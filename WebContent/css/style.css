@@ -1,0 +1,36 @@
+body {
+	background-color:#e5e5e5;
+	color:#FFFFFF;
+	font-family:arial, helvetica, sans-serif;
+	font-size:18px;
+}
+#pageContainer {
+	width:1024px;
+	background-color:#e5e5e5;
+	border:solid 1px #ce4348;
+}
+.dropdown-menu {
+	background-color:#e5e5e5;
+}
+.err {
+	color:#ce4348;
+	font-weight:bold;
+}
+.menuBar {
+	background-color:#000000;
+	color:#FFFFFF;
+}
+.spacer {
+    clear:both;
+    width:100%;
+    font-size:1px;
+}
+.trailerText {
+	font-family:times roman, serif;
+	font-size:12px;
+	font-style:italic;
+	color:#FFFFFF;
+}
+.trailerLink {
+	color:#FFFFFF;
+}

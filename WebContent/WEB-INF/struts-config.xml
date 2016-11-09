@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts 1.1//EN"
+ "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+ -->
+<struts-config>
+    <form-beans>    
+    	<form-bean name="addFamilyForm"          type="com.ansi.scilla.web.actionForm.AddFamilyForm" />
+    </form-beans>
+	<!--
+
+    <global-exceptions>
+        <exception
+            key="error.unhandledsql"
+            type="com.positiontech.struts.TrustedFeed.exceptions.NoAccountsException"
+            path="/index.jsp"/>
+    </global-exceptions>
+    -->
+
+    <global-forwards>
+        <forward name="index" path="/index.jsp"/>
+    </global-forwards>
+
+    <action-mappings>
+		<action
+            path="/dashboard"
+            type="com.ansi.scilla.web.action.DashboardAction">
+            <forward name="valid" path="/dashboard.jsp" />
+        </action>
+		<action
+            path="/login"
+            type="com.ansi.scilla.web.action.LoginAction">
+            <forward name="valid" path="/login.jsp" />
+        </action>
+        <!--    *****************************   -->
+		<action
+            path="/about_us"
+            type="com.ansi.scilla.web.action.DisplayPageAction">
+            <forward name="valid" path="/displayPage.jsp" />
+        </action>
+		<action
+			path="/adminMemberList"
+			type="com.ansi.scilla.web.action.AdminMemberListAction"
+			name="idForm"
+			input="/adminMemberList.jsp"
+			scope="request">
+			<forward name="valid" path="/adminMemberList.jsp" />
+		</action>
+
+<!--
+        
+        <action path="/communication" include="/communication.jsp"/>
+        <action path="/eligibility"   include="/eligibility.jsp"/>
+        <action path="/programs"      include="/programs.jsp"/>
+        <action path="/schedule"      include="/schedule.jsp"/>
+        <action path="/staff"         include="/staff.jsp"/>
+        <action path="/enrichment"    include="/enrichment.jsp"/>
+        <action path="/contact"       include="/contact.jsp"/>
+-->
+		
+
+    </action-mappings>
+
+    <controller processorClass="com.ansi.scilla.web.struts.ScillaRequestProcessor" />
+    <!-- 
+    <controller processorClass="org.apache.struts.action.RequestProcessor" />
+     -->
+    <!-- ================================ Message Resources Definitions -->
+    <message-resources parameter="resources.application"/>
+
+    <plug-in className="com.ansi.scilla.web.struts.ScillaPlugin" />
+    
+    <!--
+    <plug-in className="org.apache.struts.validator.ValidatorPlugIn">
+        <set-property
+            property="pathnames"
+            value="/WEB-INF/validator-rules.xml,/WEB-INF/validation.xml"/>
+    </plug-in>
+    -->
+    <!--
+    <plug-in className="org.apahce.struts.tiles.TilesPlugin">
+        <set-property
+            property="definitions-config"
+            value="/WEB-INF/tiles-config.xml"/>
+        <set-property property="moduleAware" value="true"/>
+        <set-property property="definitions-debug" value="9"/>
+        <set-property property="definitions-parser-details" value="9"/>
+        <set-property property="definitions-parser-validate" value="true"/>
+    </plug-in>
+    -->
+    <!--
+    <plug-in className="org.apache.struts.validator.ValidatorPlugIn">
+        <set-property
+            property="pathnames"
+            value="/WEB-INF/validator-rules.xml,/WEB-INF/validation.xml"/>
+    </plug-in>
+    -->
+
+</struts-config>

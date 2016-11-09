@@ -1,0 +1,2 @@
+<ResourceLink global="jdbc/oracle" name="jdbc/oracle"
+        type="oracle.jdbc.pool.OracleDataSource" />

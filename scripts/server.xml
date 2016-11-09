@@ -1,0 +1,21 @@
+<!-- within <GlobalNamingResources> ... </GlobalNamingResources> -->
+<!--
+MySQL: url="jdbc:mysql://dc2-mysql-03.kattare.com/fvdtc"
+       driverClassName="com.mysql.jdbc.Driver"
+MS SQL: url="jdbc:sqlserver://10.12.0.20:1433;databaseName=CollaborativeCare;user=lmeka;password=lmeka1;"
+       driver???   https://msdn.microsoft.com/en-us/library/mt484311(v=sql.110).aspx
+-->
+<Resource name="jdbc/oracle"
+              auth="Container"
+              type="javax.sql.DataSource"
+              driverClassName="oracle.jdbc.driver.OracleDriver"
+              url="jdbc:oracle:thin:@10.1.4.150:1521:prod"
+              username="web_user"
+              password="HtH6n6E8WRiawE32mL"
+              maxActive="10"
+              maxIdle="3"
+              validationQuery="select current_date from dual"
+              validationQueryTime="1"
+              removeAbandoned="true"
+              timeBetweenEvictionRunsMillis="30000"
+              minEvictableIdleTimeMillis="60000" />
