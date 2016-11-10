@@ -18,6 +18,7 @@ import com.ansi.scilla.web.exceptions.InvalidLoginException;
 import com.ansi.scilla.web.request.LoginRequest;
 import com.ansi.scilla.web.response.LoginResponse;
 import com.ansi.scilla.web.struts.SessionData;
+import com.ansi.scilla.web.struts.SessionUser;
 
 public class LoginServlet extends AbstractServlet {
 
@@ -36,7 +37,10 @@ public class LoginServlet extends AbstractServlet {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
+			logger.debug("Logging in");
 			String jsonString = super.makeJsonString(request);
+			logger.debug("Got json:");
+			logger.debug(jsonString);
 			LoginResponse loginResponse = new LoginResponse();
 			try {
 				loginResponse = doWork(conn, jsonString);
@@ -66,7 +70,8 @@ public class LoginServlet extends AbstractServlet {
 	protected LoginResponse doWork(Connection conn, String jsonString) throws ExpiredLoginException, InvalidLoginException, Exception {
 		LoginRequest loginRequest = new LoginRequest(jsonString);
 		User user = AppUtils.checkLogin(conn, loginRequest.getUserid(), loginRequest.getPassword());
-		LoginResponse loginResponse = new LoginResponse(conn, user);
+		SessionUser sessionUser = new SessionUser(user);
+		LoginResponse loginResponse = new LoginResponse(conn, sessionUser);
 		return loginResponse;
 		
 	}

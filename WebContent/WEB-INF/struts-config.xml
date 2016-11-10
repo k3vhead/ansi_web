@@ -26,12 +26,14 @@
             path="/dashboard"
             type="com.ansi.scilla.web.action.DashboardAction">
             <forward name="valid" path="/dashboard.jsp" />
+            <forward name="login" path="/login.jsp" />
         </action>
-		<action
-            path="/login"
-            type="com.ansi.scilla.web.action.LoginAction">
+      		<action
+            path="/logoff"
+            type="com.ansi.scilla.web.action.LogoffAction">
             <forward name="valid" path="/login.jsp" />
         </action>
+        
         <!--    *****************************   -->
 		<action
             path="/about_us"

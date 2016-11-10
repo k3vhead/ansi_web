@@ -42,13 +42,70 @@ public class TestLogin extends LoginServlet {
 	}
 
 	public void goPost() throws Exception {
-		LoginRequest request = new LoginRequest();
-		request.setUserid("dclewis@thewebthing.com");
-		request.setPassword("password1");
+//		LoginRequest request = makeGoodRequest();
+//		LoginRequest request = makeBadId();
+//		LoginRequest request = makeBadPass();
+//		LoginRequest request = makeMissingId();
+//		LoginRequest request = makeMissingPass();
+		LoginRequest request = makeNullPass();
+//		LoginRequest request = makeNullId();
+		
 		String json = JsonUtils.object2JSON(request);
 		System.out.println(json);
 		String returnString = TesterUtils.PostJson("http://127.0.0.1:8080/ansi_web/login", json);
 		System.out.println(returnString);
 	}
+
+	private LoginRequest makeGoodRequest() {
+		LoginRequest request = new LoginRequest();
+		request.setUserid("dclewis@thewebthing.com");
+		request.setPassword("password1");
+		return request;
+	}
+
+	private LoginRequest makeBadId() {
+		LoginRequest request = new LoginRequest();
+		request.setUserid("xxx@thewebthing.com");
+		request.setPassword("password1");
+		return request;
+	}
+
+	private LoginRequest makeBadPass() {
+		LoginRequest request = new LoginRequest();
+		request.setUserid("dclewis@thewebthing.com");
+		request.setPassword("xxxx");
+		return request;
+	}
+
+	private LoginRequest makeMissingId() {
+		LoginRequest request = new LoginRequest();
+		request.setUserid("");
+		request.setPassword("password1");
+		return request;
+	}
+
+
+	private LoginRequest makeMissingPass() {
+		LoginRequest request = new LoginRequest();
+		request.setUserid("dclewis@thewebthing.com");
+		request.setPassword("");
+		return request;
+	}
+	
+	private LoginRequest makeNullPass() {
+		LoginRequest request = new LoginRequest();
+		request.setUserid("dclewis@thewebthing.com");
+		request.setPassword("null");
+		return request;
+	}
+
+
+	private LoginRequest makeNullId() {
+		LoginRequest request = new LoginRequest();
+		request.setUserid(null);
+		request.setPassword("password1");
+		return request;
+	}
+
 
 }

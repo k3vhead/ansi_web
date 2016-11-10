@@ -246,20 +246,18 @@ public class AppUtils {
 		try {
 			logger.debug("user: " + userid);
 			user.selectOne(conn);
-			logger.debug("got it: " + user);
 			if ( ! user.getStatus().equals(User.STATUS_IS_GOOD)) {
 				logger.debug("expired");
 				throw new ExpiredLoginException();
 			}
+			logger.debug(user);
 			String checkPass = encryptPassword(password, user.getUserId());
 			logger.debug(checkPass);
 			if ( ! checkPass.equals(user.getPassword())) {
-				logger.debug("invalid");
 				throw new InvalidLoginException();
 			}
 			
 		} catch ( RecordNotFoundException e) {
-			logger.debug("not found");
 			throw new InvalidLoginException();
 		}
 		

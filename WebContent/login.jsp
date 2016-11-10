@@ -29,7 +29,7 @@
     
     
     <tiles:put name="content" type="string">
-    	<form action="#" method="post">
+    	<form action="#" method="post" id="loginForm">
 			<table>
 				<tr>
 					<td>User Id:</td>

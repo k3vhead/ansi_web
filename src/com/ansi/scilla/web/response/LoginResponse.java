@@ -4,16 +4,16 @@ import java.sql.Connection;
 import java.util.List;
 
 import com.ansi.scilla.common.db.Division;
-import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ApplicationWebObject;
 import com.ansi.scilla.web.common.UserPermission;
+import com.ansi.scilla.web.struts.SessionUser;
 
 public class LoginResponse extends ApplicationWebObject implements MessageResponse {
 
 	private static final long serialVersionUID = 1L;
 	
-	private User user;
+	private SessionUser user;
 	private List<UserPermission> userPermissionList;
 	private List<Division> divisionList;
 	
@@ -21,18 +21,18 @@ public class LoginResponse extends ApplicationWebObject implements MessageRespon
 		super();
 	}
 
-	public LoginResponse(Connection conn, User user) throws Exception {
+	public LoginResponse(Connection conn, SessionUser user) throws Exception {
 		super();
 		this.user = user;
 		this.userPermissionList = UserPermission.getUserPermissions(conn, user.getPermissionGroupId());
 		this.divisionList = AppUtils.makeDivisionList(conn, user.getUserId());
 	}
 
-	public User getUser() {
+	public SessionUser getUser() {
 		return user;
 	}
 
-	public void setUser(User user) {
+	public void setUser(SessionUser user) {
 		this.user = user;
 	}
 

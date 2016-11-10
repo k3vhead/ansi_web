@@ -68,7 +68,7 @@
 	    			</li>
 	    		</ul>
 	    		<ul class="nav navbar-nav navbar-right">
-	    			<li><a href="#">Login</a></li>
+	    			<li><a href="logoff.html">Logoff</a></li>
 	    		</ul>
 	    	</div>
 	    	
