@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.response;
+package com.ansi.scilla.web.response.login;
 
 import java.sql.Connection;
 import java.util.List;
@@ -7,6 +7,7 @@ import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ApplicationWebObject;
 import com.ansi.scilla.web.common.UserPermission;
+import com.ansi.scilla.web.response.MessageResponse;
 import com.ansi.scilla.web.struts.SessionUser;
 
 public class LoginResponse extends ApplicationWebObject implements MessageResponse {

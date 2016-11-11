@@ -16,7 +16,7 @@ import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.InvalidLoginException;
 import com.ansi.scilla.web.request.LoginRequest;
-import com.ansi.scilla.web.response.LoginResponse;
+import com.ansi.scilla.web.response.login.LoginResponse;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
 

@@ -65,6 +65,15 @@
         <servlet-name>login</servlet-name>
         <url-pattern>/login</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>codes</servlet-name>
+        <servlet-class>com.ansi.scilla.web.servlets.CodesServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>codes</servlet-name>
+        <url-pattern>/codes/*</url-pattern>
+    </servlet-mapping>
 	
     <!--
         Define the default session timeout for the application,

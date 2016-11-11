@@ -5,7 +5,7 @@ import java.sql.Connection;
 
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.request.LoginRequest;
-import com.ansi.scilla.web.response.LoginResponse;
+import com.ansi.scilla.web.response.login.LoginResponse;
 import com.ansi.scilla.web.servlets.LoginServlet;
 import com.thewebthing.commons.lang.JsonUtils;
 
@@ -52,7 +52,7 @@ public class TestLogin extends LoginServlet {
 		
 		String json = JsonUtils.object2JSON(request);
 		System.out.println(json);
-		String returnString = TesterUtils.PostJson("http://127.0.0.1:8080/ansi_web/login", json);
+		String returnString = TesterUtils.postJson("http://127.0.0.1:8080/ansi_web/login", json);
 		System.out.println(returnString);
 	}
 

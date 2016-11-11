@@ -9,6 +9,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.sql.Connection;
+import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -44,6 +45,10 @@ public class AbstractServlet extends HttpServlet {
 		super.doPost(request, response);
 	}
 
+	protected void sendNotFound(HttpServletResponse response) {
+		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		response.setContentType("application/json");
+	}
 	
 	protected void sendResponse(Connection conn, HttpServletResponse response, ResponseCode responseCode, MessageResponse data) throws Exception {
 		AnsiResponse ansiResponse = new AnsiResponse(conn, responseCode, data);
@@ -72,6 +77,18 @@ public class AbstractServlet extends HttpServlet {
         	request.getInputStream().close();
         }
         return writer.toString();        
+	}
+
+	protected HashMap<String, String> makeParamMap(String queryString) {
+		HashMap<String, String> paramMap = new HashMap<String, String>();
+		String[] pairs = queryString.split("\\&");
+		for ( String pair : pairs ) {
+			String[] pieces = pair.split("=");
+			if ( pieces.length == 2 ) {
+				paramMap.put(pieces[0], pieces[1]);
+			}
+		}
+		return paramMap;
 	}
 	
 	
