@@ -31,6 +31,8 @@
     	
     	<script src="js/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
         
+        <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
+        
         <link rel="stylesheet" href="css/layout.css" type="text/css" />
         <link rel="stylesheet" href="css/style.css" type="text/css" />
     	

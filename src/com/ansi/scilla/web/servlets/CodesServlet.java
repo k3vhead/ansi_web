@@ -10,8 +10,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ansi.scilla.common.db.Codes;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ResponseCode;
+import com.ansi.scilla.web.request.CodesRequest;
 import com.ansi.scilla.web.response.codes.CodesResponse;
 import com.ansi.scilla.web.response.codes.CodesListResponse;
 
@@ -22,7 +24,31 @@ public class CodesServlet extends AbstractServlet {
 	@Override
 	protected void doDelete(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		throw new ServletException("Not yet coded");
+		Connection conn = null;
+		try {
+			conn = AppUtils.getDBCPConn();
+			conn.setAutoCommit(false);
+			
+			String jsonString = super.makeJsonString(request);
+			CodesRequest codesRequest = new CodesRequest(jsonString);
+			System.out.println(codesRequest);
+			Codes codes = new Codes();
+			codes.setTableName(codesRequest.getTableName());
+			codes.setFieldName(codesRequest.getFieldName());
+			codes.setValue(codesRequest.getValue());
+			System.out.println(codes);
+			codes.delete(conn);
+			
+			CodesResponse codesResponse = new CodesResponse();
+			super.sendResponse(conn, response, ResponseCode.SUCCESS, codesResponse);
+			
+			conn.commit();
+		} catch ( Exception e) {
+			AppUtils.logException(e);
+			throw new ServletException(e);
+		} finally {
+			AppUtils.closeQuiet(conn);
+		}
 	}
 
 	@Override
