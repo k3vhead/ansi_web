@@ -3,6 +3,7 @@ package com.ansi.scilla.web.test;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.util.Date;
+import java.util.HashMap;
 
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.DivisionUser;
@@ -11,6 +12,7 @@ import com.ansi.scilla.common.db.PermissionGroup;
 import com.ansi.scilla.common.db.PermissionGroupLevel;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.Title;
+import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.common.ResponseCode;
@@ -24,18 +26,51 @@ public class InsertTestData extends TesterUtils {
 		try {
 			System.out.println("Start");
 //			itd.insertMessage();
+//			itd.insertPermissionLevel();
+//			itd.insertPermissionGroup();
+//			itd.insertPermissionGroupLevel();
+//			itd.insertUser();
 //			itd.insertDivision();
 //			itd.insertTitle();
-//			itd.insertPermissionGroup();
-//			itd.insertDivisionUser();
-//			itd.insertPermissionLevel();
-			itd.insertPermissionGroupLevel();
+			itd.insertDivisionUser();
 			System.out.println("Done");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
+	private void insertUser() throws Exception {
+		Connection conn = null;		
+		Date now = new Date();
+		
+		try {
+			conn = AppUtils.getConn();
+			conn.setAutoCommit(false);
+		
+			User user = new User();
+			user.setFirstName("David");
+			user.setLastName("Lewis");
+			user.setTitle("Fundi");
+			user.setAddedBy(1);
+			user.setAddedDate(now);
+			user.setUpdatedBy(1);
+			user.setUpdatedDate(now);
+			user.setPermissionGroupId(1);
+			user.setEmail("dclewis@thewebthing.com");
+			user.setStatus(User.STATUS_IS_GOOD);
+			user.setSuperUser(1);
+			user.setAddress1("1600 Pennsylvania Ave");
+			System.out.println(user);
+			
+			user.insertWithKey(conn);
+			conn.commit();
+		} catch ( Exception e) {
+			conn.rollback();
+			throw e;
+		} finally {
+			conn.close();
+		}	
+	}
 	private void insertPermissionGroupLevel() throws Exception {
 		Connection conn = null;		
 		Date now = new Date();
@@ -166,8 +201,8 @@ public class InsertTestData extends TesterUtils {
 
 			DivisionUser d = new DivisionUser();
 			d.setUserId(1);
-			d.setDivisionId(2);
-			d.setPermissionGroupId(2);
+			d.setDivisionId(1);
+//			d.setPermissionGroupId(2);
 			d.setTitleId(1);
 			
 			
@@ -220,8 +255,12 @@ public class InsertTestData extends TesterUtils {
 	}
 
 	public void insertMessage() throws Exception {
-		ResponseCode key = ResponseCode.SUCCESS;
-		String messageText = "Success!";
+		HashMap<ResponseCode, String> codeMap = new HashMap<ResponseCode, String>();
+		codeMap.put(ResponseCode.SUCCESS, "Success!");
+		codeMap.put(ResponseCode.EXPIRED_LOGIN, "Login has expired. See your admin");
+		codeMap.put(ResponseCode.INVALID_LOGIN, "Your userid/password do not match our records");
+		
+		
 		Integer myUserId = 1;
 		
 		
@@ -229,20 +268,26 @@ public class InsertTestData extends TesterUtils {
 		Date now = new Date();
 		try {
 			conn = AppUtils.getConn();
+			if (conn == null ) {
+				throw new Exception("null conn");
+			}
 			conn.setAutoCommit(false);
 			
-			Message message = new Message();
-			message.setKey(key.toString());
-			message.setMessage(messageText);
-			message.setSeq(1);
-			message.setAddedBy(myUserId);
-			message.setAddedDate(now);
-			message.setUpdatedBy(myUserId);
-			message.setUpdatedDate(now);
-			message.setStatus(Message.STATUS_IS_ACTIVE);
-			message.insertWithNoKey(conn);
-			
-			System.out.println(message);
+			for ( ResponseCode code : new ResponseCode[] {ResponseCode.SUCCESS, ResponseCode.EXPIRED_LOGIN, ResponseCode.INVALID_LOGIN}) {
+				Message message = new Message();
+				message.setKey(code.toString());
+				message.setMessage(codeMap.get(code));
+				message.setSeq(1);
+				message.setAddedBy(myUserId);
+				message.setAddedDate(now);
+				message.setUpdatedBy(myUserId);
+				message.setUpdatedDate(now);
+				message.setStatus(Message.STATUS_IS_ACTIVE);
+				message.insertWithNoKey(conn);
+				
+				System.out.println(message);
+				
+			}
 			
 			conn.commit();
 		} catch ( Exception e) {
