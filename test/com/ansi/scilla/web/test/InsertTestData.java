@@ -29,10 +29,10 @@ public class InsertTestData extends TesterUtils {
 //			itd.insertPermissionLevel();
 //			itd.insertPermissionGroup();
 //			itd.insertPermissionGroupLevel();
-//			itd.insertUser();
+			itd.insertUser();
 //			itd.insertDivision();
 //			itd.insertTitle();
-			itd.insertDivisionUser();
+//			itd.insertDivisionUser();
 			System.out.println("Done");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -60,9 +60,14 @@ public class InsertTestData extends TesterUtils {
 			user.setStatus(User.STATUS_IS_GOOD);
 			user.setSuperUser(1);
 			user.setAddress1("1600 Pennsylvania Ave");
+			user.setPassword(AppUtils.encryptPassword("password1", 1));
 			System.out.println(user);
 			
-			user.insertWithKey(conn);
+//			user.insertWithKey(conn);
+			User key = new User();
+			key.setUserId(1);
+			
+			user.update(conn, key);
 			conn.commit();
 		} catch ( Exception e) {
 			conn.rollback();

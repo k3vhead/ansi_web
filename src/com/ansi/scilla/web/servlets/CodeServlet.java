@@ -13,11 +13,11 @@ import javax.servlet.http.HttpServletResponse;
 import com.ansi.scilla.common.db.Codes;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ResponseCode;
-import com.ansi.scilla.web.request.CodesRequest;
+import com.ansi.scilla.web.request.CodeRequest;
 import com.ansi.scilla.web.response.codes.CodesResponse;
-import com.ansi.scilla.web.response.codes.CodesListResponse;
+import com.ansi.scilla.web.response.codes.CodeListResponse;
 
-public class CodesServlet extends AbstractServlet {
+public class CodeServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
 
@@ -30,7 +30,7 @@ public class CodesServlet extends AbstractServlet {
 			conn.setAutoCommit(false);
 			
 			String jsonString = super.makeJsonString(request);
-			CodesRequest codesRequest = new CodesRequest(jsonString);
+			CodeRequest codesRequest = new CodeRequest(jsonString);
 			System.out.println(codesRequest);
 			Codes codes = new Codes();
 			codes.setTableName(codesRequest.getTableName());
@@ -64,7 +64,7 @@ public class CodesServlet extends AbstractServlet {
 			try {
 				conn = AppUtils.getDBCPConn();
 				if ( command.equals("getList")) {
-					CodesListResponse codesListResponse = makeCodesListResponse(conn);
+					CodeListResponse codesListResponse = makeCodesListResponse(conn);
 					super.sendResponse(conn, response, ResponseCode.SUCCESS, codesListResponse);
 				} else if ( command.equals("get")) {
 					HashMap<String, String> params = super.makeParamMap(request.getQueryString());
@@ -92,8 +92,8 @@ public class CodesServlet extends AbstractServlet {
 		throw new ServletException("Not Yet Coded");
 	}
 
-	private CodesListResponse makeCodesListResponse(Connection conn) throws Exception {
-		CodesListResponse codesListResponse = new CodesListResponse(conn);
+	private CodeListResponse makeCodesListResponse(Connection conn) throws Exception {
+		CodeListResponse codesListResponse = new CodeListResponse(conn);
 		return codesListResponse;
 	}
 

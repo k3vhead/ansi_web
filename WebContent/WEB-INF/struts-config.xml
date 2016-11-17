@@ -23,9 +23,9 @@
 
     <action-mappings>
 		<action
-            path="/codesMaintenance"
+            path="/codeMaintenance"
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">
-            <forward name="valid" path="/codesMaintenance.jsp" />
+            <forward name="valid" path="/codeMaintenance.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action

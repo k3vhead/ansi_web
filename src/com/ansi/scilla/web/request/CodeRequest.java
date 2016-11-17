@@ -7,7 +7,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import com.thewebthing.commons.lang.JsonException;
 import com.thewebthing.commons.lang.JsonUtils;
 
-public class CodesRequest extends AbstractRequest {
+public class CodeRequest extends AbstractRequest {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -15,13 +15,13 @@ public class CodesRequest extends AbstractRequest {
 	private String fieldName;
 	private String value;
 	
-	public CodesRequest() {
+	public CodeRequest() {
 		super();
 	}
 	
-	public CodesRequest(String jsonString) throws JsonException, IllegalAccessException, InvocationTargetException {
+	public CodeRequest(String jsonString) throws JsonException, IllegalAccessException, InvocationTargetException {
 		this();
-		CodesRequest req = (CodesRequest) JsonUtils.JSON2Object(jsonString, CodesRequest.class);
+		CodeRequest req = (CodeRequest) JsonUtils.JSON2Object(jsonString, CodeRequest.class);
 		BeanUtils.copyProperties(this, req);
 	}
 

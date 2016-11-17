@@ -67,12 +67,12 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>codes</servlet-name>
-        <servlet-class>com.ansi.scilla.web.servlets.CodesServlet</servlet-class>
+        <servlet-name>code</servlet-name>
+        <servlet-class>com.ansi.scilla.web.servlets.CodeServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>codes</servlet-name>
-        <url-pattern>/codes/*</url-pattern>
+        <servlet-name>code</servlet-name>
+        <url-pattern>/code/*</url-pattern>
     </servlet-mapping>
 	
     <!--

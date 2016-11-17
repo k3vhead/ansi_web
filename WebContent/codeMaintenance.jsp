@@ -16,7 +16,7 @@
 <tiles:insert page="layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        Codes Maintenance
+        Code Maintenance
     </tiles:put>
     
     

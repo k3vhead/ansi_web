@@ -9,16 +9,16 @@ import java.util.List;
 import com.ansi.scilla.common.db.Codes;
 import com.ansi.scilla.web.response.MessageResponse;
 
-public class CodesListResponse implements MessageResponse, Serializable {
+public class CodeListResponse implements MessageResponse, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	private List<Codes> codesList;
 
-	public CodesListResponse() {
+	public CodeListResponse() {
 		super();
 	}
-	public CodesListResponse(Connection conn) throws Exception {
+	public CodeListResponse(Connection conn) throws Exception {
 		this.codesList = Codes.cast(new Codes().selectAll(conn));
 		Collections.sort(codesList,
 
