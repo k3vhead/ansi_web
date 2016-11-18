@@ -5,6 +5,7 @@ public enum PropertyNames {
 	DB_URL,
 	DB_USERID,
 	DB_PASSWORD,
+	DB_DRIVER,
 	
 	
 	FULL_DATE_FORMAT,

@@ -6,25 +6,25 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import com.ansi.scilla.common.db.Codes;
+import com.ansi.scilla.common.db.Code;
 import com.ansi.scilla.web.response.MessageResponse;
 
 public class CodeListResponse implements MessageResponse, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private List<Codes> codesList;
+	private List<Code> codeList;
 
 	public CodeListResponse() {
 		super();
 	}
 	public CodeListResponse(Connection conn) throws Exception {
-		this.codesList = Codes.cast(new Codes().selectAll(conn));
-		Collections.sort(codesList,
+		this.codeList = Code.cast(new Code().selectAll(conn));
+		Collections.sort(codeList,
 
-				new Comparator<Codes>() {
+				new Comparator<Code>() {
 
-			public int compare(Codes o1, Codes o2) {
+			public int compare(Code o1, Code o2) {
 
 				int ret = o1.getTableName().compareTo(o2.getTableName());
 				if ( ret == 0 ) {
@@ -42,12 +42,12 @@ public class CodeListResponse implements MessageResponse, Serializable {
 
 		});
 	}
-	public List<Codes> getCodesList() {
-		return codesList;
+	public List<Code> getCodeList() {
+		return codeList;
 	}
 
-	public void setCodesList(List<Codes> codesList) {
-		this.codesList = codesList;
+	public void setCodeList(List<Code> codeList) {
+		this.codeList = codeList;
 	}
 	
 	

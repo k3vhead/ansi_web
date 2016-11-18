@@ -2,6 +2,8 @@ package com.ansi.scilla.web.test;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.Types;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -47,27 +49,24 @@ public class InsertTestData extends TesterUtils {
 			conn = AppUtils.getConn();
 			conn.setAutoCommit(false);
 		
-			User user = new User();
-			user.setFirstName("David");
+			MyUser user = new MyUser();
+			user.setFirstName("Joshua");
 			user.setLastName("Lewis");
-			user.setTitle("Fundi");
+			user.setTitle("Guru");
 			user.setAddedBy(1);
 			user.setAddedDate(now);
 			user.setUpdatedBy(1);
 			user.setUpdatedDate(now);
 			user.setPermissionGroupId(1);
-			user.setEmail("dclewis@thewebthing.com");
+			user.setEmail("jwlewis@thewebthing.com");
 			user.setStatus(User.STATUS_IS_GOOD);
 			user.setSuperUser(1);
 			user.setAddress1("1600 Pennsylvania Ave");
 			user.setPassword(AppUtils.encryptPassword("password1", 1));
 			System.out.println(user);
 			
-//			user.insertWithKey(conn);
-			User key = new User();
-			key.setUserId(1);
-			
-			user.update(conn, key);
+			Integer userId = user.insertWithKey(conn);
+			System.out.println("UserID: " + userId);
 			conn.commit();
 		} catch ( Exception e) {
 			conn.rollback();
@@ -143,17 +142,28 @@ public class InsertTestData extends TesterUtils {
 			conn = AppUtils.getConn();
 			conn.setAutoCommit(false);
 
-			PermissionGroup d = new PermissionGroup();
-			d.setName("Permission group 2");
-			d.setDescription("Allowed to see Jobs");
-			d.setStatus(1);
-			
-			d.setAddedBy(myUserId);
-			d.setAddedDate(now);
-			d.setUpdatedBy(myUserId);
-			d.setUpdatedDate(now);
-			d.insertWithKey(conn, debug);
-			System.out.println(d);
+			String sql = "INSERT INTO permission_group(description,added_by,added_date,status,updated_by,updated_date,name) VALUES (?,?,?,?,?,?,?)";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, "Allowed to see some stuff");
+			ps.setInt(2, 1);
+			ps.setDate(3,new java.sql.Date(now.getTime()));
+//			ps.setNull(4, Types.INTEGER);
+			ps.setInt(4, PermissionGroup.STATUS_IS_ACTIVE);
+			ps.setInt(5, 1);
+			ps.setDate(6, new java.sql.Date(now.getTime()));
+			ps.setString(7, "Permission Group1");
+			ps.executeUpdate();
+//			PermissionGroup d = new PermissionGroup();
+//			d.setName("Permission group 2");
+//			d.setDescription("Allowed to see Jobs");
+//			d.setStatus(1);
+//			
+//			d.setAddedBy(myUserId);
+//			d.setAddedDate(now);
+//			d.setUpdatedBy(myUserId);
+//			d.setUpdatedDate(now);
+//			d.insertWithKey(conn, debug);
+//			System.out.println(d);
 			
 			conn.commit();
 		} catch ( Exception e) {
@@ -303,4 +313,70 @@ public class InsertTestData extends TesterUtils {
 		}
 	}
 
+	public class MyUser extends User {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public Integer insertWithKey(Connection conn, boolean debug) throws Exception {
+			String sql = "insert into ansi_user ("
+					+ "status, first_name, last_name, title, email, "
+					+ "password, phone, address1, address2, city, state, "
+					+ "zip, permission_group_id, added_by, added_date, "
+					+ "updated_by, updated_date"
+					+ ") "
+					+ "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			int n=1;
+			ps.setInt(n, getStatus());
+			n++;
+			ps.setString(n, getFirstName());
+			n++;
+			ps.setString(n, getLastName());
+			n++;
+			ps.setString(n, getTitle());
+			n++;
+			ps.setString(n, getEmail());
+			n++;
+			ps.setString(n, getPassword());
+			n++;
+			ps.setString(n, getPhone());
+			n++;
+			ps.setString(n, getAddress1());
+			n++;
+			ps.setString(n, getAddress2());
+			n++;
+			ps.setString(n, getCity());
+			n++;
+			ps.setString(n, getState());
+			n++;
+			ps.setString(n, getZip());
+			n++;
+			ps.setInt(n, getPermissionGroupId());
+			n++;
+			ps.setInt(n, getAddedBy());
+			n++;
+			ps.setDate(n, new java.sql.Date(getAddedDate().getTime()));
+			n++;
+			ps.setInt(n, getUpdatedBy());
+			n++;
+			ps.setDate(n, new java.sql.Date(this.getUpdatedDate().getTime()));
+			n++;
+			Integer id = ps.executeUpdate();
+			
+//			ResultSet rs = ps.getGeneratedKeys();
+//	        rs.absolute(1); // we're only getting 1 record
+//	        int id = rs.getInt("GENERATED_KEY");
+//	        rs.close();
+			
+	        return Integer.valueOf(id);
+		}
+
+		@Override
+		public Integer insertWithKey(Connection conn) throws Exception {
+			return insertWithKey(conn, false);
+		}
+	}
 }

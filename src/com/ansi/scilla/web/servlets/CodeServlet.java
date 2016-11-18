@@ -10,12 +10,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ansi.scilla.common.db.Codes;
+import com.ansi.scilla.common.db.Code;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.request.CodeRequest;
-import com.ansi.scilla.web.response.codes.CodesResponse;
 import com.ansi.scilla.web.response.codes.CodeListResponse;
+import com.ansi.scilla.web.response.codes.CodeResponse;
 
 public class CodeServlet extends AbstractServlet {
 
@@ -32,14 +32,14 @@ public class CodeServlet extends AbstractServlet {
 			String jsonString = super.makeJsonString(request);
 			CodeRequest codesRequest = new CodeRequest(jsonString);
 			System.out.println(codesRequest);
-			Codes codes = new Codes();
+			Code codes = new Code();
 			codes.setTableName(codesRequest.getTableName());
 			codes.setFieldName(codesRequest.getFieldName());
 			codes.setValue(codesRequest.getValue());
 			System.out.println(codes);
 			codes.delete(conn);
 			
-			CodesResponse codesResponse = new CodesResponse();
+			CodeResponse codesResponse = new CodeResponse();
 			super.sendResponse(conn, response, ResponseCode.SUCCESS, codesResponse);
 			
 			conn.commit();
@@ -68,7 +68,7 @@ public class CodeServlet extends AbstractServlet {
 					super.sendResponse(conn, response, ResponseCode.SUCCESS, codesListResponse);
 				} else if ( command.equals("get")) {
 					HashMap<String, String> params = super.makeParamMap(request.getQueryString());
-					CodesResponse codesResponse = makeCodeResponse(conn, params);
+					CodeResponse codesResponse = makeCodeResponse(conn, params);
 					super.sendResponse(conn, response, ResponseCode.SUCCESS, codesResponse);
 				} else {
 					super.sendNotFound(response);
@@ -97,8 +97,8 @@ public class CodeServlet extends AbstractServlet {
 		return codesListResponse;
 	}
 
-	private CodesResponse makeCodeResponse(Connection conn, HashMap<String, String> params) {
-		return new CodesResponse();
+	private CodeResponse makeCodeResponse(Connection conn, HashMap<String, String> params) {
+		return new CodeResponse();
 	}
 	
 }

@@ -2,6 +2,7 @@ package com.ansi.scilla.web.common;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -29,7 +30,6 @@ import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.InvalidLoginException;
-import com.thewebthing.commons.db2.DBUtils;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 import com.thewebthing.commons.lang.StringUtils;
 
@@ -67,10 +67,16 @@ public class AppUtils {
 	 * @throws Exception
 	 */
 	public static Connection getConn() throws Exception {
+		
+		String driver = getProperty(PropertyNames.DB_DRIVER);
 		String dbURL = getProperty(PropertyNames.DB_URL);
 		String dbID = getProperty(PropertyNames.DB_USERID);
 		String dbPass = getProperty(PropertyNames.DB_PASSWORD);
-		return DBUtils.getMySQLConn(dbURL, dbID, dbPass);
+		System.out.println(dbURL);
+		Class.forName(driver);		
+        Connection conn =  DriverManager.getConnection(dbURL, dbID, dbPass);
+        
+		return conn;
 	}
        
 
