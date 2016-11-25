@@ -3,7 +3,8 @@ package com.ansi.scilla.web.test;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.Types;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -31,16 +32,96 @@ public class InsertTestData extends TesterUtils {
 //			itd.insertPermissionLevel();
 //			itd.insertPermissionGroup();
 //			itd.insertPermissionGroupLevel();
-			itd.insertUser();
+//			itd.insertUser();			
 //			itd.insertDivision();
 //			itd.insertTitle();
 //			itd.insertDivisionUser();
+//			itd.insertAllUsers();
+			itd.setPasswords();
 			System.out.println("Done");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
+	private void setPasswords() throws Exception {
+		Connection conn = null;
+		String sql = "select user_id, email from ansi_user";		
+		try {
+			conn = AppUtils.getConn();
+			conn.setAutoCommit(false);
+			Statement s = conn.createStatement();
+			ResultSet rs = s.executeQuery(sql);
+			
+			PreparedStatement ps = conn.prepareStatement("update ansi_user set password=? where user_id=?");
+			
+			while (rs.next() ) {
+				Integer userId = rs.getInt("user_id");
+				String password = AppUtils.encryptPassword("password1", userId);
+				System.out.println(userId + "\t" + password);
+				ps.setString(1, password);
+				ps.setInt(2, userId);
+				ps.executeUpdate();
+			}
+			rs.close();
+			conn.commit();
+		} catch ( Exception e) {
+			e.printStackTrace();
+			conn.rollback();
+			throw e;
+		} finally {
+			AppUtils.closeQuiet(conn);
+		}
+	}
+
+	private void insertAllUsers() throws Exception {
+		Date now = new Date();
+		User user = new User();
+		user.setAddedBy(1);
+		user.setAddedDate(now);
+		user.setPermissionGroupId(1);
+		user.setStatus(User.STATUS_IS_GOOD);
+		user.setSuperUser(0);
+		user.setTitle("Title");
+		user.setUpdatedBy(1);
+		user.setUpdatedDate(now);
+		
+		Connection conn = null;
+		try {
+			conn = AppUtils.getConn();
+			conn.setAutoCommit(false);
+
+			user.setEmail("jwlewis@thewebthing.com");
+			user.setFirstName("JOsshua");
+			user.setLastName("Lewis");
+			user.insertWithKey(conn);
+			
+			user.setEmail("kjw@ansi.com");
+			user.setFirstName("Kevin");
+			user.setLastName("Wagner");
+			user.insertWithKey(conn);
+			
+			user.setEmail("kegan.ovitt@gmail.com");
+			user.setFirstName("Keegan");
+			user.setLastName("Ovitt");
+			user.insertWithKey(conn);
+			
+			user.setEmail("seatonja120@gmail.com");
+			user.setFirstName("Jessica");
+			user.setLastName("Seaton");
+			user.insertWithKey(conn);
+			
+			conn.commit();
+		} catch ( Exception e) {
+			conn.rollback();
+			throw e;
+		} finally {
+			AppUtils.closeQuiet(conn);
+		}
+		
+		
+	}
+
 	private void insertUser() throws Exception {
 		Connection conn = null;		
 		Date now = new Date();
@@ -49,7 +130,7 @@ public class InsertTestData extends TesterUtils {
 			conn = AppUtils.getConn();
 			conn.setAutoCommit(false);
 		
-			MyUser user = new MyUser();
+			User user = new User();
 			user.setFirstName("Joshua");
 			user.setLastName("Lewis");
 			user.setTitle("Guru");
@@ -61,11 +142,14 @@ public class InsertTestData extends TesterUtils {
 			user.setEmail("jwlewis@thewebthing.com");
 			user.setStatus(User.STATUS_IS_GOOD);
 			user.setSuperUser(1);
-			user.setAddress1("1600 Pennsylvania Ave");
+			user.setAddress1("1060 Addison Ave");
+			user.setCity("Chicago");
+			user.setState("IL");
+			user.setZip("12345");
 			user.setPassword(AppUtils.encryptPassword("password1", 1));
 			System.out.println(user);
 			
-			Integer userId = user.insertWithKey(conn);
+			Integer userId = user.insertWithKey(conn, true);
 			System.out.println("UserID: " + userId);
 			conn.commit();
 		} catch ( Exception e) {

@@ -73,6 +73,7 @@ public class AppUtils {
 		String dbID = getProperty(PropertyNames.DB_USERID);
 		String dbPass = getProperty(PropertyNames.DB_PASSWORD);
 		System.out.println(dbURL);
+		System.out.println(dbID + "\t" + dbPass);
 		Class.forName(driver);		
         Connection conn =  DriverManager.getConnection(dbURL, dbID, dbPass);
         

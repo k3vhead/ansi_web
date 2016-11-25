@@ -1,2 +1,1 @@
-<ResourceLink global="jdbc/oracle" name="jdbc/oracle"
-        type="oracle.jdbc.pool.OracleDataSource" />
+<ResourceLink global="jdbc/ansi" name="jdbc/ansi" type="org.apache.tomcat.dbcp.dbcp2.BasicDataSource" />
