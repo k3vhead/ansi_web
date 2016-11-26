@@ -9,7 +9,8 @@
 <%@ taglib uri="WEB-INF/struts-logic.tld" prefix="logic" %>
 <%@ taglib uri="WEB-INF/struts-bean.tld"  prefix="bean"  %>
 <%@ taglib uri="WEB-INF/struts-tiles.tld" prefix="tiles" %>
-<%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="fvdtc" %>
+<%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="webthing" %>
+<%@ taglib uri="WEB-INF/theTagThing.tld" prefix="ansi" %>
 
 
 
@@ -29,7 +30,62 @@
     
     
     <tiles:put name="content" type="string">
-		This is a dashboard
+		<h1>ANSI Scheduling Dashboard</h1>
+		<br />
+		<ansi:hasPermission permissionRequired="QUOTE">
+			<a href="#">Quotes</a><br />
+		</ansi:hasPermission>
+		<ansi:hasPermission permissionRequired="JOB">
+			<a href="#">Jobs</a><br />
+		</ansi:hasPermission>
+		<ansi:hasPermission permissionRequired="TICKET">
+			<a href="#">Tickets</a><br />
+		</ansi:hasPermission>
+		<ansi:hasPermission permissionRequired="PAYMENT">
+			<a href="#">Payments</a><br />
+		</ansi:hasPermission>
+		<ansi:hasPermission permissionRequired="INVOICE">
+			<a href="#">Invoices</a><br />
+		</ansi:hasPermission>
+		<ansi:hasPermission permissionRequired="SYSADMIN">
+			<a href="#">Permissions</a><br />
+			<html:link action="codeMaintenance">Messages &amp; Codes</html:link><br />
+		</ansi:hasPermission>
+		<ansi:hasPermission permissionRequired="USER_ADMIN">
+			<a href="#">User Admin</a><br />
+		</ansi:hasPermission>
+		<ansi:hasPermission permissionRequired="TECH_ADMIN">
+			<a href="#">Tech Admin</a><br />
+		</ansi:hasPermission>
+		
+
+		<h3>This is for demo purposes Only:</h3>		
+		<br />
+		<br />
+		<ansi:hasPermission permissionRequired="INVOICE">
+			Invoice Stuff goes here<br />
+			<ansi:hasRead>
+				Read only INVOICE<br />
+			</ansi:hasRead>
+			<ansi:hasWrite>
+				Write INVOICE<br />
+			</ansi:hasWrite>
+		</ansi:hasPermission>
+		<br />
+		<ansi:hasPermission permissionRequired="SYSADMIN">
+			Sysadmin Stuff goes here<br />
+			<ansi:hasRead>
+				Read only SYSADMIN<br />
+			</ansi:hasRead>
+			<ansi:hasWrite>
+				Write SYSADMIN<br />
+			</ansi:hasWrite>
+		</ansi:hasPermission>
+		<br />
+		<br />
+		<ansi:loggedIn>
+			There is a valid login
+		</ansi:loggedIn>
     </tiles:put>
 
 </tiles:insert>

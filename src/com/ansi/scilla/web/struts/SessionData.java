@@ -2,8 +2,6 @@ package com.ansi.scilla.web.struts;
 
 import java.util.List;
 
-import org.apache.commons.beanutils.BeanUtils;
-
 import com.ansi.scilla.web.common.ApplicationWebObject;
 import com.ansi.scilla.web.common.UserPermission;
 import com.ansi.scilla.web.response.login.LoginResponse;
@@ -14,25 +12,27 @@ public class SessionData extends ApplicationWebObject {
 	
 	public static final String KEY = "com_ansi_scilla_session_data";
 
-	private List<UserPermission> permissionList;
+	private List<UserPermission> userPermissionList;
 	private SessionUser user;
 	public SessionData() {
 		super();
 	}
 	public SessionData(List<UserPermission> permissionList, SessionUser user) {
 		this();
-		this.permissionList = permissionList;
+		this.userPermissionList = permissionList;
 		this.user = user;
 	}
 	public SessionData(LoginResponse loginResponse) throws Exception {
 		this();
-		BeanUtils.copyProperties(this, loginResponse);
+		this.user = loginResponse.getUser();
+		this.userPermissionList = loginResponse.getUserPermissionList();
 	}
-	public List<UserPermission> getPermissionList() {
-		return permissionList;
+	
+	public List<UserPermission> getUserPermissionList() {
+		return userPermissionList;
 	}
-	public void setPermissionList(List<UserPermission> permissionList) {
-		this.permissionList = permissionList;
+	public void setUserPermissionList(List<UserPermission> userPermissionList) {
+		this.userPermissionList = userPermissionList;
 	}
 	public SessionUser getUser() {
 		return user;
@@ -41,7 +41,17 @@ public class SessionData extends ApplicationWebObject {
 		this.user = user;
 	}
 
-	
+	public boolean hasPermission(String permissionName) {
+		boolean foundIt = false;
+		
+		for ( UserPermission userPermission : this.userPermissionList ) {
+			if ( userPermission.getPermissionName().equalsIgnoreCase(permissionName)) {
+				foundIt = true;
+			}
+		}
+		
+		return foundIt;
+	}
 	
 	
 }

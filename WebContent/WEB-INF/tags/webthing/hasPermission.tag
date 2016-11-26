@@ -1,10 +1,8 @@
 <%@ tag 
     description="" 
     body-content="scriptless" 
-    import= "java.util.Enumeration,
-    		java.util.List,
-    		com.ansi.scilla.web.struts.SessionData,
-    		com.ansi.scilla.web.common.Permission"
+    import= "com.ansi.scilla.web.struts.SessionData,
+    		com.ansi.scilla.web.common.UserPermission"
 %>
 
 <%@ taglib uri="/WEB-INF/struts-html.tld"  prefix="html"  %>
@@ -17,15 +15,12 @@
 
 <%
     String permissionRequired = (String)jspContext.getAttribute("permissionRequired");
-	SessionData sessionData = (SessionData)session.getAttribute("org_fvdtc_sessiondata");
+	SessionData sessionData = (SessionData)session.getAttribute(SessionData.KEY);
 	if ( sessionData != null ) {
-		List<Permission> permissions = sessionData.getPermissionList();
-		if ( permissions != null ) {
-			if ( permissions.contains( Permission.valueOf(permissionRequired))) {
+		if ( sessionData.hasPermission(permissionRequired) ) {
 %>
 <jsp:doBody />
 <%				
-			}
 		}
 	}
 %>

@@ -2,42 +2,51 @@
 
 <!DOCTYPE taglib PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN" "http://java.sun.com/j2ee/dtds/web-jsptaglibrary_1_1.dtd">
 <taglib>
-<tlibversion>1.2</tlibversion>
-<jspversion>1.1</jspversion>
-<shortname>bean</shortname>
-<!-- <uri>http://struts.apache.org/tags-bean</uri> -->
-<tag>
-        <name>lastModified</name>
-        <tagclass>com.thewebthing.theTagThing.LastModifiedTag</tagclass>
-        <bodycontent>empty</bodycontent>
-        <info>
-            Displays when a page was last modified.
-            If no Locale is given, the users Locale is used for formating.
-            If no user Locale is found, the system default Locale is used.
-        </info>
-        <attribute>
-            <name>locale</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-    </tag>
-    
-    
-    <tag>
-		<name>states</name>
-		<tagclass>com.thewebthing.theTagThing.StatesTag</tagclass>
-		<bodycontent>empty</bodycontent>
-		<info>
-            Displays a list of option/values for State
-        </info>
-        <attribute>
-                <name>defaultValue</name>
-                <required>false</required>
-                <rtexprvalue>true</rtexprvalue>
-        </attribute>
+	<tlibversion>1.2</tlibversion>
+	<jspversion>1.1</jspversion>
+	<shortname>ansi</shortname>
+	<!-- <uri>http://struts.apache.org/tags-bean</uri> -->
+	<tag>
+    	<name>loggedIn</name>
+    	<tagclass>com.ansi.scilla.web.tags.LoggedIn</tagclass>
+	    <bodycontent>JSP</bodycontent>
+    	<info>
+        	Displays tag body if there is a valid login session
+		</info>
 	</tag>
-  
-  
+    
+    
+	<tag>
+		<name>hasPermission</name>
+		<tagclass>com.ansi.scilla.web.tags.HasPermission</tagclass>
+		<bodycontent>JSP</bodycontent>
+		<info>
+			Displays tag body if user has permission
+		</info>
+		<attribute>
+			<name>permissionRequired</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>hasRead</name>
+		<tagclass>com.ansi.scilla.web.tags.HasRead</tagclass>
+		<bodycontent>JSP</bodycontent>
+		<info>
+			Displays tag body if user has permission and is read only
+		</info>
+	</tag>
+
+	<tag>
+		<name>hasWrite</name>
+		<tagclass>com.ansi.scilla.web.tags.HasWrite</tagclass>
+		<bodycontent>JSP</bodycontent>
+		<info>
+			Displays tag body if user has write permission
+		</info>
+	</tag>
 
 </taglib>
 

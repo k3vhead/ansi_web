@@ -9,8 +9,8 @@
 <%@ taglib uri="WEB-INF/struts-logic.tld" prefix="logic" %>
 <%@ taglib uri="WEB-INF/struts-bean.tld"  prefix="bean"  %>
 <%@ taglib uri="WEB-INF/struts-tiles.tld" prefix="tiles" %>
-<%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="ansi" %>
-
+<%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="webthing" %>
+<%@ taglib uri="WEB-INF/theTagThing.tld" prefix="ansi" %>
 
 
 <tiles:insert page="layout.jsp" flush="true">
@@ -151,11 +151,15 @@
     		</tr>
     	</table>
     	
-    	<div id="confirmDelete">
-    		Are You Sure You Want to Delete this Code?<br />
-    		<input type="button" id="cancelDelete" value="No" />
-    		<input type="button" id="doDelete" value="Yes" />
-    	</div>
+    	<ansi:hasPermission permissionRequired="SYSADMIN">
+    		<ansi:hasWrite>
+		    	<div id="confirmDelete">
+		    		Are You Sure You Want to Delete this Code?<br />
+		    		<input type="button" id="cancelDelete" value="No" />
+		    		<input type="button" id="doDelete" value="Yes" />
+		    	</div>
+	    	</ansi:hasWrite>
+    	</ansi:hasPermission>
     </tiles:put>
 
 </tiles:insert>

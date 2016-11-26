@@ -27,7 +27,7 @@ public class TestLogin extends LoginServlet {
 		Connection conn = null;
 		LoginRequest request = new LoginRequest();
 		request.setUserid("dclewis@thewebthing.com");
-		request.setPassword("something cryptic");
+		request.setPassword("password1");
 		String json = JsonUtils.object2JSON(request);
 		System.out.println(json);
 		try {
@@ -42,12 +42,12 @@ public class TestLogin extends LoginServlet {
 	}
 
 	public void goPost() throws Exception {
-//		LoginRequest request = makeGoodRequest();
+		LoginRequest request = makeGoodRequest();
 //		LoginRequest request = makeBadId();
 //		LoginRequest request = makeBadPass();
 //		LoginRequest request = makeMissingId();
 //		LoginRequest request = makeMissingPass();
-		LoginRequest request = makeNullPass();
+//		LoginRequest request = makeNullPass();
 //		LoginRequest request = makeNullId();
 		
 		String json = JsonUtils.object2JSON(request);

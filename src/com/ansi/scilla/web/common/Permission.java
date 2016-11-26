@@ -12,7 +12,7 @@ public enum Permission {
 	TICKET(true),
 	PAYMENT(false),
 	INVOICE(false),
-	SYSDMIN(false),
+	SYSADMIN(false),
 	USER_ADMIN(false),
 	TECH_ADMIN(false);
 

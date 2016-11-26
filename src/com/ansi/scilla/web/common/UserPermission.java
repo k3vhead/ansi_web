@@ -40,7 +40,7 @@ public class UserPermission extends ApplicationWebObject {
 			if ( rsmd.getColumnName(idx).equalsIgnoreCase("permission_name")) {
 				this.permissionName = rs.getString(idx);
 			}
-			if ( rsmd.getColumnName(idx).equalsIgnoreCase("level")) {
+			if ( rsmd.getColumnName(idx).equalsIgnoreCase("permission_level")) {
 				this.level = rs.getInt(idx);
 			}
 		}

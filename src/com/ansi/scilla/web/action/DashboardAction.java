@@ -1,7 +1,5 @@
 package com.ansi.scilla.web.action;
 
-import java.util.Calendar;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -20,23 +18,7 @@ public class DashboardAction extends AbstractAction {
 	public ActionForward execute(ActionMapping mapping, ActionForm actionForm,
 			HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
-		
-//		Logger logger = AppUtils.getLogger();
-//		Connection conn = null;
-//		try {
-//			conn = AppUtils.getDBCPConn();
-//			conn.setAutoCommit(false);
-//			logger.debug("Got a connection");
-//		} catch ( Exception e) {
-//			AppUtils.logException(e);
-//			throw e;
-//		} finally {
-//			logger.debug("Closing conn");
-//			if ( conn != null ) {
-//				conn.close();
-//			}
-//		}
-//		return mapping.findForward(FORWARD_IS_VALID);
+
 		ActionForward forward = mapping.findForward(FORWARD_IS_LOGIN);
 		HttpSession session = request.getSession();
 		if ( session != null ) {

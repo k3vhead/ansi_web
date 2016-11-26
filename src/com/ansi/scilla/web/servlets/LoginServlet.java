@@ -44,7 +44,6 @@ public class LoginServlet extends AbstractServlet {
 			LoginResponse loginResponse = new LoginResponse();
 			try {
 				loginResponse = doWork(conn, jsonString);
-				logger.debug("login success");
 				SessionData sessionData = new SessionData(loginResponse);
 				HttpSession session = request.getSession();
 				session.setAttribute(SessionData.KEY, sessionData);
