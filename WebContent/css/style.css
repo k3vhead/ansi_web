@@ -1,13 +1,28 @@
 body {
 	background-color:#e5e5e5;
-	color:#000000;
-	font-family:arial, helvetica, sans-serif;
-	font-size:18px;
+	color:#333333;
+	font-family: 'Roboto Condensed', sans-serif;
+	font-size:14px;
+}
+h1 {
+	font-size:20px;
+	font-weight:bold;
+	font-variant:small-caps;
+}
+#headerNav {
+	width:100%;
+	background:#000000;
+	color:#FFFFFF;
+	min-height:25px;
 }
 #pageContainer {
 	width:1024px;
+	margin-left:20px;
 	background-color:#e5e5e5;
-	border:solid 1px #ce4348;
+	border:solid 1px #000000;
+}
+.centered {
+	text-align:center;
 }
 .dropdown-menu {
 	background-color:#e5e5e5;
@@ -16,14 +31,38 @@ body {
 	color:#ce4348;
 	font-weight:bold;
 }
+.formLabel {
+	font-weight:bold;
+}
+.inputIsInvalid {
+	color:#FF0000;
+}
+.inputIsValid {
+	color:#00FF00;
+}
+.mainContent {
+	padding:20px; 
+	clear:both;
+}
 .menuBar {
 	background-color:#000000;
 	color:#FFFFFF;
+}
+.prettyButton {
+	background-color:#F0F0F0; 
+	color:#000000; 
+	width:100%;
+}
+.required {
+	color:#ce4348;
+	vertical-align:super;
+	font-size:85%;
 }
 .spacer {
     clear:both;
     width:100%;
     font-size:1px;
+    background:transparent;
 }
 .trailerText {
 	font-family:times roman, serif;

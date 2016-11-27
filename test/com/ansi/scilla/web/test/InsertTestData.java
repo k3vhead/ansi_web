@@ -28,15 +28,27 @@ public class InsertTestData extends TesterUtils {
 		InsertTestData itd = new InsertTestData();
 		try {
 			System.out.println("Start");
-//			itd.insertMessage();
-//			itd.insertPermissionLevel();
-//			itd.insertPermissionGroup();
-//			itd.insertPermissionGroupLevel();
-//			itd.insertUser();			
-//			itd.insertDivision();
-//			itd.insertTitle();
-//			itd.insertDivisionUser();
-//			itd.insertAllUsers();
+			/*
+			System.out.println("insertPermissionLevel");
+			itd.insertPermissionLevel();
+			System.out.println("insertMessage");
+			itd.insertMessage();
+			System.out.println("insertPermissionGroup");
+			itd.insertPermissionGroup();
+			System.out.println("insertPermissionGroupLevel");
+			itd.insertPermissionGroupLevel();
+			System.out.println("insertDivision");
+			itd.insertDivision();
+			System.out.println("insertTitle");
+			itd.insertTitle();
+			System.out.println("insertUser");
+			itd.insertUser();			
+			System.out.println("insertDivisionUser");
+			itd.insertDivisionUser();
+			*/
+			System.out.println("insertAllUsers");
+			itd.insertAllUsers();
+			System.out.println("setPasswords");
 			itd.setPasswords();
 			System.out.println("Done");
 		} catch (Exception e) {
@@ -91,10 +103,22 @@ public class InsertTestData extends TesterUtils {
 			conn = AppUtils.getConn();
 			conn.setAutoCommit(false);
 
-			user.setEmail("jwlewis@thewebthing.com");
-			user.setFirstName("JOsshua");
+			user.setEmail("dclewis@thewebthing.com");
+			user.setFirstName("David");
 			user.setLastName("Lewis");
+			user.setSuperUser(1);
 			user.insertWithKey(conn);
+			
+			user.setSuperUser(0);
+			user.setEmail("gag@ansi.com");
+			user.setFirstName("Gary");
+			user.setLastName("Groce");
+			user.insertWithKey(conn);
+			
+//			user.setEmail("jwlewis@thewebthing.com");
+//			user.setFirstName("Joshua");
+//			user.setLastName("Lewis");
+//			user.insertWithKey(conn);
 			
 			user.setEmail("kjw@ansi.com");
 			user.setFirstName("Kevin");
@@ -205,8 +229,8 @@ public class InsertTestData extends TesterUtils {
 			d.setAddedDate(now);
 			d.setUpdatedBy(myUserId);
 			d.setUpdatedDate(now);
-			d.insertWithKey(conn, debug);
 			System.out.println(d);
+			d.insertWithKey(conn, debug);
 			
 			conn.commit();
 		} catch ( Exception e) {
@@ -357,7 +381,8 @@ public class InsertTestData extends TesterUtils {
 		HashMap<ResponseCode, String> codeMap = new HashMap<ResponseCode, String>();
 		codeMap.put(ResponseCode.SUCCESS, "Success!");
 		codeMap.put(ResponseCode.EXPIRED_LOGIN, "Login has expired. See your admin");
-		codeMap.put(ResponseCode.INVALID_LOGIN, "Your userid/password do not match our records");
+		codeMap.put(ResponseCode.INVALID_LOGIN, "Invalid Login");
+		codeMap.put(ResponseCode.MISSING_DATA, "Missing Required Data");
 		
 		
 		Integer myUserId = 1;

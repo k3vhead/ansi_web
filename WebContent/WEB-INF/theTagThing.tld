@@ -17,6 +17,16 @@
     
     
 	<tag>
+    	<name>notLoggedIn</name>
+    	<tagclass>com.ansi.scilla.web.tags.NotLoggedIn</tagclass>
+	    <bodycontent>JSP</bodycontent>
+    	<info>
+        	Displays tag body if there is no valid login session
+		</info>
+	</tag>
+    
+    
+	<tag>
 		<name>hasPermission</name>
 		<tagclass>com.ansi.scilla.web.tags.HasPermission</tagclass>
 		<bodycontent>JSP</bodycontent>

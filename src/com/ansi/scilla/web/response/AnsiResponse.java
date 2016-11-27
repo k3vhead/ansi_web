@@ -11,6 +11,7 @@ import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ApplicationWebObject;
 import com.ansi.scilla.web.common.PropertyNames;
 import com.ansi.scilla.web.common.ResponseCode;
+import com.thewebthing.commons.db2.RecordNotFoundException;
 
 /**
  * Every servlet response is wrapped in an envelope with a simple header.
@@ -39,7 +40,15 @@ public class AnsiResponse extends ApplicationWebObject {
 
 	public AnsiResponse(Connection conn, ResponseCode responseCode, MessageResponse data) throws Exception {
 		super();
-		this.responseHeader = new ResponseHeader(conn, responseCode);
+		try {
+			this.responseHeader = new ResponseHeader(conn, responseCode);
+		} catch ( RecordNotFoundException e) {
+			Logger logger = AppUtils.getLogger();
+			logger.error("Expected message not found: " + responseCode);
+			this.responseHeader = new ResponseHeader();
+			this.responseHeader.setResponseCode(responseCode.toString());
+			this.responseHeader.setResponseMessage("Message not found");
+		}
 		this.data = data;
 	}
 
@@ -71,8 +80,11 @@ public class AnsiResponse extends ApplicationWebObject {
 		public String responseMessage;
 		public Calendar sessionExpirationTime;
 		
-		public ResponseHeader(Connection conn, ResponseCode responseCode) throws Exception {
+		public ResponseHeader() {
 			super();
+		}
+		public ResponseHeader(Connection conn, ResponseCode responseCode) throws Exception {
+			this();
 			makeMessage(conn, responseCode);
 			makeSessionExpiration();
 		}

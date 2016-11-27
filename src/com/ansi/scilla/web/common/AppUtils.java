@@ -96,6 +96,11 @@ public class AppUtils {
 		// Get Connection and Statement
 		Connection conn =  ds.getConnection();
 
+		if ( conn == null ) {
+			Logger logger = AppUtils.getLogger();
+			logger.info("Retrieved null connection, trying again");
+			conn = ds.getConnection();
+		}
 		return conn;
 	}
 
@@ -109,6 +114,7 @@ public class AppUtils {
 		try {
 			conn.close();
 		} catch ( Exception e) {
+			AppUtils.logException(e);
 			throw new RuntimeException(e);
 		}
 	}

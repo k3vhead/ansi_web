@@ -15,10 +15,12 @@ import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.InvalidLoginException;
+import com.ansi.scilla.web.exceptions.MissingRequiredDataException;
 import com.ansi.scilla.web.request.LoginRequest;
 import com.ansi.scilla.web.response.login.LoginResponse;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
+import com.thewebthing.commons.lang.StringUtils;
 
 public class LoginServlet extends AbstractServlet {
 
@@ -48,6 +50,9 @@ public class LoginServlet extends AbstractServlet {
 				HttpSession session = request.getSession();
 				session.setAttribute(SessionData.KEY, sessionData);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, loginResponse);
+			} catch ( MissingRequiredDataException e) {
+				logger.debug("missing login data");
+				super.sendResponse(conn, response,ResponseCode.MISSING_DATA, loginResponse);
 			} catch ( ExpiredLoginException e) {
 				logger.debug("login expired");
 				super.sendResponse(conn, response,ResponseCode.EXPIRED_LOGIN, loginResponse);
@@ -68,6 +73,9 @@ public class LoginServlet extends AbstractServlet {
 
 	protected LoginResponse doWork(Connection conn, String jsonString) throws ExpiredLoginException, InvalidLoginException, Exception {
 		LoginRequest loginRequest = new LoginRequest(jsonString);
+		if ( StringUtils.isBlank(loginRequest.getPassword()) || StringUtils.isBlank(loginRequest.getUserid())) {
+			throw new MissingRequiredDataException();
+		}
 		User user = AppUtils.checkLogin(conn, loginRequest.getUserid(), loginRequest.getPassword());
 		SessionUser sessionUser = new SessionUser(user);
 		LoginResponse loginResponse = new LoginResponse(conn, sessionUser);
