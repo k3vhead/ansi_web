@@ -9,6 +9,12 @@ import java.util.List;
 import com.ansi.scilla.common.db.Code;
 import com.ansi.scilla.web.response.MessageResponse;
 
+/** 
+ * Used to return a list of "code" objects to the client
+ * 
+ * @author dclewis
+ *
+ */
 public class CodeListResponse implements MessageResponse, Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -18,6 +24,13 @@ public class CodeListResponse implements MessageResponse, Serializable {
 	public CodeListResponse() {
 		super();
 	}
+	/**
+	 * create a list of all code table records in the database, sorted by
+	 * table, field, display value
+	 * 
+	 * @param conn
+	 * @throws Exception
+	 */
 	public CodeListResponse(Connection conn) throws Exception {
 		this.codeList = Code.cast(new Code().selectAll(conn));
 		Collections.sort(codeList,

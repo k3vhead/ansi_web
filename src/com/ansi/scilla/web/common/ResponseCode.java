@@ -5,10 +5,12 @@ import javax.servlet.http.HttpServletResponse;
 public enum ResponseCode {
 	EXPIRED_LOGIN(HttpServletResponse.SC_FORBIDDEN),
 	INVALID_LOGIN(HttpServletResponse.SC_FORBIDDEN),
-	MISSING_DATA(HttpServletResponse.SC_FORBIDDEN),
+	
+	MISSING_DATA(HttpServletResponse.SC_OK),
 
 	SUCCESS(HttpServletResponse.SC_OK);
 
+	
 	private final Integer statusCode;
 	
 	ResponseCode(Integer statusCode) {

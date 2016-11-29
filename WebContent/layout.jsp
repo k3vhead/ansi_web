@@ -31,7 +31,7 @@
         <script type="text/javascript" src="jQuery/jquery-3.1.1.min.js"></script>        
         <script type="text/javascript" src="jQuery/jquery-ui-1.8.7.custom.js"></script>
         <script type="text/javascript" src="jQuery/jcookie.js"></script>
-        <script type="text/javascript" src="jQuery/jquery.bpopup-0.7.0.min.js"></script>
+        <script type="text/javascript" src="jQuery/jquery.bpopup.min.js"></script>
         <!-- <script type="text/javascript" src="jQuery/jquery.popmenu.js"></script> -->
     	
     	<%-- 
@@ -221,6 +221,7 @@
 	    	
 	    	
 			<div class="mainContent">
+				<div id="globalMsg" class="err">&nbsp;</div>
 	    		<tiles:insert attribute="content" />
 	    	</div>
 	    	

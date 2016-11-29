@@ -83,7 +83,7 @@
 							</tr>
 							<tr>
 								<td colspan="2" style="text-align:center;">
-									<input type="button" value="Login" id="goButton" class="prettyButton" />
+									<input type="button" value="Login" id="goButton" class="prettyWideButton" />
 								</td>
 							</tr>
 							<tr>

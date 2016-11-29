@@ -2,13 +2,15 @@ package com.ansi.scilla.web.servlets;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.db.Code;
 import com.ansi.scilla.web.common.AppUtils;
@@ -30,17 +32,16 @@ public class CodeServlet extends AbstractServlet {
 			conn.setAutoCommit(false);
 			
 			String jsonString = super.makeJsonString(request);
-			CodeRequest codesRequest = new CodeRequest(jsonString);
-			System.out.println(codesRequest);
-			Code codes = new Code();
-			codes.setTableName(codesRequest.getTableName());
-			codes.setFieldName(codesRequest.getFieldName());
-			codes.setValue(codesRequest.getValue());
-			System.out.println(codes);
-			codes.delete(conn);
+			CodeRequest codeRequest = new CodeRequest(jsonString);
+			System.out.println(codeRequest);
+			Code code = new Code();
+			code.setTableName(codeRequest.getTableName());
+			code.setFieldName(codeRequest.getFieldName());
+			code.setValue(codeRequest.getValue());
+			code.delete(conn);
 			
-			CodeResponse codesResponse = new CodeResponse();
-			super.sendResponse(conn, response, ResponseCode.SUCCESS, codesResponse);
+			CodeResponse codeResponse = new CodeResponse();
+			super.sendResponse(conn, response, ResponseCode.SUCCESS, codeResponse);
 			
 			conn.commit();
 		} catch ( Exception e) {
@@ -54,24 +55,35 @@ public class CodeServlet extends AbstractServlet {
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		Pattern uriPattern = Pattern.compile("^(.*/)(.*)(\\.)(.*)$", Pattern.CASE_INSENSITIVE);
-		Matcher matcher = uriPattern.matcher(request.getRequestURI());
-		if ( matcher.matches() ) {
-//			String format = matcher.group(4);  // for now this is always json, so ignore it
-			String command = matcher.group(2);
+		String url = request.getRequestURI();
+		int idx = url.indexOf("/code/");
+		if ( idx > -1 ) {
+			System.out.println("Url:" + url);
+			String queryString = request.getQueryString();
+			System.out.println("Query String: " + queryString);
 			
+			// we're in the right place
 			Connection conn = null;
 			try {
 				conn = AppUtils.getDBCPConn();
-				if ( command.equals("getList")) {
-					CodeListResponse codesListResponse = makeCodesListResponse(conn);
-					super.sendResponse(conn, response, ResponseCode.SUCCESS, codesListResponse);
-				} else if ( command.equals("get")) {
-					HashMap<String, String> params = super.makeParamMap(request.getQueryString());
-					CodeResponse codesResponse = makeCodeResponse(conn, params);
-					super.sendResponse(conn, response, ResponseCode.SUCCESS, codesResponse);
-				} else {
+				
+				// Figure out what we've got:				
+				String myString = url.substring(idx + "/code/".length());
+				
+				String[] urlPieces = myString.split("/");
+				String command = urlPieces[0];
+				
+				if ( StringUtils.isBlank(command)) {
 					super.sendNotFound(response);
+				} else {
+					if ( command.equals("list")) {
+						// we're getting all the codes in the database
+						CodeListResponse codesListResponse = makeCodesListResponse(conn);
+						super.sendResponse(conn, response, ResponseCode.SUCCESS, codesListResponse);
+					} else {
+						CodeListResponse codesListResponse = makeFilteredListResponse(conn, urlPieces);
+						super.sendResponse(conn, response, ResponseCode.SUCCESS, codesListResponse);
+					}
 				}
 			} catch ( Exception e) {
 				AppUtils.logException(e);
@@ -97,8 +109,45 @@ public class CodeServlet extends AbstractServlet {
 		return codesListResponse;
 	}
 
-	private CodeResponse makeCodeResponse(Connection conn, HashMap<String, String> params) {
-		return new CodeResponse();
+	private CodeListResponse makeFilteredListResponse(Connection conn, String[] urlPieces) throws Exception {
+		String tableName = null;
+		String fieldName = null;
+		String value = null;
+		try {
+			tableName = urlPieces[0];
+			fieldName = urlPieces[1];
+			value = urlPieces[2];
+		} catch (ArrayIndexOutOfBoundsException e) {
+			// this is OK, just means we ran out of filters
+		}
+		Code code = new Code();
+		if ( ! StringUtils.isBlank(tableName)) {
+			code.setTableName(tableName);
+		}
+		if ( ! StringUtils.isBlank(fieldName)) {
+			code.setFieldName(fieldName);
+		}
+		if ( ! StringUtils.isBlank(value)) {
+			code.setValue(value);
+		}
+		List<Code> codeList = Code.cast(code.selectSome(conn));
+		Collections.sort(codeList,
+				new Comparator<Code>() {
+			public int compare(Code o1, Code o2) {
+				int ret = o1.getTableName().compareTo(o2.getTableName());
+				if ( ret == 0 ) {
+					ret = o1.getFieldName().compareTo(o2.getFieldName());
+				}
+				if ( ret == 0 ) {
+					ret = o1.getValue().compareTo(o2.getValue());
+				}
+				return ret;
+			}
+		});
+		CodeListResponse codeListResponse = new CodeListResponse();
+		codeListResponse.setCodeList(codeList);
+		return codeListResponse;
 	}
+
 	
 }

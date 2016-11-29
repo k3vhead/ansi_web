@@ -34,11 +34,14 @@ h1 {
 .formLabel {
 	font-weight:bold;
 }
+.green {
+	color:#008000;
+}
 .inputIsInvalid {
-	color:#FF0000;
+	color:#ce4348;
 }
 .inputIsValid {
-	color:#00FF00;
+	color:#008000;
 }
 .mainContent {
 	padding:20px; 
@@ -51,7 +54,14 @@ h1 {
 .prettyButton {
 	background-color:#F0F0F0; 
 	color:#000000; 
+}
+.prettyWideButton {
+	background-color:#F0F0F0; 
+	color:#000000; 
 	width:100%;
+}
+.red {
+	color:#ce4348;
 }
 .required {
 	color:#ce4348;

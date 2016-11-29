@@ -5,6 +5,12 @@ import java.io.Serializable;
 import com.ansi.scilla.common.db.Code;
 import com.ansi.scilla.web.response.MessageResponse;
 
+/**
+ * Used to return a single code to the client
+ * 
+ * @author dclewis
+ *
+ */
 public class CodeResponse implements MessageResponse, Serializable {
 
 	private static final long serialVersionUID = 1L;
