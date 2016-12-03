@@ -19,6 +19,25 @@ import com.ansi.scilla.web.request.CodeRequest;
 import com.ansi.scilla.web.response.codes.CodeListResponse;
 import com.ansi.scilla.web.response.codes.CodeResponse;
 
+/**
+ * The url for delete will be of the form /code/<table>/<field>/<value>
+ * 
+ * The url for get will be one of:
+ * 		/code    (retrieves everything)
+ * 		/code/<table>      (filters code table by tablename)
+ * 		/code/<table>/<field>	(filters code table tablename and field
+ * 		/code/<table>/<field>/<value>	(retrieves a single record)
+ * 
+ * The url for adding a new record will be a POST to:
+ * 		/code/new   with parameters in the JSON
+ * 
+ * The url for update will be a POST to:
+ * 		/code/<table>/<field>/<value> with parameters in the JSON
+ * 
+ * 
+ * @author dclewis
+ *
+ */
 public class CodeServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
