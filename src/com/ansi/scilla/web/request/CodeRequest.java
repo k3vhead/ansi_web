@@ -1,6 +1,7 @@
 package com.ansi.scilla.web.request;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
 
 import org.apache.commons.beanutils.BeanUtils;
 
@@ -14,6 +15,11 @@ public class CodeRequest extends AbstractRequest {
 	private String tableName;
 	private String fieldName;
 	private String value;
+	private String description;
+	private String displayValue;
+	private Integer seq;
+	private Integer status;
+
 	
 	public CodeRequest() {
 		super();
@@ -25,6 +31,8 @@ public class CodeRequest extends AbstractRequest {
 		BeanUtils.copyProperties(this, req);
 	}
 
+	@RequiredForAdd
+	@RequiredForUpdate
 	public String getTableName() {
 		return tableName;
 	}
@@ -33,6 +41,8 @@ public class CodeRequest extends AbstractRequest {
 		this.tableName = tableName;
 	}
 
+	@RequiredForAdd
+	@RequiredForUpdate
 	public String getFieldName() {
 		return fieldName;
 	}
@@ -41,12 +51,50 @@ public class CodeRequest extends AbstractRequest {
 		this.fieldName = fieldName;
 	}
 
+	@RequiredForAdd
+	@RequiredForUpdate
 	public String getValue() {
 		return value;
 	}
 
 	public void setValue(String value) {
 		this.value = value;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getDisplayValue() {
+		return displayValue;
+	}
+
+	public void setDisplayValue(String displayValue) {
+		this.displayValue = displayValue;
+	}
+
+	@RequiredForAdd
+	@RequiredForUpdate
+	public Integer getSeq() {
+		return seq;
+	}
+
+	public void setSeq(Integer seq) {
+		this.seq = seq;
+	}
+
+	@RequiredForAdd
+	@RequiredForUpdate
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
 	}
 
 }

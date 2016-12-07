@@ -1,7 +1,11 @@
 package com.ansi.scilla.web.test;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.ansi.scilla.web.request.CodeRequest;
+import com.ansi.scilla.web.servlets.CodeServlet;
 
 public class TestCodes {
 
@@ -20,11 +24,23 @@ public class TestCodes {
 	public static void main(String[] args) {
 		TesterUtils.makeLoggers();
 		try {
-			new TestCodes().go();
+//			new TestCodes().go();
 //			new TestCodes().testUri();
 //			new TestCodes().testUri2();
+			new TestCodes().testRequest();
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+	
+	
+	public void testRequest() throws Exception {
+		CodeServlet servlet = new CodeServlet();
+		CodeRequest request = new CodeRequest();
+		request.setValue("codxxxe");
+		List<String> fields =  servlet.validateFormat(request);
+		for ( String field : fields ) {
+			System.out.println(field);
 		}
 	}
 	

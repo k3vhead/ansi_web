@@ -1,9 +1,11 @@
 package com.ansi.scilla.web.servlets;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -29,7 +31,7 @@ import com.ansi.scilla.web.response.codes.CodeResponse;
  * 		/code/<table>/<field>/<value>	(retrieves a single record)
  * 
  * The url for adding a new record will be a POST to:
- * 		/code/new   with parameters in the JSON
+ * 		/code/add   with parameters in the JSON
  * 
  * The url for update will be a POST to:
  * 		/code/<table>/<field>/<value> with parameters in the JSON
@@ -120,7 +122,51 @@ public class CodeServlet extends AbstractServlet {
 	@Override
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		throw new ServletException("Not Yet Coded");
+		
+		String url = request.getRequestURI();
+		int idx = url.indexOf("/code/");
+		if ( idx > -1 ) {
+			System.out.println("Url:" + url);
+			String queryString = request.getQueryString();
+			System.out.println("Query String: " + queryString);
+
+			Connection conn = null;
+			try {
+				conn = AppUtils.getDBCPConn();
+				conn.setAutoCommit(false);
+
+				String jsonString = super.makeJsonString(request);
+				CodeRequest codeRequest = new CodeRequest(jsonString);
+				System.out.println(codeRequest);
+				
+				// figure out if this is an "add" or an "update"
+				String myString = url.substring(idx + "/code/".length());				
+				String[] urlPieces = myString.split("/");
+				String command = urlPieces[0];
+				
+				HashMap<String, List<String>> errors = command.equals(ACTION_IS_ADD) ? validateAdd(codeRequest) : validateUpdate(command, codeRequest);
+				
+				
+
+
+
+
+
+				CodeResponse codeResponse = new CodeResponse();
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, codeResponse);
+
+				conn.commit();
+			} catch ( Exception e) {
+				AppUtils.logException(e);
+				throw new ServletException(e);
+			} finally {
+				AppUtils.closeQuiet(conn);
+			}
+		} else {
+			super.sendNotFound(response);
+		}
+
+		
 	}
 
 	private CodeListResponse makeCodesListResponse(Connection conn) throws Exception {
@@ -168,5 +214,15 @@ public class CodeServlet extends AbstractServlet {
 		return codeListResponse;
 	}
 
+	
+	protected HashMap<String, List<String>> validateAdd(CodeRequest codeRequest) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		List<String> missingFields = super.validateRequiredAddFields(codeRequest);
+		return null;
+	}
+
+	protected HashMap<String, List<String>> validateUpdate(String command, CodeRequest codeRequest) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		List<String> missingFields = super.validateRequiredUpdateFields(codeRequest);
+		return null;
+	}
 	
 }

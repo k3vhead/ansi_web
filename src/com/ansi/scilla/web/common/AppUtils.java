@@ -92,6 +92,7 @@ public class AppUtils {
 		Context ctx = new InitialContext();
 		BasicDataSource ds = (BasicDataSource)ctx.lookup("java:comp/env/jdbc/ansi");
 		ds.setLogAbandoned(true);
+		ds.setTestOnBorrow(true);
 
 		// Get Connection and Statement
 		Connection conn =  ds.getConnection();
@@ -206,6 +207,10 @@ public class AppUtils {
 	}
 
 	
+	/**
+	 * Get the applcation logger (name is set in resource/config.properties)
+	 * @return
+	 */
 	public static Logger getLogger() {
 		Logger logger = Logger.getLogger(getProperty(PropertyNames.LOG_NAME));
 		return logger;
