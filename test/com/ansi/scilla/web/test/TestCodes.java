@@ -38,7 +38,7 @@ public class TestCodes {
 		CodeServlet servlet = new CodeServlet();
 		CodeRequest request = new CodeRequest();
 		request.setValue("codxxxe");
-		List<String> fields =  servlet.validateFormat(request);
+		List<String> fields =  servlet.validateRequiredAddFields(request);
 		for ( String field : fields ) {
 			System.out.println(field);
 		}

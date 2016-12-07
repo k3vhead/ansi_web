@@ -141,7 +141,7 @@ public class AbstractServlet extends HttpServlet {
 				Object value = method.invoke(request, (Object[])null);
 				if ( value == null ) {
 					String fieldName = method.getName().substring(3);
-					missingValues.add(fieldName);
+					missingValues.add(fixFieldName(fieldName));
 				}
 			}
 		}
@@ -166,7 +166,7 @@ public class AbstractServlet extends HttpServlet {
 				Object value = method.invoke(request, (Object[])null);
 				if ( value == null ) {
 					String fieldName = method.getName().substring(3);
-					missingValues.add(fieldName);
+					missingValues.add(fixFieldName(fieldName));
 				}
 			}
 		}
@@ -197,7 +197,7 @@ public class AbstractServlet extends HttpServlet {
 					Matcher m = pattern.matcher((String)value);
 					if ( ! m.matches() ) {
 						String fieldName = method.getName().substring(3);
-						nonMatchingValues.add(fieldName);
+						nonMatchingValues.add(fixFieldName(fieldName));
 					}
 				}
 			}
@@ -206,5 +206,8 @@ public class AbstractServlet extends HttpServlet {
 		return nonMatchingValues;
 	}
 	
+	protected String fixFieldName(String fieldName) {
+		return fieldName.substring(0,1).toLowerCase() + fieldName.substring(1);
+	}
 
 }
