@@ -23,6 +23,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.request.AbstractRequest;
 import com.ansi.scilla.web.request.RequiredForAdd;
@@ -142,6 +144,9 @@ public class AbstractServlet extends HttpServlet {
 				if ( value == null ) {
 					String fieldName = method.getName().substring(3);
 					missingValues.add(fixFieldName(fieldName));
+				} else if ( value instanceof String && StringUtils.isBlank((String)value)) {
+					String fieldName = method.getName().substring(3);
+					missingValues.add(fixFieldName(fieldName));
 				}
 			}
 		}
@@ -164,9 +169,14 @@ public class AbstractServlet extends HttpServlet {
 		for ( Method method : request.getClass().getMethods() ) {
 			if ( method.getAnnotation(RequiredForUpdate.class) != null ) {
 				Object value = method.invoke(request, (Object[])null);
+				String fieldName = method.getName().substring(3);
 				if ( value == null ) {
-					String fieldName = method.getName().substring(3);
 					missingValues.add(fixFieldName(fieldName));
+				} else {
+					String fieldValue = String.valueOf(value);
+					if ( StringUtils.isBlank(fieldValue)) {
+						missingValues.add(fixFieldName(fieldName));
+					}
 				}
 			}
 		}

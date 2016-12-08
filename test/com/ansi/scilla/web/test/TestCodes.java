@@ -1,11 +1,17 @@
 package com.ansi.scilla.web.test;
 
-import java.util.List;
+import java.sql.Connection;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.ansi.scilla.common.db.Code;
+import com.ansi.scilla.common.db.User;
+import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.request.CodeRequest;
+import com.ansi.scilla.web.response.codes.CodeResponse;
 import com.ansi.scilla.web.servlets.CodeServlet;
+import com.ansi.scilla.web.struts.SessionUser;
 
 public class TestCodes {
 
@@ -24,36 +30,82 @@ public class TestCodes {
 	public static void main(String[] args) {
 		TesterUtils.makeLoggers();
 		try {
-//			new TestCodes().go();
-//			new TestCodes().testUri();
-//			new TestCodes().testUri2();
-			new TestCodes().testRequest();
+			new TestCodes().go();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	
-	public void testRequest() throws Exception {
-		CodeServlet servlet = new CodeServlet();
-		CodeRequest request = new CodeRequest();
-		request.setValue("codxxxe");
-		List<String> fields =  servlet.validateRequiredAddFields(request);
-		for ( String field : fields ) {
-			System.out.println(field);
-		}
-	}
-	
+
 	public void go() throws Exception {
-		for ( String url : urlList ) {
+		Connection conn = null;
+		try {
+			conn = AppUtils.getConn();
+			conn.setAutoCommit(false);
+
+//			new TestCodes().testUri();
+//			new TestCodes().testUri2();
+//			new TestCodes().testAdd(conn);
+//			new TestCodes().testUpdate(conn);
+			new TestCodes().testjson();
 			
-			String x = "http://127.0.0.1:8080" + url;
-			System.out.println(x);
-			String returnString = TesterUtils.getJson(x);
-			System.out.println(returnString);
+			conn.commit();
+		} catch ( Exception e) {
+			conn.rollback();
+			throw e;
+		} finally {
+			conn.close();
 		}
 	}
 	
+	public void testjson() throws Exception {
+		String json = "{\"tableName\":\"tt\",\"fieldName\":\"ff\",\"value\":\"vv\",\"display\":\"dd\",\"seq\":\"1\",\"description\":\"desc\",\"status\":\"1\"}";
+		CodeRequest req = new CodeRequest(json);
+		System.out.println(req);
+	}
+	public void testAdd(Connection conn) throws Exception {
+		User user = new User();
+		user.setUserId(5);
+		user.selectOne(conn);
+		SessionUser sessionUser = new SessionUser(user);
+		CodeRequest codeRequest = new CodeRequest();
+		codeRequest.setTableName("message");
+		codeRequest.setFieldName("message");
+		codeRequest.setValue("MISSING_DATA");
+		codeRequest.setStatus(Code.STATUS_IS_ACTIVE);
+		codeRequest.setSeq(1);
+		codeRequest.setDisplayValue("Ooops -- something ain't where it oughta be");
+		codeRequest.setDescription("Web message for missing input data");
+		
+		CodeServlet servlet = new CodeServlet();
+		CodeResponse codeResponse = servlet.doAddWork(conn, codeRequest, sessionUser);
+		System.out.println(codeResponse);
+	}
+
+
+	public void testUpdate(Connection conn) throws Exception {
+		User user = new User();
+		user.setUserId(5);
+		user.selectOne(conn);
+		SessionUser sessionUser = new SessionUser(user);
+		CodeRequest codeRequest = new CodeRequest();
+		codeRequest.setTableName("xxx");
+		codeRequest.setFieldName("yyy");
+		codeRequest.setValue("zzz");
+		codeRequest.setStatus(Code.STATUS_IS_ACTIVE);
+		codeRequest.setSeq(2);
+		codeRequest.setDisplayValue("Just a test entry " + new Date());
+		codeRequest.setDescription("Stuff goes here");
+		
+		Code key = new Code();
+		key.setTableName("xxx");
+		key.setFieldName("yyy");
+		key.setValue("zzz");
+		CodeServlet servlet = new CodeServlet();
+		CodeResponse codeResponse = servlet.doUpdateWork(conn, key, codeRequest, sessionUser);
+		System.out.println(codeResponse);
+	}
+
 	public void testUri() {
 		Pattern uriPattern = Pattern.compile("^(.*/)(.*)(\\.)(.*)$", Pattern.CASE_INSENSITIVE);
 		Matcher matcher = uriPattern.matcher("/ansi_web/codes/getOne.json?id=123");

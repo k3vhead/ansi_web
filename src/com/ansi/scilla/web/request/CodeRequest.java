@@ -1,7 +1,6 @@
 package com.ansi.scilla.web.request;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
 
 import org.apache.commons.beanutils.BeanUtils;
 

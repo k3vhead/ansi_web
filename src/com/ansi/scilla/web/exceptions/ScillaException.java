@@ -1,6 +1,8 @@
 package com.ansi.scilla.web.exceptions;
 
-public abstract class ScillaException extends Exception {
+import com.ansi.scilla.common.exceptions.AnsiException;
+
+public abstract class ScillaException extends AnsiException {
 
 	private static final long serialVersionUID = 1L;
 

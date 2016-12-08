@@ -18,6 +18,8 @@ import java.util.ResourceBundle;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.log4j.FileAppender;
@@ -27,9 +29,12 @@ import org.apache.log4j.PatternLayout;
 import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
 
 import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.common.db.Message;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.InvalidLoginException;
+import com.ansi.scilla.web.struts.SessionData;
+import com.ansi.scilla.web.struts.SessionUser;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 import com.thewebthing.commons.lang.StringUtils;
 
@@ -72,8 +77,6 @@ public class AppUtils {
 		String dbURL = getProperty(PropertyNames.DB_URL);
 		String dbID = getProperty(PropertyNames.DB_USERID);
 		String dbPass = getProperty(PropertyNames.DB_PASSWORD);
-		System.out.println(dbURL);
-		System.out.println(dbID + "\t" + dbPass);
 		Class.forName(driver);		
         Connection conn =  DriverManager.getConnection(dbURL, dbID, dbPass);
         
@@ -120,6 +123,14 @@ public class AppUtils {
 		}
 	}
 	
+	public static void rollbackQuiet(Connection conn) {
+		try {
+			conn.rollback();
+		} catch ( Exception e ) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	/**
 	 * Create an application logger.
 	 * @throws IOException
@@ -315,6 +326,31 @@ public class AppUtils {
 
 		});
 		return divisionList;
+	}
+
+	public static String getMessageText(Connection conn, MessageKey messageKey, String defaultText) throws Exception {
+		String messageText = null;
+		Message message = new Message();
+		message.setKey(messageKey.name());
+		try {
+			message.selectOne(conn);
+			messageText = message.getDisplayValue();
+		} catch ( RecordNotFoundException e ) {
+			messageText = defaultText;
+		}	
+		return messageText;
+	}
+
+	public static SessionUser getSessionUser(HttpServletRequest request) {
+		SessionUser sessionUser = null;
+		HttpSession session = request.getSession();
+		if ( session != null ) {
+			SessionData sessionData = (SessionData)session.getAttribute(SessionData.KEY);
+			if ( sessionData != null ) {
+				sessionUser = sessionData.getUser();
+			}
+		}
+		return sessionUser;
 	}
 
 

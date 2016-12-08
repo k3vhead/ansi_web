@@ -136,6 +136,34 @@
 			$("#goUpdate").click( function($clickevent) {
 				$clickevent.preventDefault();
 				console.debug("Doing update");
+				$outbound = {};
+				$.each( $('#addForm :input'), function(index, value) {
+					if ( value.name ) {
+						$fieldName = value.name;
+						$id = "#addForm input[name='" + $fieldName + "']";
+						$val = $($id).val();
+						$outbound[$fieldName] = $val;
+					}
+				});
+				$outbound['seq'] = $("#addForm select[name='seq'] option:selected").val();
+				$outbound['status'] = $("#addForm select[name='status'] option:selected").val();
+
+				console.debug(JSON.stringify($outbound))
+				var jqxhr = $.ajax({
+					type: 'POST',
+					url: 'code/add',
+					data: JSON.stringify($outbound),
+					success: function($data) {
+						console.debug($data);
+					},
+					statusCode: {
+						403: function($data) {
+							$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+						} 
+					},
+					dataType: 'json'
+				});
+				
 				clearAddForm();
 				$('#addFormDiv').bPopup().close();
 			});
@@ -161,7 +189,6 @@
             	var $fieldName = $tableData[$rownum][1];
             	var $value = $tableData[$rownum][2];
             	$outbound = JSON.stringify({'tableName':$tableName, 'fieldName':$fieldName,'value':$value});
-            	console.debug($outbound);
             	var jqxhr = $.ajax({
             	    type: 'delete',
             	    url: 'code/delete',
@@ -291,7 +318,7 @@
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Display:</span></td>
 		    					<td>
-		    						<input type="text" name="display" data-required="true" data-valid="validDisplay" />
+		    						<input type="text" name="displayValue" data-required="true" data-valid="validDisplay" />
 		    						<i id="validDisplay" class="fa" aria-hidden="true"></i>
 		    					</td>
 		    					<td><span class="err" id="displayErr"></span></td>
@@ -299,7 +326,7 @@
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Sequence:</span></td>
 		    					<td>
-		    						<select name="sequence">
+		    						<select name="seq">
 		    							<% for (int i = 1; i < 21; i++ ) { %>
 		    							<option value="<%= i %>"><%= i %></option>
 		    							<% } %>

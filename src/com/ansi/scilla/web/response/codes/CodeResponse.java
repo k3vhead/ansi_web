@@ -11,7 +11,7 @@ import com.ansi.scilla.web.response.MessageResponse;
  * @author dclewis
  *
  */
-public class CodeResponse implements MessageResponse, Serializable {
+public class CodeResponse extends MessageResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
