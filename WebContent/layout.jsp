@@ -74,7 +74,8 @@
 			        			 		<li><a href="#">Message Maintenance</a></li>
 			        			 		<li><html:link action="codeMaintenance">Codes Maintenance</html:link></li>
 			        			 		<li><a href="#">User Admin</a></li>
-			        			 		<li><a href="#">Permission Groups</a></li>        			 		
+			        			 		<li><a href="#">Permission Groups</a></li> 
+										<li><html:link action="DivisionAdmin">Division Admin</html:link></li>	
 			        				</ul>
 			        			</li>
 			        			</ansi:hasWrite>
