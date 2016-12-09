@@ -8,13 +8,18 @@ import java.util.regex.Pattern;
 import com.ansi.scilla.common.db.Code;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.web.common.AppUtils;
+import com.ansi.scilla.web.common.WebMessages;
 import com.ansi.scilla.web.request.CodeRequest;
 import com.ansi.scilla.web.response.codes.CodeResponse;
 import com.ansi.scilla.web.servlets.CodeServlet;
 import com.ansi.scilla.web.struts.SessionUser;
 
-public class TestCodes {
+public class TestCodes extends CodeServlet {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final String[] urlList = new String[] {
 			"/ansi_web/code/list",
 			"/ansi_web/code/list/",
@@ -46,8 +51,8 @@ public class TestCodes {
 //			new TestCodes().testUri();
 //			new TestCodes().testUri2();
 //			new TestCodes().testAdd(conn);
-//			new TestCodes().testUpdate(conn);
-			new TestCodes().testjson();
+			new TestCodes().testUpdate(conn);
+//			new TestCodes().testjson();
 			
 			conn.commit();
 		} catch ( Exception e) {
@@ -77,8 +82,7 @@ public class TestCodes {
 		codeRequest.setDisplayValue("Ooops -- something ain't where it oughta be");
 		codeRequest.setDescription("Web message for missing input data");
 		
-		CodeServlet servlet = new CodeServlet();
-		CodeResponse codeResponse = servlet.doAddWork(conn, codeRequest, sessionUser);
+		Code codeResponse = this.doAdd(conn, codeRequest, sessionUser);
 		System.out.println(codeResponse);
 	}
 
@@ -89,21 +93,20 @@ public class TestCodes {
 		user.selectOne(conn);
 		SessionUser sessionUser = new SessionUser(user);
 		CodeRequest codeRequest = new CodeRequest();
-		codeRequest.setTableName("xxx");
-		codeRequest.setFieldName("yyy");
-		codeRequest.setValue("zzz");
+		codeRequest.setTableName("aaa");
+		codeRequest.setFieldName("bbb");
+		codeRequest.setValue("ccc");
 		codeRequest.setStatus(Code.STATUS_IS_ACTIVE);
 		codeRequest.setSeq(2);
 		codeRequest.setDisplayValue("Just a test entry " + new Date());
 		codeRequest.setDescription("Stuff goes here");
 		
 		Code key = new Code();
-		key.setTableName("xxx");
-		key.setFieldName("yyy");
-		key.setValue("zzz");
-		CodeServlet servlet = new CodeServlet();
-		CodeResponse codeResponse = servlet.doUpdateWork(conn, key, codeRequest, sessionUser);
-		System.out.println(codeResponse);
+		key.setTableName("aaa");
+		key.setFieldName("bbb");
+		key.setValue("ddd");
+		Code code = this.doUpdate(conn, key, codeRequest, sessionUser);
+		System.out.println(code);
 	}
 
 	public void testUri() {

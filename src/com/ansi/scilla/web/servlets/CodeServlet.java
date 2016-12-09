@@ -146,21 +146,63 @@ public class CodeServlet extends AbstractServlet {
 			System.out.println(jsonString);
 			CodeRequest codeRequest = new CodeRequest(jsonString);
 			
+			Code code = null;
+			ResponseCode responseCode = null;
 			if ( command.equals(ACTION_IS_ADD) ) {
-				CodeResponse codeResponse = doAddWork(conn, codeRequest, sessionUser);
-				super.sendResponse(conn, response, ResponseCode.SUCCESS, codeResponse);
-			} else if ( urlPieces.length == 3 ) {
-				System.out.println("Doing Update Stuff");
-				Code key = new Code();
-				key.setTableName(urlPieces[0]);
-				key.setFieldName(urlPieces[0]);
-				key.setValue(urlPieces[2]);
-				try {
-					CodeResponse codeResponse = doUpdateWork(conn, key, codeRequest, sessionUser);
-					super.sendResponse(conn, response, ResponseCode.SUCCESS, codeResponse);
-				} catch ( RecordNotFoundException e ) {
-					super.sendNotFound(response);
+				WebMessages webMessages = validateAdd(conn, codeRequest);
+				if (webMessages.isEmpty()) {
+					try {
+						code = doAdd(conn, codeRequest, sessionUser);
+						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
+						responseCode = ResponseCode.SUCCESS;
+						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+					} catch ( DuplicateEntryException e ) {
+						String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
+						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+						responseCode = ResponseCode.EDIT_FAILURE;
+					} catch ( Exception e ) {
+						responseCode = ResponseCode.SYSTEM_FAILURE;
+						AppUtils.logException(e);
+						String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
+						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+					}
+				} else {
+					responseCode = ResponseCode.EDIT_FAILURE;
 				}
+				CodeResponse codeResponse = new CodeResponse(code, webMessages);
+				super.sendResponse(conn, response, responseCode, codeResponse);
+				
+			} else if ( urlPieces.length == 3 ) {   //  /<tableName>/<fieldName>/<value> = 3 pieces
+				System.out.println("Doing Update Stuff");				
+				WebMessages webMessages = validateAdd(conn, codeRequest);
+				if (webMessages.isEmpty()) {
+					System.out.println("passed validation");
+					try {
+						Code key = new Code();
+						key.setTableName(urlPieces[0]);
+						key.setFieldName(urlPieces[1]);
+						key.setValue(urlPieces[2]);
+						System.out.println("Trying to do update");
+						code = doUpdate(conn, key, codeRequest, sessionUser);
+						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
+						responseCode = ResponseCode.SUCCESS;
+						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+					} catch ( RecordNotFoundException e ) {
+						System.out.println("Doing 404");
+						super.sendNotFound(response);						
+					} catch ( Exception e) {
+						System.out.println("Doing SysFailure");
+						responseCode = ResponseCode.SYSTEM_FAILURE;
+						AppUtils.logException(e);
+						String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
+						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+					}
+				} else {
+					System.out.println("Doing Edit Fail");
+					responseCode = ResponseCode.EDIT_FAILURE;
+				}
+				CodeResponse codeResponse = new CodeResponse(code, webMessages);
+				super.sendResponse(conn, response, responseCode, codeResponse);
 			} else {
 				super.sendNotFound(response);
 			}
@@ -170,35 +212,12 @@ public class CodeServlet extends AbstractServlet {
 			AppUtils.logException(e);
 			AppUtils.rollbackQuiet(conn);
 			throw new ServletException(e);
+		} finally {
+			AppUtils.closeQuiet(conn);
 		}
 		
 	}
 
-	public CodeResponse doAddWork(Connection conn, CodeRequest codeRequest, SessionUser sessionUser) throws Exception {
-		CodeResponse codeResponse = new CodeResponse();
-		Code code = null;
-		WebMessages webMessages = validateAdd(conn, codeRequest);
-		if ( webMessages.isEmpty() ) {
-			try {
-				code = doAdd(conn, codeRequest, sessionUser);
-			} catch ( DuplicateEntryException e) {
-				String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
-				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);				
-			} catch ( Exception e) {
-				// insert failed
-				AppUtils.logException(e);
-				String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
-				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-			}
-			codeResponse.setCode(code);
-		}
-		if ( webMessages.isEmpty() ) {
-			String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
-			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
-		}
-		codeResponse.setWebMessages(webMessages);
-		return codeResponse;
-	}
 
 	protected Code doAdd(Connection conn, CodeRequest codeRequest, SessionUser sessionUser) throws Exception {
 		Date today = new Date();
@@ -231,28 +250,11 @@ public class CodeServlet extends AbstractServlet {
 		return code;
 	}
 
-	public CodeResponse doUpdateWork(Connection conn, Code key, CodeRequest codeRequest, SessionUser sessionUser) throws RecordNotFoundException, Exception {
-		CodeResponse codeResponse = new CodeResponse();
-		Code code = null;
-		
-		WebMessages webMessages = validateUpdate(conn, key, codeRequest);
-		if ( webMessages.isEmpty() ) {
-			code = doUpdate(conn, key, codeRequest, sessionUser);
-		}
-		if ( webMessages.isEmpty() ) {
-			String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
-			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
-		}
-		codeResponse.setWebMessages(webMessages);
-		codeResponse.setCode(code);
-		return codeResponse;
-	}
 
 	protected Code doUpdate(Connection conn, Code key, CodeRequest codeRequest, SessionUser sessionUser) throws Exception {
 		System.out.println("This is the key:");
 		System.out.println(key);
 		System.out.println("************");
-		WebMessages webMessages = new WebMessages();
 		Date today = new Date();
 		Code code = new Code();
 		if ( ! StringUtils.isBlank(codeRequest.getDescription())) {
@@ -268,13 +270,9 @@ public class CodeServlet extends AbstractServlet {
 		code.setUpdatedBy(sessionUser.getUserId());
 		code.setUpdatedDate(today);
 		code.setValue(codeRequest.getValue());
-		try {
-			code.update(conn, key);
-		} catch ( Exception e) {
-			AppUtils.logException(e);
-			String messageText = AppUtils.getMessageText(conn, MessageKey.UPDATE_FAILED, "Update Failed");
-			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-		}
+		// if we update something that isn't there, a RecordNotFoundException gets thrown
+		// that exception get propagated and turned into a 404
+		code.update(conn, key);		
 		return code;
 	}
 
@@ -351,5 +349,6 @@ public class CodeServlet extends AbstractServlet {
 		testKey.selectOne(conn);
 		return webMessages;
 	}
+
 	
 }

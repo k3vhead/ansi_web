@@ -72,7 +72,7 @@
 			        				<a href="#">Settings</a>
 			        				<ul class="sub_menu">
 			        			 		<li><a href="#">Message Maintenance</a></li>
-			        			 		<li><html:link action="codeMaintenance">Codes Maintenance</html:link></li>
+			        			 		<li><html:link action="codeMaintenance">Code Maintenance</html:link></li>
 			        			 		<li><a href="#">User Admin</a></li>
 			        			 		<li><a href="#">Permission Groups</a></li>        			 		
 			        				</ul>

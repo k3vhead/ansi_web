@@ -68,6 +68,8 @@ public class CodeRequest extends AbstractRequest {
 		this.description = description;
 	}
 
+	@RequiredForAdd
+	@RequiredForUpdate
 	public String getDisplayValue() {
 		return displayValue;
 	}

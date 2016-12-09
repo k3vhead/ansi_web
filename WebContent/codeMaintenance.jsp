@@ -37,7 +37,7 @@
 				display:none;
 				background-color:#FFFFFF;
 				color:#000000;
-				width:300px;
+				width:400px;
 				padding:15px;
 			}
         </style>
@@ -52,18 +52,7 @@
 					$.each($data.data.codeList, function(index, value) {
 						addRow(index, value);
 					});
-					$('.updAction').bind("click", function($clickevent) {
-						doUpdate($clickevent);
-					});
-					$('.delAction').bind("click", function($clickevent) {
-						doDelete($clickevent);
-					});
-					$('.dataRow').bind("mouseover", function() {
-						$(this).css('background-color','#CCCCCC');
-					});
-					$('.dataRow').bind("mouseout", function() {
-						$(this).css('background-color','transparent');
-					});
+					doFunctionBinding();
 				},
 				statusCode: {
 					403: function($data) {
@@ -75,7 +64,29 @@
 			
 			function addRow(index, $code) {	
 				var $rownum = index + 1;
-				var row = '<tr class="dataRow">';
+       			//$('#displayTable tr:last').before(row);
+       			rowTd = makeRow($code, $rownum);
+       			row = '<tr class="dataRow">' + rowTd + "</tr>";
+       			$('#displayTable').append(row);
+			}
+			
+			function doFunctionBinding() {
+				$('.updAction').bind("click", function($clickevent) {
+					doUpdate($clickevent);
+				});
+				$('.delAction').bind("click", function($clickevent) {
+					doDelete($clickevent);
+				});
+				$('.dataRow').bind("mouseover", function() {
+					$(this).css('background-color','#CCCCCC');
+				});
+				$('.dataRow').bind("mouseout", function() {
+					$(this).css('background-color','transparent');
+				});
+			}
+			
+			function makeRow($code, $rownum) {
+				var row = "";
 				row = row + '<td>' + $code.tableName + '</td>';
 				row = row + '<td>' + $code.fieldName + '</td>';
 				row = row + '<td>' + $code.value + '</td>';
@@ -94,16 +105,47 @@
        			row = row + '<a href="#" class="delAction" data-row="' + $rownum +'"><span class="red fa fa-trash" aria-hidden="true"></span></a>';
        			row = row + '</td>';
        			</ansi:hasWrite>
-       			</ansi:hasPermission>
-       			row = row + '</tr>';
-       			//$('#displayTable tr:last').before(row);	
-       			$('#displayTable').append(row);
+       			</ansi:hasPermission>       			
+				return row;
 			}
 			
 			function doUpdate($clickevent) {
 				$clickevent.preventDefault();
-				var rownum = $clickevent.currentTarget.attributes['data-row'].value;
-				console.debug("Doing update " + rownum);
+				clearAddForm();
+				var $rownum = $clickevent.currentTarget.attributes['data-row'].value;
+				console.debug("Doing update " + $rownum);
+				$("#addFormTitle").html("Update a Code");
+				$('#addForm').data('rownum',$rownum);
+				
+                var $rowId = eval($rownum) + 1;
+            	var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")"
+            	var $row = $($rowFinder)  
+            	var tdList = $row.children("td");
+            	var $tableName = $row.children("td")[0].textContent;
+            	var $fieldName = $row.children("td")[1].textContent;
+            	var $value = $row.children("td")[2].textContent;
+            	var $display = $row.children("td")[3].textContent;
+            	var $seq = $row.children("td")[4].textContent;
+            	var $description = $row.children("td")[5].textContent;
+            	var $status = $row.children("td")[6].textContent;
+
+            	$("#addForm input[name='tableName']").val($tableName);
+            	$("#addForm input[name='fieldName']").val($fieldName);
+            	$("#addForm input[name='value']").val($value);
+            	$("#addForm input[name='displayValue']").val($display);
+            	$("#addForm select[name='seq']").val($seq);
+            	$("#addForm input[name='description']").val($description);
+            	$("#addForm select[name='status']").val($status);
+            	
+				$.each( $('#addForm :input'), function(index, value) {
+					markValid(value);
+				});
+
+             	$('#addFormDiv').bPopup({
+					modalClose: false,
+					opacity: 0.6,
+					positionStyle: 'fixed' //'fixed' or 'absolute'
+				});				
 			}
 			
 			function doDelete($clickevent) {
@@ -119,6 +161,7 @@
 			
 			$("#addButton").click( function($clickevent) {
 				$clickevent.preventDefault();
+				$("#addFormTitle").html("Add a Code");
              	$('#addFormDiv').bPopup({
 					modalClose: false,
 					opacity: 0.6,
@@ -148,24 +191,69 @@
 				$outbound['seq'] = $("#addForm select[name='seq'] option:selected").val();
 				$outbound['status'] = $("#addForm select[name='status'] option:selected").val();
 
+				if ( $('#addForm').data('rownum') == null ) {
+					$url = "code/add";
+				} else {
+					$rownum = $('#addForm').data('rownum')
+					var $tableData = [];
+	                $("#displayTable").find('tr').each(function (rowIndex, r) {
+	                    var cols = [];
+	                    $(this).find('th,td').each(function (colIndex, c) {
+	                        cols.push(c.textContent);
+	                    });
+	                    $tableData.push(cols);
+	                });
+
+	            	var $tableName = $tableData[$rownum][0];
+	            	var $fieldName = $tableData[$rownum][1];
+	            	var $value = $tableData[$rownum][2];
+	            	$url = "code/" + $tableName + "/" + $fieldName + "/" + $value;
+				}
+				
 				console.debug(JSON.stringify($outbound))
 				var jqxhr = $.ajax({
 					type: 'POST',
-					url: 'code/add',
+					url: $url,
 					data: JSON.stringify($outbound),
 					success: function($data) {
 						console.debug($data);
+						if ( $data.responseHeader.responseCode == 'SUCCESS') {
+							if ( $url == "code/add" ) {
+								var count = $('#displayTable tr').length - 1;
+								addRow(count, $data.data.code);
+							} else {
+				            	var $rownum = $('#addForm').data('rownum');
+				                var $rowId = eval($rownum) + 1;
+				            	var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")"
+				            	var $rowTd = makeRow($data.data.code, $rownum);
+				            	$($rowFinder).html($rowTd);
+							}
+							doFunctionBinding();
+							clearAddForm();
+							$('#addFormDiv').bPopup().close();
+							$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
+						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+							$.each($data.data.webMessages, function(key, messageList) {
+								var identifier = "#" + key + "Err";
+								msgHtml = "<ul>";
+								$.each(messageList, function(index, message) {
+									msgHtml = msgHtml + "<li>" + message + "</li>";
+								});
+								msgHtml = msgHtml + "</ul>";
+								$(identifier).html(msgHtml);
+							});		
+							$("#addFormMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]);
+						} else {
+							
+						}
 					},
 					statusCode: {
 						403: function($data) {
-							$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+							$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
 						} 
 					},
 					dataType: 'json'
 				});
-				
-				clearAddForm();
-				$('#addFormDiv').bPopup().close();
 			});
 
             $("#cancelDelete").click( function($event) {
@@ -232,6 +320,8 @@
 						markValid($inputField);
 					}
 				});
+				$('.err').html("");
+				$('#addForm').data('rownum',null);
             }
             
             function markValid($inputField) {
@@ -252,13 +342,14 @@
             		$($valid).addClass("inputIsInvalid");
             	}
             }
+            
         });
         </script>        
     </tiles:put>
     
     
     <tiles:put name="content" type="string">
-    	<h1>Codes Maintenance</h1>
+    	<h1>Code Maintenance</h1>
     	
     	<table id="displayTable">
     		<tr>
@@ -289,6 +380,8 @@
 		    	</div>
 		    	
 		    	<div id="addFormDiv">
+		    		<h2 id="addFormTitle"></h2>
+		    		<div id="addFormMsg" class="err"></div>
 		    		<form action="#" method="post" id="addForm">
 		    			<table>
 		    				<tr>
