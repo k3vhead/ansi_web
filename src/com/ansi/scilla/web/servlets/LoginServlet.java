@@ -52,7 +52,7 @@ public class LoginServlet extends AbstractServlet {
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, loginResponse);
 			} catch ( MissingRequiredDataException e) {
 				logger.debug("missing login data");
-				super.sendResponse(conn, response,ResponseCode.MISSING_DATA, loginResponse);
+				super.sendResponse(conn, response,ResponseCode.EDIT_FAILURE, loginResponse);
 			} catch ( ExpiredLoginException e) {
 				logger.debug("login expired");
 				super.sendResponse(conn, response,ResponseCode.EXPIRED_LOGIN, loginResponse);

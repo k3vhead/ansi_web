@@ -3,6 +3,7 @@ package com.ansi.scilla.web.response.codes;
 import java.io.Serializable;
 
 import com.ansi.scilla.common.db.Code;
+import com.ansi.scilla.web.common.WebMessages;
 import com.ansi.scilla.web.response.MessageResponse;
 
 /**
@@ -11,7 +12,7 @@ import com.ansi.scilla.web.response.MessageResponse;
  * @author dclewis
  *
  */
-public class CodeResponse implements MessageResponse, Serializable {
+public class CodeResponse extends MessageResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -21,9 +22,10 @@ public class CodeResponse implements MessageResponse, Serializable {
 		super();
 	}
 
-	public CodeResponse(Code code) {
-		super();
+	public CodeResponse(Code code, WebMessages webMessages) {
+		super(webMessages);
 		this.code = code;
+		
 	}
 
 	public Code getCode() {

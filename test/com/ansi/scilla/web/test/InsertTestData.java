@@ -28,15 +28,17 @@ public class InsertTestData extends TesterUtils {
 		InsertTestData itd = new InsertTestData();
 		try {
 			System.out.println("Start");
-			/*
 			System.out.println("insertPermissionLevel");
+			/*
 			itd.insertPermissionLevel();
 			System.out.println("insertMessage");
 			itd.insertMessage();
 			System.out.println("insertPermissionGroup");
 			itd.insertPermissionGroup();
+			*/
 			System.out.println("insertPermissionGroupLevel");
 			itd.insertPermissionGroupLevel();
+			/*
 			System.out.println("insertDivision");
 			itd.insertDivision();
 			System.out.println("insertTitle");
@@ -45,11 +47,11 @@ public class InsertTestData extends TesterUtils {
 			itd.insertUser();			
 			System.out.println("insertDivisionUser");
 			itd.insertDivisionUser();
-			*/
 			System.out.println("insertAllUsers");
 			itd.insertAllUsers();
 			System.out.println("setPasswords");
 			itd.setPasswords();
+			*/
 			System.out.println("Done");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -192,16 +194,22 @@ public class InsertTestData extends TesterUtils {
 			conn = AppUtils.getConn();
 			conn.setAutoCommit(false);
 		
-			PermissionGroupLevel p = new PermissionGroupLevel();
-			p.setAddedBy(myUserId);
-			p.setAddedDate(now);
-			p.setPermissionGroupId(1);
-			p.setPermissionLevel(1);
-			p.setPermissionName(Permission.INVOICE.toString());
-			p.setUpdateBy(myUserId);
-			p.setUpdateDate(now);
-			p.insertWithNoKey(conn);
-			
+			for ( Permission permission : Permission.values() ) {
+
+				PermissionGroupLevel p = new PermissionGroupLevel();
+				
+				if ( ! permission.equals(Permission.INVOICE)) {
+					System.out.println(permission);
+					p.setAddedBy(myUserId);
+					p.setAddedDate(now);
+					p.setPermissionGroupId(1);
+					p.setPermissionLevel(1);
+					p.setPermissionName(permission.toString());
+					p.setUpdateBy(myUserId);
+					p.setUpdateDate(now);
+					p.insertWithNoKey(conn);
+				}
+			}
 			conn.commit();
 		} catch ( Exception e) {
 			conn.rollback();
@@ -382,7 +390,7 @@ public class InsertTestData extends TesterUtils {
 		codeMap.put(ResponseCode.SUCCESS, "Success!");
 		codeMap.put(ResponseCode.EXPIRED_LOGIN, "Login has expired. See your admin");
 		codeMap.put(ResponseCode.INVALID_LOGIN, "Invalid Login");
-		codeMap.put(ResponseCode.MISSING_DATA, "Missing Required Data");
+		codeMap.put(ResponseCode.EDIT_FAILURE, "Missing Required Data");
 		
 		
 		Integer myUserId = 1;
