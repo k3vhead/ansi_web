@@ -1,6 +1,7 @@
 package com.ansi.scilla.web.request;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
 
 import org.apache.commons.beanutils.BeanUtils;
 
@@ -21,7 +22,7 @@ public class TaxRateRequest extends AbstractRequest {
 	private Date effectiveDate;
 	private String location;
 	private Float rate;
-	private Integer taxCodeId;
+	private Integer taxRateId;
 	
 	public TaxRateRequest() {
 		super();

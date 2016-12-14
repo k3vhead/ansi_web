@@ -21,8 +21,8 @@ import com.ansi.scilla.web.common.MessageKey;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.common.WebMessages;
 import com.ansi.scilla.web.request.TaxRateRequest;
-import com.ansi.scilla.web.response.taxRates.TaxRateListResponse;
-import com.ansi.scilla.web.response.taxRates.TaxRateResponse;
+import com.ansi.scilla.web.response.taxRate.TaxRateListResponse;
+import com.ansi.scilla.web.response.taxRate.TaxRateResponse;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -59,9 +59,7 @@ public class TaxRateServlet extends AbstractServlet {
 			TaxRateRequest taxRateRequest = new TaxRateRequest(jsonString);
 			System.out.println(taxRateRequest);
 			TaxRate taxRate = new TaxRate();
-			taxRate.setTableName(taxRateRequest.getTableName());
-			taxRate.setFieldName(taxRateRequest.getFieldName());
-			taxRate.setValue(taxRateRequest.getValue());
+			taxRate.setTableName(taxRateRequest.getTaxRateId());
 			taxRate.delete(conn);
 			
 			TaxRateResponse taxRateResponse = new TaxRateResponse();
@@ -102,11 +100,11 @@ public class TaxRateServlet extends AbstractServlet {
 				} else {
 					if ( command.equals("list")) {
 						// we're getting all the taxRates in the database
-						TaxRateListResponse taxRatesListResponse = makeTaxRateListResponse(conn);
-						super.sendResponse(conn, response, ResponseCode.SUCCESS, taxRatesListResponse);
+						TaxRateListResponse taxRateListResponse = makeTaxRateListResponse(conn);
+						super.sendResponse(conn, response, ResponseCode.SUCCESS, taxRateListResponse);
 					} else {
-						TaxRateListResponse taxRatesListResponse = makeFilteredListResponse(conn, urlPieces);
-						super.sendResponse(conn, response, ResponseCode.SUCCESS, taxRatesListResponse);
+						TaxRateListResponse taxRateListResponse = makeFilteredListResponse(conn, urlPieces);
+						super.sendResponse(conn, response, ResponseCode.SUCCESS, taxRateListResponse);
 					}
 				}
 			} catch ( Exception e) {
@@ -167,19 +165,17 @@ public class TaxRateServlet extends AbstractServlet {
 				} else {
 					responseCode = ResponseCode.EDIT_FAILURE;
 				}
-				CodeResponse taxRateResponse = new CodeResponse(taxRate, webMessages);
+				TaxRateResponse taxRateResponse = new TaxRateResponse(taxRate, webMessages);
 				super.sendResponse(conn, response, responseCode, taxRateResponse);
 				
-			} else if ( urlPieces.length == 3 ) {   //  /<tableName>/<fieldName>/<value> = 3 pieces
+			} else if ( urlPieces.length == 1 ) {   //  /<taxRateId> = 1 pieces
 				System.out.println("Doing Update Stuff");				
 				WebMessages webMessages = validateAdd(conn, taxRateRequest);
 				if (webMessages.isEmpty()) {
 					System.out.println("passed validation");
 					try {
 						TaxRate key = new TaxRate();
-						key.setTableName(urlPieces[0]);
-						key.setFieldName(urlPieces[1]);
-						key.setValue(urlPieces[2]);
+						key.setTaxRateId(urlPieces[0]);
 						System.out.println("Trying to do update");
 						taxRate = doUpdate(conn, key, taxRateRequest, sessionUser);
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
@@ -222,19 +218,15 @@ public class TaxRateServlet extends AbstractServlet {
 		TaxRate taxRate = new TaxRate();
 		taxRate.setAddedBy(sessionUser.getUserId());
 		taxRate.setAddedDate(today);
-		if ( ! StringUtils.isBlank(taxRateRequest.getDescription())) {
-			taxRate.setDescription(taxRateRequest.getDescription());
+		taxRate.setAmount(taxRateRequest.getAmount());
+		taxRate.setEffectiveDate(taxRateRequest.getEffectiveDate());
+		if ( ! StringUtils.isBlank(taxRateRequest.getLocation())) {
+			taxRate.setLocation(taxRateRequest.getLocation());
 		}
-		if ( ! StringUtils.isBlank(taxRateRequest.getDisplayValue())) {
-			taxRate.setDisplayValue(taxRateRequest.getDisplayValue());
-		}
-		taxRate.setFieldName(taxRateRequest.getFieldName());
-		taxRate.setSeq(taxRateRequest.getSeq());
-		taxRate.setStatus(taxRateRequest.getStatus());
-		taxRate.setTableName(taxRateRequest.getTableName());
+		taxRate.setRate(taxRateRequest.getRate());
+		taxRate.setTaxRateId(taxRateRequest.getTaxRateId());
 		taxRate.setUpdatedBy(sessionUser.getUserId());
 		taxRate.setUpdatedDate(today);
-		taxRate.setValue(taxRateRequest.getValue());
 		try {
 			taxRate.insertWithNoKey(conn);
 		} catch ( SQLException e) {
@@ -255,19 +247,15 @@ public class TaxRateServlet extends AbstractServlet {
 		System.out.println("************");
 		Date today = new Date();
 		TaxRate taxRate = new TaxRate();
-		if ( ! StringUtils.isBlank(taxRateRequest.getDescription())) {
-			taxRate.setDescription(taxRateRequest.getDescription());
+		taxRate.setAmount(taxRateRequest.getAmount());
+		taxRate.setEffectiveDate(taxRateRequest.getEffectiveDate());
+		if ( ! StringUtils.isBlank(taxRateRequest.getLocation())) {
+			taxRate.setLocation(taxRateRequest.getLocation());
 		}
-		if ( ! StringUtils.isBlank(taxRateRequest.getDisplayValue())) {
-			taxRate.setDisplayValue(taxRateRequest.getDisplayValue());
-		}
-		taxRate.setFieldName(taxRateRequest.getFieldName());
-		taxRate.setSeq(taxRateRequest.getSeq());
-		taxRate.setStatus(taxRateRequest.getStatus());
-		taxRate.setTableName(taxRateRequest.getTableName());
+		taxRate.setRate(taxRateRequest.getRate());
+		taxRate.setTaxRateId(taxRateRequest.getTaxRateId());
 		taxRate.setUpdatedBy(sessionUser.getUserId());
 		taxRate.setUpdatedDate(today);
-		taxRate.setValue(taxRateRequest.getValue());
 		// if we update something that isn't there, a RecordNotFoundException gets thrown
 		// that exception get propagated and turned into a 404
 		taxRate.update(conn, key);		
