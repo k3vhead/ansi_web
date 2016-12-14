@@ -2,7 +2,6 @@ package com.ansi.scilla.web.common;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -10,7 +9,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -31,6 +29,7 @@ import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.Message;
 import com.ansi.scilla.common.db.User;
+import com.ansi.scilla.common.utils.PropertyNames;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.InvalidLoginException;
 import com.ansi.scilla.web.struts.SessionData;
@@ -39,51 +38,8 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
 import com.thewebthing.commons.lang.StringUtils;
 
 
-public class AppUtils {
+public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 	private static final String KEYTEXT = "Y0u know, in sertin 0lder c1v1liz3d cultur3s, when m3n f@iled as entirely as y0u h@ve, they would thr0w th3ms3lv3s on they'r3 swords";
-
-	/**
-	 * Retrieve configuration properties
-	 * @return
-	 */
-	public static Properties getConfig() {
-		ResourceBundle rb = ResourceBundle.getBundle("resources.config");
-		Properties props = new Properties();
-		for (Enumeration<String> e = rb.getKeys(); e.hasMoreElements(); ) {
-			String key = e.nextElement();
-			props.setProperty(key, rb.getString(key));
-		}
-		return props;
-	}
-
-	/**
-	 * Retrieve a configuration property
-	 * @param propertyName
-	 * @return
-	 */
-	public static String getProperty(PropertyNames propertyName) {
-		return getConfig().getProperty(propertyName.toString());
-	}
-
-
-	/**
-	 * Retrieve a non-pooled database connection (use with batch or test modules)
-	 * @return
-	 * @throws Exception
-	 */
-	public static Connection getConn() throws Exception {
-		
-		String driver = getProperty(PropertyNames.DB_DRIVER);
-		String dbURL = getProperty(PropertyNames.DB_URL);
-		String dbID = getProperty(PropertyNames.DB_USERID);
-		String dbPass = getProperty(PropertyNames.DB_PASSWORD);
-		Class.forName(driver);		
-        Connection conn =  DriverManager.getConnection(dbURL, dbID, dbPass);
-        
-		return conn;
-	}
-       
-
 
 	/**
 	 * Returns a connection from the application-specified DBCP as defined in META-INF/context.xml
@@ -108,28 +64,7 @@ public class AppUtils {
 		return conn;
 	}
 
-	/**
-	 * Wraps a DB close connection in a try/catch which throws a RuntimeException. Use this
-	 * to avoid nested try/catch structures
-	 * 
-	 * @param conn
-	 */
-	public static void closeQuiet(Connection conn) {
-		try {
-			conn.close();
-		} catch ( Exception e) {
-			AppUtils.logException(e);
-			throw new RuntimeException(e);
-		}
-	}
-	
-	public static void rollbackQuiet(Connection conn) {
-		try {
-			conn.rollback();
-		} catch ( Exception e ) {
-			throw new RuntimeException(e);
-		}
-	}
+
 
 	/**
 	 * Create an application logger.
@@ -352,7 +287,6 @@ public class AppUtils {
 		}
 		return sessionUser;
 	}
-
 
 
 

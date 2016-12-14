@@ -7,9 +7,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.ansi.scilla.common.db.Message;
+import com.ansi.scilla.common.utils.PropertyNames;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ApplicationWebObject;
-import com.ansi.scilla.web.common.PropertyNames;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
