@@ -16,8 +16,8 @@ import com.ansi.scilla.common.db.Code;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.request.CodeRequest;
-import com.ansi.scilla.web.response.codes.CodeListResponse;
-import com.ansi.scilla.web.response.codes.CodeResponse;
+import com.ansi.scilla.web.response.code.CodeListResponse;
+import com.ansi.scilla.web.response.code.CodeResponse;
 
 /**
  * The url for delete will be of the form /code/<table>/<field>/<value>

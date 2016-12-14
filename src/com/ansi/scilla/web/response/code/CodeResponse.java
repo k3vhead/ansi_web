@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.response.codes;
+package com.ansi.scilla.web.response.code;
 
 import java.io.Serializable;
 

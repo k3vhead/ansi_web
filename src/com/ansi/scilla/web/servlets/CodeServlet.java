@@ -21,8 +21,8 @@ import com.ansi.scilla.web.common.MessageKey;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.common.WebMessages;
 import com.ansi.scilla.web.request.CodeRequest;
-import com.ansi.scilla.web.response.codes.CodeListResponse;
-import com.ansi.scilla.web.response.codes.CodeResponse;
+import com.ansi.scilla.web.response.code.CodeListResponse;
+import com.ansi.scilla.web.response.code.CodeResponse;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
