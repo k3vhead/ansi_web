@@ -35,12 +35,12 @@ public class InsertTestData extends TesterUtils {
 			itd.insertMessage();
 			System.out.println("insertPermissionGroup");
 			itd.insertPermissionGroup();
-			*/
 			System.out.println("insertPermissionGroupLevel");
 			itd.insertPermissionGroupLevel();
-			/*
+			*/
 			System.out.println("insertDivision");
 			itd.insertDivision();
+			/*
 			System.out.println("insertTitle");
 			itd.insertTitle();
 			System.out.println("insertUser");
@@ -229,7 +229,7 @@ public class InsertTestData extends TesterUtils {
 			conn.setAutoCommit(false);
 
 			Division d = new Division();
-			d.setName("Test Div 2");
+			d.setName("Test Div 6");
 			d.setDefaultDirectLaborPct(new BigDecimal(0.03F));
 			
 			

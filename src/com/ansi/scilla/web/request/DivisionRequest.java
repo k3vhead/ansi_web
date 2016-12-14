@@ -11,10 +11,10 @@ public class DivisionRequest extends AbstractRequest {
 
 	private static final long serialVersionUID = 1L;
 	
-	private int divisionId;
+	private Integer divisionId;
 	private String name;
-	private int parentId;
-	private float defaultDirectLaborPct;
+	private Integer parentId;
+	private Float defaultDirectLaborPct;
 	
 	public DivisionRequest() {
 		super();
@@ -26,11 +26,11 @@ public class DivisionRequest extends AbstractRequest {
 		BeanUtils.copyProperties(this, req);
 	}
 
-	public int getDivisionId() {
+	public Integer getDivisionId() {
 		return divisionId;
 	}
 
-	public void setDivisionId(int divisionId) {
+	public void setDivisionId(Integer divisionId) {
 		this.divisionId = divisionId;
 	}
 
@@ -42,19 +42,19 @@ public class DivisionRequest extends AbstractRequest {
 		this.name = name;
 	}
 
-	public int getParentId() {
+	public Integer getParentId() {
 		return parentId;
 	}
 
-	public void setParentId(int parentId) {
+	public void setParentId(Integer parentId) {
 		this.parentId = parentId;
 	}
 	
-	public float getDefaultDirectLaborPct(){
+	public Float getDefaultDirectLaborPct(){
 		return defaultDirectLaborPct;
 	}
 	
-	public void setDefaultDirectLaborPct(float defaultDirectLaborPct){
+	public void setDefaultDirectLaborPct(Float defaultDirectLaborPct){
 		this.defaultDirectLaborPct = defaultDirectLaborPct;
 	}
 

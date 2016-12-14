@@ -2,8 +2,8 @@ package com.ansi.scilla.web.servlets;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -12,12 +12,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.ansi.scilla.common.db.Code;
+import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ResponseCode;
-import com.ansi.scilla.web.request.CodeRequest;
-import com.ansi.scilla.web.response.codes.CodeListResponse;
-import com.ansi.scilla.web.response.codes.CodeResponse;
+import com.ansi.scilla.web.request.DivisionRequest;
+import com.ansi.scilla.web.response.division.DivisionListResponse;
+import com.ansi.scilla.web.response.division.DivisionResponse;
+import com.thewebthing.commons.db2.RecordNotFoundException;
 
 /**
  * The url for delete will be of the form /code/<table>/<field>/<value>
@@ -50,17 +51,15 @@ public class DivisionServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
 			
-			String jsonString = super.makeJsonString(request);
-			CodeRequest codeRequest = new CodeRequest(jsonString);
-			System.out.println(codeRequest);
-			Code code = new Code();
-			code.setTableName(codeRequest.getTableName());
-			code.setFieldName(codeRequest.getFieldName());
-			code.setValue(codeRequest.getValue());
-			code.delete(conn);
+			String jsonString = super.makeJsonString(request); //get request, change to Json
+			DivisionRequest divisionRequest = new DivisionRequest(jsonString);//put Json into codeRequest
+			System.out.println(divisionRequest);//print request
+			Division division = new Division();
+			division.setDivisionId(divisionRequest.getDivisionId());
+			division.delete(conn);
 			
-			CodeResponse codeResponse = new CodeResponse();
-			super.sendResponse(conn, response, ResponseCode.SUCCESS, codeResponse);
+			DivisionResponse divisionResponse = new DivisionResponse();
+			super.sendResponse(conn, response, ResponseCode.SUCCESS, divisionResponse);
 			
 			conn.commit();
 		} catch ( Exception e) {
@@ -75,7 +74,7 @@ public class DivisionServlet extends AbstractServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String url = request.getRequestURI();
-		int idx = url.indexOf("/code/");
+		int idx = url.indexOf("/division/");
 		if ( idx > -1 ) {
 			System.out.println("Url:" + url);
 			String queryString = request.getQueryString();
@@ -87,7 +86,7 @@ public class DivisionServlet extends AbstractServlet {
 				conn = AppUtils.getDBCPConn();
 				
 				// Figure out what we've got:				
-				String myString = url.substring(idx + "/code/".length());
+				String myString = url.substring(idx + "/division/".length());
 				
 				String[] urlPieces = myString.split("/");
 				String command = urlPieces[0];
@@ -95,14 +94,12 @@ public class DivisionServlet extends AbstractServlet {
 				if ( StringUtils.isBlank(command)) {
 					super.sendNotFound(response);
 				} else {
-					if ( command.equals("list")) {
-						// we're getting all the codes in the database
-						CodeListResponse codesListResponse = makeCodesListResponse(conn);
-						super.sendResponse(conn, response, ResponseCode.SUCCESS, codesListResponse);
-					} else {
-						CodeListResponse codesListResponse = makeFilteredListResponse(conn, urlPieces);
-						super.sendResponse(conn, response, ResponseCode.SUCCESS, codesListResponse);
-					}
+						try{
+							DivisionListResponse divisionListResponse = doGetWork(conn, url, queryString);
+							super.sendResponse(conn, response, ResponseCode.SUCCESS, divisionListResponse);
+						} catch(RecordNotFoundException recordNotFoundEx) {
+							super.sendNotFound(response);
+						}
 				}
 			} catch ( Exception e) {
 				AppUtils.logException(e);
@@ -116,6 +113,24 @@ public class DivisionServlet extends AbstractServlet {
 		}
 	}
 
+	public DivisionListResponse doGetWork(Connection conn, String url, String qs) throws RecordNotFoundException, Exception {
+		DivisionListResponse divisionListResponse = new DivisionListResponse();
+		String[] x = url.split("/");
+		
+		if(x[0].equals("list")){
+			divisionListResponse = new DivisionListResponse(conn);
+		} else if (StringUtils.isNumeric(x[0])){
+			Division div = new Division();
+			div.setDivisionId(Integer.valueOf(x[0]));
+			System.out.println("Hello World: " + x[0]);
+			div.selectOne(conn);
+			divisionListResponse.setDivisionList(Arrays.asList(new Division[] {div} ));
+		} else {
+			throw new RecordNotFoundException();
+		}
+		return divisionListResponse;
+		
+	}
 
 	@Override
 	protected void doPost(HttpServletRequest request,
@@ -123,49 +138,32 @@ public class DivisionServlet extends AbstractServlet {
 		throw new ServletException("Not Yet Coded");
 	}
 
-	private CodeListResponse makeCodesListResponse(Connection conn) throws Exception {
-		CodeListResponse codesListResponse = new CodeListResponse(conn);
-		return codesListResponse;
+	private DivisionListResponse makeDivisionListResponse(Connection conn) throws Exception {
+		DivisionListResponse divisionListResponse = new DivisionListResponse(conn);
+		return divisionListResponse;
 	}
 
-	private CodeListResponse makeFilteredListResponse(Connection conn, String[] urlPieces) throws Exception {
-		String tableName = null;
-		String fieldName = null;
-		String value = null;
+	private DivisionListResponse makeFilteredListResponse(Connection conn, String[] urlPieces) throws Exception {
+		Integer divisionId = null;
+		
 		try {
-			tableName = urlPieces[0];
-			fieldName = urlPieces[1];
-			value = urlPieces[2];
+			divisionId = Integer.valueOf(urlPieces[0]);
 		} catch (ArrayIndexOutOfBoundsException e) {
 			// this is OK, just means we ran out of filters
+		} catch (NumberFormatException e) {
+			
 		}
-		Code code = new Code();
-		if ( ! StringUtils.isBlank(tableName)) {
-			code.setTableName(tableName);
-		}
-		if ( ! StringUtils.isBlank(fieldName)) {
-			code.setFieldName(fieldName);
-		}
-		if ( ! StringUtils.isBlank(value)) {
-			code.setValue(value);
-		}
-		List<Code> codeList = Code.cast(code.selectSome(conn));
-		Collections.sort(codeList,
-				new Comparator<Code>() {
-			public int compare(Code o1, Code o2) {
-				int ret = o1.getTableName().compareTo(o2.getTableName());
-				if ( ret == 0 ) {
-					ret = o1.getFieldName().compareTo(o2.getFieldName());
-				}
-				if ( ret == 0 ) {
-					ret = o1.getValue().compareTo(o2.getValue());
-				}
-				return ret;
-			}
-		});
-		CodeListResponse codeListResponse = new CodeListResponse();
-		codeListResponse.setCodeList(codeList);
-		return codeListResponse;
+		Division division = new Division();
+		
+		division.setDivisionId(divisionId);
+		
+		
+		division.selectOne(conn);
+		List<Division> divisionList = new ArrayList<Division>();
+		divisionList.add(division);
+		DivisionListResponse divisionListResponse = new DivisionListResponse();
+		divisionListResponse.setDivisionList(divisionList);
+		return divisionListResponse;
 	}
 
 	
