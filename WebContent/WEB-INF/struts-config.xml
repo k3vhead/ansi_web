@@ -29,6 +29,12 @@
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
+            path="/DivisionAdmin"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/DivisionAdmin.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		<action
             path="/dashboard"
             type="com.ansi.scilla.web.action.DashboardAction">
             <forward name="valid" path="/dashboard.jsp" />

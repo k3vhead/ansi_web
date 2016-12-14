@@ -16,8 +16,8 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
+import com.ansi.scilla.common.utils.PropertyNames;
 import com.ansi.scilla.web.common.AppUtils;
-import com.ansi.scilla.web.common.PropertyNames;
 
 public class TesterUtils {
 	public TesterUtils() {

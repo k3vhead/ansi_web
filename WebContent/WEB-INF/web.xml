@@ -74,16 +74,25 @@
         <servlet-name>code</servlet-name>
         <url-pattern>/code/*</url-pattern>
     </servlet-mapping>
-    
+	
     <servlet>
-        <servlet-name>division</servlet-name>
-        <servlet-class>com.ansi.scilla.web.servlets.DivisionServlet</servlet-class>
+        <servlet-name>heartbeat</servlet-name>
+        <servlet-class>com.ansi.scilla.web.servlets.Heartbeat</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>division</servlet-name>
-        <url-pattern>/division/*</url-pattern>
+        <servlet-name>heartbeat</servlet-name>
+        <url-pattern>/heartbeat</url-pattern>
     </servlet-mapping>
-	
+
+    <servlet>
+        <servlet-name>motd</servlet-name>
+        <servlet-class>com.ansi.scilla.web.servlets.MotdServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>motd</servlet-name>
+        <url-pattern>/motd</url-pattern>
+    </servlet-mapping>
+
     <!--
         Define the default session timeout for the application,
         in minutes.  This value can be modified in a servlet or JSP by

@@ -23,70 +23,79 @@
     
     <tiles:put name="headextra" type="string">
         <style type="text/css">
-
+        	#clockBox {
+        		width:100%; 
+        		text-align:center; 
+        		padding-left:25px;
+        	}
+			#helloBox {
+				width:100%; 
+				clear:both; 
+				text-align:center;
+			}
+			#motd {
+				padding-top:25px;
+				padding-bottom:25px;
+			}
+			
+			
+			#clock {
+	        	position: relative;
+	        	width: 300px;
+	        	height: 300px;
+	        	margin: 10px auto 0 auto;
+	        	background: url(images/clock/clockface.jpg);
+	        	background-repeat: no-repeat;
+	        	list-style: none;
+	        	}
+	        
+	        #sec, #min, #hour {
+	        	position: absolute;
+	        	width: 15px;
+	        	height: 300px;
+	        	top: 0px;
+	        	left: 142px;
+	        	}
+	        
+	        #sec {
+	        	background: url(images/clock/sechand.png);
+	        	z-index: 3;
+	           	}
+	           
+	        #min {
+	        	background: url(images/clock/minhand.png);
+	        	z-index: 2;
+	           	}
+	           
+	        #hour {
+	        	background: url(images/clock/hourhand.png);
+	        	z-index: 1;
+	           	}
+	           	
+	        p {
+	            text-align: center; 
+	            padding: 10px 0 0 0;
+	            }
         </style>
-        <script src="js/dashboard.js"></script>        
+        <script type="text/javascript" src="js/dashboard.js"></script>
+        <script type="text/javascript" src="js/clock.js"></script>   
     </tiles:put>
     
     
     <tiles:put name="content" type="string">
 		<h1>ANSI Scheduling Dashboard</h1>
-		<br />
-		<ansi:hasPermission permissionRequired="QUOTE">
-			<a href="#">Quotes</a><br />
-		</ansi:hasPermission>
-		<ansi:hasPermission permissionRequired="JOB">
-			<a href="#">Jobs</a><br />
-		</ansi:hasPermission>
-		<ansi:hasPermission permissionRequired="TICKET">
-			<a href="#">Tickets</a><br />
-		</ansi:hasPermission>
-		<ansi:hasPermission permissionRequired="PAYMENT">
-			<a href="#">Payments</a><br />
-		</ansi:hasPermission>
-		<ansi:hasPermission permissionRequired="INVOICE">
-			<a href="#">Invoices</a><br />
-		</ansi:hasPermission>
-		<ansi:hasPermission permissionRequired="SYSADMIN">
-			<a href="#">Permissions</a><br />
-			<html:link action="codeMaintenance">Messages &amp; Codes</html:link><br />
-		</ansi:hasPermission>
-		<ansi:hasPermission permissionRequired="USER_ADMIN">
-			<a href="#">User Admin</a><br />
-		</ansi:hasPermission>
-		<ansi:hasPermission permissionRequired="TECH_ADMIN">
-			<a href="#">Tech Admin</a><br />
-		</ansi:hasPermission>
-		
-
-		<h3>This is for demo purposes Only:</h3>		
-		<br />
-		<br />
-		<ansi:hasPermission permissionRequired="INVOICE">
-			Invoice Stuff goes here<br />
-			<ansi:hasRead>
-				Read only INVOICE<br />
-			</ansi:hasRead>
-			<ansi:hasWrite>
-				Write INVOICE<br />
-			</ansi:hasWrite>
-		</ansi:hasPermission>
-		<br />
-		<ansi:hasPermission permissionRequired="SYSADMIN">
-			Sysadmin Stuff goes here<br />
-			<ansi:hasRead>
-				Read only SYSADMIN<br />
-			</ansi:hasRead>
-			<ansi:hasWrite>
-				Write SYSADMIN<br />
-			</ansi:hasWrite>
-		</ansi:hasPermission>
-		<br />
-		<br />
-		<ansi:loggedIn>
-			There is a valid login
-		</ansi:loggedIn>
-    </tiles:put>
+    	<div id="helloBox">
+    		<h4><span id="helloText">Hello</span> <c:out value="${com_ansi_scilla_session_data.user.firstName}" /></h4>
+    		<div id="clockBox">
+	    		<ul id="clock">	
+				   	<li id="sec"></li>
+				   	<li id="hour"></li>
+					<li id="min"></li>
+				</ul>
+			</div>
+    		<div id="motd"></div>
+    	</div>
+	</tiles:put>
 
 </tiles:insert>
 

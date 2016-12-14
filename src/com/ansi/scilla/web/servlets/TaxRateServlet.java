@@ -14,38 +14,36 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.ansi.scilla.common.db.Code;
+import com.ansi.scilla.common.db.TaxRate;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.MessageKey;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.common.WebMessages;
-import com.ansi.scilla.web.request.CodeRequest;
-import com.ansi.scilla.web.response.code.CodeListResponse;
-import com.ansi.scilla.web.response.code.CodeResponse;
+import com.ansi.scilla.web.request.TaxRateRequest;
+import com.ansi.scilla.web.response.taxRate.TaxRateListResponse;
+import com.ansi.scilla.web.response.taxRate.TaxRateResponse;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 /**
- * The url for delete will be of the form /code/<table>/<field>/<value>
+ * The url for delete will be of the form /taxRate/<taxRateId>
  * 
  * The url for get will be one of:
- * 		/code    (retrieves everything)
- * 		/code/<table>      (filters code table by tablename)
- * 		/code/<table>/<field>	(filters code table tablename and field
- * 		/code/<table>/<field>/<value>	(retrieves a single record)
+ * 		/taxRate    			(retrieves everything)
+ * 		/taxRate/<taxRateId>	(retrieves a single record)
  * 
  * The url for adding a new record will be a POST to:
- * 		/code/add   with parameters in the JSON
+ * 		/taxRate/add   with parameters in the JSON
  * 
  * The url for update will be a POST to:
- * 		/code/<table>/<field>/<value> with parameters in the JSON
+ * 		/taxRate/<taxRateId> with parameters in the JSON
  * 
  * 
- * @author dclewis
+ * @author gagroce
  *
  */
-public class CodeServlet extends AbstractServlet {
+public class TaxRateServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
 
@@ -58,16 +56,14 @@ public class CodeServlet extends AbstractServlet {
 			conn.setAutoCommit(false);
 			
 			String jsonString = super.makeJsonString(request);
-			CodeRequest codeRequest = new CodeRequest(jsonString);
-			System.out.println(codeRequest);
-			Code code = new Code();
-			code.setTableName(codeRequest.getTableName());
-			code.setFieldName(codeRequest.getFieldName());
-			code.setValue(codeRequest.getValue());
-			code.delete(conn);
+			TaxRateRequest taxRateRequest = new TaxRateRequest(jsonString);
+			System.out.println(taxRateRequest);
+			TaxRate taxRate = new TaxRate();
+			taxRate.setTableName(taxRateRequest.getTaxRateId());
+			taxRate.delete(conn);
 			
-			CodeResponse codeResponse = new CodeResponse();
-			super.sendResponse(conn, response, ResponseCode.SUCCESS, codeResponse);
+			TaxRateResponse taxRateResponse = new TaxRateResponse();
+			super.sendResponse(conn, response, ResponseCode.SUCCESS, taxRateResponse);
 			
 			conn.commit();
 		} catch ( Exception e) {
@@ -82,7 +78,7 @@ public class CodeServlet extends AbstractServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String url = request.getRequestURI();
-		int idx = url.indexOf("/code/");
+		int idx = url.indexOf("/taxRate/");
 		if ( idx > -1 ) {
 			System.out.println("Url:" + url);
 			String queryString = request.getQueryString();
@@ -94,7 +90,7 @@ public class CodeServlet extends AbstractServlet {
 				conn = AppUtils.getDBCPConn();
 				
 				// Figure out what we've got:				
-				String myString = url.substring(idx + "/code/".length());
+				String myString = url.substring(idx + "/taxRate/".length());
 				
 				String[] urlPieces = myString.split("/");
 				String command = urlPieces[0];
@@ -103,12 +99,12 @@ public class CodeServlet extends AbstractServlet {
 					super.sendNotFound(response);
 				} else {
 					if ( command.equals("list")) {
-						// we're getting all the codes in the database
-						CodeListResponse codesListResponse = makeCodesListResponse(conn);
-						super.sendResponse(conn, response, ResponseCode.SUCCESS, codesListResponse);
+						// we're getting all the taxRates in the database
+						TaxRateListResponse taxRateListResponse = makeTaxRateListResponse(conn);
+						super.sendResponse(conn, response, ResponseCode.SUCCESS, taxRateListResponse);
 					} else {
-						CodeListResponse codesListResponse = makeFilteredListResponse(conn, urlPieces);
-						super.sendResponse(conn, response, ResponseCode.SUCCESS, codesListResponse);
+						TaxRateListResponse taxRateListResponse = makeFilteredListResponse(conn, urlPieces);
+						super.sendResponse(conn, response, ResponseCode.SUCCESS, taxRateListResponse);
 					}
 				}
 			} catch ( Exception e) {
@@ -137,22 +133,22 @@ public class CodeServlet extends AbstractServlet {
 			conn.setAutoCommit(false);
 
 			// figure out if this is an "add" or an "update"
-			int idx = url.indexOf("/code/");
-			String myString = url.substring(idx + "/code/".length());				
+			int idx = url.indexOf("/taxRate/");
+			String myString = url.substring(idx + "/taxRate/".length());				
 			String[] urlPieces = myString.split("/");
 			String command = urlPieces[0];
 
 			String jsonString = super.makeJsonString(request);
 			System.out.println(jsonString);
-			CodeRequest codeRequest = new CodeRequest(jsonString);
+			TaxRateRequest taxRateRequest = new TaxRateRequest(jsonString);
 			
-			Code code = null;
+			TaxRate taxRate = null;
 			ResponseCode responseCode = null;
 			if ( command.equals(ACTION_IS_ADD) ) {
-				WebMessages webMessages = validateAdd(conn, codeRequest);
+				WebMessages webMessages = validateAdd(conn, taxRateRequest);
 				if (webMessages.isEmpty()) {
 					try {
-						code = doAdd(conn, codeRequest, sessionUser);
+						taxRate = doAdd(conn, taxRateRequest, sessionUser);
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 						responseCode = ResponseCode.SUCCESS;
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
@@ -169,21 +165,19 @@ public class CodeServlet extends AbstractServlet {
 				} else {
 					responseCode = ResponseCode.EDIT_FAILURE;
 				}
-				CodeResponse codeResponse = new CodeResponse(code, webMessages);
-				super.sendResponse(conn, response, responseCode, codeResponse);
+				TaxRateResponse taxRateResponse = new TaxRateResponse(taxRate, webMessages);
+				super.sendResponse(conn, response, responseCode, taxRateResponse);
 				
-			} else if ( urlPieces.length == 3 ) {   //  /<tableName>/<fieldName>/<value> = 3 pieces
+			} else if ( urlPieces.length == 1 ) {   //  /<taxRateId> = 1 pieces
 				System.out.println("Doing Update Stuff");				
-				WebMessages webMessages = validateAdd(conn, codeRequest);
+				WebMessages webMessages = validateAdd(conn, taxRateRequest);
 				if (webMessages.isEmpty()) {
 					System.out.println("passed validation");
 					try {
-						Code key = new Code();
-						key.setTableName(urlPieces[0]);
-						key.setFieldName(urlPieces[1]);
-						key.setValue(urlPieces[2]);
+						TaxRate key = new TaxRate();
+						key.setTaxRateId(urlPieces[0]);
 						System.out.println("Trying to do update");
-						code = doUpdate(conn, key, codeRequest, sessionUser);
+						taxRate = doUpdate(conn, key, taxRateRequest, sessionUser);
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 						responseCode = ResponseCode.SUCCESS;
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
@@ -201,8 +195,8 @@ public class CodeServlet extends AbstractServlet {
 					System.out.println("Doing Edit Fail");
 					responseCode = ResponseCode.EDIT_FAILURE;
 				}
-				CodeResponse codeResponse = new CodeResponse(code, webMessages);
-				super.sendResponse(conn, response, responseCode, codeResponse);
+				TaxRateResponse taxRateResponse = new TaxRateResponse(taxRate, webMessages);
+				super.sendResponse(conn, response, responseCode, taxRateResponse);
 			} else {
 				super.sendNotFound(response);
 			}
@@ -219,26 +213,22 @@ public class CodeServlet extends AbstractServlet {
 	}
 
 
-	protected Code doAdd(Connection conn, CodeRequest codeRequest, SessionUser sessionUser) throws Exception {
+	protected TaxRate doAdd(Connection conn, TaxRateRequest taxRateRequest, SessionUser sessionUser) throws Exception {
 		Date today = new Date();
-		Code code = new Code();
-		code.setAddedBy(sessionUser.getUserId());
-		code.setAddedDate(today);
-		if ( ! StringUtils.isBlank(codeRequest.getDescription())) {
-			code.setDescription(codeRequest.getDescription());
+		TaxRate taxRate = new TaxRate();
+		taxRate.setAddedBy(sessionUser.getUserId());
+		taxRate.setAddedDate(today);
+		taxRate.setAmount(taxRateRequest.getAmount());
+		taxRate.setEffectiveDate(taxRateRequest.getEffectiveDate());
+		if ( ! StringUtils.isBlank(taxRateRequest.getLocation())) {
+			taxRate.setLocation(taxRateRequest.getLocation());
 		}
-		if ( ! StringUtils.isBlank(codeRequest.getDisplayValue())) {
-			code.setDisplayValue(codeRequest.getDisplayValue());
-		}
-		code.setFieldName(codeRequest.getFieldName());
-		code.setSeq(codeRequest.getSeq());
-		code.setStatus(codeRequest.getStatus());
-		code.setTableName(codeRequest.getTableName());
-		code.setUpdatedBy(sessionUser.getUserId());
-		code.setUpdatedDate(today);
-		code.setValue(codeRequest.getValue());
+		taxRate.setRate(taxRateRequest.getRate());
+		taxRate.setTaxRateId(taxRateRequest.getTaxRateId());
+		taxRate.setUpdatedBy(sessionUser.getUserId());
+		taxRate.setUpdatedDate(today);
 		try {
-			code.insertWithNoKey(conn);
+			taxRate.insertWithNoKey(conn);
 		} catch ( SQLException e) {
 			if ( e.getMessage().contains("duplicate key")) {
 				throw new DuplicateEntryException();
@@ -247,41 +237,37 @@ public class CodeServlet extends AbstractServlet {
 				throw e;
 			}
 		} 
-		return code;
+		return taxRate;
 	}
 
 
-	protected Code doUpdate(Connection conn, Code key, CodeRequest codeRequest, SessionUser sessionUser) throws Exception {
+	protected TaxRate doUpdate(Connection conn, TaxRate key, TaxRateRequest taxRateRequest, SessionUser sessionUser) throws Exception {
 		System.out.println("This is the key:");
 		System.out.println(key);
 		System.out.println("************");
 		Date today = new Date();
-		Code code = new Code();
-		if ( ! StringUtils.isBlank(codeRequest.getDescription())) {
-			code.setDescription(codeRequest.getDescription());
+		TaxRate taxRate = new TaxRate();
+		taxRate.setAmount(taxRateRequest.getAmount());
+		taxRate.setEffectiveDate(taxRateRequest.getEffectiveDate());
+		if ( ! StringUtils.isBlank(taxRateRequest.getLocation())) {
+			taxRate.setLocation(taxRateRequest.getLocation());
 		}
-		if ( ! StringUtils.isBlank(codeRequest.getDisplayValue())) {
-			code.setDisplayValue(codeRequest.getDisplayValue());
-		}
-		code.setFieldName(codeRequest.getFieldName());
-		code.setSeq(codeRequest.getSeq());
-		code.setStatus(codeRequest.getStatus());
-		code.setTableName(codeRequest.getTableName());
-		code.setUpdatedBy(sessionUser.getUserId());
-		code.setUpdatedDate(today);
-		code.setValue(codeRequest.getValue());
+		taxRate.setRate(taxRateRequest.getRate());
+		taxRate.setTaxRateId(taxRateRequest.getTaxRateId());
+		taxRate.setUpdatedBy(sessionUser.getUserId());
+		taxRate.setUpdatedDate(today);
 		// if we update something that isn't there, a RecordNotFoundException gets thrown
 		// that exception get propagated and turned into a 404
-		code.update(conn, key);		
-		return code;
+		taxRate.update(conn, key);		
+		return taxRate;
 	}
 
-	private CodeListResponse makeCodesListResponse(Connection conn) throws Exception {
-		CodeListResponse codesListResponse = new CodeListResponse(conn);
-		return codesListResponse;
+	private TaxRateListResponse makeTaxRateListResponse(Connection conn) throws Exception {
+		TaxRateListResponse taxRatesListResponse = new TaxRateListResponse(conn);
+		return taxRatesListResponse;
 	}
 
-	private CodeListResponse makeFilteredListResponse(Connection conn, String[] urlPieces) throws Exception {
+	private TaxRateListResponse makeFilteredListResponse(Connection conn, String[] urlPieces) throws Exception {
 		String tableName = null;
 		String fieldName = null;
 		String value = null;
@@ -292,20 +278,20 @@ public class CodeServlet extends AbstractServlet {
 		} catch (ArrayIndexOutOfBoundsException e) {
 			// this is OK, just means we ran out of filters
 		}
-		Code code = new Code();
+		TaxRate taxRate = new TaxRate();
 		if ( ! StringUtils.isBlank(tableName)) {
-			code.setTableName(tableName);
+			taxRate.setTableName(tableName);
 		}
 		if ( ! StringUtils.isBlank(fieldName)) {
-			code.setFieldName(fieldName);
+			taxRate.setFieldName(fieldName);
 		}
 		if ( ! StringUtils.isBlank(value)) {
-			code.setValue(value);
+			taxRate.setValue(value);
 		}
-		List<Code> codeList = Code.cast(code.selectSome(conn));
-		Collections.sort(codeList,
-				new Comparator<Code>() {
-			public int compare(Code o1, Code o2) {
+		List<TaxRate> taxRateList = TaxRate.cast(taxRate.selectSome(conn));
+		Collections.sort(taxRateList,
+				new Comparator<TaxRate>() {
+			public int compare(TaxRate o1, TaxRate o2) {
 				int ret = o1.getTableName().compareTo(o2.getTableName());
 				if ( ret == 0 ) {
 					ret = o1.getFieldName().compareTo(o2.getFieldName());
@@ -316,15 +302,15 @@ public class CodeServlet extends AbstractServlet {
 				return ret;
 			}
 		});
-		CodeListResponse codeListResponse = new CodeListResponse();
-		codeListResponse.setCodeList(codeList);
-		return codeListResponse;
+		TaxRateListResponse taxRateListResponse = new TaxRateListResponse();
+		taxRateListResponse.setTaxRateList(taxRateList);
+		return taxRateListResponse;
 	}
 
 	
-	protected WebMessages validateAdd(Connection conn, CodeRequest codeRequest) throws Exception {
+	protected WebMessages validateAdd(Connection conn, TaxRateRequest taxRateRequest) throws Exception {
 		WebMessages webMessages = new WebMessages();
-		List<String> missingFields = super.validateRequiredAddFields(codeRequest);
+		List<String> missingFields = super.validateRequiredAddFields(taxRateRequest);
 		if ( ! missingFields.isEmpty() ) {
 			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
 			for ( String field : missingFields ) {
@@ -334,9 +320,9 @@ public class CodeServlet extends AbstractServlet {
 		return webMessages;
 	}
 
-	protected WebMessages validateUpdate(Connection conn, Code key, CodeRequest codeRequest) throws RecordNotFoundException, Exception {
+	protected WebMessages validateUpdate(Connection conn, TaxRate key, TaxRateRequest taxRateRequest) throws RecordNotFoundException, Exception {
 		WebMessages webMessages = new WebMessages();
-		List<String> missingFields = super.validateRequiredUpdateFields(codeRequest);
+		List<String> missingFields = super.validateRequiredUpdateFields(taxRateRequest);
 		if ( ! missingFields.isEmpty() ) {
 			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
 			for ( String field : missingFields ) {
@@ -345,7 +331,7 @@ public class CodeServlet extends AbstractServlet {
 		}
 		// if we "select" the key, and it isn't found, a "RecordNotFoundException" is thrown.
 		// That exception will propagate up the tree until it turns into a 404 message sent to the client
-		Code testKey = (Code)key.clone(); 
+		TaxRate testKey = (TaxRate)key.clone(); 
 		testKey.selectOne(conn);
 		return webMessages;
 	}

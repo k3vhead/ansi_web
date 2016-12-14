@@ -390,7 +390,7 @@ public class InsertTestData extends TesterUtils {
 		codeMap.put(ResponseCode.SUCCESS, "Success!");
 		codeMap.put(ResponseCode.EXPIRED_LOGIN, "Login has expired. See your admin");
 		codeMap.put(ResponseCode.INVALID_LOGIN, "Invalid Login");
-		codeMap.put(ResponseCode.MISSING_DATA, "Missing Required Data");
+		codeMap.put(ResponseCode.EDIT_FAILURE, "Missing Required Data");
 		
 		
 		Integer myUserId = 1;

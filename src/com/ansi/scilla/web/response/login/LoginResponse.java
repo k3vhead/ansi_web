@@ -1,16 +1,16 @@
 package com.ansi.scilla.web.response.login;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.util.List;
 
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.web.common.AppUtils;
-import com.ansi.scilla.web.common.ApplicationWebObject;
 import com.ansi.scilla.web.common.UserPermission;
 import com.ansi.scilla.web.response.MessageResponse;
 import com.ansi.scilla.web.struts.SessionUser;
 
-public class LoginResponse extends ApplicationWebObject implements MessageResponse {
+public class LoginResponse extends MessageResponse implements Serializable  {
 
 	private static final long serialVersionUID = 1L;
 	
