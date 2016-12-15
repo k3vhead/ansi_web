@@ -32,6 +32,10 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
  * The url for get will be one of:
  * 		/taxRate    			(retrieves everything)
  * 		/taxRate/<taxRateId>	(retrieves a single record)
+ * 	For 2.0 probably adding state, county and city fields to taxRate table
+ * 		/taxRate/<state>				(Retrieves state contains <state>)
+ * 		/taxRate/<state>/<county>		(Retrieves and county contains <county>)
+ * 		/taxRate/<state>/<county>/<city>(Retrieves and city contains <city>)
  * 
  * The url for adding a new record will be a POST to:
  * 		/taxRate/add   with parameters in the JSON
@@ -55,11 +59,11 @@ public class TaxRateServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
 			
-			String jsonString = super.makeJsonString(request);
-			TaxRateRequest taxRateRequest = new TaxRateRequest(jsonString);
-			System.out.println(taxRateRequest);
+			String jsonString = super.makeJsonString(request); //get request, change to Json
+			TaxRateRequest taxRateRequest = new TaxRateRequest(jsonString); //put Json into taxRateReques
+			System.out.println(taxRateRequest);//print request
 			TaxRate taxRate = new TaxRate();
-			taxRate.setTableName(taxRateRequest.getTaxRateId());
+			taxRate.setTaxRateId(taxRateRequest.getTaxRateId());
 			taxRate.delete(conn);
 			
 			TaxRateResponse taxRateResponse = new TaxRateResponse();
@@ -103,7 +107,8 @@ public class TaxRateServlet extends AbstractServlet {
 						TaxRateListResponse taxRateListResponse = makeTaxRateListResponse(conn);
 						super.sendResponse(conn, response, ResponseCode.SUCCESS, taxRateListResponse);
 					} else {
-						TaxRateListResponse taxRateListResponse = makeFilteredListResponse(conn, urlPieces);
+						// we're getting a single taxRate by taxRateId returned in a single entry list
+						TaxRateListResponse taxRateListResponse = makeSingleListResponse(conn, urlPieces);
 						super.sendResponse(conn, response, ResponseCode.SUCCESS, taxRateListResponse);
 					}
 				}
@@ -175,12 +180,16 @@ public class TaxRateServlet extends AbstractServlet {
 					System.out.println("passed validation");
 					try {
 						TaxRate key = new TaxRate();
-						key.setTaxRateId(urlPieces[0]);
-						System.out.println("Trying to do update");
-						taxRate = doUpdate(conn, key, taxRateRequest, sessionUser);
-						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
-						responseCode = ResponseCode.SUCCESS;
-						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+						if ( StringUtils.isNumeric(urlPieces[0]) ) {//looks like a taxRateId
+							System.out.println("Trying to do update");
+							key.setTaxRateId(Integer.valueOf(urlPieces[0]));
+							taxRate = doUpdate(conn, key, taxRateRequest, sessionUser);
+							String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
+							responseCode = ResponseCode.SUCCESS;
+							webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+						} else { //non-integer taxRateId, probably a bad thing
+							throw new RecordNotFoundException();
+						}
 					} catch ( RecordNotFoundException e ) {
 						System.out.println("Doing 404");
 						super.sendNotFound(response);						
@@ -224,11 +233,11 @@ public class TaxRateServlet extends AbstractServlet {
 			taxRate.setLocation(taxRateRequest.getLocation());
 		}
 		taxRate.setRate(taxRateRequest.getRate());
-		taxRate.setTaxRateId(taxRateRequest.getTaxRateId());
 		taxRate.setUpdatedBy(sessionUser.getUserId());
 		taxRate.setUpdatedDate(today);
 		try {
-			taxRate.insertWithNoKey(conn);
+			Integer taxRateId = taxRate.insertWithKey(conn);
+			taxRate.setTaxRateId(taxRateId);
 		} catch ( SQLException e) {
 			if ( e.getMessage().contains("duplicate key")) {
 				throw new DuplicateEntryException();
@@ -253,7 +262,7 @@ public class TaxRateServlet extends AbstractServlet {
 			taxRate.setLocation(taxRateRequest.getLocation());
 		}
 		taxRate.setRate(taxRateRequest.getRate());
-		taxRate.setTaxRateId(taxRateRequest.getTaxRateId());
+		//taxRate.setTaxRateId(taxRateRequest.getTaxRateId()); //key is passed in from the url
 		taxRate.setUpdatedBy(sessionUser.getUserId());
 		taxRate.setUpdatedDate(today);
 		// if we update something that isn't there, a RecordNotFoundException gets thrown
@@ -267,7 +276,13 @@ public class TaxRateServlet extends AbstractServlet {
 		return taxRatesListResponse;
 	}
 
-	private TaxRateListResponse makeFilteredListResponse(Connection conn, String[] urlPieces) throws Exception {
+	private TaxRateListResponse makeSingleListResponse(Connection conn, String[] urlPieces) throws Exception {
+		//TaxRateListResponse taxRatesListResponse = new TaxRateListResponse(conn);
+		//return taxRatesListResponse;
+		throw new ServletException("Not Yet Coded");
+	}
+
+/*	private TaxRateListResponse makeFilteredListResponse(Connection conn, String[] urlPieces) throws Exception {
 		String tableName = null;
 		String fieldName = null;
 		String value = null;
@@ -306,6 +321,7 @@ public class TaxRateServlet extends AbstractServlet {
 		taxRateListResponse.setTaxRateList(taxRateList);
 		return taxRateListResponse;
 	}
+*/
 
 	
 	protected WebMessages validateAdd(Connection conn, TaxRateRequest taxRateRequest) throws Exception {
