@@ -3,6 +3,7 @@ package com.ansi.scilla.web.servlets;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.TaxRate;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.web.common.AppUtils;
@@ -21,6 +23,7 @@ import com.ansi.scilla.web.common.MessageKey;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.common.WebMessages;
 import com.ansi.scilla.web.request.TaxRateRequest;
+import com.ansi.scilla.web.response.division.DivisionListResponse;
 import com.ansi.scilla.web.response.taxRate.TaxRateListResponse;
 import com.ansi.scilla.web.response.taxRate.TaxRateResponse;
 import com.ansi.scilla.web.struts.SessionUser;
@@ -277,9 +280,18 @@ public class TaxRateServlet extends AbstractServlet {
 	}
 
 	private TaxRateListResponse makeSingleListResponse(Connection conn, String[] urlPieces) throws Exception {
-		//TaxRateListResponse taxRatesListResponse = new TaxRateListResponse(conn);
-		//return taxRatesListResponse;
-		throw new ServletException("Not Yet Coded");
+		TaxRateListResponse taxRateListResponse = new TaxRateListResponse(conn);
+		
+		if (StringUtils.isNumeric(urlPieces[0])){
+			TaxRate taxRate = new TaxRate();
+			taxRate.setTaxRateId(Integer.valueOf(urlPieces[0]));
+			System.out.println("Getting TaxRate for taxRateId: " + urlPieces[0]);
+			taxRate.selectOne(conn);
+			taxRateListResponse.setTaxRateList(Arrays.asList(new TaxRate[] {taxRate} ));
+		} else {
+			throw new RecordNotFoundException();
+		}
+		return taxRateListResponse;
 	}
 
 /*	private TaxRateListResponse makeFilteredListResponse(Connection conn, String[] urlPieces) throws Exception {
