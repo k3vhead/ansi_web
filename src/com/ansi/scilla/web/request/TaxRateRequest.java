@@ -1,6 +1,7 @@
 package com.ansi.scilla.web.request;
 
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -18,10 +19,10 @@ public class TaxRateRequest extends AbstractRequest {
 
 	private static final long serialVersionUID = 1L;
 	
-	private Float amount;
+	private BigDecimal amount;
 	private Date effectiveDate;
 	private String location;
-	private Float rate;
+	private BigDecimal rate;
 	private Integer taxRateId;
 	
 	public TaxRateRequest() {
@@ -34,11 +35,11 @@ public class TaxRateRequest extends AbstractRequest {
 		BeanUtils.copyProperties(this, req);
 	}
 
-	public Float getAmount() {
+	public BigDecimal getAmount() {
 		return amount;
 	}
 
-	public void setAmount(Float amount) {
+	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
 	}
 
@@ -62,11 +63,11 @@ public class TaxRateRequest extends AbstractRequest {
 		this.location = location;
 	}
 
-	public Float getRate() {
+	public BigDecimal getRate() {
 		return rate;
 	}
 
-	public void setRate(Float rate) {
+	public void setRate(BigDecimal rate) {
 		this.rate = rate;
 	}
 

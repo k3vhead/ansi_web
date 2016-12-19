@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import com.ansi.scilla.common.db.Code;
 import com.ansi.scilla.common.db.TaxRate;
 import com.ansi.scilla.web.response.MessageResponse;
 
@@ -33,6 +34,16 @@ public class TaxRateListResponse extends MessageResponse implements Serializable
 	public TaxRateListResponse(Connection conn) throws Exception {
 		this.taxRateList = TaxRate.cast(new TaxRate().selectAll(conn));
 		Collections.sort(taxRateList);
+			/*					new Comparator<TaxRate>() {
+
+			public int compare(TaxRate o1, TaxRate o2) {
+
+				int ret = o1.getLocation().compareTo(o2.getLocation());
+				return ret;
+
+			}
+
+		});*/
 	}
 
 	public List<TaxRate> getTaxRateList() {
