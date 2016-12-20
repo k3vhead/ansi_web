@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -16,18 +14,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.db.Contact;
-import com.ansi.scilla.common.db.TaxRate;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.MessageKey;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.common.WebMessages;
 import com.ansi.scilla.web.request.ContactRequest;
-import com.ansi.scilla.web.request.TaxRateRequest;
 import com.ansi.scilla.web.response.contact.ContactListResponse;
 import com.ansi.scilla.web.response.contact.ContactResponse;
-import com.ansi.scilla.web.response.taxRate.TaxRateListResponse;
-import com.ansi.scilla.web.response.taxRate.TaxRateResponse;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -35,7 +29,8 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
  * The url for delete will be of the form /contact/<contactId>
  * 
  * The url for get will be one of:
- * 		/contact    (retrieves everything)
+ * 		/contact/list  			(retrieves everything)
+ * 		/contact/<contactId>	(retrieves a single record)
  * 
  * The url for adding a new record will be a POST to:
  * 		/contact/add   with parameters in the JSON
@@ -44,7 +39,7 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
  * 		/contact/<contactId> with parameters in the JSON
  * 
  * 
- * @author dclewis
+ * @author gagroce
  *
  */
 public class ContactServlet extends AbstractServlet {
@@ -59,9 +54,9 @@ public class ContactServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
 			
-			String jsonString = super.makeJsonString(request);
-			ContactRequest contactRequest = new ContactRequest(jsonString);
-			System.out.println(contactRequest);
+			String jsonString = super.makeJsonString(request); //get request, change to Json
+			ContactRequest contactRequest = new ContactRequest(jsonString); //put Json into contactReques
+			System.out.println(contactRequest);//print request
 			Contact contact = new Contact();
 			contact.setContactId(contactRequest.getContactId());
 			contact.delete(conn);
@@ -107,8 +102,9 @@ public class ContactServlet extends AbstractServlet {
 						ContactListResponse contactListResponse = makeContactListResponse(conn);
 						super.sendResponse(conn, response, ResponseCode.SUCCESS, contactListResponse);
 					} else {
-//						ContactListResponse contactListResponse = makeFilteredListResponse(conn, urlPieces);
-//						super.sendResponse(conn, response, ResponseCode.SUCCESS, contactListResponse);
+						// we're getting a single contact by contactId returned in a single entry list
+						ContactListResponse contactListResponse = makeSingleListResponse(conn, urlPieces);
+						super.sendResponse(conn, response, ResponseCode.SUCCESS, contactListResponse);
 					}
 				}
 			} catch ( Exception e) {
@@ -229,6 +225,7 @@ public class ContactServlet extends AbstractServlet {
 		if ( ! StringUtils.isBlank(contactRequest.getBusinessPhone())) {
 			contact.setBusinessPhone(contactRequest.getBusinessPhone());
 		}
+//		contact.setContactId(contactRequest.getContactId());//created on add
 		if ( ! StringUtils.isBlank(contactRequest.getFax())) {
 			contact.setFax(contactRequest.getFax());
 		}
@@ -270,7 +267,7 @@ public class ContactServlet extends AbstractServlet {
 		if ( ! StringUtils.isBlank(contactRequest.getBusinessPhone())) {
 			contact.setBusinessPhone(contactRequest.getBusinessPhone());
 		}
-		//contact.setContactId(contactRequest.getContactId());//contactId is passed in by the url
+//		contact.setContactId(contactRequest.getContactId());//key is in the url
 		if ( ! StringUtils.isBlank(contactRequest.getFax())) {
 			contact.setFax(contactRequest.getFax());
 		}
@@ -295,8 +292,8 @@ public class ContactServlet extends AbstractServlet {
 	}
 
 	private ContactListResponse makeContactListResponse(Connection conn) throws Exception {
-		ContactListResponse contactListResponse = new ContactListResponse(conn);
-		return contactListResponse;
+		ContactListResponse contactsListResponse = new ContactListResponse(conn);
+		return contactsListResponse;
 	}
 
 	private ContactListResponse makeSingleListResponse(Connection conn, String[] urlPieces) throws Exception {
