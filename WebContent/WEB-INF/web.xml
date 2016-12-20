@@ -74,7 +74,15 @@
         <servlet-name>code</servlet-name>
         <url-pattern>/code/*</url-pattern>
     </servlet-mapping>
-	
+    <servlet>
+    	<servlet-name>contact</servlet-name>
+    	<servlet-class>com.ansi.scilla.web.servlets.ContactServlets</servlet-class>
+    </servlet>
+    <servlet-mapping>
+    	<servlet-name>contact</servlet-name>
+    	<url-pattern>/contact/*</url-pattern>
+    </servlet-mapping>
+
     <servlet>
         <servlet-name>heartbeat</servlet-name>
         <servlet-class>com.ansi.scilla.web.servlets.Heartbeat</servlet-class>

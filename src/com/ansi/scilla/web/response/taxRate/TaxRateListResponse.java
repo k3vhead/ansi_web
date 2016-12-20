@@ -34,7 +34,7 @@ public class TaxRateListResponse extends MessageResponse implements Serializable
 	public TaxRateListResponse(Connection conn) throws Exception {
 		this.taxRateList = TaxRate.cast(new TaxRate().selectAll(conn));
 		Collections.sort(taxRateList);
-			/*					new Comparator<TaxRate>() {
+/*				new Comparator<TaxRate>() {
 
 			public int compare(TaxRate o1, TaxRate o2) {
 
