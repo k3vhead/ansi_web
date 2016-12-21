@@ -11,11 +11,14 @@ import com.ansi.scilla.web.servlets.DivisionServlet;
 public class TestDivisions {
 
 	private final String[] urlList = new String[] {
-			"/ansi_web/division/list",
-			"/ansi_web/division/list/",
+			//"/ansi_web/division/list",
+			//"/ansi_web/division/list/",
 			//"/ansi_web/division/list?id=123",
-			"/ansi_web/division/1",
-			"/ansi_web/division/1/",
+			//"/ansi_web/division/1",
+			//"/ansi_web/division/2",
+			//"/ansi-web/division/3",
+			//"/ansi-web/division/4",
+			//"/ansi_web/division/1/",
 			//"/ansi_web/division/1?",
 			//"/ansi_web/division/1?123",
 			//"/ansi_web/division/1/?123",
@@ -34,7 +37,8 @@ public class TestDivisions {
 	public static void main(String[] args) {
 		TesterUtils.makeLoggers();
 		try {
-			new TestDivisions().go2();
+//			new TestDivisions().go2();
+			new TestDivisions().delete();
 //			new TestCodes().testUri();
 //			new TestCodes().testUri2();
 		} catch (Exception e) {
@@ -61,6 +65,26 @@ public class TestDivisions {
 		} finally {
 			conn.close();
 		}
+	}
+	
+	public void delete() throws Exception {
+		DivisionServlet divisionServlet = new DivisionServlet();
+		Connection conn = null;
+		try{
+			conn=AppUtils.getConn();
+		
+		for(String url: urlList){
+			System.out.println(url);
+			int idx = url.indexOf("/division/");
+			String myString = url.substring(idx + "/division/".length());
+			
+			divisionServlet.doDeleteWork(conn, myString);
+			System.out.println("*******");
+		}
+		} finally {
+			conn.close();
+		}
+
 	}
 	
 	public void go() throws Exception {

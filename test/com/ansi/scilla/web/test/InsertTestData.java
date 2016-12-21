@@ -229,7 +229,7 @@ public class InsertTestData extends TesterUtils {
 			conn.setAutoCommit(false);
 
 			Division d = new Division();
-			d.setName("Test Div 6");
+			d.setName("Test Div 5");
 			d.setDefaultDirectLaborPct(new BigDecimal(0.03F));
 			
 			

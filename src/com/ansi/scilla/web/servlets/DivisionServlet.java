@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.common.db.DivisionUser;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ResponseCode;
 
@@ -48,28 +49,46 @@ public class DivisionServlet extends AbstractServlet {
 	@Override
 	protected void doDelete(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		Connection conn = null;
-		try {
-			conn = AppUtils.getDBCPConn();
-			conn.setAutoCommit(false);
+		
+		String url = request.getRequestURI();
+		int idx = url.indexOf("/division/");
+		if ( idx > -1 ) {
+			System.out.println("Url:" + url);
 			
-			String jsonString = super.makeJsonString(request); //get request, change to Json
-			DivisionRequest divisionRequest = new DivisionRequest(jsonString);//put Json into codeRequest
-			System.out.println(divisionRequest);//print request
-			Division division = new Division();
-			division.setDivisionId(divisionRequest.getDivisionId());
-			division.delete(conn);
+			// we're in the right place
+			Connection conn = null;
+			try {
+				conn = AppUtils.getDBCPConn();
+				conn.setAutoCommit(false);
+				
+				// Figure out what we've got:				
+				String myString = url.substring(idx + "/division/".length());
+				
+				String[] urlPieces = myString.split("/");
+				String command = urlPieces[0];
+				
+				if ( StringUtils.isBlank(command)) {
+					super.sendNotFound(response);
+				} else {
+					try {
+						doDeleteWork(conn, url);
+						DivisionResponse divisionResponse = new DivisionResponse();
+						super.sendResponse(conn, response, ResponseCode.SUCCESS, divisionResponse);
+					} catch(RecordNotFoundException recordNotFoundEx) {
+						super.sendNotFound(response);
+					}
+				}
+			} catch ( Exception e) {
+				AppUtils.logException(e);
+				throw new ServletException(e);
+			} finally {
+				AppUtils.closeQuiet(conn);
+			}
 			
-			DivisionResponse divisionResponse = new DivisionResponse();
-			super.sendResponse(conn, response, ResponseCode.SUCCESS, divisionResponse);
-			
-			conn.commit();
-		} catch ( Exception e) {
-			AppUtils.logException(e);
-			throw new ServletException(e);
-		} finally {
-			AppUtils.closeQuiet(conn);
+		} else {
+			super.sendNotFound(response);
 		}
+		
 	}
 
 	@Override
@@ -133,6 +152,37 @@ public class DivisionServlet extends AbstractServlet {
 		return divisionListResponse;
 		
 	}
+	
+	public void doDeleteWork(Connection conn, String url) throws RecordNotFoundException, Exception {
+		
+		String[] x = url.split("/");
+		
+		if (StringUtils.isNumeric(x[0])){
+			Division div = new Division();
+			div.setDivisionId(Integer.valueOf(x[0]));
+			
+			try {
+				DivisionUser divisionUser = new DivisionUser();
+				divisionUser.setDivisionId(Integer.valueOf(x[0]));
+				divisionUser.selectOne(conn);
+				System.out.println("Hello Delete: " + x[0]);
+				System.out.println("Cannot Delete, Users Inside");
+			} catch (RecordNotFoundException e) {
+				System.out.println("Hello Delete: " + x[0]);
+				try {
+					div.delete(conn);
+					System.out.println("Deleted!");
+				} catch(RecordNotFoundException er) {
+					System.out.println("Error! Division Not Found!");
+				}
+			}
+			
+			
+		} else {
+			throw new RecordNotFoundException();
+		}
+		
+	}
 
 	@Override
 	protected void doPost(HttpServletRequest request,
@@ -140,12 +190,12 @@ public class DivisionServlet extends AbstractServlet {
 		throw new ServletException("Not Yet Coded");
 	}
 
-	private DivisionListResponse makeDivisionListResponse(Connection conn) throws Exception {
+	/*private DivisionListResponse makeDivisionListResponse(Connection conn) throws Exception {
 		DivisionListResponse divisionListResponse = new DivisionListResponse(conn);
 		return divisionListResponse;
-	}
+	}*/
 
-	private DivisionListResponse makeFilteredListResponse(Connection conn, String[] urlPieces) throws Exception {
+	/*private DivisionListResponse makeFilteredListResponse(Connection conn, String[] urlPieces) throws Exception {
 		Integer divisionId = null;
 		
 		try {
@@ -166,7 +216,7 @@ public class DivisionServlet extends AbstractServlet {
 		DivisionListResponse divisionListResponse = new DivisionListResponse();
 		divisionListResponse.setDivisionList(divisionList);
 		return divisionListResponse;
-	}
+	}*/
 
 	
 }
