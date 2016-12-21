@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.request.AbstractRequest;
 import com.ansi.scilla.web.request.RequiredForAdd;
@@ -32,7 +33,6 @@ import com.ansi.scilla.web.request.RequiredForUpdate;
 import com.ansi.scilla.web.request.RequiredFormat;
 import com.ansi.scilla.web.response.AnsiResponse;
 import com.ansi.scilla.web.response.MessageResponse;
-import com.thewebthing.commons.lang.JsonUtils;
 
 
 public class AbstractServlet extends HttpServlet {
@@ -77,7 +77,7 @@ public class AbstractServlet extends HttpServlet {
 		
 		ServletOutputStream o = response.getOutputStream();
 		OutputStreamWriter writer = new OutputStreamWriter(o);
-		String jsonString = JsonUtils.object2JSON(ansiResponse);
+		String jsonString = AppUtils.object2json(ansiResponse);
 		writer.write(jsonString);
 		writer.flush();
 		writer.close();

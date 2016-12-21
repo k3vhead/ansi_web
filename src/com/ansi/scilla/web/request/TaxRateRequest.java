@@ -1,11 +1,16 @@
 package com.ansi.scilla.web.request;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Date;
 
 import org.apache.commons.beanutils.BeanUtils;
 
+import com.ansi.scilla.web.common.AppUtils;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.thewebthing.commons.lang.JsonException;
 import com.thewebthing.commons.lang.JsonUtils;
 
@@ -29,9 +34,9 @@ public class TaxRateRequest extends AbstractRequest {
 		super();
 	}
 	
-	public TaxRateRequest(String jsonString) throws JsonException, IllegalAccessException, InvocationTargetException {
+	public TaxRateRequest(String jsonString) throws IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException {
 		this();
-		TaxRateRequest req = (TaxRateRequest) JsonUtils.JSON2Object(jsonString, TaxRateRequest.class);
+		TaxRateRequest req = (TaxRateRequest) AppUtils.json2object(jsonString, TaxRateRequest.class);
 		BeanUtils.copyProperties(this, req);
 	}
 
@@ -49,6 +54,7 @@ public class TaxRateRequest extends AbstractRequest {
 		return effectiveDate;
 	}
 
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
 	public void setEffectiveDate(Date effectiveDate) {
 		this.effectiveDate = effectiveDate;
 	}
