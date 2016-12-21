@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -15,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.TaxRate;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.web.common.AppUtils;
@@ -23,7 +20,6 @@ import com.ansi.scilla.web.common.MessageKey;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.common.WebMessages;
 import com.ansi.scilla.web.request.TaxRateRequest;
-import com.ansi.scilla.web.response.division.DivisionListResponse;
 import com.ansi.scilla.web.response.taxRate.TaxRateListResponse;
 import com.ansi.scilla.web.response.taxRate.TaxRateResponse;
 import com.ansi.scilla.web.struts.SessionUser;
