@@ -1,11 +1,11 @@
 package com.ansi.scilla.web.request;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.beanutils.BeanUtils;
 
-import com.thewebthing.commons.lang.JsonException;
-import com.thewebthing.commons.lang.JsonUtils;
+import com.ansi.scilla.web.common.AppUtils;
 
 /**
  * Used to request data from the TaxRate table
@@ -29,9 +29,9 @@ public class ContactRequest extends AbstractRequest {
 		super();
 	}
 	
-	public ContactRequest(String jsonString) throws JsonException, IllegalAccessException, InvocationTargetException {
+	public ContactRequest(String jsonString) throws IOException, IllegalAccessException, InvocationTargetException {
 		this();
-		ContactRequest req = (ContactRequest) JsonUtils.JSON2Object(jsonString, ContactRequest.class);
+		ContactRequest req = (ContactRequest) AppUtils.json2object(jsonString, ContactRequest.class);
 		BeanUtils.copyProperties(this, req);
 	}
 

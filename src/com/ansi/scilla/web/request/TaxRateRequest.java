@@ -11,8 +11,6 @@ import com.ansi.scilla.web.common.AppUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.thewebthing.commons.lang.JsonException;
-import com.thewebthing.commons.lang.JsonUtils;
 
 /**
  * Used to request data from the TaxRate table

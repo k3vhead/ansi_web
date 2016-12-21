@@ -1,11 +1,14 @@
 package com.ansi.scilla.web.request;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.beanutils.BeanUtils;
 
+import com.ansi.scilla.web.common.AppUtils;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.thewebthing.commons.lang.JsonException;
-import com.thewebthing.commons.lang.JsonUtils;
 
 
 public class LoginRequest extends AbstractRequest {
@@ -22,9 +25,9 @@ public class LoginRequest extends AbstractRequest {
 		this.userid = userid;
 		this.password = password;
 	}
-	public LoginRequest(String jsonString) throws JsonException, IllegalAccessException, InvocationTargetException {
+	public LoginRequest(String jsonString) throws IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException {
 		this();
-		LoginRequest req = (LoginRequest) JsonUtils.JSON2Object(jsonString, LoginRequest.class);
+		LoginRequest req = (LoginRequest) AppUtils.json2object(jsonString, LoginRequest.class);
 		BeanUtils.copyProperties(this, req);
 	}
 	public String getUserid() {

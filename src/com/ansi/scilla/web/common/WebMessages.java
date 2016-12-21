@@ -7,9 +7,6 @@ import java.util.List;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import com.thewebthing.commons.lang.JsonException;
-import com.thewebthing.commons.lang.JsonUtils;
-
 /**
  * Used to pass error/informational messages from servlet to client
  * 
@@ -42,8 +39,8 @@ public class WebMessages extends HashMap<String, List<String>> {
 		return builder.toString();
 	}
 
-	 public String toJson() throws JsonException {
-         return JsonUtils.object2JSON(this);
+	 public String toJson() throws Exception {
+         return AppUtils.object2json(this);
 	 }
 
 }

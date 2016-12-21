@@ -1,11 +1,11 @@
 package com.ansi.scilla.web.request;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.beanutils.BeanUtils;
 
-import com.thewebthing.commons.lang.JsonException;
-import com.thewebthing.commons.lang.JsonUtils;
+import com.ansi.scilla.web.common.AppUtils;
 
 public class CodeRequest extends AbstractRequest {
 
@@ -24,9 +24,9 @@ public class CodeRequest extends AbstractRequest {
 		super();
 	}
 	
-	public CodeRequest(String jsonString) throws JsonException, IllegalAccessException, InvocationTargetException {
+	public CodeRequest(String jsonString) throws IOException, IllegalAccessException, InvocationTargetException {
 		this();
-		CodeRequest req = (CodeRequest) JsonUtils.JSON2Object(jsonString, CodeRequest.class);
+		CodeRequest req = (CodeRequest) AppUtils.json2object(jsonString, CodeRequest.class);
 		BeanUtils.copyProperties(this, req);
 	}
 

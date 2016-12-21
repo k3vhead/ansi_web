@@ -11,7 +11,7 @@ import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMessage;
 
-import com.thewebthing.commons.lang.JsonUtils;
+import com.ansi.scilla.web.common.AppUtils;
 import com.thewebthing.commons.lang.StringUtils;
 
 public abstract class AbstractActionForm extends ActionForm {
@@ -114,7 +114,7 @@ public abstract class AbstractActionForm extends ActionForm {
 
 	
 	public String toJson() throws Exception {
-		return JsonUtils.object2JSON(this);
+		return AppUtils.object2json(this);
 	}
 	
 	@Override

@@ -1,11 +1,13 @@
 package com.ansi.scilla.web.request;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.beanutils.BeanUtils;
 
-import com.thewebthing.commons.lang.JsonException;
-import com.thewebthing.commons.lang.JsonUtils;
+import com.ansi.scilla.web.common.AppUtils;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class DivisionRequest extends AbstractRequest {
 
@@ -20,9 +22,9 @@ public class DivisionRequest extends AbstractRequest {
 		super();
 	}
 	
-	public DivisionRequest(String jsonString) throws JsonException, IllegalAccessException, InvocationTargetException {
+	public DivisionRequest(String jsonString) throws IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException {
 		this();
-		DivisionRequest req = (DivisionRequest) JsonUtils.JSON2Object(jsonString, DivisionRequest.class);
+		DivisionRequest req = (DivisionRequest) AppUtils.json2object(jsonString, DivisionRequest.class);
 		BeanUtils.copyProperties(this, req);
 	}
 
