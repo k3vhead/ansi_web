@@ -2,7 +2,6 @@ package com.ansi.scilla.web.response.division;
 
 import java.io.Serializable;
 
-import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.web.response.MessageResponse;
 
 /**
@@ -15,25 +14,20 @@ public class DivisionResponse extends MessageResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private Division division;
+	private DivisionCountRecord division;
 
 	public DivisionResponse() {
 		super();
 	}
 
-	public DivisionResponse(Division division) {
+	public DivisionResponse(DivisionCountRecord division) {
 		super();
 		this.division = division;
 	}
 
-	public Division getDivision() {
+	public DivisionCountRecord getDivision() {
 		return division;
 	}
 
-	public void setCode(Division division) {
-		this.division = division;
-	}
-
-	
 	
 }

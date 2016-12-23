@@ -1,13 +1,18 @@
 package com.ansi.scilla.web.response.division;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.sql.Connection;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.common.queries.DivisionUserCount;
 import com.ansi.scilla.web.response.MessageResponse;
+import com.thewebthing.commons.lang.BeanUtils;
 
 /** 
  * Used to return a list of "code" objects to the client
@@ -19,7 +24,7 @@ public class DivisionListResponse extends MessageResponse implements Serializabl
 
 	private static final long serialVersionUID = 1L;
 
-	private List<Division> divisionList;
+	private List<DivisionCountRecord> divisionList;
 
 	public DivisionListResponse() {
 		super();
@@ -32,31 +37,27 @@ public class DivisionListResponse extends MessageResponse implements Serializabl
 	 * @throws Exception
 	 */
 	public DivisionListResponse(Connection conn) throws Exception {
-		this.divisionList = Division.cast(new Division().selectAll(conn));
-		Collections.sort(divisionList,
-
-				new Comparator<Division>() {
-
-			public int compare(Division o1, Division o2) {
-
-				int ret = o1.getName().compareTo(o2.getName());
-				if ( ret == 0 ) {
-					ret = o1.getName().compareTo(o2.getName());
-				}
-				
-				return ret;
-
-			}
-
-		});
+		List<DivisionUserCount> divisionCountList = DivisionUserCount.select(conn, new String[] {Division.NAME});
+		this.divisionList = new ArrayList<DivisionCountRecord>();
+		for ( DivisionUserCount record : divisionCountList ) {
+			this.divisionList.add(new DivisionCountRecord(record));
+		}
 	}
-	public List<Division> getDivisionList() {
+	
+	public DivisionListResponse(Connection conn, Integer divisionId) throws Exception {
+		DivisionUserCount divisionUserCount = DivisionUserCount.select(conn, divisionId);
+		DivisionCountRecord record = new DivisionCountRecord(divisionUserCount);
+		this.divisionList = Arrays.asList(new DivisionCountRecord[] { record });
+	}
+
+	public List<DivisionCountRecord> getDivisionList() {
 		return divisionList;
 	}
 
-	public void setDivisionList(List<Division> divisionList) {
+	public void setDivisionList(List<DivisionCountRecord> divisionList) {
 		this.divisionList = divisionList;
 	}
+	
 	
 	
 }

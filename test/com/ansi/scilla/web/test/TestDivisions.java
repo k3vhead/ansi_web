@@ -38,14 +38,26 @@ public class TestDivisions {
 		TesterUtils.makeLoggers();
 		try {
 //			new TestDivisions().go2();
-			new TestDivisions().delete();
+//			new TestDivisions().delete();
 //			new TestCodes().testUri();
 //			new TestCodes().testUri2();
+			new TestDivisions().testResponse();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
+	public void testResponse() throws Exception {
+		Connection conn = null;
+		try{
+			conn=AppUtils.getConn();
+			DivisionListResponse response = new DivisionListResponse(conn,1);
+			System.out.println(response.toJson());
+		} finally {
+			conn.close();
+		}
+		
+	}
 	public void go2() throws Exception {
 		DivisionServlet divisionServlet = new DivisionServlet();
 		Connection conn = null;

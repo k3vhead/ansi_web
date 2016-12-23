@@ -2,9 +2,6 @@ package com.ansi.scilla.web.servlets;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -16,8 +13,6 @@ import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.DivisionUser;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ResponseCode;
-
-import com.ansi.scilla.web.request.DivisionRequest;
 import com.ansi.scilla.web.response.division.DivisionListResponse;
 import com.ansi.scilla.web.response.division.DivisionResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
@@ -101,34 +96,29 @@ public class DivisionServlet extends AbstractServlet {
 			String queryString = request.getQueryString();
 			System.out.println("Query String: " + queryString);
 			
-			// we're in the right place
+			// Figure out what we've got:				
+			String myString = url.substring(idx + "/division/".length());
+			String[] urlPieces = myString.split("/");
+			String command = urlPieces[0];
+
 			Connection conn = null;
 			try {
-				conn = AppUtils.getDBCPConn();
-				
-				// Figure out what we've got:				
-				String myString = url.substring(idx + "/division/".length());
-				
-				String[] urlPieces = myString.split("/");
-				String command = urlPieces[0];
-				
 				if ( StringUtils.isBlank(command)) {
-					super.sendNotFound(response);
-				} else {
-						try{
-							DivisionListResponse divisionListResponse = doGetWork(conn, url, queryString);
-							super.sendResponse(conn, response, ResponseCode.SUCCESS, divisionListResponse);
-						} catch(RecordNotFoundException recordNotFoundEx) {
-							super.sendNotFound(response);
-						}
+					throw new RecordNotFoundException();
 				}
+				conn = AppUtils.getDBCPConn();
+
+				DivisionListResponse divisionListResponse = doGetWork(conn, url, queryString);
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, divisionListResponse);
+			} catch(RecordNotFoundException recordNotFoundEx) {
+				super.sendNotFound(response);
 			} catch ( Exception e) {
 				AppUtils.logException(e);
 				throw new ServletException(e);
 			} finally {
 				AppUtils.closeQuiet(conn);
 			}
-			
+
 		} else {
 			super.sendNotFound(response);
 		}
@@ -140,12 +130,9 @@ public class DivisionServlet extends AbstractServlet {
 		
 		if(x[0].equals("list")){
 			divisionListResponse = new DivisionListResponse(conn);
-		} else if (StringUtils.isNumeric(x[0])){
-			Division div = new Division();
-			div.setDivisionId(Integer.valueOf(x[0]));
-			System.out.println("Hello World: " + x[0]);
-			div.selectOne(conn);
-			divisionListResponse.setDivisionList(Arrays.asList(new Division[] {div} ));
+		} else if (StringUtils.isNumeric(x[0])) {
+			Integer divisionId = Integer.valueOf(x[0]);
+			divisionListResponse = new DivisionListResponse(conn, divisionId);
 		} else {
 			throw new RecordNotFoundException();
 		}
