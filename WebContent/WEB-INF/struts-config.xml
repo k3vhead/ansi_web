@@ -29,9 +29,45 @@
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
-            path="/DivisionAdmin"
+            path="/divisionAdmin"
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">
-            <forward name="valid" path="/DivisionAdmin.jsp" />
+            <forward name="valid" path="/divisionAdmin.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		<action
+            path="/permissiongroupAdmin"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/permissiongroupAdmin.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		<action
+            path="/userAdmin"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/userAdmin.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		<action
+            path="/applicationpropertyAdmin"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/applicationpropertyAdmin.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+				<action
+            path="/printHistory"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/printHistory.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+				<action
+            path="/usertitleMaintenance"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/usertitleMaintenance.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+				<action
+            path="/transactionhistoryView"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/transactionhistoryView.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action

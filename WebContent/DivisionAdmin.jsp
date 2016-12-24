@@ -16,7 +16,7 @@
 <tiles:insert page="layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        Division Admin
+        Division Maintenance
     </tiles:put>
     
     
@@ -27,7 +27,7 @@
 				background-color:#FFFFFF;
 				color:#000000;
 				width:300px;
-				text-align:Left;
+				text-align:center;
 				padding:15px;
 			}
 			#displayTable {
@@ -37,7 +37,7 @@
 				display:none;
 				background-color:#FFFFFF;
 				color:#000000;
-				width:300px;
+				width:400px;
 				padding:15px;
 			}
         </style>
@@ -46,24 +46,13 @@
         $(function() {        
 			var jqxhr = $.ajax({
 				type: 'GET',
-				url: 'code/list',
+				url: 'division/list',
 				data: {},
 				success: function($data) {
-					$.each($data.data.codeList, function(index, value) {
+					$.each($data.data.divisionList, function(index, value) {
 						addRow(index, value);
 					});
-					$('.updAction').bind("click", function($clickevent) {
-						doUpdate($clickevent);
-					});
-					$('.delAction').bind("click", function($clickevent) {
-						doDelete($clickevent);
-					});
-					$('.dataRow').bind("mouseover", function() {
-						$(this).css('background-color','#CCCCCC');
-					});
-					$('.dataRow').bind("mouseout", function() {
-						$(this).css('background-color','transparent');
-					});
+					doFunctionBinding();
 				},
 				statusCode: {
 					403: function($data) {
@@ -73,13 +62,34 @@
 				dataType: 'json'
 			});
 			
-			function addRow(index, $code) {	
+			function addRow(index, $division) {	
 				var $rownum = index + 1;
-				var row = '<tr class="dataRow">';
-				row = row + '<td>' + $code.tableName + '</td>';
-				row = row + '<td>' + $code.fieldName + '</td>';
-				row = row + '<td>' + $code.value + '</td>'; 
-				row = row + '<td>' + $code.value + '</td>';
+       			//$('#displayTable tr:last').before(row);
+       			rowTd = makeRow($division, $rownum);
+       			row = '<tr class="dataRow">' + rowTd + "</tr>";
+       			$('#displayTable').append(row);
+			}
+			
+			function doFunctionBinding() {
+				$('.updAction').bind("click", function($clickevent) {
+					doUpdate($clickevent);
+				});
+				$('.delAction').bind("click", function($clickevent) {
+					doDelete($clickevent);
+				});
+				$('.dataRow').bind("mouseover", function() {
+					$(this).css('background-color','#CCCCCC');
+				});
+				$('.dataRow').bind("mouseout", function() {
+					$(this).css('background-color','transparent');
+				});
+			}
+			
+			function makeRow($division, $rownum) {
+				var row = "";
+				row = row + '<td>' + $division.Name + '</td>';
+				row = row + '<td>' + $division.Name + '</td>';
+				row = row + '<td>' + $division.Name + '</td>';
        	    	<ansi:hasPermission permissionRequired="SYSADMIN">
         		<ansi:hasWrite>
        			row = row + '<td>';
@@ -87,16 +97,39 @@
        			row = row + '<a href="#" class="delAction" data-row="' + $rownum +'"><span class="red fa fa-trash" aria-hidden="true"></span></a>';
        			row = row + '</td>';
        			</ansi:hasWrite>
-       			</ansi:hasPermission>
-       			row = row + '</tr>';
-       			//$('#displayTable tr:last').before(row);	
-       			$('#displayTable').append(row);
+       			</ansi:hasPermission>       			
+				return row;
 			}
 			
 			function doUpdate($clickevent) {
 				$clickevent.preventDefault();
-				var rownum = $clickevent.currentTarget.attributes['data-row'].value;
-				console.debug("Doing update " + rownum);
+				clearAddForm();
+				var $rownum = $clickevent.currentTarget.attributes['data-row'].value;
+				console.debug("Doing update " + $rownum);
+				$("#addFormTitle").html("Update a Division");
+				$('#addForm').data('rownum',$rownum);
+				
+                var $rowId = eval($rownum) + 1;
+            	var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")"
+            	var $row = $($rowFinder)  
+            	var tdList = $row.children("td");
+            	var $tableName = $row.children("td")[0].textContent;
+            	var $fieldName = $row.children("td")[1].textContent;
+            	var $value = $row.children("td")[2].textContent;
+
+            	$("#addForm input[name='tableName']").val($tableName);
+            	$("#addForm input[name='fieldName']").val($fieldName);
+            	$("#addForm input[name='value']").val($value);
+            	
+				$.each( $('#addForm :input'), function(index, value) {
+					markValid(value);
+				});
+
+             	$('#addFormDiv').bPopup({
+					modalClose: false,
+					opacity: 0.6,
+					positionStyle: 'fixed' //'fixed' or 'absolute'
+				});				
 			}
 			
 			function doDelete($clickevent) {
@@ -112,6 +145,7 @@
 			
 			$("#addButton").click( function($clickevent) {
 				$clickevent.preventDefault();
+				$("#addFormTitle").html("Add a Division");
              	$('#addFormDiv').bPopup({
 					modalClose: false,
 					opacity: 0.6,
@@ -129,8 +163,81 @@
 			$("#goUpdate").click( function($clickevent) {
 				$clickevent.preventDefault();
 				console.debug("Doing update");
-				clearAddForm();
-				$('#addFormDiv').bPopup().close();
+				$outbound = {};
+				$.each( $('#addForm :input'), function(index, value) {
+					if ( value.name ) {
+						$fieldName = value.name;
+						$id = "#addForm input[name='" + $fieldName + "']";
+						$val = $($id).val();
+						$outbound[$fieldName] = $val;
+					}
+				});
+				$outbound['seq'] = $("#addForm select[name='seq'] option:selected").val();
+				$outbound['status'] = $("#addForm select[name='status'] option:selected").val();
+
+				if ( $('#addForm').data('rownum') == null ) {
+					$url = "division/add";
+				} else {
+					$rownum = $('#addForm').data('rownum')
+					var $tableData = [];
+	                $("#displayTable").find('tr').each(function (rowIndex, r) {
+	                    var cols = [];
+	                    $(this).find('th,td').each(function (colIndex, c) {
+	                        cols.push(c.textContent);
+	                    });
+	                    $tableData.push(cols);
+	                });
+
+	            	var $tableName = $tableData[$rownum][0];
+	            	var $fieldName = $tableData[$rownum][1];
+	            	var $value = $tableData[$rownum][2];
+	            	$url = "division/" + $Name + "/" + $Name + "/" + $Name;
+				}
+				
+				console.debug(JSON.stringify($outbound))
+				var jqxhr = $.ajax({
+					type: 'POST',
+					url: $url,
+					data: JSON.stringify($outbound),
+					success: function($data) {
+						console.debug($data);
+						if ( $data.responseHeader.responseDivision == 'SUCCESS') {
+							if ( $url == "division/add" ) {
+								var count = $('#displayTable tr').length - 1;
+								addRow(count, $data.data.division);
+							} else {
+				            	var $rownum = $('#addForm').data('rownum');
+				                var $rowId = eval($rownum) + 1;
+				            	var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")"
+				            	var $rowTd = makeRow($data.data.division, $rownum);
+				            	$($rowFinder).html($rowTd);
+							}
+							doFunctionBinding();
+							clearAddForm();
+							$('#addFormDiv').bPopup().close();
+							$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
+						} else if ( $data.responseHeader.responseDivision == 'EDIT_FAILURE') {
+							$.each($data.data.webMessages, function(key, messageList) {
+								var identifier = "#" + key + "Err";
+								msgHtml = "<ul>";
+								$.each(messageList, function(index, message) {
+									msgHtml = msgHtml + "<li>" + message + "</li>";
+								});
+								msgHtml = msgHtml + "</ul>";
+								$(identifier).html(msgHtml);
+							});		
+							$("#addFormMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]);
+						} else {
+							
+						}
+					},
+					statusCode: {
+						403: function($data) {
+							$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+						} 
+					},
+					dataType: 'json'
+				});
 			});
 
             $("#cancelDelete").click( function($event) {
@@ -154,14 +261,13 @@
             	var $fieldName = $tableData[$rownum][1];
             	var $value = $tableData[$rownum][2];
             	$outbound = JSON.stringify({'tableName':$tableName, 'fieldName':$fieldName,'value':$value});
-            	console.debug($outbound);
             	var jqxhr = $.ajax({
             	    type: 'delete',
-            	    url: 'code/delete',
+            	    url: 'division/delete',
             	    data: $outbound,
             	    success: function($data) {
             	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
-						if ( $data.responseHeader.responseCode == 'SUCCESS') {
+						if ( $data.responseHeader.responseDivision == 'SUCCESS') {
 							$rowfinder = "tr:eq(" + $rownum + ")"
 							$("#displayTable").find($rowfinder).remove();
 							$('#confirmDelete').bPopup().close();
@@ -198,6 +304,8 @@
 						markValid($inputField);
 					}
 				});
+				$('.err').html("");
+				$('#addForm').data('rownum',null);
             }
             
             function markValid($inputField) {
@@ -218,21 +326,25 @@
             		$($valid).addClass("inputIsInvalid");
             	}
             }
+            
         });
         </script>        
     </tiles:put>
     
     
     <tiles:put name="content" type="string">
-    	<h1>Division Admin</h1>
+    	<h1>Division Maintenance</h1>
     	
     	<table id="displayTable">
     		<tr>
-    		<th>User ID</th>
-			<th>User Name</th>
-    		<th>Title Name</th>
-    		<th>Division Name</th>
-    		<th>Action</th>
+    			<th>Division</th>
+    			<th>Name</th>
+    			<th>Default Direct Labor Pct</th>
+ 			    <ansi:hasPermission permissionRequired="SYSADMIN">
+    				<ansi:hasWrite>
+    					<th>Action</th>
+    				</ansi:hasWrite>
+    			</ansi:hasPermission>
     		</tr>
     	</table>
     	<div class="addButtonDiv">
@@ -242,45 +354,31 @@
     	<ansi:hasPermission permissionRequired="SYSADMIN">
     		<ansi:hasWrite>
 		    	<div id="confirmDelete">
-		    		Are You Sure You Want to Delete this Code?<br />
+		    		Are You Sure You Want to Delete this Division?<br />
 		    		<input type="button" id="cancelDelete" value="No" />
 		    		<input type="button" id="doDelete" value="Yes" />
 		    	</div>
 		    	
 		    	<div id="addFormDiv">
+		    		<h2 id="addFormTitle"></h2>
+		    		<div id="addFormMsg" class="err"></div>
 		    		<form action="#" method="post" id="addForm">
 		    			<table>
 		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">User ID:</span></td>
+		    					<td><span class="required">*</span><span class="formLabel">Name:</span></td>
 		    					<td>
 		    						<input type="text" name="tableName" data-required="true" data-valid="validTable" />
 		    						<i id="validTable" class="fa" aria-hidden="true"></i>
 		    					</td>
 		    					<td><span class="err" id="tableNameErr"></span></td>
 		    				</tr>
-							<tr>
-		    					<td><span class="required">*</span><span class="formLabel">User Name:</span></td>
+		    				<tr>
+		    					<td><span class="required">*</span><span class="formLabel">Default Direct Labor Pct:</span></td>
 		    					<td>
 		    						<input type="text" name="fieldName" data-required="true" data-valid="validField" />
 		    						<i id="validField" class="fa" aria-hidden="true"></i>
 		    					</td>
 		    					<td><span class="err" id="fieldNameErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Title Name:</span></td>
-		    					<td>
-		    						<input type="text" name="fieldName" data-required="true" data-valid="validField" />
-		    						<i id="validField" class="fa" aria-hidden="true"></i>
-		    					</td>
-		    					<td><span class="err" id="fieldNameErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Division Name:</span></td>
-		    					<td>
-		    						<input type="text" name="value" data-required="true" data-valid="validValue" />
-		    						<i id="validValue" class="fa" aria-hidden="true"></i>
-		    					</td>
-		    					<td><span class="err" id="valueErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td colspan="2" style="text-align:center;">
@@ -298,3 +396,4 @@
     </tiles:put>
 
 </tiles:insert>
+
