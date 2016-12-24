@@ -96,7 +96,8 @@ public class DivisionServlet extends AbstractServlet {
 			String queryString = request.getQueryString();
 			System.out.println("Query String: " + queryString);
 			
-			// Figure out what we've got:				
+			// Figure out what we've got:
+			// "myString" is the piece of the URL that we actually care about
 			String myString = url.substring(idx + "/division/".length());
 			String[] urlPieces = myString.split("/");
 			String command = urlPieces[0];
@@ -109,13 +110,9 @@ public class DivisionServlet extends AbstractServlet {
 				}
 				conn = AppUtils.getDBCPConn();
 
-				System.out.println("DivsionServ 112");
 				DivisionListResponse divisionListResponse = doGetWork(conn, myString, queryString);
-				System.out.println("DivsionServ 114");
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, divisionListResponse);
-				System.out.println("DivsionServ 116");
 			} catch(RecordNotFoundException recordNotFoundEx) {
-				System.out.println("DivsionServ 118");
 				super.sendNotFound(response);
 			} catch ( Exception e) {
 				AppUtils.logException(e);
@@ -125,7 +122,6 @@ public class DivisionServlet extends AbstractServlet {
 			}
 
 		} else {
-			System.out.println("DivsionServ 127");
 			super.sendNotFound(response);
 		}
 	}
@@ -133,19 +129,12 @@ public class DivisionServlet extends AbstractServlet {
 	public DivisionListResponse doGetWork(Connection conn, String url, String qs) throws RecordNotFoundException, Exception {
 		DivisionListResponse divisionListResponse = new DivisionListResponse();
 		String[] x = url.split("/");
-		System.out.println("DivsionServ 136: ");
-		for ( String z : x ) {
-			System.out.println("\t" + z);
-		}
 		if(x[0].equals("list")){
-			System.out.println("DivsionServ 138");
 			divisionListResponse = new DivisionListResponse(conn);
 		} else if (StringUtils.isNumeric(x[0])) {
-			System.out.println("DivsionServ 141");
 			Integer divisionId = Integer.valueOf(x[0]);
 			divisionListResponse = new DivisionListResponse(conn, divisionId);
 		} else {
-			System.out.println("DivsionServ 145");
 			throw new RecordNotFoundException();
 		}
 		return divisionListResponse;
