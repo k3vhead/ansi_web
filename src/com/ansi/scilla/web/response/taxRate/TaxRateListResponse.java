@@ -2,13 +2,13 @@ package com.ansi.scilla.web.response.taxRate;
 
 import java.io.Serializable;
 import java.sql.Connection;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import com.ansi.scilla.common.db.Code;
 import com.ansi.scilla.common.db.TaxRate;
 import com.ansi.scilla.web.response.MessageResponse;
+import com.thewebthing.commons.db2.RecordNotFoundException;
 
 /** 
  * Used to return a list of "taxRate" objects to the client
@@ -20,7 +20,7 @@ public class TaxRateListResponse extends MessageResponse implements Serializable
 
 	private static final long serialVersionUID = 1L;
 
-	private List<TaxRate> taxRateList;
+	private List<TaxRateResponseRecord> taxRateList;
 
 	public TaxRateListResponse() {
 		super();
@@ -32,25 +32,26 @@ public class TaxRateListResponse extends MessageResponse implements Serializable
 	 * @throws Exception
 	 */
 	public TaxRateListResponse(Connection conn) throws Exception {
-		this.taxRateList = TaxRate.cast(new TaxRate().selectAll(conn));
-		Collections.sort(taxRateList);
-/*				new Comparator<TaxRate>() {
-
-			public int compare(TaxRate o1, TaxRate o2) {
-
-				int ret = o1.getLocation().compareTo(o2.getLocation());
-				return ret;
-
+		this.taxRateList = new ArrayList<TaxRateResponseRecord>();
+		List<TaxRate> dbTaxRateList = TaxRate.cast(new TaxRate().selectAll(conn));
+		for ( TaxRate record : dbTaxRateList ) {
+			this.taxRateList.add(new TaxRateResponseRecord(record));
 			}
-
-		});*/
 	}
 
-	public List<TaxRate> getTaxRateList() {
+	public TaxRateListResponse(Connection conn, Integer taxRateId) throws RecordNotFoundException, Exception {
+		this.taxRateList = new ArrayList<TaxRateResponseRecord>();
+		TaxRate taxRate = new TaxRate();
+		taxRate.setTaxRateId(taxRateId);	
+		taxRate.selectOne(conn);
+		this.taxRateList = Arrays.asList(new TaxRateResponseRecord[] { new TaxRateResponseRecord(taxRate) });
+	}
+
+	public List<TaxRateResponseRecord> getTaxRateList() {
 		return taxRateList;
 	}
 
-	public void setTaxRateList(List<TaxRate> taxRateList) {
+	public void setTaxRateList(List<TaxRateResponseRecord> taxRateList) {
 		this.taxRateList = taxRateList;
 	}
 	

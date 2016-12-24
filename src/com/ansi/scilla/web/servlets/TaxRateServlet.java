@@ -3,7 +3,6 @@ package com.ansi.scilla.web.servlets;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -99,7 +98,8 @@ public class TaxRateServlet extends AbstractServlet {
 				String command = urlPieces[0];
 				
 				if ( StringUtils.isBlank(command)) {
-					super.sendNotFound(response);
+//					super.sendNotFound(response);
+					throw new RecordNotFoundException();
 				} else {
 					if ( command.equals("list")) {
 						// we're getting all the taxRates in the database
@@ -111,6 +111,9 @@ public class TaxRateServlet extends AbstractServlet {
 						super.sendResponse(conn, response, ResponseCode.SUCCESS, taxRateListResponse);
 					}
 				}
+			} catch ( RecordNotFoundException e ) {
+				System.out.println("TaxRateServlet: doGet() RecordNotFoundException 404");
+				super.sendNotFound(response);						
 			} catch ( Exception e) {
 				AppUtils.logException(e);
 				throw new ServletException(e);
@@ -276,18 +279,21 @@ public class TaxRateServlet extends AbstractServlet {
 	}
 
 	private TaxRateListResponse makeSingleListResponse(Connection conn, String[] urlPieces) throws Exception {
-		TaxRateListResponse taxRateListResponse = new TaxRateListResponse(conn);
-		
+		//		TaxRateListResponse taxRateListResponse = new TaxRateListResponse(conn);
+
 		if (StringUtils.isNumeric(urlPieces[0])){
-			TaxRate taxRate = new TaxRate();
+			/*			TaxRate taxRate = new TaxRate();
 			taxRate.setTaxRateId(Integer.valueOf(urlPieces[0]));
 			System.out.println("Getting TaxRate for taxRateId: " + urlPieces[0]);
 			taxRate.selectOne(conn);
 			taxRateListResponse.setTaxRateList(Arrays.asList(new TaxRate[] {taxRate} ));
+			 */
+			Integer taxRateId = Integer.valueOf(urlPieces[0]);
+			TaxRateListResponse taxRateListResponse = new TaxRateListResponse(conn, taxRateId);
+			return taxRateListResponse;
 		} else {
 			throw new RecordNotFoundException();
 		}
-		return taxRateListResponse;
 	}
 
 /*	private TaxRateListResponse makeFilteredListResponse(Connection conn, String[] urlPieces) throws Exception {
