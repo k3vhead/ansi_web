@@ -74,6 +74,17 @@
         <servlet-name>code</servlet-name>
         <url-pattern>/code/*</url-pattern>
     </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>division</servlet-name>
+        <servlet-class>com.ansi.scilla.web.servlets.DivisionServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>division</servlet-name>
+        <url-pattern>/division/*</url-pattern>
+    </servlet-mapping>
+    
+    
     <servlet>
     	<servlet-name>contact</servlet-name>
     	<servlet-class>com.ansi.scilla.web.servlets.ContactServlet</servlet-class>

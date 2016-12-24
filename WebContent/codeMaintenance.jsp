@@ -226,7 +226,9 @@
 							doFunctionBinding();
 							clearAddForm();
 							$('#addFormDiv').bPopup().close();
-							$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
+							if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
+								$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
+							}
 						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
 							$.each($data.data.webMessages, function(key, messageList) {
 								var identifier = "#" + key + "Err";
@@ -237,7 +239,9 @@
 								msgHtml = msgHtml + "</ul>";
 								$(identifier).html(msgHtml);
 							});		
-							$("#addFormMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]);
+							if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
+								$("#addFormMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]);
+							}
 						} else {
 							
 						}
