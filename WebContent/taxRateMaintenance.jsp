@@ -19,6 +19,7 @@
         Tax Rate Maintenance
     </tiles:put>    
     <tiles:put name="headextra" type="string">
+    	<link rel="stylesheet" href="css/datepicker.css" type="text/css" />
         <style type="text/css">
 			#confirmDelete {
 				display:none;
@@ -100,6 +101,14 @@
 				dataType: 'json'
 			});
 
+			
+			$('.dateField').datepicker({
+                prevText:'&lt;&lt;',
+                nextText: '&gt;&gt;',
+                showButtonPanel:true
+            });
+			
+			
 			function formatDate(dateValue)
 			{
 				var _d = new Date(dateValue);
@@ -494,7 +503,7 @@
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel">effective Date:</span></td>
 		    					<td>
-		    						<input type="text" name="effectiveDate" data-required="true" data-valid="validEffectiveDate" />
+		    						<input type="text" class="dateField" name="effectiveDate" data-required="true" data-valid="validEffectiveDate" />
 		    						<i id="validValue" class="fa" aria-hidden="true"></i>
 		    					</td>
 		    					<td><span class="err" id="valueErr"></span></td>
