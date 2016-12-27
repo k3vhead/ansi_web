@@ -2,8 +2,8 @@ package com.ansi.scilla.web.response.code;
 
 import java.io.Serializable;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import com.ansi.scilla.common.db.Code;
@@ -19,7 +19,7 @@ public class CodeListResponse extends MessageResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private List<Code> codeList;
+	private List<CodeResponseRecord> codeList;
 
 	public CodeListResponse() {
 		super();
@@ -32,34 +32,32 @@ public class CodeListResponse extends MessageResponse implements Serializable {
 	 * @throws Exception
 	 */
 	public CodeListResponse(Connection conn) throws Exception {
-		this.codeList = Code.cast(new Code().selectAll(conn));
-		Collections.sort(codeList,
-
-				new Comparator<Code>() {
-
-			public int compare(Code o1, Code o2) {
-
-				int ret = o1.getTableName().compareTo(o2.getTableName());
-				if ( ret == 0 ) {
-					ret = o1.getFieldName().compareTo(o2.getFieldName());
-				}
-				if ( ret == 0 ) {
-					ret = o1.getSeq().compareTo(o2.getSeq());
-				}
-				if ( ret == 0 ) {
-					ret = o1.getDisplayValue().compareTo(o2.getDisplayValue());
-				}
-				return ret;
-
-			}
-
-		});
+		List<Code> codeList = Code.cast(new Code().selectAll(conn));
+		this.codeList = new ArrayList<CodeResponseRecord>();
+		for ( Code code : codeList ) {
+			this.codeList.add(new CodeResponseRecord(code));
+		}
+		Collections.sort(this.codeList);
 	}
-	public List<Code> getCodeList() {
+
+	public CodeListResponse(Connection conn, String tableName, String fieldName, String value) throws Exception {
+		Code key = new Code();
+		key.setTableName(tableName);
+		key.setFieldName(fieldName);
+		key.setValue(value);
+		List<Code> codeList = Code.cast(key.selectSome(conn));
+		this.codeList = new ArrayList<CodeResponseRecord>();
+		for ( Code code : codeList ) {
+			this.codeList.add(new CodeResponseRecord(code));
+		}
+		Collections.sort(this.codeList);
+	}
+
+	public List<CodeResponseRecord> getCodeList() {
 		return codeList;
 	}
 
-	public void setCodeList(List<Code> codeList) {
+	public void setCodeList(List<CodeResponseRecord> codeList) {
 		this.codeList = codeList;
 	}
 	

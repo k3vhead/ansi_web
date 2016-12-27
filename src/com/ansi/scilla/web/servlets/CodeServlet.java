@@ -3,8 +3,6 @@ package com.ansi.scilla.web.servlets;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -14,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Code;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.web.common.AppUtils;
@@ -77,50 +76,65 @@ public class CodeServlet extends AbstractServlet {
 			AppUtils.closeQuiet(conn);
 		}
 	}
+	
+	protected void doNewDelete(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		System.out.println("CodeServlet 54");
+		String url = request.getRequestURI();
+		
+		Connection conn = null;
+		try {
+			ParsedUrl parsedUrl = new ParsedUrl(url);
+			System.out.println("CodeServlet 60");
+			conn = AppUtils.getDBCPConn();
+			conn.setAutoCommit(false);
+			
+			Code code = new Code();
+			code.setTableName(parsedUrl.tableName);
+			code.setFieldName(parsedUrl.fieldName);
+			code.setValue(parsedUrl.value);
+			code.delete(conn);
+			System.out.println("CodeServlet 69");
+			CodeResponse codeResponse = new CodeResponse();
+			super.sendResponse(conn, response, ResponseCode.SUCCESS, codeResponse);
+			System.out.println("CodeServlet 72");
+			conn.commit();
+		} catch ( Exception e) {
+			System.out.println("CodeServlet 75");
+			AppUtils.logException(e);
+			throw new ServletException(e);
+		} finally {
+			System.out.println("CodeServlet 79");
+			AppUtils.closeQuiet(conn);
+		}
+	}
 
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String url = request.getRequestURI();
-		int idx = url.indexOf("/code/");
-		if ( idx > -1 ) {
-			System.out.println("Url:" + url);
-			String queryString = request.getQueryString();
-			System.out.println("Query String: " + queryString);
+		Connection conn = null;
+		try {			
+			ParsedUrl parsedUrl = new ParsedUrl(url);
+			conn = AppUtils.getDBCPConn();
 			
-			// we're in the right place
-			Connection conn = null;
-			try {
-				conn = AppUtils.getDBCPConn();
-				
-				// Figure out what we've got:				
-				String myString = url.substring(idx + "/code/".length());
-				
-				String[] urlPieces = myString.split("/");
-				String command = urlPieces[0];
-				
-				if ( StringUtils.isBlank(command)) {
-					super.sendNotFound(response);
-				} else {
-					if ( command.equals("list")) {
-						// we're getting all the codes in the database
-						CodeListResponse codesListResponse = makeCodesListResponse(conn);
-						super.sendResponse(conn, response, ResponseCode.SUCCESS, codesListResponse);
-					} else {
-						CodeListResponse codesListResponse = makeFilteredListResponse(conn, urlPieces);
-						super.sendResponse(conn, response, ResponseCode.SUCCESS, codesListResponse);
-					}
-				}
-			} catch ( Exception e) {
-				AppUtils.logException(e);
-				throw new ServletException(e);
-			} finally {
-				AppUtils.closeQuiet(conn);
+			if ( parsedUrl.tableName.equals("list")) {
+				// we're getting all the codes in the database
+				CodeListResponse codesListResponse = makeCodesListResponse(conn);
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, codesListResponse);
+			} else {
+				CodeListResponse codesListResponse = makeFilteredListResponse(conn, parsedUrl);
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, codesListResponse);
 			}
-			
-		} else {
+		} catch ( RecordNotFoundException e) {
 			super.sendNotFound(response);
+		} catch ( Exception e) {
+			AppUtils.logException(e);
+			throw new ServletException(e);
+		} finally {
+			AppUtils.closeQuiet(conn);
 		}
+			
 	}
 
 
@@ -281,43 +295,8 @@ public class CodeServlet extends AbstractServlet {
 		return codesListResponse;
 	}
 
-	private CodeListResponse makeFilteredListResponse(Connection conn, String[] urlPieces) throws Exception {
-		String tableName = null;
-		String fieldName = null;
-		String value = null;
-		try {
-			tableName = urlPieces[0];
-			fieldName = urlPieces[1];
-			value = urlPieces[2];
-		} catch (ArrayIndexOutOfBoundsException e) {
-			// this is OK, just means we ran out of filters
-		}
-		Code code = new Code();
-		if ( ! StringUtils.isBlank(tableName)) {
-			code.setTableName(tableName);
-		}
-		if ( ! StringUtils.isBlank(fieldName)) {
-			code.setFieldName(fieldName);
-		}
-		if ( ! StringUtils.isBlank(value)) {
-			code.setValue(value);
-		}
-		List<Code> codeList = Code.cast(code.selectSome(conn));
-		Collections.sort(codeList,
-				new Comparator<Code>() {
-			public int compare(Code o1, Code o2) {
-				int ret = o1.getTableName().compareTo(o2.getTableName());
-				if ( ret == 0 ) {
-					ret = o1.getFieldName().compareTo(o2.getFieldName());
-				}
-				if ( ret == 0 ) {
-					ret = o1.getValue().compareTo(o2.getValue());
-				}
-				return ret;
-			}
-		});
-		CodeListResponse codeListResponse = new CodeListResponse();
-		codeListResponse.setCodeList(codeList);
+	private CodeListResponse makeFilteredListResponse(Connection conn, ParsedUrl parsedUrl) throws Exception {
+		CodeListResponse codeListResponse = new CodeListResponse(conn, parsedUrl.tableName, parsedUrl.fieldName, parsedUrl.value);
 		return codeListResponse;
 	}
 
@@ -351,4 +330,27 @@ public class CodeServlet extends AbstractServlet {
 	}
 
 	
+	public class ParsedUrl extends ApplicationObject {
+		private static final long serialVersionUID = 1L;
+		public String tableName;
+		public String fieldName;
+		public String value;
+		public ParsedUrl(String url) throws RecordNotFoundException {
+			int idx = url.indexOf("/code/");	
+			if ( idx < 0 ) {
+				throw new RecordNotFoundException();
+			}
+			String myString = url.substring(idx + "/code/".length());			
+			String[] urlPieces = myString.split("/");
+			if ( urlPieces.length >= 1 ) {
+				this.tableName = urlPieces[0];
+			}
+			if ( urlPieces.length >= 2 ) {
+				this.fieldName = urlPieces[1];
+			}
+			if ( urlPieces.length >= 3 ) {
+				this.value = urlPieces[2];
+			}
+		}
+	}
 }

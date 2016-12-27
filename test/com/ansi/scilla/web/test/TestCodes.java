@@ -20,14 +20,21 @@ public class TestCodes {
 	public static void main(String[] args) {
 		TesterUtils.makeLoggers();
 		try {
-			new TestCodes().go();
+//			new TestCodes().go();
 //			new TestCodes().testUri();
 //			new TestCodes().testUri2();
+			new TestCodes().testDelete();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
+	private void testDelete() throws Exception {
+		String response = TesterUtils.doDelete("http://127.0.0.1:8080/ansi_web/code/address/county/ac1", "{}");
+		System.out.println(response);
+		
+	}
+
 	public void go() throws Exception {
 		for ( String url : urlList ) {
 			

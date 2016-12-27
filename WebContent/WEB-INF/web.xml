@@ -113,18 +113,27 @@
     </servlet-mapping>
 
     <servlet>
+		<servlet-name>tableFieldList</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.TableFieldListServlet</servlet-class>
+	</servlet><servlet-mapping>
+    	<servlet-name>tableFieldList</servlet-name>
+    	<url-pattern>/tableFieldList/*</url-pattern>
+	</servlet-mapping>
+
+    <servlet>
 		<servlet-name>taxRate</servlet-name>
 		<servlet-class>com.ansi.scilla.web.servlets.TaxRateServlet</servlet-class>
 	</servlet><servlet-mapping>
     	<servlet-name>taxRate</servlet-name>
     	<url-pattern>/taxRate/*</url-pattern>
-</servlet-mapping><!--
+	</servlet-mapping>
+	
+	<!--
         Define the default session timeout for the application,
         in minutes.  This value can be modified in a servlet or JSP by
         using the HttpSession.getMaxInactiveInterval or
         HttpSession.setMaxInactiveInterval(int timeout)
     -->
-
     <session-config>
       <session-timeout>30</session-timeout>    <!-- 30 minutes -->
     </session-config>

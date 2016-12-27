@@ -40,9 +40,13 @@
 				width:400px;
 				padding:15px;
 			}
+			#delData {
+				margin-top:15px;
+				margin-bottom:15px;
+			}
         </style>
         
-        <script type="text/javascript">
+        <script type="text/javascript">        
         $(function() {        
 			var jqxhr = $.ajax({
 				type: 'GET',
@@ -61,6 +65,8 @@
 				},
 				dataType: 'json'
 			});
+			
+			getTableFieldList(null, $("#addForm select[name='tableName']"));
 			
 			function addRow(index, $code) {	
 				var $rownum = index + 1;
@@ -128,8 +134,13 @@
             	var $description = $row.children("td")[5].textContent;
             	var $status = $row.children("td")[6].textContent;
 
-            	$("#addForm input[name='tableName']").val($tableName);
-            	$("#addForm input[name='fieldName']").val($fieldName);
+            	select = $("#addForm select[name='tableName']");
+            	select.val($tableName);
+            	
+            	select = $("#addForm select[name='fieldName']");
+            	getTableFieldList($tableName, select, $fieldName);
+            	//$("#addForm input[name='tableName']").val($tableName);
+            	//$("#addForm input[name='fieldName']").val($fieldName);
             	$("#addForm input[name='value']").val($value);
             	$("#addForm input[name='displayValue']").val($display);
             	$("#addForm select[name='seq']").val($seq);
@@ -149,8 +160,20 @@
 			
 			function doDelete($clickevent) {
 				$clickevent.preventDefault();
-				var rownum = $clickevent.currentTarget.attributes['data-row'].value;
-				$('#confirmDelete').data('rownum',rownum);
+				var $rownum = $clickevent.currentTarget.attributes['data-row'].value;
+            	var $tableData = [];
+                $("#displayTable").find('tr').each(function (rowIndex, r) {
+                    var cols = [];
+                    $(this).find('th,td').each(function (colIndex, c) {
+                        cols.push(c.textContent);
+                    });
+                    $tableData.push(cols);
+                });
+            	$("#delTable").html($tableData[$rownum][0]);
+            	$("#delField").html($tableData[$rownum][1]);
+            	$("#delValue").html($tableData[$rownum][2]);
+
+				$('#confirmDelete').data('rownum',$rownum);
              	$('#confirmDelete').bPopup({
 					modalClose: false,
 					opacity: 0.6,
@@ -185,6 +208,8 @@
 						$outbound[$fieldName] = $val;
 					}
 				});
+				$outbound['tableName'] = $("#addForm select[name='tableName'] option:selected").val();
+				$outbound['fieldName'] = $("#addForm select[name='fieldName'] option:selected").val();
 				$outbound['seq'] = $("#addForm select[name='seq'] option:selected").val();
 				$outbound['status'] = $("#addForm select[name='status'] option:selected").val();
 
@@ -275,10 +300,12 @@
             	var $tableName = $tableData[$rownum][0];
             	var $fieldName = $tableData[$rownum][1];
             	var $value = $tableData[$rownum][2];
+            	$outbound = JSON.stringify({});
+            	$url = '/code/' + $tableName + "/" + $fieldName + "/" + $value;
             	$outbound = JSON.stringify({'tableName':$tableName, 'fieldName':$fieldName,'value':$value});
             	var jqxhr = $.ajax({
             	    type: 'delete',
-            	    url: 'code/delete',
+            	    url: "/code/delete",
             	    data: $outbound,
             	    success: function($data) {
             	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
@@ -311,6 +338,11 @@
             	}
             });
             
+            $("#addForm select[name='tableName']").change(function () {
+				var $selectedTable = $('#addForm select[name="tableName"] option:selected').val();
+				getTableFieldList($selectedTable, $("#addForm select[name='fieldName']"));
+            });
+            
             function clearAddForm() {
 				$.each( $('#addForm').find("input"), function(index, $inputField) {
 					$fieldName = $($inputField).attr('name');
@@ -340,6 +372,49 @@
             		$($valid).addClass("fa-ban");
             		$($valid).addClass("inputIsInvalid");
             	}
+            }
+            
+            function getTableFieldList(tableName, $select, $selectedValue) {
+            	if ( tableName == null ) {
+            		$url = "tableFieldList"
+           			//select = $("#addForm select[name='tableName']");
+            	} else {
+            		$url = "tableFieldList/" + tableName;
+            		//select = $("#addForm select[name='fieldName']");
+            	}            	
+				var jqxhr = $.ajax({
+						type: 'GET',
+						url: $url,
+						data: {},
+
+						success: function($data) {
+						console.debug($data);
+						if ( $data.responseHeader.responseCode == 'SUCCESS') {
+							if($select.prop) {
+								var options = $select.prop('options');
+							} else {
+								var options = $select.attr('options');
+							}
+							$('option', $select).remove();
+
+							options[options.length] = new Option("","");
+							$.each($data.data.nameList, function(index, value) {
+								options[options.length] = new Option(value, value);
+							});
+			            	
+			            	$select.val($selectedValue);
+						} else {
+							$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
+						}
+    				},
+    				statusCode: {
+    					403: function($data) {
+    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+    					} 
+    				},
+    				dataType: 'json'
+    			});
+
             }
             
         });
@@ -377,7 +452,21 @@
     	<ansi:hasPermission permissionRequired="SYSADMIN">
     		<ansi:hasWrite>
 		    	<div id="confirmDelete">
-		    		Are You Sure You Want to Delete this Code?<br />
+		    		<span class="formLabel">Are You Sure You Want to Delete this Code?</span><br />
+		    		<table id="delData">
+		    			<tr>
+		    				<td><span class="formLabel">Table:</span></td>
+		    				<td id="delTable"></td>
+		    			</tr>
+		    			<tr>
+		    				<td><span class="formLabel">Field:</span></td>
+		    				<td id="delField"></td>
+		    			</tr>
+		    			<tr>
+		    				<td><span class="formLabel">Value:</span></td>
+		    				<td id="delValue"></td>
+		    			</tr>
+		    		</table>
 		    		<input type="button" id="cancelDelete" value="No" />
 		    		<input type="button" id="doDelete" value="Yes" />
 		    	</div>
@@ -390,7 +479,12 @@
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Table:</span></td>
 		    					<td>
-		    						<input type="text" name="tableName" data-required="true" data-valid="validTable" />
+		    						<%--
+		    						<input type="text" name="tableName" data-required="true" data-valid="validTable" />		    						
+		    						 --%>
+		    						 <select name="tableName" data-required="true" data-valid="validTable">
+		    						 	<option value=""></option>
+		    						 </select>
 		    						<i id="validTable" class="fa" aria-hidden="true"></i>
 		    					</td>
 		    					<td><span class="err" id="tableNameErr"></span></td>
@@ -398,7 +492,9 @@
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Field:</span></td>
 		    					<td>
-		    						<input type="text" name="fieldName" data-required="true" data-valid="validField" />
+		    						<select name="fieldName" data-required="true" data-valid="validField">
+		    							<option value=""></option>
+		    						</select>
 		    						<i id="validField" class="fa" aria-hidden="true"></i>
 		    					</td>
 		    					<td><span class="err" id="fieldNameErr"></span></td>
