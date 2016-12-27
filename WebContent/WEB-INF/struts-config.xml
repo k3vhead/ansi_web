@@ -4,10 +4,10 @@
  "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
  -->
 <struts-config>
+	<!--
     <form-beans>    
     	<form-bean name="addFamilyForm"          type="com.ansi.scilla.web.actionForm.AddFamilyForm" />
     </form-beans>
-	<!--
 
     <global-exceptions>
         <exception
@@ -23,9 +23,21 @@
 
     <action-mappings>
 		<action
+            path="/applicationpropertyAdmin"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/applicationpropertyAdmin.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		<action
             path="/codeMaintenance"
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">
             <forward name="valid" path="/codeMaintenance.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		<action
+            path="/dashboard"
+            type="com.ansi.scilla.web.action.DashboardAction">
+            <forward name="valid" path="/dashboard.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
@@ -34,10 +46,27 @@
             <forward name="valid" path="/divisionAdmin.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
+     	<action
+            path="/logoff"
+            type="com.ansi.scilla.web.action.LogoffAction">
+            <forward name="valid" path="/login.jsp" />
+        </action>
 		<action
             path="/permissiongroupAdmin"
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">
             <forward name="valid" path="/permissiongroupAdmin.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		<action
+            path="/printHistory"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/printHistory.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		<action
+            path="/transactionhistoryView"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/transactionhistoryView.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
@@ -47,55 +76,12 @@
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
-            path="/applicationpropertyAdmin"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
-            <forward name="valid" path="/applicationpropertyAdmin.jsp" />
-            <forward name="login" path="/login.jsp" />            
-        </action>
-				<action
-            path="/printHistory"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
-            <forward name="valid" path="/printHistory.jsp" />
-            <forward name="login" path="/login.jsp" />            
-        </action>
-				<action
             path="/usertitleMaintenance"
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">
             <forward name="valid" path="/usertitleMaintenance.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
-				<action
-            path="/transactionhistoryView"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
-            <forward name="valid" path="/transactionhistoryView.jsp" />
-            <forward name="login" path="/login.jsp" />            
-        </action>
-		<action
-            path="/dashboard"
-            type="com.ansi.scilla.web.action.DashboardAction">
-            <forward name="valid" path="/dashboard.jsp" />
-            <forward name="login" path="/login.jsp" />            
-        </action>
-     	<action
-            path="/logoff"
-            type="com.ansi.scilla.web.action.LogoffAction">
-            <forward name="valid" path="/login.jsp" />
-        </action>
         
-        <!--    *****************************   -->
-		<action
-            path="/about_us"
-            type="com.ansi.scilla.web.action.DisplayPageAction">
-            <forward name="valid" path="/displayPage.jsp" />
-        </action>
-		<action
-			path="/adminMemberList"
-			type="com.ansi.scilla.web.action.AdminMemberListAction"
-			name="idForm"
-			input="/adminMemberList.jsp"
-			scope="request">
-			<forward name="valid" path="/adminMemberList.jsp" />
-		</action>
 
 <!--
         
