@@ -1,6 +1,7 @@
 package com.ansi.scilla.web.response.taxRate;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 
 import com.ansi.scilla.common.db.TaxRate;
 import com.ansi.scilla.web.common.WebMessages;
@@ -16,23 +17,23 @@ public class TaxRateResponse extends MessageResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private TaxRate taxRate;
+	private TaxRateResponseRecord taxRate;
 
 	public TaxRateResponse() {
 		super();
 	}
 
-	public TaxRateResponse(TaxRate taxRate, WebMessages webMessages) {
+	public TaxRateResponse(TaxRate taxRate, WebMessages webMessages) throws IllegalAccessException, InvocationTargetException {
 		super(webMessages);
-		this.taxRate = taxRate;
+		this.taxRate = new TaxRateResponseRecord(taxRate);
 		
 	}
 
-	public TaxRate getTaxRate() {
+	public TaxRateResponseRecord getTaxRate() {
 		return taxRate;
 	}
 
-	public void setTaxRate(TaxRate taxRate) {
+	public void setTaxRate(TaxRateResponseRecord taxRate) {
 		this.taxRate = taxRate;
 	}
 

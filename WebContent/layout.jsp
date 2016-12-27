@@ -73,9 +73,13 @@
 			        				<ul class="sub_menu">
 			        			 		<li><a href="#">Message Maintenance</a></li>
 			        			 		<li><html:link action="codeMaintenance">Code Maintenance</html:link></li>
-			        			 		<li><a href="#">User Admin</a></li>
-			        			 		<li><a href="#">Permission Groups</a></li> 
-										<li><html:link action="DivisionAdmin">Division Admin</html:link></li>
+			        			 		<li><html:link action="userAdmin">User Admin</html:link></li>
+			        			 		<li><html:link action="permissiongroupAdmin">Permission Group Admin</html:link></li> 
+										<li><html:link action="divisionAdmin">Division Admin</html:link></li>
+										<li><html:link action="applicationpropertyAdmin">Application Property Admin</html:link></li>
+										<li><html:link action="printHistory">Print History</html:link></li>
+										<li><html:link action="usertitleMaintenance">User Title Maintenance</html:link></li>
+										<li><html:link action="transactionhistoryView">Transaction History View</html:link></li>
 			        				</ul>
 			        			</li>
 			        			</ansi:hasWrite>
@@ -83,7 +87,7 @@
 		        			<li>
 		        				<a href="#">My ANSI</a>
 		        				<ul class="sub_menu">
-		        			 		<li><a href="#">My Account</a></li>
+		        			 		<li><html:link action="myAccount">My Account</html:link></li>
 		        			 		<li><html:link action="logoff">Logoff</html:link></li>
 		        				</ul>
 		        			</li>
