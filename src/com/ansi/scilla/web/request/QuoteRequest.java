@@ -1,12 +1,16 @@
 package com.ansi.scilla.web.request;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
 import org.apache.commons.beanutils.BeanUtils;
 
+import com.ansi.scilla.web.common.AppUtils;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.thewebthing.commons.lang.JsonException;
-import com.thewebthing.commons.lang.JsonUtils;
+
 
 	public class QuoteRequest extends AbstractRequest{
 
@@ -36,9 +40,9 @@ import com.thewebthing.commons.lang.JsonUtils;
 			super();
 		}
 		
-		public QuoteRequest(String jsonString) throws JsonException, IllegalAccessException, InvocationTargetException {
+		public QuoteRequest(String jsonString) throws JsonException, IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException {
 			this();
-			QuoteRequest req = (QuoteRequest) JsonUtils.JSON2Object(jsonString, QuoteRequest.class);
+			QuoteRequest req = (QuoteRequest) AppUtils.json2object(jsonString, QuoteRequest.class);
 			BeanUtils.copyProperties(this, req);
 		}
 		

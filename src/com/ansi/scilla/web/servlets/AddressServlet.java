@@ -10,40 +10,41 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.common.db.Quote;
+import com.ansi.scilla.common.db.Address;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.MessageKey;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.common.WebMessages;
-import com.ansi.scilla.web.request.QuoteRequest;
-import com.ansi.scilla.web.response.quote.QuoteListResponse;
-import com.ansi.scilla.web.response.quote.QuoteResponse;
+import com.ansi.scilla.web.request.AddressRequest;
+import com.ansi.scilla.web.response.address.AddressListResponse;
+import com.ansi.scilla.web.response.address.AddressResponse;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 /**
- * The url for delete will be of the form /quote/<quoteId>/<quoteNumber>/<revisionNumber>
+ * The url for delete will be of the form /address/<addressId>/<name>/<status>
  * 
  * The url for get will be one of:
- * 		/quote    (retrieves everything)
- * 		/quote/<quoteId>      (filters quote table by quoteId)
- * 		/quote/<quoteId>/<quoteNumber>	(filters quote table quoteId and quoteNumber
- * 		/quote/<quoteId>/<quoteNumber>/<revisionNumber>	(retrieves a single record)
+ * 		/address    (retrieves everything)
+ * 		/address/<addressId>      (filters address table by id)
+ * 		/address/<addressId>/<name>	(filters address table id and name
+ * 		/address/<addressId>/<name>/<status>	(retrieves a single record)
  * 
  * The url for adding a new record will be a POST to:
- * 		/quote/add   with parameters in the JSON
+ * 		/address/add   with parameters in the JSON
  * 
  * The url for update will be a POST to:
- * 		/quote/<quoteId>/<quoteNumber>/<revisionNumber> with parameters in the JSON
+ * 		/address/<addressId>/<name>/<status> with parameters in the JSON
  * 
  * 
  * 
  *
  */
-public class QuoteServlet extends AbstractServlet {
+public class AddressServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
 
@@ -56,16 +57,16 @@ public class QuoteServlet extends AbstractServlet {
 			conn.setAutoCommit(false);
 			
 			String jsonString = super.makeJsonString(request);
-			QuoteRequest quoteRequest = new QuoteRequest(jsonString);
-			System.out.println(quoteRequest);
-			Quote quote = new Quote();
-			quote.setQuoteId(quoteRequest.getQuoteId());
-			quote.setQuoteNumber(quoteRequest.getQuoteNumber());
-			quote.setRevisionNumber(quoteRequest.getRevisionNumber());
-			quote.delete(conn);
+			AddressRequest addressRequest = new AddressRequest(jsonString);
+			System.out.println(addressRequest);
+			Address address = new Address();
+			address.setAddressId(addressRequest.getAddressId());
+			address.setName(addressRequest.getName());
+			address.setStatus(addressRequest.getStatus());
+			address.delete(conn);
 			
-			QuoteResponse quoteResponse = new QuoteResponse();
-			super.sendResponse(conn, response, ResponseCode.SUCCESS, quoteResponse);
+			AddressResponse addressResponse = new AddressResponse();
+			super.sendResponse(conn, response, ResponseCode.SUCCESS, addressResponse);
 			
 			conn.commit();
 		} catch ( Exception e) {
@@ -78,32 +79,32 @@ public class QuoteServlet extends AbstractServlet {
 	
 	protected void doNewDelete(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("QuoteServlet 54");
+		System.out.println("AddressServlet 54");
 		String url = request.getRequestURI();
 		
 		Connection conn = null;
 		try {
 			ParsedUrl parsedUrl = new ParsedUrl(url);
-			System.out.println("QuoteServlet 60");
+			System.out.println("AddressServlet 60");
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
 			
-			Quote quote = new Quote();
-			quote.setQuoteId(parsedUrl.quoteId);
-			quote.setQuoteNumber(parsedUrl.quoteNumber);
-			quote.setRevisionNumber(parsedUrl.revisionNumber);
-			quote.delete(conn);
-			System.out.println("QuoteServlet 69");
-			QuoteResponse quoteResponse = new QuoteResponse();
-			super.sendResponse(conn, response, ResponseCode.SUCCESS, quoteResponse);
-			System.out.println("QuoteServlet 72");
+			Address address = new Address();
+			address.setName(parsedUrl.name);
+			address.setAddressId(parsedUrl.addressId);
+			address.setStatus(parsedUrl.status);
+			address.delete(conn);
+			System.out.println("AddressServlet 69");
+			AddressResponse addressResponse = new AddressResponse();
+			super.sendResponse(conn, response, ResponseCode.SUCCESS, addressResponse);
+			System.out.println("AddressServlet 72");
 			conn.commit();
 		} catch ( Exception e) {
-			System.out.println("QuoteServlet 75");
+			System.out.println("AddressServlet 75");
 			AppUtils.logException(e);
 			throw new ServletException(e);
 		} finally {
-			System.out.println("QuoteServlet 79");
+			System.out.println("AddressServlet 79");
 			AppUtils.closeQuiet(conn);
 		}
 	}
@@ -117,13 +118,13 @@ public class QuoteServlet extends AbstractServlet {
 			ParsedUrl parsedUrl = new ParsedUrl(url);
 			conn = AppUtils.getDBCPConn();
 			
-			if ( parsedUrl.quoteId.equals("list")) {
-				// we're getting all the codes in the database
-				QuoteListResponse quotesListResponse = makeQuotesListResponse(conn);
-				super.sendResponse(conn, response, ResponseCode.SUCCESS, quotesListResponse);
+			if ( parsedUrl.addressId.equals("list")) {
+				// we're getting all the addresses in the database
+				AddressListResponse addressListResponse = makeAddressListResponse(conn);
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, addressListResponse);
 			} else {
-				QuoteListResponse quotesListResponse = makeFilteredListResponse(conn, parsedUrl);
-				super.sendResponse(conn, response, ResponseCode.SUCCESS, quotesListResponse);
+				AddressListResponse addressListResponse = makeFilteredListResponse(conn, parsedUrl);
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, addressListResponse);
 			}
 		} catch ( RecordNotFoundException e) {
 			super.sendNotFound(response);
@@ -150,22 +151,22 @@ public class QuoteServlet extends AbstractServlet {
 			conn.setAutoCommit(false);
 
 			// figure out if this is an "add" or an "update"
-			int idx = url.indexOf("/quote/");
-			String myString = url.substring(idx + "/quote/".length());				
+			int idx = url.indexOf("/address/");
+			String myString = url.substring(idx + "/address/".length());				
 			String[] urlPieces = myString.split("/");
 			String command = urlPieces[0];
 
 			String jsonString = super.makeJsonString(request);
 			System.out.println(jsonString);
-			QuoteRequest quoteRequest = new QuoteRequest(jsonString);
+			AddressRequest addressRequest = new AddressRequest(jsonString);
 			
-			Quote quote = null;
+			Address address = null;
 			ResponseCode responseCode = null;
 			if ( command.equals(ACTION_IS_ADD) ) {
-				WebMessages webMessages = validateAdd(conn, quoteRequest);
+				WebMessages webMessages = validateAdd(conn, addressRequest);
 				if (webMessages.isEmpty()) {
 					try {
-						quote = doAdd(conn, quoteRequest, sessionUser);
+						address = doAdd(conn, addressRequest, sessionUser);
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 						responseCode = ResponseCode.SUCCESS;
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
@@ -182,21 +183,21 @@ public class QuoteServlet extends AbstractServlet {
 				} else {
 					responseCode = ResponseCode.EDIT_FAILURE;
 				}
-				QuoteResponse quoteResponse = new QuoteResponse(quote, webMessages);
-				super.sendResponse(conn, response, responseCode, quoteResponse);
+				AddressResponse addressResponse = new AddressResponse(address, webMessages);
+				super.sendResponse(conn, response, responseCode, addressResponse);
 				
 			} else if ( urlPieces.length == 3 ) {   //  /<tableName>/<fieldName>/<value> = 3 pieces
 				System.out.println("Doing Update Stuff");				
-				WebMessages webMessages = validateAdd(conn, quoteRequest);
+				WebMessages webMessages = validateAdd(conn, addressRequest);
 				if (webMessages.isEmpty()) {
 					System.out.println("passed validation");
 					try {
-						Quote key = new Quote();
-						key.setQuoteId(Integer.parseInt(urlPieces[0]));
-						key.setQuoteNumber(Integer.parseInt(urlPieces[1]));
-						key.setRevisionNumber(Integer.parseInt(urlPieces[2]));
+						Address key = new Address();
+						key.setAddressId(Integer.parseInt(urlPieces[0]));
+						key.setName(urlPieces[1]);
+						key.setStatus(urlPieces[2]);
 						System.out.println("Trying to do update");
-						quote = doUpdate(conn, key, quoteRequest, sessionUser);
+						address = doUpdate(conn, key, addressRequest, sessionUser);
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 						responseCode = ResponseCode.SUCCESS;
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
@@ -214,8 +215,8 @@ public class QuoteServlet extends AbstractServlet {
 					System.out.println("Doing Edit Fail");
 					responseCode = ResponseCode.EDIT_FAILURE;
 				}
-				QuoteResponse codeResponse = new QuoteResponse(quote, webMessages);
-				super.sendResponse(conn, response, responseCode, codeResponse);
+				AddressResponse addressResponse = new AddressResponse(address, webMessages);
+				super.sendResponse(conn, response, responseCode, addressResponse);
 			} else {
 				super.sendNotFound(response);
 			}
@@ -232,37 +233,28 @@ public class QuoteServlet extends AbstractServlet {
 	}
 
 
-	protected Quote doAdd(Connection conn, QuoteRequest quoteRequest, SessionUser sessionUser) throws Exception {
+	protected Address doAdd(Connection conn, AddressRequest addressRequest, SessionUser sessionUser) throws Exception {
 		Date today = new Date();
-		Quote quote = new Quote();
-		quote.setAddedBy(sessionUser.getUserId());
-		quote.setAddedDate(today);
+		Address address = new Address();
 		
+		address.setAddedBy(sessionUser.getUserId());
+		address.setAddedDate(today);
+
+		address.setAddressId(addressRequest.getAddressId());
+		address.setAddress1(addressRequest.getAddress1());
+		address.setAddress2(addressRequest.getAddress2());
+		address.setCity(addressRequest.getCity());
+		address.setCounty(addressRequest.getCounty());
+		address.setName(addressRequest.getName());
+		address.setState(addressRequest.getState());
+		address.setStatus(addressRequest.getStatus());
+		address.setZip(addressRequest.getZip());
 		
-		quote.setQuoteId(quoteRequest.getQuoteId());
-				//################## Add Remaining ##################
-		quote.setUpdatedBy(sessionUser.getUserId());
-		quote.setUpdatedDate(today);
+		address.setUpdatedBy(sessionUser.getUserId());
+		address.setUpdatedDate(today);
 		
-		quote.setAddress(quoteRequest.getAddress());
-		quote.setBillToAddressId(quoteRequest.getBillToAddressId());
-		quote.setCopiedFromQuoteId(quoteRequest.getCopiedFromQuoteId());
-		quote.setJobSiteAddressId(quoteRequest.getJobSiteAddressId());
-		quote.setLeadType(quoteRequest.getLeadType());
-		quote.setManagerId(quoteRequest.getManagerId());
-		quote.setName(quoteRequest.getName());
-		quote.setPaymentTerms(quoteRequest.getPaymentTerms());
-		quote.setProposalDate(quoteRequest.getProposalDate());
-		//quote.setQuoteGroupId(quoteRequest.getQuoteGroupId());
-	
-		quote.setQuoteNumber(quoteRequest.getQuoteNumber());
-		quote.setRevisionNumber(quoteRequest.getRevisionNumber());
-		quote.setSignedByContactId(quoteRequest.getSignedByContactId());
-		quote.setStatus(quoteRequest.getStatus());
-		quote.setTemplateId(quoteRequest.getTemplateId());
-	
 		try {
-			quote.insertWithNoKey(conn);
+			address.insertWithNoKey(conn);
 		} catch ( SQLException e) {
 			if ( e.getMessage().contains("duplicate key")) {
 				throw new DuplicateEntryException();
@@ -271,59 +263,53 @@ public class QuoteServlet extends AbstractServlet {
 				throw e;
 			}
 		} 
-			return quote;
+		return address;
 	}
 
 
-	protected Quote doUpdate(Connection conn, Quote key, QuoteRequest quoteRequest, SessionUser sessionUser) throws Exception {
+	protected Address doUpdate(Connection conn, Address key, AddressRequest addressRequest, SessionUser sessionUser) throws Exception {
 		System.out.println("This is the key:");
 		System.out.println(key);
 		System.out.println("************");
 		Date today = new Date();
-		Quote quote = new Quote();
-	
-		quote.setQuoteId(quoteRequest.getQuoteId());
-		//################## Add Remaining ##################
-		quote.setUpdatedBy(sessionUser.getUserId());
-		quote.setUpdatedDate(today);
+		Address address = new Address();
 		
-		quote.setAddress(quoteRequest.getAddress());
-		quote.setBillToAddressId(quoteRequest.getBillToAddressId());
-		quote.setCopiedFromQuoteId(quoteRequest.getCopiedFromQuoteId());
-		quote.setJobSiteAddressId(quoteRequest.getJobSiteAddressId());
-		quote.setLeadType(quoteRequest.getLeadType());
-		quote.setManagerId(quoteRequest.getManagerId());
-		quote.setName(quoteRequest.getName());
-		quote.setPaymentTerms(quoteRequest.getPaymentTerms());
-		quote.setProposalDate(quoteRequest.getProposalDate());
-		//quote.setQuoteGroupId(quoteRequest.getQuoteGroupId());
-	
-		quote.setQuoteNumber(quoteRequest.getQuoteNumber());
-		quote.setRevisionNumber(quoteRequest.getRevisionNumber());
-		quote.setSignedByContactId(quoteRequest.getSignedByContactId());
-		quote.setStatus(quoteRequest.getStatus());
-		quote.setTemplateId(quoteRequest.getTemplateId());
+		address.setAddedBy(sessionUser.getUserId());
+		address.setAddedDate(today);
+
+		address.setAddressId(addressRequest.getAddressId());
+		address.setAddress1(addressRequest.getAddress1());
+		address.setAddress2(addressRequest.getAddress2());
+		address.setCity(addressRequest.getCity());
+		address.setCounty(addressRequest.getCounty());
+		address.setName(addressRequest.getName());
+		address.setState(addressRequest.getState());
+		address.setStatus(addressRequest.getStatus());
+		address.setZip(addressRequest.getZip());
+		
+		address.setUpdatedBy(sessionUser.getUserId());
+		address.setUpdatedDate(today);
 		
 		// if we update something that isn't there, a RecordNotFoundException gets thrown
 		// that exception get propagated and turned into a 404
-		quote.update(conn, key);		
-		return quote;
+		address.update(conn, key);		
+		return address;
 	}
 
-	private QuoteListResponse makeQuotesListResponse(Connection conn) throws Exception {
-		QuoteListResponse quotesListResponse = new QuoteListResponse(conn);
-		return quotesListResponse;
+	private AddressListResponse makeAddressListResponse(Connection conn) throws Exception {
+		AddressListResponse addressesListResponse = new AddressListResponse(conn);
+		return addressesListResponse;
 	}
 
-	private QuoteListResponse makeFilteredListResponse(Connection conn, ParsedUrl parsedUrl) throws Exception {
-		QuoteListResponse quoteListResponse = new QuoteListResponse(conn, parsedUrl.quoteId, parsedUrl.quoteNumber, parsedUrl.revisionNumber);
-		return quoteListResponse;
+	private AddressListResponse makeFilteredListResponse(Connection conn, ParsedUrl parsedUrl) throws Exception {
+		AddressListResponse addressListResponse = new AddressListResponse(conn, parsedUrl.addressId, parsedUrl.name, parsedUrl.status);
+		return addressListResponse;
 	}
 
 	
-	protected WebMessages validateAdd(Connection conn, QuoteRequest quoteRequest) throws Exception {
+	protected WebMessages validateAdd(Connection conn, AddressRequest addressRequest) throws Exception {
 		WebMessages webMessages = new WebMessages();
-		List<String> missingFields = super.validateRequiredAddFields(quoteRequest);
+		List<String> missingFields = super.validateRequiredAddFields(addressRequest);
 		if ( ! missingFields.isEmpty() ) {
 			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
 			for ( String field : missingFields ) {
@@ -333,9 +319,9 @@ public class QuoteServlet extends AbstractServlet {
 		return webMessages;
 	}
 
-	protected WebMessages validateUpdate(Connection conn, Quote key, QuoteRequest quoteRequest) throws RecordNotFoundException, Exception {
+	protected WebMessages validateUpdate(Connection conn, Address key, AddressRequest addressRequest) throws RecordNotFoundException, Exception {
 		WebMessages webMessages = new WebMessages();
-		List<String> missingFields = super.validateRequiredUpdateFields(quoteRequest);
+		List<String> missingFields = super.validateRequiredUpdateFields(addressRequest);
 		if ( ! missingFields.isEmpty() ) {
 			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
 			for ( String field : missingFields ) {
@@ -344,32 +330,34 @@ public class QuoteServlet extends AbstractServlet {
 		}
 		// if we "select" the key, and it isn't found, a "RecordNotFoundException" is thrown.
 		// That exception will propagate up the tree until it turns into a 404 message sent to the client
-		Quote testKey = (Quote)key.clone(); 
+		Address testKey = (Address)key.clone(); 
 		testKey.selectOne(conn);
 		return webMessages;
 	}
 
 	
 	public class ParsedUrl extends ApplicationObject {
+		public String status;
+		public Integer addressId;
+		public String name;
 		private static final long serialVersionUID = 1L;
-		public Integer quoteId;
-		public Integer quoteNumber;
-		public Integer revisionNumber;
+
+
 		public ParsedUrl(String url) throws RecordNotFoundException {
-			int idx = url.indexOf("/quote/");	
+			int idx = url.indexOf("/address/");	
 			if ( idx < 0 ) {
 				throw new RecordNotFoundException();
 			}
-			String myString = url.substring(idx + "/quote/".length());			
+			String myString = url.substring(idx + "/address/".length());			
 			String[] urlPieces = myString.split("/");
 			if ( urlPieces.length >= 1 ) {
-				this.quoteId = Integer.parseInt(urlPieces[0]);
+				this.addressId = Integer.parseInt(urlPieces[0]);
 			}
 			if ( urlPieces.length >= 2 ) {
-				this.quoteNumber = Integer.parseInt(urlPieces[1]);
+				this.name = urlPieces[1];
 			}
 			if ( urlPieces.length >= 3 ) {
-				this.revisionNumber = Integer.parseInt(urlPieces[2]);
+				this.status = urlPieces[2];
 			}
 		}
 	}

@@ -2,8 +2,8 @@ package com.ansi.scilla.web.response.quote;
 
 import java.io.Serializable;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import com.ansi.scilla.common.db.Quote;
@@ -19,47 +19,45 @@ public class QuoteListResponse extends MessageResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private List<Quote> quoteList;
+	private List<QuoteResponseRecord> quoteList;
 
 	public QuoteListResponse() {
 		super();
 	}
 	/**
-	 * create a list of all quote table records in the database, sorted by
-	 * id, quote Number, revision number
+	 * create a list of all code table records in the database, sorted by
+	 * table, field, display value
 	 * 
 	 * @param conn
 	 * @throws Exception
 	 */
 	public QuoteListResponse(Connection conn) throws Exception {
-		this.quoteList = Quote.cast(new Quote().selectAll(conn));
-		Collections.sort(quoteList,
-
-				new Comparator<Quote>() {
-
-			public int compare(Quote o1, Quote o2) {
-
-				int ret = o1.getQuoteId().compareTo(o2.getQuoteId());
-				if ( ret == 0 ) {
-					ret = o1.getQuoteNumber().compareTo(o2.getQuoteNumber());
-				}
-				if ( ret == 0 ) {
-					ret = o1.getRevisionNumber().compareTo(o2.getRevisionNumber());
-				}
-				if ( ret == 0 ) {
-					ret = o1.getProposalDate().compareTo(o2.getProposalDate());
-				}
-				return ret;
-
-			}
-
-		});
+		List<Quote> quoteList = Quote.cast(new Quote().selectAll(conn));
+		this.quoteList = new ArrayList<QuoteResponseRecord>();
+		for ( Quote quote : quoteList ) {
+			this.quoteList.add(new QuoteResponseRecord(quote));
+		}
+		Collections.sort(this.quoteList);
 	}
-	public List<Quote> getQuoteList() {
+
+	public QuoteListResponse(Connection conn, Integer quoteId, Integer quoteNumber, Integer revisionNumber) throws Exception {
+		Quote key = new Quote();
+		key.setQuoteId(quoteId);
+		key.setQuoteNumber(quoteNumber);
+		key.setRevisionNumber(revisionNumber);
+		List<Quote> quoteList = Quote.cast(key.selectSome(conn));
+		this.quoteList = new ArrayList<QuoteResponseRecord>();
+		for ( Quote quote : quoteList ) {
+			this.quoteList.add(new QuoteResponseRecord(quote));
+		}
+		Collections.sort(this.quoteList);
+	}
+
+	public List<QuoteResponseRecord> getQuoteList() {
 		return quoteList;
 	}
 
-	public void setQuoteList(List<Quote> quoteList) {
+	public void setQuoteList(List<QuoteResponseRecord> quoteList) {
 		this.quoteList = quoteList;
 	}
 	

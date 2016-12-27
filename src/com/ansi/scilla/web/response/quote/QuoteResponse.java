@@ -9,6 +9,7 @@ import com.ansi.scilla.web.response.MessageResponse;
 /**
  * Used to return a single quote to the client
  * 
+ * 
  *
  */
 public class QuoteResponse extends MessageResponse implements Serializable {
@@ -27,11 +28,11 @@ public class QuoteResponse extends MessageResponse implements Serializable {
 		
 	}
 
-	public Quote getQuote() {
+	public Quote getCode() {
 		return quote;
 	}
 
-	public void setQuote(Quote quote) {
+	public void setCode(Quote quote) {
 		this.quote = quote;
 	}
 

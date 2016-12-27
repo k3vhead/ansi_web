@@ -91,7 +91,14 @@
         <servlet-name>quote</servlet-name>
         <url-pattern>/quote/*</url-pattern>
     </servlet-mapping>
-    
+      <servlet>
+        <servlet-name>address</servlet-name>
+        <servlet-class>com.ansi.scilla.web.servlets.AddressServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>address</servlet-name>
+        <url-pattern>/address/*</url-pattern>
+    </servlet-mapping>
     
     <servlet>
     	<servlet-name>contact</servlet-name>
