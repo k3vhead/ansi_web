@@ -16,7 +16,7 @@
 <tiles:insert page="layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        Quote Maintenance
+        Address Lookup
     </tiles:put>
     
     
@@ -46,10 +46,10 @@
         $(function() {        
         	var jqxhr = $.ajax({
 				type: 'GET',
-				url: 'quote/list',
+				url: 'address/list',
 				data: {},
 				success: function($data) {
-					$.each($data.data.quoteList, function(index, value) {
+					$.each($data.data.addressList, function(index, value) {
 						addRow(index, value);
 					});
 					doFunctionBinding();
@@ -90,7 +90,7 @@
     
     
     <tiles:put name="content" type="string">
-    	<h1>Quote Maintenance</h1>
+    	<h1>Address Lookup</h1>
     	
     	
 		

@@ -10,8 +10,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Address;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
