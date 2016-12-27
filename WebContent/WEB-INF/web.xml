@@ -83,6 +83,14 @@
         <servlet-name>division</servlet-name>
         <url-pattern>/division/*</url-pattern>
     </servlet-mapping>
+     <servlet>
+        <servlet-name>quote</servlet-name>
+        <servlet-class>com.ansi.scilla.web.servlets.QuoteServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>quote</servlet-name>
+        <url-pattern>/quote/*</url-pattern>
+    </servlet-mapping>
     
     
     <servlet>
