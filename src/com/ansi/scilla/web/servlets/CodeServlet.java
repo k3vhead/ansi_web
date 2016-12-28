@@ -48,45 +48,16 @@ public class CodeServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
 
-//	@Override
-//	protected void doDelete(HttpServletRequest request,
-//			HttpServletResponse response) throws ServletException, IOException {
-//		Connection conn = null;
-//		try {
-//			conn = AppUtils.getDBCPConn();
-//			conn.setAutoCommit(false);
-//			
-//			String jsonString = super.makeJsonString(request);
-//			CodeRequest codeRequest = new CodeRequest(jsonString);
-//			System.out.println(codeRequest);
-//			Code code = new Code();
-//			code.setTableName(codeRequest.getTableName());
-//			code.setFieldName(codeRequest.getFieldName());
-//			code.setValue(codeRequest.getValue());
-//			code.delete(conn);
-//			
-//			CodeResponse codeResponse = new CodeResponse();
-//			super.sendResponse(conn, response, ResponseCode.SUCCESS, codeResponse);
-//			
-//			conn.commit();
-//		} catch ( Exception e) {
-//			AppUtils.logException(e);
-//			throw new ServletException(e);
-//		} finally {
-//			AppUtils.closeQuiet(conn);
-//		}
-//	}
+
 	
 	@Override
 	protected void doDelete(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("CodeServlet 54");
 		String url = request.getRequestURI();
 		
 		Connection conn = null;
 		try {
 			ParsedUrl parsedUrl = new ParsedUrl(url);
-			System.out.println("CodeServlet 60");
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
 			
@@ -95,17 +66,13 @@ public class CodeServlet extends AbstractServlet {
 			code.setFieldName(parsedUrl.fieldName);
 			code.setValue(parsedUrl.value);
 			code.delete(conn);
-			System.out.println("CodeServlet 69");
 			CodeResponse codeResponse = new CodeResponse();
 			super.sendResponse(conn, response, ResponseCode.SUCCESS, codeResponse);
-			System.out.println("CodeServlet 72");
 			conn.commit();
 		} catch ( Exception e) {
-			System.out.println("CodeServlet 75");
 			AppUtils.logException(e);
 			throw new ServletException(e);
 		} finally {
-			System.out.println("CodeServlet 79");
 			AppUtils.closeQuiet(conn);
 		}
 	}
@@ -158,7 +125,6 @@ public class CodeServlet extends AbstractServlet {
 			String command = urlPieces[0];
 
 			String jsonString = super.makeJsonString(request);
-			System.out.println(jsonString);
 			CodeRequest codeRequest = new CodeRequest(jsonString);
 			
 			Code code = null;
@@ -188,32 +154,26 @@ public class CodeServlet extends AbstractServlet {
 				super.sendResponse(conn, response, responseCode, codeResponse);
 				
 			} else if ( urlPieces.length == 3 ) {   //  /<tableName>/<fieldName>/<value> = 3 pieces
-				System.out.println("Doing Update Stuff");				
 				WebMessages webMessages = validateAdd(conn, codeRequest);
 				if (webMessages.isEmpty()) {
-					System.out.println("passed validation");
 					try {
 						Code key = new Code();
 						key.setTableName(urlPieces[0]);
 						key.setFieldName(urlPieces[1]);
 						key.setValue(urlPieces[2]);
-						System.out.println("Trying to do update");
 						code = doUpdate(conn, key, codeRequest, sessionUser);
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 						responseCode = ResponseCode.SUCCESS;
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
 					} catch ( RecordNotFoundException e ) {
-						System.out.println("Doing 404");
 						super.sendNotFound(response);						
 					} catch ( Exception e) {
-						System.out.println("Doing SysFailure");
 						responseCode = ResponseCode.SYSTEM_FAILURE;
 						AppUtils.logException(e);
 						String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
 					}
 				} else {
-					System.out.println("Doing Edit Fail");
 					responseCode = ResponseCode.EDIT_FAILURE;
 				}
 				CodeResponse codeResponse = new CodeResponse(code, webMessages);
@@ -267,9 +227,6 @@ public class CodeServlet extends AbstractServlet {
 
 
 	protected Code doUpdate(Connection conn, Code key, CodeRequest codeRequest, SessionUser sessionUser) throws Exception {
-		System.out.println("This is the key:");
-		System.out.println(key);
-		System.out.println("************");
 		Date today = new Date();
 		Code code = new Code();
 		if ( ! StringUtils.isBlank(codeRequest.getDescription())) {
