@@ -1,5 +1,6 @@
 package com.ansi.scilla.web.test;
 
+import java.io.FileInputStream;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,6 +8,10 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Date;
 import java.util.HashMap;
+
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.DivisionUser;
@@ -28,7 +33,7 @@ public class InsertTestData extends TesterUtils {
 		InsertTestData itd = new InsertTestData();
 		try {
 			System.out.println("Start");
-			System.out.println("insertPermissionLevel");
+//			System.out.println("insertPermissionLevel");
 			/*
 			itd.insertPermissionLevel();
 			System.out.println("insertMessage");
@@ -224,21 +229,41 @@ public class InsertTestData extends TesterUtils {
 		Date now = new Date();
 		Integer myUserId = 1;
 		
+		int colDivisionCode = 0;
+		int colDescription = 1;
+		int colName = 5;
+		
+		String fileName = "/home/dclewis/Documents/projects/ansi/Divisions List from Dataflex.xlsx";
+		XSSFWorkbook wb = new XSSFWorkbook(new FileInputStream(fileName));
+		XSSFSheet sheet = wb.getSheetAt(0);
 		try {
 			conn = AppUtils.getConn();
 			conn.setAutoCommit(false);
-
+			Date today = new Date();
+			
 			Division d = new Division();
-			d.setName("Test Div 5");
 			d.setDefaultDirectLaborPct(new BigDecimal(0.03F));
+			d.setAddedBy(5);
+			d.setUpdatedBy(5);
+			d.setAddedDate(today);
+			d.setUpdatedDate(today);
+			d.setStatus(Division.STATUS_IS_ACTIVE);
 			
 			
-			d.setAddedBy(myUserId);
-			d.setAddedDate(now);
-			d.setUpdatedBy(myUserId);
-			d.setUpdatedDate(now);
-			System.out.println(d);
-			d.insertWithKey(conn, debug);
+			for ( int rowNum = 1; rowNum < sheet.getLastRowNum() + 1; rowNum++ ) {
+				System.out.println("Row: " + rowNum);
+				XSSFRow row = sheet.getRow(rowNum);
+				String divisionCode = row.getCell(colDivisionCode).getStringCellValue();
+				Integer divisionNbr = Integer.valueOf(divisionCode.substring(2));
+				String description = row.getCell(colDescription).getStringCellValue();
+				String name = row.getCell(colName) == null ? row.getCell(colDescription).getStringCellValue() : row.getCell(colName).getStringCellValue();
+				name = name + " (" + divisionCode + ")";
+				d.setDescription(description);
+				d.setDivisionCode(divisionCode);
+				d.setDivisionNbr(divisionNbr);
+				d.setName(name);
+				d.insertWithKey(conn, true);
+			}
 			
 			conn.commit();
 		} catch ( Exception e) {

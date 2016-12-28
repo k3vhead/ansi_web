@@ -168,7 +168,7 @@
 										<ul>
 											<li><a href="#">Lookup</a></li>
 											<ansi:hasWrite>
-											<li><a href="#">Maintenance</a></li>
+											<li><html:link action="jobMaintenance">Maintenance</html:link></li>
 											<li><a href="#">New</a></li>
 											</ansi:hasWrite>
 										</ul>

@@ -21,6 +21,7 @@
     
     
     <tiles:put name="headextra" type="string">
+    	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
         <style type="text/css">
 			#confirmDelete {
 				display:none;
@@ -44,26 +45,35 @@
 				margin-top:15px;
 				margin-bottom:15px;
 			}
+			#jobProposal {
+				border:solid 1px #000000;
+			}
+			#jobActivation {
+				border:solid 1px #000000;
+			}
         </style>
-        <script type="text/javascript">        
-		$( document ).ready(function() {
-			$("#xxx").click(function() {
-				JOBPROPOSAL.myFunction();				
-			});
-          	
-        });
-        </script>        
-        
     </tiles:put>
     
     
     <tiles:put name="content" type="string">
     	<h1>Job Maintenance</h1>
-    	
-    	<input type="button" value="go" id="xxx" />
-		******************<br />
-		<webthing:jobProposalActivation namespace="JOBPROPOSAL" />
-		<br />******************
+		<table>
+			<tr>
+				<td style="width:50%;">
+					<webthing:jobDescription namespace="JOBDESCRIPTION" cssId="jobProposal" />
+				</td>
+				<td>
+					<webthing:jobActivation namespace="JOBACTIVATION" cssId="jobActivation" />
+				</td>
+			</tr>
+		</table>    	
+		
+        <script type="text/javascript">        
+		$( document ).ready(function() {
+			JOBACTIVATION.init();
+          	
+        });
+        </script>        
     </tiles:put>
 
 </tiles:insert>

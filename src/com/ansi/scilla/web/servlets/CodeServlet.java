@@ -28,18 +28,18 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
 /**
  * The url for delete will be of the form /code/&lt;table&gt;/&lt;field&gt;/&lt;value&gt;
  * 
- * The url for get will be one of:
- * 		/code/list    (retrieves everything)
- * 		/code/&lt;table&gt;      (filters code table by tablename)
- * 		/code/&lt;table&gt;/&lt;field&gt;	(filters code table tablename and field
- * 		/code/&lt;table&gt;/&lt;field&gt;/&lt;value&gt;	(retrieves a single record)
- * 
- * The url for adding a new record will be a POST to:
- * 		/code/add   with parameters in the JSON
- * 
- * The url for update will be a POST to:
- * 		/code/&lt;table&gt;/&lt;field&gt;/&lt;value&gt; with parameters in the JSON
- * 
+ * The url for get will be one of:<br />
+ * 		/code/list    (retrieves everything)<br />
+ * 		/code/&lt;table&gt;      (filters code table by tablename)<br />
+ * 		/code/&lt;table&gt;/&lt;field&gt;	(filters code table tablename and field<br />
+ * 		/code/&lt;table&gt;/&lt;field&gt;/&lt;value&gt;	(retrieves a single record)<br />
+ * <br />
+ * The url for adding a new record will be a POST to:<br />
+ * 		/code/add   with parameters in the JSON<br />
+ * <br />
+ * The url for update will be a POST to:<br />
+ * 		/code/&lt;table&gt;/&lt;field&gt;/&lt;value&gt; with parameters in the JSON<br />
+ * <br />
  * 
  * @author dclewis
  *
