@@ -255,9 +255,10 @@
 				console.log("and we're making the call to ajax..." + $url);
 				console.log("outbound var: " + JSON.stringify($outbound));
 				var jqxhr = $.ajax({
-					stype: 'POST',
+					type: 'POST',
 					url: $url,
 					data: JSON.stringify($outbound),
+					//data: $outbound,
 					success: function($data) {
 						if ( $data.responseHeader.responseCode == 'SUCCESS') {
 							if ( $url == "taxRate/add" ) {
@@ -350,14 +351,20 @@
 				// use $rownum to extract the column values into variables
             	var $taxRateId = $tableData[$rownum][0];
 
+				// create the url to call to delete this row
+				var $deleteUrl = 'taxRate/' + $taxRateId;
+				console.debug($deleteUrl);
+
             	// create a JSON array of pairs containing the column values.
 				$outbound = JSON.stringify({'taxRateId':$taxRateId});
             	console.debug($outbound);
 
+
 				// make the ajax call to the java servlet to do the delete.
             	var jqxhr = $.ajax({
             	    type: 'delete',
-            	    url: 'taxRate/delete',
+            	    url: $deleteUrl,
+					//data: JSON.stringify($outbound),
             	    data: $outbound,
             	    success: function($data) {
             	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
@@ -469,7 +476,7 @@
     	<ansi:hasPermission permissionRequired="SYSADMIN">
     		<ansi:hasWrite>
 		    	<div id="confirmDelete">
-		    		Are You Sure You Want to Delete this Code?<br />
+		    		Are You Sure You Want to Delete this Tax Rate?<br />
 		    		<input type="button" id="cancelDelete" value="No" />
 		    		<input type="button" id="doDelete" value="Yes" />
 		    	</div>		    	
