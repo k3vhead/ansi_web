@@ -58,32 +58,33 @@ public class TaxRateServlet extends AbstractServlet {
 			conn.setAutoCommit(false);
 			
 			String url = request.getRequestURI();
+			System.out.println("TaxRateServlet: doDelete() Url:" + url);
 			int idx = url.indexOf("/taxRate/");
 			String myString = url.substring(idx + "/taxRate/".length());				
 			String[] urlPieces = myString.split("/");
 			String command = urlPieces[0];
 
-			String jsonString = super.makeJsonString(request); //get request, change to Json
-			System.out.println(jsonString);
-			TaxRateRequest taxRateRequest = new TaxRateRequest(jsonString);
+			System.out.println("TaxRateServlet: doDelete() command:" + command);
 			
-			TaxRate taxRate = null;
-			ResponseCode responseCode = null;
+//			ResponseCode responseCode = null;
 			if ( urlPieces.length == 1 ) {   //  /<taxRateId> = 1 pieces
+				System.out.println("TaxRateServlet: doDelete() urlPieces == 1");
 				TaxRate key = new TaxRate();
 				if ( StringUtils.isNumeric(urlPieces[0])) { //Looks like a taxRateId
-					System.out.println("Trying to do delete");
+					System.out.println("TaxRateServlet: doDelete() Trying to delete:" + command);
 					key.setTaxRateId(Integer.valueOf(urlPieces[0]));
-					taxRate.delete(conn);
+					key.delete(conn);
 					
 					TaxRateResponse taxRateResponse = new TaxRateResponse();
 					super.sendResponse(conn, response, ResponseCode.SUCCESS, taxRateResponse);
 					
 					conn.commit();
 				} else {
+					System.out.println("TaxRateServlet: doDelete() urlPieces[0] not numeric");
 					throw new RecordNotFoundException();
 				}
 			} else {
+				System.out.println("TaxRateServlet: doDelete() urlPieces <> 1" + urlPieces.length);
 				throw new RecordNotFoundException();
 			}
 
@@ -100,7 +101,11 @@ public class TaxRateServlet extends AbstractServlet {
 			
 			conn.commit();
 */
+		} catch ( RecordNotFoundException e ) {
+			System.out.println("TaxRateServlet: doDelete() RecordNotFoundException 404");
+			super.sendNotFound(response);						
 		} catch ( Exception e) {
+			System.out.println("TaxRateServlet: doDelete() unexpected exception"+e);
 			AppUtils.logException(e);
 			throw new ServletException(e);
 		} finally {
