@@ -29,7 +29,7 @@
         <title>ANSI Scheduling - <tiles:insert attribute="title" /></title>
         <link rel="SHORTCUT ICON" href="images/favicon.ico" />
         <script type="text/javascript" src="jQuery/jquery-3.1.1.min.js"></script>        
-        <script type="text/javascript" src="jQuery/jquery-ui-1.8.7.custom.js"></script>
+        <script type="text/javascript" src="jQuery/jquery-ui.min.js"></script>
         <script type="text/javascript" src="jQuery/jcookie.js"></script>
         <script type="text/javascript" src="jQuery/jquery.bpopup.min.js"></script>
         <!-- <script type="text/javascript" src="jQuery/jquery.popmenu.js"></script> -->

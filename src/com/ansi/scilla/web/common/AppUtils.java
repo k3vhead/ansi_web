@@ -26,8 +26,8 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
 
+import com.ansi.scilla.common.db.ApplicationProperties;
 import com.ansi.scilla.common.db.Division;
-import com.ansi.scilla.common.db.Message;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.utils.PropertyNames;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
@@ -265,11 +265,11 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 
 	public static String getMessageText(Connection conn, MessageKey messageKey, String defaultText) throws Exception {
 		String messageText = null;
-		Message message = new Message();
-		message.setKey(messageKey.name());
+		ApplicationProperties message = new ApplicationProperties();
+		message.setPropertyId(messageKey.name());
 		try {
 			message.selectOne(conn);
-			messageText = message.getDisplayValue();
+			messageText = message.getValueString();
 		} catch ( RecordNotFoundException e ) {
 			messageText = defaultText;
 		}	

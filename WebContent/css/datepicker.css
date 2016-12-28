@@ -1,0 +1,80 @@
+/* ****  Calendar CSS ******* */
+ /* whole calendar calendar */
+div#ui-datepicker-div { 
+    background-color:#FFFFFF; 
+    border:solid 1px #CCCCCC; 
+}
+/* header -- everything above the sun|mon|tue line */
+div.ui-datepicker-header { 
+    text-align:center; 
+}
+/* link to previous month */
+.ui-datepicker-prev {
+    cursor:pointer; 
+    float:left; 
+    padding-left:2px; 
+    font-family:arial, helvetica, sans-serif; 
+    color:#626a6d; 
+    font-size:90%; 
+}
+/* link to next month */
+.ui-datepicker-next { 
+    cursor:pointer; 
+    float:right; 
+    padding-right:2px; 
+    font-family:arial, 
+    helvetica, sans-serif; 
+    color:#626a6d; 
+    font-size:90%; 
+}            
+/* Dropdown to select month */
+.ui-datepicker-month { 
+    background-color:#FFFFFF; 
+}
+/* Dropdown to select Year */
+.ui-datepicker-year { 
+    background-color:#FFFFFF;
+}
+/* div surrounding month|year dropdowns */
+.ui-datepicker-title {
+    background-color:#FFFFFF;
+    font-size:14px; 
+}
+/* day of week cells */
+.ui-datepicker-calendar th { 
+    text-align:center; 
+    font-weight:bold;
+}
+/* day of month cells */
+.ui-datepicker-calendar td { 
+    background-color:#FFFFFF;
+}
+/* links inside day of month cells */
+.ui-datepicker-calendar a { 
+    font-family:arial, helvetica, sans-serif; 
+    text-decoration:none; 
+    color:#314987; 
+}
+/* TD for today */
+.ui-datepicker-today { 
+    border:solid 1px #314987; 
+}
+/* td for currently selected date */
+.ui-datepicker-current-day {
+    border:solid 1px #FF0000;
+}
+/* done button */
+.ui-datepicker-close {
+    display:none;
+}
+/* today button */
+.ui-datepicker-current {
+    background-color:#C0C0C0;
+    cursor:pointer;
+    font-size:12px;
+    color:#314987;                 
+}
+/* div containing today and done buttons */
+.ui-datepicker-buttonpane {
+    text-align:center;
+}

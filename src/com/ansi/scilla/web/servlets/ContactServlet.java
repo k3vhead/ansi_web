@@ -54,7 +54,33 @@ public class ContactServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
 			
-			String jsonString = super.makeJsonString(request); //get request, change to Json
+			String url = request.getRequestURI();
+			System.out.println("ContactServlet: doDelete() Url:" + url);
+			int idx = url.indexOf("/contact/");
+			String myString = url.substring(idx + "/contact/".length());				
+			String[] urlPieces = myString.split("/");
+			String command = urlPieces[0];
+			System.out.println("ContactServlet: doDelete() contactId:" + command);
+
+			if ( urlPieces.length == 1 ) {   //  /<contactId> = 1 pieces
+				Contact key = new Contact();
+				if ( StringUtils.isNumeric(urlPieces[0])) { //Looks like a contactId
+					System.out.println("ContactServlet: DoDelete: Trying to delete"+command);
+					key.setContactId(Integer.valueOf(urlPieces[0]));
+					key.delete(conn);
+					
+					ContactResponse contactResponse = new ContactResponse();
+					super.sendResponse(conn, response, ResponseCode.SUCCESS, contactResponse);
+					
+					conn.commit();
+				} else {
+					throw new RecordNotFoundException();
+				}
+			} else {
+				throw new RecordNotFoundException();
+			}
+
+/*			String jsonString = super.makeJsonString(request); //get request, change to Json
 			ContactRequest contactRequest = new ContactRequest(jsonString); //put Json into contactReques
 			System.out.println(contactRequest);//print request
 			Contact contact = new Contact();
@@ -64,7 +90,7 @@ public class ContactServlet extends AbstractServlet {
 			ContactResponse contactResponse = new ContactResponse();
 			super.sendResponse(conn, response, ResponseCode.SUCCESS, contactResponse);
 			
-			conn.commit();
+			conn.commit();*/
 		} catch ( Exception e) {
 			AppUtils.logException(e);
 			throw new ServletException(e);
@@ -95,7 +121,8 @@ public class ContactServlet extends AbstractServlet {
 				String command = urlPieces[0];
 				
 				if ( StringUtils.isBlank(command)) {
-					super.sendNotFound(response);
+//					super.sendNotFound(response);
+					throw new RecordNotFoundException();
 				} else {
 					if ( command.equals("list")) {
 						// we're getting all the contacts in the database
@@ -107,6 +134,9 @@ public class ContactServlet extends AbstractServlet {
 						super.sendResponse(conn, response, ResponseCode.SUCCESS, contactListResponse);
 					}
 				}
+			} catch ( RecordNotFoundException e ) {
+				System.out.println("ContactServlet: doGet() RecordNotFoundException 404");
+				super.sendNotFound(response);						
 			} catch ( Exception e) {
 				AppUtils.logException(e);
 				throw new ServletException(e);
@@ -206,6 +236,9 @@ public class ContactServlet extends AbstractServlet {
 			}
 			
 			conn.commit();
+		} catch ( RecordNotFoundException e ) {
+			System.out.println("ContactServlet: doDelete() RecordNotFoundException 404");
+			super.sendNotFound(response);						
 		} catch ( Exception e ) {
 			AppUtils.logException(e);
 			AppUtils.rollbackQuiet(conn);
