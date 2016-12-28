@@ -10,6 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Quote;
@@ -60,8 +61,7 @@ public class QuoteServlet extends AbstractServlet {
 			System.out.println(quoteRequest);
 			Quote quote = new Quote();
 			quote.setQuoteId(quoteRequest.getQuoteId());
-			quote.setQuoteNumber(quoteRequest.getQuoteNumber());
-			quote.setRevisionNumber(quoteRequest.getRevisionNumber());
+
 			quote.delete(conn);
 			
 			QuoteResponse quoteResponse = new QuoteResponse();
@@ -89,9 +89,10 @@ public class QuoteServlet extends AbstractServlet {
 			conn.setAutoCommit(false);
 			
 			Quote quote = new Quote();
-			quote.setQuoteId(parsedUrl.quoteId);
-			quote.setQuoteNumber(parsedUrl.quoteNumber);
-			quote.setRevisionNumber(parsedUrl.revisionNumber);
+			if(parsedUrl.quoteId != null){
+				quote.setQuoteId(Integer.parseInt(parsedUrl.quoteId));
+			} 
+			
 			quote.delete(conn);
 			System.out.println("QuoteServlet 69");
 			QuoteResponse quoteResponse = new QuoteResponse();
@@ -165,6 +166,7 @@ public class QuoteServlet extends AbstractServlet {
 				WebMessages webMessages = validateAdd(conn, quoteRequest);
 				if (webMessages.isEmpty()) {
 					try {
+			//			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, sessionUser.toString());
 						quote = doAdd(conn, quoteRequest, sessionUser);
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 						responseCode = ResponseCode.SUCCESS;
@@ -235,29 +237,45 @@ public class QuoteServlet extends AbstractServlet {
 	protected Quote doAdd(Connection conn, QuoteRequest quoteRequest, SessionUser sessionUser) throws Exception {
 		Date today = new Date();
 		Quote quote = new Quote();
-		quote.setAddedBy(sessionUser.getUserId());
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! FIX SESSION ISSUE
+		quote.setAddedBy(5);
+	//	quote.setAddedBy(sessionUser.getUserId());
+		
 		quote.setAddedDate(today);
 		
 		
-		quote.setQuoteId(quoteRequest.getQuoteId());
+	//	quote.setQuoteId(quoteRequest.getQuoteId());
 				//################## Add Remaining ##################
-		quote.setUpdatedBy(sessionUser.getUserId());
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! FIX SESSION ISSUE
+	//	quote.setUpdatedBy(sessionUser.getUserId());
+		quote.setUpdatedBy(5);
 		quote.setUpdatedDate(today);
 		
 		quote.setAddress(quoteRequest.getAddress());
 		quote.setBillToAddressId(quoteRequest.getBillToAddressId());
-		quote.setCopiedFromQuoteId(quoteRequest.getCopiedFromQuoteId());
+		if ( quoteRequest.getCopiedFromQuoteId() != null) {
+			quote.setCopiedFromQuoteId(quoteRequest.getCopiedFromQuoteId());
+		}
 		quote.setJobSiteAddressId(quoteRequest.getJobSiteAddressId());
 		quote.setLeadType(quoteRequest.getLeadType());
 		quote.setManagerId(quoteRequest.getManagerId());
 		quote.setName(quoteRequest.getName());
 		quote.setPaymentTerms(quoteRequest.getPaymentTerms());
-		quote.setProposalDate(quoteRequest.getProposalDate());
+		
+		if ( quoteRequest.getProposalDate() != null) {
+			quote.setProposalDate(quoteRequest.getProposalDate());
+		}
+		
+		if ( ! StringUtils.isBlank(quoteRequest.getAccountType())) {
+			quote.setAccountType(quoteRequest.getAccountType());
+		}
 		//quote.setQuoteGroupId(quoteRequest.getQuoteGroupId());
 	
 		quote.setQuoteNumber(quoteRequest.getQuoteNumber());
 		quote.setRevisionNumber(quoteRequest.getRevisionNumber());
-		quote.setSignedByContactId(quoteRequest.getSignedByContactId());
+		if ( quoteRequest.getSignedByContactId() != null) {
+			quote.setSignedByContactId(quoteRequest.getSignedByContactId());
+		}
 		quote.setStatus(quoteRequest.getStatus());
 		quote.setTemplateId(quoteRequest.getTemplateId());
 	
@@ -282,7 +300,7 @@ public class QuoteServlet extends AbstractServlet {
 		Date today = new Date();
 		Quote quote = new Quote();
 	
-		quote.setQuoteId(quoteRequest.getQuoteId());
+		//quote.setQuoteId(quoteRequest.getQuoteId());
 		//################## Add Remaining ##################
 		quote.setUpdatedBy(sessionUser.getUserId());
 		quote.setUpdatedDate(today);
@@ -352,24 +370,26 @@ public class QuoteServlet extends AbstractServlet {
 	
 	public class ParsedUrl extends ApplicationObject {
 		private static final long serialVersionUID = 1L;
-		public Integer quoteId;
-		public Integer quoteNumber;
-		public Integer revisionNumber;
+		public String quoteId;
+		public String quoteNumber;
+		public String revisionNumber;
 		public ParsedUrl(String url) throws RecordNotFoundException {
 			int idx = url.indexOf("/quote/");	
 			if ( idx < 0 ) {
 				throw new RecordNotFoundException();
 			}
-			String myString = url.substring(idx + "/quote/".length());			
+			String myString = url.substring(idx + "/quote/".length());	
+			//System.out.println(myString);
+			//AppUtils.logException(new Exception(myString));
 			String[] urlPieces = myString.split("/");
 			if ( urlPieces.length >= 1 ) {
-				this.quoteId = Integer.parseInt(urlPieces[0]);
+				this.quoteId = (urlPieces[0]);
 			}
 			if ( urlPieces.length >= 2 ) {
-				this.quoteNumber = Integer.parseInt(urlPieces[1]);
+				this.quoteNumber = (urlPieces[1]);
 			}
 			if ( urlPieces.length >= 3 ) {
-				this.revisionNumber = Integer.parseInt(urlPieces[2]);
+				this.revisionNumber = (urlPieces[2]);
 			}
 		}
 	}
