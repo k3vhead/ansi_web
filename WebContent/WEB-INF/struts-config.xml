@@ -46,6 +46,12 @@
             <forward name="valid" path="/divisionAdmin.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
+		<action
+            path="/jobMaintenance"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/jobMaintenance.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
      	<action
             path="/logoff"
             type="com.ansi.scilla.web.action.LogoffAction">

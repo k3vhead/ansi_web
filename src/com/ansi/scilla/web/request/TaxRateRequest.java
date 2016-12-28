@@ -13,8 +13,27 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
- * Used to request data from the TaxRate table
- * 
+ * Used to request data from the TaxRate table<br />
+ * <br />
+ * To get a list of all taxRates:<br />
+ * <br />
+ * 	Request object is not used (GET /taxRate/list)<br />
+ *  A TaxRateListResponse is returned<br />
+ *   <br />
+ * To get a particluar tax Rate:<br />
+ * 	Request object is not used (GET /taxRate/&lt;taxRateId&gt;)<br />
+ *  A TaxRateListResponse is returned<br />
+ *  <br />
+ * To add a new tax Rate:<br />
+ *  POST /taxRate/add with POSTED json string like:<br />
+ *  	{"location":"Webthing HQ","rate":123.45,"taxAmount":0.03,"effectiveDate":"12/01/2016"}<br />
+ *  A TaxRateResponse is returned<br />
+ *  <br />
+ * To upate an existing tax Rate:<br />
+ * 	POST /taxRate/&lt;taxRateId&gt; with POSTED json string like:<br />
+ * 		{"taxRateId":123,"location":"Webthing HQ","rate":123.45,"taxAmount":0.03,"effectiveDate":"12/01/2016"}<br />
+ *  A TaxRateResponse is returned<br />
+ * <br />
  * @author gagroce
  *
  */
@@ -32,20 +51,46 @@ public class TaxRateRequest extends AbstractRequest {
 		super();
 	}
 	
+	/**
+	 * Generate a TaxRateRequest from expected JSON string as defined above<br />
+	 * Exceptions are thrown when the JSON string does not match expectations<br />
+	 * <br />
+	 * @param jsonString
+	 * @throws IllegalAccessException
+	 * @throws InvocationTargetException
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
 	public TaxRateRequest(String jsonString) throws IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException {
 		this();
 		TaxRateRequest req = (TaxRateRequest) AppUtils.json2object(jsonString, TaxRateRequest.class);
 		BeanUtils.copyProperties(this, req);
 	}
 
+	/**
+	 * Flat tax amount
+	 * @return
+	 */
 	public BigDecimal getAmount() {
 		return amount;
 	}
 
+	/**
+	 * Flat tax amount.
+	 * One of amount or rate is required for add/update<br />
+	 * @param amount
+	 */
 	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
 	}
 
+	/**
+	 * Date that this tax rate becomes effective. Expecting "MM/DD/yyyy" in the json string.
+	 * Required for adding a new rate, or updating an existing rate
+	 * <br />
+	 * @return
+	 */
 	@RequiredForAdd
 	@RequiredForUpdate
 	public Date getEffectiveDate() {
@@ -57,6 +102,12 @@ public class TaxRateRequest extends AbstractRequest {
 		this.effectiveDate = effectiveDate;
 	}
 
+	/**
+	 * Location where this tax rate is applied.
+	 * Required for adding a new rate, or updating an existing rate
+	 * 
+	 * @return
+	 */
 	@RequiredForAdd
 	@RequiredForUpdate
 	public String getLocation() {
@@ -67,6 +118,11 @@ public class TaxRateRequest extends AbstractRequest {
 		this.location = location;
 	}
 
+	/**
+	 * Tax rate as a percentage of the billing total
+	 * One of amount or rate is required for add/update
+	 * @return
+	 */
 	public BigDecimal getRate() {
 		return rate;
 	}
@@ -75,7 +131,11 @@ public class TaxRateRequest extends AbstractRequest {
 		this.rate = rate;
 	}
 
-	@RequiredForAdd
+	/**
+	 * Unique identifier for this tax rate
+	 * Required when updating an existing tax rate
+	 * @return
+	 */
 	@RequiredForUpdate
 	public Integer getTaxRateId() {
 		return taxRateId;

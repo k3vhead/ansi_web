@@ -28,15 +28,15 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
  * 
  * The url for get will be one of:
  * 		/address    (retrieves everything)
- * 		/address/<addressId>      (filters address table by id)
- * 		/address/<addressId>/<name>	(filters address table id and name
- * 		/address/<addressId>/<name>/<status>	(retrieves a single record)
+ * 		/address/&lt;addressId&gt;      (filters address table by id)
+ * 		/address/&lt;addressId&gt;/&lt;name&gt;	(filters address table id and name
+ * 		/address/&lt;addressId&gt;/&lt;name&gt;/&lt;status&gt;	(retrieves a single record)
  * 
  * The url for adding a new record will be a POST to:
  * 		/address/add   with parameters in the JSON
  * 
  * The url for update will be a POST to:
- * 		/address/<addressId>/<name>/<status> with parameters in the JSON
+ * 		/address/&lt;addressId&gt;/&lt;name&gt;/&lt;status&gt; with parameters in the JSON
  * 
  * 
  * 

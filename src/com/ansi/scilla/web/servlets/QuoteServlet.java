@@ -25,19 +25,19 @@ import com.ansi.scilla.web.struts.SessionUser;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 /**
- * The url for delete will be of the form /quote/<quoteId>/<quoteNumber>/<revisionNumber>
+ * The url for delete will be of the form /quote/&lt;quoteId&gt;/<quoteNumber>/<revisionNumber>
  * 
  * The url for get will be one of:
  * 		/quote    (retrieves everything)
- * 		/quote/<quoteId>      (filters quote table by quoteId)
- * 		/quote/<quoteId>/<quoteNumber>	(filters quote table quoteId and quoteNumber
- * 		/quote/<quoteId>/<quoteNumber>/<revisionNumber>	(retrieves a single record)
+ * 		/quote/&lt;quoteId&gt;      (filters quote table by quoteId)
+ * 		/quote/&lt;quoteId&gt;/&lt;quoteNumber&gt;	(filters quote table quoteId and quoteNumber
+ * 		/quote/&lt;quoteId&gt;/&lt;quoteNumber&gt;/&lt;revisionNumber&gt;	(retrieves a single record)
  * 
  * The url for adding a new record will be a POST to:
  * 		/quote/add   with parameters in the JSON
  * 
  * The url for update will be a POST to:
- * 		/quote/<quoteId>/<quoteNumber>/<revisionNumber> with parameters in the JSON
+ * 		/quote/&lt;quoteId&gt;/&lt;quoteNumber&gt;/&lt;revisionNumber&gt; with parameters in the JSON
  * 
  * 
  * 
