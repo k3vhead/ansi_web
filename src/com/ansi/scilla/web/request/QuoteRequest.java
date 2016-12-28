@@ -46,27 +46,6 @@ import com.thewebthing.commons.lang.JsonException;
 			BeanUtils.copyProperties(this, req);
 		}
 		
-		public void setAddedBy(Integer addedBy) {
-			this.addedBy = addedBy;
-		}
-
-		@RequiredForAdd
-		@RequiredForUpdate
-		public Integer getAddedBy() {
-			return this.addedBy;
-		}
-
-		
-		public void setAddedDate(Date addedDate) {
-			this.addedDate = addedDate;
-		}
-
-		@RequiredForAdd
-		@RequiredForUpdate
-		public Date getAddedDate() {
-			return this.addedDate;
-		}
-
 		
 		public void setAddress(String address) {
 			this.address = address;
@@ -159,8 +138,7 @@ import com.thewebthing.commons.lang.JsonException;
 			this.proposalDate = proposalDate;
 		}
 
-		@RequiredForAdd
-		@RequiredForUpdate
+
 		public Date getProposalDate() {
 			return this.proposalDate;
 		}
@@ -215,8 +193,7 @@ import com.thewebthing.commons.lang.JsonException;
 			this.signedByContactId = signedByContactId;
 		}
 
-		@RequiredForAdd
-		@RequiredForUpdate
+
 		public Integer getSignedByContactId() {
 			return this.signedByContactId;
 		}

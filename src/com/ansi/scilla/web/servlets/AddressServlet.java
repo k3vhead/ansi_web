@@ -28,9 +28,8 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
  * 
  * The url for get will be one of:
  * 		/address    (retrieves everything)
- * 		/address/<addressId>      (filters address table by id)
- * 		/address/<addressId>/<name>	(filters address table id and name
- * 		/address/<addressId>/<name>/<status>	(retrieves a single record)
+ * 		/address/<addressId>      (retrieves a single record)
+
  * 
  * The url for adding a new record will be a POST to:
  * 		/address/add   with parameters in the JSON
@@ -59,8 +58,7 @@ public class AddressServlet extends AbstractServlet {
 			System.out.println(addressRequest);
 			Address address = new Address();
 			address.setAddressId(addressRequest.getAddressId());
-			address.setName(addressRequest.getName());
-			address.setStatus(addressRequest.getStatus());
+
 			address.delete(conn);
 			
 			AddressResponse addressResponse = new AddressResponse();
@@ -89,8 +87,6 @@ public class AddressServlet extends AbstractServlet {
 			
 			Address address = new Address();
 			address.setName(parsedUrl.name);
-			address.setAddressId(parsedUrl.addressId);
-			address.setStatus(parsedUrl.status);
 			address.delete(conn);
 			System.out.println("AddressServlet 69");
 			AddressResponse addressResponse = new AddressResponse();
@@ -192,8 +188,6 @@ public class AddressServlet extends AbstractServlet {
 					try {
 						Address key = new Address();
 						key.setAddressId(Integer.parseInt(urlPieces[0]));
-						key.setName(urlPieces[1]);
-						key.setStatus(urlPieces[2]);
 						System.out.println("Trying to do update");
 						address = doUpdate(conn, key, addressRequest, sessionUser);
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");

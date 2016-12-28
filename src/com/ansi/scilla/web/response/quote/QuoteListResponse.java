@@ -40,11 +40,11 @@ public class QuoteListResponse extends MessageResponse implements Serializable {
 		Collections.sort(this.quoteList);
 	}
 
-	public QuoteListResponse(Connection conn, Integer quoteId, Integer quoteNumber, Integer revisionNumber) throws Exception {
+	public QuoteListResponse(Connection conn, String quoteId, String quoteNumber, String revisionNumber) throws Exception {
 		Quote key = new Quote();
-		key.setQuoteId(quoteId);
-		key.setQuoteNumber(quoteNumber);
-		key.setRevisionNumber(revisionNumber);
+		key.setQuoteId(Integer.parseInt(quoteId));
+		key.setQuoteNumber(Integer.parseInt(quoteNumber));
+		key.setRevisionNumber(Integer.parseInt(revisionNumber));
 		List<Quote> quoteList = Quote.cast(key.selectSome(conn));
 		this.quoteList = new ArrayList<QuoteResponseRecord>();
 		for ( Quote quote : quoteList ) {

@@ -81,6 +81,18 @@
             <forward name="valid" path="/usertitleMaintenance.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
+        <action
+            path="/quoteMaintenance"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/quoteMaintenance.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+        <action
+            path="/addressLookup"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/addressLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
         
 
 <!--

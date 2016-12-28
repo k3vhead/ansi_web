@@ -144,7 +144,7 @@
 									<li>
 										<a href="#">Addresses</a>
 										<ul>
-											<li><a href="#">Lookup</a></li>
+											<li><html:link action="addressLookup">Lookup</html:link></li>
 											<li><a href="#">Maintenance</a></li>
 											<li><a href="#">New</a></li>
 										</ul>
@@ -154,7 +154,7 @@
 										<a href="#">Quotes</a>
 										<ul>
 											<li><a href="#">Lookup</a></li>
-											<li><a href="#">Maintenance</a></li>
+											<li><html:link action="quoteMaintenance">Maintenance</html:link></li>
 											<ansi:hasWrite>
 											<li><a href="#">New</a></li>
 											<li><a href="#">Templates</a></li>
