@@ -28,8 +28,8 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
  * The url for delete will be of the form /taxRate/<taxRateId>
  * 
  * The url for get will be one of:
- * 		/taxRate    			(retrieves everything)
- * 		/taxRate/<taxRateId>	(retrieves a single record)
+ * 		/taxRate/list    			(retrieves everything)
+ * 		/taxRate/<taxRateId>		(retrieves a single record)
  * 	For 2.0 probably adding state, county and city fields to taxRate table
  * 		/taxRate/<state>				(Retrieves state contains <state>)
  * 		/taxRate/<state>/<county>		(Retrieves and county contains <county>)
@@ -57,7 +57,38 @@ public class TaxRateServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
 			
+			String url = request.getRequestURI();
+			int idx = url.indexOf("/taxRate/");
+			String myString = url.substring(idx + "/taxRate/".length());				
+			String[] urlPieces = myString.split("/");
+			String command = urlPieces[0];
+
 			String jsonString = super.makeJsonString(request); //get request, change to Json
+			System.out.println(jsonString);
+			TaxRateRequest taxRateRequest = new TaxRateRequest(jsonString);
+			
+			TaxRate taxRate = null;
+			ResponseCode responseCode = null;
+			if ( urlPieces.length == 1 ) {   //  /<taxRateId> = 1 pieces
+				TaxRate key = new TaxRate();
+				if ( StringUtils.isNumeric(urlPieces[0])) { //Looks like a taxRateId
+					System.out.println("Trying to do delete");
+					key.setTaxRateId(Integer.valueOf(urlPieces[0]));
+					taxRate.delete(conn);
+					
+					TaxRateResponse taxRateResponse = new TaxRateResponse();
+					super.sendResponse(conn, response, ResponseCode.SUCCESS, taxRateResponse);
+					
+					conn.commit();
+				} else {
+					throw new RecordNotFoundException();
+				}
+			} else {
+				throw new RecordNotFoundException();
+			}
+
+
+/*			String jsonString = super.makeJsonString(request); //get request, change to Json
 			TaxRateRequest taxRateRequest = new TaxRateRequest(jsonString); //put Json into taxRateReques
 			System.out.println(taxRateRequest);//print request
 			TaxRate taxRate = new TaxRate();
@@ -68,6 +99,7 @@ public class TaxRateServlet extends AbstractServlet {
 			super.sendResponse(conn, response, ResponseCode.SUCCESS, taxRateResponse);
 			
 			conn.commit();
+*/
 		} catch ( Exception e) {
 			AppUtils.logException(e);
 			throw new ServletException(e);
