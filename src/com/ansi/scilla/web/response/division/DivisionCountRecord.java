@@ -16,9 +16,13 @@ public class DivisionCountRecord extends ApplicationObject {
 	private Integer userCount;
 	
 	public DivisionCountRecord(DivisionUserCount divisionUserCount) throws IllegalAccessException, InvocationTargetException {
-		super();
+		this();
 		BeanUtils.copyProperties(this, divisionUserCount.getDivision());
 		this.userCount = divisionUserCount.getUserCount();			
+	}
+
+	public DivisionCountRecord() {
+		super();
 	}
 
 	public BigDecimal getDefaultDirectLaborPct() {
