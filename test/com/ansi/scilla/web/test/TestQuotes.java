@@ -86,7 +86,7 @@ public class TestQuotes {
 	}
 	
 	private void testAdd() throws Exception {
-		String jsonString = "{\"quote_number\": 1,\"revision_number\": 1,\"signed_by_contact_id\": 1,\"job_site_address_id\": 2,\"bill_to_address_id\": 2,\"status\": 1,\"name\": \"keegan\",\"address\": \"123 fake st\",\"payment_terms\": \"30D\",\"template_id\": 3,\"manager_id\": 1,\"lead_type\": \"1\",\"added_by\": 5,\"added_date\": \"2016-12-28 15:02:38\",\"updated_by\": 5,\"updated_date\": \"2016-12-28 15:02:47\",\"account_type\": null}";
+		String jsonString = "{\"address\":\"123 fake st\",\"billToAddressId\":2,\"jobSiteAddressId\":2,\"leadType\":\"1\",\"managerId\":7,\"name\":\"Keegans Midwest Bank\",\"paymentTerms\":\"60D\",\"quoteNumber\":1,\"revisionNumber\":1,\"status\":0,\"templateId\":3}";
 		String URL = "http://127.0.0.1:8080/ansi_web/quote/";
 		String url = URL + "add";
 		System.out.println(url);

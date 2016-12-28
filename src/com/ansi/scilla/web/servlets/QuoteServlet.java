@@ -244,7 +244,7 @@ public class QuoteServlet extends AbstractServlet {
 		quote.setAddedDate(today);
 		
 		
-		quote.setQuoteId(quoteRequest.getQuoteId());
+	//	quote.setQuoteId(quoteRequest.getQuoteId());
 				//################## Add Remaining ##################
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! FIX SESSION ISSUE
 	//	quote.setUpdatedBy(sessionUser.getUserId());
