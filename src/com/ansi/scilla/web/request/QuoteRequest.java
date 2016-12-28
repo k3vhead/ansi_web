@@ -49,7 +49,7 @@ import com.thewebthing.commons.lang.JsonException;
 		public void setAddress(String address) {
 			this.address = address;
 		}
-
+ 
 		@RequiredForAdd
 		@RequiredForUpdate
 		public String getAddress() {

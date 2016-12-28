@@ -91,11 +91,8 @@ public class QuoteServlet extends AbstractServlet {
 			Quote quote = new Quote();
 			if(parsedUrl.quoteId != null){
 				quote.setQuoteId(Integer.parseInt(parsedUrl.quoteId));
-			} if(parsedUrl.quoteNumber != null){
-				quote.setQuoteNumber(Integer.parseInt(parsedUrl.quoteNumber));
-			} if(parsedUrl.revisionNumber != null){
-				quote.setRevisionNumber(Integer.parseInt(parsedUrl.revisionNumber));
-			}
+			} 
+			
 			quote.delete(conn);
 			System.out.println("QuoteServlet 69");
 			QuoteResponse quoteResponse = new QuoteResponse();
