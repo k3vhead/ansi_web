@@ -1,0 +1,17 @@
+com.ansi.scilla.web.action
+com.ansi.scilla.web.actionForm
+com.ansi.scilla.web.common
+com.ansi.scilla.web.exceptions
+com.ansi.scilla.web.request
+com.ansi.scilla.web.response
+com.ansi.scilla.web.response.address
+com.ansi.scilla.web.response.code
+com.ansi.scilla.web.response.contact
+com.ansi.scilla.web.response.division
+com.ansi.scilla.web.response.login
+com.ansi.scilla.web.response.qotd
+com.ansi.scilla.web.response.quote
+com.ansi.scilla.web.response.taxRate
+com.ansi.scilla.web.servlets
+com.ansi.scilla.web.struts
+com.ansi.scilla.web.tags

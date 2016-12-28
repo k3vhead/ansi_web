@@ -20,6 +20,7 @@ public class TestQuotes {
 	public static void main(String[] args) {
 		TesterUtils.makeLoggers();
 		try {
+			//new TestQuotes().testDelete2();
 			new TestQuotes().testAdd();
 			//new TestQuotes().go();
 //			new TestQuotes().testUri();
@@ -31,8 +32,8 @@ public class TestQuotes {
 	}
 	
 	private void testDelete() throws Exception {
-		//String response = TesterUtils.doDelete("http://127.0.0.1:8080/ansi_web/code/address/county/ac1", "{}");
-	//	System.out.println(response);
+		String response = TesterUtils.doDelete("http://127.0.0.1:8080/ansi_web/quote/21/1/1", "{}");
+		System.out.println(response);
 		
 	}
 
@@ -85,7 +86,15 @@ public class TestQuotes {
 	}
 	
 	private void testAdd() throws Exception {
-		String jsonString = "{\"address\":\"123 fake st\",\"billToAddressId\":12,\"jobSiteAddressId\":13,\"leadType\":\"goodLead\",\"managerId\":7,\"name\":\"Keegan's Midwest Bank\",\"paymentTerms\":\"60D\",\"quoteId\":3,\"quoteNumber\":2,\"revisionNumber\":1,\"status\":0,\"templateId\":0}";
+		String jsonString = "{\"quote_number\": 1,\"revision_number\": 1,\"signed_by_contact_id\": 1,\"job_site_address_id\": 2,\"bill_to_address_id\": 2,\"status\": 1,\"name\": \"keegan\",\"address\": \"123 fake st\",\"payment_terms\": \"30D\",\"template_id\": 3,\"manager_id\": 1,\"lead_type\": \"1\",\"added_by\": 5,\"added_date\": \"2016-12-28 15:02:38\",\"updated_by\": 5,\"updated_date\": \"2016-12-28 15:02:47\",\"account_type\": null}";
+		String URL = "http://127.0.0.1:8080/ansi_web/quote/";
+		String url = URL + "add";
+		System.out.println(url);
+		String json = TesterUtils.postJson(url, jsonString);
+		System.out.println(json);
+	}
+	private void testDelete2() throws Exception {
+		String jsonString = "{\"quote_id\": 21,\"quote_number\": 1,\"revision_number\": 1}";
 		String URL = "http://127.0.0.1:8080/ansi_web/quote/";
 		String url = URL + "add";
 		System.out.println(url);
