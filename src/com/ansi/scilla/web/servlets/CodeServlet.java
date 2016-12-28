@@ -29,7 +29,7 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
  * The url for delete will be of the form /code/<table>/<field>/<value>
  * 
  * The url for get will be one of:
- * 		/code    (retrieves everything)
+ * 		/code/list    (retrieves everything)
  * 		/code/<table>      (filters code table by tablename)
  * 		/code/<table>/<field>	(filters code table tablename and field
  * 		/code/<table>/<field>/<value>	(retrieves a single record)
@@ -48,36 +48,37 @@ public class CodeServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
 
+//	@Override
+//	protected void doDelete(HttpServletRequest request,
+//			HttpServletResponse response) throws ServletException, IOException {
+//		Connection conn = null;
+//		try {
+//			conn = AppUtils.getDBCPConn();
+//			conn.setAutoCommit(false);
+//			
+//			String jsonString = super.makeJsonString(request);
+//			CodeRequest codeRequest = new CodeRequest(jsonString);
+//			System.out.println(codeRequest);
+//			Code code = new Code();
+//			code.setTableName(codeRequest.getTableName());
+//			code.setFieldName(codeRequest.getFieldName());
+//			code.setValue(codeRequest.getValue());
+//			code.delete(conn);
+//			
+//			CodeResponse codeResponse = new CodeResponse();
+//			super.sendResponse(conn, response, ResponseCode.SUCCESS, codeResponse);
+//			
+//			conn.commit();
+//		} catch ( Exception e) {
+//			AppUtils.logException(e);
+//			throw new ServletException(e);
+//		} finally {
+//			AppUtils.closeQuiet(conn);
+//		}
+//	}
+	
 	@Override
 	protected void doDelete(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		Connection conn = null;
-		try {
-			conn = AppUtils.getDBCPConn();
-			conn.setAutoCommit(false);
-			
-			String jsonString = super.makeJsonString(request);
-			CodeRequest codeRequest = new CodeRequest(jsonString);
-			System.out.println(codeRequest);
-			Code code = new Code();
-			code.setTableName(codeRequest.getTableName());
-			code.setFieldName(codeRequest.getFieldName());
-			code.setValue(codeRequest.getValue());
-			code.delete(conn);
-			
-			CodeResponse codeResponse = new CodeResponse();
-			super.sendResponse(conn, response, ResponseCode.SUCCESS, codeResponse);
-			
-			conn.commit();
-		} catch ( Exception e) {
-			AppUtils.logException(e);
-			throw new ServletException(e);
-		} finally {
-			AppUtils.closeQuiet(conn);
-		}
-	}
-	
-	protected void doNewDelete(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		System.out.println("CodeServlet 54");
 		String url = request.getRequestURI();

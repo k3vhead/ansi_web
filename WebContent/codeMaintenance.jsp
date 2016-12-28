@@ -301,11 +301,11 @@
             	var $fieldName = $tableData[$rownum][1];
             	var $value = $tableData[$rownum][2];
             	$outbound = JSON.stringify({});
-            	$url = '/code/' + $tableName + "/" + $fieldName + "/" + $value;
-            	$outbound = JSON.stringify({'tableName':$tableName, 'fieldName':$fieldName,'value':$value});
+            	$url = 'code/' + $tableName + "/" + $fieldName + "/" + $value;
+            	//$outbound = JSON.stringify({'tableName':$tableName, 'fieldName':$fieldName,'value':$value});
             	var jqxhr = $.ajax({
             	    type: 'delete',
-            	    url: "/code/delete",
+            	    url: $url,
             	    data: $outbound,
             	    success: function($data) {
             	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
