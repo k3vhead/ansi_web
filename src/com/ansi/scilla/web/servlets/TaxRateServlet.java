@@ -170,6 +170,7 @@ public class TaxRateServlet extends AbstractServlet {
 		SessionUser sessionUser = AppUtils.getSessionUser(request);
 		String url = request.getRequestURI();
 //		String queryString = request.getQueryString();
+		System.out.println("TaxRateServlet: doPost() Url:" + url);
 		
 		Connection conn = null;
 		try {
@@ -181,14 +182,16 @@ public class TaxRateServlet extends AbstractServlet {
 			String myString = url.substring(idx + "/taxRate/".length());				
 			String[] urlPieces = myString.split("/");
 			String command = urlPieces[0];
+			System.out.println("TaxRateServlet: doPost() command:"+command);
 
 			String jsonString = super.makeJsonString(request);
-			System.out.println(jsonString);
+			System.out.println("TaxRateServlet: doPost() jsonString:"+jsonString);
 			TaxRateRequest taxRateRequest = new TaxRateRequest(jsonString);
 			
 			TaxRate taxRate = null;
 			ResponseCode responseCode = null;
 			if ( command.equals(ACTION_IS_ADD) ) {
+				System.out.println("TaxRateServlet: doPost() action is add");
 				WebMessages webMessages = validateAdd(conn, taxRateRequest);
 				if (webMessages.isEmpty()) {
 					try {
@@ -213,14 +216,14 @@ public class TaxRateServlet extends AbstractServlet {
 				super.sendResponse(conn, response, responseCode, taxRateResponse);
 				
 			} else if ( urlPieces.length == 1 ) {   //  /<taxRateId> = 1 pieces
-				System.out.println("Doing Update Stuff");				
+				System.out.println("TaxRateServlet: doPost() action is update");
 				WebMessages webMessages = validateAdd(conn, taxRateRequest);
 				if (webMessages.isEmpty()) {
 					System.out.println("passed validation");
 					try {
 						TaxRate key = new TaxRate();
 						if ( StringUtils.isNumeric(urlPieces[0]) ) {//looks like a taxRateId
-							System.out.println("Trying to do update");
+							System.out.println("TaxRateServlet: doPost() trying to update:"+urlPieces[0]);
 							key.setTaxRateId(Integer.valueOf(urlPieces[0]));
 							taxRate = doUpdate(conn, key, taxRateRequest, sessionUser);
 							String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
