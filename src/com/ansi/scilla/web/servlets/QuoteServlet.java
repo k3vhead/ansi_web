@@ -280,7 +280,7 @@ public class QuoteServlet extends AbstractServlet {
 		quote.setTemplateId(quoteRequest.getTemplateId());
 	
 		try {
-			quote.insertWithNoKey(conn);
+			quote.insertWithKey(conn);
 		} catch ( SQLException e) {
 			if ( e.getMessage().contains("duplicate key")) {
 				throw new DuplicateEntryException();
