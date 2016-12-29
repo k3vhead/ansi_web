@@ -42,7 +42,7 @@ $(function() {
 			</tr>
 			<tr>
 				<td>Address:</td>
-				<td colspan="3"><input type="text" name="<%=namespace %>_address" style="width:90%" /></td>
+				<td colspan="3"><input type="text" name="<%=namespace %>_address1" style="width:90%" /></td>
 			</tr>
 			<tr>
 				<td>Address 2:</td>
@@ -55,8 +55,8 @@ $(function() {
 				<td><input type="text" name="<%=namespace %>_zip" style="width:90%" /></td>
 			</tr>
 			<tr>
-				<td>Country:</td>
-				<td><input type="text" name="<%=namespace %>_country" style="width:90%" /></td>
+				<td>County:</td>
+				<td><input type="text" name="<%=namespace %>_counry" style="width:90%" /></td>
 				<td>&nbsp;</td>
 				<td>&nbsp;</td>
 			</tr>

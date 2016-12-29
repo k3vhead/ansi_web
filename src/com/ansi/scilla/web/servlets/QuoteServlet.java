@@ -168,7 +168,7 @@ public class QuoteServlet extends AbstractServlet {
 				WebMessages webMessages = validateAdd(conn, quoteRequest);
 				if (webMessages.isEmpty()) {
 					try {
-			//			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, sessionUser.toString());
+//						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, sessionUser.toString());
 						quote = doAdd(conn, quoteRequest, sessionUser);
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 						responseCode = ResponseCode.SUCCESS;
@@ -241,15 +241,15 @@ public class QuoteServlet extends AbstractServlet {
 		Quote quote = new Quote();
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! FIX SESSION ISSUE  *ASK DAVE
 		quote.setAddedBy(5);
-	//	quote.setAddedBy(sessionUser.getUserId());
+//		quote.setAddedBy(sessionUser.getUserId());
 		
 		quote.setAddedDate(today);
 		
 		
-	//	quote.setQuoteId(quoteRequest.getQuoteId());
-				//################## Add Remaining ##################
+//		quote.setQuoteId(quoteRequest.getQuoteId());
+
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! FIX SESSION ISSUE  *ASK DAVE
-	//	quote.setUpdatedBy(sessionUser.getUserId());
+//		quote.setUpdatedBy(sessionUser.getUserId());
 		quote.setUpdatedBy(5);
 		quote.setUpdatedDate(today);
 		
@@ -271,7 +271,7 @@ public class QuoteServlet extends AbstractServlet {
 		if ( ! StringUtils.isBlank(quoteRequest.getAccountType())) {
 			quote.setAccountType(quoteRequest.getAccountType());
 		}
-		//quote.setQuoteGroupId(quoteRequest.getQuoteGroupId());
+//		quote.setQuoteGroupId(quoteRequest.getQuoteGroupId());
 	
 		quote.setQuoteNumber(quoteRequest.getQuoteNumber());
 		quote.setRevisionNumber(quoteRequest.getRevisionNumber());
@@ -302,8 +302,8 @@ public class QuoteServlet extends AbstractServlet {
 		Date today = new Date();
 		Quote quote = new Quote();
 	
-		//quote.setQuoteId(quoteRequest.getQuoteId());
-		//################## Add Remaining ##################
+//		quote.setQuoteId(quoteRequest.getQuoteId());
+	
 		quote.setUpdatedBy(sessionUser.getUserId());
 		quote.setUpdatedDate(today);
 		
@@ -316,7 +316,7 @@ public class QuoteServlet extends AbstractServlet {
 		quote.setName(quoteRequest.getName());
 		quote.setPaymentTerms(quoteRequest.getPaymentTerms());
 		quote.setProposalDate(quoteRequest.getProposalDate());
-		//quote.setQuoteGroupId(quoteRequest.getQuoteGroupId());
+//		quote.setQuoteGroupId(quoteRequest.getQuoteGroupId());
 	
 		quote.setQuoteNumber(quoteRequest.getQuoteNumber());
 		quote.setRevisionNumber(quoteRequest.getRevisionNumber());
@@ -324,8 +324,8 @@ public class QuoteServlet extends AbstractServlet {
 		quote.setStatus(quoteRequest.getStatus());
 		quote.setTemplateId(quoteRequest.getTemplateId());
 		
-		// if we update something that isn't there, a RecordNotFoundException gets thrown
-		// that exception get propagated and turned into a 404
+//		 if we update something that isn't there, a RecordNotFoundException gets thrown
+//		 that exception get propagated and turned into a 404
 		quote.update(conn, key);		
 		return quote;
 	}
@@ -381,8 +381,8 @@ public class QuoteServlet extends AbstractServlet {
 				throw new RecordNotFoundException();
 			}
 			String myString = url.substring(idx + "/quote/".length());	
-			//System.out.println(myString);
-			//AppUtils.logException(new Exception(myString));
+//			System.out.println(myString);
+//			AppUtils.logException(new Exception(myString));
 			String[] urlPieces = myString.split("/");
 			if ( urlPieces.length >= 1 ) {
 				this.quoteId = (urlPieces[0]);

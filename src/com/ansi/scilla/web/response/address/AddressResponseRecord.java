@@ -113,26 +113,6 @@ public class AddressResponseRecord extends ApplicationObject implements Comparab
 	}
 
 
-	public void setUpdatedBy(Integer updatedBy) {
-		this.updatedBy = updatedBy;
-	}
-
-
-	public Integer getUpdatedBy() {
-		return this.updatedBy;
-	}
-
-
-	public void setUpdatedDate(Date updatedDate) {
-		this.updatedDate = updatedDate;
-	}
-
-
-	public Date getUpdatedDate() {
-		return this.updatedDate;
-	}
-
-
 	public void setZip(String zip) {
 		this.zip = zip;
 	}

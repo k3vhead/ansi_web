@@ -99,6 +99,12 @@
             <forward name="valid" path="/addressLookup.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
+         <action
+            path="/addressMaintenance"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/addressMaintenance.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
         
 
 <!--
