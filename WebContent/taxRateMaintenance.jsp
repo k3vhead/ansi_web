@@ -39,30 +39,31 @@
 				width:300px;
 				padding:15px;
 			}
-			/* #col_location {} */
-			#col_id{	
+
+			#col_01{							/* id column 		*/
 				display : none; 
 				}
-			#col_rat{	text-align: right;	}
-			#col_amt{	text-align: right;	}
-			#col_eDt{	text-align: right;	}
-			#col_aBy{ 	text-align: center;	}
-			#col_aDt{	text-align: right;	}
-			#col_uBy{	text-align: center;	}
-			#col_uDt{	text-align: right;	}
+			#col_02{	text-align: left;	}  /* location  		*/
+			#col_03{	text-align: right;	}  /* rate 				*/
+			#col_04{ 	text-align: right;	}  /* amount 			*/
+			#col_05{	text-align: right;	}  /* effectiveDate 	*/
+			#col_06{	text-align: center;	}  /* not used 		 	*/
+			#col_07{	text-align: center;	}  /* not used 		 	*/
+			#col_08{	text-align: center;	}  /* not used 		 	*/
+			#col_09{	text-align: center;	}  /* not used 		 	*/
 
 			/* #col_location {} */
-			#col_id_hdr{	
+			#col_01_hdr{							/* id column 		*/
 				display : none; 
 				}
-			#col_loc_hdr{	text-align: left;	}
-			#col_rat_hdr{	text-align: right;	}
-			#col_amt_hdr{	text-align: right;	}
-			#col_eDt_hdr{	text-align: right;	}
-			#col_aBy_hdr{ 	text-align: center;	}
-			#col_aDt_hdr{	text-align: right;	}
-			#col_uBy_hdr{	text-align: center;	}
-			#col_uDt_hdr{	text-align: right;	}
+			#col_02_hdr{	text-align: left;	} 	/* location  		*/
+			#col_03_hdr{	text-align: right;	} 	/* rate 			*/
+			#col_04_hdr{	text-align: right;	} 	/* amount 			*/
+			#col_05_hdr{	text-align: right;	} 	/* effective date 	*/
+			#col_06_hdr{ 	text-align: center;	} 	/* not used 		*/
+			#col_07_hdr{	text-align: right;	} 	/* not used 		*/
+			#col_08_hdr{	text-align: center;	} 	/* not used 		*/
+			#col_09_hdr{	text-align: right;	} 	/* not used 		*/
 
         </style>
         
@@ -83,14 +84,6 @@
 						$.each($data.data.taxRateList,	function(index, value) 		{	addRow(index, value);});
 
 					    doFunctionBinding();
-						/*
-						// bind the click events for update and delete respectively
-						$('.updAction').bind("click", 	function($clickevent) 	{	doUpdate($clickevent);});
-						$('.delAction').bind("click", 	function($clickevent) 	{	doDelete($clickevent);});
-						// setup the rollover effect on each row
-						$('.dataRow').bind("mouseover", function() { $(this).css('background-color','#CCCCCC');});
-						$('.dataRow').bind("mouseout", 	function() { $(this).css('background-color','transparent');});
-						*/
 					},
 				error : {
 					function($data) { console.log("about to call .each function...");}
@@ -118,63 +111,83 @@
 				return _fs;
 			}
 
-			function addRow(index, $code) {	
-				var $rownum = index + 1;
-				var row = '<tr class="dataRow">';
-				row = row + '<td id="col_id">' + $code.taxRateId  + '</td>';
-				row = row + '<td id="col_loc">' + $code.location  + '</td>';
-				row = row + '<td id="col_rat">' + ($code.rate*100) + '%</td>';
-				row = row + '<td id="col_amt">' + $code.amount + '</td>'; 
-				row = row + '<td id="col_eDt">' + formatDate($code.effectiveDate) + '</td>';
-
+			function makeRow($code, $data_item_id){
+				var _td = '';
+				_td = _td + '	<td id="col_01">' + $data_item_id  + 		'</td>';
+				_td = _td + '	<td id="col_02">' + $code.location + 		'</td>';
+				_td = _td + '	<td id="col_03">' + $code.rate + 			'</td>';
+				_td = _td + '	<td id="col_04">' + $code.amount + 			'</td>'; 
+				_td = _td + '	<td id="col_05">' + $code.effectiveDate + 	'</td>';
        	    	<ansi:hasPermission permissionRequired="SYSADMIN">
 					<ansi:hasWrite>
-						row = row + '<td>';
-						row = row + '<a href="#" class="updAction" data-row="' + $rownum +'"><span class="green fa fa-pencil" ari-hidden="true"></span></a> | ';
-						row = row + '<a href="#" class="delAction" data-row="' + $rownum +'"><span class="red fa fa-trash" aria-hidden="true"></span></a>';
-						row = row + '</td>';
+						_td = _td + '<td>';
+						_td = _td + '<a href="#" class="updAction" data-item-id="' + $data_item_id +'"><span class="green fa fa-pencil" ari-hidden="true"></span></a> | ';
+						_td = _td + '<a href="#" class="delAction" data-item-id="' + $data_item_id +'"><span class="red fa fa-trash" aria-hidden="true"></span></a>';
+						_td = _td + '</td>';
 					</ansi:hasWrite>
        			</ansi:hasPermission>
+				return _td;
+			}
+		
+			function addRow(index, $code) {					
+				var $data_item_id = $code.taxRateId;
+				var $rownum = index + 1;
+				var row = '';
+				row = row + '<tr class="dataRow" id="data-item-id-' + $data_item_id +'">';
+				row = row + makeRow($code, $data_item_id);
        			row = row + '</tr>';
        			//$('#displayTable tr:last').before(row);	
        			$('#displayTable').append(row);
+				console.log("addRow() : Row being added = " + row)				
 			}
 						
 			function doUpdate($clickevent) {
+				console.log("doUpdate(): We're in");
 				$clickevent.preventDefault();
 				clearAddForm();
 
 				// figure out which row was clicked.. 
-				var $rownum = $clickevent.currentTarget.attributes['data-row'].value;
+				var $data_item_id = $clickevent.currentTarget.attributes['data-item-id'].value;
+				console.log("doUpdate(): Data Item Id = " +  $data_item_id);
 
 				// Add a title to the Add Form
 				$("#addFormTitle").html("Update a Tax Code");
 				// attach a data item to the add form containing the row number being updated
-				$('#addForm').data('rownum',$rownum);
+				$('#addForm').data('data_item_id',$data_item_id);
 				
-				// Use the rownum to build a locator for the row to be found.. 
-                var $rowId = eval($rownum) + 1;
-            	var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")"
-            	var $row = $($rowFinder)  
+				// Use the data_item_id to build a locator for the row to be found.. 
+                //var $data_item_id = eval($rownum) + 1;
+            	//var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")"
+            	var $rowFinder = '#data-item-id-' + $data_item_id
+				console.log("doUpdate(): rowfinder value = " + $rowFinder);
+            	//var $row = $($rowFinder)  
+				var $row = $($rowFinder)
+				console.log("doUpdate(): html for row to update = " + $($rowFinder).text());
 
 				// get all cells in the row.. 
             	var tdList = $row.children("td");
+				console.log("doUpdate(): td list = " + tdList.text());
 
 				// Store row value in local vars.. 
 				var $taxRateId = $row.children("td")[0].textContent;
             	var $location = $row.children("td")[1].textContent;
-            	var $taxRate = $row.children("td")[2].textContent;
+            	var $rate = $row.children("td")[2].textContent;
             	var $amount = $row.children("td")[3].textContent;
             	var $effectiveDate = $row.children("td")[4].textContent;
 				
-				console.log("Setting addForm Id to : " + $taxRateId);
+				console.log("doUpdate(): taxRateId = " + $taxRateId);
+				console.log("doUpdate(): location = " + $location);
+				console.log("doUpdate(): rate = " + $rate);
+				console.log("doUpdate(): amount = " + $amount);
+				console.log("doUpdate(): effectiveDate = " + $effectiveDate);
 
 				// populate addform with existing values.. 
-				$('#addForm').data('taxRateId',$taxRateId);
+				console.log("doUpdate(): Setting addForm.data-item-id to " + $data_item_id);
+				$('#addForm').data('data-item-id',$data_item_id);
             	$("#addForm input[name='location']").val($location);
-            	$("#addForm input[name='taxRate']").val($taxRate);
-            	$("#addForm input[name='taxAmount']").val($amount);
-            	$("#addForm input[name='effectiveDate']").val($effectiveDate);
+            	$("#addForm input[name='rate']").val($rate);
+            	$("#addForm input[name='amount']").val($amount);
+				$("#addForm input[name='effectiveDate']").val($effectiveDate);
             	
 				$.each( $('#addForm :input'), function(index, value) {
 					markValid(value);
@@ -189,8 +202,8 @@
 						
 			function doDelete($clickevent) {
 				$clickevent.preventDefault();
-				var rownum = $clickevent.currentTarget.attributes['data-row'].value;
-				$('#confirmDelete').data('rownum',rownum);
+				var data_item_id = $clickevent.currentTarget.attributes['data-item-id'].value;
+				$('#confirmDelete').data('data-item-id',data_item_id);
              	$('#confirmDelete').bPopup({
 					modalClose: false,
 					opacity: 0.6,
@@ -212,12 +225,10 @@
 					$(this).css('background-color','transparent');
 				});
 			}
-			
-
 
 			$("#goUpdate").click( function($clickevent) {
 				// Add the new taxRate to the database
-				console.log("ok, we're in the goUpdate routine");
+				console.log("#goUpdate() : ok, we're in the goUpdate routine");
 				$clickevent.preventDefault();
 				$outbound = {};
 
@@ -227,33 +238,35 @@
 						$fieldName = value.name;
 						$id = "#addForm input[name='" + $fieldName + "']";
 						$val = $($id).val();
+						console.log("#goUpdate() : outbound " + $fieldName + " = " + $val);
 						$outbound[$fieldName] = $val;
 					}
 				});
+				console.log("#goUpdate() : copied values from for to data array ");
 
 				// Check to see if this is a new or existing record. 
 				// If rownum is empty.. assumed to be a new record.
-				if ( $('#addForm').data('rownum') == null ) {
+				if ( $('#addForm').data('data-item-id') == null ) {
 					// if this is a new record...
 					$url = "taxRate/add";
-					console.log("ok, we're an add.. taxRate/add");
+					console.log("#goUpdate() : this is a new record.. using url " + $url);
 				} else {
 					// if this is an existing record.. 
 					
 					// copy the rowdata from the display table 
 					//   ..into $tableData 
 					$rownum = $('#addForm').data('rownum');
-					$taxRateId = $('#addForm').data('taxRateId');
+					var $data_item_id = $('#addForm').data('data-item-id');
 					var $tableData = [];
 
-					$url = "taxRate/" + $taxRateId;
-					console.log("ok, we're an update.." + $url);
-					console.log("Sending Outbound info " + $outbound)
+					$url = "taxRate/" + $data_item_id;
+					console.log("#goUpdate() : this is an existing record.. using url " + $url);					
+					console.log("#goUpdate() : Sending Outbound info " + $outbound)
 				}
 				
 				// do the ajax call to add/update the fields.. 
-				console.log("and we're making the call to ajax..." + $url);
-				console.log("outbound var: " + JSON.stringify($outbound));
+				console.log("#goUpdate() : and we're making the call to ajax..." + $url);
+				console.log("#goUpdate() : outbound var: " + JSON.stringify($outbound));
 				var jqxhr = $.ajax({
 					type: 'POST',
 					url: $url,
@@ -263,12 +276,33 @@
 						if ( $data.responseHeader.responseCode == 'SUCCESS') {
 							if ( $url == "taxRate/add" ) {
 								var count = $('#displayTable tr').length - 1;
+								console.log("goUpdate() : url = " + $url);
+								console.log("goUpdate() : Successfully Added the Row!");
+								console.log("goUpdate() : Attempting to add the new row to the display table!");
+								console.log("goUpdate() : We're very excited!");
+								console.log("goUpdate() : now calling addRow(" + count + ',' + $data.data.code + ")");
 								addRow(count, $data.data.code);
 							} else {
-				            	var $rownum = $('#addForm').data('rownum');
-				                var $rowId = eval($rownum) + 1;
-				            	var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")"
-				            	var $rowTd = makeRow($data.data.code, $rownum);
+								console.log("goUpdate() : url = " + $url);
+								$data_item_id = $('#addForm').data('data-item-id');
+								console.log("goUpdate() : data_item_id = " + $data_item_id);
+				            	//var $rownum = $('#addForm').data('rownum');
+				                //var $rowId = eval($rownum) + 1;
+            					var $rowFinder = '#data-item-id-' + $data_item_id;
+								console.log("goUpdate() : rowFinder = " + $rowFinder);
+								
+				            	//var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")"
+								console.log("goUpdate() : Successfully updated the Row!");
+								console.log("goUpdate() : Attempting to update the data in the correct row to the display table!");
+								console.log("goUpdate() : We're very excited!");
+
+								console.log("goUpdate() : code.taxRateId = " + $data.taxRateId);
+								console.log("goUpdate() : code.location = " + $("#addForm input[name='location']").val);
+								console.log("goUpdate() : code.amount = " + $("#addForm input[name='amount']").val);
+								console.log("goUpdate() : code.rate = " + $("#addForm input[name='rate']").val);
+								console.log("goUpdate() : code.effectiveDate = " + $("#addForm input[name='effectiveDate']").val);
+								console.log("goUpdate() : calling makeRow using data-item-id " + $data_item_id);
+				            	var $rowTd = makeRow($outbound, $data_item_id);
 				            	$($rowFinder).html($rowTd);
 							}
 							doFunctionBinding();
@@ -302,11 +336,15 @@
 			
 			$("#addButton").click( function($clickevent) {
 				$clickevent.preventDefault();
+				// Add a title to the Add Form
+				$("#addFormTitle").html("Add a New Tax Code");
+
              	$('#addFormDiv').bPopup({
 					modalClose: false,
 					opacity: 0.6,
 					positionStyle: 'fixed' //'fixed' or 'absolute'
-				});				
+
+				});	
 			});
 			
 			$("#cancelUpdate").click( function($clickevent) {
@@ -346,17 +384,17 @@
 				
 				// get the row number to be deleted from the confirm delete popup
 				// ( rownum is a data item added to the popup when it was created )
-            	var $rownum = $('#confirmDelete').data('rownum');
+				var $data_item_id = $('#confirmDelete').data('data-item-id');
 
 				// use $rownum to extract the column values into variables
-            	var $taxRateId = $tableData[$rownum][0];
+            	// var $taxRateId = $tableData[$rownum][0];
 
 				// create the url to call to delete this row
-				var $deleteUrl = 'taxRate/' + $taxRateId;
+				var $deleteUrl = 'taxRate/' + $data_item_id;
 				console.debug($deleteUrl);
 
             	// create a JSON array of pairs containing the column values.
-				$outbound = JSON.stringify({'taxRateId':$taxRateId});
+				$outbound = JSON.stringify({'taxRateId':$data_item_id});
             	console.debug($outbound);
 
 
@@ -369,7 +407,7 @@
             	    success: function($data) {
             	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
 						if ( $data.responseHeader.responseCode == 'SUCCESS') {
-							$rowfinder = "tr:eq(" + $rownum + ")"
+							$rowfinder = "#data-item-id-" + $data_item_id
 							$("#displayTable").find($rowfinder).remove();
 							$('#confirmDelete').bPopup().close();
 						}
@@ -449,17 +487,17 @@
 
     	<table id="displayTable">
     		<tr>
-				<th id="col_id_hdr">taxRate Id</th>
-				<th id="col_loc_hdr">Location</th>
+				<th id="col_01_hdr">taxRate Id</th>
+				<th id="col_02_hdr">Location</th>
 				<!-- For 2.0 Maybe ~kjw
 					<th>State</th>
 					<th>County</th>
 					<th>City</th>
 					<th>Type</th>
 				-->
-				<th id="col_rat_hdr">Rate</th>
-				<th id="col_amt_hdr">Amount</th>
-				<th id="col_eDt_hdr">Effective Date</th>
+				<th id="col_03_hdr">Rate</th>
+				<th id="col_04_hdr">Amount</th>
+				<th id="col_05_hdr">Effective Date</th>
 				<!--
 				<th id="col_aBy_hdr">Added By</th>
 				<th id="col_aDt_hdr">Added Date</th>
@@ -469,9 +507,13 @@
     		</tr>
     	</table>
 
-    	<div class="addButtonDiv">
-    		<input type="button" id="addButton" class="prettyWideButton" value="New" />
-    	</div>
+		<ansi:hasPermission permissionRequired="SYSADMIN">
+			<ansi:hasWrite>
+				<div class="addButtonDiv">
+					<input type="button" id="addButton" class="prettyWideButton" value="New" />
+				</div>
+			</ansi:hasWrite>
+		</ansi:hasPermission>
     	
     	<ansi:hasPermission permissionRequired="SYSADMIN">
     		<ansi:hasWrite>
@@ -481,6 +523,7 @@
 		    		<input type="button" id="doDelete" value="Yes" />
 		    	</div>		    	
 		    	<div id="addFormDiv">
+		    		<h2 id="addFormTitle"></h2>					
 		    		<form action="#" method="post" id="addForm">
 		    			<table>
 		    				<tr>
@@ -489,31 +532,31 @@
 		    						<input type="text" name="location" data-required="true" data-valid="validLocation" />
 		    						<i id="validTable" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="tableNameErr"></span></td>
+		    					<td><span class="err" id="locationErr"></span></td>
 		    				</tr>
 							<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Tax Rate:</span></td>
 		    					<td>
-		    						<input type="text" name="taxRate" data-required="true" data-valid="validTaxRate" />
+		    						<input type="text" name="rate" data-required="true" data-valid="validRate" />
 		    						<i id="validField" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="fieldNameErr"></span></td>
+		    					<td><span class="err" id="rateErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Tax Amount:</span></td>
 		    					<td>
-		    						<input type="text" name="taxAmount" data-required="true" data-valid="validTaxAmount" />
+		    						<input type="text" name="amount" data-required="true" data-valid="validtaxAmount" />
 		    						<i id="validField" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="fieldNameErr"></span></td>
+		    					<td><span class="err" id="amountErr"></span></td>
 		    				</tr>
 		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">effective Date:</span></td>
+		    					<td><span class="required">*</span><span class="formLabel">Effective Date:</span></td>
 		    					<td>
 		    						<input type="text" class="dateField" name="effectiveDate" data-required="true" data-valid="validEffectiveDate" />
 		    						<i id="validValue" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="valueErr"></span></td>
+		    					<td><span class="err" id="effectiveDateErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td colspan="2" style="text-align:center;">
