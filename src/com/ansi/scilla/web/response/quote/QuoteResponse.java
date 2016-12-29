@@ -28,11 +28,11 @@ public class QuoteResponse extends MessageResponse implements Serializable {
 		
 	}
 
-	public Quote getCode() {
+	public Quote getQuote() {
 		return quote;
 	}
 
-	public void setCode(Quote quote) {
+	public void setQuote(Quote quote) {
 		this.quote = quote;
 	}
 

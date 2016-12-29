@@ -89,8 +89,8 @@ public class QuoteServlet extends AbstractServlet {
 			conn.setAutoCommit(false);
 			
 			Quote quote = new Quote();
-			if(parsedUrl.quoteId != null){
-				quote.setQuoteId(Integer.parseInt(parsedUrl.quoteId));
+			if(parsedUrl.quoteNumber != null){
+				quote.setQuoteId(Integer.parseInt(parsedUrl.quoteNumber));
 			} 
 			
 			quote.delete(conn);
@@ -122,6 +122,8 @@ public class QuoteServlet extends AbstractServlet {
 				// we're getting all the codes in the database
 				QuoteListResponse quotesListResponse = makeQuotesListResponse(conn);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, quotesListResponse);
+			} else if(parsedUrl.quoteId.equals("delete")){
+				doNewDelete(request,response);			
 			} else {
 				QuoteListResponse quotesListResponse = makeFilteredListResponse(conn, parsedUrl);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, quotesListResponse);
@@ -187,7 +189,7 @@ public class QuoteServlet extends AbstractServlet {
 				QuoteResponse quoteResponse = new QuoteResponse(quote, webMessages);
 				super.sendResponse(conn, response, responseCode, quoteResponse);
 				
-			} else if ( urlPieces.length == 3 ) {   //  /<tableName>/<fieldName>/<value> = 3 pieces
+			}  else if ( urlPieces.length == 3 ) {   //  /<tableName>/<fieldName>/<value> = 3 pieces
 				System.out.println("Doing Update Stuff");				
 				WebMessages webMessages = validateAdd(conn, quoteRequest);
 				if (webMessages.isEmpty()) {
@@ -237,7 +239,7 @@ public class QuoteServlet extends AbstractServlet {
 	protected Quote doAdd(Connection conn, QuoteRequest quoteRequest, SessionUser sessionUser) throws Exception {
 		Date today = new Date();
 		Quote quote = new Quote();
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! FIX SESSION ISSUE
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! FIX SESSION ISSUE  *ASK DAVE
 		quote.setAddedBy(5);
 	//	quote.setAddedBy(sessionUser.getUserId());
 		
@@ -246,7 +248,7 @@ public class QuoteServlet extends AbstractServlet {
 		
 	//	quote.setQuoteId(quoteRequest.getQuoteId());
 				//################## Add Remaining ##################
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! FIX SESSION ISSUE
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! FIX SESSION ISSUE  *ASK DAVE
 	//	quote.setUpdatedBy(sessionUser.getUserId());
 		quote.setUpdatedBy(5);
 		quote.setUpdatedDate(today);

@@ -34,6 +34,8 @@ import com.thewebthing.commons.lang.JsonException;
 		private Integer status;
 		private Integer templateId;
 		private String accountType;
+		private Integer addedBy;
+		private Date addedDate;
 		
 		public QuoteRequest() {
 			super();
@@ -45,6 +47,24 @@ import com.thewebthing.commons.lang.JsonException;
 			BeanUtils.copyProperties(this, req);
 		}
 		
+
+		public Integer getAddedBy() {
+			return this.addedBy;
+		}
+		
+		
+		public void setAddedBy(Integer addedBy) {
+			this.addedBy = addedBy;
+		}
+
+		
+		public Date getAddedDate() {
+			return this.addedDate;
+		}
+		
+		public void setAddedDate(Date addedDate) {
+			this.addedDate = addedDate;
+		}
 		
 		public void setAddress(String address) {
 			this.address = address;

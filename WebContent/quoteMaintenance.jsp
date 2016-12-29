@@ -21,6 +21,7 @@
     
     
     <tiles:put name="headextra" type="string">
+    	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
         <style type="text/css">
 			#confirmDelete {
 				display:none;
@@ -40,62 +41,114 @@
 				width:400px;
 				padding:15px;
 			}
+			#delData {
+				margin-top:15px;
+				margin-bottom:15px;
+			}
+			#jobSiteAddress {
+				border:solid 1px #000000;
+			}
+			#billToAddress {
+				border:solid 1px #000000;
+			}
+			#quoteTable {
+				border:solid 1px #000000;
+			}
+			.quoteButton {
+				background-color:#F0F0F0; 
+				color:#000000; 
+				width:70px;
+				min-height:25px;
+			}
+			.quoteSelect {
+				max-width: 150px;
+			    min-width: 150px;
+				width:150px !important;
+			}
+			.quoteSelect option{
+				max-width: 125px;
+			    min-width: 125px;
+				width:125px !important;
+			}
+			.labelSpan {
+				display: inline-block;
+				width: 80px !important;
+			}
         </style>
-        
-        <script type="text/javascript">
-        $(function() {        
-        	var jqxhr = $.ajax({
-				type: 'GET',
-				url: 'quote/list',
-				data: {},
-				success: function($data) {
-					$.each($data.data.quoteList, function(index, value) {
-						addRow(index, value);
-					});
-					doFunctionBinding();
-				},
-				statusCode: {
-					403: function($data) {
-						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-					} 
-				},
-				dataType: 'json'
-			});
-			
-			function addRow(index, $code) {	
-				var $rownum = index + 1;
-       			//$('#displayTable tr:last').before(row);
-       			rowTd = makeRow($code, $rownum);
-       			row = '<tr class="dataRow">' + rowTd + "</tr>";
-       			$('#displayTable').append(row);
-			}
-			
-			function doFunctionBinding() {
-				$('.updAction').bind("click", function($clickevent) {
-					doUpdate($clickevent);
-				});
-				$('.delAction').bind("click", function($clickevent) {
-					doDelete($clickevent);
-				});
-				$('.dataRow').bind("mouseover", function() {
-					$(this).css('background-color','#CCCCCC');
-				});
-				$('.dataRow').bind("mouseout", function() {
-					$(this).css('background-color','transparent');
-				});
-			}
-        });
-        </script>        
     </tiles:put>
     
     
     <tiles:put name="content" type="string">
     	<h1>Quote Maintenance</h1>
-    	
-    	
+		<table id="quoteTable">
+			<tr>
+				<td colspan="2">
+					<table style="width:95%;">
+						<tr>
+							<td><input type="button" name="modifyButton" value="Modify" class="quoteButton"/></td>
+							<td><span class="labelSpan">Manager:</span>
+								<select name="managerSelect" class="quoteSelect">
+									<option value=""></option>
+								</select>
+							</td>
+							<td><span class="labelSpan">Division:</span>
+								<select name="divisionSelect" class="quoteSelect">
+									<option value=""></option>
+								</select>
+							</td>
+							<td align="center">Quote</td>
+							<td align="center">Revision</td>
+							<td rowspan="2" align="center"><input type="button" name="printButton" value="Print" class="quoteButton"/></td>
+						</tr>
+						<tr>
+							<td><input type="button" name="copyButton" value="Copy" class="quoteButton"/></td>
+							<td><span class="labelSpan">Lead Type:</span>
+								<select name="leadSelect" class="quoteSelect">
+									<option value=""></option>
+								</select>
+							</td>
+							<td><span class="labelSpan">Account Type:</span>
+								<select name="accountSelect" class="quoteSelect">
+									<option value=""></option>
+								</select>
+							</td>
+							<td>Q:&nbsp;&nbsp;<input type="text" name="quoteNumberInput"  style="width:80px"/></td>
+							<td>R:&nbsp;&nbsp;<input type="text" name="quoteNumberInput"  style="width:40px"/></td>
+						</tr>
+						<tr>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td colspan="2">Proposed Date:&nbsp;&nbsp;<input type="text" name="proposedDateInput"  style="width:90px"/></td>
+							<td>Print Count:&nbsp;&nbsp;<input type="text" name="printCountInput"  style="width:90px"/></td>
+						</tr>
+						<tr>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td align="right"><a href="#">View Print History</a></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:50%;">
+					<webthing:jobSiteAddress namespace="JOBSITEADDRESS" cssId="jobSiteAddress" />
+				</td>
+				<td>
+					<webthing:billToAddress namespace="BILLTOADDRESS" cssId="billToAddress" />
+				</td>
+			</tr>
+		</table>    	
 		
-    	
-    	
+        <script type="text/javascript">        
+		$( document ).ready(function() {
+			
+          	
+        });
+        </script>        
     </tiles:put>
 
 </tiles:insert>

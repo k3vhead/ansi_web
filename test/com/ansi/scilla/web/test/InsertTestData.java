@@ -132,7 +132,7 @@ public class InsertTestData extends TesterUtils {
 			user.setLastName("Wagner");
 			user.insertWithKey(conn);
 			
-			user.setEmail("kegan.ovitt@gmail.com");
+			user.setEmail("keegan.ovitt@gmail.com");
 			user.setFirstName("Keegan");
 			user.setLastName("Ovitt");
 			user.insertWithKey(conn);
