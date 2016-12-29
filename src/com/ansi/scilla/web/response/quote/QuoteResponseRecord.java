@@ -13,8 +13,6 @@ public class QuoteResponseRecord extends ApplicationObject implements Comparable
 
 	private static final long serialVersionUID = 1L;
 
-	private Integer addedBy;
-	private Date addedDate;
 	private String address;
 	private Integer billToAddressId;
 	private Integer copiedFromQuoteId;
@@ -35,26 +33,7 @@ public class QuoteResponseRecord extends ApplicationObject implements Comparable
 		super();
 		BeanUtils.copyProperties(this, quote);
 	}
-	
-	public void setAddedBy(Integer addedBy) {
-		this.addedBy = addedBy;
-	}
-
-
-	public Integer getAddedBy() {
-		return this.addedBy;
-	}
-
-	
-	public void setAddedDate(Date addedDate) {
-		this.addedDate = addedDate;
-	}
-
-	public Date getAddedDate() {
-		return this.addedDate;
-	}
-
-	
+		
 	public void setAddress(String address) {
 		this.address = address;
 	}
@@ -211,7 +190,7 @@ public class QuoteResponseRecord extends ApplicationObject implements Comparable
 		if ( ret == 0 ) {
 			ret = this.revisionNumber.compareTo(o.getRevisionNumber());
 		}
-		return 0;
+		return ret;
 	}
 
 	

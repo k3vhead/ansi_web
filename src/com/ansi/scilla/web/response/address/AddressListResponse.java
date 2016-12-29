@@ -40,11 +40,9 @@ public class AddressListResponse extends MessageResponse implements Serializable
 		Collections.sort(this.addressList);
 	}
 
-	public AddressListResponse(Connection conn, Integer addressId, String name, String status) throws Exception {
+	public AddressListResponse(Connection conn, String addressId) throws Exception {
 		Address key = new Address();
-		key.setAddressId(addressId);
-		key.setName(name);
-		key.setStatus(status);
+		key.setAddressId(Integer.parseInt(addressId));
 		List<Address> addressList = Address.cast(key.selectSome(conn));
 		this.addressList = new ArrayList<AddressResponseRecord>();
 		for ( Address address : addressList ) {

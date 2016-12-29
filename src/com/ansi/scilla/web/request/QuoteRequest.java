@@ -17,8 +17,7 @@ import com.thewebthing.commons.lang.JsonException;
 	
 		private static final long serialVersionUID = 1L;
 		
-		private Integer addedBy;
-		private Date addedDate;
+
 		private String address;
 		private Integer billToAddressId;
 		private Integer copiedFromQuoteId;
@@ -34,7 +33,9 @@ import com.thewebthing.commons.lang.JsonException;
 		private Integer signedByContactId;
 		private Integer status;
 		private Integer templateId;
-
+		private String accountType;
+		private Integer addedBy;
+		private Date addedDate;
 		
 		public QuoteRequest() {
 			super();
@@ -46,32 +47,29 @@ import com.thewebthing.commons.lang.JsonException;
 			BeanUtils.copyProperties(this, req);
 		}
 		
+
+		public Integer getAddedBy() {
+			return this.addedBy;
+		}
+		
+		
 		public void setAddedBy(Integer addedBy) {
 			this.addedBy = addedBy;
 		}
 
-		@RequiredForAdd
-		@RequiredForUpdate
-		public Integer getAddedBy() {
-			return this.addedBy;
+		
+		public Date getAddedDate() {
+			return this.addedDate;
 		}
-
 		
 		public void setAddedDate(Date addedDate) {
 			this.addedDate = addedDate;
 		}
-
-		@RequiredForAdd
-		@RequiredForUpdate
-		public Date getAddedDate() {
-			return this.addedDate;
-		}
-
 		
 		public void setAddress(String address) {
 			this.address = address;
 		}
-
+ 
 		@RequiredForAdd
 		@RequiredForUpdate
 		public String getAddress() {
@@ -159,8 +157,7 @@ import com.thewebthing.commons.lang.JsonException;
 			this.proposalDate = proposalDate;
 		}
 
-		@RequiredForAdd
-		@RequiredForUpdate
+
 		public Date getProposalDate() {
 			return this.proposalDate;
 		}
@@ -178,14 +175,18 @@ import com.thewebthing.commons.lang.JsonException;
 		}
 		*/
 		
-		public void setQuoteId(Integer quoteId) {
-			this.quoteId = quoteId;
-		}
+	//	public void setQuoteId(Integer quoteId) {
+	//		this.quoteId = quoteId;
+	//	}
 
-		@RequiredForAdd
-		@RequiredForUpdate
+	
 		public Integer getQuoteId() {
 			return this.quoteId;
+		}
+		
+		@RequiredForUpdate
+		public void setQuoteId(Integer quoteId) {
+			this.quoteId = quoteId;
 		}
 
 		
@@ -215,10 +216,18 @@ import com.thewebthing.commons.lang.JsonException;
 			this.signedByContactId = signedByContactId;
 		}
 
-		@RequiredForAdd
-		@RequiredForUpdate
+
 		public Integer getSignedByContactId() {
 			return this.signedByContactId;
+		}
+		
+		public void setAccountType(String accountType) {
+			this.accountType = accountType;
+		}
+
+
+		public String getAccountType() {
+			return this.accountType;
 		}
 
 		

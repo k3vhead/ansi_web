@@ -13,8 +13,7 @@ public class AddressResponseRecord extends ApplicationObject implements Comparab
 
 	private static final long serialVersionUID = 1L;
 
-	private Integer addedBy;
-	private Date addedDate;
+
 	private String address1;
 	private String address2;
 	private Integer addressId;
@@ -31,24 +30,6 @@ public class AddressResponseRecord extends ApplicationObject implements Comparab
 	public AddressResponseRecord(Address address) throws IllegalAccessException, InvocationTargetException {
 		super();
 		BeanUtils.copyProperties(this, address);
-	}
-	
-	public Integer getAddedBy() {
-		return this.addedBy;
-	}
-	
-	
-	public void setAddedBy(Integer addedBy) {
-		this.addedBy = addedBy;
-	}
-
-
-	public Date getAddedDate() {
-		return this.addedDate;
-	}
-	
-	public void setAddedDate(Date addedDate) {
-		this.addedDate = addedDate;
 	}
 	
 
@@ -132,26 +113,6 @@ public class AddressResponseRecord extends ApplicationObject implements Comparab
 	}
 
 
-	public void setUpdatedBy(Integer updatedBy) {
-		this.updatedBy = updatedBy;
-	}
-
-
-	public Integer getUpdatedBy() {
-		return this.updatedBy;
-	}
-
-
-	public void setUpdatedDate(Date updatedDate) {
-		this.updatedDate = updatedDate;
-	}
-
-
-	public Date getUpdatedDate() {
-		return this.updatedDate;
-	}
-
-
 	public void setZip(String zip) {
 		this.zip = zip;
 	}
@@ -164,13 +125,8 @@ public class AddressResponseRecord extends ApplicationObject implements Comparab
 	@Override
 	public int compareTo(AddressResponseRecord o) {
 		int ret = this.getAddressId().compareTo(o.getAddressId());
-		if ( ret == 0 ) {
-			ret = this.name.compareTo(o.getName());
-		}
-		if ( ret == 0 ) {
-			ret = this.status.compareTo(o.getStatus());
-		}
-		return 0;
+
+		return ret;
 	}
 
 

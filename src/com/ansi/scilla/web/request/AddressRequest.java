@@ -42,8 +42,7 @@ import com.thewebthing.commons.lang.JsonException;
 			BeanUtils.copyProperties(this, req);
 		}
 		
-		@RequiredForAdd
-		@RequiredForUpdate
+
 		public Integer getAddedBy() {
 			return this.addedBy;
 		}
@@ -53,8 +52,7 @@ import com.thewebthing.commons.lang.JsonException;
 			this.addedBy = addedBy;
 		}
 
-		@RequiredForAdd
-		@RequiredForUpdate
+
 		public Date getAddedDate() {
 			return this.addedDate;
 		}
@@ -68,8 +66,7 @@ import com.thewebthing.commons.lang.JsonException;
 			this.address1 = address1;
 		}
 
-		@RequiredForAdd
-		@RequiredForUpdate
+	
 		public String getAddress1() {
 			return this.address1;
 		}
@@ -84,13 +81,12 @@ import com.thewebthing.commons.lang.JsonException;
 			return this.address2;
 		}
 
-
+		@RequiredForUpdate
 		public void setAddressId(Integer addressId) {
 			this.addressId = addressId;
 		}
 
-		@RequiredForAdd
-		@RequiredForUpdate
+
 		public Integer getAddressId() {
 			return this.addressId;
 		}
@@ -100,8 +96,7 @@ import com.thewebthing.commons.lang.JsonException;
 			this.city = city;
 		}
 
-		@RequiredForAdd
-		@RequiredForUpdate
+
 		public String getCity() {
 			return this.city;
 		}
@@ -111,8 +106,7 @@ import com.thewebthing.commons.lang.JsonException;
 			this.county = county;
 		}
 
-		@RequiredForAdd
-		@RequiredForUpdate
+
 		public String getCounty() {
 			return this.county;
 		}
@@ -133,8 +127,7 @@ import com.thewebthing.commons.lang.JsonException;
 			this.state = state;
 		}
 
-		@RequiredForAdd
-		@RequiredForUpdate
+
 		public String getState() {
 			return this.state;
 		}
@@ -144,8 +137,7 @@ import com.thewebthing.commons.lang.JsonException;
 			this.status = status;
 		}
 
-		@RequiredForAdd
-		@RequiredForUpdate
+
 		public String getStatus() {
 			return this.status;
 		}
@@ -155,8 +147,7 @@ import com.thewebthing.commons.lang.JsonException;
 			this.updatedBy = updatedBy;
 		}
 
-		@RequiredForAdd
-		@RequiredForUpdate
+
 		public Integer getUpdatedBy() {
 			return this.updatedBy;
 		}
@@ -166,8 +157,7 @@ import com.thewebthing.commons.lang.JsonException;
 			this.updatedDate = updatedDate;
 		}
 
-		@RequiredForAdd
-		@RequiredForUpdate
+
 		public Date getUpdatedDate() {
 			return this.updatedDate;
 		}
@@ -177,8 +167,7 @@ import com.thewebthing.commons.lang.JsonException;
 			this.zip = zip;
 		}
 
-		@RequiredForAdd
-		@RequiredForUpdate
+
 		public String getZip() {
 			return this.zip;
 		}

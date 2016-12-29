@@ -10,6 +10,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Address;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
@@ -28,15 +30,17 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
  * 
  * The url for get will be one of:
  * 		/address    (retrieves everything)
- * 		/address/&lt;addressId&gt;      (filters address table by id)
- * 		/address/&lt;addressId&gt;/&lt;name&gt;	(filters address table id and name
- * 		/address/&lt;addressId&gt;/&lt;name&gt;/&lt;status&gt;	(retrieves a single record)
+<<<<<<< HEAD
+ * 		/address/<addressId>      (retrieves a single record)
+
+
+>>>>>>> a14eeab4d9e7aed809d44375e6d91dd837a59033
  * 
  * The url for adding a new record will be a POST to:
  * 		/address/add   with parameters in the JSON
  * 
  * The url for update will be a POST to:
- * 		/address/&lt;addressId&gt;/&lt;name&gt;/&lt;status&gt; with parameters in the JSON
+ * 		/address/<addressId> with parameters in the JSON
  * 
  * 
  * 
@@ -46,8 +50,8 @@ public class AddressServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	@Override
-	protected void doDelete(HttpServletRequest request,
+
+	protected void doDelete_old(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		Connection conn = null;
 		try {
@@ -58,9 +62,8 @@ public class AddressServlet extends AbstractServlet {
 			AddressRequest addressRequest = new AddressRequest(jsonString);
 			System.out.println(addressRequest);
 			Address address = new Address();
-			address.setAddressId(addressRequest.getAddressId());
-			address.setName(addressRequest.getName());
-			address.setStatus(addressRequest.getStatus());
+			//address.setAddressId(addressRequest.getDeleteId());
+
 			address.delete(conn);
 			
 			AddressResponse addressResponse = new AddressResponse();
@@ -75,7 +78,8 @@ public class AddressServlet extends AbstractServlet {
 		}
 	}
 	
-	protected void doNewDelete(HttpServletRequest request,
+	@Override
+	protected void doDelete(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		System.out.println("AddressServlet 54");
 		String url = request.getRequestURI();
@@ -88,9 +92,9 @@ public class AddressServlet extends AbstractServlet {
 			conn.setAutoCommit(false);
 			
 			Address address = new Address();
-			address.setName(parsedUrl.name);
-			address.setAddressId(parsedUrl.addressId);
-			address.setStatus(parsedUrl.status);
+			if(parsedUrl.deleteId != null){
+				address.setAddressId(Integer.parseInt(parsedUrl.deleteId));
+			} 
 			address.delete(conn);
 			System.out.println("AddressServlet 69");
 			AddressResponse addressResponse = new AddressResponse();
@@ -120,6 +124,8 @@ public class AddressServlet extends AbstractServlet {
 				// we're getting all the addresses in the database
 				AddressListResponse addressListResponse = makeAddressListResponse(conn);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, addressListResponse);
+			} else if ( parsedUrl.addressId.equals("delete")) {
+				doDelete(request,response);	
 			} else {
 				AddressListResponse addressListResponse = makeFilteredListResponse(conn, parsedUrl);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, addressListResponse);
@@ -192,8 +198,6 @@ public class AddressServlet extends AbstractServlet {
 					try {
 						Address key = new Address();
 						key.setAddressId(Integer.parseInt(urlPieces[0]));
-						key.setName(urlPieces[1]);
-						key.setStatus(urlPieces[2]);
 						System.out.println("Trying to do update");
 						address = doUpdate(conn, key, addressRequest, sessionUser);
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
@@ -235,24 +239,37 @@ public class AddressServlet extends AbstractServlet {
 		Date today = new Date();
 		Address address = new Address();
 		
-		address.setAddedBy(sessionUser.getUserId());
+//		!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! FIX SESSION ISSUE *ASK DAVE
+//		address.setAddedBy(sessionUser.getUserId());
+		address.setAddedBy(8);
 		address.setAddedDate(today);
 
-		address.setAddressId(addressRequest.getAddressId());
-		address.setAddress1(addressRequest.getAddress1());
-		address.setAddress2(addressRequest.getAddress2());
-		address.setCity(addressRequest.getCity());
-		address.setCounty(addressRequest.getCounty());
+//		address.setAddressId(addressRequest.getAddressId());
 		address.setName(addressRequest.getName());
-		address.setState(addressRequest.getState());
-		address.setStatus(addressRequest.getStatus());
-		address.setZip(addressRequest.getZip());
 		
-		address.setUpdatedBy(sessionUser.getUserId());
+		if ( ! StringUtils.isBlank(addressRequest.getAddress1())) {
+			address.setAddress1(addressRequest.getAddress1());
+		} if ( ! StringUtils.isBlank(addressRequest.getAddress2())) {
+			address.setAddress2(addressRequest.getAddress2());
+		} if ( ! StringUtils.isBlank(addressRequest.getCity())) {
+			address.setCity(addressRequest.getCity());
+		} if ( ! StringUtils.isBlank(addressRequest.getCounty())) {
+			address.setCounty(addressRequest.getCounty());
+		} if ( ! StringUtils.isBlank(addressRequest.getState())) {
+			address.setState(addressRequest.getState());
+		} if ( ! StringUtils.isBlank(addressRequest.getStatus())) {
+			address.setStatus(addressRequest.getStatus());
+		} if ( ! StringUtils.isBlank(addressRequest.getZip())) {
+			address.setZip(addressRequest.getZip());
+		}
+		
+//		!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! FIX SESSION ISSUE *ASK DAVE
+//		address.setUpdatedBy(sessionUser.getUserId());
+		address.setUpdatedBy(8);
 		address.setUpdatedDate(today);
 		
 		try {
-			address.insertWithNoKey(conn);
+			address.insertWithKey(conn);
 		} catch ( SQLException e) {
 			if ( e.getMessage().contains("duplicate key")) {
 				throw new DuplicateEntryException();
@@ -300,7 +317,7 @@ public class AddressServlet extends AbstractServlet {
 	}
 
 	private AddressListResponse makeFilteredListResponse(Connection conn, ParsedUrl parsedUrl) throws Exception {
-		AddressListResponse addressListResponse = new AddressListResponse(conn, parsedUrl.addressId, parsedUrl.name, parsedUrl.status);
+		AddressListResponse addressListResponse = new AddressListResponse(conn, parsedUrl.addressId);
 		return addressListResponse;
 	}
 
@@ -335,9 +352,8 @@ public class AddressServlet extends AbstractServlet {
 
 	
 	public class ParsedUrl extends ApplicationObject {
-		public String status;
-		public Integer addressId;
-		public String name;
+		public String addressId;
+		public String deleteId;
 		private static final long serialVersionUID = 1L;
 
 
@@ -349,14 +365,12 @@ public class AddressServlet extends AbstractServlet {
 			String myString = url.substring(idx + "/address/".length());			
 			String[] urlPieces = myString.split("/");
 			if ( urlPieces.length >= 1 ) {
-				this.addressId = Integer.parseInt(urlPieces[0]);
+				this.addressId = (urlPieces[0]);
 			}
 			if ( urlPieces.length >= 2 ) {
-				this.name = urlPieces[1];
+				this.deleteId = (urlPieces[1]);
 			}
-			if ( urlPieces.length >= 3 ) {
-				this.status = urlPieces[2];
-			}
+			
 		}
 	}
 }
