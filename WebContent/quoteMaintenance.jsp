@@ -135,10 +135,10 @@
 			</tr>
 			<tr>
 				<td style="width:50%;">
-					<webthing:jobSiteAddress namespace="JOBSITEADDRESS" cssId="jobSiteAddress" />
+					<webthing:addressPanel label="Job Site" namespace="JOBSITEADDRESS" cssId="jobSiteAddress" />
 				</td>
 				<td>
-					<webthing:billToAddress namespace="BILLTOADDRESS" cssId="billToAddress" />
+					<webthing:addressPanel label="Bill To"  namespace="BILLTOADDRESS" cssId="billToAddress" />
 				</td>
 			</tr>
 		</table>    	
