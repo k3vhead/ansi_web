@@ -21,7 +21,6 @@
     
     
     <tiles:put name="headextra" type="string">
-    	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
         <style type="text/css">
 			#confirmDelete {
 				display:none;
@@ -135,10 +134,10 @@
 			</tr>
 			<tr>
 				<td style="width:50%;">
-					<webthing:jobSiteAddress namespace="JOBSITEADDRESS" cssId="jobSiteAddress" />
+					<webthing:addressPanel label="Job Site" namespace="JOBSITEADDRESS" cssId="jobSiteAddress" />
 				</td>
 				<td>
-					<webthing:billToAddress namespace="BILLTOADDRESS" cssId="billToAddress" />
+					<webthing:addressPanel label="Bill To"  namespace="BILLTOADDRESS" cssId="billToAddress" />
 				</td>
 			</tr>
 		</table>    	
