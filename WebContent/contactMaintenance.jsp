@@ -1,7 +1,7 @@
 <!-- 
 	
-File : taxRateMaintenance.jsp
-Created : 2016-12-28 11:00 AM
+File : contactMaintenance.jsp
+Created : 2016-12-29 10:00 PM
 Borrowed heavily from : taxRateMaintenance.jsp
 Contributer : Kevin J Wagner
 
@@ -10,10 +10,7 @@ Note : search this source for 'modthis' to quickly get to the areas that need to
 
 change log
 --------------------------------------------------------------------------------------------
-2016-12-17 11:00 AM - kjw : Created starter file .jsp file
-2016-12-28  2:00 AM - kjw : all features now work.. view/add/edit/remove..
-2016-12-29  9:45 PM - kjw : cleaned up debug code.. 
-2016-12-29  9:45 PM - kjw : added // modthis comment to quickly navigate to record specific sections of the page.
+2016-12-29 10:00 PM - kjw : Created starter file .jsp file
 
 -->
 
@@ -34,7 +31,7 @@ change log
 <tiles:insert page="layout.jsp" flush="true">
     <tiles:put name="title" type="string">
 		<!-- modthis -->
-        Tax Rate Maintenance
+        Contact Maintenance
     </tiles:put>
     <tiles:put name="headextra" type="string">
     	<link rel="stylesheet" href="css/datepicker.css" type="text/css" />
@@ -57,32 +54,43 @@ change log
 				width:300px;
 				padding:15px;
 			}
+			/*
+				private Integer contactId;
+				private String firstName;
+				private String lastName;
+				private String businessPhone;
+				private String mobilePhone;
+				private String fax;
+				private String preferredContact;
+			*/
 
 			/* <!-- modthis --> */
-			#col_01{							/* id column 		*/
+			#col_01{							/* id column contactId 		*/
 				display : none; 
 				}
-			#col_02{	text-align: left;	}  /* location  		*/
-			#col_03{	text-align: right;	}  /* rate 				*/
-			#col_04{ 	text-align: right;	}  /* amount 			*/
-			#col_05{	text-align: right;	}  /* effectiveDate 	*/
-			#col_06{	text-align: center;	}  /* not used 		 	*/
-			#col_07{	text-align: center;	}  /* not used 		 	*/
+			#col_02{	text-align: left;	}  /* firstName  		*/
+			#col_03{	text-align: left;	}  /* lastName 			*/
+			/* #col_04{ 	text-align: right;	}  /* email 	*/
+			#col_04{ 	text-align: left;	}  /* businessPhone 	*/
+			#col_05{	text-align: left;	}  /* mobilePhone 		*/
+			#col_06{	text-align: left;	}  /* fax 		 		*/
+			#col_07{	text-align: left;	}  /* preferredContact	*/
 			#col_08{	text-align: center;	}  /* not used 		 	*/
 			#col_09{	text-align: center;	}  /* not used 		 	*/
 
 			/* <!-- modthis --> */
-			#col_01_hdr{							/* id column 		*/
+			#col_01_hdr{							/* id column contactId	*/
 				display : none; 
 				}
-			#col_02_hdr{	text-align: left;	} 	/* location  		*/
-			#col_03_hdr{	text-align: right;	} 	/* rate 			*/
-			#col_04_hdr{	text-align: right;	} 	/* amount 			*/
-			#col_05_hdr{	text-align: right;	} 	/* effective date 	*/
-			#col_06_hdr{ 	text-align: center;	} 	/* not used 		*/
-			#col_07_hdr{	text-align: right;	} 	/* not used 		*/
-			#col_08_hdr{	text-align: center;	} 	/* not used 		*/
-			#col_09_hdr{	text-align: right;	} 	/* not used 		*/
+			#col_02_hdr{	text-align: left;	} 	/* firstName  		*/
+			#col_03_hdr{	text-align: left;	} 	/* lastName 		*/
+			/*  #col_04_hdr{	text-align: right;	} 	/* email 	*/
+			#col_04_hdr{	text-align: left;	} 	/* businessPhone 	*/
+			#col_05_hdr{	text-align: left;	} 	/* mobilePhone 		*/
+			#col_06_hdr{ 	text-align: left;	} 	/* fax 				*/
+			#col_07_hdr{	text-align: left;	} 	/* preferredContact 		*/
+			#col_08_hdr{	text-align: left;	} 	/* not used 		*/
+			#col_09_hdr{	text-align: left;	} 	/* not used 		*/
         </style>
         
         <script type="text/javascript">
@@ -90,7 +98,7 @@ change log
 		// Display a list of all of the rows in the db ( Select All )
         $(function() {        
 			var jqxhr = $.ajax({
-				url: 'taxRate/list', 	// modthis
+				url: 'contact/list', 	// modthis
 				type: 'GET',
 				data: {},
 				success: function($data){ // if the ajax call succeeds... do all of this stuff.. 
@@ -99,11 +107,11 @@ change log
 					//    note : the name after '$data.data.'  'taxRateList'. in this case, is defined
 					//           within the servlet that is doing the server side processing.
 					// modthis
-					$.each($data.data.taxRateList,	function(index, value) {	
+					$.each($data.data.contactList,	function(index, value) {	
 						// value.<data_item>Id> = the value used to retreive the record from the server
 						// value = the data item/row
 						// modthis
-						addRow(value.taxRateId, value);
+						addRow(value.contactId, value);
 					});
 					doFunctionBinding();
 				},
@@ -135,11 +143,14 @@ change log
 				// creates the set of <td> elements for each row.. 
 				// modthis - set the field names to match field names for datatypes
 				var _td = '';
-				_td = _td + '	<td id="col_01">' + $data_item_id  + 		'</td>';
-				_td = _td + '	<td id="col_02">' + $data_item.location + 		'</td>';
-				_td = _td + '	<td id="col_03">' + $data_item.rate + 			'</td>';
-				_td = _td + '	<td id="col_04">' + $data_item.amount + 			'</td>'; 
-				_td = _td + '	<td id="col_05">' + $data_item.effectiveDate + 	'</td>';
+				_td = _td + '	<td id="col_01">' + $data_item_id  + 				'</td>';
+				_td = _td + '	<td id="col_02">' + $data_item.firstName + 			'</td>';
+				_td = _td + '	<td id="col_03">' + $data_item.lastName + 			'</td>';
+				//_td = _td + '	<td id="col_04">' + $data_item.email + 				'</td>';
+				_td = _td + '	<td id="col_04">' + $data_item.businessPhone + 		'</td>'; 
+				_td = _td + '	<td id="col_05">' + $data_item.mobilePhone + 		'</td>';
+				_td = _td + '	<td id="col_06">' + $data_item.fax + 				'</td>';
+				_td = _td + '	<td id="col_07">' + $data_item.preferredContact + 	'</td>';
        	    	<ansi:hasPermission permissionRequired="SYSADMIN">
 					<ansi:hasWrite>
 						_td = _td + '<td>';
@@ -162,6 +173,8 @@ change log
 						
 			function doUpdate($clickevent) {
 				// This occurs when the little pencil icon is clicked.
+				//                       or
+				//              When the New Button is Click
 				// it determines which row is to be edited, retreives
 				// the values for the row and presents them to the user
 				// for editing via the popup #addFormDiv that appears 
@@ -174,7 +187,7 @@ change log
 
 				// Add a title to the Add Form
 				// modthis
-				$("#addFormTitle").html("Update a Tax Code");
+				$("#addFormTitle").html("Update Contact");
 				// attach a data item to the add form containing the row number being updated
 				$('#addForm').data('data_item_id',$data_item_id);
 				
@@ -187,19 +200,25 @@ change log
 
 				// Store row value in local vars.. 
 				// modthis
-				var $taxRateId = $row.children("td")[0].textContent;
-            	var $location = $row.children("td")[1].textContent;
-            	var $rate = $row.children("td")[2].textContent;
-            	var $amount = $row.children("td")[3].textContent;
-            	var $effectiveDate = $row.children("td")[4].textContent;
+				var $contactId = $row.children("td")[0].textContent;
+            	var $firstName = $row.children("td")[1].textContent;
+            	var $lastName = $row.children("td")[2].textContent;
+            	//var $email = $row.children("td")[3].textContent;
+            	var $businessPhone = $row.children("td")[3].textContent;
+            	var $mobilePhone = $row.children("td")[4].textContent;
+            	var $fax = $row.children("td")[5].textContent;
+            	var $preferredContact = $row.children("td")[6].textContent;
 				
 				// populate addform with existing values.. 
 				// modthis [ make sure names match database field names!]
 				$('#addForm').data('data-item-id',$data_item_id);
-            	$("#addForm input[name='location']").val($location);
-            	$("#addForm input[name='rate']").val($rate);
-            	$("#addForm input[name='amount']").val($amount);
-				$("#addForm input[name='effectiveDate']").val($effectiveDate);
+            	$("#addForm input[name='firstName']").val($firstName);
+            	$("#addForm input[name='lastName']").val($lastName);
+            	// $("#addForm input[name='email']").val($email);
+            	$("#addForm input[name='businessPhone']").val($businessPhone);
+				$("#addForm input[name='mobilePhone']").val($mobilePhone);
+				$("#addForm input[name='fax']").val($fax);
+				$("#addForm input[name='preferredContact']").val($preferredContact);
             	
 				$.each( $('#addForm :input'), function(index, value) {
 					markValid(value);
@@ -277,7 +296,7 @@ change log
 					//    add the record.  Note : this url is defined 
 					//    by the server and is specific to each set of data items
 					// modthis
-					$url = "taxRate/add";
+					$url = "contact/add";
 				} else {
 					// if this is an existing record.. 					
 					// 	( I don't think this is needed anymore -> )  $rownum = $('#addForm').data('rownum');
@@ -289,7 +308,7 @@ change log
 
 					// use this url to update the record
 					// modthis
-					$url = "taxRate/" + $data_item_id;
+					$url = "contact/" + $data_item_id;
 				}
 				
 				// do the ajax call to add/update the fields.. 
@@ -301,10 +320,10 @@ change log
 						if ( $data.responseHeader.responseCode == 'SUCCESS') {
 							// if the row was successfully added to the database
 							// modthis
-							if ( $url == "taxRate/add" ) {
+							if ( $url == "contact/add" ) {
 								// 	( I don't think this is needed anymore -> )   var count = $('#displayTable tr').length - 1;
 								// ...then add it to the table being displayed on-screen as well.
-								addRow($data.data.taxRate.taxRateId, $data.data.taxRate);
+								addRow($data.data.contact.contactId, $data.data.contact);
 							} else {
 								// if the row was successfully updated in the database
 
@@ -364,7 +383,7 @@ change log
 
 				// Add a title to the addFormDiv form [the add/update form]
 				// modthis
-				$("#addFormTitle").html("Add a New Tax Code");
+				$("#addFormTitle").html("Add a New Contact");
 
 				// show the add/update form
              	$('#addFormDiv').bPopup({
@@ -425,11 +444,11 @@ change log
 
 				// create the url to call to delete this row
 				// modthis
-				var $deleteUrl = 'taxRate/' + $data_item_id;
+				var $deleteUrl = 'contact/' + $data_item_id;
 
             	// create a JSON array of pairs containing the column values.
 				// modthis
-				$outbound = JSON.stringify({'taxRateId':$data_item_id});
+				$outbound = JSON.stringify({'contactId':$data_item_id});
 
 				// make the ajax call to the java servlet to do the delete.
             	var jqxhr = $.ajax({
@@ -515,16 +534,19 @@ change log
     </tiles:put>
         
     <tiles:put name="content" type="string">
-    	<h1>Tax Rate Maintenance</h1>
+    	<h1>Contact Maintenance</h1>
 
     	<table id="displayTable">
     		<tr>
 				<!-- // modthis -->
-				<th id="col_01_hdr">taxRate Id</th>
-				<th id="col_02_hdr">Location</th>
-				<th id="col_03_hdr">Rate</th>
-				<th id="col_04_hdr">Amount</th>
-				<th id="col_05_hdr">Effective Date</th>
+				<th id="col_01_hdr">Contact Id</th>
+				<th id="col_02_hdr">First Name</th>
+				<th id="col_03_hdr">Last Name</th>
+				<!-- <th id="col_04_hdr">Email</th> -->
+				<th id="col_04_hdr">Business Phone</th>
+				<th id="col_05_hdr">Mobile Phone</th>
+				<th id="col_06_hdr">Fax</th>
+				<th id="col_07_hdr">Preferred Contact</th>
     		</tr>
     	</table>
 
@@ -540,7 +562,7 @@ change log
     		<ansi:hasWrite>
 		    	<div id="confirmDelete">
 					<!-- // modthis -->
-		    		Are You Sure You Want to Delete this Tax Rate?<br />
+		    		Are You Sure You Want to Delete this Contact?<br />
 		    		<input type="button" id="cancelDelete" value="No" />
 		    		<input type="button" id="doDelete" value="Yes" />
 		    	</div>		    	
@@ -550,36 +572,62 @@ change log
 		    			<table>
 							<!-- MAKE SURE THE 'name' FIELD MATCH THE NAMES USED IN THE DATABASE!! -->
 		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Location:</span></td>
+		    					<td><span class="required">*</span><span class="formLabel">First Name:</span></td>
 		    					<td>
-		    						<input type="text" name="location" data-required="true" data-valid="validLocation" />
-		    						<i id="validTable" class="fa" aria-hidden="true"></i>
+		    						<input type="text" name="firstName" data-required="true" data-valid="validfirstName" />
+		    						<i id="validfirstName" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="locationErr"></span></td>
+		    					<td><span class="err" id="firstNameErr"></span></td>
 		    				</tr>
 							<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Tax Rate:</span></td>
+		    					<td><span class="required">*</span><span class="formLabel">Last Name:</span></td>
 		    					<td>
-		    						<input type="text" name="rate" data-required="true" data-valid="validRate" />
-		    						<i id="validField" class="fa" aria-hidden="true"></i>
+		    						<input type="text" name="lastName" data-required="true" data-valid="validLastName" />
+		    						<i id="validLastName" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="rateErr"></span></td>
+		    					<td><span class="err" id="lastNameErr"></span></td>
 		    				</tr>
 		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Tax Amount:</span></td>
+								<!--
+		    					<td><span class="required">*</span><span class="formLabel">Email :</span></td>
 		    					<td>
-		    						<input type="text" name="amount" data-required="true" data-valid="validtaxAmount" />
-		    						<i id="validField" class="fa" aria-hidden="true"></i>
+		    						<input type="text" name="email" data-required="true" data-valid="validemail" />
+		    						<i id="validemail" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="amountErr"></span></td>
+		    					<td><span class="err" id="emailErr"></span></td>
+								-->
 		    				</tr>
 		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Effective Date:</span></td>
+		    					<td><span class="required">*</span><span class="formLabel">Business Phone:</span></td>
 		    					<td>
-		    						<input type="text" class="dateField" name="effectiveDate" data-required="true" data-valid="validEffectiveDate" />
-		    						<i id="validValue" class="fa" aria-hidden="true"></i>
+		    						<input type="text" name="businessPhone" data-required="true" data-valid="validbusinessPhone" />
+		    						<i id="validbusinessPhone" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="effectiveDateErr"></span></td>
+		    					<td><span class="err" id="businessPhoneErr"></span></td>
+		    				</tr>
+		    				<tr>
+		    					<td><span class="required">*</span><span class="formLabel">Mobile Phone :</span></td>
+		    					<td>
+		    						<input type="text" name="mobilePhone" data-required="true" data-valid="validmobilePhone" />
+		    						<i id="validmobilePhone" class="fa" aria-hidden="true"></i>
+		    					</td>
+		    					<td><span class="err" id="mobilePhoneErr"></span></td>
+		    				</tr>
+		    				<tr>
+		    					<td><span class="required">*</span><span class="formLabel">Fax :</span></td>
+		    					<td>
+		    						<input type="text" name="fax" data-required="true" data-valid="validfax" />
+		    						<i id="validfax" class="fa" aria-hidden="true"></i>
+		    					</td>
+		    					<td><span class="err" id="faxErr"></span></td>
+		    				</tr>
+		    				<tr>
+		    					<td><span class="required">*</span><span class="formLabel">Preferred Contact :</span></td>
+		    					<td>
+		    						<input type="text" name="preferredContact" data-required="true" data-valid="validpreferredContact" />
+		    						<i id="validpreferredContact" class="fa" aria-hidden="true"></i>
+		    					</td>
+		    					<td><span class="err" id="preferredContactErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td colspan="2" style="text-align:center;">

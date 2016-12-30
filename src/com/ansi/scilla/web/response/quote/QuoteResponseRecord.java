@@ -24,7 +24,7 @@ public class QuoteResponseRecord extends ApplicationObject implements Comparable
 	private Date proposalDate;
 	private Integer quoteId;
 	private Integer quoteNumber;
-	private Integer revisionNumber;
+	private String revision;
 	private Integer signedByContactId;
 	private Integer status;
 	private Integer templateId;
@@ -143,13 +143,13 @@ public class QuoteResponseRecord extends ApplicationObject implements Comparable
 	}
 
 	
-	public void setRevisionNumber(Integer revisionNumber) {
-		this.revisionNumber = revisionNumber;
+	public void setRevisionNumber(String revision) {
+		this.revision = revision;
 	}
 
 
-	public Integer getRevisionNumber() {
-		return this.revisionNumber;
+	public String getRevision() {
+		return this.revision;
 	}
 
 	
@@ -188,7 +188,7 @@ public class QuoteResponseRecord extends ApplicationObject implements Comparable
 			ret = this.quoteNumber.compareTo(o.getQuoteNumber());
 		}
 		if ( ret == 0 ) {
-			ret = this.revisionNumber.compareTo(o.getRevisionNumber());
+			ret = this.revision.compareTo(o.getRevision());
 		}
 		return ret;
 	}
