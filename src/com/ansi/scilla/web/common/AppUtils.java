@@ -254,7 +254,7 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 
 			public int compare(Division o1, Division o2) {
 
-				int ret = o1.getName().compareTo(o2.getName());
+				int ret = o1.getDivisionCode().compareTo(o2.getDivisionCode());
 				return ret;
 
 			}
@@ -266,7 +266,7 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 	public static String getMessageText(Connection conn, MessageKey messageKey, String defaultText) throws Exception {
 		String messageText = null;
 		ApplicationProperties message = new ApplicationProperties();
-		message.setPropertyId(messageKey.name());
+		message.setPropertyId("MessageKey." + messageKey.name());
 		try {
 			message.selectOne(conn);
 			messageText = message.getValueString();
@@ -275,6 +275,20 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 		}	
 		return messageText;
 	}
+
+	public static String getResponseText(Connection conn, ResponseCode responseCode, String defaultText) throws Exception {
+		String messageText = null;
+		ApplicationProperties message = new ApplicationProperties();
+		message.setPropertyId("ResponseCode." + responseCode.name());
+		try {
+			message.selectOne(conn);
+			messageText = message.getValueString();
+		} catch ( RecordNotFoundException e ) {
+			messageText = defaultText;
+		}	
+		return messageText;
+	}
+
 
 	public static SessionUser getSessionUser(HttpServletRequest request) {
 		SessionUser sessionUser = null;

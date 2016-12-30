@@ -26,7 +26,6 @@
 $(function() {        
 	;<%=namespace%> = {
 		init: function() {
-			console.debug("inits");			
 			$("#<%=namespace %>_jobActivationForm select[name='<%=namespace %>_automanual']").selectmenu();
 			$("#<%=namespace %>_jobActivationForm select[name='<%=namespace %>_buildingType']").selectmenu();
 			$("#<%=namespace %>_jobActivationForm input[name='<%=namespace %>_nbrFloors']").spinner(
@@ -40,7 +39,27 @@ $(function() {
 				}
 			);
 		},  
-		
+		setBuildingType: function ($optionList, $selectedValue) {
+			var selectorName = "#<%=namespace %>_jobActivationForm select[name='<%=namespace %>_buildingType']";
+			console.debug(selectorName);
+			var $select = $(selectorName);
+			if($select.prop) {
+				var options = $select.prop('options');
+			} else {
+				var options = $select.attr('options');
+			}
+			$('option', $select).remove();
+			
+			options[options.length] = new Option("","");
+			$.each($optionList, function(index, type) {
+				options[options.length] = new Option(type.displayValue, type.value);
+			});
+
+			if ( $selectedValue != null ) {
+				$select.val($selectedValue);
+			}
+			$select.selectmenu();
+		}
 	}
 });
 </script>     

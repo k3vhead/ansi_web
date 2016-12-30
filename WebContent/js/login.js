@@ -4,7 +4,6 @@ $(function() {
     	$userid = $("input[name='userid']").val();
     	$password = $("input[name='password']").val();
     	$outbound = JSON.stringify({'userid':$userid, 'password':$password});
-    	console.debug($outbound);
     	var jqxhr = $.ajax({
     	     type: 'POST',
     	     url: 'login',

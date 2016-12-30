@@ -25,29 +25,68 @@
 <script type="text/javascript">        
 $(function() {        
 	;<%=namespace%> = {
-		myFunction: function() {
-			console.log('running MYNAMESPACE.myFunction...');
-		}  
+		init: function() {
+			console.debug("Doing the jobdesc init");			
+		},
+		setJobFrequency: function($optionList, $selectedValue) {
+			console.debug("Setting jf");
+			var myoptions = null;
+			var selectorName = "#<%=namespace %>_jobDescriptionForm select[name='<%=namespace%>_jobFrequency']";
+			console.debug(selectorName);
+			var $select = $(selectorName);
+			if ($select.prop) {
+				myoptions = $select.prop('options');
+			} else {
+				myoptions = $select.attr('options');
+			}
+			$('option', $select).remove();
+			
+			myoptions[myoptions.length] = new Option("","");
+			$.each($optionList, function(index, type) {
+				console.debug("Setting " + type.value);
+				myoptions[options.length] = new Option(type.displayValue, type.value);
+			});
+			//options[options.length] = new Option("Fr 1", "1");
+			//options[options.length] = new Option("Fr 2", "2");
+			if ( $selectedValue != null ) {
+				$select.val($selectedValue);
+			}
+			$select.selectmenu();
+		}
+
 	}
 });
 </script>     
 
 <div <%= cssIdString %> <%= cssClassString %> >
-	<table>
-		<tr>
-			<td>Job #:</td>
-			<td><input type="text" name="jobNbr" style="width:40px;" />
-			<td>Price Per Cleaning:</td>
-			<td><input type="text" name="ppc" style="width:100px;" /></td>
-		</tr>
-		<tr>
-			<td colspan="4">Service Description</td>
-		</tr>
-		<tr>
-			<td colspan="4">
-				<textarea cols="40" rows="8" name="serviceDescription"></textarea>
-			</td>
-		</tr>
-	</table>
+	<form name="<%= namespace %>_jobDescriptionForm">
+		<table>
+			<tr>
+				<td>Job #:</td>
+				<td><input type="text" name="<%=namespace%>_jobNbr" style="width:40px;" />
+				<td>Price Per Cleaning:</td>
+				<td><input type="text" name="<%=namespace%>_ppc" style="width:100px;" /></td>
+			</tr>
+			<tr>
+				<td colspan="2">&nbsp;</td>
+				<td>Job Frequency</td>
+				<td>
+					<select name="<%=namespace%>_jobFrequency">
+						<option value=""></option>
+						<option value="ff">FF</option>
+						<option value="gg">GG</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="4">Service Description</td>
+			</tr>
+			<tr>
+				<td colspan="4">
+					<textarea cols="40" rows="8" name="<%=namespace%>_serviceDescription"></textarea>
+				</td>
+			</tr>
+		</table>
+	</form>
 </div>
  

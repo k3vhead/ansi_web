@@ -50,6 +50,12 @@
 			#jobActivation {
 				border:solid 1px #000000;
 			}
+			#billTo {
+				border:solid 1px #000000;
+			}
+			#jobSite {
+				border:solid 1px #000000;
+			}
         </style>
     </tiles:put>
     
@@ -57,6 +63,14 @@
     <tiles:put name="content" type="string">
     	<h1>Job Maintenance</h1>
 		<table>
+			<tr>
+				<td style="width:50%;">
+					<webthing:addressPanel namespace="JOBSITE" label="Job Site" cssId="jobSite" />
+				</td>
+				<td>
+					<webthing:addressPanel namespace="BILLTO" label="Bill To" cssId="billTo" />
+				</td>
+			</tr>
 			<tr>
 				<td style="width:50%;">
 					<webthing:jobDescription namespace="JOBDESCRIPTION" cssId="jobProposal" />
@@ -69,8 +83,52 @@
 		
         <script type="text/javascript">        
 		$( document ).ready(function() {
+			function getJobFreqs() {
+        		var jqxhr1 = $.ajax({
+    				type: 'GET',
+    				url: 'options',
+    				data: 'JOB_FREQUENCY,JOB_STATUS',
+    				success: function($data) {
+    					console.debug("Getting job freq");
+    					JOBDESCRIPTION.setJobFrequency($data.data.jobFrequency);
+    				},
+    				statusCode: {
+    					403: function($data) {
+    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+    					} 
+    				},
+    				dataType: 'json'
+    			});
+			}
+    	
+			function getBuildingTypes() {
+        		var jqxhr2 = $.ajax({
+    				type: 'GET',
+    				url: 'code/list/job',
+    				data: {},
+    				success: function($data) {
+    			        var $buildingTypeList = [];
+    					console.debug("Getting building type");
+    					$.each($data.data.codeList, function(index, value) {
+    						if ( value.fieldName == 'building_type') {
+    							$buildingTypeList.push(value);
+    						}
+    					});
+    					JOBACTIVATION.setBuildingType($buildingTypeList);
+    				},
+    				statusCode: {
+    					403: function($data) {
+    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+    					} 
+    				},
+    				dataType: 'json'
+    			});
+			}
+			
+			JOBDESCRIPTION.init();
 			JOBACTIVATION.init();
-          	
+			getBuildingTypes();
+			getJobFreqs();
         });
         </script>        
     </tiles:put>

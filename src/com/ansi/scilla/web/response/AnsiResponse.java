@@ -6,7 +6,6 @@ import java.util.Calendar;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.ansi.scilla.common.db.Message;
 import com.ansi.scilla.common.utils.PropertyNames;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ApplicationWebObject;
@@ -107,13 +106,9 @@ public class AnsiResponse extends ApplicationWebObject {
 			this.sessionExpirationTime = sessionExpirationTime;
 		}
 		private void makeMessage(Connection conn, ResponseCode responseCode) throws Exception {
-			Logger logger = AppUtils.getLogger();
-			Message message = new Message();
-			message.setKey(responseCode.toString());
-			logger.debug(message);
-			message.selectOne(conn);			
-			this.responseCode = message.getKey();
-			this.responseMessage = message.getMessage();
+			String messageText = AppUtils.getResponseText(conn, responseCode, responseCode.name());
+			this.responseCode = responseCode.name();
+			this.responseMessage = messageText;
 			
 		}
 		private void makeSessionExpiration() {

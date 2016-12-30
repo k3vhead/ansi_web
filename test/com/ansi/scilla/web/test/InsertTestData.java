@@ -261,7 +261,6 @@ public class InsertTestData extends TesterUtils {
 				d.setDescription(description);
 				d.setDivisionCode(divisionCode);
 				d.setDivisionNbr(divisionNbr);
-				d.setName(name);
 				d.insertWithKey(conn, true);
 			}
 			
