@@ -198,7 +198,7 @@ public class QuoteServlet extends AbstractServlet {
 						Quote key = new Quote();
 						key.setQuoteId(Integer.parseInt(urlPieces[0]));
 						key.setQuoteNumber(Integer.parseInt(urlPieces[1]));
-						key.setRevisionNumber(Integer.parseInt(urlPieces[2]));
+						key.setRevision((urlPieces[2]));
 						System.out.println("Trying to do update");
 						quote = doUpdate(conn, key, quoteRequest, sessionUser);
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
@@ -274,11 +274,11 @@ public class QuoteServlet extends AbstractServlet {
 //		quote.setQuoteGroupId(quoteRequest.getQuoteGroupId());
 	
 		quote.setQuoteNumber(quoteRequest.getQuoteNumber());
-		quote.setRevisionNumber(quoteRequest.getRevisionNumber());
+		quote.setRevision(quoteRequest.getRevisionNumber());
 		if ( quoteRequest.getSignedByContactId() != null) {
 			quote.setSignedByContactId(quoteRequest.getSignedByContactId());
 		}
-		quote.setStatus(quoteRequest.getStatus());
+//		quote.setStatus(quoteRequest.getStatus());
 		quote.setTemplateId(quoteRequest.getTemplateId());
 	
 		try {
@@ -319,9 +319,9 @@ public class QuoteServlet extends AbstractServlet {
 //		quote.setQuoteGroupId(quoteRequest.getQuoteGroupId());
 	
 		quote.setQuoteNumber(quoteRequest.getQuoteNumber());
-		quote.setRevisionNumber(quoteRequest.getRevisionNumber());
+		quote.setRevision(quoteRequest.getRevisionNumber());
 		quote.setSignedByContactId(quoteRequest.getSignedByContactId());
-		quote.setStatus(quoteRequest.getStatus());
+//		quote.setStatus(quoteRequest.getStatus());
 		quote.setTemplateId(quoteRequest.getTemplateId());
 		
 //		 if we update something that isn't there, a RecordNotFoundException gets thrown

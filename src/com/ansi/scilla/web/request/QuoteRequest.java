@@ -29,7 +29,7 @@ import com.thewebthing.commons.lang.JsonException;
 		private Date proposalDate;
 		private Integer quoteId;
 		private Integer quoteNumber;
-		private Integer revisionNumber;
+		private String revisionNumber;
 		private Integer signedByContactId;
 		private Integer status;
 		private Integer templateId;
@@ -201,13 +201,13 @@ import com.thewebthing.commons.lang.JsonException;
 		}
 
 		
-		public void setRevisionNumber(Integer revisionNumber) {
+		public void setRevisionNumber(String revisionNumber) {
 			this.revisionNumber = revisionNumber;
 		}
 
 		@RequiredForAdd
 		@RequiredForUpdate
-		public Integer getRevisionNumber() {
+		public String getRevisionNumber() {
 			return this.revisionNumber;
 		}
 

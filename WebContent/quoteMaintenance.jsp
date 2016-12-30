@@ -71,7 +71,11 @@
 			}
 			.labelSpan {
 				display: inline-block;
-				width: 80px !important;
+				width: 90px !important;
+			}
+			.labelSpanSmall {
+				display: inline-block;
+				width: 60px !important;
 			}
         </style>
     </tiles:put>
@@ -85,10 +89,8 @@
 					<table style="width:95%;">
 						<tr>
 							<td><input type="button" name="modifyButton" value="Modify" class="quoteButton"/></td>
-							<td><span class="labelSpan">Manager:</span>
-								<select name="managerSelect" class="quoteSelect">
-									<option value=""></option>
-								</select>
+							<td><span class="labelSpanSmall">Manager:</span>
+								<input type="text" name="manager"  style="width:145px"/>
 							</td>
 							<td><span class="labelSpan">Division:</span>
 								<select name="divisionSelect" class="quoteSelect">
@@ -97,11 +99,11 @@
 							</td>
 							<td align="center">Quote</td>
 							<td align="center">Revision</td>
-							<td rowspan="2" align="center"><input type="button" name="printButton" value="Print" class="quoteButton"/></td>
+							<td rowspan="2" align="right" style="padding-right:10px;"><input type="button" name="printButton" value="Print" class="quoteButton"/></td>
 						</tr>
 						<tr>
 							<td><input type="button" name="copyButton" value="Copy" class="quoteButton"/></td>
-							<td><span class="labelSpan">Lead Type:</span>
+							<td><span class="labelSpanSmall">Lead Type:</span>
 								<select name="leadSelect" class="quoteSelect">
 									<option value=""></option>
 								</select>
@@ -117,9 +119,12 @@
 						<tr>
 							<td>&nbsp;</td>
 							<td>&nbsp;</td>
-							<td>&nbsp;</td>
-							<td colspan="2">Proposed Date:&nbsp;&nbsp;<input type="text" name="proposedDateInput"  style="width:90px"/></td>
-							<td>Print Count:&nbsp;&nbsp;<input type="text" name="printCountInput"  style="width:90px"/></td>
+							
+							<td><span class="labelSpan">Proposed Date:</span>
+								<input type="text" name="proposalDate"  style="width:90px" disabled="disabled"/>
+							</td>
+							<td colspan="2">Print Date:&nbsp;&nbsp;<input type="text" name="printDate"  style="width:90px"/></td>
+							<td>Print Count:&nbsp;&nbsp;<input type="text" name="printCount"  style="width:90px" disabled="disabled"/></td>
 						</tr>
 						<tr>
 							<td>&nbsp;</td>
@@ -127,7 +132,7 @@
 							<td>&nbsp;</td>
 							<td>&nbsp;</td>
 							<td>&nbsp;</td>
-							<td align="right"><a href="#">View Print History</a></td>
+							<td align="right"  style="padding-right:10px;"><a href="#">View Print History</a></td>
 						</tr>
 					</table>
 				</td>
