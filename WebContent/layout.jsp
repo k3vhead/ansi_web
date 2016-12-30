@@ -150,6 +150,14 @@
 											<li><a href="#">New</a></li>
 										</ul>
 									</li>
+									<li>
+										<a href="#">Contacts</a>
+										<ul>
+											<!-- <li><html:link action="addressLookup">Lookup</html:link></li> -->
+											<li><html:link action="contactMaintenance">Maintenance</html:link></li>
+											<!-- <li><a href="#">New</a></li> -->
+										</ul>
+									</li>
 									<ansi:hasPermission permissionRequired="QUOTE">
 									<li>
 										<a href="#">Quotes</a>
@@ -187,6 +195,14 @@
 										</ul>
 									</li>
 									</ansi:hasPermission>
+									<li>
+										<a href="#">Tax Rates</a>
+										<ul>
+											<!-- <li><a href="#">Lookup</a></li> -->
+											<li><html:link action="taxRateMaintenance">Maintenance</html:link></li>
+											<!-- <li><a href="#">New</a></li> -->
+										</ul>
+									</li>
 									<ansi:hasPermission permissionRequired="INVOICE">
 									<li>
 										<a href="#">Invoices</a>
