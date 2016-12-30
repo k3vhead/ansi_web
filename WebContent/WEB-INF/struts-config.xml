@@ -35,6 +35,12 @@
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
+            path="/contactMaintenance"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/contactMaintenance.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		<action
             path="/dashboard"
             type="com.ansi.scilla.web.action.DashboardAction">
             <forward name="valid" path="/dashboard.jsp" />
@@ -91,6 +97,12 @@
             path="/quoteMaintenance"
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">
             <forward name="valid" path="/quoteMaintenance.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+        <action
+            path="/taxRateMaintenance"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/taxRateMaintenance.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
         <action
