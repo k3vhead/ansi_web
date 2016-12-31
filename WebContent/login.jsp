@@ -49,7 +49,7 @@
 			#formDiv {
 				border:solid 1px #000000; 
 				padding:30px; 
-				width:80%;
+				width:85%;
 			}
         </style>
         <script src="js/login.js"></script>        

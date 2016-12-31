@@ -27,7 +27,9 @@
 		--%>
 		    	
         <title>ANSI Scheduling - <tiles:insert attribute="title" /></title>
-        <link rel="SHORTCUT ICON" href="images/favicon.ico" />
+        <!-- <link rel="SHORTCUT ICON" href="images/favicon.ico" /> -->
+        <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
+        <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
         <script type="text/javascript" src="jQuery/jquery-3.1.1.min.js"></script>        
         <script type="text/javascript" src="jQuery/jquery-ui.min.js"></script>
         <script type="text/javascript" src="jQuery/jcookie.js"></script>

@@ -165,6 +165,7 @@ public class CodeServlet extends AbstractServlet {
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 						responseCode = ResponseCode.SUCCESS;
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+						conn.commit();
 					} catch ( RecordNotFoundException e ) {
 						super.sendNotFound(response);						
 					} catch ( Exception e) {
@@ -182,7 +183,6 @@ public class CodeServlet extends AbstractServlet {
 				super.sendNotFound(response);
 			}
 			
-			conn.commit();
 		} catch ( Exception e ) {
 			AppUtils.logException(e);
 			AppUtils.rollbackQuiet(conn);
