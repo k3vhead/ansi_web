@@ -19,6 +19,7 @@ public class ContactRequest extends AbstractRequest {
 	
 	private String businessPhone;
 	private Integer contactId;
+	private String email;
 	private String fax;
 	private String firstName;
 	private String lastName;
@@ -50,6 +51,14 @@ public class ContactRequest extends AbstractRequest {
 
 	public void setContactId(Integer contactId) {
 		this.contactId = contactId;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public String getFax() {
