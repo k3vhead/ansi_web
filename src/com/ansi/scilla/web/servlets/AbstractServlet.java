@@ -10,6 +10,7 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.request.AbstractRequest;
+import com.ansi.scilla.web.request.MinMax;
 import com.ansi.scilla.web.request.RequiredForAdd;
 import com.ansi.scilla.web.request.RequiredForUpdate;
 import com.ansi.scilla.web.request.RequiredFormat;
@@ -216,6 +218,54 @@ public class AbstractServlet extends HttpServlet {
 		return nonMatchingValues;
 	}
 	
+	
+	public List<String> validateValues(AbstractRequest request) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		List<String> nonMatchingValues = new ArrayList<String>();
+		
+		for ( Method method : request.getClass().getMethods() ) {
+			MinMax minMax = method.getAnnotation(MinMax.class);
+			if ( minMax != null ) {
+				String fieldName = method.getName().substring(3);
+				
+				float min = minMax.min();
+				float max = minMax.max();
+				Object value = method.invoke(request, (Object[])null);
+				if ( value != null && value instanceof BigDecimal) {
+					BigDecimal decimalValue = (BigDecimal)value;
+					BigDecimal minValue = new BigDecimal(min);
+					BigDecimal maxValue = new BigDecimal(max);
+					
+					if ( minValue.compareTo(decimalValue) > 0 ) {
+						nonMatchingValues.add(fixFieldName(fieldName));
+					} else if ( maxValue.compareTo(decimalValue) < 0 ) {
+						nonMatchingValues.add(fixFieldName(fieldName));
+					}
+				} else if ( value != null && value instanceof Float) {
+					Float decimalValue = (Float)value;
+					Float minValue = new Float(min);
+					Float maxValue = new Float(max);
+					
+					if ( minValue.compareTo(decimalValue) > 0 ) {
+						nonMatchingValues.add(fixFieldName(fieldName));
+					} else if ( maxValue.compareTo(decimalValue) < 0 ) {
+						nonMatchingValues.add(fixFieldName(fieldName));
+					}
+				} else if ( value != null && value instanceof Integer) {
+					Integer decimalValue = (Integer)value;
+					Integer minValue = (new Float(min)).intValue();
+					Integer maxValue = (new Float(max)).intValue();
+					
+					if ( minValue.compareTo(decimalValue) > 0 ) {
+						nonMatchingValues.add(fixFieldName(fieldName));
+					} else if ( maxValue.compareTo(decimalValue) < 0 ) {
+						nonMatchingValues.add(fixFieldName(fieldName));
+					}
+				}
+			}
+		}
+		
+		return nonMatchingValues;
+	}
 	protected String fixFieldName(String fieldName) {
 		return fieldName.substring(0,1).toLowerCase() + fieldName.substring(1);
 	}
