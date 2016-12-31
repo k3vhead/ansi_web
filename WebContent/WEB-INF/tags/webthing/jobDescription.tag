@@ -37,8 +37,7 @@ $(function() {
 			
 			var $select = $(selectorName);
 			$('option', $select).remove();
-			$('option', $select).remove();
-						
+
 			$.each($optionList, function(index, val) {
 			    $select.append(new Option(val.display, val.abbrev));
 			    console.debug(val);
