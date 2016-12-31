@@ -67,8 +67,6 @@ public class LoginServlet extends AbstractServlet {
 		} finally {
 			AppUtils.closeQuiet(conn);
 		}
-		
-		super.doPost(request, response);
 	}
 
 	protected LoginResponse doWork(Connection conn, String jsonString) throws ExpiredLoginException, InvalidLoginException, Exception {
