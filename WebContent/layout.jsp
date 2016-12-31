@@ -145,9 +145,9 @@
 									<li>
 										<a href="#">Addresses</a>
 										<ul>
-											<li><html:link action="addressLookup">Lookup</html:link></li>
+											<!-- <li><html:link action="addressLookup">Lookup</html:link></li> -->
 											<li><html:link action="addressMaintenance">Maintenance</html:link></li>
-											<li><a href="#">New</a></li>
+											<!-- <li><a href="#">New</a></li> -->
 										</ul>
 									</li>
 									<li>

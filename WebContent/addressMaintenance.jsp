@@ -533,8 +533,8 @@
 							<tr>
 								<td>County:</td>
 								<td><input type="text" name="county" style="width:90%" /></td>
-								<td>&nbsp;</td>
-								<td>&nbsp;</td>
+								<td>Status:</td>
+								<td><input type="text" name="status" style="width:90%" /></td>
 							</tr>
 							<tr>
 								<td>&nbsp;</td>

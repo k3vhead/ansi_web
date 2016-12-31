@@ -105,12 +105,6 @@
             <forward name="valid" path="/taxRateMaintenance.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
-        <action
-            path="/addressLookup"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
-            <forward name="valid" path="/addressLookup.jsp" />
-            <forward name="login" path="/login.jsp" />            
-        </action>
          <action
             path="/addressMaintenance"
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">

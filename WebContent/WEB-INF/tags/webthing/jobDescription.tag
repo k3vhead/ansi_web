@@ -28,24 +28,31 @@ $(function() {
 		init: function() {
 			console.debug("Doing the jobdesc init");			
 		},
-		setJobFrequency: function($optionList, $selectedValue) {
+		setJobFrequency: function($optionList,$selectedValue) {
 			console.debug("Setting jf");
 			var myoptions = null;
-			var selectorName = "#<%=namespace %>_jobDescriptionForm select[name='<%=namespace%>_jobFrequency']";
+			var selectorName = "#<%=namespace%>_jobDescriptionForm select[name='<%=namespace%>_jobFrequency']";
+			selectorName = "select[name='<%=namespace%>_jobFrequency']";
 			console.debug(selectorName);
-			var $select = $(selectorName);
-			if ($select.prop) {
-				myoptions = $select.prop('options');
-			} else {
-				myoptions = $select.attr('options');
-			}
-			$('option', $select).remove();
 			
-			myoptions[myoptions.length] = new Option("","");
-			$.each($optionList, function(index, type) {
-				console.debug("Setting " + type.value);
-				myoptions[options.length] = new Option(type.displayValue, type.value);
+			var $select = $(selectorName);
+			$('option', $select).remove();
+			$('option', $select).remove();
+						
+			$.each($optionList, function(index, val) {
+			    $select.append(new Option(val.display, val.abbrev));
+			    console.debug(val);
 			});
+			//if ($select.prop) {
+			//	myoptions = $select.prop('options');
+			//} else {
+			//	myoptions = $select.attr('options');
+			//}
+			//myoptions[myoptions.length] = new Option("","");
+			//$.each($optionList, function(index, type) {
+			//	console.debug("Setting " + type.value);
+			//	myoptions[myoptions.length] = new Option(type.displayValue, type.value);
+			//});
 			//options[options.length] = new Option("Fr 1", "1");
 			//options[options.length] = new Option("Fr 2", "2");
 			if ( $selectedValue != null ) {

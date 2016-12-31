@@ -93,7 +93,7 @@
 								<input type="text" name="manager"  style="width:145px"/>
 							</td>
 							<td><span class="labelSpan">Division:</span>
-								<select name="divisionSelect" class="quoteSelect">
+								<select name="division" class="quoteSelect">
 									<option value=""></option>
 								</select>
 							</td>
@@ -109,12 +109,12 @@
 								</select>
 							</td>
 							<td><span class="labelSpan">Account Type:</span>
-								<select name="accountSelect" class="quoteSelect">
+								<select name="accountType" class="quoteSelect">
 									<option value=""></option>
 								</select>
 							</td>
-							<td>Q:&nbsp;&nbsp;<input type="text" name="quoteNumberInput"  style="width:80px"/></td>
-							<td>R:&nbsp;&nbsp;<input type="text" name="quoteNumberInput"  style="width:40px"/></td>
+							<td>Q:&nbsp;&nbsp;<input type="text" name="quoteNumber"  style="width:80px"/></td>
+							<td>R:&nbsp;&nbsp;<input type="text" name="revision"  style="width:40px"/></td>
 						</tr>
 						<tr>
 							<td>&nbsp;</td>
@@ -132,7 +132,7 @@
 							<td>&nbsp;</td>
 							<td>&nbsp;</td>
 							<td>&nbsp;</td>
-							<td align="right"  style="padding-right:10px;"><a href="#">View Print History</a></td>
+							<td align="right"  style="padding-right:10px;"><a href="#" name="viewPrintHistory">View Print History</a></td>
 						</tr>
 					</table>
 				</td>
