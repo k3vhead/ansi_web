@@ -156,6 +156,7 @@ public class ContactServlet extends AbstractServlet {
 		SessionUser sessionUser = AppUtils.getSessionUser(request);
 		String url = request.getRequestURI();
 //		String queryString = request.getQueryString();
+		System.out.println("ContactServlet: doPost() Url:" + url);
 		
 		Connection conn = null;
 		try {
@@ -169,12 +170,13 @@ public class ContactServlet extends AbstractServlet {
 			String command = urlPieces[0];
 
 			String jsonString = super.makeJsonString(request);
-			System.out.println(jsonString);
+			System.out.println("ContactServlet: doPost() json:" + jsonString);
 			ContactRequest contactRequest = new ContactRequest(jsonString);
 			
 			Contact contact = null;
 			ResponseCode responseCode = null;
 			if ( command.equals(ACTION_IS_ADD) ) {
+				System.out.println("ContactServlet: doPost() is add");
 				WebMessages webMessages = validateAdd(conn, contactRequest);
 				if (webMessages.isEmpty()) {
 					try {
@@ -199,14 +201,14 @@ public class ContactServlet extends AbstractServlet {
 				super.sendResponse(conn, response, responseCode, contactResponse);
 				
 			} else if ( urlPieces.length == 1 ) {   //  /<contactId> = 1 pieces
-				System.out.println("Doing Update Stuff");				
+				System.out.println("ContactServlet: doPost() is update");
 				WebMessages webMessages = validateAdd(conn, contactRequest);
 				if (webMessages.isEmpty()) {
-					System.out.println("passed validation");
+					System.out.println("ContactServlet: doPost() passed validation");
 					try {
 						Contact key = new Contact();
 						if ( StringUtils.isNumeric(urlPieces[0]) ) {//looks like a contactId
-							System.out.println("Trying to do update");
+							System.out.println("ContactServlet: doPost() Trying to do update");
 							key.setContactId(Integer.valueOf(urlPieces[0]));
 							contact = doUpdate(conn, key, contactRequest, sessionUser);
 							String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
@@ -216,17 +218,17 @@ public class ContactServlet extends AbstractServlet {
 							throw new RecordNotFoundException();
 						}
 					} catch ( RecordNotFoundException e ) {
-						System.out.println("Doing 404");
+						System.out.println("ContactServlet: doPost() Doing 404");
 						super.sendNotFound(response);						
 					} catch ( Exception e) {
-						System.out.println("Doing SysFailure");
+						System.out.println("ContactServlet: doPost() Doing SysFailure");
 						responseCode = ResponseCode.SYSTEM_FAILURE;
 						AppUtils.logException(e);
 						String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
 					}
 				} else {
-					System.out.println("Doing Edit Fail");
+					System.out.println("ContactServlet: doPost() Doing Edit Fail");
 					responseCode = ResponseCode.EDIT_FAILURE;
 				}
 				ContactResponse contactResponse = new ContactResponse(contact, webMessages);
@@ -259,6 +261,9 @@ public class ContactServlet extends AbstractServlet {
 			contact.setBusinessPhone(contactRequest.getBusinessPhone());
 		}
 //		contact.setContactId(contactRequest.getContactId());//created on add
+		if ( ! StringUtils.isBlank(contactRequest.getEmail())) {
+			contact.setEmail(contactRequest.getEmail());
+		}
 		if ( ! StringUtils.isBlank(contactRequest.getFax())) {
 			contact.setFax(contactRequest.getFax());
 		}
@@ -280,7 +285,7 @@ public class ContactServlet extends AbstractServlet {
 			Integer contactId = contact.insertWithKey(conn);
 			contact.setContactId(contactId);
 		} catch ( SQLException e) {
-			if ( e.getMessage().contains("duplicate key")) {
+			if ( e.getMessage().contains("ContactServlet: doAdd() duplicate key")) {
 				throw new DuplicateEntryException();
 			} else {
 				AppUtils.logException(e);
@@ -292,7 +297,7 @@ public class ContactServlet extends AbstractServlet {
 
 
 	protected Contact doUpdate(Connection conn, Contact key, ContactRequest contactRequest, SessionUser sessionUser) throws Exception {
-		System.out.println("This is the key:");
+		System.out.println("ContactServlet: doUpdate() This is the key:");
 		System.out.println(key);
 		System.out.println("************");
 		Date today = new Date();
@@ -303,6 +308,9 @@ public class ContactServlet extends AbstractServlet {
 //		contact.setContactId(contactRequest.getContactId());//key is in the url
 		if ( ! StringUtils.isBlank(contactRequest.getFax())) {
 			contact.setFax(contactRequest.getFax());
+		}
+		if ( ! StringUtils.isBlank(contactRequest.getEmail())) {
+			contact.setEmail(contactRequest.getEmail());
 		}
 		if ( ! StringUtils.isBlank(contactRequest.getFirstName())) {
 			contact.setFirstName(contactRequest.getFirstName());
@@ -335,7 +343,7 @@ public class ContactServlet extends AbstractServlet {
 		if (StringUtils.isNumeric(urlPieces[0])){
 			Contact contact = new Contact();
 			contact.setContactId(Integer.valueOf(urlPieces[0]));
-			System.out.println("Getting Contact for contactId: " + urlPieces[0]);
+			System.out.println("ContactServlet: makeSingleListResponse() Getting Contact for contactId: " + urlPieces[0]);
 			contact.selectOne(conn);
 			contactListResponse.setContactList(Arrays.asList(new Contact[] {contact} ));
 		} else {
