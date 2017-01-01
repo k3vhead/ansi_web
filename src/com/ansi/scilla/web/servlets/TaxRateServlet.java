@@ -210,10 +210,14 @@ public class TaxRateServlet extends AbstractServlet {
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
 					}
 				} else {
+					System.out.println("TaxRateServlet: doPost() add failed");
 					responseCode = ResponseCode.EDIT_FAILURE;
 				}
+				System.out.println("TaxRateServlet: doPost() prepare response");
 				TaxRateResponse taxRateResponse = new TaxRateResponse(taxRate, webMessages);
+				System.out.println("TaxRateServlet: doPost() send response");
 				super.sendResponse(conn, response, responseCode, taxRateResponse);
+				System.out.println("TaxRateServlet: doPost() response sent");
 				
 			} else if ( urlPieces.length == 1 ) {   //  /<taxRateId> = 1 pieces
 				System.out.println("TaxRateServlet: doPost() action is update");
@@ -246,8 +250,11 @@ public class TaxRateServlet extends AbstractServlet {
 					System.out.println("Doing Edit Fail");
 					responseCode = ResponseCode.EDIT_FAILURE;
 				}
+				System.out.println("TaxRateServlet: doPost() prepare response");
 				TaxRateResponse taxRateResponse = new TaxRateResponse(taxRate, webMessages);
+				System.out.println("TaxRateServlet: doPost() send response");
 				super.sendResponse(conn, response, responseCode, taxRateResponse);
+				System.out.println("TaxRateServlet: doPost() response sent");
 			} else {
 				super.sendNotFound(response);
 			}
@@ -380,8 +387,11 @@ public class TaxRateServlet extends AbstractServlet {
 	
 	protected WebMessages validateAdd(Connection conn, TaxRateRequest taxRateRequest) throws Exception {
 		WebMessages webMessages = new WebMessages();
+		System.out.println("TaxRateServlet: validateAdd() before");
 		List<String> missingFields = super.validateRequiredAddFields(taxRateRequest);
+		System.out.println("TaxRateServlet: validateAdd() after");
 		if ( ! missingFields.isEmpty() ) {
+			System.out.println("TaxRateServlet: validateAdd() missing fields");
 			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
 			for ( String field : missingFields ) {
 				webMessages.addMessage(field, messageText);
@@ -392,8 +402,11 @@ public class TaxRateServlet extends AbstractServlet {
 
 	protected WebMessages validateUpdate(Connection conn, TaxRate key, TaxRateRequest taxRateRequest) throws RecordNotFoundException, Exception {
 		WebMessages webMessages = new WebMessages();
+		System.out.println("TaxRateServlet: validateUpdate() before");
 		List<String> missingFields = super.validateRequiredUpdateFields(taxRateRequest);
+		System.out.println("TaxRateServlet: validateUpdate() after");
 		if ( ! missingFields.isEmpty() ) {
+			System.out.println("TaxRateServlet: validateUpdate() missing fields");
 			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
 			for ( String field : missingFields ) {
 				webMessages.addMessage(field, messageText);
@@ -402,6 +415,7 @@ public class TaxRateServlet extends AbstractServlet {
 		// if we "select" the key, and it isn't found, a "RecordNotFoundException" is thrown.
 		// That exception will propagate up the tree until it turns into a 404 message sent to the client
 		TaxRate testKey = (TaxRate)key.clone(); 
+		System.out.println("TaxRateServlet: validateUpdate() testKey:" + testKey.getTaxRateId());
 		testKey.selectOne(conn);
 		return webMessages;
 	}

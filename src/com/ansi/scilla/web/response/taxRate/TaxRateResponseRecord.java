@@ -23,7 +23,9 @@ public class TaxRateResponseRecord extends ApplicationObject {
 
 	public TaxRateResponseRecord(TaxRate taxRate) throws IllegalAccessException, InvocationTargetException {
 		super();
-		BeanUtils.copyProperties(this, taxRate);
+		if(taxRate != null) {
+			BeanUtils.copyProperties(this, taxRate);
+		}
 	}
 
 	public BigDecimal getAmount() {
