@@ -1,6 +1,8 @@
 package com.ansi.scilla.web.servlets;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
@@ -11,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Code;
@@ -69,6 +72,8 @@ public class CodeServlet extends AbstractServlet {
 			CodeResponse codeResponse = new CodeResponse();
 			super.sendResponse(conn, response, ResponseCode.SUCCESS, codeResponse);
 			conn.commit();
+		} catch ( RecordNotFoundException e) {
+			super.sendNotFound(response);
 		} catch ( Exception e) {
 			AppUtils.logException(e);
 			throw new ServletException(e);
@@ -137,6 +142,7 @@ public class CodeServlet extends AbstractServlet {
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 						responseCode = ResponseCode.SUCCESS;
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+						conn.commit();
 					} catch ( DuplicateEntryException e ) {
 						String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
@@ -157,15 +163,18 @@ public class CodeServlet extends AbstractServlet {
 				WebMessages webMessages = validateAdd(conn, codeRequest);
 				if (webMessages.isEmpty()) {
 					try {
+						ParsedUrl parsedUrl = new ParsedUrl(request.getRequestURI());
 						Code key = new Code();
-						key.setTableName(urlPieces[0]);
-						key.setFieldName(urlPieces[1]);
-						key.setValue(urlPieces[2]);
+						key.setTableName(parsedUrl.tableName);
+						key.setFieldName(parsedUrl.fieldName);
+						key.setValue(parsedUrl.value);
 						code = doUpdate(conn, key, codeRequest, sessionUser);
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 						responseCode = ResponseCode.SUCCESS;
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
 						conn.commit();
+						CodeResponse codeResponse = new CodeResponse(code, webMessages);
+						super.sendResponse(conn, response, responseCode, codeResponse);
 					} catch ( RecordNotFoundException e ) {
 						super.sendNotFound(response);						
 					} catch ( Exception e) {
@@ -173,12 +182,14 @@ public class CodeServlet extends AbstractServlet {
 						AppUtils.logException(e);
 						String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+						CodeResponse codeResponse = new CodeResponse(code, webMessages);
+						super.sendResponse(conn, response, responseCode, codeResponse);
 					}
 				} else {
 					responseCode = ResponseCode.EDIT_FAILURE;
+					CodeResponse codeResponse = new CodeResponse(code, webMessages);
+					super.sendResponse(conn, response, responseCode, codeResponse);
 				}
-				CodeResponse codeResponse = new CodeResponse(code, webMessages);
-				super.sendResponse(conn, response, responseCode, codeResponse);
 			} else {
 				super.sendNotFound(response);
 			}
@@ -227,6 +238,9 @@ public class CodeServlet extends AbstractServlet {
 
 
 	protected Code doUpdate(Connection conn, Code key, CodeRequest codeRequest, SessionUser sessionUser) throws Exception {
+		Logger logger = AppUtils.getLogger();
+		logger.debug(key);
+		logger.debug(codeRequest);
 		Date today = new Date();
 		Code code = new Code();
 		if ( ! StringUtils.isBlank(codeRequest.getDescription())) {
@@ -293,7 +307,7 @@ public class CodeServlet extends AbstractServlet {
 		public String tableName;
 		public String fieldName;
 		public String value;
-		public ParsedUrl(String url) throws RecordNotFoundException {
+		public ParsedUrl(String url) throws RecordNotFoundException, UnsupportedEncodingException {
 			int idx = url.indexOf("/code/");	
 			if ( idx < 0 ) {
 				throw new RecordNotFoundException();
@@ -301,13 +315,13 @@ public class CodeServlet extends AbstractServlet {
 			String myString = url.substring(idx + "/code/".length());			
 			String[] urlPieces = myString.split("/");
 			if ( urlPieces.length >= 1 ) {
-				this.tableName = urlPieces[0];
+				this.tableName = URLDecoder.decode(urlPieces[0],"UTF-8");
 			}
 			if ( urlPieces.length >= 2 ) {
-				this.fieldName = urlPieces[1];
+				this.fieldName = URLDecoder.decode(urlPieces[1],"UTF-8");
 			}
 			if ( urlPieces.length >= 3 ) {
-				this.value = urlPieces[2];
+				this.value = URLDecoder.decode(urlPieces[2],"UTF-8");
 			}
 		}
 	}
