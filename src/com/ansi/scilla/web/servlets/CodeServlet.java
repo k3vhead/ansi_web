@@ -11,6 +11,7 @@ import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -20,11 +21,16 @@ import com.ansi.scilla.common.db.Code;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.MessageKey;
+import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.common.WebMessages;
+import com.ansi.scilla.web.exceptions.ExpiredLoginException;
+import com.ansi.scilla.web.exceptions.NotAllowedException;
+import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.request.CodeRequest;
 import com.ansi.scilla.web.response.code.CodeListResponse;
 import com.ansi.scilla.web.response.code.CodeResponse;
+import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -54,37 +60,23 @@ public class CodeServlet extends AbstractServlet {
 
 	
 	@Override
-	protected void doDelete(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		String url = request.getRequestURI();
-		
-		Connection conn = null;
-		try {
-			ParsedUrl parsedUrl = new ParsedUrl(url);
-			conn = AppUtils.getDBCPConn();
-			conn.setAutoCommit(false);
-			
-			Code code = new Code();
-			code.setTableName(parsedUrl.tableName);
-			code.setFieldName(parsedUrl.fieldName);
-			code.setValue(parsedUrl.value);
-			code.delete(conn);
-			CodeResponse codeResponse = new CodeResponse();
-			super.sendResponse(conn, response, ResponseCode.SUCCESS, codeResponse);
-			conn.commit();
-		} catch ( RecordNotFoundException e) {
-			super.sendNotFound(response);
-		} catch ( Exception e) {
-			AppUtils.logException(e);
-			throw new ServletException(e);
-		} finally {
-			AppUtils.closeQuiet(conn);
-		}
-	}
-
-	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
+		
+		SessionData sessionData = null;
+		try {
+			sessionData = AppUtils.validateSession(request, Permission.SYSADMIN, 0);
+		} catch (TimeoutException e) {
+			AppUtils.logException(e);
+		} catch (NotAllowedException e) {
+			AppUtils.logException(e);
+		} catch (ExpiredLoginException e) {
+			AppUtils.logException(e);
+		}
+		
+		
+		Logger logger = AppUtils.getLogger();
+		logger.debug(sessionData);
 		String url = request.getRequestURI();
 		Connection conn = null;
 		try {			
@@ -109,7 +101,6 @@ public class CodeServlet extends AbstractServlet {
 		}
 			
 	}
-
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -204,6 +195,35 @@ public class CodeServlet extends AbstractServlet {
 		
 	}
 
+
+	@Override
+	protected void doDelete(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		String url = request.getRequestURI();
+		
+		Connection conn = null;
+		try {
+			ParsedUrl parsedUrl = new ParsedUrl(url);
+			conn = AppUtils.getDBCPConn();
+			conn.setAutoCommit(false);
+			
+			Code code = new Code();
+			code.setTableName(parsedUrl.tableName);
+			code.setFieldName(parsedUrl.fieldName);
+			code.setValue(parsedUrl.value);
+			code.delete(conn);
+			CodeResponse codeResponse = new CodeResponse();
+			super.sendResponse(conn, response, ResponseCode.SUCCESS, codeResponse);
+			conn.commit();
+		} catch ( RecordNotFoundException e) {
+			super.sendNotFound(response);
+		} catch ( Exception e) {
+			AppUtils.logException(e);
+			throw new ServletException(e);
+		} finally {
+			AppUtils.closeQuiet(conn);
+		}
+	}
 
 	protected Code doAdd(Connection conn, CodeRequest codeRequest, SessionUser sessionUser) throws Exception {
 		Date today = new Date();

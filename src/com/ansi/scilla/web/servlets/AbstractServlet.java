@@ -71,7 +71,15 @@ public class AbstractServlet extends HttpServlet {
 		response.setContentType("application/json");
 	}
 	
-	
+	/**
+	 * Send a json response to the client.
+	 * 
+	 * @param conn Database connection object
+	 * @param response HTTPServlet response object
+	 * @param responseCode ANSI Response Code, indicating the HTTP Servlet response that should be returned
+	 * @param data Transaction-specific ANSI response data
+	 * @throws Exception
+	 */
 	protected void sendResponse(Connection conn, HttpServletResponse response, ResponseCode responseCode, MessageResponse data) throws Exception {
 		AnsiResponse ansiResponse = new AnsiResponse(conn, responseCode, data);
 		response.setStatus(responseCode.statusCode());

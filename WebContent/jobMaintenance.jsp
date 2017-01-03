@@ -49,12 +49,23 @@
 			}
 			#jobActivation {
 				border:solid 1px #000000;
+				height:100%;
 			}
 			#billTo {
 				border:solid 1px #000000;
 			}
 			#jobSite {
 				border:solid 1px #000000;
+			}
+			#jobDates {
+				border:solid 1px #000000;
+			}
+			#jobActivation2 {
+				border:solid 1px #FF0000;
+			}
+			td.jobTableCell {
+				width:50%;
+				vertical-align:top;
 			}
         </style>
     </tiles:put>
@@ -64,32 +75,54 @@
     	<h1>Job Maintenance</h1>
 		<table>
 			<tr>
-				<td style="width:50%;">
+				<td class="jobTableCell">
 					<webthing:addressPanel namespace="JOBSITE" label="Job Site" cssId="jobSite" />
 				</td>
-				<td>
+				<td class="jobTableCell">
 					<webthing:addressPanel namespace="BILLTO" label="Bill To" cssId="billTo" />
 				</td>
 			</tr>
+		</table>
+		<table style="border:solid 1px #000000; margin-top:8px;">
 			<tr>
-				<td style="width:50%;">
+				<td class="jobTableCell" colspan="2">
+					<form name="jobForm">
+						JOB: <input type="text" name="jobNbr" id="jobNbr" />
+						Status: <input type="text" name="jobStatus" />
+						Div: <select name="division"></select>
+						<div style="float:right;">
+							<input type="button" value="Activate Job" />
+							<input type="button" value="Cancel Job" />
+						</div>
+					</form>
+				</td>
+			</tr>
+			<tr>
+				<td class="jobTableCell">
 					<webthing:jobDescription namespace="JOBDESCRIPTION" cssId="jobProposal" />
 				</td>
-				<td>
+				<td class="jobTableCell">
 					<webthing:jobActivation namespace="JOBACTIVATION" cssId="jobActivation" />
+				</td>
+			</tr>
+			<tr>
+				<td class="jobTableCell">
+					<webthing:jobDates namespace="JOBDATES" cssId="jobDates" />
+				</td>
+				<td class="jobTableCell">
+					<webthing:jobActivation namespace="JOBACTIVATION2" cssId="jobActivation2" />
 				</td>
 			</tr>
 		</table>    	
 		
         <script type="text/javascript">        
 		$( document ).ready(function() {
-			function getJobFreqs() {
+			function init() {
         		var jqxhr1 = $.ajax({
     				type: 'GET',
     				url: 'options',
     				data: 'JOB_FREQUENCY,JOB_STATUS',
     				success: function($data) {
-    					console.debug("Getting job freq");
     					JOBDESCRIPTION.setJobFrequency($data.data.jobFrequency);
     				},
     				statusCode: {
@@ -99,16 +132,13 @@
     				},
     				dataType: 'json'
     			});
-			}
-    	
-			function getBuildingTypes() {
+
         		var jqxhr2 = $.ajax({
     				type: 'GET',
     				url: 'code/list/job',
     				data: {},
     				success: function($data) {
     			        var $buildingTypeList = [];
-    					console.debug("Getting building type");
     					$.each($data.data.codeList, function(index, value) {
     						if ( value.fieldName == 'building_type') {
     							$buildingTypeList.push(value);
@@ -123,12 +153,37 @@
     				},
     				dataType: 'json'
     			});
+        		
+        		var jqxhr3 = $.ajax({
+    				type: 'GET',
+    				url: 'division/list',
+    				data: {},
+    				success: function($data) {
+    					selectorName = "select[name='division']";
+    					
+    					var $select = $(selectorName);
+    					$('option', $select).remove();
+
+    					$select.append(new Option("",""));
+    					$.each($data.data.divisionList, function(index, val) {
+    					    $select.append(new Option(val.divisionId, val.divisionId));
+    					});
+    					
+    					$select.selectmenu();
+    				},
+    				statusCode: {
+    					403: function($data) {
+    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+    					} 
+    				},
+    				dataType: 'json'
+    			});
 			}
 			
 			JOBDESCRIPTION.init();
 			JOBACTIVATION.init();
-			getBuildingTypes();
-			getJobFreqs();
+			init();
+			$("#jobNbr").focus();
         });
         </script>        
     </tiles:put>

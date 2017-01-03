@@ -32,6 +32,7 @@
 			}
 			#displayTable {
 				width:90%;
+				clear:both;
 			}
 			#addFormDiv {
 				display:none;
@@ -46,8 +47,7 @@
 			}
 			#showhidden { 
 				display:none;
-				text-align:right; 
-				width:90%;
+				text-align:right; 				
 				cursor:pointer;
 			}
 			.columnhider {
@@ -66,6 +66,20 @@
 						addRow(index, value);
 					});
 					doFunctionBinding();
+					$("#filterList").html("");
+					var $newHTML = "";
+					console.debug("***** " + window.location.href + " *****");
+					$.each($data.data.filterRecordList, function(index, value) {
+						console.debug(value.tableName)
+						$newHTML = $newHTML + '<li><a href="code/' + value.tableName + '">' + value.tableName + '</a>'; 
+						$newHTML = $newHTML + '<ul class="sub_menu">';
+						
+						$.each(value.fieldNameList, function(index, fieldName) {
+							$newHTML = $newHTML + '<li><a href="code/' + value.tableName + '/' + fieldName + '">' + fieldName + '</a></li>';
+						});
+						$newHTML = $newHTML + '</ul></li>';
+					});
+					$("#filterList").html($newHTML);
 				},
 				statusCode: {
 					403: function($data) {
@@ -472,9 +486,30 @@
     
     <tiles:put name="content" type="string">
     	<h1>Code Maintenance</h1>
-    	
-    	<div id="showhidden" class="green">
-    		<i class="fa fa-eye" aria-hidden="true"></i>
+
+		<div style="float:right; width:30%;">
+    		<div  style="float:right; width:30%;">
+    			<ul class="dropdown">
+					<li>
+						<a href="#"><i class="fa fa-filter fa-lg" aria-hidden="true"></i></a>
+			        	<ul class="sub_menu" id="filterList">
+        			 		<li><a href="#">Message is</a></li>
+        			 		<li><html:link action="codeMaintenance">Code Maintenance</html:link></li>
+        			 		<li><html:link action="userAdmin">User Admin</html:link></li>
+        			 		<li><html:link action="permissiongroupAdmin">Permission Group Admin</html:link></li> 
+							<li><html:link action="divisionAdmin">Division Admin</html:link></li>
+							<li><html:link action="applicationpropertyAdmin">Application Property Admin</html:link></li>
+							<li><html:link action="printHistory">Print History</html:link></li>
+							<li><html:link action="usertitleMaintenance">User Title Maintenance</html:link></li>
+							<li><html:link action="transactionhistoryView">Transaction History View</html:link></li>
+        				</ul>
+        			</li>
+       			</ul>
+	    	</div>
+		    	
+	    	<div id="showhidden" class="green">
+	    		<i class="fa fa-window-restore fa-lg" aria-hidden="true"></i>
+	    	</div>
     	</div>
     	<table id="displayTable">
     		<tr>

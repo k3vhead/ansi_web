@@ -94,7 +94,9 @@
 		        			 		<li><html:link action="logoff">Logoff</html:link></li>
 		        				</ul>
 		        			</li>
+		        			<li>
 			    		</ul>
+			    		<div style="padding-top:4px; padding-left:4px;"><c:out value="${com_ansi_scilla_session_data.user.firstName}" /> <c:out value="${com_ansi_scilla_session_data.user.lastName}" /></div>
 			    	</div>
 	    	
 					<div style="float:left; width:65%">	    		    		

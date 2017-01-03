@@ -39,10 +39,7 @@ public class LoginServlet extends AbstractServlet {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
-			logger.debug("Logging in");
 			String jsonString = super.makeJsonString(request);
-			logger.debug("Got json:");
-			logger.debug(jsonString);
 			LoginResponse loginResponse = new LoginResponse();
 			try {
 				loginResponse = doWork(conn, jsonString);

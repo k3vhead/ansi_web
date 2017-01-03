@@ -32,6 +32,8 @@ import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.utils.PropertyNames;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.InvalidLoginException;
+import com.ansi.scilla.web.exceptions.NotAllowedException;
+import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.thewebthing.commons.db2.RecordNotFoundException;
@@ -303,5 +305,45 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 	}
 
 
+	
+	
+	/**
+	 * Ensure that a user is logged in and has permission to execute the current function
+	 * 
+	 * @param request
+	 * @param requiredPermission
+	 * @return
+	 * @throws TimeoutException
+	 * @throws NotAllowedException
+	 * @throws ExpiredLoginException
+	 */
+	public static SessionData validateSession(HttpServletRequest request, Permission requiredPermission, Integer requiredLevel) throws TimeoutException, NotAllowedException, ExpiredLoginException {
+		HttpSession session = request.getSession();
+		SessionData sessionData = (SessionData)session.getAttribute(SessionData.KEY);
+		
+		// check for login
+		if ( sessionData == null || sessionData.getUser() == null ) {
+			throw new TimeoutException();
+		} 
+		
+		// check for superuser, or that user has permission
+		SessionUser user = sessionData.getUser();
+		if ( ! user.getSuperUser().equals(User.SUPER_USER_IS_YES)) {
+			boolean isAllowed = false;
+			for ( UserPermission userPermission : sessionData.getUserPermissionList()) {
+				Permission myPermission = Permission.valueOf(userPermission.getPermissionName());
+				if ( myPermission.equals(requiredPermission)) {
+					if ( userPermission.getLevel() >= requiredLevel ) {
+						isAllowed = true;
+					}
+				}
+			}
+			if ( ! isAllowed ) {
+	            throw new NotAllowedException();
+	        }
+		}
+		
+		return sessionData;
+	}
 
 }

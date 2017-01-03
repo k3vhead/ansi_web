@@ -63,7 +63,10 @@ $(function() {
     		$("#validPass").removeClass("inputIsValid");
     		$("#validPass").addClass("fa-ban");
     		$("#validPass").addClass("inputIsInvalid");
-    	}
-    	
+    	}    	
     });
+    
+	$("input[name='userid']").focus();
+	
+
 });

@@ -161,6 +161,14 @@
     	<url-pattern>/taxRate/*</url-pattern>
 	</servlet-mapping>
 	
+    <servlet>
+		<servlet-name>autoComplete</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.AutoCompleteDemoServlet</servlet-class>
+	</servlet><servlet-mapping>
+    	<servlet-name>autoComplete</servlet-name>
+    	<url-pattern>/autoComplete</url-pattern>
+	</servlet-mapping>
+	
 	<!--
         Define the default session timeout for the application,
         in minutes.  This value can be modified in a servlet or JSP by

@@ -64,48 +64,25 @@ $(function() {
 </script>     
 
 <div <%= cssIdString %> <%= cssClassString %> >
-	<form id="<%=namespace%>_jobActivationForm">
-		<table>
-			<tr>
-				<td colspan="1">DL %: <input type="text" name="<%=namespace %>_directLaborPct" style="width:40px;" />
-				<td colspan="1">DL Budget: <input type="text" name="<%=namespace %>_directLaborBudget" style="width:40px;" /></td>
-				<td colspan="4"># Floors <input type="text" name="<%=namespace %>_nbrFloors" style="width:100px;" /></td>
-			</tr>
-			<tr>
-				<td colspan="3">
-					Schedule (Auto/Manual):
-					<select name="<%=namespace %>_automanual">
-						<option value=""></option>
-						<option value="auto">Auto</option>
-						<option value="manual">Manual</option>
-					</select>
-				</td>
-				<td colspan="3">
-					Building Type:
-					<select name="<%=namespace %>_buildingType">
-						<option value=""></option>
-						<option value="auto">Type 1</option>
-						<option value="manual">Type 2</option>
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td>Equipment:</td>
-				<td colspan="5"><input type="text" name="<%=namespace %>_equipment" style="width:90%" /></td>
-			</tr>
-			<tr>
-				<td>Washer Notes:</td>
-				<td colspan="5"><input type="text" name="<%=namespace %>_washerNotes" style="width:90%" /></td>
-			</tr>
-			<tr>
-				<td>OM Notes:</td>
-				<td colspan="5"><input type="text" name="<%=namespace %>_omNotes" style="width:90%" /></td>
-			</tr>
-			<tr>
-				<td>Billing Notes:</td>
-				<td colspan="5"><input type="text" name="<%=namespace %>_billingNotes" style="width:90%" /></td>
-			</tr>
-		</table>
-	</form>
+	<table>
+		<tr>
+			<td>Proposed Date:</td>
+			<td>MM/DD/YYYY</td>
+			<td>Activation Date:</td>
+			<td>MM/DD/YYYY</td>
+		</tr>
+		<tr>
+			<td>Start Date:</td>
+			<td>MM/DD/YYYY</td>
+			<td>Cancel Date:</td>
+			<td>MM/DD/YYYY</td>
+		</tr>
+		<tr>
+			<td colspan="4">
+				Cancel Reason:
+				Reason goes here
+			</td>
+		</tr>
+	</table>
 </div>
  

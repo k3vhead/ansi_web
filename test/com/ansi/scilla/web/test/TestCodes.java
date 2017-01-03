@@ -1,7 +1,11 @@
 package com.ansi.scilla.web.test;
 
+import java.sql.Connection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.ansi.scilla.web.common.AppUtils;
+import com.ansi.scilla.web.response.code.CodeListResponse;
 
 public class TestCodes {
 
@@ -23,7 +27,8 @@ public class TestCodes {
 //			new TestCodes().go();
 //			new TestCodes().testUri();
 //			new TestCodes().testUri2();
-			new TestCodes().testDelete();
+//			new TestCodes().testDelete();
+			new TestCodes().makeCodeResponse();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -80,6 +85,17 @@ public class TestCodes {
 				System.out.println("\tValue: " + urlPieces[2]);
 				// ArrayIndexOutOfBoundsException
 			}
+		}
+	}
+
+	private void makeCodeResponse() throws Exception {
+		Connection conn = null;
+		try {
+			conn = AppUtils.getConn();
+			CodeListResponse resp = new CodeListResponse(conn);
+			System.out.println(resp);
+		} finally {
+			conn.close();
 		}
 	}
 }
