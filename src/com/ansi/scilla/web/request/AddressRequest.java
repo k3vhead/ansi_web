@@ -30,6 +30,7 @@ import com.thewebthing.commons.lang.JsonException;
 		private Integer updatedBy;
 		private Date updatedDate;
 		private String zip;
+		private String country_code;
 
 		
 		public AddressRequest() {
@@ -170,6 +171,16 @@ import com.thewebthing.commons.lang.JsonException;
 
 		public String getZip() {
 			return this.zip;
+		}
+		
+		public void setCountryCode(String country_code) {
+			this.country_code = country_code;
+		}
+
+		@RequiredForAdd
+		@RequiredForUpdate
+		public String getCountryCode() {
+			return this.country_code;
 		}
 
 	

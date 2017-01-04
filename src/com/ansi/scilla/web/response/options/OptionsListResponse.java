@@ -1,5 +1,6 @@
 package com.ansi.scilla.web.response.options;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -7,6 +8,8 @@ import java.util.List;
 import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.jobticket.JobStatus;
 import com.ansi.scilla.common.jobticket.TicketStatus;
+import com.ansi.scilla.common.address.Country;
+import com.ansi.scilla.common.address.State;
 import com.ansi.scilla.web.response.MessageResponse;
 
 public class OptionsListResponse extends MessageResponse {
@@ -14,6 +17,7 @@ public class OptionsListResponse extends MessageResponse {
 	private List<JobFrequencyOption> jobFrequency;
 	private List<JobStatusOption> jobStatus;
 	private List<TicketStatusOption> ticketStatus;
+	private List<CountryOption> country;
 
 	public OptionsListResponse(List<ResponseOption> options) throws ClassNotFoundException, Exception {
 		if ( options.contains(ResponseOption.JOB_FREQUENCY)) {
@@ -25,6 +29,10 @@ public class OptionsListResponse extends MessageResponse {
 		if ( options.contains(ResponseOption.TICKET_STATUS)) {
 			makeTicketStatusList();
 		}
+		if ( options.contains(ResponseOption.COUNTRY)) {
+			makeCountryList();
+		}
+
 	}
 
 	private void makeJobFrequencyList() {
@@ -48,7 +56,14 @@ public class OptionsListResponse extends MessageResponse {
 		}
 	}
 	
-	
+	private void makeCountryList() throws IOException {
+		this.country = new ArrayList<CountryOption>();
+		
+		for(Country j : EnumSet.allOf(Country.class)) {
+			this.country.add(new CountryOption(j));
+		}
+	}
+		
 	public List<JobFrequencyOption> getJobFrequency() {
 		return jobFrequency;
 	}
@@ -60,11 +75,19 @@ public class OptionsListResponse extends MessageResponse {
 	public List<JobStatusOption> getJobStatus() {
 		return jobStatus;
 	}
-
+	
 	public void setJobStatus(List<JobStatusOption> jobStatus) {
 		this.jobStatus = jobStatus;
 	}
-
+	
+	public List<CountryOption> getCountry() {
+		return country;
+	}
+	
+	public void setCountry(List<CountryOption> country) {
+		this.country = country;
+	}
+	
 	public List<TicketStatusOption> getTicketStatus() {
 		return ticketStatus;
 	}

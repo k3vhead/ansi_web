@@ -25,6 +25,7 @@ public class AddressResponseRecord extends ApplicationObject implements Comparab
 	private Integer updatedBy;
 	private Date updatedDate;
 	private String zip;
+	private String country_code;
 
 	
 	public AddressResponseRecord(Address address) throws IllegalAccessException, InvocationTargetException {
@@ -120,6 +121,15 @@ public class AddressResponseRecord extends ApplicationObject implements Comparab
 
 	public String getZip() {
 		return this.zip;
+	}
+	
+	public void setCountryCode(String country_code) {
+		this.country_code = country_code;
+	}
+
+
+	public String getCountryCode() {
+		return this.country_code;
 	}
 
 	@Override

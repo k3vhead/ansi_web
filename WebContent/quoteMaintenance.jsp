@@ -22,24 +22,7 @@
     
     <tiles:put name="headextra" type="string">
         <style type="text/css">
-			#confirmDelete {
-				display:none;
-				background-color:#FFFFFF;
-				color:#000000;
-				width:300px;
-				text-align:center;
-				padding:15px;
-			}
-			#displayTable {
-				width:90%;
-			}
-			#addFormDiv {
-				display:none;
-				background-color:#FFFFFF;
-				color:#000000;
-				width:400px;
-				padding:15px;
-			}
+
 			#delData {
 				margin-top:15px;
 				margin-bottom:15px;
@@ -60,14 +43,14 @@
 				min-height:25px;
 			}
 			.quoteSelect {
-				max-width: 150px;
-			    min-width: 150px;
-				width:150px !important;
+				max-width: 100px;
+			    min-width: 100px;
+				width:100px !important;
 			}
 			.quoteSelect option{
-				max-width: 125px;
-			    min-width: 125px;
-				width:125px !important;
+				max-width: 100px;
+			    min-width: 100px;
+				width:100px !important;
 			}
 			.labelSpan {
 				display: inline-block;
@@ -76,6 +59,43 @@
 			.labelSpanSmall {
 				display: inline-block;
 				width: 60px !important;
+			}
+			#jobDates {
+				border:solid 1px #000000;
+			}
+			#jobActivation2 {
+				border:solid 1px #FF0000;
+			}
+			td.jobTableCell {
+				width:50%;
+				vertical-align:top;
+			}
+			#delData {
+				margin-top:15px;
+				margin-bottom:15px;
+			}
+			#jobProposal {
+				border:solid 1px #000000;
+			}
+			#jobActivation {
+				border:solid 1px #000000;
+				height:100%;
+			}
+			#billTo {
+				border:solid 1px #000000;
+			}
+			#jobSite {
+				border:solid 1px #000000;
+			}
+			#jobDates {
+				border:solid 1px #000000;
+			}
+			#jobActivation2 {
+				border:solid 1px #FF0000;
+			}
+			td.jobTableCell {
+				width:50%;
+				vertical-align:top;
 			}
         </style>
     </tiles:put>
@@ -86,11 +106,11 @@
 		<table id="quoteTable">
 			<tr>
 				<td colspan="2">
-					<table style="width:95%;">
+					<table >
 						<tr>
 							<td><input type="button" name="modifyButton" value="Modify" class="quoteButton"/></td>
 							<td><span class="labelSpanSmall">Manager:</span>
-								<input type="text" name="manager"  style="width:145px"/>
+								<input type="text" name="manager"  style="width:95px"/>
 							</td>
 							<td><span class="labelSpan">Division:</span>
 								<select name="division" class="quoteSelect">
@@ -145,12 +165,29 @@
 					<webthing:addressPanel label="Bill To"  namespace="BILLTOADDRESS" cssId="billToAddress" />
 				</td>
 			</tr>
-		</table>    	
+		</table>  
+				
+		<table id="jobTable" style="border:solid 1px #000000; margin-top:8px;width:100%;">
+			<tr><td><webthing:jobPanel namespace='JOB1'  cssId='jobPanel' /></td></tr>
+		</table>
+				
+  	
 		
-        <script type="text/javascript">        
+        <script type="text/javascript">   
+      //  var jobCount = 0;
+		function addJob(){
+        	//jobCount++;
+        	//console.log(jobCount);
+			
+		}
+		
 		$( document ).ready(function() {
 			
-          	
+			
+			//$('#JOB1_jobTable').append("<tr><td>test1</td><td>test2</td></tr>");
+			//addJob();
+			$('#JOB1_jobTable').append("<td class='jobTableCell'><webthing:jobDescription namespace='JOBDESCRIPTION' cssId='jobProposal' /></td><td class='jobTableCell'><webthing:jobActivation namespace='JOBACTIVATION' cssId='jobActivation' /></td>");
+
         });
         </script>        
     </tiles:put>

@@ -30,7 +30,23 @@ $(function() {
 		;<%=namespace%> = {
 				init: function() {
 					console.debug("inits");			
-				},  
+				}, setCountry: function($optionList,$selectedValue) {
+					var selectorName = "#<%=namespace%>_jobDescriptionForm select[name='<%=namespace%>_jobFrequency']";
+					selectorName = "select[name='<%=namespace%>_jobFrequency']";
+					
+					var $select = $(selectorName);
+					$('option', $select).remove();
+
+					$select.append(new Option("",""));
+					$.each($optionList, function(index, val) {
+					    $select.append(new Option(val.display, val.abbrev));
+					});
+					
+					if ( $selectedValue != null ) {
+						$select.val($selectedValue);
+					}
+					$select.selectmenu();
+				} 
 				
 			}
 	});
@@ -61,8 +77,8 @@ $(function() {
 			<tr>
 				<td>County:</td>
 				<td><input type="text" name="<%=namespace %>_county" style="width:90%" /></td>
-				<td>&nbsp;</td>
-				<td>&nbsp;</td>
+				<td>Country:</td>
+				<td><input type="text" name="<%=namespace %>_country" style="width:90%" /></td>
 			</tr>
 			<tr>
 				<td>Job Contact:</td>

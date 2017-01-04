@@ -24,6 +24,8 @@ import com.ansi.scilla.web.response.address.AddressListResponse;
 import com.ansi.scilla.web.response.address.AddressResponse;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.thewebthing.commons.db2.RecordNotFoundException;
+import com.ansi.scilla.common.address.Country;
+import com.ansi.scilla.common.address.State;
 
 /**
  * The url for delete will be of the form /address/<addressId>/<name>/<status>
@@ -246,7 +248,7 @@ public class AddressServlet extends AbstractServlet {
 
 //		address.setAddressId(addressRequest.getAddressId());
 		address.setName(addressRequest.getName());
-		
+		address.setCountry_code(addressRequest.getCountryCode());
 		if ( ! StringUtils.isBlank(addressRequest.getAddress1())) {
 			address.setAddress1(addressRequest.getAddress1());
 		} if ( ! StringUtils.isBlank(addressRequest.getAddress2())) {
@@ -291,7 +293,7 @@ public class AddressServlet extends AbstractServlet {
 		
 		address.setAddedBy(sessionUser.getUserId());
 		address.setAddedDate(today);
-
+		address.setCountry_code(addressRequest.getCountryCode());
 		address.setAddressId(addressRequest.getAddressId());
 		address.setAddress1(addressRequest.getAddress1());
 		address.setAddress2(addressRequest.getAddress2());
