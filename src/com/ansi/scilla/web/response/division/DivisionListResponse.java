@@ -37,7 +37,7 @@ public class DivisionListResponse extends MessageResponse implements Serializabl
 	 * @throws Exception
 	 */
 	public DivisionListResponse(Connection conn) throws Exception {
-		List<DivisionUserCount> divisionCountList = DivisionUserCount.select(conn, new String[] {Division.NAME});
+		List<DivisionUserCount> divisionCountList = DivisionUserCount.select(conn, new String[] {Division.DIVISION_CODE});
 		this.divisionList = new ArrayList<DivisionCountRecord>();
 		for ( DivisionUserCount record : divisionCountList ) {
 			this.divisionList.add(new DivisionCountRecord(record));

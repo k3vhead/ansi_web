@@ -3,7 +3,7 @@ package com.ansi.scilla.web.request;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.util.Date;
+//import java.util.Date;
 
 import org.apache.commons.beanutils.BeanUtils;
 
@@ -11,20 +11,28 @@ import com.ansi.scilla.web.common.AppUtils;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+/**
+ * 
+ * @author jwlewis
+ *
+ *
+ *
+ */
+
 public class DivisionRequest extends AbstractRequest {
 
 	private static final long serialVersionUID = 1L;
 	
-	private Integer divisionId;
-	private String name;
-	private Integer parentId;
-	private BigDecimal defaultDirectLaborPct;
+	private Integer divisionId;	//Integer Division ID
+//	private String name;		//String Division Name
+	private Integer parentId;	//Integer Parent ID
+	private BigDecimal defaultDirectLaborPct;	//Float Automatic Direct Labor Percentage
 	
 	
-	private Integer divisionNbr;
-	private String divisionCode;
-	private String description;
-	private Integer status;
+	private Integer divisionNbr;	//Integer Division Number
+	private String divisionCode;	//String Division Code
+	private String description;		//String Division Description
+	private Integer status;			//Integer Division Status: 0-inactive, 1-active
 	
 	public DivisionRequest() {
 		super();
@@ -45,15 +53,15 @@ public class DivisionRequest extends AbstractRequest {
 		this.divisionId = divisionId;
 	}
 	
-	@RequiredForAdd
-	@RequiredForUpdate
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
+//	@RequiredForAdd
+//	@RequiredForUpdate
+//	public String getName() {
+//		return name;
+//	}
+//
+//	public void setName(String name) {
+//		this.name = name;
+//	}
 
 	public Integer getParentId() {
 		return parentId;
@@ -65,6 +73,7 @@ public class DivisionRequest extends AbstractRequest {
 	
 	@RequiredForAdd
 	@RequiredForUpdate
+	@RequiredFormat("")
 	public BigDecimal getDefaultDirectLaborPct(){
 		return defaultDirectLaborPct;
 	}
@@ -108,7 +117,11 @@ public class DivisionRequest extends AbstractRequest {
 	}
 
 	public void setStatus(Integer status) {
-		this.status = status;
+		if (status == 0 || status == 1){
+			this.status = status;
+		} else {
+			throw new RuntimeException("Invalid Status");
+		}
 	}
 
 }

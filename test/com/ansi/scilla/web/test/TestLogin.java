@@ -50,7 +50,8 @@ public class TestLogin extends LoginServlet {
 //		LoginRequest request = makeNullPass();
 //		LoginRequest request = makeNullId();
 		
-		String json = JsonUtils.object2JSON(request);
+//		String json = JsonUtils.object2JSON(request);
+		String json = AppUtils.object2json(request);
 		System.out.println(json);
 		String returnString = TesterUtils.postJson("http://127.0.0.1:8080/ansi_web/login", json);
 		System.out.println(returnString);
@@ -58,7 +59,7 @@ public class TestLogin extends LoginServlet {
 
 	private LoginRequest makeGoodRequest() {
 		LoginRequest request = new LoginRequest();
-		request.setUserid("dclewis@thewebthing.com");
+		request.setUserid("jwlewis@thewebthing.com");
 		request.setPassword("password1");
 		return request;
 	}

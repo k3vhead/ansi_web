@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.ansi.scilla.common.db.Code;
+//import com.ansi.scilla.common.db.Code;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.DivisionUser;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
@@ -20,9 +20,9 @@ import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.MessageKey;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.common.WebMessages;
-import com.ansi.scilla.web.request.CodeRequest;
+//import com.ansi.scilla.web.request.CodeRequest;
 import com.ansi.scilla.web.request.DivisionRequest;
-import com.ansi.scilla.web.response.code.CodeResponse;
+//import com.ansi.scilla.web.response.code.CodeResponse;
 import com.ansi.scilla.web.response.division.DivisionListResponse;
 import com.ansi.scilla.web.response.division.DivisionResponse;
 import com.ansi.scilla.web.struts.SessionUser;
@@ -30,23 +30,23 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
 
 
 /**
- * The url for delete will be of the form /code/<table>/<field>/<value>
+ * The url for delete will be of the form /division/<table>/<field>/<value>
  * 
  * The url for get will be one of:
- * 		/code    (retrieves everything)
- * 		/code/<table>      (filters code table by tablename)
- * 		/code/<table>/<field>	(filters code table tablename and field
- * 		/code/<table>/<field>/<value>	(retrieves a single record)
+ * 		/division    (retrieves everything)
+ * 		/division/<table>      (filters division table by tablename)
+ * 		/division/<table>/<field>	(filters division table tablename and field
+ * 		/division/<table>/<field>/<value>	(retrieves a single record)
  * 
  * The url for adding a new record will be a POST to:
- * 		/code/new   with parameters in the JSON
+ * 		/division/new   with parameters in the JSON
  * 
  * The url for update will be a POST to:
- * 		/code/<table>/<field>/<value> with parameters in the JSON
+ * 		/division/<table>/<field>/<value> with parameters in the JSON
  * 
  * 
  * @author dclewis
- *
+ * editer: jwlewis
  */
 public class DivisionServlet extends AbstractServlet {
 
@@ -211,6 +211,9 @@ public class DivisionServlet extends AbstractServlet {
 			if ( command.equals(ACTION_IS_ADD) ) {
 				WebMessages webMessages = validateAdd(conn, divisionRequest);
 				if (webMessages.isEmpty()) {
+					webMessages = validateFormat(conn, divisionRequest);
+				}
+				if (webMessages.isEmpty()) {
 					try {
 						division = doAdd(conn, divisionRequest, sessionUser);
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
@@ -233,38 +236,39 @@ public class DivisionServlet extends AbstractServlet {
 				
 				DivisionResponse divisionResponse = new DivisionResponse(conn, division);
 				super.sendResponse(conn, response, responseCode, divisionResponse);
-				
+			
+			/*
+			This is the Update portion of the doPost
+			*/
 			} else if ( urlPieces.length == 3 ) {   //  /<tableName>/<fieldName>/<value> = 3 pieces
-//				System.out.println("Doing Update Stuff");				
-//				WebMessages webMessages = validateAdd(conn, divisionRequest);
-//				if (webMessages.isEmpty()) {
-//					System.out.println("passed validation");
-//					try {
-//						Division key = new Division();
-//						key.setTableName(urlPieces[0]);
-//						key.setFieldName(urlPieces[1]);
-//						key.setValue(urlPieces[2]);
-//						System.out.println("Trying to do update");
-//						division = doUpdate(conn, key, divisionRequest, sessionUser);
-//						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
-//						responseCode = ResponseCode.SUCCESS;
-//						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
-//					} catch ( RecordNotFoundException e ) {
-//						System.out.println("Doing 404");
-//						super.sendNotFound(response);						
-//					} catch ( Exception e) {
-//						System.out.println("Doing SysFailure");
-//						divisionResponse = DivisionResponse.SYSTEM_FAILURE;
-//						AppUtils.logException(e);
-//						String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
-//						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-//					}
-//				} else {
-//					System.out.println("Doing Edit Fail");
-//					divisionResponse = DivisionResponse.EDIT_FAILURE;
-//				}
-//				DivisionResponse divisionResponse = new DivisionResponse(division, webMessages);
-//				super.sendResponse(conn, response, responseCode, divisionResponse);
+				System.out.println("Doing Update Stuff");				
+				WebMessages webMessages = validateAdd(conn, divisionRequest);
+				if (webMessages.isEmpty()) {
+					System.out.println("passed validation");
+					try {
+						Division key = new Division();
+						key.setDivisionId(Integer.valueOf(urlPieces[0]));
+						System.out.println("Trying to do update");
+						division = doUpdate(conn, key, divisionRequest, sessionUser);
+						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
+						responseCode = ResponseCode.SUCCESS;
+						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+					} catch ( RecordNotFoundException e ) {
+						System.out.println("Doing 404");
+						super.sendNotFound(response);						
+					} catch ( Exception e) {
+						System.out.println("Doing SysFailure");
+						responseCode = ResponseCode.SYSTEM_FAILURE;
+						AppUtils.logException(e);
+						String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
+						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+					}
+				} else {
+					System.out.println("Doing Edit Fail");
+					responseCode = ResponseCode.EDIT_FAILURE;
+				}
+				DivisionResponse divisionResponse = new DivisionResponse(conn, division);
+				super.sendResponse(conn, response, responseCode, divisionResponse);
 			} else {
 				super.sendNotFound(response);
 			}
@@ -291,7 +295,7 @@ public class DivisionServlet extends AbstractServlet {
 		if ( divisionRequest.getParentId() != null) {
 			division.setParentId(divisionRequest.getParentId());
 		}
-		division.setName(divisionRequest.getName());
+//		division.setName(divisionRequest.getName()); //MAY GET DELETED
 		division.setDivisionId(divisionRequest.getDivisionId());
 		division.setStatus(divisionRequest.getStatus());
 		division.setDefaultDirectLaborPct(divisionRequest.getDefaultDirectLaborPct());
@@ -312,9 +316,53 @@ public class DivisionServlet extends AbstractServlet {
 		return division;
 	}
 	
+	protected Division doUpdate(Connection conn, Division key, DivisionRequest divisionRequest, SessionUser sessionUser) throws Exception{
+		Date today = new Date();
+//		Division division = new Division();
+		key.setAddedBy(sessionUser.getUserId());
+		key.setAddedDate(today);
+		if ( ! StringUtils.isBlank(divisionRequest.getDescription())) {
+			key.setDescription(divisionRequest.getDescription());
+		}
+		if ( divisionRequest.getParentId() != null) {
+			key.setParentId(divisionRequest.getParentId());
+		}
+//		division.setName(divisionRequest.getName()); //MAY GET DELETED
+		key.setDivisionId(divisionRequest.getDivisionId());
+		key.setStatus(divisionRequest.getStatus());
+		key.setDefaultDirectLaborPct(divisionRequest.getDefaultDirectLaborPct());
+		key.setUpdatedBy(sessionUser.getUserId());
+		key.setUpdatedDate(today);
+		key.setDivisionNbr(divisionRequest.getDivisionNbr());
+		key.setDivisionCode(divisionRequest.getDivisionCode());
+		try {
+			key.insertWithNoKey(conn);
+		} catch ( SQLException e) {
+			if ( e.getMessage().contains("duplicate key")) {
+				throw new DuplicateEntryException();
+			} else {
+				AppUtils.logException(e);
+				throw e;
+			}
+		} 
+		return null;
+	}
+	
 	protected WebMessages validateAdd(Connection conn, DivisionRequest divisionRequest) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		List<String> missingFields = super.validateRequiredAddFields(divisionRequest);
+		if ( ! missingFields.isEmpty() ) {
+			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
+			for ( String field : missingFields ) {
+				webMessages.addMessage(field, messageText);
+			}
+		}
+		return webMessages;
+	}
+	
+	protected WebMessages validateFormat(Connection conn, DivisionRequest divisionRequest) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		List<String> missingFields = super.validateFormat(divisionRequest);
 		if ( ! missingFields.isEmpty() ) {
 			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
 			for ( String field : missingFields ) {

@@ -7,11 +7,36 @@ import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.queries.DivisionUserCount;
 import com.thewebthing.commons.lang.BeanUtils;
 
+/**
+ * 
+ * @author dclewis
+ *
+ */
+
 public class DivisionCountRecord extends ApplicationObject {
 	private static final long serialVersionUID = 1L;
 	private BigDecimal defaultDirectLaborPct;
 	private Integer divisionId;
-	private String name;
+	private String divisionCode;
+	private Integer divisionNbr;
+	private String description;
+	
+	public Integer getDivisionNbr() {
+		return divisionNbr;
+	}
+
+	public void setDivisionNbr(Integer divisionNbr) {
+		this.divisionNbr = divisionNbr;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	private Integer parentId;
 	private Integer userCount;
 	
@@ -41,12 +66,12 @@ public class DivisionCountRecord extends ApplicationObject {
 		this.divisionId = divisionId;
 	}
 
-	public String getName() {
-		return name;
+	public String getDivisionCode() {
+		return divisionCode;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setDivisionCode(String divisionCode) {
+		this.divisionCode = divisionCode;
 	}
 
 	public Integer getParentId() {
