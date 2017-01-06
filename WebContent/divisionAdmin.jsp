@@ -16,7 +16,7 @@
 <tiles:insert page="layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        Division Maintenance
+        Division Admin
     </tiles:put>
     
     
@@ -87,9 +87,12 @@
 			
 			function makeRow($division, $rownum) {
 				var row = "";
-				row = row + '<td>' + $division.Name + '</td>';
-				row = row + '<td>' + $division.Name + '</td>';
-				row = row + '<td>' + $division.Name + '</td>';
+				row = row + '<td>' + $division.divisionId + '</td>';
+				row = row + '<td>' + $division.defaultDirectLaborPct + '</td>';
+				row = row + '<td>' + $division.divisionNbr + '</td>';
+				row = row + '<td>' + $division.divisionCode + '</td>';
+				row = row + '<td>' + $division.description + '</td>'
+				row = row + '<td>' + $division.status + '</td>'
        	    	<ansi:hasPermission permissionRequired="SYSADMIN">
         		<ansi:hasWrite>
        			row = row + '<td>';
@@ -106,10 +109,10 @@
 				clearAddForm();
 				var $rownum = $clickevent.currentTarget.attributes['data-row'].value;
 				console.debug("Doing update " + $rownum);
-				$("#addFormTitle").html("Update a Division");
+				$("#addFormTitle").html("Update Division");
 				$('#addForm').data('rownum',$rownum);
 				
-                var $rowId = eval($rownum) + 1;
+				var $rowId = eval($rownum) + 1;
             	var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")"
             	var $row = $($rowFinder)  
             	var tdList = $row.children("td");
@@ -120,6 +123,7 @@
             	$("#addForm input[name='tableName']").val($tableName);
             	$("#addForm input[name='fieldName']").val($fieldName);
             	$("#addForm input[name='value']").val($value);
+				
             	
 				$.each( $('#addForm :input'), function(index, value) {
 					markValid(value);
@@ -145,7 +149,7 @@
 			
 			$("#addButton").click( function($clickevent) {
 				$clickevent.preventDefault();
-				$("#addFormTitle").html("Add a Division");
+				$("#addFormTitle").html("Add Division");
              	$('#addFormDiv').bPopup({
 					modalClose: false,
 					opacity: 0.6,
@@ -188,7 +192,7 @@
 	                    $tableData.push(cols);
 	                });
 
-	            	var $tableName = $tableData[$rownum][0];
+	                var $tableName = $tableData[$rownum][0];
 	            	var $fieldName = $tableData[$rownum][1];
 	            	var $value = $tableData[$rownum][2];
 	            	$url = "division/" + $Name + "/" + $Name + "/" + $Name;
@@ -256,7 +260,7 @@
                     $tableData.push(cols);
                 });
 
-            	var $rownum = $('#confirmDelete').data('rownum');
+                var $rownum = $('#confirmDelete').data('rownum');
             	var $tableName = $tableData[$rownum][0];
             	var $fieldName = $tableData[$rownum][1];
             	var $value = $tableData[$rownum][2];
@@ -326,7 +330,6 @@
             		$($valid).addClass("inputIsInvalid");
             	}
             }
-            
             $("#testadd").click(function($event) {
             	var $outbound = JSON.stringify({"parentId":null,"defaultDirectLaborPct":0.03,"divisionNbr":2,"divisionCode":"LW02","description":"Division Desc","status":1});
             	var jqxhr = $.ajax({
@@ -389,13 +392,16 @@
     
     
     <tiles:put name="content" type="string">
-    	<h1>Division Maintenance</h1>
+    	<h1>Division Admin</h1>
     	
     	<table id="displayTable">
     		<tr>
-    			<th>Division</th>
-    			<th>Name</th>
-    			<th>Default Direct Labor Pct</th>
+    			<th>Division ID</th>
+    			<th>Default Direct Labor Percentage</th>
+				<th>Division Number</th>
+    			<th>Division Code</th>
+    			<th>Description</th>
+    			<th>Status</th>
  			    <ansi:hasPermission permissionRequired="SYSADMIN">
     				<ansi:hasWrite>
     					<th>Action</th>
@@ -420,8 +426,15 @@
 		    		<div id="addFormMsg" class="err"></div>
 		    		<form action="#" method="post" id="addForm">
 		    			<table>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Name:</span></td>
+							<tr>
+		    					<td><span class="required">*</span><span class="formLabel">Division ID:</span></td>
+		    					<td>
+		    						<input type="text" name="tableName" data-required="true" data-valid="validTable" />
+		    						<i id="validTable" class="fa" aria-hidden="true"></i>
+		    					</td>
+		    					<td><span class="err" id="tableNameErr"></span></td>
+		    				</tr>
+		    					<td><span class="required">*</span><span class="formLabel">Default Direct Labor Percentage:</span></td>
 		    					<td>
 		    						<input type="text" name="tableName" data-required="true" data-valid="validTable" />
 		    						<i id="validTable" class="fa" aria-hidden="true"></i>
@@ -429,12 +442,39 @@
 		    					<td><span class="err" id="tableNameErr"></span></td>
 		    				</tr>
 		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Default Direct Labor Pct:</span></td>
+		    					<td><span class="required">*</span><span class="formLabel">Division Number:</span></td>
 		    					<td>
-		    						<input type="text" name="fieldName" data-required="true" data-valid="validField" />
-		    						<i id="validField" class="fa" aria-hidden="true"></i>
+		    						<input type="text" name="tableName" data-required="true" data-valid="validTable" />
+		    						<i id="validTable" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="fieldNameErr"></span></td>
+		    					<td><span class="err" id="tableNameErr"></span></td>
+		    				</tr>
+							<tr>
+		    					<td><span class="required">*</span><span class="formLabel">Division Code:</span></td>
+		    					<td>
+		    						<input type="text" name="tableName" data-required="true" data-valid="validTable" />
+		    						<i id="validTable" class="fa" aria-hidden="true"></i>
+		    					</td>
+		    					<td><span class="err" id="tableNameErr"></span></td>
+		    				</tr>
+		    				<tr>
+		    					<td><span class="required">*</span><span class="formLabel">Description:</span></td>
+		    					<td>
+		    						<input type="text" name="tableName" data-required="true" data-valid="validTable" />
+		    						<i id="validTable" class="fa" aria-hidden="true"></i>
+		    					</td>
+		    					<td><span class="err" id="tableNameErr"></span></td>
+		    				</tr>
+		    				<tr>
+		    					<td><span class="required">*</span><span class="formLabel">Status:</span></td>
+		    					<td>
+		    						<select name="status">
+		    							<option value="1">Active</option>
+		    							<option value="0">Inactive</option>
+		    						</select>
+		    						<i class="fa fa-check-square-o inputIsValid" aria-hidden="true"></i>
+		    					</td>
+		    					<td><span class="err" id="statusErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td colspan="2" style="text-align:center;">
@@ -446,9 +486,7 @@
 		    		</form>
 		    	</div>
 		    	
-		    	<input type="button" id="testadd" value="Go Add" />
-		    	<input type="button" id="testupd" value="Go Update" />
-		    	<input type="button" id="testdel" value="Go Delete" />
+		    	
 	    	</ansi:hasWrite>
     	</ansi:hasPermission>
     </tiles:put>
