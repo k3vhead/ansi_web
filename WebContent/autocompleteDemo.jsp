@@ -54,24 +54,35 @@
             	    url: $url,
             	    data: json,
             	    success: function($data) {
-            	    	console.debug($data);
+            	    	var $value= JSON.stringify($data);
+            	    	$("#dialogStatus").html("Status Code 200");
+            	    	$("#dialogResponse").html($value);
+            	    	$( "#dialog" ).dialog();
             	     },
             	     statusCode: {
             	    	403: function($data) {
-            	    		console.debug('403');
-                	    	console.debug($data);
+                	    	var $value= JSON.stringify($data);
+                	    	$("#dialogStatus").html("Status Code 403");
+                	    	$("#dialogResponse").html($value);
+                	    	$( "#dialog" ).dialog();
             	    	}, 
 	         	    	404: function($data) {
-	        	    		console.debug('404');
-	            	    	console.debug($data);
+	            	    	var $value= JSON.stringify($data);
+	            	    	$("#dialogStatus").html("Status Code 404");
+	            	    	$("#dialogResponse").html($value);
+	            	    	$( "#dialog" ).dialog();
 	        	    	}, 
             	    	401: function($data) {
-            	    		console.debug('401');
-                	    	console.debug($data);
+                	    	var $value= JSON.stringify($data);
+                	    	$("#dialogStatus").html("Status Code 401");
+                	    	$("#dialogResponse").html($value);
+                	    	$( "#dialog" ).dialog();
             	    	}, 
             	    	500: function($data) {
-            	    		console.debug('500');
-                	    	console.debug($data);
+                	    	var $value= JSON.stringify($data);
+                	    	$("#dialogStatus").html("Status Code 500");
+                	    	$("#dialogResponse").html($value);
+                	    	$( "#dialog" ).dialog();
             	    	} 
             	     },
             	     dataType: 'json'
@@ -103,6 +114,14 @@
 			<br />
 			<input type="button" id="testservlet" value="Go" />
 		</form>
+		
+		<div id="dialog" title="Servlet Response">
+  			<div id="dialogStatus" style="border-bottom:solid 1px #000000;"></div>
+  			<div id="dialogResponse" style="border-bottom:solid 1px #000000;"></div>
+  			<div style="float:right;">
+  				See it pretty at <a href="http://jsonLint.com/" target="_new">jsonlint.com</a>
+  			</div>
+		</div>
     </tiles:put>
 
 </tiles:insert>
