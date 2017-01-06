@@ -59,8 +59,6 @@ public class DivisionServlet extends AbstractServlet {
 		String url = request.getRequestURI();
 		int idx = url.indexOf("/division/");
 		if ( idx > -1 ) {
-			System.out.println("Url:" + url);
-			
 			// we're in the right place
 			Connection conn = null;
 			try {
@@ -73,11 +71,12 @@ public class DivisionServlet extends AbstractServlet {
 				String[] urlPieces = myString.split("/");
 				String command = urlPieces[0];
 				
-				if ( StringUtils.isBlank(command)) {
+				if ( StringUtils.isBlank(command) || ! StringUtils.isNumeric(command)) {
 					super.sendNotFound(response);
 				} else {
 					try {
-						doDeleteWork(conn, url);
+						doDeleteWork(conn, Integer.valueOf(command));
+						conn.commit();
 						DivisionResponse divisionResponse = new DivisionResponse();
 						super.sendResponse(conn, response, ResponseCode.SUCCESS, divisionResponse);
 					} catch(RecordNotFoundException recordNotFoundEx) {
@@ -103,9 +102,7 @@ public class DivisionServlet extends AbstractServlet {
 		String url = request.getRequestURI();
 		int idx = url.indexOf("/division/");
 		if ( idx > -1 ) {
-			System.out.println("Url:" + url);
 			String queryString = request.getQueryString();
-			System.out.println("Query String: " + queryString);
 			
 			// Figure out what we've got:
 			// "myString" is the piece of the URL that we actually care about
@@ -113,7 +110,6 @@ public class DivisionServlet extends AbstractServlet {
 			String[] urlPieces = myString.split("/");
 			String command = urlPieces[0];
 
-			System.out.println("DivisionServ 104: " + command);
 			Connection conn = null;
 			try {
 				if ( StringUtils.isBlank(command)) {
@@ -152,35 +148,19 @@ public class DivisionServlet extends AbstractServlet {
 		
 	}
 	
-	public void doDeleteWork(Connection conn, String url) throws RecordNotFoundException, Exception {
-		
-		String[] x = url.split("/");
-		
-		if (StringUtils.isNumeric(x[0])){
-			Division div = new Division();
-			div.setDivisionId(Integer.valueOf(x[0]));
-			
-			try {
-				DivisionUser divisionUser = new DivisionUser();
-				divisionUser.setDivisionId(Integer.valueOf(x[0]));
-				divisionUser.selectOne(conn);
-				System.out.println("Hello Delete: " + x[0]);
-				System.out.println("Cannot Delete, Users Inside");
-			} catch (RecordNotFoundException e) {
-				System.out.println("Hello Delete: " + x[0]);
-				try {
-					div.delete(conn);
-					System.out.println("Deleted!");
-				} catch(RecordNotFoundException er) {
-					System.out.println("Error! Division Not Found!");
-				}
-			}
-			
-			
-		} else {
-			throw new RecordNotFoundException();
+	public void doDeleteWork(Connection conn, Integer divisionId) throws RecordNotFoundException, Exception {
+
+		Division div = new Division();
+		div.setDivisionId(divisionId);
+
+		DivisionUser divisionUser = new DivisionUser();
+		divisionUser.setDivisionId(divisionId);
+
+		try {
+			divisionUser.selectOne(conn);
+		} catch (RecordNotFoundException e) {
+			div.delete(conn);
 		}
-		
 	}
 
 	@Override
@@ -189,7 +169,6 @@ public class DivisionServlet extends AbstractServlet {
 		
 		SessionUser sessionUser = AppUtils.getSessionUser(request);
 		String url = request.getRequestURI();
-//		String queryString = request.getQueryString();
 		
 		Connection conn = null;
 		try {
@@ -197,14 +176,14 @@ public class DivisionServlet extends AbstractServlet {
 			conn.setAutoCommit(false);
 
 			// figure out if this is an "add" or an "update"
-			int idx = url.indexOf("/code/");
-			String myString = url.substring(idx + "/code/".length());				
+			int idx = url.indexOf("/division/");
+			String myString = url.substring(idx + "/division/".length());		
 			String[] urlPieces = myString.split("/");
 			String command = urlPieces[0];
-
 			String jsonString = super.makeJsonString(request);
-			System.out.println(jsonString);
 			DivisionRequest divisionRequest = new DivisionRequest(jsonString);
+			divisionRequest.setParentId(null); // we're not supporting parents yet
+
 			
 			Division division = null;
 			ResponseCode responseCode = null;
@@ -219,6 +198,7 @@ public class DivisionServlet extends AbstractServlet {
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 						responseCode = ResponseCode.SUCCESS;
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+						conn.commit();
 					} catch ( DuplicateEntryException e ) {
 						String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
@@ -234,40 +214,46 @@ public class DivisionServlet extends AbstractServlet {
 				}
 				
 				
-				DivisionResponse divisionResponse = new DivisionResponse(conn, division);
+				DivisionResponse divisionResponse = null;
+				if ( division != null ) {
+					divisionResponse = new DivisionResponse(conn, division);
+				}
 				super.sendResponse(conn, response, responseCode, divisionResponse);
 			
 			/*
 			This is the Update portion of the doPost
 			*/
-			} else if ( urlPieces.length == 3 ) {   //  /<tableName>/<fieldName>/<value> = 3 pieces
-				System.out.println("Doing Update Stuff");				
+			} else if ( StringUtils.isNumeric(urlPieces[0]) ) {   
 				WebMessages webMessages = validateAdd(conn, divisionRequest);
 				if (webMessages.isEmpty()) {
-					System.out.println("passed validation");
+					webMessages = validateFormat(conn, divisionRequest);
+				}
+				if (webMessages.isEmpty()) {
 					try {
 						Division key = new Division();
 						key.setDivisionId(Integer.valueOf(urlPieces[0]));
-						System.out.println("Trying to do update");
 						division = doUpdate(conn, key, divisionRequest, sessionUser);
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 						responseCode = ResponseCode.SUCCESS;
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+						conn.commit();
 					} catch ( RecordNotFoundException e ) {
-						System.out.println("Doing 404");
-						super.sendNotFound(response);						
+						super.sendNotFound(response);
+						conn.rollback();
 					} catch ( Exception e) {
-						System.out.println("Doing SysFailure");
 						responseCode = ResponseCode.SYSTEM_FAILURE;
 						AppUtils.logException(e);
 						String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+						conn.rollback();
 					}
 				} else {
-					System.out.println("Doing Edit Fail");
 					responseCode = ResponseCode.EDIT_FAILURE;
 				}
-				DivisionResponse divisionResponse = new DivisionResponse(conn, division);
+				DivisionResponse divisionResponse = null;
+				if ( division != null ) {
+					divisionResponse = new DivisionResponse(conn, division);
+				}
 				super.sendResponse(conn, response, responseCode, divisionResponse);
 			} else {
 				super.sendNotFound(response);
@@ -287,24 +273,14 @@ public class DivisionServlet extends AbstractServlet {
 	protected Division doAdd(Connection conn, DivisionRequest divisionRequest, SessionUser sessionUser) throws Exception {
 		Date today = new Date();
 		Division division = new Division();
+		makeDivision(division, divisionRequest, sessionUser, today);
 		division.setAddedBy(sessionUser.getUserId());
 		division.setAddedDate(today);
-		if ( ! StringUtils.isBlank(divisionRequest.getDescription())) {
-			division.setDescription(divisionRequest.getDescription());
-		}
-		if ( divisionRequest.getParentId() != null) {
-			division.setParentId(divisionRequest.getParentId());
-		}
-//		division.setName(divisionRequest.getName()); //MAY GET DELETED
-		division.setDivisionId(divisionRequest.getDivisionId());
-		division.setStatus(divisionRequest.getStatus());
-		division.setDefaultDirectLaborPct(divisionRequest.getDefaultDirectLaborPct());
-		division.setUpdatedBy(sessionUser.getUserId());
-		division.setUpdatedDate(today);
-		division.setDivisionNbr(divisionRequest.getDivisionNbr());
-		division.setDivisionCode(divisionRequest.getDivisionCode());
+
+		
 		try {
-			division.insertWithNoKey(conn);
+			Integer divisionId = division.insertWithKey(conn);
+			division.setDivisionId(divisionId);
 		} catch ( SQLException e) {
 			if ( e.getMessage().contains("duplicate key")) {
 				throw new DuplicateEntryException();
@@ -316,38 +292,42 @@ public class DivisionServlet extends AbstractServlet {
 		return division;
 	}
 	
+	
 	protected Division doUpdate(Connection conn, Division key, DivisionRequest divisionRequest, SessionUser sessionUser) throws Exception{
 		Date today = new Date();
-//		Division division = new Division();
-		key.setAddedBy(sessionUser.getUserId());
-		key.setAddedDate(today);
-		if ( ! StringUtils.isBlank(divisionRequest.getDescription())) {
-			key.setDescription(divisionRequest.getDescription());
-		}
-		if ( divisionRequest.getParentId() != null) {
-			key.setParentId(divisionRequest.getParentId());
-		}
-//		division.setName(divisionRequest.getName()); //MAY GET DELETED
-		key.setDivisionId(divisionRequest.getDivisionId());
-		key.setStatus(divisionRequest.getStatus());
-		key.setDefaultDirectLaborPct(divisionRequest.getDefaultDirectLaborPct());
-		key.setUpdatedBy(sessionUser.getUserId());
-		key.setUpdatedDate(today);
-		key.setDivisionNbr(divisionRequest.getDivisionNbr());
-		key.setDivisionCode(divisionRequest.getDivisionCode());
+		Division division = new Division();
+		division.setDivisionId(key.getDivisionId());
+		division.selectOne(conn);
+		makeDivision(division, divisionRequest, sessionUser, today);
+
 		try {
-			key.insertWithNoKey(conn);
+			division.update(conn, key);
+			conn.commit();
 		} catch ( SQLException e) {
-			if ( e.getMessage().contains("duplicate key")) {
-				throw new DuplicateEntryException();
-			} else {
-				AppUtils.logException(e);
-				throw e;
-			}
+			AppUtils.logException(e);
+			throw e;
 		} 
-		return null;
+		return division;
 	}
 	
+	
+	private Division makeDivision(Division division, DivisionRequest divisionRequest, SessionUser sessionUser, Date today) {
+		if ( ! StringUtils.isBlank(divisionRequest.getDescription())) {
+			division.setDescription(divisionRequest.getDescription());
+		}
+		if ( divisionRequest.getParentId() != null) {
+			division.setParentId(divisionRequest.getParentId());
+		}
+		division.setStatus(divisionRequest.getStatus());
+		division.setDefaultDirectLaborPct(divisionRequest.getDefaultDirectLaborPct());
+		division.setUpdatedBy(sessionUser.getUserId());
+		division.setUpdatedDate(today);
+		division.setDivisionNbr(divisionRequest.getDivisionNbr());
+		division.setDivisionCode(divisionRequest.getDivisionCode());
+		
+		return division;
+	}
+
 	protected WebMessages validateAdd(Connection conn, DivisionRequest divisionRequest) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		List<String> missingFields = super.validateRequiredAddFields(divisionRequest);

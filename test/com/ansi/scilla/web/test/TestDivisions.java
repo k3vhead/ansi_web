@@ -1,10 +1,12 @@
 package com.ansi.scilla.web.test;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.ansi.scilla.web.common.AppUtils;
+import com.ansi.scilla.web.request.DivisionRequest;
 import com.ansi.scilla.web.response.division.DivisionListResponse;
 import com.ansi.scilla.web.servlets.DivisionServlet;
 
@@ -41,12 +43,26 @@ public class TestDivisions {
 //			new TestDivisions().delete();
 //			new TestCodes().testUri();
 //			new TestCodes().testUri2();
-			new TestDivisions().testResponse();
+//			new TestDivisions().testResponse();
+			new TestDivisions().testReq();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
+	private void testReq() throws Exception {
+		DivisionRequest req = new DivisionRequest();
+		req.setDefaultDirectLaborPct(new BigDecimal(.03));
+		req.setDescription("Division Desc");
+		req.setDivisionCode("LW01");
+		req.setDivisionId(99);
+		req.setDivisionNbr(01);
+		req.setStatus(1);
+		String json = req.toJson();
+		System.out.println(json);;
+		
+	}
+
 	public void testResponse() throws Exception {
 		Connection conn = null;
 		try{

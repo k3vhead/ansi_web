@@ -1,18 +1,14 @@
 package com.ansi.scilla.web.response.division;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.queries.DivisionUserCount;
 import com.ansi.scilla.web.response.MessageResponse;
-import com.thewebthing.commons.lang.BeanUtils;
 
 /** 
  * Used to return a list of "code" objects to the client

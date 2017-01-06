@@ -327,6 +327,62 @@
             	}
             }
             
+            $("#testadd").click(function($event) {
+            	var $outbound = JSON.stringify({"parentId":null,"defaultDirectLaborPct":0.03,"divisionNbr":2,"divisionCode":"LW02","description":"Division Desc","status":1});
+            	var jqxhr = $.ajax({
+            	    type: 'post',
+            	    url: 'division/add',
+            	    data: $outbound,
+            	    success: function($data) {
+            	    	console.debug($data);
+            	     },
+            	     statusCode: {
+            	    	403: function($data) {
+            	    		console.debug("403");            	    		
+            	    		console.debug($data);
+            	    	} 
+            	     },
+            	     dataType: 'json'
+            	});
+            });
+            
+            $("#testupd").click(function($event) {
+            	var $outbound = JSON.stringify({"divisionId":34,"defaultDirectLaborPct":0.04,"divisionNbr":1,"divisionCode":"LW01","description":"Division Desc updt","status":1});
+            	var jqxhr = $.ajax({
+            	    type: 'post',
+            	    url: 'division/34',
+            	    data: $outbound,
+            	    success: function($data) {
+            	    	console.debug($data);
+            	     },
+            	     statusCode: {
+            	    	403: function($data) {
+            	    		console.debug('403');
+                	    	console.debug($data);
+            	    	} 
+            	     },
+            	     dataType: 'json'
+            	});
+            });
+            
+            $("#testdel").click(function($event) {            	
+            	var jqxhr = $.ajax({
+            	    type: 'delete',
+            	    url: 'division/34',
+            	    data: null,
+            	    success: function($data) {
+            	    	console.debug($data);
+            	     },
+            	     statusCode: {
+            	    	403: function($data) {
+            	    		console.debug('403');
+                	    	console.debug($data);
+            	    	} 
+            	     },
+            	     dataType: 'json'
+            	});
+            });
+
         });
         </script>        
     </tiles:put>
@@ -390,7 +446,9 @@
 		    		</form>
 		    	</div>
 		    	
-		    	
+		    	<input type="button" id="testadd" value="Go Add" />
+		    	<input type="button" id="testupd" value="Go Update" />
+		    	<input type="button" id="testdel" value="Go Delete" />
 	    	</ansi:hasWrite>
     	</ansi:hasPermission>
     </tiles:put>
