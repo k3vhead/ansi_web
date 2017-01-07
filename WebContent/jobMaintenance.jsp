@@ -86,6 +86,7 @@
 		<table style="border:solid 1px #000000; margin-top:8px;">
 			<tr>
 				<td class="jobTableCell" colspan="2">
+					<%--
 					<form name="jobForm">
 						JOB: <input type="text" name="jobNbr" id="jobNbr" />
 						Status: <input type="text" name="jobStatus" />
@@ -95,6 +96,8 @@
 							<input type="button" value="Cancel Job" />
 						</div>
 					</form>
+					 --%>
+					 <webthing:jobPanel namespace="JOBPANEL" cssId="jobPanel" />
 				</td>
 			</tr>
 			<tr>
@@ -166,7 +169,7 @@
 
     					$select.append(new Option("",""));
     					$.each($data.data.divisionList, function(index, val) {
-    					    $select.append(new Option(val.divisionId, val.divisionId));
+    					    $select.append(new Option(val.divisionCode, val.divisionId));
     					});
     					
     					$select.selectmenu();
