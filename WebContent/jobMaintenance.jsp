@@ -185,6 +185,8 @@
 			
 			JOBDESCRIPTION.init();
 			JOBACTIVATION.init();
+			JOBSITE.init();
+			BILLTO.init();
 			init();
 			$("#jobNbr").focus();
         });
