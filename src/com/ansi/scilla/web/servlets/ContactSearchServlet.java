@@ -2,6 +2,7 @@ package com.ansi.scilla.web.servlets;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,13 +17,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.web.common.AppUtils;
+import com.thewebthing.commons.lang.StringUtils;
 
 /**
  * This url searches the following contact table fields for the search term:
  * 		business_phone
  * 		fax
- * 		first_name
- * 		last_name
+ * 		"first_name last_name"
+ * 		"last_name first_name"
  * 		mobile_phone
  * 		email
  * and returns these same fields plus:
@@ -53,16 +55,16 @@ public class ContactSearchServlet extends AbstractServlet {
 			String term = "";
 			if (qs != null) {
 				if ( qs.indexOf("term=") != -1) {
-					term = qs.substring("term=".length());
+					term = StringUtils.trimToNull(URLDecoder.decode(qs.substring("term=".length()),"UTF-8"));
 				}
 			}
-			System.out.println("ContactSearchServlet(): doGet(): term =" + term);
+			System.out.println("ContactSearchServlet(): doGet(): term =$" + term +"$");
 			List<ReturnItem> resultList = new ArrayList<ReturnItem>();
 			String sql = "select business_phone, contact_id, fax, first_name, last_name, mobile_phone, preferred_contact, email"
 					+ " from contact where lower(business_phone) like '%" + term + "%'"
 					+ " OR lower(fax) like '%" + term + "%'"
-					+ " OR lower(first_name) like '%" + term + "%'"
-					+ " OR lower(last_name) like '%" + term + "%'"
+					+ " OR lower(concat(first_name,' ',last_name)) like '%" + term + "%'"
+					+ " OR lower(concat(last_name,' ',first_name)) like '%" + term + "%'"
 					+ " OR lower(mobile_phone) like '%" + term + "%'"
 					+ " OR lower(email) like '%" + term + "%'";
 			Statement s = conn.createStatement();
