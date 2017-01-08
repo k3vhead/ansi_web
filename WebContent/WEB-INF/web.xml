@@ -176,6 +176,14 @@
 		<servlet-name>contactSearch</servlet-name>
 		<url-pattern>/contactSearch</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>quoteSearch</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.QuoteSearchServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>quoteSearch</servlet-name>
+		<url-pattern>/quoteSearch/*</url-pattern>
+	</servlet-mapping>
 
 	<!--
         Define the default session timeout for the application,
