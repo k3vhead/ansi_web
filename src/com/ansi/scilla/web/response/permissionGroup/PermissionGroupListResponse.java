@@ -5,12 +5,16 @@ import java.util.List;
 import com.ansi.scilla.web.response.MessageResponse;
 
 public class PermissionGroupListResponse extends MessageResponse {
-	private List<PermissionGroupRecord> permGroupRecordList;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	public List<PermGroupItem> getPermGroupItemList() {
+		return permGroupItemList;
+	}
+	public void setPermGroupItemList(List<PermGroupItem> permGroupItemList) {
+		this.permGroupItemList = permGroupItemList;
+	}
+	private List<PermGroupItem> permGroupItemList;
 
-	public List<PermissionGroupRecord> getPermGroupRecordList() {
-		return permGroupRecordList;
-	}
-	public void setPermGroupRecordList(List<PermissionGroupRecord> permGroupRecordList) {
-		this.permGroupRecordList = permGroupRecordList;
-	}
 }
