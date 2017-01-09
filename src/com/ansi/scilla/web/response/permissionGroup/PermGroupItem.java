@@ -11,7 +11,7 @@ public class PermGroupItem extends ApplicationObject implements Comparable<PermG
 	private String name;
 	private Integer permGroupId;
 	private Integer status;
-	List<PermissionItem> permissionItemList;
+	private List<PermissionItem> permissionItemList;
 	
 	public String getDescription() {
 		return description;
