@@ -39,6 +39,55 @@
                   alert( "Selected: " + ui.item.id + " aka " + ui.item.label + " or " + ui.item.value );
                 }
               });
+            
+            
+            $("#testservlet").click(function($event) {   
+            	var $httpType = $("#httptype option:selected" ).val();
+            	var json = JSON.stringify($("#testjson").val());
+            	var $url = $("#testurl").val();
+            	console.debug($httpType);
+            	console.debug(json);
+            	console.debug($url);
+            	
+            	var jqxhr = $.ajax({
+            	    type: $httpType,
+            	    url: $url,
+            	    data: json,
+            	    success: function($data) {
+            	    	var $value= JSON.stringify($data);
+            	    	$("#dialogStatus").html("Status Code 200");
+            	    	$("#dialogResponse").html($value);
+            	    	$( "#dialog" ).dialog();
+            	     },
+            	     statusCode: {
+            	    	403: function($data) {
+                	    	var $value= JSON.stringify($data);
+                	    	$("#dialogStatus").html("Status Code 403");
+                	    	$("#dialogResponse").html($value);
+                	    	$( "#dialog" ).dialog();
+            	    	}, 
+	         	    	404: function($data) {
+	            	    	var $value= JSON.stringify($data);
+	            	    	$("#dialogStatus").html("Status Code 404");
+	            	    	$("#dialogResponse").html($value);
+	            	    	$( "#dialog" ).dialog();
+	        	    	}, 
+            	    	401: function($data) {
+                	    	var $value= JSON.stringify($data);
+                	    	$("#dialogStatus").html("Status Code 401");
+                	    	$("#dialogResponse").html($value);
+                	    	$( "#dialog" ).dialog();
+            	    	}, 
+            	    	500: function($data) {
+                	    	var $value= JSON.stringify($data);
+                	    	$("#dialogStatus").html("Status Code 500");
+                	    	$("#dialogResponse").html($value);
+                	    	$( "#dialog" ).dialog();
+            	    	} 
+            	     },
+            	     dataType: 'json'
+            	});
+            });
         });
         </script>        
     </tiles:put>
@@ -50,6 +99,29 @@
 		<form action="#" id="demoForm">
 			Type Here: <input type="text" id="searchTerm" />
 		</form>
+		<hr />
+		<form id="testform">
+			HTTP:
+			<select id="httptype">
+				<option value="GET">GET</option>
+				<option value="POST">POST</option>
+				<option value="DELETE">DELETE</option>
+			</select>
+			<br />
+			URL: /localhost:8080/ansi_web/<input type="text" id="testurl" />
+			<br />
+			JSON String: <input type="text" id="testjson" />
+			<br />
+			<input type="button" id="testservlet" value="Go" />
+		</form>
+		
+		<div id="dialog" title="Servlet Response">
+  			<div id="dialogStatus" style="border-bottom:solid 1px #000000;"></div>
+  			<div id="dialogResponse" style="border-bottom:solid 1px #000000;"></div>
+  			<div style="float:right;">
+  				See it pretty at <a href="http://jsonLint.com/" target="_new">jsonlint.com</a>
+  			</div>
+		</div>
     </tiles:put>
 
 </tiles:insert>

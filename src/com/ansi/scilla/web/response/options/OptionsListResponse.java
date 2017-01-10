@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
+import com.ansi.scilla.common.address.Country;
 import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.jobticket.JobStatus;
 import com.ansi.scilla.common.jobticket.TicketStatus;
-import com.ansi.scilla.common.address.Country;
-import com.ansi.scilla.common.address.State;
+import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.response.MessageResponse;
 
 public class OptionsListResponse extends MessageResponse {
@@ -18,6 +18,7 @@ public class OptionsListResponse extends MessageResponse {
 	private List<JobStatusOption> jobStatus;
 	private List<TicketStatusOption> ticketStatus;
 	private List<CountryOption> country;
+	private List<Permission> permission;
 
 	public OptionsListResponse(List<ResponseOption> options) throws ClassNotFoundException, Exception {
 		if ( options.contains(ResponseOption.JOB_FREQUENCY)) {
@@ -32,7 +33,17 @@ public class OptionsListResponse extends MessageResponse {
 		if ( options.contains(ResponseOption.COUNTRY)) {
 			makeCountryList();
 		}
+		if ( options.contains(ResponseOption.PERMISSION)) {
+			makePermissionList();
+		}
 
+	}
+
+	private void makePermissionList() {
+		this.permission = new ArrayList<Permission>();
+		for(Permission j : EnumSet.allOf(Permission.class)) {
+			this.permission.add(j);
+		}
 	}
 
 	private void makeJobFrequencyList() {
@@ -95,4 +106,13 @@ public class OptionsListResponse extends MessageResponse {
 	public void setTicketStatus(List<TicketStatusOption> ticketStatus) {
 		this.ticketStatus = ticketStatus;
 	}
+
+	public List<Permission> getPermission() {
+		return permission;
+	}
+
+	public void setPermission(List<Permission> permission) {
+		this.permission = permission;
+	}
+	
 }

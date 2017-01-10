@@ -97,6 +97,23 @@
 				width:50%;
 				vertical-align:top;
 			}
+			#JOBSITEADDRESS.select	{
+				width:80px !important;
+				max-width:80px !important;
+			
+			}
+			#division-menu {
+			  max-height: 300px;
+			}
+			#JOBSITEADDRESS_state-menu {
+			  max-height: 300px;
+			}
+			#BILLTOADDRESS_state-menu {
+			  max-height: 300px;
+			}
+			#quoteTable {
+				width:100%;
+			}
         </style>
     </tiles:put>
     
@@ -113,7 +130,7 @@
 								<input type="text" name="manager"  style="width:95px"/>
 							</td>
 							<td><span class="labelSpan">Division:</span>
-								<select name="division" class="quoteSelect">
+								<select name="division" id="division" class="quoteSelect">
 									<option value=""></option>
 								</select>
 							</td>
@@ -124,7 +141,7 @@
 						<tr>
 							<td><input type="button" name="copyButton" value="Copy" class="quoteButton"/></td>
 							<td><span class="labelSpanSmall">Lead Type:</span>
-								<select name="leadSelect" class="quoteSelect">
+								<select name="leadType" class="quoteSelect">
 									<option value=""></option>
 								</select>
 							</td>
@@ -141,7 +158,7 @@
 							<td>&nbsp;</td>
 							
 							<td><span class="labelSpan">Proposed Date:</span>
-								<input type="text" name="proposalDate"  style="width:90px" disabled="disabled"/>
+								<input type="text" name="proposalDate"  style="width:95px" disabled="disabled"/>
 							</td>
 							<td colspan="2">Print Date:&nbsp;&nbsp;<input type="text" name="printDate"  style="width:90px"/></td>
 							<td>Print Count:&nbsp;&nbsp;<input type="text" name="printCount"  style="width:90px" disabled="disabled"/></td>
@@ -174,21 +191,43 @@
   	
 		
         <script type="text/javascript">   
-      //  var jobCount = 0;
-		function addJob(){
-        	//jobCount++;
-        	//console.log(jobCount);
-			
-		}
-		
-		$( document ).ready(function() {
-			
-			
-			//$('#JOB1_jobTable').append("<tr><td>test1</td><td>test2</td></tr>");
-			//addJob();
-			$('#JOB1_jobTable').append("<td class='jobTableCell'><webthing:jobDescription namespace='JOBDESCRIPTION' cssId='jobProposal' /></td><td class='jobTableCell'><webthing:jobActivation namespace='JOBACTIVATION' cssId='jobActivation' /></td>");
-
-        });
+		      $( document ).ready(function() {
+						function init() {
+							$("select[name='division']").selectmenu({ width : '100px'});
+							$("select[name='leadType']").selectmenu({ width : '100px'});
+							$("select[name='accountType']").selectmenu({ width : '100px'});
+							
+								
+							var jqxhr1 = $.ajax({
+				    				type: 'GET',
+				    				url: 'division/list',
+				    				data: {},
+				    				success: function($data) {
+				    					selectorName = "select[name='division']";
+				    					
+				    					var $select = $(selectorName);
+				    					$('option', $select).remove();
+	
+				    					$select.append(new Option("",""));
+				    					$.each($data.data.divisionList, function(index, val) {
+				    					    $select.append(new Option(val.divisionCode, val.divisionId));
+				    					});
+				    					
+				    					$select.selectmenu();
+				    				},
+				    				statusCode: {
+				    					403: function($data) {
+				    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+				    					} 
+				    				},
+				    				dataType: 'json'
+				    			});
+							}
+					
+						JOBSITEADDRESS.init();
+						BILLTOADDRESS.init();
+						init();
+		        });
         </script>        
     </tiles:put>
 

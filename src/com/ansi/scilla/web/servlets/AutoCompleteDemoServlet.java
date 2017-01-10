@@ -31,7 +31,7 @@ public class AutoCompleteDemoServlet extends AbstractServlet {
 			String term = qs.substring("term=".length());
 			System.out.println(qs);
 			List<ReturnItem> resultList = new ArrayList<ReturnItem>();
-			String sql = "select division_id, division_code, name from division where lower(name) like '%" + term + "%'";
+			String sql = "select division_id, division_code, description from division where lower(division_code) like '%" + term + "%'";
 			Statement s = conn.createStatement();
 			ResultSet rs = s.executeQuery(sql);
 			while ( rs.next() ) {
@@ -65,7 +65,7 @@ public class AutoCompleteDemoServlet extends AbstractServlet {
 		public ReturnItem(ResultSet rs) throws SQLException {
 			super();
 			this.id = rs.getInt("division_id");
-			this.label = rs.getString("name");
+			this.label = rs.getString("description");
 			this.value = rs.getString("division_code");
 		}
 

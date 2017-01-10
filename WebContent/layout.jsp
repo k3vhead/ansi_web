@@ -55,6 +55,9 @@
         <link rel="stylesheet" href="css/style.css" type="text/css" />
     	
         <script src="js/ansi.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.13/datatables.min.css"/>
+ 
+		<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.13/datatables.min.js"></script>
        
         <tiles:insert attribute="headextra" />
     </head>
@@ -104,7 +107,7 @@
 							<li><html:link action="dashboard">Dashboard</html:link></li>
 		        			<li>
 		        				<a href="#">Lookup</a>
-								<ul class="sub_menu">
+								<ul class="sub_menu" style="z-index:1000">
 									<li><a href="#">Addresses</a></li>
 									<ansi:hasPermission permissionRequired="QUOTE">
 									<li><a href="#">Quotes</a></li>
@@ -124,7 +127,7 @@
 								</ul>
 		        			</li>
 		        			<li><a href="#">Reports</a>
-		        				<ul class="sub_menu">
+		        				<ul class="sub_menu" style="z-index:1000">
 									<li><a href="#">Addresses</a></li>
 									<ansi:hasPermission permissionRequired="QUOTE">
 									<li><a href="#">Quotes</a></li>
@@ -145,7 +148,7 @@
 		        			</li>
 		        			<li>
 		        				<a href="#">QuickLinks</a>
-		        				<ul class="sub_menu">
+		        				<ul class="sub_menu" style="z-index:1000">
 									<li>
 										<a href="#">Addresses</a>
 										<ul>

@@ -11,10 +11,10 @@ public class TestOptions {
 	public static void main(String[] args) {
 		TesterUtils.makeLoggers();
 		try {
-//			List<ResponseOption> o = Arrays.asList(new ResponseOption[] {ResponseOption.JOB_STATUS, ResponseOption.JOB_FREQUENCY});
+//			List<ResponseOption> o = Arrays.asList(new ResponseOption[] {ResponseOption.PERMISSION});
 //			OptionsListResponse r = new OptionsListResponse(o);
 //			String json = r.toJson();
-			String json = TesterUtils.getJson("http://127.0.0.1:8080/ansi_web/options?JOB_STATUS,JOB_FREQUENCY,TICKET_STATUS");
+			String json = TesterUtils.getJson("http://127.0.0.1:8080/ansi_web/options?PERMISSION");
 			System.out.println(json);
 		} catch ( Exception e) {
 			e.printStackTrace();

@@ -13,6 +13,8 @@
 <%@ taglib uri="WEB-INF/theTagThing.tld" prefix="ansi" %>
 
 
+
+
 <tiles:insert page="layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
@@ -44,203 +46,171 @@
 				margin-top:15px;
 				margin-bottom:15px;
 			}
+			#state-menu {
+			  max-height: 300px;
+			}
+
         </style>
         
         <script type="text/javascript">        
         $(function() {        
-			var jqxhr = $.ajax({
+        	// var resultTable = $('#addressTable').DataTable();
+        	
+        	$("#addButton").button().on( "click", function() {
+        	      $("#addAddressForm").dialog( "open" );
+            });
+        	init();
+        	//$('#addressTable tfoot th').each( function () {
+		    //    var title = $(this).text();
+		    //    $(this).html( '<input type="text" style="width:100%" placeholder="<'+title+'>" />' );
+		    //} );
+        	var jqxhr1 = $.ajax({
 				type: 'GET',
 				url: 'address/list',
 				data: {},
+				dataType: 'json',
 				success: function($data) {
-					$.each($data.data.codeList, function(index, value) {
-						addRow(index, value);
-					});
-					doFunctionBinding();
-				},
-				statusCode: {
-					403: function($data) {
-						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-					} 
-				},
-				dataType: 'json'
-			});
-			
-			getTableFieldList(null, $("#addForm select[name='tableName']"));
-			
-			function addRow(index, $address) {	
-				var $rownum = index + 1;
-       			//$('#displayTable tr:last').before(row);
-       			rowTd = makeRow($address, $rownum);
-       			row = '<tr class="dataRow">' + rowTd + "</tr>";
-       			$('#displayTable').append(row);
-			}
-			
-			function doFunctionBinding() {
-				$('.updAction').bind("click", function($clickevent) {
-					doUpdate($clickevent);
-				});
-				$('.delAction').bind("click", function($clickevent) {
-					doDelete($clickevent);
-				});
-				$('.dataRow').bind("mouseover", function() {
-					$(this).css('background-color','#CCCCCC');
-				});
-				$('.dataRow').bind("mouseout", function() {
-					$(this).css('background-color','transparent');
-				});
-			}
-			
-			function makeRow($address, $rownum) {
-				var row = "";
-				if ( $address.addressId == null ) {
-       				row = row + '<td></td>';
-       			} else {
-					row = row + '<td>' + $address.addressId + '</td>';
-       			}
-				if ( $address.name == null ) {
-	       			row = row + '<td></td>';
-	       		} else {
-	       				row = row + '<td>' + $address.name + '</td>';
-	       		}
-				if ( $address.status == null ) {
-       				row = row + '<td></td>';
-       			} else {
-					row = row + '<td>' + $address.status + '</td>';
-       			}
-				if ( $address.address1 == null ) {
-       				row = row + '<td></td>';
-       			} else {
-       				row = row + '<td>' + $address.address1 + '</td>';
-       			}
-				if ( $address.address2 == null ) {
-       				row = row + '<td></td>';
-       			} else {
-       				row = row + '<td>' + $address.address2 + '</td>';
-       			}
-				if ( $address.city == null ) {
-       				row = row + '<td></td>';
-       			} else {
-       				row = row + '<td>' + $address.city + '</td>';
-       			}
-				if ( $address.county == null ) {
-       				row = row + '<td></td>';
-       			} else {
-       				row = row + '<td>' + $address.county + '</td>';
-       			}
-				if ( $address.state == null ) {
-       				row = row + '<td></td>';
-       			} else {
-					row = row + '<td>' + $address.state + '</td>';
-       			}
-				if ( $address.zip == null ) {
-       				row = row + '<td></td>';
-       			} else {
-					row = row + '<td>' + $address.zip + '</td>';
-       			}
-       			
-       	    	<ansi:hasPermission permissionRequired="SYSADMIN">
-        		<ansi:hasWrite>
-       			row = row + '<td>';
-       			row = row + '<a href="#" class="updAction" data-row="' + $rownum +'"><span class="green fa fa-pencil" ari-hidden="true"></span></a> | ';
-       			row = row + '<a href="#" class="delAction" data-row="' + $rownum +'"><span class="red fa fa-trash" aria-hidden="true"></span></a>';
-       			row = row + '</td>';
-       			</ansi:hasWrite>
-       			</ansi:hasPermission>       			
-				return row;
-			}
-			
-			function doUpdate($clickevent) {
-				$clickevent.preventDefault();
-				clearAddForm();
-				var $rownum = $clickevent.currentTarget.attributes['data-row'].value;
-				$("#addFormTitle").html("Update an Address");
-				$('#addForm').data('rownum',$rownum);
-				
-                var $rowId = eval($rownum) + 1;
-            	var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")";
-            	var $row = $($rowFinder);  
-            	var tdList = $row.children("td");
-            	var $addressId = $row.children("td")[0].textContent;
-            	var $name = $row.children("td")[1].textContent;
-            	var $status = $row.children("td")[2].textContent;
-            	var $address1 = $row.children("td")[3].textContent;
-            	var $address2 = $row.children("td")[4].textContent;
-            	var $city = $row.children("td")[5].textContent;
-            	var $county = $row.children("td")[6].textContent;
-            	var $state = $row.children("td")[7].textContent;
-            	var $zip = $row.children("td")[8].textContent;
+				var data = new Array();
+					 
+					 $.each($data, function(index, val) {
+						 $.each(val.codeList, function(index, val) {
+							 
+							 var addressId = (val.addressId).toString();;
+							 var name = val.name;
+							 var status = val.status;
+							 var address1 = val.address1;
+							 var address2 = val.address2;
+							 var city = val.city;
+							 var county = val.county;
+							 var country = val.country;
+							 var state = val.state;
+							 var zip = val.zip;
+							 
+							if(addressId == null) 	{	addressId = "N/A";	}	
+							if(name == null) 		{	name = "N/A";		}	
+							if(status == null) 		{	status = "N/A";		}	
+							if(address1 == null) 	{	address1 = "N/A";	}	
+							if(address2 == null) 	{	address2 = "N/A";	}	
+							if(city == null) 		{	city = "N/A";		}	
+							if(county == null) 		{	county = "N/A";		}	
+							if(country == null) 	{	country = "N/A";	}	
+							if(state == null) 		{	state = "N/A";		}	
+							if(zip == null) 		{	zip = "N/A";		}	
+						
+							 
+						 		data.push([addressId,name,status,address1,address2,city,county,country,state,zip]);
+					 			//console.log(row);
+					 			if(addressId != 2){
+					 			//	resultTable.rows.add(row).draw(false);
+					 			}
+						 });
+					 	//resultTable.rows.add(row).draw();
+					 });
+					 console.log(data);
+					 //resultTable.draw();
+	                 //   resultTable.rows.add($data.codeList).draw();
+	                 //   dataSet = $data.codeList;
+					var dataTable = $('#addressTable').DataTable( {
+					        data: data,
+					        "processing": true,
+					        columns: [
+					            { title: "Id", width: "30px" },
+					            { title: "Name" },
+					            { title: "Status" },
+					            { title: "Address 1" },
+					            { title: "Address 2" },
+					            { title: "City" },
+					            { title: "County" },
+					            { title: "Country" },
+					            { title: "State" },
+					            { title: "Zip" },
+					            {
+					                mRender: function (data, type, row) {
+					                    //return '<a class="table-edit" data-id="' + row[0] + '">EDIT</a>'
+					                     //return "<button id='edit"+ row[0] + "' class='ui-button ui-widget ui-corner-all ui-button-icon-only' title='Edit'>"
+					                     return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' id='edit"+ row[0] + "'class='ui-icon ui-icon-pencil'></a>|<a href='#' id='delete"+ row[0] + "'class='ui-icon ui-icon-trash'></a></ansi:hasWrite></ansi:hasPermission>"
+					                }
+					            
+					            }]
+					    } );
+					dataTable.rows().every( function () {
+					        var that = this;
+					        console.log(this);
+					 		$('#edit'+that.data()[0]).click(function(event){ 
+					 			//console.log(event.target.id);
+					            console.log("Button "+event.target.id+" clicked!");
+					        });
+					 		$('#delete'+that.data()[0]).click(function(event){ 
+					 			//console.log(event.target.id);
+					            console.log("Button "+event.target.id+" clicked!");
 
-            	select = $("#addForm select[name='tableName']");
-            	select.val($tableName);
-            	
-            	select = $("#addForm select[name='fieldName']");
-            	//getTableFieldList($tableName, select, $fieldName);
-            	getTableFieldList(null, $("#addForm select[name='tableName']"));
-            	//$("#addForm input[name='tableName']").val($tableName);
-            	//$("#addForm input[name='fieldName']").val($fieldName);
-            	$("#addForm input[name='name']").val($name);
+					           var $addressId = event.target.id.replace('delete','');
 
-            	$("#addForm input[name='address1']").val($address1);
-            	$("#addForm input[name='address2']").val($address2);
-            	$("#addForm input[name='city']").val($city);
-            	$("#addForm input[name='county']").val($county);
-            	$("#addForm input[name='state']").val($state);
-            	$("#addForm input[name='zip']").val($zip);
-            
-				$.each( $('#addForm :input'), function(index, value) {
-					markValid(value);
-				});
-
-             	$('#addFormDiv').bPopup({
-					modalClose: false,
-					opacity: 0.6,
-					positionStyle: 'fixed' //'fixed' or 'absolute'
-				});				
-			}
-			
-			function doDelete($clickevent) {
-				$clickevent.preventDefault();
-				var $rownum = $clickevent.currentTarget.attributes['data-row'].value;
-            	var $tableData = [];
-                $("#displayTable").find('tr').each(function (rowIndex, r) {
-                    var cols = [];
-                    $(this).find('th,td').each(function (colIndex, c) {
-                        cols.push(c.textContent);
-                    });
-                    $tableData.push(cols);
-                });
-            	$("#delTable").html($tableData[$rownum][0]);
-            	$("#delField").html($tableData[$rownum][1]);
-            	$("#delValue").html($tableData[$rownum][2]);
-
-				$('#confirmDelete').data('rownum',$rownum);
-             	$('#confirmDelete').bPopup({
-					modalClose: false,
-					opacity: 0.6,
-					positionStyle: 'fixed' //'fixed' or 'absolute'
-				});
-			}
-			
-			$("#addButton").click( function($clickevent) {
-				$clickevent.preventDefault();
-				$("#addFormTitle").html("Add an Address");
-             	$('#addFormDiv').bPopup({
-					modalClose: false,
-					opacity: 0.6,
-					positionStyle: 'fixed' //'fixed' or 'absolute'
-				});				
-			});
-			
-			$("#cancelUpdate").click( function($clickevent) {
-				$clickevent.preventDefault();
-				clearAddForm();
-				$('#addFormDiv').bPopup().close();
-			});
-
-			$("#goUpdate").click( function($clickevent) {
-				$clickevent.preventDefault();
-				$outbound = {};
+				            	$outbound = JSON.stringify({});
+				            	$url = 'address/delete/' + $addressId;
+				            	//$outbound = JSON.stringify({'tableName':$tableName, 'fieldName':$fieldName,'value':$value});
+				            	var jqxhr = $.ajax({
+				            	    type: 'delete',
+				            	    url: $url,
+				            	    data: $outbound,
+				            	    success: function($data) {
+				            	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
+										if ( $data.responseHeader.responseCode == 'SUCCESS') {
+											dataTable.ajax.reload();
+										}
+				            	     },
+				            	     statusCode: {
+				            	    	403: function($data) {
+				            	    		$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+				            	    	},
+				            	    	500: function($data) {
+				            	    		 $( "#deleteErrorDialog" ).dialog({
+				            	    		      modal: true,
+				            	    		      buttons: {
+				            	    		        Ok: function() {
+				            	    		          $( this ).dialog( "close" );
+				            	    		        }
+				            	    		      }
+				            	    		    });
+				            	    	} 
+				            	     },
+				            	     dataType: 'json'
+				            	});
+					        });
+					        
+					    } );
+	              
+					
+			},
+			statusCode: {
+				403: function($data) {
+					$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+				} 
+			},
+			dataType: 'json'
+		});
+        	
+        	
+        	$( "#addAddressForm" ).dialog({
+        	      autoOpen: false,
+        	      height: 450,
+        	      width: 550,
+        	      modal: true,
+        	      buttons: {
+        	        "Create Address": addAddress,
+        	        Cancel: function() {
+        	        	$( "#addAddressForm" ).dialog( "close" );
+        	        }
+        	      },
+        	      close: function() {
+        	    	  $( "#addAddressForm" ).dialog( "close" );
+        	        //allFields.removeClass( "ui-state-error" );
+        	      }
+        	    });
+        	
+        	function addAddress() {
+        		
+        		$outbound = {};
 				$.each( $('#addForm :input'), function(index, value) {
 					if ( value.name ) {
 						$fieldName = value.name;
@@ -258,7 +228,7 @@
 				} else {
 					$rownum = $('#addForm').data('rownum')
 					var $tableData = [];
-	                $("#displayTable").find('tr').each(function (rowIndex, r) {
+	                $("#addressTable").find('tr').each(function (rowIndex, r) {
 	                    var cols = [];
 	                    $(this).find('th,td').each(function (colIndex, c) {
 	                        cols.push(c.textContent);
@@ -271,6 +241,7 @@
 	            	var $value = $tableData[$rownum][2];
 	            	$url = "address/" + $addressId ;
 				}
+				$url = "address/add";
 				
 				var jqxhr = $.ajax({
 					type: 'POST',
@@ -278,19 +249,12 @@
 					data: JSON.stringify($outbound),
 					success: function($data) {
 						if ( $data.responseHeader.responseCode == 'SUCCESS') {
-							if ( $url == "address/add" ) {
-								var count = $('#displayTable tr').length - 1;
-								addRow(count, $data.data.code);
-							} else {
-				            	var $rownum = $('#addForm').data('rownum');
-				                var $rowId = eval($rownum) + 1;
-				            	var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")"
-				            	var $rowTd = makeRow($data.data.code, $rownum);
-				            	$($rowFinder).html($rowTd);
-							}
-							doFunctionBinding();
+							
+								
+							dataTable.ajax.reload();
+							
 							clearAddForm();
-							$('#addFormDiv').bPopup().close();
+							$( "#addAddressForm" ).dialog( "close" );
 							if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
 								$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
 							}
@@ -307,9 +271,9 @@
 							if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
 								$("#addFormMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]);
 							}
-							$('#addFormDiv').bPopup().close();
+							$( "#addAddressForm" ).dialog( "close" );
 						} else {
-							$('#addFormDiv').bPopup().close();
+							$( "#addAddressForm" ).dialog( "close" );
 						}
 					},
 					statusCode: {
@@ -319,239 +283,216 @@
 					},
 					dataType: 'json'
 				});
-				$('#addFormDiv').bPopup().close();
-			});
-
-            $("#cancelDelete").click( function($event) {
-            	$event.preventDefault();
-            	$('#confirmDelete').bPopup().close();
-            });         
-
-            $("#doDelete").click(function($event) {
-            	$event.preventDefault();
-            	var $tableData = [];
-                $("#displayTable").find('tr').each(function (rowIndex, r) {
-                    var cols = [];
-                    $(this).find('th,td').each(function (colIndex, c) {
-                        cols.push(c.textContent);
-                    });
-                    $tableData.push(cols);
-                });
-
-            	var $rownum = $('#confirmDelete').data('rownum');
-            	var $addressId = $tableData[$rownum][0];
-
-            	$outbound = JSON.stringify({});
-            	$url = 'address/delete/' + $addressId;
-            	//$outbound = JSON.stringify({'tableName':$tableName, 'fieldName':$fieldName,'value':$value});
-            	var jqxhr = $.ajax({
-            	    type: 'delete',
-            	    url: $url,
-            	    data: $outbound,
-            	    success: function($data) {
-            	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
-						if ( $data.responseHeader.responseCode == 'SUCCESS') {
-							$rowfinder = "tr:eq(" + $rownum + ")"
-							$("#displayTable").find($rowfinder).remove();
-							$('#confirmDelete').bPopup().close();
-						}
-            	     },
-            	     statusCode: {
-            	    	403: function($data) {
-            	    		$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-            	    	} 
-            	     },
-            	     dataType: 'json'
-            	});
-            });
-
-            $('#addForm').find("input").on('focus',function(e) {
-            	$required = $(this).data('required');
-            	if ( $required == true ) {
-            		markValid(this);
-            	}
-            });
-            
-            $('#addForm').find("input").on('input',function(e) {
-            	$required = $(this).data('required');
-            	if ( $required == true ) {
-            		markValid(this);
-            	}
-            });
-            
-            $("#addForm select[name='tableName']").change(function () {
-				var $selectedTable = $('#addForm select[name="tableName"] option:selected').val();
-				getTableFieldList($selectedTable, $("#addForm select[name='fieldName']"));
-            });
-            
+				$( "#addAddressForm" ).dialog( "close" );
+        	}
+        	
             function clearAddForm() {
 				$.each( $('#addForm').find("input"), function(index, $inputField) {
 					$fieldName = $($inputField).attr('name');
 					if ( $($inputField).attr("type") == "text" ) {
 						$($inputField).val("");
-						markValid($inputField);
+						//markValid($inputField);
 					}
 				});
-				$('.err').html("");
+				
 				$('#addForm').data('rownum',null);
             }
             
-            function markValid($inputField) {
-            	$fieldName = $($inputField).attr('name');
-            	$fieldGetter = "input[name='" + $fieldName + "']";
-            	$fieldValue = $($fieldGetter).val();
-            	$valid = '#' + $($inputField).data('valid');
-	            var re = /.+/;	            	 
-            	if ( re.test($fieldValue) ) {
-            		$($valid).removeClass("fa-ban");
-            		$($valid).removeClass("inputIsInvalid");
-            		$($valid).addClass("fa-check-square-o");
-            		$($valid).addClass("inputIsValid");
-            	} else {
-            		$($valid).removeClass("fa-check-square-o");
-            		$($valid).removeClass("inputIsValid");
-            		$($valid).addClass("fa-ban");
-            		$($valid).addClass("inputIsInvalid");
-            	}
+            function init(){
+
+					$.each($('input'), function () {
+				        $(this).css("height","20px");
+				        $(this).css("max-height", "20px");
+				    });
+					$("#address select[name='state']").selectmenu({ width : '150px', maxHeight: '400 !important', style: 'dropdown'});
+					$("select[name='city']").addClass("ui-corner-all");
+					$("select[name='ip']").addClass("ui-corner-all");
+					$("#address select[name='country']").selectmenu({ width : '80px', maxHeight: '400 !important', style: 'dropdown'});
+				
+					var jqxhr1 = $.ajax({
+	    				type: 'GET',
+	    				url: 'options',
+	    				data: 'COUNTRY',
+	    				success: function($data) {
+	    					setCountry($data.data.country);
+	    					setStates($data.data.country);
+
+	    				},
+	    				statusCode: {
+	    					403: function($data) {
+	    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+	    					} 
+	    				},
+	    				dataType: 'json'
+	    			});
+					
+					
+					console.debug("inits");		
             }
-            
-            function getTableFieldList(tableName, $select, $selectedValue) {
-            	if ( tableName == null ) {
-            		$url = "tableFieldList"
-           			//select = $("#addForm select[name='tableName']");
-            	} else {
-            		$url = "tableFieldList/" + tableName;
-            		//select = $("#addForm select[name='fieldName']");
-            	}            	
-				var jqxhr = $.ajax({
-						type: 'GET',
-						url: $url,
-						data: {},
+				function setCountry($optionList,$selectedValue) {
+					var selectorName = "#address select[name='country']";
+					selectorName = "select[name='country']";
+					
+					var $select = $(selectorName);
+					$('option', $select).remove();
 
-						success: function($data) {
-						console.debug($data);
-						if ( $data.responseHeader.responseCode == 'SUCCESS') {
-							if($select.prop) {
-								var options = $select.prop('options');
-							} else {
-								var options = $select.attr('options');
-							}
-							$('option', $select).remove();
+					$select.append(new Option("",""));
+					$.each($optionList, function(index, val) {
+						console.log(val);
+					    $select.append(new Option(val.abbrev));
+					});
+					
+					if ( $selectedValue != null ) {
+						$select.val($selectedValue);
+					}
+					$select.selectmenu();
+				} 
+					
+				function setStates($optionList,$selectedValue) {
+					var selectorName = "#address select[name='state']";
+					selectorName = "select[name='state']";
+					
+					var $select = $(selectorName);
+					$('option', $select).remove();
 
-							options[options.length] = new Option("","");
-							$.each($data.data.nameList, function(index, value) {
-								options[options.length] = new Option(value, value);
+					$select.append(new Option("",""));
+					$.each($optionList, function(index, val) {
+						var group = $('<optgroup label="' + val.abbrev + '" />');
+							$.each(val.stateList, function(){
+								$('<option />').html(this.display).appendTo(group);
 							});
-			            	
-			            	$select.val($selectedValue);
-						} else {
-							$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
-						}
-    				},
-    				statusCode: {
-    					403: function($data) {
-    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-    					} 
-    				},
-    				dataType: 'json'
-    			});
-
-            }
+							group.appendTo($select);
+						});
+					
+					
+					if ( $selectedValue != null ) {
+						$select.val($selectedValue);
+					}
+					$select.selectmenu();
+				}
             
+        
             
         });
         </script>        
     </tiles:put>
     
+
     
     <tiles:put name="content" type="string">
     	<h1>Address Maintenance</h1>
     	
-    	<table id="displayTable">
-    		<tr>
-    			<th>Address Id</th>
+ 	<table id="addressTable" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Id</th>
     			<th>Name</th>
     			<th>Status</th>
     			<th>Address1</th>
     			<th>Address2</th>
     			<th>City</th>
     			<th>County</th>
+    			<th>Country</th>
     			<th>State</th>
     			<th>Zip</th>
- 			    <ansi:hasPermission permissionRequired="SYSADMIN">
-    				<ansi:hasWrite>
-    					<th>Action</th>
-    				</ansi:hasWrite>
-    			</ansi:hasPermission>
-    		</tr>
-    	</table>
-		<ansi:hasPermission permissionRequired="SYSADMIN">
+    			<th>Action</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th>Id</th>
+    			<th>Name</th>
+    			<th>Status</th>
+    			<th>Address1</th>
+    			<th>Address2</th>
+    			<th>City</th>
+    			<th>County</th>
+    			<th>Country</th>
+    			<th>State</th>
+    			<th>Zip</th>
+    			<th>Action</th>
+    			
+            </tr>
+        </tfoot>
+    </table>
+    <ansi:hasPermission permissionRequired="SYSADMIN">
 			<ansi:hasWrite>
     			<div class="addButtonDiv">
     				<input type="button" id="addButton" class="prettyWideButton" value="New" />
     			</div>
 			</ansi:hasWrite>
 		</ansi:hasPermission>
-    	
-    	<ansi:hasPermission permissionRequired="SYSADMIN">
-    		<ansi:hasWrite>
-		    	<div id="confirmDelete">
-		    		<span class="formLabel">Are You Sure You Want to Delete this Code?</span><br />
-		    		<table id="delData">
-		    			<tr>
-		    				<td><span class="formLabel">AddressId:</span></td>
-		    				<td id="delTable"></td>
-		    			</tr>
-		    		</table>
-		    		<input type="button" id="cancelDelete" value="No" />
-		    		<input type="button" id="doDelete" value="Yes" />
-		    	</div>
-		    	
-		    	<div id="addFormDiv">
-		    		<h2 id="addFormTitle"></h2>
-		    		<div id="addFormMsg" class="err"></div>
-		    		<form action="#" method="post" id="addForm">
-						<table>
-							<tr>
-								<td>Name:</td>
-								<td colspan="3"><input type="text" name="name" style="width:90%" /></td>
-							</tr>
-							<tr>
-								<td>Address:</td>
-								<td colspan="3"><input type="text" name="address1" style="width:90%" /></td>
-							</tr>
-							<tr>
-								<td>Address 2:</td>
-								<td colspan="3"><input type="text" name="address2" style="width:90%" /></td>
-							</tr>
-							<tr>
-								<td>City/State/Zip:</td>
-								<td><input type="text" name="city" style="width:90%" /></td>
-								<td><input type="text" name="state" style="width:90%" /></td>
-								<td><input type="text" name="zip" style="width:90%" /></td>
-							</tr>
-							<tr>
-								<td>County:</td>
-								<td><input type="text" name="county" style="width:90%" /></td>
-								<td>Status:</td>
-								<td><input type="text" name="status" style="width:90%" /></td>
-							</tr>
-							<tr>
-								<td>&nbsp;</td>
-								<td>&nbsp;</td>
-								<td colspan="2" style="text-align:center;">
-		    						<input type="button" class="prettyButton" value="Save" id="goUpdate" />
-		    						<input type="button" class="prettyButton" value="Cancel" id="cancelUpdate" />
-		    					</td>
-							</tr>
-						</table>
-		    		</form>
-		    	</div>
-		    	
-		    	
-	    	</ansi:hasWrite>
-    	</ansi:hasPermission>
     </tiles:put>
 
+		<div id="deleteErrorDialog" title="Delete Failed!" class="ui-widget" style="display:none;">
+		  <p>Address failed to delete. It may still be assigned to existing quotes.</p>
+		</div>
+
+		<div id="addAddressForm" title="Add New Address" class="ui-widget">
+		  <p class="validateTips">All form fields are required.</p>
+		 
+		  <form id="addForm">
+		   <table>
+			<tr>
+				<td><b>Name</b></td>
+				<td colspan="3"><input type="text" name="name" style="width:315px" /></td>
+			</tr>
+			<tr>
+				<td><b>Status</b></td>
+				<td colspan="3">
+					<select name="status" id="state" style="width:85px !important;max-width:85px !important;">
+						<option value="0">Bad</option>
+						<option value="1">Good</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:85px;">Address:</td>
+				<td colspan="3"><input type="text" name="address1" style="width:315px" /></td>
+			</tr>
+			<tr>
+				<td>Address 2:</td>
+				<td colspan="3"><input type="text" name="address2" style="width:315px" /></td>
+			</tr>
+			<tr>
+			<td colspan="4" style="padding:0; margin:0;">
+				<table style="width:415px;border-collapse: collapse;padding:0; margin:0;">
+				<tr>
+					<td>City/State/Zip:</td>
+					<td><input type="text" name="city" style="width:90px;" /></td>
+					<td><select name="state" id="state" style="width:85px !important;max-width:85px !important;"></select></td>
+					<td><input type="text" name="zip" style="width:47px !important" /></td>
+				</tr>
+				</table>
+			</td>
+			</tr>
+			<tr>
+				<td>County:</td>
+				<td><input type="text" name="county" style="width:90%" /></td>
+				<td colspan="2">
+					<table style="width:180px">
+						<tr>
+							<td>Country:</td>
+							<td align="right"><select name="country" id="country"></select></td>
+						</tr>
+					</table>
+				
+				
+				</td>
+				
+			</tr>
+			<tr>
+				<td>Job Contact:</td>
+				<td style="width:140px;"><input type="text" name="jobContactName" style="width:125px" placeholder="<name>"/></td>
+				<td colspan="2"><input type="text" name="jobContactInfo" style="width:170px" placeholder="<phone,mobile,email>"/></td>
+			</tr>
+			<tr>
+				<td>Site Contact:</td>
+				<td style="width:140px;"><input type="text" name="siteContactName" style="width:125px" placeholder="<name>"/></td>
+				<td colspan="2"><input type="text" name="siteContactInfo" style="width:170px" placeholder="<phone,mobile,email>"/></td>
+			</tr>
+		</table>
+		  </form>
+		</div>
 </tiles:insert>
 

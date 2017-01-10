@@ -106,7 +106,7 @@ public class TestDivisions {
 			int idx = url.indexOf("/division/");
 			String myString = url.substring(idx + "/division/".length());
 			
-			divisionServlet.doDeleteWork(conn, myString);
+			divisionServlet.doDeleteWork(conn, Integer.valueOf(myString));
 			System.out.println("*******");
 		}
 		} finally {

@@ -56,41 +56,55 @@
         </style>
         
         <script type="text/javascript">        
-        $(function() {        
-			var jqxhr = $.ajax({
-				type: 'GET',
-				url: 'code/list',
-				data: {},
-				success: function($data) {
-					$.each($data.data.codeList, function(index, value) {
-						addRow(index, value);
-					});
-					doFunctionBinding();
-					$("#filterList").html("");
-					var $newHTML = "";
-					console.debug("***** " + window.location.href + " *****");
-					$.each($data.data.filterRecordList, function(index, value) {
-						console.debug(value.tableName)
-						$newHTML = $newHTML + '<li><a href="code/' + value.tableName + '">' + value.tableName + '</a>'; 
-						$newHTML = $newHTML + '<ul class="sub_menu">';
-						
-						$.each(value.fieldNameList, function(index, fieldName) {
-							$newHTML = $newHTML + '<li><a href="code/' + value.tableName + '/' + fieldName + '">' + fieldName + '</a></li>';
+        $(function() {     
+        	
+			function getCodes($filter) {
+				var $url = 'code/' + $filter;
+				var jqxhr = $.ajax({
+					type: 'GET',
+					url: $url,
+					data: {},
+					success: function($data) {
+						$.each($data.data.codeList, function(index, value) {
+							addRow(index, value);
 						});
-						$newHTML = $newHTML + '</ul></li>';
-					});
-					$("#filterList").html($newHTML);
-				},
-				statusCode: {
-					403: function($data) {
-						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-					} 
-				},
-				dataType: 'json'
-			});
-			
+						doFunctionBinding();
+						$("#filterList").html("");
+						var $newHTML = "";
+						
+						$.each($data.data.filterRecordList, function(index, value) {
+							
+							$newHTML = $newHTML + '<li><a class="myFilter" href="#" data-filter="' + value.tableName + '">' + value.tableName + '</a>'; 
+							$newHTML = $newHTML + '<ul class="sub_menu">';
+							
+							$.each(value.fieldNameList, function(index, fieldName) {
+								$newHTML = $newHTML + '<li><a class="myFilter" href="#" data-filter="' + value.tableName + '/' + fieldName + '">' + fieldName + '</a></li>';
+							});
+							$newHTML = $newHTML + '</ul></li>';
+						});
+						$("#filterList").html($newHTML);
+						$('.myFilter').bind("click", function($clickevent) {						
+							doFilter($clickevent);
+						});
+					},
+					statusCode: {
+						403: function($data) {
+							$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+						} 
+					},
+					dataType: 'json'
+				});
+			}
+			getCodes("list");
 			getTableFieldList(null, $("#addForm select[name='tableName']"));
 			
+			function doFilter($event) {
+				$event.preventDefault();
+				var $filtervalue = $event.currentTarget.attributes['data-filter'].value;				
+				$("#displayTable").find("tr:gt(0)").remove();
+				getCodes($filtervalue);
+			}
+        
 			function addRow(index, $code) {	
 				var $rownum = index + 1;
        			//$('#displayTable tr:last').before(row);
@@ -449,8 +463,7 @@
 						url: $url,
 						data: {},
 
-						success: function($data) {
-						console.debug($data);
+						success: function($data) {						
 						if ( $data.responseHeader.responseCode == 'SUCCESS') {
 							if($select.prop) {
 								var options = $select.prop('options');
@@ -490,7 +503,10 @@
 		<div style="float:right; width:30%;">
     		<div  style="float:right; width:30%;">
     			<ul class="dropdown">
-					<li>
+    				<li><a href="#" class="myFilter" data-filter="list"><i class="fa fa-refresh fa-lg" aria-hidden="true"></i></a></li>
+   				</ul>
+    			<ul class="dropdown">
+					<li>											
 						<a href="#"><i class="fa fa-filter fa-lg" aria-hidden="true"></i></a>
 			        	<ul class="sub_menu" id="filterList">
         			 		<li><a href="#">Message is</a></li>
@@ -512,20 +528,24 @@
 	    	</div>
     	</div>
     	<table id="displayTable">
-    		<tr>
-    			<th class="tablecol">Table<i class="fa fa-eye-slash columnhider" data-col="tablecol" style="float:right;" aria-hidden="true"></i></th>
-    			<th class="fieldcol">Field<i class="fa fa-eye-slash columnhider" data-col="fieldcol" style="float:right;" aria-hidden="true"></i></th>
-    			<th class="valuecol">Value<i class="fa fa-eye-slash columnhider" data-col="valuecol" style="float:right;" aria-hidden="true"></i></th>
-    			<th class="displaycol">Display<i class="fa fa-eye-slash columnhider" data-col="displaycol" style="float:right;" aria-hidden="true"></i></th>
-    			<th class="seqcol">Seq<i class="fa fa-eye-slash columnhider" data-col="seqcol" style="float:right;" aria-hidden="true"></i></th>
-    			<th class="desccol">Description<i class="fa fa-eye-slash columnhider" data-col="desccol" style="float:right;" aria-hidden="true"></i></th>
-    			<th class="statuscol">Status<i class="fa fa-eye-slash columnhider" data-col="statuscol" style="float:right;" aria-hidden="true"></i></th>
- 			    <ansi:hasPermission permissionRequired="SYSADMIN">
-    				<ansi:hasWrite>
-    					<th class="actioncol">Action<i class="fa fa-eye-slash columnhider" data-col="actioncol" style="float:right;" aria-hidden="true"></i></th>
-    				</ansi:hasWrite>
-    			</ansi:hasPermission>
-    		</tr>
+    		<thead>
+	    		<tr>
+	    			<th class="tablecol">Table<i class="fa fa-eye-slash columnhider" data-col="tablecol" style="float:right;" aria-hidden="true"></i></th>
+	    			<th class="fieldcol">Field<i class="fa fa-eye-slash columnhider" data-col="fieldcol" style="float:right;" aria-hidden="true"></i></th>
+	    			<th class="valuecol">Value<i class="fa fa-eye-slash columnhider" data-col="valuecol" style="float:right;" aria-hidden="true"></i></th>
+	    			<th class="displaycol">Display<i class="fa fa-eye-slash columnhider" data-col="displaycol" style="float:right;" aria-hidden="true"></i></th>
+	    			<th class="seqcol">Seq<i class="fa fa-eye-slash columnhider" data-col="seqcol" style="float:right;" aria-hidden="true"></i></th>
+	    			<th class="desccol">Description<i class="fa fa-eye-slash columnhider" data-col="desccol" style="float:right;" aria-hidden="true"></i></th>
+	    			<th class="statuscol">Status<i class="fa fa-eye-slash columnhider" data-col="statuscol" style="float:right;" aria-hidden="true"></i></th>
+	 			    <ansi:hasPermission permissionRequired="SYSADMIN">
+	    				<ansi:hasWrite>
+	    					<th class="actioncol">Action<i class="fa fa-eye-slash columnhider" data-col="actioncol" style="float:right;" aria-hidden="true"></i></th>
+	    				</ansi:hasWrite>
+	    			</ansi:hasPermission>
+	    		</tr>
+    		</thead>
+    		<tbody>
+    		</tbody>
     	</table>
 		<ansi:hasPermission permissionRequired="SYSADMIN">
 			<ansi:hasWrite>
