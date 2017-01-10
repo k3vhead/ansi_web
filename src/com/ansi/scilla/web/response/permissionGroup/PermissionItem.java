@@ -7,6 +7,12 @@ import org.apache.commons.beanutils.BeanUtils;
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.PermissionGroupLevel;
 
+/**
+ * name and permission level response
+ * @author jwlew
+ *
+ */
+
 public class PermissionItem extends ApplicationObject implements Comparable<PermissionItem> {
 
 	private static final long serialVersionUID = 1L;
