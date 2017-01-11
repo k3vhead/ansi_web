@@ -64,7 +64,6 @@
 			
 			function addRow(index, $division) {	
 				var $rownum = index + 1;
-       			//$('#displayTable tr:last').before(row);
        			rowTd = makeRow($division, $rownum);
        			row = '<tr class="dataRow">' + rowTd + "</tr>";
        			$('#displayTable').append(row);
@@ -108,7 +107,6 @@
 				$clickevent.preventDefault();
 				clearAddForm();
 				var $rownum = $clickevent.currentTarget.attributes['data-row'].value;
-				console.debug("Doing update " + $rownum);
 				$("#addFormTitle").html("Update Division");
 				$('#addForm').data('rownum',$rownum);
 				
@@ -116,13 +114,19 @@
             	var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")"
             	var $row = $($rowFinder)  
             	var tdList = $row.children("td");
-            	var $tableName = $row.children("td")[0].textContent;
-            	var $fieldName = $row.children("td")[1].textContent;
-            	var $value = $row.children("td")[2].textContent;
+            	var $divisionId = $row.children("td")[0].textContent;
+            	var $defaultDirectLaborPct = $row.children("td")[1].textContent;
+            	var $divisionNbr = $row.children("td")[2].textContent;
+            	var $divisionCode = $row.children("td")[3].textContent;
+            	var $description = $row.children("td")[4].textContent;
+            	var $status = $row.children("td")[5].textContent;
 
-            	$("#addForm input[name='tableName']").val($tableName);
-            	$("#addForm input[name='fieldName']").val($fieldName);
-            	$("#addForm input[name='value']").val($value);
+            	$("#addForm input[name='divisionId']").val($divisionId);
+            	$("#addForm input[name='defaultDirectLaborPct']").val($defaultDirectLaborPct);
+            	$("#addForm input[name='divisionNbr']").val($divisionNbr);
+            	$("#addForm input[name='divisionCode']").val($divisionCode);
+            	$("#addForm input[name='description']").val($description);
+            	$("#addForm input[name='status']").val($status);
 				
             	
 				$.each( $('#addForm :input'), function(index, value) {
@@ -195,7 +199,7 @@
 	                var $tableName = $tableData[$rownum][0];
 	            	var $fieldName = $tableData[$rownum][1];
 	            	var $value = $tableData[$rownum][2];
-	            	$url = "division/" + $Name + "/" + $Name + "/" + $Name;
+	            	$url = "division/" + $name + "/" + $name + "/" + $name;
 				}
 				
 				console.debug(JSON.stringify($outbound))
@@ -261,9 +265,12 @@
                 });
 
                 var $rownum = $('#confirmDelete').data('rownum');
-            	var $tableName = $tableData[$rownum][0];
-            	var $fieldName = $tableData[$rownum][1];
-            	var $value = $tableData[$rownum][2];
+            	var $divisionId = $tableData[$rownum][0];
+            	var $defaultDirectLaborPct = $tableData[$rownum][1];
+            	var $divisionNbr = $tableData[$rownum][2];
+            	var $divisionCode = $tableData[$rownum][3];
+            	var $description = $tableData[$rownum][4];
+            	var $status = $tableData[$rownum][5];
             	$outbound = JSON.stringify({'tableName':$tableName, 'fieldName':$fieldName,'value':$value});
             	var jqxhr = $.ajax({
             	    type: 'delete',
@@ -330,62 +337,7 @@
             		$($valid).addClass("inputIsInvalid");
             	}
             }
-            $("#testadd").click(function($event) {
-            	var $outbound = JSON.stringify({"parentId":null,"defaultDirectLaborPct":0.03,"divisionNbr":2,"divisionCode":"LW02","description":"Division Desc","status":1});
-            	var jqxhr = $.ajax({
-            	    type: 'post',
-            	    url: 'division/add',
-            	    data: $outbound,
-            	    success: function($data) {
-            	    	console.debug($data);
-            	     },
-            	     statusCode: {
-            	    	403: function($data) {
-            	    		console.debug("403");            	    		
-            	    		console.debug($data);
-            	    	} 
-            	     },
-            	     dataType: 'json'
-            	});
-            });
-            
-            $("#testupd").click(function($event) {
-            	var $outbound = JSON.stringify({"divisionId":34,"defaultDirectLaborPct":0.04,"divisionNbr":1,"divisionCode":"LW01","description":"Division Desc updt","status":1});
-            	var jqxhr = $.ajax({
-            	    type: 'post',
-            	    url: 'division/34',
-            	    data: $outbound,
-            	    success: function($data) {
-            	    	console.debug($data);
-            	     },
-            	     statusCode: {
-            	    	403: function($data) {
-            	    		console.debug('403');
-                	    	console.debug($data);
-            	    	} 
-            	     },
-            	     dataType: 'json'
-            	});
-            });
-            
-            $("#testdel").click(function($event) {            	
-            	var jqxhr = $.ajax({
-            	    type: 'delete',
-            	    url: 'division/34',
-            	    data: null,
-            	    success: function($data) {
-            	    	console.debug($data);
-            	     },
-            	     statusCode: {
-            	    	403: function($data) {
-            	    		console.debug('403');
-                	    	console.debug($data);
-            	    	} 
-            	     },
-            	     dataType: 'json'
-            	});
-            });
-
+ 
         });
         </script>        
     </tiles:put>
@@ -409,9 +361,16 @@
     			</ansi:hasPermission>
     		</tr>
     	</table>
+    	<ansi:hasPermission permissionRequired="SYSADMIN">
+    		<ansi:hasWrite>
     	<div class="addButtonDiv">
     		<input type="button" id="addButton" class="prettyWideButton" value="New" />
+    			
+    		
+    		
     	</div>
+    	</ansi:hasWrite>
+    		</ansi:hasPermission>
     	
     	<ansi:hasPermission permissionRequired="SYSADMIN">
     		<ansi:hasWrite>
@@ -426,17 +385,9 @@
 		    		<div id="addFormMsg" class="err"></div>
 		    		<form action="#" method="post" id="addForm">
 		    			<table>
-							<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Division ID:</span></td>
-		    					<td>
-		    						<input type="text" name="tableName" data-required="true" data-valid="validTable" />
-		    						<i id="validTable" class="fa" aria-hidden="true"></i>
-		    					</td>
-		    					<td><span class="err" id="tableNameErr"></span></td>
-		    				</tr>
 		    					<td><span class="required">*</span><span class="formLabel">Default Direct Labor Percentage:</span></td>
 		    					<td>
-		    						<input type="text" name="tableName" data-required="true" data-valid="validTable" />
+		    						<input type="text" name="defaultDirectLaborPct" data-required="true" data-valid="validTable" />
 		    						<i id="validTable" class="fa" aria-hidden="true"></i>
 		    					</td>
 		    					<td><span class="err" id="tableNameErr"></span></td>
@@ -444,7 +395,7 @@
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Division Number:</span></td>
 		    					<td>
-		    						<input type="text" name="tableName" data-required="true" data-valid="validTable" />
+		    						<input type="text" name="divisionNbr" data-required="true" data-valid="validTable" />
 		    						<i id="validTable" class="fa" aria-hidden="true"></i>
 		    					</td>
 		    					<td><span class="err" id="tableNameErr"></span></td>
@@ -452,7 +403,7 @@
 							<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Division Code:</span></td>
 		    					<td>
-		    						<input type="text" name="tableName" data-required="true" data-valid="validTable" />
+		    						<input type="text" name="divisionCode" data-required="true" data-valid="validTable" />
 		    						<i id="validTable" class="fa" aria-hidden="true"></i>
 		    					</td>
 		    					<td><span class="err" id="tableNameErr"></span></td>
@@ -460,7 +411,7 @@
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Description:</span></td>
 		    					<td>
-		    						<input type="text" name="tableName" data-required="true" data-valid="validTable" />
+		    						<input type="text" name="description" data-required="true" data-valid="validTable" />
 		    						<i id="validTable" class="fa" aria-hidden="true"></i>
 		    					</td>
 		    					<td><span class="err" id="tableNameErr"></span></td>
