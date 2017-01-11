@@ -196,10 +196,13 @@
 	                    $tableData.push(cols);
 	                });
 
-	                var $tableName = $tableData[$rownum][0];
-	            	var $fieldName = $tableData[$rownum][1];
-	            	var $value = $tableData[$rownum][2];
-	            	$url = "division/" + $name + "/" + $name + "/" + $name;
+	                var $divisionId = $tableData[$rownum][0];
+	            	var $defaultDirectLaborPct = $tableData[$rownum][1];
+	            	var $divisionNbr = $tableData[$rownum][2];
+	            	var $divisionCode = $tableData[$rownum][3]
+	            	var $description = $tableData[$rownum][4]
+	            	var $status = $tableData[$rownum][5]
+	            	$url = "division/" + $defaultDirectLaborPct + "/" + $divisionNbr + "/" + $divisionCode + "/" + $description + "/" + $status;
 				}
 				
 				console.debug(JSON.stringify($outbound))
@@ -271,7 +274,7 @@
             	var $divisionCode = $tableData[$rownum][3];
             	var $description = $tableData[$rownum][4];
             	var $status = $tableData[$rownum][5];
-            	$outbound = JSON.stringify({'tableName':$tableName, 'fieldName':$fieldName,'value':$value});
+            	$outbound = JSON.stringify({'divisionId':$divisionId, 'defaultDirectLaborPct':$defaultDirectLaborPct,'divisionNbr':$divisionNbr, 'divisionCode':$divisionCode, 'description':$description, 'status':$status});
             	var jqxhr = $.ajax({
             	    type: 'delete',
             	    url: 'division/delete',
@@ -348,10 +351,10 @@
     	
     	<table id="displayTable">
     		<tr>
-    			<th>Division ID</th>
-    			<th>Default Direct Labor Percentage</th>
-				<th>Division Number</th>
-    			<th>Division Code</th>
+    			<th>Div ID</th>
+    			<th>Default<br>DL %</br></th>
+				<th>Div #</th>
+    			<th>Div Code</th>
     			<th>Description</th>
     			<th>Status</th>
  			    <ansi:hasPermission permissionRequired="SYSADMIN">
@@ -390,7 +393,7 @@
 		    						<input type="text" name="defaultDirectLaborPct" data-required="true" data-valid="validTable" />
 		    						<i id="validTable" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="tableNameErr"></span></td>
+		    					<td><span class="err" id="defaultDirectLaborPctErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Division Number:</span></td>
@@ -398,7 +401,7 @@
 		    						<input type="text" name="divisionNbr" data-required="true" data-valid="validTable" />
 		    						<i id="validTable" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="tableNameErr"></span></td>
+		    					<td><span class="err" id="divisionNbrErr"></span></td>
 		    				</tr>
 							<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Division Code:</span></td>
@@ -406,7 +409,7 @@
 		    						<input type="text" name="divisionCode" data-required="true" data-valid="validTable" />
 		    						<i id="validTable" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="tableNameErr"></span></td>
+		    					<td><span class="err" id="divisionCodeErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Description:</span></td>
@@ -414,7 +417,7 @@
 		    						<input type="text" name="description" data-required="true" data-valid="validTable" />
 		    						<i id="validTable" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="tableNameErr"></span></td>
+		    					<td><span class="err" id="descriptionErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Status:</span></td>
