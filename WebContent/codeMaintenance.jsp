@@ -138,7 +138,7 @@
        			if ( $code.description == null ) {
        				row = row + '<td class="desccol"></td>';
        			} else {
-       				row = row + '<td class="deccol">' + $code.description + '</td>';
+       				row = row + '<td class="desccol">' + $code.description + '</td>';
        			}       			
        			if ( $code.status == 1 ) {
        				$iconcolor="green";
@@ -499,9 +499,11 @@
     
     <tiles:put name="content" type="string">
     	<h1>Code Maintenance</h1>
-
-		<div style="float:right; width:30%;">
-    		<div  style="float:right; width:30%;">
+    	<div style="clear:both; text-align:right; width:90%;">
+    		<div style="float:right; width:100px;">
+		    	<ul id="showhidden" class="dropdown">
+		    		<li><a href="#"><i class="fa fa-window-restore fa-lg" aria-hidden="true"></i></a></li>
+		    	</ul>
     			<ul class="dropdown">
     				<li><a href="#" class="myFilter" data-filter="list"><i class="fa fa-refresh fa-lg" aria-hidden="true"></i></a></li>
    				</ul>
@@ -520,13 +522,11 @@
 							<li><html:link action="transactionhistoryView">Transaction History View</html:link></li>
         				</ul>
         			</li>
-       			</ul>
-	    	</div>
+       			</ul>    
+      		</div>
+       		<div style="width:100%; height:1px; clear:both;">&nbsp;</div>	
+       	</div>
 		    	
-	    	<div id="showhidden" class="green">
-	    		<i class="fa fa-window-restore fa-lg" aria-hidden="true"></i>
-	    	</div>
-    	</div>
     	<table id="displayTable">
     		<thead>
 	    		<tr>
