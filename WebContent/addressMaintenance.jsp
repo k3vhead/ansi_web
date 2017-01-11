@@ -54,6 +54,140 @@
         
         <script type="text/javascript">        
         $(function() {        
+        	var dataTable = null;
+        	
+        	function createData(){
+        	 	var jqxhr1 = $.ajax({
+    				type: 'GET',
+    				url: 'address/list',
+    				data: {},
+    				dataType: 'json',
+    				success: function($data) {
+    				var data = new Array();
+    					 
+    					 $.each($data, function(index, val) {
+    						 $.each(val.codeList, function(index, val) {
+    							 
+    							 var addressId = (val.addressId).toString();
+    							 var name = val.name;
+    							 var status = val.status;
+    							 var address1 = val.address1;
+    							 var address2 = val.address2;
+    							 var city = val.city;
+    							 var county = val.county;
+    							 var country = val.country;
+    							 var state = val.state;
+    							 var zip = val.zip;
+    							 
+    							if(addressId == null) 	{	addressId = "N/A";	}	
+    							if(name == null) 		{	name = "N/A";		}	
+    							if(status == null) 		{	status = "N/A";		}	
+    							if(address1 == null) 	{	address1 = "N/A";	}	
+    							if(address2 == null) 	{	address2 = "N/A";	}	
+    							if(city == null) 		{	city = "N/A";		}	
+    							if(county == null) 		{	county = "N/A";		}	
+    							if(country == null) 	{	country = "N/A";	}	
+    							if(state == null) 		{	state = "N/A";		}	
+    							if(zip == null) 		{	zip = "N/A";		}	
+    						
+    							 
+    						 		data.push([addressId,name,status,address1,address2,city,county,country,state,zip]);
+    					 			//console.log(row);
+    					 			
+    						 });
+    					 	//resultTable.rows.add(row).draw();
+    					 });
+    					 console.log(data);
+    					 //resultTable.draw();
+    	                 //   resultTable.rows.add($data.codeList).draw();
+    	                 //   dataSet = $data.codeList;
+    					createTable(data);
+    				},
+    				statusCode: {
+    					403: function($data) {
+    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+    					} 
+    				},
+    				dataType: 'json'
+    			});
+
+        	}
+        	
+        	function createTable(data){
+        		var dataTable = $('#addressTable').DataTable( {
+			        data: data,
+			        "processing": true,
+			        columns: [
+			            { title: "Id", width: "30px" },
+			            { title: "Name" },
+			            { title: "Status" },
+			            { title: "Address 1" },
+			            { title: "Address 2" },
+			            { title: "City" },
+			            { title: "County" },
+			            { title: "Country" },
+			            { title: "State" },
+			            { title: "Zip" },
+			            {
+			                mRender: function (data, type, row) {
+			                    //return '<a class="table-edit" data-id="' + row[0] + '">EDIT</a>'
+			                     //return "<button id='edit"+ row[0] + "' class='ui-button ui-widget ui-corner-all ui-button-icon-only' title='Edit'>"
+			                     return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' id='edit"+ row[0] + "'class='ui-icon ui-icon-pencil'></a>|<a href='#' id='delete"+ row[0] + "'class='ui-icon ui-icon-trash'></a></ansi:hasWrite></ansi:hasPermission>"
+			                }
+			            
+			            }]
+			    } );
+				dataTable.rows().every( function () {
+			        var that = this;
+			        console.log(this);
+			 		$('#edit'+that.data()[0]).click(function(event){ 
+			 			//console.log(event.target.id);
+			            console.log("Button "+event.target.id+" clicked!");
+			        });
+			 		$('#delete'+that.data()[0]).click(function(event){ 
+			 			//console.log(event.target.id);
+			            console.log("Button "+event.target.id+" clicked!");
+
+			           var $addressId = event.target.id.replace('delete','');
+			           dataTable.row( this ).remove();
+			           dataTable.draw();
+		            	$outbound = JSON.stringify({});
+		            	$url = 'address/' + $addressId;
+		            	//$outbound = JSON.stringify({'tableName':$tableName, 'fieldName':$fieldName,'value':$value});
+		            	var jqxhr = $.ajax({
+		            	    type: 'delete',
+		            	    url: $url,
+		            	    data: $outbound,
+		            	    success: function($data) {
+		            	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
+								if ( $data.responseHeader.responseCode == 'SUCCESS') {
+									
+									dataTable.draw();
+								}
+		            	     },
+		            	     statusCode: {
+		            	    	403: function($data) {
+		            	    		$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+		            	    	},
+		            	    	500: function($data) {
+		            	    		 $( "#deleteErrorDialog" ).dialog({
+		            	    		      modal: true,
+		            	    		      buttons: {
+		            	    		        Ok: function() {
+		            	    		          $( this ).dialog( "close" );
+		            	    		        }
+		            	    		      }
+		            	    		    });
+		            	    	} 
+		            	     },
+		            	     dataType: 'json'
+		            	});
+			 		});
+				});
+				dataTable.draw();
+        	}
+        	
+        	
         	// var resultTable = $('#addressTable').DataTable();
         	
         	$("#addButton").button().on( "click", function() {
@@ -64,133 +198,8 @@
 		    //    var title = $(this).text();
 		    //    $(this).html( '<input type="text" style="width:100%" placeholder="<'+title+'>" />' );
 		    //} );
-        	var jqxhr1 = $.ajax({
-				type: 'GET',
-				url: 'address/list',
-				data: {},
-				dataType: 'json',
-				success: function($data) {
-				var data = new Array();
-					 
-					 $.each($data, function(index, val) {
-						 $.each(val.codeList, function(index, val) {
-							 
-							 var addressId = (val.addressId).toString();;
-							 var name = val.name;
-							 var status = val.status;
-							 var address1 = val.address1;
-							 var address2 = val.address2;
-							 var city = val.city;
-							 var county = val.county;
-							 var country = val.country;
-							 var state = val.state;
-							 var zip = val.zip;
-							 
-							if(addressId == null) 	{	addressId = "N/A";	}	
-							if(name == null) 		{	name = "N/A";		}	
-							if(status == null) 		{	status = "N/A";		}	
-							if(address1 == null) 	{	address1 = "N/A";	}	
-							if(address2 == null) 	{	address2 = "N/A";	}	
-							if(city == null) 		{	city = "N/A";		}	
-							if(county == null) 		{	county = "N/A";		}	
-							if(country == null) 	{	country = "N/A";	}	
-							if(state == null) 		{	state = "N/A";		}	
-							if(zip == null) 		{	zip = "N/A";		}	
-						
-							 
-						 		data.push([addressId,name,status,address1,address2,city,county,country,state,zip]);
-					 			//console.log(row);
-					 			if(addressId != 2){
-					 			//	resultTable.rows.add(row).draw(false);
-					 			}
-						 });
-					 	//resultTable.rows.add(row).draw();
-					 });
-					 console.log(data);
-					 //resultTable.draw();
-	                 //   resultTable.rows.add($data.codeList).draw();
-	                 //   dataSet = $data.codeList;
-					var dataTable = $('#addressTable').DataTable( {
-					        data: data,
-					        "processing": true,
-					        columns: [
-					            { title: "Id", width: "30px" },
-					            { title: "Name" },
-					            { title: "Status" },
-					            { title: "Address 1" },
-					            { title: "Address 2" },
-					            { title: "City" },
-					            { title: "County" },
-					            { title: "Country" },
-					            { title: "State" },
-					            { title: "Zip" },
-					            {
-					                mRender: function (data, type, row) {
-					                    //return '<a class="table-edit" data-id="' + row[0] + '">EDIT</a>'
-					                     //return "<button id='edit"+ row[0] + "' class='ui-button ui-widget ui-corner-all ui-button-icon-only' title='Edit'>"
-					                     return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' id='edit"+ row[0] + "'class='ui-icon ui-icon-pencil'></a>|<a href='#' id='delete"+ row[0] + "'class='ui-icon ui-icon-trash'></a></ansi:hasWrite></ansi:hasPermission>"
-					                }
-					            
-					            }]
-					    } );
-					dataTable.rows().every( function () {
-					        var that = this;
-					        console.log(this);
-					 		$('#edit'+that.data()[0]).click(function(event){ 
-					 			//console.log(event.target.id);
-					            console.log("Button "+event.target.id+" clicked!");
-					        });
-					 		$('#delete'+that.data()[0]).click(function(event){ 
-					 			//console.log(event.target.id);
-					            console.log("Button "+event.target.id+" clicked!");
-
-					           var $addressId = event.target.id.replace('delete','');
-
-				            	$outbound = JSON.stringify({});
-				            	$url = 'address/delete/' + $addressId;
-				            	//$outbound = JSON.stringify({'tableName':$tableName, 'fieldName':$fieldName,'value':$value});
-				            	var jqxhr = $.ajax({
-				            	    type: 'delete',
-				            	    url: $url,
-				            	    data: $outbound,
-				            	    success: function($data) {
-				            	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
-										if ( $data.responseHeader.responseCode == 'SUCCESS') {
-											dataTable.ajax.reload();
-										}
-				            	     },
-				            	     statusCode: {
-				            	    	403: function($data) {
-				            	    		$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-				            	    	},
-				            	    	500: function($data) {
-				            	    		 $( "#deleteErrorDialog" ).dialog({
-				            	    		      modal: true,
-				            	    		      buttons: {
-				            	    		        Ok: function() {
-				            	    		          $( this ).dialog( "close" );
-				            	    		        }
-				            	    		      }
-				            	    		    });
-				            	    	} 
-				            	     },
-				            	     dataType: 'json'
-				            	});
-					        });
-					        
-					    } );
-	              
-					
-			},
-			statusCode: {
-				403: function($data) {
-					$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-				} 
-			},
-			dataType: 'json'
-		});
-        	
-        	
+       		createData();
+			
         	$( "#addAddressForm" ).dialog({
         	      autoOpen: false,
         	      height: 450,
@@ -209,56 +218,49 @@
         	    });
         	
         	function addAddress() {
-        		
         		$outbound = {};
-				$.each( $('#addForm :input'), function(index, value) {
-					if ( value.name ) {
-						$fieldName = value.name;
-						$id = "#addForm input[name='" + $fieldName + "']";
-						$val = $($id).val();
-						$outbound[$fieldName] = $val;
-					}
-				});
-			
-				$outbound['seq'] = $("#addForm select[name='seq'] option:selected").val();
-				$outbound['status'] = $("#addForm select[name='status'] option:selected").val();
-
-				if ( $('#addForm').data('rownum') == null ) {
-					$url = "address/add";
-				} else {
-					$rownum = $('#addForm').data('rownum')
-					var $tableData = [];
-	                $("#addressTable").find('tr').each(function (rowIndex, r) {
-	                    var cols = [];
-	                    $(this).find('th,td').each(function (colIndex, c) {
-	                        cols.push(c.textContent);
-	                    });
-	                    $tableData.push(cols);
-	                });
-
-	            	var $tableName = $tableData[$rownum][0];
-	            	var $fieldName = $tableData[$rownum][1];
-	            	var $value = $tableData[$rownum][2];
-	            	$url = "address/" + $addressId ;
-				}
+        		$outbound["name"]		=	$("#name").val();
+        		$outbound["status"]		=	$("#status option:selected").val();
+        		$outbound["address1"]	=	$("#address1").val();
+        		$outbound["address2"]	=	$("#address2").val();
+        		$outbound["city"]		=	$("#city").val();
+        		$outbound["county"]		=	$("#county").val();
+        		$outbound["countryCode"]	=	$("#country option:selected").val();
+        		$outbound["state"]		=	$("#state option:selected").val();
+        		$outbound["zip"]		=	$("#zip").val();
+        		$outbound2 = {};
+        		$outbound2["Name"]		=	$("#name").val();
+        		$outbound2["Status"]		=	$("#status option:selected").val();
+        		$outbound2["Address 1"]	=	$("#address1").val();
+        		$outbound2["Address 2"]	=	$("#address2").val();
+        		$outbound2["City"]		=	$("#city").val();
+        		$outbound2["County"]		=	$("#county").val();
+        		$outbound2["Country"]	=	$("#country option:selected").val();
+        		$outbound2["State"]		=	$("#state option:selected").val();
+        		$outbound2["Zip"]		=	$("#zip").val();
+        		
+        		
 				$url = "address/add";
-				
+				console.log($outbound);
 				var jqxhr = $.ajax({
 					type: 'POST',
 					url: $url,
 					data: JSON.stringify($outbound),
 					success: function($data) {
 						if ( $data.responseHeader.responseCode == 'SUCCESS') {
-							
+							//alert("success");
+							console.log($data);
+							//createData();
+							$('#addressTable').row.add({
 								
-							dataTable.ajax.reload();
-							
+							});
 							clearAddForm();
 							$( "#addAddressForm" ).dialog( "close" );
 							if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
 								$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
 							}
 						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+							//alert("success fail");
 							$.each($data.data.webMessages, function(key, messageList) {
 								var identifier = "#" + key + "Err";
 								msgHtml = "<ul>";
@@ -273,8 +275,14 @@
 							}
 							$( "#addAddressForm" ).dialog( "close" );
 						} else {
-							$( "#addAddressForm" ).dialog( "close" );
+							//alert("success other");
 						}
+					},
+					error: function($data) {
+						
+						alert("fail");
+						console.log($data);
+							
 					},
 					statusCode: {
 						403: function($data) {
@@ -286,16 +294,18 @@
 				$( "#addAddressForm" ).dialog( "close" );
         	}
         	
+        	
+        	
             function clearAddForm() {
-				$.each( $('#addForm').find("input"), function(index, $inputField) {
-					$fieldName = $($inputField).attr('name');
-					if ( $($inputField).attr("type") == "text" ) {
-						$($inputField).val("");
-						//markValid($inputField);
-					}
-				});
-				
-				$('#addForm').data('rownum',null);
+	        	$("#name").val("");
+	        	$("#status option[value='']").attr('selected', true);
+	        	$("#address1").val("");
+	        	$("#address2").val("");
+	        	$("#city").val("");
+	        	$("#county").val("");
+	        	$("#country option[value='']").attr('selected', true);
+	        	$("#state option[value='']").attr('selected', true);
+	        	$("#zip").val("");
             }
             
             function init(){
@@ -359,7 +369,7 @@
 					$.each($optionList, function(index, val) {
 						var group = $('<optgroup label="' + val.abbrev + '" />');
 							$.each(val.stateList, function(){
-								$('<option />').html(this.display).appendTo(group);
+								$(group).append("<option value='"+this.abbreviation+"'>"+this.display+"</option>");
 							});
 							group.appendTo($select);
 						});
@@ -435,12 +445,12 @@
 		   <table>
 			<tr>
 				<td><b>Name</b></td>
-				<td colspan="3"><input type="text" name="name" style="width:315px" /></td>
+				<td colspan="3"><input type="text" name="name" id="name" style="width:315px" /></td>
 			</tr>
 			<tr>
 				<td><b>Status</b></td>
 				<td colspan="3">
-					<select name="status" id="state" style="width:85px !important;max-width:85px !important;">
+					<select name="status" id="status" style="width:85px !important;max-width:85px !important;">
 						<option value="0">Bad</option>
 						<option value="1">Good</option>
 					</select>
@@ -448,27 +458,27 @@
 			</tr>
 			<tr>
 				<td style="width:85px;">Address:</td>
-				<td colspan="3"><input type="text" name="address1" style="width:315px" /></td>
+				<td colspan="3"><input type="text" name="address1" id="address1" style="width:315px" /></td>
 			</tr>
 			<tr>
 				<td>Address 2:</td>
-				<td colspan="3"><input type="text" name="address2" style="width:315px" /></td>
+				<td colspan="3"><input type="text" name="address2" id="address2" style="width:315px" /></td>
 			</tr>
 			<tr>
 			<td colspan="4" style="padding:0; margin:0;">
 				<table style="width:415px;border-collapse: collapse;padding:0; margin:0;">
 				<tr>
 					<td>City/State/Zip:</td>
-					<td><input type="text" name="city" style="width:90px;" /></td>
+					<td><input type="text" name="city" id="city" style="width:90px;" /></td>
 					<td><select name="state" id="state" style="width:85px !important;max-width:85px !important;"></select></td>
-					<td><input type="text" name="zip" style="width:47px !important" /></td>
+					<td><input type="text" name="zip" id="zip" style="width:47px !important" /></td>
 				</tr>
 				</table>
 			</td>
 			</tr>
 			<tr>
 				<td>County:</td>
-				<td><input type="text" name="county" style="width:90%" /></td>
+				<td><input type="text" name="county" id="county" style="width:90%" /></td>
 				<td colspan="2">
 					<table style="width:180px">
 						<tr>

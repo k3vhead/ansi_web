@@ -82,7 +82,7 @@ import com.thewebthing.commons.lang.JsonException;
 			return this.address2;
 		}
 
-		@RequiredForUpdate
+		
 		public void setAddressId(Integer addressId) {
 			this.addressId = addressId;
 		}

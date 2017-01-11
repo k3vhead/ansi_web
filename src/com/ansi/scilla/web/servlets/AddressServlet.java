@@ -94,9 +94,10 @@ public class AddressServlet extends AbstractServlet {
 			conn.setAutoCommit(false);
 			
 			Address address = new Address();
-			if(parsedUrl.deleteId != null){
-				address.setAddressId(Integer.parseInt(parsedUrl.deleteId));
+			if(parsedUrl.addressId != null){
+				address.setAddressId(Integer.parseInt(parsedUrl.addressId));
 			} 
+			System.out.println("Address ID: "+ Integer.parseInt(parsedUrl.addressId));
 			address.delete(conn);
 			System.out.println("AddressServlet 69");
 			AddressResponse addressResponse = new AddressResponse();
@@ -116,6 +117,7 @@ public class AddressServlet extends AbstractServlet {
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
+		SessionUser sessionUser = AppUtils.getSessionUser(request);
 		String url = request.getRequestURI();
 		Connection conn = null;
 		try {			
@@ -126,8 +128,8 @@ public class AddressServlet extends AbstractServlet {
 				// we're getting all the addresses in the database
 				AddressListResponse addressListResponse = makeAddressListResponse(conn);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, addressListResponse);
-			} else if ( parsedUrl.addressId.equals("delete")) {
-				doDelete(request,response);	
+			} else if ( parsedUrl.addressId.equals("add")) {
+				doPost(request, response);	
 			} else {
 				AddressListResponse addressListResponse = makeFilteredListResponse(conn, parsedUrl);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, addressListResponse);
@@ -168,9 +170,9 @@ public class AddressServlet extends AbstractServlet {
 			
 			Address address = null;
 			ResponseCode responseCode = null;
-			if ( command.equals(ACTION_IS_ADD) ) {
+			if ( command.equals("add") ) {
 				WebMessages webMessages = validateAdd(conn, addressRequest);
-				if (webMessages.isEmpty()) {
+//				if (webMessages.isEmpty()) {
 					try {
 						address = doAdd(conn, addressRequest, sessionUser);
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
@@ -186,9 +188,9 @@ public class AddressServlet extends AbstractServlet {
 						String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
 					}
-				} else {
-					responseCode = ResponseCode.EDIT_FAILURE;
-				}
+//				} else {
+//					responseCode = ResponseCode.EDIT_FAILURE;
+//				}
 				AddressResponse addressResponse = new AddressResponse(address, webMessages);
 				super.sendResponse(conn, response, responseCode, addressResponse);
 				
@@ -241,8 +243,8 @@ public class AddressServlet extends AbstractServlet {
 		Date today = new Date();
 		Address address = new Address();
 		
-//		!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! FIX SESSION ISSUE *ASK DAVE
-//		address.setAddedBy(sessionUser.getUserId());
+
+		address.setAddedBy(sessionUser.getUserId());
 		address.setAddedBy(8);
 		address.setAddedDate(today);
 
@@ -355,7 +357,7 @@ public class AddressServlet extends AbstractServlet {
 	
 	public class ParsedUrl extends ApplicationObject {
 		public String addressId;
-		public String deleteId;
+
 		private static final long serialVersionUID = 1L;
 
 
@@ -369,9 +371,7 @@ public class AddressServlet extends AbstractServlet {
 			if ( urlPieces.length >= 1 ) {
 				this.addressId = (urlPieces[0]);
 			}
-			if ( urlPieces.length >= 2 ) {
-				this.deleteId = (urlPieces[1]);
-			}
+			
 			
 		}
 	}

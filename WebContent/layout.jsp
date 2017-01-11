@@ -76,7 +76,7 @@
 			    				<ansi:hasWrite>
 			        			<li>
 			        				<a href="#">Settings</a>
-			        				<ul class="sub_menu">
+			        				<ul class="sub_menu" style="z-index:1000">
 			        			 		<li><a href="#">Message Maintenance</a></li>
 			        			 		<li><html:link action="codeMaintenance">Code Maintenance</html:link></li>
 			        			 		<li><html:link action="userAdmin">User Admin</html:link></li>
@@ -92,7 +92,7 @@
 		        			</ansi:hasPermission>
 		        			<li>
 		        				<a href="#">My ANSI</a>
-		        				<ul class="sub_menu">
+		        				<ul class="sub_menu" style="z-index:1000">
 		        			 		<li><html:link action="myAccount">My Account</html:link></li>
 		        			 		<li><html:link action="logoff">Logoff</html:link></li>
 		        				</ul>

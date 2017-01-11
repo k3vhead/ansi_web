@@ -37,25 +37,7 @@
 					$("select[name='<%=namespace %>_zip']").addClass("ui-corner-all");
 					$("#<%=namespace %>_address select[name='<%=namespace %>_country']").selectmenu({ width : '80px', maxHeight: '400 !important', style: 'dropdown'});
 				
-					var jqxhr1 = $.ajax({
-	    				type: 'GET',
-	    				url: 'options',
-	    				data: 'COUNTRY',
-	    				success: function($data) {
-	    					<%=namespace %>.setCountry($data.data.country);
-	    					<%=namespace %>.setStates($data.data.country);
-	    					<%=namespace %>.setCountry($data.data.country);
-	    					<%=namespace %>.setStates($data.data.country);
-	    				},
-	    				statusCode: {
-	    					403: function($data) {
-	    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-	    					} 
-	    				},
-	    				dataType: 'json'
-	    			});
-					
-					
+							
 					console.debug("inits");			
 				}, setCountry: function($optionList,$selectedValue) {
 					var selectorName = "#<%=namespace%>_address select[name='<%=namespace%>_country']";
@@ -85,7 +67,8 @@
 					$.each($optionList, function(index, val) {
 						var group = $('<optgroup label="' + val.abbrev + '" />');
 							$.each(val.stateList, function(){
-								$('<option />').html(this.display).appendTo(group);
+								//$('<option />').html(this.display).appendTo(group);
+								$(group).append("<option value='"+this.abbreviation+"'>"+this.display+"</option>");
 							});
 							group.appendTo($select);
 						});

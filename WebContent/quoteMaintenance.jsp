@@ -222,6 +222,26 @@
 				    				},
 				    				dataType: 'json'
 				    			});
+							
+							var jqxhr2 = $.ajax({
+			    				type: 'GET',
+			    				url: 'options',
+			    				data: 'COUNTRY',
+			    				success: function($data) {
+			    					JOBSITEADDRESS.setCountry($data.data.country);
+			    					JOBSITEADDRESS.setStates($data.data.country);
+			    					BILLTOADDRESS.setCountry($data.data.country);
+			    					BILLTOADDRESS.setStates($data.data.country);
+			    				},
+			    				statusCode: {
+			    					403: function($data) {
+			    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+			    					} 
+			    				},
+			    				dataType: 'json'
+			    			});
+							
+							
 							}
 					
 						JOBSITEADDRESS.init();
