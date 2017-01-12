@@ -55,11 +55,19 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 			String qs = request.getQueryString();
 			System.out.println("ContactTypeAheadServlet(): doGet(): qs =" + qs);
 			String term = "";
-			if (qs != null) {
-				if ( qs.indexOf("term=") != -1) {
-					term = StringUtils.trimToNull(URLDecoder.decode(qs.substring("term=".length()),"UTF-8"));
-				}
-			}
+	        if ( ! StringUtils.isBlank(qs)) {
+	            int idx = qs.indexOf("term=");
+	            if ( idx > -1 ) {
+	                term = qs.substring(idx);
+	                idx = qs.indexOf("&");
+	                if ( idx > -1 ) {
+	                    term = qs.substring(0, idx);
+	                }
+	                if ( ! StringUtils.isBlank(term)) {
+	                    term = URLDecoder.decode(term, "UTF-8");
+	                }
+	            }
+	        }
 			System.out.println("ContactTypeAheadServlet(): doGet(): term =$" + term +"$");
 			List<ReturnItem> resultList = new ArrayList<ReturnItem>();
 			String sql = "select contact_id, concat(first_name, ' ', last_name) as name, business_phone, mobile_phone, email, fax, preferred_contact "
@@ -67,6 +75,7 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 					+ " OR lower(fax) like '%" + term + "%'"
 					+ " OR lower(concat(first_name,' ',last_name)) like '%" + term + "%'"
 					+ " OR lower(concat(last_name,' ',first_name)) like '%" + term + "%'"
+					+ " OR lower(concat(last_name,', ',first_name)) like '%" + term + "%'"
 					+ " OR lower(mobile_phone) like '%" + term + "%'"
 					+ " OR lower(email) like '%" + term + "%'";
 			Statement s = conn.createStatement();
@@ -154,7 +163,7 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 			return preferredContactValue;
 		}
 
-		public void setPreferredContactValue(String preferredContactvalue) {
+		public void setPreferredContactValue(String preferredContactValue) {
 			this.preferredContactValue = preferredContactValue;
 		}
 
