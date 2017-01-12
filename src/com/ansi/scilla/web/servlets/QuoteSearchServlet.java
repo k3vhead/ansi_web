@@ -139,7 +139,13 @@ public class QuoteSearchServlet extends AbstractServlet {
 				term = URLDecoder.decode(term, "UTF-8");
 				term = StringUtils.trimToNull(term);
 				term = term.toLowerCase();
-				quoteSearchListResponse = new QuoteSearchListResponse(conn, term);
+				String sort = map.get("sort");
+				if (! StringUtils.isBlank(sort)){
+					String[] sortParms = map.get("sort").split(",");
+					quoteSearchListResponse = new QuoteSearchListResponse(conn, term, sortParms);
+				} else {
+					quoteSearchListResponse = new QuoteSearchListResponse(conn, term);
+				}
 			} else {
 				throw new RecordNotFoundException();
 			}
