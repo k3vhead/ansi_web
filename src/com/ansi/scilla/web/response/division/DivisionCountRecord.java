@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.queries.DivisionUserCount;
 import com.thewebthing.commons.lang.BeanUtils;
 
@@ -20,7 +21,28 @@ public class DivisionCountRecord extends ApplicationObject {
 	private String divisionCode;
 	private Integer divisionNbr;
 	private String description;
+	private Integer parentId;
+	private Integer userCount;
+	private String status;
 	
+	
+	public DivisionCountRecord() {
+		super();
+	}
+
+	public DivisionCountRecord(DivisionUserCount divisionUserCount) throws IllegalAccessException, InvocationTargetException {
+		this();
+		BeanUtils.copyProperties(this, divisionUserCount.getDivision());
+		this.userCount = divisionUserCount.getUserCount();	
+		if ( divisionUserCount.getDivision().getStatus().equals(Division.STATUS_IS_ACTIVE)) {
+			this.status = "Active";
+		} else if (divisionUserCount.getDivision().getStatus().equals(Division.STATUS_IS_INACTIVE) ) {
+			this.status = "Inactive";
+		} else { 
+			this.status = null;
+		}
+	}
+
 	public Integer getDivisionNbr() {
 		return divisionNbr;
 	}
@@ -35,19 +57,6 @@ public class DivisionCountRecord extends ApplicationObject {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	private Integer parentId;
-	private Integer userCount;
-	
-	public DivisionCountRecord(DivisionUserCount divisionUserCount) throws IllegalAccessException, InvocationTargetException {
-		this();
-		BeanUtils.copyProperties(this, divisionUserCount.getDivision());
-		this.userCount = divisionUserCount.getUserCount();			
-	}
-
-	public DivisionCountRecord() {
-		super();
 	}
 
 	public BigDecimal getDefaultDirectLaborPct() {
@@ -88,6 +97,14 @@ public class DivisionCountRecord extends ApplicationObject {
 
 	public void setUserCount(Integer userCount) {
 		this.userCount = userCount;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 }
