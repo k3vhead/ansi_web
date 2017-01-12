@@ -58,13 +58,18 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 	        if ( ! StringUtils.isBlank(qs)) {
 	            int idx = qs.indexOf("term=");
 	            if ( idx > -1 ) {
-	                term = qs.substring(idx);
-	                idx = qs.indexOf("&");
+	                term = qs.substring(idx+"term=".length());
+	    			System.out.println("ContactTypeAheadServlet(): doGet(): term =$" + term +"$");
+	                idx = term.indexOf("&");
 	                if ( idx > -1 ) {
-	                    term = qs.substring(0, idx);
+	                    term = term.substring(0, idx);
+	        			System.out.println("ContactTypeAheadServlet(): doGet(): term =$" + term +"$");
 	                }
 	                if ( ! StringUtils.isBlank(term)) {
 	                    term = URLDecoder.decode(term, "UTF-8");
+	        			System.out.println("ContactTypeAheadServlet(): doGet(): term =$" + term +"$");
+	                    term = term.toLowerCase();
+	        			System.out.println("ContactTypeAheadServlet(): doGet(): term =$" + term +"$");
 	                }
 	            }
 	        }
@@ -166,7 +171,6 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 		public void setPreferredContactValue(String preferredContactValue) {
 			this.preferredContactValue = preferredContactValue;
 		}
-
 
 
 		
