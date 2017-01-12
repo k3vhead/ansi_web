@@ -16,8 +16,6 @@ import com.thewebthing.commons.lang.BeanUtils;
 
 public class QuoteSearchRecord extends ApplicationObject {
 	private static final long serialVersionUID = 1L;
-	private Integer addedBy;
-	private Date addedDate;
 	private String accountType;
 	private String address;
 	private Integer billToAddressId;
@@ -34,38 +32,27 @@ public class QuoteSearchRecord extends ApplicationObject {
 	private String revision;
 	private Integer signedByContactId;
 	private Integer templateId;
-	private Integer updatedBy;
-	private Date updatedDate;
 	
 	private String billToName;
+	private String jobSiteAddress;
 	private String jobSiteName;
+	private String managerName;
+	private String quoteJobCount;
+	private String quotePpcSum;
 	
 	public QuoteSearchRecord(QuoteSearch quoteSearch) throws IllegalAccessException, InvocationTargetException {
 		this();
 		BeanUtils.copyProperties(this, quoteSearch.getQuote());
 		this.billToName = quoteSearch.getBillToName();			
 		this.jobSiteName = quoteSearch.getJobSiteName();			
+		this.jobSiteAddress = quoteSearch.getJobSiteAddress();			
+		this.managerName = quoteSearch.getManagerName();			
+		this.quoteJobCount = quoteSearch.getQuoteJobCount();			
+		this.quotePpcSum = quoteSearch.getQuotePpcSum();			
 	}
 
 	public QuoteSearchRecord() {
 		super();
-	}
-
-	public void setAddedBy(Integer addedBy) {
-		this.addedBy = addedBy;
-	}
-
-	public Integer getAddedBy() {
-		return this.addedBy;
-	}
-
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
-	public void setAddedDate(Date addedDate) {
-		this.addedDate = addedDate;
-	}
-
-	public Date getAddedDate() {
-		return this.addedDate;
 	}
 
 	public void setAddress(String address) {
@@ -189,23 +176,6 @@ public class QuoteSearchRecord extends ApplicationObject {
 		return this.templateId;
 	}
 
-	public void setUpdatedBy(Integer updatedBy) {
-		this.updatedBy = updatedBy;
-	}
-
-	public Integer getUpdatedBy() {
-		return this.updatedBy;
-	}
-
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
-	public void setUpdatedDate(Date updatedDate) {
-		this.updatedDate = updatedDate;
-	}
-
-	public Date getUpdatedDate() {
-		return this.updatedDate;
-	}
-
 	public void setAccountType(String accountType) {
 		this.accountType = accountType;
 	}
@@ -214,20 +184,40 @@ public class QuoteSearchRecord extends ApplicationObject {
 		return this.accountType;
 	}
 
+	public String getBillToName() {
+		return billToName;
+	}
 	public void setBillToName(String billToName) {
 		this.billToName = billToName;
 	}
-
-	public String getBillToName() {
-		return this.billToName;
+	public String getJobSiteName() {
+		return jobSiteName;
 	}
-
 	public void setJobSiteName(String jobSiteName) {
 		this.jobSiteName = jobSiteName;
 	}
-
-	public String getJobSiteName() {
-		return this.jobSiteName;
+	public String getJobSiteAddress() {
+		return jobSiteAddress;
 	}
-
+	public void setJobSiteAddress(String jobSiteAddress) {
+		this.jobSiteAddress = jobSiteAddress;
+	}
+	public String getManagerName() {
+		return managerName;
+	}
+	public void setManagerName(String managerName) {
+		this.managerName = managerName;
+	}
+	public String getQuoteJobCount() {
+		return quoteJobCount;
+	}
+	public void setQuoteJobCount(String quoteJobCount) {
+		this.quoteJobCount = quoteJobCount;
+	}
+	public String getQuotePpcSum() {
+		return quotePpcSum;
+	}
+	public void setQuotePpcSum(String quotePpcSum) {
+		this.quotePpcSum = quotePpcSum;
+	}
 }

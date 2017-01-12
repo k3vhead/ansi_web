@@ -46,6 +46,12 @@ public class QuoteSearchListResponse extends MessageResponse implements Serializ
 		this.quoteSearchList = Arrays.asList(new QuoteSearchRecord[] { record });
 	}
 
+	public QuoteSearchListResponse(Connection conn, String queryTerm) throws Exception {
+		QuoteSearch quoteSearch = QuoteSearch.select(conn, queryTerm);
+		QuoteSearchRecord record = new QuoteSearchRecord(quoteSearch);
+		this.quoteSearchList = Arrays.asList(new QuoteSearchRecord[] { record });
+	}
+
 	public List<QuoteSearchRecord> getQuoteSearchList() {
 		return quoteSearchList;
 	}
