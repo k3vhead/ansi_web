@@ -56,20 +56,17 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 			String qs = request.getQueryString();
 			System.out.println("ContactTypeAheadServlet(): doGet(): qs =" + qs);
 			String term = "";
-	        if ( ! StringUtils.isBlank(qs)) {
-	            int idx = qs.indexOf("term=");
-	            if ( idx > -1 ) {
-	                term = qs.substring(idx+"term=".length());
-	                idx = term.indexOf("&");
-	                if ( idx > -1 ) {
-	                    term = term.substring(0, idx);
-	                }
-	                if ( ! StringUtils.isBlank(term)) {
-	                    term = URLDecoder.decode(term, "UTF-8");
-	                    term = term.toLowerCase();
-	                }
-	            }
-	        }
+			if ( ! StringUtils.isBlank(qs)) {
+				Map<String, String> map = AppUtils.getQueryMap(qs);
+				term = map.get("term");
+				System.out.println("ContactTypeAheadServlet(): doGet(): map =" + map);
+				System.out.println("ContactTypeAheadServlet(): doGet(): term =" + term);
+				if ( ! StringUtils.isBlank(term)) {
+					term = URLDecoder.decode(term, "UTF-8");
+					term = StringUtils.trimToNull(term);
+					term = term.toLowerCase();
+				}
+			}
 			System.out.println("ContactTypeAheadServlet(): doGet(): term =$" + term +"$");
 			List<ReturnItem> resultList = new ArrayList<ReturnItem>();
 			String sql = "select contact_id, concat(first_name, ' ', last_name) as name, business_phone, mobile_phone, email, fax, preferred_contact "
@@ -132,7 +129,7 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 			} else if (preferredContact.indexOf("fax") != -1) {
 				this.preferredContactValue = "fax:"+rs.getString("fax");
 			} else {
-				this.preferredContactValue = "unexpected preferrence";
+				this.preferredContactValue = preferredContact+":unexpected preferrence";
 			}
 			
 		}
