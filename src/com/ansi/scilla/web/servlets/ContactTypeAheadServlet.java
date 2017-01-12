@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -59,17 +60,13 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 	            int idx = qs.indexOf("term=");
 	            if ( idx > -1 ) {
 	                term = qs.substring(idx+"term=".length());
-	    			System.out.println("ContactTypeAheadServlet(): doGet(): term =$" + term +"$");
 	                idx = term.indexOf("&");
 	                if ( idx > -1 ) {
 	                    term = term.substring(0, idx);
-	        			System.out.println("ContactTypeAheadServlet(): doGet(): term =$" + term +"$");
 	                }
 	                if ( ! StringUtils.isBlank(term)) {
 	                    term = URLDecoder.decode(term, "UTF-8");
-	        			System.out.println("ContactTypeAheadServlet(): doGet(): term =$" + term +"$");
 	                    term = term.toLowerCase();
-	        			System.out.println("ContactTypeAheadServlet(): doGet(): term =$" + term +"$");
 	                }
 	            }
 	        }
