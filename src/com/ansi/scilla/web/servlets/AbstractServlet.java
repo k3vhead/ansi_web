@@ -297,7 +297,7 @@ public class AbstractServlet extends HttpServlet {
 	 * @param e
 	 * @return
 	 */
-	private String findBadField(String e) {
+	protected String findBadField(String e) {
 		String[] pieces = e.split("\n");
 		String matchString = StringUtils.join(pieces, " ");
 		Pattern pattern = Pattern.compile("^(.*\\[)(.*)(\\]\\))$");
