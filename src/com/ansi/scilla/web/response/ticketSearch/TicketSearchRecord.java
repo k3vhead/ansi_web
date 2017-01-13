@@ -1,29 +1,21 @@
-package com.ansi.scilla.web.request;
+package com.ansi.scilla.web.response.ticketSearch;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-//import java.util.Date;
 import java.util.Date;
 
-import org.apache.commons.beanutils.BeanUtils;
-
-import com.ansi.scilla.web.common.AppUtils;
+import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.queries.TicketSearch;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import com.thewebthing.commons.lang.BeanUtils;
 
 /**
  * 
- * @author ggroce
- *
- *
+ * @author dclewis
  *
  */
 
-public class TicketSearchRequest extends AbstractRequest {
-
+public class TicketSearchRecord extends ApplicationObject {
 	private static final long serialVersionUID = 1L;
-	
 	private String completionNotes;
 	private Integer invoiceId;
 	private Integer jobId;
@@ -41,14 +33,21 @@ public class TicketSearchRequest extends AbstractRequest {
 	private String jobCode;
 	private String jobStatus;
 	
-	public TicketSearchRequest() {
-		super();
-	}
-	
-	public TicketSearchRequest(String jsonString) throws IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException {
+	public TicketSearchRecord(TicketSearch ticketSearch) throws IllegalAccessException, InvocationTargetException {
 		this();
-		TicketSearchRequest req = (TicketSearchRequest) AppUtils.json2object(jsonString, TicketSearchRequest.class);
-		BeanUtils.copyProperties(this, req);
+		BeanUtils.copyProperties(this, ticketSearch.getTicket());
+		BeanUtils.copyProperties(this, ticketSearch.getQuote());
+		this.billToName = ticketSearch.getBillToName();			
+		this.jobSiteName = ticketSearch.getJobSiteName();			
+		this.jobSiteAddress = ticketSearch.getJobSiteAddress();	
+		this.jobId = ticketSearch.getJobId();
+		this.jobCode = ticketSearch.getJobCode();
+		this.jobStatus = ticketSearch.getJobStatus();
+		
+	}
+
+	public TicketSearchRecord() {
+		super();
 	}
 
 	public void setCompletionNotes(String completionNotes) {

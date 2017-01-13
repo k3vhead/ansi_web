@@ -199,10 +199,18 @@
     	<servlet-name>taxRate</servlet-name>
     	<url-pattern>/taxRate/*</url-pattern>
 	</servlet-mapping>
-	
+	<servlet>
+		<servlet-name>ticketSearch</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.TicketSearchServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ticketSearch</servlet-name>
+		<url-pattern>/ticketSearch/*</url-pattern>
+	</servlet-mapping>
 
-	
-	
+
+
+
 	<!--
         Define the default session timeout for the application,
         in minutes.  This value can be modified in a servlet or JSP by
