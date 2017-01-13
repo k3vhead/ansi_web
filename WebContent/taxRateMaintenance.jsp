@@ -14,6 +14,7 @@ change log
 2016-12-28  2:00 AM - kjw : all features now work.. view/add/edit/remove..
 2016-12-29  9:45 PM - kjw : cleaned up debug code.. 
 2016-12-29  9:45 PM - kjw : added // modthis comment to quickly navigate to record specific sections of the page.
+2017-01-12  3:20 PM - kjw : Added 'Action' Column header and added style rules to center the column.
 
 -->
 
@@ -66,7 +67,7 @@ change log
 			#col_03{	text-align: right;	}  /* rate 				*/
 			#col_04{ 	text-align: right;	}  /* amount 			*/
 			#col_05{	text-align: right;	}  /* effectiveDate 	*/
-			#col_06{	text-align: center;	}  /* not used 		 	*/
+			#col_06{	text-align: center;	}  /* action 		 	*/
 			#col_07{	text-align: center;	}  /* not used 		 	*/
 			#col_08{	text-align: center;	}  /* not used 		 	*/
 			#col_09{	text-align: center;	}  /* not used 		 	*/
@@ -79,7 +80,7 @@ change log
 			#col_03_hdr{	text-align: right;	} 	/* rate 			*/
 			#col_04_hdr{	text-align: right;	} 	/* amount 			*/
 			#col_05_hdr{	text-align: right;	} 	/* effective date 	*/
-			#col_06_hdr{ 	text-align: center;	} 	/* not used 		*/
+			#col_06_hdr{ 	text-align: center;	} 	/* action 		*/
 			#col_07_hdr{	text-align: right;	} 	/* not used 		*/
 			#col_08_hdr{	text-align: center;	} 	/* not used 		*/
 			#col_09_hdr{	text-align: right;	} 	/* not used 		*/
@@ -137,12 +138,12 @@ change log
 				var _td = '';
 				_td = _td + '	<td id="col_01">' + $data_item_id  + 		'</td>';
 				_td = _td + '	<td id="col_02">' + $data_item.location + 		'</td>';
-				_td = _td + '	<td id="col_03">' + $data_item.rate + 			'</td>';
+				_td = _td + '	<td id="col_03">' + (($data_item.rate)*100).toFixed(2) + '%</td>';
 				_td = _td + '	<td id="col_04">' + $data_item.amount + 			'</td>'; 
 				_td = _td + '	<td id="col_05">' + $data_item.effectiveDate + 	'</td>';
        	    	<ansi:hasPermission permissionRequired="SYSADMIN">
 					<ansi:hasWrite>
-						_td = _td + '<td>';
+						_td = _td + '<td id="col_06">';
 						_td = _td + '<a href="#" class="updAction" data-item-id="' + $data_item_id +'"><span class="green fa fa-pencil" ari-hidden="true"></span></a> | ';
 						_td = _td + '<a href="#" class="delAction" data-item-id="' + $data_item_id +'"><span class="red fa fa-trash" aria-hidden="true"></span></a>';
 						_td = _td + '</td>';
@@ -525,6 +526,11 @@ change log
 				<th id="col_03_hdr">Rate</th>
 				<th id="col_04_hdr">Amount</th>
 				<th id="col_05_hdr">Effective Date</th>
+       	    	<ansi:hasPermission permissionRequired="SYSADMIN">
+					<ansi:hasWrite>
+						<th id="col_06_hdr">Action</th>
+					</ansi:hasWrite>
+       	    	</ansi:hasPermission>
     		</tr>
     	</table>
 
