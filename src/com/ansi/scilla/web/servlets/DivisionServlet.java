@@ -5,6 +5,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +28,7 @@ import com.ansi.scilla.web.request.DivisionRequest;
 import com.ansi.scilla.web.response.division.DivisionListResponse;
 import com.ansi.scilla.web.response.division.DivisionResponse;
 import com.ansi.scilla.web.struts.SessionUser;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 
@@ -181,10 +184,28 @@ public class DivisionServlet extends AbstractServlet {
 			String[] urlPieces = myString.split("/");
 			String command = urlPieces[0];
 			String jsonString = super.makeJsonString(request);
-			DivisionRequest divisionRequest = new DivisionRequest(jsonString);
-			divisionRequest.setParentId(null); // we're not supporting parents yet
-
-			
+			try {
+				DivisionRequest divisionRequest = (DivisionRequest) AppUtils.json2object(jsonString, DivisionRequest.class);
+				processRequest(conn, response, command, sessionUser, divisionRequest);
+			} catch ( InvalidFormatException e) {
+				WebMessages webMessages = new WebMessages();
+				String field = findBadField(e.toString());
+				String messageText = AppUtils.getMessageText(conn, MessageKey.INVALID_DATA, "Invalid Format");
+				webMessages.addMessage(field, messageText);
+				DivisionResponse divisionResponse = new DivisionResponse();
+				divisionResponse.setWebMessages(webMessages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, divisionResponse);
+			}
+		} catch ( Exception e ) {
+			AppUtils.logException(e);
+			AppUtils.rollbackQuiet(conn);
+			throw new ServletException(e);
+		} finally {
+			AppUtils.closeQuiet(conn);
+		}
+	}
+		
+	private void processRequest(Connection conn, HttpServletResponse response, String command, SessionUser sessionUser, DivisionRequest divisionRequest) throws Exception {	
 			Division division = null;
 			ResponseCode responseCode = null;
 			if ( command.equals(ACTION_IS_ADD) ) {
@@ -214,16 +235,19 @@ public class DivisionServlet extends AbstractServlet {
 				}
 				
 				
-				DivisionResponse divisionResponse = null;
+				DivisionResponse divisionResponse = new DivisionResponse();
 				if ( division != null ) {
 					divisionResponse = new DivisionResponse(conn, division);
+				}
+				if ( ! webMessages.isEmpty()) {
+					divisionResponse.setWebMessages(webMessages);
 				}
 				super.sendResponse(conn, response, responseCode, divisionResponse);
 			
 			/*
 			This is the Update portion of the doPost
 			*/
-			} else if ( StringUtils.isNumeric(urlPieces[0]) ) {   
+			} else if ( StringUtils.isNumeric(command) ) {   
 				WebMessages webMessages = validateAdd(conn, divisionRequest);
 				if (webMessages.isEmpty()) {
 					webMessages = validateFormat(conn, divisionRequest);
@@ -231,7 +255,7 @@ public class DivisionServlet extends AbstractServlet {
 				if (webMessages.isEmpty()) {
 					try {
 						Division key = new Division();
-						key.setDivisionId(Integer.valueOf(urlPieces[0]));
+						key.setDivisionId(Integer.valueOf(command));
 						division = doUpdate(conn, key, divisionRequest, sessionUser);
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 						responseCode = ResponseCode.SUCCESS;
@@ -260,13 +284,7 @@ public class DivisionServlet extends AbstractServlet {
 			}
 			
 			
-		} catch ( Exception e ) {
-			AppUtils.logException(e);
-			AppUtils.rollbackQuiet(conn);
-			throw new ServletException(e);
-		} finally {
-			AppUtils.closeQuiet(conn);
-		}
+		
 		
 	}
 
@@ -351,6 +369,7 @@ public class DivisionServlet extends AbstractServlet {
 		}
 		return webMessages;
 	}
+
 	
 	/*private DivisionListResponse makeDivisionListResponse(Connection conn) throws Exception {
 		DivisionListResponse divisionListResponse = new DivisionListResponse(conn);

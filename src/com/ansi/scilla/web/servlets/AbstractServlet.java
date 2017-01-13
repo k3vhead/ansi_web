@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ResponseCode;
+import com.ansi.scilla.web.common.WebMessages;
 import com.ansi.scilla.web.request.AbstractRequest;
 import com.ansi.scilla.web.request.MinMax;
 import com.ansi.scilla.web.request.RequiredForAdd;
@@ -274,8 +275,36 @@ public class AbstractServlet extends HttpServlet {
 		
 		return nonMatchingValues;
 	}
+	
+	
+	
 	protected String fixFieldName(String fieldName) {
 		return fieldName.substring(0,1).toLowerCase() + fieldName.substring(1);
 	}
+	
+	
+	/**
+	 * The JSON parser throws an InvalidFormatException when it can't populate a field with the
+	 * provided data. For instance, trying to populate an Integer field with a string will cause an exception.
+	 * The print representation of the exception looks like:
+	 * 
+	 * at [Source: {"defaultDirectLaborPct":"xxxx","divisionNbr":"","divisionCode":"","description":"","status":"1"}; line: 1, column: 26] (through reference chain: com.ansi.scilla.web.request.DivisionRequest["defaultDirectLaborPct"])
+	 * 
+	 * This method will find the field name in that mess so that an error message can be displayed in
+	 * the right place in the UI. If the field name cannot be determined, the message goes into the 
+	 * Global Message.
+	 *  
+	 * @param e
+	 * @return
+	 */
+	private String findBadField(String e) {
+		String[] pieces = e.split("\n");
+		String matchString = StringUtils.join(pieces, " ");
+		Pattern pattern = Pattern.compile("^(.*\\[)(.*)(\\]\\))$");
+		Matcher matcher = pattern.matcher(matchString);
+		String field = matcher.matches() ? matcher.group(2).substring(1, matcher.group(2).length()-1) : WebMessages.GLOBAL_MESSAGE;
+		return field;
+	}
+
 
 }

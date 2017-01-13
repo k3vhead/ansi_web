@@ -24,11 +24,8 @@ public class DivisionRequest extends AbstractRequest {
 	private static final long serialVersionUID = 1L;
 	
 	private Integer divisionId;	//Integer Division ID
-//	private String name;		//String Division Name
 	private Integer parentId;	//Integer Parent ID
 	private BigDecimal defaultDirectLaborPct;	//Float Automatic Direct Labor Percentage
-	
-	
 	private Integer divisionNbr;	//Integer Division Number
 	private String divisionCode;	//String Division Code
 	private String description;		//String Division Description
@@ -38,11 +35,11 @@ public class DivisionRequest extends AbstractRequest {
 		super();
 	}
 	
-	public DivisionRequest(String jsonString) throws IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException {
-		this();
-		DivisionRequest req = (DivisionRequest) AppUtils.json2object(jsonString, DivisionRequest.class);
-		BeanUtils.copyProperties(this, req);
-	}
+//	public DivisionRequest(String jsonString) throws IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException {
+//		this();
+//		DivisionRequest req = (DivisionRequest) AppUtils.json2object(jsonString, DivisionRequest.class);
+//		BeanUtils.copyProperties(this, req);
+//	}
 	
 	@RequiredForUpdate
 	public Integer getDivisionId() {
@@ -53,16 +50,6 @@ public class DivisionRequest extends AbstractRequest {
 		this.divisionId = divisionId;
 	}
 	
-//	@RequiredForAdd
-//	@RequiredForUpdate
-//	public String getName() {
-//		return name;
-//	}
-//
-//	public void setName(String name) {
-//		this.name = name;
-//	}
-
 	public Integer getParentId() {
 		return parentId;
 	}
