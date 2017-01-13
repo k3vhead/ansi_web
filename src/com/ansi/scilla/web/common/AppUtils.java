@@ -1,6 +1,8 @@
 package com.ansi.scilla.web.common;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,6 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -344,6 +347,36 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 		}
 		
 		return sessionData;
+	}
+
+	/**
+	 * @throws UnsupportedEncodingException 
+	 * Parses a query sting into name, value pairs
+	 * 
+	 * @param string
+	 * @return Map<String,String>
+	 * @throws 
+	 */
+	public static HashMap<String, String> getQueryMap(String queryString) throws UnsupportedEncodingException {
+		HashMap<String, String> queryMap = new HashMap<String, String>();
+		
+		if ( ! StringUtils.isBlank(queryString)) {
+		    String[] params = queryString.split("&");  
+		    for (String param : params) {
+		    	String[] pair = param.split("=");		    	
+		        String name = pair[0];
+		        String value = null;
+		        if ( pair.length == 2 ) {
+		        	value = pair[1];
+		        	if ( ! StringUtils.isBlank(value)) {
+		        		value = URLDecoder.decode(value, "UTF-8");
+		        	}
+		        }
+		        queryMap.put(name, value);  
+		    }
+		}
+		
+	    return queryMap;  
 	}
 
 }
