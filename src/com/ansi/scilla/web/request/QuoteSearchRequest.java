@@ -24,8 +24,6 @@ public class QuoteSearchRequest extends AbstractRequest {
 
 	private static final long serialVersionUID = 1L;
 	
-	private Integer addedBy;
-	private Date addedDate;
 	private String accountType;
 	private String address;
 	private Integer billToAddressId;
@@ -42,9 +40,14 @@ public class QuoteSearchRequest extends AbstractRequest {
 	private String revision;
 	private Integer signedByContactId;
 	private Integer templateId;
-	private Integer updatedBy;
-	private Date updatedDate;
-	
+
+	private String billToName;
+	private String jobSiteAddress;
+	private String jobSiteName;
+	private String managerName;
+	private String quoteJobCount;
+	private String quotePpcSum;
+
 	public QuoteSearchRequest() {
 		super();
 	}
@@ -53,23 +56,6 @@ public class QuoteSearchRequest extends AbstractRequest {
 		this();
 		QuoteSearchRequest req = (QuoteSearchRequest) AppUtils.json2object(jsonString, QuoteSearchRequest.class);
 		BeanUtils.copyProperties(this, req);
-	}
-
-	public void setAddedBy(Integer addedBy) {
-		this.addedBy = addedBy;
-	}
-
-	public Integer getAddedBy() {
-		return this.addedBy;
-	}
-
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
-	public void setAddedDate(Date addedDate) {
-		this.addedDate = addedDate;
-	}
-
-	public Date getAddedDate() {
-		return this.addedDate;
 	}
 
 	public void setAddress(String address) {
@@ -193,29 +179,49 @@ public class QuoteSearchRequest extends AbstractRequest {
 		return this.templateId;
 	}
 
-	public void setUpdatedBy(Integer updatedBy) {
-		this.updatedBy = updatedBy;
-	}
-
-	public Integer getUpdatedBy() {
-		return this.updatedBy;
-	}
-
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
-	public void setUpdatedDate(Date updatedDate) {
-		this.updatedDate = updatedDate;
-	}
-
-	public Date getUpdatedDate() {
-		return this.updatedDate;
-	}
-
 	public void setAccountType(String accountType) {
 		this.accountType = accountType;
 	}
 
 	public String getAccountType() {
 		return this.accountType;
+	}
+
+	public String getBillToName() {
+		return billToName;
+	}
+	public void setBillToName(String billToName) {
+		this.billToName = billToName;
+	}
+	public String getJobSiteName() {
+		return jobSiteName;
+	}
+	public void setJobSiteName(String jobSiteName) {
+		this.jobSiteName = jobSiteName;
+	}
+	public String getJobSiteAddress() {
+		return jobSiteAddress;
+	}
+	public void setJobSiteAddress(String jobSiteAddress) {
+		this.jobSiteAddress = jobSiteAddress;
+	}
+	public String getManagerName() {
+		return managerName;
+	}
+	public void setManagerName(String managerName) {
+		this.managerName = managerName;
+	}
+	public String getQuoteJobCount() {
+		return quoteJobCount;
+	}
+	public void setQuoteJobCount(String quoteJobCount) {
+		this.quoteJobCount = quoteJobCount;
+	}
+	public String getQuotePpcSum() {
+		return quotePpcSum;
+	}
+	public void setQuotePpcSum(String quotePpcSum) {
+		this.quotePpcSum = quotePpcSum;
 	}
 
 	

@@ -1,10 +1,12 @@
 package com.ansi.scilla.web.servlets;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -56,10 +58,12 @@ public class QuoteSearchServlet extends AbstractServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String url = request.getRequestURI();
+		System.out.println("QuoteSearchServlet(): doGet(): url =" + url);
 		int idx = url.indexOf("/quoteSearch/");
 		if ( idx > -1 ) {
 			String queryString = request.getQueryString();
 			
+			System.out.println("QuoteSearchServlet(): doGet(): queryString =" + queryString);
 			// Figure out what we've got:
 			// "myString" is the piece of the URL that we actually care about
 			String myString = url.substring(idx + "/quoteSearch/".length());
@@ -85,7 +89,26 @@ public class QuoteSearchServlet extends AbstractServlet {
 			}
 
 		} else {
-			super.sendNotFound(response);
+			String queryString = request.getQueryString();
+			System.out.println("QuoteSearchServlet(): doGet(): queryString =" + queryString);
+			Connection conn = null;
+			try {
+				if ( StringUtils.isBlank(queryString)) {
+					throw new RecordNotFoundException();
+				}
+				conn = AppUtils.getDBCPConn();
+
+				QuoteSearchListResponse quoteSearchListQueryResponse = doGetWork(conn, queryString);
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, quoteSearchListQueryResponse);
+			} catch(RecordNotFoundException recordNotFoundEx) {
+				super.sendNotFound(response);
+			} catch ( Exception e) {
+				AppUtils.logException(e);
+				throw new ServletException(e);
+			} finally {
+				AppUtils.closeQuiet(conn);
+			}
+
 		}
 	}
 
@@ -97,6 +120,35 @@ public class QuoteSearchServlet extends AbstractServlet {
 		} else if (StringUtils.isNumeric(x[0])) {
 			Integer quoteId = Integer.valueOf(x[0]);
 			quoteSearchListResponse = new QuoteSearchListResponse(conn, quoteId);
+		} else {
+			throw new RecordNotFoundException();
+		}
+		return quoteSearchListResponse;
+		
+	}
+	
+	public QuoteSearchListResponse doGetWork(Connection conn, String qs) throws RecordNotFoundException, Exception {
+		QuoteSearchListResponse quoteSearchListResponse = new QuoteSearchListResponse();
+		String term = "";
+		if ( ! StringUtils.isBlank(qs)) {
+			Map<String, String> map = AppUtils.getQueryMap(qs);
+			term = map.get("term");
+			System.out.println("QuoteSearchServlet(): doGetWork(): map =" + map);
+			System.out.println("QuoteSearchServlet(): doGetWork(): term =" + term);
+			if ( ! StringUtils.isBlank(term)) {
+				term = URLDecoder.decode(term, "UTF-8");
+				term = StringUtils.trimToNull(term);
+				term = term.toLowerCase();
+				String sort = map.get("sort");
+				if (! StringUtils.isBlank(sort)){
+					String[] sortParms = map.get("sort").split(",");
+					quoteSearchListResponse = new QuoteSearchListResponse(conn, term, sortParms);
+				} else {
+					quoteSearchListResponse = new QuoteSearchListResponse(conn, term);
+				}
+			} else {
+				throw new RecordNotFoundException();
+			}
 		} else {
 			throw new RecordNotFoundException();
 		}

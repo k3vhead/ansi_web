@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.queries.QuoteSearch;
 import com.ansi.scilla.web.response.MessageResponse;
 
@@ -34,6 +33,22 @@ public class QuoteSearchListResponse extends MessageResponse implements Serializ
 	 */
 	public QuoteSearchListResponse(Connection conn) throws Exception {
 		List<QuoteSearch> quoteSearchList = QuoteSearch.select(conn);
+		this.quoteSearchList = new ArrayList<QuoteSearchRecord>();
+		for ( QuoteSearch record : quoteSearchList ) {
+			this.quoteSearchList.add(new QuoteSearchRecord(record));
+		}
+	}
+	
+	public QuoteSearchListResponse(Connection conn, String queryTerm) throws Exception {
+		List<QuoteSearch> quoteSearchList = QuoteSearch.select(conn, queryTerm);
+		this.quoteSearchList = new ArrayList<QuoteSearchRecord>();
+		for ( QuoteSearch record : quoteSearchList ) {
+			this.quoteSearchList.add(new QuoteSearchRecord(record));
+		}
+	}
+	
+	public QuoteSearchListResponse(Connection conn, String queryTerm, String[] sortField) throws Exception {
+		List<QuoteSearch> quoteSearchList = QuoteSearch.select(conn, queryTerm, sortField);
 		this.quoteSearchList = new ArrayList<QuoteSearchRecord>();
 		for ( QuoteSearch record : quoteSearchList ) {
 			this.quoteSearchList.add(new QuoteSearchRecord(record));
