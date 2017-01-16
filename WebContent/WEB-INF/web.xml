@@ -207,6 +207,14 @@
 		<servlet-name>ticketSearch</servlet-name>
 		<url-pattern>/ticketSearch/*</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>jobSearch</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.JobSearchServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>jobSearch</servlet-name>
+		<url-pattern>/jobSearch/*</url-pattern>
+	</servlet-mapping>
 
 
 

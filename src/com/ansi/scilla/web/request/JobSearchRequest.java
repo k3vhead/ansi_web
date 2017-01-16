@@ -2,6 +2,7 @@ package com.ansi.scilla.web.request;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 //import java.util.Date;
 import java.util.Date;
 
@@ -20,51 +21,58 @@ import com.fasterxml.jackson.databind.JsonMappingException;
  *
  */
 
-public class TicketSearchRequest extends AbstractRequest {
+public class JobSearchRequest extends AbstractRequest {
 
 	private static final long serialVersionUID = 1L;
 	
-	private String completionNotes;
-	private Integer invoiceId;
+	private Integer divisionId;
+	private String jobCode;
+	private String jobFrequency;
 	private Integer jobId;
-    private Integer printCount;
+	private Integer jobNbr;
+	private String poNumber;
+	private BigDecimal pricePerCleaning;
+	private Integer quoteId;
+	private String serviceDescription;
 	private Date startDate;
 	private String status;
-	private Integer ticketId;
-	private Integer ticketNbr;
-
+	
 	private String billToName;
+	private String divisionCode;
 	private String jobSiteAddress;
 	private String jobSiteName;
 	private String quoteNumber;
 	private String revision;
-	private String jobCode;
-	private String jobStatus;
 	
-	public TicketSearchRequest() {
+	public JobSearchRequest() {
 		super();
 	}
 	
-	public TicketSearchRequest(String jsonString) throws IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException {
+	public JobSearchRequest(String jsonString) throws IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException {
 		this();
-		TicketSearchRequest req = (TicketSearchRequest) AppUtils.json2object(jsonString, TicketSearchRequest.class);
+		JobSearchRequest req = (JobSearchRequest) AppUtils.json2object(jsonString, JobSearchRequest.class);
 		BeanUtils.copyProperties(this, req);
 	}
 
-	public void setCompletionNotes(String completionNotes) {
-		this.completionNotes = completionNotes;
+	public void setDivisionId(Integer divisionId) {
+		this.divisionId = divisionId;
 	}
 
-	public String getCompletionNotes() {
-		return this.completionNotes;
+	public Integer getDivisionId() {
+		return this.divisionId;
 	}
 
-	public void setInvoiceId(Integer invoiceId) {
-		this.invoiceId = invoiceId;
+	public String getJobCode() {
+		return jobCode;
 	}
-
-	public Integer getInvoiceId() {
-		return this.invoiceId;
+	public void setJobCode(String jobCode) {
+		this.jobCode = jobCode;
+	}
+	public String getJobFrequency() {
+		return jobFrequency;
+	}
+	public void setJobFrequency(String jobFrequency) {
+		this.jobFrequency = jobFrequency;
 	}
 
 	public void setJobId(Integer jobId) {
@@ -75,13 +83,44 @@ public class TicketSearchRequest extends AbstractRequest {
 		return this.jobId;
 	}
 
-    public void setPrintCount(Integer printCount) {
-        this.printCount = printCount;
+	public void setJobNbr(Integer jobNbr) {
+		this.jobNbr = jobNbr;
+	}
+
+	public Integer getJobNbr() {
+		return this.jobNbr;
+	}
+
+	public String getPoNumber() {
+		return poNumber;
+	}
+	public void setPoNumber(String poNumber) {
+		this.poNumber = poNumber;
+	}
+   public void setPricePerCleaning(BigDecimal pricePerCleaning) {
+        this.pricePerCleaning = pricePerCleaning;
     }
 
-    public Integer getPrintCount() {
-        return this.printCount;
+    public BigDecimal getpricePerCleaning() {
+        return this.pricePerCleaning;
     }
+
+
+	public void setQuoteId(Integer quoteId) {
+		this.quoteId = quoteId;
+	}
+
+	public Integer getQuoteId() {
+		return this.quoteId;
+	}
+
+	public void setServiceDescription(String serviceDescription) {
+		this.serviceDescription = serviceDescription;
+	}
+
+	public String getServiceDescription() {
+		return this.serviceDescription;
+	}
 
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
 	public void setStartDate(Date startDate) {
@@ -100,27 +139,17 @@ public class TicketSearchRequest extends AbstractRequest {
 		return this.status;
 	}
 
-	public void setTicketId(Integer ticketId) {
-		this.ticketId = ticketId;
-	}
-
-	public Integer getTicketId() {
-		return this.ticketId;
-	}
-
-	public void setTicketNbr(Integer ticketNbr) {
-		this.ticketNbr = ticketNbr;
-	}
-
-	public Integer getTicketNbr() {
-		return this.ticketNbr;
-	}
-
 	public String getBillToName() {
 		return billToName;
 	}
 	public void setBillToName(String billToName) {
 		this.billToName = billToName;
+	}
+	public String getDivisionCode() {
+		return divisionCode;
+	}
+	public void setDivisionCode(String divisionCode) {
+		this.divisionCode = divisionCode;
 	}
 	public String getJobSiteAddress() {
 		return jobSiteAddress;
@@ -145,18 +174,6 @@ public class TicketSearchRequest extends AbstractRequest {
 	}
 	public void setRevision(String revision) {
 		this.revision = revision;
-	}
-	public String getJobCode() {
-		return jobCode;
-	}
-	public void setJobCode(String jobCode) {
-		this.jobCode = jobCode;
-	}
-	public String getJobStatus() {
-		return jobStatus;
-	}
-	public void setJobStatus(String jobStatus) {
-		this.jobStatus = jobStatus;
 	}
 	
 }
