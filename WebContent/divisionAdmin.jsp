@@ -40,10 +40,13 @@
 				width:400px;
 				padding:15px;
 			}
+						
         </style>
         
         <script type="text/javascript">
         $(function() {        
+        	
+        
 			var jqxhr = $.ajax({
 				type: 'GET',
 				url: 'division/list',
@@ -87,11 +90,11 @@
 			function makeRow($division, $rownum) {
 				var row = "";
 				row = row + '<td>' + $division.divisionId + '</td>';
-				row = row + '<td>' + $division.defaultDirectLaborPct + '</td>';
-				row = row + '<td>' + $division.divisionNbr + '</td>';
 				row = row + '<td>' + $division.divisionCode + '</td>';
-				row = row + '<td>' + $division.description + '</td>'
-				row = row + '<td>' + $division.status + '</td>'
+				row = row + '<td>' + $division.divisionNbr + '</td>';
+				row = row + '<td>' + $division.description + '</td>';
+				row = row + '<td>' + $division.defaultDirectLaborPct + '</td>';
+				row = row + '<td>' + $division.status+ '</td>';
        	    	<ansi:hasPermission permissionRequired="SYSADMIN">
         		<ansi:hasWrite>
        			row = row + '<td>';
@@ -115,17 +118,17 @@
             	var $row = $($rowFinder)  
             	var tdList = $row.children("td");
             	var $divisionId = $row.children("td")[0].textContent;
-            	var $defaultDirectLaborPct = $row.children("td")[1].textContent;
+            	var $divisionCode = $row.children("td")[1].textContent;
             	var $divisionNbr = $row.children("td")[2].textContent;
-            	var $divisionCode = $row.children("td")[3].textContent;
-            	var $description = $row.children("td")[4].textContent;
+            	var $description = $row.children("td")[3].textContent;
+            	var $defaultDirectLaborPct = $row.children("td")[4].textContent;
             	var $status = $row.children("td")[5].textContent;
 
             	$("#addForm input[name='divisionId']").val($divisionId);
-            	$("#addForm input[name='defaultDirectLaborPct']").val($defaultDirectLaborPct);
-            	$("#addForm input[name='divisionNbr']").val($divisionNbr);
             	$("#addForm input[name='divisionCode']").val($divisionCode);
+            	$("#addForm input[name='divisionNbr']").val($divisionNbr);
             	$("#addForm input[name='description']").val($description);
+            	$("#addForm input[name='defaultDirectLaborPct']").val($defaultDirectLaborPct);
             	$("#addForm input[name='status']").val($status);
 				
             	
@@ -142,8 +145,17 @@
 			
 			function doDelete($clickevent) {
 				$clickevent.preventDefault();
-				var rownum = $clickevent.currentTarget.attributes['data-row'].value;
-				$('#confirmDelete').data('rownum',rownum);
+				var $rownum = $clickevent.currentTarget.attributes['data-row'].value;
+				var $tableData = [];
+				$("#displayTable").find('tr').each(function (rowIndex, r) {
+	                 var cols = [];
+	                 $(this).find('th,td').each(function (colIndex, c) {
+	                     cols.push(c.textContent);
+	                 });
+	                 $tableData.push(cols);
+	                });
+				
+				$('#confirmDelete').data('rownum',$rownum);
              	$('#confirmDelete').bPopup({
 					modalClose: false,
 					opacity: 0.6,
@@ -167,7 +179,7 @@
 				clearAddForm();
 				$('#addFormDiv').bPopup().close();
 			});
-
+			
 			$("#goUpdate").click( function($clickevent) {
 				$clickevent.preventDefault();
 				console.debug("Doing update");
@@ -180,29 +192,13 @@
 						$outbound[$fieldName] = $val;
 					}
 				});
-				$outbound['seq'] = $("#addForm select[name='seq'] option:selected").val();
-				$outbound['status'] = $("#addForm select[name='status'] option:selected").val();
+				
 
-				if ( $('#addForm').data('rownum') == null ) {
+				if ( $('#addForm') .data('data-item-id') == null) {
 					$url = "division/add";
 				} else {
-					$rownum = $('#addForm').data('rownum')
-					var $tableData = [];
-	                $("#displayTable").find('tr').each(function (rowIndex, r) {
-	                    var cols = [];
-	                    $(this).find('th,td').each(function (colIndex, c) {
-	                        cols.push(c.textContent);
-	                    });
-	                    $tableData.push(cols);
-	                });
-
-	                var $divisionId = $tableData[$rownum][0];
-	            	var $defaultDirectLaborPct = $tableData[$rownum][1];
-	            	var $divisionNbr = $tableData[$rownum][2];
-	            	var $divisionCode = $tableData[$rownum][3]
-	            	var $description = $tableData[$rownum][4]
-	            	var $status = $tableData[$rownum][5]
-	            	$url = "division/" + $defaultDirectLaborPct + "/" + $divisionNbr + "/" + $divisionCode + "/" + $description + "/" + $status;
+					var $data_item_id = $('#addForm').data('data-item-id');
+					$url = "divisionId/" + $data_item_id;
 				}
 				
 				console.debug(JSON.stringify($outbound))
@@ -211,8 +207,7 @@
 					url: $url,
 					data: JSON.stringify($outbound),
 					success: function($data) {
-						console.debug($data);
-						if ( $data.responseHeader.responseDivision == 'SUCCESS') {
+						if ( $data.responseHeader.responseCode == 'SUCCESS') {
 							if ( $url == "division/add" ) {
 								var count = $('#displayTable tr').length - 1;
 								addRow(count, $data.data.division);
@@ -226,8 +221,8 @@
 							doFunctionBinding();
 							clearAddForm();
 							$('#addFormDiv').bPopup().close();
-							$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
-						} else if ( $data.responseHeader.responseDivision == 'EDIT_FAILURE') {
+								$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
+						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
 							$.each($data.data.webMessages, function(key, messageList) {
 								var identifier = "#" + key + "Err";
 								msgHtml = "<ul>";
@@ -237,7 +232,7 @@
 								msgHtml = msgHtml + "</ul>";
 								$(identifier).html(msgHtml);
 							});		
-							$("#addFormMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]);
+								$("#addFormMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]);
 						} else {
 							
 						}
@@ -245,7 +240,11 @@
 					statusCode: {
 						403: function($data) {
 							$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-						} 
+						}, 
+	         	    	404: function($data) {
+	         	    		$('#addFormDiv').bPopup().close();
+	         	    		$("#globalMsg").html("Record does not exist").fadeIn(10).fadeOut(6000);
+	        	    	} 
 					},
 					dataType: 'json'
 				});
@@ -267,21 +266,24 @@
                     $tableData.push(cols);
                 });
 
-                var $rownum = $('#confirmDelete').data('rownum');
+            	var $rownum = $('#confirmDelete').data('rownum');
             	var $divisionId = $tableData[$rownum][0];
-            	var $defaultDirectLaborPct = $tableData[$rownum][1];
+            	var $divisionCode = $tableData[$rownum][1];
             	var $divisionNbr = $tableData[$rownum][2];
-            	var $divisionCode = $tableData[$rownum][3];
-            	var $description = $tableData[$rownum][4];
+            	var $description= $tableData[$rownum][3];
+            	var $defaultDirectLaborPct = $tableData[$rownum][4];
             	var $status = $tableData[$rownum][5];
-            	$outbound = JSON.stringify({'divisionId':$divisionId, 'defaultDirectLaborPct':$defaultDirectLaborPct,'divisionNbr':$divisionNbr, 'divisionCode':$divisionCode, 'description':$description, 'status':$status});
+            	
+            	$outbound = JSON.stringify({});
+            	$url = 'division/' + $divisionId;
+            	
             	var jqxhr = $.ajax({
             	    type: 'delete',
-            	    url: 'division/delete',
+            	    url: $url,
             	    data: $outbound,
             	    success: function($data) {
             	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
-						if ( $data.responseHeader.responseDivision == 'SUCCESS') {
+						if ( $data.responseHeader.responseCode == 'SUCCESS') {
 							$rowfinder = "tr:eq(" + $rownum + ")"
 							$("#displayTable").find($rowfinder).remove();
 							$('#confirmDelete').bPopup().close();
@@ -290,7 +292,11 @@
             	     statusCode: {
             	    	403: function($data) {
             	    		$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-            	    	} 
+            	    	}, 
+	         	    	404: function($data) {
+	         	    		$('#confirmDelete').bPopup().close();
+	         	    		$("#globalMsg").html("Record does not exist").fadeIn(10).fadeOut(6000);
+	        	    	} 
             	     },
             	     dataType: 'json'
             	});
@@ -352,10 +358,10 @@
     	<table id="displayTable">
     		<tr>
     			<th>Div ID</th>
-    			<th>Default<br>DL %</br></th>
-				<th>Div #</th>
     			<th>Div Code</th>
+				<th>Div #</th>
     			<th>Description</th>
+    			<th>Default<br>DL %</br></th>
     			<th>Status</th>
  			    <ansi:hasPermission permissionRequired="SYSADMIN">
     				<ansi:hasWrite>
@@ -379,6 +385,12 @@
     		<ansi:hasWrite>
 		    	<div id="confirmDelete">
 		    		Are You Sure You Want to Delete this Division?<br />
+		    		<table id="delData">
+		    			<tr>
+		    				<td><span class="formLabel">Div. Code:</span></td>
+		    				<td id="delDivisionCode"></td>
+		    			</tr>
+		    		</table>
 		    		<input type="button" id="cancelDelete" value="No" />
 		    		<input type="button" id="doDelete" value="Yes" />
 		    	</div>
@@ -388,37 +400,30 @@
 		    		<div id="addFormMsg" class="err"></div>
 		    		<form action="#" method="post" id="addForm">
 		    			<table>
-		    					<td><span class="required">*</span><span class="formLabel">Default Direct Labor Percentage:</span></td>
-		    					<td>
-		    						<input type="text" name="defaultDirectLaborPct" data-required="true" data-valid="validTable" />
-		    						<i id="validTable" class="fa" aria-hidden="true"></i>
-		    					</td>
-		    					<td><span class="err" id="defaultDirectLaborPctErr"></span></td>
-		    				</tr>
 		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Division Number:</span></td>
+		    					<td><span class="required">*</span><span class="formLabel">Div. Code:</span></td>
 		    					<td>
-		    						<input type="text" name="divisionNbr" data-required="true" data-valid="validTable" />
-		    						<i id="validTable" class="fa" aria-hidden="true"></i>
-		    					</td>
-		    					<td><span class="err" id="divisionNbrErr"></span></td>
-		    				</tr>
-							<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Division Code:</span></td>
-		    					<td>
-		    						<input type="text" name="divisionCode" data-required="true" data-valid="validTable" />
-		    						<i id="validTable" class="fa" aria-hidden="true"></i>
+		    						<input type="text" name="divisionCode" data-required="true" data-valid="validDivisionCode" />
+		    						<i id="validDivisionCode" class="fa" aria-hidden="true"></i>
 		    					</td>
 		    					<td><span class="err" id="divisionCodeErr"></span></td>
 		    				</tr>
 		    				<tr>
+		    					<td><span class="required">*</span><span class="formLabel">Div. Nbr:</span></td>
+		    					<td>
+		    						<input type="text" name="divisionNbr" data-required="true" data-valid="validDivisionNbr" />
+		    						<i id="validDivisionNbr" class="fa" aria-hidden="true"></i>
+		    					</td>
+		    					<td><span class="err" id="divisionNbrErr"></span></td>
+		    				</tr>
+		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Description:</span></td>
 		    					<td>
-		    						<input type="text" name="description" data-required="true" data-valid="validTable" />
-		    						<i id="validTable" class="fa" aria-hidden="true"></i>
+		    						<input type="text" name="description" data-required="true" data-valid="validDescription" />
+		    						<i id="validDescription" class="fa" aria-hidden="true"></i>
 		    					</td>
 		    					<td><span class="err" id="descriptionErr"></span></td>
-		    				</tr>
+		    				</tr>		    				
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Status:</span></td>
 		    					<td>
