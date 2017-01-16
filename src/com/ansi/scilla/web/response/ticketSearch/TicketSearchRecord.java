@@ -40,7 +40,6 @@ public class TicketSearchRecord extends ApplicationObject {
 		this.billToName = ticketSearch.getBillToName();			
 		this.jobSiteName = ticketSearch.getJobSiteName();			
 		this.jobSiteAddress = ticketSearch.getJobSiteAddress();	
-		this.jobId = ticketSearch.getJobId();
 		this.jobCode = ticketSearch.getJobCode();
 		this.jobStatus = ticketSearch.getJobStatus();
 		
