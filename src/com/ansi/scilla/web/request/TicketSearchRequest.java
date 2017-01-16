@@ -29,7 +29,7 @@ public class TicketSearchRequest extends AbstractRequest {
 	private Integer jobId;
     private Integer printCount;
 	private Date startDate;
-	private Integer status;
+	private String status;
 	private Integer ticketId;
 	private Integer ticketNbr;
 
@@ -92,11 +92,11 @@ public class TicketSearchRequest extends AbstractRequest {
 		return this.startDate;
 	}
 
-	public void setStatus(Integer status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 
-	public Integer getStatus() {
+	public String getStatus() {
 		return this.status;
 	}
 
