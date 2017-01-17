@@ -274,10 +274,22 @@ public class DivisionServlet extends AbstractServlet {
 				} else {
 					responseCode = ResponseCode.EDIT_FAILURE;
 				}
-				DivisionResponse divisionResponse = null;
+				/* DivisionResponse divisionResponse = null;
 				if ( division != null ) {
 					divisionResponse = new DivisionResponse(conn, division);
 				}
+				if ( ! webMessages.isEmpty()) {
+					divisionResponse.setWebMessages(webMessages);
+				} */
+				
+				DivisionResponse divisionResponse = new DivisionResponse();
+				if ( division != null ) {
+					divisionResponse = new DivisionResponse(conn, division);
+				}
+				if ( ! webMessages.isEmpty()) {
+					divisionResponse.setWebMessages(webMessages);
+				}
+				
 				super.sendResponse(conn, response, responseCode, divisionResponse);
 			} else {
 				super.sendNotFound(response);
