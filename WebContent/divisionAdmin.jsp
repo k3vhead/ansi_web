@@ -228,9 +228,9 @@
 							doFunctionBinding();
 							clearAddForm();
 							$('#addFormDiv').bPopup().close();
-							$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
+							$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
 						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-							$.each($data.data.webMessages, function(key, messageList) {
+							 $.each($data.data.webMessages, function(key, messageList) {
 								var identifier = "#" + key + "Err";
 								msgHtml = "<ul>";
 								$.each(messageList, function(index, message) {
@@ -238,8 +238,8 @@
 								});
 								msgHtml = msgHtml + "</ul>";
 								$(identifier).html(msgHtml);
-							});		
-							$("#addFormMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]);
+							});	
+							$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
 						} else {
 							
 						}
@@ -269,13 +269,20 @@
                     $tableData.push(cols);
                 });
 
-            	var $rownum = $('#confirmDelete').data('rownum');
+                var $rownum = $('#confirmDelete').data('rownum');
+            	var $divisionId = $tableData[$rownum][0];
+            	var $defaultDirectLaborPct = $tableData[$rownum][1];
+            	var $divisionNbr = $tableData[$rownum][2];
+            	var $divisionCode = $tableData[$rownum][3];
+            	var $description= $tableData[$rownum][4];
+            	var $status = $tableData[$rownum][5];
             	
-            	$outbound = JSON.stringify({'divisionId':$divisionId, 'divisionCode':$divisionCode,'divisionNbr':$divisionNbr, 'description':$description, 'defaultDirectLaborPct':$defaultDirectLaborPct,'status':$status});
+            	$outbound = JSON.stringify({});
+            	$url = 'division/' + $divisionId + "/" + $defaultDirectLaborPct + "/" + $divisionNbr + "/" + $divisionCode + "/" + $description + "/" + $status;
             	
             	var jqxhr = $.ajax({
             	    type: 'delete',
-            	    url: 'division/delete',
+            	    url: $url,
             	    data: $outbound,
             	    success: function($data) {
             	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
