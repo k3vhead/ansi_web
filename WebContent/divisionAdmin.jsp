@@ -193,13 +193,31 @@
 					}
 				});
 				
+				$outbound['status'] = $("#addForm select[name='status'] option:selected").val();
+				console.debug(JSON.stringify($outbound))
 
-				if ( $('#addForm') .data('data-item-id') == null) {
+				if ( $('#addForm').data('rownum') == null ) {
 					$url = "division/add";
+					console.debug("This is an Add")
 				} else {
-					var $data_item_id = $('#addForm').data('data-item-id');
-					$url = "divisionId/" + $data_item_id;
+					console.debug("This is an Update")
+					$rownum = $('#addForm').data('rownum')
+					var $tableData = [];
+	                $("#displayTable").find('tr').each(function (rowIndex, r) {
+	                    var cols = [];
+	                    $(this).find('th,td').each(function (colIndex, c) {
+	                        cols.push(c.textContent);
+	                    });
+	                    $tableData.push(cols);
+	                });
+
+	            	var $divisionId = $tableData[$rownum][0];
+	            	var $divisionCode = $tableData[$rownum][1];
+	            	var $divisionNbr = $tableData[$rownum][2];
+	            	$url = "division/" + $divisionId;
+	            	console.debug(JSON.stringify($url))
 				}
+			
 				
 				console.debug(JSON.stringify($outbound))
 				var jqxhr = $.ajax({
@@ -207,11 +225,13 @@
 					url: $url,
 					data: JSON.stringify($outbound),
 					success: function($data) {
+						console.debug("IT'S A SUCCESS")
 						if ( $data.responseHeader.responseCode == 'SUCCESS') {
 							if ( $url == "division/add" ) {
 								var count = $('#displayTable tr').length - 1;
 								addRow(count, $data.data.division);
 							} else {
+								console.debug("UPDATE SUCCESS")
 				            	var $rownum = $('#addForm').data('rownum');
 				                var $rowId = eval($rownum) + 1;
 				            	var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")"
@@ -223,7 +243,9 @@
 							$('#addFormDiv').bPopup().close();
 								$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
 						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+							console.debug("EDIT FAILED")
 							$.each($data.data.webMessages, function(key, messageList) {
+								console.debug("HERE LOOPING")
 								var identifier = "#" + key + "Err";
 								msgHtml = "<ul>";
 								$.each(messageList, function(index, message) {
