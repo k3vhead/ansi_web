@@ -149,28 +149,14 @@
 			
 			function doDelete($clickevent) {
 				$clickevent.preventDefault();
-				var $rownum = $clickevent.currentTarget.attributes['data-row'].value;
-				var $tableData = [];
-				$("#displayTable").find('tr').each(function (rowIndex, r) {
-	                 var cols = [];
-	                 $(this).find('th,td').each(function (colIndex, c) {
-	                     cols.push(c.textContent);
-	                 });
-	                 $tableData.push(cols);
-	                });
-				
-				$("#delDivisionId").html($tableData[$rownum][0]);
-            	$("#delDefaultDirectLaborPct").html($tableData[$rownum][1]);
-            	$("#delDivisionNbr").html($tableData[$rownum][2]);
-				
-				$('#confirmDelete').data('rownum',$rownum);
+				var rownum = $clickevent.currentTarget.attributes['data-row'].value;
+				$('#confirmDelete').data('rownum',rownum);
              	$('#confirmDelete').bPopup({
 					modalClose: false,
 					opacity: 0.6,
 					positionStyle: 'fixed' //'fixed' or 'absolute'
 				});
 			}
-			
 			$("#addButton").click( function($clickevent) {
 				$clickevent.preventDefault();
 				$("#addFormTitle").html("Add Division");
@@ -218,9 +204,7 @@
 	                });
 
 	            	var $divisionId= $tableData[$rownum][0];
-	            	var $divisionCode = $tableData[$rownum][1];
-	            	var $divisionNbr = $tableData[$rownum][2];
-	            	$url = "division/" + $divisionId + "/" + $divisionCode + "/" + $divisionNbr;
+	            	$url = "division/" + $divisionId;
 				}
 				
 				console.debug(JSON.stringify($outbound))
@@ -286,19 +270,12 @@
                 });
 
             	var $rownum = $('#confirmDelete').data('rownum');
-            	var $divisionId = $tableData[$rownum][0];
-            	var $divisionCode = $tableData[$rownum][1];
-            	var $divisionNbr = $tableData[$rownum][2];
-            	var $description= $tableData[$rownum][3];
-            	var $defaultDirectLaborPct = $tableData[$rownum][4];
-            	var $status = $tableData[$rownum][5];
             	
-            	$outbound = JSON.stringify({});
-            	$url = 'division/' + $divisionId;
+            	$outbound = JSON.stringify({'divisionId':$divisionId, 'divisionCode':$divisionCode,'divisionNbr':$divisionNbr, 'description':$description, 'defaultDirectLaborPct':$defaultDirectLaborPct,'status':$status});
             	
             	var jqxhr = $.ajax({
             	    type: 'delete',
-            	    url: $url,
+            	    url: 'division/delete',
             	    data: $outbound,
             	    success: function($data) {
             	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
