@@ -5,8 +5,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -186,15 +184,9 @@ public class DivisionServlet extends AbstractServlet {
 			String jsonString = super.makeJsonString(request);
 			try {
 				DivisionRequest divisionRequest = (DivisionRequest) AppUtils.json2object(jsonString, DivisionRequest.class);
-				processRequest(conn, response, command, sessionUser, divisionRequest);
-			} catch ( InvalidFormatException e) {
-				WebMessages webMessages = new WebMessages();
-				String field = findBadField(e.toString());
-				String messageText = AppUtils.getMessageText(conn, MessageKey.INVALID_DATA, "Invalid Format");
-				webMessages.addMessage(field, messageText);
-				DivisionResponse divisionResponse = new DivisionResponse();
-				divisionResponse.setWebMessages(webMessages);
-				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, divisionResponse);
+				processPostRequest(conn, response, command, sessionUser, divisionRequest);
+			} catch ( InvalidFormatException formatException) {
+				processBadPostRequest(conn, response, formatException);
 			}
 		} catch ( Exception e ) {
 			AppUtils.logException(e);
@@ -205,7 +197,7 @@ public class DivisionServlet extends AbstractServlet {
 		}
 	}
 		
-	private void processRequest(Connection conn, HttpServletResponse response, String command, SessionUser sessionUser, DivisionRequest divisionRequest) throws Exception {	
+	private void processPostRequest(Connection conn, HttpServletResponse response, String command, SessionUser sessionUser, DivisionRequest divisionRequest) throws Exception {	
 			Division division = null;
 			ResponseCode responseCode = null;
 			if ( command.equals(ACTION_IS_ADD) ) {
@@ -297,6 +289,17 @@ public class DivisionServlet extends AbstractServlet {
 			
 			
 		
+		
+	}
+
+	private void processBadPostRequest(Connection conn, HttpServletResponse response, InvalidFormatException formatException) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		String field = findBadField(formatException.toString());
+		String messageText = AppUtils.getMessageText(conn, MessageKey.INVALID_DATA, "Invalid Format");
+		webMessages.addMessage(field, messageText);
+		DivisionResponse divisionResponse = new DivisionResponse();
+		divisionResponse.setWebMessages(webMessages);
+		super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, divisionResponse);
 		
 	}
 
