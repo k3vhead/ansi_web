@@ -53,138 +53,64 @@
         </style>
         
         <script type="text/javascript">        
-        $(function() {        
+        
+        	$(document).ready(function() {
         	var dataTable = null;
         	
-        	function createData(){
-        	 	var jqxhr1 = $.ajax({
-    				type: 'GET',
-    				url: 'address/list',
-    				data: {},
-    				dataType: 'json',
-    				success: function($data) {
-    				var data = new Array();
-    					 
-    					 $.each($data, function(index, val) {
-    						 $.each(val.codeList, function(index, val) {
-    							 
-    							 var addressId = (val.addressId).toString();
-    							 var name = val.name;
-    							 var status = val.status;
-    							 var address1 = val.address1;
-    							 var address2 = val.address2;
-    							 var city = val.city;
-    							 var county = val.county;
-    							 var country = val.country;
-    							 var state = val.state;
-    							 var zip = val.zip;
-    							 
-    							if(addressId == null) 	{	addressId = "N/A";	}	
-    							if(name == null) 		{	name = "N/A";		}	
-    							if(status == null) 		{	status = "N/A";		}	
-    							if(address1 == null) 	{	address1 = "N/A";	}	
-    							if(address2 == null) 	{	address2 = "N/A";	}	
-    							if(city == null) 		{	city = "N/A";		}	
-    							if(county == null) 		{	county = "N/A";		}	
-    							if(country == null) 	{	country = "N/A";	}	
-    							if(state == null) 		{	state = "N/A";		}	
-    							if(zip == null) 		{	zip = "N/A";		}	
-    						
-    							 
-    						 		data.push([addressId,name,status,address1,address2,city,county,country,state,zip]);
-    					 			//console.log(row);
-    					 			
-    						 });
-    					 	//resultTable.rows.add(row).draw();
-    					 });
-    					 console.log(data);
-    					 //resultTable.draw();
-    	                 //   resultTable.rows.add($data.codeList).draw();
-    	                 //   dataSet = $data.codeList;
-    					createTable(data);
-    				},
-    				statusCode: {
-    					403: function($data) {
-    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-    					} 
-    				},
-    				dataType: 'json'
-    			});
-
-        	}
-        	
-        	function createTable(data){
+        	function createTable(){
         		var dataTable = $('#addressTable').DataTable( {
-			        data: data,
-			        "processing": true,
+        			"processing": true,
+        	        "serverSide": true,
+        	        "pageLength": 10,
+        	        "searching": true,
+        	        "paging": true,
+			        "ajax": {
+			        	"url": "addressTable",
+			        	"dataSrc": function (json) {
+			        		console.log(json);
+			        	      return json;
+			        	  },
+			        	"type": "GET"
+			        	},
+			        	rowId: 'Id',
 			        columns: [
-			            { title: "Id", width: "30px" },
-			            { title: "Name" },
-			            { title: "Status" },
-			            { title: "Address 1" },
-			            { title: "Address 2" },
-			            { title: "City" },
-			            { title: "County" },
-			            { title: "Country" },
-			            { title: "State" },
-			            { title: "Zip" },
-			            {
-			                mRender: function (data, type, row) {
-			                    //return '<a class="table-edit" data-id="' + row[0] + '">EDIT</a>'
-			                     //return "<button id='edit"+ row[0] + "' class='ui-button ui-widget ui-corner-all ui-button-icon-only' title='Edit'>"
-			                     return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' id='edit"+ row[0] + "'class='ui-icon ui-icon-pencil'></a>|<a href='#' id='delete"+ row[0] + "'class='ui-icon ui-icon-trash'></a></ansi:hasWrite></ansi:hasPermission>"
-			                }
-			            
-			            }]
+			            { title: "Id", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            	if(row.addressId != null){return (row.addressId+"");}
+			            } },
+			            { title: "Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            	if(row.name != null){return (row.name+"");}
+			            } },
+			            { title: "Status" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            	if(row.status != null){return (row.status+"");}
+			            } },
+			            { title: "Address 1", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            	if(row.address1 != null){return (row.address1+"");}
+			            } },
+			            { title: "Address 2",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            	if(row.address2 != null){return (row.address2+"");}
+			            } },
+			            { title: "City", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            	if(row.city != null){return (row.city+"");}
+			            } },
+			            { title: "County", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            	if(row.county != null){return (row.county+"");}
+			            } },
+			            { title: "Country", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            	if(row.countryCode != null){return (row.countryCode+"");}
+			            } },
+			            { title: "State", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
+			            	if(row.state != null){return (row.state+"");}
+			            } },
+			            { title: "Zip", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            	if(row.zip != null){return (row.zip+"");} 
+			            } },
+			            { title: "Action",  data: function ( row, type, set ) {	
+			            	return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.addressId+"'></a>|<a href='#' data-id='"+row.addressId+"'  class='delAction ui-icon ui-icon-trash'></a></ansi:hasWrite></ansi:hasPermission>" 
+			            } }],
+			            "initComplete": function(settings, json) {
+			            	doFunctionBinding();
+			            }
 			    } );
-				dataTable.rows().every( function () {
-			        var that = this;
-			        console.log(this);
-			 		$('#edit'+that.data()[0]).click(function(event){ 
-			 			//console.log(event.target.id);
-			            console.log("Button "+event.target.id+" clicked!");
-			        });
-			 		$('#delete'+that.data()[0]).click(function(event){ 
-			 			//console.log(event.target.id);
-			            console.log("Button "+event.target.id+" clicked!");
-
-			           var $addressId = event.target.id.replace('delete','');
-			           dataTable.row( this ).remove();
-			           dataTable.draw();
-		            	$outbound = JSON.stringify({});
-		            	$url = 'address/' + $addressId;
-		            	//$outbound = JSON.stringify({'tableName':$tableName, 'fieldName':$fieldName,'value':$value});
-		            	var jqxhr = $.ajax({
-		            	    type: 'delete',
-		            	    url: $url,
-		            	    data: $outbound,
-		            	    success: function($data) {
-		            	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
-								if ( $data.responseHeader.responseCode == 'SUCCESS') {
-									
-									dataTable.draw();
-								}
-		            	     },
-		            	     statusCode: {
-		            	    	403: function($data) {
-		            	    		$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-		            	    	},
-		            	    	500: function($data) {
-		            	    		 $( "#deleteErrorDialog" ).dialog({
-		            	    		      modal: true,
-		            	    		      buttons: {
-		            	    		        Ok: function() {
-		            	    		          $( this ).dialog( "close" );
-		            	    		        }
-		            	    		      }
-		            	    		    });
-		            	    	} 
-		            	     },
-		            	     dataType: 'json'
-		            	});
-			 		});
-				});
-				dataTable.draw();
         	}
         	
         	
@@ -193,12 +119,8 @@
         	$("#addButton").button().on( "click", function() {
         	      $("#addAddressForm").dialog( "open" );
             });
+        	
         	init();
-        	//$('#addressTable tfoot th').each( function () {
-		    //    var title = $(this).text();
-		    //    $(this).html( '<input type="text" style="width:100%" placeholder="<'+title+'>" />' );
-		    //} );
-       		createData();
 			
         	$( "#addAddressForm" ).dialog({
         	      autoOpen: false,
@@ -228,16 +150,6 @@
         		$outbound["countryCode"]	=	$("#country option:selected").val();
         		$outbound["state"]		=	$("#state option:selected").val();
         		$outbound["zip"]		=	$("#zip").val();
-        		$outbound2 = {};
-        		$outbound2["Name"]		=	$("#name").val();
-        		$outbound2["Status"]		=	$("#status option:selected").val();
-        		$outbound2["Address 1"]	=	$("#address1").val();
-        		$outbound2["Address 2"]	=	$("#address2").val();
-        		$outbound2["City"]		=	$("#city").val();
-        		$outbound2["County"]		=	$("#county").val();
-        		$outbound2["Country"]	=	$("#country option:selected").val();
-        		$outbound2["State"]		=	$("#state option:selected").val();
-        		$outbound2["Zip"]		=	$("#zip").val();
         		
         		
 				$url = "address/add";
@@ -251,14 +163,14 @@
 							//alert("success");
 							console.log($data);
 							//createData();
-							$('#addressTable').row.add({
-								
-							});
+					
 							clearAddForm();
 							$( "#addAddressForm" ).dialog( "close" );
 							if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
 								$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
 							}
+							
+							$('#addressTable').ajax.reload();
 						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
 							//alert("success fail");
 							$.each($data.data.webMessages, function(key, messageList) {
@@ -308,6 +220,8 @@
 	        	$("#zip").val("");
             }
             
+            
+            
             function init(){
 
 					$.each($('input'), function () {
@@ -336,9 +250,16 @@
 	    				dataType: 'json'
 	    			});
 					
+					createTable();
+					
+				//	setInterval( function () {
+				//		doFunctionBinding();
+				//	}, 3000 );
+					
 					
 					console.debug("inits");		
             }
+            
 				function setCountry($optionList,$selectedValue) {
 					var selectorName = "#address select[name='country']";
 					selectorName = "select[name='country']";
@@ -380,7 +301,65 @@
 					}
 					$select.selectmenu();
 				}
-            
+				
+				function doFunctionBinding() {
+					$( ".editAction" ).bind( "click", function($clickevent) {
+						 doEdit($clickevent);
+					});
+					$('.delAction').on('click', function($clickevent) {
+						doDelete($clickevent);
+					});
+					console.log("Functions Bound");
+				}
+				
+				function doEdit() {
+					var $rowid = event.currentTarget.attributes['data-id'].value;
+					
+					console.log("Edit Button Clicked: " + $rowid);
+					
+				}
+				
+				function doDelete($clickevent) {
+					$clickevent.preventDefault();
+					
+					var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
+					//$("#addressTable").row( $clickevent ).remove();
+			        //   dataTable.draw();
+		            	$outbound = JSON.stringify({});
+		            	$url = 'address/' + $rowid;
+		            	//$outbound = JSON.stringify({'tableName':$tableName, 'fieldName':$fieldName,'value':$value});
+		            	var jqxhr = $.ajax({
+		            	    type: 'delete',
+		            	    url: $url,
+		            	    data: $outbound,
+		            	    success: function($data) {
+		            	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
+								if ( $data.responseHeader.responseCode == 'SUCCESS') {
+									
+									//dataTable.draw();
+								}
+		            	     },
+		            	     statusCode: {
+		            	    	403: function($data) {
+		            	    		$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+		            	    	},
+		            	    	500: function($data) {
+		            	    		 $( "#deleteErrorDialog" ).dialog({
+		            	    		      modal: true,
+		            	    		      buttons: {
+		            	    		        Ok: function() {
+		            	    		          $( this ).dialog( "close" );
+		            	    		        }
+		            	    		      }
+		            	    		    });
+		            	    	} 
+		            	     },
+		            	     dataType: 'json'
+		            	});
+					
+					
+				}
+				
         
             
         });
@@ -398,8 +377,8 @@
                 <th>Id</th>
     			<th>Name</th>
     			<th>Status</th>
-    			<th>Address1</th>
-    			<th>Address2</th>
+    			<th style="width:80px;">Address 1</th>
+    			<th style="width:80px;">Address 2</th>
     			<th>City</th>
     			<th>County</th>
     			<th>Country</th>
@@ -413,8 +392,8 @@
                 <th>Id</th>
     			<th>Name</th>
     			<th>Status</th>
-    			<th>Address1</th>
-    			<th>Address2</th>
+    			<th style="width:80px;">Address 1</th>
+    			<th style="width:80px;">Address 2</th>
     			<th>City</th>
     			<th>County</th>
     			<th>Country</th>

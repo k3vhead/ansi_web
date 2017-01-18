@@ -63,6 +63,24 @@
         <url-pattern>/address/*</url-pattern>
     </servlet-mapping>
 
+		<servlet>
+		<servlet-name>addressSearch</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.AddressSearchServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>addressSearch</servlet-name>
+		<url-pattern>/addressSearch</url-pattern>
+	</servlet-mapping>
+
+			<servlet>
+		<servlet-name>addressTable</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.AddressTableServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>addressTable</servlet-name>
+		<url-pattern>/addressTable</url-pattern>
+	</servlet-mapping>
+	
 
     <servlet>
 		<servlet-name>autoComplete</servlet-name>
