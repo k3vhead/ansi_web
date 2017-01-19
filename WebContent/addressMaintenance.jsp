@@ -62,7 +62,15 @@
         			"processing": true,
         	        "serverSide": true,
         	        "pageLength": 10,
+        	        dom: 'Bfrtip',
         	        "searching": true,
+        	        lengthMenu: [
+        	            [ 10, 25, 50, -1 ],
+        	            [ '10 rows', '25 rows', '50 rows', 'Show all' ]
+        	        ],
+        	        buttons: [
+        	        	'pageLength','copy', 'csv', 'excel', 'pdf', 'print'
+        	        ],
         	        "paging": true,
 			        "ajax": {
 			        	"url": "addressTable",
