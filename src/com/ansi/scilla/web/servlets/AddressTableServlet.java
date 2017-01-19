@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -55,11 +56,24 @@ public class AddressTableServlet extends AbstractServlet {
 		String dir = "asc";
 		String[] cols = { "address_id", "name", "status", "address1", "address2", "city", "county", "state", "zip", "country_code" };
 		String sStart = request.getParameter("start");
-	    String sAmount = request.getParameter("amount");
+	    String sAmount = request.getParameter("length");
 	    String sEcho = request.getParameter("sEcho");
-	    String sCol = request.getParameter("iSortCol_0");
-	    String sdir = request.getParameter("sSortDir_0");
+	    String sCol = request.getParameter("order[0][column]");
+	    String sdir = request.getParameter("order[0][dir]");
+	   System.out.println(sCol);
 	   
+	   //list all passed header and paramaters
+	   /* Enumeration headerNames = request.getHeaderNames();
+	   while(headerNames.hasMoreElements()) {
+	     String headerName = (String)headerNames.nextElement();
+	     System.out.println("Header Name - " + headerName + ", Value - " + request.getHeader(headerName));
+	   }
+	   Enumeration params = request.getParameterNames(); 
+	   while(params.hasMoreElements()){
+	    String paramName = (String)params.nextElement();
+	    System.out.println("Parameter Name - "+paramName+", Value - "+request.getParameter(paramName));
+	   }
+	   */
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
