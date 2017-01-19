@@ -49,6 +49,10 @@
 			#state-menu {
 			  max-height: 300px;
 			}
+			.prettyWideButton {
+				height:30px;
+				min-height:30px;
+			}
 
         </style>
         
@@ -61,7 +65,10 @@
         		var dataTable = $('#addressTable').DataTable( {
         			"processing": true,
         	        "serverSide": true,
-        	        "pageLength": 10,
+        	        "autoWidth": false,
+        	        "deferRender": true,
+        	        "scrollX": true,
+        	        rowId: 'dt_RowId',
         	        dom: 'Bfrtip',
         	        "searching": true,
         	        lengthMenu: [
@@ -69,7 +76,7 @@
         	            [ '10 rows', '25 rows', '50 rows', 'Show all' ]
         	        ],
         	        buttons: [
-        	        	'pageLength','copy', 'csv', 'excel', 'pdf', 'print'
+        	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print'
         	        ],
         	        "paging": true,
 			        "ajax": {
@@ -112,6 +119,11 @@
 			            } }],
 			            "initComplete": function(settings, json) {
 			            	console.log(json);
+			            	
+			            	//$('#addressTable').DataTable().columns.adjust().draw();
+			            	doFunctionBinding();
+			            },
+			            "drawCallback": function( settings ) {
 			            	doFunctionBinding();
 			            }
 			    } );
@@ -174,7 +186,7 @@
 								$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
 							}
 							
-							$('#addressTable').ajax.reload();
+							$("#addressTable").DataTable().draw();
 						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
 							//alert("success fail");
 							$.each($data.data.webMessages, function(key, messageList) {
@@ -328,6 +340,7 @@
 					
 					var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
 					//$("#addressTable").row( $clickevent ).remove();
+					$("#addressTable").DataTable().row($rowid).remove();
 			        //   dataTable.draw();
 		            	$outbound = JSON.stringify({});
 		            	$url = 'address/' + $rowid;
@@ -339,7 +352,7 @@
 		            	    success: function($data) {
 		            	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
 								if ( $data.responseHeader.responseCode == 'SUCCESS') {
-									
+									$("#addressTable").DataTable().draw();
 									//dataTable.draw();
 								}
 		            	     },
@@ -378,11 +391,11 @@
  	<table id="addressTable" class="display" cellspacing="0" width="100%">
         <thead>
             <tr>
-                <th>Id</th>
+                <th style="max-width:40px;">Id</th>
     			<th>Name</th>
     			<th>Status</th>
-    			<th style="width:80px;">Address 1</th>
-    			<th style="width:80px;">Address 2</th>
+    			<th style="max-width:200px;width:200px !important;">Address 1</th>
+    			<th style="max-width:200px;width:200px !important;">Address 2</th>
     			<th>City</th>
     			<th>County</th>
     			<th>Country</th>
@@ -396,8 +409,8 @@
                 <th>Id</th>
     			<th>Name</th>
     			<th>Status</th>
-    			<th style="width:80px;">Address 1</th>
-    			<th style="width:80px;">Address 2</th>
+    			<th style="max-width:200px;width:200px !important;">Address 1</th>
+    			<th style="max-width:200px;width:200px !important;">Address 2</th>
     			<th>City</th>
     			<th>County</th>
     			<th>Country</th>
@@ -453,7 +466,7 @@
 				<tr>
 					<td>City/State/Zip:</td>
 					<td><input type="text" name="city" id="city" style="width:90px;" /></td>
-					<td><select name="state" id="state" style="width:85px !important;max-width:85px !important;"></select></td>
+					<td style="width:80px;"><select name="state" id="state" ></select></td>
 					<td><input type="text" name="zip" id="zip" style="width:47px !important" /></td>
 				</tr>
 				</table>
@@ -466,7 +479,7 @@
 					<table style="width:180px">
 						<tr>
 							<td>Country:</td>
-							<td align="right"><select name="country" id="country"></select></td>
+							<td align="right"><select name="country" id="country" style="width:80px;max-width:80px;"></select></td>
 						</tr>
 					</table>
 				
