@@ -51,29 +51,29 @@ public class AddressTableServlet extends AbstractServlet {
 			throws ServletException, IOException {
 		int amount = 10;
 		int start = 0;
-		int echo = 0;
+		int draw = 0;
 		int col = 0;
 		String dir = "asc";
 		String[] cols = { "address_id", "name", "status", "address1", "address2", "city", "county", "state", "zip", "country_code" };
 		String sStart = request.getParameter("start");
 	    String sAmount = request.getParameter("length");
-	    String sEcho = request.getParameter("sEcho");
+	    String sDraw = request.getParameter("draw");
 	    String sCol = request.getParameter("order[0][column]");
 	    String sdir = request.getParameter("order[0][dir]");
-	   System.out.println(sCol);
+	   //System.out.println(sCol);
 	   
 	   //list all passed header and paramaters
 	   /* Enumeration headerNames = request.getHeaderNames();
 	   while(headerNames.hasMoreElements()) {
 	     String headerName = (String)headerNames.nextElement();
 	     System.out.println("Header Name - " + headerName + ", Value - " + request.getHeader(headerName));
-	   }
+	   }*/
 	   Enumeration params = request.getParameterNames(); 
 	   while(params.hasMoreElements()){
 	    String paramName = (String)params.nextElement();
 	    System.out.println("Parameter Name - "+paramName+", Value - "+request.getParameter(paramName));
 	   }
-	   */
+	   
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
@@ -95,8 +95,8 @@ public class AddressTableServlet extends AbstractServlet {
 		        if (amount < 10 || amount > 100)
 		            amount = 10;
 		    }
-		    if (sEcho != null) {
-		        echo = Integer.parseInt(sEcho);
+		    if (sDraw != null) {
+		        draw = Integer.parseInt(sDraw);
 		    }
 		    if (sCol != null) {
 		        col = Integer.parseInt(sCol);
@@ -165,11 +165,12 @@ public class AddressTableServlet extends AbstractServlet {
 			response.setContentType("application/json");
 			
 			AddressJsonResponse addressJsonResponse = new AddressJsonResponse();
-			addressJsonResponse.setiTotalDisplayRecords(totalAfterFilter);
-			addressJsonResponse.setiTotalRecords(total);
-			addressJsonResponse.setAaData(resultList);
+			addressJsonResponse.setRecordsFiltered(totalAfterFilter);
+			addressJsonResponse.setRecordsTotal(total);
+			addressJsonResponse.setData(resultList);
+			addressJsonResponse.setDraw(draw);
 			
-			String json = AppUtils.object2json(resultList);
+			String json = AppUtils.object2json(addressJsonResponse);
 			
 			
 			

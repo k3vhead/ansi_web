@@ -66,13 +66,8 @@
         	        "paging": true,
 			        "ajax": {
 			        	"url": "addressTable",
-			        	"dataSrc": function (json) {
-			        		console.log(json);
-			        	      return json;
-			        	  },
 			        	"type": "GET"
 			        	},
-			        	rowId: 'Id',
 			        columns: [
 			            { title: "Id", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.addressId != null){return (row.addressId+"");}
@@ -108,6 +103,7 @@
 			            	return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.addressId+"'></a>|<a href='#' data-id='"+row.addressId+"'  class='delAction ui-icon ui-icon-trash'></a></ansi:hasWrite></ansi:hasPermission>" 
 			            } }],
 			            "initComplete": function(settings, json) {
+			            	console.log(json);
 			            	doFunctionBinding();
 			            }
 			    } );

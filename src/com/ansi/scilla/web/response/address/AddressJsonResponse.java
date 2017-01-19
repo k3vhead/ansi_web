@@ -9,54 +9,54 @@ import com.ansi.scilla.web.response.address.AddressReturnItem;
 
 public class AddressJsonResponse {
 
-    int iTotalRecords;
+    int recordsTotal;
 
-    int iTotalDisplayRecords;
+    int recordsFiltered;
 
-    String sEcho;
+    int draw;
 
-    String sColumns;
+    String columns;
 
-    List<AddressReturnItem> aaData;
+    List<AddressReturnItem> data;
 
-    public int getiTotalRecords() {
-    return iTotalRecords;
+    public int getRecordsTotal() {
+    return recordsTotal;
     }
 
-    public void setiTotalRecords(int iTotalRecords) {
-    this.iTotalRecords = iTotalRecords;
+    public void setRecordsTotal(int recordsTotal) {
+    this.recordsTotal = recordsTotal;
     }
 
-    public int getiTotalDisplayRecords() {
-    return iTotalDisplayRecords;
+    public int getRecordsFiltered() {
+    return recordsFiltered;
     }
 
-    public void setiTotalDisplayRecords(int iTotalDisplayRecords) {
-    this.iTotalDisplayRecords = iTotalDisplayRecords;
+    public void setRecordsFiltered(int recordsFiltered) {
+    this.recordsFiltered = recordsFiltered;
     }
 
-    public String getsEcho() {
-    return sEcho;
+    public int getDraw() {
+    return draw;
     }
 
-    public void setsEcho(String sEcho) {
-    this.sEcho = sEcho;
+    public void setDraw(int draw) {
+    this.draw = draw;
     }
 
-    public String getsColumns() {
-    return sColumns;
+    public String getColumns() {
+    return columns;
     }
 
-    public void setsColumns(String sColumns) {
-    this.sColumns = sColumns;
+    public void setColumns(String columns) {
+    this.columns = columns;
     }
 
-    public List<AddressReturnItem> getAaData() {
-        return aaData;
+    public List<AddressReturnItem> getData() {
+        return data;
     }
 
-    public void setAaData(List<AddressReturnItem> aaData) {
-        this.aaData = aaData;
+    public void setData(List<AddressReturnItem> data) {
+        this.data = data;
     }
 
 }
