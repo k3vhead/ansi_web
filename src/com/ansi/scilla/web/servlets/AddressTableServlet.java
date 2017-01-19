@@ -92,8 +92,11 @@ public class AddressTableServlet extends AbstractServlet {
 		    }
 		    if (sAmount != null) {
 		    	amount = Integer.parseInt(sAmount);
-		        if (amount < 10 || amount > 100)
+				System.out.println(sAmount);
+		        if (amount != -1) {
+		        	if (amount < 10 || amount > 100)
 		            amount = 10;
+		        }
 		    }
 		    if (sDraw != null) {
 		        draw = Integer.parseInt(sDraw);
@@ -136,8 +139,10 @@ public class AddressTableServlet extends AbstractServlet {
 			
 			sql += search;
 			sql += " order by " + colName + " " + dir;
-			sql += " OFFSET "+ start+" ROWS"
+			if ( amount != -1) {
+				sql += " OFFSET "+ start+" ROWS"
 					+ " FETCH NEXT " + amount + " ROWS ONLY";
+			}
 			
 			s = conn.createStatement();
 			ResultSet rs = s.executeQuery(sql);
