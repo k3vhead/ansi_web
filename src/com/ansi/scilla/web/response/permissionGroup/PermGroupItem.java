@@ -1,6 +1,11 @@
 package com.ansi.scilla.web.response.permissionGroup;
 
+import java.lang.reflect.InvocationTargetException;
+
+import org.apache.commons.beanutils.BeanUtils;
+
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.db.PermissionGroup;
 
 /**
  * permission group and the permissions assigned to that group
@@ -14,7 +19,19 @@ public class PermGroupItem extends ApplicationObject implements Comparable<PermG
 	private String name;
 	private Integer permGroupId;
 	private Integer status;
+	private Integer userCount;
 	
+	public PermGroupItem(PermissionGroup record) throws IllegalAccessException, InvocationTargetException {
+		super();
+		BeanUtils.copyProperties(this, record);
+	}
+	
+	public Integer getUserCount() {
+		return userCount;
+	}
+	public void setUserCount(Integer userCount) {
+		this.userCount = userCount;
+	}
 	public String getDescription() {
 		return description;
 	}
@@ -53,7 +70,7 @@ public class PermGroupItem extends ApplicationObject implements Comparable<PermG
 		if ( ret == 0 ) {
 			ret = this.status.compareTo(o.getStatus());
 		}
-		return 0;
+		return ret;
 	}
 	
 	

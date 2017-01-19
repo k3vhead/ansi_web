@@ -1,6 +1,5 @@
 package com.ansi.scilla.web.response.permissionGroup;
 
-import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.web.request.AbstractRequest;
 
 
@@ -10,7 +9,12 @@ import com.ansi.scilla.web.request.AbstractRequest;
  *
  *
  */
+
 public class PermGroupRequest extends AbstractRequest {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String description;
 	private String name;
 	private Integer permissionGroupId;
@@ -48,21 +52,4 @@ public class PermGroupRequest extends AbstractRequest {
 		this.status = status;
 	}
 
-	public class PermissionItem extends ApplicationObject {
-		private String permissionName;
-		private Integer permissionLevel;
-		public String getPermissionName() {
-			return permissionName;
-		}
-		public void setPermissionName(String permissionName) {
-			this.permissionName = permissionName;
-		}
-		public Integer getPermissionLevel() {
-			return permissionLevel;
-		}
-		public void setPermissionLevel(Integer permissionLevel) {
-			this.permissionLevel = permissionLevel;
-		}
-		
-	}
 }

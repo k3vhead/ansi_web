@@ -180,6 +180,14 @@
         <url-pattern>/options/*</url-pattern>
     </servlet-mapping>
 
+	<servlet>
+        <servlet-name>permissionGroup</servlet-name>
+        <servlet-class>com.ansi.scilla.web.servlets.PermissionGroupServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>permissionGroup</servlet-name>
+        <url-pattern>/permissionGroup/*</url-pattern>
+    </servlet-mapping>
 
 	<servlet>
         <servlet-name>quote</servlet-name>
