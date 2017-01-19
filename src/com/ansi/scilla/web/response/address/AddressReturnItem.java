@@ -28,6 +28,7 @@ public class AddressReturnItem extends ApplicationObject {
 			this.address1 = rs.getString("address1");
 			this.address2 = rs.getString("address2");
 			this.county = rs.getString("county");
+			this.city = rs.getString("city");
 			this.state = rs.getString("state");
 			this.zip = rs.getString("zip");
 			this.country_code = rs.getString("country_code");
