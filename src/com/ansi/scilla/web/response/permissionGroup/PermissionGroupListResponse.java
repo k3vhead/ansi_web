@@ -2,11 +2,10 @@ package com.ansi.scilla.web.response.permissionGroup;
 
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.ansi.scilla.common.db.PermissionGroup;
+import com.ansi.scilla.common.queries.PermissionGroupUserCount;
 import com.ansi.scilla.web.response.MessageResponse;
 
 public class PermissionGroupListResponse extends MessageResponse {
@@ -15,7 +14,7 @@ public class PermissionGroupListResponse extends MessageResponse {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private List<PermGroupItem> permGroupItemList;
+	private List<PermGroupCountRecord> permGroupItemList;
 	
 	public PermissionGroupListResponse() {
 		super();
@@ -23,28 +22,24 @@ public class PermissionGroupListResponse extends MessageResponse {
 	
 	
 	public PermissionGroupListResponse(Connection conn) throws Exception {
-		List<PermissionGroup> list = PermissionGroup.cast(new PermissionGroup().selectAll(conn));
-		
-		this.permGroupItemList = new ArrayList<PermGroupItem>();
-		for ( PermissionGroup record : list ) {
-			this.permGroupItemList.add(new PermGroupItem(record));
+		List<PermissionGroupUserCount> list = PermissionGroupUserCount.select(conn);
+		this.permGroupItemList = new ArrayList<PermGroupCountRecord>();
+		for ( PermissionGroupUserCount record : list ) {
+			this.permGroupItemList.add(new PermGroupCountRecord(record));
 		}
 		Collections.sort(this.permGroupItemList);
 	}
 	
 	public PermissionGroupListResponse(Connection conn, Integer permGroupId) throws Exception {
-		PermissionGroup permissionGroup = new PermissionGroup();
-		permissionGroup.setPermissionGroupId(permGroupId);
-		permissionGroup.selectOne(conn);
-		PermGroupItem permGroupItem = new PermGroupItem(permissionGroup);
-		this.permGroupItemList = Arrays.asList(new PermGroupItem[] {permGroupItem});
-		
+		PermissionGroupUserCount record = PermissionGroupUserCount.select(conn, permGroupId);
+		this.permGroupItemList = new ArrayList<PermGroupCountRecord>();
+		this.permGroupItemList.add(new PermGroupCountRecord(record));
 	}
 	
-	public List<PermGroupItem> getPermGroupItemList() {
+	public List<PermGroupCountRecord> getPermGroupItemList() {
 		return permGroupItemList;
 	}
-	public void setPermGroupItemList(List<PermGroupItem> permGroupItemList) {
+	public void setPermGroupItemList(List<PermGroupCountRecord> permGroupItemList) {
 		this.permGroupItemList = permGroupItemList;
 	}
 

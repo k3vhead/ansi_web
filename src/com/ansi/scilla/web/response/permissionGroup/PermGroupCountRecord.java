@@ -5,7 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import org.apache.commons.beanutils.BeanUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.common.db.PermissionGroup;
+import com.ansi.scilla.common.queries.PermissionGroupUserCount;
 
 /**
  * permission group and the permissions assigned to that group
@@ -13,17 +13,18 @@ import com.ansi.scilla.common.db.PermissionGroup;
  *
  */
 
-public class PermGroupItem extends ApplicationObject implements Comparable<PermGroupItem> {
+public class PermGroupCountRecord extends ApplicationObject implements Comparable<PermGroupCountRecord> {
 	private static final long serialVersionUID = 1L;
 	private String description;
 	private String name;
-	private Integer permGroupId;
 	private Integer status;
 	private Integer userCount;
+	private Integer permissionGroupId;
 	
-	public PermGroupItem(PermissionGroup record) throws IllegalAccessException, InvocationTargetException {
+	public PermGroupCountRecord(PermissionGroupUserCount record) throws IllegalAccessException, InvocationTargetException {
 		super();
-		BeanUtils.copyProperties(this, record);
+		BeanUtils.copyProperties(this, record.getPermissionGroup());
+		this.userCount = record.getUserCount();
 	}
 	
 	public Integer getUserCount() {
@@ -45,10 +46,10 @@ public class PermGroupItem extends ApplicationObject implements Comparable<PermG
 		this.name = name;
 	}
 	public Integer getPermissionGroupId() {
-		return permGroupId;
+		return permissionGroupId;
 	}
 	public void setPermissionGroupId(Integer permissionGroupId) {
-		this.permGroupId = permissionGroupId;
+		this.permissionGroupId = permissionGroupId;
 	}
 	public Integer getStatus() {
 		return status;
@@ -56,15 +57,10 @@ public class PermGroupItem extends ApplicationObject implements Comparable<PermG
 	public void setStatus(Integer status) {
 		this.status = status;
 	}
-	public Integer getPermGroupId() {
-		return permGroupId;
-	}
-	public void setPermGroupId(Integer permGroupId) {
-		this.permGroupId = permGroupId;
-	}
+	
 	
 	@Override
-	public int compareTo(PermGroupItem o) {
+	public int compareTo(PermGroupCountRecord o) {
 		
 		int ret = this.name.compareTo(o.getName());
 		if ( ret == 0 ) {

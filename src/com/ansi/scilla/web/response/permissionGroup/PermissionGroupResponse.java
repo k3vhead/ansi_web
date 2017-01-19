@@ -6,13 +6,13 @@ public class PermissionGroupResponse extends MessageResponse {
 
 	private static final long serialVersionUID = 1L;
 
-	private PermGroupItem permGroupItem;
+	private PermGroupCountRecord permGroupItem;
 
-	public PermGroupItem getPermGroupItem() {
+	public PermGroupCountRecord getPermGroupItem() {
 		return permGroupItem;
 	}
 
-	public void setPermGroupItem(PermGroupItem permGroupItem) {
+	public void setPermGroupItem(PermGroupCountRecord permGroupItem) {
 		this.permGroupItem = permGroupItem;
 	}
 	
