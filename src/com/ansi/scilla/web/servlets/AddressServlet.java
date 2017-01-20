@@ -83,13 +83,13 @@ public class AddressServlet extends AbstractServlet {
 	@Override
 	protected void doDelete(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("AddressServlet 54");
+
 		String url = request.getRequestURI();
 		
 		Connection conn = null;
 		try {
 			ParsedUrl parsedUrl = new ParsedUrl(url);
-			System.out.println("AddressServlet 60");
+
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
 			
@@ -99,17 +99,15 @@ public class AddressServlet extends AbstractServlet {
 			} 
 			System.out.println("Address ID: "+ Integer.parseInt(parsedUrl.addressId));
 			address.delete(conn);
-			System.out.println("AddressServlet 69");
+	
 			AddressResponse addressResponse = new AddressResponse();
 			super.sendResponse(conn, response, ResponseCode.SUCCESS, addressResponse);
-			System.out.println("AddressServlet 72");
+
 			conn.commit();
 		} catch ( Exception e) {
-			System.out.println("AddressServlet 75");
 			AppUtils.logException(e);
 			throw new ServletException(e);
 		} finally {
-			System.out.println("AddressServlet 79");
 			AppUtils.closeQuiet(conn);
 		}
 	}
@@ -194,7 +192,7 @@ public class AddressServlet extends AbstractServlet {
 				AddressResponse addressResponse = new AddressResponse(address, webMessages);
 				super.sendResponse(conn, response, responseCode, addressResponse);
 				
-			} else if ( urlPieces.length == 3 ) {   //  /<tableName>/<fieldName>/<value> = 3 pieces
+			} else if ( urlPieces.length == 1 ) {   //  /<tableName>/<fieldName>/<value> = 3 pieces
 				System.out.println("Doing Update Stuff");				
 				WebMessages webMessages = validateAdd(conn, addressRequest);
 				if (webMessages.isEmpty()) {
@@ -224,6 +222,7 @@ public class AddressServlet extends AbstractServlet {
 				AddressResponse addressResponse = new AddressResponse(address, webMessages);
 				super.sendResponse(conn, response, responseCode, addressResponse);
 			} else {
+				System.out.println("Edit No Run");
 				super.sendNotFound(response);
 			}
 			
@@ -250,7 +249,7 @@ public class AddressServlet extends AbstractServlet {
 
 //		address.setAddressId(addressRequest.getAddressId());
 		address.setName(addressRequest.getName());
-		address.setCountry_code(addressRequest.getCountryCode());
+		address.setCountry_code(addressRequest.getCountry_code());
 		if ( ! StringUtils.isBlank(addressRequest.getAddress1())) {
 			address.setAddress1(addressRequest.getAddress1());
 		} if ( ! StringUtils.isBlank(addressRequest.getAddress2())) {
@@ -265,11 +264,11 @@ public class AddressServlet extends AbstractServlet {
 			address.setStatus(addressRequest.getStatus());
 		} if ( ! StringUtils.isBlank(addressRequest.getZip())) {
 			address.setZip(addressRequest.getZip());
-		}
+		} 
 		
-//		!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! FIX SESSION ISSUE *ASK DAVE
-//		address.setUpdatedBy(sessionUser.getUserId());
-		address.setUpdatedBy(8);
+
+		address.setUpdatedBy(sessionUser.getUserId());
+		
 		address.setUpdatedDate(today);
 		
 		try {
@@ -295,7 +294,7 @@ public class AddressServlet extends AbstractServlet {
 		
 		address.setAddedBy(sessionUser.getUserId());
 		address.setAddedDate(today);
-		address.setCountry_code(addressRequest.getCountryCode());
+		address.setCountry_code(addressRequest.getCountry_code());
 		address.setAddressId(addressRequest.getAddressId());
 		address.setAddress1(addressRequest.getAddress1());
 		address.setAddress2(addressRequest.getAddress2());
@@ -305,7 +304,7 @@ public class AddressServlet extends AbstractServlet {
 		address.setState(addressRequest.getState());
 		address.setStatus(addressRequest.getStatus());
 		address.setZip(addressRequest.getZip());
-		
+
 		address.setUpdatedBy(sessionUser.getUserId());
 		address.setUpdatedDate(today);
 		

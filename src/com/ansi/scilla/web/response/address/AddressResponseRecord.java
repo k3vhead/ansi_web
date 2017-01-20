@@ -123,12 +123,12 @@ public class AddressResponseRecord extends ApplicationObject implements Comparab
 		return this.zip;
 	}
 	
-	public void setCountryCode(String country_code) {
+	public void setCountry_code(String country_code) {
 		this.country_code = country_code;
 	}
 
 
-	public String getCountryCode() {
+	public String getCountry_code() {
 		return this.country_code;
 	}
 

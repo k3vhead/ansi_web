@@ -257,6 +257,14 @@
 		<servlet-name>jobSearch</servlet-name>
 		<url-pattern>/jobSearch/*</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>jobTable</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.JobTableServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>jobTable</servlet-name>
+		<url-pattern>/jobTable/*</url-pattern>
+	</servlet-mapping>
 
 
 

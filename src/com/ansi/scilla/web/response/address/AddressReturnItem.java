@@ -114,11 +114,11 @@ public class AddressReturnItem extends ApplicationObject {
 		public void setZip(String zip) {
 			this.zip = zip;
 		}
-		public String getCountryCode() {
+		public String getCountry_code() {
 			return country_code;
 		}
 
-		public void setCountryCode(String country_code) {
+		public void setCountry_code(String country_code) {
 			this.country_code = country_code;
 		}
 
