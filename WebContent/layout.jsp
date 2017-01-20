@@ -68,6 +68,8 @@
  		<script type="text/javascript" src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
  		<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.html5.min.js"></script>
  		<script type="text/javascript"  src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.print.min.js"></script>
+       	<script type="text/javascript"  src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.colVis.min.js"></script>
+       
        
         <tiles:insert attribute="headextra" />
     </head>

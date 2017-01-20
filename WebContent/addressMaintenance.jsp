@@ -76,7 +76,7 @@
         	            [ '10 rows', '25 rows', '50 rows', 'Show all' ]
         	        ],
         	        buttons: [
-        	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print'
+        	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print','colvis'
         	        ],
         	        "paging": true,
 			        "ajax": {
