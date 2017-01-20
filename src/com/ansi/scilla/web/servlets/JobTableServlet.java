@@ -13,10 +13,10 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ansi.scilla.common.queries.TicketSearch;
+import com.ansi.scilla.common.queries.JobSearch;
 import com.ansi.scilla.web.common.AppUtils;
-import com.ansi.scilla.web.response.ticketTable.TicketTableJsonResponse;
-import com.ansi.scilla.web.response.ticketTable.TicketTableReturnItem;
+import com.ansi.scilla.web.response.jobTable.JobTableJsonResponse;
+import com.ansi.scilla.web.response.jobTable.JobTableReturnItem;
 
 /**
  * This url searches the following contact table fields for the search term:
@@ -38,7 +38,7 @@ import com.ansi.scilla.web.response.ticketTable.TicketTableReturnItem;
 
  *
  */
-public class TicketTableServlet extends AbstractServlet {
+public class JobTableServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
 
@@ -50,7 +50,7 @@ public class TicketTableServlet extends AbstractServlet {
 		int draw = 0;
 		int col = 0;
 		String dir = "asc";
-		String[] cols = { "ticket_id", "status", "bill_to_name", "job_site_name", "job_site_address", "start_date", "frequency", "price_per_cleaning", "job_number", "job_id", "service_description","process_date", "invoice_id" };
+		String[] cols = { "job_id", "status", "bill_to_name", "job_site_name", "job_site_address", "start_date", "job_number", "frequency", "price_per_cleaning", "service_description", "po_number" };
 		String sStart = request.getParameter("start");
 	    String sAmount = request.getParameter("length");
 	    String sDraw = request.getParameter("draw");
@@ -110,7 +110,7 @@ public class TicketTableServlet extends AbstractServlet {
 		    String colName = cols[col];
 		    int total = 0;
 		    String sql = "select count(*)"
-					+ " from ticket";
+					+ " from job";
 			Statement s = conn.createStatement();
 			ResultSet rs0 = s.executeQuery(sql);
 			if(rs0.next()){
@@ -119,10 +119,10 @@ public class TicketTableServlet extends AbstractServlet {
 			
 		    int totalAfterFilter = total;
 			
-			List<TicketTableReturnItem> resultList = new ArrayList<TicketTableReturnItem>();
-			sql = TicketSearch.sql;
+			List<JobTableReturnItem> resultList = new ArrayList<JobTableReturnItem>();
+			sql = JobSearch.sql;
 
-			String search = TicketSearch.generateWhereClause(term);
+			String search = JobSearch.generateWhereClause(term);
 			
 			System.out.println(sql);
 			sql += search;
@@ -138,11 +138,11 @@ public class TicketTableServlet extends AbstractServlet {
 			s = conn.createStatement();
 			ResultSet rs = s.executeQuery(sql);
 			while ( rs.next() ) {
-				resultList.add(new TicketTableReturnItem(rs));
+				resultList.add(new JobTableReturnItem(rs));
 			}
 			
 			String sql2 = "select count(*) "
-					+ TicketSearch.sqlFromClause;
+					+ JobSearch.sqlFromClause;
 			
 			if (search != "") {
 				sql2 += search;
@@ -159,13 +159,13 @@ public class TicketTableServlet extends AbstractServlet {
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("application/json");
 			
-			TicketTableJsonResponse ticketTableJsonResponse = new TicketTableJsonResponse();
-			ticketTableJsonResponse.setRecordsFiltered(totalAfterFilter);
-			ticketTableJsonResponse.setRecordsTotal(total);
-			ticketTableJsonResponse.setData(resultList);
-			ticketTableJsonResponse.setDraw(draw);
+			JobTableJsonResponse jobTableJsonResponse = new JobTableJsonResponse();
+			jobTableJsonResponse.setRecordsFiltered(totalAfterFilter);
+			jobTableJsonResponse.setRecordsTotal(total);
+			jobTableJsonResponse.setData(resultList);
+			jobTableJsonResponse.setDraw(draw);
 			
-			String json = AppUtils.object2json(ticketTableJsonResponse);
+			String json = AppUtils.object2json(jobTableJsonResponse);
 			
 			
 			
