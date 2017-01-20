@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.DivisionUser;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
+import com.ansi.scilla.common.exceptions.InvalidDeleteException;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.MessageKey;
 import com.ansi.scilla.web.common.ResponseCode;
@@ -80,6 +81,13 @@ public class DivisionServlet extends AbstractServlet {
 						conn.commit();
 						DivisionResponse divisionResponse = new DivisionResponse();
 						super.sendResponse(conn, response, ResponseCode.SUCCESS, divisionResponse);
+					} catch (InvalidDeleteException e) {
+						String message = AppUtils.getMessageText(conn, MessageKey.DELETE_FAILED, "Invalid Delete");
+						WebMessages webMessages = new WebMessages();
+						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+						DivisionResponse divisionResponse = new DivisionResponse();
+						divisionResponse.setWebMessages(webMessages);
+						super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, divisionResponse);
 					} catch(RecordNotFoundException recordNotFoundEx) {
 						super.sendNotFound(response);
 					}
@@ -149,7 +157,7 @@ public class DivisionServlet extends AbstractServlet {
 		
 	}
 	
-	public void doDeleteWork(Connection conn, Integer divisionId) throws RecordNotFoundException, Exception {
+	public void doDeleteWork(Connection conn, Integer divisionId) throws RecordNotFoundException, InvalidDeleteException, Exception {
 
 		Division div = new Division();
 		div.setDivisionId(divisionId);
@@ -159,6 +167,7 @@ public class DivisionServlet extends AbstractServlet {
 
 		try {
 			divisionUser.selectOne(conn);
+			throw new InvalidDeleteException();
 		} catch (RecordNotFoundException e) {
 			div.delete(conn);
 		}

@@ -7,5 +7,6 @@ public enum MessageKey {
 	INVALID_DATA,
 	SUCCESS, 
 	UPDATE_FAILED, 
+	DELETE_FAILED,
 	;
 }

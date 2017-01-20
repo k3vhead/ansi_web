@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.response.permissionGroup;
+package com.ansi.scilla.web.request;
 
 import com.ansi.scilla.web.request.AbstractRequest;
 
