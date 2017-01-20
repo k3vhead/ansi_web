@@ -31,7 +31,7 @@ import com.ansi.scilla.web.response.address.AddressReturnItem;
  * 		country
  * 		state
  * 		zip
- * 		country_cod
+ * 		country_code
  * 
  * The url for get will be one of:
  * 		/addressSearch    						(retrieves all records from address table)

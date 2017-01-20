@@ -173,13 +173,13 @@ import com.thewebthing.commons.lang.JsonException;
 			return this.zip;
 		}
 		
-		public void setCountryCode(String country_code) {
+		public void setCountry_code(String country_code) {
 			this.country_code = country_code;
 		}
 
 		@RequiredForAdd
 		@RequiredForUpdate
-		public String getCountryCode() {
+		public String getCountry_code() {
 			return this.country_code;
 		}
 
