@@ -74,7 +74,6 @@
         	        "serverSide": 		true,
         	        "autoWidth": 		false,
         	        "deferRender": 		true,
-        	        "scrollY":        	"475px",
         	        "scrollCollapse": 	true,
         	        "scrollX": 			true,
         	        rowId: 				'dt_RowId',
@@ -448,7 +447,7 @@
     <tiles:put name="content" type="string">
     	<h1>Address Maintenance</h1>
     	
- 	<table id="addressTable" class="display" cellspacing="0" width="100%" style="font-size:9pt;max-width:980px;width:980px;height:457px;min-height:457px;">
+ 	<table id="addressTable" class="display" cellspacing="0" width="100%" style="font-size:9pt;max-width:980px;width:980px;">
         <thead>
             <tr>
                 <th>Id</th>
