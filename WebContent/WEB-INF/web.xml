@@ -265,6 +265,22 @@
 		<servlet-name>jobTable</servlet-name>
 		<url-pattern>/jobTable/*</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>testServlet</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.TestServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>testServlet</servlet-name>
+		<url-pattern>/testServlet/*</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>ticketReturn</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.TicketReturnServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ticketReturn</servlet-name>
+		<url-pattern>/ticketReturn/*</url-pattern>
+	</servlet-mapping>
 
 
 
