@@ -73,6 +73,24 @@ public class AbstractServlet extends HttpServlet {
 	}
 	
 	/**
+	 * Return a 403 forbidden response
+	 * @param response
+	 */
+	protected void sendForbidden(HttpServletResponse response) {
+		response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+		response.setContentType("application/json");
+	}
+	
+	/**
+	 * Return a 405 Not Allowed response
+	 * @param response
+	 */
+	protected void sendNotAllowed(HttpServletResponse response) {
+		response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+		response.setContentType("application/json");
+	}
+	
+	/**
 	 * Send a json response to the client.
 	 * 
 	 * @param conn Database connection object
