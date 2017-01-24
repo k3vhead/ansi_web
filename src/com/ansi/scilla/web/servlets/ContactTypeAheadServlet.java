@@ -35,10 +35,10 @@ import com.thewebthing.commons.lang.StringUtils;
  * 		preferredContactValue = the value of the field indicated by the preferredContact field - additional display value
  * 
  * The url for get will be one of:
- * 		/contactSearch    						(retrieves all records from contact table)
+ * 		/contactSearch?term=					(returns all records)
  * 		/contactSearch?term=<searchTerm>		(returns all records containing <searchTerm>)
  * 
- * The servlet will return all records if there is no "term=" is found.
+ * The servlet will return 404 Not Found if there is no "term=" found.
  * 
  * @author gagroce
  *
@@ -48,56 +48,86 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 	private static final long serialVersionUID = 1L;
 
 	@Override
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		super.sendNotAllowed(response);
+	}
+	
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		super.sendNotAllowed(response);
+	}
+
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		Connection conn = null;
-		try {
-			conn = AppUtils.getDBCPConn();
+		String url = request.getRequestURI();
+		System.out.println("ContactTypeAheadServlet(): doGet(): url =" + url);
+		int idx = url.indexOf("/contactTypeAhead/");
+		if ( idx > -1 ) {
+			super.sendNotFound(response);
+		} else {
+			Connection conn = null;
 			String qs = request.getQueryString();
 			System.out.println("ContactTypeAheadServlet(): doGet(): qs =" + qs);
 			String term = "";
-			if ( ! StringUtils.isBlank(qs)) {
-				Map<String, String> map = AppUtils.getQueryMap(qs);
-				term = map.get("term");
-				System.out.println("ContactTypeAheadServlet(): doGet(): map =" + map);
-				System.out.println("ContactTypeAheadServlet(): doGet(): term =" + term);
-				if ( ! StringUtils.isBlank(term)) {
-					term = URLDecoder.decode(term, "UTF-8");
-					term = StringUtils.trimToNull(term);
-					term = term.toLowerCase();
+			if ( StringUtils.isBlank(qs)) { // No query string
+				super.sendNotFound(response);
+			} else {
+				idx = qs.indexOf("term="); 
+				if ( idx > -1 ) { // There is a search term "term="
+					Map<String, String> map = AppUtils.getQueryMap(qs);
+					String queryTerm = map.get("term");
+					System.out.println("ContactTypeAheadServlet(): doGet(): map =" + map);
+					System.out.println("ContactTypeAheadServlet(): doGet(): term =" + queryTerm);
+					if ( ! StringUtils.isBlank(queryTerm)) { // There is a term
+						queryTerm = URLDecoder.decode(queryTerm, "UTF-8");
+						queryTerm = StringUtils.trimToNull(queryTerm);
+						if ( ! StringUtils.isBlank(queryTerm)) {
+							term = queryTerm.toLowerCase();
+						}
+					}
+					try {
+						conn = AppUtils.getDBCPConn();
+						System.out.println("ContactTypeAheadServlet(): doGet(): term =$" + term +"$");
+						List<ReturnItem> resultList = new ArrayList<ReturnItem>();
+						String sql = "select contact_id, concat(first_name, ' ', last_name) as name, business_phone, mobile_phone, email, fax, preferred_contact "
+								+ " from contact where lower(business_phone) like '%" + term + "%'"
+								+ " OR lower(fax) like '%" + term + "%'"
+								+ " OR lower(concat(first_name,' ',last_name)) like '%" + term + "%'"
+								+ " OR lower(concat(last_name,' ',first_name)) like '%" + term + "%'"
+								+ " OR lower(concat(last_name,', ',first_name)) like '%" + term + "%'"
+								+ " OR lower(mobile_phone) like '%" + term + "%'"
+								+ " OR lower(email) like '%" + term + "%'";
+						Statement s = conn.createStatement();
+						ResultSet rs = s.executeQuery(sql);
+						while ( rs.next() ) {
+							resultList.add(new ReturnItem(rs));
+						}
+						rs.close();
+						
+						response.setStatus(HttpServletResponse.SC_OK);
+						response.setContentType("application/json");
+						
+						String json = AppUtils.object2json(resultList);
+						ServletOutputStream o = response.getOutputStream();
+						OutputStreamWriter writer = new OutputStreamWriter(o);
+						writer.write(json);
+						writer.flush();
+						writer.close();
+					} catch ( Exception e ) {
+						AppUtils.logException(e);
+						throw new ServletException(e);
+					} finally {
+						AppUtils.closeQuiet(conn);
+					}
+				} else { // There is no term "term="
+					super.sendNotFound(response);
 				}
+
 			}
-			System.out.println("ContactTypeAheadServlet(): doGet(): term =$" + term +"$");
-			List<ReturnItem> resultList = new ArrayList<ReturnItem>();
-			String sql = "select contact_id, concat(first_name, ' ', last_name) as name, business_phone, mobile_phone, email, fax, preferred_contact "
-					+ " from contact where lower(business_phone) like '%" + term + "%'"
-					+ " OR lower(fax) like '%" + term + "%'"
-					+ " OR lower(concat(first_name,' ',last_name)) like '%" + term + "%'"
-					+ " OR lower(concat(last_name,' ',first_name)) like '%" + term + "%'"
-					+ " OR lower(concat(last_name,', ',first_name)) like '%" + term + "%'"
-					+ " OR lower(mobile_phone) like '%" + term + "%'"
-					+ " OR lower(email) like '%" + term + "%'";
-			Statement s = conn.createStatement();
-			ResultSet rs = s.executeQuery(sql);
-			while ( rs.next() ) {
-				resultList.add(new ReturnItem(rs));
-			}
-			rs.close();
-			
-			response.setStatus(HttpServletResponse.SC_OK);
-			response.setContentType("application/json");
-			
-			String json = AppUtils.object2json(resultList);
-			ServletOutputStream o = response.getOutputStream();
-			OutputStreamWriter writer = new OutputStreamWriter(o);
-			writer.write(json);
-			writer.flush();
-			writer.close();
-		} catch ( Exception e ) {
-			AppUtils.logException(e);
-			throw new ServletException(e);
-		} finally {
-			AppUtils.closeQuiet(conn);
+
 		}
 	}
 
@@ -129,7 +159,7 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 			} else if (preferredContact.indexOf("fax") != -1) {
 				this.preferredContactValue = "fax:"+rs.getString("fax");
 			} else {
-				this.preferredContactValue = preferredContact+":unexpected preferrence";
+				this.preferredContactValue = preferredContact+":unexpected preference";
 			}
 			
 		}
