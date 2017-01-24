@@ -122,7 +122,7 @@ public class AddressTableServlet extends AbstractServlet {
 		    }
 			
 		    int totalAfterFilter = total;
-			
+			term = term.toLowerCase();
 			List<AddressReturnItem> resultList = new ArrayList<AddressReturnItem>();
 			sql = "select a.address_id, a.name, a.status, a.address1, a.address2, a.city, a.county, a.state, a.zip, a.country_code, (count(q1.job_site_address_id) + count(q2.bill_to_address_id)) as count"
 					+ " from address a"

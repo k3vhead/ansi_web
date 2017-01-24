@@ -58,6 +58,10 @@
 				max-width:80px !important;
 			}
 			
+			#addAddressForm{
+				display: none;
+			}
+			
 		
 
 			
@@ -123,6 +127,8 @@
 			            	if(row.zip != null){return (row.zip+"");} 
 			            } },
 			            { title: "Action",  data: function ( row, type, set ) {	
+			            	
+			            	
 			            	return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.addressId+"'></a>|<a href='#' data-id='"+row.addressId+"'  class='delAction ui-icon ui-icon-trash'></a></ansi:hasWrite></ansi:hasPermission>" 
 			            } }],
 			            "initComplete": function(settings, json) {
