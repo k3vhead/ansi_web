@@ -158,7 +158,7 @@ public class AddressTableServlet extends AbstractServlet {
 			
 			
 			String sql2 = "select count(*)"
-					+ " from address";
+					+ " from address a";
 			if (search != "") {
 				sql2 += search;
 			}
