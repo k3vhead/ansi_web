@@ -14,6 +14,8 @@ public class AddressJsonResponse {
     int recordsFiltered;
 
     int draw;
+    
+
 
     String columns;
 

@@ -124,10 +124,10 @@ public class AddressTableServlet extends AbstractServlet {
 		    int totalAfterFilter = total;
 			term = term.toLowerCase();
 			List<AddressReturnItem> resultList = new ArrayList<AddressReturnItem>();
-			sql = "select a.address_id, a.name, a.status, a.address1, a.address2, a.city, a.county, a.state, a.zip, a.country_code, (count(q1.job_site_address_id) + count(q2.bill_to_address_id)) as count"
+			sql = "select a.address_id, a.name, a.status, a.address1, a.address2, a.city, a.county, a.state, a.zip, a.country_code, (a3.jobCount + a3.billCount) as count"
 					+ " from address a"
-					+ " inner join dbo.quote q1 on q1.job_site_address_id = a.address_id"
-					+ " inner join dbo.quote q2 on q2.bill_to_address_id = a.address_id";
+					+ " left join (select a2.address_id, count(q1.job_site_address_id) as jobCount, count(q1.bill_to_address_id) as billCount from address a2"
+					+ " inner join quote q1 on (a2.address_id = q1.job_site_address_id or a2.address_id = q1.bill_to_address_id) group by a2.address_id ) a3 on a.address_id = a3.address_id";
 			String search = " where lower(a.name) like '%" + term + "%'"
 					+ " OR lower(a.address1) like '%" + term + "%'"
 					+ " OR lower(a.address2) like '%" + term + "%'"
@@ -135,12 +135,12 @@ public class AddressTableServlet extends AbstractServlet {
 					+ " OR lower(a.county) like '%" + term + "%'"
 					+ " OR lower(a.state) like '%" + term + "%'"
 					+ " OR lower(a.zip) like '%" + term + "%'"
-					+ " OR lower(a.country_code) like '%" + term + "%'"
-					+ " group by a.address_id, a.name, a.status, a.address1, a.address2, a.city, a.county, a.state, a.zip, a.country_code";
+					+ " OR lower(a.country_code) like '%" + term + "%'";
+//					String group = " group by a.address_id, a.name, a.status, a.address1, a.address2, a.city, a.county, a.state, a.zip, a.country_code";
 			
 			
 			
-			sql += search;
+			sql += search ;
 			sql += " order by a." + colName + " " + dir;
 			
 			

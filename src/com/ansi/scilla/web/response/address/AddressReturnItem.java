@@ -18,6 +18,7 @@ public class AddressReturnItem extends ApplicationObject {
 		private String zip;
 		private String country_code;
 		private String DT_RowId;
+		private int count;
 		
 		
 		public AddressReturnItem(ResultSet rs) throws SQLException {
@@ -33,6 +34,7 @@ public class AddressReturnItem extends ApplicationObject {
 			this.zip = rs.getString("zip");
 			this.country_code = rs.getString("country_code");
 			this.DT_RowId = rs.getInt("address_id")+"";
+			this.count = rs.getInt("count");
 
 		}
 
@@ -107,6 +109,15 @@ public class AddressReturnItem extends ApplicationObject {
 		public void setState(String state) {
 			this.state = state;
 		}
+		
+		public int getCount() {
+			return count;
+		}
+
+		public void setCount(int count) {
+			this.count = count;
+		}
+		
 		public String getZip() {
 			return zip;
 		}

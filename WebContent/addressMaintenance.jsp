@@ -62,6 +62,13 @@
 				display: none;
 			}
 			
+			#deleteErrorDialog{
+				display: none;
+			}
+			
+			#deleteConfirmDialog{
+				display: none;
+			}
 		
 
 			
@@ -127,9 +134,13 @@
 			            	if(row.zip != null){return (row.zip+"");} 
 			            } },
 			            { title: "Action",  data: function ( row, type, set ) {	
+			            	//console.log(row);
+			            	if(row.count > 0)
+			            		return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.addressId+"'></a></ansi:hasWrite></ansi:hasPermission>";
+			            	else
+			            		return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.addressId+"'></a>|<a href='#' data-id='"+row.addressId+"'  class='delAction ui-icon ui-icon-trash'></a></ansi:hasWrite></ansi:hasPermission>";
 			            	
-			            	
-			            	return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.addressId+"'></a>|<a href='#' data-id='"+row.addressId+"'  class='delAction ui-icon ui-icon-trash'></a></ansi:hasWrite></ansi:hasPermission>" 
+			            		
 			            } }],
 			            "initComplete": function(settings, json) {
 			            	//console.log(json);
@@ -416,35 +427,53 @@
 					$clickevent.preventDefault();
 					
 					var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
-					$("#addressTable").DataTable().row($rowid).remove();
-
-		            	$url = 'address/' + $rowid;
-		            	var jqxhr = $.ajax({
-		            	    type: 'delete',
-		            	    url: $url,
-		            	    success: function($data) {
-		            	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
-								if ( $data.responseHeader.responseCode == 'SUCCESS') {
-									$("#addressTable").DataTable().draw();
-								}
-		            	     },
-		            	     statusCode: {
-		            	    	403: function($data) {
-		            	    		$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-		            	    	},
-		            	    	500: function($data) {
-		            	    		 $( "#deleteErrorDialog" ).dialog({
-		            	    		      modal: true,
-		            	    		      buttons: {
-		            	    		        Ok: function() {
-		            	    		          $( this ).dialog( "close" );
-		            	    		        }
-		            	    		      }
-		            	    		    });
-		            	    	} 
-		            	     },
-		            	     dataType: 'json'
-		            	});
+					
+					
+					 $( "#deleteConfirmDialog" ).dialog({
+					      resizable: false,
+					      height: "auto",
+					      width: 400,
+					      modal: true,
+					      buttons: {
+					        "Delete Address": function() {doDelete2($rowid);$( this ).dialog( "close" );},
+					        Cancel: function() {
+					          $( this ).dialog( "close" );
+					        }
+					      }
+					    });
+					 $( "#deleteConfirmDialog" ).dialog( "open" );
+		            	
+				}
+				
+				function doDelete2($rowid){
+					$url = 'address/' + $rowid;
+	            	var jqxhr = $.ajax({
+	            	    type: 'delete',
+	            	    url: $url,
+	            	    success: function($data) {
+	            	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
+							if ( $data.responseHeader.responseCode == 'SUCCESS') {
+								$("#addressTable").DataTable().row($rowid).remove();
+								$("#addressTable").DataTable().draw();
+							}
+	            	     },
+	            	     statusCode: {
+	            	    	403: function($data) {
+	            	    		$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+	            	    	},
+	            	    	500: function($data) {
+	            	    		 $( "#deleteErrorDialog" ).dialog({
+	            	    		      modal: true,
+	            	    		      buttons: {
+	            	    		        Ok: function() {
+	            	    		          $( this ).dialog( "close" );
+	            	    		        }
+	            	    		      }
+	            	    		    });
+	            	    	} 
+	            	     },
+	            	     dataType: 'json'
+	            	});
 				}
         });
         </script>        
@@ -499,7 +528,7 @@
 		  <p>Address failed to delete. It may still be assigned to existing quotes.</p></input>
 		</div>
 
-		<div id="addAddressForm" title="Add/Update Address" class="ui-widget">
+		<div id="addAddressForm" title="Add/Update Address" class="ui-widget" style="display:none;">
 		  <p class="validateTips">All form fields are required.</p>
 		 
 		  <form id="addForm">
@@ -565,6 +594,12 @@
 		</table>
 		  </form>
 		</div>
+		
+	
+		<div id="deleteConfirmDialog" title="Delete Address?" style="display:none;">
+  			<p></span>Are you sure you would like to delete this address?</p>
+		</div>
+		
 		<input  type="text" id="updateOrAdd" style="display:none"><input  type="text" id="aId" style="display:none">
 </tiles:insert>
 

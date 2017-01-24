@@ -16,6 +16,8 @@ public class AddressResponse extends MessageResponse implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Address address;
+	
+
 
 	public AddressResponse() {
 		super();
@@ -35,6 +37,7 @@ public class AddressResponse extends MessageResponse implements Serializable {
 		this.address = address;
 	}
 
-	
+
+
 	
 }
