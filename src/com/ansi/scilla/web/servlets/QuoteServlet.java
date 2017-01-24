@@ -253,7 +253,7 @@ public class QuoteServlet extends AbstractServlet {
 		quote.setUpdatedBy(5);
 		quote.setUpdatedDate(today);
 		
-		quote.setAddress(quoteRequest.getAddress());
+//		quote.setAddress(quoteRequest.getAddress());
 		quote.setBillToAddressId(quoteRequest.getBillToAddressId());
 		if ( quoteRequest.getCopiedFromQuoteId() != null) {
 			quote.setCopiedFromQuoteId(quoteRequest.getCopiedFromQuoteId());
@@ -261,8 +261,8 @@ public class QuoteServlet extends AbstractServlet {
 		quote.setJobSiteAddressId(quoteRequest.getJobSiteAddressId());
 		quote.setLeadType(quoteRequest.getLeadType());
 		quote.setManagerId(quoteRequest.getManagerId());
-		quote.setName(quoteRequest.getName());
-		quote.setPaymentTerms(quoteRequest.getPaymentTerms());
+//		quote.setName(quoteRequest.getName());
+//		quote.setPaymentTerms(quoteRequest.getPaymentTerms());
 		
 		if ( quoteRequest.getProposalDate() != null) {
 			quote.setProposalDate(quoteRequest.getProposalDate());
@@ -307,14 +307,14 @@ public class QuoteServlet extends AbstractServlet {
 		quote.setUpdatedBy(sessionUser.getUserId());
 		quote.setUpdatedDate(today);
 		
-		quote.setAddress(quoteRequest.getAddress());
+//		quote.setAddress(quoteRequest.getAddress());
 		quote.setBillToAddressId(quoteRequest.getBillToAddressId());
 		quote.setCopiedFromQuoteId(quoteRequest.getCopiedFromQuoteId());
 		quote.setJobSiteAddressId(quoteRequest.getJobSiteAddressId());
 		quote.setLeadType(quoteRequest.getLeadType());
 		quote.setManagerId(quoteRequest.getManagerId());
-		quote.setName(quoteRequest.getName());
-		quote.setPaymentTerms(quoteRequest.getPaymentTerms());
+//		quote.setName(quoteRequest.getName());
+//		quote.setPaymentTerms(quoteRequest.getPaymentTerms());
 		quote.setProposalDate(quoteRequest.getProposalDate());
 //		quote.setQuoteGroupId(quoteRequest.getQuoteGroupId());
 	

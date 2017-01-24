@@ -124,26 +124,31 @@ public class AddressTableServlet extends AbstractServlet {
 		    int totalAfterFilter = total;
 			
 			List<AddressReturnItem> resultList = new ArrayList<AddressReturnItem>();
-			sql = "select address_id, name, status, address1, address2, city, county, state, zip, country_code"
-					+ " from address";
-			String search = " where lower(name) like '%" + term + "%'"
-					+ " OR lower(address1) like '%" + term + "%'"
-					+ " OR lower(address2) like '%" + term + "%'"
-					+ " OR lower(city) like '%" + term + "%'"
-					+ " OR lower(county) like '%" + term + "%'"
-					+ " OR lower(state) like '%" + term + "%'"
-					+ " OR lower(zip) like '%" + term + "%'"
-					+ " OR lower(country_code) like '%" + term + "%'";
+			sql = "select a.address_id, a.name, a.status, a.address1, a.address2, a.city, a.county, a.state, a.zip, a.country_code, (count(q1.job_site_address_id) + count(q2.bill_to_address_id)) as count"
+					+ " from address a"
+					+ " inner join dbo.quote q1 on q1.job_site_address_id = a.address_id"
+					+ " inner join dbo.quote q2 on q2.bill_to_address_id = a.address_id";
+			String search = " where lower(a.name) like '%" + term + "%'"
+					+ " OR lower(a.address1) like '%" + term + "%'"
+					+ " OR lower(a.address2) like '%" + term + "%'"
+					+ " OR lower(a.city) like '%" + term + "%'"
+					+ " OR lower(a.county) like '%" + term + "%'"
+					+ " OR lower(a.state) like '%" + term + "%'"
+					+ " OR lower(a.zip) like '%" + term + "%'"
+					+ " OR lower(a.country_code) like '%" + term + "%'"
+					+ " group by a.address_id, a.name, a.status, a.address1, a.address2, a.city, a.county, a.state, a.zip, a.country_code";
 			
 			
 			
 			sql += search;
-			sql += " order by " + colName + " " + dir;
+			sql += " order by a." + colName + " " + dir;
+			
+			
 			if ( amount != -1) {
 				sql += " OFFSET "+ start+" ROWS"
 					+ " FETCH NEXT " + amount + " ROWS ONLY";
 			}
-			
+			System.out.println(sql);
 			s = conn.createStatement();
 			ResultSet rs = s.executeQuery(sql);
 			while ( rs.next() ) {
@@ -158,7 +163,7 @@ public class AddressTableServlet extends AbstractServlet {
 				sql2 += search;
 			}
 			Statement s2 = conn.createStatement();
-			ResultSet rs2 = s.executeQuery(sql2);
+			ResultSet rs2 = s2.executeQuery(sql2);
 			if(rs2.next()){
 				totalAfterFilter = rs2.getInt(1);
 		    }
