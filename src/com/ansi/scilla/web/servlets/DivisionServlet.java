@@ -67,7 +67,7 @@ public class DivisionServlet extends AbstractServlet {
 				conn = AppUtils.getDBCPConn();
 				conn.setAutoCommit(false);
 				
-				// Figure out what we've got:				
+				// Figure out what we've got:
 				String myString = url.substring(idx + "/division/".length());
 				
 				String[] urlPieces = myString.split("/");

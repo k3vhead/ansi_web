@@ -5,7 +5,7 @@ import com.ansi.scilla.web.request.AbstractRequest;
 
 /**
  * Permission request and item request 
- * @author jwlew
+ * @author jwlewis
  *
  *
  */

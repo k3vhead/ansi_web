@@ -9,7 +9,7 @@ import com.ansi.scilla.common.queries.PermissionGroupUserCount;
 
 /**
  * permission group and the permissions assigned to that group
- * @author jwlew
+ * @author jwlewis
  *
  */
 
@@ -21,8 +21,12 @@ public class PermGroupCountRecord extends ApplicationObject implements Comparabl
 	private Integer userCount;
 	private Integer permissionGroupId;
 	
-	public PermGroupCountRecord(PermissionGroupUserCount record) throws IllegalAccessException, InvocationTargetException {
+	public PermGroupCountRecord(){
 		super();
+	}
+	
+	public PermGroupCountRecord(PermissionGroupUserCount record) throws IllegalAccessException, InvocationTargetException {
+		this();
 		BeanUtils.copyProperties(this, record.getPermissionGroup());
 		this.userCount = record.getUserCount();
 	}

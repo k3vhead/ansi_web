@@ -9,7 +9,7 @@ import com.ansi.scilla.common.db.PermissionGroupLevel;
 
 /**
  * name and permission level response
- * @author jwlew
+ * @author jwlewis
  *
  */
 
