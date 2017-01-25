@@ -33,9 +33,9 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
 
 /**
  * The url for get will be one of:
- * 		/ticketSearch    				(retrieves everything)
  * 		/ticketSearch/List      		(retrieves everything)
  * 		/ticketSearch/<ticketId>		(retrieves a single record)
+ *		/ticketSearch?term=				(retrieves everything)
  * 		/ticketSearch?term=<queryTerm>	(retrieves filtered selection)
  * 		/ticketSearch?sort=<sort>,<sort> (retrieve sorted selection)
  * 		/ticketSearch?term=<term>&sort=<sort> (retrieve sorted filtered selection)
@@ -93,10 +93,6 @@ public class TicketSearchServlet extends AbstractServlet {
 
 			try {
 				conn = AppUtils.getDBCPConn();
-				if ( StringUtils.isBlank(queryString)) {
-					throw new RecordNotFoundException();
-				}
-
 				TicketSearchListResponse ticketSearchListQueryResponse = doGetWork(conn, queryString);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, ticketSearchListQueryResponse);
 			} catch(RecordNotFoundException recordNotFoundEx) {
@@ -132,26 +128,30 @@ public class TicketSearchServlet extends AbstractServlet {
 		TicketSearchListResponse ticketSearchListResponse = new TicketSearchListResponse();
 		String term = "";
 		if ( ! StringUtils.isBlank(qs)) {
-			Map<String, String> map = AppUtils.getQueryMap(qs);
-			term = map.get("term");
-			System.out.println("TicketSearchServlet(): doGetWork(): map =" + map);
-			System.out.println("TicketSearchServlet(): doGetWork(): term =" + term);
-			if ( ! StringUtils.isBlank(term)) {
-				term = URLDecoder.decode(term, "UTF-8");
-				term = StringUtils.trimToNull(term);
+			int idx = qs.indexOf("term=");
+			if ( idx > -1 ) {
+				Map<String, String> map = AppUtils.getQueryMap(qs);
+				term = map.get("term");
+				System.out.println("TicketSearchServlet(): doGetWork(): map =" + map);
+				System.out.println("TicketSearchServlet(): doGetWork(): term =" + term);
+				if ( StringUtils.isBlank(term)) {
+					term = "";
+				} else {
+					term = URLDecoder.decode(term, "UTF-8");
+					term = StringUtils.trimToNull(term);
+					if ( StringUtils.isBlank(term)) {
+						term = "";
+					}
+				} 
 				term = term.toLowerCase();
 				String sort = map.get("sort");
-				if (! StringUtils.isBlank(sort)){
+				if (StringUtils.isBlank(sort)){
+					ticketSearchListResponse = new TicketSearchListResponse(conn, term);
+				} else {
 					String[] sortParms = map.get("sort").split(",");
 					ticketSearchListResponse = new TicketSearchListResponse(conn, term, sortParms);
-				} else {
-					ticketSearchListResponse = new TicketSearchListResponse(conn, term);
 				}
-			} else {
-				throw new RecordNotFoundException();
 			}
-		} else {
-			throw new RecordNotFoundException();
 		}
 		return ticketSearchListResponse;
 		
