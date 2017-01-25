@@ -28,7 +28,7 @@ import com.thewebthing.commons.lang.StringUtils;
  * 		last_name
  * 		mobile_phone
  * 		email
- * and returns these same fields plus:
+ * and returns the following fields:
  * 		id = contact_id
  * 		label = contact name:business phone:mobile phone:emai:fax - to help user select the correct contact
  * 		value = "first_name last_name" - for display
