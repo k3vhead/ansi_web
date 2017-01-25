@@ -1,11 +1,9 @@
 package com.ansi.scilla.web.servlets;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -14,20 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
-//import com.ansi.scilla.common.db.Code;
-import com.ansi.scilla.common.db.Job;
-import com.ansi.scilla.common.queries.JobSearch;
-import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.web.common.AppUtils;
-import com.ansi.scilla.web.common.MessageKey;
 import com.ansi.scilla.web.common.ResponseCode;
-import com.ansi.scilla.web.common.WebMessages;
-//import com.ansi.scilla.web.request.CodeRequest;
-import com.ansi.scilla.web.request.JobSearchRequest;
 //import com.ansi.scilla.web.response.code.CodeResponse;
 import com.ansi.scilla.web.response.jobSearch.JobSearchListResponse;
-import com.ansi.scilla.web.response.jobSearch.JobSearchResponse;
-import com.ansi.scilla.web.struts.SessionUser;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 
@@ -70,22 +58,27 @@ public class JobSearchServlet extends AbstractServlet {
 			String[] urlPieces = myString.split("/");
 			String command = urlPieces[0];
 
-			Connection conn = null;
-			try {
-				if ( StringUtils.isBlank(command)) {
-					throw new RecordNotFoundException();
-				}
-				conn = AppUtils.getDBCPConn();
-
-				JobSearchListResponse jobSearchListResponse = doGetWork(conn, myString, queryString);
-				super.sendResponse(conn, response, ResponseCode.SUCCESS, jobSearchListResponse);
-			} catch(RecordNotFoundException recordNotFoundEx) {
+			if ( StringUtils.isBlank(command)) {
 				super.sendNotFound(response);
-			} catch ( Exception e) {
-				AppUtils.logException(e);
-				throw new ServletException(e);
-			} finally {
-				AppUtils.closeQuiet(conn);
+			} else {
+				if ( command.equals("list") || StringUtils.isNumeric(command)) {
+					Connection conn = null;
+					try {
+						conn = AppUtils.getDBCPConn();
+
+						JobSearchListResponse jobSearchListResponse = doGetWork(conn, myString, queryString);
+						super.sendResponse(conn, response, ResponseCode.SUCCESS, jobSearchListResponse);
+					} catch(RecordNotFoundException recordNotFoundEx) {
+						super.sendNotFound(response);
+					} catch ( Exception e) {
+						AppUtils.logException(e);
+						throw new ServletException(e);
+					} finally {
+						AppUtils.closeQuiet(conn);
+					}
+				} else {
+					super.sendNotFound(response);
+				}
 			}
 
 		} else {
@@ -129,18 +122,33 @@ public class JobSearchServlet extends AbstractServlet {
 		
 	}
 	
+	private String getQueryString( String qs, String qm) throws UnsupportedEncodingException, Exception {
+		String term = "";
+		Map<String, String> map = AppUtils.getQueryMap(qs);
+		term = map.get(qm);
+		System.out.println("getQueryString(): map =" + map);
+		System.out.println("getQueryString(): term =" + term);
+		if ( StringUtils.isBlank(term)) {
+			term = "";
+		} else {
+			term = URLDecoder.decode(term, "UTF-8");
+			term = StringUtils.trimToNull(term);
+			if ( StringUtils.isBlank(term)) {
+				term = "";
+			}
+		} 
+		term = term.toLowerCase();
+		return term;
+	}
+	
 	public JobSearchListResponse doGetWork(Connection conn, String qs) throws RecordNotFoundException, Exception {
 		JobSearchListResponse jobSearchListResponse = new JobSearchListResponse();
 		String term = "";
 		if ( ! StringUtils.isBlank(qs)) {
-			Map<String, String> map = AppUtils.getQueryMap(qs);
-			term = map.get("term");
-			System.out.println("JobSearchServlet(): doGetWork(): map =" + map);
-			System.out.println("JobSearchServlet(): doGetWork(): term =" + term);
-			if ( ! StringUtils.isBlank(term)) {
-				term = URLDecoder.decode(term, "UTF-8");
-				term = StringUtils.trimToNull(term);
-				term = term.toLowerCase();
+			int idx = qs.indexOf("term=");
+			if ( idx > -1 ) {
+				term = getQueryString(qs, "term");
+				Map<String, String> map = AppUtils.getQueryMap(qs);
 				String sort = map.get("sort");
 				if (! StringUtils.isBlank(sort)){
 					String[] sortParms = map.get("sort").split(",");
@@ -148,11 +156,7 @@ public class JobSearchServlet extends AbstractServlet {
 				} else {
 					jobSearchListResponse = new JobSearchListResponse(conn, term);
 				}
-			} else {
-				throw new RecordNotFoundException();
 			}
-		} else {
-			throw new RecordNotFoundException();
 		}
 		return jobSearchListResponse;
 		
