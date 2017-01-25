@@ -34,6 +34,10 @@ import com.thewebthing.commons.lang.StringUtils;
  * 		value = "first_name last_name" - for display
  * 		preferredContactValue = the value of the field indicated by the preferredContact field - additional display value
  * 
+ * The url for delete will return methodNotAllowed
+ * 
+ * The url for post will return methodNotAllowed
+ * 
  * The url for get will be one of:
  * 		/contactSearch?term=					(returns all records)
  * 		/contactSearch?term=<searchTerm>		(returns all records containing <searchTerm>)

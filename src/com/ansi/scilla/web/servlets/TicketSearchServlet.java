@@ -3,9 +3,6 @@ package com.ansi.scilla.web.servlets;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -14,24 +11,18 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
-//import com.ansi.scilla.common.db.Code;
-import com.ansi.scilla.common.db.Ticket;
-import com.ansi.scilla.common.queries.TicketSearch;
-import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.web.common.AppUtils;
-import com.ansi.scilla.web.common.MessageKey;
 import com.ansi.scilla.web.common.ResponseCode;
-import com.ansi.scilla.web.common.WebMessages;
-//import com.ansi.scilla.web.request.CodeRequest;
-import com.ansi.scilla.web.request.TicketSearchRequest;
 //import com.ansi.scilla.web.response.code.CodeResponse;
 import com.ansi.scilla.web.response.ticketSearch.TicketSearchListResponse;
-import com.ansi.scilla.web.response.ticketSearch.TicketSearchResponse;
-import com.ansi.scilla.web.struts.SessionUser;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 
 /**
+ * The url for delete will return methodNotAllowed
+ * 
+ * The url for post will return methodNotAllowed
+ * 
  * The url for get will be one of:
  * 		/ticketSearch/List      		(retrieves everything)
  * 		/ticketSearch/<ticketId>		(retrieves a single record)
@@ -45,6 +36,18 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
 public class TicketSearchServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
+
+	@Override
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		super.sendNotAllowed(response);
+	}
+	
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		super.sendNotAllowed(response);
+	}
 
 	@Override
 	protected void doGet(HttpServletRequest request,

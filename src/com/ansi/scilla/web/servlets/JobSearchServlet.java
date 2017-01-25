@@ -20,20 +20,17 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
 
 
 /**
- * The url for delete will be of the form /division/<table>/<field>/<value>
+ * The url for delete will return methodNotAllowed
+ * 
+ * The url for post will return methodNotAllowed
  * 
  * The url for get will be one of:
- * 		/division    (retrieves everything)
- * 		/division/<table>      (filters division table by tablename)
- * 		/division/<table>/<field>	(filters division table tablename and field
- * 		/division/<table>/<field>/<value>	(retrieves a single record)
- * 
- * The url for adding a new record will be a POST to:
- * 		/division/new   with parameters in the JSON
- * 
- * The url for update will be a POST to:
- * 		/division/<table>/<field>/<value> with parameters in the JSON
- * 
+ * 		/jobSearch/List      				(retrieves everything)
+ * 		/jobSearch/<jobId>					(retrieves a single record)
+ *		/jobSearch?term=					(retrieves everything)
+ * 		/jobSearch?term=<queryTerm>			(retrieves filtered selection)
+ * 		/jobSearch?sort=<sort>,<sort> 		(retrieve sorted selection)
+ * 		/jobSearch?term=<term>&sort=<sort> 	(retrieve sorted filtered selection)
  * 
  * @author ggroce
  * 
@@ -41,6 +38,18 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
 public class JobSearchServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
+
+	@Override
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		super.sendNotAllowed(response);
+	}
+	
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		super.sendNotAllowed(response);
+	}
 
 	@Override
 	protected void doGet(HttpServletRequest request,

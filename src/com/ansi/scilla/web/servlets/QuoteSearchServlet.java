@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -15,46 +12,44 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
-//import com.ansi.scilla.common.db.Code;
-import com.ansi.scilla.common.db.Quote;
-import com.ansi.scilla.common.queries.QuoteSearch;
-import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.web.common.AppUtils;
-import com.ansi.scilla.web.common.MessageKey;
 import com.ansi.scilla.web.common.ResponseCode;
-import com.ansi.scilla.web.common.WebMessages;
-//import com.ansi.scilla.web.request.CodeRequest;
-import com.ansi.scilla.web.request.QuoteSearchRequest;
-import com.ansi.scilla.web.response.jobSearch.JobSearchListResponse;
 //import com.ansi.scilla.web.response.code.CodeResponse;
 import com.ansi.scilla.web.response.quoteSearch.QuoteSearchListResponse;
-import com.ansi.scilla.web.response.quoteSearch.QuoteSearchResponse;
-import com.ansi.scilla.web.struts.SessionUser;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 
 /**
- * The url for delete will be of the form /division/<table>/<field>/<value>
+ * The url for delete will return methodNotAllowed
+ * 
+ * The url for post will return methodNotAllowed
  * 
  * The url for get will be one of:
- * 		/division    (retrieves everything)
- * 		/division/<table>      (filters division table by tablename)
- * 		/division/<table>/<field>	(filters division table tablename and field
- * 		/division/<table>/<field>/<value>	(retrieves a single record)
- * 
- * The url for adding a new record will be a POST to:
- * 		/division/new   with parameters in the JSON
- * 
- * The url for update will be a POST to:
- * 		/division/<table>/<field>/<value> with parameters in the JSON
+ * 		/quoteSearch/List      				(retrieves everything)
+ * 		/quoteSearch/<quoteId>					(retrieves a single record)
+ *		/quoteSearch?term=					(retrieves everything)
+ * 		/quoteSearch?term=<queryTerm>			(retrieves filtered selection)
+ * 		/quoteSearch?sort=<sort>,<sort> 		(retrieve sorted selection)
+ * 		/quoteSearch?term=<term>&sort=<sort> 	(retrieve sorted filtered selection)
  * 
  * 
- * @author dclewis
- * editer: jwlewis
+ * @author ggroce
  */
 public class QuoteSearchServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
+
+	@Override
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		super.sendNotAllowed(response);
+	}
+	
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		super.sendNotAllowed(response);
+	}
 
 	@Override
 	protected void doGet(HttpServletRequest request,
