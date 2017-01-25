@@ -38,7 +38,6 @@ public class TicketSearchRequest extends AbstractRequest {
 	private String jobSiteName;
 	private String quoteNumber;
 	private String revision;
-	private String jobCode;
 	private String jobStatus;
 	
 	public TicketSearchRequest() {
@@ -145,12 +144,6 @@ public class TicketSearchRequest extends AbstractRequest {
 	}
 	public void setRevision(String revision) {
 		this.revision = revision;
-	}
-	public String getJobCode() {
-		return jobCode;
-	}
-	public void setJobCode(String jobCode) {
-		this.jobCode = jobCode;
 	}
 	public String getJobStatus() {
 		return jobStatus;

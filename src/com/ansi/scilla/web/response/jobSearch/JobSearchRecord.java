@@ -18,7 +18,6 @@ import com.thewebthing.commons.lang.BeanUtils;
 public class JobSearchRecord extends ApplicationObject {
 	private static final long serialVersionUID = 1L;
 	private Integer divisionId;
-	private String jobCode;
 	private String jobFrequency;
 	private Integer jobId;
 	private Integer jobNbr;
@@ -59,12 +58,6 @@ public class JobSearchRecord extends ApplicationObject {
 		return this.divisionId;
 	}
 
-	public String getJobCode() {
-		return jobCode;
-	}
-	public void setJobCode(String jobCode) {
-		this.jobCode = jobCode;
-	}
 	public String getJobFrequency() {
 		return jobFrequency;
 	}
