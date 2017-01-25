@@ -19,28 +19,31 @@ import com.ansi.scilla.web.response.ticketTable.TicketTableJsonResponse;
 import com.ansi.scilla.web.response.ticketTable.TicketTableReturnItem;
 
 /**
- * This url searches the following contact table fields for the search term:
- * 		name
- * 		address1
- * 		address2
- * 		city
- * 		country
- * 		state
- * 		zip
- * 		country_cod
+ * The url for delete will return methodNotAllowed
  * 
- * The url for get will be one of:
- * 		/addressSearch    						(retrieves all records from address table)
- * 		/addressSearch?term=<searchTerm>		(returns all records containing <searchTerm>)
+ * The url for post will return methodNotAllowed
  * 
- * The servlet will return all records if there is no "term=" is found.
+ * The url for get will be the following: 
+ * 		/ticketTable  	See DataTables Table plug-in for jQuery at datatables.net for details
  * 
-
+ * @author ggroce
  *
  */
 public class TicketTableServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
+
+	@Override
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		super.sendNotAllowed(response);
+	}
+	
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		super.sendNotAllowed(response);
+	}
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
