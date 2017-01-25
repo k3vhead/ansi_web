@@ -13,33 +13,37 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ansi.scilla.common.queries.QuoteSearch;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.response.quoteTable.QuoteTableJsonResponse;
 import com.ansi.scilla.web.response.quoteTable.QuoteTableReturnItem;
 
 /**
- * This url searches the following contact table fields for the search term:
- * 		name
- * 		address1
- * 		address2
- * 		city
- * 		country
- * 		state
- * 		zip
- * 		country_cod
+ * The url for delete will return methodNotAllowed
  * 
- * The url for get will be one of:
- * 		/addressSearch    						(retrieves all records from address table)
- * 		/addressSearch?term=<searchTerm>		(returns all records containing <searchTerm>)
+ * The url for post will return methodNotAllowed
  * 
- * The servlet will return all records if there is no "term=" is found.
+ * The url for get will be the following: 
+ * 		/quoteTable  	See DataTables Table plug-in for jQuery at datatables.net for details
  * 
-
+ * @author ggroce
  *
  */
 public class QuoteTableServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
+
+	@Override
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		super.sendNotAllowed(response);
+	}
+	
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		super.sendNotAllowed(response);
+	}
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -119,30 +123,9 @@ public class QuoteTableServlet extends AbstractServlet {
 		    int totalAfterFilter = total;
 			
 			List<QuoteTableReturnItem> resultList = new ArrayList<QuoteTableReturnItem>();
-			sql = "SELECT quote.quote_id, CONCAT(quote.quote_number,quote.revision) as quote_code, quote.proposal_date, " +
-					" CONCAT(ansi_user.first_name,' ',ansi_user.last_name) as manager_name, " +
-					" a1.name as bill_to_name, a2.name as job_site_name, a2.address1 as job_site_address, " +
-					" jobs.job_count as quote_job_count, jobs.job_ppc_sum as quote_ppc_sum " +
-					" FROM quote " +
-					" JOIN address a1 ON quote.bill_to_address_id = a1.address_id " +
-					" JOIN address a2 ON quote.job_site_address_id = a2.address_id " +
-					" JOIN ansi_user ON ansi_user.user_id = quote.manager_ID " +
-					" inner join ( " +
-						" select quote.quote_id, count(job.job_id) as job_count, sum(job.price_per_cleaning) as job_ppc_sum " +
-						" from quote " +
-						" left outer join job on job.quote_id=quote.quote_id " +
-						" group by quote.quote_id " +
-						" ) jobs on quote.quote_id=jobs.quote_id";
+			sql = QuoteSearch.sql;
 
-			String search = " where CONCAT(first_name,' ',last_name) like '%" + term + "%' " +
-					" OR CONCAT(last_name,' ',first_name) like '%" + term + "%' " +
-					" OR CONCAT(last_name,' ',first_name) like '%" + term + "%' " +
-					" OR CONCAT(quote_number,revision) like '%" + term + "%'" +
-					" OR a2.name like '%" + term + "%'" +
-					" OR a2.address1 like '%" + term + "%'" +
-					" OR a1.name like '%" + term + "%'";
-			
-			
+			String search = QuoteSearch.generateWhereClause(term);
 			
 			System.out.println(sql);
 			sql += search;
@@ -161,19 +144,7 @@ public class QuoteTableServlet extends AbstractServlet {
 				resultList.add(new QuoteTableReturnItem(rs));
 			}
 			
-			
-			
-			String sql2 = "select count(*)"
-					+ " from quote"
-					+ " JOIN address a1 ON quote.bill_to_address_id = a1.address_id "
-					+ " JOIN address a2 ON quote.job_site_address_id = a2.address_id "
-					+ " JOIN ansi_user ON ansi_user.user_id = quote.manager_ID "
-					+ " inner join ( "
-						+ " select quote.quote_id, count(job.job_id) as job_count, sum(job.price_per_cleaning) as job_ppc_sum "
-						+ " from quote "
-						+ " left outer join job on job.quote_id=quote.quote_id "
-						+ " group by quote.quote_id "
-						+ " ) jobs on quote.quote_id=jobs.quote_id";
+			String sql2 = "select count(*)" + QuoteSearch.sqlFromClause;
 
 			if (search != "") {
 				sql2 += search;
