@@ -32,23 +32,15 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
 
 
 /**
- * The url for delete will be of the form /division/<table>/<field>/<value>
- * 
  * The url for get will be one of:
- * 		/division    (retrieves everything)
- * 		/division/<table>      (filters division table by tablename)
- * 		/division/<table>/<field>	(filters division table tablename and field
- * 		/division/<table>/<field>/<value>	(retrieves a single record)
+ * 		/ticketSearch    				(retrieves everything)
+ * 		/ticketSearch/List      		(retrieves everything)
+ * 		/ticketSearch/<ticketId>		(retrieves a single record)
+ * 		/ticketSearch?term=<queryTerm>	(retrieves filtered selection)
+ * 		/ticketSearch?sort=<sort>,<sort> (retrieve sorted selection)
+ * 		/ticketSearch?term=<term>&sort=<sort> (retrieve sorted filtered selection)
  * 
- * The url for adding a new record will be a POST to:
- * 		/division/new   with parameters in the JSON
- * 
- * The url for update will be a POST to:
- * 		/division/<table>/<field>/<value> with parameters in the JSON
- * 
- * 
- * @author dclewis
- * editer: jwlewis
+ * @author ggroce
  */
 public class TicketSearchServlet extends AbstractServlet {
 
@@ -57,6 +49,7 @@ public class TicketSearchServlet extends AbstractServlet {
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
+
 		String url = request.getRequestURI();
 		System.out.println("TicketSearchServlet(): doGet(): url =" + url);
 		int idx = url.indexOf("/ticketSearch/");
@@ -69,34 +62,40 @@ public class TicketSearchServlet extends AbstractServlet {
 			String myString = url.substring(idx + "/ticketSearch/".length());
 			String[] urlPieces = myString.split("/");
 			String command = urlPieces[0];
-
-			Connection conn = null;
-			try {
-				if ( StringUtils.isBlank(command)) {
-					throw new RecordNotFoundException();
-				}
-				conn = AppUtils.getDBCPConn();
-
-				TicketSearchListResponse ticketSearchListResponse = doGetWork(conn, myString, queryString);
-				super.sendResponse(conn, response, ResponseCode.SUCCESS, ticketSearchListResponse);
-			} catch(RecordNotFoundException recordNotFoundEx) {
+			if ( StringUtils.isBlank(command)) {
 				super.sendNotFound(response);
-			} catch ( Exception e) {
-				AppUtils.logException(e);
-				throw new ServletException(e);
-			} finally {
-				AppUtils.closeQuiet(conn);
-			}
+			} else {
+				if(command.equals("list") || StringUtils.isNumeric(command)){
+					System.out.println("TicketSearchServlet(): doGet(): processing list");
+					Connection conn = null;
+					try {
+						conn = AppUtils.getDBCPConn();
 
+						TicketSearchListResponse ticketSearchListResponse = doGetWork(conn, myString, queryString);
+						super.sendResponse(conn, response, ResponseCode.SUCCESS, ticketSearchListResponse);
+					} catch(RecordNotFoundException recordNotFoundEx) {
+						super.sendNotFound(response);
+					} catch ( Exception e) {
+						AppUtils.logException(e);
+						throw new ServletException(e);
+					} finally {
+						AppUtils.closeQuiet(conn);
+					}
+				} else {
+					super.sendNotFound(response);
+				}
+			}
 		} else {
 			String queryString = request.getQueryString();
 			System.out.println("TicketSearchServlet(): doGet(): queryString =" + queryString);
 			Connection conn = null;
+			System.out.println("TicketSearchServlet(): doGet(): queryString =" + queryString);
+
 			try {
+				conn = AppUtils.getDBCPConn();
 				if ( StringUtils.isBlank(queryString)) {
 					throw new RecordNotFoundException();
 				}
-				conn = AppUtils.getDBCPConn();
 
 				TicketSearchListResponse ticketSearchListQueryResponse = doGetWork(conn, queryString);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, ticketSearchListQueryResponse);
