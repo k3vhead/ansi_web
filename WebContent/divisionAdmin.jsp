@@ -32,12 +32,13 @@
 			}
 			#displayTable {
 				width:90%;
+				clear:both;
 			}
 			#addFormDiv {
 				display:none;
 				background-color:#FFFFFF;
 				color:#000000;
-				width:400px;
+				width:475px;
 				padding:15px;
 			}
 						
@@ -98,7 +99,17 @@
        				row = row + '<td>' + $division.description + '</td>';
        			} 
 				row = row + '<td>' + $division.defaultDirectLaborPct + '</td>';
-				row = row + '<td>' + $division.status + '</td>';
+				if ( $division.status == 1 ) {
+       				$iconcolor="green";
+       				$divisionText = '<i class="fa fa-check-square" aria-hidden="true"></i>';
+       			} else if ( $division.status == 0 ) {
+       				$iconcolor="red";
+       				$divisionText = '<i class="fa fa-minus-circle" aria-hidden="true"></i>';
+       			} else {
+       				$iconcolor="red";
+       				$divisionText = '<i class="fa fa-question-circle" aria-hidden="true"></i>';       				
+       			}
+       			row = row + '<td class="status centered ' + $iconcolor + '">' + $divisionText + '</td>';
        	    	<ansi:hasPermission permissionRequired="SYSADMIN">
         		<ansi:hasWrite>
        			row = row + '<td>';
@@ -133,7 +144,7 @@
             	$("#addForm input[name='divisionNbr']").val($divisionNbr);
             	$("#addForm input[name='description']").val($description);
             	$("#addForm input[name='defaultDirectLaborPct']").val($defaultDirectLaborPct);
-            	$("#addForm input[name='status']").val($status);
+            	$("#addForm select[name='status']").val($status);
 				
             	
 				$.each( $('#addForm :input'), function(index, value) {
@@ -149,14 +160,27 @@
 			
 			function doDelete($clickevent) {
 				$clickevent.preventDefault();
-				var rownum = $clickevent.currentTarget.attributes['data-row'].value;
-				$('#confirmDelete').data('rownum',rownum);
+				var $rownum = $clickevent.currentTarget.attributes['data-row'].value;
+            	var $tableData = [];
+                $("#displayTable").find('tr').each(function (rowIndex, r) {
+                    var cols = [];
+                    $(this).find('th,td').each(function (colIndex, c) {
+                        cols.push(c.textContent);
+                    });
+                    $tableData.push(cols);
+                });
+            	$("#delDivisionId").html($tableData[$rownum][0]);
+            	$("#delDivisionCode").html($tableData[$rownum][1]);
+            	$("#delDivisionNbr").html($tableData[$rownum][2]);
+
+				$('#confirmDelete').data('rownum',$rownum);
              	$('#confirmDelete').bPopup({
 					modalClose: false,
 					opacity: 0.6,
 					positionStyle: 'fixed' //'fixed' or 'absolute'
 				});
 			}
+			
 			$("#addButton").click( function($clickevent) {
 				$clickevent.preventDefault();
 				$("#addFormTitle").html("Add Division");
@@ -271,14 +295,14 @@
 
                 var $rownum = $('#confirmDelete').data('rownum');
             	var $divisionId = $tableData[$rownum][0];
-            	var $defaultDirectLaborPct = $tableData[$rownum][1];
+            	var $divisionCode = $tableData[$rownum][1];
             	var $divisionNbr = $tableData[$rownum][2];
-            	var $divisionCode = $tableData[$rownum][3];
+            	var $defaultDirectLaborPct = $tableData[$rownum][3];
             	var $description= $tableData[$rownum][4];
             	var $status = $tableData[$rownum][5];
             	
             	$outbound = JSON.stringify({});
-            	$url = 'division/' + $divisionId + "/" + $defaultDirectLaborPct + "/" + $divisionNbr + "/" + $divisionCode + "/" + $description + "/" + $status;
+            	$url = 'division/' + $divisionId;
             	
             	var jqxhr = $.ajax({
             	    type: 'delete',
@@ -295,6 +319,10 @@
             	     statusCode: {
              	    	403: function($data) {
              	    		$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+             	    	}, 
+	         	    	404: function($data) {
+	         	    		$('#confirmDelete').bPopup().close();
+	         	    		$("#globalMsg").html("Record does not exist").fadeIn(10).fadeOut(6000);
              	    	} 
              	     },
              	     dataType: 'json'
@@ -383,7 +411,13 @@
     	<ansi:hasPermission permissionRequired="SYSADMIN">
     		<ansi:hasWrite>
 		    	<div id="confirmDelete">
-		    		Are You Sure You Want to Delete this Division?<br />
+		    		<span class="formLabel">Are You Sure You Want to Delete this Division?</span><br />
+		    		<table id="delData">
+		    			<tr>
+		    				<td><span class="formLabel">Div. Code:</span></td>
+		    				<td id="delDivisionCode"></td>
+		    			</tr>
+		    		</table>
 		    		<input type="button" id="cancelDelete" value="No" />
 		    		<input type="button" id="doDelete" value="Yes" />
 		    	</div>
@@ -396,7 +430,7 @@
 		    				<tr>
 		    					<td><span class="formLabel">Div. ID:</span></td>
 		    					<td>
-		    						<input type="text" name="divisionId" readonly/>
+		    						<input style="border:none" type="text" name="divisionId" readonly/>
 		    						<i id="validDivisionId" class="fa" aria-hidden="true"></i>
 		    					</td>
 		    					<td><span class="err" id="divisionIdErr"></span></td>
