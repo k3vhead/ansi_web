@@ -99,10 +99,10 @@
        				row = row + '<td>' + $division.description + '</td>';
        			} 
 				row = row + '<td>' + $division.defaultDirectLaborPct + '</td>';
-				if ( $division.status == 1 ) {
+				if ( $division.status == 'Active' ) {
        				$iconcolor="green";
        				$divisionText = '<i class="fa fa-check-square" aria-hidden="true"></i>';
-       			} else if ( $division.status == 0 ) {
+       			} else if ( $division.status == 'Inactive' ) {
        				$iconcolor="red";
        				$divisionText = '<i class="fa fa-minus-circle" aria-hidden="true"></i>';
        			} else {
@@ -114,7 +114,9 @@
         		<ansi:hasWrite>
        			row = row + '<td>';
        			row = row + '<a href="#" class="updAction" data-row="' + $rownum +'"><span class="green fa fa-pencil" ari-hidden="true"></span></a> | ';
+       			if ( $division.userCount == 0 ) {
        			row = row + '<a href="#" class="delAction" data-row="' + $rownum +'"><span class="red fa fa-trash" aria-hidden="true"></span></a>';
+       			}
        			row = row + '</td>';
        			</ansi:hasWrite>
        			</ansi:hasPermission>       			
@@ -254,6 +256,7 @@
 							$('#addFormDiv').bPopup().close();
 							$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
 						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+							$('.err').html("");
 							 $.each($data.data.webMessages, function(key, messageList) {
 								var identifier = "#" + key + "Err";
 								msgHtml = "<ul>";
