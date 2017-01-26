@@ -233,7 +233,7 @@ public class PermissionGroupServlet extends AbstractServlet {
 		This is the Update portion of the doPost
 		*/
 		} else if ( StringUtils.isNumeric(command) ) {   
-			WebMessages webMessages = validateAdd(conn, permGroupRequest);
+			WebMessages webMessages = validateUpdate(conn, permGroupRequest);
 			if (webMessages.isEmpty()) {
 				webMessages = validateFormat(conn, permGroupRequest);
 			}
@@ -346,6 +346,18 @@ public class PermissionGroupServlet extends AbstractServlet {
 			throw e;
 		} 
 		return permissionGroup;
+	}
+	
+	protected WebMessages validateUpdate(Connection conn, PermGroupRequest permGroupRequest) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		List<String> missingFields = super.validateRequiredUpdateFields(permGroupRequest);
+		if ( ! missingFields.isEmpty() ) {
+			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
+			for ( String field : missingFields ) {
+				webMessages.addMessage(field, messageText);
+			}
+		}
+		return webMessages;
 	}
 	
 	protected WebMessages validateFormat(Connection conn, PermGroupRequest permGroupRequest) throws Exception {

@@ -1,8 +1,5 @@
 package com.ansi.scilla.web.request;
 
-import com.ansi.scilla.web.request.AbstractRequest;
-
-
 /**
  * Permission request and item request 
  * @author jwlewis
@@ -28,6 +25,8 @@ public class PermGroupRequest extends AbstractRequest {
 		this.description = description;
 	}
 
+	@RequiredForAdd
+	@RequiredForUpdate
 	public String getName() {
 		return name;
 	}
@@ -35,7 +34,8 @@ public class PermGroupRequest extends AbstractRequest {
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	
+	@RequiredForUpdate
 	public Integer getPermissionGroupId() {
 		return permissionGroupId;
 	}
@@ -43,7 +43,9 @@ public class PermGroupRequest extends AbstractRequest {
 	public void setPermissionGroupId(Integer permissionGroupId) {
 		this.permissionGroupId = permissionGroupId;
 	}
-
+	
+	@RequiredForAdd
+	@RequiredForUpdate
 	public Integer getStatus() {
 		return status;
 	}
