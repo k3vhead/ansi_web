@@ -1,28 +1,23 @@
 package com.ansi.scilla.web.servlets;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.web.common.AppUtils;
+import com.ansi.scilla.web.common.ResponseCode;
+import com.ansi.scilla.web.response.ticketReturn.TicketReturnListResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 
 /**
  * The url for get will be one of:
- * 		/ticketReturn/<status>  (returns a list of allowed next statuses)
+ * 		/ticketReturn/<ticketId>  (returns ticket return fields for a given ticket)
  * 
  * The url for update will be a POST to:
  * 		/ticketReturn/<ticket>/<action> with parameters in the JSON
@@ -47,94 +42,46 @@ public class TicketReturnServlet extends AbstractServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String url = request.getRequestURI();
+		System.out.println("TicketReturn(): doGet(): Url:" + url);
 		int idx = url.indexOf("/ticketReturn/");
 		if ( idx > -1 ) {
-			System.out.println("Url:" + url);
-			String queryString = request.getQueryString();
-			System.out.println("Query String: " + queryString);
-			
-			// we're in the right place
-			Connection conn = null;
-			try {
-				conn = AppUtils.getDBCPConn();
-				
-				// Figure out what we've got:				
-				String myString = url.substring(idx + "/ticketReturn/".length());
-				
-				String[] urlPieces = myString.split("/");
-				String status = urlPieces[0];
-				
-				if ( StringUtils.isBlank(status)) {
-//					super.sendNotFound(response);
-					throw new RecordNotFoundException();
-				} else {
-					String statusId = status.substring(0,1);
-					TicketStatus ticketStatus = TicketStatus.lookup(statusId);
-					System.out.println("ticketStatus:" + ticketStatus);
-					if (ticketStatus == null){
-						throw new RecordNotFoundException();
+			String myString = url.substring(idx + "/ticketReturn/".length());
+			String[] urlPieces = myString.split("/");
+			System.out.println("TicketReturn(): doGet(): myString:" + myString);
+			if ( StringUtils.isBlank(urlPieces[0])) { // there is nothing to do
+				System.out.println("TicketReturn(): doGet(): nothing to do");
+				super.sendNotFound(response);
+			} else { // Figure out what we've got
+				// if urlPieces[0] is numeric this is a ticketId
+				if ( StringUtils.isNumeric(urlPieces[0])) { // this is a ticket id
+					Integer ticketId = Integer.valueOf(urlPieces[0]);
+					System.out.println("TicketReturn(): doGet(): ticketId:" + ticketId);
+					Connection conn = null;
+					try {
+						conn = AppUtils.getDBCPConn();
+
+						TicketReturnListResponse ticketReturnListResponse = new TicketReturnListResponse(conn, ticketId);
+						super.sendResponse(conn, response, ResponseCode.SUCCESS, ticketReturnListResponse);
+					} catch(RecordNotFoundException recordNotFoundEx) {
+						super.sendNotFound(response);
+					} catch ( Exception e) {
+						AppUtils.logException(e);
+						throw new ServletException(e);
+					} finally {
+						AppUtils.closeQuiet(conn);
 					}
-					List<TicketStatus> nextValues = ticketStatus.nextValues();
-					List<ReturnItem> nextOptions = new ArrayList<ReturnItem>();
-					for ( TicketStatus option : nextValues) {
-						nextOptions.add(new ReturnItem(option));
-					}
-					System.out.println("TicketReturnServlet(): doGet(): nextOptions =" + nextOptions);
-					response.setStatus(HttpServletResponse.SC_OK);
-					response.setContentType("application/json");
-					
-					String json = AppUtils.object2json(nextOptions);
-					ServletOutputStream o = response.getOutputStream();
-					OutputStreamWriter writer = new OutputStreamWriter(o);
-					writer.write(json);
-					writer.flush();
-					writer.close();
+
+				} else { // not a valid ticketId so we cannot find it
+					System.out.println("TicketReturn(): doGet(): not a valid ticket");
+					super.sendNotFound(response);
 				}
-			} catch ( RecordNotFoundException e ) {
-				System.out.println("TicketReturnServlet: doGet() RecordNotFoundException 404");
-				super.sendNotFound(response);						
-			} catch ( Exception e) {
-				AppUtils.logException(e);
-				throw new ServletException(e);
-			} finally {
-				AppUtils.closeQuiet(conn);
 			}
-			
 		} else {
 			super.sendNotFound(response);
 		}
 	}
 
 
-	public class ReturnItem extends ApplicationObject {
-		private static final long serialVersionUID = 1L;
-		private String code;
-		private String display;
-		
-		public ReturnItem(TicketStatus rs) throws SQLException {
-			super();
-			this.code = rs.code();
-			this.display = rs.display();
-		}
-
-		public String getcode() {
-			return code;
-		}
-
-		public void setCode(String code) {
-			this.code = code;
-		}
-
-		public String getDisplay() {
-			return display;
-		}
-
-		public void setDisplay(String display) {
-			this.display = display;
-		}
-
-	}
-	
 /*	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
