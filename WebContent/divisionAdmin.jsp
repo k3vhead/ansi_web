@@ -146,7 +146,7 @@
             	$("#addForm input[name='divisionNbr']").val($divisionNbr);
             	$("#addForm input[name='description']").val($description);
             	$("#addForm input[name='defaultDirectLaborPct']").val($defaultDirectLaborPct);
-            	$("#addForm select[name='status']").val($status);
+            	$("#addForm input[name='status']").val($status);
 				
             	
 				$.each( $('#addForm :input'), function(index, value) {
