@@ -39,6 +39,13 @@ public class DivisionResponse extends MessageResponse implements Serializable {
 		BeanUtils.copyProperties(this.division, division);
 		Integer userCount = this.makeUserCount(conn, division.getDivisionId());
 		this.division.setUserCount(userCount);
+		if ( division.getStatus().equals(Division.STATUS_IS_ACTIVE)) {
+			this.division.setStatus("Active");
+		} else if (division.getStatus().equals(Division.STATUS_IS_INACTIVE) ) {
+			this.division.setStatus("Inactive");
+		} else { 
+			this.division.setStatus(null);
+		}
 	}
 
 	private Integer makeUserCount(Connection conn, Integer divisionId) throws SQLException {
