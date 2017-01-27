@@ -1,7 +1,6 @@
 package com.ansi.scilla.web.response.options;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.ansi.scilla.common.ApplicationObject;

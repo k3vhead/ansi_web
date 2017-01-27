@@ -1,15 +1,7 @@
 package com.ansi.scilla.web.response.quoteSearch;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
-import org.apache.commons.beanutils.BeanUtils;
-
-import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.web.response.MessageResponse;
 
 /**

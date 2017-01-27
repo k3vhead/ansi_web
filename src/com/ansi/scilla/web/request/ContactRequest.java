@@ -40,7 +40,7 @@ public class ContactRequest extends AbstractRequest {
 		return businessPhone;
 	}
 
-	public void setBusinessPhone(String tableName) {
+	public void setBusinessPhone(String businessPhone) {
 		this.businessPhone = businessPhone;
 	}
 

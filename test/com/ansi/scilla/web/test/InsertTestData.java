@@ -210,8 +210,8 @@ public class InsertTestData extends TesterUtils {
 					p.setPermissionGroupId(1);
 					p.setPermissionLevel(1);
 					p.setPermissionName(permission.toString());
-					p.setUpdateBy(myUserId);
-					p.setUpdateDate(now);
+					p.setUpdatedBy(myUserId);
+					p.setUpdatedDate(now);
 					p.insertWithNoKey(conn);
 				}
 			}
@@ -392,8 +392,8 @@ public class InsertTestData extends TesterUtils {
 				pl.setLevel(1);
 				pl.setAddedBy(1);
 				pl.setAddedDate(now);
-				pl.setUpdateBy(1);
-				pl.setUpdateDate(now);
+				pl.setUpdatedBy(1);
+				pl.setUpdatedDate(now);
 				pl.insertWithNoKey(conn);
 				
 				pl.setLevel(0);

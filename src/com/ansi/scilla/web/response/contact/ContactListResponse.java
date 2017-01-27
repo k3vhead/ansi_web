@@ -2,8 +2,6 @@ package com.ansi.scilla.web.response.contact;
 
 import java.io.Serializable;
 import java.sql.Connection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import com.ansi.scilla.common.db.Contact;

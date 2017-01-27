@@ -1,11 +1,6 @@
 package com.ansi.scilla.web.response.ticketTable;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
-
-import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.web.response.quoteTable.QuoteTableReturnItem;
 
 public class TicketTableJsonResponse {
 

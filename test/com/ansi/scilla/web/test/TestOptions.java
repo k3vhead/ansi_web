@@ -1,11 +1,5 @@
 package com.ansi.scilla.web.test;
 
-import java.util.Arrays;
-import java.util.List;
-
-import com.ansi.scilla.web.response.options.OptionsListResponse;
-import com.ansi.scilla.web.response.options.ResponseOption;
-
 public class TestOptions {
 
 	public static void main(String[] args) {

@@ -3,8 +3,6 @@ package com.ansi.scilla.web.test;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.ansi.scilla.web.common.AppUtils;
-
 public class TestAddress {
 
 	private final String[] urlList = new String[] {
