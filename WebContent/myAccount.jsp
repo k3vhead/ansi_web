@@ -113,7 +113,6 @@
 				$clickevent.preventDefault();
 				clearAddForm();
 				var $rownum = $clickevent.currentTarget.attributes['data-row'].value;
-				console.debug("Doing update " + $rownum);
 				$("#addFormTitle").html("Update Account Information");
 				$('#addForm').data('rownum',$rownum);
 				
@@ -170,7 +169,6 @@
 			});
 			
 			$("#cancelUpdate").click( function($clickevent) {
-				console.debug("Canceling update");
 				$clickevent.preventDefault();
 				clearAddForm();
 				$('#addFormDiv').bPopup().close();
@@ -178,7 +176,6 @@
 
 			$("#goUpdate").click( function($clickevent) {
 				$clickevent.preventDefault();
-				console.debug("Doing update");
 				$outbound = {};
 				$.each( $('#addForm :input'), function(index, value) {
 					if ( value.name ) {
@@ -210,13 +207,11 @@
 	            	$url = "code/" + $tableName + "/" + $fieldName + "/" + $value;
 				}
 				
-				console.debug(JSON.stringify($outbound))
 				var jqxhr = $.ajax({
 					type: 'POST',
 					url: $url,
 					data: JSON.stringify($outbound),
 					success: function($data) {
-						console.debug($data);
 						if ( $data.responseHeader.responseCode == 'SUCCESS') {
 							if ( $url == "code/add" ) {
 								var count = $('#displayTable tr').length - 1;

@@ -45,9 +45,6 @@
             	var $httpType = $("#httptype option:selected" ).val();
             	var json = JSON.stringify($("#testjson").val());
             	var $url = $("#testurl").val();
-            	console.debug($httpType);
-            	console.debug(json);
-            	console.debug($url);
             	
             	var jqxhr = $.ajax({
             	    type: $httpType,

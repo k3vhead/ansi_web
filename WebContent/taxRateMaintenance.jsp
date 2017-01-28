@@ -378,7 +378,6 @@ change log
 			$("#cancelUpdate").click( function($clickevent) {
 				// this happens when the user clicks the cancel button 
 				// on the add/update form.
-				console.debug("Canceling update");
 				$clickevent.preventDefault();
 				clearAddForm();
 
@@ -389,7 +388,6 @@ change log
 			/* // nn 
 			$("#goUpdate").click( function($clickevent) {
 				$clickevent.preventDefault();
-				console.debug("Doing update");
 				clearAddForm();
 				$('#addFormDiv').bPopup().close();
 			});
