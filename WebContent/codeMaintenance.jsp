@@ -38,7 +38,7 @@
 				display:none;
 				background-color:#FFFFFF;
 				color:#000000;
-				width:400px;
+				width:600px;
 				padding:15px;
 			}
 			#delData {
@@ -136,8 +136,10 @@
        			row = row + '<td class="displaycol">' + $code.displayValue + '</td>';
        			row = row + '<td class="seqcol centered">' + $code.seq + '</td>';
        			if ( $code.description == null ) {
+       				$description = "";
        				row = row + '<td class="desccol"></td>';
        			} else {
+       				$description = $code.description;
        				row = row + '<td class="desccol">' + $code.description + '</td>';
        			}       			
        			if ( $code.status == 1 ) {
@@ -154,8 +156,8 @@
        	    	<ansi:hasPermission permissionRequired="SYSADMIN">
         		<ansi:hasWrite>
        			row = row + '<td class="centered actioncol">';
-       			row = row + '<a href="#" class="updAction" data-row="' + $rownum +'"><span class="green fa fa-pencil" ari-hidden="true"></span></a> | ';
-       			row = row + '<a href="#" class="delAction" data-row="' + $rownum +'"><span class="red fa fa-trash" aria-hidden="true"></span></a>';
+       			row = row + '<a href="#" class="updAction" data-tableName="' + $code.tableName +'" data-fieldName="' + $code.fieldName + '" data-value="' + $code.value + '" data-displayValue="' + $code.displayValue + '" data-seq="' + $code.seq +'" data-description="' + $description + '" data-status="' + $code.status + '"><span class="green fa fa-pencil" ari-hidden="true"></span></a> | ';
+       			row = row + '<a href="#" class="delAction" data-tableName="' + $code.tableName +'" data-fieldName="' + $code.fieldName + '" data-value="' + $code.value + '" data-displayValue="' + $code.displayValue + '" data-seq="' + $code.seq +'" data-description="' + $description + '" data-status="' + $code.status + '"><span class="red fa fa-trash" aria-hidden="true"></span></a>';
        			row = row + '</td>';
        			</ansi:hasWrite>
        			</ansi:hasPermission>       			
@@ -165,21 +167,29 @@
 			function doUpdate($clickevent) {
 				$clickevent.preventDefault();
 				clearAddForm();
-				var $rownum = $clickevent.currentTarget.attributes['data-row'].value;
+				var $tableName = $clickevent.currentTarget.attributes['data-tableName'].value;
+				var $fieldName = $clickevent.currentTarget.attributes['data-fieldName'].value;
+				var $value = $clickevent.currentTarget.attributes['data-value'].value;
+				var $displayValue = $clickevent.currentTarget.attributes['data-displayValue'].value;
+				var $seq = $clickevent.currentTarget.attributes['data-seq'].value;
+				var $description = $clickevent.currentTarget.attributes['data-description'].value;
+				var $status = $clickevent.currentTarget.attributes['data-status'].value;
 				$("#addFormTitle").html("Update a Code");
-				$('#addForm').data('rownum',$rownum);
+				$('#addForm').data('tableName',$tableName);
+				$('#addForm').data('fieldName',$fieldName);
+				$('#addForm').data('value',$value);
 				
-                var $rowId = eval($rownum) + 1;
-            	var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")"
-            	var $row = $($rowFinder)  
-            	var tdList = $row.children("td");
-            	var $tableName = $row.children("td")[0].textContent;
-            	var $fieldName = $row.children("td")[1].textContent;
-            	var $value = $row.children("td")[2].textContent;
-            	var $display = $row.children("td")[3].textContent;
-            	var $seq = $row.children("td")[4].textContent;
-            	var $description = $row.children("td")[5].textContent;
-            	var $status = $row.children("td")[6].textContent;
+                //var $rowId = eval($rownum) + 1;
+            	//var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")"
+            	//var $row = $($rowFinder)  
+            	//var tdList = $row.children("td");
+            	//var $tableName = $row.children("td")[0].textContent;
+            	//var $fieldName = $row.children("td")[1].textContent;
+            	//var $value = $row.children("td")[2].textContent;
+            	//var $display = $row.children("td")[3].textContent;
+            	//var $seq = $row.children("td")[4].textContent;
+            	//var $description = $row.children("td")[5].textContent;
+            	//var $status = $row.children("td")[6].textContent;
 
             	select = $("#addForm select[name='tableName']");
             	select.val($tableName);
@@ -189,7 +199,7 @@
             	//$("#addForm input[name='tableName']").val($tableName);
             	//$("#addForm input[name='fieldName']").val($fieldName);
             	$("#addForm input[name='value']").val($value);
-            	$("#addForm input[name='displayValue']").val($display);
+            	$("#addForm input[name='displayValue']").val($displayValue);
             	$("#addForm select[name='seq']").val($seq);
             	$("#addForm input[name='description']").val($description);
             	$("#addForm select[name='status']").val($status);
@@ -207,20 +217,36 @@
 			
 			function doDelete($clickevent) {
 				$clickevent.preventDefault();
-				var $rownum = $clickevent.currentTarget.attributes['data-row'].value;
-            	var $tableData = [];
-                $("#displayTable").find('tr').each(function (rowIndex, r) {
-                    var cols = [];
-                    $(this).find('th,td').each(function (colIndex, c) {
-                        cols.push(c.textContent);
-                    });
-                    $tableData.push(cols);
-                });
-            	$("#delTable").html($tableData[$rownum][0]);
-            	$("#delField").html($tableData[$rownum][1]);
-            	$("#delValue").html($tableData[$rownum][2]);
 
-				$('#confirmDelete').data('rownum',$rownum);
+				var $tableName = $clickevent.currentTarget.attributes['data-tableName'].value;
+				var $fieldName = $clickevent.currentTarget.attributes['data-fieldName'].value;
+				var $value = $clickevent.currentTarget.attributes['data-value'].value;
+				var $displayValue = $clickevent.currentTarget.attributes['data-displayValue'].value;
+				var $seq = $clickevent.currentTarget.attributes['data-seq'].value;
+				var $description = $clickevent.currentTarget.attributes['data-description'].value;
+				var $status = $clickevent.currentTarget.attributes['data-status'].value;
+
+				$('#confirmDelete').data('tableName',$tableName);
+				$('#confirmDelete').data('fieldName',$fieldName);
+				$('#confirmDelete').data('value',$value);
+            	$("#delTable").html($tableName);
+            	$("#delField").html($fieldName);
+            	$("#delValue").html($value);
+
+				//var $rownum = $clickevent.currentTarget.attributes['data-row'].value;
+            	//var $tableData = [];
+                //$("#displayTable").find('tr').each(function (rowIndex, r) {
+                //    var cols = [];
+                //    $(this).find('th,td').each(function (colIndex, c) {
+                //        cols.push(c.textContent);
+                //    });
+                //    $tableData.push(cols);
+                //});
+            	//$("#delTable").html($tableData[$rownum][0]);
+            	//$("#delField").html($tableData[$rownum][1]);
+            	//$("#delValue").html($tableData[$rownum][2]);
+
+				//$('#confirmDelete').data('rownum',$rownum);
              	$('#confirmDelete').bPopup({
 					modalClose: false,
 					opacity: 0.6,
@@ -230,6 +256,7 @@
 			
 			$("#addButton").click( function($clickevent) {
 				$clickevent.preventDefault();
+				clearAddForm();
 				$("#addFormTitle").html("Add a Code");
              	$('#addFormDiv').bPopup({
 					modalClose: false,
@@ -260,22 +287,27 @@
 				$outbound['seq'] = $("#addForm select[name='seq'] option:selected").val();
 				$outbound['status'] = $("#addForm select[name='status'] option:selected").val();
 
-				if ( $('#addForm').data('rownum') == null ) {
+				if ( $('#addForm').data('tableName') == null ) {
 					$url = "code/add";
 				} else {
-					$rownum = $('#addForm').data('rownum')
-					var $tableData = [];
-	                $("#displayTable").find('tr').each(function (rowIndex, r) {
-	                    var cols = [];
-	                    $(this).find('th,td').each(function (colIndex, c) {
-	                        cols.push(c.textContent);
-	                    });
-	                    $tableData.push(cols);
-	                });
+					//$rownum = $('#addForm').data('rownum')
+					//var $tableData = [];
+	                //$("#displayTable").find('tr').each(function (rowIndex, r) {
+	                //    var cols = [];
+	                //    $(this).find('th,td').each(function (colIndex, c) {
+	                //        cols.push(c.textContent);
+	                //    });
+	                //    $tableData.push(cols);
+	                //});
 
-	            	var $tableName = $tableData[$rownum][0];
-	            	var $fieldName = $tableData[$rownum][1];
-	            	var $value = $tableData[$rownum][2];
+	            	//var $tableName = $tableData[$rownum][0];
+	            	//var $fieldName = $tableData[$rownum][1];
+	            	//var $value = $tableData[$rownum][2];
+	            	
+      	            var $tableName = $('#addForm').data('tableName');
+            		var $fieldName = $("#addForm").data('fieldName');
+            		var $value = $("#addForm").data('value');
+
 	            	$url = "code/" + $tableName + "/" + $fieldName + "/" + $value;
 				}
 				
@@ -289,11 +321,26 @@
 								var count = $('#displayTable tr').length - 1;
 								addRow(count, $data.data.code);
 							} else {
-				            	var $rownum = $('#addForm').data('rownum');
-				                var $rowId = eval($rownum) + 1;
-				            	var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")"
-				            	var $rowTd = makeRow($data.data.code, $rownum);
-				            	$($rowFinder).html($rowTd);
+     				            $("#displayTable").find('tr').each(function (rowIndex, r) {
+				                    var cols = [];
+				                    $(this).find('th,td').each(function (colIndex, c) {
+				                        cols.push(c.textContent);
+				                    });
+				                    if ( cols[0] == $tableName ) {
+				                    	if ( cols[1] == $fieldName ) {
+				                    		if ( cols[2] == $value ) {
+								            	var $rowTd = makeRow($data.data.code, rowIndex);
+				                    			var $rowFinder = "#displayTable tr:nth-child(" + rowIndex + ")";
+				                    			$($rowFinder).html($rowTd);				                    			
+				                    		}
+				                    	}
+				                    }
+				                });
+
+				            	
+				            	
+				            	
+				            	//$($rowFinder).html($rowTd);
 							}
 							doFunctionBinding();
 							clearAddForm();
@@ -348,10 +395,13 @@
                 });
 
             	var $rownum = $('#confirmDelete').data('rownum');
-            	var $tableName = $tableData[$rownum][0];
-            	var $fieldName = $tableData[$rownum][1];
-            	var $value = $tableData[$rownum][2];
-            	$outbound = JSON.stringify({});
+            	//var $tableName = $tableData[$rownum][0];
+            	//var $fieldName = $tableData[$rownum][1];
+            	//var $value = $tableData[$rownum][2];
+            	var $tableName = $('#confirmDelete').data('tableName');
+            	var $fieldName = $("#confirmDelete").data('fieldName');
+            	var $value = $("#confirmDelete").data('value');
+            	$outbound = JSON.stringify({});            	
             	$url = 'code/' + $tableName + "/" + $fieldName + "/" + $value;
             	//$outbound = JSON.stringify({'tableName':$tableName, 'fieldName':$fieldName,'value':$value});
             	var jqxhr = $.ajax({
@@ -361,8 +411,21 @@
             	    success: function($data) {
             	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
 						if ( $data.responseHeader.responseCode == 'SUCCESS') {
-							$rowfinder = "tr:eq(" + $rownum + ")"
-							$("#displayTable").find($rowfinder).remove();
+							//$rowfinder = "tr:eq(" + $rownum + ")"
+							//$("#displayTable").find($rowfinder).remove();
+			                $("#displayTable").find('tr').each(function (rowIndex, r) {
+			                    var cols = [];
+			                    $(this).find('th,td').each(function (colIndex, c) {
+			                        cols.push(c.textContent);
+			                    });
+			                    if ( cols[0] == $tableName ) {
+			                    	if ( cols[1] == $fieldName ) {
+			                    		if ( cols[2] == $value ) {
+			                    			this.remove();
+			                    		}
+			                    	}
+			                    }
+			                });
 							$('#confirmDelete').bPopup().close();
 						}
             	     },
@@ -420,6 +483,14 @@
             
             
             function clearAddForm() {
+            	$.each( $('#addForm').find("select"), function(index, $inputField) {
+            		$fieldName = $($inputField).attr('name');
+            		$selectName = "#addForm select[name='" + $fieldName + "']"
+            		select = $($selectName);
+            		select.val("");
+            		markValid($inputField);
+            	});
+            	
 				$.each( $('#addForm').find("input"), function(index, $inputField) {
 					$fieldName = $($inputField).attr('name');
 					if ( $($inputField).attr("type") == "text" ) {
@@ -428,7 +499,10 @@
 					}
 				});
 				$('.err').html("");
-				$('#addForm').data('rownum',null);
+  	            $('#addForm').data('tableName', null);
+        		$("#addForm").data('fieldName', null);
+        		$("#addForm").data('value', null);
+
             }
             
             function markValid($inputField) {
