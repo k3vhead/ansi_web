@@ -21,6 +21,9 @@
     
     
     <tiles:put name="headextra" type="string">
+    	<script type="text/javascript" src="js/ansi_utils.js"></script>
+        <script type="text/javascript" src="js/jobMaintenance.js"></script>
+                
         <style type="text/css">
 			#confirmDelete {
 				display:none;
@@ -68,11 +71,31 @@
 				vertical-align:top;
 			}
         </style>
+        
+        <script type="text/javascript">
+		$(function() {
+
+			$optionData = ansi_utils.getOptions('JOB_FREQUENCY,JOB_STATUS')
+			var $jobFrequencyList = $optionData.jobFrequency;
+			var $jobStatusList = $optionData.jobStatus;
+
+			$divisionList = ansi_utils.getDivisionList();
+			
+			JOBDESCRIPTION.init("jobDescription", $jobFrequencyList);
+			JOBACTIVATION.init("jobActivation");
+			JOBPANEL.init("jabPanel", $divisionList);
+
+			$("#jobNbr").focus();
+		});
+
+
+		</script>
     </tiles:put>
     
     
     <tiles:put name="content" type="string">
     	<h1>Job Maintenance</h1>
+    	JOB ID: <c:out value="${ANSI_JOB_ID}" />
 		<table>
 			<tr>
 				<td class="jobTableCell">
@@ -97,15 +120,15 @@
 						</div>
 					</form>
 					 --%>
-					 <webthing:jobPanel namespace="JOBPANEL" cssId="jobPanel" />
+					 <webthing:jobPanel namespace="jobPanel" cssId="jobPanel" />
 				</td>
 			</tr>
 			<tr>
 				<td class="jobTableCell">
-					<webthing:jobDescription namespace="JOBDESCRIPTION" cssId="jobProposal" />
+					<webthing:jobDescription namespace="jobDescription" cssId="jobProposal" />
 				</td>
 				<td class="jobTableCell">
-					<webthing:jobActivation namespace="JOBACTIVATION" cssId="jobActivation" />
+					<webthing:jobActivation namespace="jobActivation" cssId="jobActivation" />
 				</td>
 			</tr>
 			<tr>
@@ -118,79 +141,6 @@
 			</tr>
 		</table>    	
 		
-        <script type="text/javascript">        
-		$( document ).ready(function() {
-			function init() {
-        		var jqxhr1 = $.ajax({
-    				type: 'GET',
-    				url: 'options',
-    				data: 'JOB_FREQUENCY,JOB_STATUS',
-    				success: function($data) {
-    					JOBDESCRIPTION.setJobFrequency($data.data.jobFrequency);
-    				},
-    				statusCode: {
-    					403: function($data) {
-    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-    					} 
-    				},
-    				dataType: 'json'
-    			});
-
-        		var jqxhr2 = $.ajax({
-    				type: 'GET',
-    				url: 'code/list/job',
-    				data: {},
-    				success: function($data) {
-    			        var $buildingTypeList = [];
-    					$.each($data.data.codeList, function(index, value) {
-    						if ( value.fieldName == 'building_type') {
-    							$buildingTypeList.push(value);
-    						}
-    					});
-    					JOBACTIVATION.setBuildingType($buildingTypeList);
-    				},
-    				statusCode: {
-    					403: function($data) {
-    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-    					} 
-    				},
-    				dataType: 'json'
-    			});
-        		
-        		var jqxhr3 = $.ajax({
-    				type: 'GET',
-    				url: 'division/list',
-    				data: {},
-    				success: function($data) {
-    					selectorName = "select[name='division']";
-    					
-    					var $select = $(selectorName);
-    					$('option', $select).remove();
-
-    					$select.append(new Option("",""));
-    					$.each($data.data.divisionList, function(index, val) {
-    					    $select.append(new Option(val.divisionCode, val.divisionId));
-    					});
-    					
-    					$select.selectmenu();
-    				},
-    				statusCode: {
-    					403: function($data) {
-    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-    					} 
-    				},
-    				dataType: 'json'
-    			});
-			}
-			
-			JOBDESCRIPTION.init();
-			JOBACTIVATION.init();
-			JOBSITE.init();
-			BILLTO.init();
-			init();
-			$("#jobNbr").focus();
-        });
-        </script>        
     </tiles:put>
 
 </tiles:insert>

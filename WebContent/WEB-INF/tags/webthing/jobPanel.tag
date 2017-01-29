@@ -22,16 +22,7 @@
 	String cssIdString = "id=\"" + cssId + "\"";			 
 	String cssClassString = cssClass == null || cssClass.length()==0 ? "" : "class=\"" + cssClass + "\"";
 %>
-<script type="text/javascript">        
-$(function() {        
-	;<%=namespace%> = {
-		init: function() {
-			
-		}
-	}
-});
-</script>     
-
+  
 <div <%= cssIdString %> <%= cssClassString %> >
 	<table id="<%=namespace%>_jobTable">
 			<tr>

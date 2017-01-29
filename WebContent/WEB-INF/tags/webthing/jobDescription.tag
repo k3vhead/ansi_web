@@ -22,33 +22,6 @@
 	String cssIdString = "id=\"" + cssId + "\"";			 
 	String cssClassString = cssClass == null || cssClass.length()==0 ? "" : "class=\"" + cssClass + "\"";
 %>
-<script type="text/javascript">        
-$(function() {        
-	;<%=namespace%> = {
-		init: function() {
-			console.debug("Doing the jobdesc init");			
-		},
-		setJobFrequency: function($optionList,$selectedValue) {
-			var selectorName = "#<%=namespace%>_jobDescriptionForm select[name='<%=namespace%>_jobFrequency']";
-			selectorName = "select[name='<%=namespace%>_jobFrequency']";
-			
-			var $select = $(selectorName);
-			$('option', $select).remove();
-
-			$select.append(new Option("",""));
-			$.each($optionList, function(index, val) {
-			    $select.append(new Option(val.display, val.abbrev));
-			});
-			
-			if ( $selectedValue != null ) {
-				$select.val($selectedValue);
-			}
-			$select.selectmenu();
-		}
-
-	}
-});
-</script>     
 
 <div <%= cssIdString %> <%= cssClassString %> >
 	<form name="<%= namespace %>_jobDescriptionForm">

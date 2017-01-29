@@ -4,10 +4,10 @@
  "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
  -->
 <struts-config>
-	<!--
     <form-beans>    
-    	<form-bean name="addFamilyForm"          type="com.ansi.scilla.web.actionForm.AddFamilyForm" />
+    	<form-bean name="idForm"          type="com.ansi.scilla.web.actionForm.IdForm" />
     </form-beans>
+	<!--
 
     <global-exceptions>
         <exception
@@ -54,10 +54,14 @@
         </action>
 		<action
             path="/jobMaintenance"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.action.JobMaintenanceAction"
+            name="idForm"
+            input="/jobMaintenance.jsp"
+            scope="request">
             <forward name="valid" path="/jobMaintenance.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
+        
      	<action
             path="/logoff"
             type="com.ansi.scilla.web.action.LogoffAction">
