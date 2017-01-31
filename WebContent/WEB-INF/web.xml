@@ -274,12 +274,12 @@
 		<url-pattern>/testServlet/*</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>ticketReturn</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.TicketReturnServlet</servlet-class>
+		<servlet-name>ticket</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.TicketServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>ticketReturn</servlet-name>
-		<url-pattern>/ticketReturn/*</url-pattern>
+		<servlet-name>ticket</servlet-name>
+		<url-pattern>/ticket/*</url-pattern>
 	</servlet-mapping>
 
 
