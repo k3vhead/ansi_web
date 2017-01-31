@@ -24,6 +24,7 @@ public class TicketReturnRequest extends AbstractRequest {
 	private Integer billSheet;
 	private Integer customerSignature;
 	private Integer mgrApproval;
+	private String newStatus;
 	private Date processDate;
 	private String processNotes;
 	private String status;
@@ -73,6 +74,13 @@ public class TicketReturnRequest extends AbstractRequest {
 	}
 	public Integer getMgrApproval() {
 		return this.mgrApproval;
+	}
+
+	public void setNewStatus(String newStatus) {
+		this.newStatus = newStatus;
+	}
+	public String getNewStatus() {
+		return this.newStatus;
 	}
 
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
