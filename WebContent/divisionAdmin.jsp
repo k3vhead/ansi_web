@@ -270,7 +270,10 @@
 					statusCode: {
 						403: function($data) {
 							$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-						} 
+						},
+						500: function($data) {
+             	    		$("#globalMsg").html("Unhandled Exception").fadeIn(10).fadeOut(6000);
+             	    	} 
 					},
 					dataType: 'json'
 				});
@@ -322,6 +325,9 @@
 	         	    	404: function($data) {
 	         	    		$('#confirmDelete').bPopup().close();
 	         	    		$("#globalMsg").html("Record does not exist").fadeIn(10).fadeOut(6000);
+             	    	},
+             	    	500: function($data) {
+             	    		$("#globalMsg").html("Unhandled Exception").fadeIn(10).fadeOut(6000);
              	    	} 
              	     },
              	     dataType: 'json'
