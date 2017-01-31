@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ResponseCode;
-import com.ansi.scilla.web.response.ticketReturn.TicketReturnListResponse;
+import com.ansi.scilla.web.response.ticket.TicketReturnListResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 

@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.response.ticketReturn;
+package com.ansi.scilla.web.response.ticket;
 
 import java.io.Serializable;
 import java.sql.Connection;

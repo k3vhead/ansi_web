@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.response.ticketReturn;
+package com.ansi.scilla.web.response.ticket;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
