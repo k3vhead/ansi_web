@@ -39,10 +39,82 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
 public class TicketServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
-
+	private String panel;
+	private Integer id;
+	
+	/**
+	 * Parses a URL of the form /<servlet>/<id>/<panel>
+	 * @param expected servlet identifier "/job/", "/ticket/", "/quote/table/", etc.
+	 * @param url of the form /<servlet>/<id>/<panel> where <servlet> and <panel> are String and <id> is integer
+	 * @return Boolean - true == valid url, false == invalid url
+	 * 
+	 */
+	Boolean parsePanelUrl ( String expected, String url ) {
+		this.panel = "";
+		this.id = null;
+		
+		System.out.println("parsePanelUrl(): Url:" + url);
+		int idx = url.indexOf(expected);
+		if ( idx > -1 ) {
+			String myString = url.substring(idx + expected.length());
+			String[] urlPieces = myString.split("/");
+			System.out.println("parsePanelUrl(): myString:" + myString);
+			if ( StringUtils.isBlank(urlPieces[0])) { // is the id blank?
+				System.out.println("parsePanelUrl(): no id");
+			} else if ( StringUtils.isNumeric(urlPieces[0])) { // is the id numeric?
+				this.id = Integer.valueOf(urlPieces[0]);
+				System.out.println("parsePanelUrl(): id:" + this.id);
+				if ( StringUtils.isBlank(urlPieces[1])) { // is the panel blank?
+					System.out.println("parsePanelUrl(): no panel");
+				} else { // we have a panel
+					System.out.println("parsePanelUrl(): panel:" + urlPieces[1]);
+					this.panel = urlPieces[1];
+					return(true);
+				}
+			} else { // not a valid id
+				System.out.println("parsePanelUrl(): not a valid id");
+			}
+		} 
+		return(false);
+	}
 
 	@Override
 	protected void doGet(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		String url = request.getRequestURI();
+		System.out.println("TicketReturn(): doGet(): Url:" + url);
+		if(parsePanelUrl("/ticket/",url)) {
+			System.out.println("Ticket(): doGet(): panel:" + this.panel);
+			System.out.println("Ticket(): doGet(): ticketId:" + this.id);
+			if ( this.panel.equals("return")) { // ticket return panel?
+				System.out.println("Ticket(): doGet(): process ticket return panel");
+				Connection conn = null;
+				try {
+					conn = AppUtils.getDBCPConn();
+
+					TicketReturnListResponse ticketReturnListResponse = new TicketReturnListResponse(conn, this.id);
+					super.sendResponse(conn, response, ResponseCode.SUCCESS, ticketReturnListResponse);
+				} catch(RecordNotFoundException recordNotFoundEx) {
+					super.sendNotFound(response);
+				} catch ( Exception e) {
+					AppUtils.logException(e);
+					throw new ServletException(e);
+				} finally {
+					AppUtils.closeQuiet(conn);
+				}
+			} else if ( this.panel.equals("invoice")) { // ticket invoice panel?
+				System.out.println("Ticket(): doGet(): process ticket invoice panel");
+				super.sendNotFound(response); // not coded yet
+			} else {
+				super.sendNotFound(response); // unexpected panel
+			}
+		} else {
+			super.sendNotFound(response);
+		}
+	}
+
+/*	@Override
+	protected void doGetOriginal(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String url = request.getRequestURI();
 		System.out.println("TicketReturn(): doGet(): Url:" + url);
@@ -98,7 +170,7 @@ public class TicketServlet extends AbstractServlet {
 			super.sendNotFound(response);
 		}
 	}
-
+*/
 
 /*	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
