@@ -22,6 +22,12 @@
     </global-forwards>
 
     <action-mappings>
+	<action
+            path="/addressLookup"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/addressLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
 		<action
             path="/applicationpropertyAdmin"
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">
@@ -61,6 +67,12 @@
             <forward name="valid" path="/jobMaintenance.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
+		<action
+            path="/jobLookup"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/jobLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
         
      	<action
             path="/logoff"
@@ -77,6 +89,12 @@
             path="/printHistory"
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">
             <forward name="valid" path="/printHistory.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		<action
+            path="/ticketLookup"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/ticketLookup.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action

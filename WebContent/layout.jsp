@@ -120,15 +120,15 @@
 		        			<li>
 		        				<a href="#">Lookup</a>
 								<ul class="sub_menu" style="z-index:1000">
-									<li><a href="#">Addresses</a></li>
+									<li><html:link action="addressLookup">Addresses</html:link></li>
 									<ansi:hasPermission permissionRequired="QUOTE">
-									<li><a href="#">Quotes</a></li>
+									<li><html:link action="quoteLookup">Quotes</html:link></li>
 									</ansi:hasPermission>
 									<ansi:hasPermission permissionRequired="JOB">
 									<li><a href="#">Jobs</a></li>
 									</ansi:hasPermission>
 									<ansi:hasPermission permissionRequired="TICKET">
-									<li><a href="#">Tickets</a></li>
+									<li><html:link action="ticketLookup">Tickets</html:link></li>
 									</ansi:hasPermission>
 									<ansi:hasPermission permissionRequired="INVOICE">
 									<li><a href="#">Invoices</a></li>
@@ -164,7 +164,7 @@
 									<li>
 										<a href="#">Addresses</a>
 										<ul>
-											<!-- <li><html:link action="addressLookup">Lookup</html:link></li> -->
+											<li><html:link action="addressLookup">Lookup</html:link></li>
 											<li><html:link action="addressMaintenance">Maintenance</html:link></li>
 											<!-- <li><a href="#">New</a></li> -->
 										</ul>
@@ -181,7 +181,7 @@
 									<li>
 										<a href="#">Quotes</a>
 										<ul>
-											<li><a href="#">Lookup</a></li>
+											<li><html:link action="quoteLookup">Lookup</html:link></li>
 											<li><html:link action="quoteMaintenance">Maintenance</html:link></li>
 											<ansi:hasWrite>
 											<li><a href="#">New</a></li>
@@ -206,7 +206,7 @@
 									<li>
 										<a href="#">Tickets</a>
 										<ul>
-											<li><a href="#">Lookup</a></li>
+											<li><html:link action="ticketLookup">Lookup</html:link></li>
 											<ansi:hasWrite>
 											<li><a href="#">Maintenance</a></li>
 											<li><a href="#">New</a></li>
