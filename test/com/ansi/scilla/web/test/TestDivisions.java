@@ -86,8 +86,8 @@ public class TestDivisions {
 			String myString = url.substring(idx + "/division/".length());
 			String[] hello = url.split("\\?");
 			String queryString = hello.length>1 ? hello[1]:null;
-			DivisionListResponse divisionListResponse = divisionServlet.doGetWork(conn, myString, queryString);
-			System.out.println(divisionListResponse);
+//			DivisionListResponse divisionListResponse = divisionServlet.doGetWork(conn, myString, queryString);
+//			System.out.println(divisionListResponse);
 			System.out.println("*******");
 		}
 		} finally {

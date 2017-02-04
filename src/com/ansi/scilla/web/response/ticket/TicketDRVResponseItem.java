@@ -3,7 +3,10 @@ package com.ansi.scilla.web.response.ticket;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.invoice.InvoiceTerm;
 import com.ansi.scilla.common.queries.TicketDRVQuery;
 
 public class TicketDRVResponseItem extends ApplicationObject {
@@ -34,7 +37,9 @@ public class TicketDRVResponseItem extends ApplicationObject {
 		this.address1 = record.getAddress1();
 		this.budget = record.getBudget();
 		this.city = record.getCity();
-		this.cod = record.getInvoiceTerms();
+		if ( ! StringUtils.isBlank(record.getInvoiceStyle())) {
+			this.cod = InvoiceTerm.valueOf(record.getInvoiceStyle()).display();
+		}
 		this.frequency = record.getJobFrequency();
 		this.jobNum = record.getJobNbr();
 		this.lastDone = record.getLastDone();
