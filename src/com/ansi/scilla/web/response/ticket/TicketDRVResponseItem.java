@@ -44,7 +44,7 @@ public class TicketDRVResponseItem extends ApplicationObject {
 		this.jobNum = record.getJobNbr();
 		this.lastDone = record.getLastDone();
 		this.name = record.getName();
-		this.ppc = record.getPricerPerCleaning();
+		this.ppc = record.getPricePerCleaning();
 		this.startDate = record.getStartDate();
 	}
 	
@@ -120,8 +120,5 @@ public class TicketDRVResponseItem extends ApplicationObject {
 	public void setCod(String cod) {
 		this.cod = cod;
 	}
-	
-
-	
 	
 }
