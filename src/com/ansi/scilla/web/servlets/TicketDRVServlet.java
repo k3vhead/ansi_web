@@ -17,7 +17,7 @@ import com.ansi.scilla.web.common.WebMessages;
 import com.ansi.scilla.web.response.ticket.TicketDRVResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
-public class TicketDRV extends AbstractServlet {
+public class TicketDRVServlet extends AbstractServlet {
 
 	/**
 	 * 
@@ -33,8 +33,6 @@ public class TicketDRV extends AbstractServlet {
 		Integer thisYear = today.get(Calendar.YEAR);
 
 
-
-		String url = request.getRequestURI();
 
 		Connection conn = null;
 		try {
@@ -52,7 +50,7 @@ public class TicketDRV extends AbstractServlet {
 			String divisionId = request.getParameter("divisionId");
 			WebMessages webMessages = new WebMessages();
 			ResponseCode responseCode = null;
-			TicketDRVResponse ticketDRVResponse = null;
+			TicketDRVResponse ticketDRVResponse = new TicketDRVResponse();
 			if(StringUtils.isBlank(divisionId)||!StringUtils.isNumeric(divisionId)){
 				String messageText = AppUtils.getMessageText(conn, MessageKey.INVALID_DATA, "Invalid Data");
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
@@ -70,6 +68,7 @@ public class TicketDRV extends AbstractServlet {
 					responseCode = ResponseCode.EDIT_FAILURE;
 				}
 			}
+			ticketDRVResponse.setWebMessages(webMessages);
 			super.sendResponse(conn, response, responseCode, ticketDRVResponse);
 		} catch(RecordNotFoundException recordNotFoundEx) {
 			super.sendNotFound(response);
