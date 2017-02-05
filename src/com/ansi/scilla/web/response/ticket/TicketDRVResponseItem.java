@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.invoice.InvoiceTerm;
 import com.ansi.scilla.common.queries.TicketDRVQuery;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class TicketDRVResponseItem extends ApplicationObject {
 
@@ -78,15 +79,19 @@ public class TicketDRVResponseItem extends ApplicationObject {
 	public void setCity(String city) {
 		this.city = city;
 	}
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
 	public Date getLastDone() {
 		return lastDone;
 	}
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
 	public void setLastDone(Date lastDone) {
 		this.lastDone = lastDone;
 	}
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
 	public Date getStartDate() {
 		return startDate;
 	}
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}

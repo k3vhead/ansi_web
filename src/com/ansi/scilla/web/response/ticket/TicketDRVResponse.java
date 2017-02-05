@@ -10,6 +10,7 @@ import java.util.List;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.queries.TicketDRVQuery;
 import com.ansi.scilla.web.response.MessageResponse;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class TicketDRVResponse extends MessageResponse {
@@ -35,7 +36,12 @@ public class TicketDRVResponse extends MessageResponse {
 	}
 	*/
 	
+	public TicketDRVResponse() {
+		super();
+	}
+	
 	public TicketDRVResponse(Connection conn, Integer divisionId, Integer month, Integer year) throws RecordNotFoundException, Exception{
+		this();
 		division = new Division();
 		division.setDivisionId(divisionId);
 		division.selectOne(conn);
@@ -62,15 +68,19 @@ public class TicketDRVResponse extends MessageResponse {
 		
 	}
 	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
 	public Date getStartDate() {
 		return startDate;
 	}
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
 	public Date getEndDate() {
 		return endDate;
 	}
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
@@ -86,9 +96,11 @@ public class TicketDRVResponse extends MessageResponse {
 	public void setDivision(Division division) {
 		this.division = division;
 	}
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy hh:mm:ss")
 	public Date getRunDate() {
 		return runDate;
 	}
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy hh:mm:ss")
 	public void setRunDate(Date runDate) {
 		this.runDate = runDate;
 	}
