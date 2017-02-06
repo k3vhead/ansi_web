@@ -73,6 +73,7 @@ public class DivisionRequest extends AbstractRequest {
 
 	@RequiredForAdd
 	@RequiredForUpdate
+	@RequiredFormat("^.{1,4}$")
 	public String getDivisionCode() {
 		return divisionCode;
 	}
