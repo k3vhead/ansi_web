@@ -59,6 +59,12 @@
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
+            path="/jobLookup"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/jobLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		<action
             path="/jobMaintenance"
             type="com.ansi.scilla.web.action.JobMaintenanceAction"
             name="idForm"
@@ -89,6 +95,12 @@
             path="/printHistory"
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">
             <forward name="valid" path="/printHistory.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		<action
+            path="/quoteLookup"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/quoteLookup.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action

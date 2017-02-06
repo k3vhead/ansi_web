@@ -125,7 +125,7 @@
 									<li><html:link action="quoteLookup">Quotes</html:link></li>
 									</ansi:hasPermission>
 									<ansi:hasPermission permissionRequired="JOB">
-									<li><a href="#">Jobs</a></li>
+									<li><html:link action="jobLookup">Jobs</html:link></li>
 									</ansi:hasPermission>
 									<ansi:hasPermission permissionRequired="TICKET">
 									<li><html:link action="ticketLookup">Tickets</html:link></li>
@@ -194,7 +194,7 @@
 									<li>
 										<a href="#">Jobs</a>
 										<ul>
-											<li><a href="#">Lookup</a></li>
+											<li><html:link action="jobLookup">Lookup</html:link></li>
 											<ansi:hasWrite>
 											<li><html:link action="jobMaintenance">Maintenance</html:link></li>
 											<li><a href="#">New</a></li>
