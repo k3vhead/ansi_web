@@ -3,8 +3,12 @@ package com.ansi.scilla.web.response.ticket;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.invoice.InvoiceTerm;
 import com.ansi.scilla.common.queries.TicketDRVQuery;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class TicketDRVResponseItem extends ApplicationObject {
 
@@ -34,12 +38,14 @@ public class TicketDRVResponseItem extends ApplicationObject {
 		this.address1 = record.getAddress1();
 		this.budget = record.getBudget();
 		this.city = record.getCity();
-		this.cod = record.getInvoiceTerms();
+		if ( ! StringUtils.isBlank(record.getInvoiceStyle())) {
+			this.cod = InvoiceTerm.valueOf(record.getInvoiceStyle()).display();
+		}
 		this.frequency = record.getJobFrequency();
 		this.jobNum = record.getJobNbr();
 		this.lastDone = record.getLastDone();
 		this.name = record.getName();
-		this.ppc = record.getPricerPerCleaning();
+		this.ppc = record.getPricePerCleaning();
 		this.startDate = record.getStartDate();
 	}
 	
@@ -73,15 +79,19 @@ public class TicketDRVResponseItem extends ApplicationObject {
 	public void setCity(String city) {
 		this.city = city;
 	}
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
 	public Date getLastDone() {
 		return lastDone;
 	}
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
 	public void setLastDone(Date lastDone) {
 		this.lastDone = lastDone;
 	}
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
 	public Date getStartDate() {
 		return startDate;
 	}
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
@@ -115,8 +125,5 @@ public class TicketDRVResponseItem extends ApplicationObject {
 	public void setCod(String cod) {
 		this.cod = cod;
 	}
-	
-
-	
 	
 }

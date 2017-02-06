@@ -151,6 +151,26 @@
     </servlet-mapping>
 
 
+	<servlet>
+		<servlet-name>jobSearch</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.JobSearchServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>jobSearch</servlet-name>
+		<url-pattern>/jobSearch/*</url-pattern>
+	</servlet-mapping>
+	
+	
+	<servlet>
+		<servlet-name>jobTable</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.JobTableServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>jobTable</servlet-name>
+		<url-pattern>/jobTable/*</url-pattern>
+	</servlet-mapping>
+
+
     <servlet>
         <servlet-name>login</servlet-name>
         <servlet-class>com.ansi.scilla.web.servlets.LoginServlet</servlet-class>
@@ -233,6 +253,20 @@
     	<servlet-name>taxRate</servlet-name>
     	<url-pattern>/taxRate/*</url-pattern>
 	</servlet-mapping>
+	
+	
+
+	<servlet>
+		<servlet-name>ticketDRV</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.TicketDRVServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ticketDRV</servlet-name>
+		<url-pattern>/ticketDRV</url-pattern>
+	</servlet-mapping>
+
+
+
 	<servlet>
 		<servlet-name>ticketSearch</servlet-name>
 		<servlet-class>com.ansi.scilla.web.servlets.TicketSearchServlet</servlet-class>
@@ -241,6 +275,8 @@
 		<servlet-name>ticketSearch</servlet-name>
 		<url-pattern>/ticketSearch/*</url-pattern>
 	</servlet-mapping>
+	
+	
 	<servlet>
 		<servlet-name>ticketTable</servlet-name>
 		<servlet-class>com.ansi.scilla.web.servlets.TicketTableServlet</servlet-class>
@@ -249,22 +285,8 @@
 		<servlet-name>ticketTable</servlet-name>
 		<url-pattern>/ticketTable/*</url-pattern>
 	</servlet-mapping>
-	<servlet>
-		<servlet-name>jobSearch</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.JobSearchServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>jobSearch</servlet-name>
-		<url-pattern>/jobSearch/*</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>jobTable</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.JobTableServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>jobTable</servlet-name>
-		<url-pattern>/jobTable/*</url-pattern>
-	</servlet-mapping>
+	
+	
 	<servlet>
 		<servlet-name>testServlet</servlet-name>
 		<servlet-class>com.ansi.scilla.web.servlets.TestServlet</servlet-class>

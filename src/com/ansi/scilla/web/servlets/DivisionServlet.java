@@ -17,10 +17,12 @@ import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.DivisionUser;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.common.exceptions.InvalidDeleteException;
+import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.MessageKey;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.common.WebMessages;
+import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 //import com.ansi.scilla.web.request.CodeRequest;
 import com.ansi.scilla.web.request.DivisionRequest;
 //import com.ansi.scilla.web.response.code.CodeResponse;
@@ -52,8 +54,90 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
  */
 public class DivisionServlet extends AbstractServlet {
 
+	public static final String REALM = "division";
 	private static final long serialVersionUID = 1L;
 
+	@Override
+	protected void doDelete(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		
+		try {
+			AnsiURL url = new AnsiURL(request, REALM, (String[])null);
+			
+			
+			Connection conn = null;
+			try {
+				conn = AppUtils.getDBCPConn();
+				conn.setAutoCommit(false);
+				
+				try {
+					doDeleteWork(conn, url.getId());
+					conn.commit();
+					DivisionResponse divisionResponse = new DivisionResponse();
+					super.sendResponse(conn, response, ResponseCode.SUCCESS, divisionResponse);
+				} catch (InvalidDeleteException e) {
+					String message = AppUtils.getMessageText(conn, MessageKey.DELETE_FAILED, "Invalid Delete");
+					WebMessages webMessages = new WebMessages();
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+					DivisionResponse divisionResponse = new DivisionResponse();
+					divisionResponse.setWebMessages(webMessages);
+					super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, divisionResponse);
+				} catch(RecordNotFoundException recordNotFoundEx) {
+					super.sendNotFound(response);
+				}
+			} catch ( Exception e) {
+				AppUtils.logException(e);
+				throw new ServletException(e);
+			} finally {
+				AppUtils.closeQuiet(conn);
+			}
+		} catch (ResourceNotFoundException e1) {
+			super.sendNotFound(response);
+		}
+		
+	}
+	
+	@Override
+	protected void doGet(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+				
+		try {
+			AnsiURL url = new AnsiURL(request, REALM, new String[] { ACTION_IS_LIST });
+
+		
+			Connection conn = null;
+			try {
+				conn = AppUtils.getDBCPConn();
+
+				DivisionListResponse divisionListResponse = new DivisionListResponse();
+				if( ! StringUtils.isBlank(url.getCommand()) && url.getCommand().equals(ACTION_IS_LIST)){
+					divisionListResponse = new DivisionListResponse(conn);
+				} else if (url.getId() != null) {
+					divisionListResponse = new DivisionListResponse(conn, url.getId());
+				} else {
+					// according to the URI parsing, this shouldn't happen, but it gives me warm fuzzies
+					throw new RecordNotFoundException();
+				}
+
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, divisionListResponse);
+			} catch(RecordNotFoundException recordNotFoundEx) {
+				super.sendNotFound(response);
+			} catch ( Exception e) {
+				AppUtils.logException(e);
+				throw new ServletException(e);
+			} finally {
+				AppUtils.closeQuiet(conn);
+			}
+
+			
+		} catch (ResourceNotFoundException e) {
+			super.sendNotFound(response);
+		}
+		
+
+	}
+
+	/*
 	@Override
 	protected void doDelete(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -104,10 +188,11 @@ public class DivisionServlet extends AbstractServlet {
 		}
 		
 	}
-
+	
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
+		
 		String url = request.getRequestURI();
 		int idx = url.indexOf("/division/");
 		if ( idx > -1 ) {
@@ -145,7 +230,7 @@ public class DivisionServlet extends AbstractServlet {
 	public DivisionListResponse doGetWork(Connection conn, String url, String qs) throws RecordNotFoundException, Exception {
 		DivisionListResponse divisionListResponse = new DivisionListResponse();
 		String[] x = url.split("/");
-		if(x[0].equals("list")){
+		if(x[0].equals(ACTION_IS_LIST)){
 			divisionListResponse = new DivisionListResponse(conn);
 		} else if (StringUtils.isNumeric(x[0])) {
 			Integer divisionId = Integer.valueOf(x[0]);
@@ -156,6 +241,7 @@ public class DivisionServlet extends AbstractServlet {
 		return divisionListResponse;
 		
 	}
+	*/
 	
 	public void doDeleteWork(Connection conn, Integer divisionId) throws RecordNotFoundException, InvalidDeleteException, Exception {
 
@@ -173,6 +259,133 @@ public class DivisionServlet extends AbstractServlet {
 		}
 	}
 
+	
+	@Override
+	protected void doPost(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		
+		SessionUser sessionUser = AppUtils.getSessionUser(request);
+		try {
+			String jsonString = super.makeJsonString(request);
+			AnsiURL url = new AnsiURL(request, REALM, new String[] {ACTION_IS_ADD});
+			
+			Connection conn = null;
+			try {
+				conn = AppUtils.getDBCPConn();
+				conn.setAutoCommit(false);
+
+				
+				// figure out if this is an "add" or an "update"								
+				try {
+					DivisionRequest divisionRequest = (DivisionRequest) AppUtils.json2object(jsonString, DivisionRequest.class);
+					if ( ! StringUtils.isBlank(url.getCommand()) && url.getCommand().equals(ACTION_IS_ADD)) {
+						processAddRequest(conn, response, sessionUser, divisionRequest);
+					} else if ( url.getId() != null ) {
+						processUpdateRequest(conn, response, url.getId(), sessionUser, divisionRequest);
+					} else {
+						super.sendNotFound(response);
+					}
+				} catch ( InvalidFormatException formatException) {
+					processBadPostRequest(conn, response, formatException);
+				}
+			} catch ( Exception e ) {
+				AppUtils.logException(e);
+				AppUtils.rollbackQuiet(conn);
+				throw new ServletException(e);
+			} finally {
+				AppUtils.closeQuiet(conn);
+			}
+
+		} catch ( ResourceNotFoundException e) {
+			super.sendNotFound(response);
+		}
+		
+	}
+
+	
+	
+	private void processAddRequest(Connection conn, HttpServletResponse response, SessionUser sessionUser, DivisionRequest divisionRequest) throws Exception {	
+		Division division = null;
+		ResponseCode responseCode = null;
+
+		WebMessages webMessages = validateAdd(conn, divisionRequest);
+		if (webMessages.isEmpty()) {
+			webMessages = validateFormat(conn, divisionRequest);
+		}
+		if (webMessages.isEmpty()) {
+			try {
+				division = doAdd(conn, divisionRequest, sessionUser);
+				String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
+				responseCode = ResponseCode.SUCCESS;
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+				conn.commit();
+			} catch ( DuplicateEntryException e ) {
+				String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+				responseCode = ResponseCode.EDIT_FAILURE;
+			} catch ( Exception e ) {
+				responseCode = ResponseCode.SYSTEM_FAILURE;
+				AppUtils.logException(e);
+				String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+			}
+		} else {
+			responseCode = ResponseCode.EDIT_FAILURE;
+		}
+
+
+		DivisionResponse divisionResponse = new DivisionResponse();
+		if ( division != null ) {
+			divisionResponse = new DivisionResponse(conn, division);
+		}
+		if ( ! webMessages.isEmpty()) {
+			divisionResponse.setWebMessages(webMessages);
+		}
+		super.sendResponse(conn, response, responseCode, divisionResponse);
+	}
+
+	private void processUpdateRequest(Connection conn, HttpServletResponse response, Integer id, SessionUser sessionUser, DivisionRequest divisionRequest) throws Exception {	
+		Division division = null;
+		ResponseCode responseCode = null;
+		WebMessages webMessages = validateAdd(conn, divisionRequest);
+		if (webMessages.isEmpty()) {
+			webMessages = validateFormat(conn, divisionRequest);
+		}
+		if (webMessages.isEmpty()) {
+			try {
+				Division key = new Division();
+				key.setDivisionId(id);
+				division = doUpdate(conn, key, divisionRequest, sessionUser);
+				String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
+				responseCode = ResponseCode.SUCCESS;
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+				conn.commit();
+			} catch ( RecordNotFoundException e ) {
+				super.sendNotFound(response);
+				conn.rollback();
+			} catch ( Exception e) {
+				responseCode = ResponseCode.SYSTEM_FAILURE;
+				AppUtils.logException(e);
+				String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+				conn.rollback();
+			}
+		} else {
+			responseCode = ResponseCode.EDIT_FAILURE;
+		}
+
+		DivisionResponse divisionResponse = new DivisionResponse();
+		if ( division != null ) {
+			divisionResponse = new DivisionResponse(conn, division);
+		}
+		if ( ! webMessages.isEmpty()) {
+			divisionResponse.setWebMessages(webMessages);
+		}
+
+		super.sendResponse(conn, response, responseCode, divisionResponse);
+	}
+
+	/*
 	@Override
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -205,6 +418,7 @@ public class DivisionServlet extends AbstractServlet {
 			AppUtils.closeQuiet(conn);
 		}
 	}
+	*/
 		
 	private void processPostRequest(Connection conn, HttpServletResponse response, String command, SessionUser sessionUser, DivisionRequest divisionRequest) throws Exception {	
 			Division division = null;
@@ -295,10 +509,6 @@ public class DivisionServlet extends AbstractServlet {
 			} else {
 				super.sendNotFound(response);
 			}
-			
-			
-		
-		
 	}
 
 	private void processBadPostRequest(Connection conn, HttpServletResponse response, InvalidFormatException formatException) throws Exception {
