@@ -60,8 +60,11 @@
 				},
 				statusCode: {
 					403: function($data) {
-						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-					} 
+						$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+					},
+					500: function($data) {
+         	    		$("#globalMsg").html("Unhandled Exception").fadeIn(10).fadeOut(6000);
+         	    	} 
 				},
 				dataType: 'json'
 			});
@@ -269,10 +272,10 @@
 					},
 					statusCode: {
 						403: function($data) {
-							$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+							$("#addFormMsg").html($data.responseJSON.responseHeader.responseMessage);
 						},
 						500: function($data) {
-             	    		$("#globalMsg").html("Unhandled Exception").fadeIn(10).fadeOut(6000);
+             	    		$("#addFormMsg").html("Unhandled Exception").fadeIn(10).fadeOut(6000);
              	    	} 
 					},
 					dataType: 'json'
@@ -320,6 +323,7 @@
             	     },
             	     statusCode: {
              	    	403: function($data) {
+             	    		$('#confirmDelete').bPopup().close();
              	    		$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
              	    	}, 
 	         	    	404: function($data) {
@@ -327,6 +331,7 @@
 	         	    		$("#globalMsg").html("Record does not exist").fadeIn(10).fadeOut(6000);
              	    	},
              	    	500: function($data) {
+             	    		$('#confirmDelete').bPopup().close();
              	    		$("#globalMsg").html("Unhandled Exception").fadeIn(10).fadeOut(6000);
              	    	} 
              	     },
