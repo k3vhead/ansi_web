@@ -45,7 +45,14 @@
 			
         </style>
         
-        <script type="text/javascript">        
+        <script type="text/javascript">      
+        
+        $(document).ready(function(){
+      	  $('.ScrollTop').click(function() {
+      	    $('html, body').animate({scrollTop: 0}, 800);
+      	  return false;
+      	    });
+      	});           	      
         
         	$(document).ready(function() {
         	var dataTable = null;
@@ -103,7 +110,7 @@
 			            } },
 			            { title: "Action",  data: function ( row, type, set ) {	
 			            	//console.log(row);
-			            	{return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.quoteId+"'></a></ansi:hasWrite></ansi:hasPermission>";}
+			            	{return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='quoteMaintenance.html' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.quoteId+"'></a></ansi:hasWrite></ansi:hasPermission>";}
 			            	
 			            } }],
 			            "initComplete": function(settings, json) {
@@ -117,56 +124,6 @@
         	}
         	        	
         	init();
-        			
-    				console.log($outbound);
-    				var jqxhr = $.ajax({
-    					type: 'POST',
-    					url: $url,
-    					data: JSON.stringify($outbound),
-    					success: function($data) {
-    						if ( $data.responseHeader.responseCode == 'SUCCESS') {
-    							//alert("success");
-    							console.log($data);
-    							//createData();
-    					
-    							clearAddForm();
-    							$( "#addQuoteTableForm" ).dialog( "close" );
-	    							if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
-	    								$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
-	    							}
-    							
-    							$("#quoteTable").DataTable().draw();
-    						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-    							//alert("success fail");
-    							$.each($data.data.webMessages, function(key, messageList) {
-    								var identifier = "#" + key + "Err";
-    								msgHtml = "<ul>";
-    								$.each(messageList, function(index, message) {
-    									msgHtml = msgHtml + "<li>" + message + "</li>";
-    								});
-    								msgHtml = msgHtml + "</ul>";
-    								$(identifier).html(msgHtml);
-    							});		
-    							if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
-    								$("#addFormMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]);
-    							}
-    							$( "#addQuoteTableForm" ).dialog( "close" );
-    						} else {
-    							//alert("success other");
-    						}
-    					},
-    					error: function($data) {
-    						alert("fail");
-    						//console.log($data);
-    					},
-    					statusCode: {
-    						403: function($data) {
-    							$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-    						} 
-    					},
-    					dataType: 'json'
-    				});        			
-        		       
             
             
             function init(){
@@ -252,11 +209,17 @@
     			<th>Job Count</th>
     			<th>PPC Sum</th>
     			<th>Action</th>
-    			<th>Action</th>
     			
             </tr>
         </tfoot>
     </table>
+    
+    <p align="center">
+    	<br>
+    	<a href="#" title="Scroll to Top" class="ScrollTop">Scroll To Top</a>
+    	</br>
+    </p>
+    
     </tiles:put>
 		
 </tiles:insert>

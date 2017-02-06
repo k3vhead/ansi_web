@@ -45,7 +45,14 @@
 			
         </style>
         
-        <script type="text/javascript">        
+        <script type="text/javascript">    
+        
+        $(document).ready(function(){
+        	  $('.ScrollTop').click(function() {
+        	    $('html, body').animate({scrollTop: 0}, 800);
+        	  return false;
+        	    });
+        	});
         
         	$(document).ready(function() {
         	var dataTable = null;
@@ -62,8 +69,8 @@
         	        dom: 				'Bfrtip',
         	        "searching": 		true,
         	        lengthMenu: [
-        	            [ 10, 25, 50, -1 ],
-        	            [ '10 rows', '25 rows', '50 rows', 'Show all' ]
+        	            [ 10, 50, 100, 500, -1 ],
+        	            [ '10 rows', '50 rows', '100 rows', '500 rows', 'Show all' ]
         	        ],
         	        buttons: [
         	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}}
@@ -115,7 +122,7 @@
 			            } },
 			            { title: "Action",  data: function ( row, type, set ) {	
 			            	//console.log(row);
-			            	{return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.ticketId+"'></a></ansi:hasWrite></ansi:hasPermission>";}
+			            	{return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='ticketMaintenance.html' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.ticketId+"'></a></ansi:hasWrite></ansi:hasPermission>";}
 			            	
 			            } }],
 			            "initComplete": function(settings, json) {
@@ -130,56 +137,7 @@
         	        	
         	init();
         			
-    				console.log($outbound);
-    				var jqxhr = $.ajax({
-    					type: 'POST',
-    					url: $url,
-    					data: JSON.stringify($outbound),
-    					success: function($data) {
-    						if ( $data.responseHeader.responseCode == 'SUCCESS') {
-    							//alert("success");
-    							console.log($data);
-    							//createData();
-    					
-    							clearAddForm();
-    							$( "#addTicketTableForm" ).dialog( "close" );
-	    							if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
-	    								$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
-	    							}
-    							
-    							$("#ticketTable").DataTable().draw();
-    						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-    							//alert("success fail");
-    							$.each($data.data.webMessages, function(key, messageList) {
-    								var identifier = "#" + key + "Err";
-    								msgHtml = "<ul>";
-    								$.each(messageList, function(index, message) {
-    									msgHtml = msgHtml + "<li>" + message + "</li>";
-    								});
-    								msgHtml = msgHtml + "</ul>";
-    								$(identifier).html(msgHtml);
-    							});		
-    							if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
-    								$("#addFormMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]);
-    							}
-    							$( "#addTicketTableForm" ).dialog( "close" );
-    						} else {
-    							//alert("success other");
-    						}
-    					},
-    					error: function($data) {
-    						alert("fail");
-    						//console.log($data);
-    					},
-    					statusCode: {
-    						403: function($data) {
-    							$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-    						} 
-    					},
-    					dataType: 'json'
-    				});        			
-        		       
-            
+        			
             
             function init(){
 					$.each($('input'), function () {
@@ -234,6 +192,7 @@
 					//console.log("Edit Button Clicked: " + $rowid);
 				}
         });
+        		
         </script>        
     </tiles:put>
     
@@ -279,6 +238,13 @@
             </tr>
         </tfoot>
     </table>
+    
+    <p align="center">
+    	<br>
+    	<a href="#" title="Scroll to Top" class="ScrollTop">Scroll To Top</a>
+    	</br>
+    </p>
+    
     </tiles:put>
 		
 </tiles:insert>
