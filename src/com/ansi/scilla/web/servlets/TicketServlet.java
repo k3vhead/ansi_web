@@ -19,24 +19,81 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
 
 
 /**
+ * The url for delete will return methodNotAllowed
+ * 
  * The url for get will be one of:
- * 		/ticket/<ticketId>/return  (returns ticket return fields for a given ticket)
- * 		/ticket/<ticketId>/invoice (returns ticket invoice fields for a given ticket)
+ * 		/ticket/<ticketId>	json includes panel="return" -- (returns ticket return fields for a given ticket)
+ * 			Needs to return:
+ * 				ticket
+ * 				status
+ * 				division
+ * 				processDate
+ * 				processNotes
+ * 				actDl
+ * 				actDlPct
+ * 				actPricePerCleaning
+ * 				billSheet
+ * 				customerSignature
+ * 				mgrApproval
+ * 				nextAllowedStatusList
+ * 				jobId - passed to job panels 
+ * 
+ * 		/ticket/<ticketId>	json includes panel="invoice" -- (returns ticket invoice fields for a given ticket)
  * 				Includes the invoice detail for the ticket and the invoice totals for the invoice
+ * 				Needs to return:
+				 * 		for Ticket = ticketId
+				 * 			actPpc
+				 * 			actTax
+				 * 			sumTktPpcPaid - sum(ticket_payment.amount)
+				 * 			sumTktTaxPaid - sum(ticket_payment.tax_amt)
+				 * 			balance(actPpc + actTax - (sumTcktPpcPaid + sumTktTaxPaid))
+				 * 			daysToPay(today, invoiceDate, balance) 
+				 * 					if balance == 0, daysToPay = max(paymentDate)-invoiceDate
+				 * 					if balance <> 0, daysToPay = today - invoiceDate
+				 * 			**ticket write off amount - stub for v 2.0
+				 * 		for Invoice = invoiceId
+				 * 			invoice_id (this is the invoice number)
+				 * 			sumInvPpc - sum(invoice.ticket.act_price_per_cleaning)
+				 * 			sumInvTax - sum(invoice.ticket.act_tax_amt)
+				 * 			sumInvPpcPaid - sum(invoice.ticket_payment.amount)
+				 * 			sumInvTaxPaid - sum(invoice.ticket_payment.tax_amt)
+				 * 			balance(sumInvPpc + sumInvTax - (sumInvPpcPaid + sumInvTaxPaid))
+				 * 			**invoice write off amount - stub for v 2.0
+				 * 			**invoice MSFC amount - stub for v 2.0
+				 * 			**invoice excess payment amount - stub for v 2.0
  * 					
  * 
- * The url for update will be a POST to:
- * 		/ticket/<ticket>/return with parameters in the JSON
- * 			Action 		Next Status		Parameters
- * 			complete	"C"				<nextStatus><processDate><processNotes><actualPricePerCleaning>
- * 										<actualDirectLaborPct><actualDirectLabor>
- * 										<customerSignature><billSheet><managerApproval>
- * 			skip		"S"				<nextStatus><processDate><processNotes>
- * 			void		"V"				<nextStatus><processDate><processNotes>
- * 			reject		"R"				<nextStatus><processDate><processNotes>
- * 			re-queue	"G"				<nextStatus>
+ * The url for update will be a POST to:  
+ * 		/ticket/<ticket>  json with panel="invoice" will return methodNotAllowed - invoice panel is read only
  * 
- * 		/ticket/<ticket>/invoice returns 405? as the UI has no functionality for the user to update the invoice panel
+ * 		/ticket/<ticket>  json includes panel="return" with parameters in the JSON
+ * 			Action 		Next Status			Parameters
+ * 			complete	"C"omplete			<nextStatus><processDate><processNotes><actualPricePerCleaning>
+ * 											<actualDirectLaborPct><actualDirectLabor>
+ * 											<customerSignature><billSheet><managerApproval>
+ * 			skip		"S"kipped			<nextStatus><processDate><processNotes>
+ * 			void		"V"oided			<nextStatus><processDate><processNotes>
+ * 			reject		"R"ejected			<nextStatus><processDate><processNotes>
+ * 			re-queue	"N"ot Dispatched	<nextStatus>
+ * 
+ * 
+ * Processing for POST:
+ * 	if panel != "return" return "not found"
+ * 	if invalid ticketId return "not found"
+ * 	check nextStatus against ticket.status.nextValues()
+ * 	if nextStatus is invalid return "403 forbidden"
+ * 	else
+ * 		nextStatus="C" 
+ * 			validate processDate - make sure this is not more than 35 days in the past or more than 30 days in the future for now
+ * 			validate processNotes - can be null or any valid string
+ * 			validate actualPricePerCleaning - can be 0 cannot be null
+ * 			validate actualDirectLabor - can be 0 cannot be null
+ * 			validate customerSignature, billSheet and managerApproval - these are checkboxes can either be checked or not
+ * 			if values are valid update ticket table with values
+ * 		nextStatus="S"/"V"/"R"/"N"
+ * 			validate processDate - make sure this is not more than 35 days in the past or more than 30 days in the future for now
+ * 			validate processNotes - cannot be null or blank
+ * 			if values are valid update ticket table with processDate and processNotes
  * 
  * @author ggroce
  */
@@ -110,27 +167,25 @@ public class TicketServlet extends AbstractServlet {
 			} else if ( this.panel.equals("invoice")) { // ticket invoice panel?
 				/* Needs to return:
 				 * 		for Ticket = ticketId
-				 * 			act_price_per_cleaning
-				 * 			act_tax_amt
-				 * 			sum(ticket_payment.amount)
-				 * 			sum(ticket_payment.tax_amt)
-				 * 			balance(total of ppc + tax - (payment amt + payment tax))
+				 * 			actPpc
+				 * 			actTax
+				 * 			sumTktPpcPaid - sum(ticket_payment.amount)
+				 * 			sumTktTaxPaid - sum(ticket_payment.tax_amt)
+				 * 			balance(actPpc + actTax - (sumTcktPpcPaid + sumTktTaxPaid))
 				 * 			daysToPay(today, invoiceDate, balance) 
 				 * 					if balance == 0, daysToPay = max(paymentDate)-invoiceDate
 				 * 					if balance <> 0, daysToPay = today - invoiceDate
 				 * 			**ticket write off amount - stub for v 2.0
-
 				 * 		for Invoice = invoiceId
 				 * 			invoice_id (this is the invoice number)
-				 * 			sum(act_price_per_cleaning)
-				 * 			sum(act_tax_amt)
-				 * 			sum(ticket_payment.amount)
-				 * 			sum(ticket_payment.tax_amt)
-				 * 			balance(total of inv.ppc + inv.tax - (inv.payment amt + inv.payment tax))
+				 * 			sumInvPpc - sum(invoice.ticket.act_price_per_cleaning)
+				 * 			sumInvTax - sum(invoice.ticket.act_tax_amt)
+				 * 			sumInvPpcPaid - sum(invoice.ticket_payment.amount)
+				 * 			sumInvTaxPaid - sum(invoice.ticket_payment.tax_amt)
+				 * 			balance(sumInvPpc + sumInvTax - (sumInvPpcPaid + sumInvTaxPaid))
 				 * 			**invoice write off amount - stub for v 2.0
 				 * 			**invoice MSFC amount - stub for v 2.0
 				 * 			**invoice excess payment amount - stub for v 2.0
-				 * 
 				 */
 				System.out.println("Ticket(): doGet(): process ticket invoice panel");
 				super.sendNotFound(response); // not coded yet
@@ -142,64 +197,6 @@ public class TicketServlet extends AbstractServlet {
 		}
 	}
 
-/*	@Override
-	protected void doGet(HttpServletRequest request,   // before I pulled out the parsePanelUrl() method
-			HttpServletResponse response) throws ServletException, IOException {
-		String url = request.getRequestURI();
-		System.out.println("TicketReturn(): doGet(): Url:" + url);
-		int idx = url.indexOf("/ticket/");
-		if ( idx > -1 ) {
-			String myString = url.substring(idx + "/ticket/".length());
-			String[] urlPieces = myString.split("/");
-			System.out.println("Ticket(): doGet(): myString:" + myString);
-			System.out.println("Ticket(): doGet(): urlPieces:" + urlPieces);
-			if ( StringUtils.isBlank(urlPieces[0])) { // there is nothing to do
-				System.out.println("Ticket(): doGet(): nothing to do - no ticket id");
-				super.sendNotFound(response);
-			} else { // Figure out what we've got
-				// if urlPieces[0] is numeric this is a ticketId
-				if ( StringUtils.isNumeric(urlPieces[0])) { // this is a ticket id
-					Integer ticketId = Integer.valueOf(urlPieces[0]);
-					System.out.println("TicketReturn(): doGet(): ticketId:" + ticketId);
-					if ( StringUtils.isBlank(urlPieces[1])) { // there is nothing to do
-						System.out.println("Ticket(): doGet(): nothing to do - no command");
-						super.sendNotFound(response);
-					} else {
-						System.out.println("Ticket(): doGet(): command:" + urlPieces[1]);
-						if ( urlPieces[1].equals("return")) { // ticket return panel?
-							System.out.println("Ticket(): doGet(): process ticket return panel");
-							Connection conn = null;
-							try {
-								conn = AppUtils.getDBCPConn();
-
-								TicketReturnListResponse ticketReturnListResponse = new TicketReturnListResponse(conn, ticketId);
-								super.sendResponse(conn, response, ResponseCode.SUCCESS, ticketReturnListResponse);
-							} catch(RecordNotFoundException recordNotFoundEx) {
-								super.sendNotFound(response);
-							} catch ( Exception e) {
-								AppUtils.logException(e);
-								throw new ServletException(e);
-							} finally {
-								AppUtils.closeQuiet(conn);
-							}
-						} else if ( urlPieces[1].equals("invoice")) { // ticket invoice panel?
-							System.out.println("Ticket(): doGet(): nothing to do - process ticket invoice panel");
-							super.sendNotFound(response); // not coded yet
-						} else {
-							System.out.println("Ticket(): doGet(): nothing to do - not a valid ticket panel");
-							super.sendNotFound(response); // not a valid panel
-						}
-					}
-				} else { // not a valid ticketId so we cannot find it
-					System.out.println("TicketReturn(): doGet(): not a valid ticket");
-					super.sendNotFound(response);
-				}
-			}
-		} else {
-			super.sendNotFound(response);
-		}
-	}
-*/
 
 /*	@Override
 	protected void doPost(HttpServletRequest request,
