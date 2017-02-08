@@ -6,6 +6,8 @@ import java.util.EnumSet;
 import java.util.List;
 
 import com.ansi.scilla.common.address.Country;
+import com.ansi.scilla.common.invoice.InvoiceGrouping;
+import com.ansi.scilla.common.invoice.InvoiceTerm;
 import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.jobticket.JobStatus;
 import com.ansi.scilla.common.jobticket.TicketStatus;
@@ -19,6 +21,8 @@ public class OptionsListResponse extends MessageResponse {
 	private List<TicketStatusOption> ticketStatus;
 	private List<CountryOption> country;
 	private List<Permission> permission;
+	private List<InvoiceGroupingOption> invoiceGrouping;
+	private List<InvoiceTermOption> invoiceTerm;
 
 	public OptionsListResponse(List<ResponseOption> options) throws ClassNotFoundException, Exception {
 		if ( options.contains(ResponseOption.JOB_FREQUENCY)) {
@@ -36,7 +40,27 @@ public class OptionsListResponse extends MessageResponse {
 		if ( options.contains(ResponseOption.PERMISSION)) {
 			makePermissionList();
 		}
+		if ( options.contains(ResponseOption.INVOICE_GROUPING)) {
+			makeInvoiceGroupList();
+		}
+		if ( options.contains(ResponseOption.INVOICE_TERM)) {
+			makeInvoiceTermList();
+		}
 
+	}
+
+	private void makeInvoiceGroupList() {
+		this.invoiceGrouping = new ArrayList<InvoiceGroupingOption>();
+		for ( InvoiceGrouping j : EnumSet.allOf(InvoiceGrouping.class)) {
+			this.invoiceGrouping.add(new InvoiceGroupingOption(j));
+		}
+	}
+
+	private void makeInvoiceTermList() {
+		this.invoiceTerm = new ArrayList<InvoiceTermOption>();
+		for ( InvoiceTerm j : EnumSet.allOf(InvoiceTerm.class)) {
+			this.invoiceTerm.add(new InvoiceTermOption(j));
+		}
 	}
 
 	private void makePermissionList() {
@@ -114,5 +138,22 @@ public class OptionsListResponse extends MessageResponse {
 	public void setPermission(List<Permission> permission) {
 		this.permission = permission;
 	}
+
+	public List<InvoiceGroupingOption> getInvoiceGrouping() {
+		return invoiceGrouping;
+	}
+
+	public void setInvoiceGrouping(List<InvoiceGroupingOption> invoiceGrouping) {
+		this.invoiceGrouping = invoiceGrouping;
+	}
+
+	public List<InvoiceTermOption> getInvoiceTerm() {
+		return invoiceTerm;
+	}
+
+	public void setInvoiceTerm(List<InvoiceTermOption> invoiceTerm) {
+		this.invoiceTerm = invoiceTerm;
+	}
+
 	
 }

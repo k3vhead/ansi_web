@@ -71,6 +71,25 @@ $( document ).ready(function() {
 		},
 
 		
+		// Set the values in an html select tag
+		setOptionList: function($selectorName, $optionList, $selectedValue) {
+			
+			var $select = $($selectorName);
+			$('option', $select).remove();
+
+			$select.append(new Option("",""));
+			$.each($optionList, function(index, val) {
+				console.debug(val);
+			    $select.append(new Option(val.display, val.abbrev));
+			});
+			
+			if ( $selectedValue != null ) {
+				$select.val($selectedValue);
+			}
+			$select.selectmenu();
+		}
+		
+		
 	}	
 
 });

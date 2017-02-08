@@ -23,7 +23,7 @@
     <tiles:put name="headextra" type="string">
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
         <script type="text/javascript" src="js/jobMaintenance.js"></script>
-                
+        <link rel="stylesheet" href="css/datepicker.css" type="text/css" />
         <style type="text/css">
 			#confirmDelete {
 				display:none;
@@ -63,8 +63,8 @@
 			#jobDates {
 				border:solid 1px #000000;
 			}
-			#jobActivation2 {
-				border:solid 1px #FF0000;
+			#jobInvoice {
+				border:solid 1px #000000;
 			}
 			td.jobTableCell {
 				width:50%;
@@ -75,15 +75,20 @@
         <script type="text/javascript">
 		$(function() {
 
-			$optionData = ansi_utils.getOptions('JOB_FREQUENCY,JOB_STATUS')
+			$optionData = ansi_utils.getOptions('JOB_FREQUENCY,JOB_STATUS,INVOICE_TERM,INVOICE_GROUPING');
 			var $jobFrequencyList = $optionData.jobFrequency;
 			var $jobStatusList = $optionData.jobStatus;
+			var $invoiceTermList = $optionData.invoiceTerm;
+			var $invoiceGroupingList = $optionData.invoiceGrouping;
+			var $invoiceStyleList = [];
 
 			$divisionList = ansi_utils.getDivisionList();
+			$buildingTypeList = JOBUTILS.makeBuildingTypeList();
 			
-			JOBDESCRIPTION.init("jobDescription", $jobFrequencyList);
-			JOBACTIVATION.init("jobActivation");
 			JOBPANEL.init("jabPanel", $divisionList);
+			JOBDESCRIPTION.init("jobDescription", $jobFrequencyList);
+			JOBACTIVATION.init("jobActivation", $buildingTypeList);
+			JOBINVOICE.init("jobInvoice", $invoiceStyleList, $invoiceGroupingList, $invoiceTermList);
 
 			$("#jobNbr").focus();
 		});
@@ -109,34 +114,29 @@
 		<table style="border:solid 1px #000000; margin-top:8px;">
 			<tr>
 				<td class="jobTableCell" colspan="2">
-					<%--
-					<form name="jobForm">
-						JOB: <input type="text" name="jobNbr" id="jobNbr" />
-						Status: <input type="text" name="jobStatus" />
-						Div: <select name="division"></select>
-						<div style="float:right;">
-							<input type="button" value="Activate Job" />
-							<input type="button" value="Cancel Job" />
-						</div>
-					</form>
-					 --%>
+					JobPanel:					
 					 <webthing:jobPanel namespace="jobPanel" cssId="jobPanel" />
 				</td>
 			</tr>
 			<tr>
 				<td class="jobTableCell">
+					JobDescription:
 					<webthing:jobDescription namespace="jobDescription" cssId="jobProposal" />
 				</td>
 				<td class="jobTableCell">
+					JobActivation:
 					<webthing:jobActivation namespace="jobActivation" cssId="jobActivation" />
 				</td>
 			</tr>
+
 			<tr>
 				<td class="jobTableCell">
+					JobDates:
 					<webthing:jobDates namespace="JOBDATES" cssId="jobDates" />
 				</td>
 				<td class="jobTableCell">
-					<webthing:jobActivation namespace="JOBACTIVATION2" cssId="jobActivation2" />
+					JOb Invoice:<br />			
+					<webthing:jobInvoice namespace="jobInvoice" cssId="jobInvoice" />
 				</td>
 			</tr>
 		</table>    	

@@ -25,21 +25,19 @@
   
 <div <%= cssIdString %> <%= cssClassString %> >
 	<table id="<%=namespace%>_jobTable">
-			<tr>
-				<td class="jobTableCell" colspan="2">
-					<form name="jobForm">
-						JOB: <input type="text" name="jobNbr" id="jobNbr" />
-						Status: <input type="text" name="jobStatus" />
-						Div: <select name="division"></select>
-						<div style="float:right;">
-							<input type="button" value="Activate Job" />
-							<input type="button" value="Cancel Job" />
-						</div>
-					</form>
-				</td>
-			</tr>
-
+		<tr>
+			<td class="jobTableCell" colspan="2">
+				<form name="jobForm">
+					JOB: <input type="text" name="jobNbr" id="jobNbr" />
+					Status: <input type="text" name="jobStatus" />
+					Div: <select name="division"></select>
+					<div style="float:right;">
+						<input type="button" value="Activate Job" />
+						<input type="button" value="Cancel Job" />
+					</div>
+				</form>
+			</td>
+		</tr>
 	</table>
-
 </div>
  
