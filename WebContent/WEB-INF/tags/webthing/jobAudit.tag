@@ -22,25 +22,20 @@
 	String cssIdString = "id=\"" + cssId + "\"";			 
 	String cssClassString = cssClass == null || cssClass.length()==0 ? "" : "class=\"" + cssClass + "\"";
 %>
-
+  
 <div <%= cssIdString %> <%= cssClassString %> >
-	<table>
+	<table id="<%=namespace%>_jobTable">
 		<tr>
-			<td>Proposed Date:</td>
-			<td>MM/DD/YYYY</td>
-			<td>Activation Date:</td>
-			<td>MM/DD/YYYY</td>
-		</tr>
-		<tr>
-			<td>Start Date:</td>
-			<td>MM/DD/YYYY</td>
-			<td>Cancel Date:</td>
-			<td>MM/DD/YYYY</td>
-		</tr>
-		<tr>
-			<td colspan="4">
-				Cancel Reason:
-				Reason goes here
+			<td class="jobTableCell">
+				<div style="display:inline;">
+					<span style="display:inline;" id="<%= namespace %>_createdBy">Created By</span>
+				</div>
+				<div style="display:inline;">
+					<span style="display:inline; margin-left:30px;" id="<%= namespace %>_modifiedBy">Last Changed By</span>
+				</div>
+				<div style="display:inline;">
+					<span style="display:inline; margin-left:30px;" id="<%= namespace %>_modifiedDate">Mod Date</span>
+				</div>
 			</td>
 		</tr>
 	</table>

@@ -27,15 +27,13 @@
 	<table id="<%=namespace%>_jobTable">
 		<tr>
 			<td class="jobTableCell" colspan="2">
-				<form name="jobForm">
-					JOB: <input type="text" name="jobNbr" id="jobNbr" />
-					Status: <input type="text" name="jobStatus" />
-					Div: <select name="division"></select>
-					<div style="float:right;">
-						<input type="button" value="Activate Job" />
-						<input type="button" value="Cancel Job" />
-					</div>
-				</form>
+				Job ID: <input type="text" name="jobId" id="<%= namespace %>_jobId" />
+				Status: <input type="text" name="jobStatus" id="<%= namespace %>_jobStatus" />
+				Div: <select name="divisionId" id="<%= namespace %>_divisionId"></select>
+				<div style="float:right;">
+					<input type="button" value="Activate Job" id="<%= namespace %>_activateJobButton" />
+					<input type="button" value="Cancel Job" id="<%= namespace %>_cancelJobButton" />
+				</div>
 			</td>
 		</tr>
 	</table>

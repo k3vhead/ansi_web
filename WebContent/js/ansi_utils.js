@@ -79,7 +79,6 @@ $( document ).ready(function() {
 
 			$select.append(new Option("",""));
 			$.each($optionList, function(index, val) {
-				console.debug(val);
 			    $select.append(new Option(val.display, val.abbrev));
 			});
 			

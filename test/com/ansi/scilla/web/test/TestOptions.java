@@ -1,14 +1,20 @@
 package com.ansi.scilla.web.test;
 
+import java.util.Arrays;
+import java.util.List;
+
+import com.ansi.scilla.web.response.options.OptionsListResponse;
+import com.ansi.scilla.web.response.options.ResponseOption;
+
 public class TestOptions {
 
 	public static void main(String[] args) {
 		TesterUtils.makeLoggers();
 		try {
-//			List<ResponseOption> o = Arrays.asList(new ResponseOption[] {ResponseOption.PERMISSION});
-//			OptionsListResponse r = new OptionsListResponse(o);
-//			String json = r.toJson();
-			String json = TesterUtils.getJson("http://127.0.0.1:8080/ansi_web/options?PERMISSION");
+			List<ResponseOption> o = Arrays.asList(new ResponseOption[] {ResponseOption.PERMISSION});
+			OptionsListResponse r = new OptionsListResponse(o);
+			String json = r.toJson();
+//			String json = TesterUtils.getJson("http://127.0.0.1:8080/ansi_web/options?INVOICE_STYLE");
 			System.out.println(json);
 		} catch ( Exception e) {
 			e.printStackTrace();

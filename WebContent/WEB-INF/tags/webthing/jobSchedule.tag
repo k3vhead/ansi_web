@@ -26,21 +26,20 @@
 <div <%= cssIdString %> <%= cssClassString %> >
 	<table>
 		<tr>
-			<td>Proposed Date:</td>
+			<td>Last Run:</td>
 			<td>MM/DD/YYYY</td>
-			<td>Activation Date:</td>
+			<td>Last Ticket:</td>
 			<td>MM/DD/YYYY</td>
 		</tr>
 		<tr>
-			<td>Start Date:</td>
+			<td>Next Due:</td>
 			<td>MM/DD/YYYY</td>
-			<td>Cancel Date:</td>
+			<td>Created Thru:</td>
 			<td>MM/DD/YYYY</td>
 		</tr>
 		<tr>
 			<td colspan="4">
-				Cancel Reason:
-				Reason goes here
+				<input type="button" value="Ticket List" />
 			</td>
 		</tr>
 	</table>

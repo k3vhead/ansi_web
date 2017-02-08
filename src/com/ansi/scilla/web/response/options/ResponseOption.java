@@ -2,6 +2,7 @@ package com.ansi.scilla.web.response.options;
 
 public enum ResponseOption {
 	INVOICE_GROUPING,
+	INVOICE_STYLE,
 	INVOICE_TERM,
 	JOB_FREQUENCY,
 	JOB_STATUS,

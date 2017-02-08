@@ -54,6 +54,10 @@
 				border:solid 1px #000000;
 				height:100%;
 			}
+			#jobSchedule {
+				border:solid 1px #000000;
+				height:100%;
+			}
 			#billTo {
 				border:solid 1px #000000;
 			}
@@ -75,17 +79,17 @@
         <script type="text/javascript">
 		$(function() {
 
-			$optionData = ansi_utils.getOptions('JOB_FREQUENCY,JOB_STATUS,INVOICE_TERM,INVOICE_GROUPING');
+			$optionData = ansi_utils.getOptions('JOB_FREQUENCY,JOB_STATUS,INVOICE_TERM,INVOICE_GROUPING,INVOICE_STYLE');
 			var $jobFrequencyList = $optionData.jobFrequency;
 			var $jobStatusList = $optionData.jobStatus;
 			var $invoiceTermList = $optionData.invoiceTerm;
 			var $invoiceGroupingList = $optionData.invoiceGrouping;
-			var $invoiceStyleList = [];
+			var $invoiceStyleList = $optionData.invoiceStyle;
 
 			$divisionList = ansi_utils.getDivisionList();
 			$buildingTypeList = JOBUTILS.makeBuildingTypeList();
 			
-			JOBPANEL.init("jabPanel", $divisionList);
+			JOBPANEL.init("jobPanel", $divisionList, '<c:out value="${ANSI_JOB_ID}" />');
 			JOBDESCRIPTION.init("jobDescription", $jobFrequencyList);
 			JOBACTIVATION.init("jobActivation", $buildingTypeList);
 			JOBINVOICE.init("jobInvoice", $invoiceStyleList, $invoiceGroupingList, $invoiceTermList);
@@ -133,10 +137,24 @@
 				<td class="jobTableCell">
 					JobDates:
 					<webthing:jobDates namespace="JOBDATES" cssId="jobDates" />
+					<br />
+					Job Schedule:
+					<webthing:jobSchedule namespace="jobSchedule" cssId="jobSchedule" />
 				</td>
 				<td class="jobTableCell">
 					JOb Invoice:<br />			
 					<webthing:jobInvoice namespace="jobInvoice" cssId="jobInvoice" />
+				</td>
+			</tr>
+			<tr>
+				<td class="jobTableCell">
+					JobAudit:
+					<webthing:jobAudit namespace="jobAudit" cssId="jobAudit" />
+				</td>
+				<td class="jobTableCell" style="text-align:center;">
+					<input type="button" value="Cancel" id="jobCancelButton" />
+					<input type="button" value="Save" id="jobSaveButton" />
+					<input type="button" value="Save & Exit" id="jobExitButton" />
 				</td>
 			</tr>
 		</table>    	

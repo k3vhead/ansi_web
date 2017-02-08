@@ -34,7 +34,12 @@
 						<option value=""></option>
 					</select>
 				</td>
-				<td colspan="2">Batch: <input type="checkbox" name="<%=namespace %>_invoiceBatch" /></td>
+				<td colspan="1">
+					Batch: <input type="checkbox" name="<%=namespace %>_invoiceBatch" />
+				</td>
+				<td colspan="1">
+					Tax Exempt: <input type="checkbox" name="<%=namespace %>_invoiceTaxExempt" />
+				</td>
 			</tr>
 			<tr>
 				<td colspan="1">
@@ -45,7 +50,7 @@
 						<option value="manual">Manual</option>
 					</select>
 				</td>
-				<td colspan="1">
+				<td colspan="2">
 					Terms:
 					<select name="<%=namespace %>_invoiceTerms">
 						<option value=""></option>
@@ -53,7 +58,6 @@
 						<option value="manual">Type 2</option>
 					</select>
 				</td>
-				<td colspan="1">Tax Exempt: <input type="checkbox" name="<%=namespace %>_invoiceTaxExempt" /></td>
 			</tr>
 			<tr>
 				<td>PO #: <input type="text"  name="<%=namespace %>_invoicePO" /></td>

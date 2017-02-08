@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.ansi.scilla.common.address.Country;
 import com.ansi.scilla.common.invoice.InvoiceGrouping;
+import com.ansi.scilla.common.invoice.InvoiceStyle;
 import com.ansi.scilla.common.invoice.InvoiceTerm;
 import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.jobticket.JobStatus;
@@ -23,6 +24,7 @@ public class OptionsListResponse extends MessageResponse {
 	private List<Permission> permission;
 	private List<InvoiceGroupingOption> invoiceGrouping;
 	private List<InvoiceTermOption> invoiceTerm;
+	private List<InvoiceStyleOption> invoiceStyle;
 
 	public OptionsListResponse(List<ResponseOption> options) throws ClassNotFoundException, Exception {
 		if ( options.contains(ResponseOption.JOB_FREQUENCY)) {
@@ -46,7 +48,17 @@ public class OptionsListResponse extends MessageResponse {
 		if ( options.contains(ResponseOption.INVOICE_TERM)) {
 			makeInvoiceTermList();
 		}
+		if ( options.contains(ResponseOption.INVOICE_STYLE)) {
+			makeInvoiceStyleList();
+		}
 
+	}
+
+	private void makeInvoiceStyleList() {
+		this.invoiceStyle = new ArrayList<InvoiceStyleOption>();
+		for ( InvoiceStyle j : EnumSet.allOf(InvoiceStyle.class)) {
+			this.invoiceStyle.add(new InvoiceStyleOption(j));
+		}
 	}
 
 	private void makeInvoiceGroupList() {
@@ -153,6 +165,14 @@ public class OptionsListResponse extends MessageResponse {
 
 	public void setInvoiceTerm(List<InvoiceTermOption> invoiceTerm) {
 		this.invoiceTerm = invoiceTerm;
+	}
+
+	public List<InvoiceStyleOption> getInvoiceStyle() {
+		return invoiceStyle;
+	}
+
+	public void setInvoiceStyle(List<InvoiceStyleOption> invoiceStyle) {
+		this.invoiceStyle = invoiceStyle;
 	}
 
 	

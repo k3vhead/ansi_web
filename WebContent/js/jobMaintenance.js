@@ -31,13 +31,15 @@ $( document ).ready(function() {
 	
 	
 	;JOBPANEL = {
-		init: function($namespace, $divisionList) {
-			console.debug("Doing the jobpanel init:" + $namespace);
+		init: function($namespace, $divisionList, $defaultJobId) {
 			JOBPANEL.setDivisionList($namespace, $divisionList);
+			if ( $defaultJobId != null ) {
+				JOBPANEL.setJobId($namespace, $defaultJobId)
+			}
 		},
 		
 		setDivisionList: function($namespace, $divisionList) {
-			selectorName = "select[name='division']";
+			selectorName = "select[name='divisionId']";
 			var $select = $(selectorName);
 			$('option', $select).remove();
 
@@ -47,13 +49,18 @@ $( document ).ready(function() {
 			});
 			
 			$select.selectmenu();
+		},
+		
+		setJobId: function($namespace, $jobId) {
+			$selectorName = "#" + $namespace + "_jobId";
+			$($selectorName).val($jobId);
+			
 		}
 	}
 	
 	
 	;JOBDESCRIPTION = {		
 		init: function($namespace, $jobFrequencyList) {
-			console.debug("Doing the jobdesc init:" + $namespace);
 			JOBDESCRIPTION.setJobFrequency($namespace, $jobFrequencyList);
 		},
 		setJobFrequency: function($namespace, $optionList, $selectedValue) {
@@ -81,19 +88,8 @@ $( document ).ready(function() {
 	
 	;JOBACTIVATION = {
 			init: function($namespace, $buildingTypeList) {
-				console.debug("Doing the jobactivation init:" + $namespace);
-				
-				
-		        //var $buildingTypeList = [];
-				//$.each($data.data.codeList, function(index, value) {
-				//	if ( value.fieldName == 'building_type') {
-				//		$buildingTypeList.push(value);
-				//	}
-				//});
 				JOBACTIVATION.setBuildingType($namespace, $buildingTypeList, null);
 
-				
-		
 				$("#" + $namespace + "_jobActivationForm select[name='" + $namespace + "_automanual']").selectmenu();
 				$("#" + $namespace + "_jobActivationForm select[name='" + $namespace + "_buildingType']").selectmenu();
 				$("#" + $namespace + "_jobActivationForm input[name='" + $namespace + "_nbrFloors']").spinner({
@@ -134,8 +130,6 @@ $( document ).ready(function() {
 
 	;JOBINVOICE = {
 			init: function($namespace, $invoiceStyleList, $invoiceGroupList, $invoiceTermList) {
-				console.debug("Doing the jobinvoice init:" + $namespace);
-				
 				JOBINVOICE.setInvoiceStyle($namespace, $invoiceStyleList);
 				JOBINVOICE.setInvoiceGrouping($namespace, $invoiceGroupList);
 				JOBINVOICE.setInvoiceTerms($namespace, $invoiceTermList);
@@ -153,8 +147,6 @@ $( document ).ready(function() {
 			setInvoiceStyle: function($namespace, $optionList, $selectedValue) {
 				var selectorName = "#" + $namespace + "_jobInvoiceForm select[name='" + $namespace + "_invoiceStyle']";
 				$selectorName = "select[name='" + $namespace + "_invoiceStyle']";
-				console.debug($selectorName);
-				console.debug($optionList);
 				ansi_utils.setOptionList($selectorName, $optionList, $selectedValue)
 			},
 			setInvoiceGrouping: function($namespace, $optionList, $selectedValue) {
