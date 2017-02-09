@@ -26,6 +26,7 @@ public class TicketDRVResponseItem extends ApplicationObject {
 	private BigDecimal budget;
 	private BigDecimal ppc;
 	private String cod;
+	private Integer jobId;
 	
 	public TicketDRVResponseItem() {
 		super();
@@ -47,6 +48,7 @@ public class TicketDRVResponseItem extends ApplicationObject {
 		this.name = record.getName();
 		this.ppc = record.getPricePerCleaning();
 		this.startDate = record.getStartDate();
+		this.jobId = record.getJobId();
 	}
 	
 	public Integer getTicketId() {
@@ -124,6 +126,14 @@ public class TicketDRVResponseItem extends ApplicationObject {
 	}
 	public void setCod(String cod) {
 		this.cod = cod;
+	}
+
+	public Integer getJobId() {
+		return jobId;
+	}
+
+	public void setJobId(Integer jobId) {
+		this.jobId = jobId;
 	}
 	
 }

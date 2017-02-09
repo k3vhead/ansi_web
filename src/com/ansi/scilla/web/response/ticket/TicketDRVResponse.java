@@ -28,6 +28,7 @@ public class TicketDRVResponse extends MessageResponse {
 	private BigDecimal totalDL;
 	private List<TicketDRVResponseItem> responseItemList;
 	
+	
 	/*
 	public TicketDRVResponse(Connection conn, Integer divisionId, Date startDate) throws RecordNotFoundException, Exception{
 		division = new Division();
@@ -124,6 +125,6 @@ public class TicketDRVResponse extends MessageResponse {
 	public void setResponseItemList(List<TicketDRVResponseItem> responseItemList) {
 		this.responseItemList = responseItemList;
 	}
-	
+
 	
 }
