@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.ansi.scilla.common.queries.TicketSearch;
 import com.ansi.scilla.web.common.AppUtils;
+import com.ansi.scilla.web.response.jobTable.JobTableReturnItem;
 import com.ansi.scilla.web.response.ticketTable.TicketTableJsonResponse;
 import com.ansi.scilla.web.response.ticketTable.TicketTableReturnItem;
 
@@ -92,8 +94,10 @@ public class TicketTableServlet extends AbstractServlet {
 		    if (sAmount != null) {
 		    	amount = Integer.parseInt(sAmount);
 				System.out.println(sAmount);
-		        if (amount != -1) {
-		        	if (amount < 10 || amount > 100)
+		        if (amount == -1) {
+		        	amount = 500;
+		        } else {
+		        	if (amount < 10 || amount > 50000)
 		            amount = 10;
 		        }
 		    }
@@ -140,8 +144,12 @@ public class TicketTableServlet extends AbstractServlet {
 			
 			s = conn.createStatement();
 			ResultSet rs = s.executeQuery(sql);
+			ResultSetMetaData rsmd = rs.getMetaData();
 			while ( rs.next() ) {
-				resultList.add(new TicketTableReturnItem(rs));
+				TicketTableReturnItem item = new TicketTableReturnItem();				
+				TicketTableReturnItem.rs2Object(item, rsmd, rs);
+				resultList.add(item);
+				//resultList.add(new TicketTableReturnItem(rs));
 			}
 			
 			String sql2 = "select count(*) "

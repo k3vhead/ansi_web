@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ import com.ansi.scilla.common.queries.JobSearch;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.response.jobTable.JobTableJsonResponse;
 import com.ansi.scilla.web.response.jobTable.JobTableReturnItem;
+import com.ansi.scilla.web.response.quoteTable.QuoteTableReturnItem;
 
 /**
  * The url for delete will return methodNotAllowed
@@ -140,8 +142,12 @@ public class JobTableServlet extends AbstractServlet {
 			
 			s = conn.createStatement();
 			ResultSet rs = s.executeQuery(sql);
+			ResultSetMetaData rsmd = rs.getMetaData();
 			while ( rs.next() ) {
-				resultList.add(new JobTableReturnItem(rs));
+				JobTableReturnItem item = new JobTableReturnItem();				
+				JobTableReturnItem.rs2Object(item, rsmd, rs);
+				resultList.add(item);
+				// resultList.add(new JobTableReturnItem(rs));
 			}
 			
 			String sql2 = "select count(*) "
