@@ -200,23 +200,23 @@
    <tiles:put name="content" type="string">
     	<h1>Ticket Lookup</h1>
     	
- 	<table id="ticketTable" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
+ 	<table id="ticketTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
         <colgroup>
         	<col style="width:4%;" />
     		<col style="width:4%;" />
     		<col style="width:10%;" />
     		<col style="width:10%;" />
     		<col style="width:10%;" />
-    		<col style="width:10%;" />
-    		<col style="width:4%;" />
+    		<col style="width:6%;" />
     		<col style="width:4%;" />
     		<col style="width:4%;" />
     		<col style="width:4%;" />
     		<col style="width:4%;" />
     		<col style="width:24%;" />
+    		<col style="width:6%;" />
+    		<col style="width:6%;" />
     		<col style="width:4%;" />
-    		<col style="width:4%;" />
-    		<col style="width:4%;" />
+    	</colgroup>
         <thead>
             <tr>
                 <th>Ticket</th>

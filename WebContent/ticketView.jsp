@@ -114,7 +114,7 @@
 			            { title: "PPC", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.pricePerCleaning != null){return (row.pricePerCleaning+"");}
 			            } },
-			            { title: "Code", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            { title: "COD", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.jobId != null){return (row.jobId+"");} 
 			            } },
 			            ],
@@ -192,7 +192,21 @@
    <tiles:put name="content" type="string">
     	<h1>Ticket View</h1>
     	
- 	<table id="ticketTable" class="display" cellspacing="0" width="100%" style="font-size:9pt;max-width:1300px;width:1300px;">
+ 	<table id="ticketTable" style="table-layout: fixed" class="display" cellspacing="0" width="100%" style="font-size:9pt;max-width:1300px;width:1300px;">
+        <colgroup>
+        	<col style="width:6%;" />
+    		<col style="width:6%;" />
+    		<col style="width:15%;" />
+    		<col style="width:15%;" />
+    		<col style="width:12%;" />
+    		<col style="width:8%;" />
+    		<col style="width:8%;" />
+    		<col style="width:6%;" />
+    		<col style="width:6%;" />
+    		<col style="width:6%;" />
+    		<col style="width:6%;" />
+    		<col style="width:6%;" />
+   		</colgroup>        
         <thead>
             <tr>
                 <th>TICKET</th>

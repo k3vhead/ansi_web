@@ -69,8 +69,8 @@
         	        dom: 				'Bfrtip',
         	        "searching": 		true,
         	        lengthMenu: [
-        	            [ 10, 25, 50, -1 ],
-        	            [ '10 rows', '25 rows', '50 rows', 'Show all' ]
+        	        	[ 10, 50, 100, 500, -1 ],
+        	            [ '10 rows', '50 rows', '100 rows', '500 rows', 'Show all' ]
         	        ],
         	        buttons: [
         	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}}
@@ -191,7 +191,7 @@
    <tiles:put name="content" type="string">
     	<h1>Job Lookup</h1>
     	
- 	<table id="jobTable" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
+ 	<table id="jobTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
        	<colgroup>
         	<col style="width:4%;" />
     		<col style="width:4%;" />
@@ -199,8 +199,8 @@
     		<col style="width:10%;" />
     		<col style="width:10%;" />
     		<col style="width:6%;" />
-    		<col style="width:6%;" />
     		<col style="width:4%;" />
+    		<col style="width:6%;" />
     		<col style="width:4%;" />
     		<col style="width:34%;" />
     		<col style="width:4%;" />
