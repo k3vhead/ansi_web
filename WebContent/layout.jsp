@@ -210,6 +210,7 @@
 											<ansi:hasWrite>
 											<li><a href="#">Maintenance</a></li>
 											<li><a href="#">New</a></li>
+											<li><html:link action="ticketView">View</html:link></li>
 											</ansi:hasWrite>											
 										</ul>
 									</li>

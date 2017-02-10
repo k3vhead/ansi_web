@@ -25,7 +25,7 @@
     <tiles:put name="headextra" type="string">
         <style type="text/css">
 			#displayTable {
-				width:100%;
+				width:90%;
 			}
 			#addFormDiv {
 				display:none;
@@ -182,18 +182,19 @@
    <tiles:put name="content" type="string">
     	<h1>Quote Lookup</h1>
     	
- 	<table id="quoteTable" class="fixed" cellspacing="0" width="100%" style="font-size:9pt;max-width:980px;width:980px;">
+ 	<table id="quoteTable" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
+        <colgroup>
+        	<col style="width:4%;" />
+    		<col style="width:4%;" />
+    		<col style="width:20%;" />
+    		<col style="width:20%;" />
+    		<col style="width:20%;" />
+    		<col style="width:10%;" />
+    		<col style="width:10%;" />
+    		<col style="width:4%;" />
+    		<col style="width:4%;" />
+    		<col style="width:4%;" />   
         <thead>
-        	<col width="4%" />
-    		<col width="4%" />
-    		<col width="20%" />
-    		<col width="20%" />
-    		<col width="20%" />
-    		<col width="10%" />
-    		<col width="10%" />
-    		<col width="4%" />
-    		<col width="4%" />
-    		<col width="4%" />
             <tr>
                 <th>ID</th>
     			<th>Quote</th>

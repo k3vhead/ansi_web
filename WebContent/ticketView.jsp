@@ -18,7 +18,7 @@
 <tiles:insert page="layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        Job Lookup
+        Ticket View
     </tiles:put>
     
     
@@ -45,20 +45,20 @@
 			
         </style>
         
-        <script type="text/javascript">
+        <script type="text/javascript">    
         
         $(document).ready(function(){
-      	  		$('.ScrollTop').click(function() {
-      	   		 $('html, body').animate({scrollTop: 0}, 800);
-      	  		return false;
-      	    	});
-      		});
-            	       	
+        	  $('.ScrollTop').click(function() {
+        	    $('html, body').animate({scrollTop: 0}, 800);
+        	  return false;
+        	    });
+        	});
+        
         	$(document).ready(function() {
         	var dataTable = null;
         	
         	function createTable(){
-        		var dataTable = $('#jobTable').DataTable( {
+        		var dataTable = $('#ticketTable').DataTable( {
         			"processing": 		true,
         	        "serverSide": 		true,
         	        "autoWidth": 		false,
@@ -69,57 +69,55 @@
         	        dom: 				'Bfrtip',
         	        "searching": 		true,
         	        lengthMenu: [
-        	            [ 10, 25, 50, -1 ],
-        	            [ '10 rows', '25 rows', '50 rows', 'Show all' ]
+        	            [ 10, 50, 100, 500, -1 ],
+        	            [ '10 rows', '50 rows', '100 rows', '500 rows', 'Show all' ]
         	        ],
         	        buttons: [
         	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}}
         	        ],
         	        "paging": true,
 			        "ajax": {
-			        	"url": "jobTable",
+			        	"url": "ticketTable",
 			        	"type": "GET"
 			        	},
 			        columns: [
-			        	
-			            { title: "Job", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-			            	if(row.jobId != null){return (row.jobId+"");}
+			            { title: "Ticket", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            	if(row.ticketId != null){return (row.ticketId+"");}
 			            } },
 			            { title: "Status", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.status != null){return (row.status+"");}
 			            } },
-			            { title: "Bill To" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-			            	if(row.billToName != null){return (row.billToName+"");}
-			            } },
-			            { title: "Job Site", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "Site", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.jobSiteName != null){return (row.jobSiteName+"");}
 			            } },
-			            { title: "Job Address",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "Street 1",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.jobSiteAddress != null){return (row.jobSiteAddress+"");}
+			            } },
+			            { title: "City", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            	if(row.jobFreq != null){return (row.jobFreq+"");}
+			            } },
+			            { title: "Last Done", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            	if(row.startDate != null){return (row.startDate+"");}
 			            } },
 			            { title: "Start Date", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.startDate != null){return (row.startDate+"");}
 			            } },
+			            { title: "J #", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
+			            	if(row.jobNbr != null){return (row.jobNbr+"");}
+			            } },
 			            { title: "Freq", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.jobFrequency != null){return (row.jobFrequency+"");}
+			            	if(row.jobFreq != null){return (row.jobFreq+"");}
+			            } },
+			            { title: "Budget", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            	if(row.pricePerCleaning != null){return (row.pricePerCleaning+"");}
 			            } },
 			            { title: "PPC", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.pricePerCleaning != null){return (row.pricePerCleaning+"");}
 			            } },
-			            { title: "Job #", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
-			            	if(row.jobNbr != null){return (row.jobNbr+"");}
+			            { title: "Code", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            	if(row.jobId != null){return (row.jobId+"");} 
 			            } },
-			            { title: "Service Description", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.serviceDescription != null){return (row.serviceDescription+"");}
-			            } },
-			            { title: "PO #", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.poNumber != null){return (row.poNumber+"");}
-			            } },
-			            { title: "Action",  data: function ( row, type, set ) {	
-			            	//console.log(row);
-			            	{return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='jobMaintenance.html?id="+row.jobId+"' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.jobId+"'></a></ansi:hasWrite></ansi:hasPermission>";}
-			            	
-			            } }],
+			            ],
 			            "initComplete": function(settings, json) {
 			            	//console.log(json);
 			            	doFunctionBinding();
@@ -131,6 +129,7 @@
         	}
         	        	
         	init();
+        			
         			
             
             function init(){
@@ -151,7 +150,7 @@
 				function doEdit($clickevent) {
 					var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
 
-						var $url = 'jobTable/' + $rowid;
+						var $url = 'ticketTable/' + $rowid;
 						//console.log("YOU PASSED ROW ID:" + $rowid);
 						var jqxhr = $.ajax({
 							type: 'GET',
@@ -159,21 +158,22 @@
 							success: function($data) {
 								//console.log($data);
 								
-				        		$("#jobId").val(($data.data.codeList[0]).jobId);
+				        		$("#ticketId").val(($data.data.codeList[0]).ticketId);
 				        		$("#status").val(($data.data.codeList[0]).status);
-				        		$("#billToName").val(($data.data.codeList[0]).billToName);
 				        		$("#jobSiteName").val(($data.data.codeList[0]).jobSiteName);
 				        		$("#jobSiteAddress").val(($data.data.codeList[0]).jobSiteAddress);
+				        		$("#jobFreq").val(($data.data.codeList[0]).jobFreq);
 				        		$("#startDate").val(($data.data.codeList[0]).startDate);
-				        		$("#jobFrequency").val(($data.data.codeList[0]).startDate);
-				        		$("#pricePerCleaning").val(($data.data.codeList[0]).pricePerCleaning);
+				        		$("#startDate").val(($data.data.codeList[0]).startDate);
 				        		$("#jobNbr").val(($data.data.codeList[0]).jobNbr);
-				        		$("#serviceDescription").val(($data.data.codeList[0]).serviceDescription);
-				        		$("#poNumber").val(($data.data.codeList[0]).processDate);
+				        		$("#jobFreq").val(($data.data.codeList[0]).jobFreq);
+				        		$("#pricePerCleaning").val(($data.data.codeList[0]).pricePerCleaning);
+				        		$("#pricePerCleaning").val(($data.data.codeList[0]).pricePerCleaning);
+				        		$("#jobId").val(($data.data.codeList[0]).jobId);
 				        		
-				        		$("#jId").val(($data.data.codeList[0]).jobId);
+				        		$("#tId").val(($data.data.codeList[0]).ticketId);
 				        		$("#updateOrAdd").val("update");
-				        		$("#addJobTableForm").dialog( "open" );
+				        		$("#addTicketTableForm").dialog( "open" );
 							},
 							statusCode: {
 								403: function($data) {
@@ -185,57 +185,44 @@
 					//console.log("Edit Button Clicked: " + $rowid);
 				}
         });
+        		
         </script>        
     </tiles:put>
     
    <tiles:put name="content" type="string">
-    	<h1>Job Lookup</h1>
+    	<h1>Ticket View</h1>
     	
- 	<table id="jobTable" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
-       	<colgroup>
-        	<col style="width:4%;" />
-    		<col style="width:4%;" />
-    		<col style="width:10%;" />
-    		<col style="width:10%;" />
-    		<col style="width:10%;" />
-    		<col style="width:6%;" />
-    		<col style="width:6%;" />
-    		<col style="width:4%;" />
-    		<col style="width:4%;" />
-    		<col style="width:34%;" />
-    		<col style="width:4%;" />
-    		<col style="width:4%;" />
-   		</colgroup>
+ 	<table id="ticketTable" class="display" cellspacing="0" width="100%" style="font-size:9pt;max-width:1300px;width:1300px;">
         <thead>
             <tr>
-                <th>Job Id</th>
-    			<th>Status</th>
-    			<th>Bill To</th>
-    			<th>Job Site</th>
-    			<th>Job Address</th>
+                <th>TICKET</th>
+    			<th>STATUS</th>
+    			<th>Site</th>
+    			<th>Street 1</th>
+    			<th>City</th>
+    			<th>Last Done</th>
     			<th>Start Date</th>
-    			<th>Freq</th>
+    			<th>J#</th>
+    			<th>FRQ</th>
+    			<th>BUDGET</th>
     			<th>PPC</th>
-    			<th>Job #</th>
-    			<th>Service Description</th>
-    			<th>PO #</th>
-    			<th>Action</th>
+    			<th>COD</th>
             </tr>
         </thead>
         <tfoot>
             <tr>
-                <th>Job Id</th>
-    			<th>Status</th>
-    			<th>Bill To</th>
-    			<th>Job Site</th>
-    			<th>Job Address</th>
+                <th>TICKET</th>
+    			<th>STATUS</th>
+    			<th>Site</th>
+    			<th>Street 1</th>
+    			<th>City</th>
+    			<th>Last Done</th>
     			<th>Start Date</th>
-    			<th>Freq</th>
+    			<th>J#</th>
+    			<th>FRQ</th>
+    			<th>BUDGET</th>
     			<th>PPC</th>
-    			<th>Job #</th>
-    			<th>Service Description</th>
-    			<th>PO #</th>
-    			<th>Action</th>
+    			<th>COD</th>			
             </tr>
         </tfoot>
     </table>

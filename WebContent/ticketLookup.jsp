@@ -25,7 +25,7 @@
     <tiles:put name="headextra" type="string">
         <style type="text/css">
 			#displayTable {
-				width:90%;
+				width:100%;
 			}
 			#addFormDiv {
 				display:none;
@@ -81,7 +81,7 @@
 			        	"type": "GET"
 			        	},
 			        columns: [
-			            { title: "Ticket ID", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            { title: "Ticket", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.ticketId != null){return (row.ticketId+"");}
 			            } },
 			            { title: "Status", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
@@ -100,7 +100,7 @@
 			            	if(row.startDate != null){return (row.startDate+"");}
 			            } },
 			            { title: "Freq", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.jobFrequency != null){return (row.jobFrequency+"");}
+			            	if(row.jobFreq != null){return (row.jobFreq+"");}
 			            } },
 			            { title: "PPC", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.pricePerCleaning != null){return (row.pricePerCleaning+"");}
@@ -122,7 +122,7 @@
 			            } },
 			            { title: "Action",  data: function ( row, type, set ) {	
 			            	//console.log(row);
-			            	{return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='ticketMaintenance.html' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.ticketId+"'></a></ansi:hasWrite></ansi:hasPermission>";}
+			            	{return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='jobMaintenance.html?id="+row.ticketId+"' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.ticketId+"'></a></ansi:hasWrite></ansi:hasPermission>";}
 			            	
 			            } }],
 			            "initComplete": function(settings, json) {
@@ -171,6 +171,7 @@
 				        		$("#jobSiteName").val(($data.data.codeList[0]).jobSiteName);
 				        		$("#jobSiteAddress").val(($data.data.codeList[0]).jobSiteAddress);
 				        		$("#startDate").val(($data.data.codeList[0]).startDate);
+				        		$("#jobFreq").val(($data.data.codeList[0]).jobFreq);
 				        		$("#pricePerCleaning").val(($data.data.codeList[0]).pricePerCleaning);
 				        		$("#jobNbr").val(($data.data.codeList[0]).jobNbr);
 				        		$("#jobId").val(($data.data.codeList[0]).jobId);
@@ -199,10 +200,26 @@
    <tiles:put name="content" type="string">
     	<h1>Ticket Lookup</h1>
     	
- 	<table id="ticketTable" class="display" cellspacing="0" width="100%" style="font-size:8.5pt;max-width:980px;width:980px;">
+ 	<table id="ticketTable" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
+        <colgroup>
+        	<col style="width:4%;" />
+    		<col style="width:4%;" />
+    		<col style="width:10%;" />
+    		<col style="width:10%;" />
+    		<col style="width:10%;" />
+    		<col style="width:10%;" />
+    		<col style="width:4%;" />
+    		<col style="width:4%;" />
+    		<col style="width:4%;" />
+    		<col style="width:4%;" />
+    		<col style="width:4%;" />
+    		<col style="width:24%;" />
+    		<col style="width:4%;" />
+    		<col style="width:4%;" />
+    		<col style="width:4%;" />
         <thead>
             <tr>
-                <th>Ticket Id</th>
+                <th>Ticket</th>
     			<th>Status</th>
     			<th>Bill To</th>
     			<th>Job Site</th>
@@ -220,7 +237,7 @@
         </thead>
         <tfoot>
             <tr>
-                <th>Ticket Id</th>
+                <th>Ticket</th>
     			<th>Status</th>
     			<th>Bill To</th>
     			<th>Job Site</th>
@@ -233,8 +250,7 @@
     			<th>Service Description</th>
     			<th>Process Date</th>
     			<th>Invoice</th>
-    			<th>Action</th>
-    			
+    			<th>Action</th>    			
             </tr>
         </tfoot>
     </table>
