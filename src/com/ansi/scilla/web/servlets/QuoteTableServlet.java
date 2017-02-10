@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +77,7 @@ public class QuoteTableServlet extends AbstractServlet {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
-			String qs = request.getQueryString();
+//			String qs = request.getQueryString();
 
 			String term = "";
 			
@@ -140,8 +141,12 @@ public class QuoteTableServlet extends AbstractServlet {
 			
 			s = conn.createStatement();
 			ResultSet rs = s.executeQuery(sql);
+			ResultSetMetaData rsmd = rs.getMetaData();
 			while ( rs.next() ) {
-				resultList.add(new QuoteTableReturnItem(rs));
+				QuoteTableReturnItem item = new QuoteTableReturnItem();				
+				QuoteTableReturnItem.rs2Object(item, rsmd, rs);
+				resultList.add(item);
+//				resultList.add(new QuoteTableReturnItem(rs));
 			}
 			
 			String sql2 = "select count(*)" + QuoteSearch.sqlFromClause;
