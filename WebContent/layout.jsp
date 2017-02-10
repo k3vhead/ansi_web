@@ -120,7 +120,7 @@
 		        			<li>
 		        				<a href="#">Lookup</a>
 								<ul class="sub_menu" style="z-index:1000">
-									<li><html:link action="addressLookup">Addresses</html:link></li>
+									<li><html:link action="addressMaintenance">Addresses</html:link></li>
 									<ansi:hasPermission permissionRequired="QUOTE">
 									<li><html:link action="quoteLookup">Quotes</html:link></li>
 									</ansi:hasPermission>
@@ -164,7 +164,6 @@
 									<li>
 										<a href="#">Addresses</a>
 										<ul>
-											<li><html:link action="addressLookup">Lookup</html:link></li>
 											<li><html:link action="addressMaintenance">Maintenance</html:link></li>
 											<!-- <li><a href="#">New</a></li> -->
 										</ul>
