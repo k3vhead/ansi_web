@@ -25,7 +25,7 @@
     <tiles:put name="headextra" type="string">
         <style type="text/css">
 			#displayTable {
-				width:90%;
+				width:100%;
 			}
 			#addFormDiv {
 				display:none;
@@ -69,8 +69,8 @@
         	        dom: 				'Bfrtip',
         	        "searching": 		true,
         	        lengthMenu: [
-        	            [ 10, 25, 50, -1 ],
-        	            [ '10 rows', '25 rows', '50 rows', 'Show all' ]
+        	            [ 10, 50, 100, 500, -1 ],
+        	            [ '10 rows', '50 rows', '100 rows', '500 rows', 'Show all' ]
         	        ],
         	        buttons: [
         	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}}
@@ -110,7 +110,7 @@
 			            } },
 			            { title: "Action",  data: function ( row, type, set ) {	
 			            	//console.log(row);
-			            	{return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='quoteMaintenance.html' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.quoteId+"'></a></ansi:hasWrite></ansi:hasPermission>";}
+			            	{return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='jobMaintenance.html?id="+row.quoteId+"' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.quoteId+"'></a></ansi:hasWrite></ansi:hasPermission>";}
 			            	
 			            } }],
 			            "initComplete": function(settings, json) {
@@ -182,8 +182,18 @@
    <tiles:put name="content" type="string">
     	<h1>Quote Lookup</h1>
     	
- 	<table id="quoteTable" class="display" cellspacing="0" width="100%" style="font-size:9pt;max-width:980px;width:980px;">
+ 	<table id="quoteTable" class="fixed" cellspacing="0" width="100%" style="font-size:9pt;max-width:980px;width:980px;">
         <thead>
+        	<col width="4%" />
+    		<col width="4%" />
+    		<col width="20%" />
+    		<col width="20%" />
+    		<col width="20%" />
+    		<col width="10%" />
+    		<col width="10%" />
+    		<col width="4%" />
+    		<col width="4%" />
+    		<col width="4%" />
             <tr>
                 <th>ID</th>
     			<th>Quote</th>

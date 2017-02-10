@@ -82,7 +82,7 @@
 			        	},
 			        columns: [
 			        	
-			            { title: "Job ID", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            { title: "Job", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.jobId != null){return (row.jobId+"");}
 			            } },
 			            { title: "Status", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
@@ -117,7 +117,7 @@
 			            } },
 			            { title: "Action",  data: function ( row, type, set ) {	
 			            	//console.log(row);
-			            	{return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='jobMaintenance.html' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.jobId+"'></a></ansi:hasWrite></ansi:hasPermission>";}
+			            	{return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='jobMaintenance.html?id="+row.jobId+"' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.jobId+"'></a></ansi:hasWrite></ansi:hasPermission>";}
 			            	
 			            } }],
 			            "initComplete": function(settings, json) {
@@ -191,8 +191,20 @@
    <tiles:put name="content" type="string">
     	<h1>Job Lookup</h1>
     	
- 	<table id="jobTable" class="display" cellspacing="0" width="100%" style="font-size:8.75pt;max-width:980px;width:980px;">
+ 	<table id="jobTable" class="fixed" cellspacing="0" width="100%" style="font-size:8.75pt;max-width:980px;width:980px;">
         <thead>
+        	<col width="4%" />
+    		<col width="4%" />
+    		<col width="10%" />
+    		<col width="10%" />
+    		<col width="10%" />
+    		<col width="6%" />
+    		<col width="6%" />
+    		<col width="4%" />
+    		<col width="4%" />
+    		<col width="34%" />
+    		<col width="4%" />
+    		<col width="4%" />
             <tr>
                 <th>Job Id</th>
     			<th>Status</th>
