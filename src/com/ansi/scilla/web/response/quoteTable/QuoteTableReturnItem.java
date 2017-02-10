@@ -5,8 +5,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
+import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
 import com.ansi.scilla.common.queries.ReportQuery;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.thewebthing.commons.db2.DBColumn;
 
 public class QuoteTableReturnItem extends ReportQuery {
@@ -127,6 +129,7 @@ public class QuoteTableReturnItem extends ReportQuery {
 			this.quoteJobCount = quoteJobCount;
 		}
 		@DBColumn(QUOTE_PPC_SUM)
+		@JsonSerialize(using = AnsiCurrencyFormatter.class)
 		public BigDecimal getQuotePpcSum() {
 			return quotePpcSum;
 		}
