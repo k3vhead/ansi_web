@@ -191,20 +191,22 @@
    <tiles:put name="content" type="string">
     	<h1>Job Lookup</h1>
     	
- 	<table id="jobTable" class="fixed" cellspacing="0" width="100%" style="font-size:8.75pt;max-width:980px;width:980px;">
+ 	<table id="jobTable" class="fixed" cellspacing="0" style="font-size:8.75pt;max-width:1300px;width:1300px;">
+       	<colgroup>
+        	<col style="width:4%;" />
+    		<col style="width:4%;" />
+    		<col style="width:10%;" />
+    		<col style="width:10%;" />
+    		<col style="width:10%;" />
+    		<col style="width:6%;" />
+    		<col style="width:6%;" />
+    		<col style="width:4%;" />
+    		<col style="width:4%;" />
+    		<col style="width:34%;" />
+    		<col style="width:4%;" />
+    		<col style="width:4%;" />
+   		</colgroup>
         <thead>
-        	<col width="4%" />
-    		<col width="4%" />
-    		<col width="10%" />
-    		<col width="10%" />
-    		<col width="10%" />
-    		<col width="6%" />
-    		<col width="6%" />
-    		<col width="4%" />
-    		<col width="4%" />
-    		<col width="34%" />
-    		<col width="4%" />
-    		<col width="4%" />
             <tr>
                 <th>Job Id</th>
     			<th>Status</th>
