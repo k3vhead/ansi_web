@@ -8,7 +8,8 @@ import org.apache.commons.beanutils.BeanUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.TaxRate;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class TaxRateResponseRecord extends ApplicationObject {
 	/**
@@ -36,12 +37,11 @@ public class TaxRateResponseRecord extends ApplicationObject {
 		this.amount = amount;
 	}
 
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
+	@JsonSerialize(using = AnsiDateFormatter.class)
 	public Date getEffectiveDate() {
 		return effectiveDate;
 	}
 
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
 	public void setEffectiveDate(Date effectiveDate) {
 		this.effectiveDate = effectiveDate;
 	}
