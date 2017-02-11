@@ -16,7 +16,7 @@
 <tiles:insert page="layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        Permission Group Admin
+        <bean:message key="page.label.permission" /> <bean:message key="menu.label.maintenance" />
     </tiles:put>
     
     
@@ -344,7 +344,7 @@
     
     
     <tiles:put name="content" type="string">
-    	<h1>Permission Group Maintenance</h1>
+    	<h1><bean:message key="page.label.permission" /> <bean:message key="menu.label.maintenance" /></h1>
     	
     	<table id="displayTable">
     		<tr>

@@ -1,5 +1,11 @@
 $( document ).ready(function() {
 	;JOBUTILS = {
+			
+		getJob:function($jobId) {
+			
+		},
+		
+		
 		makeBuildingTypeList:function() {							
 			var $returnValue = null;
 			var jqxhr3 = $.ajax({

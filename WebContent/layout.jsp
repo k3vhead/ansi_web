@@ -87,17 +87,17 @@
 			    			<ansi:hasPermission permissionRequired="SYSADMIN">
 			    				<ansi:hasWrite>
 			        			<li>
-			        				<a href="#">Settings</a>
+			        				<a href="#"><bean:message key="menu.label.settings" /></a>
 			        				<ul class="sub_menu" style="z-index:1000">
-			        			 		<li><a href="#">Message Maintenance</a></li>
-			        			 		<li><html:link action="codeMaintenance">Code Maintenance</html:link></li>
-			        			 		<li><html:link action="userAdmin">User Admin</html:link></li>
-			        			 		<li><html:link action="permissiongroupAdmin">Permission Group Admin</html:link></li> 
-										<li><html:link action="divisionAdmin">Division Admin</html:link></li>
-										<li><html:link action="applicationpropertyAdmin">Application Property Admin</html:link></li>
-										<li><html:link action="printHistory">Print History</html:link></li>
-										<li><html:link action="usertitleMaintenance">User Title Maintenance</html:link></li>
-										<li><html:link action="transactionhistoryView">Transaction History View</html:link></li>
+			        			 		<li><a href="#"><bean:message key="menu.label.messages" /></a></li>
+			        			 		<li><html:link action="codeMaintenance"><bean:message key="menu.label.codes" /></html:link></li>
+			        			 		<li><html:link action="userAdmin"><bean:message key="menu.label.users" /></html:link></li>
+			        			 		<li><html:link action="permissiongroupAdmin"><bean:message key="menu.label.permissions" /></html:link></li> 
+										<li><html:link action="divisionAdmin"><bean:message key="menu.label.divisions" /></html:link></li>
+										<li><html:link action="applicationpropertyAdmin"><bean:message key="menu.label.properties" /></html:link></li>
+										<li><html:link action="printHistory"><bean:message key="menu.label.printhistory" /></html:link></li>
+										<li><html:link action="usertitleMaintenance"><bean:message key="menu.label.titles" /></html:link></li>
+										<li><html:link action="transactionhistoryView"><bean:message key="menu.label.transactionhistory" /></html:link></li>
 			        				</ul>
 			        			</li>
 			        			</ansi:hasWrite>
@@ -116,133 +116,133 @@
 	    	
 					<div style="float:left; width:65%">	    		    		
 						<ul class="dropdown">
-							<li><html:link action="dashboard">Dashboard</html:link></li>
+							<li><html:link action="dashboard"><bean:message key="menu.label.dashboard" /></html:link></li>
 		        			<li>
-		        				<a href="#">Lookup</a>
+		        				<a href="#"><bean:message key="menu.label.lookup" /></a>
 								<ul class="sub_menu" style="z-index:1000">
-									<li><html:link action="addressMaintenance">Addresses</html:link></li>
+									<li><html:link action="addressMaintenance"><bean:message key="menu.label.addresses" /></html:link></li>
 									<ansi:hasPermission permissionRequired="QUOTE">
-									<li><html:link action="quoteLookup">Quotes</html:link></li>
+									<li><html:link action="quoteLookup"><bean:message key="menu.label.quotes" /></html:link></li>
 									</ansi:hasPermission>
 									<ansi:hasPermission permissionRequired="JOB">
-									<li><html:link action="jobLookup">Jobs</html:link></li>
+									<li><html:link action="jobLookup"><bean:message key="menu.label.jobs" /></html:link></li>
 									</ansi:hasPermission>
 									<ansi:hasPermission permissionRequired="TICKET">
-									<li><html:link action="ticketLookup">Tickets</html:link></li>
+									<li><html:link action="ticketLookup"><bean:message key="menu.label.tickets" /></html:link></li>
 									</ansi:hasPermission>
 									<ansi:hasPermission permissionRequired="INVOICE">
-									<li><a href="#">Invoices</a></li>
+									<li><a href="#"><bean:message key="menu.label.invoices" /></a></li>
 									</ansi:hasPermission>
 									<ansi:hasPermission permissionRequired="PAYMENT">
-									<li><a href="#">Payments</a></li>
+									<li><a href="#"><bean:message key="menu.label.payments" /></a></li>
 									</ansi:hasPermission>
 								</ul>
 		        			</li>
-		        			<li><a href="#">Reports</a>
+		        			<li><a href="#"><bean:message key="menu.label.reports" /></a>
 		        				<ul class="sub_menu" style="z-index:1000">
-									<li><a href="#">Addresses</a></li>
+									<li><a href="#"><bean:message key="menu.label.addresses" /></a></li>
 									<ansi:hasPermission permissionRequired="QUOTE">
-									<li><a href="#">Quotes</a></li>
+									<li><a href="#"><bean:message key="menu.label.quotes" /></a></li>
 									</ansi:hasPermission>
 									<ansi:hasPermission permissionRequired="JOB">
-									<li><a href="#">Jobs</a></li>
+									<li><a href="#"><bean:message key="menu.label.jobs" /></a></li>
 									</ansi:hasPermission>
 									<ansi:hasPermission permissionRequired="TICKET">
-									<li><a href="#">Tickets</a></li>
+									<li><a href="#"><bean:message key="menu.label.tickets" /></a></li>
 									</ansi:hasPermission>
 									<ansi:hasPermission permissionRequired="INVOICE">
-									<li><a href="#">Invoices</a></li>
+									<li><a href="#"><bean:message key="menu.label.invoices" /></a></li>
 									</ansi:hasPermission>
 									<ansi:hasPermission permissionRequired="PAYMENT">
-									<li><a href="#">Payments</a></li>
+									<li><a href="#"><bean:message key="menu.label.payments" /></a></li>
 									</ansi:hasPermission>
 		        				</ul>
 		        			</li>
 		        			<li>
-		        				<a href="#">QuickLinks</a>
+		        				<a href="#"><bean:message key="menu.label.quick" /></a>
 		        				<ul class="sub_menu" style="z-index:1000">
 									<li>
-										<a href="#">Addresses</a>
+										<a href="#"><bean:message key="menu.label.addresses" /></a>
 										<ul>
-											<li><html:link action="addressMaintenance">Maintenance</html:link></li>
+											<li><html:link action="addressMaintenance"><bean:message key="menu.label.maintenance" /></html:link></li>
 											<!-- <li><a href="#">New</a></li> -->
 										</ul>
 									</li>
 									<li>
-										<a href="#">Contacts</a>
+										<a href="#"><bean:message key="menu.label.contacts" /></a>
 										<ul>
 											<!-- <li><html:link action="addressLookup">Lookup</html:link></li> -->
-											<li><html:link action="contactMaintenance">Maintenance</html:link></li>
+											<li><html:link action="contactMaintenance"><bean:message key="menu.label.maintenance" /></html:link></li>
 											<!-- <li><a href="#">New</a></li> -->
 										</ul>
 									</li>
 									<ansi:hasPermission permissionRequired="QUOTE">
 									<li>
-										<a href="#">Quotes</a>
+										<a href="#"><bean:message key="menu.label.quotes" /></a>
 										<ul>
-											<li><html:link action="quoteLookup">Lookup</html:link></li>
-											<li><html:link action="quoteMaintenance">Maintenance</html:link></li>
+											<li><html:link action="quoteLookup"><bean:message key="menu.label.lookup" /></html:link></li>
+											<li><html:link action="quoteMaintenance"><bean:message key="menu.label.maintenance" /></html:link></li>
 											<ansi:hasWrite>
-											<li><a href="#">New</a></li>
-											<li><a href="#">Templates</a></li>
+											<li><a href="#"><bean:message key="menu.label.new" /></a></li>
+											<li><a href="#"><bean:message key="menu.label.templates" /></a></li>
 											</ansi:hasWrite>
 										</ul>
 									</li>
 									</ansi:hasPermission>
 									<ansi:hasPermission permissionRequired="JOB">
 									<li>
-										<a href="#">Jobs</a>
+										<a href="#"><bean:message key="menu.label.jobs" /></a>
 										<ul>
-											<li><html:link action="jobLookup">Lookup</html:link></li>
+											<li><html:link action="jobLookup"><bean:message key="menu.label.lookup" /></html:link></li>
 											<ansi:hasWrite>
-											<li><html:link action="jobMaintenance">Maintenance</html:link></li>
-											<li><a href="#">New</a></li>
+											<li><html:link action="jobMaintenance"><bean:message key="menu.label.maintenance" /></html:link></li>
+											<li><a href="#"><bean:message key="menu.label.new" /></a></li>
 											</ansi:hasWrite>
 										</ul>
 									</li>
 									</ansi:hasPermission>
 									<ansi:hasPermission permissionRequired="TICKET">
 									<li>
-										<a href="#">Tickets</a>
+										<a href="#"><bean:message key="menu.label.tickets" /></a>
 										<ul>
-											<li><html:link action="ticketLookup">Lookup</html:link></li>
+											<li><html:link action="ticketLookup"><bean:message key="menu.label.lookup" /></html:link></li>
 											<ansi:hasWrite>
-											<li><a href="#">Maintenance</a></li>
-											<li><a href="#">New</a></li>
-											<li><html:link action="ticketView">View</html:link></li>
+											<li><a href="#"><bean:message key="menu.label.maintenance" /></a></li>
+											<li><a href="#"><bean:message key="menu.label.new" /></a></li>
+											<li><html:link action="ticketView"><bean:message key="menu.label.view" /></html:link></li>
 											</ansi:hasWrite>											
 										</ul>
 									</li>
 									</ansi:hasPermission>
 									<li>
-										<a href="#">Tax Rates</a>
+										<a href="#"><bean:message key="menu.label.taxrates" /></a>
 										<ul>
 											<!-- <li><a href="#">Lookup</a></li> -->
-											<li><html:link action="taxRateMaintenance">Maintenance</html:link></li>
+											<li><html:link action="taxRateMaintenance"><bean:message key="menu.label.maintenance" /></html:link></li>
 											<!-- <li><a href="#">New</a></li> -->
 										</ul>
 									</li>
 									<ansi:hasPermission permissionRequired="INVOICE">
 									<li>
-										<a href="#">Invoices</a>
+										<a href="#"><bean:message key="menu.label.invoices" /></a>
 										<ul>
-											<li><a href="#">Lookup</a></li>
+											<li><a href="#"><bean:message key="menu.label.lookup" /></a></li>
 											<ansi:hasWrite>
-											<li><a href="#">Maintenance</a></li>
-											<li><a href="#">New</a></li>
-											<li><a href="#">Templates</a></li>
+											<li><a href="#"><bean:message key="menu.label.maintenance" /></a></li>
+											<li><a href="#"><bean:message key="menu.label.new" /></a></li>
+											<li><a href="#"><bean:message key="menu.label.templates" /></a></li>
 											</ansi:hasWrite>
 										</ul>
 									</li>
 									</ansi:hasPermission>
 									<ansi:hasPermission permissionRequired="PAYMENT">
 									<li>
-										<a href="#">Payments</a>
+										<a href="#"><bean:message key="menu.label.payments" /></a>
 										<ul>
-											<li><a href="#">Lookup</a></li>
+											<li><a href="#"><bean:message key="menu.label.lookup" /></a></li>
 											<ansi:hasWrite>
-											<li><a href="#">Maintenance</a></li>
-											<li><a href="#">New</a></li>
+											<li><a href="#"><bean:message key="menu.label.maintenance" /></a></li>
+											<li><a href="#"><bean:message key="menu.label.new" /></a></li>
 											</ansi:hasWrite>
 										</ul>
 									</li>

@@ -16,7 +16,7 @@
 <tiles:insert page="layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        Division Admin
+        <bean:message key="page.label.division" /> <bean:message key="menu.label.maintenance" />
     </tiles:put>
     
     
@@ -390,7 +390,7 @@
     
     
     <tiles:put name="content" type="string">
-    	<h1>Division Admin</h1>
+    	<h1><bean:message key="page.label.division" /> <bean:message key="menu.label.maintenance" /></h1>
     	
     	<table id="displayTable">
     		<tr>

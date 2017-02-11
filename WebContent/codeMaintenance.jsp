@@ -572,7 +572,7 @@
     
     
     <tiles:put name="content" type="string">
-    	<h1>Code Maintenance</h1>
+    	<h1><bean:message key="page.label.code" /> <bean:message key="menu.label.maintenance" /></h1>
     	<div style="clear:both; text-align:right; width:90%;">
     		<div style="float:right; width:100px;">
 		    	<ul id="showhidden" class="dropdown">
@@ -604,13 +604,13 @@
     	<table id="displayTable">
     		<thead>
 	    		<tr>
-	    			<th class="tablecol">Table<i class="fa fa-eye-slash columnhider" data-col="tablecol" style="float:right;" aria-hidden="true"></i></th>
-	    			<th class="fieldcol">Field<i class="fa fa-eye-slash columnhider" data-col="fieldcol" style="float:right;" aria-hidden="true"></i></th>
-	    			<th class="valuecol">Value<i class="fa fa-eye-slash columnhider" data-col="valuecol" style="float:right;" aria-hidden="true"></i></th>
-	    			<th class="displaycol">Display<i class="fa fa-eye-slash columnhider" data-col="displaycol" style="float:right;" aria-hidden="true"></i></th>
-	    			<th class="seqcol">Seq<i class="fa fa-eye-slash columnhider" data-col="seqcol" style="float:right;" aria-hidden="true"></i></th>
-	    			<th class="desccol">Description<i class="fa fa-eye-slash columnhider" data-col="desccol" style="float:right;" aria-hidden="true"></i></th>
-	    			<th class="statuscol">Status<i class="fa fa-eye-slash columnhider" data-col="statuscol" style="float:right;" aria-hidden="true"></i></th>
+	    			<th class="tablecol"><bean:message key="rpt.hdr.table" /><i class="fa fa-eye-slash columnhider" data-col="tablecol" style="float:right;" aria-hidden="true"></i></th>
+	    			<th class="fieldcol"><bean:message key="rpt.hdr.field" /><i class="fa fa-eye-slash columnhider" data-col="fieldcol" style="float:right;" aria-hidden="true"></i></th>
+	    			<th class="valuecol"><bean:message key="rpt.hdr.value" /><i class="fa fa-eye-slash columnhider" data-col="valuecol" style="float:right;" aria-hidden="true"></i></th>
+	    			<th class="displaycol"><bean:message key="rpt.hdr.display" /><i class="fa fa-eye-slash columnhider" data-col="displaycol" style="float:right;" aria-hidden="true"></i></th>
+	    			<th class="seqcol"><bean:message key="rpt.hdr.sequence" /><i class="fa fa-eye-slash columnhider" data-col="seqcol" style="float:right;" aria-hidden="true"></i></th>
+	    			<th class="desccol"><bean:message key="rpt.hdr.description" /><i class="fa fa-eye-slash columnhider" data-col="desccol" style="float:right;" aria-hidden="true"></i></th>
+	    			<th class="statuscol"><bean:message key="rpt.hdr.status" /><i class="fa fa-eye-slash columnhider" data-col="statuscol" style="float:right;" aria-hidden="true"></i></th>
 	 			    <ansi:hasPermission permissionRequired="SYSADMIN">
 	    				<ansi:hasWrite>
 	    					<th class="actioncol">Action<i class="fa fa-eye-slash columnhider" data-col="actioncol" style="float:right;" aria-hidden="true"></i></th>
