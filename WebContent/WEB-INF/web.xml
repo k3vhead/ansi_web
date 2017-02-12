@@ -152,6 +152,16 @@
 
 
 	<servlet>
+		<servlet-name>job</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.JobServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>job</servlet-name>
+		<url-pattern>/job/*</url-pattern>
+	</servlet-mapping>
+
+
+	<servlet>
 		<servlet-name>jobSearch</servlet-name>
 		<servlet-class>com.ansi.scilla.web.servlets.JobSearchServlet</servlet-class>
 	</servlet>
@@ -254,6 +264,15 @@
     	<url-pattern>/taxRate/*</url-pattern>
 	</servlet-mapping>
 	
+
+	<servlet>
+		<servlet-name>ticket</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.TicketServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ticket</servlet-name>
+		<url-pattern>/ticket/*</url-pattern>
+	</servlet-mapping>
 	
 
 	<servlet>
@@ -294,14 +313,6 @@
 	<servlet-mapping>
 		<servlet-name>testServlet</servlet-name>
 		<url-pattern>/testServlet/*</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>ticket</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.TicketServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>ticket</servlet-name>
-		<url-pattern>/ticket/*</url-pattern>
 	</servlet-mapping>
 
 

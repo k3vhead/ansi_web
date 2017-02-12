@@ -11,6 +11,7 @@
 <%@ attribute name="namespace" required="true" rtexprvalue="true" %>
 <%@ attribute name="cssId" required="true" rtexprvalue="true" %>
 <%@ attribute name="cssClass" required="false" rtexprvalue="true" %>
+<%@ attribute name="page" required="true" rtexprvalue="true" %>
 
 
 
@@ -18,6 +19,7 @@
     String namespace = (String)jspContext.getAttribute("namespace");
 	String cssId = (String)jspContext.getAttribute("cssId");
 	String cssClass = (String)jspContext.getAttribute("cssClass");
+	String page = (String)jspContext.getAttribute("page");
 	
 	String cssIdString = "id=\"" + cssId + "\"";			 
 	String cssClassString = cssClass == null || cssClass.length()==0 ? "" : "class=\"" + cssClass + "\"";

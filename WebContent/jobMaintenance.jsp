@@ -74,25 +74,46 @@
 				width:50%;
 				vertical-align:top;
 			}
+			.formFieldDisplay {
+				margin-left:30px;
+			}
         </style>
         
         <script type="text/javascript">
 		$(function() {
 
-			$optionData = ansi_utils.getOptions('JOB_FREQUENCY,JOB_STATUS,INVOICE_TERM,INVOICE_GROUPING,INVOICE_STYLE');
+			$optionData = ANSI_UTILS.getOptions('JOB_FREQUENCY,JOB_STATUS,INVOICE_TERM,INVOICE_GROUPING,INVOICE_STYLE');
 			var $jobFrequencyList = $optionData.jobFrequency;
 			var $jobStatusList = $optionData.jobStatus;
 			var $invoiceTermList = $optionData.invoiceTerm;
 			var $invoiceGroupingList = $optionData.invoiceGrouping;
 			var $invoiceStyleList = $optionData.invoiceStyle;
 
-			$divisionList = ansi_utils.getDivisionList();
-			$buildingTypeList = JOBUTILS.makeBuildingTypeList();
+			$divisionList = ANSI_UTILS.getDivisionList();
+			$buildingTypeList = ANSI_UTILS.makeBuildingTypeList();
 			
-			JOBPANEL.init("jobPanel", $divisionList, '<c:out value="${ANSI_JOB_ID}" />');
-			JOBDESCRIPTION.init("jobDescription", $jobFrequencyList);
-			JOBACTIVATION.init("jobActivation", $buildingTypeList);
+			var $jobDetail = null;			
+			var $quoteDetail = null;
+			var $lastRun = null;
+			var $nextDue = null;
+			var $lastCreated = null;
+			if ( '<c:out value="${ANSI_JOB_ID}" />' != '' ) {
+				$jobData = JOBUTILS.getJobDetail('<c:out value="${ANSI_JOB_ID}" />');				
+				$jobDetail = $jobData.job;
+				$quoteDetail = $jobData.quote;
+				$lastRun = $jobData.lastRun;
+				$nextDue = $jobData.nextDue;
+				$lastCreated = $jobData.lastCreated;
+			}
+			
+			JOBPANEL.init("jobPanel", $divisionList, $jobDetail);
+			JOBPROPOSAL.init("jobProposal", $jobFrequencyList, $jobDetail);
+			JOBACTIVATION.init("jobActivation", $buildingTypeList, $jobDetail);
+			JOBDATES.init("jobDates", $quoteDetail, $jobDetail);
+			JOBSCHEDULE.init("jobSchedule", $lastRun, $nextDue, $lastCreated)
 			JOBINVOICE.init("jobInvoice", $invoiceStyleList, $invoiceGroupingList, $invoiceTermList);
+			JOBAUDIT.init("jobAudit", $jobDetail);
+			
 
 			$("#jobNbr").focus();
 		});
@@ -108,10 +129,10 @@
 		<table>
 			<tr>
 				<td class="jobTableCell">
-					<webthing:addressPanel namespace="JOBSITE" label="Job Site" cssId="jobSite" />
+					<webthing:addressPanel namespace="jobSite" label="Job Site" cssId="jobSite" />
 				</td>
 				<td class="jobTableCell">
-					<webthing:addressPanel namespace="BILLTO" label="Bill To" cssId="billTo" />
+					<webthing:addressPanel namespace="billTo" label="Bill To" cssId="billTo" />
 				</td>
 			</tr>
 		</table>
@@ -119,37 +140,37 @@
 			<tr>
 				<td class="jobTableCell" colspan="2">
 					JobPanel:					
-					 <webthing:jobPanel namespace="jobPanel" cssId="jobPanel" />
+					 <webthing:jobPanel namespace="jobPanel" cssId="jobPanel" page="JOB" />
 				</td>
 			</tr>
 			<tr>
 				<td class="jobTableCell">
-					JobDescription:
-					<webthing:jobDescription namespace="jobDescription" cssId="jobProposal" />
+					JobProposal:
+					<webthing:jobProposal namespace="jobProposal" cssId="jobProposal" page="JOB" />
 				</td>
 				<td class="jobTableCell">
 					JobActivation:
-					<webthing:jobActivation namespace="jobActivation" cssId="jobActivation" />
+					<webthing:jobActivation namespace="jobActivation" cssId="jobActivation" page="JOB" />
 				</td>
 			</tr>
 
 			<tr>
 				<td class="jobTableCell">
 					JobDates:
-					<webthing:jobDates namespace="JOBDATES" cssId="jobDates" />
+					<webthing:jobDates namespace="jobDates" cssId="jobDates" page="JOB" />
 					<br />
 					Job Schedule:
-					<webthing:jobSchedule namespace="jobSchedule" cssId="jobSchedule" />
+					<webthing:jobSchedule namespace="jobSchedule" cssId="jobSchedule" page="JOB" />
 				</td>
 				<td class="jobTableCell">
 					JOb Invoice:<br />			
-					<webthing:jobInvoice namespace="jobInvoice" cssId="jobInvoice" />
+					<webthing:jobInvoice namespace="jobInvoice" cssId="jobInvoice" page="JOB" />
 				</td>
 			</tr>
 			<tr>
 				<td class="jobTableCell">
 					JobAudit:
-					<webthing:jobAudit namespace="jobAudit" cssId="jobAudit" />
+					<webthing:jobAudit namespace="jobAudit" cssId="jobAudit" page="JOB" />
 				</td>
 				<td class="jobTableCell" style="text-align:center;">
 					<input type="button" value="Cancel" id="jobCancelButton" />

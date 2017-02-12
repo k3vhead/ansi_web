@@ -10,7 +10,7 @@ import org.apache.struts.action.ActionMapping;
 
 import com.ansi.scilla.web.actionForm.IdForm;
 
-public class JobMaintenanceAction extends AbstractAction {
+public class JobMaintenanceAction extends SessionPageDisplayAction {
 
 	@Override
 	public ActionForward execute(ActionMapping mapping, ActionForm actionForm, HttpServletRequest request,

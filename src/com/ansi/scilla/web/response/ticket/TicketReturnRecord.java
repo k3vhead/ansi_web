@@ -11,7 +11,10 @@ import org.apache.commons.beanutils.BeanUtilsBean;
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.jobticket.TicketStatus;
+import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
+import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.thewebthing.commons.lang.BeanUtils;
 
 /**
@@ -110,6 +113,7 @@ public class TicketReturnRecord extends ApplicationObject {
 	public void setActPricePerCleaning(BigDecimal actPricePerCleaning) {
 		this.actPricePerCleaning = actPricePerCleaning;
 	}
+	@JsonSerialize(using=AnsiCurrencyFormatter.class)
 	public BigDecimal getActPricePerCleaning() {
 		return this.actPricePerCleaning;
 	}
@@ -135,10 +139,11 @@ public class TicketReturnRecord extends ApplicationObject {
 		return this.mgrApproval;
 	}
 
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
+	
 	public void setProcessDate(Date processDate) {
 		this.processDate = processDate;
 	}
+	@JsonSerialize(using=AnsiDateFormatter.class)
 	public Date getProcessDate() {
 		return this.processDate;
 	}

@@ -1,5 +1,5 @@
 $( document ).ready(function() {
-	;ansi_utils = {
+	;ANSI_UTILS = {
 		getOptions: function($optionList) {
 			var $returnValue = null;
 			var jqxhr1 = $.ajax({
@@ -71,6 +71,36 @@ $( document ).ready(function() {
 		},
 
 		
+		
+		
+		makeBuildingTypeList:function() {							
+			var $returnValue = null;
+			var jqxhr3 = $.ajax({
+				type: 'GET',
+				url: 'code/job/building_type',
+				data: {},
+				success: function($data) {
+					$returnValue = $data.data.codeList;
+				},
+				statusCode: {
+					403: function($data) {
+						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+					},
+					404: function($data) {
+						$returnValue = {};
+					},
+					500: function($data) {
+						
+					}
+				},
+				dataType: 'json',
+				async:false
+			});
+			return $returnValue;
+
+		},
+
+		
 		// Set the values in an html select tag
 		setOptionList: function($selectorName, $optionList, $selectedValue) {
 			
@@ -86,6 +116,23 @@ $( document ).ready(function() {
 				$select.val($selectedValue);
 			}
 			$select.selectmenu();
+		},
+		
+		setFieldValue: function($namespace, $field, $value) {
+			$selectorName = "#" + $namespace + "_" + $field;
+			$($selectorName).val($value);
+			
+		},
+		
+		setTextValue: function($namespace, $field, $value) {
+			$selectorName = "#" + $namespace + "_" + $field;
+			$($selectorName).html($value);
+		},
+		
+		setSelectValue: function($namespace, $field, $value) {
+			$selectorName = "#" + $namespace + "_" + $field;
+			$($selectorName).val($value);
+//			$($selectorName).selectmenu('refresh');
 		}
 		
 		

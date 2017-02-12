@@ -1,34 +1,32 @@
 $( document ).ready(function() {
 	;JOBUTILS = {
 			
-		getJob:function($jobId) {
-			
-		},
-		
-		
-		makeBuildingTypeList:function() {							
+		getJobDetail:function($jobId) {			
 			var $returnValue = null;
-			var jqxhr3 = $.ajax({
-				type: 'GET',
-				url: 'code/job/building_type',
-				data: {},
-				success: function($data) {
-					$returnValue = $data.data.codeList;
-				},
-				statusCode: {
-					403: function($data) {
-						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+			if ( $jobId != null ) {
+				var $url = "job/" + $jobId
+				var jqxhr = $.ajax({
+					type: 'GET',
+					url: $url,
+					data: {},
+					statusCode: {
+						200: function($data) {
+							$returnValue = $data.data;
+						},					
+						403: function($data) {
+							$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+						},
+						404: function($data) {
+							$returnValue = {};
+						},
+						500: function($data) {
+							
+						}
 					},
-					404: function($data) {
-						$returnValue = {};
-					},
-					500: function($data) {
-						
-					}
-				},
-				dataType: 'json',
-				async:false
-			});
+					dataType: 'json',
+					async:false
+				});
+			}
 			return $returnValue;
 
 		}
@@ -36,11 +34,129 @@ $( document ).ready(function() {
 	
 	
 	
+	;JOBACTIVATION = {
+			init: function($namespace, $buildingTypeList, $jobDetail) {
+				
+				if ( $jobDetail == null ) {
+					JOBACTIVATION.setBuildingType($namespace, $buildingTypeList, null);
+				} else {
+					JOBACTIVATION.setBuildingType($namespace, $buildingTypeList, $jobDetail.buildingType);
+					ANSI_UTILS.setFieldValue($namespace, "directLaborPct", $jobDetail.directLaborPct);
+					ANSI_UTILS.setFieldValue($namespace, "directLaborBudget", $jobDetail.budget);
+					ANSI_UTILS.setFieldValue($namespace, "nbrFloors", $jobDetail.floors);
+					ANSI_UTILS.setFieldValue($namespace, "equipment", $jobDetail.equipment);
+					ANSI_UTILS.setFieldValue($namespace, "washerNotes", $jobDetail.washerNOtes);
+					ANSI_UTILS.setFieldValue($namespace, "omNotes", $jobDetail.omNotes);
+					ANSI_UTILS.setFieldValue($namespace, "billingNotes", $jobDetail.billingNotes);
+				}
+				
+
+				$("#" + $namespace + "_jobActivationForm select[name='" + $namespace + "_automanual']").selectmenu();
+				$("#" + $namespace + "_jobActivationForm select[name='" + $namespace + "_buildingType']").selectmenu();
+				$("#" + $namespace + "_jobActivationForm input[name='" + $namespace + "_nbrFloors']").spinner({
+							spin: function( event, ui ) {
+								if ( ui.value < 0 ) {
+									$( this ).spinner( "value", 0 );
+									return false;
+								}
+							}
+						});
+				},
+				
+				
+				setBuildingType: function ($namespace, $optionList, $selectedValue) {
+					var selectorName = "#" + $namespace + "_jobActivationForm select[name='" + $namespace + "_buildingType']";
+					var $select = $(selectorName);
+					$select.append(new Option("",""));
+					$.each($optionList, function(index, val) {
+					    $select.append(new Option(val.display, val.abbrev));
+					});
+					
+					if ( $selectedValue != null ) {
+						$select.val($selectedValue);
+					}
+					$select.selectmenu();
+				}
+				
+				
+			}
+		
+	
+	;JOBAUDIT = {
+		init: function($namespace, $jobDetail) {
+			if ( $jobDetail != null ) {
+				var $createdBy = $jobDetail.addedFirstName + " " + $jobDetail.addedLastName + " (" + $jobDetail.addedEmail + ")";
+				var $updatedBy = $jobDetail.updatedFirstName + " " + $jobDetail.updatedLastName + " (" + $jobDetail.updatedEmail + ")";				
+				ANSI_UTILS.setTextValue($namespace, "createdBy", $createdBy);
+				ANSI_UTILS.setTextValue($namespace, "lastChangeBy", $updatedBy);
+				ANSI_UTILS.setTextValue($namespace, "lastChangeDate", $jobDetail.updatedDate);
+			}
+		}
+	}
+	
+	
+	
+	;JOBDATES = {
+		init: function($namespace, $quoteDetail, $jobDetail) {
+			if ( $jobDetail != null ) {
+				ANSI_UTILS.setTextValue($namespace, "proposalDate", $quoteDetail.proposalDate);
+				ANSI_UTILS.setTextValue($namespace, "activationDate", $jobDetail.activationDate);
+				ANSI_UTILS.setTextValue($namespace, "startDate", $jobDetail.startDate);
+				ANSI_UTILS.setTextValue($namespace, "cancelDate", $jobDetail.cancelDate);
+				ANSI_UTILS.setTextValue($namespace, "cancelReason", $jobDetail.cancelReason);
+			}
+		}
+	}
+
+	
+	
+	;JOBINVOICE = {
+			init: function($namespace, $invoiceStyleList, $invoiceGroupList, $invoiceTermList) {
+				JOBINVOICE.setInvoiceStyle($namespace, $invoiceStyleList);
+				JOBINVOICE.setInvoiceGrouping($namespace, $invoiceGroupList);
+				JOBINVOICE.setInvoiceTerms($namespace, $invoiceTermList);
+				
+				
+				var $selectorName = "input[name='" + $namespace + "_invoiceExpire']";
+				$($selectorName).datepicker({
+	                prevText:'&lt;&lt;',
+	                nextText: '&gt;&gt;',
+	                showButtonPanel:true
+	            });
+
+				
+			},
+			setInvoiceStyle: function($namespace, $optionList, $selectedValue) {
+				var selectorName = "#" + $namespace + "_jobInvoiceForm select[name='" + $namespace + "_invoiceStyle']";
+				$selectorName = "select[name='" + $namespace + "_invoiceStyle']";
+				ANSI_UTILS.setOptionList($selectorName, $optionList, $selectedValue)
+			},
+			setInvoiceGrouping: function($namespace, $optionList, $selectedValue) {
+				var selectorName = "#" + $namespace + "_jobInvoiceForm select[name='" + $namespace + "_invoiceGrouping']";
+				var $selectorName = "select[name='" + $namespace + "_invoiceGrouping']";
+				ANSI_UTILS.setOptionList($selectorName, $optionList, $selectedValue)
+			},
+			setInvoiceTerms: function($namespace, $optionList, $selectedValue) {
+				var selectorName = "#" + $namespace + "_jobInvoiceForm select[name='" + $namespace + "_invoiceTerms']";
+				var $selectorName = "select[name='" + $namespace + "_invoiceTerms']";
+				ANSI_UTILS.setOptionList($selectorName, $optionList, $selectedValue)
+			}
+
+	}
+
+	
+	
 	;JOBPANEL = {
-		init: function($namespace, $divisionList, $defaultJobId) {
+		init: function($namespace, $divisionList, $jobDetail) {
+			var $divisionLookup = {}
+			$.each($divisionList, function($index, $division) {
+				$divisionLookup[$division.divisionId]=$division.divisionCode;
+			});
 			JOBPANEL.setDivisionList($namespace, $divisionList);
-			if ( $defaultJobId != null ) {
-				JOBPANEL.setJobId($namespace, $defaultJobId)
+			if ( $jobDetail != null ) {
+				ANSI_UTILS.setFieldValue($namespace, "jobId", $jobDetail.jobId);
+				ANSI_UTILS.setTextValue($namespace, "jobStatus", $jobDetail.status);
+				ANSI_UTILS.setTextValue($namespace, "divisionId", $divisionLookup[$jobDetail.divisionId]);
 			}
 		},
 		
@@ -55,19 +171,21 @@ $( document ).ready(function() {
 			});
 			
 			$select.selectmenu();
-		},
-		
-		setJobId: function($namespace, $jobId) {
-			$selectorName = "#" + $namespace + "_jobId";
-			$($selectorName).val($jobId);
-			
 		}
 	}
 	
 	
-	;JOBDESCRIPTION = {		
-		init: function($namespace, $jobFrequencyList) {
-			JOBDESCRIPTION.setJobFrequency($namespace, $jobFrequencyList);
+	;JOBPROPOSAL = {		
+		init: function($namespace, $jobFrequencyList, $jobDetail) {
+			if ( $jobDetail != null ) {
+				ANSI_UTILS.setFieldValue($namespace, "jobNbr", $jobDetail.jobNbr);
+				ANSI_UTILS.setFieldValue($namespace, "ppc", $jobDetail.pricePerCleaning);
+				ANSI_UTILS.setFieldValue($namespace, "serviceDescription", $jobDetail.serviceDescription);
+				JOBPROPOSAL.setJobFrequency($namespace, $jobFrequencyList, $jobDetail.jobFrequency);
+			} else {
+				JOBPROPOSAL.setJobFrequency($namespace, $jobFrequencyList);
+			}
+			
 		},
 		setJobFrequency: function($namespace, $optionList, $selectedValue) {
 			var selectorName = "#" + $namespace + "_jobDescriptionForm select[name='" + $namespace + "_jobFrequency']";
@@ -91,81 +209,19 @@ $( document ).ready(function() {
 
 
 
-	
-	;JOBACTIVATION = {
-			init: function($namespace, $buildingTypeList) {
-				JOBACTIVATION.setBuildingType($namespace, $buildingTypeList, null);
-
-				$("#" + $namespace + "_jobActivationForm select[name='" + $namespace + "_automanual']").selectmenu();
-				$("#" + $namespace + "_jobActivationForm select[name='" + $namespace + "_buildingType']").selectmenu();
-				$("#" + $namespace + "_jobActivationForm input[name='" + $namespace + "_nbrFloors']").spinner({
-							spin: function( event, ui ) {
-								if ( ui.value < 1 ) {
-									$( this ).spinner( "value", 1 );
-									return false;
-								}
-							}
-						});
-				},
-				
-				
-				setBuildingType: function ($namespace, $optionList, $selectedValue) {
-					var selectorName = "#" + $namespace + "_jobActivationForm select[name='" + $namespace + "_buildingType']";
-					var $select = $(selectorName);
-					if($select.prop) {
-						var options = $select.prop('options');
-					} else {
-						var options = $select.attr('options');
-					}
-					$('option', $select).remove();
-
-					options[options.length] = new Option("","");
-					$.each($optionList, function(index, type) {
-						options[options.length] = new Option(type.displayValue, type.value);
-					});
-					if ( $selectedValue != null ) {
-						$select.val($selectedValue);
-					}
-					$select.selectmenu();
-				}
-				
-				
+	;JOBSCHEDULE = {
+		init: function($namespace, $lastRun, $nextDue, $lastCreated) {
+			if ( $lastRun != null ) {
+				ANSI_UTILS.setTextValue($namespace, "lastRun", $lastRun.startDate);
+				ANSI_UTILS.setTextValue($namespace, "lastTicket", $lastRun.ticketId);
 			}
-		
-	
-
-	;JOBINVOICE = {
-			init: function($namespace, $invoiceStyleList, $invoiceGroupList, $invoiceTermList) {
-				JOBINVOICE.setInvoiceStyle($namespace, $invoiceStyleList);
-				JOBINVOICE.setInvoiceGrouping($namespace, $invoiceGroupList);
-				JOBINVOICE.setInvoiceTerms($namespace, $invoiceTermList);
-				
-				
-				var $selectorName = "input[name='" + $namespace + "_invoiceExpire']";
-				$($selectorName).datepicker({
-	                prevText:'&lt;&lt;',
-	                nextText: '&gt;&gt;',
-	                showButtonPanel:true
-	            });
-
-				
-			},
-			setInvoiceStyle: function($namespace, $optionList, $selectedValue) {
-				var selectorName = "#" + $namespace + "_jobInvoiceForm select[name='" + $namespace + "_invoiceStyle']";
-				$selectorName = "select[name='" + $namespace + "_invoiceStyle']";
-				ansi_utils.setOptionList($selectorName, $optionList, $selectedValue)
-			},
-			setInvoiceGrouping: function($namespace, $optionList, $selectedValue) {
-				var selectorName = "#" + $namespace + "_jobInvoiceForm select[name='" + $namespace + "_invoiceGrouping']";
-				var $selectorName = "select[name='" + $namespace + "_invoiceGrouping']";
-				ansi_utils.setOptionList($selectorName, $optionList, $selectedValue)
-			},
-			setInvoiceTerms: function($namespace, $optionList, $selectedValue) {
-				var selectorName = "#" + $namespace + "_jobInvoiceForm select[name='" + $namespace + "_invoiceTerms']";
-				var $selectorName = "select[name='" + $namespace + "_invoiceTerms']";
-				ansi_utils.setOptionList($selectorName, $optionList, $selectedValue)
+			if ( $nextDue != null ) {
+				ANSI_UTILS.setTextValue($namespace, "nextDue", $nextDue.processDate + " (" + $nextDue.ticketId + ")");
 			}
-
+			if ( $lastCreated != null) {
+				ANSI_UTILS.setTextValue($namespace, "createdThru", $lastCreated.processDate);
+			}
+		}
 	}
 });
 
