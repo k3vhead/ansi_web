@@ -111,7 +111,7 @@
 			JOBACTIVATION.init("jobActivation", $buildingTypeList, $jobDetail);
 			JOBDATES.init("jobDates", $quoteDetail, $jobDetail);
 			JOBSCHEDULE.init("jobSchedule", $lastRun, $nextDue, $lastCreated)
-			JOBINVOICE.init("jobInvoice", $invoiceStyleList, $invoiceGroupingList, $invoiceTermList);
+			JOBINVOICE.init("jobInvoice", $invoiceStyleList, $invoiceGroupingList, $invoiceTermList, $jobDetail);
 			JOBAUDIT.init("jobAudit", $jobDetail);
 			
 

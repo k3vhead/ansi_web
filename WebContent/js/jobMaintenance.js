@@ -111,10 +111,26 @@ $( document ).ready(function() {
 	
 	
 	;JOBINVOICE = {
-			init: function($namespace, $invoiceStyleList, $invoiceGroupList, $invoiceTermList) {
-				JOBINVOICE.setInvoiceStyle($namespace, $invoiceStyleList);
-				JOBINVOICE.setInvoiceGrouping($namespace, $invoiceGroupList);
-				JOBINVOICE.setInvoiceTerms($namespace, $invoiceTermList);
+			init: function($namespace, $invoiceStyleList, $invoiceGroupList, $invoiceTermList, $jobDetail) {
+				if ( $jobDetail ) {
+					if ( $jobDetail.invoiceBatch == 1) {
+						ANSI_UTILS.setCheckbox($namespace, "invoiceBatch", true);
+					} else {
+						ANSI_UTILS.setCheckbox($namespace, "invoiceBatch", false);
+					}
+					if ( $jobDetail.taxExempt == 1) {
+						ANSI_UTILS.setCheckbox($namespace, "invoiceTaxExempt", true);
+					} else {
+						ANSI_UTILS.setCheckbox($namespace, "invoiceTaxExempt", false);
+					}
+					ANSI_UTILS.setFieldValue($namespace, "invoicePO", $jobDetail.poNumber);
+					ANSI_UTILS.setFieldValue($namespace, "invoiceOurVendorNbr", $jobDetail.ourVendorNbr);
+					ANSI_UTILS.setFieldValue($namespace, "invoiceExpire", $jobDetail.expirationDate);
+					ANSI_UTILS.setFieldValue($namespace, "invoiceExpireReason", $jobDetail.expirationReason);
+				}
+				JOBINVOICE.setInvoiceStyle($namespace, $invoiceStyleList, $jobDetail.invoiceStyle);
+				JOBINVOICE.setInvoiceGrouping($namespace, $invoiceGroupList, $jobDetail.invoiceGrouping);
+				JOBINVOICE.setInvoiceTerms($namespace, $invoiceTermList, $jobDetail.invoiceTerms);
 				
 				
 				var $selectorName = "input[name='" + $namespace + "_invoiceExpire']";
