@@ -33,6 +33,7 @@ public class TicketReturnRecord extends ApplicationObject {
 	private Integer mgrApproval;
 	private Date processDate;
 	private String processNotes;
+	private Date startDate;
 	private String status;
 	private Integer ticketId;
 	private List<NextAllowedStatusItem> nextAllowedStatusList;
@@ -153,6 +154,14 @@ public class TicketReturnRecord extends ApplicationObject {
 	}
 	public String getProcessNotes() {
 		return this.processNotes;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+	@JsonSerialize(using=AnsiDateFormatter.class)
+	public Date getStartDate() {
+		return this.startDate;
 	}
 
 	public void setStatus(String status) {
