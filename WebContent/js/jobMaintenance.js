@@ -228,14 +228,14 @@ $( document ).ready(function() {
 	;JOBSCHEDULE = {
 		init: function($namespace, $lastRun, $nextDue, $lastCreated) {
 			if ( $lastRun != null ) {
-				ANSI_UTILS.setTextValue($namespace, "lastRun", $lastRun.startDate);
-				ANSI_UTILS.setTextValue($namespace, "lastTicket", $lastRun.ticketId);
+				ANSI_UTILS.setTextValue($namespace, "lastRun", $lastRun.processDate + " (T" + $lastRun.ticketId + ")");
+//				ANSI_UTILS.setTextValue($namespace, "lastTicket", $lastRun.ticketId);
 			}
 			if ( $nextDue != null ) {
-				ANSI_UTILS.setTextValue($namespace, "nextDue", $nextDue.processDate + " (" + $nextDue.ticketId + ")");
+				ANSI_UTILS.setTextValue($namespace, "nextDue", $nextDue.startDate + " (T" + $nextDue.ticketId + ")");
 			}
 			if ( $lastCreated != null) {
-				ANSI_UTILS.setTextValue($namespace, "createdThru", $lastCreated.processDate);
+				ANSI_UTILS.setTextValue($namespace, "createdThru", $lastCreated.startDate + " (T" + $lastCreated.ticketId + ")");
 			}
 		}
 	}
