@@ -95,7 +95,7 @@ td.jobTableCell {
 #jobSite_state-menu {max-height: 300px;}
  
 #billTo_state-menu {max-height: 300px;}
- 
+#jobProposal_jobFrequency-menu {max-height: 300px;}
 #quoteTable {width: 100%;}
  
 #confirmDelete {
@@ -205,11 +205,15 @@ td.jobTableCell {
 				</td>
 			</tr>
 			<tr>
-				<td>
-					<webthing:addressPanel label="Job Site" namespace="jobSite" cssId="jobSiteAddress" />
-				</td>
-				<td>
-					<webthing:addressPanel label="Bill To"  namespace="billTo" cssId="billToAddress" />
+				<td colspan='2' align="left">
+					<table>
+						<td align="center" style="width:480px;">
+							<webthing:addressPanel label="Job Site" namespace="jobSite" cssId="jobSite" />
+						</td>
+						<td align="center" style="width:480px;">
+							<webthing:addressPanel label="Bill To"  namespace="billTo" cssId="billTo" />
+						</td>
+					</table>
 				</td>
 			</tr>
 		</table>  
