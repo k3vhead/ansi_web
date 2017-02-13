@@ -222,37 +222,37 @@ td.jobTableCell {
 			<tr>
 				<td class="jobTableCell" colspan="2">
 					JobPanel:					
-					 <webthing:jobPanel namespace="jobPanel" cssId="jobPanel" page="JOB" />
+					 <webthing:jobPanel namespace="jobPanel" cssId="jobPanel" page="QUOTE" />
 				</td>
 			</tr>
 			<tr>
 				<td class="jobTableCell">
 					JobProposal:
-					<webthing:jobProposal namespace="jobProposal" cssId="jobProposal" page="JOB" />
+					<webthing:jobProposal namespace="jobProposal" cssId="jobProposal" page="QUOTE" />
 				</td>
 				<td class="jobTableCell">
 					JobActivation:
-					<webthing:jobActivation namespace="jobActivation" cssId="jobActivation" page="JOB" />
+					<webthing:jobActivation namespace="jobActivation" cssId="jobActivation" page="QUOTE" />
 				</td>
 			</tr>
 
 			<tr>
 				<td class="jobTableCell">
 					JobDates:
-					<webthing:jobDates namespace="jobDates" cssId="jobDates" page="JOB" />
+					<webthing:jobDates namespace="jobDates" cssId="jobDates" page="QUOTE" />
 					<br />
 					Job Schedule:
-					<webthing:jobSchedule namespace="jobSchedule" cssId="jobSchedule" page="JOB" />
+					<webthing:jobSchedule namespace="jobSchedule" cssId="jobSchedule" page="QUOTE" />
 				</td>
 				<td class="jobTableCell">
 					JOb Invoice:<br />			
-					<webthing:jobInvoice namespace="jobInvoice" cssId="jobInvoice" page="JOB" />
+					<webthing:jobInvoice namespace="jobInvoice" cssId="jobInvoice" page="QUOTE" />
 				</td>
 			</tr>
 			<tr>
 				<td class="jobTableCell">
 					JobAudit:
-					<webthing:jobAudit namespace="jobAudit" cssId="jobAudit" page="JOB" />
+					<webthing:jobAudit namespace="jobAudit" cssId="jobAudit" page="QUOTE" />
 				</td>
 				<td class="jobTableCell" style="text-align:center;">
 					<input type="button" value="Cancel" id="jobCancelButton" />
