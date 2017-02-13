@@ -142,5 +142,59 @@ $( document ).ready(function() {
 		
 		
 	}	
+	
+	;ADDRESSPANEL = {
+			init: function($namespace, $countryList, $selectedCountry, $selectedState) {
+				$.each($('input'), function () {
+			        $(this).css("height","20px");
+			        $(this).css("max-height", "20px");
+			    });
+				$("#"+$namespace+"_address select[name='"+$namespace+"_state']").selectmenu({ width : '150px', maxHeight: '400 !important', style: 'dropdown'});
+				$("select[name='"+$namespace+"_city']").addClass("ui-corner-all");
+				$("select[name='"+$namespace+"_zip']").addClass("ui-corner-all");
+				$("#"+$namespace+"_address select[name='"+$namespace+"_country']").selectmenu({ width : '80px', maxHeight: '400 !important', style: 'dropdown'});
+				
+				this.setCountryList($namespace, $countryList, $selectedCountry);
+				this.setStateList($namespace, $countryList, $selectedState);
+				
+				
+				
+			}, setCountryList: function($namespace, $countryList, $selectedValue) {
+
+				var $select = "#"+$namespace+"_address select[name='<%=namespace%>_country']";
+				$select = $("select[name='"+$namespace+"_country']");
+				$('option', $select).remove();
+				$.each($countryList, function($index, $country) {
+					$select.append(new Option($country.abbrev));
+				});
+				
+
+				if ( $selectedValue != null ) {
+					$select.val($selectedValue);
+				}
+				$select.selectmenu();
+			}, setStateList: function($namespace, $countryList, $selectedValue) {
+
+				var $select = $("select[name='"+$namespace+"_state']");
+				$('option', $select).remove();
+
+				$select.append(new Option("",""));
+				$.each($countryList, function($index, $val) {
+					var group = $('<optgroup label="' + $val.abbrev + '" />');
+						$.each($val.stateList, function(){
+							//$('<option />').html(this.display).appendTo(group);
+							$(group).append("<option value='"+this.abbreviation+"'>"+this.display+"</option>");
+						});
+						group.appendTo($select);
+					});
+				
+				
+				if ( $selectedValue != null ) {
+					$select.val($selectedValue);
+				}
+				$select.selectmenu();
+			}
+			
+		}
 
 });

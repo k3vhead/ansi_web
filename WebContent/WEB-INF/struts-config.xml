@@ -103,6 +103,15 @@
             <forward name="valid" path="/quoteLookup.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
+        <action
+            path="/quoteMaintenance"
+            type="com.ansi.scilla.web.action.QuoteMaintenanceAction"
+            name="idForm"
+            input="/quoteMaintenance.jsp"
+            scope="request">
+            <forward name="valid" path="/quoteMaintenance.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
 		<action
             path="/ticketLookup"
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">
@@ -131,12 +140,6 @@
             path="/usertitleMaintenance"
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">
             <forward name="valid" path="/usertitleMaintenance.jsp" />
-            <forward name="login" path="/login.jsp" />            
-        </action>
-        <action
-            path="/quoteMaintenance"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
-            <forward name="valid" path="/quoteMaintenance.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
         <action

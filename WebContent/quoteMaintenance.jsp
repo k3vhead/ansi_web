@@ -21,99 +21,129 @@
     
     
     <tiles:put name="headextra" type="string">
+        <script type="text/javascript" src="js/ansi_utils.js"></script>
+        <script type="text/javascript" src="js/jobMaintenance.js"></script>
+        <script type="text/javascript" src="js/quoteMaintenance.js"></script>
         <style type="text/css">
 
-			#delData {
-				margin-top:15px;
-				margin-bottom:15px;
-			}
-			#jobSiteAddress {
-				border:solid 1px #000000;
-			}
-			#billToAddress {
-				border:solid 1px #000000;
-			}
-			#quoteTable {
-				border:solid 1px #000000;
-			}
-			.quoteButton {
-				background-color:#F0F0F0; 
-				color:#000000; 
-				width:70px;
-				min-height:25px;
-			}
-			.quoteSelect {
-				max-width: 100px;
-			    min-width: 100px;
-				width:100px !important;
-			}
-			.quoteSelect option{
-				max-width: 100px;
-			    min-width: 100px;
-				width:100px !important;
-			}
-			.labelSpan {
-				display: inline-block;
-				width: 90px !important;
-			}
-			.labelSpanSmall {
-				display: inline-block;
-				width: 60px !important;
-			}
-			#jobDates {
-				border:solid 1px #000000;
-			}
-			#jobActivation2 {
-				border:solid 1px #FF0000;
-			}
-			td.jobTableCell {
-				width:50%;
-				vertical-align:top;
-			}
-			#delData {
-				margin-top:15px;
-				margin-bottom:15px;
-			}
-			#jobProposal {
-				border:solid 1px #000000;
-			}
-			#jobActivation {
-				border:solid 1px #000000;
-				height:100%;
-			}
-			#billTo {
-				border:solid 1px #000000;
-			}
-			#jobSite {
-				border:solid 1px #000000;
-			}
-			#jobDates {
-				border:solid 1px #000000;
-			}
-			#jobActivation2 {
-				border:solid 1px #FF0000;
-			}
-			td.jobTableCell {
-				width:50%;
-				vertical-align:top;
-			}
-			#JOBSITEADDRESS.select	{
-				width:80px !important;
-				max-width:80px !important;
-			
-			}
-			#division-menu {
-			  max-height: 300px;
-			}
-			#JOBSITEADDRESS_state-menu {
-			  max-height: 300px;
-			}
-			#BILLTOADDRESS_state-menu {
-			  max-height: 300px;
-			}
-			#quoteTable {
-				width:100%;
-			}
+#delData {
+	margin-bottom: 15px;
+	margin-top: 15px;
+ }
+  
+#quoteTable {border: solid 1px #000000;}
+ 
+.quoteButton {
+	background-color: #F0F0F0;
+	color: #000000;
+	min-height: 25px;
+	width: 70px;
+ }
+ 
+.quoteSelect {
+	max-width: 100px;
+	min-width: 100px;
+	width: 100px !important;
+ }
+ 
+.quoteSelect option {
+	max-width: 100px;
+	min-width: 100px;
+	width: 100px !important;
+ }
+ 
+.labelSpan {
+	display: inline-block;
+	width: 90px !important;
+ }
+ 
+.labelSpanSmall {
+	display: inline-block;
+	width: 60px !important;
+ }
+ 
+#jobDates {border: solid 1px #000000;}
+ 
+#jobActivation2 {border: solid 1px #FF0000;}
+ 
+td.jobTableCell {
+	vertical-align: top;
+	width: 50%;
+ }
+ 
+#jobProposal {border: solid 1px #000000;}
+ 
+#jobActivation {
+	border: solid 1px #000000;
+	height: 100%;
+ }
+ 
+#jobActivation2 {border: solid 1px #FF0000;}
+ 
+td.jobTableCell {
+	vertical-align: top;
+	width: 50%;
+ }
+ 
+#jobSite.select {
+	max-width: 80px !important;
+	width: 80px !important;
+ }
+ 
+#division-menu {max-height: 300px;}
+ 
+#jobSite_state-menu {max-height: 300px;}
+ 
+#billTo_state-menu {max-height: 300px;}
+ 
+#quoteTable {width: 100%;}
+ 
+#confirmDelete {
+	background-color: #FFFFFF;
+	color: #000000;
+	display: none;
+	padding: 15px;
+	text-align: center;
+	width: 300px;
+ }
+ 
+#displayTable {width: 90%;}
+ 
+#addFormDiv {
+	background-color: #FFFFFF;
+	color: #000000;
+	display: none;
+	padding: 15px;
+	width: 400px;
+ }
+ 
+#delData {
+	margin-bottom: 15px;
+	margin-top: 15px;
+ }
+ 
+#jobProposal {border: solid 1px #000000;}
+ 
+#jobSchedule {
+	border: solid 1px #000000;
+	height: 100%;
+ }
+ 
+#billTo {border: solid 1px #000000;}
+ 
+#jobSite {border: solid 1px #000000;}
+ 
+#jobInvoice {border: solid 1px #000000;}
+ 
+td.jobTableCell {
+	vertical-align: top;
+	width: 50%;
+ }
+ 
+.formFieldDisplay {margin-left: 30px;}
+ 
+ 
+
         </style>
     </tiles:put>
     
@@ -150,7 +180,7 @@
 									<option value=""></option>
 								</select>
 							</td>
-							<td>Q:&nbsp;&nbsp;<input type="text" name="quoteNumber"  style="width:80px"/></td>
+							<td>Q:&nbsp;&nbsp;<input type="text" name="quoteNumber"  style="width:80px" value="<c:out value="${ANSI_QUOTE_ID}" />"/></td>
 							<td>R:&nbsp;&nbsp;<input type="text" name="revision"  style="width:40px"/></td>
 						</tr>
 						<tr>
@@ -175,78 +205,123 @@
 				</td>
 			</tr>
 			<tr>
-				<td style="width:50%;">
-					<webthing:addressPanel label="Job Site" namespace="JOBSITEADDRESS" cssId="jobSiteAddress" />
+				<td>
+					<webthing:addressPanel label="Job Site" namespace="jobSite" cssId="jobSiteAddress" />
 				</td>
 				<td>
-					<webthing:addressPanel label="Bill To"  namespace="BILLTOADDRESS" cssId="billToAddress" />
+					<webthing:addressPanel label="Bill To"  namespace="billTo" cssId="billToAddress" />
 				</td>
 			</tr>
 		</table>  
 				
-		<table id="jobTable" style="border:solid 1px #000000; margin-top:8px;width:100%;">
-			<tr><td><webthing:jobPanel namespace='JOB1'  cssId='jobPanel' /></td></tr>
-		</table>
+				<table style="border:solid 1px #000000; margin-top:8px;">
+			<tr>
+				<td class="jobTableCell" colspan="2">
+					JobPanel:					
+					 <webthing:jobPanel namespace="jobPanel" cssId="jobPanel" page="JOB" />
+				</td>
+			</tr>
+			<tr>
+				<td class="jobTableCell">
+					JobProposal:
+					<webthing:jobProposal namespace="jobProposal" cssId="jobProposal" page="JOB" />
+				</td>
+				<td class="jobTableCell">
+					JobActivation:
+					<webthing:jobActivation namespace="jobActivation" cssId="jobActivation" page="JOB" />
+				</td>
+			</tr>
+
+			<tr>
+				<td class="jobTableCell">
+					JobDates:
+					<webthing:jobDates namespace="jobDates" cssId="jobDates" page="JOB" />
+					<br />
+					Job Schedule:
+					<webthing:jobSchedule namespace="jobSchedule" cssId="jobSchedule" page="JOB" />
+				</td>
+				<td class="jobTableCell">
+					JOb Invoice:<br />			
+					<webthing:jobInvoice namespace="jobInvoice" cssId="jobInvoice" page="JOB" />
+				</td>
+			</tr>
+			<tr>
+				<td class="jobTableCell">
+					JobAudit:
+					<webthing:jobAudit namespace="jobAudit" cssId="jobAudit" page="JOB" />
+				</td>
+				<td class="jobTableCell" style="text-align:center;">
+					<input type="button" value="Cancel" id="jobCancelButton" />
+					<input type="button" value="Save" id="jobSaveButton" />
+					<input type="button" value="Save & Exit" id="jobExitButton" />
+				</td>
+			</tr>
+		</table>  
 				
   	
 		
         <script type="text/javascript">   
 		      $( document ).ready(function() {
-						function init() {
-							$("select[name='division']").selectmenu({ width : '100px'});
-							$("select[name='leadType']").selectmenu({ width : '100px'});
-							$("select[name='accountType']").selectmenu({ width : '100px'});
-							
-								
-							var jqxhr1 = $.ajax({
-				    				type: 'GET',
-				    				url: 'division/list',
-				    				data: {},
-				    				success: function($data) {
-				    					selectorName = "select[name='division']";
-				    					
-				    					var $select = $(selectorName);
-				    					$('option', $select).remove();
-	
-				    					$select.append(new Option("",""));
-				    					$.each($data.data.divisionList, function(index, val) {
-				    					    $select.append(new Option(val.divisionCode, val.divisionId));
-				    					});
-				    					
-				    					$select.selectmenu();
-				    				},
-				    				statusCode: {
-				    					403: function($data) {
-				    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-				    					} 
-				    				},
-				    				dataType: 'json'
-				    			});
-							
-							var jqxhr2 = $.ajax({
-			    				type: 'GET',
-			    				url: 'options',
-			    				data: 'COUNTRY',
-			    				success: function($data) {
-			    					JOBSITEADDRESS.setCountry($data.data.country);
-			    					JOBSITEADDRESS.setStates($data.data.country);
-			    					BILLTOADDRESS.setCountry($data.data.country);
-			    					BILLTOADDRESS.setStates($data.data.country);
-			    				},
-			    				statusCode: {
-			    					403: function($data) {
-			    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-			    					} 
-			    				},
-			    				dataType: 'json'
-			    			});
-							
-							
-							}
+
+					$("select[name='division']").selectmenu({ width : '100px'});
+					$("select[name='leadType']").selectmenu({ width : '100px'});
+					$("select[name='accountType']").selectmenu({ width : '100px'});
 					
-						JOBSITEADDRESS.init();
-						BILLTOADDRESS.init();
-						init();
+				
+					$optionData = ANSI_UTILS.getOptions('JOB_FREQUENCY,JOB_STATUS,INVOICE_TERM,INVOICE_GROUPING,INVOICE_STYLE,COUNTRY');
+					var $jobFrequencyList = $optionData.jobFrequency;
+					var $jobStatusList = $optionData.jobStatus;
+					var $invoiceTermList = $optionData.invoiceTerm;
+					var $invoiceGroupingList = $optionData.invoiceGrouping;
+					var $invoiceStyleList = $optionData.invoiceStyle;
+					var $countryList = $optionData.country;
+					
+					$divisionList = ANSI_UTILS.getDivisionList();
+					$buildingTypeList = ANSI_UTILS.makeBuildingTypeList();
+					
+					var $jobDetail = null;			
+					var $quoteDetail = null;
+					var $lastRun = null;
+					var $nextDue = null;
+					var $lastCreated = null;
+					$jobSiteDetail = null;
+					$billToDetail = null;
+					if ( '<c:out value="${ANSI_JOB_ID}" />' != '' ) {
+						$jobData = JOBUTILS.getJobDetail('<c:out value="${ANSI_JOB_ID}" />');				
+						$jobDetail = $jobData.job;
+						$quoteDetail = $jobData.quote;
+						$lastRun = $jobData.lastRun;
+						$nextDue = $jobData.nextDue;
+						$lastCreated = $jobData.lastCreated;
+					}
+					if ( '<c:out value="${ANSI_QUOTE_ID}" />' != '' ) {
+						$quoteData = QUOTEUTILS.getQuoteDetail('<c:out value="${ANSI_QUOTE_ID}" />');
+						//$('input[name=quoteNumber]').val('<c:out value="${ANSI_QUOTE_ID}" />');
+					/*	$jobDetail = $jobData.job;
+						$quoteDetail = $jobData.quote;
+						$lastRun = $jobData.lastRun;
+						$nextDue = $jobData.nextDue;
+						$lastCreated = $jobData.lastCreated;
+						*/
+					}
+					
+					JOBPANEL.init("jobPanel", $divisionList, $jobDetail);
+					JOBPROPOSAL.init("jobProposal", $jobFrequencyList, $jobDetail);
+					JOBACTIVATION.init("jobActivation", $buildingTypeList, $jobDetail);
+					JOBDATES.init("jobDates", $quoteDetail, $jobDetail);
+					JOBSCHEDULE.init("jobSchedule", $lastRun, $nextDue, $lastCreated)
+					//JOBINVOICE.init("jobInvoice", $invoiceStyleList, $invoiceGroupingList, $invoiceTermList, $jobDetail);
+					JOBAUDIT.init("jobAudit", $jobDetail);
+					ADDRESSPANEL.init("jobSite", $countryList, $jobSiteDetail);
+					ADDRESSPANEL.init("billTo", $countryList, $billToDetail);
+
+					$("#jobNbr").focus();
+					
+					
+
+					
+
+
 		        });
         </script>        
     </tiles:put>

@@ -25,64 +25,6 @@
 	String cssClassString = cssClass == null || cssClass.length()==0 ? "" : "class=\"" + cssClass + "\"";
 %>
 <script type="text/javascript">               
-	$(function() {        
-		;<%=namespace%> = {
-				init: function() {
-					$.each($('input'), function () {
-				        $(this).css("height","20px");
-				        $(this).css("max-height", "20px");
-				    });
-					$("#<%=namespace %>_address select[name='<%=namespace %>_state']").selectmenu({ width : '150px', maxHeight: '400 !important', style: 'dropdown'});
-					$("select[name='<%=namespace %>_city']").addClass("ui-corner-all");
-					$("select[name='<%=namespace %>_zip']").addClass("ui-corner-all");
-					$("#<%=namespace %>_address select[name='<%=namespace %>_country']").selectmenu({ width : '80px', maxHeight: '400 !important', style: 'dropdown'});
-				
-							
-					console.debug("inits");			
-				}, setCountry: function($optionList,$selectedValue) {
-					var selectorName = "#<%=namespace%>_address select[name='<%=namespace%>_country']";
-					selectorName = "select[name='<%=namespace%>_country']";
-					
-					var $select = $(selectorName);
-					$('option', $select).remove();
-
-					$select.append(new Option("",""));
-					$.each($optionList, function(index, val) {
-						console.log(val);
-					    $select.append(new Option(val.abbrev));
-					});
-					
-					if ( $selectedValue != null ) {
-						$select.val($selectedValue);
-					}
-					$select.selectmenu();
-				} , setStates: function($optionList,$selectedValue) {
-					var selectorName = "#<%=namespace%>_address select[name='<%=namespace%>_state']";
-					selectorName = "select[name='<%=namespace%>_state']";
-					
-					var $select = $(selectorName);
-					$('option', $select).remove();
-
-					$select.append(new Option("",""));
-					$.each($optionList, function(index, val) {
-						var group = $('<optgroup label="' + val.abbrev + '" />');
-							$.each(val.stateList, function(){
-								//$('<option />').html(this.display).appendTo(group);
-								$(group).append("<option value='"+this.abbreviation+"'>"+this.display+"</option>");
-							});
-							group.appendTo($select);
-						});
-					
-					
-					if ( $selectedValue != null ) {
-						$select.val($selectedValue);
-					}
-					$select.selectmenu();
-				}
-				
-			}
-		
-		});
 	
 	
 </script>     
@@ -116,7 +58,7 @@
 			</tr>
 			<tr>
 				<td>County:</td>
-				<td><input type="text" name="<%=namespace %>_county" style="width:90%" /></td>
+				<td><input type="text" name="<%=namespace %>_county" id="<%=namespace %>_county" style="width:90%" /></td>
 				<td colspan="2">
 					<table style="width:180px">
 						<tr>

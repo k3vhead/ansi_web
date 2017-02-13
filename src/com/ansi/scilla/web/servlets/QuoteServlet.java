@@ -30,15 +30,14 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
  * 
  * The url for get will be one of:
  * 		/quote    (retrieves everything)
- * 		/quote/&lt;quoteId&gt;      (filters quote table by quoteId)
- * 		/quote/&lt;quoteId&gt;/&lt;quoteNumber&gt;	(filters quote table quoteId and quoteNumber
- * 		/quote/&lt;quoteId&gt;/&lt;quoteNumber&gt;/&lt;revisionNumber&gt;	(retrieves a single record)
+ * 		/quote/&lt;quoteNumber&gt;	(filters quote table quoteId and quoteNumber
+ * 		/quote/&lt;quoteNumber&gt;/&lt;revisionNumber&gt;	(retrieves a single record)
  * 
  * The url for adding a new record will be a POST to:
  * 		/quote/add   with parameters in the JSON
  * 
  * The url for update will be a POST to:
- * 		/quote/&lt;quoteId&gt;/&lt;quoteNumber&gt;/&lt;revisionNumber&gt; with parameters in the JSON
+ * 		/quote/&lt;quoteNumber&gt;/&lt;revisionNumber&gt; with parameters in the JSON
  * 
  * 
  * 
@@ -118,11 +117,11 @@ public class QuoteServlet extends AbstractServlet {
 			ParsedUrl parsedUrl = new ParsedUrl(url);
 			conn = AppUtils.getDBCPConn();
 			
-			if ( parsedUrl.quoteId.equals("list")) {
+			if ( parsedUrl.quoteNumber.equals("list")) {
 				// we're getting all the codes in the database
 				QuoteListResponse quotesListResponse = makeQuotesListResponse(conn);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, quotesListResponse);
-			} else if(parsedUrl.quoteId.equals("delete")){
+			} else if(parsedUrl.quoteNumber.equals("delete")){
 				doNewDelete(request,response);			
 			} else {
 				QuoteListResponse quotesListResponse = makeFilteredListResponse(conn, parsedUrl);
@@ -336,7 +335,7 @@ public class QuoteServlet extends AbstractServlet {
 	}
 
 	private QuoteListResponse makeFilteredListResponse(Connection conn, ParsedUrl parsedUrl) throws Exception {
-		QuoteListResponse quoteListResponse = new QuoteListResponse(conn, parsedUrl.quoteId, parsedUrl.quoteNumber, parsedUrl.revisionNumber);
+		QuoteListResponse quoteListResponse = new QuoteListResponse(conn, parsedUrl.quoteNumber, parsedUrl.revisionNumber);
 		return quoteListResponse;
 	}
 
@@ -372,7 +371,7 @@ public class QuoteServlet extends AbstractServlet {
 	
 	public class ParsedUrl extends ApplicationObject {
 		private static final long serialVersionUID = 1L;
-		public String quoteId;
+
 		public String quoteNumber;
 		public String revisionNumber;
 		public ParsedUrl(String url) throws RecordNotFoundException {
@@ -385,14 +384,12 @@ public class QuoteServlet extends AbstractServlet {
 //			AppUtils.logException(new Exception(myString));
 			String[] urlPieces = myString.split("/");
 			if ( urlPieces.length >= 1 ) {
-				this.quoteId = (urlPieces[0]);
+				this.quoteNumber = (urlPieces[0]);
 			}
 			if ( urlPieces.length >= 2 ) {
-				this.quoteNumber = (urlPieces[1]);
+				this.revisionNumber = (urlPieces[1]);
 			}
-			if ( urlPieces.length >= 3 ) {
-				this.revisionNumber = (urlPieces[2]);
-			}
+		
 		}
 	}
 }
