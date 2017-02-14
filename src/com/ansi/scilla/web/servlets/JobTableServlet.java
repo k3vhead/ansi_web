@@ -55,7 +55,7 @@ public class JobTableServlet extends AbstractServlet {
 		int draw = 0;
 		int col = 0;
 		String dir = "asc";
-		String[] cols = { "job_id", "status", "bill_to_name", "job_site_name", "job_site_address", "start_date", "job_number", "frequency", "price_per_cleaning", "service_description", "po_number" };
+		String[] cols = { "job_id", "status", "division_nbr", "bill_to_name", "job_site_name", "job_site_address", "start_date", "job_number", "frequency", "price_per_cleaning", "service_description", "po_number" };
 		String sStart = request.getParameter("start");
 	    String sAmount = request.getParameter("length");
 	    String sDraw = request.getParameter("draw");
@@ -94,8 +94,7 @@ public class JobTableServlet extends AbstractServlet {
 		    if (sAmount != null) {
 		    	amount = Integer.parseInt(sAmount);
 				System.out.println(sAmount);
-		        if (amount != -1) {
-		        	if (amount < 10 || amount > 100)
+		        if (amount < 10 || amount > 500) {
 		            amount = 10;
 		        }
 		    }

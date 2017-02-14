@@ -54,7 +54,7 @@ public class QuoteTableServlet extends AbstractServlet {
 		int draw = 0;
 		int col = 0;
 		String dir = "asc";
-		String[] cols = { "quote_id", "quote_code", "bill_to_name", "job_site_name", "job_site_address", "manager_name", "proposal_date", "quote_job_count", "quote_ppc_sum" };
+		String[] cols = { "quote_id", "quote_code", "division_nbr", "bill_to_name", "job_site_name", "job_site_address", "manager_name", "proposal_date", "quote_job_count", "quote_ppc_sum" };
 		String sStart = request.getParameter("start");
 	    String sAmount = request.getParameter("length");
 	    String sDraw = request.getParameter("draw");
@@ -93,8 +93,7 @@ public class QuoteTableServlet extends AbstractServlet {
 		    if (sAmount != null) {
 		    	amount = Integer.parseInt(sAmount);
 				System.out.println(sAmount);
-		        if (amount != -1) {
-		        	if (amount < 10 || amount > 100)
+		        if (amount < 10 || amount > 500) {
 		            amount = 10;
 		        }
 		    }

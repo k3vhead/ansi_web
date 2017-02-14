@@ -23,6 +23,11 @@ public class QuoteTableReturnItem extends ReportQuery {
 		public static final String PROPOSAL_DATE ="proposal_date";
 		public static final String QUOTE_JOB_COUNT ="quote_job_count";
 		public static final String QUOTE_PPC_SUM ="quote_ppc_sum";
+		public static final String BILL_TO_ADDRESS_ID = "bill_to_address_id";
+		public static final String JOB_SITE_ADDRESS_ID = "job_site_address_id";
+		public static final String DIVISION_ID = "division_id";
+		public static final String DIVISION_NBR = "division_nbr";
+		public static final String DIVISION_CODE = "division_code";
 
 		
 		private Integer quoteId;
@@ -35,6 +40,11 @@ public class QuoteTableReturnItem extends ReportQuery {
 		private Integer quoteJobCount;
 		private BigDecimal quotePpcSum;
 		private String DT_RowId;
+		private Integer billToAddressId;
+		private Integer jobSiteAddressId;
+		private Integer divisionId;
+		private Integer divisionNbr;
+		private String divisionCode;
 		
 		public QuoteTableReturnItem() throws SQLException {
 			super();
@@ -50,6 +60,11 @@ public class QuoteTableReturnItem extends ReportQuery {
 			this.proposalDate = rs.getDate("proposal_date");
 			this.quoteJobCount = rs.getInt("quote_job_count");
 			this.quotePpcSum = rs.getBigDecimal("quote_ppc_sum");
+			this.billToAddressId = rs.getInt(BILL_TO_ADDRESS_ID);
+			this.jobSiteAddressId = rs.getInt(JOB_SITE_ADDRESS_ID);
+			this.divisionId = rs.getInt(DIVISION_ID);
+			this.divisionNbr = rs.getInt(DIVISION_NBR);
+			this.divisionCode = rs.getString(DIVISION_CODE);
 			this.DT_RowId = rs.getInt("quote_id")+"";
 
 		}
@@ -136,6 +151,56 @@ public class QuoteTableReturnItem extends ReportQuery {
 		@DBColumn(QUOTE_PPC_SUM)
 		public void setQuotePpcSum(BigDecimal quotePpcSum) {
 			this.quotePpcSum = quotePpcSum;
+		}
+
+		@DBColumn(BILL_TO_ADDRESS_ID)
+		public Integer getBillToAddressId() {
+			return billToAddressId;
+		}
+
+		@DBColumn(BILL_TO_ADDRESS_ID)
+		public void setBillToAddressId(Integer billToAddressId) {
+			this.billToAddressId = billToAddressId;
+		}
+
+		@DBColumn(JOB_SITE_ADDRESS_ID)
+		public Integer getJobSiteAddressId() {
+			return jobSiteAddressId;
+		}
+
+		@DBColumn(JOB_SITE_ADDRESS_ID)
+		public void setJobSiteAddressId(Integer jobSiteAddressId) {
+			this.jobSiteAddressId = jobSiteAddressId;
+		}
+
+		@DBColumn(DIVISION_ID)
+		public Integer getDivisionId() {
+			return divisionId;
+		}
+
+		@DBColumn(DIVISION_ID)
+		public void setDivisionId(Integer divisionId) {
+			this.divisionId = divisionId;
+		}
+
+		@DBColumn(DIVISION_NBR)
+		public Integer getDivisionNbr() {
+			return divisionNbr;
+		}
+
+		@DBColumn(DIVISION_NBR)
+		public void setDivisionNbr(Integer divisionNbr) {
+			this.divisionNbr = divisionNbr;
+		}
+
+		@DBColumn(DIVISION_CODE)
+		public String getDivisionCode() {
+			return divisionCode;
+		}
+
+		@DBColumn(DIVISION_CODE)
+		public void setDivisionCode(String divisionCode) {
+			this.divisionCode = divisionCode;
 		}
 
 	}

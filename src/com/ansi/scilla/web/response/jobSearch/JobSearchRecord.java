@@ -39,8 +39,8 @@ public class JobSearchRecord extends ApplicationObject {
 		this();
 		BeanUtils.copyProperties(this, jobSearch.getJob());
 		BeanUtils.copyProperties(this, jobSearch.getQuote());
+		BeanUtils.copyProperties(this,  jobSearch.getDivision());
 		this.billToName = jobSearch.getBillToName();			
-		this.divisionCode = jobSearch.getDivisionCode();			
 		this.jobSiteAddress = jobSearch.getJobSiteAddress();	
 		this.jobSiteName = jobSearch.getJobSiteName();			
 		
