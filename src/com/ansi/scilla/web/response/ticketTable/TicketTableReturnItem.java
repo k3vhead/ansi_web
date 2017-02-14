@@ -28,6 +28,14 @@ public class TicketTableReturnItem extends ReportQuery {
 	public static final String SERVICE_DESCRIPTION ="service_description";
 	public static final String INVOICE_ID = "invoice_id";
 	public static final String PROCESS_DATE = "process_date";
+	public static final String BILL_TO_ADDRESS_ID = "bill_to_address_id";
+	public static final String JOB_SITE_ADDRESS_ID = "job_site_address_id";
+	public static final String DIVISION_ID = "division_id";
+	public static final String DIVISION_NBR = "division_nbr";
+	public static final String DIVISION_CODE = "division_code";
+	public static final String FLEETMATICS_ID = "fleetmatics_id";
+
+	
 
 	private Integer ticketId;
 	private String status;
@@ -43,6 +51,12 @@ public class TicketTableReturnItem extends ReportQuery {
 	private Integer invoiceId;
 	private Date processDate;
 	private String DT_RowId;
+	private Integer billToAddressId;
+	private Integer jobSiteAddressId;
+	private Integer divisionId;
+	private Integer divisionNbr;
+	private String divisionCode;
+	private String fleetmaticsId;
 
 	public TicketTableReturnItem() throws SQLException {
 		super();
@@ -62,6 +76,12 @@ public class TicketTableReturnItem extends ReportQuery {
 		this.serviceDescription = rs.getString(SERVICE_DESCRIPTION);
 		this.invoiceId = rs.getInt(INVOICE_ID);
 		this.processDate = rs.getDate(PROCESS_DATE); 
+		this.billToAddressId = rs.getInt(BILL_TO_ADDRESS_ID);
+		this.jobSiteAddressId = rs.getInt(JOB_SITE_ADDRESS_ID);
+		this.divisionId = rs.getInt(DIVISION_ID);
+		this.divisionNbr = rs.getInt(DIVISION_NBR);
+		this.divisionCode = rs.getString(DIVISION_CODE);
+		this.fleetmaticsId = rs.getString(FLEETMATICS_ID);
 		this.DT_RowId = rs.getInt(TICKET_ID) + "";
 		System.out.println(this);
 
@@ -209,6 +229,66 @@ public class TicketTableReturnItem extends ReportQuery {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
 	public void setProcessDate(Date processDate) {
 		this.processDate = processDate;
+	}
+
+	@DBColumn(BILL_TO_ADDRESS_ID)
+	public Integer getBillToAddressId() {
+		return billToAddressId;
+	}
+
+	@DBColumn(BILL_TO_ADDRESS_ID)
+	public void setBillToAddressId(Integer billToAddressId) {
+		this.billToAddressId = billToAddressId;
+	}
+
+	@DBColumn(JOB_SITE_ADDRESS_ID)
+	public Integer getJobSiteAddressId() {
+		return jobSiteAddressId;
+	}
+
+	@DBColumn(JOB_SITE_ADDRESS_ID)
+	public void setJobSiteAddressId(Integer jobSiteAddressId) {
+		this.jobSiteAddressId = jobSiteAddressId;
+	}
+
+	@DBColumn(DIVISION_ID)
+	public Integer getDivisionId() {
+		return divisionId;
+	}
+
+	@DBColumn(DIVISION_ID)
+	public void setDivisionId(Integer divisionId) {
+		this.divisionId = divisionId;
+	}
+
+	@DBColumn(DIVISION_NBR)
+	public Integer getDivisionNbr() {
+		return divisionNbr;
+	}
+
+	@DBColumn(DIVISION_NBR)
+	public void setDivisionNbr(Integer divisionNbr) {
+		this.divisionNbr = divisionNbr;
+	}
+
+	@DBColumn(DIVISION_CODE)
+	public String getDivisionCode() {
+		return divisionCode;
+	}
+
+	@DBColumn(DIVISION_CODE)
+	public void setDivisionCode(String divisionCode) {
+		this.divisionCode = divisionCode;
+	}
+
+	@DBColumn(FLEETMATICS_ID)
+	public String getFleetmaticsId() {
+		return fleetmaticsId;
+	}
+
+	@DBColumn(FLEETMATICS_ID)
+	public void setFleetmaticsId(String fleetmaticsId) {
+		this.fleetmaticsId = fleetmaticsId;
 	}
 
 }
