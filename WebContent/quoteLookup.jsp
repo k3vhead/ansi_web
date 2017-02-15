@@ -75,6 +75,10 @@
         	        buttons: [
         	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}}
         	        ],
+        	        "columnDefs": [
+        	            { className: "dt-left", "targets": [0,2,3,4,5,7,9,] },
+        	            { className: "dt-center", "targets": [1,8,10,-1] },
+        	         ],
         	        "paging": true,
 			        "ajax": {
 			        	"url": "quoteTable",
@@ -86,6 +90,9 @@
 			            } },
 			            { title: "Quote", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.quoteCode != null){return (row.quoteCode+"");}
+			            } },
+			            { title: "Division ID" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            	if(row.divisionId != null){return (row.divisionId+"");}
 			            } },
 			            { title: "Bill To" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.billToName != null){return (row.billToName+"");}
@@ -154,6 +161,7 @@
 								
 				        		$("#quoteId").val(($data.data.codeList[0]).quoteId);
 				        		$("#quoteCode").val(($data.data.codeList[0]).quoteCode);
+				        		$("#divisionId").val(($data.data.codeList[0]).divisionId);
 				        		$("#billToName").val(($data.data.codeList[0]).billToName);
 				        		$("#jobSiteName").val(($data.data.codeList[0]).jobSiteName);
 				        		$("#jobSiteAddress").val(($data.data.codeList[0]).jobSiteAddress);
@@ -185,20 +193,22 @@
  	<table id="quoteTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
         <colgroup>
         	<col style="width:4%;" />
-    		<col style="width:4%;" />
-    		<col style="width:18%;" />
-    		<col style="width:20%;" />
-    		<col style="width:20%;" />
-    		<col style="width:10%;" />
-    		<col style="width:10%;" />
-    		<col style="width:4%;" />
     		<col style="width:6%;" />
-    		<col style="width:4%;" />  
+    		<col style="width:6%;" />
+    		<col style="width:16%;" />
+    		<col style="width:16%;" />
+    		<col style="width:14%;" />
+    		<col style="width:10%;" />
+    		<col style="width:10%;" />
+    		<col style="width:5%;" />
+    		<col style="width:8%;" />
+    		<col style="width:5%;" />  
     	</colgroup> 
         <thead>
             <tr>
                 <th>ID</th>
     			<th>Quote</th>
+    			<th>Division ID</th>
     			<th>Bill To</th>
     			<th>Job Site</th>
     			<th>Job Address</th>
@@ -213,6 +223,7 @@
             <tr>
                 <th>ID</th>
     			<th>Quote</th>
+    			<th>Division ID</th>
     			<th>Bill To</th>
     			<th>Job Site</th>
     			<th>Job Address</th>

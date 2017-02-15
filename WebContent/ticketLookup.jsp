@@ -69,12 +69,16 @@
         	        dom: 				'Bfrtip',
         	        "searching": 		true,
         	        lengthMenu: [
-        	            [ 10, 50, 100, 500, -1 ],
-        	            [ '10 rows', '50 rows', '100 rows', '500 rows', 'Show all' ]
+        	            [ 10, 50, 100, 500 ],
+        	            [ '10 rows', '50 rows', '100 rows', '500 rows' ]
         	        ],
         	        buttons: [
         	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}}
         	        ],
+        	        "columnDefs": [
+        	            { className: "dt-head-left", "targets": [0,2,3,4,5,6,8,10,11,12,13] },
+        	            { className: "dt-body-center", "targets": [1,7,9,-1] },
+        	         ],
         	        "paging": true,
 			        "ajax": {
 			        	"url": "ticketTable",
@@ -86,6 +90,9 @@
 			            } },
 			            { title: "Status", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.status != null){return (row.status+"");}
+			            } },
+			            { title: "Division ID", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            	if(row.divisionId != null){return (row.divisionId+"");}
 			            } },
 			            { title: "Bill To" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.billToName != null){return (row.billToName+"");}
@@ -100,7 +107,7 @@
 			            	if(row.startDate != null){return (row.startDate+"");}
 			            } },
 			            { title: "Freq", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.jobFreq != null){return (row.jobFreq+"");}
+			            	if(row.jobFrequency != null){return (row.jobFrequency+"");}
 			            } },
 			            { title: "PPC", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.pricePerCleaning != null){return (row.pricePerCleaning+"");}
@@ -167,6 +174,7 @@
 								
 				        		$("#ticketId").val(($data.data.codeList[0]).ticketId);
 				        		$("#status").val(($data.data.codeList[0]).status);
+				        		$("#divisionId").val(($data.data.codeList[0]).divisionId);
 				        		$("#billToName").val(($data.data.codeList[0]).billToName);
 				        		$("#jobSiteName").val(($data.data.codeList[0]).jobSiteName);
 				        		$("#jobSiteAddress").val(($data.data.codeList[0]).jobSiteAddress);
@@ -202,25 +210,27 @@
     	
  	<table id="ticketTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
         <colgroup>
-        	<col style="width:4%;" />
-    		<col style="width:4%;" />
-    		<col style="width:10%;" />
-    		<col style="width:10%;" />
-    		<col style="width:10%;" />
+        	<col style="width:5%;" />
+    		<col style="width:5%;" />
     		<col style="width:6%;" />
+    		<col style="width:9%;" />
+    		<col style="width:9%;" />
+    		<col style="width:8%;" />
+    		<col style="width:6%;" />
+    		<col style="width:5%;" />
+    		<col style="width:5%;" />
     		<col style="width:4%;" />
     		<col style="width:4%;" />
-    		<col style="width:4%;" />
-    		<col style="width:4%;" />
-    		<col style="width:24%;" />
+    		<col style="width:17%;" />
     		<col style="width:6%;" />
     		<col style="width:6%;" />
-    		<col style="width:4%;" />
+    		<col style="width:5%;" />
     	</colgroup>
         <thead>
             <tr>
                 <th>Ticket</th>
     			<th>Status</th>
+    			<th>Division ID</th>
     			<th>Bill To</th>
     			<th>Job Site</th>
     			<th>Job Address</th>
@@ -239,6 +249,7 @@
             <tr>
                 <th>Ticket</th>
     			<th>Status</th>
+    			<th>Division ID</th>
     			<th>Bill To</th>
     			<th>Job Site</th>
     			<th>Job Address</th>
