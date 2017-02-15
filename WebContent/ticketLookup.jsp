@@ -127,6 +127,9 @@
 			            { title: "Invoice", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.invoiceId != null){return (row.invoiceId+"");} 
 			            } },
+			            { title: "FM ID", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            	if(row.fleetmaticsId != null){return (row.fleetmaticsId+"");} 
+			            } },
 			            { title: "Action",  data: function ( row, type, set ) {	
 			            	//console.log(row);
 			            	{return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='ticketMaintenance.html?id="+row.ticketId+"' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.ticketId+"'></a></ansi:hasWrite></ansi:hasPermission>";}
@@ -186,6 +189,7 @@
 				        		$("#serviceDescription").val(($data.data.codeList[0]).serviceDescription);
 				        		$("#processDate").val(($data.data.codeList[0]).processDate);
 				        		$("#invoiceId").val(($data.data.codeList[0]).invoiceId);
+				        		$("#fleetmaticsId").val(($data.data.codeList[0]).fleetmaticsId);
 				        		
 				        		$("#tId").val(($data.data.codeList[0]).ticketId);
 				        		$("#updateOrAdd").val("update");
@@ -212,16 +216,17 @@
         <colgroup>
         	<col style="width:5%;" />
     		<col style="width:5%;" />
-    		<col style="width:6%;" />
-    		<col style="width:9%;" />
-    		<col style="width:9%;" />
+    		<col style="width:4%;" />
     		<col style="width:8%;" />
+    		<col style="width:8%;" />
+    		<col style="width:7%;" />
     		<col style="width:6%;" />
     		<col style="width:5%;" />
     		<col style="width:5%;" />
     		<col style="width:4%;" />
     		<col style="width:4%;" />
-    		<col style="width:17%;" />
+    		<col style="width:16%;" />
+    		<col style="width:6%;" />
     		<col style="width:6%;" />
     		<col style="width:6%;" />
     		<col style="width:5%;" />
@@ -242,6 +247,7 @@
     			<th>Service Description</th>
     			<th>Process Date</th>
     			<th>Invoice</th>
+    			<th>FM ID</th>
     			<th>Action</th>
             </tr>
         </thead>
@@ -261,6 +267,7 @@
     			<th>Service Description</th>
     			<th>Process Date</th>
     			<th>Invoice</th>
+    			<th>FM ID</th>
     			<th>Action</th>    			
             </tr>
         </tfoot>
