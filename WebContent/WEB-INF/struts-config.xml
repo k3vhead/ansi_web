@@ -6,6 +6,7 @@
 <struts-config>
     <form-beans>    
     	<form-bean name="idForm"          type="com.ansi.scilla.web.actionForm.IdForm" />
+    	<form-bean name="namespaceForm"   type="com.ansi.scilla.web.actionForm.NamespaceForm" />
     </form-beans>
 	<!--
 
@@ -153,6 +154,21 @@
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">
             <forward name="valid" path="/addressMaintenance.jsp" />
             <forward name="login" path="/login.jsp" />            
+        </action>
+        
+
+		<action
+			path="/quotePanelDemo"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/quotePanelDemo.jsp" />
+        </action>
+    	<action
+            path="/quotePanel"
+            type="com.ansi.scilla.web.action.QuotePanelAction"
+            name="namespaceForm"
+            input="/quotePanel.jsp"
+            scope="request">
+            <forward name="valid" path="/quotePanel.jsp" />
         </action>
         
 
