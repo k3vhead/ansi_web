@@ -34,13 +34,15 @@ public class TicketDRVResponseItem extends ApplicationObject {
 	
 	public TicketDRVResponseItem(TicketDRVQuery record) {
 		this();
+		System.out.println(" TicketDRVRecord:" + record);
 		this.ticketId = record.getTicketId();
 		this.status = record.getStatus();
 		this.address1 = record.getAddress1();
 		this.budget = record.getBudget();
 		this.city = record.getCity();
 		if ( ! StringUtils.isBlank(record.getInvoiceStyle())) {
-			this.cod = InvoiceTerm.valueOf(record.getInvoiceStyle()).display();
+			System.out.println(" TicketDRVRecord: invoiceStyle:" + record.getInvoiceStyle());
+			this.cod = record.getInvoiceStyle();
 		}
 		this.frequency = record.getJobFrequency();
 		this.jobNum = record.getJobNbr();
@@ -49,6 +51,7 @@ public class TicketDRVResponseItem extends ApplicationObject {
 		this.ppc = record.getPricePerCleaning();
 		this.startDate = record.getStartDate();
 		this.jobId = record.getJobId();
+		
 	}
 	
 	public Integer getTicketId() {
