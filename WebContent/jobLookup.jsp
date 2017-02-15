@@ -92,8 +92,8 @@
 			            { title: "Status", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.status != null){return (row.status+"");}
 			            } },
-			            { title: "Divsion ID" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-			            	if(row.divisionId != null){return (row.divisionId+"");}
+			            { title: "DIV", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            	if(row.divisionNbr != null){return (row.divisionNbr+"");}
 			            } },
 			            { title: "Bill To" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.billToName != null){return (row.billToName+"");}
@@ -168,7 +168,7 @@
 								
 				        		$("#jobId").val(($data.data.codeList[0]).jobId);
 				        		$("#status").val(($data.data.codeList[0]).status);
-				        		$("#divisionId").val(($data.data.codeList[0]).divisionId);
+				        		$("#divisionNbr").val(($data.data.codeList[0]).divisionNbr);
 				        		$("#billToName").val(($data.data.codeList[0]).billToName);
 				        		$("#jobSiteName").val(($data.data.codeList[0]).jobSiteName);
 				        		$("#jobSiteAddress").val(($data.data.codeList[0]).jobSiteAddress);
@@ -219,7 +219,7 @@
             <tr>
                 <th>Job</th>
     			<th>Status</th>
-    			<th>Division ID</th>
+    			<th>DIV</th>
     			<th>Bill To</th>
     			<th>Job Site</th>
     			<th>Job Address</th>
@@ -236,7 +236,7 @@
             <tr>
                 <th>Job</th>
     			<th>Status</th>
-    			<th>Division ID</th>
+    			<th>DIV</th>
     			<th>Bill To</th>
     			<th>Job Site</th>
     			<th>Job Address</th>
