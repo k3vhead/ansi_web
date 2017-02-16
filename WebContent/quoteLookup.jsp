@@ -117,7 +117,7 @@
 			            } },
 			            { title: "Action",  data: function ( row, type, set ) {	
 			            	//console.log(row);
-			            	{return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='jobMaintenance.html?id="+row.quoteId+"' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.quoteId+"'></a></ansi:hasWrite></ansi:hasPermission>";}
+			            	{return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='quoteMaintenance.html?id="+row.quoteId+"' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.quoteId+"'></a></ansi:hasWrite></ansi:hasPermission>";}
 			            	
 			            } }],
 			            "initComplete": function(settings, json) {
