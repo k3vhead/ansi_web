@@ -48,7 +48,7 @@
 		<!--[if lte IE 7]>
         	<link rel="stylesheet" type="text/css" href="css/menuIe.css" media="screen" />
     	<![endif]-->
-		<script type="text/javascript" language="javascript" src="js/menu.js"></script>
+		<script type="text/javascript" src="js/menu.js"></script>
         
                      
         <link rel="stylesheet" href="css/layout.css" type="text/css" />

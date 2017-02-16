@@ -25,9 +25,9 @@
 %>
   
 <div <%= cssIdString %> <%= cssClassString %> >
-	<table id="<%=namespace%>_jobTable">
+	<table id="<%=namespace%>_jobTable" style="width:1300px;">
 		<tr>
-			<td class="jobTableCell" colspan="2">
+			<td class="jobTableCell" colspan="2" >
 				<bean:message key="rpt.hdr.job" /> <input type="text" name="jobId" id="<%= namespace %>_jobId" />
 				<bean:message key="rpt.hdr.status" />:
 					<% if ( page.equals("QUOTE") ) { %>
@@ -41,9 +41,18 @@
 					<% } else { %>
 						<span id="<%= namespace %>_divisionId"></span>
 					<% } %>
-				<div style="float:right;">
+				<div style="float:right; text-align:right;">
+					Quote: <a href="quoteMaintenance.html"><span id="<%= namespace %>_quoteId"></span></a><br />
+					<i style="cursor:pointer;" class="fa fa-arrow-circle-right fa-3x" aria-hidden="true" id="<%= namespace %>_activateJobButton"></i>
+					<i style="cursor:pointer;" class="clickableIcon, fa fa-ban fa-3x text-danger" id="<%= namespace %>_cancelJobButton"></i>
+					<i style="cursor:pointer;" class="clickableIcon, fa fa-calendar  fa-3x" aria-hidden="true"></i>
+					
+					
+					<%--
 					<input type="button" value="Activate Job" id="<%= namespace %>_activateJobButton" />
 					<input type="button" value="Cancel Job" id="<%= namespace %>_cancelJobButton" />
+					<input type="button" value="Reschedule Job" id="<%= namespace %>_rescheduleJobButton" />
+					 --%> 
 				</div>
 			</td>
 		</tr>
