@@ -110,7 +110,7 @@
 			JOBPROPOSAL.init("jobProposal", $jobFrequencyList, $jobDetail);
 			JOBACTIVATION.init("jobActivation", $buildingTypeList, $jobDetail);
 			JOBDATES.init("jobDates", $quoteDetail, $jobDetail);
-			JOBSCHEDULE.init("jobSchedule", $lastRun, $nextDue, $lastCreated)
+			JOBSCHEDULE.init("jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
 			JOBINVOICE.init("jobInvoice", $invoiceStyleList, $invoiceGroupingList, $invoiceTermList, $jobDetail);
 			JOBAUDIT.init("jobAudit", $jobDetail);
 			
@@ -179,6 +179,8 @@
 				</td>
 			</tr>
 		</table>    	
+		
+		<webthing:jobActivateCancel namespace="jobPanel" />
 		
     </tiles:put>
 

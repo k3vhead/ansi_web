@@ -24,6 +24,9 @@ h1 {
 .centered {
 	text-align:center;
 }
+.clickableIcon {
+	cursor:pointer;
+}
 .dropdown-menu {
 	background-color:#e5e5e5;
 }

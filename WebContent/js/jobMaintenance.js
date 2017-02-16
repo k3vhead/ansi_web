@@ -80,7 +80,10 @@ $( document ).ready(function() {
 				
 				
 			}
-		
+	
+	
+	
+	
 	
 	;JOBAUDIT = {
 		init: function($namespace, $jobDetail) {
@@ -169,11 +172,122 @@ $( document ).ready(function() {
 				$divisionLookup[$division.divisionId]=$division.divisionCode;
 			});
 			JOBPANEL.setDivisionList($namespace, $divisionList);
+			JOBPANEL.initActivateModal($namespace);
+			JOBPANEL.initCancelModal($namespace);
+			
+			//make the dateselectors work in the modal window
+			var $selector= '.' + $namespace + "_datefield";
+			$($selector).datepicker({
+                prevText:'&lt;&lt;',
+                nextText: '&gt;&gt;',
+                showButtonPanel:true
+            });
+			
+			
 			if ( $jobDetail != null ) {
 				ANSI_UTILS.setFieldValue($namespace, "jobId", $jobDetail.jobId);
 				ANSI_UTILS.setTextValue($namespace, "jobStatus", $jobDetail.status);
 				ANSI_UTILS.setTextValue($namespace, "divisionId", $divisionLookup[$jobDetail.divisionId]);
+				ANSI_UTILS.setTextValue($namespace, "quoteId", $jobDetail.jobId);
+				
+				if ( $jobDetail.status == 'A' ) {					
+					$($activateJobButtonSelector).hide();
+				}
+				if ( $jobDetail.status == 'C' ) {					
+					$($cancelJobButtonSelector).hide();
+				}
 			}
+
+		},
+
+		initActivateModal: function($namespace) {
+			var $activateJobButtonSelector = "#" + $namespace + "_activateJobButton";
+			var $activateJobFormDialogSelector = "#" + $namespace + "_activateJobForm";
+			var $goButtonId = $namespace + "_activateFormButton";
+			var $closeButtonId = $namespace + "_activateFormCloseButton";
+			                                       
+			
+			$($activateJobButtonSelector).click(function() {
+				//$("#updateOrAdd").val("add");
+        		//clearAddForm();				
+        		$('#'+$goButtonId).button('option', 'label', 'Activate Job');
+        		$('#'+$closeButtonId).button('option', 'label', 'Close');
+        	    $($activateJobFormDialogSelector).dialog( "open" );
+			});
+			
+			
+			// set up the activate job modal window
+			$( $activateJobFormDialogSelector ).dialog({
+	      	      autoOpen: false,
+	      	      height: 300,
+	      	      width: 500,
+	      	      modal: true,
+	      	      buttons: [
+	      	    	  {
+	      	    			id: $goButtonId,
+	      	        		click: function() {
+	      	        			addAddress();
+	      	        		}
+	      	      		},
+	      	      		{
+	        	    		id: $closeButtonId,
+	        	        	click: function() {
+	        	        		$( $activateJobFormDialogSelector ).dialog( "close" );
+	        	        	}
+	        	      	}
+	      	      
+	      	      ],
+	      	      close: function() {
+	      	    	  $( $activateJobFormDialogSelector ).dialog( "close" );
+	      	        //allFields.removeClass( "ui-state-error" );
+	      	      }
+	      	    });
+	
+		},
+		
+		initCancelModal: function($namespace) {
+			var $cancelJobButtonSelector = "#" + $namespace + "_cancelJobButton";
+			var $cancelJobFormDialogSelector = "#" + $namespace + "_cancelJobForm";
+			var $goButtonId = $namespace + "_cancelFormButton";
+			var $closeButtonId = $namespace + "_cancelFormCloseButton";
+			                                       
+			
+			$($cancelJobButtonSelector).click(function() {
+				//$("#updateOrAdd").val("add");
+        		//clearAddForm();				
+        		$('#'+$goButtonId).button('option', 'label', 'Cancel Job');
+        		$('#'+$closeButtonId).button('option', 'label', 'Close');
+        	    $($cancelJobFormDialogSelector).dialog( "open" );
+			});
+			
+			
+			// set up the cancel job modal window
+			$( $cancelJobFormDialogSelector ).dialog({
+	      	      autoOpen: false,
+	      	      height: 300,
+	      	      width: 500,
+	      	      modal: true,
+	      	      buttons: [
+	      	    	  {
+	      	    			id: $goButtonId,
+	      	        		click: function() {
+	      	        			addAddress();
+	      	        		}
+	      	      		},
+	      	      		{
+	        	    		id: $closeButtonId,
+	        	        	click: function() {
+	        	        		$( $cancelJobFormDialogSelector ).dialog( "close" );
+	        	        	}
+	        	      	}
+	      	      
+	      	      ],
+	      	      close: function() {
+	      	    	  $( $cancelJobFormDialogSelector ).dialog( "close" );
+	      	        //allFields.removeClass( "ui-state-error" );
+	      	      }
+	      	    });
+	
 		},
 		
 		setDivisionList: function($namespace, $divisionList) {
@@ -226,16 +340,20 @@ $( document ).ready(function() {
 
 
 	;JOBSCHEDULE = {
-		init: function($namespace, $lastRun, $nextDue, $lastCreated) {
+		init: function($namespace, $jobDetail, $lastRun, $nextDue, $lastCreated) {
 			if ( $lastRun != null ) {
 				ANSI_UTILS.setTextValue($namespace, "lastRun", $lastRun.processDate + " (T" + $lastRun.ticketId + ")");
-//				ANSI_UTILS.setTextValue($namespace, "lastTicket", $lastRun.ticketId);
 			}
 			if ( $nextDue != null ) {
 				ANSI_UTILS.setTextValue($namespace, "nextDue", $nextDue.startDate + " (T" + $nextDue.ticketId + ")");
 			}
 			if ( $lastCreated != null) {
 				ANSI_UTILS.setTextValue($namespace, "createdThru", $lastCreated.startDate + " (T" + $lastCreated.ticketId + ")");
+			}
+			if ($jobDetail.repeatScheduleAnnually == 1) {
+				ANSI_UTILS.setCheckbox($namespace, "annualRepeat", true);
+			} else {
+				ANSI_UTILS.setCheckbox($namespace, "annualRepeat", false);
 			}
 		}
 	}
