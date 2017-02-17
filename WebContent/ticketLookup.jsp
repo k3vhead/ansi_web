@@ -69,15 +69,16 @@
         	        dom: 				'Bfrtip',
         	        "searching": 		true,
         	        lengthMenu: [
-        	            [ 10, 50, 100, 500 ],
-        	            [ '10 rows', '50 rows', '100 rows', '500 rows' ]
+        	        	[ 10, 50, 100, 500, 1000 ],
+        	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
         	        ],
         	        buttons: [
         	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}}
         	        ],
         	        "columnDefs": [
-        	            { className: "dt-head-left", "targets": [0,2,3,4,5,6,8,10,11,12,13] },
+        	            { className: "dt-head-left", "targets": [0,2,3,4,5,6,10,11,12,13] },
         	            { className: "dt-body-center", "targets": [1,7,9,-1] },
+        	            { className: "dt-right", "targets": [8]}
         	         ],
         	        "paging": true,
 			        "ajax": {
