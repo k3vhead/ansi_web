@@ -26,7 +26,7 @@
 %>
 
 <div <%= cssIdString %> <%= cssClassString %> >
-	<form name="<%= namespace %>_jobProposalForm">
+	<form name="<%=namespace%>_jobProposalForm">
 		<table>
 			<tr>
 				<td><bean:message key="rpt.hdr.job"/>:</td>

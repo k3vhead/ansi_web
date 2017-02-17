@@ -29,9 +29,9 @@
 	<table style="width:100%;">
 		<tr>
 			<td>Last Run:</td>
-			<td><span id="<%=namespace %>_lastRun"></span></td>
+			<td><span id="<%=namespace%>_lastRun"></span></td>
 			<td>Repeat Annually:</td>
-			<td><input value="1" type="checkbox" id="<%=namespace %>_annualRepeat"></td>
+			<td><input value="1" type="checkbox" id="<%=namespace%>_annualRepeat"></td>
 			<td rowspan="2" style="text-align:center;">
 				<i class="fa fa-list-alt fa-2x" aria-hidden="true"></i>
 				<%--  <input type="button" value="Ticket List" /> --%>

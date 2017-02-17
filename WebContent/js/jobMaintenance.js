@@ -166,17 +166,17 @@ $( document ).ready(function() {
 	
 	
 	;JOBPANEL = {
-		init: function($namespace, $divisionList, $jobDetail) {
+		init: function($namespace, $divisionList, $modalNamespace, $jobDetail) {
 			var $divisionLookup = {}
 			$.each($divisionList, function($index, $division) {
 				$divisionLookup[$division.divisionId]=$division.divisionCode;
 			});
 			JOBPANEL.setDivisionList($namespace, $divisionList);
-			JOBPANEL.initActivateModal($namespace);
-			JOBPANEL.initCancelModal($namespace);
+			JOBPANEL.initActivateModal($namespace, $modalNamespace);
+			JOBPANEL.initCancelModal($namespace, $modalNamespace);
 			
 			//make the dateselectors work in the modal window
-			var $selector= '.' + $namespace + "_datefield";
+			var $selector= '.' + $modalNamespace + "_datefield";
 			$($selector).datepicker({
                 prevText:'&lt;&lt;',
                 nextText: '&gt;&gt;',
@@ -200,9 +200,9 @@ $( document ).ready(function() {
 
 		},
 
-		initActivateModal: function($namespace) {
+		initActivateModal: function($namespace, $modalNamespace) {
 			var $activateJobButtonSelector = "#" + $namespace + "_activateJobButton";
-			var $activateJobFormDialogSelector = "#" + $namespace + "_activateJobForm";
+			var $activateJobFormDialogSelector = "#" + $modalNamespace + "_activateJobForm";
 			var $goButtonId = $namespace + "_activateFormButton";
 			var $closeButtonId = $namespace + "_activateFormCloseButton";
 			                                       
@@ -245,9 +245,9 @@ $( document ).ready(function() {
 	
 		},
 		
-		initCancelModal: function($namespace) {
+		initCancelModal: function($namespace, $modalNamespace) {
 			var $cancelJobButtonSelector = "#" + $namespace + "_cancelJobButton";
-			var $cancelJobFormDialogSelector = "#" + $namespace + "_cancelJobForm";
+			var $cancelJobFormDialogSelector = "#" + $modalNamespace + "_cancelJobForm";
 			var $goButtonId = $namespace + "_cancelFormButton";
 			var $closeButtonId = $namespace + "_cancelFormCloseButton";
 			                                       

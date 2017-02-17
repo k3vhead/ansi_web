@@ -13,10 +13,26 @@
 <%@ taglib uri="WEB-INF/theTagThing.tld" prefix="ansi" %>
 
 <% 
-	String panelname = (String)request.getAttribute("panelname");
+	// if we go through the servlet (from quote screen) parameters are set in the request attribute
+	// if we go through a jsp include (from the job screen) parameters are set in a request parameter
+	// figure out which one we've got, and use it
+	String attrPanel = (String)request.getAttribute("panelname");
+	String parmPanel = request.getParameter("panelname");	
+	String panelname = attrPanel == null ? parmPanel : attrPanel;
+	
+	String attrPage = (String)request.getAttribute("page");
+	String parmPage = request.getParameter("page");	
+	String pageName = parmPage == null ? attrPage : parmPage;
+	
 	String jobSiteName = panelname + "_jobSite";
 	String billToName = panelname + "_billTo";
-	String jobPanelName = panelname = "_jobPanel";
+	String jobPanelName = panelname + "_jobPanel";
+	String jobProposal = panelname + "_jobProposal";
+	String jobActivation = panelname + "_jobActivation";
+	String jobDates = panelname + "_jobDates";
+	String jobSchedule = panelname + "_jobSchedule";
+	String jobInvoice = panelname + "_jobInvoice";
+	String jobAudit = panelname + "_jobAudit";
 %>
 
 	<tr>
@@ -35,37 +51,37 @@
 			<tr>
 				<td class="jobTableCell" colspan="2">
 					JobPanel:					
-					 <webthing:jobPanel namespace="jobPanelName" cssId="jobPanel" page="JOB" />
+					 <webthing:jobPanel namespace="<%=jobPanelName %>" cssId="jobPanel" page="<%= pageName %>" />
 				</td>
 			</tr>
 			<tr>
 				<td class="jobTableCell">
 					JobProposal:
-					<webthing:jobProposal namespace="jobProposal" cssId="jobProposal" page="JOB" />
+					<webthing:jobProposal namespace="<%= jobProposal %>" cssId="jobProposal" page="<%= pageName %>" />
 				</td>
 				<td class="jobTableCell">
 					JobActivation:
-					<webthing:jobActivation namespace="jobActivation" cssId="jobActivation" page="JOB" />
+					<webthing:jobActivation namespace="<%= jobActivation %>" cssId="jobActivation" page="<%= pageName %>" />
 				</td>
 			</tr>
 
 			<tr>
 				<td class="jobTableCell">
 					JobDates:
-					<webthing:jobDates namespace="jobDates" cssId="jobDates" page="JOB" />
+					<webthing:jobDates namespace="<%= jobDates %>" cssId="jobDates" page="<%= pageName %>" />
 					<br />
 					Job Schedule:
-					<webthing:jobSchedule namespace="jobSchedule" cssId="jobSchedule" page="JOB" />
+					<webthing:jobSchedule namespace="<%= jobSchedule %>" cssId="jobSchedule" page="<%= pageName %>" />
 				</td>
 				<td class="jobTableCell">
 					JOb Invoice:<br />			
-					<webthing:jobInvoice namespace="jobInvoice" cssId="jobInvoice" page="JOB" />
+					<webthing:jobInvoice namespace="<%= jobInvoice %>" cssId="jobInvoice" page="<%= pageName %>" />
 				</td>
 			</tr>
 			<tr>
 				<td class="jobTableCell">
 					JobAudit:
-					<webthing:jobAudit namespace="jobAudit" cssId="jobAudit" page="JOB" />
+					<webthing:jobAudit namespace="<%= jobAudit %>" cssId="jobAudit" page="<%= pageName %>" />
 				</td>
 				<td class="jobTableCell" style="text-align:center;">
 					<input type="button" value="Cancel" id="jobCancelButton" />

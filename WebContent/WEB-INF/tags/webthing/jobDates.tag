@@ -29,20 +29,20 @@
 	<table>
 		<tr>
 			<td>Proposal Date:</td>
-			<td><span id="<%=namespace %>_proposalDate"></span></td>
+			<td><span id="<%=namespace%>_proposalDate"></span></td>
 			<td>Activation Date:</td>
-			<td><span id="<%=namespace %>_activationDate"></span></td>
+			<td><span id="<%=namespace%>_activationDate"></span></td>
 		</tr>
 		<tr>
 			<td>Start Date:</td>
-			<td><span id="<%=namespace %>_startDate"></span></td>
+			<td><span id="<%=namespace%>_startDate"></span></td>
 			<td>Cancel Date:</td>
-			<td><span id="<%=namespace %>_cancelDate"></span></td>
+			<td><span id="<%=namespace%>_cancelDate"></span></td>
 		</tr>
 		<tr>
 			<td colspan="4">
 				Cancel Reason:
-				<span id="<%=namespace %>_cancelReason"></span>
+				<span id="<%=namespace%>_cancelReason"></span>
 			</td>
 		</tr>
 	</table>

@@ -10,13 +10,14 @@
 
 <%@ attribute name="namespace" required="true" rtexprvalue="true" %>
 <%@ attribute name="cssClass" required="false" rtexprvalue="true" %>
-<%@ attribute name="page" required="false" rtexprvalue="true" %>
+<%@ attribute name="page" required="true" rtexprvalue="true" %>
 
 
 
 <%
     String namespace = (String)jspContext.getAttribute("namespace");
 	String cssClass = (String)jspContext.getAttribute("cssClass");
+	String page = (String)jspContext.getAttribute("page");
 	
 	String cssClassString = cssClass == null || cssClass.length()==0 ? "" : "class=\"" + cssClass + "\"";
 %>

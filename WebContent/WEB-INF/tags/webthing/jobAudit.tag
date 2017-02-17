@@ -31,12 +31,12 @@
 			<td class="jobTableCell">
 				<div style="display:inline;">
 					Created By:
-					<span style="display:inline;" id="<%= namespace %>_createdBy"></span>
+					<span style="display:inline;" id="<%=namespace%>_createdBy"></span>
 				</div>
 				<div style="display:inline;">
 					Last Changed:
-					<span style="display:inline; margin-left:30px;" id="<%= namespace %>_lastChangeBy"></span>
-					<span style="display:inline; margin-left:30px;" id="<%= namespace %>_lastChangeDate"></span>
+					<span style="display:inline; margin-left:30px;" id="<%=namespace%>_lastChangeBy"></span>
+					<span style="display:inline; margin-left:30px;" id="<%=namespace%>_lastChangeDate"></span>
 				</div>
 			</td>
 		</tr>

@@ -106,13 +106,13 @@
 				$lastCreated = $jobData.lastCreated;
 			}
 			
-			JOBPANEL.init("jobPanel", $divisionList, $jobDetail);
-			JOBPROPOSAL.init("jobProposal", $jobFrequencyList, $jobDetail);
-			JOBACTIVATION.init("jobActivation", $buildingTypeList, $jobDetail);
-			JOBDATES.init("jobDates", $quoteDetail, $jobDetail);
-			JOBSCHEDULE.init("jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
-			JOBINVOICE.init("jobInvoice", $invoiceStyleList, $invoiceGroupingList, $invoiceTermList, $jobDetail);
-			JOBAUDIT.init("jobAudit", $jobDetail);
+			JOBPANEL.init("row0_jobPanel", $divisionList, "activateModal", $jobDetail);
+			JOBPROPOSAL.init("row0_jobProposal", $jobFrequencyList, $jobDetail);
+			JOBACTIVATION.init("row0_jobActivation", $buildingTypeList, $jobDetail);
+			JOBDATES.init("row0_jobDates", $quoteDetail, $jobDetail);
+			JOBSCHEDULE.init("row0_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
+			JOBINVOICE.init("row0_jobInvoice", $invoiceStyleList, $invoiceGroupingList, $invoiceTermList, $jobDetail);
+			JOBAUDIT.init("row0_jobAudit", $jobDetail);
 			
 
 			$("#jobNbr").focus();
@@ -123,64 +123,19 @@
     </tiles:put>
     
     
-    <tiles:put name="content" type="string">
+    <tiles:put name="content" type="string">    	
     	<h1>Job Maintenance</h1>
-    	JOB ID: <c:out value="${ANSI_JOB_ID}" />
+ 		<%-- quotePanel requires a table because it is also used in the quote page --%>
 		<table>
-			<tr>
-				<td class="jobTableCell">
-					<webthing:addressPanel namespace="jobSite" label="Job Site" cssId="jobSite" />
-				</td>
-				<td class="jobTableCell">
-					<webthing:addressPanel namespace="billTo" label="Bill To" cssId="billTo" />
-				</td>
-			</tr>
+			<tbody>
+				<jsp:include page="quotePanel.jsp">
+					 <jsp:param name="panelname" value="row0" />
+					 <jsp:param name="page" value="JOB" />
+				</jsp:include>
+			</tbody>
 		</table>
-		<table style="border:solid 1px #000000; margin-top:8px;">
-			<tr>
-				<td class="jobTableCell" colspan="2">
-					JobPanel:					
-					 <webthing:jobPanel namespace="jobPanel" cssId="jobPanel" page="JOB" />
-				</td>
-			</tr>
-			<tr>
-				<td class="jobTableCell">
-					JobProposal:
-					<webthing:jobProposal namespace="jobProposal" cssId="jobProposal" page="JOB" />
-				</td>
-				<td class="jobTableCell">
-					JobActivation:
-					<webthing:jobActivation namespace="jobActivation" cssId="jobActivation" page="JOB" />
-				</td>
-			</tr>
-
-			<tr>
-				<td class="jobTableCell">
-					JobDates:
-					<webthing:jobDates namespace="jobDates" cssId="jobDates" page="JOB" />
-					<br />
-					Job Schedule:
-					<webthing:jobSchedule namespace="jobSchedule" cssId="jobSchedule" page="JOB" />
-				</td>
-				<td class="jobTableCell">
-					JOb Invoice:<br />			
-					<webthing:jobInvoice namespace="jobInvoice" cssId="jobInvoice" page="JOB" />
-				</td>
-			</tr>
-			<tr>
-				<td class="jobTableCell">
-					JobAudit:
-					<webthing:jobAudit namespace="jobAudit" cssId="jobAudit" page="JOB" />
-				</td>
-				<td class="jobTableCell" style="text-align:center;">
-					<input type="button" value="Cancel" id="jobCancelButton" />
-					<input type="button" value="Save" id="jobSaveButton" />
-					<input type="button" value="Save & Exit" id="jobExitButton" />
-				</td>
-			</tr>
-		</table>    	
 		
-		<webthing:jobActivateCancel namespace="jobPanel" />
+		<webthing:jobActivateCancel page="JOB" namespace="activateModal" />
 		
     </tiles:put>
 
