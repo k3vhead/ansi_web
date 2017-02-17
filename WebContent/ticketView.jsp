@@ -18,7 +18,7 @@
 <tiles:insert page="layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        Ticket View
+        Ticket View (DRV)
     </tiles:put>
     
     
@@ -42,9 +42,19 @@
 				width:80px !important;
 				max-width:80px !important;
 			}
+			.MonthDatePicker .ui-datepicker-year {
+    			display:none;   
+			}
+			.HideTodayButton .ui-datepicker-buttonpane .ui-datepicker-current {
+    			visibility:hidden;
+			}
+			.hide-calendar .ui-datepicker-calendar {
+				display:none!important;
+				visibility:hidden!important
+			}
 			
-        </style>
-        
+        </style>       
+       
         <script type="text/javascript">    
         
         $(document).ready(function(){
@@ -58,7 +68,7 @@
         	var dataTable = null;
         	
         	function createTable(){
-        		var dataTable = $('#ticketTable').DataTable( {
+        		var dataTable = $('#ticketDRV').DataTable( {
         			"processing": 		true,
         	        "serverSide": 		true,
         	        "autoWidth": 		false,
@@ -69,52 +79,60 @@
         	        dom: 				'Bfrtip',
         	        "searching": 		true,
         	        lengthMenu: [
-        	            [ 10, 50, 100, 500, -1 ],
-        	            [ '10 rows', '50 rows', '100 rows', '500 rows', 'Show all' ]
+        	            [ 10, 50, 100, 500, 1000 ],
+        	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
         	        ],
         	        buttons: [
         	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}}
         	        ],
+        	        "columnDefs": [
+        	            { className: "dt-left", "targets": [0,2,3,4,5,6,11-1] },
+        	            { className: "dt-center", "targets": [1,7,8] },
+        	            { className: "dt-right", "targets": [9,10] },
+        	         ],
         	        "paging": true,
 			        "ajax": {
-			        	"url": "ticketTable",
+			        	"url": "ticketDRV",
 			        	"type": "GET"
 			        	},
 			        columns: [
-			            { title: "Ticket", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-			            	if(row.ticketId != null){return (row.ticketId+"");}
+			            { title: "TICKET", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            	if(row.ticketid != null){return (row.ticketid+"");}
 			            } },
-			            { title: "Status", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "STATUS", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.status != null){return (row.status+"");}
 			            } },
-			            { title: "Site", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.jobSiteName != null){return (row.jobSiteName+"");}
+			            { title: "Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            	if(row.name != null){return (row.name+"");}
 			            } },
-			            { title: "Street 1",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.jobSiteAddress != null){return (row.jobSiteAddress+"");}
+			            { title: "Address 1",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            	if(row.address1 != null){return (row.address1+"");}
 			            } },
 			            { title: "City", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.jobFreq != null){return (row.jobFreq+"");}
+			            	if(row.city != null){return (row.city+"");}
 			            } },
 			            { title: "Last Done", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.startDate != null){return (row.startDate+"");}
+			            	if(row.lastDone != null){return (row.lastDone+"");}
 			            } },
 			            { title: "Start Date", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.startDate != null){return (row.startDate+"");}
 			            } },
-			            { title: "J #", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
-			            	if(row.jobNbr != null){return (row.jobNbr+"");}
+			            { title: "Job #", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
+			            	if(row.jobNum != null){return (row.jobNum+"");}
 			            } },
-			            { title: "Freq", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.jobFreq != null){return (row.jobFreq+"");}
+			            { title: "FREQ", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            	if(row.frequency != null){return (row.frequency+"");}
 			            } },
-			            { title: "Budget", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.pricePerCleaning != null){return (row.pricePerCleaning+"");}
+			            { title: "BUDGET", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            	if(row.budget!= null){return (row.budget+"");}
 			            } },
 			            { title: "PPC", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.pricePerCleaning != null){return (row.pricePerCleaning+"");}
+			            	if(row.ppc != null){return (row.ppc+"");}
 			            } },
 			            { title: "COD", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            	if(row.cod != null){return (row.cod+"");} 
+			            } },
+			            { title: "JOB ID", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.jobId != null){return (row.jobId+"");} 
 			            } },
 			            ],
@@ -140,7 +158,7 @@
 					
 					createTable();
             }; 
-				
+                
 				function doFunctionBinding() {
 					$( ".editAction" ).on( "click", function($clickevent) {
 						 doEdit($clickevent);
@@ -150,7 +168,7 @@
 				function doEdit($clickevent) {
 					var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
 
-						var $url = 'ticketTable/' + $rowid;
+						var $url = 'ticketDRV/' + $rowid;
 						//console.log("YOU PASSED ROW ID:" + $rowid);
 						var jqxhr = $.ajax({
 							type: 'GET',
@@ -160,20 +178,21 @@
 								
 				        		$("#ticketId").val(($data.data.codeList[0]).ticketId);
 				        		$("#status").val(($data.data.codeList[0]).status);
-				        		$("#jobSiteName").val(($data.data.codeList[0]).jobSiteName);
-				        		$("#jobSiteAddress").val(($data.data.codeList[0]).jobSiteAddress);
-				        		$("#jobFreq").val(($data.data.codeList[0]).jobFreq);
+				        		$("#name").val(($data.data.codeList[0]).name);
+				        		$("#address1").val(($data.data.codeList[0]).address1);
+				        		$("#city").val(($data.data.codeList[0]).city);
+				        		$("#lastDone").val(($data.data.codeList[0]).lastDone);
 				        		$("#startDate").val(($data.data.codeList[0]).startDate);
-				        		$("#startDate").val(($data.data.codeList[0]).startDate);
-				        		$("#jobNbr").val(($data.data.codeList[0]).jobNbr);
-				        		$("#jobFreq").val(($data.data.codeList[0]).jobFreq);
-				        		$("#pricePerCleaning").val(($data.data.codeList[0]).pricePerCleaning);
-				        		$("#pricePerCleaning").val(($data.data.codeList[0]).pricePerCleaning);
+				        		$("#jobNum").val(($data.data.codeList[0]).jobNum);
+				        		$("#frequency").val(($data.data.codeList[0]).frequency);
+				        		$("#budget").val(($data.data.codeList[0]).budget);
+				        		$("#ppc").val(($data.data.codeList[0]).ppc);
+				        		$("#cod").val(($data.data.codeList[0]).cod);
 				        		$("#jobId").val(($data.data.codeList[0]).jobId);
 				        		
-				        		$("#tId").val(($data.data.codeList[0]).ticketId);
+				        		$("#t_id").val(($data.data.codeList[0]).ticket_Id);
 				        		$("#updateOrAdd").val("update");
-				        		$("#addTicketTableForm").dialog( "open" );
+				        		$("#addTicketDRVForm").dialog( "open" );
 							},
 							statusCode: {
 								403: function($data) {
@@ -190,19 +209,19 @@
     </tiles:put>
     
    <tiles:put name="content" type="string">
-    	<h1>Ticket View</h1>
     	
- 	<table id="ticketTable" style="table-layout: fixed" class="display" cellspacing="0" width="100%" style="font-size:9pt;max-width:1300px;width:1300px;">
+ 	<table id="ticketDRV" style="table-layout: fixed" class="display" cellspacing="0" width="100%" style="font-size:9pt;max-width:1300px;width:1300px;">
         <colgroup>
         	<col style="width:6%;" />
     		<col style="width:6%;" />
-    		<col style="width:15%;" />
-    		<col style="width:15%;" />
-    		<col style="width:12%;" />
-    		<col style="width:8%;" />
-    		<col style="width:8%;" />
+    		<col style="width:10%;" />
+    		<col style="width:10%;" />
+    		<col style="width:10%;" />
     		<col style="width:6%;" />
     		<col style="width:6%;" />
+    		<col style="width:6%;" />
+    		<col style="width:11%;" />
+    		<col style="width:15%;" />
     		<col style="width:6%;" />
     		<col style="width:6%;" />
     		<col style="width:6%;" />
@@ -211,32 +230,34 @@
             <tr>
                 <th>TICKET</th>
     			<th>STATUS</th>
-    			<th>Site</th>
-    			<th>Street 1</th>
+    			<th>Name</th>
+    			<th>Address 1</th>
     			<th>City</th>
     			<th>Last Done</th>
     			<th>Start Date</th>
-    			<th>J#</th>
+    			<th>Job #</th>
     			<th>FRQ</th>
     			<th>BUDGET</th>
     			<th>PPC</th>
     			<th>COD</th>
+    			<th>JOB ID</th>
             </tr>
         </thead>
         <tfoot>
             <tr>
                 <th>TICKET</th>
     			<th>STATUS</th>
-    			<th>Site</th>
-    			<th>Street 1</th>
+    			<th>Name</th>
+    			<th>Address 1</th>
     			<th>City</th>
     			<th>Last Done</th>
     			<th>Start Date</th>
-    			<th>J#</th>
+    			<th>Job #</th>
     			<th>FRQ</th>
     			<th>BUDGET</th>
     			<th>PPC</th>
-    			<th>COD</th>			
+    			<th>COD</th>
+    			<th>JOB ID</th>		
             </tr>
         </tfoot>
     </table>
