@@ -55,7 +55,7 @@ public class JobTableServlet extends AbstractServlet {
 		int draw = 0;
 		int col = 0;
 		String dir = "asc";
-		String[] cols = { "job_id", "status", "division_nbr", "bill_to_name", "job_site_name", "job_site_address", "start_date", "job_number", "frequency", "price_per_cleaning", "service_description", "po_number" };
+		String[] cols = { "job_id", "job.status", "division_nbr", "bill_to_name", "job_site_name", "job_site_address", "start_date","job_frequency", "price_per_cleaning",  "job_nbr", "service_description", "po_number" };
 		String sStart = request.getParameter("start");
 	    String sAmount = request.getParameter("length");
 	    String sDraw = request.getParameter("draw");
