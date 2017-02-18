@@ -86,9 +86,9 @@
         	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}}
         	        ],
         	        "columnDefs": [
-        	            { className: "dt-left", "targets": [0,2,3,4,5,6,11-1] },
+        	            { className: "dt-left", "targets": [0,2,3,4,5,6,11,-1] },
+        	            { className: "dt-right", "targets": [0,9,10] },
         	            { className: "dt-center", "targets": [1,7,8] },
-        	            { className: "dt-right", "targets": [9,10] },
         	         ],
         	        "paging": true,
 			        "ajax": {
@@ -214,17 +214,17 @@
         <colgroup>
         	<col style="width:6%;" />
     		<col style="width:6%;" />
-    		<col style="width:10%;" />
-    		<col style="width:10%;" />
-    		<col style="width:10%;" />
+    		<col style="width:12%;" />
+    		<col style="width:12%;" />
+    		<col style="width:12%;" />
     		<col style="width:6%;" />
     		<col style="width:6%;" />
     		<col style="width:6%;" />
-    		<col style="width:11%;" />
-    		<col style="width:15%;" />
-    		<col style="width:6%;" />
-    		<col style="width:6%;" />
-    		<col style="width:6%;" />
+    		<col style="width:8%;" />
+    		<col style="width:8%;" />
+    		<col style="width:8%;" />
+    		<col style="width:7%;" />
+    		<col style="width:7%;" />
    		</colgroup>        
         <thead>
             <tr>
