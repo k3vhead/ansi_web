@@ -102,6 +102,9 @@
         	        buttons: [
         	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}}
         	        ],
+        	        "columnDefs": [
+        	            { "orderable": false, "targets": -1 }
+        	          ],
         	        "paging": true,
 			        "ajax": {
 			        	"url": "addressTable",

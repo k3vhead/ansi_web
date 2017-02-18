@@ -80,6 +80,9 @@
         	            { className: "dt-center", "targets": [1,8,-1] },
         	            { className: "dt-right", "targets": [9]}
         	         ],
+        	         "columnDefs": [
+         	            { "orderable": false, "targets": -1 }
+         	          ],
         	        "paging": true,
 			        "ajax": {
 			        	"url": "quoteTable",

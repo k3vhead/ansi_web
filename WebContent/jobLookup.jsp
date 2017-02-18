@@ -80,6 +80,9 @@
         	            { className: "dt-center", "targets": [1,7,9,12,-1] },
         	            { className: "dt-right", "targets": [8]}
         	         ],
+        	         "columnDefs": [
+         	            { "orderable": false, "targets": -1 }
+         	          ],
         	        "paging": true,
 			        "ajax": {
 			        	"url": "jobTable",
