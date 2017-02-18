@@ -75,14 +75,13 @@
         	        buttons: [
         	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}}
         	        ],
+        	        
         	        "columnDefs": [
+         	            { "orderable": false, "targets": -1 },
         	            { className: "dt-head-left", "targets": [0,2,3,4,5,6,10,11,12,13] },
         	            { className: "dt-body-center", "targets": [1,7,9,-1] },
         	            { className: "dt-right", "targets": [8]}
         	         ],
-        	         "columnDefs": [
-         	            { "orderable": false, "targets": -1 }
-         	          ],
         	        "paging": true,
 			        "ajax": {
 			        	"url": "ticketTable",
