@@ -2,19 +2,20 @@ package com.ansi.scilla.web.servlets;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
-
+import com.ansi.scilla.common.db.Ticket;
+import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ResponseCode;
-import com.ansi.scilla.web.request.DivisionRequest;
+import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.response.ticket.TicketReturnListResponse;
-import com.ansi.scilla.web.struts.SessionUser;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.ansi.scilla.web.response.ticket.TicketReturnRecord;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 
@@ -100,9 +101,7 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
 public class TicketServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
-	private String panel;
-	private Integer id;
-	private String remainder;
+	
 	
 	/**
 	 * Parses a URL of the form /<servlet>/<id>/<panel>
@@ -111,50 +110,65 @@ public class TicketServlet extends AbstractServlet {
 	 * @return Boolean - true == valid url, false == invalid url
 	 * 
 	 */
-	Boolean parsePanelUrl ( String expected, String url ) {
-		this.panel = "";
-		this.id = null;
-		
-		System.out.println("parsePanelUrl(): Url:" + url);
-		int idx = url.indexOf(expected);
-		if ( idx > -1 ) {
-			String myString = url.substring(idx + expected.length());
-			String[] urlPieces = myString.split("/");
-			System.out.println("parsePanelUrl(): myString:" + myString);
-			if ( StringUtils.isBlank(urlPieces[0])) { // is the id blank?
-				System.out.println("parsePanelUrl(): no id");
-			} else if ( StringUtils.isNumeric(urlPieces[0])) { // is the id numeric?
-				this.id = Integer.valueOf(urlPieces[0]);
-				System.out.println("parsePanelUrl(): id:" + this.id);
-				if ( StringUtils.isBlank(urlPieces[1])) { // is the panel blank?
-					System.out.println("parsePanelUrl(): no panel");
-				} else { // we have a panel
-					System.out.println("parsePanelUrl(): panel:" + urlPieces[1]);
-					this.panel = urlPieces[1];
-					return(true);
-				}
-			} else { // not a valid id
-				System.out.println("parsePanelUrl(): not a valid id");
-			}
-		} 
-		return(false);
-	}
-
+	
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		String url = request.getRequestURI();
-		System.out.println("TicketReturn(): doGet(): Url:" + url);
-		if(parsePanelUrl("/ticket/",url)) {
-			System.out.println("Ticket(): doGet(): panel:" + this.panel);
-			System.out.println("Ticket(): doGet(): ticketId:" + this.id);
-			if ( this.panel.equals("return")) { // ticket return panel?
+		
+		AnsiURL ansiURL = null;
+		try {
+			ansiURL = new AnsiURL(request, "ticket", (String[])null); //which panel to 122
+			
+			String panel = ansiURL.getQueryParameterMap().get("panel")[0]; //selected panel
+			TicketReturnRecord ticketId = new TicketReturnRecord();
+			
+			Connection conn = null;
+			TicketReturnListResponse ticketReturnListResponse = null;
+			try {
+				conn = AppUtils.getDBCPConn();
+
+				if (panel.equals("invoice")) { // ticket invoice panel?
+					ticketReturnListResponse = makeGetInvoiceResponse(conn, ansiURL); //sends Json back
+				}
+				else if (panel.equals("")){
+					ticketReturnListResponse = makeGetYYYResponse(conn, ansiURL);
+				}
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, ticketReturnListResponse); //utility to send Json back
+				
+				
+				
+			} catch(RecordNotFoundException recordNotFoundEx) {
+				super.sendNotFound(response);
+			} catch ( Exception e) {
+				AppUtils.logException(e);
+				throw new ServletException(e);
+			} finally {
+				AppUtils.closeQuiet(conn);
+			}
+		} catch (ResourceNotFoundException e1) {
+			super.sendNotFound(response);
+		}
+	}
+	
+	protected void xxx(HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+		
+		String panel = null;
+		Integer ticketId = null;
+		Connection conn = null;
+		
+		
+		if(panel.equals("/ticket/"/*, ansiURL*/)) {
+			System.out.println("Ticket(): doGet(): panel:" + panel);
+			//System.out.println("Ticket(): doGet(): ticketId:" + ticketId.getTicketId());
+			if (panel.equals("return")) { // ticket return panel?
 				System.out.println("Ticket(): doGet(): process ticket return panel");
-				Connection conn = null;
+
 				try {
 					conn = AppUtils.getDBCPConn();
+					TicketReturnListResponse ticketReturnListResponse = null;
 
-					TicketReturnListResponse ticketReturnListResponse = new TicketReturnListResponse(conn, this.id);
+					//ticketReturnListResponse = new TicketReturnListResponse(conn, this.id);
 					super.sendResponse(conn, response, ResponseCode.SUCCESS, ticketReturnListResponse);
 				} catch(RecordNotFoundException recordNotFoundEx) {
 					super.sendNotFound(response);
@@ -164,7 +178,7 @@ public class TicketServlet extends AbstractServlet {
 				} finally {
 					AppUtils.closeQuiet(conn);
 				}
-			} else if ( this.panel.equals("invoice")) { // ticket invoice panel?
+			} else if (panel.equals("invoice")) { // ticket invoice panel?
 				/* Needs to return:
 				 * 		for Ticket = ticketId
 				 * 			actPpc
@@ -187,6 +201,8 @@ public class TicketServlet extends AbstractServlet {
 				 * 			**invoice MSFC amount - stub for v 2.0
 				 * 			**invoice excess payment amount - stub for v 2.0
 				 */
+				
+				
 				System.out.println("Ticket(): doGet(): process ticket invoice panel");
 				super.sendNotFound(response); // not coded yet
 			} else {
@@ -195,6 +211,40 @@ public class TicketServlet extends AbstractServlet {
 		} else {
 			super.sendNotFound(response);
 		}
+	}
+	
+	protected TicketReturnListResponse makeGetInvoiceResponse(Connection conn, AnsiURL ansiURL) throws Exception{
+		 // ticket invoice panel?
+			TicketReturnListResponse ticketReturnListResponse = new TicketReturnListResponse();
+			Ticket ticket = new Ticket();
+			ticket.setInvoiceId(Integer.valueOf(ansiURL.getQueryParameterMap().get("ticketId")[0]));
+			List<Ticket> ticketList = Ticket.cast(ticket.selectSome(conn));
+			List<TicketReturnRecord> ticketReturnRecordList = new ArrayList<TicketReturnRecord>();
+			for(Ticket t: ticketList){
+				TicketReturnRecord r = new TicketReturnRecord(t);
+				ticketReturnRecordList.add(r);
+			}
+			
+			ticketReturnListResponse.setTicketReturnList(ticketReturnRecordList);
+			
+			return ticketReturnListResponse;
+	}
+	
+	protected TicketReturnListResponse makeGetYYYResponse(Connection conn, AnsiURL ansiURL) throws Exception{
+		 // ticket invoice panel?
+			TicketReturnListResponse ticketReturnListResponse = new TicketReturnListResponse();
+			Ticket ticket = new Ticket();
+			ticket.setInvoiceId(Integer.valueOf(ansiURL.getQueryParameterMap().get("ticketId")[0]));
+			List<Ticket> ticketList = Ticket.cast(ticket.selectSome(conn));
+			List<TicketReturnRecord> ticketReturnRecordList = new ArrayList<TicketReturnRecord>();
+			for(Ticket t: ticketList){
+				TicketReturnRecord r = new TicketReturnRecord(t);
+				ticketReturnRecordList.add(r);
+			}
+			
+			ticketReturnListResponse.setTicketReturnList(ticketReturnRecordList);
+			
+			return ticketReturnListResponse;
 	}
 
 

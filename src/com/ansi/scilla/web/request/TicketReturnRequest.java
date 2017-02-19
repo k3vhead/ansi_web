@@ -29,6 +29,7 @@ public class TicketReturnRequest extends AbstractRequest {
 	private String processNotes;
 	private String status;
 	private Integer ticketId;
+	private String panel;
 	
 	public TicketReturnRequest() {
 		super();
@@ -110,6 +111,14 @@ public class TicketReturnRequest extends AbstractRequest {
 	}
 	public Integer getTicketId() {
 		return this.ticketId;
+	}
+
+	public String getPanel() {
+		return panel;
+	}
+
+	public void setPanel(String panel) {
+		this.panel = panel;
 	}
 
 
