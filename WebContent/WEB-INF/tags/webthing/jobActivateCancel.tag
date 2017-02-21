@@ -48,11 +48,13 @@
   		<table>
   			<tr>
   				<td><bean:message key="form.hdr.canceldate" />:</td>
-  				<td><input type="text" class="<%=namespace %>_datefield" name="<%=namespace %>_cancelDate" id="<%=namespace %>_cancelDate" /></td>
+  				<td><input type="text" class="<%=namespace %>_datefield <%= namespace %>_cancelField" name="<%=namespace %>_cancelDate" id="<%=namespace %>_cancelDate" /></td>
+  				<td><span class="err <%= namespace%>_cancelMessage" id="<%= namespace%>_cancelDate_msg"></span></td>
   			</tr>
   			<tr>
   				<td><bean:message key="form.hdr.cancelreason" />:</td>
-  				<td><input type="text" name="<%=namespace %>_cancelReason" id="<%=namespace %>_cancelReason" /></td>
+  				<td><input type="text" name="<%=namespace %>_cancelReason" id="<%=namespace %>_cancelReason" class="<%= namespace %>_cancelField" /></td>
+  				<td><span class="err <%= namespace%>_cancelMessage" id="<%= namespace%>_cancelReason_msg"></span></td>
   			</tr>
   		</table>
 	</form>

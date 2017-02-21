@@ -9,11 +9,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.ansi.scilla.common.jobticket.JobUtils;
 import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ResponseCode;
+import com.ansi.scilla.web.common.WebMessages;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
+import com.ansi.scilla.web.request.JobDetailRequest;
+import com.ansi.scilla.web.request.JobDetailRequest.JobDetailRequestAction;
 import com.ansi.scilla.web.response.job.JobDetailResponse;
+import com.ansi.scilla.web.struts.SessionUser;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class JobServlet extends AbstractServlet {
@@ -66,8 +71,74 @@ public class JobServlet extends AbstractServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		super.doPost(request, response);
+		
+		AnsiURL url = null;
+		SessionUser sessionUser = AppUtils.getSessionUser(request);
+		WebMessages messages = new WebMessages();
+		JobDetailResponse jobDetailResponse = new JobDetailResponse();
+		Connection conn = null;
+		try {
+			conn = AppUtils.getDBCPConn();
+			conn.setAutoCommit(false);
+			String jsonString = super.makeJsonString(request);
+			System.out.println(jsonString);
+			url = new AnsiURL(request, "job", (String[])null);
+			try {
+				JobDetailRequest jobDetailRequest = (JobDetailRequest) AppUtils.json2object(jsonString, JobDetailRequest.class);
+				System.out.println(jobDetailRequest);
+				JobDetailRequest.JobDetailRequestAction action = JobDetailRequest.JobDetailRequestAction.valueOf(jobDetailRequest.getAction());
+				if (action.equals(JobDetailRequestAction.CANCEL_JOB)) {
+					doCancelJob(conn, url.getId(), jobDetailRequest, sessionUser, response);					
+				} else if ( action.equals(JobDetailRequestAction.ACTIVATE_JOB)) {
+					System.out.println("JObServer 94 activating job");
+	//				jobDetailResponse = doActivateJob(conn, url.getId(), jobDetailRequest, response);				
+				}
+			} catch ( IllegalArgumentException e) {
+				conn.rollback();
+				messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Missing Required Data: action");
+				jobDetailResponse.setWebMessages(messages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, jobDetailResponse);
+			}
+		} catch (ResourceNotFoundException e) {
+			super.sendNotFound(response);
+		} catch ( Exception e) {
+			AppUtils.logException(e);
+			throw new ServletException(e);
+		} finally {
+			AppUtils.closeQuiet(conn);
+		}
+		
 	}
 
+	
+	private void doCancelJob(Connection conn, Integer jobId, JobDetailRequest jobDetailRequest, SessionUser sessionUser, HttpServletResponse response) throws Exception {
+		JobDetailResponse jobDetailResponse = new JobDetailResponse();
+		WebMessages messages = new WebMessages();
+		ResponseCode responseCode = null;
+		if ( StringUtils.isBlank(jobDetailRequest.getCancelReason())) {
+			messages.addMessage("cancelReason", "Required Field");
+		}
+		if ( jobDetailRequest.getCancelDate() == null ) {
+			messages.addMessage("cancelDate", "Required Field");
+		}
+		if ( messages.isEmpty() ) {
+			try {
+				JobUtils.cancelJob(conn, jobId, jobDetailRequest.getCancelDate(), jobDetailRequest.getCancelReason(), sessionUser.getUserId());
+				conn.commit();
+				responseCode = ResponseCode.SUCCESS;
+				messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
+				jobDetailResponse = new JobDetailResponse(conn,jobId);
+			} catch ( RecordNotFoundException e) {
+				responseCode = ResponseCode.EDIT_FAILURE;
+				messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Job ID");
+			}
+		} else { 
+			responseCode = ResponseCode.EDIT_FAILURE;
+		}
+		jobDetailResponse.setWebMessages(messages);
+		super.sendResponse(conn, response, responseCode, jobDetailResponse);
+	}
+
+	
 	
 }
