@@ -94,7 +94,7 @@
 			            { title: "Status", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.status != null){return (row.status+"");}
 			            } },
-			            { title: "DIV", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "Div", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.divisionNbr != null){return (row.divisionNbr+"");}
 			            } },
 			            { title: "Bill To" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
@@ -221,7 +221,7 @@
             <tr>
                 <th>Job</th>
     			<th>Status</th>
-    			<th>DIV</th>
+    			<th>Div</th>
     			<th>Bill To</th>
     			<th>Job Site</th>
     			<th>Job Address</th>
@@ -238,7 +238,7 @@
             <tr>
                 <th>Job</th>
     			<th>Status</th>
-    			<th>DIV</th>
+    			<th>Div</th>
     			<th>Bill To</th>
     			<th>Job Site</th>
     			<th>Job Address</th>
