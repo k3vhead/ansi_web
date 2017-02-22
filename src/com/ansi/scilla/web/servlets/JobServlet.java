@@ -130,7 +130,7 @@ public class JobServlet extends AbstractServlet {
 				jobDetailResponse = new JobDetailResponse(conn,jobId);
 			} catch ( RecordNotFoundException e) {
 				responseCode = ResponseCode.EDIT_FAILURE;
-				messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Job ID");
+				messages.addMessage("cancelDate", "Invalid Job ID");
 			}
 		} else { 
 			responseCode = ResponseCode.EDIT_FAILURE;

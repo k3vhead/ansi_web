@@ -1,6 +1,65 @@
 $( document ).ready(function() {
-	;JOBUTILS = {
+	;JOB_DATA = {}
+	
+	;JOB_UTILS = {
+		pageInit:function($jobId) {
 			
+			$optionData = ANSI_UTILS.getOptions('JOB_FREQUENCY,JOB_STATUS,INVOICE_TERM,INVOICE_GROUPING,INVOICE_STYLE');
+			JOB_DATA.jobFrequencyList = $optionData.jobFrequency;
+			JOB_DATA.jobStatusList = $optionData.jobStatus;
+			JOB_DATA.invoiceTermList = $optionData.invoiceTerm;
+			JOB_DATA.invoiceGroupingList = $optionData.invoiceGrouping;
+			JOB_DATA.invoiceStyleList = $optionData.invoiceStyle;
+
+			JOB_DATA.divisionList = ANSI_UTILS.getDivisionList();
+			JOB_DATA.buildingTypeList = ANSI_UTILS.makeBuildingTypeList();
+						
+			JOB_UTILS.panelLoad($jobId);
+			
+			
+		},
+			
+		panelLoad:function($jobId) {
+			
+			var $jobDetail = null;			
+			var $quoteDetail = null;
+			var $lastRun = null;
+			var $nextDue = null;
+			var $lastCreated = null;
+			
+			if ( $jobId != '' ) {
+				$jobData = JOB_UTILS.getJobDetail($jobId);				
+				$jobDetail = $jobData.job;
+				$quoteDetail = $jobData.quote;
+				$lastRun = $jobData.lastRun;
+				$nextDue = $jobData.nextDue;
+				$lastCreated = $jobData.lastCreated;
+			}
+			
+			var jqxhr1 = $.ajax({
+				type: 'GET',
+				url: 'quotePanel.html',
+				data: {"namespace":'row0',"page":'JOB'},
+				success: function($data) {
+					$('#jobPanelHolder > tbody:last-child').replaceWith($data);
+					JOBPANEL.init("row0_jobPanel", JOB_DATA.divisionList, "activateModal", $jobDetail);
+					JOBPROPOSAL.init("row0_jobProposal", JOB_DATA.jobFrequencyList, $jobDetail);
+					JOBACTIVATION.init("row0_jobActivation", JOB_DATA.buildingTypeList, $jobDetail);
+					JOBDATES.init("row0_jobDates", $quoteDetail, $jobDetail);
+					JOBSCHEDULE.init("row0_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
+					JOBINVOICE.init("row0_jobInvoice", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, $jobDetail);
+					JOBAUDIT.init("row0_jobAudit", $jobDetail);
+				},
+				statusCode: {
+					403: function($data) {
+						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+					} 
+				},
+				dataType: 'html'
+			});
+		},
+		
+		
 		getJobDetail:function($jobId) {			
 			var $returnValue = null;
 			if ( $jobId != null ) {
@@ -32,7 +91,7 @@ $( document ).ready(function() {
 		},
 		
 		fadeMessage:function($namespace, $id, $duration) {
-			var $selectorName = "#" + namesapce + "_" + id;
+			var $selectorName = "#" + $namespace + "_" + $id;
 			if ( $duration == null ) {
 				$duration=6000;
 			}
@@ -331,10 +390,10 @@ $( document ).ready(function() {
 		cancelJob: function($namespace, $modalNamespace) {
 			//$event.preventDefault();
 			//var $jobid = $event.currentTarget.attributes['data-jobid'].value;
-			$jobid = ANSI_UTILS.getFieldValue($namespace, "jobId");
+			$jobId = ANSI_UTILS.getFieldValue($namespace, "jobId");
 			var $date = ANSI_UTILS.getFieldValue($modalNamespace, "cancelDate");
 			var $reason = ANSI_UTILS.getFieldValue($modalNamespace, "cancelReason");
-			var $url = "job/" + $jobid
+			var $url = "job/" + $jobId
 			var $outbound = {'action':'CANCEL_JOB','cancelDate':$date,'cancelReason':$reason};
 			
 			var jqxhr3 = $.ajax({
@@ -362,9 +421,7 @@ $( document ).ready(function() {
 							$($cancelFieldSelector).val("");
 							ANSI_UTILS.setTextValue($namespace, "panelMessage", "Update Successful");
 							JOB_UTILS.fadeMessage($namespace, "panelMessage")
-							JOBPANEL.init($namespace, null, $modalNamespace, $data.data.job);
-							// TODO: if audit panel is present, populate last updated fields
-							// TODO: if dates panel is present, populate cancel date / reason
+							JOB_UTILS.panelLoad($jobId);
 						}
 					},				
 					403: function($data) {
