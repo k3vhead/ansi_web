@@ -38,6 +38,7 @@ public class TicketReturnRequest extends AbstractRequest {
 	public void setActDl(BigDecimal actDl) {
 		this.actDl = actDl;
 	}
+	
 	public BigDecimal getActDl() {
 		return this.actDl;
 	}
@@ -45,6 +46,7 @@ public class TicketReturnRequest extends AbstractRequest {
 	public void setActDlPct(BigDecimal actDlPct) {
 		this.actDlPct = actDlPct;
 	}
+	
 	public BigDecimal getActDlPct() {
 		return this.actDlPct;
 	}
@@ -52,6 +54,7 @@ public class TicketReturnRequest extends AbstractRequest {
 	public void setActPricePerCleaning(BigDecimal actPricePerCleaning) {
 		this.actPricePerCleaning = actPricePerCleaning;
 	}
+	
 	public BigDecimal getActPricePerCleaning() {
 		return this.actPricePerCleaning;
 	}
@@ -59,6 +62,7 @@ public class TicketReturnRequest extends AbstractRequest {
 	public void setBillSheet(Integer billSheet) {
 		this.billSheet = billSheet;
 	}
+	
 	public Integer getBillSheet() {
 		return this.billSheet;
 	}
@@ -66,6 +70,7 @@ public class TicketReturnRequest extends AbstractRequest {
 	public void setCustomerSignature(Integer customerSignature) {
 		this.customerSignature = customerSignature;
 	}
+	
 	public Integer getCustomerSignature() {
 		return this.customerSignature;
 	}
@@ -73,6 +78,7 @@ public class TicketReturnRequest extends AbstractRequest {
 	public void setMgrApproval(Integer mgrApproval) {
 		this.mgrApproval = mgrApproval;
 	}
+	
 	public Integer getMgrApproval() {
 		return this.mgrApproval;
 	}
@@ -80,6 +86,7 @@ public class TicketReturnRequest extends AbstractRequest {
 	public void setNewStatus(String newStatus) {
 		this.newStatus = newStatus;
 	}
+	
 	public String getNewStatus() {
 		return this.newStatus;
 	}
@@ -88,6 +95,7 @@ public class TicketReturnRequest extends AbstractRequest {
 	public void setProcessDate(Date processDate) {
 		this.processDate = processDate;
 	}
+	
 	public Date getProcessDate() {
 		return this.processDate;
 	}
@@ -95,6 +103,7 @@ public class TicketReturnRequest extends AbstractRequest {
 	public void setProcessNotes(String processNotes) {
 		this.processNotes = processNotes;
 	}
+	
 	public String getProcessNotes() {
 		return this.processNotes;
 	}
@@ -102,6 +111,7 @@ public class TicketReturnRequest extends AbstractRequest {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	
 	public String getStatus() {
 		return this.status;
 	}
@@ -109,6 +119,7 @@ public class TicketReturnRequest extends AbstractRequest {
 	public void setTicketId(Integer ticketId) {
 		this.ticketId = ticketId;
 	}
+	
 	public Integer getTicketId() {
 		return this.ticketId;
 	}
