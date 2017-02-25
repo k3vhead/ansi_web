@@ -214,6 +214,9 @@ public class JobDetailResponse extends MessageResponse {
 		private String updatedFirstName;
 		private String updatedLastName;
 		private String updatedEmail;
+		private Boolean canActivate;
+		private Boolean canCancel;
+		private Boolean canReschedule;
 		
 		
 		public JobDetail(Job job, User addedBy, User updatedBy) throws IllegalAccessException, InvocationTargetException {
@@ -225,6 +228,9 @@ public class JobDetailResponse extends MessageResponse {
 			this.updatedLastName = updatedBy.getLastName();
 			this.updatedFirstName = updatedBy.getFirstName();
 			this.updatedEmail = updatedBy.getEmail();
+			this.canActivate = job.canActivate();
+			this.canCancel = job.canCancel();
+			this.canReschedule = true;
 		}
 		@JsonSerialize(using=AnsiDateFormatter.class)
 		public Date getActivationDate() {
@@ -599,6 +605,24 @@ public class JobDetailResponse extends MessageResponse {
 		}
 		public void setUpdatedEmail(String updatedEmail) {
 			this.updatedEmail = updatedEmail;
+		}
+		public Boolean getCanActivate() {
+			return canActivate;
+		}
+		public void setCanActivate(Boolean canActivate) {
+			this.canActivate = canActivate;
+		}
+		public Boolean getCanCancel() {
+			return canCancel;
+		}
+		public void setCanCancel(Boolean canCancel) {
+			this.canCancel = canCancel;
+		}
+		public Boolean getCanReschedule() {
+			return canReschedule;
+		}
+		public void setCanReschedule(Boolean canReschedule) {
+			this.canReschedule = canReschedule;
 		}
 
 	}

@@ -118,6 +118,12 @@ $( document ).ready(function() {
 			$select.selectmenu();
 		},
 		
+		getFieldValue: function($namespace, $field) {
+			$selectorName = "#" + $namespace + "_" + $field;
+			return $($selectorName).val();
+			
+		},
+		
 		setCheckbox: function($namespace, $field, $value) {
 			$selectorName = "#" + $namespace + "_" + $field;
 			$($selectorName).prop('checked', $value);

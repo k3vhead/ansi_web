@@ -1,6 +1,65 @@
 $( document ).ready(function() {
-	;JOBUTILS = {
+	;JOB_DATA = {}
+	
+	;JOB_UTILS = {
+		pageInit:function($jobId) {
 			
+			$optionData = ANSI_UTILS.getOptions('JOB_FREQUENCY,JOB_STATUS,INVOICE_TERM,INVOICE_GROUPING,INVOICE_STYLE');
+			JOB_DATA.jobFrequencyList = $optionData.jobFrequency;
+			JOB_DATA.jobStatusList = $optionData.jobStatus;
+			JOB_DATA.invoiceTermList = $optionData.invoiceTerm;
+			JOB_DATA.invoiceGroupingList = $optionData.invoiceGrouping;
+			JOB_DATA.invoiceStyleList = $optionData.invoiceStyle;
+
+			JOB_DATA.divisionList = ANSI_UTILS.getDivisionList();
+			JOB_DATA.buildingTypeList = ANSI_UTILS.makeBuildingTypeList();
+						
+			JOB_UTILS.panelLoad($jobId);
+			
+			
+		},
+			
+		panelLoad:function($jobId) {
+			
+			var $jobDetail = null;			
+			var $quoteDetail = null;
+			var $lastRun = null;
+			var $nextDue = null;
+			var $lastCreated = null;
+			
+			if ( $jobId != '' ) {
+				$jobData = JOB_UTILS.getJobDetail($jobId);				
+				$jobDetail = $jobData.job;
+				$quoteDetail = $jobData.quote;
+				$lastRun = $jobData.lastRun;
+				$nextDue = $jobData.nextDue;
+				$lastCreated = $jobData.lastCreated;
+			}
+			
+			var jqxhr1 = $.ajax({
+				type: 'GET',
+				url: 'quotePanel.html',
+				data: {"namespace":'row0',"page":'JOB'},
+				success: function($data) {
+					$('#jobPanelHolder > tbody:last-child').replaceWith($data);
+					JOBPANEL.init("row0_jobPanel", JOB_DATA.divisionList, "activateModal", $jobDetail);
+					JOBPROPOSAL.init("row0_jobProposal", JOB_DATA.jobFrequencyList, $jobDetail);
+					JOBACTIVATION.init("row0_jobActivation", JOB_DATA.buildingTypeList, $jobDetail);
+					JOBDATES.init("row0_jobDates", $quoteDetail, $jobDetail);
+					JOBSCHEDULE.init("row0_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
+					JOBINVOICE.init("row0_jobInvoice", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, $jobDetail);
+					JOBAUDIT.init("row0_jobAudit", $jobDetail);
+				},
+				statusCode: {
+					403: function($data) {
+						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+					} 
+				},
+				dataType: 'html'
+			});
+		},
+		
+		
 		getJobDetail:function($jobId) {			
 			var $returnValue = null;
 			if ( $jobId != null ) {
@@ -29,6 +88,14 @@ $( document ).ready(function() {
 			}
 			return $returnValue;
 
+		},
+		
+		fadeMessage:function($namespace, $id, $duration) {
+			var $selectorName = "#" + $namespace + "_" + $id;
+			if ( $duration == null ) {
+				$duration=6000;
+			}
+			$($selectorName).fadeOut($duration);
 		}
 	}
 	
@@ -167,15 +234,17 @@ $( document ).ready(function() {
 	
 	;JOBPANEL = {
 		init: function($namespace, $divisionList, $modalNamespace, $jobDetail) {
-			var $divisionLookup = {}
-			$.each($divisionList, function($index, $division) {
-				$divisionLookup[$division.divisionId]=$division.divisionCode;
-			});
-			JOBPANEL.setDivisionList($namespace, $divisionList);
+			if ( $divisionList != null ) {
+				var $divisionLookup = {}
+				$.each($divisionList, function($index, $division) {
+					$divisionLookup[$division.divisionId]=$division.divisionCode;
+				});
+				JOBPANEL.setDivisionList($namespace, $divisionList);
+			}
 			JOBPANEL.initActivateModal($namespace, $modalNamespace);
 			JOBPANEL.initCancelModal($namespace, $modalNamespace);
 			
-			//make the dateselectors work in the modal window
+			//make the date selectors work in the modal window
 			var $selector= '.' + $modalNamespace + "_datefield";
 			$($selector).datepicker({
                 prevText:'&lt;&lt;',
@@ -190,10 +259,18 @@ $( document ).ready(function() {
 				ANSI_UTILS.setTextValue($namespace, "divisionId", $divisionLookup[$jobDetail.divisionId]);
 				ANSI_UTILS.setTextValue($namespace, "quoteId", $jobDetail.jobId);
 				
-				if ( $jobDetail.status == 'A' ) {					
+				var $activateJobButtonSelector = "#" + $namespace + "_activateJobButton";
+				if ( $jobDetail.canActivate == true ) {							
+					$($activateJobButtonSelector).show();
+				} else {
 					$($activateJobButtonSelector).hide();
 				}
-				if ( $jobDetail.status == 'C' ) {					
+				
+				var $cancelJobButtonSelector = "#" + $namespace + "_cancelJobButton";
+				$($cancelJobButtonSelector).attr('data-jobid', $jobDetail.jobId);
+				if ( $jobDetail.canCancel == true ) {		
+					$($cancelJobButtonSelector).show();
+				} else {
 					$($cancelJobButtonSelector).hide();
 				}
 			}
@@ -226,7 +303,7 @@ $( document ).ready(function() {
 	      	    	  {
 	      	    			id: $goButtonId,
 	      	        		click: function() {
-	      	        			addAddress();
+	      	        			JOBPANEL.activateJob();
 	      	        		}
 	      	      		},
 	      	      		{
@@ -244,13 +321,20 @@ $( document ).ready(function() {
 	      	    });
 	
 		},
+	
+		
 		
 		initCancelModal: function($namespace, $modalNamespace) {
 			var $cancelJobButtonSelector = "#" + $namespace + "_cancelJobButton";
 			var $cancelJobFormDialogSelector = "#" + $modalNamespace + "_cancelJobForm";
 			var $goButtonId = $namespace + "_cancelFormButton";
 			var $closeButtonId = $namespace + "_cancelFormCloseButton";
-			                                       
+			var $cancelFieldSelector = "." + $modalNamespace + "_cancelField"
+			var $cancelMessageSelector = "." + $modalNamespace + "_cancelMessage";
+			
+			$($cancelFieldSelector).focus(function() {
+				$($cancelMessageSelector).html("");
+			});
 			
 			$($cancelJobButtonSelector).click(function() {
 				//$("#updateOrAdd").val("add");
@@ -271,7 +355,7 @@ $( document ).ready(function() {
 	      	    	  {
 	      	    			id: $goButtonId,
 	      	        		click: function() {
-	      	        			addAddress();
+	      	        			JOBPANEL.cancelJob($namespace, $modalNamespace);
 	      	        		}
 	      	      		},
 	      	      		{
@@ -301,8 +385,64 @@ $( document ).ready(function() {
 			});
 			
 			$select.selectmenu();
+		},
+		
+		cancelJob: function($namespace, $modalNamespace) {
+			//$event.preventDefault();
+			//var $jobid = $event.currentTarget.attributes['data-jobid'].value;
+			$jobId = ANSI_UTILS.getFieldValue($namespace, "jobId");
+			var $date = ANSI_UTILS.getFieldValue($modalNamespace, "cancelDate");
+			var $reason = ANSI_UTILS.getFieldValue($modalNamespace, "cancelReason");
+			var $url = "job/" + $jobId
+			var $outbound = {'action':'CANCEL_JOB','cancelDate':$date,'cancelReason':$reason};
+			
+			var jqxhr3 = $.ajax({
+				type: 'POST',
+				url: $url,
+				data: JSON.stringify($outbound),
+				statusCode: {
+					200: function($data) {
+						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+							$.each($data.data.webMessages, function(index, $value){
+								var $message = "";
+								$.each($value, function(idx2, $msg){
+									$message = $message + " " + $msg;
+								});
+								var $msgSelector = index + "_msg";
+								ANSI_UTILS.setTextValue($modalNamespace, $msgSelector, $message);
+							});
+						}
+						if ( $data.responseHeader.responseCode == 'SUCCESS') {
+							var $cancelJobFormDialogSelector = "#" + $modalNamespace + "_cancelJobForm";
+							var $cancelFieldSelector = "." + $modalNamespace + "_cancelField"
+							var $cancelMessageSelector = "." + $modalNamespace + "_cancelMessage";							
+							$( $cancelJobFormDialogSelector ).dialog( "close" );
+							$($cancelMessageSelector).html("");
+							$($cancelFieldSelector).val("");
+							ANSI_UTILS.setTextValue($namespace, "panelMessage", "Update Successful");
+							JOB_UTILS.fadeMessage($namespace, "panelMessage")
+							JOB_UTILS.panelLoad($jobId);
+						}
+					},				
+					403: function($data) {
+						ANSI_UTILS.setTextValue($namespace, "panelMessage", "Function Not Permitted");
+						JOB_UTILS.fadeMessage($namespace, "panelMessage")
+					}, 
+					404: function($data) {
+						ANSI_UTILS.setTextValue($namespace, "panelMessage", "Resource Not Available");
+						JOB_UTILS.fadeMessage($namespace, "panelMessage")
+					}, 
+					500: function($data) {
+						ANSI_UTILS.setTextValue($namespace, "panelMessage", "System Error -- Contact Support");
+					} 
+				},
+				dataType: 'json',
+				async:false
+			});
 		}
 	}
+	
+	
 	
 	
 	;JOBPROPOSAL = {		

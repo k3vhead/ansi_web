@@ -93,7 +93,7 @@
 			            { title: "Quote", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.quoteCode != null){return (row.quoteCode+"");}
 			            } },
-			            { title: "DIV", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "Div", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.divisionNbr != null){return (row.divisionNbr+"");}
 			            } },
 			            { title: "Bill To" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
@@ -210,7 +210,7 @@
             <tr>
                 <th>ID</th>
     			<th>Quote</th>
-    			<th>DIV</th>
+    			<th>Div</th>
     			<th>Bill To</th>
     			<th>Job Site</th>
     			<th>Job Address</th>
@@ -225,7 +225,7 @@
             <tr>
                 <th>ID</th>
     			<th>Quote</th>
-    			<th>DIV</th>
+    			<th>Div</th>
     			<th>Bill To</th>
     			<th>Job Site</th>
     			<th>Job Address</th>

@@ -25,6 +25,7 @@
 %>
   
 <div <%= cssIdString %> <%= cssClassString %> >
+	<div id="<%= namespace %>_panelMessage" class="err"></div>
 	<table id="<%=namespace%>_jobTable" style="width:1300px;">
 		<tr>
 			<td class="jobTableCell" colspan="2" >

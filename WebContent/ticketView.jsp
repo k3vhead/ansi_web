@@ -42,20 +42,81 @@
 				width:80px !important;
 				max-width:80px !important;
 			}
-			.MonthDatePicker .ui-datepicker-year {
-    			display:none;   
-			}
-			.HideTodayButton .ui-datepicker-buttonpane .ui-datepicker-current {
-    			visibility:hidden;
-			}
-			.hide-calendar .ui-datepicker-calendar {
-				display:none!important;
-				visibility:hidden!important
-			}
-			
         </style>       
        
-        <script type="text/javascript">    
+        <script type="text/javascript">   
+        
+        $(function() {        
+        	
+            
+			var jqxhr = $.ajax({
+				type: 'GET',
+				url: '/ansi_web/ticketDRV?divisionId=9&month=3',
+				data: {},
+				success: function($data) {
+					$.each($data.data.ticketDRV, function(index, value) {
+						addRow(index, value);
+					});
+					doFunctionBinding();
+				},
+				statusCode: {
+					403: function($data) {
+						$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+					},
+					500: function($data) {
+         	    		$("#globalMsg").html("Unhandled Exception").fadeIn(10).fadeOut(6000);
+         	    	} 
+				},
+				dataType: 'json'
+			});
+			
+			function addRow(index, $ticketDRV) {	
+				var $rownum = index + 1;
+       			rowTd = makeRow($ticketDRV, $rownum);
+       			row = '<tr class="dataRow">' + rowTd + "</tr>";
+       			$('#displayTable').append(row);
+			}
+			
+			function doFunctionBinding() {
+				$('.dataRow').bind("mouseover", function() {
+					$(this).css('background-color','#CCCCCC');
+				});
+				$('.dataRow').bind("mouseout", function() {
+					$(this).css('background-color','transparent');
+				});
+			}
+			
+			function makeRow($ticketDRV, $rownum) {
+				var row = "";
+				row = row + '<td>' + $ticketDRV.startDate + '</td>';
+				row = row + '<td>' + $ticketDRV.endDate + '</td>';
+				row = row + '<td>' + $ticketDRV.ticketCount + '</td>';
+				row = row + '<td>' + $ticketDRV.division + '</td>';
+				row = row + '<td>' + $ticketDRV.runDate + '</td>';
+				row = row + '<td>' + $ticketDRV.totalVolume + '</td>';
+				row = row + '<td>' + $ticketDRV.totalDL + '</td>';  			
+				return row;
+			}
+
+				if ( $('#addForm').data('rownum') == null ) {
+					$url = "ticketDRV/add";
+				} else {
+					$rownum = $('#addForm').data('rownum')
+					var $tableData = [];
+	                $("#displayTable").find('tr').each(function (rowIndex, r) {
+	                    var cols = [];
+	                    $(this).find('th,td').each(function (colIndex, c) {
+	                        cols.push(c.textContent);
+	                    });
+	                    $tableData.push(cols);
+	                });
+
+	            	$url = "/ansi_web/ticketDRV?divisionId=9&month=3";
+				}
+        
+        
+        
+        
         
         $(document).ready(function(){
         	  $('.ScrollTop').click(function() {
@@ -86,18 +147,19 @@
         	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}}
         	        ],
         	        "columnDefs": [
+        	        	{ "orderable": false, "targets": "_all" },
         	            { className: "dt-left", "targets": [0,2,3,4,5,6,11,-1] },
         	            { className: "dt-right", "targets": [0,9,10] },
         	            { className: "dt-center", "targets": [1,7,8] },
         	         ],
         	        "paging": true,
 			        "ajax": {
-			        	"url": "ticketDRV",
-			        	"type": "GET"
+			        	"url": "/ansi_web/ticketDRV?divisionId=9&month=3",
+			        	"dataSrc": "data.responseItemList"
 			        	},
 			        columns: [
 			            { title: "TICKET", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-			            	if(row.ticketid != null){return (row.ticketid+"");}
+			            	if(row.ticketId != null){return (row.ticketId+"");}
 			            } },
 			            { title: "STATUS", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.status != null){return (row.status+"");}
@@ -168,7 +230,7 @@
 				function doEdit($clickevent) {
 					var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
 
-						var $url = 'ticketDRV/' + $rowid;
+						var $url = '/ansi_web/ticketDRV?divisionId=9&month=3' + $rowid;
 						//console.log("YOU PASSED ROW ID:" + $rowid);
 						var jqxhr = $.ajax({
 							type: 'GET',
@@ -203,14 +265,31 @@
 						});
 					//console.log("Edit Button Clicked: " + $rowid);
 				}
+        	})
         });
         		
         </script>        
     </tiles:put>
     
-   <tiles:put name="content" type="string">
+    
+    <tiles:put name="content" type="string">
     	
+ 	<table id="displayTable" style="table-layout: fixed" align="right" class="display" cellspacing="0" width="100%" style="font-size:9pt;max-width:600px;width:600px;">
+    		<tr>
+    			<th>Start Date</th>
+    			<th>End Date</th>
+				<th>Ticket Count</th>
+    			<th>Division</th>
+    			<th>Run Date</th>
+    			<th>Total Volume</th>
+    			<th>Total D/L</th>
+    		</tr>
+    	</table>
+    
+    
+    
  	<table id="ticketDRV" style="table-layout: fixed" class="display" cellspacing="0" width="100%" style="font-size:9pt;max-width:1300px;width:1300px;">
+        <h2 align=center>Ticket View DRV</h2>
         <colgroup>
         	<col style="width:6%;" />
     		<col style="width:6%;" />
@@ -228,36 +307,36 @@
    		</colgroup>        
         <thead>
             <tr>
-                <th>TICKET</th>
-    			<th>STATUS</th>
+                <th>Ticket</th>
+    			<th>Status</th>
     			<th>Name</th>
     			<th>Address 1</th>
     			<th>City</th>
     			<th>Last Done</th>
     			<th>Start Date</th>
     			<th>Job #</th>
-    			<th>FRQ</th>
-    			<th>BUDGET</th>
+    			<th>Frq</th>
+    			<th>Budget</th>
     			<th>PPC</th>
     			<th>COD</th>
-    			<th>JOB ID</th>
+    			<th>Job ID</th>
             </tr>
         </thead>
         <tfoot>
             <tr>
-                <th>TICKET</th>
-    			<th>STATUS</th>
+                <th>Ticket</th>
+    			<th>Status</th>
     			<th>Name</th>
     			<th>Address 1</th>
     			<th>City</th>
     			<th>Last Done</th>
     			<th>Start Date</th>
     			<th>Job #</th>
-    			<th>FRQ</th>
-    			<th>BUDGET</th>
+    			<th>Frq</th>
+    			<th>Budget</th>
     			<th>PPC</th>
     			<th>COD</th>
-    			<th>JOB ID</th>		
+    			<th>Job ID</th>	
             </tr>
         </tfoot>
     </table>

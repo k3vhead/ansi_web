@@ -81,40 +81,8 @@
         
         <script type="text/javascript">
 		$(function() {
-
-			$optionData = ANSI_UTILS.getOptions('JOB_FREQUENCY,JOB_STATUS,INVOICE_TERM,INVOICE_GROUPING,INVOICE_STYLE');
-			var $jobFrequencyList = $optionData.jobFrequency;
-			var $jobStatusList = $optionData.jobStatus;
-			var $invoiceTermList = $optionData.invoiceTerm;
-			var $invoiceGroupingList = $optionData.invoiceGrouping;
-			var $invoiceStyleList = $optionData.invoiceStyle;
-
-			$divisionList = ANSI_UTILS.getDivisionList();
-			$buildingTypeList = ANSI_UTILS.makeBuildingTypeList();
+			JOB_UTILS.pageInit('<c:out value="${ANSI_JOB_ID}" />');
 			
-			var $jobDetail = null;			
-			var $quoteDetail = null;
-			var $lastRun = null;
-			var $nextDue = null;
-			var $lastCreated = null;
-			if ( '<c:out value="${ANSI_JOB_ID}" />' != '' ) {
-				$jobData = JOBUTILS.getJobDetail('<c:out value="${ANSI_JOB_ID}" />');				
-				$jobDetail = $jobData.job;
-				$quoteDetail = $jobData.quote;
-				$lastRun = $jobData.lastRun;
-				$nextDue = $jobData.nextDue;
-				$lastCreated = $jobData.lastCreated;
-			}
-			
-			JOBPANEL.init("row0_jobPanel", $divisionList, "activateModal", $jobDetail);
-			JOBPROPOSAL.init("row0_jobProposal", $jobFrequencyList, $jobDetail);
-			JOBACTIVATION.init("row0_jobActivation", $buildingTypeList, $jobDetail);
-			JOBDATES.init("row0_jobDates", $quoteDetail, $jobDetail);
-			JOBSCHEDULE.init("row0_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
-			JOBINVOICE.init("row0_jobInvoice", $invoiceStyleList, $invoiceGroupingList, $invoiceTermList, $jobDetail);
-			JOBAUDIT.init("row0_jobAudit", $jobDetail);
-			
-
 			$("#jobNbr").focus();
 		});
 
@@ -125,16 +93,12 @@
     
     <tiles:put name="content" type="string">    	
     	<h1>Job Maintenance</h1>
- 		<%-- quotePanel requires a table because it is also used in the quote page --%>
-		<table>
+		<table style="border:solid 1px #000000; margin-top:8px;" id="jobPanelHolder">
 			<tbody>
-				<jsp:include page="quotePanel.jsp">
-					 <jsp:param name="panelname" value="row0" />
-					 <jsp:param name="page" value="JOB" />
-				</jsp:include>
+				<tr><td>&nbsp;</td></tr>
 			</tbody>
-		</table>
-		
+		</table>  
+    	
 		<webthing:jobActivateCancel page="JOB" namespace="activateModal" />
 		
     </tiles:put>
