@@ -16,7 +16,7 @@
 <tiles:insert page="layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        Quote Maintenance
+        Quote Panel Demo
     </tiles:put>
     
     
@@ -176,7 +176,7 @@ td.jobTableCell {
 								</select>
 							</td>
 							<td><span class="labelSpan">Account Type:</span>
-								<select name="accountType" class="quoteSelect">
+								<select name="accountType" id="accountType" class="quoteSelect">
 									<option value=""></option>
 								</select>
 							</td>
@@ -217,49 +217,11 @@ td.jobTableCell {
 				</td>
 			</tr>
 		</table>  
-				
-				<table style="border:solid 1px #000000; margin-top:8px;">
-			<tr>
-				<td class="jobTableCell" colspan="2">
-					JobPanel:					
-					 <webthing:jobPanel namespace="jobPanel" cssId="jobPanel" page="QUOTE" />
-				</td>
-			</tr>
-			<tr>
-				<td class="jobTableCell">
-					JobProposal:
-					<webthing:jobProposal namespace="jobProposal" cssId="jobProposal" page="QUOTE" />
-				</td>
-				<td class="jobTableCell">
-					JobActivation:
-					<webthing:jobActivation namespace="jobActivation" cssId="jobActivation" page="QUOTE" />
-				</td>
-			</tr>
-
-			<tr>
-				<td class="jobTableCell">
-					JobDates:
-					<webthing:jobDates namespace="jobDates" cssId="jobDates" page="QUOTE" />
-					<br />
-					Job Schedule:
-					<webthing:jobSchedule namespace="jobSchedule" cssId="jobSchedule" page="QUOTE" />
-				</td>
-				<td class="jobTableCell">
-					JOb Invoice:<br />			
-					<webthing:jobInvoice namespace="jobInvoice" cssId="jobInvoice" page="QUOTE" />
-				</td>
-			</tr>
-			<tr>
-				<td class="jobTableCell">
-					JobAudit:
-					<webthing:jobAudit namespace="jobAudit" cssId="jobAudit" page="QUOTE" />
-				</td>
-				<td class="jobTableCell" style="text-align:center;">
-					<input type="button" value="Cancel" id="jobCancelButton" />
-					<input type="button" value="Save" id="jobSaveButton" />
-					<input type="button" value="Save & Exit" id="jobExitButton" />
-				</td>
-			</tr>
+		
+		<input type="button" id="addJobRow" value="Add a Job" />		
+		<table style="border:solid 1px #000000; margin-top:8px;" id="jobPanelHolder">
+			<tbody>
+			</tbody>
 		</table>  
 				
   	
@@ -272,13 +234,14 @@ td.jobTableCell {
 					$("select[name='accountType']").selectmenu({ width : '100px'});
 					
 				
-					$optionData = ANSI_UTILS.getOptions('JOB_FREQUENCY,JOB_STATUS,INVOICE_TERM,INVOICE_GROUPING,INVOICE_STYLE,COUNTRY');
+					$optionData = ANSI_UTILS.getOptions('JOB_FREQUENCY,JOB_STATUS,INVOICE_TERM,INVOICE_GROUPING,INVOICE_STYLE,COUNTRY,ACCOUNT_TYPE');
 					var $jobFrequencyList = $optionData.jobFrequency;
 					var $jobStatusList = $optionData.jobStatus;
 					var $invoiceTermList = $optionData.invoiceTerm;
 					var $invoiceGroupingList = $optionData.invoiceGrouping;
 					var $invoiceStyleList = $optionData.invoiceStyle;
 					var $countryList = $optionData.country;
+					var $accountTypeList = $optionData.accountType;
 					
 					$divisionList = ANSI_UTILS.getDivisionList();
 					$buildingTypeList = ANSI_UTILS.makeBuildingTypeList();
@@ -290,6 +253,7 @@ td.jobTableCell {
 					var $lastCreated = null;
 					$jobSiteDetail = null;
 					$billToDetail = null;
+					/*
 					if ( '<c:out value="${ANSI_JOB_ID}" />' != '' ) {
 						$jobData = JOBUTILS.getJobDetail('<c:out value="${ANSI_JOB_ID}" />');				
 						$jobDetail = $jobData.job;
@@ -298,6 +262,7 @@ td.jobTableCell {
 						$nextDue = $jobData.nextDue;
 						$lastCreated = $jobData.lastCreated;
 					}
+					*/
 					if ( '<c:out value="${ANSI_QUOTE_ID}" />' != '' ) {
 						$quoteData = QUOTEUTILS.getQuoteDetail('<c:out value="${ANSI_QUOTE_ID}" />');
 						//$('input[name=quoteNumber]').val('<c:out value="${ANSI_QUOTE_ID}" />');
@@ -318,14 +283,65 @@ td.jobTableCell {
 					JOBAUDIT.init("jobAudit", $jobDetail);
 					ADDRESSPANEL.init("jobSite", $countryList, $jobSiteDetail);
 					ADDRESSPANEL.init("billTo", $countryList, $billToDetail);
+					
+					
+					var $select = $("select[name='accountType']");
+					$select.selectmenu({ width : '80px', maxHeight: '400 !important', style: 'dropdown'});
+					
+					$('option', $select).remove();
+					$.each($accountTypeList, function($index, $accountType) {
+						$select.append(new Option($accountType.display));
+					});
+					
 
+					$select.selectmenu();
+					
+					
+					
 					$("#jobNbr").focus();
+					var $currentRow = 0;
+					$("#addJobRow").click(function(){
+						var $namespace = "jobpanel" + $currentRow.toString();
+						$currentRow++;
+						var jqxhr1 = $.ajax({
+							type: 'GET',
+							url: 'quotePanel.html',
+							data: {"panelname":$namespace,"page":"QUOTE"},
+							success: function($data) {
+								console.log($data);
+								$('#jobPanelHolder > tbody:last-child').append($data);
+								
+								JOBPANEL.init($namespace+"_jobPanel", $divisionList, "activateModal", $jobDetail);
+								JOBPROPOSAL.init($namespace+"_jobProposal", $jobFrequencyList, $jobDetail);
+								JOBACTIVATION.init($namespace+"_jobActivation", $buildingTypeList, $jobDetail);
+								JOBDATES.init($namespace+"jobDates", $quoteDetail, $jobDetail);
+								JOBSCHEDULE.init($namespace+"_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
+								JOBINVOICE.init($namespace+"_jobInvoice", $invoiceStyleList, $invoiceGroupingList, $invoiceTermList, $jobDetail);
+								JOBAUDIT.init($namespace+"_jobAudit", $jobDetail);
+								
+								bindAndFormat();
+								
+								
+							},
+							statusCode: {
+								403: function($data) {
+									$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+								} 
+							},
+							dataType: 'html'
+						});
+							
+					});
 					
 					
-
+				function bindAndFormat(){
+					$.each($('input'), function () {
+				        $(this).css("height","20px");
+				        $(this).css("max-height", "20px");
+				    });
 					
-
-
+				}
+				bindAndFormat();
 		        });
         </script>        
     </tiles:put>

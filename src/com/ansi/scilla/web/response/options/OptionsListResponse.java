@@ -12,6 +12,7 @@ import com.ansi.scilla.common.invoice.InvoiceTerm;
 import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.jobticket.JobStatus;
 import com.ansi.scilla.common.jobticket.TicketStatus;
+import com.ansi.scilla.common.account.AccountType;
 import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.response.MessageResponse;
 
@@ -25,6 +26,7 @@ public class OptionsListResponse extends MessageResponse {
 	private List<InvoiceGroupingOption> invoiceGrouping;
 	private List<InvoiceTermOption> invoiceTerm;
 	private List<InvoiceStyleOption> invoiceStyle;
+	private List<AccountTypeOption> accountType;
 
 	public OptionsListResponse(List<ResponseOption> options) throws ClassNotFoundException, Exception {
 		if ( options.contains(ResponseOption.JOB_FREQUENCY)) {
@@ -51,6 +53,9 @@ public class OptionsListResponse extends MessageResponse {
 		if ( options.contains(ResponseOption.INVOICE_STYLE)) {
 			makeInvoiceStyleList();
 		}
+		if ( options.contains(ResponseOption.ACCOUNT_TYPE)) {
+			makeAccountTypeList();
+		}
 
 	}
 
@@ -58,6 +63,13 @@ public class OptionsListResponse extends MessageResponse {
 		this.invoiceStyle = new ArrayList<InvoiceStyleOption>();
 		for ( InvoiceStyle j : EnumSet.allOf(InvoiceStyle.class)) {
 			this.invoiceStyle.add(new InvoiceStyleOption(j));
+		}
+	}
+	
+	private void makeAccountTypeList() {
+		this.accountType = new ArrayList<AccountTypeOption>();
+		for (AccountType j : EnumSet.allOf(AccountType.class)) {
+			this.accountType.add(new AccountTypeOption(j));
 		}
 	}
 
@@ -119,6 +131,14 @@ public class OptionsListResponse extends MessageResponse {
 		this.jobFrequency = jobFrequency;
 	}
 
+	public List<AccountTypeOption> getAccountType() {
+		return accountType;
+	}
+
+	public void setAccountType(List<AccountTypeOption> accountType) {
+		this.accountType = accountType;
+	}
+	
 	public List<JobStatusOption> getJobStatus() {
 		return jobStatus;
 	}

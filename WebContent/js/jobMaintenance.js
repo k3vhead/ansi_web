@@ -350,11 +350,11 @@ $( document ).ready(function() {
 			if ( $lastCreated != null) {
 				ANSI_UTILS.setTextValue($namespace, "createdThru", $lastCreated.startDate + " (T" + $lastCreated.ticketId + ")");
 			}
-			if ($jobDetail.repeatScheduleAnnually == 1) {
-				ANSI_UTILS.setCheckbox($namespace, "annualRepeat", true);
-			} else {
-				ANSI_UTILS.setCheckbox($namespace, "annualRepeat", false);
-			}
+//			if ($jobDetail.repeatScheduleAnnually == 1) {
+//				ANSI_UTILS.setCheckbox($namespace, "annualRepeat", true);
+//			} else {
+//				ANSI_UTILS.setCheckbox($namespace, "annualRepeat", false);
+//			}
 		}
 	}
 });
