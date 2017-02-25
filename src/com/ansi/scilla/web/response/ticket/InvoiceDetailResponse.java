@@ -3,10 +3,11 @@ package com.ansi.scilla.web.response.ticket;
 import java.math.BigDecimal;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.db.Invoice;
 
 public class InvoiceDetailResponse extends ApplicationObject {
 
-	private Integer invoice_id; // (this is the invoice number)
+	private Integer invoiceId; // (this is the invoice number)
 	private BigDecimal sumInvPpc; // - sum(invoice.ticket.act_price_per_cleaning)
 	private BigDecimal sumInvTax; // - sum(invoice.ticket.act_tax_amt)
 	private BigDecimal sumInvPpcPaid; // - sum(invoice.ticket_payment.amount)
@@ -20,12 +21,14 @@ public class InvoiceDetailResponse extends ApplicationObject {
 		super();
 	}
 	
-	public Integer getInvoice_id() {
-		return invoice_id;
+	public Integer getInvoiceId() {
+		Invoice invoice = new Invoice();
+		invoiceId = invoice.getInvoiceId();
+		return invoiceId;
 	}
 	
-	public void setInvoice_id(Integer invoice_id) {
-		this.invoice_id = invoice_id;
+	public void setInvoiceId(Integer invoiceId) {
+		this.invoiceId = invoiceId;
 	}
 	
 	public BigDecimal getSumInvPpc() {

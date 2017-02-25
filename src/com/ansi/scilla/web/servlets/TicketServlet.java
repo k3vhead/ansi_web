@@ -9,11 +9,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ansi.scilla.common.db.Invoice;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
+import com.ansi.scilla.web.response.ticket.InvoiceDetailResponse;
 import com.ansi.scilla.web.response.ticket.TicketReturnListResponse;
 import com.ansi.scilla.web.response.ticket.TicketReturnRecord;
 import com.thewebthing.commons.db2.RecordNotFoundException;
@@ -201,6 +203,8 @@ public class TicketServlet extends AbstractServlet {
 				 * 			**invoice MSFC amount - stub for v 2.0
 				 * 			**invoice excess payment amount - stub for v 2.0
 				 */
+				Invoice invoiceId = new Invoice();
+				invoiceId.getInvoiceId();
 				
 				
 				System.out.println("Ticket(): doGet(): process ticket invoice panel");
@@ -211,6 +215,12 @@ public class TicketServlet extends AbstractServlet {
 		} else {
 			super.sendNotFound(response);
 		}
+	}
+	
+	public void doGetWork(){
+		InvoiceDetailResponse invTax = new InvoiceDetailResponse();
+		invTax.getSumInvTax();
+		
 	}
 	
 	protected TicketReturnListResponse makeGetInvoiceResponse(Connection conn, AnsiURL ansiURL) throws Exception{
