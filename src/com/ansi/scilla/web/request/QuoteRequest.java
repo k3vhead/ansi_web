@@ -33,6 +33,7 @@ import com.thewebthing.commons.lang.JsonException;
 		private Integer signedByContactId;
 		private Integer status;
 		private Integer templateId;
+		private Integer divisionId;
 		private String accountType;
 		private Integer addedBy;
 		private Date addedDate;
@@ -130,6 +131,15 @@ import com.thewebthing.commons.lang.JsonException;
 			return this.managerId;
 		}
 
+		public void setDivisionId(Integer divisionId) {
+			this.divisionId = divisionId;
+		}
+
+		@RequiredForAdd
+		@RequiredForUpdate
+		public Integer getDivisionId() {
+			return this.divisionId;
+		}
 		
 		public void setName(String name) {
 			this.name = name;

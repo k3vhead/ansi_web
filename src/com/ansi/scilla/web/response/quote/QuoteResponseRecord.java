@@ -23,6 +23,8 @@ public class QuoteResponseRecord extends ApplicationObject implements Comparable
 	private String paymentTerms;
 	private Date proposalDate;
 	private Integer quoteId;
+	private Integer divisionId;
+	private String accountType;
 	private Integer quoteNumber;
 	private String revision;
 	private Integer signedByContactId;
@@ -42,15 +44,30 @@ public class QuoteResponseRecord extends ApplicationObject implements Comparable
 	public String getAddress() {
 		return this.address;
 	}
+	
+	public void setAccountType(String accountType) {
+		this.accountType = accountType;
+	}
 
+
+	public String getAccountType() {
+		return this.accountType;
+	}
 	
 	public void setBillToAddressId(Integer billToAddressId) {
 		this.billToAddressId = billToAddressId;
 	}
 
-
 	public Integer getBillToAddressId() {
 		return this.billToAddressId;
+	}
+	
+	public void setDivisionId(Integer divisionId) {
+		this.divisionId = divisionId;
+	}
+
+	public Integer getDivisionId() {
+		return this.divisionId;
 	}
 
 	

@@ -37,7 +37,7 @@
 
 	<tr>
 	<td>
-	 	<table>
+	 	<table id="addressTable">
 			<tr>
 				<td class="jobTableCell">
 					<webthing:addressPanel namespace="<%= jobSiteName %>" label="Job Site" cssId="jobSite" />

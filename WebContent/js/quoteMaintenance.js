@@ -4,7 +4,7 @@ $( document ).ready(function() {
 	
 	;QUOTEUTILS = {
 			
-			getQuoteDetail:function($quoteId) {		
+			getQuoteDetail:function($quoteId) {
 				var $returnValue = null;
 				if ( $quoteId != null ) {
 					var $url = "quote/" + $quoteId

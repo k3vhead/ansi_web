@@ -69,9 +69,6 @@ $( document ).ready(function() {
 			});
 			return $returnValue;
 		},
-
-		
-		
 		
 		makeBuildingTypeList:function() {							
 			var $returnValue = null;
@@ -199,8 +196,65 @@ $( document ).ready(function() {
 					$select.val($selectedValue);
 				}
 				$select.selectmenu();
+			},
+			getAddress:function($addressId) {						
+				var $returnValue = null;
+				var jqxhr4 = $.ajax({
+					type: 'GET',
+					url: 'address/'+$addressId,
+					data: {},
+					success: function($data) {
+						$returnValue = $data.data.codeList;
+					},
+					statusCode: {
+						403: function($data) {
+							$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+						},
+						404: function($data) {
+							$returnValue = {};
+						},
+						500: function($data) {
+							
+						}
+					},
+					dataType: 'json',
+					async:false
+				});
+				return $returnValue;
+
+			},
+			setAddress: function($namespace, $addressData) {
+				
+				if($addressData.name != null) {
+					$("input[name='"+$namespace+"_name']").val($addressData.name);
+				} if($addressData.address1 != null) {
+					$("input[name='"+$namespace+"_address1']").val($addressData.address1);
+				} if($addressData.address2 != null) {
+					$("input[name='"+$namespace+"_address2']").val($addressData.address2);
+				} if($addressData.city != null) {
+					$("input[name='"+$namespace+"_city']").val($addressData.city);
+				} if($addressData.state != null) {
+					$("select[name='"+$namespace+"_state']").val($addressData.state);
+					$("select[name='"+$namespace+"_state']").selectmenu("refresh");
+				} if($addressData.zip != null) {
+					$("input[name='"+$namespace+"_zip']").val($addressData.zip);
+				} if($addressData.county != null) {
+					$("input[name='"+$namespace+"_county']").val($addressData.county);
+				} if($addressData.country != null) {
+					$("select[name='"+$namespace+"_country']").val($addressData.country);
+					$("select[name='"+$namespace+"_country']").selectmenu("refresh");
+				} if($addressData.jobContactName != null) {
+					$("input[name='"+$namespace+"_jobContactName']").val($addressData.jobContactName);
+				} if($addressData.jobContactInfo != null) {
+					$("input[name='"+$namespace+"_jobContactInfo']").val($addressData.jobContactInfo);
+				} if($addressData.siteContactName != null) {
+					$("input[name='"+$namespace+"_siteContactName']").val($addressData.siteContactName);
+				} if($addressData.siteContactInfo != null) {
+					$("input[name='"+$namespace+"_siteContactInfo']").val($addressData.siteContactInfo);
+				}
+				//.selectmenu("refresh");
+				
 			}
-			
 		}
 
 });

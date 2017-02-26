@@ -234,17 +234,23 @@ td.jobTableCell {
 					$("select[name='accountType']").selectmenu({ width : '100px'});
 					
 				
-					$optionData = ANSI_UTILS.getOptions('JOB_FREQUENCY,JOB_STATUS,INVOICE_TERM,INVOICE_GROUPING,INVOICE_STYLE,COUNTRY,ACCOUNT_TYPE');
+					$optionData = ANSI_UTILS.getOptions('JOB_FREQUENCY,JOB_STATUS,INVOICE_TERM,INVOICE_GROUPING,INVOICE_STYLE,COUNTRY');
 					var $jobFrequencyList = $optionData.jobFrequency;
 					var $jobStatusList = $optionData.jobStatus;
 					var $invoiceTermList = $optionData.invoiceTerm;
 					var $invoiceGroupingList = $optionData.invoiceGrouping;
 					var $invoiceStyleList = $optionData.invoiceStyle;
 					var $countryList = $optionData.country;
-					var $accountTypeList = $optionData.accountType;
+					//var $accountTypeList = $optionData.accountType;
+					
+					var $accountTypeList = ANSI_UTILS.getCodes("quote","account_type");
+					var $leadTypeList = ANSI_UTILS.getCodes("quote","lead_type");
+					
 					
 					$divisionList = ANSI_UTILS.getDivisionList();
 					$buildingTypeList = ANSI_UTILS.makeBuildingTypeList();
+					
+					console.log($divisionList);
 					
 					var $jobDetail = null;			
 					var $quoteDetail = null;
@@ -263,16 +269,7 @@ td.jobTableCell {
 						$lastCreated = $jobData.lastCreated;
 					}
 					*/
-					if ( '<c:out value="${ANSI_QUOTE_ID}" />' != '' ) {
-						$quoteData = QUOTEUTILS.getQuoteDetail('<c:out value="${ANSI_QUOTE_ID}" />');
-						//$('input[name=quoteNumber]').val('<c:out value="${ANSI_QUOTE_ID}" />');
-					/*	$jobDetail = $jobData.job;
-						$quoteDetail = $jobData.quote;
-						$lastRun = $jobData.lastRun;
-						$nextDue = $jobData.nextDue;
-						$lastCreated = $jobData.lastCreated;
-						*/
-					}
+
 					
 					JOBPANEL.init("jobPanel", $divisionList, $jobDetail);
 					JOBPROPOSAL.init("jobProposal", $jobFrequencyList, $jobDetail);
@@ -286,16 +283,67 @@ td.jobTableCell {
 					
 					
 					var $select = $("select[name='accountType']");
-					$select.selectmenu({ width : '80px', maxHeight: '400 !important', style: 'dropdown'});
+					$select.selectmenu({ width : '150px', maxHeight: '400 !important', style: 'dropdown'});
 					
 					$('option', $select).remove();
-					$.each($accountTypeList, function($index, $accountType) {
-						$select.append(new Option($accountType.display));
+					$.each($accountTypeList.codeList, function($index, $accountType) {
+						$select.append(new Option($accountType.displayValue));
 					});
-					
 
 					$select.selectmenu();
 					
+					$select = $("select[name='leadType']");
+					$select.selectmenu({ width : '120px', maxHeight: '400 !important', style: 'dropdown'});
+					
+					$('option', $select).remove();
+					$.each($leadTypeList.codeList, function($index, $leadType) {
+						$select.append(new Option($leadType.displayValue));
+					});
+
+					$select.selectmenu();
+					
+					$select = $("select[name='division']");
+					$select.selectmenu({ width : '150px', maxHeight: '400 !important', style: 'dropdown'});
+					
+					$('option', $select).remove();
+					$.each($divisionList, function($index, $division) {
+						$select.append(new Option($division.divisionCode));
+					});
+
+					$select.selectmenu();
+					
+					if ( '<c:out value="${ANSI_QUOTE_ID}" />' != '' ) {
+						$quoteData = QUOTEUTILS.getQuoteDetail('<c:out value="${ANSI_QUOTE_ID}" />');
+						$quoteData = $quoteData.quoteList[0];
+						console.log($quoteData);
+						if($quoteData.billToAddressId != ''){
+							var $billToData = ADDRESSPANEL.getAddress($quoteData.billToAddressId);
+							//console.log($billToData[0]);
+							ADDRESSPANEL.setAddress("billTo",$billToData[0]);
+						}
+						if($quoteData.jobSiteAddressId != ''){
+							var $jobSiteData = ADDRESSPANEL.getAddress($quoteData.jobSiteAddressId);
+							//console.log($jobSiteData[0]);
+							ADDRESSPANEL.setAddress("jobSite",$jobSiteData[0]);
+						}
+						if($quoteData.divisionId){
+							$divisionData = getDivision($quoteData.divisionId);
+							$divisionData = $divisionData.divisionList[0];
+							if($divisionData.divisionCode != null){
+								$("select[name='division']").val($divisionData.divisionCode)
+								;
+								$("select[name='division").selectmenu("refresh");
+							}
+							console.log($divisionData);
+						}
+						//$('input[name=quoteNumber]').val('<c:out value="${ANSI_QUOTE_ID}" />');
+					/*	$jobDetail = $jobData.job;
+						$quoteDetail = $jobData.quote;
+						$lastRun = $jobData.lastRun;
+						$nextDue = $jobData.nextDue;
+						$lastCreated = $jobData.lastCreated;
+						*/
+					}
 					
 					
 					$("#jobNbr").focus();
@@ -308,9 +356,10 @@ td.jobTableCell {
 							url: 'quotePanel.html',
 							data: {"panelname":$namespace,"page":"QUOTE"},
 							success: function($data) {
-								console.log($data);
-								$('#jobPanelHolder > tbody:last-child').append($data);
+								//console.log($data);
 								
+								$('#jobPanelHolder > tbody:last-child').append($data);
+								$('#addressTable').remove();
 								JOBPANEL.init($namespace+"_jobPanel", $divisionList, "activateModal", $jobDetail);
 								JOBPROPOSAL.init($namespace+"_jobProposal", $jobFrequencyList, $jobDetail);
 								JOBACTIVATION.init($namespace+"_jobActivation", $buildingTypeList, $jobDetail);
@@ -340,6 +389,36 @@ td.jobTableCell {
 				        $(this).css("max-height", "20px");
 				    });
 					
+				}
+				
+				function getDivision($divisionId) {
+					var $returnValue = null;
+					if ( $divisionId != null ) {
+						var $url = "division/" + $divisionId
+						var jqxhr = $.ajax({
+							type: 'GET',
+							url: $url,
+							data: {},
+							statusCode: {
+								200: function($data) {
+									$returnValue = $data.data;
+								},					
+								403: function($data) {
+									$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+								},
+								404: function($data) {
+									$returnValue = {};
+								},
+								500: function($data) {
+									
+								}
+							},
+							dataType: 'json',
+							async:false
+						});
+					}
+					return $returnValue;
+
 				}
 				bindAndFormat();
 		        });
