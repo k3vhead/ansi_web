@@ -178,6 +178,14 @@
 		<url-pattern>/jobSearch/*</url-pattern>
 	</servlet-mapping>
 	
+	<servlet>
+		<servlet-name>getJobs</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.JobByQuoteIdServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>getJobs</servlet-name>
+		<url-pattern>/getJobs/*</url-pattern>
+	</servlet-mapping>
 	
 	<servlet>
 		<servlet-name>jobTable</servlet-name>

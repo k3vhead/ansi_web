@@ -142,6 +142,7 @@ td.jobTableCell {
  
 .formFieldDisplay {margin-left: 30px;}
  
+ .addressTable {display:none;}
  
 
         </style>
@@ -223,12 +224,11 @@ td.jobTableCell {
 			<tbody>
 			</tbody>
 		</table>  
-				
-  	
+	
 		
         <script type="text/javascript">   
 		      $( document ).ready(function() {
-
+		    	  	var $currentRow = 0;
 					$("select[name='division']").selectmenu({ width : '100px'});
 					$("select[name='leadType']").selectmenu({ width : '100px'});
 					$("select[name='accountType']").selectmenu({ width : '100px'});
@@ -257,8 +257,7 @@ td.jobTableCell {
 					var $lastRun = null;
 					var $nextDue = null;
 					var $lastCreated = null;
-					$jobSiteDetail = null;
-					$billToDetail = null;
+
 					/*
 					if ( '<c:out value="${ANSI_JOB_ID}" />' != '' ) {
 						$jobData = JOBUTILS.getJobDetail('<c:out value="${ANSI_JOB_ID}" />');				
@@ -270,14 +269,8 @@ td.jobTableCell {
 					}
 					*/
 
-					
-					JOBPANEL.init("jobPanel", $divisionList, $jobDetail);
-					JOBPROPOSAL.init("jobProposal", $jobFrequencyList, $jobDetail);
-					JOBACTIVATION.init("jobActivation", $buildingTypeList, $jobDetail);
-					JOBDATES.init("jobDates", $quoteDetail, $jobDetail);
-					JOBSCHEDULE.init("jobSchedule", $lastRun, $nextDue, $lastCreated)
-					//JOBINVOICE.init("jobInvoice", $invoiceStyleList, $invoiceGroupingList, $invoiceTermList, $jobDetail);
-					JOBAUDIT.init("jobAudit", $jobDetail);
+					$jobSiteDetail = null;
+					$billToDetail = null;
 					ADDRESSPANEL.init("jobSite", $countryList, $jobSiteDetail);
 					ADDRESSPANEL.init("billTo", $countryList, $billToDetail);
 					
@@ -313,7 +306,8 @@ td.jobTableCell {
 					$select.selectmenu();
 					
 					if ( '<c:out value="${ANSI_QUOTE_ID}" />' != '' ) {
-						$quoteData = QUOTEUTILS.getQuoteDetail('<c:out value="${ANSI_QUOTE_ID}" />');
+						//var $quoteId = ${ANSI_QUOTE_ID};
+						var $quoteData = QUOTEUTILS.getQuoteDetail('<c:out value="${ANSI_QUOTE_ID}" />');
 						$quoteData = $quoteData.quoteList[0];
 						console.log($quoteData);
 						if($quoteData.billToAddressId != ''){
@@ -327,7 +321,7 @@ td.jobTableCell {
 							ADDRESSPANEL.setAddress("jobSite",$jobSiteData[0]);
 						}
 						if($quoteData.divisionId){
-							$divisionData = getDivision($quoteData.divisionId);
+							var $divisionData = getDivision($quoteData.divisionId);
 							$divisionData = $divisionData.divisionList[0];
 							if($divisionData.divisionCode != null){
 								$("select[name='division']").val($divisionData.divisionCode)
@@ -336,50 +330,25 @@ td.jobTableCell {
 							}
 							console.log($divisionData);
 						}
-						//$('input[name=quoteNumber]').val('<c:out value="${ANSI_QUOTE_ID}" />');
-					/*	$jobDetail = $jobData.job;
-						$quoteDetail = $jobData.quote;
-						$lastRun = $jobData.lastRun;
-						$nextDue = $jobData.nextDue;
-						$lastCreated = $jobData.lastCreated;
-						*/
+						
+						var $jobs = getJobs('<c:out value="${ANSI_QUOTE_ID}" />');
+						console.log($jobs);
+						$.each($jobs.reverse(), function($index, $job) {
+							//console.log($currentRow);
+							//addAJob($currentRow);
+							
+							JOB_UTILS.panelLoadQuote($currentRow, $job.jobId, $index);
+							$(".addressTable").remove();
+							$currentRow++;
+						});
+						bindAndFormat();
 					}
 					
 					
 					$("#jobNbr").focus();
-					var $currentRow = 0;
+					
 					$("#addJobRow").click(function(){
-						var $namespace = "jobpanel" + $currentRow.toString();
-						$currentRow++;
-						var jqxhr1 = $.ajax({
-							type: 'GET',
-							url: 'quotePanel.html',
-							data: {"panelname":$namespace,"page":"QUOTE"},
-							success: function($data) {
-								//console.log($data);
-								
-								$('#jobPanelHolder > tbody:last-child').append($data);
-								$('#addressTable').remove();
-								JOBPANEL.init($namespace+"_jobPanel", $divisionList, "activateModal", $jobDetail);
-								JOBPROPOSAL.init($namespace+"_jobProposal", $jobFrequencyList, $jobDetail);
-								JOBACTIVATION.init($namespace+"_jobActivation", $buildingTypeList, $jobDetail);
-								JOBDATES.init($namespace+"jobDates", $quoteDetail, $jobDetail);
-								JOBSCHEDULE.init($namespace+"_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
-								JOBINVOICE.init($namespace+"_jobInvoice", $invoiceStyleList, $invoiceGroupingList, $invoiceTermList, $jobDetail);
-								JOBAUDIT.init($namespace+"_jobAudit", $jobDetail);
-								
-								bindAndFormat();
-								
-								
-							},
-							statusCode: {
-								403: function($data) {
-									$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-								} 
-							},
-							dataType: 'html'
-						});
-							
+						addAJob();
 					});
 					
 					
@@ -388,13 +357,49 @@ td.jobTableCell {
 				        $(this).css("height","20px");
 				        $(this).css("max-height", "20px");
 				    });
+				}
+				
+				function addAJob(){
+					var $namespace = "jobpanel" + $currentRow.toString();
+					$currentRow++;
+					var jqxhr1 = $.ajax({
+						type: 'GET',
+						url: 'quotePanel.html',
+						data: {"panelname":$namespace,"page":"QUOTE"},
+						success: function($data) {
+							//console.log($data);
+							
+							$('#jobPanelHolder > tbody:last-child').append($data);
+							
+							$(".addressTable").remove();
+							$jobDetail = null;
+							JOBPANEL.init($namespace+"_jobPanel", JOB_DATA.divisionList, "activateModal", $jobDetail);
+							JOBPROPOSAL.init($namespace+"_jobProposal", JOB_DATA.jobFrequencyList, $jobDetail);
+							JOBACTIVATION.init($namespace+"_jobActivation", JOB_DATA.buildingTypeList, $jobDetail);
+							JOBDATES.init($namespace+"_jobDates", $quoteDetail, $jobDetail);
+							JOBSCHEDULE.init($namespace+"_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
+							JOBINVOICE.init($namespace+"_jobInvoice", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, $jobDetail);
+							JOBAUDIT.init($namespace+"_jobAudit", $jobDetail);
+							bindAndFormat();
+							$currentRow++;
+							
+							
+							
+						},
+						statusCode: {
+							403: function($data) {
+								$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+							} 
+						},
+						dataType: 'html'
+					});
 					
 				}
 				
 				function getDivision($divisionId) {
 					var $returnValue = null;
 					if ( $divisionId != null ) {
-						var $url = "division/" + $divisionId
+						var $url = "division/" + $divisionId;
 						var jqxhr = $.ajax({
 							type: 'GET',
 							url: $url,
@@ -402,6 +407,38 @@ td.jobTableCell {
 							statusCode: {
 								200: function($data) {
 									$returnValue = $data.data;
+								},					
+								403: function($data) {
+									$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+								},
+								404: function($data) {
+									$returnValue = {};
+								},
+								500: function($data) {
+									
+								}
+							},
+							dataType: 'json',
+							async:false
+						});
+					}
+					return $returnValue;
+
+				}
+				
+				function getJobs($quoteId) {
+					console.log($quoteId);
+					var $returnValue = null;
+					if ( $quoteId != null ) {
+						var $url = "getJobs?quoteId=" + $quoteId;
+						//console.log($url);
+						var jqxhr = $.ajax({
+							type: 'GET',
+							url: $url,
+							data: {},
+							statusCode: {
+								200: function($data) {
+									$returnValue = $data;
 								},					
 								403: function($data) {
 									$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);

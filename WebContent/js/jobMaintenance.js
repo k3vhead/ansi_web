@@ -58,6 +58,60 @@ $( document ).ready(function() {
 				dataType: 'html'
 			});
 		},
+		panelLoadQuote:function($namespace, $jobId, $index) {
+			
+			if($index == 0){
+				$optionData = ANSI_UTILS.getOptions('JOB_FREQUENCY,JOB_STATUS,INVOICE_TERM,INVOICE_GROUPING,INVOICE_STYLE');
+				
+				JOB_DATA.jobFrequencyList = $optionData.jobFrequency;
+				JOB_DATA.jobStatusList = $optionData.jobStatus;
+				JOB_DATA.invoiceTermList = $optionData.invoiceTerm;
+				JOB_DATA.invoiceGroupingList = $optionData.invoiceGrouping;
+				JOB_DATA.invoiceStyleList = $optionData.invoiceStyle;
+
+				JOB_DATA.divisionList = ANSI_UTILS.getDivisionList();
+				JOB_DATA.buildingTypeList = ANSI_UTILS.makeBuildingTypeList();
+			}
+			
+			
+			var $jobDetail = null;			
+			var $quoteDetail = null;
+			var $lastRun = null;
+			var $nextDue = null;
+			var $lastCreated = null;
+			
+			if ( $jobId != '' ) {
+				$jobData = JOB_UTILS.getJobDetail($jobId);				
+				$jobDetail = $jobData.job;
+				$quoteDetail = $jobData.quote;
+				$lastRun = $jobData.lastRun;
+				$nextDue = $jobData.nextDue;
+				$lastCreated = $jobData.lastCreated;
+			}
+			
+			var jqxhr1 = $.ajax({
+				type: 'GET',
+				url: 'quotePanel.html',
+				data: {"namespace":$namespace,"page":'QUOTE'},
+				success: function($data) {
+					$('#jobPanelHolder > tbody:last-child').append($data);
+					JOBPANEL.init($namespace+"_jobPanel", JOB_DATA.divisionList, $namespace+"_activateModal", $jobDetail);
+					JOBPROPOSAL.init($namespace+"_jobProposal", JOB_DATA.jobFrequencyList, $jobDetail);
+					JOBACTIVATION.init($namespace+"_jobActivation", JOB_DATA.buildingTypeList, $jobDetail);
+					JOBDATES.init($namespace+"_jobDates", $quoteDetail, $jobDetail);
+					JOBSCHEDULE.init($namespace+"_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
+					JOBINVOICE.init($namespace+"_jobInvoice", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, $jobDetail);
+					JOBAUDIT.init($namespace+"_jobAudit", $jobDetail);
+					$(".addressTable").remove();
+				},
+				statusCode: {
+					403: function($data) {
+						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+					} 
+				},
+				dataType: 'html'
+			});
+		},
 		
 		
 		getJobDetail:function($jobId) {			
