@@ -7,6 +7,8 @@ import org.apache.commons.beanutils.BeanUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Quote;
+import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 
 public class QuoteResponseRecord extends ApplicationObject implements Comparable<QuoteResponseRecord> {
@@ -135,7 +137,7 @@ public class QuoteResponseRecord extends ApplicationObject implements Comparable
 		this.proposalDate = proposalDate;
 	}
 
-
+	@JsonSerialize(using=AnsiDateFormatter.class)
 	public Date getProposalDate() {
 		return this.proposalDate;
 	}
@@ -198,6 +200,7 @@ public class QuoteResponseRecord extends ApplicationObject implements Comparable
 	public Integer getTemplateId() {
 		return this.templateId;
 	}
+	
 	@Override
 	public int compareTo(QuoteResponseRecord o) {
 		int ret = this.quoteId.compareTo(o.getQuoteId());

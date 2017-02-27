@@ -46,9 +46,6 @@ $( document ).ready(function() {
 			return $returnValue;
 		},
 		
-		
-		
-		
 		// get a list of divisions
 		getDivisionList: function($tableName, $fieldName) {
 			var $returnValue = null;
@@ -147,7 +144,7 @@ $( document ).ready(function() {
 	}	
 	
 	;ADDRESSPANEL = {
-			init: function($namespace, $countryList, $selectedCountry, $selectedState) {
+			init: function($namespace, $countryList, $selectedCountry) {
 				$.each($('input'), function () {
 			        $(this).css("height","20px");
 			        $(this).css("max-height", "20px");
@@ -157,12 +154,12 @@ $( document ).ready(function() {
 				$("select[name='"+$namespace+"_zip']").addClass("ui-corner-all");
 				$("#"+$namespace+"_address select[name='"+$namespace+"_country']").selectmenu({ width : '80px', maxHeight: '400 !important', style: 'dropdown'});
 				
-				this.setCountryList($namespace, $countryList, $selectedCountry);
-				this.setStateList($namespace, $countryList, $selectedState);
+				this.setCountryList($namespace, $countryList);
+				this.setStateList($namespace, $countryList);
 				
 				
 				
-			}, setCountryList: function($namespace, $countryList, $selectedValue) {
+			}, setCountryList: function($namespace, $countryList) {
 
 				var $select = "#"+$namespace+"_address select[name='<%=namespace%>_country']";
 				$select = $("select[name='"+$namespace+"_country']");
@@ -171,12 +168,8 @@ $( document ).ready(function() {
 					$select.append(new Option($country.abbrev));
 				});
 				
-
-				if ( $selectedValue != null ) {
-					$select.val($selectedValue);
-				}
 				$select.selectmenu();
-			}, setStateList: function($namespace, $countryList, $selectedValue) {
+			}, setStateList: function($namespace, $countryList) {
 
 				var $select = $("select[name='"+$namespace+"_state']");
 				$('option', $select).remove();
@@ -191,10 +184,6 @@ $( document ).ready(function() {
 						group.appendTo($select);
 					});
 				
-				
-				if ( $selectedValue != null ) {
-					$select.val($selectedValue);
-				}
 				$select.selectmenu();
 			},
 			getAddress:function($addressId) {						

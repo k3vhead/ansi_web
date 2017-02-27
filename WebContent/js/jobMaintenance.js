@@ -28,7 +28,7 @@ $( document ).ready(function() {
 			var $lastCreated = null;
 			
 			if ( $jobId != '' ) {
-				$jobData = JOB_UTILS.getJobDetail($jobId);				
+				$jobData = JOB_UTILS.getJobDetail($jobId);
 				$jobDetail = $jobData.job;
 				$quoteDetail = $jobData.quote;
 				$lastRun = $jobData.lastRun;
@@ -293,7 +293,9 @@ $( document ).ready(function() {
 				$.each($divisionList, function($index, $division) {
 					$divisionLookup[$division.divisionId]=$division.divisionCode;
 				});
-				JOBPANEL.setDivisionList($namespace, $divisionList);
+				if($("#" + $namespace + "_divisionId").is("select")){
+					JOBPANEL.setDivisionList($namespace, $divisionList);
+				}
 			}
 			JOBPANEL.initActivateModal($namespace, $modalNamespace);
 			JOBPANEL.initCancelModal($namespace, $modalNamespace);
@@ -310,7 +312,12 @@ $( document ).ready(function() {
 			if ( $jobDetail != null ) {
 				ANSI_UTILS.setFieldValue($namespace, "jobId", $jobDetail.jobId);
 				ANSI_UTILS.setTextValue($namespace, "jobStatus", $jobDetail.status);
-				ANSI_UTILS.setTextValue($namespace, "divisionId", $divisionLookup[$jobDetail.divisionId]);
+				if($("#" + $namespace + "_divisionId").is("span")){
+				  ANSI_UTILS.setTextValue($namespace, "divisionId", $divisionLookup[$jobDetail.divisionId]);
+				} else {
+					$("#" + $namespace + "_divisionId").val($divisionLookup[$jobDetail.divisionId]);
+					$("#" + $namespace + "_divisionId").selectmenu("refresh");
+				}
 				ANSI_UTILS.setTextValue($namespace, "quoteId", $jobDetail.jobId);
 				
 				var $activateJobButtonSelector = "#" + $namespace + "_activateJobButton";
@@ -429,9 +436,10 @@ $( document ).ready(function() {
 		},
 		
 		setDivisionList: function($namespace, $divisionList) {
-			selectorName = "select[name='divisionId']";
+			selectorName = "#"+$namespace+"_divisionId";
+			console.log(selectorName);
 			var $select = $(selectorName);
-			$('option', $select).remove();
+			//$('option', $select).remove();
 
 			$select.append(new Option("",""));
 			$.each($divisionList, function(index, val) {

@@ -647,4 +647,4 @@ public class JobDetailResponse extends MessageResponse {
 			this.proposalDate = proposalDate;
 		}		
 	}
-} 
+}
