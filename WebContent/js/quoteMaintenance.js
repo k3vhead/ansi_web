@@ -83,6 +83,8 @@ $( document ).ready(function() {
 					QUOTEUTILS.bindAndFormat();
 				}
 				
+				$("#quoteTable").show();
+				QUOTEUTILS.bindAndFormat();
 			},
 			getQuoteDetail:function($quoteId) {
 				var $returnValue = null;

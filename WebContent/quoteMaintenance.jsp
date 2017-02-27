@@ -151,7 +151,7 @@ td.jobTableCell {
     
     <tiles:put name="content" type="string">
     	<h1>Quote Maintenance</h1>
-		<table id="quoteTable">
+		<table id="quoteTable" style="display:none;">
 			<tr>
 				<td colspan="2">
 					<table >
