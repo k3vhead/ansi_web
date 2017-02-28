@@ -19,8 +19,7 @@ $( document ).ready(function() {
 			
 		},
 			
-		panelLoad:function($jobId) {
-			
+		panelLoad:function($jobId) {			
 			var $jobDetail = null;			
 			var $quoteDetail = null;
 			var $lastRun = null;
@@ -58,8 +57,8 @@ $( document ).ready(function() {
 				dataType: 'html'
 			});
 		},
+		
 		panelLoadQuote:function($namespace, $jobId, $index) {
-			
 			if($index == 0){
 				$optionData = ANSI_UTILS.getOptions('JOB_FREQUENCY,JOB_STATUS,INVOICE_TERM,INVOICE_GROUPING,INVOICE_STYLE');
 				

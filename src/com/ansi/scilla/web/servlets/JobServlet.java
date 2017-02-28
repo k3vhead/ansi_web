@@ -91,7 +91,7 @@ public class JobServlet extends AbstractServlet {
 					doCancelJob(conn, url.getId(), jobDetailRequest, sessionUser, response);					
 				} else if ( action.equals(JobDetailRequestAction.ACTIVATE_JOB)) {
 					System.out.println("JObServer 94 activating job");
-	//				jobDetailResponse = doActivateJob(conn, url.getId(), jobDetailRequest, response);				
+					doActivateJob(conn, url.getId(), jobDetailRequest, sessionUser, response);				
 				}
 			} catch ( IllegalArgumentException e) {
 				conn.rollback();
@@ -137,6 +137,26 @@ public class JobServlet extends AbstractServlet {
 		}
 		jobDetailResponse.setWebMessages(messages);
 		super.sendResponse(conn, response, responseCode, jobDetailResponse);
+	}
+
+	
+	private void doActivateJob(Connection conn, Integer jobId, JobDetailRequest jobDetailRequest, SessionUser sessionUser, HttpServletResponse response) throws Exception {
+		JobDetailResponse jobDetailResponse = new JobDetailResponse();
+		WebMessages messages = new WebMessages();
+		ResponseCode responseCode = null;
+		try {
+			JobUtils.scheduleJob(conn, jobId, sessionUser.getUserId());
+			conn.commit();
+			responseCode = ResponseCode.SUCCESS;
+			messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
+			jobDetailResponse = new JobDetailResponse(conn,jobId);
+		} catch ( RecordNotFoundException e) {
+			responseCode = ResponseCode.EDIT_FAILURE;
+			messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Job ID");
+		}
+		jobDetailResponse.setWebMessages(messages);
+		super.sendResponse(conn, response, responseCode, jobDetailResponse);
+		
 	}
 
 	

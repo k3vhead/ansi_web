@@ -62,25 +62,27 @@
         <servlet-name>address</servlet-name>
         <url-pattern>/address/*</url-pattern>
     </servlet-mapping>
+    
+    
     <servlet>
     	<servlet-name>addressTypeAhead</servlet-name>
     	<servlet-class>com.ansi.scilla.web.servlets.AddressTypeAheadServlet</servlet-class>
     </servlet>
-
     <servlet-mapping>
     	<servlet-name>addressTypeAhead</servlet-name>
     	<url-pattern>/addressTypeAhead/*</url-pattern>
-    </servlet-mapping><servlet>
+    </servlet-mapping>
+    
+    <servlet>
 		<servlet-name>addressSearch</servlet-name>
 		<servlet-class>com.ansi.scilla.web.servlets.AddressSearchServlet</servlet-class>
-	</servlet>
-    
+	</servlet>    
     <servlet-mapping>
 		<servlet-name>addressSearch</servlet-name>
 		<url-pattern>/addressSearch</url-pattern>
 	</servlet-mapping>
 
-			<servlet>
+	<servlet>
 		<servlet-name>addressTable</servlet-name>
 		<servlet-class>com.ansi.scilla.web.servlets.AddressTableServlet</servlet-class>
 	</servlet>
