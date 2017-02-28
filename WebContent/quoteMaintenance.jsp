@@ -158,7 +158,7 @@ td.jobTableCell {
 						<tr>
 							<td><input type="button" name="modifyButton" value="Modify" class="quoteButton"/></td>
 							<td><span class="labelSpanSmall">Manager:</span>
-								<input type="text" name="manager"  style="width:95px"/>
+								<input type="text" name="manager"  style="width:150px" disabled="disabled"/>
 							</td>
 							<td><span class="labelSpan">Division:</span>
 								<select name="division" id="division" class="quoteSelect">
@@ -225,6 +225,8 @@ td.jobTableCell {
 			</tbody>
 		</table>  
 	
+		<span id="modalSpan"></span>
+		
 		
         <script type="text/javascript">   
 		      $( document ).ready(function() {

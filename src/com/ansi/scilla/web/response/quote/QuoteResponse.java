@@ -2,6 +2,7 @@ package com.ansi.scilla.web.response.quote;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
 import java.util.Date;
 
 import com.ansi.scilla.common.ApplicationObject;
@@ -35,7 +36,10 @@ public class QuoteResponse extends MessageResponse implements Serializable {
 	public QuoteResponse(Quote quote, WebMessages webMessages) throws IllegalAccessException, InvocationTargetException {
 		super(webMessages);
 		this.quote = quote;
-		this.quoteDetail = new QuoteDetail(quote);
+		
+
+		
+
 		
 	}
 
@@ -48,25 +52,6 @@ public class QuoteResponse extends MessageResponse implements Serializable {
 	}
 
 	
-	public class QuoteDetail extends ApplicationObject {
-		private static final long serialVersionUID = 1L;
-		
-		private Date proposalDate;
-		
-		public QuoteDetail() {
-			super();
-		}
-		public QuoteDetail(Quote quote) throws IllegalAccessException, InvocationTargetException {
-			this();
-			BeanUtils.copyProperties(this, quote);
-		}
-		@JsonSerialize(using=AnsiDateFormatter.class)
-		public Date getProposalDate() {
-			return proposalDate;
-		}
-		public void setProposalDate(Date proposalDate) {
-			this.proposalDate = proposalDate;
-		}		
-	}
+
 	
 }

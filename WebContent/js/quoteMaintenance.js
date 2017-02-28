@@ -26,15 +26,18 @@ $( document ).ready(function() {
 			},
 				
 			panelLoad:function($quoteId) {
-				var $jobDetail = null;			
-				var $quoteDetail = null;
+				var $quoteDetail = null;			
+				var $jobDetail = null;
 				var $lastRun = null;
 				var $nextDue = null;
 				var $lastCreated = null;
 				if ( $quoteId != '' ) {
-					var $quoteData = QUOTEUTILS.getQuoteDetail($quoteId);
+					var $quoteDetail = QUOTEUTILS.getQuoteDetail($quoteId);
 					
 				}
+				
+				var $quoteData = $quoteDetail.quote;
+				console.log($quoteDetail);
 				ADDRESSPANEL.init("jobSite", JOB_DATA.countryList);
 				ADDRESSPANEL.init("billTo", JOB_DATA.countryList);
 				
@@ -48,38 +51,40 @@ $( document ).ready(function() {
 
 				QUOTEUTILS.setDivisionList($divisionList);
 				
-				if($quoteData != null){
-					console.log($quoteData);
-					if($quoteData.billToAddressId != ''){
-						var $billToData = ADDRESSPANEL.getAddress($quoteData.billToAddressId);
-						ADDRESSPANEL.setAddress("billTo",$billToData[0]);
+				if($quoteDetail != null){
+					//console.log($quoteData);
+					if($quoteDetail.billTo != null){
+						ADDRESSPANEL.setAddress("billTo",$quoteDetail.billTo);
 					}
-					if($quoteData.jobSiteAddressId != ''){
-						var $jobSiteData = ADDRESSPANEL.getAddress($quoteData.jobSiteAddressId);
-						ADDRESSPANEL.setAddress("jobSite",$jobSiteData[0]);
+					if($quoteDetail.jobSite != null){
+						ADDRESSPANEL.setAddress("jobSite",$quoteDetail.jobSite);
 					}
-					if($quoteData.divisionId){
-						var $divisionData = QUOTEUTILS.getDivision($quoteData.divisionId);
-
-						if($divisionData.divisionCode != null){
-							$("select[name='division']").val($divisionData.divisionCode);
-							$("select[name='division").selectmenu("refresh");
-						}
-						console.log($divisionData);
-					}
+						
+						$("select[name='division']").val($quoteData.getDivisionCode);
+						$("select[name='division").selectmenu("refresh");
+						
 					if($quoteData.proposalDate != ''){
 						$("input[name='proposalDate']").val($quoteData.proposalDate);
 					}
+					
+					var $manager = $quoteData.managerFirstName + " " + $quoteData.managerLastName + " (" + $quoteData.managerEmail + ")";
+					$("input[name='manager']").val($manager);
+					
 					var $jobs = QUOTEUTILS.getJobs($quoteId);
 					//console.log($jobs);
+					var modalText = "";
 					$.each($jobs.reverse(), function($index, $job) {
 						//console.log($currentRow);
 						//addAJob($currentRow);
 						
 						JOB_UTILS.panelLoadQuote($currentRow, $job.jobId, $index);
 						$(".addressTable").remove();
+						
+						modalText += "<webthing:jobActivateCancel page='QUOTE' namespace='"+$currentRow+"_activateModal' />";
 						$currentRow++;
 					});
+					
+					$("#modalSpan").html(modalText);
 					QUOTEUTILS.bindAndFormat();
 				}
 				
@@ -168,35 +173,6 @@ $( document ).ready(function() {
 					dataType: 'html'
 				});
 				
-			},
-			
-			getDivision: function($divisionId) {
-				var $returnValue = null;
-				if ( $divisionId != null ) {
-					var $url = "division/" + $divisionId;
-					var jqxhr = $.ajax({
-						type: 'GET',
-						url: $url,
-						data: {},
-						statusCode: {
-							200: function($data) {
-								$returnValue = $data.data;
-							},					
-							403: function($data) {
-								$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-							},
-							404: function($data) {
-								$returnValue = {};
-							},
-							500: function($data) {
-								
-							}
-						},
-						dataType: 'json',
-						async:false
-					});
-				}
-				return $returnValue.divisionList[0];
 			},
 			
 			getJobs: function($quoteId) {
