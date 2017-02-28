@@ -1,11 +1,14 @@
 package com.ansi.scilla.web.response.ticket;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.util.Date;
 import java.util.List;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.jobticket.TicketStatus;
+import com.ansi.scilla.common.queries.TicketPaymentTotals;
+import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class TicketDetail extends ApplicationObject { //TicketPaymentTotal populate from
 	
@@ -15,6 +18,7 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 	private static final long serialVersionUID = 1L;
 	
 	private Integer ticketId;
+	private Integer invoiceId;
 	private String status;
 	private Integer divisionId;
 	private String divisionCode;
@@ -28,10 +32,9 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 	private Boolean mgrApproval;
 	private List<TicketStatus> nextAllowedStatusList;
 	private Integer jobId; // - passed to job panels;
-	private BigDecimal actPpc;
 	private BigDecimal actTax;
-	private BigDecimal sumTktPpcPaid; // - sum(ticket_payment.amount);
-	private BigDecimal sumTktTaxPaid; // - sum(ticket_payment.tax_amt);
+	private BigDecimal totalVolPaid; // - sum(ticket_payment.amount);
+	private BigDecimal totalTaxPaid; // - sum(ticket_payment.tax_amt);
 	private BigDecimal balance; // (actPpc + actTax - (sumTcktPpcPaid + sumTktTaxPaid));
 	private Integer daysToPay; //(today, invoiceDate, balance);
 //	  					if balance == 0, daysToPay = max(paymentDate)-invoiceDate;
@@ -42,6 +45,30 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		super();
 	}
 	
+	public TicketDetail(Connection conn, Integer ticketId) throws RecordNotFoundException, Exception {
+		TicketPaymentTotals ticketPaymentTotals = TicketPaymentTotals.select(conn, ticketId);
+		this.ticketId = ticketId;
+		this.invoiceId = ticketPaymentTotals.getTicket().getInvoiceId();
+		this.status = ticketPaymentTotals.getTicket().getStatus();
+		this.divisionId = ticketPaymentTotals.getDivisionId();
+		this.divisionCode = ticketPaymentTotals.getDivisionCode();
+		this.processDate = ticketPaymentTotals.getTicket().getProcessDate();
+		this.processNotes = ticketPaymentTotals.getTicket().getProcessNotes();
+		this.actDl = ticketPaymentTotals.getTicket().getActDlAmt();
+		this.actDlPct = ticketPaymentTotals.getTicket().getActDlPct();
+		this.actPricePerCleaning = ticketPaymentTotals.getTicket().getActPricePerCleaning();
+		this.billSheet = ticketPaymentTotals.getTicket().getBillSheet() == 1;
+		this.customerSignature = ticketPaymentTotals.getTicket().getCustomerSignature() == 1;
+		this.mgrApproval = ticketPaymentTotals.getTicket().getMgrApproval() == 1;
+		this.nextAllowedStatusList = TicketStatus.valueOf(ticketPaymentTotals.getTicket().getStatus()).nextValues();
+		this.jobId = ticketPaymentTotals.getTicket().getJobId();
+		this.actTax = ticketPaymentTotals.getTicket().getActTaxAmt();
+		this.totalVolPaid = ticketPaymentTotals.getTotalVolPaid();
+		this.totalTaxPaid = ticketPaymentTotals.getTotalTaxPaid();
+		this.balance = actPricePerCleaning.add(actTax).subtract(totalVolPaid.add(totalTaxPaid));
+		//daysToPay insert HERE:***
+	}
+
 	public Integer getTicketId() {
 		return ticketId;
 	}
@@ -50,6 +77,14 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		this.ticketId = ticketId;
 	}
 	
+	public Integer getInvoiceId() {
+		return invoiceId;
+	}
+
+	public void setInvoiceId(Integer invoiceId) {
+		this.invoiceId = invoiceId;
+	}
+
 	public String getStatus() {
 		return status;
 	}
@@ -154,14 +189,6 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		this.jobId = jobId;
 	}
 	
-	public BigDecimal getActPpc() {
-		return actPpc;
-	}
-	
-	public void setActPpc(BigDecimal actPpc) {
-		this.actPpc = actPpc;
-	}
-	
 	public BigDecimal getActTax() {
 		return actTax;
 	}
@@ -170,20 +197,20 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		this.actTax = actTax;
 	}
 	
-	public BigDecimal getSumTktPpcPaid() {
-		return sumTktPpcPaid;
+	public BigDecimal getTotalVolPaid() {
+		return totalVolPaid;
 	}
 	
-	public void setSumTktPpcPaid(BigDecimal sumTktPpcPaid) {
-		this.sumTktPpcPaid = sumTktPpcPaid;
+	public void setTotalVolPaid(BigDecimal totalVolPaid) {
+		this.totalVolPaid = totalVolPaid;
 	}
 	
-	public BigDecimal getSumTktTaxPaid() {
-		return sumTktTaxPaid;
+	public BigDecimal getTotalTaxPaid() {
+		return totalTaxPaid;
 	}
 	
-	public void setSumTktTaxPaid(BigDecimal sumTktTaxPaid) {
-		this.sumTktTaxPaid = sumTktTaxPaid;
+	public void setTotalTaxPaid(BigDecimal totalTaxPaid) {
+		this.totalTaxPaid = totalTaxPaid;
 	}
 	
 	public BigDecimal getBalance() {

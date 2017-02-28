@@ -1,8 +1,11 @@
 package com.ansi.scilla.web.response.ticket;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.queries.InvoiceTotals;
+import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class InvoiceDetail extends ApplicationObject {
 
@@ -25,6 +28,16 @@ public class InvoiceDetail extends ApplicationObject {
 		super();
 	}
 	
+	public InvoiceDetail(Connection conn, Integer invoiceId) throws RecordNotFoundException, Exception {
+		InvoiceTotals invoiceTotals = InvoiceTotals.select(conn, invoiceId);
+		this.invoiceId = invoiceId;
+		this.sumInvPpc = invoiceTotals.getTotalVolInv();
+		this.sumInvTax = invoiceTotals.getTotalTaxInv();
+		this.sumInvPpcPaid = invoiceTotals.getTotalVolPaid();
+		this.sumInvTaxPaid = invoiceTotals.getTotalTaxPaid();
+		this.balance = sumInvPpc.add(sumInvTax).subtract(sumInvPpcPaid.add(sumInvTaxPaid));
+	}
+
 	public Integer getInvoiceId() {
 		return invoiceId;
 	}

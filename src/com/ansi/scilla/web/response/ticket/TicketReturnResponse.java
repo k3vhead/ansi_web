@@ -1,6 +1,9 @@
 package com.ansi.scilla.web.response.ticket;
 
+import java.sql.Connection;
+
 import com.ansi.scilla.web.response.MessageResponse;
+import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class TicketReturnResponse extends MessageResponse {
 	
@@ -9,27 +12,34 @@ public class TicketReturnResponse extends MessageResponse {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private TicketDetail ticketResponse;
-	private InvoiceDetail invoiceResponse;
+	private TicketDetail ticketDetail;
+	private InvoiceDetail invoiceDetail;
 	
 	public TicketReturnResponse(){
 		super();
 	}
 	
-	public TicketDetail getTicketResponse() {
-		return ticketResponse;
+	public TicketReturnResponse(Connection conn, Integer ticketId) throws RecordNotFoundException, Exception{
+		this.ticketDetail = new TicketDetail(conn, ticketId);
+		if(ticketDetail.getInvoiceId() != null){
+			this.invoiceDetail = new InvoiceDetail(conn, ticketDetail.getInvoiceId());
+		}
 	}
 	
-	public void setTicketResponse(TicketDetail ticketResponse) {
-		this.ticketResponse = ticketResponse;
+	public TicketDetail getTicketDetail() {
+		return ticketDetail;
 	}
 	
-	public InvoiceDetail getInvoiceResponse() {
-		return invoiceResponse;
+	public void setTicketDetail(TicketDetail ticketResponse) {
+		this.ticketDetail = ticketResponse;
 	}
 	
-	public void setInvoiceResponse(InvoiceDetail invoiceResponse) {
-		this.invoiceResponse = invoiceResponse;
+	public InvoiceDetail getInvoiceDetail() {
+		return invoiceDetail;
+	}
+	
+	public void setInvoiceDetail(InvoiceDetail invoiceResponse) {
+		this.invoiceDetail = invoiceResponse;
 	}
 	
 	
