@@ -3,10 +3,14 @@ package com.ansi.scilla.web.response.ticket;
 import java.math.BigDecimal;
 
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.common.db.Invoice;
 
-public class InvoiceDetailResponse extends ApplicationObject {
+public class InvoiceDetail extends ApplicationObject {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private Integer invoiceId; // (this is the invoice number)
 	private BigDecimal sumInvPpc; // - sum(invoice.ticket.act_price_per_cleaning)
 	private BigDecimal sumInvTax; // - sum(invoice.ticket.act_tax_amt)
@@ -17,13 +21,11 @@ public class InvoiceDetailResponse extends ApplicationObject {
 //	  			**invoice MSFC amount - stub for v 2.0
 //	  			**invoice excess payment amount - stub for v 2.0
 //	
-	public InvoiceDetailResponse() {
+	public InvoiceDetail() {
 		super();
 	}
 	
 	public Integer getInvoiceId() {
-		Invoice invoice = new Invoice();
-		invoiceId = invoice.getInvoiceId();
 		return invoiceId;
 	}
 	

@@ -18,7 +18,7 @@ public class TicketReturnListResponse extends MessageResponse implements Seriali
 
 	private static final long serialVersionUID = 1L;
 
-	private List<TicketReturnRecord> ticketReturnList;
+	private List<TicketRecord> ticketReturnList;
 
 	public TicketReturnListResponse() {
 		super();
@@ -32,9 +32,9 @@ public class TicketReturnListResponse extends MessageResponse implements Seriali
 	 */
 	public TicketReturnListResponse(Connection conn) throws Exception {
 		List<Ticket> ticketList = Ticket.cast(new Ticket().selectAll(conn));
-		this.ticketReturnList = new ArrayList<TicketReturnRecord>();
+		this.ticketReturnList = new ArrayList<TicketRecord>();
 		for ( Ticket ticket : ticketList ) {
-			this.ticketReturnList.add(new TicketReturnRecord(ticket));
+			this.ticketReturnList.add(new TicketRecord(ticket));
 		}
 	}
 	
@@ -42,17 +42,17 @@ public class TicketReturnListResponse extends MessageResponse implements Seriali
 		Ticket key = new Ticket();
 		key.setTicketId(ticketId);
 		List<Ticket> ticketList = Ticket.cast(key.selectSome(conn));
-		this.ticketReturnList = new ArrayList<TicketReturnRecord>();
+		this.ticketReturnList = new ArrayList<TicketRecord>();
 		for ( Ticket ticket : ticketList ) {
-			this.ticketReturnList.add(new TicketReturnRecord(ticket));
+			this.ticketReturnList.add(new TicketRecord(ticket));
 		}
 	}
 
-	public List<TicketReturnRecord> getDivisionList() {
+	public List<TicketRecord> getDivisionList() {
 		return ticketReturnList;
 	}
 
-	public void setTicketReturnList(List<TicketReturnRecord> ticketReturnList) {
+	public void setTicketReturnList(List<TicketRecord> ticketReturnList) {
 		this.ticketReturnList = ticketReturnList;
 	}
 	

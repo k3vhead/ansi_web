@@ -15,9 +15,9 @@ import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
-import com.ansi.scilla.web.response.ticket.InvoiceDetailResponse;
+import com.ansi.scilla.web.response.ticket.InvoiceDetail;
 import com.ansi.scilla.web.response.ticket.TicketReturnListResponse;
-import com.ansi.scilla.web.response.ticket.TicketReturnRecord;
+import com.ansi.scilla.web.response.ticket.TicketRecord;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 
@@ -121,20 +121,14 @@ public class TicketServlet extends AbstractServlet {
 		try {
 			ansiURL = new AnsiURL(request, "ticket", (String[])null); //which panel to 122
 			
-			String panel = ansiURL.getQueryParameterMap().get("panel")[0]; //selected panel
-			TicketReturnRecord ticketId = new TicketReturnRecord();
+			TicketRecord ticketId = new TicketRecord();
 			
 			Connection conn = null;
 			TicketReturnListResponse ticketReturnListResponse = null;
 			try {
 				conn = AppUtils.getDBCPConn();
-
-				if (panel.equals("invoice")) { // ticket invoice panel?
-					ticketReturnListResponse = makeGetInvoiceResponse(conn, ansiURL); //sends Json back
-				}
-				else if (panel.equals("")){
-					ticketReturnListResponse = makeGetYYYResponse(conn, ansiURL);
-				}
+				
+				
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, ticketReturnListResponse); //utility to send Json back
 				
 				
@@ -205,7 +199,7 @@ public class TicketServlet extends AbstractServlet {
 				 */
 				Invoice invoiceId = new Invoice();
 				invoiceId.getInvoiceId();
-				
+				doGetWork(invoiceId);
 				
 				System.out.println("Ticket(): doGet(): process ticket invoice panel");
 				super.sendNotFound(response); // not coded yet
@@ -217,8 +211,8 @@ public class TicketServlet extends AbstractServlet {
 		}
 	}
 	
-	public void doGetWork(){
-		InvoiceDetailResponse invTax = new InvoiceDetailResponse();
+	public void doGetWork(Invoice invoiceId){
+		InvoiceDetail invTax = new InvoiceDetail();
 		invTax.getSumInvTax();
 		
 	}
@@ -229,9 +223,9 @@ public class TicketServlet extends AbstractServlet {
 			Ticket ticket = new Ticket();
 			ticket.setInvoiceId(Integer.valueOf(ansiURL.getQueryParameterMap().get("ticketId")[0]));
 			List<Ticket> ticketList = Ticket.cast(ticket.selectSome(conn));
-			List<TicketReturnRecord> ticketReturnRecordList = new ArrayList<TicketReturnRecord>();
+			List<TicketRecord> ticketReturnRecordList = new ArrayList<TicketRecord>();
 			for(Ticket t: ticketList){
-				TicketReturnRecord r = new TicketReturnRecord(t);
+				TicketRecord r = new TicketRecord(t);
 				ticketReturnRecordList.add(r);
 			}
 			
@@ -246,9 +240,9 @@ public class TicketServlet extends AbstractServlet {
 			Ticket ticket = new Ticket();
 			ticket.setInvoiceId(Integer.valueOf(ansiURL.getQueryParameterMap().get("ticketId")[0]));
 			List<Ticket> ticketList = Ticket.cast(ticket.selectSome(conn));
-			List<TicketReturnRecord> ticketReturnRecordList = new ArrayList<TicketReturnRecord>();
+			List<TicketRecord> ticketReturnRecordList = new ArrayList<TicketRecord>();
 			for(Ticket t: ticketList){
-				TicketReturnRecord r = new TicketReturnRecord(t);
+				TicketRecord r = new TicketRecord(t);
 				ticketReturnRecordList.add(r);
 			}
 			

@@ -1,41 +1,35 @@
 package com.ansi.scilla.web.response.ticket;
 
-import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
-import java.sql.SQLException;
-
-import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.web.response.MessageResponse;
 
-/**
- * Used to return a single ticket return set to the client
- * 
- * @author ggroce
- *
- */
-public class TicketReturnResponse extends MessageResponse implements Serializable {
-
+public class TicketReturnResponse extends MessageResponse {
+	
+	/**
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
-
-	private TicketReturnRecord ticket;
-
-	public TicketReturnResponse() {
+	
+	private TicketDetail ticketResponse;
+	private InvoiceDetail invoiceResponse;
+	
+	public TicketReturnResponse(){
 		super();
 	}
-
-	public TicketReturnResponse(TicketReturnRecord ticket) {
-		super();
-		this.ticket = ticket;
+	
+	public TicketDetail getTicketResponse() {
+		return ticketResponse;
 	}
-
-	public TicketReturnResponse(Connection conn, Ticket ticket) throws IllegalAccessException, InvocationTargetException, SQLException {
-		this();
-		this.ticket = new TicketReturnRecord(ticket);
+	
+	public void setTicketResponse(TicketDetail ticketResponse) {
+		this.ticketResponse = ticketResponse;
 	}
-
-	public TicketReturnRecord getTicket() {
-		return ticket;
+	
+	public InvoiceDetail getInvoiceResponse() {
+		return invoiceResponse;
+	}
+	
+	public void setInvoiceResponse(InvoiceDetail invoiceResponse) {
+		this.invoiceResponse = invoiceResponse;
 	}
 	
 	

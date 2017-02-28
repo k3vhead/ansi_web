@@ -5,24 +5,28 @@ import java.util.Date;
 import java.util.List;
 
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.common.db.Division;
-import com.ansi.scilla.common.db.Ticket;
-import com.ansi.scilla.web.response.ticket.TicketReturnRecord.NextAllowedStatusItem;
+import com.ansi.scilla.common.jobticket.TicketStatus;
 
-public class TicketDetailResponse extends ApplicationObject {
+public class TicketDetail extends ApplicationObject { //TicketPaymentTotal populate from
 	
-	private Ticket ticket;
-	private Integer status;
-	private Division division;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	private Integer ticketId;
+	private String status;
+	private Integer divisionId;
+	private String divisionCode;
 	private Date processDate;
 	private String processNotes;
 	private BigDecimal actDl;
 	private BigDecimal actDlPct;
 	private BigDecimal actPricePerCleaning;
-	private Integer billSheet;
-	private Integer customerSignature;
-	private Integer mgrApproval;
-	private List<NextAllowedStatusItem> nextAllowedStatusList;
+	private Boolean billSheet;
+	private Boolean customerSignature;
+	private Boolean mgrApproval;
+	private List<TicketStatus> nextAllowedStatusList;
 	private Integer jobId; // - passed to job panels;
 	private BigDecimal actPpc;
 	private BigDecimal actTax;
@@ -34,34 +38,42 @@ public class TicketDetailResponse extends ApplicationObject {
 //	  					if balance <> 0, daysToPay = today - invoiceDate;
 //	  			**ticket write off amount - stub for v 2.0;
 //	
-	public TicketDetailResponse(){
+	public TicketDetail(){
 		super();
 	}
 	
-	public Ticket getTicket() {
-		return ticket;
+	public Integer getTicketId() {
+		return ticketId;
 	}
 	
-	public void setTicket(Ticket ticket) {
-		this.ticket = ticket;
+	public void setTicketId(Integer ticketId) {
+		this.ticketId = ticketId;
 	}
 	
-	public Integer getStatus() {
+	public String getStatus() {
 		return status;
 	}
 	
-	public void setStatus(Integer status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 	
-	public Division getDivision() {
-		return division;
+	public Integer getDivisionId() {
+		return divisionId;
 	}
 	
-	public void setDivision(Division division) {
-		this.division = division;
+	public void setDivisionId(Integer divisionId) {
+		this.divisionId = divisionId;
 	}
 	
+	public String getDivisionCode() {
+		return divisionCode;
+	}
+
+	public void setDivisionCode(String divisionCode) {
+		this.divisionCode = divisionCode;
+	}
+
 	public Date getProcessDate() {
 		return processDate;
 	}
@@ -102,35 +114,35 @@ public class TicketDetailResponse extends ApplicationObject {
 		this.actPricePerCleaning = actPricePerCleaning;
 	}
 	
-	public Integer getBillSheet() {
+	public Boolean getBillSheet() {
 		return billSheet;
 	}
 	
-	public void setBillSheet(Integer billSheet) {
+	public void setBillSheet(Boolean billSheet) {
 		this.billSheet = billSheet;
 	}
 	
-	public Integer getCustomerSignature() {
+	public Boolean getCustomerSignature() {
 		return customerSignature;
 	}
 	
-	public void setCustomerSignature(Integer customerSignature) {
+	public void setCustomerSignature(Boolean customerSignature) {
 		this.customerSignature = customerSignature;
 	}
 	
-	public Integer getMgrApproval() {
+	public Boolean getMgrApproval() {
 		return mgrApproval;
 	}
 	
-	public void setMgrApproval(Integer mgrApproval) {
+	public void setMgrApproval(Boolean mgrApproval) {
 		this.mgrApproval = mgrApproval;
 	}
 	
-	public List<NextAllowedStatusItem> getNextAllowedStatusList() {
+	public List<TicketStatus> getNextAllowedStatusList() {
 		return nextAllowedStatusList;
 	}
 	
-	public void setNextAllowedStatusList(List<NextAllowedStatusItem> nextAllowedStatusList) {
+	public void setNextAllowedStatusList(List<TicketStatus> nextAllowedStatusList) {
 		this.nextAllowedStatusList = nextAllowedStatusList;
 	}
 	

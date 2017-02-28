@@ -13,7 +13,6 @@ import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
 import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.thewebthing.commons.lang.BeanUtils;
 
@@ -23,7 +22,7 @@ import com.thewebthing.commons.lang.BeanUtils;
  *
  */
 
-public class TicketReturnRecord extends ApplicationObject {
+public class TicketRecord extends ApplicationObject {
 	private static final long serialVersionUID = 1L;
 	private BigDecimal actDl;
 	private BigDecimal actDlPct;
@@ -39,11 +38,11 @@ public class TicketReturnRecord extends ApplicationObject {
 	private List<NextAllowedStatusItem> nextAllowedStatusList;
 	
 	
-	public TicketReturnRecord() {
+	public TicketRecord() {
 		super();
 	}
 
-	public TicketReturnRecord(Ticket ticket) throws IllegalAccessException, InvocationTargetException {
+	public TicketRecord(Ticket ticket) throws IllegalAccessException, InvocationTargetException {
 		this();
 		System.out.println("ticket:" + ticket);
 		BeanUtilsBean beanUtilsBean = BeanUtilsBean.getInstance();
