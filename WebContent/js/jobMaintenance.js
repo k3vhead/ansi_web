@@ -93,15 +93,16 @@ $( document ).ready(function() {
 				url: 'quotePanel.html',
 				data: {"namespace":$namespace,"page":'QUOTE'},
 				success: function($data) {
+					$("#loadingJobsDiv").hide();
 					$('#jobPanelHolder > tbody:last-child').append($data);
-					JOBPANEL.init($namespace+"_jobPanel", JOB_DATA.divisionList, $namespace+"_activateModal", $jobDetail);
+					JOBPANEL.init($namespace+"_jobPanel", JOB_DATA.divisionList, $namespace, $jobDetail);
 					JOBPROPOSAL.init($namespace+"_jobProposal", JOB_DATA.jobFrequencyList, $jobDetail);
 					JOBACTIVATION.init($namespace+"_jobActivation", JOB_DATA.buildingTypeList, $jobDetail);
 					JOBDATES.init($namespace+"_jobDates", $quoteDetail, $jobDetail);
 					JOBSCHEDULE.init($namespace+"_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
 					JOBINVOICE.init($namespace+"_jobInvoice", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, $jobDetail);
 					JOBAUDIT.init($namespace+"_jobAudit", $jobDetail);
-					$(".addressTable").remove();
+					//$(".addressTable").remove();
 				},
 				statusCode: {
 					403: function($data) {
@@ -310,7 +311,11 @@ $( document ).ready(function() {
 			
 			if ( $jobDetail != null ) {
 				ANSI_UTILS.setFieldValue($namespace, "jobId", $jobDetail.jobId);
-				ANSI_UTILS.setTextValue($namespace, "jobStatus", $jobDetail.status);
+				if($("#" + $namespace + "_jobStatus").is("span")){
+					ANSI_UTILS.setTextValue($namespace, "jobStatus", $jobDetail.status);
+				} else {
+					$("#" + $namespace + "_jobStatus").val($jobDetail.status);
+				}
 				if($("#" + $namespace + "_divisionId").is("span")){
 				  ANSI_UTILS.setTextValue($namespace, "divisionId", $divisionLookup[$jobDetail.divisionId]);
 				} else {

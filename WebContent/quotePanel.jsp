@@ -19,7 +19,7 @@
 	String attrPanel = (String)request.getAttribute("panelname");
 	String parmPanel = request.getParameter("panelname");	
 	String panelname = attrPanel == null ? parmPanel : attrPanel;
-	
+	String namespace = (String)request.getAttribute("namespace");
 	String attrPage = (String)request.getAttribute("page");
 	String parmPage = request.getParameter("page");	
 	String pageName = parmPage == null ? attrPage : parmPage;
@@ -34,9 +34,10 @@
 	String jobInvoice = panelname + "_jobInvoice";
 	String jobAudit = panelname + "_jobAudit";
 %>
-
+	
 	<tr>
 	<td>
+	<% if ( !pageName.equals("QUOTE") ) { %>
 	 	<table class="addressTable">
 			<tr>
 				<td class="jobTableCell">
@@ -47,6 +48,7 @@
 				</td>
 			</tr>
 		</table> 
+		<% }  %>
 		<table style="border:solid 1px #000000; margin-top:8px;">
 			<tr>
 				<td class="jobTableCell" colspan="2">
@@ -83,14 +85,16 @@
 					JobAudit:
 					<webthing:jobAudit namespace="<%= jobAudit %>" cssId="jobAudit" page="<%= pageName %>" />
 				</td>
+				<% if ( !pageName.equals("QUOTE") ) { %>
 				<td class="jobTableCell" style="text-align:center;">
 					<input type="button" value="Cancel" id="jobCancelButton" />
 					<input type="button" value="Save" id="jobSaveButton" />
 					<input type="button" value="Save & Exit" id="jobExitButton" />
 				</td>
+				<% }  %>
 			</tr>
 		</table>    	
 	</td>
 	</tr>
-
+	
 		

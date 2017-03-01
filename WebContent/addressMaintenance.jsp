@@ -498,7 +498,7 @@
     				<input type="button" id="addButton" class="prettyWideButton" value="New" />
     			</div>
 			</ansi:hasWrite>
-		</ansi:hasPermission>
+	</ansi:hasPermission>
     </tiles:put>
 
 		<div id="deleteErrorDialog" title="Delete Failed!" class="ui-widget" style="display:none;">

@@ -16,7 +16,7 @@
 <tiles:insert page="layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        Quote Panel Demo
+        Quote Maintenance
     </tiles:put>
     
     
@@ -97,7 +97,12 @@ td.jobTableCell {
 #billTo_state-menu {max-height: 300px;}
 #jobProposal_jobFrequency-menu {max-height: 300px;}
 #quoteTable {width: 100%;}
- 
+
+.prettyWideButton {
+				height:30px;
+				min-height:30px;
+}
+
 #confirmDelete {
 	background-color: #FFFFFF;
 	color: #000000;
@@ -151,6 +156,7 @@ td.jobTableCell {
     
     <tiles:put name="content" type="string">
     	<h1>Quote Maintenance</h1>
+    	<div id="loadingDiv">Loading...</div>
 		<table id="quoteTable" style="display:none;">
 			<tr>
 				<td colspan="2">
@@ -217,13 +223,34 @@ td.jobTableCell {
 					</table>
 				</td>
 			</tr>
+			<tr>
+				<td>
+				<div id="loadingJobsDiv" style="display:none;">Loading Jobs...</div>
+					<table style="border:solid 1px #000000; margin-top:8px;" id="jobPanelHolder">
+						<tbody>
+						</tbody>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td>
+    				<input type="button" id="addJobRow" class="prettyWideButton" value="New" />
+				</td>
+			</tr>
+			<tr>
+				<td align="right">
+					<table style="border:0;border-collapse:collapse;"  align="right">
+						<tr>
+							<td><input type="button" class="prettyWideButton" value="Cancel" id="quoteCancelButton" /></td>
+							<td><input type="button" class="prettyWideButton" value="Save" id="quoteSaveButton" /></td>
+							<td><input type="button" class="prettyWideButton" value="Save & Exit" id="quoteExitButton" /></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
 		</table>  
 		
-		<input type="button" id="addJobRow" value="Add a Job" />		
-		<table style="border:solid 1px #000000; margin-top:8px;" id="jobPanelHolder">
-			<tbody>
-			</tbody>
-		</table>  
+		
 	
 		<span id="modalSpan"></span>
 		

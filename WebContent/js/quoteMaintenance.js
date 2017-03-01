@@ -5,6 +5,7 @@ $( document ).ready(function() {
 	
 	;QUOTEUTILS = {
 			pageInit:function($quoteId) {
+			
 				$optionData = ANSI_UTILS.getOptions('JOB_FREQUENCY,JOB_STATUS,INVOICE_TERM,INVOICE_GROUPING,INVOICE_STYLE,COUNTRY');
 				JOB_DATA.jobFrequencyList = $optionData.jobFrequency;
 				JOB_DATA.jobStatusList = $optionData.jobStatus;
@@ -19,7 +20,6 @@ $( document ).ready(function() {
 				
 				$("#addJobRow").click(function(){
 					QUOTEUTILS.addAJob();
-					$currentRow++;
 				});
 				
 				QUOTEUTILS.panelLoad($quoteId);
@@ -33,10 +33,10 @@ $( document ).ready(function() {
 				var $lastCreated = null;
 				if ( $quoteId != '' ) {
 					var $quoteDetail = QUOTEUTILS.getQuoteDetail($quoteId);
-					
+					var $quoteData = $quoteDetail.quote;
 				}
 				
-				var $quoteData = $quoteDetail.quote;
+				
 				console.log($quoteDetail);
 				ADDRESSPANEL.init("jobSite", JOB_DATA.countryList);
 				ADDRESSPANEL.init("billTo", JOB_DATA.countryList);
@@ -51,7 +51,7 @@ $( document ).ready(function() {
 
 				QUOTEUTILS.setDivisionList($divisionList);
 				
-				if($quoteDetail != null){
+				if($quoteData != null){
 					//console.log($quoteData);
 					if($quoteDetail.billTo != null){
 						ADDRESSPANEL.setAddress("billTo",$quoteDetail.billTo);
@@ -72,23 +72,32 @@ $( document ).ready(function() {
 					
 					var $jobs = QUOTEUTILS.getJobs($quoteId);
 					//console.log($jobs);
+					if($jobs.length == 0){
+						$("#loadingJobsDiv").hide();
+					} else {
+						$("#loadingJobsDiv").show();
+					}
 					var modalText = "";
 					$.each($jobs.reverse(), function($index, $job) {
 						//console.log($currentRow);
 						//addAJob($currentRow);
 						
 						JOB_UTILS.panelLoadQuote($currentRow, $job.jobId, $index);
-						$(".addressTable").remove();
+						//$(".addressTable").remove();
 						
-						modalText += "<webthing:jobActivateCancel page='QUOTE' namespace='"+$currentRow+"_activateModal' />";
+						console.log(QUOTEUTILS.getModal($currentRow));
 						$currentRow++;
 					});
 					
-					$("#modalSpan").html(modalText);
+					//$("#modalSpan").html(modalText);
 					QUOTEUTILS.bindAndFormat();
+				} else {
+					$("#loadingJobsDiv").hide();
 				}
-				
+				$("#loadingDiv").hide();
 				$("#quoteTable").show();
+				
+				QUOTEUTILS.buttonsInit();
 				QUOTEUTILS.bindAndFormat();
 			},
 			getQuoteDetail:function($quoteId) {
@@ -133,37 +142,111 @@ $( document ).ready(function() {
 
 				$select.selectmenu();
 			},
-			
+			buttonsInit:function() {
+				
+				$("#quoteSaveButton").button().on( "click", function() {
+					QUOTEUTILS.save();
+	            });
+				$("#quoteCancelButton").button().on( "click", function() {
+//					QUOTEUTILS.cancel();
+	            });
+				$("#quoteExitButton").button().on( "click", function() {
+					QUOTEUTILS.save();
+//					QUOTEUTILS.exit();
+	            });
+			},
+			save: function(){
+				$outbound = {};
+//        		$outbound["manager"]		=	$("input[name="+$addressPanelNamespace+"_name]").val();
+//        		$outbound["lead_type"]		=	$("input[name="+$addressPanelNamespace+"_status]").val();
+//        		$outbound["account_type"]	=	$("input[name="+$addressPanelNamespace+"_address1]").val();
+//        		$outbound["proposal_date"]	=	$("input[name="+$addressPanelNamespace+"_address2]").val();
+//        		$outbound["division_id"]		=	$("input[name="+$addressPanelNamespace+"_city]").val();
+//        		
+				
+//				$aNames = {0:"jobSite",1:"billTo"};
+//				$.each($aNames, function($index, $addressPanelNamespace) {
+//					$aOutbound = {};
+//					$aOutbound[$addressPanelNamespace+"name"]		=	$("input[name="+$addressPanelNamespace+"_name]").val();
+//					$aOutbound[$addressPanelNamespace+"status"]		=	$("input[name="+$addressPanelNamespace+"_status]").val();
+//					$aOutbound[$addressPanelNamespace+"address1"]	=	$("input[name="+$addressPanelNamespace+"_address1]").val();
+//					$aOutbound[$addressPanelNamespace+"address2"]	=	$("input[name="+$addressPanelNamespace+"_address2]").val();
+//					$aOutbound[$addressPanelNamespace+"city"]		=	$("input[name="+$addressPanelNamespace+"_city]").val();
+//					$aOutbound[$addressPanelNamespace+"county"]		=	$("input[name="+$addressPanelNamespace+"_county]").val();
+//					$aOutbound[$addressPanelNamespace+"country_code"]	=	$("input[name="+$addressPanelNamespace+"country] option:selected").val();
+//	        		$aOutbound[$addressPanelNamespace+"state"]		=	$("input[name="+$addressPanelNamespace+"state] option:selected").val();
+//	        		$aOutbound[$addressPanelNamespace+"zip"]		=	$("input[name="+$addressPanelNamespace+"_zip]").val();
+//	        		QUOTEUTILS.saveAddress($aOutbound);
+//				});
+				
+				
+			},
+			saveAddress: function($outbound){
+				$url = "address/add";
+				var jqxhr = $.ajax({
+					type: 'POST',
+					url: $url,
+					data: JSON.stringify($outbound),
+					success: function($data) {
+						if ( $data.responseHeader.responseCode == 'SUCCESS') {
+								if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
+									$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
+								}
+						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+							$.each($data.data.webMessages, function(key, messageList) {
+								var identifier = "#" + key + "Err";
+								msgHtml = "<ul>";
+								$.each(messageList, function(index, message) {
+									msgHtml = msgHtml + "<li>" + message + "</li>";
+								});
+								msgHtml = msgHtml + "</ul>";
+								$(identifier).html(msgHtml);
+							});		
+							if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
+								$("#addFormMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]);
+							}
+						} else {
+						}
+					},
+					error: function($data) {
+						alert("fail");
+						//console.log($data);
+					},
+					statusCode: {
+						403: function($data) {
+							$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+						} 
+					},
+					dataType: 'json'
+				});
+			},
 			addAJob: function(){
 				var $namespace = "jobpanel" + $currentRow.toString();
+				var $row = $currentRow.toString();
 				$currentRow++;
 				var jqxhr1 = $.ajax({
 					type: 'GET',
 					url: 'quotePanel.html',
-					data: {"panelname":$namespace,"page":"QUOTE"},
+					data: {"panelname":$row,"page":"QUOTE"},
 					success: function($data) {
-						//console.log($data);
-						
+
 						$('#jobPanelHolder > tbody:last-child').append($data);
-						
-						$(".addressTable").remove();
+
 						var $jobDetail = null;			
 						var $quoteDetail = null;
 						var $lastRun = null;
 						var $nextDue = null;
 						var $lastCreated = null;
-						JOBPANEL.init($currentRow.toString()+"_jobPanel", JOB_DATA.divisionList, "activateModal", $jobDetail);
+						//console.log(JOB_DATA);
+						JOBPANEL.init($row+"_jobPanel", JOB_DATA.divisionList, "activateModal", $jobDetail);
 						JOBPROPOSAL.init($namespace+"_jobProposal", JOB_DATA.jobFrequencyList, $jobDetail);
 						JOBACTIVATION.init($namespace+"_jobActivation", JOB_DATA.buildingTypeList, $jobDetail);
 						JOBDATES.init($namespace+"_jobDates", $quoteDetail, $jobDetail);
 						JOBSCHEDULE.init($namespace+"_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
-						JOBINVOICE.init($namespace+"_jobInvoice", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, $jobDetail);
+						//JOBINVOICE.init($namespace+"_jobInvoice", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, $jobDetail);
 						JOBAUDIT.init($namespace+"_jobAudit", $jobDetail);
-						bindAndFormat();
-						$currentRow++;
-						
-						
-						
+						QUOTEUTILS.bindAndFormat();
+	
 					},
 					statusCode: {
 						403: function($data) {
@@ -172,15 +255,12 @@ $( document ).ready(function() {
 					},
 					dataType: 'html'
 				});
-				
 			},
 			
 			getJobs: function($quoteId) {
-				console.log($quoteId);
 				var $returnValue = null;
 				if ( $quoteId != null ) {
 					var $url = "getJobs?quoteId=" + $quoteId;
-					//console.log($url);
 					var jqxhr = $.ajax({
 						type: 'GET',
 						url: $url,
@@ -221,7 +301,28 @@ $( document ).ready(function() {
 			        $(this).css("height","20px");
 			        $(this).css("max-height", "20px");
 			    });
+			},
+			
+			getModal: function($namespace){
+				var $returnValue = null;
+				var jqxhr1 = $.ajax({
+					type: 'GET',
+					url: 'modalGet.html',
+					data: {"namespace":$namespace,"page":'QUOTE'},
+					success: function($data) {
+						$returnValue = $data;
+						//$(".addressTable").remove();
+					},
+					statusCode: {
+						403: function($data) {
+							$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+						} 
+					},
+					dataType: 'html'
+				});
+				return $returnValue;
 			}
+			
 		}
 		
 	

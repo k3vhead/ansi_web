@@ -170,6 +170,14 @@
             scope="request">
             <forward name="valid" path="/quotePanel.jsp" />
         </action>
+        <action
+            path="/modalGet"
+            type="com.ansi.scilla.web.action.ModalGetAction"
+            name="namespaceForm"
+            input="/modalGet.jsp"
+            scope="request">
+            <forward name="valid" path="/modalGet.jsp" />
+        </action>
         
 
 <!--
