@@ -42,82 +42,104 @@
 				width:80px !important;
 				max-width:80px !important;
 			}
+			#headerTable { 
+				display:none; 
+			}			
+			#divisionId {
+				border:solid 1px #000000;
+			}
         </style>       
        
         <script type="text/javascript">   
         
-        $(function() {        
+        $(function() {
         	
-            
-			var jqxhr = $.ajax({
-				type: 'GET',
-				url: '/ansi_web/ticketDRV?divisionId=9&month=3',
-				data: {},
-				success: function($data) {
-					$.each($data.data.ticketDRV, function(index, value) {
-						addRow(index, value);
-					});
-					doFunctionBinding();
-				},
-				statusCode: {
-					403: function($data) {
-						$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-					},
-					500: function($data) {
-         	    		$("#globalMsg").html("Unhandled Exception").fadeIn(10).fadeOut(6000);
-         	    	} 
-				},
-				dataType: 'json'
-			});
-			
-			function addRow(index, $ticketDRV) {	
-				var $rownum = index + 1;
-       			rowTd = makeRow($ticketDRV, $rownum);
-       			row = '<tr class="dataRow">' + rowTd + "</tr>";
-       			$('#displayTable').append(row);
-			}
-			
-			function doFunctionBinding() {
-				$('.dataRow').bind("mouseover", function() {
-					$(this).css('background-color','#CCCCCC');
-				});
-				$('.dataRow').bind("mouseout", function() {
-					$(this).css('background-color','transparent');
-				});
-			}
-			
-			function makeRow($ticketDRV, $rownum) {
-				var row = "";
-				row = row + '<td>' + $ticketDRV.startDate + '</td>';
-				row = row + '<td>' + $ticketDRV.endDate + '</td>';
-				row = row + '<td>' + $ticketDRV.ticketCount + '</td>';
-				row = row + '<td>' + $ticketDRV.division + '</td>';
-				row = row + '<td>' + $ticketDRV.runDate + '</td>';
-				row = row + '<td>' + $ticketDRV.totalVolume + '</td>';
-				row = row + '<td>' + $ticketDRV.totalDL + '</td>';  			
-				return row;
-			}
+        	$(document).ready(function($divisionId) {			
+    			var $returnValue = null;
+    			if ( $divisionId != null ) {
+    				var $url = "division/list" + $divisionId
+    				var jqxhr = $.ajax({
+    					type: 'GET',
+    					url: $url,
+    					data: {},
+    					statusCode: {
+    						200: function($data) {
+    							$returnValue = $data.data;
+    						},					
+    						403: function($data) {
+    							$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+    						},
+    						404: function($data) {
+    							$returnValue = {};
+    						},
+    						500: function($data) {
+    							
+    						}
+    					},
+    					dataType: 'json',
+    					async:false
+    				});
+    			}
+    			return $returnValue;
 
-				if ( $('#addForm').data('rownum') == null ) {
-					$url = "ticketDRV/add";
-				} else {
-					$rownum = $('#addForm').data('rownum')
-					var $tableData = [];
-	                $("#displayTable").find('tr').each(function (rowIndex, r) {
-	                    var cols = [];
-	                    $(this).find('th,td').each(function (colIndex, c) {
-	                        cols.push(c.textContent);
-	                    });
-	                    $tableData.push(cols);
-	                });
+    		}),
+        				
+    		
+    		function init($namespace, $divisionList, $modalNamespace, $jobDetail) {
+    			if ( $divisionList != null ) {
+    				var $divisionLookup = {}
+    				$.each($divisionList, function($index, $division) {
+    					$divisionLookup[$division.divisionId]=$division.divisionCode;
+    				});
+    				JOBPANEL.setDivisionList($namespace, $divisionList);
+    			}
+    			JOBPANEL.initActivateModal($namespace, $modalNamespace);
+    			JOBPANEL.initCancelModal($namespace, $modalNamespace);
+    			
+    			//make the date selectors work in the modal window
+    			var $selector= '.' + $modalNamespace + "_datefield";
+    			$($selector).datepicker({
+                    prevText:'&lt;&lt;',
+                    nextText: '&gt;&gt;',
+                    showButtonPanel:true
+                });
+    			
+    			
+    			if ( $jobDetail != null ) {
+    				ANSI_UTILS.setTextValue($namespace, "divisionId", $divisionLookup[$jobDetail.divisionId]);
+    				
+    				var $activateJobButtonSelector = "#" + $namespace + "_activateJobButton";
+    				if ( $jobDetail.canActivate == true ) {							
+    					$($activateJobButtonSelector).show();
+    				} else {
+    					$($activateJobButtonSelector).hide();
+    				}
+    				
+    				var $cancelJobButtonSelector = "#" + $namespace + "_cancelJobButton";
+    				$($cancelJobButtonSelector).attr('data-jobid', $jobDetail.jobId);
+    				if ( $jobDetail.canCancel == true ) {		
+    					$($cancelJobButtonSelector).show();
+    				} else {
+    					$($cancelJobButtonSelector).hide();
+    				}
+    			}
 
-	            	$url = "/ansi_web/ticketDRV?divisionId=9&month=3";
-				}
-        
-        
-        
-        
-        
+    		},
+        				
+        				function ($namespace, $optionList, $selectedValue) {
+        					var selectorName = "#" + $namespace + "_divisionIdForm select[name='" + $namespace + "_divisionId']";
+        					var $select = $(selectorName);
+        					$select.append(new Option("",""));
+        					$.each($optionList, function(index, val) {
+        					    $select.append(new Option(val.display, val.abbrev));
+        					});
+        					
+        					if ( $selectedValue != null ) {
+        						$select.val($selectedValue);
+        					}
+        					$select.selectmenu();
+        				},
+                
         $(document).ready(function(){
         	  $('.ScrollTop').click(function() {
         	    $('html, body').animate({scrollTop: 0}, 800);
@@ -271,21 +293,14 @@
         </script>        
     </tiles:put>
     
-    
-    <tiles:put name="content" type="string">
-    	
- 	<table id="displayTable" style="table-layout: fixed" align="right" class="display" cellspacing="0" width="100%" style="font-size:9pt;max-width:600px;width:600px;">
-    		<tr>
-    			<th>Start Date</th>
-    			<th>End Date</th>
-				<th>Ticket Count</th>
-    			<th>Division</th>
-    			<th>Run Date</th>
-    			<th>Total Volume</th>
-    			<th>Total D/L</th>
-    		</tr>
-    	</table>
-    
+    <tiles:put name="content" type="string">    	
+    <table id="divisionId"></table>
+    	<h1>Division ID</h1>
+		<table style="border:solid 1px #000000; margin-top:8px;" id="divisionId">
+			<tbody>
+				<tr><td>&nbsp;</td></tr>
+			</tbody>
+		</table>  
     
     
  	<table id="ticketDRV" style="table-layout: fixed" class="display" cellspacing="0" width="100%" style="font-size:9pt;max-width:1300px;width:1300px;">
