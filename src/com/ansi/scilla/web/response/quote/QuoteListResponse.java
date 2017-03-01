@@ -35,9 +35,9 @@ public class QuoteListResponse extends MessageResponse implements Serializable {
 		List<Quote> quoteList = Quote.cast(new Quote().selectAll(conn));
 		this.quoteList = new ArrayList<QuoteResponseRecord>();
 		for ( Quote quote : quoteList ) {
-			this.quoteList.add(new QuoteResponseRecord(quote));
+			this.quoteList.add(new QuoteResponseRecord(conn, quote));
 		}
-		Collections.sort(this.quoteList);
+		//Collections.sort(this.quoteList);
 	}
 
 	public QuoteListResponse(Connection conn, String quoteNumber, String revisionNumber) throws Exception {
@@ -51,9 +51,9 @@ public class QuoteListResponse extends MessageResponse implements Serializable {
 		List<Quote> quoteList = Quote.cast(key.selectSome(conn));
 		this.quoteList = new ArrayList<QuoteResponseRecord>();
 		for ( Quote quote : quoteList ) {
-			this.quoteList.add(new QuoteResponseRecord(quote));
+			this.quoteList.add(new QuoteResponseRecord(conn, quote));
 		}
-		Collections.sort(this.quoteList);
+		//Collections.sort(this.quoteList);
 	}
 
 	public List<QuoteResponseRecord> getQuoteList() {

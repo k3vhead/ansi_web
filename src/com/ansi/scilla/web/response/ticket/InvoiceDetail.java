@@ -1,12 +1,19 @@
 package com.ansi.scilla.web.response.ticket;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
 
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.common.db.Invoice;
+import com.ansi.scilla.common.queries.InvoiceTotals;
+import com.thewebthing.commons.db2.RecordNotFoundException;
 
-public class InvoiceDetailResponse extends ApplicationObject {
+public class InvoiceDetail extends ApplicationObject {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private Integer invoiceId; // (this is the invoice number)
 	private BigDecimal sumInvPpc; // - sum(invoice.ticket.act_price_per_cleaning)
 	private BigDecimal sumInvTax; // - sum(invoice.ticket.act_tax_amt)
@@ -17,13 +24,21 @@ public class InvoiceDetailResponse extends ApplicationObject {
 //	  			**invoice MSFC amount - stub for v 2.0
 //	  			**invoice excess payment amount - stub for v 2.0
 //	
-	public InvoiceDetailResponse() {
+	public InvoiceDetail() {
 		super();
 	}
 	
+	public InvoiceDetail(Connection conn, Integer invoiceId) throws RecordNotFoundException, Exception {
+		InvoiceTotals invoiceTotals = InvoiceTotals.select(conn, invoiceId);
+		this.invoiceId = invoiceId;
+		this.sumInvPpc = invoiceTotals.getTotalVolInv();
+		this.sumInvTax = invoiceTotals.getTotalTaxInv();
+		this.sumInvPpcPaid = invoiceTotals.getTotalVolPaid();
+		this.sumInvTaxPaid = invoiceTotals.getTotalTaxPaid();
+		this.balance = sumInvPpc.add(sumInvTax).subtract(sumInvPpcPaid.add(sumInvTaxPaid));
+	}
+
 	public Integer getInvoiceId() {
-		Invoice invoice = new Invoice();
-		invoiceId = invoice.getInvoiceId();
 		return invoiceId;
 	}
 	

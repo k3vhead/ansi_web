@@ -176,7 +176,7 @@ td.jobTableCell {
 								</select>
 							</td>
 							<td><span class="labelSpan">Account Type:</span>
-								<select name="accountType" class="quoteSelect">
+								<select name="accountType" id="accountType" class="quoteSelect">
 									<option value=""></option>
 								</select>
 							</td>
@@ -234,13 +234,14 @@ td.jobTableCell {
 					$("select[name='accountType']").selectmenu({ width : '100px'});
 					
 				
-					$optionData = ANSI_UTILS.getOptions('JOB_FREQUENCY,JOB_STATUS,INVOICE_TERM,INVOICE_GROUPING,INVOICE_STYLE,COUNTRY');
+					$optionData = ANSI_UTILS.getOptions('JOB_FREQUENCY,JOB_STATUS,INVOICE_TERM,INVOICE_GROUPING,INVOICE_STYLE,COUNTRY,ACCOUNT_TYPE');
 					var $jobFrequencyList = $optionData.jobFrequency;
 					var $jobStatusList = $optionData.jobStatus;
 					var $invoiceTermList = $optionData.invoiceTerm;
 					var $invoiceGroupingList = $optionData.invoiceGrouping;
 					var $invoiceStyleList = $optionData.invoiceStyle;
 					var $countryList = $optionData.country;
+					var $accountTypeList = $optionData.accountType;
 					
 					$divisionList = ANSI_UTILS.getDivisionList();
 					$buildingTypeList = ANSI_UTILS.makeBuildingTypeList();
@@ -252,6 +253,7 @@ td.jobTableCell {
 					var $lastCreated = null;
 					$jobSiteDetail = null;
 					$billToDetail = null;
+					/*
 					if ( '<c:out value="${ANSI_JOB_ID}" />' != '' ) {
 						$jobData = JOBUTILS.getJobDetail('<c:out value="${ANSI_JOB_ID}" />');				
 						$jobDetail = $jobData.job;
@@ -260,6 +262,7 @@ td.jobTableCell {
 						$nextDue = $jobData.nextDue;
 						$lastCreated = $jobData.lastCreated;
 					}
+					*/
 					if ( '<c:out value="${ANSI_QUOTE_ID}" />' != '' ) {
 						$quoteData = QUOTEUTILS.getQuoteDetail('<c:out value="${ANSI_QUOTE_ID}" />');
 						//$('input[name=quoteNumber]').val('<c:out value="${ANSI_QUOTE_ID}" />');
@@ -280,7 +283,24 @@ td.jobTableCell {
 					JOBAUDIT.init("jobAudit", $jobDetail);
 					ADDRESSPANEL.init("jobSite", $countryList, $jobSiteDetail);
 					ADDRESSPANEL.init("billTo", $countryList, $billToDetail);
+					
+					
+					var $select = $("select[name='accountType']");
+					$select.selectmenu({ width : '80px', maxHeight: '400 !important', style: 'dropdown'});
+					
+					$('option', $select).remove();
+					$.each($accountTypeList, function($index, $accountType) {
+						$select.append(new Option($accountType.display));
+					});
+					
 
+					if ( $selectedValue != null ) {
+						$select.val($selectedValue);
+					}
+					$select.selectmenu();
+					
+					
+					
 					$("#jobNbr").focus();
 					var $currentRow = 0;
 					$("#addJobRow").click(function(){
@@ -289,9 +309,22 @@ td.jobTableCell {
 						var jqxhr1 = $.ajax({
 							type: 'GET',
 							url: 'quotePanel.html',
-							data: {"namespace":$namespace},
+							data: {"panelname":$namespace,"page":"QUOTE"},
 							success: function($data) {
+								console.log($data);
 								$('#jobPanelHolder > tbody:last-child').append($data);
+								
+								JOBPANEL.init($namespace+"_jobPanel", $divisionList, "activateModal", $jobDetail);
+								JOBPROPOSAL.init($namespace+"_jobProposal", $jobFrequencyList, $jobDetail);
+								JOBACTIVATION.init($namespace+"_jobActivation", $buildingTypeList, $jobDetail);
+								JOBDATES.init($namespace+"jobDates", $quoteDetail, $jobDetail);
+								JOBSCHEDULE.init($namespace+"_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
+								JOBINVOICE.init($namespace+"_jobInvoice", $invoiceStyleList, $invoiceGroupingList, $invoiceTermList, $jobDetail);
+								JOBAUDIT.init($namespace+"_jobAudit", $jobDetail);
+								
+								bindAndFormat();
+								
+								
 							},
 							statusCode: {
 								403: function($data) {
@@ -304,8 +337,14 @@ td.jobTableCell {
 					});
 					
 					
-
-
+				function bindAndFormat(){
+					$.each($('input'), function () {
+				        $(this).css("height","20px");
+				        $(this).css("max-height", "20px");
+				    });
+					
+				}
+				bindAndFormat();
 		        });
         </script>        
     </tiles:put>

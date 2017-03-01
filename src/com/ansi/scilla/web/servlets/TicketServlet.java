@@ -15,9 +15,10 @@ import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
-import com.ansi.scilla.web.response.ticket.InvoiceDetailResponse;
+import com.ansi.scilla.web.response.ticket.InvoiceDetail;
+import com.ansi.scilla.web.response.ticket.TicketRecord;
 import com.ansi.scilla.web.response.ticket.TicketReturnListResponse;
-import com.ansi.scilla.web.response.ticket.TicketReturnRecord;
+import com.ansi.scilla.web.response.ticket.TicketReturnResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 
@@ -121,23 +122,13 @@ public class TicketServlet extends AbstractServlet {
 		try {
 			ansiURL = new AnsiURL(request, "ticket", (String[])null); //which panel to 122
 			
-			String panel = ansiURL.getQueryParameterMap().get("panel")[0]; //selected panel
-			TicketReturnRecord ticketId = new TicketReturnRecord();
-			
 			Connection conn = null;
-			TicketReturnListResponse ticketReturnListResponse = null;
+			TicketReturnResponse ticketReturnResponse = null;
 			try {
 				conn = AppUtils.getDBCPConn();
-
-				if (panel.equals("invoice")) { // ticket invoice panel?
-					ticketReturnListResponse = makeGetInvoiceResponse(conn, ansiURL); //sends Json back
-				}
-				else if (panel.equals("")){
-					ticketReturnListResponse = makeGetYYYResponse(conn, ansiURL);
-				}
-				super.sendResponse(conn, response, ResponseCode.SUCCESS, ticketReturnListResponse); //utility to send Json back
+				ticketReturnResponse = new TicketReturnResponse(conn, ansiURL.getId());
 				
-				
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, ticketReturnResponse); //utility to send Json back
 				
 			} catch(RecordNotFoundException recordNotFoundEx) {
 				super.sendNotFound(response);
@@ -152,111 +143,7 @@ public class TicketServlet extends AbstractServlet {
 		}
 	}
 	
-	protected void xxx(HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
-		
-		String panel = null;
-		Integer ticketId = null;
-		Connection conn = null;
-		
-		
-		if(panel.equals("/ticket/"/*, ansiURL*/)) {
-			System.out.println("Ticket(): doGet(): panel:" + panel);
-			//System.out.println("Ticket(): doGet(): ticketId:" + ticketId.getTicketId());
-			if (panel.equals("return")) { // ticket return panel?
-				System.out.println("Ticket(): doGet(): process ticket return panel");
-
-				try {
-					conn = AppUtils.getDBCPConn();
-					TicketReturnListResponse ticketReturnListResponse = null;
-
-					//ticketReturnListResponse = new TicketReturnListResponse(conn, this.id);
-					super.sendResponse(conn, response, ResponseCode.SUCCESS, ticketReturnListResponse);
-				} catch(RecordNotFoundException recordNotFoundEx) {
-					super.sendNotFound(response);
-				} catch ( Exception e) {
-					AppUtils.logException(e);
-					throw new ServletException(e);
-				} finally {
-					AppUtils.closeQuiet(conn);
-				}
-			} else if (panel.equals("invoice")) { // ticket invoice panel?
-				/* Needs to return:
-				 * 		for Ticket = ticketId
-				 * 			actPpc
-				 * 			actTax
-				 * 			sumTktPpcPaid - sum(ticket_payment.amount)
-				 * 			sumTktTaxPaid - sum(ticket_payment.tax_amt)
-				 * 			balance(actPpc + actTax - (sumTcktPpcPaid + sumTktTaxPaid))
-				 * 			daysToPay(today, invoiceDate, balance) 
-				 * 					if balance == 0, daysToPay = max(paymentDate)-invoiceDate
-				 * 					if balance <> 0, daysToPay = today - invoiceDate
-				 * 			**ticket write off amount - stub for v 2.0
-				 * 		for Invoice = invoiceId
-				 * 			invoice_id (this is the invoice number)
-				 * 			sumInvPpc - sum(invoice.ticket.act_price_per_cleaning)
-				 * 			sumInvTax - sum(invoice.ticket.act_tax_amt)
-				 * 			sumInvPpcPaid - sum(invoice.ticket_payment.amount)
-				 * 			sumInvTaxPaid - sum(invoice.ticket_payment.tax_amt)
-				 * 			balance(sumInvPpc + sumInvTax - (sumInvPpcPaid + sumInvTaxPaid))
-				 * 			**invoice write off amount - stub for v 2.0
-				 * 			**invoice MSFC amount - stub for v 2.0
-				 * 			**invoice excess payment amount - stub for v 2.0
-				 */
-				Invoice invoiceId = new Invoice();
-				invoiceId.getInvoiceId();
-				
-				
-				System.out.println("Ticket(): doGet(): process ticket invoice panel");
-				super.sendNotFound(response); // not coded yet
-			} else {
-				super.sendNotFound(response); // unexpected panel
-			}
-		} else {
-			super.sendNotFound(response);
-		}
-	}
 	
-	public void doGetWork(){
-		InvoiceDetailResponse invTax = new InvoiceDetailResponse();
-		invTax.getSumInvTax();
-		
-	}
-	
-	protected TicketReturnListResponse makeGetInvoiceResponse(Connection conn, AnsiURL ansiURL) throws Exception{
-		 // ticket invoice panel?
-			TicketReturnListResponse ticketReturnListResponse = new TicketReturnListResponse();
-			Ticket ticket = new Ticket();
-			ticket.setInvoiceId(Integer.valueOf(ansiURL.getQueryParameterMap().get("ticketId")[0]));
-			List<Ticket> ticketList = Ticket.cast(ticket.selectSome(conn));
-			List<TicketReturnRecord> ticketReturnRecordList = new ArrayList<TicketReturnRecord>();
-			for(Ticket t: ticketList){
-				TicketReturnRecord r = new TicketReturnRecord(t);
-				ticketReturnRecordList.add(r);
-			}
-			
-			ticketReturnListResponse.setTicketReturnList(ticketReturnRecordList);
-			
-			return ticketReturnListResponse;
-	}
-	
-	protected TicketReturnListResponse makeGetYYYResponse(Connection conn, AnsiURL ansiURL) throws Exception{
-		 // ticket invoice panel?
-			TicketReturnListResponse ticketReturnListResponse = new TicketReturnListResponse();
-			Ticket ticket = new Ticket();
-			ticket.setInvoiceId(Integer.valueOf(ansiURL.getQueryParameterMap().get("ticketId")[0]));
-			List<Ticket> ticketList = Ticket.cast(ticket.selectSome(conn));
-			List<TicketReturnRecord> ticketReturnRecordList = new ArrayList<TicketReturnRecord>();
-			for(Ticket t: ticketList){
-				TicketReturnRecord r = new TicketReturnRecord(t);
-				ticketReturnRecordList.add(r);
-			}
-			
-			ticketReturnListResponse.setTicketReturnList(ticketReturnRecordList);
-			
-			return ticketReturnListResponse;
-	}
-
 
 /*	@Override
 	protected void doPost(HttpServletRequest request,

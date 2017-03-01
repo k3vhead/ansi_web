@@ -1,41 +1,45 @@
 package com.ansi.scilla.web.response.ticket;
 
-import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
-import java.sql.SQLException;
 
-import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.web.response.MessageResponse;
+import com.thewebthing.commons.db2.RecordNotFoundException;
 
-/**
- * Used to return a single ticket return set to the client
- * 
- * @author ggroce
- *
- */
-public class TicketReturnResponse extends MessageResponse implements Serializable {
-
+public class TicketReturnResponse extends MessageResponse {
+	
+	/**
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
-
-	private TicketReturnRecord ticket;
-
-	public TicketReturnResponse() {
+	
+	private TicketDetail ticketDetail;
+	private InvoiceDetail invoiceDetail;
+	
+	public TicketReturnResponse(){
 		super();
 	}
-
-	public TicketReturnResponse(TicketReturnRecord ticket) {
-		super();
-		this.ticket = ticket;
+	
+	public TicketReturnResponse(Connection conn, Integer ticketId) throws RecordNotFoundException, Exception{
+		this.ticketDetail = new TicketDetail(conn, ticketId);
+		if(ticketDetail.getInvoiceId() != null){
+			this.invoiceDetail = new InvoiceDetail(conn, ticketDetail.getInvoiceId());
+		}
 	}
-
-	public TicketReturnResponse(Connection conn, Ticket ticket) throws IllegalAccessException, InvocationTargetException, SQLException {
-		this();
-		this.ticket = new TicketReturnRecord(ticket);
+	
+	public TicketDetail getTicketDetail() {
+		return ticketDetail;
 	}
-
-	public TicketReturnRecord getTicket() {
-		return ticket;
+	
+	public void setTicketDetail(TicketDetail ticketResponse) {
+		this.ticketDetail = ticketResponse;
+	}
+	
+	public InvoiceDetail getInvoiceDetail() {
+		return invoiceDetail;
+	}
+	
+	public void setInvoiceDetail(InvoiceDetail invoiceResponse) {
+		this.invoiceDetail = invoiceResponse;
 	}
 	
 	

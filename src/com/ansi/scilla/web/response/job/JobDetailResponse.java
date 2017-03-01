@@ -15,7 +15,7 @@ import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
 import com.ansi.scilla.common.utils.AppUtils;
 import com.ansi.scilla.web.response.MessageResponse;
 import com.ansi.scilla.web.response.address.AddressResponseRecord;
-import com.ansi.scilla.web.response.ticket.TicketReturnRecord;
+import com.ansi.scilla.web.response.ticket.TicketRecord;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 import com.thewebthing.commons.lang.BeanUtils;
@@ -27,10 +27,10 @@ public class JobDetailResponse extends MessageResponse {
 	private JobDetail job;
 	private AddressResponseRecord billTo;
 	private AddressResponseRecord jobSite;
-	private TicketReturnRecord lastRun;
-	private TicketReturnRecord nextDue;
+	private TicketRecord lastRun;
+	private TicketRecord nextDue;
 	private QuoteDetail quote;
-	private TicketReturnRecord lastCreated;
+	private TicketRecord lastCreated;
 	
 	public JobDetailResponse() {
 		super();
@@ -75,25 +75,25 @@ public class JobDetailResponse extends MessageResponse {
 		
 		try {
 			Ticket lastRunTicket = AppUtils.getLastRunTicket(conn, jobId);
-			this.lastRun = new TicketReturnRecord(lastRunTicket);
+			this.lastRun = new TicketRecord(lastRunTicket);
 		} catch ( RecordNotFoundException e ) {
 			// this is OK, just means job has never run
-			this.lastRun = new TicketReturnRecord();
+			this.lastRun = new TicketRecord();
 		}
 		
 		try {
 			Ticket nextDueTicket = AppUtils.getNextDueTicket(conn, jobId);
-			this.nextDue = new TicketReturnRecord(nextDueTicket);
+			this.nextDue = new TicketRecord(nextDueTicket);
 		} catch ( RecordNotFoundException e) {
 			// this is OK, just means job is not scheduled to run again
-			this.nextDue = new TicketReturnRecord();
+			this.nextDue = new TicketRecord();
 		}
 		
 		try {
 			Ticket lastCreatedTicket = AppUtils.getLastCreatedTicket(conn, jobId);
-			this.lastCreated = new TicketReturnRecord(lastCreatedTicket);
+			this.lastCreated = new TicketRecord(lastCreatedTicket);
 		} catch ( RecordNotFoundException e) {
-			this.lastCreated = new TicketReturnRecord();
+			this.lastCreated = new TicketRecord();
 		}
 		
 	}
@@ -116,16 +116,16 @@ public class JobDetailResponse extends MessageResponse {
 	public void setJobSite(AddressResponseRecord jobSite) {
 		this.jobSite = jobSite;
 	}
-	public TicketReturnRecord getLastRun() {
+	public TicketRecord getLastRun() {
 		return lastRun;
 	}
-	public void setLastRun(TicketReturnRecord lastRun) {
+	public void setLastRun(TicketRecord lastRun) {
 		this.lastRun = lastRun;
 	}
-	public TicketReturnRecord getNextDue() {
+	public TicketRecord getNextDue() {
 		return nextDue;
 	}
-	public void setNextDue(TicketReturnRecord nextDue) {
+	public void setNextDue(TicketRecord nextDue) {
 		this.nextDue = nextDue;
 	}
 
@@ -143,11 +143,11 @@ public class JobDetailResponse extends MessageResponse {
 
 
 
-	public TicketReturnRecord getLastCreated() {
+	public TicketRecord getLastCreated() {
 		return lastCreated;
 	}
 
-	public void setLastCreated(TicketReturnRecord lastCreated) {
+	public void setLastCreated(TicketRecord lastCreated) {
 		this.lastCreated = lastCreated;
 	}
 
@@ -647,4 +647,4 @@ public class JobDetailResponse extends MessageResponse {
 			this.proposalDate = proposalDate;
 		}		
 	}
-} 
+}

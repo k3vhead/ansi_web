@@ -238,18 +238,16 @@ public class QuoteServlet extends AbstractServlet {
 	protected Quote doAdd(Connection conn, QuoteRequest quoteRequest, SessionUser sessionUser) throws Exception {
 		Date today = new Date();
 		Quote quote = new Quote();
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! FIX SESSION ISSUE  *ASK DAVE
-		quote.setAddedBy(5);
-//		quote.setAddedBy(sessionUser.getUserId());
+
+		quote.setAddedBy(sessionUser.getUserId());
 		
 		quote.setAddedDate(today);
 		
 		
 //		quote.setQuoteId(quoteRequest.getQuoteId());
 
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! FIX SESSION ISSUE  *ASK DAVE
-//		quote.setUpdatedBy(sessionUser.getUserId());
-		quote.setUpdatedBy(5);
+		quote.setUpdatedBy(sessionUser.getUserId());
+
 		quote.setUpdatedDate(today);
 		
 //		quote.setAddress(quoteRequest.getAddress());
@@ -259,6 +257,8 @@ public class QuoteServlet extends AbstractServlet {
 		}
 		quote.setJobSiteAddressId(quoteRequest.getJobSiteAddressId());
 		quote.setLeadType(quoteRequest.getLeadType());
+		quote.setDivisionId(quoteRequest.getDivisionId());
+		quote.setAccountType(quoteRequest.getAccountType());
 		quote.setManagerId(quoteRequest.getManagerId());
 //		quote.setName(quoteRequest.getName());
 //		quote.setPaymentTerms(quoteRequest.getPaymentTerms());
