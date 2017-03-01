@@ -149,8 +149,16 @@
         <servlet-name>division</servlet-name>
         <url-pattern>/division/*</url-pattern>
     </servlet-mapping>
-    
-    
+    <servlet>
+    	<servlet-name>divisionTypeAhead</servlet-name>
+    	<servlet-class>com.ansi.scilla.web.servlets.DivisionTypeAheadServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+    	<servlet-name>divisionTypeAhead</servlet-name>
+    	<url-pattern>/divisionTypeAhead/*</url-pattern>
+    </servlet-mapping>
+
+
     <servlet>
         <servlet-name>heartbeat</servlet-name>
         <servlet-class>com.ansi.scilla.web.servlets.Heartbeat</servlet-class>
