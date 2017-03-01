@@ -60,7 +60,7 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		this.billSheet = ticketPaymentTotals.getTicket().getBillSheet() == 1;
 		this.customerSignature = ticketPaymentTotals.getTicket().getCustomerSignature() == 1;
 		this.mgrApproval = ticketPaymentTotals.getTicket().getMgrApproval() == 1;
-		this.nextAllowedStatusList = TicketStatus.valueOf(ticketPaymentTotals.getTicket().getStatus()).nextValues();
+		this.nextAllowedStatusList = TicketStatus.lookup(ticketPaymentTotals.getTicket().getStatus()).nextValues();
 		this.jobId = ticketPaymentTotals.getTicket().getJobId();
 		this.actTax = ticketPaymentTotals.getTicket().getActTaxAmt();
 		this.totalVolPaid = ticketPaymentTotals.getTotalVolPaid();
