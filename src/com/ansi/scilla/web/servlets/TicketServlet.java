@@ -2,23 +2,18 @@ package com.ansi.scilla.web.servlets;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ansi.scilla.common.db.Invoice;
-import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
-import com.ansi.scilla.web.response.ticket.InvoiceDetail;
-import com.ansi.scilla.web.response.ticket.TicketRecord;
-import com.ansi.scilla.web.response.ticket.TicketReturnListResponse;
+import com.ansi.scilla.web.request.TicketReturnRequest;
 import com.ansi.scilla.web.response.ticket.TicketReturnResponse;
+import com.ansi.scilla.web.struts.SessionUser;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 
@@ -142,7 +137,77 @@ public class TicketServlet extends AbstractServlet {
 			super.sendNotFound(response);
 		}
 	}
+
+
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		AnsiURL ansiURL = null;
+		Connection conn = null;
+		TicketReturnResponse ticketReturnResponse = null;
+		try {
+			conn = AppUtils.getDBCPConn();
+			String jsonString = super.makeJsonString(request);
+			TicketReturnRequest ticketReturnRequest = (TicketReturnRequest)AppUtils.json2object(jsonString, TicketReturnRequest.class);
+			ansiURL = new AnsiURL(request, "ticket", (String[])null);
+			SessionUser sessionUser = AppUtils.getSessionUser(request);
+			
+			if ( ticketReturnRequest.getAction().equals(TicketReturnRequest.POST_ACTION_IS_COMPLETE)) {
+				processComplete(conn, response, ticketReturnRequest, sessionUser);
+			} else if ( ticketReturnRequest.getAction().equals(TicketReturnRequest.POST_ACTION_IS_SKIP)) {
+				processSkip(conn, response, ticketReturnRequest, sessionUser);
+			} else if ( ticketReturnRequest.getAction().equals(TicketReturnRequest.POST_ACTION_IS_VOID)) {
+				processVoid(conn, response, ticketReturnRequest, sessionUser);
+			} else if ( ticketReturnRequest.getAction().equals(TicketReturnRequest.POST_ACTION_IS_REJECT)) {
+				processReject(conn, response, ticketReturnRequest, sessionUser);
+			} else if ( ticketReturnRequest.getAction().equals(TicketReturnRequest.POST_ACTION_IS_REQUEUE)) {
+				processRequeue(conn, response, ticketReturnRequest, sessionUser);
+			} else {
+				// this is an error -- a bad action was requested
+			}
+				
+		} catch (ResourceNotFoundException e1) {
+			super.sendNotFound(response);
+		} catch ( Exception e) {
+			AppUtils.logException(e);
+			throw new ServletException(e);
+		} finally {
+			AppUtils.closeQuiet(conn);
+		}
+	}
+
+
+	private void processComplete(Connection conn, HttpServletResponse response, TicketReturnRequest ticketReturnRequest, SessionUser sessionUser) {
+		// edit input fields to make sure everything is present and valid
+		// if all input is good
+		//		update the ticket with info from the request
+	}
+
+
+	private void processSkip(Connection conn, HttpServletResponse response, TicketReturnRequest ticketReturnRequest, SessionUser sessionUser) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	private void processVoid(Connection conn, HttpServletResponse response, TicketReturnRequest ticketReturnRequest, SessionUser sessionUser) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	private void processReject(Connection conn, HttpServletResponse response, TicketReturnRequest ticketReturnRequest, SessionUser sessionUser) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	private void processRequeue(Connection conn, HttpServletResponse response, TicketReturnRequest ticketReturnRequest, SessionUser sessionUser) {
+		// TODO Auto-generated method stub
+		
+	}
 	
+
 	
 
 /*	@Override

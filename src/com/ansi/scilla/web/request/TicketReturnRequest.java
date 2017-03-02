@@ -18,6 +18,13 @@ public class TicketReturnRequest extends AbstractRequest {
 
 	private static final long serialVersionUID = 1L;
 	
+	public static final String POST_ACTION_IS_COMPLETE = "complete";
+	public static final String POST_ACTION_IS_SKIP = "skip";
+	public static final String POST_ACTION_IS_VOID = "void";
+	public static final String POST_ACTION_IS_REJECT = "reject";
+	public static final String POST_ACTION_IS_REQUEUE = "requeue";
+	
+	private String action;
 	private BigDecimal actDl;
 	private BigDecimal actDlPct;
 	private BigDecimal actPricePerCleaning;
@@ -35,6 +42,14 @@ public class TicketReturnRequest extends AbstractRequest {
 		super();
 	}
 		
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
+	}
+
 	public void setActDl(BigDecimal actDl) {
 		this.actDl = actDl;
 	}
