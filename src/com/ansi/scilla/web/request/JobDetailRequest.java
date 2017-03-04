@@ -12,6 +12,8 @@ public class JobDetailRequest extends AbstractRequest {
 	private String action;
 	private Date cancelDate;
 	private String cancelReason;
+	private Date activationDate;
+	private Date startDate;
 	
 	public Integer getJobId() {
 		return jobId;
@@ -39,8 +41,25 @@ public class JobDetailRequest extends AbstractRequest {
 		this.cancelReason = cancelReason;
 	}
 	
+	public Date getActivationDate() {
+		return activationDate;
+	}
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
+	public void setActivationDate(Date activationDate) {
+		this.activationDate = activationDate;
+	}
+	public Date getStartDate() {
+		return startDate;
+	}
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
 	public static enum JobDetailRequestAction {
 		ACTIVATE_JOB,
-		CANCEL_JOB;
+		CANCEL_JOB,
+		SCHEDULE_JOB;
+		
 	}
 }

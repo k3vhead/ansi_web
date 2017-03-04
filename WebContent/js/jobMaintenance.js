@@ -227,7 +227,7 @@ $( document ).ready(function() {
 				ANSI_UTILS.setTextValue($namespace, "activationDate", $jobDetail.activationDate);
 				ANSI_UTILS.setTextValue($namespace, "startDate", $jobDetail.startDate);
 				ANSI_UTILS.setTextValue($namespace, "cancelDate", $jobDetail.cancelDate);
-				ANSI_UTILS.setTextValue($namespace, "cancelReason", $jobDetail.cancelReason);
+				ANSI_UTILS.setTextValue($namespace, "cancelReason", $jobDetail.cancelReason);				
 			}
 		}
 	}
@@ -299,6 +299,7 @@ $( document ).ready(function() {
 			}
 			JOBPANEL.initActivateModal($namespace, $modalNamespace);
 			JOBPANEL.initCancelModal($namespace, $modalNamespace);
+			JOBPANEL.initScheduleModal($namespace, $modalNamespace);
 			
 			//make the date selectors work in the modal window
 			var $selector= '.' + $modalNamespace + "_datefield";
@@ -368,7 +369,7 @@ $( document ).ready(function() {
 	      	    	  {
 	      	    			id: $goButtonId,
 	      	        		click: function() {
-	      	        			JOBPANEL.activateJob();
+	      	        			JOBPANEL.activateJob($namespace, $modalNamespace);
 	      	        		}
 	      	      		},
 	      	      		{
@@ -439,6 +440,53 @@ $( document ).ready(function() {
 	
 		},
 		
+		initScheduleModal: function($namespace, $modalNamespace) {
+			var $scheduleJobButtonSelector = "#" + $namespace + "_scheduleJobButton";
+			var $scheduleJobFormDialogSelector = "#" + $modalNamespace + "_scheduleJobForm";
+			var $goButtonId = $namespace + "_scheduleFormButton";
+			var $closeButtonId = $namespace + "_scheduleFormCloseButton";
+			                                       
+			
+			$($scheduleJobButtonSelector).click(function() {
+				//$("#updateOrAdd").val("add");
+        		//clearAddForm();				
+        		$('#'+$goButtonId).button('option', 'label', 'Schedue Job');
+        		$('#'+$closeButtonId).button('option', 'label', 'Close');
+        	    $($scheduleJobFormDialogSelector).dialog( "open" );
+			});
+			
+			
+			// set up the schedule job modal window
+			$( $scheduleJobFormDialogSelector ).dialog({
+	      	      autoOpen: false,
+	      	      height: 300,
+	      	      width: 500,
+	      	      modal: true,
+	      	      buttons: [
+	      	    	  {
+	      	    			id: $goButtonId,
+	      	        		click: function() {
+	      	        			JOBPANEL.scheduleJob($namespace, $modalNamespace);
+	      	        		}
+	      	      		},
+	      	      		{
+	        	    		id: $closeButtonId,
+	        	        	click: function() {
+	        	        		$( $scheduleJobFormDialogSelector ).dialog( "close" );
+	        	        	}
+	        	      	}
+	      	      
+	      	      ],
+	      	      close: function() {
+	      	    	  $( $scheduleJobFormDialogSelector ).dialog( "close" );
+	      	        //allFields.removeClass( "ui-state-error" );
+	      	      }
+	      	    });
+	
+		},
+	
+		
+		
 		setDivisionList: function($namespace, $divisionList) {
 			selectorName = "#"+$namespace+"_divisionId";
 			console.log(selectorName);
@@ -469,6 +517,11 @@ $( document ).ready(function() {
 				statusCode: {
 					200: function($data) {
 						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+							var $cancelJobFormDialogSelector = "#" + $modalNamespace + "_cancelJobForm";
+							var $cancelFieldSelector = "." + $modalNamespace + "_cancelField"
+							var $cancelMessageSelector = "." + $modalNamespace + "_cancelMessage";							
+							$($cancelMessageSelector).html("");
+							$($cancelFieldSelector).val("");
 							$.each($data.data.webMessages, function(index, $value){
 								var $message = "";
 								$.each($value, function(idx2, $msg){
@@ -502,10 +555,121 @@ $( document ).ready(function() {
 						ANSI_UTILS.setTextValue($namespace, "panelMessage", "System Error -- Contact Support");
 					} 
 				},
-				dataType: 'json',
-				async:false
+				dataType: 'json'
+			});
+		},
+		
+		activateJob: function($namespace, $modalNamespace) {
+			$jobId = ANSI_UTILS.getFieldValue($namespace, "jobId");
+			var $startDate = ANSI_UTILS.getFieldValue($modalNamespace, "startDate");
+			var $activationDate = ANSI_UTILS.getFieldValue($modalNamespace, "activationDate");
+			var $url = "job/" + $jobId
+			var $outbound = {'action':'ACTIVATE_JOB','startDate':$startDate,'activationDate':$activationDate};
+			
+			var jqxhr3 = $.ajax({
+				type: 'POST',
+				url: $url,
+				data: JSON.stringify($outbound),
+				statusCode: {
+					200: function($data) {
+						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+							var $activateJobFormDialogSelector = "#" + $modalNamespace + "_activateJobForm";
+							var $activateFieldSelector = "." + $modalNamespace + "_activateField"
+							var $activateMessageSelector = "." + $modalNamespace + "_activateMessage";							
+							$($activateMessageSelector).html("");
+							$($activateFieldSelector).val("");
+							$.each($data.data.webMessages, function(index, $value){
+								var $message = "";
+								$.each($value, function(idx2, $msg){
+									$message = $message + " " + $msg;
+								});
+								var $msgSelector = index + "_msg";
+								ANSI_UTILS.setTextValue($modalNamespace, $msgSelector, $message);
+							});
+						}
+						if ( $data.responseHeader.responseCode == 'SUCCESS') {
+							var $activateJobFormDialogSelector = "#" + $modalNamespace + "_activateJobForm";
+							var $activateFieldSelector = "." + $modalNamespace + "_activateField"
+							var $activateMessageSelector = "." + $modalNamespace + "_activateMessage";							
+							$( $activateJobFormDialogSelector ).dialog( "close" );
+							$($activateMessageSelector).html("");
+							$($activateFieldSelector).val("");
+							ANSI_UTILS.setTextValue($namespace, "panelMessage", "Update Successful");
+							JOB_UTILS.fadeMessage($namespace, "panelMessage")
+							JOB_UTILS.panelLoad($jobId);
+						}
+					},				
+					403: function($data) {
+						ANSI_UTILS.setTextValue($namespace, "panelMessage", "Function Not Permitted");
+						JOB_UTILS.fadeMessage($namespace, "panelMessage")
+					}, 
+					404: function($data) {
+						ANSI_UTILS.setTextValue($namespace, "panelMessage", "Resource Not Available");
+						JOB_UTILS.fadeMessage($namespace, "panelMessage")
+					}, 
+					500: function($data) {
+						ANSI_UTILS.setTextValue($namespace, "panelMessage", "System Error -- Contact Support");
+					} 
+				},
+				dataType: 'json'
+			});
+		},
+		
+		scheduleJob: function($namespace, $modalNamespace) {
+			$jobId = ANSI_UTILS.getFieldValue($namespace, "jobId");
+			var $startDate = ANSI_UTILS.getFieldValue($modalNamespace, "scheduleStartDate");
+			var $url = "job/" + $jobId
+			var $outbound = {'action':'SCHEDULE_JOB','startDate':$startDate};
+			
+			var jqxhr3 = $.ajax({
+				type: 'POST',
+				url: $url,
+				data: JSON.stringify($outbound),
+				statusCode: {
+					200: function($data) {
+						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+							var $scheduleJobFormDialogSelector = "#" + $modalNamespace + "_scheduleJobForm";
+							var $scheduleFieldSelector = "." + $modalNamespace + "_scheduleField"
+							var $scheduleMessageSelector = "." + $modalNamespace + "_scheduleMessage";							
+							$($scheduleMessageSelector).html("");
+							$($scheduleFieldSelector).val("");
+							$.each($data.data.webMessages, function(index, $value){
+								var $message = "";
+								$.each($value, function(idx2, $msg){
+									$message = $message + " " + $msg;
+								});
+								var $msgSelector = index + "_msg";
+								ANSI_UTILS.setTextValue($modalNamespace, $msgSelector, $message);
+							});
+						}
+						if ( $data.responseHeader.responseCode == 'SUCCESS') {
+							var $scheduleJobFormDialogSelector = "#" + $modalNamespace + "_scheduleJobForm";
+							var $scheduleFieldSelector = "." + $modalNamespace + "_scheduleField"
+							var $scheduleMessageSelector = "." + $modalNamespace + "_scheduleMessage";							
+							$( $scheduleJobFormDialogSelector ).dialog( "close" );
+							$($scheduleMessageSelector).html("");
+							$($scheduleFieldSelector).val("");
+							ANSI_UTILS.setTextValue($namespace, "panelMessage", "Update Successful");
+							JOB_UTILS.fadeMessage($namespace, "panelMessage")
+							JOB_UTILS.panelLoad($jobId);
+						}
+					},				
+					403: function($data) {
+						ANSI_UTILS.setTextValue($namespace, "panelMessage", "Function Not Permitted");
+						JOB_UTILS.fadeMessage($namespace, "panelMessage")
+					}, 
+					404: function($data) {
+						ANSI_UTILS.setTextValue($namespace, "panelMessage", "Resource Not Available");
+						JOB_UTILS.fadeMessage($namespace, "panelMessage")
+					}, 
+					500: function($data) {
+						ANSI_UTILS.setTextValue($namespace, "panelMessage", "System Error -- Contact Support");
+					} 
+				},
+				dataType: 'json'
 			});
 		}
+
 	}
 	
 	
@@ -547,20 +711,20 @@ $( document ).ready(function() {
 
 	;JOBSCHEDULE = {
 		init: function($namespace, $jobDetail, $lastRun, $nextDue, $lastCreated) {
-			if ( $lastRun != null ) {
+			if ( $lastRun != null && $lastRun.processDate != null ) {
 				ANSI_UTILS.setTextValue($namespace, "lastRun", $lastRun.processDate + " (T" + $lastRun.ticketId + ")");
 			}
-			if ( $nextDue != null ) {
+			if ( $nextDue != null && $nextDue.startDate != null ) {
 				ANSI_UTILS.setTextValue($namespace, "nextDue", $nextDue.startDate + " (T" + $nextDue.ticketId + ")");
 			}
-			if ( $lastCreated != null) {
+			if ( $lastCreated != null && $lastCreated.startDate != null) {
 				ANSI_UTILS.setTextValue($namespace, "createdThru", $lastCreated.startDate + " (T" + $lastCreated.ticketId + ")");
 			}
-//			if ($jobDetail.repeatScheduleAnnually == 1) {
-//				ANSI_UTILS.setCheckbox($namespace, "annualRepeat", true);
-//			} else {
-//				ANSI_UTILS.setCheckbox($namespace, "annualRepeat", false);
-//			}
+			if ($jobDetail.repeatScheduleAnnually == 1) {
+				ANSI_UTILS.setCheckbox($namespace, "annualRepeat", true);
+			} else {
+				ANSI_UTILS.setCheckbox($namespace, "annualRepeat", false);
+			}
 		}
 	}
 });

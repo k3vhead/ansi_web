@@ -92,6 +92,9 @@ public class JobServlet extends AbstractServlet {
 				} else if ( action.equals(JobDetailRequestAction.ACTIVATE_JOB)) {
 					System.out.println("JObServer 94 activating job");
 					doActivateJob(conn, url.getId(), jobDetailRequest, sessionUser, response);				
+				} else if ( action.equals(JobDetailRequestAction.SCHEDULE_JOB)) {
+					System.out.println("JobServlet 96 scheduling job");
+					doScheduleJob(conn, url.getId(), jobDetailRequest, sessionUser, response);
 				}
 			} catch ( IllegalArgumentException e) {
 				conn.rollback();
@@ -145,10 +148,27 @@ public class JobServlet extends AbstractServlet {
 		WebMessages messages = new WebMessages();
 		ResponseCode responseCode = null;
 		try {
-			JobUtils.scheduleJob(conn, jobId, sessionUser.getUserId());
-			conn.commit();
-			responseCode = ResponseCode.SUCCESS;
-			messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
+			if ( jobDetailRequest.getStartDate() == null ) {
+				messages.addMessage("startDate", "Required Field");
+			}
+			if ( jobDetailRequest.getActivationDate() == null ) {
+				messages.addMessage("activationDate", "Required Field");
+			}
+			if ( messages.isEmpty() ) {
+				try {
+					System.out.println("JobServlet 156");
+					JobUtils.activateJob(conn, jobId, jobDetailRequest.getStartDate(), jobDetailRequest.getActivationDate(), sessionUser.getUserId());
+					conn.commit();
+					responseCode = ResponseCode.SUCCESS;
+					messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
+				} catch ( RecordNotFoundException e) {
+					conn.rollback();
+					responseCode = ResponseCode.EDIT_FAILURE;
+					messages.addMessage("activationDate", "Invalid Job ID");
+				}
+			} else {
+				responseCode = ResponseCode.EDIT_FAILURE;
+			}
 			jobDetailResponse = new JobDetailResponse(conn,jobId);
 		} catch ( RecordNotFoundException e) {
 			responseCode = ResponseCode.EDIT_FAILURE;
@@ -159,6 +179,39 @@ public class JobServlet extends AbstractServlet {
 		
 	}
 
-	
+
+	private void doScheduleJob(Connection conn, Integer jobId, JobDetailRequest jobDetailRequest, SessionUser sessionUser, HttpServletResponse response) throws Exception {
+		JobDetailResponse jobDetailResponse = new JobDetailResponse();
+		WebMessages messages = new WebMessages();
+		ResponseCode responseCode = null;
+		try {
+			if ( jobDetailRequest.getStartDate() == null ) {
+				messages.addMessage("scheduleStartDate", "Required Field");
+			}
+			if ( messages.isEmpty() ) {
+				try {
+					System.out.println("JobServlet 193");
+					JobUtils.rescheduleJob(conn, jobId, jobDetailRequest.getStartDate(), sessionUser.getUserId());
+					conn.commit();
+					responseCode = ResponseCode.SUCCESS;
+					messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
+				} catch ( RecordNotFoundException e) {
+					conn.rollback();
+					responseCode = ResponseCode.EDIT_FAILURE;
+					messages.addMessage("scheduleStartDate", "Invalid Job ID");
+				}
+			} else {
+				responseCode = ResponseCode.EDIT_FAILURE;
+			}
+			jobDetailResponse = new JobDetailResponse(conn,jobId);
+		} catch ( RecordNotFoundException e) {
+			responseCode = ResponseCode.EDIT_FAILURE;
+			messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Job ID");
+		}
+		jobDetailResponse.setWebMessages(messages);
+		super.sendResponse(conn, response, responseCode, jobDetailResponse);
+		
+	}
+
 	
 }

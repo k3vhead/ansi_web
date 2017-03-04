@@ -230,7 +230,7 @@ public class JobDetailResponse extends MessageResponse {
 			this.updatedEmail = updatedBy.getEmail();
 			this.canActivate = job.canActivate();
 			this.canCancel = job.canCancel();
-			this.canReschedule = true;
+			this.canReschedule = job.canReschedule();
 		}
 		@JsonSerialize(using=AnsiDateFormatter.class)
 		public Date getActivationDate() {
