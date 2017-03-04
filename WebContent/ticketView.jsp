@@ -42,10 +42,13 @@
 				width:80px !important;
 				max-width:80px !important;
 			}
+			#summaryTable {
+				width:90%;
+			}
 			#headerTable { 
 				display:none; 
 			}			
-			#divisionId {
+			#divisionSelect{
 				border:solid 1px #000000;
 			}
         </style>       
@@ -54,91 +57,91 @@
         
         $(function() {
         	
-        	$(document).ready(function($divisionId) {			
-    			var $returnValue = null;
-    			if ( $divisionId != null ) {
-    				var $url = "division/list" + $divisionId
-    				var jqxhr = $.ajax({
-    					type: 'GET',
-    					url: $url,
-    					data: {},
-    					statusCode: {
-    						200: function($data) {
-    							$returnValue = $data.data;
-    						},					
-    						403: function($data) {
-    							$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-    						},
-    						404: function($data) {
-    							$returnValue = {};
-    						},
-    						500: function($data) {
-    							
-    						}
-    					},
-    					dataType: 'json',
-    					async:false
-    				});
-    			}
-    			return $returnValue;
-
-    		}),
+        	var jqxhr = $.ajax({
+				type: 'GET',
+				url: 'division/list',
+				data: {},
+				success: function($data) {
+					$.each($data.data.divisionList, function(index, value) {
+						addRow(index, value);
+					});
+					doFunctionBinding();
+				},
+				statusCode: {
+					403: function($data) {
+						$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+					},
+					500: function($data) {
+         	    		$("#globalMsg").html("Unhandled Exception").fadeIn(10).fadeOut(6000);
+         	    	} 
+				},
+				dataType: 'json'
+			});
+        	
+        	
+        	var jqxhr = $.ajax({
+				type: 'GET',
+				url: '/ansi_web/ticketDRV?divisionId=9&month=3',
+				data: {},
+				success: function($data) {
+					$.each($data.data.ticketDRVList, function(index, value) {
+						addRow(index, value);
+					});
+					doFunctionBinding();
+				},
+				statusCode: {
+					403: function($data) {
+						$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+					},
+					500: function($data) {
+         	    		$("#globalMsg").html("Unhandled Exception").fadeIn(10).fadeOut(6000);
+         	    	} 
+				},
+				dataType: 'json'
+			});
+			
+			function addRow(index, $ticketDRV) {	
+				var $rownum = index + 1;
+       			rowTd = makeRow($ticketDRV, $rownum);
+       			row = '<tr class="dataRow">' + rowTd + "</tr>";
+       			$('#summaryTable').append(row);
+			}
+			
+			function doFunctionBinding() {
+				$('.updAction').bind("click", function($clickevent) {
+					doUpdate($clickevent);
+				});
+				$('.delAction').bind("click", function($clickevent) {
+					doDelete($clickevent);
+				});
+				$('.dataRow').bind("mouseover", function() {
+					$(this).css('background-color','#CCCCCC');
+				});
+				$('.dataRow').bind("mouseout", function() {
+					$(this).css('background-color','transparent');
+				});
+			}
+			
+			function makeRow($ticketDRV, $rownum) {
+				var row = "";
+				row = row + '<td>' + $ticketDRV.startDate + '</td>';
+				row = row + '<td>' + $ticketDRV.endDate + '</td>';
+				row = row + '<td>' + $ticketDRV.ticketCount + '</td>';
+				row = row + '<td>' + $ticketDRV.division + '</td>';
+				row = row + '<td>' + $ticketDRV.runDate + '</td>';
+				row = row + '<td>' + $ticketDRV.totalVolume + '</td>';
+				row = row + '<td>' + $ticketDRV.totalDL + '</td>';  			
+				return row;
+			}
+        	
+        	
+        	
+        	function makeRow($division, $rownum) {
+				var row = "";
+				row = row + '<td>' + $division.divisionId + '</td>';      			
+				return row;
+			}
         				
-    		
-    		function init($namespace, $divisionList, $modalNamespace, $jobDetail) {
-    			if ( $divisionList != null ) {
-    				var $divisionLookup = {}
-    				$.each($divisionList, function($index, $division) {
-    					$divisionLookup[$division.divisionId]=$division.divisionCode;
-    				});
-    				JOBPANEL.setDivisionList($namespace, $divisionList);
-    			}
-    			JOBPANEL.initActivateModal($namespace, $modalNamespace);
-    			JOBPANEL.initCancelModal($namespace, $modalNamespace);
-    			
-    			//make the date selectors work in the modal window
-    			var $selector= '.' + $modalNamespace + "_datefield";
-    			$($selector).datepicker({
-                    prevText:'&lt;&lt;',
-                    nextText: '&gt;&gt;',
-                    showButtonPanel:true
-                });
-    			
-    			
-    			if ( $jobDetail != null ) {
-    				ANSI_UTILS.setTextValue($namespace, "divisionId", $divisionLookup[$jobDetail.divisionId]);
-    				
-    				var $activateJobButtonSelector = "#" + $namespace + "_activateJobButton";
-    				if ( $jobDetail.canActivate == true ) {							
-    					$($activateJobButtonSelector).show();
-    				} else {
-    					$($activateJobButtonSelector).hide();
-    				}
-    				
-    				var $cancelJobButtonSelector = "#" + $namespace + "_cancelJobButton";
-    				$($cancelJobButtonSelector).attr('data-jobid', $jobDetail.jobId);
-    				if ( $jobDetail.canCancel == true ) {		
-    					$($cancelJobButtonSelector).show();
-    				} else {
-    					$($cancelJobButtonSelector).hide();
-    				}
-    			}
-
-    		},
-        				
-        				function ($namespace, $optionList, $selectedValue) {
-        					var selectorName = "#" + $namespace + "_divisionIdForm select[name='" + $namespace + "_divisionId']";
-        					var $select = $(selectorName);
-        					$select.append(new Option("",""));
-        					$.each($optionList, function(index, val) {
-        					    $select.append(new Option(val.display, val.abbrev));
-        					});
-        					
-        					if ( $selectedValue != null ) {
-        						$select.val($selectedValue);
-        					}
-        					$select.selectmenu();
-        				},
                 
         $(document).ready(function(){
         	  $('.ScrollTop').click(function() {
@@ -158,6 +161,7 @@
         	        "deferRender": 		true,
         	        "scrollCollapse": 	true,
         	        "scrollX": 			true,
+        	        "bFilter":			true,
         	        rowId: 				'dt_RowId',
         	        dom: 				'Bfrtip',
         	        "searching": 		true,
@@ -176,7 +180,7 @@
         	         ],
         	        "paging": true,
 			        "ajax": {
-			        	"url": "/ansi_web/ticketDRV?divisionId=9&month=3",
+			        	"url": "/ansi_web/ticketDRV?month=nn&divisionId=nn",
 			        	"dataSrc": "data.responseItemList"
 			        	},
 			        columns: [
@@ -229,6 +233,10 @@
 			            }
 			    } );
         	}
+        	
+        	$( ".selector" ).selectmenu({
+        		  appendTo: "#DivisionSelect"
+        		});
         	        	
         	init();
         			
@@ -242,6 +250,15 @@
 					
 					createTable();
             }; 
+            
+            function initComplete (){
+              var r = $('#TicketDRV tfoot tr');
+              r.find('th').each(function(){
+                $(this).css('padding', 8);
+              });
+              $('#TicketDRV thead').append(r);
+              $('#divisionSelect').css('text-align', 'center');
+            }
                 
 				function doFunctionBinding() {
 					$( ".editAction" ).on( "click", function($clickevent) {
@@ -252,7 +269,7 @@
 				function doEdit($clickevent) {
 					var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
 
-						var $url = '/ansi_web/ticketDRV?divisionId=9&month=3' + $rowid;
+						var $url = '/ansi_web/ticketDRV?month=nn&divisionId=nn' + $rowid;
 						//console.log("YOU PASSED ROW ID:" + $rowid);
 						var jqxhr = $.ajax({
 							type: 'GET',
@@ -293,14 +310,61 @@
         </script>        
     </tiles:put>
     
-    <tiles:put name="content" type="string">    	
+    <tiles:put name="content" type="string">
     <table id="divisionId"></table>
-    	<h1>Division ID</h1>
-		<table style="border:solid 1px #000000; margin-top:8px;" id="divisionId">
+    	<h1 align=center>Division and Month Select</h1>
+		<table align=center; style="border:solid 1px #000000; margin-top:8px;" id="divisionId" style="font-size:9pt;max-width:200px;">
 			<tbody>
+			<span class="formLabel">Division ID</span>
+  				<select>
+  					<option value="12">12</option>
+  					<option value="15">15</option>
+  					<option value="18">18</option>
+  					<option value="19">19</option>
+  					<option value="23">23</option>
+  					<option value="31">31</option>
+  					<option value="32">32</option>
+  					<option value="44">44</option>
+  					<option value="65">65</option>
+  					<option value="66">66</option>
+  					<option value="67">67</option>
+  					<option value="71">71</option>
+  					<option value="77">77</option>
+  					<option value="78">78</option>
+  					<option value="89">89</option>
+				</select>
+		<span class="formLabel">Month</span>        
+  				<select>
+  					<option value="1">1</option>
+  					<option value="2">2</option>
+  					<option value="3">3</option>
+  					<option value="4">4</option>
+  					<option value="5">5</option>
+  					<option value="6">6</option>
+  					<option value="7">7</option>
+  					<option value="8">8</option>
+  					<option value="9">9</option>
+  					<option value="10">10</option>
+  					<option value="11">11</option>
+  					<option value="12">12</option>
+  				</select>
+  			<input id="button1" type="button" value="Select" />
 				<tr><td>&nbsp;</td></tr>
 			</tbody>
 		</table>  
+		
+		
+		<table id="summaryTable">
+    		<tr>
+    			<th>Start Date</th>
+    			<th>End Date</th>
+				<th>Ticket Count</th>
+    			<th>Division</th>
+    			<th>Run Date</th>
+    			<th>Total Volume</th>
+    			<th>Total D/L</th>
+    		</tr>
+    	</table>
     
     
  	<table id="ticketDRV" style="table-layout: fixed" class="display" cellspacing="0" width="100%" style="font-size:9pt;max-width:1300px;width:1300px;">
