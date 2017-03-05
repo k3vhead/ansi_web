@@ -2,14 +2,20 @@ package com.ansi.scilla.web.servlets;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.ansi.scilla.common.db.Ticket;
+import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ResponseCode;
+import com.ansi.scilla.web.common.WebMessages;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.request.TicketReturnRequest;
 import com.ansi.scilla.web.response.ticket.TicketReturnResponse;
@@ -142,32 +148,38 @@ public class TicketServlet extends AbstractServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		AnsiURL ansiURL = null;
+		AnsiURL ansiURL = null; 
 		Connection conn = null;
-		TicketReturnResponse ticketReturnResponse = null;
+		//TicketReturnResponse ticketReturnResponse = null;
 		try {
 			conn = AppUtils.getDBCPConn();
 			String jsonString = super.makeJsonString(request);
 			TicketReturnRequest ticketReturnRequest = (TicketReturnRequest)AppUtils.json2object(jsonString, TicketReturnRequest.class);
-			ansiURL = new AnsiURL(request, "ticket", (String[])null);
+			ansiURL = new AnsiURL(request, "ticket", (String[])null); //  .../ticket/etc
 			SessionUser sessionUser = AppUtils.getSessionUser(request);
 			
-			if ( ticketReturnRequest.getAction().equals(TicketReturnRequest.POST_ACTION_IS_COMPLETE)) {
-				processComplete(conn, response, ticketReturnRequest, sessionUser);
-			} else if ( ticketReturnRequest.getAction().equals(TicketReturnRequest.POST_ACTION_IS_SKIP)) {
-				processSkip(conn, response, ticketReturnRequest, sessionUser);
-			} else if ( ticketReturnRequest.getAction().equals(TicketReturnRequest.POST_ACTION_IS_VOID)) {
-				processVoid(conn, response, ticketReturnRequest, sessionUser);
-			} else if ( ticketReturnRequest.getAction().equals(TicketReturnRequest.POST_ACTION_IS_REJECT)) {
-				processReject(conn, response, ticketReturnRequest, sessionUser);
-			} else if ( ticketReturnRequest.getAction().equals(TicketReturnRequest.POST_ACTION_IS_REQUEUE)) {
-				processRequeue(conn, response, ticketReturnRequest, sessionUser);
-			} else {
-				// this is an error -- a bad action was requested
+			Ticket ticket = new Ticket();
+			try{
+				ticket.setTicketId(ansiURL.getId());
+				ticket.selectOne(conn);
+				if ( ticketReturnRequest.getAction().equals(TicketReturnRequest.POST_ACTION_IS_COMPLETE)) {
+					processComplete(conn, response, ticket, ticketReturnRequest, sessionUser);
+				} else if ( ticketReturnRequest.getAction().equals(TicketReturnRequest.POST_ACTION_IS_SKIP)) {
+					processSkip(conn, response, ticket, ticketReturnRequest, sessionUser);
+				} else if ( ticketReturnRequest.getAction().equals(TicketReturnRequest.POST_ACTION_IS_VOID)) {
+					processVoid(conn, response, ticket, ticketReturnRequest, sessionUser);
+				} else if ( ticketReturnRequest.getAction().equals(TicketReturnRequest.POST_ACTION_IS_REJECT)) {
+					processReject(conn, response, ticket, ticketReturnRequest, sessionUser);
+				} else if ( ticketReturnRequest.getAction().equals(TicketReturnRequest.POST_ACTION_IS_REQUEUE)) {
+					processRequeue(conn, response, ticket, ticketReturnRequest, sessionUser);
+				} else {
+					// this is an error -- a bad action was requested
+					super.sendNotAllowed(response);
+				}
+			} catch (RecordNotFoundException e) {
+				//send a Bad Ticket message back
+				super.sendNotFound(response);
 			}
-				
-		} catch (ResourceNotFoundException e1) {
-			super.sendNotFound(response);
 		} catch ( Exception e) {
 			AppUtils.logException(e);
 			throw new ServletException(e);
@@ -176,35 +188,208 @@ public class TicketServlet extends AbstractServlet {
 		}
 	}
 
+	
+	
+	@Override
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		
+		super.sendNotAllowed(response);
+	}
 
-	private void processComplete(Connection conn, HttpServletResponse response, TicketReturnRequest ticketReturnRequest, SessionUser sessionUser) {
+
+	private void processComplete (Connection conn, HttpServletResponse response, Ticket ticket, TicketReturnRequest ticketReturnRequest,
+			SessionUser sessionUser) throws RecordNotFoundException, Exception {
 		// edit input fields to make sure everything is present and valid
 		// if all input is good
 		//		update the ticket with info from the request
-	}
-
-
-	private void processSkip(Connection conn, HttpServletResponse response, TicketReturnRequest ticketReturnRequest, SessionUser sessionUser) {
-		// TODO Auto-generated method stub
+		TicketReturnResponse ticketReturnResponse = null;
+		WebMessages messages = new WebMessages();
+		ResponseCode responseCode = null;
+		if (ticketReturnRequest.getProcessDate() == null) {
+			messages.addMessage("processDate", "Required Field");
+		}
+		if (ticketReturnRequest.getActPricePerCleaning() == null ) {
+			messages.addMessage("actPricePerCleaning", "Required Field");
+		}
+		if (ticketReturnRequest.getActDlPct() == null ) {
+			messages.addMessage("actDlPct", "Required Field");
+		}
+		if (ticketReturnRequest.getActDlAmt() == null ) {
+			messages.addMessage("actDlAmt", "Required Field");
+		}
+		if ( messages.isEmpty() ) {
+			try {
+				ticket.setStatus(TicketStatus.COMPLETED.code());
+				//required fields
+				ticket.setProcessDate(ticketReturnRequest.getProcessDate());
+				ticket.setActPricePerCleaning(ticketReturnRequest.getActPricePerCleaning());
+				ticket.setActDlPct(ticketReturnRequest.getActDlPct());
+				ticket.setActDlAmt(ticketReturnRequest.getActDlAmt());
+				//optional fields
+				if(!StringUtils.isBlank(ticketReturnRequest.getProcessNotes())){
+					ticket.setProcessNotes(ticketReturnRequest.getProcessNotes());
+				} 
+				if (ticketReturnRequest.getCustomerSignature() != null && ticketReturnRequest.getCustomerSignature() == 1){
+					ticket.setCustomerSignature(Ticket.CUSTOMER_SIGNATURE_IS_YES);
+				} 
+				if (ticketReturnRequest.getMgrApproval() != null && ticketReturnRequest.getMgrApproval() == 1){
+					ticket.setMgrApproval(Ticket.MGR_APPROVAL_IS_YES);
+				} 
+				if (ticketReturnRequest.getBillSheet() != null && ticketReturnRequest.getBillSheet() == 1){
+					ticket.setBillSheet(Ticket.BILL_SHEET_IS_YES);
+				}
+				doTicketUpdate(conn, ticket, sessionUser);
+				conn.commit();
+				responseCode = ResponseCode.SUCCESS;
+				messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
+				ticketReturnResponse = new TicketReturnResponse(conn, ticket.getTicketId());
+			} catch ( RecordNotFoundException e) {
+				responseCode = ResponseCode.EDIT_FAILURE;
+			}
+		} else { 
+			responseCode = ResponseCode.EDIT_FAILURE;
+		}
+		ticketReturnResponse.setWebMessages(messages);
+		super.sendResponse(conn, response, responseCode, ticketReturnResponse);
 		
 	}
 
 
-	private void processVoid(Connection conn, HttpServletResponse response, TicketReturnRequest ticketReturnRequest, SessionUser sessionUser) {
-		// TODO Auto-generated method stub
+	private void processSkip (Connection conn, HttpServletResponse response, Ticket ticket, TicketReturnRequest ticketReturnRequest,
+			SessionUser sessionUser) throws RecordNotFoundException, Exception {
+
+		TicketReturnResponse ticketReturnResponse = null;
+		WebMessages messages = new WebMessages();
+		ResponseCode responseCode = null;
+
+		if (ticketReturnRequest.getProcessDate() == null) {
+			messages.addMessage("processDate", "Required Field");
+		}
+		if (StringUtils.isBlank(ticketReturnRequest.getProcessNotes())) {
+			messages.addMessage("processNotes", "Required Field");
+		}
+		if ( messages.isEmpty() ) {
+			ticket.setStatus(TicketStatus.SKIPPED.code());
+			//required fields
+			ticket.setProcessDate(ticketReturnRequest.getProcessDate());
+			//optional fields
+			ticket.setProcessNotes(ticketReturnRequest.getProcessNotes());
+			doTicketUpdate(conn, ticket, sessionUser);
+			conn.commit();
+			responseCode = ResponseCode.SUCCESS;
+			messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
+			ticketReturnResponse = new TicketReturnResponse(conn, ticket.getTicketId());
+		} else { 
+			responseCode = ResponseCode.EDIT_FAILURE;
+		}
+		ticketReturnResponse.setWebMessages(messages);
+		super.sendResponse(conn, response, responseCode, ticketReturnResponse);
 		
 	}
 
 
-	private void processReject(Connection conn, HttpServletResponse response, TicketReturnRequest ticketReturnRequest, SessionUser sessionUser) {
-		// TODO Auto-generated method stub
+	private void processVoid (Connection conn, HttpServletResponse response, Ticket ticket, TicketReturnRequest ticketReturnRequest,
+			SessionUser sessionUser) throws RecordNotFoundException, Exception {
+		
+		TicketReturnResponse ticketReturnResponse = null;
+		WebMessages messages = new WebMessages();
+		ResponseCode responseCode = null;
+
+		if (ticketReturnRequest.getProcessDate() == null) {
+			messages.addMessage("processDate", "Required Field");
+		}
+		if (StringUtils.isBlank(ticketReturnRequest.getProcessNotes())) {
+			messages.addMessage("processNotes", "Required Field");
+		}
+		if ( messages.isEmpty() ) {
+			ticket.setStatus(TicketStatus.VOIDED.code());
+			//required fields
+			ticket.setProcessDate(ticketReturnRequest.getProcessDate());
+			//optional fields
+			ticket.setProcessNotes(ticketReturnRequest.getProcessNotes());
+			doTicketUpdate(conn, ticket, sessionUser);
+			conn.commit();
+			responseCode = ResponseCode.SUCCESS;
+			messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
+			ticketReturnResponse = new TicketReturnResponse(conn, ticket.getTicketId());
+		} else { 
+			responseCode = ResponseCode.EDIT_FAILURE;
+		}
+		ticketReturnResponse.setWebMessages(messages);
+		super.sendResponse(conn, response, responseCode, ticketReturnResponse);
+	}
+
+
+	private void processReject (Connection conn, HttpServletResponse response, Ticket ticket, TicketReturnRequest ticketReturnRequest,
+			SessionUser sessionUser) throws RecordNotFoundException, Exception {
+		
+		TicketReturnResponse ticketReturnResponse = null;
+		WebMessages messages = new WebMessages();
+		ResponseCode responseCode = null;
+
+		if (ticketReturnRequest.getProcessDate() == null) {
+			messages.addMessage("processDate", "Required Field");
+		}
+		if (StringUtils.isBlank(ticketReturnRequest.getProcessNotes())) {
+			messages.addMessage("processNotes", "Required Field");
+		}
+		if ( messages.isEmpty() ) {
+			ticket.setStatus(TicketStatus.REJECTED.code());
+			//required fields
+			ticket.setProcessDate(ticketReturnRequest.getProcessDate());
+			//optional fields
+			ticket.setProcessNotes(ticketReturnRequest.getProcessNotes());
+			doTicketUpdate(conn, ticket, sessionUser);
+			conn.commit();
+			responseCode = ResponseCode.SUCCESS;
+			messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
+			ticketReturnResponse = new TicketReturnResponse(conn, ticket.getTicketId());
+		} else { 
+			responseCode = ResponseCode.EDIT_FAILURE;
+		}
+		ticketReturnResponse.setWebMessages(messages);
+		super.sendResponse(conn, response, responseCode, ticketReturnResponse);
 		
 	}
 
 
-	private void processRequeue(Connection conn, HttpServletResponse response, TicketReturnRequest ticketReturnRequest, SessionUser sessionUser) {
-		// TODO Auto-generated method stub
+	private void processRequeue (Connection conn, HttpServletResponse response, Ticket ticket, TicketReturnRequest ticketReturnRequest,
+			SessionUser sessionUser) throws RecordNotFoundException, Exception {
 		
+		TicketReturnResponse ticketReturnResponse = null;
+		WebMessages messages = new WebMessages();
+		ResponseCode responseCode = null;
+
+		if (ticketReturnRequest.getProcessDate() == null) {
+			messages.addMessage("processDate", "Required Field");
+		}
+		if ( messages.isEmpty() ) {
+			ticket.setStatus(TicketStatus.NOT_DISPATCHED.code());
+			//required fields
+			ticket.setProcessDate(ticketReturnRequest.getProcessDate());
+			//optional fields
+			doTicketUpdate(conn, ticket, sessionUser);
+			conn.commit();
+			responseCode = ResponseCode.SUCCESS;
+			messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
+			ticketReturnResponse = new TicketReturnResponse(conn, ticket.getTicketId());
+		} else { 
+			responseCode = ResponseCode.EDIT_FAILURE;
+		}
+		ticketReturnResponse.setWebMessages(messages);
+		super.sendResponse(conn, response, responseCode, ticketReturnResponse);
+		
+	}
+
+
+	private void doTicketUpdate(Connection conn, Ticket ticket, SessionUser sessionUser) throws Exception {
+		Ticket key = new Ticket();
+		key.setTicketId(ticket.getTicketId());
+		ticket.setUpdatedBy(sessionUser.getUserId());
+		Date today = new Date();
+		ticket.setUpdatedDate(today);
+		ticket.update(conn, key);
 	}
 	
 

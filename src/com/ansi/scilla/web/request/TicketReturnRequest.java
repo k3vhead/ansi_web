@@ -25,7 +25,7 @@ public class TicketReturnRequest extends AbstractRequest {
 	public static final String POST_ACTION_IS_REQUEUE = "requeue";
 	
 	private String action;
-	private BigDecimal actDl;
+	private BigDecimal actDlAmt;
 	private BigDecimal actDlPct;
 	private BigDecimal actPricePerCleaning;
 	private Integer billSheet;
@@ -50,12 +50,12 @@ public class TicketReturnRequest extends AbstractRequest {
 		this.action = action;
 	}
 
-	public void setActDl(BigDecimal actDl) {
-		this.actDl = actDl;
+	public void setActDlAmt(BigDecimal actDlAmt) {
+		this.actDlAmt = actDlAmt;
 	}
 	
-	public BigDecimal getActDl() {
-		return this.actDl;
+	public BigDecimal getActDlAmt() {
+		return this.actDlAmt;
 	}
 
 	public void setActDlPct(BigDecimal actDlPct) {
