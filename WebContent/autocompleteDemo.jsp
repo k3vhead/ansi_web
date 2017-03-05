@@ -43,7 +43,7 @@
             
             $("#testservlet").click(function($event) {   
             	var $httpType = $("#httptype option:selected" ).val();
-            	var json = JSON.stringify($("#testjson").val());
+            	var json = $("#testjson").val();
             	var $url = $("#testurl").val();
             	
             	var jqxhr = $.ajax({
