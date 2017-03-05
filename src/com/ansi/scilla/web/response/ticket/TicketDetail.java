@@ -7,7 +7,9 @@ import java.util.List;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.jobticket.TicketStatus;
+import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
 import com.ansi.scilla.common.queries.TicketPaymentTotals;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class TicketDetail extends ApplicationObject { //TicketPaymentTotal populate from
@@ -109,6 +111,7 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		this.divisionCode = divisionCode;
 	}
 
+	@JsonSerialize(using=AnsiDateFormatter.class)
 	public Date getProcessDate() {
 		return processDate;
 	}
