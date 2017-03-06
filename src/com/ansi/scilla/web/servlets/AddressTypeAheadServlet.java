@@ -94,6 +94,7 @@ public class AddressTypeAheadServlet extends AbstractServlet {
 						conn = AppUtils.getDBCPConn();
 						System.out.println("AddresTypeAheadServlet(): doGet(): term =$" + term +"$");
 						List<ReturnItem> resultList = new ArrayList<ReturnItem>();
+						
 						String sql = "select address_id, name, address1, address2, city, county, state, zip "
 								+ " from address " 
 								+ " where lower(name) like '%" + term + "%'"

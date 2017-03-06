@@ -148,7 +148,12 @@ td.jobTableCell {
 .formFieldDisplay {margin-left: 30px;}
  
  .addressTable {display:none;}
- 
+  .ui-autocomplete-category {
+    font-weight: bold;
+    padding: .2em .4em;
+    margin: .8em 0 .2em;
+    line-height: 1.5;
+  }
 
         </style>
     </tiles:put>
