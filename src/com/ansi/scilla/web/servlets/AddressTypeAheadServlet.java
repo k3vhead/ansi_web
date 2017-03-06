@@ -37,7 +37,7 @@ import com.thewebthing.commons.lang.StringUtils;
  * The url for post will return methodNotAllowed
  * 
  * The url for get will be one of:
- * 		/addressSearch?term=					(returns all records)
+ * 		/addressSearch?term=					(returns null list)
  * 		/addressSearch?term=<searchTerm>		(returns all records containing <searchTerm>)
  * 
  * The servlet will return 404 Not Found if there is no "term=" found.
@@ -86,45 +86,56 @@ public class AddressTypeAheadServlet extends AbstractServlet {
 					if ( ! StringUtils.isBlank(queryTerm)) { // There is a term
 						queryTerm = URLDecoder.decode(queryTerm, "UTF-8");
 						queryTerm = StringUtils.trimToNull(queryTerm);
-						if ( ! StringUtils.isBlank(queryTerm)) {
-							term = queryTerm.toLowerCase();
-						}
-					}
-					try {
-						conn = AppUtils.getDBCPConn();
-						System.out.println("AddresTypeAheadServlet(): doGet(): term =$" + term +"$");
 						List<ReturnItem> resultList = new ArrayList<ReturnItem>();
-						
-						String sql = "select address_id, name, address1, address2, city, county, state, zip "
-								+ " from address " 
-								+ " where lower(name) like '%" + term + "%'"
-								+ " OR lower(address1) like '%" + term + "%'"
-								+ " OR lower(address2) like '%" + term + "%'"
-								+ " OR lower(city) like '%" + term + "%'"
-								+ " OR lower(state) like '%" + term + "%'"
-								+ " OR lower(county) like '%" + term + "%'"
-								+ " OR lower(zip) like '%" + term + "%'";
-						Statement s = conn.createStatement();
-						ResultSet rs = s.executeQuery(sql);
-						while ( rs.next() ) {
-							resultList.add(new ReturnItem(rs));
+						if ( StringUtils.isBlank(queryTerm)) { // blank search term
+							response.setStatus(HttpServletResponse.SC_OK);
+							response.setContentType("application/json");
+							
+							String json = AppUtils.object2json(resultList);
+							ServletOutputStream o = response.getOutputStream();
+							OutputStreamWriter writer = new OutputStreamWriter(o);
+							writer.write(json);
+							writer.flush();
+							writer.close();
+
+						} else {
+							term = queryTerm.toLowerCase();
+							try {
+								conn = AppUtils.getDBCPConn();
+								System.out.println("AddresTypeAheadServlet(): doGet(): term =$" + term +"$");
+								
+								String sql = "select address_id, name, address1, address2, city, county, state, zip "
+										+ " from address " 
+										+ " where lower(name) like '%" + term + "%'"
+										+ " OR lower(address1) like '%" + term + "%'"
+										+ " OR lower(address2) like '%" + term + "%'"
+										+ " OR lower(city) like '%" + term + "%'"
+										+ " OR lower(state) like '%" + term + "%'"
+										+ " OR lower(county) like '%" + term + "%'"
+										+ " OR lower(zip) like '%" + term + "%'";
+								Statement s = conn.createStatement();
+								ResultSet rs = s.executeQuery(sql);
+								while ( rs.next() ) {
+									resultList.add(new ReturnItem(rs));
+								}
+								rs.close();
+								
+								response.setStatus(HttpServletResponse.SC_OK);
+								response.setContentType("application/json");
+								
+								String json = AppUtils.object2json(resultList);
+								ServletOutputStream o = response.getOutputStream();
+								OutputStreamWriter writer = new OutputStreamWriter(o);
+								writer.write(json);
+								writer.flush();
+								writer.close();
+							} catch ( Exception e ) {
+								AppUtils.logException(e);
+								throw new ServletException(e);
+							} finally {
+								AppUtils.closeQuiet(conn);
+							}
 						}
-						rs.close();
-						
-						response.setStatus(HttpServletResponse.SC_OK);
-						response.setContentType("application/json");
-						
-						String json = AppUtils.object2json(resultList);
-						ServletOutputStream o = response.getOutputStream();
-						OutputStreamWriter writer = new OutputStreamWriter(o);
-						writer.write(json);
-						writer.flush();
-						writer.close();
-					} catch ( Exception e ) {
-						AppUtils.logException(e);
-						throw new ServletException(e);
-					} finally {
-						AppUtils.closeQuiet(conn);
 					}
 				} else { // There is no term "term="
 					super.sendNotFound(response);
