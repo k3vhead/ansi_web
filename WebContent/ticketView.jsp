@@ -79,12 +79,30 @@
 			});
         	
         	
+        	$("#divisionSel").change(function () {
+        		if ($('#divisionSel').val() == 'N') {
+        			$('#month').hide();
+        		} else {
+        			$('#month').show();
+        		}
+        	});
+        	
+        	
+        	
+        	function makeRow($division, $rownum) {
+				var row = "";
+				row = row + '<td>' + $division.divisionId + '</td>';     			
+				return row;
+			}
+        			
+        	
+        	
         	var jqxhr = $.ajax({
 				type: 'GET',
-				url: '/ansi_web/ticketDRV?divisionId=9&month=3',
-				data: {},
+				url: '"/ansi_web/ticketDRV?month=nn&divisionId=nn"',
+				dataSrc: '',
 				success: function($data) {
-					$.each($data.data.ticketDRVList, function(index, value) {
+					$.each($data.data.ticketDRV, function(index, value) {
 						addRow(index, value);
 					});
 					doFunctionBinding();
@@ -127,21 +145,12 @@
 				row = row + '<td>' + $ticketDRV.startDate + '</td>';
 				row = row + '<td>' + $ticketDRV.endDate + '</td>';
 				row = row + '<td>' + $ticketDRV.ticketCount + '</td>';
-				row = row + '<td>' + $ticketDRV.division + '</td>';
+				row = row + '<td>' + $ticketDRV.divisionCode + '</td>';
 				row = row + '<td>' + $ticketDRV.runDate + '</td>';
 				row = row + '<td>' + $ticketDRV.totalVolume + '</td>';
 				row = row + '<td>' + $ticketDRV.totalDL + '</td>';  			
 				return row;
-			}
-        	
-        	
-        	
-        	function makeRow($division, $rownum) {
-				var row = "";
-				row = row + '<td>' + $division.divisionId + '</td>';      			
-				return row;
-			}
-        				
+			}	
                 
         $(document).ready(function(){
         	  $('.ScrollTop').click(function() {
@@ -184,16 +193,16 @@
 			        	"dataSrc": "data.responseItemList"
 			        	},
 			        columns: [
-			            { title: "TICKET", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            { title: "Ticket", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.ticketId != null){return (row.ticketId+"");}
 			            } },
-			            { title: "STATUS", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "Status", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.status != null){return (row.status+"");}
 			            } },
 			            { title: "Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.name != null){return (row.name+"");}
 			            } },
-			            { title: "Address 1",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "Address",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.address1 != null){return (row.address1+"");}
 			            } },
 			            { title: "City", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
@@ -208,10 +217,10 @@
 			            { title: "Job #", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
 			            	if(row.jobNum != null){return (row.jobNum+"");}
 			            } },
-			            { title: "FREQ", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "Freq", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.frequency != null){return (row.frequency+"");}
 			            } },
-			            { title: "BUDGET", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "Budget", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.budget!= null){return (row.budget+"");}
 			            } },
 			            { title: "PPC", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
@@ -220,7 +229,7 @@
 			            { title: "COD", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.cod != null){return (row.cod+"");} 
 			            } },
-			            { title: "JOB ID", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            { title: "Job Id", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.jobId != null){return (row.jobId+"");} 
 			            } },
 			            ],
@@ -233,10 +242,6 @@
 			            }
 			    } );
         	}
-        	
-        	$( ".selector" ).selectmenu({
-        		  appendTo: "#DivisionSelect"
-        		});
         	        	
         	init();
         			
@@ -311,30 +316,28 @@
     </tiles:put>
     
     <tiles:put name="content" type="string">
-    <table id="divisionId"></table>
-    	<h1 align=center>Division and Month Select</h1>
-		<table align=center; style="border:solid 1px #000000; margin-top:8px;" id="divisionId" style="font-size:9pt;max-width:200px;">
+    	<h1 >Division and Month Select</h1>
+		<table style="border:solid 1px #000000; margin-top:8px;" id="divisionId" style="font-size:9pt;max-width:200px;">
 			<tbody>
-			<span class="formLabel">Division ID</span>
-  				<select>
-  					<option value="12">12</option>
-  					<option value="15">15</option>
-  					<option value="18">18</option>
-  					<option value="19">19</option>
-  					<option value="23">23</option>
-  					<option value="31">31</option>
-  					<option value="32">32</option>
-  					<option value="44">44</option>
-  					<option value="65">65</option>
-  					<option value="66">66</option>
-  					<option value="67">67</option>
-  					<option value="71">71</option>
-  					<option value="77">77</option>
-  					<option value="78">78</option>
-  					<option value="89">89</option>
+			<select name="divisionSel" id='#divisionSel'>			
+  					<option value="1">9</option>
+  					<option value="2">12</option>
+  					<option value="3">15</option>
+  					<option value="4">18</option>
+  					<option value="5">19</option>
+  					<option value="6">23</option>
+  					<option value="7">31</option>
+  					<option value="8">32</option>
+  					<option value="9">44</option>
+  					<option value="10">65</option>
+  					<option value="11">66</option>
+  					<option value="12">67</option>
+  					<option value="13">71</option>
+  					<option value="14">77</option>
+  					<option value="15">78</option>
+  					<option value="16">89</option>
 				</select>
-		<span class="formLabel">Month</span>        
-  				<select>
+		<select name="month" id='#month'>  
   					<option value="1">1</option>
   					<option value="2">2</option>
   					<option value="3">3</option>
@@ -354,6 +357,7 @@
 		</table>  
 		
 		
+        <h2 align=center>Ticket View DRV</h2>
 		<table id="summaryTable">
     		<tr>
     			<th>Start Date</th>
@@ -368,7 +372,6 @@
     
     
  	<table id="ticketDRV" style="table-layout: fixed" class="display" cellspacing="0" width="100%" style="font-size:9pt;max-width:1300px;width:1300px;">
-        <h2 align=center>Ticket View DRV</h2>
         <colgroup>
         	<col style="width:6%;" />
     		<col style="width:6%;" />
