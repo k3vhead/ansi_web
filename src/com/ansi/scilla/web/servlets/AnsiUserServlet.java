@@ -6,74 +6,87 @@ import java.sql.Connection;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.ansi.scilla.web.ansiUser.AnsiUserListResponse;
+import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ResponseCode;
-import com.ansi.scilla.web.response.permissionGroup.PermissionGroupListResponse;
+import com.ansi.scilla.web.common.WebMessages;
+import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
+import com.ansi.scilla.web.response.user.UserResponse;
+import com.ansi.scilla.web.struts.SessionData;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class AnsiUserServlet extends AbstractServlet {
-	
+
 	/**
 	 * 
 	 * @author jwlewis
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
+	public static final String REALM = "user";
+
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		
-		String url = request.getRequestURI();
-		int idx = url.indexOf("/user/");
-		if ( idx > -1 ) {
-			//String queryString = request.getQueryString();
-			
-			// Figure out what we've got:
-			// "myString" is the piece of the URL that we actually care about
-			String myString = url.substring(idx + "/user/".length());
-			String[] urlPieces = myString.split("/");
-			String command = urlPieces[0];
 
-			Connection conn = null;
-			try {
-				if ( StringUtils.isBlank(command)) {
-					throw new RecordNotFoundException();
-				}
-				conn = AppUtils.getDBCPConn();
 
-				AnsiUserListResponse ansiUserListResponse = doGetWork(conn, myString);
-				super.sendResponse(conn, response, ResponseCode.SUCCESS, ansiUserListResponse);
-			} catch(RecordNotFoundException recordNotFoundEx) {
-				super.sendNotFound(response);
-			} catch ( Exception e) {
-				AppUtils.logException(e);
-				throw new ServletException(e);
-			} finally {
-				AppUtils.closeQuiet(conn);
+		HttpSession session = request.getSession();
+		if ( session == null ) {
+			super.sendNotAllowed(response);
+		} else {
+			SessionData sessionData = (SessionData)session.getAttribute(SessionData.KEY);
+			if ( sessionData == null ) {
+				super.sendNotAllowed(response);
+			} else {
+				doGetWork(request, response);
 			}
+		}
+	}
 
-		} else {
+	private void doGetWork(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+		Connection conn = null;
+		UserResponse userResponse = new UserResponse();
+		WebMessages messages = new WebMessages();
+		try {
+			conn = AppUtils.getDBCPConn();
+			AnsiURL url = new AnsiURL(request, REALM, new String[] {"list"});	
+
+			if( url.getId() == null && StringUtils.isBlank(url.getCommand())) {
+				System.out.println("user servlet 43");
+				throw new ResourceNotFoundException();
+			} else if (url.getId() != null) {
+				System.out.println("user servlet 46");
+				userResponse = new UserResponse(conn, url.getId());
+			} else if ( ! StringUtils.isBlank(url.getCommand())) {
+				System.out.println("user servlet 49");
+				userResponse = new UserResponse(conn);
+			} else {
+				// according to the URI parsing, this shouldn't happen, but it gives me warm fuzzies
+				throw new ResourceNotFoundException();
+			}
+			System.out.println("user servlet 55");
+			messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
+			userResponse.setWebMessages(messages);
+			super.sendResponse(conn, response, ResponseCode.SUCCESS, userResponse);
+		} catch(RecordNotFoundException e) {
+			System.out.println("user servlet 60");
 			super.sendNotFound(response);
+		} catch(ResourceNotFoundException e) {
+			System.out.println("user servlet 63");
+			super.sendNotFound(response);
+		} catch ( Exception e) {
+			AppUtils.logException(e);
+			throw new ServletException(e);
+		} finally {
+			AppUtils.closeQuiet(conn);
 		}
+
 	}
-	
-	public AnsiUserListResponse doGetWork(Connection conn, String url) throws RecordNotFoundException, Exception {
-		AnsiUserListResponse ansiUserListResponse = new AnsiUserListResponse();
-		String[] x = url.split("/");
-		if(x[0].equals("list")){
-			ansiUserListResponse = new AnsiUserListResponse(conn);
-		} else if (StringUtils.isNumeric(x[0])) {
-			Integer permGroupId = Integer.valueOf(x[0]);
-			ansiUserListResponse = new AnsiUserListResponse(conn, permGroupId);
-		} else {
-			throw new RecordNotFoundException();
-		}
-		return ansiUserListResponse;
-	}
-	
-	
+
+
+
 }
