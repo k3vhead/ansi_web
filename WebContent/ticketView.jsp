@@ -55,11 +55,24 @@
        
         <script type="text/javascript">   
         
-        $(function() {
+        $(function() {       	
+        	$("#divisionId").change(function () {
+        		if (month.selected) {
+        			doPopulate
+        		}
+        	});
+        	
+        	$("#month").change(function () {
+        		if (divisionId.selected) {
+        			doPopulate
+        		}
+        	});
+        	
+        	function doPopulate () {
         	
         	var jqxhr = $.ajax({
 				type: 'GET',
-				url: 'division/list',
+				url: '"/ansi_web/ticketDRV?month=nn&divisionId=nn"',
 				data: {},
 				success: function($data) {
 					$.each($data.data.divisionList, function(index, value) {
@@ -79,19 +92,11 @@
 			});
         	
         	
-        	$("#divisionSel").change(function () {
-        		if ($('#divisionSel').val() == 'N') {
-        			$('#month').hide();
-        		} else {
-        			$('#month').show();
-        		}
-        	});
-        	
-        	
         	
         	function makeRow($division, $rownum) {
 				var row = "";
-				row = row + '<td>' + $division.divisionId + '</td>';     			
+				row = row + '<td>' + $ticketDRV.divisionId + '</td>'; 
+				row = row + '<td>' + $ticketDRV.month + '</td>';    			
 				return row;
 			}
         			
@@ -100,7 +105,7 @@
         	var jqxhr = $.ajax({
 				type: 'GET',
 				url: '"/ansi_web/ticketDRV?month=nn&divisionId=nn"',
-				dataSrc: '',
+				dataSrc: {},
 				success: function($data) {
 					$.each($data.data.ticketDRV, function(index, value) {
 						addRow(index, value);
@@ -187,7 +192,7 @@
         	            { className: "dt-right", "targets": [0,9,10] },
         	            { className: "dt-center", "targets": [1,7,8] },
         	         ],
-        	        "paging": true,
+        	        "paging": false,
 			        "ajax": {
 			        	"url": "/ansi_web/ticketDRV?month=nn&divisionId=nn",
 			        	"dataSrc": "data.responseItemList"
@@ -310,7 +315,8 @@
 					//console.log("Edit Button Clicked: " + $rowid);
 				}
         	})
-        });
+        }
+       });
         		
         </script>        
     </tiles:put>
@@ -319,25 +325,25 @@
     	<h1 >Division and Month Select</h1>
 		<table style="border:solid 1px #000000; margin-top:8px;" id="divisionId" style="font-size:9pt;max-width:200px;">
 			<tbody>
-			<select name="divisionSel" id='#divisionSel'>			
-  					<option value="1">9</option>
-  					<option value="2">12</option>
-  					<option value="3">15</option>
-  					<option value="4">18</option>
-  					<option value="5">19</option>
-  					<option value="6">23</option>
-  					<option value="7">31</option>
-  					<option value="8">32</option>
-  					<option value="9">44</option>
-  					<option value="10">65</option>
-  					<option value="11">66</option>
-  					<option value="12">67</option>
-  					<option value="13">71</option>
-  					<option value="14">77</option>
-  					<option value="15">78</option>
-  					<option value="16">89</option>
+			<select id="divisionId" class="divisionId" onchange="doPopulate">			
+  					<option value="9">9</option>
+  					<option value="12">12</option>
+  					<option value="15">15</option>
+  					<option value="18">18</option>
+  					<option value="19">19</option>
+  					<option value="23">23</option>
+  					<option value="31">31</option>
+  					<option value="32">32</option>
+  					<option value="44">44</option>
+  					<option value="65">65</option>
+  					<option value="66">66</option>
+  					<option value="67">67</option>
+  					<option value="71">71</option>
+  					<option value="77">77</option>
+  					<option value="78">78</option>
+  					<option value="89">89</option>
 				</select>
-		<select name="month" id='#month'>  
+		<select id="month" class="month" onchange="doPopulate">  
   					<option value="1">1</option>
   					<option value="2">2</option>
   					<option value="3">3</option>
@@ -351,7 +357,7 @@
   					<option value="11">11</option>
   					<option value="12">12</option>
   				</select>
-  			<input id="button1" type="button" value="Select" />
+  			<input id="doPopulate" type="button" value="Select" />
 				<tr><td>&nbsp;</td></tr>
 			</tbody>
 		</table>  
