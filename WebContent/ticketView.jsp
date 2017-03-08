@@ -12,7 +12,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="webthing" %>
 <%@ taglib uri="WEB-INF/theTagThing.tld" prefix="ansi" %>
 
-
+<%@ page import="java.util.Calendar" %>
 
 
 <tiles:insert page="layout.jsp" flush="true">
@@ -44,56 +44,104 @@
 			}
 			#summaryTable {
 				width:90%;
+				display:none;
 			}
-			#headerTable { 
-				display:none; 
-			}			
 			#divisionSelect{
 				border:solid 1px #000000;
 			}
+			.summaryHdr {
+				font-weight:bold;
+			}
         </style>       
        
-        <script type="text/javascript">   
-        
-        $(function() {       	
-        	$("#divisionId").change(function () {
-        		if (month.selected) {
-        			doPopulate
-        		}
-        	});
-        	
-        	$("#month").change(function () {
-        		if (divisionId.selected) {
-        			doPopulate
-        		}
-        	});
-        	
-        	function doPopulate () {
-        	
-        	var jqxhr = $.ajax({
-				type: 'GET',
-				url: '"/ansi_web/ticketDRV?month=nn&divisionId=nn"',
-				data: {},
-				success: function($data) {
-					$.each($data.data.divisionList, function(index, value) {
-						addRow(index, value);
-					});
-					doFunctionBinding();
-				},
-				statusCode: {
-					403: function($data) {
-						$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-					},
-					500: function($data) {
-         	    		$("#globalMsg").html("Unhandled Exception").fadeIn(10).fadeOut(6000);
-         	    	} 
-				},
-				dataType: 'json'
+        <script type="text/javascript" src="js/ansi_utils.js"></script>
+       
+        <script type="text/javascript">
+		$(function() {
+			console.debug("Starting");
+			// Populate the division list
+        	$divisionList = ANSI_UTILS.getDivisionList();
+        	console.debug("Got the list");
+			$("#divisionId").append(new Option("",""));
+			$.each($divisionList, function(index, val) {
+				$("#divisionId").append(new Option(val.divisionCode, val.divisionId));
 			});
+			// Make the dropdowns pretty
+			//$("#divisionId").selectmenu();
+			//$("#month").selectmenu();
+
+			
+			$("select").change(function () {
+				var $selectedMonth = $('#month option:selected').val();  
+				var $selectedDiv = $('#divisionId option:selected').val();
+        		if ($selectedMonth != '' && $selectedDiv != '') {
+        			doPopulate($selectedDiv, $selectedMonth)
+        		}
+        	});
         	
+        	$("#doPopulate").click(function() { 
+        		var $selectedMonth = $('#month option:selected').val();  
+				var $selectedDiv = $('#divisionId option:selected').val();
+        		if ($selectedMonth != '' && $selectedDiv != '') {
+        			doPopulate($selectedDiv, $selectedMonth)
+        		} else {
+        			console.debug("Not populating");
+        		}
+        	});
         	
+        	function doPopulate($selectedDiv, $selectedMonth) {
+        		var $outbound = {'month':$selectedMonth,'divisionId':$selectedDiv};
+        		console.debug($outbound);
+        		
+        		var jqxhr = $.ajax({
+    				type: 'GET',
+    				url: 'ticketDRV',
+    				data: $outbound,
+    				success: function($data) {
+    					populateSummary($data.data);
+    				},
+    				statusCode: {
+    					403: function($data) {
+    						$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+    					},
+    					500: function($data) {
+             	    		$("#globalMsg").html("Unhandled Exception").fadeIn(10).fadeOut(6000);
+             	    	} 
+    				},
+    				dataType: 'json'
+    			});
+            	
+        	}
         	
-        	function makeRow($division, $rownum) {
+        	function populateSummary($data) {
+				$("#division").html($data.division.divisionNbr + "-" + $data.division.divisionCode);
+				$("#startDate").html($data.startDate);
+				$("#totalVolume").html($data.totalVolume);
+				$("#runDate").html($data.runDate);
+				$("#summaryTable").fadeIn(4000);
+        	}
+        	
+			$('.ScrollTop').click(function() {
+				$('html, body').animate({scrollTop: 0}, 800);
+      	  		return false;
+      	    });
+        	
+        	function addRow(index, $ticketDRV) {	
+				var $rownum = index + 1;
+       			rowTd = makeRow($ticketDRV, $rownum);
+       			row = '<tr class="dataRow">' + rowTd + "</tr>";
+       			$('#summaryTable').append(row);
+			}
+        });
+		
+
+
+		</script>
+       
+       
+       <!-- 
+       
+               	function makeRow($division, $rownum) {
 				var row = "";
 				row = row + '<td>' + $ticketDRV.divisionId + '</td>'; 
 				row = row + '<td>' + $ticketDRV.month + '</td>';    			
@@ -102,48 +150,8 @@
         			
         	
         	
-        	var jqxhr = $.ajax({
-				type: 'GET',
-				url: '"/ansi_web/ticketDRV?month=nn&divisionId=nn"',
-				dataSrc: {},
-				success: function($data) {
-					$.each($data.data.ticketDRV, function(index, value) {
-						addRow(index, value);
-					});
-					doFunctionBinding();
-				},
-				statusCode: {
-					403: function($data) {
-						$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-					},
-					500: function($data) {
-         	    		$("#globalMsg").html("Unhandled Exception").fadeIn(10).fadeOut(6000);
-         	    	} 
-				},
-				dataType: 'json'
-			});
 			
-			function addRow(index, $ticketDRV) {	
-				var $rownum = index + 1;
-       			rowTd = makeRow($ticketDRV, $rownum);
-       			row = '<tr class="dataRow">' + rowTd + "</tr>";
-       			$('#summaryTable').append(row);
-			}
 			
-			function doFunctionBinding() {
-				$('.updAction').bind("click", function($clickevent) {
-					doUpdate($clickevent);
-				});
-				$('.delAction').bind("click", function($clickevent) {
-					doDelete($clickevent);
-				});
-				$('.dataRow').bind("mouseover", function() {
-					$(this).css('background-color','#CCCCCC');
-				});
-				$('.dataRow').bind("mouseout", function() {
-					$(this).css('background-color','transparent');
-				});
-			}
 			
 			function makeRow($ticketDRV, $rownum) {
 				var row = "";
@@ -157,14 +165,8 @@
 				return row;
 			}	
                 
-        $(document).ready(function(){
-        	  $('.ScrollTop').click(function() {
-        	    $('html, body').animate({scrollTop: 0}, 800);
-        	  return false;
-        	    });
         	});
         
-        	$(document).ready(function() {
         	var dataTable = null;
         	
         	function createTable(){
@@ -317,62 +319,50 @@
         	})
         }
        });
-        		
-        </script>        
-    </tiles:put>
+       
+       
+        -->
+        
+
+	</tiles:put>
     
     <tiles:put name="content" type="string">
     	<h1 >Division and Month Select</h1>
-		<table style="border:solid 1px #000000; margin-top:8px;" id="divisionId" style="font-size:9pt;max-width:200px;">
-			<tbody>
-			<select id="divisionId" class="divisionId" onchange="doPopulate">			
-  					<option value="9">9</option>
-  					<option value="12">12</option>
-  					<option value="15">15</option>
-  					<option value="18">18</option>
-  					<option value="19">19</option>
-  					<option value="23">23</option>
-  					<option value="31">31</option>
-  					<option value="32">32</option>
-  					<option value="44">44</option>
-  					<option value="65">65</option>
-  					<option value="66">66</option>
-  					<option value="67">67</option>
-  					<option value="71">71</option>
-  					<option value="77">77</option>
-  					<option value="78">78</option>
-  					<option value="89">89</option>
-				</select>
-		<select id="month" class="month" onchange="doPopulate">  
-  					<option value="1">1</option>
-  					<option value="2">2</option>
-  					<option value="3">3</option>
-  					<option value="4">4</option>
-  					<option value="5">5</option>
-  					<option value="6">6</option>
-  					<option value="7">7</option>
-  					<option value="8">8</option>
-  					<option value="9">9</option>
-  					<option value="10">10</option>
-  					<option value="11">11</option>
-  					<option value="12">12</option>
-  				</select>
-  			<input id="doPopulate" type="button" value="Select" />
-				<tr><td>&nbsp;</td></tr>
-			</tbody>
-		</table>  
+		<select id="divisionId">			
+		</select>
+		<select id="month">  
+			<option value=""></option>
+			<option value="<%= Calendar.JANUARY %>">January</option>
+			<option value="<%= Calendar.FEBRUARY %>">February</option>
+			<option value="<%= Calendar.MARCH %>">March</option>
+			<option value="<%= Calendar.APRIL %>">April</option>
+			<option value="<%= Calendar.MAY %>">May</option>
+			<option value="<%= Calendar.JUNE %>">June</option>
+			<option value="<%= Calendar.JULY %>">July</option>
+			<option value="<%= Calendar.AUGUST %>">August</option>
+			<option value="<%= Calendar.SEPTEMBER %>">September</option>
+			<option value="<%= Calendar.OCTOBER %>">October</option>
+			<option value="<%= Calendar.NOVEMBER %>">November</option>
+			<option value="<%= Calendar.DECEMBER %>">December</option>
+ 		</select>
+ 		<input id="doPopulate" type="button" value="Go" />
 		
 		
-        <h2 align=center>Ticket View DRV</h2>
+        <h2>Ticket View DRV</h2>
 		<table id="summaryTable">
+			<tr>
+    			<td class="summaryHdr">Created:</td>
+    			<td><span id="runDate"></span></td>
+    			<td>&nbsp;</td>
+    			<td class="summaryHdr">Division</td>
+    			<td><span id="division"></span></td>
+			</tr>
     		<tr>
-    			<th>Start Date</th>
-    			<th>End Date</th>
-				<th>Ticket Count</th>
-    			<th>Division</th>
-    			<th>Run Date</th>
-    			<th>Total Volume</th>
-    			<th>Total D/L</th>
+    			<td class="summaryHdr">From:</td>
+    			<td><span id="startDate"></span></td>
+    			<td class="tableSplitter">&nbsp;</td>
+    			<td class="summaryHdr">Total Volume for the Month</td>
+    			<td><span id="totalVolume"></span></td>
     		</tr>
     	</table>
     
