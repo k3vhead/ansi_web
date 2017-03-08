@@ -208,7 +208,7 @@
 											<ansi:hasWrite>
 											<li><a href="#"><bean:message key="menu.label.maintenance" /></a></li>
 											<li><a href="#"><bean:message key="menu.label.new" /></a></li>
-											<li><html:link action="ticketView"><bean:message key="menu.label.view" /></html:link></li>
+											<li><html:link action="ticketView"><bean:message key="menu.label.drv30" /></html:link></li>
 											</ansi:hasWrite>											
 										</ul>
 									</li>

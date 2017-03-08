@@ -50,7 +50,7 @@ public class TicketDRVResponse extends MessageResponse {
 		Calendar calendar = Calendar.getInstance();
 		runDate = calendar.getTime();
 		calendar.clear();
-		calendar.set(year, month-1, 1);
+		calendar.set(year, month, 1);
 		startDate = calendar.getTime();
 		calendar.set(Calendar.DAY_OF_MONTH, calendar.getMaximum(Calendar.DAY_OF_MONTH));
 		endDate = calendar.getTime();

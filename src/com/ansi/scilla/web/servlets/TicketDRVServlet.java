@@ -39,7 +39,6 @@ public class TicketDRVServlet extends AbstractServlet {
 
 			conn = AppUtils.getDBCPConn();
 			String month = request.getParameter("month");
-			month = "3";
 			if(StringUtils.isBlank(month)||!StringUtils.isNumeric(month)||Integer.valueOf(month)>12){
 				month = String.valueOf(thisMonth);
 				System.out.println("TicketDRVServlet: this month:" + month);
@@ -53,7 +52,6 @@ public class TicketDRVServlet extends AbstractServlet {
 
 			String divisionId = request.getParameter("divisionId");
 			System.out.println("TicketDRVServlet: divisionId:" + divisionId);
-			divisionId = "9";
 
 			WebMessages webMessages = new WebMessages();
 			ResponseCode responseCode = null;
