@@ -257,7 +257,7 @@ td.jobTableCell {
 		
 		
 	
-		<span id="modalSpan"></span>
+		<webthing:jobActivateCancel page="QUOTE" namespace="activateModal" />
 		
 		
         <script type="text/javascript">   

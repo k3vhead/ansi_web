@@ -221,7 +221,7 @@ $( document ).ready(function() {
 				});
 			},
 			addAJob: function(){
-				var $namespace = "jobpanel" + $currentRow.toString();
+				var $namespace = $currentRow.toString() + "_jobPanel";
 				var $row = $currentRow.toString();
 				$currentRow++;
 				var jqxhr1 = $.ajax({
@@ -231,20 +231,21 @@ $( document ).ready(function() {
 					success: function($data) {
 
 						$('#jobPanelHolder > tbody:last-child').append($data);
+						console.log($namespace);
+						var $jobDetail = [{invoiceStyle: null, activationDate: null, startDate: null, cancelDate: null, cancelReason: null}];		
 
-						var $jobDetail = null;			
-						var $quoteDetail = null;
+						var $quoteDetail = [{proposalDate: null}];
 						var $lastRun = null;
 						var $nextDue = null;
 						var $lastCreated = null;
 						//console.log(JOB_DATA);
 						JOBPANEL.init($row+"_jobPanel", JOB_DATA.divisionList, "activateModal", $jobDetail);
-						JOBPROPOSAL.init($namespace+"_jobProposal", JOB_DATA.jobFrequencyList, $jobDetail);
-						JOBACTIVATION.init($namespace+"_jobActivation", JOB_DATA.buildingTypeList, $jobDetail);
-						JOBDATES.init($namespace+"_jobDates", $quoteDetail, $jobDetail);
-						JOBSCHEDULE.init($namespace+"_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
-						//JOBINVOICE.init($namespace+"_jobInvoice", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, $jobDetail);
-						JOBAUDIT.init($namespace+"_jobAudit", $jobDetail);
+						JOBPROPOSAL.init($row+"_jobProposal", JOB_DATA.jobFrequencyList, $jobDetail);
+						JOBACTIVATION.init($row+"_jobActivation", JOB_DATA.buildingTypeList, $jobDetail);
+						JOBDATES.init($row+"_jobDates", $quoteDetail, $jobDetail);
+						JOBSCHEDULE.init($row+"_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
+						JOBINVOICE.init($row+"_jobInvoice", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, $jobDetail);
+						JOBAUDIT.init($row+"_jobAudit", $jobDetail);
 						QUOTEUTILS.bindAndFormat();
 	
 					},

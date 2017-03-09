@@ -95,7 +95,7 @@ $( document ).ready(function() {
 				success: function($data) {
 					$("#loadingJobsDiv").hide();
 					$('#jobPanelHolder > tbody:last-child').append($data);
-					JOBPANEL.init($namespace+"_jobPanel", JOB_DATA.divisionList, $namespace, $jobDetail);
+					JOBPANEL.init($namespace+"_jobPanel", JOB_DATA.divisionList, "activateModal", $jobDetail);
 					JOBPROPOSAL.init($namespace+"_jobProposal", JOB_DATA.jobFrequencyList, $jobDetail);
 					JOBACTIVATION.init($namespace+"_jobActivation", JOB_DATA.buildingTypeList, $jobDetail);
 					JOBDATES.init($namespace+"_jobDates", $quoteDetail, $jobDetail);
@@ -720,7 +720,7 @@ $( document ).ready(function() {
 			if ( $lastCreated != null && $lastCreated.startDate != null) {
 				ANSI_UTILS.setTextValue($namespace, "createdThru", $lastCreated.startDate + " (T" + $lastCreated.ticketId + ")");
 			}
-			if ($jobDetail.repeatScheduleAnnually == 1) {
+			if ($jobDetail != null && $jobDetail.repeatScheduleAnnually == 1) {
 				ANSI_UTILS.setCheckbox($namespace, "annualRepeat", true);
 			} else {
 				ANSI_UTILS.setCheckbox($namespace, "annualRepeat", false);
