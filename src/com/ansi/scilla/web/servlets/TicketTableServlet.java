@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -14,9 +15,10 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.ansi.scilla.common.queries.TicketSearch;
 import com.ansi.scilla.web.common.AppUtils;
-import com.ansi.scilla.web.response.jobTable.JobTableReturnItem;
 import com.ansi.scilla.web.response.ticketTable.TicketTableJsonResponse;
 import com.ansi.scilla.web.response.ticketTable.TicketTableReturnItem;
 
@@ -78,12 +80,20 @@ public class TicketTableServlet extends AbstractServlet {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
-			String qs = request.getQueryString();
-
+//			String qs = request.getQueryString();
+			Enumeration<String> e = request.getParameterNames();
+			while ( e.hasMoreElements() ) {
+				String name = e.nextElement();
+				System.out.println(name);
+			}
 			String term = "";
+			Integer jobId = null;
 			
 			if(request.getParameter("search[value]") != null){
 				term = request.getParameter("search[value]");
+			}
+			if (! StringUtils.isBlank(request.getParameter("jobId"))) {
+				jobId = Integer.valueOf(request.getParameter("jobId"));
 			}
 			System.out.println(term);
 			if (sStart != null) {
@@ -130,6 +140,9 @@ public class TicketTableServlet extends AbstractServlet {
 			
 			System.out.println(sql);
 			sql += search;
+			if (jobId != null) {
+				sql += " and job.job_id=" + jobId + " ";
+			}
 			System.out.println(sql);
 			sql += " order by " + colName + " " + dir;
 			System.out.println(sql);

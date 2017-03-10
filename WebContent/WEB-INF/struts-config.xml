@@ -6,6 +6,7 @@
 <struts-config>
     <form-beans>    
     	<form-bean name="idForm"          type="com.ansi.scilla.web.actionForm.IdForm" />
+    	<form-bean name="jobIdForm"       type="com.ansi.scilla.web.actionForm.JobIdForm" />
     	<form-bean name="namespaceForm"   type="com.ansi.scilla.web.actionForm.NamespaceForm" />
     </form-beans>
 	<!--
@@ -115,7 +116,10 @@
         </action>
 		<action
             path="/ticketLookup"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.action.TicketLookupAction"
+            name="jobIdForm"
+            input="/ticketLookup.jsp"
+            scope="request">            
             <forward name="valid" path="/ticketLookup.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>

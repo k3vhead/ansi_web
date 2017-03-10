@@ -58,6 +58,8 @@
         	var dataTable = null;
         	
         	function createTable(){
+				var $jobId = '<c:out value="${ANSI_JOB_ID}" />';
+
         		var dataTable = $('#ticketTable').DataTable( {
         			"processing": 		true,
         	        "serverSide": 		true,
@@ -85,7 +87,8 @@
         	        "paging": true,
 			        "ajax": {
 			        	"url": "ticketTable",
-			        	"type": "GET"
+			        	"type": "GET",
+			        	"data": {"jobId":$jobId}
 			        	},
 			        columns: [
 			            { title: "Ticket", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
@@ -169,7 +172,6 @@
 				
 				function doEdit($clickevent) {
 					var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
-
 						var $url = 'ticketTable/' + $rowid;
 						//console.log("YOU PASSED ROW ID:" + $rowid);
 						var jqxhr = $.ajax({
@@ -213,8 +215,7 @@
     </tiles:put>
     
    <tiles:put name="content" type="string">
-    	<h1>Ticket Lookup</h1>
-    	
+    	<h1>Ticket Lookup</h1>    	
  	<table id="ticketTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
         <colgroup>
         	<col style="width:5%;" />

@@ -727,10 +727,17 @@ $( document ).ready(function() {
 				ANSI_UTILS.setCheckbox($namespace, "annualRepeat", false);
 			}
 			
-			var $selectorName = "#" + $namespace + "_" + "annualRepeat";
-			$($selectorName).click(function($event) {
+			var $ticketListSelector = "#" + $namespace + "_showTicketList";
+			$($ticketListSelector).click(function($event){
 				var $jobId = JOB_DATA.jobId;
-				var $isChecked = $($selectorName).prop('checked');
+				location.href="ticketLookup.html?jobId=" + $jobId;
+			});
+			
+			
+			var $repeatSelectorName = "#" + $namespace + "_" + "annualRepeat";
+			$($repeatSelectorName).click(function($event) {
+				var $jobId = JOB_DATA.jobId;
+				var $isChecked = $($repeatSelectorName).prop('checked');
 				var $outbound = {"action":"REPEAT_JOB", "annualRepeat":$isChecked};
 				var $url = "job/" + $jobId;
 

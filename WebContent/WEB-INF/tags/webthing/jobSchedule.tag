@@ -12,6 +12,7 @@
 <%@ attribute name="cssId" required="true" rtexprvalue="true" %>
 <%@ attribute name="cssClass" required="false" rtexprvalue="true" %>
 <%@ attribute name="page" required="true" rtexprvalue="true" %>
+<%@ attribute name="jobId" required="true" rtexprvalue="true" %>
 
 
 
@@ -20,6 +21,7 @@
 	String cssId = (String)jspContext.getAttribute("cssId");
 	String cssClass = (String)jspContext.getAttribute("cssClass");
 	String page = (String)jspContext.getAttribute("page");
+	String jobId = (String)jspContext.getAttribute("jobId");
 	
 	String cssIdString = "id=\"" + cssId + "\"";			 
 	String cssClassString = cssClass == null || cssClass.length()==0 ? "" : "class=\"" + cssClass + "\"";
@@ -33,7 +35,7 @@
 			<td>Repeat Annually:</td>
 			<td><input value="1" type="checkbox" id="<%=namespace%>_annualRepeat"></td>
 			<td rowspan="2" style="text-align:center;">
-				<i class="fa fa-list-alt fa-2x" aria-hidden="true"></i>
+				<i style="cursor:pointer;" class="fa fa-list-alt fa-2x" aria-hidden="true" id="<%=namespace%>_showTicketList"></i>
 				<%--  <input type="button" value="Ticket List" /> --%>
 			</td>
 		</tr>
