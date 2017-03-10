@@ -90,11 +90,11 @@ public class JobServlet extends AbstractServlet {
 				if (action.equals(JobDetailRequestAction.CANCEL_JOB)) {
 					doCancelJob(conn, url.getId(), jobDetailRequest, sessionUser, response);					
 				} else if ( action.equals(JobDetailRequestAction.ACTIVATE_JOB)) {
-					System.out.println("JObServer 94 activating job");
 					doActivateJob(conn, url.getId(), jobDetailRequest, sessionUser, response);				
 				} else if ( action.equals(JobDetailRequestAction.SCHEDULE_JOB)) {
-					System.out.println("JobServlet 96 scheduling job");
 					doScheduleJob(conn, url.getId(), jobDetailRequest, sessionUser, response);
+				} else if ( action.equals(JobDetailRequestAction.REPEAT_JOB)) {
+					doRepeatJob(conn, url.getId(), jobDetailRequest, sessionUser, response);
 				}
 			} catch ( IllegalArgumentException e) {
 				conn.rollback();
@@ -211,6 +211,38 @@ public class JobServlet extends AbstractServlet {
 		jobDetailResponse.setWebMessages(messages);
 		super.sendResponse(conn, response, responseCode, jobDetailResponse);
 		
+	}
+
+	private void doRepeatJob(Connection conn, Integer jobId, JobDetailRequest jobDetailRequest, SessionUser sessionUser,
+			HttpServletResponse response) throws Exception {
+		JobDetailResponse jobDetailResponse = new JobDetailResponse();
+		WebMessages messages = new WebMessages();
+		ResponseCode responseCode = null;
+		try {
+			if ( jobDetailRequest.getAnnualRepeat() == null ) {
+				messages.addMessage("annualRepeat", "Required Field");
+			}
+			if ( messages.isEmpty() ) {
+				try {
+					JobUtils.updateAnnualRepeat(conn, jobId, jobDetailRequest.getAnnualRepeat(), sessionUser.getUserId());
+					conn.commit();
+					responseCode = ResponseCode.SUCCESS;
+					messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
+				} catch ( RecordNotFoundException e) {
+					conn.rollback();
+					responseCode = ResponseCode.EDIT_FAILURE;
+					messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Job ID");
+				}
+			} else {
+				responseCode = ResponseCode.EDIT_FAILURE;
+			}
+			jobDetailResponse = new JobDetailResponse(conn,jobId);
+		} catch ( RecordNotFoundException e) {
+			responseCode = ResponseCode.EDIT_FAILURE;
+			messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Job ID");
+		}
+		jobDetailResponse.setWebMessages(messages);
+		super.sendResponse(conn, response, responseCode, jobDetailResponse);		
 	}
 
 	

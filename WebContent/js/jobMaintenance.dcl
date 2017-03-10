@@ -96,7 +96,7 @@ $( document ).ready(function() {
 				success: function($data) {
 					$("#loadingJobsDiv").hide();
 					$('#jobPanelHolder > tbody:last-child').append($data);
-					JOBPANEL.init($namespace+"_jobPanel", JOB_DATA.divisionList, "activateModal", $jobDetail);
+					JOBPANEL.init($namespace+"_jobPanel", JOB_DATA.divisionList, $namespace, $jobDetail);
 					JOBPROPOSAL.init($namespace+"_jobProposal", JOB_DATA.jobFrequencyList, $jobDetail);
 					JOBACTIVATION.init($namespace+"_jobActivation", JOB_DATA.buildingTypeList, $jobDetail);
 					JOBDATES.init($namespace+"_jobDates", $quoteDetail, $jobDetail);
@@ -721,14 +721,15 @@ $( document ).ready(function() {
 			if ( $lastCreated != null && $lastCreated.startDate != null) {
 				ANSI_UTILS.setTextValue($namespace, "createdThru", $lastCreated.startDate + " (T" + $lastCreated.ticketId + ")");
 			}
-			if ($jobDetail != null && $jobDetail.repeatScheduleAnnually == 1) {
+			if ($jobDetail.repeatScheduleAnnually == 1) {
 				ANSI_UTILS.setCheckbox($namespace, "annualRepeat", true);
 			} else {
 				ANSI_UTILS.setCheckbox($namespace, "annualRepeat", false);
 			}
-			
+						
 			var $selectorName = "#" + $namespace + "_" + "annualRepeat";
 			$($selectorName).click(function($event) {
+				console.debug("Annual repeater");
 				var $jobId = JOB_DATA.jobId;
 				var $isChecked = $($selectorName).prop('checked');
 				var $outbound = {"action":"REPEAT_JOB", "annualRepeat":$isChecked};
@@ -740,21 +741,46 @@ $( document ).ready(function() {
 					data: JSON.stringify($outbound),
 					statusCode: {
 						200: function($data) {
+							console.debug($data);
+							/*
 							if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-								$("#globalMsg").html("Edit Error").show().fadeOut(4000);
+								var $cancelJobFormDialogSelector = "#" + $modalNamespace + "_cancelJobForm";
+								var $cancelFieldSelector = "." + $modalNamespace + "_cancelField"
+								var $cancelMessageSelector = "." + $modalNamespace + "_cancelMessage";							
+								$($cancelMessageSelector).html("");
+								$($cancelFieldSelector).val("");
+								$.each($data.data.webMessages, function(index, $value){
+									var $message = "";
+									$.each($value, function(idx2, $msg){
+										$message = $message + " " + $msg;
+									});
+									var $msgSelector = index + "_msg";
+									ANSI_UTILS.setTextValue($modalNamespace, $msgSelector, $message);
+								});
 							}
 							if ( $data.responseHeader.responseCode == 'SUCCESS') {
-								$("#globalMsg").html("Update Successful").show().fadeOut(4000);
+								var $cancelJobFormDialogSelector = "#" + $modalNamespace + "_cancelJobForm";
+								var $cancelFieldSelector = "." + $modalNamespace + "_cancelField"
+								var $cancelMessageSelector = "." + $modalNamespace + "_cancelMessage";							
+								$( $cancelJobFormDialogSelector ).dialog( "close" );
+								$($cancelMessageSelector).html("");
+								$($cancelFieldSelector).val("");
+								ANSI_UTILS.setTextValue($namespace, "panelMessage", "Update Successful");
+								JOB_UTILS.fadeMessage($namespace, "panelMessage")
 								JOB_UTILS.panelLoad($jobId);
 							}
+							*/
 						},				
 						403: function($data) {
+							console.debug("Error 403");
 							$("#globalMsg").html("Function Not Permitted");
 						}, 
 						404: function($data) {
+							console.debug("Error 404");
 							$("#globalMsg").html("Invalid Request");
 						}, 
 						500: function($data) {
+							console.debug("Error 500");
 							$("#globalMsg").html("System error; contact support");
 						} 
 					},

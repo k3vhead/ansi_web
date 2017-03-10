@@ -1,5 +1,13 @@
 package com.ansi.scilla.web.test;
 
+import java.sql.Connection;
+import java.util.Calendar;
+import java.util.List;
+
+import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.common.utils.AppUtils;
+import com.ansi.scilla.web.response.ticket.TicketDRVResponse;
+
 public class TestDRV {
 
 	public static void main(String[] args) {
@@ -12,6 +20,7 @@ public class TestDRV {
 	}
 	
 	public void go() throws Exception {
+		/*
 		String[] urlList = new String[] {
 			"http://127.0.0.1:8080/ansi_web/ticketDRV",
 			"http://127.0.0.1:8080/ansi_web/ticketDRV?divisionId=19",
@@ -28,6 +37,26 @@ public class TestDRV {
 			System.out.println(json);
 			System.out.println("*****************\n***************");
 		}
+		*/
+		Connection conn = null;
+		try {
+			conn = AppUtils.getConn();
+			TicketDRVResponse x = new TicketDRVResponse(conn, 10, 3, 2017);
+			System.out.println(x.toJson());
+			/*
+			List<Division> divisionList = Division.cast(new Division().selectAll(conn));
+			for ( Division d : divisionList ) {
+				for (int month = Calendar.MARCH; month < 12; month++ ) {
+					TicketDRVResponse x = new TicketDRVResponse(conn, d.getDivisionId(), month, 2017);
+					System.out.println(d.getDivisionId() + "\t" + month + "\t" + x.getResponseItemList().size());
+				}
+			}
+			*/
+			
+		} finally {
+			conn.close();
+		}
+		
 	}
 
 }

@@ -14,6 +14,7 @@ public class JobDetailRequest extends AbstractRequest {
 	private String cancelReason;
 	private Date activationDate;
 	private Date startDate;
+	private Boolean annualRepeat;
 	
 	public Integer getJobId() {
 		return jobId;
@@ -56,10 +57,18 @@ public class JobDetailRequest extends AbstractRequest {
 		this.startDate = startDate;
 	}
 
+	public Boolean getAnnualRepeat() {
+		return annualRepeat;
+	}
+	public void setAnnualRepeat(Boolean annualRepeat) {
+		this.annualRepeat = annualRepeat;
+	}
+
 	public static enum JobDetailRequestAction {
 		ACTIVATE_JOB,
 		CANCEL_JOB,
-		SCHEDULE_JOB;
+		SCHEDULE_JOB,
+		REPEAT_JOB;
 		
 	}
 }
