@@ -63,17 +63,17 @@ public class AddressTableServlet extends AbstractServlet {
 	   //System.out.println(sCol);
 	   
 	   //list all passed header and paramaters
-	   /* Enumeration headerNames = request.getHeaderNames();
-	   while(headerNames.hasMoreElements()) {
-	     String headerName = (String)headerNames.nextElement();
-	     System.out.println("Header Name - " + headerName + ", Value - " + request.getHeader(headerName));
-	   }
-	   Enumeration params = request.getParameterNames(); 
-	   while(params.hasMoreElements()){
-	    String paramName = (String)params.nextElement();
-	    System.out.println("Parameter Name - "+paramName+", Value - "+request.getParameter(paramName));
-	   }*/
-	   
+//	    Enumeration headerNames = request.getHeaderNames();
+//	   while(headerNames.hasMoreElements()) {
+//	     String headerName = (String)headerNames.nextElement();
+//	     System.out.println("Header Name - " + headerName + ", Value - " + request.getHeader(headerName));
+//	   }
+//	   Enumeration params = request.getParameterNames(); 
+//	   while(params.hasMoreElements()){
+//	    String paramName = (String)params.nextElement();
+//	    System.out.println("Parameter Name - "+paramName+", Value - "+request.getParameter(paramName));
+//	   }
+//	   
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
@@ -182,8 +182,8 @@ public class AddressTableServlet extends AbstractServlet {
 			
 			String json = AppUtils.object2json(addressJsonResponse);
 			
-			
-			
+//			System.out.println(json);
+					
 			
 			ServletOutputStream o = response.getOutputStream();
 			OutputStreamWriter writer = new OutputStreamWriter(o);

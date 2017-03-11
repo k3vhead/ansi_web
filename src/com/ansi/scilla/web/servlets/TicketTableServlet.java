@@ -66,16 +66,16 @@ public class TicketTableServlet extends AbstractServlet {
 	   //System.out.println(sCol);
 	   
 	   //list all passed header and paramaters
-	   /* Enumeration headerNames = request.getHeaderNames();
-	   while(headerNames.hasMoreElements()) {
-	     String headerName = (String)headerNames.nextElement();
-	     System.out.println("Header Name - " + headerName + ", Value - " + request.getHeader(headerName));
-	   }
-	   Enumeration params = request.getParameterNames(); 
-	   while(params.hasMoreElements()){
-	    String paramName = (String)params.nextElement();
-	    System.out.println("Parameter Name - "+paramName+", Value - "+request.getParameter(paramName));
-	   }*/
+//	    Enumeration headerNames = request.getHeaderNames();
+//	   while(headerNames.hasMoreElements()) {
+//	     String headerName = (String)headerNames.nextElement();
+//	     System.out.println("Header Name - " + headerName + ", Value - " + request.getHeader(headerName));
+//	   }
+//	   Enumeration params = request.getParameterNames(); 
+//	   while(params.hasMoreElements()){
+//	    String paramName = (String)params.nextElement();
+//	    System.out.println("Parameter Name - "+paramName+", Value - "+request.getParameter(paramName));
+//	   }
 	   
 		Connection conn = null;
 		try {
@@ -138,7 +138,7 @@ public class TicketTableServlet extends AbstractServlet {
 
 			String search = TicketSearch.generateWhereClause(term);
 			
-			System.out.println(sql);
+//			System.out.println("search: " +search);
 			sql += search;
 			if (jobId != null) {
 				sql += " and job.job_id=" + jobId + " ";
@@ -150,7 +150,7 @@ public class TicketTableServlet extends AbstractServlet {
 				sql += " OFFSET "+ start+" ROWS"
 					+ " FETCH NEXT " + amount + " ROWS ONLY";
 			}
-			System.out.println(sql);
+//			System.out.println(sql);
 			
 			s = conn.createStatement();
 			ResultSet rs = s.executeQuery(sql);
@@ -165,13 +165,19 @@ public class TicketTableServlet extends AbstractServlet {
 			String sql2 = "select count(*) "
 					+ TicketSearch.sqlFromClause;
 			
+			if (jobId != null) {
+				sql2 += " and job.job_id=" + jobId + " ";
+			}
+			
 			if (search != "") {
 				sql2 += search;
 			}
+			System.out.println(sql2);
 			Statement s2 = conn.createStatement();
 			ResultSet rs2 = s2.executeQuery(sql2);
 			if(rs2.next()){
 				totalAfterFilter = rs2.getInt(1);
+				//totalAfterFilter = 1;
 		    }
 			rs.close();
 			rs0.close();
@@ -186,9 +192,11 @@ public class TicketTableServlet extends AbstractServlet {
 			ticketTableJsonResponse.setData(resultList);
 			ticketTableJsonResponse.setDraw(draw);
 			
+//			System.out.println("Total:"+total);
+//			System.out.println("TotalAfterFilter:"+totalAfterFilter);
 			String json = AppUtils.object2json(ticketTableJsonResponse);
 			
-			
+//			System.out.println(json);
 			
 			
 			ServletOutputStream o = response.getOutputStream();
