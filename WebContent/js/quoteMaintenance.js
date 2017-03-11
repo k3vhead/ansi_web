@@ -78,7 +78,7 @@ $( document ).ready(function() {
 						$("#loadingJobsDiv").show();
 					}
 					var modalText = "";
-					$.each($jobs.reverse(), function($index, $job) {
+					$.each($jobs, function($index, $job) {
 						//console.log($currentRow);
 						//addAJob($currentRow);
 						

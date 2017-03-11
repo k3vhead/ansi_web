@@ -49,7 +49,7 @@ public class JobByQuoteIdServlet extends AbstractServlet {
 
 			List<ReturnItem> resultList = new ArrayList<ReturnItem>();
 			String sql = "select job_id"
-					+ " from job where quote_id = " + term;
+					+ " from job where quote_id = " + term + " order by job_id ASC";
 			Statement s = conn.createStatement();
 			ResultSet rs = s.executeQuery(sql);
 			while ( rs.next() ) {
