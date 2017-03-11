@@ -73,7 +73,7 @@
 					<webthing:jobDates namespace="<%= jobDates %>" cssId="jobDates" page="<%= pageName %>" />
 					<br />
 					Job Schedule:
-					<webthing:jobSchedule namespace="<%= jobSchedule %>" cssId="jobSchedule" page="<%= pageName %>" />
+					<webthing:jobSchedule namespace="<%= jobSchedule %>" cssId="jobSchedule" jobId="" page="<%= pageName %>" />
 				</td>
 				<td class="jobTableCell">
 					JOb Invoice:<br />			

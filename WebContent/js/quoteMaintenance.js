@@ -59,8 +59,8 @@ $( document ).ready(function() {
 					if($quoteDetail.jobSite != null){
 						ADDRESSPANEL.setAddress("jobSite",$quoteDetail.jobSite);
 					}
-						
-						$("select[name='division']").val($quoteData.getDivisionCode);
+						console.log("DivisionCode: "+ $quoteData.divisionId);
+						$("select[name='division']").val($quoteData.divisionId);
 						$("select[name='division").selectmenu("refresh");
 						
 					if($quoteData.proposalDate != ''){
