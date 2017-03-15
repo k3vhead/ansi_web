@@ -212,7 +212,8 @@
 					modalClose: false,
 					opacity: 0.6,
 					positionStyle: 'fixed' //'fixed' or 'absolute'
-				});				
+				});		
+            	$("#addForm input[name='value']").select();
 			}
 			
 			function doDelete($clickevent) {
@@ -262,7 +263,8 @@
 					modalClose: false,
 					opacity: 0.6,
 					positionStyle: 'fixed' //'fixed' or 'absolute'
-				});				
+				});			
+             	$("#addForm select[name='tableName']").focus();
 			});
 			
 			$("#cancelUpdate").click( function($clickevent) {
