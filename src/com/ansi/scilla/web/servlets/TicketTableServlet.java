@@ -104,8 +104,10 @@ public class TicketTableServlet extends AbstractServlet {
 		    if (sAmount != null) {
 		    	amount = Integer.parseInt(sAmount);
 				System.out.println(sAmount);
-		        if (amount < 10 || amount > 500) {
+		        if (amount < 10 ) {
 		            amount = 10;
+		        } else if (amount > 1000) {
+		            amount = 1000;
 		        }
 		    }
 		    if (sDraw != null) {
