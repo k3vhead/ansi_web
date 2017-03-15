@@ -89,6 +89,7 @@
         		}
         	});
         	
+        	console.debug("Starting 2");
         	function doPopulate($selectedDiv, $selectedMonth) {
         		var $outbound = {'month':$selectedMonth,'divisionId':$selectedDiv};
         		console.debug($outbound);
@@ -99,6 +100,7 @@
     				data: $outbound,
     				success: function($data) {
     					populateSummary($data.data);
+    					populateDataTable($data.data);
     				},
     				statusCode: {
     					403: function($data) {
@@ -113,6 +115,7 @@
             	
         	}
         	
+        	console.debug("Starting 3");
         	function populateSummary($data) {
 				$("#division").html($data.division.divisionNbr + "-" + $data.division.divisionCode);
 				$("#startDate").html($data.startDate);
@@ -132,14 +135,7 @@
        			row = '<tr class="dataRow">' + rowTd + "</tr>";
        			$('#summaryTable').append(row);
 			}
-        });
 		
-
-
-		</script>
-       
-       
-       <!-- 
        
                	function makeRow($division, $rownum) {
 				var row = "";
@@ -147,29 +143,16 @@
 				row = row + '<td>' + $ticketDRV.month + '</td>';    			
 				return row;
 			}
-        			
         	
-        	
-			
-			
-			
-			function makeRow($ticketDRV, $rownum) {
-				var row = "";
-				row = row + '<td>' + $ticketDRV.startDate + '</td>';
-				row = row + '<td>' + $ticketDRV.endDate + '</td>';
-				row = row + '<td>' + $ticketDRV.ticketCount + '</td>';
-				row = row + '<td>' + $ticketDRV.divisionCode + '</td>';
-				row = row + '<td>' + $ticketDRV.runDate + '</td>';
-				row = row + '<td>' + $ticketDRV.totalVolume + '</td>';
-				row = row + '<td>' + $ticketDRV.totalDL + '</td>';  			
-				return row;
-			}	
-                
-        	});
-        
+               	console.debug("Starting 4");
+             
+             
+             
+             
+            $(document).ready(function() {
         	var dataTable = null;
         	
-        	function createTable(){
+        	function populateDataTable($data){
         		var dataTable = $('#ticketDRV').DataTable( {
         			"processing": 		true,
         	        "serverSide": 		true,
@@ -177,16 +160,17 @@
         	        "deferRender": 		true,
         	        "scrollCollapse": 	true,
         	        "scrollX": 			true,
-        	        "bFilter":			true,
+        	        "bFilter":			true,        	        
         	        rowId: 				'dt_RowId',
         	        dom: 				'Bfrtip',
         	        "searching": 		true,
+        	        "destroy":			true,
         	        lengthMenu: [
         	            [ 10, 50, 100, 500, 1000 ],
-        	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
+        	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ],
         	        ],
         	        buttons: [
-        	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}}
+        	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}},
         	        ],
         	        "columnDefs": [
         	        	{ "orderable": false, "targets": "_all" },
@@ -194,10 +178,14 @@
         	            { className: "dt-right", "targets": [0,9,10] },
         	            { className: "dt-center", "targets": [1,7,8] },
         	         ],
-        	        "paging": false,
-			        "ajax": {
-			        	"url": "/ansi_web/ticketDRV?month=nn&divisionId=nn",
-			        	"dataSrc": "data.responseItemList"
+        	        "paging": true,
+			        "aoColumns": [
+			                { "mData": null },
+			         ],
+        	        "ajax": {
+			        	"url": "ticketDRV",
+			        	"data": "$outbound",
+			        	"type": "GET",
 			        	},
 			        columns: [
 			            { title: "Ticket", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
@@ -249,20 +237,20 @@
 			            }
 			    } );
         	}
-        	        	
+        	
         	init();
         			
         			
             
             function init(){
-					$.each($('input'), function () {
+            	$.each($('input'), function () {
 				        $(this).css("height","20px");
 				        $(this).css("max-height", "20px");
 				    });
 					
-					createTable();
+					populateDataTable();
             }; 
-            
+            console.debug("Starting 7");
             function initComplete (){
               var r = $('#TicketDRV tfoot tr');
               r.find('th').each(function(){
@@ -272,60 +260,57 @@
               $('#divisionSelect').css('text-align', 'center');
             }
                 
-				function doFunctionBinding() {
-					$( ".editAction" ).on( "click", function($clickevent) {
-						 doEdit($clickevent);
-					});
-				}
-				
-				function doEdit($clickevent) {
-					var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
-
-						var $url = '/ansi_web/ticketDRV?month=nn&divisionId=nn' + $rowid;
+				//function doFunctionBinding() {
+					//$( ".editAction" ).on( "click", function($clickevent) {
+					//	 doEdit($clickevent);
+					//});
+				//}
+				//console.debug("Starting 8");
+				//function doEdit($clickevent) {
+					//console.debug("Starting 12");
+					//var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
+					//console.debug("Starting 11");
+						//var $url = '/ansi_web/ticketDRV?month=nn&divisionId=nn' + $rowid;
 						//console.log("YOU PASSED ROW ID:" + $rowid);
-						var jqxhr = $.ajax({
-							type: 'GET',
-							url: $url,
-							success: function($data) {
+						//var jqxhr = $.ajax({
+							//type: 'GET',
+							//url: $url,
+							//success: function($data) {
 								//console.log($data);
-								
-				        		$("#ticketId").val(($data.data.codeList[0]).ticketId);
-				        		$("#status").val(($data.data.codeList[0]).status);
-				        		$("#name").val(($data.data.codeList[0]).name);
-				        		$("#address1").val(($data.data.codeList[0]).address1);
-				        		$("#city").val(($data.data.codeList[0]).city);
-				        		$("#lastDone").val(($data.data.codeList[0]).lastDone);
-				        		$("#startDate").val(($data.data.codeList[0]).startDate);
-				        		$("#jobNum").val(($data.data.codeList[0]).jobNum);
-				        		$("#frequency").val(($data.data.codeList[0]).frequency);
-				        		$("#budget").val(($data.data.codeList[0]).budget);
-				        		$("#ppc").val(($data.data.codeList[0]).ppc);
-				        		$("#cod").val(($data.data.codeList[0]).cod);
-				        		$("#jobId").val(($data.data.codeList[0]).jobId);
+								//console.debug("Starting 10");
+				        		//$("#ticketId").val(($data.data.codeList[0]).ticketId);
+				        		//$("#status").val(($data.data.codeList[0]).status);
+				        		//$("#name").val(($data.data.codeList[0]).name);
+				        		//$("#address1").val(($data.data.codeList[0]).address1);
+				        		//$("#city").val(($data.data.codeList[0]).city);
+				        		//$("#lastDone").val(($data.data.codeList[0]).lastDone);
+				        		//$("#startDate").val(($data.data.codeList[0]).startDate);
+				        		//$("#jobNum").val(($data.data.codeList[0]).jobNum);
+				        		//$("#frequency").val(($data.data.codeList[0]).frequency);
+				        		//$("#budget").val(($data.data.codeList[0]).budget);
+				        		//$("#ppc").val(($data.data.codeList[0]).ppc);
+				        		//$("#cod").val(($data.data.codeList[0]).cod);
+				        		//$("#jobId").val(($data.data.codeList[0]).jobId);
 				        		
-				        		$("#t_id").val(($data.data.codeList[0]).ticket_Id);
-				        		$("#updateOrAdd").val("update");
-				        		$("#addTicketDRVForm").dialog( "open" );
-							},
-							statusCode: {
-								403: function($data) {
-									$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-								} 
-							},
-							dataType: 'json'
-						});
+				        		//$("#t_id").val(($data.data.codeList[0]).ticket_Id);
+				        		//$("#updateOrAdd").val("update");
+				        		//$("#addTicketDRVForm").dialog( "open" );
+							//},
+							//statusCode: {
+								//403: function($data) {
+									//$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+								//} 
+							//},
+							//dataType: 'json'
+						//});
 					//console.log("Edit Button Clicked: " + $rowid);
-				}
-        	})
-        }
-       });
-       
-       
-        -->
+				})
+			});
+		console.debug("Starting 9");
+       </script>
         
 
 	</tiles:put>
-    
     <tiles:put name="content" type="string">
     	<h1 >Division and Month Select</h1>
 		<select id="divisionId">			
@@ -388,7 +373,7 @@
                 <th>Ticket</th>
     			<th>Status</th>
     			<th>Name</th>
-    			<th>Address 1</th>
+    			<th>Address</th>
     			<th>City</th>
     			<th>Last Done</th>
     			<th>Start Date</th>
@@ -405,7 +390,7 @@
                 <th>Ticket</th>
     			<th>Status</th>
     			<th>Name</th>
-    			<th>Address 1</th>
+    			<th>Address</th>
     			<th>City</th>
     			<th>Last Done</th>
     			<th>Start Date</th>
@@ -414,7 +399,7 @@
     			<th>Budget</th>
     			<th>PPC</th>
     			<th>COD</th>
-    			<th>Job ID</th>	
+    			<th>Job ID</th>
             </tr>
         </tfoot>
     </table>
