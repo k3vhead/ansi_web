@@ -85,6 +85,7 @@
 					JobAudit:
 					<webthing:jobAudit namespace="<%= jobAudit %>" cssId="jobAudit" page="<%= pageName %>" />
 				</td>
+				<%--
 				<% if ( !pageName.equals("QUOTE") ) { %>
 				<td class="jobTableCell" style="text-align:center;">
 					<input type="button" value="Cancel" id="jobCancelButton" />
@@ -92,6 +93,7 @@
 					<input type="button" value="Save & Exit" id="jobExitButton" />
 				</td>
 				<% }  %>
+				 --%>
 			</tr>
 		</table>    	
 	</td>
