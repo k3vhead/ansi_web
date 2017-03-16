@@ -77,11 +77,15 @@
 			.formFieldDisplay {
 				margin-left:30px;
 			}
+			#invoiceModal {
+				display:none;
+			}
         </style>
         
         <script type="text/javascript">
 		$(function() {
 			JOB_UTILS.pageInit('<c:out value="${ANSI_JOB_ID}" />');
+			JOBINVOICE.init("invoiceModal", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, JOB_DATA.jobDetail);
 			
 			$("#jobNbr").focus();
 		});
@@ -100,7 +104,7 @@
 		</table>  
     	
 		<webthing:jobActivateCancel page="JOB" namespace="activateModal" />
-		
+		<webthing:jobInvoice namespace="invoiceModal" cssId="invoiceModal" page="QUOTE" />
     </tiles:put>
 
 </tiles:insert>

@@ -15,6 +15,7 @@ $( document ).ready(function() {
 			JOB_DATA.buildingTypeList = ANSI_UTILS.makeBuildingTypeList();
 						
 			JOB_DATA.jobId = $jobId;
+			
 			JOB_UTILS.panelLoad($jobId);
 			
 			
@@ -30,6 +31,7 @@ $( document ).ready(function() {
 			if ( $jobId != '' ) {
 				$jobData = JOB_UTILS.getJobDetail($jobId);
 				$jobDetail = $jobData.job;
+				JOB_DATA.jobDetail = $jobDetail;
 				$quoteDetail = $jobData.quote;
 				$lastRun = $jobData.lastRun;
 				$nextDue = $jobData.nextDue;
@@ -173,8 +175,8 @@ $( document ).ready(function() {
 				}
 				
 
-				$("#" + $namespace + "_jobActivationForm select[name='" + $namespace + "_automanual']").selectmenu();
-				$("#" + $namespace + "_jobActivationForm select[name='" + $namespace + "_buildingType']").selectmenu();
+				//$("#" + $namespace + "_jobActivationForm select[name='" + $namespace + "_automanual']").selectmenu();
+				//$("#" + $namespace + "_jobActivationForm select[name='" + $namespace + "_buildingType']").selectmenu();
 				$("#" + $namespace + "_jobActivationForm input[name='" + $namespace + "_nbrFloors']").spinner({
 							spin: function( event, ui ) {
 								if ( ui.value < 0 ) {
@@ -197,7 +199,7 @@ $( document ).ready(function() {
 					if ( $selectedValue != null ) {
 						$select.val($selectedValue);
 					}
-					$select.selectmenu();
+					//$select.selectmenu();
 				}
 				
 				
@@ -240,18 +242,39 @@ $( document ).ready(function() {
 				if ( $jobDetail ) {
 					if ( $jobDetail.invoiceBatch == 1) {
 						ANSI_UTILS.setCheckbox($namespace, "invoiceBatch", true);
+						$selectorName = "#" + $namespace + "_invoiceBatch_is_yes";
+						$($selectorName).show();
+						$selectorName = "#" + $namespace + "_invoiceBatch_is_no";
+						$($selectorName).hide();
 					} else {
 						ANSI_UTILS.setCheckbox($namespace, "invoiceBatch", false);
+						$selectorName = "#" + $namespace + "_invoiceBatch_is_yes";
+						$($selectorName).hide();
+						$selectorName = "#" + $namespace + "_invoiceBatch_is_no";
+						$($selectorName).show();
 					}
 					if ( $jobDetail.taxExempt == 1) {
 						ANSI_UTILS.setCheckbox($namespace, "invoiceTaxExempt", true);
+						$selectorName = "#" + $namespace + "_invoiceTaxExempt_is_yes";
+						$($selectorName).show();
+						$selectorName = "#" + $namespace + "_invoiceTaxExempt_is_no";
+						$($selectorName).hide();
 					} else {
 						ANSI_UTILS.setCheckbox($namespace, "invoiceTaxExempt", false);
+						$selectorName = "#" + $namespace + "_invoiceTaxExempt_is_yes";
+						$($selectorName).hide();
+						$selectorName = "#" + $namespace + "_invoiceTaxExempt_is_no";
+						$($selectorName).show();
 					}
 					ANSI_UTILS.setFieldValue($namespace, "invoicePO", $jobDetail.poNumber);
 					ANSI_UTILS.setFieldValue($namespace, "invoiceOurVendorNbr", $jobDetail.ourVendorNbr);
 					ANSI_UTILS.setFieldValue($namespace, "invoiceExpire", $jobDetail.expirationDate);
 					ANSI_UTILS.setFieldValue($namespace, "invoiceExpireReason", $jobDetail.expirationReason);
+					
+					ANSI_UTILS.setTextValue($namespace, "invoicePO", $jobDetail.poNumber);
+					ANSI_UTILS.setTextValue($namespace, "invoiceOurVendorNbr", $jobDetail.ourVendorNbr);
+					ANSI_UTILS.setTextValue($namespace, "invoiceExpire", $jobDetail.expirationDate);
+					ANSI_UTILS.setTextValue($namespace, "invoiceExpireReason", $jobDetail.expirationReason);
 				}
 				JOBINVOICE.setInvoiceStyle($namespace, $invoiceStyleList, $jobDetail.invoiceStyle);
 				JOBINVOICE.setInvoiceGrouping($namespace, $invoiceGroupList, $jobDetail.invoiceGrouping);
@@ -265,22 +288,79 @@ $( document ).ready(function() {
 	                showButtonPanel:true
 	            });
 
+				var $goButtonId = $namespace + "_saveInvoiceButton";
+				var $closeButtonId = $namespace + "_saveInvoiceCloseButton";
+				// set up the activate job modal window
+				$( '#invoiceModal' ).dialog({
+		      	      autoOpen: false,
+		      	      height: 300,
+		      	      width: 500,
+		      	      modal: true,
+		      	      buttons: [
+		      	    	  {
+		      	    			id: $goButtonId,
+		      	        		click: function() {
+		      	        			//JOBPANEL.activateJob($namespace, $modalNamespace);
+		      	        			console.debug("gobutton clicked")
+		      	        		}
+		      	      		},
+		      	      		{
+		        	    		id: $closeButtonId,
+		        	        	click: function() {
+		        	        		$('#invoiceModal').dialog( "close" );
+		        	        	}
+		        	      	}
+		      	      
+		      	      ],
+		      	      close: function() {
+		      	    	  $( '#invoiceModal' ).dialog( "close" );
+		      	        //allFields.removeClass( "ui-state-error" );
+		      	      }
+		      	    });
 				
+				$selectorName = "#" + $namespace + "_invoiceEdit";
+				$($selectorName).click(function($event) {
+					$event.preventDefault();
+					console.debug("Clicked the edit");
+					$('#'+$goButtonId).button('option', 'label', 'Save');
+	        		$('#'+$closeButtonId).button('option', 'label', 'Close');
+	        	    $('#invoiceModal').dialog( "open" );
+
+				});
 			},
 			setInvoiceStyle: function($namespace, $optionList, $selectedValue) {
 				var selectorName = "#" + $namespace + "_jobInvoiceForm select[name='" + $namespace + "_invoiceStyle']";
+				console.debug($selectorName)
 				$selectorName = "select[name='" + $namespace + "_invoiceStyle']";
 				ANSI_UTILS.setOptionList($selectorName, $optionList, $selectedValue)
+
+				$.each($optionList, function(index, val) {
+					if ( val.abbrev == $selectedValue) {
+						ANSI_UTILS.setTextValue($namespace, "invoiceStyle", val.display);
+					}
+				});				
 			},
 			setInvoiceGrouping: function($namespace, $optionList, $selectedValue) {
 				var selectorName = "#" + $namespace + "_jobInvoiceForm select[name='" + $namespace + "_invoiceGrouping']";
 				var $selectorName = "select[name='" + $namespace + "_invoiceGrouping']";
 				ANSI_UTILS.setOptionList($selectorName, $optionList, $selectedValue)
+
+				$.each($optionList, function(index, val) {
+					if ( val.abbrev == $selectedValue) {
+						ANSI_UTILS.setTextValue($namespace, "invoiceGrouping", val.display);
+					}
+				});
 			},
 			setInvoiceTerms: function($namespace, $optionList, $selectedValue) {
 				var selectorName = "#" + $namespace + "_jobInvoiceForm select[name='" + $namespace + "_invoiceTerms']";
 				var $selectorName = "select[name='" + $namespace + "_invoiceTerms']";
 				ANSI_UTILS.setOptionList($selectorName, $optionList, $selectedValue)
+
+				$.each($optionList, function(index, val) {
+					if ( val.abbrev == $selectedValue) {
+						ANSI_UTILS.setTextValue($namespace, "invoiceTerms", val.display);
+					}
+				});
 			}
 
 	}
@@ -322,7 +402,7 @@ $( document ).ready(function() {
 				  ANSI_UTILS.setTextValue($namespace, "divisionId", $divisionLookup[$jobDetail.divisionId]);
 				} else {
 					$("#" + $namespace + "_divisionId").val($divisionLookup[$jobDetail.divisionId]);
-					$("#" + $namespace + "_divisionId").selectmenu("refresh");
+					//$("#" + $namespace + "_divisionId").selectmenu("refresh");
 				}
 				ANSI_UTILS.setTextValue($namespace, "quoteId", $jobDetail.jobId);
 				
@@ -499,7 +579,7 @@ $( document ).ready(function() {
 			    $select.append(new Option(val.divisionCode, val.divisionId));
 			});
 			
-			$select.selectmenu();
+			//$select.selectmenu();
 		},
 		
 		cancelJob: function($namespace, $modalNamespace) {
@@ -703,7 +783,7 @@ $( document ).ready(function() {
 			if ( $selectedValue != null ) {
 				$select.val($selectedValue);
 			}
-			$select.selectmenu();
+			//$select.selectmenu();
 		}
 
 	}
