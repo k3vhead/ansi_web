@@ -7,6 +7,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.queries.TicketDRVQuery;
 import com.ansi.scilla.web.response.MessageResponse;
@@ -126,5 +131,155 @@ public class TicketDRVResponse extends MessageResponse {
 		this.responseItemList = responseItemList;
 	}
 
+	public XSSFWorkbook toXLSX(){
+		XSSFWorkbook workbook = new XSSFWorkbook();
+		XSSFSheet sheet = workbook.createSheet();
+		Date today = new Date();
+		int rowNum = 0;
+		XSSFRow row = null;
+		
+		workbook.setSheetName(0,"DRV");
+		row = sheet.createRow(rowNum);
+		XSSFCell cell = null;
+		cell = row.createCell(3);
+		cell.setCellValue("Created: ");
+		cell = row.createCell(4);
+		cell.setCellValue(this.getRunDate());
+		cell = row.createCell(12);
+		cell.setCellValue("Division: ");
+		cell = row.createCell(13);
+		cell.setCellValue(this.getDivision().getDivisionNbr() + "-" + this.getDivision().getDivisionCode());
+		rowNum++;
+		
+		row = sheet.createRow(rowNum);
+		cell = row.createCell(3);
+		cell.setCellValue("Start Date Used");
+		cell = row.createCell(12);
+		cell.setCellValue("Total Volume for the Month: ");
+		cell = row.createCell(13);
+		cell.setCellValue(this.getTotalVolume().intValue());
+		rowNum++;
+		
+		row = sheet.createRow(rowNum);
+		cell = row.createCell(3);
+		cell.setCellValue("From: ");
+		cell = row.createCell(4);
+		cell.setCellValue(this.getStartDate());
+		cell = row.createCell(12);
+		cell.setCellValue("Total D/L for the Month: ");
+		cell = row.createCell(13);
+		cell.setCellValue(this.getTotalDL().intValue());
+		rowNum++;
+		
+		row = sheet.createRow(rowNum);
+		cell = row.createCell(3);
+		cell.setCellValue("To: ");
+		cell = row.createCell(4);
+		cell.setCellValue(this.getEndDate());
+		cell = row.createCell(12);
+		cell.setCellValue("Tickets: ");
+		cell = row.createCell(13);
+		cell.setCellValue(this.getTicketCount());
+		rowNum++;
+		
+		row = sheet.createRow(rowNum);
+		cell = row.createCell(3);
+		cell.setCellValue("Ticket");
+		cell = row.createCell(4);
+		cell.setCellValue("Status");
+		cell = row.createCell(5);
+		cell.setCellValue("Site");
+		cell = row.createCell(6);
+		cell.setCellValue("Street 1");
+		cell = row.createCell(7);
+		cell.setCellValue("City");
+		cell = row.createCell(8);
+		cell.setCellValue("Last Done");
+		cell = row.createCell(9);
+		cell.setCellValue("Start Date");
+		cell = row.createCell(10);
+		cell.setCellValue("J#");
+		cell = row.createCell(11);
+		cell.setCellValue("FRQ");
+		cell = row.createCell(12);
+		cell.setCellValue("Budget");
+		cell = row.createCell(13);
+		cell.setCellValue("PPC");
+		cell = row.createCell(14);
+		cell.setCellValue("COD");
+		rowNum++;
+		
+		for (TicketDRVResponseItem item : this.getResponseItemList()) {
+			int colNum = 3;
+			cell = row.createCell(colNum);	//3
+			cell.setCellValue(item.getTicketId());
+			colNum++;
+			cell = row.createCell(colNum);	//4
+			cell.setCellValue(item.getStartDate());
+			colNum++;
+			cell = row.createCell(colNum);	//5
+			cell.setCellValue(item.getName());	//Site
+			colNum++;
+			cell = row.createCell(colNum);	//6
+			cell.setCellValue(item.getAddress1());	//Street
+			colNum++;
+			cell = row.createCell(colNum);	//7
+			cell.setCellValue(item.getCity());
+			colNum++;
+			cell = row.createCell(colNum);	//8
+			if(item.getLastDone() != null){
+				cell.setCellValue(item.getLastDone());
+			}
+			colNum++;
+			cell = row.createCell(colNum);	//9
+			cell.setCellValue(item.getStartDate());
+			colNum++;
+			cell = row.createCell(colNum);	//10
+			cell.setCellValue(item.getJobNum());	// J#
+			colNum++;
+			cell = row.createCell(colNum);	//11
+			cell.setCellValue(item.getFrequency());
+			colNum++;
+			cell = row.createCell(colNum);	//12
+			cell.setCellValue(item.getBudget().doubleValue());
+			colNum++;
+			cell = row.createCell(colNum);	//13
+			cell.setCellValue(item.getPpc().doubleValue());
+			colNum++;
+			cell = row.createCell(colNum);	//14
+			cell.setCellValue(item.getCod());
+			colNum++;
+			
+			rowNum++;
+		}
+		
+//		List<TicketDRVQuery> queryList = TicketDRVQuery.makeMonthlyReport(conn, divisionId, month, year);
+//		for(TicketDRVQuery query : queryList){
+//			TicketDRVResponseItem item = new TicketDRVResponseItem(query);
+//			responseItemList.add(item);
+//		}
+//		Short rownum = 1;
+//
+//		while ( rs.next() ) {
+//			row = sheet.createRow(rownum);
+//			for ( int i = 1; i < rsmd.getColumnCount() + 1; i++ ) {
+//				cell = row.createCell(i-1);
+//				Object o = rs.getObject(i);
+//				if ( o == null ) {
+//					cell.setCellValue( "" );
+//				} else {
+//					cell.setCellValue( String.valueOf(rs.getObject(i)));
+//				}
+//				
+//			}
+//			rownum++;
+//		}
+//
+//		for ( int i = 1; i < rsmd.getColumnCount() + 1; i++ ) {
+//			sheet.autoSizeColumn(i); 
+//		}
+		
+		return workbook;
+	}
 	
 }
