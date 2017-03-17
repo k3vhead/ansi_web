@@ -1,6 +1,7 @@
 package com.ansi.scilla.web.servlets;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.Connection;
 import java.util.Calendar;
 
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.MessageKey;
@@ -87,5 +89,22 @@ public class TicketDRVServlet extends AbstractServlet {
 
 	}
 
+	public void sendAsXLS(HttpServletResponse response, TicketDRVResponse ticketDRVResponse) throws IOException{
+		XSSFWorkbook workbook = ticketDRVResponse.toXLSX();
+		OutputStream out = response.getOutputStream();
+		
+	    response.setHeader("Expires", "0");
+	    response.setHeader("Cache-Control", "must-revalidate, post-check=0, pre-check=0");
+	    response.setHeader("Pragma", "public");
+	    // setting the content type
+	    response.setContentType("application/vnd.ms-excel");
+	    String dispositionHeader = "attachment; filename=" + "DRV" + ".xlsx";
+		response.setHeader("Content-disposition",dispositionHeader);
+	    // the contentlength
+//	    response.setContentLength(baos.size());
+
+		workbook.write(out);
+		out.close();
+	}
 
 }
