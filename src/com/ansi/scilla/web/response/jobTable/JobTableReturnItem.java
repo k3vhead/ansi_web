@@ -15,7 +15,7 @@ public class JobTableReturnItem extends ReportQuery {
 	private static final long serialVersionUID = 1L;
 
 	public static final String JOB_ID = "job_id";
-	public static final String STATUS ="status";
+	public static final String JOB_STATUS ="job_status";
 	public static final String BILL_TO_NAME ="bill_to_name";
 	public static final String JOB_SITE_NAME ="job_site_name";
 	public static final String JOB_SITE_ADDRESS ="job_site_address";
@@ -32,7 +32,7 @@ public class JobTableReturnItem extends ReportQuery {
 	public static final String DIVISION_CODE = "division_code";
 
 	private Integer jobId;
-	private String status;
+	private String jobStatus;
 	private String billToName;
 	private String jobSiteName;
 	private String jobSiteAddress;
@@ -55,7 +55,7 @@ public class JobTableReturnItem extends ReportQuery {
 	public JobTableReturnItem(ResultSet rs) throws SQLException {
 		super();
 		this.jobId = rs.getInt(JOB_ID);
-		this.status = rs.getString(STATUS);
+		this.jobStatus = rs.getString(JOB_STATUS);
 		this.billToName = rs.getString(BILL_TO_NAME);
 		this.jobSiteName = rs.getString(JOB_SITE_NAME);
 		this.jobSiteAddress = rs.getString(JOB_SITE_ADDRESS);
@@ -92,14 +92,14 @@ public class JobTableReturnItem extends ReportQuery {
 		this.DT_RowId = DT_RowId;
 	}
 
-	@DBColumn(STATUS)
-	public String getStatus() {
-		return status;
+	@DBColumn(JOB_STATUS)
+	public String getJobStatus() {
+		return jobStatus;
 	}
 
-	@DBColumn(STATUS)
-	public void setStatus(String status) {
-		this.status = status;
+	@DBColumn(JOB_STATUS)
+	public void setJobStatus(String jobStatus) {
+		this.jobStatus = jobStatus;
 	}
 
 	@DBColumn(BILL_TO_NAME)

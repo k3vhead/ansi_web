@@ -92,7 +92,7 @@
 			            	if(row.jobId != null){return (row.jobId+"");}
 			            } },
 			            { title: "Status", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.status != null){return (row.status+"");}
+			            	if(row.jobStatus != null){return (row.jobStatus+"");}
 			            } },
 			            { title: "Div", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.divisionNbr != null){return (row.divisionNbr+"");}
@@ -169,7 +169,7 @@
 								//console.log($data);
 								
 				        		$("#jobId").val(($data.data.codeList[0]).jobId);
-				        		$("#status").val(($data.data.codeList[0]).status);
+				        		$("#jobStatus").val(($data.data.codeList[0]).jobStatus);
 				        		$("#divisionNbr").val(($data.data.codeList[0]).divisionNbr);
 				        		$("#billToName").val(($data.data.codeList[0]).billToName);
 				        		$("#jobSiteName").val(($data.data.codeList[0]).jobSiteName);
