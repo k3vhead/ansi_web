@@ -7,12 +7,22 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.poi.hssf.usermodel.HeaderFooter;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.Footer;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.common.queries.TicketDRVQuery;
 import com.ansi.scilla.web.response.MessageResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -134,121 +144,291 @@ public class TicketDRVResponse extends MessageResponse {
 	public XSSFWorkbook toXLSX(){
 		XSSFWorkbook workbook = new XSSFWorkbook();
 		XSSFSheet sheet = workbook.createSheet();
+		CreationHelper createHelper = workbook.getCreationHelper();
 		Date today = new Date();
 		int rowNum = 0;
 		XSSFRow row = null;
 		
+		//DateFormat
+		CellStyle cellStyleDate = workbook.createCellStyle();
+		cellStyleDate.setDataFormat(createHelper.createDataFormat().getFormat("mm/dd/yyyy"));	//military time
+
+		
+		//Date/Time Format		
+		CellStyle cellStyleDateTime = workbook.createCellStyle();
+		cellStyleDateTime.setDataFormat(createHelper.createDataFormat().getFormat("mm/dd/yyyy hh:mm:ss a"));	//military time
+
+		//Decimal Format: 2 digits and commas
+		CellStyle cellStyleDecimal = workbook.createCellStyle();
+		DataFormat format = workbook.createDataFormat();
+		cellStyleDecimal.setDataFormat(format.getFormat("#,##0.00"));
+		
+		//Header White and Black
+		CellStyle cellStyleBackColor = workbook.createCellStyle();
+		cellStyleBackColor.setFillBackgroundColor(IndexedColors.BLACK.getIndex());
+	    cellStyleBackColor.setFillPattern(CellStyle.ALIGN_FILL);
+	    
+	    CellStyle cellStyleFontColor = workbook.createCellStyle();
+	    XSSFFont font = workbook.createFont();
+	    font.setColor(HSSFColor.WHITE.index);
+	    cellStyleFontColor.setFont(font);
+
+		//Bold and Underline
+	    XSSFFont fontStyle = workbook.createFont();
+	    fontStyle.setBold(true);
+	    
+	    //Cell Alignment
+	    CellStyle cellStyleLeftAll = workbook.createCellStyle();
+	    cellStyleLeftAll.setAlignment(CellStyle.ALIGN_LEFT);
+	    CellStyle cellStyleCenterAll = workbook.createCellStyle();
+	    cellStyleCenterAll.setAlignment(CellStyle.ALIGN_CENTER);
+	    CellStyle cellStyleRightAll = workbook.createCellStyle();
+	    cellStyleRightAll.setAlignment(CellStyle.ALIGN_RIGHT);
+	    
+	    //Date and Alignment
+	    CellStyle cellLeftDateTime = workbook.createCellStyle();
+	    cellLeftDateTime.setAlignment(CellStyle.ALIGN_LEFT);
+	    cellLeftDateTime.setDataFormat(createHelper.createDataFormat().getFormat("mm/dd/yyyy hh:mm:ss"));
+	    
+	    CellStyle cellLeftDate = workbook.createCellStyle();
+	    cellLeftDate.setAlignment(CellStyle.ALIGN_LEFT);
+	    cellLeftDate.setDataFormat(createHelper.createDataFormat().getFormat("mm/dd/yyyy"));
+	    
+	    //Decimal and Alignment
+	    CellStyle cellRightDecimal = workbook.createCellStyle();
+	    cellRightDecimal.setAlignment(CellStyle.ALIGN_RIGHT);
+	    cellRightDecimal.setDataFormat(format.getFormat("#,##0.00"));
+	    
+		//Vertical Script
+	    CellStyle vertical = workbook.createCellStyle();
+	    vertical.setRotation((short)90);
+	    
+		//Footer(page number)
+	    Sheet sht = workbook.createSheet();
+	    Footer footer = sht.getFooter();
+	    footer.setCenter("Page " + HeaderFooter.page() + " of " + HeaderFooter.numPages());
+	    
 		workbook.setSheetName(0,"DRV");
 		row = sheet.createRow(rowNum);
 		XSSFCell cell = null;
 		cell = row.createCell(3);
 		cell.setCellValue("Created: ");
+		//cell.setCellStyle((CellStyle) fontStyle);
+		cell.setCellStyle(cellStyleLeftAll);
 		cell = row.createCell(4);
 		cell.setCellValue(this.getRunDate());
+		cell.setCellStyle(cellLeftDateTime);
+		cell = row.createCell(6);
+		cell.setCellValue("American National Skyline, Inc.");
+		cell.setCellStyle(cellStyleCenterAll);
 		cell = row.createCell(12);
 		cell.setCellValue("Division: ");
-		cell = row.createCell(13);
+		//cell.setCellStyle((CellStyle) fontStyle);
+		cell.setCellStyle(cellStyleRightAll);
+		cell = row.createCell(14);
 		cell.setCellValue(this.getDivision().getDivisionNbr() + "-" + this.getDivision().getDivisionCode());
-		rowNum++;
+		cell.setCellStyle(cellStyleRightAll);
+		rowNum++;	//row=1
 		
 		row = sheet.createRow(rowNum);
 		cell = row.createCell(3);
 		cell.setCellValue("Start Date Used");
+		//cell.setCellStyle((CellStyle) fontStyle);
+		cell.setCellStyle(cellStyleLeftAll);
+		cell = row.createCell(6);
+		cell.setCellValue("Detailed Rolling Volume Check List");
+		cell.setCellStyle(cellStyleCenterAll);
 		cell = row.createCell(12);
 		cell.setCellValue("Total Volume for the Month: ");
-		cell = row.createCell(13);
+		//cell.setCellStyle((CellStyle) fontStyle);
+		cell.setCellStyle(cellStyleRightAll);
+		cell = row.createCell(14);
 		cell.setCellValue(this.getTotalVolume().intValue());
-		rowNum++;
+		cell.setCellStyle(cellRightDecimal);
+		rowNum++;	//row=2
 		
 		row = sheet.createRow(rowNum);
 		cell = row.createCell(3);
 		cell.setCellValue("From: ");
+		//cell.setCellStyle((CellStyle) fontStyle);
+		cell.setCellStyle(cellStyleLeftAll);
 		cell = row.createCell(4);
 		cell.setCellValue(this.getStartDate());
+		cell.setCellStyle(cellLeftDate);
 		cell = row.createCell(12);
 		cell.setCellValue("Total D/L for the Month: ");
-		cell = row.createCell(13);
+		//cell.setCellStyle((CellStyle) fontStyle);
+		cell.setCellStyle(cellStyleRightAll);
+		cell = row.createCell(14);
 		cell.setCellValue(this.getTotalDL().intValue());
-		rowNum++;
+		cell.setCellStyle(cellRightDecimal);
+		rowNum++;	//row=3
 		
 		row = sheet.createRow(rowNum);
+		cell = row.createCell(0);
+		cell.setCellValue("Ruin");
+		cell.setCellStyle(vertical);
+		cell = row.createCell(1);
+		cell.setCellValue("Reject/Reschedule");
+		cell.setCellStyle(vertical);
+		cell = row.createCell(2);
+		cell.setCellValue("Cancel Job");
+		cell.setCellStyle(vertical);
 		cell = row.createCell(3);
 		cell.setCellValue("To: ");
+		//cell.setCellStyle((CellStyle) fontStyle);
+		cell.setCellStyle(cellStyleLeftAll);
 		cell = row.createCell(4);
 		cell.setCellValue(this.getEndDate());
+		cell.setCellStyle(cellLeftDate);
 		cell = row.createCell(12);
 		cell.setCellValue("Tickets: ");
-		cell = row.createCell(13);
+		//cell.setCellStyle((CellStyle) fontStyle);
+		cell.setCellStyle(cellStyleRightAll);
+		cell = row.createCell(14);
 		cell.setCellValue(this.getTicketCount());
-		rowNum++;
+		cell.setCellStyle(cellStyleRightAll);
+		cell = row.createCell(15);
+		cell.setCellValue("Received");
+		cell.setCellStyle(vertical);
+		cell = row.createCell(16);
+		cell.setCellValue("Ran");
+		cell.setCellStyle(vertical);
+		cell = row.createCell(17);
+		cell.setCellValue("Submitted");
+		cell.setCellStyle(vertical);
+		cell = row.createCell(18);
+		cell.setCellValue("Invoiced");
+		cell.setCellStyle(vertical);
+		cell = row.createCell(19);
+		cell.setCellValue("Paid");
+		cell.setCellStyle(vertical);
+		rowNum++;	//row=4
 		
 		row = sheet.createRow(rowNum);
+		cell = row.createCell(0);
+		cell.setCellStyle(cellStyleBackColor);
+		cell = row.createCell(1);
+		cell.setCellStyle(cellStyleBackColor);
+		cell = row.createCell(2);
+		cell.setCellStyle(cellStyleBackColor);
 		cell = row.createCell(3);
 		cell.setCellValue("Ticket");
+		cell.setCellStyle(cellStyleBackColor);
 		cell = row.createCell(4);
 		cell.setCellValue("Status");
+		cell.setCellStyle(cellStyleBackColor);
 		cell = row.createCell(5);
 		cell.setCellValue("Site");
+		cell.setCellStyle(cellStyleBackColor);
 		cell = row.createCell(6);
 		cell.setCellValue("Street 1");
+		cell.setCellStyle(cellStyleBackColor);
 		cell = row.createCell(7);
 		cell.setCellValue("City");
+		cell.setCellStyle(cellStyleBackColor);
 		cell = row.createCell(8);
 		cell.setCellValue("Last Done");
+		cell.setCellStyle(cellStyleBackColor);
 		cell = row.createCell(9);
 		cell.setCellValue("Start Date");
+		cell.setCellStyle(cellStyleBackColor);
 		cell = row.createCell(10);
 		cell.setCellValue("J#");
+		cell.setCellStyle(cellStyleBackColor);
 		cell = row.createCell(11);
 		cell.setCellValue("FRQ");
+		cell.setCellStyle(cellStyleBackColor);
 		cell = row.createCell(12);
 		cell.setCellValue("Budget");
+		cell.setCellStyle(cellStyleBackColor);
 		cell = row.createCell(13);
 		cell.setCellValue("PPC");
+		cell.setCellStyle(cellStyleBackColor);
 		cell = row.createCell(14);
 		cell.setCellValue("COD");
-		rowNum++;
+		cell.setCellStyle(cellStyleBackColor);
+		cell = row.createCell(15);
+		cell.setCellStyle(cellStyleBackColor);
+		cell = row.createCell(16);
+		cell.setCellStyle(cellStyleBackColor);
+		cell = row.createCell(17);
+		cell.setCellStyle(cellStyleBackColor);
+		cell = row.createCell(18);
+		cell.setCellStyle(cellStyleBackColor);
+		cell = row.createCell(19);
+		cell.setCellStyle(cellStyleBackColor);
+		
+		rowNum++;	//row=5
 		
 		for (TicketDRVResponseItem item : this.getResponseItemList()) {
+			row = sheet.createRow(rowNum);
+			//Column Width Fit
+		    Sheet shet = workbook.getSheetAt(0);
 			int colNum = 3;
+			shet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//3
 			cell.setCellValue(item.getTicketId());
+			cell.setCellStyle(cellStyleLeftAll);
 			colNum++;
+			shet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//4
-			cell.setCellValue(item.getStartDate());
+			cell.setCellValue(TicketStatus.lookup(item.getStatus()).display());
+			cell.setCellStyle(cellStyleLeftAll);
 			colNum++;
+			shet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//5
 			cell.setCellValue(item.getName());	//Site
+			cell.setCellStyle(cellStyleLeftAll);
 			colNum++;
+			shet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//6
 			cell.setCellValue(item.getAddress1());	//Street
+			cell.setCellStyle(cellStyleLeftAll);
 			colNum++;
+			shet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//7
 			cell.setCellValue(item.getCity());
+			cell.setCellStyle(cellStyleLeftAll);
 			colNum++;
+			shet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//8
 			if(item.getLastDone() != null){
 				cell.setCellValue(item.getLastDone());
+				cell.setCellStyle(cellLeftDate);
 			}
 			colNum++;
+			shet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//9
 			cell.setCellValue(item.getStartDate());
+			cell.setCellStyle(cellLeftDate);
 			colNum++;
+			shet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//10
 			cell.setCellValue(item.getJobNum());	// J#
+			cell.setCellStyle(cellStyleCenterAll);
 			colNum++;
+			shet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//11
 			cell.setCellValue(item.getFrequency());
+			cell.setCellStyle(cellStyleCenterAll);
 			colNum++;
+			shet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//12
 			cell.setCellValue(item.getBudget().doubleValue());
+			cell.setCellStyle(cellRightDecimal);
 			colNum++;
+			shet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//13
 			cell.setCellValue(item.getPpc().doubleValue());
+			cell.setCellStyle(cellRightDecimal);
 			colNum++;
+			shet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//14
 			cell.setCellValue(item.getCod());
+			cell.setCellStyle(cellStyleRightAll);
 			colNum++;
+			shet.autoSizeColumn(colNum);
 			
 			rowNum++;
 		}
