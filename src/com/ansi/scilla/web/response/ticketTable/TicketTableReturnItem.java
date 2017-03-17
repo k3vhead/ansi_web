@@ -16,7 +16,7 @@ public class TicketTableReturnItem extends ReportQuery {
 	private static final long serialVersionUID = 1L;
 
 	public static final String TICKET_ID = "ticket_id";
-	public static final String STATUS ="status";
+	public static final String TICKET_STATUS ="ticket_status";
 	public static final String BILL_TO_NAME ="bill_to_name";
 	public static final String JOB_SITE_NAME ="job_site_name";
 	public static final String JOB_SITE_ADDRESS ="job_site_address";
@@ -38,7 +38,7 @@ public class TicketTableReturnItem extends ReportQuery {
 	
 
 	private Integer ticketId;
-	private String status;
+	private String ticketStatus;
 	private String billToName;
 	private String jobSiteName;
 	private String jobSiteAddress;
@@ -64,7 +64,7 @@ public class TicketTableReturnItem extends ReportQuery {
 	public TicketTableReturnItem(ResultSet rs) throws SQLException {
 		super();
 		this.ticketId = rs.getInt(TICKET_ID);
-		this.status = rs.getString(STATUS);
+		this.ticketStatus = rs.getString(TICKET_STATUS);
 		this.billToName = rs.getString(BILL_TO_NAME);
 		this.jobSiteName = rs.getString(JOB_SITE_NAME);
 		this.jobSiteAddress = rs.getString(JOB_SITE_ADDRESS);
@@ -106,14 +106,14 @@ public class TicketTableReturnItem extends ReportQuery {
 		this.DT_RowId = DT_RowId;
 	}
 
-	@DBColumn(STATUS)
-	public String getStatus() {
-		return status;
+	@DBColumn(TICKET_STATUS)
+	public String getTicketStatus() {
+		return ticketStatus;
 	}
 
-	@DBColumn(STATUS)
-	public void setStatus(String status) {
-		this.status = status;
+	@DBColumn(TICKET_STATUS)
+	public void setTicketStatus(String ticketStatus) {
+		this.ticketStatus = ticketStatus;
 	}
 
 	@DBColumn(BILL_TO_NAME)

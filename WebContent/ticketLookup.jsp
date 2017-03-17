@@ -95,7 +95,7 @@
 			            	if(row.ticketId != null){return (row.ticketId+"");}
 			            } },
 			            { title: "Status", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.status != null){return (row.status+"");}
+			            	if(row.ticketStatus != null){return (row.ticketStatus+"");}
 			            } },
 			            { title: "Div", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.divisionNbr != null){return (row.divisionNbr+"");}
@@ -181,7 +181,7 @@
 								//console.log($data);
 								
 				        		$("#ticketId").val(($data.data.codeList[0]).ticketId);
-				        		$("#status").val(($data.data.codeList[0]).status);
+				        		$("#ticketStatus").val(($data.data.codeList[0]).ticketStatus);
 				        		$("#divisionNbr").val(($data.data.codeList[0]).divisionNbr);
 				        		$("#billToName").val(($data.data.codeList[0]).billToName);
 				        		$("#jobSiteName").val(($data.data.codeList[0]).jobSiteName);
