@@ -10,15 +10,21 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
+import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.common.WebMessages;
+import com.ansi.scilla.web.exceptions.ExpiredLoginException;
+import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
+import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.request.TicketReturnRequest;
 import com.ansi.scilla.web.response.ticket.TicketReturnResponse;
+import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -122,7 +128,7 @@ public class TicketServlet extends AbstractServlet {
 		AnsiURL ansiURL = null;
 		try {
 			ansiURL = new AnsiURL(request, "ticket", (String[])null); //which panel to 122
-			
+			AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
 			Connection conn = null;
 			TicketReturnResponse ticketReturnResponse = null;
 			try {
@@ -141,6 +147,8 @@ public class TicketServlet extends AbstractServlet {
 			}
 		} catch (ResourceNotFoundException e1) {
 			super.sendNotFound(response);
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+			super.sendForbidden(response);
 		}
 	}
 
@@ -156,7 +164,9 @@ public class TicketServlet extends AbstractServlet {
 			String jsonString = super.makeJsonString(request);
 			TicketReturnRequest ticketReturnRequest = (TicketReturnRequest)AppUtils.json2object(jsonString, TicketReturnRequest.class);
 			ansiURL = new AnsiURL(request, "ticket", (String[])null); //  .../ticket/etc
-			SessionUser sessionUser = AppUtils.getSessionUser(request);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+
+			SessionUser sessionUser = sessionData.getUser(); 
 			
 			Ticket ticket = new Ticket();
 			try{
@@ -180,6 +190,8 @@ public class TicketServlet extends AbstractServlet {
 				//send a Bad Ticket message back
 				super.sendNotFound(response);
 			}
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+			super.sendForbidden(response);
 		} catch ( Exception e) {
 			AppUtils.logException(e);
 			throw new ServletException(e);

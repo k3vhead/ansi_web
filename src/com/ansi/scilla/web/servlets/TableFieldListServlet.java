@@ -13,8 +13,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.AppUtils;
+import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.common.ResponseCode;
+import com.ansi.scilla.web.exceptions.ExpiredLoginException;
+import com.ansi.scilla.web.exceptions.NotAllowedException;
+import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.response.code.TableFieldListResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -27,11 +32,15 @@ public class TableFieldListServlet extends AbstractServlet {
 			throws ServletException, IOException {
 		Connection conn = null;
 		try {
-//			conn = AppUtils.getDBCPConn();
-			conn = AppUtils.getConn();
+			conn = AppUtils.getDBCPConn();
+//			conn = AppUtils.getConn();
+			AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+
 			List<String> resultList = doGetWork(conn, request.getRequestURI());			
 			TableFieldListResponse tableFieldListResponse = new TableFieldListResponse( resultList);
 			super.sendResponse(conn, response, ResponseCode.SUCCESS, tableFieldListResponse);
+		} catch ( TimeoutException | ExpiredLoginException | NotAllowedException e) {
+			super.sendForbidden(response);
 		} catch ( RecordNotFoundException e) {
 			super.sendNotFound(response);
 		} catch ( Exception e) {
