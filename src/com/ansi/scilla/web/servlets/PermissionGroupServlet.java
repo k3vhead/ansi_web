@@ -13,16 +13,22 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.db.PermissionGroup;
+import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.common.exceptions.InvalidDeleteException;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.MessageKey;
+import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.common.WebMessages;
+import com.ansi.scilla.web.exceptions.ExpiredLoginException;
+import com.ansi.scilla.web.exceptions.NotAllowedException;
+import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.request.PermGroupRequest;
 import com.ansi.scilla.web.response.permissionGroup.PermissionGroupListResponse;
 import com.ansi.scilla.web.response.permissionGroup.PermissionGroupResponse;
+import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
@@ -38,7 +44,7 @@ public class PermissionGroupServlet extends AbstractServlet {
 	@Override
 	protected void doDelete(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		
+				
 		String url = request.getRequestURI();
 		int idx = url.indexOf("/permissionGroup/");
 		if ( idx > -1 ) {
@@ -47,6 +53,8 @@ public class PermissionGroupServlet extends AbstractServlet {
 			try {
 				conn = AppUtils.getDBCPConn();
 				conn.setAutoCommit(false);
+			
+				SessionData sessionData = AppUtils.validateSession(request, Permission.USER_ADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 				
 				// Figure out what we've got:
 				String myString = url.substring(idx + "/permissionGroup/".length());
@@ -73,6 +81,8 @@ public class PermissionGroupServlet extends AbstractServlet {
 						super.sendNotFound(response);
 					}
 				}
+			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+				super.sendForbidden(response);
 			} catch ( Exception e) {
 				AppUtils.logException(e);
 				throw new ServletException(e);

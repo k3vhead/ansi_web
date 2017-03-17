@@ -89,7 +89,7 @@
 					},
 					statusCode: {
 						403: function($data) {
-							$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+							$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
 						} 
 					},
 					dataType: 'json'

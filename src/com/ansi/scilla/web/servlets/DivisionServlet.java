@@ -15,19 +15,25 @@ import org.apache.commons.lang3.StringUtils;
 //import com.ansi.scilla.common.db.Code;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.DivisionUser;
+import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.common.exceptions.InvalidDeleteException;
 import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.MessageKey;
+import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.common.WebMessages;
+import com.ansi.scilla.web.exceptions.ExpiredLoginException;
+import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
+import com.ansi.scilla.web.exceptions.TimeoutException;
 //import com.ansi.scilla.web.request.CodeRequest;
 import com.ansi.scilla.web.request.DivisionRequest;
 //import com.ansi.scilla.web.response.code.CodeResponse;
 import com.ansi.scilla.web.response.division.DivisionListResponse;
 import com.ansi.scilla.web.response.division.DivisionResponse;
+import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
@@ -61,7 +67,7 @@ public class DivisionServlet extends AbstractServlet {
 		
 		try {
 			AnsiURL url = new AnsiURL(request, REALM, (String[])null);
-			
+			SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 			
 			Connection conn = null;
 			try {
@@ -89,8 +95,11 @@ public class DivisionServlet extends AbstractServlet {
 			} finally {
 				AppUtils.closeQuiet(conn);
 			}
+		
 		} catch (ResourceNotFoundException e1) {
 			super.sendNotFound(response);
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+			super.sendForbidden(response);
 		}
 		
 	}
@@ -101,7 +110,7 @@ public class DivisionServlet extends AbstractServlet {
 				
 		try {
 			AnsiURL url = new AnsiURL(request, REALM, new String[] { ACTION_IS_LIST });
-
+			SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_READ);
 		
 			Connection conn = null;
 			try {
@@ -130,6 +139,8 @@ public class DivisionServlet extends AbstractServlet {
 			
 		} catch (ResourceNotFoundException e) {
 			super.sendNotFound(response);
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+			super.sendForbidden(response);
 		}
 		
 
@@ -161,7 +172,7 @@ public class DivisionServlet extends AbstractServlet {
 		try {
 			String jsonString = super.makeJsonString(request);
 			AnsiURL url = new AnsiURL(request, REALM, new String[] {ACTION_IS_ADD});
-			
+			SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 			Connection conn = null;
 			try {
 				conn = AppUtils.getDBCPConn();
@@ -191,6 +202,8 @@ public class DivisionServlet extends AbstractServlet {
 
 		} catch ( ResourceNotFoundException e) {
 			super.sendNotFound(response);
+		} catch (TimeoutException  | NotAllowedException | ExpiredLoginException e1) {
+			super.sendForbidden(response);
 		}
 		
 	}

@@ -10,11 +10,16 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
+import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.common.WebMessages;
+import com.ansi.scilla.web.exceptions.ExpiredLoginException;
+import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
+import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.response.user.UserResponse;
 import com.ansi.scilla.web.struts.SessionData;
 import com.thewebthing.commons.db2.RecordNotFoundException;
@@ -33,17 +38,11 @@ public class AnsiUserServlet extends AbstractServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
-
-		HttpSession session = request.getSession();
-		if ( session == null ) {
-			super.sendNotAllowed(response);
-		} else {
-			SessionData sessionData = (SessionData)session.getAttribute(SessionData.KEY);
-			if ( sessionData == null ) {
-				super.sendNotAllowed(response);
-			} else {
-				doGetWork(request, response);
-			}
+		try {
+			SessionData sessionData = AppUtils.validateSession(request, Permission.USER_ADMIN, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			doGetWork(request, response);
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+			super.sendForbidden(response);
 		}
 	}
 

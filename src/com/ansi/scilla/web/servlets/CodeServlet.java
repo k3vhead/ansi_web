@@ -11,13 +11,13 @@ import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Code;
+import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.MessageKey;
@@ -64,24 +64,15 @@ public class CodeServlet extends AbstractServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		
 		SessionData sessionData = null;
-		try {
-			sessionData = AppUtils.validateSession(request, Permission.SYSADMIN, 0);
-		} catch (TimeoutException e) {
-			AppUtils.logException(e);
-		} catch (NotAllowedException e) {
-			AppUtils.logException(e);
-		} catch (ExpiredLoginException e) {
-			AppUtils.logException(e);
-		}
-		
-		
-		Logger logger = AppUtils.getLogger();
-		logger.debug(sessionData);
-		String url = request.getRequestURI();
 		Connection conn = null;
 		try {			
-			ParsedUrl parsedUrl = new ParsedUrl(url);
-			conn = AppUtils.getDBCPConn();
+			conn = AppUtils.getDBCPConn();			
+			sessionData = AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			
+			Logger logger = AppUtils.getLogger();
+			logger.debug(sessionData);
+			String url = request.getRequestURI();
+			ParsedUrl parsedUrl = new ParsedUrl(url);			
 			
 			if ( parsedUrl.tableName.equals("list")) {
 				// we're getting all the codes in the database
@@ -91,6 +82,8 @@ public class CodeServlet extends AbstractServlet {
 				CodeListResponse codesListResponse = makeFilteredListResponse(conn, parsedUrl);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, codesListResponse);
 			}
+		} catch (TimeoutException  | NotAllowedException | ExpiredLoginException e) {
+			super.sendForbidden(response);
 		} catch ( RecordNotFoundException e) {
 			super.sendNotFound(response);
 		} catch ( Exception e) {
