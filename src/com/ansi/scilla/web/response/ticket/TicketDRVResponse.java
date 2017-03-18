@@ -14,8 +14,9 @@ import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Footer;
 import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -145,7 +146,7 @@ public class TicketDRVResponse extends MessageResponse {
 		XSSFWorkbook workbook = new XSSFWorkbook();
 		XSSFSheet sheet = workbook.createSheet();
 		CreationHelper createHelper = workbook.getCreationHelper();
-		Date today = new Date();
+		//Date today = new Date();
 		int rowNum = 0;
 		XSSFRow row = null;
 		
@@ -174,14 +175,38 @@ public class TicketDRVResponse extends MessageResponse {
 	    cellStyleFontColor.setFont(font);
 
 		//Bold and Underline
-	    XSSFFont fontStyle = workbook.createFont();
-	    fontStyle.setBold(true);
+	    XSSFFont fontStyleBold = workbook.createFont();
+	    XSSFFont fontStyleItalicBold = workbook.createFont();
+	    
+	    fontStyleBold.setBold(true);
+	    
+	    fontStyleItalicBold.setItalic(true);
+	    fontStyleItalicBold.setBold(true);
+	    
+	    XSSFCellStyle cellLeftBold = workbook.createCellStyle();
+	    cellLeftBold.setAlignment(CellStyle.ALIGN_LEFT);
+	    cellLeftBold.setFont(fontStyleBold);
+	    
+	    XSSFCellStyle cellRightBold = workbook.createCellStyle();
+	    cellRightBold.setAlignment(CellStyle.ALIGN_RIGHT);
+	    cellRightBold.setFont(fontStyleBold);
+	    
+	    XSSFCellStyle cellCenterBold = workbook.createCellStyle();
+	    XSSFCellStyle cellCenterBoldItalic = workbook.createCellStyle();
+	    
+	    cellCenterBold.setAlignment(CellStyle.ALIGN_CENTER);
+	    cellCenterBold.setFont(fontStyleBold);
+	    
+	    cellCenterBoldItalic.setAlignment(CellStyle.ALIGN_CENTER);
+	    cellCenterBoldItalic.setFont(fontStyleItalicBold);
 	    
 	    //Cell Alignment
 	    CellStyle cellStyleLeftAll = workbook.createCellStyle();
 	    cellStyleLeftAll.setAlignment(CellStyle.ALIGN_LEFT);
+	    
 	    CellStyle cellStyleCenterAll = workbook.createCellStyle();
 	    cellStyleCenterAll.setAlignment(CellStyle.ALIGN_CENTER);
+	    
 	    CellStyle cellStyleRightAll = workbook.createCellStyle();
 	    cellStyleRightAll.setAlignment(CellStyle.ALIGN_RIGHT);
 	    
@@ -204,67 +229,13 @@ public class TicketDRVResponse extends MessageResponse {
 	    vertical.setRotation((short)90);
 	    
 		//Footer(page number)
-	    Sheet sht = workbook.createSheet();
-	    Footer footer = sht.getFooter();
+	    Footer footer = sheet.getFooter();
 	    footer.setCenter("Page " + HeaderFooter.page() + " of " + HeaderFooter.numPages());
 	    
 		workbook.setSheetName(0,"DRV");
 		row = sheet.createRow(rowNum);
 		XSSFCell cell = null;
-		cell = row.createCell(3);
-		cell.setCellValue("Created: ");
-		//cell.setCellStyle((CellStyle) fontStyle);
-		cell.setCellStyle(cellStyleLeftAll);
-		cell = row.createCell(4);
-		cell.setCellValue(this.getRunDate());
-		cell.setCellStyle(cellLeftDateTime);
-		cell = row.createCell(6);
-		cell.setCellValue("American National Skyline, Inc.");
-		cell.setCellStyle(cellStyleCenterAll);
-		cell = row.createCell(12);
-		cell.setCellValue("Division: ");
-		//cell.setCellStyle((CellStyle) fontStyle);
-		cell.setCellStyle(cellStyleRightAll);
-		cell = row.createCell(14);
-		cell.setCellValue(this.getDivision().getDivisionNbr() + "-" + this.getDivision().getDivisionCode());
-		cell.setCellStyle(cellStyleRightAll);
-		rowNum++;	//row=1
 		
-		row = sheet.createRow(rowNum);
-		cell = row.createCell(3);
-		cell.setCellValue("Start Date Used");
-		//cell.setCellStyle((CellStyle) fontStyle);
-		cell.setCellStyle(cellStyleLeftAll);
-		cell = row.createCell(6);
-		cell.setCellValue("Detailed Rolling Volume Check List");
-		cell.setCellStyle(cellStyleCenterAll);
-		cell = row.createCell(12);
-		cell.setCellValue("Total Volume for the Month: ");
-		//cell.setCellStyle((CellStyle) fontStyle);
-		cell.setCellStyle(cellStyleRightAll);
-		cell = row.createCell(14);
-		cell.setCellValue(this.getTotalVolume().intValue());
-		cell.setCellStyle(cellRightDecimal);
-		rowNum++;	//row=2
-		
-		row = sheet.createRow(rowNum);
-		cell = row.createCell(3);
-		cell.setCellValue("From: ");
-		//cell.setCellStyle((CellStyle) fontStyle);
-		cell.setCellStyle(cellStyleLeftAll);
-		cell = row.createCell(4);
-		cell.setCellValue(this.getStartDate());
-		cell.setCellStyle(cellLeftDate);
-		cell = row.createCell(12);
-		cell.setCellValue("Total D/L for the Month: ");
-		//cell.setCellStyle((CellStyle) fontStyle);
-		cell.setCellStyle(cellStyleRightAll);
-		cell = row.createCell(14);
-		cell.setCellValue(this.getTotalDL().intValue());
-		cell.setCellStyle(cellRightDecimal);
-		rowNum++;	//row=3
-		
-		row = sheet.createRow(rowNum);
 		cell = row.createCell(0);
 		cell.setCellValue("Ruin");
 		cell.setCellStyle(vertical);
@@ -275,18 +246,19 @@ public class TicketDRVResponse extends MessageResponse {
 		cell.setCellValue("Cancel Job");
 		cell.setCellStyle(vertical);
 		cell = row.createCell(3);
-		cell.setCellValue("To: ");
-		//cell.setCellStyle((CellStyle) fontStyle);
-		cell.setCellStyle(cellStyleLeftAll);
+		cell.setCellValue("Created: ");
+		cell.setCellStyle(cellLeftBold);
 		cell = row.createCell(4);
-		cell.setCellValue(this.getEndDate());
-		cell.setCellStyle(cellLeftDate);
+		cell.setCellValue(this.getRunDate());
+		cell.setCellStyle(cellLeftDateTime);
+		cell = row.createCell(6);
+		cell.setCellValue("American National Skyline, Inc.");
+		cell.setCellStyle(cellCenterBoldItalic);
 		cell = row.createCell(12);
-		cell.setCellValue("Tickets: ");
-		//cell.setCellStyle((CellStyle) fontStyle);
-		cell.setCellStyle(cellStyleRightAll);
+		cell.setCellValue("Division: ");
+		cell.setCellStyle(cellRightBold);
 		cell = row.createCell(14);
-		cell.setCellValue(this.getTicketCount());
+		cell.setCellValue(this.getDivision().getDivisionNbr() + "-" + this.getDivision().getDivisionCode());
 		cell.setCellStyle(cellStyleRightAll);
 		cell = row.createCell(15);
 		cell.setCellValue("Received");
@@ -303,6 +275,60 @@ public class TicketDRVResponse extends MessageResponse {
 		cell = row.createCell(19);
 		cell.setCellValue("Paid");
 		cell.setCellStyle(vertical);
+		
+		rowNum++;	//row=1
+		
+		row = sheet.createRow(rowNum);
+		cell = row.createCell(3);
+		cell.setCellValue("Start Date Used");
+		cell.setCellStyle(cellLeftBold);
+		cell = row.createCell(6);
+		cell.setCellValue("Detailed Rolling Volume Check List");
+		cell.setCellStyle(cellCenterBold);
+		cell = row.createCell(12);
+		cell.setCellValue("Total Volume for the Month: ");
+		cell.setCellStyle(cellRightBold);
+		cell = row.createCell(14);
+		cell.setCellValue(this.getTotalVolume().intValue());
+		cell.setCellStyle(cellRightDecimal);
+		rowNum++;	//row=2
+		
+		row = sheet.createRow(rowNum);
+		cell = row.createCell(3);
+		cell.setCellValue("From: ");
+		cell.setCellStyle(cellLeftBold);
+		cell = row.createCell(4);
+		cell.setCellValue(this.getStartDate());
+		cell.setCellStyle(cellLeftDate);
+		cell = row.createCell(12);
+		cell.setCellValue("Total D/L for the Month: ");
+		cell.setCellStyle(cellRightBold);
+		cell = row.createCell(14);
+		cell.setCellValue(this.getTotalDL().intValue());
+		cell.setCellStyle(cellRightDecimal);
+		rowNum++;	//row=3
+		
+		row = sheet.createRow(rowNum);
+		sheet.addMergedRegion(new CellRangeAddress(0,3,0,0));
+		sheet.addMergedRegion(new CellRangeAddress(0,3,1,1));
+		sheet.addMergedRegion(new CellRangeAddress(0,3,2,2));
+		cell = row.createCell(3);
+		cell.setCellValue("To: ");
+		cell.setCellStyle(cellLeftBold);
+		cell = row.createCell(4);
+		cell.setCellValue(this.getEndDate());
+		cell.setCellStyle(cellLeftDate);
+		cell = row.createCell(12);
+		cell.setCellValue("Tickets: ");
+		cell.setCellStyle(cellRightBold);
+		cell = row.createCell(14);
+		cell.setCellValue(this.getTicketCount());
+		cell.setCellStyle(cellStyleRightAll);
+		sheet.addMergedRegion(new CellRangeAddress(0,3,15,15));
+		sheet.addMergedRegion(new CellRangeAddress(0,3,16,16));
+		sheet.addMergedRegion(new CellRangeAddress(0,3,17,17));
+		sheet.addMergedRegion(new CellRangeAddress(0,3,18,18));
+		sheet.addMergedRegion(new CellRangeAddress(0,3,19,19));
 		rowNum++;	//row=4
 		
 		row = sheet.createRow(rowNum);
@@ -358,77 +384,82 @@ public class TicketDRVResponse extends MessageResponse {
 		cell.setCellStyle(cellStyleBackColor);
 		cell = row.createCell(19);
 		cell.setCellStyle(cellStyleBackColor);
-		
 		rowNum++;	//row=5
+		
+//		//Repeat above rows on printsheets
+		sheet.setRepeatingRows(CellRangeAddress.valueOf("1:5"));
+//		
+//		//Freezing above rows
+		sheet.createFreezePane(19, 5, 0, 0);
 		
 		for (TicketDRVResponseItem item : this.getResponseItemList()) {
 			row = sheet.createRow(rowNum);
 			//Column Width Fit
-		    Sheet shet = workbook.getSheetAt(0);
+		    sheet = workbook.getSheetAt(0);
 			int colNum = 3;
-			shet.autoSizeColumn(colNum);
+			sheet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//3
 			cell.setCellValue(item.getTicketId());
 			cell.setCellStyle(cellStyleLeftAll);
 			colNum++;
-			shet.autoSizeColumn(colNum);
+			sheet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//4
 			cell.setCellValue(TicketStatus.lookup(item.getStatus()).display());
 			cell.setCellStyle(cellStyleLeftAll);
 			colNum++;
-			shet.autoSizeColumn(colNum);
+			sheet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//5
 			cell.setCellValue(item.getName());	//Site
 			cell.setCellStyle(cellStyleLeftAll);
 			colNum++;
-			shet.autoSizeColumn(colNum);
+			sheet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//6
 			cell.setCellValue(item.getAddress1());	//Street
 			cell.setCellStyle(cellStyleLeftAll);
 			colNum++;
-			shet.autoSizeColumn(colNum);
+			sheet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//7
 			cell.setCellValue(item.getCity());
 			cell.setCellStyle(cellStyleLeftAll);
 			colNum++;
-			shet.autoSizeColumn(colNum);
+			sheet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//8
 			if(item.getLastDone() != null){
 				cell.setCellValue(item.getLastDone());
 				cell.setCellStyle(cellLeftDate);
 			}
 			colNum++;
-			shet.autoSizeColumn(colNum);
+			sheet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//9
 			cell.setCellValue(item.getStartDate());
 			cell.setCellStyle(cellLeftDate);
 			colNum++;
-			shet.autoSizeColumn(colNum);
+			sheet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//10
 			cell.setCellValue(item.getJobNum());	// J#
 			cell.setCellStyle(cellStyleCenterAll);
 			colNum++;
-			shet.autoSizeColumn(colNum);
+			sheet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//11
 			cell.setCellValue(item.getFrequency());
 			cell.setCellStyle(cellStyleCenterAll);
 			colNum++;
-			shet.autoSizeColumn(colNum);
+			sheet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//12
 			cell.setCellValue(item.getBudget().doubleValue());
 			cell.setCellStyle(cellRightDecimal);
 			colNum++;
-			shet.autoSizeColumn(colNum);
+			sheet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//13
 			cell.setCellValue(item.getPpc().doubleValue());
 			cell.setCellStyle(cellRightDecimal);
 			colNum++;
-			shet.autoSizeColumn(colNum);
+			sheet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//14
 			cell.setCellValue(item.getCod());
 			cell.setCellStyle(cellStyleRightAll);
 			colNum++;
-			shet.autoSizeColumn(colNum);
+			sheet.autoSizeColumn(colNum);
 			
 			rowNum++;
 		}
