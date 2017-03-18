@@ -77,7 +77,7 @@ public class TicketDRVServlet extends AbstractServlet {
 				}
 			}
 			ticketDRVResponse.setWebMessages(webMessages);
-			if(format.equalsIgnoreCase("xls")){
+			if(!StringUtils.isBlank(format) && format.equalsIgnoreCase("xls")){
 				sendAsXLS(response, ticketDRVResponse);
 			} else{
 				super.sendResponse(conn, response, responseCode, ticketDRVResponse);
