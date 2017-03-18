@@ -239,12 +239,15 @@ public class TicketDRVResponse extends MessageResponse {
 		cell = row.createCell(0);
 		cell.setCellValue("Ruin");
 		cell.setCellStyle(vertical);
+		sheet.autoSizeColumn(0);
 		cell = row.createCell(1);
 		cell.setCellValue("Reject/Reschedule");
 		cell.setCellStyle(vertical);
+		sheet.autoSizeColumn(1);
 		cell = row.createCell(2);
 		cell.setCellValue("Cancel Job");
 		cell.setCellStyle(vertical);
+		sheet.autoSizeColumn(2);
 		cell = row.createCell(3);
 		cell.setCellValue("Created: ");
 		cell.setCellStyle(cellLeftBold);
@@ -263,19 +266,23 @@ public class TicketDRVResponse extends MessageResponse {
 		cell = row.createCell(15);
 		cell.setCellValue("Received");
 		cell.setCellStyle(vertical);
+		sheet.autoSizeColumn(15);
 		cell = row.createCell(16);
 		cell.setCellValue("Ran");
 		cell.setCellStyle(vertical);
+		sheet.autoSizeColumn(16);
 		cell = row.createCell(17);
 		cell.setCellValue("Submitted");
 		cell.setCellStyle(vertical);
+		sheet.autoSizeColumn(17);
 		cell = row.createCell(18);
 		cell.setCellValue("Invoiced");
 		cell.setCellStyle(vertical);
+		sheet.autoSizeColumn(18);
 		cell = row.createCell(19);
 		cell.setCellValue("Paid");
 		cell.setCellStyle(vertical);
-		
+		sheet.autoSizeColumn(19);
 		rowNum++;	//row=1
 		
 		row = sheet.createRow(rowNum);
