@@ -41,6 +41,7 @@ public class TicketDRVServlet extends AbstractServlet {
 
 			conn = AppUtils.getDBCPConn();
 			String month = request.getParameter("month");
+			String format = request.getParameter("format");
 			if(StringUtils.isBlank(month)||!StringUtils.isNumeric(month)||Integer.valueOf(month)>12){
 				month = String.valueOf(thisMonth);
 				System.out.println("TicketDRVServlet: this month:" + month);
@@ -76,7 +77,11 @@ public class TicketDRVServlet extends AbstractServlet {
 				}
 			}
 			ticketDRVResponse.setWebMessages(webMessages);
-			super.sendResponse(conn, response, responseCode, ticketDRVResponse);
+			if(format.equalsIgnoreCase("xls")){
+				sendAsXLS(response, ticketDRVResponse);
+			} else{
+				super.sendResponse(conn, response, responseCode, ticketDRVResponse);
+			}
 		} catch(RecordNotFoundException recordNotFoundEx) {
 			super.sendNotFound(response);
 		} catch ( Exception e) {
