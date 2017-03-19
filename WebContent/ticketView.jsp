@@ -134,7 +134,6 @@
         		var dataTable = $('#ticketDRV').DataTable( {
         			"bDestroy":			true,
         			"processing": 		true,
-        			"sAjaxDataSource":	"data.resonseItemList",
         			"autoWidth": 		false,
         	        "scrollCollapse": 	true,
         	        "scrollX": 			true,
@@ -156,9 +155,8 @@
         	         ],
         	        "paging": true,
         	        "ajax": {
-        	        	"type": "GET",
-        				"url": "ticketDRV",
-        				"data": "{'month':$selectedMonth,'divisionId':$selectedDiv}",
+        				"url": "/ansi_web/ticketDRV?month=3&divisionId=9",
+        				"dataSrc": "data.responseItemList",
 			        	},
 			        columns: [
 			            { title: "Ticket", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
