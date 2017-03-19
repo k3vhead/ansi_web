@@ -57,7 +57,7 @@
         <script type="text/javascript" src="js/ansi_utils.js"></script>
        
         <script type="text/javascript">
-		$(function() {
+        $(document).ready(function() {
 			console.debug("Starting");
 			// Populate the division list
         	$divisionList = ANSI_UTILS.getDivisionList();
@@ -66,9 +66,6 @@
 			$.each($divisionList, function(index, val) {
 				$("#divisionId").append(new Option(val.divisionCode, val.divisionId));
 			});
-			// Make the dropdowns pretty
-			//$("#divisionId").selectmenu();
-			//$("#month").selectmenu();
 
 			
 			$("select").change(function () {
@@ -111,11 +108,15 @@
         	
         	console.debug("Starting 3");
         	function populateSummary($data) {
+        		//console.log($data);
+        	
 				$("#division").html($data.division.divisionNbr + "-" + $data.division.divisionCode);
 				$("#startDate").html($data.startDate);
 				$("#totalVolume").html($data.totalVolume);
 				$("#runDate").html($data.runDate);
 				$("#summaryTable").fadeIn(4000);
+				populateDataTable($data);
+				
         	}
         	
 			$('.ScrollTop').click(function() {
@@ -127,10 +128,12 @@
              
 			$('#ticketDRV').dataTable().fnDestroy();
 			
-            $(document).ready(function() {
+           
         	var dataTable = null;
         	
         	function populateDataTable($data) {
+        		
+        	//console.log($data);
         		var dataTable = $('#ticketDRV').DataTable( {
         			"bDestroy":			true,
         			"processing": 		true,
@@ -154,10 +157,7 @@
         	            { className: "dt-center", "targets": [1,7,8] },
         	         ],
         	        "paging": true,
-        	        "ajax": {
-        				"url": "/ansi_web/ticketDRV?month=3&divisionId=9",
-        				"dataSrc": "data.responseItemList",
-			        	},
+        	        data: $data.responseItemList,
 			        columns: [
 			            { title: "Ticket", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.ticketId != null){return (row.ticketId+"");}
@@ -216,7 +216,7 @@
 				        $(this).css("max-height", "20px");
 				    });
 					
-            	populateDataTable();
+            	//populateDataTable();
             }; 
             console.debug("Starting 7");
             function initComplete (){
@@ -281,7 +281,7 @@
         	//	}).fail(function (jqXHR, textStatus, errorThrown) {
         		// needs to implement if it fails
         	//	});
-        	})
+        	
                 
 				//function doFunctionBinding() {
 					//$( ".editAction" ).on( "click", function($clickevent) {
@@ -327,10 +327,11 @@
 							//dataType: 'json'
 						//});
 					//console.log("Edit Button Clicked: " + $rowid);
-					});
+				
 				//})
 			//});
 		console.debug("Starting 9");
+        })
        </script>
         
 
