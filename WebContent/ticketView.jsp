@@ -76,11 +76,7 @@
         		}
         	});
         	
-        	
-        	
-        	
-        	
-        	
+        	        	
         	console.debug("Starting 2");
         	function doPopulate($selectedDiv, $selectedMonth) {
         		var $outbound = {'month':$selectedMonth,'divisionId':$selectedDiv};
@@ -208,8 +204,6 @@
         	
         	init();
         			
-        			
-            
             function init(){
             	$.each($('input'), function () {
 				        $(this).css("height","20px");
@@ -233,7 +227,7 @@
         	
         	$("#doPopulate").click(function() { 
         		var dataTable = $('#ticketDRV').DataTable();
-        		dataTable.ajax.reload();
+        		//dataTable.ajax.reload();
         		var $selectedMonth = $('#month option:selected').val();  
 				var $selectedDiv = $('#divisionId option:selected').val();
         		if ($selectedMonth != '' && $selectedDiv != '') {
