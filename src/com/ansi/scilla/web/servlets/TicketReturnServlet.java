@@ -9,8 +9,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.AppUtils;
+import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.common.ResponseCode;
+import com.ansi.scilla.web.exceptions.ExpiredLoginException;
+import com.ansi.scilla.web.exceptions.NotAllowedException;
+import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.response.ticket.TicketReturnListResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -42,43 +47,48 @@ public class TicketReturnServlet extends AbstractServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String url = request.getRequestURI();
-		System.out.println("TicketReturn(): doGet(): Url:" + url);
-		int idx = url.indexOf("/ticketReturn/");
-		if ( idx > -1 ) {
-			String myString = url.substring(idx + "/ticketReturn/".length());
-			String[] urlPieces = myString.split("/");
-			System.out.println("TicketReturn(): doGet(): myString:" + myString);
-			if ( StringUtils.isBlank(urlPieces[0])) { // there is nothing to do
-				System.out.println("TicketReturn(): doGet(): nothing to do");
-				super.sendNotFound(response);
-			} else { // Figure out what we've got
-				// if urlPieces[0] is numeric this is a ticketId
-				if ( StringUtils.isNumeric(urlPieces[0])) { // this is a ticket id
-					Integer ticketId = Integer.valueOf(urlPieces[0]);
-					System.out.println("TicketReturn(): doGet(): ticketId:" + ticketId);
-					Connection conn = null;
-					try {
-						conn = AppUtils.getDBCPConn();
-
-						TicketReturnListResponse ticketReturnListResponse = new TicketReturnListResponse(conn, ticketId);
-						super.sendResponse(conn, response, ResponseCode.SUCCESS, ticketReturnListResponse);
-					} catch(RecordNotFoundException recordNotFoundEx) {
-						super.sendNotFound(response);
-					} catch ( Exception e) {
-						AppUtils.logException(e);
-						throw new ServletException(e);
-					} finally {
-						AppUtils.closeQuiet(conn);
-					}
-
-				} else { // not a valid ticketId so we cannot find it
-					System.out.println("TicketReturn(): doGet(): not a valid ticket");
+		try {
+			AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			int idx = url.indexOf("/ticketReturn/");
+			if ( idx > -1 ) {
+				String myString = url.substring(idx + "/ticketReturn/".length());
+				String[] urlPieces = myString.split("/");
+				System.out.println("TicketReturn(): doGet(): myString:" + myString);
+				if ( StringUtils.isBlank(urlPieces[0])) { // there is nothing to do
+					System.out.println("TicketReturn(): doGet(): nothing to do");
 					super.sendNotFound(response);
+				} else { // Figure out what we've got
+					// if urlPieces[0] is numeric this is a ticketId
+					if ( StringUtils.isNumeric(urlPieces[0])) { // this is a ticket id
+						Integer ticketId = Integer.valueOf(urlPieces[0]);
+						System.out.println("TicketReturn(): doGet(): ticketId:" + ticketId);
+						Connection conn = null;
+						try {
+							conn = AppUtils.getDBCPConn();
+
+							TicketReturnListResponse ticketReturnListResponse = new TicketReturnListResponse(conn, ticketId);
+							super.sendResponse(conn, response, ResponseCode.SUCCESS, ticketReturnListResponse);
+						} catch(RecordNotFoundException recordNotFoundEx) {
+							super.sendNotFound(response);
+						} catch ( Exception e) {
+							AppUtils.logException(e);
+							throw new ServletException(e);
+						} finally {
+							AppUtils.closeQuiet(conn);
+						}
+
+					} else { // not a valid ticketId so we cannot find it
+						System.out.println("TicketReturn(): doGet(): not a valid ticket");
+						super.sendNotFound(response);
+					}
 				}
+			} else {
+				super.sendNotFound(response);
 			}
-		} else {
-			super.sendNotFound(response);
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+			super.sendForbidden(response);
 		}
+
 	}
 
 

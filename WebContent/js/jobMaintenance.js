@@ -136,7 +136,8 @@ $( document ).ready(function() {
 							$returnValue = {};
 						},
 						500: function($data) {
-							
+							$("#globalMsg").html("System Error: Contact Support");
+							$returnValue={};
 						}
 					},
 					dataType: 'json',

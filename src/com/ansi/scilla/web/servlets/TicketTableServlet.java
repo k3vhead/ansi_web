@@ -128,6 +128,7 @@ public class TicketTableServlet extends AbstractServlet {
 		    String sql = "select count(*)"
 					+ " from ticket";
 			Statement s = conn.createStatement();
+					
 			ResultSet rs0 = s.executeQuery(sql);
 			if(rs0.next()){
 		        total = rs0.getInt(1);
