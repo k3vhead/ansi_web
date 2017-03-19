@@ -79,15 +79,10 @@
         		}
         	});
         	
-        	$("#doPopulate").click(function() { 
-        		var $selectedMonth = $('#month option:selected').val();  
-				var $selectedDiv = $('#divisionId option:selected').val();
-        		if ($selectedMonth != '' && $selectedDiv != '') {
-        			doPopulate($selectedDiv, $selectedMonth)
-        		} else {
-        			console.debug("Not populating");
-        		}
-        	});
+        	
+        	
+        	
+        	
         	
         	console.debug("Starting 2");
         	function doPopulate($selectedDiv, $selectedMonth) {
@@ -100,7 +95,6 @@
     				data: $outbound,
     				success: function($data) {
     					populateSummary($data.data);
-    					populateDataTable($data.data);
     				},
     				statusCode: {
     					403: function($data) {
@@ -128,43 +122,25 @@
 				$('html, body').animate({scrollTop: 0}, 800);
       	  		return false;
       	    });
-        	
-        	function addRow(index, $ticketDRV) {	
-				var $rownum = index + 1;
-       			rowTd = makeRow($ticketDRV, $rownum);
-       			row = '<tr class="dataRow">' + rowTd + "</tr>";
-       			$('#summaryTable').append(row);
-			}
-		
-       
-               	function makeRow($division, $rownum) {
-				var row = "";
-				row = row + '<td>' + $ticketDRV.divisionId + '</td>'; 
-				row = row + '<td>' + $ticketDRV.month + '</td>';    			
-				return row;
-			}
-        	
-               	console.debug("Starting 4");
              
              
              
-             
+			$('#ticketDRV').dataTable().fnDestroy();
+			
             $(document).ready(function() {
         	var dataTable = null;
         	
-        	function populateDataTable($data){
+        	function populateDataTable($data) {
         		var dataTable = $('#ticketDRV').DataTable( {
+        			"bDestroy":			true,
         			"processing": 		true,
-        	        "serverSide": 		true,
-        	        "autoWidth": 		false,
-        	        "deferRender": 		true,
+        			"sAjaxDataSource":	"data.resonseItemList",
+        			"autoWidth": 		false,
         	        "scrollCollapse": 	true,
         	        "scrollX": 			true,
-        	        "bFilter":			true,        	        
         	        rowId: 				'dt_RowId',
         	        dom: 				'Bfrtip',
         	        "searching": 		true,
-        	        "destroy":			true,
         	        lengthMenu: [
         	            [ 10, 50, 100, 500, 1000 ],
         	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ],
@@ -179,13 +155,10 @@
         	            { className: "dt-center", "targets": [1,7,8] },
         	         ],
         	        "paging": true,
-			        "aoColumns": [
-			                { "mData": null },
-			         ],
         	        "ajax": {
-			        	"url": "ticketDRV",
-			        	"data": "$outbound",
-			        	"type": "GET",
+        	        	"type": "GET",
+        				"url": "ticketDRV",
+        				"data": "{'month':$selectedMonth,'divisionId':$selectedDiv}",
 			        	},
 			        columns: [
 			            { title: "Ticket", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
@@ -229,11 +202,8 @@
 			            } },
 			            ],
 			            "initComplete": function(settings, json) {
-			            	//console.log(json);
-			            	doFunctionBinding();
 			            },
 			            "drawCallback": function( settings ) {
-			            	doFunctionBinding();
 			            }
 			    } );
         	}
@@ -248,7 +218,7 @@
 				        $(this).css("max-height", "20px");
 				    });
 					
-					populateDataTable();
+            	populateDataTable();
             }; 
             console.debug("Starting 7");
             function initComplete (){
@@ -259,6 +229,61 @@
               $('#TicketDRV thead').append(r);
               $('#divisionSelect').css('text-align', 'center');
             }
+            
+            
+
+        	
+        	$("#doPopulate").click(function() { 
+        		var dataTable = $('#ticketDRV').DataTable();
+        		dataTable.ajax.reload();
+        		var $selectedMonth = $('#month option:selected').val();  
+				var $selectedDiv = $('#divisionId option:selected').val();
+        		if ($selectedMonth != '' && $selectedDiv != '') {
+        			doPopulate($selectedDiv, $selectedMonth)
+        		} else {
+        			console.debug("Not populating");
+        		}
+        	});
+            
+            //function doPopulate($selectedDiv, $selectedMonth) {
+        		//var $outbound = {'month':$selectedMonth,'divisionId':$selectedDiv};
+        		//console.debug($outbound);
+        		
+        		//var jqxhr = $.ajax({
+    			//	type: 'GET',
+    			//	url: 'ticketDRV',
+    				//data: $outbound,
+    				//success: function($data) {
+    				//	populateDataTable($data.data);
+    				//},
+    				//statusCode: {
+    				//	403: function($data) {
+    				//		$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+    				//	},
+    				//	500: function($data) {
+             	    	//	$("#globalMsg").html("Unhandled Exception").fadeIn(10).fadeOut(6000);
+             	    //	} 
+    				//},
+    				//dataType: 'json'
+    			//});
+            	
+        	//}
+            
+            
+            //function doPopulate($selectedDiv, $selectedMonth) {
+        	//	var $outbound = {'month':$selectedMonth,'divisionId':$selectedDiv};
+        		//console.debug($outbound);
+        	//$("#doPopulate").on("click", function (event) {
+        	//	$.ajax({
+        	//	url: 'ticketDRV',
+        		//dataSrc: 'data.responseItemList'
+        		//}).done(function (result) {
+        		//Table.clear().draw();
+        	//	Table.rows.add(result).draw();
+        	//	}).fail(function (jqXHR, textStatus, errorThrown) {
+        		// needs to implement if it fails
+        	//	});
+        	})
                 
 				//function doFunctionBinding() {
 					//$( ".editAction" ).on( "click", function($clickevent) {
@@ -304,8 +329,9 @@
 							//dataType: 'json'
 						//});
 					//console.log("Edit Button Clicked: " + $rowid);
-				})
-			});
+					});
+				//})
+			//});
 		console.debug("Starting 9");
        </script>
         
