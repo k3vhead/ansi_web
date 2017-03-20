@@ -161,13 +161,13 @@ td.jobTableCell {
     
     <tiles:put name="content" type="string">
     	<h1>Quote Maintenance</h1>
-    	<div id="loadingDiv">Loading...</div>
+    	<div id="loadingDiv"><i class='fa fa-refresh fa-spin'></i></div>
 		<table id="quoteTable" style="display:none;">
 			<tr>
 				<td colspan="2">
 					<table >
 						<tr>
-							<td><input type="button" name="modifyButton" value="Modify" class="quoteButton"/></td>
+							<td><input type="button" name="modifyQuoteButton" value="Modify" class="quoteButton"/></td>
 							<td><span class="labelSpanSmall">Manager:</span>
 								<input type="text" name="manager"  style="width:150px" disabled="disabled"/>
 							</td>
@@ -181,7 +181,7 @@ td.jobTableCell {
 							<td rowspan="2" align="right" style="padding-right:10px;"><input type="button" name="printButton" value="Print" class="quoteButton"/></td>
 						</tr>
 						<tr>
-							<td><input type="button" name="copyButton" value="Copy" class="quoteButton"/></td>
+							<td><input type="button" name="copyQuoteButton" value="Copy" class="quoteButton"/></td>
 							<td><span class="labelSpanSmall">Lead Type:</span>
 								<select name="leadType" class="quoteSelect">
 									<option value=""></option>
@@ -196,7 +196,7 @@ td.jobTableCell {
 							<td>R:&nbsp;&nbsp;<input type="text" name="revision"  style="width:40px"/></td>
 						</tr>
 						<tr>
-							<td>&nbsp;</td>
+							<td><input type="button" name="newQuoteButton" value="New" class="quoteButton"/></td>
 							<td>&nbsp;</td>
 							
 							<td><span class="labelSpan">Proposed Date:</span>
@@ -230,7 +230,7 @@ td.jobTableCell {
 			</tr>
 			<tr>
 				<td>
-				<div id="loadingJobsDiv" style="display:none;">Loading Jobs...</div>
+				<div id="loadingJobsDiv" style="display:none;"><i class='fa fa-refresh fa-spin'></i></div>
 					<table style="border:solid 1px #000000; margin-top:8px;" id="jobPanelHolder">
 						<tbody>
 						</tbody>
@@ -239,7 +239,7 @@ td.jobTableCell {
 			</tr>
 			<tr>
 				<td>
-    				<input type="button" id="addJobRow" class="prettyWideButton" value="New" />
+    				<input type="button" id="addJobRow" class="prettyWideButton" value="New Job" />
 				</td>
 			</tr>
 			<tr>

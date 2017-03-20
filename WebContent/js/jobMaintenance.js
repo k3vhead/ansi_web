@@ -105,7 +105,13 @@ $( document ).ready(function() {
 					JOBSCHEDULE.init($namespace+"_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
 					JOBINVOICE.init($namespace+"_jobInvoice", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, $jobDetail);
 					JOBAUDIT.init($namespace+"_jobAudit", $jobDetail);
+					$("#"+$namespace+"_jobPanel_jobLink").attr("href", "jobMaintenance.html?id="+$jobId);
+					$("#"+$namespace+"_jobPanel_jobLink").text($jobId);
 					//$(".addressTable").remove();
+					$.each($('input'), function () {
+				        $(this).css("height","20px");
+				        $(this).css("max-height", "20px");
+				    });
 				},
 				statusCode: {
 					403: function($data) {
@@ -377,6 +383,7 @@ $( document ).ready(function() {
 				});
 				if($("#" + $namespace + "_divisionId").is("select")){
 					JOBPANEL.setDivisionList($namespace, $divisionList);
+					$("#" + $namespace + "_divisionId").selectmenu({ width : '150px', maxHeight: '400 !important', style: 'dropdown'});
 				}
 			}
 			JOBPANEL.initActivateModal($namespace, $modalNamespace);
@@ -402,8 +409,8 @@ $( document ).ready(function() {
 				if($("#" + $namespace + "_divisionId").is("span")){
 				  ANSI_UTILS.setTextValue($namespace, "divisionId", $divisionLookup[$jobDetail.divisionId]);
 				} else {
-					$("#" + $namespace + "_divisionId").val($divisionLookup[$jobDetail.divisionId]);
-					//$("#" + $namespace + "_divisionId").selectmenu("refresh");
+					$("#" + $namespace + "_divisionId").val($jobDetail.divisionId);
+					$("#" + $namespace + "_divisionId").selectmenu("refresh");
 				}
 				ANSI_UTILS.setTextValue($namespace, "quoteId", $jobDetail.jobId);
 				

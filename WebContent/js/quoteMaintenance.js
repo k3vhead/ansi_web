@@ -41,7 +41,7 @@ $( document ).ready(function() {
 				ADDRESSPANEL.init("jobSite", JOB_DATA.countryList);
 				ADDRESSPANEL.init("billTo", JOB_DATA.countryList);
 				
-
+				console.log(ANSI_UTILS.getCodes("quote","account_type"));
 				QUOTEUTILS.setSelectMenu("accountType",ANSI_UTILS.getCodes("quote","account_type"));
 				QUOTEUTILS.setSelectMenu("leadType",ANSI_UTILS.getCodes("quote","lead_type"));
 				
@@ -63,6 +63,24 @@ $( document ).ready(function() {
 						$("select[name='division']").val($quoteData.divisionId);
 						$("select[name='division").selectmenu("refresh");
 						
+					//console.log("Account Type: "+ $quoteData.accountType);
+					//console.log(($quoteData.accountType).length < 128);
+					if($quoteData.accountType.length < 128){
+						$("select[name='accountType']").val($quoteData.accountType);
+						$("select[name='accountType").selectmenu("refresh");
+					} else {
+						$("select[name='leadType']").val(null);
+						$("select[name='leadType").selectmenu("refresh");
+					}
+					
+					if($quoteData.leadType.length < 128){
+						$("select[name='leadType']").val($quoteData.leadType);
+						$("select[name='leadType").selectmenu("refresh");
+					} else {
+						$("select[name='leadType']").val(null);
+						$("select[name='leadType").selectmenu("refresh");
+					}
+					
 					if($quoteData.proposalDate != ''){
 						$("input[name='proposalDate']").val($quoteData.proposalDate);
 					}
@@ -81,11 +99,12 @@ $( document ).ready(function() {
 					$.each($jobs, function($index, $job) {
 						//console.log($currentRow);
 						//addAJob($currentRow);
-						
+						console.log("Index:"+$index);
 						JOB_UTILS.panelLoadQuote($currentRow, $job.jobId, $index);
 						//$(".addressTable").remove();
+						console.log("#"+$currentRow+"_jobPanel_jobLink");
 						
-						console.log(QUOTEUTILS.getModal($currentRow));
+						//console.log(QUOTEUTILS.getModal($currentRow));
 						$currentRow++;
 					});
 					
@@ -154,6 +173,19 @@ $( document ).ready(function() {
 					QUOTEUTILS.save();
 //					QUOTEUTILS.exit();
 	            });
+				$("input[name=newQuoteButton]").button().on( "click", function(event) {
+					event.preventDefault();
+					window.location.replace("quoteMaintenance.html");
+	            });
+				$("input[name=copyQuoteButton]").button().on( "click", function(event) {
+					event.preventDefault();
+					console.log("Copy Quote");
+	            });
+				$("input[name=modifyQuoteButton]").button().on( "click", function(event) {
+					event.preventDefault();
+					console.log("Modify Quote");
+	            });
+				
 			},
 			save: function(){
 				$outbound = {};
@@ -239,6 +271,7 @@ $( document ).ready(function() {
 						var $nextDue = null;
 						var $lastCreated = null;
 						//console.log(JOB_DATA);
+						
 						JOBPANEL.init($row+"_jobPanel", JOB_DATA.divisionList, "activateModal", $jobDetail);
 						JOBPROPOSAL.init($row+"_jobProposal", JOB_DATA.jobFrequencyList, $jobDetail);
 						JOBACTIVATION.init($row+"_jobActivation", JOB_DATA.buildingTypeList, $jobDetail);
@@ -291,8 +324,9 @@ $( document ).ready(function() {
 				$select.selectmenu({ width : '150px', maxHeight: '400 !important', style: 'dropdown'});
 				
 				$('option', $select).remove();
+				$select.append(new Option("",null));
 				$.each($data.codeList, function($index, $val) {
-					$select.append(new Option($val.displayValue));
+					$select.append(new Option($val.displayValue,$val.value));
 				});
 
 				$select.selectmenu();
