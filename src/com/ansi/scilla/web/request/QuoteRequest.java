@@ -73,8 +73,8 @@ import com.thewebthing.commons.lang.JsonException;
 			this.address = address;
 		}
  
-		@RequiredForAdd
-		@RequiredForUpdate
+//		@RequiredForAdd
+//		@RequiredForUpdate
 		public String getAddress() {
 			return this.address;
 		}
@@ -116,7 +116,7 @@ import com.thewebthing.commons.lang.JsonException;
 			this.leadType = leadType;
 		}
 
-		@RequiredForAdd
+
 		@RequiredForUpdate
 		public String getLeadType() {
 			return this.leadType;
@@ -147,8 +147,8 @@ import com.thewebthing.commons.lang.JsonException;
 			this.name = name;
 		}
 
-		@RequiredForAdd
-		@RequiredForUpdate
+//		@RequiredForAdd
+//		@RequiredForUpdate
 		public String getName() {
 			return this.name;
 		}
@@ -158,8 +158,8 @@ import com.thewebthing.commons.lang.JsonException;
 			this.paymentTerms = paymentTerms;
 		}
 
-		@RequiredForAdd
-		@RequiredForUpdate
+//		@RequiredForAdd
+//		@RequiredForUpdate
 		public String getPaymentTerms() {
 			return this.paymentTerms;
 		}
@@ -206,7 +206,6 @@ import com.thewebthing.commons.lang.JsonException;
 			this.quoteNumber = quoteNumber;
 		}
 
-		@RequiredForAdd
 		@RequiredForUpdate
 		public Integer getQuoteNumber() {
 			return this.quoteNumber;
@@ -217,7 +216,6 @@ import com.thewebthing.commons.lang.JsonException;
 			this.revisionNumber = revisionNumber;
 		}
 
-		@RequiredForAdd
 		@RequiredForUpdate
 		public String getRevisionNumber() {
 			return this.revisionNumber;
@@ -247,7 +245,6 @@ import com.thewebthing.commons.lang.JsonException;
 			this.status = status;
 		}
 
-		@RequiredForAdd
 		@RequiredForUpdate
 		public Integer getStatus() {
 			return this.status;

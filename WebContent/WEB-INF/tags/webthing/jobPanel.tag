@@ -29,10 +29,18 @@
 	<table id="<%=namespace%>_jobTable" style="width:1300px;">
 		<tr>
 			<td class="jobTableCell" colspan="2" >
-				<bean:message key="rpt.hdr.job" /> <input type="text" name="jobId" id="<%= namespace %>_jobId" />
+				<bean:message key="rpt.hdr.job" /> 
+				
+				<% if ( page.equals("QUOTE") ) { %>
+						<input type="text" name="jobId" id="<%= namespace %>_jobId" disabled="disabled"/>
+				<% } else { %>
+						<input type="text" name="jobId" id="<%= namespace %>_jobId" /> 						
+				<% } %>
+				
+				
 				<bean:message key="rpt.hdr.status" />:
 					<% if ( page.equals("QUOTE") ) { %>
-						<input type="text" name="jobStatus" id="<%= namespace %>_jobStatus" />
+						<input type="text" name="jobStatus" id="<%= namespace %>_jobStatus" disabled="disabled"/>
 					<% } else { %>
 						<span id="<%= namespace %>_jobStatus"></span> 						
 					<% } %>

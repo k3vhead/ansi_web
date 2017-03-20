@@ -169,7 +169,9 @@ td.jobTableCell {
 						<tr>
 							<td><input type="button" name="modifyQuoteButton" value="Modify" class="quoteButton"/></td>
 							<td><span class="labelSpanSmall">Manager:</span>
-								<input type="text" name="manager"  style="width:150px" disabled="disabled"/>
+								<select name="manager" id="manager" class="quoteSelect">
+									<option value=""></option>
+								</select>
 							</td>
 							<td><span class="labelSpan">Division:</span>
 								<select name="division" id="division" class="quoteSelect">
@@ -197,7 +199,7 @@ td.jobTableCell {
 						</tr>
 						<tr>
 							<td><input type="button" name="newQuoteButton" value="New" class="quoteButton"/></td>
-							<td>&nbsp;</td>
+							<td>Signed By:&nbsp;&nbsp;<input type="text" name="signedBy"  style="width:170px" disabled="disabled"/></td>
 							
 							<td><span class="labelSpan">Proposed Date:</span>
 								<input type="text" name="proposalDate"  style="width:95px" disabled="disabled"/>
