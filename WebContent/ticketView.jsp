@@ -52,16 +52,17 @@
 			.summaryHdr {
 				font-weight:bold;
 			}
+			.right {
+				text-align:right;
+			}
         </style>       
        
         <script type="text/javascript" src="js/ansi_utils.js"></script>
        
         <script type="text/javascript">
         $(document).ready(function() {
-			console.debug("Starting");
 			// Populate the division list
         	$divisionList = ANSI_UTILS.getDivisionList();
-        	console.debug("Got the list");
 			$("#divisionId").append(new Option("",""));
 			$.each($divisionList, function(index, val) {
 				$("#divisionId").append(new Option(val.divisionCode, val.divisionId));
@@ -77,7 +78,6 @@
         	});
         	
         	        	
-        	console.debug("Starting 2");
         	function doPopulate($selectedDiv, $selectedMonth) {
         		var $outbound = {'month':$selectedMonth,'divisionId':$selectedDiv};
         		console.debug($outbound);
@@ -102,12 +102,12 @@
             	
         	}
         	
-        	console.debug("Starting 3");
         	function populateSummary($data) {
-        		//console.log($data);
-        	
 				$("#division").html($data.division.divisionNbr + "-" + $data.division.divisionCode);
 				$("#startDate").html($data.startDate);
+				$("#endDate").html($data.endDate);
+				$("#ticketCount").html($data.ticketCount);
+				$("#totalDL").html($data.totalDL);
 				$("#totalVolume").html($data.totalVolume);
 				$("#runDate").html($data.runDate);
 				$("#summaryTable").fadeIn(4000);
@@ -128,8 +128,6 @@
         	var dataTable = null;
         	
         	function populateDataTable($data) {
-        		
-        	//console.log($data);
         		var dataTable = $('#ticketDRV').DataTable( {
         			"bDestroy":			true,
         			"processing": 		true,
@@ -212,7 +210,6 @@
 					
             	//populateDataTable();
             }; 
-            console.debug("Starting 7");
             function initComplete (){
               var r = $('#TicketDRV tfoot tr');
               r.find('th').each(function(){
@@ -232,8 +229,6 @@
 				var $selectedDiv = $('#divisionId option:selected').val();
         		if ($selectedMonth != '' && $selectedDiv != '') {
         			doPopulate($selectedDiv, $selectedMonth)
-        		} else {
-        			console.debug("Not populating");
         		}
         	});
             
@@ -324,7 +319,6 @@
 				
 				//})
 			//});
-		console.debug("Starting 9");
         })
        </script>
         
@@ -358,15 +352,28 @@
     			<td class="summaryHdr">Created:</td>
     			<td><span id="runDate"></span></td>
     			<td>&nbsp;</td>
-    			<td class="summaryHdr">Division</td>
-    			<td><span id="division"></span></td>
+    			<td class="summaryHdr right">Division</td>
+    			<td class="right"><span id="division"></span></td>
+			</tr>
+			<tr>
+				<td class="summaryHdr" colspan="2">Start Dates Used</td>
+				<td>&nbsp;</td>
+				<td class="summaryHdr right">Total Volume For the Month</td>
+				<td class="right"><span id="totalVolume"></span></td>
 			</tr>
     		<tr>
     			<td class="summaryHdr">From:</td>
     			<td><span id="startDate"></span></td>
     			<td class="tableSplitter">&nbsp;</td>
-    			<td class="summaryHdr">Total Volume for the Month</td>
-    			<td><span id="totalVolume"></span></td>
+    			<td class="summaryHdr right">Total D/L for the Month</td>
+    			<td class="right"><span id="totalDL"></span></td>
+    		</tr>
+    		<tr>
+    			<td class="summaryHdr">To:</td>
+    			<td><span id="endDate"></span></td>
+    			<td class="tableSplitter">&nbsp;</td>
+    			<td class="summaryHdr right">Tickets:</td>
+    			<td class="right"><span id="ticketCount"></span></td>
     		</tr>
     	</table>
     
