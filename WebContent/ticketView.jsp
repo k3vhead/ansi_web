@@ -44,7 +44,9 @@
 			}
 			#summaryTable {
 				width:90%;
-				display:none;
+			}
+			#ticketData {
+				display:hidden;
 			}
 			#divisionSelect{
 				border:solid 1px #000000;
@@ -88,13 +90,15 @@
     				data: $outbound,
     				success: function($data) {
     					populateSummary($data.data);
+    					populateDataTable($data.data);
+    					$("#ticketData").fadeIn(4000);
     				},
     				statusCode: {
     					403: function($data) {
     						$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
     					},
     					500: function($data) {
-             	    		$("#globalMsg").html("Unhandled Exception").fadeIn(10).fadeOut(6000);
+             	    		$("#globalMsg").html("System Error: Contact Support").fadeIn(10);
              	    	} 
     				},
     				dataType: 'json'
@@ -110,8 +114,6 @@
 				$("#totalDL").html($data.totalDL);
 				$("#totalVolume").html($data.totalVolume);
 				$("#runDate").html($data.runDate);
-				$("#summaryTable").fadeIn(4000);
-				populateDataTable($data);
 				
         	}
         	
@@ -232,93 +234,7 @@
         		}
         	});
             
-            //function doPopulate($selectedDiv, $selectedMonth) {
-        		//var $outbound = {'month':$selectedMonth,'divisionId':$selectedDiv};
-        		//console.debug($outbound);
-        		
-        		//var jqxhr = $.ajax({
-    			//	type: 'GET',
-    			//	url: 'ticketDRV',
-    				//data: $outbound,
-    				//success: function($data) {
-    				//	populateDataTable($data.data);
-    				//},
-    				//statusCode: {
-    				//	403: function($data) {
-    				//		$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-    				//	},
-    				//	500: function($data) {
-             	    	//	$("#globalMsg").html("Unhandled Exception").fadeIn(10).fadeOut(6000);
-             	    //	} 
-    				//},
-    				//dataType: 'json'
-    			//});
-            	
-        	//}
-            
-            
-            //function doPopulate($selectedDiv, $selectedMonth) {
-        	//	var $outbound = {'month':$selectedMonth,'divisionId':$selectedDiv};
-        		//console.debug($outbound);
-        	//$("#doPopulate").on("click", function (event) {
-        	//	$.ajax({
-        	//	url: 'ticketDRV',
-        		//dataSrc: 'data.responseItemList'
-        		//}).done(function (result) {
-        		//Table.clear().draw();
-        	//	Table.rows.add(result).draw();
-        	//	}).fail(function (jqXHR, textStatus, errorThrown) {
-        		// needs to implement if it fails
-        	//	});
-        	
-                
-				//function doFunctionBinding() {
-					//$( ".editAction" ).on( "click", function($clickevent) {
-					//	 doEdit($clickevent);
-					//});
-				//}
-				//console.debug("Starting 8");
-				//function doEdit($clickevent) {
-					//console.debug("Starting 12");
-					//var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
-					//console.debug("Starting 11");
-						//var $url = '/ansi_web/ticketDRV?month=nn&divisionId=nn' + $rowid;
-						//console.log("YOU PASSED ROW ID:" + $rowid);
-						//var jqxhr = $.ajax({
-							//type: 'GET',
-							//url: $url,
-							//success: function($data) {
-								//console.log($data);
-								//console.debug("Starting 10");
-				        		//$("#ticketId").val(($data.data.codeList[0]).ticketId);
-				        		//$("#status").val(($data.data.codeList[0]).status);
-				        		//$("#name").val(($data.data.codeList[0]).name);
-				        		//$("#address1").val(($data.data.codeList[0]).address1);
-				        		//$("#city").val(($data.data.codeList[0]).city);
-				        		//$("#lastDone").val(($data.data.codeList[0]).lastDone);
-				        		//$("#startDate").val(($data.data.codeList[0]).startDate);
-				        		//$("#jobNum").val(($data.data.codeList[0]).jobNum);
-				        		//$("#frequency").val(($data.data.codeList[0]).frequency);
-				        		//$("#budget").val(($data.data.codeList[0]).budget);
-				        		//$("#ppc").val(($data.data.codeList[0]).ppc);
-				        		//$("#cod").val(($data.data.codeList[0]).cod);
-				        		//$("#jobId").val(($data.data.codeList[0]).jobId);
-				        		
-				        		//$("#t_id").val(($data.data.codeList[0]).ticket_Id);
-				        		//$("#updateOrAdd").val("update");
-				        		//$("#addTicketDRVForm").dialog( "open" );
-							//},
-							//statusCode: {
-								//403: function($data) {
-									//$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-								//} 
-							//},
-							//dataType: 'json'
-						//});
-					//console.log("Edit Button Clicked: " + $rowid);
-				
-				//})
-			//});
+
         })
        </script>
         
@@ -345,7 +261,7 @@
  		</select>
  		<input id="doPopulate" type="button" value="Go" />
 		
-		
+		<div id="ticketData">
         <h2>Ticket View DRV</h2>
 		<table id="summaryTable">
 			<tr>
@@ -435,7 +351,7 @@
     	<a href="#" title="Scroll to Top" class="ScrollTop">Scroll To Top</a>
     	</br>
     </p>
-    
+    </div>
     </tiles:put>
 		
 </tiles:insert>
