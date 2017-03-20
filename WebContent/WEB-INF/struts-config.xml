@@ -124,6 +124,15 @@
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
+            path="/ticketReturn"
+            type="com.ansi.scilla.web.action.TicketReturnAction"
+            name="idForm"
+            input="/ticketReturn.jsp"
+            scope="request">            
+            <forward name="valid" path="/ticketReturn.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		<action
             path="/ticketView"
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">
             <forward name="valid" path="/ticketView.jsp" />
