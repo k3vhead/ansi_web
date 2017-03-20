@@ -82,6 +82,7 @@
 				<td colspan="2"><input type="text" name="<%=namespace %>_siteContactInfo" style="width:170px" placeholder="<phone,mobile,email>"/></td>
 			</tr>
 		</table>
+		<input type="text" name="<%=namespace %>_id" style="display:none" />
 	</form>
 </div>
  

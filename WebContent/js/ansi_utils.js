@@ -222,7 +222,8 @@ $( document ).ready(function() {
 
 			},
 			setAddress: function($namespace, $addressData) {
-				
+				console.log("Address Data;");
+				console.log($addressData);
 				if($addressData.name != null) {
 					$("input[name='"+$namespace+"_name']").val($addressData.name);
 				} if($addressData.address1 != null) {
@@ -249,7 +250,14 @@ $( document ).ready(function() {
 					$("input[name='"+$namespace+"_siteContactName']").val($addressData.siteContactName);
 				} if($addressData.siteContactInfo != null) {
 					$("input[name='"+$namespace+"_siteContactInfo']").val($addressData.siteContactInfo);
+				} if($addressData.addressId != null) {
+//					console.log("Address Id:" + $addressData.addressId);
+					$("input[name='"+$namespace+"_id']").val($addressData.addressId);
+//					console.log("Id Input:" + $("input[name='"+$namespace+"_id']").val());
 				}
+				
+				
+				
 				//.selectmenu("refresh");
 				
 			}, clearAddress: function($namespace){

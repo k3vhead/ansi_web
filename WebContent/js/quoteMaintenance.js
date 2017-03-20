@@ -38,10 +38,12 @@ $( document ).ready(function() {
 				
 				
 				console.log($quoteDetail);
+				
 				ADDRESSPANEL.init("jobSite", JOB_DATA.countryList);
 				ADDRESSPANEL.init("billTo", JOB_DATA.countryList);
 				
 				console.log(ANSI_UTILS.getCodes("quote","account_type"));
+				QUOTEUTILS.setSelectMenu("manager",QUOTEUTILS.getUsers());
 				QUOTEUTILS.setSelectMenu("accountType",ANSI_UTILS.getCodes("quote","account_type"));
 				QUOTEUTILS.setSelectMenu("leadType",ANSI_UTILS.getCodes("quote","lead_type"));
 				
@@ -85,8 +87,10 @@ $( document ).ready(function() {
 						$("input[name='proposalDate']").val($quoteData.proposalDate);
 					}
 					
-					var $manager = $quoteData.managerFirstName + " " + $quoteData.managerLastName + " (" + $quoteData.managerEmail + ")";
-					$("input[name='manager']").val($manager);
+					//var $manager = $quoteData.managerFirstName + " " + $quoteData.managerLastName + " (" + $quoteData.managerEmail + ")";
+					//console.log("ManagerId: " + $quoteData.managerId);
+					$("select[name='manager']").val($quoteData.managerId);
+					$("select[name='manager']").selectmenu("refresh");
 					
 					var $jobs = QUOTEUTILS.getJobs($quoteId);
 					//console.log($jobs);
@@ -152,7 +156,7 @@ $( document ).ready(function() {
 			setDivisionList:function($divisionList) {
 				
 				var $select = $("select[name='division']");
-				$select.selectmenu({ width : '150px', maxHeight: '400 !important', style: 'dropdown'});
+				$select.selectmenu({ width : '175px', maxHeight: '400 !important', style: 'dropdown'});
 				
 				$('option', $select).remove();
 				$.each($divisionList, function($index, $division) {
@@ -189,13 +193,16 @@ $( document ).ready(function() {
 			},
 			save: function(){
 				$outbound = {};
-//        		$outbound["manager"]		=	$("input[name="+$addressPanelNamespace+"_name]").val();
-//        		$outbound["lead_type"]		=	$("input[name="+$addressPanelNamespace+"_status]").val();
-//        		$outbound["account_type"]	=	$("input[name="+$addressPanelNamespace+"_address1]").val();
-//        		$outbound["proposal_date"]	=	$("input[name="+$addressPanelNamespace+"_address2]").val();
-//        		$outbound["division_id"]		=	$("input[name="+$addressPanelNamespace+"_city]").val();
-//        		
-				
+        		$outbound["managerId"]		=	$("select[name=manager]").val();
+        		$outbound["leadType"]		=	$("select[name=leadType").val();
+        		$outbound["accountType"]	=	$("select[name=accountType").val();
+        		$outbound["divisionId"]	=	$("select[name=division]").val();
+        		$outbound["jobSiteAddressId"]	=	$("input[name=jobSite_id]").val();
+        		$outbound["billToAddressId"]	=	$("input[name=billTo_id]").val();
+        		$outbound["templateId"]	=	0;
+		
+        		console.log("Save Outbound: ");
+        		console.log($outbound);
 //				$aNames = {0:"jobSite",1:"billTo"};
 //				$.each($aNames, function($index, $addressPanelNamespace) {
 //					$aOutbound = {};
@@ -210,7 +217,50 @@ $( document ).ready(function() {
 //	        		$aOutbound[$addressPanelNamespace+"zip"]		=	$("input[name="+$addressPanelNamespace+"_zip]").val();
 //	        		QUOTEUTILS.saveAddress($aOutbound);
 //				});
-				
+        		
+        		$url = "quote/add";
+				console.log($outbound);
+				var jqxhr = $.ajax({
+					type: 'POST',
+					url: $url,
+					data: JSON.stringify($outbound),
+					success: function($data) {
+						if ( $data.responseHeader.responseCode == 'SUCCESS') {
+
+							console.log("Save Success");
+							
+								if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
+									$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
+								}
+							
+						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+							
+							console.log("Edit Failure");
+							console.log($data);
+							$.each($data.data.webMessages, function(key, messageList) {
+								var identifier = "#" + key + "Err";
+								msgHtml = "<ul>";
+								$.each(messageList, function(index, message) {
+									msgHtml = msgHtml + "<li>" + message + "</li>";
+								});
+								msgHtml = msgHtml + "</ul>";
+								$(identifier).html(msgHtml);
+							});		
+						} else {
+							console.log("Save Other");
+						}
+					},
+					error: function($data) {
+						console.log("Fail: ");
+						console.log($data);
+					},
+					statusCode: {
+						403: function($data) {
+							$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+						} 
+					},
+					dataType: 'json'
+				});
 				
 			},
 			saveAddress: function($outbound){
@@ -321,8 +371,8 @@ $( document ).ready(function() {
 			},
 			setSelectMenu: function($selector,$data){
 				var $select = $("select[name='"+$selector+"']");
-				$select.selectmenu({ width : '150px', maxHeight: '400 !important', style: 'dropdown'});
-				
+				$select.selectmenu({ width : '175px', maxHeight: '400 !important', style: 'dropdown'});
+				//console.log($data);
 				$('option', $select).remove();
 				$select.append(new Option("",null));
 				$.each($data.codeList, function($index, $val) {
@@ -356,7 +406,45 @@ $( document ).ready(function() {
 					dataType: 'html'
 				});
 				return $returnValue;
-			}
+			},
+			
+		getUsers: function(){
+			var $returnValue = [];
+			var $codeList = [];
+				var $url = "user/list";
+				var jqxhr = $.ajax({
+					type: 'GET',
+					url: $url,
+					data: {},
+					statusCode: {
+						200: function($data) {
+							//console.log($data.data.userList);
+							var $i = 0;
+							$.each($data.data.userList, function($index, $val) {
+								if($val.title === "Division Manager"){
+									$codeList[$i] = {displayValue: $val.firstName + " " + $val.lastName + " (" + $val.email + ")", value: $val.userId};
+									$i++;
+								}
+							});
+							
+						},					
+						403: function($data) {
+							$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+						},
+						404: function($data) {
+							$returnValue = {};
+						},
+						500: function($data) {
+							
+						}
+					},
+					dataType: 'json',
+					async:false
+				});
+			//console.log($returnValue);
+			$returnValue = {codeList: $codeList};
+			return $returnValue;
+		}
 			
 		}
 		

@@ -168,6 +168,7 @@ public class QuoteServlet extends AbstractServlet {
 				if (webMessages.isEmpty()) {
 					try {
 //						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, sessionUser.toString());
+						System.out.println("Doing Add");
 						quote = doAdd(conn, quoteRequest, sessionUser);
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 						responseCode = ResponseCode.SUCCESS;
@@ -272,14 +273,15 @@ public class QuoteServlet extends AbstractServlet {
 		}
 //		quote.setQuoteGroupId(quoteRequest.getQuoteGroupId());
 	
-		quote.setQuoteNumber(quoteRequest.getQuoteNumber());
-		quote.setRevision(quoteRequest.getRevisionNumber());
+	//	quote.setQuoteNumber(quoteRequest.getQuoteNumber());
+	//	quote.setRevision(quoteRequest.getRevisionNumber());
 		if ( quoteRequest.getSignedByContactId() != null) {
 			quote.setSignedByContactId(quoteRequest.getSignedByContactId());
 		}
 //		quote.setStatus(quoteRequest.getStatus());
 		quote.setTemplateId(quoteRequest.getTemplateId());
-	
+		System.out.println("Quote servlet Add Data:");
+		System.out.println(quote.toString());
 		try {
 			quote.insertWithKey(conn);
 		} catch ( SQLException e) {
