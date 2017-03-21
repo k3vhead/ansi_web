@@ -403,7 +403,7 @@ public class TicketDRVResponse extends MessageResponse {
 		sheet.setRepeatingRows(CellRangeAddress.valueOf("1:5"));
 //		
 //		//Freezing above rows
-		sheet.createFreezePane(19, 5, 0, 0);
+//		sheet.createFreezePane(19, 5, 0, 0);
 		
 		for (TicketDRVResponseItem item : this.getResponseItemList()) {
 			row = sheet.createRow(rowNum);

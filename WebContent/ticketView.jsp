@@ -34,22 +34,30 @@
 				width:400px;
 				padding:15px;
 			}
-			.prettyWideButton {
-				height:30px;
-				min-height:30px;
-			}
-			select	{
-				width:80px !important;
-				max-width:80px !important;
-			}
 			#summaryTable {
-				width:90%;
+				width:100%;
+				width:1300px;
+				max-width:1300px;
 			}
 			#ticketData {
-				display:hidden;
+				width:100%;
+				display:none;
 			}
-			#divisionSelect{
-				border:solid 1px #000000;
+			#ticketDRV {
+				width:100%;
+				max-width:1300px;
+				width:1300px;
+			}
+			#xlsDownloadDiv {
+				float:right;
+				margin-right:30px;
+				display:none;
+			}
+			#xlsDownload {
+				text-decoration:none;				
+			}
+			#xlsDownload:visited {
+				color:#000000;
 			}
 			.summaryHdr {
 				font-weight:bold;
@@ -82,7 +90,8 @@
         	        	
         	function doPopulate($selectedDiv, $selectedMonth) {
         		var $outbound = {'month':$selectedMonth,'divisionId':$selectedDiv};
-        		console.debug($outbound);
+        		var $downloadUrl = "ticketDRV?format=xls&divisionId=" + $selectedDiv + "&month=" + $selectedDiv;
+        		$("#xlsDownload").attr("href", $downloadUrl);
         		
         		var jqxhr = $.ajax({
     				type: 'GET',
@@ -92,6 +101,7 @@
     					populateSummary($data.data);
     					populateDataTable($data.data);
     					$("#ticketData").fadeIn(4000);
+    					$("#xlsDownloadDiv").fadeIn(4000);
     				},
     				statusCode: {
     					403: function($data) {
@@ -204,11 +214,12 @@
         	
         	init();
         			
+        	
             function init(){
-            	$.each($('input'), function () {
-				        $(this).css("height","20px");
-				        $(this).css("max-height", "20px");
-				    });
+            //	$.each($('input'), function () {
+			//	        $(this).css("height","20px");
+			//	        $(this).css("max-height", "20px");
+			//	    });
 					
             	//populateDataTable();
             }; 
@@ -242,6 +253,9 @@
 	</tiles:put>
     <tiles:put name="content" type="string">
     	<h1 >Division and Month Select</h1>
+    	<div id="xlsDownloadDiv">
+    		<a href="#" id="xlsDownload"><i class="fa fa-table fa-3x" aria-hidden="true" style="cursor:pointer"></i></a>
+    	</div>
 		<select id="divisionId">			
 		</select>
 		<select id="month">  
