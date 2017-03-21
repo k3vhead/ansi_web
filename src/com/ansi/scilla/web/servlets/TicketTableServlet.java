@@ -17,8 +17,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.queries.TicketSearch;
 import com.ansi.scilla.web.common.AppUtils;
+import com.ansi.scilla.web.common.Permission;
+import com.ansi.scilla.web.exceptions.ExpiredLoginException;
+import com.ansi.scilla.web.exceptions.NotAllowedException;
+import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.response.ticketTable.TicketTableJsonResponse;
 import com.ansi.scilla.web.response.ticketTable.TicketTableReturnItem;
 
@@ -80,6 +85,7 @@ public class TicketTableServlet extends AbstractServlet {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
+			AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
 //			String qs = request.getQueryString();
 			Enumeration<String> e = request.getParameterNames();
 			while ( e.hasMoreElements() ) {
@@ -207,6 +213,8 @@ public class TicketTableServlet extends AbstractServlet {
 			writer.write(json);
 			writer.flush();
 			writer.close();
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+			super.sendForbidden(response);
 		} catch ( Exception e ) {
 			AppUtils.logException(e);
 			throw new ServletException(e);

@@ -11,8 +11,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.AppUtils;
+import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.common.ResponseCode;
+import com.ansi.scilla.web.exceptions.ExpiredLoginException;
+import com.ansi.scilla.web.exceptions.NotAllowedException;
+import com.ansi.scilla.web.exceptions.TimeoutException;
 //import com.ansi.scilla.web.response.code.CodeResponse;
 import com.ansi.scilla.web.response.ticketSearch.TicketSearchListResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
@@ -73,9 +78,12 @@ public class TicketSearchServlet extends AbstractServlet {
 					Connection conn = null;
 					try {
 						conn = AppUtils.getDBCPConn();
+						AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
 
 						TicketSearchListResponse ticketSearchListResponse = doGetWork(conn, myString, queryString);
 						super.sendResponse(conn, response, ResponseCode.SUCCESS, ticketSearchListResponse);
+					} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+						super.sendForbidden(response);
 					} catch(RecordNotFoundException recordNotFoundEx) {
 						super.sendNotFound(response);
 					} catch ( Exception e) {
@@ -96,8 +104,11 @@ public class TicketSearchServlet extends AbstractServlet {
 
 			try {
 				conn = AppUtils.getDBCPConn();
+				AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
 				TicketSearchListResponse ticketSearchListQueryResponse = doGetWork(conn, queryString);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, ticketSearchListQueryResponse);
+			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+				super.sendForbidden(response);
 			} catch(RecordNotFoundException recordNotFoundEx) {
 				super.sendNotFound(response);
 			} catch ( Exception e) {

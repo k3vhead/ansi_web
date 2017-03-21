@@ -13,12 +13,17 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.MessageKey;
+import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.common.WebMessages;
+import com.ansi.scilla.web.exceptions.ExpiredLoginException;
+import com.ansi.scilla.web.exceptions.NotAllowedException;
+import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.request.QuoteRequest;
 import com.ansi.scilla.web.response.quote.QuoteListResponse;
 import com.ansi.scilla.web.response.quote.QuoteResponse;
@@ -53,6 +58,7 @@ public class QuoteServlet extends AbstractServlet {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
+			AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 			conn.setAutoCommit(false);
 			
 			String jsonString = super.makeJsonString(request);
@@ -67,6 +73,8 @@ public class QuoteServlet extends AbstractServlet {
 			super.sendResponse(conn, response, ResponseCode.SUCCESS, quoteResponse);
 			
 			conn.commit();
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+			super.sendForbidden(response);
 		} catch ( Exception e) {
 			AppUtils.logException(e);
 			throw new ServletException(e);
@@ -85,6 +93,7 @@ public class QuoteServlet extends AbstractServlet {
 			ParsedUrl parsedUrl = new ParsedUrl(url);
 			System.out.println("QuoteServlet 60");
 			conn = AppUtils.getDBCPConn();
+			AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 			conn.setAutoCommit(false);
 			
 			Quote quote = new Quote();
@@ -98,6 +107,8 @@ public class QuoteServlet extends AbstractServlet {
 			super.sendResponse(conn, response, ResponseCode.SUCCESS, quoteResponse);
 			System.out.println("QuoteServlet 72");
 			conn.commit();
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+			super.sendForbidden(response);
 		} catch ( Exception e) {
 			System.out.println("QuoteServlet 75");
 			AppUtils.logException(e);
@@ -116,6 +127,7 @@ public class QuoteServlet extends AbstractServlet {
 		try {			
 			ParsedUrl parsedUrl = new ParsedUrl(url);
 			conn = AppUtils.getDBCPConn();
+			AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_READ);
 			
 			if ( parsedUrl.quoteNumber.equals("list")) {
 				// we're getting all the codes in the database
@@ -127,6 +139,8 @@ public class QuoteServlet extends AbstractServlet {
 				QuoteListResponse quotesListResponse = makeFilteredListResponse(conn, parsedUrl);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, quotesListResponse);
 			}
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+			super.sendForbidden(response);
 		} catch ( RecordNotFoundException e) {
 			super.sendNotFound(response);
 		} catch ( Exception e) {
@@ -149,6 +163,7 @@ public class QuoteServlet extends AbstractServlet {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
+			AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 			conn.setAutoCommit(false);
 
 			// figure out if this is an "add" or an "update"
@@ -228,6 +243,8 @@ public class QuoteServlet extends AbstractServlet {
 			}
 			
 			conn.commit();
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+			super.sendForbidden(response);
 		} catch ( Exception e ) {
 			AppUtils.logException(e);
 			AppUtils.rollbackQuiet(conn);

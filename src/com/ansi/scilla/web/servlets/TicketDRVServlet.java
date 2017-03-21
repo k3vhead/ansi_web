@@ -12,10 +12,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.MessageKey;
+import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.common.WebMessages;
+import com.ansi.scilla.web.exceptions.ExpiredLoginException;
+import com.ansi.scilla.web.exceptions.NotAllowedException;
+import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.response.ticket.TicketDRVResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -25,6 +30,18 @@ public class TicketDRVServlet extends AbstractServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	@Override
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		super.sendNotAllowed(response);
+	}
+	
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		super.sendNotAllowed(response);
+	}
 
 	@Override
 	protected void doGet(HttpServletRequest request,
@@ -40,6 +57,7 @@ public class TicketDRVServlet extends AbstractServlet {
 		try {
 
 			conn = AppUtils.getDBCPConn();
+			AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
 			String month = request.getParameter("month");
 			String format = request.getParameter("format");
 			if(StringUtils.isBlank(month)||!StringUtils.isNumeric(month)||Integer.valueOf(month)>12){
@@ -82,6 +100,8 @@ public class TicketDRVServlet extends AbstractServlet {
 			} else{
 				super.sendResponse(conn, response, responseCode, ticketDRVResponse);
 			}
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+			super.sendForbidden(response);
 		} catch(RecordNotFoundException recordNotFoundEx) {
 			super.sendNotFound(response);
 		} catch ( Exception e) {

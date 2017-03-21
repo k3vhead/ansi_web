@@ -14,8 +14,13 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.queries.QuoteSearch;
 import com.ansi.scilla.web.common.AppUtils;
+import com.ansi.scilla.web.common.Permission;
+import com.ansi.scilla.web.exceptions.ExpiredLoginException;
+import com.ansi.scilla.web.exceptions.NotAllowedException;
+import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.response.quoteTable.QuoteTableJsonResponse;
 import com.ansi.scilla.web.response.quoteTable.QuoteTableReturnItem;
 
@@ -77,6 +82,7 @@ public class QuoteTableServlet extends AbstractServlet {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
+			AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_READ);
 //			String qs = request.getQueryString();
 
 			String term = "";
@@ -183,6 +189,8 @@ public class QuoteTableServlet extends AbstractServlet {
 			writer.write(json);
 			writer.flush();
 			writer.close();
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+			super.sendForbidden(response);
 		} catch ( Exception e ) {
 			AppUtils.logException(e);
 			throw new ServletException(e);
