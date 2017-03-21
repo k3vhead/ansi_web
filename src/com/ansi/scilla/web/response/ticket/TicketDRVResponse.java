@@ -88,19 +88,19 @@ public class TicketDRVResponse extends MessageResponse {
 		
 	}
 	
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Date getStartDate() {
 		return startDate;
 	}
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Date getEndDate() {
 		return endDate;
 	}
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
@@ -117,11 +117,11 @@ public class TicketDRVResponse extends MessageResponse {
 	public void setDivision(Division division) {
 		this.division = division;
 	}
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy hh:mm:ss")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy hh:mm:ss aa z", timezone="America/Chicago")
 	public Date getRunDate() {
 		return runDate;
 	}
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy hh:mm:ss")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy hh:mm:ss", timezone="America/Chicago")
 	public void setRunDate(Date runDate) {
 		this.runDate = runDate;
 	}
