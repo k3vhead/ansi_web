@@ -140,8 +140,8 @@
         	        dom: 				'Bfrtip',
         	        "searching": 		true,
         	        lengthMenu: [
-        	            [ 10, 50, 100, 500, 1000 ],
-        	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ],
+        	            [ 10, 50, 100, 500, 1000, -1 ],
+        	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows', 'Show All' ],
         	        ],
         	        buttons: [
         	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}},
