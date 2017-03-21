@@ -2,6 +2,7 @@ package com.ansi.scilla.web.test;
 
 import java.io.FileOutputStream;
 import java.sql.Connection;
+import java.util.Calendar;
 
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -38,13 +39,20 @@ public class TestDRV {
 			System.out.println("*****************\n***************");
 		}
 		*/
+		Integer month=Calendar.MARCH;
+		Integer divisionId=10;
+		String json1 = TesterUtils.getJson("http://127.0.0.1:8080/ansi_web/ticketDRV?month=" + month + "&divisionId=" + divisionId);
 		Connection conn = null;
 		try {
-			conn = AppUtils.getConn();
-			TicketDRVResponse x = new TicketDRVResponse(conn, 10, 2, 2017);
-			System.out.println(x.toJson());
-			XSSFWorkbook workbook = x.toXLSX();
-			workbook.write(new FileOutputStream("C:/Users/jwlew/Desktop/ANSI/xlfTest.xlsx"));
+			conn = AppUtils.getConn();			
+			TicketDRVResponse x = new TicketDRVResponse(conn, divisionId, month, 2017);
+			System.out.println(x.getResponseItemList().size());
+			String json2 = x.toJson();
+			System.out.println(json1);
+			System.out.println(json2);
+			System.out.println(json1.equals(json2));
+//			XSSFWorkbook workbook = x.toXLSX();
+//			workbook.write(new FileOutputStream("C:/Users/jwlew/Desktop/ANSI/xlfTest.xlsx"));
 			/*
 			List<Division> divisionList = Division.cast(new Division().selectAll(conn));
 			for ( Division d : divisionList ) {
