@@ -187,7 +187,7 @@
 							},
 							statusCode: {
 								403: function($data) {
-									$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+									$("#useridMsg").html("Session Timeout. Log in and try again");
 								} 
 							},
 							dataType: 'json'
