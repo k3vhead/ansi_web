@@ -85,7 +85,12 @@
         <script type="text/javascript">
 		$(function() {
 			JOB_UTILS.pageInit('<c:out value="${ANSI_JOB_ID}" />');
-			JOBINVOICE.init("invoiceModal", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, JOB_DATA.jobDetail);
+			console.debug(JOB_DATA.invoiceStyleList);
+			JOBINVOICE.init("invoiceModal", 
+					JOB_DATA.invoiceStyleList, 
+					JOB_DATA.invoiceGroupingList, 
+					JOB_DATA.invoiceTermList, 
+					JOB_DATA.jobDetail);
 			
 			$("#jobNbr").focus();
 		});
