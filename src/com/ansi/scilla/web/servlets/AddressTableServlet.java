@@ -124,7 +124,7 @@ public class AddressTableServlet extends AbstractServlet {
 		    int totalAfterFilter = total;
 			term = term.toLowerCase();
 			List<AddressReturnItem> resultList = new ArrayList<AddressReturnItem>();
-			sql = "select a.address_id, a.name, a.status, a.address1, a.address2, a.city, a.county, a.state, a.zip, a.country_code, (a3.jobCount + a3.billCount) as count"
+			sql = "select a.address_id, a.name, a.address_status, a.address1, a.address2, a.city, a.county, a.state, a.zip, a.country_code, (a3.jobCount + a3.billCount) as count"
 					+ " from address a"
 					+ " left join (select a2.address_id, count(q1.job_site_address_id) as jobCount, count(q1.bill_to_address_id) as billCount from address a2"
 					+ " inner join quote q1 on (a2.address_id = q1.job_site_address_id or a2.address_id = q1.bill_to_address_id) group by a2.address_id ) a3 on a.address_id = a3.address_id";

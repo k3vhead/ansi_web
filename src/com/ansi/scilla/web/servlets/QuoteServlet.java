@@ -170,15 +170,18 @@ public class QuoteServlet extends AbstractServlet {
 //						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, sessionUser.toString());
 						System.out.println("Doing Add");
 						quote = doAdd(conn, quoteRequest, sessionUser);
+						//quote.update(conn, quote);
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 						responseCode = ResponseCode.SUCCESS;
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+						//quote.update(conn, quote);
 					} catch ( DuplicateEntryException e ) {
 						String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
 						responseCode = ResponseCode.EDIT_FAILURE;
 					} catch ( Exception e ) {
 						responseCode = ResponseCode.SYSTEM_FAILURE;
+						System.out.println("Fail: System Failure");
 						AppUtils.logException(e);
 						String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
@@ -245,7 +248,7 @@ public class QuoteServlet extends AbstractServlet {
 		quote.setAddedDate(today);
 		
 		
-//		quote.setQuoteId(quoteRequest.getQuoteId());
+//		quote.setQuoteId(5000000);
 
 		quote.setUpdatedBy(sessionUser.getUserId());
 
@@ -273,17 +276,20 @@ public class QuoteServlet extends AbstractServlet {
 		}
 //		quote.setQuoteGroupId(quoteRequest.getQuoteGroupId());
 	
-	//	quote.setQuoteNumber(quoteRequest.getQuoteNumber());
-	//	quote.setRevision(quoteRequest.getRevisionNumber());
-		if ( quoteRequest.getSignedByContactId() != null) {
-			quote.setSignedByContactId(quoteRequest.getSignedByContactId());
-		}
+		quote.setQuoteNumber(5000000);
+		quote.setRevision("A");
+			quote.setSignedByContactId(null);
+		
 //		quote.setStatus(quoteRequest.getStatus());
 		quote.setTemplateId(quoteRequest.getTemplateId());
 		System.out.println("Quote servlet Add Data:");
 		System.out.println(quote.toString());
+		int q = 0;
 		try {
-			quote.insertWithKey(conn);
+			q = quote.insertWithKey(conn);
+			//System.out.println("QuoteID After Insert? "+ q);
+			
+			
 		} catch ( SQLException e) {
 			if ( e.getMessage().contains("duplicate key")) {
 				throw new DuplicateEntryException();
@@ -292,6 +298,14 @@ public class QuoteServlet extends AbstractServlet {
 				throw e;
 			}
 		} 
+			quote.setQuoteId(q);
+			quote.setQuoteNumber(q);
+			
+//			Quote key = new Quote();
+//			key.setQuoteId(q);
+//			key.setQuoteNumber(q);
+			
+			//quote.update(conn, null);
 			return quote;
 	}
 

@@ -118,7 +118,7 @@
 			            	if(row.name != null){return (row.name+"");}
 			            } },
 			            { title: "Status" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-			            	if(row.status != null){return (row.status+"");}
+			            	if(row.address_status != null){return (row.address_status+"");}
 			            } },
 			            { title: "Address 1", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.address1 != null){return (row.address1+"");}
@@ -198,7 +198,7 @@
         	function addAddress() {
         		$outbound = {};
         		$outbound["name"]		=	$("input[name="+$addressPanelNamespace+"_name]").val();
-        		$outbound["status"]		=	$("input[name="+$addressPanelNamespace+"_status]").val();
+        		$outbound["address_status"]		=	$("input[name="+$addressPanelNamespace+"_status]").val();
         		$outbound["address1"]	=	$("input[name="+$addressPanelNamespace+"_address1]").val();
         		$outbound["address2"]	=	$("input[name="+$addressPanelNamespace+"_address2]").val();
         		$outbound["city"]		=	$("input[name="+$addressPanelNamespace+"_city]").val();

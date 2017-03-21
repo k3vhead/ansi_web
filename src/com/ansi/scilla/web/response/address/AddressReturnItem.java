@@ -9,7 +9,7 @@ public class AddressReturnItem extends ApplicationObject {
 		private static final long serialVersionUID = 1L;
 		private Integer address_id;
 		private String name;
-		private String status;
+		private String address_status;
 		private String address1;
 		private String address2;
 		private String city;
@@ -25,7 +25,7 @@ public class AddressReturnItem extends ApplicationObject {
 			super();
 			this.address_id = rs.getInt("address_id");
 			this.name = rs.getString("name");
-			this.status = rs.getString("status");
+			this.address_status = rs.getString("address_status");
 			this.address1 = rs.getString("address1");
 			this.address2 = rs.getString("address2");
 			this.county = rs.getString("county");
@@ -63,11 +63,11 @@ public class AddressReturnItem extends ApplicationObject {
 		}
 
 		public String getStatus() {
-			return status;
+			return address_status;
 		}
 
-		public void setStatus(String status) {
-			this.status = status;
+		public void setStatus(String address_status) {
+			this.address_status = address_status;
 		}
 
 		public String getAddress1() {
