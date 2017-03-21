@@ -24,9 +24,12 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.jobticket.TicketStatus;
+import com.ansi.scilla.common.jsonFormat.AnsiBigDecimalFormatter;
+import com.ansi.scilla.common.jsonFormat.AnsiIntegerFormatter;
 import com.ansi.scilla.common.queries.TicketDRVQuery;
 import com.ansi.scilla.web.response.MessageResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class TicketDRVResponse extends MessageResponse {
@@ -101,6 +104,7 @@ public class TicketDRVResponse extends MessageResponse {
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
+	@JsonSerialize(using=AnsiIntegerFormatter.class)
 	public Integer getTicketCount() {
 		return ticketCount;
 	}
@@ -121,12 +125,14 @@ public class TicketDRVResponse extends MessageResponse {
 	public void setRunDate(Date runDate) {
 		this.runDate = runDate;
 	}
+	@JsonSerialize(using=AnsiBigDecimalFormatter.class)
 	public BigDecimal getTotalVolume() {
 		return totalVolume;
 	}
 	public void setTotalVolume(BigDecimal totalVolume) {
 		this.totalVolume = totalVolume;
 	}
+	@JsonSerialize(using=AnsiBigDecimalFormatter.class)
 	public BigDecimal getTotalDL() {
 		return totalDL;
 	}

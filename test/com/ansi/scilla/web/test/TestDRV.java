@@ -45,7 +45,7 @@ public class TestDRV {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getConn();			
-			TicketDRVResponse x = new TicketDRVResponse(conn, divisionId, month, 2017);
+			TicketDRVResponse x = new TicketDRVResponse(conn, divisionId, month, 2018);
 			System.out.println(x.getResponseItemList().size());
 			String json2 = x.toJson();
 			System.out.println(json1);

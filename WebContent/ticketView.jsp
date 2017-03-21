@@ -139,12 +139,12 @@
         	        rowId: 				'dt_RowId',
         	        dom: 				'Bfrtip',
         	        "searching": 		true,
-        	        lengthMenu: [
-        	            [ 10, 50, 100, 500, 1000, -1 ],
-        	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows', 'Show All' ],
-        	        ],
+        	        //lengthMenu: [
+        	        //    [ 10, 50, 100, 500, 1000, -1 ],
+        	        //    [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows', 'Show All' ],
+        	        //],
         	        buttons: [
-        	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}},
+        	        //	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}},
         	        ],
         	        "columnDefs": [
         	        	{ "orderable": false, "targets": "_all" },
@@ -152,7 +152,7 @@
         	            { className: "dt-right", "targets": [0,9,10] },
         	            { className: "dt-center", "targets": [1,7,8] },
         	         ],
-        	        "paging": true,
+        	        "paging": false,
         	        data: $data.responseItemList,
 			        columns: [
 			            { title: "Ticket", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
