@@ -14,18 +14,21 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Address;
+import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.MessageKey;
+import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.common.WebMessages;
+import com.ansi.scilla.web.exceptions.ExpiredLoginException;
+import com.ansi.scilla.web.exceptions.NotAllowedException;
+import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.request.AddressRequest;
 import com.ansi.scilla.web.response.address.AddressListResponse;
 import com.ansi.scilla.web.response.address.AddressResponse;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.thewebthing.commons.db2.RecordNotFoundException;
-import com.ansi.scilla.common.address.Country;
-import com.ansi.scilla.common.address.State;
 
 /**
  * The url for delete will be of the form /address/<addressId>/<name>/<status>
@@ -58,6 +61,7 @@ public class AddressServlet extends AbstractServlet {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
+			AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 			conn.setAutoCommit(false);
 			
 			String jsonString = super.makeJsonString(request);
@@ -72,6 +76,8 @@ public class AddressServlet extends AbstractServlet {
 			super.sendResponse(conn, response, ResponseCode.SUCCESS, addressResponse);
 			
 			conn.commit();
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+			super.sendForbidden(response);
 		} catch ( Exception e) {
 			AppUtils.logException(e);
 			throw new ServletException(e);
@@ -91,6 +97,7 @@ public class AddressServlet extends AbstractServlet {
 			ParsedUrl parsedUrl = new ParsedUrl(url);
 
 			conn = AppUtils.getDBCPConn();
+			AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 			conn.setAutoCommit(false);
 			
 			Address address = new Address();
@@ -104,6 +111,8 @@ public class AddressServlet extends AbstractServlet {
 			super.sendResponse(conn, response, ResponseCode.SUCCESS, addressResponse);
 
 			conn.commit();
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+			super.sendForbidden(response);
 		} catch ( Exception e) {
 			AppUtils.logException(e);
 			throw new ServletException(e);
@@ -121,6 +130,7 @@ public class AddressServlet extends AbstractServlet {
 		try {			
 			ParsedUrl parsedUrl = new ParsedUrl(url);
 			conn = AppUtils.getDBCPConn();
+			AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);
 			
 			if ( parsedUrl.addressId.equals("list")) {
 				// we're getting all the addresses in the database
@@ -132,6 +142,8 @@ public class AddressServlet extends AbstractServlet {
 				AddressListResponse addressListResponse = makeFilteredListResponse(conn, parsedUrl);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, addressListResponse);
 			}
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+			super.sendForbidden(response);
 		} catch ( RecordNotFoundException e) {
 			super.sendNotFound(response);
 		} catch ( Exception e) {
@@ -154,6 +166,7 @@ public class AddressServlet extends AbstractServlet {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
+			AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 			conn.setAutoCommit(false);
 
 			// figure out if this is an "add" or an "update"
@@ -227,6 +240,8 @@ public class AddressServlet extends AbstractServlet {
 			}
 			
 			conn.commit();
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+			super.sendForbidden(response);
 		} catch ( Exception e ) {
 			AppUtils.logException(e);
 			AppUtils.rollbackQuiet(conn);
