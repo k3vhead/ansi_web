@@ -249,7 +249,7 @@
 					},
 					statusCode: {
 						403: function($data) {
-							$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+							$("#globalMsg").html("Session Timeout. Log in and try again");
 						} 
 					},
 					dataType: 'json'
@@ -300,7 +300,7 @@
     					},
     					statusCode: {
     						403: function($data) {
-    							$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+    							$("#globalMsg").html("Session Timeout. Log in and try again");
     						} 
     					},
     					dataType: 'json'
@@ -392,7 +392,7 @@
 						},
 						statusCode: {
 							403: function($data) {
-								$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+								$("#globalMsg").html("Session Timeout. Log in and try again");
 							} 
 						},
 						dataType: 'json'
@@ -436,7 +436,7 @@
             	     },
             	     statusCode: {
             	    	403: function($data) {
-            	    		$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+            	    		$("#globalMsg").html("Session Timeout. Log in and try again");
             	    	},
             	    	500: function($data) {
             	    		 $( "#deleteErrorDialog" ).dialog({

@@ -2,13 +2,10 @@ package com.ansi.scilla.web.servlets;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -16,10 +13,13 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.AppUtils;
+import com.ansi.scilla.web.common.Permission;
+import com.ansi.scilla.web.exceptions.ExpiredLoginException;
+import com.ansi.scilla.web.exceptions.NotAllowedException;
+import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.response.address.AddressJsonResponse;
-import com.thewebthing.commons.lang.StringUtils;
 import com.ansi.scilla.web.response.address.AddressReturnItem;
 
 /**
@@ -39,12 +39,27 @@ import com.ansi.scilla.web.response.address.AddressReturnItem;
  * 
  * The servlet will return all records if there is no "term=" is found.
  * 
-
+ * The url for delete will return methodNotAllowed
+ * 
+ * The url for post will return methodNotAllowed
+ * 
  *
  */
 public class AddressTableServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
+
+	@Override
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		super.sendNotAllowed(response);
+	}
+	
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		super.sendNotAllowed(response);
+	}
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -77,6 +92,7 @@ public class AddressTableServlet extends AbstractServlet {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
+			AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);
 			String qs = request.getQueryString();
 
 			String term = "";
@@ -190,6 +206,8 @@ public class AddressTableServlet extends AbstractServlet {
 			writer.write(json);
 			writer.flush();
 			writer.close();
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+			super.sendForbidden(response);
 		} catch ( Exception e ) {
 			AppUtils.logException(e);
 			throw new ServletException(e);
