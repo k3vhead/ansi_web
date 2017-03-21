@@ -14,11 +14,16 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.db.Contact;
+import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.MessageKey;
+import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.common.WebMessages;
+import com.ansi.scilla.web.exceptions.ExpiredLoginException;
+import com.ansi.scilla.web.exceptions.NotAllowedException;
+import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.request.ContactRequest;
 import com.ansi.scilla.web.response.contact.ContactListResponse;
 import com.ansi.scilla.web.response.contact.ContactResponse;
@@ -52,6 +57,7 @@ public class ContactServlet extends AbstractServlet {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
+			AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 			conn.setAutoCommit(false);
 			
 			String url = request.getRequestURI();
@@ -91,6 +97,8 @@ public class ContactServlet extends AbstractServlet {
 			super.sendResponse(conn, response, ResponseCode.SUCCESS, contactResponse);
 			
 			conn.commit();*/
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+			super.sendForbidden(response);
 		} catch ( Exception e) {
 			AppUtils.logException(e);
 			throw new ServletException(e);
@@ -113,6 +121,7 @@ public class ContactServlet extends AbstractServlet {
 			Connection conn = null;
 			try {
 				conn = AppUtils.getDBCPConn();
+				AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);
 				
 				// Figure out what we've got:				
 				String myString = url.substring(idx + "/contact/".length());
@@ -134,6 +143,8 @@ public class ContactServlet extends AbstractServlet {
 						super.sendResponse(conn, response, ResponseCode.SUCCESS, contactListResponse);
 					}
 				}
+			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+				super.sendForbidden(response);
 			} catch ( RecordNotFoundException e ) {
 				System.out.println("ContactServlet: doGet() RecordNotFoundException 404");
 				super.sendNotFound(response);						
@@ -161,6 +172,7 @@ public class ContactServlet extends AbstractServlet {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
+			AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 			conn.setAutoCommit(false);
 
 			// figure out if this is an "add" or an "update"
@@ -238,6 +250,8 @@ public class ContactServlet extends AbstractServlet {
 			}
 			
 			conn.commit();
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+			super.sendForbidden(response);
 		} catch ( RecordNotFoundException e ) {
 			System.out.println("ContactServlet: doDelete() RecordNotFoundException 404");
 			super.sendNotFound(response);						

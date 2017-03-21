@@ -17,7 +17,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.AppUtils;
+import com.ansi.scilla.web.common.Permission;
+import com.ansi.scilla.web.exceptions.ExpiredLoginException;
+import com.ansi.scilla.web.exceptions.NotAllowedException;
+import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.thewebthing.commons.lang.StringUtils;
 
 /**
@@ -94,6 +99,7 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 					}
 					try {
 						conn = AppUtils.getDBCPConn();
+						AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);
 						System.out.println("ContactTypeAheadServlet(): doGet(): term =$" + term +"$");
 						List<ReturnItem> resultList = new ArrayList<ReturnItem>();
 						String sql = "select contact_id, concat(first_name, ' ', last_name) as name, business_phone, mobile_phone, email, fax, preferred_contact "
@@ -120,6 +126,8 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 						writer.write(json);
 						writer.flush();
 						writer.close();
+					} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+						super.sendForbidden(response);
 					} catch ( Exception e ) {
 						AppUtils.logException(e);
 						throw new ServletException(e);
