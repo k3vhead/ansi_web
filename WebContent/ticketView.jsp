@@ -158,7 +158,7 @@
         	        //	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}},
         	        ],
         	        "columnDefs": [
-        	        	{ "orderable": false, "targets": "_all" },
+        	        	{ "orderable": true, "targets": "_all" },
         	            { className: "dt-left", "targets": [0,2,3,4,5,6,11,-1] },
         	            { className: "dt-right", "targets": [0,9,10] },
         	            { className: "dt-center", "targets": [1,7,8] },
