@@ -100,13 +100,14 @@ public class TicketTypeAheadServlet extends AbstractServlet {
 								List<ReturnItem> resultList = new ArrayList<ReturnItem>();
 								//ticket_id:ticket_status:division_code:job_nbr:frequency:act_price_per_cleaning:job site:address 1
 								String sql = "select ticket_id, ticket_status, division.division_code, job_nbr, job_frequency"
-										+ ", act_price_per_cleaning, address.name, address.address1 "
+										+ ", act_price_per_cleaning, address.name, address.address1, fleetmatics_id "
 										+ " from ticket " 
 										+ " join job on job.job_id = ticket.job_id " 
 										+ " join quote on quote.quote_id = job.quote_id " 
 										+ " join division on division.division_id = ticket.act_division_id " 
 										+ " join address on address.address_id = quote.job_site_address_id " 
 										+ " where ticket_id like '%" + term + "%'"
+										+ " or fleetmatics_id like '%" + term + "%'"
 										//+ " and ticket_status in ('N','D')"
 										;
 								Statement s = conn.createStatement();
@@ -155,12 +156,13 @@ public class TicketTypeAheadServlet extends AbstractServlet {
 			this.id = rs.getInt("ticket_id");
 			//ticket_id:ticket_status:division_code:job_nbr:frequency:act_price_per_cleaning:job site:address 1
 			this.label = rs.getString("ticket_id") 
-					+ "::" + rs.getString("ticket_status")
+					+ ":" + "Status " + rs.getString("ticket_status")
 					+ ":" + rs.getString("division_code")
-					+ ":" + rs.getString("job_nbr")
-					+ ":" + rs.getString("job_frequency")
-					+ ":" + rs.getString("act_price_per_cleaning")
-					+ ":" + rs.getString("name")
+					+ ":" + "J# " + rs.getString("job_nbr")
+					+ ":" + "Freq " + rs.getString("job_frequency")
+					+ ":" + "PPC " + rs.getString("act_price_per_cleaning")
+					+ ":" + "FM " + rs.getString("fleetmatics_id")
+					+ ":" + "Site " + rs.getString("name")
 					+ ":" + rs.getString("address1");
 			this.value = rs.getString("ticket_id");
 		}
