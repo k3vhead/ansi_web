@@ -67,7 +67,7 @@ public class TicketDRVServlet extends AbstractServlet {
 			}
 			System.out.println("TicketDRVServlet: this month:" + month);
 			Integer chosenMonth = Integer.valueOf(month);
-			if(chosenMonth<=thisMonth){
+			if(chosenMonth<thisMonth){
 				thisYear++;
 			}
 

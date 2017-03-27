@@ -62,7 +62,7 @@ public class TicketTableServlet extends AbstractServlet {
 		int draw = 0;
 		int col = 0;
 		String dir = "asc";
-		String[] cols = { "ticket_id", "ticket.ticket_status", "division_nbr", "bill_to_name", "job_site_name", "job_site_address", "start_date", "job_frequency", "price_per_cleaning", "job_nbr", "job.job_id", "service_description","process_date", "invoice_id", "fleetmatics_id" };
+		String[] cols = { "ticket_id", "ticket.ticket_status", "division_nbr", "bill_to_name", "job_site_name", "job_site_address", "start_date", "job_frequency", "act_price_per_cleaning", "job_nbr", "job.job_id", "service_description","process_date", "invoice_id", "fleetmatics_id" };
 		String sStart = request.getParameter("start");
 	    String sAmount = request.getParameter("length");
 	    String sDraw = request.getParameter("draw");
@@ -121,7 +121,7 @@ public class TicketTableServlet extends AbstractServlet {
 		    }
 		    if (sCol != null) {
 		        col = Integer.parseInt(sCol);
-		        if (col < 0 || col > 10)
+		        if (col < 0 || col > 15)
 		            col = 0;
 		    }
 		    if (sdir != null) {
