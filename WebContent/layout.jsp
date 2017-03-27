@@ -206,7 +206,7 @@
 										<ul>
 											<li><html:link action="ticketLookup"><bean:message key="menu.label.lookup" /></html:link></li>
 											<ansi:hasWrite>
-											<li><html:link action="ticketReturn"><bean:message key="menu.label.ticketReturn" /></html:link></li>
+											<li><html:link action="ticketReturn"><bean:message key="menu.label.maintenance" /></html:link></li>
 											<li><a href="#"><bean:message key="menu.label.new" /></a></li>
 											<li><html:link action="ticketView"><bean:message key="menu.label.drv30" /></html:link></li>
 											</ansi:hasWrite>											
