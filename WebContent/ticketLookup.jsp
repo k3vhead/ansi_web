@@ -116,7 +116,7 @@
 			            	if(row.jobFrequency != null){return (row.jobFrequency+"");}
 			            } },
 			            { title: "PPC", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.pricePerCleaning != null){return (row.pricePerCleaning+"");}
+			            	if(row.actPricePerCleaning != null){return (row.actPricePerCleaning+"");}
 			            } },
 			            { title: "Job #", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
 			            	if(row.jobNbr != null){return (row.jobNbr+"");}
@@ -188,7 +188,7 @@
 				        		$("#jobSiteAddress").val(($data.data.codeList[0]).jobSiteAddress);
 				        		$("#startDate").val(($data.data.codeList[0]).startDate);
 				        		$("#jobFreq").val(($data.data.codeList[0]).jobFreq);
-				        		$("#pricePerCleaning").val(($data.data.codeList[0]).pricePerCleaning);
+				        		$("#actPricePerCleaning").val(($data.data.codeList[0]).actPricePerCleaning);
 				        		$("#jobNbr").val(($data.data.codeList[0]).jobNbr);
 				        		$("#jobId").val(($data.data.codeList[0]).jobId);
 				        		$("#serviceDescription").val(($data.data.codeList[0]).serviceDescription);
