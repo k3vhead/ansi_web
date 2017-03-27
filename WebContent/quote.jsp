@@ -18,8 +18,7 @@
     <tiles:put name="title" type="string">
         Quote
     </tiles:put>
-    
-    
+        
     <tiles:put name="headextra" type="string">
         <script type="text/javascript" src="js/ansi_utils.js"></script>
         <script type="text/javascript" src="js/jobMaintenance.js"></script>
@@ -38,6 +37,11 @@
 	color: #000000;
 	min-height: 25px;
 	width: 70px;
+ }
+ 
+ span {
+	display: inline-block;
+	width: 90px !important;
  }
  
 .quoteSelect {

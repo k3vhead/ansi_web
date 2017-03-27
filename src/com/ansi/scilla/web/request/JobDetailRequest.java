@@ -68,7 +68,8 @@ public class JobDetailRequest extends AbstractRequest {
 		ACTIVATE_JOB,
 		CANCEL_JOB,
 		SCHEDULE_JOB,
-		REPEAT_JOB;
+		REPEAT_JOB,
+		ADD_JOB;
 		
 	}
 }

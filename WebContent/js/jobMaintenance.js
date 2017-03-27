@@ -160,6 +160,64 @@ $( document ).ready(function() {
 				$duration=6000;
 			}
 			$($selectorName).fadeOut($duration);
+		},
+		
+		addJob: function($jobId) {
+			var $url = "job/" + $jobId
+		
+			var $outbound = {};
+    		$outbound["action"]	= 'ADD_JOB';
+    		
+    		
+    		
+    		
+			var jqxhr3 = $.ajax({
+				type: 'POST',
+				url: $url,
+				data: JSON.stringify($outbound),
+				statusCode: {
+					200: function($data) {
+						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+							var $scheduleJobFormDialogSelector = "#" + $modalNamespace + "_scheduleJobForm";
+							var $scheduleFieldSelector = "." + $modalNamespace + "_scheduleField"
+							var $scheduleMessageSelector = "." + $modalNamespace + "_scheduleMessage";							
+							$($scheduleMessageSelector).html("");
+							$($scheduleFieldSelector).val("");
+							$.each($data.data.webMessages, function(index, $value){
+								var $message = "";
+								$.each($value, function(idx2, $msg){
+									$message = $message + " " + $msg;
+								});
+								var $msgSelector = index + "_msg";
+								ANSI_UTILS.setTextValue($modalNamespace, $msgSelector, $message);
+							});
+						}
+						if ( $data.responseHeader.responseCode == 'SUCCESS') {
+							var $scheduleJobFormDialogSelector = "#" + $modalNamespace + "_scheduleJobForm";
+							var $scheduleFieldSelector = "." + $modalNamespace + "_scheduleField"
+							var $scheduleMessageSelector = "." + $modalNamespace + "_scheduleMessage";							
+							$( $scheduleJobFormDialogSelector ).dialog( "close" );
+							$($scheduleMessageSelector).html("");
+							$($scheduleFieldSelector).val("");
+							ANSI_UTILS.setTextValue($namespace, "panelMessage", "Update Successful");
+							JOB_UTILS.fadeMessage($namespace, "panelMessage")
+							JOB_UTILS.panelLoad($jobId);
+						}
+					},				
+					403: function($data) {
+						ANSI_UTILS.setTextValue($namespace, "panelMessage", "Function Not Permitted");
+						JOB_UTILS.fadeMessage($namespace, "panelMessage")
+					}, 
+					404: function($data) {
+						ANSI_UTILS.setTextValue($namespace, "panelMessage", "Resource Not Available");
+						JOB_UTILS.fadeMessage($namespace, "panelMessage")
+					}, 
+					500: function($data) {
+						ANSI_UTILS.setTextValue($namespace, "panelMessage", "System Error -- Contact Support");
+					} 
+				},
+				dataType: 'json'
+			});
 		}
 	}
 	
