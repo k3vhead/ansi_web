@@ -97,6 +97,8 @@ $( document ).ready(function() {
 		
 		// Set the values in an html select tag
 		setOptionList: function($selectorName, $optionList, $selectedValue) {
+			console.log("setOptionList: " + $selectorName);
+			console.log($optionList);
 			
 			var $select = $($selectorName);
 			$('option', $select).remove();

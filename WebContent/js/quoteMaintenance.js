@@ -19,7 +19,7 @@ $( document ).ready(function() {
 
 				
 				$("#addJobRow").click(function(){
-					QUOTEUTILS.addAJob();
+					QUOTEUTILS.addAJob($quoteId);
 				});
 				
 				QUOTEUTILS.panelLoad($quoteId);
@@ -105,6 +105,7 @@ $( document ).ready(function() {
 						//addAJob($currentRow);
 						console.log("Index:"+$index);
 						JOB_UTILS.panelLoadQuote($currentRow, $job.jobId, $index);
+
 						//$(".addressTable").remove();
 						console.log("#"+$currentRow+"_jobPanel_jobLink");
 						
@@ -189,6 +190,7 @@ $( document ).ready(function() {
 					event.preventDefault();
 					console.log("Modify Quote");
 	            });
+				
 				
 			},
 			save: function(){
@@ -302,7 +304,7 @@ $( document ).ready(function() {
 					dataType: 'json'
 				});
 			},
-			addAJob: function(){
+			addAJob: function($quoteId){
 				var $namespace = $currentRow.toString() + "_jobPanel";
 				var $row = $currentRow.toString();
 				$currentRow++;
@@ -329,7 +331,10 @@ $( document ).ready(function() {
 						JOBSCHEDULE.init($row+"_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
 						JOBINVOICE.init($row+"_jobInvoice", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, $jobDetail);
 						JOBAUDIT.init($row+"_jobAudit", $jobDetail);
-						QUOTEUTILS.bindAndFormat();
+						$('.jobSave').on('click', function($clickevent) {
+							JOB_UTILS.addJob($(this).attr("rownum"),$quoteId);
+			            });
+						JOB_UTILS.bindAndFormat();
 	
 					},
 					statusCode: {

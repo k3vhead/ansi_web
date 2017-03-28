@@ -23,6 +23,7 @@
     <tiles:put name="headextra" type="string">
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
         <script type="text/javascript" src="js/jobMaintenance.js"></script>
+        <script type="text/javascript" src="js/quoteMaintenance.js"></script>
         <link rel="stylesheet" href="css/datepicker.css" type="text/css" />
         <style type="text/css">
 			#confirmDelete {

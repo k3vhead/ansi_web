@@ -33,6 +33,8 @@
 	String jobSchedule = panelname + "_jobSchedule";
 	String jobInvoice = panelname + "_jobInvoice";
 	String jobAudit = panelname + "_jobAudit";
+	String jobSave = panelname + "_jobSave";
+	String jobCancel = panelname + "_jobCancel";
 %>
 	
 	<tr>
@@ -76,7 +78,7 @@
 					<webthing:jobSchedule namespace="<%= jobSchedule %>" cssId="jobSchedule" jobId="" page="<%= pageName %>" />
 				</td>
 				<td class="jobTableCell">
-					JOb Invoice:<br />			
+					Job Invoice:<br />			
 					<webthing:jobInvoice namespace="<%= jobInvoice %>" cssId="jobInvoice" page="<%= pageName %>" />
 				</td>
 			</tr>
@@ -85,15 +87,14 @@
 					JobAudit:
 					<webthing:jobAudit namespace="<%= jobAudit %>" cssId="jobAudit" page="<%= pageName %>" />
 				</td>
-				<%--
-				<% if ( !pageName.equals("QUOTE") ) { %>
+				
+				<% if ( pageName.equals("QUOTE") ) { %>
 				<td class="jobTableCell" style="text-align:center;">
-					<input type="button" value="Cancel" id="jobCancelButton" />
-					<input type="button" value="Save" id="jobSaveButton" />
-					<input type="button" value="Save & Exit" id="jobExitButton" />
+				<!-- <input type="button" name="<%= jobCancel %>" value="Cancel" rownum="<%= panelname %>" id="jobCancelButton" /> -->
+					<input type="button" class="jobSave" name="<%= jobSave %>" value="Save" rownum="<%= panelname %>" id="jobSaveButton" />
 				</td>
 				<% }  %>
-				 --%>
+				
 			</tr>
 		</table>    	
 	</td>

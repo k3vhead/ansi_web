@@ -276,7 +276,7 @@ public class JobServlet extends AbstractServlet {
 		
 		job.setAddedDate(today);
 		
-		job.setJobId(jobRequest.getJobId());
+//		job.setJobId(jobRequest.getJobId());
 		
 		if(jobRequest.getQuoteId() != null){
 			job.setQuoteId(jobRequest.getQuoteId());

@@ -4,16 +4,17 @@ $( document ).ready(function() {
 	;JOB_UTILS = {
 		pageInit:function($jobId) {
 			
-			$optionData = ANSI_UTILS.getOptions('JOB_FREQUENCY,JOB_STATUS,INVOICE_TERM,INVOICE_GROUPING,INVOICE_STYLE');
+			$optionData = ANSI_UTILS.getOptions('JOB_FREQUENCY,JOB_STATUS,INVOICE_TERM,INVOICE_GROUPING,INVOICE_STYLE,COUNTRY');
 			JOB_DATA.jobFrequencyList = $optionData.jobFrequency;
 			JOB_DATA.jobStatusList = $optionData.jobStatus;
 			JOB_DATA.invoiceTermList = $optionData.invoiceTerm;
 			JOB_DATA.invoiceGroupingList = $optionData.invoiceGrouping;
 			JOB_DATA.invoiceStyleList = $optionData.invoiceStyle;
-
+			JOB_DATA.countryList = $optionData.country;
 			JOB_DATA.divisionList = ANSI_UTILS.getDivisionList();
 			JOB_DATA.buildingTypeList = ANSI_UTILS.makeBuildingTypeList();
-						
+			
+			
 			JOB_DATA.jobId = $jobId;
 			
 			JOB_UTILS.panelLoad($jobId);
@@ -31,6 +32,7 @@ $( document ).ready(function() {
 			if ( $jobId != '' ) {
 				$jobData = JOB_UTILS.getJobDetail($jobId);
 				$jobDetail = $jobData.job;
+				console.log($jobDetail);
 				JOB_DATA.jobDetail = $jobDetail;
 				$quoteDetail = $jobData.quote;
 				$lastRun = $jobData.lastRun;
@@ -51,6 +53,27 @@ $( document ).ready(function() {
 					JOBSCHEDULE.init("row0_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
 					JOBINVOICE.init("row0_jobInvoice", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, $jobDetail);
 					JOBAUDIT.init("row0_jobAudit", $jobDetail);
+					ADDRESSPANEL.init("row0_jobSite", JOB_DATA.countryList);
+					ADDRESSPANEL.init("row0_billTo", JOB_DATA.countryList);
+					
+					
+					console.log("Quote ID: "+$jobDetail.quoteId);
+					if ( $jobDetail.quoteId != '' ) {
+						var $quoteDetails = QUOTEUTILS.getQuoteDetail($jobDetail.quoteId);
+						var $quoteData = $quoteDetails.quote;
+					}
+					
+
+					if($quoteData != null){
+						console.log($quoteData);
+						if($quoteDetails.billTo != null){
+							ADDRESSPANEL.setAddress("row0_billTo",$quoteDetails.billTo);
+						}
+						if($quoteDetails.jobSite != null){
+							ADDRESSPANEL.setAddress("row0_jobSite",$quoteDetails.jobSite);
+						}
+					}
+					
 				},
 				statusCode: {
 					403: function($data) {
@@ -112,6 +135,9 @@ $( document ).ready(function() {
 				        $(this).css("height","20px");
 				        $(this).css("max-height", "20px");
 				    });
+					$('.jobSave').on('click', function($clickevent) {
+						JOB_UTILS.addJob($(this).attr("rownum"),$jobDetail.quoteId);
+		            });
 				},
 				statusCode: {
 					403: function($data) {
@@ -162,13 +188,52 @@ $( document ).ready(function() {
 			$($selectorName).fadeOut($duration);
 		},
 		
-		addJob: function($jobId) {
-			var $url = "job/" + $jobId
+		addJob: function($rn,$quoteId) {
+			var $url = "job/add";
 		
 			var $outbound = {};
     		$outbound["action"]	= 'ADD_JOB';
-    		
-    		
+    		$pre = "#"+$rn;
+    		$outbound["activationDate"]				= $($pre+"_jobDates_activationDate").html();
+//    		$outbound["billingContactId"]			= $("select[name=]").val();
+    		$outbound["billingNotes"]				= $($pre+"_jobActivation_billingNotes").val();
+    		$outbound["budget"]						= $($pre+"_jobActivation_directLaborBudget").val();
+    		$outbound["buildingType"]				= $($pre+"_jobActivation_buildingType").val();
+    		$outbound["cancelDate"]					= $($pre+"_jobDates_cancelDate").html();
+    		$outbound["cancelReason"]				= $($pre+"_jobDates_cancelReason").html();
+//    		$outbound["contractContactId"]	= $("select[name=]").val();
+    		$outbound["directLaborPct"]				= $($pre+"_jobActivation_directLaborPct").val();
+    		$outbound["divisionId"]					= $($pre+"_jobPanel_divisionId").val();
+    		$outbound["equipment"]					= $($pre+"_jobActivation_equipment").val();
+    		$outbound["expirationDate"]				= $($pre+"_jobInvoice_invoiceExpire").val();
+    		$outbound["expirationReason"]			= $($pre+"_jobInvoice_invoiceExpireReason").val();
+    		$outbound["floors"]						= $($pre+"_jobActivation_nbrFloors").val();
+    		$outbound["invoiceBatch"]				= $($pre+"_jobInvoice_invoiceBatch").val();
+    		$outbound["invoiceGrouping"]			= $($pre+"_jobInvoice_invoiceGrouping").val();
+    		$outbound["invoiceStyle"]				= $($pre+"_jobInvoice_invoiceStyle").val();
+    		$outbound["invoiceTerms"]				= $($pre+"_jobInvoice_invoiceTerms").val();
+//    		$outbound["jobContactId"]				= $($pre+"").val();
+    		$outbound["jobFrequency"]				= $($pre+"_jobProposal_jobFrequency").val();
+    		$outbound["jobNbr"]						= $($pre+"_jobProposal_jobNbr").val();
+//    		$outbound["jobTypeId"]					= $($pre+"").val();
+//    		$outbound["lastPriceChange"]			= $($pre+"").val();
+//    		$outbound["lastReviewDate"]				= $($pre+"").val();
+    		$outbound["omNotes"]					= $($pre+"_jobActivation_omNotes").val();
+    		$outbound["ourVendorNbr"]				= $($pre+"_jobInvoice_invoiceOurVendorNbr").val();
+//    		$outbound["paymentTerms"]				= $($pre+"").val();
+    		$outbound["poNumber"]					= $($pre+"_jobInvoice_invoicePO").val();
+    		$outbound["pricePerCleaning"]			= $($pre+"_jobProposal_ppc").val();
+    		$outbound["quoteId"]					= $quoteId;
+    		$outbound["repeatScheduleAnnually"]		= $($pre+"_jobSchedule_annualRepeat").val();
+    		$outbound["requestSpecialScheduling"]	= 0;
+    		$outbound["serviceDescription"]			= $($pre+"_jobProposal_serviceDescription").val();
+//    		$outbound["siteContact"]				= $($pre+"").val();
+    		$outbound["startDate"]					= $($pre+"_jobDates_startDate").html();
+    		$outbound["status"]						= $($pre+"_jobPanel_jobStatus").val();
+    		$outbound["taxExempt"]					= $($pre+"_jobInvoice_invoiceTaxExempt").val();
+    		$outbound["washerNotes"]				= $($pre+"_jobActivation_washerNotes").val();
+ 
+
     		
     		
 			var jqxhr3 = $.ajax({

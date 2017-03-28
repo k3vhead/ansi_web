@@ -27,9 +27,11 @@
 
 
 <div <%= cssIdString %> <%= cssClassString %> >
+<% if ( page.equalsIgnoreCase("JOB")) { %> 
 	<div style="float:right;margin-right:6px; margin-top:6px;">
 		<span id="<%=namespace %>_invoiceEdit" style="cursor:pointer;" class="green fa fa-pencil" ari-hidden="true"></span>
 	</div>
+<% } %>
 	<form id="<%=namespace%>_jobInvoiceForm">
 		<table>
 			<tr>
@@ -118,7 +120,7 @@
 					<% if ( page.equalsIgnoreCase("JOB")) { %> 
 						<span id="<%=namespace%>_invoiceExpireReason"></span>
 					<% } else { %>
-					<input type="text" name="<%=namespace%>_invoiceExpireReason" id="<%=namespace%>_invoiceExpireReason" />
+						<input type="text" name="<%=namespace%>_invoiceExpireReason" id="<%=namespace%>_invoiceExpireReason" />
 					<% } %>
 				</td>
 			</tr>
