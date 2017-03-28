@@ -23,10 +23,12 @@ public class TicketTableReturnItem extends ReportQuery {
 	public static final String START_DATE ="start_date";
 	public static final String JOB_FREQUENCY ="job_frequency";
 	public static final String PRICE_PER_CLEANING ="price_per_cleaning";
+	public static final String ACT_PRICE_PER_CLEANING ="act_price_per_cleaning";
 	public static final String JOB_NBR ="job_nbr";
 	public static final String JOB_ID = "job_id";
 	public static final String SERVICE_DESCRIPTION ="service_description";
 	public static final String INVOICE_ID = "invoice_id";
+	public static final String INVOICE_DATE = "invoice_date";
 	public static final String PROCESS_DATE = "process_date";
 	public static final String BILL_TO_ADDRESS_ID = "bill_to_address_id";
 	public static final String JOB_SITE_ADDRESS_ID = "job_site_address_id";
@@ -45,10 +47,12 @@ public class TicketTableReturnItem extends ReportQuery {
 	private Date startDate;
 	private String jobFrequency;
 	private BigDecimal pricePerCleaning;
+	private BigDecimal actPricePerCleaning;
 	private Integer jobNbr;
 	private Integer jobId;
 	private String serviceDescription;
 	private Integer invoiceId;
+	private Date invoiceDate;
 	private Date processDate;
 	private String DT_RowId;
 	private Integer billToAddressId;
@@ -71,10 +75,12 @@ public class TicketTableReturnItem extends ReportQuery {
 		this.startDate = rs.getDate(START_DATE);
 		this.jobFrequency = rs.getString(JOB_FREQUENCY);
 		this.pricePerCleaning = rs.getBigDecimal(PRICE_PER_CLEANING);
+		this.actPricePerCleaning = rs.getBigDecimal(ACT_PRICE_PER_CLEANING);
 		this.jobNbr = rs.getInt(JOB_NBR);
 		this.jobId = rs.getInt(JOB_ID);
 		this.serviceDescription = rs.getString(SERVICE_DESCRIPTION);
 		this.invoiceId = rs.getInt(INVOICE_ID);
+		this.invoiceDate = rs.getDate(INVOICE_DATE); 
 		this.processDate = rs.getDate(PROCESS_DATE); 
 		this.billToAddressId = rs.getInt(BILL_TO_ADDRESS_ID);
 		this.jobSiteAddressId = rs.getInt(JOB_SITE_ADDRESS_ID);
@@ -168,6 +174,17 @@ public class TicketTableReturnItem extends ReportQuery {
 		this.jobFrequency = jobFrequency;
 	}
 
+	@DBColumn(ACT_PRICE_PER_CLEANING)
+	@JsonSerialize(using = AnsiCurrencyFormatter.class)
+	public BigDecimal getActPricePerCleaning() {
+		return actPricePerCleaning;
+	}
+
+	@DBColumn(ACT_PRICE_PER_CLEANING)
+	public void setActPricePerCleaning(BigDecimal actPricePerCleaning) {
+		this.actPricePerCleaning = actPricePerCleaning;
+	}
+
 	@DBColumn(PRICE_PER_CLEANING)
 	@JsonSerialize(using = AnsiCurrencyFormatter.class)
 	public BigDecimal getPricePerCleaning() {
@@ -223,6 +240,18 @@ public class TicketTableReturnItem extends ReportQuery {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
 	public Date getProcessDate() {
 		return processDate;
+	}
+
+	@DBColumn(INVOICE_DATE)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
+	public void setInvoiceDate(Date invoiceDate) {
+		this.invoiceDate = invoiceDate;
+	}
+
+	@DBColumn(INVOICE_DATE)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
+	public Date getInvoiceDate() {
+		return invoiceDate;
 	}
 
 	@DBColumn(PROCESS_DATE)

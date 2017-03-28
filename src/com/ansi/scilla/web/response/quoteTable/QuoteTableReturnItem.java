@@ -28,6 +28,8 @@ public class QuoteTableReturnItem extends ReportQuery {
 		public static final String DIVISION_ID = "division_id";
 		public static final String DIVISION_NBR = "division_nbr";
 		public static final String DIVISION_CODE = "division_code";
+		public static final String QUOTE_NUMBER = "quote_number";
+		public static final String REVISION = "revision";
 
 		
 		private Integer quoteId;
@@ -45,27 +47,31 @@ public class QuoteTableReturnItem extends ReportQuery {
 		private Integer divisionId;
 		private Integer divisionNbr;
 		private String divisionCode;
+		private Integer quoteNumber;
+		private String revision;
 		
 		public QuoteTableReturnItem() throws SQLException {
 			super();
 		}
 		public QuoteTableReturnItem(ResultSet rs) throws SQLException {
 			super();
-			this.quoteId = rs.getInt("quote_id");
-			this.quoteCode = rs.getString("quote_code");
-			this.billToName = rs.getString("bill_to_name");
-			this.jobSiteName = rs.getString("job_site_name");
-			this.jobSiteAddress = rs.getString("job_site_address");
-			this.managerName = rs.getString("manager_name");
-			this.proposalDate = rs.getDate("proposal_date");
-			this.quoteJobCount = rs.getInt("quote_job_count");
-			this.quotePpcSum = rs.getBigDecimal("quote_ppc_sum");
+			this.quoteId = rs.getInt(QUOTE_ID);
+			this.quoteCode = rs.getString(QUOTE_CODE);
+			this.quoteNumber = rs.getInt(QUOTE_NUMBER);
+			this.revision = rs.getString(REVISION);
+			this.billToName = rs.getString(BILL_TO_NAME);
+			this.jobSiteName = rs.getString(JOB_SITE_NAME);
+			this.jobSiteAddress = rs.getString(JOB_SITE_ADDRESS);
+			this.managerName = rs.getString(MANAGER_NAME);
+			this.proposalDate = rs.getDate(PROPOSAL_DATE);
+			this.quoteJobCount = rs.getInt(QUOTE_JOB_COUNT);
+			this.quotePpcSum = rs.getBigDecimal(QUOTE_PPC_SUM);
 			this.billToAddressId = rs.getInt(BILL_TO_ADDRESS_ID);
 			this.jobSiteAddressId = rs.getInt(JOB_SITE_ADDRESS_ID);
 			this.divisionId = rs.getInt(DIVISION_ID);
 			this.divisionNbr = rs.getInt(DIVISION_NBR);
 			this.divisionCode = rs.getString(DIVISION_CODE);
-			this.DT_RowId = rs.getInt("quote_id")+"";
+			this.DT_RowId = rs.getInt(QUOTE_ID)+"";
 
 		}
 
@@ -92,6 +98,22 @@ public class QuoteTableReturnItem extends ReportQuery {
 		@DBColumn(QUOTE_CODE)
 		public void setQuoteCode(String quoteCode) {
 			this.quoteCode = quoteCode;
+		}
+		@DBColumn(QUOTE_NUMBER)
+		public Integer getQuoteNumber() {
+			return quoteNumber;
+		}
+		@DBColumn(QUOTE_NUMBER)
+		public void setQuoteNumber(Integer quoteNumber) {
+			this.quoteNumber = quoteNumber;
+		}
+		@DBColumn(REVISION)
+		public String getRevision() {
+			return revision;
+		}
+		@DBColumn(REVISION)
+		public void setRevision(String revision) {
+			this.revision = revision;
 		}
 		@DBColumn(BILL_TO_NAME)
 		public String getBillToName() {
