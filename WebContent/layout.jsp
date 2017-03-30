@@ -227,9 +227,9 @@
 										<ul>
 											<li><html:link action="invoiceLookup"><bean:message key="menu.label.lookup" /></html:link></li>
 											<ansi:hasWrite>
-											<li><a href="#"><bean:message key="menu.label.maintenance" /></a></li>
-											<li><a href="#"><bean:message key="menu.label.new" /></a></li>
-											<li><a href="#"><bean:message key="menu.label.templates" /></a></li>
+											<li><html:link action="invoiceGeneration">Generate</html:link></li>
+											<li><html:link action="invoicePrint">Print</html:link></li>
+											<%-- <li><a href="#"><bean:message key="menu.label.templates" /></a></li> --%>
 											</ansi:hasWrite>
 										</ul>
 									</li>

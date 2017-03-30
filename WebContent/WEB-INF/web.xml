@@ -170,12 +170,32 @@
 
 
 	<servlet>
+		<servlet-name>invoiceGeneration</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.InvoiceGenerationServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>invoiceGeneration</servlet-name>
+		<url-pattern>/invoiceGeneration/*</url-pattern>
+	</servlet-mapping>
+
+
+	<servlet>
 		<servlet-name>invoiceLookup</servlet-name>
 		<servlet-class>com.ansi.scilla.web.servlets.InvoiceLookupServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>invoiceLookup</servlet-name>
 		<url-pattern>/invoiceLookup/*</url-pattern>
+	</servlet-mapping>
+
+
+	<servlet>
+		<servlet-name>invoicePrint</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.InvoicePrintServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>invoicePrint</servlet-name>
+		<url-pattern>/invoicePrint/*</url-pattern>
 	</servlet-mapping>
 
 

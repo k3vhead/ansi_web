@@ -61,9 +61,21 @@
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
+            path="/invoiceGeneration"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/invoiceGeneration.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		<action
             path="/invoiceLookup"
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">
             <forward name="valid" path="/invoiceLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		<action
+            path="/invoicePrint"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/invoicePrint.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
