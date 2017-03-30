@@ -170,6 +170,16 @@
 
 
 	<servlet>
+		<servlet-name>invoiceLookup</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.InvoiceLookupServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>invoiceLookup</servlet-name>
+		<url-pattern>/invoiceLookup/*</url-pattern>
+	</servlet-mapping>
+
+
+	<servlet>
 		<servlet-name>job</servlet-name>
 		<servlet-class>com.ansi.scilla.web.servlets.JobServlet</servlet-class>
 	</servlet>
