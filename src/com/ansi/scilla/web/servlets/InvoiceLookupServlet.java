@@ -58,8 +58,8 @@ public class InvoiceLookupServlet extends AbstractServlet {
 		int start = 0;
 		int draw = 0;
 		int col = 0;
-		String dir = "desc";
-		String[] cols = { "invoice.invoice_id", "div", "bill_to_name", "ticket.invoice_date", "ticket_count", "invoice_total" };
+		String dir = "asc";
+		String[] cols = { "invoice.invoice_id", "div", "bill_to_name", "ticket_count", "ticket.invoice_date", "invoice_total" };
 		String sStart = request.getParameter("start");
 	    String sAmount = request.getParameter("length");
 	    String sDraw = request.getParameter("draw");
@@ -101,14 +101,18 @@ public class InvoiceLookupServlet extends AbstractServlet {
 		            col = 0;
 		    }
 		    if (sdir != null) {
+				System.out.println("sdir: " + sdir);
 		        if (!sdir.equals("asc"))
 		            dir = "desc";
 		    }
 		    
 		    String colName = cols[col];
 		    int total = 0;
-		    String sql = "select count(*)"
-					+ " from invoice";
+		    String sql = "select count(1) from ("
+					+ InvoiceSearch.sql
+					+ ") t";
+			System.out.println("total count: " + sql);
+
 			Statement s = conn.createStatement();
 			ResultSet rs0 = s.executeQuery(sql);
 			if(rs0.next()){
@@ -139,12 +143,15 @@ public class InvoiceLookupServlet extends AbstractServlet {
 				resultList.add(new InvoiceLookupResponseItem(rs));
 			}
 			
-			String sql2 = "select count(*) "
-					+ InvoiceSearch.sqlFromClause;
+			String sql2 = "select count(1) from ("
+					+ InvoiceSearch.sql;
 			
 			if (search != "") {
 				sql2 += search;
 			}
+			sql2 += ") t";
+			
+			System.out.println("filtered count: " + sql2);
 			Statement s2 = conn.createStatement();
 			ResultSet rs2 = s2.executeQuery(sql2);
 			if(rs2.next()){
