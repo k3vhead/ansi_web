@@ -76,10 +76,10 @@
         	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}}
         	        ],
         	        "columnDefs": [
-         	            { "orderable": false, "targets": -1 },
+//         	            { "orderable": false, "targets": -1 },  // Need to re-add this when we add the action column back in
         	            { className: "dt-left", "targets": [0,1,2] },
         	            { className: "dt-center", "targets": [3,4] },
-        	            { className: "dt-right", "targets": [5]}
+        	            { className: "dt-right", "targets": [5,6,7,8,9]}
         	         ],
         	        "paging": true,
 			        "ajax": {
@@ -104,7 +104,19 @@
 			            	if(row.invoiceDate != null){return (row.invoiceDate+"");}
 			            } },
 			            { title: "Amount",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            	if(row.invoiceAmount != null){return (row.invoiceAmount+"");}
+			            } },
+			            { title: "Tax",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            	if(row.invoiceTax != null){return (row.invoiceTax+"");}
+			            } },
+			            { title: "Total",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.invoiceTotal != null){return (row.invoiceTotal+"");}
+			            } },
+			            { title: "Paid",  "defaultContent": "<i>-</i>", data: function ( row, type, set ) {
+			            	if(row.invoicePaid != null){return (row.invoicePaid+"");}
+			            } },
+			            { title: "Balance",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            	if(row.invoiceBalance != null){return (row.invoiceBalance+"");}else{return(row.invoiceTotal+"");}
 			            } },
 			            //{ title: "Action",  data: function ( row, type, set ) {	
 			            //	{return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='jobMaintenance.html?id="+row.jobId+"' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.jobId+"'></a></ansi:hasWrite></ansi:hasPermission>";}
@@ -184,12 +196,16 @@
     	
  	<table id="invoiceTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:800px;width:800px;">
        	<colgroup>
+        	<col style="width:5%;" />
+        	<col style="width:5%;" />
+        	<col style="width:20%;" />
         	<col style="width:10%;" />
         	<col style="width:10%;" />
-        	<col style="width:20%;" />
-        	<col style="width:20%;" />
-        	<col style="width:20%;" />
-        	<col style="width:20%;" />
+        	<col style="width:10%;" />
+        	<col style="width:10%;" />
+        	<col style="width:10%;" />
+        	<col style="width:10%;" />
+        	<col style="width:10%;" />
    		</colgroup>
         <thead>
             <tr>
@@ -198,7 +214,11 @@
     			<th>Bill To</th>
     			<th>Tickets</th>
     			<th>Invoice Date</th>
-    			<th>Amount Due</th>
+    			<th>Amount</th>
+    			<th>Tax</th>
+    			<th>Total</th>
+    			<th>Paid</th>
+    			<th>Balance</th>
             </tr>
         </thead>
         <tfoot>
@@ -208,7 +228,11 @@
     			<th>Bill To</th>
     			<th>Tickets</th>
     			<th>Invoice Date</th>
-    			<th>Amount Due</th>
+    			<th>Amount</th>
+    			<th>Tax</th>
+    			<th>Total</th>
+    			<th>Paid</th>
+    			<th>Balance</th>
             </tr>
         </tfoot>
     </table>
