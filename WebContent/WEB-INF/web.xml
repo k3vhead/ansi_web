@@ -398,6 +398,14 @@
 	<servlet-name>userServlet</servlet-name>
 		<url-pattern>/user/*</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>paymentLookup</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.PaymentLookupServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>paymentLookup</servlet-name>
+		<url-pattern>/paymentLookup/*</url-pattern>
+	</servlet-mapping>
 
 
 
