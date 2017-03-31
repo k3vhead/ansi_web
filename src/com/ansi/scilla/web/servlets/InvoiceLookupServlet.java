@@ -59,7 +59,8 @@ public class InvoiceLookupServlet extends AbstractServlet {
 		int draw = 0;
 		int col = 0;
 		String dir = "asc";
-		String[] cols = { "invoice.invoice_id", "div", "bill_to_name", "ticket_count", "ticket.invoice_date", "invoice_total" };
+		String[] cols = { "invoice.invoice_id", "div", "bill_to_name", "ticket_count", "ticket.invoice_date", 
+						"invoice_amount", "invoice_tax", "invoice_total", "invoice_paid", "invoice_balance" };
 		String sStart = request.getParameter("start");
 	    String sAmount = request.getParameter("length");
 	    String sDraw = request.getParameter("draw");
