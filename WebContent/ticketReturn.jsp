@@ -106,6 +106,36 @@
         
         <script type="text/javascript">
         $( document ).ready(function() {
+        	$('input[type=text]').change(function () {
+    			var $ticketNbr = $('#ticketNbr').val();
+            	if ($ticketNbr != '') {
+            		doPopulate($ticketNbr)
+            	}
+            });
+        		
+        		
+        	function doPopulate($ticketNbr) {
+        		
+        		
+        	var jqxhr = $.ajax({
+        		type: 'GET',
+        		url: "ticket/" + $ticketNbr,
+        		//data: $ticketNbr,
+        		success: function($data) {
+        			populateTicketDetail($data.data);
+        			populateInvoiceDetail($data.data);
+        		},
+        		statusCode: {
+        			403: function($data) {
+        				$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+        			},
+        			500: function($data) {
+             	    	$("#globalMsg").html("System Error: Contact Support").fadeIn(10);
+             	    } 
+        		},
+        		dataType: 'json'
+        	});
+        	
 			$("#panelSelector").change(function($event) {
 				$(".workPanel").hide();
 				$("#monitor").html("");
@@ -119,26 +149,6 @@
         		}
 
 			});
-        
-        
-        var jqxhr = $.ajax({
-			type: 'GET',
-			url: 'ticket/677949',
-			success: function($data) {
-				populateTicketDetail($data.data);
-				populateInvoiceDetail($data.data);
-				populateJobData($data.data);
-			},
-			statusCode: {
-				403: function($data) {
-					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-				},
-				500: function($data) {
-     	    		$("#globalMsg").html("System Error: Contact Support").fadeIn(10);
-     	    	} 
-			},
-			dataType: 'json'
-		});
 	
 	function populateTicketDetail($data) {
 		$("#ticketId").html($data.ticketDetail.ticketId);
@@ -158,20 +168,43 @@
 		$("#invoiceBalance").html($data.invoiceDetail.balance);
 		
 	}
-        
-        
-	function populateJobData($data) {
-			JOB_UTILS.pageInit('<c:out value="${ANSI_JOB_ID}" />');
-			console.debug(JOB_DATA.invoiceStyleList);
-			JOBINVOICE.init("invoiceModal", 
-					JOB_DATA.invoiceStyleList, 
-					JOB_DATA.invoiceGroupingList, 
-					JOB_DATA.invoiceTermList, 
-					JOB_DATA.jobDetail);
-			
-			$("#jobNbr").focus();
-		}
-      });
+	
+	
+	$("#cancelUpdate").click( function($clickevent) {
+		$clickevent.preventDefault();
+		clearAddForm();
+		$('#addFormTicket').bPopup().close();
+	});
+	
+	
+	$("#goUpdate").click( function($clickevent) {
+		$clickevent.preventDefault();
+		$outbound = {};
+		$.each( $('#addForm :input'), function(index, value) {
+			if ( value.name ) {
+				$fieldName = value.name;
+				$id = "#addForm input[name='" + $fieldName + "']";
+				$val = $($id).val();
+				$outbound[$fieldName] = $val;
+			}
+		  })
+		});
+	
+		var jqxhr = $.ajax({
+			type: 'POST',
+			url: "ticket/" + $ticketNbr,
+			success: function($data) {
+			},
+			statusCode: {
+				403: function($data) {
+					$("#globalMsg").html("Session Timeout. Log in and try again");
+				} 
+			},
+			dataType: 'json'
+		});
+        }
+	
+    });
 
 		</script>
     </tiles:put>
@@ -180,40 +213,163 @@
     <tiles:put name="content" type="string">    	
     	<h1>Ticket Return</h1>
     	
+    	<form id="form">
+    		<div>
+        		<input id="ticketNbr" name="ticketNbr" type="text"/>
+    		</div>
+		</form>
+ 		<input id="doPopulate" type="button" value="Go" />
+    	
     	<div  id="selectPanel">
 			<select id="panelSelector">
 				<option value=""></option>
-				<option value="newStatus">New Status Panel</option>
-				<option value="completeTicket">Complete Ticket Panel</option>
-				<option value="skipTicket">Skip Ticket Panel</option>
-				<option value="voidTicket">Void Ticket Panel</option>
-				<option value="rejectTicket">Reject Ticket Panel</option>
-				<option value="requeueTicket">ReQueue Ticket Panel</option>
+				<option value="completeTicket">Complete Ticket</option>
+				<option value="skipTicket">Skip Ticket</option>
+				<option value="voidTicket">Void Ticket</option>
+				<option value="rejectTicket">Reject Ticket</option>
+				<option value="requeueTicket">Re-Queue Ticket</option>
 			</select>
-			<span id="monitor"></span>
-		</div>
-		
-		<div class="workPanel" id="newStatus">
-			<h2>THis is panel 1</h2>
 		</div>
   	
 		<div class="workPanel" id="completeTicket">
-			<h2>THis is panel 2</h2>
+			<form action="#" method="post" id="addForm">
+		    			<table>
+		    				<tr>
+		    					<td><span class="required">*</span><span class="formLabel">Completion Date:</span></td>
+		    					<td>
+		    						<input type="text" name="completionDate"/>
+		    					</td>
+		    				</tr>
+		    				<tr>
+		    					<td><span class="required">*</span><span class="formLabel">PPC:</span></td>
+		    					<td>
+		    						<input type="text" name="actPricePerCleaning"/>
+		    					</td>
+		    				</tr>
+		    				<tr>
+		    					<td><span class="required">*</span><span class="formLabel">DL %:</span></td>
+		    					<td>
+		    						<input type="text" name="defaultActDlPct"/>
+		    					</td>
+		    				</tr>
+		    				<tr>
+		    					<td><span class="required">*</span><span class="formLabel">Direct Labor:</span></td>
+		    					<td>
+		    						<input type="text" name="actDlAmt"/>
+		    					</td>
+		    				</tr>
+							<tr>
+		    					<td><span class="required">*</span><span class="formLabel">Completion Notes:</span></td>
+		    					<td>
+		    						<input type="text" name="processNotes"/>
+		    					</td>
+		    				</tr>
+		    				<tr>
+		    					<td><span class="required">*</span><span class="formLabel">Customer Signature:</span></td>
+		    					<td>
+		    						<input type="checkbox" name="customerSignature" />
+		    					</td>
+		    				</tr>
+		    				<tr>
+		    					<td><span class="required">*</span><span class="formLabel">Bill Sheet:</span></td>
+		    					<td>
+		    						<input type="checkbox" name="billSheet"/>
+		    					</td>
+		    				</tr>
+		    				<tr>
+		    					<td><span class="required">*</span><span class="formLabel">Manager Approval:</span></td>
+		    					<td>
+		    						<input type="checkbox" name="mgrApproval"/>
+		    					</td>
+		    				</tr>
+		    				
+		    				
+		    				<tr>
+		    					<td colspan="2" style="text-align:center;">
+		    						<input type="button" class="prettyButton" value="Complete" id="goUpdate" />
+		    						<input type="button" class="prettyButton" value="Clear" id="cancelUpdate" />
+		    					</td>
+		    				</tr>
+		    			</table>
+		    		</form>
 		</div>
 
 		<div class="workPanel" id="skipTicket">
-			<h2>THis is panel 3</h2>
+		    				<tr>
+		    					<td><span class="required">*</span><span class="formLabel">Skip Date:</span></td>
+		    					<td>
+		    						<input type="text" name="skipDate"/>
+		    					</td>
+		    				</tr>
+							<tr>
+		    					<td><span class="required">*</span><span class="formLabel">Skip Reason:</span></td>
+		    					<td>
+		    						<input type="text" name="description"/>
+		    					</td>
+		    				</tr>
+		    				<tr>
+		    					<td colspan="2" style="text-align:center;">
+		    						<input type="button" class="prettyButton" value="Skip" id="goUpdate" />
+		    						<input type="button" class="prettyButton" value="Clear" id="cancelUpdate" />
+		    					</td>
+		    				</tr>
 		</div>
 		<div class="workPanel" id="voidTicket">
-			<h2>THis is panel 4</h2>
+		    				<tr>
+		    					<td><span class="required">*</span><span class="formLabel">Void Date:</span></td>
+		    					<td>
+		    						<input type="text" name="divisionNbr"/>
+		    					</td>
+		    				</tr>
+							<tr>
+		    					<td><span class="required">*</span><span class="formLabel">Void Reason:</span></td>
+		    					<td>
+		    						<input type="text" name="description"/>
+		    					</td>
+		    				</tr>
+		    				<tr>
+		    					<td colspan="2" style="text-align:center;">
+		    						<input type="button" class="prettyButton" value="Void" id="goUpdate" />
+		    						<input type="button" class="prettyButton" value="Clear" id="cancelUpdate" />
+		    					</td>
+		    				</tr>
 		</div>
   	
 		<div class="workPanel" id="rejectTicket">
-			<h2>THis is panel 5</h2>
+		    				<tr>
+		    					<td><span class="required">*</span><span class="formLabel">Reject Date:</span></td>
+		    					<td>
+		    						<input type="text" name="divisionNbr"/>
+		    					</td>
+		    				</tr>
+							<tr>
+		    					<td><span class="required">*</span><span class="formLabel">Reject Reason:</span></td>
+		    					<td>
+		    						<input type="text" name="description"/>
+		    					</td>
+		    				</tr>
+		    				<tr>
+		    					<td colspan="2" style="text-align:center;">
+		    						<input type="button" class="prettyButton" value="Reject" id="goUpdate" />
+		    						<input type="button" class="prettyButton" value="Clear" id="cancelUpdate" />
+		    					</td>
+		    				</tr>
 		</div>
 
 		<div class="workPanel" id="requeueTicket">
-			<h2>THis is panel 6</h2>
+		    				<tr>
+		    					<td><span class="required">*</span><span class="formLabel">Process Date:</span></td>
+		    					<td>
+		    						<input type="text" name="divisionNbr"/>
+		    					</td>
+		    				</tr>
+		    				<tr>
+		    					<td colspan="2" style="text-align:center;">
+		    						<input type="button" class="prettyButton" value="Re-Queue" id="goUpdate" />
+		    						<input type="button" class="prettyButton" value="Clear" id="cancelUpdate" />
+		    					</td>
+		    				</tr>
+			
 		</div>
     	
     	
@@ -254,13 +410,6 @@
     			<td><span id="invoiceBalance"></span></td>
     		</tr>
     	</table>
-    	
-    	
-		<table style="border:solid 1px #000000; margin-top:8px;" id="jobPanelHolder">
-			<tbody>
-				<tr><td>&nbsp;</td></tr>
-			</tbody>
-		</table> 
     	
     </tiles:put>
 
