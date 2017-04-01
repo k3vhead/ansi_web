@@ -106,7 +106,7 @@
         
         <script type="text/javascript">
         $( document ).ready(function() {
-        	$('input[type=text]').change(function () {
+        	$('#doPopulate').click(function () {
     			var $ticketNbr = $('#ticketNbr').val();
             	if ($ticketNbr != '') {
             		doPopulate($ticketNbr)
@@ -117,24 +117,28 @@
         	function doPopulate($ticketNbr) {
         		
         		
-        	var jqxhr = $.ajax({
-        		type: 'GET',
-        		url: "ticket/" + $ticketNbr,
-        		//data: $ticketNbr,
-        		success: function($data) {
-        			populateTicketDetail($data.data);
-        			populateInvoiceDetail($data.data);
-        		},
-        		statusCode: {
-        			403: function($data) {
-        				$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-        			},
-        			500: function($data) {
-             	    	$("#globalMsg").html("System Error: Contact Support").fadeIn(10);
-             	    } 
-        		},
-        		dataType: 'json'
-        	});
+		       	var jqxhr = $.ajax({
+		       		type: 'GET',
+		       		url: "ticket/" + $ticketNbr,
+		       		//data: $ticketNbr,
+		       		success: function($data) {
+		       			populateTicketDetail($data.data);
+		       			populateInvoiceDetail($data.data);
+		       		},
+		       		statusCode: {
+	       				404: function($data) {
+	        	    		$("#globalMsg").html("Bad Ticket Number").fadeIn(10);
+	        	    	},
+						403: function($data) {
+							$("#globalMsg").html("Session Timeout. Log in and try again");
+						},
+		       			500: function($data) {
+	            	    	$("#globalMsg").html("System Error: Contact Support").fadeIn(10);
+	            		},
+		       		},
+		       		dataType: 'json'
+		       	});
+        	}
         	
 			$("#panelSelector").change(function($event) {
 				$(".workPanel").hide();
@@ -150,59 +154,66 @@
 
 			});
 	
-	function populateTicketDetail($data) {
-		$("#ticketId").html($data.ticketDetail.ticketId);
-		$("#actPricePerCleaning").html($data.ticketDetail.actPricePerCleaning);
-		$("#totalVolPaid").html($data.ticketDetail.totalVolPaid);
-		$("#actTax").html($data.ticketDetail.actTax);
-		$("#totalTaxPaid").html($data.ticketDetail.totalTaxPaid);
-		$("#ticketBalance").html($data.ticketDetail.balance);
-		
-	}
-	function populateInvoiceDetail($data) {
-		$("#invoiceId").html($data.invoiceDetail.invoiceId);
-		$("#sumInvPpc").html($data.invoiceDetail.sumInvPpc);
-		$("#sumInvPpcPaid").html($data.invoiceDetail.sumInvPpcPaid);
-		$("#sumInvTax").html($data.invoiceDetail.sumInvTax);
-		$("#sumInvTaxPaid").html($data.invoiceDetail.sumInvTaxPaid);
-		$("#invoiceBalance").html($data.invoiceDetail.balance);
-		
-	}
-	
-	
-	$("#cancelUpdate").click( function($clickevent) {
-		$clickevent.preventDefault();
-		clearAddForm();
-		$('#addFormTicket').bPopup().close();
-	});
-	
-	
-	$("#goUpdate").click( function($clickevent) {
-		$clickevent.preventDefault();
-		$outbound = {};
-		$.each( $('#addForm :input'), function(index, value) {
-			if ( value.name ) {
-				$fieldName = value.name;
-				$id = "#addForm input[name='" + $fieldName + "']";
-				$val = $($id).val();
-				$outbound[$fieldName] = $val;
+			function populateTicketDetail($data) {
+				$("#ticketId").html($data.ticketDetail.ticketId);
+				$("#actPricePerCleaning").html($data.ticketDetail.actPricePerCleaning);
+				$("#totalVolPaid").html($data.ticketDetail.totalVolPaid);
+				$("#actTax").html($data.ticketDetail.actTax);
+				$("#totalTaxPaid").html($data.ticketDetail.totalTaxPaid);
+				$("#ticketBalance").html($data.ticketDetail.balance);
+				
 			}
-		  })
-		});
+			function populateInvoiceDetail($data) {
+				$("#invoiceId").html($data.invoiceDetail.invoiceId);
+				$("#sumInvPpc").html($data.invoiceDetail.sumInvPpc);
+				$("#sumInvPpcPaid").html($data.invoiceDetail.sumInvPpcPaid);
+				$("#sumInvTax").html($data.invoiceDetail.sumInvTax);
+				$("#sumInvTaxPaid").html($data.invoiceDetail.sumInvTaxPaid);
+				$("#invoiceBalance").html($data.invoiceDetail.balance);
+				
+			}
 	
-		var jqxhr = $.ajax({
-			type: 'POST',
-			url: "ticket/" + $ticketNbr,
-			success: function($data) {
-			},
-			statusCode: {
-				403: function($data) {
-					$("#globalMsg").html("Session Timeout. Log in and try again");
-				} 
-			},
-			dataType: 'json'
-		});
-        }
+	
+			$("#cancelUpdate").click( function($clickevent) {
+				$clickevent.preventDefault();
+				clearAddForm();
+				$('#addFormTicket').bPopup().close();
+			});
+	
+	
+			$("#goUpdate").click( function($clickevent) {
+				$clickevent.preventDefault();
+				$outbound = {};
+				$.each( $('#addForm :input'), function(index, value) {
+					if ( value.name ) {
+						$fieldName = value.name;
+						$id = "#addForm input[name='" + $fieldName + "']";
+						$val = $($id).val();
+						$outbound[$fieldName] = $val;
+					}
+				 })
+			});
+	
+			var jqxhr = $.ajax({
+				type: 'POST',
+				url: "ticket/" + $ticketNbr,
+				data: JSON.stringify($outbound),
+				success: function($data) {
+				},
+				statusCode: {
+       				404: function($data) {
+        	    		$("#globalMsg").html("Bad Ticket Number").fadeIn(10);
+        	    	},
+					403: function($data) {
+						$("#globalMsg").html("Session Timeout. Log in and try again");
+					},
+	       			500: function($data) {
+            	    	$("#globalMsg").html("System Error: Contact Support").fadeIn(10);
+            		},  
+				},
+				dataType: 'json'
+			});
+        
 	
     });
 
@@ -218,7 +229,7 @@
         		<input id="ticketNbr" name="ticketNbr" type="text"/>
     		</div>
 		</form>
- 		<input id="doPopulate" type="button" value="Go" />
+ 		<input id="doPopulate" type="button" value="Search" />
     	
     	<div  id="selectPanel">
 			<select id="panelSelector">
@@ -286,7 +297,7 @@
 		    				
 		    				<tr>
 		    					<td colspan="2" style="text-align:center;">
-		    						<input type="button" class="prettyButton" value="Complete" id="goUpdate" />
+		    						<input type="button" class="prettyButton" value="Complete" id="goUpdate" data-panel="complete" />
 		    						<input type="button" class="prettyButton" value="Clear" id="cancelUpdate" />
 		    					</td>
 		    				</tr>
@@ -309,7 +320,7 @@
 		    				</tr>
 		    				<tr>
 		    					<td colspan="2" style="text-align:center;">
-		    						<input type="button" class="prettyButton" value="Skip" id="goUpdate" />
+		    						<input type="button" class="prettyButton" value="Skip" id="goUpdate"data-panel="skip" />
 		    						<input type="button" class="prettyButton" value="Clear" id="cancelUpdate" />
 		    					</td>
 		    				</tr>
@@ -329,7 +340,7 @@
 		    				</tr>
 		    				<tr>
 		    					<td colspan="2" style="text-align:center;">
-		    						<input type="button" class="prettyButton" value="Void" id="goUpdate" />
+		    						<input type="button" class="prettyButton" value="Void" id="goUpdate" data-panel="void"/>
 		    						<input type="button" class="prettyButton" value="Clear" id="cancelUpdate" />
 		    					</td>
 		    				</tr>
@@ -350,7 +361,7 @@
 		    				</tr>
 		    				<tr>
 		    					<td colspan="2" style="text-align:center;">
-		    						<input type="button" class="prettyButton" value="Reject" id="goUpdate" />
+		    						<input type="button" class="prettyButton" value="Reject" id="goUpdate" data-panel="reject" />
 		    						<input type="button" class="prettyButton" value="Clear" id="cancelUpdate" />
 		    					</td>
 		    				</tr>
@@ -365,7 +376,7 @@
 		    				</tr>
 		    				<tr>
 		    					<td colspan="2" style="text-align:center;">
-		    						<input type="button" class="prettyButton" value="Re-Queue" id="goUpdate" />
+		    						<input type="button" class="prettyButton" value="Re-Queue" id="goUpdate" data-panel="requeue" />
 		    						<input type="button" class="prettyButton" value="Clear" id="cancelUpdate" />
 		    					</td>
 		    				</tr>
