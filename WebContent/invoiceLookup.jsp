@@ -48,13 +48,13 @@
         <script type="text/javascript">
         
         $(document).ready(function(){
-      	  		$('.ScrollTop').click(function() {
-      	   		 $('html, body').animate({scrollTop: 0}, 800);
-      	  		return false;
-      	    	});
+        	var $filterDivisionId = '<c:out value="${ANSI_DIVISION_ID}" />';
+        	
+			$('.ScrollTop').click(function() {
+				$('html, body').animate({scrollTop: 0}, 800);
+				return false;
       		});
             	       	
-        	$(document).ready(function() {
         	var dataTable = null;
         	
         	function createTable(){
@@ -84,7 +84,8 @@
         	        "paging": true,
 			        "ajax": {
 			        	"url": "invoiceLookup",
-			        	"type": "GET"
+			        	"type": "GET",
+			        	"data":{"divisionId":$filterDivisionId}
 			        	},
 			        columns: [
 			        	

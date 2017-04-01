@@ -24,16 +24,6 @@
     
     <tiles:put name="headextra" type="string">
         <style type="text/css">
-			#displayTable {
-				width:90%;
-			}
-			#addFormDiv {
-				display:none;
-				background-color:#FFFFFF;
-				color:#000000;
-				width:400px;
-				padding:15px;
-			}
 			#summaryTable {
 				width:100%;
 				width:1300px;
@@ -44,7 +34,6 @@
 				display:none;
 			}
 			#ticketDRV {
-				width:100%;
 				max-width:1300px;
 				width:1300px;
 			}
@@ -227,10 +216,10 @@
             function initComplete (){
               var r = $('#TicketDRV tfoot tr');
               r.find('th').each(function(){
-                $(this).css('padding', 8);
+                //$(this).css('padding', 8);
               });
               $('#TicketDRV thead').append(r);
-              $('#divisionSelect').css('text-align', 'center');
+              //$('#divisionSelect').css('text-align', 'center');
             }
             
             
@@ -309,18 +298,18 @@
     	</table>
     
     
- 	<table id="ticketDRV" style="table-layout: fixed" class="display" cellspacing="0" width="100%" style="font-size:9pt;max-width:1300px;width:1300px;">
+ 	<table id="ticketDRV" class="display" cellspacing="0" style="table-layout: fixed; font-size:9pt;max-width:1300px;width:1300px;">
         <colgroup>
-        	<col style="width:6%;" />
-    		<col style="width:6%;" />
+        	<col style="width:5%;" />
+    		<col style="width:5%;" />
     		<col style="width:12%;" />
     		<col style="width:12%;" />
     		<col style="width:12%;" />
     		<col style="width:6%;" />
     		<col style="width:6%;" />
     		<col style="width:6%;" />
-    		<col style="width:8%;" />
-    		<col style="width:8%;" />
+    		<col style="width:7%;" />
+    		<col style="width:7%;" />
     		<col style="width:8%;" />
     		<col style="width:7%;" />
     		<col style="width:7%;" />

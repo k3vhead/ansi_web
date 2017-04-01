@@ -156,6 +156,7 @@
 			        	var $action = $clickevent.currentTarget.attributes['data-action'].value;
 			        	if ( $action=='list') {
 			        		console.debug("Listing invoices for " + $divisionId);
+			        		location.href="invoiceLookup.html?id=" + $divisionId;
 			        	} else if ( $action=='print') {
 			        		console.debug("Printing invoices for " + $divisionId);
 			        		printModal($divisionId);
@@ -227,11 +228,11 @@
 			    						$($selectorName).show();
 			    						$($selectorName).html(value[0]).fadeOut(4000);
 			    					});
+			    				} else {
+			    					$("#printModal").dialog("close");
+			    					console.debug($data.data);
+			    					//getPDF($data);
 			    				}
-			    			},
-			    			999: function($data) {
-		    					$("#printModal").dialog("close");
-		    					getPDF($data);
 			    			},
 		    				403: function($data) {
 		    					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
@@ -245,23 +246,34 @@
 		        }
         
 				function getPDF(blob) {
-					// Create a new Blob object using the 
-			        //response data of the onload object
-			        //var blob = new Blob([this.response], {type: 'application/pdf'});
-			        //Create a link element, hide it, direct 
-			        //it towards the blob, and then 'click' it programatically
-			        var a = document.createElement("a");
-			        a.style = "display: none";
-			        document.body.appendChild(a);
-			        //Create a DOMString representing the blob 
-			        //and point the link element towards it
-			        var url = window.URL.createObjectURL(blob);
-			        a.href = url;
-			        a.download = 'myFile.pdf';
-			        //programatically click the link to trigger the download
-			        a.click();
-			        //release the reference to the file by revoking the Object URL
-			        window.URL.revokeObjectURL(url);
+					let xhr = new XMLHttpRequest();
+				    //set the request type to post and the destination url to '/convert'
+				    xhr.open('POST', 'convert');
+				    //set the reponse type to blob since that's what we're expecting back
+				    xhr.responseType = 'blob';
+				    let formData = new FormData(this);
+				    xhr.send(formData); 
+
+				    xhr.onload = function(e) {
+				        if (this.status == 200) {
+				            // Create a new Blob object using the response data of the onload object
+				            var blob = new Blob([this.response], {type: 'image/pdf'});
+				            //Create a link element, hide it, direct it towards the blob, and then 'click' it programatically
+				            let a = document.createElement("a");
+				            a.style = "display: none";
+				            document.body.appendChild(a);
+				            //Create a DOMString representing the blob and point the link element towards it
+				            let url = window.URL.createObjectURL(blob);
+				            a.href = url;
+				            a.download = 'myFile.pdf';
+				            //programatically click the link to trigger the download
+				            a.click();
+				            //release the reference to the file by revoking the Object URL
+				            window.URL.revokeObjectURL(url);
+				        }else{
+				            //deal with your error state here
+				        }
+				    };
 				}
 				
 				function getPDFxxx(blob) {

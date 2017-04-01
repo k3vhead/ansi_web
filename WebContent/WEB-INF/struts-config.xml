@@ -68,7 +68,10 @@
         </action>
 		<action
             path="/invoiceLookup"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.action.InvoiceLookupAction"
+            name="idForm"
+            input="/invoiceLookup.jsp"
+            scope="request">
             <forward name="valid" path="/invoiceLookup.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
