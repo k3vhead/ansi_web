@@ -30,6 +30,9 @@
 			.action-link {
 				cursor:pointer;
 			}
+			#pdfDownload {
+				display:none;
+			}
         </style>
         
         <script type="text/javascript">        
@@ -117,7 +120,7 @@
 				            		var $dataDiv = 'data-division="' + row.divisionId + '"';
 				            		var $listLink = '<i class="action-link fa fa-list" aria-hidden="true" data-action="list" ' + $dataDiv + '></i>';
 				            		var $printLink = '<i class="action-link fa fa-print" aria-hidden="true" data-action="print" ' + $dataDiv + '></i>';
-				            		return $listLink + ' ' + $printLink;
+				            		return $listLink + ' | ' + $printLink;
 				            	}
 				            } }
 				            ],
@@ -155,10 +158,8 @@
 			        	var $divisionId = $clickevent.currentTarget.attributes['data-division'].value;
 			        	var $action = $clickevent.currentTarget.attributes['data-action'].value;
 			        	if ( $action=='list') {
-			        		console.debug("Listing invoices for " + $divisionId);
 			        		location.href="invoiceLookup.html?id=" + $divisionId;
 			        	} else if ( $action=='print') {
-			        		console.debug("Printing invoices for " + $divisionId);
 			        		printModal($divisionId);
 			        	} else {
 			        		$("#globalMessage").html("Invalid action. Reload the page and start again");
@@ -230,8 +231,14 @@
 			    					});
 			    				} else {
 			    					$("#printModal").dialog("close");
-			    					console.debug($data.data);
-			    					//getPDF($data);
+			    					var a = document.createElement('a');
+			    					var linkText = document.createTextNode("Download");
+			    					a.appendChild(linkText);
+			    					a.title = "Download";
+			    					a.href = $data.data.invoiceFile;
+			    					a.target = "_new";   // open in a new window
+			    					document.body.appendChild(a);
+			    					a.click();
 			    				}
 			    			},
 		    				403: function($data) {
@@ -245,7 +252,8 @@
 		    		});        	
 		        }
         
-				function getPDF(blob) {
+				
+				function xyz() {
 					let xhr = new XMLHttpRequest();
 				    //set the request type to post and the destination url to '/convert'
 				    xhr.open('POST', 'convert');
@@ -276,22 +284,6 @@
 				    };
 				}
 				
-				function getPDFxxx(blob) {
-					var req = new XMLHttpRequest();
-					req.open("GET", "/file.pdf", true);
-					req.responseType = "blob";
-
-					req.onload = function (event) {
-						var blob = req.response;
-						console.log(blob.size);
-						var link=document.createElement('a');
-						link.href=window.URL.createObjectURL(blob);
-					    link.download="FakePDF.pdf";
-					    link.click();
-					};
-
-					req.send();
-				}
 
 			});
 
@@ -335,6 +327,7 @@
     </table>
     
     
+    	<a id="pdfDownload"></a>
     	<div id="printModal">
 			<form action="#">
 				<table>

@@ -26,7 +26,7 @@ public class InvoicePrintRequest extends AbstractRequest {
 	public Date getPrintDate() {
 		return printDate;
 	}
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setPrintDate(Date printDate) {
 		this.printDate = printDate;
 	}
@@ -35,7 +35,7 @@ public class InvoicePrintRequest extends AbstractRequest {
 	public Date getDueDate() {
 		return dueDate;
 	}
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setDueDate(Date dueDate) {
 		this.dueDate = dueDate;
 	}
