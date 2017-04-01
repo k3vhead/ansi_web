@@ -24,12 +24,12 @@
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
         <link rel="stylesheet" href="css/datepicker.css" type="text/css" />
         <style type="text/css">
-        	#invoicePrintPanel {
-        		width:80%;
-        		padding-left:40px;
+        	#printModal {
         		display:none;
         	}
-
+			.action-link {
+				cursor:pointer;
+			}
         </style>
         
         <script type="text/javascript">        
@@ -41,148 +41,247 @@
             });
 
         
-         var jqxhr = $.ajax({
-   			type: 'GET',
-   			url: 'invoicePrintLookup/',
-   			data: null,
-   			success: function($data) {   				
-   				populateDataTable($data.data);
-   			},
-   			statusCode: {
-   				403: function($data) {
-   					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-   				},
-   				404: function($data) {
-   					$("#globalMsg").html("System Error: Contact Support").fadeIn(10);
-   				},
-   				500: function($data) {
-        	    		$("#globalMsg").html("System Error: Contact Support").fadeIn(10);
-        	    	} 
-   			},
-   			dataType: 'json'
-   		});        	
+	         var jqxhr = $.ajax({
+	   			type: 'GET',
+	   			url: 'invoicePrintLookup/',
+	   			data: null,
+	   			success: function($data) {   				
+	   				populateDataTable($data.data);
+	   			},
+	   			statusCode: {
+	   				403: function($data) {
+	   					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+	   				},
+	   				404: function($data) {
+	   					$("#globalMsg").html("System Error: Contact Support").fadeIn(10);
+	   				},
+	   				500: function($data) {
+	        	    		$("#globalMsg").html("System Error: Contact Support").fadeIn(10);
+	        	    	} 
+	   			},
+	   			dataType: 'json'
+	   		});        	
         	
         	
          
-		$('#invoiceTable').dataTable().fnDestroy();
+			$('#invoiceTable').dataTable().fnDestroy();
 			
 	           
-		var dataTable = null;
+			var dataTable = null;
         	
-		function populateDataTable($data) {
-			var dataTable = $('#invoiceTable').DataTable( {
-        			"bDestroy":			true,
-        			"processing": 		true,
-        			"autoWidth": 		false,
-        	        "scrollCollapse": 	true,
-        	        "scrollX": 			true,
-        	        rowId: 				'dt_RowId',
-        	        dom: 				'Bfrtip',
-        	        "searching": 		true,
-        	        //lengthMenu: [
-        	        //    [ 10, 50, 100, 500, 1000, -1 ],
-        	        //    [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows', 'Show All' ],
-        	        //],
-        	        buttons: [
-        	        //	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}},
-        	        ],
-        	        "columnDefs": [
-        	        	{ "orderable": true, "targets": "_all" },
-        	            { className: "dt-left", "targets": [0] },
-        	            { className: "dt-right", "targets": [3,4] },
-        	            { className: "dt-center", "targets": [1,2,5] },
-        	         ],
-        	        "paging": false,
-        	        data: $data.invoiceList,
-			        columns: [
-			            { title: "Division", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-			            	if(row.div != null){return (row.div+"");}
-			            } },
-			            { title: "Invoices", "defaultContent": "<i>0</i>", data: function ( row, type, set ) {
-			            	if(row.invoiceCount != null){return (row.invoiceCount+"");}
-			            } },
-			            { title: "Tickets", "defaultContent": "<i>0</i>", data: function ( row, type, set ) {
-			            	if(row.ticketCount != null){return (row.ticketCount+"");}
-			            } },
-			            { title: "Tax",  "defaultContent": "<i></i>", data: function ( row, type, set ) {
-			            	if(row.taxTotal != null){return (row.taxTotal+"");}
-			            } },
-			            { title: "PPC", "defaultContent": "<i></i>", data: function ( row, type, set ) {
-			            	if(row.invoiceTotal != null){return (row.invoiceTotal+"");}
-			            } },
-			            { title: "Action", "defaultContent": "<i></i>", data: function ( row, type, set ) {
-			            	if(row.invoiceCount == "0"){
-			            		return "";
-			            	} else {
-			            		return '<i class="fa fa-list" aria-hidden="true"></i> <i class="fa fa-print" aria-hidden="true"></i>';
-			            	}
-			            } }
-			            ],
-			            "initComplete": function(settings, json) {
-			            },
-			            "drawCallback": function( settings ) {
-			            }
-			    } );
-        	}
+			function populateDataTable($data) {
+				var dataTable = $('#invoiceTable').DataTable( {
+	        			"bDestroy":			true,
+	        			"processing": 		true,
+	        			"autoWidth": 		false,
+	        	        "scrollCollapse": 	true,
+	        	        "scrollX": 			true,
+	        	        rowId: 				'dt_RowId',
+	        	        dom: 				'Bfrtip',
+	        	        "searching": 		true,
+	        	        //lengthMenu: [
+	        	        //    [ 10, 50, 100, 500, 1000, -1 ],
+	        	        //    [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows', 'Show All' ],
+	        	        //],
+	        	        buttons: [
+	        	        //	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}},
+	        	        ],
+	        	        "columnDefs": [
+	        	        	{ "orderable": true, "targets": "_all" },
+	        	            { className: "dt-left", "targets": [0] },
+	        	            { className: "dt-right", "targets": [3,4] },
+	        	            { className: "dt-center", "targets": [1,2,5] },
+	        	         ],
+	        	        "paging": false,
+	        	        data: $data.invoiceList,
+				        columns: [
+				            { title: "Division", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				            	if(row.div != null){return (row.div+"");}
+				            } },
+				            { title: "Invoices", "defaultContent": "<i>0</i>", data: function ( row, type, set ) {
+				            	if(row.invoiceCount != null){return (row.invoiceCount+"");}
+				            } },
+				            { title: "Tickets", "defaultContent": "<i>0</i>", data: function ( row, type, set ) {
+				            	if(row.ticketCount != null){return (row.ticketCount+"");}
+				            } },
+				            { title: "Tax",  "defaultContent": "<i></i>", data: function ( row, type, set ) {
+				            	if(row.taxTotal != null){return (row.taxTotal+"");}
+				            } },
+				            { title: "PPC", "defaultContent": "<i></i>", data: function ( row, type, set ) {
+				            	if(row.invoiceTotal != null){return (row.invoiceTotal+"");}
+				            } },
+				            { title: "Action", "defaultContent": "<i></i>", data: function ( row, type, set ) {
+				            	if(row.invoiceCount == "0"){
+				            		return "";
+				            	} else {
+				            		var $dataDiv = 'data-division="' + row.divisionId + '"';
+				            		var $listLink = '<i class="action-link fa fa-list" aria-hidden="true" data-action="list" ' + $dataDiv + '></i>';
+				            		var $printLink = '<i class="action-link fa fa-print" aria-hidden="true" data-action="print" ' + $dataDiv + '></i>';
+				            		return $listLink + ' ' + $printLink;
+				            	}
+				            } }
+				            ],
+				            "initComplete": function(settings, json) {
+				            	doFunctionBinding();
+				            },
+				            "drawCallback": function( settings ) {
+				            	doFunctionBinding();
+				            }
+				    } );
+	        	}
         	
-        	init();
+        		init();
         			
         	
-            function init(){
-            //	$.each($('input'), function () {
-			//	        $(this).css("height","20px");
-			//	        $(this).css("max-height", "20px");
-			//	    });
-					
-            	//populateDataTable();
-            }; 
-            function initComplete (){
-              var r = $('#invoiceTable tfoot tr');
-              r.find('th').each(function(){
-                $(this).css('padding', 8);
-              });
-              $('#invoiceTable thead').append(r);
-            }
+	            function init(){
+	            //	$.each($('input'), function () {
+				//	        $(this).css("height","20px");
+				//	        $(this).css("max-height", "20px");
+				//	    });
+						
+	            	//populateDataTable();
+	            };
+	            
+	            function initComplete (){
+					var r = $('#invoiceTable tfoot tr');
+					r.find('th').each(function(){
+						$(this).css('padding', 8);
+					});
+					$('#invoiceTable thead').append(r);
+	            }
             
-        	
-        	
-        $("#goButton").click(function($event){
-        	var $divisionId = $("#divisionId").val();
-        	var $printDate = $("#printDate").val();
-        	var $dueDate = $("#dueDate").val();
-        	var $outbound = {'divisionId':$divisionId,'printDate':$printDate,'dueDate':$dueDate};
-            var jqxhr = $.ajax({
-    			type: 'POST',
-    			url: 'invoicePrint/',
-    			data: JSON.stringify($outbound),
-    			success: function($data) {
-    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-    					$.each($data.data.webMessages, function (key, value) {
-    						var $selectorName = "#" + key + "Err";
-    						$($selectorName).show();
-    						$($selectorName).html(value[0]).fadeOut(4000);
-    					});
-    				} else {
-    					$("#globalMsg").html($data.responseHeader.responseMessage).fadeOut(4000);
-    		        	$("#invoiceDate").val("");
-    		        	$("#monthlyFlag").prop('checked', false);
-    				}
-    			},
-    			statusCode: {
-    				403: function($data) {
-    					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-    				},
-    				500: function($data) {
-         	    		$("#globalMsg").html("System Error: Contact Support").fadeIn(10);
-         	    	} 
-    			},
-    			dataType: 'json'
-    		});        	
-        });
-        
-	
+				function doFunctionBinding() {
+					$( ".action-link" ).on( "click", function($clickevent) {
+			        	var $divisionId = $clickevent.currentTarget.attributes['data-division'].value;
+			        	var $action = $clickevent.currentTarget.attributes['data-action'].value;
+			        	if ( $action=='list') {
+			        		console.debug("Listing invoices for " + $divisionId);
+			        	} else if ( $action=='print') {
+			        		console.debug("Printing invoices for " + $divisionId);
+			        		printModal($divisionId);
+			        	} else {
+			        		$("#globalMessage").html("Invalid action. Reload the page and start again");
+			        	}
+					});
+				}
 
-      });
+				
+				
+				function printModal($divisionId) {
+    				$("#printDate").val("");
+   					$("#dueDate").val("");
+   					$("#printDateErr").html("");
+   					$("#dueDateErr").html("");
+
+	        		$('#goPrint').data('divisionId',$divisionId);
+	        		$('#goPrint').button('option', 'label', 'Print Invoices');
+	        		$('#closePrint').button('option', 'label', 'Close');
+	        	    $('#printModal').dialog( "open" );
+				}
+				
+				
+				// set up the activate job modal window
+				$( "#printModal" ).dialog({
+					  title:'Print Invoices',
+		      	      autoOpen: false,
+		      	      height: 300,
+		      	      width: 500,
+		      	      modal: true,
+		      	      buttons: [
+		      	    	  {
+		        	    		id: "closePrint",
+		        	        	click: function() {
+		        	        		$("#printModal").dialog( "close" );
+		        	        	}
+		      	      		},
+		      	      		{
+		      	    			id: "goPrint",
+		      	        		click: function($event) {
+		      	        			printInvoices();
+		      	        		}
+		        	      	}
+		      	      
+		      	      ],
+		      	      close: function() {
+		      	    	  $("#printModal").dialog( "close" );
+		      	        //allFields.removeClass( "ui-state-error" );
+		      	      }
+		      	    });
+		
+				
+				function printInvoices() {
+        			var $divisionId = $("#goPrint").data('divisionId');
+					var $printDate = $("#printDate").val();
+					var $dueDate = $("#dueDate").val();
+					
+		        	var $outbound = {'divisionId':$divisionId,'printDate':$printDate,'dueDate':$dueDate};
+		            var jqxhr = $.ajax({
+		    			type: 'POST',
+		    			url: 'invoicePrint/',
+		    			data: JSON.stringify($outbound),
+		    			statusCode: {
+			    			200: function($data) {
+			    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+			    					$.each($data.data.webMessages, function (key, value) {
+			    						var $selectorName = "#" + key + "Err";
+			    						$($selectorName).show();
+			    						$($selectorName).html(value[0]).fadeOut(4000);
+			    					});
+			    				}
+			    			},
+			    			999: function($data) {
+		    					$("#printModal").dialog("close");
+		    					getPDF($data);
+			    			},
+		    				403: function($data) {
+		    					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+		    				},
+		    				500: function($data) {
+		         	    		$("#globalMsg").html("System Error: Contact Support").fadeIn(10);
+		         	    	} 
+		    			},
+		    			dataType: 'json'
+		    		});        	
+		        }
+        
+				function getPDF(blob) {
+					// Create a new Blob object using the 
+			        //response data of the onload object
+			        //var blob = new Blob([this.response], {type: 'application/pdf'});
+			        //Create a link element, hide it, direct 
+			        //it towards the blob, and then 'click' it programatically
+			        var a = document.createElement("a");
+			        a.style = "display: none";
+			        document.body.appendChild(a);
+			        //Create a DOMString representing the blob 
+			        //and point the link element towards it
+			        var url = window.URL.createObjectURL(blob);
+			        a.href = url;
+			        a.download = 'myFile.pdf';
+			        //programatically click the link to trigger the download
+			        a.click();
+			        //release the reference to the file by revoking the Object URL
+			        window.URL.revokeObjectURL(url);
+				}
+				
+				function getPDFxxx(blob) {
+					var req = new XMLHttpRequest();
+					req.open("GET", "/file.pdf", true);
+					req.responseType = "blob";
+
+					req.onload = function (event) {
+						var blob = req.response;
+						console.log(blob.size);
+						var link=document.createElement('a');
+						link.href=window.URL.createObjectURL(blob);
+					    link.download="FakePDF.pdf";
+					    link.click();
+					};
+
+					req.send();
+				}
+
+			});
 
 		</script>
     </tiles:put>
@@ -224,14 +323,9 @@
     </table>
     
     
-    	<div id="invoicePrintPanel">
+    	<div id="printModal">
 			<form action="#">
 				<table>
-					<tr>
-						<td>Division: </td>
-						<td><select id="divisionId"></select></td>
-						<td><span class="err" id="printDateErr"></span></td>
-					</tr>
 					<tr>
 						<td>Print Date: </td>
 						<td><input type="text" class="dateField" id="printDate"/></td>
@@ -242,9 +336,11 @@
 						<td><input type="text" class="dateField" id="dueDate"/></td>
 						<td><span class="err" id="dueDateErr"></span></td>
 					</tr>
+					<%--
 					<tr>
-						<td colspan="2"><input type="button" value="Print Invoices" id="goButton" /></td>
+						<td colspan="2"><input type="button" value="Print Invoices" id="goPrint" /></td>
 					</tr>
+					 --%>
 				</table>
 			</form>
     	</div>
