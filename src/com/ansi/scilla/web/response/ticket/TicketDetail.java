@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.jobticket.TicketStatus;
+import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
 import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
 import com.ansi.scilla.common.queries.TicketPaymentTotals;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -127,7 +128,7 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 	public void setProcessNotes(String processNotes) {
 		this.processNotes = processNotes;
 	}
-	
+	@JsonSerialize(using=AnsiCurrencyFormatter.class)
 	public BigDecimal getActDl() {
 		return actDl;
 	}
@@ -143,7 +144,7 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 	public void setActDlPct(BigDecimal actDlPct) {
 		this.actDlPct = actDlPct;
 	}
-	
+	@JsonSerialize(using=AnsiCurrencyFormatter.class)
 	public BigDecimal getActPricePerCleaning() {
 		return actPricePerCleaning;
 	}
@@ -191,7 +192,7 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 	public void setJobId(Integer jobId) {
 		this.jobId = jobId;
 	}
-	
+	@JsonSerialize(using=AnsiCurrencyFormatter.class)
 	public BigDecimal getActTax() {
 		return actTax;
 	}
@@ -199,7 +200,7 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 	public void setActTax(BigDecimal actTax) {
 		this.actTax = actTax;
 	}
-	
+	@JsonSerialize(using=AnsiCurrencyFormatter.class)
 	public BigDecimal getTotalVolPaid() {
 		return totalVolPaid;
 	}
@@ -208,6 +209,7 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		this.totalVolPaid = totalVolPaid;
 	}
 	
+	@JsonSerialize(using=AnsiCurrencyFormatter.class)
 	public BigDecimal getTotalTaxPaid() {
 		return totalTaxPaid;
 	}
@@ -215,7 +217,7 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 	public void setTotalTaxPaid(BigDecimal totalTaxPaid) {
 		this.totalTaxPaid = totalTaxPaid;
 	}
-	
+	@JsonSerialize(using=AnsiCurrencyFormatter.class)
 	public BigDecimal getBalance() {
 		return balance;
 	}

@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
 import com.ansi.scilla.common.queries.InvoiceTotals;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class InvoiceDetail extends ApplicationObject {
@@ -45,7 +47,7 @@ public class InvoiceDetail extends ApplicationObject {
 	public void setInvoiceId(Integer invoiceId) {
 		this.invoiceId = invoiceId;
 	}
-	
+	@JsonSerialize(using=AnsiCurrencyFormatter.class)
 	public BigDecimal getSumInvPpc() {
 		return sumInvPpc;
 	}
@@ -53,7 +55,7 @@ public class InvoiceDetail extends ApplicationObject {
 	public void setSumInvPpc(BigDecimal sumInvPpc) {
 		this.sumInvPpc = sumInvPpc;
 	}
-	
+	@JsonSerialize(using=AnsiCurrencyFormatter.class)
 	public BigDecimal getSumInvTax() {
 		return sumInvTax;
 	}
@@ -61,7 +63,7 @@ public class InvoiceDetail extends ApplicationObject {
 	public void setSumInvTax(BigDecimal sumInvTax) {
 		this.sumInvTax = sumInvTax;
 	}
-	
+	@JsonSerialize(using=AnsiCurrencyFormatter.class)
 	public BigDecimal getSumInvPpcPaid() {
 		return sumInvPpcPaid;
 	}
@@ -69,7 +71,7 @@ public class InvoiceDetail extends ApplicationObject {
 	public void setSumInvPpcPaid(BigDecimal sumInvPpcPaid) {
 		this.sumInvPpcPaid = sumInvPpcPaid;
 	}
-	
+	@JsonSerialize(using=AnsiCurrencyFormatter.class)
 	public BigDecimal getSumInvTaxPaid() {
 		return sumInvTaxPaid;
 	}
@@ -77,7 +79,7 @@ public class InvoiceDetail extends ApplicationObject {
 	public void setSumInvTaxPaid(BigDecimal sumInvTaxPaid) {
 		this.sumInvTaxPaid = sumInvTaxPaid;
 	}
-	
+	@JsonSerialize(using=AnsiCurrencyFormatter.class)
 	public BigDecimal getBalance() {
 		return balance;
 	}
