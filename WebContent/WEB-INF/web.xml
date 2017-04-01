@@ -122,6 +122,16 @@
 
 
 	<servlet>
+		<servlet-name>contactLookup</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.ContactTableServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>contactLookup</servlet-name>
+		<url-pattern>/contactLookup</url-pattern>
+	</servlet-mapping>
+	
+	
+	<servlet>
 		<servlet-name>contactSearch</servlet-name>
 		<servlet-class>com.ansi.scilla.web.servlets.ContactSearchServlet</servlet-class>
 	</servlet>
