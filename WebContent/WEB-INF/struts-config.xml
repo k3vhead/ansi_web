@@ -109,6 +109,12 @@
             <forward name="valid" path="/login.jsp" />
         </action>
 		<action
+            path="/paymentLookup"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/paymentLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		<action
             path="/permissiongroupAdmin"
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">
             <forward name="valid" path="/permissiongroupAdmin.jsp" />

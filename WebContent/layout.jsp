@@ -133,7 +133,7 @@
 									<li><html:link action="invoiceLookup"><bean:message key="menu.label.invoices" /></html:link></li>
 									</ansi:hasPermission>
 									<ansi:hasPermission permissionRequired="PAYMENT">
-									<li><a href="#"><bean:message key="menu.label.payments" /></a></li>
+									<li><html:link action="paymentLookup"><bean:message key="menu.label.payments" /></html:link></li>
 									</ansi:hasPermission>
 								</ul>
 		        			</li>
@@ -238,7 +238,7 @@
 									<li>
 										<a href="#"><bean:message key="menu.label.payments" /></a>
 										<ul>
-											<li><a href="#"><bean:message key="menu.label.lookup" /></a></li>
+											<li><html:link action="paymentLookup"><bean:message key="menu.label.lookup" /></html:link></li>
 											<ansi:hasWrite>
 											<li><a href="#"><bean:message key="menu.label.maintenance" /></a></li>
 											<li><a href="#"><bean:message key="menu.label.new" /></a></li>
