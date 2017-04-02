@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.ansi.scilla.common.db.Contact;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
+import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.MessageKey;
 import com.ansi.scilla.web.common.Permission;
@@ -27,6 +28,7 @@ import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.request.ContactRequest;
 import com.ansi.scilla.web.response.contact.ContactListResponse;
 import com.ansi.scilla.web.response.contact.ContactResponse;
+import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -55,48 +57,22 @@ public class ContactServlet extends AbstractServlet {
 	protected void doDelete(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		Connection conn = null;
+		AnsiURL url = null;
 		try {
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+//			String jsonString = super.makeJsonString(request);
+//			ContactRequest contactRequest = (ContactRequest)AppUtils.json2object(jsonString, ContactRequest.class);
+			url = new AnsiURL(request, "contact", (String[])null);
+			AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 			conn.setAutoCommit(false);
-			
-			String url = request.getRequestURI();
-			System.out.println("ContactServlet: doDelete() Url:" + url);
-			int idx = url.indexOf("/contact/");
-			String myString = url.substring(idx + "/contact/".length());				
-			String[] urlPieces = myString.split("/");
-			String command = urlPieces[0];
-			System.out.println("ContactServlet: doDelete() contactId:" + command);
-
-			if ( urlPieces.length == 1 ) {   //  /<contactId> = 1 pieces
-				Contact key = new Contact();
-				if ( StringUtils.isNumeric(urlPieces[0])) { //Looks like a contactId
-					System.out.println("ContactServlet: DoDelete: Trying to delete"+command);
-					key.setContactId(Integer.valueOf(urlPieces[0]));
-					key.delete(conn);
-					
-					ContactResponse contactResponse = new ContactResponse();
-					super.sendResponse(conn, response, ResponseCode.SUCCESS, contactResponse);
-					
-					conn.commit();
-				} else {
-					throw new RecordNotFoundException();
-				}
-			} else {
-				throw new RecordNotFoundException();
-			}
-
-/*			String jsonString = super.makeJsonString(request); //get request, change to Json
-			ContactRequest contactRequest = new ContactRequest(jsonString); //put Json into contactReques
-			System.out.println(contactRequest);//print request
-			Contact contact = new Contact();
-			contact.setContactId(contactRequest.getContactId());
-			contact.delete(conn);
-			
-			ContactResponse contactResponse = new ContactResponse();
-			super.sendResponse(conn, response, ResponseCode.SUCCESS, contactResponse);
-			
-			conn.commit();*/
+			Contact key = new Contact();
+			key.setContactId(url.getId());
+			key.delete(conn);
+			conn.commit();
+			ContactResponse data = new ContactResponse();
+			WebMessages webMessages = new WebMessages();
+			data.setWebMessages(webMessages);
+			super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
 			super.sendForbidden(response);
 		} catch ( Exception e) {
@@ -110,53 +86,26 @@ public class ContactServlet extends AbstractServlet {
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		String url = request.getRequestURI();
-		int idx = url.indexOf("/contact/");
-		if ( idx > -1 ) {
-			System.out.println("Url:" + url);
-			String queryString = request.getQueryString();
-			System.out.println("Query String: " + queryString);
-			
-			// we're in the right place
-			Connection conn = null;
-			try {
-				conn = AppUtils.getDBCPConn();
-				AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);
-				
-				// Figure out what we've got:				
-				String myString = url.substring(idx + "/contact/".length());
-				
-				String[] urlPieces = myString.split("/");
-				String command = urlPieces[0];
-				
-				if ( StringUtils.isBlank(command)) {
-//					super.sendNotFound(response);
-					throw new RecordNotFoundException();
-				} else {
-					if ( command.equals("list")) {
-						// we're getting all the contacts in the database
-						ContactListResponse contactListResponse = makeContactListResponse(conn);
-						super.sendResponse(conn, response, ResponseCode.SUCCESS, contactListResponse);
-					} else {
-						// we're getting a single contact by contactId returned in a single entry list
-						ContactListResponse contactListResponse = makeSingleListResponse(conn, urlPieces);
-						super.sendResponse(conn, response, ResponseCode.SUCCESS, contactListResponse);
-					}
-				}
-			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
-				super.sendForbidden(response);
-			} catch ( RecordNotFoundException e ) {
-				System.out.println("ContactServlet: doGet() RecordNotFoundException 404");
-				super.sendNotFound(response);						
-			} catch ( Exception e) {
-				AppUtils.logException(e);
-				throw new ServletException(e);
-			} finally {
-				AppUtils.closeQuiet(conn);
-			}
-			
-		} else {
-			super.sendNotFound(response);
+		AnsiURL url = null;
+		Connection conn = null;
+		WebMessages webMessages = new WebMessages();
+		try {
+			conn = AppUtils.getDBCPConn();
+			AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			url = new AnsiURL(request, "contact",(String[])null);
+			ContactListResponse contactListResponse = makeSingleListResponse(conn, url.getId());
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
+			contactListResponse.setWebMessages(webMessages);
+			super.sendResponse(conn, response, ResponseCode.SUCCESS, contactListResponse);				
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+			super.sendForbidden(response);
+		} catch ( RecordNotFoundException e ) {
+			super.sendNotFound(response);						
+		} catch ( Exception e) {
+			AppUtils.logException(e);
+			throw new ServletException(e);
+		} finally {
+			AppUtils.closeQuiet(conn);
 		}
 	}
 
@@ -164,96 +113,30 @@ public class ContactServlet extends AbstractServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		SessionUser sessionUser = AppUtils.getSessionUser(request);
-		String url = request.getRequestURI();
-//		String queryString = request.getQueryString();
-		System.out.println("ContactServlet: doPost() Url:" + url);
-		
+		AnsiURL url = null;
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 			conn.setAutoCommit(false);
-
-			// figure out if this is an "add" or an "update"
-			int idx = url.indexOf("/contact/");
-			String myString = url.substring(idx + "/contact/".length());				
-			String[] urlPieces = myString.split("/");
-			String command = urlPieces[0];
-
 			String jsonString = super.makeJsonString(request);
-			System.out.println("ContactServlet: doPost() json:" + jsonString);
-			ContactRequest contactRequest = new ContactRequest(jsonString);
-			
-			Contact contact = null;
-			ResponseCode responseCode = null;
-			if ( command.equals(ACTION_IS_ADD) ) {
-				System.out.println("ContactServlet: doPost() is add");
-				WebMessages webMessages = validateAdd(conn, contactRequest);
-				if (webMessages.isEmpty()) {
-					try {
-						contact = doAdd(conn, contactRequest, sessionUser);
-						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
-						responseCode = ResponseCode.SUCCESS;
-						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
-					} catch ( DuplicateEntryException e ) {
-						String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
-						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-						responseCode = ResponseCode.EDIT_FAILURE;
-					} catch ( Exception e ) {
-						responseCode = ResponseCode.SYSTEM_FAILURE;
-						AppUtils.logException(e);
-						String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
-						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-					}
-				} else {
-					responseCode = ResponseCode.EDIT_FAILURE;
-				}
-				ContactResponse contactResponse = new ContactResponse(contact, webMessages);
-				super.sendResponse(conn, response, responseCode, contactResponse);
-				
-			} else if ( urlPieces.length == 1 ) {   //  /<contactId> = 1 pieces
-				System.out.println("ContactServlet: doPost() is update");
-				WebMessages webMessages = validateAdd(conn, contactRequest);
-				if (webMessages.isEmpty()) {
-					System.out.println("ContactServlet: doPost() passed validation");
-					try {
-						Contact key = new Contact();
-						if ( StringUtils.isNumeric(urlPieces[0]) ) {//looks like a contactId
-							System.out.println("ContactServlet: doPost() Trying to do update");
-							key.setContactId(Integer.valueOf(urlPieces[0]));
-							contact = doUpdate(conn, key, contactRequest, sessionUser);
-							String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
-							responseCode = ResponseCode.SUCCESS;
-							webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
-						} else { //non-integer contactId, probably a bad thing
-							throw new RecordNotFoundException();
-						}
-					} catch ( RecordNotFoundException e ) {
-						System.out.println("ContactServlet: doPost() Doing 404");
-						super.sendNotFound(response);						
-					} catch ( Exception e) {
-						System.out.println("ContactServlet: doPost() Doing SysFailure");
-						responseCode = ResponseCode.SYSTEM_FAILURE;
-						AppUtils.logException(e);
-						String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
-						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-					}
-				} else {
-					System.out.println("ContactServlet: doPost() Doing Edit Fail");
-					responseCode = ResponseCode.EDIT_FAILURE;
-				}
-				ContactResponse contactResponse = new ContactResponse(contact, webMessages);
-				super.sendResponse(conn, response, responseCode, contactResponse);
+			ContactRequest contactRequest = (ContactRequest)AppUtils.json2object(jsonString, ContactRequest.class);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			SessionUser sessionUser = sessionData.getUser();
+			url = new AnsiURL(request,"contact", new String[] {ACTION_IS_ADD});
+
+			if ( url.getId() != null ) {
+				// THis is an update
+				processUpdate(conn, response, url.getId(), contactRequest, sessionUser);
+			} else if ( url.getCommand().equalsIgnoreCase(ACTION_IS_ADD)) {
+				// this is an add
+				processAdd(conn, response, contactRequest, sessionUser);
 			} else {
+				// this is messed up
 				super.sendNotFound(response);
 			}
-			
-			conn.commit();
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
 			super.sendForbidden(response);
 		} catch ( RecordNotFoundException e ) {
-			System.out.println("ContactServlet: doDelete() RecordNotFoundException 404");
 			super.sendNotFound(response);						
 		} catch ( Exception e ) {
 			AppUtils.logException(e);
@@ -262,8 +145,106 @@ public class ContactServlet extends AbstractServlet {
 		} finally {
 			AppUtils.closeQuiet(conn);
 		}
+	}			
+			
+	private void processUpdate(Connection conn, HttpServletResponse response, Integer contactId, ContactRequest contactRequest, SessionUser sessionUser) throws RecordNotFoundException, Exception {
+		Contact contact = new Contact();
+		ContactResponse data = new ContactResponse();
+		contact.setContactId(contactId);
+		contact.selectOne(conn);  // this throws RecordNotFound, which is propagated up the line into a 404 return 
+		WebMessages webMessages = validateUpdate(conn, contact, contactRequest);
 		
+		if (webMessages.isEmpty()) {
+			contact = doUpdate(conn, contactId, contact, contactRequest, sessionUser);
+			conn.commit();
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update successful!");
+			data.setContact(contact);
+			data.setWebMessages(webMessages);
+			super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
+		} else {
+			data.setWebMessages(webMessages);
+			super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+		}
+		//			System.out.println("ContactServlet: doPost() passed validation");
+		//			try {
+		//				Contact key = new Contact();
+		//				if ( StringUtils.isNumeric(urlPieces[0]) ) {//looks like a contactId
+		//					System.out.println("ContactServlet: doPost() Trying to do update");
+		//					key.setContactId(Integer.valueOf(urlPieces[0]));
+		//					contact = doUpdate(conn, key, contactRequest, sessionUser);
+		//					String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
+		//					responseCode = ResponseCode.SUCCESS;
+		//					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+		//				} else { //non-integer contactId, probably a bad thing
+		//					throw new RecordNotFoundException();
+		//				}
+		//			} catch ( RecordNotFoundException e ) {
+		//				System.out.println("ContactServlet: doPost() Doing 404");
+		//				super.sendNotFound(response);						
+		//			} catch ( Exception e) {
+		//				System.out.println("ContactServlet: doPost() Doing SysFailure");
+		//				responseCode = ResponseCode.SYSTEM_FAILURE;
+		//				AppUtils.logException(e);
+		//				String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
+		//				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+		//			}
+		//		} else {
+		//			System.out.println("ContactServlet: doPost() Doing Edit Fail");
+		//			responseCode = ResponseCode.EDIT_FAILURE;
+		//		}
+		//		ContactResponse contactResponse = new ContactResponse(contact, webMessages);
+		//		super.sendResponse(conn, response, responseCode, contactResponse);
+		//	} else {
+		//		super.sendNotFound(response);
+		//	}		
 	}
+
+	private Contact doUpdate(Connection conn, Integer contactId, Contact contact, ContactRequest contactRequest, SessionUser sessionUser) throws Exception {
+		contact.setBusinessPhone(contactRequest.getBusinessPhone());
+		contact.setFax(contactRequest.getFax());
+		contact.setEmail(contactRequest.getEmail());
+		contact.setFirstName(contactRequest.getFirstName());
+		contact.setLastName(contactRequest.getLastName());
+		contact.setMobilePhone(contactRequest.getMobilePhone());
+		contact.setPreferredContact(contactRequest.getPreferredContact());
+		contact.setUpdatedBy(sessionUser.getUserId());
+//		contact.setUpdatedDate(today); this gets magically updated for us
+		
+		Contact key = new Contact();
+		key.setContactId(contactId);
+		contact.update(conn, key);	
+		return contact;
+	}
+
+	
+	private void processAdd(Connection conn, HttpServletResponse response, ContactRequest contactRequest, SessionUser sessionUser) throws Exception {
+		ResponseCode responseCode = null;
+		Contact contact = null;
+		WebMessages webMessages = validateAdd(conn, contactRequest);
+		if (webMessages.isEmpty()) {
+			try {
+				contact = doAdd(conn, contactRequest, sessionUser);
+				String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
+				responseCode = ResponseCode.SUCCESS;
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+			} catch ( DuplicateEntryException e ) {
+				String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+				responseCode = ResponseCode.EDIT_FAILURE;
+			} catch ( Exception e ) {
+				responseCode = ResponseCode.SYSTEM_FAILURE;
+				AppUtils.logException(e);
+				String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+			}
+		} else {
+			responseCode = ResponseCode.EDIT_FAILURE;
+		}
+		ContactResponse contactResponse = new ContactResponse(contact, webMessages);
+		super.sendResponse(conn, response, responseCode, contactResponse);
+	}
+
+
 
 
 	protected Contact doAdd(Connection conn, ContactRequest contactRequest, SessionUser sessionUser) throws Exception {
@@ -310,102 +291,19 @@ public class ContactServlet extends AbstractServlet {
 	}
 
 
-	protected Contact doUpdate(Connection conn, Contact key, ContactRequest contactRequest, SessionUser sessionUser) throws Exception {
-		System.out.println("ContactServlet: doUpdate() This is the key:");
-		System.out.println(key);
-		System.out.println("************");
-		Date today = new Date();
+
+
+
+	private ContactListResponse makeSingleListResponse(Connection conn, Integer contactId) throws Exception {
+		ContactListResponse contactListResponse = new ContactListResponse(conn);		
 		Contact contact = new Contact();
-		if ( ! StringUtils.isBlank(contactRequest.getBusinessPhone())) {
-			contact.setBusinessPhone(contactRequest.getBusinessPhone());
-		}
-//		contact.setContactId(contactRequest.getContactId());//key is in the url
-		if ( ! StringUtils.isBlank(contactRequest.getFax())) {
-			contact.setFax(contactRequest.getFax());
-		}
-		if ( ! StringUtils.isBlank(contactRequest.getEmail())) {
-			contact.setEmail(contactRequest.getEmail());
-		}
-		if ( ! StringUtils.isBlank(contactRequest.getFirstName())) {
-			contact.setFirstName(contactRequest.getFirstName());
-		}
-		if ( ! StringUtils.isBlank(contactRequest.getLastName())) {
-			contact.setLastName(contactRequest.getLastName());
-		}
-		if ( ! StringUtils.isBlank(contactRequest.getMobilePhone())) {
-			contact.setMobilePhone(contactRequest.getMobilePhone());
-		}
-		if ( ! StringUtils.isBlank(contactRequest.getPreferredContact())) {
-			contact.setPreferredContact(contactRequest.getPreferredContact());
-		}
-		contact.setUpdatedBy(sessionUser.getUserId());
-		contact.setUpdatedDate(today);
-		// if we update something that isn't there, a RecordNotFoundException gets thrown
-		// that exception get propagated and turned into a 404
-		contact.update(conn, key);		
-		return contact;
-	}
-
-	private ContactListResponse makeContactListResponse(Connection conn) throws Exception {
-		ContactListResponse contactsListResponse = new ContactListResponse(conn);
-		return contactsListResponse;
-	}
-
-	private ContactListResponse makeSingleListResponse(Connection conn, String[] urlPieces) throws Exception {
-		ContactListResponse contactListResponse = new ContactListResponse(conn);
-		
-		if (StringUtils.isNumeric(urlPieces[0])){
-			Contact contact = new Contact();
-			contact.setContactId(Integer.valueOf(urlPieces[0]));
-			System.out.println("ContactServlet: makeSingleListResponse() Getting Contact for contactId: " + urlPieces[0]);
-			contact.selectOne(conn);
-			contactListResponse.setContactList(Arrays.asList(new Contact[] {contact} ));
-		} else {
-			throw new RecordNotFoundException();
-		}
+		contact.setContactId(contactId);
+		contact.selectOne(conn);
+		contactListResponse.setContactList(Arrays.asList(new Contact[] {contact} ));
 		return contactListResponse;
 	}
 
-/*	private ContactListResponse makeFilteredListResponse(Connection conn, String[] urlPieces) throws Exception {
-		String tableName = null;
-		String fieldName = null;
-		String value = null;
-		try {
-			tableName = urlPieces[0];
-			fieldName = urlPieces[1];
-			value = urlPieces[2];
-		} catch (ArrayIndexOutOfBoundsException e) {
-			// this is OK, just means we ran out of filters
-		}
-		Contact contact = new Contact();
-		if ( ! StringUtils.isBlank(tableName)) {
-			contact.setTableName(tableName);
-		}
-		if ( ! StringUtils.isBlank(fieldName)) {
-			contact.setFieldName(fieldName);
-		}
-		if ( ! StringUtils.isBlank(value)) {
-			contact.setValue(value);
-		}
-		List<Contact> contactList = Contact.cast(contact.selectSome(conn));
-		Collections.sort(contactList,
-				new Comparator<Contact>() {
-			public int compare(Contact o1, Contact o2) {
-				int ret = o1.getTableName().compareTo(o2.getTableName());
-				if ( ret == 0 ) {
-					ret = o1.getFieldName().compareTo(o2.getFieldName());
-				}
-				if ( ret == 0 ) {
-					ret = o1.getValue().compareTo(o2.getValue());
-				}
-				return ret;
-			}
-		});
-		ContactListResponse contactListResponse = new ContactListResponse();
-		contactListResponse.setContactList(contactList);
-		return contactListResponse;
-	}
-*/
+
 
 	
 	protected WebMessages validateAdd(Connection conn, ContactRequest contactRequest) throws Exception {
@@ -420,19 +318,27 @@ public class ContactServlet extends AbstractServlet {
 		return webMessages;
 	}
 
-	protected WebMessages validateUpdate(Connection conn, Contact key, ContactRequest contactRequest) throws RecordNotFoundException, Exception {
+	protected WebMessages validateUpdate(Connection conn, Contact contact, ContactRequest contactRequest) throws RecordNotFoundException, Exception {
 		WebMessages webMessages = new WebMessages();
 		List<String> missingFields = super.validateRequiredUpdateFields(contactRequest);
-		if ( ! missingFields.isEmpty() ) {
+		if ( missingFields.isEmpty() ) {
+			List<String> badFormatFieldList = super.validateFormat(contactRequest);
+			if ( badFormatFieldList.isEmpty() ) {
+				if ( ! contactRequest.isValidPreferredContact(conn)) {
+					webMessages.addMessage(ContactRequest.PREFERRED_CONTACT, "Invalid value");
+				}
+			} else {
+				for ( String field : badFormatFieldList ) {
+					webMessages.addMessage(field, "Invalid Format");
+				}
+			}
+		} else {
+			// we have required fields that are not populated
 			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
 			for ( String field : missingFields ) {
 				webMessages.addMessage(field, messageText);
 			}
 		}
-		// if we "select" the key, and it isn't found, a "RecordNotFoundException" is thrown.
-		// That exception will propagate up the tree until it turns into a 404 message sent to the client
-		Contact testKey = (Contact)key.clone(); 
-		testKey.selectOne(conn);
 		return webMessages;
 	}
 

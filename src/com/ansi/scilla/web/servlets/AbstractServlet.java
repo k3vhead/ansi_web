@@ -234,10 +234,13 @@ public class AbstractServlet extends HttpServlet {
 				Pattern pattern = Pattern.compile(regex);
 				Object value = method.invoke(request, (Object[])null);
 				if ( value != null && value instanceof String) {
-					Matcher m = pattern.matcher((String)value);
-					if ( ! m.matches() ) {
-						String fieldName = method.getName().substring(3);
-						nonMatchingValues.add(fixFieldName(fieldName));
+					String testValue = (String)value;
+					if ( ! StringUtils.isBlank(testValue)) {
+						Matcher m = pattern.matcher(testValue);
+						if ( ! m.matches() ) {
+							String fieldName = method.getName().substring(3);
+							nonMatchingValues.add(fixFieldName(fieldName));
+						}
 					}
 				}
 			}
