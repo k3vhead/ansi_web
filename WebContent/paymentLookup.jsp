@@ -77,8 +77,8 @@
         	        ],
         	        "columnDefs": [
 //         	            { "orderable": false, "targets": -1 },  // Need to re-add this when we add the action column back in
-        	            { className: "dt-left", "targets": [10,11,12] },
-        	            { className: "dt-center", "targets": [0,2,3,4,5,6,9] },
+        	            { className: "dt-left", "targets": [11,12,13] },
+        	            { className: "dt-center", "targets": [0,2,3,4,5,6,9,10] },
         	            { className: "dt-right", "targets": [1,7,8]}
         	         ],
         	        "paging": true,
@@ -117,6 +117,9 @@
 			            } },
 			            { title: "Div", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.ticketDiv != null){return (row.ticketDiv+"");}
+			            } },
+			            { title: "Invoice",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            	if(row.invoiceId != null){return (row.invoiceId+"");}
 			            } },
 			            { title: "Bill To", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.billToName != null){return (row.billToName+"");}
@@ -215,6 +218,7 @@
         	<col style="width:5%;" />
         	<col style="width:5%;" />
         	<col style="width:5%;" />
+        	<col style="width:5%;" />
         	<col style="width:10%;" />
         	<col style="width:10%;" />
         	<col style="width:10%;" />
@@ -231,6 +235,7 @@
     			<th>Ticket PPC</th>
     			<th>Ticket Tax</th>
     			<th>Div</th>
+    			<th>Invoice</th>
     			<th>Bill To</th>
     			<th>Job Site</th>
     			<th>Payment Note</th>
@@ -248,6 +253,7 @@
     			<th>Ticket PPC</th>
     			<th>Ticket Tax</th>
     			<th>Div</th>
+    			<th>Invoice</th>
     			<th>Bill To</th>
     			<th>Job Site</th>
     			<th>Payment Note</th>
