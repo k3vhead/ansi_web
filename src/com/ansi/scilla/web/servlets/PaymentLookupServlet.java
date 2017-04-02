@@ -20,8 +20,8 @@ import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.response.invoice.PaymentLookupResponse;
-import com.ansi.scilla.web.response.invoice.PaymentLookupResponseItem;
+import com.ansi.scilla.web.response.payment.PaymentLookupResponse;
+import com.ansi.scilla.web.response.payment.PaymentLookupResponseItem;
 
 public class PaymentLookupServlet extends AbstractServlet {
 
