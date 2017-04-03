@@ -2,20 +2,18 @@ package com.ansi.scilla.web.servlets;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.db.Contact;
 import com.ansi.scilla.common.db.PermissionLevel;
-import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.MessageKey;
@@ -147,7 +145,27 @@ public class ContactServlet extends AbstractServlet {
 		}
 	}			
 			
-	private void processUpdate(Connection conn, HttpServletResponse response, Integer contactId, ContactRequest contactRequest, SessionUser sessionUser) throws RecordNotFoundException, Exception {
+	protected void processAdd(Connection conn, HttpServletResponse response, ContactRequest contactRequest, SessionUser sessionUser) throws Exception {
+		ResponseCode responseCode = null;
+		Contact contact = new Contact();
+		
+		WebMessages webMessages = validateAdd(conn, contactRequest);
+		if (webMessages.isEmpty()) {			
+			contact = doAdd(conn, contactRequest, sessionUser);
+			String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");		
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+			responseCode = ResponseCode.SUCCESS;
+		} else {
+			responseCode = ResponseCode.EDIT_FAILURE;
+		}
+		ContactResponse contactResponse = new ContactResponse(contact, webMessages);
+		super.sendResponse(conn, response, responseCode, contactResponse);
+	}
+
+
+
+
+	protected void processUpdate(Connection conn, HttpServletResponse response, Integer contactId, ContactRequest contactRequest, SessionUser sessionUser) throws RecordNotFoundException, Exception {
 		Contact contact = new Contact();
 		ContactResponse data = new ContactResponse();
 		contact.setContactId(contactId);
@@ -165,156 +183,45 @@ public class ContactServlet extends AbstractServlet {
 			data.setWebMessages(webMessages);
 			super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
 		}
-		//			System.out.println("ContactServlet: doPost() passed validation");
-		//			try {
-		//				Contact key = new Contact();
-		//				if ( StringUtils.isNumeric(urlPieces[0]) ) {//looks like a contactId
-		//					System.out.println("ContactServlet: doPost() Trying to do update");
-		//					key.setContactId(Integer.valueOf(urlPieces[0]));
-		//					contact = doUpdate(conn, key, contactRequest, sessionUser);
-		//					String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
-		//					responseCode = ResponseCode.SUCCESS;
-		//					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
-		//				} else { //non-integer contactId, probably a bad thing
-		//					throw new RecordNotFoundException();
-		//				}
-		//			} catch ( RecordNotFoundException e ) {
-		//				System.out.println("ContactServlet: doPost() Doing 404");
-		//				super.sendNotFound(response);						
-		//			} catch ( Exception e) {
-		//				System.out.println("ContactServlet: doPost() Doing SysFailure");
-		//				responseCode = ResponseCode.SYSTEM_FAILURE;
-		//				AppUtils.logException(e);
-		//				String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
-		//				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-		//			}
-		//		} else {
-		//			System.out.println("ContactServlet: doPost() Doing Edit Fail");
-		//			responseCode = ResponseCode.EDIT_FAILURE;
-		//		}
-		//		ContactResponse contactResponse = new ContactResponse(contact, webMessages);
-		//		super.sendResponse(conn, response, responseCode, contactResponse);
-		//	} else {
-		//		super.sendNotFound(response);
-		//	}		
 	}
 
-	private Contact doUpdate(Connection conn, Integer contactId, Contact contact, ContactRequest contactRequest, SessionUser sessionUser) throws Exception {
-		contact.setBusinessPhone(contactRequest.getBusinessPhone());
-		contact.setFax(contactRequest.getFax());
-		contact.setEmail(contactRequest.getEmail());
-		contact.setFirstName(contactRequest.getFirstName());
-		contact.setLastName(contactRequest.getLastName());
-		contact.setMobilePhone(contactRequest.getMobilePhone());
-		contact.setPreferredContact(contactRequest.getPreferredContact());
-		contact.setUpdatedBy(sessionUser.getUserId());
-//		contact.setUpdatedDate(today); this gets magically updated for us
-		
-		Contact key = new Contact();
-		key.setContactId(contactId);
-		contact.update(conn, key);	
-		return contact;
-	}
-
-	
-	private void processAdd(Connection conn, HttpServletResponse response, ContactRequest contactRequest, SessionUser sessionUser) throws Exception {
-		ResponseCode responseCode = null;
-		Contact contact = null;
-		WebMessages webMessages = validateAdd(conn, contactRequest);
-		if (webMessages.isEmpty()) {
-			try {
-				contact = doAdd(conn, contactRequest, sessionUser);
-				String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
-				responseCode = ResponseCode.SUCCESS;
-				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
-			} catch ( DuplicateEntryException e ) {
-				String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
-				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-				responseCode = ResponseCode.EDIT_FAILURE;
-			} catch ( Exception e ) {
-				responseCode = ResponseCode.SYSTEM_FAILURE;
-				AppUtils.logException(e);
-				String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
-				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-			}
-		} else {
-			responseCode = ResponseCode.EDIT_FAILURE;
-		}
-		ContactResponse contactResponse = new ContactResponse(contact, webMessages);
-		super.sendResponse(conn, response, responseCode, contactResponse);
-	}
-
-
-
-
-	protected Contact doAdd(Connection conn, ContactRequest contactRequest, SessionUser sessionUser) throws Exception {
-		Date today = new Date();
-		Contact contact = new Contact();
-		contact.setAddedBy(sessionUser.getUserId());
-		contact.setAddedDate(today);
-		if ( ! StringUtils.isBlank(contactRequest.getBusinessPhone())) {
-			contact.setBusinessPhone(contactRequest.getBusinessPhone());
-		}
-//		contact.setContactId(contactRequest.getContactId());//created on add
-		if ( ! StringUtils.isBlank(contactRequest.getEmail())) {
-			contact.setEmail(contactRequest.getEmail());
-		}
-		if ( ! StringUtils.isBlank(contactRequest.getFax())) {
-			contact.setFax(contactRequest.getFax());
-		}
-		if ( ! StringUtils.isBlank(contactRequest.getFirstName())) {
-			contact.setFirstName(contactRequest.getFirstName());
-		}
-		if ( ! StringUtils.isBlank(contactRequest.getLastName())) {
-			contact.setLastName(contactRequest.getLastName());
-		}
-		if ( ! StringUtils.isBlank(contactRequest.getMobilePhone())) {
-			contact.setMobilePhone(contactRequest.getMobilePhone());
-		}
-		if ( ! StringUtils.isBlank(contactRequest.getPreferredContact())) {
-			contact.setPreferredContact(contactRequest.getPreferredContact());
-		}
-		contact.setUpdatedBy(sessionUser.getUserId());
-		contact.setUpdatedDate(today);
-		try {
-			Integer contactId = contact.insertWithKey(conn);
-			contact.setContactId(contactId);
-		} catch ( SQLException e) {
-			if ( e.getMessage().contains("ContactServlet: doAdd() duplicate key")) {
-				throw new DuplicateEntryException();
-			} else {
-				AppUtils.logException(e);
-				throw e;
-			}
-		} 
-		return contact;
-	}
-
-
-
-
-
-	private ContactListResponse makeSingleListResponse(Connection conn, Integer contactId) throws Exception {
-		ContactListResponse contactListResponse = new ContactListResponse(conn);		
-		Contact contact = new Contact();
-		contact.setContactId(contactId);
-		contact.selectOne(conn);
-		contactListResponse.setContactList(Arrays.asList(new Contact[] {contact} ));
-		return contactListResponse;
-	}
-
-
-
-	
 	protected WebMessages validateAdd(Connection conn, ContactRequest contactRequest) throws Exception {
 		WebMessages webMessages = new WebMessages();
+		System.out.println("Validating add");
 		List<String> missingFields = super.validateRequiredAddFields(contactRequest);
-		if ( ! missingFields.isEmpty() ) {
+		if ( missingFields.isEmpty() ) {
+			System.out.println("Contact servlet: No missing fields 195");
+			List<String> badFormatFieldList = super.validateFormat(contactRequest);
+			if ( badFormatFieldList.isEmpty() ) {
+				System.out.println("Contact servlet: No bad formats 198");
+				if ( contactRequest.isValidPreferredContact(conn)) {
+					validatePreferredContact(contactRequest, webMessages);
+				} else {
+					System.out.println("valid preferred 200");
+					webMessages.addMessage(ContactRequest.PREFERRED_CONTACT, "Invalid value");
+				}
+				System.out.println("Contact servlet: 203");
+				boolean isDupe = isDuplicateContact(conn, contactRequest);
+				System.out.println("Contact servlet: 205");
+				if ( isDupe ) {
+					System.out.println("Contact servlet: dupes 207");
+					webMessages.addMessage(ContactRequest.LAST_NAME, "Duplicate Contact");
+				}
+				System.out.println("Contact servlet: 210"); 
+			} else {
+				for ( String field : badFormatFieldList ) {
+					webMessages.addMessage(field, "Invalid Format");
+				}
+			}
+		} else {
+			// we have required fields that are not populated
 			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
 			for ( String field : missingFields ) {
 				webMessages.addMessage(field, messageText);
 			}
 		}
+		System.out.println("Contact servlet: 223");
+		System.out.println(webMessages.isEmpty());
 		return webMessages;
 	}
 
@@ -324,7 +231,9 @@ public class ContactServlet extends AbstractServlet {
 		if ( missingFields.isEmpty() ) {
 			List<String> badFormatFieldList = super.validateFormat(contactRequest);
 			if ( badFormatFieldList.isEmpty() ) {
-				if ( ! contactRequest.isValidPreferredContact(conn)) {
+				if ( contactRequest.isValidPreferredContact(conn)) {
+					validatePreferredContact(contactRequest, webMessages);
+				} else {
 					webMessages.addMessage(ContactRequest.PREFERRED_CONTACT, "Invalid value");
 				}
 			} else {
@@ -340,6 +249,86 @@ public class ContactServlet extends AbstractServlet {
 			}
 		}
 		return webMessages;
+	}
+
+	protected Contact doAdd(Connection conn, ContactRequest contactRequest, SessionUser sessionUser) throws Exception {
+		Contact contact = new Contact();
+		contact.setAddedBy(sessionUser.getUserId());
+		contact.setBusinessPhone(contactRequest.getBusinessPhone());
+//		contact.setContactId(contactRequest.getContactId());//created on add
+		contact.setEmail(contactRequest.getEmail());
+		contact.setFax(contactRequest.getFax());
+		contact.setFirstName(contactRequest.getFirstName());
+		contact.setLastName(contactRequest.getLastName());
+		contact.setMobilePhone(contactRequest.getMobilePhone());
+		contact.setPreferredContact(contactRequest.getPreferredContact());
+		contact.setUpdatedBy(sessionUser.getUserId());
+		Integer contactId = contact.insertWithKey(conn);
+		contact.setContactId(contactId);
+		conn.commit();
+		return contact;
+	}
+
+	protected Contact doUpdate(Connection conn, Integer contactId, Contact contact, ContactRequest contactRequest, SessionUser sessionUser) throws Exception {
+			contact.setBusinessPhone(contactRequest.getBusinessPhone());
+			contact.setFax(contactRequest.getFax());
+			contact.setEmail(contactRequest.getEmail());
+			contact.setFirstName(contactRequest.getFirstName());
+			contact.setLastName(contactRequest.getLastName());
+			contact.setMobilePhone(contactRequest.getMobilePhone());
+			contact.setPreferredContact(contactRequest.getPreferredContact());
+			contact.setUpdatedBy(sessionUser.getUserId());
+	//		contact.setUpdatedDate(today); this gets magically updated for us
+			
+			Contact key = new Contact();
+			key.setContactId(contactId);
+			contact.update(conn, key);	
+			return contact;
+		}
+
+	protected void validatePreferredContact(ContactRequest contactRequest, WebMessages webMessages) {
+		if ( contactRequest.getPreferredContact().equals(Contact.BUSINESS_PHONE) && StringUtils.isBlank(contactRequest.getBusinessPhone())){
+			webMessages.addMessage(Contact.BUSINESS_PHONE, "Missing data");
+		} else if ( contactRequest.getPreferredContact().equals(Contact.MOBILE_PHONE) && StringUtils.isBlank(contactRequest.getMobilePhone())){
+			webMessages.addMessage(Contact.MOBILE_PHONE, "Missing data");
+		} else if ( contactRequest.getPreferredContact().equals(Contact.FAX) && StringUtils.isBlank(contactRequest.getFax())){
+			webMessages.addMessage(Contact.FAX, "Missing data");
+		} else if ( contactRequest.getPreferredContact().equals(Contact.EMAIL) && StringUtils.isBlank(contactRequest.getEmail())){
+			webMessages.addMessage(Contact.EMAIL, "Missing data");
+		}
+		
+	}
+
+	protected boolean isDuplicateContact(Connection conn, ContactRequest contactRequest) throws Exception {
+		System.out.println("Contact servlet: 287");
+		boolean isDuplicate = false;
+		Contact potential = new Contact();
+		BeanUtils.copyProperties(potential, contactRequest);
+		
+		Contact key = new Contact();
+		key.setLastName(contactRequest.getLastName());
+		key.setFirstName(contactRequest.getFirstName());
+		System.out.println("Contact servlet: 296");
+		System.out.println(key);
+		List<Contact> contactList = Contact.cast(key.selectSome(conn));
+		System.out.println("Contact servlet: 299: " + contactList.size() + " to compare");
+		for ( Contact actual : contactList) {
+			System.out.println("Contact servlet: 301");
+			System.out.println(actual);
+			if ( potential.equals(actual)) {
+				isDuplicate = true;
+			}
+		}
+		return isDuplicate;
+	}
+
+	protected ContactListResponse makeSingleListResponse(Connection conn, Integer contactId) throws Exception {
+		ContactListResponse contactListResponse = new ContactListResponse();		
+		Contact contact = new Contact();
+		contact.setContactId(contactId);
+		contact.selectOne(conn);
+		contactListResponse.setContactList(Arrays.asList(new Contact[] {contact} ));
+		return contactListResponse;
 	}
 
 	

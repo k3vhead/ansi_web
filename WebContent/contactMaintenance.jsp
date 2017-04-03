@@ -61,6 +61,23 @@
 				return false;
       		});
 			
+			$("#showNew").click(function($event) {
+				$('#goEdit').data("contactId",null);
+        		$('#goEdit').button('option', 'label', 'Save');
+        		$('#closeEditPanel').button('option', 'label', 'Close');
+        		
+				$("#editPanel input[name='businessPhone']").val("");
+				$("#editPanel input[name='fax']").val("");
+				$("#editPanel input[name='firstName']").val("");
+				$("#editPanel input[name='lastName']").val("");
+				$("#editPanel input[name='mobilePhone']").val("");
+				$("#editPanel input[name='preferredContact']").val("email");
+				$("#editPanel input[name='email']").val("");			        		
+        		$("#editPanel .err").html("");
+        		$("#editPanel").dialog("open");
+			});
+
+			
 			var jqxhr = $.ajax({
 				type: 'GET',
 				url: "code/contact/preferred_contact",
@@ -74,13 +91,13 @@
                     	});
 					},
 					403: function($data) {
-						$("#globalMessage").html("Session Timeout. Log in and try again");
+						$("#globalMsg").html("Session Timeout. Log in and try again");
 					},
 					404: function($data) {
-						$("#globalMessage").html("System Error while retrieving preferred contact types");
+						$("#globalMsg").html("System Error while retrieving preferred contact types");
 					},
 					500: function($data) {
-						$("#globalMessage").html("System Error; Contact Support");
+						$("#globalMsg").html("System Error; Contact Support");
 					}
 				},
 				dataType: 'json'
@@ -127,7 +144,7 @@
 			            } },
 			            { title: "Business Phone", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.businessPhone != null){
-			            		if ( row.preferred_contact='business_phone') {
+			            		if ( row.preferredContact=='business_phone') {
 			            			value = '<span style="font-weight:bold;">' + row.businessPhone + '</span>';
 			            		} else {
 			            			value = row.businessPhone + "";
@@ -137,7 +154,7 @@
 			            } },
 			            { title: "Email", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.businessPhone != null){
-			            		if ( row.preferred_contact='email') {
+			            		if ( row.preferredContact=='email') {
 			            			value = '<span style="font-weight:bold;">' + row.email + '</span>';
 			            		} else {
 			            			value = row.email + "";
@@ -146,7 +163,7 @@
 			            	}
 			            } },
 			            { title: "Fax" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-		            		if ( row.preferred_contact='fax') {
+		            		if ( row.preferredContact=='fax') {
 		            			value = '<span style="font-weight:bold;">' + row.fax + '</span>';
 		            		} else {
 		            			value = row.fax + "";
@@ -154,7 +171,7 @@
 		            		return (value);
 			            } },
 			            { title: "Mobile" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-		            		if ( row.preferred_contact='mobile_phone') {
+		            		if ( row.preferredContact=='mobile_phone') {
 		            			value = '<span style="font-weight:bold;">' + row.mobilePhone + '</span>';
 		            		} else {
 		            			value = row.mobilePhone + "";
@@ -241,7 +258,7 @@
 				$outbound['firstName'] = $("#editPanel input[name='firstName']").val();
 				$outbound['lastName'] = $("#editPanel input[name='lastName']").val();
 				$outbound['mobilePhone'] = $("#editPanel input[name='mobilePhone']").val();
-				$outbound['preferredContact'] = $("#editPanel input[name='preferredContact']").val();
+				$outbound['preferredContact'] = $("#editPanel select[name='preferredContact'] option:selected").val();
 				$outbound['email'] = $("#editPanel input[name='email']").val();			        		
 				console.debug($outbound);
 				
@@ -259,18 +276,18 @@
 		    					});
 		    				} else {
 				        		$("#editPanel").dialog("close");
-		    					$("#globalMessage").html("Update Successful").show().fadeOut(10000);
+		    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
 		    					$('#contactTable').DataTable().ajax.reload();
 		    				}
 						},
 						403: function($data) {
-							$("#globalMessage").html("Session Timeout. Log in and try again");
+							$("#globalMsg").html("Session Timeout. Log in and try again");
 						},
 						404: function($data) {
-							$("#globalMessage").html("Invalid Contact");
+							$("#globalMsg").html("Invalid Contact").show().fadeOut(100000);
 						},
 						500: function($data) {
-							$("#globalMessage").html("System Error; Contact Support");
+							$("#globalMsg").html("System Error; Contact Support");
 						}
 					},
 					dataType: 'json'
@@ -305,16 +322,17 @@
 							$("#editPanel input[name='mobilePhone']").val($contact.mobilePhone);
 							$("#editPanel input[name='preferredContact']").val($contact.preferredContact);
 							$("#editPanel input[name='email']").val($contact.email);			        		
+			        		$("#editPanel .err").html("");
 			        		$("#editPanel").dialog("open");
 						},
 						403: function($data) {
-							$("#globalMessage").html("Session Timeout. Log in and try again");
+							$("#globalMsg").html("Session Timeout. Log in and try again");
 						},
 						404: function($data) {
-							$("#globalMessage").html("Invalid Contact");
+							$("#globalMsg").html("Invalid Contact");
 						},
 						500: function($data) {
-							$("#globalMessage").html("System Error; Contact Support");
+							$("#globalMsg").html("System Error; Contact Support");
 						}
 					},
 					dataType: 'json'
@@ -362,6 +380,7 @@
             </tr>
         </tfoot>
     </table>
+    <input type="button" class="prettyWideButton" value="New" id="showNew" />
     
     <p align="center">
     	<br>
