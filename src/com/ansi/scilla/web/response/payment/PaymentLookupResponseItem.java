@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.response.invoice;
+package com.ansi.scilla.web.response.payment;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,6 +25,7 @@ public class PaymentLookupResponseItem extends ReportQuery {
 	public static final String TICKET_AMOUNT = "ticket_amount";
 	public static final String TICKET_TAX = "ticket_tax";
 	public static final String TICKET_DIV = "ticket_div";
+	public static final String INVOICE_ID = "invoice_id";
 	public static final String BILL_TO_NAME = "bill_to_name";
 	public static final String JOB_SITE_NAME = "job_site_name";
 	
@@ -44,6 +45,7 @@ public class PaymentLookupResponseItem extends ReportQuery {
 	private BigDecimal ticketAmount;
 	private BigDecimal ticketTax;
 	private String ticketDiv;
+	private Integer invoiceId;
 	private String billToName;
 	private String jobSiteName;
 	
@@ -64,6 +66,7 @@ public class PaymentLookupResponseItem extends ReportQuery {
 		this.ticketAmount = rs.getBigDecimal(TICKET_AMOUNT);
 		this.ticketTax = rs.getBigDecimal(TICKET_TAX);
 		this.ticketDiv = rs.getString(TICKET_DIV);
+		this.invoiceId = rs.getInt(INVOICE_ID);
 		this.billToName = rs.getString(BILL_TO_NAME);
 		this.jobSiteName = rs.getString(JOB_SITE_NAME);
 	}
@@ -160,6 +163,14 @@ public class PaymentLookupResponseItem extends ReportQuery {
 	@DBColumn(TICKET_DIV)
 	public void setTicketDiv(String ticketDiv) {
 		this.ticketDiv = ticketDiv;
+	}
+	@DBColumn(INVOICE_ID)
+	public Integer getInvoiceId() {
+		return invoiceId;
+	}
+	@DBColumn(INVOICE_ID)
+	public void setInvoiceId(Integer invoiceId) {
+		this.invoiceId = invoiceId;
 	}
 	@DBColumn(BILL_TO_NAME)
 	public String getBillToName() {
