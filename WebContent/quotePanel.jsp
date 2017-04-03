@@ -43,10 +43,10 @@
 	 	<table class="addressTable">
 			<tr>
 				<td class="jobTableCell">
-					<webthing:addressPanel namespace="<%= jobSiteName %>" label="Job Site" cssId="jobSite" />
+					<webthing:addressPanel namespace="<%= jobSiteName %>" label="Job Site" cssId="jobSite" page="job"/>
 				</td>
 				<td class="jobTableCell">
-					<webthing:addressPanel namespace="<%= billToName %>" label="Bill To" cssId="billTo" />
+					<webthing:addressPanel namespace="<%= billToName %>" label="Bill To" cssId="billTo" page="bill"/>
 				</td>
 			</tr>
 		</table> 

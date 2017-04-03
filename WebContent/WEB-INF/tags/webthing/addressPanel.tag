@@ -12,7 +12,7 @@
 <%@ attribute name="cssId" required="true" rtexprvalue="true" %>
 <%@ attribute name="cssClass" required="false" rtexprvalue="true" %>
 <%@ attribute name="label" required="true" rtexprvalue="true" %>
-
+<%@ attribute name="page" required="true" rtexprvalue="true" %>
 
 
 <%
@@ -20,6 +20,7 @@
 	String cssId = (String)jspContext.getAttribute("cssId");
 	String cssClass = (String)jspContext.getAttribute("cssClass");
 	String label = (String)jspContext.getAttribute("label");
+	String page = (String)jspContext.getAttribute("page");
 	
 	String cssIdString = "id=\"" + cssId + "\"";			 
 	String cssClassString = cssClass == null || cssClass.length()==0 ? "" : "class=\"" + cssClass + "\"";
@@ -72,17 +73,31 @@
 				
 			</tr>
 			<tr>
-				<td>Job Contact:</td>
-				<td style="width:140px;"><input type="text" name="<%=namespace %>_jobContactName" style="width:125px" placeholder="<name>"/></td>
-				<td colspan="2"><input type="text" name="<%=namespace %>_jobContactInfo" style="width:170px" placeholder="<phone,mobile,email>"/></td>
+			<% if ( page.equals("job") ) { %>
+					<td>Job Contact:</td>
+					<td style="width:140px;"><input type="text" name="<%=namespace %>_jobContactName" style="width:125px" placeholder="<name>"/></td>
+					<td colspan="2"><input type="text" name="<%=namespace %>_jobContactInfo" style="width:170px" placeholder="<phone,mobile,email>"/></td>
+				<% } else if ( page.equals("bill") ){%>
+					<td>Cont Contact:</td>
+					<td style="width:140px;"><input type="text" name="<%=namespace %>_contractContactName" style="width:125px" placeholder="<name>"/></td>
+					<td colspan="2"><input type="text" name="<%=namespace %>_contractContactInfo" style="width:170px" placeholder="<phone,mobile,email>"/></td>
+				<% } %>
 			</tr>
 			<tr>
-				<td>Site Contact:</td>
-				<td style="width:140px;"><input type="text" name="<%=namespace %>_siteContactName" style="width:125px" placeholder="<name>"/></td>
-				<td colspan="2"><input type="text" name="<%=namespace %>_siteContactInfo" style="width:170px" placeholder="<phone,mobile,email>"/></td>
+			<% if ( page.equals("job") ) { %>
+					<td>Site Contact:</td>
+					<td style="width:140px;"><input type="text" name="<%=namespace %>_siteContactName" style="width:125px" placeholder="<name>"/></td>
+					<td colspan="2"><input type="text" name="<%=namespace %>_siteContactInfo" style="width:170px" placeholder="<phone,mobile,email>"/></td>
+				<% } else if ( page.equals("bill") ){%>
+					<td>Billing Contact:</td>
+					<td style="width:140px;"><input type="text" name="<%=namespace %>_billingContactName" style="width:125px" placeholder="<name>"/></td>
+					<td colspan="2"><input type="text" name="<%=namespace %>_billingContactInfo" style="width:170px" placeholder="<phone,mobile,email>"/></td>
+				<% } %>
 			</tr>
 		</table>
 		<input type="text" name="<%=namespace %>_id" style="display:none" />
+		<input type="text" name="<%=namespace %>_Con1id" style="display:none" />
+		<input type="text" name="<%=namespace %>_Con2id" style="display:none" />
 	</form>
 </div>
  

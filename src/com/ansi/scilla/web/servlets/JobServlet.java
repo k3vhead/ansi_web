@@ -88,6 +88,7 @@ public class JobServlet extends AbstractServlet {
 			throws ServletException, IOException {
 		
 		AnsiURL url = null;
+		String url2 = request.getRequestURI();
 		SessionUser sessionUser = AppUtils.getSessionUser(request);
 		WebMessages messages = new WebMessages();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
@@ -97,32 +98,43 @@ public class JobServlet extends AbstractServlet {
 			conn.setAutoCommit(false);
 			String jsonString = super.makeJsonString(request);
 			System.out.println(jsonString);
-			url = new AnsiURL(request, "job", (String[])null);
 			
-			System.out.println("URL:"+url);
+			int idx = url2.indexOf("/job/");
+			String myString = url2.substring(idx + "/job/".length());				
+			String[] urlPieces = myString.split("/");
+			String command = urlPieces[0];
 			
-			try {
-				JobDetailRequest jobDetailRequest = (JobDetailRequest) AppUtils.json2object(jsonString, JobDetailRequest.class);
-				System.out.println(jobDetailRequest);
-				JobDetailRequest.JobDetailRequestAction action = JobDetailRequest.JobDetailRequestAction.valueOf(jobDetailRequest.getAction());
-				if (action.equals(JobDetailRequestAction.CANCEL_JOB)) {
-					doCancelJob(conn, url.getId(), jobDetailRequest, sessionUser, response);					
-				} else if ( action.equals(JobDetailRequestAction.ACTIVATE_JOB)) {
-					doActivateJob(conn, url.getId(), jobDetailRequest, sessionUser, response);				
-				} else if ( action.equals(JobDetailRequestAction.SCHEDULE_JOB)) {
-					doScheduleJob(conn, url.getId(), jobDetailRequest, sessionUser, response);
-				} else if ( action.equals(JobDetailRequestAction.REPEAT_JOB)) {
-					doRepeatJob(conn, url.getId(), jobDetailRequest, sessionUser, response);
-				} else if ( action.equals(JobDetailRequestAction.ADD_JOB)) {
-					JobRequest jobRequest = new JobRequest(jsonString);
-					doAdd(conn, jobRequest, sessionUser, response);
+			
+			if ( command.equalsIgnoreCase("add") ) {
+				JobRequest jobRequest = new JobRequest(jsonString);
+				doAdd(conn, jobRequest, sessionUser, response);
+			} else {
+				url = new AnsiURL(request, "job", (String[])null);
+				
+				System.out.println("URL:"+url);
+				
+				try {
+
+					JobDetailRequest jobDetailRequest = (JobDetailRequest) AppUtils.json2object(jsonString, JobDetailRequest.class);
+					System.out.println(jobDetailRequest);
+					JobDetailRequest.JobDetailRequestAction action = JobDetailRequest.JobDetailRequestAction.valueOf(jobDetailRequest.getAction());
+					if (action.equals(JobDetailRequestAction.CANCEL_JOB)) {
+						doCancelJob(conn, url.getId(), jobDetailRequest, sessionUser, response);					
+					} else if ( action.equals(JobDetailRequestAction.ACTIVATE_JOB)) {
+						doActivateJob(conn, url.getId(), jobDetailRequest, sessionUser, response);				
+					} else if ( action.equals(JobDetailRequestAction.SCHEDULE_JOB)) {
+						doScheduleJob(conn, url.getId(), jobDetailRequest, sessionUser, response);
+					} else if ( action.equals(JobDetailRequestAction.REPEAT_JOB)) {
+						doRepeatJob(conn, url.getId(), jobDetailRequest, sessionUser, response);
+					}
+				} catch ( IllegalArgumentException e) {
+					conn.rollback();
+					messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Missing Required Data: action");
+					jobDetailResponse.setWebMessages(messages);
+					super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, jobDetailResponse);
 				}
-			} catch ( IllegalArgumentException e) {
-				conn.rollback();
-				messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Missing Required Data: action");
-				jobDetailResponse.setWebMessages(messages);
-				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, jobDetailResponse);
 			}
+			conn.commit();
 		} catch (ResourceNotFoundException e) {
 			super.sendNotFound(response);
 		} catch ( Exception e) {
@@ -285,7 +297,7 @@ public class JobServlet extends AbstractServlet {
 		job.setJobNbr(jobRequest.getJobNbr());
 
 		job.setJobFrequency(jobRequest.getJobFrequency());
-		job.setStatus(jobRequest.getStatus());
+		job.setStatus("N");
 		job.setPricePerCleaning(jobRequest.getPricePerCleaning());
 		job.setDivisionId(jobRequest.getDivisionId());
 		job.setDirectLaborPct(jobRequest.getDirectLaborPct());
@@ -340,7 +352,11 @@ public class JobServlet extends AbstractServlet {
 			job.setOmNotes(jobRequest.getOmNotes());
 		}
 		
-		job.setActivationDate(jobRequest.getActivationDate());
+		if(jobRequest.getActivationDate() == null) {
+			job.setActivationDate(today);
+		} else {
+			job.setActivationDate(jobRequest.getActivationDate());
+		}
 		
 		if(jobRequest.getStartDate() != null){
 			job.setStartDate(jobRequest.getStartDate());
@@ -364,6 +380,10 @@ public class JobServlet extends AbstractServlet {
 		
 		if(jobRequest.getJobTypeId() != null) {
 			job.setJobTypeId(jobRequest.getJobTypeId());
+		}
+		
+		if(job.getJobTypeId() == 0){
+			job.setJobTypeId(null);
 		}
 		
 		job.setRequestSpecialScheduling(jobRequest.getRequestSpecialScheduling());
@@ -393,6 +413,7 @@ public class JobServlet extends AbstractServlet {
 				throw e;
 			}
 		} 
+		job.setJobId(j);
 		JobResponse jobResponse = new JobResponse(job, messages);
 		super.sendResponse(conn, response, responseCode, jobResponse);		
 		return job;

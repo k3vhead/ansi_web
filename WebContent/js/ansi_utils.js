@@ -67,6 +67,27 @@ $( document ).ready(function() {
 			return $returnValue;
 		},
 		
+		// get a list of divisions
+		getUser: function($userid) {
+			var $returnValue = null;
+			var jqxhr3 = $.ajax({
+				type: 'GET',
+				url: 'user/'+$userid,
+				data: {},
+				success: function($data) {
+					$returnValue = $data.data.userList;
+				},
+				statusCode: {
+					403: function($data) {
+						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+					} 
+				},
+				dataType: 'json',
+				async:false
+			});
+			return $returnValue;
+		},
+		
 		makeBuildingTypeList:function() {							
 			var $returnValue = null;
 			var jqxhr3 = $.ajax({
@@ -162,6 +183,39 @@ $( document ).ready(function() {
 				        ADDRESSPANEL.clearAddress($namespace);
 				        var data = ADDRESSPANEL.getAddress(ui.item.id);
 				        ADDRESSPANEL.setAddress($namespace,data[0]);
+				      }
+				  });
+				 
+				 $( "input[name='"+$namespace+"_jobContactName']" ).autocomplete({
+				     'source':"contactTypeAhead?term=",
+				      select: function( event, ui ) {
+				        var data = ADDRESSPANEL.getContact(ui.item.id);
+				        var id = ADDRESSPANEL.setContact($namespace+"_job",data);
+				        $("input[name='"+$namespace+"_Con1id']").val(id);
+				      }
+				  });
+				 $( "input[name='"+$namespace+"_siteContactName']" ).autocomplete({
+				     'source':"contactTypeAhead?term=",
+				      select: function( event, ui ) {
+				        var data = ADDRESSPANEL.getContact(ui.item.id);
+				        var id = ADDRESSPANEL.setContact($namespace+"_site",data);
+				        $("input[name='"+$namespace+"_Con2id']").val(id);
+				      }
+				    });
+				 $( "input[name='"+$namespace+"_contractContactName']" ).autocomplete({
+				     'source':"contactTypeAhead?term=",
+				      select: function( event, ui ) {
+				        var data = ADDRESSPANEL.getContact(ui.item.id);
+				        var id = ADDRESSPANEL.setContact($namespace+"_contract",data);
+				        $("input[name='"+$namespace+"_Con1id']").val(id);
+				      }
+				    });
+				 $( "input[name='"+$namespace+"_billingContactName']" ).autocomplete({
+				     'source':"contactTypeAhead?term=",
+				      select: function( event, ui ) {
+				        var data = ADDRESSPANEL.getContact(ui.item.id);
+				        var id = ADDRESSPANEL.setContact($namespace+"_billing",data);
+				        $("input[name='"+$namespace+"_Con2id']").val(id);
 				      }
 				    });
 				
@@ -262,6 +316,29 @@ $( document ).ready(function() {
 				
 				//.selectmenu("refresh");
 				
+			},
+			setContact: function($namespace, $contactData) {
+				console.log("Contact Data;");
+				console.log($contactData);
+				if($contactData.preferredContact == "business_phone") {
+					$("input[name='"+$namespace+"ContactInfo']").val($contactData.businessPhone);
+				} 
+				if($contactData.preferredContact == "email") {
+					$("input[name='"+$namespace+"ContactInfo']").val($contactData.email);
+				} 
+				if($contactData.preferredContact == "mobile_phone") {
+					$("input[name='"+$namespace+"ContactInfo']").val($contactData.mobilePhone);
+				} 
+				
+				
+					$("input[name='"+$namespace+"ContactName']").val($contactData.lastName + ", "+$contactData.firstName);
+				
+				
+				
+				return $contactData.contactId;
+				
+				//.selectmenu("refresh");
+				
 			}, clearAddress: function($namespace){
 
 					$("input[name='"+$namespace+"_name']").val("");
@@ -278,6 +355,37 @@ $( document ).ready(function() {
 					$("input[name='"+$namespace+"_jobContactInfo']").val("");
 					$("input[name='"+$namespace+"_siteContactName']").val("");
 					$("input[name='"+$namespace+"_siteContactInfo']").val("");
+			},
+			getContact: function($contactId){
+				var $returnValue = [];
+					var $url = "contact/"+$contactId;
+					var jqxhr = $.ajax({
+						type: 'GET',
+						url: $url,
+						data: {},
+						statusCode: {
+							200: function($data) {
+								console.log("Contact Data: ");
+								console.log($data);
+								$returnValue = $data.data.contactList[0];
+								
+							},					
+							403: function($data) {
+								$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+							},
+							404: function($data) {
+								$returnValue = {};
+							},
+							500: function($data) {
+								
+							}
+						},
+						dataType: 'json',
+						async:false
+					});
+				//console.log($returnValue);
+
+				return $returnValue;
 			}
 		}
 

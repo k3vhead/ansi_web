@@ -2,6 +2,8 @@ $( document ).ready(function() {
 
 	var $currentRow = 0;
 	;JOB_DATA = {}
+	;QUOTE_DATA = {}
+	
 	
 	;QUOTEUTILS = {
 			pageInit:function($quoteId) {
@@ -34,6 +36,7 @@ $( document ).ready(function() {
 				if ( $quoteId != '' ) {
 					var $quoteDetail = QUOTEUTILS.getQuoteDetail($quoteId);
 					var $quoteData = $quoteDetail.quote;
+					QUOTE_DATA.data = $quoteData;
 				}
 				
 				
@@ -61,9 +64,13 @@ $( document ).ready(function() {
 					if($quoteDetail.jobSite != null){
 						ADDRESSPANEL.setAddress("jobSite",$quoteDetail.jobSite);
 					}
+					$signedByData = ADDRESSPANEL.getContact($quoteData.signedByContactId);
+					$("input[name='signedBy']").val($signedByData.lastName + ", "+$signedByData.firstName + "(" +$signedByData.contactId+")");
+					
 						console.log("DivisionCode: "+ $quoteData.divisionId);
 						$("select[name='division']").val($quoteData.divisionId);
 						$("select[name='division").selectmenu("refresh");
+						
 						
 					//console.log("Account Type: "+ $quoteData.accountType);
 					//console.log(($quoteData.accountType).length < 128);
@@ -101,11 +108,35 @@ $( document ).ready(function() {
 					}
 					var modalText = "";
 					$.each($jobs, function($index, $job) {
+						if($index == 0){
+							
+						}
 						//console.log($currentRow);
 						//addAJob($currentRow);
 						console.log("Index:"+$index);
-						JOB_UTILS.panelLoadQuote($currentRow, $job.jobId, $index);
-
+						$jobContacts = JOB_UTILS.panelLoadQuote($currentRow, $job.jobId, $index, $quoteData);
+						console.log("Job Contacts:");
+						console.log($jobContacts);
+						
+						if($index == 0){
+							$("input[name='jobSite_Con1id']").val($jobContacts['jobContactId']);
+							$jobContactData = ADDRESSPANEL.getContact($jobContacts['jobContactId']);
+							ADDRESSPANEL.setContact("jobSite_job",$jobContactData);
+							
+							$("input[name='jobSite_Con2id']").val($jobContacts['siteContact']);
+							$jobSiteData = ADDRESSPANEL.getContact($jobContacts['siteContact']);
+							ADDRESSPANEL.setContact("jobSite_site",$jobSiteData);
+							
+							$("input[name='billTo_Con1id']").val($jobContacts['contractContactId']);
+							$jobContractData = ADDRESSPANEL.getContact($jobContacts['contractContactId']);
+							ADDRESSPANEL.setContact("billTo_contract",$jobContractData);
+							
+							$("input[name='billTo_Con2id']").val($jobContacts['billingContactId']);
+							$jobBillingData = ADDRESSPANEL.getContact($jobContacts['billingContactId']);
+							ADDRESSPANEL.setContact("billTo_billing",$jobBillingData);
+						}
+						
+						
 						//$(".addressTable").remove();
 						console.log("#"+$currentRow+"_jobPanel_jobLink");
 						
@@ -334,7 +365,7 @@ $( document ).ready(function() {
 						$('.jobSave').on('click', function($clickevent) {
 							JOB_UTILS.addJob($(this).attr("rownum"),$quoteId);
 			            });
-						JOB_UTILS.bindAndFormat();
+						QUOTEUTILS.bindAndFormat();
 	
 					},
 					statusCode: {
