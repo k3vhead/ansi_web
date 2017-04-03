@@ -219,16 +219,19 @@ public class TicketServlet extends AbstractServlet {
 		WebMessages messages = new WebMessages();
 		ResponseCode responseCode = null;
 		if (ticketReturnRequest.getProcessDate() == null) {
-			messages.addMessage("processDate", "Required Field");
+			messages.addMessage(TicketReturnRequest.PROCESS_DATE, "Required Field");
 		}
 		if (ticketReturnRequest.getActPricePerCleaning() == null ) {
-			messages.addMessage("actPricePerCleaning", "Required Field");
+			messages.addMessage(TicketReturnRequest.ACT_PRICE_PER_CLEANING, "Required Field");
 		}
 		if (ticketReturnRequest.getActDlPct() == null ) {
-			messages.addMessage("actDlPct", "Required Field");
+			messages.addMessage(TicketReturnRequest.ACT_DL_PCT, "Required Field");
 		}
 		if (ticketReturnRequest.getActDlAmt() == null ) {
-			messages.addMessage("actDlAmt", "Required Field");
+			messages.addMessage(TicketReturnRequest.ACT_DL_AMT, "Required Field");
+		}
+		if ( ! isValidNewStatus(ticket.getStatus(), ticketReturnRequest.getNewStatus())) {
+			messages.addMessage(TicketReturnRequest.NEW_STATUS, "Invalid status sequence");
 		}
 		if ( messages.isEmpty() ) {
 			try {
@@ -281,6 +284,10 @@ public class TicketServlet extends AbstractServlet {
 		if (StringUtils.isBlank(ticketReturnRequest.getProcessNotes())) {
 			messages.addMessage("processNotes", "Required Field");
 		}
+		if ( ! isValidNewStatus(ticket.getStatus(), ticketReturnRequest.getNewStatus())) {
+			messages.addMessage(TicketReturnRequest.NEW_STATUS, "Invalid status sequence");
+		}
+
 		if ( messages.isEmpty() ) {
 			ticket.setStatus(TicketStatus.SKIPPED.code());
 			//required fields
@@ -314,6 +321,10 @@ public class TicketServlet extends AbstractServlet {
 		if (StringUtils.isBlank(ticketReturnRequest.getProcessNotes())) {
 			messages.addMessage("processNotes", "Required Field");
 		}
+		if ( ! isValidNewStatus(ticket.getStatus(), ticketReturnRequest.getNewStatus())) {
+			messages.addMessage(TicketReturnRequest.NEW_STATUS, "Invalid status sequence");
+		}
+
 		if ( messages.isEmpty() ) {
 			ticket.setStatus(TicketStatus.VOIDED.code());
 			//required fields
@@ -346,6 +357,10 @@ public class TicketServlet extends AbstractServlet {
 		if (StringUtils.isBlank(ticketReturnRequest.getProcessNotes())) {
 			messages.addMessage("processNotes", "Required Field");
 		}
+		if ( ! isValidNewStatus(ticket.getStatus(), ticketReturnRequest.getNewStatus())) {
+			messages.addMessage(TicketReturnRequest.NEW_STATUS, "Invalid status sequence");
+		}
+
 		if ( messages.isEmpty() ) {
 			ticket.setStatus(TicketStatus.REJECTED.code());
 			//required fields
@@ -376,6 +391,10 @@ public class TicketServlet extends AbstractServlet {
 		if (ticketReturnRequest.getProcessDate() == null) {
 			messages.addMessage("processDate", "Required Field");
 		}
+		if ( ! isValidNewStatus(ticket.getStatus(), ticketReturnRequest.getNewStatus())) {
+			messages.addMessage(TicketReturnRequest.NEW_STATUS, "Invalid status sequence");
+		}
+
 		if ( messages.isEmpty() ) {
 			ticket.setStatus(TicketStatus.NOT_DISPATCHED.code());
 			//required fields
@@ -392,6 +411,13 @@ public class TicketServlet extends AbstractServlet {
 		ticketReturnResponse.setWebMessages(messages);
 		super.sendResponse(conn, response, responseCode, ticketReturnResponse);
 		
+	}
+
+
+	private boolean isValidNewStatus(String status, String newStatus) {
+		TicketStatus oldStatus = TicketStatus.lookup(status);
+		TicketStatus checkThis = TicketStatus.lookup(newStatus);
+		return oldStatus.nextValues().contains(checkThis);
 	}
 
 

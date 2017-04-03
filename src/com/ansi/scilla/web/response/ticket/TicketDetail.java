@@ -43,7 +43,9 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 //	  					if balance == 0, daysToPay = max(paymentDate)-invoiceDate;
 //	  					if balance <> 0, daysToPay = today - invoiceDate;
 //	  			**ticket write off amount - stub for v 2.0;
-//	
+	private String divisionDisplay;
+	
+	
 	public TicketDetail(){
 		super();
 	}
@@ -70,6 +72,7 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		this.totalTaxPaid = ticketPaymentTotals.getTotalTaxPaid();
 		this.balance = actPricePerCleaning.add(actTax).subtract(totalVolPaid.add(totalTaxPaid));
 		//daysToPay insert HERE:***
+		this.divisionDisplay = ticketPaymentTotals.getDivisionDisplay();
 	}
 
 	public Integer getTicketId() {
@@ -232,6 +235,14 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 	
 	public void setDaysToPay(Integer daysToPay) {
 		this.daysToPay = daysToPay;
+	}
+
+	public String getDivisionDisplay() {
+		return divisionDisplay;
+	}
+
+	public void setDivisionDisplay(String divisionDisplay) {
+		this.divisionDisplay = divisionDisplay;
 	}
 	
 }

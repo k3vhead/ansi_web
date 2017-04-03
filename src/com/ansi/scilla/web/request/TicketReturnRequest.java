@@ -23,6 +23,22 @@ public class TicketReturnRequest extends AbstractRequest {
 	public static final String POST_ACTION_IS_VOID = "void";
 	public static final String POST_ACTION_IS_REJECT = "reject";
 	public static final String POST_ACTION_IS_REQUEUE = "requeue";
+
+	
+	public static final String ACTION = "action";
+	public static final String ACT_DL_AMT = "actDlAmt";
+	public static final String ACT_DL_PCT = "actDlPct";
+	public static final String ACT_PRICE_PER_CLEANING = "actPricePerCleaning";
+	public static final String BILL_SHEET = "billSheet";
+	public static final String CUSTOMER_SIGNATURE = "customerSignature";
+	public static final String MGR_APPROVAL = "mgrApproval";
+	public static final String NEW_STATUS = "newStatus";
+	public static final String PROCESS_DATE = "processDate";
+	public static final String PROCESS_NOTES = "processNotes";
+	public static final String STATUS = "status";
+	public static final String TICKET_ID = "ticketId";
+
+	
 	
 	private String action;
 	private BigDecimal actDlAmt;
