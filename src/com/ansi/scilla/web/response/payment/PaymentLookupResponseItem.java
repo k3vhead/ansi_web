@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.response.invoice;
+package com.ansi.scilla.web.response.payment;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;

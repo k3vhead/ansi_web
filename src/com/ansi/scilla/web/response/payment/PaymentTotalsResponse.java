@@ -1,8 +1,8 @@
-package com.ansi.scilla.web.response.invoice;
+package com.ansi.scilla.web.response.payment;
 
 import java.util.List;
 
-public class PaymentLookupResponse {
+public class PaymentTotalsResponse {
 
     int recordsTotal;
 
@@ -12,7 +12,7 @@ public class PaymentLookupResponse {
 
     String columns;
 
-    List<PaymentLookupResponseItem> data;
+    List<PaymentTotalsResponseItem> data;
 
     public int getRecordsTotal() {
     return recordsTotal;
@@ -46,11 +46,11 @@ public class PaymentLookupResponse {
     this.columns = columns;
     }
 
-    public List<PaymentLookupResponseItem> getData() {
+    public List<PaymentTotalsResponseItem> getData() {
         return data;
     }
 
-    public void setData(List<PaymentLookupResponseItem> data) {
+    public void setData(List<PaymentTotalsResponseItem> data) {
         this.data = data;
     }
 
