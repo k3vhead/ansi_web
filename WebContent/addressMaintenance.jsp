@@ -509,7 +509,7 @@
 		  <p class="validateTips">All form fields are required.</p>
 		 
 		  <form id="addForm">
-			<webthing:addressPanel label="Name" namespace="ADDRESSPANEL" cssId="addressPanel" />
+			<webthing:addressPanel label="Name" namespace="ADDRESSPANEL" cssId="addressPanel" page="job"/>
 		  </form>
 		</div>
 		
