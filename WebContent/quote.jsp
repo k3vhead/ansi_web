@@ -218,10 +218,10 @@ td.jobTableCell {
 				<td colspan='2' align="left">
 					<table>
 						<td align="center" style="width:480px;">
-							<webthing:addressPanel label="Job Site" namespace="jobSite" cssId="jobSite" />
+							<webthing:addressPanel label="Job Site" namespace="jobSite" cssId="jobSite" page="job"/>
 						</td>
 						<td align="center" style="width:480px;">
-							<webthing:addressPanel label="Bill To"  namespace="billTo" cssId="billTo" />
+							<webthing:addressPanel label="Bill To"  namespace="billTo" cssId="billTo" page="bill"/>
 						</td>
 					</table>
 				</td>
