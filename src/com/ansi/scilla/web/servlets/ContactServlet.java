@@ -187,27 +187,19 @@ public class ContactServlet extends AbstractServlet {
 
 	protected WebMessages validateAdd(Connection conn, ContactRequest contactRequest) throws Exception {
 		WebMessages webMessages = new WebMessages();
-		System.out.println("Validating add");
 		List<String> missingFields = super.validateRequiredAddFields(contactRequest);
 		if ( missingFields.isEmpty() ) {
-			System.out.println("Contact servlet: No missing fields 195");
 			List<String> badFormatFieldList = super.validateFormat(contactRequest);
 			if ( badFormatFieldList.isEmpty() ) {
-				System.out.println("Contact servlet: No bad formats 198");
 				if ( contactRequest.isValidPreferredContact(conn)) {
 					validatePreferredContact(contactRequest, webMessages);
 				} else {
-					System.out.println("valid preferred 200");
 					webMessages.addMessage(ContactRequest.PREFERRED_CONTACT, "Invalid value");
 				}
-				System.out.println("Contact servlet: 203");
 				boolean isDupe = isDuplicateContact(conn, contactRequest);
-				System.out.println("Contact servlet: 205");
 				if ( isDupe ) {
-					System.out.println("Contact servlet: dupes 207");
 					webMessages.addMessage(ContactRequest.LAST_NAME, "Duplicate Contact");
 				}
-				System.out.println("Contact servlet: 210"); 
 			} else {
 				for ( String field : badFormatFieldList ) {
 					webMessages.addMessage(field, "Invalid Format");
@@ -220,8 +212,6 @@ public class ContactServlet extends AbstractServlet {
 				webMessages.addMessage(field, messageText);
 			}
 		}
-		System.out.println("Contact servlet: 223");
-		System.out.println(webMessages.isEmpty());
 		return webMessages;
 	}
 
@@ -300,7 +290,6 @@ public class ContactServlet extends AbstractServlet {
 	}
 
 	protected boolean isDuplicateContact(Connection conn, ContactRequest contactRequest) throws Exception {
-		System.out.println("Contact servlet: 287");
 		boolean isDuplicate = false;
 		Contact potential = new Contact();
 		BeanUtils.copyProperties(potential, contactRequest);
@@ -308,13 +297,8 @@ public class ContactServlet extends AbstractServlet {
 		Contact key = new Contact();
 		key.setLastName(contactRequest.getLastName());
 		key.setFirstName(contactRequest.getFirstName());
-		System.out.println("Contact servlet: 296");
-		System.out.println(key);
 		List<Contact> contactList = Contact.cast(key.selectSome(conn));
-		System.out.println("Contact servlet: 299: " + contactList.size() + " to compare");
 		for ( Contact actual : contactList) {
-			System.out.println("Contact servlet: 301");
-			System.out.println(actual);
 			if ( potential.equals(actual)) {
 				isDuplicate = true;
 			}
