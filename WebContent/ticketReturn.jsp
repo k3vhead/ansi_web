@@ -87,6 +87,10 @@
 			#displayInvoiceTable {
     			border-collapse: collapse;
 				width:90%;
+			}			
+			#displaySummaryTable {
+    			border-collapse: collapse;
+				width:90%;
 			}
 			td, th {
     			border: 1px solid #dddddd;
@@ -133,6 +137,12 @@
 				
 			}
 			
+			function populateSummary($data) {
+				$("#status").html($data.ticketDetail.status);
+				$("#divisionCode").html($data.ticketDetail.divisionCode);
+				$("#jobId").html($data.ticketDetail.jobId);				
+			}
+			
 			
         	function doPopulate($ticketNbr) {
         		        		
@@ -141,9 +151,14 @@
 		       		url: "ticket/" + $ticketNbr,
 		       		//data: $ticketNbr,
 		       		success: function($data) {
+						$.each($data.data.ticketList, function(index, value) {
+							addRow(index, value);
+						});
+						doFunctionBinding();
 		       			populateTicketDetail($data.data);
-		       			populateInvoiceDetail($data.data);		       			
-		       		},
+		       			populateInvoiceDetail($data.data);
+		       			populateSummary($data.data);
+					},
 		       		statusCode: {
 	       				404: function($data) {
 	        	    		$("#globalMsg").html("Bad Ticket Number").fadeIn(10);
@@ -158,6 +173,13 @@
 		       		dataType: 'json'
 		       	});
         	}
+        	
+        	function addRow(index, $ticket) {	
+				var $rownum = index + 1;
+       			rowTd = makeRow($ticket, $rownum);
+       			row = '<tr class="dataRow">' + rowTd + "</tr>";
+       			$('#displayTable').append(row);
+			}
         	
         	
         	//$nextAllowedStatusList = ticket.nextAllowedStatusList();
@@ -198,8 +220,7 @@
 				$('.dataRow').bind("mouseout", function() {
 					$(this).css('background-color','transparent');
 				});
-			}
-			
+			}			
 			
 			function doUpdate($clickevent) {
 				var $action = $event.currentTarget.attributes['data-panel'].value;
@@ -246,7 +267,6 @@
 			$("#cancelUpdate").click( function($clickevent) {
 				$clickevent.preventDefault();
 				clearAddForm();
-				$('#addFormDiv').bPopup().close();
 			});
 			
 			
@@ -396,12 +416,20 @@
     <tiles:put name="content" type="string">    	
     	<h1>Ticket Return</h1>
     	
-    	<form id="form">
+    	<table id="displayTable">
     		<div>
+        		<span class="formLabel">Ticket:</span>
         		<input id="ticketNbr" name="ticketNbr" type="text"/>
+        		<input id="doPopulate" type="button" value="Search" />
+        	</div>
+        <table id="displaySummaryTable">
+        	<div>
+        		<th>Status</th><td><span id="status"></span></td>    		
+        		<th>Division ID</th><td><span id="divisionCode"></span></td>
+        		<th>Job ID</th><td><span id="jobId"></span></td>
     		</div>
-		</form>
- 		<input id="doPopulate" type="button" value="Search" />
+		</table>
+ 		
     	
     	<div  id="selectPanel">
 			<select id="panelSelector">
@@ -415,12 +443,13 @@
 		</div>
   	
 		<div class="workPanel" id="completeTicket">
+		    <div id="addFormMsg" class="err"></div>
 			<form action="#" method="post" id="addForm">
 		    			<table>
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Completion Date:</span></td>
 		    					<td>
-		    						<input type="text" name="processDate" data-required="true" data-valid="validProcessDate" />
+		    						<input type="text" name="processDate" data-required="true" data-valid="validProcessDate" />		    						
 		    						<i id="validProcessDate" class="fa" aria-hidden="true"></i>
 		    					</td>
 		    					<td><span class="err" id="processDateErr"></span></td>
@@ -450,36 +479,30 @@
 		    					<td><span class="err" id="actDlAmtErr"></span></td>
 		    				</tr>
 							<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Completion Notes:</span></td>
+		    					<td><span class="formLabel">Completion Notes:</span></td>
 		    					<td>
-		    						<input type="text" name="processNotes" data-required="true" data-valid="validProcessNotes" />
-		    						<i id="validProcessNotes" class="fa" aria-hidden="true"></i>
+		    						<input type="text" name="processNotes"/>
 		    					</td>
 		    					<td><span class="err" id="ProcessNotesErr"></span></td>
 		    				</tr>
 		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Customer Signature:</span></td>
+		    					<td><span class="formLabel">Customer Signature:</span></td>
 		    					<td>
-		    						<input type="checkbox" name="customerSignature" data-required="true" data-valid="validCustomerSignature" />
-		    						<i id="validCustomerSignature" class="fa" aria-hidden="true"></i>
+		    						<input type="checkbox" name="customerSignature" />
 		    					</td>
-		    					<td><span class="err" id="customerSignatureErr"></span></td>
 		    				</tr>
 		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Bill Sheet:</span></td>
+		    					<td><span class="formLabel">Bill Sheet:</span></td>
 		    					<td>
-		    						<input type="checkbox" name="billSheet" data-required="true" data-valid="validBillSheet" />
-		    						<i id="validBillSheet" class="fa" aria-hidden="true"></i>
+		    						<input type="checkbox" name="billSheet"/>
 		    					</td>
 		    					<td><span class="err" id="billSheetErr"></span></td>
 		    				</tr>
 		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Manager Approval:</span></td>
+		    					<td><span class="formLabel">Manager Approval:</span></td>
 		    					<td>
-		    						<input type="checkbox" name="mgrApproval" data-required="true" data-valid="validMgrApproval" />
-		    						<i id="validMgrApproval" class="fa" aria-hidden="true"></i>
+		    						<input type="checkbox" name="mgrApproval"  />
 		    					</td>
-		    					<td><span class="err" id="mgrApprovalErr"></span></td>
 		    				</tr>
 		    				
 		    				
@@ -503,12 +526,10 @@
 		    					<td><span class="err" id="processDateErr"></span></td>
 		    				</tr>
 							<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Skip Reason:</span></td>
+		    					<td><span class="formLabel">Skip Reason:</span></td>
 		    					<td>
-		    						<input type="text" name="processNotes" data-required="true" data-valid="validProcessNotes" />
-		    						<i id="validProcessNotes" class="fa" aria-hidden="true"></i>
+		    						<input type="text" name="processNotes"/>
 		    					</td>
-		    					<td><span class="err" id="ProcessNotesErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td colspan="2" style="text-align:center;">
@@ -527,12 +548,11 @@
 		    					<td><span class="err" id="processDateErr"></span></td>
 		    				</tr>
 							<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Void Reason:</span></td>
+		    					<td><span class="formLabel">Void Reason:</span></td>
 		    					<td>
-		    						<input type="text" name="processNotes" data-required="true" data-valid="validProcessNotes" />
+		    						<input type="text" name="processNotes"/>
 		    						<i id="validProcessNotes" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="ProcessNotesErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td colspan="2" style="text-align:center;">
@@ -552,12 +572,10 @@
 		    					<td><span class="err" id="processDateErr"></span></td>
 		    				</tr>
 							<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Reject Reason:</span></td>
+		    					<td>><span class="formLabel">Reject Reason:</span></td>
 		    					<td>
-		    						<input type="text" name="processNotes" data-required="true" data-valid="validProcessNotes" />
-		    						<i id="validProcessNotes" class="fa" aria-hidden="true"></i>
+		    						<input type="text" name="processNotes"/>
 		    					</td>
-		    					<td><span class="err" id="ProcessNotesErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td colspan="2" style="text-align:center;">
