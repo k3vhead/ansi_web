@@ -92,6 +92,18 @@
     			border-collapse: collapse;
 				width:90%;
 			}
+			#selectPanel {
+				width:100%;
+				display:none;
+			}
+			#summaryTable{
+				width:100%;
+				display:none;
+			}
+			#dataTables {
+				width:100%;
+				display:none;
+			}
 			td, th {
     			border: 1px solid #dddddd;
     			text-align: left;
@@ -101,10 +113,6 @@
 				width:95%;
 				border:solid 1px #000000;
 				display:none;
-			}
-			#selectPanel {
-				width:95%;
-				border:solid 1px #000000;
 			}
         </style>
         
@@ -130,12 +138,19 @@
 				$("#actTax").html($data.ticketDetail.actTax);
 				$("#totalTaxPaid").html($data.ticketDetail.totalTaxPaid);
 				$("#ticketBalance").html($data.ticketDetail.balance);
+
+			}
+			
+			
+			
+			
+			function populatePanelSelect ($data) {
 				$('option', "#panelSelector").remove();
 				$("#panelSelector").append(new Option("", ""));
                 $.each($data.ticketDetail.nextAllowedStatusList, function($index, $status) {
 					$("#panelSelector").append(new Option($status, $status));
                 });
-
+				
 			}
 			
 			function populateInvoiceDetail($data) {
@@ -169,6 +184,10 @@
 		       			populateTicketDetail($data.data);
 		       			populateInvoiceDetail($data.data);
 		       			populateSummary($data.data);
+		       			populatePanelSelect($data.data);
+    					$("#summaryTable").fadeIn(4000);
+    					$("#selectPanel").fadeIn(4000);
+    					$("#dataTables").fadeIn(4000);
 					},
 		       		statusCode: {
 	       				404: function($data) {
@@ -200,10 +219,20 @@
 			//});
 
         	
+			$('#row_dim').hide(); 
+    			$('#type').change(function(){
+        			if($('#type').val() == 'parcel') {
+           				 $('#row_dim').show(); 
+        			} else {
+            			$('#row_dim').hide(); 
+        		} 
+    		});
+			
+			
         	
 			$("#panelSelector").change(function($event) {
 				$(".workPanel").hide();
-				var $selectedPanel = $('#panelSelector option:selected').val();					
+				var $selectedPanel = $('#panelSelector option:selected').val();		
         		if ($selectedPanel != '' ) {
         			$selectedId = "#" + $selectedPanel;
         			$($selectedId).fadeIn(1500);
@@ -431,14 +460,15 @@
        		<input id="ticketNbr" name="ticketNbr" type="text"/>
        		<input id="doPopulate" type="button" value="Search" />
        	</div>
-        <table id="displaySummaryTable">
-        	<tr>
-        		<th>Status</th><td><span id="status"></span></td>    		
-        		<th>Division ID</th><td><span id="divisionCode"></span></td>
-        		<th>Job ID</th><td><span id="jobId"></span></td>
-    		</tr>
-		</table>
- 		
+       	<div id="summaryTable">
+	        <table id="displaySummaryTable">
+	        	<tr>
+	        		<th>Status</th><td><span id="status"></span></td>    		
+	        		<th>Division ID</th><td><span id="divisionCode"></span></td>
+	        		<th>Job ID</th><td><span id="jobId"></span></td>
+	    		</tr>
+			</table>
+ 		</div>
     	
     	<div id="selectPanel">
 			<select id="panelSelector">
@@ -450,215 +480,224 @@
 				<option value="requeueTicket">Re-Queue Ticket</option>
 			</select>
 		</div>
-  	
-		<div class="workPanel" id="COMPLETED">
-		    <div id="addFormMsg" class="err"></div>
-			<form action="#" method="post" id="addForm">
-			    <table>
+		
+		
+			<div class="workPanel" id="COMPLETED">
+			    <div id="addFormMsg" class="err"></div>
+				<form action="#" method="post" id="addForm">
+				    <table>
+				    	<tr>
+				    		<td><span class="required">*</span><span class="formLabel">Completion Date:</span></td>
+				    		<td>
+				    			<input type="text" class="dateField" name="processDate" data-required="true" data-valid="validProcessDate" />		    						
+				    			<i id="validProcessDate" class="fa" aria-hidden="true"></i>
+				    		</td>
+				    		<td><span class="err" id="processDateErr"></span></td>
+				    	</tr>
+				    	<tr>
+				    		<td><span class="required">*</span><span class="formLabel">PPC:</span></td>
+				    		<td>
+				    			<input type="text" name="actPricePerCleaning" data-required="true" data-valid="validActPricePerCleaning" />
+				    			<i id="validActPricePerCleaning" class="fa" aria-hidden="true"></i>
+				    		</td>
+				    		<td><span class="err" id="actPricePerCleaningErr"></span></td>
+				    	</tr>
+				    	<tr>
+				    		<td><span class="required">*</span><span class="formLabel">DL %:</span></td>
+				    		<td>
+				    			<input type="text" name="defaultActDlPct" data-required="true" data-valid="validDefaultActDlPct" />
+				    			<i id="validDefaultActDlPct" class="fa" aria-hidden="true"></i>
+				    		</td>
+				    		<td><span class="err" id="defaultActDlPctErr"></span></td>
+				    	</tr>
+				    	<tr>
+				    		<td><span class="required">*</span><span class="formLabel">Direct Labor:</span></td>
+				    		<td>
+				    			<input type="text" name="actDlAmt" data-required="true" data-valid="validActDlAmt" />
+				    			<i id="validActDlAmt" class="fa" aria-hidden="true"></i>
+				    		</td>
+				    		<td><span class="err" id="actDlAmtErr"></span></td>
+				    	</tr>
+						<tr>
+				    		<td><span class="formLabel">Completion Notes:</span></td>
+				    		<td>
+				    			<input type="text" name="processNotes"/>
+				    		</td>
+				    		<td><span class="err" id="ProcessNotesErr"></span></td>
+				    	</tr>
+				    	<tr>
+				    		<td><span class="formLabel">Customer Signature:</span></td>
+				    		<td>
+				    			<input type="checkbox" name="customerSignature" />
+				    		</td>
+			    		</tr>
+				    	<tr>
+				    		<td><span class="formLabel">Bill Sheet:</span></td>
+				    		<td>
+				    			<input type="checkbox" name="billSheet"/>
+				    		</td>
+				    		<td><span class="err" id="billSheetErr"></span></td>
+				    	</tr>
+				    	<tr>
+				    		<td><span class="formLabel">Manager Approval:</span></td>
+				    		<td>
+				    			<input type="checkbox" name="mgrApproval"  />
+				    		</td>
+				    	</tr>
+			    		<tr>
+				    		<td colspan="2" style="text-align:center;">
+				    			<input type="button" class="prettyButton" value="Complete" id="goUpdate" data-panel="completeTicket" />
+				    			<input type="button" class="prettyButton" value="Clear" id="cancelUpdate" />
+				    		</td>
+				    	</tr>
+				    </table>
+				</form>
+			</div>
+		
+			<div class="workPanel" id="SKIPPED">
+				<div id="addFormMsg" class="err"></div>
+				<table>
 			    	<tr>
-			    		<td><span class="required">*</span><span class="formLabel">Completion Date:</span></td>
-			    		<td>
-			    			<input type="text" class="dateField" name="processDate" data-required="true" data-valid="validProcessDate" />		    						
-			    			<i id="validProcessDate" class="fa" aria-hidden="true"></i>
-			    		</td>
-			    		<td><span class="err" id="processDateErr"></span></td>
-			    	</tr>
-			    	<tr>
-			    		<td><span class="required">*</span><span class="formLabel">PPC:</span></td>
-			    		<td>
-			    			<input type="text" name="actPricePerCleaning" data-required="true" data-valid="validActPricePerCleaning" />
-			    			<i id="validActPricePerCleaning" class="fa" aria-hidden="true"></i>
-			    		</td>
-			    		<td><span class="err" id="actPricePerCleaningErr"></span></td>
-			    	</tr>
-			    	<tr>
-			    		<td><span class="required">*</span><span class="formLabel">DL %:</span></td>
-			    		<td>
-			    			<input type="text" name="defaultActDlPct" data-required="true" data-valid="validDefaultActDlPct" />
-			    			<i id="validDefaultActDlPct" class="fa" aria-hidden="true"></i>
-			    		</td>
-			    		<td><span class="err" id="defaultActDlPctErr"></span></td>
-			    	</tr>
-			    	<tr>
-			    		<td><span class="required">*</span><span class="formLabel">Direct Labor:</span></td>
-			    		<td>
-			    			<input type="text" name="actDlAmt" data-required="true" data-valid="validActDlAmt" />
-			    			<i id="validActDlAmt" class="fa" aria-hidden="true"></i>
-			    		</td>
-			    		<td><span class="err" id="actDlAmtErr"></span></td>
-			    	</tr>
+			    		<td><span class="required">*</span><span class="formLabel">Skip Date:</span></td>
+		  					<td>
+		  						<input type="text" class="dateField" name="processDate" data-required="true" data-valid="validProcessDate" />
+		  						<i id="validProcessDate" class="fa" aria-hidden="true"></i>
+		  					</td>
+		  					<td><span class="err" id="processDateErr"></span></td>
+		  				</tr>
 					<tr>
-			    		<td><span class="formLabel">Completion Notes:</span></td>
-			    		<td>
-			    			<input type="text" name="processNotes"/>
-			    		</td>
-			    		<td><span class="err" id="ProcessNotesErr"></span></td>
-			    	</tr>
-			    	<tr>
-			    		<td><span class="formLabel">Customer Signature:</span></td>
-			    		<td>
-			    			<input type="checkbox" name="customerSignature" />
-			    		</td>
-		    		</tr>
-			    	<tr>
-			    		<td><span class="formLabel">Bill Sheet:</span></td>
-			    		<td>
-			    			<input type="checkbox" name="billSheet"/>
-			    		</td>
-			    		<td><span class="err" id="billSheetErr"></span></td>
-			    	</tr>
-			    	<tr>
-			    		<td><span class="formLabel">Manager Approval:</span></td>
-			    		<td>
-			    			<input type="checkbox" name="mgrApproval"  />
-			    		</td>
-			    	</tr>
-		    		<tr>
-			    		<td colspan="2" style="text-align:center;">
-			    			<input type="button" class="prettyButton" value="Complete" id="goUpdate" data-panel="completeTicket" />
-			    			<input type="button" class="prettyButton" value="Clear" id="cancelUpdate" />
-			    		</td>
-			    	</tr>
-			    </table>
-			</form>
-		</div>
-
-		<div class="workPanel" id="SKIPPED">
-			<table>
-		    	<tr>
-		    		<td><span class="required">*</span><span class="formLabel">Skip Date:</span></td>
-   					<td>
-   						<input type="text" name="processDate" data-required="true" data-valid="validProcessDate" />
-   						<i id="validProcessDate" class="fa" aria-hidden="true"></i>
-   					</td>
-   					<td><span class="err" id="processDateErr"></span></td>
-   				</tr>
-				<tr>
-   					<td><span class="formLabel">Skip Reason:</span></td>
-   					<td>
-   						<input type="text" name="processNotes"/>
-   					</td>
-   				</tr>
-   				<tr>
-   					<td colspan="2" style="text-align:center;">
-   						<input type="button" class="prettyButton" value="Skip" id="goUpdate" data-panel="skipTicket" />
-   						<input type="button" class="prettyButton" value="Clear" id="cancelUpdate" />
-   					</td>
-   				</tr>
-   			</table>
-		</div>
+		  					<td><span class="formLabel">Skip Reason:</span></td>
+		  					<td>
+		  						<input type="text" name="processNotes"/>
+		  					</td>
+		  				</tr>
+		  				<tr>
+		  					<td colspan="2" style="text-align:center;">
+		  						<input type="button" class="prettyButton" value="Skip" id="goUpdate" data-panel="skipTicket" />
+		  						<input type="button" class="prettyButton" value="Clear" id="cancelUpdate" />
+		  					</td>
+		  				</tr>
+		  			</table>
+			</div>
+			
+			
+			<div class="workPanel" id="VOIDED">
+				<div id="addFormMsg" class="err"></div>
+				<table>
+		  				<tr>
+		  					<td><span class="required">*</span><span class="formLabel">Void Date:</span></td>
+		  					<td>
+		  						<input type="text" class="dateField" name="processDate" data-required="true" data-valid="validProcessDate" />
+		  						<i id="validProcessDate" class="fa" aria-hidden="true"></i>
+		  					</td>
+		  					<td><span class="err" id="processDateErr"></span></td>
+		  				</tr>
+					<tr>
+		  					<td><span class="formLabel">Void Reason:</span></td>
+		  					<td>
+		  						<input type="text" name="processNotes"/>
+		  						<i id="validProcessNotes" class="fa" aria-hidden="true"></i>
+		  					</td>
+		  				</tr>
+		  				<tr>
+		  					<td colspan="2" style="text-align:center;">
+		  						<input type="button" class="prettyButton" value="Void" id="goUpdate" data-panel="voidTicket"/>
+		  						<input type="button" class="prettyButton" value="Clear" id="cancelUpdate" />
+		  					</td>
+		  				</tr>
+		  			</table>
+			</div>
+		 	
+			<div class="workPanel" id="REJECTED">
+				<div id="addFormMsg" class="err"></div>
+				<table>
+		  				<tr>
+		  					<td><span class="required">*</span><span class="formLabel">Reject Date:</span></td>
+		  					<td>
+		  						<input type="text" class="dateField" name="processDate" data-required="true" data-valid="validProcessDate" />
+		  						<i id="validProcessDate" class="fa" aria-hidden="true"></i>
+		  					</td>
+		  					<td><span class="err" id="processDateErr"></span></td>
+		  				</tr>
+					<tr>
+		  					<td><span class="formLabel">Reject Reason:</span></td>
+		  					<td>
+		  						<input type="text" name="processNotes"/>
+		  					</td>
+		  				</tr>
+		  				<tr>
+		  					<td colspan="2" style="text-align:center;">
+		  						<input type="button" class="prettyButton" value="Reject" id="goUpdate" data-panel="rejectTicket" />
+		  						<input type="button" class="prettyButton" value="Clear" id="cancelUpdate" />
+		  					</td>
+		  				</tr>
+		  			</table>
+			</div>
+			
+			
 		
-		
-		<div class="workPanel" id="VOIDED">
-			<table>
-   				<tr>
-   					<td><span class="required">*</span><span class="formLabel">Void Date:</span></td>
-   					<td>
-   						<input type="text" name="processDate" data-required="true" data-valid="validProcessDate" />
-   						<i id="validProcessDate" class="fa" aria-hidden="true"></i>
-   					</td>
-   					<td><span class="err" id="processDateErr"></span></td>
-   				</tr>
-				<tr>
-   					<td><span class="formLabel">Void Reason:</span></td>
-   					<td>
-   						<input type="text" name="processNotes"/>
-   						<i id="validProcessNotes" class="fa" aria-hidden="true"></i>
-   					</td>
-   				</tr>
-   				<tr>
-   					<td colspan="2" style="text-align:center;">
-   						<input type="button" class="prettyButton" value="Void" id="goUpdate" data-panel="voidTicket"/>
-   						<input type="button" class="prettyButton" value="Clear" id="cancelUpdate" />
-   					</td>
-   				</tr>
-   			</table>
+			<div class="workPanel" id="NOT_DISPATCHED">
+				<div id="addFormMsg" class="err"></div>
+				<table>
+		  				<tr>
+		  					<td><span class="required">*</span><span class="formLabel">Process Date:</span></td>
+		  					<td>
+		  						<input type="text" class="dateField" name="processDate" data-required="true" data-valid="validProcessDate" />
+		  						<i id="validProcessDate" class="fa" aria-hidden="true"></i>
+		  					</td>
+		  					<td><span class="err" id="processDateErr"></span></td>
+		  				</tr>
+		  				<tr>
+		  					<td colspan="2" style="text-align:center;">
+		  						<input type="button" class="prettyButton" value="Re-Queue" id="goUpdate" data-panel="requeueTicket" />
+		  						<input type="button" class="prettyButton" value="Clear" id="cancelUpdate" />
+		  					</td>
+		  				</tr>
+		  			</table>			
+			</div>
+			
+			<div class="workPanel" id="INVOICED"> </div>
+			<div class="workPanel" id="PAID"> </div>
+		   	
+		<div id="dataTables">
+		   	<table id="displayTicketTable">
+		   		<tr>
+		   			<th>Ticket</th>
+		   			<th>Ticket Amt</th>
+		   			<th>Ticket Paid</th>
+		   			<th>Ticket Tax</th>
+		   			<th>Tax Paid</th>
+		   			<th>Balance</th>
+		   		</tr>
+		   		<tr>
+		   			<td><span id="ticketId"></span></td>
+		   			<td><span id="actPricePerCleaning"></span></td>
+		   			<td><span id="totalVolPaid"></span></td>
+		   			<td><span id="actTax"></span></td>
+		   			<td><span id="totalTaxPaid"></span></td>
+		   			<td><span id="ticketBalance"></span></td>
+		   		</tr>
+		   	</table>
+		   	
+		   	<table id="displayInvoiceTable">
+		   		<tr>
+		   			<th>Inv #</th>
+		   			<th>Inv Amt</th>
+		   			<th>Inv Paid</th>
+		   			<th>Tax Amt</th>
+		   			<th>Tax Paid</th>
+		   			<th>Balance</th>
+		   		</tr>
+		   		<tr>
+		   			<td><span id="invoiceId"></span></td>
+		   			<td><span id="sumInvPpc"></span></td>
+		   			<td><span id="sumInvPpcPaid"></span></td>
+		   			<td><span id="sumInvTax"></span></td>
+		   			<td><span id="sumInvTaxPaid"></span></td>
+		   			<td><span id="invoiceBalance"></span></td>
+		   		</tr>
+		   	</table>
 		</div>
-  	
-		<div class="workPanel" id="REJECTED">
-			<table>
-   				<tr>
-   					<td><span class="required">*</span><span class="formLabel">Reject Date:</span></td>
-   					<td>
-   						<input type="text" name="processDate" data-required="true" data-valid="validProcessDate" />
-   						<i id="validProcessDate" class="fa" aria-hidden="true"></i>
-   					</td>
-   					<td><span class="err" id="processDateErr"></span></td>
-   				</tr>
-				<tr>
-   					<td>><span class="formLabel">Reject Reason:</span></td>
-   					<td>
-   						<input type="text" name="processNotes"/>
-   					</td>
-   				</tr>
-   				<tr>
-   					<td colspan="2" style="text-align:center;">
-   						<input type="button" class="prettyButton" value="Reject" id="goUpdate" data-panel="rejectTicket" />
-   						<input type="button" class="prettyButton" value="Clear" id="cancelUpdate" />
-   					</td>
-   				</tr>
-   			</table>
-		</div>
-		
-		
-
-		<div class="workPanel" id="NOT_DISPATCHED">
-			<table>
-   				<tr>
-   					<td><span class="required">*</span><span class="formLabel">Process Date:</span></td>
-   					<td>
-   						<input type="text" name="processDate" data-required="true" data-valid="validProcessDate" />
-   						<i id="validProcessDate" class="fa" aria-hidden="true"></i>
-   					</td>
-   					<td><span class="err" id="processDateErr"></span></td>
-   				</tr>
-   				<tr>
-   					<td colspan="2" style="text-align:center;">
-   						<input type="button" class="prettyButton" value="Re-Queue" id="goUpdate" data-panel="requeueTicket" />
-   						<input type="button" class="prettyButton" value="Clear" id="cancelUpdate" />
-   					</td>
-   				</tr>
-   			</table>			
-		</div>
-    	
-    	
-    	<table id="displayTicketTable">
-    		<tr>
-    			<th>Ticket</th>
-    			<th>Ticket Amt</th>
-    			<th>Ticket Paid</th>
-    			<th>Ticket Tax</th>
-    			<th>Tax Paid</th>
-    			<th>Balance</th>
-    		</tr>
-    		<tr>
-    			<td><span id="ticketId"></span></td>
-    			<td><span id="actPricePerCleaning"></span></td>
-    			<td><span id="totalVolPaid"></span></td>
-    			<td><span id="actTax"></span></td>
-    			<td><span id="totalTaxPaid"></span></td>
-    			<td><span id="ticketBalance"></span></td>
-    		</tr>
-    	</table>
-    	
-    	<table id="displayInvoiceTable">
-    		<tr>
-    			<th>Inv #</th>
-    			<th>Inv Amt</th>
-    			<th>Inv Paid</th>
-    			<th>Tax Amt</th>
-    			<th>Tax Paid</th>
-    			<th>Balance</th>
-    		</tr>
-    		<tr>
-    			<td><span id="invoiceId"></span></td>
-    			<td><span id="sumInvPpc"></span></td>
-    			<td><span id="sumInvPpcPaid"></span></td>
-    			<td><span id="sumInvTax"></span></td>
-    			<td><span id="sumInvTaxPaid"></span></td>
-    			<td><span id="invoiceBalance"></span></td>
-    		</tr>
-    	</table>
     	
     </tiles:put>
 
