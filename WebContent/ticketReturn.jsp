@@ -118,6 +118,12 @@
         
         <script type="text/javascript">
         $( document ).ready(function() {
+			var $ticketStatusList = ANSI_UTILS.getOptions("TICKET_STATUS");
+			var $ticketStatusMap = {}
+			$.each($ticketStatusList.ticketStatus, function($index, $value) {
+			    $ticketStatusMap[$value.code]=$value.display;
+			});
+                
         	$('#doPopulate').click(function () {
     			var $ticketNbr = $('#ticketNbr').val();
             	if ($ticketNbr != '') {
@@ -164,8 +170,8 @@
 			}
 			
 			function populateSummary($data) {
-				$("#status").html($data.ticketDetail.status);
-				$("#divisionCode").html($data.ticketDetail.divisionCode);
+				$("#status").html($ticketStatusMap[$data.ticketDetail.status] + " (" + $data.ticketDetail.status + ")");
+				$("#divisionDisplay").html($data.ticketDetail.divisionDisplay);
 				$("#jobId").html($data.ticketDetail.jobId);				
 			}
 			
@@ -228,6 +234,17 @@
         		} 
     		});
 			
+    			
+    			//if ( this.value == '1')
+    			//      //.....................^.......
+    			//      {
+    			 //       $("#business").show();
+    			 //     }
+    			 //     else
+    			  //    {
+    			  //      $("#business").hide();
+    			  //    }
+    			  //  });
 			
         	
 			$("#panelSelector").change(function($event) {
@@ -238,6 +255,10 @@
         			$($selectedId).fadeIn(1500);
         			$("#monitor").html("Displaying " + $selectedPanel);
         		} else {
+        			$("#P").hide();
+        			$("#C").hide();
+        			$("#I").hide();
+        			$("#V").hide();
         			$("#monitor").html("Hiding Everything");
         		}
         		//var $ticketStatus = $('#ticketStatus option:selected').val;
@@ -464,7 +485,7 @@
 	        <table id="displaySummaryTable">
 	        	<tr>
 	        		<th>Status</th><td><span id="status"></span></td>    		
-	        		<th>Division ID</th><td><span id="divisionCode"></span></td>
+	        		<th>Division</th><td><span id="divisionDisplay"></span></td>
 	        		<th>Job ID</th><td><span id="jobId"></span></td>
 	    		</tr>
 			</table>
