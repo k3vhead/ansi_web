@@ -240,7 +240,7 @@
 										<ul>
 											<li><html:link action="paymentLookup"><bean:message key="menu.label.lookup" /></html:link></li>
 											<ansi:hasWrite>
-											<li><a href="#"><bean:message key="menu.label.maintenance" /></a></li>
+											<li><html:link action="payment"><bean:message key="menu.label.maintenance" /></html:link></li>
 											<li><a href="#"><bean:message key="menu.label.new" /></a></li>
 											</ansi:hasWrite>
 										</ul>

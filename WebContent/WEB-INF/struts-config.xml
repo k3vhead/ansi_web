@@ -109,6 +109,15 @@
             <forward name="valid" path="/login.jsp" />
         </action>
 		<action
+            path="/payment"
+            type="com.ansi.scilla.web.action.PaymentAction"
+            name="idForm"
+            input="/payment.jsp"
+            scope="request">
+            <forward name="valid" path="/payment.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		<action
             path="/paymentLookup"
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">
             <forward name="valid" path="/paymentLookup.jsp" />

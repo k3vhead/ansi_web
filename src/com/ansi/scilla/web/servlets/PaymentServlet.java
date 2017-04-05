@@ -1,17 +1,22 @@
 package com.ansi.scilla.web.servlets;
 
 import java.io.IOException;
+import java.sql.Connection;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ansi.scilla.common.db.PermissionLevel;
+import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.Permission;
+import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
+import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
+import com.ansi.scilla.web.response.payment.PaymentResponse;
 
 
 /**
@@ -56,47 +61,27 @@ public class PaymentServlet extends AbstractServlet {
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		String url = request.getRequestURI();
+		Connection conn = null;
+		AnsiURL url = null;
 		try {
+			conn = AppUtils.getDBCPConn();
 			AppUtils.validateSession(request, Permission.PAYMENT, PermissionLevel.PERMISSION_LEVEL_IS_READ);
-			int idx = url.indexOf("/payment/");
-			if ( idx > -1 ) {
-				String myString = url.substring(idx + "/payment/".length());
-				String[] urlPieces = myString.split("/");
-				System.out.println("Payment(): doGet(): myString:" + myString);
-//				if ( StringUtils.isBlank(urlPieces[0])) { // there is nothing to do
-//					System.out.println("Payment(): doGet(): nothing to do");
-//					super.sendNotFound(response);
-//				} else { // Figure out what we've got
-//					// if urlPieces[0] is numeric this is a ticketId
-//					if ( StringUtils.isNumeric(urlPieces[0])) { // this is a ticket id
-//						Integer ticketId = Integer.valueOf(urlPieces[0]);
-//						System.out.println("Payment(): doGet(): ticketId:" + ticketId);
-//						Connection conn = null;
-//						try {
-//							conn = AppUtils.getDBCPConn();
-
-//							PaymentListResponse paymentReturnListResponse = new PaymentListResponse(conn, ticketId);
-//							super.sendResponse(conn, response, ResponseCode.SUCCESS, paymentReturnListResponse);
-//						} catch(RecordNotFoundException recordNotFoundEx) {
-//							super.sendNotFound(response);
-//						} catch ( Exception e) {
-//							AppUtils.logException(e);
-//							throw new ServletException(e);
-//						} finally {
-//							AppUtils.closeQuiet(conn);
-//						}
-//
-//					} else { // not a valid ticketId so we cannot find it
-//						System.out.println("Payment(): doGet(): not a valid ticket");
-//						super.sendNotFound(response);
-//					}
-//				}
+			url = new AnsiURL(request, "payment", (String[])null);
+			if ( url.getId() != null ) {
+				PaymentResponse data = new PaymentResponse(conn, url.getId());
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, data);				
 			} else {
-				super.sendNotFound(response);
+				throw new ResourceNotFoundException(); 
 			}
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
 			super.sendForbidden(response);
+		} catch (ResourceNotFoundException e) {
+			super.sendNotFound(response);
+		} catch (Exception e) {
+			AppUtils.logException(e);
+			throw new ServletException(e);
+		} finally {
+			AppUtils.closeQuiet(conn);
 		}
 
 	}
