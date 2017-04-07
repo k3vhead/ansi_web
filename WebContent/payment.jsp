@@ -27,6 +27,9 @@
         	#paymentSummary {
         		width:1300px;
         	}
+        	#paymentSummary td {
+        		text-align:center;
+        	}
         	.black_border {
         		border:solid 1px #000000;
         	}
@@ -100,11 +103,11 @@
         	});
 
         	$("#modalSearch").click(function($event) {
+        		$("#newPaymentDate").datepicker("hide");
         		$("#modalSearchBox").css('background-color','#CCCCCC');
         		$("#modalNewBox").css('background-color','#FFFFFF');
         		$(".searchPmtRow").show();
         		$(".newPmtRow").hide();
-        		$("#newPaymentDate").blur();
         		$("#modalSearch").data("action","search");
         		$("#pmtSearchId").focus();
         	})
@@ -139,16 +142,17 @@
 	   				statusCode: {
 		   				200: function($data) {   				
 		   					//populateDataTable($data.data);
-		   					console.debug($data);
+		   					populatePaymentSummary($data.data.paymentTotals);
+		   					$("#paymentModal").dialog("close");
 		   				},
 	   					403: function($data) {
 		   					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
 		   				},
 		   				404: function($data) {
-		   					$("#globalMsg").html("System Error: Contact Support").fadeIn(10);
+		   					$("#pmtSearchIdErr").html("Invalid Payment Id").show().fadeOut(10000);
 		   				},
 		   				500: function($data) {
-		        	    		$("#globalMsg").html("System Error: Contact Support").fadeIn(10);
+	        	    		$("#globalMsg").html("System Error: Contact Support").fadeIn(10000);
 	        	    	} 
 		   			},
 		   			dataType: 'json'
@@ -156,6 +160,17 @@
         	}
         	
         	
+        	
+        	function populatePaymentSummary($paymentData) {
+        		$.each($paymentData, function ($key, $value) {
+					var $selector = "#paymentSummary ." + $key;
+					if ( $value == null ) {
+						$($selector).html("");
+					} else {
+						$($selector).html($value);
+					}
+				});
+        	}
          
 			$('#invoiceTable').dataTable().fnDestroy();
 			
@@ -323,20 +338,21 @@
     	
     	<table id="paymentSummary">
 	    	<colgroup>
-	        	<col style="width:9%;" />
-	        	<col style="width:9%;" />
-	        	<col style="width:9%;" />
-	        	<col style="width:9%;" />
-	        	<col style="width:9%;" />
-	        	<col style="width:19%;" />
-	        	<col style="width:9%;" />
-	        	<col style="width:9%;" />
-	        	<col style="width:9%;" />
-	        	<col style="width:9%;" />
+	        	<col style="width:8%;" />
+	        	<col style="width:8%;" />
+	        	<col style="width:8%;" />
+	        	<col style="width:8%;" />
+	        	<col style="width:8%;" />
+	        	<col style="width:8%;" />
+	        	<col style="width:20%;" />
+	        	<col style="width:8%;" />
+	        	<col style="width:8%;" />
+	        	<col style="width:8%;" />
 	   		</colgroup> 
     		<tr>
     			<td class="formHdr">Payment Id</td>
     			<td class="formHdr">Date Paid</td>
+    			<td class="formHdr">Type</td>
     			<td class="formHdr">Check Number</td>
     			<td class="formHdr">Check Date</td>
     			<td class="formHdr">Amount</td>
@@ -347,16 +363,17 @@
     			<td class="formHdr">Available</td>
     		</tr>
     		<tr>
-    			<td class="black_border""><span id="paymentId"></span><span style="float:right;" id="editPaymentIcon" class="action-link green fa fa-pencil" ari-hidden="true"></span></td>
-    			<td class="black_border"><span id="datePaid"></span></td>
-    			<td class="black_border"><span id="checkNumber"></span></td>
-    			<td class="black_border"><span id="checkDate"></span></td>
-    			<td class="black_border"><span id="amount"></span></td>
-    			<td class="black_border"><span id="paymentNotes"></span></td>
-    			<td class="black_border"><span id="appliedAmt"></span></td>
-    			<td class="black_border"><span id="appliedTax"></span></td>
-    			<td class="black_border"><span id="appliedTotal"></span></td>
-    			<td class="black_border"><span id="available"></span></td>
+    			<td class="black_border""><span class="paymentId"></span><span style="float:right;" id="editPaymentIcon" class="action-link green fa fa-pencil" ari-hidden="true"></span></td>
+    			<td class="black_border"><span class="paymentDate"></span></td>
+    			<td class="black_border"><span class="paymentType"></span></td>
+    			<td class="black_border"><span class="checkNbr"></span></td>
+    			<td class="black_border"><span class="checkDate"></span></td>
+    			<td class="black_border"><span class="paymentAmount"></span></td>
+    			<td class="black_border"><span class="paymentNote"></span></td>
+    			<td class="black_border"><span class="appliedAmount"></span></td>
+    			<td class="black_border"><span class="appliedTaxAmt"></span></td>
+    			<td class="black_border"><span class="appliedTotal"></span></td>
+    			<td class="black_border"><span class="available"></span></td>
     		</tr>
     	</table>
     	
@@ -461,6 +478,11 @@
 					</tr>
 				</table>
 				<table style="width:450px;">
+					<colgroup>
+			        	<col style="width:25%;" />
+			        	<col style="width:30%;" />
+			        	<col style="width:45%;" />
+					</colgroup>
 					<tr class="searchPmtRow">
 						<td class="formHdr">Payment Id: </td>
 						<td><input type="text" id="pmtSearchId"/></td>

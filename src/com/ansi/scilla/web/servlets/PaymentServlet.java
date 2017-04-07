@@ -17,6 +17,7 @@ import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.response.payment.PaymentResponse;
+import com.thewebthing.commons.db2.RecordNotFoundException;
 
 
 /**
@@ -67,15 +68,17 @@ public class PaymentServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			AppUtils.validateSession(request, Permission.PAYMENT, PermissionLevel.PERMISSION_LEVEL_IS_READ);
 			url = new AnsiURL(request, "payment", (String[])null);
+			System.out.println("Getting: " + url.getId());
 			if ( url.getId() != null ) {
 				PaymentResponse data = new PaymentResponse(conn, url.getId());
+				System.out.println(data);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, data);				
 			} else {
 				throw new ResourceNotFoundException(); 
 			}
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
 			super.sendForbidden(response);
-		} catch (ResourceNotFoundException e) {
+		} catch (ResourceNotFoundException | RecordNotFoundException e) {
 			super.sendNotFound(response);
 		} catch (Exception e) {
 			AppUtils.logException(e);

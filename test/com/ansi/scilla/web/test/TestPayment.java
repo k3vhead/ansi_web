@@ -21,7 +21,7 @@ public class TestPayment {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getConn();
-			PaymentResponse data = new PaymentResponse(conn, 128217);
+			PaymentResponse data = new PaymentResponse(conn, 25416);
 			System.out.println(data);
 		} finally {
 			if(conn !=null){
