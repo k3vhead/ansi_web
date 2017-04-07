@@ -428,8 +428,16 @@
 	<servlet-name>userServlet</servlet-name>
 		<url-pattern>/user/*</url-pattern>
 	</servlet-mapping>
-	
-	
+	<servlet>
+		<servlet-name>invoiceTypeAhead</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.InvoiceTypeAheadServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>invoiceTypeAhead</servlet-name>
+		<url-pattern>/invoiceTypeAhead/*</url-pattern>
+	</servlet-mapping>
+
+
 
 
 
