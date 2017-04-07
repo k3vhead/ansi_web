@@ -2,12 +2,16 @@ package com.ansi.scilla.web.servlets;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.PermissionLevel;
+import com.ansi.scilla.common.jsonFormat.AnsiFormat;
 import com.ansi.scilla.common.queries.InvoiceSearch;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.Permission;
@@ -148,6 +153,9 @@ public class InvoiceTypeAheadServlet extends AbstractServlet {
 
 	public class ReturnItem extends ApplicationObject {
 		private static final long serialVersionUID = 1L;
+		private final SimpleDateFormat sdf = new SimpleDateFormat(AnsiFormat.DATE.pattern());
+		DecimalFormat currencyFormatter = new DecimalFormat(AnsiFormat.CURRENCY.pattern());
+		
 		private Integer id;
 		private String label;
 		private String value;
@@ -156,15 +164,26 @@ public class InvoiceTypeAheadServlet extends AbstractServlet {
 			super();
 			this.id = rs.getInt("invoice_id");
 			//invoice_id:div:bill_to_name:invoice_date:invoice_amount:invoice_tax:invoice_total:invoice_balance
-			this.label = rs.getInt("invoice_id") 
-					+ ":" + "Invoice " + rs.getString("div")
-					+ ":" + "BT " + rs.getString("bill_to_name")
-					+ ":" + "Date " + rs.getDate("invoice_date")
-					+ ":" + "Amount " + rs.getBigDecimal("invoice_amount")
-					+ ":" + "Tax " + rs.getBigDecimal("invoice_tax")
-					+ ":" + "Total " + rs.getBigDecimal("invoice_total")
-					+ ":" + "Balance " + rs.getBigDecimal("invoice_balance");
-			this.value = rs.getInt("invoice_id") + "";
+			int invoiceId = rs.getInt(InvoiceSearch.INVOICE_ID);
+			String div = rs.getString(InvoiceSearch.DIV);
+			String billToName = rs.getString(InvoiceSearch.BILL_TO_NAME);
+			Date invoiceDate = rs.getDate(InvoiceSearch.INVOICE_DATE);
+			String dateDisplay = invoiceDate == null ? " " : sdf.format(invoiceDate);
+			BigDecimal invoiceAmount = rs.getBigDecimal(InvoiceSearch.INVOICE_AMOUNT);
+			BigDecimal invoiceTax = rs.getBigDecimal(InvoiceSearch.INVOICE_TAX);
+			BigDecimal invoiceTotal = rs.getBigDecimal(InvoiceSearch.INVOICE_TOTAL);
+			BigDecimal invoiceBalance = rs.getBigDecimal(InvoiceSearch.INVOICE_BALANCE);
+			String balanceDisplay = invoiceBalance == null ? " " : currencyFormatter.format(invoiceBalance);
+			
+			this.label = invoiceId 
+					+ ":" + "Invoice " + div
+					+ ":" + "BT " + billToName
+					+ ":" + "Date " + dateDisplay
+					+ ":" + "Amount " + currencyFormatter.format(invoiceAmount)
+					+ ":" + "Tax " + currencyFormatter.format(invoiceTax)
+					+ ":" + "Total " + currencyFormatter.format(invoiceTotal)
+					+ ":" + "Balance " + balanceDisplay;
+			this.value = String.valueOf(invoiceId);
 		}
 
 		public Integer getId() {

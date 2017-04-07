@@ -171,6 +171,23 @@
 					}
 				});
         	}
+        	
+        	
+        	
+            $( "#invoiceNbr" ).autocomplete({
+                source: "invoiceTypeAhead",
+                minLength: 4,
+                appendTo: "#someElem",
+                select: function( event, ui ) {
+                  //alert( "Selected: " + ui.item.id + " aka " + ui.item.label + " or " + ui.item.value );
+                  $("#invoiceNbr").val(ui.item.id);
+                }
+              });
+
+        	
+        	
+        	
+        	// ***********************************************************************
          
 			$('#invoiceTable').dataTable().fnDestroy();
 			
@@ -363,7 +380,10 @@
     			<td class="formHdr">Available</td>
     		</tr>
     		<tr>
-    			<td class="black_border""><span class="paymentId"></span><span style="float:right;" id="editPaymentIcon" class="action-link green fa fa-pencil" ari-hidden="true"></span></td>
+    			<td class="black_border">
+    				<span class="paymentId"></span>
+    				<span style="float:right;" id="editPaymentIcon" class="action-link green fa fa-pencil" ari-hidden="true"></span>
+    			</td>
     			<td class="black_border"><span class="paymentDate"></span></td>
     			<td class="black_border"><span class="paymentType"></span></td>
     			<td class="black_border"><span class="checkNbr"></span></td>
