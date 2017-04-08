@@ -175,8 +175,8 @@ public class InvoiceTypeAheadServlet extends AbstractServlet {
 			BigDecimal invoiceBalance = rs.getBigDecimal(InvoiceSearch.INVOICE_BALANCE);
 			String balanceDisplay = invoiceBalance == null ? " " : currencyFormatter.format(invoiceBalance);
 			
-			this.label = invoiceId 
-					+ ":" + "Invoice " + div
+			this.label = "Invoice " + invoiceId 
+					+ ":" + "Div " + div
 					+ ":" + "BT " + billToName
 					+ ":" + "Date " + dateDisplay
 					+ ":" + "Amount " + currencyFormatter.format(invoiceAmount)

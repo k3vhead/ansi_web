@@ -2,12 +2,16 @@ package com.ansi.scilla.web.servlets;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.PermissionLevel;
+import com.ansi.scilla.common.jsonFormat.AnsiFormat;
 import com.ansi.scilla.common.queries.PaymentSearch;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.Permission;
@@ -137,28 +142,48 @@ public class PaymentTypeAheadServlet extends AbstractServlet {
 
 	public class ReturnItem extends ApplicationObject {
 		private static final long serialVersionUID = 1L;
+		private final SimpleDateFormat sdf = new SimpleDateFormat(AnsiFormat.DATE.pattern());
+		DecimalFormat currencyFormatter = new DecimalFormat(AnsiFormat.CURRENCY.pattern());
 		private Integer id;
 		private String label;
 		private String value;
 		
 		public ReturnItem(ResultSet rs) throws SQLException {
 			super();
+			//invoice_id:div:bill_to_name:invoice_date:invoice_amount:invoice_tax:invoice_total:invoice_balance
+			int paymentId = rs.getInt(PaymentSearch.PAYMENT_ID);
+			String billToName = rs.getString(PaymentSearch.BILL_TO_NAME);
+			Date paymentDate = rs.getDate(PaymentSearch.PAYMENT_DATE);
+			String paymentDateDisplay = paymentDate == null ? " " : sdf.format(paymentDate);
+			BigDecimal paymentAmount = rs.getBigDecimal(PaymentSearch.PAYMENT_AMOUNT);
+			String amountDisplay = paymentAmount == null ? " " : currencyFormatter.format(paymentAmount);
+			String paymentNote = rs.getString(PaymentSearch.PAYMENT_NOTE);
+			String paymentType = rs.getString(PaymentSearch.PAYMENT_TYPE);
+			String checkNbr = rs.getString(PaymentSearch.CHECK_NBR);
+			Date checkDate = rs.getDate(PaymentSearch.CHECK_DATE);
+			String checkDateDisplay = checkDate == null ? " " : sdf.format(checkDate);
+			int ticketId = rs.getInt(PaymentSearch.TICKET_ID);
+			String ticketDiv = rs.getString(PaymentSearch.TICKET_DIV);
+			String jobSiteName = rs.getString(PaymentSearch.JOB_SITE_NAME);
+			int invoiceId = rs.getInt(PaymentSearch.INVOICE_ID);
+			
+			this.value = String.valueOf(paymentId);
 			this.id = rs.getInt("payment_id");
 			//payment_id:bill_to_name:date:amount:note:type:check_nbr:check_date:ticket_id:div:job_site:invoice_id
-			this.label = "Payment " + rs.getInt("payment_id") 
-					+ ":" + "BT " + rs.getString("bill_to_name")
-					+ ":" + "Date " + rs.getDate("payment_date")
-					+ ":" + "Amt " + rs.getBigDecimal("payment_amount")
-					+ ":" + "Note " + rs.getString("payment_note")
-					+ ":" + "Type " + rs.getString("payment_type")
-					+ ":" + "Chk# " + rs.getString("check_nbr")
-					+ ":" + "ChkDate " + rs.getDate("check_date")
-					+ ":" + "Ticket " + rs.getInt("ticket_id")
-					+ ":" + "Div " + rs.getString("ticket_div")
-					+ ":" + "JS " + rs.getString("job_site_name")
-					+ ":" + "Invoice " + rs.getInt("invoice_id")
+			this.label = "Payment " + paymentId 
+					+ ":" + "BT " + billToName
+					+ ":" + "Date " + paymentDateDisplay
+					+ ":" + "Amt " + amountDisplay
+					+ ":" + "Note " + paymentNote
+					+ ":" + "Type " + paymentType
+					+ ":" + "Chk# " + checkNbr
+					+ ":" + "ChkDate " + checkDateDisplay
+					+ ":" + "Ticket " + ticketId
+					+ ":" + "Div " + ticketDiv
+					+ ":" + "JS " + jobSiteName
+					+ ":" + "Invoice " + invoiceId
 					;
-			this.value = rs.getInt("payment_id") + "";
+			this.value = String.valueOf(paymentId);
 		}
 
 		public Integer getId() {
