@@ -82,6 +82,8 @@
         <script type="text/javascript">        
         
         	$(document).ready(function() {
+        		var $ansiModal = '<c:out value="${ANSI_MODAL}" />';
+        		
         	var dataTable = null;
         	var $addressPanelNamespace = "ADDRESSPANEL";
         	function createTable(){
@@ -451,6 +453,10 @@
             	     },
             	     dataType: 'json'
             	});
+			}
+			
+			if ( $ansiModal != '' ) {
+				$("#addButton").click();
 			}
         });
         </script>        

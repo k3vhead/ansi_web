@@ -56,6 +56,8 @@
         <script type="text/javascript">
         
         $(document).ready(function(){
+        	var $ansiModal = '<c:out value="${ANSI_MODAL}" />';
+        	
 			$('.ScrollTop').click(function() {
 				$('html, body').animate({scrollTop: 0}, 800);
 				return false;
@@ -339,6 +341,9 @@
 				});
 			}
 			
+			if ( $ansiModal != '' ) {
+				$("#showNew").click();
+			}
 			
         });
         </script>        
