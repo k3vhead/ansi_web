@@ -42,7 +42,9 @@
 				width:80px !important;
 				max-width:80px !important;
 			}
-			
+			.edit-action-link {
+				cursor:pointer;
+			}
         </style>
         
         <script type="text/javascript">
@@ -73,12 +75,15 @@
         	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
         	        ],
         	        buttons: [
-        	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}}
+        	        	'pageLength','copy', 'csv', 'excel', 
+        	        	{extend: 'pdfHtml5', orientation: 'landscape'}, 
+        	        	'print',
+        	        	{extend: 'colvis',	label: function () {doFunctionBinding();}}
         	        ],
         	        "columnDefs": [
 //         	            { "orderable": false, "targets": -1 },  // Need to re-add this when we add the action column back in
         	            { className: "dt-left", "targets": [11,12,13] },
-        	            { className: "dt-center", "targets": [0,2,3,4,5,6,9,10] },
+        	            { className: "dt-center", "targets": [0,2,3,4,5,6,9,10,14] },
         	            { className: "dt-right", "targets": [1,7,8]}
         	         ],
         	        "paging": true,
@@ -130,9 +135,9 @@
 			            { title: "Note",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.paymentNote != null){return (row.paymentNote+"");}
 			            } },
-			            //{ title: "Action",  data: function ( row, type, set ) {	
-			            //	{return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='jobMaintenance.html?id="+row.jobId+"' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.jobId+"'></a></ansi:hasWrite></ansi:hasPermission>";}
-			            //} }
+			            { title: "Action",  data: function ( row, type, set ) {	
+			            	{return '<i class="edit-action-link ui-icon ui-icon-pencil" data-paymentId="' +row.paymentId+'" />"';}
+			            } }
 			            ],
 			            "initComplete": function(settings, json) {
 			            	//console.log(json);
@@ -157,48 +162,13 @@
             }; 
 				
 				function doFunctionBinding() {
-					$( ".editAction" ).on( "click", function($clickevent) {
-						 doEdit($clickevent);
+					$( ".edit-action-link" ).on( "click", function($clickevent) {
+			        	var $paymentId = $clickevent.currentTarget.attributes['data-paymentId'].value;
+		        		location.href="payment.html?id=" + $paymentId;
 					});
 				}
 				
-				function doEdit($clickevent) {
-					var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
 
-						var $url = 'paymentLookup/' + $rowid;
-						//console.log("YOU PASSED ROW ID:" + $rowid);
-						var jqxhr = $.ajax({
-							type: 'GET',
-							url: $url,
-							success: function($data) {
-								//console.log($data);
-								
-				        		$("#jobId").val(($data.data.codeList[0]).jobId);
-				        		$("#jobStatus").val(($data.data.codeList[0]).jobStatus);
-				        		$("#divisionNbr").val(($data.data.codeList[0]).divisionNbr);
-				        		$("#billToName").val(($data.data.codeList[0]).billToName);
-				        		$("#jobSiteName").val(($data.data.codeList[0]).jobSiteName);
-				        		$("#jobSiteAddress").val(($data.data.codeList[0]).jobSiteAddress);
-				        		$("#startDate").val(($data.data.codeList[0]).startDate);
-				        		$("#jobFrequency").val(($data.data.codeList[0]).startDate);
-				        		$("#pricePerCleaning").val(($data.data.codeList[0]).pricePerCleaning);
-				        		$("#jobNbr").val(($data.data.codeList[0]).jobNbr);
-				        		$("#serviceDescription").val(($data.data.codeList[0]).serviceDescription);
-				        		$("#poNumber").val(($data.data.codeList[0]).processDate);
-				        		
-				        		$("#jId").val(($data.data.codeList[0]).jobId);
-				        		$("#updateOrAdd").val("update");
-				        		$("#addinvoiceTableForm").dialog( "open" );
-							},
-							statusCode: {
-								403: function($data) {
-									$("#useridMsg").html("Session Timeout. Log in and try again");
-								} 
-							},
-							dataType: 'json'
-						});
-					//console.log("Edit Button Clicked: " + $rowid);
-				}
         });
         </script>        
     </tiles:put>
@@ -208,20 +178,21 @@
     	
  	<table id="paymentTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:800px;width:800px;">
        	<colgroup>
-        	<col style="width:5%;" />
-        	<col style="width:5%;" />
-        	<col style="width:5%;" />
-        	<col style="width:5%;" />
-        	<col style="width:5%;" />
-        	<col style="width:5%;" />
-        	<col style="width:5%;" />
-        	<col style="width:5%;" />
-        	<col style="width:5%;" />
-        	<col style="width:5%;" />
-        	<col style="width:5%;" />
-        	<col style="width:10%;" />
-        	<col style="width:10%;" />
-        	<col style="width:10%;" />
+			<col style="width:5%;" />
+			<col style="width:6%;" />
+			<col style="width:5%;" />
+			<col style="width:5%;" />
+			<col style="width:5%;" />
+			<col style="width:6%;" />
+			<col style="width:5%;" />
+			<col style="width:6%;" />
+			<col style="width:5%;" />
+			<col style="width:5%;" />
+			<col style="width:5%;" />
+			<col style="width:12%;" />
+			<col style="width:12%;" />
+			<col style="width:12%;" />
+			<col style="width:5%;" />
    		</colgroup>
         <thead>
             <tr>
@@ -239,6 +210,7 @@
     			<th>Bill To</th>
     			<th>Job Site</th>
     			<th>Payment Note</th>
+    			<th>Action</th>
             </tr>
         </thead>
         <tfoot>
@@ -257,6 +229,7 @@
     			<th>Bill To</th>
     			<th>Job Site</th>
     			<th>Payment Note</th>
+    			<th>Action</th>
             </tr>
         </tfoot>
     </table>

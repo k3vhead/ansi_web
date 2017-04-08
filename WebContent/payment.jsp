@@ -176,15 +176,23 @@
         	
             $( "#invoiceNbr" ).autocomplete({
                 source: "invoiceTypeAhead",
-                minLength: 4,
-                appendTo: "#someElem",
+                minLength: 2,
+                appendTo: "#someInvoice",
                 select: function( event, ui ) {
                   //alert( "Selected: " + ui.item.id + " aka " + ui.item.label + " or " + ui.item.value );
                   $("#invoiceNbr").val(ui.item.id);
                 }
               });
 
-        	
+        	$("#pmtSearchId").autocomplete({
+                source: "paymentTypeAhead",
+                minLength: 2,
+                appendTo: "#somePmt",
+                select: function( event, ui ) {
+                  //alert( "Selected: " + ui.item.id + " aka " + ui.item.label + " or " + ui.item.value );
+                  $("#invoiceNbr").val(ui.item.id);
+                }
+        	});
         	
         	
         	// ***********************************************************************

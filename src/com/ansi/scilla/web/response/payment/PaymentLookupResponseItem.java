@@ -1,11 +1,15 @@
 package com.ansi.scilla.web.response.payment;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
+import org.apache.commons.beanutils.BeanUtils;
+
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
 import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
+import com.ansi.scilla.common.queries.PaymentSearchResult;
 import com.ansi.scilla.common.queries.ReportQuery;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.thewebthing.commons.db2.DBColumn;
@@ -71,6 +75,12 @@ public class PaymentLookupResponseItem extends ReportQuery {
 		this.jobSiteName = rs.getString(JOB_SITE_NAME);
 	}
 
+	public PaymentLookupResponseItem(PaymentSearchResult result) throws IllegalAccessException, InvocationTargetException {
+		this();
+		BeanUtils.copyProperties(this, result);
+	}
+	
+	
 	@DBColumn(PAYMENT_ID)
 	public Integer getPaymentId() {
 		return paymentId;

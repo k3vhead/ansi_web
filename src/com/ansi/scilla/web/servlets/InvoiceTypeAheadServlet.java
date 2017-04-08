@@ -115,7 +115,13 @@ public class InvoiceTypeAheadServlet extends AbstractServlet {
 //										+ " where ticket_id like '%" + term + "%'"
 //										+ " or fleetmatics_id like '%" + term + "%'"
 										//+ " and ticket_status in ('N','D')"
+								
+								
 								String sql = InvoiceSearch.sql + InvoiceSearch.generateWhereClause(term);
+								System.out.println("******");
+								System.out.println("Invoice SQL:\n" + sql);
+								System.out.println("******");
+								
 								Statement s = conn.createStatement();
 								ResultSet rs = s.executeQuery(sql);
 								while ( rs.next() ) {

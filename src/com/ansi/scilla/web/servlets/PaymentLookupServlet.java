@@ -3,8 +3,6 @@ package com.ansi.scilla.web.servlets;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.queries.PaymentSearch;
+import com.ansi.scilla.common.queries.PaymentSearchResult;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
@@ -110,58 +109,69 @@ public class PaymentLookupServlet extends AbstractServlet {
 		    
 		    String colName = cols[col];
 		    int total = 0;
-		    String sql = "select count(1) from ("
-					+ PaymentSearch.sql
-					+ ") t";
-			System.out.println("total count: " + sql);
-
-			Statement s = conn.createStatement();
-			ResultSet rs0 = s.executeQuery(sql);
-			if(rs0.next()){
-		        total = rs0.getInt(1);
-		    }
-			
+//		    String sql = "select count(1) from ("
+//					+ PaymentSearch.sql
+//					+ ") t";
+//			System.out.println("total count: " + sql);
+//
+//			Statement s = conn.createStatement();
+//			ResultSet rs0 = s.executeQuery(sql);
+//			if(rs0.next()){
+//		        total = rs0.getInt(1);
+//		    }
+		    total = new PaymentSearch().getSearchCount(conn, term); 
 		    int totalAfterFilter = total;
 			
 			List<PaymentLookupResponseItem> resultList = new ArrayList<PaymentLookupResponseItem>();
-			sql = PaymentSearch.sql;
-
-			String search = PaymentSearch.generateWhereClause(term);
-			
-			System.out.println(sql);
-			sql += search;
-			System.out.println(sql);
-			sql += " order by " + colName + " " + dir;
-			System.out.println(sql);
-			if ( amount != -1) {
-				sql += " OFFSET "+ start+" ROWS"
-					+ " FETCH NEXT " + amount + " ROWS ONLY";
+//			sql = PaymentSearch.sql;
+//
+//			String search = PaymentSearch.generateWhereClause(term);
+//			
+//			System.out.println(sql);
+//			sql += search;
+//			System.out.println(sql);
+//			sql += " order by " + colName + " " + dir;
+//			System.out.println(sql);
+//			if ( amount != -1) {
+//				sql += " OFFSET "+ start+" ROWS"
+//					+ " FETCH NEXT " + amount + " ROWS ONLY";
+//			}
+//			System.out.println(sql);
+//			
+//			s = conn.createStatement();
+//			ResultSet rs = s.executeQuery(sql);
+//			while ( rs.next() ) {
+//				resultList.add(new PaymentLookupResponseItem(rs));
+//			}
+			List<PaymentSearchResult> searchResultList = null;
+			if ( amount != 1 ) {
+				searchResultList = new PaymentSearch().search(conn, term, start, amount);
+			} else {
+				searchResultList = new PaymentSearch().search(conn, term);
 			}
-			System.out.println(sql);
-			
-			s = conn.createStatement();
-			ResultSet rs = s.executeQuery(sql);
-			while ( rs.next() ) {
-				resultList.add(new PaymentLookupResponseItem(rs));
+			for ( PaymentSearchResult result : searchResultList ) {
+				resultList.add(new PaymentLookupResponseItem(result));
 			}
 			
-			String sql2 = "select count(1) from ("
-					+ PaymentSearch.sql;
+//			String sql2 = "select count(1) from ("
+//					+ PaymentSearch.sql;
+//			
+//			if (search != "") {
+//				sql2 += search;
+//			}
+//			sql2 += ") t";
+//			
+//			System.out.println("filtered count: " + sql2);
+//			Statement s2 = conn.createStatement();
+//			ResultSet rs2 = s2.executeQuery(sql2);
+//			if(rs2.next()){
+//				totalAfterFilter = rs2.getInt(1);
+//		    }
+//			rs.close();
+//			rs0.close();
+//			rs2.close();
 			
-			if (search != "") {
-				sql2 += search;
-			}
-			sql2 += ") t";
-			
-			System.out.println("filtered count: " + sql2);
-			Statement s2 = conn.createStatement();
-			ResultSet rs2 = s2.executeQuery(sql2);
-			if(rs2.next()){
-				totalAfterFilter = rs2.getInt(1);
-		    }
-			rs.close();
-			rs0.close();
-			rs2.close();
+			totalAfterFilter = new PaymentSearch().getSearchCount(conn, term);
 			
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("application/json");

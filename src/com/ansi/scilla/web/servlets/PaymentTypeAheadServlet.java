@@ -7,7 +7,6 @@ import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,6 +23,7 @@ import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.jsonFormat.AnsiFormat;
 import com.ansi.scilla.common.queries.PaymentSearch;
+import com.ansi.scilla.common.queries.PaymentSearchResult;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
@@ -104,13 +104,18 @@ public class PaymentTypeAheadServlet extends AbstractServlet {
 								AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
 								System.out.println("PaymentTypeAheadServlet(): doGet(): term =$" + term +"$");
 								List<ReturnItem> resultList = new ArrayList<ReturnItem>();
-								String sql = PaymentSearch.sql + PaymentSearch.generateWhereClause(term);
-								Statement s = conn.createStatement();
-								ResultSet rs = s.executeQuery(sql);
-								while ( rs.next() ) {
-									resultList.add(new ReturnItem(rs));
+//								String sql = PaymentSearch.sql + PaymentSearch.generateWhereClause(term);
+//								Statement s = conn.createStatement();
+//								ResultSet rs = s.executeQuery(sql);
+//								while ( rs.next() ) {
+//									resultList.add(new ReturnItem(rs));
+//								}
+//								rs.close();
+								Integer resultSizeLimit = 250;
+								List<PaymentSearchResult> searchResultList = new PaymentSearch(null, null, resultSizeLimit).search(conn, term);
+								for ( PaymentSearchResult result : searchResultList ) {
+									resultList.add(new ReturnItem(result));
 								}
-								rs.close();
 								
 								response.setStatus(HttpServletResponse.SC_OK);
 								response.setContentType("application/json");
@@ -151,21 +156,21 @@ public class PaymentTypeAheadServlet extends AbstractServlet {
 		public ReturnItem(ResultSet rs) throws SQLException {
 			super();
 			//invoice_id:div:bill_to_name:invoice_date:invoice_amount:invoice_tax:invoice_total:invoice_balance
-			int paymentId = rs.getInt(PaymentSearch.PAYMENT_ID);
-			String billToName = rs.getString(PaymentSearch.BILL_TO_NAME);
-			Date paymentDate = rs.getDate(PaymentSearch.PAYMENT_DATE);
+			int paymentId = rs.getInt(PaymentSearchResult.PAYMENT_ID);
+			String billToName = rs.getString(PaymentSearchResult.BILL_TO_NAME);
+			Date paymentDate = rs.getDate(PaymentSearchResult.PAYMENT_DATE);
 			String paymentDateDisplay = paymentDate == null ? " " : sdf.format(paymentDate);
-			BigDecimal paymentAmount = rs.getBigDecimal(PaymentSearch.PAYMENT_AMOUNT);
+			BigDecimal paymentAmount = rs.getBigDecimal(PaymentSearchResult.PAYMENT_AMOUNT);
 			String amountDisplay = paymentAmount == null ? " " : currencyFormatter.format(paymentAmount);
-			String paymentNote = rs.getString(PaymentSearch.PAYMENT_NOTE);
-			String paymentType = rs.getString(PaymentSearch.PAYMENT_TYPE);
-			String checkNbr = rs.getString(PaymentSearch.CHECK_NBR);
-			Date checkDate = rs.getDate(PaymentSearch.CHECK_DATE);
+			String paymentNote = rs.getString(PaymentSearchResult.PAYMENT_NOTE);
+			String paymentType = rs.getString(PaymentSearchResult.PAYMENT_TYPE);
+			String checkNbr = rs.getString(PaymentSearchResult.CHECK_NBR);
+			Date checkDate = rs.getDate(PaymentSearchResult.CHECK_DATE);
 			String checkDateDisplay = checkDate == null ? " " : sdf.format(checkDate);
-			int ticketId = rs.getInt(PaymentSearch.TICKET_ID);
-			String ticketDiv = rs.getString(PaymentSearch.TICKET_DIV);
-			String jobSiteName = rs.getString(PaymentSearch.JOB_SITE_NAME);
-			int invoiceId = rs.getInt(PaymentSearch.INVOICE_ID);
+			int ticketId = rs.getInt(PaymentSearchResult.TICKET_ID);
+			String ticketDiv = rs.getString(PaymentSearchResult.TICKET_DIV);
+			String jobSiteName = rs.getString(PaymentSearchResult.JOB_SITE_NAME);
+			int invoiceId = rs.getInt(PaymentSearchResult.INVOICE_ID);
 			
 			this.value = String.valueOf(paymentId);
 			this.id = rs.getInt("payment_id");
@@ -184,6 +189,28 @@ public class PaymentTypeAheadServlet extends AbstractServlet {
 					+ ":" + "Invoice " + invoiceId
 					;
 			this.value = String.valueOf(paymentId);
+		}
+
+		public ReturnItem(PaymentSearchResult result) {
+			String paymentDateDisplay = result.getPaymentDate() == null ? " " : sdf.format(result.getPaymentDate());
+			String amountDisplay = result.getPaymentAmount() == null ? " " : currencyFormatter.format(result.getPaymentAmount());
+			String checkDateDisplay = result.getCheckDate() == null ? " " : sdf.format(result.getCheckDate());
+
+			//payment_id:bill_to_name:date:amount:note:type:check_nbr:check_date:ticket_id:div:job_site:invoice_id
+			this.label = "Payment " + result.getPaymentId() 
+					+ ":" + "BT " + result.getBillToName()
+					+ ":" + "Date " + paymentDateDisplay
+					+ ":" + "Amt " + amountDisplay
+					+ ":" + "Note " + result.getPaymentNote()
+					+ ":" + "Type " + result.getPaymentType()
+					+ ":" + "Chk# " + result.getCheckNbr()
+					+ ":" + "ChkDate " + checkDateDisplay
+					+ ":" + "Ticket " + result.getTicketId()
+					+ ":" + "Div " + result.getTicketDiv()
+					+ ":" + "JS " + result.getJobSiteName()
+					+ ":" + "Invoice " + result.getInvoiceId()
+					;
+			this.value = String.valueOf(result.getPaymentId());
 		}
 
 		public Integer getId() {
