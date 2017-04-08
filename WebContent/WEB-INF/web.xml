@@ -317,6 +317,16 @@
 
 
 	<servlet>
+		<servlet-name>paymentTypeAhead</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.PaymentTypeAheadServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>paymentTypeAhead</servlet-name>
+		<url-pattern>/paymentTypeAhead/*</url-pattern>
+	</servlet-mapping>
+
+
+	<servlet>
         <servlet-name>permissionGroup</servlet-name>
         <servlet-class>com.ansi.scilla.web.servlets.PermissionGroupServlet</servlet-class>
     </servlet>
