@@ -24,10 +24,16 @@
     </global-forwards>
 
     <action-mappings>
-	<action
-            path="/addressLookup"
+         <action
+            path="/addressMaintenance"
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">
-            <forward name="valid" path="/addressLookup.jsp" />
+            <forward name="valid" path="/addressMaintenance.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		<action
+            path="/newAddress"
+            type="com.ansi.scilla.web.action.SessionPageDisplayModalAction">
+            <forward name="valid" path="/addressMaintenance.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
@@ -45,6 +51,12 @@
 		<action
             path="/contactMaintenance"
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/contactMaintenance.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		<action
+            path="/newContact"
+            type="com.ansi.scilla.web.action.SessionPageDisplayModalAction">
             <forward name="valid" path="/contactMaintenance.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
@@ -121,7 +133,7 @@
             path="/paymentLookup"
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">
             <forward name="valid" path="/paymentLookup.jsp" />
-            <forward name="login" path="/login.jsp" />            
+            <forward name="login" path="/login.jsp" />
         </action>
 		<action
             path="/permissiongroupAdmin"
@@ -196,12 +208,6 @@
             path="/taxRateMaintenance"
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">
             <forward name="valid" path="/taxRateMaintenance.jsp" />
-            <forward name="login" path="/login.jsp" />            
-        </action>
-         <action
-            path="/addressMaintenance"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
-            <forward name="valid" path="/addressMaintenance.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
         

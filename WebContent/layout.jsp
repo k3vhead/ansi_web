@@ -77,10 +77,110 @@
     		
 	    	<img src="images/ansi_logo-symbol.png"  />
 	    	<img src="images/ansi_logo-words.png" /><br />
-	    	
+
 	    	<ansi:loggedIn>
 				<div id="headerNav">
-	    		
+		    		<div  style="float:right; width:30%;">
+			    		<ul class="dropdown">
+			    			<ansi:hasPermission permissionRequired="SYSADMIN">
+			    				<ansi:hasWrite>
+			        			<li>
+			        				<a href="#"><bean:message key="menu.label.settings" /></a>
+			        				<ul class="sub_menu" style="z-index:1000">
+			        					<li><html:link action="taxRateMaintenance">Tax <bean:message key="menu.label.maintenance" /></html:link></li>
+			        			 		<%-- <li><a href="#"><bean:message key="menu.label.messages" /></a></li> --%>
+			        			 		<li><html:link action="codeMaintenance"><bean:message key="menu.label.codes" /></html:link></li>
+			        			 		<%-- <li><html:link action="userAdmin"><bean:message key="menu.label.users" /></html:link></li>  --%>
+			        			 		<%-- <li><html:link action="permissiongroupAdmin"><bean:message key="menu.label.permissions" /></html:link></li> --%> 
+										<li><html:link action="divisionAdmin"><bean:message key="menu.label.divisions" /></html:link></li>
+										<%-- <li><html:link action="applicationpropertyAdmin"><bean:message key="menu.label.properties" /></html:link></li>  --%>
+										<%-- <li><html:link action="printHistory"><bean:message key="menu.label.printhistory" /></html:link></li> --%>
+										<%-- <li><html:link action="usertitleMaintenance"><bean:message key="menu.label.titles" /></html:link></li> --%>
+										<%-- <li><html:link action="transactionhistoryView"><bean:message key="menu.label.transactionhistory" /></html:link></li> --%>
+			        				</ul>
+			        			</li>
+			    				</ansi:hasWrite>
+		    				</ansi:hasPermission>
+		        			<li>
+		        				<a href="#">My ANSI</a>
+		        				<ul class="sub_menu" style="z-index:1000">
+		        			 		<%-- <li><html:link action="myAccount">My Account</html:link></li> --%>
+		        			 		<li><html:link action="logoff">Logoff</html:link></li>
+		        				</ul>
+		        			</li>
+		    			</ul>
+						<div style="padding-top:4px; padding-left:4px;"><c:out value="${com_ansi_scilla_session_data.user.firstName}" /> <c:out value="${com_ansi_scilla_session_data.user.lastName}" /></div>		    		</div>
+						<div style="float:left; width:65%">	    		    		
+							<ul class="dropdown">
+								<li><html:link action="dashboard"><bean:message key="menu.label.dashboard" /></html:link></li>
+			        			<li>
+			        				<a href="#"><bean:message key="menu.label.lookup" /></a>
+									<ul class="sub_menu" style="z-index:1000">
+										<li><html:link action="addressMaintenance"><bean:message key="menu.label.addresses" /></html:link></li>
+										<li><html:link action="/contactMaintenance">Contacts</html:link></li>
+										<ansi:hasPermission permissionRequired="QUOTE">
+										<li><html:link action="quoteLookup"><bean:message key="menu.label.quotes" /></html:link></li>
+										</ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="JOB">
+										<li><html:link action="jobLookup"><bean:message key="menu.label.jobs" /></html:link></li>
+										</ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="TICKET">
+										<li><html:link action="ticketLookup"><bean:message key="menu.label.tickets" /></html:link></li>
+										</ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="INVOICE">
+										<li><html:link action="invoiceLookup"><bean:message key="menu.label.invoices" /></html:link></li>
+										</ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="PAYMENT">
+										<li><html:link action="paymentLookup"><bean:message key="menu.label.payments" /></html:link></li>
+										</ansi:hasPermission>
+									</ul>
+			        			</li>
+			        			<li>
+			        				<a href="#">Reports</a>
+									<ul class="sub_menu" style="z-index:1000">
+										<ansi:hasPermission permissionRequired="TICKET">
+										<li><html:link action="ticketView"><bean:message key="menu.label.drv30" /></html:link></li>
+										</ansi:hasPermission>
+									</ul>
+								</li>
+			        			<li>
+			        				<a href="#">Quick Links</a>
+									<ul class="sub_menu" style="z-index:1000">
+										<li><html:link action="newAddress">New Address</html:link></li>
+										<li><html:link action="newContact">New Contact</html:link></li>
+										<ansi:hasPermission permissionRequired="QUOTE">
+										<ansi:hasWrite>
+										<li><html:link action="quoteMaintenance">New Quote</html:link></li>
+										</ansi:hasWrite>
+										</ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="JOB">
+										<ansi:hasWrite>
+										<li><html:link action="jobMaintenance">New Job</html:link></li>
+										</ansi:hasWrite>
+										</ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="TICKET">
+										<li><html:link action="ticketReturn">Ticket Return</html:link></li>
+										</ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="INVOICE">
+										<ansi:hasWrite>
+										<li><html:link action="invoiceGeneration">Generate Invoices</html:link></li>
+										<li><html:link action="invoicePrint">Print Invoices</html:link></li>
+										</ansi:hasWrite>
+										</ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="PAYMENT">
+										<ansi:hasWrite>
+										<li><html:link action="payment">Enter Payment</html:link></li>
+										</ansi:hasWrite>
+										</ansi:hasPermission>
+									</ul>
+								</li>
+							</ul>
+						</div>  <!--  menus left --> 
+				</div> <!-- id=headerNav -->
+			</ansi:loggedIn>	    	
+	    	<%--
+	    	<ansi:loggedIn>
+				<div id="headerNav">
 		    		<div  style="float:right; width:30%;">
 			    		<ul class="dropdown">
 			    			<ansi:hasPermission permissionRequired="SYSADMIN">
@@ -229,7 +329,7 @@
 											<ansi:hasWrite>
 											<li><html:link action="invoiceGeneration">Generate</html:link></li>
 											<li><html:link action="invoicePrint">Print</html:link></li>
-											<%-- <li><a href="#"><bean:message key="menu.label.templates" /></a></li> --%>
+											<li><a href="#"><bean:message key="menu.label.templates" /></a></li>
 											</ansi:hasWrite>
 										</ul>
 									</li>
@@ -253,6 +353,7 @@
         		</div>
         		<br />
 	    	</ansi:loggedIn>
+	    	--%>
 	    	<ansi:notLoggedIn>
 	    		<div id="headerNav">
 	    			&nbsp;
