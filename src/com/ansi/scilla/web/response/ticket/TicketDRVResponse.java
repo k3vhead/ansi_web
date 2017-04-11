@@ -172,13 +172,15 @@ public class TicketDRVResponse extends MessageResponse {
 		
 		//Header White and Black
 		CellStyle cellStyleBackColor = workbook.createCellStyle();
+		XSSFFont font = workbook.createFont();
+		font.setColor(HSSFColor.WHITE.index);
 		cellStyleBackColor.setFillBackgroundColor(IndexedColors.BLACK.getIndex());
 	    cellStyleBackColor.setFillPattern(CellStyle.ALIGN_FILL);
+	    cellStyleBackColor.setFont(font);
 	    
-	    CellStyle cellStyleFontColor = workbook.createCellStyle();
-	    XSSFFont font = workbook.createFont();
-	    font.setColor(HSSFColor.WHITE.index);
-	    cellStyleFontColor.setFont(font);
+//	    CellStyle cellStyleFontColor = workbook.createCellStyle();
+//	    font.setColor(HSSFColor.WHITE.index);
+//	    cellStyleFontColor.setFont(font);
 
 		//Bold and Underline
 	    XSSFFont fontStyleBold = workbook.createFont();
@@ -238,10 +240,17 @@ public class TicketDRVResponse extends MessageResponse {
 	    Footer footer = sheet.getFooter();
 	    footer.setCenter("Page " + HeaderFooter.page() + " of " + HeaderFooter.numPages());
 	    
+	    CellStyle border = workbook.createCellStyle();
+	    border.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+	    border.setTopBorderColor(IndexedColors.BLACK.getIndex());
+	    border.setRightBorderColor(IndexedColors.BLACK.getIndex());
+	    border.setLeftBorderColor(IndexedColors.BLACK.getIndex());
+	    
 		workbook.setSheetName(0,"DRV");
 		row = sheet.createRow(rowNum);
 		XSSFCell cell = null;
 		
+		//row = 0
 		cell = row.createCell(0);
 		cell.setCellValue("Ruin");
 		cell.setCellStyle(vertical);
@@ -260,6 +269,7 @@ public class TicketDRVResponse extends MessageResponse {
 		cell = row.createCell(4);
 		cell.setCellValue(this.getRunDate());
 		cell.setCellStyle(cellLeftDateTime);
+		sheet.addMergedRegion(new CellRangeAddress(0,0,4,5));
 		cell = row.createCell(6);
 		cell.setCellValue("American National Skyline, Inc.");
 		cell.setCellStyle(cellCenterBoldItalic);
@@ -293,8 +303,9 @@ public class TicketDRVResponse extends MessageResponse {
 		
 		row = sheet.createRow(rowNum);
 		cell = row.createCell(3);
-		cell.setCellValue("Start Date Used");
+		cell.setCellValue("Start Date");
 		cell.setCellStyle(cellLeftBold);
+		sheet.addMergedRegion(new CellRangeAddress(1,1,4,5));
 		cell = row.createCell(6);
 		cell.setCellValue("Detailed Rolling Volume Check List");
 		cell.setCellStyle(cellCenterBold);
@@ -313,6 +324,7 @@ public class TicketDRVResponse extends MessageResponse {
 		cell = row.createCell(4);
 		cell.setCellValue(this.getStartDate());
 		cell.setCellStyle(cellLeftDate);
+		sheet.addMergedRegion(new CellRangeAddress(2,2,4,5));
 		cell = row.createCell(12);
 		cell.setCellValue("Total D/L for the Month: ");
 		cell.setCellStyle(cellRightBold);
@@ -330,6 +342,7 @@ public class TicketDRVResponse extends MessageResponse {
 		cell.setCellStyle(cellLeftBold);
 		cell = row.createCell(4);
 		cell.setCellValue(this.getEndDate());
+		sheet.addMergedRegion(new CellRangeAddress(3,3,4,5));
 		cell.setCellStyle(cellLeftDate);
 		cell = row.createCell(12);
 		cell.setCellValue("Tickets: ");
