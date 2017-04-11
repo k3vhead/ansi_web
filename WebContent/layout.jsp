@@ -87,6 +87,7 @@
 			        			<li>
 			        				<a href="#"><bean:message key="menu.label.settings" /></a>
 			        				<ul class="sub_menu" style="z-index:1000">
+			        					<li><html:link action="ticketGeneration">Ticket Generation</html:link></li>
 			        					<li><html:link action="taxRateMaintenance">Tax <bean:message key="menu.label.maintenance" /></html:link></li>
 			        			 		<%-- <li><a href="#"><bean:message key="menu.label.messages" /></a></li> --%>
 			        			 		<li><html:link action="codeMaintenance"><bean:message key="menu.label.codes" /></html:link></li>

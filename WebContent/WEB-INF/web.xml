@@ -403,6 +403,17 @@
 
 
 	<servlet>
+		<servlet-name>ticketGeneration</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.TicketGenerationServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ticketGeneration</servlet-name>
+		<url-pattern>/ticketGeneration/</url-pattern>
+	</servlet-mapping>
+
+
+
+	<servlet>
 		<servlet-name>ticketSearch</servlet-name>
 		<servlet-class>com.ansi.scilla.web.servlets.TicketSearchServlet</servlet-class>
 	</servlet>

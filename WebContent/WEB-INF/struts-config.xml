@@ -163,6 +163,12 @@
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
+            path="/ticketGeneration"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">            
+            <forward name="valid" path="/ticketGeneration.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		<action
             path="/ticketLookup"
             type="com.ansi.scilla.web.action.TicketLookupAction"
             name="jobIdForm"
