@@ -23,6 +23,11 @@
 	
 	String cssIdString = "id=\"" + cssId + "\"";			 
 	String cssClassString = cssClass == null || cssClass.length()==0 ? "" : "class=\"" + cssClass + "\"";
+	
+	String disabled = "";
+	if ( page.equalsIgnoreCase("JOB")) { 
+		disabled = "disabled=\"disabled\"";
+	}
 %>
 
 
@@ -35,93 +40,67 @@
 	<form id="<%=namespace%>_jobInvoiceForm">
 		<table>
 			<tr>
-				<td colspan="1">
+				<td colspan="1" style="width:80px;">
 					Invoice Style:
-					<% if ( page.equalsIgnoreCase("JOB")) { %> 
-						<span id="<%=namespace%>_invoiceStyle"></span>
-					<% } else { %>
-						<select name="<%=namespace%>_invoiceStyle" id="<%=namespace%>_invoiceStyle" style="width:40px;">
-							<option value=""></option>
-						</select>
-					<% } %>
 				</td>
-				<td colspan="1">
-					Batch: 
-					<% if ( page.equalsIgnoreCase("JOB")) { %>
-						<i id="<%=namespace%>_invoiceBatch_is_yes" class="fa fa-check-square-o" aria-hidden="true"></i>
-						<i id="<%=namespace%>_invoiceBatch_is_no" class="fa fa-minus-circle" aria-hidden="true"></i>
-					<% } else { %>
-						<input type="checkbox" value="1" name="<%=namespace%>_invoiceBatch" id="<%=namespace%>_invoiceBatch"/>
-					<% } %>
+				<td colspan="1" style="width:200px">
+					<select name="<%=namespace%>_invoiceStyle" id="<%=namespace%>_invoiceStyle" style="width:40px;" <%=disabled%>>
+						<option value=""></option>
+					</select>
 				</td>
-				<td colspan="1">
-					Tax Exempt: 
-					<% if ( page.equalsIgnoreCase("JOB")) { %>
-						<i id="<%=namespace%>_invoiceTaxExempt_is_yes" class="fa fa-check-square-o" aria-hidden="true"></i>
-						<i id="<%=namespace%>_invoiceTaxExempt_is_no" class="fa fa-minus-circle" aria-hidden="true"></i>
-					<% } else { %>
-						<input type="checkbox" name="<%=namespace%>_invoiceTaxExempt" id="<%=namespace%>_invoiceTaxExempt"/>
-					<% } %>
+				<td colspan="1" style="width:80px;vertical-align:middle;" valign="middle">
+					Batch: <input type="checkbox" value="1" name="<%=namespace%>_invoiceBatch" id="<%=namespace%>_invoiceBatch" <%=disabled%>/>
+				</td>
+				<td colspan="1" style="width:200px;vertical-align:middle;" valign="middle">
+					Tax Exempt: <input type="checkbox" name="<%=namespace%>_invoiceTaxExempt" id="<%=namespace%>_invoiceTaxExempt" <%=disabled%>/>
 				</td>
 			</tr>
 			<tr>
-				<td colspan="1">
+				<td colspan="1" style="width:80px;">
 					Grouping:
-					<% if ( page.equalsIgnoreCase("JOB")) { %> 
-						<span id="<%=namespace%>_invoiceGrouping"></span>
-					<% } else { %>
-						<select name="<%=namespace%>_invoiceGrouping" id="<%=namespace%>_invoiceGrouping">
+				</td>
+				<td colspan="1" style="width:200px">
+						<select name="<%=namespace%>_invoiceGrouping" id="<%=namespace%>_invoiceGrouping" <%=disabled%>>
 							<option value=""></option>
 							<option value="auto">Auto</option>
 							<option value="manual">Manual</option>
 						</select>
-					<% } %>
 				</td>
-				<td colspan="2">
+				<td colspan="1" style="width:80px;">
 					Terms:
-					<% if ( page.equalsIgnoreCase("JOB")) { %> 
-						<span id="<%=namespace%>_invoiceTerms"></span>
-					<% } else { %>
-						<select name="<%=namespace%>_invoiceTerms" id="<%=namespace%>_invoiceTerms">
+				</td>
+				<td colspan="1" style="width:200px">
+						<select name="<%=namespace%>_invoiceTerms" id="<%=namespace%>_invoiceTerms" <%=disabled%>>
 							<option value=""></option>
 						</select>
-					<% } %>
 				</td>
 			</tr>
 			<tr>
-				<td>
+				<td colspan="1" style="width:80px;">
 					PO #: 
-					<% if ( page.equalsIgnoreCase("JOB")) { %> 
-						<span id="<%=namespace%>_invoicePO"></span>
-					<% } else { %>
-						<input type="text"  name="<%=namespace%>_invoicePO" id="<%=namespace%>_invoicePO" />
-					<% } %>
 				</td>
-				<td colspan="2">
+				<td colspan="1" style="width:200px">
+						<input type="text"  name="<%=namespace%>_invoicePO" id="<%=namespace%>_invoicePO" <%=disabled%>/>
+				</td>
+				<td colspan="1" style="width:80px;">
 					Our Vendor #: 
-					<% if ( page.equalsIgnoreCase("JOB")) { %> 
-						<span id="<%=namespace%>_invoiceOurVendorNbr"></span>
-					<% } else { %>
-						<input type="text" name="<%=namespace%>_invoiceOurVendorNbr" id="<%=namespace%>_invoiceOurVendorNbr"  />
-					<% } %>
+					</td>
+					<td colspan="1" style="width:200px">
+						<input type="text" name="<%=namespace%>_invoiceOurVendorNbr" id="<%=namespace%>_invoiceOurVendorNbr"  <%=disabled%>/>
 				</td>
 			</tr>
 			<tr>
-				<td>
+				<td colspan="1" style="width:80px;">
 					Expire: 
-					<% if ( page.equalsIgnoreCase("JOB")) { %> 
-						<span id="<%=namespace%>_invoiceExpire"></span>
-					<% } else { %>
-						<input type="text" name="<%=namespace%>_invoiceExpire" id="<%=namespace%>_invoiceExpire" />
-					<% } %>
 				</td>
-				<td colspan="2">
+				<td colspan="1" style="width:200px">
+						<input type="text" name="<%=namespace%>_invoiceExpire" id="<%=namespace%>_invoiceExpire" <%=disabled%>/>
+				</td>
+				<td colspan="1" style="width:80px;">
 					Exp. Reason: 
-					<% if ( page.equalsIgnoreCase("JOB")) { %> 
-						<span id="<%=namespace%>_invoiceExpireReason"></span>
-					<% } else { %>
-						<input type="text" name="<%=namespace%>_invoiceExpireReason" id="<%=namespace%>_invoiceExpireReason" />
-					<% } %>
+				</td>
+				<td colspan="1" style="width:200px">
+						<input type="text" name="<%=namespace%>_invoiceExpireReason" id="<%=namespace%>_invoiceExpireReason" <%=disabled%>/>
 				</td>
 			</tr>
 		</table>

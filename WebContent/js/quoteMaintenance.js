@@ -1,6 +1,7 @@
 $( document ).ready(function() {
 
 	var $currentRow = 0;
+	var $globalQuoteId = 0;
 	;JOB_DATA = {}
 	;QUOTE_DATA = {}
 	
@@ -36,6 +37,7 @@ $( document ).ready(function() {
 				if ( $quoteId != '' ) {
 					var $quoteDetail = QUOTEUTILS.getQuoteDetail($quoteId);
 					var $quoteData = $quoteDetail.quote;
+					$globalQuoteId = $quoteId;
 					QUOTE_DATA.data = $quoteData;
 				}
 				
@@ -200,13 +202,23 @@ $( document ).ready(function() {
 			buttonsInit:function() {
 				
 				$("#quoteSaveButton").button().on( "click", function() {
-					QUOTEUTILS.save();
+					var qN = $("input[name=quoteNumber]").val();
+					if(qN.length == 0){
+						QUOTEUTILS.save();
+					} else {
+						QUOTEUTILS.update();
+					}
 	            });
 				$("#quoteCancelButton").button().on( "click", function() {
 //					QUOTEUTILS.cancel();
 	            });
 				$("#quoteExitButton").button().on( "click", function() {
-					QUOTEUTILS.save();
+					var qN = $("input[name=quoteNumber]").val();
+					if(qN.length == 0){
+						QUOTEUTILS.save();
+					} else {
+						QUOTEUTILS.update();
+					}
 //					QUOTEUTILS.exit();
 	            });
 				$("input[name=newQuoteButton]").button().on( "click", function(event) {
@@ -259,9 +271,70 @@ $( document ).ready(function() {
 					data: JSON.stringify($outbound),
 					success: function($data) {
 						if ( $data.responseHeader.responseCode == 'SUCCESS') {
-
-							console.log("Save Success");
 							
+							$("input[name=quoteNumber]").val($data.data.quote.quoteNumber);
+							$("input[name=revision]").val($data.data.quote.revision);
+							console.log("Save Success");
+							console.log($data);
+								if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
+									$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
+								}
+							
+						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+							
+							console.log("Edit Failure");
+							console.log($data);
+							$.each($data.data.webMessages, function(key, messageList) {
+								var identifier = "#" + key + "Err";
+								msgHtml = "<ul>";
+								$.each(messageList, function(index, message) {
+									msgHtml = msgHtml + "<li>" + message + "</li>";
+								});
+								msgHtml = msgHtml + "</ul>";
+								$(identifier).html(msgHtml);
+							});		
+						} else {
+							console.log("Save Other");
+						}
+					},
+					error: function($data) {
+						console.log("Fail: ");
+						console.log($data);
+					},
+					statusCode: {
+						403: function($data) {
+							$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+						} 
+					},
+					dataType: 'json'
+				});
+				
+			},
+			update: function(){
+				$outbound = {};
+				
+        		$outbound["managerId"]		=	$("select[name=manager]").val();
+        		$outbound["leadType"]		=	$("select[name=leadType").val();
+        		$outbound["accountType"]	=	$("select[name=accountType").val();
+        		$outbound["divisionId"]	=	$("select[name=division]").val();
+        		$outbound["jobSiteAddressId"]	=	$("input[name=jobSite_id]").val();
+        		$outbound["billToAddressId"]	=	$("input[name=billTo_id]").val();
+        		$outbound["templateId"]	=	0;
+		
+        		console.log("Update Outbound: ");
+        		console.log($outbound);
+
+        		$url = "quote/"+$globalQuoteId+"/"+$("input[name=quoteNumber]").val();
+				console.log($outbound);
+				var jqxhr = $.ajax({
+					type: 'POST',
+					url: $url,
+					data: JSON.stringify($outbound),
+					success: function($data) {
+						if ( $data.responseHeader.responseCode == 'SUCCESS') {
+
+							console.log("Update Success");
+							console.log($data);
 								if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
 									$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
 								}

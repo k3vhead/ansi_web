@@ -57,6 +57,10 @@
 	width: 90px !important;
  }
  
+ .invoiceSpan {
+ 	width: 80px !important;
+ }
+ 
 .labelSpanSmall {
 	display: inline-block;
 	width: 60px !important;

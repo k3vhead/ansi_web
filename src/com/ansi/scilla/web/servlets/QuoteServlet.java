@@ -29,7 +29,6 @@ import com.ansi.scilla.web.response.quote.QuoteListResponse;
 import com.ansi.scilla.web.response.quote.QuoteResponse;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.thewebthing.commons.db2.RecordNotFoundException;
-
 /**
  * The url for delete will be of the form /quote/&lt;quoteId&gt;/<quoteNumber>/<revisionNumber>
  * 
@@ -51,7 +50,8 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
 public class QuoteServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
-
+	public static final String ACTION_IS_UPDATE = "update";
+	
 	@Override
 	protected void doDelete(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -185,7 +185,8 @@ public class QuoteServlet extends AbstractServlet {
 //						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, sessionUser.toString());
 						System.out.println("Doing Add");
 						quote = doAdd(conn, quoteRequest, sessionUser);
-						//quote.update(conn, quote);
+						conn.commit();
+						quote.update(conn, quote);
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 						responseCode = ResponseCode.SUCCESS;
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
@@ -207,7 +208,7 @@ public class QuoteServlet extends AbstractServlet {
 				QuoteResponse quoteResponse = new QuoteResponse(quote, webMessages);
 				super.sendResponse(conn, response, responseCode, quoteResponse);
 				
-			}  else if ( urlPieces.length == 3 ) {   //  /<tableName>/<fieldName>/<value> = 3 pieces
+			}  else if ( urlPieces.length >= 2 ) {   //  /<tableName>/<fieldName>/<value> = 3 pieces
 				System.out.println("Doing Update Stuff");				
 				WebMessages webMessages = validateAdd(conn, quoteRequest);
 				if (webMessages.isEmpty()) {
@@ -215,8 +216,9 @@ public class QuoteServlet extends AbstractServlet {
 					try {
 						Quote key = new Quote();
 						key.setQuoteId(Integer.parseInt(urlPieces[0]));
+						key.selectOne(conn);
 						key.setQuoteNumber(Integer.parseInt(urlPieces[1]));
-						key.setRevision((urlPieces[2]));
+						//key.setRevision((urlPieces[2]));
 						System.out.println("Trying to do update");
 						quote = doUpdate(conn, key, quoteRequest, sessionUser);
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
@@ -263,9 +265,6 @@ public class QuoteServlet extends AbstractServlet {
 		quote.setAddedBy(sessionUser.getUserId());
 		
 		quote.setAddedDate(today);
-		
-		
-//		quote.setQuoteId(5000000);
 
 		quote.setUpdatedBy(sessionUser.getUserId());
 
@@ -332,12 +331,17 @@ public class QuoteServlet extends AbstractServlet {
 		System.out.println(key);
 		System.out.println("************");
 		Date today = new Date();
-		Quote quote = new Quote();
+		Quote quote = key;
 	
 //		quote.setQuoteId(quoteRequest.getQuoteId());
 	
 		quote.setUpdatedBy(sessionUser.getUserId());
 		quote.setUpdatedDate(today);
+		
+		
+		String value = key.getRevision();
+		int charValue = value.charAt(0);
+		String next = String.valueOf( (char) (charValue + 1));
 		
 //		quote.setAddress(quoteRequest.getAddress());
 		quote.setBillToAddressId(quoteRequest.getBillToAddressId());
@@ -346,19 +350,22 @@ public class QuoteServlet extends AbstractServlet {
 		quote.setLeadType(quoteRequest.getLeadType());
 		quote.setManagerId(quoteRequest.getManagerId());
 //		quote.setName(quoteRequest.getName());
-//		quote.setPaymentTerms(quoteRequest.getPaymentTerms());
+
 		quote.setProposalDate(quoteRequest.getProposalDate());
-//		quote.setQuoteGroupId(quoteRequest.getQuoteGroupId());
+
 	
-		quote.setQuoteNumber(quoteRequest.getQuoteNumber());
-		quote.setRevision(quoteRequest.getRevisionNumber());
+		quote.setQuoteNumber(AppUtils.getNextQuoteNumber(conn));
+		quote.setRevision(next);
 		quote.setSignedByContactId(quoteRequest.getSignedByContactId());
-//		quote.setStatus(quoteRequest.getStatus());
 		quote.setTemplateId(quoteRequest.getTemplateId());
 		
 //		 if we update something that isn't there, a RecordNotFoundException gets thrown
 //		 that exception get propagated and turned into a 404
-		quote.update(conn, key);		
+		
+		System.out.println("This is the update quote:");
+		System.out.println(quote);
+		
+		quote.update(conn, quote);		
 		return quote;
 	}
 

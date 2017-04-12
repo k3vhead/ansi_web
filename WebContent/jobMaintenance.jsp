@@ -81,6 +81,13 @@
 			#invoiceModal {
 				display:none;
 			}
+			.ui-state-disabled{
+			   opacity: 0.7 !important;
+			}
+			input[type="text"][disabled] {
+			   color: black;
+			}
+			input[type=checkbox] {width:25px; height:25px;}
         </style>
         
         <script type="text/javascript">

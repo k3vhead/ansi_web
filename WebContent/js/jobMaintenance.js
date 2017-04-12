@@ -144,6 +144,7 @@ $( document ).ready(function() {
 					JOBPROPOSAL.init($namespace+"_jobProposal", JOB_DATA.jobFrequencyList, $jobDetail);
 					JOBACTIVATION.init($namespace+"_jobActivation", JOB_DATA.buildingTypeList, $jobDetail);
 					JOBDATES.init($namespace+"_jobDates", $quoteDetail, $jobDetail);
+					//console.log("Job Schedule NameSpace: "+$namespace+"_jobSchedule");
 					JOBSCHEDULE.init($namespace+"_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
 					JOBINVOICE.init($namespace+"_jobInvoice", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, $jobDetail);
 					JOBAUDIT.init($namespace+"_jobAudit", $jobDetail);
@@ -437,41 +438,65 @@ $( document ).ready(function() {
 				var $goButtonId = $namespace + "_saveInvoiceButton";
 				var $closeButtonId = $namespace + "_saveInvoiceCloseButton";
 				// set up the activate job modal window
-				$( '#invoiceModal' ).dialog({
-		      	      autoOpen: false,
-		      	      height: 300,
-		      	      width: 500,
-		      	      modal: true,
-		      	      buttons: [
-		      	    	  {
-		      	    			id: $goButtonId,
-		      	        		click: function() {
-		      	        			//JOBPANEL.activateJob($namespace, $modalNamespace);
-		      	        			console.debug("gobutton clicked")
-		      	        		}
-		      	      		},
-		      	      		{
-		        	    		id: $closeButtonId,
-		        	        	click: function() {
-		        	        		$('#invoiceModal').dialog( "close" );
-		        	        	}
-		        	      	}
-		      	      
-		      	      ],
-		      	      close: function() {
-		      	    	  $( '#invoiceModal' ).dialog( "close" );
-		      	        //allFields.removeClass( "ui-state-error" );
-		      	      }
-		      	    });
-				
+//				$( '#invoiceModal' ).dialog({
+//		      	      autoOpen: false,
+//		      	      height: 300,
+//		      	      width: 500,
+//		      	      modal: true,
+//		      	      buttons: [
+//		      	    	  {
+//		      	    			id: $goButtonId,
+//		      	        		click: function() {
+//		      	        			//JOBPANEL.activateJob($namespace, $modalNamespace);
+//		      	        			console.debug("gobutton clicked")
+//		      	        		}
+//		      	      		},
+//		      	      		{
+//		        	    		id: $closeButtonId,
+//		        	        	click: function() {
+//		        	        		$('#invoiceModal').dialog( "close" );
+//		        	        	}
+//		        	      	}
+//		      	      
+//		      	      ],
+//		      	      close: function() {
+//		      	    	  $( '#invoiceModal' ).dialog( "close" );
+//		      	        //allFields.removeClass( "ui-state-error" );
+//		      	      }
+//		      	    });
+//				
 				$selectorName = "#" + $namespace + "_invoiceEdit";
 				$($selectorName).click(function($event) {
 					$event.preventDefault();
 					console.debug("Clicked the edit");
-					$('#'+$goButtonId).button('option', 'label', 'Save');
-	        		$('#'+$closeButtonId).button('option', 'label', 'Close');
-	        	    $('#invoiceModal').dialog( "open" );
-
+					
+					if($("#" + $namespace + "_invoiceEdit").hasClass( "fa-pencil" )){
+						$("#" + $namespace + "_invoiceStyle").selectmenu( "option", "disabled", false );
+						$("#" + $namespace + "_invoiceBatch").prop('disabled', false);
+						$("#" + $namespace + "_invoiceTaxExempt").prop('disabled', false);
+						$("#" + $namespace + "_invoiceGrouping").selectmenu( "option", "disabled", false );
+						$("#" + $namespace + "_invoiceTerms").selectmenu( "option", "disabled", false );
+						$("#" + $namespace + "_invoicePO").prop('disabled', false);
+						$("#" + $namespace + "_invoiceOurVendorNbr").prop('disabled', false);
+						$("#" + $namespace + "_invoiceExpire").prop('disabled', false);
+						$("#" + $namespace + "_invoiceExpireReason").prop('disabled', false);
+						
+						$("#" + $namespace + "_invoiceEdit").removeClass('fa-pencil');
+						$("#" + $namespace + "_invoiceEdit").addClass('fa-save');
+					} else if($("#" + $namespace + "_invoiceEdit").hasClass( "fa-save" )){
+						$("#" + $namespace + "_invoiceStyle").selectmenu( "option", "disabled", true );
+						$("#" + $namespace + "_invoiceBatch").prop('disabled', true);
+						$("#" + $namespace + "_invoiceTaxExempt").prop('disabled', true);
+						$("#" + $namespace + "_invoiceGrouping").selectmenu( "option", "disabled", true );
+						$("#" + $namespace + "_invoiceTerms").selectmenu( "option", "disabled", true );
+						$("#" + $namespace + "_invoicePO").prop('disabled', true);
+						$("#" + $namespace + "_invoiceOurVendorNbr").prop('disabled', true);
+						$("#" + $namespace + "_invoiceExpire").prop('disabled', true);
+						$("#" + $namespace + "_invoiceExpireReason").prop('disabled', true);
+						
+						$("#" + $namespace + "_invoiceEdit").removeClass('fa-save');
+						$("#" + $namespace + "_invoiceEdit").addClass('fa-pencil');
+					}
 				});
 			},
 			setInvoiceStyle: function($namespace, $optionList, $selectedValue) {
@@ -956,14 +981,14 @@ $( document ).ready(function() {
 			
 			var $ticketListSelector = "#" + $namespace + "_showTicketList";
 			$($ticketListSelector).click(function($event){
-				var $jobId = JOB_DATA.jobId;
+				var $jobId = $jobDetail.jobId;
 				location.href="ticketLookup.html?jobId=" + $jobId;
 			});
-			
-			
+//			console.log("Job Scheduling JobDetail");
+//			console.log($jobDetail);
 			var $repeatSelectorName = "#" + $namespace + "_" + "annualRepeat";
 			$($repeatSelectorName).click(function($event) {
-				var $jobId = JOB_DATA.jobId;
+				var $jobId = $jobDetail.jobId;
 				var $isChecked = $($repeatSelectorName).prop('checked');
 				var $outbound = {"action":"REPEAT_JOB", "annualRepeat":$isChecked};
 				var $url = "job/" + $jobId;
