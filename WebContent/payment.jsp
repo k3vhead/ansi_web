@@ -175,13 +175,23 @@
         	
         	
             $( "#invoiceNbr" ).autocomplete({
-                source: "invoiceTypeAhead",
+				source: "invoiceTypeAhead",
                 minLength: 2,
                 appendTo: "#someInvoice",
                 select: function( event, ui ) {
-                  //alert( "Selected: " + ui.item.id + " aka " + ui.item.label + " or " + ui.item.value );
-                  $("#invoiceNbr").val(ui.item.id);
-                }
+					//alert( "Selected: " + ui.item.id + " aka " + ui.item.label + " or " + ui.item.value );
+					$("#invoiceNbr").val(ui.item.id);
+					var $ticketData = populateTicketData(ui.item.id);
+                },
+                _renderMenu: function( ul, items ) {
+                	  var that = this;
+                	  $.each( items, function( index, item ) {
+                	    that._renderItemData( ul, item );
+                	  });
+                	  console.debug("Items: " + items.size());
+                	  // this should be where we figure out that we only have 1 matching item
+                	  // and do some populating magic. But it doesn't appear to be working
+                	}
               });
 
         	$("#pmtSearchId").autocomplete({
@@ -195,6 +205,54 @@
         	});
         	
         	
+        	function populateTicketData($invoiceId) {
+        		var $url = 'invoice/' + $invoiceId;        		
+				var jqxhr = $.ajax({
+	   				type: 'GET',
+	   				url: $url,
+	   				data: null,
+	   				statusCode: {
+		   				200: function($data) {
+		   					console.debug($data);
+		   					$(".billToField").html("");
+		   					var $address = $data.data.address;
+		   					$("#billToAddress1").html($address.address1);
+		   					$("#billToAddress2").html($address.address2);
+		   					$("#billToCity").html($address.city);
+	   						$("#billToName").html($address.name);
+	   						$("#billToState").html($address.state);
+	   						$("#billToZip").html($address.zip);
+		   					//populateDataTable($data.data);
+		   				},
+	   					403: function($data) {
+		   					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+		   				},
+		   				404: function($data) {
+		   					$("#pmtSearchIdErr").html("Invalid Payment Id").show().fadeOut(10000);
+		   				},
+		   				405: function($data) {
+		   					$("#globalMsg").html("System Error: Contact Support").fadeIn(4000);
+		   				},
+		   				500: function($data) {
+	        	    		$("#globalMsg").html("System Error: Contact Support").fadeIn(4000);
+	        	    	} 
+		   			},
+		   			dataType: 'json'
+		   		});        	
+        	}
+        	
+			function paymentModal() {
+				$("#paymentModal .err").html("");
+				$("#paymentModal input").val("");
+        		$('#goPayment').button('option', 'label', 'Go');
+        		$('#closePmtModal').button('option', 'label', 'Close');
+        	    $('#paymentModal').dialog( "open" );
+			}
+
+        	
+        	function postPayment() {
+        		
+        	}
         	// ***********************************************************************
          
 			$('#invoiceTable').dataTable().fnDestroy();
@@ -299,13 +357,6 @@
 
 				
 				
-				function paymentModal() {
-    				$("#paymentModal .err").html("");
-					$("#paymentModal input").val("");
-	        		$('#goPayment').button('option', 'label', 'Go');
-	        		$('#closePmtModal').button('option', 'label', 'Close');
-	        	    $('#paymentModal').dialog( "open" );
-				}
 				
 				
 
@@ -423,22 +474,22 @@
     		</tr>
     		<tr>
     			<td class="formHdr">Name:</td>
-    			<td class="black_border"><span id="billToName"></span></td>
+    			<td class="black_border"><span id="billToName" class="billToField"></span></td>
     		</tr>
     		<tr>
     			<td class="formHdr">Address:</td>
-    			<td class="black_border"><span id="billToAddress"></span></td>
+    			<td class="black_border"><span id="billToAddress1" class="billToField"></span></td>
     		</tr>
     		<tr>
     			<td class="formHdr">Address2:</td>
-    			<td class="black_border"><span id="billToAddress2"></span></td>
+    			<td class="black_border"><span id="billToAddress2" class="billToField"></span></td>
     		</tr>
     		<tr>
     			<td class="formHdr">City/State/Zip:</td>
     			<td class="black_border">
-    				<span id="billToCity"></span>,
-    				<span id="billToState"></span>
-    				<span id="billToZip"></span>
+    				<span id="billToCity" class="billToField"></span>,
+    				<span id="billToState" class="billToField"></span>
+    				<span id="billToZip" class="billToField"></span>
     			</td>
     		</tr>
     	</table>

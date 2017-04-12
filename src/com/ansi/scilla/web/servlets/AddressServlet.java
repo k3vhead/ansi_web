@@ -264,7 +264,7 @@ public class AddressServlet extends AbstractServlet {
 
 //		address.setAddressId(addressRequest.getAddressId());
 		address.setName(addressRequest.getName());
-		address.setCountry_code(addressRequest.getCountry_code());
+		address.setCountry_code(addressRequest.getCountryCode());
 		if ( ! StringUtils.isBlank(addressRequest.getAddress1())) {
 			address.setAddress1(addressRequest.getAddress1());
 		} if ( ! StringUtils.isBlank(addressRequest.getAddress2())) {
@@ -309,7 +309,7 @@ public class AddressServlet extends AbstractServlet {
 		
 		address.setAddedBy(sessionUser.getUserId());
 		address.setAddedDate(today);
-		address.setCountry_code(addressRequest.getCountry_code());
+		address.setCountry_code(addressRequest.getCountryCode());
 		address.setAddressId(addressRequest.getAddressId());
 		address.setAddress1(addressRequest.getAddress1());
 		address.setAddress2(addressRequest.getAddress2());

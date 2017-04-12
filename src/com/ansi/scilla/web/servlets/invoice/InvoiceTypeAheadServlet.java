@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.servlets;
+package com.ansi.scilla.web.servlets.invoice;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -7,6 +7,7 @@ import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,13 +23,13 @@ import javax.servlet.http.HttpServletResponse;
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.jsonFormat.AnsiFormat;
-import com.ansi.scilla.common.queries.PaymentSearch;
-import com.ansi.scilla.common.queries.PaymentSearchResult;
+import com.ansi.scilla.common.queries.InvoiceSearch;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
+import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.thewebthing.commons.lang.StringUtils;
 
 /**
@@ -36,7 +37,7 @@ import com.thewebthing.commons.lang.StringUtils;
  * 		ticket_id
  * and returns the following fields:
  * 		id = ticket_id
- * 		label = payment_id:bill_to_name:date:amount:note:type:check_nbr:check_date:ticket_id:div:job_site:invoice_id
+ * 		label = ticket_id:ticket_status:division_code:job_nbr:frequency:act_price_per_cleaning:job site:address 1
  * 		value = ticket_id
  * 
  * The url for delete will return methodNotAllowed
@@ -44,15 +45,15 @@ import com.thewebthing.commons.lang.StringUtils;
  * The url for post will return methodNotAllowed
  * 
  * The url for get will be one of:
- * 		/PaymentTypeAhead?term=					(returns not found)
- * 		/PaymentTypeAhead?term=<searchTerm>		(returns all records containing <searchTerm>)
+ * 		/invoiceTypeAhead?term=					(returns not found)
+ * 		/invoiceTypeAhead?term=<searchTerm>		(returns all records containing <searchTerm>)
  * 
  * The servlet will return 404 Not Found if there is no "term=" found.
  * 
  * @author gagroce
  *
  */
-public class PaymentTypeAheadServlet extends AbstractServlet {
+public class InvoiceTypeAheadServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
 
@@ -72,14 +73,14 @@ public class PaymentTypeAheadServlet extends AbstractServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String url = request.getRequestURI();
-		System.out.println("PaymentTypeAheadServlet(): doGet(): url =" + url);
-		int idx = url.indexOf("/paymentTypeAhead/");
+		System.out.println("InvoiceTypeAheadServlet(): doGet(): url =" + url);
+		int idx = url.indexOf("/invoiceTypeAhead/");
 		if ( idx > -1 ) {
 			super.sendNotFound(response);
 		} else {
 			Connection conn = null;
 			String qs = request.getQueryString();
-			System.out.println("PaymentTypeAheadServlet(): doGet(): qs =" + qs);
+			System.out.println("InvoiceTypeAheadServlet(): doGet(): qs =" + qs);
 			String term = "";
 			if ( StringUtils.isBlank(qs)) { // No query string
 				super.sendNotFound(response);
@@ -88,8 +89,8 @@ public class PaymentTypeAheadServlet extends AbstractServlet {
 				if ( idx > -1 ) { // There is a search term "term="
 					Map<String, String> map = AppUtils.getQueryMap(qs);
 					String queryTerm = map.get("term");
-					System.out.println("PaymentTypeAheadServlet(): doGet(): map =" + map);
-					System.out.println("PaymentTypeAheadServlet(): doGet(): term =" + queryTerm);
+					System.out.println("InvoiceTypeAheadServlet(): doGet(): map =" + map);
+					System.out.println("InvoiceTypeAheadServlet(): doGet(): term =" + queryTerm);
 					if ( StringUtils.isBlank(queryTerm)) { // There is no term
 						super.sendNotFound(response);
 					} else { // There is a term
@@ -102,20 +103,32 @@ public class PaymentTypeAheadServlet extends AbstractServlet {
 							try {
 								conn = AppUtils.getDBCPConn();
 								AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
-								System.out.println("PaymentTypeAheadServlet(): doGet(): term =$" + term +"$");
+								System.out.println("InvoiceTypeAheadServlet(): doGet(): term =$" + term +"$");
 								List<ReturnItem> resultList = new ArrayList<ReturnItem>();
-//								String sql = PaymentSearch.sql + PaymentSearch.generateWhereClause(term);
-//								Statement s = conn.createStatement();
-//								ResultSet rs = s.executeQuery(sql);
-//								while ( rs.next() ) {
-//									resultList.add(new ReturnItem(rs));
-//								}
-//								rs.close();
-								Integer resultSizeLimit = 250;
-								List<PaymentSearchResult> searchResultList = new PaymentSearch(null, null, resultSizeLimit).search(conn, term);
-								for ( PaymentSearchResult result : searchResultList ) {
-									resultList.add(new ReturnItem(result));
+								//invoice_id:ticket_status:division_code:job_nbr:frequency:act_price_per_cleaning:job site:address 1
+//								String sql = "select ticket_id, ticket_status, division.division_code, job_nbr, job_frequency"
+//										+ ", act_price_per_cleaning, address.name, address.address1, fleetmatics_id "
+//										+ " from ticket " 
+//										+ " join job on job.job_id = ticket.job_id " 
+//										+ " join quote on quote.quote_id = job.quote_id " 
+//										+ " join division on division.division_id = ticket.act_division_id " 
+//										+ " join address on address.address_id = quote.job_site_address_id " 
+//										+ " where ticket_id like '%" + term + "%'"
+//										+ " or fleetmatics_id like '%" + term + "%'"
+										//+ " and ticket_status in ('N','D')"
+								
+								
+								String sql = InvoiceSearch.sql + InvoiceSearch.generateWhereClause(term);
+								System.out.println("******");
+								System.out.println("Invoice SQL:\n" + sql);
+								System.out.println("******");
+								
+								Statement s = conn.createStatement();
+								ResultSet rs = s.executeQuery(sql);
+								while ( rs.next() ) {
+									resultList.add(new ReturnItem(rs));
 								}
+								rs.close();
 								
 								response.setStatus(HttpServletResponse.SC_OK);
 								response.setContentType("application/json");
@@ -149,68 +162,35 @@ public class PaymentTypeAheadServlet extends AbstractServlet {
 		private static final long serialVersionUID = 1L;
 		private final SimpleDateFormat sdf = new SimpleDateFormat(AnsiFormat.DATE.pattern());
 		DecimalFormat currencyFormatter = new DecimalFormat(AnsiFormat.CURRENCY.pattern());
+		
 		private Integer id;
 		private String label;
 		private String value;
 		
 		public ReturnItem(ResultSet rs) throws SQLException {
 			super();
+			this.id = rs.getInt("invoice_id");
 			//invoice_id:div:bill_to_name:invoice_date:invoice_amount:invoice_tax:invoice_total:invoice_balance
-			int paymentId = rs.getInt(PaymentSearchResult.PAYMENT_ID);
-			String billToName = rs.getString(PaymentSearchResult.BILL_TO_NAME);
-			Date paymentDate = rs.getDate(PaymentSearchResult.PAYMENT_DATE);
-			String paymentDateDisplay = paymentDate == null ? " " : sdf.format(paymentDate);
-			BigDecimal paymentAmount = rs.getBigDecimal(PaymentSearchResult.PAYMENT_AMOUNT);
-			String amountDisplay = paymentAmount == null ? " " : currencyFormatter.format(paymentAmount);
-			String paymentNote = rs.getString(PaymentSearchResult.PAYMENT_NOTE);
-			String paymentType = rs.getString(PaymentSearchResult.PAYMENT_TYPE);
-			String checkNbr = rs.getString(PaymentSearchResult.CHECK_NBR);
-			Date checkDate = rs.getDate(PaymentSearchResult.CHECK_DATE);
-			String checkDateDisplay = checkDate == null ? " " : sdf.format(checkDate);
-			int ticketId = rs.getInt(PaymentSearchResult.TICKET_ID);
-			String ticketDiv = rs.getString(PaymentSearchResult.TICKET_DIV);
-			String jobSiteName = rs.getString(PaymentSearchResult.JOB_SITE_NAME);
-			int invoiceId = rs.getInt(PaymentSearchResult.INVOICE_ID);
+			int invoiceId = rs.getInt(InvoiceSearch.INVOICE_ID);
+			String div = rs.getString(InvoiceSearch.DIV);
+			String billToName = rs.getString(InvoiceSearch.BILL_TO_NAME);
+			Date invoiceDate = rs.getDate(InvoiceSearch.INVOICE_DATE);
+			String dateDisplay = invoiceDate == null ? " " : sdf.format(invoiceDate);
+			BigDecimal invoiceAmount = rs.getBigDecimal(InvoiceSearch.INVOICE_AMOUNT);
+			BigDecimal invoiceTax = rs.getBigDecimal(InvoiceSearch.INVOICE_TAX);
+			BigDecimal invoiceTotal = rs.getBigDecimal(InvoiceSearch.INVOICE_TOTAL);
+			BigDecimal invoiceBalance = rs.getBigDecimal(InvoiceSearch.INVOICE_BALANCE);
+			String balanceDisplay = invoiceBalance == null ? " " : currencyFormatter.format(invoiceBalance);
 			
-			this.value = String.valueOf(paymentId);
-			this.id = rs.getInt("payment_id");
-			//payment_id:bill_to_name:date:amount:note:type:check_nbr:check_date:ticket_id:div:job_site:invoice_id
-			this.label = "Payment " + paymentId 
+			this.label = "Invoice " + invoiceId 
+					+ ":" + "Div " + div
 					+ ":" + "BT " + billToName
-					+ ":" + "Date " + paymentDateDisplay
-					+ ":" + "Amt " + amountDisplay
-					+ ":" + "Note " + paymentNote
-					+ ":" + "Type " + paymentType
-					+ ":" + "Chk# " + checkNbr
-					+ ":" + "ChkDate " + checkDateDisplay
-					+ ":" + "Ticket " + ticketId
-					+ ":" + "Div " + ticketDiv
-					+ ":" + "JS " + jobSiteName
-					+ ":" + "Invoice " + invoiceId
-					;
-			this.value = String.valueOf(paymentId);
-		}
-
-		public ReturnItem(PaymentSearchResult result) {
-			String paymentDateDisplay = result.getPaymentDate() == null ? " " : sdf.format(result.getPaymentDate());
-			String amountDisplay = result.getPaymentAmount() == null ? " " : currencyFormatter.format(result.getPaymentAmount());
-			String checkDateDisplay = result.getCheckDate() == null ? " " : sdf.format(result.getCheckDate());
-
-			//payment_id:bill_to_name:date:amount:note:type:check_nbr:check_date:ticket_id:div:job_site:invoice_id
-			this.label = "Payment " + result.getPaymentId() 
-					+ ":" + "BT " + result.getBillToName()
-					+ ":" + "Date " + paymentDateDisplay
-					+ ":" + "Amt " + amountDisplay
-					+ ":" + "Note " + result.getPaymentNote()
-					+ ":" + "Type " + result.getPaymentType()
-					+ ":" + "Chk# " + result.getCheckNbr()
-					+ ":" + "ChkDate " + checkDateDisplay
-					+ ":" + "Ticket " + result.getTicketId()
-					+ ":" + "Div " + result.getTicketDiv()
-					+ ":" + "JS " + result.getJobSiteName()
-					+ ":" + "Invoice " + result.getInvoiceId()
-					;
-			this.value = String.valueOf(result.getPaymentId());
+					+ ":" + "Date " + dateDisplay
+					+ ":" + "Amount " + currencyFormatter.format(invoiceAmount)
+					+ ":" + "Tax " + currencyFormatter.format(invoiceTax)
+					+ ":" + "Total " + currencyFormatter.format(invoiceTotal)
+					+ ":" + "Balance " + balanceDisplay;
+			this.value = String.valueOf(invoiceId);
 		}
 
 		public Integer getId() {

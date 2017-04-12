@@ -1,7 +1,6 @@
 package com.ansi.scilla.web.response.address;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
 
 import org.apache.commons.beanutils.BeanUtils;
 
@@ -22,10 +21,10 @@ public class AddressResponseRecord extends ApplicationObject implements Comparab
 	private String name;
 	private String state;
 	private String status;
-	private Integer updatedBy;
-	private Date updatedDate;
+//	private Integer updatedBy;
+//	private Date updatedDate;
 	private String zip;
-	private String country_code;
+	private String countryCode;
 
 	
 	public AddressResponseRecord(Address address) throws IllegalAccessException, InvocationTargetException {
@@ -123,13 +122,13 @@ public class AddressResponseRecord extends ApplicationObject implements Comparab
 		return this.zip;
 	}
 	
-	public void setCountry_code(String country_code) {
-		this.country_code = country_code;
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
 	}
 
 
-	public String getCountry_code() {
-		return this.country_code;
+	public String getCountryCode() {
+		return this.countryCode;
 	}
 
 	@Override
