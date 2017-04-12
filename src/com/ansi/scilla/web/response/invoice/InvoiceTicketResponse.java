@@ -7,12 +7,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.address.AddressUtils;
 import com.ansi.scilla.common.db.Address;
+import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
 import com.ansi.scilla.common.queries.TicketPaymentTotals;
 import com.ansi.scilla.web.response.MessageResponse;
 import com.ansi.scilla.web.response.address.AddressResponseRecord;
 import com.ansi.scilla.web.response.payment.TicketPaymentTotalItem;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class InvoiceTicketResponse extends MessageResponse {
@@ -20,7 +23,7 @@ public class InvoiceTicketResponse extends MessageResponse {
 	private static final long serialVersionUID = 1L;
 
 	private AddressResponseRecord address;
-	List<TicketPaymentTotalItem> ticketList;
+	private List<TicketPaymentTotalItem> ticketList;
 	
 	public InvoiceTicketResponse() {
 		super();
@@ -48,6 +51,7 @@ public class InvoiceTicketResponse extends MessageResponse {
 	public void setTicketList(List<TicketPaymentTotalItem> ticketList) {
 		this.ticketList = ticketList;
 	}
+
 	private void makeTicketList(List<TicketPaymentTotals> totalsList) throws IllegalAccessException, InvocationTargetException {
 		this.ticketList = new ArrayList<TicketPaymentTotalItem>();
 		for ( TicketPaymentTotals ticket : totalsList ) {
@@ -62,5 +66,5 @@ public class InvoiceTicketResponse extends MessageResponse {
 		});		
 	}
 	
-	
+
 }

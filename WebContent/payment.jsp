@@ -38,6 +38,10 @@
         		clear:both; 
         		margin-top:15px;
         	}
+        	#ticketTable {
+        		width:1300px;
+        		max-width:1300px;
+        	}
         	#paymentModal {
         		display:none;
         	}
@@ -130,6 +134,7 @@
         		} else {
         			$("#globalMsg").html("System error. Reload and try again");
         		}
+        		$("#invocieNbr").focus();
         	}
         	
         	function getPayment() {
@@ -222,7 +227,7 @@
 	   						$("#billToName").html($address.name);
 	   						$("#billToState").html($address.state);
 	   						$("#billToZip").html($address.zip);
-		   					//populateDataTable($data.data);
+		   					populateDataTable($data.data);
 		   				},
 	   					403: function($data) {
 		   					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
@@ -251,17 +256,17 @@
 
         	
         	function postPayment() {
-        		
+        		console.debug("Post Payment");	
         	}
         	// ***********************************************************************
          
-			$('#invoiceTable').dataTable().fnDestroy();
+			$('#ticketTable').dataTable().fnDestroy();
 			
 	           
 			var dataTable = null;
         	
 			function populateDataTable($data) {
-				var dataTable = $('#invoiceTable').DataTable( {
+				var dataTable = $('#ticketTable').DataTable( {
 	        			"bDestroy":			true,
 	        			"processing": 		true,
 	        			"autoWidth": 		false,
@@ -269,7 +274,7 @@
 	        	        "scrollX": 			true,
 	        	        rowId: 				'dt_RowId',
 	        	        dom: 				'Bfrtip',
-	        	        "searching": 		true,
+	        	        "searching": 		false,
 	        	        //lengthMenu: [
 	        	        //    [ 10, 50, 100, 500, 1000, -1 ],
 	        	        //    [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows', 'Show All' ],
@@ -284,33 +289,48 @@
 	        	            { className: "dt-center", "targets": [1,2,5] },
 	        	         ],
 	        	        "paging": false,
-	        	        data: $data.invoiceList,
+	        	        data: $data.ticketList,
 				        columns: [
 				            { title: "Division", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-				            	if(row.div != null){return (row.div+"");}
+				            	if(row.divisionDisplay != null){return (row.divisionDisplay+"");}
 				            } },
-				            { title: "Invoices", "defaultContent": "<i>0</i>", data: function ( row, type, set ) {
-				            	if(row.invoiceCount != null){return (row.invoiceCount+"");}
+				            { title: "Ticket", "defaultContent": "<i>0</i>", data: function ( row, type, set ) {
+				            	if(row.ticketId != null){return (row.ticketId+"");}
 				            } },
-				            { title: "Tickets", "defaultContent": "<i>0</i>", data: function ( row, type, set ) {
-				            	if(row.ticketCount != null){return (row.ticketCount+"");}
+				            { title: "Completed", "defaultContent": "<i>0</i>", data: function ( row, type, set ) {
+				            	//if(row.ticketCount != null){return (row.ticketCount+"");}
+				            	return "???";
 				            } },
-				            { title: "Tax",  "defaultContent": "<i></i>", data: function ( row, type, set ) {
-				            	if(row.taxTotal != null){return (row.taxTotal+"");}
+				            { title: "Inv. Date",  "defaultContent": "<i></i>", data: function ( row, type, set ) {
+				            	if(row.invoiceDate != null){return (row.invoiceDate+"");}
 				            } },
-				            { title: "PPC", "defaultContent": "<i></i>", data: function ( row, type, set ) {
-				            	if(row.invoiceTotal != null){return (row.invoiceTotal+"");}
+				            { title: "Inv. Amt.", "defaultContent": "<i></i>", data: function ( row, type, set ) {
+				            	if(row.actPricePerCleaning != null){return (row.actPricePerCleaning+"");}
 				            } },
-				            { title: "Action", "defaultContent": "<i></i>", data: function ( row, type, set ) {
-				            	if(row.invoiceCount == "0"){
-				            		return "";
-				            	} else {
-				            		var $dataDiv = 'data-division="' + row.divisionId + '"';
-				            		var $listLink = '<i class="action-link fa fa-list" aria-hidden="true" data-action="list" ' + $dataDiv + '></i>';
-				            		var $printLink = '<i class="action-link fa fa-print" aria-hidden="true" data-action="print" ' + $dataDiv + '></i>';
-				            		return $listLink + ' | ' + $printLink;
-				            	}
-				            } }
+				            { title: "Inv. Paid", "defaultContent": "<i></i>", data: function ( row, type, set ) {
+				            	if(row.totalVolPaid != null){return (row.totalVolPaid+"");}
+				            } },
+				            { title: "Tax. Amt.", "defaultContent": "<i></i>", data: function ( row, type, set ) {
+				            	if(row.actTaxAmt != null){return (row.actTaxAmt+"");}
+				            } },
+				            { title: "Tax. Paid", "defaultContent": "<i></i>", data: function ( row, type, set ) {
+				            	if(row.totalTaxPaid != null){return (row.totalTaxPaid+"");}
+				            } },
+				            { title: "Balance", "defaultContent": "<i></i>", data: function ( row, type, set ) {
+				            	if(row.totalBalance != null){return (row.totalBalance+"");}
+				            } },
+				            { title: "Pay Inv", "defaultContent": "<i></i>", data: function ( row, type, set ) {
+				            	//if(row.invoiceTotal != null){return (row.invoiceTotal+"");}
+				            	return "???";
+				            } },
+				            { title: "Pay Tax", "defaultContent": "<i></i>", data: function ( row, type, set ) {
+				            	//if(row.invoiceTotal != null){return (row.invoiceTotal+"");}
+				            	return "???";
+				            } },
+				            { title: "Write Off", "defaultContent": "<i></i>", data: function ( row, type, set ) {
+				            	//if(row.invoiceTotal != null){return (row.invoiceTotal+"");}
+				            	return "???";
+				            } },
 				            ],
 				            "initComplete": function(settings, json) {
 				            	doFunctionBinding();
@@ -334,11 +354,11 @@
 	            };
 	            
 	            function initComplete (){
-					var r = $('#invoiceTable tfoot tr');
+					var r = $('#ticketTable tfoot tr');
 					r.find('th').each(function(){
 						$(this).css('padding', 8);
 					});
-					$('#invoiceTable thead').append(r);
+					$('#ticketTable thead').append(r);
 	            }
             
 				function doFunctionBinding() {
@@ -499,7 +519,7 @@
     	
     	
     	
-    	<table id="invoiceTable" style="table-layout: fixed" class="display" cellspacing="0" width="100%" style="font-size:9pt;max-width:1300px;width:1300px;">
+    	<table id="ticketTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
 	        <colgroup>
 	        	<col style="width:10%;" />
 	        	<col style="width:10%;" />
