@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.servlets;
+package com.ansi.scilla.web.servlets.invoice;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -20,6 +20,7 @@ import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.request.InvoiceGenerationRequest;
 import com.ansi.scilla.web.response.invoice.InvoiceGenerationResponse;
+import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
 

@@ -135,7 +135,7 @@
 			            	if(row.county != null){return (row.county+"");}
 			            } },
 			            { title: "Country", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.country_code != null){return (row.country_code+"");}
+			            	if(row.countryCode != null){return (row.countryCode+"");}
 			            } },
 			            { title: "State", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
 			            	if(row.state != null){return (row.state+"");}
@@ -205,7 +205,7 @@
         		$outbound["address2"]	=	$("input[name="+$addressPanelNamespace+"_address2]").val();
         		$outbound["city"]		=	$("input[name="+$addressPanelNamespace+"_city]").val();
         		$outbound["county"]		=	$("input[name="+$addressPanelNamespace+"_county]").val();
-        		$outbound["country_code"]	=	$("input[name="+$addressPanelNamespace+"country] option:selected").val();
+        		$outbound["countryCode"]	=	$("input[name="+$addressPanelNamespace+"country] option:selected").val();
         		$outbound["state"]		=	$("input[name="+$addressPanelNamespace+"state] option:selected").val();
         		$outbound["zip"]		=	$("input[name="+$addressPanelNamespace+"_zip]").val();
         		
@@ -382,7 +382,7 @@
 			        		$("input[name="+$addressPanelNamespace+"_address2]").val(($data.data.codeList[0]).address2);
 			        		$("input[name="+$addressPanelNamespace+"_city]").val(($data.data.codeList[0]).city);
 			        		$("input[name="+$addressPanelNamespace+"_county]").val(($data.data.codeList[0]).county);
-			        		$("#"+$addressPanelNamespace+"country").val(($data.data.codeList[0]).country_code);
+			        		$("#"+$addressPanelNamespace+"country").val(($data.data.codeList[0]).countryCode);
 			        		$("#"+$addressPanelNamespace+"country").selectmenu("refresh");
 			        		$("#"+$addressPanelNamespace+"state").val(($data.data.codeList[0]).state);
 			        		$("#"+$addressPanelNamespace+"state").selectmenu("refresh");
