@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.servlets;
+package com.ansi.scilla.web.servlets.addresses;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -23,6 +23,7 @@ import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
+import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.thewebthing.commons.lang.StringUtils;
 
 /**
@@ -42,7 +43,7 @@ import com.thewebthing.commons.lang.StringUtils;
  * The url for post will return methodNotAllowed
  * 
  * The url for get will be one of:
- * 		/addressSearch?term=					(returns all records)
+ * 		/addressSearch?term=					(returns null list)
  * 		/addressSearch?term=<searchTerm>		(returns all records containing <searchTerm>)
  * 
  * The servlet will return 404 Not Found if there is no "term=" found.
@@ -50,7 +51,7 @@ import com.thewebthing.commons.lang.StringUtils;
  * @author gagroce
  *
  */
-public class DivisionTypeAheadServlet extends AbstractServlet {
+public class AddressTypeAheadServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
 
@@ -70,14 +71,14 @@ public class DivisionTypeAheadServlet extends AbstractServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String url = request.getRequestURI();
-		System.out.println("DivisionTypeAheadServlet(): doGet(): url =" + url);
-		int idx = url.indexOf("/divisionTypeAhead/");
+		System.out.println("AddressTypeAheadServlet(): doGet(): url =" + url);
+		int idx = url.indexOf("/addressTypeAhead/");
 		if ( idx > -1 ) {
 			super.sendNotFound(response);
 		} else {
 			Connection conn = null;
 			String qs = request.getQueryString();
-			System.out.println("DivisionTypeAheadServlet(): doGet(): qs =" + qs);
+			System.out.println("AddressTypeAheadServlet(): doGet(): qs =" + qs);
 			String term = "";
 			if ( StringUtils.isBlank(qs)) { // No query string
 				super.sendNotFound(response);
@@ -86,49 +87,64 @@ public class DivisionTypeAheadServlet extends AbstractServlet {
 				if ( idx > -1 ) { // There is a search term "term="
 					Map<String, String> map = AppUtils.getQueryMap(qs);
 					String queryTerm = map.get("term");
-					System.out.println("DivisionTypeAheadServlet(): doGet(): map =" + map);
-					System.out.println("DivisionTypeAheadServlet(): doGet(): term =" + queryTerm);
+					System.out.println("AddressTypeAheadServlet(): doGet(): map =" + map);
+					System.out.println("AddressTypeAheadServlet(): doGet(): term =" + queryTerm);
 					if ( ! StringUtils.isBlank(queryTerm)) { // There is a term
 						queryTerm = URLDecoder.decode(queryTerm, "UTF-8");
 						queryTerm = StringUtils.trimToNull(queryTerm);
-						if ( ! StringUtils.isBlank(queryTerm)) {
-							term = queryTerm.toLowerCase();
-						}
-					}
-					try {
-						conn = AppUtils.getDBCPConn();
-						AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);
-						System.out.println("DivisionTypeAheadServlet(): doGet(): term =$" + term +"$");
 						List<ReturnItem> resultList = new ArrayList<ReturnItem>();
-						String sql = "select division_id, division_nbr, division_code, description, status "
-								+ " from division " 
-								+ " where division_id like '%" + term + "%'"
-								+ " OR division_nbr like '%" + term + "%'"
-								+ " OR lower(division_code) like '%" + term + "%'"
-								+ " OR lower(description) like '%" + term + "%'";
-						Statement s = conn.createStatement();
-						ResultSet rs = s.executeQuery(sql);
-						while ( rs.next() ) {
-							resultList.add(new ReturnItem(rs));
+						if ( StringUtils.isBlank(queryTerm)) { // blank search term
+							response.setStatus(HttpServletResponse.SC_OK);
+							response.setContentType("application/json");
+							
+							String json = AppUtils.object2json(resultList);
+							ServletOutputStream o = response.getOutputStream();
+							OutputStreamWriter writer = new OutputStreamWriter(o);
+							writer.write(json);
+							writer.flush();
+							writer.close();
+
+						} else {
+							term = queryTerm.toLowerCase();
+							try {
+								conn = AppUtils.getDBCPConn();
+								AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+								System.out.println("AddresTypeAheadServlet(): doGet(): term =$" + term +"$");
+								
+								String sql = "select address_id, name, address1, address2, city, county, state, zip "
+										+ " from address " 
+										+ " where lower(name) like '%" + term + "%'"
+										+ " OR lower(address1) like '%" + term + "%'"
+										+ " OR lower(address2) like '%" + term + "%'"
+										+ " OR lower(city) like '%" + term + "%'"
+										+ " OR lower(state) like '%" + term + "%'"
+										+ " OR lower(county) like '%" + term + "%'"
+										+ " OR lower(zip) like '%" + term + "%'";
+								Statement s = conn.createStatement();
+								ResultSet rs = s.executeQuery(sql);
+								while ( rs.next() ) {
+									resultList.add(new ReturnItem(rs));
+								}
+								rs.close();
+								
+								response.setStatus(HttpServletResponse.SC_OK);
+								response.setContentType("application/json");
+								
+								String json = AppUtils.object2json(resultList);
+								ServletOutputStream o = response.getOutputStream();
+								OutputStreamWriter writer = new OutputStreamWriter(o);
+								writer.write(json);
+								writer.flush();
+								writer.close();
+							} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+								super.sendForbidden(response);
+							} catch ( Exception e ) {
+								AppUtils.logException(e);
+								throw new ServletException(e);
+							} finally {
+								AppUtils.closeQuiet(conn);
+							}
 						}
-						rs.close();
-						
-						response.setStatus(HttpServletResponse.SC_OK);
-						response.setContentType("application/json");
-						
-						String json = AppUtils.object2json(resultList);
-						ServletOutputStream o = response.getOutputStream();
-						OutputStreamWriter writer = new OutputStreamWriter(o);
-						writer.write(json);
-						writer.flush();
-						writer.close();
-					} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
-						super.sendForbidden(response);
-					} catch ( Exception e ) {
-						AppUtils.logException(e);
-						throw new ServletException(e);
-					} finally {
-						AppUtils.closeQuiet(conn);
 					}
 				} else { // There is no term "term="
 					super.sendNotFound(response);
@@ -147,13 +163,15 @@ public class DivisionTypeAheadServlet extends AbstractServlet {
 		
 		public ReturnItem(ResultSet rs) throws SQLException {
 			super();
-			this.id = rs.getInt("division_id");
-			this.label = rs.getString("division_id") 
-					+ "::" + rs.getString("division_nbr")
-					+ ":" + rs.getString("division_code")
-					+ ":" + rs.getString("description")
-					+ ":" + rs.getString("status");
-			this.value = rs.getString("division_nbr");
+			this.id = rs.getInt("address_id");
+			this.label = rs.getString("name") 
+					+ "::" + rs.getString("address1")
+					+ ":" + rs.getString("address2")
+					+ ":" + rs.getString("city")
+					+ ":" + rs.getString("state")
+					+ ":" + rs.getString("zip")
+					+ ":" + rs.getString("county");
+			this.value = rs.getString("name");
 		}
 
 		public Integer getId() {

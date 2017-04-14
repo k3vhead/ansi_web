@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.servlets;
+package com.ansi.scilla.web.servlets.divisions;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -33,6 +33,7 @@ import com.ansi.scilla.web.request.DivisionRequest;
 //import com.ansi.scilla.web.response.code.CodeResponse;
 import com.ansi.scilla.web.response.division.DivisionListResponse;
 import com.ansi.scilla.web.response.division.DivisionResponse;
+import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;

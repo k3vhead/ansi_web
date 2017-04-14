@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.servlets;
+package com.ansi.scilla.web.servlets.tickets;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -26,6 +26,7 @@ import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.request.TicketGenerationRequest;
 import com.ansi.scilla.web.response.ticket.TicketGenerationResponse;
+import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
 

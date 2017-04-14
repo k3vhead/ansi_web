@@ -56,7 +56,7 @@
 
 	<servlet>
         <servlet-name>address</servlet-name>
-        <servlet-class>com.ansi.scilla.web.servlets.AddressServlet</servlet-class>
+        <servlet-class>com.ansi.scilla.web.servlets.addresses.AddressServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>address</servlet-name>
@@ -66,7 +66,7 @@
     
     <servlet>
     	<servlet-name>addressTypeAhead</servlet-name>
-    	<servlet-class>com.ansi.scilla.web.servlets.AddressTypeAheadServlet</servlet-class>
+    	<servlet-class>com.ansi.scilla.web.servlets.addresses.AddressTypeAheadServlet</servlet-class>
     </servlet>
     <servlet-mapping>
     	<servlet-name>addressTypeAhead</servlet-name>
@@ -75,7 +75,7 @@
     
     <servlet>
 		<servlet-name>addressSearch</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.AddressSearchServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.servlets.addresses.AddressSearchServlet</servlet-class>
 	</servlet>    
     <servlet-mapping>
 		<servlet-name>addressSearch</servlet-name>
@@ -84,7 +84,7 @@
 
 	<servlet>
 		<servlet-name>addressTable</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.AddressTableServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.servlets.addresses.AddressTableServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>addressTable</servlet-name>
@@ -153,7 +153,7 @@
 
     <servlet>
         <servlet-name>division</servlet-name>
-        <servlet-class>com.ansi.scilla.web.servlets.DivisionServlet</servlet-class>
+        <servlet-class>com.ansi.scilla.web.servlets.divisions.DivisionServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>division</servlet-name>
@@ -161,7 +161,7 @@
     </servlet-mapping>
     <servlet>
     	<servlet-name>divisionTypeAhead</servlet-name>
-    	<servlet-class>com.ansi.scilla.web.servlets.DivisionTypeAheadServlet</servlet-class>
+    	<servlet-class>com.ansi.scilla.web.servlets.divisions.DivisionTypeAheadServlet</servlet-class>
     </servlet>
     <servlet-mapping>
     	<servlet-name>divisionTypeAhead</servlet-name>
@@ -393,7 +393,7 @@
 
 	<servlet>
 		<servlet-name>ticket</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.TicketServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.servlets.tickets.TicketServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ticket</servlet-name>
@@ -403,7 +403,7 @@
 
 	<servlet>
 		<servlet-name>ticketDRV</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.TicketDRVServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.servlets.tickets.TicketDRVServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ticketDRV</servlet-name>
@@ -414,7 +414,7 @@
 
 	<servlet>
 		<servlet-name>ticketGeneration</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.TicketGenerationServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.servlets.tickets.TicketGenerationServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ticketGeneration</servlet-name>
@@ -425,7 +425,7 @@
 
 	<servlet>
 		<servlet-name>ticketSearch</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.TicketSearchServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.servlets.tickets.TicketSearchServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ticketSearch</servlet-name>
@@ -435,7 +435,7 @@
 	
 	<servlet>
 		<servlet-name>ticketTable</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.TicketTableServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.servlets.tickets.TicketTableServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ticketTable</servlet-name>
@@ -443,7 +443,7 @@
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>ticketTypeAhead</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.TicketTypeAheadServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.servlets.tickets.TicketTypeAheadServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ticketTypeAhead</servlet-name>

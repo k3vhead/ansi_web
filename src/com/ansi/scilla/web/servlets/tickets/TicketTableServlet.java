@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.servlets;
+package com.ansi.scilla.web.servlets.tickets;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -26,6 +26,7 @@ import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.response.ticketTable.TicketTableJsonResponse;
 import com.ansi.scilla.web.response.ticketTable.TicketTableReturnItem;
+import com.ansi.scilla.web.servlets.AbstractServlet;
 
 /**
  * The url for delete will return methodNotAllowed

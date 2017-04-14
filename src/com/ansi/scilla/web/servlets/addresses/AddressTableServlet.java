@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.servlets;
+package com.ansi.scilla.web.servlets.addresses;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -21,6 +21,7 @@ import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.response.address.AddressJsonResponse;
 import com.ansi.scilla.web.response.address.AddressReturnItem;
+import com.ansi.scilla.web.servlets.AbstractServlet;
 
 /**
  * This url searches the following contact table fields for the search term:
