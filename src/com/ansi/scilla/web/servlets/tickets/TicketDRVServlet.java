@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.util.Calendar;
+import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -48,7 +49,7 @@ public class TicketDRVServlet extends AbstractServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
-		Calendar today = Calendar.getInstance();
+		Calendar today = Calendar.getInstance(new Locale("America/Chicago"));
 		Integer thisMonth = today.get(Calendar.MONTH);
 		Integer thisYear = today.get(Calendar.YEAR);
 

@@ -10,6 +10,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -114,7 +115,7 @@ public class InvoicePrintServlet extends AbstractServlet {
 
 
 	private void processUpdate(Connection conn, HttpServletRequest request, HttpServletResponse response, InvoicePrintRequest invoicePrintRequest, SessionUser sessionUser) throws Exception {
-		Calendar invoiceDate = Calendar.getInstance();
+		Calendar invoiceDate = Calendar.getInstance(new Locale("America/Chicago"));
 //		invoiceDate.setTime(invoiceGenerationRequest.getInvoiceDate());
 //		Boolean monthlyFlag = invoiceGenerationRequest.getMonthlyFlag();
 //		Integer userId = sessionUser.getUserId();
@@ -139,9 +140,9 @@ public class InvoicePrintServlet extends AbstractServlet {
 		String fileDate = fileDateFormat.format(printDate);
 		String invoiceFileName = division.getDivisionNbr() + "-" + division.getDivisionCode() + "_" + fileDate + ".pdf";
 
-		Calendar printCalendar = Calendar.getInstance();
+		Calendar printCalendar = Calendar.getInstance(new Locale("America/Chicago"));
 		printCalendar.setTime(printDate);
-		Calendar dueCalendar = Calendar.getInstance();
+		Calendar dueCalendar = Calendar.getInstance(new Locale("America/Chicago"));
 		dueCalendar.setTime(dueDate);
 		ByteArrayOutputStream baos = InvoiceUtils.printInvoices(conn, division, printCalendar, dueCalendar);
 		

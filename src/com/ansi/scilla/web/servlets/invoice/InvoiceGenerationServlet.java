@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -81,7 +82,7 @@ public class InvoiceGenerationServlet extends AbstractServlet {
 
 
 	private void processUpdate(Connection conn, HttpServletResponse response, InvoiceGenerationRequest invoiceGenerationRequest, SessionUser sessionUser) throws Exception {
-		Calendar invoiceDate = Calendar.getInstance();
+		Calendar invoiceDate = Calendar.getInstance(new Locale("America/Chicago"));
 		invoiceDate.setTime(invoiceGenerationRequest.getInvoiceDate());
 		Boolean monthlyFlag = invoiceGenerationRequest.getMonthlyFlag();
 		Integer userId = sessionUser.getUserId();
