@@ -2,6 +2,7 @@ package com.ansi.scilla.web.response;
 
 import java.sql.Connection;
 import java.util.Calendar;
+import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -116,7 +117,7 @@ public class AnsiResponse extends ApplicationWebObject {
 			if ( StringUtils.isBlank(property)) {
 				property="30";
 			}
-			Calendar now = Calendar.getInstance();
+			Calendar now = Calendar.getInstance(new Locale("America/Chicago"));
 			now.roll(Calendar.MINUTE, Integer.valueOf(property));
 		}
 		

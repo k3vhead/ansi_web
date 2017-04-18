@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.poi.hssf.usermodel.HeaderFooter;
 import org.apache.poi.hssf.util.HSSFColor;
@@ -66,7 +67,7 @@ public class TicketDRVResponse extends MessageResponse {
 		division.setDivisionId(divisionId);
 		division.selectOne(conn);
 		
-		Calendar calendar = Calendar.getInstance();
+		Calendar calendar = Calendar.getInstance(new Locale("America/Chicago"));
 		runDate = calendar.getTime();
 		calendar.clear();
 		calendar.set(year, month, 1);
