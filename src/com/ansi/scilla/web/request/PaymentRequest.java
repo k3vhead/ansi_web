@@ -9,17 +9,21 @@ import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-/**
- * 
- * @author ggroce
- *
- *
- *
- */
 
 public class PaymentRequest extends AbstractRequest {
 
 	private static final long serialVersionUID = 1L;
+	
+	public static final String AMOUNT = "amount";
+	public static final String PAYMENT_ID = "paymentId";
+	public static final String TYPE = "type";
+	public static final String PAYMENT_DATE = "paymentDate";
+	public static final String PAYMENT_NOTE = "paymentNote";
+	public static final String CHECK_NUMBER = "checkNumber";
+	public static final String CHECK_DATE = "checkDate";
+	public static final String FEES = "fees";
+	public static final String EXCESS_PAYMENT = "excessPayment";
+	
 	
 	private BigDecimal amount;
 	private Integer paymentId;
@@ -43,6 +47,8 @@ public class PaymentRequest extends AbstractRequest {
 	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
 	}
+	@RequiredForAdd
+	@RequiredForUpdate
 	public BigDecimal getAmount() {
 		return this.amount;
 	}
@@ -50,6 +56,7 @@ public class PaymentRequest extends AbstractRequest {
 	public void setPaymentId(Integer paymentId) {
 		this.paymentId = paymentId;
 	}
+	@RequiredForUpdate
 	public Integer getPaymentId() {
 		return this.paymentId;
 	}
@@ -65,6 +72,8 @@ public class PaymentRequest extends AbstractRequest {
 	public void setPaymentDate(Date paymentDate) {
 		this.paymentDate = paymentDate;
 	}
+	@RequiredForAdd
+	@RequiredForUpdate
 	public Date getPaymentDate() {
 		return this.paymentDate;
 	}

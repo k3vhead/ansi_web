@@ -54,6 +54,11 @@
 			.searchPmtRow {
 				display:none;
 			}
+			.tfootTotal {
+				border:sold 1px #000000;
+        		font-weight:bold;
+				text-align:right;
+			}
         </style>
         
         <script type="text/javascript">        
@@ -179,7 +184,7 @@
         	
         	
         	
-            $( "#invoiceNbr" ).autocomplete({
+            var $invoiceComplete = $( "#invoiceNbr" ).autocomplete({
 				source: "invoiceTypeAhead",
                 minLength: 2,
                 appendTo: "#someInvoice",
@@ -187,18 +192,19 @@
 					//alert( "Selected: " + ui.item.id + " aka " + ui.item.label + " or " + ui.item.value );
 					$("#invoiceNbr").val(ui.item.id);
 					var $ticketData = populateTicketData(ui.item.id);
-                },
-                _renderMenu: function( ul, items ) {
-                	  var that = this;
-                	  $.each( items, function( index, item ) {
-                	    that._renderItemData( ul, item );
-                	  });
-                	  console.debug("Items: " + items.size());
-                	  // this should be where we figure out that we only have 1 matching item
-                	  // and do some populating magic. But it doesn't appear to be working
-                	}
-              });
-
+                }
+          	}).data('ui-autocomplete');
+			$invoiceComplete._renderMenu = function( ul, items ) {
+              	  var that = this;
+            	  $.each( items, function( index, item ) {
+            	    that._renderItemData( ul, item );
+            	  });
+            	  console.debug("Items: " + items.length);
+            	  // this should be where we figure out that we only have 1 matching item
+            	  // and do some populating magic. But it doesn't appear to be working
+            	}
+            
+            
         	$("#pmtSearchId").autocomplete({
                 source: "paymentTypeAhead",
                 minLength: 2,
@@ -266,6 +272,11 @@
 			var dataTable = null;
         	
 			function populateDataTable($data) {
+				
+				$("#totalBalance").html($data.totalBalance);
+				$("#totalPayInvoice").html($data.totalPayInvoice);
+				$("#totalPayTax").html($data.totalPayTax);
+				
 				var dataTable = $('#ticketTable').DataTable( {
 	        			"bDestroy":			true,
 	        			"processing": 		true,
@@ -281,12 +292,13 @@
 	        	        //],
 	        	        buttons: [
 	        	        //	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}},
+	        	        	'copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',
 	        	        ],
 	        	        "columnDefs": [
 	        	        	{ "orderable": true, "targets": "_all" },
 	        	            { className: "dt-left", "targets": [0] },
-	        	            { className: "dt-right", "targets": [3,4] },
-	        	            { className: "dt-center", "targets": [1,2,5] },
+	        	            { className: "dt-right", "targets": [4,5,6,7,8,9,10] },
+	        	            { className: "dt-center", "targets": [0,1,2,3] },
 	        	         ],
 	        	        "paging": false,
 	        	        data: $data.ticketList,
@@ -298,39 +310,36 @@
 				            	if(row.ticketId != null){return (row.ticketId+"");}
 				            } },
 				            { title: "Completed", "defaultContent": "<i>0</i>", data: function ( row, type, set ) {
-				            	//if(row.ticketCount != null){return (row.ticketCount+"");}
-				            	return "???";
+				            	if(row.processDate != null){return (row.processDate+"");}
 				            } },
 				            { title: "Inv. Date",  "defaultContent": "<i></i>", data: function ( row, type, set ) {
 				            	if(row.invoiceDate != null){return (row.invoiceDate+"");}
 				            } },
-				            { title: "Inv. Amt.", "defaultContent": "<i></i>", data: function ( row, type, set ) {
+				            { title: "Inv. Amt.", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
 				            	if(row.actPricePerCleaning != null){return (row.actPricePerCleaning+"");}
 				            } },
-				            { title: "Inv. Paid", "defaultContent": "<i></i>", data: function ( row, type, set ) {
+				            { title: "Inv. Paid", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
 				            	if(row.totalVolPaid != null){return (row.totalVolPaid+"");}
 				            } },
-				            { title: "Tax. Amt.", "defaultContent": "<i></i>", data: function ( row, type, set ) {
+				            { title: "Tax. Amt.", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
 				            	if(row.actTaxAmt != null){return (row.actTaxAmt+"");}
 				            } },
-				            { title: "Tax. Paid", "defaultContent": "<i></i>", data: function ( row, type, set ) {
+				            { title: "Tax. Paid", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
 				            	if(row.totalTaxPaid != null){return (row.totalTaxPaid+"");}
 				            } },
-				            { title: "Balance", "defaultContent": "<i></i>", data: function ( row, type, set ) {
+				            { title: "Balance", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
 				            	if(row.totalBalance != null){return (row.totalBalance+"");}
 				            } },
-				            { title: "Pay Inv", "defaultContent": "<i></i>", data: function ( row, type, set ) {
+				            { title: "Pay Inv", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
+				            	if(row.totalVolPaid != null){return (row.totalVolPaid+"");}				            	
+				            } },
+				            { title: "Pay Tax", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
+				            	if(row.totalPayTax != null){return (row.totalPayTax+"");}
+				            } }
+				            <%-- { title: "Write Off", "defaultContent": "<i></i>", data: function ( row, type, set ) {
 				            	//if(row.invoiceTotal != null){return (row.invoiceTotal+"");}
 				            	return "???";
-				            } },
-				            { title: "Pay Tax", "defaultContent": "<i></i>", data: function ( row, type, set ) {
-				            	//if(row.invoiceTotal != null){return (row.invoiceTotal+"");}
-				            	return "???";
-				            } },
-				            { title: "Write Off", "defaultContent": "<i></i>", data: function ( row, type, set ) {
-				            	//if(row.invoiceTotal != null){return (row.invoiceTotal+"");}
-				            	return "???";
-				            } },
+				            } }, --%>
 				            ],
 				            "initComplete": function(settings, json) {
 				            	doFunctionBinding();
@@ -521,15 +530,15 @@
     	
     	<table id="ticketTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
 	        <colgroup>
-	        	<col style="width:10%;" />
-	        	<col style="width:10%;" />
-	        	<col style="width:10%;" />
-	        	<col style="width:10%;" />
-	        	<col style="width:10%;" />
-	        	<col style="width:10%;" />
-	        	<col style="width:10%;" />
-	        	<col style="width:10%;" />
-	        	<col style="width:10%;" />
+	        	<col style="width:9%;" />
+	        	<col style="width:9%;" />
+	        	<col style="width:9%;" />
+	        	<col style="width:9%;" />
+	        	<col style="width:9%;" />
+	        	<col style="width:9%;" />
+	        	<col style="width:9%;" />
+	        	<col style="width:9%;" />
+	        	<col style="width:9%;" />
 	        	<col style="width:10%;" />
 	   		</colgroup>        
 	        <thead>
@@ -540,24 +549,28 @@
 	    			<td class="formHdr">Inv Date</td>
 	    			<td class="formHdr">Inv Amt</td>
 	    			<td class="formHdr">Inv Paid</td>
+	    			<td class="formHdr">Tax Amt</td>
+	    			<td class="formHdr">Tax Paid</td>
 	    			<td class="formHdr">Balance</td>
 	    			<td class="formHdr">Pay Inv</td>
 	    			<td class="formHdr">Pay Tax</td>
-	    			<td class="formHdr">Write Off</td>
+	    			<%-- <td class="formHdr">Write Off</td> (this is for v2) --%>
 	            </tr>
 	        </thead>
 	        <tfoot>
 	            <tr>
-	    			<td class="formHdr">Div</td>
-	    			<td class="formHdr">Ticket</td>
-	    			<td class="formHdr">Completed</td>
-	    			<td class="formHdr">Inv Date</td>
-	    			<td class="formHdr">Inv Amt</td>
-	    			<td class="formHdr">Inv Paid</td>
-	    			<td class="formHdr">Balance</td>
-	    			<td class="formHdr">Pay Inv</td>
-	    			<td class="formHdr">Pay Tax</td>
-	    			<td class="formHdr">Write Off</td>
+	    			<td class="formHdr">&nbsp</td>
+	    			<td class="formHdr">&nbsp</td>
+	    			<td class="formHdr">&nbsp</td>
+	    			<td class="formHdr">&nbsp</td>
+	    			<td class="formHdr">&nbsp</td>
+	    			<td class="formHdr">&nbsp</td>
+	    			<td class="formHdr">&nbsp</td>
+	    			<td style="text-align:right; font-weight:bold;">Totals:</td>
+	    			<td style="text-align:right; border:solid 1px #000000; font-weight:bold;"><span class="totalField" id="totalBalance"></span></td>
+	    			<td style="text-align:right; border:solid 1px #000000; font-weight:bold;"><span class="totalField" id="totalPayInvoice"></span></td>
+	    			<td style="text-align:right; border:solid 1px #000000; font-weight:bold;"><span class="totalField" id="totalPayTax"></span></td>
+	    			<%-- <td class="formHdr">Write Off</td> (this is for v2) --%>
 	            </tr>
 	        </tfoot>
 	    </table>

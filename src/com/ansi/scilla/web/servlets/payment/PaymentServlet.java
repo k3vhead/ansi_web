@@ -1,7 +1,9 @@
 package com.ansi.scilla.web.servlets.payment;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Connection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -9,11 +11,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.ansi.scilla.common.db.Payment;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.common.ResponseCode;
+import com.ansi.scilla.web.common.WebMessages;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
@@ -95,32 +101,30 @@ public class PaymentServlet extends AbstractServlet {
 
 	}
 
-	/*
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Connection conn = null;
+		AnsiURL url = null;
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
 			String jsonString = super.makeJsonString(request);
 			PaymentRequest paymentRequest = (PaymentRequest)AppUtils.json2object(jsonString, PaymentRequest.class);
+			url = new AnsiURL(request, jsonString, new String[] {PaymentRequestType.ADD.toString()});
 			SessionData sessionData = AppUtils.validateSession(request, Permission.PAYMENT, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			SessionUser sessionUser = sessionData.getUser();
 
-			SessionUser sessionUser = sessionData.getUser(); 
-			List<String> addErrors = super.validateRequiredAddFields(paymentRequest);
-			HashMap<String, String> errors = new HashMap<String, String>();
-			if ( addErrors.isEmpty() ) {
-				errors = validateDates(paymentRequest);
-			}
-			if (addErrors.isEmpty() && errors.isEmpty()) {
-				processUpdate(conn, request, response, paymentRequest, sessionUser);
-//				fakeThePDF(conn, request, response, invoicePrintRequest);
+			if ( ! StringUtils.isBlank(url.getCommand())) {
+				processAdd(conn, paymentRequest, sessionUser, response);
+			} else if ( url.getId() != null ) {
+				processUpdate(conn, url.getId(), paymentRequest, sessionUser, response);
 			} else {
-				processError(conn, response, addErrors, errors);
+				throw new ResourceNotFoundException();
 			}
-			conn.rollback();
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
 			super.sendForbidden(response);
+		} catch ( ResourceNotFoundException e) {
+			super.sendNotFound(response);
 		} catch ( Exception e) {
 			AppUtils.logException(e);
 			AppUtils.rollbackQuiet(conn);
@@ -129,32 +133,10 @@ public class PaymentServlet extends AbstractServlet {
 			AppUtils.closeQuiet(conn);
 		}
 	}
-	*/
-	
-	
 
-/*
 
-	protected TaxRate doUpdate(Connection conn, TaxRate key, TaxRateRequest taxRateRequest, SessionUser sessionUser) throws Exception {
-		System.out.println("This is the key:");
-		System.out.println(key);
-		System.out.println("************");
-		Date today = new Date();
-		TaxRate taxRate = new TaxRate();
-		taxRate.setAmount(taxRateRequest.getAmount());
-		taxRate.setEffectiveDate(taxRateRequest.getEffectiveDate());
-		if ( ! StringUtils.isBlank(taxRateRequest.getLocation())) {
-			taxRate.setLocation(taxRateRequest.getLocation());
-		}
-		taxRate.setRate(taxRateRequest.getRate());
-		//taxRate.setTaxRateId(taxRateRequest.getTaxRateId()); //key is passed in from the url
-		taxRate.setUpdatedBy(sessionUser.getUserId());
-		taxRate.setUpdatedDate(today);
-		// if we update something that isn't there, a RecordNotFoundException gets thrown
-		// that exception get propagated and turned into a 404
-		taxRate.update(conn, key);		
-		return taxRate;
-	}
+
+	/*
 
 	protected WebMessages validateUpdate(Connection conn, TaxRate key, TaxRateRequest taxRateRequest) throws RecordNotFoundException, Exception {
 		WebMessages webMessages = new WebMessages();
@@ -175,6 +157,99 @@ public class PaymentServlet extends AbstractServlet {
 		testKey.selectOne(conn);
 		return webMessages;
 	}
-*/
+	 */
+
+	private void processAdd(Connection conn, PaymentRequest paymentRequest, SessionUser sessionUser, HttpServletResponse response) throws Exception {
+		List<String> addErrors = super.validateRequiredAddFields(paymentRequest);
+		HashMap<String, String> errors = new HashMap<String, String>();
+		if ( addErrors.isEmpty() ) {
+			errors = validateValues(paymentRequest);
+		}
+		if (addErrors.isEmpty() && errors.isEmpty()) {
+			doAdd(conn, paymentRequest, response, sessionUser);
+		} else {
+			doErrorResponse(conn, response, addErrors, errors);
+		}
+		conn.rollback();
+	}
+
+	private void doAdd(Connection conn, PaymentRequest paymentRequest, HttpServletResponse response, SessionUser sessionUser) throws Exception {
+		throw new RuntimeException("This shouldn't work yet because of payment status/type/method questions");
+		/*
+		Payment payment = new Payment();
+		payment.setAddedBy(sessionUser.getUserId());
+		payment.setAmount(paymentRequest.getAmount());
+		payment.setCheckDate(paymentRequest.getCheckDate());
+		payment.setCheckNumber(paymentRequest.getCheckNumber());
+//		payment.setInvoiceId(invoiceId);
+		payment.setPaymentDate(paymentRequest.getPaymentDate());
+		payment.setPaymentNote(paymentRequest.getPaymentNote());
+//		payment.setStatus(status);
+//		payment.setType(type);
+		payment.setUpdatedBy(sessionUser.getUserId());
+
+		Integer paymentId = payment.insertWithKey(conn);
+		payment.setPaymentId(paymentId);
+		conn.commit();
+		
+		WebMessages webMessages = new WebMessages();
+		webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success! Payment Added");
+		PaymentResponse data = new PaymentResponse(conn, paymentId);
+		data.setWebMessages(webMessages);
+		super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
+		*/
+	}
+
+	private void processUpdate(Connection conn, Integer id, PaymentRequest paymentRequest, SessionUser sessionUser, HttpServletResponse response) {
+		throw new RuntimeException("Not Coded yet");
+	}
+
+	private HashMap<String, String> validateValues(PaymentRequest paymentRequest) {
+		HashMap<String, String> errors = new HashMap<String, String>();
+		Date today = new Date();
+		// amount must be a positive number
+		if ( paymentRequest.getAmount().compareTo(new BigDecimal(0.0)) < 1 ) {
+			errors.put(PaymentRequest.AMOUNT, "Amount must be more than $0.00");
+		}
 	
+		// if we have a check date or a check number, we need the other one also
+		if ( paymentRequest.getCheckDate() != null ) {
+			if (paymentRequest.getCheckNumber() == null ) {
+				errors.put(PaymentRequest.CHECK_NUMBER, "Required value");
+			}
+	
+			// no post-dated checks
+			if ( paymentRequest.getPaymentDate().before(paymentRequest.getCheckDate())) {
+				errors.put(PaymentRequest.CHECK_DATE, "Payment Date before check date");
+			} else if ( paymentRequest.getPaymentDate().before(today)) {
+				errors.put(PaymentRequest.CHECK_DATE, "Check Date must be on or before today");
+			}
+		} else {
+			if (paymentRequest.getCheckNumber() != null ) {
+				errors.put(PaymentRequest.CHECK_DATE, "Required value");
+			}
+		}
+	
+		return errors;
+	}
+
+	private void doErrorResponse(Connection conn, HttpServletResponse response, List<String> addErrors, HashMap<String, String> errors) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		for ( String error : addErrors ) {
+			webMessages.addMessage(error, "Required field");
+		}
+		for ( String key : errors.keySet() ) {
+			webMessages.addMessage(key, errors.get(key));
+		}
+		PaymentResponse data = new PaymentResponse();
+		data.setWebMessages(webMessages);
+		super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+
+	}
+
+	public enum PaymentRequestType {
+		ADD,
+		UPDATE,
+		DELETE;
+	}
 }
