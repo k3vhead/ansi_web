@@ -939,6 +939,40 @@ $( document ).ready(function() {
 				JOBPROPOSAL.setJobFrequency($namespace, $jobFrequencyList);
 			}
 			
+			$selectorName = "#" + $namespace + "_proposalEdit";
+			$($selectorName).click(function($event) {
+				$event.preventDefault();
+				console.debug("Clicked the edit");
+				
+				if($($selectorName).hasClass( "fa-pencil" )){
+					$("#" + $namespace + "_invoiceStyle").selectmenu( "option", "disabled", false );
+					$("#" + $namespace + "_invoiceBatch").prop('disabled', false);
+					$("#" + $namespace + "_invoiceTaxExempt").prop('disabled', false);
+					$("#" + $namespace + "_invoiceGrouping").selectmenu( "option", "disabled", false );
+					$("#" + $namespace + "_invoiceTerms").selectmenu( "option", "disabled", false );
+					$("#" + $namespace + "_invoicePO").prop('disabled', false);
+					$("#" + $namespace + "_invoiceOurVendorNbr").prop('disabled', false);
+					$("#" + $namespace + "_invoiceExpire").prop('disabled', false);
+					$("#" + $namespace + "_invoiceExpireReason").prop('disabled', false);
+					
+					$($selectorName).removeClass('fa-pencil');
+					$($selectorName).addClass('fa-save');
+				} else if($($selectorName).hasClass( "fa-save" )){
+					$("#" + $namespace + "_invoiceStyle").selectmenu( "option", "disabled", true );
+					$("#" + $namespace + "_invoiceBatch").prop('disabled', true);
+					$("#" + $namespace + "_invoiceTaxExempt").prop('disabled', true);
+					$("#" + $namespace + "_invoiceGrouping").selectmenu( "option", "disabled", true );
+					$("#" + $namespace + "_invoiceTerms").selectmenu( "option", "disabled", true );
+					$("#" + $namespace + "_invoicePO").prop('disabled', true);
+					$("#" + $namespace + "_invoiceOurVendorNbr").prop('disabled', true);
+					$("#" + $namespace + "_invoiceExpire").prop('disabled', true);
+					$("#" + $namespace + "_invoiceExpireReason").prop('disabled', true);
+					
+					$($selectorName).removeClass('fa-save');
+					$($selectorName).addClass('fa-pencil');
+				}
+			});
+			
 		},
 		setJobFrequency: function($namespace, $optionList, $selectedValue) {
 			var selectorName = "#" + $namespace + "_jobDescriptionForm select[name='" + $namespace + "_jobFrequency']";

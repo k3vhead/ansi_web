@@ -31,6 +31,11 @@
 %>
 
 <div <%= cssIdString %> <%= cssClassString %> >
+<% if ( page.equalsIgnoreCase("JOB")) { %> 
+	<div style="float:right;margin-right:6px; margin-top:6px;">
+		<span id="<%=namespace %>_proposalEdit" style="cursor:pointer;" class="green fa fa-pencil" ari-hidden="true"></span>
+	</div>
+<% } %>
 	<form name="<%=namespace%>_jobProposalForm">
 		<table>
 			<tr>
