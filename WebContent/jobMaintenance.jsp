@@ -87,7 +87,7 @@
 			input[type="text"][disabled] {
 			   color: black;
 			}
-			input[type=checkbox] {width:25px; height:25px;}
+			input[type=checkbox] {width:20px; height:20px;}
         </style>
         
         <script type="text/javascript">

@@ -185,8 +185,10 @@ public class QuoteServlet extends AbstractServlet {
 //						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, sessionUser.toString());
 						System.out.println("Doing Add");
 						quote = doAdd(conn, quoteRequest, sessionUser);
-						conn.commit();
-						quote.update(conn, quote);
+						
+						/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CANT GET QUOTE NUMBER OR REVISION TO UPDATE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
+						//conn.commit();
+						//quote.update(conn, quote);
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 						responseCode = ResponseCode.SUCCESS;
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);

@@ -158,6 +158,13 @@ td.jobTableCell {
     margin: .8em 0 .2em;
     line-height: 1.5;
   }
+  .ui-state-disabled{
+	   opacity: 0.7 !important;
+	}
+	input[type="text"][disabled] {
+	   color: black;
+	}
+	input[type=checkbox] {width:20px; height:20px;}
 
         </style>
     </tiles:put>

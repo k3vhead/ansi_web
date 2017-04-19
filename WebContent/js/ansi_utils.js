@@ -118,9 +118,7 @@ $( document ).ready(function() {
 		
 		// Set the values in an html select tag
 		setOptionList: function($selectorName, $optionList, $selectedValue) {
-			console.log("setOptionList: " + $selectorName);
-			console.log($optionList);
-			
+		
 			var $select = $($selectorName);
 			$('option', $select).remove();
 
@@ -132,7 +130,8 @@ $( document ).ready(function() {
 			if ( $selectedValue != null ) {
 				$select.val($selectedValue);
 			}
-			$select.selectmenu();
+			$select.selectmenu({ width : '175px', maxHeight: '400 !important', style: 'dropdown'});
+
 		},
 		
 		getFieldValue: function($namespace, $field) {
@@ -318,8 +317,8 @@ $( document ).ready(function() {
 				
 			},
 			setContact: function($namespace, $contactData) {
-				console.log("Contact Data;");
-				console.log($contactData);
+//				console.log("Contact Data;");
+//				console.log($contactData);
 				if($contactData.preferredContact == "business_phone") {
 					$("input[name='"+$namespace+"ContactInfo']").val($contactData.businessPhone);
 				} 
@@ -345,11 +344,9 @@ $( document ).ready(function() {
 					$("input[name='"+$namespace+"_address1']").val("");
 					$("input[name='"+$namespace+"_address2']").val("");
 					$("input[name='"+$namespace+"_city']").val("");
-					//$("select[name='"+$namespace+"_state']").val("");
 					$("select[name='"+$namespace+"_state']").selectmenu("refresh");
 					$("input[name='"+$namespace+"_zip']").val("");
 					$("input[name='"+$namespace+"_county']").val("");
-					//$("select[name='"+$namespace+"_country']").val("");
 					$("select[name='"+$namespace+"_country']").selectmenu("refresh");
 					$("input[name='"+$namespace+"_jobContactName']").val("");
 					$("input[name='"+$namespace+"_jobContactInfo']").val("");
@@ -365,8 +362,8 @@ $( document ).ready(function() {
 						data: {},
 						statusCode: {
 							200: function($data) {
-								console.log("Contact Data: ");
-								console.log($data);
+//								console.log("Contact Data: ");
+//								console.log($data);
 								$returnValue = $data.data.contactList[0];
 								
 							},					

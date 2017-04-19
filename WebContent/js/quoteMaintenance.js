@@ -47,7 +47,7 @@ $( document ).ready(function() {
 				ADDRESSPANEL.init("jobSite", JOB_DATA.countryList);
 				ADDRESSPANEL.init("billTo", JOB_DATA.countryList);
 				
-				console.log(ANSI_UTILS.getCodes("quote","account_type"));
+//				console.log(ANSI_UTILS.getCodes("quote","account_type"));
 				QUOTEUTILS.setSelectMenu("manager",QUOTEUTILS.getUsers());
 				QUOTEUTILS.setSelectMenu("accountType",ANSI_UTILS.getCodes("quote","account_type"));
 				QUOTEUTILS.setSelectMenu("leadType",ANSI_UTILS.getCodes("quote","lead_type"));
@@ -69,7 +69,7 @@ $( document ).ready(function() {
 					$signedByData = ADDRESSPANEL.getContact($quoteData.signedByContactId);
 					$("input[name='signedBy']").val($signedByData.lastName + ", "+$signedByData.firstName + "(" +$signedByData.contactId+")");
 					
-						console.log("DivisionCode: "+ $quoteData.divisionId);
+//						console.log("DivisionCode: "+ $quoteData.divisionId);
 						$("select[name='division']").val($quoteData.divisionId);
 						$("select[name='division").selectmenu("refresh");
 						
@@ -115,10 +115,10 @@ $( document ).ready(function() {
 						}
 						//console.log($currentRow);
 						//addAJob($currentRow);
-						console.log("Index:"+$index);
+						console.log("Loading Job: "+$index);
 						$jobContacts = JOB_UTILS.panelLoadQuote($currentRow, $job.jobId, $index, $quoteData);
-						console.log("Job Contacts:");
-						console.log($jobContacts);
+//						console.log("Job Contacts:");
+//						console.log($jobContacts);
 						
 						if($index == 0){
 							$("input[name='jobSite_Con1id']").val($jobContacts['jobContactId']);
@@ -140,7 +140,7 @@ $( document ).ready(function() {
 						
 						
 						//$(".addressTable").remove();
-						console.log("#"+$currentRow+"_jobPanel_jobLink");
+//						console.log("#"+$currentRow+"_jobPanel_jobLink");
 						
 						//console.log(QUOTEUTILS.getModal($currentRow));
 						$currentRow++;
@@ -245,7 +245,12 @@ $( document ).ready(function() {
         		$outbound["jobSiteAddressId"]	=	$("input[name=jobSite_id]").val();
         		$outbound["billToAddressId"]	=	$("input[name=billTo_id]").val();
         		$outbound["templateId"]	=	0;
-		
+        		$outbound["jobContactId"] = $("input[name='jobSite_Con1id']").val();
+        		$outbound["siteContact"] = $("input[name='jobSite_Con2id']").val();
+        		$outbound["contractContactId"] = $("input[name='billTo_Con1id']").val();
+        		$outbound["billingContactId"] = $("input[name='billTo_Con2id']").val();
+        		
+
         		console.log("Save Outbound: ");
         		console.log($outbound);
 //				$aNames = {0:"jobSite",1:"billTo"};
@@ -264,7 +269,7 @@ $( document ).ready(function() {
 //				});
         		
         		$url = "quote/add";
-				console.log($outbound);
+//				console.log($outbound);
 				var jqxhr = $.ajax({
 					type: 'POST',
 					url: $url,
@@ -320,12 +325,16 @@ $( document ).ready(function() {
         		$outbound["jobSiteAddressId"]	=	$("input[name=jobSite_id]").val();
         		$outbound["billToAddressId"]	=	$("input[name=billTo_id]").val();
         		$outbound["templateId"]	=	0;
-		
+        		$outbound["jobContactId"] = $("input[name='jobSite_Con1id']").val();
+        		$outbound["siteContact"] = $("input[name='jobSite_Con2id']").val();
+        		$outbound["contractContactId"] = $("input[name='billTo_Con1id']").val();
+        		$outbound["billingContactId"] = $("input[name='billTo_Con2id']").val();
+        		
         		console.log("Update Outbound: ");
         		console.log($outbound);
 
         		$url = "quote/"+$globalQuoteId+"/"+$("input[name=quoteNumber]").val();
-				console.log($outbound);
+//				console.log($outbound);
 				var jqxhr = $.ajax({
 					type: 'POST',
 					url: $url,
@@ -419,7 +428,7 @@ $( document ).ready(function() {
 					success: function($data) {
 
 						$('#jobPanelHolder > tbody:last-child').append($data);
-						console.log($namespace);
+//						console.log($namespace);
 						var $jobDetail = [{invoiceStyle: null, activationDate: null, startDate: null, cancelDate: null, cancelReason: null}];		
 
 						var $quoteDetail = [{proposalDate: null}];
@@ -431,6 +440,7 @@ $( document ).ready(function() {
 						JOBPANEL.init($row+"_jobPanel", JOB_DATA.divisionList, "activateModal", $jobDetail);
 						JOBPROPOSAL.init($row+"_jobProposal", JOB_DATA.jobFrequencyList, $jobDetail);
 						JOBACTIVATION.init($row+"_jobActivation", JOB_DATA.buildingTypeList, $jobDetail);
+						$("#" + $row+"_jobActivation" + "_nbrFloors").spinner( "option", "disabled", false );
 						JOBDATES.init($row+"_jobDates", $quoteDetail, $jobDetail);
 						JOBSCHEDULE.init($row+"_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
 						JOBINVOICE.init($row+"_jobInvoice", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, $jobDetail);
@@ -480,7 +490,7 @@ $( document ).ready(function() {
 			},
 			setSelectMenu: function($selector,$data){
 				var $select = $("select[name='"+$selector+"']");
-				$select.selectmenu({ width : '175px', maxHeight: '400 !important', style: 'dropdown'});
+				//$select.selectmenu({ width : '175px', maxHeight: '400 !important', style: 'dropdown'});
 				//console.log($data);
 				$('option', $select).remove();
 				$select.append(new Option("",null));
@@ -488,7 +498,7 @@ $( document ).ready(function() {
 					$select.append(new Option($val.displayValue,$val.value));
 				});
 
-				$select.selectmenu();
+				$select.selectmenu({ width : '175px', maxHeight: '400 !important', style: 'dropdown'});
 			},
 			bindAndFormat:function(){
 				$.each($('input'), function () {

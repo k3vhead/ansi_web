@@ -34,7 +34,7 @@
 				<% if ( page.equals("QUOTE") ) { %>
 						<input type="text" name="jobId" id="<%= namespace %>_jobId" disabled="disabled"/>
 				<% } else { %>
-						<input type="text" name="jobId" id="<%= namespace %>_jobId" /> 						
+						<input type="text" name="jobId" id="<%= namespace %>_jobId" disabled="disabled"/> 						
 				<% } %>
 				
 				
