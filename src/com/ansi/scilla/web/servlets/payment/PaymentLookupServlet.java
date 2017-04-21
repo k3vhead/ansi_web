@@ -145,8 +145,8 @@ public class PaymentLookupServlet extends AbstractServlet {
 //				resultList.add(new PaymentLookupResponseItem(rs));
 //			}
 			List<PaymentSearchResult> searchResultList = null;
-			if ( amount != 1 ) {
-				searchResultList = new PaymentSearch().search(conn, term, start, amount);
+			if ( amount != -1 ) {
+				searchResultList = new PaymentSearch().search(conn, term, start, amount, colName, dir);
 			} else {
 				searchResultList = new PaymentSearch().search(conn, term);
 			}
