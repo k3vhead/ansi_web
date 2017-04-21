@@ -8,6 +8,7 @@ public enum ResponseOption {
 	JOB_STATUS,
 	TICKET_STATUS,
 	COUNTRY,
+	PAYMENT_METHOD,
 	PERMISSION,
 	ACCOUNT_TYPE;
 }

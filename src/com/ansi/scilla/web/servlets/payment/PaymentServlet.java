@@ -1,11 +1,11 @@
 package com.ansi.scilla.web.servlets.payment;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.sql.Connection;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.ansi.scilla.common.db.Payment;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
@@ -109,8 +108,9 @@ public class PaymentServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
 			String jsonString = super.makeJsonString(request);
+			System.out.println(jsonString);
 			PaymentRequest paymentRequest = (PaymentRequest)AppUtils.json2object(jsonString, PaymentRequest.class);
-			url = new AnsiURL(request, jsonString, new String[] {PaymentRequestType.ADD.toString()});
+			url = new AnsiURL(request, "payment", new String[] {PaymentRequestType.ADD.name().toLowerCase()});
 			SessionData sessionData = AppUtils.validateSession(request, Permission.PAYMENT, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 			SessionUser sessionUser = sessionData.getUser();
 
@@ -206,11 +206,7 @@ public class PaymentServlet extends AbstractServlet {
 
 	private HashMap<String, String> validateValues(PaymentRequest paymentRequest) {
 		HashMap<String, String> errors = new HashMap<String, String>();
-		Date today = new Date();
-		// amount must be a positive number
-		if ( paymentRequest.getAmount().compareTo(new BigDecimal(0.0)) < 1 ) {
-			errors.put(PaymentRequest.AMOUNT, "Amount must be more than $0.00");
-		}
+		Calendar today = Calendar.getInstance(new Locale("America/Chicago"));
 	
 		// if we have a check date or a check number, we need the other one also
 		if ( paymentRequest.getCheckDate() != null ) {
@@ -221,7 +217,7 @@ public class PaymentServlet extends AbstractServlet {
 			// no post-dated checks
 			if ( paymentRequest.getPaymentDate().before(paymentRequest.getCheckDate())) {
 				errors.put(PaymentRequest.CHECK_DATE, "Payment Date before check date");
-			} else if ( paymentRequest.getPaymentDate().before(today)) {
+			} else if ( ! paymentRequest.getPaymentDate().before(today.getTime())) {
 				errors.put(PaymentRequest.CHECK_DATE, "Check Date must be on or before today");
 			}
 		} else {

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
+import com.ansi.scilla.common.account.AccountType;
 import com.ansi.scilla.common.address.Country;
 import com.ansi.scilla.common.invoice.InvoiceGrouping;
 import com.ansi.scilla.common.invoice.InvoiceStyle;
@@ -12,7 +13,7 @@ import com.ansi.scilla.common.invoice.InvoiceTerm;
 import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.jobticket.JobStatus;
 import com.ansi.scilla.common.jobticket.TicketStatus;
-import com.ansi.scilla.common.account.AccountType;
+import com.ansi.scilla.common.payment.PaymentMethod;
 import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.response.MessageResponse;
 
@@ -27,6 +28,7 @@ public class OptionsListResponse extends MessageResponse {
 	private List<InvoiceTermOption> invoiceTerm;
 	private List<InvoiceStyleOption> invoiceStyle;
 	private List<AccountTypeOption> accountType;
+	private List<PaymentMethodOption> paymentMethod;
 
 	public OptionsListResponse(List<ResponseOption> options) throws ClassNotFoundException, Exception {
 		if ( options.contains(ResponseOption.JOB_FREQUENCY)) {
@@ -56,7 +58,9 @@ public class OptionsListResponse extends MessageResponse {
 		if ( options.contains(ResponseOption.ACCOUNT_TYPE)) {
 			makeAccountTypeList();
 		}
-
+		if ( options.contains(ResponseOption.PAYMENT_METHOD)) {
+			makePaymentMethodList();
+		}
 	}
 
 	private void makeInvoiceStyleList() {
@@ -70,6 +74,13 @@ public class OptionsListResponse extends MessageResponse {
 		this.accountType = new ArrayList<AccountTypeOption>();
 		for (AccountType j : EnumSet.allOf(AccountType.class)) {
 			this.accountType.add(new AccountTypeOption(j));
+		}
+	}
+
+	private void makePaymentMethodList() {
+		this.paymentMethod = new ArrayList<PaymentMethodOption>();
+		for (PaymentMethod j : EnumSet.allOf(PaymentMethod.class)) {
+			this.paymentMethod.add(new PaymentMethodOption(j));
 		}
 	}
 
@@ -191,9 +202,18 @@ public class OptionsListResponse extends MessageResponse {
 		return invoiceStyle;
 	}
 
+	public List<PaymentMethodOption> getPaymentMethod() {
+		return paymentMethod;
+	}
+
+	public void setPaymentMethod(List<PaymentMethodOption> paymentMethod) {
+		this.paymentMethod = paymentMethod;
+	}
+
 	public void setInvoiceStyle(List<InvoiceStyleOption> invoiceStyle) {
 		this.invoiceStyle = invoiceStyle;
 	}
+
 
 	
 }

@@ -59,11 +59,27 @@
         		font-weight:bold;
 				text-align:right;
 			}
+			#applyButton {
+				display:none;
+			}
         </style>
         
         <script type="text/javascript">        
         $( document ).ready(function() {
+        	
+        	// see if we have a URL parm for payment ID
         	var $paymentId = '<c:out value="${ANSI_PAYMENT_ID}" />';
+        	// set defaut modal action
+        	var $paymentAction = "new";
+        	
+        	// populate payment method list
+        	var $optionData = ANSI_UTILS.getOptions("PAYMENT_METHOD");
+        	$('option', $("#paymentMethod")).remove();
+        	$("#paymentMethod").append(new Option("",""));
+			$.each($optionData.paymentMethod, function(index, val) {
+				$("#paymentMethod").append(new Option(val.display, val.abbrev));
+			});
+        	
 
 			// set up the activate job modal window
 			$( "#paymentModal" ).dialog({
@@ -72,11 +88,15 @@
 				height: 400,
 				width: 500,
 				modal: true,
+				closeOnEscape:false,
+				open: function(event, ui) {
+					$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+				},
 				buttons: [
 					{
 						id: "closePmtModal",
 						click: function() {
-							$("#paymentModal").dialog( "close" );
+							location.href="paymentLookup.html";
 						}
 					},{
 						id: "goPayment",
@@ -84,11 +104,11 @@
 							goPayment();
 						}
 					}
-				],
-				close: function() {
-					$("#paymentModal").dialog( "close" );
-	      	        //allFields.removeClass( "ui-state-error" );
-				}
+				]
+				//,close: function() {
+				//	$("#paymentModal").dialog( "close" );
+	      	    //    //allFields.removeClass( "ui-state-error" );
+				//}
 			});
 			
 			
@@ -100,8 +120,10 @@
         	
         	if ( $paymentId == '' ) {
         		paymentModal();
+        		$paymentAction = "new";
+        		$("#modalNew").click();
         	} else {
-        		$("#modalSearch").data("action","search");
+        		$paymentAction = "search";
         		$("#pmtSearchId").val($paymentId);
         		goPayment();
         	}
@@ -112,6 +134,7 @@
         	});
 
         	$("#modalSearch").click(function($event) {
+        		$paymentAction = "search";
         		$("#newPaymentDate").datepicker("hide");
         		$("#modalSearchBox").css('background-color','#CCCCCC');
         		$("#modalNewBox").css('background-color','#FFFFFF');
@@ -122,24 +145,24 @@
         	})
         	
         	$("#modalNew").click(function($event) {
+        		$paymentAction = "new";
         		$("#modalSearchBox").css('background-color','#FFFFFF');
         		$("#modalNewBox").css('background-color','#CCCCCC');
         		$(".searchPmtRow").hide();
         		$(".newPmtRow").show();
-        		$("#modalSearch").data("action","new");
         		$("#newPaymentDate").focus();
         	})
         	
         	function goPayment() {
-        		var $action = $("#modalSearch").data("action");
-        		if ( $action == "search") {
+        		console.debug("Action: " + $paymentAction);
+        		if ( $paymentAction == "search") {
         			getPayment();
-        		} else if ($action == "new"){
+        		} else if ($paymentAction == "new"){
         			postPayment();
         		} else {
         			$("#globalMsg").html("System error. Reload and try again");
         		}
-        		$("#invocieNbr").focus();
+        		$("#invoiceNbr").focus();
         	}
         	
         	function getPayment() {
@@ -224,7 +247,6 @@
 	   				data: null,
 	   				statusCode: {
 		   				200: function($data) {
-		   					console.debug($data);
 		   					$(".billToField").html("");
 		   					var $address = $data.data.address;
 		   					$("#billToAddress1").html($address.address1);
@@ -256,13 +278,68 @@
 				$("#paymentModal .err").html("");
 				$("#paymentModal input").val("");
         		$('#goPayment').button('option', 'label', 'Go');
-        		$('#closePmtModal').button('option', 'label', 'Close');
+        		$('#closePmtModal').button('option', 'label', 'Exit');
         	    $('#paymentModal').dialog( "open" );
 			}
 
         	
         	function postPayment() {
-        		console.debug("Post Payment");	
+        		console.debug("Post Payment");
+        		var $outbound = {}
+        		$.each($('.newPmtRow input'), function(){
+        			$outbound[this.id]=this.value
+        		});
+        		$.each($('.newPmtRow select'), function(){
+        			$outbound[this.id]=this.value
+        		});
+        		console.debug($outbound);
+        		
+				var jqxhr = $.ajax({
+	   				type: 'POST',
+	   				url: 'payment/add',
+	   				data: JSON.stringify($outbound),
+	   				statusCode: {
+		   				200: function($data) {
+		   					if ( $data.responseHeader.responseCode=='EDIT_FAILURE') {
+		   						doPaymentEditFailure($data.data);
+		   					} else if ( $data.responseHeader.responseCode == 'SUCCESS') {
+		   						console.debug("Do something with add results");
+		   					} else {
+		   						$("#globalMsg").html($data.responseHeader.responseMessage);			   						
+		   					}
+		   				},
+	   					403: function($data) {
+		   					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+		   				},
+		   				404: function($data) {
+		   					$("#pmtSearchIdErr").html("Invalid Payment Id").show().fadeOut(10000);
+		   				},
+		   				405: function($data) {
+		   					$("#globalMsg").html("System Error: Contact Support").fadeIn(4000);
+		   				},
+		   				500: function($data) {
+	        	    		$("#globalMsg").html("System Error: Contact Support").fadeIn(4000);
+	        	    	} 
+		   			},
+		   			dataType: 'json'
+		   		});        	
+        	}
+        	
+        	
+        	
+        	function doPaymentEditFailure($data) {
+        		$.each($data.webMessages, function(field, errList) {
+        			var $selector = "#" + field + "Err";
+        			if ( errList.length == 1 ) {
+        				$($selector).html(errList[0]).show().fadeOut(8000);
+        			} else {
+        				var $errString = "";
+        				$.each(errList, function(index, err) {
+        					$errString = $errString + "<li>" + err + "</li>";
+        				});
+        				$($selector).html("<ul>" + errString + "</ul>").show().fadeOut(8000);
+        			}
+        		});
         	}
         	// ***********************************************************************
          
@@ -331,10 +408,10 @@
 				            	if(row.totalBalance != null){return (row.totalBalance+"");}
 				            } },
 				            { title: "Pay Inv", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
-				            	if(row.totalVolPaid != null){return (row.totalVolPaid+"");}				            	
+			            		return '<input type="text" data-ticketId="'+row.ticketId+'" class="ticketPayInv ticketPmt" style="width:80px;" />';
 				            } },
 				            { title: "Pay Tax", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
-				            	if(row.totalPayTax != null){return (row.totalPayTax+"");}
+			            		return '<input type="text" data-ticketId="'+row.ticketId+'" class="ticketPayTax ticketPmt" style="width:80px;" />';
 				            } }
 				            <%-- { title: "Write Off", "defaultContent": "<i></i>", data: function ( row, type, set ) {
 				            	//if(row.invoiceTotal != null){return (row.invoiceTotal+"");}
@@ -370,19 +447,19 @@
 					$('#ticketTable thead').append(r);
 	            }
             
-				function doFunctionBinding() {
-					$( ".action-link" ).on( "click", function($clickevent) {
-			        	var $divisionId = $clickevent.currentTarget.attributes['data-division'].value;
-			        	var $action = $clickevent.currentTarget.attributes['data-action'].value;
-			        	if ( $action=='list') {
-			        		location.href="invoiceLookup.html?id=" + $divisionId;
-			        	} else if ( $action=='print') {
-			        		paymentModal($divisionId);
-			        	} else {
-			        		$("#globalMessage").html("Invalid action. Reload the page and start again");
-			        	}
-					});
-				}
+				//function doFunctionBinding() {
+				//	$( ".action-link" ).on( "click", function($clickevent) {
+			    //   	var $divisionId = $clickevent.currentTarget.attributes['data-division'].value;
+			    //    	var $action = $clickevent.currentTarget.attributes['data-action'].value;
+			    //    	if ( $action=='list') {
+			    //    		location.href="invoiceLookup.html?id=" + $divisionId;
+			    //    	} else if ( $action=='print') {
+			    //    		paymentModal($divisionId);
+			    //    	} else {
+			    //    		$("#globalMessage").html("Invalid action. Reload the page and start again");
+			    //    	}
+				//	});
+				//}
 
 				
 				
@@ -574,6 +651,15 @@
 	            </tr>
 	        </tfoot>
 	    </table>
+	    
+	    
+    	<div style="clear:both; width:1300px; text-align:right;  margin-top:20px;">
+    		<input type="button" value="Clear" id="clearButton" />
+    		<input type="button" value="Calculate Totals" id="calcButton" />
+    		<input type="button" value="Apply Payments" id="applyButton" />
+    		<input type="button" value="Exit" id="exitButton" />
+    	</div>
+    
     
     
     	<div id="paymentModal">
@@ -607,28 +693,33 @@
 					</tr>
 					<tr class="newPmtRow">
 						<td class="formHdr">Date Paid: </td>
-						<td><input type="text" class="dateField" id="newPaymentDate"/></td>
-						<td><span class="err" id="newPaymentDateErr"></span></td>
+						<td><input type="text" class="dateField newPaymentField" id="paymentDate"/></td>
+						<td><span class="err" id="paymentDateErr"></span></td>
+					</tr>
+					<tr class="newPmtRow">
+						<td class="formHdr">Payment Method: </td>
+						<td><select id="paymentMethod" class="newPaymentField"></select></td>
+						<td><span class="err" id="paymentMethodErr"></span></td>
 					</tr>
 					<tr class="newPmtRow">
 						<td class="formHdr">Check Nbr: </td>
-						<td><input type="text" id="newCheckNbr"/></td>
-						<td><span class="err" id="newCheckNbrErr"></span></td>
+						<td><input type="text" id="checkNumber" class="newPaymentField" /></td>
+						<td><span class="err" id="checkNumberErr"></span></td>
 					</tr>
 					<tr class="newPmtRow">
 						<td class="formHdr">Check Date: </td>
-						<td><input type="text" class="dateField" id="newCheckDate"/></td>
-						<td><span class="err" id="newCheckDateErr"></span></td>
+						<td><input type="text" class="dateField newPaymentField" id="checkDate"/></td>
+						<td><span class="err" id="checkDateErr"></span></td>
 					</tr>
 					<tr class="newPmtRow">
 						<td class="formHdr">Amount: </td>
-						<td><input type="text" id="newPaymentAmount"/></td>
-						<td><span class="err" id="newPaymentAmountErr"></span></td>
+						<td><input type="text" id="paymentAmount" class="newPaymentField"/></td>
+						<td><span class="err" id="paymentAmountErr"></span></td>
 					</tr>
 					<tr class="newPmtRow">
 						<td class="formHdr">Notes: </td>
-						<td><input type="text" id="newPaymentNote"/></td>
-						<td><span class="err" id="newPaymentNoteErr"></span></td>
+						<td><input type="text" id="paymentNote" class="newPaymentField" /></td>
+						<td><span class="err" id="paymentNoteErr"></span></td>
 					</tr>
 				</table>
 			</form>

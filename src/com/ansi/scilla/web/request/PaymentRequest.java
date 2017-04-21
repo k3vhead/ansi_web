@@ -14,7 +14,7 @@ public class PaymentRequest extends AbstractRequest {
 
 	private static final long serialVersionUID = 1L;
 	
-	public static final String AMOUNT = "amount";
+	public static final String AMOUNT = "paymentAmount";
 	public static final String PAYMENT_ID = "paymentId";
 	public static final String TYPE = "type";
 	public static final String PAYMENT_DATE = "paymentDate";
@@ -23,15 +23,17 @@ public class PaymentRequest extends AbstractRequest {
 	public static final String CHECK_DATE = "checkDate";
 	public static final String FEES = "fees";
 	public static final String EXCESS_PAYMENT = "excessPayment";
+	public static final String PAYMENT_METHOD = "paymentMethod";
 	
 	
-	private BigDecimal amount;
+	private BigDecimal paymentAmount;
 	private Integer paymentId;
 	private String type;
 	private Date paymentDate;
 	private String paymentNote;
 	private String checkNumber;
 	private Date checkDate;
+	private String paymentMethod;
 	
 	private BigDecimal fees;
 	private BigDecimal excessPayment;
@@ -43,15 +45,17 @@ public class PaymentRequest extends AbstractRequest {
 		super();
 	}
 		
-	@JsonSerialize(using=AnsiCurrencyFormatter.class)
-	public void setAmount(BigDecimal amount) {
-		this.amount = amount;
-	}
 	@RequiredForAdd
 	@RequiredForUpdate
-	public BigDecimal getAmount() {
-		return this.amount;
+	public BigDecimal getPaymentAmount() {
+		return paymentAmount;
 	}
+
+	@JsonSerialize(using=AnsiCurrencyFormatter.class)
+	public void setPaymentAmount(BigDecimal paymentAmount) {
+		this.paymentAmount = paymentAmount;
+	}
+
 
 	public void setPaymentId(Integer paymentId) {
 		this.paymentId = paymentId;
@@ -84,10 +88,11 @@ public class PaymentRequest extends AbstractRequest {
 	public String getPaymentNote() {
 		return this.paymentNote;
 	}
-
 	public void setCheckNumber(String checkNumber) {
 		this.checkNumber = checkNumber;
 	}
+	@RequiredForAdd
+	@RequiredForUpdate
 	public String getCheckNumber() {
 		return this.checkNumber;
 	}
@@ -96,6 +101,8 @@ public class PaymentRequest extends AbstractRequest {
 	public void setCheckDate(Date checkDate) {
 		this.checkDate = checkDate;
 	}
+	@RequiredForAdd
+	@RequiredForUpdate
 	public Date getCheckDate() {
 		return this.checkDate;
 	}
@@ -121,6 +128,15 @@ public class PaymentRequest extends AbstractRequest {
 	}
 	public List<PayTicketRequestItem> getPayTicketList() {
 		return this.payTicketList;
+	}
+	@RequiredForAdd
+	@RequiredForUpdate
+	public String getPaymentMethod() {
+		return paymentMethod;
+	}
+
+	public void setPaymentMethod(String paymentMethod) {
+		this.paymentMethod = paymentMethod;
 	}
 
 
