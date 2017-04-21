@@ -71,6 +71,8 @@
         	var $paymentId = '<c:out value="${ANSI_PAYMENT_ID}" />';
         	// set defaut modal action
         	var $paymentAction = "new";
+        	// set up a variable to hold unapplied amount in a format we can use
+        	var $unappliedAmount = 0;
         	
         	// populate payment method list
         	var $optionData = ANSI_UTILS.getOptions("PAYMENT_METHOD");
@@ -154,7 +156,6 @@
         	})
         	
         	function goPayment() {
-        		console.debug("Action: " + $paymentAction);
         		if ( $paymentAction == "search") {
         			getPayment();
         		} else if ($paymentAction == "new"){
@@ -195,6 +196,8 @@
         	
         	
         	function populatePaymentSummary($paymentData) {
+        		$("#unappliedAmount").html($paymentData.available);
+        		$unappliedAmount = $paymentData.available.replace("\$","").replace(",","");
         		$.each($paymentData, function ($key, $value) {
 					var $selector = "#paymentSummary ." + $key;
 					if ( $value == null ) {
@@ -203,6 +206,7 @@
 						$($selector).html($value);
 					}
 				});
+        		
         	}
         	
         	
@@ -212,20 +216,21 @@
                 minLength: 2,
                 appendTo: "#someInvoice",
                 select: function( event, ui ) {
-					//alert( "Selected: " + ui.item.id + " aka " + ui.item.label + " or " + ui.item.value );
 					$("#invoiceNbr").val(ui.item.id);
 					var $ticketData = populateTicketData(ui.item.id);
                 }
           	}).data('ui-autocomplete');
 			$invoiceComplete._renderMenu = function( ul, items ) {
-              	  var that = this;
-            	  $.each( items, function( index, item ) {
-            	    that._renderItemData( ul, item );
-            	  });
-            	  console.debug("Items: " + items.length);
-            	  // this should be where we figure out that we only have 1 matching item
-            	  // and do some populating magic. But it doesn't appear to be working
-            	}
+				var that = this;
+				$.each( items, function( index, item ) {
+					that._renderItemData( ul, item );
+				});
+				if ( items.length == 1 ) {
+					$("#invoiceNbr").val(items[0].id);
+					$("#invoiceNbr").autocomplete("close");
+					var $ticketData = populateTicketData(items[0].id);
+				}
+			}
             
             
         	$("#pmtSearchId").autocomplete({
@@ -256,6 +261,9 @@
 	   						$("#billToState").html($address.state);
 	   						$("#billToZip").html($address.zip);
 		   					populateDataTable($data.data);
+		   					$("#toPay").html("$0.00");
+		   					$("#feeAmount").val("0.00");
+		   					$("#excessCash").val("0.00");		   					
 		   				},
 	   					403: function($data) {
 		   					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
@@ -304,20 +312,27 @@
 		   						doPaymentEditFailure($data.data);
 		   					} else if ( $data.responseHeader.responseCode == 'SUCCESS') {
 		   						console.debug("Do something with add results");
+		   						populatePaymentSummary($data.data.paymentTotals);
+		   						$(".newPaymentField").val("");
+		   						$("#paymentModal").dialog("close");
 		   					} else {
-		   						$("#globalMsg").html($data.responseHeader.responseMessage);			   						
+		   						$("#globalMsg").html($data.responseHeader.responseMessage);
+		   						$("#paymentModal").dialog("close");
 		   					}
 		   				},
 	   					403: function($data) {
+	   						$("#paymentModal").dialog("close");
 		   					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
 		   				},
-		   				404: function($data) {
+		   				404: function($data) {		   					
 		   					$("#pmtSearchIdErr").html("Invalid Payment Id").show().fadeOut(10000);
 		   				},
 		   				405: function($data) {
+		   					$("#paymentModal").dialog("close");
 		   					$("#globalMsg").html("System Error: Contact Support").fadeIn(4000);
 		   				},
 		   				500: function($data) {
+		   					$("#paymentModal").dialog("close");
 	        	    		$("#globalMsg").html("System Error: Contact Support").fadeIn(4000);
 	        	    	} 
 		   			},
@@ -341,7 +356,6 @@
         			}
         		});
         	}
-        	// ***********************************************************************
          
 			$('#ticketTable').dataTable().fnDestroy();
 			
@@ -408,7 +422,7 @@
 				            	if(row.totalBalance != null){return (row.totalBalance+"");}
 				            } },
 				            { title: "Pay Inv", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
-			            		return '<input type="text" data-ticketId="'+row.ticketId+'" class="ticketPayInv ticketPmt" style="width:80px;" />';
+			            		return '<input type="text" data-ticketId="'+row.ticketId+'" data-balance="'+ row.totalBalance.replace("\$","").replace(",","") +'" class="ticketPayInv ticketPmt" style="width:80px;" />';
 				            } },
 				            { title: "Pay Tax", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
 			            		return '<input type="text" data-ticketId="'+row.ticketId+'" class="ticketPayTax ticketPmt" style="width:80px;" />';
@@ -431,10 +445,10 @@
         			
         	
 	            function init(){
-	            //	$.each($('input'), function () {
-				//	        $(this).css("height","20px");
-				//	        $(this).css("max-height", "20px");
-				//	    });
+	            	$.each($('input'), function () {
+				        $(this).css("height","20px");
+				        $(this).css("max-height", "20px");
+				    });
 						
 	            	//populateDataTable();
 	            };
@@ -447,68 +461,51 @@
 					$('#ticketTable thead').append(r);
 	            }
             
-				//function doFunctionBinding() {
-				//	$( ".action-link" ).on( "click", function($clickevent) {
-			    //   	var $divisionId = $clickevent.currentTarget.attributes['data-division'].value;
-			    //    	var $action = $clickevent.currentTarget.attributes['data-action'].value;
-			    //    	if ( $action=='list') {
-			    //    		location.href="invoiceLookup.html?id=" + $divisionId;
-			    //    	} else if ( $action=='print') {
-			    //    		paymentModal($divisionId);
-			    //    	} else {
-			    //    		$("#globalMessage").html("Invalid action. Reload the page and start again");
-			    //    	}
-				//	});
-				//}
-
+	            
+				function calcTotalPayInv() {
+					var $totalToPay = 0.00
+					$.each( $(".ticketPayInv"), function() {
+						if ( $(this).val() != null && $(this).val() != "" ) {
+							$totalToPay = $totalToPay + parseFloat($(this).val());
+						}						
+					});
+					console.debug($totalToPay);
+					return $totalToPay
+				}
+				function calcTotalPayTax() {
+					var $totalTax = 0.00;
+					$.each( $(".ticketPayTax"), function() {
+						if ( $(this).val() != null && $(this).val() != "" ) {
+							$totalTax = $totalTax + parseFloat($(this).val());
+						}						
+					});
+					console.debug($totalTax);
+					return $totalTax;
+				}
+				function calcTotalPay() {
+					return calcTotalPayInv() + calcTotalPayTax();
+				}
 				
-				
-				
-				
-
-		
-				
-				function printInvoices() {
-        			var $divisionId = $("#goPrint").data('divisionId');
-					var $printDate = $("#printDate").val();
-					var $dueDate = $("#dueDate").val();
-					
-		        	var $outbound = {'divisionId':$divisionId,'printDate':$printDate,'dueDate':$dueDate};
-		            var jqxhr = $.ajax({
-		    			type: 'POST',
-		    			url: 'invoicePrint/',
-		    			data: JSON.stringify($outbound),
-		    			statusCode: {
-			    			200: function($data) {
-			    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-			    					$.each($data.data.webMessages, function (key, value) {
-			    						var $selectorName = "#" + key + "Err";
-			    						$($selectorName).show();
-			    						$($selectorName).html(value[0]).fadeOut(4000);
-			    					});
-			    				} else {
-			    					$("#paymentModal").dialog("close");
-			    					var a = document.createElement('a');
-			    					var linkText = document.createTextNode("Download");
-			    					a.appendChild(linkText);
-			    					a.title = "Download";
-			    					a.href = $data.data.invoiceFile;
-			    					a.target = "_new";   // open in a new window
-			    					document.body.appendChild(a);
-			    					a.click();
-			    				}
-			    			},
-		    				403: function($data) {
-		    					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-		    				},
-		    				500: function($data) {
-		         	    		$("#globalMsg").html("System Error: Contact Support").fadeIn(10);
-		         	    	} 
-		    			},
-		    			dataType: 'json'
-		    		});        	
-		        }
+				function doFunctionBinding() {
+					$( ".ticketPayInv").on("focus", function() {
+						console.debug($(this));
+						console.debug("Unapplied: " + $unappliedAmount);
+						if ( $(this).val() == null || $(this).val() == "" ) {
+							$balance = parseFloat($(this).data("balance"));
+							$totalPay = calcTotalPay();
+							$available = $unappliedAmount - $totalPay;
+							$toPay = Math.min($balance, $available)
+							$(this).val($toPay);
+						} else {
+							console.debug("NOt setting value");
+						}
+					});
+					$( ".ticketPayInv").on("change", function() {
+						console.debug("Doing changes stuff");
+					});
+				}
         
+
 			});
 
 		</script>

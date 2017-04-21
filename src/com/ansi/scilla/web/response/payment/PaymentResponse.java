@@ -1,5 +1,6 @@
 package com.ansi.scilla.web.response.payment;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,22 @@ public class PaymentResponse extends MessageResponse {
 	
 	public PaymentResponse(Connection conn, Integer paymentId) throws RecordNotFoundException, Exception{
 		PaymentTotals paymentTotals = PaymentTotals.select(conn, paymentId);
+		System.out.println("PaymentResponse 30");
+		System.out.println(paymentTotals);
+		if ( paymentTotals.getAppliedAmount() == null ) {
+			paymentTotals.setAppliedAmount(BigDecimal.ZERO);
+		}
+		if ( paymentTotals.getAppliedTaxAmt() == null ) {
+			paymentTotals.setAppliedTaxAmt(BigDecimal.ZERO);
+		}
+		if ( paymentTotals.getAppliedTotal() == null ) {
+			paymentTotals.setAppliedTotal(BigDecimal.ZERO);
+		}
+		if ( paymentTotals.getAvailable() == null ) {
+			paymentTotals.setAvailable(paymentTotals.getPaymentAmount());
+		}
+		System.out.println("PaymentResponse 42");
+		System.out.println(paymentTotals);
 		this.paymentTotals = new PaymentTotalsResponseItem(paymentTotals);
 
 	}

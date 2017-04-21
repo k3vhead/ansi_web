@@ -1,6 +1,7 @@
 package com.ansi.scilla.web.servlets.payment;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -13,7 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.ansi.scilla.common.db.Payment;
 import com.ansi.scilla.common.db.PermissionLevel;
+import com.ansi.scilla.common.payment.PaymentType;
 import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.Permission;
@@ -174,19 +177,26 @@ public class PaymentServlet extends AbstractServlet {
 	}
 
 	private void doAdd(Connection conn, PaymentRequest paymentRequest, HttpServletResponse response, SessionUser sessionUser) throws Exception {
-		throw new RuntimeException("This shouldn't work yet because of payment status/type/method questions");
-		/*
 		Payment payment = new Payment();
 		payment.setAddedBy(sessionUser.getUserId());
-		payment.setAmount(paymentRequest.getAmount());
+		payment.setAmount(paymentRequest.getPaymentAmount());
 		payment.setCheckDate(paymentRequest.getCheckDate());
 		payment.setCheckNumber(paymentRequest.getCheckNumber());
-//		payment.setInvoiceId(invoiceId);
 		payment.setPaymentDate(paymentRequest.getPaymentDate());
 		payment.setPaymentNote(paymentRequest.getPaymentNote());
-//		payment.setStatus(status);
-//		payment.setType(type);
+		payment.setStatus(0);
+		if ( paymentRequest.getPaymentAmount().compareTo(BigDecimal.ZERO) > 0 ) {
+			payment.setType(PaymentType.PAYMENT.name());
+		} else if ( paymentRequest.getPaymentAmount().compareTo(BigDecimal.ZERO) < 0 ) {
+			payment.setType(PaymentType.REFUND.name());
+		} else { 
+			// Payment amount is 0
+			payment.setType(PaymentType.MOVE.name());
+		}
+		payment.setPaymentMethod(paymentRequest.getPaymentMethod());
 		payment.setUpdatedBy(sessionUser.getUserId());
+		
+		System.out.println(payment);
 
 		Integer paymentId = payment.insertWithKey(conn);
 		payment.setPaymentId(paymentId);
@@ -197,7 +207,6 @@ public class PaymentServlet extends AbstractServlet {
 		PaymentResponse data = new PaymentResponse(conn, paymentId);
 		data.setWebMessages(webMessages);
 		super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
-		*/
 	}
 
 	private void processUpdate(Connection conn, Integer id, PaymentRequest paymentRequest, SessionUser sessionUser, HttpServletResponse response) {
