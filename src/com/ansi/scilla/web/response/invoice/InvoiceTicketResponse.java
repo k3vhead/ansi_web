@@ -10,10 +10,12 @@ import java.util.List;
 
 import com.ansi.scilla.common.address.AddressUtils;
 import com.ansi.scilla.common.db.Address;
+import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
 import com.ansi.scilla.common.queries.TicketPaymentTotals;
 import com.ansi.scilla.web.response.MessageResponse;
 import com.ansi.scilla.web.response.address.AddressResponseRecord;
 import com.ansi.scilla.web.response.payment.TicketPaymentTotalItem;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class InvoiceTicketResponse extends MessageResponse {
@@ -59,39 +61,43 @@ public class InvoiceTicketResponse extends MessageResponse {
 	public void setTicketList(List<TicketPaymentTotalItem> ticketList) {
 		this.ticketList = ticketList;
 	}
-
+	@JsonSerialize(using=AnsiCurrencyFormatter.class)
 	public BigDecimal getTotalBalance() {
 		return totalBalance;
 	}
 	public void setTotalBalance(BigDecimal totalBalance) {
 		this.totalBalance = totalBalance;
 	}
+	@JsonSerialize(using=AnsiCurrencyFormatter.class)
 	public BigDecimal getTotalPayInvoice() {
 		return totalPayInvoice;
 	}
 	public void setTotalPayInvoice(BigDecimal totalPayInvoice) {
 		this.totalPayInvoice = totalPayInvoice;
 	}
+	@JsonSerialize(using=AnsiCurrencyFormatter.class)
 	public BigDecimal getTotalPayTax() {
 		return totalPayTax;
 	}
 	public void setTotalPayTax(BigDecimal totalPayTax) {
 		this.totalPayTax = totalPayTax;
 	}
+	@JsonSerialize(using=AnsiCurrencyFormatter.class)
 	public BigDecimal getTotalWriteOff() {
 		return totalWriteOff;
 	}
 	public void setTotalWriteOff(BigDecimal totalWriteOff) {
 		this.totalWriteOff = totalWriteOff;
 	}
+	
 	private void makeTicketList(List<TicketPaymentTotals> totalsList) throws IllegalAccessException, InvocationTargetException {
 		this.ticketList = new ArrayList<TicketPaymentTotalItem>();
 		for ( TicketPaymentTotals ticket : totalsList ) {
 			TicketPaymentTotalItem total = new TicketPaymentTotalItem(ticket);
 			this.ticketList.add(total);
 			this.totalBalance = this.totalBalance.add(total.getTotalBalance());
-			this.totalPayInvoice = this.totalPayInvoice.add(total.getTotalVolPaid());
-			this.totalPayTax = this.totalPayTax.add(total.getTotalTaxPaid());
+//			this.totalPayInvoice = this.totalPayInvoice.add(total.getTotalVolPaid());
+//			this.totalPayTax = this.totalPayTax.add(total.getTotalTaxPaid());
 //			this.totalWriteOff = this.totalWriteOff.add(total.getWriteOff());   this is for version 2
 		}
 		Collections.sort(this.ticketList, new Comparator<TicketPaymentTotalItem>() {

@@ -41,8 +41,6 @@ public class PaymentResponse extends MessageResponse {
 		if ( paymentTotals.getAvailable() == null ) {
 			paymentTotals.setAvailable(paymentTotals.getPaymentAmount());
 		}
-		System.out.println("PaymentResponse 42");
-		System.out.println(paymentTotals);
 		this.paymentTotals = new PaymentTotalsResponseItem(paymentTotals);
 
 	}

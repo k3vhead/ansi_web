@@ -155,6 +155,38 @@
         		$("#newPaymentDate").focus();
         	})
         	
+        	
+        	$("#exitButton").click(function($event) {
+        		location.href="paymentLookup.html";
+        	});
+        	
+        	$("#clearButton").click(function($event) {
+        		$(".ticketPmt").val("");
+        		$(".totalField").val("$0.00");
+        		$("#feeAmount").val("0.00");
+        		$("#excessCash").val("0.00");
+        	});
+        	
+        	$("#feeAmount").change(function($event) {
+				$fixedValue = parseFloat($(this).val()).toFixed(2);
+				$(this).val($fixedValue);
+				calculateAllTotals();
+        	});
+        	
+        	$("#feeAmount").focus(function($event) {
+				$(this).select();
+        	});
+        	
+        	$("#excessCash").change(function($event) {
+				$fixedValue = parseFloat($(this).val()).toFixed(2);
+				$(this).val($fixedValue);
+				calculateAllTotals();
+        	});
+        	
+        	$("#excessCash").focus(function($event) {
+				$(this).select();
+        	});
+        	
         	function goPayment() {
         		if ( $paymentAction == "search") {
         			getPayment();
@@ -292,7 +324,6 @@
 
         	
         	function postPayment() {
-        		console.debug("Post Payment");
         		var $outbound = {}
         		$.each($('.newPmtRow input'), function(){
         			$outbound[this.id]=this.value
@@ -300,7 +331,6 @@
         		$.each($('.newPmtRow select'), function(){
         			$outbound[this.id]=this.value
         		});
-        		console.debug($outbound);
         		
 				var jqxhr = $.ajax({
 	   				type: 'POST',
@@ -311,7 +341,6 @@
 		   					if ( $data.responseHeader.responseCode=='EDIT_FAILURE') {
 		   						doPaymentEditFailure($data.data);
 		   					} else if ( $data.responseHeader.responseCode == 'SUCCESS') {
-		   						console.debug("Do something with add results");
 		   						populatePaymentSummary($data.data.paymentTotals);
 		   						$(".newPaymentField").val("");
 		   						$("#paymentModal").dialog("close");
@@ -368,6 +397,11 @@
 				$("#totalPayInvoice").html($data.totalPayInvoice);
 				$("#totalPayTax").html($data.totalPayTax);
 				
+				var $tabIndex = 0;
+				$("#feeAmount").attr("tabindex", 2*$data.ticketList.length + 1);
+				$("#excessCash").attr("tabindex", 2*$data.ticketList.length + 2);
+				$("#calcButton").attr("tabindex", 2*$data.ticketList.length + 3);
+				
 				var dataTable = $('#ticketTable').DataTable( {
 	        			"bDestroy":			true,
 	        			"processing": 		true,
@@ -422,10 +456,12 @@
 				            	if(row.totalBalance != null){return (row.totalBalance+"");}
 				            } },
 				            { title: "Pay Inv", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
-			            		return '<input type="text" data-ticketId="'+row.ticketId+'" data-balance="'+ row.totalBalance.replace("\$","").replace(",","") +'" class="ticketPayInv ticketPmt" style="width:80px;" />';
+				            	$tabIndex = $tabIndex+1;
+			            		return '<input tabIndex="'+ $tabIndex +'" type="text" data-ticketId="'+row.ticketId+'" data-balance="'+ row.totalBalance.replace("\$","").replace(",","") +'" class="ticketPayInv ticketPmt" style="width:80px;" />';
 				            } },
 				            { title: "Pay Tax", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
-			            		return '<input type="text" data-ticketId="'+row.ticketId+'" class="ticketPayTax ticketPmt" style="width:80px;" />';
+				            	$myTabIndex = $tabIndex + $data.ticketList.length;
+			            		return '<input tabIndex="' + $myTabIndex + '" type="text" data-ticketId="'+row.ticketId+'" data-balance="'+ row.totalBalance.replace("\$","").replace(",","") +'" class="ticketPayTax ticketPmt" style="width:80px;" />';
 				            } }
 				            <%-- { title: "Write Off", "defaultContent": "<i></i>", data: function ( row, type, set ) {
 				            	//if(row.invoiceTotal != null){return (row.invoiceTotal+"");}
@@ -439,13 +475,15 @@
 				            	doFunctionBinding();
 				            }
 				    } );
+				
+					
 	        	}
         	
         		init();
         			
         	
 	            function init(){
-	            	$.each($('input'), function () {
+	            	$.each($('input[type="text"]'), function () {
 				        $(this).css("height","20px");
 				        $(this).css("max-height", "20px");
 				    });
@@ -463,49 +501,92 @@
             
 	            
 				function calcTotalPayInv() {
-					var $totalToPay = 0.00
+					var $totalValue = 0.00
 					$.each( $(".ticketPayInv"), function() {
 						if ( $(this).val() != null && $(this).val() != "" ) {
-							$totalToPay = $totalToPay + parseFloat($(this).val());
+							$totalValue = $totalValue + parseFloat($(this).val());
 						}						
 					});
-					console.debug($totalToPay);
-					return $totalToPay
+					$("#totalPayInvoice").html( formatCurrency($totalValue));
+					return $totalValue
 				}
+				
 				function calcTotalPayTax() {
-					var $totalTax = 0.00;
+					var $totalValue = 0.00;
 					$.each( $(".ticketPayTax"), function() {
 						if ( $(this).val() != null && $(this).val() != "" ) {
-							$totalTax = $totalTax + parseFloat($(this).val());
+							$totalValue = $totalValue + parseFloat($(this).val());
 						}						
 					});
-					console.debug($totalTax);
-					return $totalTax;
+					$("#totalPayTax").html( formatCurrency($totalValue));
+					return $totalValue;
 				}
+				function calcToPay() {
+					var $totalValue = calcTotalPayInv() + calcTotalPayTax();
+					$("#toPay").html( formatCurrency($totalValue) );
+					return $totalValue;
+					
+				}				
 				function calcTotalPay() {
-					return calcTotalPayInv() + calcTotalPayTax();
+					var $feeAmount = parseFloat($("#feeAmount").val());
+					var $excessCash = parseFloat($("#excessCash").val());
+					var $toPay = calcToPay();
+					return $feeAmount + $excessCash + $toPay;
 				}
+				
+				function calculateAllTotals() {
+					$totalPayInvoice = calcTotalPayInv();
+					$totalPayTax = calcTotalPayTax();
+					$toPay = calcToPay();					
+					$totalPay = calcTotalPay();
+					$available = $unappliedAmount - $totalPay;
+					$("#unappliedAmount").html(formatCurrency($available));
+				}
+				
 				
 				function doFunctionBinding() {
 					$( ".ticketPayInv").on("focus", function() {
-						console.debug($(this));
-						console.debug("Unapplied: " + $unappliedAmount);
 						if ( $(this).val() == null || $(this).val() == "" ) {
+							// figure default amount to apply
 							$balance = parseFloat($(this).data("balance"));
 							$totalPay = calcTotalPay();
 							$available = $unappliedAmount - $totalPay;
 							$toPay = Math.min($balance, $available)
-							$(this).val($toPay);
-						} else {
-							console.debug("NOt setting value");
+							$(this).val($toPay.toFixed(2));
+							// calculate totals
+							calculateAllTotals();
+							$(this).select();
 						}
 					});
 					$( ".ticketPayInv").on("change", function() {
-						console.debug("Doing changes stuff");
+						$fixedValue = parseFloat($(this).val()).toFixed(2);
+						$(this).val($fixedValue);
+						calculateAllTotals();
+					});
+					$( ".ticketPayTax").on("focus", function() {
+						if ( $(this).val() == null || $(this).val() == "" ) {
+							// figure default amount to apply
+							$balance = parseFloat($(this).data("balance"));
+							$totalPay = calcTotalPay();
+							$available = $unappliedAmount - $totalPay;
+							$toPay = Math.min($balance, $available)
+							$(this).val($toPay.toFixed(2));
+							// calculate totals
+							calculateAllTotals();
+							$(this).select();
+						}
+					});
+					$( ".ticketPayTax").on("change", function() {
+						$fixedValue = parseFloat($(this).val()).toFixed(2);
+						$(this).val($fixedValue);
+						calculateAllTotals();
 					});
 				}
         
 
+				function formatCurrency($amount) {
+					return "$" + $amount.toFixed(2);
+				}
 			});
 
 		</script>
@@ -632,21 +713,35 @@
 	            </tr>
 	        </thead>
 	        <tfoot>
-	            <tr>
-	    			<td class="formHdr">&nbsp</td>
-	    			<td class="formHdr">&nbsp</td>
-	    			<td class="formHdr">&nbsp</td>
-	    			<td class="formHdr">&nbsp</td>
-	    			<td class="formHdr">&nbsp</td>
-	    			<td class="formHdr">&nbsp</td>
-	    			<td class="formHdr">&nbsp</td>
-	    			<td style="text-align:right; font-weight:bold;">Totals:</td>
-	    			<td style="text-align:right; border:solid 1px #000000; font-weight:bold;"><span class="totalField" id="totalBalance"></span></td>
-	    			<td style="text-align:right; border:solid 1px #000000; font-weight:bold;"><span class="totalField" id="totalPayInvoice"></span></td>
-	    			<td style="text-align:right; border:solid 1px #000000; font-weight:bold;"><span class="totalField" id="totalPayTax"></span></td>
-	    			<%-- <td class="formHdr">Write Off</td> (this is for v2) --%>
-	            </tr>
 	        </tfoot>
+        </table>
+        <table style="width:1300px; margin-left:20px;">
+	        <colgroup>
+	        	<col style="width:9%;" />
+	        	<col style="width:9%;" />
+	        	<col style="width:9%;" />
+	        	<col style="width:9%;" />
+	        	<col style="width:9%;" />
+	        	<col style="width:9%;" />
+	        	<col style="width:9%;" />
+	        	<col style="width:9%;" />
+	        	<col style="width:9%;" />
+	        	<col style="width:10%;" />
+	   		</colgroup>        
+            <tr>
+    			<td class="formHdr">&nbsp;</td>
+    			<td class="formHdr">&nbsp;</td>
+    			<td class="formHdr">&nbsp;</td>
+    			<td class="formHdr">&nbsp;</td>
+    			<td class="formHdr">&nbsp;</td>
+    			<td class="formHdr">&nbsp;</td>
+    			<td class="formHdr">&nbsp;</td>
+    			<td style="text-align:right; font-weight:bold;">Totals:</td>
+    			<td style="text-align:right; border:solid 1px #000000; font-weight:bold;"><span class="totalField" id="totalBalance"></span></td>
+    			<td style="text-align:right; border:solid 1px #000000; font-weight:bold;"><span class="totalField" id="totalPayInvoice"></span></td>
+    			<td style="text-align:right; border:solid 1px #000000; font-weight:bold;"><span class="totalField" id="totalPayTax"></span></td>
+    			<%-- <td class="formHdr">Write Off</td> (this is for v2) --%>
+            </tr>
 	    </table>
 	    
 	    
