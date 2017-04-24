@@ -240,8 +240,8 @@ public class QuoteServlet extends AbstractServlet {
 					System.out.println("Doing Edit Fail");
 					responseCode = ResponseCode.EDIT_FAILURE;
 				}
-				QuoteResponse codeResponse = new QuoteResponse(quote, webMessages);
-				super.sendResponse(conn, response, responseCode, codeResponse);
+				//QuoteResponse codeResponse = new QuoteResponse(quote, webMessages);
+				//super.sendResponse(conn, response, responseCode, codeResponse);
 			} else {
 				super.sendNotFound(response);
 			}

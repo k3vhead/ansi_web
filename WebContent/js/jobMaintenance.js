@@ -320,6 +320,54 @@ $( document ).ready(function() {
 				},
 				dataType: 'json'
 			});
+		},
+		update: function($outbound){
+			console.log("Update Outbound: ");
+    		console.log($outbound);
+
+    		$url = "job/update/"+$("input[name=jobId]").val();
+//			console.log($outbound);
+			var jqxhr = $.ajax({
+				type: 'POST',
+				url: $url,
+				data: JSON.stringify($outbound),
+				success: function($data) {
+					if ( $data.responseHeader.responseCode == 'SUCCESS') {
+
+						console.log("Update Success");
+						console.log($data);
+							if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
+								$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
+							}
+						
+					} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+						
+						console.log("Edit Failure");
+						console.log($data);
+						$.each($data.data.webMessages, function(key, messageList) {
+							var identifier = "#" + key + "Err";
+							msgHtml = "<ul>";
+							$.each(messageList, function(index, message) {
+								msgHtml = msgHtml + "<li>" + message + "</li>";
+							});
+							msgHtml = msgHtml + "</ul>";
+							$(identifier).html(msgHtml);
+						});		
+					} else {
+						console.log("Save Other");
+					}
+				},
+				error: function($data) {
+					console.log("Fail: ");
+					console.log($data);
+				},
+				statusCode: {
+					403: function($data) {
+						$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+					} 
+				},
+				dataType: 'json'
+			});
 		}
 	}
 	
@@ -386,8 +434,20 @@ $( document ).ready(function() {
 						$("#" + $namespace + "_omNotes").prop('disabled', true);
 						$("#" + $namespace + "_billingNotes").prop('disabled', true);
 						
-						//Add Save Here
+						$outbound = {};
 						
+
+						$outbound["buildingType"]	= $("#" + $namespace + "_buildingType").val();
+						$outbound["directLaborPct"]	= $("#" + $namespace + "_directLaborPct").val();
+						$outbound["directLaborBudget"]	= $("#" + $namespace + "_directLaborBudget").val();
+						$outbound["nbrFloors"]	= $("#" + $namespace + "_nbrFloors").val();
+						$outbound["equipment"]	= $("#" + $namespace + "_equipment").val();
+						$outbound["washerNotes"]	= $("#" + $namespace + "_washerNotes").val();
+						$outbound["omNotes"]	= $("#" + $namespace + "_omNotes").val();
+						$outbound["billingNotes"]	= $("#" + $namespace + "_billingNotes").val();
+						
+						JOB_UTILS.update($outbound);
+		        	
 						$("#" + $namespace + "_activationEdit").removeClass('fa-save');
 						$("#" + $namespace + "_activationEdit").addClass('fa-pencil');
 					}
@@ -559,7 +619,20 @@ $( document ).ready(function() {
 						$("#" + $namespace + "_invoiceExpire").prop('disabled', true);
 						$("#" + $namespace + "_invoiceExpireReason").prop('disabled', true);
 						
-						//Add Save Here
+						$outbound = {};
+						
+						$outbound["invoiceStyle"]	= $("#" + $namespace + "_invoiceStyle").val();
+						$outbound["invoiceBatch"]	= $("#" + $namespace + "_invoiceBatch").val();
+						$outbound["invoiceTaxExempt"]	= $("#" + $namespace + "_invoiceTaxExempt").val();
+						$outbound["invoiceGrouping"]	= $("#" + $namespace + "_invoiceGrouping").val();
+						$outbound["invoiceTerms"]	= $("#" + $namespace + "_invoiceTerms").val();
+						$outbound["invoicePO"]	= $("#" + $namespace + "_invoicePO").val();
+						$outbound["invoiceOurVendorNbr"]	= $("#" + $namespace + "_invoiceOurVendorNbr").val();
+						$outbound["invoiceExpire"]	= $("#" + $namespace + "_invoiceExpire").val();
+						$outbound["invoiceExpireReason"]	= $("#" + $namespace + "_invoiceExpireReason").val();
+						
+						
+						JOB_UTILS.update($outbound);
 						
 						$("#" + $namespace + "_invoiceEdit").removeClass('fa-save');
 						$("#" + $namespace + "_invoiceEdit").addClass('fa-pencil');
@@ -1024,7 +1097,14 @@ $( document ).ready(function() {
 					$("#" + $namespace + "_ppc").prop('disabled', true);
 					$("#" + $namespace + "_serviceDescription").prop('disabled', true);
 					
-					//Add Save Here
+					$outbound = {};
+					
+					$outbound["jobFrequency"]	= $("#" + $namespace + "_jobFrequency").val();
+					$outbound["jobNbr"]	= $("#" + $namespace + "_jobNbr").val();
+					$outbound["ppc"]	= $("#" + $namespace + "_ppc").val();
+					$outbound["serviceDescription"]	= $("#" + $namespace + "_serviceDescription").val();
+					
+					JOB_UTILS.update($outbound);
 					
 					$("#" + $namespace + "_proposalEdit").removeClass('fa-save');
 					$("#" + $namespace + "_proposalEdit").addClass('fa-pencil');

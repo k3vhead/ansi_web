@@ -92,6 +92,7 @@ public class JobServlet extends AbstractServlet {
 		SessionUser sessionUser = AppUtils.getSessionUser(request);
 		WebMessages messages = new WebMessages();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
+		ResponseCode responseCode = null;
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
@@ -104,11 +105,44 @@ public class JobServlet extends AbstractServlet {
 			String[] urlPieces = myString.split("/");
 			String command = urlPieces[0];
 			
+			System.out.println("Servlet Output: [0]"+urlPieces[0]+" [1]"+urlPieces[1]);
 			
 			if ( command.equalsIgnoreCase("add") ) {
 				JobRequest jobRequest = new JobRequest(jsonString);
 				doAdd(conn, jobRequest, sessionUser, response);
+			} else if ( command.equalsIgnoreCase("update") ){
+				JobRequest jobRequest = new JobRequest(jsonString);
+				
+				try {
+					Job key = new Job();
+					key.setJobId(Integer.parseInt(urlPieces[1]));
+					key.selectOne(conn);
+					
+					System.out.println("This is the key:");
+					System.out.println(key);
+					System.out.println("************");
+					
+					//key.setRevision((urlPieces[2]));
+					System.out.println("Trying to do update");
+					Job job = doUpdate(conn, key, jobRequest, sessionUser, response);
+					String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
+					responseCode = ResponseCode.SUCCESS;
+					messages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+				} catch ( RecordNotFoundException e ) {
+					System.out.println("Doing 404");
+					System.out.println(e);
+					super.sendNotFound(response);						
+				} catch ( Exception e) {
+					System.out.println("Doing SysFailure");
+					responseCode = ResponseCode.SYSTEM_FAILURE;
+					AppUtils.logException(e);
+					String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
+					messages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+				}
+				
+				
 			} else {
+			
 				url = new AnsiURL(request, "job", (String[])null);
 				
 				System.out.println("URL:"+url);
@@ -416,6 +450,161 @@ public class JobServlet extends AbstractServlet {
 		job.setJobId(j);
 		JobResponse jobResponse = new JobResponse(job, messages);
 		super.sendResponse(conn, response, responseCode, jobResponse);		
+		return job;
+	}
+	
+	protected Job doUpdate(Connection conn, Job key,JobRequest jobRequest, SessionUser sessionUser, HttpServletResponse response) throws Exception {
+		WebMessages messages = new WebMessages();
+		ResponseCode responseCode = null;
+		Date today = new Date();
+		
+
+		Job job = key;
+
+		if(jobRequest.getJobFrequency() != null) {
+			job.setJobFrequency(jobRequest.getJobFrequency());
+		}
+		
+		if(jobRequest.getStatus() != null) {
+			job.setStatus(jobRequest.getStatus());
+		}
+		if(jobRequest.getPricePerCleaning() != null) {
+			job.setPricePerCleaning(jobRequest.getPricePerCleaning());
+		}
+//		if(jobRequest.getDivisionId() != null) {
+//			job.setDivisionId(jobRequest.getDivisionId());
+//		}
+		if(jobRequest.getDirectLaborPct() != null) {
+			job.setDirectLaborPct(jobRequest.getDirectLaborPct());
+		}
+		if(jobRequest.getBudget() != null) {
+			job.setBudget(jobRequest.getBudget());
+		}
+		if(jobRequest.getFloors() != null) {
+			job.setFloors(jobRequest.getFloors());
+		}
+		if(jobRequest.getInvoiceTerms() != null) {
+			job.setInvoiceTerms(jobRequest.getInvoiceTerms());
+		}
+		if(jobRequest.getInvoiceStyle() != null) {
+			job.setInvoiceStyle(jobRequest.getInvoiceStyle());
+		}
+		if(jobRequest.getInvoiceBatch() != null) {
+			job.setInvoiceBatch(jobRequest.getInvoiceBatch());
+		}
+		if(jobRequest.getInvoiceGrouping() != null) {
+			job.setInvoiceGrouping(jobRequest.getInvoiceGrouping());
+		}
+		
+//		if(jobRequest.getContractContactId() != null) {
+			job.setContractContactId(key.getContractContactId());
+//		}
+		if(jobRequest.getTaxExempt() != null) {
+			job.setTaxExempt(jobRequest.getTaxExempt());
+		}
+		if(jobRequest.getPoNumber() != null){
+			job.setPoNumber(jobRequest.getPoNumber());
+		}
+		
+		if(jobRequest.getExpirationDate() != null){
+			job.setExpirationDate(jobRequest.getExpirationDate());
+		}
+		
+		if(jobRequest.getExpirationReason() != null){
+			job.setExpirationReason(jobRequest.getExpirationReason());
+		}
+		if(job.getExpirationReason().length() < 2){
+			job.setExpirationReason(null);
+		}
+		
+		if(jobRequest.getBuildingType() != null){
+			job.setBuildingType(jobRequest.getBuildingType());
+		}
+		if(jobRequest.getOurVendorNbr() != null){
+			job.setOurVendorNbr(jobRequest.getOurVendorNbr());
+		}
+		if(jobRequest.getServiceDescription() != null){
+			job.setServiceDescription(jobRequest.getServiceDescription());
+		}
+		if(jobRequest.getEquipment() != null){
+			job.setEquipment(jobRequest.getEquipment());
+		}
+		
+		if(jobRequest.getWasherNotes() != null){
+			job.setWasherNotes(jobRequest.getWasherNotes());
+		}
+//		if(jobRequest.getBillingContactId() != null){
+//			job.setBillingContactId(jobRequest.getBillingContactId());
+//		}
+		if(jobRequest.getBillingNotes() != null) {
+			job.setBillingNotes(jobRequest.getBillingNotes());
+		}
+		if(job.getBillingNotes().length() < 2){
+			job.setBillingNotes(null);
+		}
+		
+		if(jobRequest.getOmNotes() != null) {
+			job.setOmNotes(jobRequest.getOmNotes());
+		}
+		if(job.getOmNotes().length() < 2){
+			job.setOmNotes(null);
+		}
+		
+//		if(jobRequest.getActivationDate() == null) {
+//			job.setActivationDate(today);
+//		} else {
+//			job.setActivationDate(jobRequest.getActivationDate());
+//		}
+		
+		if(jobRequest.getStartDate() != null){
+			job.setStartDate(jobRequest.getStartDate());
+		}
+		
+		if(jobRequest.getCancelDate() != null){
+			job.setCancelDate(jobRequest.getCancelDate());
+		}
+		
+		if(jobRequest.getCancelReason() != null){
+			job.setCancelReason(jobRequest.getCancelReason());
+		}
+		
+//		if(jobRequest.getSiteContact() != null) {
+//			job.setSiteContact(jobRequest.getSiteContact());
+//		}
+//		
+//		if(jobRequest.getJobContactId() != null) {
+//			job.setJobContactId(jobRequest.getJobContactId());
+//		}
+//		
+		if(jobRequest.getJobTypeId() != null) {
+			job.setJobTypeId(jobRequest.getJobTypeId());
+		}
+		
+		if(job.getJobTypeId() == 0){
+			job.setJobTypeId(null);
+		}
+		if(jobRequest.getRequestSpecialScheduling() != null) {
+			job.setRequestSpecialScheduling(jobRequest.getRequestSpecialScheduling());
+		}
+//		if(jobRequest.getRepeatScheduleAnnually() != null) {
+			job.setRepeatScheduleAnnually(1);
+//		}
+		if(jobRequest.getPaymentTerms() != null){
+			job.setPaymentTerms(jobRequest.getPaymentTerms());
+		}
+		if(job.getPaymentTerms().length() < 2){
+			job.setPaymentTerms(null);
+		}
+		
+		job.setUpdatedBy(sessionUser.getUserId());
+
+//		job.setUpdatedDate(today);
+		
+
+		System.out.println("Job servlet Add Data:");
+		System.out.println(job.toString());
+		job.update(conn, job);
+		
 		return job;
 	}
 	
