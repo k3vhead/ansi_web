@@ -28,7 +28,7 @@ public class TicketReturnAction extends SessionPageDisplayAction {
 			AppUtils.validateSession(request, Permission.TECH_ADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 			IdForm form = (IdForm)actionForm;
 			if ( form != null && ! StringUtils.isBlank(form.getId())) {
-				request.setAttribute("TICKET_ID", form.getId());
+				request.setAttribute("ANSI_TICKET_ID", form.getId());
 			}
 			forward = mapping.findForward(FORWARD_IS_VALID);
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {

@@ -122,6 +122,7 @@
         
         <script type="text/javascript">
         $( document ).ready(function() {
+        	var $defaultTicketNbr='<c:out value="${ANSI_TICKET_ID}" />';
 			var $ticketStatusList = ANSI_UTILS.getOptions("TICKET_STATUS");
 			var $ticketStatusMap = {}
 			$.each($ticketStatusList.ticketStatus, function($index, $value) {
@@ -131,7 +132,7 @@
 			
         	$("#doPopulate").click(function () {
     			var $ticketNbr = $('#ticketNbr').val();
-            	if ($ticketNbr != '') {
+            	if ($ticketNbr != '') {            		
             		doPopulate($ticketNbr)
             	}
             });
@@ -493,7 +494,11 @@
             }
 			
 			
-			
+        	if ( $defaultTicketNbr != '' ) {
+        		$("#ticketNbr").val($defaultTicketNbr);
+        		$("#doPopulate").click();
+        	}
+
     });
 
 		</script>
