@@ -154,6 +154,12 @@
 										<li><html:link action="quoteMaintenance">New Quote</html:link></li>
 										</ansi:hasWrite>
 										</ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="TICKET">
+										<ansi:hasWrite>
+										<li><html:link action="ticketGeneration">Generate Tickets</html:link></li>
+										<li><html:link action="ticketPrint">Print Tickets</html:link></li>
+										</ansi:hasWrite>
+										</ansi:hasPermission>
 										<ansi:hasPermission permissionRequired="JOB">
 										<ansi:hasWrite>
 										<li><html:link action="jobMaintenance">New Job</html:link></li>
