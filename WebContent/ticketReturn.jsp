@@ -100,7 +100,11 @@
 				width:100%;
 				display:none;
 			}
-			#dataTables {
+			#ticketTable {
+				width:100%;
+				display:none;
+			}
+			#invoiceTable {
 				width:100%;
 				display:none;
 			}
@@ -123,8 +127,9 @@
 			$.each($ticketStatusList.ticketStatus, function($index, $value) {
 			    $ticketStatusMap[$value.code]=$value.display;
 			});
-                
-        	$('#doPopulate').click(function () {
+			
+			
+        	$("#doPopulate").click(function () {
     			var $ticketNbr = $('#ticketNbr').val();
             	if ($ticketNbr != '') {
             		doPopulate($ticketNbr)
@@ -145,10 +150,7 @@
 				$("#totalTaxPaid").html($data.ticketDetail.totalTaxPaid);
 				$("#ticketBalance").html($data.ticketDetail.balance);
 
-			}
-			
-			
-			
+			}			
 			
 			function populatePanelSelect ($data) {
 				$('option', "#panelSelector").remove();
@@ -175,14 +177,19 @@
 				
 			}
 			
-			function populateInvoiceDetail($data) {
-				$("#invoiceId").html($data.invoiceDetail.invoiceId);
-				$("#sumInvPpc").html($data.invoiceDetail.sumInvPpc);
-				$("#sumInvPpcPaid").html($data.invoiceDetail.sumInvPpcPaid);
-				$("#sumInvTax").html($data.invoiceDetail.sumInvTax);
-				$("#sumInvTaxPaid").html($data.invoiceDetail.sumInvTaxPaid);
-				$("#invoiceBalance").html($data.invoiceDetail.balance);
-				
+			function populateInvoiceDetail ($data) {
+				if ($data.invoiceDetail) {
+					$("#invoiceId").html($data.invoiceDetail.invoiceId);					
+					$("#sumInvPpc").html($data.invoiceDetail.sumInvPpc);
+					$("#sumInvPpcPaid").html($data.invoiceDetail.sumInvPpcPaid);
+					$("#sumInvTax").html($data.invoiceDetail.sumInvTax);
+					$("#sumInvTaxPaid").html($data.invoiceDetail.sumInvTaxPaid);
+					$("#invoiceBalance").html($data.invoiceDetail.balance);
+	                $("#invoiceTable").show();
+					$("#invoiceTable").fadeIn(4000);  
+				}else{
+					$("#invoiceTable").hide();				
+				}				
 			}
 			
 			function populateSummary($data) {
@@ -191,9 +198,7 @@
 				$("#jobId").html($data.ticketDetail.jobId);				
 			}
 			
-			
-        	function doPopulate($ticketNbr) {
-        		        		
+        	function doPopulate($ticketNbr) {    		
 		       	var jqxhr = $.ajax({
 		       		type: 'GET',
 		       		url: "ticket/" + $ticketNbr,
@@ -204,13 +209,13 @@
 						});
 						doFunctionBinding();
 						$(".workPanel").hide();
-		       			populateTicketDetail($data.data);
-		       			populateInvoiceDetail($data.data);
+		       			populateTicketDetail($data.data);	       			
 		       			populateSummary($data.data);
 		       			populatePanelSelect($data.data);
     					$("#summaryTable").fadeIn(4000);
     					$("#selectPanel").fadeIn(4000);
-    					$("#dataTables").fadeIn(4000);
+    					$("#ticketTable").fadeIn(4000);
+		       			populateInvoiceDetail($data.data);	  					
 					},
 		       		statusCode: {
 	       				404: function($data) {
@@ -697,7 +702,7 @@
 			<div class="workPanel" id="INVOICED"> </div>
 			<div class="workPanel" id="PAID"> </div>
 		   	
-		<div id="dataTables">
+		<div id="ticketTable">
 		   	<table id="displayTicketTable">
 		   		<tr>
 		   			<th>Ticket</th>
@@ -717,6 +722,9 @@
 		   		</tr>
 		   	</table>
 		   	
+		</div>
+		   	
+		<div id = "invoiceTable">		   	
 		   	<table id="displayInvoiceTable">
 		   		<tr>
 		   			<th>Inv #</th>
