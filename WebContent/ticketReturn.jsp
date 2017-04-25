@@ -136,6 +136,8 @@
             	}
             });
         	
+        	
+        	
         	$('.dateField').datepicker({
                 prevText:'&lt;&lt;',
                 nextText: '&gt;&gt;',
@@ -344,8 +346,8 @@
 					positionStyle: 'fixed' //'fixed' or 'absolute'
 				});				
 			}
-	
-	
+			
+			
 			$("#cancelUpdate").click( function($clickevent) {
 				$clickevent.preventDefault();
 				clearAddForm();
@@ -458,6 +460,9 @@
             
             function clearAddForm() {
 				$.each( $('#addForm').find("input"), function(index, $inputField) {
+					$('input[name=customerSignature]').prop('checked', false);
+					$('input[name=billSheet]').prop('checked', false);
+					$('input[name=mgrApproval]').prop('checked', false);
 					$fieldName = $($inputField).attr('name');
 					if ( $($inputField).attr("type") == "text" ) {
 						$($inputField).val("");
@@ -599,6 +604,7 @@
 		
 			<div class="workPanel" id="SKIPPED">
 				<div id="addFormMsg" class="err"></div>
+				<form action="#" method="post" id="addForm">
 				<table>
 			    	<tr>
 			    		<td><span class="required">*</span><span class="formLabel">Skip Date:</span></td>
@@ -626,6 +632,7 @@
 			
 			<div class="workPanel" id="VOIDED">
 				<div id="addFormMsg" class="err"></div>
+				<form action="#" method="post" id="addForm">
 				<table>
 		  				<tr>
 		  					<td><span class="required">*</span><span class="formLabel">Void Date:</span></td>
@@ -653,6 +660,7 @@
 		 	
 			<div class="workPanel" id="REJECTED">
 				<div id="addFormMsg" class="err"></div>
+				<form action="#" method="post" id="addForm">
 				<table>
 		  				<tr>
 		  					<td><span class="required">*</span><span class="formLabel">Reject Date:</span></td>
@@ -681,6 +689,7 @@
 		
 			<div class="workPanel" id="NOT_DISPATCHED">
 				<div id="addFormMsg" class="err"></div>
+				<form action="#" method="post" id="addForm">
 				<table>
 		  				<tr>
 		  					<td><span class="required">*</span><span class="formLabel">Process Date:</span></td>
