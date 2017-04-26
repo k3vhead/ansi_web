@@ -238,6 +238,8 @@ $( document ).ready(function() {
 			},
 			save: function(){
 				$outbound = {};
+	       		$outbound["quoteNumber"]		=	$("select[name=quoteNumber]").val();
+	       		$outbound["revisionNumber"]		=	$("select[name=revision]").val();
         		$outbound["managerId"]		=	$("select[name=manager]").val();
         		$outbound["leadType"]		=	$("select[name=leadType").val();
         		$outbound["accountType"]	=	$("select[name=accountType").val();
@@ -318,8 +320,9 @@ $( document ).ready(function() {
 			update: function(){
 				$outbound = {};
 				
-        		$outbound["managerId"]		=	$("select[name=manager]").val();
-        		$outbound["leadType"]		=	$("select[name=leadType").val();
+	       		$outbound["quoteNumber"]		=	$("select[name=quoteNumber]").val();
+	       		$outbound["revisionNumber"]		=	$("select[name=revision]").val();
+	       	 	$outbound["leadType"]		=	$("select[name=leadType").val();
         		$outbound["accountType"]	=	$("select[name=accountType").val();
         		$outbound["divisionId"]	=	$("select[name=division]").val();
         		$outbound["jobSiteAddressId"]	=	$("input[name=jobSite_id]").val();
@@ -334,6 +337,7 @@ $( document ).ready(function() {
         		console.log($outbound);
 
         		$url = "quote/"+$globalQuoteId+"/"+$("input[name=quoteNumber]").val();
+//        		$url = "quote/"+$("input[name=quoteNumber]").val();
 //				console.log($outbound);
 				var jqxhr = $.ajax({
 					type: 'POST',
