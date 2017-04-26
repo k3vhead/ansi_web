@@ -215,6 +215,233 @@ public class QuoteServlet extends AbstractServlet {
 				WebMessages webMessages = validateAdd(conn, quoteRequest);
 				if (webMessages.isEmpty()) {
 					System.out.println("passed validation");
+					System.out.println(urlPieces);
+					try {
+						Quote key = new Quote();
+						key.setQuoteId(Integer.parseInt(urlPieces[1]));
+//						key.setQuoteId(Integer.parseInt(urlPieces[0]));
+//						key.selectOne(conn);
+						System.out.println("Trying to do update");
+						quote = doUpdate(conn, key, quoteRequest, sessionUser);
+						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
+						responseCode = ResponseCode.SUCCESS;
+						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+					} catch ( RecordNotFoundException e ) {
+						System.out.println("Doing 404");
+						super.sendNotFound(response);						
+					} catch ( Exception e) {
+						System.out.println("Doing SysFailure");
+						responseCode = ResponseCode.SYSTEM_FAILURE;
+						AppUtils.logException(e);
+						String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
+						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+					}
+				} else {
+					System.out.println("Doing Edit Fail");
+					responseCode = ResponseCode.EDIT_FAILURE;
+				}
+				QuoteResponse codeResponse = new QuoteResponse(quote, webMessages);
+				super.sendResponse(conn, response, responseCode, codeResponse);
+			} else {
+				super.sendNotFound(response);
+			}
+			
+			conn.commit();
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+			super.sendForbidden(response);
+		} catch ( Exception e ) {
+			AppUtils.logException(e);
+			AppUtils.rollbackQuiet(conn);
+			throw new ServletException(e);
+		} finally {
+			AppUtils.closeQuiet(conn);
+		}
+		
+	}
+
+	protected Quote doAdd(Connection conn, QuoteRequest quoteRequest, SessionUser sessionUser) throws Exception {
+		Date today = new Date();
+		Quote quote = new Quote();
+
+		quote.setAddedBy(sessionUser.getUserId());
+		
+		quote.setAddedDate(today);
+
+		quote.setUpdatedBy(sessionUser.getUserId());
+
+		quote.setUpdatedDate(today);
+		
+//		quote.setAddress(quoteRequest.getAddress());
+		quote.setBillToAddressId(quoteRequest.getBillToAddressId());
+		if ( quoteRequest.getCopiedFromQuoteId() != null) {
+			quote.setCopiedFromQuoteId(quoteRequest.getCopiedFromQuoteId());
+		}
+		quote.setQuoteNumber(quoteRequest.getQuoteNumber());
+		quote.setRevision(quoteRequest.getRevisionNumber());
+		quote.setJobSiteAddressId(quoteRequest.getJobSiteAddressId());
+		quote.setLeadType(quoteRequest.getLeadType());
+		quote.setDivisionId(quoteRequest.getDivisionId());
+		quote.setAccountType(quoteRequest.getAccountType());
+		quote.setManagerId(quoteRequest.getManagerId());
+//		quote.setName(quoteRequest.getName());
+//		quote.setPaymentTerms(quoteRequest.getPaymentTerms());
+		
+		if ( quoteRequest.getProposalDate() != null) {
+			quote.setProposalDate(quoteRequest.getProposalDate());
+		}
+		
+		if ( ! StringUtils.isBlank(quoteRequest.getAccountType())) {
+			quote.setAccountType(quoteRequest.getAccountType());
+		}
+//		quote.setQuoteGroupId(quoteRequest.getQuoteGroupId());
+	
+		quote.setQuoteNumber(AppUtils.getNextQuoteNumber(conn));
+//		quote.setQuoteNumber(5000000);
+		quote.setRevision("A");
+			quote.setSignedByContactId(null);
+		
+//		quote.setStatus(quoteRequest.getStatus());
+		quote.setTemplateId(quoteRequest.getTemplateId());
+		System.out.println("Quote servlet Add Data:");
+		System.out.println(quote.toString());
+		int q = 0;
+		try {
+			q = quote.insertWithKey(conn);
+			//System.out.println("QuoteID After Insert? "+ q);
+			
+			
+		} catch ( SQLException e) {
+			if ( e.getMessage().contains("duplicate key")) {
+				throw new DuplicateEntryException();
+			} else {
+				AppUtils.logException(e);
+				throw e;
+			}
+		} 
+			quote.setQuoteId(q);
+			quote.setQuoteNumber(q);
+			
+//			Quote key = new Quote();
+//			key.setQuoteId(q);
+//			key.setQuoteNumber(q);
+			
+			//quote.update(conn, null);
+			return quote;
+	}
+
+
+	protected Quote doUpdate(Connection conn, Quote key, QuoteRequest quoteRequest, SessionUser sessionUser) throws Exception {
+		System.out.println("This is the key:");
+		System.out.println(key);
+		System.out.println("************");
+		Date today = new Date();
+		Quote quote = new Quote();
+	
+//		quote.setQuoteId(quoteRequest.getQuoteId());
+	
+		quote.setUpdatedBy(sessionUser.getUserId());
+		quote.setUpdatedDate(today);
+		
+		
+//		String value = key.getRevision();
+//		int charValue = value.charAt(0);
+//		String next = String.valueOf( (char) (charValue + 1));
+		
+//		quote.setAddress(quoteRequest.getAddress());
+		quote.setBillToAddressId(quoteRequest.getBillToAddressId());
+		quote.setQuoteNumber(quoteRequest.getQuoteNumber());
+		quote.setRevision(quoteRequest.getRevisionNumber());
+		quote.setCopiedFromQuoteId(quoteRequest.getCopiedFromQuoteId());
+		quote.setJobSiteAddressId(quoteRequest.getJobSiteAddressId());
+		quote.setLeadType(quoteRequest.getLeadType());
+		quote.setManagerId(quoteRequest.getManagerId());
+//		quote.setName(quoteRequest.getName());
+
+		if ( quoteRequest.getProposalDate() != null) {
+			quote.setProposalDate(quoteRequest.getProposalDate());
+		}
+		if ( ! StringUtils.isBlank(quoteRequest.getAccountType())) {
+			quote.setAccountType(quoteRequest.getAccountType());
+		}
+
+	
+//		quote.setQuoteNumber(AppUtils.getNextQuoteNumber(conn));
+//		quote.setRevision(App);
+		quote.setSignedByContactId(quoteRequest.getSignedByContactId());
+		quote.setTemplateId(quoteRequest.getTemplateId());
+		
+//		 if we update something that isn't there, a RecordNotFoundException gets thrown
+//		 that exception get propagated and turned into a 404
+		
+		System.out.println("This is the update quote:");
+		System.out.println(quote);
+		
+		quote.update(conn, key);		
+		return quote;
+	}
+
+	protected void doOldPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		SessionUser sessionUser = AppUtils.getSessionUser(request);
+		String url = request.getRequestURI();
+//		String queryString = request.getQueryString();
+		
+		Connection conn = null;
+		try {
+			conn = AppUtils.getDBCPConn();
+			AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			conn.setAutoCommit(false);
+
+			// figure out if this is an "add" or an "update"
+			int idx = url.indexOf("/quote/");
+			String myString = url.substring(idx + "/quote/".length());				
+			String[] urlPieces = myString.split("/");
+			String command = urlPieces[0];
+
+			String jsonString = super.makeJsonString(request);
+			System.out.println(jsonString);
+			QuoteRequest quoteRequest = new QuoteRequest(jsonString);
+			
+			Quote quote = null;
+			ResponseCode responseCode = null;
+			if ( command.equals(ACTION_IS_ADD) ) {
+				WebMessages webMessages = validateAdd(conn, quoteRequest);
+				if (webMessages.isEmpty()) {
+					try {
+//						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, sessionUser.toString());
+						System.out.println("Doing Add");
+						quote = doAdd(conn, quoteRequest, sessionUser);
+						
+						/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CANT GET QUOTE NUMBER OR REVISION TO UPDATE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
+						//conn.commit();
+						//quote.update(conn, quote);
+						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
+						responseCode = ResponseCode.SUCCESS;
+						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+						//quote.update(conn, quote);
+					} catch ( DuplicateEntryException e ) {
+						String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
+						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+						responseCode = ResponseCode.EDIT_FAILURE;
+					} catch ( Exception e ) {
+						responseCode = ResponseCode.SYSTEM_FAILURE;
+						System.out.println("Fail: System Failure");
+						AppUtils.logException(e);
+						String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
+						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+					}
+				} else {
+					responseCode = ResponseCode.EDIT_FAILURE;
+				}
+				QuoteResponse quoteResponse = new QuoteResponse(quote, webMessages);
+				super.sendResponse(conn, response, responseCode, quoteResponse);
+				
+			}  else if ( urlPieces.length >= 2 ) {   //  /<tableName>/<fieldName>/<value> = 3 pieces
+				System.out.println("Doing Update Stuff");				
+				WebMessages webMessages = validateAdd(conn, quoteRequest);
+				if (webMessages.isEmpty()) {
+					System.out.println("passed validation");
+					System.out.println(urlPieces);
 					try {
 						Quote key = new Quote();
 						key.setQuoteId(Integer.parseInt(urlPieces[0]));
@@ -222,7 +449,7 @@ public class QuoteServlet extends AbstractServlet {
 						key.setQuoteNumber(Integer.parseInt(urlPieces[1]));
 						//key.setRevision((urlPieces[2]));
 						System.out.println("Trying to do update");
-						quote = doUpdate(conn, key, quoteRequest, sessionUser);
+						quote = doOldUpdate(conn, key, quoteRequest, sessionUser);
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 						responseCode = ResponseCode.SUCCESS;
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
@@ -260,75 +487,7 @@ public class QuoteServlet extends AbstractServlet {
 	}
 
 
-	protected Quote doAdd(Connection conn, QuoteRequest quoteRequest, SessionUser sessionUser) throws Exception {
-		Date today = new Date();
-		Quote quote = new Quote();
-
-		quote.setAddedBy(sessionUser.getUserId());
-		
-		quote.setAddedDate(today);
-
-		quote.setUpdatedBy(sessionUser.getUserId());
-
-		quote.setUpdatedDate(today);
-		
-//		quote.setAddress(quoteRequest.getAddress());
-		quote.setBillToAddressId(quoteRequest.getBillToAddressId());
-		if ( quoteRequest.getCopiedFromQuoteId() != null) {
-			quote.setCopiedFromQuoteId(quoteRequest.getCopiedFromQuoteId());
-		}
-		quote.setJobSiteAddressId(quoteRequest.getJobSiteAddressId());
-		quote.setLeadType(quoteRequest.getLeadType());
-		quote.setDivisionId(quoteRequest.getDivisionId());
-		quote.setAccountType(quoteRequest.getAccountType());
-		quote.setManagerId(quoteRequest.getManagerId());
-//		quote.setName(quoteRequest.getName());
-//		quote.setPaymentTerms(quoteRequest.getPaymentTerms());
-		
-		if ( quoteRequest.getProposalDate() != null) {
-			quote.setProposalDate(quoteRequest.getProposalDate());
-		}
-		
-		if ( ! StringUtils.isBlank(quoteRequest.getAccountType())) {
-			quote.setAccountType(quoteRequest.getAccountType());
-		}
-//		quote.setQuoteGroupId(quoteRequest.getQuoteGroupId());
-	
-		quote.setQuoteNumber(5000000);
-		quote.setRevision("A");
-			quote.setSignedByContactId(null);
-		
-//		quote.setStatus(quoteRequest.getStatus());
-		quote.setTemplateId(quoteRequest.getTemplateId());
-		System.out.println("Quote servlet Add Data:");
-		System.out.println(quote.toString());
-		int q = 0;
-		try {
-			q = quote.insertWithKey(conn);
-			//System.out.println("QuoteID After Insert? "+ q);
-			
-			
-		} catch ( SQLException e) {
-			if ( e.getMessage().contains("duplicate key")) {
-				throw new DuplicateEntryException();
-			} else {
-				AppUtils.logException(e);
-				throw e;
-			}
-		} 
-			quote.setQuoteId(q);
-			quote.setQuoteNumber(q);
-			
-//			Quote key = new Quote();
-//			key.setQuoteId(q);
-//			key.setQuoteNumber(q);
-			
-			//quote.update(conn, null);
-			return quote;
-	}
-
-
-	protected Quote doUpdate(Connection conn, Quote key, QuoteRequest quoteRequest, SessionUser sessionUser) throws Exception {
+	protected Quote doOldUpdate(Connection conn, Quote key, QuoteRequest quoteRequest, SessionUser sessionUser) throws Exception {
 		System.out.println("This is the key:");
 		System.out.println(key);
 		System.out.println("************");
