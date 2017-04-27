@@ -27,8 +27,6 @@ public class PaymentResponse extends MessageResponse {
 	
 	public PaymentResponse(Connection conn, Integer paymentId) throws RecordNotFoundException, Exception{
 		PaymentTotals paymentTotals = PaymentTotals.select(conn, paymentId);
-		System.out.println("PaymentResponse 30");
-		System.out.println(paymentTotals);
 		if ( paymentTotals.getAppliedAmount() == null ) {
 			paymentTotals.setAppliedAmount(BigDecimal.ZERO);
 		}

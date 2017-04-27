@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.request;
+package com.ansi.scilla.web.request.payment;
 import java.math.BigDecimal;
 import java.util.Date;
 

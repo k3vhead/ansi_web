@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.request;
+package com.ansi.scilla.web.request.payment;
 
 import java.math.BigDecimal;
 //import java.util.Date;
@@ -6,6 +6,9 @@ import java.util.Date;
 import java.util.List;
 
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
+import com.ansi.scilla.web.request.AbstractRequest;
+import com.ansi.scilla.web.request.RequiredForAdd;
+import com.ansi.scilla.web.request.RequiredForUpdate;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 

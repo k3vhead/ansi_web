@@ -199,6 +199,7 @@
         	}
         	
         	function getPayment() {
+        		$("#clearButton").click();
         		var $paymentId = $("#pmtSearchId").val();
         		var $url = 'payment/' + $paymentId;
 				var jqxhr = $.ajax({
@@ -275,6 +276,63 @@
                 }
         	});
         	
+        	
+        	$("#calcButton").click(function($event) {
+        		var $outbound = {};
+        		var $ticketList = [];
+        		$outbound['paymentId'] = $("#paymentSummary .paymentId").html();
+        		$outbound['invoiceId'] = $("#invoiceNbr").val();
+        		$outbound['feeAmount'] = parseFloat($("#feeAmount").val());
+        		$outbound['excessCash'] = parseFloat($("#excessCash").val());
+
+        		
+        		//return '<input tabIndex="'+ $tabIndex +'" type="text" data-ticketId="'+row.ticketId+'" data-balance="'+ row.totalBalance.replace("\$","").replace(",","") +'" class="ticketPayInv ticketPmt" style="width:80px;" />';
+        		//return '<input tabIndex="' + $myTabIndex + '" type="text" data-ticketId="'+row.ticketId+'" data-balance="'+ row.totalBalance.replace("\$","").replace(",","") +'" class="ticketPayTax ticketPmt" style="width:80px;'+$display+'" />';
+
+        		
+        		
+        		$.each( $('#ticketTable tr'), function($row, $value) {
+        			var $inputs = $("input");
+        			var $inputList = $(this).find($inputs);
+        			
+    				var $ticketItem = {};
+    				var $useThisRow = false;
+    				
+        			$.each( $inputList, function($col, $input) {        				
+        				var $ticketId = $(this).attr("data-ticketId");
+        				if ( $ticketId != null && $ticketId != "" ) {
+        					console.debug($ticketId);
+        					$ticketItem["ticketId"] = $ticketId;
+        					
+	            			if ( $(this).hasClass("ticketPayInv") ) {
+	            				var $payInvoice = $(this).val();
+	            				if ( $payInvoice != null && $payInvoice != "" ) {
+	            					$ticketItem["payInvoice"] = $payInvoice;
+	                				$useThisRow = true;
+	            				}
+	            			}
+	            			if ( $(this).hasClass("ticketPayTax") ) {
+	            				var $payTax = $(this).val();
+	            				if ( $payTax != null && $payTax != "" ) {
+	            					$ticketItem["payTax"] = $payTax;
+	                				$useThisRow = true;
+	            				}
+	            			}
+        				}
+        			});
+        			if ( $useThisRow == true ) {
+        				$ticketList.push($ticketItem);	
+        			}
+        			
+        			//var $payInv = $inputList[0];
+        			//var $payTax = $inputList[1];
+        			//console.debug($row + ": PayInv")
+        			//console.debug( $($payInv).val() );
+        		});
+
+				$outbound['ticketList'] = $ticketList;
+				console.debug(JSON.stringify($outbound));
+        	});
         	
         	function populateTicketData($invoiceId) {
         		var $url = 'invoice/' + $invoiceId;        		
@@ -456,12 +514,17 @@
 				            	if(row.totalBalance != null){return (row.totalBalance+"");}
 				            } },
 				            { title: "Pay Inv", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
-				            	$tabIndex = $tabIndex+1;
+				            	$tabIndex = $tabIndex+1;				            	
 			            		return '<input tabIndex="'+ $tabIndex +'" type="text" data-ticketId="'+row.ticketId+'" data-balance="'+ row.totalBalance.replace("\$","").replace(",","") +'" class="ticketPayInv ticketPmt" style="width:80px;" />';
 				            } },
 				            { title: "Pay Tax", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
 				            	$myTabIndex = $tabIndex + $data.ticketList.length;
-			            		return '<input tabIndex="' + $myTabIndex + '" type="text" data-ticketId="'+row.ticketId+'" data-balance="'+ row.totalBalance.replace("\$","").replace(",","") +'" class="ticketPayTax ticketPmt" style="width:80px;" />';
+				            	if ( row.actTaxAmt == "$0.00") {
+				            		$display="display:none;";
+				            	} else {
+				            		$display="";
+				            	}
+			            		return '<input tabIndex="' + $myTabIndex + '" type="text" data-ticketId="'+row.ticketId+'" data-balance="'+ row.totalBalance.replace("\$","").replace(",","") +'" class="ticketPayTax ticketPmt" style="width:80px;'+$display+'" />';
 				            } }
 				            <%-- { title: "Write Off", "defaultContent": "<i></i>", data: function ( row, type, set ) {
 				            	//if(row.invoiceTotal != null){return (row.invoiceTotal+"");}
@@ -559,7 +622,11 @@
 						}
 					});
 					$( ".ticketPayInv").on("change", function() {
-						$fixedValue = parseFloat($(this).val()).toFixed(2);
+						if ( isNaN($(this).val()) ) {
+							$fixedValue = 0;
+						} else {
+							$fixedValue = parseFloat($(this).val()).toFixed(2);
+						}
 						$(this).val($fixedValue);
 						calculateAllTotals();
 					});
@@ -577,7 +644,11 @@
 						}
 					});
 					$( ".ticketPayTax").on("change", function() {
-						$fixedValue = parseFloat($(this).val()).toFixed(2);
+						if ( isNaN($(this).val()) ) {
+							$fixedValue = 0;
+						} else {
+							$fixedValue = parseFloat($(this).val()).toFixed(2);
+						}
 						$(this).val($fixedValue);
 						calculateAllTotals();
 					});

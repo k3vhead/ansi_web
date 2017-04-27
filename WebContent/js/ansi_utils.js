@@ -47,7 +47,7 @@ $( document ).ready(function() {
 		},
 		
 		// get a list of divisions
-		getDivisionList: function($tableName, $fieldName) {
+		getDivisionList: function() {
 			var $returnValue = null;
 			var jqxhr3 = $.ajax({
 				type: 'GET',

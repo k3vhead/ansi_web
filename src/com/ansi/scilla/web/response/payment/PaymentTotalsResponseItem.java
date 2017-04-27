@@ -25,7 +25,7 @@ public class PaymentTotalsResponseItem extends ReportQuery {
 	public static final String APPLIED_AMOUNT = "applied_amount";
 	public static final String APPLIED_TAX_AMT = "applied_tax_amt";
 	public static final String APPLIED_TOTAL = "applied_total";
-	public static final String AVAILABLE = "AVAILABLE";
+	public static final String AVAILABLE = "available";
 	
 	/*
 	 invoice.invoice_id, sum(ticket.act_price_per_cleaning) as invoice_total, " + 

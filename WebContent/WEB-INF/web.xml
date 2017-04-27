@@ -92,6 +92,16 @@
 	</servlet-mapping>
 	
 
+	<servlet>
+		<servlet-name>applyPayment</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.addresses.ApplyPaymentServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>applyPayment</servlet-name>
+		<url-pattern>/applyPayment/*</url-pattern>
+	</servlet-mapping>
+	
+
     <servlet>
 		<servlet-name>autoComplete</servlet-name>
 		<servlet-class>com.ansi.scilla.web.servlets.AutoCompleteDemoServlet</servlet-class>

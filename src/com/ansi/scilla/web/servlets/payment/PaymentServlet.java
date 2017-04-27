@@ -26,7 +26,7 @@ import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.request.PaymentRequest;
+import com.ansi.scilla.web.request.payment.PaymentRequest;
 import com.ansi.scilla.web.response.payment.PaymentResponse;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.ansi.scilla.web.struts.SessionData;
@@ -82,7 +82,6 @@ public class PaymentServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			AppUtils.validateSession(request, Permission.PAYMENT, PermissionLevel.PERMISSION_LEVEL_IS_READ);
 			url = new AnsiURL(request, "payment", (String[])null);
-			System.out.println("Getting: " + url.getId());
 			if ( url.getId() != null ) {
 				PaymentResponse data = new PaymentResponse(conn, url.getId());
 				System.out.println(data);
