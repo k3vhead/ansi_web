@@ -51,6 +51,9 @@
 			.editAction {
 				cursor:pointer;
 			}
+			.swap-name {
+				cursor:pointer;
+			}
         </style>
         
         <script type="text/javascript">
@@ -62,6 +65,13 @@
 				$('html, body').animate({scrollTop: 0}, 800);
 				return false;
       		});
+			
+			$('.swap-name').click(function() {
+				var $tempName = $("#editPanel input[name='firstName']").val();
+				$("#editPanel input[name='firstName']").val(  $("#editPanel input[name='lastName']").val()  );
+				$("#editPanel input[name='lastName']").val($tempName);
+			});
+			
 			
 			$("#showNew").click(function($event) {
 				$('#goEdit').data("contactId",null);
@@ -397,14 +407,14 @@
     <div id="editPanel">
     	<table>
     		<tr>
-    			<td><span class="formHdr">Last Name</span></td>
-    			<td><input type="text" name="lastName" /></td>
-    			<td><span class="err" id="lastNameErr"></span></td>
+    			<td><span class="formHdr">First Name</span></td>
+    			<td><input type="text" name="firstName" /> <i class="fa fa-level-down swap-name" aria-hidden="true"></i></td>
+    			<td><span class="err" id="firstNameErr"></span></td>
     		</tr>
     		<tr>
-    			<td><span class="formHdr">First Name</span></td>
-    			<td><input type="text" name="firstName" /></td>
-    			<td><span class="err" id="firstNameErr"></span></td>
+    			<td><span class="formHdr">Last Name</span></td>
+    			<td></i><input type="text" name="lastName" /> <i class="fa fa-level-up swap-name" aria-hidden="true"></td>
+    			<td><span class="err" id="lastNameErr"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">Business Phone</span></td>
