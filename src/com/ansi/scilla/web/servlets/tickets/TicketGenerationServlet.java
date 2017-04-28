@@ -32,7 +32,7 @@ import com.ansi.scilla.web.struts.SessionUser;
 
 public class TicketGenerationServlet extends AbstractServlet{
 	
-public static final String logName = "com.ansi.scilla.web.response.ticket.ticketGeneration";
+	private static final long serialVersionUID = 1L;
 	
 	
 	
@@ -120,7 +120,8 @@ public static final String logName = "com.ansi.scilla.web.response.ticket.ticket
 		startDate.setTime(generateTicketRequest.getStartDate());
 		endDate.setTime(generateTicketRequest.getEndDate());
 		
-		JobUtils.generateTicketsFromJobSchedule(conn, startDate, endDate, sessionUser.getUserId());
+		
+		JobUtils.generateTicketsFromJobSchedule(conn, generateTicketRequest.getDivisionId(), startDate, endDate, sessionUser.getUserId());
 		conn.commit();
 		WebMessages webMessages = new WebMessages();
 		TicketGenerationResponse data = new TicketGenerationResponse();

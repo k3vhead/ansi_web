@@ -5,6 +5,11 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class TicketGenerationRequest extends AbstractRequest {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Integer divisionId;
 	private Date startDate;
 	private Date endDate;
 	
@@ -28,6 +33,14 @@ public class TicketGenerationRequest extends AbstractRequest {
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
+	}
+
+	public Integer getDivisionId() {
+		return divisionId;
+	}
+
+	public void setDivisionId(Integer divisionId) {
+		this.divisionId = divisionId;
 	}
 	
 	

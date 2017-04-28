@@ -119,82 +119,111 @@
         <script type="text/javascript">
         $( document ).ready(function() {
         	
-        	$('.dateField').datepicker({
-                prevText:'&lt;&lt;',
-                nextText: '&gt;&gt;',
-                showButtonPanel:true
-            });
+        	;TICKET_GEN = {
+        		init : function() {
+                	$('.dateField').datepicker({
+                        prevText:'&lt;&lt;',
+                        nextText: '&gt;&gt;',
+                        showButtonPanel:true
+                    });
 
-			
-			
-			$("#goButton").click(function($event) {				
-				var $startDate = $("#startDate").val();
-				var $endDate = $("#endDate").val();
-				var $outbound = {"startDate":$startDate,"endDate":$endDate};
-
-		       	var jqxhr = $.ajax({
-		       		type: 'POST',
-		       		url: "ticketGeneration/",
-		       		data: JSON.stringify($outbound),
-		       		statusCode: {
-		       			200: function($data) {
-		       				if ( $data.responseHeader.responseCode == 'SUCCESS') {
-		       					$(".err").html("");
-		       					$("#globalMsg").html("Success! Tickets Generated").show();
-		       					$("#startDate").val("");
-		       					$("#endDate").val("");
-							} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-								$('.err').html("");
-								$.each($data.data.webMessages, function(key, messageList) {
-									var identifier = "#" + key + "Err";
-									msgHtml = "<ul>";
-									$.each(messageList, function(index, message) {
-										msgHtml = msgHtml + "<li>" + message + "</li>";
-									});
-									msgHtml = msgHtml + "</ul>";
-									$(identifier).html(msgHtml);
-								});	
-								$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);							
-							} else {
-								$("#globalMsg").html("Unexpected Result: " + $data.responseHeader.responseCode).show();
-							}
-		       			},			       		
-	       				404: function($data) {
-	        	    		$("#globalMsg").html("System Error: Contact Support").show();
-	        	    	},
-						403: function($data) {
-							$("#globalMsg").html("Session Timeout. Log in and try again");
-						},
-		       			500: function($data) {
-	            	    	$("#globalMsg").html("System Error: Contact Support").show();
-	            		},
-		       		},
-		       		dataType: 'json'
-		       	});
-        	});
+                	TICKET_GEN.populateDivisionSelect();
+                	
+        			$("#goButton").click(function($event) {		
+        				TICKET_GEN.go($event);
+                	});
+        			
+        			//$("select").change(function() {
+        			//	TICKET_GEN.markValid($(this));
+        			//});
+        		},		
         	
+                populateDivisionSelect:function() {
+                	$data = ANSI_UTILS.getDivisionList();
+                	$select = $("#divisionId");
+        			$('option', $select).remove();
+        			$select.append(new Option("",null));
+        			$.each($data, function($index, $val) {
+        				var $display = $val.divisionNbr + "-" + $val.divisionCode;
+        				$select.append(new Option($display, $val.divisionId));
+        			});	
+                },
+
+                go : function($event) {
+                	var $divisionId = $("#divisionId").val();
+    				var $startDate = $("#startDate").val();
+    				var $endDate = $("#endDate").val();
+    				var $outbound = {"startDate":$startDate,"endDate":$endDate,"divisionId":$divisionId};
+					console.debug($outbound);
+					
+    		       	var jqxhr = $.ajax({
+    		       		type: 'POST',
+    		       		url: "ticketGeneration/",
+    		       		data: JSON.stringify($outbound),
+    		       		statusCode: {
+    		       			200: function($data) {
+    		       				if ( $data.responseHeader.responseCode == 'SUCCESS') {
+    		       					$(".err").html("");
+    		       					$("#globalMsg").html("Success! Tickets Generated").show();
+    		       					$("#startDate").val("");
+    		       					$("#endDate").val("");
+    							} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+    								$('.err').html("");
+    								$.each($data.data.webMessages, function(key, messageList) {
+    									var identifier = "#" + key + "Err";
+    									msgHtml = "<ul>";
+    									$.each(messageList, function(index, message) {
+    										msgHtml = msgHtml + "<li>" + message + "</li>";
+    									});
+    									msgHtml = msgHtml + "</ul>";
+    									$(identifier).html(msgHtml);
+    								});	
+    								$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);							
+    							} else {
+    								$("#globalMsg").html("Unexpected Result: " + $data.responseHeader.responseCode).show();
+    							}
+    		       			},			       		
+    	       				404: function($data) {
+    	        	    		$("#globalMsg").html("System Error: Contact Support").show();
+    	        	    	},
+    						403: function($data) {
+    							$("#globalMsg").html("Session Timeout. Log in and try again");
+    						},
+    		       			500: function($data) {
+    	            	    	$("#globalMsg").html("System Error: Contact Support").show();
+    	            		},
+    		       		},
+    		       		dataType: 'json'
+    		       	});
+                },
+                
+                markValid : function($inputField) {
+                	$fieldName = $($inputField).attr('name');
+                	$fieldGetter = "input[name='" + $fieldName + "']";
+                	$fieldValue = $($fieldGetter).val();
+                	$valid = '#' + $($inputField).data('valid');
+    	            var re = /.+/;	            	 
+                	if ( re.test($fieldValue) ) {
+                		$($valid).removeClass("fa-ban");
+                		$($valid).removeClass("inputIsInvalid");
+                		$($valid).addClass("fa-check-square-o");
+                		$($valid).addClass("inputIsValid");
+                	} else {
+                		$($valid).removeClass("fa-check-square-o");
+                		$($valid).removeClass("inputIsValid");
+                		$($valid).addClass("fa-ban");
+                		$($valid).addClass("inputIsInvalid");
+                	}
+                }
+
+        	}
+			
 
             
-            function markValid($inputField) {
-            	$fieldName = $($inputField).attr('name');
-            	$fieldGetter = "input[name='" + $fieldName + "']";
-            	$fieldValue = $($fieldGetter).val();
-            	$valid = '#' + $($inputField).data('valid');
-	            var re = /.+/;	            	 
-            	if ( re.test($fieldValue) ) {
-            		$($valid).removeClass("fa-ban");
-            		$($valid).removeClass("inputIsInvalid");
-            		$($valid).addClass("fa-check-square-o");
-            		$($valid).addClass("inputIsValid");
-            	} else {
-            		$($valid).removeClass("fa-check-square-o");
-            		$($valid).removeClass("inputIsValid");
-            		$($valid).addClass("fa-ban");
-            		$($valid).addClass("inputIsInvalid");
-            	}
-            }
+			TICKET_GEN.init();
 			
 			
+	
 			
     });
 
@@ -206,6 +235,11 @@
     	<h1>Ticket Generation</h1>
     	
     	<table>
+    		<tr>
+    			<td><span class="formHdr">Division: </span></td>
+    			<td><select id="divisionId" data-valid="validDivisionId"></select><span id="validDivisionId"></span></td>
+    			<td><span class="err" id="divisionIdErr"></span></td>
+    		</tr>
     		<tr>
     			<td><span class="formHdr">Start Date: </span></td>
     			<td><input type="text" id="startDate" class="dateField" /></td>
