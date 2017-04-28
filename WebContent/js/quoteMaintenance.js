@@ -238,8 +238,6 @@ $( document ).ready(function() {
 			},
 			save: function(){
 				$outbound = {};
-	       		$outbound["quoteNumber"]		=	$("select[name=quoteNumber]").val();
-	       		$outbound["revisionNumber"]		=	$("select[name=revision]").val();
         		$outbound["managerId"]		=	$("select[name=manager]").val();
         		$outbound["leadType"]		=	$("select[name=leadType").val();
         		$outbound["accountType"]	=	$("select[name=accountType").val();
@@ -279,6 +277,8 @@ $( document ).ready(function() {
 					success: function($data) {
 						if ( $data.responseHeader.responseCode == 'SUCCESS') {
 							
+//							$("input[name=quoteId]").val($data.data.quote.quoteId);//gag
+							$globalQuoteId =	$data.data.quote.quoteId;//gag
 							$("input[name=quoteNumber]").val($data.data.quote.quoteNumber);
 							$("input[name=revision]").val($data.data.quote.revision);
 							console.log("Save Success");
@@ -320,8 +320,6 @@ $( document ).ready(function() {
 			update: function(){
 				$outbound = {};
 				
-	       		$outbound["quoteNumber"]		=	$("select[name=quoteNumber]").val();
-	       		$outbound["revisionNumber"]		=	$("select[name=revision]").val();
 	       	 	$outbound["leadType"]		=	$("select[name=leadType").val();
         		$outbound["accountType"]	=	$("select[name=accountType").val();
         		$outbound["divisionId"]	=	$("select[name=division]").val();
@@ -336,10 +334,13 @@ $( document ).ready(function() {
         		console.log("Update Outbound: ");
         		console.log($outbound);
 
-        		$url = "quote/"+$globalQuoteId+"/"+$("input[name=quoteNumber]").val();
+        		$url = "quote/"+$globalQuoteId+"/"+$("input[name=quoteNumber]").val()+"/"+$("input[name=revision]").val();
+//        		$url = "quote/"+$("input[name=quoteId]").val()+"/"+$("input[name=quoteNumber]").val()+"/"+$("input[name=revision]").val();
 //        		$url = "quote/"+$("input[name=quoteNumber]").val();
 //				console.log($outbound);
-				var jqxhr = $.ajax({
+				alert(JSON.stringify($outbound));
+				alert($url);
+        		var jqxhr = $.ajax({
 					type: 'POST',
 					url: $url,
 					data: JSON.stringify($outbound),
