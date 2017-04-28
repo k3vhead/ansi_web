@@ -94,7 +94,7 @@
 
 	<servlet>
 		<servlet-name>applyPayment</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.addresses.ApplyPaymentServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.servlets.payment.ApplyPaymentServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>applyPayment</servlet-name>

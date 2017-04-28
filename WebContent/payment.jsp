@@ -285,12 +285,6 @@
         		$outbound['feeAmount'] = parseFloat($("#feeAmount").val());
         		$outbound['excessCash'] = parseFloat($("#excessCash").val());
 
-        		
-        		//return '<input tabIndex="'+ $tabIndex +'" type="text" data-ticketId="'+row.ticketId+'" data-balance="'+ row.totalBalance.replace("\$","").replace(",","") +'" class="ticketPayInv ticketPmt" style="width:80px;" />';
-        		//return '<input tabIndex="' + $myTabIndex + '" type="text" data-ticketId="'+row.ticketId+'" data-balance="'+ row.totalBalance.replace("\$","").replace(",","") +'" class="ticketPayTax ticketPmt" style="width:80px;'+$display+'" />';
-
-        		
-        		
         		$.each( $('#ticketTable tr'), function($row, $value) {
         			var $inputs = $("input");
         			var $inputList = $(this).find($inputs);
@@ -301,7 +295,6 @@
         			$.each( $inputList, function($col, $input) {        				
         				var $ticketId = $(this).attr("data-ticketId");
         				if ( $ticketId != null && $ticketId != "" ) {
-        					console.debug($ticketId);
         					$ticketItem["ticketId"] = $ticketId;
         					
 	            			if ( $(this).hasClass("ticketPayInv") ) {
@@ -323,15 +316,36 @@
         			if ( $useThisRow == true ) {
         				$ticketList.push($ticketItem);	
         			}
-        			
-        			//var $payInv = $inputList[0];
-        			//var $payTax = $inputList[1];
-        			//console.debug($row + ": PayInv")
-        			//console.debug( $($payInv).val() );
         		});
 
 				$outbound['ticketList'] = $ticketList;
 				console.debug(JSON.stringify($outbound));
+				
+				var jqxhr = $.ajax({
+	   				type: 'POST',
+	   				url: "applyPayment/verify",
+	   				data: JSON.stringify($outbound),
+	   				statusCode: {
+		   				200: function($data) {
+		   					console.debug($data);		   					
+		   				},
+	   					403: function($data) {
+		   					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+		   				},
+		   				404: function($data) {
+		   					$("#globalMsg").html("System Error 404: Contact Support").show();
+		   				},
+		   				405: function($data) {
+		   					$("#globalMsg").html("System Error 405: Contact Support").show();
+		   				},
+		   				500: function($data) {
+	        	    		$("#globalMsg").html("System Error 500: Contact Support").show();
+	        	    	} 
+		   			},
+		   			dataType: 'json'
+		   		});      
+				
+				
         	});
         	
         	function populateTicketData($invoiceId) {
@@ -515,7 +529,7 @@
 				            } },
 				            { title: "Pay Inv", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
 				            	$tabIndex = $tabIndex+1;				            	
-			            		return '<input tabIndex="'+ $tabIndex +'" type="text" data-ticketId="'+row.ticketId+'" data-balance="'+ row.totalBalance.replace("\$","").replace(",","") +'" class="ticketPayInv ticketPmt" style="width:80px;" />';
+			            		return '<input tabIndex="'+ $tabIndex +'" type="text" data-ticketId="'+row.ticketId+'" data-paid="'+ row.totalVolPaid.replace("\$","").replace(",","") +'" data-amount="'+ row.actPricePerCleaning.replace("\$","").replace(",","") +'" class="ticketPayInv ticketPmt" style="width:80px;" />';
 				            } },
 				            { title: "Pay Tax", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
 				            	$myTabIndex = $tabIndex + $data.ticketList.length;
@@ -524,7 +538,7 @@
 				            	} else {
 				            		$display="";
 				            	}
-			            		return '<input tabIndex="' + $myTabIndex + '" type="text" data-ticketId="'+row.ticketId+'" data-balance="'+ row.totalBalance.replace("\$","").replace(",","") +'" class="ticketPayTax ticketPmt" style="width:80px;'+$display+'" />';
+			            		return '<input tabIndex="' + $myTabIndex + '" type="text" data-ticketId="'+row.ticketId+'" data-paid="'+ row.totalTaxPaid.replace("\$","").replace(",","") +'" data-amount="'+ row.actTaxAmt.replace("\$","").replace(",","") +'" class="ticketPayTax ticketPmt" style="width:80px;'+$display+'" />';
 				            } }
 				            <%-- { title: "Write Off", "defaultContent": "<i></i>", data: function ( row, type, set ) {
 				            	//if(row.invoiceTotal != null){return (row.invoiceTotal+"");}
@@ -611,7 +625,7 @@
 					$( ".ticketPayInv").on("focus", function() {
 						if ( $(this).val() == null || $(this).val() == "" ) {
 							// figure default amount to apply
-							$balance = parseFloat($(this).data("balance"));
+							$balance = parseFloat($(this).data("amount") - parseFloat($(this).data("paid")));
 							$totalPay = calcTotalPay();
 							$available = $unappliedAmount - $totalPay;
 							$toPay = Math.min($balance, $available)
@@ -633,10 +647,10 @@
 					$( ".ticketPayTax").on("focus", function() {
 						if ( $(this).val() == null || $(this).val() == "" ) {
 							// figure default amount to apply
-							$balance = parseFloat($(this).data("balance"));
+							$taxBalance = parseFloat($(this).data("amount") - parseFloat($(this).data("paid")));
 							$totalPay = calcTotalPay();
 							$available = $unappliedAmount - $totalPay;
-							$toPay = Math.min($balance, $available)
+							$toPay = Math.min($taxBalance, $available)
 							$(this).val($toPay.toFixed(2));
 							// calculate totals
 							calculateAllTotals();

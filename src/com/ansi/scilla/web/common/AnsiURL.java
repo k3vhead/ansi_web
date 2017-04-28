@@ -53,7 +53,7 @@ public class AnsiURL extends ApplicationWebObject {
 		String searchString = "/" + expectedRealm + "/";
 		int idx = request.getRequestURI().indexOf(searchString);
 		if ( idx < 0 ) {
-			throw new ResourceNotFoundException();
+			throw new ResourceNotFoundException("No realm");
 		}
 		String myString = request.getRequestURI().substring(idx + 1);
 		String[] pieces = myString.split("/");
@@ -61,11 +61,11 @@ public class AnsiURL extends ApplicationWebObject {
 		this.realm = pieces[0];
 		if ( ! this.realm.equals(expectedRealm)) {
 			// this shouldn't ever happen, because we just looked for the realm, but it makes me happy to have it here
-			throw new ResourceNotFoundException();
+			throw new ResourceNotFoundException("Wrong realm");
 		}
 		if ( pieces.length == 1 && expectedCommandList != null ) {
 			// we have no command, but we're expecting one
-			throw new ResourceNotFoundException();
+			throw new ResourceNotFoundException("Extra command");
 		}
 		if ( pieces.length > 1 ) {
 			if ( StringUtils.isNumeric(pieces[1])) {
@@ -93,16 +93,16 @@ public class AnsiURL extends ApplicationWebObject {
 				// both command and expected are empty; we're getting what we expected
 			} else {
 				// no command, but we're expecting something
-				throw new ResourceNotFoundException();
+				throw new ResourceNotFoundException("Missing Command");
 			}
 		} else {
 			if ( expectedCommandList == null ) {
 				// we have a command, but we're not expecting anything
-				throw new ResourceNotFoundException();
+				throw new ResourceNotFoundException("Extra command");
 			} else {
 				// we have a command, and we're expecting something; do they match?
 				if ( ! ArrayUtils.contains(expectedCommandList, this.command)) {
-					throw new ResourceNotFoundException();
+					throw new ResourceNotFoundException("Invalid command");
 				}
 			}
 		}
