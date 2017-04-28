@@ -98,7 +98,7 @@ public class QuoteServlet extends AbstractServlet {
 			
 			Quote quote = new Quote();
 			if(parsedUrl.quoteNumber != null){
-				quote.setQuoteId(Integer.parseInt(parsedUrl.quoteNumber));
+				quote.setQuoteId(Integer.parseInt(parsedUrl.quoteId));
 			} 
 			
 			quote.delete(conn);
@@ -221,7 +221,7 @@ public class QuoteServlet extends AbstractServlet {
 						key.setQuoteId(Integer.parseInt(urlPieces[1]));
 //						key.setQuoteId(Integer.parseInt(urlPieces[0]));
 //						key.selectOne(conn);
-						System.out.println("Trying to do update");
+						System.out.println("Trying to do update for quote "+key.getQuoteId());
 						quote = doUpdate(conn, key, quoteRequest, sessionUser);
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 						responseCode = ResponseCode.SUCCESS;
@@ -319,7 +319,7 @@ public class QuoteServlet extends AbstractServlet {
 			}
 		} 
 			quote.setQuoteId(q);
-			quote.setQuoteNumber(q);
+//			quote.setQuoteNumber(q);
 			
 //			Quote key = new Quote();
 //			key.setQuoteId(q);
@@ -336,8 +336,10 @@ public class QuoteServlet extends AbstractServlet {
 		System.out.println("************");
 		Date today = new Date();
 		Quote quote = new Quote();
-	
-//		quote.setQuoteId(quoteRequest.getQuoteId());
+		quote.setQuoteId(key.getQuoteId());
+		quote.selectOne(conn);
+
+		//		quote.setQuoteId(quoteRequest.getQuoteId());
 	
 		quote.setUpdatedBy(sessionUser.getUserId());
 		quote.setUpdatedDate(today);
@@ -349,8 +351,8 @@ public class QuoteServlet extends AbstractServlet {
 		
 //		quote.setAddress(quoteRequest.getAddress());
 		quote.setBillToAddressId(quoteRequest.getBillToAddressId());
-		quote.setQuoteNumber(quoteRequest.getQuoteNumber());
-		quote.setRevision(quoteRequest.getRevisionNumber());
+//		quote.setQuoteNumber(quoteRequest.getQuoteNumber());
+//		quote.setRevision(quoteRequest.getRevisionNumber());
 		quote.setCopiedFromQuoteId(quoteRequest.getCopiedFromQuoteId());
 		quote.setJobSiteAddressId(quoteRequest.getJobSiteAddressId());
 		quote.setLeadType(quoteRequest.getLeadType());
@@ -573,6 +575,7 @@ public class QuoteServlet extends AbstractServlet {
 	public class ParsedUrl extends ApplicationObject {
 		private static final long serialVersionUID = 1L;
 
+		public String quoteId;
 		public String quoteNumber;
 		public String revisionNumber;
 		public ParsedUrl(String url) throws RecordNotFoundException {
@@ -585,10 +588,13 @@ public class QuoteServlet extends AbstractServlet {
 //			AppUtils.logException(new Exception(myString));
 			String[] urlPieces = myString.split("/");
 			if ( urlPieces.length >= 1 ) {
-				this.quoteNumber = (urlPieces[0]);
+				this.quoteId = (urlPieces[0]);
 			}
 			if ( urlPieces.length >= 2 ) {
-				this.revisionNumber = (urlPieces[1]);
+				this.quoteNumber = (urlPieces[1]);
+			}
+			if ( urlPieces.length >= 3 ) {
+				this.revisionNumber = (urlPieces[2]);
 			}
 		
 		}
