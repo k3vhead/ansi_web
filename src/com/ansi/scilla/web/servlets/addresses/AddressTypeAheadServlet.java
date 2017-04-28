@@ -119,7 +119,10 @@ public class AddressTypeAheadServlet extends AbstractServlet {
 										+ " OR lower(city) like '%" + term + "%'"
 										+ " OR lower(state) like '%" + term + "%'"
 										+ " OR lower(county) like '%" + term + "%'"
-										+ " OR lower(zip) like '%" + term + "%'";
+										+ " OR lower(zip) like '%" + term + "%'"
+										+ " ORDER BY name "
+										+ " OFFSET 0 ROWS"
+										+ " FETCH NEXT 500 ROWS ONLY";
 								Statement s = conn.createStatement();
 								ResultSet rs = s.executeQuery(sql);
 								while ( rs.next() ) {
