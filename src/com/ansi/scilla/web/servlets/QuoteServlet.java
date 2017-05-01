@@ -30,18 +30,18 @@ import com.ansi.scilla.web.response.quote.QuoteResponse;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 /**
- * The url for delete will be of the form /quote/&lt;quoteId&gt;/<quoteNumber>/<revisionNumber>
+ * The url for delete will be of the form /quote/&lt;quoteId&gt;/<quoteNumber>/<revision>
  * 
  * The url for get will be one of:
  * 		/quote    (retrieves everything)
- * 		/quote/&lt;quoteNumber&gt;	(filters quote table quoteId and quoteNumber
- * 		/quote/&lt;quoteNumber&gt;/&lt;revisionNumber&gt;	(retrieves a single record)
+ * 		/quote/&lt;quoteId&gt;	(filters quote table quoteId and quoteNumber
+ * 		/quote/&lt;quoteId&gt;/&lt;quoteNumber&gt;/&lt;revision&gt;	(retrieves a single record)
  * 
  * The url for adding a new record will be a POST to:
  * 		/quote/add   with parameters in the JSON
  * 
  * The url for update will be a POST to:
- * 		/quote/&lt;quoteNumber&gt;/&lt;revisionNumber&gt; with parameters in the JSON
+ * 		/quote/&lt;quoteId&gt;/&lt;quoteNumber&gt;/&lt;revision&gt; with parameters in the JSON
  * 
  * 
  * 
@@ -97,7 +97,7 @@ public class QuoteServlet extends AbstractServlet {
 			conn.setAutoCommit(false);
 			
 			Quote quote = new Quote();
-			if(parsedUrl.quoteNumber != null){
+			if(parsedUrl.quoteId != null){
 				quote.setQuoteId(Integer.parseInt(parsedUrl.quoteId));
 			} 
 			
@@ -129,14 +129,14 @@ public class QuoteServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_READ);
 			
-			if ( parsedUrl.quoteNumber.equals("list")) {
+			if ( parsedUrl.quoteId.equals("list")) {
 				// we're getting all the codes in the database
 				QuoteListResponse quotesListResponse = makeQuotesListResponse(conn);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, quotesListResponse);
-			} else if(parsedUrl.quoteNumber.equals("delete")){
+			} else if(parsedUrl.quoteId.equals("delete")){
 				doNewDelete(request,response);			
 			} else {
-				QuoteListResponse quotesListResponse = makeFilteredListResponse(conn, parsedUrl);
+				QuoteListResponse quotesListResponse = makeFilteredListResponse(conn, parsedUrl.quoteId);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, quotesListResponse);
 			}
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
@@ -218,8 +218,8 @@ public class QuoteServlet extends AbstractServlet {
 					System.out.println(urlPieces);
 					try {
 						Quote key = new Quote();
-						key.setQuoteId(Integer.parseInt(urlPieces[1]));
-//						key.setQuoteId(Integer.parseInt(urlPieces[0]));
+//						key.setQuoteId(Integer.parseInt(urlPieces[1]));
+						key.setQuoteId(Integer.parseInt(urlPieces[0]));
 //						key.selectOne(conn);
 						System.out.println("Trying to do update for quote "+key.getQuoteId());
 						quote = doUpdate(conn, key, quoteRequest, sessionUser);
@@ -241,6 +241,11 @@ public class QuoteServlet extends AbstractServlet {
 					responseCode = ResponseCode.EDIT_FAILURE;
 				}
 				QuoteResponse codeResponse = new QuoteResponse(quote, webMessages);
+				System.out.println("Response:");
+				System.out.println("responseCode: " + responseCode);
+				System.out.println("codeResponse: " + codeResponse);
+				System.out.println("response: " + response);
+
 				super.sendResponse(conn, response, responseCode, codeResponse);
 			} else {
 				super.sendNotFound(response);
@@ -369,7 +374,10 @@ public class QuoteServlet extends AbstractServlet {
 	
 //		quote.setQuoteNumber(AppUtils.getNextQuoteNumber(conn));
 //		quote.setRevision(App);
-		quote.setSignedByContactId(quoteRequest.getSignedByContactId());
+		if ( (quoteRequest.getSignedByContactId() != null) && (quoteRequest.getSignedByContactId() != 0) ) {
+			System.out.println("signed by: " + quoteRequest.getSignedByContactId());
+			quote.setSignedByContactId(quoteRequest.getSignedByContactId());
+		}
 		quote.setTemplateId(quoteRequest.getTemplateId());
 		
 //		 if we update something that isn't there, a RecordNotFoundException gets thrown
@@ -538,7 +546,12 @@ public class QuoteServlet extends AbstractServlet {
 	}
 
 	private QuoteListResponse makeFilteredListResponse(Connection conn, ParsedUrl parsedUrl) throws Exception {
-		QuoteListResponse quoteListResponse = new QuoteListResponse(conn, parsedUrl.quoteNumber, parsedUrl.revisionNumber);
+		QuoteListResponse quoteListResponse = new QuoteListResponse(conn, parsedUrl.quoteNumber, parsedUrl.revision);
+		return quoteListResponse;
+	}
+
+	private QuoteListResponse makeFilteredListResponse(Connection conn, String quoteId) throws Exception {
+		QuoteListResponse quoteListResponse = new QuoteListResponse(conn, quoteId);
 		return quoteListResponse;
 	}
 
@@ -577,7 +590,7 @@ public class QuoteServlet extends AbstractServlet {
 
 		public String quoteId;
 		public String quoteNumber;
-		public String revisionNumber;
+		public String revision;
 		public ParsedUrl(String url) throws RecordNotFoundException {
 			int idx = url.indexOf("/quote/");	
 			if ( idx < 0 ) {
@@ -594,7 +607,7 @@ public class QuoteServlet extends AbstractServlet {
 				this.quoteNumber = (urlPieces[1]);
 			}
 			if ( urlPieces.length >= 3 ) {
-				this.revisionNumber = (urlPieces[2]);
+				this.revision = (urlPieces[2]);
 			}
 		
 		}
