@@ -40,13 +40,22 @@ public class QuoteListResponse extends MessageResponse implements Serializable {
 		//Collections.sort(this.quoteList);
 	}
 
-	public QuoteListResponse(Connection conn, String quoteNumber, String revisionNumber) throws Exception {
+	public QuoteListResponse(Connection conn, String quoteNumber, String revision) throws Exception {
 		Quote key = new Quote();
-		key.setQuoteId(Integer.parseInt(quoteNumber));
+		key.setQuoteNumber(Integer.parseInt(quoteNumber));
+		key.setRevision(revision);		
 		
-		//key.setQuoteNumber(Integer.parseInt(quoteNumber));
-		key.setRevision(revisionNumber);
-		
+		List<Quote> quoteList = Quote.cast(key.selectSome(conn));
+		this.quoteList = new ArrayList<QuoteResponseRecord>();
+		for ( Quote quote : quoteList ) {
+			this.quoteList.add(new QuoteResponseRecord(conn, quote));
+		}
+		//Collections.sort(this.quoteList);
+	}
+
+	public QuoteListResponse(Connection conn, String quoteId) throws Exception {
+		Quote key = new Quote();
+		key.setQuoteId(Integer.parseInt(quoteId));
 		
 		List<Quote> quoteList = Quote.cast(key.selectSome(conn));
 		this.quoteList = new ArrayList<QuoteResponseRecord>();
