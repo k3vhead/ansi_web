@@ -45,6 +45,9 @@
         	#paymentModal {
         		display:none;
         	}
+        	#confirmPaymentModal {
+        		display:none;
+        	}
         	.formHdr {
         		font-weight:bold;
         	}
@@ -61,6 +64,10 @@
 			}
 			#applyButton {
 				display:none;
+			}
+			.confirmCurrency {
+				text-align:right;
+				padding-left:8px;
 			}
         </style>
         
@@ -83,7 +90,7 @@
 			});
         	
 
-			// set up the activate job modal window
+			// set up the activate payment modal window
 			$( "#paymentModal" ).dialog({
 				title:'Payment',
 				autoOpen: false,
@@ -113,6 +120,37 @@
 				//}
 			});
 			
+			
+			
+			// set up the confirmation modal window
+			$( "#confirmPaymentModal" ).dialog({
+				title:'Confirm Payment Details',
+				autoOpen: false,
+				height: 250,
+				width: 400,
+				modal: true,
+				closeOnEscape:true,
+				//open: function(event, ui) {
+				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+				//},
+				buttons: [
+					{
+						id: "closeConfirm",
+						click: function() {
+							$("#confirmPaymentModal").dialog( "close" );
+						}
+					},{
+						id: "goConfirm",
+						click: function($event) {
+							goApplyPayment();
+						}
+					}
+				]
+				//,close: function() {
+				//	$("#paymentModal").dialog( "close" );
+	      	    //    //allFields.removeClass( "ui-state-error" );
+				//}
+			});
 			
         	$('.dateField').datepicker({
                 prevText:'&lt;&lt;',
@@ -327,7 +365,19 @@
 	   				data: JSON.stringify($outbound),
 	   				statusCode: {
 		   				200: function($data) {
-		   					console.debug($data);		   					
+		   					console.debug($data);
+		   	        		$('#closeConfirm').button('option', 'label', 'Cancel');
+		   	        		$('#goConfirm').button('option', 'label', 'Save');
+		   	        		
+		   	     			$("#confirmPaymentModal .availableFromPayment").html($data.data.availableFromPayment);
+		   	     			$("#confirmPaymentModal .invoiceBalance").html($data.data.invoiceBalance);
+		   	     			$("#confirmPaymentModal .totalPayInvoice").html($data.data.totalPayInvoice);
+		   	     			$("#confirmPaymentModal .totalPayTax").html($data.data.totalPayTax);
+		   	     			$("#confirmPaymentModal .excessCash").html($data.data.excessCash);
+		   	 				$("#confirmPaymentModal .feeAmount").html($data.data.feeAmount);
+ 	     					$("#confirmPaymentModal .unappliedAmount").html($data.data.unappliedAmount);
+		   	        		$("#confirmPaymentModal").data("applyPaymentRequest", $data.data.applyPaymentRequest);
+		   	        	    $('#confirmPaymentModal').dialog( "open" );
 		   				},
 	   					403: function($data) {
 		   					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
@@ -669,6 +719,34 @@
 				}
         
 
+				function goApplyPayment() {
+					$outbound = $("#confirmPaymentModal").data("applyPaymentRequest");
+					console.debug($outbound);
+					
+					var jqxhr = $.ajax({
+		   				type: 'POST',
+		   				url: "applyPayment/commit",
+		   				data: JSON.stringify($outbound),
+		   				statusCode: {
+			   				200: function($data) {   							   					
+			   					$("#confirmMessageText").html("Payment Committed").show().fadeOut(3000);
+			   					//$("#confirmPaymentModal").dialog("close");
+			   					console.debug($data);
+			   				},
+		   					403: function($data) {
+			   					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+			   				},
+			   				404: function($data) {
+			   					$("#pmtSearchIdErr").html("Invalid Payment Id").show().fadeOut(10000);
+			   				},
+			   				500: function($data) {
+		        	    		$("#globalMsg").html("System Error: Contact Support").fadeIn(10000);
+		        	    	} 
+			   			},
+			   			dataType: 'json'
+			   		});        	
+				}
+				
 				function formatCurrency($amount) {
 					return "$" + $amount.toFixed(2);
 				}
@@ -901,6 +979,43 @@
 				</table>
 			</form>
     	</div>
+    	
+    	
+    	<div id="confirmPaymentModal">
+    		<span class="err" id="confirmMessageText"></span>
+    		<table>
+    			<tr>
+    				<td><span class="formHdr">Available from Payment:</span></td>
+    				<td class="confirmCurrency"><span class="availableFromPayment"></span></td>
+    			</tr>
+    			<tr>
+    				<td><span class="formHdr">Invoice Balance:</span></td>
+    				<td class="confirmCurrency"><span class="invoiceBalance"></span></td>
+    			</tr>
+    			<tr>
+    				<td><span class="formHdr">Total Pay Invoice:</span></td>
+    				<td class="confirmCurrency"><span class="totalPayInvoice"></span></td>
+    			</tr>
+    			<tr>
+    				<td><span class="formHdr">Total Pay Tax:</span></td>
+    				<td class="confirmCurrency"><span class="totalPayTax"></span></td>
+    			</tr>
+    			<tr>
+    				<td><span class="formHdr">Excess Cash:</span></td>
+    				<td class="confirmCurrency"><span class="excessCash"></span></td>
+    			</tr>
+    			<tr>
+    				<td><span class="formHdr">Fee Amount:</span></td>
+    				<td class="confirmCurrency"><span class="feeAmount"></span></td>
+    			</tr>
+    			<tr>
+    				<td><span class="formHdr">Unapplied Amount:</span></td>
+    				<td class="confirmCurrency"><span class="unappliedAmount"></span></td>
+    			</tr>
+    		</table>
+    	</div>
+    	
+    	
     </tiles:put>
 
 </tiles:insert>

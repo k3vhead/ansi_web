@@ -1,7 +1,12 @@
 package com.ansi.scilla.web.servlets.payment;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Connection;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -9,7 +14,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.PermissionLevel;
+import com.ansi.scilla.common.db.Ticket;
+import com.ansi.scilla.common.db.TicketPayment;
+import com.ansi.scilla.common.jobticket.TicketStatus;
+import com.ansi.scilla.common.jobticket.TicketType;
 import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.Permission;
@@ -51,19 +61,11 @@ public class ApplyPaymentServlet extends AbstractServlet {
 			SessionUser sessionUser = sessionData.getUser();
 
 			PaymentRequestType requestType = PaymentRequestType.valueOf(url.getCommand().toUpperCase());
-			if ( ! StringUtils.isBlank(url.getCommand())) {
-				ApplyPaymentResponse data = new ApplyPaymentResponse();
-				if ( requestType.equals(PaymentRequestType.VERIFY)) {
-					data = doVerify(conn, paymentRequest);
-				} else if ( requestType.equals(PaymentRequestType.COMMIT)) {
-					doCommit();
-				} else {
-					throw new ResourceNotFoundException();
-				}
-				data.setApplyPaymentRequest(paymentRequest);				
-				super.sendResponse(conn, response, ResponseCode.SUCCESS, data); 
+			if ( StringUtils.isBlank(url.getCommand())) {
+				throw new ResourceNotFoundException();				 
 			} else {
-				throw new ResourceNotFoundException();
+				ApplyPaymentResponse data = processRequest(conn, requestType, paymentRequest, sessionUser);
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
 			}
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
 			super.sendForbidden(response);
@@ -81,32 +83,49 @@ public class ApplyPaymentServlet extends AbstractServlet {
 
 
 
-	private ApplyPaymentResponse doVerify(Connection conn, ApplyPaymentRequest paymentRequest) throws RecordNotFoundException, Exception {
-		System.out.println("Doing Verify");
-		System.out.println(paymentRequest);
-		InvoiceTicketResponse invoiceData = new InvoiceTicketResponse(conn, paymentRequest.getInvoiceId());
-		PaymentResponse paymentData = new PaymentResponse(conn, paymentRequest.getPaymentId());
+	private ApplyPaymentResponse processRequest(Connection conn, PaymentRequestType requestType, ApplyPaymentRequest paymentRequest,
+			SessionUser sessionUser) throws RecordNotFoundException, Exception {
+		ApplyPaymentResponse data = new ApplyPaymentResponse();
+		ApplyPaymentDetail detail =  new ApplyPaymentDetail(conn, paymentRequest);
 
-		Double excessCash = paymentRequest.getExcessCash() == null ? 0.0D : paymentRequest.getExcessCash();
-		Double feeAmount = paymentRequest.getFeeAmount() == null ? 0.0D : paymentRequest.getFeeAmount();
+		
+		if ( requestType.equals(PaymentRequestType.VERIFY)) {
+			data = doVerify(conn, detail);
+		} else if ( requestType.equals(PaymentRequestType.COMMIT)) {
+			data = doCommit(conn, detail, sessionUser);
+		} else {
+			throw new ResourceNotFoundException();
+		}
+		data.setApplyPaymentRequest(paymentRequest);				
+
+		return data;
+	}
+
+
+
+	private ApplyPaymentResponse doVerify(Connection conn, ApplyPaymentDetail detail) throws RecordNotFoundException, Exception {
 		ApplyPaymentResponse response = new ApplyPaymentResponse();
-		response.setExcessCash(excessCash);
-		response.setFeeAmount(feeAmount);
-		response.setAvailableFromPayment(paymentData.getPaymentTotals().getAvailable().doubleValue());
-		response.setInvoiceBalance(invoiceData.getTotalBalance().doubleValue());
+		response.setExcessCash(detail.excessCash);
+		response.setFeeAmount(detail.feeAmount);
+		response.setAvailableFromPayment(detail.availableFromPayment);
+		response.setInvoiceBalance(detail.invoiceBalance);
 		
 		Double totalPayInvoice = 0.0D;
 		Double totalPayTax = 0.0D;
-		for ( ApplyPaymentRequestItem item : paymentRequest.getTicketList()) {
+		for ( ApplyPaymentRequestItem item : detail.ticketList) {
 			Double payInvoice = item.getPayInvoice() == null ? 0.0D : item.getPayInvoice();
 			Double payTax = item.getPayTax() == null ? 0.0D : item.getPayTax();
 			totalPayInvoice = totalPayInvoice + payInvoice;
 			totalPayTax = totalPayTax + payTax;
 		}
-		response.setTotalPayInvoice(totalPayInvoice);
-		response.setTotalPayTax(totalPayTax);
+		response.setTotalPayInvoice(new BigDecimal(totalPayInvoice));
+		response.setTotalPayTax(new BigDecimal(totalPayTax));
 		
-		Double unappliedAmount = paymentData.getPaymentTotals().getAvailable().doubleValue() - totalPayInvoice - totalPayTax - paymentRequest.getExcessCash() - paymentRequest.getFeeAmount();
+		BigDecimal unappliedAmount = detail.availableFromPayment;
+		unappliedAmount = unappliedAmount.subtract(new BigDecimal(totalPayInvoice));
+		unappliedAmount = unappliedAmount.subtract(new BigDecimal(totalPayTax));
+		unappliedAmount = unappliedAmount.subtract(detail.excessCash);
+		unappliedAmount = unappliedAmount.subtract(detail.feeAmount);
 		response.setUnappliedAmount(unappliedAmount);
 		
 		return response;
@@ -114,14 +133,156 @@ public class ApplyPaymentServlet extends AbstractServlet {
 
 
 
-	private void doCommit() {
-		throw new RuntimeException("Not yet coded");
+	private ApplyPaymentResponse doCommit(Connection conn, ApplyPaymentDetail detail, SessionUser sessionUser) throws Exception {
+		ApplyPaymentResponse response = new ApplyPaymentResponse(); 
+		Double totalPayInvoice = 0.0D;
+		Double totalPayTax = 0.0D;
+		
+		for ( ApplyPaymentRequestItem item : detail.ticketList) {
+			if ( item.getPayInvoice() != null ) {
+				totalPayInvoice = totalPayInvoice + item.getPayInvoice();
+			}
+			if ( item.getPayTax() != null ) {
+				totalPayTax = totalPayTax + item.getPayTax();
+			}
+			makeTicketPayment(conn, detail.paymentId, detail.invoiceId, item, sessionUser);
+		}
+		if ( detail.excessCash.compareTo(BigDecimal.ZERO) > 0  || detail.feeAmount.compareTo(BigDecimal.ZERO) > 0 ) {
+			Ticket ticketPattern = new Ticket();
+			ticketPattern.setTicketId(detail.ticketList.get(0).getTicketId());
+			ticketPattern.selectOne(conn);
+			if ( detail.excessCash.compareTo(BigDecimal.ZERO) > 0 ) {
+				makeTicket(conn, TicketType.EXCESS, ticketPattern, detail.paymentId, detail.invoiceId, detail.excessCash, sessionUser);
+			}
+			if ( detail.feeAmount.compareTo(BigDecimal.ZERO) > 0 ) {
+				makeTicket(conn, TicketType.FEE, ticketPattern, detail.paymentId, detail.invoiceId, detail.feeAmount, sessionUser);
+			}
+		}
+		conn.rollback();
+		
+		BigDecimal unappliedAmount = detail.availableFromPayment;
+		unappliedAmount = unappliedAmount.subtract(new BigDecimal(totalPayInvoice));
+		unappliedAmount = unappliedAmount.subtract(new BigDecimal(totalPayTax));
+		unappliedAmount = unappliedAmount.subtract(detail.excessCash);
+		unappliedAmount = unappliedAmount.subtract(detail.feeAmount);
+		response.setUnappliedAmount(unappliedAmount);
+
+		return response;
 	}
+
+
+	
+
+	private void makeTicket(Connection conn, TicketType ticketType, Ticket ticketPattern, Integer paymentId, Integer invoiceId,
+			BigDecimal amount, SessionUser sessionUser) throws Exception {
+
+		Calendar today = Calendar.getInstance(new Locale("America/Chicago"));
+		Ticket ticket = new Ticket();
+		ticket.setActDivisionId(ticketPattern.getActDivisionId());
+		ticket.setActDlAmt(amount);
+		ticket.setActDlPct(BigDecimal.ZERO);
+		ticket.setActPricePerCleaning(BigDecimal.ZERO);
+		ticket.setActTaxAmt(BigDecimal.ZERO);
+		ticket.setActTaxRateId(ticketPattern.getActTaxRateId());
+		ticket.setAddedBy(sessionUser.getUserId());
+//		ticket.setAddedDate(addedDate);		// added by super
+		ticket.setBillSheet(Ticket.BILL_SHEET_IS_NO);
+		ticket.setCustomerSignature(Ticket.CUSTOMER_SIGNATURE_IS_NO);
+		ticket.setFleetmaticsId(null);
+		ticket.setInvoiceDate(ticketPattern.getInvoiceDate());
+		ticket.setInvoiceId(invoiceId);
+		ticket.setJobId(ticketPattern.getJobId());
+		ticket.setMgrApproval(Ticket.MGR_APPROVAL_IS_NO);
+		ticket.setPrintCount(0);
+		ticket.setProcessDate(ticketPattern.getProcessDate());
+		ticket.setProcessNotes(null);
+		ticket.setStartDate(today.getTime());
+		ticket.setStatus(TicketStatus.PAID.code());
+//		ticket.setTicketId(ticketId);
+		ticket.setUpdatedBy(sessionUser.getUserId());
+//		ticket.setUpdatedDate(updatedDate);		// set by the super
+		ticket.setTicketType(ticketType.code());
+		Integer ticketId = ticket.insertWithKey(conn);
+		System.out.println(ticket);
+		
+
+		TicketPayment ticketPayment = new TicketPayment();
+		ticketPayment.setAddedBy(sessionUser.getUserId());
+//		ticketPayment.setAddedDate(addedDate);  		// populated in the super
+		ticketPayment.setAmount(amount);
+		ticketPayment.setPaymentId(paymentId);
+		ticketPayment.setStatus(0); // do we have values for this?
+		ticketPayment.setTaxAmt(BigDecimal.ZERO);
+		ticketPayment.setTicketId(ticketId);
+		ticketPayment.setUpdatedBy(sessionUser.getUserId());
+//		ticketPayment.setUpdatedDate(updatedDate); 			// populated in the super
+		
+		System.out.println(ticketPayment);
+		ticketPayment.insertWithNoKey(conn);
+
+		
+		
+	}
+
+
+
+	private void makeTicketPayment(Connection conn, Integer paymentId, Integer invoiceId, ApplyPaymentRequestItem item, SessionUser sessionUser) throws Exception {
+		Double payInvoice = item.getPayInvoice() == null ? 0.0D : item.getPayInvoice();
+		Double payTax = item.getPayTax() == null ? 0.0D : item.getPayTax();
+
+		BigDecimal amount = new BigDecimal(payInvoice).setScale(2, RoundingMode.HALF_UP);
+		BigDecimal taxAmt = new BigDecimal(payTax).setScale(2, RoundingMode.HALF_UP);
+		
+		if ( payInvoice != 0.0D || payTax != 0.0D ) {
+			TicketPayment ticketPayment = new TicketPayment();
+			ticketPayment.setAddedBy(sessionUser.getUserId());
+	//		ticketPayment.setAddedDate(addedDate);  		// populated in the super
+			ticketPayment.setAmount(amount);
+			ticketPayment.setPaymentId(paymentId);
+			ticketPayment.setStatus(0); // do we have values for this?
+			ticketPayment.setTaxAmt(taxAmt);
+			ticketPayment.setTicketId(item.getTicketId());
+			ticketPayment.setUpdatedBy(sessionUser.getUserId());
+	//		ticketPayment.setUpdatedDate(updatedDate); 			// populated in the super
+			
+			System.out.println(ticketPayment);
+			ticketPayment.insertWithNoKey(conn);
+		}
+	}
+
 
 
 
 	public enum PaymentRequestType {
 		VERIFY,
 		COMMIT;
+	}
+	
+	private class ApplyPaymentDetail extends ApplicationObject {
+		private static final long serialVersionUID = 1L;
+
+		public Integer paymentId;
+		public Integer invoiceId;
+		public BigDecimal excessCash;
+		public BigDecimal feeAmount;
+		public BigDecimal availableFromPayment;
+		public BigDecimal invoiceBalance;
+		List<ApplyPaymentRequestItem> ticketList;
+//		public InvoiceTicketResponse invoiceTicketResponse; 
+		
+		public ApplyPaymentDetail(Connection conn, ApplyPaymentRequest paymentRequest) throws RecordNotFoundException, Exception {
+			InvoiceTicketResponse invoiceData = new InvoiceTicketResponse(conn, paymentRequest.getInvoiceId());
+			PaymentResponse paymentData = new PaymentResponse(conn, paymentRequest.getPaymentId());
+
+			paymentId = paymentRequest.getPaymentId();
+			invoiceId = paymentRequest.getInvoiceId();
+			excessCash = paymentRequest.getExcessCash() == null ? BigDecimal.ZERO : new BigDecimal(paymentRequest.getExcessCash());
+			feeAmount = paymentRequest.getFeeAmount() == null ? BigDecimal.ZERO : new BigDecimal(paymentRequest.getFeeAmount());
+			availableFromPayment = paymentData.getPaymentTotals().getAvailable();
+			invoiceBalance = invoiceData.getTotalBalance();
+			ticketList = paymentRequest.getTicketList();
+//			invoiceTicketResponse = invoiceData;
+
+		}
 	}
 }

@@ -1,61 +1,72 @@
 package com.ansi.scilla.web.response.payment;
 
+import java.math.BigDecimal;
+
+import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
 import com.ansi.scilla.web.request.payment.ApplyPaymentRequest;
 import com.ansi.scilla.web.response.MessageResponse;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class ApplyPaymentResponse extends MessageResponse {
 
 	private static final long serialVersionUID = 1L;
 
-	private Double availableFromPayment;
-	private Double invoiceBalance;
-	private Double totalPayInvoice;
-	private Double totalPayTax;
-	private Double excessCash;
-	private Double feeAmount;
-	private Double unappliedAmount;
+	private BigDecimal availableFromPayment;
+	private BigDecimal invoiceBalance;
+	private BigDecimal totalPayInvoice;
+	private BigDecimal totalPayTax;
+	private BigDecimal excessCash;
+	private BigDecimal feeAmount;
+	private BigDecimal unappliedAmount;
 	private ApplyPaymentRequest applyPaymentRequest;
 	
-	public Double getAvailableFromPayment() {
+	@JsonSerialize(using=AnsiCurrencyFormatter.class)
+	public BigDecimal getAvailableFromPayment() {
 		return availableFromPayment;
 	}
-	public void setAvailableFromPayment(Double availableFromPayment) {
+	public void setAvailableFromPayment(BigDecimal availableFromPayment) {
 		this.availableFromPayment = availableFromPayment;
 	}
-	public Double getInvoiceBalance() {
+	@JsonSerialize(using=AnsiCurrencyFormatter.class)
+	public BigDecimal getInvoiceBalance() {
 		return invoiceBalance;
 	}
-	public void setInvoiceBalance(Double invoiceBalance) {
+	public void setInvoiceBalance(BigDecimal invoiceBalance) {
 		this.invoiceBalance = invoiceBalance;
 	}
-	public Double getTotalPayInvoice() {
+	@JsonSerialize(using=AnsiCurrencyFormatter.class)
+	public BigDecimal getTotalPayInvoice() {
 		return totalPayInvoice;
 	}
-	public void setTotalPayInvoice(Double totalPayInvoice) {
+	public void setTotalPayInvoice(BigDecimal totalPayInvoice) {
 		this.totalPayInvoice = totalPayInvoice;
 	}
-	public Double getTotalPayTax() {
+	@JsonSerialize(using=AnsiCurrencyFormatter.class)
+	public BigDecimal getTotalPayTax() {
 		return totalPayTax;
 	}
-	public void setTotalPayTax(Double totalPayTax) {
+	public void setTotalPayTax(BigDecimal totalPayTax) {
 		this.totalPayTax = totalPayTax;
 	}
-	public Double getExcessCash() {
+	@JsonSerialize(using=AnsiCurrencyFormatter.class)
+	public BigDecimal getExcessCash() {
 		return excessCash;
 	}
-	public void setExcessCash(Double excessCash) {
+	public void setExcessCash(BigDecimal excessCash) {
 		this.excessCash = excessCash;
 	}
-	public Double getFeeAmount() {
+	@JsonSerialize(using=AnsiCurrencyFormatter.class)
+	public BigDecimal getFeeAmount() {
 		return feeAmount;
 	}
-	public void setFeeAmount(Double feeAmount) {
+	public void setFeeAmount(BigDecimal feeAmount) {
 		this.feeAmount = feeAmount;
 	}
-	public Double getUnappliedAmount() {
+	@JsonSerialize(using=AnsiCurrencyFormatter.class)
+	public BigDecimal getUnappliedAmount() {
 		return unappliedAmount;
 	}
-	public void setUnappliedAmount(Double unappliedAmount) {
+	public void setUnappliedAmount(BigDecimal unappliedAmount) {
 		this.unappliedAmount = unappliedAmount;
 	}
 	public ApplyPaymentRequest getApplyPaymentRequest() {
