@@ -320,6 +320,7 @@ $( document ).ready(function() {
 			update: function(){
 				$outbound = {};
 				
+	       		$outbound["managerId"]		=	$("select[name=manager]").val();
 	       	 	$outbound["leadType"]		=	$("select[name=leadType").val();
         		$outbound["accountType"]	=	$("select[name=accountType").val();
         		$outbound["divisionId"]	=	$("select[name=division]").val();
@@ -425,6 +426,7 @@ $( document ).ready(function() {
 			addAJob: function($quoteId){
 				var $namespace = $currentRow.toString() + "_jobPanel";
 				var $row = $currentRow.toString();
+				alert("quote addAJob quoteId:" + $quoteId);
 				$currentRow++;
 				var jqxhr1 = $.ajax({
 					type: 'GET',
