@@ -172,7 +172,7 @@ public class PaymentServlet extends AbstractServlet {
 		} else {
 			doErrorResponse(conn, response, addErrors, errors);
 		}
-		conn.rollback();
+		conn.commit();
 	}
 
 	private void doAdd(Connection conn, PaymentRequest paymentRequest, HttpServletResponse response, SessionUser sessionUser) throws Exception {
