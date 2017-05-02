@@ -126,15 +126,20 @@
 			$( "#confirmPaymentModal" ).dialog({
 				title:'Confirm Payment Details',
 				autoOpen: false,
-				height: 250,
+				height: 270,
 				width: 400,
 				modal: true,
-				closeOnEscape:true,
-				//open: function(event, ui) {
-				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-				//},
+				closeOnEscape:false,
+				open: function(event, ui) {
+					$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+				},
 				buttons: [
 					{
+						id: "okConfirm",
+						click: function() {
+							goOkConfirm();
+						}
+					},{
 						id: "closeConfirm",
 						click: function() {
 							$("#confirmPaymentModal").dialog( "close" );
@@ -357,7 +362,6 @@
         		});
 
 				$outbound['ticketList'] = $ticketList;
-				console.debug(JSON.stringify($outbound));
 				
 				var jqxhr = $.ajax({
 	   				type: 'POST',
@@ -365,9 +369,13 @@
 	   				data: JSON.stringify($outbound),
 	   				statusCode: {
 		   				200: function($data) {
-		   					console.debug($data);
+		   					$("#okConfirm").button('option', 'label', 'OK');
 		   	        		$('#closeConfirm').button('option', 'label', 'Cancel');
 		   	        		$('#goConfirm').button('option', 'label', 'Save');
+		   					$("#okConfirm").hide();
+		   	        		$('#closeConfirm').show();
+		   	        		$('#goConfirm').show();
+
 		   	        		
 		   	     			$("#confirmPaymentModal .availableFromPayment").html($data.data.availableFromPayment);
 		   	     			$("#confirmPaymentModal .invoiceBalance").html($data.data.invoiceBalance);
@@ -721,17 +729,18 @@
 
 				function goApplyPayment() {
 					$outbound = $("#confirmPaymentModal").data("applyPaymentRequest");
-					console.debug($outbound);
 					
 					var jqxhr = $.ajax({
 		   				type: 'POST',
 		   				url: "applyPayment/commit",
 		   				data: JSON.stringify($outbound),
 		   				statusCode: {
-			   				200: function($data) {   							   					
-			   					$("#confirmMessageText").html("Payment Committed").show().fadeOut(3000);
-			   					//$("#confirmPaymentModal").dialog("close");
-			   					console.debug($data);
+			   				200: function($data) {   	
+								$("#confirmPaymentModal").data("applyPaymentResponse", $data.data);
+			   					$("#confirmMessageText").html("Payment Committed").show();
+			   					$("#okConfirm").show();
+			   	        		$('#closeConfirm').hide();
+			   	        		$('#goConfirm').hide();								
 			   				},
 		   					403: function($data) {
 			   					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
@@ -745,6 +754,16 @@
 			   			},
 			   			dataType: 'json'
 			   		});        	
+				}
+				
+				function goOkConfirm() {
+					var $applyPaymentResponse = $("#confirmPaymentModal").data("applyPaymentResponse");
+					if ( $applyPaymentResponse.unappliedAmount == "$0.00" || $applyPaymentResponse.unappliedAmount == "-$0.00") {
+						$url = "payment.html";
+					} else {
+						$url = "payment.html?id=" + $applyPaymentResponse.applyPaymentRequest.paymentId;
+					}
+					location.href=$url;
 				}
 				
 				function formatCurrency($amount) {

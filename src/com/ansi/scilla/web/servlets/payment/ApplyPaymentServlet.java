@@ -149,7 +149,7 @@ public class ApplyPaymentServlet extends AbstractServlet {
 		}
 		if ( detail.excessCash.compareTo(BigDecimal.ZERO) > 0  || detail.feeAmount.compareTo(BigDecimal.ZERO) > 0 ) {
 			Ticket ticketPattern = new Ticket();
-			ticketPattern.setTicketId(detail.ticketList.get(0).getTicketId());
+			ticketPattern.setInvoiceId(detail.invoiceId);
 			ticketPattern.selectOne(conn);
 			if ( detail.excessCash.compareTo(BigDecimal.ZERO) > 0 ) {
 				makeTicket(conn, TicketType.EXCESS, ticketPattern, detail.paymentId, detail.invoiceId, detail.excessCash, sessionUser);
@@ -176,10 +176,12 @@ public class ApplyPaymentServlet extends AbstractServlet {
 	private void makeTicket(Connection conn, TicketType ticketType, Ticket ticketPattern, Integer paymentId, Integer invoiceId,
 			BigDecimal amount, SessionUser sessionUser) throws Exception {
 
+		BigDecimal pmtAmount = amount.setScale(2, RoundingMode.HALF_UP);
+
 		Calendar today = Calendar.getInstance(new Locale("America/Chicago"));
 		Ticket ticket = new Ticket();
 		ticket.setActDivisionId(ticketPattern.getActDivisionId());
-		ticket.setActDlAmt(amount);
+		ticket.setActDlAmt(pmtAmount);
 		ticket.setActDlPct(BigDecimal.ZERO);
 		ticket.setActPricePerCleaning(BigDecimal.ZERO);
 		ticket.setActTaxAmt(BigDecimal.ZERO);
@@ -209,7 +211,7 @@ public class ApplyPaymentServlet extends AbstractServlet {
 		TicketPayment ticketPayment = new TicketPayment();
 		ticketPayment.setAddedBy(sessionUser.getUserId());
 //		ticketPayment.setAddedDate(addedDate);  		// populated in the super
-		ticketPayment.setAmount(amount);
+		ticketPayment.setAmount(pmtAmount);
 		ticketPayment.setPaymentId(paymentId);
 		ticketPayment.setStatus(0); // do we have values for this?
 		ticketPayment.setTaxAmt(BigDecimal.ZERO);
