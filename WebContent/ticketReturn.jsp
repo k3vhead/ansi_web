@@ -349,14 +349,19 @@
 			}
 			
 			
-			$("#cancelUpdate").click( function($clickevent) {
+			
+			
+			
+			
+			$(".cancelUpdate").click( function($clickevent) {
 				$clickevent.preventDefault();
+				$(".clearMe").val("");
 				clearAddForm();
 			});
 			
 			
 	
-			$("#goUpdate").click( function($clickevent) {
+			$(".goUpdate").click( function($clickevent) {
 				$outbound = {};
 				$.each( $('#addForm :input'), function(index, value) {
 					if ( value.name ) {
@@ -542,7 +547,7 @@
 				    	<tr>
 				    		<td><span class="required">*</span><span class="formLabel">Completion Date:</span></td>
 				    		<td>
-				    			<input type="text" class="dateField" name="processDate" data-required="true" data-valid="validProcessDate" />		    						
+				    			<input type="text" class="dateField clearMe" name="processDate" data-required="true" data-valid="validProcessDate" />		    						
 				    			<i id="validProcessDate" class="fa" aria-hidden="true"></i>
 				    		</td>
 				    		<td><span class="err" id="processDateErr"></span></td>
@@ -599,8 +604,8 @@
 				    	</tr>
 			    		<tr>
 				    		<td colspan="2" style="text-align:center;">
-				    			<input type="button" class="prettyButton" value="Complete" id="goUpdate" data-panel="completeTicket" />
-				    			<input type="button" class="prettyButton" value="Clear" id="cancelUpdate" />
+				    			<input type="button" class="prettyButton goUpdate" value="Complete" data-panel="completeTicket" />
+				    			<input type="button" class="prettyButton cancelUpdate" value="Clear" />
 				    		</td>
 				    	</tr>
 				    </table>
@@ -614,7 +619,7 @@
 			    	<tr>
 			    		<td><span class="required">*</span><span class="formLabel">Skip Date:</span></td>
 		  					<td>
-		  						<input type="text" class="dateField" name="processDate" data-required="true" data-valid="validProcessDate" />
+		  						<input type="text" class="dateField clearMe" name="processDate" data-required="true" data-valid="validProcessDate" />
 		  						<i id="validProcessDate" class="fa" aria-hidden="true"></i>
 		  					</td>
 		  					<td><span class="err" id="processDateErr"></span></td>
@@ -622,13 +627,13 @@
 					<tr>
 		  					<td><span class="formLabel">Skip Reason:</span></td>
 		  					<td>
-		  						<input type="text" name="processNotes"/>
+		  						<input type="text" class="textField clearMe" name="processNotes"/>
 		  					</td>
 		  				</tr>
 		  				<tr>
 		  					<td colspan="2" style="text-align:center;">
-		  						<input type="button" class="prettyButton" value="Skip" id="goUpdate" data-panel="skipTicket" />
-		  						<input type="button" class="prettyButton" value="Clear" id="cancelUpdate" />
+		  						<input type="button" class="prettyButton goUpdate" value="Skip" data-panel="skipTicket" />
+		  						<input type="button" class="prettyButton cancelUpdate" value="Clear" />
 		  					</td>
 		  				</tr>
 		  			</table>
@@ -642,7 +647,7 @@
 		  				<tr>
 		  					<td><span class="required">*</span><span class="formLabel">Void Date:</span></td>
 		  					<td>
-		  						<input type="text" class="dateField" name="processDate" data-required="true" data-valid="validProcessDate" />
+		  						<input type="text" class="dateField clearMe" name="processDate" data-required="true" data-valid="validProcessDate" />
 		  						<i id="validProcessDate" class="fa" aria-hidden="true"></i>
 		  					</td>
 		  					<td><span class="err" id="processDateErr"></span></td>
@@ -650,14 +655,14 @@
 					<tr>
 		  					<td><span class="formLabel">Void Reason:</span></td>
 		  					<td>
-		  						<input type="text" name="processNotes"/>
+		  						<input type="text" class="textField clearMe" name="processNotes"/>
 		  						<i id="validProcessNotes" class="fa" aria-hidden="true"></i>
 		  					</td>
 		  				</tr>
 		  				<tr>
 		  					<td colspan="2" style="text-align:center;">
-		  						<input type="button" class="prettyButton" value="Void" id="goUpdate" data-panel="voidTicket"/>
-		  						<input type="button" class="prettyButton" value="Clear" id="cancelUpdate" />
+		  						<input type="button" class="prettyButton goUpdate" value="Void" data-panel="voidTicket"/>
+		  						<input type="button" class="prettyButton cancelUpdate" value="Clear" />
 		  					</td>
 		  				</tr>
 		  			</table>
@@ -670,7 +675,7 @@
 		  				<tr>
 		  					<td><span class="required">*</span><span class="formLabel">Reject Date:</span></td>
 		  					<td>
-		  						<input type="text" class="dateField" name="processDate" data-required="true" data-valid="validProcessDate" />
+		  						<input type="text" class="dateField clearMe" name="processDate" data-required="true" data-valid="validProcessDate" />
 		  						<i id="validProcessDate" class="fa" aria-hidden="true"></i>
 		  					</td>
 		  					<td><span class="err" id="processDateErr"></span></td>
@@ -678,13 +683,13 @@
 					<tr>
 		  					<td><span class="formLabel">Reject Reason:</span></td>
 		  					<td>
-		  						<input type="text" name="processNotes"/>
+		  						<input type="text" class="textField clearMe" name="processNotes"/>
 		  					</td>
 		  				</tr>
 		  				<tr>
 		  					<td colspan="2" style="text-align:center;">
-		  						<input type="button" class="prettyButton" value="Reject" id="goUpdate" data-panel="rejectTicket" />
-		  						<input type="button" class="prettyButton" value="Clear" id="cancelUpdate" />
+		  						<input type="button" class="prettyButton goUpdate" value="Reject" data-panel="rejectTicket" />
+		  						<input type="button" class="prettyButton cancelUpdate" value="Clear" />
 		  					</td>
 		  				</tr>
 		  			</table>
@@ -699,15 +704,15 @@
 		  				<tr>
 		  					<td><span class="required">*</span><span class="formLabel">Process Date:</span></td>
 		  					<td>
-		  						<input type="text" class="dateField" name="processDate" data-required="true" data-valid="validProcessDate" />
+		  						<input type="text" class="dateField clearMe" name="processDate" data-required="true" data-valid="validProcessDate" />
 		  						<i id="validProcessDate" class="fa" aria-hidden="true"></i>
 		  					</td>
 		  					<td><span class="err" id="processDateErr"></span></td>
 		  				</tr>
 		  				<tr>
 		  					<td colspan="2" style="text-align:center;">
-		  						<input type="button" class="prettyButton" value="Re-Queue" id="goUpdate" data-panel="requeueTicket" />
-		  						<input type="button" class="prettyButton" value="Clear" id="cancelUpdate" />
+		  						<input type="button" class="prettyButton goUpdate" value="Re-Queue" data-panel="requeueTicket" />
+		  						<input type="button" class="prettyButton cancelUpdate" value="Clear" />
 		  					</td>
 		  				</tr>
 		  			</table>			
