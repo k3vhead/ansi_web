@@ -339,8 +339,8 @@ $( document ).ready(function() {
 //        		$url = "quote/"+$("input[name=quoteId]").val()+"/"+$("input[name=quoteNumber]").val()+"/"+$("input[name=revision]").val();
 //        		$url = "quote/"+$("input[name=quoteNumber]").val();
 //				console.log($outbound);
-				alert(JSON.stringify($outbound));
-				alert($url);
+//				alert(JSON.stringify($outbound));
+//				alert($url);
         		var jqxhr = $.ajax({
 					type: 'POST',
 					url: $url,

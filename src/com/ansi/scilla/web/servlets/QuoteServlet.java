@@ -303,7 +303,7 @@ public class QuoteServlet extends AbstractServlet {
 		quote.setQuoteNumber(AppUtils.getNextQuoteNumber(conn));
 //		quote.setQuoteNumber(5000000);
 		quote.setRevision("A");
-			quote.setSignedByContactId(null);
+		quote.setSignedByContactId(null);
 		
 //		quote.setStatus(quoteRequest.getStatus());
 		quote.setTemplateId(quoteRequest.getTemplateId());

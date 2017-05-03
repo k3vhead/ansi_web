@@ -107,16 +107,17 @@ public class JobServlet extends AbstractServlet {
 			
 			System.out.println("Servlet Output: [0]"+urlPieces[0]+" [1]"+urlPieces[1]);
 			
+			JobRequest jobRequest = new JobRequest(jsonString);
+			
 			if ( command.equalsIgnoreCase("add") ) {
-				JobRequest jobRequest = new JobRequest(jsonString);
+				
 				doAdd(conn, jobRequest, sessionUser, response);
 			} else if ( command.equalsIgnoreCase("update") ){
-				JobRequest jobRequest = new JobRequest(jsonString);
-				
+								
 				try {
 					Job key = new Job();
 					key.setJobId(Integer.parseInt(urlPieces[1]));
-					key.selectOne(conn);
+					//key.selectOne(conn);
 					
 					System.out.println("This is the key:");
 					System.out.println(key);
@@ -459,7 +460,9 @@ public class JobServlet extends AbstractServlet {
 		Date today = new Date();
 		
 
-		Job job = key;
+		Job job = new Job();
+		job.setJobId(key.getJobId());
+		job.selectOne(conn);
 
 		if(jobRequest.getJobFrequency() != null) {
 			job.setJobFrequency(jobRequest.getJobFrequency());
@@ -511,12 +514,14 @@ public class JobServlet extends AbstractServlet {
 		}
 		
 		if(jobRequest.getExpirationReason() != null){
-			job.setExpirationReason(jobRequest.getExpirationReason());
-		}
-		if(job.getExpirationReason().length() < 2){
-			job.setExpirationReason(null);
+			if(jobRequest.getExpirationReason().equals("")){
+				job.setExpirationReason("");
+			} else {
+				job.setExpirationReason(jobRequest.getExpirationReason());
+			}
 		}
 		
+	
 		if(jobRequest.getBuildingType() != null){
 			job.setBuildingType(jobRequest.getBuildingType());
 		}
@@ -531,23 +536,32 @@ public class JobServlet extends AbstractServlet {
 		}
 		
 		if(jobRequest.getWasherNotes() != null){
-			job.setWasherNotes(jobRequest.getWasherNotes());
-		}
+			if(jobRequest.getWasherNotes().equals("")){
+				job.setWasherNotes(null);
+			} else {
+				job.setWasherNotes(jobRequest.getWasherNotes());
+			}
+		} 
+		
 //		if(jobRequest.getBillingContactId() != null){
 //			job.setBillingContactId(jobRequest.getBillingContactId());
 //		}
 		if(jobRequest.getBillingNotes() != null) {
-			job.setBillingNotes(jobRequest.getBillingNotes());
-		}
-		if(job.getBillingNotes().length() < 2){
-			job.setBillingNotes(null);
+			if(jobRequest.getBillingNotes().equals("")) {
+				job.setBillingNotes(null);
+			} else {
+				job.setBillingNotes(jobRequest.getBillingNotes());
+			}
 		}
 		
+
+		
 		if(jobRequest.getOmNotes() != null) {
-			job.setOmNotes(jobRequest.getOmNotes());
-		}
-		if(job.getOmNotes().length() < 2){
-			job.setOmNotes(null);
+			if(jobRequest.getOmNotes().equals("")) {
+				job.setOmNotes(null);
+			} else {
+				job.setOmNotes(jobRequest.getOmNotes());
+			}
 		}
 		
 //		if(jobRequest.getActivationDate() == null) {
@@ -590,11 +604,14 @@ public class JobServlet extends AbstractServlet {
 			job.setRepeatScheduleAnnually(1);
 //		}
 		if(jobRequest.getPaymentTerms() != null){
-			job.setPaymentTerms(jobRequest.getPaymentTerms());
+			if(jobRequest.getPaymentTerms().equals("")){
+				job.setPaymentTerms(null);
+			} else {
+				job.setPaymentTerms(jobRequest.getPaymentTerms());
+			}
 		}
-		if(job.getPaymentTerms().length() < 2){
-			job.setPaymentTerms(null);
-		}
+		
+	
 		
 		job.setUpdatedBy(sessionUser.getUserId());
 
@@ -603,7 +620,7 @@ public class JobServlet extends AbstractServlet {
 
 		System.out.println("Job servlet Add Data:");
 		System.out.println(job.toString());
-		job.update(conn, job);
+		job.update(conn, key);
 		
 		return job;
 	}
