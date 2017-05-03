@@ -22,7 +22,7 @@ $( document ).ready(function() {
 
 				
 				$("#addJobRow").click(function(){
-					QUOTEUTILS.addAJob($quoteId);
+					QUOTEUTILS.addAJob($globalQuoteId);
 				});
 				
 				QUOTEUTILS.panelLoad($quoteId);
