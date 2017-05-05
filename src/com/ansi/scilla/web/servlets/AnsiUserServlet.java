@@ -6,7 +6,6 @@ import java.sql.Connection;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -21,7 +20,6 @@ import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.response.user.UserResponse;
-import com.ansi.scilla.web.struts.SessionData;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class AnsiUserServlet extends AbstractServlet {
@@ -39,7 +37,7 @@ public class AnsiUserServlet extends AbstractServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 
 		try {
-			SessionData sessionData = AppUtils.validateSession(request, Permission.USER_ADMIN, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			AppUtils.validateSession(request, Permission.USER_ADMIN, PermissionLevel.PERMISSION_LEVEL_IS_READ);
 			doGetWork(request, response);
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
 			super.sendForbidden(response);
@@ -52,7 +50,7 @@ public class AnsiUserServlet extends AbstractServlet {
 		WebMessages messages = new WebMessages();
 		try {
 			conn = AppUtils.getDBCPConn();
-			AnsiURL url = new AnsiURL(request, REALM, new String[] {"list"});	
+			AnsiURL url = new AnsiURL(request, REALM, new String[] {"list","manager"});	
 
 			if( url.getId() == null && StringUtils.isBlank(url.getCommand())) {
 				System.out.println("user servlet 43");
@@ -62,7 +60,8 @@ public class AnsiUserServlet extends AbstractServlet {
 				userResponse = new UserResponse(conn, url.getId());
 			} else if ( ! StringUtils.isBlank(url.getCommand())) {
 				System.out.println("user servlet 49");
-				userResponse = new UserResponse(conn);
+				UserResponse.UserListType listType = UserResponse.UserListType.valueOf(url.getCommand().toUpperCase());
+				userResponse = new UserResponse(conn, listType);
 			} else {
 				// according to the URI parsing, this shouldn't happen, but it gives me warm fuzzies
 				throw new ResourceNotFoundException();

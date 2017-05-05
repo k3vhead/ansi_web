@@ -8,6 +8,7 @@ import com.ansi.scilla.web.response.user.UserResponse;
 public class TestUser {
 
 	public static void main(String[] args) {
+		TesterUtils.makeLoggers();
 		try {
 			new TestUser().go();
 		} catch (Exception e) {
@@ -19,7 +20,7 @@ public class TestUser {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getConn();
-			UserResponse r = new UserResponse(conn);
+			UserResponse r = new UserResponse(conn, UserResponse.UserListType.MANAGER);
 			System.out.println(r.toJson());
 		} finally {
 			conn.close();

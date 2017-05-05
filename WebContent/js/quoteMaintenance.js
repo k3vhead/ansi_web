@@ -537,7 +537,7 @@ $( document ).ready(function() {
 		getUsers: function(){
 			var $returnValue = [];
 			var $codeList = [];
-				var $url = "user/list";
+				var $url = "user/manager";
 				var jqxhr = $.ajax({
 					type: 'GET',
 					url: $url,
@@ -547,10 +547,10 @@ $( document ).ready(function() {
 							//console.log($data.data.userList);
 							var $i = 0;
 							$.each($data.data.userList, function($index, $val) {
-								if($val.title === "Division Manager"){
+								//if($val.title === "Division Manager"){
 									$codeList[$i] = {displayValue: $val.firstName + " " + $val.lastName + " (" + $val.email + ")", value: $val.userId};
 									$i++;
-								}
+								//}
 							});
 							
 						},					
