@@ -47,7 +47,7 @@ $( document ).ready(function() {
 				ADDRESSPANEL.init("jobSite", JOB_DATA.countryList);
 				ADDRESSPANEL.init("billTo", JOB_DATA.countryList);
 				
-//				console.log(ANSI_UTILS.getCodes("quote","account_type"));
+				//console.log(ANSI_UTILS.getCodes("quote","account_type"));
 				QUOTEUTILS.setSelectMenu("manager",QUOTEUTILS.getUsers());
 				QUOTEUTILS.setSelectMenu("accountType",ANSI_UTILS.getCodes("quote","account_type"));
 				QUOTEUTILS.setSelectMenu("leadType",ANSI_UTILS.getCodes("quote","lead_type"));
@@ -69,11 +69,12 @@ $( document ).ready(function() {
 					$signedByData = ADDRESSPANEL.getContact($quoteData.signedByContactId);
 					$("input[name='signedBy']").val($signedByData.lastName + ", "+$signedByData.firstName + "(" +$signedByData.contactId+")");
 					
-//						console.log("DivisionCode: "+ $quoteData.divisionId);
+					//	console.log("DivisionCode: "+ $quoteData.divisionId);
+					
 						$("select[name='division']").val($quoteData.divisionId);
 						$("select[name='division").selectmenu("refresh");
 						
-						
+					
 					//console.log("Account Type: "+ $quoteData.accountType);
 					//console.log(($quoteData.accountType).length < 128);
 					if($quoteData.accountType.length < 128){
@@ -238,18 +239,32 @@ $( document ).ready(function() {
 			},
 			save: function(){
 				$outbound = {};
-        		$outbound["managerId"]		=	$("select[name=manager]").val();
-        		$outbound["leadType"]		=	$("select[name=leadType").val();
-        		$outbound["accountType"]	=	$("select[name=accountType").val();
-        		$outbound["divisionId"]	=	$("select[name=division]").val();
-        		$outbound["jobSiteAddressId"]	=	$("input[name=jobSite_id]").val();
-        		$outbound["billToAddressId"]	=	$("input[name=billTo_id]").val();
-        		$outbound["templateId"]	=	0;
-        		$outbound["jobContactId"] = $("input[name='jobSite_Con1id']").val();
-        		$outbound["siteContact"] = $("input[name='jobSite_Con2id']").val();
-        		$outbound["contractContactId"] = $("input[name='billTo_Con1id']").val();
-        		$outbound["billingContactId"] = $("input[name='billTo_Con2id']").val();
-        		
+				
+				if ($("select[name=manager]").val() != null) {
+	        		$outbound["managerId"]		=	$("select[name=manager]").val();
+				} if ($("select[name=leadType").val() != null) {
+	        		$outbound["leadType"]		=	$("select[name=leadType").val();
+				} if ($("select[name=accountType").val() != null) {
+	        		$outbound["accountType"]	=	$("select[name=accountType").val();
+				} if ($("select[name=division]").val() != null) {
+	        		$outbound["divisionId"]	=	$("select[name=division]").val();
+				} if ($("input[name=jobSite_id]").val() != null) {
+	        		$outbound["jobSiteAddressId"]	=	$("input[name=jobSite_id]").val();
+				} if ($("input[name=billTo_id]").val() != null) {
+	        		$outbound["billToAddressId"]	=	$("input[name=billTo_id]").val();
+				}
+				
+	        		$outbound["templateId"]	=	0;
+	        		
+	        	if ($("input[name='jobSite_Con1id']").val() != null) {
+	        		$outbound["jobContactId"] = $("input[name='jobSite_Con1id']").val();
+				} if ($("input[name='jobSite_Con2id']").val() != null) {
+	        		$outbound["siteContact"] = $("input[name='jobSite_Con2id']").val();
+				} if ($("input[name='billTo_Con1id']").val() != null) {
+	        		$outbound["contractContactId"] = $("input[name='billTo_Con1id']").val();
+				} if ($("input[name='billTo_Con2id']").val() != null) {
+	        		$outbound["billingContactId"] = $("input[name='billTo_Con2id']").val();
+				}
 
         		console.log("Save Outbound: ");
         		console.log($outbound);
@@ -320,17 +335,29 @@ $( document ).ready(function() {
 			update: function(){
 				$outbound = {};
 				
-	       		$outbound["managerId"]		=	$("select[name=manager]").val();
-	       	 	$outbound["leadType"]		=	$("select[name=leadType").val();
-        		$outbound["accountType"]	=	$("select[name=accountType").val();
-        		$outbound["divisionId"]	=	$("select[name=division]").val();
-        		$outbound["jobSiteAddressId"]	=	$("input[name=jobSite_id]").val();
-        		$outbound["billToAddressId"]	=	$("input[name=billTo_id]").val();
-        		$outbound["templateId"]	=	0;
-        		$outbound["jobContactId"] = $("input[name='jobSite_Con1id']").val();
-        		$outbound["siteContact"] = $("input[name='jobSite_Con2id']").val();
-        		$outbound["contractContactId"] = $("input[name='billTo_Con1id']").val();
-        		$outbound["billingContactId"] = $("input[name='billTo_Con2id']").val();
+				if($("select[name=manager]").val() != null) {	
+		       		$outbound["managerId"]		=	$("select[name=manager]").val();
+				} if($("select[name=leadType").val() != null) {	
+		       	 	$outbound["leadType"]		=	$("select[name=leadType").val();
+				} if($("select[name=accountType").val() != null) {	
+	        		$outbound["accountType"]	=	$("select[name=accountType").val();
+				} if($("select[name=division]").val() != null) {	
+	        		$outbound["divisionId"]	=	$("select[name=division]").val();
+				} if($("input[name=jobSite_id]").val() != null) {	
+	        		$outbound["jobSiteAddressId"]	=	$("input[name=jobSite_id]").val();
+				} if($("input[name=billTo_id]").val() != null) {	
+	        		$outbound["billToAddressId"]	=	$("input[name=billTo_id]").val();
+				} 	
+	        		$outbound["templateId"]	=	0;
+				if($("input[name='jobSite_Con1id']").val() != null) {	
+	        		$outbound["jobContactId"] = $("input[name='jobSite_Con1id']").val();
+				} if($("input[name='jobSite_Con2id']").val() != null) {	
+	        		$outbound["siteContact"] = $("input[name='jobSite_Con2id']").val();
+				} if($("input[name='billTo_Con1id']").val() != null) {	
+	        		$outbound["contractContactId"] = $("input[name='billTo_Con1id']").val();
+				} if($("input[name='billTo_Con2id']").val() != null) {	
+	        		$outbound["billingContactId"] = $("input[name='billTo_Con2id']").val();
+				}
         		
         		console.log("Update Outbound: ");
         		console.log($outbound);
