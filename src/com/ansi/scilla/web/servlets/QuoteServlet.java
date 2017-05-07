@@ -174,6 +174,8 @@ public class QuoteServlet extends AbstractServlet {
 
 			String jsonString = super.makeJsonString(request);
 			System.out.println(jsonString);
+			QuoteRequest testRequest = new QuoteRequest();
+			System.out.println("test:" + testRequest);
 			QuoteRequest quoteRequest = new QuoteRequest(jsonString);
 			
 			Quote quote = null;

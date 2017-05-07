@@ -240,29 +240,29 @@ $( document ).ready(function() {
 			save: function(){
 				$outbound = {};
 				
-				if ($("select[name=manager]").val() != null) {
+				if ($("select[name=manager]").val() != "") {
 	        		$outbound["managerId"]		=	$("select[name=manager]").val();
-				} if ($("select[name=leadType").val() != null) {
+				} if ($("select[name=leadType").val() != "") {
 	        		$outbound["leadType"]		=	$("select[name=leadType").val();
-				} if ($("select[name=accountType").val() != null) {
+				} if ($("select[name=accountType").val() != "") {
 	        		$outbound["accountType"]	=	$("select[name=accountType").val();
-				} if ($("select[name=division]").val() != null) {
+				} if ($("select[name=division]").val() != 0) {
 	        		$outbound["divisionId"]	=	$("select[name=division]").val();
-				} if ($("input[name=jobSite_id]").val() != null) {
+				} if ($("input[name=jobSite_id]").val() != 0) {
 	        		$outbound["jobSiteAddressId"]	=	$("input[name=jobSite_id]").val();
-				} if ($("input[name=billTo_id]").val() != null) {
+				} if ($("input[name=billTo_id]").val() != 0) {
 	        		$outbound["billToAddressId"]	=	$("input[name=billTo_id]").val();
 				}
 				
 	        		$outbound["templateId"]	=	0;
 	        		
-	        	if ($("input[name='jobSite_Con1id']").val() != null) {
+	        	if ($("input[name='jobSite_Con1id']").val() != 0) {
 	        		$outbound["jobContactId"] = $("input[name='jobSite_Con1id']").val();
-				} if ($("input[name='jobSite_Con2id']").val() != null) {
+				} if ($("input[name='jobSite_Con2id']").val() != 0) {
 	        		$outbound["siteContact"] = $("input[name='jobSite_Con2id']").val();
-				} if ($("input[name='billTo_Con1id']").val() != null) {
+				} if ($("input[name='billTo_Con1id']").val() != 0) {
 	        		$outbound["contractContactId"] = $("input[name='billTo_Con1id']").val();
-				} if ($("input[name='billTo_Con2id']").val() != null) {
+				} if ($("input[name='billTo_Con2id']").val() != 0) {
 	        		$outbound["billingContactId"] = $("input[name='billTo_Con2id']").val();
 				}
 
@@ -335,27 +335,27 @@ $( document ).ready(function() {
 			update: function(){
 				$outbound = {};
 				
-				if($("select[name=manager]").val() != null) {	
+				if($("select[name=manager]").val() != "") {	
 		       		$outbound["managerId"]		=	$("select[name=manager]").val();
-				} if($("select[name=leadType").val() != null) {	
+				} if($("select[name=leadType").val() != "") {	
 		       	 	$outbound["leadType"]		=	$("select[name=leadType").val();
-				} if($("select[name=accountType").val() != null) {	
+				} if($("select[name=accountType").val() != 0) {	
 	        		$outbound["accountType"]	=	$("select[name=accountType").val();
-				} if($("select[name=division]").val() != null) {	
+				} if($("select[name=division]").val() != 0) {	
 	        		$outbound["divisionId"]	=	$("select[name=division]").val();
-				} if($("input[name=jobSite_id]").val() != null) {	
+				} if($("input[name=jobSite_id]").val() != 0) {	
 	        		$outbound["jobSiteAddressId"]	=	$("input[name=jobSite_id]").val();
-				} if($("input[name=billTo_id]").val() != null) {	
+				} if($("input[name=billTo_id]").val() != 0) {	
 	        		$outbound["billToAddressId"]	=	$("input[name=billTo_id]").val();
 				} 	
 	        		$outbound["templateId"]	=	0;
-				if($("input[name='jobSite_Con1id']").val() != null) {	
+				if($("input[name='jobSite_Con1id']").val() != 0) {	
 	        		$outbound["jobContactId"] = $("input[name='jobSite_Con1id']").val();
-				} if($("input[name='jobSite_Con2id']").val() != null) {	
+				} if($("input[name='jobSite_Con2id']").val() != 0) {	
 	        		$outbound["siteContact"] = $("input[name='jobSite_Con2id']").val();
-				} if($("input[name='billTo_Con1id']").val() != null) {	
+				} if($("input[name='billTo_Con1id']").val() != 0) {	
 	        		$outbound["contractContactId"] = $("input[name='billTo_Con1id']").val();
-				} if($("input[name='billTo_Con2id']").val() != null) {	
+				} if($("input[name='billTo_Con2id']").val() != 0) {	
 	        		$outbound["billingContactId"] = $("input[name='billTo_Con2id']").val();
 				}
         		
@@ -527,7 +527,7 @@ $( document ).ready(function() {
 				//$select.selectmenu({ width : '175px', maxHeight: '400 !important', style: 'dropdown'});
 				//console.log($data);
 				$('option', $select).remove();
-				$select.append(new Option("",null));
+				$select.append(new Option("",""));
 				$.each($data.codeList, function($index, $val) {
 					$select.append(new Option($val.displayValue,$val.value));
 				});
