@@ -179,6 +179,7 @@ public class QuoteServlet extends AbstractServlet {
 			Quote quote = null;
 			ResponseCode responseCode = null;
 			if ( command.equals(ACTION_IS_ADD) ) {
+				System.out.println("Call validateAdd"+quoteRequest);
 				WebMessages webMessages = validateAdd(conn, quoteRequest);
 				if (webMessages.isEmpty()) {
 					try {
@@ -415,6 +416,7 @@ public class QuoteServlet extends AbstractServlet {
 			Quote quote = null;
 			ResponseCode responseCode = null;
 			if ( command.equals(ACTION_IS_ADD) ) {
+				System.out.println("Call validateAdd");
 				WebMessages webMessages = validateAdd(conn, quoteRequest);
 				if (webMessages.isEmpty()) {
 					try {
@@ -559,10 +561,12 @@ public class QuoteServlet extends AbstractServlet {
 	protected WebMessages validateAdd(Connection conn, QuoteRequest quoteRequest) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		List<String> missingFields = super.validateRequiredAddFields(quoteRequest);
+		System.out.println("validateAdd");
 		if ( ! missingFields.isEmpty() ) {
 			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
 			for ( String field : missingFields ) {
 				webMessages.addMessage(field, messageText);
+				System.out.println("field:"+field+":"+messageText);
 			}
 		}
 		return webMessages;
