@@ -564,12 +564,34 @@ public class QuoteServlet extends AbstractServlet {
 		WebMessages webMessages = new WebMessages();
 		List<String> missingFields = super.validateRequiredAddFields(quoteRequest);
 		System.out.println("validateAdd");
+		String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
 		if ( ! missingFields.isEmpty() ) {
-			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
+//			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
 			for ( String field : missingFields ) {
 				webMessages.addMessage(field, messageText);
 				System.out.println("field:"+field+":"+messageText);
 			}
+		}
+		if (quoteRequest.getDivisionId() == 0 ) {
+			webMessages.addMessage("divisionId", messageText);
+		}
+		if (quoteRequest.getBillToAddressId() == 0 ) {
+			webMessages.addMessage("billToAddressId", messageText);
+		}
+		if (quoteRequest.getJobSiteAddressId() == 0 ) {
+			webMessages.addMessage("jobSiteAddressId", messageText);
+		}
+		if (quoteRequest.getContractContactId() == 0 ) {
+			webMessages.addMessage("contractContactId", messageText);
+		}
+		if (quoteRequest.getBillingContactId() == 0 ) {
+			webMessages.addMessage("billingContactId", messageText);
+		}
+		if (quoteRequest.getJobContactId() == 0 ) {
+			webMessages.addMessage("jobContactId", messageText);
+		}
+		if (quoteRequest.getSiteContact() == 0 ) {
+			webMessages.addMessage("siteContact", messageText);
 		}
 		return webMessages;
 	}

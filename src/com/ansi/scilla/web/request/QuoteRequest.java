@@ -40,6 +40,8 @@ import com.thewebthing.commons.lang.JsonException;
 		private Date addedDate;
 		private Integer contractContactId;
 		private Integer billingContactId;
+		private Integer jobContactId;
+		private Integer siteContact;
 
 		
 		public QuoteRequest() {
@@ -155,6 +157,26 @@ import com.thewebthing.commons.lang.JsonException;
 		@RequiredForUpdate
 		public Integer getContractContactId() {
 			return this.contractContactId;
+		}
+
+		public void setJobContactId(Integer jobContactId) {
+			this.jobContactId = jobContactId;
+		}
+
+		@RequiredForAdd
+		@RequiredForUpdate
+		public Integer getJobContactId() {
+			return this.jobContactId;
+		}
+
+		public void setSiteContact(Integer siteContact) {
+			this.siteContact = siteContact;
+		}
+
+		@RequiredForAdd
+		@RequiredForUpdate
+		public Integer getSiteContact() {
+			return this.siteContact;
 		}
 
 		public void setDivisionId(Integer divisionId) {
