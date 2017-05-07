@@ -38,6 +38,9 @@ import com.thewebthing.commons.lang.JsonException;
 		private String accountType;
 		private Integer addedBy;
 		private Date addedDate;
+		private Integer contractContactId;
+		private Integer billingContactId;
+
 		
 		public QuoteRequest() {
 			super();
@@ -117,6 +120,7 @@ import com.thewebthing.commons.lang.JsonException;
 		}
 
 
+		@RequiredForAdd
 		@RequiredForUpdate
 		public String getLeadType() {
 			return this.leadType;
@@ -131,6 +135,26 @@ import com.thewebthing.commons.lang.JsonException;
 		@RequiredForUpdate
 		public Integer getManagerId() {
 			return this.managerId;
+		}
+
+		public void setBillingContactId(Integer billingContactId) {
+			this.billingContactId = billingContactId;
+		}
+
+		@RequiredForAdd
+		@RequiredForUpdate
+		public Integer getBillingContactId() {
+			return this.billingContactId;
+		}
+
+		public void setContractContactId(Integer contractContactId) {
+			this.contractContactId = contractContactId;
+		}
+
+		@RequiredForAdd
+		@RequiredForUpdate
+		public Integer getContractContactId() {
+			return this.contractContactId;
 		}
 
 		public void setDivisionId(Integer divisionId) {
@@ -236,6 +260,8 @@ import com.thewebthing.commons.lang.JsonException;
 		}
 
 
+		@RequiredForAdd
+		@RequiredForUpdate
 		public String getAccountType() {
 			return this.accountType;
 		}
@@ -255,8 +281,8 @@ import com.thewebthing.commons.lang.JsonException;
 			this.templateId = templateId;
 		}
 
-		@RequiredForAdd
-		@RequiredForUpdate
+//		@RequiredForAdd
+//		@RequiredForUpdate
 		public Integer getTemplateId() {
 			return this.templateId;
 		}
