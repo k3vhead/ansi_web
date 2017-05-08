@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
+import org.apache.commons.beanutils.BeanUtils;
+
 import com.ansi.scilla.web.common.AppUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -48,7 +50,31 @@ import com.thewebthing.commons.lang.JsonException;
 		
 		public QuoteRequest(String jsonString) throws JsonException, IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException {
 			this();
-			AppUtils.json2object(jsonString, QuoteRequest.class, this);
+//			AppUtils.json2object(jsonString, QuoteRequest.class, this);
+			QuoteRequest req = (QuoteRequest) AppUtils.json2object(jsonString, QuoteRequest.class);
+			this.setAddress(req.getAddress());
+			this.setBillToAddressId(req.getBillToAddressId());
+			this.setCopiedFromQuoteId(req.getCopiedFromQuoteId());
+			this.setJobSiteAddressId(req.getJobSiteAddressId());
+			this.setLeadType(req.getLeadType());
+			this.setManagerId(req.getManagerId());
+			this.setName(req.getName());
+			this.setPaymentTerms(req.getPaymentTerms());
+			this.setProposalDate(req.getProposalDate());
+			this.setQuoteId(req.getQuoteId());
+			this.setQuoteNumber(req.getQuoteNumber());
+			this.setRevisionNumber(req.getRevisionNumber());
+			this.setSignedByContactId(req.getSignedByContactId());
+			this.setStatus(req.getStatus());
+			this.setTemplateId(req.getTemplateId());
+			this.setDivisionId(req.getDivisionId());
+			this.setAccountType(req.getAccountType());
+			this.setAddedBy(req.getAddedBy());
+			this.setAddedDate(req.getAddedDate());
+			this.setContractContactId(req.getContractContactId());
+			this.setBillingContactId(req.getBillingContactId());
+			this.setJobContactId(req.getJobContactId());
+			this.setSiteContact(req.getSiteContact());
 		}
 		
 
@@ -230,20 +256,14 @@ import com.thewebthing.commons.lang.JsonException;
 		}
 		*/
 		
-	//	public void setQuoteId(Integer quoteId) {
-	//		this.quoteId = quoteId;
-	//	}
-
-	
-		public Integer getQuoteId() {
-			return this.quoteId;
-		}
-		
-		@RequiredForUpdate
 		public void setQuoteId(Integer quoteId) {
 			this.quoteId = quoteId;
 		}
 
+		@RequiredForUpdate
+		public Integer getQuoteId() {
+			return this.quoteId;
+		}
 		
 		public void setQuoteNumber(Integer quoteNumber) {
 			this.quoteNumber = quoteNumber;
@@ -290,7 +310,7 @@ import com.thewebthing.commons.lang.JsonException;
 			this.status = status;
 		}
 
-		@RequiredForUpdate
+//		@RequiredForUpdate
 		public Integer getStatus() {
 			return this.status;
 		}
