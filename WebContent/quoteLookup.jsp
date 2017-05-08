@@ -42,7 +42,9 @@
 				width:80px !important;
 				max-width:80px !important;
 			}
-			
+			.quotePrint {
+				cursor:pointer;
+			}
         </style>
         
         <script type="text/javascript">      
@@ -119,7 +121,9 @@
 			            } },
 			            { title: "Action",  data: function ( row, type, set ) {	
 			            	//console.log(row);
-			            	{return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='quoteMaintenance.html?id="+row.quoteId+"' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.quoteId+"'></a></ansi:hasWrite></ansi:hasPermission>";}
+			            	editText = '<a href="quoteMaintenance.html?id='+row.quoteId+'" class="editAction ui-icon ui-icon-pencil" data-id="'+row.quoteId+'"></a>';
+			            	printText =  '<i class="fa fa-print quotePrint" aria=hidden="true" data-id="'+row.quoteId+'"></i>';
+			            	{return '<ansi:hasPermission permissionRequired="QUOTE">'+ editText +  ' ' + printText + '<ansi:hasWrite></ansi:hasWrite></ansi:hasPermission>';}
 			            	
 			            } }],
 			            "initComplete": function(settings, json) {
