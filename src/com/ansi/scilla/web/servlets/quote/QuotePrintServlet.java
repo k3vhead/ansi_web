@@ -103,10 +103,10 @@ public class QuotePrintServlet extends AbstractServlet {
 		ByteArrayOutputStream baos = QuotePrinter.printQuote(conn, quoteId, quotePrintRequest.getQuoteDate(), sessionUser.getUserId());
 		
 		
-		FileOutputStream os = new FileOutputStream(new File(invoicePathName + "/" + invoiceFileName));
-		baos.writeTo(os);
-		os.flush();
-		os.close();
+//		FileOutputStream os = new FileOutputStream(new File(invoicePathName + "/" + invoiceFileName));
+//		baos.writeTo(os);
+//		os.flush();
+//		os.close();
 		
 		
 		data.setWebMessages(webMessages);
