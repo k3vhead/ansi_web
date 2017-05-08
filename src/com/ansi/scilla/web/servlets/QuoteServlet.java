@@ -572,27 +572,7 @@ public class QuoteServlet extends AbstractServlet {
 				System.out.println("field:"+field+":"+messageText);
 			}
 		}
-		if (quoteRequest.getDivisionId() == 0 ) {
-			webMessages.addMessage("divisionId", messageText);
-		}
-		if (quoteRequest.getBillToAddressId() == 0 ) {
-			webMessages.addMessage("billToAddressId", messageText);
-		}
-		if (quoteRequest.getJobSiteAddressId() == 0 ) {
-			webMessages.addMessage("jobSiteAddressId", messageText);
-		}
-		if (quoteRequest.getContractContactId() == 0 ) {
-			webMessages.addMessage("contractContactId", messageText);
-		}
-		if (quoteRequest.getBillingContactId() == 0 ) {
-			webMessages.addMessage("billingContactId", messageText);
-		}
-		if (quoteRequest.getJobContactId() == 0 ) {
-			webMessages.addMessage("jobContactId", messageText);
-		}
-		if (quoteRequest.getSiteContact() == 0 ) {
-			webMessages.addMessage("siteContact", messageText);
-		}
+
 		return webMessages;
 	}
 
