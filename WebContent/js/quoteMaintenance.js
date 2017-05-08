@@ -240,31 +240,31 @@ $( document ).ready(function() {
 			save: function(){
 				$outbound = {};
 				
-				if ($("select[name=manager]").val() != "") {
+//				if ($("select[name=manager]").val() != "") {
 	        		$outbound["managerId"]		=	$("select[name=manager]").val();
-				} if ($("select[name=leadType").val() != "") {
+//				} if ($("select[name=leadType").val() != "") {
 	        		$outbound["leadType"]		=	$("select[name=leadType").val();
-				} if ($("select[name=accountType").val() != "") {
+//				} if ($("select[name=accountType").val() != "") {
 	        		$outbound["accountType"]	=	$("select[name=accountType").val();
-				} if ($("select[name=division]").val() != 0) {
+//				} if ($("select[name=division]").val() != 0) {
 	        		$outbound["divisionId"]	=	$("select[name=division]").val();
-				} if ($("input[name=jobSite_id]").val() != 0) {
+//				} if ($("input[name=jobSite_id]").val() != 0) {
 	        		$outbound["jobSiteAddressId"]	=	$("input[name=jobSite_id]").val();
-				} if ($("input[name=billTo_id]").val() != 0) {
+//				} if ($("input[name=billTo_id]").val() != 0) {
 	        		$outbound["billToAddressId"]	=	$("input[name=billTo_id]").val();
-				}
+//				}
 				
 	        		$outbound["templateId"]	=	0;
 	        		
-	        	if ($("input[name='jobSite_Con1id']").val() != 0) {
+//	        	if ($("input[name='jobSite_Con1id']").val() != 0) {
 	        		$outbound["jobContactId"] = $("input[name='jobSite_Con1id']").val();
-				} if ($("input[name='jobSite_Con2id']").val() != 0) {
+//				} if ($("input[name='jobSite_Con2id']").val() != 0) {
 	        		$outbound["siteContact"] = $("input[name='jobSite_Con2id']").val();
-				} if ($("input[name='billTo_Con1id']").val() != 0) {
+//				} if ($("input[name='billTo_Con1id']").val() != 0) {
 	        		$outbound["contractContactId"] = $("input[name='billTo_Con1id']").val();
-				} if ($("input[name='billTo_Con2id']").val() != 0) {
+//				} if ($("input[name='billTo_Con2id']").val() != 0) {
 	        		$outbound["billingContactId"] = $("input[name='billTo_Con2id']").val();
-				}
+//				}
 
         		console.log("Save Outbound: ");
         		console.log($outbound);
@@ -304,6 +304,7 @@ $( document ).ready(function() {
 							
 						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
 							
+							alert("Edit Failure: Required Data is Missing");
 							console.log("Edit Failure");
 							console.log($data);
 							$.each($data.data.webMessages, function(key, messageList) {
@@ -335,29 +336,32 @@ $( document ).ready(function() {
 			update: function(){
 				$outbound = {};
 				
-				if($("select[name=manager]").val() != "") {	
+//				if($("select[name=manager]").val() != "") {	
 		       		$outbound["managerId"]		=	$("select[name=manager]").val();
-				} if($("select[name=leadType").val() != "") {	
+//				} if($("select[name=leadType").val() != "") {	
 		       	 	$outbound["leadType"]		=	$("select[name=leadType").val();
-				} if($("select[name=accountType").val() != 0) {	
+//				} if($("select[name=accountType").val() != 0) {	
 	        		$outbound["accountType"]	=	$("select[name=accountType").val();
-				} if($("select[name=division]").val() != 0) {	
+//				} if($("select[name=division]").val() != 0) {	
 	        		$outbound["divisionId"]	=	$("select[name=division]").val();
-				} if($("input[name=jobSite_id]").val() != 0) {	
+//				} if($("input[name=jobSite_id]").val() != 0) {	
 	        		$outbound["jobSiteAddressId"]	=	$("input[name=jobSite_id]").val();
-				} if($("input[name=billTo_id]").val() != 0) {	
+//				} if($("input[name=billTo_id]").val() != 0) {	
 	        		$outbound["billToAddressId"]	=	$("input[name=billTo_id]").val();
-				} 	
+//				} 	
 	        		$outbound["templateId"]	=	0;
-				if($("input[name='jobSite_Con1id']").val() != 0) {	
+//				if($("input[name='jobSite_Con1id']").val() != 0) {	
 	        		$outbound["jobContactId"] = $("input[name='jobSite_Con1id']").val();
-				} if($("input[name='jobSite_Con2id']").val() != 0) {	
+//				} if($("input[name='jobSite_Con2id']").val() != 0) {	
 	        		$outbound["siteContact"] = $("input[name='jobSite_Con2id']").val();
-				} if($("input[name='billTo_Con1id']").val() != 0) {	
+//				} if($("input[name='billTo_Con1id']").val() != 0) {	
 	        		$outbound["contractContactId"] = $("input[name='billTo_Con1id']").val();
-				} if($("input[name='billTo_Con2id']").val() != 0) {	
+//				} if($("input[name='billTo_Con2id']").val() != 0) {	
 	        		$outbound["billingContactId"] = $("input[name='billTo_Con2id']").val();
-				}
+//				}
+	        		$outbound["quoteNumber"] = $("input[name='quoteNumber']").val();
+	        		$outbound["revisionNumber"] = $("input[name='revision']").val();
+	        		$outbound["quoteId"] = $globalQuoteId;
         		
         		console.log("Update Outbound: ");
         		console.log($outbound);
@@ -383,6 +387,7 @@ $( document ).ready(function() {
 							
 						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
 							
+							alert("Edit Failure: Required Data is Missing");
 							console.log("Edit Failure");
 							console.log($data);
 							$.each($data.data.webMessages, function(key, messageList) {
@@ -423,6 +428,7 @@ $( document ).ready(function() {
 									$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
 								}
 						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+							alert("Edit Failure: Required Data is Missing");
 							$.each($data.data.webMessages, function(key, messageList) {
 								var identifier = "#" + key + "Err";
 								msgHtml = "<ul>";
