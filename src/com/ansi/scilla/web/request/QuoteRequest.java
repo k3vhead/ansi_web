@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
-import org.apache.commons.beanutils.BeanUtils;
-
 import com.ansi.scilla.web.common.AppUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -50,8 +48,7 @@ import com.thewebthing.commons.lang.JsonException;
 		
 		public QuoteRequest(String jsonString) throws JsonException, IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException {
 			this();
-			QuoteRequest req = (QuoteRequest) AppUtils.json2object(jsonString, QuoteRequest.class);
-			BeanUtils.copyProperties(this, req);
+			AppUtils.json2object(jsonString, QuoteRequest.class, this);
 		}
 		
 
