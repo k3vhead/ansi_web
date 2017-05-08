@@ -472,6 +472,16 @@
 
 
 	<servlet>
+		<servlet-name>testJsonServlet</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.JsonTestServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>testJsonServlet</servlet-name>
+		<url-pattern>/testJson</url-pattern>
+	</servlet-mapping>
+
+
+	<servlet>
 		<servlet-name>userServlet</servlet-name>
 		<servlet-class>com.ansi.scilla.web.servlets.AnsiUserServlet</servlet-class>
 	</servlet>
