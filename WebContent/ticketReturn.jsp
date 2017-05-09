@@ -122,6 +122,7 @@
         
         <script type="text/javascript">
         $( document ).ready(function() {
+        	
         	var $defaultTicketNbr='<c:out value="${ANSI_TICKET_ID}" />';
 			var $ticketStatusList = ANSI_UTILS.getOptions("TICKET_STATUS");
 			var $ticketStatusMap = {}
@@ -337,9 +338,9 @@
             	$("#addForm input[name='mgrApproval']").val($mgrApproval);
 				
             	
-				$.each( $('#addForm :input'), function(index, value) {
-					markValid(value);
-				});
+				//$.each( $('#addForm :input'), function(index, value) {
+				//	markValid(value);
+				//});
 
              	$('#addFormDiv').bPopup({
 					modalClose: false,
@@ -382,7 +383,7 @@
 				$outbound['mgrApproval'] = $("#addForm select[name='mgrApproval'] option:selected").val();
 
 				if ( $('#addForm').data('rownum') == null ) {
-					$url = "ticket/" + $ticketNbr ;
+					$url = "ticket/";
 				} else {
 					$rownum = $('#addForm').data('rownum')
 					var $tableData = [];
@@ -395,7 +396,9 @@
 	                });
 	
 	            	$url = "ticket/" + $ticketNbr;
-				}	    		    
+				}
+				
+				console.debug('CHECK ONE');
 				
 				var jqxhr = $.ajax({
 					type: 'POST',
@@ -403,9 +406,10 @@
 					data: JSON.stringify($outbound),
 					success: function($data) {
 							if ( $data.responseHeader.responseCode == 'SUCCESS') {
-								if ( $url == "'ticket/' + $ticketNbr" ) {
+								if ( $url == "ticket/" + $ticketNbr ) {
 									var count = $('#displayTable tr').length - 1;
 									addRow(count, $data.data.ticket);
+									console.debug('CHECK TWO');
 								} else {
 					            	var $rownum = $('#addForm').data('rownum');
 					                var $rowId = eval($rownum) + 1;
@@ -450,19 +454,19 @@
 			
 
 
-            $('#addForm').find("input").on('focus',function(e) {
-            	$required = $(this).data('required');
-            	if ( $required == true ) {
-            		markValid(this);
-            	}
-            });
+            //$('#addForm').find("input").on('focus',function(e) {
+            //	$required = $(this).data('required');
+            //	if ( $required == true ) {
+            //		markValid(this);
+            //	}
+           // });
             
-            $('#addForm').find("input").on('input',function(e) {
-            	$required = $(this).data('required');
-            	if ( $required == true ) {
-            		markValid(this);
-            	}
-            });
+           // $('#addForm').find("input").on('input',function(e) {
+           // 	$required = $(this).data('required');
+           // 	if ( $required == true ) {
+           // 		markValid(this);
+           // 	}
+           // });
             
             function clearAddForm() {
 				$.each( $('#addForm').find("input"), function(index, $inputField) {
@@ -472,36 +476,36 @@
 					$fieldName = $($inputField).attr('name');
 					if ( $($inputField).attr("type") == "text" ) {
 						$($inputField).val("");
-						markValid($inputField);
+						//markValid($inputField);
 					}
 				});
-				$('.err').html("");
+				//$('.err').html("");
 				$('#addForm').data('rownum',null);
             }
             
-            function markValid($inputField) {
-            	$fieldName = $($inputField).attr('name');
-            	$fieldGetter = "input[name='" + $fieldName + "']";
-            	$fieldValue = $($fieldGetter).val();
-            	$valid = '#' + $($inputField).data('valid');
-	            var re = /.+/;	            	 
-            	if ( re.test($fieldValue) ) {
-            		$($valid).removeClass("fa-ban");
-            		$($valid).removeClass("inputIsInvalid");
-            		$($valid).addClass("fa-check-square-o");
-            		$($valid).addClass("inputIsValid");
-            	} else {
-            		$($valid).removeClass("fa-check-square-o");
-            		$($valid).removeClass("inputIsValid");
-            		$($valid).addClass("fa-ban");
-            		$($valid).addClass("inputIsInvalid");
-            	}
-            }
-			
-			
+            //function markValid($inputField) {
+            //	$fieldName = $($inputField).attr('name');
+           // 	$fieldGetter = "input[name='" + $fieldName + "']";
+            //	$fieldValue = $($fieldGetter).val();
+            //	$valid = '#' + $($inputField).data('valid');
+	        //    var re = /.+/;	            	 
+            //	if ( re.test($fieldValue) ) {
+            //		$($valid).removeClass("fa-ban");
+            //		$($valid).removeClass("inputIsInvalid");
+            //		$($valid).addClass("fa-check-square-o");
+           // 		$($valid).addClass("inputIsValid");
+            //	} else {
+            //		$($valid).removeClass("fa-check-square-o");
+            //		$($valid).removeClass("inputIsValid");
+            //		$($valid).addClass("fa-ban");
+            //		$($valid).addClass("inputIsInvalid");
+            //	}
+            //}
+            
         	if ( $defaultTicketNbr != '' ) {
         		$("#ticketNbr").val($defaultTicketNbr);
         		$("#doPopulate").click();
+        		$("#ticketNbr").focus();
         	}
 
     });
