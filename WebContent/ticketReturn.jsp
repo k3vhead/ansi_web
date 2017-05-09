@@ -125,6 +125,7 @@
         	
         	var $defaultTicketNbr='<c:out value="${ANSI_TICKET_ID}" />';
 			var $ticketStatusList = ANSI_UTILS.getOptions("TICKET_STATUS");
+			var $globalTicketId = 0;
 			var $ticketStatusMap = {}
 			$.each($ticketStatusList.ticketStatus, function($index, $value) {
 			    $ticketStatusMap[$value.code]=$value.display;
@@ -133,7 +134,10 @@
 			
         	$("#doPopulate").click(function () {
     			var $ticketNbr = $('#ticketNbr').val();
-            	if ($ticketNbr != '') {            		
+    			$globalTicketId = $('#ticketNbr').val();
+    			alert("ticket:" + $ticketNbr);
+    			alert("ticket:" + $globalTicketId);
+    			if ($ticketNbr != '') {            		
             		doPopulate($ticketNbr)
             	}
             });
@@ -328,6 +332,7 @@
             	var $billSheet = $row.children("td")[6].textContent;
             	var $mgrApproval = $row.children("td")[7].textContent;
 
+    			alert("doUpdate: processDate:" + $processDate);
             	$("#addForm input[name='processDate']").val($processDate);
             	$("#addForm input[name='actPricePerCleaning']").val($actPricePerCleaning);
             	$("#addForm input[name='defaultActDlPct']").val($defaultActDlPct);
@@ -336,6 +341,7 @@
             	$("#addForm input[name='customerSignature']").val($customerSignature);
             	$("#addForm input[name='billSheet']").val($billSheet);
             	$("#addForm input[name='mgrApproval']").val($mgrApproval);
+    			alert("doUpdate: processDate2:" + $processDate);
 				
             	
 				//$.each( $('#addForm :input'), function(index, value) {
@@ -343,6 +349,7 @@
 				//});
 
              	$('#addFormDiv').bPopup({
+        			alert("modal:");
 					modalClose: false,
 					opacity: 0.6,
 					positionStyle: 'fixed' //'fixed' or 'absolute'
@@ -382,9 +389,10 @@
 				$outbound['billSheet'] = $("#addForm select[name='billSheet'] option:selected").val();			
 				$outbound['mgrApproval'] = $("#addForm select[name='mgrApproval'] option:selected").val();
 
-				if ( $('#addForm').data('rownum') == null ) {
-					$url = "ticket/";
-				} else {
+    			alert("update ticket:" + $globalTicketId);
+//				if ( $('#addForm').data('rownum') == null ) {
+//					$url = "ticket/";
+//				} else {
 					$rownum = $('#addForm').data('rownum')
 					var $tableData = [];
 	                $("#displayTable").find('tr').each(function (rowIndex, r) {
@@ -395,9 +403,10 @@
 	                    $tableData.push(cols);
 	                });
 	
-	            	$url = "ticket/" + $ticketNbr;
-				}
+	            	$url = "ticket/" + $globalTicketId;
+//				}
 				
+    			alert("url:" + $url);
 				console.debug('CHECK ONE');
 				
 				var jqxhr = $.ajax({
