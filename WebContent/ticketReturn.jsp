@@ -135,8 +135,7 @@
         	$("#doPopulate").click(function () {
     			var $ticketNbr = $('#ticketNbr').val();
     			$globalTicketId = $('#ticketNbr').val();
-    			alert("ticket:" + $ticketNbr);
-    			alert("ticket:" + $globalTicketId);
+    			console.debug("$globalTicketId:" + $globalTicketId);
     			if ($ticketNbr != '') {            		
             		doPopulate($ticketNbr)
             	}
@@ -332,7 +331,6 @@
             	var $billSheet = $row.children("td")[6].textContent;
             	var $mgrApproval = $row.children("td")[7].textContent;
 
-    			alert("doUpdate: processDate:" + $processDate);
             	$("#addForm input[name='processDate']").val($processDate);
             	$("#addForm input[name='actPricePerCleaning']").val($actPricePerCleaning);
             	$("#addForm input[name='defaultActDlPct']").val($defaultActDlPct);
@@ -341,7 +339,6 @@
             	$("#addForm input[name='customerSignature']").val($customerSignature);
             	$("#addForm input[name='billSheet']").val($billSheet);
             	$("#addForm input[name='mgrApproval']").val($mgrApproval);
-    			alert("doUpdate: processDate2:" + $processDate);
 				
             	
 				//$.each( $('#addForm :input'), function(index, value) {
@@ -349,7 +346,6 @@
 				//});
 
              	$('#addFormDiv').bPopup({
-        			alert("modal:");
 					modalClose: false,
 					opacity: 0.6,
 					positionStyle: 'fixed' //'fixed' or 'absolute'
@@ -380,33 +376,69 @@
 					}
 				})
 
-				$outbound['processDate'] = $("#addForm select[name='processDate'] option:selected").val();
-				$outbound['actPricePerCleaning'] = $("#addForm select[name='actPricePerCleaning'] option:selected").val();
-				$outbound['defaultActDlPct'] = $("#addForm select[name='defaultActDlPct'] option:selected").val();
-				$outbound['actDlAmt'] = $("#addForm select[name='actDlAmt'] option:selected").val();			
-				$outbound['processNotes'] = $("#addForm select[name='processNotes'] option:selected").val();
-				$outbound['customerSignature'] = $("#addForm select[name='customerSignature'] option:selected").val();
-				$outbound['billSheet'] = $("#addForm select[name='billSheet'] option:selected").val();			
-				$outbound['mgrApproval'] = $("#addForm select[name='mgrApproval'] option:selected").val();
+//	        	$outbound["jobSiteAddressId"]	=	$("input[name=jobSite_id]").val();
+				
+				$outbound['processDate'] = $("input[name=processDate]").val();
+				$outbound['actPricePerCleaning'] = $("input[name=actPricePerCleaning]").val();
+				$outbound['defaultActDlPct'] = $("input[name=defaultActDlPct]").val();
+				$outbound['actDlAmt'] = $("input[name=actDlAmt]").val();			
+				$outbound['processNotes'] = $("input[name='processNotes']").val();
+				if($('input[name=customerSignature]').prop('checked')) {
+					$outbound['customerSignature'] = "1";
+				} else {
+					$outbound['customerSignature'] = "0";
+				}
+				if($('input[name=billSheet]').prop('checked')) {
+					$outbound['billSheet'] = "1";
+				} else {
+					$outbound['billSheet'] = "0";
+				}
+				if($('input[name=mgrApproval]').prop('checked')) {
+					$outbound['mgrApproval'] = "1";
+				} else {
+					$outbound['mgrApproval'] = "0";
+				}
 
-    			alert("update ticket:" + $globalTicketId);
+				$outbound['newStatus'] = $('#panelSelector option:selected').val();
+				switch ($('#panelSelector option:selected').val()) {
+				case "COMPLETED":	$outbound['action'] = "complete"; break;
+				case "VOIDED":		$outbound['action'] = "void"; break;
+				case "SKIPPED":		$outbound['action'] = "skip"; break;
+				case "REJECTED":	$outbound['action'] = "reject"; break;
+				default:			$outbound['action'] = "invalid"; break;
+				}
+
+//				$('input[name=billSheet]').prop('checked', false);
+//				$('input[name=mgrApproval]').prop('checked', false);
+
+//				$outbound['processDate'] = $("#addForm select[name='processDate'] option:selected").val();
+//				$outbound['actPricePerCleaning'] = $("#addForm select[name='actPricePerCleaning'] option:selected").val();
+//				$outbound['defaultActDlPct'] = $("#addForm select[name='defaultActDlPct'] option:selected").val();
+//				$outbound['actDlAmt'] = $("#addForm select[name='actDlAmt'] option:selected").val();			
+//				$outbound['processNotes'] = $("#addForm select[name='processNotes'] option:selected").val();
+//				$outbound['customerSignature'] = $("#addForm select[name='customerSignature'] option:selected").val();
+//				$outbound['billSheet'] = $("#addForm select[name='billSheet'] option:selected").val();			
+//				$outbound['mgrApproval'] = $("#addForm select[name='mgrApproval'] option:selected").val();
+
+    			console.debug("update ticket:" + $globalTicketId);
 //				if ( $('#addForm').data('rownum') == null ) {
 //					$url = "ticket/";
 //				} else {
-					$rownum = $('#addForm').data('rownum')
-					var $tableData = [];
-	                $("#displayTable").find('tr').each(function (rowIndex, r) {
-	                    var cols = [];
-	                    $(this).find('th,td').each(function (colIndex, c) {
-	                        cols.push(c.textContent);
-	                    });
-	                    $tableData.push(cols);
-	                });
+				$rownum = $('#addForm').data('rownum')
+				var $tableData = [];
+                $("#displayTable").find('tr').each(function (rowIndex, r) {
+                    var cols = [];
+                    $(this).find('th,td').each(function (colIndex, c) {
+                        cols.push(c.textContent);
+                    });
+                    $tableData.push(cols);
+                });
 	
-	            	$url = "ticket/" + $globalTicketId;
+            	$url = "ticket/" + $globalTicketId;
 //				}
 				
-    			alert("url:" + $url);
+    			console.debug("outbound:" + JSON.stringify($outbound));
+    			console.debug("url:" + $url);
 				console.debug('CHECK ONE');
 				
 				var jqxhr = $.ajax({

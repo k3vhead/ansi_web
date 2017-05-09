@@ -163,7 +163,9 @@ public class TicketServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 			String jsonString = super.makeJsonString(request);
+			System.out.println("jsonstring:"+jsonString);
 			TicketReturnRequest ticketReturnRequest = (TicketReturnRequest)AppUtils.json2object(jsonString, TicketReturnRequest.class);
+			System.out.println("TicketReturnRequest:"+ticketReturnRequest);
 			ansiURL = new AnsiURL(request, "ticket", (String[])null); //  .../ticket/etc
 			SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 
@@ -266,6 +268,7 @@ public class TicketServlet extends AbstractServlet {
 		} else { 
 			responseCode = ResponseCode.EDIT_FAILURE;
 		}
+		System.out.println("messages:"+messages);
 		ticketReturnResponse.setWebMessages(messages);
 		super.sendResponse(conn, response, responseCode, ticketReturnResponse);
 		
@@ -317,16 +320,20 @@ public class TicketServlet extends AbstractServlet {
 		ResponseCode responseCode = null;
 
 		if (ticketReturnRequest.getProcessDate() == null) {
+			System.out.println("No process date");
 			messages.addMessage("processDate", "Required Field");
 		}
 		if (StringUtils.isBlank(ticketReturnRequest.getProcessNotes())) {
+			System.out.println("No process notes");
 			messages.addMessage("processNotes", "Required Field");
 		}
 		if ( ! isValidNewStatus(ticket.getStatus(), ticketReturnRequest.getNewStatus())) {
+			System.out.println("Invalid next status");
 			messages.addMessage(TicketReturnRequest.NEW_STATUS, "Invalid status sequence");
 		}
 
 		if ( messages.isEmpty() ) {
+			System.out.println("valid void");
 			ticket.setStatus(TicketStatus.VOIDED.code());
 			//required fields
 			ticket.setProcessDate(ticketReturnRequest.getProcessDate());
@@ -338,6 +345,7 @@ public class TicketServlet extends AbstractServlet {
 			messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
 			ticketReturnResponse = new TicketReturnResponse(conn, ticket.getTicketId());
 		} else { 
+			System.out.println("Edit failure");
 			responseCode = ResponseCode.EDIT_FAILURE;
 		}
 		ticketReturnResponse.setWebMessages(messages);
