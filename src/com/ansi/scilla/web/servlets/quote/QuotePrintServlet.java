@@ -1,43 +1,44 @@
 package com.ansi.scilla.web.servlets.quote;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.Connection;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.ansi.scilla.common.db.PermissionLevel;
+import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.quote.QuotePrinter;
 import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.Permission;
-import com.ansi.scilla.web.common.ResponseCode;
-import com.ansi.scilla.web.common.WebMessages;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.request.quote.QuotePrintRequest;
-import com.ansi.scilla.web.response.quote.QuotePrintResponse;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
+import com.thewebthing.commons.db2.RecordNotFoundException;
 
 
 
 public class QuotePrintServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
-	
-	
+	public static final String QUOTE_DATE = "quoteDate"; 
+	private final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+
 	
 	@Override
 	protected void doGet(HttpServletRequest request,
@@ -51,21 +52,23 @@ public class QuotePrintServlet extends AbstractServlet {
 			throws ServletException, IOException {
 		AnsiURL ansiURL = null; 
 		Connection conn = null;
+		
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
-			String jsonString = super.makeJsonString(request);
-			QuotePrintRequest quotePrintRequest = new QuotePrintRequest();
-			AppUtils.json2object(jsonString, QuotePrintRequest.class, quotePrintRequest);
-			ansiURL = new AnsiURL(request, "printQuote", (String[])null); //  .../ticket/etc
+			ansiURL = new AnsiURL(request, "quotePrint", (String[])null); 
 			SessionData sessionData = AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			Integer quoteId = ansiURL.getId();
+			String dateString = request.getParameter(QUOTE_DATE);
 
-			SessionUser sessionUser = sessionData.getUser(); 
-			List<String> addErrors = super.validateRequiredAddFields(quotePrintRequest);
-			if (addErrors.isEmpty()) {
-				processUpdate(conn, request, response, ansiURL.getId(), quotePrintRequest, sessionUser);
-			} else {
-				processError(conn, response, addErrors);
+			SessionUser sessionUser = sessionData.getUser();			
+			Date quoteDate = makeQuoteDate(dateString);
+			
+			try {
+				validateQuote(conn, quoteId);
+				processPrint(conn, response, quoteId, quoteDate, sessionUser);
+			} catch ( RecordNotFoundException e) {
+				super.sendNotFound(response);
 			}
 			conn.rollback();
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
@@ -81,6 +84,26 @@ public class QuotePrintServlet extends AbstractServlet {
 
 	
 	
+	private Date makeQuoteDate(String dateString) {
+		Date quoteDate = new GregorianCalendar(new Locale("America/Chicago")).getTime();
+		try {
+			if ( ! StringUtils.isBlank(dateString)) {
+				quoteDate = sdf.parse(dateString);
+			}
+		} catch ( ParseException e ) {
+			// just use current date
+		}
+		return quoteDate;
+	}
+
+
+	private void validateQuote(Connection conn, Integer quoteId) throws Exception {
+		Quote quote = new Quote();
+		quote.setQuoteId(quoteId);
+		quote.selectOne(conn);
+	}
+
+
 	@Override
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -89,46 +112,32 @@ public class QuotePrintServlet extends AbstractServlet {
 	}
 
 
-	private void processUpdate(Connection conn, HttpServletRequest request, HttpServletResponse response, Integer quoteId, QuotePrintRequest quotePrintRequest, SessionUser sessionUser) throws Exception {
-		Calendar today = Calendar.getInstance(new Locale("America/Chicago"));
+	private void processPrint(Connection conn, HttpServletResponse response, Integer quoteId, Date quoteDate, SessionUser sessionUser) throws Exception {
 		
+		ByteArrayOutputStream baos = QuotePrinter.printQuote(conn, quoteId, quoteDate, sessionUser.getUserId());
+		
+		Calendar today = Calendar.getInstance(new Locale("America/Chicago"));
 		SimpleDateFormat fileDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		QuotePrintResponse data = new QuotePrintResponse();
-		WebMessages webMessages = new WebMessages();
 		String fileDate = fileDateFormat.format(today.getTime());
 
-		Date printDate = quotePrintRequest.getQuoteDate();				
-		String invoiceFileName = "quote" + quoteId + "_" + fileDate + ".pdf";
+		String fileName = "quote" + quoteId + "_" + fileDate + ".pdf";
+		
+        response.setHeader("Expires", "0");
+        response.setHeader("Cache-Control", "must-revalidate, post-check=0, pre-check=0");
+        response.setHeader("Pragma", "public");
+		String dispositionHeader = "attachment; filename=" + fileName;
 
-		ByteArrayOutputStream baos = QuotePrinter.printQuote(conn, quoteId, quotePrintRequest.getQuoteDate(), sessionUser.getUserId());
-		
-		
-//		FileOutputStream os = new FileOutputStream(new File(invoicePathName + "/" + invoiceFileName));
-//		baos.writeTo(os);
-//		os.flush();
-//		os.close();
-		
-		
-		data.setWebMessages(webMessages);
-		super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
-
-		
+		response.setHeader("Content-disposition",dispositionHeader);
+        // setting the content type
+        response.setContentType("application/pdf");
+        // the contentlength
+        response.setContentLength(baos.size());
+        // write ByteArrayOutputStream to the ServletOutputStream
+        OutputStream os = response.getOutputStream();
+        baos.writeTo(os);
+        os.flush();
+        os.close();
 	}
 
 
-	private void processError(Connection conn, HttpServletResponse response, List<String> addErrors) throws Exception {
-		WebMessages webMessages = new WebMessages();
-		for ( String error : addErrors ) {
-			webMessages.addMessage(error, "Required field");
-		}
-		QuotePrintResponse data = new QuotePrintResponse();
-		data.setWebMessages(webMessages);
-		super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
-	}
-
-
-
-
-
-	
 }

@@ -12,7 +12,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="webthing" %>
 <%@ taglib uri="WEB-INF/theTagThing.tld" prefix="ansi" %>
 
-
+<%@ page import="com.ansi.scilla.web.servlets.quote.QuotePrintServlet" %>
 
 
 <tiles:insert page="layout.jsp" flush="true">
@@ -45,21 +45,116 @@
 			.quotePrint {
 				cursor:pointer;
 			}
+			#printQuoteDiv {
+				display:none;
+			}
         </style>
         
         <script type="text/javascript">      
         
         $(document).ready(function(){
-      	  $('.ScrollTop').click(function() {
-      	    $('html, body').animate({scrollTop: 0}, 800);
-      	  return false;
-      	    });
-      	});           	      
-        
-        	$(document).ready(function() {
-        	var dataTable = null;
-        	
-        	function createTable(){
+			var dataTable = null;
+
+			$('.ScrollTop').click(function() {
+				$('html, body').animate({scrollTop: 0}, 800);
+     	  		return false;
+			});           	      
+
+        	$('.dateField').datepicker({
+                prevText:'&lt;&lt;',
+                nextText: '&gt;&gt;',
+                showButtonPanel:true
+            });
+
+			$( "#printQuoteDiv" ).dialog({
+				title:'Print Quote',
+				autoOpen: false,
+				height: 200,
+				width: 500,
+				modal: true,
+				closeOnEscape:true,
+				//open: function(event, ui) {
+				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+				//},
+				buttons: [
+					{
+						id: "goPrint",
+							click: function($event) {
+							goPrint();
+						}
+					}
+				]
+			});
+
+			init();
+
+           	function init(){
+				$.each($('input'), function () {
+			        $(this).css("height","20px");
+			        $(this).css("max-height", "20px");
+			    });
+				
+				createTable();
+           	}
+
+			function doFunctionBinding() {
+				$( ".editAction" ).on( "click", function($clickevent) {
+					 doEdit($clickevent);
+				});
+				$( ".quotePrint" ).on( "click", function($clickevent) {
+					 showQuotePrint($(this));
+				});
+			}
+
+			function showQuotePrint($data) {
+				var $quoteId = $data.data("id");
+				var $quoteNumber = $data.data("quotenumber");
+				$("#goPrint").button('option', 'label', 'Print');
+				$('#printQuoteDiv input[name="quoteId"]').val($quoteId);
+				$('#printQuoteDiv .quoteNumber').html($quoteNumber);
+				$("#printQuoteForm").attr("action", "quotePrint/" + $quoteId);
+				$("#printQuoteDiv").dialog("open");
+			}
+			
+			function goPrint() {
+				var $quoteId = $('#printQuoteDiv input[name="quoteId"]').val();
+				var $quoteDate = $('#printQuoteDiv input[name="quoteDate"]').val();
+				$("#printQuoteDiv").dialog("close");
+				$("#printQuoteForm").submit();
+			}
+			
+			function doEdit($clickevent) {
+				var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
+				var $url = 'quoteTable/' + $rowid;
+				var jqxhr = $.ajax({
+					type: 'GET',
+					url: $url,
+					success: function($data) {
+		        		$("#quoteId").val(($data.data.codeList[0]).quoteId);
+		        		$("#quoteCode").val(($data.data.codeList[0]).quoteCode);
+		        		$("#divisionNbr").val(($data.data.codeList[0]).divisionNbr);
+		        		$("#billToName").val(($data.data.codeList[0]).billToName);
+		        		$("#jobSiteName").val(($data.data.codeList[0]).jobSiteName);
+		        		$("#jobSiteAddress").val(($data.data.codeList[0]).jobSiteAddress);
+		        		$("#managerName").val(($data.data.codeList[0]).managerName);
+		        		$("#proposalDate").val(($data.data.codeList[0]).proposalDate);
+		        		$("#quoteJobCount").val(($data.data.codeList[0]).quoteJobCount);
+		        		$("#quotePpcSum").val(($data.data.codeList[0]).quotePpcSum);
+		        		
+		        		$("#qId").val(($data.data.codeList[0]).quoteId);
+		        		$("#updateOrAdd").val("update");
+		        		$("#addQuoteTableForm").dialog( "open" );
+					},
+					statusCode: {
+						403: function($data) {
+							$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+						} 
+					},
+					dataType: 'json'
+				});				
+			}
+			
+			function createTable(){
         		var dataTable = $('#quoteTable').DataTable( {
         			"processing": 		true,
         	        "serverSide": 		true,
@@ -122,7 +217,7 @@
 			            { title: "Action",  data: function ( row, type, set ) {	
 			            	//console.log(row);
 			            	editText = '<a href="quoteMaintenance.html?id='+row.quoteId+'" class="editAction ui-icon ui-icon-pencil" data-id="'+row.quoteId+'"></a>';
-			            	printText =  '<i class="fa fa-print quotePrint" aria=hidden="true" data-id="'+row.quoteId+'"></i>';
+			            	printText =  '<i class="fa fa-print quotePrint" aria=hidden="true" data-id="'+row.quoteId+'" data-quotenumber="'+ row.quoteCode + '"></i>';
 			            	{return '<ansi:hasPermission permissionRequired="QUOTE">'+ editText +  ' ' + printText + '<ansi:hasWrite></ansi:hasWrite></ansi:hasPermission>';}
 			            	
 			            } }],
@@ -133,65 +228,21 @@
 			            "drawCallback": function( settings ) {
 			            	doFunctionBinding();
 			            }
-			    } );
-        	}
-        	        	
-        	init();
-            
-            
-            function init(){
-					$.each($('input'), function () {
-				        $(this).css("height","20px");
-				        $(this).css("max-height", "20px");
-				    });
-					
-					createTable();
-            }; 
-				
-				function doFunctionBinding() {
-					$( ".editAction" ).on( "click", function($clickevent) {
-						 doEdit($clickevent);
-					});
-				}
-				
-				function doEdit($clickevent) {
-					var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
-
-						var $url = 'quoteTable/' + $rowid;
-						//console.log("YOU PASSED ROW ID:" + $rowid);
-						var jqxhr = $.ajax({
-							type: 'GET',
-							url: $url,
-							success: function($data) {
-								//console.log($data);
-								
-				        		$("#quoteId").val(($data.data.codeList[0]).quoteId);
-				        		$("#quoteCode").val(($data.data.codeList[0]).quoteCode);
-				        		$("#divisionNbr").val(($data.data.codeList[0]).divisionNbr);
-				        		$("#billToName").val(($data.data.codeList[0]).billToName);
-				        		$("#jobSiteName").val(($data.data.codeList[0]).jobSiteName);
-				        		$("#jobSiteAddress").val(($data.data.codeList[0]).jobSiteAddress);
-				        		$("#managerName").val(($data.data.codeList[0]).managerName);
-				        		$("#proposalDate").val(($data.data.codeList[0]).proposalDate);
-				        		$("#quoteJobCount").val(($data.data.codeList[0]).quoteJobCount);
-				        		$("#quotePpcSum").val(($data.data.codeList[0]).quotePpcSum);
-				        		
-				        		$("#qId").val(($data.data.codeList[0]).quoteId);
-				        		$("#updateOrAdd").val("update");
-				        		$("#addQuoteTableForm").dialog( "open" );
-							},
-							statusCode: {
-								403: function($data) {
-									$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-								} 
-							},
-							dataType: 'json'
-						});
-					//console.log("Edit Button Clicked: " + $rowid);
-				}
-        });
+				    } );
+        		}
+			});
         </script>        
     </tiles:put>
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
     
    <tiles:put name="content" type="string">
     	<h1>Quote Lookup</h1>
@@ -249,6 +300,14 @@
     	</br>
     </p>
     
+    
+    <div id="printQuoteDiv">
+    	<form method="post" action="quotePrint" id="printQuoteForm" target="_new">
+    		<input type="hidden" name="quoteId" />
+    		Quote Number: <span class="quoteNumber"></span><br />
+    		Quote Date: <input type="text" class="dateField" name="<%= QuotePrintServlet.QUOTE_DATE %>" /><br />
+    	</form>
+    </div>
     </tiles:put>
 		
 </tiles:insert>

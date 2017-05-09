@@ -363,6 +363,15 @@
         <servlet-name>quote</servlet-name>
         <url-pattern>/quote/*</url-pattern>
     </servlet-mapping>
+
+	<servlet>
+        <servlet-name>quotePrint</servlet-name>
+        <servlet-class>com.ansi.scilla.web.servlets.quote.QuotePrintServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>quotePrint</servlet-name>
+        <url-pattern>/quotePrint/*</url-pattern>
+    </servlet-mapping>
     
     
 	<servlet>
