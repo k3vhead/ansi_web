@@ -12,8 +12,9 @@
 <%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="webthing" %>
 <%@ taglib uri="WEB-INF/theTagThing.tld" prefix="ansi" %>
 
-<%@ page import="com.ansi.scilla.web.servlets.quote.QuotePrintServlet" %>
-
+<%
+	String quotePrintModal = "printQuoteDiv";
+%>
 
 <tiles:insert page="layout.jsp" flush="true">
 
@@ -23,6 +24,7 @@
     
     
     <tiles:put name="headextra" type="string">
+  	    <script type="text/javascript" src="js/quotePrint.js"></script>
         <style type="text/css">
 			#displayTable {
 				width:90%;
@@ -66,25 +68,8 @@
                 showButtonPanel:true
             });
 
-			$( "#printQuoteDiv" ).dialog({
-				title:'Print Quote',
-				autoOpen: false,
-				height: 200,
-				width: 500,
-				modal: true,
-				closeOnEscape:true,
-				//open: function(event, ui) {
-				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-				//},
-				buttons: [
-					{
-						id: "goPrint",
-							click: function($event) {
-							goPrint();
-						}
-					}
-				]
-			});
+
+        	QUOTE_PRINT.init_modal(<%= "\"#" + quotePrintModal + "\"" %>);
 
 			init();
 
@@ -102,27 +87,10 @@
 					 doEdit($clickevent);
 				});
 				$( ".quotePrint" ).on( "click", function($clickevent) {
-					 showQuotePrint($(this));
+					 QUOTE_PRINT.showQuotePrint(<%= "\"#" + quotePrintModal + "\"" %>, $(this).data("id"), $(this).data("quotenumber"));
 				});
 			}
 
-			function showQuotePrint($data) {
-				var $quoteId = $data.data("id");
-				var $quoteNumber = $data.data("quotenumber");
-				$("#goPrint").button('option', 'label', 'Print');
-				$('#printQuoteDiv input[name="quoteId"]').val($quoteId);
-				$('#printQuoteDiv .quoteNumber').html($quoteNumber);
-				$("#printQuoteForm").attr("action", "quotePrint/" + $quoteId);
-				$("#printQuoteDiv").dialog("open");
-			}
-			
-			function goPrint() {
-				var $quoteId = $('#printQuoteDiv input[name="quoteId"]').val();
-				var $quoteDate = $('#printQuoteDiv input[name="quoteDate"]').val();
-				$("#printQuoteDiv").dialog("close");
-				$("#printQuoteForm").submit();
-			}
-			
 			function doEdit($clickevent) {
 				var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
 				var $url = 'quoteTable/' + $rowid;
@@ -300,14 +268,8 @@
     	</br>
     </p>
     
-    
-    <div id="printQuoteDiv">
-    	<form method="post" action="quotePrint" id="printQuoteForm" target="_new">
-    		<input type="hidden" name="quoteId" />
-    		Quote Number: <span class="quoteNumber"></span><br />
-    		Quote Date: <input type="text" class="dateField" name="<%= QuotePrintServlet.QUOTE_DATE %>" /><br />
-    	</form>
-    </div>
+    <webthing:quotePrint modalName="<%= quotePrintModal %>" />
+  
     </tiles:put>
 		
 </tiles:insert>

@@ -70,7 +70,7 @@ public class QuotePrintServlet extends AbstractServlet {
 			} catch ( RecordNotFoundException e) {
 				super.sendNotFound(response);
 			}
-			conn.rollback();
+			conn.commit();
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
 			super.sendForbidden(response);
 		} catch ( Exception e) {
