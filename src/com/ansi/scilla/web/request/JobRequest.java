@@ -66,6 +66,7 @@ public class JobRequest extends AbstractRequest{
 	
 	public JobRequest(String jsonString) throws JsonException, IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException {
 		this();
+		System.out.println("timezone: "+timezone);
 		JobRequest req = (JobRequest) AppUtils.json2object(jsonString, JobRequest.class);
 		BeanUtils.copyProperties(this, req);
 	}
@@ -87,7 +88,7 @@ public class JobRequest extends AbstractRequest{
 		this.addedDate = addedDate;
 	}
 	
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy/MM/dd", timezone="America/Chicago")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setActivationDate(Date activationDate) {
 		this.activationDate = activationDate;
 	}
@@ -132,6 +133,7 @@ public class JobRequest extends AbstractRequest{
 		return this.buildingType;
 	}
 
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setCancelDate(Date cancelDate) {
 		this.cancelDate = cancelDate;
 	}
@@ -183,6 +185,7 @@ public class JobRequest extends AbstractRequest{
 		return this.equipment;
 	}
 
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setExpirationDate(Date expirationDate) {
 		this.expirationDate = expirationDate;
 	}
@@ -285,6 +288,7 @@ public class JobRequest extends AbstractRequest{
 		return this.jobTypeId;
 	}
 
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setLastPriceChange(Date lastPriceChange) {
 		this.lastPriceChange = lastPriceChange;
 	}
@@ -293,6 +297,7 @@ public class JobRequest extends AbstractRequest{
 		return this.lastPriceChange;
 	}
 
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setLastReviewDate(Date lastReviewDate) {
 		this.lastReviewDate = lastReviewDate;
 	}
@@ -386,6 +391,7 @@ public class JobRequest extends AbstractRequest{
 		return this.siteContact;
 	}
 
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
