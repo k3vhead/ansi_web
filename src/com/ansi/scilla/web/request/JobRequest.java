@@ -82,12 +82,12 @@ public class JobRequest extends AbstractRequest{
 		return this.addedDate;
 	}
 	
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setAddedDate(Date addedDate) {
 		this.addedDate = addedDate;
 	}
 	
-	//@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy/MM/dd")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy/MM/dd", timezone="America/Chicago")
 	public void setActivationDate(Date activationDate) {
 		this.activationDate = activationDate;
 	}
