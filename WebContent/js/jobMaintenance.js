@@ -232,11 +232,20 @@ $( document ).ready(function() {
 		
 		addJob: function($rn,$quoteId, $namespace) {
 			var $url = "job/add";
-		
+
 			var $outbound = {};
-    		$outbound["action"]	= 'ADD_JOB';
+			alert("job addJob - quoteId:" + $quoteId);
+//			alert($globalQuoteId);
+//    		$outbound["action"]	= 'ADD_JOB';
     		$pre = "#"+$rn;
     		
+			alert("job addJob - jobId:" + $($pre+"_jobPanel_jobId").val());
+    		if ($($pre+"_jobPanel_jobId").val()) {
+    			$url = "job/"+$($pre+"_jobPanel_jobId").val();
+        		$outbound["action"]	= 'UPDATE_JOB';			
+    		} else {
+        		$outbound["action"]	= 'ADD_JOB';
+    		}
     		$outbound["activationDate"]				= $($pre+"_jobDates_activationDate").html();
     		$outbound["billingContactId"]			= $("input[name='billTo_Con2id']").val();
     		$outbound["billingNotes"]				= $($pre+"_jobActivation_billingNotes").val();

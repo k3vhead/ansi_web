@@ -105,14 +105,14 @@ public class JobServlet extends AbstractServlet {
 			String[] urlPieces = myString.split("/");
 			String command = urlPieces[0];
 			
-			System.out.println("Servlet Output: [0]"+urlPieces[0]+" [1]"+urlPieces[1]);
+			System.out.println("Servlet Output: [0]"+urlPieces[0]);
 			
 			JobRequest jobRequest = new JobRequest(jsonString);
 			
 			if ( command.equalsIgnoreCase("add") ) {
 				
 				doAdd(conn, jobRequest, sessionUser, response);
-			} else if ( command.equalsIgnoreCase("update") ){
+			} /*else if ( action.equals(JobDetailRequestAction.UPDATE_JOB) ){
 								
 				try {
 					Job key = new Job();
@@ -142,7 +142,7 @@ public class JobServlet extends AbstractServlet {
 				}
 				
 				
-			} else {
+			} */else {
 			
 				url = new AnsiURL(request, "job", (String[])null);
 				
@@ -161,7 +161,29 @@ public class JobServlet extends AbstractServlet {
 						doScheduleJob(conn, url.getId(), jobDetailRequest, sessionUser, response);
 					} else if ( action.equals(JobDetailRequestAction.REPEAT_JOB)) {
 						doRepeatJob(conn, url.getId(), jobDetailRequest, sessionUser, response);
+					} else if ( action.equals(JobDetailRequestAction.UPDATE_JOB)) {
+						Job key = new Job();
+						key.setJobId(url.getId());
+						//key.selectOne(conn);
+						
+						System.out.println("This is the key:");
+						System.out.println(key);
+						System.out.println("************");
+						
+						//key.setRevision((urlPieces[2]));
+						System.out.println("Trying to do update");
+						Job job = doUpdate(conn, key, jobRequest, sessionUser, response);
+						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
+						responseCode = ResponseCode.SUCCESS;
+						messages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+						JobResponse jobResponse = new JobResponse(job, messages);
+						super.sendResponse(conn, response, responseCode, jobResponse);		
+
 					}
+				} catch ( RecordNotFoundException e ) {
+					System.out.println("Doing 404");
+					System.out.println(e);
+					super.sendNotFound(response);						
 				} catch ( IllegalArgumentException e) {
 					conn.rollback();
 					messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Missing Required Data: action");
@@ -621,7 +643,7 @@ public class JobServlet extends AbstractServlet {
 		System.out.println("Job servlet Add Data:");
 		System.out.println(job.toString());
 		job.update(conn, key);
-		
+
 		return job;
 	}
 	
