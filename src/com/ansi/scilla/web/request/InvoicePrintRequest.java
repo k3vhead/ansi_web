@@ -22,7 +22,7 @@ public class InvoicePrintRequest extends AbstractRequest {
 		this.divisionId = divisionId;
 	}
 	@RequiredForAdd
-	@JsonSerialize(using = AnsiDateFormatter.class)
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Date getPrintDate() {
 		return printDate;
 	}
@@ -31,7 +31,7 @@ public class InvoicePrintRequest extends AbstractRequest {
 		this.printDate = printDate;
 	}
 	@RequiredForAdd
-	@JsonSerialize(using = AnsiDateFormatter.class)
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Date getDueDate() {
 		return dueDate;
 	}

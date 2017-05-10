@@ -88,11 +88,12 @@ import com.thewebthing.commons.lang.JsonException;
 		}
 
 		
+		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public Date getAddedDate() {
 			return this.addedDate;
 		}
 		
-		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
+		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public void setAddedDate(Date addedDate) {
 			this.addedDate = addedDate;
 		}
@@ -233,12 +234,13 @@ import com.thewebthing.commons.lang.JsonException;
 			return this.paymentTerms;
 		}
 		
-		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
+		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public void setProposalDate(Date proposalDate) {
 			this.proposalDate = proposalDate;
 		}
 
 
+		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public Date getProposalDate() {
 			return this.proposalDate;
 		}

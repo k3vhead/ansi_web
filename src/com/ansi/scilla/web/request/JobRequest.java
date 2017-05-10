@@ -78,6 +78,7 @@ public class JobRequest extends AbstractRequest{
 		this.addedBy = addedBy;
 	}
 
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Date getAddedDate() {
 		return this.addedDate;
 	}
@@ -93,6 +94,7 @@ public class JobRequest extends AbstractRequest{
 	}
 
 	@RequiredForAdd
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Date getActivationDate() {
 		return this.activationDate;
 	}
@@ -137,6 +139,7 @@ public class JobRequest extends AbstractRequest{
 		this.cancelDate = cancelDate;
 	}
 
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Date getCancelDate() {
 		return this.cancelDate;
 	}
@@ -189,6 +192,7 @@ public class JobRequest extends AbstractRequest{
 		this.expirationDate = expirationDate;
 	}
 
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Date getExpirationDate() {
 		return this.expirationDate;
 	}

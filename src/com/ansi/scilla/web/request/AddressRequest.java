@@ -7,6 +7,7 @@ import java.util.Date;
 import org.apache.commons.beanutils.BeanUtils;
 
 import com.ansi.scilla.web.common.AppUtils;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.thewebthing.commons.lang.JsonException;
@@ -37,9 +38,10 @@ import com.thewebthing.commons.lang.JsonException;
 			super();
 		}
 		
-		public AddressRequest(String jsonString) throws JsonException, IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException {
+		public AddressRequest(String jsonString) throws JsonException, IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException, InstantiationException, NoSuchMethodException {
 			this();
-			AddressRequest req = (AddressRequest) AppUtils.json2object(jsonString, AddressRequest.class);
+			AddressRequest req = new AddressRequest();
+			AppUtils.json2object(jsonString, req);
 			BeanUtils.copyProperties(this, req);
 		}
 		
@@ -54,10 +56,12 @@ import com.thewebthing.commons.lang.JsonException;
 		}
 
 
+                @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public Date getAddedDate() {
 			return this.addedDate;
 		}
 		
+		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public void setAddedDate(Date addedDate) {
 			this.addedDate = addedDate;
 		}
@@ -154,11 +158,12 @@ import com.thewebthing.commons.lang.JsonException;
 		}
 
 
+		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public void setUpdatedDate(Date updatedDate) {
 			this.updatedDate = updatedDate;
 		}
 
-
+                @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public Date getUpdatedDate() {
 			return this.updatedDate;
 		}

@@ -2,7 +2,6 @@ package com.ansi.scilla.web.request;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-//import java.util.Date;
 import java.util.Date;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -122,11 +121,12 @@ public class QuoteSearchRequest extends AbstractRequest {
 		return this.paymentTerms;
 	}
 
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setProposalDate(Date proposalDate) {
 		this.proposalDate = proposalDate;
 	}
 
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Date getProposalDate() {
 		return this.proposalDate;
 	}

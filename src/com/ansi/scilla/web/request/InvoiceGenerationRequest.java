@@ -13,12 +13,12 @@ public class InvoiceGenerationRequest extends AbstractRequest {
 	private Date invoiceDate;
 	private Boolean monthlyFlag;
 	
-	@JsonSerialize(using = AnsiDateFormatter.class)
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	@RequiredForAdd
 	public Date getInvoiceDate() {
 		return invoiceDate;
 	}
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setInvoiceDate(Date invoiceDate) {
 		this.invoiceDate = invoiceDate;
 	}

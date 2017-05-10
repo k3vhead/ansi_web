@@ -28,10 +28,11 @@ public class JobDetailRequest extends AbstractRequest {
 	public void setAction(String action) {
 		this.action = action;
 	}
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Date getCancelDate() {
 		return cancelDate;
 	}
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setCancelDate(Date cancelDate) {
 		this.cancelDate = cancelDate;
 	}
@@ -41,18 +42,19 @@ public class JobDetailRequest extends AbstractRequest {
 	public void setCancelReason(String cancelReason) {
 		this.cancelReason = cancelReason;
 	}
-	
+        @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")	
 	public Date getActivationDate() {
 		return activationDate;
 	}
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setActivationDate(Date activationDate) {
 		this.activationDate = activationDate;
 	}
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Date getStartDate() {
 		return startDate;
 	}
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}

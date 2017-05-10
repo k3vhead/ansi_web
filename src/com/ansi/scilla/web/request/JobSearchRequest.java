@@ -3,7 +3,6 @@ package com.ansi.scilla.web.request;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-//import java.util.Date;
 import java.util.Date;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -122,11 +121,12 @@ public class JobSearchRequest extends AbstractRequest {
 		return this.serviceDescription;
 	}
 
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
 
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Date getStartDate() {
 		return this.startDate;
 	}

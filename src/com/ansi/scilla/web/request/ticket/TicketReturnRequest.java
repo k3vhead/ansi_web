@@ -1,7 +1,6 @@
 package com.ansi.scilla.web.request.ticket;
 
 import java.math.BigDecimal;
-//import java.util.Date;
 import java.util.Date;
 
 import com.ansi.scilla.web.request.AbstractRequest;
@@ -105,11 +104,11 @@ public class TicketReturnRequest extends AbstractRequest {
 		return this.newStatus;
 	}
 
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setProcessDate(Date processDate) {
 		this.processDate = processDate;
 	}
-	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")	
 	public Date getProcessDate() {
 		return this.processDate;
 	}

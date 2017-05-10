@@ -2,7 +2,6 @@ package com.ansi.scilla.web.request.ticket;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-//import java.util.Date;
 import java.util.Date;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -83,11 +82,12 @@ public class TicketSearchRequest extends AbstractRequest {
         return this.printCount;
     }
 
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
 
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Date getStartDate() {
 		return this.startDate;
 	}

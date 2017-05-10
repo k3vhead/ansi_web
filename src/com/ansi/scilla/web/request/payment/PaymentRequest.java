@@ -1,7 +1,6 @@
 package com.ansi.scilla.web.request.payment;
 
 import java.math.BigDecimal;
-//import java.util.Date;
 import java.util.Date;
 import java.util.List;
 
@@ -75,12 +74,13 @@ public class PaymentRequest extends AbstractRequest {
 		return this.type;
 	}
 
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setPaymentDate(Date paymentDate) {
 		this.paymentDate = paymentDate;
 	}
 	@RequiredForAdd
 	@RequiredForUpdate
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Date getPaymentDate() {
 		return this.paymentDate;
 	}
@@ -100,12 +100,13 @@ public class PaymentRequest extends AbstractRequest {
 		return this.checkNumber;
 	}
 
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setCheckDate(Date checkDate) {
 		this.checkDate = checkDate;
 	}
 	@RequiredForAdd
 	@RequiredForUpdate
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Date getCheckDate() {
 		return this.checkDate;
 	}
