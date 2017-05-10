@@ -349,6 +349,9 @@
 							$fieldValue = $(this).prop("checked");
 						}
 						$outbound[$fieldName]=$fieldValue;
+						if ( $fieldName == "defaultActDlPct" ) { //gag
+							$outbound["actDlPct"] = $fieldValue;	//gag						
+						} //gag
 					}
 				});
 
@@ -373,6 +376,7 @@
 								$(".workPanel").hide();
 								clearAddForm();								
 							} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+//								alert("Edit Fail - missing required data");
 								console.debug("Fail");
 								console.debug($data.data.webMessages);
 								$('.err').html("");
