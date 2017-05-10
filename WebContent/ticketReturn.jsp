@@ -12,6 +12,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="webthing" %>
 <%@ taglib uri="WEB-INF/theTagThing.tld" prefix="ansi" %>
 
+<%@ page import="com.ansi.scilla.common.jobticket.TicketStatus" %>
 
 <tiles:insert page="layout.jsp" flush="true">
 
@@ -35,13 +36,6 @@
 			}
 			#displayTable {
 				width:90%;
-			}
-			#addFormDiv {
-				display:none;
-				background-color:#FFFFFF;
-				color:#000000;
-				width:400px;
-				padding:15px;
 			}
 			#delData {
 				margin-top:15px;
@@ -149,6 +143,12 @@
                 showButtonPanel:true
             });
 
+        	$('#ticketNbr').focus(function($event) {
+        		$('.workPanel').hide();
+        		clearAddForm();
+        		$(this).select();	
+        	});
+        	
 			function populateTicketDetail($data) {
 				$("#ticketId").html($data.ticketDetail.ticketId);
 				$("#actPricePerCleaning").html($data.ticketDetail.actPricePerCleaning);
@@ -214,7 +214,6 @@
 						$.each($data.data.ticketList, function(index, value) {
 							addRow(index, value);
 						});
-						doFunctionBinding();
 						$(".workPanel").hide();
 		       			populateTicketDetail($data.data);	       			
 		       			populateSummary($data.data);
@@ -226,13 +225,13 @@
 					},
 		       		statusCode: {
 	       				404: function($data) {
-	        	    		$("#globalMsg").html("Bad Ticket Number").fadeIn(10);
+	        	    		$("#globalMsg").html("Invalid Ticket Number").show().fadeOut(6000);
 	        	    	},
 						403: function($data) {
-							$("#globalMsg").html("Session Timeout. Log in and try again");
+							$("#globalMsg").html("Session Timeout. Log in and try again").show();
 						},
 		       			500: function($data) {
-	            	    	$("#globalMsg").html("System Error: Contact Support").fadeIn(10);
+	            	    	$("#globalMsg").html("System Error: Contact Support").show();
 	            		},
 		       		},
 		       		dataType: 'json'
@@ -247,13 +246,6 @@
 			}
         	
         	
-        	//$nextAllowedStatusList = ticket.nextAllowedStatusList();
-			//$("#status").append(new Option("",""));
-			//$.each($nextAllowedStatusList, function(index, val) {
-			//	$("#status").append(new Option(val.status));
-			//});
-
-        	
 			$('#row_dim').hide(); 
     			$('#type').change(function(){
         			if($('#type').val() == 'parcel') {
@@ -264,41 +256,17 @@
     		});
 			
     			
-    			//if ( this.value == '1')
-    			//      //.....................^.......
-    			//      {
-    			 //       $("#business").show();
-    			 //     }
-    			 //     else
-    			  //    {
-    			  //      $("#business").hide();
-    			  //    }
-    			  //  });
-			
-        	
 			$("#panelSelector").change(function($event) {
 				$(".workPanel").hide();
 				var $selectedPanel = $('#panelSelector option:selected').val();		
         		if ($selectedPanel != '' ) {
         			$selectedId = "#" + $selectedPanel;
         			$($selectedId).fadeIn(1500);
-        			$("#monitor").html("Displaying " + $selectedPanel);
-        		} else {
-        			$("#P").hide();
-        			$("#C").hide();
-        			$("#I").hide();
-        			$("#V").hide();
-        			$("#monitor").html("Hiding Everything");
         		}
-        		//var $ticketStatus = $('#ticketStatus option:selected').val;
-        		//if($ticketStatus != '' ){
-        		//	$
-        		//}
-
 			});
 			
 
-			
+			<%--
 			function doFunctionBinding() {
 				$('.updAction').bind("click", function($clickevent) {
 					doUpdate($clickevent);
@@ -352,6 +320,7 @@
 				});				
 			}
 			
+			--%>
 			
 			
 			
@@ -366,103 +335,46 @@
 			
 	
 			$(".goUpdate").click( function($clickevent) {
+				// the goButton -- $(this) -- tells us which panel is being submitted
+				// loop through all input in that panel and put the values in $outbound
+				var $panelName = $(this).data('panel');
+				var $inputSelector = "#" + $panelName + " :input";				
+
 				$outbound = {};
-				$.each( $('#addForm :input'), function(index, value) {
+				$.each( $($inputSelector), function(index, value) {
 					if ( value.name ) {
-						$fieldName = value.name;
-						$id = "#addForm input[name='" + $fieldName + "']";
-						$val = $($id).val();
-						$outbound[$fieldName] = $val;
+						var $fieldName = value.name;
+						var $fieldValue = $(this).val();
+						if ( $(this).attr("type") == "checkbox" ) {
+							$fieldValue = $(this).prop("checked");
+						}
+						$outbound[$fieldName]=$fieldValue;
 					}
-				})
+				});
 
-//	        	$outbound["jobSiteAddressId"]	=	$("input[name=jobSite_id]").val();
-				
-				$outbound['processDate'] = $("input[name=processDate]").val();
-				$outbound['actPricePerCleaning'] = $("input[name=actPricePerCleaning]").val();
-				$outbound['actDlPct'] = $("input[name=defaultActDlPct]").val();
-				$outbound['actDlAmt'] = $("input[name=actDlAmt]").val();			
-				$outbound['processNotes'] = $("input[name='processNotes']").val();
-				if($('input[name=customerSignature]').prop('checked')) {
-					$outbound['customerSignature'] = "1";
-				} else {
-					$outbound['customerSignature'] = "0";
-				}
-				if($('input[name=billSheet]').prop('checked')) {
-					$outbound['billSheet'] = "1";
-				} else {
-					$outbound['billSheet'] = "0";
-				}
-				if($('input[name=mgrApproval]').prop('checked')) {
-					$outbound['mgrApproval'] = "1";
-				} else {
-					$outbound['mgrApproval'] = "0";
-				}
-
-				$outbound['nextStatus'] = $('#panelSelector option:selected').val();
-				switch ($('#panelSelector option:selected').val()) {
-				case "COMPLETED":	$outbound['action'] = "complete"; $outbound['newStatus'] = "C"; break;
-				case "VOIDED":		$outbound['action'] = "void"; $outbound['newStatus'] = "V"; break;
-				case "SKIPPED":		$outbound['action'] = "skip"; $outbound['newStatus'] = "S"; break;
-				case "REJECTED":	$outbound['action'] = "reject"; $outbound['newStatus'] = "R"; break;
-				default:			$outbound['action'] = "invalid"; break;
-				}
-
-//				$('input[name=billSheet]').prop('checked', false);
-//				$('input[name=mgrApproval]').prop('checked', false);
-
-//				$outbound['processDate'] = $("#addForm select[name='processDate'] option:selected").val();
-//				$outbound['actPricePerCleaning'] = $("#addForm select[name='actPricePerCleaning'] option:selected").val();
-//				$outbound['defaultActDlPct'] = $("#addForm select[name='defaultActDlPct'] option:selected").val();
-//				$outbound['actDlAmt'] = $("#addForm select[name='actDlAmt'] option:selected").val();			
-//				$outbound['processNotes'] = $("#addForm select[name='processNotes'] option:selected").val();
-//				$outbound['customerSignature'] = $("#addForm select[name='customerSignature'] option:selected").val();
-//				$outbound['billSheet'] = $("#addForm select[name='billSheet'] option:selected").val();			
-//				$outbound['mgrApproval'] = $("#addForm select[name='mgrApproval'] option:selected").val();
 
     			console.debug("update ticket:" + $globalTicketId);
-//				if ( $('#addForm').data('rownum') == null ) {
-//					$url = "ticket/";
-//				} else {
-				$rownum = $('#addForm').data('rownum')
-				var $tableData = [];
-                $("#displayTable").find('tr').each(function (rowIndex, r) {
-                    var cols = [];
-                    $(this).find('th,td').each(function (colIndex, c) {
-                        cols.push(c.textContent);
-                    });
-                    $tableData.push(cols);
-                });
 	
             	$url = "ticket/" + $globalTicketId;
-//				}
 				
     			console.debug("outbound:" + JSON.stringify($outbound));
     			console.debug("url:" + $url);
-				console.debug('CHECK ONE');
-				
+
 				var jqxhr = $.ajax({
 					type: 'POST',
 					url: $url,
 					data: JSON.stringify($outbound),
-					success: function($data) {
+					statusCode: {
+						200: function($data) {
+							console.debug("response 200");
 							if ( $data.responseHeader.responseCode == 'SUCCESS') {
-								if ( $url == "ticket/" + $ticketNbr ) {
-									var count = $('#displayTable tr').length - 1;
-									addRow(count, $data.data.ticket);
-									console.debug('CHECK TWO');
-								} else {
-					            	var $rownum = $('#addForm').data('rownum');
-					                var $rowId = eval($rownum) + 1;
-					            	var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")"
-					            	var $rowTd = makeRow($data.data.ticket, $rownum);
-					            	$($rowFinder).html($rowTd);
-								}
-								doFunctionBinding();
-								clearAddForm();
-								$('#addFormDiv').bPopup().close();
-								$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
+								console.debug("Success");
+								$("#globalMsg").html("Update Complete").show().fadeOut(6000);
+								$(".workPanel").hide();
+								clearAddForm();								
 							} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+								console.debug("Fail");
+								console.debug($data.data.webMessages);
 								$('.err').html("");
 								 $.each($data.data.webMessages, function(key, messageList) {
 									var identifier = "#" + key + "Err";
@@ -473,24 +385,23 @@
 									msgHtml = msgHtml + "</ul>";
 									$(identifier).html(msgHtml);
 								});	
-								$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
+								$("#globalMsg").html($data.responseHeader.responseMessage).show().fadeOut(6000);
 							} else {
-								
+								$("#globalMsg").html("Unexepected Response, Contact support (" + $data.responseHeader.responseMessage + ")").show();
 							}
 						},
-						statusCode: {
-		       				404: function($data) {
-		        	    		$("#globalMsg").html("Bad Ticket Number").fadeIn(10);
-		        	    	},
-							403: function($data) {
-								$("#globalMsg").html("Session Timeout. Log in and try again");
-							},
-			       			500: function($data) {
-		            	    	$("#globalMsg").html("System Error: Contact Support").fadeIn(10);
-		            		},  
+	       				404: function($data) {
+	        	    		$("#globalMsg").html("Invalid Ticket Number").show().fadeOut(6000);
+	        	    	},
+						403: function($data) {
+							$("#globalMsg").html("Session Timeout. Log in and try again").show();
 						},
-						dataType: 'json'
-					});
+		       			500: function($data) {
+	            	    	$("#globalMsg").html("System Error: Contact Support").show();
+	            		},  
+					},
+					dataType: 'json'
+				});
 			});
 			
 
@@ -510,7 +421,7 @@
            // });
             
             function clearAddForm() {
-				$.each( $('#addForm').find("input"), function(index, $inputField) {
+				$.each( $('.addForm').find("input"), function(index, $inputField) {
 					$('input[name=customerSignature]').prop('checked', false);
 					$('input[name=billSheet]').prop('checked', false);
 					$('input[name=mgrApproval]').prop('checked', false);
@@ -521,7 +432,6 @@
 					}
 				});
 				//$('.err').html("");
-				$('#addForm').data('rownum',null);
             }
             
             //function markValid($inputField) {
@@ -556,11 +466,11 @@
     
     
     <tiles:put name="content" type="string">    	
-    	<h1>Ticket Return</h1>
+		<h1>Ticket Return</h1>
     	
    		<div>
        		<span class="formLabel">Ticket:</span>
-       		<input id="ticketNbr" name="ticketNbr" type="text"/>
+       		<input id="ticketNbr" name="ticketNbr" type="text" maxlength="10" />
        		<input id="doPopulate" type="button" value="Search" />
        	</div>
        	<div id="summaryTable">
@@ -585,9 +495,10 @@
 		</div>
 		
 		
-			<div class="workPanel" id="COMPLETED">
-			    <div id="addFormMsg" class="err"></div>
-				<form action="#" method="post" id="addForm">
+		<div class="workPanel" id="COMPLETED">
+			<div id="addFormMsg" class="err"></div>
+				<form action="#" method="post" class="addForm">
+					<input type="hidden" name="newStatus" value="<%= TicketStatus.COMPLETED.code() %>" />
 				    <table>
 				    	<tr>
 				    		<td><span class="required">*</span><span class="formLabel">Completion Date:</span></td>
@@ -649,7 +560,7 @@
 				    	</tr>
 			    		<tr>
 				    		<td colspan="2" style="text-align:center;">
-				    			<input type="button" class="prettyButton goUpdate" value="Complete" data-panel="completeTicket" />
+				    			<input type="button" class="prettyButton goUpdate" value="Complete" data-panel="COMPLETED" />
 				    			<input type="button" class="prettyButton cancelUpdate" value="Clear" />
 				    		</td>
 				    	</tr>
@@ -659,7 +570,8 @@
 		
 			<div class="workPanel" id="SKIPPED">
 				<div id="addFormMsg" class="err"></div>
-				<form action="#" method="post" id="addForm">
+				<form action="#" method="post" class="addForm">
+				<input type="hidden" name="newStatus" value="<%= TicketStatus.SKIPPED.code() %>" />
 				<table>
 			    	<tr>
 			    		<td><span class="required">*</span><span class="formLabel">Skip Date:</span></td>
@@ -677,7 +589,7 @@
 		  				</tr>
 		  				<tr>
 		  					<td colspan="2" style="text-align:center;">
-		  						<input type="button" class="prettyButton goUpdate" value="Skip" data-panel="skipTicket" />
+		  						<input type="button" class="prettyButton goUpdate" value="Skip" data-panel="SKIPPED" />
 		  						<input type="button" class="prettyButton cancelUpdate" value="Clear" />
 		  					</td>
 		  				</tr>
@@ -687,7 +599,8 @@
 			
 			<div class="workPanel" id="VOIDED">
 				<div id="addFormMsg" class="err"></div>
-				<form action="#" method="post" id="addForm">
+				<form action="#" method="post" class="addForm">
+				<input type="hidden" name="newStatus" value="<%= TicketStatus.VOIDED.code() %>" />
 				<table>
 		  				<tr>
 		  					<td><span class="required">*</span><span class="formLabel">Void Date:</span></td>
@@ -706,7 +619,7 @@
 		  				</tr>
 		  				<tr>
 		  					<td colspan="2" style="text-align:center;">
-		  						<input type="button" class="prettyButton goUpdate" value="Void" data-panel="voidTicket"/>
+		  						<input type="button" class="prettyButton goUpdate" value="Void" data-panel="VOIDED"/>
 		  						<input type="button" class="prettyButton cancelUpdate" value="Clear" />
 		  					</td>
 		  				</tr>
@@ -715,7 +628,8 @@
 		 	
 			<div class="workPanel" id="REJECTED">
 				<div id="addFormMsg" class="err"></div>
-				<form action="#" method="post" id="addForm">
+				<form action="#" method="post" class="addForm">
+				<input type="hidden" name="newStatus" value="<%= TicketStatus.REJECTED.code() %>" />
 				<table>
 		  				<tr>
 		  					<td><span class="required">*</span><span class="formLabel">Reject Date:</span></td>
@@ -733,7 +647,7 @@
 		  				</tr>
 		  				<tr>
 		  					<td colspan="2" style="text-align:center;">
-		  						<input type="button" class="prettyButton goUpdate" value="Reject" data-panel="rejectTicket" />
+		  						<input type="button" class="prettyButton goUpdate" value="Reject" data-panel="REJECTED" />
 		  						<input type="button" class="prettyButton cancelUpdate" value="Clear" />
 		  					</td>
 		  				</tr>
@@ -744,7 +658,8 @@
 		
 			<div class="workPanel" id="NOT_DISPATCHED">
 				<div id="addFormMsg" class="err"></div>
-				<form action="#" method="post" id="addForm">
+				<form action="#" method="post" class="addForm">
+				<input type="hidden" name="newStatus" value="<%= TicketStatus.NOT_DISPATCHED.code() %>" />
 				<table>
 		  				<tr>
 		  					<td><span class="required">*</span><span class="formLabel">Process Date:</span></td>
@@ -756,7 +671,7 @@
 		  				</tr>
 		  				<tr>
 		  					<td colspan="2" style="text-align:center;">
-		  						<input type="button" class="prettyButton goUpdate" value="Re-Queue" data-panel="requeueTicket" />
+		  						<input type="button" class="prettyButton goUpdate" value="Re-Queue" data-panel="NOT_DISPATCHED" />
 		  						<input type="button" class="prettyButton cancelUpdate" value="Clear" />
 		  					</td>
 		  				</tr>

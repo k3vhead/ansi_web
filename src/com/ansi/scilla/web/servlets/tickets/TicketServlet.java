@@ -22,7 +22,7 @@ import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.request.TicketReturnRequest;
+import com.ansi.scilla.web.request.ticket.TicketReturnRequest;
 import com.ansi.scilla.web.response.ticket.TicketReturnResponse;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.ansi.scilla.web.struts.SessionData;
@@ -164,7 +164,9 @@ public class TicketServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			String jsonString = super.makeJsonString(request);
 			System.out.println("jsonstring:"+jsonString);
-			TicketReturnRequest ticketReturnRequest = (TicketReturnRequest)AppUtils.json2object(jsonString, TicketReturnRequest.class);
+//			TicketReturnRequest ticketReturnRequest = (TicketReturnRequest)AppUtils.json2object(jsonString, TicketReturnRequest.class);
+			TicketReturnRequest ticketReturnRequest = new TicketReturnRequest();
+			AppUtils.json2object(jsonString, ticketReturnRequest);
 			System.out.println("TicketReturnRequest:"+ticketReturnRequest);
 			ansiURL = new AnsiURL(request, "ticket", (String[])null); //  .../ticket/etc
 			SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
@@ -175,15 +177,15 @@ public class TicketServlet extends AbstractServlet {
 			try{
 				ticket.setTicketId(ansiURL.getId());
 				ticket.selectOne(conn);
-				if ( ticketReturnRequest.getAction().equals(TicketReturnRequest.POST_ACTION_IS_COMPLETE)) {
+				if ( ticketReturnRequest.getNewStatus().equals(TicketStatus.COMPLETED.code())) {
 					processComplete(conn, response, ticket, ticketReturnRequest, sessionUser);
-				} else if ( ticketReturnRequest.getAction().equals(TicketReturnRequest.POST_ACTION_IS_SKIP)) {
+				} else if ( ticketReturnRequest.getNewStatus().equals(TicketStatus.SKIPPED.code())) {
 					processSkip(conn, response, ticket, ticketReturnRequest, sessionUser);
-				} else if ( ticketReturnRequest.getAction().equals(TicketReturnRequest.POST_ACTION_IS_VOID)) {
+				} else if ( ticketReturnRequest.getNewStatus().equals(TicketStatus.VOIDED.code())) {
 					processVoid(conn, response, ticket, ticketReturnRequest, sessionUser);
-				} else if ( ticketReturnRequest.getAction().equals(TicketReturnRequest.POST_ACTION_IS_REJECT)) {
+				} else if ( ticketReturnRequest.getNewStatus().equals(TicketStatus.REJECTED.code())) {
 					processReject(conn, response, ticket, ticketReturnRequest, sessionUser);
-				} else if ( ticketReturnRequest.getAction().equals(TicketReturnRequest.POST_ACTION_IS_REQUEUE)) {
+				} else if ( ticketReturnRequest.getNewStatus().equals(TicketStatus.NOT_DISPATCHED.code())) {
 					processRequeue(conn, response, ticket, ticketReturnRequest, sessionUser);
 				} else {
 					// this is an error -- a bad action was requested
@@ -218,7 +220,7 @@ public class TicketServlet extends AbstractServlet {
 		// edit input fields to make sure everything is present and valid
 		// if all input is good
 		//		update the ticket with info from the request
-		TicketReturnResponse ticketReturnResponse = null;
+		TicketReturnResponse ticketReturnResponse = new TicketReturnResponse();
 		WebMessages messages = new WebMessages();
 		ResponseCode responseCode = null;
 		if (ticketReturnRequest.getProcessDate() == null) {
@@ -254,13 +256,13 @@ public class TicketServlet extends AbstractServlet {
 				if(!StringUtils.isBlank(ticketReturnRequest.getProcessNotes())){
 					ticket.setProcessNotes(ticketReturnRequest.getProcessNotes());
 				} 
-				if (ticketReturnRequest.getCustomerSignature() != null && ticketReturnRequest.getCustomerSignature() == 1){
+				if (ticketReturnRequest.getCustomerSignature() != null && ticketReturnRequest.getCustomerSignature()){
 					ticket.setCustomerSignature(Ticket.CUSTOMER_SIGNATURE_IS_YES);
 				} 
-				if (ticketReturnRequest.getMgrApproval() != null && ticketReturnRequest.getMgrApproval() == 1){
+				if (ticketReturnRequest.getMgrApproval() != null && ticketReturnRequest.getMgrApproval()){
 					ticket.setMgrApproval(Ticket.MGR_APPROVAL_IS_YES);
 				} 
-				if (ticketReturnRequest.getBillSheet() != null && ticketReturnRequest.getBillSheet() == 1){
+				if (ticketReturnRequest.getBillSheet() != null && ticketReturnRequest.getBillSheet()){
 					ticket.setBillSheet(Ticket.BILL_SHEET_IS_YES);
 				}
 				doTicketUpdate(conn, ticket, sessionUser);
@@ -285,7 +287,7 @@ public class TicketServlet extends AbstractServlet {
 	private void processSkip (Connection conn, HttpServletResponse response, Ticket ticket, TicketReturnRequest ticketReturnRequest,
 			SessionUser sessionUser) throws RecordNotFoundException, Exception {
 
-		TicketReturnResponse ticketReturnResponse = null;
+		TicketReturnResponse ticketReturnResponse = new TicketReturnResponse();
 		WebMessages messages = new WebMessages();
 		ResponseCode responseCode = null;
 
@@ -322,7 +324,7 @@ public class TicketServlet extends AbstractServlet {
 	private void processVoid (Connection conn, HttpServletResponse response, Ticket ticket, TicketReturnRequest ticketReturnRequest,
 			SessionUser sessionUser) throws RecordNotFoundException, Exception {
 		
-		TicketReturnResponse ticketReturnResponse = null;
+		TicketReturnResponse ticketReturnResponse = new TicketReturnResponse();
 		WebMessages messages = new WebMessages();
 		ResponseCode responseCode = null;
 
@@ -363,7 +365,7 @@ public class TicketServlet extends AbstractServlet {
 	private void processReject (Connection conn, HttpServletResponse response, Ticket ticket, TicketReturnRequest ticketReturnRequest,
 			SessionUser sessionUser) throws RecordNotFoundException, Exception {
 		
-		TicketReturnResponse ticketReturnResponse = null;
+		TicketReturnResponse ticketReturnResponse = new TicketReturnResponse();
 		WebMessages messages = new WebMessages();
 		ResponseCode responseCode = null;
 
@@ -400,7 +402,7 @@ public class TicketServlet extends AbstractServlet {
 	private void processRequeue (Connection conn, HttpServletResponse response, Ticket ticket, TicketReturnRequest ticketReturnRequest,
 			SessionUser sessionUser) throws RecordNotFoundException, Exception {
 		
-		TicketReturnResponse ticketReturnResponse = null;
+		TicketReturnResponse ticketReturnResponse = new TicketReturnResponse();
 		WebMessages messages = new WebMessages();
 		ResponseCode responseCode = null;
 

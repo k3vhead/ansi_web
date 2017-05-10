@@ -1,9 +1,10 @@
-package com.ansi.scilla.web.request;
+package com.ansi.scilla.web.request.ticket;
 
 import java.math.BigDecimal;
 //import java.util.Date;
 import java.util.Date;
 
+import com.ansi.scilla.web.request.AbstractRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
@@ -18,14 +19,6 @@ public class TicketReturnRequest extends AbstractRequest {
 
 	private static final long serialVersionUID = 1L;
 	
-	public static final String POST_ACTION_IS_COMPLETE = "complete";
-	public static final String POST_ACTION_IS_SKIP = "skip";
-	public static final String POST_ACTION_IS_VOID = "void";
-	public static final String POST_ACTION_IS_REJECT = "reject";
-	public static final String POST_ACTION_IS_REQUEUE = "requeue";
-
-	
-	public static final String ACTION = "action";
 	public static final String ACT_DL_AMT = "actDlAmt";
 	public static final String ACT_DL_PCT = "actDlPct";
 	public static final String ACT_PRICE_PER_CLEANING = "actPricePerCleaning";
@@ -40,13 +33,12 @@ public class TicketReturnRequest extends AbstractRequest {
 
 	
 	
-	private String action;
 	private BigDecimal actDlAmt;
 	private BigDecimal actDlPct;
 	private BigDecimal actPricePerCleaning;
-	private Integer billSheet;
-	private Integer customerSignature;
-	private Integer mgrApproval;
+	private Boolean billSheet;
+	private Boolean customerSignature;
+	private Boolean mgrApproval;
 	private String newStatus;
 	private Date processDate;
 	private String processNotes;
@@ -57,14 +49,6 @@ public class TicketReturnRequest extends AbstractRequest {
 		super();
 	}
 		
-	public String getAction() {
-		return action;
-	}
-
-	public void setAction(String action) {
-		this.action = action;
-	}
-
 	public void setActDlAmt(BigDecimal actDlAmt) {
 		this.actDlAmt = actDlAmt;
 	}
@@ -89,27 +73,27 @@ public class TicketReturnRequest extends AbstractRequest {
 		return this.actPricePerCleaning;
 	}
 
-	public void setBillSheet(Integer billSheet) {
+	public void setBillSheet(Boolean billSheet) {
 		this.billSheet = billSheet;
 	}
 	
-	public Integer getBillSheet() {
+	public Boolean getBillSheet() {
 		return this.billSheet;
 	}
 
-	public void setCustomerSignature(Integer customerSignature) {
+	public void setCustomerSignature(Boolean customerSignature) {
 		this.customerSignature = customerSignature;
 	}
 	
-	public Integer getCustomerSignature() {
+	public Boolean getCustomerSignature() {
 		return this.customerSignature;
 	}
 
-	public void setMgrApproval(Integer mgrApproval) {
+	public void setMgrApproval(Boolean mgrApproval) {
 		this.mgrApproval = mgrApproval;
 	}
 	
-	public Integer getMgrApproval() {
+	public Boolean getMgrApproval() {
 		return this.mgrApproval;
 	}
 

@@ -1,7 +1,9 @@
-package com.ansi.scilla.web.request;
+package com.ansi.scilla.web.request.ticket;
 
 import java.util.Date;
 
+import com.ansi.scilla.web.request.AbstractRequest;
+import com.ansi.scilla.web.request.RequiredForAdd;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class TicketGenerationRequest extends AbstractRequest {

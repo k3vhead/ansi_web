@@ -24,7 +24,7 @@ import com.ansi.scilla.web.common.WebMessages;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.request.TicketGenerationRequest;
+import com.ansi.scilla.web.request.ticket.TicketGenerationRequest;
 import com.ansi.scilla.web.response.ticket.TicketGenerationResponse;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.ansi.scilla.web.struts.SessionData;

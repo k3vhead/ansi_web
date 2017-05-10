@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.request;
+package com.ansi.scilla.web.request.ticket;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -8,6 +8,7 @@ import java.util.Date;
 import org.apache.commons.beanutils.BeanUtils;
 
 import com.ansi.scilla.web.common.AppUtils;
+import com.ansi.scilla.web.request.AbstractRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;

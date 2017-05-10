@@ -2,7 +2,7 @@ package com.ansi.scilla.web.test;
 
 import java.util.Date;
 
-import com.ansi.scilla.web.request.TicketReturnRequest;
+import com.ansi.scilla.web.request.ticket.TicketReturnRequest;
 
 public class TestTicket {
 
