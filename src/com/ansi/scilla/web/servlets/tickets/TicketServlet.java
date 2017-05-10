@@ -222,22 +222,28 @@ public class TicketServlet extends AbstractServlet {
 		WebMessages messages = new WebMessages();
 		ResponseCode responseCode = null;
 		if (ticketReturnRequest.getProcessDate() == null) {
+			System.out.println("No process date");
 			messages.addMessage(TicketReturnRequest.PROCESS_DATE, "Required Field");
 		}
 		if (ticketReturnRequest.getActPricePerCleaning() == null ) {
+			System.out.println("No act ppc");
 			messages.addMessage(TicketReturnRequest.ACT_PRICE_PER_CLEANING, "Required Field");
 		}
 		if (ticketReturnRequest.getActDlPct() == null ) {
+			System.out.println("No act dl pct");
 			messages.addMessage(TicketReturnRequest.ACT_DL_PCT, "Required Field");
 		}
 		if (ticketReturnRequest.getActDlAmt() == null ) {
+			System.out.println("No act dl amt");
 			messages.addMessage(TicketReturnRequest.ACT_DL_AMT, "Required Field");
 		}
 		if ( ! isValidNewStatus(ticket.getStatus(), ticketReturnRequest.getNewStatus())) {
+			System.out.println("invalid next status");
 			messages.addMessage(TicketReturnRequest.NEW_STATUS, "Invalid status sequence");
 		}
 		if ( messages.isEmpty() ) {
 			try {
+				System.out.println("process update");
 				ticket.setStatus(TicketStatus.COMPLETED.code());
 				//required fields
 				ticket.setProcessDate(ticketReturnRequest.getProcessDate());
@@ -263,6 +269,7 @@ public class TicketServlet extends AbstractServlet {
 				messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
 				ticketReturnResponse = new TicketReturnResponse(conn, ticket.getTicketId());
 			} catch ( RecordNotFoundException e) {
+				System.out.println("update failed");
 				responseCode = ResponseCode.EDIT_FAILURE;
 			}
 		} else { 

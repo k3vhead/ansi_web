@@ -380,7 +380,7 @@
 				
 				$outbound['processDate'] = $("input[name=processDate]").val();
 				$outbound['actPricePerCleaning'] = $("input[name=actPricePerCleaning]").val();
-				$outbound['defaultActDlPct'] = $("input[name=defaultActDlPct]").val();
+				$outbound['actDlPct'] = $("input[name=defaultActDlPct]").val();
 				$outbound['actDlAmt'] = $("input[name=actDlAmt]").val();			
 				$outbound['processNotes'] = $("input[name='processNotes']").val();
 				if($('input[name=customerSignature]').prop('checked')) {
@@ -399,12 +399,12 @@
 					$outbound['mgrApproval'] = "0";
 				}
 
-				$outbound['newStatus'] = $('#panelSelector option:selected').val();
+				$outbound['nextStatus'] = $('#panelSelector option:selected').val();
 				switch ($('#panelSelector option:selected').val()) {
-				case "COMPLETED":	$outbound['action'] = "complete"; break;
-				case "VOIDED":		$outbound['action'] = "void"; break;
-				case "SKIPPED":		$outbound['action'] = "skip"; break;
-				case "REJECTED":	$outbound['action'] = "reject"; break;
+				case "COMPLETED":	$outbound['action'] = "complete"; $outbound['newStatus'] = "C"; break;
+				case "VOIDED":		$outbound['action'] = "void"; $outbound['newStatus'] = "V"; break;
+				case "SKIPPED":		$outbound['action'] = "skip"; $outbound['newStatus'] = "S"; break;
+				case "REJECTED":	$outbound['action'] = "reject"; $outbound['newStatus'] = "R"; break;
 				default:			$outbound['action'] = "invalid"; break;
 				}
 
