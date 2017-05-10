@@ -66,7 +66,6 @@ public class JobRequest extends AbstractRequest{
 	
 	public JobRequest(String jsonString) throws JsonException, IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException {
 		this();
-		System.out.println("timezone: "+timezone);
 		JobRequest req = (JobRequest) AppUtils.json2object(jsonString, JobRequest.class);
 		BeanUtils.copyProperties(this, req);
 	}
