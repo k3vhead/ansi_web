@@ -129,7 +129,6 @@
         	$("#doPopulate").click(function () {
     			var $ticketNbr = $('#ticketNbr').val();
     			$globalTicketId = $('#ticketNbr').val();
-    			console.debug("$globalTicketId:" + $globalTicketId);
     			if ($ticketNbr != '') {            		
             		doPopulate($ticketNbr)
             	}
@@ -265,70 +264,11 @@
         		}
 			});
 			
-
-			<%--
-			function doFunctionBinding() {
-				$('.updAction').bind("click", function($clickevent) {
-					doUpdate($clickevent);
-				});
-				$('.dataRow').bind("mouseover", function() {
-					$(this).css('background-color','#CCCCCC');
-				});
-				$('.dataRow').bind("mouseout", function() {
-					$(this).css('background-color','transparent');
-				});
-			}			
-			
-			function doUpdate($clickevent) {
-				var $action = $event.currentTarget.attributes['data-panel'].value;
-				$outbound['action'] = $action;
-				$clickevent.preventDefault();
-				$('#addForm').data('rownum',$rownum);
-				clearAddForm();
-				
-				var $rowId = eval($rownum) + 1;
-            	var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")"
-            	var $row = $($rowFinder)  
-            	var tdList = $row.children("td");
-            	var $processDate = $row.children("td")[0].textContent;
-            	var $actPricePerCleaning = $row.children("td")[1].textContent;
-            	var $defaultActDlPct = $row.children("td")[2].textContent;
-            	var $actDlAmt = $row.children("td")[3].textContent;
-            	var $processNotes = $row.children("td")[4].textContent;
-            	var $customerSignature = $row.children("td")[5].textContent;
-            	var $billSheet = $row.children("td")[6].textContent;
-            	var $mgrApproval = $row.children("td")[7].textContent;
-
-            	$("#addForm input[name='processDate']").val($processDate);
-            	$("#addForm input[name='actPricePerCleaning']").val($actPricePerCleaning);
-            	$("#addForm input[name='defaultActDlPct']").val($defaultActDlPct);
-            	$("#addForm input[name='actDlAmt']").val($actDlAmt);
-            	$("#addForm input[name='processNotes']").val($processNotes);
-            	$("#addForm input[name='customerSignature']").val($customerSignature);
-            	$("#addForm input[name='billSheet']").val($billSheet);
-            	$("#addForm input[name='mgrApproval']").val($mgrApproval);
-				
-            	
-				//$.each( $('#addForm :input'), function(index, value) {
-				//	markValid(value);
-				//});
-
-             	$('#addFormDiv').bPopup({
-					modalClose: false,
-					opacity: 0.6,
-					positionStyle: 'fixed' //'fixed' or 'absolute'
-				});				
-			}
-			
-			--%>
-			
-			
-			
-			
 			
 			$(".cancelUpdate").click( function($clickevent) {
 				$clickevent.preventDefault();
 				$(".clearMe").val("");
+				$(".err").html("");
 				clearAddForm();
 			});
 			
@@ -356,12 +296,7 @@
 				});
 
 
-    			console.debug("update ticket:" + $globalTicketId);
-	
             	$url = "ticket/" + $globalTicketId;
-				
-    			console.debug("outbound:" + JSON.stringify($outbound));
-    			console.debug("url:" + $url);
 
 				var jqxhr = $.ajax({
 					type: 'POST',
@@ -369,19 +304,13 @@
 					data: JSON.stringify($outbound),
 					statusCode: {
 						200: function($data) {
-							console.debug("response 200");
 							if ( $data.responseHeader.responseCode == 'SUCCESS') {
-								console.debug("Success");
 								$("#globalMsg").html("Update Complete").show().fadeOut(6000);
-								$(".workPanel").hide();
-								clearAddForm();								
+								$("#ticketNbr").focus();
 							} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-//								alert("Edit Fail - missing required data");
-								console.debug("Fail");
-								console.debug($data.data.webMessages);
 								$('.err').html("");
-								 $.each($data.data.webMessages, function(key, messageList) {
-									var identifier = "#" + key + "Err";
+								$.each($data.data.webMessages, function(key, messageList) {
+									var identifier = "#" + $panelName + " ." + key + "Err";
 									msgHtml = "<ul>";
 									$.each(messageList, function(index, message) {
 										msgHtml = msgHtml + "<li>" + message + "</li>";
@@ -510,7 +439,7 @@
 				    			<input type="text" class="dateField clearMe" name="processDate" data-required="true" data-valid="validProcessDate" />		    						
 				    			<i id="validProcessDate" class="fa" aria-hidden="true"></i>
 				    		</td>
-				    		<td><span class="err" id="processDateErr"></span></td>
+				    		<td><span class="err processDateErr"></span></td>
 				    	</tr>
 				    	<tr>
 				    		<td><span class="required">*</span><span class="formLabel">PPC:</span></td>
@@ -518,15 +447,15 @@
 				    			<input type="text" name="actPricePerCleaning" data-required="true" data-valid="validActPricePerCleaning" />
 				    			<i id="validActPricePerCleaning" class="fa" aria-hidden="true"></i>
 				    		</td>
-				    		<td><span class="err" id="actPricePerCleaningErr"></span></td>
+				    		<td><span class="err actPricePerCleaningErr"></span></td>
 				    	</tr>
 				    	<tr>
 				    		<td><span class="required">*</span><span class="formLabel">DL %:</span></td>
 				    		<td>
-				    			<input type="text" name="defaultActDlPct" data-required="true" data-valid="validDefaultActDlPct" />
-				    			<i id="validDefaultActDlPct" class="fa" aria-hidden="true"></i>
+				    			<input type="text" name="actDlPct" data-required="true" data-valid="validActDlPct" />
+				    			<i id="validActActDlPct" class="fa" aria-hidden="true"></i>
 				    		</td>
-				    		<td><span class="err" id="defaultActDlPctErr"></span></td>
+				    		<td><span class="err actDlPctErr"></span></td>
 				    	</tr>
 				    	<tr>
 				    		<td><span class="required">*</span><span class="formLabel">Direct Labor:</span></td>
@@ -534,14 +463,14 @@
 				    			<input type="text" name="actDlAmt" data-required="true" data-valid="validActDlAmt" />
 				    			<i id="validActDlAmt" class="fa" aria-hidden="true"></i>
 				    		</td>
-				    		<td><span class="err" id="actDlAmtErr"></span></td>
+				    		<td><span class="err actDlAmtErr"></span></td>
 				    	</tr>
 						<tr>
 				    		<td><span class="formLabel">Completion Notes:</span></td>
 				    		<td>
 				    			<input type="text" name="processNotes"/>
 				    		</td>
-				    		<td><span class="err" id="ProcessNotesErr"></span></td>
+				    		<td><span class="err ProcessNotesErr"></span></td>
 				    	</tr>
 				    	<tr>
 				    		<td><span class="formLabel">Customer Signature:</span></td>
@@ -579,17 +508,18 @@
 				<table>
 			    	<tr>
 			    		<td><span class="required">*</span><span class="formLabel">Skip Date:</span></td>
-		  					<td>
-		  						<input type="text" class="dateField clearMe" name="processDate" data-required="true" data-valid="validProcessDate" />
-		  						<i id="validProcessDate" class="fa" aria-hidden="true"></i>
-		  					</td>
-		  					<td><span class="err" id="processDateErr"></span></td>
-		  				</tr>
+	  					<td>
+	  						<input type="text" class="dateField clearMe" name="processDate" data-required="true" data-valid="validProcessDate" />
+	  						<i id="validProcessDate" class="fa" aria-hidden="true"></i>
+	  					</td>
+	  					<td><span class="err processDateErr"></span></td>
+	  				</tr>
 					<tr>
-		  					<td><span class="formLabel">Skip Reason:</span></td>
+		  					<td><span class="required">*</span><span class="formLabel">Skip Reason:</span></td>
 		  					<td>
 		  						<input type="text" class="textField clearMe" name="processNotes"/>
 		  					</td>
+		  					<td><span class="err processNotesErr"></span></td>
 		  				</tr>
 		  				<tr>
 		  					<td colspan="2" style="text-align:center;">
@@ -606,20 +536,21 @@
 				<form action="#" method="post" class="addForm">
 				<input type="hidden" name="newStatus" value="<%= TicketStatus.VOIDED.code() %>" />
 				<table>
-		  				<tr>
-		  					<td><span class="required">*</span><span class="formLabel">Void Date:</span></td>
-		  					<td>
-		  						<input type="text" class="dateField clearMe" name="processDate" data-required="true" data-valid="validProcessDate" />
-		  						<i id="validProcessDate" class="fa" aria-hidden="true"></i>
-		  					</td>
-		  					<td><span class="err" id="processDateErr"></span></td>
-		  				</tr>
+	  				<tr>
+	  					<td><span class="required">*</span><span class="formLabel">Void Date:</span></td>
+	  					<td>
+	  						<input type="text" class="dateField clearMe" name="processDate" data-required="true" data-valid="validProcessDate" />
+	  						<i id="validProcessDate" class="fa" aria-hidden="true"></i>
+	  					</td>
+	  					<td><span class="err processDateErr"></span></td>
+	  				</tr>
 					<tr>
-		  					<td><span class="formLabel">Void Reason:</span></td>
+		  					<td><span class="required">*</span><span class="formLabel">Void Reason:</span></td>
 		  					<td>
 		  						<input type="text" class="textField clearMe" name="processNotes"/>
 		  						<i id="validProcessNotes" class="fa" aria-hidden="true"></i>
 		  					</td>
+		  					<td><span class="err processNotesErr"></span></td>
 		  				</tr>
 		  				<tr>
 		  					<td colspan="2" style="text-align:center;">
@@ -641,13 +572,12 @@
 		  						<input type="text" class="dateField clearMe" name="processDate" data-required="true" data-valid="validProcessDate" />
 		  						<i id="validProcessDate" class="fa" aria-hidden="true"></i>
 		  					</td>
-		  					<td><span class="err" id="processDateErr"></span></td>
+		  					<td><span class="err processDateErr"></span></td>
 		  				</tr>
 					<tr>
-		  					<td><span class="formLabel">Reject Reason:</span></td>
-		  					<td>
-		  						<input type="text" class="textField clearMe" name="processNotes"/>
-		  					</td>
+		  					<td><span class="required">*</span><span class="formLabel">Reject Reason:</span></td>
+		  					<td><input type="text" class="textField clearMe" name="processNotes"/></td>
+		  					<td><span class="err processNotesErr"></span></td>
 		  				</tr>
 		  				<tr>
 		  					<td colspan="2" style="text-align:center;">
@@ -671,7 +601,7 @@
 		  						<input type="text" class="dateField clearMe" name="processDate" data-required="true" data-valid="validProcessDate" />
 		  						<i id="validProcessDate" class="fa" aria-hidden="true"></i>
 		  					</td>
-		  					<td><span class="err" id="processDateErr"></span></td>
+		  					<td><span class="err processDateErr"></span></td>
 		  				</tr>
 		  				<tr>
 		  					<td colspan="2" style="text-align:center;">
