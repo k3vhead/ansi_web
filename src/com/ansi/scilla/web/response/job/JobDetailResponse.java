@@ -16,6 +16,7 @@ import com.ansi.scilla.common.utils.AppUtils;
 import com.ansi.scilla.web.response.MessageResponse;
 import com.ansi.scilla.web.response.address.AddressResponseRecord;
 import com.ansi.scilla.web.response.ticket.TicketRecord;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 import com.thewebthing.commons.lang.BeanUtils;
@@ -237,6 +238,7 @@ public class JobDetailResponse extends MessageResponse {
 			return activationDate;
 		}
 
+		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public void setActivationDate(Date activationDate) {
 			this.activationDate = activationDate;
 		}
@@ -277,6 +279,7 @@ public class JobDetailResponse extends MessageResponse {
 			return cancelDate;
 		}
 
+		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public void setCancelDate(Date cancelDate) {
 			this.cancelDate = cancelDate;
 		}
@@ -325,6 +328,7 @@ public class JobDetailResponse extends MessageResponse {
 			return expirationDate;
 		}
 
+		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public void setExpirationDate(Date expirationDate) {
 			this.expirationDate = expirationDate;
 		}
@@ -421,6 +425,7 @@ public class JobDetailResponse extends MessageResponse {
 			return lastPriceChange;
 		}
 
+		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public void setLastPriceChange(Date lastPriceChange) {
 			this.lastPriceChange = lastPriceChange;
 		}
@@ -512,11 +517,13 @@ public class JobDetailResponse extends MessageResponse {
 		public void setSiteContact(Integer siteContact) {
 			this.siteContact = siteContact;
 		}
+//		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		@JsonSerialize(using=AnsiDateFormatter.class)
 		public Date getStartDate() {
 			return startDate;
 		}
 
+		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public void setStartDate(Date startDate) {
 			this.startDate = startDate;
 		}
@@ -554,6 +561,7 @@ public class JobDetailResponse extends MessageResponse {
 		public Date getAddedDate() {
 			return addedDate;
 		}
+		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public void setAddedDate(Date addedDate) {
 			this.addedDate = addedDate;
 		}
@@ -567,6 +575,7 @@ public class JobDetailResponse extends MessageResponse {
 		public Date getUpdatedDate() {
 			return updatedDate;
 		}
+		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public void setUpdatedDate(Date updatedDate) {
 			this.updatedDate = updatedDate;
 		}
