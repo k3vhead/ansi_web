@@ -93,7 +93,7 @@ public class JobRequest extends AbstractRequest{
 		this.activationDate = activationDate;
 	}
 
-	@RequiredForAdd
+//	@RequiredForAdd
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Date getActivationDate() {
 		return this.activationDate;
@@ -227,6 +227,7 @@ public class JobRequest extends AbstractRequest{
 		this.invoiceGrouping = invoiceGrouping;
 	}
 
+	@RequiredForAdd
 	public String getInvoiceGrouping() {
 		return this.invoiceGrouping;
 	}
@@ -252,6 +253,7 @@ public class JobRequest extends AbstractRequest{
 		this.jobContactId = jobContactId;
 	}
 
+	@RequiredForAdd
 	public Integer getJobContactId() {
 		return this.jobContactId;
 	}
@@ -269,7 +271,7 @@ public class JobRequest extends AbstractRequest{
 		this.jobId = jobId;
 	}
 
-	@RequiredForAdd
+//	@RequiredForAdd
 	public Integer getJobId() {
 		return this.jobId;
 	}
@@ -390,6 +392,7 @@ public class JobRequest extends AbstractRequest{
 		this.siteContact = siteContact;
 	}
 
+	@RequiredForAdd
 	public Integer getSiteContact() {
 		return this.siteContact;
 	}
@@ -407,7 +410,7 @@ public class JobRequest extends AbstractRequest{
 		this.status = status;
 	}
 
-	@RequiredForAdd
+//	@RequiredForAdd
 	public String getStatus() {
 		return this.status;
 	}

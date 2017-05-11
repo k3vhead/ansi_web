@@ -234,12 +234,12 @@ $( document ).ready(function() {
 			var $url = "job/add";
 
 			var $outbound = {};
-			alert("job addJob - quoteId:" + $quoteId);
+//			alert("job addJob - quoteId:" + $quoteId);
 //			alert($globalQuoteId);
 //    		$outbound["action"]	= 'ADD_JOB';
     		$pre = "#"+$rn;
     		
-			alert("job addJob - jobId:" + $($pre+"_jobPanel_jobId").val());
+//			alert("job addJob - jobId:" + $($pre+"_jobPanel_jobId").val());
     		if ($($pre+"_jobPanel_jobId").val()) {
     			$url = "job/"+$($pre+"_jobPanel_jobId").val();
         		$outbound["action"]	= 'UPDATE_JOB';			
@@ -301,6 +301,7 @@ $( document ).ready(function() {
 						console.log("Return 200");
 						console.log($data);
 						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+							alert("Edit Failure - missing data");
 							console.log("Edit Fail");
 						}
 						if ( $data.responseHeader.responseCode == 'SUCCESS') {

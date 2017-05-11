@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +33,7 @@ import com.ansi.scilla.web.request.QuoteRequest;
 import com.ansi.scilla.web.request.JobDetailRequest.JobDetailRequestAction;
 import com.ansi.scilla.web.response.job.JobDetailResponse;
 import com.ansi.scilla.web.response.job.JobResponse;
+import com.ansi.scilla.web.response.quote.QuoteResponse;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -90,6 +92,7 @@ public class JobServlet extends AbstractServlet {
 		AnsiURL url = null;
 		String url2 = request.getRequestURI();
 		SessionUser sessionUser = AppUtils.getSessionUser(request);
+		System.out.println("Session user: "+sessionUser);
 		WebMessages messages = new WebMessages();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		ResponseCode responseCode = null;
@@ -336,141 +339,145 @@ public class JobServlet extends AbstractServlet {
 	}
 	
 	protected Job doAdd(Connection conn, JobRequest jobRequest, SessionUser sessionUser, HttpServletResponse response) throws Exception {
-		WebMessages messages = new WebMessages();
 		ResponseCode responseCode = null;
 		Date today = new Date();
 		Job job = new Job();
 
-		job.setAddedBy(sessionUser.getUserId());
-		
-		job.setAddedDate(today);
-		
-//		job.setJobId(jobRequest.getJobId());
-		
-		if(jobRequest.getQuoteId() != null){
-			job.setQuoteId(jobRequest.getQuoteId());
-		}
-		
-		job.setJobNbr(jobRequest.getJobNbr());
-
-		job.setJobFrequency(jobRequest.getJobFrequency());
-		job.setStatus("N");
-		job.setPricePerCleaning(jobRequest.getPricePerCleaning());
-		job.setDivisionId(jobRequest.getDivisionId());
-		job.setDirectLaborPct(jobRequest.getDirectLaborPct());
-		job.setBudget(jobRequest.getBudget());
-		job.setFloors(jobRequest.getFloors());
-		job.setInvoiceTerms(jobRequest.getInvoiceTerms());
-		job.setInvoiceStyle(jobRequest.getInvoiceStyle());
-		job.setInvoiceBatch(jobRequest.getInvoiceBatch());
-		
-		if(jobRequest.getInvoiceGrouping() != null) {
-			job.setInvoiceGrouping(jobRequest.getInvoiceGrouping());
-		}
-		
-		job.setContractContactId(jobRequest.getContractContactId());
-		job.setTaxExempt(jobRequest.getTaxExempt());
-		
-		if(jobRequest.getPoNumber() != null){
-			job.setPoNumber(jobRequest.getPoNumber());
-		}
-		
-		if(jobRequest.getExpirationDate() != null){
-			job.setExpirationDate(jobRequest.getExpirationDate());
-		}
-		
-		if(jobRequest.getExpirationReason() != null){
-			job.setExpirationReason(jobRequest.getExpirationReason());
-		}
-		
-		job.setBuildingType(jobRequest.getBuildingType());
-		
-		if(jobRequest.getOurVendorNbr() != null){
-			job.setOurVendorNbr(jobRequest.getOurVendorNbr());
-		}
-		
-		job.setServiceDescription(jobRequest.getServiceDescription());
-		
-		if(jobRequest.getEquipment() != null){
-			job.setEquipment(jobRequest.getEquipment());
-		}
-		
-		if(jobRequest.getWasherNotes() != null){
-			job.setWasherNotes(jobRequest.getWasherNotes());
-		}
-		
-		job.setBillingContactId(jobRequest.getBillingContactId());
-		
-		if(jobRequest.getBillingNotes() != null) {
-			job.setBillingNotes(jobRequest.getBillingNotes());
-		}
-		
-		if(jobRequest.getOmNotes() != null) {
-			job.setOmNotes(jobRequest.getOmNotes());
-		}
-		
-		if(jobRequest.getActivationDate() == null) {
-			job.setActivationDate(today);
-		} else {
-			job.setActivationDate(jobRequest.getActivationDate());
-		}
-		
-		if(jobRequest.getStartDate() != null){
-			job.setStartDate(jobRequest.getStartDate());
-		}
-		
-		if(jobRequest.getCancelDate() != null){
-			job.setCancelDate(jobRequest.getCancelDate());
-		}
-		
-		if(jobRequest.getCancelReason() != null){
-			job.setCancelReason(jobRequest.getCancelReason());
-		}
-		
-		if(jobRequest.getSiteContact() != null) {
-			job.setSiteContact(jobRequest.getSiteContact());
-		}
-		
-		if(jobRequest.getJobContactId() != null) {
-			job.setJobContactId(jobRequest.getJobContactId());
-		}
-		
-		if(jobRequest.getJobTypeId() != null) {
-			job.setJobTypeId(jobRequest.getJobTypeId());
-		}
-		
-		if(job.getJobTypeId() == 0){
-			job.setJobTypeId(null);
-		}
-		
-		job.setRequestSpecialScheduling(jobRequest.getRequestSpecialScheduling());
-		job.setRepeatScheduleAnnually(jobRequest.getRepeatScheduleAnnually());
-		
-		if(jobRequest.getPaymentTerms() != null){
-			job.setPaymentTerms(jobRequest.getPaymentTerms());
-		}
-		
-		job.setUpdatedBy(sessionUser.getUserId());
-
-		job.setUpdatedDate(today);
-		
-
-		System.out.println("Job servlet Add Data:");
-		System.out.println(job.toString());
-		int j = 0;
-		try {
-			j = job.insertWithKey(conn);
-			responseCode = ResponseCode.SUCCESS;
-		} catch ( SQLException e) {
-			responseCode = ResponseCode.EDIT_FAILURE;
-			if ( e.getMessage().contains("duplicate key")) {
-				throw new DuplicateEntryException();
-			} else {
-				AppUtils.logException(e);
-				throw e;
+		WebMessages messages = validateAdd(conn, jobRequest);
+		if (messages.isEmpty()) {
+			job.setAddedBy(sessionUser.getUserId());
+			
+			job.setAddedDate(today);
+			
+//			job.setJobId(jobRequest.getJobId());
+			
+			if(jobRequest.getQuoteId() != null){
+				job.setQuoteId(jobRequest.getQuoteId());
 			}
-		} 
-		job.setJobId(j);
+			
+			job.setJobNbr(jobRequest.getJobNbr());
+
+			job.setJobFrequency(jobRequest.getJobFrequency());
+			job.setStatus("N");
+			job.setPricePerCleaning(jobRequest.getPricePerCleaning());
+			job.setDivisionId(jobRequest.getDivisionId());
+			job.setDirectLaborPct(jobRequest.getDirectLaborPct());
+			job.setBudget(jobRequest.getBudget());
+			job.setFloors(jobRequest.getFloors());
+			job.setInvoiceTerms(jobRequest.getInvoiceTerms());
+			job.setInvoiceStyle(jobRequest.getInvoiceStyle());
+			job.setInvoiceBatch(jobRequest.getInvoiceBatch());
+			
+			if(jobRequest.getInvoiceGrouping() != null) {
+				job.setInvoiceGrouping(jobRequest.getInvoiceGrouping());
+			}
+			
+			job.setContractContactId(jobRequest.getContractContactId());
+			job.setTaxExempt(jobRequest.getTaxExempt());
+			
+			if(jobRequest.getPoNumber() != null){
+				job.setPoNumber(jobRequest.getPoNumber());
+			}
+			
+			if(jobRequest.getExpirationDate() != null){
+				job.setExpirationDate(jobRequest.getExpirationDate());
+			}
+			
+			if(jobRequest.getExpirationReason() != null){
+				job.setExpirationReason(jobRequest.getExpirationReason());
+			}
+			
+			job.setBuildingType(jobRequest.getBuildingType());
+			
+			if(jobRequest.getOurVendorNbr() != null){
+				job.setOurVendorNbr(jobRequest.getOurVendorNbr());
+			}
+			
+			job.setServiceDescription(jobRequest.getServiceDescription());
+			
+			if(jobRequest.getEquipment() != null){
+				job.setEquipment(jobRequest.getEquipment());
+			}
+			
+			if(jobRequest.getWasherNotes() != null){
+				job.setWasherNotes(jobRequest.getWasherNotes());
+			}
+			
+			job.setBillingContactId(jobRequest.getBillingContactId());
+			
+			if(jobRequest.getBillingNotes() != null) {
+				job.setBillingNotes(jobRequest.getBillingNotes());
+			}
+			
+			if(jobRequest.getOmNotes() != null) {
+				job.setOmNotes(jobRequest.getOmNotes());
+			}
+			
+			if(jobRequest.getActivationDate() == null) {
+				job.setActivationDate(today);
+			} else {
+				job.setActivationDate(jobRequest.getActivationDate());
+			}
+			
+			if(jobRequest.getStartDate() != null){
+				job.setStartDate(jobRequest.getStartDate());
+			}
+			
+			if(jobRequest.getCancelDate() != null){
+				job.setCancelDate(jobRequest.getCancelDate());
+			}
+			
+			if(jobRequest.getCancelReason() != null){
+				job.setCancelReason(jobRequest.getCancelReason());
+			}
+			
+			if(jobRequest.getSiteContact() != null) {
+				job.setSiteContact(jobRequest.getSiteContact());
+			}
+			
+			if(jobRequest.getJobContactId() != null) {
+				job.setJobContactId(jobRequest.getJobContactId());
+			}
+			
+			if(jobRequest.getJobTypeId() != null) {
+				job.setJobTypeId(jobRequest.getJobTypeId());
+			}
+			
+			if(job.getJobTypeId() == 0){
+				job.setJobTypeId(null);
+			}
+			
+			job.setRequestSpecialScheduling(jobRequest.getRequestSpecialScheduling());
+			job.setRepeatScheduleAnnually(jobRequest.getRepeatScheduleAnnually());
+			
+			if(jobRequest.getPaymentTerms() != null){
+				job.setPaymentTerms(jobRequest.getPaymentTerms());
+			}
+			
+			job.setUpdatedBy(sessionUser.getUserId());
+
+			job.setUpdatedDate(today);
+			
+
+			System.out.println("Job servlet Add Data:");
+			System.out.println(job.toString());
+			int j = 0;
+			try {
+				j = job.insertWithKey(conn);
+				responseCode = ResponseCode.SUCCESS;
+			} catch ( SQLException e) {
+				responseCode = ResponseCode.EDIT_FAILURE;
+				if ( e.getMessage().contains("duplicate key")) {
+					throw new DuplicateEntryException();
+				} else {
+					AppUtils.logException(e);
+					throw e;
+				}
+			} 
+			job.setJobId(j);
+		} else {
+			responseCode = ResponseCode.EDIT_FAILURE;
+		}
 		JobResponse jobResponse = new JobResponse(job, messages);
 		super.sendResponse(conn, response, responseCode, jobResponse);		
 		return job;
@@ -486,167 +493,213 @@ public class JobServlet extends AbstractServlet {
 		job.setJobId(key.getJobId());
 		job.selectOne(conn);
 
-		if(jobRequest.getJobFrequency() != null) {
-			job.setJobFrequency(jobRequest.getJobFrequency());
-		}
-		
-		if(jobRequest.getStatus() != null) {
-			job.setStatus(jobRequest.getStatus());
-		}
-		if(jobRequest.getPricePerCleaning() != null) {
-			job.setPricePerCleaning(jobRequest.getPricePerCleaning());
-		}
-//		if(jobRequest.getDivisionId() != null) {
-//			job.setDivisionId(jobRequest.getDivisionId());
-//		}
-		if(jobRequest.getDirectLaborPct() != null) {
-			job.setDirectLaborPct(jobRequest.getDirectLaborPct());
-		}
-		if(jobRequest.getBudget() != null) {
-			job.setBudget(jobRequest.getBudget());
-		}
-		if(jobRequest.getFloors() != null) {
-			job.setFloors(jobRequest.getFloors());
-		}
-		if(jobRequest.getInvoiceTerms() != null) {
-			job.setInvoiceTerms(jobRequest.getInvoiceTerms());
-		}
-		if(jobRequest.getInvoiceStyle() != null) {
-			job.setInvoiceStyle(jobRequest.getInvoiceStyle());
-		}
-		if(jobRequest.getInvoiceBatch() != null) {
-			job.setInvoiceBatch(jobRequest.getInvoiceBatch());
-		}
-		if(jobRequest.getInvoiceGrouping() != null) {
-			job.setInvoiceGrouping(jobRequest.getInvoiceGrouping());
-		}
-		
-//		if(jobRequest.getContractContactId() != null) {
-			job.setContractContactId(key.getContractContactId());
-//		}
-		if(jobRequest.getTaxExempt() != null) {
-			job.setTaxExempt(jobRequest.getTaxExempt());
-		}
-		if(jobRequest.getPoNumber() != null){
-			job.setPoNumber(jobRequest.getPoNumber());
-		}
-		
-		if(jobRequest.getExpirationDate() != null){
-			job.setExpirationDate(jobRequest.getExpirationDate());
-		}
-		
-		if(jobRequest.getExpirationReason() != null){
-			if(jobRequest.getExpirationReason().equals("")){
-				job.setExpirationReason("");
-			} else {
-				job.setExpirationReason(jobRequest.getExpirationReason());
+		WebMessages webMessages = validateUpdate(conn, key, jobRequest);
+		if (webMessages.isEmpty()) {
+			if(jobRequest.getJobFrequency() != null) {
+				job.setJobFrequency(jobRequest.getJobFrequency());
 			}
-		}
-		
-	
-		if(jobRequest.getBuildingType() != null){
-			job.setBuildingType(jobRequest.getBuildingType());
-		}
-		if(jobRequest.getOurVendorNbr() != null){
-			job.setOurVendorNbr(jobRequest.getOurVendorNbr());
-		}
-		if(jobRequest.getServiceDescription() != null){
-			job.setServiceDescription(jobRequest.getServiceDescription());
-		}
-		if(jobRequest.getEquipment() != null){
-			job.setEquipment(jobRequest.getEquipment());
-		}
-		
-		if(jobRequest.getWasherNotes() != null){
-			if(jobRequest.getWasherNotes().equals("")){
-				job.setWasherNotes(null);
-			} else {
-				job.setWasherNotes(jobRequest.getWasherNotes());
+			
+			if(jobRequest.getStatus() != null) {
+				job.setStatus(jobRequest.getStatus());
 			}
-		} 
-		
-//		if(jobRequest.getBillingContactId() != null){
-//			job.setBillingContactId(jobRequest.getBillingContactId());
-//		}
-		if(jobRequest.getBillingNotes() != null) {
-			if(jobRequest.getBillingNotes().equals("")) {
-				job.setBillingNotes(null);
-			} else {
-				job.setBillingNotes(jobRequest.getBillingNotes());
+			if(jobRequest.getPricePerCleaning() != null) {
+				job.setPricePerCleaning(jobRequest.getPricePerCleaning());
 			}
-		}
+//			if(jobRequest.getDivisionId() != null) {
+//				job.setDivisionId(jobRequest.getDivisionId());
+//			}
+			if(jobRequest.getDirectLaborPct() != null) {
+				job.setDirectLaborPct(jobRequest.getDirectLaborPct());
+			}
+			if(jobRequest.getBudget() != null) {
+				job.setBudget(jobRequest.getBudget());
+			}
+			if(jobRequest.getFloors() != null) {
+				job.setFloors(jobRequest.getFloors());
+			}
+			if(jobRequest.getInvoiceTerms() != null) {
+				job.setInvoiceTerms(jobRequest.getInvoiceTerms());
+			}
+			if(jobRequest.getInvoiceStyle() != null) {
+				job.setInvoiceStyle(jobRequest.getInvoiceStyle());
+			}
+			if(jobRequest.getInvoiceBatch() != null) {
+				job.setInvoiceBatch(jobRequest.getInvoiceBatch());
+			}
+			if(jobRequest.getInvoiceGrouping() != null) {
+				job.setInvoiceGrouping(jobRequest.getInvoiceGrouping());
+			}
+			
+//			if(jobRequest.getContractContactId() != null) {
+				job.setContractContactId(key.getContractContactId());
+//			}
+			if(jobRequest.getTaxExempt() != null) {
+				job.setTaxExempt(jobRequest.getTaxExempt());
+			}
+			if(jobRequest.getPoNumber() != null){
+				job.setPoNumber(jobRequest.getPoNumber());
+			}
+			
+			if(jobRequest.getExpirationDate() != null){
+				job.setExpirationDate(jobRequest.getExpirationDate());
+			}
+			
+			if(jobRequest.getExpirationReason() != null){
+				if(jobRequest.getExpirationReason().equals("")){
+					job.setExpirationReason("");
+				} else {
+					job.setExpirationReason(jobRequest.getExpirationReason());
+				}
+			}
+			
 		
+			if(jobRequest.getBuildingType() != null){
+				job.setBuildingType(jobRequest.getBuildingType());
+			}
+			if(jobRequest.getOurVendorNbr() != null){
+				job.setOurVendorNbr(jobRequest.getOurVendorNbr());
+			}
+			if(jobRequest.getServiceDescription() != null){
+				job.setServiceDescription(jobRequest.getServiceDescription());
+			}
+			if(jobRequest.getEquipment() != null){
+				job.setEquipment(jobRequest.getEquipment());
+			}
+			
+			if(jobRequest.getWasherNotes() != null){
+				if(jobRequest.getWasherNotes().equals("")){
+					job.setWasherNotes(null);
+				} else {
+					job.setWasherNotes(jobRequest.getWasherNotes());
+				}
+			} 
+			
+//			if(jobRequest.getBillingContactId() != null){
+//				job.setBillingContactId(jobRequest.getBillingContactId());
+//			}
+			if(jobRequest.getBillingNotes() != null) {
+				if(jobRequest.getBillingNotes().equals("")) {
+					job.setBillingNotes(null);
+				} else {
+					job.setBillingNotes(jobRequest.getBillingNotes());
+				}
+			}
+			
 
-		
-		if(jobRequest.getOmNotes() != null) {
-			if(jobRequest.getOmNotes().equals("")) {
-				job.setOmNotes(null);
-			} else {
-				job.setOmNotes(jobRequest.getOmNotes());
+			
+			if(jobRequest.getOmNotes() != null) {
+				if(jobRequest.getOmNotes().equals("")) {
+					job.setOmNotes(null);
+				} else {
+					job.setOmNotes(jobRequest.getOmNotes());
+				}
 			}
-		}
-		
-//		if(jobRequest.getActivationDate() == null) {
-//			job.setActivationDate(today);
-//		} else {
-//			job.setActivationDate(jobRequest.getActivationDate());
-//		}
-		
-		if(jobRequest.getStartDate() != null){
-			job.setStartDate(jobRequest.getStartDate());
-		}
-		
-		if(jobRequest.getCancelDate() != null){
-			job.setCancelDate(jobRequest.getCancelDate());
-		}
-		
-		if(jobRequest.getCancelReason() != null){
-			job.setCancelReason(jobRequest.getCancelReason());
-		}
-		
-//		if(jobRequest.getSiteContact() != null) {
-//			job.setSiteContact(jobRequest.getSiteContact());
-//		}
-//		
-//		if(jobRequest.getJobContactId() != null) {
-//			job.setJobContactId(jobRequest.getJobContactId());
-//		}
-//		
-		if(jobRequest.getJobTypeId() != null) {
-			job.setJobTypeId(jobRequest.getJobTypeId());
-		}
-		
-		if(job.getJobTypeId() == 0){
-			job.setJobTypeId(null);
-		}
-		if(jobRequest.getRequestSpecialScheduling() != null) {
-			job.setRequestSpecialScheduling(jobRequest.getRequestSpecialScheduling());
-		}
-//		if(jobRequest.getRepeatScheduleAnnually() != null) {
-			job.setRepeatScheduleAnnually(1);
-//		}
-		if(jobRequest.getPaymentTerms() != null){
-			if(jobRequest.getPaymentTerms().equals("")){
-				job.setPaymentTerms(null);
-			} else {
-				job.setPaymentTerms(jobRequest.getPaymentTerms());
+			
+//			if(jobRequest.getActivationDate() == null) {
+//				job.setActivationDate(today);
+//			} else {
+//				job.setActivationDate(jobRequest.getActivationDate());
+//			}
+			
+			if(jobRequest.getStartDate() != null){
+				job.setStartDate(jobRequest.getStartDate());
 			}
+			
+			if(jobRequest.getCancelDate() != null){
+				job.setCancelDate(jobRequest.getCancelDate());
+			}
+			
+			if(jobRequest.getCancelReason() != null){
+				job.setCancelReason(jobRequest.getCancelReason());
+			}
+			
+//			if(jobRequest.getSiteContact() != null) {
+//				job.setSiteContact(jobRequest.getSiteContact());
+//			}
+//			
+//			if(jobRequest.getJobContactId() != null) {
+//				job.setJobContactId(jobRequest.getJobContactId());
+//			}
+//			
+			if(jobRequest.getJobTypeId() != null) {
+				job.setJobTypeId(jobRequest.getJobTypeId());
+			}
+			
+			if(job.getJobTypeId() == 0){
+				job.setJobTypeId(null);
+			}
+			if(jobRequest.getRequestSpecialScheduling() != null) {
+				job.setRequestSpecialScheduling(jobRequest.getRequestSpecialScheduling());
+			}
+//			if(jobRequest.getRepeatScheduleAnnually() != null) {
+				job.setRepeatScheduleAnnually(1);
+//			}
+			if(jobRequest.getPaymentTerms() != null){
+				if(jobRequest.getPaymentTerms().equals("")){
+					job.setPaymentTerms(null);
+				} else {
+					job.setPaymentTerms(jobRequest.getPaymentTerms());
+				}
+			}
+			
+		
+			
+			job.setUpdatedBy(sessionUser.getUserId());
+
+//			job.setUpdatedDate(today);
+			
+
+			System.out.println("Job servlet Add Data:");
+			System.out.println(job.toString());
+			job.update(conn, key);
+			responseCode = ResponseCode.SUCCESS;
+		} else {
+			System.out.println("Doing Edit Fail");
+			responseCode = ResponseCode.EDIT_FAILURE;
 		}
-		
-	
-		
-		job.setUpdatedBy(sessionUser.getUserId());
+		JobResponse codeResponse = new JobResponse(job, webMessages);
+		System.out.println("Response:");
+		System.out.println("responseCode: " + responseCode);
+		System.out.println("codeResponse: " + codeResponse);
+		System.out.println("response: " + response);
 
-//		job.setUpdatedDate(today);
-		
-
-		System.out.println("Job servlet Add Data:");
-		System.out.println(job.toString());
-		job.update(conn, key);
+		super.sendResponse(conn, response, responseCode, codeResponse);
 
 		return job;
 	}
 	
+	protected WebMessages validateAdd(Connection conn, JobRequest jobRequest) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		List<String> missingFields = super.validateRequiredAddFields(jobRequest);
+		System.out.println("validateAdd");
+		String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
+		if ( ! missingFields.isEmpty() ) {
+//			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
+			for ( String field : missingFields ) {
+				webMessages.addMessage(field, messageText);
+				System.out.println("field:"+field+":"+messageText);
+			}
+		}
+
+		return webMessages;
+	}
+
+	protected WebMessages validateUpdate(Connection conn, Job key, JobRequest jobRequest) throws RecordNotFoundException, Exception {
+		WebMessages webMessages = new WebMessages();
+		List<String> missingFields = super.validateRequiredUpdateFields(jobRequest);
+		if ( ! missingFields.isEmpty() ) {
+			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
+			for ( String field : missingFields ) {
+				webMessages.addMessage(field, messageText);
+			}
+		}
+		// if we "select" the key, and it isn't found, a "RecordNotFoundException" is thrown.
+		// That exception will propagate up the tree until it turns into a 404 message sent to the client
+		Job testKey = (Job)key.clone(); 
+		testKey.selectOne(conn);
+		return webMessages;
+	}
+
 
 	
 }
