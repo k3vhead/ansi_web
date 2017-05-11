@@ -627,9 +627,7 @@ $( document ).ready(function() {
 					},
 					statusCode: {
 						200: function($data) {
-		   					if ( $data.responseHeader.responseCode=='EDIT_FAILURE') {
-		   						doQuoteEditFailure($data.data);
-		   					} else if ( $data.responseHeader.responseCode == 'SUCCESS') {
+
 		   						
 		   						$('#jobPanelHolder > tbody:last-child').append($data);
 //								console.log($namespace);
@@ -654,10 +652,7 @@ $( document ).ready(function() {
 					            });
 								QUOTEUTILS.bindAndFormat();
 		   						
-		   					} else {
-		   						$("#globalMsg").html($data.responseHeader.responseMessage);
-		   						$("#paymentModal").dialog("close");
-		   					}
+		   		
 		   				},
 	   					403: function($data) {
 	   						$("#paymentModal").dialog("close");
