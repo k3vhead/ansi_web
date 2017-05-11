@@ -54,6 +54,13 @@
 			.right {
 				text-align:right;
 			}
+			.dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody {
+				padding:0;
+				margin:0;
+				text-align:left;
+				width:1300px;
+				max-width:1300px;
+			}
         </style>       
        
         <script type="text/javascript" src="js/ansi_utils.js"></script>
@@ -80,7 +87,6 @@
         	function doPopulate($selectedDiv, $selectedMonth) {
         		var $outbound = {'month':$selectedMonth,'divisionId':$selectedDiv};
         		var $downloadUrl = "ticketDRV?format=xls&divisionId=" + $selectedDiv + "&month=" + $selectedMonth;
-        		console.debug($downloadUrl);
         		$("#xlsDownload").attr("href", $downloadUrl);
         		
         		var jqxhr = $.ajax({
