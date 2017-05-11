@@ -213,10 +213,12 @@
 						$.each($data.data.ticketList, function(index, value) {
 							addRow(index, value);
 						});
+						console.debug($data.data);
 						$(".workPanel").hide();
 		       			populateTicketDetail($data.data);	       			
 		       			populateSummary($data.data);
 		       			populatePanelSelect($data.data);
+		       			$("#COMPLETED input[name=actDlPct]").val($data.data.ticketDetail.defaultDirectLaborPct);
     					$("#summaryTable").fadeIn(4000);
     					$("#selectPanel").fadeIn(4000);
     					$("#ticketTable").fadeIn(4000);
