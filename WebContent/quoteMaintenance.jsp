@@ -24,6 +24,11 @@
         <script type="text/javascript" src="js/ansi_utils.js"></script>
         <script type="text/javascript" src="js/jobMaintenance.js"></script>
         <script type="text/javascript" src="js/quoteMaintenance.js"></script>
+        <script type="text/javascript" src="js/quotePrint.js"></script>
+        <%
+			String quotePrintModal = "";
+		%>
+        
         <style type="text/css">
 
 #delData {
@@ -107,6 +112,10 @@ td.jobTableCell {
 				min-height:30px;
 }
 
+.error {
+    color: red;  
+}
+
 #confirmDelete {
 	background-color: #FFFFFF;
 	color: #000000;
@@ -179,28 +188,28 @@ td.jobTableCell {
 					<table >
 						<tr>
 							<td><input type="button" name="modifyQuoteButton" value="Modify" class="quoteButton"/></td>
-							<td><span class="labelSpanSmall">Manager:</span>
+							<td><span class="labelSpanSmall" id="managerLabel">Manager:</span>
 								<select name="manager" id="manager" class="quoteSelect">
 									<option value=""></option>
 								</select>
 							</td>
-							<td><span class="labelSpan">Division:</span>
+							<td><span class="labelSpan"  id="divisionLabel">Division:</span>
 								<select name="division" id="division" class="quoteSelect">
 									<option value=""></option>
 								</select>
 							</td>
-							<td align="center">Quote</td>
-							<td align="center">Revision</td>
+							<td align="center"><span  id="quoteLabel">Quote</span>span></td>
+							<td align="center"><span  id="revisionLabel">Revision</span></td>
 							<td rowspan="2" align="right" style="padding-right:10px;"><input type="button" name="printButton" value="Print" class="quoteButton"/></td>
 						</tr>
 						<tr>
 							<td><input type="button" name="copyQuoteButton" value="Copy" class="quoteButton"/></td>
-							<td><span class="labelSpanSmall">Lead Type:</span>
+							<td><span class="labelSpanSmall" id="leadTypeLabel">Lead Type:</span>
 								<select name="leadType" class="quoteSelect">
 									<option value=""></option>
 								</select>
 							</td>
-							<td><span class="labelSpan">Account Type:</span>
+							<td><span class="labelSpan" id="accountTypeLabel">Account Type:</span>
 								<select name="accountType" id="accountType" class="quoteSelect">
 									<option value=""></option>
 								</select>
@@ -272,6 +281,7 @@ td.jobTableCell {
 	
 		<webthing:jobActivateCancel page="QUOTE" namespace="activateModal" />
 		
+		<webthing:quotePrint modalName="printQuoteDiv" />
 		
         <script type="text/javascript">   
 		      $( document ).ready(function() {

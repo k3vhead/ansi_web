@@ -34,7 +34,7 @@
 	<form id="<%=namespace%>_address">
 		<table>
 			<tr>
-				<td><b><%= label %></b></td>
+				<td><span id="<%=namespace%>Label"><b><%= label %></b></span></td>
 				<td colspan="3"><input type="text" name="<%=namespace %>_name" style="width:315px" /></td>
 			</tr>
 			<tr>
@@ -74,22 +74,22 @@
 			</tr>
 			<tr>
 			<% if ( page.equals("job") ) { %>
-					<td>Job Contact:</td>
+					<td><span id="<%=namespace %>C1">Job Contact:</span></td>
 					<td style="width:140px;"><input type="text" name="<%=namespace %>_jobContactName" style="width:125px" placeholder="<name>"/></td>
 					<td colspan="2"><input type="text" name="<%=namespace %>_jobContactInfo" style="width:170px" placeholder="<phone,mobile,email>"/></td>
 				<% } else if ( page.equals("bill") ){%>
-					<td>Cont Contact:</td>
+					<td><span id="<%=namespace %>C1">Cont Contact:</span></td>
 					<td style="width:140px;"><input type="text" name="<%=namespace %>_contractContactName" style="width:125px" placeholder="<name>"/></td>
 					<td colspan="2"><input type="text" name="<%=namespace %>_contractContactInfo" style="width:170px" placeholder="<phone,mobile,email>"/></td>
 				<% } %>
 			</tr>
 			<tr>
 			<% if ( page.equals("job") ) { %>
-					<td>Site Contact:</td>
+					<td><span id="<%=namespace %>C2">Site Contact:</span></td>
 					<td style="width:140px;"><input type="text" name="<%=namespace %>_siteContactName" style="width:125px" placeholder="<name>"/></td>
 					<td colspan="2"><input type="text" name="<%=namespace %>_siteContactInfo" style="width:170px" placeholder="<phone,mobile,email>"/></td>
 				<% } else if ( page.equals("bill") ){%>
-					<td>Billing Contact:</td>
+					<td><span id="<%=namespace %>C2">Billing Contact:</span></td>
 					<td style="width:140px;"><input type="text" name="<%=namespace %>_billingContactName" style="width:125px" placeholder="<name>"/></td>
 					<td colspan="2"><input type="text" name="<%=namespace %>_billingContactInfo" style="width:170px" placeholder="<phone,mobile,email>"/></td>
 				<% } %>

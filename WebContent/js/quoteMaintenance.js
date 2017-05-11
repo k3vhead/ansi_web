@@ -5,6 +5,33 @@ $( document ).ready(function() {
 	;JOB_DATA = {}
 	;QUOTE_DATA = {}
 	
+	;Lookup = {
+//	       		managerId:"select[name=manager]",
+//	       	 	leadType: "select[name=leadType]",
+//        		accountType:"select[name=accountType]",
+//        		divisionId:"select[name=division]",
+//        		jobSiteAddressId:"input[name=jobSite_id]",
+//        		billToAddressId:"input[name=billTo_id]",
+//        		jobContactId:"input[name='jobSite_Con1id']",
+//        		siteContact:"input[name='jobSite_Con2id']",
+//        		contractContactId:"input[name='billTo_Con1id']",
+//        		billingContactId:"input[name='billTo_Con2id']",
+//        		quoteNumber:"input[name='quoteNumber']",
+//        		revisionNumber:"input[name='revision']"
+			managerId:"manager",
+       	 	leadType: "leadType",
+    		accountType:"accountType",
+    		divisionId:"division",
+    		jobSiteAddressId:"jobSiteLabel",
+    		billToAddressId:"billToLabel",
+    		jobContactId:"jobSite_Con1id",
+    		siteContact:"jobSite_Con2id",
+    		contractContactId:"billTo_Con1id",
+    		billingContactId:"billTo_Con2id",
+    		quoteNumber:"quoteNumber",
+    		revisionNumber:"revision"	
+	}
+	
 	
 	;QUOTEUTILS = {
 			pageInit:function($quoteId) {
@@ -19,7 +46,7 @@ $( document ).ready(function() {
 				JOB_DATA.divisionList = ANSI_UTILS.getDivisionList();
 				JOB_DATA.buildingTypeList = ANSI_UTILS.makeBuildingTypeList();
 				JOB_DATA.countryList = $optionData.country;
-
+				
 				
 				$("#addJobRow").click(function(){
 					QUOTEUTILS.addAJob($globalQuoteId);
@@ -34,6 +61,14 @@ $( document ).ready(function() {
 				var $lastRun = null;
 				var $nextDue = null;
 				var $lastCreated = null;
+				
+				$('.dateField').datepicker({
+	                prevText:'&lt;&lt;',
+	                nextText: '&gt;&gt;',
+	                showButtonPanel:true
+	            });
+				QUOTE_PRINT.init_modal("#printQuoteDiv");
+				
 				if ( $quoteId != '' ) {
 					var $quoteDetail = QUOTEUTILS.getQuoteDetail($quoteId);
 					var $quoteData = $quoteDetail.quote;
@@ -148,6 +183,7 @@ $( document ).ready(function() {
 					});
 					
 					//$("#modalSpan").html(modalText);
+					
 					QUOTEUTILS.bindAndFormat();
 				} else {
 					$("#loadingJobsDiv").hide();
@@ -234,7 +270,13 @@ $( document ).ready(function() {
 					event.preventDefault();
 					console.log("Modify Quote");
 	            });
+				$("input[name=printButton]").button().on( "click", function(event) {
+					event.preventDefault();
+					QUOTE_PRINT.showQuotePrint("#printQuoteDiv", $globalQuoteId, $("input[name=quoteNumber]").val());
+					console.log("Print Quote");
+	            });
 				
+				 
 				
 			},
 			save: function(){
@@ -289,45 +331,104 @@ $( document ).ready(function() {
 					type: 'POST',
 					url: $url,
 					data: JSON.stringify($outbound),
-					success: function($data) {
-						if ( $data.responseHeader.responseCode == 'SUCCESS') {
-							
-//							$("input[name=quoteId]").val($data.data.quote.quoteId);//gag
-							$globalQuoteId =	$data.data.quote.quoteId;//gag
-							$("input[name=quoteNumber]").val($data.data.quote.quoteNumber);
-							$("input[name=revision]").val($data.data.quote.revision);
-							console.log("Save Success");
-							console.log($data);
-								if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
-									$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
-								}
-							
-						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-							
-							alert("Edit Failure: Required Data is Missing");
-							console.log("Edit Failure");
-							console.log($data);
-							$.each($data.data.webMessages, function(key, messageList) {
-								var identifier = "#" + key + "Err";
-								msgHtml = "<ul>";
-								$.each(messageList, function(index, message) {
-									msgHtml = msgHtml + "<li>" + message + "</li>";
-								});
-								msgHtml = msgHtml + "</ul>";
-								$(identifier).html(msgHtml);
-							});		
-						} else {
-							console.log("Save Other");
-						}
-					},
+//					success: function($data) {
+//						if ( $data.responseHeader.responseCode == 'SUCCESS') {
+//							
+//////							$("input[name=quoteId]").val($data.data.quote.quoteId);//gag
+////							$globalQuoteId =	$data.data.quote.quoteId;//gag
+////							$("input[name=quoteNumber]").val($data.data.quote.quoteNumber);
+////							$("input[name=revision]").val($data.data.quote.revision);
+////							console.log("Save Success");
+////							console.log($data);
+////								if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
+////									$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
+////								}
+//							
+//						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+//							
+//							alert("Edit Failure: Required Data is Missing");
+//							console.log("Edit Failure");
+//							console.log($data);
+//							$.each($data.data.webMessages, function(key, messageList) {
+//								var identifier = "#" + key + "Err";
+//								msgHtml = "<ul>";
+//								$.each(messageList, function(index, message) {
+//									msgHtml = msgHtml + "<li>" + message + "</li>";
+//								});
+//								msgHtml = msgHtml + "</ul>";
+//								$(identifier).html(msgHtml);
+//							});		
+//						} else {
+//							console.log("Save Other");
+//						}
+//					},
 					error: function($data) {
 						console.log("Fail: ");
 						console.log($data);
 					},
 					statusCode: {
-						403: function($data) {
-							$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-						} 
+						200: function($data) {
+		   					if ( $data.responseHeader.responseCode=='EDIT_FAILURE') {
+		   						//doQuoteEditFailure($data.data);
+		   						
+		   						//alert("Edit Failure: Required Data is Missing");
+								console.log("Edit Failure");
+								console.log($data);
+								$.each($data.data.webMessages, function(key, messageList) {
+									var identifier = "#"+Lookup[key]+"Label";
+									//console.log("Show Error:" + identifier);
+									if(key == "jobSiteAddressId"){
+										ADDRESSPANEL.setError("jobSite","Label");
+									}
+									if(key == "billToAddressId"){
+										ADDRESSPANEL.setError("billTo","Label");
+									}
+									if(key == "contractContactId"){
+										ADDRESSPANEL.setError("billTo","C1");
+									}
+									if(key == "jobContactId"){
+										ADDRESSPANEL.setError("jobSite","C1");
+									}
+									if(key == "billingContactId"){
+										ADDRESSPANEL.setError("billTo","C2");
+									}
+									if(key == "siteContact"){
+										ADDRESSPANEL.setError("jobSite","C2");
+									}
+									
+									$(identifier).addClass('error');
+									 setTimeout(function() {
+										 $(identifier).removeClass('error');
+								        }, 8000);
+								});	
+		   					} else if ( $data.responseHeader.responseCode == 'SUCCESS') {
+//								$("input[name=quoteId]").val($data.data.quote.quoteId);//gag
+								$globalQuoteId =	$data.data.quote.quoteId;//gag
+								$("input[name=quoteNumber]").val($data.data.quote.quoteNumber);
+								$("input[name=revision]").val($data.data.quote.revision);
+								console.log("Save Success");
+								console.log($data);
+									if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
+										$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
+									}
+								
+		   					} else {
+		   						$("#globalMsg").html($data.responseHeader.responseMessage);
+
+		   					}
+		   				},
+	   					403: function($data) {
+		   					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+		   				},
+		   				404: function($data) {		   					
+		   					
+		   				},
+		   				405: function($data) {
+		   					$("#globalMsg").html("System Error: Contact Support").fadeIn(4000);
+		   				},
+		   				500: function($data) {
+	        	    		$("#globalMsg").html("System Error: Contact Support").fadeIn(4000);
+	        	    	}
 					},
 					dataType: 'json'
 				});
@@ -376,41 +477,74 @@ $( document ).ready(function() {
 					type: 'POST',
 					url: $url,
 					data: JSON.stringify($outbound),
-					success: function($data) {
-						if ( $data.responseHeader.responseCode == 'SUCCESS') {
-
-							console.log("Update Success");
-							console.log($data);
-								if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
-									$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
-								}
-							
-						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-							
-							alert("Edit Failure: Required Data is Missing");
-							console.log("Edit Failure");
-							console.log($data);
-							$.each($data.data.webMessages, function(key, messageList) {
-								var identifier = "#" + key + "Err";
-								msgHtml = "<ul>";
-								$.each(messageList, function(index, message) {
-									msgHtml = msgHtml + "<li>" + message + "</li>";
-								});
-								msgHtml = msgHtml + "</ul>";
-								$(identifier).html(msgHtml);
-							});		
-						} else {
-							console.log("Save Other");
-						}
-					},
+//					success: function($data) {
+//						if ( $data.responseHeader.responseCode == 'SUCCESS') {
+//
+//							console.log("Update Success");
+//							console.log($data);
+//								if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
+//									$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
+//								}
+//							
+//						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+//							
+//							alert("Edit Failure: Required Data is Missing");
+//							console.log("Edit Failure");
+//							console.log($data);
+//							$.each($data.data.webMessages, function(key, messageList) {
+//								var identifier = "#" + key + "Err";
+//								msgHtml = "<ul>";
+//								$.each(messageList, function(index, message) {
+//									msgHtml = msgHtml + "<li>" + message + "</li>";
+//								});
+//								msgHtml = msgHtml + "</ul>";
+//								$(identifier).html(msgHtml);
+//							});		
+//						} else {
+//							console.log("Save Other");
+//						}
+//					},
 					error: function($data) {
 						console.log("Fail: ");
 						console.log($data);
 					},
 					statusCode: {
-						403: function($data) {
-							$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-						} 
+						200: function($data) {
+		   					if ( $data.responseHeader.responseCode=='EDIT_FAILURE') {
+		   						//doQuoteEditFailure($data.data);
+		   						
+		   						alert("Edit Failure: Required Data is Missing");
+								console.log("Edit Failure");
+								console.log($data);
+								$.each($data.data.webMessages, function(key, messageList) {
+									var identifier = Lookup[key];
+									console.log("Show Error:" + identifier);
+									$(identifier).addClass("error");
+								});	
+		   					} else if ( $data.responseHeader.responseCode == 'SUCCESS') {
+		   						console.log("Update Success");
+								console.log($data);
+									if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
+										$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
+									}
+								
+		   					} else {
+		   						$("#globalMsg").html($data.responseHeader.responseMessage);
+
+		   					}
+		   				},
+	   					403: function($data) {
+		   					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+		   				},
+		   				404: function($data) {		   					
+		   					
+		   				},
+		   				405: function($data) {
+		   					$("#globalMsg").html("System Error: Contact Support").fadeIn(4000);
+		   				},
+		   				500: function($data) {
+	        	    		$("#globalMsg").html("System Error: Contact Support").fadeIn(4000);
+	        	    	}
 					},
 					dataType: 'json'
 				});
@@ -467,34 +601,79 @@ $( document ).ready(function() {
 					data: {"panelname":$row,"page":"QUOTE"},
 					success: function($data) {
 
-						$('#jobPanelHolder > tbody:last-child').append($data);
-//						console.log($namespace);
-						var $jobDetail = [{invoiceStyle: null, activationDate: null, startDate: null, cancelDate: null, cancelReason: null}];		
-
-						var $quoteDetail = [{proposalDate: null}];
-						var $lastRun = null;
-						var $nextDue = null;
-						var $lastCreated = null;
-						//console.log(JOB_DATA);
-						
-						JOBPANEL.init($row+"_jobPanel", JOB_DATA.divisionList, "activateModal", $jobDetail);
-						JOBPROPOSAL.init($row+"_jobProposal", JOB_DATA.jobFrequencyList, $jobDetail);
-						JOBACTIVATION.init($row+"_jobActivation", JOB_DATA.buildingTypeList, $jobDetail);
-						$("#" + $row+"_jobActivation" + "_nbrFloors").spinner( "option", "disabled", false );
-						JOBDATES.init($row+"_jobDates", $quoteDetail, $jobDetail);
-						JOBSCHEDULE.init($row+"_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
-						JOBINVOICE.init($row+"_jobInvoice", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, $jobDetail);
-						JOBAUDIT.init($row+"_jobAudit", $jobDetail);
-						$('.jobSave').on('click', function($clickevent) {
-							JOB_UTILS.addJob($(this).attr("rownum"),$quoteId);
-			            });
-						QUOTEUTILS.bindAndFormat();
+//						$('#jobPanelHolder > tbody:last-child').append($data);
+////						console.log($namespace);
+//						var $jobDetail = [{invoiceStyle: null, activationDate: null, startDate: null, cancelDate: null, cancelReason: null}];		
+//
+//						var $quoteDetail = [{proposalDate: null}];
+//						var $lastRun = null;
+//						var $nextDue = null;
+//						var $lastCreated = null;
+//						//console.log(JOB_DATA);
+//						
+//						JOBPANEL.init($row+"_jobPanel", JOB_DATA.divisionList, "activateModal", $jobDetail);
+//						JOBPROPOSAL.init($row+"_jobProposal", JOB_DATA.jobFrequencyList, $jobDetail);
+//						JOBACTIVATION.init($row+"_jobActivation", JOB_DATA.buildingTypeList, $jobDetail);
+//						$("#" + $row+"_jobActivation" + "_nbrFloors").spinner( "option", "disabled", false );
+//						JOBDATES.init($row+"_jobDates", $quoteDetail, $jobDetail);
+//						JOBSCHEDULE.init($row+"_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
+//						JOBINVOICE.init($row+"_jobInvoice", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, $jobDetail);
+//						JOBAUDIT.init($row+"_jobAudit", $jobDetail);
+//						$('.jobSave').on('click', function($clickevent) {
+//							JOB_UTILS.addJob($(this).attr("rownum"),$quoteId);
+//			            });
+//						QUOTEUTILS.bindAndFormat();
 	
 					},
 					statusCode: {
-						403: function($data) {
-							$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-						} 
+						200: function($data) {
+		   					if ( $data.responseHeader.responseCode=='EDIT_FAILURE') {
+		   						doQuoteEditFailure($data.data);
+		   					} else if ( $data.responseHeader.responseCode == 'SUCCESS') {
+		   						
+		   						$('#jobPanelHolder > tbody:last-child').append($data);
+//								console.log($namespace);
+								var $jobDetail = [{invoiceStyle: null, activationDate: null, startDate: null, cancelDate: null, cancelReason: null}];		
+
+								var $quoteDetail = [{proposalDate: null}];
+								var $lastRun = null;
+								var $nextDue = null;
+								var $lastCreated = null;
+								//console.log(JOB_DATA);
+								
+								JOBPANEL.init($row+"_jobPanel", JOB_DATA.divisionList, "activateModal", $jobDetail);
+								JOBPROPOSAL.init($row+"_jobProposal", JOB_DATA.jobFrequencyList, $jobDetail);
+								JOBACTIVATION.init($row+"_jobActivation", JOB_DATA.buildingTypeList, $jobDetail);
+								$("#" + $row+"_jobActivation" + "_nbrFloors").spinner( "option", "disabled", false );
+								JOBDATES.init($row+"_jobDates", $quoteDetail, $jobDetail);
+								JOBSCHEDULE.init($row+"_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
+								JOBINVOICE.init($row+"_jobInvoice", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, $jobDetail);
+								JOBAUDIT.init($row+"_jobAudit", $jobDetail);
+								$('.jobSave').on('click', function($clickevent) {
+									JOB_UTILS.addJob($(this).attr("rownum"),$quoteId);
+					            });
+								QUOTEUTILS.bindAndFormat();
+		   						
+		   					} else {
+		   						$("#globalMsg").html($data.responseHeader.responseMessage);
+		   						$("#paymentModal").dialog("close");
+		   					}
+		   				},
+	   					403: function($data) {
+	   						$("#paymentModal").dialog("close");
+		   					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+		   				},
+		   				404: function($data) {		   					
+		   					$("#pmtSearchIdErr").html("Invalid Payment Id").show().fadeOut(10000);
+		   				},
+		   				405: function($data) {
+		   					$("#paymentModal").dialog("close");
+		   					$("#globalMsg").html("System Error: Contact Support").fadeIn(4000);
+		   				},
+		   				500: function($data) {
+		   					$("#paymentModal").dialog("close");
+	        	    		$("#globalMsg").html("System Error: Contact Support").fadeIn(4000);
+	        	    	}
 					},
 					dataType: 'html'
 				});
@@ -603,7 +782,20 @@ $( document ).ready(function() {
 			//console.log($returnValue);
 			$returnValue = {codeList: $codeList};
 			return $returnValue;
-		}
+		}, doQuoteEditFailure: function ($data) {
+    		$.each($data.webMessages, function(field, errList) {
+    			var $selector = "#" + field + "Err";
+    			if ( errList.length == 1 ) {
+    				$($selector).html(errList[0]).show().fadeOut(8000);
+    			} else {
+    				var $errString = "";
+    				$.each(errList, function(index, err) {
+    					$errString = $errString + "<li>" + err + "</li>";
+    				});
+    				$($selector).html("<ul>" + errString + "</ul>").show().fadeOut(8000);
+    			}
+    		});
+    	}
 			
 		}
 		

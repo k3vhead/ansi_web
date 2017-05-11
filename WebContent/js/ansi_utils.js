@@ -276,6 +276,12 @@ $( document ).ready(function() {
 				return $returnValue;
 
 			},
+			setError: function($namespace, $id){
+				$("#"+$namespace+$id).addClass('error');
+				setTimeout(function() {
+					$("#"+$namespace+$id).removeClass('error');
+			        }, 8000);
+			},
 			setAddress: function($namespace, $addressData) {
 				console.log("Address Data;");
 				console.log($addressData);
