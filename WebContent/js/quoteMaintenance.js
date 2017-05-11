@@ -593,7 +593,7 @@ $( document ).ready(function() {
 			addAJob: function($quoteId){
 				var $namespace = $currentRow.toString() + "_jobPanel";
 				var $row = $currentRow.toString();
-				alert("quote addAJob quoteId:" + $quoteId);
+//				alert("quote addAJob quoteId:" + $quoteId);
 				$currentRow++;
 				var jqxhr1 = $.ajax({
 					type: 'GET',
