@@ -79,7 +79,7 @@ public class TicketGenerationServlet extends AbstractServlet{
 				
 			} catch ( InvalidFormatException e ) {
 				String badField = super.findBadField(e.toString());
-				TicketReturnResponse data = new TicketReturnResponse();
+				TicketGenerationResponse data = new TicketGenerationResponse();
 				WebMessages messages = new WebMessages();
 				messages.addMessage(badField, "Invalid Format");
 				data.setWebMessages(messages);

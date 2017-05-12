@@ -192,7 +192,7 @@ public class TicketServlet extends AbstractServlet {
 					// this is an error -- a bad action was requested
 					super.sendNotAllowed(response);
 				}
-			} catch ( InvalidFormatException e ) {
+			}  catch ( InvalidFormatException e ) {
 				String badField = super.findBadField(e.toString());
 				TicketReturnResponse data = new TicketReturnResponse();
 				WebMessages messages = new WebMessages();

@@ -128,7 +128,7 @@ public class PaymentServlet extends AbstractServlet {
 				}
 			} catch ( InvalidFormatException e ) {
 				String badField = super.findBadField(e.toString());
-				TicketReturnResponse data = new TicketReturnResponse();
+				PaymentResponse data = new PaymentResponse();
 				WebMessages messages = new WebMessages();
 				messages.addMessage(badField, "Invalid Format");
 				data.setWebMessages(messages);
