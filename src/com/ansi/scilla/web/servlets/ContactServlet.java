@@ -119,23 +119,25 @@ public class ContactServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
+			
+			// JOSHUA -- MOVE these lines 124-125 inside the "try" on line 129
 			String jsonString = super.makeJsonString(request);
 			ContactRequest contactRequest = (ContactRequest)AppUtils.json2object(jsonString, ContactRequest.class);
 			SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 			SessionUser sessionUser = sessionData.getUser();
-			
+
 			try {
 				url = new AnsiURL(request,"contact", new String[] {ACTION_IS_ADD});
 
 				if ( url.getId() != null ) {
-				// THis is an update
-				processUpdate(conn, response, url.getId(), contactRequest, sessionUser);
+					// THis is an update
+					processUpdate(conn, response, url.getId(), contactRequest, sessionUser);
 				} else if ( url.getCommand().equalsIgnoreCase(ACTION_IS_ADD)) {
-				// this is an add
-				processAdd(conn, response, contactRequest, sessionUser);
+					// this is an add
+					processAdd(conn, response, contactRequest, sessionUser);
 				} else {
-				// this is messed up
-				super.sendNotFound(response);
+					// this is messed up
+					super.sendNotFound(response);
 				}
 			} catch ( InvalidFormatException e ) {
 				String badField = super.findBadField(e.toString());
