@@ -28,9 +28,11 @@ import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.request.payment.PaymentRequest;
 import com.ansi.scilla.web.response.payment.PaymentResponse;
+import com.ansi.scilla.web.response.ticket.TicketReturnResponse;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 
@@ -107,26 +109,35 @@ public class PaymentServlet extends AbstractServlet {
 		Connection conn = null;
 		AnsiURL url = null;
 		try {
-			conn = AppUtils.getDBCPConn();
-			conn.setAutoCommit(false);
-			String jsonString = super.makeJsonString(request);
-			System.out.println(jsonString);
-			PaymentRequest paymentRequest = (PaymentRequest)AppUtils.json2object(jsonString, PaymentRequest.class);
-			url = new AnsiURL(request, "payment", new String[] {PaymentRequestType.ADD.name().toLowerCase()});
-			SessionData sessionData = AppUtils.validateSession(request, Permission.PAYMENT, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
-			SessionUser sessionUser = sessionData.getUser();
-
-			if ( ! StringUtils.isBlank(url.getCommand())) {
-				processAdd(conn, paymentRequest, sessionUser, response);
-			} else if ( url.getId() != null ) {
-				processUpdate(conn, url.getId(), paymentRequest, sessionUser, response);
-			} else {
-				throw new ResourceNotFoundException();
+			try{
+				conn = AppUtils.getDBCPConn();
+				conn.setAutoCommit(false);
+				String jsonString = super.makeJsonString(request);
+				System.out.println(jsonString);
+				PaymentRequest paymentRequest = (PaymentRequest)AppUtils.json2object(jsonString, PaymentRequest.class);
+				url = new AnsiURL(request, "payment", new String[] {PaymentRequestType.ADD.name().toLowerCase()});
+				SessionData sessionData = AppUtils.validateSession(request, Permission.PAYMENT, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+				SessionUser sessionUser = sessionData.getUser();
+				
+				if ( ! StringUtils.isBlank(url.getCommand())) {
+					processAdd(conn, paymentRequest, sessionUser, response);
+				} else if ( url.getId() != null ) {
+					processUpdate(conn, url.getId(), paymentRequest, sessionUser, response);
+				} else {
+					throw new ResourceNotFoundException();
+				}
+			} catch ( InvalidFormatException e ) {
+				String badField = super.findBadField(e.toString());
+				TicketReturnResponse data = new TicketReturnResponse();
+				WebMessages messages = new WebMessages();
+				messages.addMessage(badField, "Invalid Format");
+				data.setWebMessages(messages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+				super.sendForbidden(response);
+			} catch ( ResourceNotFoundException e) {
+				super.sendNotFound(response);
 			}
-		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
-			super.sendForbidden(response);
-		} catch ( ResourceNotFoundException e) {
-			super.sendNotFound(response);
 		} catch ( Exception e) {
 			AppUtils.logException(e);
 			AppUtils.rollbackQuiet(conn);
