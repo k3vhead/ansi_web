@@ -215,7 +215,7 @@ public class TaxRateServlet extends AbstractServlet {
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
 					} catch ( InvalidFormatException e ) {
 						String badField = super.findBadField(e.toString());
-						TicketReturnResponse data = new TicketReturnResponse();
+						TaxRateResponse data = new TaxRateResponse();
 						WebMessages messages = new WebMessages();
 						messages.addMessage(badField, "Invalid Format");
 						data.setWebMessages(messages);

@@ -52,7 +52,7 @@ public class LoginServlet extends AbstractServlet {
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, loginResponse);
 			} catch ( InvalidFormatException e ) {
 				String badField = super.findBadField(e.toString());
-				TicketReturnResponse data = new TicketReturnResponse();
+				LoginResponse data = new LoginResponse();
 				WebMessages messages = new WebMessages();
 				messages.addMessage(badField, "Invalid Format");
 				data.setWebMessages(messages);
