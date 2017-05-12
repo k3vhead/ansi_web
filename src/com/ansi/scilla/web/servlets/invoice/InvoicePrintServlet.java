@@ -29,9 +29,11 @@ import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.request.InvoicePrintRequest;
 import com.ansi.scilla.web.response.invoice.InvoicePrintResponse;
+import com.ansi.scilla.web.response.ticket.TicketReturnResponse;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Font;
@@ -61,28 +63,37 @@ public class InvoicePrintServlet extends AbstractServlet {
 //		AnsiURL ansiURL = null; 
 		Connection conn = null;
 		try {
-			conn = AppUtils.getDBCPConn();
-			conn.setAutoCommit(false);
-			String jsonString = super.makeJsonString(request);
-			InvoicePrintRequest invoicePrintRequest = (InvoicePrintRequest)AppUtils.json2object(jsonString, InvoicePrintRequest.class);
-//			ansiURL = new AnsiURL(request, "invoiceGeneration", (String[])null); //  .../ticket/etc
-			SessionData sessionData = AppUtils.validateSession(request, Permission.INVOICE, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
-
-			SessionUser sessionUser = sessionData.getUser(); 
-			List<String> addErrors = super.validateRequiredAddFields(invoicePrintRequest);
-			HashMap<String, String> errors = new HashMap<String, String>();
-			if ( addErrors.isEmpty() ) {
-				errors = validateDates(invoicePrintRequest);
+			try{
+				conn = AppUtils.getDBCPConn();
+				conn.setAutoCommit(false);
+				String jsonString = super.makeJsonString(request);
+				InvoicePrintRequest invoicePrintRequest = (InvoicePrintRequest)AppUtils.json2object(jsonString, InvoicePrintRequest.class);
+//				ansiURL = new AnsiURL(request, "invoiceGeneration", (String[])null); //  .../ticket/etc
+				SessionData sessionData = AppUtils.validateSession(request, Permission.INVOICE, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+				
+				SessionUser sessionUser = sessionData.getUser(); 
+				List<String> addErrors = super.validateRequiredAddFields(invoicePrintRequest);
+				HashMap<String, String> errors = new HashMap<String, String>();
+				if ( addErrors.isEmpty() ) {
+					errors = validateDates(invoicePrintRequest);
+				}
+				if (addErrors.isEmpty() && errors.isEmpty()) {
+					processUpdate(conn, request, response, invoicePrintRequest, sessionUser);
+//					fakeThePDF(conn, request, response, invoicePrintRequest);
+				} else {
+					processError(conn, response, addErrors, errors);
+				}
+				conn.rollback();
+			} catch ( InvalidFormatException e ) {
+				String badField = super.findBadField(e.toString());
+				TicketReturnResponse data = new TicketReturnResponse();
+				WebMessages messages = new WebMessages();
+				messages.addMessage(badField, "Invalid Format");
+				data.setWebMessages(messages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+				super.sendForbidden(response);
 			}
-			if (addErrors.isEmpty() && errors.isEmpty()) {
-				processUpdate(conn, request, response, invoicePrintRequest, sessionUser);
-//				fakeThePDF(conn, request, response, invoicePrintRequest);
-			} else {
-				processError(conn, response, addErrors, errors);
-			}
-			conn.rollback();
-		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
-			super.sendForbidden(response);
 		} catch ( Exception e) {
 			AppUtils.logException(e);
 			AppUtils.rollbackQuiet(conn);
