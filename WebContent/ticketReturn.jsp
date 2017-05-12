@@ -149,6 +149,10 @@
         		$(this).select();	
         	});
         	
+        	$("input[type=text]").focus(function() {
+        		$(this).select();
+        	});
+        	
 			function populateTicketDetail($data) {
 				$("#ticketId").html($data.ticketDetail.ticketId);
 				$("#actPricePerCleaning").html($data.ticketDetail.actPricePerCleaning);
@@ -228,6 +232,53 @@
    				$("#COMPLETED span[class=actDlPct]").html($actDlPct.toFixed(3));		       				
    				$("#COMPLETED input[name=actDlAmt]").val($actDlAmt.toFixed(2));
 			}
+
+			
+			function markValid($item) {
+	    		$item.removeClass("fa");
+	    		$item.removeClass("fa-ban");
+				$item.removeClass("inputIsInvalid");
+
+				$item.addClass("fa");
+	    		$item.addClass("fa-check-square-o");
+				$item.addClass("inputIsValid");
+			}
+			
+			function markInvalid($item) {
+				$item.removeClass("fa");
+	    		$item.removeClass("fa-check-square-o");
+				$item.removeClass("inputIsValid");
+
+				$item.addClass("fa");
+	    		$item.addClass("fa-ban");
+				$item.addClass("inputIsInvalid");
+			}
+			
+			$("#COMPLETED input[name=actPricePerCleaning]").change(function($event) {
+				var $actPricePerCleaning = $("#COMPLETED input[name=actPricePerCleaning]").val();
+				var $actDlPct = $("#COMPLETED input[name=actDlPct]").val();
+				if ( isNaN($actPricePerCleaning) ) {
+					markInvalid($("#validActPricePerCleaning"));
+				} else {
+					markValid($("#validActPricePerCleaning"));
+					var $actDlAmt = ($actPricePerCleaning * $actDlPct) / 100;
+					$("#COMPLETED input[name=actDlAmt]").val($actDlAmt.toFixed(2));					
+				}
+			});
+			
+			
+			$("#COMPLETED input[name=actDlAmt]").change(function($event) {
+				var $actPricePerCleaning = $("#COMPLETED input[name=actPricePerCleaning]").val();
+				var $actDlAmt = $("#COMPLETED input[name=actDlAmt]").val();
+				if ( isNaN($actDlAmt) ) {
+					markInvalid($("#validActDlAmt"));
+				} else {
+					markValid($("#validActDlAmt"));
+					var $actDlPct = ($actDlAmt / $actPricePerCleaning) * 100;
+					$("#COMPLETED input[name=actDlPct]").val($actDlPct);					
+					$("#COMPLETED span[class=actDlPct]").html($actDlPct.toFixed(3));
+				}
+			});
 			
 			
         	function doPopulate($ticketNbr) {    		
