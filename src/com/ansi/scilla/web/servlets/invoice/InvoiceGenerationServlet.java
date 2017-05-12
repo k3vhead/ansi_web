@@ -65,7 +65,7 @@ public class InvoiceGenerationServlet extends AbstractServlet {
 				conn.commit();
 			} catch ( InvalidFormatException e ) {
 				String badField = super.findBadField(e.toString());
-				TicketReturnResponse data = new TicketReturnResponse();
+				InvoiceGenerationResponse data = new InvoiceGenerationResponse();
 				WebMessages messages = new WebMessages();
 				messages.addMessage(badField, "Invalid Format");
 				data.setWebMessages(messages);

@@ -83,7 +83,7 @@ public class DivisionServlet extends AbstractServlet {
 					super.sendResponse(conn, response, ResponseCode.SUCCESS, divisionResponse);
 				} catch ( InvalidFormatException e ) {
 					String badField = super.findBadField(e.toString());
-					TicketReturnResponse data = new TicketReturnResponse();
+					DivisionResponse data = new DivisionResponse();
 					WebMessages messages = new WebMessages();
 					messages.addMessage(badField, "Invalid Format");
 					data.setWebMessages(messages);

@@ -24,6 +24,7 @@ import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.common.ResponseCode;
+import com.ansi.scilla.web.common.WebMessages;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
@@ -33,9 +34,11 @@ import com.ansi.scilla.web.request.payment.ApplyPaymentRequestItem;
 import com.ansi.scilla.web.response.invoice.InvoiceTicketResponse;
 import com.ansi.scilla.web.response.payment.ApplyPaymentResponse;
 import com.ansi.scilla.web.response.payment.PaymentResponse;
+import com.ansi.scilla.web.response.ticket.TicketReturnResponse;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 
@@ -51,27 +54,36 @@ public class ApplyPaymentServlet extends AbstractServlet {
 		Connection conn = null;
 		AnsiURL url = null;
 		try {
-			conn = AppUtils.getDBCPConn();
-			conn.setAutoCommit(false);
-			String jsonString = super.makeJsonString(request);
-			System.out.println(jsonString);			
-			ApplyPaymentRequest paymentRequest = (ApplyPaymentRequest)AppUtils.json2object(jsonString, ApplyPaymentRequest.class);
-			url = new AnsiURL(request, "applyPayment", new String[] {PaymentRequestType.VERIFY.name().toLowerCase(), PaymentRequestType.COMMIT.name().toLowerCase()});
-			SessionData sessionData = AppUtils.validateSession(request, Permission.PAYMENT, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
-			SessionUser sessionUser = sessionData.getUser();
-
-			PaymentRequestType requestType = PaymentRequestType.valueOf(url.getCommand().toUpperCase());
-			if ( StringUtils.isBlank(url.getCommand())) {
-				throw new ResourceNotFoundException();				 
-			} else {
-				ApplyPaymentResponse data = processRequest(conn, requestType, paymentRequest, sessionUser);
-				super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
+			try{
+				conn = AppUtils.getDBCPConn();
+				conn.setAutoCommit(false);
+				String jsonString = super.makeJsonString(request);
+				System.out.println(jsonString);			
+				ApplyPaymentRequest paymentRequest = (ApplyPaymentRequest)AppUtils.json2object(jsonString, ApplyPaymentRequest.class);
+				url = new AnsiURL(request, "applyPayment", new String[] {PaymentRequestType.VERIFY.name().toLowerCase(), PaymentRequestType.COMMIT.name().toLowerCase()});
+				SessionData sessionData = AppUtils.validateSession(request, Permission.PAYMENT, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+				SessionUser sessionUser = sessionData.getUser();
+				
+				PaymentRequestType requestType = PaymentRequestType.valueOf(url.getCommand().toUpperCase());
+				if ( StringUtils.isBlank(url.getCommand())) {
+					throw new ResourceNotFoundException();				 
+				} else {
+					ApplyPaymentResponse data = processRequest(conn, requestType, paymentRequest, sessionUser);
+					super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
+				}
+			} catch ( InvalidFormatException e ) {
+				String badField = super.findBadField(e.toString());
+				ApplyPaymentResponse data = new ApplyPaymentResponse();
+				WebMessages messages = new WebMessages();
+				messages.addMessage(badField, "Invalid Format");
+				data.setWebMessages(messages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+				super.sendForbidden(response);
+			} catch ( ResourceNotFoundException e) {
+				System.out.println("*** ApplyPayment 404:  " + e + "****");
+				super.sendNotFound(response);
 			}
-		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
-			super.sendForbidden(response);
-		} catch ( ResourceNotFoundException e) {
-			System.out.println("*** ApplyPayment 404:  " + e + "****");
-			super.sendNotFound(response);
 		} catch ( Exception e) {
 			AppUtils.logException(e);
 			AppUtils.rollbackQuiet(conn);
