@@ -213,13 +213,6 @@ public class TaxRateServlet extends AbstractServlet {
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 						responseCode = ResponseCode.SUCCESS;
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
-					} catch ( InvalidFormatException e ) {
-						String badField = super.findBadField(e.toString());
-						TaxRateResponse data = new TaxRateResponse();
-						WebMessages messages = new WebMessages();
-						messages.addMessage(badField, "Invalid Format");
-						data.setWebMessages(messages);
-						super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
 					} catch ( DuplicateEntryException e ) {
 						String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
