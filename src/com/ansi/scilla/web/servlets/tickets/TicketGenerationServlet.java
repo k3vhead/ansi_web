@@ -26,9 +26,11 @@ import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.request.ticket.TicketGenerationRequest;
 import com.ansi.scilla.web.response.ticket.TicketGenerationResponse;
+import com.ansi.scilla.web.response.ticket.TicketReturnResponse;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 public class TicketGenerationServlet extends AbstractServlet{
 	
@@ -54,28 +56,37 @@ public class TicketGenerationServlet extends AbstractServlet{
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Connection conn = null;
 		try {
-			conn = AppUtils.getDBCPConn();
-			conn.setAutoCommit(false);
-			String jsonString = super.makeJsonString(request);
-			TicketGenerationRequest generateTicketRequest = (TicketGenerationRequest)AppUtils.json2object(jsonString, TicketGenerationRequest.class);
-//			ansiURL = new AnsiURL(request, "invoiceGeneration", (String[])null); //  .../ticket/etc
-			SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
-
-			SessionUser sessionUser = sessionData.getUser(); 
-			List<String> addErrors = super.validateRequiredAddFields(generateTicketRequest);
-			HashMap<String, String> errors = new HashMap<String, String>();
-			if ( addErrors.isEmpty() ) {
-				errors = validateDates(generateTicketRequest);
+			try {
+				conn = AppUtils.getDBCPConn();
+				conn.setAutoCommit(false);
+				String jsonString = super.makeJsonString(request);
+				TicketGenerationRequest generateTicketRequest = (TicketGenerationRequest)AppUtils.json2object(jsonString, TicketGenerationRequest.class);
+//				ansiURL = new AnsiURL(request, "invoiceGeneration", (String[])null); //  .../ticket/etc
+				SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+				
+				SessionUser sessionUser = sessionData.getUser(); 
+				List<String> addErrors = super.validateRequiredAddFields(generateTicketRequest);
+				HashMap<String, String> errors = new HashMap<String, String>();
+				if ( addErrors.isEmpty() ) {
+					errors = validateDates(generateTicketRequest);
+				}
+				if (addErrors.isEmpty() && errors.isEmpty()) {
+					processUpdate(conn, request, response, generateTicketRequest, sessionUser);
+//					fakeThePDF(conn, request, response, invoicePrintRequest);
+				} else {
+					processError(conn, response, addErrors, errors);
+				}
+				
+			} catch ( InvalidFormatException e ) {
+				String badField = super.findBadField(e.toString());
+				TicketReturnResponse data = new TicketReturnResponse();
+				WebMessages messages = new WebMessages();
+				messages.addMessage(badField, "Invalid Format");
+				data.setWebMessages(messages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+				super.sendForbidden(response);
 			}
-			if (addErrors.isEmpty() && errors.isEmpty()) {
-				processUpdate(conn, request, response, generateTicketRequest, sessionUser);
-//				fakeThePDF(conn, request, response, invoicePrintRequest);
-			} else {
-				processError(conn, response, addErrors, errors);
-			}
-			
-		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
-			super.sendForbidden(response);
 		} catch ( Exception e) {
 			AppUtils.logException(e);
 			AppUtils.rollbackQuiet(conn);
