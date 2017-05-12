@@ -26,7 +26,9 @@ import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.request.TaxRateRequest;
 import com.ansi.scilla.web.response.taxRate.TaxRateListResponse;
 import com.ansi.scilla.web.response.taxRate.TaxRateResponse;
+import com.ansi.scilla.web.response.ticket.TicketReturnResponse;
 import com.ansi.scilla.web.struts.SessionUser;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 /**
@@ -211,6 +213,13 @@ public class TaxRateServlet extends AbstractServlet {
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 						responseCode = ResponseCode.SUCCESS;
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+					} catch ( InvalidFormatException e ) {
+						String badField = super.findBadField(e.toString());
+						TicketReturnResponse data = new TicketReturnResponse();
+						WebMessages messages = new WebMessages();
+						messages.addMessage(badField, "Invalid Format");
+						data.setWebMessages(messages);
+						super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
 					} catch ( DuplicateEntryException e ) {
 						String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
