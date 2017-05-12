@@ -120,8 +120,6 @@ public class ContactServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
 			
-			// JOSHUA -- MOVE these lines 124-125 inside the "try" on line 129
-			
 			SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 			SessionUser sessionUser = sessionData.getUser();
 

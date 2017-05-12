@@ -13,13 +13,16 @@ import org.apache.log4j.Logger;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ResponseCode;
+import com.ansi.scilla.web.common.WebMessages;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.InvalidLoginException;
 import com.ansi.scilla.web.exceptions.MissingRequiredDataException;
 import com.ansi.scilla.web.request.LoginRequest;
 import com.ansi.scilla.web.response.login.LoginResponse;
+import com.ansi.scilla.web.response.ticket.TicketReturnResponse;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.lang.StringUtils;
 
 public class LoginServlet extends AbstractServlet {
@@ -47,6 +50,13 @@ public class LoginServlet extends AbstractServlet {
 				HttpSession session = request.getSession();
 				session.setAttribute(SessionData.KEY, sessionData);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, loginResponse);
+			} catch ( InvalidFormatException e ) {
+				String badField = super.findBadField(e.toString());
+				TicketReturnResponse data = new TicketReturnResponse();
+				WebMessages messages = new WebMessages();
+				messages.addMessage(badField, "Invalid Format");
+				data.setWebMessages(messages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
 			} catch ( MissingRequiredDataException e) {
 				logger.debug("missing login data");
 				super.sendResponse(conn, response,ResponseCode.EDIT_FAILURE, loginResponse);
