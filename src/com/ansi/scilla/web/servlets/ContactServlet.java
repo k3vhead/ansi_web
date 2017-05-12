@@ -26,8 +26,10 @@ import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.request.ContactRequest;
 import com.ansi.scilla.web.response.contact.ContactListResponse;
 import com.ansi.scilla.web.response.contact.ContactResponse;
+import com.ansi.scilla.web.response.ticket.TicketReturnResponse;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 /**
@@ -109,7 +111,8 @@ public class ContactServlet extends AbstractServlet {
 
 
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+		
 		
 		AnsiURL url = null;
 		Connection conn = null;
@@ -120,22 +123,32 @@ public class ContactServlet extends AbstractServlet {
 			ContactRequest contactRequest = (ContactRequest)AppUtils.json2object(jsonString, ContactRequest.class);
 			SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 			SessionUser sessionUser = sessionData.getUser();
-			url = new AnsiURL(request,"contact", new String[] {ACTION_IS_ADD});
+			
+			try {
+				url = new AnsiURL(request,"contact", new String[] {ACTION_IS_ADD});
 
-			if ( url.getId() != null ) {
+				if ( url.getId() != null ) {
 				// THis is an update
 				processUpdate(conn, response, url.getId(), contactRequest, sessionUser);
-			} else if ( url.getCommand().equalsIgnoreCase(ACTION_IS_ADD)) {
+				} else if ( url.getCommand().equalsIgnoreCase(ACTION_IS_ADD)) {
 				// this is an add
 				processAdd(conn, response, contactRequest, sessionUser);
-			} else {
+				} else {
 				// this is messed up
 				super.sendNotFound(response);
+				}
+			} catch ( InvalidFormatException e ) {
+				String badField = super.findBadField(e.toString());
+				ContactResponse data = new ContactResponse();
+				WebMessages messages = new WebMessages();
+				messages.addMessage(badField, "Invalid Format");
+				data.setWebMessages(messages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+				super.sendForbidden(response);
+			} catch ( RecordNotFoundException e ) {
+				super.sendNotFound(response);
 			}
-		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
-			super.sendForbidden(response);
-		} catch ( RecordNotFoundException e ) {
-			super.sendNotFound(response);						
 		} catch ( Exception e ) {
 			AppUtils.logException(e);
 			AppUtils.rollbackQuiet(conn);
