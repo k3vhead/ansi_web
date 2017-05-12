@@ -144,6 +144,7 @@
 
         	$('#ticketNbr').focus(function($event) {
         		$('.workPanel').hide();
+        		$("#panelSelector").hide();
         		clearAddForm();
         		$(this).select();	
         	});
