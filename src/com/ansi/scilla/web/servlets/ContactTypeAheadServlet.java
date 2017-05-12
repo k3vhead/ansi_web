@@ -160,13 +160,6 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 		
 		public ReturnItem(ResultSet rs) throws SQLException {
 			super();
-			this.id = rs.getInt("contact_id");
-			this.label = rs.getString("name") 
-					+ "::" + rs.getString("business_phone")
-					+ ":" + rs.getString("mobile_phone")
-					+ ":" + rs.getString("email")
-					+ ":" + rs.getString("fax");
-			this.value = rs.getString("name");
 			String preferredContact = rs.getString("preferred_contact");
 			if (preferredContact == null) {
 				this.preferredContactValue = "no preferred contact";
@@ -181,6 +174,14 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 			} else {
 				this.preferredContactValue = preferredContact+":unexpected preference";
 			}
+			this.id = rs.getInt("contact_id");
+			this.label = rs.getString("name") 
+					+ "::" + rs.getString("business_phone")
+					+ ":" + rs.getString("mobile_phone")
+					+ ":" + rs.getString("email")
+					+ ":" + rs.getString("fax")
+					+ ":Prefers:" + this.getPreferredContactValue();
+			this.value = rs.getString("name");
 			
 		}
 
