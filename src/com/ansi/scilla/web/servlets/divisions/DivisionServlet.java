@@ -33,6 +33,7 @@ import com.ansi.scilla.web.request.DivisionRequest;
 //import com.ansi.scilla.web.response.code.CodeResponse;
 import com.ansi.scilla.web.response.division.DivisionListResponse;
 import com.ansi.scilla.web.response.division.DivisionResponse;
+import com.ansi.scilla.web.response.ticket.TicketReturnResponse;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
@@ -80,6 +81,13 @@ public class DivisionServlet extends AbstractServlet {
 					conn.commit();
 					DivisionResponse divisionResponse = new DivisionResponse();
 					super.sendResponse(conn, response, ResponseCode.SUCCESS, divisionResponse);
+				} catch ( InvalidFormatException e ) {
+					String badField = super.findBadField(e.toString());
+					TicketReturnResponse data = new TicketReturnResponse();
+					WebMessages messages = new WebMessages();
+					messages.addMessage(badField, "Invalid Format");
+					data.setWebMessages(messages);
+					super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
 				} catch (InvalidDeleteException e) {
 					String message = AppUtils.getMessageText(conn, MessageKey.DELETE_FAILED, "Invalid Delete");
 					WebMessages webMessages = new WebMessages();
