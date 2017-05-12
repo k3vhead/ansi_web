@@ -121,12 +121,13 @@ public class ContactServlet extends AbstractServlet {
 			conn.setAutoCommit(false);
 			
 			// JOSHUA -- MOVE these lines 124-125 inside the "try" on line 129
-			String jsonString = super.makeJsonString(request);
-			ContactRequest contactRequest = (ContactRequest)AppUtils.json2object(jsonString, ContactRequest.class);
+			
 			SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 			SessionUser sessionUser = sessionData.getUser();
 
 			try {
+				String jsonString = super.makeJsonString(request);
+				ContactRequest contactRequest = (ContactRequest)AppUtils.json2object(jsonString, ContactRequest.class);
 				url = new AnsiURL(request,"contact", new String[] {ACTION_IS_ADD});
 
 				if ( url.getId() != null ) {
