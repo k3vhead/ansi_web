@@ -102,14 +102,22 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 						AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);
 						System.out.println("ContactTypeAheadServlet(): doGet(): term =$" + term +"$");
 						List<ReturnItem> resultList = new ArrayList<ReturnItem>();
-						String sql = "select contact_id, concat(first_name, ' ', last_name) as name, business_phone, mobile_phone, email, fax, preferred_contact "
+						String sql = "select contact_id, "
+//								+ " concat(last_name,', ',first_name) as name, "
+								+ " concat(first_name, ' ', last_name) as name, "
+								+ " business_phone, mobile_phone, email, fax, preferred_contact "
 								+ " from contact where lower(business_phone) like '%" + term + "%'"
 								+ " OR lower(fax) like '%" + term + "%'"
 								+ " OR lower(concat(first_name,' ',last_name)) like '%" + term + "%'"
 								+ " OR lower(concat(last_name,' ',first_name)) like '%" + term + "%'"
 								+ " OR lower(concat(last_name,', ',first_name)) like '%" + term + "%'"
 								+ " OR lower(mobile_phone) like '%" + term + "%'"
-								+ " OR lower(email) like '%" + term + "%'";
+								+ " OR lower(email) like '%" + term + "%'"
+								+ " ORDER BY concat(first_name, ' ', last_name) "
+//								+ " ORDER BY concat(last_name,', ',first_name) "
+								+ " OFFSET 0 ROWS"
+								+ " FETCH NEXT 500 ROWS ONLY";
+						
 						Statement s = conn.createStatement();
 						ResultSet rs = s.executeQuery(sql);
 						while ( rs.next() ) {
