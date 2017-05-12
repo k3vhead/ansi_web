@@ -27,6 +27,7 @@ import com.ansi.scilla.web.response.ticket.TicketReturnResponse;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 
@@ -164,17 +165,17 @@ public class TicketServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			String jsonString = super.makeJsonString(request);
 			System.out.println("jsonstring:"+jsonString);
-//			TicketReturnRequest ticketReturnRequest = (TicketReturnRequest)AppUtils.json2object(jsonString, TicketReturnRequest.class);
-			TicketReturnRequest ticketReturnRequest = new TicketReturnRequest();
-			AppUtils.json2object(jsonString, ticketReturnRequest);
-			System.out.println("TicketReturnRequest:"+ticketReturnRequest);
-			ansiURL = new AnsiURL(request, "ticket", (String[])null); //  .../ticket/etc
-			SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 
-			SessionUser sessionUser = sessionData.getUser(); 
+			SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 			
 			Ticket ticket = new Ticket();
 			try{
+				TicketReturnRequest ticketReturnRequest = new TicketReturnRequest();
+				AppUtils.json2object(jsonString, ticketReturnRequest);
+				System.out.println("TicketReturnRequest:"+ticketReturnRequest);
+				ansiURL = new AnsiURL(request, "ticket", (String[])null); //  .../ticket/etc
+
+				SessionUser sessionUser = sessionData.getUser(); 
 				ticket.setTicketId(ansiURL.getId());
 				ticket.selectOne(conn);
 				if ( ticketReturnRequest.getNewStatus().equals(TicketStatus.COMPLETED.code())) {
@@ -191,6 +192,13 @@ public class TicketServlet extends AbstractServlet {
 					// this is an error -- a bad action was requested
 					super.sendNotAllowed(response);
 				}
+			} catch ( InvalidFormatException e ) {
+				String badField = super.findBadField(e.toString());
+				TicketReturnResponse data = new TicketReturnResponse();
+				WebMessages messages = new WebMessages();
+				messages.addMessage(badField, "Invalid Format");
+				data.setWebMessages(messages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
 			} catch (RecordNotFoundException e) {
 				//send a Bad Ticket message back
 				super.sendNotFound(response);
