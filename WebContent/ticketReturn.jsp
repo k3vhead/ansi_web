@@ -203,6 +203,31 @@
 				$("#divisionDisplay").html($data.ticketDetail.divisionDisplay);
 				$("#jobId").html($data.ticketDetail.jobId);				
 			}
+
+			
+			function populateDefaultValues($data) {
+				$actPricePerCleaning = $data.ticketDetail.actPricePerCleaning.substring(1);
+       			if ( $data.actDlPct == null ) {
+       				$actDlPct = $data.ticketDetail.defaultDirectLaborPct;
+       			} else {i
+       				$actDlPct = $data.ticketDetail.actDlPct;
+       			}
+       			if ($data.ticketDetail.actDlAmt == null ) {
+       				if ( $actPricePerCleaning == null ) {
+       					$actDlAmt = null;
+       				} else {
+       					$actDlAmt = $actPricePerCleaning.substring(1) * $actDlPct;
+       				}	
+       			} else {
+       				$actDlAmt = $data.ticketDetail.actDlAmt;
+       			}
+   				
+   				$("#COMPLETED input[name=actPricePerCleaning]").val($actPricePerCleaning);
+   				$("#COMPLETED input[name=actDlPct]").val($actDlPct);
+   				$("#COMPLETED span[class=actDlPct]").html($actDlPct.toFixed(3));		       				
+   				$("#COMPLETED input[name=actDlAmt]").val($actDlAmt.toFixed(2));
+			}
+			
 			
         	function doPopulate($ticketNbr) {    		
 		       	var jqxhr = $.ajax({
@@ -213,12 +238,12 @@
 						$.each($data.data.ticketList, function(index, value) {
 							addRow(index, value);
 						});
-						console.debug($data.data);
 						$(".workPanel").hide();
 		       			populateTicketDetail($data.data);	       			
 		       			populateSummary($data.data);
 		       			populatePanelSelect($data.data);
-		       			$("#COMPLETED input[name=actDlPct]").val($data.data.ticketDetail.defaultDirectLaborPct);
+		       			populateDefaultValues($data.data);
+		       			
     					$("#summaryTable").fadeIn(4000);
     					$("#selectPanel").fadeIn(4000);
     					$("#ticketTable").fadeIn(4000);
@@ -454,7 +479,8 @@
 				    	<tr>
 				    		<td><span class="required">*</span><span class="formLabel">DL %:</span></td>
 				    		<td>
-				    			<input type="text" name="actDlPct" data-required="true" data-valid="validActDlPct" />
+				    			<span class="actDlPct"></span>
+				    			<input type="hidden" name="actDlPct" data-required="true" data-valid="validActDlPct" />
 				    			<i id="validActActDlPct" class="fa" aria-hidden="true"></i>
 				    		</td>
 				    		<td><span class="err actDlPctErr"></span></td>

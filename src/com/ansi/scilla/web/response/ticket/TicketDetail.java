@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
 import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
@@ -27,7 +28,7 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 	private String divisionCode;
 	private Date processDate;
 	private String processNotes;
-	private BigDecimal actDl;
+	private BigDecimal actDlAmt;
 	private BigDecimal actDlPct;
 	private BigDecimal actPricePerCleaning;
 	private Boolean billSheet;
@@ -44,6 +45,8 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 //	  					if balance <> 0, daysToPay = today - invoiceDate;
 //	  			**ticket write off amount - stub for v 2.0;
 	private String divisionDisplay;
+	private BigDecimal defaultDirectLaborPct;
+	
 	
 	
 	public TicketDetail(){
@@ -52,6 +55,10 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 	
 	public TicketDetail(Connection conn, Integer ticketId) throws RecordNotFoundException, Exception {
 		TicketPaymentTotals ticketPaymentTotals = TicketPaymentTotals.select(conn, ticketId);
+		Division division = new Division();
+		division.setDivisionId(ticketPaymentTotals.getDivisionId());
+		division.selectOne(conn);
+		this.defaultDirectLaborPct = division.getDefaultDirectLaborPct();
 		this.ticketId = ticketId;
 		this.invoiceId = ticketPaymentTotals.getTicket().getInvoiceId();
 		this.status = ticketPaymentTotals.getTicket().getStatus();
@@ -59,7 +66,7 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		this.divisionCode = ticketPaymentTotals.getDivisionCode();
 		this.processDate = ticketPaymentTotals.getTicket().getProcessDate();
 		this.processNotes = ticketPaymentTotals.getTicket().getProcessNotes();
-		this.actDl = ticketPaymentTotals.getTicket().getActDlAmt();
+		this.actDlAmt = ticketPaymentTotals.getTicket().getActDlAmt();
 		this.actDlPct = ticketPaymentTotals.getTicket().getActDlPct();
 		this.actPricePerCleaning = ticketPaymentTotals.getTicket().getActPricePerCleaning();
 		this.billSheet = ticketPaymentTotals.getTicket().getBillSheet() == 1;
@@ -132,12 +139,12 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		this.processNotes = processNotes;
 	}
 	@JsonSerialize(using=AnsiCurrencyFormatter.class)
-	public BigDecimal getActDl() {
-		return actDl;
+	public BigDecimal getActDlAmt() {
+		return actDlAmt;
 	}
 	
-	public void setActDl(BigDecimal actDl) {
-		this.actDl = actDl;
+	public void setActDlAmt(BigDecimal actDlAmt) {
+		this.actDlAmt = actDlAmt;
 	}
 	
 	public BigDecimal getActDlPct() {
@@ -243,6 +250,14 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 
 	public void setDivisionDisplay(String divisionDisplay) {
 		this.divisionDisplay = divisionDisplay;
+	}
+
+	public BigDecimal getDefaultDirectLaborPct() {
+		return defaultDirectLaborPct;
+	}
+
+	public void setDefaultDirectLaborPct(BigDecimal defaultDirectLaborPct) {
+		this.defaultDirectLaborPct = defaultDirectLaborPct;
 	}
 	
 }
