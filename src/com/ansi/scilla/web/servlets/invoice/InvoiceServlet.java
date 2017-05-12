@@ -18,7 +18,9 @@ import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.response.invoice.InvoiceTicketResponse;
+import com.ansi.scilla.web.response.ticket.TicketReturnResponse;
 import com.ansi.scilla.web.servlets.AbstractServlet;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 public class InvoiceServlet extends AbstractServlet {
 
@@ -30,23 +32,32 @@ public class InvoiceServlet extends AbstractServlet {
 		AnsiURL url = null;
 		Connection conn = null;
 		try {
-			conn = AppUtils.getDBCPConn();
-			conn.setAutoCommit(false);
-			AppUtils.validateSession(request, Permission.INVOICE, PermissionLevel.PERMISSION_LEVEL_IS_READ);
-			url = new AnsiURL(request, "invoice", (String[])null);
-			if ( url.getId() == null ) {
-				super.sendNotFound(response);
-			} else {
-				InvoiceTicketResponse data = new InvoiceTicketResponse(conn, url.getId());
-				WebMessages webMessages = new WebMessages();
-				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
-				data.setWebMessages(webMessages);
-				super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
-			}
-		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
-			super.sendForbidden(response);
-		} catch (ResourceNotFoundException e) {
-			super.sendNotAllowed(response);
+			try {
+				conn = AppUtils.getDBCPConn();
+				conn.setAutoCommit(false);
+				AppUtils.validateSession(request, Permission.INVOICE, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+				url = new AnsiURL(request, "invoice", (String[])null);
+				if ( url.getId() == null ) {
+					super.sendNotFound(response);
+				} else {
+					InvoiceTicketResponse data = new InvoiceTicketResponse(conn, url.getId());
+					WebMessages webMessages = new WebMessages();
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
+					data.setWebMessages(webMessages);
+					super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
+				}
+			} catch ( InvalidFormatException e ) {
+				String badField = super.findBadField(e.toString());
+				TicketReturnResponse data = new TicketReturnResponse();
+				WebMessages messages = new WebMessages();
+				messages.addMessage(badField, "Invalid Format");
+				data.setWebMessages(messages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+				super.sendForbidden(response);
+			} catch (ResourceNotFoundException e) {
+				super.sendNotAllowed(response);
+			} 
 		} catch ( Exception e ) {
 			AppUtils.logException(e);
 			AppUtils.rollbackQuiet(conn);
