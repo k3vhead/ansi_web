@@ -413,11 +413,11 @@ public class JobServlet extends AbstractServlet {
 				job.setOmNotes(jobRequest.getOmNotes());
 			}
 			
-			if(jobRequest.getActivationDate() == null) {
-				job.setActivationDate(today);
-			} else {
-				job.setActivationDate(jobRequest.getActivationDate());
-			}
+//			if(jobRequest.getActivationDate() == null) {
+//				job.setActivationDate(today);
+//			} else {
+//				job.setActivationDate(jobRequest.getActivationDate());
+//			}
 			
 			if(jobRequest.getStartDate() != null){
 				job.setStartDate(jobRequest.getStartDate());
