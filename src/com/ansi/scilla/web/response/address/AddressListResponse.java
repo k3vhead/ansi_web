@@ -51,7 +51,7 @@ public class AddressListResponse extends MessageResponse implements Serializable
 		Collections.sort(this.addressList);
 	}
 
-	public List<AddressResponseRecord> getCodeList() {
+	public List<AddressResponseRecord> getAddressList() {
 		return addressList;
 	}
 

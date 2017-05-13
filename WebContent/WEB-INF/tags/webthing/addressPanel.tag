@@ -25,11 +25,6 @@
 	String cssIdString = "id=\"" + cssId + "\"";			 
 	String cssClassString = cssClass == null || cssClass.length()==0 ? "" : "class=\"" + cssClass + "\"";
 %>
-<script type="text/javascript">               
-	
-	
-</script>     
-
 <div <%= cssIdString %> <%= cssClassString %> >
 	<form id="<%=namespace%>_address">
 		<table>

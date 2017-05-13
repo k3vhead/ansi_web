@@ -16,6 +16,7 @@ import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Address;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
+import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.MessageKey;
 import com.ansi.scilla.web.common.Permission;
@@ -31,31 +32,11 @@ import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
-/**
- * The url for delete will be of the form /address/<addressId>/<name>/<status>
- * 
- * The url for get will be one of:
- * 		/address    (retrieves everything)
-<<<<<<< HEAD
- * 		/address/<addressId>      (retrieves a single record)
-
-
->>>>>>> a14eeab4d9e7aed809d44375e6d91dd837a59033
- * 
- * The url for adding a new record will be a POST to:
- * 		/address/add   with parameters in the JSON
- * 
- * The url for update will be a POST to:
- * 		/address/<addressId> with parameters in the JSON
- * 
- * 
- * 
- *
- */
 public class AddressServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
 
+	public static final String COMMAND_IS_ADD = "add";
 
 	protected void doDelete_old(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -125,7 +106,6 @@ public class AddressServlet extends AbstractServlet {
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		SessionUser sessionUser = AppUtils.getSessionUser(request);
 		String url = request.getRequestURI();
 		Connection conn = null;
 		try {			
@@ -161,8 +141,6 @@ public class AddressServlet extends AbstractServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		SessionUser sessionUser = AppUtils.getSessionUser(request);
-		String url = request.getRequestURI();
-//		String queryString = request.getQueryString();
 		
 		Connection conn = null;
 		try {
@@ -170,74 +148,19 @@ public class AddressServlet extends AbstractServlet {
 			AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 			conn.setAutoCommit(false);
 
-			// figure out if this is an "add" or an "update"
-			int idx = url.indexOf("/address/");
-			String myString = url.substring(idx + "/address/".length());				
-			String[] urlPieces = myString.split("/");
-			String command = urlPieces[0];
-
 			String jsonString = super.makeJsonString(request);
+			AnsiURL url = new AnsiURL(request, "address", new String[] {COMMAND_IS_ADD});
+
 			System.out.println(jsonString);
 			AddressRequest addressRequest = new AddressRequest(jsonString);
 			
-			Address address = null;
-			ResponseCode responseCode = null;
-			if ( command.equals("add") ) {
-				WebMessages webMessages = validateAdd(conn, addressRequest);
-//				if (webMessages.isEmpty()) {
-					try {
-						address = doAdd(conn, addressRequest, sessionUser);
-						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
-						responseCode = ResponseCode.SUCCESS;
-						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
-					} catch ( DuplicateEntryException e ) {
-						String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
-						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-						responseCode = ResponseCode.EDIT_FAILURE;
-					} catch ( Exception e ) {
-						responseCode = ResponseCode.SYSTEM_FAILURE;
-						AppUtils.logException(e);
-						String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
-						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-					}
-//				} else {
-//					responseCode = ResponseCode.EDIT_FAILURE;
-//				}
-				AddressResponse addressResponse = new AddressResponse(address, webMessages);
-				super.sendResponse(conn, response, responseCode, addressResponse);
-				
-			} else if ( urlPieces.length == 1 ) {   //  /<tableName>/<fieldName>/<value> = 3 pieces
-				System.out.println("Doing Update Stuff");				
-				WebMessages webMessages = validateAdd(conn, addressRequest);
-				if (webMessages.isEmpty()) {
-					System.out.println("passed validation");
-					try {
-						Address key = new Address();
-						key.setAddressId(Integer.parseInt(urlPieces[0]));
-						System.out.println("Trying to do update");
-						address = doUpdate(conn, key, addressRequest, sessionUser);
-						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
-						responseCode = ResponseCode.SUCCESS;
-						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
-					} catch ( RecordNotFoundException e ) {
-						System.out.println("Doing 404");
-						super.sendNotFound(response);						
-					} catch ( Exception e) {
-						System.out.println("Doing SysFailure");
-						responseCode = ResponseCode.SYSTEM_FAILURE;
-						AppUtils.logException(e);
-						String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
-						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-					}
-				} else {
-					System.out.println("Doing Edit Fail");
-					responseCode = ResponseCode.EDIT_FAILURE;
-				}
-				AddressResponse addressResponse = new AddressResponse(address, webMessages);
-				super.sendResponse(conn, response, responseCode, addressResponse);
+			if ( (! StringUtils.isBlank(url.getCommand())) && url.getCommand().equals(COMMAND_IS_ADD) ) {
+				processAddRequest(conn, response, addressRequest, sessionUser);		
+			} else if ( url.getId() != null ) {
+				processUpdateRequest(conn, response, url.getId(), addressRequest, sessionUser);
 			} else {
-				System.out.println("Edit No Run");
-				super.sendNotFound(response);
+				// this should never happen
+				throw new ServletException("Invalid system state");
 			}
 			
 			conn.commit();
@@ -254,6 +177,35 @@ public class AddressServlet extends AbstractServlet {
 	}
 
 
+	private void processAddRequest(Connection conn, HttpServletResponse response, AddressRequest addressRequest, SessionUser sessionUser) throws Exception {
+		Address address = new Address();
+		ResponseCode responseCode = null;
+		
+		List<String> badFields = super.validateRequiredAddFields(addressRequest);
+		WebMessages webMessages = makeWebMessages(conn, badFields);
+		if (webMessages.isEmpty()) {
+			try {
+				address = doAdd(conn, addressRequest, sessionUser);
+				String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
+				responseCode = ResponseCode.SUCCESS;
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+			} catch ( DuplicateEntryException e ) {
+				String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+				responseCode = ResponseCode.EDIT_FAILURE;
+			} catch ( Exception e ) {
+				responseCode = ResponseCode.SYSTEM_FAILURE;
+				AppUtils.logException(e);
+				String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+			}
+		} else {
+			responseCode = ResponseCode.EDIT_FAILURE;
+		}
+		AddressResponse addressResponse = new AddressResponse(address, webMessages);
+		super.sendResponse(conn, response, responseCode, addressResponse);
+	}
+
 	protected Address doAdd(Connection conn, AddressRequest addressRequest, SessionUser sessionUser) throws Exception {
 		Date today = new Date();
 		Address address = new Address();
@@ -265,7 +217,7 @@ public class AddressServlet extends AbstractServlet {
 
 //		address.setAddressId(addressRequest.getAddressId());
 		address.setName(addressRequest.getName());
-		address.setCountry_code(addressRequest.getCountryCode());
+		address.setCountryCode(addressRequest.getCountryCode());
 		if ( ! StringUtils.isBlank(addressRequest.getAddress1())) {
 			address.setAddress1(addressRequest.getAddress1());
 		} if ( ! StringUtils.isBlank(addressRequest.getAddress2())) {
@@ -301,6 +253,45 @@ public class AddressServlet extends AbstractServlet {
 	}
 
 
+	private void processUpdateRequest(Connection conn, HttpServletResponse response, Integer addressId, AddressRequest addressRequest, SessionUser sessionUser) throws Exception {
+		System.out.println("Doing Update Stuff");	
+		ResponseCode responseCode = null;
+		Address address = new Address();
+		
+		List<String> badFields = super.validateRequiredUpdateFields(addressRequest);
+		WebMessages webMessages = makeWebMessages(conn, badFields);
+		if (webMessages.isEmpty()) {
+			System.out.println("passed validation");
+			try {
+				Address key = new Address();
+				key.setAddressId(addressId);
+				System.out.println("Trying to do update");
+				address = doUpdate(conn, key, addressRequest, sessionUser);
+				String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
+				responseCode = ResponseCode.SUCCESS;
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+				AddressResponse addressResponse = new AddressResponse(address, webMessages);
+				super.sendResponse(conn, response, responseCode, addressResponse);
+			} catch ( RecordNotFoundException e ) {
+				System.out.println("Doing 404");
+				super.sendNotFound(response);						
+			} catch ( Exception e) {
+				System.out.println("Doing SysFailure");
+				responseCode = ResponseCode.SYSTEM_FAILURE;
+				AppUtils.logException(e);
+				String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+				AddressResponse addressResponse = new AddressResponse(address, webMessages);
+				super.sendResponse(conn, response, responseCode, addressResponse);
+			}
+		} else {
+			System.out.println("Doing Edit Fail");
+			responseCode = ResponseCode.EDIT_FAILURE;
+			AddressResponse addressResponse = new AddressResponse(address, webMessages);
+			super.sendResponse(conn, response, responseCode, addressResponse);
+		}
+	}
+
 	protected Address doUpdate(Connection conn, Address key, AddressRequest addressRequest, SessionUser sessionUser) throws Exception {
 		System.out.println("This is the key:");
 		System.out.println(key);
@@ -310,7 +301,7 @@ public class AddressServlet extends AbstractServlet {
 		
 		address.setAddedBy(sessionUser.getUserId());
 		address.setAddedDate(today);
-		address.setCountry_code(addressRequest.getCountryCode());
+		address.setCountryCode(addressRequest.getCountryCode());
 		address.setAddressId(addressRequest.getAddressId());
 		address.setAddress1(addressRequest.getAddress1());
 		address.setAddress2(addressRequest.getAddress2());
@@ -341,9 +332,8 @@ public class AddressServlet extends AbstractServlet {
 	}
 
 	
-	protected WebMessages validateAdd(Connection conn, AddressRequest addressRequest) throws Exception {
+	protected WebMessages makeWebMessages(Connection conn, List<String> missingFields) throws Exception {
 		WebMessages webMessages = new WebMessages();
-		List<String> missingFields = super.validateRequiredAddFields(addressRequest);
 		if ( ! missingFields.isEmpty() ) {
 			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
 			for ( String field : missingFields ) {
@@ -353,21 +343,6 @@ public class AddressServlet extends AbstractServlet {
 		return webMessages;
 	}
 
-	protected WebMessages validateUpdate(Connection conn, Address key, AddressRequest addressRequest) throws RecordNotFoundException, Exception {
-		WebMessages webMessages = new WebMessages();
-		List<String> missingFields = super.validateRequiredUpdateFields(addressRequest);
-		if ( ! missingFields.isEmpty() ) {
-			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
-			for ( String field : missingFields ) {
-				webMessages.addMessage(field, messageText);
-			}
-		}
-		// if we "select" the key, and it isn't found, a "RecordNotFoundException" is thrown.
-		// That exception will propagate up the tree until it turns into a 404 message sent to the client
-		Address testKey = (Address)key.clone(); 
-		testKey.selectOne(conn);
-		return webMessages;
-	}
 
 	
 	public class ParsedUrl extends ApplicationObject {
