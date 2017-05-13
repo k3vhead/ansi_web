@@ -24,6 +24,7 @@
     
     <tiles:put name="headextra" type="string">
     <script type="text/javascript" src="js/ansi_utils.js"></script>
+    <script type="text/javascript" src="js/addressUtils.js"></script>
         <style type="text/css">
         	td { border:solid 1px #FF000;}
 			#confirmDelete {
@@ -80,7 +81,14 @@
 				font-weight:bold;
 			}
 			#ADDRESSPANEL_state-menu {max-height: 300px;}
-			
+			.viewAction {
+				cursor:pointer;
+				text-decoration:none;
+				color:#000000;
+			}
+			#addressView {
+				display:none;
+			}
         </style>
         
         <script type="text/javascript">        
@@ -150,16 +158,14 @@
 				            	if(row.zip != null){return (row.zip+"");} 
 				            } },
 				            { title: "Action",  data: function ( row, type, set ) {	
-				            	//console.log(row);
 				            	if(row.count > 0)
-				            		return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.addressId+"'></a></ansi:hasWrite></ansi:hasPermission>";
+				            		return "<a href=\"#\" class=\"viewAction fa fa-search-plus\" aria-hidden=\"true\" data-id='"+row.addressId+"'></a> | <ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.addressId+"'></a></ansi:hasWrite></ansi:hasPermission>";
 				            	else
-				            		return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.addressId+"'></a>|<a href='#' data-id='"+row.addressId+"'  class='delAction ui-icon ui-icon-trash'></a></ansi:hasWrite></ansi:hasPermission>";
+				            		return "<a href=\"#\" class=\"viewAction fa fa-search-plus\" aria-hidden=\"true\" data-id='"+row.addressId+"'></a> | <ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.addressId+"'></a>|<a href='#' data-id='"+row.addressId+"'  class='delAction ui-icon ui-icon-trash'></a></ansi:hasWrite></ansi:hasPermission>";
 				            	
 				            		
 				            } }],
 				            "initComplete": function(settings, json) {
-				            	//console.log(json);
 				            	doFunctionBinding();
 				            },
 				            "drawCallback": function( settings ) {
@@ -220,7 +226,27 @@
 				});
         		
         		
+        		$( "#addressView" ).dialog({
+					title:"View Address",        			
+					autoOpen: false,
+					height: "auto",
+					width: 520,
+					modal: true,
+					buttons: [{
+						id: 'closeViewButton',
+						click: function() {
+							$( "#addressView" ).dialog( "close" );
+						}
+					}],
+					close: function() {
+						$( "#addressView" ).dialog( "close" );
+						//allFields.removeClass( "ui-state-error" );
+					}
+				});
+        		
+        		
 				$('#addFormCloseButton').button('option', 'label', 'Close');
+				$('#closeViewButton').button('option', 'label', 'Close');
 				init();
 
         		function addAddress() {
@@ -305,7 +331,6 @@
             
 	            function init(){
 					$optionData = ANSI_UTILS.getOptions('COUNTRY');
-					//console.log($optionData);
 					var $countryList = $optionData.country;
 					$jobSiteDetail = "";
 
@@ -349,13 +374,22 @@
 					$('#addressTable_next').on('click', function($clickevent) {
 		        		window.scrollTo(0, 0);
 		        	});
+					$('.viewAction').on('click', function($clickevent) {
+						doView($clickevent);
+					});
 				}
+	            
+	            function doView($clickEvent) {
+	            	$clickEvent.preventDefault();
+					var $addressId = $clickEvent.currentTarget.attributes['data-id'].value;
+					ADDRESS_UTILS.getAddress($addressId, "#addressView");
+					$("#addressView").dialog("open");
+	            }
 			
 				function doEdit($clickevent) {
 					var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
 
 					var $url = 'address/' + $rowid;
-					//console.log("YOU PASSED ROW ID:" + $rowid);
 					var jqxhr = $.ajax({
 						type: 'GET',
 						url: $url,
@@ -574,8 +608,14 @@
 		
 	
 		<div id="deleteConfirmDialog" title="Delete Address?" style="display:none;">
-  			<p></span>Are you sure you would like to delete this address?</p>
+  			<p>Are you sure you would like to delete this address?</p>
 		</div>
+				
+		<%-- 
+		with optional label:
+		<webthing:addressDisplayPanel cssId="addressView" label="Keegan's mansion"/>
+		--%>				
+		<webthing:addressDisplayPanel cssId="addressView" />
 		
 		<input  type="text" id="updateOrAdd" style="display:none"><input  type="text" id="aId" style="display:none">
     </tiles:put>	
