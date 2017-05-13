@@ -26,7 +26,6 @@ import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.request.TaxRateRequest;
 import com.ansi.scilla.web.response.taxRate.TaxRateListResponse;
 import com.ansi.scilla.web.response.taxRate.TaxRateResponse;
-import com.ansi.scilla.web.response.ticket.TicketReturnResponse;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
@@ -200,80 +199,18 @@ public class TaxRateServlet extends AbstractServlet {
 
 			String jsonString = super.makeJsonString(request);
 			System.out.println("TaxRateServlet: doPost() jsonString:"+jsonString);
-			TaxRateRequest taxRateRequest = new TaxRateRequest(jsonString);
 			
-			TaxRate taxRate = null;
-			ResponseCode responseCode = null;
-			if ( command.equals(ACTION_IS_ADD) ) {
-				System.out.println("TaxRateServlet: doPost() action is add");
-				WebMessages webMessages = validateAdd(conn, taxRateRequest);
-				if (webMessages.isEmpty()) {
-					try {
-						taxRate = doAdd(conn, taxRateRequest, sessionUser);
-						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
-						responseCode = ResponseCode.SUCCESS;
-						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
-					} catch ( DuplicateEntryException e ) {
-						String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
-						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-						responseCode = ResponseCode.EDIT_FAILURE;
-					} catch ( Exception e ) {
-						responseCode = ResponseCode.SYSTEM_FAILURE;
-						AppUtils.logException(e);
-						String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
-						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-					}
-				} else {
-					System.out.println("TaxRateServlet: doPost() add failed");
-					responseCode = ResponseCode.EDIT_FAILURE;
-				}
-				System.out.println("TaxRateServlet: doPost() prepare response");
-				TaxRateResponse taxRateResponse = new TaxRateResponse(taxRate, webMessages);
-				System.out.println("TaxRateServlet: doPost() send response");
-				super.sendResponse(conn, response, responseCode, taxRateResponse);
-				System.out.println("TaxRateServlet: doPost() response sent");
-				
-			} else if ( urlPieces.length == 1 ) {   //  /<taxRateId> = 1 pieces
-				System.out.println("TaxRateServlet: doPost() action is update");
-				WebMessages webMessages = validateAdd(conn, taxRateRequest);
-				if (webMessages.isEmpty()) {
-					System.out.println("passed validation");
-					try {
-						TaxRate key = new TaxRate();
-						if ( StringUtils.isNumeric(urlPieces[0]) ) {//looks like a taxRateId
-							System.out.println("TaxRateServlet: doPost() trying to update:"+urlPieces[0]);
-							key.setTaxRateId(Integer.valueOf(urlPieces[0]));
-							taxRate = doUpdate(conn, key, taxRateRequest, sessionUser);
-							String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
-							responseCode = ResponseCode.SUCCESS;
-							webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
-						} else { //non-integer taxRateId, probably a bad thing
-							throw new RecordNotFoundException();
-						}
-					} catch ( RecordNotFoundException e ) {
-						System.out.println("Doing 404");
-						super.sendNotFound(response);						
-					} catch ( Exception e) {
-						System.out.println("Doing SysFailure");
-						responseCode = ResponseCode.SYSTEM_FAILURE;
-						AppUtils.logException(e);
-						String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
-						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-					}
-				} else {
-					System.out.println("Doing Edit Fail");
-					responseCode = ResponseCode.EDIT_FAILURE;
-				}
-				System.out.println("TaxRateServlet: doPost() prepare response");
-				TaxRateResponse taxRateResponse = new TaxRateResponse(taxRate, webMessages);
-				System.out.println("TaxRateServlet: doPost() send response");
-				super.sendResponse(conn, response, responseCode, taxRateResponse);
-				System.out.println("TaxRateServlet: doPost() response sent");
-			} else {
-				super.sendNotFound(response);
+			try {
+				TaxRateRequest taxRateRequest = new TaxRateRequest(jsonString);
+				processValidPostRequest(conn, response, request, command, urlPieces, taxRateRequest, sessionUser);
+			} catch ( InvalidFormatException e) {
+				String badField = super.findBadField(e.toString());
+				TaxRateResponse data = new TaxRateResponse();
+				WebMessages messages = new WebMessages();
+				messages.addMessage(badField, "Invalid Format");
+				data.setWebMessages(messages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
 			}
-			
-			conn.commit();
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
 			super.sendForbidden(response);
 		} catch ( Exception e ) {
@@ -286,6 +223,81 @@ public class TaxRateServlet extends AbstractServlet {
 		
 	}
 
+
+	private void processValidPostRequest(Connection conn, HttpServletResponse response, HttpServletRequest request, String command, String[] urlPieces, TaxRateRequest taxRateRequest, SessionUser sessionUser) throws Exception {
+		TaxRate taxRate = null;
+		ResponseCode responseCode = null;
+		if ( command.equals(ACTION_IS_ADD) ) {
+			System.out.println("TaxRateServlet: doPost() action is add");
+			WebMessages webMessages = validateAdd(conn, taxRateRequest);
+			if (webMessages.isEmpty()) {
+				try {
+					taxRate = doAdd(conn, taxRateRequest, sessionUser);
+					String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
+					responseCode = ResponseCode.SUCCESS;
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+				} catch ( DuplicateEntryException e ) {
+					String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+					responseCode = ResponseCode.EDIT_FAILURE;
+				} catch ( Exception e ) {
+					responseCode = ResponseCode.SYSTEM_FAILURE;
+					AppUtils.logException(e);
+					String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+				}
+			} else {
+				System.out.println("TaxRateServlet: doPost() add failed");
+				responseCode = ResponseCode.EDIT_FAILURE;
+			}
+			System.out.println("TaxRateServlet: doPost() prepare response");
+			TaxRateResponse taxRateResponse = new TaxRateResponse(taxRate, webMessages);
+			System.out.println("TaxRateServlet: doPost() send response");
+			super.sendResponse(conn, response, responseCode, taxRateResponse);
+			System.out.println("TaxRateServlet: doPost() response sent");
+			
+		} else if ( urlPieces.length == 1 ) {   //  /<taxRateId> = 1 pieces
+			System.out.println("TaxRateServlet: doPost() action is update");
+			WebMessages webMessages = validateAdd(conn, taxRateRequest);
+			if (webMessages.isEmpty()) {
+				System.out.println("passed validation");
+				try {
+					TaxRate key = new TaxRate();
+					if ( StringUtils.isNumeric(urlPieces[0]) ) {//looks like a taxRateId
+						System.out.println("TaxRateServlet: doPost() trying to update:"+urlPieces[0]);
+						key.setTaxRateId(Integer.valueOf(urlPieces[0]));
+						taxRate = doUpdate(conn, key, taxRateRequest, sessionUser);
+						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
+						responseCode = ResponseCode.SUCCESS;
+						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+					} else { //non-integer taxRateId, probably a bad thing
+						throw new RecordNotFoundException();
+					}
+				} catch ( RecordNotFoundException e ) {
+					System.out.println("Doing 404");
+					super.sendNotFound(response);						
+				} catch ( Exception e) {
+					System.out.println("Doing SysFailure");
+					responseCode = ResponseCode.SYSTEM_FAILURE;
+					AppUtils.logException(e);
+					String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+				}
+			} else {
+				System.out.println("Doing Edit Fail");
+				responseCode = ResponseCode.EDIT_FAILURE;
+			}
+			System.out.println("TaxRateServlet: doPost() prepare response");
+			TaxRateResponse taxRateResponse = new TaxRateResponse(taxRate, webMessages);
+			System.out.println("TaxRateServlet: doPost() send response");
+			super.sendResponse(conn, response, responseCode, taxRateResponse);
+			System.out.println("TaxRateServlet: doPost() response sent");
+		} else {
+			super.sendNotFound(response);
+		}
+		
+		conn.commit();		
+	}
 
 	protected TaxRate doAdd(Connection conn, TaxRateRequest taxRateRequest, SessionUser sessionUser) throws Exception {
 		Date today = new Date();
