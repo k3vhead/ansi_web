@@ -24,6 +24,7 @@
     <tiles:put name="headextra" type="string">
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
         <script type="text/javascript" src="js/jobMaintenance.js"></script>
+    <script type="text/javascript" src="js/addressUtils.js"></script>
         <link rel="stylesheet" href="css/datepicker.css" type="text/css" />
         <style type="text/css">
 			#confirmDelete {
@@ -112,6 +113,10 @@
 				border:solid 1px #000000;
 				display:none;
 			}
+			.ansi-address-label {
+				font-weight:bold;
+			}
+			
         </style>
         
         <script type="text/javascript">
@@ -295,6 +300,8 @@
 		       			populateSummary($data.data);
 		       			populatePanelSelect($data.data);
 		       			populateDefaultValues($data.data);
+						ADDRESS_UTILS.populateAddress("#jobSiteAddress", $data.data.ticketDetail.jobSiteAddress);
+						ADDRESS_UTILS.populateAddress("#billToAddress", $data.data.ticketDetail.billToAddress);
 		       			
     					$("#summaryTable").fadeIn(4000);
     					$("#selectPanel").fadeIn(4000);
@@ -315,6 +322,9 @@
 		       		dataType: 'json'
 		       	});
         	}
+        	
+        	
+        	
         	
         	function addRow(index, $ticket) {	
 				var $rownum = index + 1;
@@ -706,12 +716,21 @@
 		   			<th>Balance</th>
 		   		</tr>
 		   		<tr>
-		   			<td><span id="ticketId"></span></td>
-		   			<td><span id="actPricePerCleaning"></span></td>
-		   			<td><span id="totalVolPaid"></span></td>
-		   			<td><span id="actTax"></span></td>
-		   			<td><span id="totalTaxPaid"></span></td>
-		   			<td><span id="ticketBalance"></span></td>
+		   			<td style="border-bottom:solid 1px #000000;"><span id="ticketId"></span></td>
+		   			<td style="border-bottom:solid 1px #000000;"><span id="actPricePerCleaning"></span></td>
+		   			<td style="border-bottom:solid 1px #000000;"><span id="totalVolPaid"></span></td>
+		   			<td style="border-bottom:solid 1px #000000;"><span id="actTax"></span></td>
+		   			<td style="border-bottom:solid 1px #000000;"><span id="totalTaxPaid"></span></td>
+		   			<td style="border-bottom:solid 1px #000000;"><span id="ticketBalance"></span></td>
+		   		</tr>
+		   		<tr>
+		   			<td colspan="3" style="border-right:solid 1px #000000;">
+		   				<webthing:addressDisplayPanel cssId="jobSiteAddress" label="Job Site" />
+		   			</td>
+		   			<td colspan="3" style="border-left:solid 1px #FF0000;">
+						<webthing:addressDisplayPanel cssId="billToAddress" label="Bill To" />
+		   			
+		   			</td>
 		   		</tr>
 		   	</table>
 		   	

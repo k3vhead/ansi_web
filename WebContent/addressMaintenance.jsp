@@ -88,6 +88,10 @@
 			}
 			#addressView {
 				display:none;
+				width:400px;
+			}
+			.ansi-address-label {
+				font-weight:bold;
 			}
         </style>
         

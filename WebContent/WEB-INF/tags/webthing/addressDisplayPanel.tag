@@ -20,7 +20,7 @@
 	String labelString = label == null || label.length()==0 ? "Name" : label;
 %>
 <div id="<%= cssId %>">
-	<table>
+	<table style="width:100%;">
 		<tr>
 			<td><span class="ansi-address-label"><%= labelString %>:</span></td>
 			<td colspan="3">
@@ -40,10 +40,10 @@
 			</td>						
 		</tr>
 		<tr>
-			<td colspan="4" style="padding:0; margin:0;">
+			<td><span class="ansi-address-label">City/State/Zip:</span></td>
+			<td colspan="3" style="padding:0; margin:0;">
 				<table style="border-collapse: collapse;padding:0; margin:0;">
 					<tr>
-						<td><span class="ansi-address-label">City/State/Zip:</span></td>
 						<td>
 							<span class="ansi-address-city ansi-address-value" style="width:90px;"></span>
 						</td>

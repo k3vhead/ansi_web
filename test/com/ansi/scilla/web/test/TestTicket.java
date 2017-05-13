@@ -1,8 +1,9 @@
 package com.ansi.scilla.web.test;
 
-import java.util.Date;
+import java.sql.Connection;
 
-import com.ansi.scilla.web.request.ticket.TicketReturnRequest;
+import com.ansi.scilla.common.utils.AppUtils;
+import com.ansi.scilla.web.response.ticket.TicketDetail;
 
 public class TestTicket {
 
@@ -20,7 +21,7 @@ public class TestTicket {
 //		}
 		TesterUtils.makeLoggers();
 		try {
-			new TestTicket().go();
+			new TestTicket().goDetail();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -30,6 +31,17 @@ public class TestTicket {
 		String url = "http://127.0.0.1:8080/ansi_web/ticket/484252";
 		String json = TesterUtils.getJson(url);
 		System.out.println(json);
+	}
+	
+	public void goDetail() throws Exception {
+		Connection conn = null;
+		try {
+			conn = AppUtils.getConn();
+			TicketDetail td = new TicketDetail(conn, 662056);
+			System.out.println(td);
+		} finally {
+			AppUtils.closeQuiet(conn);
+		}
 	}
 
 }

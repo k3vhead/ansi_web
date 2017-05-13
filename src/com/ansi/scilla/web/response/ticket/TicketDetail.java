@@ -11,6 +11,7 @@ import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
 import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
 import com.ansi.scilla.common.queries.TicketPaymentTotals;
+import com.ansi.scilla.web.response.address.AddressDetail;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -46,6 +47,8 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 //	  			**ticket write off amount - stub for v 2.0;
 	private String divisionDisplay;
 	private BigDecimal defaultDirectLaborPct;
+	private AddressDetail jobSiteAddress;
+	private AddressDetail billToAddress;
 	
 	
 	
@@ -80,6 +83,9 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		this.balance = actPricePerCleaning.add(actTax).subtract(totalVolPaid.add(totalTaxPaid));
 		//daysToPay insert HERE:***
 		this.divisionDisplay = ticketPaymentTotals.getDivisionDisplay();
+		
+		this.billToAddress = new AddressDetail(conn, ticketPaymentTotals.getBillToAddressId());
+		this.jobSiteAddress = new AddressDetail(conn, ticketPaymentTotals.getJobSiteAddressId());
 	}
 
 	public Integer getTicketId() {
@@ -259,5 +265,22 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 	public void setDefaultDirectLaborPct(BigDecimal defaultDirectLaborPct) {
 		this.defaultDirectLaborPct = defaultDirectLaborPct;
 	}
+
+	public AddressDetail getJobSiteAddress() {
+		return jobSiteAddress;
+	}
+
+	public void setJobSiteAddress(AddressDetail jobSiteAddress) {
+		this.jobSiteAddress = jobSiteAddress;
+	}
+
+	public AddressDetail getBillToAddress() {
+		return billToAddress;
+	}
+
+	public void setBillToAddress(AddressDetail billToAddress) {
+		this.billToAddress = billToAddress;
+	}
+
 	
 }
