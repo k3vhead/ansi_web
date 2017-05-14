@@ -25,6 +25,7 @@
         <script type="text/javascript" src="js/jobMaintenance.js"></script>
         <script type="text/javascript" src="js/quoteMaintenance.js"></script>
         <script type="text/javascript" src="js/quotePrint.js"></script>
+        <script type="text/javascript" src="js/addressUtils.js"></script>
         <%
 			String quotePrintModal = "";
 		%>
@@ -241,12 +242,54 @@ td.jobTableCell {
 			<tr>
 				<td colspan='2' align="left">
 					<table>
-						<td align="center" style="width:480px;">
-							<webthing:addressPanel label="Job Site" namespace="jobSite" cssId="jobSite" page="job"/>
+					<tr>
+						<td align="left" style="width:480px;">
+							<span style="display: inline-block;width:51px;"><b>Job Site</b></span><input type="text" name="jobSite_name" style="width:425px" />
 						</td>
-						<td align="center" style="width:480px;">
-							<webthing:addressPanel label="Bill To"  namespace="billTo" cssId="billTo"  page="bill"/>
+						<td align="left" style="width:480px;">
+							<span style="display: inline-block;width:51px;"><b>Bill To</b></span><input type="text" name="billTo_name" style="width:425px" />
 						</td>
+					</tr>
+					<tr>
+						<td align="left" style="width:480px;">
+							<!--<webthing:addressPanel label="Job Site" namespace="jobSite" cssId="jobSite" page="job"/>-->
+							<webthing:addressDisplayPanel cssId="jobSite" />
+						</td>
+						<td align="left" style="width:480px;">
+							<!--<webthing:addressPanel label="Bill To"  namespace="billTo" cssId="billTo"  page="bill"/>-->
+							<webthing:addressDisplayPanel cssId="billTo" />
+						</td>
+					</tr>
+					<tr>
+						<td align="left" style="width:480px;">
+							<table style="width:100%;">
+								<tr>
+									<td><span id="jobSiteC1">Job Contact:</span></td>
+									<td style="width:140px;"><input type="text" name="jobSite_jobContactName" style="width:125px" placeholder="<name>"/></td>
+									<td colspan="2"><span name="jobSite_jobContactInfo" style="display: inline-block;width:170px;"></span></td>
+								</tr>
+								<tr>
+									<td><span id="jobSiteC2">Site Contact:</span></td>
+									<td style="width:140px;"><input type="text" name="jobSite_siteContactName" style="width:125px" placeholder="<name>"/></td>
+									<td colspan="2"><span name="jobSite_siteContactInfo" style="display: inline-block;width:170px;"></span></td>
+								</tr>
+							</table>
+						</td>
+						<td align="left" style="width:480px;">
+							<table style="width:100%;border:1px solid #FFFFFF">
+								<tr>
+									<td><span id="billToC1">Cont Contact:</span></td>
+									<td style="width:140px;"><input type="text" name="billTo_contractContactName" style="width:125px" placeholder="<name>"/></td>
+									<td colspan="2"><span name="billTo_contractContactInfo" style="display: inline-block;width:170px;"></span></td>
+								</tr>
+								<tr>
+									<td><span id="billToC2">Billing Contact:</span></td>
+									<td style="width:140px;"><input type="text" name="billTo_billingContactName" style="width:125px" placeholder="<name>"/></td>
+									<td colspan="2"><span name="billTo_billingContactInfo" style="display: inline-block;width:170px;"></span></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
 					</table>
 				</td>
 			</tr>
