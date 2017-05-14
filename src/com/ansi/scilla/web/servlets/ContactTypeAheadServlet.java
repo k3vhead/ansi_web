@@ -46,6 +46,7 @@ import com.thewebthing.commons.lang.StringUtils;
  * The url for get will be one of:
  * 		/contactSearch?term=					(returns all records)
  * 		/contactSearch?term=<searchTerm>		(returns all records containing <searchTerm>)
+ * 		/contactSearch?id=<contactId>			(returns the record for <contactId>)
  * 
  * The servlet will return 404 Not Found if there is no "term=" found.
  * 
@@ -143,7 +144,58 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 						AppUtils.closeQuiet(conn);
 					}
 				} else { // There is no term "term="
-					super.sendNotFound(response);
+					idx = qs.indexOf("id="); 
+					if ( idx > -1 ) { // There is a contactId "id="
+						Map<String, String> map = AppUtils.getQueryMap(qs);
+						String idTerm = map.get("id");
+						System.out.println("ContactTypeAheadServlet(): doGet(): map =" + map);
+						System.out.println("ContactTypeAheadServlet(): doGet(): id =" + idTerm);
+						if ( ! StringUtils.isBlank(idTerm)) { // There is a term
+							idTerm = URLDecoder.decode(idTerm, "UTF-8");
+							idTerm = StringUtils.trimToNull(idTerm);
+							if ( ! StringUtils.isBlank(idTerm)) {
+								term = idTerm.toLowerCase();
+							}
+						}
+						try {
+							conn = AppUtils.getDBCPConn();
+							AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+							System.out.println("ContactTypeAheadServlet(): doGet(): term =$" + term +"$");
+							List<ReturnItem> resultList = new ArrayList<ReturnItem>();
+							String sql = "select contact_id, "
+//									+ " concat(last_name,', ',first_name) as name, "
+									+ " concat(first_name, ' ', last_name) as name, "
+									+ " business_phone, mobile_phone, email, fax, preferred_contact "
+									+ " from contact where contact_id = " + idTerm;
+							
+							Statement s = conn.createStatement();
+							ResultSet rs = s.executeQuery(sql);
+							while ( rs.next() ) {
+								resultList.add(new ReturnItem(rs));
+							}
+							rs.close();
+							
+							response.setStatus(HttpServletResponse.SC_OK);
+							response.setContentType("application/json");
+							
+							String json = AppUtils.object2json(resultList);
+							ServletOutputStream o = response.getOutputStream();
+							OutputStreamWriter writer = new OutputStreamWriter(o);
+							writer.write(json);
+							writer.flush();
+							writer.close();
+						} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+							super.sendForbidden(response);
+						} catch ( Exception e ) {
+							AppUtils.logException(e);
+							throw new ServletException(e);
+						} finally {
+							AppUtils.closeQuiet(conn);
+						}
+					} else { // There is no term "id="
+						super.sendNotFound(response);
+					}
+
 				}
 
 			}
@@ -164,9 +216,9 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 			if (preferredContact == null) {
 				this.preferredContactValue = "no preferred contact";
 			} else if (preferredContact.indexOf("mobile_phone") != -1) {
-				this.preferredContactValue = "mobile:"+rs.getString("mobile_phone");
+				this.preferredContactValue = "mobile_phone:"+rs.getString("mobile_phone");
 			} else if (preferredContact.indexOf("business_phone") != -1) {
-				this.preferredContactValue = "business:"+rs.getString("business_phone");
+				this.preferredContactValue = "business_phone:"+rs.getString("business_phone");
 			} else if (preferredContact.indexOf("email") != -1) {
 				this.preferredContactValue = "email:"+rs.getString("email");
 			} else if (preferredContact.indexOf("fax") != -1) {
