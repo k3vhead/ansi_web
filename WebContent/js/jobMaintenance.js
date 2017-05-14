@@ -158,7 +158,8 @@ $( document ).ready(function() {
 				data: {"namespace":$namespace,"page":'QUOTE'},
 				success: function($data) {
 					$("#loadingJobsDiv").hide();
-					$('#jobPanelHolder > tbody:last-child').append($data);
+					$('#accordian').append("<h3 id="+$namespace+"_jobHeader><span id='"+$namespace+"_jobStatusHead'></span>&nbsp;&nbsp;Job: <span id='"+$namespace+"_jobIdHead'></span>&nbsp;&nbsp;Job #: <span id='"+$namespace+"_jobNumberHead'></span>&nbsp;&nbsp;PPC: <span id='"+$namespace+"_jobPPCHead'></span>&nbsp;&nbsp; Frequency: <span id='"+$namespace+"_jobFreqHead'></span></h3>");
+					$('#accordian').append("<div id="+$namespace+"_jobDiv>"+$data+"</div>");
 					JOBPANEL.init($namespace+"_jobPanel", JOB_DATA.divisionList, "activateModal", $jobDetail);
 					JOBPROPOSAL.init($namespace+"_jobProposal", JOB_DATA.jobFrequencyList, $jobDetail);
 					JOBACTIVATION.init($namespace+"_jobActivation", JOB_DATA.buildingTypeList, $jobDetail);
@@ -168,6 +169,21 @@ $( document ).ready(function() {
 					JOBSCHEDULE.init($namespace+"_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
 					JOBINVOICE.init($namespace+"_jobInvoice", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, $jobDetail);
 					JOBAUDIT.init($namespace+"_jobAudit", $jobDetail);
+					if($jobDetail.jobId != null){
+						$("#"+$namespace+"_jobIdHead").html($jobDetail.jobId);
+					}
+					if($jobDetail.status != null){
+						$("#"+$namespace+"_jobStatusHead").html($jobDetail.status);					
+					}
+					if($jobDetail.jobNbr != null){
+						$("#"+$namespace+"_jobNumberHead").html($jobDetail.jobNbr);	
+					}
+					if($jobDetail.pricePerCleaning != null){
+						$("#"+$namespace+"_jobPPCHead").html($jobDetail.pricePerCleaning);	
+					}
+					if($jobDetail.jobFrequency != null){
+						$("#"+$namespace+"_jobFreqHead").html($jobDetail.jobFrequency);
+					}
 					$("#"+$namespace+"_jobPanel_jobLink").attr("href", "jobMaintenance.html?id="+$jobId);
 					$("#"+$namespace+"_jobPanel_jobLink").text($jobId);
 					//$(".addressTable").remove();

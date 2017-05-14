@@ -35,7 +35,7 @@
         <script type="text/javascript" src="jQuery/jcookie.js"></script>
         <script type="text/javascript" src="jQuery/jquery.bpopup.min.js"></script>
         <!-- <script type="text/javascript" src="jQuery/jquery.popmenu.js"></script> -->
-    	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
+    	<link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
     	
     	<%-- 
     	<script src="js/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
