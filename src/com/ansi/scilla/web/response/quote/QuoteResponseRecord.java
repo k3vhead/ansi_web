@@ -268,7 +268,7 @@ public class QuoteResponseRecord extends MessageResponse {
 			}
 	
 			
-			public void setRevisionNumber(String revision) {
+			public void setRevision(String revision) {
 				this.revision = revision;
 			}
 	
