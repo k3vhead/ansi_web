@@ -164,9 +164,9 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 			if (preferredContact == null) {
 				this.preferredContactValue = "no preferred contact";
 			} else if (preferredContact.indexOf("mobile_phone") != -1) {
-				this.preferredContactValue = "mobile:"+rs.getString("mobile_phone");
+				this.preferredContactValue = "mobile_phone:"+rs.getString("mobile_phone");
 			} else if (preferredContact.indexOf("business_phone") != -1) {
-				this.preferredContactValue = "business:"+rs.getString("business_phone");
+				this.preferredContactValue = "business_phone:"+rs.getString("business_phone");
 			} else if (preferredContact.indexOf("email") != -1) {
 				this.preferredContactValue = "email:"+rs.getString("email");
 			} else if (preferredContact.indexOf("fax") != -1) {
