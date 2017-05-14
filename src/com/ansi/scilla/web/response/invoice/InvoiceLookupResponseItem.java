@@ -15,6 +15,7 @@ public class InvoiceLookupResponseItem extends ReportQuery {
 	private static final long serialVersionUID = 1L;
 
 	public static final String INVOICE_ID = "invoice_id";
+	public static final String FLEETMATICS_INVOICE_NBR = "fleetmatics_invoice_nbr";
 	public static final String INVOICE_AMOUNT = "invoice_amount";
 	public static final String INVOICE_TAX = "invoice_tax";
 	public static final String INVOICE_TOTAL = "invoice_total";
@@ -31,6 +32,7 @@ public class InvoiceLookupResponseItem extends ReportQuery {
 		" concat(division.division_nbr, '-', division.division_code) as div
 	 */
 	private Integer invoiceId;
+	private String fleetmaticsInvoiceNbr;
 	private BigDecimal invoiceAmount;
 	private BigDecimal invoiceTax;
 	private BigDecimal invoiceTotal;
@@ -48,6 +50,7 @@ public class InvoiceLookupResponseItem extends ReportQuery {
 	public InvoiceLookupResponseItem(ResultSet rs) throws SQLException {
 		this();
 		this.invoiceId = rs.getInt(INVOICE_ID);
+		this.fleetmaticsInvoiceNbr = rs.getString(FLEETMATICS_INVOICE_NBR);
 		this.invoiceAmount = rs.getBigDecimal(INVOICE_AMOUNT);
 		this.invoiceTax = rs.getBigDecimal(INVOICE_TAX);
 		this.invoiceTotal = rs.getBigDecimal(INVOICE_TOTAL);
@@ -65,6 +68,14 @@ public class InvoiceLookupResponseItem extends ReportQuery {
 	@DBColumn(INVOICE_ID)
 	public void setInvoiceId(Integer invoiceId) {
 		this.invoiceId = invoiceId;
+	}
+	@DBColumn(FLEETMATICS_INVOICE_NBR)
+	public String getFleetmaticsInvoiceNbr() {
+		return fleetmaticsInvoiceNbr;
+	}
+	@DBColumn(FLEETMATICS_INVOICE_NBR)
+	public void setFleetmaticsInvoiceNbr(String fleetmaticsInvoiceNbr) {
+		this.fleetmaticsInvoiceNbr = fleetmaticsInvoiceNbr;
 	}
 	@JsonSerialize(using=AnsiCurrencyFormatter.class)
 	@DBColumn(INVOICE_AMOUNT)

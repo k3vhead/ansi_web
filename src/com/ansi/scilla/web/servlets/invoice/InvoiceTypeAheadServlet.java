@@ -172,6 +172,7 @@ public class InvoiceTypeAheadServlet extends AbstractServlet {
 			this.id = rs.getInt("invoice_id");
 			//invoice_id:div:bill_to_name:invoice_date:invoice_amount:invoice_tax:invoice_total:invoice_balance
 			int invoiceId = rs.getInt(InvoiceSearch.INVOICE_ID);
+			String fmInvoiceNbr = rs.getString(InvoiceSearch.FLEETMATICS_INVOICE_NBR);
 			String div = rs.getString(InvoiceSearch.DIV);
 			String billToName = rs.getString(InvoiceSearch.BILL_TO_NAME);
 			Date invoiceDate = rs.getDate(InvoiceSearch.INVOICE_DATE);
@@ -183,6 +184,7 @@ public class InvoiceTypeAheadServlet extends AbstractServlet {
 			String balanceDisplay = invoiceBalance == null ? " " : currencyFormatter.format(invoiceBalance);
 			
 			this.label = "Invoice " + invoiceId 
+					+ ":" + "FM Invoice # " + fmInvoiceNbr
 					+ ":" + "Div " + div
 					+ ":" + "BT " + billToName
 					+ ":" + "Date " + dateDisplay
