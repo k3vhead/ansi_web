@@ -147,8 +147,8 @@
 			        			<li>
 			        				<a href="#">Quick Links</a>
 									<ul class="sub_menu" style="z-index:1000">
-										<li><html:link action="newAddress">New Address</html:link></li>
 										<li><html:link action="newContact">New Contact</html:link></li>
+										<li><html:link action="newAddress">New Address</html:link></li>
 										<ansi:hasPermission permissionRequired="QUOTE">
 										<ansi:hasWrite>
 										<li><html:link action="quoteMaintenance">New Quote</html:link></li>
@@ -160,11 +160,13 @@
 										<li><html:link action="ticketPrint">Print Tickets</html:link></li>
 										</ansi:hasWrite>
 										</ansi:hasPermission>
+										<%--
 										<ansi:hasPermission permissionRequired="JOB">
 										<ansi:hasWrite>
 										<li><html:link action="jobMaintenance">New Job</html:link></li>
 										</ansi:hasWrite>
 										</ansi:hasPermission>
+										 --%>
 										<ansi:hasPermission permissionRequired="TICKET">
 										<li><html:link action="ticketReturn">Ticket Return</html:link></li>
 										</ansi:hasPermission>
