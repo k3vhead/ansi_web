@@ -170,17 +170,19 @@ $( document ).ready(function() {
 						//ADDRESSPANEL.setAddress("billTo",$quoteDetail.billTo);
 						//ADDRESS_UTILS.getAddress($quoteDetail.billTo.addressId, "#billTo");
 						ADDRESS_UTILS.populateAddress("#billTo", $quoteDetail.billTo);
+						 $( "input[name='billTo_name']" ).val($quoteDetail.billTo.name);
 					}
 					if($quoteDetail.jobSite != null){
 						//ADDRESSPANEL.setAddress("jobSite",$quoteDetail.jobSite);
 						//ADDRESS_UTILS.getAddress($quoteDetail.jobSite.addressId, "#jobSite");
 						ADDRESS_UTILS.populateAddress("#jobSite", $quoteDetail.jobSite);
+						$( "input[name='jobSite_name']" ).val($quoteDetail.jobSite.name);
 					}
 					//console.log(" Quote Detail Contact Id:" + $quoteData.jobContactId);
 					
 					$signedByData = ADDRESSPANEL.getContact($quoteData.signedByContactId);
 					$("input[name='signedBy']").val($signedByData.lastName + ", "+$signedByData.firstName + "(" +$signedByData.contactId+")");
-					
+					$("input[name='revision']").val($quoteData.revision);
 					//	console.log("DivisionCode: "+ $quoteData.divisionId);
 					
 						$("select[name='division']").val($quoteData.divisionId);
