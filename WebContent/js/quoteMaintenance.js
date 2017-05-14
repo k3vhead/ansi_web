@@ -169,12 +169,15 @@ $( document ).ready(function() {
 					if($quoteDetail.billTo != null){
 						//ADDRESSPANEL.setAddress("billTo",$quoteDetail.billTo);
 						//ADDRESS_UTILS.getAddress($quoteDetail.billTo.addressId, "#billTo");
+						$billToId = $quoteDetail.billTo.addressId;
 						ADDRESS_UTILS.populateAddress("#billTo", $quoteDetail.billTo);
 						 $( "input[name='billTo_name']" ).val($quoteDetail.billTo.name);
 					}
+					
 					if($quoteDetail.jobSite != null){
 						//ADDRESSPANEL.setAddress("jobSite",$quoteDetail.jobSite);
 						//ADDRESS_UTILS.getAddress($quoteDetail.jobSite.addressId, "#jobSite");
+						$jobSiteId = $quoteDetail.jobSite.addressId;
 						ADDRESS_UTILS.populateAddress("#jobSite", $quoteDetail.jobSite);
 						$( "input[name='jobSite_name']" ).val($quoteDetail.jobSite.name);
 					}
@@ -613,6 +616,7 @@ $( document ).ready(function() {
 
         		$url = "quote/"+$globalQuoteId+"/"+$("input[name=quoteNumber]").val()+"/"+$("input[name=revision]").val();
 //        		$url = "quote/"+$("input[name=quoteId]").val()+"/"+$("input[name=quoteNumber]").val()+"/"+$("input[name=revision]").val();
+        		console.log("URL: "+ $url);
 //        		$url = "quote/"+$("input[name=quoteNumber]").val();
 //				console.log($outbound);
 //				alert(JSON.stringify($outbound));
