@@ -2,6 +2,13 @@ $( document ).ready(function() {
 
 	var $currentRow = 0;
 	var $globalQuoteId = 0;
+	var $billToId = 0;
+	var $jobSiteId = 0;
+	var $jobContactId = 0;
+	var $siteContactId = 0;
+	var $contractContactId = 0;
+	var $billingContactId = 0;
+	
 	;JOB_DATA = {}
 	;QUOTE_DATA = {}
 	
@@ -67,6 +74,7 @@ $( document ).ready(function() {
 	                nextText: '&gt;&gt;',
 	                showButtonPanel:true
 	            });
+				
 				QUOTE_PRINT.init_modal("#printQuoteDiv");
 				
 				if ( $quoteId != '' ) {
@@ -79,8 +87,8 @@ $( document ).ready(function() {
 				
 				console.log($quoteDetail);
 				
-				ADDRESSPANEL.init("jobSite", JOB_DATA.countryList);
-				ADDRESSPANEL.init("billTo", JOB_DATA.countryList);
+				//ADDRESSPANEL.init("jobSite", JOB_DATA.countryList);
+				//ADDRESSPANEL.init("billTo", JOB_DATA.countryList);
 				
 				//console.log(ANSI_UTILS.getCodes("quote","account_type"));
 				QUOTEUTILS.setSelectMenu("manager",QUOTEUTILS.getUsers());
@@ -89,18 +97,89 @@ $( document ).ready(function() {
 				
 				$divisionList = ANSI_UTILS.getDivisionList();
 				$buildingTypeList = ANSI_UTILS.makeBuildingTypeList();
-				
-
 				QUOTEUTILS.setDivisionList($divisionList);
+				
+				 $( "input[name='jobSite_name']" ).autocomplete({
+				     'source':"addressTypeAhead?",
+				      select: function( event, ui ) {
+				    	$jobSiteId = ui.item.id;
+				    	ADDRESS_UTILS.clearAddress("#jobSite");
+				    	ADDRESS_UTILS.getAddress($jobSiteId, "#jobSite");
+				    	
+				      }
+				  });
+				 
+				 $( "input[name='billTo_name']" ).autocomplete({
+				     'source':"addressTypeAhead?",
+				      select: function( event, ui ) {
+				    	$billToId = ui.item.id;
+				    	ADDRESS_UTILS.clearAddress("#billTo");
+				    	ADDRESS_UTILS.getAddress($billToId, "#billTo");
+				    	//label
+				    	//preferredContactValue
+				      }
+				  });
+				
+				 $( "input[name='jobSite_jobContactName']" ).autocomplete({
+				     'source':"contactTypeAhead?",
+				      select: function( event, ui ) {
+				    	$jobContactId = ui.item.id;
+//				        var data = ADDRESSPANEL.getContact(ui.item.id);
+//				        var id = ADDRESSPANEL.setContact($namespace+"_job",data);
+				    	
+				    	var spanText = QUOTEUTILS.processContact(ui.item);
+				    	
+				    	$("input[name='jobSite_jobContactName']").val(ui.item.value);
+				    	$("span[name='jobSite_jobContactInfo']").html(spanText);
+				      }
+				  });
+				 $( "input[name='jobSite_siteContactName']" ).autocomplete({
+				     'source':"contactTypeAhead?",
+				      select: function( event, ui ) {
+				    	$siteContactId = ui.item.id;
+				    	var spanText = QUOTEUTILS.processContact(ui.item);
+				    	
+				    	$("input[name='jobSite_siteContactName']").val(ui.item.value);
+				    	$("span[name='jobSite_siteContactInfo']").html(spanText);
+				      }
+				    });
+				 $( "input[name='billTo_contractContactName']" ).autocomplete({
+				     'source':"contactTypeAhead?",
+				      select: function( event, ui ) {
+				    	$contractContactId = ui.item.id;
+				    	var spanText = QUOTEUTILS.processContact(ui.item);
+				    	
+				    	$("input[name='billTo_contractContactName']").val(ui.item.value);
+				    	$("span[name='billTo_contractContactInfo']").html(spanText);
+				      }
+				    });
+				 $( "input[name='billTo_billingContactName']" ).autocomplete({
+				     'source':"contactTypeAhead?",
+				      select: function( event, ui ) {
+				    	$billingContactId = ui.item.id;
+				    	var spanText = QUOTEUTILS.processContact(ui.item);
+				    	
+				    	$("input[name='billTo_billingContactName']").val(ui.item.value);
+				    	$("span[name='billTo_billingContactInfo']").html(spanText);
+				      }
+				    });
+				
+				
 				
 				if($quoteData != null){
 					//console.log($quoteData);
 					if($quoteDetail.billTo != null){
-						ADDRESSPANEL.setAddress("billTo",$quoteDetail.billTo);
+						//ADDRESSPANEL.setAddress("billTo",$quoteDetail.billTo);
+						//ADDRESS_UTILS.getAddress($quoteDetail.billTo.addressId, "#billTo");
+						ADDRESS_UTILS.populateAddress("#billTo", $quoteDetail.billTo);
 					}
 					if($quoteDetail.jobSite != null){
-						ADDRESSPANEL.setAddress("jobSite",$quoteDetail.jobSite);
+						//ADDRESSPANEL.setAddress("jobSite",$quoteDetail.jobSite);
+						//ADDRESS_UTILS.getAddress($quoteDetail.jobSite.addressId, "#jobSite");
+						ADDRESS_UTILS.populateAddress("#jobSite", $quoteDetail.jobSite);
 					}
+					//console.log(" Quote Detail Contact Id:" + $quoteData.jobContactId);
+					
 					$signedByData = ADDRESSPANEL.getContact($quoteData.signedByContactId);
 					$("input[name='signedBy']").val($signedByData.lastName + ", "+$signedByData.firstName + "(" +$signedByData.contactId+")");
 					
@@ -146,34 +225,46 @@ $( document ).ready(function() {
 					}
 					var modalText = "";
 					$.each($jobs, function($index, $job) {
-						if($index == 0){
-							
-						}
+						
 						//console.log($currentRow);
 						//addAJob($currentRow);
 						console.log("Loading Job: "+$index);
 						$jobContacts = JOB_UTILS.panelLoadQuote($currentRow, $job.jobId, $index, $quoteData);
-//						console.log("Job Contacts:");
-//						console.log($jobContacts);
+						console.log("Job Contacts:");
+						console.log($jobContacts);
 						
 						if($index == 0){
-							$("input[name='jobSite_Con1id']").val($jobContacts['jobContactId']);
-							$jobContactData = ADDRESSPANEL.getContact($jobContacts['jobContactId']);
-							ADDRESSPANEL.setContact("jobSite_job",$jobContactData);
-							
-							$("input[name='jobSite_Con2id']").val($jobContacts['siteContact']);
-							$jobSiteData = ADDRESSPANEL.getContact($jobContacts['siteContact']);
-							ADDRESSPANEL.setContact("jobSite_site",$jobSiteData);
-							
-							$("input[name='billTo_Con1id']").val($jobContacts['contractContactId']);
-							$jobContractData = ADDRESSPANEL.getContact($jobContacts['contractContactId']);
-							ADDRESSPANEL.setContact("billTo_contract",$jobContractData);
-							
-							$("input[name='billTo_Con2id']").val($jobContacts['billingContactId']);
-							$jobBillingData = ADDRESSPANEL.getContact($jobContacts['billingContactId']);
-							ADDRESSPANEL.setContact("billTo_billing",$jobBillingData);
+							if($jobContacts.jobContactId != null){
+								$jobContactId = $jobContacts.jobContactId;
+								console.log("Contact Id:" + $jobContactId);
+								var data = QUOTEUTILS.getContact($jobContactId);
+								console.log(data);
+								var spanText = QUOTEUTILS.processContact(data);
+						    	$("input[name='jobSite_jobContactName']").val(data.value);
+						    	$("span[name='jobSite_jobContactInfo']").html(spanText);
+							}
+							if($jobContacts.siteContact != null){
+								$siteContactId = $jobContacts.siteContact;
+								var data = QUOTEUTILS.getContact($siteContactId);
+								var spanText = QUOTEUTILS.processContact(data);
+								$("input[name='jobSite_siteContactName']").val(data.value);
+						    	$("span[name='jobSite_siteContactInfo']").html(spanText);
+							}
+							if($jobContacts.contractContactId != null){
+								$contractContactId = $jobContacts.contractContactId;
+								var data = QUOTEUTILS.getContact($contractContactId);
+								var spanText = QUOTEUTILS.processContact(data);
+								$("input[name='billTo_contractContactName']").val(data.value);
+						    	$("span[name='billTo_contractContactInfo']").html(spanText);
+							}
+							if($jobContacts.billingContactId != null){
+								$billingContactId = $jobContacts.billingContactId;
+								var data = QUOTEUTILS.getContact($billingContactId);
+								var spanText = QUOTEUTILS.processContact(data);
+								$("input[name='billTo_billingContactName']").val(data.value);
+						    	$("span[name='billTo_billingContactInfo']").html(spanText);
+							}
 						}
-						
 						
 						//$(".addressTable").remove();
 //						console.log("#"+$currentRow+"_jobPanel_jobLink");
@@ -193,6 +284,56 @@ $( document ).ready(function() {
 				
 				QUOTEUTILS.buttonsInit();
 				QUOTEUTILS.bindAndFormat();
+			},
+			processContact:function($ui){
+				
+		    	var spanText = "";
+		    	
+		    	if($ui.preferredContactValue != null){
+		    	var res = ($ui.preferredContactValue).split(":");
+		    	if(res[0] == "mobile_phone"){ //mobile-phone
+		    			spanText = "<i class='fa fa-mobile' aria-hidden='true'></i>";
+		    	} else if(res[0] == "email"){
+		    		spanText = "<i class='fa fa-envelope-o' aria-hidden='true'></i>";
+		    	} else if(res[0] == "business_phone"){
+		    		spanText = "<i class='fa fa-phone' aria-hidden='true'></i>";
+		    	} else if(res[0] == "fax"){
+		    		spanText = "<i class='fa fa-fax' aria-hidden='true'></i>";
+		    	}
+		    	
+		    	spanText += "&nbsp;"+res[1];
+		    	}
+		    	return spanText;
+			},
+			getContact:function($id){
+				var $url = "contactTypeAhead?id="+$id;
+				console.log("Contact Data: "+$id);
+				$returnValue = null;
+				var jqxhr = $.ajax({
+					type: 'GET',
+					url: $url,
+					data: {},
+					statusCode: {
+						200: function($data) {
+							console.log("Contact Data: "+$id);
+							console.log($data[0]);
+							$returnValue = $data[0];
+						},					
+						403: function($data) {
+							$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+						},
+						404: function($data) {
+							console.log("THis?");
+							$returnValue = {};
+						},
+						500: function($data) {
+							
+						}
+					},
+					dataType: 'json',
+					async:false
+				});
+				return $returnValue;
 			},
 			getQuoteDetail:function($quoteId) {
 				var $returnValue = null;
@@ -291,21 +432,21 @@ $( document ).ready(function() {
 //				} if ($("select[name=division]").val() != 0) {
 	        		$outbound["divisionId"]	=	$("select[name=division]").val();
 //				} if ($("input[name=jobSite_id]").val() != 0) {
-	        		$outbound["jobSiteAddressId"]	=	$("input[name=jobSite_id]").val();
+	        		$outbound["jobSiteAddressId"]	=	$jobSiteId;
 //				} if ($("input[name=billTo_id]").val() != 0) {
-	        		$outbound["billToAddressId"]	=	$("input[name=billTo_id]").val();
+	        		$outbound["billToAddressId"]	=	$billToId;
 //				}
 				
 	        		$outbound["templateId"]	=	0;
 	        		
 //	        	if ($("input[name='jobSite_Con1id']").val() != 0) {
-	        		$outbound["jobContactId"] = $("input[name='jobSite_Con1id']").val();
+	        		$outbound["jobContactId"] = $jobContactId;
 //				} if ($("input[name='jobSite_Con2id']").val() != 0) {
-	        		$outbound["siteContact"] = $("input[name='jobSite_Con2id']").val();
+	        		$outbound["siteContact"] = $siteContactId;
 //				} if ($("input[name='billTo_Con1id']").val() != 0) {
-	        		$outbound["contractContactId"] = $("input[name='billTo_Con1id']").val();
+	        		$outbound["contractContactId"] = $contractContactId;
 //				} if ($("input[name='billTo_Con2id']").val() != 0) {
-	        		$outbound["billingContactId"] = $("input[name='billTo_Con2id']").val();
+	        		$outbound["billingContactId"] = $billingContactId;
 //				}
 
         		console.log("Save Outbound: ");
@@ -377,25 +518,25 @@ $( document ).ready(function() {
 								$.each($data.data.webMessages, function(key, messageList) {
 									var identifier = "#"+Lookup[key]+"Label";
 									//console.log("Show Error:" + identifier);
-									if(key == "jobSiteAddressId"){
-										ADDRESSPANEL.setError("jobSite","Label");
-									}
-									if(key == "billToAddressId"){
-										ADDRESSPANEL.setError("billTo","Label");
-									}
-									if(key == "contractContactId"){
-										ADDRESSPANEL.setError("billTo","C1");
-									}
-									if(key == "jobContactId"){
-										ADDRESSPANEL.setError("jobSite","C1");
-									}
-									if(key == "billingContactId"){
-										ADDRESSPANEL.setError("billTo","C2");
-									}
-									if(key == "siteContact"){
-										ADDRESSPANEL.setError("jobSite","C2");
-									}
-									
+//									if(key == "jobSiteAddressId"){
+//										ADDRESSPANEL.setError("jobSite","Label");
+//									}
+//									if(key == "billToAddressId"){
+//										ADDRESSPANEL.setError("billTo","Label");
+//									}
+//									if(key == "contractContactId"){
+//										ADDRESSPANEL.setError("billTo","C1");
+//									}
+//									if(key == "jobContactId"){
+//										ADDRESSPANEL.setError("jobSite","C1");
+//									}
+//									if(key == "billingContactId"){
+//										ADDRESSPANEL.setError("billTo","C2");
+//									}
+//									if(key == "siteContact"){
+//										ADDRESSPANEL.setError("jobSite","C2");
+//									}
+//									
 									$(identifier).addClass('error');
 									 setTimeout(function() {
 										 $(identifier).removeClass('error');
@@ -446,19 +587,19 @@ $( document ).ready(function() {
 //				} if($("select[name=division]").val() != 0) {	
 	        		$outbound["divisionId"]	=	$("select[name=division]").val();
 //				} if($("input[name=jobSite_id]").val() != 0) {	
-	        		$outbound["jobSiteAddressId"]	=	$("input[name=jobSite_id]").val();
+	        		$outbound["jobSiteAddressId"]	=	$jobSiteId;
 //				} if($("input[name=billTo_id]").val() != 0) {	
-	        		$outbound["billToAddressId"]	=	$("input[name=billTo_id]").val();
+	        		$outbound["billToAddressId"]	=	$billToId;
 //				} 	
 	        		$outbound["templateId"]	=	0;
 //				if($("input[name='jobSite_Con1id']").val() != 0) {	
-	        		$outbound["jobContactId"] = $("input[name='jobSite_Con1id']").val();
+	        		$outbound["jobContactId"] = $jobContactId;
 //				} if($("input[name='jobSite_Con2id']").val() != 0) {	
-	        		$outbound["siteContact"] = $("input[name='jobSite_Con2id']").val();
+	        		$outbound["siteContact"] = $siteContactId;
 //				} if($("input[name='billTo_Con1id']").val() != 0) {	
-	        		$outbound["contractContactId"] = $("input[name='billTo_Con1id']").val();
+	        		$outbound["contractContactId"] = $contractContactId;
 //				} if($("input[name='billTo_Con2id']").val() != 0) {	
-	        		$outbound["billingContactId"] = $("input[name='billTo_Con2id']").val();
+	        		$outbound["billingContactId"] = $billingContactId;
 //				}
 	        		$outbound["quoteNumber"] = $("input[name='quoteNumber']").val();
 	        		$outbound["revisionNumber"] = $("input[name='revision']").val();
