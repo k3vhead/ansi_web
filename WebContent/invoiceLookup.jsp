@@ -77,9 +77,9 @@
         	        ],
         	        "columnDefs": [
 //         	            { "orderable": false, "targets": -1 },  // Need to re-add this when we add the action column back in
-        	            { className: "dt-left", "targets": [0,1,2] },
-        	            { className: "dt-center", "targets": [3,4] },
-        	            { className: "dt-right", "targets": [5,6,7,8,9]}
+        	            { className: "dt-left", "targets": [0,1,2,3] },
+        	            { className: "dt-center", "targets": [4,5] },
+        	            { className: "dt-right", "targets": [6,7,8,9,10]}
         	         ],
         	        "paging": true,
 			        "ajax": {
@@ -91,6 +91,9 @@
 			        	
 			            { title: "Invoice", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.invoiceId != null){return (row.invoiceId+"");}
+			            } },
+			            { title: "FM Inv", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            	if(row.fleetmaticsInvoiceNbr != null){return (row.fleetmaticsInvoiceNbr+"");}
 			            } },
 			            { title: "Div", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.div != null){return (row.div+"");}
@@ -198,9 +201,10 @@
  	<table id="invoiceTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:800px;width:800px;">
        	<colgroup>
         	<col style="width:5%;" />
+        	<col style="width:6%;" />
         	<col style="width:5%;" />
-        	<col style="width:20%;" />
-        	<col style="width:10%;" />
+        	<col style="width:18%;" />
+        	<col style="width:5%;" />
         	<col style="width:10%;" />
         	<col style="width:10%;" />
         	<col style="width:10%;" />
@@ -211,6 +215,7 @@
         <thead>
             <tr>
                 <th>Invoice</th>
+                <th>FM Inv</th>
     			<th>Div</th>
     			<th>Bill To</th>
     			<th>Tickets</th>
@@ -225,6 +230,7 @@
         <tfoot>
             <tr>
                 <th>Invoice</th>
+                <th>FM Inv</th>
     			<th>Div</th>
     			<th>Bill To</th>
     			<th>Tickets</th>
