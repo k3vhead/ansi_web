@@ -127,7 +127,7 @@ $( document ).ready(function() {
 //				        var data = ADDRESSPANEL.getContact(ui.item.id);
 //				        var id = ADDRESSPANEL.setContact($namespace+"_job",data);
 				    	
-				    	var spanText = processContact(ui.item);
+				    	var spanText = QUOTEUTILS.processContact(ui.item);
 				    	
 				    	$("input[name='jobSite_jobContactName']").val(ui.item.value);
 				    	$("span[name='jobSite_jobContactInfo']").html(spanText);
@@ -137,7 +137,7 @@ $( document ).ready(function() {
 				     'source':"contactTypeAhead?",
 				      select: function( event, ui ) {
 				    	$siteContactId = ui.item.id;
-				    	var spanText = processContact(ui.item);
+				    	var spanText = QUOTEUTILS.processContact(ui.item);
 				    	
 				    	$("input[name='jobSite_siteContactName']").val(ui.item.value);
 				    	$("span[name='jobSite_siteContactInfo']").html(spanText);
@@ -147,7 +147,7 @@ $( document ).ready(function() {
 				     'source':"contactTypeAhead?",
 				      select: function( event, ui ) {
 				    	$contractContactId = ui.item.id;
-				    	var spanText = processContact(ui.item);
+				    	var spanText = QUOTEUTILS.processContact(ui.item);
 				    	
 				    	$("input[name='billTo_contractContactName']").val(ui.item.value);
 				    	$("span[name='billTo_contractContactInfo']").html(spanText);
@@ -157,7 +157,7 @@ $( document ).ready(function() {
 				     'source':"contactTypeAhead?",
 				      select: function( event, ui ) {
 				    	$billingContactId = ui.item.id;
-				    	var spanText = processContact(ui.item);
+				    	var spanText = QUOTEUTILS.processContact(ui.item);
 				    	
 				    	$("input[name='billTo_billingContactName']").val(ui.item.value);
 				    	$("span[name='billTo_billingContactInfo']").html(spanText);
@@ -178,34 +178,8 @@ $( document ).ready(function() {
 						//ADDRESS_UTILS.getAddress($quoteDetail.jobSite.addressId, "#jobSite");
 						ADDRESS_UTILS.populateAddress("#jobSite", $quoteDetail.jobSite);
 					}
-					if($quoteDetail.jobContactId != null){
-						$jobContactId = $quoteDetail.jobContactId;
-						var data = getContact($jobContactId);
-						var spanText = processContact(data.id);
-				    	$("input[name='jobSite_jobContactName']").val(data.value);
-				    	$("span[name='jobSite_jobContactInfo']").html(spanText);
-					}
-					if($quoteDetail.siteContact != null){
-						$siteContactId = $quoteDetail.siteContact;
-						var data = getContact($siteContactId);
-						var spanText = processContact(data.id);
-						$("input[name='jobSite_siteContactName']").val(data.value);
-				    	$("span[name='jobSite_siteContactInfo']").html(spanText);
-					}
-					if($quoteDetail.contractContactId != null){
-						$contractContactId = $quoteDetail.contractContactId;
-						var data = getContact($contractContactId);
-						var spanText = processContact(data.id);
-						$("input[name='billTo_contractContactName']").val(data.value);
-				    	$("span[name='billTo_contractContactInfo']").html(spanText);
-					}
-					if($quoteDetail.billingContactId != null){
-						$billingContactId = $quoteDetail.billingContactId;
-						var data = getContact($billingContactId);
-						var spanText = processContact(data.id);
-						$("input[name='billTo_billingContactName']").val(data.value);
-				    	$("span[name='billTo_billingContactInfo']").html(spanText);
-					}
+					//console.log(" Quote Detail Contact Id:" + $quoteData.jobContactId);
+					
 					$signedByData = ADDRESSPANEL.getContact($quoteData.signedByContactId);
 					$("input[name='signedBy']").val($signedByData.lastName + ", "+$signedByData.firstName + "(" +$signedByData.contactId+")");
 					
@@ -251,15 +225,46 @@ $( document ).ready(function() {
 					}
 					var modalText = "";
 					$.each($jobs, function($index, $job) {
-						if($index == 0){
-							
-						}
+						
 						//console.log($currentRow);
 						//addAJob($currentRow);
 						console.log("Loading Job: "+$index);
 						$jobContacts = JOB_UTILS.panelLoadQuote($currentRow, $job.jobId, $index, $quoteData);
-//						console.log("Job Contacts:");
-//						console.log($jobContacts);
+						console.log("Job Contacts:");
+						console.log($jobContacts);
+						
+						if($index == 0){
+							if($jobContacts.jobContactId != null){
+								$jobContactId = $jobContacts.jobContactId;
+								console.log("Contact Id:" + $jobContactId);
+								var data = QUOTEUTILS.getContact($jobContactId);
+								console.log(data);
+								var spanText = QUOTEUTILS.processContact(data);
+						    	$("input[name='jobSite_jobContactName']").val(data.value);
+						    	$("span[name='jobSite_jobContactInfo']").html(spanText);
+							}
+							if($jobContacts.siteContact != null){
+								$siteContactId = $jobContacts.siteContact;
+								var data = QUOTEUTILS.getContact($siteContactId);
+								var spanText = QUOTEUTILS.processContact(data);
+								$("input[name='jobSite_siteContactName']").val(data.value);
+						    	$("span[name='jobSite_siteContactInfo']").html(spanText);
+							}
+							if($jobContacts.contractContactId != null){
+								$contractContactId = $jobContacts.contractContactId;
+								var data = QUOTEUTILS.getContact($contractContactId);
+								var spanText = QUOTEUTILS.processContact(data);
+								$("input[name='billTo_contractContactName']").val(data.value);
+						    	$("span[name='billTo_contractContactInfo']").html(spanText);
+							}
+							if($jobContacts.billingContactId != null){
+								$billingContactId = $jobContacts.billingContactId;
+								var data = QUOTEUTILS.getContact($billingContactId);
+								var spanText = QUOTEUTILS.processContact(data);
+								$("input[name='billTo_billingContactName']").val(data.value);
+						    	$("span[name='billTo_billingContactInfo']").html(spanText);
+							}
+						}
 						
 						//$(".addressTable").remove();
 //						console.log("#"+$currentRow+"_jobPanel_jobLink");
@@ -281,8 +286,11 @@ $( document ).ready(function() {
 				QUOTEUTILS.bindAndFormat();
 			},
 			processContact:function($ui){
-				var res = (ui.preferredContactValue).split(" ");
+				
 		    	var spanText = "";
+		    	
+		    	if($ui.preferredContactValue != null){
+		    	var res = ($ui.preferredContactValue).split(":");
 		    	if(res[0] == "mobile_phone"){ //mobile-phone
 		    			spanText = "<i class='fa fa-mobile' aria-hidden='true'></i>";
 		    	} else if(res[0] == "email"){
@@ -294,22 +302,28 @@ $( document ).ready(function() {
 		    	}
 		    	
 		    	spanText += "&nbsp;"+res[1];
+		    	}
 		    	return spanText;
 			},
 			getContact:function($id){
 				var $url = "contactTypeAhead?id="+$id;
+				console.log("Contact Data: "+$id);
+				$returnValue = null;
 				var jqxhr = $.ajax({
 					type: 'GET',
 					url: $url,
 					data: {},
 					statusCode: {
 						200: function($data) {
+							console.log("Contact Data: "+$id);
+							console.log($data[0]);
 							$returnValue = $data[0];
 						},					
 						403: function($data) {
 							$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
 						},
 						404: function($data) {
+							console.log("THis?");
 							$returnValue = {};
 						},
 						500: function($data) {
@@ -319,6 +333,7 @@ $( document ).ready(function() {
 					dataType: 'json',
 					async:false
 				});
+				return $returnValue;
 			},
 			getQuoteDetail:function($quoteId) {
 				var $returnValue = null;

@@ -241,12 +241,12 @@ td.jobTableCell {
 			</tr>
 			<tr>
 				<td colspan='2' align="left">
-					<table>
+					<table style="width:100%;">
 					<tr>
-						<td align="left" style="width:480px;">
+						<td align="left" style="width:480px;border:1px solid #000000">
 							<span style="display: inline-block;width:51px;"><b>Job Site</b></span><input type="text" name="jobSite_name" style="width:425px" />
 						</td>
-						<td align="left" style="width:480px;">
+						<td align="left" style="width:480px;border:1px solid #000000">
 							<span style="display: inline-block;width:51px;"><b>Bill To</b></span><input type="text" name="billTo_name" style="width:425px" />
 						</td>
 					</tr>
@@ -262,7 +262,7 @@ td.jobTableCell {
 					</tr>
 					<tr>
 						<td align="left" style="width:480px;">
-							<table style="width:100%;">
+							<table style="width:100%;border:1px solid #000000">
 								<tr>
 									<td><span id="jobSiteC1">Job Contact:</span></td>
 									<td style="width:140px;"><input type="text" name="jobSite_jobContactName" style="width:125px" placeholder="<name>"/></td>
@@ -276,7 +276,7 @@ td.jobTableCell {
 							</table>
 						</td>
 						<td align="left" style="width:480px;">
-							<table style="width:100%;border:1px solid #FFFFFF">
+							<table style="width:100%;border:1px solid #000000">
 								<tr>
 									<td><span id="billToC1">Cont Contact:</span></td>
 									<td style="width:140px;"><input type="text" name="billTo_contractContactName" style="width:125px" placeholder="<name>"/></td>
