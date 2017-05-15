@@ -12,6 +12,8 @@
 <%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="webthing" %>
 <%@ taglib uri="WEB-INF/theTagThing.tld" prefix="ansi" %>
 
+<%@ page import="com.ansi.scilla.web.actionForm.MessageForm" %>
+
 
 <tiles:insert page="layout.jsp" flush="true">
 
@@ -60,9 +62,14 @@
     						$($selectorName).html(value[0]).fadeOut(4000);
     					});
     				} else {
-    					$("#globalMsg").html($data.responseHeader.responseMessage).fadeOut(4000);
-    		        	$("#invoiceDate").val("");
-    		        	$("#monthlyFlag").prop('checked', false);
+    					//$("#globalMsg").html($data.responseHeader.responseMessage).fadeOut(4000);
+    		        	//$("#invoiceDate").val("");
+    		        	//$("#monthlyFlag").prop('checked', false);
+    		        	console.debug("Invoices genned");
+    		        	$("#printForm input[name=message]").val("Success! Invoices Generated");
+    					console.debug("form submit");
+    				    $("#printForm").submit();
+    		        	
     				}
     			},
     			statusCode: {
@@ -107,6 +114,10 @@
 				</table>
 			</form>
     	</div>
+    	
+    	<html:form action="invoicePrint" styleId="printForm">
+    		<html:hidden property="<%= MessageForm.MESSAGE %>" />
+    	</html:form>
     </tiles:put>
 
 </tiles:insert>

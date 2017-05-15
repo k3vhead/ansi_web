@@ -37,6 +37,11 @@
         
         <script type="text/javascript">        
         $( document ).ready(function() {
+        	var $invoiceGenMessage = '<c:out value="${invoice_gen_message}" />'
+        	if ( $invoiceGenMessage != '' ) {
+        		$("#globalMsg").html($invoiceGenMessage).show().fadeOut(6000);
+        	}
+
         	$('.dateField').datepicker({
                 prevText:'&lt;&lt;',
                 nextText: '&gt;&gt;',
@@ -53,13 +58,13 @@
 	   			},
 	   			statusCode: {
 	   				403: function($data) {
-	   					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+	   					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage).show();
 	   				},
 	   				404: function($data) {
-	   					$("#globalMsg").html("System Error: Contact Support").fadeIn(10);
+	   					$("#globalMsg").html("System Error: Contact Support").show();
 	   				},
 	   				500: function($data) {
-	        	    		$("#globalMsg").html("System Error: Contact Support").fadeIn(10);
+	        	    		$("#globalMsg").html("System Error: Contact Support").show();
 	        	    	} 
 	   			},
 	   			dataType: 'json'

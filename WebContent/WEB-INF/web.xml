@@ -443,6 +443,27 @@
 
 
 	<servlet>
+		<servlet-name>ticketPrint</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.ticket.TicketPrintServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ticketPrint</servlet-name>
+		<url-pattern>/ticketPrint/*</url-pattern>
+	</servlet-mapping>
+
+
+	<servlet>
+		<servlet-name>ticketPrintLookup</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.ticket.TicketPrintLookupServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ticketPrintLookup</servlet-name>
+		<url-pattern>/ticketPrintLookup/*</url-pattern>
+	</servlet-mapping>
+
+
+
+	<servlet>
 		<servlet-name>ticketSearch</servlet-name>
 		<servlet-class>com.ansi.scilla.web.servlets.tickets.TicketSearchServlet</servlet-class>
 	</servlet>
