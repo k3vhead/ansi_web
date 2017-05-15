@@ -285,7 +285,7 @@ public class QuoteServlet extends AbstractServlet {
 			quote.setCopiedFromQuoteId(quoteRequest.getCopiedFromQuoteId());
 		}
 		quote.setQuoteNumber(quoteRequest.getQuoteNumber());
-		quote.setRevision(quoteRequest.getRevisionNumber());
+		quote.setRevision(quoteRequest.getRevision());
 		quote.setJobSiteAddressId(quoteRequest.getJobSiteAddressId());
 		quote.setLeadType(quoteRequest.getLeadType());
 		quote.setDivisionId(quoteRequest.getDivisionId());

@@ -137,30 +137,28 @@ $( document ).ready(function() {
 				     'source':"contactTypeAhead?",
 				      select: function( event, ui ) {
 				    	$siteContactId = ui.item.id;
-				    	var spanText = QUOTEUTILS.processContact(ui.item);
+				    	
 				    	
 				    	$("input[name='jobSite_siteContactName']").val(ui.item.value);
-				    	$("span[name='jobSite_siteContactInfo']").html(spanText);
+				    	$("span[name='jobSite_siteContactInfo']").html(QUOTEUTILS.processContact(ui.item));
 				      }
 				    });
 				 $( "input[name='billTo_contractContactName']" ).autocomplete({
 				     'source':"contactTypeAhead?",
 				      select: function( event, ui ) {
 				    	$contractContactId = ui.item.id;
-				    	var spanText = QUOTEUTILS.processContact(ui.item);
 				    	
 				    	$("input[name='billTo_contractContactName']").val(ui.item.value);
-				    	$("span[name='billTo_contractContactInfo']").html(spanText);
+				    	$("span[name='billTo_contractContactInfo']").html(QUOTEUTILS.processContact(ui.item));
 				      }
 				    });
 				 $( "input[name='billTo_billingContactName']" ).autocomplete({
 				     'source':"contactTypeAhead?",
 				      select: function( event, ui ) {
 				    	$billingContactId = ui.item.id;
-				    	var spanText = QUOTEUTILS.processContact(ui.item);
 				    	
 				    	$("input[name='billTo_billingContactName']").val(ui.item.value);
-				    	$("span[name='billTo_billingContactInfo']").html(spanText);
+				    	$("span[name='billTo_billingContactInfo']").html(QUOTEUTILS.processContact(ui.item));
 				      }
 				    });
 				
@@ -171,18 +169,23 @@ $( document ).ready(function() {
 					if($quoteDetail.billTo != null){
 						//ADDRESSPANEL.setAddress("billTo",$quoteDetail.billTo);
 						//ADDRESS_UTILS.getAddress($quoteDetail.billTo.addressId, "#billTo");
+						$billToId = $quoteDetail.billTo.addressId;
 						ADDRESS_UTILS.populateAddress("#billTo", $quoteDetail.billTo);
+						 $( "input[name='billTo_name']" ).val($quoteDetail.billTo.name);
 					}
+					
 					if($quoteDetail.jobSite != null){
 						//ADDRESSPANEL.setAddress("jobSite",$quoteDetail.jobSite);
 						//ADDRESS_UTILS.getAddress($quoteDetail.jobSite.addressId, "#jobSite");
+						$jobSiteId = $quoteDetail.jobSite.addressId;
 						ADDRESS_UTILS.populateAddress("#jobSite", $quoteDetail.jobSite);
+						$( "input[name='jobSite_name']" ).val($quoteDetail.jobSite.name);
 					}
 					//console.log(" Quote Detail Contact Id:" + $quoteData.jobContactId);
 					
 					$signedByData = ADDRESSPANEL.getContact($quoteData.signedByContactId);
 					$("input[name='signedBy']").val($signedByData.lastName + ", "+$signedByData.firstName + "(" +$signedByData.contactId+")");
-					
+					$("input[name='revision']").val($quoteData.revision);
 					//	console.log("DivisionCode: "+ $quoteData.divisionId);
 					
 						$("select[name='division']").val($quoteData.divisionId);
@@ -236,33 +239,27 @@ $( document ).ready(function() {
 						if($index == 0){
 							if($jobContacts.jobContactId != null){
 								$jobContactId = $jobContacts.jobContactId;
-								console.log("Contact Id:" + $jobContactId);
 								var data = QUOTEUTILS.getContact($jobContactId);
-								console.log(data);
-								var spanText = QUOTEUTILS.processContact(data);
 						    	$("input[name='jobSite_jobContactName']").val(data.value);
-						    	$("span[name='jobSite_jobContactInfo']").html(spanText);
+						    	$("span[name='jobSite_jobContactInfo']").html(QUOTEUTILS.processContact(data));
 							}
 							if($jobContacts.siteContact != null){
 								$siteContactId = $jobContacts.siteContact;
 								var data = QUOTEUTILS.getContact($siteContactId);
-								var spanText = QUOTEUTILS.processContact(data);
 								$("input[name='jobSite_siteContactName']").val(data.value);
-						    	$("span[name='jobSite_siteContactInfo']").html(spanText);
+						    	$("span[name='jobSite_siteContactInfo']").html(QUOTEUTILS.processContact(data));
 							}
 							if($jobContacts.contractContactId != null){
 								$contractContactId = $jobContacts.contractContactId;
 								var data = QUOTEUTILS.getContact($contractContactId);
-								var spanText = QUOTEUTILS.processContact(data);
 								$("input[name='billTo_contractContactName']").val(data.value);
-						    	$("span[name='billTo_contractContactInfo']").html(spanText);
+						    	$("span[name='billTo_contractContactInfo']").html(QUOTEUTILS.processContact(data));
 							}
 							if($jobContacts.billingContactId != null){
 								$billingContactId = $jobContacts.billingContactId;
 								var data = QUOTEUTILS.getContact($billingContactId);
-								var spanText = QUOTEUTILS.processContact(data);
 								$("input[name='billTo_billingContactName']").val(data.value);
-						    	$("span[name='billTo_billingContactInfo']").html(spanText);
+						    	$("span[name='billTo_billingContactInfo']").html(QUOTEUTILS.processContact(data));
 							}
 						}
 						
@@ -279,11 +276,20 @@ $( document ).ready(function() {
 				} else {
 					$("#loadingJobsDiv").hide();
 				}
-				$("#loadingDiv").hide();
-				$("#quoteTable").show();
+				
+				
 				
 				QUOTEUTILS.buttonsInit();
 				QUOTEUTILS.bindAndFormat();
+				
+				 setTimeout(function() {
+					$("#loadingDiv").hide();
+					$("#quoteTable").show();
+					$("#accordian").accordion({
+							collapsible: true
+					});
+			        }, 500);
+				
 			},
 			processContact:function($ui){
 				
@@ -292,16 +298,16 @@ $( document ).ready(function() {
 		    	if($ui.preferredContactValue != null){
 		    	var res = ($ui.preferredContactValue).split(":");
 		    	if(res[0] == "mobile_phone"){ //mobile-phone
-		    			spanText = "<i class='fa fa-mobile' aria-hidden='true'></i>";
+		    		spanText = "<i class='fa fa-mobile' aria-hidden='true'></i>&nbsp;"+res[1];
 		    	} else if(res[0] == "email"){
-		    		spanText = "<i class='fa fa-envelope-o' aria-hidden='true'></i>";
+		    		spanText = "<i class='fa fa-envelope-o' aria-hidden='true'></i>&nbsp;<a href='mailto:"+res[1]+"' target='_top'>"+res[1]+"</a>";
 		    	} else if(res[0] == "business_phone"){
-		    		spanText = "<i class='fa fa-phone' aria-hidden='true'></i>";
+		    		spanText = "<i class='fa fa-phone' aria-hidden='true'></i>&nbsp;"+res[1];
 		    	} else if(res[0] == "fax"){
-		    		spanText = "<i class='fa fa-fax' aria-hidden='true'></i>";
+		    		spanText = "<i class='fa fa-fax' aria-hidden='true'></i>&nbsp;"+res[1];
 		    	}
 		    	
-		    	spanText += "&nbsp;"+res[1];
+		    	//spanText += "&nbsp;"+res[1];
 		    	}
 		    	return spanText;
 			},
@@ -602,7 +608,7 @@ $( document ).ready(function() {
 	        		$outbound["billingContactId"] = $billingContactId;
 //				}
 	        		$outbound["quoteNumber"] = $("input[name='quoteNumber']").val();
-	        		$outbound["revisionNumber"] = $("input[name='revision']").val();
+	        		$outbound["revision"] = $("input[name='revision']").val();
 	        		$outbound["quoteId"] = $globalQuoteId;
         		
         		console.log("Update Outbound: ");
@@ -610,6 +616,7 @@ $( document ).ready(function() {
 
         		$url = "quote/"+$globalQuoteId+"/"+$("input[name=quoteNumber]").val()+"/"+$("input[name=revision]").val();
 //        		$url = "quote/"+$("input[name=quoteId]").val()+"/"+$("input[name=quoteNumber]").val()+"/"+$("input[name=revision]").val();
+        		console.log("URL: "+ $url);
 //        		$url = "quote/"+$("input[name=quoteNumber]").val();
 //				console.log($outbound);
 //				alert(JSON.stringify($outbound));
@@ -769,8 +776,9 @@ $( document ).ready(function() {
 					statusCode: {
 						200: function($data) {
 
-		   						
-		   						$('#jobPanelHolder > tbody:last-child').append($data);
+							$('#accordian').append("<h3 id="+$row+"_jobHeader><span id='"+$row+"_jobStatusHead'></span>&nbsp;&nbsp;Job: <span id='"+$row+"_jobIdHead'></span>&nbsp;&nbsp;Job #: <span id='"+$row+"_jobNumberHead'></span>&nbsp;&nbsp;PPC: <span id='"+$row+"_jobPPCHead'></span>&nbsp;&nbsp; Frequency: <span id='"+$row+"_jobFreqHead'></span></h3>");
+							$('#accordian').append("<div id="+$row+"_jobDiv>"+$data+"</div>");
+		   					//	$('#jobPanelHolder > tbody:last-child').append($data);
 //								console.log($namespace);
 								var $jobDetail = [{invoiceStyle: null, activationDate: null, startDate: null, cancelDate: null, cancelReason: null}];		
 
@@ -792,7 +800,7 @@ $( document ).ready(function() {
 									JOB_UTILS.addJob($(this).attr("rownum"),$quoteId);
 					            });
 								QUOTEUTILS.bindAndFormat();
-		   						
+								$("#accordian").accordion( "refresh" );
 		   		
 		   				},
 	   					403: function($data) {

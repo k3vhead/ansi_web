@@ -30,7 +30,7 @@ import com.thewebthing.commons.lang.JsonException;
 		private Date proposalDate;
 		private Integer quoteId;
 		private Integer quoteNumber;
-		private String revisionNumber;
+		private String revision;
 		private Integer signedByContactId;
 		private Integer status;
 		private Integer templateId;
@@ -63,7 +63,7 @@ import com.thewebthing.commons.lang.JsonException;
 			this.setProposalDate(req.getProposalDate());
 			this.setQuoteId(req.getQuoteId());
 			this.setQuoteNumber(req.getQuoteNumber());
-			this.setRevisionNumber(req.getRevisionNumber());
+			this.setRevision(req.getRevision());
 			this.setSignedByContactId(req.getSignedByContactId());
 			this.setStatus(req.getStatus());
 			this.setTemplateId(req.getTemplateId());
@@ -277,13 +277,13 @@ import com.thewebthing.commons.lang.JsonException;
 		}
 
 		
-		public void setRevisionNumber(String revisionNumber) {
-			this.revisionNumber = revisionNumber;
+		public void setRevision(String revision) {
+			this.revision = revision;
 		}
 
 		@RequiredForUpdate
-		public String getRevisionNumber() {
-			return this.revisionNumber;
+		public String getRevision() {
+			return this.revision;
 		}
 
 		

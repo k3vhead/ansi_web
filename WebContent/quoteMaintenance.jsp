@@ -175,6 +175,13 @@ td.jobTableCell {
 	   color: black;
 	}
 	input[type=checkbox] {width:20px; height:20px;}
+	
+	.ui-accordion .ui-accordion-header {
+		background: #c5c5c5 !important;
+		border: #c5c5c5 !important;
+	}
+	
+	
 
         </style>
     </tiles:put>
@@ -199,7 +206,7 @@ td.jobTableCell {
 									<option value=""></option>
 								</select>
 							</td>
-							<td align="center"><span  id="quoteLabel">Quote</span>span></td>
+							<td align="center"><span  id="quoteLabel">Quote</span></td>
 							<td align="center"><span  id="revisionLabel">Revision</span></td>
 							<td rowspan="2" align="right" style="padding-right:10px;"><input type="button" name="printButton" value="Print" class="quoteButton"/></td>
 						</tr>
@@ -296,10 +303,8 @@ td.jobTableCell {
 			<tr>
 				<td>
 				<div id="loadingJobsDiv" style="display:none;"><i class='fa fa-refresh fa-spin'></i></div>
-					<table style="border:solid 1px #000000; margin-top:8px;" id="jobPanelHolder">
-						<tbody>
-						</tbody>
-					</table>
+					<div id="accordian">
+					</div>
 				</td>
 			</tr>
 			<tr>
