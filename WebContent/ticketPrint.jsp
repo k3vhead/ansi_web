@@ -24,14 +24,11 @@
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
         <link rel="stylesheet" href="css/datepicker.css" type="text/css" />
         <style type="text/css">
-        	#printModal {
+        	#printForm {
         		display:none;
         	}
 			.action-link {
 				cursor:pointer;
-			}
-			#pdfDownload {
-				display:none;
 			}
 			#ticketTableContainer {
 				display:none;
@@ -66,12 +63,12 @@
         			$("#printDate").focus();
         		} else {
         			$("#printDateErr").fadeOut(6000);
-        			makeInvoiceTable();
+        			makeTicketTable();
         			$("#ticketTableContainer").fadeIn(3000);
         		}
         	}
         
-        	function makeInvoiceTable() {
+        	function makeTicketTable() {
         		var $outbound = {};
         		$outbound['printDate'] = $("#printDate").val();
 		        var jqxhr = $.ajax({
@@ -138,7 +135,7 @@
 				            	if(row.totalPpc != null){return (row.totalPpc+"");}
 				            } },
 				            { title: "Action", "defaultContent": "<i></i>", data: function ( row, type, set ) {
-				            	if(row.ticketCount == "0"){
+				            	if(row.ticketCount == "0" || row.ticketCount == 0 || row.ticketCount == null ){
 				            		return "";
 				            	} else {
 				            		var $dataDiv = 'data-division="' + row.divisionId + '"';
@@ -179,63 +176,24 @@
 				function doFunctionBinding() {
 					$( ".action-link" ).on( "click", function($clickevent) {
 			        	var $divisionId = $clickevent.currentTarget.attributes['data-division'].value;
-			        	var $action = $clickevent.currentTarget.attributes['data-action'].value;
-			        	if ( $action=='list') {
-			        		location.href="ticketLookup.html?id=" + $divisionId;
-			        	} else if ( $action=='print') {
-			        		//printModal($divisionId);
-			        		alert("Not quote ready to print yet");
-			        	} else {
-			        		$("#globalMessage").html("Invalid action. Reload the page and start again");
-			        	}
+		        		doPrint($divisionId);
 					});
 				}
 
 				
-				
+				function doPrint($divisionId) {
+					console.debug("Printing:");
+					var $printDate = $("#printDate").val();
+					console.debug($printDate);
+					console.debug($divisionId);
+					$("#printForm input[name=printDate]").val($printDate);
+					$("#printForm input[name=divisionId]").val($divisionId);
+					$("#printForm").submit();
+				}
 
 		
 				
-				function printInvoices() {
-        			var $divisionId = $("#goPrint").data('divisionId');
-					var $printDate = $("#printDate").val();
-					var $dueDate = $("#dueDate").val();
-					console.debug("Getting ticket count");
-		        	var $outbound = {'divisionId':$divisionId,'printDate':$printDate,'dueDate':$dueDate};
-		            var jqxhr = $.ajax({
-		    			type: 'POST',
-		    			url: 'ticketPrint/',
-		    			data: JSON.stringify($outbound),
-		    			statusCode: {
-			    			200: function($data) {
-			    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-			    					$.each($data.data.webMessages, function (key, value) {
-			    						var $selectorName = "#" + key + "Err";
-			    						$($selectorName).show();
-			    						$($selectorName).html(value[0]).fadeOut(4000);
-			    					});
-			    				} else {
-			    					$("#printModal").dialog("close");
-			    					var a = document.createElement('a');
-			    					var linkText = document.createTextNode("Download");
-			    					a.appendChild(linkText);
-			    					a.title = "Download";
-			    					a.href = $data.data.ticketFile;
-			    					a.target = "_new";   // open in a new window
-			    					document.body.appendChild(a);
-			    					a.click();
-			    				}
-			    			},
-		    				403: function($data) {
-		    					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-		    				},
-		    				500: function($data) {
-		         	    		$("#globalMsg").html("System Error: Contact Support").fadeIn(10);
-		         	    	} 
-		    			},
-		    			dataType: 'json'
-		    		});        	
-		        }
+
         
 			});
 
@@ -279,7 +237,11 @@
 		        </tfoot>
 		    </table>
 	    </div>
-    
+
+		<form action="ticketPrint" method="post" id="printForm" target="_new">
+			<input type="hidden" name="printDate" />
+			<input type="hidden" name="divisionId" />
+		</form>
     
     </tiles:put>
 
