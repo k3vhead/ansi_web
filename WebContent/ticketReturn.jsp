@@ -148,9 +148,6 @@
             });
 
         	$('#ticketNbr').focus(function($event) {
-        		$('.workPanel').hide();
-        		$("#panelSelector").hide();
-        		clearAddForm();
         		$(this).select();	
         	});
         	
@@ -395,7 +392,8 @@
 						200: function($data) {
 							if ( $data.responseHeader.responseCode == 'SUCCESS') {
 								$("#globalMsg").html("Update Complete").show().fadeOut(6000);
-								$("#ticketNbr").focus();
+				        		$("#doPopulate").click();
+				        		$("#ticketNbr").focus();
 							} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
 								$('.err').html("");
 								$.each($data.data.webMessages, function(key, messageList) {
