@@ -454,7 +454,7 @@
 
 	<servlet>
 		<servlet-name>ticketPrintLookup</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.ticket.TicketPrintLookupServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.servlets.tickets.TicketPrintLookupServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ticketPrintLookup</servlet-name>
