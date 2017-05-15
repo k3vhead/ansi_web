@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.sql.Connection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -19,8 +20,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.jobticket.TicketPrinter;
+import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.common.queries.TicketPrint;
 import com.ansi.scilla.common.queries.TicketPrintResult;
 import com.ansi.scilla.web.common.AppUtils;
@@ -108,19 +111,30 @@ public class TicketPrintServlet extends AbstractServlet {
 
 
 	private void processPrint(Connection conn, HttpServletResponse response, Integer divisionId, Date endDate, SessionUser sessionUser) throws Exception {
+		Division division = new Division();
+		division.setDivisionId(divisionId);
+		division.selectOne(conn);
+		String divisionString = division.getDivisionNbr() + "-" + division.getDivisionCode();
+		
 		TicketPrint tp = new TicketPrint();
-		tp.setWhereClause("\nwhere ticket.act_division_id=10 and ticket.start_date<EOMONTH(SYSDATETIME(),2) and ticket.ticket_status='N'\n");
+		tp.setWhereClause("\nwhere ticket.act_division_id=? and ticket.start_date<? and ticket.ticket_status=?\n");
 		tp.setSortField(new String[] { "ticket.start_date" });
-		List<TicketPrintResult> ticketList = tp.selectSome(conn);
+		List<Object> boundVariables = new ArrayList<Object>();
+		boundVariables.add(divisionId);
+		boundVariables.add(endDate);
+		boundVariables.add(TicketStatus.NOT_DISPATCHED.code());
+		List<TicketPrintResult> ticketList = tp.selectSome(conn, boundVariables);
 		
 		TicketPrinter ticketPrinter = new TicketPrinter();
 		ByteArrayOutputStream baos = ticketPrinter.makeTickets(conn, ticketList);
+		
+		
 		
 		Calendar today = Calendar.getInstance(TimeZone.getTimeZone("America/Chicago"));
 		SimpleDateFormat fileDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		String fileDate = fileDateFormat.format(today.getTime());
 
-		String fileName = "tickets_" + divisionId + "_" + fileDate + ".pdf";
+		String fileName = "tickets_" + divisionString + "_" + fileDate + ".pdf";
 		
         response.setHeader("Expires", "0");
         response.setHeader("Cache-Control", "must-revalidate, post-check=0, pre-check=0");
