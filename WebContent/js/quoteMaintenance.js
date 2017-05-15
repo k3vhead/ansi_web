@@ -257,6 +257,7 @@ $( document ).ready(function() {
 							}
 							if($jobContacts.billingContactId != null){
 								$billingContactId = $jobContacts.billingContactId;
+								console.log("Just set $billingContactId: "+ $billingContactId);
 								var data = QUOTEUTILS.getContact($billingContactId);
 								$("input[name='billTo_billingContactName']").val(data.value);
 						    	$("span[name='billTo_billingContactInfo']").html(QUOTEUTILS.processContact(data));

@@ -139,6 +139,10 @@ $( document ).ready(function() {
 					$returnData['siteContact'] = $jobDetail.siteContact;
 					$returnData['contractContactId'] = $jobDetail.contractContactId;
 					$returnData['billingContactId'] = $jobDetail.billingContactId;
+					$jobContactId = $jobDetail.jobContactId;
+					$siteContactId = $jobDetail.siteContact;
+					$contractContactId = $jobDetail.contractContactId;
+					$billingContactId = $jobDetail.billingContactId;
 				}
 			}
 			
@@ -186,7 +190,7 @@ $( document ).ready(function() {
 				        $(this).css("max-height", "20px");
 				    });
 					$('.jobSave').on('click', function($clickevent) {
-						JOB_UTILS.addJob($(this).attr("rownum"),$jobDetail.quoteId, $namespace);
+						JOB_UTILS.addJob($(this).attr("rownum"),$jobDetail.quoteId, $namespace, $jobContactId, $siteContactId, $contractContactId, $billingContactId);
 		            });
 				},
 				statusCode: {
@@ -252,6 +256,12 @@ $( document ).ready(function() {
 			} if($billingContactId1 != null){
 				$billingContactId = $billingContactId1;
 			}
+			
+//			console.log("$jobContactId: "+$jobContactId);
+//			console.log("$siteContactId: "+$siteContactId);
+//			console.log("$contractContactId: "+$contractContactId);
+//			console.log("$billingContactId: "+$billingContactId);
+			
 			var $outbound = {};
 //			alert("job addJob - quoteId:" + $quoteId);
 //			alert($globalQuoteId);
