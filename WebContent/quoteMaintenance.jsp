@@ -200,6 +200,7 @@ td.jobTableCell {
 								<select name="manager" id="manager" class="quoteSelect">
 									<option value=""></option>
 								</select>
+								<i id="managerIdErr" aria-hidden="true"></i>
 							</td>
 							<td><span class="labelSpan"  id="divisionLabel">Division:</span>
 								<select name="division" id="division" class="quoteSelect">
@@ -216,11 +217,13 @@ td.jobTableCell {
 								<select name="leadType" class="quoteSelect">
 									<option value=""></option>
 								</select>
+								<i id="leadTypeErr" aria-hidden="true"></i>
 							</td>
 							<td><span class="labelSpan" id="accountTypeLabel">Account Type:</span>
 								<select name="accountType" id="accountType" class="quoteSelect">
 									<option value=""></option>
 								</select>
+								<i id="accountTypeErr" aria-hidden="true"></i>
 							</td>
 							<td>Q:&nbsp;&nbsp;<input type="text" name="quoteNumber"  style="width:80px" value="<c:out value="${ANSI_QUOTE_ID}" />"/></td>
 							<td>R:&nbsp;&nbsp;<input type="text" name="revision"  style="width:40px"/></td>
@@ -252,9 +255,11 @@ td.jobTableCell {
 					<tr>
 						<td align="left" style="width:480px;border:1px solid #000000">
 							<span style="display: inline-block;width:51px;"><b>Job Site</b></span><input type="text" name="jobSite_name" style="width:425px" />
+							<i id="jobSiteAddressIdErr" aria-hidden="true"></i>
 						</td>
 						<td align="left" style="width:480px;border:1px solid #000000">
 							<span style="display: inline-block;width:51px;"><b>Bill To</b></span><input type="text" name="billTo_name" style="width:425px" />
+							<i id="billToAddressIdErr" aria-hidden="true"></i>
 						</td>
 					</tr>
 					<tr>
@@ -273,12 +278,12 @@ td.jobTableCell {
 								<tr>
 									<td><span id="jobSiteC1">Job Contact:</span></td>
 									<td style="width:140px;"><input type="text" name="jobSite_jobContactName" style="width:125px" placeholder="<name>"/></td>
-									<td colspan="2"><span name="jobSite_jobContactInfo" style="display: inline-block;width:170px;"></span></td>
+									<td colspan="2"><span name="jobSite_jobContactInfo" style="display: inline-block;width:170px;"></span><i id="jobContactIdErr" aria-hidden="true"></i></td>
 								</tr>
 								<tr>
 									<td><span id="jobSiteC2">Site Contact:</span></td>
 									<td style="width:140px;"><input type="text" name="jobSite_siteContactName" style="width:125px" placeholder="<name>"/></td>
-									<td colspan="2"><span name="jobSite_siteContactInfo" style="display: inline-block;width:170px;"></span></td>
+									<td colspan="2"><span name="jobSite_siteContactInfo" style="display: inline-block;width:170px;"></span><i id="siteContactErr" aria-hidden="true"></i></td>
 								</tr>
 							</table>
 						</td>
@@ -287,12 +292,12 @@ td.jobTableCell {
 								<tr>
 									<td><span id="billToC1">Cont Contact:</span></td>
 									<td style="width:140px;"><input type="text" name="billTo_contractContactName" style="width:125px" placeholder="<name>"/></td>
-									<td colspan="2"><span name="billTo_contractContactInfo" style="display: inline-block;width:170px;"></span></td>
+									<td colspan="2"><span name="billTo_contractContactInfo" style="display: inline-block;width:170px;"></span><i id="contractContactIdErr" aria-hidden="true"></i></td>
 								</tr>
 								<tr>
 									<td><span id="billToC2">Billing Contact:</span></td>
 									<td style="width:140px;"><input type="text" name="billTo_billingContactName" style="width:125px" placeholder="<name>"/></td>
-									<td colspan="2"><span name="billTo_billingContactInfo" style="display: inline-block;width:170px;"></span></td>
+									<td colspan="2"><span name="billTo_billingContactInfo" style="display: inline-block;width:170px;"></span><i id="billingContactIdErr" aria-hidden="true"></i></td>
 								</tr>
 							</table>
 						</td>

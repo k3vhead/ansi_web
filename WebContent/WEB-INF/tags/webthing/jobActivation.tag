@@ -40,8 +40,8 @@
 	<form id="<%=namespace%>_jobActivationForm">
 		<table>
 			<tr>
-				<td colspan="1">DL %: <input type="text" name="<%=namespace%>_directLaborPct" id="<%=namespace%>_directLaborPct" style="width:40px;"  <%=disabled%>/>
-				<td colspan="1">DL Budget: <input type="text" name="<%=namespace%>_directLaborBudget" id="<%=namespace%>_directLaborBudget" style="width:40px;"  <%=disabled%>/></td>
+				<td colspan="1">DL %: <input type="text" name="<%=namespace%>_directLaborPct" id="<%=namespace%>_directLaborPct" style="width:40px;"  <%=disabled%>/><i id="directLaborPctErr" aria-hidden="true"></i></td>
+				<td colspan="1">DL Budget: <input type="text" name="<%=namespace%>_directLaborBudget" id="<%=namespace%>_directLaborBudget" style="width:40px;"  <%=disabled%>/><i id="budgetErr" aria-hidden="true"></i></td>
 				<td colspan="4"># Floors <input type="text" name="<%=namespace%>_nbrFloors" id="<%=namespace%>_nbrFloors" style="width:100px;"  <%=disabled%>/></td>
 			</tr>
 			<tr>

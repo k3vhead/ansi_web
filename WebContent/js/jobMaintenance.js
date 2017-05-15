@@ -2,6 +2,10 @@ $( document ).ready(function() {
 	;JOB_DATA = {}
 	;QUOTE_DATA = {}
 	;Page = null;
+	var $jobContactId = null;
+	var $siteContactId = null;
+	var $contractContactId = null;
+	var $billingContactId = null;
 	;JOB_UTILS = {
 		pageInit:function($jobId) {
 
@@ -78,17 +82,7 @@ $( document ).ready(function() {
 							ADDRESSPANEL.setAddress("0_jobSite",$quoteDetails.jobSite);
 						}
 						
-						$jobContactData = ADDRESSPANEL.getContact($jobDetail.jobContactId);
-						ADDRESSPANEL.setContact("0_jobSite_job",$jobContactData);
-						
-						$jobSiteData = ADDRESSPANEL.getContact($jobDetail.siteContact);
-						ADDRESSPANEL.setContact("0_jobSite_site",$jobSiteData);
-						
-						$jobContractData = ADDRESSPANEL.getContact($jobDetail.contractContactId);
-						ADDRESSPANEL.setContact("0_billTo_contract",$jobContractData);
-						
-						$jobBillingData = ADDRESSPANEL.getContact($jobDetail.billingContactId);
-						ADDRESSPANEL.setContact("0_billTo_billing",$jobBillingData);
+					
 						
 					}
 					
@@ -246,9 +240,18 @@ $( document ).ready(function() {
 			$($selectorName).fadeOut($duration);
 		},
 		
-		addJob: function($rn,$quoteId, $namespace) {
+		addJob: function($rn,$quoteId, $namespace, $jobContactId1, $siteContactId1, $contractContactId1, $billingContactId1) {
 			var $url = "job/add";
-
+			
+			if($jobContactId1 != null){
+				$jobContactId = $jobContactId1;
+			} if($siteContactId1 != null){
+				$siteContactId = $siteContactId1;
+			} if($contractContactId1 != null){
+				$contractContactId = $contractContactId1;
+			} if($billingContactId1 != null){
+				$billingContactId = $billingContactId1;
+			}
 			var $outbound = {};
 //			alert("job addJob - quoteId:" + $quoteId);
 //			alert($globalQuoteId);
@@ -263,13 +266,13 @@ $( document ).ready(function() {
         		$outbound["action"]	= 'ADD_JOB';
     		}
     		$outbound["activationDate"]				= $($pre+"_jobDates_activationDate").html();
-    		$outbound["billingContactId"]			= $("input[name='billTo_Con2id']").val();
+    		$outbound["billingContactId"]			= $billingContactId;
     		$outbound["billingNotes"]				= $($pre+"_jobActivation_billingNotes").val();
     		$outbound["budget"]						= $($pre+"_jobActivation_directLaborBudget").val();
     		$outbound["buildingType"]				= $($pre+"_jobActivation_buildingType").val();
     		$outbound["cancelDate"]					= $($pre+"_jobDates_cancelDate").html();
     		$outbound["cancelReason"]				= $($pre+"_jobDates_cancelReason").html();
-    		$outbound["contractContactId"]			= $("input[name='billTo_Con1id']").val();
+    		$outbound["contractContactId"]			= $contractContactId;
     		$outbound["directLaborPct"]				= $($pre+"_jobActivation_directLaborPct").val();
     		$outbound["divisionId"]					= $($pre+"_jobPanel_divisionId").val();
     		$outbound["equipment"]					= $($pre+"_jobActivation_equipment").val();
@@ -280,7 +283,7 @@ $( document ).ready(function() {
     		$outbound["invoiceGrouping"]			= $($pre+"_jobInvoice_invoiceGrouping").val();
     		$outbound["invoiceStyle"]				= $($pre+"_jobInvoice_invoiceStyle").val();
     		$outbound["invoiceTerms"]				= $($pre+"_jobInvoice_invoiceTerms").val();
-    		$outbound["jobContactId"]				= $("input[name='jobSite_Con1id']").val();
+    		$outbound["jobContactId"]				= $jobContactId;
     		$outbound["jobFrequency"]				= $($pre+"_jobProposal_jobFrequency").val();
     		$outbound["jobNbr"]						= $($pre+"_jobProposal_jobNbr").val();
     		$outbound["jobTypeId"]					= null;
@@ -295,7 +298,7 @@ $( document ).ready(function() {
     		$outbound["repeatScheduleAnnually"]		= $($pre+"_jobSchedule_annualRepeat").val();
     		$outbound["requestSpecialScheduling"]	= 0;
     		$outbound["serviceDescription"]			= $($pre+"_jobProposal_serviceDescription").val();
-    		$outbound["siteContact"]				= $("input[name='jobSite_Con2id']").val();
+    		$outbound["siteContact"]				= $siteContactId;
     		$outbound["startDate"]					= $($pre+"_jobDates_startDate").html();
     		$outbound["status"]						= $($pre+"_jobPanel_jobStatus").val();
     		$outbound["taxExempt"]					= 1;
@@ -305,7 +308,7 @@ $( document ).ready(function() {
     		
     		$outbound["washerNotes"]				= $($pre+"_jobActivation_washerNotes").val();
  
-
+    		console.log($outbound);
     		
     		
 			var jqxhr3 = $.ajax({
@@ -314,9 +317,18 @@ $( document ).ready(function() {
 				data: JSON.stringify($outbound),
 				statusCode: {
 					200: function($data) {
+						$(".inputIsInvalid").removeClass("fa-ban");
+						$(".inputIsInvalid").removeClass("inputIsInvalid");
 						console.log("Return 200");
 						console.log($data);
 						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+							
+							$.each($data.data.webMessages, function(key, messageList) {
+								var identifier = "#"+key+"Err";
+								$(identifier).addClass("fa-ban");
+								$(identifier).addClass("inputIsInvalid");
+							});
+							
 							alert("Edit Failure - missing data");
 							console.log("Edit Fail");
 						}

@@ -2,12 +2,12 @@ $( document ).ready(function() {
 
 	var $currentRow = 0;
 	var $globalQuoteId = 0;
-	var $billToId = 0;
-	var $jobSiteId = 0;
-	var $jobContactId = 0;
-	var $siteContactId = 0;
-	var $contractContactId = 0;
-	var $billingContactId = 0;
+	var $billToId = null;
+	var $jobSiteId = null;
+	var $jobContactId = null;
+	var $siteContactId = null;
+	var $contractContactId = null;
+	var $billingContactId = null;
 	
 	;JOB_DATA = {}
 	;QUOTE_DATA = {}
@@ -263,6 +263,11 @@ $( document ).ready(function() {
 							}
 						}
 						
+						if($("#"+$index+"_jobPanel_jobStatus").val() == "P" || $("#"+$index+"_jobPanel_jobStatus").val() == "N"){
+							$("#"+$index+"_jobPanel_scheduleJobButton").hide();
+						}
+						
+						
 						//$(".addressTable").remove();
 //						console.log("#"+$currentRow+"_jobPanel_jobLink");
 						
@@ -274,6 +279,7 @@ $( document ).ready(function() {
 					
 					QUOTEUTILS.bindAndFormat();
 				} else {
+					QUOTEUTILS.addAJob($globalQuoteId,false);
 					$("#loadingJobsDiv").hide();
 				}
 				
@@ -313,7 +319,7 @@ $( document ).ready(function() {
 			},
 			getContact:function($id){
 				var $url = "contactTypeAhead?id="+$id;
-				console.log("Contact Data: "+$id);
+//				console.log("Contact Data: "+$id);
 				$returnValue = null;
 				var jqxhr = $.ajax({
 					type: 'GET',
@@ -321,8 +327,8 @@ $( document ).ready(function() {
 					data: {},
 					statusCode: {
 						200: function($data) {
-							console.log("Contact Data: "+$id);
-							console.log($data[0]);
+//							console.log("Contact Data: "+$id);
+//							console.log($data[0]);
 							$returnValue = $data[0];
 						},					
 						403: function($data) {
@@ -515,38 +521,15 @@ $( document ).ready(function() {
 					},
 					statusCode: {
 						200: function($data) {
+							$(".inputIsInvalid").removeClass("fa-ban");
+							$(".inputIsInvalid").removeClass("inputIsInvalid");
 		   					if ( $data.responseHeader.responseCode=='EDIT_FAILURE') {
-		   						//doQuoteEditFailure($data.data);
-		   						
-		   						//alert("Edit Failure: Required Data is Missing");
 								console.log("Edit Failure");
 								console.log($data);
 								$.each($data.data.webMessages, function(key, messageList) {
-									var identifier = "#"+Lookup[key]+"Label";
-									//console.log("Show Error:" + identifier);
-//									if(key == "jobSiteAddressId"){
-//										ADDRESSPANEL.setError("jobSite","Label");
-//									}
-//									if(key == "billToAddressId"){
-//										ADDRESSPANEL.setError("billTo","Label");
-//									}
-//									if(key == "contractContactId"){
-//										ADDRESSPANEL.setError("billTo","C1");
-//									}
-//									if(key == "jobContactId"){
-//										ADDRESSPANEL.setError("jobSite","C1");
-//									}
-//									if(key == "billingContactId"){
-//										ADDRESSPANEL.setError("billTo","C2");
-//									}
-//									if(key == "siteContact"){
-//										ADDRESSPANEL.setError("jobSite","C2");
-//									}
-//									
-									$(identifier).addClass('error');
-									 setTimeout(function() {
-										 $(identifier).removeClass('error');
-								        }, 8000);
+									var identifier = "#"+key+"Err";
+									$(identifier).addClass("fa-ban");
+									$(identifier).addClass("inputIsInvalid");
 								});	
 		   					} else if ( $data.responseHeader.responseCode == 'SUCCESS') {
 //								$("input[name=quoteId]").val($data.data.quote.quoteId);//gag
@@ -738,9 +721,10 @@ $( document ).ready(function() {
 					dataType: 'json'
 				});
 			},
-			addAJob: function($quoteId){
+			addAJob: function($quoteId,refresh=true){
 				var $namespace = $currentRow.toString() + "_jobPanel";
 				var $row = $currentRow.toString();
+				$globalQuoteId = $quoteId;
 //				alert("quote addAJob quoteId:" + $quoteId);
 				$currentRow++;
 				var jqxhr1 = $.ajax({
@@ -797,10 +781,45 @@ $( document ).ready(function() {
 								JOBINVOICE.init($row+"_jobInvoice", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, $jobDetail);
 								JOBAUDIT.init($row+"_jobAudit", $jobDetail);
 								$('.jobSave').on('click', function($clickevent) {
-									JOB_UTILS.addJob($(this).attr("rownum"),$quoteId);
+									JOB_UTILS.addJob($(this).attr("rownum"),$globalQuoteId,$jobContactId, $siteContactId, $contractContactId, $billingContactId);
 					            });
 								QUOTEUTILS.bindAndFormat();
-								$("#accordian").accordion( "refresh" );
+								
+								//console.log($globalQuoteId);
+								
+								var $maxJobNbr = 0;
+								
+								for($x=0;$x<=$row;$x++){
+									if(parseInt($("#"+$x+'_jobProposal_jobNbr').val()) > $maxJobNbr){
+										$maxJobNbr = parseInt($("#"+$x+'_jobProposal_jobNbr').val());
+									}
+								}
+								$("#"+$row+'_jobProposal_jobNbr').val(($maxJobNbr+1));
+								$('#'+$row+'_jobActivation_automanual').val("auto");
+								$('#'+$row+'_jobActivation_automanual').selectmenu("refresh");
+								$("#"+$row+'_jobActivation_equipment').val('BASIC');
+								$("#"+$row+'_jobSchedule_annualRepeat').prop('checked', true);
+								
+								$('#'+$row+'_jobInvoice_invoiceStyle').val("INVOICE");
+								$('#'+$row+'_jobInvoice_invoiceStyle').selectmenu("refresh");
+								
+								$('#'+$row+'_jobInvoice_invoiceGrouping').val("BY_JOB_SITE");
+								$('#'+$row+'_jobInvoice_invoiceGrouping').selectmenu("refresh");
+								
+								$('#'+$row+'_jobInvoice_invoiceTerms').val("DAY10");
+								$('#'+$row+'_jobInvoice_invoiceTerms').selectmenu("refresh");
+								//console.log(QUOTE_DATA['data']);
+								if(QUOTE_DATA['data'] != null && QUOTE_DATA['data'].divisionCode != null){
+									$("#"+$row+'_jobPanel_divisionId').text(QUOTE_DATA['data'].divisionCode);
+								}
+								//$("#"+$row+'_jobPanel_divisionId').selectmenu("refresh");
+								
+								setTimeout(function() {
+									if(refresh){
+										$("#accordian").accordion( "refresh" );
+									}
+							       }, 250);
+								
 		   		
 		   				},
 	   					403: function($data) {

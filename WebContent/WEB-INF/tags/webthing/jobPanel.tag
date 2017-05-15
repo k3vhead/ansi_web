@@ -45,17 +45,16 @@
 						<span id="<%= namespace %>_jobStatus"></span> 						
 					<% } %>
 				<bean:message key="rpt.hdr.division" />:
-					<% if ( page.equals("QUOTE")) { %> 
-					<select name="divisionId" id="<%= namespace %>_divisionId"></select>
-					<% } else { %>
+
 						<span id="<%= namespace %>_divisionId"></span>
-					<% } %>
+					
 				<div style="float:right; text-align:right;">
 					<% if ( page.equals("QUOTE") ) { %>
 						Job: <a href="jobMaintenance.html" id="<%= namespace %>_jobLink"></a><br />
 					<% } else { %>
 						Quote: <a href="quoteMaintenance.html"><span id="<%= namespace %>_quoteId"></span></a><br />
 					<% } %>
+					<i style="cursor:pointer;" class="fa fa-product-hunt fa-3x" aria-hidden="true" id="<%= namespace %>_proposeJobButton"></i>
 					<i style="cursor:pointer;" class="fa fa-arrow-circle-right fa-3x" aria-hidden="true" id="<%= namespace %>_activateJobButton"></i>
 					<i style="cursor:pointer;" class="clickableIcon, fa fa-ban fa-3x text-danger" id="<%= namespace %>_cancelJobButton"></i>
 					<i style="cursor:pointer;" class="clickableIcon, fa fa-calendar  fa-3x" aria-hidden="true" id="<%= namespace %>_scheduleJobButton"></i>
