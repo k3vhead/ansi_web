@@ -67,7 +67,7 @@ public class TicketPrintServlet extends AbstractServlet {
 			if ( url.getId() == null ) {
 				super.sendNotFound(response);
 			} else {
-				pricessTicketPrint(conn, response, url.getId(), sessionUser);
+				processTicketPrint(conn, response, url.getId(), sessionUser);
 			}
 
 			conn.rollback();
@@ -122,7 +122,7 @@ public class TicketPrintServlet extends AbstractServlet {
 	}
 
 
-	private void pricessTicketPrint(Connection conn, HttpServletResponse response, Integer ticketId, SessionUser sessionUser) throws Exception {
+	private void processTicketPrint(Connection conn, HttpServletResponse response, Integer ticketId, SessionUser sessionUser) throws Exception {
 		TicketPrint tp = new TicketPrint();
 		TicketPrintResult result = tp.selectOne(conn, ticketId);
 		List<TicketPrintResult> ticketList = Arrays.asList(new TicketPrintResult[] { result });
