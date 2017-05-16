@@ -535,8 +535,10 @@ $( document ).ready(function() {
 		   					} else if ( $data.responseHeader.responseCode == 'SUCCESS') {
 //								$("input[name=quoteId]").val($data.data.quote.quoteId);//gag
 								$globalQuoteId =	$data.data.quote.quoteId;//gag
+						
 								$("input[name=quoteNumber]").val($data.data.quote.quoteNumber);
 								$("input[name=revision]").val($data.data.quote.revision);
+
 								console.log("Save Success");
 								console.log($data);
 									if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
@@ -649,7 +651,7 @@ $( document ).ready(function() {
 								console.log("Edit Failure");
 								console.log($data);
 								$.each($data.data.webMessages, function(key, messageList) {
-									var identifier = Lookup[key];
+									var identifier = key
 									console.log("Show Error:" + identifier);
 									$(identifier).addClass("error");
 								});	
@@ -782,7 +784,7 @@ $( document ).ready(function() {
 								JOBINVOICE.init($row+"_jobInvoice", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, $jobDetail);
 								JOBAUDIT.init($row+"_jobAudit", $jobDetail);
 								$('.jobSave').on('click', function($clickevent) {
-									JOB_UTILS.addJob($(this).attr("rownum"),$globalQuoteId,$jobContactId, $siteContactId, $contractContactId, $billingContactId);
+									JOB_UTILS.addJob($(this).attr("rownum"),$globalQuoteId);
 					            });
 								QUOTEUTILS.bindAndFormat();
 								
@@ -842,7 +844,21 @@ $( document ).ready(function() {
 					dataType: 'html'
 				});
 			},
-			
+			getjobContactId: function(){
+				return $jobContactId;	
+			},
+			getsiteContact: function(){
+				return $siteContactId;
+			},
+			getcontractContactId: function(){
+				return $contractContactId;
+			},
+			getbillingContactId: function(){
+				return $billingContactId;
+			},
+			getDivision: function(){
+				return $("select[name=division]").val();
+			},
 			getJobs: function($quoteId) {
 				var $returnValue = null;
 				if ( $quoteId != null ) {
