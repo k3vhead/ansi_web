@@ -2,7 +2,7 @@ package com.ansi.scilla.web.ansiUser;
 
 import java.lang.reflect.InvocationTargetException;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.queries.PermissionGroupUserCount;
@@ -20,9 +20,9 @@ public class AnsiUserCountRecord extends ApplicationObject {
 		super();
 	}
 	
-	public AnsiUserCountRecord(PermissionGroupUserCount record) throws IllegalAccessException, InvocationTargetException {
+	public AnsiUserCountRecord(PermissionGroupUserCount record) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		this();
-		BeanUtils.copyProperties(this, record.getPermissionGroup());
+		PropertyUtils.copyProperties(this, record.getPermissionGroup());
 		this.userCount = record.getUserCount();
 	}
 	

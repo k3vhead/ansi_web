@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
 import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
@@ -75,9 +75,9 @@ public class PaymentLookupResponseItem extends ReportQuery {
 		this.jobSiteName = rs.getString(JOB_SITE_NAME);
 	}
 
-	public PaymentLookupResponseItem(PaymentSearchResult result) throws IllegalAccessException, InvocationTargetException {
+	public PaymentLookupResponseItem(PaymentSearchResult result) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		this();
-		BeanUtils.copyProperties(this, result);
+		PropertyUtils.copyProperties(this, result);
 	}
 	
 	

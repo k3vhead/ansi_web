@@ -3,7 +3,7 @@ package com.ansi.scilla.web.request;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.web.common.AppUtils;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -24,10 +24,10 @@ public class LoginRequest extends AbstractRequest {
 		this.userid = userid;
 		this.password = password;
 	}
-	public LoginRequest(String jsonString) throws IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException {
+	public LoginRequest(String jsonString) throws IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException, NoSuchMethodException {
 		this();
 		LoginRequest req = (LoginRequest) AppUtils.json2object(jsonString, LoginRequest.class);
-		BeanUtils.copyProperties(this, req);
+		PropertyUtils.copyProperties(this, req);
 	}
 	public String getUserid() {
 		return userid;

@@ -28,7 +28,7 @@ public class QuoteSearchResponse extends MessageResponse implements Serializable
 /*	public QuoteSearchResponse(Connection conn, QuoteSearch quoteSearch) throws IllegalAccessException, InvocationTargetException, SQLException {
 		this();
 		this.quoteSearch = new QuoteSearchRecord();
-		BeanUtils.copyProperties(this.quoteSearch, quoteSearch);
+		PropertyUtils.copyProperties(this.quoteSearch, quoteSearch);
 		Integer billToName = this.makeUserCount(conn, quoteSearch.getQuoteId());
 		this.quoteSearch.setBillToName(billToName);
 	}

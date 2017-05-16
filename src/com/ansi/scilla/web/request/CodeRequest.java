@@ -3,7 +3,7 @@ package com.ansi.scilla.web.request;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.web.common.AppUtils;
 
@@ -24,10 +24,11 @@ public class CodeRequest extends AbstractRequest {
 		super();
 	}
 	
-	public CodeRequest(String jsonString) throws IOException, IllegalAccessException, InvocationTargetException {
+	public CodeRequest(String jsonString) throws IOException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchMethodException {
 		this();
-		CodeRequest req = (CodeRequest) AppUtils.json2object(jsonString, CodeRequest.class);
-		BeanUtils.copyProperties(this, req);
+		CodeRequest req = new CodeRequest();
+		AppUtils.json2object(jsonString, req);
+		PropertyUtils.copyProperties(this, req);
 	}
 
 	@RequiredForAdd

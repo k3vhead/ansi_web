@@ -21,7 +21,7 @@ public class AnsiUserItem extends ApplicationObject {
 	/*
 	public PermissionItem(PermissionGroupLevel permissionGroupLevel) throws IllegalAccessException, InvocationTargetException {
 		this();
-		BeanUtils.copyProperties(this, permissionGroupLevel);
+		PropertyUtils.copyProperties(this, permissionGroupLevel);
 	}
 	*/
 	

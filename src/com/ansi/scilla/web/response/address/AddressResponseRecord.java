@@ -2,7 +2,7 @@ package com.ansi.scilla.web.response.address;
 
 import java.lang.reflect.InvocationTargetException;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Address;
@@ -27,9 +27,9 @@ public class AddressResponseRecord extends ApplicationObject implements Comparab
 	private String countryCode;
 
 	
-	public AddressResponseRecord(Address address) throws IllegalAccessException, InvocationTargetException {
+	public AddressResponseRecord(Address address) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		super();
-		BeanUtils.copyProperties(this, address);
+		PropertyUtils.copyProperties(this, address);
 	}
 	
 

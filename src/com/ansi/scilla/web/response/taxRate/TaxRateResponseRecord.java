@@ -4,7 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.TaxRate;
@@ -22,10 +22,10 @@ public class TaxRateResponseRecord extends ApplicationObject {
 	private BigDecimal rate;
 	private Integer taxRateId;
 
-	public TaxRateResponseRecord(TaxRate taxRate) throws IllegalAccessException, InvocationTargetException {
+	public TaxRateResponseRecord(TaxRate taxRate) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		super();
 		if(taxRate != null) {
-			BeanUtils.copyProperties(this, taxRate);
+			PropertyUtils.copyProperties(this, taxRate);
 		}
 	}
 

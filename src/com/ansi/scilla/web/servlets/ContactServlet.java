@@ -9,7 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.db.Contact;
@@ -26,7 +26,6 @@ import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.request.ContactRequest;
 import com.ansi.scilla.web.response.contact.ContactListResponse;
 import com.ansi.scilla.web.response.contact.ContactResponse;
-import com.ansi.scilla.web.response.ticket.TicketReturnResponse;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
@@ -306,7 +305,7 @@ public class ContactServlet extends AbstractServlet {
 	protected boolean isDuplicateContact(Connection conn, ContactRequest contactRequest) throws Exception {
 		boolean isDuplicate = false;
 		Contact potential = new Contact();
-		BeanUtils.copyProperties(potential, contactRequest);
+		PropertyUtils.copyProperties(potential, contactRequest);
 		
 		Contact key = new Contact();
 		key.setLastName(contactRequest.getLastName());

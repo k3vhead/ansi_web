@@ -5,7 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.web.common.AppUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -64,10 +64,10 @@ public class JobRequest extends AbstractRequest{
 		super();
 	}
 	
-	public JobRequest(String jsonString) throws JsonException, IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException {
+	public JobRequest(String jsonString) throws JsonException, IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException, NoSuchMethodException {
 		this();
 		JobRequest req = (JobRequest) AppUtils.json2object(jsonString, JobRequest.class);
-		BeanUtils.copyProperties(this, req);
+		PropertyUtils.copyProperties(this, req);
 	}
 	
 	public Integer getAddedBy() {

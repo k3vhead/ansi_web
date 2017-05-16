@@ -2,9 +2,10 @@ package com.ansi.scilla.web.response.user;
 
 import java.lang.reflect.InvocationTargetException;
 
+import org.apache.commons.beanutils.PropertyUtils;
+
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.User;
-import com.thewebthing.commons.lang.BeanUtils;
 
 public class UserResponseItem extends ApplicationObject {
 
@@ -28,9 +29,9 @@ public class UserResponseItem extends ApplicationObject {
 		super();
 	}
 
-	public UserResponseItem(User user) throws IllegalAccessException, InvocationTargetException {
+	public UserResponseItem(User user) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		this();
-		BeanUtils.copyProperties(this, user);
+		PropertyUtils.copyProperties(this, user);
 	}
 
 	public String getEmail() {

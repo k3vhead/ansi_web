@@ -43,7 +43,7 @@ public class InvoiceTicketResponse extends MessageResponse {
 		List<TicketPaymentTotals> totalsList = TicketPaymentTotals.selectByInvoice(conn, invoiceId);
 		makeTicketList(totalsList);
 	}
-	public InvoiceTicketResponse(AddressResponseRecord address, List<TicketPaymentTotals> totalsList) throws IllegalAccessException, InvocationTargetException {
+	public InvoiceTicketResponse(AddressResponseRecord address, List<TicketPaymentTotals> totalsList) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		this();
 		this.address = address;
 		makeTicketList(totalsList);
@@ -90,7 +90,7 @@ public class InvoiceTicketResponse extends MessageResponse {
 		this.totalWriteOff = totalWriteOff;
 	}
 	
-	private void makeTicketList(List<TicketPaymentTotals> totalsList) throws IllegalAccessException, InvocationTargetException {
+	private void makeTicketList(List<TicketPaymentTotals> totalsList) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		this.ticketList = new ArrayList<TicketPaymentTotalItem>();
 		for ( TicketPaymentTotals ticket : totalsList ) {
 			TicketPaymentTotalItem total = new TicketPaymentTotalItem(ticket);

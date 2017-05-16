@@ -5,7 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.web.common.AppUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -61,11 +61,12 @@ public class TaxRateRequest extends AbstractRequest {
 	 * @throws JsonParseException
 	 * @throws JsonMappingException
 	 * @throws IOException
+	 * @throws NoSuchMethodException 
 	 */
-	public TaxRateRequest(String jsonString) throws IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException {
+	public TaxRateRequest(String jsonString) throws IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException, NoSuchMethodException {
 		this();
 		TaxRateRequest req = (TaxRateRequest) AppUtils.json2object(jsonString, TaxRateRequest.class);
-		BeanUtils.copyProperties(this, req);
+		PropertyUtils.copyProperties(this, req);
 	}
 
 	/**

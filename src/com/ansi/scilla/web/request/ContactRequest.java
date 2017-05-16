@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.common.db.Code;
 import com.ansi.scilla.common.db.Contact;
@@ -44,10 +44,10 @@ public class ContactRequest extends AbstractRequest {
 		super();
 	}
 	
-	public ContactRequest(String jsonString) throws IOException, IllegalAccessException, InvocationTargetException {
+	public ContactRequest(String jsonString) throws IOException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		this();
 		ContactRequest req = (ContactRequest) AppUtils.json2object(jsonString, ContactRequest.class);
-		BeanUtils.copyProperties(this, req);
+		PropertyUtils.copyProperties(this, req);
 	}
 	
 	@RequiredFormat(PHONE_FORMAT)

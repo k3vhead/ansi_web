@@ -42,7 +42,9 @@
 				width:80px !important;
 				max-width:80px !important;
 			}
-			
+			.print-link {
+				cursor:pointer;
+			}
         </style>
         
         <script type="text/javascript">    
@@ -138,8 +140,14 @@
 			            } },
 			            { title: "Action",  data: function ( row, type, set ) {	
 			            	//console.log(row);
-			            	{return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='ticketReturn.html?id="+row.ticketId+"' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.ticketId+"'></a></ansi:hasWrite></ansi:hasPermission>";}
-			            	
+			            	var $editLink = "<a href='ticketReturn.html?id="+row.ticketId+"' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.ticketId+"'></a>";
+			            	if ( row.ticketStatus == 'N' ) {
+			            		var $ticketData = 'data-id="' + row.ticketId + '"';
+			            		$printLink = '<i class="print-link fa fa-print" aria-hidden="true" ' + $ticketData + '></i>'
+			            	} else {
+			            		$printLink = "";
+			            	}
+			            	return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite>" + $editLink + ' ' + $printLink + "</ansi:hasWrite></ansi:hasPermission>"
 			            } }],
 			            "initComplete": function(settings, json) {
 			            	//console.log(json);
@@ -167,6 +175,9 @@
 				function doFunctionBinding() {
 					$( ".editAction" ).on( "click", function($clickevent) {
 						 doEdit($clickevent);
+					});
+					$(".print-link").on( "click", function($clickevent) {
+						doPrint($clickevent);
 					});
 				}
 				
@@ -209,6 +220,18 @@
 						});
 					//console.log("Edit Button Clicked: " + $rowid);
 				}
+				
+				function doPrint($clickevent) {
+					var $ticketId = $clickevent.currentTarget.attributes['data-id'].value;
+					console.debug("ROWID: " + $ticketId);
+					var a = document.createElement('a');
+                    var linkText = document.createTextNode("Download");
+                    a.appendChild(linkText);
+                    a.title = "Download";
+                    a.href = "ticketPrint/" + $ticketId;
+                    a.target = "_new";   // open in a new window
+                    document.body.appendChild(a);
+                    a.click();				}
         });
         		
         </script>        
@@ -282,7 +305,7 @@
     	<a href="#" title="Scroll to Top" class="ScrollTop">Scroll To Top</a>
     	</br>
     </p>
-    
+
     </tiles:put>
 		
 </tiles:insert>

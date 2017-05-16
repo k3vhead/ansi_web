@@ -1,18 +1,16 @@
 package com.ansi.scilla.web.response.quote;
 
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
 import java.util.Date;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Address;
+import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.db.User;
-import com.ansi.scilla.common.db.Division;
-import com.ansi.scilla.common.db.PrintHistory;
-
-import java.sql.Connection;
 import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
 import com.ansi.scilla.web.response.MessageResponse;
 import com.ansi.scilla.web.response.address.AddressResponseRecord;
@@ -29,7 +27,7 @@ public class QuoteResponseRecord extends MessageResponse {
 
 	public QuoteResponseRecord(Connection conn, Quote quote) throws Exception {
 		super();
-		BeanUtils.copyProperties(this, quote);
+		PropertyUtils.copyProperties(this, quote);
 		
 		User manager = new User();
 		manager.setUserId(quote.getManagerId());
@@ -110,9 +108,9 @@ public class QuoteResponseRecord extends MessageResponse {
 				super();
 			}
 			
-			public QuoteDetail(Quote quote, User manager, Division division) throws IllegalAccessException, InvocationTargetException {
+			public QuoteDetail(Quote quote, User manager, Division division) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 				this();
-				BeanUtils.copyProperties(this, quote);
+				PropertyUtils.copyProperties(this, quote);
 				this.managerLastName = manager.getLastName();
 				this.managerFirstName = manager.getFirstName();
 				this.managerEmail = manager.getEmail();

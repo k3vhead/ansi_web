@@ -3,10 +3,11 @@ package com.ansi.scilla.web.response.ticketSearch;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
+import org.apache.commons.beanutils.PropertyUtils;
+
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.queries.TicketSearch;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.thewebthing.commons.lang.BeanUtils;
 
 /**
  * 
@@ -32,10 +33,10 @@ public class TicketSearchRecord extends ApplicationObject {
 	private String revision;
 	private String jobStatus;
 	
-	public TicketSearchRecord(TicketSearch ticketSearch) throws IllegalAccessException, InvocationTargetException {
+	public TicketSearchRecord(TicketSearch ticketSearch) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		this();
-		BeanUtils.copyProperties(this, ticketSearch.getTicket());
-		BeanUtils.copyProperties(this, ticketSearch.getQuote());
+		PropertyUtils.copyProperties(this, ticketSearch.getTicket());
+		PropertyUtils.copyProperties(this, ticketSearch.getQuote());
 		this.billToName = ticketSearch.getBillToName();			
 		this.jobSiteName = ticketSearch.getJobSiteName();			
 		this.jobSiteAddress = ticketSearch.getJobSiteAddress();	

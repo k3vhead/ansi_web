@@ -3,7 +3,7 @@ package com.ansi.scilla.web.request;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.web.common.AppUtils;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -36,7 +36,7 @@ import com.thewebthing.commons.lang.JsonException;
 			this();
 			AddressRequest req = new AddressRequest();
 			AppUtils.json2object(jsonString, req);
-			BeanUtils.copyProperties(this, req);
+			PropertyUtils.copyProperties(this, req);
 		}
 		
 

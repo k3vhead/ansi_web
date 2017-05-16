@@ -7,7 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.common.db.PermissionGroup;
 import com.ansi.scilla.web.response.MessageResponse;
@@ -33,10 +33,10 @@ public class PermissionGroupResponse extends MessageResponse implements Serializ
 	}
 	
 	
-	public PermissionGroupResponse(Connection conn, PermissionGroup perm) throws IllegalAccessException, InvocationTargetException, SQLException {
+	public PermissionGroupResponse(Connection conn, PermissionGroup perm) throws IllegalAccessException, InvocationTargetException, SQLException, NoSuchMethodException {
 		this();
 		this.permGroupCountRecord = new PermGroupCountRecord();
-		BeanUtils.copyProperties(this.permGroupCountRecord, perm);
+		PropertyUtils.copyProperties(this.permGroupCountRecord, perm);
 		Integer userCount = this.makeUserCount(conn, perm.getPermissionGroupId());
 		this.permGroupCountRecord.setUserCount(userCount);
 	}

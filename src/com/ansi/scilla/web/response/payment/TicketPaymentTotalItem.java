@@ -4,12 +4,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.apache.commons.beanutils.PropertyUtils;
+
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
 import com.ansi.scilla.common.queries.TicketPaymentTotals;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.thewebthing.commons.lang.BeanUtils;
 
 public class TicketPaymentTotalItem extends ApplicationObject {
 
@@ -47,10 +48,10 @@ public class TicketPaymentTotalItem extends ApplicationObject {
 		super();
 	}
 	
-	public TicketPaymentTotalItem(TicketPaymentTotals ticketPaymentTotals) throws IllegalAccessException, InvocationTargetException {
+	public TicketPaymentTotalItem(TicketPaymentTotals ticketPaymentTotals) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		this();
-		BeanUtils.copyProperties(this, ticketPaymentTotals);
-		BeanUtils.copyProperties(this, ticketPaymentTotals.getTicket());
+		PropertyUtils.copyProperties(this, ticketPaymentTotals);
+		PropertyUtils.copyProperties(this, ticketPaymentTotals.getTicket());
 	}
 	
 	public Integer getDivisionId() {

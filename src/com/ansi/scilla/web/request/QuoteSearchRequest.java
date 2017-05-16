@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.web.common.AppUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -51,10 +51,10 @@ public class QuoteSearchRequest extends AbstractRequest {
 		super();
 	}
 	
-	public QuoteSearchRequest(String jsonString) throws IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException {
+	public QuoteSearchRequest(String jsonString) throws IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException, NoSuchMethodException {
 		this();
 		QuoteSearchRequest req = (QuoteSearchRequest) AppUtils.json2object(jsonString, QuoteSearchRequest.class);
-		BeanUtils.copyProperties(this, req);
+		PropertyUtils.copyProperties(this, req);
 	}
 
 	public void setAddress(String address) {

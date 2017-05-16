@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.queries.QuoteWriter;
@@ -34,7 +34,7 @@ public class UserResponse extends MessageResponse {
 			List<QuoteWriter> quoteWriterList = QuoteWriter.selectAll(conn);
 			for ( QuoteWriter quoteWriter : quoteWriterList ) {
 				UserResponseItem item = new UserResponseItem();
-				BeanUtils.copyProperties(item, quoteWriter);
+				PropertyUtils.copyProperties(item, quoteWriter);
 				this.userList.add(item);
 			}
 		} else {

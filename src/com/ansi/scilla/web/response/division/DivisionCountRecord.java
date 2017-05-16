@@ -3,10 +3,11 @@ package com.ansi.scilla.web.response.division;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 
+import org.apache.commons.beanutils.BeanUtils;
+
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.queries.DivisionUserCount;
-import com.thewebthing.commons.lang.BeanUtils;
 
 /**
  * 
@@ -30,9 +31,12 @@ public class DivisionCountRecord extends ApplicationObject {
 		super();
 	}
 
-	public DivisionCountRecord(DivisionUserCount divisionUserCount) throws IllegalAccessException, InvocationTargetException {
-		this();
+	public DivisionCountRecord(DivisionUserCount divisionUserCount) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		this();		
 		BeanUtils.copyProperties(this, divisionUserCount.getDivision());
+		if ( divisionUserCount.getDivision().getDivisionId() == null ) {
+			this.divisionId = null;
+		}
 		this.userCount = divisionUserCount.getUserCount();	
 		if ( divisionUserCount.getDivision().getStatus().equals(Division.STATUS_IS_ACTIVE)) {
 			this.status = "Active";

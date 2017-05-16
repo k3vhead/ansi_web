@@ -23,7 +23,7 @@ public class TaxRateResponse extends MessageResponse implements Serializable {
 		super();
 	}
 
-	public TaxRateResponse(TaxRate taxRate, WebMessages webMessages) throws IllegalAccessException, InvocationTargetException {
+	public TaxRateResponse(TaxRate taxRate, WebMessages webMessages) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		super(webMessages);
 		this.taxRate = new TaxRateResponseRecord(taxRate);
 		

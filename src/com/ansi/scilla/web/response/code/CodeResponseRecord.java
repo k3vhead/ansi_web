@@ -2,7 +2,7 @@ package com.ansi.scilla.web.response.code;
 
 import java.lang.reflect.InvocationTargetException;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Code;
@@ -19,9 +19,9 @@ public class CodeResponseRecord extends ApplicationObject implements Comparable<
 	private String tableName;
 	private String value;
 	
-	public CodeResponseRecord(Code code) throws IllegalAccessException, InvocationTargetException {
+	public CodeResponseRecord(Code code) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		super();
-		BeanUtils.copyProperties(this, code);
+		PropertyUtils.copyProperties(this, code);
 	}
 	
 	public String getDescription() {		

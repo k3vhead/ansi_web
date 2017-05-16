@@ -2,7 +2,7 @@ package com.ansi.scilla.web.response.permissionGroup;
 
 import java.lang.reflect.InvocationTargetException;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.PermissionGroupLevel;
@@ -23,9 +23,9 @@ public class PermissionItem extends ApplicationObject implements Comparable<Perm
 	public PermissionItem() {
 		super();
 	}
-	public PermissionItem(PermissionGroupLevel permissionGroupLevel) throws IllegalAccessException, InvocationTargetException {
+	public PermissionItem(PermissionGroupLevel permissionGroupLevel) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		this();
-		BeanUtils.copyProperties(this, permissionGroupLevel);
+		PropertyUtils.copyProperties(this, permissionGroupLevel);
 	}
 	
 	public String getPermissionName() {

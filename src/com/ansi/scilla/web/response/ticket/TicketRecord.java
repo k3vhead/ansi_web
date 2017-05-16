@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtilsBean;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Ticket;
@@ -14,7 +15,6 @@ import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
 import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.thewebthing.commons.lang.BeanUtils;
 
 /**
  * 
@@ -42,14 +42,14 @@ public class TicketRecord extends ApplicationObject {
 		super();
 	}
 
-	public TicketRecord(Ticket ticket) throws IllegalAccessException, InvocationTargetException {
+	public TicketRecord(Ticket ticket) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		this();
 		System.out.println("ticket:" + ticket);
 		BeanUtilsBean beanUtilsBean = BeanUtilsBean.getInstance();
 		beanUtilsBean.getConvertUtils().register(
 		    new org.apache.commons.beanutils.converters.BigDecimalConverter(null),
 		BigDecimal.class);
-		BeanUtils.copyProperties(this, ticket);
+		PropertyUtils.copyProperties(this, ticket);
 		this.nextAllowedStatusList = getNextAllowedStatusList(ticket.getStatus());	
 	}
 

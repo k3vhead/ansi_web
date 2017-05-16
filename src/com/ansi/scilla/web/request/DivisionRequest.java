@@ -30,7 +30,7 @@ public class DivisionRequest extends AbstractRequest {
 //	public DivisionRequest(String jsonString) throws IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException {
 //		this();
 //		DivisionRequest req = (DivisionRequest) AppUtils.json2object(jsonString, DivisionRequest.class);
-//		BeanUtils.copyProperties(this, req);
+//		PropertyUtils.copyProperties(this, req);
 //	}
 	
 	@RequiredForUpdate

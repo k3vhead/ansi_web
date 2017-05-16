@@ -2,7 +2,7 @@ package com.ansi.scilla.web.struts;
 
 import java.lang.reflect.InvocationTargetException;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.User;
@@ -25,9 +25,9 @@ public class SessionUser extends ApplicationObject {
 	public SessionUser() {
 		super();
 	}
-	public SessionUser(User user) throws IllegalAccessException, InvocationTargetException {
+	public SessionUser(User user) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		this();
-		BeanUtils.copyProperties(this, user);
+		PropertyUtils.copyProperties(this, user);
 	}
 	public String getAddress() {
 		return address;

@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.util.Date;
 
+import org.apache.commons.beanutils.PropertyUtils;
+
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Address;
 import com.ansi.scilla.common.db.Job;
@@ -19,7 +21,6 @@ import com.ansi.scilla.web.response.ticket.TicketRecord;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.thewebthing.commons.db2.RecordNotFoundException;
-import com.thewebthing.commons.lang.BeanUtils;
 
 public class JobDetailResponse extends MessageResponse {
 
@@ -220,9 +221,9 @@ public class JobDetailResponse extends MessageResponse {
 		private Boolean canReschedule;
 		
 		
-		public JobDetail(Job job, User addedBy, User updatedBy) throws IllegalAccessException, InvocationTargetException {
+		public JobDetail(Job job, User addedBy, User updatedBy) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 			super();
-			BeanUtils.copyProperties(this, job);
+			PropertyUtils.copyProperties(this, job);
 			this.addedLastName = addedBy.getLastName();
 			this.addedFirstName = addedBy.getFirstName();
 			this.addedEmail = addedBy.getEmail();
@@ -644,9 +645,9 @@ public class JobDetailResponse extends MessageResponse {
 		public QuoteDetail() {
 			super();
 		}
-		public QuoteDetail(Quote quote) throws IllegalAccessException, InvocationTargetException {
+		public QuoteDetail(Quote quote) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 			this();
-			BeanUtils.copyProperties(this, quote);
+			PropertyUtils.copyProperties(this, quote);
 		}
 		@JsonSerialize(using=AnsiDateFormatter.class)
 		public Date getProposalDate() {

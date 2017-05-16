@@ -4,10 +4,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.apache.commons.beanutils.PropertyUtils;
+
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.queries.JobSearch;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.thewebthing.commons.lang.BeanUtils;
 
 /**
  * 
@@ -35,11 +36,11 @@ public class JobSearchRecord extends ApplicationObject {
 	private String quoteNumber;
 	private String revision;
 	
-	public JobSearchRecord(JobSearch jobSearch) throws IllegalAccessException, InvocationTargetException {
+	public JobSearchRecord(JobSearch jobSearch) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		this();
-		BeanUtils.copyProperties(this, jobSearch.getJob());
-		BeanUtils.copyProperties(this, jobSearch.getQuote());
-		BeanUtils.copyProperties(this,  jobSearch.getDivision());
+		PropertyUtils.copyProperties(this, jobSearch.getJob());
+		PropertyUtils.copyProperties(this, jobSearch.getQuote());
+		PropertyUtils.copyProperties(this,  jobSearch.getDivision());
 		this.billToName = jobSearch.getBillToName();			
 		this.jobSiteAddress = jobSearch.getJobSiteAddress();	
 		this.jobSiteName = jobSearch.getJobSiteName();			

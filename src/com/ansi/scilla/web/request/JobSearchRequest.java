@@ -5,7 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.web.common.AppUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -47,10 +47,10 @@ public class JobSearchRequest extends AbstractRequest {
 		super();
 	}
 	
-	public JobSearchRequest(String jsonString) throws IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException {
+	public JobSearchRequest(String jsonString) throws IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException, NoSuchMethodException {
 		this();
 		JobSearchRequest req = (JobSearchRequest) AppUtils.json2object(jsonString, JobSearchRequest.class);
-		BeanUtils.copyProperties(this, req);
+		PropertyUtils.copyProperties(this, req);
 	}
 
 	public void setDivisionId(Integer divisionId) {

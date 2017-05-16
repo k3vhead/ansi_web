@@ -7,7 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.web.response.MessageResponse;
@@ -33,10 +33,10 @@ public class DivisionResponse extends MessageResponse implements Serializable {
 		this.division = division;
 	}
 
-	public DivisionResponse(Connection conn, Division division) throws IllegalAccessException, InvocationTargetException, SQLException {
+	public DivisionResponse(Connection conn, Division division) throws IllegalAccessException, InvocationTargetException, SQLException, NoSuchMethodException {
 		this();
 		this.division = new DivisionCountRecord();
-		BeanUtils.copyProperties(this.division, division);
+		PropertyUtils.copyProperties(this.division, division);
 		Integer userCount = this.makeUserCount(conn, division.getDivisionId());
 		this.division.setUserCount(userCount);
 		if ( division.getStatus().equals(Division.STATUS_IS_ACTIVE)) {

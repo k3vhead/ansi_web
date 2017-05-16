@@ -3,10 +3,11 @@ package com.ansi.scilla.web.response.quoteSearch;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
+import org.apache.commons.beanutils.PropertyUtils;
+
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.queries.QuoteSearch;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.thewebthing.commons.lang.BeanUtils;
 
 /**
  * 
@@ -40,9 +41,9 @@ public class QuoteSearchRecord extends ApplicationObject {
 	private String quoteJobCount;
 	private String quotePpcSum;
 	
-	public QuoteSearchRecord(QuoteSearch quoteSearch) throws IllegalAccessException, InvocationTargetException {
+	public QuoteSearchRecord(QuoteSearch quoteSearch) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		this();
-		BeanUtils.copyProperties(this, quoteSearch.getQuote());
+		PropertyUtils.copyProperties(this, quoteSearch.getQuote());
 		this.billToName = quoteSearch.getBillToName();			
 		this.jobSiteName = quoteSearch.getJobSiteName();			
 		this.jobSiteAddress = quoteSearch.getJobSiteAddress();			

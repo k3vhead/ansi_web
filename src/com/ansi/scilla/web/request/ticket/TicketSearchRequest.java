@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.request.AbstractRequest;
@@ -44,10 +44,11 @@ public class TicketSearchRequest extends AbstractRequest {
 		super();
 	}
 	
-	public TicketSearchRequest(String jsonString) throws IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException {
+	public TicketSearchRequest(String jsonString) throws JsonParseException, JsonMappingException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, IOException  {
 		this();
-		TicketSearchRequest req = (TicketSearchRequest) AppUtils.json2object(jsonString, TicketSearchRequest.class);
-		BeanUtils.copyProperties(this, req);
+		TicketSearchRequest req = new TicketSearchRequest();
+		AppUtils.json2object(jsonString, req);
+		PropertyUtils.copyProperties(this, req);
 	}
 
 	public void setCompletionNotes(String completionNotes) {
