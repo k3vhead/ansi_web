@@ -32,6 +32,7 @@
 				<div style="display:inline;">
 					Created By:
 					<span style="display:inline;" id="<%=namespace%>_createdBy"></span>
+					<span style="display:inline; margin-left:30px;" id="<%=namespace%>_createdDate"></span>
 				</div>
 				<div style="display:inline;">
 					Last Changed:
