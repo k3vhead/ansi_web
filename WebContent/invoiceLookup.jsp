@@ -104,7 +104,7 @@
 			            { title: "Tickets" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.ticketCount != null){return (row.ticketCount+"");}
 			            } },
-			            { title: "Date", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "Invoice Date", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.invoiceDate != null){return (row.invoiceDate+"");}
 			            } },
 			            { title: "Amount",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
