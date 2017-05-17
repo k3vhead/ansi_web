@@ -2,23 +2,21 @@ package com.ansi.scilla.web.request;
 
 import java.util.Date;
 
-import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class InvoicePrintRequest extends AbstractRequest {
 
 	private static final long serialVersionUID = 1L;
 
-	private Integer divisionId;
+	private String divisionId;
 	private Date printDate;
 	private Date dueDate;
 	
 	@RequiredForAdd
-	public Integer getDivisionId() {
+	public String getDivisionId() {
 		return divisionId;
 	}
-	public void setDivisionId(Integer divisionId) {
+	public void setDivisionId(String divisionId) {
 		this.divisionId = divisionId;
 	}
 	@RequiredForAdd

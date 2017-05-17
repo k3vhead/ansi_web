@@ -33,6 +33,9 @@
 			#pdfDownload {
 				display:none;
 			}
+			#hangOn {
+				display:none;
+			}
         </style>
         
         <script type="text/javascript">        
@@ -48,6 +51,9 @@
                 showButtonPanel:true
             });
 
+        	$("#printAll").click(function($event) {
+        		printModal("all");
+        	});
         
 	         var jqxhr = $.ajax({
 	   			type: 'GET',
@@ -179,6 +185,7 @@
    					$("#dueDate").val("");
    					$("#printDateErr").html("");
    					$("#dueDateErr").html("");
+   					$("#hangOn").hide();
 
 	        		$('#goPrint').data('divisionId',$divisionId);
 	        		$('#goPrint').button('option', 'label', 'Print Invoices');
@@ -217,6 +224,7 @@
 		
 				
 				function printInvoices() {
+					$("#hangOn").show();
         			var $divisionId = $("#goPrint").data('divisionId');
 					var $printDate = $("#printDate").val();
 					var $dueDate = $("#dueDate").val();
@@ -297,6 +305,7 @@
             </tr>
         </tfoot>
     </table>
+    <input type="button" value="Print All Invoices" id="printAll" class="prettyWideButton" />
     
     
     	<a id="pdfDownload"></a>
@@ -320,6 +329,11 @@
 					 --%>
 				</table>
 			</form>
+			<div style="width:100%; padding-top:20px; text-align:center;" id="hangOn">
+				<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><br />
+				<br />
+				This may take a while ....
+			</div>
     	</div>
     </tiles:put>
 

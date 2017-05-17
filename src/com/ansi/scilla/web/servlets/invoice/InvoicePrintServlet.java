@@ -6,11 +6,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
+import java.util.TimeZone;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +20,6 @@ import javax.servlet.http.HttpServletResponse;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.invoice.InvoiceUtils;
-import com.ansi.scilla.common.jsonFormat.AnsiFormat;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.common.ResponseCode;
@@ -28,19 +28,13 @@ import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.request.InvoicePrintRequest;
+import com.ansi.scilla.web.response.invoice.InvoicePrintLookupResponse;
+import com.ansi.scilla.web.response.invoice.InvoicePrintLookupResponseItem;
 import com.ansi.scilla.web.response.invoice.InvoicePrintResponse;
-import com.ansi.scilla.web.response.ticket.TicketReturnResponse;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.itextpdf.text.Chunk;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.FontFactory;
-import com.itextpdf.text.PageSize;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.PdfWriter;
 
 
 
@@ -67,7 +61,8 @@ public class InvoicePrintServlet extends AbstractServlet {
 				conn = AppUtils.getDBCPConn();
 				conn.setAutoCommit(false);
 				String jsonString = super.makeJsonString(request);
-				InvoicePrintRequest invoicePrintRequest = (InvoicePrintRequest)AppUtils.json2object(jsonString, InvoicePrintRequest.class);
+				InvoicePrintRequest invoicePrintRequest = new InvoicePrintRequest();
+				AppUtils.json2object(jsonString, invoicePrintRequest);
 //				ansiURL = new AnsiURL(request, "invoiceGeneration", (String[])null); //  .../ticket/etc
 				SessionData sessionData = AppUtils.validateSession(request, Permission.INVOICE, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 				
@@ -79,7 +74,6 @@ public class InvoicePrintServlet extends AbstractServlet {
 				}
 				if (addErrors.isEmpty() && errors.isEmpty()) {
 					processUpdate(conn, request, response, invoicePrintRequest, sessionUser);
-//					fakeThePDF(conn, request, response, invoicePrintRequest);
 				} else {
 					processError(conn, response, addErrors, errors);
 				}
@@ -126,7 +120,7 @@ public class InvoicePrintServlet extends AbstractServlet {
 
 
 	private void processUpdate(Connection conn, HttpServletRequest request, HttpServletResponse response, InvoicePrintRequest invoicePrintRequest, SessionUser sessionUser) throws Exception {
-		Calendar invoiceDate = Calendar.getInstance(new Locale("America/Chicago"));
+//		Calendar invoiceDate = Calendar.getInstance(new Locale("America/Chicago"));
 //		invoiceDate.setTime(invoiceGenerationRequest.getInvoiceDate());
 //		Boolean monthlyFlag = invoiceGenerationRequest.getMonthlyFlag();
 //		Integer userId = sessionUser.getUserId();
@@ -141,21 +135,28 @@ public class InvoicePrintServlet extends AbstractServlet {
 			invoicePath.mkdirs();
 		}
 
-		Integer divisionId = invoicePrintRequest.getDivisionId();
-		Division division = new Division();
-		division.setDivisionId(divisionId);
-		division.selectOne(conn);
-
 		Date printDate = invoicePrintRequest.getPrintDate();				
 		Date dueDate = invoicePrintRequest.getDueDate();		
 		String fileDate = fileDateFormat.format(printDate);
-		String invoiceFileName = division.getDivisionNbr() + "-" + division.getDivisionCode() + "_" + fileDate + ".pdf";
 
-		Calendar printCalendar = Calendar.getInstance(new Locale("America/Chicago"));
+		List<Integer> divisionList = makeDivisionList(conn, invoicePrintRequest.getDivisionId());
+		String invoiceFileName = null;
+		if ( divisionList.size() == 1 ) {
+			Division division = new Division();
+			division.setDivisionId(divisionList.get(0));
+			division.selectOne(conn);
+			invoiceFileName = division.getDivisionNbr() + "-" + division.getDivisionCode();
+		} else {
+			invoiceFileName = "allDivisions";
+		}
+		invoiceFileName = invoiceFileName + "_" + fileDate + ".pdf";
+
+
+		Calendar printCalendar = Calendar.getInstance(TimeZone.getTimeZone("America/Chicago"));
 		printCalendar.setTime(printDate);
-		Calendar dueCalendar = Calendar.getInstance(new Locale("America/Chicago"));
+		Calendar dueCalendar = Calendar.getInstance(TimeZone.getTimeZone("America/Chicago"));
 		dueCalendar.setTime(dueDate);
-		ByteArrayOutputStream baos = InvoiceUtils.printInvoices(conn, division, printCalendar, dueCalendar);
+		ByteArrayOutputStream baos = InvoiceUtils.printInvoices(conn, divisionList, printCalendar, dueCalendar);
 		
 		
 		FileOutputStream os = new FileOutputStream(new File(invoicePathName + "/" + invoiceFileName));
@@ -169,6 +170,22 @@ public class InvoicePrintServlet extends AbstractServlet {
 		super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
 
 		
+	}
+
+
+	private List<Integer> makeDivisionList(Connection conn, String divisionId) throws Exception {
+		List<Integer> divisionList = new ArrayList<Integer>();
+		if ( divisionId.equalsIgnoreCase("all")) {
+			InvoicePrintLookupResponse response = new InvoicePrintLookupResponse(conn);
+			for ( InvoicePrintLookupResponseItem item : response.getInvoiceList()) {
+				if ( item.getInvoiceCount() > 0 ) {
+					divisionList.add(item.getDivisionId());
+				}
+			}			
+		} else {
+			divisionList.add(Integer.valueOf(divisionId));
+		}
+		return divisionList;
 	}
 
 
@@ -183,71 +200,6 @@ public class InvoicePrintServlet extends AbstractServlet {
 		InvoicePrintResponse data = new InvoicePrintResponse();
 		data.setWebMessages(webMessages);
 		super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
-	}
-
-
-
-
-	private void fakeThePDF(Connection conn, HttpServletRequest request, HttpServletResponse response, InvoicePrintRequest invoicePrintRequest ) throws Exception {
-		SimpleDateFormat fileDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		InvoicePrintResponse data = new InvoicePrintResponse();
-		WebMessages webMessages = new WebMessages();
-		String invoicePathName = request.getPathTranslated() + "invoicePDF";
-		File invoicePath = new File(invoicePathName);
-		if ( ! invoicePath.exists()) {
-			invoicePath.mkdirs();
-		}
-
-		Integer divisionId = invoicePrintRequest.getDivisionId();
-		Division division = new Division();
-		division.setDivisionId(divisionId);
-		division.selectOne(conn);
-
-		Date printDate = invoicePrintRequest.getPrintDate();				
-		Date dueDate = invoicePrintRequest.getDueDate();		
-		String fileDate = fileDateFormat.format(printDate);
-		String invoiceFileName = division.getDivisionNbr() + "-" + division.getDivisionCode() + "_" + fileDate + ".pdf";
-
-		
-		Font fontSplashTitle = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18);
-		Font fontSplashText = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14);
-		float marginLeft = 30F;
-		float marginRight = 30F;
-		float marginTop = 36F;
-		float marginBottom = 36F;
-		SimpleDateFormat invoiceDateFormat = new SimpleDateFormat(AnsiFormat.DATE.pattern());
-
-		Document document = new Document(PageSize.LETTER, marginLeft, marginRight, marginTop, marginBottom);
-
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		PdfWriter pdfWriter = PdfWriter.getInstance(document, baos);
-
-		document.open();
-
-		Paragraph p = new Paragraph();
-		p.add(new Chunk("Invoices for ",fontSplashTitle));
-		p.add(new Chunk(String.valueOf(divisionId),fontSplashTitle));
-		p.add(Chunk.NEWLINE);
-		p.add(new Chunk("Print date: " + invoiceDateFormat.format(printDate),fontSplashText));
-		p.add(Chunk.NEWLINE);
-		p.add(new Chunk("Due date: " + invoiceDateFormat.format(dueDate),fontSplashText));
-		document.add(p);
-		document.add(Chunk.NEXTPAGE);
-
-		document.close();
-
-		
-
-		FileOutputStream os = new FileOutputStream(new File(invoicePathName + "/" + invoiceFileName));
-		baos.writeTo(os);
-		os.flush();
-		os.close();
-		
-		
-		data.setInvoiceFile("invoicePDF/" + invoiceFileName);
-		data.setWebMessages(webMessages);
-		super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
-
 	}
 	
 }
