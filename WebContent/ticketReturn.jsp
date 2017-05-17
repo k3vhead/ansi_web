@@ -24,7 +24,7 @@
     <tiles:put name="headextra" type="string">
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
         <script type="text/javascript" src="js/jobMaintenance.js"></script>
-    <script type="text/javascript" src="js/addressUtils.js"></script>
+    	<script type="text/javascript" src="js/addressUtils.js"></script>
         <link rel="stylesheet" href="css/datepicker.css" type="text/css" />
         <style type="text/css">
 			#confirmDelete {
@@ -208,7 +208,10 @@
 			function populateSummary($data) {
 				$("#status").html($ticketStatusMap[$data.ticketDetail.status] + " (" + $data.ticketDetail.status + ")");
 				$("#divisionDisplay").html($data.ticketDetail.divisionDisplay);
-				$("#jobId").html($data.ticketDetail.jobId);				
+				$("#jobId").html($data.ticketDetail.jobId);
+				$("#serviceDescription").html($data.ticketDetail.serviceDescription);
+				$("#jobFrequency").html($data.ticketDetail.jobFrequency);
+				$("#invoiceStyle").html($data.ticketDetail.invoiceStyle);
 			}
 
 			
@@ -499,6 +502,11 @@
 	        		<th>Status</th><td><span id="status"></span></td>    		
 	        		<th>Division</th><td><span id="divisionDisplay"></span></td>
 	        		<th>Job ID</th><td><span id="jobId"></span></td>
+	        		<th>Payment Terms:</th><td><span id="invoiceStyle"></span></td>
+	        		<th>Frequency</th><td><span id="jobFrequency"></span></td>
+        		</tr>
+        		<tr>
+	        		<th colspan="2">Service Description:</th><td colspan="7"><span id="serviceDescription"></span></td>
 	    		</tr>
 			</table>
  		</div>
@@ -758,4 +766,5 @@
     </tiles:put>
 
 </tiles:insert>
+
 

@@ -5,8 +5,13 @@ import java.sql.Connection;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.common.invoice.InvoiceStyle;
+import com.ansi.scilla.common.invoice.InvoiceTerm;
+import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
 import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
@@ -49,7 +54,11 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 	private BigDecimal defaultDirectLaborPct;
 	private AddressDetail jobSiteAddress;
 	private AddressDetail billToAddress;
-	
+	private String serviceDescription;
+	private String jobFrequency;
+	private String invoiceTerms;
+	private String invoiceStyle;
+
 	
 	
 	public TicketDetail(){
@@ -83,9 +92,22 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		this.balance = actPricePerCleaning.add(actTax).subtract(totalVolPaid.add(totalTaxPaid));
 		//daysToPay insert HERE:***
 		this.divisionDisplay = ticketPaymentTotals.getDivisionDisplay();
+		this.serviceDescription = ticketPaymentTotals.getServiceDescription();
+		if ( ! StringUtils.isBlank(ticketPaymentTotals.getJobFrequency() )) {
+			this.jobFrequency = JobFrequency.get(ticketPaymentTotals.getJobFrequency()).display();
+		}
+		if ( ! StringUtils.isBlank(ticketPaymentTotals.getInvoiceStyle())) {
+			this.invoiceStyle = InvoiceStyle.valueOf(ticketPaymentTotals.getInvoiceStyle()).display();
+		}
+		if ( ! StringUtils.isBlank(ticketPaymentTotals.getInvoiceTerms())) {
+			this.invoiceTerms = InvoiceTerm.valueOf(ticketPaymentTotals.getInvoiceTerms()).display();
+		}
+		
+		 
 		
 		this.billToAddress = new AddressDetail(conn, ticketPaymentTotals.getBillToAddressId());
 		this.jobSiteAddress = new AddressDetail(conn, ticketPaymentTotals.getJobSiteAddressId());
+		
 	}
 
 	public Integer getTicketId() {
@@ -280,6 +302,38 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 
 	public void setBillToAddress(AddressDetail billToAddress) {
 		this.billToAddress = billToAddress;
+	}
+
+	public String getServiceDescription() {
+		return serviceDescription;
+	}
+
+	public void setServiceDescription(String serviceDescription) {
+		this.serviceDescription = serviceDescription;
+	}
+
+	public String getJobFrequency() {
+		return jobFrequency;
+	}
+
+	public void setJobFrequency(String jobFrequency) {
+		this.jobFrequency = jobFrequency;
+	}
+
+	public String getInvoiceTerms() {
+		return invoiceTerms;
+	}
+
+	public void setInvoiceTerms(String invoiceTerms) {
+		this.invoiceTerms = invoiceTerms;
+	}
+
+	public String getInvoiceStyle() {
+		return invoiceStyle;
+	}
+
+	public void setInvoiceStyle(String invoiceStyle) {
+		this.invoiceStyle = invoiceStyle;
 	}
 
 	
