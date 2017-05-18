@@ -250,7 +250,7 @@
     <tiles:put name="content" type="string">
     	<h1 >Division and Month Select</h1>
     	<div id="xlsDownloadDiv">
-    		<a href="#" id="xlsDownload"><i class="fa fa-table fa-3x" aria-hidden="true" style="cursor:pointer"></i></a>
+    		<a href="#" id="xlsDownload"><i class="fa fa-file-excel-o fa-2x" aria-hidden="true" style="cursor:pointer"></i></a>
     	</div>
 		<select id="divisionId">			
 		</select>

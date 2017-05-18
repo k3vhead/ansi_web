@@ -193,121 +193,17 @@ td.jobTableCell {
 		<table id="quoteTable" style="display:none;">
 			<tr>
 				<td colspan="2">
-					<table >
-						<tr>
-							<td><input type="button" name="modifyQuoteButton" value="Modify" class="quoteButton"/></td>
-							<td><span class="labelSpanSmall" id="managerLabel">Manager:</span>
-								<select name="manager" id="manager" class="quoteSelect">
-									<option value=""></option>
-								</select>
-								<i id="managerIdErr" aria-hidden="true"></i>
-							</td>
-							<td><span class="labelSpan"  id="divisionLabel">Division:</span>
-								<select name="division" id="division" class="quoteSelect">
-									<option value=""></option>
-								</select>
-							</td>
-							<td align="center"><span  id="quoteLabel">Quote</span></td>
-							<td align="center"><span  id="revisionLabel">Revision</span></td>
-							<td rowspan="2" align="right" style="padding-right:10px;"><input type="button" name="printButton" value="Print" class="quoteButton"/></td>
-						</tr>
-						<tr>
-							<td><input type="button" name="copyQuoteButton" value="Copy" class="quoteButton"/></td>
-							<td><span class="labelSpanSmall" id="leadTypeLabel">Lead Type:</span>
-								<select name="leadType" class="quoteSelect">
-									<option value=""></option>
-								</select>
-								<i id="leadTypeErr" aria-hidden="true"></i>
-							</td>
-							<td><span class="labelSpan" id="accountTypeLabel">Account Type:</span>
-								<select name="accountType" id="accountType" class="quoteSelect">
-									<option value=""></option>
-								</select>
-								<i id="accountTypeErr" aria-hidden="true"></i>
-							</td>
-							<td>Q:&nbsp;&nbsp;<input type="text" name="quoteNumber"  style="width:80px" value="<c:out value="${ANSI_QUOTE_ID}" />"/></td>
-							<td>R:&nbsp;&nbsp;<input type="text" name="revision"  style="width:40px"/></td>
-						</tr>
-						<tr>
-							<td><input type="button" name="newQuoteButton" value="New" class="quoteButton"/></td>
-							<td>Signed By:&nbsp;&nbsp;<input type="text" name="signedBy"  style="width:170px" disabled="disabled"/></td>
-							
-							<td><span class="labelSpan">Proposed Date:</span>
-								<input type="text" name="proposalDate"  style="width:95px" disabled="disabled"/>
-							</td>
-							<td colspan="2">Print Date:&nbsp;&nbsp;<input type="text" name="printDate"  style="width:90px"/></td>
-							<td>Print Count:&nbsp;&nbsp;<input type="text" name="printCount"  style="width:90px" disabled="disabled"/></td>
-						</tr>
-						<tr>
-							<td>&nbsp;</td>
-							<td>&nbsp;</td>
-							<td>&nbsp;</td>
-							<td>&nbsp;</td>
-							<td>&nbsp;</td>
-							<td align="right"  style="padding-right:10px;"><a href="#" name="viewPrintHistory">View Print History</a></td>
-						</tr>
-					</table>
+					<jsp:include page="quoteMaintenance/quoteTable_hdr.jsp" />
 				</td>
 			</tr>
 			<tr>
 				<td colspan='2' align="left">
-					<table style="width:100%;">
-					<tr>
-						<td align="left" style="width:480px;border:1px solid #000000">
-							<span style="display: inline-block;width:51px;"><b>Job Site</b></span><input type="text" name="jobSite_name" style="width:425px" />
-							<i id="jobSiteAddressIdErr" aria-hidden="true"></i>
-						</td>
-						<td align="left" style="width:480px;border:1px solid #000000">
-							<span style="display: inline-block;width:51px;"><b>Bill To</b></span><input type="text" name="billTo_name" style="width:425px" />
-							<i id="billToAddressIdErr" aria-hidden="true"></i>
-						</td>
-					</tr>
-					<tr>
-						<td align="left" style="width:480px;">
-							<!--<webthing:addressPanel label="Job Site" namespace="jobSite" cssId="jobSite" page="job"/>-->
-							<webthing:addressDisplayPanel cssId="jobSite" />
-						</td>
-						<td align="left" style="width:480px;">
-							<!--<webthing:addressPanel label="Bill To"  namespace="billTo" cssId="billTo"  page="bill"/>-->
-							<webthing:addressDisplayPanel cssId="billTo" />
-						</td>
-					</tr>
-					<tr>
-						<td align="left" style="width:480px;">
-							<table style="width:100%;border:1px solid #000000">
-								<tr>
-									<td><span id="jobSiteC1">Job Contact:</span></td>
-									<td style="width:140px;"><input type="text" name="jobSite_jobContactName" style="width:125px" placeholder="<name>"/></td>
-									<td colspan="2"><span name="jobSite_jobContactInfo" style="display: inline-block;width:170px;"></span><i id="jobContactIdErr" aria-hidden="true"></i></td>
-								</tr>
-								<tr>
-									<td><span id="jobSiteC2">Site Contact:</span></td>
-									<td style="width:140px;"><input type="text" name="jobSite_siteContactName" style="width:125px" placeholder="<name>"/></td>
-									<td colspan="2"><span name="jobSite_siteContactInfo" style="display: inline-block;width:170px;"></span><i id="siteContactErr" aria-hidden="true"></i></td>
-								</tr>
-							</table>
-						</td>
-						<td align="left" style="width:480px;">
-							<table style="width:100%;border:1px solid #000000">
-								<tr>
-									<td><span id="billToC1">Cont Contact:</span></td>
-									<td style="width:140px;"><input type="text" name="billTo_contractContactName" style="width:125px" placeholder="<name>"/></td>
-									<td colspan="2"><span name="billTo_contractContactInfo" style="display: inline-block;width:170px;"></span><i id="contractContactIdErr" aria-hidden="true"></i></td>
-								</tr>
-								<tr>
-									<td><span id="billToC2">Billing Contact:</span></td>
-									<td style="width:140px;"><input type="text" name="billTo_billingContactName" style="width:125px" placeholder="<name>"/></td>
-									<td colspan="2"><span name="billTo_billingContactInfo" style="display: inline-block;width:170px;"></span><i id="billingContactIdErr" aria-hidden="true"></i></td>
-								</tr>
-							</table>
-						</td>
-					</tr>
-					</table>
+					<jsp:include page="quoteMaintenance/quoteTable_contacts.jsp" />	
 				</td>
 			</tr>
 			<tr>
 				<td>
-				<div id="loadingJobsDiv" style="display:none;"><i class='fa fa-refresh fa-spin'></i></div>
+					<div id="loadingJobsDiv" style="display:none;"><i class='fa fa-refresh fa-spin'></i></div>
 					<div id="accordian">
 					</div>
 				</td>
@@ -319,13 +215,7 @@ td.jobTableCell {
 			</tr>
 			<tr>
 				<td align="right">
-					<table style="border:0;border-collapse:collapse;"  align="right">
-						<tr>
-							<td><input type="button" class="prettyWideButton" value="Cancel" id="quoteCancelButton" /></td>
-							<td><input type="button" class="prettyWideButton" value="Save" id="quoteSaveButton" /></td>
-							<td><input type="button" class="prettyWideButton" value="Save & Exit" id="quoteExitButton" /></td>
-						</tr>
-					</table>
+					<jsp:include page="quoteMaintenance/quoteTable_buttons.jsp" />
 				</td>
 			</tr>
 		</table>  
