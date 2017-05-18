@@ -216,7 +216,7 @@
 
 			
 			function populateDefaultValues($data) {
-				$actPricePerCleaning = $data.ticketDetail.actPricePerCleaning.substring(1);
+				$actPricePerCleaning = $data.ticketDetail.actPricePerCleaning.substring(1).replace(/,/,"");
        			if ( $data.actDlPct == null ) {
        				$actDlPct = $data.ticketDetail.defaultDirectLaborPct;
        			} else {i
@@ -226,7 +226,7 @@
        				if ( $actPricePerCleaning == null ) {
        					$actDlAmt = null;
        				} else {
-       					$actDlAmt = $actPricePerCleaning.substring(1) * $actDlPct;
+       					$actDlAmt = $actPricePerCleaning.substring(1).replace(/,/,"") * $actDlPct;
        				}	
        			} else {
        				$actDlAmt = $data.ticketDetail.actDlAmt;
