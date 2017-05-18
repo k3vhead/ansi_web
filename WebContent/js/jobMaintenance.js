@@ -537,6 +537,7 @@ $( document ).ready(function() {
 				var $createdBy = $jobDetail.addedFirstName + " " + $jobDetail.addedLastName + " (" + $jobDetail.addedEmail + ")";
 				var $updatedBy = $jobDetail.updatedFirstName + " " + $jobDetail.updatedLastName + " (" + $jobDetail.updatedEmail + ")";				
 				ANSI_UTILS.setTextValue($namespace, "createdBy", $createdBy);
+				ANSI_UTILS.setTextValue($namespace, "createdDate", $jobDetail.addedDate);
 				ANSI_UTILS.setTextValue($namespace, "lastChangeBy", $updatedBy);
 				ANSI_UTILS.setTextValue($namespace, "lastChangeDate", $jobDetail.updatedDate);
 			}
