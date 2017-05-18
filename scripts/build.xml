@@ -66,7 +66,11 @@
                 <include name="*.jar"/>
             </fileset>
         </path>
-        
+
+    	<propertyfile file="${dist}/WEB-INF/classes/resources/build_web.properties" comment="ansi_web">
+    		<entry key="builddate" type="date" value="now" pattern="MM/dd/yyyy HH:mm:ss" />
+    	</propertyfile>
+
         <javac srcdir="../../${projectName}/src"
                destdir="${dist}/WEB-INF/classes"
                debug="${compile.debug}"

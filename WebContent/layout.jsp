@@ -380,11 +380,12 @@
 	    		<div style="float:right; width:45%;">
 		    		<div class="trailerText" style="float:right;">
 		    			Powered by <a href="http://www.thewebthing.com" class="trailerLink" target="new">theWebThing</a>
+		    			<webthing:buildDate />
 		    		</div>
 	    		</div>
 	    		<div style="float:left; width:45%;">
 		    		<div class="trailerText">
-		    			&copy; 2016 American National Skyline, All Rights Reserved
+		    			&copy; 2016 American National Skyline, All Rights Reserved   
 		    		</div>
 	    		</div>	  
 	    		<div class="spacer">&nbsp;</div>  		

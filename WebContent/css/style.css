@@ -9,6 +9,10 @@ h1 {
 	font-weight:bold;
 	font-variant:small-caps;
 }
+#buildDate {
+	cursor:pointer;
+	text-decoration:underline;	
+}
 #headerNav {
 	width:100%;
 	background:#000000;
