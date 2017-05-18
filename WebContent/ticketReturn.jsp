@@ -266,7 +266,7 @@
 					markInvalid($("#validActPricePerCleaning"));
 				} else {
 					markValid($("#validActPricePerCleaning"));
-					var $actDlAmt = ($actPricePerCleaning * $actDlPct) / 100;
+					var $actDlAmt = ($actPricePerCleaning * $actDlPct);
 					$("#COMPLETED input[name=actDlAmt]").val($actDlAmt.toFixed(2));					
 				}
 			});
@@ -279,7 +279,7 @@
 					markInvalid($("#validActDlAmt"));
 				} else {
 					markValid($("#validActDlAmt"));
-					var $actDlPct = ($actDlAmt / $actPricePerCleaning) * 100;
+					var $actDlPct = ($actDlAmt / $actPricePerCleaning);
 					$("#COMPLETED input[name=actDlPct]").val($actDlPct);					
 					$("#COMPLETED span[class=actDlPct]").html($actDlPct.toFixed(3));
 				}
