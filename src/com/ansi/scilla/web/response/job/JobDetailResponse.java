@@ -13,10 +13,12 @@ import com.ansi.scilla.common.db.Job;
 import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.db.User;
+import com.ansi.scilla.common.db.ViewTicketLog;
 import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
 import com.ansi.scilla.common.utils.AppUtils;
 import com.ansi.scilla.web.response.MessageResponse;
 import com.ansi.scilla.web.response.address.AddressResponseRecord;
+import com.ansi.scilla.web.response.ticket.TicketLogRecord;
 import com.ansi.scilla.web.response.ticket.TicketRecord;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -30,9 +32,9 @@ public class JobDetailResponse extends MessageResponse {
 	private AddressResponseRecord billTo;
 	private AddressResponseRecord jobSite;
 	private TicketRecord lastRun;
-	private TicketRecord nextDue;
+	private TicketLogRecord nextDue;
 	private QuoteDetail quote;
-	private TicketRecord lastCreated;
+	private TicketLogRecord lastCreated;
 	
 	public JobDetailResponse() {
 		super();
@@ -84,18 +86,18 @@ public class JobDetailResponse extends MessageResponse {
 		}
 		
 		try {
-			Ticket nextDueTicket = AppUtils.getNextDueTicket(conn, jobId);
-			this.nextDue = new TicketRecord(nextDueTicket);
+			ViewTicketLog nextDueTicket = AppUtils.getNextDueTicketLog(conn, jobId);
+			this.nextDue = new TicketLogRecord(nextDueTicket);
 		} catch ( RecordNotFoundException e) {
 			// this is OK, just means job is not scheduled to run again
-			this.nextDue = new TicketRecord();
+			this.nextDue = new TicketLogRecord();
 		}
 		
 		try {
-			Ticket lastCreatedTicket = AppUtils.getLastCreatedTicket(conn, jobId);
-			this.lastCreated = new TicketRecord(lastCreatedTicket);
+			ViewTicketLog lastCreatedTicket = AppUtils.getLastCreatedTicketLog(conn, jobId);
+			this.lastCreated = new TicketLogRecord(lastCreatedTicket);
 		} catch ( RecordNotFoundException e) {
-			this.lastCreated = new TicketRecord();
+			this.lastCreated = new TicketLogRecord();
 		}
 		
 	}
@@ -124,10 +126,10 @@ public class JobDetailResponse extends MessageResponse {
 	public void setLastRun(TicketRecord lastRun) {
 		this.lastRun = lastRun;
 	}
-	public TicketRecord getNextDue() {
+	public TicketLogRecord getNextDue() {
 		return nextDue;
 	}
-	public void setNextDue(TicketRecord nextDue) {
+	public void setNextDue(TicketLogRecord nextDue) {
 		this.nextDue = nextDue;
 	}
 
@@ -145,11 +147,11 @@ public class JobDetailResponse extends MessageResponse {
 
 
 
-	public TicketRecord getLastCreated() {
+	public TicketLogRecord getLastCreated() {
 		return lastCreated;
 	}
 
-	public void setLastCreated(TicketRecord lastCreated) {
+	public void setLastCreated(TicketLogRecord lastCreated) {
 		this.lastCreated = lastCreated;
 	}
 
