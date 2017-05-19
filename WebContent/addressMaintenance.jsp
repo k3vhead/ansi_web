@@ -162,12 +162,15 @@
 				            	if(row.zip != null){return (row.zip+"");} 
 				            } },
 				            { title: "Action",  data: function ( row, type, set ) {	
-				            	if(row.count > 0)
-				            		return "<a href=\"#\" class=\"viewAction fa fa-search-plus\" aria-hidden=\"true\" data-id='"+row.addressId+"'></a> | <ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.addressId+"'></a></ansi:hasWrite></ansi:hasPermission>";
-				            	else
-				            		return "<a href=\"#\" class=\"viewAction fa fa-search-plus\" aria-hidden=\"true\" data-id='"+row.addressId+"'></a> | <ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.addressId+"'></a>|<a href='#' data-id='"+row.addressId+"'  class='delAction ui-icon ui-icon-trash'></a></ansi:hasWrite></ansi:hasPermission>";
+				            	$viewLink = "<a href=\"#\" class=\"viewAction fa fa-search-plus\" aria-hidden=\"true\" data-id='"+row.addressId+"'></a> ";
+				            	$editLink = "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.addressId+"'></a></ansi:hasWrite></ansi:hasPermission>";
+				            	$deleteLink = "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' data-id='"+row.addressId+"'  class='delAction ui-icon ui-icon-trash'></a></ansi:hasWrite></ansi:hasPermission>";
 				            	
-				            		
+				            	$action = $viewLink + " " + $editLink;
+				            	if(row.count < 1) {
+				            		$action = $action + " " + $deleteLink;
+				            	}				            	
+				            	return $action;	
 				            } }],
 				            "initComplete": function(settings, json) {
 				            	doFunctionBinding();
@@ -593,17 +596,6 @@
 						<td>
 							<input type="text" name="county" id="county" style="width:90%" />
 							<i id="countyErr" class="fa errIcon" aria-hidden="true"></i>
-						</td>
-						<td colspan="2">
-							<table>
-								<tr>
-									<td><span class="formLabel">Country:</span></td>
-									<td align="right">
-										<select name="countryCode" id="countryCode"></select>
-										<i id="countryCodeErr" class="fa errIcon" aria-hidden="true"></i>
-									</td>
-								</tr>
-							</table>
 						</td>
 					</tr>
 				</table>

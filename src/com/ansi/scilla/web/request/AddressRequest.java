@@ -25,7 +25,6 @@ import com.thewebthing.commons.lang.JsonException;
 		private String state;
 		private String status;
 		private String zip;
-		private String countryCode;
 
 		
 		public AddressRequest() {
@@ -62,7 +61,6 @@ import com.thewebthing.commons.lang.JsonException;
 			this.addressId = addressId;
 		}
 
-		@RequiredForUpdate
 		public Integer getAddressId() {
 			return this.addressId;
 		}
@@ -125,15 +123,6 @@ import com.thewebthing.commons.lang.JsonException;
 			return this.zip;
 		}
 		
-		public void setCountryCode(String countryCode) {
-			this.countryCode = countryCode;
-		}
-
-		@RequiredForAdd
-		@RequiredForUpdate
-		public String getCountryCode() {
-			return this.countryCode;
-		}
 
 	
 	

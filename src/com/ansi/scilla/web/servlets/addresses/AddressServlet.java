@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.address.AddressUtils;
+import com.ansi.scilla.common.address.Country;
 import com.ansi.scilla.common.db.Address;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
@@ -153,11 +155,11 @@ public class AddressServlet extends AbstractServlet {
 
 			System.out.println(jsonString);
 			AddressRequest addressRequest = new AddressRequest(jsonString);
-			
+			Country country = AddressUtils.getCountryForState(addressRequest.getState());
 			if ( (! StringUtils.isBlank(url.getCommand())) && url.getCommand().equals(COMMAND_IS_ADD) ) {
-				processAddRequest(conn, response, addressRequest, sessionUser);		
+				processAddRequest(conn, response, addressRequest, country, sessionUser);		
 			} else if ( url.getId() != null ) {
-				processUpdateRequest(conn, response, url.getId(), addressRequest, sessionUser);
+				processUpdateRequest(conn, response, url.getId(), addressRequest, country, sessionUser);
 			} else {
 				// this should never happen
 				throw new ServletException("Invalid system state");
@@ -177,7 +179,7 @@ public class AddressServlet extends AbstractServlet {
 	}
 
 
-	private void processAddRequest(Connection conn, HttpServletResponse response, AddressRequest addressRequest, SessionUser sessionUser) throws Exception {
+	private void processAddRequest(Connection conn, HttpServletResponse response, AddressRequest addressRequest, Country country, SessionUser sessionUser) throws Exception {
 		Address address = new Address();
 		ResponseCode responseCode = null;
 		
@@ -185,7 +187,7 @@ public class AddressServlet extends AbstractServlet {
 		WebMessages webMessages = makeWebMessages(conn, badFields);
 		if (webMessages.isEmpty()) {
 			try {
-				address = doAdd(conn, addressRequest, sessionUser);
+				address = doAdd(conn, addressRequest, country, sessionUser);
 				String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 				responseCode = ResponseCode.SUCCESS;
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
@@ -206,7 +208,7 @@ public class AddressServlet extends AbstractServlet {
 		super.sendResponse(conn, response, responseCode, addressResponse);
 	}
 
-	protected Address doAdd(Connection conn, AddressRequest addressRequest, SessionUser sessionUser) throws Exception {
+	protected Address doAdd(Connection conn, AddressRequest addressRequest, Country country, SessionUser sessionUser) throws Exception {
 		Date today = new Date();
 		Address address = new Address();
 		
@@ -217,7 +219,7 @@ public class AddressServlet extends AbstractServlet {
 
 //		address.setAddressId(addressRequest.getAddressId());
 		address.setName(addressRequest.getName());
-		address.setCountryCode(addressRequest.getCountryCode());
+		address.setCountryCode(country.abbrev());
 		if ( ! StringUtils.isBlank(addressRequest.getAddress1())) {
 			address.setAddress1(addressRequest.getAddress1());
 		} if ( ! StringUtils.isBlank(addressRequest.getAddress2())) {
@@ -253,7 +255,7 @@ public class AddressServlet extends AbstractServlet {
 	}
 
 
-	private void processUpdateRequest(Connection conn, HttpServletResponse response, Integer addressId, AddressRequest addressRequest, SessionUser sessionUser) throws Exception {
+	private void processUpdateRequest(Connection conn, HttpServletResponse response, Integer addressId, AddressRequest addressRequest, Country country, SessionUser sessionUser) throws Exception {
 		System.out.println("Doing Update Stuff");	
 		ResponseCode responseCode = null;
 		Address address = new Address();
@@ -266,7 +268,7 @@ public class AddressServlet extends AbstractServlet {
 				Address key = new Address();
 				key.setAddressId(addressId);
 				System.out.println("Trying to do update");
-				address = doUpdate(conn, key, addressRequest, sessionUser);
+				address = doUpdate(conn, key, addressRequest, country, sessionUser);
 				String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 				responseCode = ResponseCode.SUCCESS;
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
@@ -292,7 +294,7 @@ public class AddressServlet extends AbstractServlet {
 		}
 	}
 
-	protected Address doUpdate(Connection conn, Address key, AddressRequest addressRequest, SessionUser sessionUser) throws Exception {
+	protected Address doUpdate(Connection conn, Address key, AddressRequest addressRequest, Country country, SessionUser sessionUser) throws Exception {
 		System.out.println("This is the key:");
 		System.out.println(key);
 		System.out.println("************");
@@ -301,7 +303,7 @@ public class AddressServlet extends AbstractServlet {
 		
 		address.setAddedBy(sessionUser.getUserId());
 		address.setAddedDate(today);
-		address.setCountryCode(addressRequest.getCountryCode());
+		address.setCountryCode(country.abbrev());
 		address.setAddressId(addressRequest.getAddressId());
 		address.setAddress1(addressRequest.getAddress1());
 		address.setAddress2(addressRequest.getAddress2());

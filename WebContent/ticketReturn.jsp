@@ -42,6 +42,10 @@
 				margin-top:15px;
 				margin-bottom:15px;
 			}
+			#jobId {
+				cursor:pointer;
+				text-decoration:underline;
+			}
 			#jobProposal {
 				border:solid 1px #000000;
 			}
@@ -79,6 +83,7 @@
     			border-collapse: collapse;
 				width:90%;
 			}
+
 			#displayInvoiceTable {
     			border-collapse: collapse;
 				width:90%;
@@ -116,7 +121,9 @@
 			.ansi-address-label {
 				font-weight:bold;
 			}
-			
+			.bottomRow {
+				border-bottom:solid 1px #000000;
+			}
         </style>
         
         <script type="text/javascript">
@@ -162,7 +169,54 @@
 				$("#actTax").html($data.ticketDetail.actTax);
 				$("#totalTaxPaid").html($data.ticketDetail.totalTaxPaid);
 				$("#ticketBalance").html($data.ticketDetail.balance);
-
+				
+				$("#completedRow").hide();
+				if ( $data.ticketDetail.status=='N') {
+					$("#processNotesRow").hide();
+				} else {
+					$("#processNotesRow").show();
+					$("#processNotesRow td").addClass("bottomRow");
+					if ( $data.ticketDetail.status == 'R' ) {
+						$processLabel = "Reject Date:";
+					} else if ( $data.ticketDetail.status == 'D' ) {
+						$processLabel = "Dispatch Date:";
+					} else if ( $data.ticketDetail.status == 'V' ) {
+						$processLabel = "Void Date:";
+					} else if ( $data.ticketDetail.status == 'S' ) {
+						$processLabel = "Skip Date:";
+					} else if ( $data.ticketDetail.status == 'C' ) {
+						$processLabel = "Complete Date:";
+						$("#processNotesRow td").removeClass("bottomRow");
+						$("#completedRow").show();
+						if ( $data.ticketDetail.customerSignature == true ) {
+							markValid($("#customerSignature"));
+						} else {
+							markInvalid($("#customerSignature"));
+						}
+						if ( $data.ticketDetail.billSheet == true ) {
+							markValid($("#billSheet"));
+						} else {
+							markInvalid($("#billSheet"));
+						}
+						if ( $data.ticketDetail.managerApproval == true ) {
+							markValid($("#managerApproval"));
+						} else {
+							markInvalid($("#managerApproval"));
+						}
+						
+						
+					} else if ( $data.ticketDetail.status == 'I' ) {
+						$processLabel = "Invoice Date:";
+					} else if ( $data.ticketDetail.status == 'P' ) {
+						$processLabel = "Paid Date:";
+					} else {
+						$processLabel = "Process Date (" + $data.ticketDetail.status + ")";
+					}
+					
+					$("#processDateLabel").html($processLabel);
+					$("#processDate").html($data.ticketDetail.processDate);
+					$("#processNotes").html($data.ticketDetail.processNotes);
+				}
 			}			
 			
 			function populatePanelSelect ($data) {
@@ -209,6 +263,10 @@
 				$("#status").html($ticketStatusMap[$data.ticketDetail.status] + " (" + $data.ticketDetail.status + ")");
 				$("#divisionDisplay").html($data.ticketDetail.divisionDisplay);
 				$("#jobId").html($data.ticketDetail.jobId);
+				//$("#jobId").attr("data-jobid",$data.ticketDetail.jobId);
+				$( "#jobId" ).on( "click", function($clickevent) {
+					 location.href="jobMaintenance.html?id=" + $data.ticketDetail.jobId;
+				});
 				$("#serviceDescription").html($data.ticketDetail.serviceDescription);
 				$("#jobFrequency").html($data.ticketDetail.jobFrequency);
 				$("#invoiceStyle").html($data.ticketDetail.invoiceStyle);
@@ -729,11 +787,21 @@
 		   			<td style="border-bottom:solid 1px #000000;"><span id="totalTaxPaid"></span></td>
 		   			<td style="border-bottom:solid 1px #000000;"><span id="ticketBalance"></span></td>
 		   		</tr>
+		   		<tr id="processNotesRow">
+		   			<td colspan="2"><span class="formLabel" id="processDateLabel"></span> <span id="processDate"></span></td>
+		   			<td colspan="4"><span class="formLabel">Process Notes:</span> <span id="processNotes"></span></td>
+		   		</tr>
+		   		<tr id="completedRow">
+		   			<td class="bottomRow" colspan="2"><span class="formLabel">Customer Signature: </span> <i id="customerSignature" class="fa" aria-hidden="true"></i></td>
+		   			<td class="bottomRow" colspan="2"><span class="formLabel">Bill Sheet: </span> <i id="billSheet" class="fa" aria-hidden="true"></i></td>
+		   			<td class="bottomRow" colspan="2"><span class="formLabel">Manager Approval: </span> <i id="managerApproval" class="fa" aria-hidden="true"></i></td>
+		   		</tr>
+		   		
 		   		<tr>
-		   			<td colspan="3" style="border-right:solid 1px #000000;">
+		   			<td colspan="3" style="border-top:solid 1px #000000; border-right:solid 1px #000000;">
 		   				<webthing:addressDisplayPanel cssId="jobSiteAddress" label="Job Site" />
 		   			</td>
-		   			<td colspan="3" style="border-left:solid 1px #FF0000;">
+		   			<td colspan="3" style="border-top:solid 1px #)00000; border-left:solid 1px #FF0000;">
 						<webthing:addressDisplayPanel cssId="billToAddress" label="Bill To" />
 		   			
 		   			</td>

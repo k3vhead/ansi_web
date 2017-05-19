@@ -16,7 +16,7 @@ public class AddressReturnItem extends ApplicationObject {
 		private String county;
 		private String state;
 		private String zip;
-		private String country_code;
+		private String countryCode;
 		private String DT_RowId;
 		private int count;
 		
@@ -32,7 +32,7 @@ public class AddressReturnItem extends ApplicationObject {
 			this.city = rs.getString("city");
 			this.state = rs.getString("state");
 			this.zip = rs.getString("zip");
-			this.country_code = rs.getString("country_code");
+			this.countryCode = rs.getString("country_code");
 			this.DT_RowId = rs.getInt("address_id")+"";
 			this.count = rs.getInt("count");
 
@@ -125,12 +125,12 @@ public class AddressReturnItem extends ApplicationObject {
 		public void setZip(String zip) {
 			this.zip = zip;
 		}
-		public String getCountry_code() {
-			return country_code;
+		public String getCountryCode() {
+			return countryCode;
 		}
 
-		public void setCountry_code(String country_code) {
-			this.country_code = country_code;
+		public void setCountryCode(String countryCode) {
+			this.countryCode = countryCode;
 		}
 
 	}

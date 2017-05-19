@@ -45,6 +45,10 @@
 			.print-link {
 				cursor:pointer;
 			}
+			.editJob {
+				cursor:pointer;
+				text-decoration:underline;
+			}
         </style>
         
         <script type="text/javascript">    
@@ -124,7 +128,7 @@
 			            	if(row.jobNbr != null){return (row.jobNbr+"");}
 			            } },
 			            { title: "Job ID", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-			            	if(row.jobId != null){return (row.jobId+"");} 
+			            	if(row.jobId != null){return ('<span class="editJob" data-jobid="'+ row.jobId +'">'+row.jobId+"</span>");} 
 			            } },
 			            { title: "Service Description", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.serviceDescription != null){return (row.serviceDescription+"");}
@@ -140,14 +144,19 @@
 			            } },
 			            { title: "Action",  data: function ( row, type, set ) {	
 			            	//console.log(row);
-			            	var $editLink = "<a href='ticketReturn.html?id="+row.ticketId+"' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.ticketId+"'></a>";
-			            	if ( row.ticketStatus == 'N' || row.ticketStatus == 'D' ) {
-			            		var $ticketData = 'data-id="' + row.ticketId + '"';
-			            		$printLink = '<i class="print-link fa fa-print" aria-hidden="true" ' + $ticketData + '></i>'
+			            	if ( row.ticketId == null ) {
+			            		$actionData = "";
 			            	} else {
-			            		$printLink = "";
+				            	var $editLink = "<a href='ticketReturn.html?id="+row.ticketId+"' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.ticketId+"'></a>";
+				            	if ( row.ticketStatus == 'N' || row.ticketStatus == 'D' ) {
+				            		var $ticketData = 'data-id="' + row.ticketId + '"';
+				            		$printLink = '<i class="print-link fa fa-print" aria-hidden="true" ' + $ticketData + '></i>'
+				            	} else {
+				            		$printLink = "";
+				            	}
+				            	$actionData = "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite>" + $editLink + ' ' + $printLink + "</ansi:hasWrite></ansi:hasPermission>"
 			            	}
-			            	return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite>" + $editLink + ' ' + $printLink + "</ansi:hasWrite></ansi:hasPermission>"
+			            	return $actionData;
 			            } }],
 			            "initComplete": function(settings, json) {
 			            	//console.log(json);
@@ -178,6 +187,11 @@
 					});
 					$(".print-link").on( "click", function($clickevent) {
 						doPrint($clickevent);
+					});
+					$(".editJob").on( "click", function($clickevent) {
+						console.debug("clicked a job")
+						var $jobId = $(this).data("jobid");
+						location.href="jobMaintenance.html?id=" + $jobId;
 					});
 				}
 				
