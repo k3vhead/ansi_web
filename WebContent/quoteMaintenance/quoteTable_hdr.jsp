@@ -12,7 +12,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="webthing" %>
 <%@ taglib uri="/WEB-INF/theTagThing.tld" prefix="ansi" %>
 
-					<table >
+					<table style="width:1100px;">
 						<tr>
 							<td><input type="button" name="modifyQuoteButton" value="Modify" class="quoteButton"/></td>
 							<td><span class="labelSpanSmall" id="managerLabel">Manager:</span>
@@ -28,7 +28,7 @@
 							</td>
 							<td align="center"><span  id="quoteLabel">Quote</span></td>
 							<td align="center"><span  id="revisionLabel">Revision</span></td>
-							<td rowspan="2" align="right" style="padding-right:10px;"><input type="button" name="printButton" value="Print" class="quoteButton"/></td>
+							<td rowspan="2" align="right" style="padding-right:10px;"><input type="button" name="previewButton" value="Preview Quote" class="quoteButton"/><input type="button" name="printButton" value="Propose/Print" class="quoteButton"/></td>
 						</tr>
 						<tr>
 							<td><input type="button" name="copyQuoteButton" value="Copy" class="quoteButton"/></td>

@@ -48,9 +48,6 @@
 				<td colspan="3">
 					Schedule (Auto/Manual):
 					<select name="<%=namespace%>_automanual" id="<%=namespace%>_automanual" <%=disabled%>>
-						<option value=""></option>
-						<option value="auto">Auto</option>
-						<option value="manual">Manual</option>
 					</select>
 				</td>
 				<td colspan="3">

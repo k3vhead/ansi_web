@@ -49,7 +49,7 @@
 					</select>
 				</td>
 				<td colspan="1" style="width:80px;vertical-align:middle;" valign="middle">
-					Batch: <input type="checkbox" value="1" name="<%=namespace%>_invoiceBatch" id="<%=namespace%>_invoiceBatch" <%=disabled%>/>
+					Batch: <input type="checkbox" name="<%=namespace%>_invoiceBatch" id="<%=namespace%>_invoiceBatch" <%=disabled%>/>
 				</td>
 				<td colspan="1" style="width:200px;vertical-align:middle;" valign="middle">
 					Tax Exempt: <input type="checkbox" name="<%=namespace%>_invoiceTaxExempt" id="<%=namespace%>_invoiceTaxExempt" <%=disabled%>/>
@@ -62,8 +62,6 @@
 				<td colspan="1" style="width:200px">
 						<select name="<%=namespace%>_invoiceGrouping" id="<%=namespace%>_invoiceGrouping" <%=disabled%>>
 							<option value=""></option>
-							<option value="auto">Auto</option>
-							<option value="manual">Manual</option>
 						</select>
 				</td>
 				<td colspan="1" style="width:80px;">

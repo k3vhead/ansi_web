@@ -2,7 +2,7 @@ $( document ).ready(function() {
 	;JOB_DATA = {}
 	;QUOTE_DATA = {}
 	;Page = null;
-
+	$jobClicked = 0;
 	;JOB_UTILS = {
 		pageInit:function($jobId) {
 
@@ -22,12 +22,12 @@ $( document ).ready(function() {
 			
 			JOB_DATA.jobId = $jobId;
 			
-			JOB_UTILS.panelLoad($jobId);
+			JOB_UTILS.panelLoad("0",$jobId);
 			
 			
 		},
 			
-		panelLoad:function($jobId) {			
+		panelLoad:function($namespace,$jobId) {			
 			var $jobDetail = null;			
 			var $quoteDetail = null;
 			var $lastRun = null;
@@ -52,21 +52,45 @@ $( document ).ready(function() {
 				data: {"namespace":'0',"page":'JOB'},
 				success: function($data) {
 					$('#jobPanelHolder > tbody:last-child').replaceWith($data);
-					JOBPANEL.init("0_jobPanel", JOB_DATA.divisionList, "activateModal", $jobDetail);
-					JOBPROPOSAL.init("0_jobProposal", JOB_DATA.jobFrequencyList, $jobDetail);
-					JOBACTIVATION.init("0_jobActivation", JOB_DATA.buildingTypeList, $jobDetail);
-					JOBDATES.init("0_jobDates", $quoteDetail, $jobDetail);
-					JOBSCHEDULE.init("0_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
-					JOBINVOICE.init("0_jobInvoice", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, $jobDetail);
-					JOBAUDIT.init("0_jobAudit", $jobDetail);
-					ADDRESSPANEL.init("0_jobSite", JOB_DATA.countryList);
-					ADDRESSPANEL.init("0_billTo", JOB_DATA.countryList);
+					JOBPANEL.init($namespace+"_jobPanel", JOB_DATA.divisionList, "activateModal", $jobDetail);
+					JOBPROPOSAL.init($namespace+"_jobProposal", JOB_DATA.jobFrequencyList, $jobDetail);
+					JOBACTIVATION.init($namespace+"_jobActivation", JOB_DATA.buildingTypeList, $jobDetail);
+					JOBDATES.init($namespace+"_jobDates", $quoteDetail, $jobDetail);
+					JOBSCHEDULE.init($namespace+"_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
+					JOBINVOICE.init($namespace+"_jobInvoice", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, $jobDetail);
+					JOBAUDIT.init($namespace+"_jobAudit", $jobDetail);
+					ADDRESSPANEL.init($namespace+"_jobSite", JOB_DATA.countryList);
+					ADDRESSPANEL.init($namespace+"_billTo", JOB_DATA.countryList);
 					
 					
 					console.log("Quote ID: "+$jobDetail.quoteId);
+					$("#quoteLink").attr("href", "quoteMaintenance.html?id="+$jobDetail.quoteId);
 					if ( $jobDetail.quoteId != '' ) {
 						var $quoteDetails = QUOTEUTILS.getQuoteDetail($jobDetail.quoteId);
 						var $quoteData = $quoteDetails.quote;
+					}
+					
+					if($jobDetail.jobId != null){
+						$("#"+$namespace+"_jobIdHead").html($jobDetail.jobId);
+					}
+					if($jobDetail.status != null){
+						$("#"+$namespace+"_jobStatusHead").html($jobDetail.status);					
+					}
+					if($jobDetail.jobNbr != null){
+						$("#"+$namespace+"_jobNumberHead").html($jobDetail.jobNbr);	
+					}
+					if($jobDetail.pricePerCleaning != null){
+						$("#"+$namespace+"_jobPPCHead").html($jobDetail.pricePerCleaning);	
+					}
+					if($jobDetail.jobFrequency != null){
+						$("#"+$namespace+"_jobFreqHead").html($jobDetail.jobFrequency);
+					}
+					$("#"+$namespace+"_jobPanel_jobLink").attr("href", "jobMaintenance.html?id="+$jobId);
+					$("#"+$namespace+"_jobPanel_jobLink").text($jobId);
+					//$(".addressTable").remove();
+					
+					if($("#"+$namespace+"_jobPanel_jobStatus").val() != "A" ||  $("#"+$namespace+"_jobPanel_jobStatus").val() != "C"){
+						$("#"+$namespace+"_jobPanel_scheduleJobButton").hide();
 					}
 					
 
@@ -182,6 +206,11 @@ $( document ).ready(function() {
 					$("#"+$namespace+"_jobPanel_jobLink").attr("href", "jobMaintenance.html?id="+$jobId);
 					$("#"+$namespace+"_jobPanel_jobLink").text($jobId);
 					//$(".addressTable").remove();
+					
+					if($("#"+$namespace+"_jobPanel_jobStatus").val() != "A" ||  $("#"+$namespace+"_jobPanel_jobStatus").val() != "C"){
+						$("#"+$namespace+"_jobPanel_scheduleJobButton").hide();
+					}
+					
 					$.each($('input'), function () {
 				        $(this).css("height","20px");
 				        $(this).css("max-height", "20px");
@@ -274,7 +303,12 @@ $( document ).ready(function() {
     		$outbound["expirationDate"]				= $($pre+"_jobInvoice_invoiceExpire").val();
     		$outbound["expirationReason"]			= $($pre+"_jobInvoice_invoiceExpireReason").val();
     		$outbound["floors"]						= $($pre+"_jobActivation_nbrFloors").val();
-    		$outbound["invoiceBatch"]				= $($pre+"_jobInvoice_invoiceBatch").val();
+    		$outbound["invoiceBatch"]				= 0;
+    		if($($pre+"_jobInvoice_invoiceBatch").prop("checked")){
+    			$outbound["invoiceBatch"]				= 1;
+    		}
+    		
+
     		$outbound["invoiceGrouping"]			= $($pre+"_jobInvoice_invoiceGrouping").val();
     		$outbound["invoiceStyle"]				= $($pre+"_jobInvoice_invoiceStyle").val();
     		$outbound["invoiceTerms"]				= $($pre+"_jobInvoice_invoiceTerms").val();
@@ -289,14 +323,29 @@ $( document ).ready(function() {
     		$outbound["paymentTerms"]				= null;
     		$outbound["poNumber"]					= $($pre+"_jobInvoice_invoicePO").val();
     		$outbound["pricePerCleaning"]			= $($pre+"_jobProposal_ppc").val();
-    		$outbound["quoteId"]					= $quoteId;
-    		$outbound["repeatScheduleAnnually"]		= $($pre+"_jobSchedule_annualRepeat").val();
-    		$outbound["requestSpecialScheduling"]	= 0;
+    		$outbound["quoteId"]					= QUOTEUTILS.getQuoteId();
+    		    		
+    		$outbound["repeatScheduleAnnually"]		= 0;
+    		if($($pre+"_jobSchedule_annualRepeat").prop("checked")){
+    			$outbound["repeatScheduleAnnually"]				= 1;
+    		}
+    		
+    		$outbound["requestSpecialScheduling"]	= null;
+    		if($($pre+"_jobActivation_automanual").val() == "manual"){
+    			$outbound["requestSpecialScheduling"]	= 1;
+    		} else if($($pre+"_jobActivation_automanual").val() == "auto") {
+    			$outbound["requestSpecialScheduling"]	= 0;
+    		}
+    		
     		$outbound["serviceDescription"]			= $($pre+"_jobProposal_serviceDescription").val();
     		$outbound["siteContact"]				= QUOTEUTILS.getsiteContact();
     		$outbound["startDate"]					= $($pre+"_jobDates_startDate").html();
     		$outbound["status"]						= $($pre+"_jobPanel_jobStatus").val();
-    		$outbound["taxExempt"]					= 1;
+    		
+    		$outbound["taxExempt"]					= 0;
+    		if($($pre+"_jobInvoice_invoiceTaxExempt").prop("checked")){
+    			$outbound["taxExempt"]				= 1;
+    		}
     		if(($($pre+"_jobInvoice_invoiceTaxExempt").val()) == "on") {
     			$outbound["taxExempt"] = 0;
     		} 
@@ -347,7 +396,7 @@ $( document ).ready(function() {
 							if($data.data.job.jobFrequency != null){
 								$($pre+"_jobFreqHead").html($data.data.job.jobFrequency);
 							}
-							$($pre+"_jobPanel_divisionId").text($("select[name='division']").text());
+							$($pre+"_jobPanel_divisionId").text($("select[name='division'] option:selected").text());
 							
 //************* FINISH AUDIT
 							//JOBAUDIT.init($rn,$data.data.job);
@@ -426,8 +475,7 @@ $( document ).ready(function() {
 	;JOBACTIVATION = {
 			init: function($namespace, $buildingTypeList, $jobDetail) {
 				//console.log("Job Activation Namespace: "+$namespace);
-				var selectorName = "select[name='" + $namespace + "_automanual']";
-				$(selectorName).selectmenu({ width : '75px', maxHeight: '400 !important', style: 'dropdown'});
+				
 				if ( $jobDetail == null ) {
 					JOBACTIVATION.setBuildingType($namespace, QUOTEUTILS.setSelectMenu("buildingType",ANSI_UTILS.getCodes("job","building_type")), $jobDetail.buildingType);
 				} else {
@@ -454,9 +502,14 @@ $( document ).ready(function() {
 						}
 					});					
 				
-				
-				$selectorName = "#" + $namespace + "_activationEdit";
-				$($selectorName).click(function($event) {
+					var $select = $("select[name='"+$namespace+"_automanual']");
+					$select.append(new Option("",""));
+					$select.append(new Option("Auto","auto"));
+					$select.append(new Option("Manual","manual"));
+					$select.selectmenu({ width : '75px', maxHeight: '400 !important', style: 'dropdown'});
+					
+					$selectorName = "#" + $namespace + "_activationEdit";
+					$($selectorName).click(function($event) {
 					$event.preventDefault();
 
 					
@@ -797,8 +850,14 @@ $( document ).ready(function() {
 			$($activateJobButtonSelector).click(function() {
 				//$("#updateOrAdd").val("add");
         		//clearAddForm();				
-        		$('#'+$goButtonId).button('option', 'label', 'Activate Job');
-        		$('#'+$closeButtonId).button('option', 'label', 'Close');
+				
+				$id = this.id;
+        	    $num = $id.substring(0,$id.indexOf("_"));
+        	    console.log($num);
+        	    $jobClicked = $num;
+        		$("#activateFormButton").button('option', 'label', 'Activate Job');
+        		$("#activateFormCloseButton").button('option', 'label', 'Close');
+
         	    $($activateJobFormDialogSelector).dialog( "open" );
 			});
 			
@@ -811,13 +870,13 @@ $( document ).ready(function() {
 	      	      modal: true,
 	      	      buttons: [
 	      	    	  {
-	      	    			id: $goButtonId,
+	      	    			id: "activateFormButton",
 	      	        		click: function() {
-	      	        			JOBPANEL.activateJob($namespace, $modalNamespace);
+	      	        			JOBPANEL.activateJob($jobClicked+"_jobPanel", $modalNamespace);
 	      	        		}
 	      	      		},
 	      	      		{
-	        	    		id: $closeButtonId,
+	        	    		id: "activateFormCloseButton",
 	        	        	click: function() {
 	        	        		$( $activateJobFormDialogSelector ).dialog( "close" );
 	        	        	}
@@ -837,8 +896,8 @@ $( document ).ready(function() {
 		initCancelModal: function($namespace, $modalNamespace) {
 			var $cancelJobButtonSelector = "#" + $namespace + "_cancelJobButton";
 			var $cancelJobFormDialogSelector = "#" + $modalNamespace + "_cancelJobForm";
-			var $goButtonId = $namespace + "_cancelFormButton";
-			var $closeButtonId = $namespace + "_cancelFormCloseButton";
+			var $goButtonId = "cancelFormButton";
+			var $closeButtonId = "cancelFormCloseButton";
 			var $cancelFieldSelector = "." + $modalNamespace + "_cancelField"
 			var $cancelMessageSelector = "." + $modalNamespace + "_cancelMessage";
 			
@@ -849,6 +908,10 @@ $( document ).ready(function() {
 			$($cancelJobButtonSelector).click(function() {
 				//$("#updateOrAdd").val("add");
         		//clearAddForm();				
+				$id = this.id;
+        	    $num = $id.substring(0,$id.indexOf("_"));
+        	    console.log($num);
+        	    $jobClicked = $num;
         		$('#'+$goButtonId).button('option', 'label', 'Cancel Job');
         		$('#'+$closeButtonId).button('option', 'label', 'Close');
         	    $($cancelJobFormDialogSelector).dialog( "open" );
@@ -865,7 +928,7 @@ $( document ).ready(function() {
 	      	    	  {
 	      	    			id: $goButtonId,
 	      	        		click: function() {
-	      	        			JOBPANEL.cancelJob($namespace, $modalNamespace);
+	      	        			JOBPANEL.cancelJob($jobClicked+"_jobPanel", $modalNamespace);
 	      	        		}
 	      	      		},
 	      	      		{
@@ -887,13 +950,17 @@ $( document ).ready(function() {
 		initScheduleModal: function($namespace, $modalNamespace) {
 			var $scheduleJobButtonSelector = "#" + $namespace + "_scheduleJobButton";
 			var $scheduleJobFormDialogSelector = "#" + $modalNamespace + "_scheduleJobForm";
-			var $goButtonId = $namespace + "_scheduleFormButton";
-			var $closeButtonId = $namespace + "_scheduleFormCloseButton";
+			var $goButtonId = "scheduleFormButton";
+			var $closeButtonId = "scheduleFormCloseButton";
 			                                       
 			
 			$($scheduleJobButtonSelector).click(function() {
 				//$("#updateOrAdd").val("add");
         		//clearAddForm();				
+				$id = this.id;
+        	    $num = $id.substring(0,$id.indexOf("_"));
+        	    console.log($num);
+        	    $jobClicked = $num;
         		$('#'+$goButtonId).button('option', 'label', 'Schedue Job');
         		$('#'+$closeButtonId).button('option', 'label', 'Close');
         	    $($scheduleJobFormDialogSelector).dialog( "open" );
@@ -910,7 +977,7 @@ $( document ).ready(function() {
 	      	    	  {
 	      	    			id: $goButtonId,
 	      	        		click: function() {
-	      	        			JOBPANEL.scheduleJob($namespace, $modalNamespace);
+	      	        			JOBPANEL.scheduleJob($jobClicked+"_jobPanel", $modalNamespace);
 	      	        		}
 	      	      		},
 	      	      		{
@@ -984,7 +1051,7 @@ $( document ).ready(function() {
 							$($cancelFieldSelector).val("");
 							ANSI_UTILS.setTextValue($namespace, "panelMessage", "Update Successful");
 							JOB_UTILS.fadeMessage($namespace, "panelMessage")
-							JOB_UTILS.panelLoad($jobId);
+							JOB_UTILS.panelLoad($jobClicked,$jobId);
 						}
 					},				
 					403: function($data) {
@@ -1019,7 +1086,8 @@ $( document ).ready(function() {
 						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
 							var $activateJobFormDialogSelector = "#" + $modalNamespace + "_activateJobForm";
 							var $activateFieldSelector = "." + $modalNamespace + "_activateField"
-							var $activateMessageSelector = "." + $modalNamespace + "_activateMessage";							
+							var $activateMessageSelector = "." + $modalNamespace + "_activateMessage";			
+							
 							$($activateMessageSelector).html("");
 							$($activateFieldSelector).val("");
 							$.each($data.data.webMessages, function(index, $value){
@@ -1040,7 +1108,7 @@ $( document ).ready(function() {
 							$($activateFieldSelector).val("");
 							ANSI_UTILS.setTextValue($namespace, "panelMessage", "Update Successful");
 							JOB_UTILS.fadeMessage($namespace, "panelMessage")
-							JOB_UTILS.panelLoad($jobId);
+							JOB_UTILS.panelLoad($jobClicked,$jobId);
 						}
 					},				
 					403: function($data) {
@@ -1095,7 +1163,7 @@ $( document ).ready(function() {
 							$($scheduleFieldSelector).val("");
 							ANSI_UTILS.setTextValue($namespace, "panelMessage", "Update Successful");
 							JOB_UTILS.fadeMessage($namespace, "panelMessage")
-							JOB_UTILS.panelLoad($jobId);
+							JOB_UTILS.panelLoad($jobClicked, $jobId);
 						}
 					},				
 					403: function($data) {
@@ -1216,6 +1284,10 @@ $( document ).ready(function() {
 //			console.log($jobDetail);
 			var $repeatSelectorName = "#" + $namespace + "_" + "annualRepeat";
 			$($repeatSelectorName).click(function($event) {
+				$id = this.id;
+        	    $num = $id.substring(0,$id.indexOf("_"));
+        	    console.log($num);
+        	    $jobClicked = $num;
 				var $jobId = $jobDetail.jobId;
 				var $isChecked = $($repeatSelectorName).prop('checked');
 				var $outbound = {"action":"REPEAT_JOB", "annualRepeat":$isChecked};
@@ -1232,7 +1304,7 @@ $( document ).ready(function() {
 							}
 							if ( $data.responseHeader.responseCode == 'SUCCESS') {
 								$("#globalMsg").html("Update Successful").show().fadeOut(4000);
-								JOB_UTILS.panelLoad($jobId);
+								JOB_UTILS.panelLoad($jobClicked,$jobId);
 							}
 						},				
 						403: function($data) {

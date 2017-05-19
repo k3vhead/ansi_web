@@ -107,9 +107,11 @@ $( document ).ready(function() {
 				    	ADDRESS_UTILS.getAddress($jobSiteId, "#jobSite");
 				    	
 				      }
-				  });
+				});
+			
 				 
-				 $( "input[name='billTo_name']" ).autocomplete({
+				
+				$( "input[name='billTo_name']" ).autocomplete({
 				     'source':"addressTypeAhead?",
 				      select: function( event, ui ) {
 				    	$billToId = ui.item.id;
@@ -118,9 +120,11 @@ $( document ).ready(function() {
 				    	//label
 				    	//preferredContactValue
 				      }
-				  });
+				});
+			
+				 
 				
-				 $( "input[name='jobSite_jobContactName']" ).autocomplete({
+				$( "input[name='jobSite_jobContactName']" ).autocomplete({
 				     'source':"contactTypeAhead?",
 				      select: function( event, ui ) {
 				    	$jobContactId = ui.item.id;
@@ -132,8 +136,11 @@ $( document ).ready(function() {
 				    	$("input[name='jobSite_jobContactName']").val(ui.item.value);
 				    	$("span[name='jobSite_jobContactInfo']").html(spanText);
 				      }
-				  });
-				 $( "input[name='jobSite_siteContactName']" ).autocomplete({
+				});
+
+			
+				 
+				$( "input[name='jobSite_siteContactName']" ).autocomplete({
 				     'source':"contactTypeAhead?",
 				      select: function( event, ui ) {
 				    	$siteContactId = ui.item.id;
@@ -142,8 +149,11 @@ $( document ).ready(function() {
 				    	$("input[name='jobSite_siteContactName']").val(ui.item.value);
 				    	$("span[name='jobSite_siteContactInfo']").html(QUOTEUTILS.processContact(ui.item));
 				      }
-				    });
-				 $( "input[name='billTo_contractContactName']" ).autocomplete({
+				 });
+				
+				 
+				 
+				$( "input[name='billTo_contractContactName']" ).autocomplete({
 				     'source':"contactTypeAhead?",
 				      select: function( event, ui ) {
 				    	$contractContactId = ui.item.id;
@@ -151,7 +161,10 @@ $( document ).ready(function() {
 				    	$("input[name='billTo_contractContactName']").val(ui.item.value);
 				    	$("span[name='billTo_contractContactInfo']").html(QUOTEUTILS.processContact(ui.item));
 				      }
-				    });
+				 });
+				
+				 
+				 
 				 $( "input[name='billTo_billingContactName']" ).autocomplete({
 				     'source':"contactTypeAhead?",
 				      select: function( event, ui ) {
@@ -160,7 +173,8 @@ $( document ).ready(function() {
 				    	$("input[name='billTo_billingContactName']").val(ui.item.value);
 				    	$("span[name='billTo_billingContactInfo']").html(QUOTEUTILS.processContact(ui.item));
 				      }
-				    });
+				 });
+				
 				
 				
 				
@@ -295,7 +309,7 @@ $( document ).ready(function() {
 					$("#accordian").accordion({
 							collapsible: true
 					});
-			        }, 500);
+			        }, 750);
 				
 			},
 			processContact:function($ui){
@@ -424,8 +438,14 @@ $( document ).ready(function() {
 					event.preventDefault();
 					console.log("Modify Quote");
 	            });
+				$("input[name=previewButton]").button().on( "click", function(event) {
+					event.preventDefault();
+					QUOTE_PRINT.showQuotePrint("#printQuoteDiv", $globalQuoteId, $("input[name=quoteNumber]").val());
+					console.log("Print Quote");
+	            });
 				$("input[name=printButton]").button().on( "click", function(event) {
 					event.preventDefault();
+					//ADD PROPOSE ACTION
 					QUOTE_PRINT.showQuotePrint("#printQuoteDiv", $globalQuoteId, $("input[name=quoteNumber]").val());
 					console.log("Print Quote");
 	            });
@@ -858,6 +878,9 @@ $( document ).ready(function() {
 			},
 			getDivision: function(){
 				return $("select[name=division]").val();
+			},
+			getQuoteId: function(){
+				return $globalQuoteId;
 			},
 			getJobs: function($quoteId) {
 				var $returnValue = null;

@@ -23,7 +23,11 @@
 	String cssIdString = "id=\"" + cssId + "\"";			 
 	String cssClassString = cssClass == null || cssClass.length()==0 ? "" : "class=\"" + cssClass + "\"";
 %>
-  
+ 
+<!-- IF ACTIVE OR CANCELLED ALLOW RESQUEDULE OTHERWISE DON'T -->
+<!-- Modify copies everything over and and increments revision -->
+<!-- Copy copies everything with new quote id -->
+ 
 <div <%= cssIdString %> <%= cssClassString %> >
 	<div id="<%= namespace %>_panelMessage" class="err"></div>
 	<table id="<%=namespace%>_jobTable" style="width:1300px;">
@@ -52,9 +56,9 @@
 					<% if ( page.equals("QUOTE") ) { %>
 						Job: <a href="jobMaintenance.html" id="<%= namespace %>_jobLink"></a><br />
 					<% } else { %>
-						Quote: <a href="quoteMaintenance.html"><span id="<%= namespace %>_quoteId"></span></a><br />
+						Quote: <a href="quoteMaintenance.html" id="quoteLink"><span id="<%= namespace %>_quoteId"></span></a><br />
 					<% } %>
-					<i style="cursor:pointer;" class="fa fa-product-hunt fa-3x" aria-hidden="true" id="<%= namespace %>_proposeJobButton"></i>
+
 					<i style="cursor:pointer;" class="fa fa-arrow-circle-right fa-3x" aria-hidden="true" id="<%= namespace %>_activateJobButton"></i>
 					<i style="cursor:pointer;" class="clickableIcon, fa fa-ban fa-3x text-danger" id="<%= namespace %>_cancelJobButton"></i>
 					<i style="cursor:pointer;" class="clickableIcon, fa fa-calendar  fa-3x" aria-hidden="true" id="<%= namespace %>_scheduleJobButton"></i>

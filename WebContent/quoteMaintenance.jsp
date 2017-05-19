@@ -42,8 +42,8 @@
 .quoteButton {
 	background-color: #F0F0F0;
 	color: #000000;
-	min-height: 25px;
-	width: 70px;
+	min-height: 30px;
+	width: 120px;
  }
  
 .quoteSelect {
