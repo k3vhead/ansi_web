@@ -344,7 +344,10 @@ public class JobServlet extends AbstractServlet {
 		Job job = new Job();
 
 		WebMessages messages = validateAdd(conn, jobRequest);
-		if (messages.isEmpty()) {
+		if(jobRequest.getQuoteId() != null && jobRequest.getQuoteId() ==0){
+			responseCode = ResponseCode.EDIT_FAILURE;
+			messages.addMessage(WebMessages.GLOBAL_MESSAGE, "No Quote ID, Try saving quote first");
+		} else if (messages.isEmpty()) {
 			job.setAddedBy(sessionUser.getUserId());
 			
 			job.setAddedDate(today);
