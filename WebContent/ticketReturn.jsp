@@ -42,6 +42,10 @@
 				margin-top:15px;
 				margin-bottom:15px;
 			}
+			#jobId {
+				cursor:pointer;
+				text-decoration:underline;
+			}
 			#jobProposal {
 				border:solid 1px #000000;
 			}
@@ -259,6 +263,10 @@
 				$("#status").html($ticketStatusMap[$data.ticketDetail.status] + " (" + $data.ticketDetail.status + ")");
 				$("#divisionDisplay").html($data.ticketDetail.divisionDisplay);
 				$("#jobId").html($data.ticketDetail.jobId);
+				//$("#jobId").attr("data-jobid",$data.ticketDetail.jobId);
+				$( "#jobId" ).on( "click", function($clickevent) {
+					 location.href="jobMaintenance.html?id=" + $data.ticketDetail.jobId;
+				});
 				$("#serviceDescription").html($data.ticketDetail.serviceDescription);
 				$("#jobFrequency").html($data.ticketDetail.jobFrequency);
 				$("#invoiceStyle").html($data.ticketDetail.invoiceStyle);
