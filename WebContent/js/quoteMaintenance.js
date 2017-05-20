@@ -205,6 +205,9 @@ $( document ).ready(function() {
 						$("select[name='division']").val($quoteData.divisionId);
 						$("select[name='division").selectmenu("refresh");
 						
+
+					$("#printCount").html($quoteData.printCount);
+					
 					
 					//console.log("Account Type: "+ $quoteData.accountType);
 					//console.log(($quoteData.accountType).length < 128);

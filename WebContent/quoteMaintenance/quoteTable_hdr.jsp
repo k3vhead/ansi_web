@@ -35,7 +35,7 @@
 								<%-- <i class="fa fa-list-alt fa-3x" id="viewPrintHistory" aria=hidden="true"></i>--%>
 								<span class="fa-stack fa-2x" id="viewPrintHistory" style="color:#444444;">
     								<i class="fa fa-list-alt fa-stack-2x"></i>
-    								<i class="fa fa-stack-1x"><span style="color:#FFFFFF; text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000, 1px 1px 0 #000; font-weight:bold;" id="printCount">2</span></i>
+    								<i class="fa fa-stack-1x"><span style="color:#FFFFFF; text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000, 1px 1px 0 #000; font-weight:bold;" id="printCount">N/A</span></i>
 								</span>
 							</td>
 						</tr>

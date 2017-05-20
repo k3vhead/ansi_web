@@ -3,7 +3,6 @@ package com.ansi.scilla.web.response.quote;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import com.ansi.scilla.common.db.Quote;

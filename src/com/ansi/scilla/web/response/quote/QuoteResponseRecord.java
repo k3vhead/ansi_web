@@ -2,6 +2,9 @@ package com.ansi.scilla.web.response.quote;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
 
 import org.apache.commons.beanutils.PropertyUtils;
@@ -9,6 +12,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Address;
 import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.common.db.PrintHistory;
 import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
@@ -51,7 +55,8 @@ public class QuoteResponseRecord extends MessageResponse {
 		billToAddress.selectOne(conn);
 		this.billTo = new AddressResponseRecord(billToAddress);
 		
-		this.quote = new QuoteDetail(quote, manager, division);
+		Integer printCount = makePrintCount(conn, quote.getQuoteId());
+		this.quote = new QuoteDetail(quote, manager, division, printCount);
 	}
 	
 	public QuoteDetail getQuote() {
@@ -75,6 +80,19 @@ public class QuoteResponseRecord extends MessageResponse {
 		this.jobSite = jobSite;
 	}
 	
+
+	private Integer makePrintCount(Connection conn, Integer quoteId) throws SQLException {
+		Integer printCount = 0;
+		String sql = "select count(*) as print_count from print_history where " + PrintHistory.QUOTE_ID + "=?";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1,  quoteId);
+		ResultSet rs = ps.executeQuery();
+		if ( rs.next() ) {
+			printCount = rs.getInt("print_count");
+		}
+		return printCount;
+	}
+
 
 	public class QuoteDetail extends ApplicationObject {
 		private static final long serialVersionUID = 1L;
@@ -102,13 +120,14 @@ public class QuoteResponseRecord extends MessageResponse {
 		private String divisionCode;
 //		private Date printDate;
 //		private Date quoteDate;
-//		
+		private Integer printCount;
+
 		
 			public QuoteDetail() {
 				super();
 			}
 			
-			public QuoteDetail(Quote quote, User manager, Division division) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+			public QuoteDetail(Quote quote, User manager, Division division, Integer printCount) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 				this();
 				PropertyUtils.copyProperties(this, quote);
 				this.managerLastName = manager.getLastName();
@@ -117,6 +136,7 @@ public class QuoteResponseRecord extends MessageResponse {
 				this.divisionCode = division.getDivisionCode();
 //				this.printDate = printHistory.getPrintDate();
 //				this.quoteDate = printHistory.getQuoteDate();
+				this.printCount = printCount;
 			}
 			
 			public void setAddress(String address) {
@@ -322,6 +342,14 @@ public class QuoteResponseRecord extends MessageResponse {
 			}
 			public void setManagerEmail(String managerEmail) {
 				this.managerEmail = managerEmail;
+			}
+
+			public Integer getPrintCount() {
+				return printCount;
+			}
+
+			public void setPrintCount(Integer printCount) {
+				this.printCount = printCount;
 			}
 		
 
