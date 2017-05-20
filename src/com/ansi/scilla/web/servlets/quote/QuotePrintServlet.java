@@ -19,7 +19,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.Quote;
+import com.ansi.scilla.common.quote.QuotePrintType;
 import com.ansi.scilla.common.quote.QuotePrinter;
+import com.ansi.scilla.common.quote.QuoteUtils;
 import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.Permission;
@@ -37,6 +39,9 @@ public class QuotePrintServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
 	public static final String QUOTE_DATE = "quoteDate"; 
+	public static final String PRINT_TYPE = "printType";
+	public static final String PRINT_TYPE_IS_PREVIEW = QuotePrintType.PREVIEW.name();
+	public static final String PRINT_TYPE_IS_PROPOSE = QuotePrintType.PROPOSE.name();
 	private final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
 
 	
@@ -60,13 +65,14 @@ public class QuotePrintServlet extends AbstractServlet {
 			SessionData sessionData = AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 			Integer quoteId = ansiURL.getId();
 			String dateString = request.getParameter(QUOTE_DATE);
+			String quoteType = request.getParameter(PRINT_TYPE);
 
 			SessionUser sessionUser = sessionData.getUser();			
 			Date quoteDate = makeQuoteDate(dateString);
 			
 			try {
 				validateQuote(conn, quoteId);
-				processPrint(conn, response, quoteId, quoteDate, sessionUser);
+				processPrint(conn, response, quoteId, quoteDate, quoteType, sessionUser);
 			} catch ( RecordNotFoundException e) {
 				super.sendNotFound(response);
 			}
@@ -112,9 +118,11 @@ public class QuotePrintServlet extends AbstractServlet {
 	}
 
 
-	private void processPrint(Connection conn, HttpServletResponse response, Integer quoteId, Date quoteDate, SessionUser sessionUser) throws Exception {
+	private void processPrint(Connection conn, HttpServletResponse response, Integer quoteId, Date quoteDate, String printType, SessionUser sessionUser) throws Exception {
 		
-		ByteArrayOutputStream baos = QuotePrinter.printQuote(conn, quoteId, quoteDate, sessionUser.getUserId());
+		ByteArrayOutputStream baos = printType.equalsIgnoreCase(PRINT_TYPE_IS_PROPOSE) ?
+				QuoteUtils.proposeQuote(conn, quoteId, sessionUser.getUserId(), quoteDate) :
+					QuoteUtils.previewQuote(conn, quoteId, sessionUser.getUserId(), quoteDate);
 		
 		Calendar today = Calendar.getInstance(new Locale("America/Chicago"));
 		SimpleDateFormat fileDateFormat = new SimpleDateFormat("yyyy-MM-dd");

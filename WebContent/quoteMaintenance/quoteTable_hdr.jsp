@@ -28,7 +28,9 @@
 							</td>
 							<td align="center"><span  id="quoteLabel">Quote</span></td>
 							<td align="center"><span  id="revisionLabel">Revision</span></td>
-							<td rowspan="2" align="right" style="padding-right:10px;"><input type="button" name="previewButton" value="Preview Quote" class="quoteButton"/><input type="button" name="printButton" value="Propose/Print" class="quoteButton"/></td>
+							<td rowspan="2" align="right" style="padding-right:10px;">
+								<i class="fa fa-print fa-3x" id="printButton" aria=hidden="true"></i>
+							</td>
 						</tr>
 						<tr>
 							<td><input type="button" name="copyQuoteButton" value="Copy" class="quoteButton"/></td>

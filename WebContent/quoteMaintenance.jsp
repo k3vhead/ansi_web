@@ -32,154 +32,157 @@
         
         <style type="text/css">
 
-#delData {
-	margin-bottom: 15px;
-	margin-top: 15px;
- }
-  
-#quoteTable {border: solid 1px #000000;}
+			#delData {
+				margin-bottom: 15px;
+				margin-top: 15px;
+			 }
+			  
+			#quoteTable {border: solid 1px #000000;}
  
-.quoteButton {
-	background-color: #F0F0F0;
-	color: #000000;
-	min-height: 30px;
-	width: 120px;
- }
+			 #printButton {
+			 	cursor:pointer;
+		 	}
+			.quoteButton {
+				background-color: #F0F0F0;
+				color: #000000;
+				min-height: 30px;
+				width: 120px;
+			 }
+			 
+			.quoteSelect {
+				max-width: 100px;
+				min-width: 100px;
+				width: 100px !important;
+			 }
  
-.quoteSelect {
-	max-width: 100px;
-	min-width: 100px;
-	width: 100px !important;
- }
+			.quoteSelect option {
+				max-width: 100px;
+				min-width: 100px;
+				width: 100px !important;
+			 }
+			 
+			.labelSpan {
+				display: inline-block;
+				width: 90px !important;
+			 }
+			 
+			 .invoiceSpan {
+			 	width: 80px !important;
+			 }
  
-.quoteSelect option {
-	max-width: 100px;
-	min-width: 100px;
-	width: 100px !important;
- }
+			.labelSpanSmall {
+				display: inline-block;
+				width: 60px !important;
+			 }
+			 
+			#jobDates {border: solid 1px #000000;}
+			 
+			#jobActivation2 {border: solid 1px #FF0000;}
+			 
+			td.jobTableCell {
+				vertical-align: top;
+				width: 50%;
+			 }
  
-.labelSpan {
-	display: inline-block;
-	width: 90px !important;
- }
+			#jobProposal {border: solid 1px #000000;}
+			 
+			#jobActivation {
+				border: solid 1px #000000;
+				height: 100%;
+			 }
+			 
+			#jobActivation2 {border: solid 1px #FF0000;}
+			 
+			td.jobTableCell {
+				vertical-align: top;
+				width: 50%;
+			 }
  
- .invoiceSpan {
- 	width: 80px !important;
- }
- 
-.labelSpanSmall {
-	display: inline-block;
-	width: 60px !important;
- }
- 
-#jobDates {border: solid 1px #000000;}
- 
-#jobActivation2 {border: solid 1px #FF0000;}
- 
-td.jobTableCell {
-	vertical-align: top;
-	width: 50%;
- }
- 
-#jobProposal {border: solid 1px #000000;}
- 
-#jobActivation {
-	border: solid 1px #000000;
-	height: 100%;
- }
- 
-#jobActivation2 {border: solid 1px #FF0000;}
- 
-td.jobTableCell {
-	vertical-align: top;
-	width: 50%;
- }
- 
-#jobSite.select {
-	max-width: 80px !important;
-	width: 80px !important;
- }
- 
-#division-menu {max-height: 300px;}
- 
-#jobSite_state-menu {max-height: 300px;}
- 
-#billTo_state-menu {max-height: 300px;}
-#jobProposal_jobFrequency-menu {max-height: 300px;}
-#quoteTable {width: 100%;}
+			#jobSite.select {
+				max-width: 80px !important;
+				width: 80px !important;
+			 }
+			 
+			#division-menu {max-height: 300px;}
+			 
+			#jobSite_state-menu {max-height: 300px;}
+			 
+			#billTo_state-menu {max-height: 300px;}
+			#jobProposal_jobFrequency-menu {max-height: 300px;}
+			#quoteTable {width: 100%;}
 
-.prettyWideButton {
+			.prettyWideButton {
 				height:30px;
 				min-height:30px;
-}
+			}
 
-.error {
-    color: red;  
-}
-
-#confirmDelete {
-	background-color: #FFFFFF;
-	color: #000000;
-	display: none;
-	padding: 15px;
-	text-align: center;
-	width: 300px;
- }
+			.error {
+			    color: red;  
+			}
+			
+			#confirmDelete {
+				background-color: #FFFFFF;
+				color: #000000;
+				display: none;
+				padding: 15px;
+				text-align: center;
+				width: 300px;
+			 }
  
-#displayTable {width: 90%;}
+			#displayTable {width: 90%;}
+			 
+			#addFormDiv {
+				background-color: #FFFFFF;
+				color: #000000;
+				display: none;
+				padding: 15px;
+				width: 400px;
+			 }
+			 
+			#delData {
+				margin-bottom: 15px;
+				margin-top: 15px;
+			 }
+			 
+			#jobProposal {border: solid 1px #000000;}
+			 
+			#jobSchedule {
+				border: solid 1px #000000;
+				height: 100%;
+			 }
  
-#addFormDiv {
-	background-color: #FFFFFF;
-	color: #000000;
-	display: none;
-	padding: 15px;
-	width: 400px;
- }
+			#billTo {border: solid 1px #000000;}
+			 
+			#jobSite {border: solid 1px #000000;}
+			 
+			#jobInvoice {border: solid 1px #000000;}
+			 
+			td.jobTableCell {
+				vertical-align: top;
+				width: 50%;
+			 }
+			 
+			.formFieldDisplay {margin-left: 30px;}
  
-#delData {
-	margin-bottom: 15px;
-	margin-top: 15px;
- }
- 
-#jobProposal {border: solid 1px #000000;}
- 
-#jobSchedule {
-	border: solid 1px #000000;
-	height: 100%;
- }
- 
-#billTo {border: solid 1px #000000;}
- 
-#jobSite {border: solid 1px #000000;}
- 
-#jobInvoice {border: solid 1px #000000;}
- 
-td.jobTableCell {
-	vertical-align: top;
-	width: 50%;
- }
- 
-.formFieldDisplay {margin-left: 30px;}
- 
- .addressTable {display:none;}
-  .ui-autocomplete-category {
-    font-weight: bold;
-    padding: .2em .4em;
-    margin: .8em 0 .2em;
-    line-height: 1.5;
-  }
-  .ui-state-disabled{
-	   opacity: 0.7 !important;
-	}
-	input[type="text"][disabled] {
-	   color: black;
-	}
-	input[type=checkbox] {width:20px; height:20px;}
+			.addressTable {display:none;}
+  			.ui-autocomplete-category {
+			    font-weight: bold;
+			    padding: .2em .4em;
+			    margin: .8em 0 .2em;
+			    line-height: 1.5;
+  			}
+  			.ui-state-disabled{
+	   			opacity: 0.7 !important;
+			}
+			input[type="text"][disabled] {
+	   			color: black;
+			}
+			input[type=checkbox] {width:20px; height:20px;}
 	
-	.ui-accordion .ui-accordion-header {
-		background: #c5c5c5 !important;
-		border: #c5c5c5 !important;
-	}
+			.ui-accordion .ui-accordion-header {
+				background: #c5c5c5 !important;
+				border: #c5c5c5 !important;
+			}
 	
 	
 

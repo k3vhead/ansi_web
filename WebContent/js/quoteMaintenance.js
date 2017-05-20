@@ -438,12 +438,7 @@ $( document ).ready(function() {
 					event.preventDefault();
 					console.log("Modify Quote");
 	            });
-				$("input[name=previewButton]").button().on( "click", function(event) {
-					event.preventDefault();
-					QUOTE_PRINT.showQuotePrint("#printQuoteDiv", $globalQuoteId, $("input[name=quoteNumber]").val());
-					console.log("Print Quote");
-	            });
-				$("input[name=printButton]").button().on( "click", function(event) {
+				$("#printButton").on( "click", function(event) {
 					event.preventDefault();
 					//ADD PROPOSE ACTION
 					QUOTE_PRINT.showQuotePrint("#printQuoteDiv", $globalQuoteId, $("input[name=quoteNumber]").val());

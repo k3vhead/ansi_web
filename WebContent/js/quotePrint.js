@@ -3,7 +3,7 @@
 			$( $modalName ).dialog({
 				title:'Print Quote',
 				autoOpen: false,
-				height: 200,
+				height: 300,
 				width: 500,
 				modal: true,
 				closeOnEscape:true,
