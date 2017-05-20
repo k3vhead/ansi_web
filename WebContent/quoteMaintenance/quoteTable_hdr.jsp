@@ -29,7 +29,14 @@
 							<td align="center"><span  id="quoteLabel">Quote</span></td>
 							<td align="center"><span  id="revisionLabel">Revision</span></td>
 							<td rowspan="2" align="right" style="padding-right:10px;">
-								<i class="fa fa-print fa-3x" id="printButton" aria=hidden="true"></i>
+								<span class="fa-stack fa-2x" style="color:#444444;">
+									<i class="fa fa-print fa-stack-2x" id="printButton" aria=hidden="true"></i>
+								</span>
+								<%-- <i class="fa fa-list-alt fa-3x" id="viewPrintHistory" aria=hidden="true"></i>--%>
+								<span class="fa-stack fa-2x" id="viewPrintHistory" style="color:#444444;">
+    								<i class="fa fa-list-alt fa-stack-2x"></i>
+    								<i class="fa fa-stack-1x"><span style="color:#FFFFFF; text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000, 1px 1px 0 #000; font-weight:bold;" id="printCount">2</span></i>
+								</span>
 							</td>
 						</tr>
 						<tr>
@@ -56,15 +63,19 @@
 							<td><span class="labelSpan">Proposed Date:</span>
 								<input type="text" name="proposalDate"  style="width:95px" disabled="disabled"/>
 							</td>
+							<%--
 							<td colspan="2">Print Date:&nbsp;&nbsp;<input type="text" name="printDate"  style="width:90px"/></td>
 							<td>Print Count:&nbsp;&nbsp;<input type="text" name="printCount"  style="width:90px" disabled="disabled"/></td>
+							 --%>
 						</tr>
+						<%--
 						<tr>
 							<td>&nbsp;</td>
 							<td>&nbsp;</td>
 							<td>&nbsp;</td>
 							<td>&nbsp;</td>
 							<td>&nbsp;</td>
-							<td align="right"  style="padding-right:10px;"><a href="#" name="viewPrintHistory">View Print History</a></td>
+							<td align="right"  style="padding-right:10px;"><a href="#" name="viewPrintHistory" id="viewPrintHistory">View Print History</a></td>
 						</tr>
+						 --%>
 					</table>

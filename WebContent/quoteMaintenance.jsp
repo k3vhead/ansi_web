@@ -26,6 +26,8 @@
         <script type="text/javascript" src="js/quoteMaintenance.js"></script>
         <script type="text/javascript" src="js/quotePrint.js"></script>
         <script type="text/javascript" src="js/addressUtils.js"></script>
+        <script type="text/javascript" src="js/quotePrintHistory.js"></script>
+        
         <%
 			String quotePrintModal = "";
 		%>
@@ -184,8 +186,15 @@
 				border: #c5c5c5 !important;
 			}
 	
-	
-
+			#printHistoryDiv {
+				display:none;
+			}
+			#viewPrintHistory {
+				cursor:pointer;
+			}
+			#printQuoteDiv {
+				display:none;
+			}
         </style>
     </tiles:put>
     
@@ -229,9 +238,12 @@
 		
 		<webthing:quotePrint modalName="printQuoteDiv" />
 		
+		<webthing:quotePrintHistory modalName="printHistoryDiv" />
+		
         <script type="text/javascript">   
 		      $( document ).ready(function() {
 					QUOTEUTILS.pageInit('<c:out value="${ANSI_QUOTE_ID}" />');
+					QUOTE_PRINT_HISTORY.init("#printHistoryDiv", "#viewPrintHistory");
 		        });
         </script>        
     </tiles:put>
