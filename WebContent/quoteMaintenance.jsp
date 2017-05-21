@@ -71,6 +71,19 @@
 			 .invoiceSpan {
 			 	width: 80px !important;
 			 }
+			 
+			 .saveIcon{
+			 float:right;
+			 }
+			 
+			 .grey {
+			 color: #696969;
+			 }
+			 
+			 
+			 .green {
+			 color:green;
+			 }
  
 			.labelSpanSmall {
 				display: inline-block;
@@ -202,10 +215,10 @@
     <tiles:put name="content" type="string">
     	<h1>Quote Maintenance</h1>
     	<div id="loadingDiv"><i class='fa fa-refresh fa-spin'></i></div>
-		<table id="quoteTable" style="display:none;">
+		<table id="quoteTable" valign="top" style="display:none;vertical-align:top;">
 			<tr>
-				<td colspan="2">
-					<jsp:include page="quoteMaintenance/quoteTable_hdr.jsp" />
+				<td colspan="2" valign="top" style="vertical-align:top;">
+					<jsp:include page="quoteMaintenance/quoteTable_hdr.jsp" /><i id='QuoteSaveHead' class='fa fa-floppy-o saveIcon grey' aria-hidden='true'>
 				</td>
 			</tr>
 			<tr>

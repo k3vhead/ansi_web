@@ -91,7 +91,7 @@
 				<% if ( pageName.equals("QUOTE") ) { %>
 				<td class="jobTableCell" style="text-align:center;">
 				<!-- <input type="button" name="<%= jobCancel %>" value="Cancel" rownum="<%= panelname %>" id="jobCancelButton" /> -->
-					<input type="button" class="jobSave" name="<%= jobSave %>" value="Save" rownum="<%= panelname %>" id="jobSaveButton" />
+				<!-- <input type="button" class="jobSave" name="<%= jobSave %>" value="Save" rownum="<%= panelname %>" id="jobSaveButton" /> -->
 				</td>
 				<% }  %>
 				

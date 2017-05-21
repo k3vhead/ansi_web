@@ -628,7 +628,7 @@ public class JobServlet extends AbstractServlet {
 				job.setJobTypeId(jobRequest.getJobTypeId());
 			}
 			
-			if(job.getJobTypeId() == 0){
+			if(job.getJobTypeId()!= null && job.getJobTypeId() == 0){
 				job.setJobTypeId(null);
 			}
 			if(jobRequest.getRequestSpecialScheduling() != null) {

@@ -11,34 +11,7 @@ $( document ).ready(function() {
 	
 	;JOB_DATA = {}
 	;QUOTE_DATA = {}
-	
-	;Lookup = {
-//	       		managerId:"select[name=manager]",
-//	       	 	leadType: "select[name=leadType]",
-//        		accountType:"select[name=accountType]",
-//        		divisionId:"select[name=division]",
-//        		jobSiteAddressId:"input[name=jobSite_id]",
-//        		billToAddressId:"input[name=billTo_id]",
-//        		jobContactId:"input[name='jobSite_Con1id']",
-//        		siteContact:"input[name='jobSite_Con2id']",
-//        		contractContactId:"input[name='billTo_Con1id']",
-//        		billingContactId:"input[name='billTo_Con2id']",
-//        		quoteNumber:"input[name='quoteNumber']",
-//        		revisionNumber:"input[name='revision']"
-			managerId:"manager",
-       	 	leadType: "leadType",
-    		accountType:"accountType",
-    		divisionId:"division",
-    		jobSiteAddressId:"jobSiteLabel",
-    		billToAddressId:"billToLabel",
-    		jobContactId:"jobSite_Con1id",
-    		siteContact:"jobSite_Con2id",
-    		contractContactId:"billTo_Con1id",
-    		billingContactId:"billTo_Con2id",
-    		quoteNumber:"quoteNumber",
-    		revisionNumber:"revision"	
-	}
-	
+		
 	
 	;QUOTEUTILS = {
 			pageInit:function($quoteId) {
@@ -108,7 +81,12 @@ $( document ).ready(function() {
 				    	
 				      }
 				});
-			
+				
+				 $( "input[name='jobSite_name']" ).focusout(function() {
+					 if( $( "input[name='jobSite_name']" ).val() == ""){
+						 $jobSiteId = null;
+					 }
+				  });
 				 
 				
 				$( "input[name='billTo_name']" ).autocomplete({
@@ -121,7 +99,12 @@ $( document ).ready(function() {
 				    	//preferredContactValue
 				      }
 				});
-			
+				
+				$( "input[name='billTo_name']" ).focusout(function() {
+					 if( $( "input[name='billTo_name']" ).val() == ""){
+						 $billToId = null;
+					 }
+				  });
 				 
 				
 				$( "input[name='jobSite_jobContactName']" ).autocomplete({
@@ -138,7 +121,11 @@ $( document ).ready(function() {
 				      }
 				});
 
-			
+				$( "input[name='jobSite_jobContactName']" ).focusout(function() {
+					 if( $( "input[name='jobSite_jobContactName']" ).val() == ""){
+						 $jobContactId = null;
+					 }
+				  });
 				 
 				$( "input[name='jobSite_siteContactName']" ).autocomplete({
 				     'source':"contactTypeAhead?",
@@ -151,7 +138,11 @@ $( document ).ready(function() {
 				      }
 				 });
 				
-				 
+				$( "input[name='jobSite_siteContactName']" ).focusout(function() {
+					 if( $( "input[name='jobSite_siteContactName']" ).val() == ""){
+						 $siteContactId = null;
+					 }
+				  });
 				 
 				$( "input[name='billTo_contractContactName']" ).autocomplete({
 				     'source':"contactTypeAhead?",
@@ -163,6 +154,11 @@ $( document ).ready(function() {
 				      }
 				 });
 				
+				$( "input[name='billTo_contractContactName']" ).focusout(function() {
+					 if( $( "input[name='billTo_contractContactName']" ).val() == ""){
+						 $contractContactId = null;
+					 }
+				  });
 				 
 				 
 				 $( "input[name='billTo_billingContactName']" ).autocomplete({
@@ -175,6 +171,11 @@ $( document ).ready(function() {
 				      }
 				 });
 				
+				 $( "input[name='billTo_billingContactName']" ).focusout(function() {
+					 if( $( "input[name='billTo_billingContactName']" ).val() == ""){
+						 $billingContactId = null;
+					 }
+				  });
 				
 				
 				
@@ -198,7 +199,11 @@ $( document ).ready(function() {
 					//console.log(" Quote Detail Contact Id:" + $quoteData.jobContactId);
 					
 					$signedByData = ADDRESSPANEL.getContact($quoteData.signedByContactId);
-					$("input[name='signedBy']").val($signedByData.lastName + ", "+$signedByData.firstName + "(" +$signedByData.contactId+")");
+					//console.log("SignedBy");
+					//console.log($signedByData);
+					if($signedByData.length > 0){
+						$("input[name='signedBy']").val($signedByData.lastName + ", "+$signedByData.firstName + "(" +$signedByData.contactId+")");
+					}
 					$("input[name='revision']").val($quoteData.revision);
 					//	console.log("DivisionCode: "+ $quoteData.divisionId);
 					
@@ -250,6 +255,7 @@ $( document ).ready(function() {
 						//addAJob($currentRow);
 						console.log("Loading Job: "+$index);
 						$jobContacts = JOB_UTILS.panelLoadQuote($currentRow, $job.jobId, $index, $quoteData);
+												
 						console.log("Job Contacts:");
 						console.log($jobContacts);
 						
@@ -416,6 +422,7 @@ $( document ).ready(function() {
 					} else {
 						QUOTEUTILS.update();
 					}
+					
 	            });
 				$("#quoteCancelButton").button().on( "click", function() {
 //					QUOTEUTILS.cancel();
@@ -427,6 +434,7 @@ $( document ).ready(function() {
 					} else {
 						QUOTEUTILS.update();
 					}
+
 //					QUOTEUTILS.exit();
 	            });
 				$("input[name=newQuoteButton]").button().on( "click", function(event) {
@@ -482,6 +490,8 @@ $( document ).ready(function() {
 
         		console.log("Save Outbound: ");
         		console.log($outbound);
+        		console.log("$currentRow");
+				console.log($currentRow);
 //				$aNames = {0:"jobSite",1:"billTo"};
 //				$.each($aNames, function($index, $addressPanelNamespace) {
 //					$aOutbound = {};
@@ -543,6 +553,10 @@ $( document ).ready(function() {
 							$(".inputIsInvalid").removeClass("fa-ban");
 							$(".inputIsInvalid").removeClass("inputIsInvalid");
 		   					if ( $data.responseHeader.responseCode=='EDIT_FAILURE') {
+		   						$("#QuoteSaveHead").removeClass("grey");
+		   						$("#QuoteSaveHead").removeClass("error");
+		   						$("#QuoteSaveHead").removeClass("green");
+		   						$("#QuoteSaveHead").addClass("error");
 								console.log("Edit Failure");
 								console.log($data);
 								$.each($data.data.webMessages, function(key, messageList) {
@@ -553,15 +567,24 @@ $( document ).ready(function() {
 		   					} else if ( $data.responseHeader.responseCode == 'SUCCESS') {
 //								$("input[name=quoteId]").val($data.data.quote.quoteId);//gag
 								$globalQuoteId =	$data.data.quote.quoteId;//gag
-						
+								$("#QuoteSaveHead").removeClass("grey");
+		   						$("#QuoteSaveHead").removeClass("error");
+		   						$("#QuoteSaveHead").removeClass("green");
+		   						$("#QuoteSaveHead").addClass("green");
 								$("input[name=quoteNumber]").val($data.data.quote.quoteNumber);
 								$("input[name=revision]").val($data.data.quote.revision);
 
 								console.log("Save Success");
 								console.log($data);
-									if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
-										$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
-									}
+								if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
+									$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
+								}
+									
+								console.log("$currentRow");
+								console.log($currentRow);
+								for($i = 0;$i < $currentRow;$i++){
+									JOB_UTILS.addJob($i,$globalQuoteId, $i);
+								}
 								
 		   					} else {
 		   						$("#globalMsg").html($data.responseHeader.responseMessage);
@@ -615,6 +638,9 @@ $( document ).ready(function() {
 	        		$outbound["revision"] = $("input[name='revision']").val();
 	        		$outbound["quoteId"] = $globalQuoteId;
         		
+        		console.log("$currentRow");
+				console.log($currentRow);
+					
         		console.log("Update Outbound: ");
         		console.log($outbound);
 
@@ -664,7 +690,10 @@ $( document ).ready(function() {
 						200: function($data) {
 		   					if ( $data.responseHeader.responseCode=='EDIT_FAILURE') {
 		   						//doQuoteEditFailure($data.data);
-		   						
+		   						$("#QuoteSaveHead").removeClass("grey");
+		   						$("#QuoteSaveHead").removeClass("error");
+		   						$("#QuoteSaveHead").removeClass("green");
+		   						$("#QuoteSaveHead").addClass("error");
 		   						alert("Edit Failure: Required Data is Missing");
 								console.log("Edit Failure");
 								console.log($data);
@@ -676,8 +705,19 @@ $( document ).ready(function() {
 		   					} else if ( $data.responseHeader.responseCode == 'SUCCESS') {
 		   						console.log("Update Success");
 								console.log($data);
+								$("#QuoteSaveHead").removeClass("grey");
+		   						$("#QuoteSaveHead").removeClass("error");
+		   						$("#QuoteSaveHead").removeClass("green");
+		   						$("#QuoteSaveHead").addClass("green");
 									if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
 										$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
+									}
+
+					        		console.log("$currentRow");
+									console.log($currentRow);
+
+									for($i = 0;$i < $currentRow;$i++){
+										JOB_UTILS.addJob($i,$globalQuoteId, $i);
 									}
 								
 		   					} else {
@@ -781,7 +821,7 @@ $( document ).ready(function() {
 					statusCode: {
 						200: function($data) {
 
-							$('#accordian').append("<h3 id="+$row+"_jobHeader><span id='"+$row+"_jobStatusHead'></span>&nbsp;&nbsp;Job: <span id='"+$row+"_jobIdHead'></span>&nbsp;&nbsp;Job #: <span id='"+$row+"_jobNumberHead'></span>&nbsp;&nbsp;PPC: <span id='"+$row+"_jobPPCHead'></span>&nbsp;&nbsp; Frequency: <span id='"+$row+"_jobFreqHead'></span></h3>");
+							$('#accordian').append("<h3 id="+$row+"_jobHeader><span id='"+$row+"_jobStatusHead'></span>&nbsp;&nbsp;Job: <span id='"+$row+"_jobIdHead'></span>&nbsp;&nbsp;Job #: <span id='"+$row+"_jobNumberHead'></span>&nbsp;&nbsp;PPC: <span id='"+$row+"_jobPPCHead'></span>&nbsp;&nbsp; Frequency: <span id='"+$row+"_jobFreqHead'></span>&nbsp;&nbsp; Desc: <span id='"+$row+"_jobDescHead'></span><i id='"+$row+"_jobSaveHead' class='fa fa-floppy-o saveIcon' aria-hidden='true'></i></h3>");
 							$('#accordian').append("<div id="+$row+"_jobDiv>"+$data+"</div>");
 		   					//	$('#jobPanelHolder > tbody:last-child').append($data);
 //								console.log($namespace);
@@ -801,9 +841,9 @@ $( document ).ready(function() {
 								JOBSCHEDULE.init($row+"_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
 								JOBINVOICE.init($row+"_jobInvoice", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, $jobDetail);
 								JOBAUDIT.init($row+"_jobAudit", $jobDetail);
-								$('.jobSave').on('click', function($clickevent) {
-									JOB_UTILS.addJob($(this).attr("rownum"),$globalQuoteId);
-					            });
+//								$('.jobSave').on('click', function($clickevent) {
+//									JOB_UTILS.addJob($(this).attr("rownum"),$globalQuoteId);
+//					            });
 								QUOTEUTILS.bindAndFormat();
 								
 								//console.log($globalQuoteId);

@@ -85,11 +85,16 @@ $( document ).ready(function() {
 					if($jobDetail.jobFrequency != null){
 						$("#"+$namespace+"_jobFreqHead").html($jobDetail.jobFrequency);
 					}
+					if($jobDetail.serviceDescription != null){
+						$("#"+$namespace+"_jobDescHead").html($jobDetail.serviceDescription.substring(0, 50));
+					}
 					$("#"+$namespace+"_jobPanel_jobLink").attr("href", "jobMaintenance.html?id="+$jobId);
 					$("#"+$namespace+"_jobPanel_jobLink").text($jobId);
 					//$(".addressTable").remove();
 					
-					if($("#"+$namespace+"_jobPanel_jobStatus").val() != "A" ||  $("#"+$namespace+"_jobPanel_jobStatus").val() != "C"){
+;
+					
+					if($jobData.status != "A" && $jobData.status != "C"){
 						$("#"+$namespace+"_jobPanel_scheduleJobButton").hide();
 					}
 					
@@ -177,7 +182,7 @@ $( document ).ready(function() {
 				data: {"namespace":$namespace,"page":'QUOTE'},
 				success: function($data) {
 					$("#loadingJobsDiv").hide();
-					$('#accordian').append("<h3 id="+$namespace+"_jobHeader><span id='"+$namespace+"_jobStatusHead'></span>&nbsp;&nbsp;Job: <span id='"+$namespace+"_jobIdHead'></span>&nbsp;&nbsp;Job #: <span id='"+$namespace+"_jobNumberHead'></span>&nbsp;&nbsp;PPC: <span id='"+$namespace+"_jobPPCHead'></span>&nbsp;&nbsp; Frequency: <span id='"+$namespace+"_jobFreqHead'></span></h3>");
+					$('#accordian').append("<h3 id="+$namespace+"_jobHeader><span id='"+$namespace+"_jobStatusHead'></span>&nbsp;&nbsp;Job: <span id='"+$namespace+"_jobIdHead'></span>&nbsp;&nbsp;Job #: <span id='"+$namespace+"_jobNumberHead'></span>&nbsp;&nbsp;PPC: <span id='"+$namespace+"_jobPPCHead'></span>&nbsp;&nbsp; Frequency: <span id='"+$namespace+"_jobFreqHead'></span>&nbsp;&nbsp; Desc: <span id='"+$namespace+"_jobDescHead'></span><i id='"+$namespace+"_jobSaveHead' class='fa fa-floppy-o saveIcon grey' aria-hidden='true'></i></h3>");
 					$('#accordian').append("<div id="+$namespace+"_jobDiv>"+$data+"</div>");
 					JOBPANEL.init($namespace+"_jobPanel", JOB_DATA.divisionList, "activateModal", $jobDetail);
 					JOBPROPOSAL.init($namespace+"_jobProposal", JOB_DATA.jobFrequencyList, $jobDetail);
@@ -203,11 +208,16 @@ $( document ).ready(function() {
 					if($jobDetail.jobFrequency != null){
 						$("#"+$namespace+"_jobFreqHead").html($jobDetail.jobFrequency);
 					}
+					if($jobDetail.serviceDescription != null){
+						$("#"+$namespace+"_jobDescHead").html($jobDetail.serviceDescription.substring(0, 50));
+					}
+					
+					
 					$("#"+$namespace+"_jobPanel_jobLink").attr("href", "jobMaintenance.html?id="+$jobId);
 					$("#"+$namespace+"_jobPanel_jobLink").text($jobId);
 					//$(".addressTable").remove();
 					
-					if($("#"+$namespace+"_jobPanel_jobStatus").val() != "A" ||  $("#"+$namespace+"_jobPanel_jobStatus").val() != "C"){
+					if($("#"+$namespace+"_jobPanel_jobStatus").val() != "A" &&  $("#"+$namespace+"_jobPanel_jobStatus").val() != "C"){
 						$("#"+$namespace+"_jobPanel_scheduleJobButton").hide();
 					}
 					
@@ -215,9 +225,10 @@ $( document ).ready(function() {
 				        $(this).css("height","20px");
 				        $(this).css("max-height", "20px");
 				    });
-					$('.jobSave').on('click', function($clickevent) {
-						JOB_UTILS.addJob($(this).attr("rownum"),$jobDetail.quoteId, $namespace);
-		            });
+					//$('.jobSave').on('click', function($clickevent) {
+						//console.log($namespace);
+						//JOB_UTILS.addJob($(this).attr("rownum"),$jobDetail.quoteId, $namespace);
+		           // });
 				},
 				statusCode: {
 					403: function($data) {
@@ -282,6 +293,7 @@ $( document ).ready(function() {
 //    		$outbound["action"]	= 'ADD_JOB';
     		$pre = "#"+$rn;
     		
+    		
 //			alert("job addJob - jobId:" + $($pre+"_jobPanel_jobId").val());
     		if ($($pre+"_jobPanel_jobId").val()) {
     			$url = "job/"+$($pre+"_jobPanel_jobId").val();
@@ -289,6 +301,8 @@ $( document ).ready(function() {
     		} else {
         		$outbound["action"]	= 'ADD_JOB';
     		}
+    		
+    		console.log("Action: "+$outbound["action"]+" Row: "+$rn);
     		$outbound["activationDate"]				= $($pre+"_jobDates_activationDate").html();
     		$outbound["billingContactId"]			= QUOTEUTILS.getbillingContactId();
     		$outbound["billingNotes"]				= $($pre+"_jobActivation_billingNotes").val();
@@ -363,12 +377,19 @@ $( document ).ready(function() {
 					200: function($data) {
 						$(".inputIsInvalid").removeClass("fa-ban");
 						$(".inputIsInvalid").removeClass("inputIsInvalid");
-						console.log("Return 200");
+						console.log("Return 200: "+$rn);
 						console.log($data);
+						
 						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
 							
+							
+							$("#"+$rn+"_jobSaveHead").removeClass("grey");
+							$("#"+$rn+"_jobSaveHead").removeClass("error");
+							$("#"+$rn+"_jobSaveHead").removeClass("green");
+							$("#"+$rn+"_jobSaveHead").addClass("error");
+							
 							$.each($data.data.webMessages, function(key, messageList) {
-								var identifier = "#"+key+"Err";
+								var identifier = "#"+$rn+"_jobDiv ."+key+"Err";
 								$(identifier).addClass("fa-ban");
 								$(identifier).addClass("inputIsInvalid");
 							});
@@ -378,27 +399,39 @@ $( document ).ready(function() {
 						}
 						if ( $data.responseHeader.responseCode == 'SUCCESS') {
 							console.log("Success!");
-							$($pre+"_jobPanel_jobId").val($data.data.job.jobId);
-							$($pre+"_jobPanel_jobStatus").val($data.data.job.status);
+							
+							$("#"+$rn+"_jobSaveHead").removeClass("grey");
+							$("#"+$rn+"_jobSaveHead").removeClass("error");
+							$("#"+$rn+"_jobSaveHead").removeClass("green");
+							$("#"+$rn+"_jobSaveHead").addClass("green");
+							
+							$("#"+$rn+"_jobPanel_jobId").val($data.data.job.jobId);
+							$("#"+$rn+"_jobPanel_jobStatus").val($data.data.job.status);
 							$userData = ANSI_UTILS.getUser($data.data.job.addedBy);
 							if($data.data.job.jobId != null){
-								$($pre+"_jobIdHead").html($data.data.job.jobId);
+								$("#"+$rn+"_jobIdHead").html($data.data.job.jobId);
 							}
 							if($data.data.job.status != null){
-								$($pre+"_jobStatusHead").html($data.data.job.status);					
+								$("#"+$rn+"_jobStatusHead").html($data.data.job.status);					
 							}
 							if($data.data.job.jobNbr != null){
-								$($pre+"_jobNumberHead").html($data.data.job.jobNbr);	
+								$("#"+$rn+"_jobNumberHead").html($data.data.job.jobNbr);	
 							}
 							if($data.data.job.pricePerCleaning != null){
-								$($pre+"_jobPPCHead").html($data.data.job.pricePerCleaning);	
+								$("#"+$rn+"_jobPPCHead").html($data.data.job.pricePerCleaning);	
 							}
 							if($data.data.job.jobFrequency != null){
-								$($pre+"_jobFreqHead").html($data.data.job.jobFrequency);
+								$("#"+$rn+"_jobFreqHead").html($data.data.job.jobFrequency);
 							}
-							$($pre+"_jobPanel_divisionId").text($("select[name='division'] option:selected").text());
+							if($data.data.job.serviceDescription != null){
+								$("#"+$rn+"_jobDescHead").html($data.data.job.serviceDescription.substring(0, 50));
+							}
+							$("#"+$rn+"_jobPanel_divisionId").text($("select[name='division'] option:selected").text());
 							
 //************* FINISH AUDIT
+							$addedBy = ANSI_UTILS.getUser($data.data.job.addedBy);
+							$updatedBy = ANSI_UTILS.getUser($data.data.job.updatedBy);
+							//JOBAUDIT.init($rn+"_jobAudit", $data.data.job);
 							//JOBAUDIT.init($rn,$data.data.job);
 							ANSI_UTILS.setTextValue($namespace, "panelMessage", "Update Successful");
 							JOB_UTILS.fadeMessage($namespace, "panelMessage")
@@ -408,13 +441,26 @@ $( document ).ready(function() {
 					403: function($data) {
 						ANSI_UTILS.setTextValue($namespace, "panelMessage", "Function Not Permitted");
 						JOB_UTILS.fadeMessage($namespace, "panelMessage")
+						$($pre+"_jobSaveHead").removeClass("grey");
+						$($pre+"_jobSaveHead").removeClass("error");
+						$($pre+"_jobSaveHead").removeClass("green");
+						$($pre+"_jobSaveHead").addClass("error");
 					}, 
 					404: function($data) {
 						ANSI_UTILS.setTextValue($namespace, "panelMessage", "Resource Not Available");
 						JOB_UTILS.fadeMessage($namespace, "panelMessage")
+						$($pre+"_jobSaveHead").removeClass("grey");
+						$($pre+"_jobSaveHead").removeClass("error");
+						$($pre+"_jobSaveHead").removeClass("green");
+						$($pre+"_jobSaveHead").addClass("error");
 					}, 
 					500: function($data) {
 						ANSI_UTILS.setTextValue($namespace, "panelMessage", "System Error -- Contact Support");
+						//JOB_UTILS.fadeMessage($namespace, "panelMessage")
+						$($pre+"_jobSaveHead").removeClass("grey");
+						$($pre+"_jobSaveHead").removeClass("error");
+						$($pre+"_jobSaveHead").removeClass("green");
+						$($pre+"_jobSaveHead").addClass("error");
 					} 
 				},
 				dataType: 'json'

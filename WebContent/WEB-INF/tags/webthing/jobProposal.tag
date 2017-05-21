@@ -42,7 +42,7 @@
 				<td><bean:message key="rpt.hdr.job"/>:</td>
 				<td><input type="text" name="<%=namespace%>_jobNbr" id="<%=namespace%>_jobNbr" style="width:40px;" <%=disabled%>/>
 				<td><bean:message key="rpt.hdr.ppc" />:</td>
-				<td><input type="text" name="<%=namespace%>_ppc" id="<%=namespace%>_ppc" style="width:100px;"  <%=disabled%>/><i id="pricePerCleaningErr" aria-hidden="true"></i></td>
+				<td><input type="text" name="<%=namespace%>_ppc" id="<%=namespace%>_ppc" style="width:100px;"  <%=disabled%>/><i id="<%=namespace%>_pricePerCleaningErr" class="pricePerCleaningErr" aria-hidden="true"></i></td>
 			</tr>
 			<tr>
 				<td colspan="2">&nbsp;</td>
@@ -51,11 +51,11 @@
 					<select name="<%=namespace%>_jobFrequency" id="<%=namespace%>_jobFrequency"  <%=disabled%>>
 						<option value=""></option>
 					</select>
-					<i id="jobFrequencyErr" aria-hidden="true"></i>
+					<i id="<%=namespace%>_jobFrequencyErr" class="jobFrequencyErr" aria-hidden="true"></i>
 				</td>
 			</tr>
 			<tr>
-				<td colspan="4"><bean:message key="rpt.hdr.servicedescription" /><i id=serviceDescriptionErr" aria-hidden="true"></i></td>
+				<td colspan="4"><bean:message key="rpt.hdr.servicedescription" /><i id="<%=namespace%>_serviceDescriptionErr" class="serviceDescriptionErr" aria-hidden="true"></i></td>
 			</tr>
 			<tr>
 				<td colspan="4">
