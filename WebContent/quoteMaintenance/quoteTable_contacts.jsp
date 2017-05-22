@@ -15,12 +15,12 @@
 
 					<table style="width:100%;">
 						<tr>
-							<td align="left" style="width:480px;border:1px solid #000000">
-								<span style="display: inline-block;width:51px;"><b>Job Site</b></span><input type="text" name="jobSite_name" style="width:425px" />
+							<td align="left" style="width:480px;border:1px solid #000000; white-space:nowrap;">
+								<span style="display: inline-block;width:51px;"><b>Job&nbsp;Site:</b></span> <input type="text" name="jobSite_name" style="width:425px" />
 								<i id="jobSiteAddressIdErr" aria-hidden="true"></i>
 							</td>
-							<td align="left" style="width:480px;border:1px solid #000000">
-								<span style="display: inline-block;width:51px;"><b>Bill To</b></span><input type="text" name="billTo_name" style="width:425px" />
+							<td align="left" style="width:480px;border:1px solid #000000; white-space:nowrap;">
+								<span style="display: inline-block;width:51px;"><b>Bill&nbsp;To:</b></span> <input type="text" name="billTo_name" style="width:425px" />
 								<i id="billToAddressIdErr" aria-hidden="true"></i>
 							</td>
 						</tr>

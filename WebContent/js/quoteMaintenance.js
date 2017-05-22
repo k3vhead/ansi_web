@@ -72,7 +72,7 @@ $( document ).ready(function() {
 				$buildingTypeList = ANSI_UTILS.makeBuildingTypeList();
 				QUOTEUTILS.setDivisionList($divisionList);
 				
-				 $( "input[name='jobSite_name']" ).autocomplete({
+				 var $jobSiteNameComplete = $( "input[name='jobSite_name']" ).autocomplete({
 				     'source':"addressTypeAhead?",
 				      select: function( event, ui ) {
 				    	$jobSiteId = ui.item.id;
@@ -80,7 +80,18 @@ $( document ).ready(function() {
 				    	ADDRESS_UTILS.getAddress($jobSiteId, "#jobSite");
 				    	
 				      }
-				});
+				}).data('ui-autocomplete');
+				 $jobSiteNameComplete._renderMenu = function( ul, items ) {
+					var that = this;
+					$.each( items, function( index, item ) {
+						that._renderItemData( ul, item );
+					});
+					if ( items.length == 1 ) {
+				    	$jobSiteId = items[0].id;
+				    	ADDRESS_UTILS.clearAddress("#jobSite");
+				    	ADDRESS_UTILS.getAddress($jobSiteId, "#jobSite");
+					}
+				}
 				
 				 $( "input[name='jobSite_name']" ).focusout(function() {
 					 if( $( "input[name='jobSite_name']" ).val() == ""){
@@ -89,7 +100,7 @@ $( document ).ready(function() {
 				  });
 				 
 				
-				$( "input[name='billTo_name']" ).autocomplete({
+				var $billToNameComplete = $( "input[name='billTo_name']" ).autocomplete({
 				     'source':"addressTypeAhead?",
 				      select: function( event, ui ) {
 				    	$billToId = ui.item.id;
@@ -98,7 +109,20 @@ $( document ).ready(function() {
 				    	//label
 				    	//preferredContactValue
 				      }
-				});
+				}).data('ui-autocomplete');
+				$billToNameComplete._renderMenu = function( ul, items ) {
+					var that = this;
+					$.each( items, function( index, item ) {
+						that._renderItemData( ul, item );
+					});
+					if ( items.length == 1 ) {
+						$billToId = items[0].id;
+				    	ADDRESS_UTILS.clearAddress("#billTo");
+				    	ADDRESS_UTILS.getAddress($billToId, "#billTo");
+					}
+				}
+
+				
 				
 				$( "input[name='billTo_name']" ).focusout(function() {
 					 if( $( "input[name='billTo_name']" ).val() == ""){
@@ -131,8 +155,6 @@ $( document ).ready(function() {
 				     'source':"contactTypeAhead?",
 				      select: function( event, ui ) {
 				    	$siteContactId = ui.item.id;
-				    	
-				    	
 				    	$("input[name='jobSite_siteContactName']").val(ui.item.value);
 				    	$("span[name='jobSite_siteContactInfo']").html(QUOTEUTILS.processContact(ui.item));
 				      }
