@@ -18,7 +18,7 @@
 <tiles:insert page="layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        Contact <bean:message key="menu.label.maintenance" />
+        Contact <bean:message key="menu.label.lookup" />
     </tiles:put>
     
     

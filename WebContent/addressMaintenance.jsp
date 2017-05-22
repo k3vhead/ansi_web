@@ -18,7 +18,7 @@
 <tiles:insert page="layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        Address Maintenance
+        Address <bean:message key="menu.label.lookup" />
     </tiles:put>
     
     
@@ -522,7 +522,7 @@
     </tiles:put>
     
     <tiles:put name="content" type="string">
-    	<h1>Address Maintenance</h1>
+    	<h1>Address <bean:message key="menu.label.lookup" /></h1>
     	
  		<table id="addressTable" class="display" cellspacing="0" style="font-size:9pt;">
 	        <thead>
