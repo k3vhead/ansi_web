@@ -256,6 +256,28 @@
 				$('#closeViewButton').button('option', 'label', 'Close');
 				init();
 
+				
+				var $billToNameComplete = $( "#addAddressForm input[name='name']" ).autocomplete({
+				     'source':"addressTypeAhead?",
+				      select: function( event, ui ) {
+				    	$addressId = ui.item.id;
+				    	populateAddressForm($addressId);
+				   	}
+				}).data('ui-autocomplete');
+				$billToNameComplete._renderMenu = function( ul, items ) {
+					var that = this;
+					$.each( items, function( index, item ) {
+						that._renderItemData( ul, item );
+					});
+					if ( items.length == 1 ) {
+						$addressId = items[0].id;
+				    	populateAddressForm($addressId);
+					}
+				}
+
+				
+				
+				
         		function addAddress() {
         			clearErrIcons();
 	        		$outbound = {};
@@ -395,7 +417,10 @@
 			
 				function doEdit($clickevent) {
 					var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
-
+					populateAddressForm($rowid);
+				}
+				
+				function populateAddressForm($rowid) {
 					var $url = 'address/' + $rowid;
 					var jqxhr = $.ajax({
 						type: 'GET',
@@ -415,6 +440,7 @@
 								
 				        		$("#aId").val($address.addressId);
 				        		$("#updateOrAdd").val("update");
+						    	$('#addFormButton').button('option', 'label', 'Update Address');
 				        		$("#addAddressForm").dialog( "open" );
 							},
 							403: function($data) {

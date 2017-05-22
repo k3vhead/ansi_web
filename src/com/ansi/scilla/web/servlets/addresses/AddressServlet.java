@@ -213,32 +213,42 @@ public class AddressServlet extends AbstractServlet {
 		Address address = new Address();
 		
 
-		address.setAddedBy(sessionUser.getUserId());
-		address.setAddedBy(8);
-		address.setAddedDate(today);
 
 //		address.setAddressId(addressRequest.getAddressId());
 		address.setName(addressRequest.getName());
 		address.setCountryCode(country.abbrev());
 		if ( ! StringUtils.isBlank(addressRequest.getAddress1())) {
 			address.setAddress1(addressRequest.getAddress1());
-		} if ( ! StringUtils.isBlank(addressRequest.getAddress2())) {
+		} 
+		if ( ! StringUtils.isBlank(addressRequest.getAddress2())) {
 			address.setAddress2(addressRequest.getAddress2());
-		} if ( ! StringUtils.isBlank(addressRequest.getCity())) {
+		} 
+		if ( ! StringUtils.isBlank(addressRequest.getCity())) {
 			address.setCity(addressRequest.getCity());
-		} if ( ! StringUtils.isBlank(addressRequest.getCounty())) {
+		} 
+		if ( ! StringUtils.isBlank(addressRequest.getCounty())) {
 			address.setCounty(addressRequest.getCounty());
-		} if ( ! StringUtils.isBlank(addressRequest.getState())) {
+		} 
+		if ( ! StringUtils.isBlank(addressRequest.getState())) {
 			address.setState(addressRequest.getState());
-		} if ( ! StringUtils.isBlank(addressRequest.getStatus())) {
+		} 
+		if ( ! StringUtils.isBlank(addressRequest.getStatus())) {
 			address.setStatus(addressRequest.getStatus());
-		} if ( ! StringUtils.isBlank(addressRequest.getZip())) {
+		} 
+		if ( ! StringUtils.isBlank(addressRequest.getZip())) {
 			address.setZip(addressRequest.getZip());
 		} 
 		
-
-		address.setUpdatedBy(sessionUser.getUserId());
+		try {
+			address.selectOne(conn);
+			throw new DuplicateEntryException();
+		} catch ( RecordNotFoundException e ) {
+			// this is good -- means no duplicates
+		}
 		
+		address.setAddedBy(sessionUser.getUserId());
+		address.setAddedDate(today);
+		address.setUpdatedBy(sessionUser.getUserId());
 		address.setUpdatedDate(today);
 		
 		try {
@@ -253,6 +263,7 @@ public class AddressServlet extends AbstractServlet {
 		} 
 		return address;
 	}
+
 
 
 	private void processUpdateRequest(Connection conn, HttpServletResponse response, Integer addressId, AddressRequest addressRequest, Country country, SessionUser sessionUser) throws Exception {
