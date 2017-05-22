@@ -20,6 +20,7 @@ import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.db.TicketPayment;
 import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.common.jobticket.TicketType;
+import com.ansi.scilla.common.jobticket.TicketUtils;
 import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.Permission;
@@ -34,7 +35,6 @@ import com.ansi.scilla.web.request.payment.ApplyPaymentRequestItem;
 import com.ansi.scilla.web.response.invoice.InvoiceTicketResponse;
 import com.ansi.scilla.web.response.payment.ApplyPaymentResponse;
 import com.ansi.scilla.web.response.payment.PaymentResponse;
-import com.ansi.scilla.web.response.ticket.TicketReturnResponse;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
@@ -59,7 +59,8 @@ public class ApplyPaymentServlet extends AbstractServlet {
 				conn.setAutoCommit(false);
 				String jsonString = super.makeJsonString(request);
 				System.out.println(jsonString);			
-				ApplyPaymentRequest paymentRequest = (ApplyPaymentRequest)AppUtils.json2object(jsonString, ApplyPaymentRequest.class);
+				ApplyPaymentRequest paymentRequest = new  ApplyPaymentRequest();
+				AppUtils.json2object(jsonString, paymentRequest);
 				url = new AnsiURL(request, "applyPayment", new String[] {PaymentRequestType.VERIFY.name().toLowerCase(), PaymentRequestType.COMMIT.name().toLowerCase()});
 				SessionData sessionData = AppUtils.validateSession(request, Permission.PAYMENT, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 				SessionUser sessionUser = sessionData.getUser();
@@ -170,6 +171,7 @@ public class ApplyPaymentServlet extends AbstractServlet {
 				makeTicket(conn, TicketType.FEE, ticketPattern, detail.paymentId, detail.invoiceId, detail.feeAmount, sessionUser);
 			}
 		}
+
 		conn.rollback();
 		
 		BigDecimal unappliedAmount = detail.availableFromPayment;
@@ -243,25 +245,7 @@ public class ApplyPaymentServlet extends AbstractServlet {
 	private void makeTicketPayment(Connection conn, Integer paymentId, Integer invoiceId, ApplyPaymentRequestItem item, SessionUser sessionUser) throws Exception {
 		Double payInvoice = item.getPayInvoice() == null ? 0.0D : item.getPayInvoice();
 		Double payTax = item.getPayTax() == null ? 0.0D : item.getPayTax();
-
-		BigDecimal amount = new BigDecimal(payInvoice).setScale(2, RoundingMode.HALF_UP);
-		BigDecimal taxAmt = new BigDecimal(payTax).setScale(2, RoundingMode.HALF_UP);
-		
-		if ( payInvoice != 0.0D || payTax != 0.0D ) {
-			TicketPayment ticketPayment = new TicketPayment();
-			ticketPayment.setAddedBy(sessionUser.getUserId());
-	//		ticketPayment.setAddedDate(addedDate);  		// populated in the super
-			ticketPayment.setAmount(amount);
-			ticketPayment.setPaymentId(paymentId);
-			ticketPayment.setStatus(0); // do we have values for this?
-			ticketPayment.setTaxAmt(taxAmt);
-			ticketPayment.setTicketId(item.getTicketId());
-			ticketPayment.setUpdatedBy(sessionUser.getUserId());
-	//		ticketPayment.setUpdatedDate(updatedDate); 			// populated in the super
-			
-			System.out.println(ticketPayment);
-			ticketPayment.insertWithNoKey(conn);
-		}
+		TicketUtils.applyPayment(conn, paymentId, item.getTicketId(), payInvoice, payTax, sessionUser.getUserId());
 	}
 
 
