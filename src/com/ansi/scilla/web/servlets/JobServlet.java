@@ -179,8 +179,9 @@ public class JobServlet extends AbstractServlet {
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 						responseCode = ResponseCode.SUCCESS;
 						messages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
-						JobResponse jobResponse = new JobResponse(job, messages);
-						super.sendResponse(conn, response, responseCode, jobResponse);		
+						jobDetailResponse = new JobDetailResponse(conn, job.getJobId());
+//						JobResponse jobResponse = new JobResponse(job, messages);
+						super.sendResponse(conn, response, responseCode, jobDetailResponse);		
 
 					}
 				} catch ( RecordNotFoundException e ) {
@@ -339,6 +340,7 @@ public class JobServlet extends AbstractServlet {
 	}
 	
 	protected Job doAdd(Connection conn, JobRequest jobRequest, SessionUser sessionUser, HttpServletResponse response) throws Exception {
+		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		ResponseCode responseCode = null;
 		Date today = new Date();
 		Job job = new Job();
@@ -478,11 +480,13 @@ public class JobServlet extends AbstractServlet {
 				}
 			} 
 			job.setJobId(j);
+			jobDetailResponse = new JobDetailResponse(conn, job.getJobId());
 		} else {
 			responseCode = ResponseCode.EDIT_FAILURE;
 		}
-		JobResponse jobResponse = new JobResponse(job, messages);
-		super.sendResponse(conn, response, responseCode, jobResponse);		
+//		JobDetailResponse jobDetailResponse = new JobDetailResponse(conn, job.getJobId());
+//		JobResponse jobResponse = new JobResponse(job, messages);
+		super.sendResponse(conn, response, responseCode, jobDetailResponse);		
 		return job;
 	}
 	
@@ -660,13 +664,14 @@ public class JobServlet extends AbstractServlet {
 			System.out.println("Doing Edit Fail");
 			responseCode = ResponseCode.EDIT_FAILURE;
 		}
-		JobResponse codeResponse = new JobResponse(job, webMessages);
+		JobDetailResponse jobDetailResponse = new JobDetailResponse(conn, job.getJobId());
+//		JobResponse codeResponse = new JobResponse(job, webMessages);
 		System.out.println("Response:");
 		System.out.println("responseCode: " + responseCode);
-		System.out.println("codeResponse: " + codeResponse);
+		System.out.println("jobDetailResponse: " + jobDetailResponse);
 		System.out.println("response: " + response);
 
-		super.sendResponse(conn, response, responseCode, codeResponse);
+		super.sendResponse(conn, response, responseCode, jobDetailResponse);
 
 		return job;
 	}

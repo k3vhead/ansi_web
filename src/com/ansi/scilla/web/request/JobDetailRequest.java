@@ -14,6 +14,7 @@ public class JobDetailRequest extends AbstractRequest {
 	private String cancelReason;
 	private Date activationDate;
 	private Date startDate;
+	private Date proposalDate;
 	private Boolean annualRepeat;
 	
 	public Integer getJobId() {
@@ -58,6 +59,14 @@ public class JobDetailRequest extends AbstractRequest {
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
+	public void setProposalDate(Date proposalDate) {
+		this.proposalDate = proposalDate;
+	}
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
+	public Date getProposalDate() {
+		return proposalDate;
+	}
 
 	public Boolean getAnnualRepeat() {
 		return annualRepeat;
@@ -70,6 +79,7 @@ public class JobDetailRequest extends AbstractRequest {
 		ACTIVATE_JOB,
 		CANCEL_JOB,
 		SCHEDULE_JOB,
+		PROPOSE_JOB,
 		REPEAT_JOB,
 		UPDATE_JOB,
 		ADD_JOB;

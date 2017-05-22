@@ -104,6 +104,7 @@ public class JobRequest extends AbstractRequest{
 	}
 
 	@RequiredForAdd
+	@RequiredForUpdate
 	public Integer getBillingContactId() {
 		return this.billingContactId;
 	}
@@ -121,6 +122,7 @@ public class JobRequest extends AbstractRequest{
 	}
 
 	@RequiredForAdd
+	@RequiredForUpdate
 	public BigDecimal getBudget() {
 		return this.budget;
 	}
@@ -130,6 +132,7 @@ public class JobRequest extends AbstractRequest{
 	}
 
 	@RequiredForAdd
+	@RequiredForUpdate
 	public String getBuildingType() {
 		return this.buildingType;
 	}
@@ -157,6 +160,7 @@ public class JobRequest extends AbstractRequest{
 	}
 
 	@RequiredForAdd
+	@RequiredForUpdate
 	public Integer getContractContactId() {
 		return this.contractContactId;
 	}
@@ -166,6 +170,7 @@ public class JobRequest extends AbstractRequest{
 	}
 
 	@RequiredForAdd
+	@RequiredForUpdate
 	public BigDecimal getDirectLaborPct() {
 		return this.directLaborPct;
 	}
@@ -175,6 +180,7 @@ public class JobRequest extends AbstractRequest{
 	}
 
 	@RequiredForAdd
+	@RequiredForUpdate
 	public Integer getDivisionId() {
 		return this.divisionId;
 	}
@@ -210,6 +216,7 @@ public class JobRequest extends AbstractRequest{
 	}
 
 	@RequiredForAdd
+	@RequiredForUpdate
 	public Integer getFloors() {
 		return this.floors;
 	}
@@ -219,6 +226,7 @@ public class JobRequest extends AbstractRequest{
 	}
 
 	@RequiredForAdd
+	@RequiredForUpdate
 	public Integer getInvoiceBatch() {
 		return this.invoiceBatch;
 	}
@@ -228,6 +236,7 @@ public class JobRequest extends AbstractRequest{
 	}
 
 	@RequiredForAdd
+	@RequiredForUpdate
 	public String getInvoiceGrouping() {
 		return this.invoiceGrouping;
 	}
@@ -237,6 +246,7 @@ public class JobRequest extends AbstractRequest{
 	}
 
 	@RequiredForAdd
+	@RequiredForUpdate
 	public String getInvoiceStyle() {
 		return this.invoiceStyle;
 	}
@@ -254,6 +264,7 @@ public class JobRequest extends AbstractRequest{
 	}
 
 	@RequiredForAdd
+	@RequiredForUpdate
 	public Integer getJobContactId() {
 		return this.jobContactId;
 	}
@@ -263,6 +274,7 @@ public class JobRequest extends AbstractRequest{
 	}
 
 	@RequiredForAdd
+	@RequiredForUpdate
 	public String getJobFrequency() {
 		return this.jobFrequency;
 	}
@@ -272,6 +284,7 @@ public class JobRequest extends AbstractRequest{
 	}
 
 //	@RequiredForAdd
+//	@RequiredForUpdate
 	public Integer getJobId() {
 		return this.jobId;
 	}
@@ -281,6 +294,7 @@ public class JobRequest extends AbstractRequest{
 	}
 
 	@RequiredForAdd
+	@RequiredForUpdate
 	public Integer getJobNbr() {
 		return this.jobNbr;
 	}
@@ -348,6 +362,7 @@ public class JobRequest extends AbstractRequest{
 	}
 
 	@RequiredForAdd
+	@RequiredForUpdate
 	public BigDecimal getPricePerCleaning() {
 		return this.pricePerCleaning;
 	}
@@ -357,6 +372,7 @@ public class JobRequest extends AbstractRequest{
 	}
 
 	@RequiredForAdd
+	@RequiredForUpdate
 	public Integer getQuoteId() {
 		return this.quoteId;
 	}
@@ -366,6 +382,7 @@ public class JobRequest extends AbstractRequest{
 	}
 
 	@RequiredForAdd
+	@RequiredForUpdate
 	public Integer getRepeatScheduleAnnually() {
 		return this.repeatScheduleAnnually;
 	}
@@ -375,6 +392,7 @@ public class JobRequest extends AbstractRequest{
 	}
 
 	@RequiredForAdd
+	@RequiredForUpdate
 	public Integer getRequestSpecialScheduling() {
 		return this.requestSpecialScheduling;
 	}
@@ -384,6 +402,7 @@ public class JobRequest extends AbstractRequest{
 	}
 
 	@RequiredForAdd
+	@RequiredForUpdate
 	public String getServiceDescription() {
 		return this.serviceDescription;
 	}
@@ -393,6 +412,7 @@ public class JobRequest extends AbstractRequest{
 	}
 
 	@RequiredForAdd
+	@RequiredForUpdate
 	public Integer getSiteContact() {
 		return this.siteContact;
 	}
@@ -420,6 +440,7 @@ public class JobRequest extends AbstractRequest{
 	}
 
 	@RequiredForAdd
+	@RequiredForUpdate
 	public Integer getTaxExempt() {
 		return this.taxExempt;
 	}

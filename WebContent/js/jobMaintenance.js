@@ -429,9 +429,9 @@ $( document ).ready(function() {
 							$("#"+$rn+"_jobPanel_divisionId").text($("select[name='division'] option:selected").text());
 							
 //************* FINISH AUDIT
-							$addedBy = ANSI_UTILS.getUser($data.data.job.addedBy);
-							$updatedBy = ANSI_UTILS.getUser($data.data.job.updatedBy);
-							//JOBAUDIT.init($rn+"_jobAudit", $data.data.job);
+							//$addedBy = ANSI_UTILS.getUser($data.data.job.addedBy);
+							//$updatedBy = ANSI_UTILS.getUser($data.data.job.updatedBy);
+							JOBAUDIT.init($rn+"_jobAudit", $data.data.job);
 							//JOBAUDIT.init($rn,$data.data.job);
 							ANSI_UTILS.setTextValue($namespace, "panelMessage", "Update Successful");
 							JOB_UTILS.fadeMessage($namespace, "panelMessage")

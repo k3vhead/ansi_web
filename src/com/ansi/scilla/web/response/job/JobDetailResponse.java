@@ -236,7 +236,8 @@ public class JobDetailResponse extends MessageResponse {
 			this.canCancel = job.canCancel();
 			this.canReschedule = job.canReschedule();
 		}
-		@JsonSerialize(using=AnsiDateFormatter.class)
+//		@JsonSerialize(using=AnsiDateFormatter.class)
+		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public Date getActivationDate() {
 			return activationDate;
 		}
@@ -277,7 +278,7 @@ public class JobDetailResponse extends MessageResponse {
 		public void setBuildingType(String buildingType) {
 			this.buildingType = buildingType;
 		}
-		@JsonSerialize(using=AnsiDateFormatter.class)
+		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public Date getCancelDate() {
 			return cancelDate;
 		}
@@ -326,7 +327,7 @@ public class JobDetailResponse extends MessageResponse {
 		public void setEquipment(String equipment) {
 			this.equipment = equipment;
 		}
-		@JsonSerialize(using=AnsiDateFormatter.class)
+		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public Date getExpirationDate() {
 			return expirationDate;
 		}
@@ -423,7 +424,7 @@ public class JobDetailResponse extends MessageResponse {
 		public void setJobTypeId(Integer jobTypeId) {
 			this.jobTypeId = jobTypeId;
 		}
-		@JsonSerialize(using=AnsiDateFormatter.class)
+		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public Date getLastPriceChange() {
 			return lastPriceChange;
 		}
@@ -432,11 +433,12 @@ public class JobDetailResponse extends MessageResponse {
 		public void setLastPriceChange(Date lastPriceChange) {
 			this.lastPriceChange = lastPriceChange;
 		}
-		@JsonSerialize(using=AnsiDateFormatter.class)
+		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public Date getLastReviewDate() {
 			return lastReviewDate;
 		}
 
+		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public void setLastReviewDate(Date lastReviewDate) {
 			this.lastReviewDate = lastReviewDate;
 		}
@@ -521,7 +523,7 @@ public class JobDetailResponse extends MessageResponse {
 			this.siteContact = siteContact;
 		}
 //		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
-		@JsonSerialize(using=AnsiDateFormatter.class)
+		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public Date getStartDate() {
 			return startDate;
 		}
@@ -560,7 +562,7 @@ public class JobDetailResponse extends MessageResponse {
 		public void setAddedBy(Integer addedBy) {
 			this.addedBy = addedBy;
 		}
-		@JsonSerialize(using=AnsiDateFormatter.class)
+		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public Date getAddedDate() {
 			return addedDate;
 		}
@@ -574,7 +576,7 @@ public class JobDetailResponse extends MessageResponse {
 		public void setUpdatedBy(Integer updatedBy) {
 			this.updatedBy = updatedBy;
 		}
-		@JsonSerialize(using=AnsiDateFormatter.class)
+		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public Date getUpdatedDate() {
 			return updatedDate;
 		}
@@ -651,10 +653,11 @@ public class JobDetailResponse extends MessageResponse {
 			this();
 			PropertyUtils.copyProperties(this, quote);
 		}
-		@JsonSerialize(using=AnsiDateFormatter.class)
+		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public Date getProposalDate() {
 			return proposalDate;
 		}
+		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public void setProposalDate(Date proposalDate) {
 			this.proposalDate = proposalDate;
 		}		

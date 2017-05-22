@@ -18,6 +18,7 @@ import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
 import com.ansi.scilla.web.response.MessageResponse;
 import com.ansi.scilla.web.response.address.AddressResponseRecord;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 
@@ -151,19 +152,22 @@ public class QuoteResponseRecord extends MessageResponse {
 			public void setAccountType(String accountType) {
 				this.accountType = accountType;
 			}
+//			@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 			//@JsonSerialize(using=AnsiDateFormatter.class)
 //			public Date getPrintDate() {
 //				return this.printDate;
 //			}
 //			
+//			@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 //			public void setPrintDate(Date printDate) {
 //				this.printDate = printDate;
 //			}
-//			//@JsonSerialize(using=AnsiDateFormatter.class)
+//			@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 //			public Date getQuoteDate() {
 //				return this.quoteDate;
 //			}
 //			
+//			@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 //			public void setQuoteDate(Date quoteDate) {
 //				this.quoteDate = quoteDate;
 //			}
@@ -257,11 +261,12 @@ public class QuoteResponseRecord extends MessageResponse {
 			}
 	
 			
+			@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 			public void setProposalDate(Date proposalDate) {
 				this.proposalDate = proposalDate;
 			}
 	
-			@JsonSerialize(using=AnsiDateFormatter.class)
+			@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 			public Date getProposalDate() {
 				return this.proposalDate;
 			}
