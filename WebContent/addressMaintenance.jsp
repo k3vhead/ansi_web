@@ -258,22 +258,26 @@
 
 				
 				var $billToNameComplete = $( "#addAddressForm input[name='name']" ).autocomplete({
-				     'source':"addressTypeAhead?",
-				      select: function( event, ui ) {
-				    	$addressId = ui.item.id;
-				    	populateAddressForm($addressId);
+					'source':"addressTypeAhead?",
+					select: function( event, ui ) {
+						$addressId = ui.item.id;
+						populateAddressForm($addressId);
 				   	}
 				}).data('ui-autocomplete');
-				$billToNameComplete._renderMenu = function( ul, items ) {
-					var that = this;
-					$.each( items, function( index, item ) {
-						that._renderItemData( ul, item );
-					});
-					if ( items.length == 1 ) {
-						$addressId = items[0].id;
-				    	populateAddressForm($addressId);
-					}
-				}
+				//$billToNameComplete._renderMenu = function( ul, items ) {
+				//	console.debug("Matched " + items.length + " items");
+				//	if ( items.length == 0 ) {
+				//   	alert("No matches")
+				//	}
+				//	var that = this;
+				//	$.each( items, function( index, item ) {
+				//		that._renderItemData( ul, item );
+				//	});
+				//	if ( items.length == 1 ) {
+				//		$addressId = items[0].id;
+				// 		populateAddressForm($addressId);
+				//	}
+				//};
 
 				
 				
