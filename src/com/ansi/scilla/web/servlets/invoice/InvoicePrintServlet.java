@@ -74,10 +74,11 @@ public class InvoicePrintServlet extends AbstractServlet {
 				}
 				if (addErrors.isEmpty() && errors.isEmpty()) {
 					processUpdate(conn, request, response, invoicePrintRequest, sessionUser);
+					conn.commit();
 				} else {
 					processError(conn, response, addErrors, errors);
+					conn.rollback();
 				}
-				conn.rollback();
 			} catch ( InvalidFormatException e ) {
 				String badField = super.findBadField(e.toString());
 				InvoicePrintResponse data = new InvoicePrintResponse();

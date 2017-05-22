@@ -172,7 +172,7 @@ public class ApplyPaymentServlet extends AbstractServlet {
 			}
 		}
 
-		conn.rollback();
+		conn.commit();
 		
 		BigDecimal unappliedAmount = detail.availableFromPayment;
 		unappliedAmount = unappliedAmount.subtract(new BigDecimal(totalPayInvoice));

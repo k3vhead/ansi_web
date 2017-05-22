@@ -70,7 +70,7 @@ public class TicketPrintServlet extends AbstractServlet {
 				processTicketPrint(conn, response, url.getId(), sessionUser);
 			}
 
-			conn.rollback();
+			conn.commit();
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
 			super.sendForbidden(response);
 		} catch ( Exception e) {
@@ -101,7 +101,7 @@ public class TicketPrintServlet extends AbstractServlet {
 			
 			processDivisionPrint(conn, response, divisionId, endDate, sessionUser);
 			
-			conn.rollback();
+			conn.commit();
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
 			super.sendForbidden(response);
 		} catch ( Exception e) {
