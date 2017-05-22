@@ -340,6 +340,7 @@ public class JobServlet extends AbstractServlet {
 	}
 	
 	protected Job doAdd(Connection conn, JobRequest jobRequest, SessionUser sessionUser, HttpServletResponse response) throws Exception {
+		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		ResponseCode responseCode = null;
 		Date today = new Date();
 		Job job = new Job();
@@ -479,10 +480,11 @@ public class JobServlet extends AbstractServlet {
 				}
 			} 
 			job.setJobId(j);
+			jobDetailResponse = new JobDetailResponse(conn, job.getJobId());
 		} else {
 			responseCode = ResponseCode.EDIT_FAILURE;
 		}
-		JobDetailResponse jobDetailResponse = new JobDetailResponse(conn, job.getJobId());
+//		JobDetailResponse jobDetailResponse = new JobDetailResponse(conn, job.getJobId());
 //		JobResponse jobResponse = new JobResponse(job, messages);
 		super.sendResponse(conn, response, responseCode, jobDetailResponse);		
 		return job;
