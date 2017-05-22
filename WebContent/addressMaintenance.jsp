@@ -93,6 +93,9 @@
 			.ansi-address-label {
 				font-weight:bold;
 			}
+			.copyAction {
+				text-decoration:none;
+			}
         </style>
         
         <script type="text/javascript">        
@@ -164,9 +167,10 @@
 				            { title: "Action",  data: function ( row, type, set ) {	
 				            	$viewLink = "<a href=\"#\" class=\"viewAction fa fa-search-plus\" aria-hidden=\"true\" data-id='"+row.addressId+"'></a> ";
 				            	$editLink = "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.addressId+"'></a></ansi:hasWrite></ansi:hasPermission>";
+				            	$copyLink = "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' class=\"copyAction fa fa-files-o\" data-id='"+row.addressId+"'></a></ansi:hasWrite></ansi:hasPermission>";
 				            	$deleteLink = "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' data-id='"+row.addressId+"'  class='delAction ui-icon ui-icon-trash'></a></ansi:hasWrite></ansi:hasPermission>";
 				            	
-				            	$action = $viewLink + " " + $editLink;
+				            	$action = $viewLink + " " + $editLink + " " + $copyLink;
 				            	if(row.count < 1) {
 				            		$action = $action + " " + $deleteLink;
 				            	}				            	
@@ -204,6 +208,7 @@
 	        	$("#addButton").button().on( "click", function() {
 	        		$("#updateOrAdd").val("add");
 	        		clearAddForm();
+	        		$("#addAddressForm").dialog( "option", "title", "Add Address" );
 	        		$('#addFormButton').button('option', 'label', 'Add Address');
 	        	    $("#addAddressForm").dialog( "open" );
 	        	      	
@@ -261,7 +266,7 @@
 					'source':"addressTypeAhead?",
 					select: function( event, ui ) {
 						$addressId = ui.item.id;
-						populateAddressForm($addressId);
+						populateAddressForm($addressId, "edit");
 				   	}
 				}).data('ui-autocomplete');
 				//$billToNameComplete._renderMenu = function( ul, items ) {
@@ -308,7 +313,7 @@
 									clearAddForm();
 									$( "#addAddressForm" ).dialog( "close" );
 									if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
-										$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
+										$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).show().fadeOut(6000);
 									}
 									$("#addressTable").DataTable().draw();
 									$( "#addAddressForm" ).dialog( "close" );
@@ -318,7 +323,7 @@
 										markInvalid( $($identifier) );
 									});		
 									if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
-										$("#addFormMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeOut(6000);
+										$("#addFormMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).show().fadeOut(6000);
 									} else {
 										$("#addFormMsg").html("Invalid/Missing Data").show().fadeOut(6000);
 									}
@@ -396,19 +401,23 @@
 
 
 	            function doFunctionBinding() {
-					$( ".editAction" ).on( "click", function($clickevent) {
-						$('#addFormButton').button('option', 'label', 'Update Address');
-						 doEdit($clickevent);
+					$( ".editAction" ).on( "click", function($clickEvent) {
+		        		$("#addAddressForm").dialog( "option", "title", "Update Address" );
+						 doEdit($clickEvent);
 					});
-					$('.delAction').on('click', function($clickevent) {
-						doDelete($clickevent);
+					$('.delAction').on('click', function($clickEvent) {
+						doDelete($clickEvent);
 					});
 					
-					$('#addressTable_next').on('click', function($clickevent) {
+					$('#addressTable_next').on('click', function($clickEvent) {
 		        		window.scrollTo(0, 0);
 		        	});
-					$('.viewAction').on('click', function($clickevent) {
-						doView($clickevent);
+					$('.viewAction').on('click', function($clickEvent) {
+						doView($clickEvent);
+					});
+					$( ".copyAction" ).on( "click", function($clickEvent) {
+		        		$("#addAddressForm").dialog( "option", "title", "Add Address" );
+						 doCopy($clickEvent);
 					});
 				}
 	            
@@ -419,12 +428,20 @@
 					$("#addressView").dialog("open");
 	            }
 			
-				function doEdit($clickevent) {
-					var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
-					populateAddressForm($rowid);
+				function doEdit($clickEvent) {
+	            	$clickEvent.preventDefault();
+					var $rowid = $clickEvent.currentTarget.attributes['data-id'].value;
+					populateAddressForm($rowid, "edit");
 				}
 				
-				function populateAddressForm($rowid) {
+				function doCopy($clickEvent) {
+	            	$clickEvent.preventDefault();
+					var $rowid = $clickEvent.currentTarget.attributes['data-id'].value;
+					populateAddressForm($rowid, "copy");
+				}
+				
+				function populateAddressForm($rowid, $action) {
+					console.debug("Populate addr form: " + $action);
 					var $url = 'address/' + $rowid;
 					var jqxhr = $.ajax({
 						type: 'GET',
@@ -441,11 +458,22 @@
 		        				});
 								$("#addForm select[name=countryCode]").val($address.countryCode);
 								$("#addForm select[name=state]").val($address.state);
+
 								
-				        		$("#aId").val($address.addressId);
-				        		$("#updateOrAdd").val("update");
-						    	$('#addFormButton').button('option', 'label', 'Update Address');
-				        		$("#addAddressForm").dialog( "open" );
+								if ( $action == "copy" ) {
+									$('#addFormButton').button('option', 'label', 'Add Address');
+									$("#addAddressForm").dialog( "option", "title", "Add Address" );
+									$("#updateOrAdd").val("add");
+					        		$("#addAddressForm").dialog( "open" );
+								} else if ( $action == "edit" ) {
+					        		$("#aId").val($address.addressId);
+					        		$("#updateOrAdd").val("update");
+							    	$('#addFormButton').button('option', 'label', 'Update Address');
+							    	$("#addAddressForm").dialog( "option", "title", "Update Address" );
+					        		$("#addAddressForm").dialog( "open" );
+								} else {
+									$("#globalMsg").html("Invalid session state. Reload the page and try again");
+								}
 							},
 							403: function($data) {
 								$("#globalMsg").html("Session Timeout. Log in and try again");
@@ -464,9 +492,9 @@
 					});
 				}
 			
-				function doDelete($clickevent) {
-					$clickevent.preventDefault();
-					var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
+				function doDelete($clickEvent) {
+					$clickEvent.preventDefault();
+					var $rowid = $clickEvent.currentTarget.attributes['data-id'].value;
 					
 					$( "#deleteConfirmDialog" ).dialog({
 						resizable: false,
