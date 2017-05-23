@@ -50,7 +50,7 @@ public class ContactTableServlet extends AbstractServlet {
 		int draw = 0;
 		int col = 0;
 		String dir = "asc";
-		String[] cols = { "last_name", "first_name", "business_phone", "fax", "mobile_hone", "preferred_contact" };
+		String[] cols = { "last_name", "first_name", "business_phone", "email", "fax", "mobile_phone", "preferred_contact" };
 		String sStart = request.getParameter("start");
 	    String sAmount = request.getParameter("length");
 	    String sDraw = request.getParameter("draw");
