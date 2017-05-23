@@ -441,7 +441,6 @@
 				}
 				
 				function populateAddressForm($rowid, $action) {
-					console.debug("Populate addr form: " + $action);
 					var $url = 'address/' + $rowid;
 					var jqxhr = $.ajax({
 						type: 'GET',
