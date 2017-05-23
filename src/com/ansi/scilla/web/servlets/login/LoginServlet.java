@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.servlets;
+package com.ansi.scilla.web.servlets.login;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -20,6 +20,7 @@ import com.ansi.scilla.web.exceptions.MissingRequiredDataException;
 import com.ansi.scilla.web.request.LoginRequest;
 import com.ansi.scilla.web.response.login.LoginResponse;
 import com.ansi.scilla.web.response.ticket.TicketReturnResponse;
+import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
@@ -56,10 +57,10 @@ public class LoginServlet extends AbstractServlet {
 				WebMessages messages = new WebMessages();
 				messages.addMessage(badField, "Invalid Format");
 				data.setWebMessages(messages);
-				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+				super.sendResponse(conn, response, ResponseCode.INVALID_LOGIN, data);
 			} catch ( MissingRequiredDataException e) {
 				logger.debug("missing login data");
-				super.sendResponse(conn, response,ResponseCode.EDIT_FAILURE, loginResponse);
+				super.sendResponse(conn, response,ResponseCode.INVALID_LOGIN, loginResponse);
 			} catch ( ExpiredLoginException e) {
 				logger.debug("login expired");
 				super.sendResponse(conn, response,ResponseCode.EXPIRED_LOGIN, loginResponse);
