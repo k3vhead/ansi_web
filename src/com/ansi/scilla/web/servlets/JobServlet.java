@@ -486,6 +486,7 @@ public class JobServlet extends AbstractServlet {
 		}
 //		JobDetailResponse jobDetailResponse = new JobDetailResponse(conn, job.getJobId());
 //		JobResponse jobResponse = new JobResponse(job, messages);
+		jobDetailResponse.setWebMessages(messages);
 		super.sendResponse(conn, response, responseCode, jobDetailResponse);		
 		return job;
 	}
@@ -671,6 +672,7 @@ public class JobServlet extends AbstractServlet {
 		System.out.println("jobDetailResponse: " + jobDetailResponse);
 		System.out.println("response: " + response);
 
+		jobDetailResponse.setWebMessages(messages);
 		super.sendResponse(conn, response, responseCode, jobDetailResponse);
 
 		return job;
