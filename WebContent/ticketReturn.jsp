@@ -113,6 +113,9 @@
     			text-align: left;
     			padding: 8px;
     		}
+    		#displaySummaryTable th {
+    			white-space:nowrap;
+    		}
 			.workPanel {
 				width:95%;
 				border:solid 1px #000000;
@@ -161,6 +164,39 @@
         	$("input[type=text]").focus(function() {
         		$(this).select();
         	});
+        	
+        	
+        	
+        	
+            var $ticketComplete = $( "#ticketNbr" ).autocomplete({
+				source: "ticketTypeAhead",
+                minLength: 2,
+                appendTo: "#someTicket",
+                select: function( event, ui ) {
+                	var $ticketNbr = ui.item.id;                	
+					$("#ticketNbr").val($ticketNbr);
+            		doPopulate($ticketNbr);
+                }
+          	}).data('ui-autocomplete');
+			$ticketComplete._renderMenu = function( ul, items ) {
+				var that = this;
+				$.each( items, function( index, item ) {
+					that._renderItemData( ul, item );
+				});
+				if ( items.length == 1 ) {
+					var $ticketNbr = items[0].id;
+					$("#ticketNbr").val($ticketNbr);
+					$("#ticketNbr").autocomplete("close");
+            		doPopulate($ticketNbr);
+				}
+			}
+
+        	
+        	
+        	
+        	
+        	
+        	
         	
 			function populateTicketDetail($data) {
 				$("#ticketId").html($data.ticketDetail.ticketId);
@@ -284,16 +320,16 @@
        				if ( $actPricePerCleaning == null ) {
        					$actDlAmt = null;
        				} else {
-       					$actDlAmt = $actPricePerCleaning.substring(1).replace(/,/,"") * $actDlPct;
+       					$actDlAmt = $actPricePerCleaning.substring(1).replace(/,/,"");
        				}	
        			} else {
-       				$actDlAmt = $data.ticketDetail.actDlAmt;
+       				$actDlAmt = $data.ticketDetail.actDlAmt.substring(1).replace(/,/,"");
        			}
    				
    				$("#COMPLETED input[name=actPricePerCleaning]").val($actPricePerCleaning);
    				$("#COMPLETED input[name=actDlPct]").val($actDlPct);
    				$("#COMPLETED span[class=actDlPct]").html(($actDlPct * 100).toFixed(3));		       				
-   				$("#COMPLETED input[name=actDlAmt]").val($actDlAmt.toFixed(2));
+   				$("#COMPLETED input[name=actDlAmt]").val($actDlAmt);
 			}
 
 			
