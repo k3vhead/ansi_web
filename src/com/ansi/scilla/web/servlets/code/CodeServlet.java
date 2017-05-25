@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.servlets;
+package com.ansi.scilla.web.servlets.code;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -30,6 +30,7 @@ import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.request.CodeRequest;
 import com.ansi.scilla.web.response.code.CodeListResponse;
 import com.ansi.scilla.web.response.code.CodeResponse;
+import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.thewebthing.commons.db2.RecordNotFoundException;
@@ -69,19 +70,25 @@ public class CodeServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();			
 			sessionData = AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_READ);
 			
+			String sortBy = request.getParameter("sortBy");
+			
 			Logger logger = AppUtils.getLogger();
 			logger.debug(sessionData);
 			String url = request.getRequestURI();
 			ParsedUrl parsedUrl = new ParsedUrl(url);			
 			
+			CodeListResponse codesListResponse = null;
 			if ( parsedUrl.tableName.equals("list")) {
 				// we're getting all the codes in the database
-				CodeListResponse codesListResponse = makeCodesListResponse(conn);
-				super.sendResponse(conn, response, ResponseCode.SUCCESS, codesListResponse);
+				codesListResponse = makeCodesListResponse(conn);
 			} else {
-				CodeListResponse codesListResponse = makeFilteredListResponse(conn, parsedUrl);
-				super.sendResponse(conn, response, ResponseCode.SUCCESS, codesListResponse);
+				codesListResponse = makeFilteredListResponse(conn, parsedUrl);				
 			}
+			if ( ! StringUtils.isBlank(sortBy) && sortBy.equalsIgnoreCase("display")) {
+				codesListResponse.sortByDisplay();
+			}
+			super.sendResponse(conn, response, ResponseCode.SUCCESS, codesListResponse);
+
 		} catch (TimeoutException  | NotAllowedException | ExpiredLoginException e) {
 			super.sendForbidden(response);
 		} catch ( RecordNotFoundException e) {

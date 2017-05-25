@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.ansi.scilla.common.ApplicationObject;
@@ -75,6 +76,15 @@ public class CodeListResponse extends MessageResponse implements Serializable {
 	}
 	public void setFilterRecordList(List<FilterRecord> filterRecordList) {
 		this.filterRecordList = filterRecordList;
+	}
+
+	public void sortByDisplay() {
+		Collections.sort(this.codeList, new Comparator<CodeResponseRecord>() {
+			public int compare(CodeResponseRecord o1, CodeResponseRecord o2) {
+				int ret = o1.getDisplayValue().compareTo(o2.getDisplayValue());
+				return ret;
+			}
+		});
 	}
 
 	private void makeFilterList(Connection conn) throws SQLException {
