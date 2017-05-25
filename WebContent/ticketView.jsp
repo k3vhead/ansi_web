@@ -71,7 +71,8 @@
         	$divisionList = ANSI_UTILS.getDivisionList();
 			$("#divisionId").append(new Option("",""));
 			$.each($divisionList, function(index, val) {
-				$("#divisionId").append(new Option(val.divisionCode, val.divisionId));
+				var $displayValue = val.divisionNbr + "-" + val.divisionCode;
+				$("#divisionId").append(new Option($displayValue, val.divisionId));
 			});
 
 			

@@ -98,7 +98,7 @@
 			            	if(row.jobStatus != null){return (row.jobStatus+"");}
 			            } },
 			            { title: "Div", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.divisionNbr != null){return (row.divisionNbr+"");}
+			            	if(row.divisionNbr != null){return (row.divisionNbr+"-"+row.divisionCode);}
 			            } },
 			            { title: "Bill To" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.billToName != null){return (row.billToName+"");}
