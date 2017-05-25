@@ -501,8 +501,8 @@ public class JobServlet extends AbstractServlet {
 		job.setJobId(key.getJobId());
 		job.selectOne(conn);
 
-		WebMessages webMessages = validateUpdate(conn, key, jobRequest);
-		if (webMessages.isEmpty()) {
+		messages = validateUpdate(conn, key, jobRequest);
+		if (messages.isEmpty()) {
 			if(jobRequest.getJobFrequency() != null) {
 				job.setJobFrequency(jobRequest.getJobFrequency());
 			}
