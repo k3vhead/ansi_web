@@ -109,7 +109,9 @@ public class TicketTypeAheadServlet extends AbstractServlet {
 										+ " join address on address.address_id = quote.job_site_address_id " 
 										+ " where ticket_id like '%" + term + "%'"
 										+ " or fleetmatics_id like '%" + term + "%'"
-										//+ " and ticket_status in ('N','D')"
+										+ " ORDER BY ticket.ticket_id "
+										+ " OFFSET 0 ROWS"
+										+ " FETCH NEXT 100 ROWS ONLY"
 										;
 								Statement s = conn.createStatement();
 								ResultSet rs = s.executeQuery(sql);
