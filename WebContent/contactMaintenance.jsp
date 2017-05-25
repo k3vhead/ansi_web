@@ -90,9 +90,13 @@
 			});
 
 			
+			console.debug("Getting preferred cont options");
+			var $outbound = {};
+			$outbound['sortBy'] = 'display';
 			var jqxhr = $.ajax({
 				type: 'GET',
 				url: "code/contact/preferred_contact",
+				data:$outbound,
 				statusCode: {
 					200: function($data) {
 						//console.log($data);

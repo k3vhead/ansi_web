@@ -113,7 +113,7 @@
 
     <servlet>
         <servlet-name>code</servlet-name>
-        <servlet-class>com.ansi.scilla.web.servlets.CodeServlet</servlet-class>
+        <servlet-class>com.ansi.scilla.web.servlets.code.CodeServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>code</servlet-name>

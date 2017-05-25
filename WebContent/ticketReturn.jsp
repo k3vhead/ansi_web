@@ -170,7 +170,7 @@
         	
             var $ticketComplete = $( "#ticketNbr" ).autocomplete({
 				source: "ticketTypeAhead",
-                minLength: 2,
+                minLength: 3,
                 appendTo: "#someTicket",
                 select: function( event, ui ) {
                 	var $ticketNbr = ui.item.id;                	
