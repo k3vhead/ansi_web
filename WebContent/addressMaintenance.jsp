@@ -543,7 +543,7 @@
 				}
 			
 				if ( $ansiModal != '' ) {
-					$("#addButton").click();
+					$(".addButton").click();
 				}
 	        });
         </script>        
