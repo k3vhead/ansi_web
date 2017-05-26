@@ -100,7 +100,7 @@ public class TicketTypeAheadServlet extends AbstractServlet {
 								System.out.println("TicketTypeAheadServlet(): doGet(): term =$" + term +"$");
 								List<ReturnItem> resultList = new ArrayList<ReturnItem>();
 								//ticket_id:ticket_status:division_code:job_nbr:frequency:act_price_per_cleaning:job site:address 1
-								String sql = "select top(250) ticket_id, ticket_status, division.division_code, job_nbr, job_frequency"
+								String sql = "select ticket_id, ticket_status, division.division_code, job_nbr, job_frequency"
 										+ ", act_price_per_cleaning, address.name, address.address1, fleetmatics_id "
 										+ " from ticket " 
 										+ " join job on job.job_id = ticket.job_id " 
@@ -111,7 +111,7 @@ public class TicketTypeAheadServlet extends AbstractServlet {
 										+ " or fleetmatics_id like '%" + term + "%'"
 										+ " ORDER BY ticket.ticket_id "
 										+ " OFFSET 0 ROWS"
-										+ " FETCH NEXT 100 ROWS ONLY"
+										+ " FETCH NEXT 250 ROWS ONLY"
 										;
 								Statement s = conn.createStatement();
 								ResultSet rs = s.executeQuery(sql);

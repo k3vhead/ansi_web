@@ -1,6 +1,7 @@
 package com.ansi.scilla.web.servlets.tickets;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.util.Date;
 
@@ -231,6 +232,19 @@ public class TicketServlet extends AbstractServlet {
 		TicketReturnResponse ticketReturnResponse = new TicketReturnResponse();
 		WebMessages messages = new WebMessages();
 		ResponseCode responseCode = null;
+		boolean checkBoxChecked = false;
+		if (ticketReturnRequest.getBillSheet() ) {
+			checkBoxChecked = true;
+		}
+		if (ticketReturnRequest.getCustomerSignature() ) {
+			checkBoxChecked = true;
+		}
+		if (ticketReturnRequest.getMgrApproval() ) {
+			checkBoxChecked = true;
+		}
+		if ( ! checkBoxChecked ) {
+			messages.addMessage(TicketReturnRequest.CUSTOMER_SIGNATURE, "At Least 1 Approval Required");
+		}
 		if (ticketReturnRequest.getProcessDate() == null) {
 			System.out.println("No process date");
 			messages.addMessage(TicketReturnRequest.PROCESS_DATE, "Required Field");
@@ -242,6 +256,17 @@ public class TicketServlet extends AbstractServlet {
 		if (ticketReturnRequest.getActDlPct() == null ) {
 			System.out.println("No act dl pct");
 			messages.addMessage(TicketReturnRequest.ACT_DL_PCT, "Required Field");
+		} else {
+			BigDecimal pct = ticketReturnRequest.getActDlPct();
+			boolean badPct = false;
+			if ( pct.compareTo(new BigDecimal(35D)) > 0 ) {
+				badPct = true;
+			} else if ( pct.compareTo(new BigDecimal(1.0D)) < 0 && pct.compareTo(BigDecimal.ONE) != 0) {
+				badPct = true;
+			}
+			if ( badPct ) {
+				messages.addMessage(TicketReturnRequest.ACT_DL_PCT, "Invalid Direct Labor");
+			}
 		}
 		if (ticketReturnRequest.getActDlAmt() == null ) {
 			System.out.println("No act dl amt");
