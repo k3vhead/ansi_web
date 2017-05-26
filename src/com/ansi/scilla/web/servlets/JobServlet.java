@@ -12,10 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.ansi.scilla.common.db.PermissionLevel;
-import com.ansi.scilla.common.db.Quote;
-import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.common.db.Job;
+import com.ansi.scilla.common.db.PermissionLevel;
+import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.common.jobticket.JobUtils;
 import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
@@ -28,12 +27,9 @@ import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.request.JobDetailRequest;
-import com.ansi.scilla.web.request.JobRequest;
-import com.ansi.scilla.web.request.QuoteRequest;
 import com.ansi.scilla.web.request.JobDetailRequest.JobDetailRequestAction;
+import com.ansi.scilla.web.request.JobRequest;
 import com.ansi.scilla.web.response.job.JobDetailResponse;
-import com.ansi.scilla.web.response.job.JobResponse;
-import com.ansi.scilla.web.response.quote.QuoteResponse;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -683,7 +679,11 @@ public class JobServlet extends AbstractServlet {
 		List<String> missingFields = super.validateRequiredAddFields(jobRequest);
 		System.out.println("validateAdd");
 		String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
-		if ( ! missingFields.isEmpty() ) {
+		if ( missingFields.isEmpty() ) {
+			if ( ! JobUtils.isValidDLPct(jobRequest.getDirectLaborPct())) {
+				webMessages.addMessage("actDLPct", "Invalid DL Pct");
+			}
+		} else {
 //			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
 			for ( String field : missingFields ) {
 				webMessages.addMessage(field, messageText);
@@ -694,10 +694,15 @@ public class JobServlet extends AbstractServlet {
 		return webMessages;
 	}
 
+
 	protected WebMessages validateUpdate(Connection conn, Job key, JobRequest jobRequest) throws RecordNotFoundException, Exception {
 		WebMessages webMessages = new WebMessages();
 		List<String> missingFields = super.validateRequiredUpdateFields(jobRequest);
-		if ( ! missingFields.isEmpty() ) {
+		if ( missingFields.isEmpty() ) {
+			if ( ! JobUtils.isValidDLPct(jobRequest.getDirectLaborPct())) {
+				webMessages.addMessage("actDLPct", "Invalid DL Pct");
+			}
+		} else {
 			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
 			for ( String field : missingFields ) {
 				webMessages.addMessage(field, messageText);

@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.Ticket;
+import com.ansi.scilla.common.jobticket.JobUtils;
 import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
@@ -257,14 +258,8 @@ public class TicketServlet extends AbstractServlet {
 			System.out.println("No act dl pct");
 			messages.addMessage(TicketReturnRequest.ACT_DL_PCT, "Required Field");
 		} else {
-			BigDecimal pct = ticketReturnRequest.getActDlPct();
-			boolean badPct = false;
-			if ( pct.compareTo(new BigDecimal(35D)) > 0 ) {
-				badPct = true;
-			} else if ( pct.compareTo(new BigDecimal(1.0D)) < 0 && pct.compareTo(BigDecimal.ONE) != 0) {
-				badPct = true;
-			}
-			if ( badPct ) {
+			BigDecimal testPct = ticketReturnRequest.getActDlPct().multiply(new BigDecimal(100D));
+			if ( ! JobUtils.isValidDLPct(testPct)) {
 				messages.addMessage(TicketReturnRequest.ACT_DL_PCT, "Invalid Direct Labor");
 			}
 		}
