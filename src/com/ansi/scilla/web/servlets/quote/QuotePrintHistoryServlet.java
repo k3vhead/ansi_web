@@ -42,9 +42,13 @@ public class QuotePrintHistoryServlet extends AbstractServlet {
 			Integer quoteId = ansiURL.getId();
 
 			try {
-				Quote quote = validateQuote(conn, quoteId);
-				AddressDetail jobSite = makeJobSite(conn, quote.getJobSiteAddressId());
-				QuotePrintHistory history = new QuotePrintHistory(conn, quoteId);
+				QuotePrintHistory history = new QuotePrintHistory();
+				AddressDetail jobSite = new AddressDetail();
+				if ( quoteId != 0 ) {
+					Quote quote = validateQuote(conn, quoteId);
+					jobSite = makeJobSite(conn, quote.getJobSiteAddressId());
+					history = new QuotePrintHistory(conn, quoteId);
+				}
 				processGet(conn, response, history, jobSite);
 			} catch ( RecordNotFoundException e) {
 				super.sendNotFound(response);
