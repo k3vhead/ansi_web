@@ -27,6 +27,31 @@
 			.ui-autocomplete-loading {
 			  background: white url("images/ui-anim_basic_16x16.gif") right center no-repeat;
 			}
+			.tooltip {
+				position:relative;
+				display:inline-block;
+				border:solid 1px #000000;
+			}
+			.tooltip .tooltiptext {
+				visibility:hidden;
+				width:120px;
+				background-color:#404040;
+				color:#CCCCCC;
+				text-align:center;
+				padding: 5px;
+				border-radious: 6px;
+				position:absolute;
+				z-index:1;
+				font-size:12px;
+				
+				bottom:100%;
+				left:50%;
+				margin-left:-60px;   /* .5 * width */
+			}
+			
+			.tooltip:hover .tooltiptext {
+				visibility:visible;
+			}
 		</style>
         
         <script type="text/javascript">        
@@ -118,6 +143,21 @@
   			<div style="float:right;">
   				See it pretty at <a href="http://jsonLint.com/" target="_new">jsonlint.com</a>
   			</div>
+		</div>
+		
+		
+		<div style="width:200px; text-align:center; border:solid 1px #000000;">
+			<div class="tooltip" style="margin-bottom:10px;">
+				This is a tool
+				<span class="tooltiptext">This is help for the tool</span>
+			</div>
+			<span class="fa-stack fa-2x tooltip" style="color:#444444;">
+				<i class="fa fa-print fa-stack-2x" id="printButton" aria=hidden="true"><span class="tooltiptext">Print</span></i>
+			</span>
+			<span class="fa-stack fa-2x tooltip" id="viewPrintHistory" style="color:#444444;">
+				<i class="fa fa-list-alt fa-stack-2x"><span class="tooltiptext">Print History<br />Print Count</span></i>
+				<i class="fa fa-stack-1x"><span style="color:#FFFFFF; text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000, 1px 1px 0 #000; font-weight:bold;" id="printCount">N/A</span></i>				
+			</span>
 		</div>
     </tiles:put>
 

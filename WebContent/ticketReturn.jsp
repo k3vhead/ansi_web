@@ -173,7 +173,8 @@
                 minLength: 3,
                 appendTo: "#someTicket",
                 select: function( event, ui ) {
-                	var $ticketNbr = ui.item.id;                	
+                	var $ticketNbr = ui.item.id;
+                	$globalTicketId = $ticketNbr
 					$("#ticketNbr").val($ticketNbr);
             		doPopulate($ticketNbr);
                 }
@@ -185,6 +186,7 @@
 				});
 				if ( items.length == 1 ) {
 					var $ticketNbr = items[0].id;
+					$globalTicketId = $ticketNbr
 					$("#ticketNbr").val($ticketNbr);
 					$("#ticketNbr").autocomplete("close");
             		doPopulate($ticketNbr);
@@ -500,7 +502,7 @@
 										msgHtml = msgHtml + "<li>" + message + "</li>";
 									});
 									msgHtml = msgHtml + "</ul>";
-									$(identifier).html(msgHtml);
+									$(identifier).html(msgHtml).show().fadeOut(6000);
 								});	
 								$("#globalMsg").html($data.responseHeader.responseMessage).show().fadeOut(6000);
 							} else {
@@ -667,6 +669,7 @@
 				    		<td>
 				    			<input type="checkbox" name="customerSignature" />
 				    		</td>
+				    		<td><span class="err customerSignatureErr"></span></td>
 			    		</tr>
 				    	<tr>
 				    		<td><span class="formLabel">Bill Sheet:</span></td>
@@ -680,6 +683,7 @@
 				    		<td>
 				    			<input type="checkbox" name="mgrApproval"  />
 				    		</td>
+				    		<td><span class="err mgrApprovalErr"></span></td>
 				    	</tr>
 			    		<tr>
 				    		<td colspan="2" style="text-align:center;">

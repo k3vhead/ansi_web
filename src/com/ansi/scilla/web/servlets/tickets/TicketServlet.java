@@ -1,6 +1,7 @@
 package com.ansi.scilla.web.servlets.tickets;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.util.Date;
 
@@ -12,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.Ticket;
+import com.ansi.scilla.common.jobticket.JobUtils;
 import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
@@ -231,6 +233,19 @@ public class TicketServlet extends AbstractServlet {
 		TicketReturnResponse ticketReturnResponse = new TicketReturnResponse();
 		WebMessages messages = new WebMessages();
 		ResponseCode responseCode = null;
+		boolean checkBoxChecked = false;
+		if (ticketReturnRequest.getBillSheet() ) {
+			checkBoxChecked = true;
+		}
+		if (ticketReturnRequest.getCustomerSignature() ) {
+			checkBoxChecked = true;
+		}
+		if (ticketReturnRequest.getMgrApproval() ) {
+			checkBoxChecked = true;
+		}
+		if ( ! checkBoxChecked ) {
+			messages.addMessage(TicketReturnRequest.CUSTOMER_SIGNATURE, "At Least 1 Approval Required");
+		}
 		if (ticketReturnRequest.getProcessDate() == null) {
 			System.out.println("No process date");
 			messages.addMessage(TicketReturnRequest.PROCESS_DATE, "Required Field");
@@ -242,6 +257,11 @@ public class TicketServlet extends AbstractServlet {
 		if (ticketReturnRequest.getActDlPct() == null ) {
 			System.out.println("No act dl pct");
 			messages.addMessage(TicketReturnRequest.ACT_DL_PCT, "Required Field");
+		} else {
+			BigDecimal testPct = ticketReturnRequest.getActDlPct().multiply(new BigDecimal(100D));
+			if ( ! JobUtils.isValidDLPct(testPct)) {
+				messages.addMessage(TicketReturnRequest.ACT_DL_PCT, "Invalid Direct Labor");
+			}
 		}
 		if (ticketReturnRequest.getActDlAmt() == null ) {
 			System.out.println("No act dl amt");

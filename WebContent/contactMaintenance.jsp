@@ -73,7 +73,7 @@
 			});
 			
 			
-			$("#showNew").click(function($event) {
+			$(".showNew").click(function($event) {
 				$('#goEdit').data("contactId",null);
         		$('#goEdit').button('option', 'label', 'Save');
         		$('#closeEditPanel').button('option', 'label', 'Close');
@@ -196,7 +196,7 @@
 			            } },
 			            { title: "Action",  data: function ( row, type, set ) {	
 			            	{
-			            		return '<i class="editAction ui-icon ui-icon-pencil" data-id="'+ row.contactId + '" />';}
+			            		return '<span class="tooltip"><i class="editAction ui-icon ui-icon-pencil" data-id="'+ row.contactId + '" /><span class="tooltiptext">Edit</span></span>';}
 			            } }
 			            ],
 			            "initComplete": function(settings, json) {
@@ -356,7 +356,7 @@
 			}
 			
 			if ( $ansiModal != '' ) {
-				$("#showNew").click();
+				$(".showNew").click();
 			}
 			
         });
@@ -366,6 +366,7 @@
    <tiles:put name="content" type="string">
     	<h1>Contact <bean:message key="menu.label.lookup" /></h1>
     	
+    	    <input type="button" class="prettyWideButton showNew" value="New" />
  	<table id="contactTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:800px;width:800px;">
        	<colgroup>
         	<col style="width:20%;" />
@@ -399,7 +400,7 @@
             </tr>
         </tfoot>
     </table>
-    <input type="button" class="prettyWideButton" value="New" id="showNew" />
+    <input type="button" class="prettyWideButton showNew" value="New" />
     
     <p align="center">
     	<br>

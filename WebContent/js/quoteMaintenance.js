@@ -430,7 +430,8 @@ $( document ).ready(function() {
 				
 				$('option', $select).remove();
 				$.each($divisionList, function($index, $division) {
-					$select.append(new Option($division.divisionCode, $division.divisionId));
+					var $displayValue = $division.divisionNbr + "-" + $division.divisionCode;
+					$select.append(new Option($displayValue, $division.divisionId));
 				});
 
 				$select.selectmenu();

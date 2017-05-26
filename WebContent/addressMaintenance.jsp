@@ -166,10 +166,10 @@
 				            	if(row.zip != null){return (row.zip+"");} 
 				            } },
 				            { title: "Action",  data: function ( row, type, set ) {	
-				            	$viewLink = "<a href=\"#\" class=\"viewAction fa fa-search-plus\" aria-hidden=\"true\" data-id='"+row.addressId+"'></a> ";
-				            	$editLink = "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.addressId+"'></a></ansi:hasWrite></ansi:hasPermission>";
-				            	$copyLink = "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' class=\"copyAction fa fa-files-o\" data-id='"+row.addressId+"'></a></ansi:hasWrite></ansi:hasPermission>";
-				            	$deleteLink = "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' data-id='"+row.addressId+"'  class='delAction ui-icon ui-icon-trash'></a></ansi:hasWrite></ansi:hasPermission>";
+				            	$viewLink = "<a href=\"#\" class=\"viewAction fa fa-search-plus tooltip\" aria-hidden=\"true\" data-id='"+row.addressId+"'><span class=\"tooltiptext\">View</span></a> ";
+				            	$editLink = "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' class=\"editAction ui-icon ui-icon-pencil tooltip\" data-id='"+row.addressId+"'><span class=\"tooltiptext\">Edit</span></a></ansi:hasWrite></ansi:hasPermission>";
+				            	$copyLink = "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' class=\"copyAction fa fa-files-o tooltip\" data-id='"+row.addressId+"'><span class=\"tooltiptext\">Copy</span></a></ansi:hasWrite></ansi:hasPermission>";
+				            	$deleteLink = "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' data-id='"+row.addressId+"'  class='delAction ui-icon ui-icon-trash tooltip'><span class=\"tooltiptext\">Delete</span></a></ansi:hasWrite></ansi:hasPermission>";
 				            	
 				            	$action = $viewLink + " " + $editLink + " " + $copyLink;
 				            	if(row.count < 1) {
@@ -206,7 +206,7 @@
     				$item.addClass("inputIsInvalid");
     			}
 
-	        	$("#addButton").button().on( "click", function() {
+	        	$(".addButton").button().on( "click", function() {
 	        		$("#updateOrAdd").val("add");
 	        		clearAddForm();
 	        		$("#addAddressForm").dialog( "option", "title", "Add Address" );
@@ -543,7 +543,7 @@
 				}
 			
 				if ( $ansiModal != '' ) {
-					$("#addButton").click();
+					$(".addButton").click();
 				}
 	        });
         </script>        
@@ -552,6 +552,13 @@
     <tiles:put name="content" type="string">
     	<h1>Address <bean:message key="menu.label.lookup" /></h1>
     	
+	    <ansi:hasPermission permissionRequired="SYSADMIN">
+			<ansi:hasWrite>
+    			<div class="addButtonDiv">
+    				<input type="button" class="addButton prettyWideButton" value="New" />
+    			</div>
+			</ansi:hasWrite>
+		</ansi:hasPermission>
  		<table id="addressTable" class="display" cellspacing="0" style="font-size:9pt;">
 	        <thead>
 	            <tr>
@@ -586,11 +593,11 @@
 	        </tfoot>
 	    </table>
 	    <ansi:hasPermission permissionRequired="SYSADMIN">
-				<ansi:hasWrite>
-	    			<div class="addButtonDiv">
-	    				<input type="button" id="addButton" class="prettyWideButton" value="New" />
-	    			</div>
-				</ansi:hasWrite>
+			<ansi:hasWrite>
+    			<div class="addButtonDiv">
+    				<input type="button" class="addButton prettyWideButton" value="New" />
+    			</div>
+			</ansi:hasWrite>
 		</ansi:hasPermission>
 
 		<div id="deleteErrorDialog" title="Delete Failed!" class="ui-widget" style="display:none;">

@@ -29,12 +29,12 @@
 							<td align="center"><span  id="quoteLabel">Quote</span></td>
 							<td align="center"><span  id="revisionLabel">Revision</span></td>
 							<td rowspan="2" align="right" style="padding-right:10px;">
-								<span class="fa-stack fa-2x" style="color:#444444;">
-									<i class="fa fa-print fa-stack-2x" id="printButton" aria=hidden="true"></i>
+								<span class="fa-stack fa-2x tooltip" style="color:#444444;">
+									<i class="fa fa-print fa-stack-2x" id="printButton" aria=hidden="true"><span class="tooltiptext">Print</span></i>
 								</span>
 								<%-- <i class="fa fa-list-alt fa-3x" id="viewPrintHistory" aria=hidden="true"></i>--%>
-								<span class="fa-stack fa-2x" id="viewPrintHistory" style="color:#444444;">
-    								<i class="fa fa-list-alt fa-stack-2x"></i>
+								<span class="fa-stack fa-2x tooltip" id="viewPrintHistory" style="color:#444444;">
+    								<i class="fa fa-list-alt fa-stack-2x"><span class="tooltiptext">Print History<br />Print Count</span></i>
     								<i class="fa fa-stack-1x"><span style="color:#FFFFFF; text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000, 1px 1px 0 #000; font-weight:bold;" id="printCount">N/A</span></i>
 								</span>
 							</td>
