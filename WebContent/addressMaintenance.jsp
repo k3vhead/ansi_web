@@ -206,7 +206,7 @@
     				$item.addClass("inputIsInvalid");
     			}
 
-	        	$("#addButton").button().on( "click", function() {
+	        	$(".addButton").button().on( "click", function() {
 	        		$("#updateOrAdd").val("add");
 	        		clearAddForm();
 	        		$("#addAddressForm").dialog( "option", "title", "Add Address" );
@@ -552,6 +552,13 @@
     <tiles:put name="content" type="string">
     	<h1>Address <bean:message key="menu.label.lookup" /></h1>
     	
+	    <ansi:hasPermission permissionRequired="SYSADMIN">
+			<ansi:hasWrite>
+    			<div class="addButtonDiv">
+    				<input type="button" class="addButton prettyWideButton" value="New" />
+    			</div>
+			</ansi:hasWrite>
+		</ansi:hasPermission>
  		<table id="addressTable" class="display" cellspacing="0" style="font-size:9pt;">
 	        <thead>
 	            <tr>
@@ -586,11 +593,11 @@
 	        </tfoot>
 	    </table>
 	    <ansi:hasPermission permissionRequired="SYSADMIN">
-				<ansi:hasWrite>
-	    			<div class="addButtonDiv">
-	    				<input type="button" id="addButton" class="prettyWideButton" value="New" />
-	    			</div>
-				</ansi:hasWrite>
+			<ansi:hasWrite>
+    			<div class="addButtonDiv">
+    				<input type="button" class="addButton prettyWideButton" value="New" />
+    			</div>
+			</ansi:hasWrite>
 		</ansi:hasPermission>
 
 		<div id="deleteErrorDialog" title="Delete Failed!" class="ui-widget" style="display:none;">
