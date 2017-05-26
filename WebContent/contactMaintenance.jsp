@@ -196,7 +196,7 @@
 			            } },
 			            { title: "Action",  data: function ( row, type, set ) {	
 			            	{
-			            		return '<i class="editAction ui-icon ui-icon-pencil" data-id="'+ row.contactId + '" />';}
+			            		return '<span class="tooltip"><i class="editAction ui-icon ui-icon-pencil" data-id="'+ row.contactId + '" /><span class="tooltiptext">Edit</span></span>';}
 			            } }
 			            ],
 			            "initComplete": function(settings, json) {
