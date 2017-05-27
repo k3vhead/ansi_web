@@ -59,9 +59,9 @@
 						Quote: <a href="quoteMaintenance.html" id="quoteLink"><span id="<%= namespace %>_quoteId"></span></a><br />
 					<% } %>
 
-					<i style="cursor:pointer;" class="fa fa-arrow-circle-right fa-3x" aria-hidden="true" id="<%= namespace %>_activateJobButton"></i>
-					<i style="cursor:pointer;" class="clickableIcon, fa fa-ban fa-3x text-danger" id="<%= namespace %>_cancelJobButton"></i>
-					<i style="cursor:pointer;" class="clickableIcon, fa fa-calendar  fa-3x" aria-hidden="true" id="<%= namespace %>_scheduleJobButton"></i>
+					<i style="cursor:pointer;" class="fa fa-arrow-circle-right fa-3x tooltip" aria-hidden="true" id="<%= namespace %>_activateJobButton"><span class="tooltiptext">Activate</span></i>
+					<i style="cursor:pointer;" class="clickableIcon, fa fa-ban fa-3x text-danger tooltip" id="<%= namespace %>_cancelJobButton"><span class="tooltiptext">Cancel</span></i>
+					<i style="cursor:pointer;" class="clickableIcon, fa fa-calendar  fa-3x tooltip" aria-hidden="true" id="<%= namespace %>_scheduleJobButton"><span class="tooltiptext">Schedule</span></i>
 					
 					
 					<%--
