@@ -35,7 +35,7 @@
 			<td>Repeat Annually:</td>
 			<td><input value="1" type="checkbox" id="<%=namespace%>_annualRepeat"></td>
 			<td rowspan="2" style="text-align:center;">
-				<i style="cursor:pointer;" class="fa fa-list-alt fa-2x" aria-hidden="true" id="<%=namespace%>_showTicketList"></i>
+				<i style="cursor:pointer;" class="fa fa-list-alt fa-2x tooltip" aria-hidden="true" id="<%=namespace%>_showTicketList"><span class="tooltiptext">Ticket List</span></i>
 				<%--  <input type="button" value="Ticket List" /> --%>
 			</td>
 		</tr>
