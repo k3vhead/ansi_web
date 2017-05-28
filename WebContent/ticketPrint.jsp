@@ -52,7 +52,6 @@
 //        	});
         	
         	$("#printDateButton").click(function($event) {
-        		console.debug("clicking");
         		validateDate();
         	});
         	

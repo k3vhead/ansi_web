@@ -52,7 +52,7 @@
             });
 
         	$("#printAll").click(function($event) {
-        		printModal("all");
+        		INVOICE_PRINT.printModal("all");
         	});
         
 	         var jqxhr = $.ajax({
@@ -171,7 +171,7 @@
 			        	if ( $action=='list') {
 			        		location.href="invoiceLookup.html?id=" + $divisionId;
 			        	} else if ( $action=='print') {
-			        		printModal($divisionId);
+			        		INVOICE_PRINT.printModal($divisionId);
 			        	} else {
 			        		$("#globalMessage").html("Invalid action. Reload the page and start again");
 			        	}
@@ -179,162 +179,55 @@
 				}
 
 				
-				
-				function printModal($divisionId) {
-    				$("#printDate").val("");
-   					$("#dueDate").val("");
-   					$("#printDateErr").html("");
-   					$("#dueDateErr").html("");
-   					$("#hangOn").hide();
+				INVOICE_PRINT.init("printModal")
 
-	        		$('#goPrint').data('divisionId',$divisionId);
-	        		$('#goPrint').button('option', 'label', 'Print Invoices');
-	        		$('#closePrint').button('option', 'label', 'Close');
-	        	    $('#printModal').dialog( "open" );
-				}
-				
-				
-				// set up the activate job modal window
-				$( "#printModal" ).dialog({
-					  title:'Print Invoices',
-		      	      autoOpen: false,
-		      	      height: 300,
-		      	      width: 500,
-		      	      modal: true,
-		      	      buttons: [
-		      	    	  {
-		        	    		id: "closePrint",
-		        	        	click: function() {
-		        	        		$("#printModal").dialog( "close" );
-		        	        	}
-		      	      		},
-		      	      		{
-		      	    			id: "goPrint",
-		      	        		click: function($event) {
-		      	        			printInvoices();
-		      	        		}
-		        	      	}
-		      	      
-		      	      ],
-		      	      close: function() {
-		      	    	  $("#printModal").dialog( "close" );
-		      	        //allFields.removeClass( "ui-state-error" );
-		      	      }
-		      	    });
-		
-				
-				function printInvoices() {
-					$("#hangOn").show();
-        			var $divisionId = $("#goPrint").data('divisionId');
-					var $printDate = $("#printDate").val();
-					var $dueDate = $("#dueDate").val();
-					
-		        	var $outbound = {'divisionId':$divisionId,'printDate':$printDate,'dueDate':$dueDate};
-		            var jqxhr = $.ajax({
-		    			type: 'POST',
-		    			url: 'invoicePrint/',
-		    			data: JSON.stringify($outbound),
-		    			statusCode: {
-			    			200: function($data) {
-			    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-			    					$.each($data.data.webMessages, function (key, value) {
-			    						var $selectorName = "#" + key + "Err";
-			    						$($selectorName).show();
-			    						$($selectorName).html(value[0]).fadeOut(4000);
-			    					});
-			    				} else {
-			    					$("#printModal").dialog("close");
-			    					var a = document.createElement('a');
-			    					var linkText = document.createTextNode("Download");
-			    					a.appendChild(linkText);
-			    					a.title = "Download";
-			    					a.href = $data.data.invoiceFile;
-			    					a.target = "_new";   // open in a new window
-			    					document.body.appendChild(a);
-			    					a.click();
-			    				}
-			    			},
-		    				403: function($data) {
-		    					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-		    				},
-		    				500: function($data) {
-		         	    		$("#globalMsg").html("System Error: Contact Support").fadeIn(10);
-		         	    	} 
-		    			},
-		    			dataType: 'json'
-		    		});        	
-		        }
         
 			});
 
 		</script>
+		<script type="text/javascript" src="js/invoicePrint.js"></script>
     </tiles:put>
     
     
     <tiles:put name="content" type="string">    	
     	<h1>Invoice Print</h1>
-    	
-    	
+
     	<table id="invoiceTable" style="table-layout: fixed" class="display" cellspacing="0" width="100%" style="font-size:9pt;max-width:1300px;width:1300px;">
-        <colgroup>
-        	<col style="width:15%;" />
-        	<col style="width:15%;" />
-        	<col style="width:15%;" />
-        	<col style="width:15%;" />
-        	<col style="width:15%;" />
-        	<col style="width:15%;" />
-   		</colgroup>        
-        <thead>
-            <tr>
-                <th>Division</th>
-    			<th>Invoices</th>
-    			<th>Tickets</th>
-    			<th>Tax</th>
-    			<th>PPC</th>
-    			<th>Action</th>
-            </tr>
-        </thead>
-        <tfoot>
-            <tr>
-                <th>Division</th>
-    			<th>Invoices</th>
-    			<th>Tickets</th>
-    			<th>Tax</th>
-    			<th>PPC</th>
-    			<th>Action</th>
-            </tr>
-        </tfoot>
-    </table>
-    <input type="button" value="Print All Invoices" id="printAll" class="prettyWideButton" />
+	        <colgroup>
+    	    	<col style="width:15%;" />
+        		<col style="width:15%;" />
+        		<col style="width:15%;" />
+	        	<col style="width:15%;" />
+	        	<col style="width:15%;" />
+	        	<col style="width:15%;" />
+	   		</colgroup>        
+	        <thead>
+	            <tr>
+	                <th>Division</th>
+	    			<th>Invoices</th>
+	    			<th>Tickets</th>
+	    			<th>Tax</th>
+	    			<th>PPC</th>
+	    			<th>Action</th>
+	            </tr>
+	        </thead>
+	        <tfoot>
+	            <tr>
+	                <th>Division</th>
+	    			<th>Invoices</th>
+	    			<th>Tickets</th>
+	    			<th>Tax</th>
+	    			<th>PPC</th>
+	    			<th>Action</th>
+	            </tr>
+	        </tfoot>
+    	</table>
+    	<input type="button" value="Print All Invoices" id="printAll" class="prettyWideButton" />
     
     
     	<a id="pdfDownload"></a>
-    	<div id="printModal">
-			<form action="#">
-				<table>
-					<tr>
-						<td>Print Date: </td>
-						<td><input type="text" class="dateField" id="printDate"/></td>
-						<td><span class="err" id="printDateErr"></span></td>
-					</tr>
-					<tr>
-						<td>Due Date: </td>
-						<td><input type="text" class="dateField" id="dueDate"/></td>
-						<td><span class="err" id="dueDateErr"></span></td>
-					</tr>
-					<%--
-					<tr>
-						<td colspan="2"><input type="button" value="Print Invoices" id="goPrint" /></td>
-					</tr>
-					 --%>
-				</table>
-			</form>
-			<div style="width:100%; padding-top:20px; text-align:center;" id="hangOn">
-				<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><br />
-				<br />
-				This may take a while ....
-			</div>
-    	</div>
+    	
+		<webthing:invoicePrint modalName="printModal" />
     </tiles:put>
 
 </tiles:insert>
