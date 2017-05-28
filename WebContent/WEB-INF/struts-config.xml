@@ -5,10 +5,11 @@
  -->
 <struts-config>
     <form-beans>    
-    	<form-bean name="idForm"          type="com.ansi.scilla.web.actionForm.IdForm" />
-    	<form-bean name="jobIdForm"       type="com.ansi.scilla.web.actionForm.JobIdForm" />
-    	<form-bean name="messageForm"     type="com.ansi.scilla.web.actionForm.MessageForm" />
-    	<form-bean name="namespaceForm"   type="com.ansi.scilla.web.actionForm.NamespaceForm" />
+    	<form-bean name="idForm"           type="com.ansi.scilla.web.actionForm.IdForm" />
+    	<form-bean name="jobIdForm"        type="com.ansi.scilla.web.actionForm.JobIdForm" />
+    	<form-bean name="messageForm"      type="com.ansi.scilla.web.actionForm.MessageForm" />
+    	<form-bean name="namespaceForm"    type="com.ansi.scilla.web.actionForm.NamespaceForm" />
+    	<form-bean name="ticketLookupForm" type="com.ansi.scilla.web.actionForm.TicketLookupForm" />
     </form-beans>
 	<!--
 
@@ -175,7 +176,7 @@
 		<action
             path="/ticketLookup"
             type="com.ansi.scilla.web.action.TicketLookupAction"
-            name="jobIdForm"
+            name="ticketLookupForm"
             input="/ticketLookup.jsp"
             scope="request">            
             <forward name="valid" path="/ticketLookup.jsp" />

@@ -1,5 +1,6 @@
 $(function() {
     $("#goButton").click(function($event) {
+    	$(".working").show();
     	$event.preventDefault();
     	$userid = $("input[name='userid']").val();
     	$password = $("input[name='password']").val();
@@ -13,6 +14,7 @@ $(function() {
     	     },
     	     statusCode: {
     	    	403: function($data) {
+    	    		$(".working").hide();
     	    		$("#loginMsg").html($data.responseJSON.responseHeader.responseMessage);
     	    		$("#loginMsg").fadeIn('fast');
     	    		$("#loginMsg").fadeOut(6000);

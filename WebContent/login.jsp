@@ -51,6 +51,20 @@
 				padding:30px; 
 				width:85%;
 			}
+			.login-box {
+				border:solid 1px #000000;
+				background-color:#FFFFFF;
+			}
+			.login-box input {
+				border:none;
+			}
+			.workingBox {
+				width:20px;
+				display:inline-block;
+			}
+			.working {
+				display:none;
+			}
         </style>
         <script src="js/login.js"></script>        
     </tiles:put>
@@ -73,12 +87,23 @@
 							</tr>
 							<tr>
 								<td class="formLabel"><span class="required">*</span> User Id: </td>
-								<td><input type="text" name="userid" /></td>
+								<td>
+									<div class="login-box">
+										<input type="text" name="userid" />
+									</div>
+								</td>
 								<td><i id="validUser" aria-hidden="true"></i></td>							
 							</tr>
 							<tr>
 								<td class="formLabel"><span class="required">*</span> Password: </td>
-								<td><input type="password" name="password" /></td>
+								<td>
+									<div class="login-box">
+										<input type="password" name="password" />
+										<div class="workingBox">
+											<i class="fa fa-spinner fa-pulse fa-fw working"></i>
+										</div>
+									</div>
+								</td>
 								<td><i id="validPass" aria-hidden="true"></i></td>
 							</tr>
 							<tr>
