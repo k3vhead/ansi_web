@@ -3,12 +3,11 @@ package com.ansi.scilla.web.servlets.tickets;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Enumeration;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -18,14 +17,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.db.PermissionLevel;
-import com.ansi.scilla.common.queries.TicketSearch;
+import com.ansi.scilla.common.queries.TicketLookupSearch;
+import com.ansi.scilla.common.queries.TicketLookupSearchItem;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.response.ticketTable.TicketTableJsonResponse;
-import com.ansi.scilla.web.response.ticketTable.TicketTableReturnItem;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 
 /**
@@ -48,7 +47,7 @@ public class TicketTableServlet extends AbstractServlet {
 			throws ServletException, IOException {
 		super.sendNotAllowed(response);
 	}
-	
+
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -65,103 +64,102 @@ public class TicketTableServlet extends AbstractServlet {
 		String dir = "asc";
 		String[] cols = { "view_ticket_log.ticket_id", "view_ticket_log.ticket_status", "division_nbr", "bill_to_name", "job_site_name", "job_site_address", "view_ticket_log.start_date", "job_frequency", "job.price_per_cleaning", "job_nbr", "job.job_id", "service_description","process_date", "invoice_id", "fleetmatics_id" };
 		String sStart = request.getParameter("start");
-	    String sAmount = request.getParameter("length");
-	    String sDraw = request.getParameter("draw");
-	    String sCol = request.getParameter("order[0][column]");
-	    String sdir = request.getParameter("order[0][dir]");
-	   //System.out.println(sCol);
-	   
-	   //list all passed header and parameters
-//	    Enumeration headerNames = request.getHeaderNames();
-//	   while(headerNames.hasMoreElements()) {
-//	     String headerName = (String)headerNames.nextElement();
-//	     System.out.println("Header Name - " + headerName + ", Value - " + request.getHeader(headerName));
-//	   }
-//	   Enumeration params = request.getParameterNames(); 
-//	   while(params.hasMoreElements()){
-//	    String paramName = (String)params.nextElement();
-//	    System.out.println("Parameter Name - "+paramName+", Value - "+request.getParameter(paramName));
-//	   }
-	   
+		String sAmount = request.getParameter("length");
+		String sDraw = request.getParameter("draw");
+		String sCol = request.getParameter("order[0][column]");
+		String sdir = request.getParameter("order[0][dir]");
+
+
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
 			AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
-//			String qs = request.getQueryString();
-			Enumeration<String> e = request.getParameterNames();
-			while ( e.hasMoreElements() ) {
-				String name = e.nextElement();
-				System.out.println(name);
-			}
 			String term = "";
-			Integer jobId = null;
-			
+			Integer parmJobId = null;
+			Integer parmDivisionId = null;
+			Calendar parmStartDate = null;
+
 			if(request.getParameter("search[value]") != null){
 				term = request.getParameter("search[value]");
 			}
 			if (! StringUtils.isBlank(request.getParameter("jobId"))) {
-				jobId = Integer.valueOf(request.getParameter("jobId"));
+				parmJobId = Integer.valueOf(request.getParameter("jobId"));
 			}
-			System.out.println(term);
+			if (! StringUtils.isBlank(request.getParameter("divisionId"))) {
+				parmDivisionId = Integer.valueOf(request.getParameter("divisionId"));
+			}
+			if (! StringUtils.isBlank(request.getParameter("startDate"))) {
+				SimpleDateFormat parmDateFormatter = new SimpleDateFormat("MM/dd/yyyy");
+				Date parmDate = parmDateFormatter.parse(request.getParameter("startDate"));
+				parmStartDate = Calendar.getInstance(TimeZone.getTimeZone("America/Chicago"));
+				parmStartDate.setTime(parmDate);
+			}
+
 			if (sStart != null) {
-		        start = Integer.parseInt(sStart);
-		        if (start < 0)
-		            start = 0;
-		    }
-		    if (sAmount != null) {
-		    	amount = Integer.parseInt(sAmount);
-				System.out.println(sAmount);
-		        if (amount < 10 ) {
-		            amount = 10;
-		        } else if (amount > 1000) {
-		            amount = 1000;
-		        }
-		    }
-		    if (sDraw != null) {
-		        draw = Integer.parseInt(sDraw);
-		    }
-		    if (sCol != null) {
-		        col = Integer.parseInt(sCol);
-		        if (col < 0 || col > 15)
-		            col = 0;
-		    }
-		    if (sdir != null) {
-		        if (!sdir.equals("asc"))
-		            dir = "desc";
-		    }
-		    
-		    String colName = cols[col];
-		    int total = 0;
-		    String sql = "select count(*)"
+				start = Integer.parseInt(sStart);
+				start = start < 0 ? 0 : start;
+			}
+			if (sAmount != null) {
+				amount = Integer.parseInt(sAmount);
+				if (amount < 10 ) {
+					amount = 10;
+				} else if (amount > 1000) {
+					amount = 1000;
+				}
+			}
+			if (sDraw != null) {
+				draw = Integer.parseInt(sDraw);
+			}
+			if (sCol != null) {
+				col = Integer.parseInt(sCol);
+				if (col < 0 || col > 15) {
+					col = 0;
+				}
+			}
+			if (sdir != null) {
+				if (!sdir.equals("asc")) {
+					dir = "desc";
+				}
+			}
+
+			String colName = cols[col];
+
+
+			/*
+			int total = 0;
+			int totalAfterFilter = total;
+			
+			String sql = "select count(*)"
 					+ " from ticket";
 			Statement s = conn.createStatement();
-					
+
 			ResultSet rs0 = s.executeQuery(sql);
 			if(rs0.next()){
-		        total = rs0.getInt(1);
-		    }
-			
-		    int totalAfterFilter = total;
-			
+				total = rs0.getInt(1);
+			}
+
 			List<TicketTableReturnItem> resultList = new ArrayList<TicketTableReturnItem>();
 			sql = TicketSearch.sql;
 
 			String search = TicketSearch.generateWhereClause(term);
-			
-//			System.out.println("search: " +search);
+
+			//			System.out.println("search: " +search);
 			sql += search;
-			if (jobId != null) {
-				sql += " and job.job_id=" + jobId + " ";
+			if (parmJobId != null) {
+				sql += " and job.job_id=" + parmJobId + " ";
+			}
+			if ( parmDivisionId != null ) {
+				sql += " and job.division_id=" + parmDivisionId + " ";
 			}
 			System.out.println(sql);
 			sql += " order by " + colName + " " + dir;
 			System.out.println(sql);
 			if ( amount != -1) {
 				sql += " OFFSET "+ start+" ROWS"
-					+ " FETCH NEXT " + amount + " ROWS ONLY";
+						+ " FETCH NEXT " + amount + " ROWS ONLY";
 			}
-//			System.out.println(sql);
-			
+			System.out.println(sql);
+
 			s = conn.createStatement();
 			ResultSet rs = s.executeQuery(sql);
 			ResultSetMetaData rsmd = rs.getMetaData();
@@ -171,14 +169,14 @@ public class TicketTableServlet extends AbstractServlet {
 				resultList.add(item);
 				//resultList.add(new TicketTableReturnItem(rs));
 			}
-			
+
 			String sql2 = "select count(*) "
 					+ TicketSearch.sqlFromClause;
-			
-			if (jobId != null) {
-				sql2 += " and job.job_id=" + jobId + " ";
+
+			if (parmJobId != null) {
+				sql2 += " and job.job_id=" + parmJobId + " ";
 			}
-			
+
 			if (search != "") {
 				sql2 += search;
 			}
@@ -188,27 +186,35 @@ public class TicketTableServlet extends AbstractServlet {
 			if(rs2.next()){
 				totalAfterFilter = rs2.getInt(1);
 				//totalAfterFilter = 1;
-		    }
+			}
 			rs.close();
 			rs0.close();
 			rs2.close();
+			*/
+			
+			
+			TicketLookupSearch ticketSearch = new TicketLookupSearch(start, amount);
+			ticketSearch.setSearchTerm(term);
+			ticketSearch.setDivisionId(parmDivisionId);
+			ticketSearch.setJobId(parmJobId);
+			ticketSearch.setSortBy(colName);
+			ticketSearch.setSortIsAscending(dir.equals("asc"));
+			ticketSearch.setStartDate(parmStartDate);
+			List<TicketLookupSearchItem> itemList = ticketSearch.select(conn);
+			Integer filteredCount = ticketSearch.selectCount(conn);
+			Integer totalCount = ticketSearch.countAll(conn);
 			
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("application/json");
-			
+
 			TicketTableJsonResponse ticketTableJsonResponse = new TicketTableJsonResponse();
-			ticketTableJsonResponse.setRecordsFiltered(totalAfterFilter);
-			ticketTableJsonResponse.setRecordsTotal(total);
-			ticketTableJsonResponse.setData(resultList);
+			ticketTableJsonResponse.setRecordsFiltered(filteredCount);
+			ticketTableJsonResponse.setRecordsTotal(totalCount);
+			ticketTableJsonResponse.makeData(itemList);
 			ticketTableJsonResponse.setDraw(draw);
-			
-//			System.out.println("Total:"+total);
-//			System.out.println("TotalAfterFilter:"+totalAfterFilter);
+
 			String json = AppUtils.object2json(ticketTableJsonResponse);
-			
-//			System.out.println(json);
-			
-			
+
 			ServletOutputStream o = response.getOutputStream();
 			OutputStreamWriter writer = new OutputStreamWriter(o);
 			writer.write(json);

@@ -1,57 +1,63 @@
 package com.ansi.scilla.web.response.ticketTable;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import com.ansi.scilla.common.queries.TicketLookupSearchItem;
 
 public class TicketTableJsonResponse {
 
-    int recordsTotal;
+	private int recordsTotal;
+	private int recordsFiltered;
+	private int draw;
+	private String columns;
 
-    int recordsFiltered;
+	private List<TicketTableReturnItem> data;
 
-    int draw;
+	public int getRecordsTotal() {
+		return recordsTotal;
+	}
 
-    String columns;
+	public void setRecordsTotal(int recordsTotal) {
+		this.recordsTotal = recordsTotal;
+	}
 
-    List<TicketTableReturnItem> data;
+	public int getRecordsFiltered() {
+		return recordsFiltered;
+	}
 
-    public int getRecordsTotal() {
-    return recordsTotal;
-    }
+	public void setRecordsFiltered(int recordsFiltered) {
+		this.recordsFiltered = recordsFiltered;
+	}
 
-    public void setRecordsTotal(int recordsTotal) {
-    this.recordsTotal = recordsTotal;
-    }
+	public int getDraw() {
+		return draw;
+	}
 
-    public int getRecordsFiltered() {
-    return recordsFiltered;
-    }
+	public void setDraw(int draw) {
+		this.draw = draw;
+	}
 
-    public void setRecordsFiltered(int recordsFiltered) {
-    this.recordsFiltered = recordsFiltered;
-    }
+	public String getColumns() {
+		return columns;
+	}
 
-    public int getDraw() {
-    return draw;
-    }
+	public void setColumns(String columns) {
+		this.columns = columns;
+	}
 
-    public void setDraw(int draw) {
-    this.draw = draw;
-    }
+	public List<TicketTableReturnItem> getData() {
+		return data;
+	}
 
-    public String getColumns() {
-    return columns;
-    }
+	public void makeData(List<TicketLookupSearchItem> itemList) throws Exception {
+		this.data = new ArrayList<TicketTableReturnItem>();
+		for ( TicketLookupSearchItem item : itemList) {
+			this.data.add(new TicketTableReturnItem(item));
+		}
+	}
 
-    public void setColumns(String columns) {
-    this.columns = columns;
-    }
-
-    public List<TicketTableReturnItem> getData() {
-        return data;
-    }
-
-    public void setData(List<TicketTableReturnItem> data) {
-        this.data = data;
-    }
-
+	public void setData(List<TicketTableReturnItem> data) {
+		this.data = data;
+	}
 }

@@ -2,8 +2,8 @@ package com.ansi.scilla.web.test;
 
 import java.sql.Connection;
 
+import com.ansi.scilla.common.queries.TicketPaymentTotals;
 import com.ansi.scilla.common.utils.AppUtils;
-import com.ansi.scilla.web.response.ticket.TicketDetail;
 
 public class TestTicket {
 
@@ -37,7 +37,8 @@ public class TestTicket {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getConn();
-			TicketDetail td = new TicketDetail(conn, 662056);
+//			TicketDetail td = new TicketDetail(conn, 651611);
+			TicketPaymentTotals td = TicketPaymentTotals.select(conn, 651611);
 			System.out.println(td);
 		} finally {
 			AppUtils.closeQuiet(conn);

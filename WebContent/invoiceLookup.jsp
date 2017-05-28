@@ -78,7 +78,7 @@
         	        "columnDefs": [
 //         	            { "orderable": false, "targets": -1 },  // Need to re-add this when we add the action column back in
         	            { className: "dt-left", "targets": [0,1,2,3] },
-        	            { className: "dt-center", "targets": [4,5] },
+        	            { className: "dt-center", "targets": [4,5,11] },
         	            { className: "dt-right", "targets": [6,7,8,9,10]}
         	         ],
         	        "paging": true,
@@ -122,9 +122,10 @@
 			            { title: "Balance",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.invoiceBalance != null){return (row.invoiceBalance+"");}else{return(row.invoiceTotal+"");}
 			            } },
-			            //{ title: "Action",  data: function ( row, type, set ) {	
-			            //	{return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='jobMaintenance.html?id="+row.jobId+"' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.jobId+"'></a></ansi:hasWrite></ansi:hasPermission>";}
-			            //} }
+			            { title: "Action",  data: function ( row, type, set ) {
+			            	$printText =  '<i class="fa fa-print invoicePrint tooltip" aria=hidden="true" data-id="'+row.invoiceId+'"><span class="tooltiptext">Reprint</span></i>';
+			            	{return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite>" + $printText + "</ansi:hasWrite></ansi:hasPermission>";}
+			            } }
 			            ],
 			            "initComplete": function(settings, json) {
 			            	//console.log(json);
@@ -149,8 +150,8 @@
             }; 
 				
 				function doFunctionBinding() {
-					$( ".editAction" ).on( "click", function($clickevent) {
-						 doEdit($clickevent);
+					$( ".invoicePrint" ).on( "click", function($clickevent) {
+						console.debug("Printing");
 					});
 				}
 				
@@ -206,11 +207,12 @@
         	<col style="width:18%;" />
         	<col style="width:5%;" />
         	<col style="width:10%;" />
-        	<col style="width:10%;" />
-        	<col style="width:10%;" />
-        	<col style="width:10%;" />
-        	<col style="width:10%;" />
-        	<col style="width:10%;" />
+        	<col style="width:8%;" />
+        	<col style="width:8%;" />
+        	<col style="width:8%;" />
+        	<col style="width:8%;" />
+        	<col style="width:8%;" />
+        	<col style="width:8%" />
    		</colgroup>
         <thead>
             <tr>
@@ -225,6 +227,7 @@
     			<th>Total</th>
     			<th>Paid</th>
     			<th>Balance</th>
+    			<th>Action</th>
             </tr>
         </thead>
         <tfoot>
@@ -240,6 +243,7 @@
     			<th>Total</th>
     			<th>Paid</th>
     			<th>Balance</th>
+    			<th>Action</th>
             </tr>
         </tfoot>
     </table>

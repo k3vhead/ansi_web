@@ -6,7 +6,7 @@ import java.sql.Connection;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.request.LoginRequest;
 import com.ansi.scilla.web.response.login.LoginResponse;
-import com.ansi.scilla.web.servlets.LoginServlet;
+import com.ansi.scilla.web.servlets.login.LoginServlet;
 import com.thewebthing.commons.lang.JsonUtils;
 
 

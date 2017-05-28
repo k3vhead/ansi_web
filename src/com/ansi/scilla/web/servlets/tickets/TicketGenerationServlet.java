@@ -123,7 +123,7 @@ public class TicketGenerationServlet extends AbstractServlet{
 		super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
 	}
 
-	public void processUpdate(Connection conn, HttpServletRequest request, HttpServletResponse response, 
+	private void processUpdate(Connection conn, HttpServletRequest request, HttpServletResponse response, 
 			TicketGenerationRequest generateTicketRequest, SessionUser sessionUser) throws Exception {
 		
 		Calendar startDate = Calendar.getInstance(new Locale("America/Chicago"));

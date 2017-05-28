@@ -114,6 +114,16 @@
 				border:solid 1px #000000;
 				display:none;
 			}
+			#resultsDiv {
+				display:none;
+			}
+			#resultsTable {
+				width:600px;
+			}
+			.viewAction {
+				color:#000000;
+				text-decoration:none;
+			}
         </style>
         
         <script type="text/javascript">
@@ -149,6 +159,26 @@
         			});	
                 },
 
+                
+                addResultsRow : function($data, $divisionText) {
+                	var $row = '<tr>';
+                	$row = $row + '<td>' + $divisionText + '</td>';
+                	$row = $row + '<td>' + $data.startDate + '</td>';
+                	$row = $row + '<td>' + $data.endDate + '</td>';
+                	$viewLink = "<a href=\"#\" class=\"viewAction fa fa-search-plus tooltip\" aria-hidden=\"true\" data-startdate='"+ $data.startDate +"' data-id='"+$data.divisionId+"'><span class=\"tooltiptext\">View Tickets</span></a> ";
+                	$row = $row + '<td>' + $viewLink + '</td>';
+                	$('#resultsTable tr:last').after($row);
+                	$('.viewAction').bind("click", function($event) {
+                		console.debug("clicked");
+                		$event.preventDefault();
+                        var $divisionId = $event.currentTarget.attributes['data-id'].value;           
+                        var $startDate = $event.currentTarget.attributes['data-startdate'].value;
+                        var $lookupUrl = "ticketLookup.html?divisionId=" + $divisionId + "&startDate=" + $startDate;
+						location.href=$lookupUrl;
+                	});
+                },
+                
+                
                 go : function($event) {
                 	var $divisionId = $("#divisionId").val();
     				var $startDate = $("#startDate").val();
@@ -162,11 +192,14 @@
     		       		data: JSON.stringify($outbound),
     		       		statusCode: {
     		       			200: function($data) {
+    		       				console.debug($data);
+    		       				$("#resultsDiv").fadeIn(2000);
     		       				if ( $data.responseHeader.responseCode == 'SUCCESS') {
     		       					$(".err").html("");
-    		       					$("#globalMsg").html("Success! Tickets Generated").show();
+    		       					$("#globalMsg").html("Success! Tickets Generated").show().fadeOut(6000);
     		       					$("#startDate").val("");
     		       					$("#endDate").val("");
+    		       					TICKET_GEN.addResultsRow($outbound, $("#divisionId option:selected").text());
     							} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
     								$('.err').html("");
     								$.each($data.data.webMessages, function(key, messageList) {
@@ -236,17 +269,17 @@
     	
     	<table>
     		<tr>
-    			<td><span class="formHdr">Division: </span></td>
+    			<td><span class="formLabel">Division: </span></td>
     			<td><select id="divisionId" data-valid="validDivisionId"></select><span id="validDivisionId"></span></td>
     			<td><span class="err" id="divisionIdErr"></span></td>
     		</tr>
     		<tr>
-    			<td><span class="formHdr">Start Date: </span></td>
+    			<td><span class="formLabel">Start Date: </span></td>
     			<td><input type="text" id="startDate" class="dateField" /></td>
     			<td><span class="err" id="startDateErr"></span></td>
     		</tr>
     		<tr>
-    			<td><span class="formHdr">End Date: </span></td>
+    			<td><span class="formLabel">End Date: </span></td>
     			<td><input type="text" id="endDate" class="dateField" /></td>
     			<td><span class="err" id="endDateErr"></span></td>
     		</tr>
@@ -256,6 +289,22 @@
     	</table>
 
     	
+    	<div id="resultsDiv">
+    		<table id="resultsTable">
+   		       	<colgroup>
+					<col style="width:25%;" />
+					<col style="width:25%;" />
+					<col style="width:25%;" />
+					<col style="width:25%;" />
+    			</colgroup>
+    			<tr>
+    				<td><span class="formLabel">Division</span></td>
+    				<td><span class="formLabel">Start Date</span></td>
+    				<td><span class="formLabel">EndDate</span></td>
+    				<td><span class="formLabel">Action</span></td>
+    			</tr>
+    		</table>
+    	</div>
     </tiles:put>
 
 </tiles:insert>

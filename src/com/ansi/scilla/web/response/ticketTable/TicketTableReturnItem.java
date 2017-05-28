@@ -5,9 +5,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
-import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
 import com.ansi.scilla.common.queries.ReportQuery;
+import com.ansi.scilla.common.queries.TicketLookupSearchItem;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.thewebthing.commons.db2.DBColumn;
@@ -62,7 +62,7 @@ public class TicketTableReturnItem extends ReportQuery {
 	private String divisionCode;
 	private String fleetmaticsId;
 
-	public TicketTableReturnItem() throws SQLException {
+	public TicketTableReturnItem()  {
 		super();
 	}
 	public TicketTableReturnItem(ResultSet rs) throws SQLException {
@@ -89,11 +89,35 @@ public class TicketTableReturnItem extends ReportQuery {
 		this.divisionCode = rs.getString(DIVISION_CODE);
 		this.fleetmaticsId = rs.getString(FLEETMATICS_ID);
 		this.DT_RowId = rs.getInt(TICKET_ID) + "";
-		System.out.println(this);
-
-
 	}
 
+	public TicketTableReturnItem(TicketLookupSearchItem item) throws Exception {
+		this();
+		this.ticketId = item.getViewTicketLog().getTicketId();
+		this.ticketStatus = item.getViewTicketLog().getStatus();
+		this.billToName = item.getBillToName();
+		this.jobSiteName = item.getJobSiteName();
+		this.jobSiteAddress = item.getJobSiteAddress();
+		this.startDate = item.getViewTicketLog().getStartDate();
+		this.jobFrequency = item.getJobFrequency();
+		this.pricePerCleaning = item.getPricePerCleaning();
+		this.actPricePerCleaning = item.getTicket().getActPricePerCleaning();
+		this.jobNbr = item.getJobNbr();
+		this.jobId = item.getViewTicketLog().getJobId();
+		this.serviceDescription = item.getServiceDescription();
+		this.invoiceId = item.getTicket().getInvoiceId();
+		this.invoiceDate =  item.getTicket().getInvoiceDate();
+		this.processDate =  item.getTicket().getProcessDate();
+		this.billToAddressId = item.getQuote().getBillToAddressId();
+		this.jobSiteAddressId = item.getQuote().getJobSiteAddressId();
+		this.divisionId = item.getDivision().getDivisionId();
+		this.divisionNbr = item.getDivision().getDivisionNbr();
+		this.divisionCode = item.getDivision().getDivisionCode();
+		this.fleetmaticsId = item.getTicket().getFleetmaticsId();
+		this.DT_RowId = String.valueOf(item.getTicket().getTicketId());
+
+	}
+	
 	@DBColumn(TICKET_ID)
 	public Integer getTicketId() {
 		return ticketId;
