@@ -3,11 +3,7 @@ package com.ansi.scilla.web.servlets.tickets;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -23,14 +19,12 @@ import org.apache.commons.lang3.StringUtils;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.queries.TicketLookupSearch;
 import com.ansi.scilla.common.queries.TicketLookupSearchItem;
-import com.ansi.scilla.common.queries.TicketSearch;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.response.ticketTable.TicketTableJsonResponse;
-import com.ansi.scilla.web.response.ticketTable.TicketTableReturnItem;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 
 /**
@@ -96,7 +90,7 @@ public class TicketTableServlet extends AbstractServlet {
 			}
 			if (! StringUtils.isBlank(request.getParameter("startDate"))) {
 				SimpleDateFormat parmDateFormatter = new SimpleDateFormat("MM/dd/yyyy");
-				Date parmDate = parmDateFormatter.parse(request.getParameter("divisionId"));
+				Date parmDate = parmDateFormatter.parse(request.getParameter("startDate"));
 				parmStartDate = Calendar.getInstance(TimeZone.getTimeZone("America/Chicago"));
 				parmStartDate.setTime(parmDate);
 			}
@@ -131,10 +125,10 @@ public class TicketTableServlet extends AbstractServlet {
 			String colName = cols[col];
 
 
+			/*
 			int total = 0;
 			int totalAfterFilter = total;
 			
-			/*
 			String sql = "select count(*)"
 					+ " from ticket";
 			Statement s = conn.createStatement();
