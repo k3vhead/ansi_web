@@ -73,7 +73,7 @@
         	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
         	        ],
         	        buttons: [
-        	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}}
+        	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();$('#jobTable').draw();}}
         	        ],
         	        "columnDefs": [
          	            { "orderable": false, "targets": -1 },
@@ -140,6 +140,7 @@
 			            	doFunctionBinding();
 			            }
 			    } );
+        		//new $.fn.dataTable.FixedColumns( dataTable );
         	}
         	        	
         	init();
