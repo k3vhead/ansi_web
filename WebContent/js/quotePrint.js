@@ -43,6 +43,8 @@
 			var $quoteDate = $($quoteDateSelector).val();
 			$($modalName).dialog("close");
 			$($quoteFormSelector).submit();
+			location.reload();
+			$(window.location).attr('href', 'quoteMaintenance.html?id='+$quoteId);
 		}
 
 }

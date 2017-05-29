@@ -42,13 +42,55 @@
 	<% if ( !pageName.equals("QUOTE") ) { %>
 	 	<table class="addressTable">
 			<tr>
-				<td class="jobTableCell">
-					<webthing:addressPanel namespace="<%= jobSiteName %>" label="Job Site" cssId="jobSite" page="job"/>
-				</td>
-				<td class="jobTableCell">
-					<webthing:addressPanel namespace="<%= billToName %>" label="Bill To" cssId="billTo" page="bill"/>
-				</td>
-			</tr>
+					<td align="left" style="width:480px;border:1px solid #000000; white-space:nowrap;">
+							<span style="display: inline-block;width:51px;"><b>Bill&nbsp;To:</b></span> <input type="text" name="billTo_name" style="width:425px" />
+							<i id="billToAddressIdErr" aria-hidden="true"></i>	
+							</td>
+							<td align="left" style="width:480px;border:1px solid #000000; white-space:nowrap;">
+								<span style="display: inline-block;width:51px;"><b>Job&nbsp;Site:</b></span> <input type="text" name="jobSite_name" style="width:425px" />
+								<i id="jobSiteAddressIdErr" aria-hidden="true"></i>
+							</td>
+						</tr>
+						<tr>
+							<td align="left" style="width:480px;">
+								<!--<webthing:addressPanel label="Bill To"  namespace="billTo" cssId="billTo"  page="bill"/>-->
+								<webthing:addressDisplayPanel cssId="billTo" />
+							</td>
+							<td align="left" style="width:480px;">
+							<!--<webthing:addressPanel label="Job Site" namespace="jobSite" cssId="jobSite" page="job"/>-->
+								<webthing:addressDisplayPanel cssId="jobSite" />
+							</td>
+						</tr>
+						<tr>
+							<td align="left" style="width:480px;">
+								<table style="width:100%;border:1px solid #000000">
+									<tr>
+										<td><span id="billToC1">Cont Contact:</span></td>
+										<td style="width:140px;"><input type="text" name="billTo_contractContactName" style="width:125px" placeholder="<name>"/></td>
+										<td colspan="2"><span name="billTo_contractContactInfo" style="display: inline-block;width:170px;"></span><i id="contractContactIdErr" aria-hidden="true"></i></td>
+									</tr>
+									<tr>
+										<td><span id="billToC2">Billing Contact:</span></td>
+										<td style="width:140px;"><input type="text" name="billTo_billingContactName" style="width:125px" placeholder="<name>"/></td>
+										<td colspan="2"><span name="billTo_billingContactInfo" style="display: inline-block;width:170px;"></span><i id="billingContactIdErr" aria-hidden="true"></i></td>
+									</tr>
+								</table>
+							</td>
+							<td align="left" style="width:480px;">
+								<table style="width:100%;border:1px solid #000000">
+									<tr>
+										<td><span id="jobSiteC1">Job Contact:</span></td>
+										<td style="width:140px;"><input type="text" name="jobSite_jobContactName" style="width:125px" placeholder="<name>"/></td>
+										<td colspan="2"><span name="jobSite_jobContactInfo" style="display: inline-block;width:170px;"></span><i id="jobContactIdErr" aria-hidden="true"></i></td>
+									</tr>
+									<tr>
+										<td><span id="jobSiteC2">Site Contact:</span></td>
+										<td style="width:140px;"><input type="text" name="jobSite_siteContactName" style="width:125px" placeholder="<name>"/></td>
+										<td colspan="2"><span name="jobSite_siteContactInfo" style="display: inline-block;width:170px;"></span><i id="siteContactErr" aria-hidden="true"></i></td>
+									</tr>
+								</table>
+							</td>
+						</tr>
 		</table> 
 		<% }  %>
 		<table style="border:solid 1px #000000; margin-top:8px;">

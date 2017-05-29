@@ -30,9 +30,6 @@
 			.action-link {
 				cursor:pointer;
 			}
-			#pdfDownload {
-				display:none;
-			}
 			#hangOn {
 				display:none;
 			}
@@ -225,8 +222,6 @@
     	<input type="button" value="Print All Invoices" id="printAll" class="prettyWideButton" />
     
     
-    	<a id="pdfDownload"></a>
-    	
 		<webthing:invoicePrint modalName="printModal" />
     </tiles:put>
 

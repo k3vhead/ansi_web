@@ -25,6 +25,7 @@ public class InvoiceLookupResponseItem extends ReportQuery {
 	public static final String INVOICE_DATE = "invoice_date";
 	public static final String BILL_TO_NAME = "bill_to_name";
 	public static final String DIV = "div";
+	public static final String PRINT_COUNT = "print_count";
 	
 	/*
 	 invoice.invoice_id, sum(ticket.act_price_per_cleaning) as invoice_total, " + 
@@ -42,6 +43,7 @@ public class InvoiceLookupResponseItem extends ReportQuery {
 	private Date invoiceDate;
 	private String billToName;
 	private String div;
+	private Integer printCount;
 	
 	
 	public InvoiceLookupResponseItem() {
@@ -60,6 +62,7 @@ public class InvoiceLookupResponseItem extends ReportQuery {
 		this.invoiceDate = rs.getDate(INVOICE_DATE);
 		this.billToName = rs.getString(BILL_TO_NAME);
 		this.div = rs.getString(DIV);
+		this.printCount=rs.getInt(PRINT_COUNT);
 	}
 	@DBColumn(INVOICE_ID)
 	public Integer getInvoiceId() {
@@ -154,6 +157,12 @@ public class InvoiceLookupResponseItem extends ReportQuery {
 	@DBColumn(DIV)
 	public void setDiv(String div) {
 		this.div = div;
+	}
+	public Integer getPrintCount() {
+		return printCount;
+	}
+	public void setPrintCount(Integer printCount) {
+		this.printCount = printCount;
 	}
 	
 	
