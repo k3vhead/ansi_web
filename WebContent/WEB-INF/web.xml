@@ -441,6 +441,16 @@
 	
 
 	<servlet>
+		<servlet-name>ticketApprovalOverride</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.tickets.TicketApprovalOverrideServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ticketApprovalOverride</servlet-name>
+		<url-pattern>/ticketApprovalOverride/*</url-pattern>
+	</servlet-mapping>
+	
+
+	<servlet>
 		<servlet-name>ticketDRV</servlet-name>
 		<servlet-class>com.ansi.scilla.web.servlets.tickets.TicketDRVServlet</servlet-class>
 	</servlet>
