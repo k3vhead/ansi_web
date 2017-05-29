@@ -32,11 +32,9 @@
 
 
 <div <%= cssIdString %> <%= cssClassString %> >
-<% if ( page.equalsIgnoreCase("JOB")) { %> 
 	<div style="float:right;margin-right:6px; margin-top:6px;">
 		<span id="<%=namespace %>_invoiceEdit" style="cursor:pointer;" class="green fa fa-pencil tooltip" ari-hidden="true"><span class="tooltiptext">Edit</span></span>
 	</div>
-<% } %>
 	<form id="<%=namespace%>_jobInvoiceForm">
 		<table>
 			<tr>

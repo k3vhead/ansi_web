@@ -24,6 +24,7 @@
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
         <script type="text/javascript" src="js/jobMaintenance.js"></script>
         <script type="text/javascript" src="js/quoteMaintenance.js"></script>
+         <script type="text/javascript" src="js/addressUtils.js"></script>
         <link rel="stylesheet" href="css/datepicker.css" type="text/css" />
         <style type="text/css">
 			#confirmDelete {
