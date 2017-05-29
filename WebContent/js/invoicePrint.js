@@ -1,5 +1,5 @@
 ;INVOICE_PRINT = {
-		init : function($modalName, $triggerName) {
+		init : function($modalName) {
 			INVOICE_PRINT.modalName = $modalName;
 			
 
@@ -33,6 +33,7 @@
 
 		
 		printModal : function($divisionId) {
+			var $modalSelector = "#" + INVOICE_PRINT.modalName
 			$("#printDate").val("");
 			$("#dueDate").val("");
 			$("#printDateErr").html("");
@@ -42,12 +43,46 @@
     		$('#goPrint').data('divisionId',$divisionId);
     		$('#goPrint').button('option', 'label', 'Print Invoices');
     		$('#closePrint').button('option', 'label', 'Close');
-    	    $('#printModal').dialog( "open" );
+    	    $($modalSelector).dialog( "open" );
 		},
 		
 		
 
-
+		reprintInvoice : function($invoiceId) {
+			var $url = "invoiceReprint/" + $invoiceId;
+            var jqxhr = $.ajax({
+    			type: 'GET',
+    			url: $url,
+    			data: {},
+    			statusCode: {
+	    			200: function($data) {
+	    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+	    					$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'].value[0]).show().fadeOut(4000);
+	    				} else {
+	    					var a = document.createElement('a');
+	    					var linkText = document.createTextNode("Download");
+	    					a.appendChild(linkText);
+	    					a.title = "Download";
+	    					a.href = $data.data.invoiceFile;
+	    					a.target = "_new";   // open in a new window
+	    					document.body.appendChild(a);
+	    					a.click();
+	    				}
+	    			},
+    				403: function($data) {
+    					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage).show();
+    				},
+    				404: function($data) {
+    					$("#globalMsg").html("Invoice " + $invoiceId + " does not exist or has never been printed").show().fadeOut(4000);
+    				},
+    				500: function($data) {
+         	    		$("#globalMsg").html("System Error: Contact Support").show();
+         	    	} 
+    			},
+    			dataType: 'json'
+    		});       
+		},
+		
 		
 		printInvoices : function() {
 			var $modalSelector = "#" + INVOICE_PRINT.modalName; 

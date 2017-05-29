@@ -230,6 +230,16 @@
 
 
 	<servlet>
+		<servlet-name>invoiceReprint</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.invoice.InvoiceReprintServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>invoiceReprint</servlet-name>
+		<url-pattern>/invoiceReprint/*</url-pattern>
+	</servlet-mapping>
+
+
+	<servlet>
 		<servlet-name>invoicePrintLookup</servlet-name>
 		<servlet-class>com.ansi.scilla.web.servlets.invoice.InvoicePrintLookupServlet</servlet-class>
 	</servlet>

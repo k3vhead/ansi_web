@@ -11,7 +11,8 @@ h1 {
 }
 #buildDate {
 	cursor:pointer;
-	text-decoration:underline;	
+	text-decoration:none;
+	font-size:90%;	
 }
 #headerNav {
 	width:100%;
@@ -89,6 +90,7 @@ h1 {
 }
 .trailerLink {
 	color:#FFFFFF;
+	text-decoration:none;
 }
 .tooltip {
 	position:relative;

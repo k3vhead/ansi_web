@@ -42,7 +42,9 @@
 				width:80px !important;
 				max-width:80px !important;
 			}
-			
+			.invoicePrint {
+				color:#000000;
+			}
         </style>
         
         <script type="text/javascript">
@@ -123,7 +125,11 @@
 			            	if(row.invoiceBalance != null){return (row.invoiceBalance+"");}else{return(row.invoiceTotal+"");}
 			            } },
 			            { title: "Action",  data: function ( row, type, set ) {
-			            	$printText =  '<i class="fa fa-print invoicePrint tooltip" aria=hidden="true" data-id="'+row.invoiceId+'"><span class="tooltiptext">Reprint</span></i>';
+			            	if ( row.printCount > 0 ) {
+			            		$printText =  '<i class="fa fa-print invoicePrint tooltip" aria=hidden="true" data-invoiceId="'+row.invoiceId+'"><span class="tooltiptext">Reprint</span></i>';
+			            	} else {
+			            		$printText = ""; 
+			            	}
 			            	{return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite>" + $printText + "</ansi:hasWrite></ansi:hasPermission>";}
 			            } }
 			            ],
@@ -151,10 +157,15 @@
 				
 				function doFunctionBinding() {
 					$( ".invoicePrint" ).on( "click", function($clickevent) {
-						console.debug("Printing");
+						invoicePrint($clickevent);
 					});
 				}
 				
+				
+				function invoicePrint($clickevent) {
+					var $invoiceId = $clickevent.currentTarget.attributes['data-invoiceId'].value;
+					INVOICE_PRINT.reprintInvoice($invoiceId);
+				}
 				function doEdit($clickevent) {
 					var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
 
@@ -193,7 +204,8 @@
 					//console.log("Edit Button Clicked: " + $rowid);
 				}
         });
-        </script>        
+        </script>
+        <script type="text/javascript" src="js/invoicePrint.js"></script>        
     </tiles:put>
     
    <tiles:put name="content" type="string">

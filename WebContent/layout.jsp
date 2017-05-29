@@ -11,6 +11,8 @@
 <%@ taglib uri="WEB-INF/theTagThing.tld" prefix="ansi" %>
 
 <%@ page errorPage="errorHandler.jsp" %>
+<%@ page import="java.util.Calendar,
+				java.util.TimeZone" %>
 
 <!DOCTYPE html>
 <html>
@@ -385,7 +387,7 @@
 	    		</div>
 	    		<div style="float:left; width:45%;">
 		    		<div class="trailerText">
-		    			&copy; 2016 American National Skyline, All Rights Reserved   
+		    			&copy; 2016-<%= Calendar.getInstance(TimeZone.getTimeZone("America/Chicago")).get(Calendar.YEAR) %> American National Skyline, All Rights Reserved   
 		    		</div>
 	    		</div>	  
 	    		<div class="spacer">&nbsp;</div>  		
