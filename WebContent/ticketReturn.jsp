@@ -127,11 +127,18 @@
 			.bottomRow {
 				border-bottom:solid 1px #000000;
 			}
+			.editApprovals {
+				cursor:pointer;
+			}
+			#editApprovalsModal {
+				display:none;
+			}
         </style>
         
         <script type="text/javascript">
         $( document ).ready(function() {
         	
+        	GLOBAL_DATA = {};
         	var $defaultTicketNbr='<c:out value="${ANSI_TICKET_ID}" />';
 			var $ticketStatusList = ANSI_UTILS.getOptions("TICKET_STATUS");
 			var $globalTicketId = 0;
@@ -139,6 +146,35 @@
 			$.each($ticketStatusList.ticketStatus, function($index, $value) {
 			    $ticketStatusMap[$value.code]=$value.display;
 			});
+			
+			
+			
+			$("#editApprovalsModal").dialog({
+				title:'Edit Approvals',
+				autoOpen: false,
+				height: 300,
+				width: 400,
+				modal: true,
+				buttons: [
+					{
+						id: "cancelModal",
+						click: function() {
+							$("#editApprovalsModal").dialog( "close" );
+						}
+					},{
+						id: "saveModal",
+						click: function($event) {
+							saveApprovals();
+						}
+					}
+				],
+				close: function() {
+					$("#editApprovalsModal").dialog( "close" );
+				}
+			});
+    		$('#saveModal').button('option', 'label', 'Save');
+    		$('#cancelModal').button('option', 'label', 'Cancel');
+
 			
 			
         	$("#doPopulate").click(function () {
@@ -196,11 +232,40 @@
         	
         	
         	
-        	
+			$(".editApprovals").click(function($event) {
+				$("#editApprovalsModal input[name='modalCustomerSignature']").prop("checked", false);
+				$("#editApprovalsModal input[name='modalManagerApproval']").prop("checked", false);
+				$("#editApprovalsModal input[name='modalBillSheet']").prop("checked", false);
+				
+				if ( GLOBAL_DATA['globalTicket'].customerSignature == true ) {
+					$("#modalCustomerSignature").show();
+					$("#editApprovalsModal input[name='modalCustomerSignature']").hide();
+				} else {
+					$("#modalCustomerSignature").hide();
+					$("#editApprovalsModal input[name='modalCustomerSignature']").show();					
+				}
+				if ( GLOBAL_DATA['globalTicket'].billSheet == true ) {
+					$("#modalBillSheet").show();
+					$("#editApprovalsModal input[name='modalBillSheet']").hide();
+				} else {
+					$("#modalBillSheet").hide();
+					$("#editApprovalsModal input[name='modalBillSheet']").show();
+				}
+				if ( GLOBAL_DATA['globalTicket'].mgrApproval == true ) {
+					$("#modalManagerApproval").show();
+					$("#editApprovalsModal input[name='modalManagerApproval']").hide();
+				} else {
+					$("#modalManagerApproval").hide();
+					$("#editApprovalsModal input[name='modalManagerApproval']").show();
+				}
+				
+				$("#editApprovalsModal").dialog("open");
+			});
         	
         	
         	
 			function populateTicketDetail($data) {
+       			GLOBAL_DATA['globalTicket'] = $data.ticketDetail;
 				$("#ticketId").html($data.ticketDetail.ticketId);
 				$("#actPricePerCleaning").html($data.ticketDetail.actPricePerCleaning);
 				$("#totalVolPaid").html($data.ticketDetail.totalVolPaid);
@@ -236,12 +301,17 @@
 						} else {
 							markInvalid($("#billSheet"));
 						}
-						if ( $data.ticketDetail.managerApproval == true ) {
+						if ( $data.ticketDetail.mgrApproval == true ) {
 							markValid($("#managerApproval"));
 						} else {
 							markInvalid($("#managerApproval"));
 						}
 						
+						if ($data.ticketDetail.customerSignature == true && $data.ticketDetail.billSheet == true && $data.ticketDetail.mgrApproval == true) {
+							$(".editApprovals").hide();
+						} else {
+							$(".editApprovals").show();
+						}
 						
 					} else if ( $data.ticketDetail.status == 'I' ) {
 						$processLabel = "Invoice Date:";
@@ -521,23 +591,11 @@
 					},
 					dataType: 'json'
 				});
+				
 			});
 			
 
 
-            //$('#addForm').find("input").on('focus',function(e) {
-            //	$required = $(this).data('required');
-            //	if ( $required == true ) {
-            //		markValid(this);
-            //	}
-           // });
-            
-           // $('#addForm').find("input").on('input',function(e) {
-           // 	$required = $(this).data('required');
-           // 	if ( $required == true ) {
-           // 		markValid(this);
-           // 	}
-           // });
             
             function clearAddForm() {
 				$.each( $('.addForm').find("input"), function(index, $inputField) {
@@ -547,30 +605,62 @@
 					$fieldName = $($inputField).attr('name');
 					if ( $($inputField).attr("type") == "text" ) {
 						$($inputField).val("");
-						//markValid($inputField);
 					}
 				});
-				//$('.err').html("");
             }
             
-            //function markValid($inputField) {
-            //	$fieldName = $($inputField).attr('name');
-           // 	$fieldGetter = "input[name='" + $fieldName + "']";
-            //	$fieldValue = $($fieldGetter).val();
-            //	$valid = '#' + $($inputField).data('valid');
-	        //    var re = /.+/;	            	 
-            //	if ( re.test($fieldValue) ) {
-            //		$($valid).removeClass("fa-ban");
-            //		$($valid).removeClass("inputIsInvalid");
-            //		$($valid).addClass("fa-check-square-o");
-           // 		$($valid).addClass("inputIsValid");
-            //	} else {
-            //		$($valid).removeClass("fa-check-square-o");
-            //		$($valid).removeClass("inputIsValid");
-            //		$($valid).addClass("fa-ban");
-            //		$($valid).addClass("inputIsInvalid");
-            //	}
-            //}
+
+			function saveApprovals() {
+				var $outbound = {}
+				$outbound['customerSignature'] = $("#editApprovalsModal input[name='modalCustomerSignature']").prop("checked");
+				$outbound['managerApproval'] = $("#editApprovalsModal input[name='modalManagerApproval']").prop("checked");
+				$outbound['billSheet'] = $("#editApprovalsModal input[name='modalBillSheet']").prop("checked");
+
+				
+            	$url = "ticketApprovalOverride/" + $globalTicketId;
+
+				var jqxhr = $.ajax({
+					type: 'POST',
+					url: $url,
+					data: JSON.stringify($outbound),
+					statusCode: {
+						200: function($data) {
+							if ( $data.responseHeader.responseCode == 'SUCCESS') {
+								$("#editApprovalsModal").dialog("close");
+								$("#globalMsg").html("Update Complete").show().fadeOut(6000);
+								$("#doPopulate").click();
+				        		$("#ticketNbr").focus();
+							} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+								$("#approvalErr").html($data.data.webMessages.GLOBAL_MESSAGE[0]).show().fadeOut(6000);
+							} else {
+								$("#editApprovalsModal").dialog("close");
+								$("#globalMsg").html("Unexepected Response, Contact support (" + $data.responseHeader.responseMessage + ")").show();
+							}
+						},
+	       				404: function($data) {
+							$("#editApprovalsModal").dialog("close");
+	        	    		$("#globalMsg").html("Invalid Ticket Number").show().fadeOut(6000);
+	        	    	},
+						403: function($data) {
+							$("#editApprovalsModal").dialog("close");
+							$("#globalMsg").html("Session Timeout. Log in and try again").show();
+						},
+						405: function($data) {
+							$("#editApprovalsModal").dialog("close");
+							$("#globalMsg").html("You're not allowed to perform this function").show();
+						},
+		       			500: function($data) {
+							$("#editApprovalsModal").dialog("close");
+	            	    	$("#globalMsg").html("System Error: Contact Support").show();
+	            		},  
+					},
+					dataType: 'json'
+				});
+				
+				
+				
+			}
+
             
         	if ( $defaultTicketNbr != '' ) {
         		$("#ticketNbr").val($defaultTicketNbr);
@@ -834,7 +924,12 @@
 		   		<tr id="completedRow">
 		   			<td class="bottomRow" colspan="2"><span class="formLabel">Customer Signature: </span> <i id="customerSignature" class="fa" aria-hidden="true"></i></td>
 		   			<td class="bottomRow" colspan="2"><span class="formLabel">Bill Sheet: </span> <i id="billSheet" class="fa" aria-hidden="true"></i></td>
-		   			<td class="bottomRow" colspan="2"><span class="formLabel">Manager Approval: </span> <i id="managerApproval" class="fa" aria-hidden="true"></i></td>
+		   			<td class="bottomRow" colspan="2">
+		   				<span class="formLabel">Manager Approval: </span> <i id="managerApproval" class="fa" aria-hidden="true"></i>
+		   				<div style="float:right;">
+		   					<span class="green fa fa-pencil tooltip editApprovals" ari-hidden="true"><span class="tooltiptext">Edit</span></span>
+		   				</div>
+		   			</td>
 		   		</tr>
 		   		
 		   		<tr>
@@ -871,6 +966,34 @@
 		   	</table>
 		</div>
     	
+    	
+    	
+    	<div id="editApprovalsModal">
+    		<div class="err" id="approvalErr"></div>
+    		<table>
+    			<tr>
+    				<td><span class="formLabel">Customer Signature:</span></td>
+    				<td>
+    					<i id="modalCustomerSignature" class="fa fa-check-square-o" aria-hidden="true"></i>
+    					<input type="checkbox" name="modalCustomerSignature" />
+    				</td>
+    			</tr>
+    			<tr>
+    				<td><span class="formLabel">Bill Sheet:</span></td>
+    				<td>
+    					<i id="modalBillSheet" class="fa fa-check-square-o" aria-hidden="true"></i>
+    					<input type="checkbox" name="modalBillSheet" />
+    				</td>
+    			</tr>
+    			<tr>
+    				<td><span class="formLabel">Manager Approval:</span></td>
+    				<td>
+    					<i id="modalManagerApproval" class="fa fa-check-square-o" aria-hidden="true"></i>
+    					<input type="checkbox" name="modalManagerApproval" />
+    				</td>
+    			</tr>
+    		</table>
+    	</div>
     </tiles:put>
 
 </tiles:insert>
