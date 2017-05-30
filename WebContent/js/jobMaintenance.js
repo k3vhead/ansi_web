@@ -112,6 +112,8 @@ $( document ).ready(function() {
 					if($jobDetail.serviceDescription != null){
 						$("#"+$namespace+"_jobDescHead").html($jobDetail.serviceDescription.substring(0, 50));
 					}
+					
+
 					$("#"+$namespace+"_jobPanel_jobLink").attr("href", "jobMaintenance.html?id="+$jobId);
 					$("#"+$namespace+"_jobPanel_jobLink").text($jobId);
 					//$(".addressTable").remove();
@@ -407,7 +409,10 @@ $( document ).ready(function() {
     		$outbound["serviceDescription"]			= $($pre+"_jobProposal_serviceDescription").val();
     		$outbound["siteContact"]				= QUOTEUTILS.getsiteContact();
     		$outbound["startDate"]					= $($pre+"_jobDates_startDate").html();
-    		$outbound["status"]						= $($pre+"_jobPanel_jobStatus").val();
+    		
+    		if ($($pre+"_jobPanel_jobId").val() == false) {
+    			$outbound["status"]						= $($pre+"_jobPanel_jobStatus").val();
+    		}
     		
     		$outbound["taxExempt"]					= 0;
     		if($($pre+"_jobInvoice_invoiceTaxExempt").prop("checked")){
@@ -523,7 +528,7 @@ $( document ).ready(function() {
 			console.log("Update Outbound: ");
     		console.log($outbound);
 
-    		$url = "job/update/"+$id;
+    		$url = "job/"+$id;
 //			console.log($outbound);
 			var jqxhr = $.ajax({
 				type: 'POST',
@@ -607,6 +612,13 @@ $( document ).ready(function() {
 					$select.append(new Option("Manual","manual"));
 					$select.selectmenu({ width : '75px', maxHeight: '400 !important', style: 'dropdown'});
 					
+					if($jobDetail.requestSpecialScheduling == 0){
+						$select.val("auto");
+					} else if($jobDetail.requestSpecialScheduling == 1){
+						$select.val("manual");
+					}
+					$select.selectmenu("refresh");
+					
 					$selectorName = "#" + $namespace + "_activationEdit";
 					$($selectorName).click(function($event) {
 					$event.preventDefault();
@@ -638,17 +650,8 @@ $( document ).ready(function() {
 						
 						$outbound = {};
 						
-						$outbound["action"]	= 'UPDATE_JOB';
-						$outbound["buildingType"]	= $("#" + $namespace + "_buildingType").val();
-						$outbound["directLaborPct"]	= $("#" + $namespace + "_directLaborPct").val();
-						$outbound["directLaborBudget"]	= $("#" + $namespace + "_directLaborBudget").val();
-						$outbound["nbrFloors"]	= $("#" + $namespace + "_nbrFloors").val();
-						$outbound["equipment"]	= $("#" + $namespace + "_equipment").val();
-						$outbound["washerNotes"]	= $("#" + $namespace + "_washerNotes").val();
-						$outbound["omNotes"]	= $("#" + $namespace + "_omNotes").val();
-						$outbound["billingNotes"]	= $("#" + $namespace + "_billingNotes").val();
 						
-						JOB_UTILS.update($id,$outbound);
+						JOB_UTILS.addJob($namespace.substring(0,$namespace.indexOf("_")),$id,$namespace);
 		        	
 						$("#" + $namespace + "_activationEdit").removeClass('fa-save');
 						$("#" + $namespace + "_activationEdit").addClass('fa-pencil');
@@ -835,7 +838,7 @@ $( document ).ready(function() {
 						$outbound["invoiceExpireReason"]	= $("#" + $namespace + "_invoiceExpireReason").val();
 						
 						
-						JOB_UTILS.update($id,$outbound);
+						JOB_UTILS.addJob($namespace.substring(0,$namespace.indexOf("_")),$id,$namespace);
 						
 						$("#" + $namespace + "_invoiceEdit").removeClass('fa-save');
 						$("#" + $namespace + "_invoiceEdit").addClass('fa-pencil');
@@ -1322,7 +1325,7 @@ $( document ).ready(function() {
 					$outbound["ppc"]	= $("#" + $namespace + "_ppc").val();
 					$outbound["serviceDescription"]	= $("#" + $namespace + "_serviceDescription").val();
 					
-					JOB_UTILS.update($id,$outbound);
+					JOB_UTILS.addJob($namespace.substring(0,$namespace.indexOf("_")),$id,$namespace);
 					
 					$("#" + $namespace + "_proposalEdit").removeClass('fa-save');
 					$("#" + $namespace + "_proposalEdit").addClass('fa-pencil');

@@ -133,6 +133,7 @@ $( document ).ready(function() {
 						$("input[name='proposalDate']").val($quoteData.proposalDate);
 					}
 					
+					
 					//var $manager = $quoteData.managerFirstName + " " + $quoteData.managerLastName + " (" + $quoteData.managerEmail + ")";
 					//console.log("ManagerId: " + $quoteData.managerId);
 					$("select[name='manager']").val($quoteData.managerId);

@@ -57,7 +57,7 @@
 			</tr>
 			<tr>
 				<td>Equipment:</td>
-				<td colspan="5"><input type="text" name="<%=namespace%>_equipment" id="<%=namespace%>_equipment" style="width:90%"  <%=disabled%>/></td>
+				<td colspan="5"><input type="text" name="<%=namespace%>_equipment" id="<%=namespace%>_equipment" style="width:90%"  <%=disabled%>/><i id="<%=namespace%>_equipmentErr" class="equipmentErr" aria-hidden="true"></i></td>
 			</tr>
 			<tr>
 				<td>Washer Notes:</td>
