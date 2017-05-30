@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.db.Job;
 import com.ansi.scilla.common.db.PermissionLevel;
+import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.common.jobticket.JobUtils;
 import com.ansi.scilla.web.common.AnsiURL;
@@ -499,13 +500,14 @@ public class JobServlet extends AbstractServlet {
 
 		messages = validateUpdate(conn, key, jobRequest);
 		if (messages.isEmpty()) {
+//			job.insertHistory(conn);
 			if(jobRequest.getJobFrequency() != null) {
 				job.setJobFrequency(jobRequest.getJobFrequency());
 			}
 			
-			if(jobRequest.getStatus() != null) {
-				job.setStatus(jobRequest.getStatus());
-			}
+//			if(jobRequest.getStatus() != null) {
+//				job.setStatus(jobRequest.getStatus());
+//			}
 			if(jobRequest.getPricePerCleaning() != null) {
 				job.setPricePerCleaning(jobRequest.getPricePerCleaning());
 			}
@@ -655,6 +657,7 @@ public class JobServlet extends AbstractServlet {
 
 			System.out.println("Job servlet Add Data:");
 			System.out.println(job.toString());
+			JobUtils.updateJobHistory(conn, job.getJobId());
 			job.update(conn, key);
 			responseCode = ResponseCode.SUCCESS;
 		} else {
@@ -681,7 +684,7 @@ public class JobServlet extends AbstractServlet {
 		String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
 		if ( missingFields.isEmpty() ) {
 			if ( ! JobUtils.isValidDLPct(jobRequest.getDirectLaborPct())) {
-				webMessages.addMessage("actDLPct", "Invalid DL Pct");
+				webMessages.addMessage("directLabotPct", "Invalid DL Pct");
 			}
 		} else {
 //			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
@@ -714,7 +717,6 @@ public class JobServlet extends AbstractServlet {
 		testKey.selectOne(conn);
 		return webMessages;
 	}
-
 
 	
 }
