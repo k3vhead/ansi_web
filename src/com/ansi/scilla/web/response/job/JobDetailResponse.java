@@ -14,14 +14,13 @@ import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.db.ViewTicketLog;
-import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
+import com.ansi.scilla.common.exceptions.InvalidJobStatusException;
 import com.ansi.scilla.common.utils.AppUtils;
 import com.ansi.scilla.web.response.MessageResponse;
 import com.ansi.scilla.web.response.address.AddressResponseRecord;
 import com.ansi.scilla.web.response.ticket.TicketLogRecord;
 import com.ansi.scilla.web.response.ticket.TicketRecord;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class JobDetailResponse extends MessageResponse {
@@ -223,7 +222,7 @@ public class JobDetailResponse extends MessageResponse {
 		private Boolean canReschedule;
 		
 		
-		public JobDetail(Job job, User addedBy, User updatedBy) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		public JobDetail(Job job, User addedBy, User updatedBy) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, InvalidJobStatusException {
 			super();
 			PropertyUtils.copyProperties(this, job);
 			this.addedLastName = addedBy.getLastName();
