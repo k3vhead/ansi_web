@@ -1,5 +1,7 @@
 ;QUOTE_PRINT = {
 		init_modal : function($modalName) {
+			QUOTE_PRINT['modalName'] = $modalName;
+			
 			$( $modalName ).dialog({
 				title:'Print Quote',
 				autoOpen: false,
@@ -43,8 +45,17 @@
 			var $quoteDate = $($quoteDateSelector).val();
 			$($modalName).dialog("close");
 			$($quoteFormSelector).submit();
-			location.reload();
-			$(window.location).attr('href', 'quoteMaintenance.html?id='+$quoteId);
-		}
+			//$(window.location).attr('href', 'quoteMaintenance.html?id='+$quoteId);
+			//location.reload();
+			window.setTimeout(QUOTE_PRINT.reloadPage, 1000);
+			//location.href='quoteMaintenance.html?id='+$quoteId			
+		},
+		
+		
 
+		reloadPage : function() {
+			$quoteIdSelector = QUOTE_PRINT['modalName'] + ' input[name="quoteId"]'
+			var $quoteId = $($quoteIdSelector).val();
+			location.href='quoteMaintenance.html?id='+$quoteId
+		}
 }
