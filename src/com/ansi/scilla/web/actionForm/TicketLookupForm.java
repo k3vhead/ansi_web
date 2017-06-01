@@ -9,10 +9,12 @@ public class TicketLookupForm extends AbstractActionForm {
 	public static final String JOB_ID = "jobId";
 	public static final String DIVISION_ID = "divisionId";
 	public static final String START_DATE = "startDate";
+	public static final String STATUS = "status"; 
 	
 	private String jobId;
 	private String divisionId;
 	private String startDate;
+	private String status;
 
 	public String getJobId() {
 		return jobId;
@@ -36,6 +38,14 @@ public class TicketLookupForm extends AbstractActionForm {
 
 	public void setStartDate(String startDate) {
 		this.startDate = startDate;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 	

@@ -1,9 +1,16 @@
 package com.ansi.scilla.web.common;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.net.URLDecoder;
 import java.sql.Connection;
+import java.util.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -14,6 +21,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.Random;
 import java.util.ResourceBundle;
 
 import javax.naming.Context;
@@ -45,6 +53,8 @@ import com.thewebthing.commons.lang.StringUtils;
 
 public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 	private static final String KEYTEXT = "Y0u know, in sertin 0lder c1v1liz3d cultur3s, when m3n f@iled as entirely as y0u h@ve, they would thr0w th3ms3lv3s on they'r3 swords";
+
+	private static Random random = new Random((new Date()).getTime());
 
 	/**
 	 * Returns a connection from the application-specified DBCP as defined in META-INF/context.xml
@@ -379,4 +389,40 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 	    return queryMap;  
 	}
 
+	public static String getRandomQuote() {
+		String resultString = "Get to Work!";
+		try {
+			String webResource="resources/randomquotes.txt";
+			InputStream is = AppUtils.class.getClassLoader().getResourceAsStream(webResource);
+			Writer writer = new StringWriter();
+			 
+            char[] buffer = new char[1024];
+            try {
+                Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                int n;
+                while ((n = reader.read(buffer)) != -1) {
+                    writer.write(buffer, 0, n);
+                }
+            } finally {
+                is.close();
+            }
+            String[] lines =  writer.toString().split("\n");
+            int low = 0;
+            int high = lines.length;
+            int result = random.nextInt(high-low) + low;
+            resultString = lines[result];
+		} catch ( Exception e ) {
+			AppUtils.logException(e);
+		}
+		return resultString;
+	}
+	
+	public static void main(String[] args ) {
+		for ( int i = 0; i < 100; i++ ) {
+			for ( int j = 0; j < random.nextInt(100000); j++) {
+				// doing nothing
+			}
+			System.out.println(AppUtils.getRandomQuote());			
+		}
+	}
 }

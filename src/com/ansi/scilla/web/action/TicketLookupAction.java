@@ -28,6 +28,9 @@ public class TicketLookupAction extends SessionPageDisplayAction {
 			if ( ! StringUtils.isBlank(form.getStartDate())) {
 				request.setAttribute("ANSI_TICKET_LOOKUP_START_DATE", form.getStartDate());
 			}
+			if ( ! StringUtils.isBlank(form.getStatus())) {
+				request.setAttribute("ANSI_TICKET_LOOKUP_STATUS", form.getStatus());
+			}
 
 		}
 		return super.execute(mapping, actionForm, request, response);

@@ -37,6 +37,7 @@ public class MotdServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();				
 			String message = doGetWork(conn);
+//			String message = getQotd();
 			MotdResponse motdResponse = new MotdResponse(message);
 			super.sendResponse(conn, response, ResponseCode.SUCCESS, motdResponse);
 		} catch (Exception e) {

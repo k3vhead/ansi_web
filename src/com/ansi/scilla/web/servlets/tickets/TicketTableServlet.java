@@ -78,6 +78,7 @@ public class TicketTableServlet extends AbstractServlet {
 			Integer parmJobId = null;
 			Integer parmDivisionId = null;
 			Calendar parmStartDate = null;
+			String parmStatus = null;
 
 			if(request.getParameter("search[value]") != null){
 				term = request.getParameter("search[value]");
@@ -94,7 +95,10 @@ public class TicketTableServlet extends AbstractServlet {
 				parmStartDate = Calendar.getInstance(TimeZone.getTimeZone("America/Chicago"));
 				parmStartDate.setTime(parmDate);
 			}
-
+			if ( ! StringUtils.isBlank(request.getParameter("status"))) {
+				parmStatus = request.getParameter("status");
+			}
+			
 			if (sStart != null) {
 				start = Integer.parseInt(sStart);
 				start = start < 0 ? 0 : start;
@@ -200,6 +204,7 @@ public class TicketTableServlet extends AbstractServlet {
 			ticketSearch.setSortBy(colName);
 			ticketSearch.setSortIsAscending(dir.equals("asc"));
 			ticketSearch.setStartDate(parmStartDate);
+			ticketSearch.setStatus(parmStatus);
 			List<TicketLookupSearchItem> itemList = ticketSearch.select(conn);
 			Integer filteredCount = ticketSearch.selectCount(conn);
 			Integer totalCount = ticketSearch.countAll(conn);

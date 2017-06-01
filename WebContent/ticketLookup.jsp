@@ -67,6 +67,7 @@
 				var $jobId = '<c:out value="${ANSI_JOB_ID}" />';
 				var $divisionId = '<c:out value="${ANSI_DIVISION_ID}" />';
 				var $startDate = '<c:out value="${ANSI_TICKET_LOOKUP_START_DATE}" />';
+				var $statusFilter = '<c:out value="${ANSI_TICKET_LOOKUP_STATUS}" />';
 
         		var dataTable = $('#ticketTable').DataTable( {
         			"processing": 		true,
@@ -96,7 +97,7 @@
 			        "ajax": {
 			        	"url": "ticketTable",
 			        	"type": "GET",
-			        	"data": {"jobId":$jobId,"divisionId":$divisionId,"startDate":$startDate}
+			        	"data": {"jobId":$jobId,"divisionId":$divisionId,"startDate":$startDate,"status":$statusFilter}
 			        	},
 			        columns: [
 			            { title: "Ticket", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
