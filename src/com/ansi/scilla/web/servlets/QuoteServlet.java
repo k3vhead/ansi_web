@@ -16,6 +16,7 @@ import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
+import com.ansi.scilla.common.quote.QuoteUtils;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.MessageKey;
 import com.ansi.scilla.web.common.Permission;
@@ -67,6 +68,8 @@ public class QuoteServlet extends AbstractServlet {
 			Quote quote = new Quote();
 			quote.setQuoteId(quoteRequest.getQuoteId());
 
+			QuoteUtils.updateQuoteHistory(conn, quoteRequest.getQuoteId());
+
 			quote.delete(conn);
 			
 			QuoteResponse quoteResponse = new QuoteResponse();
@@ -99,6 +102,7 @@ public class QuoteServlet extends AbstractServlet {
 			Quote quote = new Quote();
 			if(parsedUrl.quoteId != null){
 				quote.setQuoteId(Integer.parseInt(parsedUrl.quoteId));
+				QuoteUtils.updateQuoteHistory(conn, Integer.parseInt(parsedUrl.quoteId));
 			} 
 			
 			quote.delete(conn);
@@ -365,6 +369,7 @@ public class QuoteServlet extends AbstractServlet {
 		quote.setJobSiteAddressId(quoteRequest.getJobSiteAddressId());
 		quote.setLeadType(quoteRequest.getLeadType());
 		quote.setManagerId(quoteRequest.getManagerId());
+		quote.setDivisionId(quoteRequest.getDivisionId());
 //		quote.setName(quoteRequest.getName());
 
 		if ( quoteRequest.getProposalDate() != null) {
@@ -388,6 +393,8 @@ public class QuoteServlet extends AbstractServlet {
 		
 		System.out.println("This is the update quote:");
 		System.out.println(quote);
+
+		QuoteUtils.updateQuoteHistory(conn, key.getQuoteId());
 		
 		quote.update(conn, key);		
 		return quote;
