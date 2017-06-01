@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.Ticket;
+import com.ansi.scilla.common.db.TicketPayment;
 import com.ansi.scilla.common.jobticket.JobUtils;
 import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.web.common.AnsiURL;
@@ -469,6 +470,7 @@ public class TicketServlet extends AbstractServlet {
 
 	private void doTicketUpdate(Connection conn, Ticket ticket, SessionUser sessionUser) throws Exception {
 		Ticket key = new Ticket();
+		updateTicketHistory(conn, ticket);
 		key.setTicketId(ticket.getTicketId());
 		ticket.setUpdatedBy(sessionUser.getUserId());
 		Date today = new Date();
@@ -477,7 +479,12 @@ public class TicketServlet extends AbstractServlet {
 	}
 	
 
-	
+	private void updateTicketHistory(Connection conn, Ticket ticket) throws Exception {
+		Ticket testTicket = new Ticket();
+		testTicket.setTicketId(ticket.getTicketId());
+		testTicket.selectOne(conn);
+		testTicket.insertHistory(conn);
+	}	
 
 /*	@Override
 	protected void doPost(HttpServletRequest request,
