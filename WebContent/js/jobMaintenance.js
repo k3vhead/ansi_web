@@ -70,8 +70,7 @@ $( document ).ready(function() {
 					ADDRESSPANEL.init($namespace+"_billTo", JOB_DATA.countryList);
 					
 					
-					console.log("Quote ID: "+$jobDetail.quoteId);
-					$("#quoteLink").attr("href", "quoteMaintenance.html?id="+$jobDetail.quoteId);
+					
 					if ( $jobDetail.quoteId != '' ) {
 						var $quoteDetails = QUOTEUTILS.getQuoteDetail($jobDetail.quoteId);
 						var $quoteData = $quoteDetails.quote;
@@ -116,12 +115,42 @@ $( document ).ready(function() {
 
 					$("#"+$namespace+"_jobPanel_jobLink").attr("href", "jobMaintenance.html?id="+$jobId);
 					$("#"+$namespace+"_jobPanel_jobLink").text($jobId);
+					
+					console.log("Quote ID For Link: "+$jobDetail.quoteId);
+					$("#"+$namespace+"_jobPanel_quoteLink").attr("href", "quoteMaintenance.html?id="+$jobDetail.quoteId);
+					$("#"+$namespace+"_jobPanel_quoteLink").text($jobDetail.quoteId);
 					//$(".addressTable").remove();
 					
+					if($jobDetail.status != "N"){
+						$("#"+$namespace+"_jobProposal_proposalEdit").hide();
+					}
 
 					
-					if($jobData.status != "A" && $jobData.status != "C"){
+					$pageURL = window.location.href;
+					if($pageURL.indexOf("job")>0){
+						$("#"+$namespace+"_jobPanel_jobLinkSpan").hide();
+					}
+					if($pageURL.indexOf("quote")>0){
+						$("#"+$namespace+"_jobPanel_quoteLinkSpan").hide();
+					}
+
+					
+					if($jobDetail.canReschedule){
+						$("#"+$namespace+"_jobPanel_scheduleJobButton").show();
+					} else {
 						$("#"+$namespace+"_jobPanel_scheduleJobButton").hide();
+					}
+					
+					if($jobDetail.canActivate){
+						$("#"+$namespace+"_jobPanel_activateJobButton").show();
+					} else {
+						$("#"+$namespace+"_jobPanel_activateJobButton").hide();
+					}
+					
+					if($jobDetail.canCancel){
+						$("#"+$namespace+"_jobPanel_cancelJobButton").show();
+					} else {
+						$("#"+$namespace+"_jobPanel_cancelJobButton").hide();
 					}
 					
 
@@ -270,10 +299,42 @@ $( document ).ready(function() {
 					
 					$("#"+$namespace+"_jobPanel_jobLink").attr("href", "jobMaintenance.html?id="+$jobId);
 					$("#"+$namespace+"_jobPanel_jobLink").text($jobId);
-					//$(".addressTable").remove();
 					
-					if($("#"+$namespace+"_jobPanel_jobStatus").val() != "A" &&  $("#"+$namespace+"_jobPanel_jobStatus").val() != "C"){
+
+					$("#"+$namespace+"_jobPanel_quoteLink").attr("href", "quoteMaintenance.html?id="+$jobDetail.quoteId);
+					$("#"+$namespace+"_jobPanel_quoteLink").text($jobDetail.quoteId);
+
+					$pageURL = window.location.href;
+					if($pageURL.indexOf("job")>0){
+						$("#"+$namespace+"_jobPanel_jobLinkSpan").hide();
+					}
+					if($pageURL.indexOf("quote")>0){
+						$("#"+$namespace+"_jobPanel_quoteLinkSpan").hide();
+					}
+					
+					//$(".addressTable").remove();
+
+					
+					if($jobDetail.canReschedule){
+						$("#"+$namespace+"_jobPanel_scheduleJobButton").show();
+					} else {
 						$("#"+$namespace+"_jobPanel_scheduleJobButton").hide();
+					}
+					
+					if($jobDetail.canActivate){
+						$("#"+$namespace+"_jobPanel_activateJobButton").show();
+					} else {
+						$("#"+$namespace+"_jobPanel_activateJobButton").hide();
+					}
+					
+					if($jobDetail.canCancel){
+						$("#"+$namespace+"_jobPanel_cancelJobButton").show();
+					} else {
+						$("#"+$namespace+"_jobPanel_cancelJobButton").hide();
+					}
+					
+					if($jobDetail.status != "N"){
+						$("#"+$namespace+"_jobProposal_proposalEdit").hide();
 					}
 					
 					$.each($('input'), function () {
@@ -415,12 +476,11 @@ $( document ).ready(function() {
     		}
     		
     		$outbound["taxExempt"]					= 0;
+    		
     		if($($pre+"_jobInvoice_invoiceTaxExempt").prop("checked")){
     			$outbound["taxExempt"]				= 1;
     		}
-    		if(($($pre+"_jobInvoice_invoiceTaxExempt").val()) == "on") {
-    			$outbound["taxExempt"] = 0;
-    		} 
+
     		
     		$outbound["washerNotes"]				= $($pre+"_jobActivation_washerNotes").val();
  
@@ -588,7 +648,7 @@ $( document ).ready(function() {
 					ANSI_UTILS.setFieldValue($namespace, "directLaborBudget", $jobDetail.budget);
 					ANSI_UTILS.setFieldValue($namespace, "nbrFloors", $jobDetail.floors);
 					ANSI_UTILS.setFieldValue($namespace, "equipment", $jobDetail.equipment);
-					ANSI_UTILS.setFieldValue($namespace, "washerNotes", $jobDetail.washerNOtes);
+					ANSI_UTILS.setFieldValue($namespace, "washerNotes", $jobDetail.washerNotes);
 					ANSI_UTILS.setFieldValue($namespace, "omNotes", $jobDetail.omNotes);
 					ANSI_UTILS.setFieldValue($namespace, "billingNotes", $jobDetail.billingNotes);
 				}

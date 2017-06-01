@@ -185,10 +185,7 @@ $( document ).ready(function() {
 							}
 						}
 						
-						if($("#"+$index+"_jobPanel_jobStatus").val() == "P" || $("#"+$index+"_jobPanel_jobStatus").val() == "N"){
-							$("#"+$index+"_jobPanel_scheduleJobButton").hide();
-						}
-						
+
 						
 						//$(".addressTable").remove();
 //						console.log("#"+$currentRow+"_jobPanel_jobLink");

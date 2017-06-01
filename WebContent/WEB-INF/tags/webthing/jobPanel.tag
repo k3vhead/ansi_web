@@ -53,12 +53,9 @@
 						<span id="<%= namespace %>_divisionId"></span>
 					
 				<div style="float:right; text-align:right;">
-					<% if ( page.equals("QUOTE") ) { %>
-						Job: <a href="jobMaintenance.html" id="<%= namespace %>_jobLink"></a><br />
-					<% } else { %>
-						Quote: <a href="quoteMaintenance.html" id="quoteLink"><span id="<%= namespace %>_quoteId"></span></a><br />
-					<% } %>
-
+						<span id="<%= namespace %>_jobLinkSpan">Job: <a href="jobMaintenance.html" id="<%= namespace %>_jobLink"></a><br /></span>
+						<span id="<%= namespace %>_quoteLinkSpan">Quote: <a href="quoteMaintenance.html" id="<%= namespace %>_quoteLink"></a><br /></span>
+				
 					<i style="cursor:pointer;" class="fa fa-arrow-circle-right fa-3x tooltip" aria-hidden="true" id="<%= namespace %>_activateJobButton"><span class="tooltiptext">Activate</span></i>
 					<i style="cursor:pointer;" class="clickableIcon, fa fa-ban fa-3x text-danger tooltip" id="<%= namespace %>_cancelJobButton"><span class="tooltiptext">Cancel</span></i>
 					<i style="cursor:pointer;" class="clickableIcon, fa fa-calendar  fa-3x tooltip" aria-hidden="true" id="<%= namespace %>_scheduleJobButton"><span class="tooltiptext">Schedule</span></i>
