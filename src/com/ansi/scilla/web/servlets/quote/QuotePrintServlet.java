@@ -20,7 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.quote.QuotePrintType;
-import com.ansi.scilla.common.quote.QuotePrinter;
 import com.ansi.scilla.common.quote.QuoteUtils;
 import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
