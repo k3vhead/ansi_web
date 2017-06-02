@@ -54,7 +54,7 @@ public class JobRequest extends AbstractRequest{
 	private String serviceDescription;
 	private Integer siteContact;
 	private Date startDate;
-	private String status;
+//	private String status;
 	private Integer taxExempt;
 	private String washerNotes;
 	private Integer addedBy;
@@ -189,6 +189,8 @@ public class JobRequest extends AbstractRequest{
 		this.equipment = equipment;
 	}
 
+	@RequiredForAdd
+	@RequiredForUpdate
 	public String getEquipment() {
 		return this.equipment;
 	}
@@ -392,7 +394,7 @@ public class JobRequest extends AbstractRequest{
 	}
 
 	@RequiredForAdd
-	@RequiredForUpdate
+//	@RequiredForUpdate
 	public Integer getRequestSpecialScheduling() {
 		return this.requestSpecialScheduling;
 	}
@@ -426,14 +428,14 @@ public class JobRequest extends AbstractRequest{
 		return this.startDate;
 	}
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+//	public void setStatus(String status) {
+//		this.status = status;
+//	}
 
 //	@RequiredForAdd
-	public String getStatus() {
-		return this.status;
-	}
+//	public String getStatus() {
+//		return this.status;
+//	}
 
 	public void setTaxExempt(Integer taxExempt) {
 		this.taxExempt = taxExempt;
