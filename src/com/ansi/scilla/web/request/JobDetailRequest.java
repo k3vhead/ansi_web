@@ -78,6 +78,7 @@ public class JobDetailRequest extends AbstractRequest {
 	public static enum JobDetailRequestAction {
 		ACTIVATE_JOB,
 		CANCEL_JOB,
+		DELETE_JOB,
 		SCHEDULE_JOB,
 		PROPOSE_JOB,
 		REPEAT_JOB,

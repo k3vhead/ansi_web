@@ -219,6 +219,7 @@ public class JobDetailResponse extends MessageResponse {
 		private String updatedEmail;
 		private Boolean canActivate;
 		private Boolean canCancel;
+		private Boolean canDelete;
 		private Boolean canReschedule;
 		
 		
@@ -233,6 +234,7 @@ public class JobDetailResponse extends MessageResponse {
 			this.updatedEmail = updatedBy.getEmail();
 			this.canActivate = job.canActivate();
 			this.canCancel = job.canCancel();
+			this.canDelete = job.canDelete();
 			this.canReschedule = job.canReschedule();
 		}
 //		@JsonSerialize(using=AnsiDateFormatter.class)
@@ -630,6 +632,12 @@ public class JobDetailResponse extends MessageResponse {
 		}
 		public void setCanCancel(Boolean canCancel) {
 			this.canCancel = canCancel;
+		}
+		public Boolean getCanDelete() {
+			return canDelete;
+		}
+		public void setCanDelete(Boolean canDelete) {
+			this.canDelete = canDelete;
 		}
 		public Boolean getCanReschedule() {
 			return canReschedule;
