@@ -400,6 +400,32 @@ $( document ).ready(function() {
 
 		},
 		
+		changeFieldState: function($namespace,$disabledBoolean){
+			$("#" + $namespace + "_jobActivation_automanual").selectmenu( "option", "disabled", $disabledBoolean );
+			$("#" + $namespace + "_jobActivation_buildingType").selectmenu( "option", "disabled", $disabledBoolean );
+			$("#" + $namespace + "_jobActivation_directLaborPct").prop('disabled', $disabledBoolean);
+			$("#" + $namespace + "_jobActivation_directLaborBudget").prop('disabled', $disabledBoolean);
+			$("#" + $namespace + "_jobActivation_nbrFloors").spinner( "option", "disabled", $disabledBoolean );
+			$("#" + $namespace + "_jobActivation_equipment").prop('disabled', $disabledBoolean);
+			$("#" + $namespace + "_jobActivation_washerNotes").prop('disabled', $disabledBoolean);
+			$("#" + $namespace + "_jobActivation_omNotes").prop('disabled', $disabledBoolean);
+			$("#" + $namespace + "_jobActivation_billingNotes").prop('disabled', $disabledBoolean);
+			
+			$("#" + $namespace + "_jobInvoice_invoiceStyle").selectmenu( "option", "disabled", $disabledBoolean );
+			$("#" + $namespace + "_jobInvoice_invoiceBatch").prop('disabled', $disabledBoolean);
+			$("#" + $namespace + "_jobInvoice_invoiceTaxExempt").prop('disabled', true);
+			$("#" + $namespace + "_jobInvoice_invoiceGrouping").selectmenu( "option", "disabled", $disabledBoolean );
+			$("#" + $namespace + "_jobInvoice_invoiceTerms").selectmenu( "option", "disabled", $disabledBoolean );
+			$("#" + $namespace + "_jobInvoice_invoicePO").prop('disabled', $disabledBoolean);
+			$("#" + $namespace + "_jobInvoice_invoiceOurVendorNbr").prop('disabled', $disabledBoolean);
+			$("#" + $namespace + "_jobInvoice_invoiceExpire").prop('disabled', $disabledBoolean);
+			$("#" + $namespace + "_jobInvoice_invoiceExpireReason").prop('disabled', $disabledBoolean);
+			
+			$("#" + $namespace + "_jobProposal_jobFrequency").selectmenu( "option", "disabled", $disabledBoolean );
+			$("#" + $namespace + "_jobProposal_jobNbr").prop('disabled', $disabledBoolean);
+			$("#" + $namespace + "_jobProposal_ppc").prop('disabled', $disabledBoolean);
+			$("#" + $namespace + "_jobProposal_serviceDescription").prop('disabled', $disabledBoolean);
+		},
 		fadeMessage:function($namespace, $id, $duration) {
 			var $selectorName = "#" + $namespace + "_" + $id;
 			if ( $duration == null ) {
@@ -591,6 +617,9 @@ $( document ).ready(function() {
 							
 							$("#"+$rn+"_jobPanel_jobLink").attr("href", "jobMaintenance.html?id="+$data.data.job.jobId);
 							$("#"+$rn+"_jobPanel_jobLink").text($data.data.job.jobId);
+							$("#"+$rn+"_jobSchedule_showTicketList").show();
+							
+							JOB_UTILS.changeFieldState($namespace,true);
 							
 //************* FINISH AUDIT
 							//$addedBy = ANSI_UTILS.getUser($data.data.job.addedBy);

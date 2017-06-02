@@ -938,6 +938,9 @@ $( document ).ready(function() {
 									$("#"+$row+"_jobPanel_quoteLinkSpan").hide();
 								}
 								$("#"+$row+"_jobPanel_scheduleJobButton").hide();
+								$("#"+$row+"_jobPanel_deleteJobButton").hide();
+								$("#"+$row+"_jobSchedule_showTicketList").hide();
+								
 								setTimeout(function() {
 									if(refresh){
 										$("#accordian").accordion( "refresh" );
