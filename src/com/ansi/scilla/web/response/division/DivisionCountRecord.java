@@ -15,7 +15,7 @@ import com.ansi.scilla.common.queries.DivisionUserCount;
  *
  */
 
-public class DivisionCountRecord extends ApplicationObject {
+public class DivisionCountRecord extends ApplicationObject implements Comparable<DivisionCountRecord> {
 	private static final long serialVersionUID = 1L;
 	private BigDecimal defaultDirectLaborPct;
 	private Integer divisionId;
@@ -109,6 +109,13 @@ public class DivisionCountRecord extends ApplicationObject {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	@Override
+	public int compareTo(DivisionCountRecord o) {
+		String myDisplay = getDivisionNbr() + "-" + getDivisionCode();
+		String yourDisplay = o.getDivisionNbr() + "-" + o.getDivisionCode();
+		return myDisplay.compareTo(yourDisplay);
 	}
 
 }

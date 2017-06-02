@@ -3,13 +3,11 @@ package com.ansi.scilla.web.response.options;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.jobticket.JobStatus;
 
-public class JobStatusOption extends ApplicationObject {
+public class JobStatusOption extends WebOption  {
 	private static final long serialVersionUID = 1L;
 	private String code;
-	private String display;
 	private List<String> nextValues;
 	public JobStatusOption(JobStatus jobStatus) {
 		super();
@@ -25,12 +23,6 @@ public class JobStatusOption extends ApplicationObject {
 	}
 	public void setCode(String code) {
 		this.code = code;
-	}
-	public String getDisplay() {
-		return display;
-	}
-	public void setDisplay(String display) {
-		this.display = display;
 	}
 	public List<String> getNextValues() {
 		return nextValues;

@@ -33,7 +33,6 @@ import com.ansi.scilla.web.request.DivisionRequest;
 //import com.ansi.scilla.web.response.code.CodeResponse;
 import com.ansi.scilla.web.response.division.DivisionListResponse;
 import com.ansi.scilla.web.response.division.DivisionResponse;
-import com.ansi.scilla.web.response.ticket.TicketReturnResponse;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;

@@ -11,11 +11,14 @@ public class TestOptions {
 	public static void main(String[] args) {
 		TesterUtils.makeLoggers();
 		try {
-			List<ResponseOption> o = Arrays.asList(new ResponseOption[] {ResponseOption.PERMISSION});
-			OptionsListResponse r = new OptionsListResponse(o);
-			String json = r.toJson();
-//			String json = TesterUtils.getJson("http://127.0.0.1:8080/ansi_web/options?INVOICE_STYLE");
-			System.out.println(json);
+			for ( ResponseOption x : ResponseOption.values() ) {
+				List<ResponseOption> o = Arrays.asList(new ResponseOption[] {x});
+				OptionsListResponse r = new OptionsListResponse(o);
+				String json = r.toJson();
+//				String json = TesterUtils.getJson("http://127.0.0.1:8080/ansi_web/options?INVOICE_STYLE");
+				System.out.println(json);
+				System.out.println("*********************");
+			}
 		} catch ( Exception e) {
 			e.printStackTrace();
 		}

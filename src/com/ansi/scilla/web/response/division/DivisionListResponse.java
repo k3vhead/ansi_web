@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.ansi.scilla.common.db.Division;
@@ -38,6 +39,7 @@ public class DivisionListResponse extends MessageResponse implements Serializabl
 		for ( DivisionUserCount record : divisionCountList ) {
 			this.divisionList.add(new DivisionCountRecord(record));
 		}
+		Collections.sort(this.divisionList);
 	}
 	
 	public DivisionListResponse(Connection conn, Integer divisionId) throws Exception {

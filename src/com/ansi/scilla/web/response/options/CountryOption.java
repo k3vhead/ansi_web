@@ -7,10 +7,9 @@ import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.address.Country;
 import com.ansi.scilla.common.address.State;
 
-public class CountryOption extends ApplicationObject {
+public class CountryOption extends WebOption  {
 	private static final long serialVersionUID = 1L;
 	private String abbrev;
-	private String display;
 	private List<State> stateList;
 
 	public CountryOption(Country country) throws IOException {
@@ -25,12 +24,6 @@ public class CountryOption extends ApplicationObject {
 	
 	public void setAbbrev(String abbrev) {
 		this.abbrev = abbrev;
-	}
-	public String getDisplay() {
-		return display;
-	}
-	public void setDisplay(String display) {
-		this.display = display;
 	}
 	
 	public List<State> getStateList(){

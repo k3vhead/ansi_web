@@ -1,12 +1,10 @@
 package com.ansi.scilla.web.response.options;
 
-import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.jobticket.JobFrequency;
 
-public class JobFrequencyOption extends ApplicationObject {
+public class JobFrequencyOption extends WebOption  {
 	private static final long serialVersionUID = 1L;
 	private String abbrev;
-	private String display;
 
 	public JobFrequencyOption(JobFrequency jobFrequency) {
 		this.abbrev = jobFrequency.abbrev();
@@ -21,13 +19,6 @@ public class JobFrequencyOption extends ApplicationObject {
 		this.abbrev = abbrev;
 	}
 
-	public String getDisplay() {
-		return display;
-	}
-
-	public void setDisplay(String display) {
-		this.display = display;
-	}
 
 	
 }

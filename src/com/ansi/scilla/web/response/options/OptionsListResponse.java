@@ -2,6 +2,7 @@ package com.ansi.scilla.web.response.options;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -68,6 +69,7 @@ public class OptionsListResponse extends MessageResponse {
 		for ( InvoiceStyle j : EnumSet.allOf(InvoiceStyle.class)) {
 			this.invoiceStyle.add(new InvoiceStyleOption(j));
 		}
+		Collections.sort(this.invoiceStyle);
 	}
 	
 	private void makeAccountTypeList() {
@@ -75,6 +77,7 @@ public class OptionsListResponse extends MessageResponse {
 		for (AccountType j : EnumSet.allOf(AccountType.class)) {
 			this.accountType.add(new AccountTypeOption(j));
 		}
+		Collections.sort(this.accountType);
 	}
 
 	private void makePaymentMethodList() {
@@ -82,6 +85,7 @@ public class OptionsListResponse extends MessageResponse {
 		for (PaymentMethod j : EnumSet.allOf(PaymentMethod.class)) {
 			this.paymentMethod.add(new PaymentMethodOption(j));
 		}
+		Collections.sort(this.paymentMethod);
 	}
 
 	private void makeInvoiceGroupList() {
@@ -89,6 +93,7 @@ public class OptionsListResponse extends MessageResponse {
 		for ( InvoiceGrouping j : EnumSet.allOf(InvoiceGrouping.class)) {
 			this.invoiceGrouping.add(new InvoiceGroupingOption(j));
 		}
+		Collections.sort(this.invoiceGrouping);
 	}
 
 	private void makeInvoiceTermList() {
@@ -96,6 +101,7 @@ public class OptionsListResponse extends MessageResponse {
 		for ( InvoiceTerm j : EnumSet.allOf(InvoiceTerm.class)) {
 			this.invoiceTerm.add(new InvoiceTermOption(j));
 		}
+		Collections.sort(this.invoiceTerm);
 	}
 
 	private void makePermissionList() {
@@ -110,6 +116,7 @@ public class OptionsListResponse extends MessageResponse {
 		for(JobFrequency j : EnumSet.allOf(JobFrequency.class)) {
 			this.jobFrequency.add(new JobFrequencyOption(j));
 		}
+		Collections.sort(this.jobFrequency);
 	}
 	
 	private void makeJobStatusList() {
@@ -117,6 +124,7 @@ public class OptionsListResponse extends MessageResponse {
 		for(JobStatus j : EnumSet.allOf(JobStatus.class)) {
 			this.jobStatus.add(new JobStatusOption(j));
 		}
+		Collections.sort(this.jobStatus);
 	}
 	
 	private void makeTicketStatusList() {
@@ -124,6 +132,7 @@ public class OptionsListResponse extends MessageResponse {
 		for(TicketStatus j : EnumSet.allOf(TicketStatus.class)) {
 			this.ticketStatus.add(new TicketStatusOption(j));
 		}
+		Collections.sort(this.ticketStatus);
 	}
 	
 	private void makeCountryList() throws IOException {
@@ -132,6 +141,7 @@ public class OptionsListResponse extends MessageResponse {
 		for(Country j : EnumSet.allOf(Country.class)) {
 			this.country.add(new CountryOption(j));
 		}
+		//don't sort country; we want USA first
 	}
 		
 	public List<JobFrequencyOption> getJobFrequency() {
