@@ -153,6 +153,13 @@ $( document ).ready(function() {
 						$("#"+$namespace+"_jobPanel_cancelJobButton").hide();
 					}
 					
+					if($jobDetail.canDelete){
+						$("#"+$namespace+"_jobPanel_deleteJobButton").show();
+					} else {
+						$("#"+$namespace+"_jobPanel_deleteJobButton").hide();
+					}
+					
+					
 
 					if($quoteData != null){
 //						console.log($quoteData);
@@ -333,6 +340,12 @@ $( document ).ready(function() {
 						$("#"+$namespace+"_jobPanel_cancelJobButton").hide();
 					}
 					
+					if($jobDetail.canDelete){
+						$("#"+$namespace+"_jobPanel_deleteJobButton").show();
+					} else {
+						$("#"+$namespace+"_jobPanel_deleteJobButton").hide();
+					}
+					
 					if($jobDetail.status != "N"){
 						$("#"+$namespace+"_jobProposal_proposalEdit").hide();
 					}
@@ -506,17 +519,23 @@ $( document ).ready(function() {
 							$("#"+$rn+"_jobSaveHead").removeClass("green");
 							$("#"+$rn+"_jobSaveHead").addClass("error");
 							
+							$errorMessage ="<p>";
 							$.each($data.data.webMessages, function(key, messageList) {
 								var identifier = "#"+$rn+"_jobDiv ."+key+"Err";
+								$errorMessage += "<b>"+key+"</b>: "+messageList[0]+"<br/>";
 								$(identifier).addClass("fa-ban");
 								$(identifier).addClass("inputIsInvalid");
 							});
-							
-							alert("Edit Failure - missing data");
+							$errorMessage +="</p>";
+							$( "#error-message" ).dialog( "option", "title", "Job Save Error" );
+							$( "#error-message" ).html($errorMessage);
+							$( "#error-message" ).dialog("open");
+							//alert("Edit Failure - missing data");
 							console.log("Edit Fail");
 						}
 						if ( $data.responseHeader.responseCode == 'SUCCESS') {
 							console.log("Success!");
+							console.log($data.data.job);
 							
 							$("#"+$rn+"_jobSaveHead").removeClass("grey");
 							$("#"+$rn+"_jobSaveHead").removeClass("error");
@@ -545,6 +564,33 @@ $( document ).ready(function() {
 								$("#"+$rn+"_jobDescHead").html($data.data.job.serviceDescription.substring(0, 50));
 							}
 							$("#"+$rn+"_jobPanel_divisionId").text($("select[name='division'] option:selected").text());
+							
+							if($data.data.job.canReschedule){
+								$("#"+$rn+"_jobPanel_scheduleJobButton").show();
+							} else {
+								$("#"+$rn+"_jobPanel_scheduleJobButton").hide();
+							}
+							
+							if($data.data.job.canActivate){
+								$("#"+$rn+"_jobPanel_activateJobButton").show();
+							} else {
+								$("#"+$rn+"_jobPanel_activateJobButton").hide();
+							}
+							
+							if($data.data.job.canCancel){
+								$("#"+$rn+"_jobPanel_cancelJobButton").show();
+							} else {
+								$("#"+$rn+"_jobPanel_cancelJobButton").hide();
+							}
+							
+							if($data.data.job.canDelete){
+								$("#"+$namespace+"_jobPanel_deleteJobButton").show();
+							} else {
+								$("#"+$namespace+"_jobPanel_deleteJobButton").hide();
+							}
+							
+							$("#"+$rn+"_jobPanel_jobLink").attr("href", "jobMaintenance.html?id="+$data.data.job.jobId);
+							$("#"+$rn+"_jobPanel_jobLink").text($data.data.job.jobId);
 							
 //************* FINISH AUDIT
 							//$addedBy = ANSI_UTILS.getUser($data.data.job.addedBy);
@@ -1090,7 +1136,7 @@ $( document ).ready(function() {
 	      	    	  {
 	      	    			id: $goButtonId,
 	      	        		click: function() {
-	      	        			JOBPANEL.cancelJob($jobClicked+"_jobPanel", $modalNamespace);
+	      	        			JOBPANEL.cancelJob($jobClicked+"_jobPanel", $modalNamespace, $jobClicked);
 	      	        		}
 	      	      		},
 	      	      		{
@@ -1174,7 +1220,7 @@ $( document ).ready(function() {
 			//$select.selectmenu();
 		},
 		
-		cancelJob: function($namespace, $modalNamespace) {
+		cancelJob: function($namespace, $modalNamespace, $rn) {
 			//$event.preventDefault();
 			//var $jobid = $event.currentTarget.attributes['data-jobid'].value;
 			$jobId = ANSI_UTILS.getFieldValue($namespace, "jobId");
@@ -1213,7 +1259,7 @@ $( document ).ready(function() {
 							$($cancelFieldSelector).val("");
 							ANSI_UTILS.setTextValue($namespace, "panelMessage", "Update Successful");
 							JOB_UTILS.fadeMessage($namespace, "panelMessage")
-							JOB_UTILS.panelLoad($jobClicked,$jobId);
+							JOB_UTILS.panelLoad($rn,$jobId);
 						}
 					},				
 					403: function($data) {

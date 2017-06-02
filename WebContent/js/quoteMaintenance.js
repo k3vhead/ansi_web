@@ -32,6 +32,17 @@ $( document ).ready(function() {
 					QUOTEUTILS.addAJob($globalQuoteId);
 				});
 				
+				$( "#error-message" ).dialog({
+				      modal: true,
+				      autoOpen: false,
+				      width: 400,
+				      buttons: {
+				        Ok: function() {
+				          $( this ).dialog( "close" );
+				        }
+				      }
+				 });
+				
 				QUOTEUTILS.panelLoad($quoteId);
 			},
 				
@@ -55,6 +66,8 @@ $( document ).ready(function() {
 					var $quoteData = $quoteDetail.quote;
 					$globalQuoteId = $quoteId;
 					QUOTE_DATA.data = $quoteData;
+				} else {
+					$("#printButton").hide();
 				}
 				
 				
@@ -594,14 +607,22 @@ $( document ).ready(function() {
 		   						$("#QuoteSaveHead").addClass("error");
 								console.log("Edit Failure");
 								console.log($data);
+								
+								$errorMessage ="<p>";
 								$.each($data.data.webMessages, function(key, messageList) {
 									var identifier = "#"+key+"Err";
+									$errorMessage += "<b>"+key+"</b>: "+messageList[0]+"<br/>";
 									$(identifier).addClass("fa-ban");
 									$(identifier).addClass("inputIsInvalid");
 								});	
+								$errorMessage +="</p>";
+								$( "#error-message" ).dialog( "option", "title", "Quote Save Error" );
+								$( "#error-message" ).html($errorMessage);
+								$( "#error-message" ).dialog("open");
 		   					} else if ( $data.responseHeader.responseCode == 'SUCCESS') {
 //								$("input[name=quoteId]").val($data.data.quote.quoteId);//gag
 								$globalQuoteId =	$data.data.quote.quoteId;//gag
+								$("#printButton").show();
 								$("#QuoteSaveHead").removeClass("grey");
 		   						$("#QuoteSaveHead").removeClass("error");
 		   						$("#QuoteSaveHead").removeClass("green");
@@ -909,7 +930,14 @@ $( document ).ready(function() {
 									$("#"+$row+'_jobPanel_divisionId').text(QUOTE_DATA['data'].divisionCode);
 								}
 								//$("#"+$row+'_jobPanel_divisionId').selectmenu("refresh");
-								
+								$pageURL = window.location.href;
+								if($pageURL.indexOf("job")>0){
+									$("#"+$row+"_jobPanel_jobLinkSpan").hide();
+								}
+								if($pageURL.indexOf("quote")>0){
+									$("#"+$row+"_jobPanel_quoteLinkSpan").hide();
+								}
+								$("#"+$row+"_jobPanel_scheduleJobButton").hide();
 								setTimeout(function() {
 									if(refresh){
 										$("#accordian").accordion( "refresh" );

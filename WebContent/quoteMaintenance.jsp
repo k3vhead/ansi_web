@@ -244,7 +244,8 @@
 				</td>
 			</tr>
 		</table>  
-		
+		<div id="error-message" title="">
+		</div>
 		
 	
 		<webthing:jobActivateCancel page="QUOTE" namespace="activateModal" />

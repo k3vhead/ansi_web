@@ -59,7 +59,7 @@
 					<i style="cursor:pointer;" class="fa fa-arrow-circle-right fa-3x tooltip" aria-hidden="true" id="<%= namespace %>_activateJobButton"><span class="tooltiptext">Activate</span></i>
 					<i style="cursor:pointer;" class="clickableIcon, fa fa-ban fa-3x text-danger tooltip" id="<%= namespace %>_cancelJobButton"><span class="tooltiptext">Cancel</span></i>
 					<i style="cursor:pointer;" class="clickableIcon, fa fa-calendar  fa-3x tooltip" aria-hidden="true" id="<%= namespace %>_scheduleJobButton"><span class="tooltiptext">Schedule</span></i>
-					
+					<i style="cursor:pointer;" class="clickableIcon, fa fa-trash fa-3x tooltip" aria-hidden="true" id="<%= namespace %>_deleteJobButton"><span class="tooltiptext">Delete</span></i>
 					
 					<%--
 					<input type="button" value="Activate Job" id="<%= namespace %>_activateJobButton" />
