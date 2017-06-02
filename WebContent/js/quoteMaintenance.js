@@ -1029,7 +1029,7 @@ $( document ).ready(function() {
 				var jqxhr = $.ajax({
 					type: 'GET',
 					url: $url,
-					data: {},
+					data: {"sortBy":"firstName"},    // you can do firstName,lastName or email
 					statusCode: {
 						200: function($data) {
 							//console.log($data.data.userList);

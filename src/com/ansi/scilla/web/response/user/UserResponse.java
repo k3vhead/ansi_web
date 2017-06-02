@@ -1,5 +1,6 @@
 package com.ansi.scilla.web.response.user;
 
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,6 +16,9 @@ import com.ansi.scilla.web.response.MessageResponse;
 public class UserResponse extends MessageResponse {
 
 	private static final long serialVersionUID = 1L;
+
+	/* This works for string values only. If you want to sort by userid, change the sort method */
+	public static final String[] VALID_SORT_FIELDS = new String[] {"firstName","lastName","email"};
 
 	private List<UserResponseItem> userList;
 
@@ -70,6 +74,24 @@ public class UserResponse extends MessageResponse {
 	}
 
 	
+	public void sort(String sortField) throws Exception {
+		String getterName = "get" + sortField.substring(0,1).toUpperCase() + sortField.substring(1);
+		Method method = UserResponseItem.class.getMethod(getterName, (Class<?>[])null);
+		Collections.sort(userList, new Comparator<UserResponseItem>() {
+			public int compare(UserResponseItem o1, UserResponseItem o2) {
+				try {
+					String value1 = (String)method.invoke(o1, (Object[])null);
+					String value2 = (String)method.invoke(o2, (Object[])null);
+					int ret = value1.compareTo(value2);
+					return ret;
+				} catch ( Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+	}
+
+
 	public enum UserListType {
 		LIST,
 		MANAGER;

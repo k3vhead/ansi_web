@@ -4,6 +4,7 @@ import java.sql.Connection;
 
 import com.ansi.scilla.common.utils.AppUtils;
 import com.ansi.scilla.web.response.user.UserResponse;
+import com.ansi.scilla.web.response.user.UserResponseItem;
 
 public class TestUser {
 
@@ -21,7 +22,11 @@ public class TestUser {
 		try {
 			conn = AppUtils.getConn();
 			UserResponse r = new UserResponse(conn, UserResponse.UserListType.MANAGER);
-			System.out.println(r.toJson());
+			r.sort("email");
+//			System.out.println(r.toJson());
+			for ( UserResponseItem i : r.getUserList() ) {
+				System.out.println(i.getFirstName() + "\t" + i.getLastName() + "\t" + i.getEmail());
+			}
 		} finally {
 			conn.close();
 		}

@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.db.PermissionLevel;
@@ -51,6 +52,14 @@ public class AnsiUserServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 			AnsiURL url = new AnsiURL(request, REALM, new String[] {"list","manager"});	
+			String sortField = request.getParameter("sortBy");
+			System.out.println("Sortig by: " + sortField);
+			if ( ! StringUtils.isBlank(sortField)) {
+				if ( ! ArrayUtils.contains(UserResponse.VALID_SORT_FIELDS, sortField) ) {
+					sortField = null;
+				}
+			}
+			System.out.println("Still sorting by: " + sortField);
 
 			if( url.getId() == null && StringUtils.isBlank(url.getCommand())) {
 				System.out.println("user servlet 43");
@@ -65,6 +74,9 @@ public class AnsiUserServlet extends AbstractServlet {
 			} else {
 				// according to the URI parsing, this shouldn't happen, but it gives me warm fuzzies
 				throw new ResourceNotFoundException();
+			}
+			if ( ! StringUtils.isBlank(sortField)) {
+				userResponse.sort(sortField);
 			}
 			System.out.println("user servlet 55");
 			messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
