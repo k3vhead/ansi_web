@@ -53,6 +53,7 @@ public class CodeListResponse extends MessageResponse implements Serializable {
 		key.setTableName(tableName);
 		key.setFieldName(fieldName);
 		key.setValue(value);
+		key.setStatus(Code.STATUS_IS_ACTIVE);
 		List<Code> codeList = Code.cast(key.selectSome(conn));
 		this.codeList = new ArrayList<CodeResponseRecord>();
 		for ( Code code : codeList ) {
