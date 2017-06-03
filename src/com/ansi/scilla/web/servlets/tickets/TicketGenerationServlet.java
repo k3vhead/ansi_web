@@ -26,7 +26,6 @@ import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.request.ticket.TicketGenerationRequest;
 import com.ansi.scilla.web.response.ticket.TicketGenerationResponse;
-import com.ansi.scilla.web.response.ticket.TicketReturnResponse;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
@@ -60,7 +59,8 @@ public class TicketGenerationServlet extends AbstractServlet{
 				conn = AppUtils.getDBCPConn();
 				conn.setAutoCommit(false);
 				String jsonString = super.makeJsonString(request);
-				TicketGenerationRequest generateTicketRequest = (TicketGenerationRequest)AppUtils.json2object(jsonString, TicketGenerationRequest.class);
+				TicketGenerationRequest generateTicketRequest = new TicketGenerationRequest();
+				AppUtils.json2object(jsonString, generateTicketRequest);
 //				ansiURL = new AnsiURL(request, "invoiceGeneration", (String[])null); //  .../ticket/etc
 				SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 				
@@ -126,11 +126,15 @@ public class TicketGenerationServlet extends AbstractServlet{
 	private void processUpdate(Connection conn, HttpServletRequest request, HttpServletResponse response, 
 			TicketGenerationRequest generateTicketRequest, SessionUser sessionUser) throws Exception {
 		
+		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss.S");
 		Calendar startDate = Calendar.getInstance(new Locale("America/Chicago"));
 		Calendar endDate = Calendar.getInstance(new Locale("America/Chicago"));
 		startDate.setTime(generateTicketRequest.getStartDate());
 		endDate.setTime(generateTicketRequest.getEndDate());
-		
+		DateUtils.truncate(startDate, Calendar.DAY_OF_MONTH);
+		endDate = DateUtils.ceiling(endDate, Calendar.DAY_OF_MONTH);
+		System.out.println(sdf.format(startDate.getTime()));
+		System.out.println(sdf.format(endDate.getTime()));
 		
 		JobUtils.generateTicketsFromJobSchedule(conn, generateTicketRequest.getDivisionId(), startDate, endDate, sessionUser.getUserId());
 		conn.commit();
