@@ -8,7 +8,7 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
-import com.ansi.scilla.web.actionForm.IdForm;
+import com.ansi.scilla.web.actionForm.InvoiceLookupForm;
 
 public class InvoiceLookupAction extends SessionPageDisplayAction {
 
@@ -16,9 +16,14 @@ public class InvoiceLookupAction extends SessionPageDisplayAction {
 	public ActionForward execute(ActionMapping mapping, ActionForm actionForm, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		
-		IdForm form = (IdForm)actionForm;
-		if ( form != null && ! StringUtils.isBlank(form.getId())) {
-			request.setAttribute("ANSI_DIVISION_ID", form.getId());
+		InvoiceLookupForm form = (InvoiceLookupForm)actionForm;
+		if ( form != null ) {
+			if ( ! StringUtils.isBlank(form.getId())) {
+				request.setAttribute("ANSI_DIVISION_ID", form.getId());
+			}
+			if ( ! StringUtils.isBlank(form.getPpcFilter())) {
+				request.setAttribute("ANSI_PPC_FILTER", form.getPpcFilter());
+			}
 		}
 		return super.execute(mapping, actionForm, request, response);
 	}

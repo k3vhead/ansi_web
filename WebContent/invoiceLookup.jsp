@@ -12,7 +12,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="webthing" %>
 <%@ taglib uri="WEB-INF/theTagThing.tld" prefix="ansi" %>
 
-
+<%@ page import="com.ansi.scilla.web.actionForm.InvoiceLookupForm" %>
 
 
 <tiles:insert page="layout.jsp" flush="true">
@@ -51,6 +51,12 @@
         
         $(document).ready(function(){
         	var $filterDivisionId = '<c:out value="${ANSI_DIVISION_ID}" />';
+        	var $filterPPC = '<c:out value="${ANSI_PPC_FILTER}" />';
+        	if ( $filterPPC == 'yes' ) {
+        		$filterIcon = "fa fa-check-square-o";
+        	} else {
+        		$filterIcon = "fa fa-ban";
+        	}
         	
 			$('.ScrollTop').click(function() {
 				$('html, body').animate({scrollTop: 0}, 800);
@@ -75,7 +81,25 @@
         	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
         	        ],
         	        buttons: [
-        	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}}
+        	        	'pageLength',
+        	        	'copy', 
+        	        	'csv', 
+        	        	'excel', 
+        	        	{extend: 'pdfHtml5', orientation: 'landscape'}, 
+        	        	'print',
+        	        	{extend: 'colvis',	label: function () {doFunctionBinding();}},
+        	        	{
+        	        		text:'PPC Filter <i class="'+$filterIcon+'"></i>',
+        	        		action: function(e, dt, node, config) {
+        	        			if ( $filterPPC == 'yes' ) {
+        	        				$filterPPC = 'no';
+        	        			} else {
+        	        				$filterPPC = 'yes';
+        	        			}
+        	        			var $url = "invoiceLookup.html?divisionId=" + $filterDivisionId + "&ppcFilter=" + $filterPPC;
+        	        			location.href=$url;
+        	        		}
+        	        	}
         	        ],
         	        "columnDefs": [
 //         	            { "orderable": false, "targets": -1 },  // Need to re-add this when we add the action column back in
@@ -87,7 +111,7 @@
 			        "ajax": {
 			        	"url": "invoiceLookup",
 			        	"type": "GET",
-			        	"data":{"divisionId":$filterDivisionId}
+			        	"data":{"divisionId":$filterDivisionId,"<%=InvoiceLookupForm.PPC_FILTER%>":$filterPPC}
 			        	},
 			        columns: [
 			        	
