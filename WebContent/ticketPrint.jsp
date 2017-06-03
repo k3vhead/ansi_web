@@ -33,6 +33,9 @@
 			#ticketTableContainer {
 				display:none;
 			}
+			.print-is-done {
+				color:#00FF00;
+			}
         </style>
         
         <script type="text/javascript">        
@@ -176,6 +179,7 @@
 					$( ".action-link" ).on( "click", function($clickevent) {
 			        	var $divisionId = $clickevent.currentTarget.attributes['data-division'].value;
 		        		doPrint($divisionId);
+		        		$clickevent.currentTarget.attributes['class'].value = "fa fa-check-square-o inputIsValid";
 					});
 				}
 
