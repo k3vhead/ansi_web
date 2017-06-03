@@ -205,7 +205,7 @@
         	
         	$("#clearButton").click(function($event) {
         		$(".ticketPmt").val("");
-        		$(".totalField").val("$0.00");
+        		$(".totalField").html("$0.00");
         		$("#feeAmount").val("0.00");
         		$("#excessCash").val("0.00");
         	});
