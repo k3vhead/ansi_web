@@ -55,6 +55,7 @@
 			.prettyWideButton {
 				height:30px;
 				min-height:30px;
+				border:solid 1px #404040;
 			}
 			select	{
 				width:80px !important;
