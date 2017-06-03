@@ -399,7 +399,72 @@ $( document ).ready(function() {
 			return $returnValue;
 
 		},
-		
+		deleteJob: function($namespace,$rn){
+			var $outbound = {};
+			var $pre = "#"+$rn;
+			$outbound["action"]	= 'DELETE_JOB';
+			var $url = "job/"+$("#"+$rn+"_jobPanel_jobId").val();
+			console.log($url);
+			var jqxhr3 = $.ajax({
+				type: 'POST',
+				url: $url,
+				data: JSON.stringify($outbound),
+				statusCode: {
+					200: function($data) {
+						$(".inputIsInvalid").removeClass("fa-ban");
+						$(".inputIsInvalid").removeClass("inputIsInvalid");
+						console.log("Return 200: "+$rn);
+						console.log($data);
+						
+						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+							
+							
+							$("#"+$rn+"_jobSaveHead").removeClass("grey");
+							$("#"+$rn+"_jobSaveHead").removeClass("error");
+							$("#"+$rn+"_jobSaveHead").removeClass("green");
+							$("#"+$rn+"_jobSaveHead").addClass("error");
+							
+							$errorMessage ="<p>Job Delete Failed - Contact Support</p>";
+
+							$( "#error-message" ).dialog( "option", "title", "Job Delete Error" );
+							$( "#error-message" ).html($errorMessage);
+							$( "#error-message" ).dialog("open");
+							//alert("Edit Failure - missing data");
+							console.log("Edit Fail");
+						}
+						if ( $data.responseHeader.responseCode == 'SUCCESS') {
+							$("#"+$rn+"_jobHeader").remove();
+							$("#"+$rn+"_jobDiv").remove();
+						}
+					},				
+					403: function($data) {
+						ANSI_UTILS.setTextValue($namespace, "panelMessage", "Function Not Permitted");
+						JOB_UTILS.fadeMessage($namespace, "panelMessage")
+						$($pre+"_jobSaveHead").removeClass("grey");
+						$($pre+"_jobSaveHead").removeClass("error");
+						$($pre+"_jobSaveHead").removeClass("green");
+						$($pre+"_jobSaveHead").addClass("error");
+					}, 
+					404: function($data) {
+						ANSI_UTILS.setTextValue($namespace, "panelMessage", "Resource Not Available");
+						JOB_UTILS.fadeMessage($namespace, "panelMessage")
+						$($pre+"_jobSaveHead").removeClass("grey");
+						$($pre+"_jobSaveHead").removeClass("error");
+						$($pre+"_jobSaveHead").removeClass("green");
+						$($pre+"_jobSaveHead").addClass("error");
+					}, 
+					500: function($data) {
+						ANSI_UTILS.setTextValue($namespace, "panelMessage", "System Error -- Contact Support");
+						//JOB_UTILS.fadeMessage($namespace, "panelMessage")
+						$($pre+"_jobSaveHead").removeClass("grey");
+						$($pre+"_jobSaveHead").removeClass("error");
+						$($pre+"_jobSaveHead").removeClass("green");
+						$($pre+"_jobSaveHead").addClass("error");
+					} 
+				},
+				dataType: 'json'
+			});
+		},
 		changeFieldState: function($namespace,$disabledBoolean){
 			$("#" + $namespace + "_jobActivation_automanual").selectmenu( "option", "disabled", $disabledBoolean );
 			$("#" + $namespace + "_jobActivation_buildingType").selectmenu( "option", "disabled", $disabledBoolean );
@@ -434,7 +499,7 @@ $( document ).ready(function() {
 			$($selectorName).fadeOut($duration);
 		},
 		
-		addJob: function($rn,$quoteId, $namespace) {
+		addJob: function($rn,$quoteId, $namespace,$exit) {
 			var $url = "job/add";
 						
 //			console.log("$jobContactId: "+$jobContactId);
@@ -558,6 +623,7 @@ $( document ).ready(function() {
 							$( "#error-message" ).dialog("open");
 							//alert("Edit Failure - missing data");
 							console.log("Edit Fail");
+							return false;
 						}
 						if ( $data.responseHeader.responseCode == 'SUCCESS') {
 							console.log("Success!");
@@ -628,6 +694,13 @@ $( document ).ready(function() {
 							//JOBAUDIT.init($rn,$data.data.job);
 							ANSI_UTILS.setTextValue($namespace, "panelMessage", "Update Successful");
 							JOB_UTILS.fadeMessage($namespace, "panelMessage")
+							QUOTEUTILS.incrementSave();
+							if($exit){
+								if(QUOTEUTILS.getSaveCounter() == QUOTEUTILS.getCurrentRow()){
+									location.href="quoteLookup.html";
+								}
+							}
+							return true;
 							//JOB_UTILS.panelLoad($jobId);
 						}
 					},				
@@ -786,7 +859,7 @@ $( document ).ready(function() {
 						$outbound = {};
 						
 						
-						JOB_UTILS.addJob($namespace.substring(0,$namespace.indexOf("_")),$id,$namespace);
+						JOB_UTILS.addJob($namespace.substring(0,$namespace.indexOf("_")),$id,$namespace,false);
 		        	
 						$("#" + $namespace + "_activationEdit").removeClass('fa-save');
 						$("#" + $namespace + "_activationEdit").addClass('fa-pencil');
@@ -973,7 +1046,7 @@ $( document ).ready(function() {
 						$outbound["invoiceExpireReason"]	= $("#" + $namespace + "_invoiceExpireReason").val();
 						
 						
-						JOB_UTILS.addJob($namespace.substring(0,$namespace.indexOf("_")),$id,$namespace);
+						JOB_UTILS.addJob($namespace.substring(0,$namespace.indexOf("_")),$id,$namespace,false);
 						
 						$("#" + $namespace + "_invoiceEdit").removeClass('fa-save');
 						$("#" + $namespace + "_invoiceEdit").addClass('fa-pencil');
@@ -1034,6 +1107,7 @@ $( document ).ready(function() {
 			JOBPANEL.initActivateModal($namespace, $modalNamespace);
 			JOBPANEL.initCancelModal($namespace, $modalNamespace);
 			JOBPANEL.initScheduleModal($namespace, $modalNamespace);
+			JOBPANEL.initDelete($namespace);
 			
 			//make the date selectors work in the modal window
 			var $selector= '.' + $modalNamespace + "_datefield";
@@ -1232,7 +1306,37 @@ $( document ).ready(function() {
 	      	    });
 	
 		},
-	
+		initDelete: function($namespace){
+			var $deleteJobButtonSelector = "#" + $namespace + "_deleteJobButton";
+		
+			$($deleteJobButtonSelector).click(function() {
+				//$("#updateOrAdd").val("add");
+        		//clearAddForm();				
+				$id = this.id;
+        	    $num = $id.substring(0,$id.indexOf("_"));
+        	    console.log($num);
+        	    $jobClicked = $num;
+        	    $errorMessage ="</p>Are you sure you want to delete job "+$("#"+$jobClicked+"_jobPanel_jobId").val()+"?</p>";
+				$( "#delete-message" ).dialog( "option", "title", "Delete Job?" );
+				$( "#delete-message" ).html($errorMessage);
+        	    $( "#delete-message" ).dialog( "open" );
+			});
+			
+			$( "#delete-message" ).dialog({
+			      modal: true,
+			      autoOpen: false,
+			      width: 400,
+			      buttons: {
+			        Cancel: function() {
+			          $( this ).dialog( "close" );
+			        },
+			        Delete: function() {
+			        	$( this ).dialog( "close" );
+			        	JOB_UTILS.deleteJob($namespace,$jobClicked);
+			        }
+			      }
+			 });
+		},
 		
 		
 		setDivisionList: function($namespace, $divisionList) {
@@ -1460,7 +1564,7 @@ $( document ).ready(function() {
 					$outbound["ppc"]	= $("#" + $namespace + "_ppc").val();
 					$outbound["serviceDescription"]	= $("#" + $namespace + "_serviceDescription").val();
 					
-					JOB_UTILS.addJob($namespace.substring(0,$namespace.indexOf("_")),$id,$namespace);
+					JOB_UTILS.addJob($namespace.substring(0,$namespace.indexOf("_")),$id,$namespace,false);
 					
 					$("#" + $namespace + "_proposalEdit").removeClass('fa-save');
 					$("#" + $namespace + "_proposalEdit").addClass('fa-pencil');

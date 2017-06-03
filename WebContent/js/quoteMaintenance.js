@@ -8,7 +8,7 @@ $( document ).ready(function() {
 	var $siteContactId = null;
 	var $contractContactId = null;
 	var $billingContactId = null;
-	
+	var $saveCounter = 0;
 	;JOB_DATA = {}
 	;QUOTE_DATA = {}
 		
@@ -42,6 +42,7 @@ $( document ).ready(function() {
 				        }
 				      }
 				 });
+				
 				
 				QUOTEUTILS.panelLoad($quoteId);
 			},
@@ -147,6 +148,8 @@ $( document ).ready(function() {
 					}
 					
 					
+					
+					
 					//var $manager = $quoteData.managerFirstName + " " + $quoteData.managerLastName + " (" + $quoteData.managerEmail + ")";
 					//console.log("ManagerId: " + $quoteData.managerId);
 					$("select[name='manager']").val($quoteData.managerId);
@@ -210,6 +213,10 @@ $( document ).ready(function() {
 					//$("#modalSpan").html(modalText);
 					
 					QUOTEUTILS.bindAndFormat();
+					if($quoteData.proposalDate != null){
+						//console.log("Disable Button!");
+						$("#addJobRow").hide();
+					}
 				} else {
 					QUOTEUTILS.addAJob($globalQuoteId,false);
 					$("#loadingJobsDiv").hide();
@@ -248,6 +255,15 @@ $( document ).ready(function() {
 		    	//spanText += "&nbsp;"+res[1];
 		    	}
 		    	return spanText;
+			},
+			incrementSave: function(){
+				$saveCounter++;
+			},
+			getSaveCounter: function(){
+				return $saveCounter;
+			},
+			getCurrentRow: function(){
+				return $currentRow;
 			},
 			getContact:function($id){
 				var $url = "contactTypeAhead?id="+$id;
@@ -466,9 +482,9 @@ $( document ).ready(function() {
 				$("#quoteSaveButton").button().on( "click", function() {
 					var qN = $("input[name=quoteNumber]").val();
 					if(qN.length == 0){
-						QUOTEUTILS.save();
+						QUOTEUTILS.save(false);
 					} else {
-						QUOTEUTILS.update();
+						QUOTEUTILS.update(false);
 					}
 					
 	            });
@@ -477,12 +493,13 @@ $( document ).ready(function() {
 	            });
 				$("#quoteExitButton").button().on( "click", function() {
 					var qN = $("input[name=quoteNumber]").val();
+					$rtn = null;
 					if(qN.length == 0){
-						QUOTEUTILS.save();
+						$rtn = QUOTEUTILS.save(true);
 					} else {
-						QUOTEUTILS.update();
+						$rtn = QUOTEUTILS.update(true);
 					}
-
+					
 //					QUOTEUTILS.exit();
 	            });
 				$("input[name=newQuoteButton]").button().on( "click", function(event) {
@@ -507,53 +524,28 @@ $( document ).ready(function() {
 				 
 				
 			},
-			save: function(){
+			save: function($exit){
 				$outbound = {};
 				
-//				if ($("select[name=manager]").val() != "") {
 	        		$outbound["managerId"]		=	$("select[name=manager]").val();
-//				} if ($("select[name=leadType").val() != "") {
 	        		$outbound["leadType"]		=	$("select[name=leadType").val();
-//				} if ($("select[name=accountType").val() != "") {
 	        		$outbound["accountType"]	=	$("select[name=accountType").val();
-//				} if ($("select[name=division]").val() != 0) {
 	        		$outbound["divisionId"]	=	$("select[name=division]").val();
-//				} if ($("input[name=jobSite_id]").val() != 0) {
 	        		$outbound["jobSiteAddressId"]	=	$jobSiteId;
-//				} if ($("input[name=billTo_id]").val() != 0) {
 	        		$outbound["billToAddressId"]	=	$billToId;
-//				}
 				
 	        		$outbound["templateId"]	=	0;
 	        		
-//	        	if ($("input[name='jobSite_Con1id']").val() != 0) {
 	        		$outbound["jobContactId"] = $jobContactId;
-//				} if ($("input[name='jobSite_Con2id']").val() != 0) {
 	        		$outbound["siteContact"] = $siteContactId;
-//				} if ($("input[name='billTo_Con1id']").val() != 0) {
 	        		$outbound["contractContactId"] = $contractContactId;
-//				} if ($("input[name='billTo_Con2id']").val() != 0) {
 	        		$outbound["billingContactId"] = $billingContactId;
-//				}
+
 
         		console.log("Save Outbound: ");
         		console.log($outbound);
         		console.log("$currentRow");
 				console.log($currentRow);
-//				$aNames = {0:"jobSite",1:"billTo"};
-//				$.each($aNames, function($index, $addressPanelNamespace) {
-//					$aOutbound = {};
-//					$aOutbound[$addressPanelNamespace+"name"]		=	$("input[name="+$addressPanelNamespace+"_name]").val();
-//					$aOutbound[$addressPanelNamespace+"status"]		=	$("input[name="+$addressPanelNamespace+"_status]").val();
-//					$aOutbound[$addressPanelNamespace+"address1"]	=	$("input[name="+$addressPanelNamespace+"_address1]").val();
-//					$aOutbound[$addressPanelNamespace+"address2"]	=	$("input[name="+$addressPanelNamespace+"_address2]").val();
-//					$aOutbound[$addressPanelNamespace+"city"]		=	$("input[name="+$addressPanelNamespace+"_city]").val();
-//					$aOutbound[$addressPanelNamespace+"county"]		=	$("input[name="+$addressPanelNamespace+"_county]").val();
-//					$aOutbound[$addressPanelNamespace+"country_code"]	=	$("input[name="+$addressPanelNamespace+"country] option:selected").val();
-//	        		$aOutbound[$addressPanelNamespace+"state"]		=	$("input[name="+$addressPanelNamespace+"state] option:selected").val();
-//	        		$aOutbound[$addressPanelNamespace+"zip"]		=	$("input[name="+$addressPanelNamespace+"_zip]").val();
-//	        		QUOTEUTILS.saveAddress($aOutbound);
-//				});
         		
         		$url = "quote/add";
 //				console.log($outbound);
@@ -561,37 +553,6 @@ $( document ).ready(function() {
 					type: 'POST',
 					url: $url,
 					data: JSON.stringify($outbound),
-//					success: function($data) {
-//						if ( $data.responseHeader.responseCode == 'SUCCESS') {
-//							
-//////							$("input[name=quoteId]").val($data.data.quote.quoteId);//gag
-////							$globalQuoteId =	$data.data.quote.quoteId;//gag
-////							$("input[name=quoteNumber]").val($data.data.quote.quoteNumber);
-////							$("input[name=revision]").val($data.data.quote.revision);
-////							console.log("Save Success");
-////							console.log($data);
-////								if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
-////									$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
-////								}
-//							
-//						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-//							
-//							alert("Edit Failure: Required Data is Missing");
-//							console.log("Edit Failure");
-//							console.log($data);
-//							$.each($data.data.webMessages, function(key, messageList) {
-//								var identifier = "#" + key + "Err";
-//								msgHtml = "<ul>";
-//								$.each(messageList, function(index, message) {
-//									msgHtml = msgHtml + "<li>" + message + "</li>";
-//								});
-//								msgHtml = msgHtml + "</ul>";
-//								$(identifier).html(msgHtml);
-//							});		
-//						} else {
-//							console.log("Save Other");
-//						}
-//					},
 					error: function($data) {
 						console.log("Fail: ");
 						console.log($data);
@@ -619,6 +580,7 @@ $( document ).ready(function() {
 								$( "#error-message" ).dialog( "option", "title", "Quote Save Error" );
 								$( "#error-message" ).html($errorMessage);
 								$( "#error-message" ).dialog("open");
+								return false;
 		   					} else if ( $data.responseHeader.responseCode == 'SUCCESS') {
 //								$("input[name=quoteId]").val($data.data.quote.quoteId);//gag
 								$globalQuoteId =	$data.data.quote.quoteId;//gag
@@ -638,8 +600,9 @@ $( document ).ready(function() {
 									
 								console.log("$currentRow");
 								console.log($currentRow);
+								$saveCounter = 0;
 								for($i = 0;$i < $currentRow;$i++){
-									JOB_UTILS.addJob($i,$globalQuoteId, $i);
+										JOB_UTILS.addJob($i,$globalQuoteId, $i, $exit);
 								}
 								
 		   					} else {
@@ -664,32 +627,20 @@ $( document ).ready(function() {
 				});
 				
 			},
-			update: function(){
+			update: function($exit){
 				$outbound = {};
 				
-//				if($("select[name=manager]").val() != "") {	
 		       		$outbound["managerId"]		=	$("select[name=manager]").val();
-//				} if($("select[name=leadType").val() != "") {	
 		       	 	$outbound["leadType"]		=	$("select[name=leadType").val();
-//				} if($("select[name=accountType").val() != 0) {	
 	        		$outbound["accountType"]	=	$("select[name=accountType").val();
-//				} if($("select[name=division]").val() != 0) {	
 	        		$outbound["divisionId"]	=	$("select[name=division]").val();
-//				} if($("input[name=jobSite_id]").val() != 0) {	
 	        		$outbound["jobSiteAddressId"]	=	$jobSiteId;
-//				} if($("input[name=billTo_id]").val() != 0) {	
 	        		$outbound["billToAddressId"]	=	$billToId;
-//				} 	
 	        		$outbound["templateId"]	=	0;
-//				if($("input[name='jobSite_Con1id']").val() != 0) {	
 	        		$outbound["jobContactId"] = $jobContactId;
-//				} if($("input[name='jobSite_Con2id']").val() != 0) {	
 	        		$outbound["siteContact"] = $siteContactId;
-//				} if($("input[name='billTo_Con1id']").val() != 0) {	
 	        		$outbound["contractContactId"] = $contractContactId;
-//				} if($("input[name='billTo_Con2id']").val() != 0) {	
 	        		$outbound["billingContactId"] = $billingContactId;
-//				}
 	        		$outbound["quoteNumber"] = $("input[name='quoteNumber']").val();
 	        		$outbound["revision"] = $("input[name='revision']").val();
 	        		$outbound["quoteId"] = $globalQuoteId;
@@ -703,41 +654,10 @@ $( document ).ready(function() {
         		$url = "quote/"+$globalQuoteId+"/"+$("input[name=quoteNumber]").val()+"/"+$("input[name=revision]").val();
 //        		$url = "quote/"+$("input[name=quoteId]").val()+"/"+$("input[name=quoteNumber]").val()+"/"+$("input[name=revision]").val();
         		console.log("URL: "+ $url);
-//        		$url = "quote/"+$("input[name=quoteNumber]").val();
-//				console.log($outbound);
-//				alert(JSON.stringify($outbound));
-//				alert($url);
         		var jqxhr = $.ajax({
 					type: 'POST',
 					url: $url,
 					data: JSON.stringify($outbound),
-//					success: function($data) {
-//						if ( $data.responseHeader.responseCode == 'SUCCESS') {
-//
-//							console.log("Update Success");
-//							console.log($data);
-//								if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
-//									$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
-//								}
-//							
-//						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-//							
-//							alert("Edit Failure: Required Data is Missing");
-//							console.log("Edit Failure");
-//							console.log($data);
-//							$.each($data.data.webMessages, function(key, messageList) {
-//								var identifier = "#" + key + "Err";
-//								msgHtml = "<ul>";
-//								$.each(messageList, function(index, message) {
-//									msgHtml = msgHtml + "<li>" + message + "</li>";
-//								});
-//								msgHtml = msgHtml + "</ul>";
-//								$(identifier).html(msgHtml);
-//							});		
-//						} else {
-//							console.log("Save Other");
-//						}
-//					},
 					error: function($data) {
 						console.log("Fail: ");
 						console.log($data);
@@ -758,6 +678,7 @@ $( document ).ready(function() {
 									$(identifier).addClass("fa-ban");
 									$(identifier).addClass("inputIsInvalid");
 								});	
+								return false;
 		   					} else if ( $data.responseHeader.responseCode == 'SUCCESS') {
 		   						console.log("Update Success");
 								console.log($data);
@@ -772,10 +693,12 @@ $( document ).ready(function() {
 					        		console.log("$currentRow");
 									console.log($currentRow);
 
+									$saveCounter = 0;
 									for($i = 0;$i < $currentRow;$i++){
-										JOB_UTILS.addJob($i,$globalQuoteId, $i);
+											JOB_UTILS.addJob($i,$globalQuoteId, $i, $exit);
 									}
-								
+									
+			
 		   					} else {
 		   						$("#globalMsg").html($data.responseHeader.responseMessage);
 
@@ -850,28 +773,6 @@ $( document ).ready(function() {
 					data: {"panelname":$row,"page":"QUOTE"},
 					success: function($data) {
 
-//						$('#jobPanelHolder > tbody:last-child').append($data);
-////						console.log($namespace);
-//						var $jobDetail = [{invoiceStyle: null, activationDate: null, startDate: null, cancelDate: null, cancelReason: null}];		
-//
-//						var $quoteDetail = [{proposalDate: null}];
-//						var $lastRun = null;
-//						var $nextDue = null;
-//						var $lastCreated = null;
-//						//console.log(JOB_DATA);
-//						
-//						JOBPANEL.init($row+"_jobPanel", JOB_DATA.divisionList, "activateModal", $jobDetail);
-//						JOBPROPOSAL.init($row+"_jobProposal", JOB_DATA.jobFrequencyList, $jobDetail);
-//						JOBACTIVATION.init($row+"_jobActivation", JOB_DATA.buildingTypeList, $jobDetail);
-//						$("#" + $row+"_jobActivation" + "_nbrFloors").spinner( "option", "disabled", false );
-//						JOBDATES.init($row+"_jobDates", $quoteDetail, $jobDetail);
-//						JOBSCHEDULE.init($row+"_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
-//						JOBINVOICE.init($row+"_jobInvoice", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, $jobDetail);
-//						JOBAUDIT.init($row+"_jobAudit", $jobDetail);
-//						$('.jobSave').on('click', function($clickevent) {
-//							JOB_UTILS.addJob($(this).attr("rownum"),$quoteId);
-//			            });
-//						QUOTEUTILS.bindAndFormat();
 	
 					},
 					statusCode: {
