@@ -19,7 +19,7 @@ public class TestPermissionGroups {
 	public void go() throws Exception {
 		Connection conn = null;
 		try {
-			conn = AppUtils.getConn();
+			conn = AppUtils.getDevConn();
 			PermissionGroupListResponse response = new PermissionGroupListResponse(conn);
 			System.out.println(response.toJson());
 		} finally {

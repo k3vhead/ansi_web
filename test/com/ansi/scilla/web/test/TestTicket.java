@@ -36,7 +36,7 @@ public class TestTicket {
 	public void goDetail() throws Exception {
 		Connection conn = null;
 		try {
-			conn = AppUtils.getConn();
+			conn = AppUtils.getDevConn();
 //			TicketDetail td = new TicketDetail(conn, 651611);
 			TicketPaymentTotals td = TicketPaymentTotals.select(conn, 651611);
 			System.out.println(td);

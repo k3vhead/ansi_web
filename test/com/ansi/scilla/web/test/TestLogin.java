@@ -31,7 +31,7 @@ public class TestLogin extends LoginServlet {
 		String json = JsonUtils.object2JSON(request);
 		System.out.println(json);
 		try {
-			conn = AppUtils.getConn();
+			conn = AppUtils.getDevConn();
 			LoginResponse loginResponse = doWork(conn, json);
 			System.out.println(loginResponse);
 		} catch ( Exception e) {

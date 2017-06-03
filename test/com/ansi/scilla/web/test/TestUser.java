@@ -20,7 +20,7 @@ public class TestUser {
 	public void go() throws Exception {
 		Connection conn = null;
 		try {
-			conn = AppUtils.getConn();
+			conn = AppUtils.getDevConn();
 			UserResponse r = new UserResponse(conn, UserResponse.UserListType.MANAGER);
 			r.sort("email");
 //			System.out.println(r.toJson());

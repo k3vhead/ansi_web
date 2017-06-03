@@ -20,7 +20,7 @@ public class TestPayment {
 
 		Connection conn = null;
 		try {
-			conn = AppUtils.getConn();
+			conn = AppUtils.getDevConn();
 			PaymentResponse data = new PaymentResponse(conn, 25416);
 			System.out.println(data);
 		} finally {

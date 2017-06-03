@@ -19,7 +19,7 @@ public class TestInvoiceResponse {
 	public void go() throws Exception {
 		Connection conn = null;
 		try {
-			conn = AppUtils.getConn();
+			conn = AppUtils.getDevConn();
 //			InvoicePrintLookupResponse resp = new InvoicePrintLookupResponse(conn);
 //			System.out.println(resp.toJson());
 			

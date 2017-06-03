@@ -66,7 +66,7 @@ public class TestDivisions {
 	public void testResponse() throws Exception {
 		Connection conn = null;
 		try{
-			conn=AppUtils.getConn();
+			conn=AppUtils.getDevConn();
 			DivisionListResponse response = new DivisionListResponse(conn,1);
 			System.out.println(response.toJson());
 		} finally {
@@ -78,7 +78,7 @@ public class TestDivisions {
 		DivisionServlet divisionServlet = new DivisionServlet();
 		Connection conn = null;
 		try{
-			conn=AppUtils.getConn();
+			conn=AppUtils.getDevConn();
 		
 		for(String url: urlList){
 			System.out.println(url);
@@ -99,7 +99,7 @@ public class TestDivisions {
 		DivisionServlet divisionServlet = new DivisionServlet();
 		Connection conn = null;
 		try{
-			conn=AppUtils.getConn();
+			conn=AppUtils.getDevConn();
 		
 		for(String url: urlList){
 			System.out.println(url);

@@ -28,8 +28,8 @@ public class TestMS {
 		
         Connection conn = null;
         try {
-//        	conn =  DriverManager.getConnection(dbURL, userId, password);
-        	conn = AppUtils.getConn();
+//        	conn =  DriverManager.getDevConnection(dbURL, userId, password);
+        	conn = AppUtils.getDevConn();
             if ( conn == null ) {
             	throw new Exception("Null");
             }

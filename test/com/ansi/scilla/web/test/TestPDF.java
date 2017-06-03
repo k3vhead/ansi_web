@@ -35,7 +35,7 @@ public class TestPDF {
 	public void go() throws Exception {
 		Connection conn = null;
 		try {
-			conn = AppUtils.getConn();
+			conn = AppUtils.getDevConn();
 			conn.setAutoCommit(false);
 			
 			Calendar printDate = Calendar.getInstance();
@@ -48,7 +48,7 @@ public class TestPDF {
 //			for ( Division division : divisionList ) {
 //				divisionId = division.getDivisionId();
 //				System.out.println("***** " + divisionId + " *******");				
-				List<List<InvoiceTicket>> ticketList = InvoiceUtils.makeTicketList(conn, divisionId);
+				List<List<InvoiceTicket>> ticketList = InvoiceUtils.makeDivisionTicketList(conn, divisionId);
 				if ( ticketList.size()==0) {
 					System.err.println("Skipping: " + divisionId);
 				} else {

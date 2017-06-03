@@ -91,7 +91,7 @@ public class TestCodes {
 	private void makeCodeResponse() throws Exception {
 		Connection conn = null;
 		try {
-			conn = AppUtils.getConn();
+			conn = AppUtils.getDevConn();
 			CodeListResponse resp = new CodeListResponse(conn);
 			System.out.println(resp);
 		} finally {

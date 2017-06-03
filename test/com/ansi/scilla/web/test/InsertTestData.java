@@ -67,7 +67,7 @@ public class InsertTestData extends TesterUtils {
 		Connection conn = null;
 		String sql = "select user_id, email from ansi_user";		
 		try {
-			conn = AppUtils.getConn();
+			conn = AppUtils.getDevConn();
 			conn.setAutoCommit(false);
 			Statement s = conn.createStatement();
 			ResultSet rs = s.executeQuery(sql);
@@ -107,7 +107,7 @@ public class InsertTestData extends TesterUtils {
 		
 		Connection conn = null;
 		try {
-			conn = AppUtils.getConn();
+			conn = AppUtils.getDevConn();
 			conn.setAutoCommit(false);
 
 			user.setEmail("dclewis@thewebthing.com");
@@ -158,7 +158,7 @@ public class InsertTestData extends TesterUtils {
 		Date now = new Date();
 		
 		try {
-			conn = AppUtils.getConn();
+			conn = AppUtils.getDevConn();
 			conn.setAutoCommit(false);
 		
 			User user = new User();
@@ -196,7 +196,7 @@ public class InsertTestData extends TesterUtils {
 		Integer myUserId = 1;
 		
 		try {
-			conn = AppUtils.getConn();
+			conn = AppUtils.getDevConn();
 			conn.setAutoCommit(false);
 		
 			for ( Permission permission : Permission.values() ) {
@@ -237,7 +237,7 @@ public class InsertTestData extends TesterUtils {
 		XSSFWorkbook wb = new XSSFWorkbook(new FileInputStream(fileName));
 		XSSFSheet sheet = wb.getSheetAt(0);
 		try {
-			conn = AppUtils.getConn();
+			conn = AppUtils.getDevConn();
 			conn.setAutoCommit(false);
 			Date today = new Date();
 			
@@ -279,7 +279,7 @@ public class InsertTestData extends TesterUtils {
 		Integer myUserId = 1;
 		
 		try {
-			conn = AppUtils.getConn();
+			conn = AppUtils.getDevConn();
 			conn.setAutoCommit(false);
 
 			String sql = "INSERT INTO permission_group(description,added_by,added_date,status,updated_by,updated_date,name) VALUES (?,?,?,?,?,?,?)";
@@ -321,7 +321,7 @@ public class InsertTestData extends TesterUtils {
 		Integer myUserId = 1;
 		
 		try {
-			conn = AppUtils.getConn();
+			conn = AppUtils.getDevConn();
 			conn.setAutoCommit(false);
 
 			Title d = new Title();
@@ -351,7 +351,7 @@ public class InsertTestData extends TesterUtils {
 		Integer myUserId = 1;
 		
 		try {
-			conn = AppUtils.getConn();
+			conn = AppUtils.getDevConn();
 			conn.setAutoCommit(false);
 
 			DivisionUser d = new DivisionUser();
@@ -382,7 +382,7 @@ public class InsertTestData extends TesterUtils {
 		Connection conn = null;		
 		Date now = new Date();
 		try {
-			conn = AppUtils.getConn();
+			conn = AppUtils.getDevConn();
 			conn.setAutoCommit(false);
 			
 			for ( Permission p : Permission.values() ) {
@@ -423,7 +423,7 @@ public class InsertTestData extends TesterUtils {
 		Connection conn = null;		
 		Date now = new Date();
 		try {
-			conn = AppUtils.getConn();
+			conn = AppUtils.getDevConn();
 			if (conn == null ) {
 				throw new Exception("null conn");
 			}

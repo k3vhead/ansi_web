@@ -44,7 +44,7 @@ public class TestDRV {
 		String json1 = TesterUtils.getJson("http://127.0.0.1:8080/ansi_web/ticketDRV?month=" + month + "&divisionId=" + divisionId);
 		Connection conn = null;
 		try {
-			conn = AppUtils.getConn();			
+			conn = AppUtils.getDevConn();			
 			TicketDRVResponse x = new TicketDRVResponse(conn, divisionId, month, 2018);
 			System.out.println(x.getResponseItemList().size());
 			String json2 = x.toJson();

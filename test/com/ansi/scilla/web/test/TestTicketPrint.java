@@ -20,7 +20,7 @@ public class TestTicketPrint {
 	public void go() throws Exception {
 		Connection conn = null;
 		try {
-			conn = AppUtils.getConn();
+			conn = AppUtils.getDevConn();
 			Calendar endDate = new GregorianCalendar(2017, Calendar.JUNE, 1);
 			TicketPrintLookupResponse r = new TicketPrintLookupResponse(conn, endDate);
 			System.out.println(r);

@@ -16,7 +16,7 @@ public class InsertMessages {
 	public void go() throws Exception {
 		Connection conn = null;
 		try {
-			conn = AppUtils.getConn();
+			conn = AppUtils.getDevConn();
 			conn.setAutoCommit(false);
 			
 			Date today = new Date();

@@ -21,7 +21,7 @@ public class TestTicketLookup {
 		Connection conn = null;
 		System.out.println("Start");
 		try {
-			conn = AppUtils.getConn();
+			conn = AppUtils.getDevConn();
 			TicketLookupSearch x = new TicketLookupSearch(0, 10);
 //			x.setSearchTerm("710004");
 			x.setJobId(17);

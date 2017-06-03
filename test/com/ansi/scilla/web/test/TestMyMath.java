@@ -31,7 +31,7 @@ public class TestMyMath {
 		
 		Connection conn = null;
 		try {
-			conn = AppUtils.getConn();
+			conn = AppUtils.getDevConn();
 			conn.setAutoCommit(false);
 			
 			Statement s = conn.createStatement();

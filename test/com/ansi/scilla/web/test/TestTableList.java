@@ -21,7 +21,7 @@ public class TestTableList {
 	public void go() throws Exception {
 		Connection conn = null;
 		try {
-			conn = AppUtils.getConn();
+			conn = AppUtils.getDevConn();
 			List<String> tables = new TableFieldListServlet().doGetWork(conn, "/tableFieldList/quote");
 			for ( String table: tables ) {
 				System.out.println(table);
