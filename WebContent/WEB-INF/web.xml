@@ -404,7 +404,7 @@
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>quoteTable</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.QuoteTableServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.servlets.quote.QuoteTableServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>quoteTable</servlet-name>

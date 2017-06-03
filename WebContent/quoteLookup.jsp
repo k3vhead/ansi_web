@@ -146,6 +146,7 @@
         	            { className: "dt-center", "targets": [1,8,-1] },
         	            { className: "dt-right", "targets": [9]}
         	         ],
+        	        "order":[[7,"desc"]],
         	        "paging": true,
 			        "ajax": {
 			        	"url": "quoteTable",
