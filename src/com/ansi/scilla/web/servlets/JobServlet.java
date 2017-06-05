@@ -562,7 +562,7 @@ public class JobServlet extends AbstractServlet {
 			}
 			
 //			if(jobRequest.getContractContactId() != null) {
-				job.setContractContactId(key.getContractContactId());
+				job.setContractContactId(jobRequest.getContractContactId());
 //			}
 			if(jobRequest.getTaxExempt() != null) {
 				job.setTaxExempt(jobRequest.getTaxExempt());
@@ -605,9 +605,9 @@ public class JobServlet extends AbstractServlet {
 				}
 			} 
 			
-//			if(jobRequest.getBillingContactId() != null){
-//				job.setBillingContactId(jobRequest.getBillingContactId());
-//			}
+			if(jobRequest.getBillingContactId() != null){
+				job.setBillingContactId(jobRequest.getBillingContactId());
+			}
 			if(jobRequest.getBillingNotes() != null) {
 				if(jobRequest.getBillingNotes().equals("")) {
 					job.setBillingNotes(null);
@@ -644,14 +644,14 @@ public class JobServlet extends AbstractServlet {
 				job.setCancelReason(jobRequest.getCancelReason());
 			}
 			
-//			if(jobRequest.getSiteContact() != null) {
-//				job.setSiteContact(jobRequest.getSiteContact());
-//			}
-//			
-//			if(jobRequest.getJobContactId() != null) {
-//				job.setJobContactId(jobRequest.getJobContactId());
-//			}
-//			
+			if(jobRequest.getSiteContact() != null) {
+				job.setSiteContact(jobRequest.getSiteContact());
+			}
+			
+			if(jobRequest.getJobContactId() != null) {
+				job.setJobContactId(jobRequest.getJobContactId());
+			}
+			
 			if(jobRequest.getJobTypeId() != null) {
 				job.setJobTypeId(jobRequest.getJobTypeId());
 			}
