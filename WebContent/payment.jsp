@@ -478,6 +478,7 @@
 				$("#toPay").html("");
 				$("#feeAmount").val("");
 				$("#excessCash").val("");
+				$('#ticketTable').DataTable().clear().draw();
         	}
         	
 			function paymentModal() {
