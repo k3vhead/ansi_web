@@ -339,7 +339,9 @@ $( document ).ready(function() {
 				    	//preferredContactValue
 				      },
 		              response: function(event, ui) {
-		            	  alert("No Matches");
+		            	  if (ui.content.length === 0) {
+		            		  alert("No Matches")
+		            	  }
 		              }
 				}).data('ui-autocomplete');
 				$billToNameComplete._renderMenu = function( ul, items ) {

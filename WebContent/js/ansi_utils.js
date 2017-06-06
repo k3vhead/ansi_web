@@ -184,7 +184,6 @@ $( document ).ready(function() {
 				        ADDRESSPANEL.setAddress($namespace,data[0]);
 				      },
 		              response: function(event, ui) {
-		            	  console.debug("Hashtag yay");
 		            	  if (ui.content.length === 0) {
 		            		  alert("No Matching Address")
 		            	  }
@@ -199,7 +198,6 @@ $( document ).ready(function() {
 				        $("input[name='"+$namespace+"_Con1id']").val(id);
 				      },
 		              response: function(event, ui) {
-		            	  console.debug("Hashtag yay");
 		            	  if (ui.content.length === 0) {
 		            		  alert("No Matching Address")
 		            	  }
@@ -213,7 +211,6 @@ $( document ).ready(function() {
 				        $("input[name='"+$namespace+"_Con2id']").val(id);
 				      },
 		              response: function(event, ui) {
-		            	  console.debug("Hashtag yay");
 		            	  if (ui.content.length === 0) {
 		            		  alert("No Matching Address")
 		            	  }
@@ -227,7 +224,6 @@ $( document ).ready(function() {
 				        $("input[name='"+$namespace+"_Con1id']").val(id);
 				      },
 		              response: function(event, ui) {
-		            	  console.debug("Hashtag yay");
 		            	  if (ui.content.length === 0) {
 		            		  alert("No Matching Address")
 		            	  }
@@ -241,7 +237,6 @@ $( document ).ready(function() {
 				        $("input[name='"+$namespace+"_Con2id']").val(id);
 				      },
 		              response: function(event, ui) {
-		            	  console.debug("Hashtag yay");
 		            	  if (ui.content.length === 0) {
 		            		  alert("No Matching Address")
 		            	  }
