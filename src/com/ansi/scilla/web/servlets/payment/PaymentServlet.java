@@ -3,6 +3,7 @@ package com.ansi.scilla.web.servlets.payment;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -117,6 +118,7 @@ public class PaymentServlet extends AbstractServlet {
 				System.out.println(jsonString);
 				PaymentRequest paymentRequest = new PaymentRequest();
 				AppUtils.json2object(jsonString, paymentRequest);
+				System.out.println(paymentRequest);
 				url = new AnsiURL(request, "payment", new String[] {PaymentRequestType.ADD.name().toLowerCase()});
 				SessionData sessionData = AppUtils.validateSession(request, Permission.PAYMENT, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 				SessionUser sessionUser = sessionData.getUser();
@@ -270,7 +272,10 @@ public class PaymentServlet extends AbstractServlet {
 			// no post-dated checks
 			if ( paymentRequest.getPaymentDate().before(paymentRequest.getCheckDate())) {
 				errors.put(PaymentRequest.CHECK_DATE, "Payment Date before check date");
-			} else if ( ! paymentRequest.getPaymentDate().before(today.getTime())) {
+			} else if ( ! paymentRequest.getCheckDate().before(today.getTime())) {
+//				SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss.S");
+//				System.out.println("Pay: " + sdf.format(sdf.format(paymentRequest.getCheckDate())));
+//				System.out.println("Now: " + sdf.format(today.getTime()));
 				errors.put(PaymentRequest.CHECK_DATE, "Check Date must be on or before today");
 			}
 		} else {
