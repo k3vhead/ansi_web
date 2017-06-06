@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.db.Payment;
 import com.ansi.scilla.common.db.PermissionLevel;
+import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.payment.PaymentType;
 import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
@@ -27,8 +28,8 @@ import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.request.payment.PaymentRequest;
+import com.ansi.scilla.web.response.payment.DuplicatePaymentResponse;
 import com.ansi.scilla.web.response.payment.PaymentResponse;
-import com.ansi.scilla.web.response.ticket.TicketReturnResponse;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
@@ -114,7 +115,8 @@ public class PaymentServlet extends AbstractServlet {
 				conn.setAutoCommit(false);
 				String jsonString = super.makeJsonString(request);
 				System.out.println(jsonString);
-				PaymentRequest paymentRequest = (PaymentRequest)AppUtils.json2object(jsonString, PaymentRequest.class);
+				PaymentRequest paymentRequest = new PaymentRequest();
+				AppUtils.json2object(jsonString, paymentRequest);
 				url = new AnsiURL(request, "payment", new String[] {PaymentRequestType.ADD.name().toLowerCase()});
 				SessionData sessionData = AppUtils.validateSession(request, Permission.PAYMENT, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 				SessionUser sessionUser = sessionData.getUser();
@@ -174,16 +176,48 @@ public class PaymentServlet extends AbstractServlet {
 
 	private void processAdd(Connection conn, PaymentRequest paymentRequest, SessionUser sessionUser, HttpServletResponse response) throws Exception {
 		List<String> addErrors = super.validateRequiredAddFields(paymentRequest);
+		Payment duplicatePayment = null;
 		HashMap<String, String> errors = new HashMap<String, String>();
 		if ( addErrors.isEmpty() ) {
 			errors = validateValues(paymentRequest);
 		}
 		if (addErrors.isEmpty() && errors.isEmpty()) {
-			doAdd(conn, paymentRequest, response, sessionUser);
+			duplicatePayment = checkForDupe(conn, paymentRequest);
+		}
+		 
+		if (addErrors.isEmpty() && errors.isEmpty()) {
+			boolean doAdd = false;
+			if ( duplicatePayment == null ) {
+				// no duplicate payment was found
+				doAdd = true;
+			} else {
+				if ( paymentRequest.getConfirmDuplicate() ) {
+					// duplicate was found, enter it anyway
+					doAdd = true;
+				}
+			}
+			if ( doAdd ) {
+				doAdd(conn, paymentRequest, response, sessionUser);
+				conn.commit();
+			} else {
+				doWarningResponse(conn, response, duplicatePayment);
+			}
 		} else {
 			doErrorResponse(conn, response, addErrors, errors);
 		}
-		conn.commit();
+	}
+
+	private Payment checkForDupe(Connection conn, PaymentRequest paymentRequest) throws Exception {
+		Payment payment = new Payment();
+		payment.setPaymentMethod(paymentRequest.getPaymentMethod());
+		payment.setCheckDate(paymentRequest.getCheckDate());
+		payment.setAmount(paymentRequest.getPaymentAmount());
+		try {
+			payment.selectOne(conn);
+		} catch ( RecordNotFoundException e ){
+			payment = null;
+		}
+		return payment;
 	}
 
 	private void doAdd(Connection conn, PaymentRequest paymentRequest, HttpServletResponse response, SessionUser sessionUser) throws Exception {
@@ -248,6 +282,20 @@ public class PaymentServlet extends AbstractServlet {
 		return errors;
 	}
 
+	private void doWarningResponse(Connection conn, HttpServletResponse response, Payment duplicatePayment) throws Exception {
+		User user = new User();
+		user.setUserId(duplicatePayment.getAddedBy());
+		try {
+			user.selectOne(conn);
+		} catch ( RecordNotFoundException e) {
+			// this is weird, but not a killer situation
+			user.setLastName("Unknown");
+		}
+		DuplicatePaymentResponse data = new DuplicatePaymentResponse(duplicatePayment, user);
+		super.sendResponse(conn, response, ResponseCode.EDIT_WARNING, data);
+	}
+
+	
 	private void doErrorResponse(Connection conn, HttpServletResponse response, List<String> addErrors, HashMap<String, String> errors) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		for ( String error : addErrors ) {
@@ -267,4 +315,6 @@ public class PaymentServlet extends AbstractServlet {
 		UPDATE,
 		DELETE;
 	}
+	
+	
 }

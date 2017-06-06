@@ -50,6 +50,7 @@
         	}
         	.formHdr {
         		font-weight:bold;
+        		white-space:nowrap;
         	}
 			.action-link {
 				cursor:pointer;
@@ -68,6 +69,9 @@
 			.confirmCurrency {
 				text-align:right;
 				padding-left:8px;
+			}
+			.duplicatePmtRow {
+				display:none;
 			}
         </style>
         
@@ -95,7 +99,7 @@
 				title:'Payment',
 				autoOpen: false,
 				height: 400,
-				width: 500,
+				width: 600,
 				modal: true,
 				closeOnEscape:false,
 				open: function(event, ui) {
@@ -185,8 +189,11 @@
         		$("#modalNewBox").css('background-color','#FFFFFF');
         		$(".searchPmtRow").show();
         		$(".newPmtRow").hide();
+        		$(".duplicatePmtRow").hide();
         		$("#modalSearch").data("action","search");
         		$("#pmtSearchId").focus();
+        		$( "#paymentModal" ).dialog("option", "height", 400);
+
         	})
         	
         	$("#modalNew").click(function($event) {
@@ -461,6 +468,7 @@
         		$.each($('.newPmtRow select'), function(){
         			$outbound[this.id]=this.value
         		});
+        		$outbound['confirmDuplicate'] = $("#confirmDuplicate").prop("checked");
         		
 				var jqxhr = $.ajax({
 	   				type: 'POST',
@@ -470,6 +478,8 @@
 		   				200: function($data) {
 		   					if ( $data.responseHeader.responseCode=='EDIT_FAILURE') {
 		   						doPaymentEditFailure($data.data);
+		   					} else if ( $data.responseHeader.responseCode=='EDIT_WARNING') {
+		   						doPaymentEditWarning($data.data);
 		   					} else if ( $data.responseHeader.responseCode == 'SUCCESS') {
 		   						populatePaymentSummary($data.data.paymentTotals);
 		   						$(".newPaymentField").val("");
@@ -497,6 +507,20 @@
 		   			},
 		   			dataType: 'json'
 		   		});        	
+        	}
+        	
+        	
+        	function doPaymentEditWarning($data) {
+        		var $dupeMessage = '<span class="formHdr">Possible Duplicate entry detected:</span><br />';
+        		$dupeMessage = $dupeMessage + "ID: " + $data.payment.paymentId + "<br />";
+        		$dupeMessage = $dupeMessage + "Method: " + $data.payment.paymentMethod + "<br />";
+        		$dupeMessage = $dupeMessage + "Date: " + $data.payment.checkDate + "<br />";
+        		$dupeMessage = $dupeMessage + "Amount: " + $data.payment.amount + "<br />";
+        		$dupeMessage = $dupeMessage + "Entered By: " + $data.firstName + " " + $data.lastName + " on " + $data.payment.paymentDate + "<br />";
+        		$("#duplicatePmtMessage").html($dupeMessage);
+        		$("#confirmDuplicate").prop("checked", false);
+        		$( "#paymentModal" ).dialog("option", "height", 550);
+        		$(".duplicatePmtRow").show();
         	}
         	
         	
@@ -938,18 +962,18 @@
     
     	<div id="paymentModal">
 			<form action="#">
-				<table style="width:450px;">
+				<table style="width:500px;">
 					<colgroup>
 			        	<col style="width:50%;" />
 			        	<col style="width:50%;" />
 					</colgroup>
 					<tr>
-						<td id="modalNewBox" style="text-align:center; border:solid 1px #000000; padding:5px; background-color:#CCCCCC;"><i id="modalNew"    class="action-link fa fa-plus-square fa-lg" aria-hidden="true"></i></td>
-						<td id="modalSearchBox" style="text-align:center; border:solid 1px #000000; padding:5px; background-color:#FFFFFF;"><i id="modalSearch" class="action-link fa fa-search-plus fa-lg" aria-hidden="true"></i></td>
+						<td id="modalNewBox" style="text-align:center; border:solid 1px #000000; padding:5px; background-color:#CCCCCC;"><i id="modalNew" class="action-link fa fa-plus-square fa-lg tooltip" aria-hidden="true"><span class="tooltiptextleft">New Payment</span></i></td>
+						<td id="modalSearchBox" style="text-align:center; border:solid 1px #000000; padding:5px; background-color:#FFFFFF;"><i id="modalSearch" class="action-link fa fa-search-plus fa-lg tooltip" aria-hidden="true"><span class="tooltiptextleft">Find Payment</span></i></td>
 						<td>&nbsp;</td>
 					</tr>
 				</table>
-				<table style="width:450px;">
+				<table style="width:500px;">
 					<colgroup>
 			        	<col style="width:25%;" />
 			        	<col style="width:30%;" />
@@ -994,6 +1018,14 @@
 						<td class="formHdr">Notes: </td>
 						<td><input type="text" id="paymentNote" class="newPaymentField" /></td>
 						<td><span class="err" id="paymentNoteErr"></span></td>
+					</tr>
+					<tr class="duplicatePmtRow">
+						<td colspan="2"><span id="duplicatePmtMessage"></span></td>
+					</tr>
+					<tr class="duplicatePmtRow">
+						<td class="formHdr">Confirm Entry:</td>
+						<td><input type="checkbox" id="confirmDuplicate" class="newPaymentField"/></td>
+						<td><span class="err" id="confirmDuplicateErr"></span></td>
 					</tr>
 				</table>
 			</form>

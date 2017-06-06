@@ -7,6 +7,7 @@ public enum ResponseCode {
 	INVALID_LOGIN(HttpServletResponse.SC_FORBIDDEN),
 	
 	EDIT_FAILURE(HttpServletResponse.SC_OK),
+	EDIT_WARNING(HttpServletResponse.SC_OK),
 	
 	SYSTEM_FAILURE(HttpServletResponse.SC_INTERNAL_SERVER_ERROR),
 

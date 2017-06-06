@@ -26,6 +26,7 @@ public class PaymentRequest extends AbstractRequest {
 	public static final String FEES = "fees";
 	public static final String EXCESS_PAYMENT = "excessPayment";
 	public static final String PAYMENT_METHOD = "paymentMethod";
+	public static final String CONFIRM_DUPLICATE = "confirmDuplicate";
 	
 	
 	private BigDecimal paymentAmount;
@@ -36,6 +37,7 @@ public class PaymentRequest extends AbstractRequest {
 	private String checkNumber;
 	private Date checkDate;
 	private String paymentMethod;
+	private Boolean confirmDuplicate;
 	
 	private BigDecimal fees;
 	private BigDecimal excessPayment;
@@ -141,6 +143,14 @@ public class PaymentRequest extends AbstractRequest {
 
 	public void setPaymentMethod(String paymentMethod) {
 		this.paymentMethod = paymentMethod;
+	}
+
+	public Boolean getConfirmDuplicate() {
+		return confirmDuplicate;
+	}
+
+	public void setConfirmDuplicate(Boolean confirmDuplicate) {
+		this.confirmDuplicate = confirmDuplicate;
 	}
 
 

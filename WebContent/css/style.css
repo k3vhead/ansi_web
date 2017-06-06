@@ -114,6 +114,27 @@ h1 {
 	margin-left:-60px;   /* .5 * width */
 }
 
+.tooltip .tooltiptextleft {
+	border:solid 1px #000000;
+	visibility:hidden;
+	width:120px;
+	background-color:#404040;
+	color:#CCCCCC;
+	text-align:center;
+	padding: 5px;
+	border-radious: 6px;
+	position:absolute;
+	z-index:1;
+	font-size:12px;
+	
+	top: -5px;
+    left: 105%; 
+}
+
 .tooltip:hover .tooltiptext {
+	visibility:visible;
+}
+
+.tooltip:hover .tooltiptextleft {
 	visibility:visible;
 }
