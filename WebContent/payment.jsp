@@ -296,11 +296,19 @@
         	
             var $invoiceComplete = $( "#invoiceNbr" ).autocomplete({
 				source: "invoiceTypeAhead",
-                minLength: 2,
+                minLength: 3,
                 appendTo: "#someInvoice",
                 select: function( event, ui ) {
 					$("#invoiceNbr").val(ui.item.id);
 					var $ticketData = populateTicketData(ui.item.id);
+                },
+                response: function(event, ui) {
+                    if (ui.content.length === 0) {
+                    	$("#invoiceNbrErr").html("No Matches");
+                    	clearTicketData()
+                    } else {
+                    	$("#invoiceNbrErr").html("");
+                    }
                 }
           	}).data('ui-autocomplete');
 			$invoiceComplete._renderMenu = function( ul, items ) {
@@ -323,6 +331,13 @@
                 select: function( event, ui ) {
                   //alert( "Selected: " + ui.item.id + " aka " + ui.item.label + " or " + ui.item.value );
                   $("#invoiceNbr").val(ui.item.id);
+                },
+                response: function(event, ui) {
+                    if (ui.content.length === 0) {
+                    	$("#pmtSearchIdErr").html("No Matching Payments");
+                    } else {
+                    	$("#pmtSearchIdErr").html("");
+                    }
                 }
         	});
         	
@@ -449,6 +464,20 @@
 		   			},
 		   			dataType: 'json'
 		   		});        	
+        	}
+        	
+        	
+        	function clearTicketData() {
+        		$(".billToField").html("");
+				$("#billToAddress1").html("");
+				$("#billToAddress2").html("");
+				$("#billToCity").html("");
+				$("#billToName").html("");
+				$("#billToState").html("");
+				$("#billToZip").html("");
+				$("#toPay").html("");
+				$("#feeAmount").val("");
+				$("#excessCash").val("");
         	}
         	
 			function paymentModal() {
@@ -860,7 +889,10 @@
     	<table style="width:500px;">
     		<tr>
     			<td class="formHdr">Bill To:</td>
-    			<td>Invoice Number: <input type="text" id="invoiceNbr" /></td>
+    			<td>
+    				Invoice Number: <input type="text" id="invoiceNbr" />
+    				<span id="invoiceNbrErr" class="err"></span>
+    			</td>
     		</tr>
     		<tr>
     			<td class="formHdr">Name:</td>
