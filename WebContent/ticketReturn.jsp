@@ -213,6 +213,14 @@
                 	$globalTicketId = $ticketNbr
 					$("#ticketNbr").val($ticketNbr);
             		doPopulate($ticketNbr);
+                },
+                response: function(event, ui) {
+                    if (ui.content.length === 0) {
+                    	$("#globalMsg").html("No Matching Ticket");
+                    	clearTicketData()
+                    } else {
+                    	$("#globalMsg").html("");
+                    }
                 }
           	}).data('ui-autocomplete');
 			$ticketComplete._renderMenu = function( ul, items ) {

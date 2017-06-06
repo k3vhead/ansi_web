@@ -303,7 +303,12 @@ $( document ).ready(function() {
 				    	ADDRESS_UTILS.clearAddress("#jobSite");
 				    	ADDRESS_UTILS.getAddress($jobSiteId, "#jobSite");
 				    	
-				      }
+				      },
+		              response: function(event, ui) {
+		            	  if (ui.content.length === 0) {
+		            		  alert("No Matches")
+		            	  }
+		              }
 				}).data('ui-autocomplete');
 				 $jobSiteNameComplete._renderMenu = function( ul, items ) {
 					var that = this;
@@ -332,7 +337,10 @@ $( document ).ready(function() {
 				    	ADDRESS_UTILS.getAddress($billToId, "#billTo");
 				    	//label
 				    	//preferredContactValue
-				      }
+				      },
+		              response: function(event, ui) {
+		            	  alert("No Matches");
+		              }
 				}).data('ui-autocomplete');
 				$billToNameComplete._renderMenu = function( ul, items ) {
 					var that = this;
@@ -361,7 +369,12 @@ $( document ).ready(function() {
 				    	$jobContactId = ui.item.id;
 				    	$("input[name='jobSite_jobContactName']").val(ui.item.value);
 				    	$("span[name='jobSite_jobContactInfo']").html(QUOTEUTILS.processContact(ui.item));
-				      }
+				      },
+		              response: function(event, ui) {
+		            	  if (ui.content.length === 0) {
+		            		  alert("No Matches")
+		            	  }
+		              }
 				});
 
 				$( "input[name='jobSite_jobContactName']" ).focusout(function() {
@@ -376,7 +389,12 @@ $( document ).ready(function() {
 				    	$siteContactId = ui.item.id;
 				    	$("input[name='jobSite_siteContactName']").val(ui.item.value);
 				    	$("span[name='jobSite_siteContactInfo']").html(QUOTEUTILS.processContact(ui.item));
-				      }
+				      },
+		              response: function(event, ui) {
+		            	  if (ui.content.length === 0) {
+		            		  alert("No Matches")
+		            	  }
+		              }
 				 });
 				
 				$( "input[name='jobSite_siteContactName']" ).focusout(function() {
@@ -408,7 +426,12 @@ $( document ).ready(function() {
 					    	$("input[name='billTo_billingContactName']").val(ui.item.value);
 					    	$("span[name='billTo_billingContactInfo']").html(QUOTEUTILS.processContact(ui.item));
 				    	}
-				      }
+				      },
+		              response: function(event, ui) {
+		            	  if (ui.content.length === 0) {
+		            		  alert("No Matches")
+		            	  }
+		              }
 				 });
 				
 				$( "input[name='billTo_contractContactName']" ).focusout(function() {
@@ -425,7 +448,12 @@ $( document ).ready(function() {
 				    	
 				    	$("input[name='billTo_billingContactName']").val(ui.item.value);
 				    	$("span[name='billTo_billingContactInfo']").html(QUOTEUTILS.processContact(ui.item));
-				      }
+				      },
+		              response: function(event, ui) {
+		            	  if (ui.content.length === 0) {
+		            		  alert("No Matches")
+		            	  }
+		              }
 				 });
 				
 				 $( "input[name='billTo_billingContactName']" ).focusout(function() {

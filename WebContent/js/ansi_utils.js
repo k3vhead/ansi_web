@@ -182,7 +182,13 @@ $( document ).ready(function() {
 				        ADDRESSPANEL.clearAddress($namespace);
 				        var data = ADDRESSPANEL.getAddress(ui.item.id);
 				        ADDRESSPANEL.setAddress($namespace,data[0]);
-				      }
+				      },
+		              response: function(event, ui) {
+		            	  console.debug("Hashtag yay");
+		            	  if (ui.content.length === 0) {
+		            		  alert("No Matching Address")
+		            	  }
+		              }
 				  });
 				 
 				 $( "input[name='"+$namespace+"_jobContactName']" ).autocomplete({
@@ -191,7 +197,13 @@ $( document ).ready(function() {
 				        var data = ADDRESSPANEL.getContact(ui.item.id);
 				        var id = ADDRESSPANEL.setContact($namespace+"_job",data);
 				        $("input[name='"+$namespace+"_Con1id']").val(id);
-				      }
+				      },
+		              response: function(event, ui) {
+		            	  console.debug("Hashtag yay");
+		            	  if (ui.content.length === 0) {
+		            		  alert("No Matching Address")
+		            	  }
+		              }
 				  });
 				 $( "input[name='"+$namespace+"_siteContactName']" ).autocomplete({
 				     'source':"contactTypeAhead?term=",
@@ -199,7 +211,13 @@ $( document ).ready(function() {
 				        var data = ADDRESSPANEL.getContact(ui.item.id);
 				        var id = ADDRESSPANEL.setContact($namespace+"_site",data);
 				        $("input[name='"+$namespace+"_Con2id']").val(id);
-				      }
+				      },
+		              response: function(event, ui) {
+		            	  console.debug("Hashtag yay");
+		            	  if (ui.content.length === 0) {
+		            		  alert("No Matching Address")
+		            	  }
+		              }
 				    });
 				 $( "input[name='"+$namespace+"_contractContactName']" ).autocomplete({
 				     'source':"contactTypeAhead?term=",
@@ -207,7 +225,13 @@ $( document ).ready(function() {
 				        var data = ADDRESSPANEL.getContact(ui.item.id);
 				        var id = ADDRESSPANEL.setContact($namespace+"_contract",data);
 				        $("input[name='"+$namespace+"_Con1id']").val(id);
-				      }
+				      },
+		              response: function(event, ui) {
+		            	  console.debug("Hashtag yay");
+		            	  if (ui.content.length === 0) {
+		            		  alert("No Matching Address")
+		            	  }
+		              }
 				    });
 				 $( "input[name='"+$namespace+"_billingContactName']" ).autocomplete({
 				     'source':"contactTypeAhead?term=",
@@ -215,7 +239,13 @@ $( document ).ready(function() {
 				        var data = ADDRESSPANEL.getContact(ui.item.id);
 				        var id = ADDRESSPANEL.setContact($namespace+"_billing",data);
 				        $("input[name='"+$namespace+"_Con2id']").val(id);
-				      }
+				      },
+		              response: function(event, ui) {
+		            	  console.debug("Hashtag yay");
+		            	  if (ui.content.length === 0) {
+		            		  alert("No Matching Address")
+		            	  }
+		              }
 				    });
 				
 				this.setCountryList($namespace, $countryList);
