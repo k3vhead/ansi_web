@@ -167,6 +167,25 @@
                 showButtonPanel:true
             });
         	
+        	$('#paymentDate').datepicker({
+	            prevText:'&lt;&lt;',
+	            nextText: '&gt;&gt;',
+	            showButtonPanel:true,
+	            onSelect: function(dateText, inst) {
+	            	$("#paymentMethod").focus();
+	            }
+	        });
+        	
+        	
+        	$('#checkDate').datepicker({
+	            prevText:'&lt;&lt;',
+	            nextText: '&gt;&gt;',
+	            showButtonPanel:true,
+	            onSelect: function(dateText, inst) {
+	            	$("#paymentAmount").focus();
+	            }
+	        });
+        	
         	if ( $paymentId == '' ) {
         		paymentModal();
         		$paymentAction = "new";
@@ -1024,7 +1043,7 @@
 					</tr>
 					<tr class="newPmtRow">
 						<td class="formHdr">Date Paid: </td>
-						<td><input type="text" class="dateField newPaymentField" id="paymentDate"/></td>
+						<td><input type="text" class="newPaymentField" id="paymentDate"/></td>
 						<td><span class="err" id="paymentDateErr"></span></td>
 					</tr>
 					<tr class="newPmtRow">
@@ -1039,7 +1058,7 @@
 					</tr>
 					<tr class="newPmtRow">
 						<td class="formHdr">Check Date: </td>
-						<td><input type="text" class="dateField newPaymentField" id="checkDate"/></td>
+						<td><input type="text" class="newPaymentField" id="checkDate"/></td>
 						<td><span class="err" id="checkDateErr"></span></td>
 					</tr>
 					<tr class="newPmtRow">
