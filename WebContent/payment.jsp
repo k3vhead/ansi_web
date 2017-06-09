@@ -564,6 +564,7 @@
         		$dupeMessage = $dupeMessage + "ID: " + $data.payment.paymentId + "<br />";
         		$dupeMessage = $dupeMessage + "Method: " + $data.payment.paymentMethod + "<br />";
         		$dupeMessage = $dupeMessage + "Date: " + $data.payment.checkDate + "<br />";
+        		$dupeMessage = $dupeMessage + "Check Nbr: " + $data.payment.checkNumber + "<br />";
         		$dupeMessage = $dupeMessage + "Amount: " + $data.payment.amount + "<br />";
         		$dupeMessage = $dupeMessage + "Entered By: " + $data.firstName + " " + $data.lastName + " on " + $data.payment.paymentDate + "<br />";
         		$("#duplicatePmtMessage").html($dupeMessage);
