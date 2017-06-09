@@ -1,0 +1,42 @@
+.ansi-calendar-cell { 
+	vertical-align:top; 
+	text-align:center;
+	border:solid 1px #404040;
+}
+.ansi-date-month {
+	border:bottom:solid 1px #404040;
+	background-color:#CCCCCC;
+}
+.ansi-date-month-text {
+	color:#404040;
+	font-weight:bold;
+	font-family:arial, helvetica;
+}
+.ansi-date-dayname {
+	
+}
+.ansi-date-dayname-text {
+	font-weight:bold;
+	font-family:arial, helvetica;
+	font-size:90%;
+}
+.ansi-date-day {
+	text-align:center;			
+	cursor:pointer;	
+	border:solid 1px #FFFFFF;		
+}
+.ansi-date-day-text {
+	font-family:arial, helvetica;
+}
+.ansi-date-highlight {
+	border:solid 1px #FF0000;
+}
+.ansi-date-lowlight {
+	border:solid 1px #FFFFFF;
+}
+.ansi-date-selected {
+	background-color:#008000;
+}
+.ansi-date-notselected {
+	background-color:#FFFFFF;
+}
