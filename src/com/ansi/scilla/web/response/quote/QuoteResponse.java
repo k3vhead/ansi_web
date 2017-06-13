@@ -2,18 +2,12 @@ package com.ansi.scilla.web.response.quote;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
 import java.util.Date;
 
-import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Quote;
-import com.ansi.scilla.common.db.User;
-import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
 import com.ansi.scilla.web.common.WebMessages;
 import com.ansi.scilla.web.response.MessageResponse;
-import com.ansi.scilla.web.response.job.JobDetailResponse.QuoteDetail;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.thewebthing.commons.lang.BeanUtils;
+import com.ansi.scilla.web.response.job.QuoteDetail;
 
 /**
  * Used to return a single quote to the client
