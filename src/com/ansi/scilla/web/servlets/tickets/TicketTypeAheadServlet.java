@@ -158,13 +158,15 @@ public class TicketTypeAheadServlet extends AbstractServlet {
 			super();
 			this.id = rs.getInt("ticket_id");
 			//ticket_id:ticket_status:division_code:job_nbr:frequency:act_price_per_cleaning:job site:address 1
+			String fmId = rs.getString("fleetmatics_id");
+			String fmDisplay = StringUtils.isBlank(fmId) ? "n/a" : fmId;
 			this.label = rs.getString("ticket_id") 
 					+ ":" + "Status " + rs.getString("ticket_status")
 					+ ":" + rs.getString("division_code")
 					+ ":" + "J# " + rs.getString("job_nbr")
 					+ ":" + "Freq " + rs.getString("job_frequency")
 					+ ":" + "PPC " + rs.getString("act_price_per_cleaning")
-					+ ":" + "FM " + rs.getString("fleetmatics_id")
+					+ ":" + "FM " + fmDisplay
 					+ ":" + "Site " + rs.getString("name")
 					+ ":" + rs.getString("address1");
 			this.value = rs.getString("ticket_id");
