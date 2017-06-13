@@ -6,6 +6,7 @@ import java.util.Date;
 
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
 import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
+import com.ansi.scilla.common.queries.InvoiceSearch;
 import com.ansi.scilla.common.queries.ReportQuery;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.thewebthing.commons.db2.DBColumn;
@@ -49,6 +50,22 @@ public class InvoiceLookupResponseItem extends ReportQuery {
 	public InvoiceLookupResponseItem() {
 		super();
 	}
+	public InvoiceLookupResponseItem(InvoiceSearch invoiceSearch) {
+		this();
+		this.invoiceId = invoiceSearch.getInvoiceId();
+		this.fleetmaticsInvoiceNbr = invoiceSearch.getFleetmaticsInvoiceNbr();
+		this.invoiceAmount = invoiceSearch.getInvoiceAmount();
+		this.invoiceTax = invoiceSearch.getInvoiceTax();
+		this.invoiceTotal = invoiceSearch.getInvoiceTotal();
+		this.invoicePaid = invoiceSearch.getInvoicePaid();
+		this.invoiceBalance = invoiceSearch.getInvoiceBalance();
+		this.ticketCount = invoiceSearch.getTicketCount();
+		this.invoiceDate = invoiceSearch.getInvoiceDate();
+		this.billToName = invoiceSearch.getBillToName();
+		this.div = invoiceSearch.getDiv();
+		this.printCount=invoiceSearch.getPrintCount();		
+	}
+	
 	public InvoiceLookupResponseItem(ResultSet rs) throws SQLException {
 		this();
 		this.invoiceId = rs.getInt(INVOICE_ID);

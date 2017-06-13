@@ -3,9 +3,6 @@ package com.ansi.scilla.web.servlets.invoice;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ansi.scilla.common.db.PermissionLevel;
-import com.ansi.scilla.common.invoice.InvoiceStatus;
 import com.ansi.scilla.common.queries.InvoiceSearch;
 import com.ansi.scilla.web.actionForm.InvoiceLookupForm;
 import com.ansi.scilla.web.common.AppUtils;
@@ -30,17 +26,6 @@ import com.thewebthing.commons.lang.StringUtils;
 
 public class InvoiceLookupServlet extends AbstractServlet {
 
-//	private final String lookupSql = "select invoice.invoice_id, sum(ticket.act_price_per_cleaning) as invoice_total, " + 
-//			" count(ticket.ticket_id) as ticket_count, ticket.invoice_date, bill_to.bill_to_name, " + 
-//			" concat(division.division_nbr, '-', division.division_code) as div " +
-//			" from invoice, ticket, division, job, quote, address as bill_to " +
-//			" where ticket.invoice_id=invoice.invoice_id " +
-//			" and division.division_id=ticket.act_division_id " +
-//			" and job.job_id = ticket.job_id " +
-//			" and quote.quote_id=job.quote_id " +
-//			" and bill_to.address_id=quote.bill_to_address_id " +
-//			" group by invoice.invoice_id, ticket.invoice_date, bill_to.name, division.division_nbr, division.division_code " +
-//			" order by invoice_id desc";
 	
 	private static final long serialVersionUID = 1L;
 
@@ -126,9 +111,9 @@ public class InvoiceLookupServlet extends AbstractServlet {
 
 			String colName = cols[col];
 
-			Integer totalFiltered = makeFilteredCount(conn, filterDivisionId, filterPPC);		    
+			Integer totalFiltered = InvoiceSearch.makeFilteredCount(conn, term, filterDivisionId, filterPPC);		    
 			List<InvoiceLookupResponseItem> resultList = makeFetchData(conn, amount, start, term, filterDivisionId, filterPPC, colName, dir);
-			Integer totalUnfiltered = makeUnfilteredCount(conn);
+			Integer totalUnfiltered = InvoiceSearch.makeUnfilteredCount(conn);
 
 
 			response.setStatus(HttpServletResponse.SC_OK);
@@ -160,31 +145,7 @@ public class InvoiceLookupServlet extends AbstractServlet {
 		}
 	}
 
-	private Integer makeUnfilteredCount(Connection conn) throws SQLException {
-		Integer totalUnfiltered = null;
-		String sql2 = "select count(1) from ("
-				+ InvoiceSearch.sql;
-		
-		sql2 += ") t";
-		
-//	    if ( ! StringUtils.isBlank(filterDivisionId)) {
-//	    	sql2 = sql2.replaceAll("inner join division on", "inner join division on division.division_id=" + filterDivisionId + " and ");
-//	    	sql2 = sql2.replaceAll("group by", "where invoice.invoice_status='" + InvoiceStatus.NEW.code() + "' group by");
-//	    }
 
-		System.out.println("*****");
-		System.out.println("filtered count:\n" + sql2);
-		System.out.println("*****");
-		Statement s2 = conn.createStatement();
-		ResultSet rs2 = s2.executeQuery(sql2);
-		if(rs2.next()){
-			totalUnfiltered = rs2.getInt(1);
-	    }
-		rs2.close();
-		/** End of Section **/
-		
-		return totalUnfiltered;
-	}
 
 	private List<InvoiceLookupResponseItem> makeFetchData(Connection conn, Integer amount, Integer start, String term, String filterDivisionId, Boolean filterPPC, String colName, String dir) throws Exception {
 		System.out.println("Getting fetch data");
@@ -196,105 +157,16 @@ public class InvoiceLookupServlet extends AbstractServlet {
 		System.out.println("colName: " + colName);
 		System.out.println("dir: " + dir);
 				
-		
+		List<InvoiceSearch> invoiceSearchList = InvoiceSearch.makeFetchData(conn, amount, start, term, filterDivisionId, filterPPC, colName, dir);
 		List<InvoiceLookupResponseItem> resultList = new ArrayList<InvoiceLookupResponseItem>();
-		String sql = InvoiceSearch.sql;
-		String search = InvoiceSearch.generateWhereClause(term);
-		
-//		System.out.println("****** Search (Not executed until fetch)");
-//		System.out.println(sql);
-//		System.out.println("*******");
-		sql += search;
-//		System.out.println(sql);
-//		System.out.println(sql);
-		System.out.println("**** Before *****\n" + sql + "\n**** /Before ******");
-
-		if ( filterPPC ) {			
-			if ( StringUtils.isBlank(filterDivisionId)) {
-				sql = "select * from (\n" + sql + "\n) invoice_search \nwhere invoice_search.invoice_balance != 0";
-			} else {
-				// filter on both PPC & division
-		    	sql = sql.replaceAll("inner join division on", "inner join division on division.division_id=" + filterDivisionId + " and ");
-		    	sql = sql.replaceAll("group by", "where invoice.invoice_status='" + InvoiceStatus.NEW.code() + "'\n group by");
-				sql = "select * from (\n" + sql + "\n) invoice_search \nwhere invoice_search.invoice_balance != 0";
-			}
-		} else {
-			if ( StringUtils.isBlank(filterDivisionId)) {
-				// no filters on anything, so just go
-			} else {
-				// filter on division, not PPC, so this is copied from old version
-		    	sql = sql.replaceAll("inner join division on", "inner join division on division.division_id=" + filterDivisionId + " and ");
-		    	sql = sql.replaceAll("group by", "where invoice.invoice_status='" + InvoiceStatus.NEW.code() + "'\n group by");
-			}
+		for ( InvoiceSearch invoiceSearch : invoiceSearchList ) {
+			resultList.add(new InvoiceLookupResponseItem(invoiceSearch));
 		}
-		
-		sql += "\n order by " + colName + " " + dir;
-
-		if ( amount != -1) {
-			sql += "\n OFFSET "+ start+" ROWS" + " FETCH NEXT " + amount + " ROWS ONLY";
-		}
-//	    if ( ! StringUtils.isBlank(filterDivisionId)) {
-//	    	sql = sql.replaceAll("inner join division on", "inner join division on division.division_id=" + filterDivisionId + " and ");
-//	    	sql = sql.replaceAll("group by", "where invoice.invoice_status='" + InvoiceStatus.NEW.code() + "' group by");
-//	    }
-		System.out.println("*****\nfetch:\n");
-		System.out.println(sql);
-		System.out.println("*****");
-		
-		Statement s = conn.createStatement();
-		ResultSet rs = s.executeQuery(sql);
-		while ( rs.next() ) {
-			resultList.add(new InvoiceLookupResponseItem(rs));
-		}
-		rs.close();
-
-		/** End of section **/
-
 		return resultList;
-	}
-
-	private Integer makeFilteredCount(Connection conn, String filterDivisionId, Boolean filterPPC) throws SQLException {
-	    String sql = InvoiceSearch.sql;
-	    Integer total = null;
-	    
-	    
-		if ( filterPPC ) {			
-			if ( StringUtils.isBlank(filterDivisionId)) {
-				sql = "select * from (\n" + sql + "\n) invoice_search \nwhere invoice_search.invoice_balance != 0";
-			} else {
-				// filter on both PPC & division
-		    	sql = sql.replaceAll("inner join division on", "inner join division on division.division_id=" + filterDivisionId + " and ");
-		    	sql = sql.replaceAll("group by", "where invoice.invoice_status='" + InvoiceStatus.NEW.code() + "'\n group by");
-				sql = "select * from (\n" + sql + "\n) invoice_search \nwhere invoice_search.invoice_balance != 0";
-			}
-		} else {
-			if ( StringUtils.isBlank(filterDivisionId)) {
-				// no filters on anything, so just go
-			} else {
-				// filter on division, not PPC, so this is copied from old version
-		    	sql = sql.replaceAll("inner join division on", "inner join division on division.division_id=" + filterDivisionId + " and ");
-		    	sql = sql.replaceAll("group by", "where invoice.invoice_status='" + InvoiceStatus.NEW.code() + "'\n group by");
-			}
-		}
 		
-		sql = "select count(1) from ("+ sql + ") t";
-	    
-//	    if ( ! StringUtils.isBlank(filterDivisionId)) {
-//	    	sql = sql.replaceAll("inner join division on", "inner join division on division.division_id=" + filterDivisionId + " and ");
-//	    	sql = sql.replaceAll("group by", "where invoice.invoice_status='" + InvoiceStatus.NEW.code() + "' group by");
-//	    }
-//	    System.out.println("*****");
-//		System.out.println("total count:\t" + sql);
-//		System.out.println("*****");
-		Statement s = conn.createStatement();
-		ResultSet rs0 = s.executeQuery(sql);
-		if(rs0.next()){
-	        total = rs0.getInt(1);
-	    }
-		rs0.close();
-
-	    return total;
 	}
+	
+
 
 
 }
