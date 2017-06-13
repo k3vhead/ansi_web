@@ -282,7 +282,9 @@ public class TicketServlet extends AbstractServlet {
 				ticket.setActDlPct(ticketReturnRequest.getActDlPct());
 				ticket.setActDlAmt(ticketReturnRequest.getActDlAmt());
 				//optional fields
-				if(!StringUtils.isBlank(ticketReturnRequest.getProcessNotes())){
+				if(StringUtils.isBlank(ticketReturnRequest.getProcessNotes())){
+					ticket.setProcessNotes("");
+				} else {
 					ticket.setProcessNotes(ticketReturnRequest.getProcessNotes());
 				} 
 				if (ticketReturnRequest.getCustomerSignature() != null && ticketReturnRequest.getCustomerSignature()){
