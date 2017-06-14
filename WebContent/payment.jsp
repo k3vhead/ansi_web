@@ -567,6 +567,15 @@
         		$dupeMessage = $dupeMessage + "Check Nbr: " + $data.payment.checkNumber + "<br />";
         		$dupeMessage = $dupeMessage + "Amount: " + $data.payment.amount + "<br />";
         		$dupeMessage = $dupeMessage + "Entered By: " + $data.firstName + " " + $data.lastName + " on " + $data.payment.paymentDate + "<br />";
+        		$dupeMessage = $dupeMessage + "Invoice(s): ";
+        		if ( $data.invoiceIdList.size == 0 ) {
+        			$dupeMessage = $dupeMessage + "None";
+        		} else {
+        			$.each($data.invoiceIdList, function(idx, invoiceId) {
+        				$dupeMessage = $dupeMessage + invoiceId + " ";
+        			});
+        		}
+        		$dupeMessage = $dupeMessage + "<br />";
         		$("#duplicatePmtMessage").html($dupeMessage);
         		$("#confirmDuplicate").prop("checked", false);
         		$( "#paymentModal" ).dialog("option", "height", 550);

@@ -3,7 +3,9 @@ package com.ansi.scilla.web.servlets.payment;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Connection;
-import java.text.SimpleDateFormat;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -296,7 +298,18 @@ public class PaymentServlet extends AbstractServlet {
 			// this is weird, but not a killer situation
 			user.setLastName("Unknown");
 		}
-		DuplicatePaymentResponse data = new DuplicatePaymentResponse(duplicatePayment, user);
+		PreparedStatement ps = conn.prepareStatement("select distinct ticket.invoice_id " +
+												" from ticket_payment " +
+												" inner join ticket on ticket.ticket_id=ticket_payment.ticket_id " +
+												" where ticket_payment.payment_id=?");
+		ps.setInt(1, duplicatePayment.getPaymentId());
+		ResultSet rs = ps.executeQuery();
+		List<Integer> invoiceIdList = new ArrayList<Integer>();
+		while ( rs.next() ) {
+			invoiceIdList.add(rs.getInt(1));
+		}
+		rs.close();
+		DuplicatePaymentResponse data = new DuplicatePaymentResponse(duplicatePayment, user, invoiceIdList);
 		super.sendResponse(conn, response, ResponseCode.EDIT_WARNING, data);
 	}
 

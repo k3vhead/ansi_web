@@ -1,6 +1,7 @@
 package com.ansi.scilla.web.response.payment;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 import com.ansi.scilla.common.db.Payment;
 import com.ansi.scilla.common.db.User;
@@ -15,18 +16,20 @@ public class DuplicatePaymentResponse extends MessageResponse {
 	private String lastName;
 	private String email;
 	private String phone;
+	private List<Integer> invoiceIdList;
 	
 	public DuplicatePaymentResponse() {
 		super();
 	}
 	
-	public DuplicatePaymentResponse(Payment payment, User user) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	public DuplicatePaymentResponse(Payment payment, User user, List<Integer> invoiceIdList) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		this();
 		this.payment = new PaymentDetail(payment);
 		this.firstName = user.getFirstName();
 		this.lastName = user.getLastName();
 		this.email = user.getEmail();
 		this.phone = user.getPhone();
+		this.invoiceIdList = invoiceIdList;
 	}
 	public PaymentDetail getPayment() {
 		return payment;
@@ -57,6 +60,14 @@ public class DuplicatePaymentResponse extends MessageResponse {
 	}
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+
+	public List<Integer> getInvoiceIdList() {
+		return invoiceIdList;
+	}
+
+	public void setInvoiceIdList(List<Integer> invoiceIdList) {
+		this.invoiceIdList = invoiceIdList;
 	}
 	
 	
