@@ -119,11 +119,15 @@
 	    			},
     				403: function($data) {
     					$("#hangOn").hide();
-    					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+    					$("#globalMsg").html("Session timeout. Please log in and try again").show();
+    					$($modalSelector).dialog("close");
+    					$('html, body').animate({scrollTop: 0}, 800);
     				},
     				500: function($data) {
     					$("#hangOn").hide();
-         	    		$("#globalMsg").html("System Error: Contact Support").fadeIn(10);
+         	    		$("#globalMsg").html("System Error: Contact Support").show();
+    					$($modalSelector).dialog("close");
+    					$('html, body').animate({scrollTop: 0}, 800);
          	    	} 
     			},
     			dataType: 'json'
