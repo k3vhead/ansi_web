@@ -100,13 +100,16 @@ public class TicketTypeAheadServlet extends AbstractServlet {
 								System.out.println("TicketTypeAheadServlet(): doGet(): term =$" + term +"$");
 								List<ReturnItem> resultList = new ArrayList<ReturnItem>();
 								//ticket_id:ticket_status:division_code:job_nbr:frequency:act_price_per_cleaning:job site:address 1
-								String sql = "select ticket_id, ticket_status, division.division_code, job_nbr, job_frequency"
-										+ ", act_price_per_cleaning, address.name, address.address1, fleetmatics_id "
+								String sql = "select ticket_id, ticket_status "
+//										+ ", division.division_code, job_nbr, job_frequency"
+										+ ", act_price_per_cleaning"
+//										+ ", address.name, address.address1"
+										+ ", fleetmatics_id "
 										+ " from ticket " 
-										+ " join job on job.job_id = ticket.job_id " 
-										+ " join quote on quote.quote_id = job.quote_id " 
-										+ " join division on division.division_id = ticket.act_division_id " 
-										+ " join address on address.address_id = quote.job_site_address_id " 
+//										+ " join job on job.job_id = ticket.job_id " 
+//										+ " join quote on quote.quote_id = job.quote_id " 
+//										+ " join division on division.division_id = ticket.act_division_id " 
+//										+ " join address on address.address_id = quote.job_site_address_id " 
 										+ " where ticket_id like '%" + term + "%'"
 										+ " or fleetmatics_id like '%" + term + "%'"
 										+ " ORDER BY ticket.ticket_id "
@@ -162,13 +165,14 @@ public class TicketTypeAheadServlet extends AbstractServlet {
 			String fmDisplay = StringUtils.isBlank(fmId) ? "n/a" : fmId;
 			this.label = rs.getString("ticket_id") 
 					+ ":" + "Status " + rs.getString("ticket_status")
-					+ ":" + rs.getString("division_code")
-					+ ":" + "J# " + rs.getString("job_nbr")
-					+ ":" + "Freq " + rs.getString("job_frequency")
+//					+ ":" + rs.getString("division_code")
+//					+ ":" + "J# " + rs.getString("job_nbr")
+//					+ ":" + "Freq " + rs.getString("job_frequency")
 					+ ":" + "PPC " + rs.getString("act_price_per_cleaning")
 					+ ":" + "FM " + fmDisplay
-					+ ":" + "Site " + rs.getString("name")
-					+ ":" + rs.getString("address1");
+//					+ ":" + "Site " + rs.getString("name")
+//					+ ":" + rs.getString("address1")
+					;
 			this.value = rs.getString("ticket_id");
 		}
 
