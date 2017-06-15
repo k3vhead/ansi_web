@@ -340,16 +340,16 @@
 				if ($data.ticketDetail.status=='N') {
 					$("#panelSelector").hide();
 					$("#REJECTED").fadeIn(1500);
-				} else if ($data.ticketDetail.status=='C') {
-					$("#panelSelector").hide();
+//				} else if ($data.ticketDetail.status=='C') {
+//					$("#panelSelector").hide();
 				} else if ($data.ticketDetail.status=='I') {
 					$("#panelSelector").hide();
 				} else if ( $data.ticketDetail.nextAllowedStatusList.length == 0 ) {
 					$("#panelSelector").hide();
-				} else if ( $data.ticketDetail.nextAllowedStatusList.length == 1 ) {
-					$panelId = "#" + $data.ticketDetail.nextAllowedStatusList[0];
-					$("#panelSelector").hide();
-					$($panelId).fadeIn(1500);
+//				} else if ( $data.ticketDetail.nextAllowedStatusList.length == 1 ) {
+//					$panelId = "#" + $data.ticketDetail.nextAllowedStatusList[0];
+//					$("#panelSelector").hide();
+//					$($panelId).fadeIn(1500);
 				} else {
 					$("#panelSelector").append(new Option("", ""));
 	                $.each($data.ticketDetail.nextAllowedStatusList, function($index, $status) {
