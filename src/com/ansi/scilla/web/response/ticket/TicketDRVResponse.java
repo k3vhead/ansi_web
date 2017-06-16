@@ -275,8 +275,9 @@ public class TicketDRVResponse extends MessageResponse {
 		cell = row.createCell(6);
 		cell.setCellValue("American National Skyline, Inc.");
 		cell.setCellStyle(cellCenterBoldItalic);
-		cell = row.createCell(12);
+		cell = row.createCell(10);
 		cell.setCellValue("Division: ");
+		sheet.addMergedRegion(new CellRangeAddress(0,0,10,13));
 		cell.setCellStyle(cellRightBold);
 		cell = row.createCell(14);
 		cell.setCellValue(this.getDivision().getDivisionNbr() + "-" + this.getDivision().getDivisionCode());
@@ -311,8 +312,9 @@ public class TicketDRVResponse extends MessageResponse {
 		cell = row.createCell(6);
 		cell.setCellValue("Detailed Rolling Volume Check List");
 		cell.setCellStyle(cellCenterBold);
-		cell = row.createCell(12);
+		cell = row.createCell(10);
 		cell.setCellValue("Total Volume for the Month: ");
+		sheet.addMergedRegion(new CellRangeAddress(1,1,10,13));
 		cell.setCellStyle(cellRightBold);
 		cell = row.createCell(14);
 		cell.setCellValue(this.getTotalVolume().intValue());
@@ -327,8 +329,9 @@ public class TicketDRVResponse extends MessageResponse {
 		cell.setCellValue(this.getStartDate());
 		cell.setCellStyle(cellLeftDate);
 		sheet.addMergedRegion(new CellRangeAddress(2,2,4,5));
-		cell = row.createCell(12);
+		cell = row.createCell(10);
 		cell.setCellValue("Total D/L for the Month: ");
+		sheet.addMergedRegion(new CellRangeAddress(2,2,10,13));
 		cell.setCellStyle(cellRightBold);
 		cell = row.createCell(14);
 		cell.setCellValue(this.getTotalDL().intValue());
@@ -346,8 +349,9 @@ public class TicketDRVResponse extends MessageResponse {
 		cell.setCellValue(this.getEndDate());
 		sheet.addMergedRegion(new CellRangeAddress(3,3,4,5));
 		cell.setCellStyle(cellLeftDate);
-		cell = row.createCell(12);
+		cell = row.createCell(10);
 		cell.setCellValue("Tickets: ");
+		sheet.addMergedRegion(new CellRangeAddress(3,3,10,13));
 		cell.setCellStyle(cellRightBold);
 		cell = row.createCell(14);
 		cell.setCellValue(this.getTicketCount());

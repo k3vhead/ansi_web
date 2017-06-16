@@ -39,20 +39,20 @@ public class TestDRV {
 			System.out.println("*****************\n***************");
 		}
 		*/
-		Integer month=Calendar.MARCH;
-		Integer divisionId=10;
-		String json1 = TesterUtils.getJson("http://127.0.0.1:8080/ansi_web/ticketDRV?month=" + month + "&divisionId=" + divisionId);
+		Integer month=Calendar.JUNE;
+		Integer divisionId=110;
+		//String json1 = TesterUtils.getJson("http://127.0.0.1:8080/ansi_web/ticketDRV?month=" + month + "&divisionId=" + divisionId);
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDevConn();			
-			TicketDRVResponse x = new TicketDRVResponse(conn, divisionId, month, 2018);
+			TicketDRVResponse x = new TicketDRVResponse(conn, divisionId, month, 2017);
 			System.out.println(x.getResponseItemList().size());
-			String json2 = x.toJson();
-			System.out.println(json1);
-			System.out.println(json2);
-			System.out.println(json1.equals(json2));
-//			XSSFWorkbook workbook = x.toXLSX();
-//			workbook.write(new FileOutputStream("C:/Users/jwlew/Desktop/ANSI/xlfTest.xlsx"));
+//			String json2 = x.toJson();
+//			System.out.println(json1);
+//			System.out.println(json2);
+//			System.out.println(json1.equals(json2));
+			XSSFWorkbook workbook = x.toXLSX();
+			workbook.write(new FileOutputStream("C:/Users/jwlew/Desktop/ANSI/xlfTest.xlsx"));
 			/*
 			List<Division> divisionList = Division.cast(new Division().selectAll(conn));
 			for ( Division d : divisionList ) {
