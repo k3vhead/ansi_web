@@ -78,7 +78,7 @@ public class TestInvoiceSearch {
 			conn.setAutoCommit(false);
 
 			// Copied from InvoiceTypeAhead:
-			String sql = InvoiceSearch.sql + "\n" + InvoiceSearch.generateWhereClause(term);
+			String sql = InvoiceSearch.sql + "\n" + InvoiceSearch.generateWhereClause(conn, term);
 			System.out.println("******");
 			System.out.println("Invoice SQL:\n" + sql);
 			System.out.println("******");

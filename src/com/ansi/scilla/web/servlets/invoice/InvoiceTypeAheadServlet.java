@@ -118,7 +118,7 @@ public class InvoiceTypeAheadServlet extends AbstractServlet {
 										//+ " and ticket_status in ('N','D')"
 								
 								
-								String sql = InvoiceSearch.sql + InvoiceSearch.generateWhereClause(term);
+								String sql = InvoiceSearch.sql + InvoiceSearch.generateWhereClause(conn, term);
 								System.out.println("******");
 								System.out.println("Invoice SQL:\n" + sql);
 								System.out.println("******");
