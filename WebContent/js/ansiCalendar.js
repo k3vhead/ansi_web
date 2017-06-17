@@ -1,3 +1,8 @@
+// css classes that you really care about:
+// ansi-date-not-available -- dates in the past, you can't select these
+// ansi-date-available -- future dates that can be selected 
+// ansi-date-not-selected -- future dates that are available, but not selected
+// ansi-date-selected -- future dates that are available and selected
 $(function() {             
 	;ANSI_CALENDAR = {
 		DATA: {
@@ -7,12 +12,79 @@ $(function() {
 			monthNames:['January','February','March','April','May','June','July','August','September','October','November','December'],
 		},		
 	
-		init:function($nameSpace, $monthsToDisplay) {
-			ANSI_CALENDAR.DATA['nameSpace']=$nameSpace;
+		init:function($nameSpace, $monthsToDisplay, $label) {
+			ANSI_CALENDAR.DATA['nameSpace']=$nameSpace;			
 			ANSI_CALENDAR.DATA['monthsToDisplay']=$monthsToDisplay;
 			ANSI_CALENDAR.makeDisplayTable($nameSpace, $monthsToDisplay);
 			ANSI_CALENDAR.makeCalendars($nameSpace);
 			ANSI_CALENDAR.bindVariables($nameSpace);
+			ANSI_CALENDAR.makeModal($nameSpace, $monthsToDisplay, $label);
+		},
+		
+		
+		go:function($jobId) {
+			console.debug($jobId);
+			var $modalId = "#" + ANSI_CALENDAR.DATA['nameSpace'] + "_dateTable";
+			var $url = "jobSchedule/" +$jobId;
+			var jqxhr = $.ajax({
+				type: 'GET',
+				url: $url,
+				data: null,
+				statusCode: {
+					200: function($data) {
+						if ( $data.responseHeader.responseCode == 'SUCCESS') {
+							// clear existing selected dates
+							$selector = $modalId + " .ansi-date-selected";
+							$($selector).removeClass("ansi-date-selected");
+
+							// set days prior to today to unavailable
+							var $today = new Date();
+							
+							var $monthString = ("0" + ($today.getMonth()+1)).slice (-2);
+
+							
+							var $dayOfMonth = 1;
+							while ( $dayOfMonth < $today.getDay() ) {
+								var $dayString = ("0" + $dayOfMonth).slice (-2);
+								var $selector = $modalId + " .day-" + $monthString + "-" + $dayString + "-" + $today.getFullYear();
+								console.debug("Not avail: " + $selector);
+								$($selector).addClass("ansi-date-not-available");
+								$dayOfMonth++;
+							}
+				    		
+				    		
+							// set already-scheduled days to "selected"
+							$.each($data.data.ticketList, function(index, $ticket) {
+								var $dateString = $ticket.startDate.replace(/\//g,"-");
+								$selector = $modalId + " .day-" + $dateString;
+								console.debug($ticket.startDate + " " + $selector);
+								$($selector).removeClass("ansi-date-not-selected");
+								$($selector).removeClass("ansi-date-not-available");
+								$($selector).addClass("ansi-date-selected");								
+							});
+							$($modalId).dialog( "open" );
+						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+							$("#globalMsg").html("Edit error").show().fadeOut(6000);
+						} else {
+							$("#globalMsg").html("System Error: Contact Support").show();
+						}
+					},
+					403: function($data) {
+						$("#globalMsg").html("Session Timeout. Log in and try again").show();
+					}, 
+					404: function($data) {
+						$("#globalMsg").html("System Error 404: Contact Support").show();
+					}, 
+					405: function($data) {
+						$("#globalMsg").html("System Error 405: Contact Support").show();
+					}, 
+					500: function($data) {
+						$("#globalMsg").html("System Error 500: Contact Support").show();
+					} 
+				},
+				dataType: 'json'
+			});
+						
 		},
 		
 		
@@ -71,7 +143,53 @@ $(function() {
 		
 		
 		
+		makeModal: function($nameSpace, $monthsToDisplay, $title) {
+			var $modalId = "#" + $nameSpace + "_dateTable";
+			var $buttonId = "#" + $nameSpace + "_close";
+			var $rows = $monthsToDisplay/4; //we always go 4 wide
+			var $height = Math.min(620, (Math.ceil($rows) * 207) + 20);
+			$( $modalId ).dialog({
+				title:$title,
+				autoOpen: false,
+				height: $height,
+				width: 700,
+				modal: true,
+				closeOnEscape:false,
+//				open: function(event, ui) {
+//					$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+//				},
+				buttons: [
+					{
+						id: $buttonId,
+						click: function() {
+							$($modalId).dialog( "close" );
+						}
+					}
+				]
+				//,close: function() {
+				//	$("#paymentModal").dialog( "close" );
+	      	    //    //allFields.removeClass( "ui-state-error" );
+				//}
+			});
+
+			$( $modalId ).dialog('option', 'buttons', {
+				"Done":function() {
+					$($modalId).dialog( "close" );
+				}
+			});
+
+			
+		},
+		
+		
+		
+		
 		makeMonth: function($monthStart) {
+			var $today = new Date();
+			$today.setHours(0);
+			$today.setMinutes(0);
+			$today.setSeconds(0);
+			$today.setMilliseconds(0); //we want midnight this morning
     		var $currentDate = new Date($monthStart.getFullYear(), $monthStart.getMonth(), $monthStart.getDate(), 0, 0, 0);
     		var $monthList = [];
 			var $htmlString = '';				
@@ -108,7 +226,13 @@ $(function() {
 				var $monthString = ("0" + ($currentDate.getMonth()+1)).slice (-2);
 				var $dayString = ("0" + $currentDate.getDate()).slice (-2);
 				var $dateString = $monthString + "/" + $dayString + "/" + $currentDate.getFullYear(); 
-				$monthList.push('<td class="ansi-date-day ansi-date-notselected" data-date="'+$dateString+'"><span class="ansi-date-day-text">' + $dayOfMonth + '</span></td>');					
+				if ( $currentDate < $today ) {
+					$selectable = "ansi-date-not-available";
+				} else {
+					$selectable = "ansi-date-available ansi-date-not-selected";
+				}
+				var $dateClass = "day-" + $monthString + "-" + $dayString + "-" + $currentDate.getFullYear();
+				$monthList.push('<td class="ansi-date-day ' + $selectable +' ' + $dateClass + '" data-date="'+$dateString+'"><span class="ansi-date-day-text">' + $dayOfMonth + '</span></td>');					
 				$dayOfMonth++;
 				count++;
 				$currentDate.setDate($currentDate.getDate() + 1);
@@ -132,7 +256,7 @@ $(function() {
     	
     	
     	bindVariables: function($nameSpace) {
-    		var $selector = "#" + $nameSpace + " .ansi-date-day";
+    		var $selector = "#" + $nameSpace + " .ansi-date-available";
         	$($selector).mouseover(function($event) {
         		$(this).removeClass("ansi-date-lowlight");
         		$(this).addClass("ansi-date-highlight");
@@ -147,11 +271,14 @@ $(function() {
 	        	//var $dateString = $clickEvent.currentTarget.attributes['data-date'].value;
 	        	$dateString = $(this).data("date");
 	        	if ( $(this).hasClass("ansi-date-selected") ) {
-	        		$(this).switchClass("ansi-date-selected","ansi-date-notselected",10);
+	        		$(this).switchClass("ansi-date-selected","ansi-date-not-selected",10);
 	        	} else {
-	        		$(this).switchClass("ansi-date-notselected","ansi-date-selected",10);
+	        		$(this).switchClass("ansi-date-not-selected","ansi-date-selected",10);
 	        	}
         	});
+        	
+        	var $showTrigger = "#" + $nameSpace + " .ansi-date-show-calendar";
+        	var $modalSelector = "#" + $nameSpace + " .modal-calendar";
     	}
 	}
 });

@@ -21,7 +21,9 @@
 	font-size:90%;
 }
 .ansi-date-day {
-	text-align:center;			
+	text-align:center;	
+}
+.ansi-date-available {		
 	cursor:pointer;	
 	border:solid 1px #FFFFFF;		
 }
@@ -37,6 +39,12 @@
 .ansi-date-selected {
 	background-color:#008000;
 }
-.ansi-date-notselected {
+.ansi-date-not-selected {
 	background-color:#FFFFFF;
+}
+.ansi-date-show-calendar {
+	cursor:pointer;
+}
+.ansi-date-not-available {
+	background-color:#CCCCCC;
 }

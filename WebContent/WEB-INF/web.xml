@@ -270,6 +270,17 @@
 
 
 	<servlet>
+		<servlet-name>jobSchedule</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.job.JobScheduleServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>jobSchedule</servlet-name>
+		<url-pattern>/jobSchedule/*</url-pattern>
+	</servlet-mapping>
+	
+
+
+	<servlet>
 		<servlet-name>jobSearch</servlet-name>
 		<servlet-class>com.ansi.scilla.web.servlets.JobSearchServlet</servlet-class>
 	</servlet>
