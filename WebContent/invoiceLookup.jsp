@@ -63,127 +63,128 @@
 				return false;
       		});
             	       	
-        	var dataTable = null;
+			function createTable() {
+	        	var dataTable =  $('#invoiceTable').DataTable( {
+	        			"processing": 		true,
+	        	        "serverSide": 		true,
+	        	        "autoWidth": 		false,
+	        	        "deferRender": 		true,
+	        	        "scrollCollapse": 	true,
+	        	        "scrollX": 			true,
+	        	        rowId: 				'dt_RowId',
+	        	        dom: 				'Bfrtip',
+	        	        "searching": 		true,
+	        	        lengthMenu: [
+	        	        	[ 10, 50, 100, 500, 1000 ],
+	        	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
+	        	        ],
+	        	        buttons: [
+	        	        	'pageLength',
+	        	        	'copy', 
+	        	        	'csv', 
+	        	        	'excel', 
+	        	        	{extend: 'pdfHtml5', orientation: 'landscape'}, 
+	        	        	'print',
+	        	        	{extend: 'colvis',	label: function () {doFunctionBinding();}},
+	        	        	{
+	        	        		text:'PPC Filter <i class="'+$filterIcon+'"></i>',
+	        	        		action: function(e, dt, node, config) {
+	        	        			if ( $filterPPC == 'yes' ) {
+	        	        				$filterPPC = 'no';
+	        	        			} else {
+	        	        				$filterPPC = 'yes';
+	        	        			}
+	        	        			var $url = "invoiceLookup.html?divisionId=" + $filterDivisionId + "&ppcFilter=" + $filterPPC;
+	        	        			location.href=$url;
+	        	        		}
+	        	        	}
+	        	        ],
+	        	        "columnDefs": [
+	//         	            { "orderable": false, "targets": -1 },  // Need to re-add this when we add the action column back in
+	        	            { className: "dt-left", "targets": [0,1,2,3] },
+	        	            { className: "dt-center", "targets": [4,5,11] },
+	        	            { className: "dt-right", "targets": [6,7,8,9,10]}
+	        	         ],
+	        	        "paging": true,
+				        "ajax": {
+				        	"url": "invoiceLookup",
+				        	"type": "GET",
+				        	"data":{"divisionId":$filterDivisionId,"<%=InvoiceLookupForm.PPC_FILTER%>":$filterPPC}
+				        	},
+				        columns: [
+				        	
+				            { title: "Invoice", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				            	if(row.invoiceId != null){return (row.invoiceId+"");}
+				            } },
+				            { title: "FM Inv", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            	if(row.fleetmaticsInvoiceNbr != null){return (row.fleetmaticsInvoiceNbr+"");}
+				            } },
+				            { title: "Div", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            	if(row.div != null){return (row.div+"");}
+				            } },
+				            { title: "Bill To", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            	if(row.billToName != null){return (row.billToName+"");}
+				            } },
+				            { title: "Tickets" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				            	if(row.ticketCount != null){return (row.ticketCount+"");}
+				            } },
+				            { title: "Invoice Date", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            	if(row.invoiceDate != null){return (row.invoiceDate+"");}
+				            } },
+				            { title: "Amount",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            	if(row.invoiceAmount != null){return (row.invoiceAmount+"");}
+				            } },
+				            { title: "Tax",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            	if(row.invoiceTax != null){return (row.invoiceTax+"");}
+				            } },
+				            { title: "Total",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            	if(row.invoiceTotal != null){return (row.invoiceTotal+"");}
+				            } },
+				            { title: "Paid",  "defaultContent": "<i>-</i>", data: function ( row, type, set ) {
+				            	if(row.invoicePaid != null){return (row.invoicePaid+"");}
+				            } },
+				            { title: "Balance",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            	if(row.invoiceBalance != null){return (row.invoiceBalance+"");}else{return(row.invoiceTotal+"");}
+				            } },
+				            { title: "Action",  data: function ( row, type, set ) {
+				            	if ( row.printCount > 0 ) {
+				            		$printText =  '<i class="fa fa-print invoicePrint tooltip" aria=hidden="true" data-invoiceId="'+row.invoiceId+'"><span class="tooltiptext">Reprint</span></i>';
+				            	} else {
+				            		$printText = ""; 
+				            	}
+				            	{return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite>" + $printText + "</ansi:hasWrite></ansi:hasPermission>";}
+				            } }
+				            ],
+				            "initComplete": function(settings, json) {
+				            	//console.log(json);
+				            	doFunctionBinding();
+				            },
+				            "drawCallback": function( settings ) {
+				            	doFunctionBinding();
+				            }
+				    } );
+				$('.dataTables_filter input').unbind();        			
+				return dataTable;	        	
+			}
         	
-        	function createTable(){
-        		var dataTable = $('#invoiceTable').DataTable( {
-        			"processing": 		true,
-        	        "serverSide": 		true,
-        	        "autoWidth": 		false,
-        	        "deferRender": 		true,
-        	        "scrollCollapse": 	true,
-        	        "scrollX": 			true,
-        	        rowId: 				'dt_RowId',
-        	        dom: 				'Bfrtip',
-        	        "searching": 		true,
-        	        lengthMenu: [
-        	        	[ 10, 50, 100, 500, 1000 ],
-        	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
-        	        ],
-        	        buttons: [
-        	        	'pageLength',
-        	        	'copy', 
-        	        	'csv', 
-        	        	'excel', 
-        	        	{extend: 'pdfHtml5', orientation: 'landscape'}, 
-        	        	'print',
-        	        	{extend: 'colvis',	label: function () {doFunctionBinding();}},
-        	        	{
-        	        		text:'PPC Filter <i class="'+$filterIcon+'"></i>',
-        	        		action: function(e, dt, node, config) {
-        	        			if ( $filterPPC == 'yes' ) {
-        	        				$filterPPC = 'no';
-        	        			} else {
-        	        				$filterPPC = 'yes';
-        	        			}
-        	        			var $url = "invoiceLookup.html?divisionId=" + $filterDivisionId + "&ppcFilter=" + $filterPPC;
-        	        			location.href=$url;
-        	        		}
-        	        	}
-        	        ],
-        	        "columnDefs": [
-//         	            { "orderable": false, "targets": -1 },  // Need to re-add this when we add the action column back in
-        	            { className: "dt-left", "targets": [0,1,2,3] },
-        	            { className: "dt-center", "targets": [4,5,11] },
-        	            { className: "dt-right", "targets": [6,7,8,9,10]}
-        	         ],
-        	        "paging": true,
-			        "ajax": {
-			        	"url": "invoiceLookup",
-			        	"type": "GET",
-			        	"data":{"divisionId":$filterDivisionId,"<%=InvoiceLookupForm.PPC_FILTER%>":$filterPPC}
-			        	},
-			        columns: [
-			        	
-			            { title: "Invoice", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-			            	if(row.invoiceId != null){return (row.invoiceId+"");}
-			            } },
-			            { title: "FM Inv", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.fleetmaticsInvoiceNbr != null){return (row.fleetmaticsInvoiceNbr+"");}
-			            } },
-			            { title: "Div", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.div != null){return (row.div+"");}
-			            } },
-			            { title: "Bill To", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.billToName != null){return (row.billToName+"");}
-			            } },
-			            { title: "Tickets" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-			            	if(row.ticketCount != null){return (row.ticketCount+"");}
-			            } },
-			            { title: "Invoice Date", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.invoiceDate != null){return (row.invoiceDate+"");}
-			            } },
-			            { title: "Amount",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.invoiceAmount != null){return (row.invoiceAmount+"");}
-			            } },
-			            { title: "Tax",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.invoiceTax != null){return (row.invoiceTax+"");}
-			            } },
-			            { title: "Total",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.invoiceTotal != null){return (row.invoiceTotal+"");}
-			            } },
-			            { title: "Paid",  "defaultContent": "<i>-</i>", data: function ( row, type, set ) {
-			            	if(row.invoicePaid != null){return (row.invoicePaid+"");}
-			            } },
-			            { title: "Balance",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.invoiceBalance != null){return (row.invoiceBalance+"");}else{return(row.invoiceTotal+"");}
-			            } },
-			            { title: "Action",  data: function ( row, type, set ) {
-			            	if ( row.printCount > 0 ) {
-			            		$printText =  '<i class="fa fa-print invoicePrint tooltip" aria=hidden="true" data-invoiceId="'+row.invoiceId+'"><span class="tooltiptext">Reprint</span></i>';
-			            	} else {
-			            		$printText = ""; 
-			            	}
-			            	{return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite>" + $printText + "</ansi:hasWrite></ansi:hasPermission>";}
-			            } }
-			            ],
-			            "initComplete": function(settings, json) {
-			            	//console.log(json);
-			            	doFunctionBinding();
-			            },
-			            "drawCallback": function( settings ) {
-			            	doFunctionBinding();
-			            }
-			    } );
-        	}
         	        	
-        	init();
-        			
-            
-            function init(){
-					$.each($('input'), function () {
-				        $(this).css("height","20px");
-				        $(this).css("max-height", "20px");
-				    });
-					
-					createTable();
-            }; 
-				
-				function doFunctionBinding() {
-					$( ".invoicePrint" ).on( "click", function($clickevent) {
-						invoicePrint($clickevent);
-					});
-				}
+        	$.each($('input'), function () {
+		        $(this).css("height","20px");
+		        $(this).css("max-height", "20px");
+		    });
+			var dataTable = createTable();
+        	
+
+			function doFunctionBinding() {
+				$( ".invoicePrint" ).on( "click", function($clickevent) {
+					invoicePrint($clickevent);
+				});
+	        	$('.dataTables_filter input').keyup( function(e) {
+	        		if ( e.keyCode == 13 ) {
+	        			dataTable.search(this.value).draw();
+	        		}
+	        	});
+			}
 				
 				
 				function invoicePrint($clickevent) {
