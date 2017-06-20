@@ -182,7 +182,7 @@
 	            nextText: '&gt;&gt;',
 	            showButtonPanel:true,
 	            onSelect: function(dateText, inst) {
-	            	$("#paymentAmount").focus();
+	            	$("#paymentNotes").focus();
 	            }
 	        });
         	
@@ -1067,14 +1067,14 @@
 						<td><span class="err" id="checkNumberErr"></span></td>
 					</tr>
 					<tr class="newPmtRow">
-						<td class="formHdr">Check Date: </td>
-						<td><input type="text" class="newPaymentField" id="checkDate"/></td>
-						<td><span class="err" id="checkDateErr"></span></td>
-					</tr>
-					<tr class="newPmtRow">
 						<td class="formHdr">Amount: </td>
 						<td><input type="text" id="paymentAmount" class="newPaymentField"/></td>
 						<td><span class="err" id="paymentAmountErr"></span></td>
+					</tr>
+					<tr class="newPmtRow">
+						<td class="formHdr">Check Date: </td>
+						<td><input type="text" class="newPaymentField" id="checkDate"/></td>
+						<td><span class="err" id="checkDateErr"></span></td>
 					</tr>
 					<tr class="newPmtRow">
 						<td class="formHdr">Notes: </td>
