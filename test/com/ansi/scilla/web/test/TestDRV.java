@@ -39,7 +39,7 @@ public class TestDRV {
 			System.out.println("*****************\n***************");
 		}
 		*/
-		Integer month=Calendar.JUNE;
+		Integer month=Calendar.MAY;
 		Integer divisionId=110;
 		//String json1 = TesterUtils.getJson("http://127.0.0.1:8080/ansi_web/ticketDRV?month=" + month + "&divisionId=" + divisionId);
 		Connection conn = null;

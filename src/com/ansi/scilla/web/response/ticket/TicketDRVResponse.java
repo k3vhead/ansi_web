@@ -15,6 +15,7 @@ import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Footer;
 import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
@@ -180,6 +181,11 @@ public class TicketDRVResponse extends MessageResponse {
 	    cellStyleBackColor.setFillPattern(CellStyle.ALIGN_FILL);
 	    cellStyleBackColor.setFont(font);
 	    
+	    CellStyle cellStyleGrayColor = workbook.createCellStyle();
+	    cellStyleGrayColor.setFillBackgroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+	    cellStyleGrayColor.setFillPattern(CellStyle.ALIGN_FILL);
+	    
+	    
 //	    CellStyle cellStyleFontColor = workbook.createCellStyle();
 //	    font.setColor(HSSFColor.WHITE.index);
 //	    cellStyleFontColor.setFont(font);
@@ -192,6 +198,12 @@ public class TicketDRVResponse extends MessageResponse {
 	    
 	    fontStyleItalicBold.setItalic(true);
 	    fontStyleItalicBold.setBold(true);
+	    
+	    CellStyle border = workbook.createCellStyle();
+	    border.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+	    border.setTopBorderColor(IndexedColors.BLACK.getIndex());
+	    border.setRightBorderColor(IndexedColors.BLACK.getIndex());
+	    border.setLeftBorderColor(IndexedColors.BLACK.getIndex());
 	    
 	    XSSFCellStyle cellLeftBold = workbook.createCellStyle();
 	    cellLeftBold.setAlignment(CellStyle.ALIGN_LEFT);
@@ -214,11 +226,53 @@ public class TicketDRVResponse extends MessageResponse {
 	    CellStyle cellStyleLeftAll = workbook.createCellStyle();
 	    cellStyleLeftAll.setAlignment(CellStyle.ALIGN_LEFT);
 	    
+	    
+	    CellStyle leftAllBorder = workbook.createCellStyle();
+//	    leftAllBorder.setFillBackgroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+//	    leftAllBorder.setFillPattern(CellStyle.ALIGN_FILL);
+	    leftAllBorder.setAlignment(CellStyle.ALIGN_LEFT);
+	    leftAllBorder.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+	    leftAllBorder.setTopBorderColor(IndexedColors.BLACK.getIndex());
+	    leftAllBorder.setLeftBorderColor(IndexedColors.BLACK.getIndex());
+	    leftAllBorder.setRightBorderColor(IndexedColors.BLACK.getIndex());
+	    leftAllBorder.setBorderBottom((short) 2);
+	    leftAllBorder.setBorderLeft((short) 2);
+	    leftAllBorder.setBorderRight((short) 2);
+	    leftAllBorder.setBorderTop((short) 2);
+	    
 	    CellStyle cellStyleCenterAll = workbook.createCellStyle();
 	    cellStyleCenterAll.setAlignment(CellStyle.ALIGN_CENTER);
 	    
+	    CellStyle centerAllBorder = workbook.createCellStyle();
+//	    centerAllGrayBack.setFillBackgroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+//	    centerAllGrayBack.setFillPattern(CellStyle.ALIGN_FILL);
+	    centerAllBorder.setAlignment(CellStyle.ALIGN_CENTER);
+	    centerAllBorder.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+	    centerAllBorder.setTopBorderColor(IndexedColors.BLACK.getIndex());
+	    centerAllBorder.setLeftBorderColor(IndexedColors.BLACK.getIndex());
+	    centerAllBorder.setRightBorderColor(IndexedColors.BLACK.getIndex());
+	    centerAllBorder.setBorderBottom((short) 2);
+	    centerAllBorder.setBorderLeft((short) 2);
+	    centerAllBorder.setBorderRight((short) 2);
+	    centerAllBorder.setBorderTop((short) 2);
+
+	    
 	    CellStyle cellStyleRightAll = workbook.createCellStyle();
 	    cellStyleRightAll.setAlignment(CellStyle.ALIGN_RIGHT);
+	    
+	    CellStyle rightAllBorder = workbook.createCellStyle();
+//	    rightAllGrayBack.setFillBackgroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+//	    rightAllGrayBack.setFillPattern(CellStyle.ALIGN_FILL);
+	    rightAllBorder.setAlignment(CellStyle.ALIGN_RIGHT);
+	    rightAllBorder.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+	    rightAllBorder.setTopBorderColor(IndexedColors.BLACK.getIndex());
+	    rightAllBorder.setLeftBorderColor(IndexedColors.BLACK.getIndex());
+	    rightAllBorder.setRightBorderColor(IndexedColors.BLACK.getIndex());
+	    rightAllBorder.setBorderBottom((short) 2);
+	    rightAllBorder.setBorderLeft((short) 2);
+	    rightAllBorder.setBorderRight((short) 2);
+	    rightAllBorder.setBorderTop((short) 2);
+
 	    
 	    //Date and Alignment
 	    CellStyle cellLeftDateTime = workbook.createCellStyle();
@@ -229,10 +283,40 @@ public class TicketDRVResponse extends MessageResponse {
 	    cellLeftDate.setAlignment(CellStyle.ALIGN_LEFT);
 	    cellLeftDate.setDataFormat(createHelper.createDataFormat().getFormat("mm/dd/yyyy"));
 	    
+	    CellStyle cellLeftDateBorder = workbook.createCellStyle();
+	    cellLeftDateBorder.setAlignment(CellStyle.ALIGN_LEFT);
+	    cellLeftDateBorder.setDataFormat(createHelper.createDataFormat().getFormat("mm/dd/yyyy"));
+//	    cellLeftDateGray.setFillBackgroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+//	    cellLeftDateGray.setFillPattern(CellStyle.ALIGN_FILL);
+	    cellLeftDateBorder.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+	    cellLeftDateBorder.setTopBorderColor(IndexedColors.BLACK.getIndex());
+	    cellLeftDateBorder.setLeftBorderColor(IndexedColors.BLACK.getIndex());
+	    cellLeftDateBorder.setRightBorderColor(IndexedColors.BLACK.getIndex());
+	    cellLeftDateBorder.setBorderBottom((short) 2);
+	    cellLeftDateBorder.setBorderLeft((short) 2);
+	    cellLeftDateBorder.setBorderRight((short) 2);
+	    cellLeftDateBorder.setBorderTop((short) 2);
+
+	    
 	    //Decimal and Alignment
 	    CellStyle cellRightDecimal = workbook.createCellStyle();
 	    cellRightDecimal.setAlignment(CellStyle.ALIGN_RIGHT);
 	    cellRightDecimal.setDataFormat(format.getFormat("#,##0.00"));
+	    
+	    
+	    CellStyle cellRightDecimalBorder = workbook.createCellStyle();
+	    cellRightDecimalBorder.setAlignment(CellStyle.ALIGN_RIGHT);
+	    cellRightDecimalBorder.setDataFormat(format.getFormat("#,##0.00"));
+//	    cellRightDecimalGray.setFillBackgroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+//	    cellRightDecimalGray.setFillPattern(CellStyle.ALIGN_FILL);
+	    cellRightDecimalBorder.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+	    cellRightDecimalBorder.setTopBorderColor(IndexedColors.BLACK.getIndex());
+	    cellRightDecimalBorder.setLeftBorderColor(IndexedColors.BLACK.getIndex());
+	    cellRightDecimalBorder.setRightBorderColor(IndexedColors.BLACK.getIndex());
+	    cellRightDecimalBorder.setBorderBottom((short) 2);
+	    cellRightDecimalBorder.setBorderLeft((short) 2);
+	    cellRightDecimalBorder.setBorderRight((short) 2);
+	    cellRightDecimalBorder.setBorderTop((short) 2);
 	    
 		//Vertical Script
 	    CellStyle vertical = workbook.createCellStyle();
@@ -241,12 +325,6 @@ public class TicketDRVResponse extends MessageResponse {
 		//Footer(page number)
 	    Footer footer = sheet.getFooter();
 	    footer.setCenter("Page " + HeaderFooter.page() + " of " + HeaderFooter.numPages());
-	    
-	    CellStyle border = workbook.createCellStyle();
-	    border.setBottomBorderColor(IndexedColors.BLACK.getIndex());
-	    border.setTopBorderColor(IndexedColors.BLACK.getIndex());
-	    border.setRightBorderColor(IndexedColors.BLACK.getIndex());
-	    border.setLeftBorderColor(IndexedColors.BLACK.getIndex());
 	    
 		workbook.setSheetName(0,"DRV");
 		row = sheet.createRow(rowNum);
@@ -426,75 +504,176 @@ public class TicketDRVResponse extends MessageResponse {
 		
 		for (TicketDRVResponseItem item : this.getResponseItemList()) {
 			row = sheet.createRow(rowNum);
+//			if(rowNum%2==0){
+//				row.setRowStyle(cellStyleGrayColor);
+//			}
 			//Column Width Fit
 		    sheet = workbook.getSheetAt(0);
-			int colNum = 3;
+			int colNum = 0;
+			
+			sheet.autoSizeColumn(colNum);
+			cell = row.createCell(colNum);	//0
+			cell.setCellStyle(leftAllBorder);
+			colNum++;
+			
+			sheet.autoSizeColumn(colNum);
+			cell = row.createCell(colNum);	//1
+			cell.setCellStyle(leftAllBorder);
+			colNum++;
+			
+			sheet.autoSizeColumn(colNum);
+			cell = row.createCell(colNum);	//2
+			cell.setCellStyle(leftAllBorder);
+			colNum++;
+			
 			sheet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//3
 			cell.setCellValue(item.getTicketId());
-			cell.setCellStyle(cellStyleLeftAll);
+			cell.setCellStyle(leftAllBorder);
+//			if(rowNum%2==0){
+//				cell.setCellStyle(leftAllBorder);
+//			}
 			colNum++;
+			
 			sheet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//4
 			cell.setCellValue(TicketStatus.lookup(item.getStatus()).display());
-			cell.setCellStyle(cellStyleLeftAll);
+			cell.setCellStyle(leftAllBorder);
+//			if(rowNum%2==0){
+//				cell.setCellStyle(leftAllBorder);
+//			}
 			colNum++;
+			
 			sheet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//5
 			cell.setCellValue(item.getName());	//Site
-			cell.setCellStyle(cellStyleLeftAll);
+			cell.setCellStyle(leftAllBorder);
+//			if(rowNum%2==0){
+//				cell.setCellStyle(leftAllBorder);
+//			}
 			colNum++;
+			
 			sheet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//6
 			cell.setCellValue(item.getAddress1());	//Street
-			cell.setCellStyle(cellStyleLeftAll);
+			cell.setCellStyle(leftAllBorder);
+//			if(rowNum%2==0){
+//				cell.setCellStyle(leftAllBorder);
+//			}
 			colNum++;
+			
 			sheet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//7
 			cell.setCellValue(item.getCity());
-			cell.setCellStyle(cellStyleLeftAll);
+			cell.setCellStyle(leftAllBorder);
+//			if(rowNum%2==0){
+//				cell.setCellStyle(leftAllBorder);
+//			}
 			colNum++;
+			
 			sheet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//8
+			cell.setCellStyle(leftAllBorder);
+//			if(rowNum%2==0){
+//				cell.setCellStyle(leftAllBorder);
+//			}
 			if(item.getLastDone() != null){
 				cell.setCellValue(item.getLastDone());
-				cell.setCellStyle(cellLeftDate);
+				cell.setCellStyle(cellLeftDateBorder);
+//				if(rowNum%2==0){
+//					cell.setCellStyle(cellLeftDateBorder);
+//				}
 			}
 			colNum++;
+			
 			sheet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//9
 			cell.setCellValue(item.getStartDate());
-			cell.setCellStyle(cellLeftDate);
+			cell.setCellStyle(cellLeftDateBorder);
+//			if(rowNum%2==0){
+//				cell.setCellStyle(cellLeftDateBorder);
+//			}
 			colNum++;
+			
 			sheet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//10
 			cell.setCellValue(item.getJobNum());	// J#
-			cell.setCellStyle(cellStyleCenterAll);
+			cell.setCellStyle(centerAllBorder);
+//			if(rowNum%2==0){
+//				cell.setCellStyle(centerAllBorder);
+//			}
 			colNum++;
+			
 			sheet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//11
 			cell.setCellValue(item.getFrequency());
-			cell.setCellStyle(cellStyleCenterAll);
+			cell.setCellStyle(centerAllBorder);
+//			if(rowNum%2==0){
+//				cell.setCellStyle(centerAllBorder);
+//			}
 			colNum++;
+			
 			sheet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//12
 			cell.setCellValue(item.getBudget().doubleValue());
-			cell.setCellStyle(cellRightDecimal);
+			cell.setCellStyle(cellRightDecimalBorder);
+//			if(rowNum%2==0){
+//				cell.setCellStyle(cellRightDecimalBorder);
+//			}
 			colNum++;
+			
 			sheet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//13
 			cell.setCellValue(item.getPpc().doubleValue());
-			cell.setCellStyle(cellRightDecimal);
+			cell.setCellStyle(cellRightDecimalBorder);
+//			if(rowNum%2==0){
+//				cell.setCellStyle(cellRightDecimalBorder);
+//			}
 			colNum++;
+			
 			sheet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//14
 			cell.setCellValue(item.getCod());
-			cell.setCellStyle(cellStyleRightAll);
+			cell.setCellStyle(rightAllBorder);
+//			if(rowNum%2==0){
+//				cell.setCellStyle(rightAllBorder);
+//			}
 			colNum++;
-			sheet.autoSizeColumn(colNum);
 			
+			sheet.autoSizeColumn(colNum);
+			cell = row.createCell(colNum);	//15
+			cell.setCellStyle(rightAllBorder);
+			colNum++;
+			
+			sheet.autoSizeColumn(colNum);
+			cell = row.createCell(colNum);	//16
+			cell.setCellStyle(leftAllBorder);
+			colNum++;
+			
+			sheet.autoSizeColumn(colNum);
+			cell = row.createCell(colNum);	//17
+			cell.setCellStyle(leftAllBorder);
+			colNum++;
+			
+			sheet.autoSizeColumn(colNum);
+			cell = row.createCell(colNum);	//18
+			cell.setCellStyle(leftAllBorder);
+			colNum++;
+			
+			sheet.autoSizeColumn(colNum);
+			cell = row.createCell(colNum);	//19
+			cell.setCellStyle(leftAllBorder);
+			colNum++;
+			
+			sheet.autoSizeColumn(colNum);
 			rowNum++;
 		}
+		
+		sheet.setMargin(Sheet.RightMargin, 0.3);
+		sheet.setMargin(Sheet.TopMargin, 0.3);
+		sheet.setMargin(Sheet.LeftMargin, 0.3);
+		sheet.setMargin(Sheet.BottomMargin, 0.3);
+		sheet.getPrintSetup().setLandscape(true);
 		
 //		List<TicketDRVQuery> queryList = TicketDRVQuery.makeMonthlyReport(conn, divisionId, month, year);
 //		for(TicketDRVQuery query : queryList){
