@@ -360,6 +360,7 @@ public class TicketDRVResponse extends MessageResponse {
 		cell = row.createCell(14);
 		cell.setCellValue(this.getDivision().getDivisionNbr() + "-" + this.getDivision().getDivisionCode());
 		cell.setCellStyle(cellStyleRightAll);
+		/*
 		cell = row.createCell(15);
 		cell.setCellValue("Received");
 		cell.setCellStyle(vertical);
@@ -380,6 +381,7 @@ public class TicketDRVResponse extends MessageResponse {
 		cell.setCellValue("Paid");
 		cell.setCellStyle(vertical);
 		sheet.autoSizeColumn(19);
+		*/
 		rowNum++;	//row=1
 		
 		row = sheet.createRow(rowNum);
@@ -434,11 +436,13 @@ public class TicketDRVResponse extends MessageResponse {
 		cell = row.createCell(14);
 		cell.setCellValue(this.getTicketCount());
 		cell.setCellStyle(cellStyleRightAll);
+		/*
 		sheet.addMergedRegion(new CellRangeAddress(0,3,15,15));
 		sheet.addMergedRegion(new CellRangeAddress(0,3,16,16));
 		sheet.addMergedRegion(new CellRangeAddress(0,3,17,17));
 		sheet.addMergedRegion(new CellRangeAddress(0,3,18,18));
 		sheet.addMergedRegion(new CellRangeAddress(0,3,19,19));
+		*/
 		rowNum++;	//row=4
 		
 		row = sheet.createRow(rowNum);
@@ -484,6 +488,7 @@ public class TicketDRVResponse extends MessageResponse {
 		cell = row.createCell(14);
 		cell.setCellValue("COD");
 		cell.setCellStyle(cellStyleBackColor);
+		/*
 		cell = row.createCell(15);
 		cell.setCellStyle(cellStyleBackColor);
 		cell = row.createCell(16);
@@ -494,6 +499,7 @@ public class TicketDRVResponse extends MessageResponse {
 		cell.setCellStyle(cellStyleBackColor);
 		cell = row.createCell(19);
 		cell.setCellStyle(cellStyleBackColor);
+		*/
 		rowNum++;	//row=5
 		
 //		//Repeat above rows on printsheets
@@ -639,7 +645,7 @@ public class TicketDRVResponse extends MessageResponse {
 //				cell.setCellStyle(rightAllBorder);
 //			}
 			colNum++;
-			
+			/*
 			sheet.autoSizeColumn(colNum);
 			cell = row.createCell(colNum);	//15
 			cell.setCellStyle(rightAllBorder);
@@ -664,7 +670,7 @@ public class TicketDRVResponse extends MessageResponse {
 			cell = row.createCell(colNum);	//19
 			cell.setCellStyle(leftAllBorder);
 			colNum++;
-			
+			*/
 			sheet.autoSizeColumn(colNum);
 			rowNum++;
 		}
