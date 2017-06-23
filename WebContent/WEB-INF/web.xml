@@ -515,6 +515,16 @@
 	
 	
 	<servlet>
+		<servlet-name>ticketStatusReport</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.report.TicketStatusReportServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ticketStatusReport</servlet-name>
+		<url-pattern>/ticketStatusReport/*</url-pattern>
+	</servlet-mapping>
+	
+	
+	<servlet>
 		<servlet-name>ticketTable</servlet-name>
 		<servlet-class>com.ansi.scilla.web.servlets.tickets.TicketTableServlet</servlet-class>
 	</servlet>

@@ -199,6 +199,12 @@
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
+            path="/ticketStatusReport"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/ticketStatusReport.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		<action
             path="/ticketView"
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">
             <forward name="valid" path="/ticketView.jsp" />
