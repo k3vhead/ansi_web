@@ -15,6 +15,7 @@ import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Footer;
 import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.PrintSetup;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -679,8 +680,11 @@ public class TicketDRVResponse extends MessageResponse {
 		sheet.setMargin(Sheet.TopMargin, 0.3);
 		sheet.setMargin(Sheet.LeftMargin, 0.3);
 		sheet.setMargin(Sheet.BottomMargin, 0.3);
+		//sheet.getPrintSetup().set
+		sheet.setFitToPage(true);
+		sheet.getPrintSetup().setFitWidth((short) 1);
+		sheet.getPrintSetup().setFitHeight((short) 0);
 		sheet.getPrintSetup().setLandscape(true);
-		
 //		List<TicketDRVQuery> queryList = TicketDRVQuery.makeMonthlyReport(conn, divisionId, month, year);
 //		for(TicketDRVQuery query : queryList){
 //			TicketDRVResponseItem item = new TicketDRVResponseItem(query);
