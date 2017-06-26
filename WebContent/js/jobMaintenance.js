@@ -46,10 +46,10 @@ $( document ).ready(function() {
 				$lastCreated = $jobData.lastCreated;
 				
 				if($jobDetail != null){
-					$jobContactId = $jobDetail.jobContactId;
-					$siteContactId = $jobDetail.siteContact;
-					$contractContactId = $jobDetail.contractContactId;
-					$billingContactId = $jobDetail.billingContactId;
+					QUOTEUTILS.$jobContactId = $jobDetail.jobContactId;
+					QUOTEUTILS.$siteContactId = $jobDetail.siteContact;
+					QUOTEUTILS.$contractContactId = $jobDetail.contractContactId;
+					QUOTEUTILS.$billingContactId = $jobDetail.billingContactId;
 				}
 			}
 			
@@ -59,13 +59,13 @@ $( document ).ready(function() {
 				data: {"namespace":'0',"page":'JOB'},
 				success: function($data) {
 					$('#jobPanelHolder > tbody:last-child').replaceWith($data);
-					JOBPANEL.init($namespace+"_jobPanel", JOB_DATA.divisionList, "activateModal", $jobDetail);
-					JOBPROPOSAL.init($namespace+"_jobProposal", JOB_DATA.jobFrequencyList, $jobDetail);
-					JOBACTIVATION.init($namespace+"_jobActivation", JOB_DATA.buildingTypeList, $jobDetail);
-					JOBDATES.init($namespace+"_jobDates", $quoteDetail, $jobDetail);
-					JOBSCHEDULE.init($namespace+"_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
-					JOBINVOICE.init($namespace+"_jobInvoice", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, $jobDetail);
-					JOBAUDIT.init($namespace+"_jobAudit", $jobDetail);
+					//JOBPANEL.init($namespace+"_jobPanel", JOB_DATA.divisionList, "activateModal", $jobDetail);
+//					JOBPROPOSAL.init($namespace+"_jobProposal", JOB_DATA.jobFrequencyList, $jobDetail);
+//					JOBACTIVATION.init($namespace+"_jobActivation", JOB_DATA.buildingTypeList, $jobDetail);
+//					JOBDATES.init($namespace+"_jobDates", $quoteDetail, $jobDetail);
+//					JOBSCHEDULE.init($namespace+"_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
+//					JOBINVOICE.init($namespace+"_jobInvoice", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, $jobDetail);
+//					JOBAUDIT.init($namespace+"_jobAudit", $jobDetail);
 					ADDRESSPANEL.init($namespace+"_jobSite", JOB_DATA.countryList);
 					ADDRESSPANEL.init($namespace+"_billTo", JOB_DATA.countryList);
 					
@@ -527,7 +527,8 @@ $( document ).ready(function() {
     		$outbound["billingContactId"]			= QUOTEUTILS.getbillingContactId();
     		$outbound["billingNotes"]				= $($pre+"_jobActivation_billingNotes").val();
     		$outbound["budget"]						= $($pre+"_jobActivation_directLaborBudget").val();
-    		$outbound["buildingType"]				= $($pre+"_jobActivation_buildingType").val();
+    		//console.log($pre+"_jobActivation_buildingType");
+    		$outbound["buildingType"]				= $($pre+"_jobActivation_buildingType").val();//0_jobActivation_buildingType
     		$outbound["cancelDate"]					= $($pre+"_jobDates_cancelDate").html();
     		$outbound["cancelReason"]				= $($pre+"_jobDates_cancelReason").html();
     		$outbound["contractContactId"]			= QUOTEUTILS.getcontractContactId();
@@ -786,12 +787,15 @@ $( document ).ready(function() {
 	
 	;JOBACTIVATION = {
 			init: function($namespace, $buildingTypeList, $jobDetail) {
-				//console.log("Job Activation Namespace: "+$namespace);
+				console.log("Job Activation Config Namespace: "+$namespace);
 				
 				if ( $jobDetail == null ) {
 					JOBACTIVATION.setBuildingType($namespace, QUOTEUTILS.setSelectMenu("buildingType",ANSI_UTILS.getCodes("job","building_type")), $jobDetail.buildingType);
 				} else {
 					JOBACTIVATION.setBuildingType($namespace, $buildingTypeList, $jobDetail.buildingType);
+					if($jobDetail.directLaborPct < 1 && $jobDetail.directLaborPct != 0){
+						$jobDetail.directLaborPct = $jobDetail.directLaborPct*100;
+					}
 					ANSI_UTILS.setFieldValue($namespace, "directLaborPct", $jobDetail.directLaborPct);
 					ANSI_UTILS.setFieldValue($namespace, "directLaborBudget", $jobDetail.budget);
 					ANSI_UTILS.setFieldValue($namespace, "nbrFloors", $jobDetail.floors);
@@ -833,6 +837,7 @@ $( document ).ready(function() {
 					$id = $("#"+$namespace.substring(0,$namespace.indexOf("_"))+"_jobPanel_jobId").val();
 					console.log("#"+$namespace.substring(0,$namespace.indexOf("_"))+"_jobPanel_jobId");
 					if($("#" + $namespace + "_activationEdit").hasClass( "fa-pencil" )){
+						console.log("Clicked: Pencil");
 						$("#" + $namespace + "_automanual").selectmenu( "option", "disabled", false );
 						$("#" + $namespace + "_buildingType").selectmenu( "option", "disabled", false );
 						$("#" + $namespace + "_directLaborPct").prop('disabled', false);
@@ -846,6 +851,7 @@ $( document ).ready(function() {
 						$("#" + $namespace + "_activationEdit").removeClass('fa-pencil');
 						$("#" + $namespace + "_activationEdit").addClass('fa-save');
 					} else if($("#" + $namespace + "_activationEdit").hasClass( "fa-save" )){
+						console.log("Clicked: Save");
 						$("#" + $namespace + "_automanual").selectmenu( "option", "disabled", true );
 						$("#" + $namespace + "_buildingType").selectmenu( "option", "disabled", true );
 						$("#" + $namespace + "_directLaborPct").prop('disabled', true);
@@ -869,22 +875,24 @@ $( document ).ready(function() {
 				},
 				
 				
-				setBuildingType: function ($namespace, $data, $selectedValue) {
+				setBuildingType: function ($namespace, $optionList, $selectedValue) {
 
 					var selectorName = "select[name='" + $namespace + "_buildingType']";
 					var $select = $(selectorName);
+					
 					$('option', $select).remove();
-					$select.append(new Option("",null));
-					$.each($data, function($index, $val) {
-						$select.append(new Option($val.displayValue,$val.value));
+
+					$select.append(new Option("",""));
+					$.each($optionList, function(index, val) {
+					    $select.append(new Option(val.displayValue, val.value));
 					});
 					
-					$select.selectmenu({ width : '175px', maxHeight: '400 !important', style: 'dropdown'});
-					
-					if($selectedValue != null) { 
+					if ( $selectedValue != null ) {
 						$select.val($selectedValue);
-						$select.selectmenu("refresh");
 					}
+					$select.selectmenu({ width : '175px', maxHeight: '400 !important', style: 'dropdown'});
+
+
 				}
 				
 				
@@ -1449,7 +1457,7 @@ $( document ).ready(function() {
 							$($activateFieldSelector).val("");
 							ANSI_UTILS.setTextValue($namespace, "panelMessage", "Update Successful");
 							JOB_UTILS.fadeMessage($namespace, "panelMessage")
-							JOB_UTILS.panelLoad($jobClicked,$jobId);
+							location.reload();
 						}
 					},				
 					403: function($data) {

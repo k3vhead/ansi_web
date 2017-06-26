@@ -875,6 +875,9 @@ $( document ).ready(function() {
 								setTimeout(function() {
 									if(refresh){
 										$("#accordian").accordion( "refresh" );
+										var current = $("#accordian").accordion( "option", "active" );
+
+										$("#accordian").accordion("option","active",current+1);
 									}
 							       }, 250);
 								
@@ -898,7 +901,7 @@ $( document ).ready(function() {
 					},
 					dataType: 'html'
 				});
-			},
+			},			
 			getjobContactId: function(){
 				return $jobContactId;	
 			},
