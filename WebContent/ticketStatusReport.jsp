@@ -75,6 +75,37 @@
 				font-style:italic;
 				font-weight:bold;
 			}
+			.css-data-header-left {
+				text-align:left;
+				width:75px;
+			}
+			.css-data-header-left-text {
+				font-weight:bold;
+			}
+			.css-data-left {
+				text-align:left;
+				width:120px;
+			}
+			.css-data-left-text {
+			}
+			.css-data-header-right {
+				text-align:left;
+				width:120px;
+			}
+			.css-data-header-right-text {
+				font-weight:bold;
+			}
+			.css-data-right {
+				text-align:right;
+			}
+			.css-data-right-text {
+			}
+			.ansi-stdrpt-column-4 {
+				text-align:right;
+			}
+			.ansi-stdrpt-column-6 {
+				text-align:center;
+			}
 <%-- 
 	
 	private final String CSS_HEADER_ROW = "ansi-stdrpt-header-row";
@@ -121,6 +152,7 @@
 							$("#globalMsg").html("").hide();
 							$("#ticketReport").html($data);
 							$("#ticketData").fadeIn(3000);
+							bindFunctions();
 						},
 						403: function($data) {
 							$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
@@ -140,6 +172,14 @@
 			}
         	        	
 
+			function bindFunctions() {
+	        	$(".ansi-stdrpt-data-row").bind("mouseover", function() {
+	                $(this).css('background-color','#CCCCCC');
+		        });
+	        	$(".ansi-stdrpt-data-row").bind("mouseout", function() {
+	                $(this).css('background-color','transparent');
+		        });
+			}
         	
 			$('.ScrollTop').click(function() {
 				$('html, body').animate({scrollTop: 0}, 800);
