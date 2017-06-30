@@ -215,7 +215,13 @@ public class ApplyPaymentServlet extends AbstractServlet {
 		ticket.setMgrApproval(Ticket.MGR_APPROVAL_IS_NO);
 		ticket.setPrintCount(0);
 		ticket.setProcessDate(ticketPattern.getProcessDate());
-		ticket.setProcessNotes(null);
+		if (ticketType == TicketType.FEE) {
+			ticket.setProcessNotes("Write Off");
+		} else if (ticketType == TicketType.EXCESS) {
+			ticket.setProcessNotes("Excess Cash");
+		} else {
+			ticket.setProcessNotes(null);
+		}
 		ticket.setStartDate(today.getTime());
 		ticket.setStatus(TicketStatus.PAID.code());
 //		ticket.setTicketId(ticketId);
