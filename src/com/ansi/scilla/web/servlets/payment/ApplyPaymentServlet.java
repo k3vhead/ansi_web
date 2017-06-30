@@ -160,14 +160,14 @@ public class ApplyPaymentServlet extends AbstractServlet {
 			}
 			makeTicketPayment(conn, detail.paymentId, detail.invoiceId, item, sessionUser);
 		}
-		if ( detail.excessCash.compareTo(BigDecimal.ZERO) > 0  || detail.feeAmount.compareTo(BigDecimal.ZERO) > 0 ) {
+		if ( detail.excessCash.compareTo(BigDecimal.ZERO) != 0  || detail.feeAmount.compareTo(BigDecimal.ZERO) != 0 ) {
 			Ticket ticketPattern = new Ticket();
 			ticketPattern.setInvoiceId(detail.invoiceId);
 			ticketPattern.selectOne(conn);
-			if ( detail.excessCash.compareTo(BigDecimal.ZERO) > 0 ) {
+			if ( detail.excessCash.compareTo(BigDecimal.ZERO) != 0 ) {
 				makeTicket(conn, TicketType.EXCESS, ticketPattern, detail.paymentId, detail.invoiceId, detail.excessCash, sessionUser);
 			}
-			if ( detail.feeAmount.compareTo(BigDecimal.ZERO) > 0 ) {
+			if ( detail.feeAmount.compareTo(BigDecimal.ZERO) != 0 ) {
 				makeTicket(conn, TicketType.FEE, ticketPattern, detail.paymentId, detail.invoiceId, detail.feeAmount, sessionUser);
 			}
 		}
@@ -197,7 +197,11 @@ public class ApplyPaymentServlet extends AbstractServlet {
 		ticket.setActDivisionId(ticketPattern.getActDivisionId());
 		ticket.setActDlAmt(pmtAmount);
 		ticket.setActDlPct(BigDecimal.ZERO);
-		ticket.setActPricePerCleaning(BigDecimal.ZERO);
+		if (ticketType == TicketType.FEE) {
+			ticket.setActPricePerCleaning(amount);
+		} else {
+			ticket.setActPricePerCleaning(BigDecimal.ZERO);
+		}
 		ticket.setActTaxAmt(BigDecimal.ZERO);
 		ticket.setActTaxRateId(ticketPattern.getActTaxRateId());
 		ticket.setAddedBy(sessionUser.getUserId());
