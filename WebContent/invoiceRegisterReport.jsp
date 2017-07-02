@@ -193,7 +193,6 @@
 				var $selectedMonth = $('#startMonth option:selected').val();
 				var $selectedYear = $('#startYear option:selected').val();
 				var $downloadUrl = "invoiceRegisterReport/" + $selectedDiv + "?month=" + $selectedMonth + "&year=" + $selectedYear;
-				console.debug($downloadUrl);
 				$("#xlsDownload").attr("href", $downloadUrl);
 				$("#downloader").click();
 			});

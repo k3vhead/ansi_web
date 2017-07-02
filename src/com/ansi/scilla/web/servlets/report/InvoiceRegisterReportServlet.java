@@ -58,8 +58,10 @@ public class InvoiceRegisterReportServlet extends AbstractServlet {
 			    response.setHeader("Cache-Control", "must-revalidate, post-check=0, pre-check=0");
 			    response.setHeader("Pragma", "public");
 			    // setting the content type
-			    response.setContentType("application/vnd.ms-excel");
+//			    response.setContentType("application/vnd.ms-excel");
+			    response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 			    String dispositionHeader = "attachment; filename=" + fileName + ".xlsx";
+			    System.out.println("Invoice register 63: " + fileName);
 				response.setHeader("Content-disposition",dispositionHeader);
 			    // the contentlength
 //			    response.setContentLength(baos.size());
