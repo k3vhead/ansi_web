@@ -230,6 +230,17 @@
 
 
 	<servlet>
+		<servlet-name>invoiceRegisterReport</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.report.InvoiceRegisterReportServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>invoiceRegisterReport</servlet-name>
+		<url-pattern>/invoiceRegisterReport/*</url-pattern>
+	</servlet-mapping>
+
+
+
+	<servlet>
 		<servlet-name>invoiceReprint</servlet-name>
 		<servlet-class>com.ansi.scilla.web.servlets.invoice.InvoiceReprintServlet</servlet-class>
 	</servlet>

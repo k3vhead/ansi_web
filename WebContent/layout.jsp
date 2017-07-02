@@ -147,6 +147,7 @@
 										<ansi:hasPermission permissionRequired="TICKET">
 										<li><html:link action="ticketView"><bean:message key="menu.label.drv30" /></html:link></li>
 										</ansi:hasPermission>
+										<li><html:link action="invoiceRegisterReport">Invoice Register</html:link></li>
 									</ul>
 								</li>
 			        			<li>
