@@ -167,8 +167,11 @@ public class ApplyPaymentServlet extends AbstractServlet {
 			if ( detail.excessCash.compareTo(BigDecimal.ZERO) != 0 ) {
 				makeTicket(conn, TicketType.EXCESS, ticketPattern, detail.paymentId, detail.invoiceId, detail.excessCash, sessionUser);
 			}
-			if ( detail.feeAmount.compareTo(BigDecimal.ZERO) != 0 ) {
+			if ( detail.feeAmount.compareTo(BigDecimal.ZERO) > 0 ) {
 				makeTicket(conn, TicketType.FEE, ticketPattern, detail.paymentId, detail.invoiceId, detail.feeAmount, sessionUser);
+			}
+			if ( detail.feeAmount.compareTo(BigDecimal.ZERO) < 0 ) {
+				makeTicket(conn, TicketType.WRITEOFF, ticketPattern, detail.paymentId, detail.invoiceId, detail.feeAmount, sessionUser);
 			}
 		}
 
@@ -195,10 +198,10 @@ public class ApplyPaymentServlet extends AbstractServlet {
 		Calendar today = Calendar.getInstance(new Locale("America/Chicago"));
 		Ticket ticket = new Ticket();
 		ticket.setActDivisionId(ticketPattern.getActDivisionId());
-		ticket.setActDlAmt(pmtAmount);
+		ticket.setActDlAmt(BigDecimal.ZERO);
 		ticket.setActDlPct(BigDecimal.ZERO);
-		if (ticketType == TicketType.FEE) {
-			ticket.setActPricePerCleaning(amount);
+		if (ticketType == TicketType.FEE || ticketType == TicketType.WRITEOFF ) {
+			ticket.setActPricePerCleaning(pmtAmount);
 		} else {
 			ticket.setActPricePerCleaning(BigDecimal.ZERO);
 		}
@@ -209,16 +212,18 @@ public class ApplyPaymentServlet extends AbstractServlet {
 		ticket.setBillSheet(Ticket.BILL_SHEET_IS_NO);
 		ticket.setCustomerSignature(Ticket.CUSTOMER_SIGNATURE_IS_NO);
 		ticket.setFleetmaticsId(null);
-		ticket.setInvoiceDate(ticketPattern.getInvoiceDate());
+		ticket.setInvoiceDate(today.getTime());
 		ticket.setInvoiceId(invoiceId);
 		ticket.setJobId(ticketPattern.getJobId());
 		ticket.setMgrApproval(Ticket.MGR_APPROVAL_IS_NO);
 		ticket.setPrintCount(0);
-		ticket.setProcessDate(ticketPattern.getProcessDate());
+		ticket.setProcessDate(today.getTime());
 		if (ticketType == TicketType.FEE) {
-			ticket.setProcessNotes("Write Off");
+			ticket.setProcessNotes("Fee");
 		} else if (ticketType == TicketType.EXCESS) {
 			ticket.setProcessNotes("Excess Cash");
+		} else if (ticketType == TicketType.WRITEOFF) {
+			ticket.setProcessNotes("Write Off");
 		} else {
 			ticket.setProcessNotes(null);
 		}
@@ -228,6 +233,8 @@ public class ApplyPaymentServlet extends AbstractServlet {
 		ticket.setUpdatedBy(sessionUser.getUserId());
 //		ticket.setUpdatedDate(updatedDate);		// set by the super
 		ticket.setTicketType(ticketType.code());
+
+//		System.out.println(ticket);
 		Integer ticketId = ticket.insertWithKey(conn);
 		System.out.println(ticket);
 		
