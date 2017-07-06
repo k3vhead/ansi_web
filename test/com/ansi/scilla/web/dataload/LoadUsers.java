@@ -51,7 +51,7 @@ public class LoadUsers {
 	public void go() throws Exception {
 		Connection conn = null;
 		try {
-			conn = AppUtils.getConn();
+			conn = AppUtils.getDevConn();
 			conn.setAutoCommit(false);
 			
 			doWork(conn, inputFileName, outputFileName);

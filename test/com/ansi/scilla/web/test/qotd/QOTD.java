@@ -32,7 +32,7 @@ public class QOTD {
 	private void testServlet() throws Exception {
 		Connection conn = null;
 		try {
-			conn = AppUtils.getConn();
+			conn = AppUtils.getDevConn();
 			MotdServlet servlet = new MotdServlet();
 			String message = servlet.doGetWork(conn);
 			System.out.println(message);
