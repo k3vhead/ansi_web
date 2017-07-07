@@ -83,7 +83,7 @@ public class JobTableServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 			AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);
-			String qs = request.getQueryString();
+//			String qs = request.getQueryString();
 
 			String term = "";
 			
@@ -93,8 +93,9 @@ public class JobTableServlet extends AbstractServlet {
 			System.out.println(term);
 			if (sStart != null) {
 		        start = Integer.parseInt(sStart);
-		        if (start < 0)
+		        if (start < 0) {
 		            start = 0;
+		        }
 		    }
 		    if (sAmount != null) {
 		    	amount = Integer.parseInt(sAmount);

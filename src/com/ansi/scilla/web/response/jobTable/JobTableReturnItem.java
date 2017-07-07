@@ -31,6 +31,8 @@ public class JobTableReturnItem extends ReportQuery {
 	public static final String DIVISION_NBR = "division_nbr";
 	public static final String DIVISION_CODE = "division_code";
 	public static final String QUOTE_ID = "quote_id";
+	public static final String QUOTE_NUMBER = "quote_number";
+	public static final String REVISION = "revision";
 
 	private Integer jobId;
 	private String jobStatus;
@@ -50,6 +52,8 @@ public class JobTableReturnItem extends ReportQuery {
 	private Integer divisionNbr;
 	private String divisionCode;
 	private Integer quoteId;
+	private Integer quoteNumber;
+	private String revision;
 
 	public JobTableReturnItem() throws SQLException {
 		super();
@@ -74,6 +78,8 @@ public class JobTableReturnItem extends ReportQuery {
 		this.divisionCode = rs.getString(DIVISION_CODE);
 		this.DT_RowId = rs.getInt(JOB_ID) + "";
 		this.quoteId = rs.getInt(QUOTE_ID);
+		this.quoteNumber = rs.getInt(QUOTE_NUMBER);
+		this.revision = rs.getString(REVISION);
 	}
 
 	@DBColumn(JOB_ID)
@@ -253,6 +259,22 @@ public class JobTableReturnItem extends ReportQuery {
 	@DBColumn(QUOTE_ID)
 	public void setQuoteId(Integer quoteId) {
 		this.quoteId = quoteId;
+	}
+	@DBColumn(QUOTE_NUMBER)
+	public Integer getQuoteNumber() {
+		return quoteNumber;
+	}
+	@DBColumn(QUOTE_NUMBER)
+	public void setQuoteNumber(Integer quoteNumber) {
+		this.quoteNumber = quoteNumber;
+	}
+	@DBColumn(REVISION)
+	public String getRevision() {
+		return revision;
+	}
+	@DBColumn(REVISION)
+	public void setRevision(String revision) {
+		this.revision = revision;
 	}
 
 }

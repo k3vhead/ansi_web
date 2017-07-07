@@ -92,7 +92,7 @@
 			            	if(row.jobId != null){return (row.jobId+"");}
 			            } },
 			            { title: "Quote", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.quoteId != null){return ('<a href="quoteMaintenance.html?id='+ row.quoteId+ '" style="color:#404040">' + row.quoteId+'</a>');}
+			            	if(row.quoteId != null){return ('<a href="quoteMaintenance.html?id='+ row.quoteId+ '" style="color:#404040">' + row.quoteNumber + row.revision +'</a>');}
 			            } },
 			            { title: "Status", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.jobStatus != null){return (row.jobStatus+"");}
