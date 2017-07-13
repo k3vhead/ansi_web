@@ -102,7 +102,7 @@ public class InvoiceRegisterReportServlet extends AbstractServlet {
 			startDate.set(Calendar.YEAR, Integer.valueOf(year));
 		}		
 		startDate.set(Calendar.DAY_OF_MONTH, 1);
-		startDate.set(Calendar.HOUR, 0);
+		startDate.set(Calendar.HOUR_OF_DAY, 0);
 		startDate.set(Calendar.MINUTE, 0);
 		startDate.set(Calendar.SECOND, 0);
 		startDate.set(Calendar.MILLISECOND, 0);
