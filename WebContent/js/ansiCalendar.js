@@ -6,6 +6,7 @@
 $(function() {             
 	;ANSI_CALENDAR = {
 		DATA: {
+			jobId:null,
 			nameSpace:null,        			
 			monthsToDisplay:12,
 			today:new Date(),
@@ -24,6 +25,7 @@ $(function() {
 		
 		go:function($jobId) {
 			console.debug($jobId);
+			ANSI_CALENDAR.DATA['jobId']=$jobId;			
 			var $modalId = "#" + ANSI_CALENDAR.DATA['nameSpace'] + "_dateTable";
 			var $url = "jobSchedule/" +$jobId;
 			var jqxhr = $.ajax({
@@ -47,7 +49,6 @@ $(function() {
 							while ( $dayOfMonth < $today.getDay() ) {
 								var $dayString = ("0" + $dayOfMonth).slice (-2);
 								var $selector = $modalId + " .day-" + $monthString + "-" + $dayString + "-" + $today.getFullYear();
-								console.debug("Not avail: " + $selector);
 								$($selector).addClass("ansi-date-not-available");
 								$dayOfMonth++;
 							}
@@ -57,7 +58,6 @@ $(function() {
 							$.each($data.data.ticketList, function(index, $ticket) {
 								var $dateString = $ticket.startDate.replace(/\//g,"-");
 								$selector = $modalId + " .day-" + $dateString;
-								console.debug($ticket.startDate + " " + $selector);
 								$($selector).removeClass("ansi-date-not-selected");
 								$($selector).removeClass("ansi-date-not-available");
 								$($selector).addClass("ansi-date-selected");								
@@ -268,17 +268,82 @@ $(function() {
         	
         	$($selector).click(function($clickEvent) {
         		$clickEvent.preventDefault();
-	        	//var $dateString = $clickEvent.currentTarget.attributes['data-date'].value;
-	        	$dateString = $(this).data("date");
-	        	if ( $(this).hasClass("ansi-date-selected") ) {
-	        		$(this).switchClass("ansi-date-selected","ansi-date-not-selected",10);
-	        	} else {
-	        		$(this).switchClass("ansi-date-not-selected","ansi-date-selected",10);
-	        	}
+        		ANSI_CALENDAR.clickDate($(this));
         	});
         	
         	var $showTrigger = "#" + $nameSpace + " .ansi-date-show-calendar";
         	var $modalSelector = "#" + $nameSpace + " .modal-calendar";
+    	},
+    	
+    	
+    	
+    	
+    	
+    	
+    	clickDate : function($clickDate) {
+    		var $myDate = $(this);
+        	var $dateString = $clickDate.data("date");        	
+        	console.debug($dateString);
+        	var $outbound = {'jobDate':$dateString}
+			var $url = "jobSchedule/" + ANSI_CALENDAR.DATA['jobId'];
+			var $modalId = "#" + ANSI_CALENDAR.DATA['nameSpace'] + "_dateTable";
+			var $messageDisplay = $modalId + " .ansi-calendar-msg";
+			var jqxhr = $.ajax({
+				type: 'POST',
+				url: $url,
+				data: JSON.stringify($outbound),
+				statusCode: {
+					200: function($data) {
+						if ( $data.responseHeader.responseCode == 'SUCCESS') {
+							// everything is good: toggle the selection
+				        	if ( $clickDate.hasClass("ansi-date-selected") ) {
+				        		$clickDate.switchClass("ansi-date-selected","ansi-date-not-selected",10);
+				        	} else {
+				        		$clickDate.switchClass("ansi-date-not-selected","ansi-date-selected",10);
+				        	}
+				        	$($messageDisplay).html("Success").show().fadeOut(6000);
+						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+							// something went wrong: display a message
+							var $errMessage = "";
+							if ( $data.data.webMessages.length  > 1 ) {
+								$errMessage = "<ul>";
+								$.each( $data.data.webMessages['GLOBAL_MESSAGE'], function(index, value) {
+									$errMessage = $errMessage + "<li>" + value + "</li>";
+								});
+								$errMessage = $errMessage + "</ul>";
+							} else {
+								$errMessage = $data.data.webMessages['GLOBAL_MESSAGE'][0];
+							}
+							$($messageDisplay).html($errMessage).show().fadeOut(4000);
+						} else {
+							// something went really wrong: call for help
+							$($messageDisplay).html("System Error: Contact Support").show();
+						}
+					},
+					403: function($data) {
+						$($modalId).dialog("close");
+						$("#globalMsg").html("Session Timeout. Log in and try again").show();
+					}, 
+					404: function($data) {
+						$($modalId).dialog("close");
+						$("#globalMsg").html("System Error 404: Contact Support").show();
+					}, 
+					405: function($data) {
+						$($modalId).dialog("close");
+						$("#globalMsg").html("System Error 405: Contact Support").show();
+					}, 
+					500: function($data) {
+						$($modalId).dialog("close");
+						$("#globalMsg").html("System Error 500: Contact Support").show();
+					} 
+				},
+				dataType: 'json'
+			});
+    	},
+    	
+    	
+    	unClickDate : function($clickDate) {
+    		    		
     	}
 	}
 });

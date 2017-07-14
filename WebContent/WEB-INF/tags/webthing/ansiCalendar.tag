@@ -20,8 +20,8 @@
 	String modalId = "id=\"" + nameSpace + "_dateTable\"";
 %>
 <div <%= cssIdString %>>
-	
 	<div <%=modalId %>>
+		<div class="ansi-calendar-msg err"></div>
 		<table class="dateTable">	
 		</table>
 	</div>

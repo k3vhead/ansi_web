@@ -7,11 +7,13 @@ import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 
+import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.ViewTicketLog;
 import com.ansi.scilla.common.jobticket.TicketType;
 import com.ansi.scilla.web.response.MessageResponse;
@@ -35,6 +37,13 @@ public class JobScheduleResponse extends MessageResponse {
 		make(conn, jobId, startDate);
 	}
 
+	public JobScheduleResponse(Connection conn, Integer jobId, Date startDate) throws Exception {
+		this();
+		Calendar start = Calendar.getInstance(new AnsiTime());
+		start.setTime(startDate);
+		make(conn, jobId, start);
+	}
+	
 	public List<JobScheduleResponseItem> getTicketList() {
 		return ticketList;
 	}
