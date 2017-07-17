@@ -347,11 +347,8 @@ $(function() {
 				},
 				dataType: 'json'
 			});
-    	},
-    	
-    	
-    	unClickDate : function($clickDate) {
-    		    		
     	}
+    	
+    	
 	}
 });

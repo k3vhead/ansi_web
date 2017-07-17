@@ -9,15 +9,25 @@ $(function() {
     	     type: 'POST',
     	     url: 'login',
     	     data: $outbound,
-    	     success: function($data) {
-    	    	 location.href="dashboard.html";
-    	     },
     	     statusCode: {
+        	    200: function($data) {
+        	    	location.href="dashboard.html";
+        	    },
     	    	403: function($data) {
     	    		$(".working").hide();
     	    		$("#loginMsg").html($data.responseJSON.responseHeader.responseMessage);
     	    		$("#loginMsg").fadeIn('fast');
     	    		$("#loginMsg").fadeOut(6000);
+    	    	}, 
+    	    	404: function($data) {
+    	    		$(".working").hide();
+    	    		$("#loginMsg").html("System Error 404: Contact Support");
+    	    		$("#loginMsg").fadeIn('fast');
+    	    	}, 
+    	    	500: function($data) {
+    	    		$(".working").hide();
+    	    		$("#loginMsg").html("System Error 500: Contact Support");
+    	    		$("#loginMsg").fadeIn('fast');
     	    	} 
     	     },
     	     dataType: 'json'
