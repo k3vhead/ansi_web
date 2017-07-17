@@ -60,7 +60,11 @@ $(function() {
 								$selector = $modalId + " .day-" + $dateString;
 								$($selector).removeClass("ansi-date-not-selected");
 								$($selector).removeClass("ansi-date-not-available");
-								$($selector).addClass("ansi-date-selected");								
+								$($selector).addClass("ansi-date-selected");	
+								if ( $ticket.ticketId != null ) {
+									$($selector).removeClass("ansi-date-available");
+									$($selector).addClass("ansi-date-dispatched");
+								}
 							});
 							$($modalId).dialog( "open" );
 						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
@@ -271,6 +275,10 @@ $(function() {
         		ANSI_CALENDAR.clickDate($(this));
         	});
         	
+        	var $dispatched = "#" + $nameSpace + " ansi-date-dispatched";
+        	$($dispatched).click(function($event) {
+        		alert("Already dispatched");
+        	});
         	var $showTrigger = "#" + $nameSpace + " .ansi-date-show-calendar";
         	var $modalSelector = "#" + $nameSpace + " .modal-calendar";
     	},

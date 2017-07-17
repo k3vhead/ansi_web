@@ -64,8 +64,7 @@ public class JobScheduleServlet extends AbstractServlet {
 	 * Errors: Not a valid job ID (returns 404)
 	 *         Not a manually-scheduled job (returns 200 with message)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Connection conn = null;
 
 		JobScheduleResponse jobScheduleResponse = new JobScheduleResponse();
@@ -131,6 +130,8 @@ public class JobScheduleServlet extends AbstractServlet {
 				if( url.getId() == null || ! StringUtils.isBlank(url.getCommand())) {	
 					throw new ResourceNotFoundException();
 				} else if (url.getId() != null) {
+					WebMessages webMessages = new WebMessages();
+					ResponseCode responseCode = null;
 					try {
 						Calendar displayDate = new Midnight(new AnsiTime());
 						displayDate.set(Calendar.DAY_OF_MONTH, 1);
@@ -141,8 +142,6 @@ public class JobScheduleServlet extends AbstractServlet {
 						DateAction dateAction = insertOrDelete(conn, jobScheduleRequest, jobScheduleResponse);						
 						List<String> messageList = validateInput(conn, job, jobScheduleRequest, jobScheduleResponse, dateAction);
 						
-						WebMessages webMessages = new WebMessages();
-						ResponseCode responseCode = null;
 						if ( messageList.isEmpty() ) {
 							try {
 								if ( dateAction.equals(DateAction.INSERT)) {
@@ -163,6 +162,11 @@ public class JobScheduleServlet extends AbstractServlet {
 							}
 							responseCode = ResponseCode.EDIT_FAILURE;
 						}
+						jobScheduleResponse.setWebMessages(webMessages);
+						super.sendResponse(conn, response, responseCode, jobScheduleResponse);
+					} catch ( DateAlreadyScheduledException e ) {
+						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Ticket has already been dispatched");
+						responseCode = ResponseCode.EDIT_FAILURE;
 						jobScheduleResponse.setWebMessages(webMessages);
 						super.sendResponse(conn, response, responseCode, jobScheduleResponse);
 					} catch ( RecordNotFoundException e) {
@@ -192,11 +196,14 @@ public class JobScheduleServlet extends AbstractServlet {
 		}		
 	}
 
-	private DateAction insertOrDelete(Connection conn, JobScheduleRequest jobScheduleRequest, JobScheduleResponse jobScheduleResponse) {
+	private DateAction insertOrDelete(Connection conn, JobScheduleRequest jobScheduleRequest, JobScheduleResponse jobScheduleResponse) throws DateAlreadyScheduledException {
 		DateAction dateAction = DateAction.INSERT; // we're adding a date (default)
 		for ( JobScheduleResponseItem item : jobScheduleResponse.getTicketList() ) {
 			if ( DateUtils.isSameDay(jobScheduleRequest.getJobDate().getTime(), item.getStartDate()) ) {
 				dateAction = DateAction.DELETE; // nope we're deleting a date
+				if ( item.getTicketId() != null ) {
+					throw new DateAlreadyScheduledException();
+				}
 			}
 		}
 		return dateAction;
@@ -256,7 +263,7 @@ public class JobScheduleServlet extends AbstractServlet {
 		if ( messageList.isEmpty() ) {
 			if ( dateAction.equals(DateAction.INSERT) ) {
 				validateNumberOfDates(conn, job, jobScheduleRequest, jobScheduleResponse.getTicketList(), messageList);
-			}			
+			}
 		}
 		return messageList;
 	}
@@ -299,6 +306,10 @@ public class JobScheduleServlet extends AbstractServlet {
 		}
 	}
 
+	private class DateAlreadyScheduledException extends Exception {
+		private static final long serialVersionUID = 1L;
+	}
+	
 	private enum DateAction {
 		INSERT,
 		DELETE
