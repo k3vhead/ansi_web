@@ -32,7 +32,7 @@
 
 <div <%= cssIdString %> <%= cssClassString %> >
 	<div style="float:right;margin-right:6px; margin-top:6px;">
-		<span id="<%=namespace %>_proposalEdit" style="cursor:pointer;" class="green fa fa-pencil tooltip" ari-hidden="true"><span class="tooltiptext">Edit</span></span>
+		<span id="<%=namespace %>_proposalEdit" style="cursor:pointer;" class="green fa fa-pencil tooltip" ari-hidden="true"><span id="<%=namespace %>tooltiptext" class="tooltiptext">Edit</span></span>
 	</div>
 	<form name="<%=namespace%>_jobProposalForm">
 		<table>

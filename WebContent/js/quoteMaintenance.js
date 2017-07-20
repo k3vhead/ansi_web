@@ -7,6 +7,7 @@ $( document ).ready(function() {
 	var $jobContactId = null;
 	var $siteContactId = null;
 	var $contractContactId = null;
+	var $divisionId = 0;
 	var $billingContactId = null;
 	var $saveCounter = 0;
 	;JOB_DATA = {}
@@ -119,6 +120,7 @@ $( document ).ready(function() {
 					//	console.log("DivisionCode: "+ $quoteData.divisionId);
 					
 						$("select[name='division']").val($quoteData.divisionId);
+						$divisionId = $quoteData.divisionId;
 						$("select[name='division").selectmenu("refresh");
 						
 
@@ -914,8 +916,23 @@ $( document ).ready(function() {
 			getbillingContactId: function(){
 				return $billingContactId;
 			},
+			setjobContactId: function($jobContactId1){
+				$jobContactId = $jobContactId1;	
+			},
+			setsiteContactId: function($siteContactId1){
+				$siteContactId = $siteContactId1;
+			},
+			setcontractContactId: function($contractContactId1){
+				$contractContactId = $contractContactId1;
+			},
+			setbillingContactId: function($billingContactId1){
+				$billingContactId = $billingContactId1;
+			},
+			setDivision: function($divisionId1){
+				$divisionId = $divisionId1;
+			},
 			getDivision: function(){
-				return $("select[name=division]").val();
+				return $divisionId;
 			},
 			getQuoteId: function(){
 				return $globalQuoteId;

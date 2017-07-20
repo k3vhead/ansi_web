@@ -1,4 +1,5 @@
 $( document ).ready(function() {
+	var $divisionLookup = {};
 	;JOB_DATA = {}
 	;QUOTE_DATA = {}
 	;Page = null;
@@ -46,10 +47,12 @@ $( document ).ready(function() {
 				$lastCreated = $jobData.lastCreated;
 				
 				if($jobDetail != null){
-					QUOTEUTILS.$jobContactId = $jobDetail.jobContactId;
-					QUOTEUTILS.$siteContactId = $jobDetail.siteContact;
-					QUOTEUTILS.$contractContactId = $jobDetail.contractContactId;
-					QUOTEUTILS.$billingContactId = $jobDetail.billingContactId;
+					console.log("setting Ids " + $jobDetail.jobContactId);
+					QUOTEUTILS.setjobContactId($jobDetail.jobContactId);
+					QUOTEUTILS.setsiteContactId($jobDetail.siteContact);
+					QUOTEUTILS.setcontractContactId($jobDetail.contractContactId);
+					QUOTEUTILS.setbillingContactId($jobDetail.billingContactId);
+					console.log("Check Ids " + QUOTEUTILS.getjobContactId());
 				}
 			}
 			
@@ -160,6 +163,7 @@ $( document ).ready(function() {
 					}
 					
 					
+					
 
 					if($quoteData != null){
 //						console.log($quoteData);
@@ -173,29 +177,35 @@ $( document ).ready(function() {
 						QUOTEUTILS.addressActions();
 						if($jobContacts.jobContactId != null){
 							$jobContactId = $jobContacts.jobContactId;
+							QUOTEUTILS.setjobContactId($jobContactId);
 							var data = QUOTEUTILS.getContact($jobContactId);
 					    	$("input[name='jobSite_jobContactName']").val(data.value);
 					    	$("span[name='jobSite_jobContactInfo']").html(QUOTEUTILS.processContact(data));
 						}
 						if($jobContacts.siteContact != null){
 							$siteContactId = $jobContacts.siteContact;
+							QUOTEUTILS.setsiteContactId($siteContactId);
 							var data = QUOTEUTILS.getContact($siteContactId);
 							$("input[name='jobSite_siteContactName']").val(data.value);
 					    	$("span[name='jobSite_siteContactInfo']").html(QUOTEUTILS.processContact(data));
 						}
 						if($jobContacts.contractContactId != null){
 							$contractContactId = $jobContacts.contractContactId;
+							QUOTEUTILS.setcontractContactId($contractContactId);
 							var data = QUOTEUTILS.getContact($contractContactId);
 							$("input[name='billTo_contractContactName']").val(data.value);
 					    	$("span[name='billTo_contractContactInfo']").html(QUOTEUTILS.processContact(data));
 						}
 						if($jobContacts.billingContactId != null){
 							$billingContactId = $jobContacts.billingContactId;
+							QUOTEUTILS.setbillingContactId($billingContactId);
 							console.log("Just set $billingContactId: "+ $billingContactId);
 							var data = QUOTEUTILS.getContact($billingContactId);
+							//console.log("check")
 							$("input[name='billTo_billingContactName']").val(data.value);
 					    	$("span[name='billTo_billingContactInfo']").html(QUOTEUTILS.processContact(data));
 						}
+						
 					}
 					
 				},
@@ -284,6 +294,7 @@ $( document ).ready(function() {
 					JOBSCHEDULE.init($namespace+"_jobSchedule", $jobDetail, $lastRun, $nextDue, $lastCreated)
 					JOBINVOICE.init($namespace+"_jobInvoice", JOB_DATA.invoiceStyleList, JOB_DATA.invoiceGroupingList, JOB_DATA.invoiceTermList, $jobDetail);
 					JOBAUDIT.init($namespace+"_jobAudit", $jobDetail);
+					$("#" + $namespace + "_jobActivation_nbrFloors").spinner( "option", "disabled", true );
 					if($jobDetail.jobId != null){
 						$("#"+$namespace+"_jobIdHead").html($jobDetail.jobId);
 					}
@@ -466,6 +477,7 @@ $( document ).ready(function() {
 			});
 		},
 		changeFieldState: function($namespace,$disabledBoolean){
+
 			$("#" + $namespace + "_jobActivation_automanual").selectmenu( "option", "disabled", $disabledBoolean );
 			$("#" + $namespace + "_jobActivation_buildingType").selectmenu( "option", "disabled", $disabledBoolean );
 			$("#" + $namespace + "_jobActivation_directLaborPct").prop('disabled', $disabledBoolean);
@@ -656,7 +668,7 @@ $( document ).ready(function() {
 							if($data.data.job.serviceDescription != null){
 								$("#"+$rn+"_jobDescHead").html($data.data.job.serviceDescription.substring(0, 50));
 							}
-							$("#"+$rn+"_jobPanel_divisionId").text($("select[name='division'] option:selected").text());
+							$("#"+$rn+"_jobPanel_divisionId").text(QUOTEUTILS.getDivision());
 							
 							if($data.data.job.canReschedule){
 								$("#"+$rn+"_jobPanel_scheduleJobButton").show();
@@ -848,6 +860,8 @@ $( document ).ready(function() {
 						$("#" + $namespace + "_omNotes").prop('disabled', false);
 						$("#" + $namespace + "_billingNotes").prop('disabled', false);
 						
+						$("#" + $namespace + "tooltiptext").text("Save");
+						
 						$("#" + $namespace + "_activationEdit").removeClass('fa-pencil');
 						$("#" + $namespace + "_activationEdit").addClass('fa-save');
 					} else if($("#" + $namespace + "_activationEdit").hasClass( "fa-save" )){
@@ -866,6 +880,8 @@ $( document ).ready(function() {
 						
 						
 						JOB_UTILS.addJob($namespace.substring(0,$namespace.indexOf("_")),$id,$namespace,false);
+						
+						$("#" + $namespace + "tooltiptext").text("Edit");
 		        	
 						$("#" + $namespace + "_activationEdit").removeClass('fa-save');
 						$("#" + $namespace + "_activationEdit").addClass('fa-pencil');
@@ -1028,6 +1044,8 @@ $( document ).ready(function() {
 						$("#" + $namespace + "_invoiceExpire").prop('disabled', false);
 						$("#" + $namespace + "_invoiceExpireReason").prop('disabled', false);
 						
+						$("#" + $namespace + "tooltiptext").text("Save");
+						
 						$("#" + $namespace + "_invoiceEdit").removeClass('fa-pencil');
 						$("#" + $namespace + "_invoiceEdit").addClass('fa-save');
 					} else if($("#" + $namespace + "_invoiceEdit").hasClass( "fa-save" )){
@@ -1055,6 +1073,8 @@ $( document ).ready(function() {
 						
 						
 						JOB_UTILS.addJob($namespace.substring(0,$namespace.indexOf("_")),$id,$namespace,false);
+						
+						$("#" + $namespace + "tooltiptext").text("Edit");
 						
 						$("#" + $namespace + "_invoiceEdit").removeClass('fa-save');
 						$("#" + $namespace + "_invoiceEdit").addClass('fa-pencil');
@@ -1103,7 +1123,7 @@ $( document ).ready(function() {
 	;JOBPANEL = {
 		init: function($namespace, $divisionList, $modalNamespace, $jobDetail) {
 			if ( $divisionList != null ) {
-				var $divisionLookup = {}
+				
 				$.each($divisionList, function($index, $division) {
 					$divisionLookup[$division.divisionId]=$division.divisionCode;
 				});
@@ -1135,6 +1155,8 @@ $( document ).ready(function() {
 				}
 				if($("#" + $namespace + "_divisionId").is("span")){
 				  ANSI_UTILS.setTextValue($namespace, "divisionId", $divisionLookup[$jobDetail.divisionId]);
+				  $("#" + $namespace + "_divisionId").text($divisionLookup[QUOTEUTILS.getDivision()]);
+				  QUOTEUTILS.setDivision($jobDetail.divisionId);
 				} else {
 					$("#" + $namespace + "_divisionId").val($jobDetail.divisionId);
 					$("#" + $namespace + "_divisionId").selectmenu("refresh");
@@ -1557,6 +1579,8 @@ $( document ).ready(function() {
 					$("#" + $namespace + "_ppc").prop('disabled', false);
 					$("#" + $namespace + "_serviceDescription").prop('disabled', false);
 					
+					$("#" + $namespace + "tooltiptext").text("Save");
+					
 					$("#" + $namespace + "_proposalEdit").removeClass('fa-pencil');
 					$("#" + $namespace + "_proposalEdit").addClass('fa-save');
 				} else if($("#" + $namespace + "_proposalEdit").hasClass( "fa-save" )){
@@ -1573,6 +1597,8 @@ $( document ).ready(function() {
 					$outbound["serviceDescription"]	= $("#" + $namespace + "_serviceDescription").val();
 					
 					JOB_UTILS.addJob($namespace.substring(0,$namespace.indexOf("_")),$id,$namespace,false);
+					
+					$("#" + $namespace + "tooltiptext").text("Edit");
 					
 					$("#" + $namespace + "_proposalEdit").removeClass('fa-save');
 					$("#" + $namespace + "_proposalEdit").addClass('fa-pencil');
