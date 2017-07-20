@@ -1,4 +1,4 @@
-package org.fvdtc.struts;
+package com.ansi.scilla.web.test.sample;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,6 +11,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -24,15 +25,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.fvdtc.common.AdminPermission;
-import org.fvdtc.common.AppUtils;
-import org.fvdtc.common.ReportConfig;
-import org.fvdtc.common.RosterFormat;
-import org.fvdtc.common.RosterReportType;
-import org.fvdtc.common.RosterUtils;
-import org.fvdtc.common.SessionData;
-import org.fvdtc.db.Member;
-import org.fvdtc.db.MembershipYear;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
@@ -426,4 +418,29 @@ public class RosterServlet extends HttpServlet {
 //
 //	}
 	
+	public enum AdminPermission {
+		MEMBER_ADMIN;		
+	}
+	public enum RosterReportType {
+		ACTIVE,
+		APPLIED,
+		BALANCE_DUE,
+		MEMBERSHIP_REPORT,
+		PUBLISHED,
+		RENEWABLES,
+		WT_EMAIL,
+		WT_USPS,
+		AKC_REPORT;
+
+	}
+	public class Member {
+		
+	}
+	public enum RosterFormat {
+		HTML,
+		PDF,
+		CSV,
+		XLS;
+	}
+
 }
