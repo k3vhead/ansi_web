@@ -124,9 +124,9 @@ $( document ).ready(function() {
 					$("#"+$namespace+"_jobPanel_quoteLink").text($jobDetail.quoteId);
 					//$(".addressTable").remove();
 					
-					if($jobDetail.status != "N"){
-						$("#"+$namespace+"_jobProposal_proposalEdit").hide();
-					}
+//					if($jobDetail.status != "N"){
+//						$("#"+$namespace+"_jobProposal_proposalEdit").hide();
+//					}
 
 					
 					$pageURL = window.location.href;
@@ -357,9 +357,9 @@ $( document ).ready(function() {
 						$("#"+$namespace+"_jobPanel_deleteJobButton").hide();
 					}
 					
-					if($jobDetail.status != "N"){
-						$("#"+$namespace+"_jobProposal_proposalEdit").hide();
-					}
+//					if($jobDetail.status != "N"){
+//						$("#"+$namespace+"_jobProposal_proposalEdit").hide();
+//					}
 					
 					$.each($('input'), function () {
 				        $(this).css("height","20px");
