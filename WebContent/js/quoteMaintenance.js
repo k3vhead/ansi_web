@@ -563,6 +563,8 @@ $( document ).ready(function() {
 	        		$outbound["leadType"]		=	$("select[name=leadType").val();
 	        		$outbound["accountType"]	=	$("select[name=accountType").val();
 	        		$outbound["divisionId"]	=	$("select[name=division]").val();
+	        		QUOTEUTILS.setDivision($("select[name=division]").val());
+
 	        		$outbound["jobSiteAddressId"]	=	$jobSiteId;
 	        		$outbound["billToAddressId"]	=	$billToId;
 				
