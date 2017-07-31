@@ -131,8 +131,8 @@ public class TicketGenerationServlet extends AbstractServlet{
 		Calendar endDate = Calendar.getInstance(new Locale("America/Chicago"));
 		startDate.setTime(generateTicketRequest.getStartDate());
 		endDate.setTime(generateTicketRequest.getEndDate());
-		DateUtils.truncate(startDate, Calendar.DAY_OF_MONTH);
-		endDate = DateUtils.ceiling(endDate, Calendar.DAY_OF_MONTH);
+//		DateUtils.truncate(startDate, Calendar.DAY_OF_MONTH);
+//		endDate = DateUtils.ceiling(endDate, Calendar.DAY_OF_MONTH);
 		System.out.println(sdf.format(startDate.getTime()));
 		System.out.println(sdf.format(endDate.getTime()));
 		
