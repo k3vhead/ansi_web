@@ -217,6 +217,8 @@ public class TicketPrintServlet extends AbstractServlet {
 			ticket = new Ticket();
 			ticket.setTicketId(result.getTicketNumber());
 			ticket.selectOne(conn);
+			ticket.insertHistory(conn);
+
 			Integer printCount = ticket.getPrintCount() == null ? 1 : ticket.getPrintCount() + 1;
 			ticket.setStatus(TicketStatus.DISPATCHED.code());
 			ticket.setUpdatedBy(sessionUser.getUserId());
