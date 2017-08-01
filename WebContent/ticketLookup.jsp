@@ -151,7 +151,8 @@
 			            		$actionData = "";
 			            	} else {
 				            	var $editLink = "<a href='ticketReturn.html?id="+row.ticketId+"' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.ticketId+"'></a>";
-				            	if ( row.ticketStatus == 'N' || row.ticketStatus == 'D' ) {
+				            	if ( row.ticketStatus == 'N' || row.ticketStatus == 'D' 
+				            			|| row.ticketStatus == 'C' || row.ticketStatus == 'I' || row.ticketStatus == 'P') {
 				            		var $ticketData = 'data-id="' + row.ticketId + '"';
 				            		$printLink = '<i class="print-link fa fa-print" aria-hidden="true" ' + $ticketData + '></i>'
 				            	} else {

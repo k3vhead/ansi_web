@@ -295,7 +295,7 @@
 						$processLabel = "Void Date:";
 					} else if ( $data.ticketDetail.status == 'S' ) {
 						$processLabel = "Skip Date:";
-					} else if ( $data.ticketDetail.status == 'C' ) {
+					} else if ( ($data.ticketDetail.status == 'C') || ($data.ticketDetail.status == 'I') || ($data.ticketDetail.status == 'P') ) {
 						$processLabel = "Complete Date:";
 						$("#processNotesRow td").removeClass("bottomRow");
 						$("#completedRow").show();
@@ -337,12 +337,13 @@
 			
 			function populatePanelSelect ($data) {
 				$('option', "#panelSelector").remove();
-				if ($data.ticketDetail.status=='N') {
-					$("#panelSelector").hide();
-					$("#REJECTED").fadeIn(1500);
+//				if ($data.ticketDetail.status=='N') {
+//					$("#panelSelector").hide();
+//					$("#REJECTED").fadeIn(1500);
 //				} else if ($data.ticketDetail.status=='C') {
 //					$("#panelSelector").hide();
-				} else if ($data.ticketDetail.status=='I') {
+//				} else 
+				if ($data.ticketDetail.status=='I') {
 					$("#panelSelector").hide();
 				} else if ( $data.ticketDetail.nextAllowedStatusList.length == 0 ) {
 					$("#panelSelector").hide();
