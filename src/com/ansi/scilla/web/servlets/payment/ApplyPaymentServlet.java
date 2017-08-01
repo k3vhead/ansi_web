@@ -5,8 +5,9 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Connection;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
-import java.util.Locale;
+import java.util.TimeZone;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -195,7 +196,21 @@ public class ApplyPaymentServlet extends AbstractServlet {
 
 		BigDecimal pmtAmount = amount.setScale(2, RoundingMode.HALF_UP);
 
-		Calendar today = Calendar.getInstance(new Locale("America/Chicago"));
+		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("America/Chicago"));
+		calendar.set(Calendar.HOUR, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		
+		Date today = calendar.getTime();		
+		System.out.println(today);
+		
+		/*Calendar today = Calendar.getInstance(new Locale("America/Chicago"));
+		today.set(Calendar.HOUR, 0);
+		today.set(Calendar.MINUTE, 0);
+		today.set(Calendar.SECOND, 0);
+		today.set(Calendar.MILLISECOND, 0);*/
+		
 		Ticket ticket = new Ticket();
 		ticket.setActDivisionId(ticketPattern.getActDivisionId());
 		ticket.setActDlAmt(BigDecimal.ZERO);
@@ -212,12 +227,12 @@ public class ApplyPaymentServlet extends AbstractServlet {
 		ticket.setBillSheet(Ticket.BILL_SHEET_IS_NO);
 		ticket.setCustomerSignature(Ticket.CUSTOMER_SIGNATURE_IS_NO);
 		ticket.setFleetmaticsId(null);
-		ticket.setInvoiceDate(today.getTime());
+		ticket.setInvoiceDate(today);
 		ticket.setInvoiceId(invoiceId);
 		ticket.setJobId(ticketPattern.getJobId());
 		ticket.setMgrApproval(Ticket.MGR_APPROVAL_IS_NO);
 		ticket.setPrintCount(0);
-		ticket.setProcessDate(today.getTime());
+		ticket.setProcessDate(today);
 		if (ticketType == TicketType.FEE) {
 			ticket.setProcessNotes("Fee");
 		} else if (ticketType == TicketType.EXCESS) {
@@ -227,7 +242,7 @@ public class ApplyPaymentServlet extends AbstractServlet {
 		} else {
 			ticket.setProcessNotes(null);
 		}
-		ticket.setStartDate(today.getTime());
+		ticket.setStartDate(today);
 		ticket.setStatus(TicketStatus.PAID.code());
 //		ticket.setTicketId(ticketId);
 		ticket.setUpdatedBy(sessionUser.getUserId());
