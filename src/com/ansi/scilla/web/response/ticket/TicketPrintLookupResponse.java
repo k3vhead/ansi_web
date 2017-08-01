@@ -24,7 +24,7 @@ public class TicketPrintLookupResponse extends MessageResponse {
     + " (select ticket.act_division_id, count(*) as ticket_count, sum(job.price_per_cleaning) as price_per_cleaning \n"
     + " from ticket  \n"
     + " inner join job on job.job_id=ticket.job_id \n"
-    + " where ticket.ticket_status='N' and ticket.start_date<? \n"
+    + " where ticket.ticket_status='N' and ticket.start_date<=? \n"
     + " group by ticket.act_division_id) as xyz on act_division_id=division.division_id \n"
     + " group by division.division_id, division.division_nbr, division.division_code \n"
     + " order by div";
