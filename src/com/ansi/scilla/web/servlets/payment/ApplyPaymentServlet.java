@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.db.Payment;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.db.TicketPayment;
@@ -41,6 +42,7 @@ import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
+import java.util.Locale;
 
 
 
@@ -202,15 +204,20 @@ public class ApplyPaymentServlet extends AbstractServlet {
 		calendar.set(Calendar.SECOND, 0);
 		calendar.set(Calendar.MILLISECOND, 0);
 		
-		Date today = calendar.getTime();		
-		System.out.println(today);
+//		Date today = calendar.getTime();		
+//		System.out.println(today);
 		
-		/*Calendar today = Calendar.getInstance(new Locale("America/Chicago"));
+		Calendar today = Calendar.getInstance(new Locale("America/Chicago"));
 		today.set(Calendar.HOUR, 0);
 		today.set(Calendar.MINUTE, 0);
 		today.set(Calendar.SECOND, 0);
-		today.set(Calendar.MILLISECOND, 0);*/
-		
+		today.set(Calendar.MILLISECOND, 0);
+		System.out.println(today);
+
+		Payment payment = new Payment();
+		payment.setPaymentId(paymentId);
+		payment.selectOne(conn);
+
 		Ticket ticket = new Ticket();
 		ticket.setActDivisionId(ticketPattern.getActDivisionId());
 		ticket.setActDlAmt(BigDecimal.ZERO);
@@ -227,22 +234,22 @@ public class ApplyPaymentServlet extends AbstractServlet {
 		ticket.setBillSheet(Ticket.BILL_SHEET_IS_NO);
 		ticket.setCustomerSignature(Ticket.CUSTOMER_SIGNATURE_IS_NO);
 		ticket.setFleetmaticsId(null);
-		ticket.setInvoiceDate(today);
+		ticket.setInvoiceDate(today.getTime());
 		ticket.setInvoiceId(invoiceId);
 		ticket.setJobId(ticketPattern.getJobId());
 		ticket.setMgrApproval(Ticket.MGR_APPROVAL_IS_NO);
 		ticket.setPrintCount(0);
-		ticket.setProcessDate(today);
+		ticket.setProcessDate(today.getTime());
 		if (ticketType == TicketType.FEE) {
 			ticket.setProcessNotes("Fee");
 		} else if (ticketType == TicketType.EXCESS) {
 			ticket.setProcessNotes("Excess Cash");
 		} else if (ticketType == TicketType.WRITEOFF) {
-			ticket.setProcessNotes("Write Off");
+			ticket.setProcessNotes(payment.getPaymentNote());
 		} else {
-			ticket.setProcessNotes(null);
+			ticket.setProcessNotes(payment.getPaymentNote());
 		}
-		ticket.setStartDate(today);
+		ticket.setStartDate(today.getTime());
 		ticket.setStatus(TicketStatus.PAID.code());
 //		ticket.setTicketId(ticketId);
 		ticket.setUpdatedBy(sessionUser.getUserId());
