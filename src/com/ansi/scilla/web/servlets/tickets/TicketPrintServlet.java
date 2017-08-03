@@ -138,9 +138,7 @@ public class TicketPrintServlet extends AbstractServlet {
 		Ticket ticket = new Ticket();
 		ticket.setTicketId(ticketId);
 		ticket.selectOne(conn);
-		if (ticket.getStatus() == TicketStatus.NOT_DISPATCHED.code()) {
-			updateTicketStatus(conn, ticketList, sessionUser);
-		}
+		updateTicketStatus(conn, ticketList, sessionUser);
 		
 	}
 
