@@ -134,10 +134,6 @@ public class TicketPrintServlet extends AbstractServlet {
 		String fileName = "tickets_" + ticketId + "_" + fileDate + ".pdf";
 
 		doTicketPrint(conn, response, ticketList, fileName);
-
-		Ticket ticket = new Ticket();
-		ticket.setTicketId(ticketId);
-		ticket.selectOne(conn);
 		updateTicketStatus(conn, ticketList, sessionUser);
 		
 	}
@@ -223,7 +219,7 @@ public class TicketPrintServlet extends AbstractServlet {
 			ticket.insertHistory(conn);
 
 			Integer printCount = ticket.getPrintCount() == null ? 1 : ticket.getPrintCount() + 1;
-			if (ticket.getStatus() == TicketStatus.NOT_DISPATCHED.code()) {
+			if (ticket.getStatus().equals(TicketStatus.NOT_DISPATCHED.code())) {
 				ticket.setStatus(TicketStatus.DISPATCHED.code());
 			}
 			ticket.setUpdatedBy(sessionUser.getUserId());
