@@ -13,7 +13,9 @@
 <%@ taglib uri="WEB-INF/theTagThing.tld" prefix="ansi" %>
 
 
-
+<%@ page import="java.lang.reflect.Method,
+			com.ansi.scilla.web.common.ReportType,
+			com.ansi.scilla.common.reportBuilder.AbstractReport" %>
 
 <tiles:insert page="layout.jsp" flush="true">
 
@@ -81,7 +83,20 @@
 		
     
     <p align="center">
-    	<br>
+    	<%
+		for ( ReportType reportType : ReportType.values()) {
+			String reportClassName = reportType.reportClassName();
+			Class<?> reportClass = Class.forName(reportClassName);
+			AbstractReport report = (AbstractReport)reportClass.newInstance();
+			Method method = reportClass.getMethod("getTitle", (Class<?>[])null);
+			String title = (String)method.invoke(report, (Object[])null);
+		%>
+			<a href="report.html?<%= reportType.jsp() %>"><%= title %></a><br />
+		<%
+			System.out.println(title);
+		} 
+		%>
+		<br>
     	<a href="#" title="Scroll to Top" class="ScrollTop">Scroll To Top</a>
     	</br>
     </p>

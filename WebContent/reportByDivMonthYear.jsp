@@ -18,7 +18,7 @@
 <tiles:insert page="layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        Report By Month Year
+        <c:out value="${com_ansi_scilla_report_title}" />
     </tiles:put>
     
     
@@ -76,7 +76,7 @@
     </tiles:put>
     
    <tiles:put name="content" type="string">
-    	<h1>Report By Month Year</h1>
+    	<h1><c:out value="${com_ansi_scilla_report_title}" /></h1>
     	
 		
     
