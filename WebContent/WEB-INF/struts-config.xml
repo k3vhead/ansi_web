@@ -10,6 +10,7 @@
     	<form-bean name="jobIdForm"         type="com.ansi.scilla.web.actionForm.JobIdForm" />
     	<form-bean name="messageForm"       type="com.ansi.scilla.web.actionForm.MessageForm" />
     	<form-bean name="namespaceForm"     type="com.ansi.scilla.web.actionForm.NamespaceForm" />
+    	<form-bean name="reportIdForm"      type="com.ansi.scilla.web.actionForm.ReportIdForm" />
     	<form-bean name="ticketLookupForm"  type="com.ansi.scilla.web.actionForm.TicketLookupForm" />
     </form-beans>
 	<!--
@@ -174,6 +175,25 @@
             <forward name="valid" path="/quoteMaintenance.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
+		<action
+            path="/report"
+            type="com.ansi.scilla.web.action.ReportAction"
+            name="reportIdForm"
+            input="/reportMenu.jsp"
+            scope="request">
+            <forward name="valid" path="/reportMenu.jsp" />
+            <forward name="reportByDivEnd" path="/reportByDivEnd.jsp" />
+            <forward name="reportByDivMonthYear" path="/reportByDivMonthYear.jsp" />
+            <forward name="reportByDivStartEnd" path="/reportByDivStartEnd.jsp" />
+            <forward name="reportByStartEnd" path="/reportByStartEnd.jsp" />     
+            <forward name="login" path="/login.jsp" />            
+        </action>        
+		<action
+            path="/sixMonthRollingVolumeReport"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/sixMonthRollingVolumeReport.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>        
 		<action
             path="/ticketGeneration"
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">            
