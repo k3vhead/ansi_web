@@ -91,7 +91,7 @@
 			Method method = reportClass.getMethod("getTitle", (Class<?>[])null);
 			String title = (String)method.invoke(report, (Object[])null);
 		%>
-			<a href="report.html?<%= reportType.jsp() %>"><%= title %></a><br />
+			<a href="report.html?id=<%= reportType.toString() %>"><%= title %></a><br />
 		<%
 			System.out.println(title);
 		} 
