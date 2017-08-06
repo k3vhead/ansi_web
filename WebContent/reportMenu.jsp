@@ -93,7 +93,6 @@
 		%>
 			<a href="report.html?id=<%= reportType.toString() %>"><%= title %></a><br />
 		<%
-			System.out.println(title);
 		} 
 		%>
 		<br>
