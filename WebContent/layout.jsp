@@ -92,6 +92,8 @@
 			        			<li>
 			        				<a href="#"><bean:message key="menu.label.settings" /></a>
 			        				<ul class="sub_menu" style="z-index:1000">
+										<li><html:link action="proposedActiveCancelledReport">PAC Report</html:link></li>
+										<li><html:link action="cashReceiptsRegisterReport">Cash Receipts Register Report</html:link></li>
 			        					<li><html:link action="ticketGeneration">Ticket Generation</html:link></li>
 			        					<li><html:link action="taxRateMaintenance">Tax <bean:message key="menu.label.maintenance" /></html:link></li>
 			        			 		<%-- <li><a href="#"><bean:message key="menu.label.messages" /></a></li> --%>
@@ -148,6 +150,8 @@
 										<li><html:link action="ticketView"><bean:message key="menu.label.drv30" /></html:link></li>
 										</ansi:hasPermission>
 										<li><html:link action="invoiceRegisterReport">Invoice Register</html:link></li>
+										<li><html:link action="cashReceiptsRegisterReport">Cash Receipts Register</html:link></li>
+										<li><html:link action="proposedActiveCancelledReport">Proposed Active Cancelled (PAC)</html:link></li>
 									</ul>
 								</li>
 			        			<li>

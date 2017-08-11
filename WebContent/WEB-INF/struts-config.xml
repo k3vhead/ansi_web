@@ -47,6 +47,12 @@
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
+            path="/cashReceiptsRegisterReport"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/cashReceiptsRegisterReport.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		<action
             path="/codeMaintenance"
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">
             <forward name="valid" path="/codeMaintenance.jsp" />
@@ -158,6 +164,12 @@
             path="/printHistory"
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">
             <forward name="valid" path="/printHistory.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		<action
+            path="/proposedActiveCancelledReport"
+            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            <forward name="valid" path="/proposedActiveCancelledReport.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
