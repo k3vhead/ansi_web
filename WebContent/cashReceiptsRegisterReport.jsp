@@ -129,98 +129,131 @@
         <script type="text/javascript">
         $( document ).ready(function() {
         	
-        	//;TICKET_GEN = {
-        		//init : function() {
+        	;TICKET_GEN = {
+        		init : function() {
                 	$('.dateField').datepicker({
                         prevText:'&lt;&lt;',
                         nextText: '&gt;&gt;',
                         showButtonPanel:true
                     });
 
-                	//TICKET_GEN.populateDivisionSelect();
+                	TICKET_GEN.populateDivisionSelect();
                 	
-        			$("#goButton").click(function($event) {	
+        			$("#goButton").click(function($event) {		
+        				TICKET_GEN.go($event);
                 	});
         			
         			//$("select").change(function() {
         			//	TICKET_GEN.markValid($(this));
         			//});
-        		//},		
+        		},		
         	
-               // populateDivisionSelect function() {
-                	//$data = ANSI_UTILS.getDivisionList();
-                //	$select = $("#divisionId");
-        			//$('option', $select).remove();
-        			//$select.append(new Option("",null));
-        			//$.each($data, function($index, $val) {
-        			//	var $display = $val.divisionNbr + "-" + $val.divisionCode;
-        			//	$select.append(new Option($display, $val.divisionId));
-        			//});	
-               // },
-               
-               $divisionList = ANSI_UTILS.getDivisionList();
-					$("#divisionId").append(new Option("",""));
-					$.each($divisionList, function(index, val) {
-					var $displayValue = val.divisionNbr + "-" + val.divisionCode;
-					$("#divisionId").append(new Option($displayValue, val.divisionId));
-				});
+                populateDivisionSelect:function() {
+                	$data = ANSI_UTILS.getDivisionList();
+                	$select = $("#divisionId");
+        			$('option', $select).remove();
+        			$select.append(new Option("",null));
+        			$.each($data, function($index, $val) {
+        				var $display = $val.divisionNbr + "-" + $val.divisionCode;
+        				$select.append(new Option($display, $val.divisionId));
+        			});	
+                },
 
                 
-                //function($data, $divisionText) {
-                	//var $row = '<tr>';
-                	//$row = $row + '<td>' + $divisionText + '</td>';
-                	//$row = $row + '<td>' + $data.startDate + '</td>';
-                	//$row = $row + '<td>' + $data.endDate + '</td>';
-                	//$viewLink = "<a href=\"#\" class=\"viewAction fa fa-search-plus tooltip\" aria-hidden=\"true\" data-startdate='"+ $data.startDate +"' data-id='"+$data.divisionId+"'><span class=\"tooltiptext\">View Tickets</span></a> ";
-                	//$row = $row + '<td>' + $viewLink + '</td>';
-                	//$('#resultsTable tr:last').after($row);
-                	//$('.viewAction').bind("click", function($event) {
-                	//	console.debug("clicked");
-                	//	$event.preventDefault();
-                     //   var $divisionId = $event.currentTarget.attributes['data-id'].value;           
-                     //   var $startDate = $event.currentTarget.attributes['data-startdate'].value;
-                     //   var $lookupUrl = "ticketLookup.html?status=N&divisionId=" + $divisionId + "&startDate=" + $startDate;
-					//	location.href=$lookupUrl;
-                	//});
-               // },
+                addResultsRow : function($data, $divisionText) {
+                	var $row = '<tr>';
+                	$row = $row + '<td>' + $divisionText + '</td>';
+                	$row = $row + '<td>' + $data.startDate + '</td>';
+                	$row = $row + '<td>' + $data.endDate + '</td>';
+                	$viewLink = "<a href=\"#\" class=\"viewAction fa fa-search-plus tooltip\" aria-hidden=\"true\" data-startdate='"+ $data.startDate +"' data-id='"+$data.divisionId+"'><span class=\"tooltiptext\">View Tickets</span></a> ";
+                	$row = $row + '<td>' + $viewLink + '</td>';
+                	$('#resultsTable tr:last').after($row);
+                	$('.viewAction').bind("click", function($event) {
+                		console.debug("clicked");
+                		$event.preventDefault();
+                        var $divisionId = $event.currentTarget.attributes['data-id'].value;           
+                        var $startDate = $event.currentTarget.attributes['data-startdate'].value;
+                        var $lookupUrl = "ticketLookup.html?status=N&divisionId=" + $divisionId + "&startDate=" + $startDate;
+						location.href=$lookupUrl;
+                	});
+                },
                 
                 
-                $("#goButton").click(function () {
+                go : function($event) {
                 	var $divisionId = $("#divisionId").val();
     				var $startDate = $("#startDate").val();
     				var $endDate = $("#endDate").val();
-    				var $downloadUrl = "cashReceiptsRegisterReport/" + $divisionId + $startDate + $endDate;
-    				$("#xlsDownload").attr("href", $downloadUrl);
-    				$("#downloader").click();
-    			});
-    			
-    			
-    			function xxx() {
-    				var jqxhr = $.ajax({
-    					type: 'GET',
-    					url: $url,
-    					data: {'startDate':$startDate,'endDate':$endDate},
-    					statusCode: {
-    						200: function($data) {
-    							var newWindow = window.open("", "new window", "width=200, height=100");							
-    							newWindow.document.write(data);
-    						},
+    				var $outbound = {"startDate":$startDate,"endDate":$endDate,"divisionId":$divisionId};
+					console.debug($outbound);
+					
+    		       	var jqxhr = $.ajax({
+    		       		type: 'POST',
+    		       		url: "cashReceiptsRegisterReport/",
+    		       		data: JSON.stringify($outbound),
+    		       		statusCode: {
+    		       			200: function($data) {
+    		       				console.debug($data);
+    		       				$("#resultsDiv").fadeIn(2000);
+    		       				if ( $data.responseHeader.responseCode == 'SUCCESS') {
+    		       					$(".err").html("");
+    		       					$("#globalMsg").html("Success! Tickets Generated").show().fadeOut(6000);
+    		       					$("#startDate").val("");
+    		       					$("#endDate").val("");
+    		       					TICKET_GEN.addResultsRow($outbound, $("#divisionId option:selected").text());
+    							} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+    								$('.err').html("");
+    								$.each($data.data.webMessages, function(key, messageList) {
+    									var identifier = "#" + key + "Err";
+    									msgHtml = "<ul>";
+    									$.each(messageList, function(index, message) {
+    										msgHtml = msgHtml + "<li>" + message + "</li>";
+    									});
+    									msgHtml = msgHtml + "</ul>";
+    									$(identifier).html(msgHtml);
+    								});	
+    								$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);							
+    							} else {
+    								$("#globalMsg").html("Unexpected Result: " + $data.responseHeader.responseCode).show();
+    							}
+    		       			},			       		
+    	       				404: function($data) {
+    	        	    		$("#globalMsg").html("System Error: Contact Support").show();
+    	        	    	},
     						403: function($data) {
-    							$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-    						}, 
-    						404: function($data) {
-    							$("#globalMsg").html("Invalid Division").show().fadeOut(5000);
-    						}, 
-    						405: function($data) {
-    							$("#globalMsg").html("System Error 405; Contact Support").show().fadeOut(5000);
-    						}, 
-    						500: function($data) {
-    							$("#globalMsg").html("System Error 500; Contact Support").show();
-    						} 
-    					},
-    					dataType: 'html'
-    				});
-    			}
+    							$("#globalMsg").html("Session Timeout. Log in and try again");
+    						},
+    		       			500: function($data) {
+    	            	    	$("#globalMsg").html("System Error: Contact Support").show();
+    	            		},
+    		       		},
+    		       		dataType: 'json'
+    		       	});
+                },
+                
+                markValid : function($inputField) {
+                	$fieldName = $($inputField).attr('name');
+                	$fieldGetter = "input[name='" + $fieldName + "']";
+                	$fieldValue = $($fieldGetter).val();
+                	$valid = '#' + $($inputField).data('valid');
+    	            var re = /.+/;	            	 
+                	if ( re.test($fieldValue) ) {
+                		$($valid).removeClass("fa-ban");
+                		$($valid).removeClass("inputIsInvalid");
+                		$($valid).addClass("fa-check-square-o");
+                		$($valid).addClass("inputIsValid");
+                	} else {
+                		$($valid).removeClass("fa-check-square-o");
+                		$($valid).removeClass("inputIsValid");
+                		$($valid).addClass("fa-ban");
+                		$($valid).addClass("inputIsInvalid");
+                	}
+                }
+
+        	}
+			
+
+            
+			TICKET_GEN.init();
 			
 			
 	
@@ -256,10 +289,22 @@
     	</table>
 
     	
-    	<div id="xlsDownloadDiv">
-    		<a href="#" id="xlsDownload" target="_new"><span id="downloader">Download</span></a>
+    	<div id="resultsDiv">
+    		<table id="resultsTable">
+   		       	<colgroup>
+					<col style="width:25%;" />
+					<col style="width:25%;" />
+					<col style="width:25%;" />
+					<col style="width:25%;" />
+    			</colgroup>
+    			<tr>
+    				<td><span class="formLabel">Division</span></td>
+    				<td><span class="formLabel">Start Date</span></td>
+    				<td><span class="formLabel">EndDate</span></td>
+    				<td><span class="formLabel">Action</span></td>
+    			</tr>
+    		</table>
     	</div>
-    	
     </tiles:put>
 
 </tiles:insert>
