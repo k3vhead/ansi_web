@@ -187,9 +187,9 @@
 					console.debug($outbound);
 					
     		       	var jqxhr = $.ajax({
-    		       		type: 'POST',
+    		       		type: 'GET',
     		       		url: "pacReport/",
-    		       		data: JSON.stringify($outbound),
+    		       		data: {"startDate":$startDate,"endDate":$endDate,"divisionId":$divisionId},
     		       		statusCode: {
     		       			200: function($data) {
     		       				console.debug($data);

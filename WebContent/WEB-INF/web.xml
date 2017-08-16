@@ -112,6 +112,16 @@
 
 
     <servlet>
+        <servlet-name>cashReceiptsRegisterReport</servlet-name>
+        <servlet-class>com.ansi.scilla.web.servlets.report.CashReceiptsRegisterReportServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>cashReceiptsRegisterReport</servlet-name>
+        <url-pattern>/cashReceiptsRegisterReport/*</url-pattern>
+    </servlet-mapping>
+    
+
+    <servlet>
         <servlet-name>code</servlet-name>
         <servlet-class>com.ansi.scilla.web.servlets.code.CodeServlet</servlet-class>
     </servlet>
@@ -347,6 +357,16 @@
         <servlet-name>options</servlet-name>
         <url-pattern>/options/*</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>pacReport</servlet-name>
+        <servlet-class>com.ansi.scilla.web.servlets.report.PacReportServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>pacReport</servlet-name>
+        <url-pattern>/pacReport/*</url-pattern>
+    </servlet-mapping>
+    
 
 	<servlet>
 		<servlet-name>payment</servlet-name>
