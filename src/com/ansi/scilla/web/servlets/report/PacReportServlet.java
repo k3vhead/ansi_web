@@ -44,8 +44,88 @@ public class PacReportServlet extends AbstractServlet {
 			try {
 				conn = AppUtils.getDBCPConn();
 
-				Integer divisionId = ansiURL.getId();
+				System.out.println(REALM+":URL:"+request);
+
+				String divisionIdString = ansiURL.getQueryParameterMap().get("divisionId")[0];
+				Integer divisionId = Integer.parseInt(divisionIdString);
 //				Division division = validateDivision(conn, divisionId);
+				System.out.println(REALM+":Div:"+divisionId+"\tDivString:"+divisionIdString);
+
+				SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+
+				Calendar startDate = Calendar.getInstance();
+				String start = ansiURL.getQueryParameterMap().get("startDate")[0];
+				if ( ! StringUtils.isBlank(start)) {
+					startDate.setTime(sdf.parse(start));
+				}		
+				startDate.set(Calendar.HOUR_OF_DAY, 0);
+				startDate.set(Calendar.MINUTE, 0);
+				startDate.set(Calendar.SECOND, 0);
+				startDate.set(Calendar.MILLISECOND, 0);
+
+				Calendar endDate = Calendar.getInstance();
+				String end = ansiURL.getQueryParameterMap().get("endDate")[0];
+				if ( ! StringUtils.isBlank(end)) {
+					endDate.setTime(sdf.parse(end));
+				}		
+				endDate.set(Calendar.HOUR_OF_DAY, 0);
+				endDate.set(Calendar.MINUTE, 0);
+				endDate.set(Calendar.SECOND, 0);
+				endDate.set(Calendar.MILLISECOND, 0);
+
+				System.out.println(REALM+":Start:"+startDate.getTime()+"\tEnd:"+endDate.getTime());
+
+				PacSummaryReport report1 = new PacSummaryReport(conn, divisionId,startDate,endDate);
+				String reportHtml1 = HTMLBuilder.build(report1); 
+
+				PacProposedListReport report2 = new PacProposedListReport(conn, divisionId,startDate,endDate);
+				String reportHtml2 = HTMLBuilder.build(report2); 
+
+				PacActivationListReport report3 = new PacActivationListReport(conn, divisionId,startDate,endDate);
+				String reportHtml3 = HTMLBuilder.build(report3); 
+
+				PacCancelledListReport report4 = new PacCancelledListReport(conn, divisionId,startDate,endDate);
+				String reportHtml4 = HTMLBuilder.build(report4); 
+
+				response.setStatus(HttpServletResponse.SC_OK);
+				response.setContentType("text/html");
+
+				ServletOutputStream o = response.getOutputStream();
+				OutputStreamWriter writer = new OutputStreamWriter(o);
+				writer.write(reportHtml1+"\n"+reportHtml2+"\n"+reportHtml3+"\n"+reportHtml4);
+				writer.flush();
+				writer.close();
+
+			} catch(RecordNotFoundException recordNotFoundEx) {
+				super.sendNotFound(response);
+			} catch ( Exception e) {
+				AppUtils.logException(e);
+				throw new ServletException(e);
+			} finally {
+				AppUtils.closeQuiet(conn);
+			}
+		} catch (ResourceNotFoundException e1) {
+			super.sendNotFound(response);
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+			super.sendForbidden(response);
+		}
+	}	
+/*	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		AnsiURL ansiURL = null;
+		try {
+			ansiURL = new AnsiURL(request, REALM, (String[])null); 
+			AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			Connection conn = null;
+			try {
+				conn = AppUtils.getDBCPConn();
+				System.out.println(REALM+":URL:"+request);
+
+				String divisionIdString = ansiURL.getQueryParameterMap().get("divisionId")[0];
+				Integer divisionId = Integer.getInteger(divisionIdString);
+//				Division division = validateDivision(conn, divisionId);
+
 				SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
 
 				Calendar startDate = Calendar.getInstance();
@@ -104,6 +184,6 @@ public class PacReportServlet extends AbstractServlet {
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
 			super.sendForbidden(response);
 		}
-	}	
+	}	*/
 }
 
