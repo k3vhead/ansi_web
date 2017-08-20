@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.invoice.InvoiceUtils;
 import com.ansi.scilla.web.common.AppUtils;
@@ -21,7 +21,6 @@ import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.request.InvoiceGenerationRequest;
 import com.ansi.scilla.web.response.invoice.InvoiceGenerationResponse;
-import com.ansi.scilla.web.response.ticket.TicketReturnResponse;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
@@ -93,7 +92,7 @@ public class InvoiceGenerationServlet extends AbstractServlet {
 
 
 	private void processUpdate(Connection conn, HttpServletResponse response, InvoiceGenerationRequest invoiceGenerationRequest, SessionUser sessionUser) throws Exception {
-		Calendar invoiceDate = Calendar.getInstance(new Locale("America/Chicago"));
+		Calendar invoiceDate = Calendar.getInstance(new AnsiTime());
 		invoiceDate.setTime(invoiceGenerationRequest.getInvoiceDate());
 		Boolean monthlyFlag = invoiceGenerationRequest.getMonthlyFlag();
 		Integer userId = sessionUser.getUserId();

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import org.apache.poi.hssf.usermodel.HeaderFooter;
 import org.apache.poi.hssf.util.HSSFColor;
@@ -15,7 +14,6 @@ import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Footer;
 import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.PrintSetup;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -25,9 +23,9 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.jobticket.TicketStatus;
-import com.ansi.scilla.common.jsonFormat.AnsiBigDecimalFormatter;
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
 import com.ansi.scilla.common.jsonFormat.AnsiIntegerFormatter;
 import com.ansi.scilla.common.queries.TicketDRVQuery;
@@ -70,7 +68,7 @@ public class TicketDRVResponse extends MessageResponse {
 		division.setDivisionId(divisionId);
 		division.selectOne(conn);
 		
-		Calendar calendar = Calendar.getInstance(new Locale("America/Chicago"));
+		Calendar calendar = Calendar.getInstance(new AnsiTime());
 		runDate = calendar.getTime();
 		calendar.clear();
 		calendar.set(year, month, 1);

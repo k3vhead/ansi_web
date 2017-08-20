@@ -8,12 +8,12 @@ import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.Invoice;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.invoice.InvoiceUtils;
@@ -94,7 +94,7 @@ public class InvoiceReprintServlet extends AbstractServlet {
 
 	private void processUpdate(Connection conn, HttpServletRequest request, HttpServletResponse response, Invoice invoice, SessionUser sessionUser) throws Exception {
 		WebMessages webMessages = new WebMessages();
-		Date today = Calendar.getInstance(TimeZone.getTimeZone("America/Chicago")).getTime();
+		Date today = Calendar.getInstance(new AnsiTime()).getTime();
 		SimpleDateFormat fileDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		InvoicePrintResponse data = new InvoicePrintResponse();
 		String pathTranslated = request.getPathTranslated();

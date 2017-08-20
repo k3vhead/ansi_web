@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -70,7 +69,7 @@ public class JobScheduleServlet extends AbstractServlet {
 		JobScheduleResponse jobScheduleResponse = new JobScheduleResponse();
 		
 		try {
-			Calendar theFirstOfTheMonth = Calendar.getInstance(TimeZone.getTimeZone("America/Chicago"));
+			Calendar theFirstOfTheMonth = Calendar.getInstance(new AnsiTime());
 			theFirstOfTheMonth.set(Calendar.DAY_OF_MONTH, 1);
 			conn = AppUtils.getDBCPConn();
 			AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);
@@ -115,7 +114,7 @@ public class JobScheduleServlet extends AbstractServlet {
 		JobScheduleResponse jobScheduleResponse = new JobScheduleResponse();
 		
 		try {
-			Calendar theFirstOfTheMonth = Calendar.getInstance(TimeZone.getTimeZone("America/Chicago"));
+			Calendar theFirstOfTheMonth = Calendar.getInstance(new AnsiTime());
 			theFirstOfTheMonth.set(Calendar.DAY_OF_MONTH, 1);
 			conn = AppUtils.getDBCPConn();
 			SessionData sessionData = AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
