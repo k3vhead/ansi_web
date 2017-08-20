@@ -16,14 +16,14 @@
 <tiles:insert page="layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        Proposed Active Cancelled
+        Proposed Active Cancelled Report
     </tiles:put>
     
     
     <tiles:put name="headextra" type="string">
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
-        <script type="text/javascript" src="js/jobMaintenance.js"></script>
         <link rel="stylesheet" href="css/datepicker.css" type="text/css" />
+        <link rel="stylesheet" href="css/accordion.css" type="text/css" />
         <style type="text/css">
 			#confirmDelete {
 				display:none;
@@ -129,7 +129,7 @@
         <script type="text/javascript">
         $( document ).ready(function() {
         	
-        	;TICKET_GEN = {
+        	;PAC_REPORT = {
         		init : function() {
                 	$('.dateField').datepicker({
                         prevText:'&lt;&lt;',
@@ -137,14 +137,15 @@
                         showButtonPanel:true
                     });
 
-                	TICKET_GEN.populateDivisionSelect();
+                	PAC_REPORT.populateDivisionSelect();
                 	
         			$("#goButton").click(function($event) {		
-        				TICKET_GEN.go($event);
+        				PAC_REPORT.go($event);
                 	});
         			
+        			
         			//$("select").change(function() {
-        			//	TICKET_GEN.markValid($(this));
+        			//	PAC_REPORT.markValid($(this));
         			//});
         		},		
         	
@@ -183,31 +184,60 @@
                 	var $divisionId = $("#divisionId").val();
     				var $startDate = $("#startDate").val();
     				var $endDate = $("#endDate").val();
-    				var $outbound = {"startDate":$startDate,"endDate":$endDate,"divisionId":$divisionId};
-					console.debug($outbound);
-					
-    		       	var jqxhr = $.ajax({
-    		       		type: 'GET',
-    		       		url: "pacReport/",
-    		       		data: {"startDate":$startDate,"endDate":$endDate,"divisionId":$divisionId},
-    		       		statusCode: {
-    		       			200: function($data) {
-    		       				console.debug($data);
-    		       				$("#resultsDiv").html($data);
-    		       				$("#resultsDiv").fadeIn(2000);    		       				
-    		       			},			       		
-    	       				404: function($data) {
-    	        	    		$("#globalMsg").html("System Error: Contact Support").show();
-    	        	    	},
-    						403: function($data) {
-    							$("#globalMsg").html("Session Timeout. Log in and try again");
-    						},
-    		       			500: function($data) {
-    	            	    	$("#globalMsg").html("System Error: Contact Support").show();
-    	            		},
-    		       		},
-    		       		dataType: 'html'
-    		       	});
+    				var $doneFlags = {'SUMMARY':false, 'P':false, 'A':false, 'C':false};
+    				
+    				$.each(['SUMMARY','P','A','C'], function(index, val) {
+    					var $outbound = {"startDate":$startDate,"endDate":$endDate,"divisionId":$divisionId,"pacType":val};
+    					var $displayDiv = "#pac" + val;
+    					
+    					var $url = "pacReport/" + $divisionId
+        		       	var jqxhr = $.ajax({
+        		       		type: 'POST',
+        		       		url: $url,
+        		       		data: JSON.stringify($outbound),
+        		       		statusCode: {
+        		       			200: function($data) {
+        		       				$($displayDiv).html($data);
+        		       				$doneFlags[val]=true;   
+        		       				console.debug("Done with " + val);
+        		       			},			       		
+        	       				404: function($data) {
+        	        	    		$("#globalMsg").html("System Error: Contact Support").show();
+        	        	    	},
+        						403: function($data) {
+        							$("#globalMsg").html("Session Timeout. Log in and try again");
+        						},
+        		       			500: function($data) {
+        	            	    	$("#globalMsg").html("System Error: Contact Support").show();
+        	            		},
+        		       		},
+        		       		dataType: 'html'
+        		       	});
+    				});
+    				
+    				
+    				var $allDone = false;
+    				var $countem = 0;
+    				
+    				while ($allDone == false && $countem < 20) {
+    					var delay = 1000;
+    					setTimeout(function() {
+    						console.debug("Checking flags");
+    						$alldDone = $doneFlags['SUMMARY'] == true && $doneFlags['P'] == true  && $doneFlags['A'] == true  && $doneFlags['C'] == true ;
+    					}, delay);
+    					$countem = $countem+1;
+    				}
+    				
+           			$('ul.accordionList').accordion({
+						//autoHeight: true,
+						heightStyle: "content",
+						alwaysOpen: true,
+						header: 'h4',
+						fillSpace: false,
+						collapsible: false,
+						active: true
+					});
+           			$("#resultsDiv").fadeIn(2000);
                 },
                 
                 markValid : function($inputField) {
@@ -233,7 +263,7 @@
 			
 
             
-			TICKET_GEN.init();
+			PAC_REPORT.init();
 			
 			
 	
@@ -270,20 +300,32 @@
 
     	
     	<div id="resultsDiv">
-    		<table id="resultsTable">
-   		       	<colgroup>
-					<col style="width:25%;" />
-					<col style="width:25%;" />
-					<col style="width:25%;" />
-					<col style="width:25%;" />
-    			</colgroup>
-    			<tr>
-    				<td><span class="formLabel">Division</span></td>
-    				<td><span class="formLabel">Start Date</span></td>
-    				<td><span class="formLabel">EndDate</span></td>
-    				<td><span class="formLabel">Action</span></td>
-    			</tr>
-    		</table>
+    		<ul class="accordionList">
+	    		<li class="accordionItem">    			
+	        		<h4 class="accHdr">Summary</h4>
+	        		<div id="pacSUMMARY">
+	        			... Loading ...
+	        		</div>
+	       		</li>
+	    		<li class="accordionItem">    			
+	        		<h4 class="accHdr">Proposed</h4>
+	        		<div id="pacP">
+	        			... Loading ...
+	        		</div>
+	       		</li>
+	    		<li class="accordionItem">    			
+	        		<h4 class="accHdr">Active</h4>
+	        		<div id="pacA">
+	        			... Loading ...
+	        		</div>
+	       		</li>
+	    		<li class="accordionItem">    			
+	        		<h4 class="accHdr">Cancelled</h4>
+	        		<div id="pacC">
+	        			... Loading ...
+	        		</div>
+	       		</li>
+    		</ul>
     	</div>
     </tiles:put>
 
