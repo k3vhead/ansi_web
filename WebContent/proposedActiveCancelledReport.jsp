@@ -193,28 +193,8 @@
     		       		statusCode: {
     		       			200: function($data) {
     		       				console.debug($data);
-    		       				$("#resultsDiv").fadeIn(2000);
-    		       				if ( $data.responseHeader.responseCode == 'SUCCESS') {
-    		       					$(".err").html("");
-    		       					$("#globalMsg").html("Success! Tickets Generated").show().fadeOut(6000);
-    		       					$("#startDate").val("");
-    		       					$("#endDate").val("");
-    		       					TICKET_GEN.addResultsRow($outbound, $("#divisionId option:selected").text());
-    							} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-    								$('.err').html("");
-    								$.each($data.data.webMessages, function(key, messageList) {
-    									var identifier = "#" + key + "Err";
-    									msgHtml = "<ul>";
-    									$.each(messageList, function(index, message) {
-    										msgHtml = msgHtml + "<li>" + message + "</li>";
-    									});
-    									msgHtml = msgHtml + "</ul>";
-    									$(identifier).html(msgHtml);
-    								});	
-    								$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);							
-    							} else {
-    								$("#globalMsg").html("Unexpected Result: " + $data.responseHeader.responseCode).show();
-    							}
+    		       				$("#resultsDiv").html($data);
+    		       				$("#resultsDiv").fadeIn(2000);    		       				
     		       			},			       		
     	       				404: function($data) {
     	        	    		$("#globalMsg").html("System Error: Contact Support").show();
@@ -226,7 +206,7 @@
     	            	    	$("#globalMsg").html("System Error: Contact Support").show();
     	            		},
     		       		},
-    		       		dataType: 'json'
+    		       		dataType: 'html'
     		       	});
                 },
                 
