@@ -12,7 +12,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.TimeZone;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
+import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.Ticket;
@@ -127,7 +127,7 @@ public class TicketPrintServlet extends AbstractServlet {
 		TicketPrintResult result = tp.selectOne(conn, ticketId);
 		List<TicketPrintResult> ticketList = Arrays.asList(new TicketPrintResult[] { result });
 
-		Calendar today = Calendar.getInstance(TimeZone.getTimeZone("America/Chicago"));
+		Calendar today = Calendar.getInstance(new AnsiTime());
 		SimpleDateFormat fileDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		String fileDate = fileDateFormat.format(today.getTime());
 	
@@ -158,7 +158,7 @@ public class TicketPrintServlet extends AbstractServlet {
 		boundVariables.add(TicketStatus.NOT_DISPATCHED.code());
 		List<TicketPrintResult> ticketList = tp.selectSome(conn, boundVariables);
 
-		Calendar today = Calendar.getInstance(TimeZone.getTimeZone("America/Chicago"));
+		Calendar today = Calendar.getInstance(new AnsiTime());
 		SimpleDateFormat fileDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		String fileDate = fileDateFormat.format(today.getTime());
 	
@@ -194,7 +194,7 @@ public class TicketPrintServlet extends AbstractServlet {
 
 
 	private Date makeEndDate(String dateString) {
-		Calendar endDate = new GregorianCalendar(TimeZone.getTimeZone("America/Chicago"));
+		Calendar endDate = new GregorianCalendar(new AnsiTime());
 		try {
 			if ( ! StringUtils.isBlank(dateString)) {
 				endDate.setTime(sdf.parse(dateString));

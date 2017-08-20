@@ -5,9 +5,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Connection;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Payment;
 import com.ansi.scilla.common.db.PermissionLevel;
@@ -42,7 +41,6 @@ import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
-import java.util.Locale;
 
 
 
@@ -198,7 +196,7 @@ public class ApplyPaymentServlet extends AbstractServlet {
 
 		BigDecimal pmtAmount = amount.setScale(2, RoundingMode.HALF_UP);
 
-		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("America/Chicago"));
+		Calendar calendar = Calendar.getInstance(new AnsiTime());
 		calendar.set(Calendar.HOUR, 0);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);
@@ -207,7 +205,7 @@ public class ApplyPaymentServlet extends AbstractServlet {
 //		Date today = calendar.getTime();		
 //		System.out.println(today);
 		
-		Calendar today = Calendar.getInstance(new Locale("America/Chicago"));
+		Calendar today = Calendar.getInstance(new AnsiTime());
 		today.set(Calendar.HOUR, 0);
 		today.set(Calendar.MINUTE, 0);
 		today.set(Calendar.SECOND, 0);

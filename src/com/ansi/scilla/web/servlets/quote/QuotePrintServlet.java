@@ -9,7 +9,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.quote.QuotePrintType;
@@ -90,7 +90,7 @@ public class QuotePrintServlet extends AbstractServlet {
 	
 	
 	private Date makeQuoteDate(String dateString) {
-		Date quoteDate = new GregorianCalendar(new Locale("America/Chicago")).getTime();
+		Date quoteDate = new GregorianCalendar(new AnsiTime()).getTime();
 		try {
 			if ( ! StringUtils.isBlank(dateString)) {
 				quoteDate = sdf.parse(dateString);
@@ -123,7 +123,7 @@ public class QuotePrintServlet extends AbstractServlet {
 				QuoteUtils.proposeQuote(conn, quoteId, sessionUser.getUserId(), quoteDate) :
 					QuoteUtils.previewQuote(conn, quoteId, sessionUser.getUserId(), quoteDate);
 		
-		Calendar today = Calendar.getInstance(new Locale("America/Chicago"));
+		Calendar today = Calendar.getInstance(new AnsiTime());
 		SimpleDateFormat fileDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		String fileDate = fileDateFormat.format(today.getTime());
 

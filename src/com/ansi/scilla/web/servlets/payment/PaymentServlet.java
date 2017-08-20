@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.Payment;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.User;
@@ -263,7 +263,7 @@ public class PaymentServlet extends AbstractServlet {
 
 	private HashMap<String, String> validateValues(PaymentRequest paymentRequest) {
 		HashMap<String, String> errors = new HashMap<String, String>();
-		Calendar today = Calendar.getInstance(new Locale("America/Chicago"));
+		Calendar today = Calendar.getInstance(new AnsiTime());
 	
 		// if we have a check date or a check number, we need the other one also
 		if ( paymentRequest.getCheckDate() != null ) {

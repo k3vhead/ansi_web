@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.util.Calendar;
-import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.MessageKey;
@@ -49,7 +49,7 @@ public class TicketDRVServlet extends AbstractServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
-		Calendar today = Calendar.getInstance(new Locale("America/Chicago"));
+		Calendar today = Calendar.getInstance(new AnsiTime());
 		Integer thisMonth = today.get(Calendar.MONTH);
 		Integer thisYear = today.get(Calendar.YEAR);
 

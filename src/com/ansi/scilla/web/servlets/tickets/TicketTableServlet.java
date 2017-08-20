@@ -7,7 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -16,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.queries.TicketLookupSearch;
 import com.ansi.scilla.common.queries.TicketLookupSearchItem;
@@ -92,7 +92,7 @@ public class TicketTableServlet extends AbstractServlet {
 			if (! StringUtils.isBlank(request.getParameter("startDate"))) {
 				SimpleDateFormat parmDateFormatter = new SimpleDateFormat("MM/dd/yyyy");
 				Date parmDate = parmDateFormatter.parse(request.getParameter("startDate"));
-				parmStartDate = Calendar.getInstance(TimeZone.getTimeZone("America/Chicago"));
+				parmStartDate = Calendar.getInstance(new AnsiTime());
 				parmStartDate.setTime(parmDate);
 			}
 			if ( ! StringUtils.isBlank(request.getParameter("status"))) {

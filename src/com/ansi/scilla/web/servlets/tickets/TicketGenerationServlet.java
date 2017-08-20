@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.time.DateUtils;
 
+import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.PermissionLevel;
 //import com.ansi.scilla.batch.scheduling.GenerateTickets;
 import com.ansi.scilla.common.jobticket.JobUtils;
@@ -127,8 +127,8 @@ public class TicketGenerationServlet extends AbstractServlet{
 			TicketGenerationRequest generateTicketRequest, SessionUser sessionUser) throws Exception {
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss.S");
-		Calendar startDate = Calendar.getInstance(new Locale("America/Chicago"));
-		Calendar endDate = Calendar.getInstance(new Locale("America/Chicago"));
+		Calendar startDate = Calendar.getInstance(new AnsiTime());
+		Calendar endDate = Calendar.getInstance(new AnsiTime());
 		startDate.setTime(generateTicketRequest.getStartDate());
 		endDate.setTime(generateTicketRequest.getEndDate());
 //		DateUtils.truncate(startDate, Calendar.DAY_OF_MONTH);
