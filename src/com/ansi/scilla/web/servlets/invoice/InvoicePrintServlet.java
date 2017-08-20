@@ -11,12 +11,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.TimeZone;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.invoice.InvoiceUtils;
@@ -153,9 +153,9 @@ public class InvoicePrintServlet extends AbstractServlet {
 		invoiceFileName = invoiceFileName + "_" + fileDate + ".pdf";
 
 
-		Calendar printCalendar = Calendar.getInstance(TimeZone.getTimeZone("America/Chicago"));
+		Calendar printCalendar = Calendar.getInstance(new AnsiTime());
 		printCalendar.setTime(printDate);
-		Calendar dueCalendar = Calendar.getInstance(TimeZone.getTimeZone("America/Chicago"));
+		Calendar dueCalendar = Calendar.getInstance(new AnsiTime());
 		dueCalendar.setTime(dueDate);
 		ByteArrayOutputStream baos = InvoiceUtils.printInvoices(conn, divisionList, printCalendar, dueCalendar);
 		
