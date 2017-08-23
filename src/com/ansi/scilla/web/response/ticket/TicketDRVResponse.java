@@ -153,6 +153,15 @@ public class TicketDRVResponse extends MessageResponse {
 	public XSSFWorkbook toXLSX(){
 		XSSFWorkbook workbook = new XSSFWorkbook();
 		XSSFSheet sheet = workbook.createSheet();
+		sheet.setMargin(Sheet.RightMargin, 0.3);
+		sheet.setMargin(Sheet.TopMargin, 0.3);
+		sheet.setMargin(Sheet.LeftMargin, 0.3);
+		sheet.setMargin(Sheet.BottomMargin, 0.3);
+		//sheet.getPrintSetup().set
+		sheet.setFitToPage(true);
+		sheet.getPrintSetup().setFitWidth((short) 1);
+		sheet.getPrintSetup().setFitHeight((short) 0);
+		sheet.getPrintSetup().setLandscape(true);
 		CreationHelper createHelper = workbook.getCreationHelper();
 		//Date today = new Date();
 		int rowNum = 0;
@@ -674,15 +683,15 @@ public class TicketDRVResponse extends MessageResponse {
 			rowNum++;
 		}
 		
-		sheet.setMargin(Sheet.RightMargin, 0.3);
-		sheet.setMargin(Sheet.TopMargin, 0.3);
-		sheet.setMargin(Sheet.LeftMargin, 0.3);
-		sheet.setMargin(Sheet.BottomMargin, 0.3);
-		//sheet.getPrintSetup().set
-		sheet.setFitToPage(true);
-		sheet.getPrintSetup().setFitWidth((short) 1);
-		sheet.getPrintSetup().setFitHeight((short) 0);
-		sheet.getPrintSetup().setLandscape(true);
+//		sheet.setMargin(Sheet.RightMargin, 0.3);
+//		sheet.setMargin(Sheet.TopMargin, 0.3);
+//		sheet.setMargin(Sheet.LeftMargin, 0.3);
+//		sheet.setMargin(Sheet.BottomMargin, 0.3);
+//		
+//		sheet.setFitToPage(true);
+//		sheet.getPrintSetup().setFitWidth((short) 1);
+//		sheet.getPrintSetup().setFitHeight((short) 0);
+//		sheet.getPrintSetup().setLandscape(true);
 //		List<TicketDRVQuery> queryList = TicketDRVQuery.makeMonthlyReport(conn, divisionId, month, year);
 //		for(TicketDRVQuery query : queryList){
 //			TicketDRVResponseItem item = new TicketDRVResponseItem(query);
