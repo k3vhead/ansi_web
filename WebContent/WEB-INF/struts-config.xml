@@ -59,6 +59,11 @@
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
+            path="/deployedTaskList"
+            type="com.ansi.scilla.web.action.DeployedTaskAction">
+            <forward name="valid" path="/deployedTaskList.jsp" />
+        </action>
+		<action
             path="/contactMaintenance"
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">
             <forward name="valid" path="/contactMaintenance.jsp" />

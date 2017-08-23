@@ -19,4 +19,39 @@ $(function(){
     	var $commonDate = $(this).attr("data-commonBuildDate");
     	alert("Web Build: " + $webDate + "\nCommon Build: " + $commonDate);
     });
+    
+    
+    $( "#taskListModal" ).dialog({
+        autoOpen: false,
+        height: "auto",
+        width: 780,
+        modal: true,
+        buttons: [{
+        	id: 'taskListCloseButton',
+        	click: function() {
+        		$( "#taskListModal" ).dialog( "close" );
+        	}
+        }],
+        close: function() {
+        	$( "#taskListModal" ).dialog( "close" );
+        }
+    });
+
+    
+    
+    $("#taskList").click(function($event) {
+    	$.ajax({     
+        	type: 'GET',
+        	url: 'deployedTaskList.html',
+        	data:  {},
+        	success: function($data) {
+            	$("#taskListModal").html($data);
+                $("#taskListModal").dialog( "option", "title", "Latest Modifications" );
+                $('#taskListCloseButton').button('option', 'label', 'Close');
+                $("#taskListModal").dialog( "open" );
+        	},
+        	dataType: 'html'
+   		});
+    });
+
 });

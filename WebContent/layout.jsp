@@ -390,7 +390,7 @@
 	    		<div style="float:right; width:45%;">
 		    		<div class="trailerText" style="float:right;">
 		    			Powered by <a href="http://www.thewebthing.com" class="trailerLink" target="new">theWebThing</a>
-		    			<webthing:buildDate />
+		    			(<webthing:buildDate />| <span id="taskList" class="trailerLink">Deployed </span>)
 		    		</div>
 	    		</div>
 	    		<div style="float:left; width:45%;">
@@ -401,6 +401,9 @@
 	    		<div class="spacer">&nbsp;</div>  		
 	    	</div>
 	    	
+    	</div>
+    	<div id="taskListModal">
+    		... loading ...
     	</div>
     </body>
 </html>

@@ -13,4 +13,4 @@
 <%
 	BuildDate buildDate = new BuildDate();
 %>
-<span id="buildDate" class="trailerLink" data-webBuildDate="<%= buildDate.getWebBuildDate() %>" data-commonBuildDate="<%= buildDate.getCommonBuildDate()%>">(Build)</span>
+<span id="buildDate" class="trailerLink" data-webBuildDate="<%= buildDate.getWebBuildDate() %>" data-commonBuildDate="<%= buildDate.getCommonBuildDate()%>">Build</span>

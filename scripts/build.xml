@@ -11,6 +11,7 @@
     <property name="compile.debug" value="true"/>
     <property environment="env" />
 	<property name="libdirectory"  value="../WebContent/WEB-INF/lib" />
+	
     
     <path id="compile.classpath">
         <fileset dir="${env.CATALINA_HOME}/lib">
@@ -23,8 +24,14 @@
         <fileset dir="${libdirectory}">
             <include name="*.jar"/>
         </fileset>
+    	
     </path>
 
+	<target name="asana">
+		<echo message="Setting asana to true" level="info" />																																																																																																																																	
+		<property name="doasana" value="true" />
+	</target>
+	
     <target name="clean">
         <!-- clear out old stuff -->
         <delete dir="${build}"/>
@@ -60,6 +67,25 @@
     
     
     <target name="build" depends="init, centerpoint_ui" description="Build everything">
+		<path id="asana.classpath">
+            <path refid="compile.classpath"/>
+			<pathelement location="../build/classes"/>
+        </path>
+		<taskdef name="asanatask" 
+			classname="com.thewebthing.asanaAPI.ant.AsanaTagTaskList">
+			<classpath refid="asana.classpath"/>
+		</taskdef>
+		<!-- Project: ANSI Scheduling -->
+		<!-- Tag: ANSI PROD_DEPLOY -->
+		<asanatask 
+			asanaProjectId="186314071512099" 
+			asanaTagId="360062619557556" 
+			destination="${dist}/WEB-INF/classes/resources/completedTask.properties" 
+			doasana="${doasana}" />
+			
+			
+			
+			
         <path id="ui.classpath">
             <path refid="compile.classpath"/>
             <fileset dir="${dist}/WEB-INF/lib">

@@ -1,1 +1,7 @@
 .someLayoutStyle {}
+#taskListModal {
+	display:none;
+}
+#taskList {
+	cursor:pointer;
+}
