@@ -16,14 +16,14 @@
 <tiles:insert page="layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        Cash Receipts Register
+        Cash Receipts Register Report
     </tiles:put>
     
     
     <tiles:put name="headextra" type="string">
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
-        <script type="text/javascript" src="js/jobMaintenance.js"></script>
         <link rel="stylesheet" href="css/datepicker.css" type="text/css" />
+        <link rel="stylesheet" href="css/accordion.css" type="text/css" />
         <style type="text/css">
 			#confirmDelete {
 				display:none;
@@ -129,7 +129,7 @@
         <script type="text/javascript">
         $( document ).ready(function() {
         	
-        	;TICKET_GEN = {
+        	;CRR_REPORT = {
         		init : function() {
                 	$('.dateField').datepicker({
                         prevText:'&lt;&lt;',
@@ -137,14 +137,15 @@
                         showButtonPanel:true
                     });
 
-                	TICKET_GEN.populateDivisionSelect();
+                	CRR_REPORT.populateDivisionSelect();
                 	
         			$("#goButton").click(function($event) {		
-        				TICKET_GEN.go($event);
+        				CRR_REPORT.go($event);
                 	});
         			
+        			
         			//$("select").change(function() {
-        			//	TICKET_GEN.markValid($(this));
+        			//	CRR_REPORT.markValid($(this));
         			//});
         		},		
         	
@@ -183,51 +184,60 @@
                 	var $divisionId = $("#divisionId").val();
     				var $startDate = $("#startDate").val();
     				var $endDate = $("#endDate").val();
-    				var $outbound = {"startDate":$startDate,"endDate":$endDate,"divisionId":$divisionId};
-					console.debug($outbound);
-					
-    		       	var jqxhr = $.ajax({
-    		       		type: 'POST',
-    		       		url: "cashReceiptsRegisterReport/",
-    		       		data: JSON.stringify($outbound),
-    		       		statusCode: {
-    		       			200: function($data) {
-    		       				console.debug($data);
-    		       				$("#resultsDiv").fadeIn(2000);
-    		       				if ( $data.responseHeader.responseCode == 'SUCCESS') {
-    		       					$(".err").html("");
-    		       					$("#globalMsg").html("Success! Tickets Generated").show().fadeOut(6000);
-    		       					$("#startDate").val("");
-    		       					$("#endDate").val("");
-    		       					TICKET_GEN.addResultsRow($outbound, $("#divisionId option:selected").text());
-    							} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-    								$('.err').html("");
-    								$.each($data.data.webMessages, function(key, messageList) {
-    									var identifier = "#" + key + "Err";
-    									msgHtml = "<ul>";
-    									$.each(messageList, function(index, message) {
-    										msgHtml = msgHtml + "<li>" + message + "</li>";
-    									});
-    									msgHtml = msgHtml + "</ul>";
-    									$(identifier).html(msgHtml);
-    								});	
-    								$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);							
-    							} else {
-    								$("#globalMsg").html("Unexpected Result: " + $data.responseHeader.responseCode).show();
-    							}
-    		       			},			       		
-    	       				404: function($data) {
-    	        	    		$("#globalMsg").html("System Error: Contact Support").show();
-    	        	    	},
-    						403: function($data) {
-    							$("#globalMsg").html("Session Timeout. Log in and try again");
-    						},
-    		       			500: function($data) {
-    	            	    	$("#globalMsg").html("System Error: Contact Support").show();
-    	            		},
-    		       		},
-    		       		dataType: 'json'
-    		       	});
+    				var $doneFlags = {'SUMMARY':false, 'DETAIL':false};
+    				
+    				$.each(['SUMMARY','DETAIL'], function(index, val) {
+    					var $outbound = {"startDate":$startDate,"endDate":$endDate,"crrType":val};
+    					var $displayDiv = "#crr" + val;
+    					
+    					var $url = "cashReceiptsRegisterReport/"
+        		       	var jqxhr = $.ajax({
+        		       		type: 'POST',
+        		       		url: $url,
+        		       		data: JSON.stringify($outbound),
+        		       		statusCode: {
+        		       			200: function($data) {
+        		       				$($displayDiv).html($data);
+        		       				$doneFlags[val]=true;   
+        		       				console.debug("Done with " + val);
+        		       			},			       		
+        	       				404: function($data) {
+        	        	    		$("#globalMsg").html("System Error: Contact Support").show();
+        	        	    	},
+        						403: function($data) {
+        							$("#globalMsg").html("Session Timeout. Log in and try again");
+        						},
+        		       			500: function($data) {
+        	            	    	$("#globalMsg").html("System Error: Contact Support").show();
+        	            		},
+        		       		},
+        		       		dataType: 'html'
+        		       	});
+    				});
+    				
+    				
+    				var $allDone = false;
+    				var $countem = 0;
+    				
+    				while ($allDone == false && $countem < 20) {
+    					var delay = 1000;
+    					setTimeout(function() {
+    						console.debug("Checking flags");
+    						$alldDone = $doneFlags['SUMMARY'] == true && $doneFlags['DETAIL'] == true ;
+    					}, delay);
+    					$countem = $countem+1;
+    				}
+    				
+           			$('ul.accordionList').accordion({
+						//autoHeight: true,
+						heightStyle: "content",
+						alwaysOpen: true,
+						header: 'h4',
+						fillSpace: false,
+						collapsible: false,
+						active: true
+					});
+           			$("#resultsDiv").fadeIn(2000);
                 },
                 
                 markValid : function($inputField) {
@@ -253,7 +263,7 @@
 			
 
             
-			TICKET_GEN.init();
+			CRR_REPORT.init();
 			
 			
 	
@@ -265,7 +275,7 @@
     
     
     <tiles:put name="content" type="string">    	
-    	<h1>Cash Receipts Register</h1>
+    	<h1>Proposed Active Cancelled</h1>
     	
     	<table>
     		<tr>
@@ -290,20 +300,20 @@
 
     	
     	<div id="resultsDiv">
-    		<table id="resultsTable">
-   		       	<colgroup>
-					<col style="width:25%;" />
-					<col style="width:25%;" />
-					<col style="width:25%;" />
-					<col style="width:25%;" />
-    			</colgroup>
-    			<tr>
-    				<td><span class="formLabel">Division</span></td>
-    				<td><span class="formLabel">Start Date</span></td>
-    				<td><span class="formLabel">EndDate</span></td>
-    				<td><span class="formLabel">Action</span></td>
-    			</tr>
-    		</table>
+    		<ul class="accordionList">
+	    		<li class="accordionItem">    			
+	        		<h4 class="accHdr">Summary</h4>
+	        		<div id="crrSUMMARY">
+	        			... Loading ...
+	        		</div>
+	       		</li>
+	    		<li class="accordionItem">    			
+	        		<h4 class="accHdr">Detail</h4>
+	        		<div id="crrDETAIL">
+	        			... Loading ...
+	        		</div>
+	       		</li>
+    		</ul>
     	</div>
     </tiles:put>
 
