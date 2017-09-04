@@ -16,7 +16,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.PermissionLevel;
-import com.ansi.scilla.common.report.InvoiceRegisterReport;
+import com.ansi.scilla.common.report.invoiceRegisterReport.InvoiceRegisterReport;
 import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.Permission;
