@@ -53,7 +53,7 @@ public class TicketPrintLookupServlet extends AbstractServlet {
 			try{
 				TicketPrintLookupRequest ticketRequest = new TicketPrintLookupRequest();
 				AppUtils.json2object(jsonString, ticketRequest);
-				System.out.println("TicketReturnRequest:"+ticketRequest);
+				System.out.println("TicketReturnRequest:"+ticketRequest+"\tPrintDate:"+ticketRequest.getPrintDate());
 
 				TicketPrintLookupResponse data = new TicketPrintLookupResponse(conn, ticketRequest.getPrintDate());
 				messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
