@@ -82,8 +82,8 @@ public class CashReceiptsRegisterReportServlet extends AbstractServlet {
 						throw new Exception("Invalid Report Type");
 					}
 					reportHtml = HTMLBuilder.build(report);
-					XSSFWorkbook reportXLS = XLSBuilder.build(report);
-					reportXLS.write(new FileOutputStream("cashReceiptsRegister.xlsx"));
+//					XSSFWorkbook reportXLS = XLSBuilder.build(report);
+//					reportXLS.write(new FileOutputStream("cashReceiptsRegister.xlsx"));
 				}
 				
  
