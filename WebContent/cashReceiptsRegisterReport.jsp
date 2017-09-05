@@ -275,7 +275,7 @@
     
     
     <tiles:put name="content" type="string">    	
-    	<h1>Proposed Active Cancelled</h1>
+    	<h1>Cash Receipts Register</h1>
     	
     	<table>
     		<tr>

@@ -17,8 +17,10 @@ import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.Midnight;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.report.cashReceiptsRegister.CashReceiptsRegisterDetailReport;
+import com.ansi.scilla.common.report.cashReceiptsRegister.CashReceiptsRegisterSummaryReport;
 import com.ansi.scilla.common.report.pac.PacSummaryReport;
 import com.ansi.scilla.common.reportBuilder.HTMLBuilder;
+import com.ansi.scilla.common.reportBuilder.HTMLSummaryBuilder;
 import com.ansi.scilla.common.reportBuilder.XLSBuilder;
 import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
@@ -70,8 +72,8 @@ public class CashReceiptsRegisterReportServlet extends AbstractServlet {
 				
 				String reportHtml = null;
 				if ( requestedType.equals(CashReceiptsRegisterReportRequest.CrrReportType.SUMMARY)) {
-					PacSummaryReport summary = new PacSummaryReport(conn,divisionId,startDate,endDate);
-					reportHtml = HTMLBuilder.build(summary);
+					CashReceiptsRegisterSummaryReport report = new CashReceiptsRegisterSummaryReport(conn, startDate, startDate);
+					reportHtml = HTMLSummaryBuilder.build(report);
 				} else {
 					CashReceiptsRegisterDetailReport report = null;
 					if ( requestedType.equals(CashReceiptsRegisterReportRequest.CrrReportType.DETAIL)) {
