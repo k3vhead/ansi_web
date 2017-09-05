@@ -444,6 +444,8 @@
 		<servlet-name>quoteSearch</servlet-name>
 		<url-pattern>/quoteSearch/*</url-pattern>
 	</servlet-mapping>
+	
+	
 	<servlet>
 		<servlet-name>quoteTable</servlet-name>
 		<servlet-class>com.ansi.scilla.web.servlets.quote.QuoteTableServlet</servlet-class>
@@ -451,6 +453,16 @@
 	<servlet-mapping>
 		<servlet-name>quoteTable</servlet-name>
 		<url-pattern>/quoteTable/*</url-pattern>
+	</servlet-mapping>
+
+
+	<servlet>
+		<servlet-name>report</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.report.StandardReportServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>report</servlet-name>
+		<url-pattern>/report/*</url-pattern>
 	</servlet-mapping>
 
 

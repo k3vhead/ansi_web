@@ -16,7 +16,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.Midnight;
 import com.ansi.scilla.common.db.PermissionLevel;
-import com.ansi.scilla.common.report.CashReceiptRegister.CashReceiptsRegisterDetailReport;
+import com.ansi.scilla.common.report.cashReceiptsRegister.CashReceiptsRegisterDetailReport;
 import com.ansi.scilla.common.report.pac.PacSummaryReport;
 import com.ansi.scilla.common.reportBuilder.HTMLBuilder;
 import com.ansi.scilla.common.reportBuilder.XLSBuilder;

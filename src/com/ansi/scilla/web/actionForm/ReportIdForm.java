@@ -1,11 +1,16 @@
 package com.ansi.scilla.web.actionForm;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 
+import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.web.common.ReportType;
 import com.thewebthing.commons.lang.StringUtils;
 
@@ -23,6 +28,23 @@ public class ReportIdForm extends IdForm {
 			errors.add(ID, new ActionMessage("err.invalid.reportId"));
 		}
 		
+		List<ReportRow> reportRowList = new ArrayList<ReportRow>();
+		try {
+			for ( ReportType reportType : ReportType.values()) {
+				String reportClassName = reportType.reportClassName();
+				Class<?> reportClass = Class.forName(reportClassName);
+				Field field = reportClass.getDeclaredField("REPORT_TITLE");
+				String title = (String)field.get(null);
+				reportRowList.add(new ReportRow(reportType.toString(), title));
+	//			AbstractReport report = (AbstractReport)reportClass.newInstance();
+	//			Method method = reportClass.getMethod("getTitle", (Class<?>[])null);
+	//			String title = (String)method.invoke(report, (Object[])null);
+	//			<a href="report.html?id=<%= reportType.toString() %>"><%= title %></a><br />
+			}
+			request.setAttribute("com_ansi_scilla_report_types", reportRowList);
+		} catch ( Exception e) {
+			throw new RuntimeException(e);
+		}
 		
 		return errors;
 	}
@@ -44,4 +66,20 @@ public class ReportIdForm extends IdForm {
 	}
 
 
+	public class ReportRow extends ApplicationObject {
+		private static final long serialVersionUID = 1L;
+		public String reportTitle;
+		public String reportType;
+		public ReportRow(String reportType, String reportTitle) {
+			this.reportType = reportType;
+			this.reportTitle = reportTitle;
+		}
+		public String getReportTitle() {
+			return reportTitle;
+		}
+		public String getReportType() {
+			return reportType;
+		}		
+		
+	}
 }

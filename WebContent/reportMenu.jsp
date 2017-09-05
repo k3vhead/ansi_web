@@ -83,18 +83,9 @@
 		
     
     <p align="center">
-    	<%
-		for ( ReportType reportType : ReportType.values()) {
-			String reportClassName = reportType.reportClassName();
-			Class<?> reportClass = Class.forName(reportClassName);
-			AbstractReport report = (AbstractReport)reportClass.newInstance();
-			Method method = reportClass.getMethod("getTitle", (Class<?>[])null);
-			String title = (String)method.invoke(report, (Object[])null);
-		%>
-			<a href="report.html?id=<%= reportType.toString() %>"><%= title %></a><br />
-		<%
-		} 
-		%>
+    	<c:forEach var="row" items="${com_ansi_scilla_report_types}">
+    	<a href="report.html?id=<c:out value="${row.reportType}" />"><c:out value="${row.reportTitle}" /></a><br />
+    	</c:forEach>
 		<br>
     	<a href="#" title="Scroll to Top" class="ScrollTop">Scroll To Top</a>
     	</br>

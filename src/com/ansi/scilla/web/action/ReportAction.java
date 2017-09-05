@@ -1,5 +1,6 @@
 package com.ansi.scilla.web.action;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +27,7 @@ import com.ansi.scilla.web.struts.SessionData;
 public class ReportAction extends SessionPageDisplayAction {
 	
 	public static final String REPORT_TITLE = "com_ansi_scilla_report_title";
+	public static final String REPORT_TYPE = "com_ansi_scilla_report_type";
 
 	@Override
 	public ActionForward execute(ActionMapping mapping, ActionForm actionForm, HttpServletRequest request,
@@ -42,10 +44,10 @@ public class ReportAction extends SessionPageDisplayAction {
 				
 				String reportClassName = reportType.reportClassName();
 				Class<?> reportClass = Class.forName(reportClassName);
-				AbstractReport report = (AbstractReport)reportClass.newInstance();
-				Method method = reportClass.getMethod("getTitle", (Class<?>[])null);
-				String reportTitle = (String)method.invoke(report, (Object[])null);
+				Field myField = reportClass.getDeclaredField("REPORT_TITLE");				
+				String reportTitle = (String)myField.get(null);
 				request.setAttribute(REPORT_TITLE, reportTitle);
+				request.setAttribute(REPORT_TYPE, reportType.toString());
 				
 				String jsp = reportType.jsp();
 				forward = mapping.findForward(jsp);				
