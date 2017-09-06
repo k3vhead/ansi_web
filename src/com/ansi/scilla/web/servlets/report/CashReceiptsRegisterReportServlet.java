@@ -1,6 +1,5 @@
 package com.ansi.scilla.web.servlets.report;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.sql.Connection;
@@ -11,23 +10,17 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.Midnight;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.report.cashReceiptsRegister.CashReceiptsRegisterDetailReport;
 import com.ansi.scilla.common.report.cashReceiptsRegister.CashReceiptsRegisterSummaryReport;
-import com.ansi.scilla.common.report.pac.PacSummaryReport;
 import com.ansi.scilla.common.reportBuilder.HTMLBuilder;
 import com.ansi.scilla.common.reportBuilder.HTMLSummaryBuilder;
-import com.ansi.scilla.common.reportBuilder.XLSBuilder;
-import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
-import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.request.report.CashReceiptsRegisterReportRequest;
 import com.ansi.scilla.web.servlets.AbstractServlet;
@@ -41,10 +34,10 @@ public class CashReceiptsRegisterReportServlet extends AbstractServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		AnsiURL ansiURL = null;
+//		AnsiURL ansiURL = null;
 		try {
 			String jsonString = super.makeJsonString(request);
-			ansiURL = new AnsiURL(request, REALM, (String[])null); 
+//			ansiURL = new AnsiURL(request, REALM, (String[])null); 
 			AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_READ);
 			Connection conn = null;
 			try {
@@ -52,7 +45,7 @@ public class CashReceiptsRegisterReportServlet extends AbstractServlet {
 
 				System.out.println(REALM+":URL:"+request);
 
-				Integer divisionId = 102;
+//				Integer divisionId = 102;
 				CashReceiptsRegisterReportRequest reportRequest = new CashReceiptsRegisterReportRequest();
 				AppUtils.json2object(jsonString, reportRequest);
 
@@ -72,12 +65,12 @@ public class CashReceiptsRegisterReportServlet extends AbstractServlet {
 				
 				String reportHtml = null;
 				if ( requestedType.equals(CashReceiptsRegisterReportRequest.CrrReportType.SUMMARY)) {
-					CashReceiptsRegisterSummaryReport report = new CashReceiptsRegisterSummaryReport(conn, startDate, startDate);
+					CashReceiptsRegisterSummaryReport report = CashReceiptsRegisterSummaryReport.buildReport(conn, startDate, startDate);
 					reportHtml = HTMLSummaryBuilder.build(report);
 				} else {
 					CashReceiptsRegisterDetailReport report = null;
 					if ( requestedType.equals(CashReceiptsRegisterReportRequest.CrrReportType.DETAIL)) {
-						report = new CashReceiptsRegisterDetailReport(conn,startDate,endDate);
+						report = CashReceiptsRegisterDetailReport.buildReport(conn,startDate,endDate);
 					} else { 
 						throw new Exception("Invalid Report Type");
 					}
@@ -105,8 +98,8 @@ public class CashReceiptsRegisterReportServlet extends AbstractServlet {
 			} finally {
 				AppUtils.closeQuiet(conn);
 			}
-		} catch (ResourceNotFoundException e1) {
-			super.sendNotFound(response);
+//		} catch (ResourceNotFoundException e1) {
+//			super.sendNotFound(response);
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
 			super.sendForbidden(response);
 		}

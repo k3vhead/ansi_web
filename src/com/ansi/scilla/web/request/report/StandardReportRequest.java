@@ -3,7 +3,6 @@ package com.ansi.scilla.web.request.report;
 import java.util.Calendar;
 
 import com.ansi.scilla.web.request.AbstractRequest;
-import com.ansi.scilla.web.request.RequiredForAdd;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class StandardReportRequest extends AbstractRequest {

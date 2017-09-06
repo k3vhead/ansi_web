@@ -8,14 +8,17 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.sql.Connection;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.ansi.scilla.common.reportBuilder.AnsiReport;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ApplicationWebObject;
 import com.ansi.scilla.web.common.ReportType;
@@ -125,7 +128,7 @@ public class ReportDefinition extends ApplicationWebObject {
 	}
 
 
-	public String makeJsonString(HttpServletRequest request) throws UnsupportedEncodingException, IOException {
+	private String makeJsonString(HttpServletRequest request) throws UnsupportedEncodingException, IOException {
 		Writer writer = new StringWriter();
 		 
         char[] buffer = new char[1024];
@@ -142,7 +145,61 @@ public class ReportDefinition extends ApplicationWebObject {
 	}
 
 
+	/**
+	 * Validate the current report definition against the validator class defined in the ReportType enum
+	 * @param conn
+	 * @return
+	 * @throws ClassNotFoundException
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */
+	@SuppressWarnings("unchecked")
+	public List<String> validate(Connection conn) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		String validatorClassName = this.reportType.validatorClassName();
+		Class<?> validatorClass = Class.forName(validatorClassName);
+		Method method = validatorClass.getMethod("validate", new Class<?>[] {Connection.class, ReportDefinition.class});
+		List<String> messageList = (List<String>)method.invoke(null, new Object[]{conn, this});
+		return messageList;
+	}
+
 	
-	
+	/**
+	 * Uses the parameter list from the ReportType enum to generate a list of class types (based on the
+	 * return type of the getter methods) and values (based on executing the method) to call the static
+	 * buildReport method for the specified report. If the stars align, and we've followed all the rules
+	 * we'll return a report object that can be fed to an HTML/XLS/PDF builder for display.
+	 * @param conn
+	 * @return
+	 * @throws ClassNotFoundException
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */
+	public AnsiReport build(Connection conn) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Class<?> reportClass = Class.forName(reportType.reportClassName());
+		int arrayLength = reportType.builderParms().length + 1;   // connection + all parms
+		Class<?>[] classList = new Class<?>[arrayLength];
+		Object[] objectList = new Object[arrayLength];
+		
+		classList[0] = Connection.class;
+		objectList[0] = conn;
+		
+		for ( int i = 0; i < reportType.builderParms().length; i++ ) {
+			int idx = i + 1;
+			String methodName = "get" + StringUtils.capitalize(reportType.builderParms()[i]);
+			Method getter = this.getClass().getMethod(methodName, (Class<?>[])null);
+			classList[idx] = getter.getReturnType();
+			objectList[idx] = getter.invoke(this, (Object[])null);
+		}
+		
+		Method builderMethod = reportClass.getMethod("buildReport", classList);
+		AnsiReport report = (AnsiReport)builderMethod.invoke(null, objectList);
+		return report;
+	}
 	
 }

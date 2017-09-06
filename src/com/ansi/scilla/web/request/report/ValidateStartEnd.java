@@ -1,5 +1,6 @@
 package com.ansi.scilla.web.request.report;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,7 @@ public class ValidateStartEnd extends ApplicationObject  {
 
 	private static final long serialVersionUID = 1L;
 
-	public static List<String> validate(ReportDefinition def) {
+	public static List<String> validate(Connection conn, ReportDefinition def) {
 		List<String> messageList = new ArrayList<String>();
 		
 		if ( def.getStartDate() == null ) {
