@@ -144,7 +144,7 @@
 									</ul>
 			        			</li>
 			        			<li>
-			        				<a href="#">Reports</a>
+			        				<a href="report.html">Reports</a>
 									<ul class="sub_menu" style="z-index:1000">
 										<ansi:hasPermission permissionRequired="TICKET">
 										<li><html:link action="ticketView"><bean:message key="menu.label.drv30" /></html:link></li>

@@ -65,6 +65,7 @@
        			},
        			
        			go : function($clickEvent) {
+       				$("#resultsDiv").fadeIn(2000);
        				var $startDate = $("#startDate").val();
        				var $endDate = $("#endDate").val();
        				var $url = "report/" + REPORT_BY_START_END.reportType;
@@ -75,8 +76,7 @@
     		       		data: JSON.stringify($outbound),
     		       		statusCode: {
     		       			200: function($data) {
-								$("#resultsDiv").html($data);
-    		       				$("#resultsDiv").fadeIn(2000);
+								$("#resultsDiv").html($data);    		       				
     		       			},			       		
     	       				404: function($data) {
     	        	    		$("#globalMsg").html("System Error: Contact Support").show();
@@ -116,7 +116,10 @@
     	</table>
 		
 		<div id="resultsDiv">
-			Report goes here
+			.... Thinking ...<br />
+			<div style="width:80px;">
+			<i class="fa fa-spinner fa-pulse fa-fw fa-5x"></i>
+			</div>
 		</div>
     
 	    <p align="center">
