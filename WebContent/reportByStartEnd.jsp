@@ -24,6 +24,7 @@
     
     <tiles:put name="headextra" type="string">
   	    <link rel="stylesheet" href="css/datepicker.css" type="text/css" />
+		<link rel="stylesheet" href="css/accordion.css" type="text/css" />
     	
         <style type="text/css">
 			#resultsDiv {
@@ -53,6 +54,18 @@
        				REPORT_BY_START_END.doBindings();
        			},
        			
+       			doAccordion : function() {
+       				$('ul.accordionList').accordion({
+						//autoHeight: true,
+						heightStyle: "content",
+						alwaysOpen: true,
+						header: 'h4',
+						fillSpace: false,
+						collapsible: false,
+						active: true
+					});
+       			},
+       			
        			doBindings : function() {
        	     	  	$('.ScrollTop').click(function() {
 						$('html, body').animate({scrollTop: 0}, 800);
@@ -72,10 +85,12 @@
        			
        			go : function($clickEvent) {
        				$("#resultsDiv").fadeIn(2000);
+       				// These values must match the 'doAccordion' function
+       				var $reportDisplay = {'ul':'accordionList', 'li':'accordionItem', 'titleTag':'h4','titleClass':'accHdr'};
        				var $startDate = $("#startDate").val();
        				var $endDate = $("#endDate").val();
        				var $url = "report/" + REPORT_BY_START_END.reportType;
-       				var $outbound = {'startDate':$startDate, 'endDate':$endDate};
+       				var $outbound = {'startDate':$startDate, 'endDate':$endDate, 'reportDisplay':$reportDisplay};
        				var $downloadUrl = $url+"?startDate=" + $startDate + "&endDate="+$endDate;
        				var jqxhr = $.ajax({
     		       		type: 'POST',
@@ -85,6 +100,7 @@
     		       			200: function($data) {
 								$("#resultsDiv").html($data); 
 								$("#xlsDownload").attr("href", $downloadUrl);
+								REPORT_BY_START_END.doAccordion();
 								$("#xlsDiv").show();
     		       			},			       		
     	       				404: function($data) {

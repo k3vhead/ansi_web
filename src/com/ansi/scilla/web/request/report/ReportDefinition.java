@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -54,6 +55,7 @@ public class ReportDefinition extends ApplicationWebObject {
 	private Integer divisionId;
 	private Integer month;
 	private Integer year;
+	private HashMap<String, String> reportDisplay;
 
 	/*
 	<forward name="reportByDivEnd" path="/reportByDivEnd.jsp" />
@@ -125,7 +127,9 @@ public class ReportDefinition extends ApplicationWebObject {
 		if ( reportRequest.getYear() != null ) {
 			this.year = reportRequest.getYear();
 		}
-		
+		if ( reportRequest.getReportDisplay() != null ) {
+			this.reportDisplay = reportRequest.getReportDisplay();
+		}
 	}
 	
 	private void parseParameters(Map<String, String[]> queryParameterMap) throws ParseException {
@@ -170,6 +174,9 @@ public class ReportDefinition extends ApplicationWebObject {
 	}
 
 
+	public HashMap<String, String> getReportDisplay() {
+		return reportDisplay;
+	}
 	private String makeJsonString(HttpServletRequest request) throws UnsupportedEncodingException, IOException {
 		Writer writer = new StringWriter();
 		 

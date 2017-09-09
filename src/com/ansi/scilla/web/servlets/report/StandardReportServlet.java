@@ -35,6 +35,7 @@ public class StandardReportServlet extends AbstractServlet {
 							"\t<body>\n";
 	private final String endHtml = "\t</body>\n</html>";
 			
+	private ReportDefinition def;
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -47,10 +48,11 @@ public class StandardReportServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
 			
-			ReportDefinition def = new ReportDefinition(request);
+			this.def = new ReportDefinition(request);
 			System.out.println(def);
 			List<String> messageList = def.validate(conn);
-			workbook = generateXLSReport(conn, def);
+			workbook = generateXLSReport(conn);
+			System.out.println("StandardServletReport 55");
 			fileName = def.makeReportFileName();
 			
 		} catch ( Exception e) 	{
@@ -61,7 +63,7 @@ public class StandardReportServlet extends AbstractServlet {
 			AppUtils.closeQuiet(conn);
 		}		
 		
-
+		System.out.println("StandardServletReport 66");
 		ServletOutputStream out = response.getOutputStream();
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setHeader("Expires", "0");
@@ -70,10 +72,11 @@ public class StandardReportServlet extends AbstractServlet {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         String dispositionHeader = "attachment; filename=" + fileName + ".xlsx";
         response.setHeader("Content-disposition",dispositionHeader);
+        System.out.println("StandardServletReport 74");
         workbook.write(out);
         out.flush();
         out.close();
-		
+        System.out.println("StandardServletReport 79");
 	}
 
 	@Override
@@ -84,10 +87,10 @@ public class StandardReportServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
 			
-			ReportDefinition def = new ReportDefinition(request);
+			this.def = new ReportDefinition(request);
 			System.out.println(def);
 			List<String> messageList = def.validate(conn);
-			reportHtml = messageList.isEmpty() ? generateHTMLReport(conn, def) : generateErrorHTML(messageList);
+			reportHtml = messageList.isEmpty() ? generateHTMLReport(conn) : generateErrorHTML(messageList);
 			
 		} catch ( Exception e) 	{
 			AppUtils.logException(e);
@@ -97,7 +100,7 @@ public class StandardReportServlet extends AbstractServlet {
 			AppUtils.closeQuiet(conn);
 		}		
 		
-		
+		 
 		response.setContentType("text/html");
 		response.setStatus(HttpServletResponse.SC_OK);
 		
@@ -110,7 +113,7 @@ public class StandardReportServlet extends AbstractServlet {
 	}
 
 
-	private String generateHTMLReport(Connection conn, ReportDefinition def) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	private String generateHTMLReport(Connection conn) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		AnsiReport report = def.build(conn);
 		Method method = findAnHTMLMethod(report);
 		String reportHtml = (String)method.invoke(this, new Object[] {report});
@@ -145,12 +148,38 @@ public class StandardReportServlet extends AbstractServlet {
 	}
 
 	public String buildHTML(CompoundReport report) throws Exception {
+		boolean doAccordion = false;
+		String ul = "";
+		String li = "";
+		String title = "";
+		if ( this.def.getReportDisplay() != null && ! this.def.getReportDisplay().isEmpty() ) {
+			doAccordion = true;
+			ul = "<ul class=\""+ def.getReportDisplay().get("ul") +"\">";
+			li = "<li class=\"" + def.getReportDisplay().get("li") + "\">";			
+		}
 		StringBuffer buf = new StringBuffer();
+		if ( doAccordion ) {
+			buf.append(ul);
+		}
 		for ( AbstractReport subReport : report.getReports() ) {
 			Method method = findAnHTMLMethod(subReport);
 			String subReportHtml = (String)method.invoke(this, new Object[] {subReport});
+			if ( doAccordion ) {
+				String titleText = subReport.getTitle();
+				title = "<" + def.getReportDisplay().get("titleTag") + " class=\""+ def.getReportDisplay().get("titleClass") +"\">"+ titleText +"</h4>";
+				buf.append(li +"\n");
+				buf.append(title +"\n");
+				buf.append("<div>\n");
+			}
 			buf.append(subReportHtml);
-			buf.append("<div style=\"clear:both;\"><br /><hr /><br /></div>");
+			if ( doAccordion ) {
+				buf.append("</div>\n</li>\n");
+			} else {
+				buf.append("<div style=\"clear:both;\"><br /><hr /><br /></div>");
+			}
+		}
+		if ( doAccordion) {
+			buf.append("</ul>");
 		}
 		return buf.toString();
 	}
@@ -176,7 +205,7 @@ public class StandardReportServlet extends AbstractServlet {
 	
 	
 	
-	private XSSFWorkbook generateXLSReport(Connection conn, ReportDefinition def) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	private XSSFWorkbook generateXLSReport(Connection conn) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		XSSFWorkbook reportXLS = new XSSFWorkbook();
 		AnsiReport report = def.build(conn);
 		Method method = findAnXLSMethod(report);
@@ -186,6 +215,7 @@ public class StandardReportServlet extends AbstractServlet {
 			System.out.println(x.getName());
 		}
 		method.invoke(this, new Object[] {report, reportXLS});
+		System.out.println("StandardServletReport 218");
 		return reportXLS;
 
 	}
@@ -229,6 +259,7 @@ public class StandardReportServlet extends AbstractServlet {
 		System.out.println("StandardREportServlet 223");
 		System.out.println(report.getSubtitle());
 		XLSBuilder.build(report, workbook);
+		System.out.println("StandardReportServlet 259");
 	}
 	
 }

@@ -1,6 +1,7 @@
 package com.ansi.scilla.web.request.report;
 
 import java.util.Calendar;
+import java.util.HashMap;
 
 import com.ansi.scilla.web.request.AbstractRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -12,6 +13,7 @@ public class StandardReportRequest extends AbstractRequest {
 	private Calendar endDate;
 	private Integer month;
 	private Integer year;
+	private HashMap<String, String> reportDisplay;
 
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Calendar getStartDate() {
@@ -55,5 +57,13 @@ public class StandardReportRequest extends AbstractRequest {
 
 	public void setYear(Integer year) {
 		this.year = year;
+	}
+
+	public HashMap<String, String> getReportDisplay() {
+		return reportDisplay;
+	}
+
+	public void setReportDisplay(HashMap<String, String> reportDisplay) {
+		this.reportDisplay = reportDisplay;
 	}
 }
