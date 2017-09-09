@@ -10,7 +10,12 @@ import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.reportBuilder.AnsiReport;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ApplicationWebObject;
@@ -34,6 +40,14 @@ import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 public class ReportDefinition extends ApplicationWebObject {
 
 	private static final long serialVersionUID = 1L;
+	private final SimpleDateFormat dateParmFormat = new SimpleDateFormat("MM/dd/yyyy");
+	private final String PARM_DIVISION_ID = "divisionId";
+	private final String PARM_START_DATE = "startDate";
+	private final String PARM_END_DATE = "endDate";
+	private final String PARM_MONTH = "month";
+	private final String PARM_YEAR = "year";
+	
+	
 	private ReportType reportType;
 	private Calendar startDate;
 	private Calendar endDate;
@@ -48,6 +62,9 @@ public class ReportDefinition extends ApplicationWebObject {
     <forward name="reportByStartEnd" path="/reportByStartEnd.jsp" />
 	*/ 
 	
+	private ReportDefinition() {
+		super();
+	}
 	/**
 	 * Parse the URI from the given request.
 	 * Note that posted values (like the JSON in and "ADD") must be processed before invoking this constructor
@@ -63,23 +80,26 @@ public class ReportDefinition extends ApplicationWebObject {
 	 * @throws InvocationTargetException 
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
+	 * @throws ParseException 
 	 */
-	public ReportDefinition(HttpServletRequest request) throws ResourceNotFoundException, UnsupportedEncodingException, IOException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	public ReportDefinition(HttpServletRequest request) throws ResourceNotFoundException, UnsupportedEncodingException, IOException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ParseException {
 		super();
 		
 		String jsonString = makeJsonString(request);
 		StandardReportRequest reportRequest = new StandardReportRequest();
 		if ( ! StringUtils.isBlank(jsonString)) {
+			System.out.println("ReportDef 75: " + jsonString);
 			AppUtils.json2object(jsonString, reportRequest);
+			System.out.println("ReportDef 75: " + reportRequest);
 		}
-
-		Map<String, String[]> queryParameterMap = request.getParameterMap();
-
-		
 		int idx = request.getRequestURI().indexOf("/report/");
 		if ( idx < 0 ) {			
 			throw new ResourceNotFoundException("No Report");
 		}
+		
+		parseParameters(request.getParameterMap());
+
+		
 		String myString = request.getRequestURI().substring(idx + 1);
 		String[] pieces = myString.split("/");
 		String reportId = pieces[1];
@@ -106,6 +126,28 @@ public class ReportDefinition extends ApplicationWebObject {
 			this.year = reportRequest.getYear();
 		}
 		
+	}
+	
+	private void parseParameters(Map<String, String[]> queryParameterMap) throws ParseException {
+		if ( queryParameterMap.containsKey(PARM_START_DATE)) {
+			Date startDate = dateParmFormat.parse(queryParameterMap.get(PARM_START_DATE)[0]);
+			this.startDate = Calendar.getInstance(new AnsiTime());
+			this.startDate.setTime(startDate);
+		}
+		if ( queryParameterMap.containsKey(PARM_END_DATE)) {
+			Date endDate = dateParmFormat.parse(queryParameterMap.get(PARM_END_DATE)[0]);
+			this.endDate = Calendar.getInstance(new AnsiTime());
+			this.endDate.setTime(endDate);
+		}
+		if ( queryParameterMap.containsKey(PARM_DIVISION_ID)) {
+			this.divisionId = Integer.valueOf(queryParameterMap.get(PARM_DIVISION_ID)[0]);
+		}
+		if ( queryParameterMap.containsKey(PARM_MONTH)) {
+			this.month = Integer.valueOf(queryParameterMap.get(PARM_MONTH)[0]);
+		}
+		if ( queryParameterMap.containsKey(PARM_YEAR)) {
+			this.year = Integer.valueOf(queryParameterMap.get(PARM_YEAR)[0]);
+		}
 	}
 	
 	public ReportType getReportType() {
@@ -144,7 +186,14 @@ public class ReportDefinition extends ApplicationWebObject {
         return writer.toString();        
 	}
 
-
+	public String makeReportFileName() {
+		List<String> names = new ArrayList<String>();
+		String[] pieces = this.reportType.name().split("_");
+		for ( String piece : pieces ) {
+			names.add(StringUtils.capitalize(piece.toLowerCase()));
+		}
+		return StringUtils.join(names, "");
+	}
 	/**
 	 * Validate the current report definition against the validator class defined in the ReportType enum
 	 * @param conn
@@ -201,5 +250,23 @@ public class ReportDefinition extends ApplicationWebObject {
 		AnsiReport report = (AnsiReport)builderMethod.invoke(null, objectList);
 		return report;
 	}
-	
+
+	public static void main(String[] args) {
+		Connection conn = null;
+		Calendar startDate = new GregorianCalendar(2017, Calendar.AUGUST, 8);
+		Calendar endDate = new GregorianCalendar(2017, Calendar.SEPTEMBER, 10);
+		try {
+			conn = AppUtils.getDevConn();
+			ReportDefinition def = new ReportDefinition();
+			def.startDate = startDate;
+			def.endDate = endDate;
+			def.reportType = ReportType.CASH_RECEIPTS_REGISTER;
+			AnsiReport report = def.build(conn);
+			
+		} catch ( Exception e) {
+			e.printStackTrace();
+		} finally {
+			AppUtils.closeQuiet(conn);			
+		}
+	}
 }

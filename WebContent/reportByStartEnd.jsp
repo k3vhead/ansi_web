@@ -31,6 +31,12 @@
 				display:none;
 				margin-top:20px;
 				border:solid 1px #000000;
+				clear:both;
+			}
+			#xlsDiv {
+				float:right;
+				display:none;
+				margin-right:100px;
 			}
         </style>
         
@@ -70,13 +76,16 @@
        				var $endDate = $("#endDate").val();
        				var $url = "report/" + REPORT_BY_START_END.reportType;
        				var $outbound = {'startDate':$startDate, 'endDate':$endDate};
+       				var $downloadUrl = $url+"?startDate=" + $startDate + "&endDate="+$endDate;
        				var jqxhr = $.ajax({
     		       		type: 'POST',
     		       		url: $url,
     		       		data: JSON.stringify($outbound),
     		       		statusCode: {
     		       			200: function($data) {
-								$("#resultsDiv").html($data);    		       				
+								$("#resultsDiv").html($data); 
+								$("#xlsDownload").attr("href", $downloadUrl);
+								$("#xlsDiv").show();
     		       			},			       		
     	       				404: function($data) {
     	        	    		$("#globalMsg").html("System Error: Contact Support").show();
@@ -101,6 +110,11 @@
    <tiles:put name="content" type="string">
     	<h1><c:out value="${com_ansi_scilla_report_title}" /></h1>
     	
+		<div id="xlsDiv" class="tooltip">
+			<span class="tooltiptext">Download</span>
+			<a href="#"  id="xlsDownload"><i class="fa fa-file-excel-o fa-2x" aria-hidden="true" style="cursor:pointer"></i></a>
+		</div>
+		
     	<table>
     		<tr>
     			<td>Start Date:</td>
