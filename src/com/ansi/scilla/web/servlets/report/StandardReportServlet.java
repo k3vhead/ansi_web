@@ -5,6 +5,7 @@ import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -88,7 +89,7 @@ public class StandardReportServlet extends AbstractServlet {
 			conn.setAutoCommit(false);
 			
 			this.def = new ReportDefinition(request);
-			System.out.println(def);
+			System.out.println("StandardReportServlet 91 " + this.def.getStartDate());
 			List<String> messageList = def.validate(conn);
 			reportHtml = messageList.isEmpty() ? generateHTMLReport(conn) : generateErrorHTML(messageList);
 			
@@ -114,10 +115,22 @@ public class StandardReportServlet extends AbstractServlet {
 
 
 	private String generateHTMLReport(Connection conn) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		AnsiReport report = def.build(conn);
+		System.out.println("StandardReportServlet 117: " + this.def.getStartDate());
+		AnsiReport report = def.build(conn);	
+		printDate("StandardReportServlet 117: ", report);
 		Method method = findAnHTMLMethod(report);
 		String reportHtml = (String)method.invoke(this, new Object[] {report});
 		return reportHtml;
+	}
+
+	private void printDate(String string, AnsiReport report) {
+		try {
+			Method method = report.getClass().getMethod("getStartDate", (Class<?>[])null);
+			Calendar startDate = (Calendar)method.invoke(report, (Object[])null);
+			System.out.println(string + " " + startDate);
+		} catch ( Exception e ) {
+			System.out.println(string + " " + e);
+		}
 	}
 
 	private String generateErrorHTML(List<String> messageList) {
@@ -148,6 +161,7 @@ public class StandardReportServlet extends AbstractServlet {
 	}
 
 	public String buildHTML(CompoundReport report) throws Exception {
+		printDate("StandardReportServlet 164: ", report);
 		boolean doAccordion = false;
 		String ul = "";
 		String li = "";
@@ -185,17 +199,23 @@ public class StandardReportServlet extends AbstractServlet {
 	}
 
 	public String buildHTML(StandardSummaryReport report) throws Exception {
-		System.out.println("StandardREportServlet 122");
+		System.out.println("StandardREportServlet 202");
+		printDate("StandardREportServlet 202", report);
 		System.out.println(report.getSubtitle());
 		System.out.println(report.getCompanySubtitle());
 		System.out.println(report.getRegionSubtitle());
 		System.out.println(report.getDivisionSubtitle());
+		System.out.println(report.getClass().getName());
+		printDate("StandardReportServlet 207: ", report);
 		return HTMLSummaryBuilder.build(report);
 	}
 
 	public String buildHTML(StandardReport report) throws Exception {
-		System.out.println("StandardREportServlet 131");
+		System.out.println("StandardREportServlet 212");
+		printDate("StandardREportServlet 212", report);
 		System.out.println(report.getSubtitle());
+		System.out.println(report.getClass().getName());
+		printDate("StandardReportServlet 214: ", report);
 		return HTMLBuilder.build(report);
 	}
 

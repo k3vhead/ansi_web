@@ -49,9 +49,9 @@ public class ReportDefinition extends ApplicationWebObject {
 	private final String PARM_YEAR = "year";
 	
 	
-	private ReportType reportType;
-	private Calendar startDate;
-	private Calendar endDate;
+	protected ReportType reportType;
+	protected Calendar startDate;
+	protected Calendar endDate;
 	private Integer divisionId;
 	private Integer month;
 	private Integer year;
@@ -64,7 +64,7 @@ public class ReportDefinition extends ApplicationWebObject {
     <forward name="reportByStartEnd" path="/reportByStartEnd.jsp" />
 	*/ 
 	
-	private ReportDefinition() {
+	protected ReportDefinition() {
 		super();
 	}
 	/**
@@ -90,9 +90,7 @@ public class ReportDefinition extends ApplicationWebObject {
 		String jsonString = makeJsonString(request);
 		StandardReportRequest reportRequest = new StandardReportRequest();
 		if ( ! StringUtils.isBlank(jsonString)) {
-			System.out.println("ReportDef 75: " + jsonString);
 			AppUtils.json2object(jsonString, reportRequest);
-			System.out.println("ReportDef 75: " + reportRequest);
 		}
 		int idx = request.getRequestURI().indexOf("/report/");
 		if ( idx < 0 ) {			
@@ -113,10 +111,12 @@ public class ReportDefinition extends ApplicationWebObject {
 		}
 		
 		if (reportRequest.getStartDate() != null ) {
-			this.startDate = reportRequest.getStartDate();					
+			this.startDate = Calendar.getInstance(new AnsiTime());
+			this.startDate.setTime(reportRequest.getStartDate());					
 		}
 		if ( reportRequest.getEndDate() != null ) {
-			this.endDate = reportRequest.getEndDate();
+			this.endDate = Calendar.getInstance(new AnsiTime());
+			this.endDate.setTime(reportRequest.getEndDate());
 		}
 		if ( reportRequest.getDivisionId() != null ) {
 			this.divisionId = reportRequest.getDivisionId();
