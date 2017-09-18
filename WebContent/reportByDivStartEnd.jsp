@@ -33,6 +33,11 @@
 				margin-top:20px;
 				border:solid 1px #000000;
 			}
+			#xlsDiv {
+				float:right;
+				display:none;
+				margin-right:100px;
+			}
         </style>
         
         <script type="text/javascript">
@@ -44,7 +49,12 @@
         		reportType : "<c:out value="${com_ansi_scilla_report_type}" />",
         		
        			init : function() {
-       				// put init stuff here
+       	        	$divisionList = ANSI_UTILS.getDivisionList();
+       				$("#divisionId").append(new Option("",""));
+       				$.each($divisionList, function(index, val) {
+       					var $displayValue = val.divisionNbr + "-" + val.divisionCode;
+       					$("#divisionId").append(new Option($displayValue, val.divisionId));
+       				});
        				REPORT_BY_DIV_START_END.doBindings();
        			},
        			
@@ -127,9 +137,8 @@
 		</div>
     	
     	<table>
-    		<tr> 
-    			<td>Division ID:</td>
-    			<td><input type="text" name="divisionId" id="divisionId" class="dateField" /></td>
+    		<tr>
+    			<select id="divisionId">	</select>
     		</tr>
     		<tr>
     			<td>Start Date:</td>

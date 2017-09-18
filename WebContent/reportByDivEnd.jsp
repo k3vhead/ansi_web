@@ -44,7 +44,13 @@
         		reportType : "<c:out value="${com_ansi_scilla_report_type}" />",
         		
        			init : function() {
-       				// put init stuff here
+       	        	$divisionList = ANSI_UTILS.getDivisionList();
+       				$("#divisionId").append(new Option("",""));
+       				$.each($divisionList, function(index, val) {
+       					var $displayValue = val.divisionNbr + "-" + val.divisionCode;
+       					$("#divisionId").append(new Option($displayValue, val.divisionId));
+       				});
+       				
        				REPORT_BY_DIV_END.doBindings();
        			},
        			
@@ -85,9 +91,7 @@
        				var $endDate = $("#endDate").val();
        				var $url = "report/" + REPORT_BY_DIV_END.reportType;
        				var $outbound = {'divisionId':$divisionId, 'endDate':$endDate, 'reportDisplay':$reportDisplay};
-       				var $downloadUrl = $url+"?divisionId=" + $divisionId + "&endDate="+$endDate;
-       				var jqxhr = $.ajax({
-       				
+       				var $downloadUrl = $url+"?divisionId=" + $divisionId + "&endDate="+$endDate;       				
        				
        				var jqxhr = $.ajax({
     		       		type: 'POST',
@@ -130,8 +134,7 @@
     	
     	<table>
     		<tr>
-    			<td>Division ID:</td>
-    			<td><input type="text" name="divisionId" id="divisionId" class="dateField" /></td>
+    			<select id="divisionId">	</select>
     		</tr>
     		<tr>
     			<td>End Date:</td>
