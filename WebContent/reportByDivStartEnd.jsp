@@ -23,6 +23,7 @@
     
     
     <tiles:put name="headextra" type="string">
+    	<script type="text/javascript" src="js/ansi_utils.js"></script>
   	    <link rel="stylesheet" href="css/datepicker.css" type="text/css" />
   	    <link rel="stylesheet" href="css/accordion.css" type="text/css" />
     	
@@ -96,7 +97,7 @@
        				var $endDate = $("#endDate").val();
        				var $url = "report/" + REPORT_BY_DIV_START_END.reportType;
        				var $outbound = {'divisionId':$divisionId, 'startDate':$startDate, 'endDate':$endDate, 'reportDisplay':$reportDisplay};
-       				var $downloadUrl = $url+"?divisionId=" + $divisionId + "&startDate="$startDate + "&endDate="+$endDate;
+       				var $downloadUrl = $url+"?divisionId=" + $divisionId + "&startDate="+$startDate + "&endDate="+$endDate;
        				var jqxhr = $.ajax({
     		       		type: 'POST',
     		       		url: $url,
@@ -138,7 +139,8 @@
     	
     	<table>
     		<tr>
-    			<select id="divisionId">	</select>
+    			<td>Div ID:</td>
+    			<td><select id="divisionId">	</select></td>
     		</tr>
     		<tr>
     			<td>Start Date:</td>

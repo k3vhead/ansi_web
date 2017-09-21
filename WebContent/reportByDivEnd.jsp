@@ -23,6 +23,7 @@
     
     
     <tiles:put name="headextra" type="string">
+    	<script type="text/javascript" src="js/ansi_utils.js"></script>
   	    <link rel="stylesheet" href="css/datepicker.css" type="text/css" />
   	    <link rel="stylesheet" href="css/accordion.css" type="text/css" />
     	
@@ -33,13 +34,18 @@
 				margin-top:20px;
 				border:solid 1px #000000;
 			}
+			#xlsDiv {
+				float:right;
+				display:none;
+				margin-right:100px;
+			}
         </style>
         
         <script type="text/javascript">
         
 		$(document).ready(function() {
         	
-        	;REPORT_BY_DIV_END = {
+        	;INVOICE_REGISTER_REPORT = {
         			
         		reportType : "<c:out value="${com_ansi_scilla_report_type}" />",
         		
@@ -51,7 +57,7 @@
        					$("#divisionId").append(new Option($displayValue, val.divisionId));
        				});
        				
-       				REPORT_BY_DIV_END.doBindings();
+       				INVOICE_REGISTER_REPORT.doBindings();
        			},
        			
        			doAccordion : function() {
@@ -79,7 +85,7 @@
 					});
        	     	  	
        	     	  	$('#goButton').click(function($clickEvent) {
-       	     	  	REPORT_BY_DIV_END.go($clickEvent)
+       	     	  	INVOICE_REGISTER_REPORT.go($clickEvent)
        	     	  	});
        			},
        			
@@ -89,7 +95,7 @@
        				var $reportDisplay = {'ul':'accordionList', 'li':'accordionItem', 'titleTag':'h4','titleClass':'accHdr'}; 
        				var $divisionId = $("#divisionId").val();
        				var $endDate = $("#endDate").val();
-       				var $url = "report/" + REPORT_BY_DIV_END.reportType;
+       				var $url = "report/" + INVOICE_REGISTER_REPORT.reportType;
        				var $outbound = {'divisionId':$divisionId, 'endDate':$endDate, 'reportDisplay':$reportDisplay};
        				var $downloadUrl = $url+"?divisionId=" + $divisionId + "&endDate="+$endDate;       				
        				
@@ -101,7 +107,7 @@
     		       			200: function($data) {
 								$("#resultsDiv").html($data); 
 								$("#xlsDownload").attr("href", $downloadUrl);
-								REPORT_BY_DIV_END.doAccordion();
+								INVOICE_REGISTER_REPORT.doAccordion();
 								$("#xlsDiv").show(); 				
     		       			},		       		
     	       				404: function($data) {
@@ -119,7 +125,7 @@
        			}
         	}
             	       	
-        	REPORT_BY_DIV_END.init();
+        	INVOICE_REGISTER_REPORT.init();
         });
         </script>        
     </tiles:put>
@@ -134,7 +140,8 @@
     	
     	<table>
     		<tr>
-    			<select id="divisionId">	</select>
+    			<td>Div ID:</td>
+    			<td><select id="divisionId">	</select></td>
     		</tr>
     		<tr>
     			<td>End Date:</td>

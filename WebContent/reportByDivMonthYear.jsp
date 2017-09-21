@@ -23,6 +23,7 @@
     
     
     <tiles:put name="headextra" type="string">
+    	<script type="text/javascript" src="js/ansi_utils.js"></script>
   	    <link rel="stylesheet" href="css/datepicker.css" type="text/css" />
   	    <link rel="stylesheet" href="css/accordion.css" type="text/css" />
     	
@@ -96,7 +97,7 @@
        				var $year = $("#year").val();
        				var $url = "report/" + REPORT_BY_DIV_MONTH_YEAR.reportType;
        				var $outbound = {'divisionId':$divisionId, 'month':$month, 'year':$year, 'reportDisplay':$reportDisplay};
-       				var $downloadUrl = $url+"?divisionId=" + $divisionId + "&month="$month + "&year="+$year;
+       				var $downloadUrl = $url+"?divisionId=" + $divisionId + "&month="+$month + "&year="+$year;
        				var jqxhr = $.ajax({
     		       		type: 'POST',
     		       		url: $url,
@@ -138,11 +139,25 @@
     	
     	<table>
     		<tr> 
-    			<select id="divisionId">		</select>
+    			<td>Div ID:</td>
+    			<td><select id="divisionId">		</select></td>
     		</tr>
     		<tr>
-    			<td>Month:</td>
-    			<td><input type="text" name="month" id="month" class="dateField" /></td>
+    			<select id="month">  
+					<option value=""></option>
+					<option value="1">January</option>
+					<option value="2">February</option>
+					<option value="3">March</option>
+					<option value="4">April</option>
+					<option value="5">May</option>
+					<option value="6">June</option>
+					<option value="7">July</option>
+					<option value="8">August</option>
+					<option value="9">September</option>
+					<option value="10">October</option>
+					<option value="11">November</option>
+					<option value="12">December</option>
+ 		</select>
     		</tr>
     		<tr>
     			<td>Year:</td>
