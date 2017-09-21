@@ -45,7 +45,7 @@
         
 		$(document).ready(function() {
         	
-        	;INVOICE_REGISTER_REPORT = {
+        	;REPORT_BY_DIV_END = {
         			
         		reportType : "<c:out value="${com_ansi_scilla_report_type}" />",
         		
@@ -57,7 +57,7 @@
        					$("#divisionId").append(new Option($displayValue, val.divisionId));
        				});
        				
-       				INVOICE_REGISTER_REPORT.doBindings();
+       				REPORT_BY_DIV_END.doBindings();
        			},
        			
        			doAccordion : function() {
@@ -85,7 +85,7 @@
 					});
        	     	  	
        	     	  	$('#goButton').click(function($clickEvent) {
-       	     	  	INVOICE_REGISTER_REPORT.go($clickEvent)
+       	     	  	REPORT_BY_DIV_END.go($clickEvent)
        	     	  	});
        			},
        			
@@ -95,7 +95,7 @@
        				var $reportDisplay = {'ul':'accordionList', 'li':'accordionItem', 'titleTag':'h4','titleClass':'accHdr'}; 
        				var $divisionId = $("#divisionId").val();
        				var $endDate = $("#endDate").val();
-       				var $url = "report/" + INVOICE_REGISTER_REPORT.reportType;
+       				var $url = "report/" + REPORT_BY_DIV_END.reportType;
        				var $outbound = {'divisionId':$divisionId, 'endDate':$endDate, 'reportDisplay':$reportDisplay};
        				var $downloadUrl = $url+"?divisionId=" + $divisionId + "&endDate="+$endDate;       				
        				
@@ -107,7 +107,7 @@
     		       			200: function($data) {
 								$("#resultsDiv").html($data); 
 								$("#xlsDownload").attr("href", $downloadUrl);
-								INVOICE_REGISTER_REPORT.doAccordion();
+								REPORT_BY_DIV_END.doAccordion();
 								$("#xlsDiv").show(); 				
     		       			},		       		
     	       				404: function($data) {
@@ -125,7 +125,7 @@
        			}
         	}
             	       	
-        	INVOICE_REGISTER_REPORT.init();
+        	REPORT_BY_DIV_END.init();
         });
         </script>        
     </tiles:put>
