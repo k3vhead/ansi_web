@@ -143,7 +143,8 @@
     			<td><select id="divisionId">		</select></td>
     		</tr>
     		<tr>
-    			<select id="month">  
+    			<td>Month:</td>
+    			<td><select id="month">  
 					<option value=""></option>
 					<option value="1">January</option>
 					<option value="2">February</option>
@@ -157,7 +158,7 @@
 					<option value="10">October</option>
 					<option value="11">November</option>
 					<option value="12">December</option>
- 		</select>
+ 		</select></td>
     		</tr>
     		<tr>
     			<td>Year:</td>
