@@ -38,7 +38,7 @@ public class TicketStatusReportServlet extends AbstractServlet {
 			try {
 				conn = AppUtils.getDBCPConn();
 
-				TicketStatusReport report = new TicketStatusReport(conn, ansiURL.getId());
+				TicketStatusReport report = TicketStatusReport.buildReport(conn, ansiURL.getId());
 				String reportHtml = HTMLBuilder.build(report); 
 
 				
