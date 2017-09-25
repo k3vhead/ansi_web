@@ -16,11 +16,10 @@ public enum ReportType {
 			new String[] {"startDate", "endDate"}
 		),
 	INVOICE_REGISTER_REPORT(
-			"reportByDivEnd",
+			"reportByDivMonthYear",
 			"com.ansi.scilla.common.report.invoiceRegisterReport.InvoiceRegisterReport",
-			"com.ansi.scilla.web.request.report.ValidateDivEnd", 
-			new String[] {"divisionId", "endDate"}
-			
+			"com.ansi.scilla.web.request.report.ValidateDivMonthYear", 
+			new String[] {"divisionId", "month", "year"}
 		),
 	PAC_REPORT(
 			"reportByDivStartEnd", 
