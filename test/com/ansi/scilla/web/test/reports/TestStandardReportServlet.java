@@ -1,23 +1,21 @@
-package com.ansi.scilla.web.servlets.report;
+package com.ansi.scilla.web.test.reports;
 
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.ansi.scilla.common.reportBuilder.AbstractReport;
 import com.ansi.scilla.common.reportBuilder.AnsiReport;
 import com.ansi.scilla.common.reportBuilder.CompoundReport;
-import com.ansi.scilla.common.reportBuilder.CustomReport;
 import com.ansi.scilla.common.reportBuilder.HTMLBuilder;
 import com.ansi.scilla.common.reportBuilder.HTMLSummaryBuilder;
 import com.ansi.scilla.common.reportBuilder.StandardReport;
@@ -25,12 +23,11 @@ import com.ansi.scilla.common.reportBuilder.StandardSummaryReport;
 import com.ansi.scilla.common.reportBuilder.XLSBuilder;
 import com.ansi.scilla.common.reportBuilder.XLSSummaryBuilder;
 import com.ansi.scilla.web.common.AppUtils;
+import com.ansi.scilla.web.common.ReportType;
 import com.ansi.scilla.web.request.report.ReportDefinition;
-import com.ansi.scilla.web.servlets.AbstractServlet;
 
-public class StandardReportServlet extends AbstractServlet {
+public class TestStandardReportServlet {
 
-	private static final long serialVersionUID = 1L;
 	private final String startHtml = "<html>\n" +
 							"\t<head></head>\n" +
 							"\t<body>\n";
@@ -38,83 +35,66 @@ public class StandardReportServlet extends AbstractServlet {
 			
 	private ReportDefinition def;
 
-	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-
-		Connection conn = null;
-		XSSFWorkbook workbook = new XSSFWorkbook();
-		String fileName = "ansiReport";
+	public static void main(String[] args) {
+		Calendar startDate = new GregorianCalendar(2017, Calendar.JULY, 5);
+		Calendar endDate = new GregorianCalendar(2017, Calendar.JULY, 5);
 		try {
-			conn = AppUtils.getDBCPConn();
-			conn.setAutoCommit(false);
-			
-			this.def = new ReportDefinition(request);
-			List<String> messageList = def.validate(conn);
-			workbook = generateXLSReport(conn);
-			fileName = def.makeReportFileName();
-			
-		} catch ( Exception e) 	{
-			AppUtils.logException(e);
-			AppUtils.rollbackQuiet(conn);
-			throw new ServletException(e);
-		} finally {
-			AppUtils.closeQuiet(conn);
-		}		
-		
-		ServletOutputStream out = response.getOutputStream();
-		response.setStatus(HttpServletResponse.SC_OK);
-		response.setHeader("Expires", "0");
-        response.setHeader("Cache-Control", "must-revalidate, post-check=0, pre-check=0");
-        response.setHeader("Pragma", "public");
-        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        String dispositionHeader = "attachment; filename=" + fileName + ".xlsx";
-        response.setHeader("Content-disposition",dispositionHeader);
-        workbook.write(out);
-        out.flush();
-        out.close();
+			new TestStandardReportServlet().go(
+					ReportType.CASH_RECEIPTS_REGISTER.toString(), 
+					startDate, 
+					endDate);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
+	
+	public void go(String reportId, Calendar startDate, Calendar endDate) throws Exception {
 
-	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
 		Connection conn = null;
 		String reportHtml = "Report Gen Failed";
 		try {
-			conn = AppUtils.getDBCPConn();
+			conn = AppUtils.getDevConn();
 			conn.setAutoCommit(false);
 			
-			this.def = new ReportDefinition(request);
+			this.def = new TestReportDef(reportId, startDate, endDate);
+			System.out.println("StandardReportServlet 91 " + this.def.getStartDate());
 			List<String> messageList = def.validate(conn);
 			reportHtml = messageList.isEmpty() ? generateHTMLReport(conn) : generateErrorHTML(messageList);
 			
 		} catch ( Exception e) 	{
 			AppUtils.logException(e);
-			AppUtils.rollbackQuiet(conn);
+			if ( conn != null) {
+				AppUtils.rollbackQuiet(conn);
+			}
 			throw new ServletException(e);
 		} finally {
 			AppUtils.closeQuiet(conn);
 		}		
 		
 		 
-		response.setContentType("text/html");
-		response.setStatus(HttpServletResponse.SC_OK);
-		
-		ServletOutputStream o = response.getOutputStream();
-		OutputStreamWriter writer = new OutputStreamWriter(o);
-		writer.write(startHtml + reportHtml + endHtml);
-		writer.flush();
-		writer.close();
+		FileUtils.write(new File("/home/dclewis/Documents/webthing_v2/projects/ANSI/testresults/testoutput.html"), startHtml + reportHtml + endHtml);
 
 	}
 
 
 	private String generateHTMLReport(Connection conn) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		System.out.println("StandardReportServlet 117: " + this.def.getStartDate());
 		AnsiReport report = def.build(conn);	
+		printDate("StandardReportServlet 117: ", report);
 		Method method = findAnHTMLMethod(report);
 		String reportHtml = (String)method.invoke(this, new Object[] {report});
 		return reportHtml;
 	}
 
+	private void printDate(String string, AnsiReport report) {
+		try {
+			Method method = report.getClass().getMethod("getStartDate", (Class<?>[])null);
+			Calendar startDate = (Calendar)method.invoke(report, (Object[])null);
+			System.out.println(string + " " + startDate);
+		} catch ( Exception e ) {
+			System.out.println(string + " " + e);
+		}
+	}
 
 	private String generateErrorHTML(List<String> messageList) {
 		StringBuffer buf = new StringBuffer();
@@ -144,6 +124,7 @@ public class StandardReportServlet extends AbstractServlet {
 	}
 
 	public String buildHTML(CompoundReport report) throws Exception {
+		printDate("StandardReportServlet 164: ", report);
 		boolean doAccordion = false;
 		String ul = "";
 		String li = "";
@@ -181,17 +162,26 @@ public class StandardReportServlet extends AbstractServlet {
 	}
 
 	public String buildHTML(StandardSummaryReport report) throws Exception {
+		System.out.println("StandardREportServlet 202");
+		System.out.println(report.getSubtitle());
+		System.out.println(report.getCompanySubtitle());
+		System.out.println(report.getRegionSubtitle());
+		System.out.println(report.getDivisionSubtitle());
+		System.out.println(report.getClass().getName());
+		printDate("StandardReportServlet 207: ", report);
 		return HTMLSummaryBuilder.build(report);
 	}
 
 	public String buildHTML(StandardReport report) throws Exception {
+		System.out.println("StandardREportServlet 212");
+		System.out.println(report.getSubtitle());
+		System.out.println(report.getClass().getName());
+		printDate("StandardReportServlet 214: ", report);
 		return HTMLBuilder.build(report);
 	}
 
 	
-	public String buildHTML(CustomReport report) throws Exception {
-		return report.makeHTML();
-	}
+	
 	
 	
 	
@@ -200,7 +190,13 @@ public class StandardReportServlet extends AbstractServlet {
 		XSSFWorkbook reportXLS = new XSSFWorkbook();
 		AnsiReport report = def.build(conn);
 		Method method = findAnXLSMethod(report);
+		System.out.println("StandardServletREport 177");
+		System.out.println(method.getName());
+		for ( Class<?> x : method.getParameterTypes()) {
+			System.out.println(x.getName());
+		}
 		method.invoke(this, new Object[] {report, reportXLS});
+		System.out.println("StandardServletReport 218");
 		return reportXLS;
 
 	}
@@ -224,6 +220,7 @@ public class StandardReportServlet extends AbstractServlet {
 	}
 
 	public void buildXLS(CompoundReport report, XSSFWorkbook workbook) throws Exception {
+		System.out.println("StandardREportServlet 206");
 		for ( AbstractReport subReport : report.getReports() ) {
 			Method method = findAnXLSMethod(subReport);
 			method.invoke(this, new Object[] {subReport, workbook});
@@ -231,14 +228,19 @@ public class StandardReportServlet extends AbstractServlet {
 	}
 
 	public void buildXLS(StandardSummaryReport report, XSSFWorkbook workbook) throws Exception {
+		System.out.println("StandardREportServlet 214");
+		System.out.println(report.getSubtitle());
+		System.out.println(report.getCompanySubtitle());
+		System.out.println(report.getRegionSubtitle());
+		System.out.println(report.getDivisionSubtitle());
 		XLSSummaryBuilder.build(report, workbook);
 	}
 
 	public void buildXLS(StandardReport report, XSSFWorkbook workbook) throws Exception {
+		System.out.println("StandardREportServlet 223");
+		System.out.println(report.getSubtitle());
 		XLSBuilder.build(report, workbook);
+		System.out.println("StandardReportServlet 259");
 	}
 	
-	public void buildXLS(CustomReport report, XSSFWorkbook workbook) throws Exception {
-		report.add2XLS(workbook);
-	}
 }

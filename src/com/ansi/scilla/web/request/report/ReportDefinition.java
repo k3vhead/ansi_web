@@ -204,7 +204,7 @@ public class ReportDefinition extends ApplicationWebObject {
 	/**
 	 * Validate the current report definition against the validator class defined in the ReportType enum
 	 * @param conn
-	 * @return
+	 * @return List of error messages. Empty list (not null) if no validation errors
 	 * @throws ClassNotFoundException
 	 * @throws NoSuchMethodException
 	 * @throws SecurityException
@@ -258,22 +258,5 @@ public class ReportDefinition extends ApplicationWebObject {
 		return report;
 	}
 
-	public static void main(String[] args) {
-		Connection conn = null;
-		Calendar startDate = new GregorianCalendar(2017, Calendar.AUGUST, 8);
-		Calendar endDate = new GregorianCalendar(2017, Calendar.SEPTEMBER, 10);
-		try {
-			conn = AppUtils.getDevConn();
-			ReportDefinition def = new ReportDefinition();
-			def.startDate = startDate;
-			def.endDate = endDate;
-			def.reportType = ReportType.CASH_RECEIPTS_REGISTER;
-			AnsiReport report = def.build(conn);
-			
-		} catch ( Exception e) {
-			e.printStackTrace();
-		} finally {
-			AppUtils.closeQuiet(conn);			
-		}
-	}
+	
 }
