@@ -29,7 +29,7 @@ public enum ReportType {
 		),
 	SIX_MONTH_ROLLING_VOLUME_REPORT(
 			"reportByDivMonthYear", 
-			"com.ansi.scilla.common.report.sixMonthRollingVolume.SixMonthRollingVolumeReport",
+			"com.ansi.scilla.web.report.SixMonthRollingVolumeWebReport",
 			"com.ansi.scilla.web.request.report.ValidateDivMonthYear",  
 			new String[] {"divisionId", "month", "year"}
 		),

@@ -206,12 +206,6 @@
             <forward name="login" path="/login.jsp" />            
         </action>        
 		<action
-            path="/sixMonthRollingVolumeReport"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
-            <forward name="valid" path="/sixMonthRollingVolumeReport.jsp" />
-            <forward name="login" path="/login.jsp" />            
-        </action>        
-		<action
             path="/ticketGeneration"
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">            
             <forward name="valid" path="/ticketGeneration.jsp" />
