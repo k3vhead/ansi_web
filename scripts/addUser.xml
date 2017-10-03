@@ -1,0 +1,38 @@
+<project name="RunAddUser" default="run" basedir="..">
+    <description>Run AddUser</description>
+    <property environment="env" />  <!-- get environment variables -->
+
+	<property name="libdirectory" value="WebContent/WEB-INF/lib" />
+	<property name="classdirectory" value="build/classes" />
+
+
+    <!-- include external jar files in the classpath -->
+    <path id="compile.classpath">
+        <pathelement path="${java.class.path}/"/>
+    	<pathelement path="${classdirectory}" />
+        <fileset dir="${libdirectory}">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+
+
+    <target name="run">
+	    <java classname="com.ansi.scilla.web.dataload.AddUser">
+    		<classpath>
+    			<pathelement path="." />
+    			<path refid="compile.classpath" />
+	   		</classpath>
+	    	<arg value="DB=DEV" />
+	    	<!-- <arg value="DB=PROD" /> -->
+	    	<arg value="FIRST_NAME=Jessica" />
+	    	<arg value="LAST_NAME=Pikul" />
+	    	<arg value="EMAIL=jmp@ansi.com" />
+	    	<arg value="PHONE=630-941-8500 x139" />
+	    	<arg value="PERMISSION_GROUP=1" />
+	    	<arg value="ADDED_BY=5" />  <!-- dave -->
+			<!-- <arg value="ADDED_BY=6" />  Gary -->
+	    	<!-- <arg value="ADDED_BY=7" />  Kevin -->
+	    </java>
+    </target>
+</project>
