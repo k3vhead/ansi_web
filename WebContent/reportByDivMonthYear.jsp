@@ -45,7 +45,7 @@
         
 		$(document).ready(function() {
         	
-        	;REPORT_BY_DIV_MONTH_YEAR = {
+        	;SIX_MONTH_ROLLING_VOLUME_REPORT = {
         			
         		reportType : "<c:out value="${com_ansi_scilla_report_type}" />",
         		
@@ -56,7 +56,7 @@
        					var $displayValue = val.divisionNbr + "-" + val.divisionCode;
        					$("#divisionId").append(new Option($displayValue, val.divisionId));
        				});
-       				REPORT_BY_DIV_MONTH_YEAR.doBindings();
+       				SIX_MONTH_ROLLING_VOLUME_REPORT.doBindings();
        			},
        			
        			doAccordion : function() {
@@ -76,15 +76,23 @@
 						$('html, body').animate({scrollTop: 0}, 800);
        	      	  		return false;
        	     	    });
+       	     	  	
+       	     		$(function() {
+       	     	  		var start_year = new Date().getFullYear();
+
+       	     	  		for (var i = start_year; i > start_year - 3; i--) {
+       	     	    	$('select').append('<option value="' + i + '">' + i + '</option>');
+       	     	  		}
+       	     		});
        				
-       	     	  	$('.dateField').datepicker({
-                        prevText:'&lt;&lt;',
-                        nextText: '&gt;&gt;',
-                        showButtonPanel:true
-					});
+       	     	  	//$('.dateField').datepicker({
+                    //    prevText:'&lt;&lt;',
+                    //    nextText: '&gt;&gt;',
+                    //    showButtonPanel:true
+					//});
        	     	  	
        	     	  	$('#goButton').click(function($clickEvent) {
-       	     	  		REPORT_BY_DIV_MONTH_YEAR.go($clickEvent)
+       	     	  		SIX_MONTH_ROLLING_VOLUME_REPORT.go($clickEvent)
        	     	  	});
        			},
        			
@@ -95,7 +103,7 @@
        				var $divisionId = $("#divisionId").val();
        				var $month = $("#month").val();
        				var $year = $("#year").val();
-       				var $url = "report/" + REPORT_BY_DIV_MONTH_YEAR.reportType;
+       				var $url = "report/" + SIX_MONTH_ROLLING_VOLUME_REPORT.reportType;
        				var $outbound = {'divisionId':$divisionId, 'month':$month, 'year':$year, 'reportDisplay':$reportDisplay};
        				var $downloadUrl = $url+"?divisionId=" + $divisionId + "&month="+$month + "&year="+$year;
        				var jqxhr = $.ajax({
@@ -106,7 +114,7 @@
     		       			200: function($data) {
 								$("#resultsDiv").html($data); 
 								$("#xlsDownload").attr("href", $downloadUrl);
-								REPORT_BY_DIV_MONTH_YEAR.doAccordion();
+								SIX_MONTH_ROLLING_VOLUME_REPORT.doAccordion();
 								$("#xlsDiv").show(); 				
     		       			},			       		
     	       				404: function($data) {
@@ -124,7 +132,7 @@
        			}
         	}
             	       	
-        	REPORT_BY_DIV_MONTH_YEAR.init();
+        	SIX_MONTH_ROLLING_VOLUME_REPORT.init();
         });
         </script>        
     </tiles:put>
@@ -158,11 +166,11 @@
 					<option value="10">October</option>
 					<option value="11">November</option>
 					<option value="12">December</option>
- 		</select></td>
+ 				</select></td>
     		</tr>
     		<tr>
     			<td>Year:</td>
-    			<td><input type="text" name="year" id="year" class="dateField" /></td>
+    			<td><select id="year"></select></td>
     		</tr>    		
     		<tr>
     			<td colspan="2" style="text-align:center;"><input type="button" value="Go" id="goButton" /></td>
