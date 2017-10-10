@@ -36,10 +36,6 @@ public class ReportIdForm extends IdForm {
 				Field field = reportClass.getDeclaredField("REPORT_TITLE");
 				String title = (String)field.get(null);
 				reportRowList.add(new ReportRow(reportType.toString(), title));
-	//			AbstractReport report = (AbstractReport)reportClass.newInstance();
-	//			Method method = reportClass.getMethod("getTitle", (Class<?>[])null);
-	//			String title = (String)method.invoke(report, (Object[])null);
-	//			<a href="report.html?id=<%= reportType.toString() %>"><%= title %></a><br />
 			}
 			request.setAttribute("com_ansi_scilla_report_types", reportRowList);
 		} catch ( Exception e) {

@@ -195,7 +195,7 @@
 		<action
             path="/report"
             type="com.ansi.scilla.web.action.ReportAction"
-            name="reportIdForm"
+            name="idForm"
             input="/reportMenu.jsp"
             scope="request">
             <forward name="valid" path="/reportMenu.jsp" />
