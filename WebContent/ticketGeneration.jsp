@@ -169,7 +169,6 @@
                 	$row = $row + '<td>' + $viewLink + '</td>';
                 	$('#resultsTable tr:last').after($row);
                 	$('.viewAction').bind("click", function($event) {
-                		console.debug("clicked");
                 		$event.preventDefault();
                         var $divisionId = $event.currentTarget.attributes['data-id'].value;           
                         var $startDate = $event.currentTarget.attributes['data-startdate'].value;
