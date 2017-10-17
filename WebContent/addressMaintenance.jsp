@@ -211,7 +211,7 @@
 	        		$("#updateOrAdd").val("add");
 	        		clearAddForm();
 	        		$("#addAddressForm").dialog( "option", "title", "Add Address" );
-	        		$('#addFormButton').button('option', 'label', 'Add Address');
+	        		$('#addFormButton').button('option', 'label', 'Save');
 	        	    $("#addAddressForm").dialog( "open" );
 	        	      	
 	            });
@@ -223,14 +223,14 @@
 					width: 520,
 					modal: true,
 					buttons: [{
-						id: 'addFormButton',
-						click: function() {
-							addAddress();
-						}
-					},{
 						id: 'addFormCloseButton',
 						click: function() {
 							$( "#addAddressForm" ).dialog( "close" );
+						}								
+					},{
+						id: 'addFormButton',
+						click: function() {
+							addAddress();
 						}
 					}],
 					close: function() {
@@ -469,7 +469,7 @@
 								} else if ( $action == "edit" ) {
 					        		$("#aId").val($address.addressId);
 					        		$("#updateOrAdd").val("update");
-							    	$('#addFormButton').button('option', 'label', 'Update Address');
+							    	$('#addFormButton').button('option', 'label', 'Save');
 							    	$("#addAddressForm").dialog( "option", "title", "Update Address" );
 					        		$("#addAddressForm").dialog( "open" );
 								} else {
