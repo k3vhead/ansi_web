@@ -96,6 +96,7 @@
 			}
 			.copyAction {
 				text-decoration:none;
+				color:#000000;
 			}
         </style>
         
