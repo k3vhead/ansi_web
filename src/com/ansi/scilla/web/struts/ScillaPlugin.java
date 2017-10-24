@@ -21,6 +21,7 @@ public class ScillaPlugin implements PlugIn {
 			AppUtils.makeApplicationLogger();
 			AppUtils.makeApacheLogger();
 			AppUtils.makeWebthingLogger();
+			AppUtils.makeTransactionLogger();
 		} catch ( Exception e) {
 			throw new ServletException(e);
 		}

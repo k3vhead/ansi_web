@@ -25,7 +25,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
+import com.ansi.scilla.common.utils.PropertyNames;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.common.WebMessages;
@@ -36,6 +38,7 @@ import com.ansi.scilla.web.request.RequiredForUpdate;
 import com.ansi.scilla.web.request.RequiredFormat;
 import com.ansi.scilla.web.response.AnsiResponse;
 import com.ansi.scilla.web.response.MessageResponse;
+import com.ansi.scilla.web.struts.SessionUser;
 
 
 public class AbstractServlet extends HttpServlet {
@@ -135,7 +138,9 @@ public class AbstractServlet extends HttpServlet {
         } finally {
         	request.getInputStream().close();
         }
-        return writer.toString();        
+        String jsonString = writer.toString();
+        AppUtils.logTransaction(request, jsonString);
+        return jsonString;        
 	}
 
 	/**

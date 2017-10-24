@@ -153,6 +153,31 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 	}
 
 	/**
+	 * Create a logger to track all transactions
+	 * @throws IOException
+	 */
+	public static void makeTransactionLogger() throws IOException {
+		Properties properties = System.getProperties();
+		String catalinaBase = properties.getProperty("catalina.base");
+		if ( catalinaBase == null ) {
+			catalinaBase = "/Users/dcl/Documents";
+		}
+		String fileSeparator = properties.getProperty("file.separator");
+
+
+		Logger logger = Logger.getLogger(PropertyNames.TRANSACTION_LOG.toString());
+		PatternLayout layout = new PatternLayout(getProperty(PropertyNames.LOG_PATTERN));
+		FileAppender systemFileAppender = new FileAppender(
+				layout,
+				catalinaBase + fileSeparator + "logs" + fileSeparator + "ansi_scilla_transaction_log");
+		logger.addAppender(systemFileAppender);
+		systemFileAppender.activateOptions();
+		logger.setLevel(Level.INFO);		
+	}
+
+
+
+	/**
 	 * Log exception to the application logger
 	 * @param e
 	 */
@@ -424,5 +449,17 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 			}
 			System.out.println(AppUtils.getRandomQuote());			
 		}
+	}
+
+
+
+	public static void logTransaction(HttpServletRequest request, String jsonString) {
+        SessionUser user = AppUtils.getSessionUser(request);
+        String userEmail = user == null ? "n/a" : user.getEmail();
+        // Don't log passwords
+        String logString = jsonString.replaceAll("\"password\":\".*\"", "\"password\":\"*******\"");
+        Logger logger = Logger.getLogger(PropertyNames.TRANSACTION_LOG.toString());
+        logger.info("User: " + userEmail + "\tParameters: " + logString);
+		
 	}
 }

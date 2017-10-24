@@ -8,8 +8,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
+import com.ansi.scilla.common.utils.PropertyNames;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
+import com.ansi.scilla.web.struts.SessionUser;
 
 /**
  * Parses a "standard" url following the pattern:<br>
@@ -46,6 +49,12 @@ public class AnsiURL extends ApplicationWebObject {
 	 */
 	public AnsiURL(HttpServletRequest request, String expectedRealm, String[] expectedCommandList) throws ResourceNotFoundException {
 		super();
+		
+        SessionUser user = AppUtils.getSessionUser(request);
+        String userEmail = user == null ? "n/a" : user.getEmail();
+        Logger logger = Logger.getLogger(PropertyNames.TRANSACTION_LOG.toString());
+        logger.info("User: " + userEmail + "\tURL: " + request.getRequestURI());
+
 		this.filterList = new ArrayList<String>();
 		this.queryParameterMap = request.getParameterMap();
 

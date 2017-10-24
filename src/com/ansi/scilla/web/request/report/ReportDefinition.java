@@ -190,7 +190,9 @@ public class ReportDefinition extends ApplicationWebObject {
         } finally {
         	request.getInputStream().close();
         }
-        return writer.toString();        
+        String jsonString = writer.toString();
+        AppUtils.logTransaction(request, jsonString);
+        return jsonString;        
 	}
 
 	public String makeReportFileName() {
