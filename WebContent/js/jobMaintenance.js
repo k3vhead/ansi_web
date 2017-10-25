@@ -479,7 +479,7 @@ $( document ).ready(function() {
 		changeFieldState: function($namespace,$disabledBoolean){
 
 			$("#" + $namespace + "_jobActivation_automanual").selectmenu( "option", "disabled", $disabledBoolean );
-			$("#" + $namespace + "_jobActivation_buildingType").selectmenu( "option", "disabled", $disabledBoolean );
+			//$("#" + $namespace + "_jobActivation_buildingType").selectmenu( "option", "disabled", $disabledBoolean );
 			$("#" + $namespace + "_jobActivation_directLaborPct").prop('disabled', $disabledBoolean);
 			$("#" + $namespace + "_jobActivation_directLaborBudget").prop('disabled', $disabledBoolean);
 			$("#" + $namespace + "_jobActivation_nbrFloors").spinner( "option", "disabled", $disabledBoolean );
@@ -539,8 +539,8 @@ $( document ).ready(function() {
     		$outbound["billingContactId"]			= QUOTEUTILS.getbillingContactId();
     		$outbound["billingNotes"]				= $($pre+"_jobActivation_billingNotes").val();
     		$outbound["budget"]						= $($pre+"_jobActivation_directLaborBudget").val();
-    		//console.log($pre+"_jobActivation_buildingType");
-    		$outbound["buildingType"]				= $($pre+"_jobActivation_buildingType").val();//0_jobActivation_buildingType
+//    		$outbound["buildingType"]				= $($pre+"_jobActivation_buildingType").val();//0_jobActivation_buildingType
+    		$outbound["buildingType"]				= $("#buildingType").val();
     		$outbound["cancelDate"]					= $($pre+"_jobDates_cancelDate").html();
     		$outbound["cancelReason"]				= $($pre+"_jobDates_cancelReason").html();
     		$outbound["contractContactId"]			= QUOTEUTILS.getcontractContactId();
@@ -851,7 +851,7 @@ $( document ).ready(function() {
 					if($("#" + $namespace + "_activationEdit").hasClass( "fa-pencil" )){
 						console.log("Clicked: Pencil");
 						$("#" + $namespace + "_automanual").selectmenu( "option", "disabled", false );
-						$("#" + $namespace + "_buildingType").selectmenu( "option", "disabled", false );
+//						$("#" + $namespace + "_buildingType").selectmenu( "option", "disabled", false );
 						$("#" + $namespace + "_directLaborPct").prop('disabled', false);
 						$("#" + $namespace + "_directLaborBudget").prop('disabled', false);
 						$("#" + $namespace + "_nbrFloors").spinner( "option", "disabled", false );
@@ -867,7 +867,7 @@ $( document ).ready(function() {
 					} else if($("#" + $namespace + "_activationEdit").hasClass( "fa-save" )){
 						console.log("Clicked: Save");
 						$("#" + $namespace + "_automanual").selectmenu( "option", "disabled", true );
-						$("#" + $namespace + "_buildingType").selectmenu( "option", "disabled", true );
+//						$("#" + $namespace + "_buildingType").selectmenu( "option", "disabled", true );
 						$("#" + $namespace + "_directLaborPct").prop('disabled', true);
 						$("#" + $namespace + "_directLaborBudget").prop('disabled', true);
 						$("#" + $namespace + "_nbrFloors").spinner( "option", "disabled", true );
@@ -893,7 +893,8 @@ $( document ).ready(function() {
 				
 				setBuildingType: function ($namespace, $optionList, $selectedValue) {
 
-					var selectorName = "select[name='" + $namespace + "_buildingType']";
+//					var selectorName = "select[name='" + $namespace + "_buildingType']";
+					var selectorName = "select[name='buildingType']";
 					var $select = $(selectorName);
 					
 					$('option', $select).remove();

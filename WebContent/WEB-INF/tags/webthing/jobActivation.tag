@@ -48,12 +48,14 @@
 					<select name="<%=namespace%>_automanual" id="<%=namespace%>_automanual" <%=disabled%>>
 					</select>
 				</td>
+				<%--
 				<td colspan="3">
 					Building Type:
 					<select name="<%=namespace%>_buildingType" id="<%=namespace%>_buildingType" <%=disabled%>>
 						<option value=""></option>
 					</select>
 				</td>
+				 --%>
 			</tr>
 			<tr>
 				<td>Equipment:</td>
