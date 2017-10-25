@@ -274,11 +274,9 @@ public class PaymentServlet extends AbstractServlet {
 			// no post-dated checks
 			if ( paymentRequest.getPaymentDate().before(paymentRequest.getCheckDate())) {
 				errors.put(PaymentRequest.CHECK_DATE, "Payment Date before check date");
-			} else if ( ! paymentRequest.getCheckDate().before(today.getTime())) {
-//				SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss.S");
-//				System.out.println("Pay: " + sdf.format(sdf.format(paymentRequest.getCheckDate())));
-//				System.out.println("Now: " + sdf.format(today.getTime()));
-				errors.put(PaymentRequest.CHECK_DATE, "Check Date must be on or before today");
+//	2017/10/25  Post-dating payments is OK per Danielle
+//			} else if ( ! paymentRequest.getCheckDate().before(today.getTime())) {
+//				errors.put(PaymentRequest.CHECK_DATE, "Check Date must be on or before today");
 			}
 		} else {
 			if (paymentRequest.getCheckNumber() != null ) {
