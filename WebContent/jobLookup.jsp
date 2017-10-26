@@ -48,13 +48,11 @@
         <script type="text/javascript">
         
         $(document).ready(function(){
-      	  		$('.ScrollTop').click(function() {
-      	   		 $('html, body').animate({scrollTop: 0}, 800);
+      	  	$('.ScrollTop').click(function() {
+				$('html, body').animate({scrollTop: 0}, 800);
       	  		return false;
-      	    	});
-      		});
-            	       	
-        	$(document).ready(function() {
+      	    });
+
         	var dataTable = null;
         	
         	function createTable(){
@@ -107,7 +105,7 @@
 			            	if(row.jobSiteName != null){return (row.jobSiteName+"");}
 			            } },
 			            { title: "Job Address",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.jobSiteAddress != null){return (row.jobSiteAddress+"");}
+			            	if(row.jobSiteAddress != null){return (row.jobSiteAddress+", " + row.jobSiteCity + ", " + row.jobSiteState );}
 			            } },
 			            { title: "Start Date", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.startDate != null){return (row.startDate+"");}

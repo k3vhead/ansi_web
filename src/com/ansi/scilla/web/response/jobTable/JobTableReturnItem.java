@@ -19,6 +19,8 @@ public class JobTableReturnItem extends ReportQuery {
 	public static final String BILL_TO_NAME ="bill_to_name";
 	public static final String JOB_SITE_NAME ="job_site_name";
 	public static final String JOB_SITE_ADDRESS ="job_site_address";
+	public static final String JOB_SITE_CITY = "job_site_city";
+	public static final String JOB_SITE_STATE = "job_site_state";
 	public static final String START_DATE ="start_date";
 	public static final String JOB_NBR ="job_nbr";
 	public static final String JOB_FREQUENCY ="job_frequency";
@@ -54,6 +56,8 @@ public class JobTableReturnItem extends ReportQuery {
 	private Integer quoteId;
 	private Integer quoteNumber;
 	private String revision;
+	private String jobSiteCity;
+	private String jobSiteState;
 
 	public JobTableReturnItem() throws SQLException {
 		super();
@@ -275,6 +279,22 @@ public class JobTableReturnItem extends ReportQuery {
 	@DBColumn(REVISION)
 	public void setRevision(String revision) {
 		this.revision = revision;
+	}
+	@DBColumn(JOB_SITE_CITY)
+	public String getJobSiteCity() {
+		return jobSiteCity;
+	}
+	@DBColumn(JOB_SITE_CITY)
+	public void setJobSiteCity(String jobSiteCity) {
+		this.jobSiteCity = jobSiteCity;
+	}
+	@DBColumn(JOB_SITE_STATE)
+	public String getJobSiteState() {
+		return jobSiteState;
+	}
+	@DBColumn(JOB_SITE_STATE)
+	public void setJobSiteState(String jobSiteState) {
+		this.jobSiteState = jobSiteState;
 	}
 
 }
