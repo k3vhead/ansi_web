@@ -1,23 +1,88 @@
-/* ****  Report CSS ******* */
+.ansi-stdrpt {
+	max-width:1300px;
+	width:1300px;
+}
+.ansi-stdrpt-header-table {
+	width: 100%;
+    background: #000000; 
+    color: #FFFFFF;
+    min-height: 25px;
+}
+.ansi-stdrpt-data-table {
+	width:95%;
+	display:none;
+	margin-top:20px;
+	border:solid 1px #000000;
+}
+.ansi-stdrpt-header-row {
+}
+.ansi-stdrpt-empty-header {
+}
+.ansi-stdrpt-col-header-text {
+}
+.ansi-stdrpt-data-row {
+}
+.ansi-stdrpt-summary-row {
+}
+.ansi-stdrpt-summary {
+}
+.ansi-stdrpt-summary-text {
+}
+.ansi-stdrpt-summary-row {
+}
+.ansi-stdrpt-summary {
+}
+.ansi-stdrpt-summary-text {
+}
+.ansi-stdrpt-col-header {
+}
+.ansi-stdrpt-col-header-text {
+}
+.ansi-stdrpt-banner {
+}
+.ansi-stdrpt-banner-text {
+}
+.ansi-stdrpt-title {
+}
+.ansi-stdrpt-title-text {
+}
+.ansi-stdrpt-subtitle {
+}
+.ansi-stdrpt-subtitle-text {
+}
+.ansi-stdrpt-notes {
+}
+.ansi-stdrpt-notes-text {
+}
+.css-data-header-left {
+}
+.css-data-left {
+}
+.css-data-header-left-text {
+}
+.css-data-left-text {
+}
+.css-data-header-right {
+}
+.css-data-right {
+}
+.css-data-header-right-text {
+}
+.css-data-right-text {
+}
+.css-data-center {
+}
+.css-data-center-text {
+}
+	
 
-TABLE;
-	#table {
-		max-width:1300px;
-		width:1300px;
-	}
 HEADER_TABLE = "ansi-stdrpt-header-table";
 	#headerTable{
-	    width: 100%;
-	    background: #000000; mm
-	    color: #FFFFFF;
-	    min-height: 25px;
+	    
 	}
 DATA_TABLE = "ansi-stdrpt-data-table";
 	#dataTable {
-		width:95%;
-		display:none;
-		margin-top:20px;
-		border:solid 1px #000000;
+		
 	}
 HEADER_ROW = "ansi-stdrpt-header-row";
 	h1 {
