@@ -1,0 +1,159 @@
+/* ****  Report CSS ******* */
+
+TABLE;
+	#table {
+		max-width:1300px;
+		width:1300px;
+	}
+HEADER_TABLE = "ansi-stdrpt-header-table";
+	#headerTable{
+	    width: 100%;
+	    background: #000000; mm
+	    color: #FFFFFF;
+	    min-height: 25px;
+	}
+DATA_TABLE = "ansi-stdrpt-data-table";
+	#dataTable {
+		width:95%;
+		display:none;
+		margin-top:20px;
+		border:solid 1px #000000;
+	}
+HEADER_ROW = "ansi-stdrpt-header-row";
+	h1 {
+		font-size:20px;
+		font-weight:bold;
+		font-variant:small-caps;
+	}
+EMPTY_HEADER = "ansi-stdrpt-empty-header";
+	#emptyHeader{
+		width:100%;
+		display:none;
+	}
+EMPTY_HEADER_TEXT = "ansi-stdrpt-col-header-text";
+	.emptyHeaderText {
+		text-align:right;
+	}
+DATA_ROW = "ansi-stdrpt-data-row";
+	.dataRow {
+	    display: table;
+	    width: 100%; 
+	    table-layout: fixed;
+	    border-spacing: 10px;
+	}
+SUMMARY_ROW = "ansi-stdrpt-summary-row";
+	.subtotalText {
+		text-align:right;
+	}
+SUMMARY = "ansi-stdrpt-summary";			
+	#displaySummaryTable {
+  		border-collapse: collapse;
+		width:90%;
+	}
+SUMMARY_TEXT = "ansi-stdrpt-summary-text";
+	.summaryText {
+		text-align:right;
+	}
+SUBTOTAL_ROW = "ansi-stdrpt-summary-row";			
+	#subtotalRow {
+  		border-collapse: collapse;
+		width:90%;
+	}
+SUBTOTAL = "ansi-stdrpt-summary";			
+	#subtotal {
+  		border-collapse: collapse;
+		width:90%;
+	}
+SUBTOTAL_TEXT = "ansi-stdrpt-summary-text";
+	.subtotalText {
+		text-align:right;
+	}
+COLHDR = "ansi-stdrpt-col-header";
+COLHDR_TEXT = "ansi-stdrpt-col-header-text";
+	.colHdrText {
+		text-align:right;
+	}
+BANNER = "ansi-stdrpt-banner";			
+	#banner {
+  		border-collapse: collapse;
+		width:90%;
+	}
+BANNER_TEXT = "ansi-stdrpt-banner-text";
+	.rightText {
+		text-align:right;
+	}
+TITLE = "ansi-stdrpt-title";			
+	#title {
+  		border-collapse: collapse;
+		width:90%;
+	}
+TITLE_TEXT = "ansi-stdrpt-title-text";
+	.rightText {
+		text-align:right;
+	}
+SUBTITLE = "ansi-stdrpt-subtitle";			
+	#subtitle {
+  		border-collapse: collapse;
+		width:90%;
+	}
+SUBTITLE_TEXT = "ansi-stdrpt-subtitle-text";
+	.rightText {
+		text-align:right;
+	}
+NOTES = "ansi-stdrpt-notes";			
+	#notes {
+  		border-collapse: collapse;
+		width:90%;
+	}
+NOTES_TEXT = "ansi-stdrpt-notes-text";
+	.notesText {
+		text-align:right;
+	}
+DATA_HEADER_LEFT;
+	.leftHdr {
+		font-weight:bold;
+		text-alignment:left;
+	}
+DATA_LEFT = "css-data-left";
+	.leftData {
+		vertical-align:left;
+	}
+DATA_HEADER_LEFT_TEXT = "css-data-header-left-text";
+	headerLeftText {
+	font-size:20px;
+	font-weight:bold;
+	font-variant:small-caps;
+	text-align:left;
+	}
+DATA_LEFT_TEXT;
+	.leftText {
+		text-align:left;
+	}
+DATA_HEADER_RIGHT;
+	.rightHdr {
+		font-weight:bold;
+		text-alignment:right;
+	}
+DATA_RIGHT = "css-data-right";
+	.rightData {
+		vertical-align:right;
+	}
+DATA_HEADER_RIGHT_TEXT = "css-data-header-right-text";
+	headerRightText {
+	font-size:20px;
+	font-weight:bold;
+	font-variant:small-caps;
+	text-align:right;
+	}
+DATA_RIGHT_TEXT = "css-data-right-text";
+	.rightText {
+		text-align:right;
+	}
+DATA_CENTER = "css-data-center";
+	.centerData {
+		vertical-align:middle;
+	}
+DATA_CENTER_TEXT;
+	.centerText {
+		text-align:center;
+	}
