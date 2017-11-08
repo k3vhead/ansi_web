@@ -204,7 +204,16 @@
             <forward name="reportByDivStartEnd" path="/reportByDivStartEnd.jsp" />
             <forward name="reportByStartEnd" path="/reportByStartEnd.jsp" />     
             <forward name="login" path="/login.jsp" />            
-        </action>        
+        </action>  
+        <action
+            path="/ticketOverride"
+            type="com.ansi.scilla.web.action.TicketReturnAction"
+            name="idForm"
+            input="/ticketOverride.jsp"
+            scope="request">            
+            <forward name="valid" path="/ticketOverride.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>      
 		<action
             path="/ticketGeneration"
             type="com.ansi.scilla.web.action.SessionPageDisplayAction">            

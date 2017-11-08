@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.invoice.InvoiceStyle;
 import com.ansi.scilla.common.invoice.InvoiceTerm;
 import com.ansi.scilla.common.jobticket.JobFrequency;
@@ -58,6 +59,7 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 	private String jobFrequency;
 	private String invoiceTerms;
 	private String invoiceStyle;
+	private Date invoiceDate;
 
 	
 	
@@ -66,12 +68,18 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 	}
 	
 	public TicketDetail(Connection conn, Integer ticketId) throws RecordNotFoundException, Exception {
+		Ticket ticket = new Ticket();
+		ticket.setTicketId(ticketId);
+		ticket.selectOne(conn);
 		TicketPaymentTotals ticketPaymentTotals = TicketPaymentTotals.select(conn, ticketId);
 		Division division = new Division();
 		division.setDivisionId(ticketPaymentTotals.getDivisionId());
 		division.selectOne(conn);
 		this.defaultDirectLaborPct = division.getDefaultDirectLaborPct();
 		this.ticketId = ticketId;
+		if ( ticket.getInvoiceDate() != null ) {
+			this.invoiceDate = ticket.getInvoiceDate();
+		}
 		this.invoiceId = ticketPaymentTotals.getTicket().getInvoiceId();
 		this.status = ticketPaymentTotals.getTicket().getStatus();
 		this.divisionId = ticketPaymentTotals.getDivisionId();
@@ -334,6 +342,16 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 
 	public void setInvoiceStyle(String invoiceStyle) {
 		this.invoiceStyle = invoiceStyle;
+	}
+	
+	@JsonSerialize(using=AnsiDateFormatter.class)
+	public Date getInvoiceDate() {
+		return invoiceDate;
+	}
+
+	@JsonSerialize(using=AnsiDateFormatter.class)
+	public void setInvoiceDate(Date invoiceDate) {
+		this.invoiceDate = invoiceDate;
 	}
 
 	

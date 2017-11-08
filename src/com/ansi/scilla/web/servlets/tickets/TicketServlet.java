@@ -127,19 +127,21 @@ public class TicketServlet extends AbstractServlet {
 	 */
 	
 	@Override
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		processGetRequest(request, response, "ticket");		
+	}
+
+
+	protected void processGetRequest(HttpServletRequest request, HttpServletResponse response, String realm) throws ServletException {
 		AnsiURL ansiURL = null;
 		try {
-			ansiURL = new AnsiURL(request, "ticket", (String[])null); //which panel to 122
+			ansiURL = new AnsiURL(request, realm, (String[])null); //which panel to 122
 			AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
 			Connection conn = null;
 			TicketReturnResponse ticketReturnResponse = null;
 			try {
 				conn = AppUtils.getDBCPConn();
 				ticketReturnResponse = new TicketReturnResponse(conn, ansiURL.getId());
-				
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, ticketReturnResponse); //utility to send Json back
 				
 			} catch(RecordNotFoundException recordNotFoundEx) {
@@ -151,10 +153,11 @@ public class TicketServlet extends AbstractServlet {
 				AppUtils.closeQuiet(conn);
 			}
 		} catch (ResourceNotFoundException e1) {
+			AppUtils.logException(e1);
 			super.sendNotFound(response);
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
 			super.sendForbidden(response);
-		}
+		}		
 	}
 
 
@@ -175,7 +178,6 @@ public class TicketServlet extends AbstractServlet {
 			try{
 				TicketReturnRequest ticketReturnRequest = new TicketReturnRequest();
 				AppUtils.json2object(jsonString, ticketReturnRequest);
-				System.out.println("TicketReturnRequest:"+ticketReturnRequest);
 				ansiURL = new AnsiURL(request, "ticket", (String[])null); //  .../ticket/etc
 
 				SessionUser sessionUser = sessionData.getUser(); 
@@ -226,7 +228,7 @@ public class TicketServlet extends AbstractServlet {
 	}
 
 
-	private void processComplete (Connection conn, HttpServletResponse response, Ticket ticket, TicketReturnRequest ticketReturnRequest,
+	protected void processComplete (Connection conn, HttpServletResponse response, Ticket ticket, TicketReturnRequest ticketReturnRequest,
 			SessionUser sessionUser) throws RecordNotFoundException, Exception {
 		// edit input fields to make sure everything is present and valid
 		// if all input is good
@@ -315,7 +317,7 @@ public class TicketServlet extends AbstractServlet {
 	}
 
 
-	private void processSkip (Connection conn, HttpServletResponse response, Ticket ticket, TicketReturnRequest ticketReturnRequest,
+	protected void processSkip (Connection conn, HttpServletResponse response, Ticket ticket, TicketReturnRequest ticketReturnRequest,
 			SessionUser sessionUser) throws RecordNotFoundException, Exception {
 
 		TicketReturnResponse ticketReturnResponse = new TicketReturnResponse();
@@ -352,7 +354,7 @@ public class TicketServlet extends AbstractServlet {
 	}
 
 
-	private void processVoid (Connection conn, HttpServletResponse response, Ticket ticket, TicketReturnRequest ticketReturnRequest,
+	protected void processVoid (Connection conn, HttpServletResponse response, Ticket ticket, TicketReturnRequest ticketReturnRequest,
 			SessionUser sessionUser) throws RecordNotFoundException, Exception {
 		
 		TicketReturnResponse ticketReturnResponse = new TicketReturnResponse();
@@ -393,7 +395,7 @@ public class TicketServlet extends AbstractServlet {
 	}
 
 
-	private void processReject (Connection conn, HttpServletResponse response, Ticket ticket, TicketReturnRequest ticketReturnRequest,
+	protected void processReject (Connection conn, HttpServletResponse response, Ticket ticket, TicketReturnRequest ticketReturnRequest,
 			SessionUser sessionUser) throws RecordNotFoundException, Exception {
 		
 		TicketReturnResponse ticketReturnResponse = new TicketReturnResponse();
@@ -430,7 +432,7 @@ public class TicketServlet extends AbstractServlet {
 	}
 
 
-	private void processRequeue (Connection conn, HttpServletResponse response, Ticket ticket, TicketReturnRequest ticketReturnRequest,
+	protected void processRequeue (Connection conn, HttpServletResponse response, Ticket ticket, TicketReturnRequest ticketReturnRequest,
 			SessionUser sessionUser) throws RecordNotFoundException, Exception {
 		
 		TicketReturnResponse ticketReturnResponse = new TicketReturnResponse();
@@ -463,7 +465,7 @@ public class TicketServlet extends AbstractServlet {
 	}
 
 
-	private boolean isValidNewStatus(String status, String newStatus) {
+	protected boolean isValidNewStatus(String status, String newStatus) {
 		TicketStatus oldStatus = TicketStatus.lookup(status);
 		TicketStatus checkThis = TicketStatus.lookup(newStatus);
 		return oldStatus.nextValues().contains(checkThis);

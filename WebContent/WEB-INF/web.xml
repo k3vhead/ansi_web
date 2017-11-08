@@ -516,6 +516,15 @@
 
 
 	<servlet>
+		<servlet-name>ticketOverride</servlet-name>
+		<servlet-class>com.ansi.scilla.web.servlets.tickets.TicketOverrideServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ticketOverride</servlet-name>
+		<url-pattern>/ticketOverride/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
 		<servlet-name>ticketGeneration</servlet-name>
 		<servlet-class>com.ansi.scilla.web.servlets.tickets.TicketGenerationServlet</servlet-class>
 	</servlet>

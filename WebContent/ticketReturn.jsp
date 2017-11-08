@@ -127,11 +127,14 @@
 			.bottomRow {
 				border-bottom:solid 1px #000000;
 			}
-			.editApprovals {
-				cursor:pointer;
-			}
 			#editApprovalsModal {
 				display:none;
+			}
+			.action-link {
+				cursor:pointer;
+			}
+			#status {
+				white-space:nowrap;
 			}
         </style>
         
@@ -201,7 +204,9 @@
         		$(this).select();
         	});
         	
-        	
+        	$("#editTicket").click(function($event) {
+        		location.href="ticketEdit.html?id="+$globalTicketId;
+        	});
         	
         	
             var $ticketComplete = $( "#ticketNbr" ).autocomplete({
@@ -223,6 +228,7 @@
                     }
                 }
           	}).data('ui-autocomplete');
+            
 			$ticketComplete._renderMenu = function( ul, items ) {
 				var that = this;
 				$.each( items, function( index, item ) {
@@ -701,7 +707,7 @@
 	        		<th>Frequency</th><td><span id="jobFrequency"></span></td>
         		</tr>
         		<tr>
-	        		<th colspan="2">Service Description:</th><td colspan="7"><span id="serviceDescription"></span></td>
+	        		<th colspan="2">Service Description:</th><td colspan="8"><span id="serviceDescription"></span></td>
 	    		</tr>
 			</table>
  		</div>
@@ -919,7 +925,10 @@
 		   			<th>Balance</th>
 		   		</tr>
 		   		<tr>
-		   			<td style="border-bottom:solid 1px #000000;"><span id="ticketId"></span></td>
+		   			<td style="border-bottom:solid 1px #000000;">
+		   				<span id="ticketId"></span>&nbsp;
+		   				<span id="editTicket" class="green fa fa-pencil tooltip action-link" ari-hidden="true"><span class="tooltiptext">Edit</span></span>
+		   			</td>
 		   			<td style="border-bottom:solid 1px #000000;"><span id="actPricePerCleaning"></span></td>
 		   			<td style="border-bottom:solid 1px #000000;"><span id="totalVolPaid"></span></td>
 		   			<td style="border-bottom:solid 1px #000000;"><span id="actTax"></span></td>
@@ -936,7 +945,7 @@
 		   			<td class="bottomRow" colspan="2">
 		   				<span class="formLabel">Manager Approval: </span> <i id="managerApproval" class="fa" aria-hidden="true"></i>
 		   				<div style="float:right;">
-		   					<span class="green fa fa-pencil tooltip editApprovals" ari-hidden="true"><span class="tooltiptext">Edit</span></span>
+		   					<span class="green fa fa-pencil tooltip action-link editApprovals" ari-hidden="true"><span class="tooltiptext">Edit</span></span>
 		   				</div>
 		   			</td>
 		   		</tr>

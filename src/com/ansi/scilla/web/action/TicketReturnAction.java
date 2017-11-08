@@ -25,7 +25,7 @@ public class TicketReturnAction extends SessionPageDisplayAction {
 		
 		ActionForward forward = mapping.findForward(FORWARD_IS_LOGIN);
 		try {
-			AppUtils.validateSession(request, Permission.TECH_ADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 			IdForm form = (IdForm)actionForm;
 			if ( form != null && ! StringUtils.isBlank(form.getId())) {
 				request.setAttribute("ANSI_TICKET_ID", form.getId());
