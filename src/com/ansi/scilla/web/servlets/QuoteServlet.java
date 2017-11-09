@@ -39,7 +39,8 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
  * 		/quote/&lt;quoteId&gt;/&lt;quoteNumber&gt;/&lt;revision&gt;	(retrieves a single record)
  * 
  * The url for adding a new record will be a POST to:
- * 		/quote/add   with parameters in the JSON
+ * 		/quote/add   	with parameters in the JSON
+ * 		/quote/copy/&lt;quoteId&gt; 
  * 
  * The url for update will be a POST to:
  * 		/quote/&lt;quoteId&gt;/&lt;quoteNumber&gt;/&lt;revision&gt; with parameters in the JSON
@@ -217,6 +218,30 @@ public class QuoteServlet extends AbstractServlet {
 				QuoteResponse quoteResponse = new QuoteResponse(quote, webMessages);
 				super.sendResponse(conn, response, responseCode, quoteResponse);
 				
+			}  else if ( command.equals(ACTION_IS_COPY) ) {   
+				
+				WebMessages webMessages = new WebMessages();
+				try {
+					System.out.println("Doing Copy");
+					quote = doCopy(conn, Integer.parseInt(urlPieces[1]), sessionUser);
+					
+					String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
+					responseCode = ResponseCode.SUCCESS;
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+				} catch ( DuplicateEntryException e ) {
+					String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+					responseCode = ResponseCode.EDIT_FAILURE;
+				} catch ( Exception e ) {
+					responseCode = ResponseCode.SYSTEM_FAILURE;
+					System.out.println("Fail: System Failure");
+					AppUtils.logException(e);
+					String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+				}
+				QuoteResponse quoteResponse = new QuoteResponse(quote, webMessages);
+				super.sendResponse(conn, response, responseCode, quoteResponse);
+				
 			}  else if ( urlPieces.length >= 2 ) {   //  /<tableName>/<fieldName>/<value> = 3 pieces
 				System.out.println("Doing Update Stuff");				
 				System.out.println("Call validateUpdate:"+quoteRequest);
@@ -339,6 +364,21 @@ public class QuoteServlet extends AbstractServlet {
 			
 			//quote.update(conn, null);
 			return quote;
+	}
+
+
+	protected Quote doCopy(Connection conn, Integer sourceQuoteId, SessionUser sessionUser) throws Exception {
+
+		System.out.println("Quote servlet call copyQuote:" + sourceQuoteId);
+
+		Quote quote = new Quote();
+		try {
+			quote = QuoteUtils.copyQuote(conn, sourceQuoteId, sessionUser.getUserId());
+		} catch ( SQLException e) {
+			AppUtils.logException(e);
+			throw e;
+		} 
+		return quote;
 	}
 
 
