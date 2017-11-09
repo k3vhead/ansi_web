@@ -46,6 +46,7 @@ public class AbstractServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	public static final String ACTION_IS_ADD = "add";
+	public static final String ACTION_IS_COPY = "copy";
 	public static final String ACTION_IS_LIST = "list";
 	
 
