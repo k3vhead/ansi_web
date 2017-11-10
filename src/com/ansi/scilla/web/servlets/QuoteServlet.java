@@ -178,10 +178,8 @@ public class QuoteServlet extends AbstractServlet {
 			String command = urlPieces[0];
 
 			String jsonString = super.makeJsonString(request);
-			System.out.println(jsonString);
-			QuoteRequest testRequest = new QuoteRequest();
-			System.out.println("test:" + testRequest);
-			QuoteRequest quoteRequest = new QuoteRequest(jsonString);
+			System.out.println("Quote Json: " + jsonString);
+			QuoteRequest quoteRequest = StringUtils.isBlank(jsonString) ? new QuoteRequest() : new QuoteRequest(jsonString);
 			
 			Quote quote = null;
 			ResponseCode responseCode = null;

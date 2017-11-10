@@ -47,6 +47,9 @@
 			.quotePrint {
 				cursor:pointer;
 			}
+			.copyQuote {
+				cursor:pointer;
+			}
 			#printQuoteDiv {
 				display:none;
 			}
@@ -89,6 +92,10 @@
 				$( ".quotePrint" ).on( "click", function($clickevent) {
 					 QUOTE_PRINT.showQuotePrint(<%= "\"#" + quotePrintModal + "\"" %>, $(this).data("id"), $(this).data("quotenumber"));
 				});
+				
+				$( ".copyQuote" ).on( "click", function($clickevent) {
+					doCopy($(this).data("id"));
+				});
 			}
 
 			function doEdit($clickevent) {
@@ -120,6 +127,31 @@
 					},
 					dataType: 'json'
 				});				
+			}
+			
+			function doCopy($quoteId) {
+				var $url = "quote/copy/" + $quoteId;
+				var jqxhr = $.ajax({
+					type: 'POST',
+					url: $url,
+					data: {},
+					statusCode: {
+						200: function($data) {
+							$returnValue = $data.data;
+							location.href="quoteMaintenance.html?id=" + $data.data.quote.quoteId;
+						},					
+						403: function($data) {
+							$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+						},
+						404: function($data) {
+							$returnValue = {};
+						},
+						500: function($data) {
+							
+						}
+					},
+					dataType: 'json'
+				});
 			}
 			
 			function createTable(){
@@ -186,14 +218,15 @@
 			            { title: "Action",  data: function ( row, type, set ) {	
 			            	//console.log(row);
 			            	editText = '<a href="quoteMaintenance.html?id='+row.quoteId+'" class="editAction ui-icon ui-icon-pencil" data-id="'+row.quoteId+'"></a>';
-			            	printText =  '<i class="fa fa-print quotePrint" aria=hidden="true" data-id="'+row.quoteId+'" data-quotenumber="'+ row.quoteCode + '"></i>';
-			            	{return '<ansi:hasPermission permissionRequired="QUOTE">'+ editText +  ' ' + printText + '<ansi:hasWrite></ansi:hasWrite></ansi:hasPermission>';}
+			            	printText = '<i class="fa fa-print quotePrint" aria=hidden="true" data-id="'+row.quoteId+'" data-quotenumber="'+ row.quoteCode + '"></i>';
+			            	copyText = '<i class="fa fa-files-o copyQuote" aria-hidden="true" data-id="'+row.quoteId+'"></i>';
+			            	{return '<ansi:hasPermission permissionRequired="QUOTE">'+ editText +  '&nbsp;' + printText + '&nbsp;' + copyText + '<ansi:hasWrite></ansi:hasWrite></ansi:hasPermission>';}
 			            	
 			            } }],
-			            "initComplete": function(settings, json) {
+			            //"initComplete": function(settings, json) {
 			            	//console.log(json);
-			            	doFunctionBinding();
-			            },
+			            //	doFunctionBinding();
+			            //},
 			            "drawCallback": function( settings ) {
 			            	doFunctionBinding();
 			            }
@@ -223,12 +256,12 @@
     		<col style="width:6%;" />
     		<col style="width:16%;" />
     		<col style="width:16%;" />
-    		<col style="width:14%;" />
+    		<col style="width:13%;" />
     		<col style="width:10%;" />
-    		<col style="width:10%;" />
+    		<col style="width:9%;" />
     		<col style="width:5%;" />
     		<col style="width:8%;" />
-    		<col style="width:5%;" />  
+    		<col style="width:7%;" />  
     	</colgroup> 
         <thead>
             <tr>
