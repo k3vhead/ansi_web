@@ -32,7 +32,7 @@ public class TicketOverrideServlet extends TicketServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		super.processGetRequest(request, response, "ticketOverride");
+		processGetRequest(request, response, "ticketOverride");
 	}
 
 	@Override
@@ -59,15 +59,15 @@ public class TicketOverrideServlet extends TicketServlet {
 				ticket.setTicketId(ansiURL.getId());
 				ticket.selectOne(conn);
 				if ( ticketOverrideRequest.getNewStatus().equals(TicketStatus.COMPLETED.code())) {
-					processComplete(conn, response, ticket, ticketOverrideRequest, sessionUser);
-				} else if ( ticketOverrideRequest.getNewStatus().equals(TicketStatus.SKIPPED.code())) {
-					processSkip(conn, response, ticket, ticketOverrideRequest, sessionUser);
-				} else if ( ticketOverrideRequest.getNewStatus().equals(TicketStatus.VOIDED.code())) {
-					processVoid(conn, response, ticket, ticketOverrideRequest, sessionUser);
-				} else if ( ticketOverrideRequest.getNewStatus().equals(TicketStatus.REJECTED.code())) {
-					processReject(conn, response, ticket, ticketOverrideRequest, sessionUser);
-				} else if ( ticketOverrideRequest.getNewStatus().equals(TicketStatus.NOT_DISPATCHED.code())) {
-					processRequeue(conn, response, ticket, ticketOverrideRequest, sessionUser);
+//					processComplete(conn, response, ticket, ticketOverrideRequest, sessionUser);
+//				} else if ( ticketOverrideRequest.getNewStatus().equals(TicketStatus.SKIPPED.code())) {
+//					processSkip(conn, response, ticket, ticketOverrideRequest, sessionUser);
+//				} else if ( ticketOverrideRequest.getNewStatus().equals(TicketStatus.VOIDED.code())) {
+//					processVoid(conn, response, ticket, ticketOverrideRequest, sessionUser);
+//				} else if ( ticketOverrideRequest.getNewStatus().equals(TicketStatus.REJECTED.code())) {
+//					processReject(conn, response, ticket, ticketOverrideRequest, sessionUser);
+//				} else if ( ticketOverrideRequest.getNewStatus().equals(TicketStatus.NOT_DISPATCHED.code())) {
+//					processRequeue(conn, response, ticket, ticketOverrideRequest, sessionUser);
 				} else {
 					// this is an error -- a bad action was requested
 					super.sendNotAllowed(response);

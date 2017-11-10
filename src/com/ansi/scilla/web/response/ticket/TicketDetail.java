@@ -9,11 +9,13 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.common.db.TaxRate;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.invoice.InvoiceStyle;
 import com.ansi.scilla.common.invoice.InvoiceTerm;
 import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.jobticket.TicketStatus;
+import com.ansi.scilla.common.jobticket.TicketType;
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
 import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
 import com.ansi.scilla.common.queries.TicketPaymentTotals;
@@ -63,6 +65,28 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 
 	
 	
+	
+	
+	
+	/* ******************************************** */
+	/* ******************************************** */
+	
+	private BigDecimal actTaxAmt;
+	private Integer actTaxRateId;
+	private Integer printCount;
+	private Date startDate;
+	private String fleetmaticsId;
+//	private Integer actDivisionId;
+	private String ticketType;
+	// Tax stuff:
+	private BigDecimal taxRateAmount;
+	private Date taxRateEffectiveDate;
+	private String taxRateLocation;
+	private BigDecimal taxRate;
+	
+	/* ******************************************** */
+	/* ******************************************** */
+	
 	public TicketDetail(){
 		super();
 	}
@@ -110,12 +134,25 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		if ( ! StringUtils.isBlank(ticketPaymentTotals.getInvoiceTerms())) {
 			this.invoiceTerms = InvoiceTerm.valueOf(ticketPaymentTotals.getInvoiceTerms()).display();
 		}
-		
+		this.actTaxAmt = ticket.getActTaxAmt();
+		this.printCount = ticket.getPrintCount();
+		this.startDate = ticket.getStartDate();
+		this.fleetmaticsId = ticket.getFleetmaticsId();
+//		this.actDivisionId = ticket.getActDivisionId();
+		this.ticketType = TicketType.lookup(ticket.getTicketType()).display();
+		this.actTaxRateId = ticket.getActTaxRateId();
 		 
 		
 		this.billToAddress = new AddressDetail(conn, ticketPaymentTotals.getBillToAddressId());
 		this.jobSiteAddress = new AddressDetail(conn, ticketPaymentTotals.getJobSiteAddressId());
 		
+		TaxRate taxRate = new TaxRate();
+		taxRate.setTaxRateId(ticket.getActTaxRateId());
+		taxRate.selectOne(conn);
+		this.taxRateAmount = taxRate.getAmount();
+		this.taxRateEffectiveDate = taxRate.getEffectiveDate();
+		this.taxRateLocation = taxRate.getLocation();
+		this.taxRate = taxRate.getRate();
 	}
 
 	public Integer getTicketId() {
@@ -352,6 +389,90 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 	@JsonSerialize(using=AnsiDateFormatter.class)
 	public void setInvoiceDate(Date invoiceDate) {
 		this.invoiceDate = invoiceDate;
+	}
+
+	public BigDecimal getActTaxAmt() {
+		return actTaxAmt;
+	}
+
+	public void setActTaxAmt(BigDecimal actTaxAmt) {
+		this.actTaxAmt = actTaxAmt;
+	}
+
+	public Integer getActTaxRateId() {
+		return actTaxRateId;
+	}
+
+	public void setActTaxRateId(Integer actTaxRateId) {
+		this.actTaxRateId = actTaxRateId;
+	}
+
+	public Integer getPrintCount() {
+		return printCount;
+	}
+
+	public void setPrintCount(Integer printCount) {
+		this.printCount = printCount;
+	}
+
+	@JsonSerialize(using=AnsiDateFormatter.class)
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public String getFleetmaticsId() {
+		return fleetmaticsId;
+	}
+
+	public void setFleetmaticsId(String fleetmaticsId) {
+		this.fleetmaticsId = fleetmaticsId;
+	}
+
+	public String getTicketType() {
+		return ticketType;
+	}
+
+	public void setTicketType(String ticketType) {
+		this.ticketType = ticketType;
+	}
+
+
+
+	public BigDecimal getTaxRateAmount() {
+		return taxRateAmount;
+	}
+
+	public void setTaxRateAmount(BigDecimal taxRateAmount) {
+		this.taxRateAmount = taxRateAmount;
+	}
+	
+	@JsonSerialize(using=AnsiDateFormatter.class)
+	public Date getTaxRateEffectiveDate() {
+		return taxRateEffectiveDate;
+	}
+
+	public void setTaxRateEffectiveDate(Date taxRateEffectiveDate) {
+		this.taxRateEffectiveDate = taxRateEffectiveDate;
+	}
+
+	public String getTaxRateLocation() {
+		return taxRateLocation;
+	}
+
+	public void setTaxRateLocation(String taxRateLocation) {
+		this.taxRateLocation = taxRateLocation;
+	}
+
+	public BigDecimal getTaxRate() {
+		return taxRate;
+	}
+
+	public void setTaxRate(BigDecimal taxRate) {
+		this.taxRate = taxRate;
 	}
 
 	

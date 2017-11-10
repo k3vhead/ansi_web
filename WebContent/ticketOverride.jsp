@@ -326,8 +326,12 @@
     				$("#actTax").html($data.ticketDetail.actTax);
     				$("#totalTaxPaid").html($data.ticketDetail.totalTaxPaid);
     				$("#ticketBalance").html($data.ticketDetail.balance);
-    				$("#invoiceNbr").html($data.ticketDetail.invoiceId);
-    				$("#invoiceDate").html($data.ticketDetail.invoiceDate);
+    				$("#ticketType").html($data.ticketDetail.ticketType);
+    				$("#startDate").html($data.ticketDetail.startDate);
+    				$("#fleetmaticsId").html($data.ticketDetail.fleetmaticsId);
+					$("#actDlPct").html($data.ticketDetail.actDlPct);
+					$("#actDlAmt").html($data.ticketDetail.actDlAmt);
+
     				
     				$("#completedRow").hide();
     				if ( $data.ticketDetail.status=='N') {
@@ -385,21 +389,19 @@
     			
     			
     			populatePanelSelect:function($data) {
-    				console.debug("Ticket detail status: " + $data.ticketDetail.status);
-    				console.debug("Populate Panel Select: ");  
-    				console.debug(GLOBAL_DATA.ticketSeqMap[$data.ticketDetail.status][0]);
     				$(".workPanel").hide();
     				$.each(GLOBAL_DATA.ticketSeqMap[$data.ticketDetail.status][1], function($index, $value) {
-    					console.debug("value: " + $value + " " + GLOBAL_DATA.ticketSeqMap[$value][0])
+//    					console.debug("value: " + $value + " " + GLOBAL_DATA.ticketSeqMap[$value][0])
     					var $selector = "#" + GLOBAL_DATA.ticketSeqMap[$value][0];
-    					$($selector).fadeIn(3000);
+//    					$($selector).fadeIn(3000);
         			});
     			},
     			
     			
     			populateInvoiceDetail:function($data) {
     				if ($data.invoiceDetail) {
-    					$("#invoiceId").html($data.invoiceDetail.invoiceId);					
+    					$("#invoiceId").html($data.invoiceDetail.invoiceId);
+    					$("#invoiceDate").html($data.ticketDetail.invoiceDate);
     					$("#sumInvPpc").html($data.invoiceDetail.sumInvPpc);
     					$("#sumInvPpcPaid").html($data.invoiceDetail.sumInvPpcPaid);
     					$("#sumInvTax").html($data.invoiceDetail.sumInvTax);
@@ -407,7 +409,7 @@
     					$("#invoiceBalance").html($data.invoiceDetail.balance);
     	                $("#invoiceTable").show();
     					$("#invoiceTable").fadeIn(4000);  
-    				}else{
+    				} else {
     					$("#invoiceTable").hide();				
     				}				
     			},
@@ -477,6 +479,8 @@
     		       		url: "ticketOverride/" + $ticketNbr,
     		       		//data: $ticketNbr,
     		       		success: function($data) {
+    		       			console.debug("doPopulate 482: ")
+    		       			console.debug($data.data);
     						$.each($data.data.ticketList, function(index, value) {
     							TICKET_OVERRIDE.addRow(index, value);
     						});
@@ -491,6 +495,8 @@
         					$("#summaryTable").fadeIn(4000);
         					$("#selectPanel").fadeIn(4000);
         					$("#ticketTable").fadeIn(4000);
+    		       			console.debug("doPopulate 497: ")
+    		       			console.debug($data.data);
         					TICKET_OVERRIDE.populateInvoiceDetail($data.data);	  					
     					},
     		       		statusCode: {
@@ -922,8 +928,11 @@
 		   			<th>Ticket Tax</th>
 		   			<th>Tax Paid</th>
 		   			<th>Balance</th>
-		   			<th>Invoice Nbr</th>
-		   			<th>Invoice Date</th>
+		   			<th>Ticket Type</th>
+ 		   			<th>DL Amt</th>
+		   			<th>DL Pct</th>
+		   			<th>Start Date</th>
+		   			<th>FM ID</th>
 		   		</tr>
 		   		<tr>
 		   			<td style="border-bottom:solid 1px #000000;">
@@ -934,12 +943,15 @@
 		   			<td style="border-bottom:solid 1px #000000;"><span id="actTax"></span></td>
 		   			<td style="border-bottom:solid 1px #000000;"><span id="totalTaxPaid"></span></td>
 		   			<td style="border-bottom:solid 1px #000000;"><span id="ticketBalance"></span></td>
-		   			<td style="border-bottom:solid 1px #000000;"><span id="invoiceNbr"></span></td>
-		   			<td style="border-bottom:solid 1px #000000;"><span id="invoiceDate"></span></td>
+		   			<td style="border-bottom:solid 1px #000000;"><span id="actDlAmt"></span></td>
+		   			<td style="border-bottom:solid 1px #000000;"><span id="actDlPct"></span></td>
+		   			<td style="border-bottom:solid 1px #000000;"><span id="ticketType"></span></td>
+		   			<td style="border-bottom:solid 1px #000000;"><span id="startDate"></span></td>
+		   			<td style="border-bottom:solid 1px #000000;"><span id="fleetmaticsId"></span></td>
 		   		</tr>
 		   		<tr id="processNotesRow">
 		   			<td colspan="2"><span class="formLabel" id="processDateLabel"></span> <span id="processDate"></span></td>
-		   			<td colspan="6"><span class="formLabel">Process Notes:</span> <span id="processNotes"></span></td>
+		   			<td colspan="9"><span class="formLabel">Process Notes:</span> <span id="processNotes"></span></td>
 		   		</tr>
 		   		<tr id="completedRow">
 		   			<td class="bottomRow" colspan="2"><span class="formLabel">Customer Signature: </span> <i id="customerSignature" class="fa" aria-hidden="true"></i></td>
@@ -950,7 +962,7 @@
 		   					<span class="green fa fa-pencil tooltip action-link editApprovals" ari-hidden="true"><span class="tooltiptext">Edit</span></span>
 		   				</div>
 		   			</td>
-		   			<td class="bottomRow" colspan="2">&nbsp;</td>
+		   			<td class="bottomRow" colspan="5">&nbsp;</td>
 		   		</tr>
 		   		
 		   		<tr>
@@ -970,6 +982,7 @@
 		   	<table id="displayInvoiceTable">
 		   		<tr>
 		   			<th>Inv #</th>
+		   			<th>Inv Date</th>
 		   			<th>Inv Amt</th>
 		   			<th>Inv Paid</th>
 		   			<th>Tax Amt</th>
@@ -978,6 +991,7 @@
 		   		</tr>
 		   		<tr>
 		   			<td><span id="invoiceId"></span></td>
+		   			<td><span id="invoiceDate"></span></td>
 		   			<td><span id="sumInvPpc"></span></td>
 		   			<td><span id="sumInvPpcPaid"></span></td>
 		   			<td><span id="sumInvTax"></span></td>
