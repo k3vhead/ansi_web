@@ -202,7 +202,8 @@
             <forward name="reportByDivEnd" path="/reportByDivEnd.jsp" />
             <forward name="reportByDivMonthYear" path="/reportByDivMonthYear.jsp" />
             <forward name="reportByDivStartEnd" path="/reportByDivStartEnd.jsp" />
-            <forward name="reportByStartEnd" path="/reportByStartEnd.jsp" />     
+            <forward name="reportByStartEnd" path="/reportByStartEnd.jsp" />
+            <forward name="reportNoInput" path="/reportNoInput.jsp" />      
             <forward name="login" path="/login.jsp" />            
         </action>  
         <action

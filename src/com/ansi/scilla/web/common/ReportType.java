@@ -9,6 +9,18 @@ public enum ReportType {
     <forward name="reportByStartEnd" path="/reportByStartEnd.jsp" />     
 	*/
 	
+	ADDRESS_USAGE_REPORT(
+			"reportNoInput",
+			"com.ansi.scilla.common.report.datadumps.AddressUsage",
+			"com.ansi.scilla.web.request.report.NoValidate", 
+			new String[] {}
+		),
+	CLIENT_CONTACT_REPORT(
+			"reportNoInput",
+			"com.ansi.scilla.common.report.datadumps.ClientContact",
+			"com.ansi.scilla.web.request.report.NoValidate", 
+			new String[] {}
+		),
 	CASH_RECEIPTS_REGISTER(
 			"reportByStartEnd", 
 			"com.ansi.scilla.common.report.cashReceiptsRegister.CashReceiptsRegisterReport",

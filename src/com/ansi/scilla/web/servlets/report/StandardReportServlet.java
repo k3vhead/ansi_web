@@ -18,6 +18,7 @@ import com.ansi.scilla.common.reportBuilder.AbstractReport;
 import com.ansi.scilla.common.reportBuilder.AnsiReport;
 import com.ansi.scilla.common.reportBuilder.CompoundReport;
 import com.ansi.scilla.common.reportBuilder.CustomReport;
+import com.ansi.scilla.common.reportBuilder.DataDumpReport;
 import com.ansi.scilla.common.reportBuilder.HTMLBuilder;
 import com.ansi.scilla.common.reportBuilder.HTMLSummaryBuilder;
 import com.ansi.scilla.common.reportBuilder.StandardReport;
@@ -131,7 +132,7 @@ public class StandardReportServlet extends AbstractServlet {
 		Class<?> reportClass = report.getClass();
 		try {
 			method = this.getClass().getMethod("buildHTML", new Class<?>[] { reportClass });
-		} catch ( NoSuchMethodException e ) {
+		} catch ( NoSuchMethodException e1 ) {
 			Class<?> superclass = reportClass.getSuperclass();
 			try {
 				method = this.getClass().getMethod("buildHTML", new Class<?>[] { superclass });
@@ -143,6 +144,10 @@ public class StandardReportServlet extends AbstractServlet {
 		return method;
 	}
 
+	public String buildHTML(DataDumpReport report) throws Exception {
+		return report.makeHTML();
+	}
+	
 	public String buildHTML(CompoundReport report) throws Exception {
 		boolean doAccordion = false;
 		String ul = "";
@@ -205,13 +210,21 @@ public class StandardReportServlet extends AbstractServlet {
 
 	}
 
+	/**
+	 * See if the report has its own XLS builder. If not, try the standard builder hierarchy
+	 * until you run out of options, or find the right method
+	 * @param report
+	 * @return
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 */
 	public Method findAnXLSMethod(AnsiReport report) throws NoSuchMethodException, SecurityException {
 		Method method = null;
 		Class<?> reportClass = report.getClass();
 		Class<?> workbookClass = XSSFWorkbook.class;
 		try {
 			method = this.getClass().getMethod("buildXLS", new Class<?>[] { reportClass, workbookClass });
-		} catch ( NoSuchMethodException e ) {
+		} catch ( NoSuchMethodException e1 ) {
 			Class<?> superclass = reportClass.getSuperclass();
 			try {
 				method = this.getClass().getMethod("buildXLS", new Class<?>[] { superclass, workbookClass });
@@ -221,6 +234,10 @@ public class StandardReportServlet extends AbstractServlet {
 			} 
 		}
 		return method;
+	}
+
+	public void buildXLS(DataDumpReport report, XSSFWorkbook workbook) throws Exception {
+		report.add2XLS(workbook);
 	}
 
 	public void buildXLS(CompoundReport report, XSSFWorkbook workbook) throws Exception {
