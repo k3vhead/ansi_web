@@ -1,224 +1,40 @@
 .ansi-stdrpt {
-	max-width:1300px;
-	width:1300px;
 }
-.ansi-stdrpt-header-table {
-	width: 100%;
-    background: #000000; 
-    color: #FFFFFF;
-    min-height: 25px;
+.ansi-stdrpt-data-table {	
+	width:90%;
+	border:solid 1px #000000;
+	text-align: left;
+	margin: 2px;
 }
-.ansi-stdrpt-data-table {
-	width:95%;
-	display:none;
-	margin-top:20px;
+.ansi-stdrpt-summary {	
 	border:solid 1px #000000;
 }
-.ansi-stdrpt-header-row {
-}
-.ansi-stdrpt-empty-header {
-}
-.ansi-stdrpt-col-header-text {
-}
-.ansi-stdrpt-data-row {
-}
-.ansi-stdrpt-summary-row {
-}
-.ansi-stdrpt-summary {
-}
-.ansi-stdrpt-summary-text {
-}
-.ansi-stdrpt-summary-row {
-}
-.ansi-stdrpt-summary {
-}
-.ansi-stdrpt-summary-text {
-}
 .ansi-stdrpt-col-header {
-}
-.ansi-stdrpt-col-header-text {
+	border:solid 1px #000000;
 }
 .ansi-stdrpt-banner {
-}
-.ansi-stdrpt-banner-text {
+	border:solid 1px #000000;	
 }
 .ansi-stdrpt-title {
-}
-.ansi-stdrpt-title-text {
+	border:solid 1px #000000;	
 }
 .ansi-stdrpt-subtitle {
-}
-.ansi-stdrpt-subtitle-text {
-}
-.ansi-stdrpt-notes {
-}
-.ansi-stdrpt-notes-text {
+	border:solid 1px #000000;
 }
 .css-data-header-left {
+	border:solid 1px #000000;
+	padding: 15px;
+	font-weight:bold;
+	text-alignment:left;	
+    margin: 25px;
 }
 .css-data-left {
+	border:solid 1px #000000;
+	vertical-align:left;
 }
-.css-data-header-left-text {
-}
-.css-data-left-text {
-}
-.css-data-header-right {
+.css-data-header-right {	
+	border:solid 1px #000000;
 }
 .css-data-right {
+	border:solid 1px #000000;
 }
-.css-data-header-right-text {
-}
-.css-data-right-text {
-}
-.css-data-center {
-}
-.css-data-center-text {
-}
-	
-
-HEADER_TABLE = "ansi-stdrpt-header-table";
-	#headerTable{
-	    
-	}
-DATA_TABLE = "ansi-stdrpt-data-table";
-	#dataTable {
-		
-	}
-HEADER_ROW = "ansi-stdrpt-header-row";
-	h1 {
-		font-size:20px;
-		font-weight:bold;
-		font-variant:small-caps;
-	}
-EMPTY_HEADER = "ansi-stdrpt-empty-header";
-	#emptyHeader{
-		width:100%;
-		display:none;
-	}
-EMPTY_HEADER_TEXT = "ansi-stdrpt-col-header-text";
-	.emptyHeaderText {
-		text-align:right;
-	}
-DATA_ROW = "ansi-stdrpt-data-row";
-	.dataRow {
-	    display: table;
-	    width: 100%; 
-	    table-layout: fixed;
-	    border-spacing: 10px;
-	}
-SUMMARY_ROW = "ansi-stdrpt-summary-row";
-	.subtotalText {
-		text-align:right;
-	}
-SUMMARY = "ansi-stdrpt-summary";			
-	#displaySummaryTable {
-  		border-collapse: collapse;
-		width:90%;
-	}
-SUMMARY_TEXT = "ansi-stdrpt-summary-text";
-	.summaryText {
-		text-align:right;
-	}
-SUBTOTAL_ROW = "ansi-stdrpt-summary-row";			
-	#subtotalRow {
-  		border-collapse: collapse;
-		width:90%;
-	}
-SUBTOTAL = "ansi-stdrpt-summary";			
-	#subtotal {
-  		border-collapse: collapse;
-		width:90%;
-	}
-SUBTOTAL_TEXT = "ansi-stdrpt-summary-text";
-	.subtotalText {
-		text-align:right;
-	}
-COLHDR = "ansi-stdrpt-col-header";
-COLHDR_TEXT = "ansi-stdrpt-col-header-text";
-	.colHdrText {
-		text-align:right;
-	}
-BANNER = "ansi-stdrpt-banner";			
-	#banner {
-  		border-collapse: collapse;
-		width:90%;
-	}
-BANNER_TEXT = "ansi-stdrpt-banner-text";
-	.rightText {
-		text-align:right;
-	}
-TITLE = "ansi-stdrpt-title";			
-	#title {
-  		border-collapse: collapse;
-		width:90%;
-	}
-TITLE_TEXT = "ansi-stdrpt-title-text";
-	.rightText {
-		text-align:right;
-	}
-SUBTITLE = "ansi-stdrpt-subtitle";			
-	#subtitle {
-  		border-collapse: collapse;
-		width:90%;
-	}
-SUBTITLE_TEXT = "ansi-stdrpt-subtitle-text";
-	.rightText {
-		text-align:right;
-	}
-NOTES = "ansi-stdrpt-notes";			
-	#notes {
-  		border-collapse: collapse;
-		width:90%;
-	}
-NOTES_TEXT = "ansi-stdrpt-notes-text";
-	.notesText {
-		text-align:right;
-	}
-DATA_HEADER_LEFT;
-	.leftHdr {
-		font-weight:bold;
-		text-alignment:left;
-	}
-DATA_LEFT = "css-data-left";
-	.leftData {
-		vertical-align:left;
-	}
-DATA_HEADER_LEFT_TEXT = "css-data-header-left-text";
-	headerLeftText {
-	font-size:20px;
-	font-weight:bold;
-	font-variant:small-caps;
-	text-align:left;
-	}
-DATA_LEFT_TEXT;
-	.leftText {
-		text-align:left;
-	}
-DATA_HEADER_RIGHT;
-	.rightHdr {
-		font-weight:bold;
-		text-alignment:right;
-	}
-DATA_RIGHT = "css-data-right";
-	.rightData {
-		vertical-align:right;
-	}
-DATA_HEADER_RIGHT_TEXT = "css-data-header-right-text";
-	headerRightText {
-	font-size:20px;
-	font-weight:bold;
-	font-variant:small-caps;
-	text-align:right;
-	}
-DATA_RIGHT_TEXT = "css-data-right-text";
-	.rightText {
-		text-align:right;
-	}
-DATA_CENTER = "css-data-center";
-	.centerData {
-		vertical-align:middle;
-	}
-DATA_CENTER_TEXT;
-	.centerText {
-		text-align:center;
-	}
