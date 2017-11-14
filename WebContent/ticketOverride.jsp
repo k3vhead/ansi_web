@@ -130,6 +130,12 @@
 			#editApprovalsModal {
 				display:none;
 			}
+			#editStartDateModal {
+				display:none;
+			}
+			#editProcessDateModal {
+				display:none;
+			}
 			.action-link {
 				cursor:pointer;
 			}
@@ -152,23 +158,29 @@
         			$(".editApprovals").click(function($event) {
         				TICKET_OVERRIDE.doEditApprovals($event);
         			});
-        			$('#row_dim').hide(); 
-        			$("#COMPLETED input[name=actPricePerCleaning]").change(function($event) {
-        				TICKET_OVERRIDE.doPpcChange($event);
+        			$(".editStartDate").click(function($event) {
+        				TICKET_OVERRIDE.doEditStartDate($event);
         			});
-        			$("#COMPLETED input[name=actDlAmt]").change(function($event) {
-        				TICKET_OVERRIDE.doActDlAmtChg($event);
+        			$(".editProcessDate").click(function($event) {
+        				TICKET_OVERRIDE.doEditProcessDate($event);
         			});
-           			$('#type').change(function(){
-           				TICKET_OVERRIDE.doTypeChg();
-           			});
-        			$(".cancelUpdate").click( function($clickevent) {
-        				TICKET_OVERRIDE.doCancelUpdate($clickevent);
-        			});
-        			$(".goUpdate").click( function($clickevent) {
-        				var $goButton=$(this);
-        				TICKET_OVERRIDE.goUpdate($goButton);
-        			});
+
+//        			$("#COMPLETED input[name=actPricePerCleaning]").change(function($event) {
+//        				TICKET_OVERRIDE.doPpcChange($event);
+//        			});
+//        			$("#COMPLETED input[name=actDlAmt]").change(function($event) {
+//        				TICKET_OVERRIDE.doActDlAmtChg($event);
+//        			});
+//           			$('#type').change(function(){
+//           				TICKET_OVERRIDE.doTypeChg();
+//           			});
+//        			$(".cancelUpdate").click( function($clickevent) {
+//        				TICKET_OVERRIDE.doCancelUpdate($clickevent);
+//        			});
+//        			$(".goUpdate").click( function($clickevent) {
+//        				var $goButton=$(this);
+//        				TICKET_OVERRIDE.goUpdate($goButton);
+//        			});
         			
         			
         			
@@ -220,6 +232,66 @@
         			});
             		$('#saveModal').button('option', 'label', 'Save');
             		$('#cancelModal').button('option', 'label', 'Cancel');
+            		
+            		
+            		
+            		
+            		
+        			$("#editStartDateModal").dialog({
+        				title:'Edit Start Date',
+        				autoOpen: false,
+        				height: 300,
+        				width: 400,
+        				modal: true,
+        				buttons: [
+        					{
+        						id: "cancelStartDateModal",
+        						click: function() {
+        							$("#editStartDateModal").dialog( "close" );
+        						}
+        					},{
+        						id: "saveStartDateModal",
+        						click: function($event) {
+        							console.debug("Saving new start date");
+        							TICKET_OVERRIDE.saveNewStartDate();
+        						}
+        					}
+        				],
+        				close: function() {
+        					$("#editStartDateModal").dialog( "close" );
+        				}
+        			});
+            		$('#saveStartDateModal').button('option', 'label', 'Save');
+            		$('#cancelStartDateModal').button('option', 'label', 'Cancel');
+            		
+            		
+            		
+            		$("#editProcessDateModal").dialog({
+        				title:'Edit Process Notes',
+        				autoOpen: false,
+        				height: 300,
+        				width: 400,
+        				modal: true,
+        				buttons: [
+        					{
+        						id: "cancelProcessDateModal",
+        						click: function() {
+        							$("#editProcessDateModal").dialog( "close" );
+        						}
+        					},{
+        						id: "saveProcessDateModal",
+        						click: function($event) {
+        							console.debug("Saving new process date");
+        							TICKET_OVERRIDE.saveNewProcessDate();
+        						}
+        					}
+        				],
+        				close: function() {
+        					$("#editProcessDateModal").dialog( "close" );
+        				}
+        			});
+            		$('#saveProcessDateModal').button('option', 'label', 'Save');
+            		$('#cancelProcessDateModal').button('option', 'label', 'Cancel');
        			},
         			
         			
@@ -317,6 +389,20 @@
                	},
                	
                	
+               	doEditStartDate:function($event) {
+               		console.debug("editing start date")               		
+               		$('#editStartDateModal').find('input[name="newDate"]').val(GLOBAL_DATA['globalTicket'].startDate);
+    				$("#editStartDateModal").dialog("open");
+
+               	},
+               	
+               	doEditProcessDate : function($event) {
+               		console.debug("editing process date")
+               		$('#editProcessDateModal').find('input[name="newDate"]').val(GLOBAL_DATA['globalTicket'].processDate);
+               		$('#editProcessDateModal').find('input[name="newNOte"]').val(GLOBAL_DATA['globalTicket'].processNotes);
+    				$("#editProcessDateModal").dialog("open");
+               	},
+               	
                	
                	populateTicketDetail:function($data) {
            			GLOBAL_DATA['globalTicket'] = $data.ticketDetail;
@@ -328,6 +414,7 @@
     				$("#ticketBalance").html($data.ticketDetail.balance);
     				$("#ticketType").html($data.ticketDetail.ticketType);
     				$("#startDate").html($data.ticketDetail.startDate);
+    				//GLOBAL_DATA.defaultStartDate = $data.ticketDetail.startDate;
     				$("#fleetmaticsId").html($data.ticketDetail.fleetmaticsId);
 					$("#actDlPct").html($data.ticketDetail.actDlPct);
 					$("#actDlAmt").html($data.ticketDetail.actDlAmt);
@@ -479,8 +566,6 @@
     		       		url: "ticketOverride/" + $ticketNbr,
     		       		//data: $ticketNbr,
     		       		success: function($data) {
-    		       			console.debug("doPopulate 482: ")
-    		       			console.debug($data.data);
     						$.each($data.data.ticketList, function(index, value) {
     							TICKET_OVERRIDE.addRow(index, value);
     						});
@@ -495,8 +580,6 @@
         					$("#summaryTable").fadeIn(4000);
         					$("#selectPanel").fadeIn(4000);
         					$("#ticketTable").fadeIn(4000);
-    		       			console.debug("doPopulate 497: ")
-    		       			console.debug($data.data);
         					TICKET_OVERRIDE.populateInvoiceDetail($data.data);	  					
     					},
     		       		statusCode: {
@@ -583,6 +666,70 @@
     					dataType: 'json'
     				});
     			},
+    			
+    			
+    			saveNewStartDate:function() {
+               		var $newStartDate = $('#editStartDateModal').find('input[name="newDate"]').val();
+					var $overrideList =[ {'startDate':$newStartDate}];
+					TICKET_OVERRIDE.doOverride($('#editStartDateModal'), $overrideList);
+    			},
+    			
+    			
+    			saveNewProcessDate:function() {
+               		var $newDate = $('#editProcessDateModal').find('input[name="newDate"]').val();
+               		var $newNote = $('#editProcessDateModal').find('input[name="newNote"]').val();
+					var $overrideList =[ {'startDate':$newDate},{'processNote':$newNote}];
+					TICKET_OVERRIDE.doOverride($('#editProcessDateModal'), $overrideList);
+    			},
+    			
+    			
+    			doOverride:function($modal, $overrideList) {
+    				var $outbound = {'override':$overrideList};
+					console.debug($overrideList);
+					console.debug($outbound);
+					console.debug(JSON.stringify($outbound));
+					
+                	$url = "ticketOverride/" + GLOBAL_DATA.globalTicketId;
+
+    				var jqxhr = $.ajax({
+    					type: 'POST',
+    					url: $url,
+    					data: JSON.stringify($outbound),
+    					statusCode: {
+    						200: function($data) {
+    							if ( $data.responseHeader.responseCode == 'SUCCESS') {
+    								$modal.dialog("close");
+    								$("#globalMsg").html("Update Complete").show().fadeOut(6000);
+    								$("#doPopulate").click();
+    				        		$("#ticketNbr").focus();
+    							} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+    								$modal.find('.modalErr').html($data.data.webMessages.GLOBAL_MESSAGE[0]).show().fadeOut(6000);
+    							} else {
+    								$modal.dialog("close");
+    								$("#globalMsg").html("Unexepected Response, Contact support (" + $data.responseHeader.responseMessage + ")").show();
+    							}
+    						},
+    	       				404: function($data) {
+								$modal.dialog("close");
+    	        	    		$("#globalMsg").html("Invalid Ticket Number").show().fadeOut(6000);
+    	        	    	},
+    						403: function($data) {
+								$modal.dialog("close");
+    							$("#globalMsg").html("Session Timeout. Log in and try again").show();
+    						},
+    						405: function($data) {
+    							$("#editApprovalsModal").dialog("close");
+    							$("#globalMsg").html("You're not allowed to perform this function").show();
+    						},
+    		       			500: function($data) {
+								$modal.dialog("close");
+    	            	    	$("#globalMsg").html("System Error: Contact Support").show();
+    	            		},  
+    					},
+    					dataType: 'json'
+    				});
+    			},
+    			
     			
     			doPpcChange:function($event) {
     				var $actPricePerCleaning = $("#COMPLETED input[name=actPricePerCleaning]").val();
@@ -935,34 +1082,44 @@
 		   			<th>FM ID</th>
 		   		</tr>
 		   		<tr>
-		   			<td style="border-bottom:solid 1px #000000;">
+		   			<td style="border-bottom:solid 1px #000000; width:9%;">
 		   				<span id="ticketId"></span>&nbsp;
 		   			</td>
-		   			<td style="border-bottom:solid 1px #000000;"><span id="actPricePerCleaning"></span></td>
-		   			<td style="border-bottom:solid 1px #000000;"><span id="totalVolPaid"></span></td>
-		   			<td style="border-bottom:solid 1px #000000;"><span id="actTax"></span></td>
-		   			<td style="border-bottom:solid 1px #000000;"><span id="totalTaxPaid"></span></td>
-		   			<td style="border-bottom:solid 1px #000000;"><span id="ticketBalance"></span></td>
-		   			<td style="border-bottom:solid 1px #000000;"><span id="actDlAmt"></span></td>
-		   			<td style="border-bottom:solid 1px #000000;"><span id="actDlPct"></span></td>
-		   			<td style="border-bottom:solid 1px #000000;"><span id="ticketType"></span></td>
-		   			<td style="border-bottom:solid 1px #000000;"><span id="startDate"></span></td>
-		   			<td style="border-bottom:solid 1px #000000;"><span id="fleetmaticsId"></span></td>
+		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="actPricePerCleaning"></span></td>
+		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="totalVolPaid"></span></td>
+		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="actTax"></span></td>
+		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="totalTaxPaid"></span></td>
+		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="ticketBalance"></span></td>
+		   			<td style="border-bottom:solid 1px #000000; width:8%;"><span id="actDlAmt"></span></td>
+		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="actDlPct"></span></td>
+		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="ticketType"></span></td>
+		   			<td style="border-bottom:solid 1px #000000; white-space:nowrap; width:10%;">
+		   				<span id="startDate"></span>
+	   					<span class="green fa fa-pencil tooltip action-link editStartDate" ari-hidden="true"><span class="tooltiptext">Edit</span></span>
+		   			</td>
+		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="fleetmaticsId"></span></td>
 		   		</tr>
 		   		<tr id="processNotesRow">
 		   			<td colspan="2"><span class="formLabel" id="processDateLabel"></span> <span id="processDate"></span></td>
-		   			<td colspan="9"><span class="formLabel">Process Notes:</span> <span id="processNotes"></span></td>
+		   			<td colspan="9">
+		   				<span class="formLabel">Process Notes:</span> 
+		   				<span id="processNotes"></span>
+						<div style="float:right;">
+		   					<span class="green fa fa-pencil tooltip action-link editProcessDate" ari-hidden="true"><span class="tooltiptext">Edit</span></span>
+		   				</div>
+		   			</td>
 		   		</tr>
 		   		<tr id="completedRow">
 		   			<td class="bottomRow" colspan="2"><span class="formLabel">Customer Signature: </span> <i id="customerSignature" class="fa" aria-hidden="true"></i></td>
 		   			<td class="bottomRow" colspan="2"><span class="formLabel">Bill Sheet: </span> <i id="billSheet" class="fa" aria-hidden="true"></i></td>
 		   			<td class="bottomRow" colspan="2">
-		   				<span class="formLabel">Manager Approval: </span> <i id="managerApproval" class="fa" aria-hidden="true"></i>
-		   				<div style="float:right;">
+		   				<span class="formLabel">Manager Approval: </span> <i id="managerApproval" class="fa" aria-hidden="true"></i>		   				
+		   			</td>
+		   			<td class="bottomRow" colspan="5">
+						<div style="float:right;">
 		   					<span class="green fa fa-pencil tooltip action-link editApprovals" ari-hidden="true"><span class="tooltiptext">Edit</span></span>
 		   				</div>
 		   			</td>
-		   			<td class="bottomRow" colspan="5">&nbsp;</td>
 		   		</tr>
 		   		
 		   		<tr>
@@ -1026,6 +1183,31 @@
     					<i id="modalManagerApproval" class="fa fa-check-square-o" aria-hidden="true"></i>
     					<input type="checkbox" name="modalManagerApproval" />
     				</td>
+    			</tr>
+    		</table>
+    	</div>
+    	
+    	
+ 	    <div id="editStartDateModal">
+    		<div class="err modalErr" ></div>
+    		<table>
+    			<tr>
+    				<td><span class="formLabel">Start Date:</span></td>
+    				<td><input type="text" name="newDate" class="dateField" /></td>
+    			</tr>
+    		</table>
+    	</div>
+    	
+    	<div id="editProcessDateModal">
+    	<div class="err modalErr" ></div>
+    		<table>
+    			<tr>
+    				<td><span class="formLabel">Process Date:</span></td>
+    				<td><input type="text" name="newDate" class="dateField" /></td>
+    			</tr>
+    			<tr>
+    				<td><span class="formLabel">Process Note:</span></td>
+    				<td><input type="text" name="newNote" /></td>
     			</tr>
     		</table>
     	</div>
