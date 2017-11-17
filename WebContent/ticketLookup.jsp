@@ -49,6 +49,11 @@
 				cursor:pointer;
 				text-decoration:underline;
 			}
+			.overrideAction {
+				cursor:pointer;
+				text-decoration:none;
+				color:#000000;
+			}
         </style>
         
         <script type="text/javascript">    
@@ -151,6 +156,7 @@
 			            		$actionData = "";
 			            	} else {
 				            	var $editLink = "<a href='ticketReturn.html?id="+row.ticketId+"' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.ticketId+"'></a>";
+				            	var $overrideLink = "<a href='ticketOverride.html?id="+row.ticketId+"' class=\"overrideAction fa fa-magic\" data-id='"+row.ticketId+"'></a>";
 				            	if ( row.ticketStatus == 'N' || row.ticketStatus == 'D' 
 				            			|| row.ticketStatus == 'C' || row.ticketStatus == 'I' || row.ticketStatus == 'P') {
 				            		var $ticketData = 'data-id="' + row.ticketId + '"';
@@ -158,7 +164,7 @@
 				            	} else {
 				            		$printLink = "";
 				            	}
-				            	$actionData = "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite>" + $editLink + ' ' + $printLink + "</ansi:hasWrite></ansi:hasPermission>"
+				            	$actionData = "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite>" + $editLink + ' ' + $printLink + ' ' + $overrideLink + "</ansi:hasWrite></ansi:hasPermission>"
 			            	}
 			            	return $actionData;
 			            } }],
@@ -188,7 +194,7 @@
 				function doFunctionBinding() {
 					$( ".editAction" ).on( "click", function($clickevent) {
 						 doEdit($clickevent);
-					});
+					});					
 					$(".print-link").on( "click", function($clickevent) {
 						doPrint($clickevent);
 					});
@@ -238,6 +244,8 @@
 						});
 					//console.log("Edit Button Clicked: " + $rowid);
 				}
+				
+				
 				
 				function doPrint($clickevent) {
 					var $ticketId = $clickevent.currentTarget.attributes['data-id'].value;

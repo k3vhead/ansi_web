@@ -188,6 +188,11 @@
 										<li><html:link action="payment">Enter Payment</html:link></li>
 										</ansi:hasWrite>
 										</ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="TICKET">
+										<ansi:hasWrite>
+										<li><html:link action="ticketOverride">Ticket Override</html:link></li>
+										</ansi:hasWrite>
+										</ansi:hasPermission>
 									</ul>
 								</li>
 							</ul>

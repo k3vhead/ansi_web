@@ -671,20 +671,20 @@
     			saveNewStartDate:function() {
                		var $newStartDate = $('#editStartDateModal').find('input[name="newDate"]').val();
 					var $overrideList =[ {'startDate':$newStartDate}];
-					TICKET_OVERRIDE.doOverride($('#editStartDateModal'), $overrideList);
+					TICKET_OVERRIDE.doOverride($('#editStartDateModal'), "startDate", $overrideList);
     			},
     			
     			
     			saveNewProcessDate:function() {
                		var $newDate = $('#editProcessDateModal').find('input[name="newDate"]').val();
                		var $newNote = $('#editProcessDateModal').find('input[name="newNote"]').val();
-					var $overrideList =[ {'startDate':$newDate},{'processNote':$newNote}];
-					TICKET_OVERRIDE.doOverride($('#editProcessDateModal'), $overrideList);
+					var $overrideList =[ {'processDate':$newDate},{'processNote':$newNote}];
+					TICKET_OVERRIDE.doOverride($('#editProcessDateModal'), "processDate", $overrideList);
     			},
     			
     			
-    			doOverride:function($modal, $overrideList) {
-    				var $outbound = {'override':$overrideList};
+    			doOverride:function($modal, $type, $overrideList) {
+    				var $outbound = {'type':$type, 'override':$overrideList};
 					console.debug($overrideList);
 					console.debug($outbound);
 					console.debug(JSON.stringify($outbound));
