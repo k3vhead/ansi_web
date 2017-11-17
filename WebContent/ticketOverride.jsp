@@ -142,6 +142,9 @@
 			#status {
 				white-space:nowrap;
 			}
+			.joblink {
+				color:#000000;
+			}
         </style>
         
         <script type="text/javascript">
@@ -504,11 +507,10 @@
     			populateSummary:function($data) {
     				$("#status").html(GLOBAL_DATA.ticketStatusMap[$data.ticketDetail.status] + " (" + $data.ticketDetail.status + ")");
     				$("#divisionDisplay").html($data.ticketDetail.divisionDisplay);
-    				$("#jobId").html($data.ticketDetail.jobId);
-    				//$("#jobId").attr("data-jobid",$data.ticketDetail.jobId);
-    				$( "#jobId" ).on( "click", function($clickevent) {
-    					 location.href="jobMaintenance.html?id=" + $data.ticketDetail.jobId;
-    				});
+    				$("#jobId").html( '<a class="joblink" href="jobMaintenance.html?id='+ $data.ticketDetail.jobId + '">' + $data.ticketDetail.jobId + '</a>');
+    				//$( "#jobId" ).on( "click", function($clickevent) {
+    				//	 location.href="jobMaintenance.html?id=" + $data.ticketDetail.jobId;
+    				//});
     				$("#serviceDescription").html($data.ticketDetail.serviceDescription);
     				$("#jobFrequency").html($data.ticketDetail.jobFrequency);
     				$("#invoiceStyle").html($data.ticketDetail.invoiceStyle);
