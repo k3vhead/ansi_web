@@ -248,7 +248,11 @@ public class ApplyPaymentServlet extends AbstractServlet {
 			ticket.setProcessNotes(payment.getPaymentNote());
 		}
 		ticket.setStartDate(today.getTime());
-		ticket.setStatus(TicketStatus.PAID.code());
+		if (ticketType == TicketType.EXCESS) {
+			ticket.setStatus(TicketStatus.INVOICED.code());
+		} else {
+			ticket.setStatus(TicketStatus.PAID.code());
+		}
 //		ticket.setTicketId(ticketId);
 		ticket.setUpdatedBy(sessionUser.getUserId());
 //		ticket.setUpdatedDate(updatedDate);		// set by the super
