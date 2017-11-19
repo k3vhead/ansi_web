@@ -29,7 +29,7 @@ public class JobScheduleResponse extends MessageResponse {
 	}
 	
 	public JobScheduleResponse(Connection conn, Integer jobId) throws Exception {
-		this(conn, jobId, Calendar.getInstance());
+		this(conn, jobId, Calendar.getInstance(new AnsiTime()));
 	}
 	
 	public JobScheduleResponse(Connection conn, Integer jobId, Calendar startDate) throws Exception {

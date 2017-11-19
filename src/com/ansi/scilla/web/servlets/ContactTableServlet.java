@@ -68,7 +68,6 @@ public class ContactTableServlet extends AbstractServlet {
 			if(request.getParameter("search[value]") != null){
 				term = request.getParameter("search[value]");
 			}
-			System.out.println(term);
 			if (sStart != null) {
 		        start = Integer.parseInt(sStart);
 		        if (start < 0)
@@ -76,7 +75,6 @@ public class ContactTableServlet extends AbstractServlet {
 		    }
 		    if (sAmount != null) {
 		    	amount = Integer.parseInt(sAmount);
-				System.out.println(sAmount);
 		        if (amount < 10 ) {
 		            amount = 10;
 		        } else if (amount > 1000) {
@@ -92,7 +90,6 @@ public class ContactTableServlet extends AbstractServlet {
 		            col = 0;
 		    }
 		    if (sdir != null) {
-				System.out.println("sdir: " + sdir);
 		        if (!sdir.equals("asc"))
 		            dir = "desc";
 		    }
@@ -103,9 +100,6 @@ public class ContactTableServlet extends AbstractServlet {
 					+ ContactSearch.sql
 					+ ") t";
 
-		    System.out.println("*****");
-			System.out.println("total count:\t" + sql);
-			System.out.println("*****");
 			Statement s = conn.createStatement();
 			ResultSet rs0 = s.executeQuery(sql);
 			if(rs0.next()){
@@ -119,20 +113,12 @@ public class ContactTableServlet extends AbstractServlet {
 
 			String search = ContactSearch.generateWhereClause(term);
 			
-			System.out.println("****** Search (Not executed until fetch)");
-			System.out.println(sql);
-			System.out.println("*******");
 			sql += search;
-			System.out.println(sql);
 			sql += " order by " + colName + " " + dir;
-			System.out.println(sql);
 			if ( amount != -1) {
 				sql += " OFFSET "+ start+" ROWS"
 					+ " FETCH NEXT " + amount + " ROWS ONLY";
 			}
-			System.out.println("*****\nfetch:\n");
-			System.out.println(sql);
-			System.out.println("*****");
 			
 			s = conn.createStatement();
 			ResultSet rs = s.executeQuery(sql);
@@ -150,9 +136,6 @@ public class ContactTableServlet extends AbstractServlet {
 			sql2 += ") t";
 			
 
-			System.out.println("*****");
-			System.out.println("filtered count:\n" + sql2);
-			System.out.println("*****");
 			Statement s2 = conn.createStatement();
 			ResultSet rs2 = s2.executeQuery(sql2);
 			if(rs2.next()){

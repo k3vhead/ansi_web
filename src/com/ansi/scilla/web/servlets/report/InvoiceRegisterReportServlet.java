@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.report.invoiceRegisterReport.InvoiceRegisterReport;
@@ -92,7 +93,7 @@ public class InvoiceRegisterReportServlet extends AbstractServlet {
 	}
 
 	private Calendar makeStartDate(AnsiURL ansiURL) {
-		Calendar startDate = Calendar.getInstance();
+		Calendar startDate = Calendar.getInstance(new AnsiTime());
 		String month = ansiURL.getQueryParameterMap().get("month")[0];
 		if ( ! StringUtils.isBlank(month)) {
 			startDate.set(Calendar.MONTH, Integer.valueOf(month));

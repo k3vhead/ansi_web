@@ -142,6 +142,9 @@
 			#status {
 				white-space:nowrap;
 			}
+			.joblink {
+				color:#000000;
+			}
         </style>
         
         <script type="text/javascript">
@@ -504,11 +507,10 @@
     			populateSummary:function($data) {
     				$("#status").html(GLOBAL_DATA.ticketStatusMap[$data.ticketDetail.status] + " (" + $data.ticketDetail.status + ")");
     				$("#divisionDisplay").html($data.ticketDetail.divisionDisplay);
-    				$("#jobId").html($data.ticketDetail.jobId);
-    				//$("#jobId").attr("data-jobid",$data.ticketDetail.jobId);
-    				$( "#jobId" ).on( "click", function($clickevent) {
-    					 location.href="jobMaintenance.html?id=" + $data.ticketDetail.jobId;
-    				});
+    				$("#jobId").html( '<a class="joblink" href="jobMaintenance.html?id='+ $data.ticketDetail.jobId + '">' + $data.ticketDetail.jobId + '</a>');
+    				//$( "#jobId" ).on( "click", function($clickevent) {
+    				//	 location.href="jobMaintenance.html?id=" + $data.ticketDetail.jobId;
+    				//});
     				$("#serviceDescription").html($data.ticketDetail.serviceDescription);
     				$("#jobFrequency").html($data.ticketDetail.jobFrequency);
     				$("#invoiceStyle").html($data.ticketDetail.invoiceStyle);
@@ -671,20 +673,20 @@
     			saveNewStartDate:function() {
                		var $newStartDate = $('#editStartDateModal').find('input[name="newDate"]').val();
 					var $overrideList =[ {'startDate':$newStartDate}];
-					TICKET_OVERRIDE.doOverride($('#editStartDateModal'), $overrideList);
+					TICKET_OVERRIDE.doOverride($('#editStartDateModal'), "startDate", $overrideList);
     			},
     			
     			
     			saveNewProcessDate:function() {
                		var $newDate = $('#editProcessDateModal').find('input[name="newDate"]').val();
                		var $newNote = $('#editProcessDateModal').find('input[name="newNote"]').val();
-					var $overrideList =[ {'startDate':$newDate},{'processNote':$newNote}];
-					TICKET_OVERRIDE.doOverride($('#editProcessDateModal'), $overrideList);
+					var $overrideList =[ {'processDate':$newDate},{'processNote':$newNote}];
+					TICKET_OVERRIDE.doOverride($('#editProcessDateModal'), "processDate", $overrideList);
     			},
     			
     			
-    			doOverride:function($modal, $overrideList) {
-    				var $outbound = {'override':$overrideList};
+    			doOverride:function($modal, $type, $overrideList) {
+    				var $outbound = {'type':$type, 'override':$overrideList};
 					console.debug($overrideList);
 					console.debug($outbound);
 					console.debug(JSON.stringify($outbound));
