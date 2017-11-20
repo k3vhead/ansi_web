@@ -1,12 +1,10 @@
 package com.ansi.scilla.web.report;
 
 import java.sql.Connection;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.ansi.scilla.common.report.sixMonthRollingVolume.SixMonthRollingVolumeReport;
-import com.ansi.scilla.common.reportBuilder.AbstractReport;
-import com.ansi.scilla.common.reportBuilder.CompoundReport;
+import com.ansi.scilla.report.reportBuilder.AbstractReport;
+import com.ansi.scilla.report.reportBuilder.CompoundReport;
 
 /**
  * A wrapper for the SixMonthRollingVolume report, giving a full year of data

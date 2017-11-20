@@ -18,7 +18,7 @@ import com.ansi.scilla.common.report.pac.PacCancelledListReport;
 import com.ansi.scilla.common.report.pac.PacDetailReport;
 import com.ansi.scilla.common.report.pac.PacProposedListReport;
 import com.ansi.scilla.common.report.pac.PacSummaryReport;
-import com.ansi.scilla.common.reportBuilder.HTMLBuilder;
+import com.ansi.scilla.report.reportBuilder.HTMLBuilder;
 import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.Permission;

@@ -14,17 +14,17 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import com.ansi.scilla.common.reportBuilder.AbstractReport;
-import com.ansi.scilla.common.reportBuilder.AnsiReport;
-import com.ansi.scilla.common.reportBuilder.CompoundReport;
-import com.ansi.scilla.common.reportBuilder.CustomReport;
-import com.ansi.scilla.common.reportBuilder.DataDumpReport;
-import com.ansi.scilla.common.reportBuilder.HTMLBuilder;
-import com.ansi.scilla.common.reportBuilder.HTMLSummaryBuilder;
-import com.ansi.scilla.common.reportBuilder.StandardReport;
-import com.ansi.scilla.common.reportBuilder.StandardSummaryReport;
-import com.ansi.scilla.common.reportBuilder.XLSBuilder;
-import com.ansi.scilla.common.reportBuilder.XLSSummaryBuilder;
+import com.ansi.scilla.report.reportBuilder.AbstractReport;
+import com.ansi.scilla.report.reportBuilder.AnsiReport;
+import com.ansi.scilla.report.reportBuilder.CompoundReport;
+import com.ansi.scilla.report.reportBuilder.CustomReport;
+import com.ansi.scilla.report.reportBuilder.DataDumpReport;
+import com.ansi.scilla.report.reportBuilder.HTMLBuilder;
+import com.ansi.scilla.report.reportBuilder.HTMLSummaryBuilder;
+import com.ansi.scilla.report.reportBuilder.StandardReport;
+import com.ansi.scilla.report.reportBuilder.StandardSummaryReport;
+import com.ansi.scilla.report.reportBuilder.XLSBuilder;
+import com.ansi.scilla.report.reportBuilder.XLSSummaryBuilder;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.request.report.ReportDefinition;
 import com.ansi.scilla.web.servlets.AbstractServlet;

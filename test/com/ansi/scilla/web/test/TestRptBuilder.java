@@ -8,13 +8,13 @@ import java.util.GregorianCalendar;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.ansi.scilla.common.report.cashReceiptsRegister.CashReceiptsRegisterReport;
-import com.ansi.scilla.common.reportBuilder.AbstractReport;
-import com.ansi.scilla.common.reportBuilder.AnsiReport;
-import com.ansi.scilla.common.reportBuilder.CompoundReport;
-import com.ansi.scilla.common.reportBuilder.StandardReport;
-import com.ansi.scilla.common.reportBuilder.StandardSummaryReport;
-import com.ansi.scilla.common.reportBuilder.XLSBuilder;
 import com.ansi.scilla.common.utils.AppUtils;
+import com.ansi.scilla.report.reportBuilder.AbstractReport;
+import com.ansi.scilla.report.reportBuilder.AnsiReport;
+import com.ansi.scilla.report.reportBuilder.CompoundReport;
+import com.ansi.scilla.report.reportBuilder.StandardReport;
+import com.ansi.scilla.report.reportBuilder.StandardSummaryReport;
+import com.ansi.scilla.report.reportBuilder.XLSBuilder;
 
 public class TestRptBuilder {
 
