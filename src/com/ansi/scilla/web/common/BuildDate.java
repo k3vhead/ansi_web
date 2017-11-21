@@ -6,9 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.util.ResourceBundle;
 
 import com.ansi.scilla.common.ApplicationObject;
 
@@ -17,6 +15,7 @@ public class BuildDate extends ApplicationObject {
 	private static final long serialVersionUID = 1L;
 	private String webBuildDate;
 	private String commonBuildDate;
+	private String reportBuildDate;
 
 	public BuildDate() {
 		super();
@@ -32,10 +31,17 @@ public class BuildDate extends ApplicationObject {
 			InputStream commonStream = BuildDate.class.getClassLoader().getResourceAsStream(commonResource);
 			this.commonBuildDate = makeBuildDate(commonStream);
 			commonStream.close();
+
+			String reportResource="resources/build_report.properties";
+//			System.out.println(reportResource);
+			InputStream reportStream = BuildDate.class.getClassLoader().getResourceAsStream(reportResource);
+			this.reportBuildDate = makeBuildDate(reportStream);
+			reportStream.close();
 		} catch ( Exception e ) {
 			AppUtils.logException(e);
 			this.webBuildDate = "Error";
 			this.commonBuildDate = "Error";
+			this.reportBuildDate = "Error";
 		}
 	}
 
@@ -74,5 +80,8 @@ public class BuildDate extends ApplicationObject {
 	public String getCommonBuildDate() {
 		return commonBuildDate;
 	}
-	
+
+	public String getReportBuildDate() {
+		return reportBuildDate;
+	}
 }

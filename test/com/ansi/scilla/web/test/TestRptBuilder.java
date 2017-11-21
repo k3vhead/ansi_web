@@ -7,8 +7,8 @@ import java.util.GregorianCalendar;
 
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import com.ansi.scilla.common.report.cashReceiptsRegister.CashReceiptsRegisterReport;
 import com.ansi.scilla.common.utils.AppUtils;
+import com.ansi.scilla.report.cashReceiptsRegister.CashReceiptsRegisterReport;
 import com.ansi.scilla.report.reportBuilder.AbstractReport;
 import com.ansi.scilla.report.reportBuilder.AnsiReport;
 import com.ansi.scilla.report.reportBuilder.CompoundReport;

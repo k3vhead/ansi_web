@@ -17,7 +17,8 @@ $(function(){
     $("#buildDate").click(function($event) {
     	var $webDate = $(this).attr("data-webBuildDate");
     	var $commonDate = $(this).attr("data-commonBuildDate");
-    	alert("Web Build: " + $webDate + "\nCommon Build: " + $commonDate);
+    	var $reportDate = $(this).attr("data-reportBuildDate");
+    	alert("Web Build: " + $webDate + "\nCommon Build: " + $commonDate + "\nReport Build: " + $reportDate);
     });
     
     
