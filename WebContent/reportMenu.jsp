@@ -14,7 +14,7 @@
 
 
 <%@ page import="java.lang.reflect.Method,
-			com.ansi.scilla.web.common.ReportType,
+			com.ansi.scilla.web.report.common.ReportType,
 			com.ansi.scilla.report.reportBuilder.AbstractReport" %>
 
 <tiles:insert page="layout.jsp" flush="true">

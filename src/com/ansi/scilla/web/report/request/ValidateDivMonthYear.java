@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.request.report;
+package com.ansi.scilla.web.report.request;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Division;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
-public class ValidateDivEnd extends ApplicationObject  {
+public class ValidateDivMonthYear extends ApplicationObject  {
 
 	private static final long serialVersionUID = 1L;
 
@@ -24,8 +24,11 @@ public class ValidateDivEnd extends ApplicationObject  {
 				messageList.add("Invalid Division");
 			}
 		}
-		if ( def.getEndDate() == null ) {
-			messageList.add("Missing end date");
+		if ( def.getMonth() == null ) {
+			messageList.add("Missing month");
+		}
+		if ( def.getYear() == null ) {
+			messageList.add("Missing year");
 		}
 		return messageList;
 	}

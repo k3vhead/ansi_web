@@ -23,8 +23,8 @@ import com.ansi.scilla.report.reportBuilder.StandardSummaryReport;
 import com.ansi.scilla.report.reportBuilder.XLSBuilder;
 import com.ansi.scilla.report.reportBuilder.XLSSummaryBuilder;
 import com.ansi.scilla.web.common.AppUtils;
-import com.ansi.scilla.web.common.ReportType;
-import com.ansi.scilla.web.request.report.ReportDefinition;
+import com.ansi.scilla.web.report.common.ReportType;
+import com.ansi.scilla.web.report.request.ReportDefinition;
 
 public class TestStandardReportServlet {
 

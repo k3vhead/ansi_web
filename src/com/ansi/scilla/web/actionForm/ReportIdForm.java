@@ -11,7 +11,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.web.common.ReportType;
+import com.ansi.scilla.web.report.common.ReportType;
 import com.thewebthing.commons.lang.StringUtils;
 
 public class ReportIdForm extends IdForm {

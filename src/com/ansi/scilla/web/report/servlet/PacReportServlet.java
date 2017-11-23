@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.servlets.report;
+package com.ansi.scilla.web.report.servlet;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -26,7 +26,7 @@ import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.request.report.PacReportRequest;
+import com.ansi.scilla.web.report.request.PacReportRequest;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 

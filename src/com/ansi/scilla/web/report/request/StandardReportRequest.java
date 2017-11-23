@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.request.report;
+package com.ansi.scilla.web.report.request;
 
 import java.util.Date;
 import java.util.HashMap;

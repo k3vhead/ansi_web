@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.common;
+package com.ansi.scilla.web.report.common;
 
 /**
  * These are here so we can make sure we didn't typo the object name in the enum
@@ -8,7 +8,7 @@ package com.ansi.scilla.web.common;
 //import com.ansi.scilla.report.cashReceiptsRegister.CashReceiptsRegisterReport;
 //import com.ansi.scilla.report.invoiceRegisterReport.InvoiceRegisterReport;
 //import com.ansi.scilla.report.pac.PacReport;
-//import com.ansi.scilla.web.report.SixMonthRollingVolumeWebReport;
+//import com.ansi.scilla.web.report.webReport.SixMonthRollingVolumeWebReport;
 //import com.ansi.scilla.report.ticket.TicketStatusReport;
 
 
@@ -24,43 +24,43 @@ public enum ReportType {
 	ADDRESS_USAGE_REPORT(
 			"reportNoInput",
 			"com.ansi.scilla.report.datadumps.AddressUsage",
-			"com.ansi.scilla.web.request.report.NoValidate", 
+			"com.ansi.scilla.web.report.request.NoValidate", 
 			new String[] {}
 		),
 	CLIENT_CONTACT_REPORT(
 			"reportNoInput",
 			"com.ansi.scilla.report.datadumps.ClientContact",
-			"com.ansi.scilla.web.request.report.NoValidate", 
+			"com.ansi.scilla.web.report.request.NoValidate", 
 			new String[] {}
 		),
 	CASH_RECEIPTS_REGISTER(
 			"reportByStartEnd", 
 			"com.ansi.scilla.report.cashReceiptsRegister.CashReceiptsRegisterReport",
-			"com.ansi.scilla.web.request.report.ValidateStartEnd", 
+			"com.ansi.scilla.web.report.request.ValidateStartEnd", 
 			new String[] {"startDate", "endDate"}
 		),
 	INVOICE_REGISTER_REPORT(
 			"reportByDivMonthYear",
 			"com.ansi.scilla.report.invoiceRegisterReport.InvoiceRegisterReport",
-			"com.ansi.scilla.web.request.report.ValidateDivMonthYear", 
+			"com.ansi.scilla.web.report.request.ValidateDivMonthYear", 
 			new String[] {"divisionId", "month", "year"}
 		),
 	PAC_REPORT(
 			"reportByDivStartEnd", 
 			"com.ansi.scilla.report.pac.PacReport",
-			"com.ansi.scilla.web.request.report.ValidateDivStartEnd", 
+			"com.ansi.scilla.web.report.request.ValidateDivStartEnd", 
 			new String[] {"divisionId", "startDate", "endDate"}
 		),
 	SIX_MONTH_ROLLING_VOLUME_REPORT(
 			"reportByDivMonthYear", 
-			"com.ansi.scilla.web.report.SixMonthRollingVolumeWebReport",
-			"com.ansi.scilla.web.request.report.ValidateDivMonthYear",  
+			"com.ansi.scilla.web.report.webReport.SixMonthRollingVolumeWebReport",
+			"com.ansi.scilla.web.report.request.ValidateDivMonthYear",  
 			new String[] {"divisionId", "month", "year"}
 		),
 	TICKET_STATUS_REPORT(
 			"reportByDivStartEnd", 
 			"com.ansi.scilla.report.ticket.TicketStatusReport",
-			"com.ansi.scilla.web.request.report.ValidateDivStartEnd", 
+			"com.ansi.scilla.web.report.request.ValidateDivStartEnd", 
 			new String[] {"divisionId", "startDate", "endDate"}
 		);
 		

@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.request.report;
+package com.ansi.scilla.web.report.request;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,8 +27,8 @@ import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.report.reportBuilder.AnsiReport;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ApplicationWebObject;
-import com.ansi.scilla.web.common.ReportType;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
+import com.ansi.scilla.web.report.common.ReportType;
 
 /**
  * Uses URL path and quote string, along with posted JSON to completely define a report

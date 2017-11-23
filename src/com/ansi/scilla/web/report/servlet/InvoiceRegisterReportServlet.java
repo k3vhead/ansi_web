@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.servlets.report;
+package com.ansi.scilla.web.report.servlet;
 
 import java.io.IOException;
 import java.io.OutputStream;

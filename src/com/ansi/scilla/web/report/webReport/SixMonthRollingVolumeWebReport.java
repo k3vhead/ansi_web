@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.report;
+package com.ansi.scilla.web.report.webReport;
 
 import java.sql.Connection;
 

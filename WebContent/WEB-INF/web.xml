@@ -113,7 +113,7 @@
 
     <servlet>
         <servlet-name>cashReceiptsRegisterReport</servlet-name>
-        <servlet-class>com.ansi.scilla.web.servlets.report.CashReceiptsRegisterReportServlet</servlet-class>
+        <servlet-class>com.ansi.scilla.web.report.servlet.CashReceiptsRegisterReportServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>cashReceiptsRegisterReport</servlet-name>
@@ -241,7 +241,7 @@
 
 	<servlet>
 		<servlet-name>invoiceRegisterReport</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.report.InvoiceRegisterReportServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.report.servlet.InvoiceRegisterReportServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>invoiceRegisterReport</servlet-name>
@@ -360,7 +360,7 @@
 
     <servlet>
         <servlet-name>pacReport</servlet-name>
-        <servlet-class>com.ansi.scilla.web.servlets.report.PacReportServlet</servlet-class>
+        <servlet-class>com.ansi.scilla.web.report.servlet.PacReportServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>pacReport</servlet-name>
@@ -458,7 +458,7 @@
 
 	<servlet>
 		<servlet-name>report</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.report.StandardReportServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.report.servlet.StandardReportServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>report</servlet-name>
@@ -568,7 +568,7 @@
 	
 	<servlet>
 		<servlet-name>ticketStatusReport</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.report.TicketStatusReportServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.report.servlet.TicketStatusReportServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ticketStatusReport</servlet-name>

@@ -2,9 +2,9 @@ package com.ansi.scilla.web.test.reports;
 
 import java.util.Calendar;
 
-import com.ansi.scilla.web.common.ReportType;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
-import com.ansi.scilla.web.request.report.ReportDefinition;
+import com.ansi.scilla.web.report.common.ReportType;
+import com.ansi.scilla.web.report.request.ReportDefinition;
 
 public class TestReportDef extends ReportDefinition {
 

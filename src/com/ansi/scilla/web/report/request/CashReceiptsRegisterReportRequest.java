@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.request.report;
+package com.ansi.scilla.web.report.request;
 
 import com.ansi.scilla.web.request.DivStartEndDateRequest;
 import com.ansi.scilla.web.request.RequiredForAdd;
