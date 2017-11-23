@@ -14,13 +14,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ansi.scilla.common.db.PermissionLevel;
+import com.ansi.scilla.web.code.response.TableFieldListResponse;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.response.code.TableFieldListResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class TableFieldListServlet extends AbstractServlet {

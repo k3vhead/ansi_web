@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.servlets.code;
+package com.ansi.scilla.web.code.servlet;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -19,6 +19,9 @@ import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Code;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
+import com.ansi.scilla.web.code.request.CodeRequest;
+import com.ansi.scilla.web.code.response.CodeListResponse;
+import com.ansi.scilla.web.code.response.CodeResponse;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.MessageKey;
 import com.ansi.scilla.web.common.Permission;
@@ -27,9 +30,6 @@ import com.ansi.scilla.web.common.WebMessages;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.request.CodeRequest;
-import com.ansi.scilla.web.response.code.CodeListResponse;
-import com.ansi.scilla.web.response.code.CodeResponse;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
