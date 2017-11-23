@@ -3,8 +3,8 @@ package com.ansi.scilla.web.invoice.request;
 import java.util.Date;
 
 import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
-import com.ansi.scilla.web.request.AbstractRequest;
-import com.ansi.scilla.web.request.RequiredForAdd;
+import com.ansi.scilla.web.common.request.AbstractRequest;
+import com.ansi.scilla.web.common.request.RequiredForAdd;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 

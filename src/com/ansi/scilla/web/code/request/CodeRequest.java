@@ -6,9 +6,9 @@ import java.lang.reflect.InvocationTargetException;
 import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.web.common.AppUtils;
-import com.ansi.scilla.web.request.AbstractRequest;
-import com.ansi.scilla.web.request.RequiredForAdd;
-import com.ansi.scilla.web.request.RequiredForUpdate;
+import com.ansi.scilla.web.common.request.AbstractRequest;
+import com.ansi.scilla.web.common.request.RequiredForAdd;
+import com.ansi.scilla.web.common.request.RequiredForUpdate;
 
 public class CodeRequest extends AbstractRequest {
 

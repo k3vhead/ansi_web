@@ -1,6 +1,6 @@
 package com.ansi.scilla.web.servlets;
 
-import com.ansi.scilla.web.request.AbstractRequest;
+import com.ansi.scilla.web.common.request.AbstractRequest;
 
 public class TestJsonStuff extends AbstractRequest {
 

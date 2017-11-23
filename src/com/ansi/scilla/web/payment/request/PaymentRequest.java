@@ -5,9 +5,9 @@ import java.util.Date;
 import java.util.List;
 
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
-import com.ansi.scilla.web.request.AbstractRequest;
-import com.ansi.scilla.web.request.RequiredForAdd;
-import com.ansi.scilla.web.request.RequiredForUpdate;
+import com.ansi.scilla.web.common.request.AbstractRequest;
+import com.ansi.scilla.web.common.request.RequiredForAdd;
+import com.ansi.scilla.web.common.request.RequiredForUpdate;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 

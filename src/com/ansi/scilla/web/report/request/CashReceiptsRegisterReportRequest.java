@@ -1,7 +1,6 @@
 package com.ansi.scilla.web.report.request;
 
-import com.ansi.scilla.web.request.DivStartEndDateRequest;
-import com.ansi.scilla.web.request.RequiredForAdd;
+import com.ansi.scilla.web.common.request.RequiredForAdd;
 
 public class CashReceiptsRegisterReportRequest extends DivStartEndDateRequest {
 

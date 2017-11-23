@@ -3,7 +3,7 @@ package com.ansi.scilla.web.report.request;
 import java.util.Date;
 import java.util.HashMap;
 
-import com.ansi.scilla.web.request.AbstractRequest;
+import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class StandardReportRequest extends AbstractRequest {

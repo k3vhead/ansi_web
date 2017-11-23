@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.invoice.request;
+package com.ansi.scilla.web.ticket.request;
 
 import java.util.Date;
 
@@ -6,42 +6,44 @@ import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequiredForAdd;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-public class InvoicePrintRequest extends AbstractRequest {
-
+public class TicketGenerationRequest extends AbstractRequest {
+	/**
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
-
-	private String divisionId;
-	private Date printDate;
-	private Date dueDate;
+	private Integer divisionId;
+	private Date startDate;
+	private Date endDate;
 	
 	@RequiredForAdd
-	public String getDivisionId() {
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
+	public Date getStartDate() {
+		return startDate;
+	}
+	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+	
+	@RequiredForAdd
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
+	public Date getEndDate() {
+		return endDate;
+	}
+	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	public Integer getDivisionId() {
 		return divisionId;
 	}
-	public void setDivisionId(String divisionId) {
+
+	public void setDivisionId(Integer divisionId) {
 		this.divisionId = divisionId;
 	}
-	@RequiredForAdd
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
-	public Date getPrintDate() {
-		return printDate;
-	}
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
-	public void setPrintDate(Date printDate) {
-		this.printDate = printDate;
-	}
-	@RequiredForAdd
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
-	public Date getDueDate() {
-		return dueDate;
-	}
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
-	public void setDueDate(Date dueDate) {
-		this.dueDate = dueDate;
-	}
-	
-	
-	
 	
 	
 	

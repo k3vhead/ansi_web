@@ -2,7 +2,7 @@ package com.ansi.scilla.web.payment.request;
 
 import java.util.List;
 
-import com.ansi.scilla.web.request.AbstractRequest;
+import com.ansi.scilla.web.common.request.AbstractRequest;
 
 public class ApplyPaymentRequest extends AbstractRequest {
 

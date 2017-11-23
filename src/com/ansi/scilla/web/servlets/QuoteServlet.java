@@ -25,9 +25,9 @@ import com.ansi.scilla.web.common.WebMessages;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
+import com.ansi.scilla.web.quote.request.QuoteRequest;
 import com.ansi.scilla.web.quote.response.QuoteListResponse;
 import com.ansi.scilla.web.quote.response.QuoteResponse;
-import com.ansi.scilla.web.request.QuoteRequest;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 /**
