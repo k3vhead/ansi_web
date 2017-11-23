@@ -3,7 +3,7 @@ package com.ansi.scilla.web.test;
 import java.sql.Connection;
 
 import com.ansi.scilla.common.utils.AppUtils;
-import com.ansi.scilla.web.response.payment.PaymentResponse;
+import com.ansi.scilla.web.payment.response.PaymentResponse;
 
 public class TestPayment {
 

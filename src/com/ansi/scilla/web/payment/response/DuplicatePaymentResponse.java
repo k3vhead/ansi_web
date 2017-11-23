@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.response.payment;
+package com.ansi.scilla.web.payment.response;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.servlets.payment;
+package com.ansi.scilla.web.payment.servlet;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -19,8 +19,8 @@ import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.response.payment.PaymentLookupResponse;
-import com.ansi.scilla.web.response.payment.PaymentLookupResponseItem;
+import com.ansi.scilla.web.payment.response.PaymentLookupResponse;
+import com.ansi.scilla.web.payment.response.PaymentLookupResponseItem;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 
 public class PaymentLookupServlet extends AbstractServlet {

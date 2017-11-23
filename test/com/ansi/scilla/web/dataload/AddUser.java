@@ -31,20 +31,21 @@ public class AddUser extends ApplicationObject {
 	private Random random = new Random();
 
 	
-	private final List<String> argNames = Arrays.asList(new String[] {DB,FIRST_NAME,LAST_NAME,EMAIL,PHONE,ADDED_BY,PERMISSION_GROUP,TITLE} );
+	private final List<String> argNames    = Arrays.asList(new String[] {DB,FIRST_NAME,LAST_NAME,EMAIL,PHONE,ADDED_BY,PERMISSION_GROUP,TITLE} );
+	private final List<String> argRequired = Arrays.asList(new String[] {DB,FIRST_NAME,LAST_NAME,EMAIL,      ADDED_BY,PERMISSION_GROUP,TITLE} );
 	private final List<String> dbTypes = Arrays.asList(new String[] {DB_TYPE_DEV, DB_TYPE_PROD} );
 	
 	public static void main(String[] args) {
 
 		String[] myargs = new String[] {
-				"DB=PROD",
-				"FIRST_NAME=Jessica",
-		    	"LAST_NAME=Pikul",
-		    	"EMAIL=jmp@ansi.com",
-		    	"PHONE=630-941-8500 x139",
+				"DB=DEV",
+				"FIRST_NAME=Jim",
+		    	"LAST_NAME=Ruzycki",
+		    	"EMAIL=jer@ansi.com",
+//		    	"PHONE=",
 		    	"PERMISSION_GROUP=1",
 		    	"ADDED_BY=5",
-		    	"TITLE=Customer Service Representative"
+		    	"TITLE=Division Manager"
 		};
 		System.out.println("Starting AddUser");
 		try {
@@ -86,7 +87,8 @@ public class AddUser extends ApplicationObject {
 			Integer userId = newUser.insertWithKey(conn);
 			
 			Integer passnum = random.nextInt(1000-100) + 100;
-			String password = "password" + passnum;
+			String password = parms.get(FIRST_NAME).substring(0,3) + parms.get(LAST_NAME).substring(0,3) + passnum;
+//			String password = "password" + passnum;
 			String encryptedPassword = AppUtils.encryptPassword(password, userId);	
 			System.out.println("Password is: " + password);
 			
@@ -126,7 +128,7 @@ public class AddUser extends ApplicationObject {
 			}
 			parms.put(pieces[0], pieces[1]);
 		}
-		for ( String argName : argNames ) {
+		for ( String argName : argRequired ) {
 			if ( ! parms.containsKey(argName)) {
 				throw new Exception("Missing argument " + argName);
 			}

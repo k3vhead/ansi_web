@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.request.payment;
+package com.ansi.scilla.web.payment.request;
 
 import java.util.List;
 

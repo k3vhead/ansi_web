@@ -1,20 +1,17 @@
-package com.ansi.scilla.web.response.payment;
-import java.lang.reflect.InvocationTargetException;
+package com.ansi.scilla.web.payment.response;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
-import org.apache.commons.beanutils.PropertyUtils;
-
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
 import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
-import com.ansi.scilla.common.queries.PaymentSearchResult;
+import com.ansi.scilla.common.queries.PaymentTotals;
 import com.ansi.scilla.common.queries.ReportQuery;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.thewebthing.commons.db2.DBColumn;
 
-public class PaymentLookupResponseItem extends ReportQuery {
+public class PaymentTotalsResponseItem extends ReportQuery {
 
 	private static final long serialVersionUID = 1L;
 
@@ -25,13 +22,10 @@ public class PaymentLookupResponseItem extends ReportQuery {
 	public static final String PAYMENT_NOTE = "payment_note";
 	public static final String CHECK_NBR = "check_nbr";
 	public static final String CHECK_DATE = "check_date";
-	public static final String TICKET_ID = "ticket_id";
-	public static final String TICKET_AMOUNT = "ticket_amount";
-	public static final String TICKET_TAX = "ticket_tax";
-	public static final String TICKET_DIV = "ticket_div";
-	public static final String INVOICE_ID = "invoice_id";
-	public static final String BILL_TO_NAME = "bill_to_name";
-	public static final String JOB_SITE_NAME = "job_site_name";
+	public static final String APPLIED_AMOUNT = "applied_amount";
+	public static final String APPLIED_TAX_AMT = "applied_tax_amt";
+	public static final String APPLIED_TOTAL = "applied_total";
+	public static final String AVAILABLE = "available";
 	
 	/*
 	 invoice.invoice_id, sum(ticket.act_price_per_cleaning) as invoice_total, " + 
@@ -45,19 +39,16 @@ public class PaymentLookupResponseItem extends ReportQuery {
 	private String paymentNote;
 	private String checkNbr;
 	private Date checkDate;
-	private Integer ticketId;
-	private BigDecimal ticketAmount;
-	private BigDecimal ticketTax;
-	private String ticketDiv;
-	private Integer invoiceId;
-	private String billToName;
-	private String jobSiteName;
+	private BigDecimal appliedAmount;
+	private BigDecimal appliedTaxAmt;
+	private BigDecimal appliedTotal;
+	private BigDecimal available;
 	
 	
-	public PaymentLookupResponseItem() {
+	public PaymentTotalsResponseItem() {
 		super();
 	}
-	public PaymentLookupResponseItem(ResultSet rs) throws SQLException {
+	public PaymentTotalsResponseItem(ResultSet rs) throws SQLException {
 		this();
 		this.paymentId = rs.getInt(PAYMENT_ID);
 		this.paymentAmount = rs.getBigDecimal(PAYMENT_AMOUNT);
@@ -66,21 +57,26 @@ public class PaymentLookupResponseItem extends ReportQuery {
 		this.paymentNote = rs.getString(PAYMENT_NOTE);
 		this.checkNbr = rs.getString(CHECK_NBR);
 		this.checkDate = rs.getDate(CHECK_DATE);
-		this.ticketId = rs.getInt(TICKET_ID);
-		this.ticketAmount = rs.getBigDecimal(TICKET_AMOUNT);
-		this.ticketTax = rs.getBigDecimal(TICKET_TAX);
-		this.ticketDiv = rs.getString(TICKET_DIV);
-		this.invoiceId = rs.getInt(INVOICE_ID);
-		this.billToName = rs.getString(BILL_TO_NAME);
-		this.jobSiteName = rs.getString(JOB_SITE_NAME);
+		this.appliedAmount = rs.getBigDecimal(APPLIED_AMOUNT);
+		this.appliedTaxAmt = rs.getBigDecimal(APPLIED_TAX_AMT);
+		this.appliedTotal = rs.getBigDecimal(APPLIED_TOTAL);
+		this.available = rs.getBigDecimal(AVAILABLE);
+	}
+	public PaymentTotalsResponseItem(PaymentTotals paymentTotals) throws SQLException {
+		this();
+		this.paymentId = paymentTotals.getPaymentId();
+		this.paymentAmount = paymentTotals.getPaymentAmount();
+		this.paymentDate = paymentTotals.getPaymentDate();
+		this.paymentType = paymentTotals.getPaymentType();
+		this.paymentNote = paymentTotals.getPaymentNote();
+		this.checkNbr = paymentTotals.getCheckNbr();
+		this.checkDate = paymentTotals.getCheckDate();
+		this.appliedAmount = paymentTotals.getAppliedAmount();
+		this.appliedTaxAmt = paymentTotals.getAppliedTaxAmt();
+		this.appliedTotal = paymentTotals.getAppliedTotal();
+		this.available = paymentTotals.getAvailable();
 	}
 
-	public PaymentLookupResponseItem(PaymentSearchResult result) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		this();
-		PropertyUtils.copyProperties(this, result);
-	}
-	
-	
 	@DBColumn(PAYMENT_ID)
 	public Integer getPaymentId() {
 		return paymentId;
@@ -140,63 +136,41 @@ public class PaymentLookupResponseItem extends ReportQuery {
 	public void setCheckDate(Date checkDate) {
 		this.checkDate = checkDate;
 	}
-	@DBColumn(TICKET_ID)
-	public Integer getTicketId() {
-		return ticketId;
+	@JsonSerialize(using=AnsiCurrencyFormatter.class)
+	@DBColumn(APPLIED_AMOUNT)
+	public BigDecimal getAppliedAmount() {
+		return appliedAmount;
 	}
-	@DBColumn(TICKET_ID)
-	public void setTicketId(Integer ticketId) {
-		this.ticketId = ticketId;
+	@DBColumn(APPLIED_AMOUNT)
+	public void setAppliedAmount(BigDecimal appliedAmount) {
+		this.appliedAmount = appliedAmount;
 	}
 	@JsonSerialize(using=AnsiCurrencyFormatter.class)
-	@DBColumn(TICKET_AMOUNT)
-	public BigDecimal getTicketAmount() {
-		return ticketAmount;
+	@DBColumn(APPLIED_TAX_AMT)
+	public BigDecimal getAppliedTaxAmt() {
+		return appliedTaxAmt;
 	}
-	@DBColumn(TICKET_AMOUNT)
-	public void setTicketAmount(BigDecimal ticketAmount) {
-		this.ticketAmount = ticketAmount;
+	@DBColumn(APPLIED_TAX_AMT)
+	public void setAppliedTaxAmt(BigDecimal appliedTaxAmt) {
+		this.appliedTaxAmt = appliedTaxAmt;
 	}
 	@JsonSerialize(using=AnsiCurrencyFormatter.class)
-	@DBColumn(TICKET_TAX)
-	public BigDecimal getTicketTax() {
-		return ticketTax;
+	@DBColumn(APPLIED_TOTAL)
+	public BigDecimal getAppliedTotal() {
+		return appliedTotal;
 	}
-	@DBColumn(TICKET_TAX)
-	public void setTicketTax(BigDecimal ticketTax) {
-		this.ticketTax = ticketTax;
+	@DBColumn(APPLIED_TOTAL)
+	public void setAppliedTotal(BigDecimal appliedTotal) {
+		this.appliedTotal = appliedTotal;
 	}
-	@DBColumn(TICKET_DIV)
-	public String getTicketDiv() {
-		return ticketDiv;
+	@JsonSerialize(using=AnsiCurrencyFormatter.class)
+	@DBColumn(AVAILABLE)
+	public BigDecimal getAvailable() {
+		return available;
 	}
-	@DBColumn(TICKET_DIV)
-	public void setTicketDiv(String ticketDiv) {
-		this.ticketDiv = ticketDiv;
-	}
-	@DBColumn(INVOICE_ID)
-	public Integer getInvoiceId() {
-		return invoiceId;
-	}
-	@DBColumn(INVOICE_ID)
-	public void setInvoiceId(Integer invoiceId) {
-		this.invoiceId = invoiceId;
-	}
-	@DBColumn(BILL_TO_NAME)
-	public String getBillToName() {
-		return billToName;
-	}
-	@DBColumn(BILL_TO_NAME)
-	public void setBillToName(String billToName) {
-		this.billToName = billToName;
-	}
-	@DBColumn(JOB_SITE_NAME)
-	public String getJobSiteName() {
-		return jobSiteName;
-	}
-	@DBColumn(JOB_SITE_NAME)
-	public void setJobSiteName(String jobSiteName) {
-		this.jobSiteName = jobSiteName;
+	@DBColumn(AVAILABLE)
+	public void setAvailable(BigDecimal available) {
+		this.available = available;
 	}
 
 	

@@ -94,7 +94,7 @@
 
 	<servlet>
 		<servlet-name>applyPayment</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.payment.ApplyPaymentServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.payment.servlet.ApplyPaymentServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>applyPayment</servlet-name>
@@ -370,7 +370,7 @@
 
 	<servlet>
 		<servlet-name>payment</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.payment.PaymentServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.payment.servlet.PaymentServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>payment</servlet-name>
@@ -380,7 +380,7 @@
 	
 	<servlet>
 		<servlet-name>paymentLookup</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.payment.PaymentLookupServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.payment.servlet.PaymentLookupServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>paymentLookup</servlet-name>
@@ -390,7 +390,7 @@
 
 	<servlet>
 		<servlet-name>paymentTypeAhead</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.payment.PaymentTypeAheadServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.payment.servlet.PaymentTypeAheadServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>paymentTypeAhead</servlet-name>

@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.servlets.payment;
+package com.ansi.scilla.web.payment.servlet;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -31,11 +31,11 @@ import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.request.payment.ApplyPaymentRequest;
-import com.ansi.scilla.web.request.payment.ApplyPaymentRequestItem;
+import com.ansi.scilla.web.payment.request.ApplyPaymentRequest;
+import com.ansi.scilla.web.payment.request.ApplyPaymentRequestItem;
+import com.ansi.scilla.web.payment.response.ApplyPaymentResponse;
+import com.ansi.scilla.web.payment.response.PaymentResponse;
 import com.ansi.scilla.web.response.invoice.InvoiceTicketResponse;
-import com.ansi.scilla.web.response.payment.ApplyPaymentResponse;
-import com.ansi.scilla.web.response.payment.PaymentResponse;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;

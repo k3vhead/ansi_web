@@ -12,9 +12,9 @@ import com.ansi.scilla.common.address.AddressUtils;
 import com.ansi.scilla.common.db.Address;
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
 import com.ansi.scilla.common.queries.TicketPaymentTotals;
+import com.ansi.scilla.web.payment.response.TicketPaymentTotalItem;
 import com.ansi.scilla.web.response.MessageResponse;
 import com.ansi.scilla.web.response.address.AddressResponseRecord;
-import com.ansi.scilla.web.response.payment.TicketPaymentTotalItem;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
