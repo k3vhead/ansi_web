@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.servlets.invoice;
+package com.ansi.scilla.web.invoice.servlet;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -27,10 +27,10 @@ import com.ansi.scilla.web.common.WebMessages;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.request.InvoicePrintRequest;
-import com.ansi.scilla.web.response.invoice.InvoicePrintLookupResponse;
-import com.ansi.scilla.web.response.invoice.InvoicePrintLookupResponseItem;
-import com.ansi.scilla.web.response.invoice.InvoicePrintResponse;
+import com.ansi.scilla.web.invoice.request.InvoicePrintRequest;
+import com.ansi.scilla.web.invoice.response.InvoicePrintLookupResponse;
+import com.ansi.scilla.web.invoice.response.InvoicePrintLookupResponseItem;
+import com.ansi.scilla.web.invoice.response.InvoicePrintResponse;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;

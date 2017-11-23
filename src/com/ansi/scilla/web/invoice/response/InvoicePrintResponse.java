@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.response.invoice;
+package com.ansi.scilla.web.invoice.response;
 
 import com.ansi.scilla.web.response.MessageResponse;
 

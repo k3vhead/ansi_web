@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.request;
+package com.ansi.scilla.web.address.request;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -6,6 +6,9 @@ import java.lang.reflect.InvocationTargetException;
 import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.web.common.AppUtils;
+import com.ansi.scilla.web.request.AbstractRequest;
+import com.ansi.scilla.web.request.RequiredForAdd;
+import com.ansi.scilla.web.request.RequiredForUpdate;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.thewebthing.commons.lang.JsonException;

@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.servlets.invoice;
+package com.ansi.scilla.web.invoice.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -17,7 +17,7 @@ import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.response.invoice.InvoiceTicketResponse;
+import com.ansi.scilla.web.invoice.response.InvoiceTicketResponse;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 
 public class InvoiceServlet extends AbstractServlet {

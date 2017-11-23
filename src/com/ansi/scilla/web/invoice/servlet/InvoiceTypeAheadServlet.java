@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.servlets.invoice;
+package com.ansi.scilla.web.invoice.servlet;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;

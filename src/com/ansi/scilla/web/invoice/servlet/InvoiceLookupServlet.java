@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.servlets.invoice;
+package com.ansi.scilla.web.invoice.servlet;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -19,8 +19,8 @@ import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.response.invoice.InvoiceLookupResponse;
-import com.ansi.scilla.web.response.invoice.InvoiceLookupResponseItem;
+import com.ansi.scilla.web.invoice.response.InvoiceLookupResponse;
+import com.ansi.scilla.web.invoice.response.InvoiceLookupResponseItem;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.thewebthing.commons.lang.StringUtils;
 

@@ -201,7 +201,7 @@
 
 	<servlet>
 		<servlet-name>invoice</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.invoice.InvoiceServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.invoice.servlet.InvoiceServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>invoice</servlet-name>
@@ -211,7 +211,7 @@
 
 	<servlet>
 		<servlet-name>invoiceGeneration</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.invoice.InvoiceGenerationServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.invoice.servlet.InvoiceGenerationServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>invoiceGeneration</servlet-name>
@@ -221,7 +221,7 @@
 
 	<servlet>
 		<servlet-name>invoiceLookup</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.invoice.InvoiceLookupServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.invoice.servlet.InvoiceLookupServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>invoiceLookup</servlet-name>
@@ -231,7 +231,7 @@
 
 	<servlet>
 		<servlet-name>invoicePrint</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.invoice.InvoicePrintServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.invoice.servlet.InvoicePrintServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>invoicePrint</servlet-name>
@@ -252,7 +252,7 @@
 
 	<servlet>
 		<servlet-name>invoiceReprint</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.invoice.InvoiceReprintServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.invoice.servlet.InvoiceReprintServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>invoiceReprint</servlet-name>
@@ -262,7 +262,7 @@
 
 	<servlet>
 		<servlet-name>invoicePrintLookup</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.invoice.InvoicePrintLookupServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.invoice.servlet.InvoicePrintLookupServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>invoicePrintLookup</servlet-name>
@@ -272,7 +272,7 @@
 
 	<servlet>
 		<servlet-name>invoiceTypeAhead</servlet-name>
-		<servlet-class>com.ansi.scilla.web.servlets.invoice.InvoiceTypeAheadServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.invoice.servlet.InvoiceTypeAheadServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>invoiceTypeAhead</servlet-name>

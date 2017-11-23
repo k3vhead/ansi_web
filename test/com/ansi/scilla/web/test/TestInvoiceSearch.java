@@ -9,7 +9,7 @@ import java.util.List;
 
 import com.ansi.scilla.common.queries.InvoiceSearch;
 import com.ansi.scilla.common.utils.AppUtils;
-import com.ansi.scilla.web.response.invoice.InvoiceLookupResponseItem;
+import com.ansi.scilla.web.invoice.response.InvoiceLookupResponseItem;
 
 
 public class TestInvoiceSearch {

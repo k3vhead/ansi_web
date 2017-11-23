@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.servlets.invoice;
+package com.ansi.scilla.web.invoice.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -15,7 +15,7 @@ import com.ansi.scilla.web.common.WebMessages;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.response.invoice.InvoicePrintLookupResponse;
+import com.ansi.scilla.web.invoice.response.InvoicePrintLookupResponse;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 
 

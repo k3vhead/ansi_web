@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.response.invoice;
+package com.ansi.scilla.web.invoice.response;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
