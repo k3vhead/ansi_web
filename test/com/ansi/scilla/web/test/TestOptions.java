@@ -3,8 +3,8 @@ package com.ansi.scilla.web.test;
 import java.util.Arrays;
 import java.util.List;
 
-import com.ansi.scilla.web.response.options.OptionsListResponse;
-import com.ansi.scilla.web.response.options.ResponseOption;
+import com.ansi.scilla.web.options.response.OptionsListResponse;
+import com.ansi.scilla.web.options.response.ResponseOption;
 
 public class TestOptions {
 

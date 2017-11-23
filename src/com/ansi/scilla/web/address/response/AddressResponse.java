@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import com.ansi.scilla.common.db.Address;
 import com.ansi.scilla.web.common.WebMessages;
-import com.ansi.scilla.web.response.MessageResponse;
+import com.ansi.scilla.web.common.response.MessageResponse;
 
 /**
  * Used to return a single address to the client

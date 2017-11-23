@@ -18,9 +18,8 @@ import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-//import com.ansi.scilla.web.response.code.CodeResponse;
-import com.ansi.scilla.web.response.ticketSearch.TicketSearchListResponse;
 import com.ansi.scilla.web.servlets.AbstractServlet;
+import com.ansi.scilla.web.ticket.response.TicketSearchListResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 

@@ -6,8 +6,8 @@ import java.util.Collections;
 import java.util.List;
 
 import com.ansi.scilla.common.queries.PermissionGroupUserCount;
-import com.ansi.scilla.web.response.MessageResponse;
-import com.ansi.scilla.web.response.permissionGroup.PermGroupCountRecord;
+import com.ansi.scilla.web.common.response.MessageResponse;
+import com.ansi.scilla.web.permission.response.PermGroupCountRecord;
 
 public class AnsiUserListResponse extends MessageResponse {
 	

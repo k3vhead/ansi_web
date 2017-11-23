@@ -18,11 +18,11 @@ import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.queries.ContactSearch;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.Permission;
+import com.ansi.scilla.web.contact.response.ContactTableResponse;
+import com.ansi.scilla.web.contact.response.ContactTableResponseItem;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.response.contact.ContactTableResponse;
-import com.ansi.scilla.web.response.contact.ContactTableResponseItem;
 
 public class ContactTableServlet extends AbstractServlet {
 

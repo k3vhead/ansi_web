@@ -2,7 +2,7 @@ package com.ansi.scilla.web.request.ticket;
 
 import java.util.Calendar;
 
-import com.ansi.scilla.web.response.MessageResponse;
+import com.ansi.scilla.web.common.response.MessageResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class TicketPrintLookupRequest extends MessageResponse {

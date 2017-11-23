@@ -20,7 +20,7 @@ import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.response.user.UserResponse;
+import com.ansi.scilla.web.user.response.UserResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class AnsiUserServlet extends AbstractServlet {

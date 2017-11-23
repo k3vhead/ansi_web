@@ -24,9 +24,9 @@ import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.request.TaxRateRequest;
-import com.ansi.scilla.web.response.taxRate.TaxRateListResponse;
-import com.ansi.scilla.web.response.taxRate.TaxRateResponse;
 import com.ansi.scilla.web.struts.SessionUser;
+import com.ansi.scilla.web.tax.response.TaxRateListResponse;
+import com.ansi.scilla.web.tax.response.TaxRateResponse;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 

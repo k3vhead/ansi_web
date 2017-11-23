@@ -3,8 +3,8 @@ package com.ansi.scilla.web.payment.response;
 import java.math.BigDecimal;
 
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
+import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.payment.request.ApplyPaymentRequest;
-import com.ansi.scilla.web.response.MessageResponse;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class ApplyPaymentResponse extends MessageResponse {

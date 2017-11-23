@@ -6,7 +6,7 @@ import java.util.List;
 import com.ansi.scilla.common.queries.TicketLookupSearch;
 import com.ansi.scilla.common.queries.TicketLookupSearchItem;
 import com.ansi.scilla.common.utils.AppUtils;
-import com.ansi.scilla.web.response.ticketTable.TicketTableReturnItem;
+import com.ansi.scilla.web.ticket.response.TicketTableReturnItem;
 
 public class TestTicketLookup {
 

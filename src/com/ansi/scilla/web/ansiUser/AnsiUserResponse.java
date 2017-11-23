@@ -10,8 +10,8 @@ import java.sql.SQLException;
 import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.common.db.PermissionGroup;
-import com.ansi.scilla.web.response.MessageResponse;
-import com.ansi.scilla.web.response.permissionGroup.PermGroupCountRecord;
+import com.ansi.scilla.web.common.response.MessageResponse;
+import com.ansi.scilla.web.permission.response.PermGroupCountRecord;
 
 public class AnsiUserResponse extends MessageResponse implements Serializable  {
 	

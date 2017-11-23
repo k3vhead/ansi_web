@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ansi.scilla.common.invoice.InvoiceStatus;
-import com.ansi.scilla.web.response.MessageResponse;
+import com.ansi.scilla.web.common.response.MessageResponse;
 
 public class InvoicePrintLookupResponse extends MessageResponse {
 

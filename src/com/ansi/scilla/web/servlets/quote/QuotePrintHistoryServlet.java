@@ -19,7 +19,7 @@ import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.response.quote.QuotePrintHistoryResponse;
+import com.ansi.scilla.web.quote.response.QuotePrintHistoryResponse;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 

@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.ansi.scilla.common.db.Address;
-import com.ansi.scilla.web.response.MessageResponse;
+import com.ansi.scilla.web.common.response.MessageResponse;
 
 /** 
  * Used to return a list of "address" objects to the client

@@ -31,13 +31,13 @@ import com.ansi.scilla.common.utils.PropertyNames;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.common.WebMessages;
+import com.ansi.scilla.web.common.response.AnsiResponse;
+import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.request.AbstractRequest;
 import com.ansi.scilla.web.request.MinMax;
 import com.ansi.scilla.web.request.RequiredForAdd;
 import com.ansi.scilla.web.request.RequiredForUpdate;
 import com.ansi.scilla.web.request.RequiredFormat;
-import com.ansi.scilla.web.response.AnsiResponse;
-import com.ansi.scilla.web.response.MessageResponse;
 import com.ansi.scilla.web.struts.SessionUser;
 
 

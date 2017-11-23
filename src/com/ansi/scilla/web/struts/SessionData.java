@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.ansi.scilla.web.common.ApplicationWebObject;
 import com.ansi.scilla.web.common.UserPermission;
-import com.ansi.scilla.web.response.login.LoginResponse;
+import com.ansi.scilla.web.login.response.LoginResponse;
 
 public class SessionData extends ApplicationWebObject {
 

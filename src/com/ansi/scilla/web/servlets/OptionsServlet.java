@@ -18,8 +18,8 @@ import com.ansi.scilla.web.common.ResponseCode;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.response.options.ResponseOption;
-import com.ansi.scilla.web.response.options.OptionsListResponse;
+import com.ansi.scilla.web.options.response.OptionsListResponse;
+import com.ansi.scilla.web.options.response.ResponseOption;
 
 /**
  * The url for HTTP get will be of the form /options/?&lt;name&gt;,&lt;name&gt;,&lt;name&gt;<br />

@@ -6,7 +6,7 @@ import java.util.Date;
 import com.ansi.scilla.common.db.Job;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.web.common.AppUtils;
-import com.ansi.scilla.web.response.job.JobDetail;
+import com.ansi.scilla.web.job.response.JobDetail;
 
 public class TestJobDetailResponse {
 

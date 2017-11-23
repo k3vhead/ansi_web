@@ -24,8 +24,8 @@ import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.response.ticketTable.TicketTableJsonResponse;
 import com.ansi.scilla.web.servlets.AbstractServlet;
+import com.ansi.scilla.web.ticket.response.TicketTableJsonResponse;
 
 /**
  * The url for delete will return methodNotAllowed

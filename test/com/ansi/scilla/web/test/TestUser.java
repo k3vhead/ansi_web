@@ -3,8 +3,8 @@ package com.ansi.scilla.web.test;
 import java.sql.Connection;
 
 import com.ansi.scilla.common.utils.AppUtils;
-import com.ansi.scilla.web.response.user.UserResponse;
-import com.ansi.scilla.web.response.user.UserResponseItem;
+import com.ansi.scilla.web.user.response.UserResponse;
+import com.ansi.scilla.web.user.response.UserResponseItem;
 
 public class TestUser {
 

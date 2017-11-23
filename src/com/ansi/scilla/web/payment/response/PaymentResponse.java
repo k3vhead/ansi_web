@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.ansi.scilla.common.queries.PaymentTotals;
 import com.ansi.scilla.common.queries.TicketPaymentTotals;
-import com.ansi.scilla.web.response.MessageResponse;
+import com.ansi.scilla.web.common.response.MessageResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class PaymentResponse extends MessageResponse {

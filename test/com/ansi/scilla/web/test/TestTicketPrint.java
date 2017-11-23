@@ -5,7 +5,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import com.ansi.scilla.common.utils.AppUtils;
-import com.ansi.scilla.web.response.ticket.TicketPrintLookupResponse;
+import com.ansi.scilla.web.ticket.response.TicketPrintLookupResponse;
 
 public class TestTicketPrint {
 

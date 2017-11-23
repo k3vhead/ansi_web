@@ -21,8 +21,8 @@ import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.response.quoteTable.QuoteTableJsonResponse;
-import com.ansi.scilla.web.response.quoteTable.QuoteTableReturnItem;
+import com.ansi.scilla.web.quote.response.QuoteTableJsonResponse;
+import com.ansi.scilla.web.quote.response.QuoteTableReturnItem;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 
 /**

@@ -6,7 +6,7 @@ import org.apache.commons.beanutils.BeanUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.PermissionGroupLevel;
-import com.ansi.scilla.web.response.permissionGroup.PermissionItem;
+import com.ansi.scilla.web.permission.response.PermissionItem;
 
 public class AnsiUserItem extends ApplicationObject {
 	

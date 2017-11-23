@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.ansi.scilla.common.db.Payment;
 import com.ansi.scilla.common.db.User;
-import com.ansi.scilla.web.response.MessageResponse;
+import com.ansi.scilla.web.common.response.MessageResponse;
 
 public class DuplicatePaymentResponse extends MessageResponse {
 

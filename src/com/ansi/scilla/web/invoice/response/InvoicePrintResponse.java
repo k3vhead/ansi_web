@@ -1,6 +1,6 @@
 package com.ansi.scilla.web.invoice.response;
 
-import com.ansi.scilla.web.response.MessageResponse;
+import com.ansi.scilla.web.common.response.MessageResponse;
 
 public class InvoicePrintResponse extends MessageResponse {
 

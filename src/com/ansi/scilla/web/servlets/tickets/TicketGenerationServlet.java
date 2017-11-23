@@ -25,10 +25,10 @@ import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.request.ticket.TicketGenerationRequest;
-import com.ansi.scilla.web.response.ticket.TicketGenerationResponse;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.ansi.scilla.web.struts.SessionData;
 import com.ansi.scilla.web.struts.SessionUser;
+import com.ansi.scilla.web.ticket.response.TicketGenerationResponse;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 public class TicketGenerationServlet extends AbstractServlet{

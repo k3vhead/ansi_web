@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.ansi.scilla.common.db.ApplicationProperties;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.ResponseCode;
-import com.ansi.scilla.web.response.qotd.MotdResponse;
+import com.ansi.scilla.web.qotd.response.MotdResponse;
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
