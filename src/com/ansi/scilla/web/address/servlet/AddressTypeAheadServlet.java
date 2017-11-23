@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.servlets.addresses;
+package com.ansi.scilla.web.address.servlet;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;

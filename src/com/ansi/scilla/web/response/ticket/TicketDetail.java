@@ -19,7 +19,7 @@ import com.ansi.scilla.common.jobticket.TicketType;
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
 import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
 import com.ansi.scilla.common.queries.TicketPaymentTotals;
-import com.ansi.scilla.web.response.address.AddressDetail;
+import com.ansi.scilla.web.address.response.AddressDetail;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 

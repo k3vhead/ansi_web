@@ -1,11 +1,11 @@
-package com.ansi.scilla.web.response.address;
+package com.ansi.scilla.web.address.response;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.web.response.address.AddressReturnItem;
+import com.ansi.scilla.web.address.response.AddressReturnItem;
 
 public class AddressJsonResponse {
 

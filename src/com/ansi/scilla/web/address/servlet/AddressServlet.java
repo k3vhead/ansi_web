@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.servlets.addresses;
+package com.ansi.scilla.web.address.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -19,6 +19,8 @@ import com.ansi.scilla.common.db.Address;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.web.address.request.AddressRequest;
+import com.ansi.scilla.web.address.response.AddressListResponse;
+import com.ansi.scilla.web.address.response.AddressResponse;
 import com.ansi.scilla.web.common.AnsiURL;
 import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.MessageKey;
@@ -28,8 +30,6 @@ import com.ansi.scilla.web.common.WebMessages;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.response.address.AddressListResponse;
-import com.ansi.scilla.web.response.address.AddressResponse;
 import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.ansi.scilla.web.struts.SessionUser;
 import com.thewebthing.commons.db2.RecordNotFoundException;

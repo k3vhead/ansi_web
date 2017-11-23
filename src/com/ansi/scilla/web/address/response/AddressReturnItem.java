@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.response.address;
+package com.ansi.scilla.web.address.response;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

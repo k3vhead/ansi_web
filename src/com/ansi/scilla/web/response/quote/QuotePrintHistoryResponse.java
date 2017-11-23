@@ -3,8 +3,8 @@ package com.ansi.scilla.web.response.quote;
 import java.util.List;
 
 import com.ansi.scilla.common.queries.QuotePrintHistoryItem;
+import com.ansi.scilla.web.address.response.AddressDetail;
 import com.ansi.scilla.web.response.MessageResponse;
-import com.ansi.scilla.web.response.address.AddressDetail;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class QuotePrintHistoryResponse extends MessageResponse {
