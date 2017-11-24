@@ -8,11 +8,11 @@ import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.common.db.Code;
 import com.ansi.scilla.common.db.Contact;
-import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequiredForAdd;
 import com.ansi.scilla.web.common.request.RequiredForUpdate;
 import com.ansi.scilla.web.common.request.RequiredFormat;
+import com.ansi.scilla.web.common.utils.AppUtils;
 import com.thewebthing.commons.db2.DBTable;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 

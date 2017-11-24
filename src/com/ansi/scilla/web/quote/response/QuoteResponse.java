@@ -5,8 +5,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
 import com.ansi.scilla.common.db.Quote;
-import com.ansi.scilla.web.common.WebMessages;
 import com.ansi.scilla.web.common.response.MessageResponse;
+import com.ansi.scilla.web.common.response.WebMessages;
 
 /**
  * Used to return a single quote to the client

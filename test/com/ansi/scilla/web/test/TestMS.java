@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.util.List;
 
 import com.ansi.scilla.common.db.User;
-import com.ansi.scilla.web.common.AppUtils;
+import com.ansi.scilla.web.common.utils.AppUtils;
 
 public class TestMS {
 

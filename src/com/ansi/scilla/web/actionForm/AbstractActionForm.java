@@ -11,7 +11,7 @@ import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMessage;
 
-import com.ansi.scilla.web.common.AppUtils;
+import com.ansi.scilla.web.common.utils.AppUtils;
 import com.thewebthing.commons.lang.StringUtils;
 
 public abstract class AbstractActionForm extends ActionForm {

@@ -5,9 +5,9 @@ import java.sql.Connection;
 import java.util.List;
 
 import com.ansi.scilla.common.db.Division;
-import com.ansi.scilla.web.common.AppUtils;
-import com.ansi.scilla.web.common.UserPermission;
 import com.ansi.scilla.web.common.response.MessageResponse;
+import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.common.utils.UserPermission;
 import com.ansi.scilla.web.struts.SessionUser;
 
 public class LoginResponse extends MessageResponse implements Serializable  {

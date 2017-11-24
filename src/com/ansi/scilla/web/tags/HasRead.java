@@ -5,7 +5,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.jstl.core.ConditionalTagSupport;
 
-import com.ansi.scilla.web.common.UserPermission;
+import com.ansi.scilla.web.common.utils.UserPermission;
 import com.ansi.scilla.web.struts.SessionData;
 
 public class HasRead extends ConditionalTagSupport {

@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 import com.ansi.scilla.common.db.TicketPayment;
-import com.ansi.scilla.web.common.AppUtils;
+import com.ansi.scilla.web.common.utils.AppUtils;
 
 public class TestMyMath {
 

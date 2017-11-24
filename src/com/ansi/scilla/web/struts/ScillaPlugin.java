@@ -6,7 +6,7 @@ import org.apache.struts.action.ActionServlet;
 import org.apache.struts.action.PlugIn;
 import org.apache.struts.config.ModuleConfig;
 
-import com.ansi.scilla.web.common.AppUtils;
+import com.ansi.scilla.web.common.utils.AppUtils;
 
 public class ScillaPlugin implements PlugIn {
 

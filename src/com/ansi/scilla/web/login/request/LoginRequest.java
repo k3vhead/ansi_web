@@ -5,8 +5,8 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
-import com.ansi.scilla.web.common.AppUtils;
 import com.ansi.scilla.web.common.request.AbstractRequest;
+import com.ansi.scilla.web.common.utils.AppUtils;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 

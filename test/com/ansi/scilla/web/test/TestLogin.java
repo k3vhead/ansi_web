@@ -3,10 +3,10 @@ package com.ansi.scilla.web.test;
 
 import java.sql.Connection;
 
-import com.ansi.scilla.web.common.AppUtils;
+import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.login.request.LoginRequest;
 import com.ansi.scilla.web.login.response.LoginResponse;
-import com.ansi.scilla.web.servlets.login.LoginServlet;
+import com.ansi.scilla.web.login.servlet.LoginServlet;
 import com.thewebthing.commons.lang.JsonUtils;
 
 

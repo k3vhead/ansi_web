@@ -2,8 +2,8 @@ package com.ansi.scilla.web.qotd.response;
 
 import java.io.Serializable;
 
-import com.ansi.scilla.web.common.WebMessages;
 import com.ansi.scilla.web.common.response.MessageResponse;
+import com.ansi.scilla.web.common.response.WebMessages;
 
 /**
  * Used to return the MOTD to the client

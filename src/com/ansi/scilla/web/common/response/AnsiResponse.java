@@ -8,9 +8,8 @@ import org.apache.log4j.Logger;
 
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.utils.PropertyNames;
-import com.ansi.scilla.web.common.AppUtils;
-import com.ansi.scilla.web.common.ApplicationWebObject;
-import com.ansi.scilla.web.common.ResponseCode;
+import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.common.utils.ApplicationWebObject;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 /**

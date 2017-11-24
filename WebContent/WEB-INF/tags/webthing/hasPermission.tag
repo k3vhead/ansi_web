@@ -2,7 +2,7 @@
     description="" 
     body-content="scriptless" 
     import= "com.ansi.scilla.web.struts.SessionData,
-    		com.ansi.scilla.web.common.UserPermission"
+    		com.ansi.scilla.web.common.utils.UserPermission"
 %>
 
 <%@ taglib uri="/WEB-INF/struts-html.tld"  prefix="html"  %>

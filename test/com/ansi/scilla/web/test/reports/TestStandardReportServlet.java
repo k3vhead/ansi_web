@@ -22,7 +22,7 @@ import com.ansi.scilla.report.reportBuilder.StandardReport;
 import com.ansi.scilla.report.reportBuilder.StandardSummaryReport;
 import com.ansi.scilla.report.reportBuilder.XLSBuilder;
 import com.ansi.scilla.report.reportBuilder.XLSSummaryBuilder;
-import com.ansi.scilla.web.common.AppUtils;
+import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.report.common.ReportType;
 import com.ansi.scilla.web.report.request.ReportDefinition;
 

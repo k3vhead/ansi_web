@@ -17,13 +17,13 @@ import com.ansi.scilla.report.cashReceiptsRegister.CashReceiptsRegisterDetailRep
 import com.ansi.scilla.report.cashReceiptsRegister.CashReceiptsRegisterSummaryReport;
 import com.ansi.scilla.report.reportBuilder.HTMLBuilder;
 import com.ansi.scilla.report.reportBuilder.HTMLSummaryBuilder;
-import com.ansi.scilla.web.common.AppUtils;
-import com.ansi.scilla.web.common.Permission;
+import com.ansi.scilla.web.common.servlet.AbstractServlet;
+import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.report.request.CashReceiptsRegisterReportRequest;
-import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class CashReceiptsRegisterReportServlet extends AbstractServlet {

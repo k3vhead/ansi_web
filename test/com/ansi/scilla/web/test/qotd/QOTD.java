@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.ansi.scilla.web.common.AppUtils;
-import com.ansi.scilla.web.servlets.MotdServlet;
+import com.ansi.scilla.web.common.servlet.MotdServlet;
+import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.test.TesterUtils;
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndEntry;

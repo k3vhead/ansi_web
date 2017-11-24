@@ -8,17 +8,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ansi.scilla.common.db.PermissionLevel;
-import com.ansi.scilla.web.common.AnsiURL;
-import com.ansi.scilla.web.common.AppUtils;
-import com.ansi.scilla.web.common.Permission;
-import com.ansi.scilla.web.common.ResponseCode;
-import com.ansi.scilla.web.common.WebMessages;
+import com.ansi.scilla.web.common.response.ResponseCode;
+import com.ansi.scilla.web.common.response.WebMessages;
+import com.ansi.scilla.web.common.servlet.AbstractServlet;
+import com.ansi.scilla.web.common.utils.AnsiURL;
+import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.invoice.response.InvoiceTicketResponse;
-import com.ansi.scilla.web.servlets.AbstractServlet;
 
 public class InvoiceServlet extends AbstractServlet {
 

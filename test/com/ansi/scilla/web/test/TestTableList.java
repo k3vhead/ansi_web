@@ -3,8 +3,8 @@ package com.ansi.scilla.web.test;
 import java.sql.Connection;
 import java.util.List;
 
-import com.ansi.scilla.web.common.AppUtils;
-import com.ansi.scilla.web.servlets.TableFieldListServlet;
+import com.ansi.scilla.web.code.servlet.TableFieldListServlet;
+import com.ansi.scilla.web.common.utils.AppUtils;
 
 public class TestTableList {
 

@@ -1,7 +1,6 @@
 package com.ansi.scilla.web.common.response;
 
-import com.ansi.scilla.web.common.ApplicationWebObject;
-import com.ansi.scilla.web.common.WebMessages;
+import com.ansi.scilla.web.common.utils.ApplicationWebObject;
 
 public abstract class MessageResponse extends ApplicationWebObject {
 	private static final long serialVersionUID = 1L;

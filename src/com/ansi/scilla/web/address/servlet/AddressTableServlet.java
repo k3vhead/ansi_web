@@ -16,12 +16,12 @@ import javax.servlet.http.HttpServletResponse;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.address.response.AddressJsonResponse;
 import com.ansi.scilla.web.address.response.AddressReturnItem;
-import com.ansi.scilla.web.common.AppUtils;
-import com.ansi.scilla.web.common.Permission;
+import com.ansi.scilla.web.common.servlet.AbstractServlet;
+import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.servlets.AbstractServlet;
 
 /**
  * This url searches the following contact table fields for the search term:

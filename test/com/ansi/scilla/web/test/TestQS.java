@@ -2,7 +2,7 @@ package com.ansi.scilla.web.test;
 
 import java.util.HashMap;
 
-import com.ansi.scilla.web.common.AppUtils;
+import com.ansi.scilla.web.common.utils.AppUtils;
 
 public class TestQS {
 

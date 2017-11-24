@@ -5,10 +5,10 @@ import java.sql.Connection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.ansi.scilla.web.common.AppUtils;
+import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.division.request.DivisionRequest;
 import com.ansi.scilla.web.division.response.DivisionListResponse;
-import com.ansi.scilla.web.servlets.divisions.DivisionServlet;
+import com.ansi.scilla.web.division.servlet.DivisionServlet;
 
 public class TestDivisions {
 

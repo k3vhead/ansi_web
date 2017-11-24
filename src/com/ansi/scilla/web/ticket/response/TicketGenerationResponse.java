@@ -1,7 +1,7 @@
 package com.ansi.scilla.web.ticket.response;
 
-import com.ansi.scilla.web.common.WebMessages;
 import com.ansi.scilla.web.common.response.MessageResponse;
+import com.ansi.scilla.web.common.response.WebMessages;
 
 public class TicketGenerationResponse extends MessageResponse {
 

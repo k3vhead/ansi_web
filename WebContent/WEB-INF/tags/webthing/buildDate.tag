@@ -1,7 +1,7 @@
 <%@ tag 
     description="" 
     body-content="empty" 
-    import="com.ansi.scilla.web.common.BuildDate"
+    import="com.ansi.scilla.web.common.utils.BuildDate"
 %>
 
 <%@ taglib uri="/WEB-INF/struts-html.tld"  prefix="html"  %>

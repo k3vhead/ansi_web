@@ -25,8 +25,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.report.reportBuilder.AnsiReport;
-import com.ansi.scilla.web.common.AppUtils;
-import com.ansi.scilla.web.common.ApplicationWebObject;
+import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.common.utils.ApplicationWebObject;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.report.common.ReportType;
 

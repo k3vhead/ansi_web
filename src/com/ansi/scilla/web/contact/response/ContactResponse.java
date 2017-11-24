@@ -3,8 +3,8 @@ package com.ansi.scilla.web.contact.response;
 import java.io.Serializable;
 
 import com.ansi.scilla.common.db.Contact;
-import com.ansi.scilla.web.common.WebMessages;
 import com.ansi.scilla.web.common.response.MessageResponse;
+import com.ansi.scilla.web.common.response.WebMessages;
 
 /**
  * Used to return a single contact to the client

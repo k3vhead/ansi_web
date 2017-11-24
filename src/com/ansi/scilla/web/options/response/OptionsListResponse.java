@@ -15,8 +15,8 @@ import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.jobticket.JobStatus;
 import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.common.payment.PaymentMethod;
-import com.ansi.scilla.web.common.Permission;
 import com.ansi.scilla.web.common.response.MessageResponse;
+import com.ansi.scilla.web.common.utils.Permission;
 
 public class OptionsListResponse extends MessageResponse {
 	private static final long serialVersionUID = 1L;

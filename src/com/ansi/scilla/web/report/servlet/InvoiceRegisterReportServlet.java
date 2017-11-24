@@ -18,14 +18,14 @@ import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.report.invoiceRegisterReport.InvoiceRegisterReport;
-import com.ansi.scilla.web.common.AnsiURL;
-import com.ansi.scilla.web.common.AppUtils;
-import com.ansi.scilla.web.common.Permission;
+import com.ansi.scilla.web.common.servlet.AbstractServlet;
+import com.ansi.scilla.web.common.utils.AnsiURL;
+import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.servlets.AbstractServlet;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 import com.thewebthing.commons.lang.StringUtils;
 

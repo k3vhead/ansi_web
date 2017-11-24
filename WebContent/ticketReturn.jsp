@@ -207,8 +207,8 @@
         		$(this).select();
         	});
         	
-        	$("#editTicket").click(function($event) {
-        		location.href="ticketEdit.html?id="+$globalTicketId;
+        	$("#ticketOverride").click(function($event) {
+        		location.href="ticketOverride.html?id="+$globalTicketId;
         	});
         	
         	
@@ -930,7 +930,7 @@
 		   		<tr>
 		   			<td style="border-bottom:solid 1px #000000;">
 		   				<span id="ticketId"></span>&nbsp;
-		   				<span id="editTicket" class="green fa fa-pencil tooltip action-link" ari-hidden="true"><span class="tooltiptext">Edit</span></span>
+		   				<span id="ticketOverride" class="green fa fa-pencil tooltip action-link" ari-hidden="true"><span class="tooltiptext">Override</span></span>
 		   			</td>
 		   			<td style="border-bottom:solid 1px #000000;"><span id="actPricePerCleaning"></span></td>
 		   			<td style="border-bottom:solid 1px #000000;"><span id="totalVolPaid"></span></td>

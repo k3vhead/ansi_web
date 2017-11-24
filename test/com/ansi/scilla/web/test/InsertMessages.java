@@ -5,7 +5,7 @@ import java.util.Date;
 
 import com.ansi.scilla.common.db.ApplicationProperties;
 import com.ansi.scilla.common.utils.AppUtils;
-import com.ansi.scilla.web.common.MessageKey;
+import com.ansi.scilla.web.common.response.MessageKey;
 
 public class InsertMessages {
 

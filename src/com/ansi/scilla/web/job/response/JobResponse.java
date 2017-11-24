@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 
 import com.ansi.scilla.common.db.Job;
-import com.ansi.scilla.web.common.WebMessages;
 import com.ansi.scilla.web.common.response.MessageResponse;
+import com.ansi.scilla.web.common.response.WebMessages;
 
 /**
  * Used to return a single quote to the client

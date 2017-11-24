@@ -1,7 +1,7 @@
 <%@ tag 
     description="" 
     body-content="empty"
-    import="com.ansi.scilla.web.servlets.quote.QuotePrintServlet"
+    import="com.ansi.scilla.web.quote.servlet.QuotePrintServlet"
     
 %>
 

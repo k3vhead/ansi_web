@@ -1,6 +1,6 @@
 package com.ansi.scilla.web.common.request;
 
-import com.ansi.scilla.web.common.ApplicationWebObject;
+import com.ansi.scilla.web.common.utils.ApplicationWebObject;
 
 public abstract class AbstractRequest extends ApplicationWebObject {
 

@@ -1,6 +1,6 @@
 package com.ansi.scilla.web.test;
 
-import com.ansi.scilla.web.common.AppUtils;
+import com.ansi.scilla.web.common.utils.AppUtils;
 
 public class TestPassword extends TesterUtils {
 
