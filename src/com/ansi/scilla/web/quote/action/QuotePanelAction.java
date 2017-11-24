@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.action;
+package com.ansi.scilla.web.quote.action;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,7 +10,7 @@ import org.apache.struts.action.ActionMapping;
 import com.ansi.scilla.web.common.action.AbstractAction;
 import com.ansi.scilla.web.common.actionForm.NamespaceForm;
 
-public class ModalGetAction extends AbstractAction {
+public class QuotePanelAction extends AbstractAction {
 
 	@Override
 	public ActionForward execute(ActionMapping mapping, ActionForm actionForm, HttpServletRequest request,

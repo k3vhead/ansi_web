@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.action;
+package com.ansi.scilla.web.common.action;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,7 +21,6 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.web.common.action.AbstractAction;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.BuildDate;
 

@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.action;
+package com.ansi.scilla.web.report.action;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

@@ -60,7 +60,7 @@
         </action>
 		<action
             path="/deployedTaskList"
-            type="com.ansi.scilla.web.action.DeployedTaskAction">
+            type="com.ansi.scilla.web.common.action.DeployedTaskAction">
             <forward name="valid" path="/deployedTaskList.jsp" />
         </action>
 		<action
@@ -77,7 +77,7 @@
         </action>
 		<action
             path="/dashboard"
-            type="com.ansi.scilla.web.action.DashboardAction">
+            type="com.ansi.scilla.web.common.action.DashboardAction">
             <forward name="valid" path="/dashboard.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
@@ -95,7 +95,7 @@
         </action>
 		<action
             path="/invoiceLookup"
-            type="com.ansi.scilla.web.action.InvoiceLookupAction"
+            type="com.ansi.scilla.web.invoice.action.InvoiceLookupAction"
             name="invoiceLookupForm"
             input="/invoiceLookup.jsp"
             scope="request">
@@ -104,7 +104,7 @@
         </action>
 		<action
             path="/invoicePrint"
-            type="com.ansi.scilla.web.action.InvoicePrintAction"
+            type="com.ansi.scilla.web.invoice.action.InvoicePrintAction"
             name="messageForm"
             input="/invoiceGeneration.jsp"
             scope="request">
@@ -125,7 +125,7 @@
         </action>
 		<action
             path="/jobMaintenance"
-            type="com.ansi.scilla.web.action.JobMaintenanceAction"
+            type="com.ansi.scilla.web.job.action.JobMaintenanceAction"
             name="idForm"
             input="/jobMaintenance.jsp"
             scope="request">
@@ -141,12 +141,12 @@
         
      	<action
             path="/logoff"
-            type="com.ansi.scilla.web.action.LogoffAction">
+            type="com.ansi.scilla.web.login.action.LogoffAction">
             <forward name="valid" path="/login.jsp" />
         </action>
 		<action
             path="/payment"
-            type="com.ansi.scilla.web.action.PaymentAction"
+            type="com.ansi.scilla.web.payment.action.PaymentAction"
             name="idForm"
             input="/payment.jsp"
             scope="request">
@@ -185,7 +185,7 @@
         </action>
         <action
             path="/quoteMaintenance"
-            type="com.ansi.scilla.web.action.QuoteMaintenanceAction"
+            type="com.ansi.scilla.web.quote.action.QuoteMaintenanceAction"
             name="idForm"
             input="/quoteMaintenance.jsp"
             scope="request">
@@ -194,7 +194,7 @@
         </action>
 		<action
             path="/report"
-            type="com.ansi.scilla.web.action.ReportAction"
+            type="com.ansi.scilla.web.report.action.ReportAction"
             name="idForm"
             input="/reportMenu.jsp"
             scope="request">
@@ -208,7 +208,7 @@
         </action>  
         <action
             path="/ticketOverride"
-            type="com.ansi.scilla.web.action.TicketReturnAction"
+            type="com.ansi.scilla.web.ticket.action.TicketReturnAction"
             name="idForm"
             input="/ticketOverride.jsp"
             scope="request">            
@@ -223,7 +223,7 @@
         </action>
 		<action
             path="/ticketLookup"
-            type="com.ansi.scilla.web.action.TicketLookupAction"
+            type="com.ansi.scilla.web.ticket.action.TicketLookupAction"
             name="ticketLookupForm"
             input="/ticketLookup.jsp"
             scope="request">            
@@ -238,7 +238,7 @@
         </action>
 		<action
             path="/ticketReturn"
-            type="com.ansi.scilla.web.action.TicketReturnAction"
+            type="com.ansi.scilla.web.ticket.action.TicketReturnAction"
             name="idForm"
             input="/ticketReturn.jsp"
             scope="request">            
@@ -290,7 +290,7 @@
         </action>
     	<action
             path="/quotePanel"
-            type="com.ansi.scilla.web.action.QuotePanelAction"
+            type="com.ansi.scilla.web.quote.action.QuotePanelAction"
             name="namespaceForm"
             input="/quotePanel.jsp"
             scope="request">
@@ -298,7 +298,7 @@
         </action>
         <action
             path="/modalGet"
-            type="com.ansi.scilla.web.action.ModalGetAction"
+            type="com.ansi.scilla.web.common.action.ModalGetAction"
             name="namespaceForm"
             input="/modalGet.jsp"
             scope="request">

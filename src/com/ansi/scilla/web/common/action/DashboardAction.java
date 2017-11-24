@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.action;
+package com.ansi.scilla.web.common.action;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -8,7 +8,6 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
-import com.ansi.scilla.web.common.action.AbstractAction;
 import com.ansi.scilla.web.common.struts.SessionData;
 
 public class DashboardAction extends AbstractAction {

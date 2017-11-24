@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.action;
+package com.ansi.scilla.web.invoice.action;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
