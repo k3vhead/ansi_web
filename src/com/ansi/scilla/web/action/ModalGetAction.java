@@ -7,7 +7,8 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
-import com.ansi.scilla.web.actionForm.NamespaceForm;
+import com.ansi.scilla.web.common.action.AbstractAction;
+import com.ansi.scilla.web.common.actionForm.NamespaceForm;
 
 public class ModalGetAction extends AbstractAction {
 

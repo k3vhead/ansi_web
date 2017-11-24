@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.actionForm;
+package com.ansi.scilla.web.common.actionForm;
 
 public class IdForm extends AbstractActionForm {
 

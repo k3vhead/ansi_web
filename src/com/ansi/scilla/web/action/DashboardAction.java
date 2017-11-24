@@ -8,7 +8,8 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
-import com.ansi.scilla.web.struts.SessionData;
+import com.ansi.scilla.web.common.action.AbstractAction;
+import com.ansi.scilla.web.common.struts.SessionData;
 
 public class DashboardAction extends AbstractAction {
 

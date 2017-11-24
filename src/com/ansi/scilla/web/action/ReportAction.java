@@ -13,9 +13,10 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.web.actionForm.IdForm;
+import com.ansi.scilla.web.common.action.SessionPageDisplayAction;
+import com.ansi.scilla.web.common.actionForm.IdForm;
+import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.report.common.ReportType;
-import com.ansi.scilla.web.struts.SessionData;
 import com.thewebthing.commons.lang.StringUtils;
 
 /**

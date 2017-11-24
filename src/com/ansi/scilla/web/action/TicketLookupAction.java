@@ -8,7 +8,8 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
-import com.ansi.scilla.web.actionForm.TicketLookupForm;
+import com.ansi.scilla.web.common.action.SessionPageDisplayAction;
+import com.ansi.scilla.web.ticket.actionForm.TicketLookupForm;
 
 public class TicketLookupAction extends SessionPageDisplayAction {
 

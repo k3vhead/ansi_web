@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.struts;
+package com.ansi.scilla.web.common.struts;
 
 import java.lang.reflect.InvocationTargetException;
 

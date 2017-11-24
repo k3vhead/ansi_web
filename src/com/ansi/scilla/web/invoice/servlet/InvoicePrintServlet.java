@@ -23,6 +23,8 @@ import com.ansi.scilla.common.invoice.InvoiceUtils;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
+import com.ansi.scilla.web.common.struts.SessionData;
+import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
@@ -32,8 +34,6 @@ import com.ansi.scilla.web.invoice.request.InvoicePrintRequest;
 import com.ansi.scilla.web.invoice.response.InvoicePrintLookupResponse;
 import com.ansi.scilla.web.invoice.response.InvoicePrintLookupResponseItem;
 import com.ansi.scilla.web.invoice.response.InvoicePrintResponse;
-import com.ansi.scilla.web.struts.SessionData;
-import com.ansi.scilla.web.struts.SessionUser;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 

@@ -25,6 +25,8 @@ import com.ansi.scilla.common.jobticket.TicketUtils;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
+import com.ansi.scilla.web.common.struts.SessionData;
+import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
@@ -37,8 +39,6 @@ import com.ansi.scilla.web.payment.request.ApplyPaymentRequest;
 import com.ansi.scilla.web.payment.request.ApplyPaymentRequestItem;
 import com.ansi.scilla.web.payment.response.ApplyPaymentResponse;
 import com.ansi.scilla.web.payment.response.PaymentResponse;
-import com.ansi.scilla.web.struts.SessionData;
-import com.ansi.scilla.web.struts.SessionUser;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 

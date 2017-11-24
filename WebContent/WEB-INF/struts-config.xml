@@ -5,13 +5,13 @@
  -->
 <struts-config>
     <form-beans>    
-    	<form-bean name="idForm"            type="com.ansi.scilla.web.actionForm.IdForm" />
-    	<form-bean name="invoiceLookupForm" type="com.ansi.scilla.web.actionForm.InvoiceLookupForm" />
-    	<form-bean name="jobIdForm"         type="com.ansi.scilla.web.actionForm.JobIdForm" />
-    	<form-bean name="messageForm"       type="com.ansi.scilla.web.actionForm.MessageForm" />
-    	<form-bean name="namespaceForm"     type="com.ansi.scilla.web.actionForm.NamespaceForm" />
-    	<form-bean name="reportIdForm"      type="com.ansi.scilla.web.actionForm.ReportIdForm" />
-    	<form-bean name="ticketLookupForm"  type="com.ansi.scilla.web.actionForm.TicketLookupForm" />
+    	<form-bean name="idForm"            type="com.ansi.scilla.web.common.actionForm.IdForm" />
+    	<form-bean name="messageForm"       type="com.ansi.scilla.web.common.actionForm.MessageForm" />
+    	<form-bean name="namespaceForm"     type="com.ansi.scilla.web.common.actionForm.NamespaceForm" />
+    	<form-bean name="invoiceLookupForm" type="com.ansi.scilla.web.invoice.actionForm.InvoiceLookupForm" />
+    	<form-bean name="jobIdForm"         type="com.ansi.scilla.web.job.actionForm.JobIdForm" />
+    	<form-bean name="reportIdForm"      type="com.ansi.scilla.web.report.actionForm.ReportIdForm" />
+    	<form-bean name="ticketLookupForm"  type="com.ansi.scilla.web.ticket.actionForm.TicketLookupForm" />
     </form-beans>
 	<!--
 
@@ -30,31 +30,31 @@
     <action-mappings>
          <action
             path="/addressMaintenance"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/addressMaintenance.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
             path="/newAddress"
-            type="com.ansi.scilla.web.action.SessionPageDisplayModalAction">
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayModalAction">
             <forward name="valid" path="/addressMaintenance.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
             path="/applicationpropertyAdmin"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/applicationpropertyAdmin.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
             path="/cashReceiptsRegisterReport"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/cashReceiptsRegisterReport.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
             path="/codeMaintenance"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/codeMaintenance.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
@@ -65,13 +65,13 @@
         </action>
 		<action
             path="/contactMaintenance"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/contactMaintenance.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
             path="/newContact"
-            type="com.ansi.scilla.web.action.SessionPageDisplayModalAction">
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayModalAction">
             <forward name="valid" path="/contactMaintenance.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
@@ -83,13 +83,13 @@
         </action>
 		<action
             path="/divisionAdmin"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/divisionAdmin.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
             path="/invoiceGeneration"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/invoiceGeneration.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
@@ -113,13 +113,13 @@
         </action>
 		<action
             path="/invoiceRegisterReport"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/invoiceRegisterReport.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
             path="/jobLookup"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/jobLookup.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
@@ -134,7 +134,7 @@
         </action>
 		<action
             path="/jobLookup"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/jobLookup.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
@@ -155,31 +155,31 @@
         </action>
 		<action
             path="/paymentLookup"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/paymentLookup.jsp" />
             <forward name="login" path="/login.jsp" />
         </action>
 		<action
             path="/permissiongroupAdmin"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/permissiongroupAdmin.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
             path="/printHistory"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/printHistory.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
             path="/proposedActiveCancelledReport"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/proposedActiveCancelledReport.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
             path="/quoteLookup"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/quoteLookup.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
@@ -217,7 +217,7 @@
         </action>      
 		<action
             path="/ticketGeneration"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">            
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">            
             <forward name="valid" path="/ticketGeneration.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
@@ -232,7 +232,7 @@
         </action>
 		<action
             path="/ticketPrint"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">            
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">            
             <forward name="valid" path="/ticketPrint.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
@@ -247,37 +247,37 @@
         </action>
 		<action
             path="/ticketStatusReport"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/ticketStatusReport.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
             path="/ticketView"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/ticketView.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
             path="/transactionhistoryView"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/transactionhistoryView.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
             path="/userAdmin"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/userAdmin.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
             path="/usertitleMaintenance"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/usertitleMaintenance.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
         <action
             path="/taxRateMaintenance"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/taxRateMaintenance.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
@@ -285,7 +285,7 @@
 
 		<action
 			path="/quotePanelDemo"
-            type="com.ansi.scilla.web.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/quotePanelDemo.jsp" />
         </action>
     	<action
@@ -320,14 +320,14 @@
 
     </action-mappings>
 
-    <controller processorClass="com.ansi.scilla.web.struts.ScillaRequestProcessor" />
+    <controller processorClass="com.ansi.scilla.web.common.struts.ScillaRequestProcessor" />
     <!-- 
     <controller processorClass="org.apache.struts.action.RequestProcessor" />
      -->
     <!-- ================================ Message Resources Definitions -->
     <message-resources parameter="resources.application"/>
 
-    <plug-in className="com.ansi.scilla.web.struts.ScillaPlugin" />
+    <plug-in className="com.ansi.scilla.web.common.struts.ScillaPlugin" />
     
     <!--
     <plug-in className="org.apache.struts.validator.ValidatorPlugIn">

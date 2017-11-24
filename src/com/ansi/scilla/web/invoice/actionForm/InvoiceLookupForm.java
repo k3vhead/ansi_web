@@ -1,4 +1,6 @@
-package com.ansi.scilla.web.actionForm;
+package com.ansi.scilla.web.invoice.actionForm;
+
+import com.ansi.scilla.web.common.actionForm.AbstractActionForm;
 
 public class InvoiceLookupForm extends AbstractActionForm {
 

@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.struts;
+package com.ansi.scilla.web.common.struts;
 
 import javax.servlet.ServletException;
 

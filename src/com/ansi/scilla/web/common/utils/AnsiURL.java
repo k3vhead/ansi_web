@@ -11,8 +11,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.ansi.scilla.common.utils.PropertyNames;
+import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
-import com.ansi.scilla.web.struts.SessionUser;
 
 /**
  * Parses a "standard" url following the pattern:<br>

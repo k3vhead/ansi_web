@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.actionForm;
+package com.ansi.scilla.web.report.actionForm;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -11,6 +11,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.web.common.actionForm.IdForm;
 import com.ansi.scilla.web.report.common.ReportType;
 import com.thewebthing.commons.lang.StringUtils;
 

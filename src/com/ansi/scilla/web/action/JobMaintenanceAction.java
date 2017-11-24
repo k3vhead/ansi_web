@@ -8,7 +8,8 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
-import com.ansi.scilla.web.actionForm.IdForm;
+import com.ansi.scilla.web.common.action.SessionPageDisplayAction;
+import com.ansi.scilla.web.common.actionForm.IdForm;
 
 public class JobMaintenanceAction extends SessionPageDisplayAction {
 

@@ -37,8 +37,8 @@ import com.ansi.scilla.web.common.response.AnsiResponse;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
+import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.struts.SessionUser;
 
 
 public class AbstractServlet extends HttpServlet {

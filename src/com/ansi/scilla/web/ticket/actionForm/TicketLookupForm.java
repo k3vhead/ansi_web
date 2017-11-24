@@ -1,4 +1,6 @@
-package com.ansi.scilla.web.actionForm;
+package com.ansi.scilla.web.ticket.actionForm;
+
+import com.ansi.scilla.web.common.actionForm.AbstractActionForm;
 
 public class TicketLookupForm extends AbstractActionForm {
 

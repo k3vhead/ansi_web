@@ -12,7 +12,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="webthing" %>
 <%@ taglib uri="WEB-INF/theTagThing.tld" prefix="ansi" %>
 
-<%@ page import="com.ansi.scilla.web.actionForm.MessageForm" %>
+<%@ page import="com.ansi.scilla.web.common.actionForm.MessageForm" %>
 
 
 <tiles:insert page="layout.jsp" flush="true">

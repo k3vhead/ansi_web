@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.actionForm;
+package com.ansi.scilla.web.common.actionForm;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

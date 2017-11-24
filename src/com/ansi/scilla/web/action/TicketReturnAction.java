@@ -9,7 +9,8 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
 import com.ansi.scilla.common.db.PermissionLevel;
-import com.ansi.scilla.web.actionForm.IdForm;
+import com.ansi.scilla.web.common.action.SessionPageDisplayAction;
+import com.ansi.scilla.web.common.actionForm.IdForm;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;

@@ -5,7 +5,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.jstl.core.ConditionalTagSupport;
 
-import com.ansi.scilla.web.struts.SessionData;
+import com.ansi.scilla.web.common.struts.SessionData;
 
 public class LoggedIn extends ConditionalTagSupport {
 

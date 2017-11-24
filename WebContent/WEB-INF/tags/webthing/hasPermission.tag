@@ -1,7 +1,7 @@
 <%@ tag 
     description="" 
     body-content="scriptless" 
-    import= "com.ansi.scilla.web.struts.SessionData,
+    import= "com.ansi.scilla.web.common.struts.SessionData,
     		com.ansi.scilla.web.common.utils.UserPermission"
 %>
 
