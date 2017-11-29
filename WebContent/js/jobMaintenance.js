@@ -1157,7 +1157,7 @@ $( document ).ready(function() {
 				if($("#" + $namespace + "_divisionId").is("span")){
 				  ANSI_UTILS.setTextValue($namespace, "divisionId", $divisionLookup[$jobDetail.divisionId]);
 				  $("#" + $namespace + "_divisionId").text($divisionLookup[QUOTEUTILS.getDivision()]);
-				  QUOTEUTILS.setDivision($jobDetail.divisionId);
+				  //QUOTEUTILS.setDivision($jobDetail.divisionId);
 				} else {
 					$("#" + $namespace + "_divisionId").val($jobDetail.divisionId);
 					$("#" + $namespace + "_divisionId").selectmenu("refresh");
