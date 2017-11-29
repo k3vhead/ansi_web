@@ -33,17 +33,9 @@ public class TestInvoiceSearch {
 			conn = AppUtils.getDevConn();
 			conn.setAutoCommit(false);
 
-			Integer totalFiltered = InvoiceSearch.makeFilteredCount(conn, term, filterDivisionId, filterPPC);		    
-			List<InvoiceSearch> records = InvoiceSearch.makeFetchData(conn, amount, start, term, filterDivisionId, filterPPC, colName, dir);
-			Integer totalUnfiltered = InvoiceSearch.makeUnfilteredCount(conn);
-			
-			System.out.println("TotalFiltered: " + totalFiltered);
-			System.out.println(records.size() + " records");
-			System.out.println("totalUnfiltered: " + totalUnfiltered);
-			List<InvoiceLookupResponseItem> resultList = new ArrayList<InvoiceLookupResponseItem>();
-			for ( InvoiceSearch invoiceSearch : records ) {
-				resultList.add(new InvoiceLookupResponseItem(invoiceSearch));
-			}
+//			testMakeFilteredCount(conn, amount, start, term, filterDivisionId, filterPPC, colName, dir);
+			Integer totalFiltered = InvoiceSearch.makeFilteredCount(conn, (String)null, "200000", false);		    
+
 
 			conn.rollback();
 		} catch ( Exception e) {
@@ -69,6 +61,23 @@ public class TestInvoiceSearch {
 	
 	
 	
+	private void testMakeFilteredCount(Connection conn, Integer amount, Integer start, String term, String filterDivisionId, Boolean filterPPC, String colName, String dir) throws Exception {
+		Integer totalFiltered = InvoiceSearch.makeFilteredCount(conn, term, filterDivisionId, filterPPC);		    
+		List<InvoiceSearch> records = InvoiceSearch.makeFetchData(conn, amount, start, term, filterDivisionId, filterPPC, colName, dir);
+		Integer totalUnfiltered = InvoiceSearch.makeUnfilteredCount(conn);
+		
+		System.out.println("TotalFiltered: " + totalFiltered);
+		System.out.println(records.size() + " records");
+		System.out.println("totalUnfiltered: " + totalUnfiltered);
+		List<InvoiceLookupResponseItem> resultList = new ArrayList<InvoiceLookupResponseItem>();
+		for ( InvoiceSearch invoiceSearch : records ) {
+			resultList.add(new InvoiceLookupResponseItem(invoiceSearch));
+		}
+		
+	}
+
+
+
 	private void testSearch(String term) throws Exception {
 		
 		Connection conn = null;
