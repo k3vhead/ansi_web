@@ -402,7 +402,7 @@
                	doEditProcessDate : function($event) {
                		console.debug("editing process date")
                		$('#editProcessDateModal').find('input[name="newDate"]').val(GLOBAL_DATA['globalTicket'].processDate);
-               		$('#editProcessDateModal').find('input[name="newNOte"]').val(GLOBAL_DATA['globalTicket'].processNotes);
+               		$('#editProcessDateModal').find('input[name="newNote"]').val(GLOBAL_DATA['globalTicket'].processNotes);
     				$("#editProcessDateModal").dialog("open");
                	},
                	
@@ -1097,7 +1097,7 @@
 		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="ticketType"></span></td>
 		   			<td style="border-bottom:solid 1px #000000; white-space:nowrap; width:10%;">
 		   				<span id="startDate"></span>
-	   					<span class="green fa fa-pencil tooltip action-link editStartDate" ari-hidden="true"><span class="tooltiptext">Edit</span></span>
+	   					<webthing:edit styleClass="editStartDate action-link">Edit</webthing:edit>
 		   			</td>
 		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="fleetmaticsId"></span></td>
 		   		</tr>
@@ -1107,7 +1107,7 @@
 		   				<span class="formLabel">Process Notes:</span> 
 		   				<span id="processNotes"></span>
 						<div style="float:right;">
-		   					<span class="green fa fa-pencil tooltip action-link editProcessDate" ari-hidden="true"><span class="tooltiptext">Edit</span></span>
+							<webthing:edit styleClass="editProcessDate action-link">Edit</webthing:edit>		   					
 		   				</div>
 		   			</td>
 		   		</tr>
@@ -1119,7 +1119,7 @@
 		   			</td>
 		   			<td class="bottomRow" colspan="5">
 						<div style="float:right;">
-		   					<span class="green fa fa-pencil tooltip action-link editApprovals" ari-hidden="true"><span class="tooltiptext">Edit</span></span>
+		   					<webthing:edit styleClass="editApprovals action-link">Edit</webthing:edit>
 		   				</div>
 		   			</td>
 		   		</tr>

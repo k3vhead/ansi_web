@@ -111,6 +111,10 @@ public class InvoiceLookupServlet extends AbstractServlet {
 
 			String colName = cols[col];
 
+			System.out.println("InvoiceLookupServlet 114");
+			System.out.println(term);
+			System.out.println(filterDivisionId);
+			System.out.println(filterPPC);
 			Integer totalFiltered = InvoiceSearch.makeFilteredCount(conn, term, filterDivisionId, filterPPC);		    
 			List<InvoiceLookupResponseItem> resultList = makeFetchData(conn, amount, start, term, filterDivisionId, filterPPC, colName, dir);
 			Integer totalUnfiltered = InvoiceSearch.makeUnfilteredCount(conn);
