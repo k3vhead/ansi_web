@@ -418,7 +418,7 @@
 
 	<servlet>
         <servlet-name>quotePrint</servlet-name>
-        <servlet-class>com.ansi.scilla.web.quote.quote.servlet.QuotePrintServlet</servlet-class>
+        <servlet-class>com.ansi.scilla.web.quote.servlet.QuotePrintServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>quotePrint</servlet-name>
