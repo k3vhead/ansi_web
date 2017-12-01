@@ -79,6 +79,9 @@
 			#invoiceModal {
 				display:none;
 			}
+			#editInvoiceIdModal {
+				display:none;
+			}
 			#displayTicketTable {
     			border-collapse: collapse;
 				width:90%;
@@ -158,6 +161,7 @@
         			TICKET_OVERRIDE.initDialog();
         			TICKET_OVERRIDE.initFields();
         			TICKET_OVERRIDE.initButtons();
+        			TICKET_OVERRIDE.initTypeAhead();
         			$(".editApprovals").click(function($event) {
         				TICKET_OVERRIDE.doEditApprovals($event);
         			});
@@ -166,6 +170,9 @@
         			});
         			$(".editProcessDate").click(function($event) {
         				TICKET_OVERRIDE.doEditProcessDate($event);
+        			});
+        			$(".editInvoiceId").click(function($event) {
+        				TICKET_OVERRIDE.doEditInvoiceId($event);
         			});
 
 //        			$("#COMPLETED input[name=actPricePerCleaning]").change(function($event) {
@@ -295,6 +302,45 @@
         			});
             		$('#saveProcessDateModal').button('option', 'label', 'Save');
             		$('#cancelProcessDateModal').button('option', 'label', 'Cancel');
+            		
+            		
+            		
+            		
+            		
+            		
+            		$("#editInvoiceIdModal").dialog({
+        				title:'Edit Invoice ID',
+        				autoOpen: false,
+        				height: 300,
+        				width: 400,
+        				modal: true,
+        				buttons: [
+        					{
+        						id: "cancelInvoiceIdModal",
+        						click: function() {
+        							$("#editInvoiceIdModal").dialog( "close" );
+        						}
+        					},{
+        						id: "saveInvoiceIdModal",
+        						click: function($event) {
+        							console.debug("Saving new invoice id");
+        							TICKET_OVERRIDE.saveNewInvoiceId();
+        						}
+        					},{
+        						id: "newInvoiceId",
+        						click: function($event) {
+        							console.debug("Creating new invoice");
+        							TICKET_OVERRIDE.createNewInvoice();
+        						}
+        					}
+        				],
+        				close: function() {
+        					$("#editInvoiceIdModal").dialog( "close" );
+        				}
+        			});
+            		$('#saveInvoiceIdModal').button('option', 'label', 'Save');
+            		$('#cancelInvoiceIdModal').button('option', 'label', 'Cancel');
+            		$('#newInvoiceId').button('option', 'label', 'New');
        			},
         			
         			
@@ -308,6 +354,38 @@
                     });
        			},
                 	
+       			
+       			initTypeAhead:function() {
+       				var $invoiceComplete = $( "#invoiceNbr" ).autocomplete({
+       					source: "invoiceTypeAhead",
+       	                minLength: 3,
+       	                appendTo: "#someInvoice",
+       	                select: function( event, ui ) {
+       						$("#invoiceNbr").val(ui.item.id);
+       						//var $ticketData = populateTicketData(ui.item.id);
+       	                },
+       	                response: function(event, ui) {
+       	                    if (ui.content.length === 0) {
+       	                    	$("#editInvoiceIdModal").find('.modalErr').html("No Matches").show().fadeOut(6000);
+       	                    } else {
+       	                    	$("#editInvoiceIdModal").find('.modalErr').html("");
+       	                    }
+       	                }
+       	          	}).data('ui-autocomplete');
+       				$invoiceComplete._renderMenu = function( ul, items ) {
+       					var that = this;
+       					$.each( items, function( index, item ) {
+       						that._renderItemData( ul, item );
+       					});
+       					if ( items.length == 1 ) {
+       						$("#invoiceNbr").val(items[0].id);
+       						$("#invoiceNbr").autocomplete("close");
+       						//var $ticketData = populateTicketData(items[0].id);
+       					}
+       				}	
+       			},
+       			
+       			
                 	
        			initFields:function() {
                 	$('.dateField').datepicker({
@@ -404,6 +482,13 @@
                		$('#editProcessDateModal').find('input[name="newDate"]').val(GLOBAL_DATA['globalTicket'].processDate);
                		$('#editProcessDateModal').find('input[name="newNote"]').val(GLOBAL_DATA['globalTicket'].processNotes);
     				$("#editProcessDateModal").dialog("open");
+               	},
+               	
+               	
+               	doEditInvoiceId : function($event) {
+               		console.debug("editing invoice id")
+               		$('#editInvoiceIdModal').find('input[name="newInvoiceId"]').val(GLOBAL_DATA['globalTicket'].invoiceId);
+    				$("#editInvoiceIdModal").dialog("open");
                	},
                	
                	
@@ -682,6 +767,13 @@
                		var $newNote = $('#editProcessDateModal').find('input[name="newNote"]').val();
 					var $overrideList =[ {'processDate':$newDate},{'processNote':$newNote}];
 					TICKET_OVERRIDE.doOverride($('#editProcessDateModal'), "processDate", $overrideList);
+    			},
+    			
+    			
+    			saveNewInvoiceId:function() {
+    				var $newInvoiceId = $('#editInvoiceIdModal').find('input[name="newInvoiceId"]').val();
+    				var $overrideList =[ {'invoiceId':$newInvoiceId}];
+    				TICKET_OVERRIDE.doOverride($('#editInvoiceIdModal'), "invoice", $overrideList);
     			},
     			
     			
@@ -1149,7 +1241,10 @@
 		   			<th>Balance</th>
 		   		</tr>
 		   		<tr>
-		   			<td><span id="invoiceId"></span></td>
+		   			<td>
+		   				<span id="invoiceId"></span>
+		   				<webthing:edit styleClass="action-link editInvoiceId">Edit</webthing:edit>
+		   			</td>
 		   			<td><span id="invoiceDate"></span></td>
 		   			<td><span id="sumInvPpc"></span></td>
 		   			<td><span id="sumInvPpcPaid"></span></td>
@@ -1201,7 +1296,7 @@
     	</div>
     	
     	<div id="editProcessDateModal">
-    	<div class="err modalErr" ></div>
+    		<div class="err modalErr" ></div>
     		<table>
     			<tr>
     				<td><span class="formLabel">Process Date:</span></td>
@@ -1211,6 +1306,19 @@
     				<td><span class="formLabel">Process Note:</span></td>
     				<td><input type="text" name="newNote" /></td>
     			</tr>
+    		</table>
+    	</div>
+    	
+    	
+    	
+    	
+    	<div id="editInvoiceIdModal">
+    		<div class="err modalErr" ></div>
+    		<table>
+    			<tr>
+    				<td><span class="formLabel" >Invoice ID:</span></td>
+    				<td><input type="text" name="newInvoiceId" id="invoiceNbr"/></td>
+    			</tr>    			
     		</table>
     	</div>
     </tiles:put>

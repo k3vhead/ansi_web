@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -17,8 +18,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.db.Address;
+import com.ansi.scilla.common.db.Invoice;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.Ticket;
+import com.ansi.scilla.common.invoice.InvoiceUtils;
+import com.ansi.scilla.common.jobticket.TicketUtils;
 import com.ansi.scilla.common.utils.PropertyNames;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -48,14 +53,18 @@ public class TicketOverrideServlet extends TicketServlet {
 	public static final String FIELDNAME_OVERRIDE = "override";
 	public static final String FIELDNAME_PROCESS_DATE = "processDate";
 	public static final String FIELDNAME_PROCESS_NOTE = "processNote";
+	public static final String FIELDNAME_INVOICE_ID = "invoiceId";
 	
 	private final String MESSAGE_SUCCESS = "Success";
 	private final String MESSAGE_INVALID_FORMAT = "Invalid Format";
 	private final String MESSAGE_INVALID_OVERRIDE = "Invalid Override";
 	private final String MESSAGE_NOT_PROCESSED = "Not Processed";
 	private final String MESSAGE_INVALID_DATE = "Invalid Date";
+	private final String MESSAGE_INVALID_INVOICE_ID = "Invalid Invoice ID";
 	private final String MESSAGE_MISSING_START_DATE = "Missing required value: start date";
 	private final String MESSAGE_MISSING_PROCESS_NOTE = "Missing required values: process date/process notes";
+	private final String MESSAGE_BILLTO_MISMATCH = "New Invoice does not have the same bill-to";
+	private final String MESSAGE_MISSING_INVOICE_ID = "Missing required value: Invoice ID";
 	
 	
 	
@@ -128,9 +137,9 @@ public class TicketOverrideServlet extends TicketServlet {
 			result = new OverrideResult(false, MESSAGE_INVALID_OVERRIDE + ": " + values.get(FIELDNAME_TYPE), ticket);
 		} else {
 			String processor = overrideType.processor();
-			Method method = this.getClass().getMethod(processor, new Class[] { Ticket.class, HashMap.class});
+			Method method = this.getClass().getMethod(processor, new Class[] { Connection.class, Ticket.class, HashMap.class});
 			
-			result = (OverrideResult)method.invoke(this, new Object[]{ticket, values});
+			result = (OverrideResult)method.invoke(this, new Object[]{conn, ticket, values});
 			if ( result.success == true ) {
 				Ticket key = new Ticket();
 				key.setTicketId(ticket.getTicketId());
@@ -166,7 +175,7 @@ public class TicketOverrideServlet extends TicketServlet {
 		return values;
 	}
 	
-	public OverrideResult doStartDate(Ticket ticket, HashMap<String, String> values) {
+	public OverrideResult doStartDate(Connection conn, Ticket ticket, HashMap<String, String> values) {
 		Boolean success = null;
 		String message = null;
 		if ( values.containsKey(FIELDNAME_START_DATE)) {
@@ -191,7 +200,7 @@ public class TicketOverrideServlet extends TicketServlet {
 		return new OverrideResult(success, message, ticket);
 	}
 	
-	public OverrideResult doProcessDate(Ticket ticket, HashMap<String, String> values) {
+	public OverrideResult doProcessDate(Connection conn, Ticket ticket, HashMap<String, String> values) {
 		Boolean success = null;
 		String message = null;
 		if ( values.containsKey(FIELDNAME_PROCESS_DATE) && values.containsKey(FIELDNAME_PROCESS_NOTE)) {
@@ -216,13 +225,56 @@ public class TicketOverrideServlet extends TicketServlet {
 		return new OverrideResult(success, message, ticket);
 	}
 	
-	public OverrideResult doInvoice(Ticket ticket, HashMap<String, String> values) {
+	public OverrideResult doInvoice(Connection conn, Ticket ticket, HashMap<String, String> values) throws Exception {
 		System.out.println("processing invoice");
-		Boolean success = false;
-		String message = MESSAGE_INVALID_OVERRIDE;
+		Boolean success = null;
+		String message = null;
+		if ( values.containsKey(FIELDNAME_INVOICE_ID) ) {
+			Integer newInvoiceId = Integer.valueOf(values.get(FIELDNAME_INVOICE_ID));
+			if ( isSameBillTo(conn, ticket.getTicketId(), newInvoiceId) ) {
+				try {				
+					System.out.println("TicketOverrideServlet 233: ");
+
+					ticket.setInvoiceId(newInvoiceId);
+					success = true;
+					message = MESSAGE_SUCCESS;
+				} catch (Exception e) {
+					System.out.println("TicketOverrideServlet 237: ");
+
+					success = false;
+					message = MESSAGE_INVALID_INVOICE_ID;
+				}
+			} else {
+				System.out.println("TicketOverrideServlet 241: ");
+
+				success = false;
+				message = MESSAGE_BILLTO_MISMATCH;
+			}
+		} else {
+			success = false;
+			message = MESSAGE_MISSING_INVOICE_ID;
+		}
 		return new OverrideResult(success, message, ticket);
 	}
 	
+	private boolean isSameBillTo(Connection conn, Integer ticketId, Integer newInvoiceId) throws Exception {
+		try {
+			Address oldBillTo = TicketUtils.getBillToForTicket(conn, ticketId);
+			List<Invoice> invoiceList = InvoiceUtils.getInvoicesForBillTo(conn, oldBillTo.getAddressId());
+			boolean isSameBillTo = false;
+			for ( Invoice invoice : invoiceList ) {
+				if ( invoice.getInvoiceId().equals(newInvoiceId)) {
+					isSameBillTo = true;
+				}
+			}
+			System.out.println("TicketOverrideServlet 255: " + isSameBillTo);
+			return isSameBillTo;			
+		} catch ( RecordNotFoundException e ) {
+			System.out.println("TicketOverrideServlet 257: ");
+			return false;
+		}
+	}
+
 	/**
 	 * id - the string identifying what kind of override we're doing
 	 * processor - the method in the servlet that process the request. Must have signature: methodName(Integer ticketId, HashMap<String, String> values)

@@ -13,12 +13,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.PermissionLevel;
@@ -56,7 +57,12 @@ import com.thewebthing.commons.lang.StringUtils;
 public class InvoiceTypeAheadServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
+	
+	private final String PARAMETER_BILLTO = "billto";
+	private final String PARAMETER_TERM = "term";
 
+	private Logger logger = Logger.getLogger(this.getClass());
+	
 	@Override
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -72,90 +78,104 @@ public class InvoiceTypeAheadServlet extends AbstractServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		try {
+			AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			processRequest(request, response);
+
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+			super.sendForbidden(response);
+		} catch ( Exception e ) {
+			AppUtils.logException(e);
+			throw new ServletException(e);						
+		}
+
+	}
+	
+	private void processRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String url = request.getRequestURI();
-		System.out.println("InvoiceTypeAheadServlet(): doGet(): url =" + url);
+		logger.debug("InvoiceTypeAheadServlet(): doGet(): url =" + url);
 		int idx = url.indexOf("/invoiceTypeAhead/");
 		if ( idx > -1 ) {
 			super.sendNotFound(response);
 		} else {
-			Connection conn = null;
-			String qs = request.getQueryString();
-			System.out.println("InvoiceTypeAheadServlet(): doGet(): qs =" + qs);
-			String term = "";
-			if ( StringUtils.isBlank(qs)) { // No query string
-				super.sendNotFound(response);
-			} else {
-				idx = qs.indexOf("term="); 
-				if ( idx > -1 ) { // There is a search term "term="
-					Map<String, String> map = AppUtils.getQueryMap(qs);
-					String queryTerm = map.get("term");
-					System.out.println("InvoiceTypeAheadServlet(): doGet(): map =" + map);
-					System.out.println("InvoiceTypeAheadServlet(): doGet(): term =" + queryTerm);
-					if ( StringUtils.isBlank(queryTerm)) { // There is no term
-						super.sendNotFound(response);
-					} else { // There is a term
-						queryTerm = URLDecoder.decode(queryTerm, "UTF-8");
-						queryTerm = StringUtils.trimToNull(queryTerm);
-						if (StringUtils.isBlank(queryTerm)) { // Search term is blank
-							super.sendNotFound(response);
-						} else {
-							term = queryTerm.toLowerCase();
-							try {
-								conn = AppUtils.getDBCPConn();
-								AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
-								System.out.println("InvoiceTypeAheadServlet(): doGet(): term =$" + term +"$");
-								List<ReturnItem> resultList = new ArrayList<ReturnItem>();
-								//invoice_id:ticket_status:division_code:job_nbr:frequency:act_price_per_cleaning:job site:address 1
-//								String sql = "select ticket_id, ticket_status, division.division_code, job_nbr, job_frequency"
-//										+ ", act_price_per_cleaning, address.name, address.address1, fleetmatics_id "
-//										+ " from ticket " 
-//										+ " join job on job.job_id = ticket.job_id " 
-//										+ " join quote on quote.quote_id = job.quote_id " 
-//										+ " join division on division.division_id = ticket.act_division_id " 
-//										+ " join address on address.address_id = quote.job_site_address_id " 
-//										+ " where ticket_id like '%" + term + "%'"
-//										+ " or fleetmatics_id like '%" + term + "%'"
-										//+ " and ticket_status in ('N','D')"
-								
-								
-								String sql = InvoiceSearch.sql + InvoiceSearch.generateWhereClause(conn, term);
-								System.out.println("******");
-								System.out.println("Invoice SQL:\n" + sql);
-								System.out.println("******");
-								
-								Statement s = conn.createStatement();
-								ResultSet rs = s.executeQuery(sql);
-								while ( rs.next() ) {
-									resultList.add(new ReturnItem(rs));
-								}
-								rs.close();
-								
-								response.setStatus(HttpServletResponse.SC_OK);
-								response.setContentType("application/json");
-								
-								String json = AppUtils.object2json(resultList);
-								ServletOutputStream o = response.getOutputStream();
-								OutputStreamWriter writer = new OutputStreamWriter(o);
-								writer.write(json);
-								writer.flush();
-								writer.close();
-							} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
-								super.sendForbidden(response);
-							} catch ( Exception e ) {
-								AppUtils.logException(e);
-								throw new ServletException(e);
-							} finally {
-								AppUtils.closeQuiet(conn);
-							}
-						}
-					}
-				} else { // There is no term "term="
-					super.sendNotFound(response);
-				}
-
+			String billTo = request.getParameter(PARAMETER_BILLTO);
+			if ( billTo != null ) {
+				billTo = URLDecoder.decode(billTo, "UTF-8");
+				billTo = StringUtils.trimToNull(billTo);
+			}
+			String queryTerm = request.getParameter(PARAMETER_TERM);
+			if ( queryTerm != null ) {
+				queryTerm = URLDecoder.decode(queryTerm, "UTF-8");
+				queryTerm = StringUtils.trimToNull(queryTerm);
 			}
 
+			if ( StringUtils.isBlank(queryTerm)) {
+				super.sendNotFound(response);
+			} else {
+				Connection conn = null;
+				try {
+					conn = AppUtils.getDBCPConn();
+					if ( StringUtils.isBlank(billTo)) {
+						processQueryTerm(conn, queryTerm, response);
+					} else {
+						processBillTo(conn, queryTerm, billTo, response);
+					}
+				} finally {
+					AppUtils.closeQuiet(conn);
+				}
+			}		
 		}
+	}
+
+	/**
+	 * Returns json representation of invoices info where it matches the search term
+	 * @param conn
+	 * @param queryTerm
+	 * @param response
+	 * @throws Exception
+	 */
+	private void processQueryTerm(Connection conn, String queryTerm, HttpServletResponse response) throws Exception {
+
+		String term = queryTerm.toLowerCase();
+		System.out.println("InvoiceTypeAheadServlet(): doGet(): term =$" + term +"$");
+		List<ReturnItem> resultList = new ArrayList<ReturnItem>();
+
+
+		String sql = InvoiceSearch.sql + InvoiceSearch.generateWhereClause(conn, term);
+		System.out.println("******");
+		System.out.println("Invoice SQL:\n" + sql);
+		System.out.println("******");
+
+		Statement s = conn.createStatement();
+		ResultSet rs = s.executeQuery(sql);
+		while ( rs.next() ) {
+			resultList.add(new ReturnItem(rs));
+		}
+		rs.close();
+
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.setContentType("application/json");
+
+		String json = AppUtils.object2json(resultList);
+		ServletOutputStream o = response.getOutputStream();
+		OutputStreamWriter writer = new OutputStreamWriter(o);
+		writer.write(json);
+		writer.flush();
+		writer.close();
+	}
+
+	/**
+	 * Returns json representation of invoice info where invoice info matches query term 
+	 * and billto for that invoice exactly matches input
+	 * @param conn
+	 * @param queryTerm
+	 * @param billTo Address ID for bill to
+	 * @param response
+	 * @throws Exception
+	 */
+	private void processBillTo(Connection conn, String queryTerm, String billTo, HttpServletResponse response) throws Exception {
+		processQueryTerm(conn, queryTerm, response);
+		//TOD replace query search with query + bill to address id
 	}
 
 	public class ReturnItem extends ApplicationObject {
