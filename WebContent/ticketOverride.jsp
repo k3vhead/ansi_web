@@ -174,6 +174,7 @@
         			$(".editInvoiceId").click(function($event) {
         				TICKET_OVERRIDE.doEditInvoiceId($event);
         			});
+        			$("#generateInvoice").checkboxradio();
 					$("#generateInvoice").click(function($event) {
 						var doNewInvoice = $("#generateInvoice").is(":checked");
 						if (doNewInvoice == true) {
@@ -1319,7 +1320,8 @@
     			<tr>
     				<td><span class="formLabel" >Invoice ID:</span></td>
     				<td>
-    					<input type="text" name="newInvoiceId" id="invoiceNbr"/>
+    					<input type="text" name="newInvoiceId" id="invoiceNbr"/><br />
+    					<label for="generateInvoice">New</label>
     					<input type="checkbox" name="generateInvoice" id="generateInvoice" />
     				</td>
     			</tr>
