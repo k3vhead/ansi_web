@@ -54,6 +54,7 @@ public class TicketOverrideServlet extends TicketServlet {
 	public static final String FIELDNAME_PROCESS_DATE = "processDate";
 	public static final String FIELDNAME_PROCESS_NOTE = "processNote";
 	public static final String FIELDNAME_INVOICE_ID = "invoiceId";
+	public static final String FIELDNAME_INVOICE_DATE = "invoiceDate";
 	
 	private final String MESSAGE_SUCCESS = "Success";
 	private final String MESSAGE_INVALID_FORMAT = "Invalid Format";
@@ -65,6 +66,7 @@ public class TicketOverrideServlet extends TicketServlet {
 	private final String MESSAGE_MISSING_PROCESS_NOTE = "Missing required values: process date/process notes";
 	private final String MESSAGE_BILLTO_MISMATCH = "New Invoice does not have the same bill-to";
 	private final String MESSAGE_MISSING_INVOICE_ID = "Missing required value: Invoice ID";
+	private final String MESSAGE_MISSING_INVOICE_DATE = "Missing required value: Invoice Date";
 	
 	
 	
@@ -86,7 +88,6 @@ public class TicketOverrideServlet extends TicketServlet {
 			System.out.println("jsonstring:"+jsonString);
 
 			SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
-
 			Ticket ticket = new Ticket();
 			try{
 				ansiURL = new AnsiURL(request, REALM, (String[])null); //  .../ticket/etc
@@ -137,14 +138,21 @@ public class TicketOverrideServlet extends TicketServlet {
 			result = new OverrideResult(false, MESSAGE_INVALID_OVERRIDE + ": " + values.get(FIELDNAME_TYPE), ticket);
 		} else {
 			String processor = overrideType.processor();
-			Method method = this.getClass().getMethod(processor, new Class[] { Connection.class, Ticket.class, HashMap.class});
+			Method method = this.getClass().getMethod(processor, new Class[] { Connection.class, Ticket.class, HashMap.class, SessionUser.class });
 			
-			result = (OverrideResult)method.invoke(this, new Object[]{conn, ticket, values});
+			result = (OverrideResult)method.invoke(this, new Object[]{conn, ticket, values, sessionUser});
 			if ( result.success == true ) {
-				Ticket key = new Ticket();
-				key.setTicketId(ticket.getTicketId());
-				result.ticket.update(conn, key);
+				// In some cases (eg New Invoice), ticket update is done in the process method
+				// we don't want to update the ticket twice and confuse things.
+				// But, the process worked so we commit the DB transaction
+				if ( result.doTicketUpdate) {
+					Ticket key = new Ticket();
+					key.setTicketId(ticket.getTicketId());
+					result.ticket.update(conn, key);
+				}
 				conn.commit();
+			} else {
+				conn.rollback();
 			}
 		}		
 		
@@ -175,7 +183,7 @@ public class TicketOverrideServlet extends TicketServlet {
 		return values;
 	}
 	
-	public OverrideResult doStartDate(Connection conn, Ticket ticket, HashMap<String, String> values) {
+	public OverrideResult doStartDate(Connection conn, Ticket ticket, HashMap<String, String> values, SessionUser sessionUser) {
 		Boolean success = null;
 		String message = null;
 		if ( values.containsKey(FIELDNAME_START_DATE)) {
@@ -200,7 +208,7 @@ public class TicketOverrideServlet extends TicketServlet {
 		return new OverrideResult(success, message, ticket);
 	}
 	
-	public OverrideResult doProcessDate(Connection conn, Ticket ticket, HashMap<String, String> values) {
+	public OverrideResult doProcessDate(Connection conn, Ticket ticket, HashMap<String, String> values, SessionUser sessionUser) {
 		Boolean success = null;
 		String message = null;
 		if ( values.containsKey(FIELDNAME_PROCESS_DATE) && values.containsKey(FIELDNAME_PROCESS_NOTE)) {
@@ -225,7 +233,7 @@ public class TicketOverrideServlet extends TicketServlet {
 		return new OverrideResult(success, message, ticket);
 	}
 	
-	public OverrideResult doInvoice(Connection conn, Ticket ticket, HashMap<String, String> values) throws Exception {
+	public OverrideResult doInvoice(Connection conn, Ticket ticket, HashMap<String, String> values, SessionUser sessionUser) throws Exception {
 		System.out.println("processing invoice");
 		Boolean success = null;
 		String message = null;
@@ -234,19 +242,16 @@ public class TicketOverrideServlet extends TicketServlet {
 			if ( isSameBillTo(conn, ticket.getTicketId(), newInvoiceId) ) {
 				try {				
 					System.out.println("TicketOverrideServlet 233: ");
-
 					ticket.setInvoiceId(newInvoiceId);
 					success = true;
 					message = MESSAGE_SUCCESS;
 				} catch (Exception e) {
 					System.out.println("TicketOverrideServlet 237: ");
-
 					success = false;
 					message = MESSAGE_INVALID_INVOICE_ID;
 				}
 			} else {
 				System.out.println("TicketOverrideServlet 241: ");
-
 				success = false;
 				message = MESSAGE_BILLTO_MISMATCH;
 			}
@@ -256,6 +261,40 @@ public class TicketOverrideServlet extends TicketServlet {
 		}
 		return new OverrideResult(success, message, ticket);
 	}
+	
+	
+	/**
+	 * Ticket Override to create a new invoice for this ticket
+	 * @param conn
+	 * @param ticket
+	 * @param values
+	 * @return
+	 * @throws Exception
+	 */
+	public OverrideResult doNewInvoice(Connection conn, Ticket ticket, HashMap<String, String> values, SessionUser sessionUser) throws Exception {
+		System.out.println("processing new invoice");
+		Boolean success = null;
+		String message = null;
+		
+		if ( values.containsKey(FIELDNAME_INVOICE_DATE) ) {
+			String dateForamt = AppUtils.getProperty(PropertyNames.COMMON_DATE_FORMAT);
+			SimpleDateFormat sdf = new SimpleDateFormat(dateForamt);
+			Date date = sdf.parse(values.get(FIELDNAME_INVOICE_DATE));
+			Calendar invoiceDate = Calendar.getInstance(new AnsiTime());
+			invoiceDate.setTime(date);
+			Integer invoiceId = InvoiceUtils.generateInvoiceForTicket(conn, invoiceDate, ticket.getTicketId(), sessionUser.getUserId());
+			ticket.setInvoiceDate(date);
+			ticket.setInvoiceId(invoiceId);		
+			success = true;
+			message = MESSAGE_SUCCESS;
+		} else {
+			success = false;
+			message = MESSAGE_MISSING_INVOICE_DATE;
+		}
+		return new OverrideResult(success, message, ticket, false);
+	}
+	
+	
 	
 	private boolean isSameBillTo(Connection conn, Integer ticketId, Integer newInvoiceId) throws Exception {
 		try {
@@ -285,7 +324,8 @@ public class TicketOverrideServlet extends TicketServlet {
 	public enum OverrideType {
 		START_DATE("startDate", "doStartDate"),
 		PROCESS_DATE("processDate", "doProcessDate"),
-		INVOICE("invoice", "doInvoice");
+		INVOICE("invoice", "doInvoice"),
+		NEWINVOICE("newInvoice","doNewInvoice");
 		
 		private final String id;
 		private final String processor;
@@ -312,11 +352,16 @@ public class TicketOverrideServlet extends TicketServlet {
 		public Boolean success;
 		public String message;
 		public Ticket ticket;
+		public boolean doTicketUpdate;
 		public OverrideResult(Boolean success, String message, Ticket ticket) {
+			this(success, message,ticket, true);
+		}
+		public OverrideResult(Boolean success, String message, Ticket ticket, boolean doTicketUpdate) {
 			super();
 			this.success = success;
 			this.message = message;
 			this.ticket = ticket;
+			this.doTicketUpdate = doTicketUpdate;
 		}
 	}
 

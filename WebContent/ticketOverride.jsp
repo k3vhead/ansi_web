@@ -138,7 +138,7 @@
 			}
 			#editProcessDateModal {
 				display:none;
-			}
+			}			
 			.action-link {
 				cursor:pointer;
 			}
@@ -174,7 +174,14 @@
         			$(".editInvoiceId").click(function($event) {
         				TICKET_OVERRIDE.doEditInvoiceId($event);
         			});
-
+					$("#generateInvoice").click(function($event) {
+						var doNewInvoice = $("#generateInvoice").is(":checked");
+						if (doNewInvoice == true) {
+							$("#invoiceNbr").attr("disabled","disabled");
+						} else {
+							$("#invoiceNbr").removeAttr("disabled");
+						}
+					});
 //        			$("#COMPLETED input[name=actPricePerCleaning]").change(function($event) {
 //        				TICKET_OVERRIDE.doPpcChange($event);
 //        			});
@@ -262,7 +269,6 @@
         					},{
         						id: "saveStartDateModal",
         						click: function($event) {
-        							console.debug("Saving new start date");
         							TICKET_OVERRIDE.saveNewStartDate();
         						}
         					}
@@ -291,7 +297,6 @@
         					},{
         						id: "saveProcessDateModal",
         						click: function($event) {
-        							console.debug("Saving new process date");
         							TICKET_OVERRIDE.saveNewProcessDate();
         						}
         					}
@@ -323,14 +328,7 @@
         					},{
         						id: "saveInvoiceIdModal",
         						click: function($event) {
-        							console.debug("Saving new invoice id");
         							TICKET_OVERRIDE.saveNewInvoiceId();
-        						}
-        					},{
-        						id: "newInvoiceId",
-        						click: function($event) {
-        							console.debug("Creating new invoice");
-        							TICKET_OVERRIDE.createNewInvoice();
         						}
         					}
         				],
@@ -340,7 +338,6 @@
         			});
             		$('#saveInvoiceIdModal').button('option', 'label', 'Save');
             		$('#cancelInvoiceIdModal').button('option', 'label', 'Cancel');
-            		$('#newInvoiceId').button('option', 'label', 'New');
        			},
         			
         			
@@ -471,14 +468,12 @@
                	
                	
                	doEditStartDate:function($event) {
-               		console.debug("editing start date")               		
                		$('#editStartDateModal').find('input[name="newDate"]').val(GLOBAL_DATA['globalTicket'].startDate);
     				$("#editStartDateModal").dialog("open");
 
                	},
                	
                	doEditProcessDate : function($event) {
-               		console.debug("editing process date")
                		$('#editProcessDateModal').find('input[name="newDate"]').val(GLOBAL_DATA['globalTicket'].processDate);
                		$('#editProcessDateModal').find('input[name="newNote"]').val(GLOBAL_DATA['globalTicket'].processNotes);
     				$("#editProcessDateModal").dialog("open");
@@ -486,8 +481,8 @@
                	
                	
                	doEditInvoiceId : function($event) {
-               		console.debug("editing invoice id")
                		$('#editInvoiceIdModal').find('input[name="newInvoiceId"]').val(GLOBAL_DATA['globalTicket'].invoiceId);
+               		$('#editInvoiceIdModal').find('input[name="newInvoiceDate"]').val(GLOBAL_DATA['globalTicket'].invoiceDate);
     				$("#editInvoiceIdModal").dialog("open");
                	},
                	
@@ -771,16 +766,22 @@
     			
     			
     			saveNewInvoiceId:function() {
+    				var $generateNewInvoice = $('#editInvoiceIdModal').find('input[name="generateInvoice"]').is(":checked");
+    				if ( $generateNewInvoice == true ) {
+    					$overrideType = "newInvoice";
+    				} else {
+    					$overrideType = "invoice";
+    				}
     				var $newInvoiceId = $('#editInvoiceIdModal').find('input[name="newInvoiceId"]').val();
-    				var $overrideList =[ {'invoiceId':$newInvoiceId}];
-    				TICKET_OVERRIDE.doOverride($('#editInvoiceIdModal'), "invoice", $overrideList);
+    				var $newInvoiceDate = $('#editInvoiceIdModal').find('input[name="newInvoiceDate"]').val();
+    				
+    				var $overrideList =[ {'invoiceId':$newInvoiceId, 'invoiceDate':$newInvoiceDate, 'geneateNewInvoice':$generateNewInvoice}];
+    				TICKET_OVERRIDE.doOverride($('#editInvoiceIdModal'), $overrideType, $overrideList);
     			},
     			
     			
     			doOverride:function($modal, $type, $overrideList) {
     				var $outbound = {'type':$type, 'override':$overrideList};
-					console.debug($overrideList);
-					console.debug($outbound);
 					console.debug(JSON.stringify($outbound));
 					
                 	$url = "ticketOverride/" + GLOBAL_DATA.globalTicketId;
@@ -1317,10 +1318,21 @@
     		<table>
     			<tr>
     				<td><span class="formLabel" >Invoice ID:</span></td>
-    				<td><input type="text" name="newInvoiceId" id="invoiceNbr"/></td>
-    			</tr>    			
+    				<td>
+    					<input type="text" name="newInvoiceId" id="invoiceNbr"/>
+    					<input type="checkbox" name="generateInvoice" id="generateInvoice" />
+    				</td>
+    			</tr>
+    			<tr>
+    				<td><span class="formLabel">Invoice Date:</span></td>
+    				<td><input type="text" name="newInvoiceDate" id="newInvoiceDate" class="dateField" /></td>
+    			</tr>  
     		</table>
     	</div>
+    	
+    	
+    	
+    	
     </tiles:put>
 
 </tiles:insert>
