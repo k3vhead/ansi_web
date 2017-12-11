@@ -58,7 +58,7 @@ public class InvoiceTypeAheadServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
 	
-	private final String PARAMETER_BILLTO = "billto";
+	private final String PARAMETER_BILLTO = "billTo";
 	private final String PARAMETER_TERM = "term";
 
 	private Logger logger = Logger.getLogger(this.getClass());
@@ -114,12 +114,8 @@ public class InvoiceTypeAheadServlet extends AbstractServlet {
 			} else {
 				Connection conn = null;
 				try {
-					conn = AppUtils.getDBCPConn();
-					if ( StringUtils.isBlank(billTo)) {
-						processQueryTerm(conn, queryTerm, response);
-					} else {
-						processBillTo(conn, queryTerm, billTo, response);
-					}
+					conn = AppUtils.getDBCPConn();					
+					makeQueryResult(conn, queryTerm, billTo, response);
 				} finally {
 					AppUtils.closeQuiet(conn);
 				}
@@ -134,14 +130,15 @@ public class InvoiceTypeAheadServlet extends AbstractServlet {
 	 * @param response
 	 * @throws Exception
 	 */
-	private void processQueryTerm(Connection conn, String queryTerm, HttpServletResponse response) throws Exception {
+	private void makeQueryResult(Connection conn, String queryTerm, String billTo, HttpServletResponse response) throws Exception {
 
 		String term = queryTerm.toLowerCase();
-		System.out.println("InvoiceTypeAheadServlet(): doGet(): term =$" + term +"$");
+		System.out.println("InvoiceTypeAheadServlet(): doGet(): term =[" + term +"]  billTo=[" + billTo + "]" );
 		List<ReturnItem> resultList = new ArrayList<ReturnItem>();
 
+		Integer billToAddressId = StringUtils.isNumeric(billTo) ? Integer.valueOf(billTo) : null;
 
-		String sql = InvoiceSearch.sql + InvoiceSearch.generateWhereClause(conn, term);
+		String sql = InvoiceSearch.sql + InvoiceSearch.generateWhereClause(conn, term, billToAddressId);
 		System.out.println("******");
 		System.out.println("Invoice SQL:\n" + sql);
 		System.out.println("******");
@@ -164,19 +161,7 @@ public class InvoiceTypeAheadServlet extends AbstractServlet {
 		writer.close();
 	}
 
-	/**
-	 * Returns json representation of invoice info where invoice info matches query term 
-	 * and billto for that invoice exactly matches input
-	 * @param conn
-	 * @param queryTerm
-	 * @param billTo Address ID for bill to
-	 * @param response
-	 * @throws Exception
-	 */
-	private void processBillTo(Connection conn, String queryTerm, String billTo, HttpServletResponse response) throws Exception {
-		processQueryTerm(conn, queryTerm, response);
-		//TOD replace query search with query + bill to address id
-	}
+
 
 	public class ReturnItem extends ApplicationObject {
 		private static final long serialVersionUID = 1L;

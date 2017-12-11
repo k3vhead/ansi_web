@@ -40,7 +40,6 @@ import com.thewebthing.commons.lang.StringUtils;
  * The url for get will be one of:
  * 		/ticketTypeAhead?term=					(returns not found)
  * 		/ticketTypeAhead?term=<searchTerm>		(returns all records containing <searchTerm>)
- * 		/ticketTypeAhead?term=&lt;SearchTerm&gt;&billTo=&lt;addressId&gt;  (adds filter for billTo address ID) 
  * 
  * The servlet will return 404 Not Found if there is no "term=" found.
  * 
@@ -94,15 +93,12 @@ public class TicketTypeAheadServlet extends AbstractServlet {
 
 	private void processRequest(Connection conn, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String term = request.getParameter("term");
-		String billTo = request.getParameter("billTo");
 		AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
 
 		if ( StringUtils.isBlank(term)) {
 			super.sendNotFound(response);
-		} else if ( StringUtils.isBlank(billTo)) {
-			processInvoiceAutoComplete(conn, term, response);
 		} else {
-			processInvoiceBillToFilter(conn, term, billTo, response);
+			processInvoiceAutoComplete(conn, term, response);
 		}
 	}
 	
@@ -149,11 +145,7 @@ public class TicketTypeAheadServlet extends AbstractServlet {
 			writer.close();
 		}
 	}
-
-	private void processInvoiceBillToFilter(Connection conn, String term, String billTo, HttpServletResponse response) throws Exception {
-		// TODO Auto-generated method stub
-		processInvoiceAutoComplete(conn, term, response);
-	}
+	
 
 	public class ReturnItem extends ApplicationObject {
 		private static final long serialVersionUID = 1L;

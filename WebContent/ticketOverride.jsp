@@ -139,6 +139,9 @@
 			#editProcessDateModal {
 				display:none;
 			}			
+			#newInvoiceDateRow {
+				display:none;
+			}
 			.action-link {
 				cursor:pointer;
 			}
@@ -179,8 +182,10 @@
 						var doNewInvoice = $("#generateInvoice").is(":checked");
 						if (doNewInvoice == true) {
 							$("#invoiceNbr").attr("disabled","disabled");
+							$("#newInvoiceDateRow").show();
 						} else {
 							$("#invoiceNbr").removeAttr("disabled");
+							$("#newInvoiceDateRow").hide();
 						}
 					});
 //        			$("#COMPLETED input[name=actPricePerCleaning]").change(function($event) {
@@ -353,9 +358,39 @@
        			},
                 	
        			
+       			
+       			doAutoComplete:function(request, response) {
+       				console.debug(request);
+       				var $billToAddressId = GLOBAL_DATA['globalTicket'].billToAddress.addressId;
+       				var $outbound={"term":request.term, "billTo":$billToAddressId};
+       				var jqxhr = $.ajax({
+    					type: 'GET',
+    					url: "invoiceTypeAhead",
+    					data: $outbound,
+    					statusCode: {
+    						200: function($data) {
+    							response($data);
+    						},
+    	       				404: function($data) {
+    	       					response($data);
+    	        	    	},
+    						403: function($data) {
+    							response($data);
+    						},
+    						405: function($data) {
+    							response($data);
+    						},
+    		       			500: function($data) {
+    		       				response($data);
+    	            		},  
+    					},
+    					dataType: 'json'
+    				});
+       			},
+       			
        			initTypeAhead:function() {
        				var $invoiceComplete = $( "#invoiceNbr" ).autocomplete({
-       					source: "invoiceTypeAhead",
+       					source: TICKET_OVERRIDE.doAutoComplete,
        	                minLength: 3,
        	                appendTo: "#someInvoice",
        	                select: function( event, ui ) {
@@ -1318,15 +1353,15 @@
     		<div class="err modalErr" ></div>
     		<table>
     			<tr>
-    				<td><span class="formLabel" >Invoice ID:</span></td>
+    				<td style="width:100px;"><span class="formLabel" >Invoice ID:</span></td>
     				<td>
     					<input type="text" name="newInvoiceId" id="invoiceNbr"/><br />
     					<label for="generateInvoice">New</label>
     					<input type="checkbox" name="generateInvoice" id="generateInvoice" />
     				</td>
     			</tr>
-    			<tr>
-    				<td><span class="formLabel">Invoice Date:</span></td>
+    			<tr id="newInvoiceDateRow">
+    				<td style="width:100px;"><span class="formLabel">Invoice Date:</span></td>
     				<td><input type="text" name="newInvoiceDate" id="newInvoiceDate" class="dateField" /></td>
     			</tr>  
     		</table>
