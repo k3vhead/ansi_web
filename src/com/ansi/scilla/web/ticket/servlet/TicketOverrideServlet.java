@@ -84,6 +84,7 @@ public class TicketOverrideServlet extends TicketServlet {
 		//TicketReturnResponse ticketReturnResponse = null;
 		try {
 			conn = AppUtils.getDBCPConn();
+			conn.setAutoCommit(false);
 			String jsonString = super.makeJsonString(request);
 			System.out.println("jsonstring:"+jsonString);
 
