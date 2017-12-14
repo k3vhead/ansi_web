@@ -49,6 +49,9 @@
 				cursor:pointer;
 				text-decoration:underline;
 			}
+			.jobLink {
+				color:#000000;
+			}
 			.overrideAction {
 				cursor:pointer;
 				text-decoration:none;
@@ -136,7 +139,8 @@
 			            	if(row.jobNbr != null){return (row.jobNbr+"");}
 			            } },
 			            { title: "Job ID", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-			            	if(row.jobId != null){return ('<span class="editJob" data-jobid="'+ row.jobId +'">'+row.jobId+"</span>");} 
+			            	//if(row.jobId != null){return ('<span class="editJob" data-jobid="'+ row.jobId +'">'+row.jobId+"</span>");} 
+			            	if(row.jobId != null){return ('<a href="jobMaintenance.html?id='+ row.jobId +'" class="jobLink">'+row.jobId+"</span>");}
 			            } },
 			            { title: "Service Description", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.serviceDescription != null){return (row.serviceDescription+"");}
@@ -200,11 +204,11 @@
 					$(".print-link").on( "click", function($clickevent) {
 						doPrint($clickevent);
 					});
-					$(".editJob").on( "click", function($clickevent) {
-						console.debug("clicked a job")
-						var $jobId = $(this).data("jobid");
-						location.href="jobMaintenance.html?id=" + $jobId;
-					});
+					//$(".editJob").on( "click", function($clickevent) {
+					//	console.debug("clicked a job")
+					//	var $jobId = $(this).data("jobid");
+					//	location.href="jobMaintenance.html?id=" + $jobId;
+					//});
 				}
 				
 				function doEdit($clickevent) {
