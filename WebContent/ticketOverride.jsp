@@ -177,6 +177,9 @@
         			$(".editInvoiceId").click(function($event) {
         				TICKET_OVERRIDE.doEditInvoiceId($event);
         			});
+        			$(".editInvoiceDate").click(function($event) {
+        				TICKET_OVERRIDE.doEditInvoiceDate($event);
+        			});
         			$("#generateInvoice").checkboxradio();
 					$("#generateInvoice").click(function($event) {
 						var doNewInvoice = $("#generateInvoice").is(":checked");
@@ -344,6 +347,37 @@
         			});
             		$('#saveInvoiceIdModal').button('option', 'label', 'Save');
             		$('#cancelInvoiceIdModal').button('option', 'label', 'Cancel');
+
+            		
+            		
+            		
+            		
+            		
+            		$("#editInvoiceDateModal").dialog({
+        				title:'Edit Invoice Date',
+        				autoOpen: false,
+        				height: 300,
+        				width: 400,
+        				modal: true,
+        				buttons: [
+        					{
+        						id: "cancelInvoiceDateModal",
+        						click: function() {
+        							$("#editInvoiceDateModal").dialog( "close" );
+        						}
+        					},{
+        						id: "saveInvoiceDateModal",
+        						click: function($event) {
+        							TICKET_OVERRIDE.saveNewInvoiceDate();
+        						}
+        					}
+        				],
+        				close: function() {
+        					$("#editInvoiceDateModal").dialog( "close" );
+        				}
+        			});
+            		$('#saveInvoiceDateModal').button('option', 'label', 'Save');
+            		$('#cancelInvoiceDateModal').button('option', 'label', 'Cancel');
        			},
         			
         			
@@ -522,6 +556,10 @@
     				$("#editInvoiceIdModal").dialog("open");
                	},
                	
+               	doEditInvoiceDate : function($event) {
+               		$('#editInvoiceDateModal').find('input[name="overrideInvoiceDate"]').val(GLOBAL_DATA['globalTicket'].invoiceDate);
+    				$("#editInvoiceDateModal").dialog("open");
+               	},
                	
                	populateTicketDetail:function($data) {
            			GLOBAL_DATA['globalTicket'] = $data.ticketDetail;
@@ -811,8 +849,17 @@
     				var $newInvoiceId = $('#editInvoiceIdModal').find('input[name="newInvoiceId"]').val();
     				var $newInvoiceDate = $('#editInvoiceIdModal').find('input[name="newInvoiceDate"]').val();
     				
-    				var $overrideList =[ {'invoiceId':$newInvoiceId, 'invoiceDate':$newInvoiceDate, 'geneateNewInvoice':$generateNewInvoice}];
+    				var $overrideList =[ {'invoiceId':$newInvoiceId, 'invoiceDate':$newInvoiceDate, 'generateNewInvoice':$generateNewInvoice}];
     				TICKET_OVERRIDE.doOverride($('#editInvoiceIdModal'), $overrideType, $overrideList);
+    			},
+    			
+    			
+    			saveNewInvoiceDate:function() {
+   					var $overrideType = "invoiceDate";
+    				var $newInvoiceDate = $('#editInvoiceDateModal').find('input[name="overrideInvoiceDate"]').val();
+    				
+    				var $overrideList =[ {'invoiceDate':$newInvoiceDate}];
+    				TICKET_OVERRIDE.doOverride($('#editInvoiceDateModal'), $overrideType, $overrideList);
     			},
     			
     			
@@ -1282,7 +1329,14 @@
 		   				<span id="invoiceId"></span>
 		   				<webthing:edit styleClass="action-link editInvoiceId">Edit</webthing:edit>
 		   			</td>
-		   			<td><span id="invoiceDate"></span></td>
+		   			<td>
+		   				<span id="invoiceDate"></span>
+ 				    	<ansi:hasPermission permissionRequired="TICKET_SPECIAL_OVERRIDE">
+		    				<ansi:hasWrite>
+		    					<webthing:edit styleClass="action-link editInvoiceDate">Edit</webthing:edit>
+		    				</ansi:hasWrite>
+		    			</ansi:hasPermission>
+		   			</td>
 		   			<td><span id="sumInvPpc"></span></td>
 		   			<td><span id="sumInvPpcPaid"></span></td>
 		   			<td><span id="sumInvTax"></span></td>
@@ -1368,6 +1422,20 @@
     	</div>
     	
     	
+    	
+    	<ansi:hasPermission permissionRequired="TICKET_SPECIAL_OVERRIDE">
+			<ansi:hasWrite>
+				<div id="editInvoiceDateModal">
+		    		<div class="err modalErr" ></div>
+		    		<table>		    			
+		    			<tr>
+		    				<td style="width:100px;"><span class="formLabel">Invoice Date:</span></td>
+		    				<td><input type="text" name="overrideInvoiceDate" id="overrideInvoiceDate" class="dateField" /></td>
+		    			</tr>  
+		    		</table>
+		    	</div> 			
+    		</ansi:hasWrite>
+ 		</ansi:hasPermission>
     	
     	
     </tiles:put>

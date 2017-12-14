@@ -10,6 +10,7 @@ public enum Permission {
 	QUOTE(false),
 	JOB(true),
 	TICKET(true),
+	TICKET_SPECIAL_OVERRIDE(false),    // specifically needed for invoice date
 	PAYMENT(false),
 	INVOICE(false),
 	SYSADMIN(false),
