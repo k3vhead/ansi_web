@@ -67,6 +67,7 @@ public class TicketOverrideServlet extends TicketServlet {
 	private final String MESSAGE_BILLTO_MISMATCH = "New Invoice does not have the same bill-to";
 	private final String MESSAGE_MISSING_INVOICE_ID = "Missing required value: Invoice ID";
 	private final String MESSAGE_MISSING_INVOICE_DATE = "Missing required value: Invoice Date";
+	private final String MESSAGE_INSUFFICIENT_PERMISSION = "You do not have permission to do this";
 	
 	
 	
@@ -93,11 +94,10 @@ public class TicketOverrideServlet extends TicketServlet {
 			try{
 				ansiURL = new AnsiURL(request, REALM, (String[])null); //  .../ticket/etc
 
-				SessionUser sessionUser = sessionData.getUser(); 
 				ticket.setTicketId(ansiURL.getId());
 				ticket.selectOne(conn);
 				
-				OverrideResult result = processUpdateRequest(conn, ticket, jsonString, sessionUser);
+				OverrideResult result = processUpdateRequest(conn, ticket, jsonString, sessionData);
 				WebMessages messages = new WebMessages();
 				messages.addMessage(WebMessages.GLOBAL_MESSAGE, result.message);
 
@@ -131,29 +131,38 @@ public class TicketOverrideServlet extends TicketServlet {
 		}
 	}
 
-	private OverrideResult processUpdateRequest(Connection conn, Ticket ticket, String jsonString, SessionUser sessionUser) throws Exception {
+	private OverrideResult processUpdateRequest(Connection conn, Ticket ticket, String jsonString, SessionData sessionData) throws Exception {
+		SessionUser sessionUser = sessionData.getUser(); 
+
 		HashMap<String,String> values = makeValues(jsonString);
 		OverrideResult result = new OverrideResult(false, MESSAGE_NOT_PROCESSED, ticket);
 		OverrideType overrideType = OverrideType.lookup(values.get(FIELDNAME_TYPE));
 		if ( overrideType == null ) {			
 			result = new OverrideResult(false, MESSAGE_INVALID_OVERRIDE + ": " + values.get(FIELDNAME_TYPE), ticket);
 		} else {
-			String processor = overrideType.processor();
-			Method method = this.getClass().getMethod(processor, new Class[] { Connection.class, Ticket.class, HashMap.class, SessionUser.class });
-			
-			result = (OverrideResult)method.invoke(this, new Object[]{conn, ticket, values, sessionUser});
-			if ( result.success == true ) {
-				// In some cases (eg New Invoice), ticket update is done in the process method
-				// we don't want to update the ticket twice and confuse things.
-				// But, the process worked so we commit the DB transaction
-				if ( result.doTicketUpdate) {
-					Ticket key = new Ticket();
-					key.setTicketId(ticket.getTicketId());
-					result.ticket.update(conn, key);
+			if ( sessionData.hasPermission(overrideType.permission().name())) {
+				 
+				String processor = overrideType.processor();
+				Method method = this.getClass().getMethod(processor, new Class[] { Connection.class, Ticket.class, HashMap.class, SessionUser.class });
+				
+				result = (OverrideResult)method.invoke(this, new Object[]{conn, ticket, values, sessionUser});
+				if ( result.success == true ) {
+					// In some cases (eg New Invoice), ticket update is done in the process method
+					// we don't want to update the ticket twice and confuse things.
+					// But, the process worked so we commit the DB transaction
+					if ( result.doTicketUpdate) {
+						Ticket key = new Ticket();
+						key.setTicketId(ticket.getTicketId());
+						result.ticket.update(conn, key);
+					}
+					conn.commit();
+				} else {
+					conn.rollback();
 				}
-				conn.commit();
 			} else {
-				conn.rollback();
+				Boolean success = false;
+				Boolean doUpdate = false;
+				result = new OverrideResult(success, MESSAGE_INSUFFICIENT_PERMISSION, ticket, doUpdate);
 			}
 		}		
 		
@@ -296,6 +305,29 @@ public class TicketOverrideServlet extends TicketServlet {
 	}
 	
 	
+	public OverrideResult doInvoiceDate(Connection conn, Ticket ticket, HashMap<String, String> values, SessionUser sessionUser) throws Exception {
+		System.out.println("processing invoice date");
+		Boolean success = null;
+		String message = null;
+		
+
+		if ( values.containsKey(FIELDNAME_INVOICE_DATE) ) {
+			String dateForamt = AppUtils.getProperty(PropertyNames.COMMON_DATE_FORMAT);
+			SimpleDateFormat sdf = new SimpleDateFormat(dateForamt);
+			Date date = sdf.parse(values.get(FIELDNAME_INVOICE_DATE));
+			Calendar invoiceDate = Calendar.getInstance(new AnsiTime());
+			invoiceDate.setTime(date);
+			ticket.setInvoiceDate(date);
+			success = true;
+			message = MESSAGE_SUCCESS;
+		} else {
+			success = false;
+			message = MESSAGE_MISSING_INVOICE_DATE;
+		}
+		return new OverrideResult(success, message, ticket, true);
+	}
+	
+	
 	
 	private boolean isSameBillTo(Connection conn, Integer ticketId, Integer newInvoiceId) throws Exception {
 		try {
@@ -316,20 +348,29 @@ public class TicketOverrideServlet extends TicketServlet {
 	}
 
 	/**
+	 * This enum acts as the traffic cop for valid ticket overrides. If the type isn't here, then it itsn't valid. It
+	 * also determines the method that is called (via reflection, that's why everything is "public") to do the actual
+	 * ticket update.
+	 * 
 	 * id - the string identifying what kind of override we're doing
 	 * processor - the method in the servlet that process the request. Must have signature: methodName(Integer ticketId, HashMap<String, String> values)
+	 * permission - any permission required beyond the TICKET that is minimum required to do this update. (Yes, we're checking
+	 * 		for "ticket" twice, but it's at minimal cost, and it makes the code easier)
 	 * 
 	 * @author dclewis
 	 *
 	 */
 	public enum OverrideType {
-		START_DATE("startDate", "doStartDate"),
-		PROCESS_DATE("processDate", "doProcessDate"),
-		INVOICE("invoice", "doInvoice"),
-		NEWINVOICE("newInvoice","doNewInvoice");
+		START_DATE("startDate", "doStartDate", Permission.TICKET),
+		PROCESS_DATE("processDate", "doProcessDate", Permission.TICKET),
+		INVOICE("invoice", "doInvoice", Permission.TICKET),
+		NEW_INVOICE("newInvoice","doNewInvoice", Permission.TICKET),
+		INVOICE_DATE("invoiceDate","doInvoiceDate", Permission.TICKET_SPECIAL_OVERRIDE),
+		;
 		
 		private final String id;
 		private final String processor;
+		private final Permission permission;
 		private static final Map<String, OverrideType> lookup = new HashMap<String, OverrideType>();
 		
 		static {
@@ -338,15 +379,18 @@ public class TicketOverrideServlet extends TicketServlet {
 			}
 		}
 		
-		OverrideType(String id, String processor) {
+		OverrideType(String id, String processor, Permission permission) {
 			this.id = id;
 			this.processor = processor;
+			this.permission = permission;
 		}
 		
 		public String id() { return id; }
 		public String processor() { return processor; }
+		public Permission permission() { return permission; }
 		public static OverrideType lookup(String id) { return lookup.get(id); }
 	}
+	
 	
 	public class OverrideResult extends ApplicationObject {
 		private static final long serialVersionUID = 1L;
