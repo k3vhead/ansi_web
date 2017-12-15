@@ -4,7 +4,7 @@
 }
 /*All Headers*/
 .ansi-stdrpt-header-table {
-	width:100%;	
+	width:85%;	
 	/*text-align: center*/
 	/*border:solid 1px #000000;*/
 }
@@ -16,7 +16,6 @@
 }
 /*All Headers*/
 .ansi-stdrpt-header-row {	
-	width: 100%;
 	font-weight:bold;
 	/*text-align: center;*/
 }
@@ -64,7 +63,6 @@
 /*All ANSI Headers*/
 .ansi-stdrpt-banner {
 	font-size:larger;
-	position: flex;
 	text-align: center;
 
  	
@@ -108,11 +106,13 @@
 }
 /*Create and For Header*/
 .css-data-header-left {
+	width: 50px;
 	font-weight:bold;
 	text-alignment:left;	
 }
 /*Dates Created and For*/
 .css-data-left {
+	width: 150px;
 	font-weight:normal;
 	text-align:left;
 }
@@ -126,28 +126,27 @@
 }
 /*To and From*/
 .css-data-header-right {
-		
+	width: 150px;
 	font-weight:bold;
-	text-align: left;
 }
 /*To and From Date Detail Page*/
 .css-data-right {
+	width: 150px;
 	font-weight: normal;
-	vertical-align:left;
+	text-align: left;
 }
 /*To and From Detail Page*/
 .css-data-header-right-text {
-	
 	font-weight:normal;
 	text-align:left;
 }
 /*To and From Date Detail Page*/
 .css-data-right-text {
-
 	text-align:left;
 }
 /*?????????????????*/
 .css-data-center {
+	
 
 }
 /*?????????????*/
