@@ -668,6 +668,7 @@
     				$("#serviceDescription").html($data.ticketDetail.serviceDescription);
     				$("#jobFrequency").html($data.ticketDetail.jobFrequency);
     				$("#invoiceStyle").html($data.ticketDetail.invoiceStyle);
+    				$("#poNumber").html($data.ticketDetail.poNumber);
     			},
 
     			
@@ -1045,6 +1046,7 @@
 	        		<th>Job ID</th><td><span id="jobId"></span></td>
 	        		<th>Payment Terms:</th><td><span id="invoiceStyle"></span></td>
 	        		<th>Frequency</th><td><span id="jobFrequency"></span></td>
+	        		<th>PO #</th><td><span id="poNumber"></span></td>
         		</tr>
         		<tr>
 	        		<th colspan="2">Service Description:</th><td colspan="8"><span id="serviceDescription"></span></td>

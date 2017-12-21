@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.common.db.Job;
 import com.ansi.scilla.common.db.TaxRate;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.invoice.InvoiceStyle;
@@ -83,6 +84,7 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 	private Date taxRateEffectiveDate;
 	private String taxRateLocation;
 	private BigDecimal taxRate;
+	private String poNumber;
 	
 	/* ******************************************** */
 	/* ******************************************** */
@@ -96,9 +98,16 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		ticket.setTicketId(ticketId);
 		ticket.selectOne(conn);
 		TicketPaymentTotals ticketPaymentTotals = TicketPaymentTotals.select(conn, ticketId);
+		
 		Division division = new Division();
 		division.setDivisionId(ticketPaymentTotals.getDivisionId());
 		division.selectOne(conn);
+		
+		Job job = new Job();
+		job.setJobId(ticket.getJobId());
+		job.selectOne(conn);
+		
+		
 		this.defaultDirectLaborPct = division.getDefaultDirectLaborPct();
 		this.ticketId = ticketId;
 		if ( ticket.getInvoiceDate() != null ) {
@@ -153,6 +162,7 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		this.taxRateEffectiveDate = taxRate.getEffectiveDate();
 		this.taxRateLocation = taxRate.getLocation();
 		this.taxRate = taxRate.getRate();
+		this.poNumber = job.getPoNumber();
 	}
 
 	public Integer getTicketId() {
@@ -473,6 +483,14 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 
 	public void setTaxRate(BigDecimal taxRate) {
 		this.taxRate = taxRate;
+	}
+
+	public String getPoNumber() {
+		return poNumber;
+	}
+
+	public void setPoNumber(String poNumber) {
+		this.poNumber = poNumber;
 	}
 
 	
