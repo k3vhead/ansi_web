@@ -162,7 +162,11 @@
 				            	//var $editLink = "<a href='ticketReturn.html?id="+row.ticketId+"' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.ticketId+"'></a>";
 				            	var $editLink = '<a href="ticketReturn.html?id='+row.ticketId+'" class="editAction" data-id="'+row.ticketId+'"><webthing:edit>Edit</webthing:edit></a>';
 				            	//var $overrideLink = "<a href='ticketOverride.html?id="+row.ticketId+"' class=\"overrideAction fa fa-magic\" data-id='"+row.ticketId+"'></a>";
-				            	var $overrideLink = '<a href="ticketOverride.html?id='+row.ticketId+'" class="overrideAction" data-id="'+row.ticketId+'"><webthing:override>Override</webthing:override></a>';
+				            	if ( row.ticketStatus == 'F' ) {
+				            		var $overrideLink = "";
+				            	} else {
+				            		var $overrideLink = '<a href="ticketOverride.html?id='+row.ticketId+'" class="overrideAction" data-id="'+row.ticketId+'"><webthing:override>Override</webthing:override></a>';
+				            	}
 				            	if ( row.ticketStatus == 'N' || row.ticketStatus == 'D' 
 				            			|| row.ticketStatus == 'C' || row.ticketStatus == 'I' || row.ticketStatus == 'P') {
 				            		var $ticketData = 'data-id="' + row.ticketId + '"';
