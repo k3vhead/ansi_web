@@ -82,6 +82,9 @@
 			#editInvoiceIdModal {
 				display:none;
 			}
+			#editActualPPCModal {
+				display:none;
+			}
 			#displayTicketTable {
     			border-collapse: collapse;
 				width:90%;
@@ -179,6 +182,9 @@
         			});
         			$(".editInvoiceDate").click(function($event) {
         				TICKET_OVERRIDE.doEditInvoiceDate($event);
+        			});
+        			$(".editActualPPC").click(function($event) {
+        				TICKET_OVERRIDE.doEditActualPPC($event);
         			});
         			$("#generateInvoice").checkboxradio();
 					$("#generateInvoice").click(function($event) {
@@ -378,6 +384,37 @@
         			});
             		$('#saveInvoiceDateModal').button('option', 'label', 'Save');
             		$('#cancelInvoiceDateModal').button('option', 'label', 'Cancel');
+
+            		
+            		
+            		
+            		
+            		
+            		$("#editActualPPCModal").dialog({
+        				title:'Edit Ticket Amount',
+        				autoOpen: false,
+        				height: 300,
+        				width: 400,
+        				modal: true,
+        				buttons: [
+        					{
+        						id: "cancelActualPPCModal",
+        						click: function() {
+        							$("#editActualPPCModal").dialog( "close" );
+        						}
+        					},{
+        						id: "saveActualPPCModal",
+        						click: function($event) {
+        							TICKET_OVERRIDE.saveNewActualPPC();
+        						}
+        					}
+        				],
+        				close: function() {
+        					$("#editActualPPCModal").dialog( "close" );
+        				}
+        			});
+            		$('#saveActualPPCModal').button('option', 'label', 'Save');
+            		$('#cancelActualPPCModal').button('option', 'label', 'Cancel');
        			},
         			
         			
@@ -559,6 +596,11 @@
                	doEditInvoiceDate : function($event) {
                		$('#editInvoiceDateModal').find('input[name="overrideInvoiceDate"]').val(GLOBAL_DATA['globalTicket'].invoiceDate);
     				$("#editInvoiceDateModal").dialog("open");
+               	},
+               	
+               	doEditActualPPC : function($event) {
+               		$('#editActualPPCModal').find('input[name="overrideActualPPC"]').val(GLOBAL_DATA['globalTicket'].actPricePerCleaning.substring(1));
+    				$("#editActualPPCModal").dialog("open");
                	},
                	
                	populateTicketDetail:function($data) {
@@ -861,6 +903,15 @@
     				
     				var $overrideList =[ {'invoiceDate':$newInvoiceDate}];
     				TICKET_OVERRIDE.doOverride($('#editInvoiceDateModal'), $overrideType, $overrideList);
+    			},
+    			
+    			
+    			saveNewActualPPC : function() {
+    				var $overrideType = "actPricePerCleaning";
+    				var $newActualPPC = $('#editActualPPCModal').find('input[name="overrideActualPPC"]').val();
+    				
+    				var $overrideList =[ {'actPricePerCleaning':$newActualPPC}];
+    				TICKET_OVERRIDE.doOverride($('#editActualPPCModal'), $overrideType, $overrideList);
     			},
     			
     			
@@ -1262,17 +1313,22 @@
 		   			<th>FM ID</th>
 		   		</tr>
 		   		<tr>
+		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="ticketId"></span></td>
 		   			<td style="border-bottom:solid 1px #000000; width:9%;">
-		   				<span id="ticketId"></span>&nbsp;
+		   				<span id="actPricePerCleaning"></span>
+		   				<ansi:hasPermission permissionRequired="TICKET_SPECIAL_OVERRIDE">
+		    				<ansi:hasWrite>
+		    					<webthing:edit styleClass="action-link editActualPPC">Edit</webthing:edit>
+		    				</ansi:hasWrite>
+		    			</ansi:hasPermission>
 		   			</td>
-		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="actPricePerCleaning"></span></td>
 		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="totalVolPaid"></span></td>
 		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="actTax"></span></td>
 		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="totalTaxPaid"></span></td>
 		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="ticketBalance"></span></td>
+		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="ticketType"></span></td>
 		   			<td style="border-bottom:solid 1px #000000; width:8%;"><span id="actDlAmt"></span></td>
 		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="actDlPct"></span></td>
-		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="ticketType"></span></td>
 		   			<td style="border-bottom:solid 1px #000000; white-space:nowrap; width:10%;">
 		   				<span id="startDate"></span>
 	   					<webthing:edit styleClass="editStartDate action-link">Edit</webthing:edit>
@@ -1433,6 +1489,21 @@
 		    			<tr>
 		    				<td style="width:100px;"><span class="formLabel">Invoice Date:</span></td>
 		    				<td><input type="text" name="overrideInvoiceDate" id="overrideInvoiceDate" class="dateField" /></td>
+		    			</tr>  
+		    		</table>
+		    	</div> 			
+    		</ansi:hasWrite>
+ 		</ansi:hasPermission>
+    	
+    	
+    	<ansi:hasPermission permissionRequired="TICKET_SPECIAL_OVERRIDE">
+			<ansi:hasWrite>
+				<div id="editActualPPCModal">
+		    		<div class="err modalErr" ></div>
+		    		<table>		    			
+		    			<tr>
+		    				<td style="width:100px;"><span class="formLabel">Ticket Amt:</span></td>
+		    				<td><input type="text" name="overrideActualPPC" id="overrideActualPPC" /></td>
 		    			</tr>  
 		    		</table>
 		    	</div> 			

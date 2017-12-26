@@ -2,6 +2,7 @@ package com.ansi.scilla.web.ticket.servlet;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,6 +16,8 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
 
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.ApplicationObject;
@@ -55,19 +58,21 @@ public class TicketOverrideServlet extends TicketServlet {
 	public static final String FIELDNAME_PROCESS_NOTE = "processNote";
 	public static final String FIELDNAME_INVOICE_ID = "invoiceId";
 	public static final String FIELDNAME_INVOICE_DATE = "invoiceDate";
+	public static final String FIELDNAME_ACT_PRICE_PER_CLEANING = "actPricePerCleaning";
 	
 	private final String MESSAGE_SUCCESS = "Success";
-	private final String MESSAGE_INVALID_FORMAT = "Invalid Format";
-	private final String MESSAGE_INVALID_OVERRIDE = "Invalid Override";
 	private final String MESSAGE_NOT_PROCESSED = "Not Processed";
+	private final String MESSAGE_INSUFFICIENT_PERMISSION = "You do not have permission to do this";
+	private final String MESSAGE_BILLTO_MISMATCH = "New Invoice does not have the same bill-to";
 	private final String MESSAGE_INVALID_DATE = "Invalid Date";
 	private final String MESSAGE_INVALID_INVOICE_ID = "Invalid Invoice ID";
-	private final String MESSAGE_MISSING_START_DATE = "Missing required value: start date";
-	private final String MESSAGE_MISSING_PROCESS_NOTE = "Missing required values: process date/process notes";
-	private final String MESSAGE_BILLTO_MISMATCH = "New Invoice does not have the same bill-to";
+	private final String MESSAGE_INVALID_FORMAT = "Invalid Format";
+	private final String MESSAGE_INVALID_OVERRIDE = "Invalid Override";
 	private final String MESSAGE_MISSING_INVOICE_ID = "Missing required value: Invoice ID";
 	private final String MESSAGE_MISSING_INVOICE_DATE = "Missing required value: Invoice Date";
-	private final String MESSAGE_INSUFFICIENT_PERMISSION = "You do not have permission to do this";
+	private final String MESSAGE_MISSING_PROCESS_NOTE = "Missing required values: process date/process notes";
+	private final String MESSAGE_MISSING_START_DATE = "Missing required value: start date";
+	private final String MESSAGE_MISSING_VALUE_PPC = "Missing required value: Actual Price Per Cleaning";
 	
 	
 	
@@ -153,6 +158,8 @@ public class TicketOverrideServlet extends TicketServlet {
 					if ( result.doTicketUpdate) {
 						Ticket key = new Ticket();
 						key.setTicketId(ticket.getTicketId());
+						Logger logger = AppUtils.getLogger();
+						logger.debug(ticket);
 						result.ticket.update(conn, key);
 					}
 					conn.commit();
@@ -312,8 +319,8 @@ public class TicketOverrideServlet extends TicketServlet {
 		
 
 		if ( values.containsKey(FIELDNAME_INVOICE_DATE) ) {
-			String dateForamt = AppUtils.getProperty(PropertyNames.COMMON_DATE_FORMAT);
-			SimpleDateFormat sdf = new SimpleDateFormat(dateForamt);
+			String dateFormat = AppUtils.getProperty(PropertyNames.COMMON_DATE_FORMAT);
+			SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
 			Date date = sdf.parse(values.get(FIELDNAME_INVOICE_DATE));
 			Calendar invoiceDate = Calendar.getInstance(new AnsiTime());
 			invoiceDate.setTime(date);
@@ -323,6 +330,34 @@ public class TicketOverrideServlet extends TicketServlet {
 		} else {
 			success = false;
 			message = MESSAGE_MISSING_INVOICE_DATE;
+		}
+		return new OverrideResult(success, message, ticket, true);
+	}
+	
+	
+	
+	public OverrideResult doPricePerCleaning(Connection conn, Ticket ticket, HashMap<String, String> values, SessionUser sessionUser) throws Exception {
+		System.out.println("processing PPC");
+		Boolean success = null;
+		String message = null;
+		
+
+		if ( values.containsKey(FIELDNAME_ACT_PRICE_PER_CLEANING) ) {
+			try {
+				String value = values.get(FIELDNAME_ACT_PRICE_PER_CLEANING);
+				Double actPricePerCleaning = Double.valueOf(value);
+				ticket.setActPricePerCleaning(new BigDecimal(actPricePerCleaning));
+				Double actDlAmt = actPricePerCleaning * ticket.getActDlPct().doubleValue();
+				ticket.setActDlAmt( new BigDecimal(actDlAmt) );
+				success = true;
+				message = MESSAGE_SUCCESS;
+			} catch ( NumberFormatException e ) {
+				success = false;
+				message = MESSAGE_INVALID_FORMAT + ": Must be numeric";
+			}
+		} else {
+			success = false;
+			message = MESSAGE_MISSING_VALUE_PPC;
 		}
 		return new OverrideResult(success, message, ticket, true);
 	}
@@ -366,6 +401,7 @@ public class TicketOverrideServlet extends TicketServlet {
 		INVOICE("invoice", "doInvoice", Permission.TICKET),
 		NEW_INVOICE("newInvoice","doNewInvoice", Permission.TICKET),
 		INVOICE_DATE("invoiceDate","doInvoiceDate", Permission.TICKET_SPECIAL_OVERRIDE),
+		ACT_PRICE_PER_CLEANING("actPricePerCleaning","doPricePerCleaning", Permission.TICKET_SPECIAL_OVERRIDE),
 		;
 		
 		private final String id;
