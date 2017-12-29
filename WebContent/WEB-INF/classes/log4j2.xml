@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" name="ANSI Web">
+	<Appenders>
+		<Console name="STDOUT" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{yyyy/MM/dd HH:mm:ss.S} | %p | %l | %m%n"/>
+		</Console>
+		<File name="application_log" fileName="logs/com_ansi_scilla" append="true">
+			<PatternLayout pattern="%d{yyyy/MM/dd HH:mm:ss.S} | %p | %l | %m%n"/>
+		</File>
+		<File name="transaction_log" fileName="logs/ansi_scilla_transaction_log" append="true">
+			<PatternLayout pattern="%d{yyyy/MM/dd HH:mm:ss.S} | %p | %l | %m%n"/>
+		</File>
+		<File name="apache_log" fileName="logs/com_scilla_apache_log" append="true">
+			<PatternLayout pattern="%d{yyyy/MM/dd HH:mm:ss.S} | %p | %l | %m%n"/>
+		</File>
+		<File name="webthing_log" fileName="logs/com_thewebthing_log" append="true">
+			<PatternLayout pattern="%d{yyyy/MM/dd HH:mm:ss.S} | %p | %l | %m%n"/>
+		</File>
+	</Appenders>
+	
+	
+	<Loggers>
+		<Logger name="com.ansi.scilla" level="debug">
+			<appender-ref ref="application_log" level="debug" />
+		</Logger>
+		<Logger name="TRANSACTION_LOG" level="info">
+			<appender-ref ref="transaction_log" level="info" />
+		</Logger>
+		<Logger name="org.apache.struts" level="error">
+			<appender-ref ref="apache_log" level="error" />
+		</Logger>
+		<Logger name="com.thewebthing" level="error">
+			<appender-ref ref="webthing_log" level="error" />
+		</Logger>
+    	<Root level="debug">
+      		<AppenderRef ref="STDOUT"/>
+    	</Root>
+	</Loggers>
+</Configuration>

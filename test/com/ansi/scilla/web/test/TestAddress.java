@@ -11,7 +11,6 @@ public class TestAddress {
 		};
 
 	public static void main(String[] args) {
-		TesterUtils.makeLoggers();
 		
 		try {
 			//new TestAddress().testDelete(3);

@@ -8,7 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -22,7 +23,6 @@ import com.ansi.scilla.web.exceptions.InvalidLoginException;
 import com.ansi.scilla.web.exceptions.MissingRequiredDataException;
 import com.ansi.scilla.web.login.request.LoginRequest;
 import com.ansi.scilla.web.login.response.LoginResponse;
-import com.ansi.scilla.web.ticket.response.TicketReturnResponse;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.lang.StringUtils;
 
@@ -52,6 +52,7 @@ public class LoginServlet extends AbstractServlet {
 				session.setAttribute(SessionData.KEY, sessionData);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, loginResponse);
 			} catch ( InvalidFormatException e ) {
+				logger.log(Level.DEBUG, "invalid format");
 				String badField = super.findBadField(e.toString());
 				LoginResponse data = new LoginResponse();
 				WebMessages messages = new WebMessages();
@@ -59,7 +60,7 @@ public class LoginServlet extends AbstractServlet {
 				data.setWebMessages(messages);
 				super.sendResponse(conn, response, ResponseCode.INVALID_LOGIN, data);
 			} catch ( MissingRequiredDataException e) {
-				logger.debug("missing login data");
+				logger.log(Level.DEBUG, "missing login data");
 				super.sendResponse(conn, response,ResponseCode.INVALID_LOGIN, loginResponse);
 			} catch ( ExpiredLoginException e) {
 				logger.debug("login expired");

@@ -8,7 +8,6 @@ import java.util.regex.Pattern;
 
 import com.ansi.scilla.web.common.servlet.MotdServlet;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.test.TesterUtils;
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
@@ -20,7 +19,6 @@ public class QOTD {
 	
 	public static void main(String[] args) {
 		try {
-			TesterUtils.makeLoggers();
 //			new QOTD().go();
 //			new QOTD().regex();
 			new QOTD().testServlet();

@@ -8,7 +8,6 @@ import com.thewebthing.commons.lang.StringUtils;
 public class TestContactSearch {
 
 	public static void main(String[] args) {
-		TesterUtils.makeLoggers();
 		try {
 			String term = URLEncoder.encode("bob thomas", "UTF-8");
 			new TestContactSearch().goxx("term=&");

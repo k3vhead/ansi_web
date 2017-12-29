@@ -12,35 +12,16 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 
-import com.ansi.scilla.common.utils.PropertyNames;
-import com.ansi.scilla.web.common.utils.AppUtils;
 import com.thewebthing.commons.lang.StringUtils;
 
 public class TesterUtils {
-	public TesterUtils() {
-		makeLoggers();
-	}
 	
+	/**
+	 * This is only here for backward compatability. It does nothing.
+	 * @deprecated replace with LogManager.getLogger(logname);
+	 */
 	public static void makeLoggers() {
-		for ( String loggerName : new String[] {"com.thewebthing","org.apache"} ) {
-			makeLogger(loggerName, Level.INFO);
-		}
-		String ansiLoggerName = AppUtils.getProperty(PropertyNames.LOG_NAME);
-		makeLogger(ansiLoggerName, Level.DEBUG);
-	}
-
-	private static void makeLogger(String loggerName, Level level) {
-		Logger logger = Logger.getLogger(loggerName);
-		PatternLayout layout = new PatternLayout(AppUtils.getProperty(PropertyNames.LOG_PATTERN));
-		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
-		logger.addAppender(consoleAppender);
-		consoleAppender.activateOptions();
-		logger.setLevel(level);
 		
 	}
 	

@@ -10,7 +10,6 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URLDecoder;
 import java.sql.Connection;
-import java.util.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -18,9 +17,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
 import java.util.Random;
 import java.util.ResourceBundle;
 
@@ -31,10 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
 
 import com.ansi.scilla.common.db.ApplicationProperties;
@@ -86,95 +83,99 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 	/**
 	 * Create an application logger.
 	 * @throws IOException
+	 * @deprecated
 	 */
 	public static void makeApplicationLogger() throws IOException {
-		Properties properties = System.getProperties();
-		String catalinaBase = properties.getProperty("catalina.base");
-		if ( catalinaBase == null ) {
-			catalinaBase = "/Users/dclewis/Documents";
-		}
-		String fileSeparator = properties.getProperty("file.separator");
-
-		String logName = getProperty(PropertyNames.LOG_NAME);
-		String logfilename = logName.replaceAll("\\.", "_"); 
-
-		Logger logger = Logger.getLogger(logName);
-		PatternLayout layout = new PatternLayout(getProperty(PropertyNames.LOG_PATTERN));
-		FileAppender systemFileAppender = new FileAppender(
-				layout,
-				catalinaBase + fileSeparator + "logs" + fileSeparator + logfilename);
-		logger.addAppender(systemFileAppender);
-		systemFileAppender.activateOptions();
-		logger.setLevel(Level.DEBUG);
+//		Properties properties = System.getProperties();
+//		String catalinaBase = properties.getProperty("catalina.base");
+//		if ( catalinaBase == null ) {
+//			catalinaBase = "/Users/dclewis/Documents";
+//		}
+//		String fileSeparator = properties.getProperty("file.separator");
+//
+//		String logName = getProperty(PropertyNames.LOG_NAME);
+//		String logfilename = logName.replaceAll("\\.", "_"); 
+//
+//		Logger logger = Logger.getLogger(logName);
+//		PatternLayout layout = new PatternLayout(getProperty(PropertyNames.LOG_PATTERN));
+//		FileAppender systemFileAppender = new FileAppender(
+//				layout,
+//				catalinaBase + fileSeparator + "logs" + fileSeparator + logfilename);
+//		logger.addAppender(systemFileAppender);
+//		systemFileAppender.activateOptions();
+//		logger.setLevel(Level.DEBUG);
 	}
 	
 	/**
 	 * Create a logger to be used by apache utilities
 	 * @throws IOException
+	 * @deprecated
 	 */
 	public static void makeApacheLogger() throws IOException {
-		Properties properties = System.getProperties();
-		String catalinaBase = properties.getProperty("catalina.base");
-		if ( catalinaBase == null ) {
-			catalinaBase = "/Users/dclewis/Documents";
-		}
-		String fileSeparator = properties.getProperty("file.separator");
-
-
-		Logger logger = Logger.getLogger("org.apache.struts");
-		PatternLayout layout = new PatternLayout(getProperty(PropertyNames.LOG_PATTERN));
-		FileAppender systemFileAppender = new FileAppender(
-				layout,
-				catalinaBase + fileSeparator + "logs" + fileSeparator + "com_scilla_apache_log");
-		logger.addAppender(systemFileAppender);
-		systemFileAppender.activateOptions();
-		logger.setLevel(Level.INFO);
+//		Properties properties = System.getProperties();
+//		String catalinaBase = properties.getProperty("catalina.base");
+//		if ( catalinaBase == null ) {
+//			catalinaBase = "/Users/dclewis/Documents";
+//		}
+//		String fileSeparator = properties.getProperty("file.separator");
+//
+//
+//		Logger logger = Logger.getLogger("org.apache.struts");
+//		PatternLayout layout = new PatternLayout(getProperty(PropertyNames.LOG_PATTERN));
+//		FileAppender systemFileAppender = new FileAppender(
+//				layout,
+//				catalinaBase + fileSeparator + "logs" + fileSeparator + "com_scilla_apache_log");
+//		logger.addAppender(systemFileAppender);
+//		systemFileAppender.activateOptions();
+//		logger.setLevel(Level.INFO);
 	}
 
 	/**
 	 * Create a logger to be used by webthing utilities
 	 * @throws IOException
+	 * @deprecated
 	 */
 	public static void makeWebthingLogger() throws IOException {
-		Properties properties = System.getProperties();
-		String catalinaBase = properties.getProperty("catalina.base");
-		if ( catalinaBase == null ) {
-			catalinaBase = "/Users/dcl/Documents";
-		}
-		String fileSeparator = properties.getProperty("file.separator");
-
-
-		Logger logger = Logger.getLogger("com.thewebthing");
-		PatternLayout layout = new PatternLayout(getProperty(PropertyNames.LOG_PATTERN));
-		FileAppender systemFileAppender = new FileAppender(
-				layout,
-				catalinaBase + fileSeparator + "logs" + fileSeparator + "com_thewebthing_log");
-		logger.addAppender(systemFileAppender);
-		systemFileAppender.activateOptions();
-		logger.setLevel(Level.DEBUG);
+//		Properties properties = System.getProperties();
+//		String catalinaBase = properties.getProperty("catalina.base");
+//		if ( catalinaBase == null ) {
+//			catalinaBase = "/Users/dcl/Documents";
+//		}
+//		String fileSeparator = properties.getProperty("file.separator");
+//
+//
+//		Logger logger = Logger.getLogger("com.thewebthing");
+//		PatternLayout layout = new PatternLayout(getProperty(PropertyNames.LOG_PATTERN));
+//		FileAppender systemFileAppender = new FileAppender(
+//				layout,
+//				catalinaBase + fileSeparator + "logs" + fileSeparator + "com_thewebthing_log");
+//		logger.addAppender(systemFileAppender);
+//		systemFileAppender.activateOptions();
+//		logger.setLevel(Level.DEBUG);
 	}
 
 	/**
 	 * Create a logger to track all transactions
 	 * @throws IOException
+	 * @deprecated
 	 */
 	public static void makeTransactionLogger() throws IOException {
-		Properties properties = System.getProperties();
-		String catalinaBase = properties.getProperty("catalina.base");
-		if ( catalinaBase == null ) {
-			catalinaBase = "/Users/dcl/Documents";
-		}
-		String fileSeparator = properties.getProperty("file.separator");
-
-
-		Logger logger = Logger.getLogger(PropertyNames.TRANSACTION_LOG.toString());
-		PatternLayout layout = new PatternLayout(getProperty(PropertyNames.LOG_PATTERN));
-		FileAppender systemFileAppender = new FileAppender(
-				layout,
-				catalinaBase + fileSeparator + "logs" + fileSeparator + "ansi_scilla_transaction_log");
-		logger.addAppender(systemFileAppender);
-		systemFileAppender.activateOptions();
-		logger.setLevel(Level.INFO);		
+//		Properties properties = System.getProperties();
+//		String catalinaBase = properties.getProperty("catalina.base");
+//		if ( catalinaBase == null ) {
+//			catalinaBase = "/Users/dcl/Documents";
+//		}
+//		String fileSeparator = properties.getProperty("file.separator");
+//
+//
+//		Logger logger = Logger.getLogger(PropertyNames.TRANSACTION_LOG.toString());
+//		PatternLayout layout = new PatternLayout(getProperty(PropertyNames.LOG_PATTERN));
+//		FileAppender systemFileAppender = new FileAppender(
+//				layout,
+//				catalinaBase + fileSeparator + "logs" + fileSeparator + "ansi_scilla_transaction_log");
+//		logger.addAppender(systemFileAppender);
+//		systemFileAppender.activateOptions();
+//		logger.setLevel(Level.INFO);		
 	}
 
 
@@ -184,7 +185,7 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 	 * @param e
 	 */
 	public static void logException(Exception e) {
-		Logger logger = Logger.getLogger(getProperty(PropertyNames.LOG_NAME));
+		Logger logger = LogManager.getLogger(getProperty(PropertyNames.LOG_NAME));
 
 		StringBuffer buf = new StringBuffer();
 		buf.append(e.toString() + "\n");
@@ -200,7 +201,7 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 	 * @return
 	 */
 	public static Logger getLogger() {
-		Logger logger = Logger.getLogger(getProperty(PropertyNames.LOG_NAME));
+		Logger logger = LogManager.getLogger(getProperty(PropertyNames.LOG_NAME));
 		return logger;
 	}
 	
@@ -460,8 +461,8 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
         String userEmail = user == null ? "n/a" : user.getEmail();
         // Don't log passwords
         String logString = jsonString.replaceAll("\"password\":\".*\"", "\"password\":\"*******\"");
-        Logger logger = Logger.getLogger(PropertyNames.TRANSACTION_LOG.toString());
-        logger.info("User: " + userEmail + "\tParameters: " + logString);
+        Logger logger = LogManager.getLogger(PropertyNames.TRANSACTION_LOG.toString());
+        logger.info("User Login: " + userEmail + "\tParameters: " + logString);
 		
 	}
 }

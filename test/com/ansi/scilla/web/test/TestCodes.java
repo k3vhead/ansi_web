@@ -22,7 +22,6 @@ public class TestCodes {
 		};
 
 	public static void main(String[] args) {
-		TesterUtils.makeLoggers();
 		try {
 //			new TestCodes().go();
 //			new TestCodes().testUri();
