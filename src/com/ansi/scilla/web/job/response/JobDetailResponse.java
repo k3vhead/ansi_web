@@ -2,15 +2,18 @@ package com.ansi.scilla.web.job.response;
 
 import java.sql.Connection;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
 import com.ansi.scilla.common.db.Address;
 import com.ansi.scilla.common.db.Job;
 import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.db.ViewTicketLog;
-import com.ansi.scilla.common.utils.AppUtils;
 import com.ansi.scilla.web.address.response.AddressResponseRecord;
 import com.ansi.scilla.web.common.response.MessageResponse;
+import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.quote.response.QuoteDetail;
 import com.ansi.scilla.web.ticket.response.TicketLogRecord;
 import com.ansi.scilla.web.ticket.response.TicketRecord;
@@ -34,6 +37,7 @@ public class JobDetailResponse extends MessageResponse {
 	
 	public JobDetailResponse(Connection conn, Integer jobId) throws RecordNotFoundException, Exception {
 		this();
+		Logger logger = AppUtils.getLogger();
 		Job job = new Job();
 		job.setJobId(jobId);
 		job.selectOne(conn);
@@ -49,14 +53,12 @@ public class JobDetailResponse extends MessageResponse {
 		this.job = new JobDetail(job, addedBy, updatedBy);
 
 		
-		System.out.println("JobDetailResponse 44");
-		System.out.println(this.job.toJson());
+		logger.log(Level.DEBUG, this.job.toJson());
 		
 		Quote quote = new Quote();
 		quote.setQuoteId(job.getQuoteId());
 		quote.selectOne(conn);		
-		System.out.println("JobDetailResponse 49");
-		System.out.println(quote);
+		logger.log(Level.DEBUG, quote);
 		this.quote = new QuoteDetail(quote);
 		
 		Address jobSiteAddress = new Address();

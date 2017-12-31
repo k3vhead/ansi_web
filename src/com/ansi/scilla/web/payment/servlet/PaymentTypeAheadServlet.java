@@ -19,6 +19,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Level;
+
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.jsonFormat.AnsiFormat;
@@ -73,14 +75,14 @@ public class PaymentTypeAheadServlet extends AbstractServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String url = request.getRequestURI();
-		System.out.println("PaymentTypeAheadServlet(): doGet(): url =" + url);
+		logger.log(Level.DEBUG, "PaymentTypeAheadServlet(): doGet(): url =" + url);
 		int idx = url.indexOf("/paymentTypeAhead/");
 		if ( idx > -1 ) {
 			super.sendNotFound(response);
 		} else {
 			Connection conn = null;
 			String qs = request.getQueryString();
-			System.out.println("PaymentTypeAheadServlet(): doGet(): qs =" + qs);
+			logger.log(Level.DEBUG, "PaymentTypeAheadServlet(): doGet(): qs =" + qs);
 			String term = "";
 			if ( StringUtils.isBlank(qs)) { // No query string
 				super.sendNotFound(response);
@@ -89,8 +91,8 @@ public class PaymentTypeAheadServlet extends AbstractServlet {
 				if ( idx > -1 ) { // There is a search term "term="
 					Map<String, String> map = AppUtils.getQueryMap(qs);
 					String queryTerm = map.get("term");
-					System.out.println("PaymentTypeAheadServlet(): doGet(): map =" + map);
-					System.out.println("PaymentTypeAheadServlet(): doGet(): term =" + queryTerm);
+					logger.log(Level.DEBUG, "PaymentTypeAheadServlet(): doGet(): map =" + map);
+					logger.log(Level.DEBUG, "PaymentTypeAheadServlet(): doGet(): term =" + queryTerm);
 					if ( StringUtils.isBlank(queryTerm)) { // There is no term
 						super.sendNotFound(response);
 					} else { // There is a term
@@ -103,7 +105,7 @@ public class PaymentTypeAheadServlet extends AbstractServlet {
 							try {
 								conn = AppUtils.getDBCPConn();
 								AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
-								System.out.println("PaymentTypeAheadServlet(): doGet(): term =$" + term +"$");
+								logger.log(Level.DEBUG, "PaymentTypeAheadServlet(): doGet(): term =$" + term +"$");
 								List<ReturnItem> resultList = new ArrayList<ReturnItem>();
 //								String sql = PaymentSearch.sql + PaymentSearch.generateWhereClause(term);
 //								Statement s = conn.createStatement();

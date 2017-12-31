@@ -11,6 +11,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Level;
+
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.queries.InvoiceSearch;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
@@ -50,7 +52,7 @@ public class InvoiceLookupServlet extends AbstractServlet {
 		 **/
 		String filterDivisionId = request.getParameter("divisionId");
 		String filterPPCValue = request.getParameter(InvoiceLookupForm.PPC_FILTER);
-		System.out.println("filterPPCValue: " + filterPPCValue);
+		logger.log(Level.DEBUG, "filterPPCValue: " + filterPPCValue);
 		Boolean filterPPC = ! StringUtils.isBlank(filterPPCValue) &&  filterPPCValue.equalsIgnoreCase("yes");
 		
 		int amount = 10;
@@ -78,7 +80,7 @@ public class InvoiceLookupServlet extends AbstractServlet {
 			if(request.getParameter("search[value]") != null){
 				term = request.getParameter("search[value]");
 			}
-			System.out.println(term);
+			logger.log(Level.INFO, term);
 			if (sStart != null) {
 				start = Integer.parseInt(sStart);
 				if (start < 0)
@@ -86,7 +88,7 @@ public class InvoiceLookupServlet extends AbstractServlet {
 			}
 			if (sAmount != null) {
 				amount = Integer.parseInt(sAmount);
-				System.out.println(sAmount);
+				logger.log(Level.DEBUG, sAmount);
 				if (amount < 10 ) {
 					amount = 10;
 				} else if (amount > 1000) {
@@ -103,7 +105,7 @@ public class InvoiceLookupServlet extends AbstractServlet {
 				}
 			}
 			if (sdir != null) {
-				System.out.println("sdir: " + sdir);
+				logger.log(Level.DEBUG, "sdir: " + sdir);
 				if (!sdir.equals("asc")) {
 					dir = "desc";
 				}
@@ -111,10 +113,10 @@ public class InvoiceLookupServlet extends AbstractServlet {
 
 			String colName = cols[col];
 
-			System.out.println("InvoiceLookupServlet 114");
-			System.out.println(term);
-			System.out.println(filterDivisionId);
-			System.out.println(filterPPC);
+			logger.log(Level.DEBUG, "InvoiceLookupServlet 114");
+			logger.log(Level.DEBUG, term);
+			logger.log(Level.DEBUG, filterDivisionId);
+			logger.log(Level.DEBUG, filterPPC);
 			Integer totalFiltered = InvoiceSearch.makeFilteredCount(conn, term, filterDivisionId, filterPPC);		    
 			List<InvoiceLookupResponseItem> resultList = makeFetchData(conn, amount, start, term, filterDivisionId, filterPPC, colName, dir);
 			Integer totalUnfiltered = InvoiceSearch.makeUnfilteredCount(conn);
@@ -152,14 +154,14 @@ public class InvoiceLookupServlet extends AbstractServlet {
 
 
 	private List<InvoiceLookupResponseItem> makeFetchData(Connection conn, Integer amount, Integer start, String term, String filterDivisionId, Boolean filterPPC, String colName, String dir) throws Exception {
-		System.out.println("Getting fetch data");
-		System.out.println("Amount: " + amount);
-		System.out.println("Start: " + start);
-		System.out.println("term: " + term);
-		System.out.println("filterDivisionId: " + filterDivisionId);
-		System.out.println("filterPPC: " + filterPPC);
-		System.out.println("colName: " + colName);
-		System.out.println("dir: " + dir);
+		logger.log(Level.DEBUG, "Getting fetch data");
+		logger.log(Level.DEBUG, "Amount: " + amount);
+		logger.log(Level.DEBUG, "Start: " + start);
+		logger.log(Level.DEBUG, "term: " + term);
+		logger.log(Level.DEBUG, "filterDivisionId: " + filterDivisionId);
+		logger.log(Level.DEBUG, "filterPPC: " + filterPPC);
+		logger.log(Level.DEBUG, "colName: " + colName);
+		logger.log(Level.DEBUG, "dir: " + dir);
 				
 		List<InvoiceSearch> invoiceSearchList = InvoiceSearch.makeFetchData(conn, amount, start, term, filterDivisionId, filterPPC, colName, dir);
 		List<InvoiceLookupResponseItem> resultList = new ArrayList<InvoiceLookupResponseItem>();

@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.address.AddressUtils;
@@ -50,7 +51,7 @@ public class AddressServlet extends AbstractServlet {
 			
 			String jsonString = super.makeJsonString(request);
 			AddressRequest addressRequest = new AddressRequest(jsonString);
-			System.out.println(addressRequest);
+			logger.log(Level.DEBUG, addressRequest);
 			Address address = new Address();
 			//address.setAddressId(addressRequest.getDeleteId());
 
@@ -88,7 +89,7 @@ public class AddressServlet extends AbstractServlet {
 			if(parsedUrl.addressId != null){
 				address.setAddressId(Integer.parseInt(parsedUrl.addressId));
 			} 
-			System.out.println("Address ID: "+ Integer.parseInt(parsedUrl.addressId));
+			logger.log(Level.DEBUG, "Address ID: "+ Integer.parseInt(parsedUrl.addressId));
 			address.delete(conn);
 	
 			AddressResponse addressResponse = new AddressResponse();
@@ -153,7 +154,7 @@ public class AddressServlet extends AbstractServlet {
 			String jsonString = super.makeJsonString(request);
 			AnsiURL url = new AnsiURL(request, "address", new String[] {COMMAND_IS_ADD});
 
-			System.out.println(jsonString);
+			logger.log(Level.DEBUG, jsonString);
 			AddressRequest addressRequest = new AddressRequest(jsonString);
 			Country country = AddressUtils.getCountryForState(addressRequest.getState());
 			if ( (! StringUtils.isBlank(url.getCommand())) && url.getCommand().equals(COMMAND_IS_ADD) ) {
@@ -267,18 +268,18 @@ public class AddressServlet extends AbstractServlet {
 
 
 	private void processUpdateRequest(Connection conn, HttpServletResponse response, Integer addressId, AddressRequest addressRequest, Country country, SessionUser sessionUser) throws Exception {
-		System.out.println("Doing Update Stuff");	
+		logger.log(Level.DEBUG, "Doing Update Stuff");	
 		ResponseCode responseCode = null;
 		Address address = new Address();
 		
 		List<String> badFields = super.validateRequiredUpdateFields(addressRequest);
 		WebMessages webMessages = makeWebMessages(conn, badFields);
 		if (webMessages.isEmpty()) {
-			System.out.println("passed validation");
+			logger.log(Level.DEBUG, "passed validation");
 			try {
 				Address key = new Address();
 				key.setAddressId(addressId);
-				System.out.println("Trying to do update");
+				logger.log(Level.DEBUG, "Trying to do update");
 				address = doUpdate(conn, key, addressRequest, country, sessionUser);
 				String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 				responseCode = ResponseCode.SUCCESS;
@@ -286,10 +287,10 @@ public class AddressServlet extends AbstractServlet {
 				AddressResponse addressResponse = new AddressResponse(address, webMessages);
 				super.sendResponse(conn, response, responseCode, addressResponse);
 			} catch ( RecordNotFoundException e ) {
-				System.out.println("Doing 404");
+				logger.log(Level.DEBUG, "Doing 404");
 				super.sendNotFound(response);						
 			} catch ( Exception e) {
-				System.out.println("Doing SysFailure");
+				logger.log(Level.DEBUG, "Doing SysFailure");
 				responseCode = ResponseCode.SYSTEM_FAILURE;
 				AppUtils.logException(e);
 				String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
@@ -298,7 +299,7 @@ public class AddressServlet extends AbstractServlet {
 				super.sendResponse(conn, response, responseCode, addressResponse);
 			}
 		} else {
-			System.out.println("Doing Edit Fail");
+			logger.log(Level.DEBUG, "Doing Edit Fail");
 			responseCode = ResponseCode.EDIT_FAILURE;
 			AddressResponse addressResponse = new AddressResponse(address, webMessages);
 			super.sendResponse(conn, response, responseCode, addressResponse);
@@ -306,9 +307,8 @@ public class AddressServlet extends AbstractServlet {
 	}
 
 	protected Address doUpdate(Connection conn, Address key, AddressRequest addressRequest, Country country, SessionUser sessionUser) throws Exception {
-		System.out.println("This is the key:");
-		System.out.println(key);
-		System.out.println("************");
+		logger.log(Level.DEBUG, "This is the key:");
+		logger.log(Level.DEBUG, key);
 		Date today = new Date();
 		Address address = new Address();
 		

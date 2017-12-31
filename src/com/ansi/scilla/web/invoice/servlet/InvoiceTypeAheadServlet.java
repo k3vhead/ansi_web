@@ -19,6 +19,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
@@ -133,15 +134,15 @@ public class InvoiceTypeAheadServlet extends AbstractServlet {
 	private void makeQueryResult(Connection conn, String queryTerm, String billTo, HttpServletResponse response) throws Exception {
 
 		String term = queryTerm.toLowerCase();
-		System.out.println("InvoiceTypeAheadServlet(): doGet(): term =[" + term +"]  billTo=[" + billTo + "]" );
+		logger.log(Level.DEBUG, "InvoiceTypeAheadServlet(): doGet(): term =[" + term +"]  billTo=[" + billTo + "]" );
 		List<ReturnItem> resultList = new ArrayList<ReturnItem>();
 
 		Integer billToAddressId = StringUtils.isNumeric(billTo) ? Integer.valueOf(billTo) : null;
 
 		String sql = InvoiceSearch.sql + InvoiceSearch.generateWhereClause(conn, term, billToAddressId);
-		System.out.println("******");
-		System.out.println("Invoice SQL:\n" + sql);
-		System.out.println("******");
+		logger.log(Level.DEBUG, "******");
+		logger.log(Level.DEBUG, "Invoice SQL:\n" + sql);
+		logger.log(Level.DEBUG, "******");
 
 		Statement s = conn.createStatement();
 		ResultSet rs = s.executeQuery(sql);

@@ -11,6 +11,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Level;
+
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.queries.PaymentSearch;
 import com.ansi.scilla.common.queries.PaymentSearchResult;
@@ -79,7 +81,7 @@ public class PaymentLookupServlet extends AbstractServlet {
 			if(request.getParameter("search[value]") != null){
 				term = request.getParameter("search[value]");
 			}
-			System.out.println(term);
+			logger.log(Level.INFO, term);
 			if (sStart != null) {
 		        start = Integer.parseInt(sStart);
 		        if (start < 0)
@@ -87,7 +89,7 @@ public class PaymentLookupServlet extends AbstractServlet {
 		    }
 		    if (sAmount != null) {
 		    	amount = Integer.parseInt(sAmount);
-				System.out.println(sAmount);
+		    	logger.log(Level.DEBUG, sAmount);
 		        if (amount < 10 ) {
 		            amount = 10;
 		        } else if (amount > 1000) {
@@ -103,7 +105,7 @@ public class PaymentLookupServlet extends AbstractServlet {
 		            col = 0;
 		    }
 		    if (sdir != null) {
-				System.out.println("sdir: " + sdir);
+		    	logger.log(Level.DEBUG, "sdir: " + sdir);
 		        if (!sdir.equals("asc"))
 		            dir = "desc";
 		    }
@@ -113,7 +115,7 @@ public class PaymentLookupServlet extends AbstractServlet {
 //		    String sql = "select count(1) from ("
 //					+ PaymentSearch.sql
 //					+ ") t";
-//			System.out.println("total count: " + sql);
+//			logger.log(Level.DEBUG, "total count: " + sql);
 //
 //			Statement s = conn.createStatement();
 //			ResultSet rs0 = s.executeQuery(sql);
@@ -128,16 +130,16 @@ public class PaymentLookupServlet extends AbstractServlet {
 //
 //			String search = PaymentSearch.generateWhereClause(term);
 //			
-//			System.out.println(sql);
+//			logger.log(Level.DEBUG, sql);
 //			sql += search;
-//			System.out.println(sql);
+//			logger.log(Level.DEBUG, sql);
 //			sql += " order by " + colName + " " + dir;
-//			System.out.println(sql);
+//			logger.log(Level.DEBUG, sql);
 //			if ( amount != -1) {
 //				sql += " OFFSET "+ start+" ROWS"
 //					+ " FETCH NEXT " + amount + " ROWS ONLY";
 //			}
-//			System.out.println(sql);
+//			logger.log(Level.DEBUG, sql);
 //			
 //			s = conn.createStatement();
 //			ResultSet rs = s.executeQuery(sql);
@@ -162,7 +164,7 @@ public class PaymentLookupServlet extends AbstractServlet {
 //			}
 //			sql2 += ") t";
 //			
-//			System.out.println("filtered count: " + sql2);
+//			logger.log(Level.DEBUG, "filtered count: " + sql2);
 //			Statement s2 = conn.createStatement();
 //			ResultSet rs2 = s2.executeQuery(sql2);
 //			if(rs2.next()){

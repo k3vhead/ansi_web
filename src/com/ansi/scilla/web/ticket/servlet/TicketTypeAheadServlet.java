@@ -15,6 +15,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Level;
+
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
@@ -66,7 +68,7 @@ public class TicketTypeAheadServlet extends AbstractServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String url = request.getRequestURI();
-		System.out.println("TicketTypeAheadServlet(): doGet(): url =" + url);
+		logger.log(Level.DEBUG, "TicketTypeAheadServlet(): doGet(): url =" + url);
 		int idx = url.indexOf("/ticketTypeAhead/");
 		String qs = request.getQueryString();
 		Connection conn = null;

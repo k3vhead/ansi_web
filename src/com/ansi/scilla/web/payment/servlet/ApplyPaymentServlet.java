@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
 
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.ApplicationObject;
@@ -59,7 +60,7 @@ public class ApplyPaymentServlet extends AbstractServlet {
 				conn = AppUtils.getDBCPConn();
 				conn.setAutoCommit(false);
 				String jsonString = super.makeJsonString(request);
-				System.out.println(jsonString);			
+				logger.log(Level.DEBUG, jsonString);			
 				ApplyPaymentRequest paymentRequest = new  ApplyPaymentRequest();
 				AppUtils.json2object(jsonString, paymentRequest);
 				url = new AnsiURL(request, "applyPayment", new String[] {PaymentRequestType.VERIFY.name().toLowerCase(), PaymentRequestType.COMMIT.name().toLowerCase()});
@@ -83,7 +84,7 @@ public class ApplyPaymentServlet extends AbstractServlet {
 			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
 				super.sendForbidden(response);
 			} catch ( ResourceNotFoundException e) {
-				System.out.println("*** ApplyPayment 404:  " + e + "****");
+				logger.log(Level.DEBUG, "*** ApplyPayment 404:  " + e + "****");
 				super.sendNotFound(response);
 			}
 		} catch ( Exception e) {
@@ -202,15 +203,13 @@ public class ApplyPaymentServlet extends AbstractServlet {
 		calendar.set(Calendar.SECOND, 0);
 		calendar.set(Calendar.MILLISECOND, 0);
 		
-//		Date today = calendar.getTime();		
-//		System.out.println(today);
 		
 		Calendar today = Calendar.getInstance(new AnsiTime());
 		today.set(Calendar.HOUR, 0);
 		today.set(Calendar.MINUTE, 0);
 		today.set(Calendar.SECOND, 0);
 		today.set(Calendar.MILLISECOND, 0);
-		System.out.println(today);
+		logger.log(Level.DEBUG, today);
 
 		Payment payment = new Payment();
 		payment.setPaymentId(paymentId);
@@ -258,9 +257,8 @@ public class ApplyPaymentServlet extends AbstractServlet {
 //		ticket.setUpdatedDate(updatedDate);		// set by the super
 		ticket.setTicketType(ticketType.code());
 
-//		System.out.println(ticket);
 		Integer ticketId = ticket.insertWithKey(conn);
-		System.out.println(ticket);
+		logger.log(Level.DEBUG, ticket);
 		
 
 		TicketPayment ticketPayment = new TicketPayment();
@@ -274,7 +272,7 @@ public class ApplyPaymentServlet extends AbstractServlet {
 		ticketPayment.setUpdatedBy(sessionUser.getUserId());
 //		ticketPayment.setUpdatedDate(updatedDate); 			// populated in the super
 		
-		System.out.println(ticketPayment);
+		logger.log(Level.DEBUG, ticketPayment);
 		ticketPayment.insertWithNoKey(conn);
 
 		

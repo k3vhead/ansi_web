@@ -13,6 +13,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Level;
+
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.address.response.AddressJsonResponse;
 import com.ansi.scilla.web.address.response.AddressReturnItem;
@@ -76,20 +78,8 @@ public class AddressTableServlet extends AbstractServlet {
 	    String sDraw = request.getParameter("draw");
 	    String sCol = request.getParameter("order[0][column]");
 	    String sdir = request.getParameter("order[0][dir]");
-	   //System.out.println(sCol);
 	   
-	   //list all passed header and paramaters
-//	    Enumeration headerNames = request.getHeaderNames();
-//	   while(headerNames.hasMoreElements()) {
-//	     String headerName = (String)headerNames.nextElement();
-//	     System.out.println("Header Name - " + headerName + ", Value - " + request.getHeader(headerName));
-//	   }
-//	   Enumeration params = request.getParameterNames(); 
-//	   while(params.hasMoreElements()){
-//	    String paramName = (String)params.nextElement();
-//	    System.out.println("Parameter Name - "+paramName+", Value - "+request.getParameter(paramName));
-//	   }
-//	   
+
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
@@ -101,7 +91,7 @@ public class AddressTableServlet extends AbstractServlet {
 			if(request.getParameter("search[value]") != null){
 				term = request.getParameter("search[value]");
 			}
-			System.out.println(term);
+			logger.log(Level.INFO, term);
 			if (sStart != null) {
 		        start = Integer.parseInt(sStart);
 		        if (start < 0)
@@ -109,7 +99,7 @@ public class AddressTableServlet extends AbstractServlet {
 		    }
 		    if (sAmount != null) {
 		    	amount = Integer.parseInt(sAmount);
-				System.out.println(sAmount);
+		    	logger.log(Level.DEBUG, sAmount);
 		        if (amount != -1) {
 		        	if (amount < 10 || amount > 100)
 		            amount = 10;
@@ -165,7 +155,7 @@ public class AddressTableServlet extends AbstractServlet {
 				sql += " OFFSET "+ start+" ROWS"
 					+ " FETCH NEXT " + amount + " ROWS ONLY";
 			}
-			System.out.println(sql);
+			logger.log(Level.DEBUG, sql);
 			s = conn.createStatement();
 			ResultSet rs = s.executeQuery(sql);
 			while ( rs.next() ) {
@@ -199,7 +189,6 @@ public class AddressTableServlet extends AbstractServlet {
 			
 			String json = AppUtils.object2json(addressJsonResponse);
 			
-//			System.out.println(json);
 					
 			
 			ServletOutputStream o = response.getOutputStream();

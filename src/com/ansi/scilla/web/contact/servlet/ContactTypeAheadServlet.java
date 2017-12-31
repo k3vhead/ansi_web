@@ -16,6 +16,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Level;
+
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
@@ -74,14 +76,14 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String url = request.getRequestURI();
-		System.out.println("ContactTypeAheadServlet(): doGet(): url =" + url);
+		logger.log(Level.DEBUG, "ContactTypeAheadServlet(): doGet(): url =" + url);
 		int idx = url.indexOf("/contactTypeAhead/");
 		if ( idx > -1 ) {
 			super.sendNotFound(response);
 		} else {
 			Connection conn = null;
 			String qs = request.getQueryString();
-			System.out.println("ContactTypeAheadServlet(): doGet(): qs =" + qs);
+			logger.log(Level.DEBUG, "ContactTypeAheadServlet(): doGet(): qs =" + qs);
 			String term = "";
 			if ( StringUtils.isBlank(qs)) { // No query string
 				super.sendNotFound(response);
@@ -90,8 +92,8 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 				if ( idx > -1 ) { // There is a search term "term="
 					Map<String, String> map = AppUtils.getQueryMap(qs);
 					String queryTerm = map.get("term");
-					System.out.println("ContactTypeAheadServlet(): doGet(): map =" + map);
-					System.out.println("ContactTypeAheadServlet(): doGet(): term =" + queryTerm);
+					logger.log(Level.DEBUG, "ContactTypeAheadServlet(): doGet(): map =" + map);
+					logger.log(Level.DEBUG, "ContactTypeAheadServlet(): doGet(): term =" + queryTerm);
 					if ( ! StringUtils.isBlank(queryTerm)) { // There is a term
 						queryTerm = URLDecoder.decode(queryTerm, "UTF-8");
 						queryTerm = StringUtils.trimToNull(queryTerm);
@@ -102,7 +104,7 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 					try {
 						conn = AppUtils.getDBCPConn();
 						AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);
-						System.out.println("ContactTypeAheadServlet(): doGet(): term =$" + term +"$");
+						logger.log(Level.DEBUG, "ContactTypeAheadServlet(): doGet(): term =$" + term +"$");
 						List<ReturnItem> resultList = new ArrayList<ReturnItem>();
 						String sql = "select contact_id, "
 //								+ " concat(last_name,', ',first_name) as name, "
@@ -149,8 +151,8 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 					if ( idx > -1 ) { // There is a contactId "id="
 						Map<String, String> map = AppUtils.getQueryMap(qs);
 						String idTerm = map.get("id");
-						System.out.println("ContactTypeAheadServlet(): doGet(): map =" + map);
-						System.out.println("ContactTypeAheadServlet(): doGet(): id =" + idTerm);
+						logger.log(Level.DEBUG, "ContactTypeAheadServlet(): doGet(): map =" + map);
+						logger.log(Level.DEBUG, "ContactTypeAheadServlet(): doGet(): id =" + idTerm);
 						if ( ! StringUtils.isBlank(idTerm)) { // There is a term
 							idTerm = URLDecoder.decode(idTerm, "UTF-8");
 							idTerm = StringUtils.trimToNull(idTerm);
@@ -161,7 +163,7 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 						try {
 							conn = AppUtils.getDBCPConn();
 							AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);
-							System.out.println("ContactTypeAheadServlet(): doGet(): term =$" + term +"$");
+							logger.log(Level.DEBUG, "ContactTypeAheadServlet(): doGet(): term =$" + term +"$");
 							List<ReturnItem> resultList = new ArrayList<ReturnItem>();
 							String sql = "select contact_id, "
 //									+ " concat(last_name,', ',first_name) as name, "

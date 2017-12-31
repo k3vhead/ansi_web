@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
 
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -59,12 +60,12 @@ public class TicketSearchServlet extends AbstractServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 
 		String url = request.getRequestURI();
-		System.out.println("TicketSearchServlet(): doGet(): url =" + url);
+		logger.log(Level.DEBUG, "TicketSearchServlet(): doGet(): url =" + url);
 		int idx = url.indexOf("/ticketSearch/");
 		if ( idx > -1 ) {
 			String queryString = request.getQueryString();
 			
-			System.out.println("TicketSearchServlet(): doGet(): queryString =" + queryString);
+			logger.log(Level.DEBUG, "TicketSearchServlet(): doGet(): queryString =" + queryString);
 			// Figure out what we've got:
 			// "myString" is the piece of the URL that we actually care about
 			String myString = url.substring(idx + "/ticketSearch/".length());
@@ -74,7 +75,7 @@ public class TicketSearchServlet extends AbstractServlet {
 				super.sendNotFound(response);
 			} else {
 				if(command.equals("list") || StringUtils.isNumeric(command)){
-					System.out.println("TicketSearchServlet(): doGet(): processing list");
+					logger.log(Level.DEBUG, "TicketSearchServlet(): doGet(): processing list");
 					Connection conn = null;
 					try {
 						conn = AppUtils.getDBCPConn();
@@ -98,9 +99,9 @@ public class TicketSearchServlet extends AbstractServlet {
 			}
 		} else {
 			String queryString = request.getQueryString();
-			System.out.println("TicketSearchServlet(): doGet(): queryString =" + queryString);
+			logger.log(Level.DEBUG, "TicketSearchServlet(): doGet(): queryString =" + queryString);
 			Connection conn = null;
-			System.out.println("TicketSearchServlet(): doGet(): queryString =" + queryString);
+			logger.log(Level.DEBUG, "TicketSearchServlet(): doGet(): queryString =" + queryString);
 
 			try {
 				conn = AppUtils.getDBCPConn();
@@ -125,11 +126,11 @@ public class TicketSearchServlet extends AbstractServlet {
 		TicketSearchListResponse ticketSearchListResponse = new TicketSearchListResponse();
 		String[] x = url.split("/");
 		if(x[0].equals("list")){
-			System.out.println("TicketSearchServlet(): doGetWork(): processing list");
+			logger.log(Level.DEBUG, "TicketSearchServlet(): doGetWork(): processing list");
 			ticketSearchListResponse = new TicketSearchListResponse(conn);
 		} else if (StringUtils.isNumeric(x[0])) {
 			Integer ticketId = Integer.valueOf(x[0]);
-			System.out.println("TicketSearchServlet(): doGetWork(): processing ticketId:" + ticketId);
+			logger.log(Level.DEBUG, "TicketSearchServlet(): doGetWork(): processing ticketId:" + ticketId);
 			ticketSearchListResponse = new TicketSearchListResponse(conn, ticketId);
 		} else {
 			throw new RecordNotFoundException();
@@ -146,8 +147,8 @@ public class TicketSearchServlet extends AbstractServlet {
 			if ( idx > -1 ) {
 				Map<String, String> map = AppUtils.getQueryMap(qs);
 				term = map.get("term");
-				System.out.println("TicketSearchServlet(): doGetWork(): map =" + map);
-				System.out.println("TicketSearchServlet(): doGetWork(): term =" + term);
+				logger.log(Level.DEBUG, "TicketSearchServlet(): doGetWork(): map =" + map);
+				logger.log(Level.DEBUG, "TicketSearchServlet(): doGetWork(): term =" + term);
 				if ( StringUtils.isBlank(term)) {
 					term = "";
 				} else {

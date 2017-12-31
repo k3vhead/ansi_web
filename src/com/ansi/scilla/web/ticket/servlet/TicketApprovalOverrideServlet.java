@@ -7,6 +7,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Level;
+
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -39,7 +41,7 @@ public class TicketApprovalOverrideServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 			String jsonString = super.makeJsonString(request);
-			System.out.println("jsonstring:"+jsonString);
+			logger.log(Level.DEBUG, "jsonstring:"+jsonString);
 
 			SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 			
@@ -47,7 +49,7 @@ public class TicketApprovalOverrideServlet extends AbstractServlet {
 			try{
 				TicketApprovalOverride ticketRequest = new TicketApprovalOverride();
 				AppUtils.json2object(jsonString, ticketRequest);
-				System.out.println("TicketReturnRequest:"+ticketRequest);
+				logger.log(Level.DEBUG, "TicketReturnRequest:"+ticketRequest);
 				ansiURL = new AnsiURL(request, "ticketApprovalOverride", (String[])null); //  .../ticket/etc
 
 				SessionUser sessionUser = sessionData.getUser(); 

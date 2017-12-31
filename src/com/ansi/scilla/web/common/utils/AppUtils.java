@@ -30,7 +30,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
@@ -446,14 +445,6 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 		return resultString;
 	}
 	
-	public static void main(String[] args ) {
-		for ( int i = 0; i < 100; i++ ) {
-			for ( int j = 0; j < random.nextInt(100000); j++) {
-				// doing nothing
-			}
-			System.out.println(AppUtils.getRandomQuote());			
-		}
-	}
 
 
 

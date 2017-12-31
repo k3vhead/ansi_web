@@ -16,6 +16,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Level;
+
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
@@ -71,14 +73,14 @@ public class AddressTypeAheadServlet extends AbstractServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String url = request.getRequestURI();
-		System.out.println("AddressTypeAheadServlet(): doGet(): url =" + url);
+		logger.log(Level.DEBUG, "AddressTypeAheadServlet(): doGet(): url =" + url);
 		int idx = url.indexOf("/addressTypeAhead/");
 		if ( idx > -1 ) {
 			super.sendNotFound(response);
 		} else {
 			Connection conn = null;
 			String qs = request.getQueryString();
-			System.out.println("AddressTypeAheadServlet(): doGet(): qs =" + qs);
+			logger.log(Level.DEBUG, "AddressTypeAheadServlet(): doGet(): qs =" + qs);
 			String term = "";
 			if ( StringUtils.isBlank(qs)) { // No query string
 				super.sendNotFound(response);
@@ -87,8 +89,8 @@ public class AddressTypeAheadServlet extends AbstractServlet {
 				if ( idx > -1 ) { // There is a search term "term="
 					Map<String, String> map = AppUtils.getQueryMap(qs);
 					String queryTerm = map.get("term");
-					System.out.println("AddressTypeAheadServlet(): doGet(): map =" + map);
-					System.out.println("AddressTypeAheadServlet(): doGet(): term =" + queryTerm);
+					logger.log(Level.DEBUG, "AddressTypeAheadServlet(): doGet(): map =" + map);
+					logger.log(Level.DEBUG, "AddressTypeAheadServlet(): doGet(): term =" + queryTerm);
 					if ( ! StringUtils.isBlank(queryTerm)) { // There is a term
 						queryTerm = URLDecoder.decode(queryTerm, "UTF-8");
 						queryTerm = StringUtils.trimToNull(queryTerm);
@@ -109,7 +111,7 @@ public class AddressTypeAheadServlet extends AbstractServlet {
 							try {
 								conn = AppUtils.getDBCPConn();
 								AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);
-								System.out.println("AddresTypeAheadServlet(): doGet(): term =$" + term +"$");
+								logger.log(Level.DEBUG, "AddresTypeAheadServlet(): doGet(): term =$" + term +"$");
 								
 								String sql = "select address_id, name, address1, address2, city, county, state, zip "
 										+ " from address " 

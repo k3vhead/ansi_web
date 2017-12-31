@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.log4j.Level;
 
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.Division;
@@ -142,7 +143,7 @@ public class TicketPrintServlet extends AbstractServlet {
 	private void processDivisionPrint(Connection conn, HttpServletResponse response, Integer divisionId, Date endDate, SessionUser sessionUser) throws Exception {
 		
 		
-		System.out.println("Division: " + divisionId + " Date: " + endDate);
+		logger.log(Level.DEBUG, "Division: " + divisionId + " Date: " + endDate);
 		
 		Division division = new Division();
 		division.setDivisionId(divisionId);
@@ -170,7 +171,7 @@ public class TicketPrintServlet extends AbstractServlet {
 	}
 	
 	private void doTicketPrint(Connection conn, HttpServletResponse response, List<TicketPrintResult> ticketList, String fileName) throws Exception {
-		System.out.println("Printing " + ticketList.size() + " tickets");
+		logger.log(Level.DEBUG, "Printing " + ticketList.size() + " tickets");
 		TicketPrinter ticketPrinter = new TicketPrinter();
 		ByteArrayOutputStream baos = ticketPrinter.makeTickets(conn, ticketList);
 		

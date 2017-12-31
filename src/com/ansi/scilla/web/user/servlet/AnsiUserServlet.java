@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
 
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -54,22 +55,22 @@ public class AnsiUserServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			AnsiURL url = new AnsiURL(request, REALM, new String[] {"list","manager"});	
 			String sortField = request.getParameter("sortBy");
-			System.out.println("Sortig by: " + sortField);
+			logger.log(Level.DEBUG, "Sortig by: " + sortField);
 			if ( ! StringUtils.isBlank(sortField)) {
 				if ( ! ArrayUtils.contains(UserResponse.VALID_SORT_FIELDS, sortField) ) {
 					sortField = null;
 				}
 			}
-			System.out.println("Still sorting by: " + sortField);
+			logger.log(Level.DEBUG, "Still sorting by: " + sortField);
 
 			if( url.getId() == null && StringUtils.isBlank(url.getCommand())) {
-				System.out.println("user servlet 43");
+				logger.log(Level.DEBUG, "user servlet 43");
 				throw new ResourceNotFoundException();
 			} else if (url.getId() != null) {
-				System.out.println("user servlet 46");
+				logger.log(Level.DEBUG, "user servlet 46");
 				userResponse = new UserResponse(conn, url.getId());
 			} else if ( ! StringUtils.isBlank(url.getCommand())) {
-				System.out.println("user servlet 49");
+				logger.log(Level.DEBUG, "user servlet 49");
 				UserResponse.UserListType listType = UserResponse.UserListType.valueOf(url.getCommand().toUpperCase());
 				userResponse = new UserResponse(conn, listType);
 			} else {
@@ -79,15 +80,15 @@ public class AnsiUserServlet extends AbstractServlet {
 			if ( ! StringUtils.isBlank(sortField)) {
 				userResponse.sort(sortField);
 			}
-			System.out.println("user servlet 55");
+			logger.log(Level.DEBUG, "user servlet 55");
 			messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
 			userResponse.setWebMessages(messages);
 			super.sendResponse(conn, response, ResponseCode.SUCCESS, userResponse);
 		} catch(RecordNotFoundException e) {
-			System.out.println("user servlet 60");
+			logger.log(Level.DEBUG, "user servlet 60");
 			super.sendNotFound(response);
 		} catch(ResourceNotFoundException e) {
-			System.out.println("user servlet 63");
+			logger.log(Level.DEBUG, "user servlet 63");
 			super.sendNotFound(response);
 		} catch ( Exception e) {
 			AppUtils.logException(e);

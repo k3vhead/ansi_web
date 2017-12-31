@@ -147,7 +147,7 @@ public class TicketTableServlet extends AbstractServlet {
 
 			String search = TicketSearch.generateWhereClause(term);
 
-			//			System.out.println("search: " +search);
+			//			logger.log(Level.DEBUG, "search: " +search);
 			sql += search;
 			if (parmJobId != null) {
 				sql += " and job.job_id=" + parmJobId + " ";
@@ -155,14 +155,14 @@ public class TicketTableServlet extends AbstractServlet {
 			if ( parmDivisionId != null ) {
 				sql += " and job.division_id=" + parmDivisionId + " ";
 			}
-			System.out.println(sql);
+			logger.log(Level.DEBUG, sql);
 			sql += " order by " + colName + " " + dir;
-			System.out.println(sql);
+			logger.log(Level.DEBUG, sql);
 			if ( amount != -1) {
 				sql += " OFFSET "+ start+" ROWS"
 						+ " FETCH NEXT " + amount + " ROWS ONLY";
 			}
-			System.out.println(sql);
+			logger.log(Level.DEBUG, sql);
 
 			s = conn.createStatement();
 			ResultSet rs = s.executeQuery(sql);
@@ -184,7 +184,7 @@ public class TicketTableServlet extends AbstractServlet {
 			if (search != "") {
 				sql2 += search;
 			}
-			System.out.println(sql2);
+			logger.log(Level.DEBUG, sql2);
 			Statement s2 = conn.createStatement();
 			ResultSet rs2 = s2.executeQuery(sql2);
 			if(rs2.next()){

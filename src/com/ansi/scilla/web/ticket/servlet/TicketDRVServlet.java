@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.ansi.scilla.common.AnsiTime;
@@ -64,17 +65,17 @@ public class TicketDRVServlet extends AbstractServlet {
 			String format = request.getParameter("format");
 			if(StringUtils.isBlank(month)||!StringUtils.isNumeric(month)||Integer.valueOf(month)>12){
 				month = String.valueOf(thisMonth);
-				System.out.println("TicketDRVServlet: this month:" + month);
+				logger.log(Level.DEBUG, "TicketDRVServlet: this month:" + month);
 
 			}
-			System.out.println("TicketDRVServlet: this month:" + month);
+			logger.log(Level.DEBUG, "TicketDRVServlet: this month:" + month);
 			Integer chosenMonth = Integer.valueOf(month);
 			if(chosenMonth<thisMonth){
 				thisYear++;
 			}
 
 			String divisionId = request.getParameter("divisionId");
-			System.out.println("TicketDRVServlet: divisionId:" + divisionId);
+			logger.log(Level.DEBUG, "TicketDRVServlet: divisionId:" + divisionId);
 
 			WebMessages webMessages = new WebMessages();
 			ResponseCode responseCode = null;

@@ -14,6 +14,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Level;
+
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.web.common.utils.AppUtils;
 
@@ -29,7 +31,7 @@ public class AutoCompleteDemoServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			String qs = request.getQueryString();
 			String term = qs.substring("term=".length());
-			System.out.println(qs);
+			logger.log(Level.INFO, qs);
 			List<ReturnItem> resultList = new ArrayList<ReturnItem>();
 			String sql = "select division_id, division_code, description from division where lower(division_code) like '%" + term + "%'";
 			Statement s = conn.createStatement();

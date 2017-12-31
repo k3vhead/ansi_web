@@ -10,6 +10,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Level;
+
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.Midnight;
 import com.ansi.scilla.common.db.PermissionLevel;
@@ -47,7 +49,7 @@ public class PacReportServlet extends AbstractServlet {
 			try {
 				conn = AppUtils.getDBCPConn();
 
-				System.out.println(REALM+":URL:"+request);
+				logger.log(Level.DEBUG, REALM+":URL:"+request);
 
 				Integer divisionId = ansiURL.getId();
 				PacReportRequest reportRequest = new PacReportRequest();
@@ -65,7 +67,7 @@ public class PacReportServlet extends AbstractServlet {
 				endDate.set(Calendar.DAY_OF_MONTH, reportRequest.getEndDate().get(Calendar.DAY_OF_MONTH));
 
 				PacReportRequest.PacReportType requestedType = PacReportRequest.PacReportType.valueOf(reportRequest.getPacType());
-				System.out.println(REALM+":Start:"+startDate.getTime()+"\tEnd:"+endDate.getTime());
+				logger.log(Level.DEBUG, REALM+":Start:"+startDate.getTime()+"\tEnd:"+endDate.getTime());
 				
 				String reportHtml = null;
 				if ( requestedType.equals(PacReportRequest.PacReportType.SUMMARY)) {
@@ -120,7 +122,7 @@ public class PacReportServlet extends AbstractServlet {
 			Connection conn = null;
 			try {
 				conn = AppUtils.getDBCPConn();
-				System.out.println(REALM+":URL:"+request);
+				logger.log(Level.DEBUG, REALM+":URL:"+request);
 
 				String divisionIdString = ansiURL.getQueryParameterMap().get("divisionId")[0];
 				Integer divisionId = Integer.getInteger(divisionIdString);
@@ -148,7 +150,7 @@ public class PacReportServlet extends AbstractServlet {
 				endDate.set(Calendar.SECOND, 0);
 				endDate.set(Calendar.MILLISECOND, 0);
 
-				System.out.println(REALM+":Start:"+startDate.getTime()+"\tEnd:"+endDate.getTime());
+				logger.log(Level.DEBUG, REALM+":Start:"+startDate.getTime()+"\tEnd:"+endDate.getTime());
 
 				PacSummaryReport report1 = new PacSummaryReport(conn, ansiURL.getId(),startDate,endDate);
 				String reportHtml1 = HTMLBuilder.build(report1); 

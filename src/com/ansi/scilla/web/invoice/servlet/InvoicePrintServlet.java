@@ -16,6 +16,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Level;
+
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.PermissionLevel;
@@ -102,8 +104,8 @@ public class InvoicePrintServlet extends AbstractServlet {
 	
 	private HashMap<String, String> validateDates(InvoicePrintRequest invoicePrintRequest) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss.S");
-		System.out.println("Print: " + sdf.format(invoicePrintRequest.getPrintDate()));
-		System.out.println("Due: " + sdf.format(invoicePrintRequest.getDueDate()));
+		logger.log(Level.DEBUG, "Print: " + sdf.format(invoicePrintRequest.getPrintDate()));
+		logger.log(Level.DEBUG, "Due: " + sdf.format(invoicePrintRequest.getDueDate()));
 		HashMap<String, String> dateErrors = new HashMap<String, String>();
 		if ( ! invoicePrintRequest.getDueDate().after(invoicePrintRequest.getPrintDate())) {
 			dateErrors.put("dueDate", "Due Date Must be after Print Date");

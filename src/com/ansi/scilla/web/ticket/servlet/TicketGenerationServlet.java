@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.log4j.Level;
 
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.PermissionLevel;
@@ -98,8 +99,8 @@ public class TicketGenerationServlet extends AbstractServlet{
 	
 	private HashMap<String, String> validateDates(TicketGenerationRequest generateTicketRequest) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss.S");
-		System.out.println("Start Date: " + sdf.format(generateTicketRequest.getStartDate()));
-		System.out.println("End Date: " + sdf.format(generateTicketRequest.getEndDate()));
+		logger.log(Level.DEBUG, "Start Date: " + sdf.format(generateTicketRequest.getStartDate()));
+		logger.log(Level.DEBUG, "End Date: " + sdf.format(generateTicketRequest.getEndDate()));
 		HashMap<String, String> dateErrors = new HashMap<String, String>();
 		if(!DateUtils.isSameDay(generateTicketRequest.getStartDate(), generateTicketRequest.getEndDate())){
 			if ( ! generateTicketRequest.getEndDate().after(generateTicketRequest.getStartDate())) {
@@ -133,8 +134,8 @@ public class TicketGenerationServlet extends AbstractServlet{
 		endDate.setTime(generateTicketRequest.getEndDate());
 //		DateUtils.truncate(startDate, Calendar.DAY_OF_MONTH);
 //		endDate = DateUtils.ceiling(endDate, Calendar.DAY_OF_MONTH);
-		System.out.println(sdf.format(startDate.getTime()));
-		System.out.println(sdf.format(endDate.getTime()));
+		logger.log(Level.DEBUG, sdf.format(startDate.getTime()));
+		logger.log(Level.DEBUG, sdf.format(endDate.getTime()));
 		
 		JobUtils.generateTicketsFromJobSchedule(conn, generateTicketRequest.getDivisionId(), startDate, endDate, sessionUser.getUserId());
 		conn.commit();

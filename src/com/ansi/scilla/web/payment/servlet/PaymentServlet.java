@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
 
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.Payment;
@@ -90,7 +91,7 @@ public class PaymentServlet extends AbstractServlet {
 			url = new AnsiURL(request, "payment", (String[])null);
 			if ( url.getId() != null ) {
 				PaymentResponse data = new PaymentResponse(conn, url.getId());
-				System.out.println(data);
+				logger.log(Level.DEBUG, data);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, data);				
 			} else {
 				throw new ResourceNotFoundException(); 
@@ -117,10 +118,10 @@ public class PaymentServlet extends AbstractServlet {
 				conn = AppUtils.getDBCPConn();
 				conn.setAutoCommit(false);
 				String jsonString = super.makeJsonString(request);
-				System.out.println(jsonString);
+				logger.log(Level.DEBUG, jsonString);
 				PaymentRequest paymentRequest = new PaymentRequest();
 				AppUtils.json2object(jsonString, paymentRequest);
-				System.out.println(paymentRequest);
+				logger.log(Level.DEBUG, paymentRequest);
 				url = new AnsiURL(request, "payment", new String[] {PaymentRequestType.ADD.name().toLowerCase()});
 				SessionData sessionData = AppUtils.validateSession(request, Permission.PAYMENT, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 				SessionUser sessionUser = sessionData.getUser();
@@ -159,11 +160,11 @@ public class PaymentServlet extends AbstractServlet {
 
 	protected WebMessages validateUpdate(Connection conn, TaxRate key, TaxRateRequest taxRateRequest) throws RecordNotFoundException, Exception {
 		WebMessages webMessages = new WebMessages();
-		System.out.println("TaxRateServlet: validateUpdate() before");
+		logger.log(Level.DEBUG, "TaxRateServlet: validateUpdate() before");
 		List<String> missingFields = super.validateRequiredUpdateFields(taxRateRequest);
-		System.out.println("TaxRateServlet: validateUpdate() after");
+		logger.log(Level.DEBUG, "TaxRateServlet: validateUpdate() after");
 		if ( ! missingFields.isEmpty() ) {
-			System.out.println("TaxRateServlet: validateUpdate() missing fields");
+			logger.log(Level.DEBUG, "TaxRateServlet: validateUpdate() missing fields");
 			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
 			for ( String field : missingFields ) {
 				webMessages.addMessage(field, messageText);
@@ -172,7 +173,7 @@ public class PaymentServlet extends AbstractServlet {
 		// if we "select" the key, and it isn't found, a "RecordNotFoundException" is thrown.
 		// That exception will propagate up the tree until it turns into a 404 message sent to the client
 		TaxRate testKey = (TaxRate)key.clone(); 
-		System.out.println("TaxRateServlet: validateUpdate() testKey:" + testKey.getTaxRateId());
+		logger.log(Level.DEBUG, "TaxRateServlet: validateUpdate() testKey:" + testKey.getTaxRateId());
 		testKey.selectOne(conn);
 		return webMessages;
 	}
@@ -244,7 +245,7 @@ public class PaymentServlet extends AbstractServlet {
 		payment.setPaymentMethod(paymentRequest.getPaymentMethod());
 		payment.setUpdatedBy(sessionUser.getUserId());
 		
-		System.out.println(payment);
+		logger.log(Level.DEBUG, payment);
 
 		Integer paymentId = payment.insertWithKey(conn);
 		payment.setPaymentId(paymentId);

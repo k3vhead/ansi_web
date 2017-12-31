@@ -11,10 +11,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
 
 import com.ansi.scilla.common.db.Job;
 import com.ansi.scilla.common.db.PermissionLevel;
-import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.common.jobticket.JobUtils;
 import com.ansi.scilla.web.common.response.MessageKey;
@@ -30,8 +30,8 @@ import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.job.request.JobDetailRequest;
-import com.ansi.scilla.web.job.request.JobRequest;
 import com.ansi.scilla.web.job.request.JobDetailRequest.JobDetailRequestAction;
+import com.ansi.scilla.web.job.request.JobRequest;
 import com.ansi.scilla.web.job.response.JobDetailResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -90,7 +90,7 @@ public class JobServlet extends AbstractServlet {
 		AnsiURL url = null;
 		String url2 = request.getRequestURI();
 		SessionUser sessionUser = AppUtils.getSessionUser(request);
-		System.out.println("Session user: "+sessionUser);
+		logger.log(Level.DEBUG, "Session user: "+sessionUser);
 		WebMessages messages = new WebMessages();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		ResponseCode responseCode = null;
@@ -99,14 +99,14 @@ public class JobServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
 			String jsonString = super.makeJsonString(request);
-			System.out.println(jsonString);
+			logger.log(Level.DEBUG, jsonString);
 			
 			int idx = url2.indexOf("/job/");
 			String myString = url2.substring(idx + "/job/".length());				
 			String[] urlPieces = myString.split("/");
 			String command = urlPieces[0];
 			
-			System.out.println("Servlet Output: [0]"+urlPieces[0]);
+			logger.log(Level.DEBUG, "Servlet Output: [0]"+urlPieces[0]);
 			
 			JobRequest jobRequest = new JobRequest(jsonString);
 			
@@ -120,22 +120,18 @@ public class JobServlet extends AbstractServlet {
 					key.setJobId(Integer.parseInt(urlPieces[1]));
 					//key.selectOne(conn);
 					
-					System.out.println("This is the key:");
-					System.out.println(key);
-					System.out.println("************");
 					
 					//key.setRevision((urlPieces[2]));
-					System.out.println("Trying to do update");
 					Job job = doUpdate(conn, key, jobRequest, sessionUser, response);
 					String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 					responseCode = ResponseCode.SUCCESS;
 					messages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
 				} catch ( RecordNotFoundException e ) {
-					System.out.println("Doing 404");
-					System.out.println(e);
+					logger.log(Level.DEBUG, "Doing 404");
+					logger.log(Level.DEBUG, e);
 					super.sendNotFound(response);						
 				} catch ( Exception e) {
-					System.out.println("Doing SysFailure");
+					logger.log(Level.DEBUG, "Doing SysFailure");
 					responseCode = ResponseCode.SYSTEM_FAILURE;
 					AppUtils.logException(e);
 					String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
@@ -147,12 +143,12 @@ public class JobServlet extends AbstractServlet {
 			
 				url = new AnsiURL(request, "job", (String[])null);
 				
-				System.out.println("URL:"+url);
+				logger.log(Level.DEBUG, "URL:"+url);
 				
 				try {
 
 					JobDetailRequest jobDetailRequest = (JobDetailRequest) AppUtils.json2object(jsonString, JobDetailRequest.class);
-					System.out.println(jobDetailRequest);
+					logger.log(Level.DEBUG, jobDetailRequest);
 					JobDetailRequest.JobDetailRequestAction action = JobDetailRequest.JobDetailRequestAction.valueOf(jobDetailRequest.getAction());
 					if (action.equals(JobDetailRequestAction.CANCEL_JOB)) {
 						doCancelJob(conn, url.getId(), jobDetailRequest, sessionUser, response);					
@@ -169,12 +165,12 @@ public class JobServlet extends AbstractServlet {
 						key.setJobId(url.getId());
 						//key.selectOne(conn);
 						
-						System.out.println("This is the key:");
-						System.out.println(key);
-						System.out.println("************");
+						logger.log(Level.DEBUG, "This is the key:");
+						logger.log(Level.DEBUG, key);
+						logger.log(Level.DEBUG, "************");
 						
 						//key.setRevision((urlPieces[2]));
-						System.out.println("Trying to do update");
+						logger.log(Level.DEBUG, "Trying to do update");
 						Job job = doUpdate(conn, key, jobRequest, sessionUser, response);
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 						responseCode = ResponseCode.SUCCESS;
@@ -185,8 +181,8 @@ public class JobServlet extends AbstractServlet {
 
 					}
 				} catch ( RecordNotFoundException e ) {
-					System.out.println("Doing 404");
-					System.out.println(e);
+					logger.log(Level.DEBUG, "Doing 404");
+					logger.log(Level.DEBUG, e);
 					super.sendNotFound(response);						
 				} catch ( IllegalArgumentException e) {
 					conn.rollback();
@@ -273,7 +269,7 @@ public class JobServlet extends AbstractServlet {
 			}
 			if ( messages.isEmpty() ) {
 				try {
-					System.out.println("JobServlet 156");
+					logger.log(Level.DEBUG, "JobServlet 156");
 					JobUtils.activateJob(conn, jobId, jobDetailRequest.getStartDate(), jobDetailRequest.getActivationDate(), sessionUser.getUserId());
 					conn.commit();
 					responseCode = ResponseCode.SUCCESS;
@@ -307,7 +303,7 @@ public class JobServlet extends AbstractServlet {
 			}
 			if ( messages.isEmpty() ) {
 				try {
-					System.out.println("JobServlet 193");
+					logger.log(Level.DEBUG, "JobServlet 193");
 					JobUtils.rescheduleJob(conn, jobId, jobDetailRequest.getStartDate(), sessionUser.getUserId());
 					conn.commit();
 					responseCode = ResponseCode.SUCCESS;
@@ -487,8 +483,8 @@ public class JobServlet extends AbstractServlet {
 			job.setUpdatedDate(today);
 			
 
-			System.out.println("Job servlet Add Data:");
-			System.out.println(job.toString());
+			logger.log(Level.DEBUG, "Job servlet Add Data:");
+			logger.log(Level.DEBUG, job.toString());
 			int j = 0;
 			try {
 				j = job.insertWithKey(conn);
@@ -681,21 +677,21 @@ public class JobServlet extends AbstractServlet {
 //			job.setUpdatedDate(today);
 			
 
-			System.out.println("Job servlet Add Data:");
-			System.out.println(job.toString());
+			logger.log(Level.DEBUG, "Job servlet Add Data:");
+			logger.log(Level.DEBUG, job.toString());
 			JobUtils.updateJobHistory(conn, job.getJobId());
 			job.update(conn, key);
 			responseCode = ResponseCode.SUCCESS;
 		} else {
-			System.out.println("Doing Edit Fail");
+			logger.log(Level.DEBUG, "Doing Edit Fail");
 			responseCode = ResponseCode.EDIT_FAILURE;
 		}
 		JobDetailResponse jobDetailResponse = new JobDetailResponse(conn, job.getJobId());
 //		JobResponse codeResponse = new JobResponse(job, webMessages);
-		System.out.println("Response:");
-		System.out.println("responseCode: " + responseCode);
-		System.out.println("jobDetailResponse: " + jobDetailResponse);
-		System.out.println("response: " + response);
+		logger.log(Level.DEBUG, "Response:");
+		logger.log(Level.DEBUG, "responseCode: " + responseCode);
+		logger.log(Level.DEBUG, "jobDetailResponse: " + jobDetailResponse);
+		logger.log(Level.DEBUG, "response: " + response);
 
 		jobDetailResponse.setWebMessages(messages);
 		super.sendResponse(conn, response, responseCode, jobDetailResponse);
@@ -706,7 +702,7 @@ public class JobServlet extends AbstractServlet {
 	protected WebMessages validateAdd(Connection conn, JobRequest jobRequest) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		List<String> missingFields = super.validateRequiredAddFields(jobRequest);
-		System.out.println("validateAdd");
+		logger.log(Level.DEBUG, "validateAdd");
 		String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
 		if ( missingFields.isEmpty() ) {
 			if ( ! JobUtils.isValidDLPct(jobRequest.getDirectLaborPct())) {
@@ -716,7 +712,7 @@ public class JobServlet extends AbstractServlet {
 //			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
 			for ( String field : missingFields ) {
 				webMessages.addMessage(field, messageText);
-				System.out.println("field:"+field+":"+messageText);
+				logger.log(Level.DEBUG, "field:"+field+":"+messageText);
 			}
 		}
 

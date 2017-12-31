@@ -10,10 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
 
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.Ticket;
-import com.ansi.scilla.common.db.TicketPayment;
 import com.ansi.scilla.common.jobticket.JobUtils;
 import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -170,7 +170,7 @@ public class TicketServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 			String jsonString = super.makeJsonString(request);
-			System.out.println("jsonstring:"+jsonString);
+			logger.log(Level.DEBUG, "jsonstring:"+jsonString);
 
 			SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 			
@@ -250,15 +250,15 @@ public class TicketServlet extends AbstractServlet {
 			messages.addMessage(TicketReturnRequest.CUSTOMER_SIGNATURE, "At Least 1 Approval Required");
 		}
 		if (ticketReturnRequest.getProcessDate() == null) {
-			System.out.println("No process date");
+			logger.log(Level.DEBUG, "No process date");
 			messages.addMessage(TicketReturnRequest.PROCESS_DATE, "Required Field");
 		}
 		if (ticketReturnRequest.getActPricePerCleaning() == null ) {
-			System.out.println("No act ppc");
+			logger.log(Level.DEBUG, "No act ppc");
 			messages.addMessage(TicketReturnRequest.ACT_PRICE_PER_CLEANING, "Required Field");
 		}
 		if (ticketReturnRequest.getActDlPct() == null ) {
-			System.out.println("No act dl pct");
+			logger.log(Level.DEBUG, "No act dl pct");
 			messages.addMessage(TicketReturnRequest.ACT_DL_PCT, "Required Field");
 		} else {
 			BigDecimal testPct = ticketReturnRequest.getActDlPct().multiply(new BigDecimal(100D));
@@ -267,16 +267,16 @@ public class TicketServlet extends AbstractServlet {
 			}
 		}
 		if (ticketReturnRequest.getActDlAmt() == null ) {
-			System.out.println("No act dl amt");
+			logger.log(Level.DEBUG, "No act dl amt");
 			messages.addMessage(TicketReturnRequest.ACT_DL_AMT, "Required Field");
 		}
 		if ( ! isValidNewStatus(ticket.getStatus(), ticketReturnRequest.getNewStatus())) {
-			System.out.println("invalid next status");
+			logger.log(Level.DEBUG, "invalid next status");
 			messages.addMessage(TicketReturnRequest.NEW_STATUS, "Invalid status sequence");
 		}
 		if ( messages.isEmpty() ) {
 			try {
-				System.out.println("process update");
+				logger.log(Level.DEBUG, "process update");
 				ticket.setStatus(TicketStatus.COMPLETED.code());
 				//required fields
 				ticket.setProcessDate(ticketReturnRequest.getProcessDate());
@@ -304,13 +304,13 @@ public class TicketServlet extends AbstractServlet {
 				messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
 				ticketReturnResponse = new TicketReturnResponse(conn, ticket.getTicketId());
 			} catch ( RecordNotFoundException e) {
-				System.out.println("update failed");
+				logger.log(Level.DEBUG, "update failed");
 				responseCode = ResponseCode.EDIT_FAILURE;
 			}
 		} else { 
 			responseCode = ResponseCode.EDIT_FAILURE;
 		}
-		System.out.println("messages:"+messages);
+		logger.log(Level.DEBUG, "messages:"+messages);
 		ticketReturnResponse.setWebMessages(messages);
 		super.sendResponse(conn, response, responseCode, ticketReturnResponse);
 		
@@ -362,20 +362,20 @@ public class TicketServlet extends AbstractServlet {
 		ResponseCode responseCode = null;
 
 		if (ticketReturnRequest.getProcessDate() == null) {
-			System.out.println("No process date");
+			logger.log(Level.DEBUG, "No process date");
 			messages.addMessage("processDate", "Required Field");
 		}
 		if (StringUtils.isBlank(ticketReturnRequest.getProcessNotes())) {
-			System.out.println("No process notes");
+			logger.log(Level.DEBUG, "No process notes");
 			messages.addMessage("processNotes", "Required Field");
 		}
 		if ( ! isValidNewStatus(ticket.getStatus(), ticketReturnRequest.getNewStatus())) {
-			System.out.println("Invalid next status");
+			logger.log(Level.DEBUG, "Invalid next status");
 			messages.addMessage(TicketReturnRequest.NEW_STATUS, "Invalid status sequence");
 		}
 
 		if ( messages.isEmpty() ) {
-			System.out.println("valid void");
+			logger.log(Level.DEBUG, "valid void");
 			ticket.setStatus(TicketStatus.VOIDED.code());
 			//required fields
 			ticket.setProcessDate(ticketReturnRequest.getProcessDate());
@@ -387,7 +387,7 @@ public class TicketServlet extends AbstractServlet {
 			messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
 			ticketReturnResponse = new TicketReturnResponse(conn, ticket.getTicketId());
 		} else { 
-			System.out.println("Edit failure");
+			logger.log(Level.DEBUG, "Edit failure");
 			responseCode = ResponseCode.EDIT_FAILURE;
 		}
 		ticketReturnResponse.setWebMessages(messages);
@@ -495,12 +495,12 @@ public class TicketServlet extends AbstractServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		SessionUser sessionUser = AppUtils.getSessionUser(request);
 		String url = request.getRequestURI();
-		System.out.println("TicketReturn(): doPost(): Url:" + url);
+		logger.log(Level.DEBUG, "TicketReturn(): doPost(): Url:" + url);
 		if(parsePanelUrl("/ticket/",url)) {
-			System.out.println("Ticket(): doPost(): panel:" + this.panel);
-			System.out.println("Ticket(): doPost(): ticketId:" + this.id);
+			logger.log(Level.DEBUG, "Ticket(): doPost(): panel:" + this.panel);
+			logger.log(Level.DEBUG, "Ticket(): doPost(): ticketId:" + this.id);
 			if ( this.panel.equals("return")) { // ticket return panel?
-				System.out.println("Ticket(): doPost(): process ticket return panel");
+				logger.log(Level.DEBUG, "Ticket(): doPost(): process ticket return panel");
 				String jsonString = super.makeJsonString(request);
 				try {
 					TicketReturnRequest ticketReturnRequest = (TicketReturnRequest) AppUtils.json2object(jsonString, TicketReturnRequest.class);
@@ -565,7 +565,7 @@ public class TicketServlet extends AbstractServlet {
 				 * 			**invoice excess payment amount - stub for v 2.0
 				 * 
 				 */
-/*				System.out.println("Ticket(): doGet(): process ticket invoice panel");
+/*				logger.log(Level.DEBUG, "Ticket(): doGet(): process ticket invoice panel");
 				super.sendNotFound(response); // not coded yet
 			} else {
 				super.sendNotFound(response); // unexpected panel

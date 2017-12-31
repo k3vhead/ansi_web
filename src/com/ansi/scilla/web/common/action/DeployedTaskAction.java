@@ -34,7 +34,6 @@ public class DeployedTaskAction extends AbstractAction {
 		
 		try {
 			String webResource="resources/completedTask.properties";
-//			System.out.println(webResource);
 			InputStream webStream = BuildDate.class.getClassLoader().getResourceAsStream(webResource);
 			List<AsanaListItem> taskList = makeTaskList(webStream);
 			webStream.close();

@@ -17,6 +17,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.ansi.scilla.common.AnsiTime;
@@ -92,7 +93,7 @@ public class TicketOverrideServlet extends TicketServlet {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
 			String jsonString = super.makeJsonString(request);
-			System.out.println("jsonstring:"+jsonString);
+			logger.log(Level.DEBUG, "jsonstring:"+jsonString);
 
 			SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 			Ticket ticket = new Ticket();
@@ -210,7 +211,7 @@ public class TicketOverrideServlet extends TicketServlet {
 				Date newStartDate = sdf.parse(values.get(FIELDNAME_START_DATE));
 				Calendar start = Calendar.getInstance(new AnsiTime());
 				start.setTime(newStartDate);
-				System.out.println(newStartDate);
+				logger.log(Level.DEBUG, newStartDate);
 				ticket.setStartDate(start.getTime()); // do it this way for timezone weirdness
 				success = true;
 				message = MESSAGE_SUCCESS;
@@ -251,24 +252,24 @@ public class TicketOverrideServlet extends TicketServlet {
 	}
 	
 	public OverrideResult doInvoice(Connection conn, Ticket ticket, HashMap<String, String> values, SessionUser sessionUser) throws Exception {
-		System.out.println("processing invoice");
+		logger.log(Level.DEBUG, "processing invoice");
 		Boolean success = null;
 		String message = null;
 		if ( values.containsKey(FIELDNAME_INVOICE_ID) ) {
 			Integer newInvoiceId = Integer.valueOf(values.get(FIELDNAME_INVOICE_ID));
 			if ( isSameBillTo(conn, ticket.getTicketId(), newInvoiceId) ) {
 				try {				
-					System.out.println("TicketOverrideServlet 233: ");
+					logger.log(Level.DEBUG, "TicketOverrideServlet 233: ");
 					ticket.setInvoiceId(newInvoiceId);
 					success = true;
 					message = MESSAGE_SUCCESS;
 				} catch (Exception e) {
-					System.out.println("TicketOverrideServlet 237: ");
+					logger.log(Level.DEBUG, "TicketOverrideServlet 237: ");
 					success = false;
 					message = MESSAGE_INVALID_INVOICE_ID;
 				}
 			} else {
-				System.out.println("TicketOverrideServlet 241: ");
+				logger.log(Level.DEBUG, "TicketOverrideServlet 241: ");
 				success = false;
 				message = MESSAGE_BILLTO_MISMATCH;
 			}
@@ -289,7 +290,7 @@ public class TicketOverrideServlet extends TicketServlet {
 	 * @throws Exception
 	 */
 	public OverrideResult doNewInvoice(Connection conn, Ticket ticket, HashMap<String, String> values, SessionUser sessionUser) throws Exception {
-		System.out.println("processing new invoice");
+		logger.log(Level.DEBUG, "processing new invoice");
 		Boolean success = null;
 		String message = null;
 		
@@ -313,7 +314,7 @@ public class TicketOverrideServlet extends TicketServlet {
 	
 	
 	public OverrideResult doInvoiceDate(Connection conn, Ticket ticket, HashMap<String, String> values, SessionUser sessionUser) throws Exception {
-		System.out.println("processing invoice date");
+		logger.log(Level.DEBUG, "processing invoice date");
 		Boolean success = null;
 		String message = null;
 		
@@ -337,7 +338,7 @@ public class TicketOverrideServlet extends TicketServlet {
 	
 	
 	public OverrideResult doPricePerCleaning(Connection conn, Ticket ticket, HashMap<String, String> values, SessionUser sessionUser) throws Exception {
-		System.out.println("processing PPC");
+		logger.log(Level.DEBUG, "processing PPC");
 		Boolean success = null;
 		String message = null;
 		
@@ -374,10 +375,10 @@ public class TicketOverrideServlet extends TicketServlet {
 					isSameBillTo = true;
 				}
 			}
-			System.out.println("TicketOverrideServlet 255: " + isSameBillTo);
+			logger.log(Level.DEBUG, "TicketOverrideServlet 255: " + isSameBillTo);
 			return isSameBillTo;			
 		} catch ( RecordNotFoundException e ) {
-			System.out.println("TicketOverrideServlet 257: ");
+			logger.log(Level.DEBUG, "TicketOverrideServlet 257: ");
 			return false;
 		}
 	}

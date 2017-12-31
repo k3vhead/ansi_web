@@ -49,6 +49,7 @@ public class AbstractServlet extends HttpServlet {
 	public static final String ACTION_IS_COPY = "copy";
 	public static final String ACTION_IS_LIST = "list";
 	
+	protected Logger logger = AppUtils.getLogger();
 
 	@Override
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response)

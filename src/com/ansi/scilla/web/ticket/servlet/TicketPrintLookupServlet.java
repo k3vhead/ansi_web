@@ -7,6 +7,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Level;
+
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -46,14 +48,14 @@ public class TicketPrintLookupServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 			String jsonString = super.makeJsonString(request);
-			System.out.println("jsonstring:"+jsonString);
+			logger.log(Level.DEBUG, "jsonstring:"+jsonString);
 
 			AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 			
 			try{
 				TicketPrintLookupRequest ticketRequest = new TicketPrintLookupRequest();
 				AppUtils.json2object(jsonString, ticketRequest);
-				System.out.println("TicketReturnRequest:"+ticketRequest+"\tPrintDate:"+ticketRequest.getPrintDate());
+				logger.log(Level.DEBUG, "TicketReturnRequest:"+ticketRequest+"\tPrintDate:"+ticketRequest.getPrintDate());
 
 				TicketPrintLookupResponse data = new TicketPrintLookupResponse(conn, ticketRequest.getPrintDate());
 				messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");

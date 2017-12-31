@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
 
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -60,12 +61,12 @@ public class JobSearchServlet extends AbstractServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String url = request.getRequestURI();
-		System.out.println("JobSearchServlet(): doGet(): url =" + url);
+		logger.log(Level.DEBUG, "JobSearchServlet(): doGet(): url =" + url);
 		int idx = url.indexOf("/jobSearch/");
 		if ( idx > -1 ) {
 			String queryString = request.getQueryString();
 			
-			System.out.println("JobSearchServlet(): doGet(): queryString =" + queryString);
+			logger.log(Level.DEBUG, "JobSearchServlet(): doGet(): queryString =" + queryString);
 			// Figure out what we've got:
 			// "myString" is the piece of the URL that we actually care about
 			String myString = url.substring(idx + "/jobSearch/".length());
@@ -100,7 +101,7 @@ public class JobSearchServlet extends AbstractServlet {
 
 		} else {
 			String queryString = request.getQueryString();
-			System.out.println("JobSearchServlet(): doGet(): queryString =" + queryString);
+			logger.log(Level.DEBUG, "JobSearchServlet(): doGet(): queryString =" + queryString);
 			Connection conn = null;
 			try {
 				if ( StringUtils.isBlank(queryString)) {
@@ -129,11 +130,11 @@ public class JobSearchServlet extends AbstractServlet {
 		JobSearchListResponse jobSearchListResponse = new JobSearchListResponse();
 		String[] x = url.split("/");
 		if(x[0].equals("list")){
-			System.out.println("JobSearchServlet(): doGetWork(): processing list");
+			logger.log(Level.DEBUG, "JobSearchServlet(): doGetWork(): processing list");
 			jobSearchListResponse = new JobSearchListResponse(conn);
 		} else if (StringUtils.isNumeric(x[0])) {
 			Integer jobId = Integer.valueOf(x[0]);
-			System.out.println("JobSearchServlet(): doGetWork(): processing jobId:" + jobId);
+			logger.log(Level.DEBUG, "JobSearchServlet(): doGetWork(): processing jobId:" + jobId);
 			jobSearchListResponse = new JobSearchListResponse(conn, jobId);
 		} else {
 			throw new RecordNotFoundException();
@@ -146,8 +147,8 @@ public class JobSearchServlet extends AbstractServlet {
 		String term = "";
 		Map<String, String> map = AppUtils.getQueryMap(qs);
 		term = map.get(qm);
-		System.out.println("getQueryString(): map =" + map);
-		System.out.println("getQueryString(): term =" + term);
+		logger.log(Level.DEBUG, "getQueryString(): map =" + map);
+		logger.log(Level.DEBUG, "getQueryString(): term =" + term);
 		if ( StringUtils.isBlank(term)) {
 			term = "";
 		} else {

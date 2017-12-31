@@ -12,6 +12,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Level;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.ansi.scilla.common.AnsiTime;
@@ -62,7 +63,7 @@ public class InvoiceRegisterReportServlet extends AbstractServlet {
 //			    response.setContentType("application/vnd.ms-excel");
 			    response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 			    String dispositionHeader = "attachment; filename=" + fileName + ".xlsx";
-			    System.out.println("Invoice register 63: " + fileName);
+			    logger.log(Level.DEBUG, "Invoice register 63: " + fileName);
 				response.setHeader("Content-disposition",dispositionHeader);
 			    // the contentlength
 //			    response.setContentLength(baos.size());

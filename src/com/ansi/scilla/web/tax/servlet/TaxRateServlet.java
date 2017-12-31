@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
 
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.TaxRate;
@@ -66,20 +67,20 @@ public class TaxRateServlet extends AbstractServlet {
 			conn.setAutoCommit(false);
 			
 			String url = request.getRequestURI();
-			System.out.println("TaxRateServlet: doDelete() Url:" + url);
+			logger.log(Level.DEBUG, "TaxRateServlet: doDelete() Url:" + url);
 			int idx = url.indexOf("/taxRate/");
 			String myString = url.substring(idx + "/taxRate/".length());				
 			String[] urlPieces = myString.split("/");
 			String command = urlPieces[0];
 
-			System.out.println("TaxRateServlet: doDelete() command:" + command);
+			logger.log(Level.DEBUG, "TaxRateServlet: doDelete() command:" + command);
 			
 //			ResponseCode responseCode = null;
 			if ( urlPieces.length == 1 ) {   //  /<taxRateId> = 1 pieces
-				System.out.println("TaxRateServlet: doDelete() urlPieces == 1");
+				logger.log(Level.DEBUG, "TaxRateServlet: doDelete() urlPieces == 1");
 				TaxRate key = new TaxRate();
 				if ( StringUtils.isNumeric(urlPieces[0])) { //Looks like a taxRateId
-					System.out.println("TaxRateServlet: doDelete() Trying to delete:" + command);
+					logger.log(Level.DEBUG, "TaxRateServlet: doDelete() Trying to delete:" + command);
 					key.setTaxRateId(Integer.valueOf(urlPieces[0]));
 					key.delete(conn);
 					
@@ -88,18 +89,18 @@ public class TaxRateServlet extends AbstractServlet {
 					
 					conn.commit();
 				} else {
-					System.out.println("TaxRateServlet: doDelete() urlPieces[0] not numeric");
+					logger.log(Level.DEBUG, "TaxRateServlet: doDelete() urlPieces[0] not numeric");
 					throw new RecordNotFoundException();
 				}
 			} else {
-				System.out.println("TaxRateServlet: doDelete() urlPieces <> 1" + urlPieces.length);
+				logger.log(Level.DEBUG, "TaxRateServlet: doDelete() urlPieces <> 1" + urlPieces.length);
 				throw new RecordNotFoundException();
 			}
 
 
 /*			String jsonString = super.makeJsonString(request); //get request, change to Json
 			TaxRateRequest taxRateRequest = new TaxRateRequest(jsonString); //put Json into taxRateReques
-			System.out.println(taxRateRequest);//print request
+			logger.log(Level.DEBUG, taxRateRequest);//print request
 			TaxRate taxRate = new TaxRate();
 			taxRate.setTaxRateId(taxRateRequest.getTaxRateId());
 			taxRate.delete(conn);
@@ -112,10 +113,10 @@ public class TaxRateServlet extends AbstractServlet {
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
 			super.sendForbidden(response);
 		} catch ( RecordNotFoundException e ) {
-			System.out.println("TaxRateServlet: doDelete() RecordNotFoundException 404");
+			logger.log(Level.DEBUG, "TaxRateServlet: doDelete() RecordNotFoundException 404");
 			super.sendNotFound(response);						
 		} catch ( Exception e) {
-			System.out.println("TaxRateServlet: doDelete() unexpected exception"+e);
+			logger.log(Level.DEBUG, "TaxRateServlet: doDelete() unexpected exception"+e);
 			AppUtils.logException(e);
 			throw new ServletException(e);
 		} finally {
@@ -129,9 +130,9 @@ public class TaxRateServlet extends AbstractServlet {
 		String url = request.getRequestURI();
 		int idx = url.indexOf("/taxRate/");
 		if ( idx > -1 ) {
-			System.out.println("Url:" + url);
+			logger.log(Level.DEBUG, "Url:" + url);
 			String queryString = request.getQueryString();
-			System.out.println("Query String: " + queryString);
+			logger.log(Level.DEBUG, "Query String: " + queryString);
 			
 			// we're in the right place
 			Connection conn = null;
@@ -162,7 +163,7 @@ public class TaxRateServlet extends AbstractServlet {
 			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
 				super.sendForbidden(response);
 			} catch ( RecordNotFoundException e ) {
-				System.out.println("TaxRateServlet: doGet() RecordNotFoundException 404");
+				logger.log(Level.DEBUG, "TaxRateServlet: doGet() RecordNotFoundException 404");
 				super.sendNotFound(response);						
 			} catch ( Exception e) {
 				AppUtils.logException(e);
@@ -183,7 +184,7 @@ public class TaxRateServlet extends AbstractServlet {
 		SessionUser sessionUser = AppUtils.getSessionUser(request);
 		String url = request.getRequestURI();
 //		String queryString = request.getQueryString();
-		System.out.println("TaxRateServlet: doPost() Url:" + url);
+		logger.log(Level.DEBUG, "TaxRateServlet: doPost() Url:" + url);
 		
 		Connection conn = null;
 		try {
@@ -196,10 +197,10 @@ public class TaxRateServlet extends AbstractServlet {
 			String myString = url.substring(idx + "/taxRate/".length());				
 			String[] urlPieces = myString.split("/");
 			String command = urlPieces[0];
-			System.out.println("TaxRateServlet: doPost() command:"+command);
+			logger.log(Level.DEBUG, "TaxRateServlet: doPost() command:"+command);
 
 			String jsonString = super.makeJsonString(request);
-			System.out.println("TaxRateServlet: doPost() jsonString:"+jsonString);
+			logger.log(Level.DEBUG, "TaxRateServlet: doPost() jsonString:"+jsonString);
 			
 			try {
 				TaxRateRequest taxRateRequest = new TaxRateRequest(jsonString);
@@ -229,7 +230,7 @@ public class TaxRateServlet extends AbstractServlet {
 		TaxRate taxRate = null;
 		ResponseCode responseCode = null;
 		if ( command.equals(ACTION_IS_ADD) ) {
-			System.out.println("TaxRateServlet: doPost() action is add");
+			logger.log(Level.DEBUG, "TaxRateServlet: doPost() action is add");
 			WebMessages webMessages = validateAdd(conn, taxRateRequest);
 			if (webMessages.isEmpty()) {
 				try {
@@ -248,24 +249,24 @@ public class TaxRateServlet extends AbstractServlet {
 					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
 				}
 			} else {
-				System.out.println("TaxRateServlet: doPost() add failed");
+				logger.log(Level.DEBUG, "TaxRateServlet: doPost() add failed");
 				responseCode = ResponseCode.EDIT_FAILURE;
 			}
-			System.out.println("TaxRateServlet: doPost() prepare response");
+			logger.log(Level.DEBUG, "TaxRateServlet: doPost() prepare response");
 			TaxRateResponse taxRateResponse = new TaxRateResponse(taxRate, webMessages);
-			System.out.println("TaxRateServlet: doPost() send response");
+			logger.log(Level.DEBUG, "TaxRateServlet: doPost() send response");
 			super.sendResponse(conn, response, responseCode, taxRateResponse);
-			System.out.println("TaxRateServlet: doPost() response sent");
+			logger.log(Level.DEBUG, "TaxRateServlet: doPost() response sent");
 			
 		} else if ( urlPieces.length == 1 ) {   //  /<taxRateId> = 1 pieces
-			System.out.println("TaxRateServlet: doPost() action is update");
+			logger.log(Level.DEBUG, "TaxRateServlet: doPost() action is update");
 			WebMessages webMessages = validateAdd(conn, taxRateRequest);
 			if (webMessages.isEmpty()) {
-				System.out.println("passed validation");
+				logger.log(Level.DEBUG, "passed validation");
 				try {
 					TaxRate key = new TaxRate();
 					if ( StringUtils.isNumeric(urlPieces[0]) ) {//looks like a taxRateId
-						System.out.println("TaxRateServlet: doPost() trying to update:"+urlPieces[0]);
+						logger.log(Level.DEBUG, "TaxRateServlet: doPost() trying to update:"+urlPieces[0]);
 						key.setTaxRateId(Integer.valueOf(urlPieces[0]));
 						taxRate = doUpdate(conn, key, taxRateRequest, sessionUser);
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
@@ -275,24 +276,24 @@ public class TaxRateServlet extends AbstractServlet {
 						throw new RecordNotFoundException();
 					}
 				} catch ( RecordNotFoundException e ) {
-					System.out.println("Doing 404");
+					logger.log(Level.DEBUG, "Doing 404");
 					super.sendNotFound(response);						
 				} catch ( Exception e) {
-					System.out.println("Doing SysFailure");
+					logger.log(Level.DEBUG, "Doing SysFailure");
 					responseCode = ResponseCode.SYSTEM_FAILURE;
 					AppUtils.logException(e);
 					String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
 					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
 				}
 			} else {
-				System.out.println("Doing Edit Fail");
+				logger.log(Level.DEBUG, "Doing Edit Fail");
 				responseCode = ResponseCode.EDIT_FAILURE;
 			}
-			System.out.println("TaxRateServlet: doPost() prepare response");
+			logger.log(Level.DEBUG, "TaxRateServlet: doPost() prepare response");
 			TaxRateResponse taxRateResponse = new TaxRateResponse(taxRate, webMessages);
-			System.out.println("TaxRateServlet: doPost() send response");
+			logger.log(Level.DEBUG, "TaxRateServlet: doPost() send response");
 			super.sendResponse(conn, response, responseCode, taxRateResponse);
-			System.out.println("TaxRateServlet: doPost() response sent");
+			logger.log(Level.DEBUG, "TaxRateServlet: doPost() response sent");
 		} else {
 			super.sendNotFound(response);
 		}
@@ -329,9 +330,9 @@ public class TaxRateServlet extends AbstractServlet {
 
 
 	protected TaxRate doUpdate(Connection conn, TaxRate key, TaxRateRequest taxRateRequest, SessionUser sessionUser) throws Exception {
-		System.out.println("This is the key:");
-		System.out.println(key);
-		System.out.println("************");
+		logger.log(Level.DEBUG, "This is the key:");
+		logger.log(Level.DEBUG, key);
+		logger.log(Level.DEBUG, "************");
 		Date today = new Date();
 		TaxRate taxRate = new TaxRate();
 		taxRate.setAmount(taxRateRequest.getAmount());
@@ -360,7 +361,7 @@ public class TaxRateServlet extends AbstractServlet {
 		if (StringUtils.isNumeric(urlPieces[0])){
 			/*			TaxRate taxRate = new TaxRate();
 			taxRate.setTaxRateId(Integer.valueOf(urlPieces[0]));
-			System.out.println("Getting TaxRate for taxRateId: " + urlPieces[0]);
+			logger.log(Level.DEBUG, "Getting TaxRate for taxRateId: " + urlPieces[0]);
 			taxRate.selectOne(conn);
 			taxRateListResponse.setTaxRateList(Arrays.asList(new TaxRate[] {taxRate} ));
 			 */
@@ -416,11 +417,11 @@ public class TaxRateServlet extends AbstractServlet {
 	
 	protected WebMessages validateAdd(Connection conn, TaxRateRequest taxRateRequest) throws Exception {
 		WebMessages webMessages = new WebMessages();
-		System.out.println("TaxRateServlet: validateAdd() before");
+		logger.log(Level.DEBUG, "TaxRateServlet: validateAdd() before");
 		List<String> missingFields = super.validateRequiredAddFields(taxRateRequest);
-		System.out.println("TaxRateServlet: validateAdd() after");
+		logger.log(Level.DEBUG, "TaxRateServlet: validateAdd() after");
 		if ( ! missingFields.isEmpty() ) {
-			System.out.println("TaxRateServlet: validateAdd() missing fields");
+			logger.log(Level.DEBUG, "TaxRateServlet: validateAdd() missing fields");
 			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
 			for ( String field : missingFields ) {
 				webMessages.addMessage(field, messageText);
@@ -431,11 +432,11 @@ public class TaxRateServlet extends AbstractServlet {
 
 	protected WebMessages validateUpdate(Connection conn, TaxRate key, TaxRateRequest taxRateRequest) throws RecordNotFoundException, Exception {
 		WebMessages webMessages = new WebMessages();
-		System.out.println("TaxRateServlet: validateUpdate() before");
+		logger.log(Level.DEBUG, "TaxRateServlet: validateUpdate() before");
 		List<String> missingFields = super.validateRequiredUpdateFields(taxRateRequest);
-		System.out.println("TaxRateServlet: validateUpdate() after");
+		logger.log(Level.DEBUG, "TaxRateServlet: validateUpdate() after");
 		if ( ! missingFields.isEmpty() ) {
-			System.out.println("TaxRateServlet: validateUpdate() missing fields");
+			logger.log(Level.DEBUG, "TaxRateServlet: validateUpdate() missing fields");
 			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
 			for ( String field : missingFields ) {
 				webMessages.addMessage(field, messageText);
@@ -444,7 +445,7 @@ public class TaxRateServlet extends AbstractServlet {
 		// if we "select" the key, and it isn't found, a "RecordNotFoundException" is thrown.
 		// That exception will propagate up the tree until it turns into a 404 message sent to the client
 		TaxRate testKey = (TaxRate)key.clone(); 
-		System.out.println("TaxRateServlet: validateUpdate() testKey:" + testKey.getTaxRateId());
+		logger.log(Level.DEBUG, "TaxRateServlet: validateUpdate() testKey:" + testKey.getTaxRateId());
 		testKey.selectOne(conn);
 		return webMessages;
 	}

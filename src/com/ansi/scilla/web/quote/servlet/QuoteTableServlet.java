@@ -14,6 +14,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Level;
+
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.queries.QuoteSearch;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
@@ -77,7 +79,7 @@ public class QuoteTableServlet extends AbstractServlet {
 	    	if(request.getParameter("search[value]") != null){
 	    		term = request.getParameter("search[value]");
 	    	}
-	    	System.out.println(term);
+	    	logger.log(Level.INFO, term);
 	    	if (sStart != null) {
 	    		start = Integer.parseInt(sStart);
 	    		if (start < 0) {
@@ -86,7 +88,7 @@ public class QuoteTableServlet extends AbstractServlet {
 	    	}
 	    	if (sAmount != null) {
 	    		amount = Integer.parseInt(sAmount);
-	    		System.out.println(sAmount);
+	    		logger.log(Level.DEBUG, sAmount);
 	    		if (amount < 10 ) {
 	    			amount = 10;
 	    		} else if (amount > 1000) {
@@ -125,16 +127,16 @@ public class QuoteTableServlet extends AbstractServlet {
 
 	    	String search = QuoteSearch.generateWhereClause(term);
 
-	    	System.out.println(sql);
+	    	logger.log(Level.DEBUG, sql);
 	    	sql += search;
-	    	System.out.println(sql);
+	    	logger.log(Level.DEBUG, sql);
 	    	sql += " order by " + colName + " " + dir;
-	    	System.out.println(sql);
+	    	logger.log(Level.DEBUG, sql);
 	    	if ( amount != -1) {
 	    		sql += " OFFSET "+ start+" ROWS"
 	    				+ " FETCH NEXT " + amount + " ROWS ONLY";
 	    	}
-	    	System.out.println(sql);
+	    	logger.log(Level.DEBUG, sql);
 
 	    	s = conn.createStatement();
 	    	ResultSet rs = s.executeQuery(sql);

@@ -8,12 +8,15 @@ import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
 import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
+import com.ansi.scilla.web.common.utils.AppUtils;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
@@ -44,7 +47,8 @@ public class TicketRecord extends ApplicationObject {
 
 	public TicketRecord(Ticket ticket) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		this();
-		System.out.println("ticket:" + ticket);
+		Logger logger = AppUtils.getLogger();
+		logger.log(Level.DEBUG, "ticket:" + ticket);
 		BeanUtilsBean beanUtilsBean = BeanUtilsBean.getInstance();
 		beanUtilsBean.getConvertUtils().register(
 		    new org.apache.commons.beanutils.converters.BigDecimalConverter(null),
@@ -54,9 +58,10 @@ public class TicketRecord extends ApplicationObject {
 	}
 
 	public List<NextAllowedStatusItem> getNextAllowedStatusList( String status ) {
+		Logger logger = AppUtils.getLogger();
 		String statusId = status.substring(0,1);
 		TicketStatus ticketStatus = TicketStatus.lookup(statusId);
-		System.out.println("ticketStatus:" + ticketStatus);
+		logger.log(Level.DEBUG, "ticketStatus:" + ticketStatus);
 		List<NextAllowedStatusItem> nextOptions = new ArrayList<NextAllowedStatusItem>();
 		if (ticketStatus != null){
 			List<TicketStatus> nextValues = ticketStatus.nextValues();

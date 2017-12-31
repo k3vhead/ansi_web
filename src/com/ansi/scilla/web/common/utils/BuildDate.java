@@ -21,19 +21,16 @@ public class BuildDate extends ApplicationObject {
 		super();
 		try {
 			String webResource="resources/build_web.properties";
-//			System.out.println(webResource);
 			InputStream webStream = BuildDate.class.getClassLoader().getResourceAsStream(webResource);
 			this.webBuildDate = makeBuildDate(webStream);
 			webStream.close();
 			
 			String commonResource="resources/build_common.properties";
-//			System.out.println(commonResource);
 			InputStream commonStream = BuildDate.class.getClassLoader().getResourceAsStream(commonResource);
 			this.commonBuildDate = makeBuildDate(commonStream);
 			commonStream.close();
 
 			String reportResource="resources/build_report.properties";
-//			System.out.println(reportResource);
 			InputStream reportStream = BuildDate.class.getClassLoader().getResourceAsStream(reportResource);
 			this.reportBuildDate = makeBuildDate(reportStream);
 			reportStream.close();
@@ -62,7 +59,6 @@ public class BuildDate extends ApplicationObject {
         String propertyString = writer.toString();
         String[] lines = propertyString.split("\n");
         for ( int i = 0; i < lines.length; i++ ) {
-//        	System.out.println(i + "\t" + lines[i]);
         	if ( lines[i].startsWith("builddate")) {
         		String[] values = lines[i].split("=");
         		buildDate = values[1];

@@ -15,6 +15,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Level;
+
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
@@ -74,14 +76,14 @@ public class ContactSearchServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);
 			String qs = request.getQueryString();
-			System.out.println("ContactSearchServlet(): doGet(): qs =" + qs);
+			logger.log(Level.DEBUG, "ContactSearchServlet(): doGet(): qs =" + qs);
 			String term = "";
 			if (qs != null) {
 				if ( qs.indexOf("term=") != -1) {
 					term = StringUtils.trimToNull(URLDecoder.decode(qs.substring("term=".length()),"UTF-8"));
 				}
 			}
-			System.out.println("ContactSearchServlet(): doGet(): term =$" + term +"$");
+			logger.log(Level.DEBUG, "ContactSearchServlet(): doGet(): term =$" + term +"$");
 			List<ReturnItem> resultList = new ArrayList<ReturnItem>();
 			String sql = "select business_phone, contact_id, fax, first_name, last_name, mobile_phone, preferred_contact, email"
 					+ " from contact where lower(business_phone) like '%" + term + "%'"

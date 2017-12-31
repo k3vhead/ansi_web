@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
 
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -60,12 +61,12 @@ public class QuoteSearchServlet extends AbstractServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String url = request.getRequestURI();
-		System.out.println("QuoteSearchServlet(): doGet(): url =" + url);
+		logger.log(Level.DEBUG, "QuoteSearchServlet(): doGet(): url =" + url);
 		int idx = url.indexOf("/quoteSearch/");
 		if ( idx > -1 ) {
 			String queryString = request.getQueryString();
 			
-			System.out.println("QuoteSearchServlet(): doGet(): queryString =" + queryString);
+			logger.log(Level.DEBUG, "QuoteSearchServlet(): doGet(): queryString =" + queryString);
 			// Figure out what we've got:
 			// "myString" is the piece of the URL that we actually care about
 			String myString = url.substring(idx + "/quoteSearch/".length());
@@ -102,7 +103,7 @@ public class QuoteSearchServlet extends AbstractServlet {
 			}
 		} else {
 			String queryString = request.getQueryString();
-			System.out.println("QuoteSearchServlet(): doGet(): queryString =" + queryString);
+			logger.log(Level.DEBUG, "QuoteSearchServlet(): doGet(): queryString =" + queryString);
 			Connection conn = null;
 			try {
 				conn = AppUtils.getDBCPConn();
@@ -143,8 +144,8 @@ public class QuoteSearchServlet extends AbstractServlet {
 		String term = "";
 		Map<String, String> map = AppUtils.getQueryMap(qs);
 		term = map.get(qm);
-		System.out.println("getQueryString(): map =" + map);
-		System.out.println("getQueryString(): term =" + term);
+		logger.log(Level.DEBUG, "getQueryString(): map =" + map);
+		logger.log(Level.DEBUG, "getQueryString(): term =" + term);
 		if ( StringUtils.isBlank(term)) {
 			term = "";
 		} else {

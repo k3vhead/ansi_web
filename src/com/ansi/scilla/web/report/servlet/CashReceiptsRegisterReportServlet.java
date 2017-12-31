@@ -10,6 +10,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Level;
+
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.Midnight;
 import com.ansi.scilla.common.db.PermissionLevel;
@@ -43,7 +45,7 @@ public class CashReceiptsRegisterReportServlet extends AbstractServlet {
 			try {
 				conn = AppUtils.getDBCPConn();
 
-				System.out.println(REALM+":URL:"+request);
+				logger.log(Level.DEBUG, REALM+":URL:"+request);
 
 //				Integer divisionId = 102;
 				CashReceiptsRegisterReportRequest reportRequest = new CashReceiptsRegisterReportRequest();
@@ -61,7 +63,7 @@ public class CashReceiptsRegisterReportServlet extends AbstractServlet {
 				endDate.set(Calendar.DAY_OF_MONTH, reportRequest.getEndDate().get(Calendar.DAY_OF_MONTH));
 
 				CashReceiptsRegisterReportRequest.CrrReportType requestedType = CashReceiptsRegisterReportRequest.CrrReportType.valueOf(reportRequest.getCrrType());
-				System.out.println(REALM+":Start:"+startDate.getTime()+"\tEnd:"+endDate.getTime());
+				logger.log(Level.DEBUG, REALM+":Start:"+startDate.getTime()+"\tEnd:"+endDate.getTime());
 				
 				String reportHtml = null;
 				if ( requestedType.equals(CashReceiptsRegisterReportRequest.CrrReportType.SUMMARY)) {
