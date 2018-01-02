@@ -17,7 +17,7 @@ public class TaxRateResponse extends MessageResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private TaxRateResponseRecord taxRate;
+	private TaxRateResponseItem taxRate;
 
 	public TaxRateResponse() {
 		super();
@@ -25,15 +25,15 @@ public class TaxRateResponse extends MessageResponse implements Serializable {
 
 	public TaxRateResponse(TaxRate taxRate, WebMessages webMessages) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		super(webMessages);
-		this.taxRate = new TaxRateResponseRecord(taxRate);
+		this.taxRate = new TaxRateResponseItem(taxRate);
 		
 	}
 
-	public TaxRateResponseRecord getTaxRate() {
+	public TaxRateResponseItem getTaxRate() {
 		return taxRate;
 	}
 
-	public void setTaxRate(TaxRateResponseRecord taxRate) {
+	public void setTaxRate(TaxRateResponseItem taxRate) {
 		this.taxRate = taxRate;
 	}
 

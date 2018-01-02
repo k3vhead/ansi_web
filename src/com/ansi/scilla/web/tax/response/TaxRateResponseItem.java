@@ -11,7 +11,7 @@ import com.ansi.scilla.common.db.TaxRate;
 import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-public class TaxRateResponseRecord extends ApplicationObject {
+public class TaxRateResponseItem extends ApplicationObject {
 	/**
 	 * 
 	 */
@@ -22,7 +22,7 @@ public class TaxRateResponseRecord extends ApplicationObject {
 	private BigDecimal rate;
 	private Integer taxRateId;
 
-	public TaxRateResponseRecord(TaxRate taxRate) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	public TaxRateResponseItem(TaxRate taxRate) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		super();
 		if(taxRate != null) {
 			PropertyUtils.copyProperties(this, taxRate);

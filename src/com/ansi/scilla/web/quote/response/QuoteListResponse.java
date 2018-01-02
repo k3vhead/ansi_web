@@ -18,7 +18,7 @@ public class QuoteListResponse extends MessageResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private List<QuoteResponseRecord> quoteList;
+	private List<QuoteResponseItem> quoteList;
 
 	public QuoteListResponse() {
 		super();
@@ -32,9 +32,9 @@ public class QuoteListResponse extends MessageResponse implements Serializable {
 	 */
 	public QuoteListResponse(Connection conn) throws Exception {
 		List<Quote> quoteList = Quote.cast(new Quote().selectAll(conn));
-		this.quoteList = new ArrayList<QuoteResponseRecord>();
+		this.quoteList = new ArrayList<QuoteResponseItem>();
 		for ( Quote quote : quoteList ) {
-			this.quoteList.add(new QuoteResponseRecord(conn, quote));
+			this.quoteList.add(new QuoteResponseItem(conn, quote));
 		}
 		//Collections.sort(this.quoteList);
 	}
@@ -45,9 +45,9 @@ public class QuoteListResponse extends MessageResponse implements Serializable {
 		key.setRevision(revision);		
 		
 		List<Quote> quoteList = Quote.cast(key.selectSome(conn));
-		this.quoteList = new ArrayList<QuoteResponseRecord>();
+		this.quoteList = new ArrayList<QuoteResponseItem>();
 		for ( Quote quote : quoteList ) {
-			this.quoteList.add(new QuoteResponseRecord(conn, quote));
+			this.quoteList.add(new QuoteResponseItem(conn, quote));
 		}
 		//Collections.sort(this.quoteList);
 	}
@@ -57,18 +57,18 @@ public class QuoteListResponse extends MessageResponse implements Serializable {
 		key.setQuoteId(Integer.parseInt(quoteId));
 		
 		List<Quote> quoteList = Quote.cast(key.selectSome(conn));
-		this.quoteList = new ArrayList<QuoteResponseRecord>();
+		this.quoteList = new ArrayList<QuoteResponseItem>();
 		for ( Quote quote : quoteList ) {
-			this.quoteList.add(new QuoteResponseRecord(conn, quote));
+			this.quoteList.add(new QuoteResponseItem(conn, quote));
 		}
 		//Collections.sort(this.quoteList);
 	}
 
-	public List<QuoteResponseRecord> getQuoteList() {
+	public List<QuoteResponseItem> getQuoteList() {
 		return quoteList;
 	}
 
-	public void setQuoteList(List<QuoteResponseRecord> quoteList) {
+	public void setQuoteList(List<QuoteResponseItem> quoteList) {
 		this.quoteList = quoteList;
 	}
 	

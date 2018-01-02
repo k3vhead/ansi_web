@@ -8,7 +8,7 @@ import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Address;
 
 
-public class AddressResponseRecord extends ApplicationObject implements Comparable<AddressResponseRecord> {
+public class AddressResponseItem extends ApplicationObject implements Comparable<AddressResponseItem> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -27,7 +27,7 @@ public class AddressResponseRecord extends ApplicationObject implements Comparab
 	private String countryCode;
 
 	
-	public AddressResponseRecord(Address address) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	public AddressResponseItem(Address address) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		super();
 		PropertyUtils.copyProperties(this, address);
 	}
@@ -132,7 +132,7 @@ public class AddressResponseRecord extends ApplicationObject implements Comparab
 	}
 
 	@Override
-	public int compareTo(AddressResponseRecord o) {
+	public int compareTo(AddressResponseItem o) {
 		int ret = this.getAddressId().compareTo(o.getAddressId());
 
 		return ret;

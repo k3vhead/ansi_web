@@ -26,13 +26,13 @@
 		<Logger name="TRANSACTION_LOG" level="info">
 			<appender-ref ref="transaction_log" level="info" />
 		</Logger>
-		<Logger name="org.apache.struts" level="error">
+		<Logger name="org.apache" level="error">
 			<appender-ref ref="apache_log" level="error" />
 		</Logger>
 		<Logger name="com.thewebthing" level="error">
 			<appender-ref ref="webthing_log" level="error" />
 		</Logger>
-    	<Root level="info">
+    	<Root level="error">
       		<AppenderRef ref="STDOUT"/>
     	</Root>
 	</Loggers>

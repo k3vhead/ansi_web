@@ -12,7 +12,7 @@ import com.ansi.scilla.common.address.AddressUtils;
 import com.ansi.scilla.common.db.Address;
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
 import com.ansi.scilla.common.queries.TicketPaymentTotals;
-import com.ansi.scilla.web.address.response.AddressResponseRecord;
+import com.ansi.scilla.web.address.response.AddressResponseItem;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.payment.response.TicketPaymentTotalItem;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -22,7 +22,7 @@ public class InvoiceTicketResponse extends MessageResponse {
 
 	private static final long serialVersionUID = 1L;
 
-	private AddressResponseRecord address;
+	private AddressResponseItem address;
 	private List<TicketPaymentTotalItem> ticketList;
 	private BigDecimal totalBalance;
 	private BigDecimal totalPayInvoice;
@@ -39,20 +39,20 @@ public class InvoiceTicketResponse extends MessageResponse {
 	public InvoiceTicketResponse(Connection conn, Integer invoiceId) throws RecordNotFoundException, Exception {
 		this();
 		Address address = AddressUtils.getBillToForInvoice(conn, invoiceId);
-		this.address = new AddressResponseRecord(address);
+		this.address = new AddressResponseItem(address);
 		List<TicketPaymentTotals> totalsList = TicketPaymentTotals.selectByInvoice(conn, invoiceId);
 		makeTicketList(totalsList);
 	}
-	public InvoiceTicketResponse(AddressResponseRecord address, List<TicketPaymentTotals> totalsList) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	public InvoiceTicketResponse(AddressResponseItem address, List<TicketPaymentTotals> totalsList) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		this();
 		this.address = address;
 		makeTicketList(totalsList);
 	}
 	
-	public AddressResponseRecord getAddress() {
+	public AddressResponseItem getAddress() {
 		return address;
 	}
-	public void setAddress(AddressResponseRecord address) {
+	public void setAddress(AddressResponseItem address) {
 		this.address = address;
 	}
 	public List<TicketPaymentTotalItem> getTicketList() {

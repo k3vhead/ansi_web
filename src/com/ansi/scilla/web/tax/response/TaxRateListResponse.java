@@ -20,7 +20,7 @@ public class TaxRateListResponse extends MessageResponse implements Serializable
 
 	private static final long serialVersionUID = 1L;
 
-	private List<TaxRateResponseRecord> taxRateList;
+	private List<TaxRateResponseItem> taxRateList;
 
 	public TaxRateListResponse() {
 		super();
@@ -32,26 +32,26 @@ public class TaxRateListResponse extends MessageResponse implements Serializable
 	 * @throws Exception
 	 */
 	public TaxRateListResponse(Connection conn) throws Exception {
-		this.taxRateList = new ArrayList<TaxRateResponseRecord>();
+		this.taxRateList = new ArrayList<TaxRateResponseItem>();
 		List<TaxRate> dbTaxRateList = TaxRate.cast(new TaxRate().selectAll(conn));
 		for ( TaxRate record : dbTaxRateList ) {
-			this.taxRateList.add(new TaxRateResponseRecord(record));
+			this.taxRateList.add(new TaxRateResponseItem(record));
 			}
 	}
 
 	public TaxRateListResponse(Connection conn, Integer taxRateId) throws RecordNotFoundException, Exception {
-		this.taxRateList = new ArrayList<TaxRateResponseRecord>();
+		this.taxRateList = new ArrayList<TaxRateResponseItem>();
 		TaxRate taxRate = new TaxRate();
 		taxRate.setTaxRateId(taxRateId);	
 		taxRate.selectOne(conn);
-		this.taxRateList = Arrays.asList(new TaxRateResponseRecord[] { new TaxRateResponseRecord(taxRate) });
+		this.taxRateList = Arrays.asList(new TaxRateResponseItem[] { new TaxRateResponseItem(taxRate) });
 	}
 
-	public List<TaxRateResponseRecord> getTaxRateList() {
+	public List<TaxRateResponseItem> getTaxRateList() {
 		return taxRateList;
 	}
 
-	public void setTaxRateList(List<TaxRateResponseRecord> taxRateList) {
+	public void setTaxRateList(List<TaxRateResponseItem> taxRateList) {
 		this.taxRateList = taxRateList;
 	}
 	

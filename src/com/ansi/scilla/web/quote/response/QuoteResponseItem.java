@@ -16,21 +16,21 @@ import com.ansi.scilla.common.db.PrintHistory;
 import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.jsonFormat.AnsiDateFormatter;
-import com.ansi.scilla.web.address.response.AddressResponseRecord;
+import com.ansi.scilla.web.address.response.AddressResponseItem;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 
-public class QuoteResponseRecord extends MessageResponse {
+public class QuoteResponseItem extends MessageResponse {
 
 	private static final long serialVersionUID = 1L;
 	
 	private QuoteDetail quote;
-	private AddressResponseRecord billTo;
-	private AddressResponseRecord jobSite;
+	private AddressResponseItem billTo;
+	private AddressResponseItem jobSite;
 
-	public QuoteResponseRecord(Connection conn, Quote quote) throws Exception {
+	public QuoteResponseItem(Connection conn, Quote quote) throws Exception {
 		super();
 		PropertyUtils.copyProperties(this, quote);
 		
@@ -49,12 +49,12 @@ public class QuoteResponseRecord extends MessageResponse {
 		Address jobSiteAddress = new Address();
 		jobSiteAddress.setAddressId(quote.getJobSiteAddressId());
 		jobSiteAddress.selectOne(conn);
-		this.jobSite = new AddressResponseRecord(jobSiteAddress);
+		this.jobSite = new AddressResponseItem(jobSiteAddress);
 		
 		Address billToAddress = new Address();
 		billToAddress.setAddressId(quote.getBillToAddressId());
 		billToAddress.selectOne(conn);
-		this.billTo = new AddressResponseRecord(billToAddress);
+		this.billTo = new AddressResponseItem(billToAddress);
 		
 		Integer printCount = makePrintCount(conn, quote.getQuoteId());
 		this.quote = new QuoteDetail(quote, manager, division, printCount);
@@ -68,16 +68,16 @@ public class QuoteResponseRecord extends MessageResponse {
 		this.quote = quote;
 	}
 	
-	public AddressResponseRecord getBillTo() {
+	public AddressResponseItem getBillTo() {
 		return billTo;
 	}
-	public void setBillTo(AddressResponseRecord billTo) {
+	public void setBillTo(AddressResponseItem billTo) {
 		this.billTo = billTo;
 	}
-	public AddressResponseRecord getJobSite() {
+	public AddressResponseItem getJobSite() {
 		return jobSite;
 	}
-	public void setJobSite(AddressResponseRecord jobSite) {
+	public void setJobSite(AddressResponseItem jobSite) {
 		this.jobSite = jobSite;
 	}
 	

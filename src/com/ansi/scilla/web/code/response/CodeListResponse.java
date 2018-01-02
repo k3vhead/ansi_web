@@ -24,7 +24,7 @@ public class CodeListResponse extends MessageResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private List<CodeResponseRecord> codeList;
+	private List<CodeResponseItem> codeList;
 	private List<FilterRecord> filterRecordList;
 
 	public CodeListResponse() {
@@ -39,9 +39,9 @@ public class CodeListResponse extends MessageResponse implements Serializable {
 	 */
 	public CodeListResponse(Connection conn) throws Exception {
 		List<Code> codeList = Code.cast(new Code().selectAll(conn));
-		this.codeList = new ArrayList<CodeResponseRecord>();
+		this.codeList = new ArrayList<CodeResponseItem>();
 		for ( Code code : codeList ) {
-			this.codeList.add(new CodeResponseRecord(code));
+			this.codeList.add(new CodeResponseItem(code));
 		}
 		Collections.sort(this.codeList);
 		
@@ -55,20 +55,20 @@ public class CodeListResponse extends MessageResponse implements Serializable {
 		key.setValue(value);
 		key.setStatus(Code.STATUS_IS_ACTIVE);
 		List<Code> codeList = Code.cast(key.selectSome(conn));
-		this.codeList = new ArrayList<CodeResponseRecord>();
+		this.codeList = new ArrayList<CodeResponseItem>();
 		for ( Code code : codeList ) {
-			this.codeList.add(new CodeResponseRecord(code));
+			this.codeList.add(new CodeResponseItem(code));
 		}
 		Collections.sort(this.codeList);
 		
 		makeFilterList(conn);
 	}
 
-	public List<CodeResponseRecord> getCodeList() {
+	public List<CodeResponseItem> getCodeList() {
 		return codeList;
 	}
 
-	public void setCodeList(List<CodeResponseRecord> codeList) {
+	public void setCodeList(List<CodeResponseItem> codeList) {
 		this.codeList = codeList;
 	}
 	
@@ -80,8 +80,8 @@ public class CodeListResponse extends MessageResponse implements Serializable {
 	}
 
 	public void sortByDisplay() {
-		Collections.sort(this.codeList, new Comparator<CodeResponseRecord>() {
-			public int compare(CodeResponseRecord o1, CodeResponseRecord o2) {
+		Collections.sort(this.codeList, new Comparator<CodeResponseItem>() {
+			public int compare(CodeResponseItem o1, CodeResponseItem o2) {
 				int ret = o1.getDisplayValue().compareTo(o2.getDisplayValue());
 				return ret;
 			}

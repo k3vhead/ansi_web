@@ -19,7 +19,7 @@ public class AddressListResponse extends MessageResponse implements Serializable
 
 	private static final long serialVersionUID = 1L;
 
-	private List<AddressResponseRecord> addressList;
+	private List<AddressResponseItem> addressList;
 
 	public AddressListResponse() {
 		super();
@@ -33,9 +33,9 @@ public class AddressListResponse extends MessageResponse implements Serializable
 	 */
 	public AddressListResponse(Connection conn) throws Exception {
 		List<Address> addressList = Address.cast(new Address().selectAll(conn));
-		this.addressList = new ArrayList<AddressResponseRecord>();
+		this.addressList = new ArrayList<AddressResponseItem>();
 		for ( Address address : addressList ) {
-			this.addressList.add(new AddressResponseRecord(address));
+			this.addressList.add(new AddressResponseItem(address));
 		}
 		Collections.sort(this.addressList);
 	}
@@ -44,18 +44,18 @@ public class AddressListResponse extends MessageResponse implements Serializable
 		Address key = new Address();
 		key.setAddressId(Integer.parseInt(addressId));
 		List<Address> addressList = Address.cast(key.selectSome(conn));
-		this.addressList = new ArrayList<AddressResponseRecord>();
+		this.addressList = new ArrayList<AddressResponseItem>();
 		for ( Address address : addressList ) {
-			this.addressList.add(new AddressResponseRecord(address));
+			this.addressList.add(new AddressResponseItem(address));
 		}
 		Collections.sort(this.addressList);
 	}
 
-	public List<AddressResponseRecord> getAddressList() {
+	public List<AddressResponseItem> getAddressList() {
 		return addressList;
 	}
 
-	public void setAddressList(List<AddressResponseRecord> addressList) {
+	public void setAddressList(List<AddressResponseItem> addressList) {
 		this.addressList = addressList;
 	}
 	

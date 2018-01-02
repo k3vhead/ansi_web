@@ -7,7 +7,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Code;
 
-public class CodeResponseRecord extends ApplicationObject implements Comparable<CodeResponseRecord> {
+public class CodeResponseItem extends ApplicationObject implements Comparable<CodeResponseItem> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -19,7 +19,7 @@ public class CodeResponseRecord extends ApplicationObject implements Comparable<
 	private String tableName;
 	private String value;
 	
-	public CodeResponseRecord(Code code) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	public CodeResponseItem(Code code) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		super();
 		PropertyUtils.copyProperties(this, code);
 	}
@@ -67,7 +67,7 @@ public class CodeResponseRecord extends ApplicationObject implements Comparable<
 		this.value = value;
 	}
 	@Override
-	public int compareTo(CodeResponseRecord o) {
+	public int compareTo(CodeResponseItem o) {
 		int ret = this.getTableName().compareTo(o.getTableName());
 		if ( ret == 0 ) {
 			ret = this.fieldName.compareTo(o.getFieldName());
