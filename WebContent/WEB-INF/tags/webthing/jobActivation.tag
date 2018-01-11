@@ -29,8 +29,24 @@
 		disabled = "disabled=\"disabled\"";
 	}
 %>
-
-
+<script type="text/javascript">
+	$(function() {
+		//$("#<%=namespace%>_automanual").change(function() {
+		//	var $selectedValue = $("#<%=namespace%>_automanual").val();
+		//	if ( $selectedValue == "manual" ) {
+		//		$("#<%=namespace%>_jobActivationForm.ansi-date-show-calendar").show();
+		//	} else {
+		//		$("#<%=namespace%>_jobActivationForm.ansi-date-show-calendar").hide();
+		//	}
+		//});
+		
+		$(".ansi-date-show-calendar").click(function($event) {
+			console.debug("Clicked it");
+			//var $jobId = $("input[name='jobId']").val();
+			ANSI_CALENDAR.go(JOB_DATA.jobId);			
+		});
+	});
+</script>
 <div <%= cssIdString %> <%= cssClassString %> >
 	<div style="float:right;margin-right:6px; margin-top:6px;">
 		<span id="<%=namespace %>_activationEdit" style="cursor:pointer;" class="green fa fa-pencil tooltip" ari-hidden="true"><span id="<%=namespace %>tooltiptext" class="tooltiptext">Edit</span></span>
@@ -45,8 +61,9 @@
 			<tr>
 				<td colspan="3">
 					Schedule (Auto/Manual):
-					<select name="<%=namespace%>_automanual" id="<%=namespace%>_automanual" <%=disabled%>>
+					<select class="automanual" name="<%=namespace%>_automanual" id="<%=namespace%>_automanual" <%=disabled%>> 
 					</select>
+					<span class="ansi-date-show-calendar"><i class="fa fa-calendar-check-o fa-2x" aria-hidden="true"></i></span>
 				</td>
 				<%--
 				<td colspan="3">

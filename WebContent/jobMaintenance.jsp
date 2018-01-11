@@ -24,7 +24,9 @@
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
         <script type="text/javascript" src="js/jobMaintenance.js"></script>
         <script type="text/javascript" src="js/quoteMaintenance.js"></script>
-         <script type="text/javascript" src="js/addressUtils.js"></script>
+        <script type="text/javascript" src="js/addressUtils.js"></script>
+		<script type="text/javascript" src="js/ansiCalendar.js"></script>
+        <link rel="stylesheet" href="css/ansiCalendar.css" />
         <link rel="stylesheet" href="css/datepicker.css" type="text/css" />
         <style type="text/css">
 			#confirmDelete {
@@ -88,6 +90,9 @@
 			input[type="text"][disabled] {
 			   color: black;
 			}
+			.ansi-date-show-calendar {
+				display:none;
+			}
 			input[type=checkbox] {width:20px; height:20px;}
         </style>
         
@@ -101,7 +106,7 @@
 					JOB_DATA.invoiceTermList, 
 					JOB_DATA.jobDetail);
 			*/
-			$("#jobNbr").focus();
+			$("#jobNbr").focus();			
 		});
 
 
@@ -119,6 +124,8 @@
     	
 		<webthing:jobActivateCancel page="JOB" namespace="activateModal" />
 		<webthing:jobInvoice namespace="invoiceModal" cssId="invoiceModal" page="QUOTE" />
+		<webthing:ansiCalendar id="ansiDate" monthsToDisplay="12" triggerSize="2" label="Manual Job Schedule" />
+		
     </tiles:put>
 
 </tiles:insert>
