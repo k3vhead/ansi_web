@@ -60,6 +60,7 @@ public class TicketOverrideServlet extends TicketServlet {
 	public static final String FIELDNAME_INVOICE_ID = "invoiceId";
 	public static final String FIELDNAME_INVOICE_DATE = "invoiceDate";
 	public static final String FIELDNAME_ACT_PRICE_PER_CLEANING = "actPricePerCleaning";
+	public static final String FIELDNAME_ACT_PO_NUMBER = "actPoNumber";
 	
 	private final String MESSAGE_SUCCESS = "Success";
 	private final String MESSAGE_NOT_PROCESSED = "Not Processed";
@@ -74,6 +75,7 @@ public class TicketOverrideServlet extends TicketServlet {
 	private final String MESSAGE_MISSING_PROCESS_NOTE = "Missing required values: process date/process notes";
 	private final String MESSAGE_MISSING_START_DATE = "Missing required value: start date";
 	private final String MESSAGE_MISSING_VALUE_PPC = "Missing required value: Actual Price Per Cleaning";
+	private final String MESSAGE_MISSING_VALUE_PO = "Missing required value: PO Number";
 	
 	
 	
@@ -365,6 +367,26 @@ public class TicketOverrideServlet extends TicketServlet {
 	
 	
 	
+	
+	public OverrideResult doPoNumber(Connection conn, Ticket ticket, HashMap<String, String> values, SessionUser sessionUser) throws Exception {
+		logger.log(Level.DEBUG, "processing PO Number");
+		Boolean success = null;
+		String message = null;
+		
+
+		if ( values.containsKey(FIELDNAME_ACT_PO_NUMBER) ) {
+			String value = values.get(FIELDNAME_ACT_PO_NUMBER);
+			ticket.setActPoNumber(value);
+			success = true;
+			message = MESSAGE_SUCCESS;
+		} else {
+			success = false;
+			message = MESSAGE_MISSING_VALUE_PO;
+		}
+		return new OverrideResult(success, message, ticket, true);
+	}
+	
+	
 	private boolean isSameBillTo(Connection conn, Integer ticketId, Integer newInvoiceId) throws Exception {
 		try {
 			Address oldBillTo = TicketUtils.getBillToForTicket(conn, ticketId);
@@ -403,6 +425,7 @@ public class TicketOverrideServlet extends TicketServlet {
 		NEW_INVOICE("newInvoice","doNewInvoice", Permission.TICKET),
 		INVOICE_DATE("invoiceDate","doInvoiceDate", Permission.TICKET_SPECIAL_OVERRIDE),
 		ACT_PRICE_PER_CLEANING("actPricePerCleaning","doPricePerCleaning", Permission.TICKET_SPECIAL_OVERRIDE),
+		ACT_PO_NUMBER("actPoNumber","doPoNumber", Permission.TICKET),
 		;
 		
 		private final String id;

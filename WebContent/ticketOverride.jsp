@@ -85,6 +85,9 @@
 			#editActualPPCModal {
 				display:none;
 			}
+			#editPoNumberModal {
+				display:none;
+			}
 			#displayTicketTable {
     			border-collapse: collapse;
 				width:90%;
@@ -185,6 +188,9 @@
         			});
         			$(".editActualPPC").click(function($event) {
         				TICKET_OVERRIDE.doEditActualPPC($event);
+        			});
+        			$(".editPoNumber").click(function($event) {
+        				TICKET_OVERRIDE.doEditPoNumber($event);
         			});
         			$("#generateInvoice").checkboxradio();
 					$("#generateInvoice").click(function($event) {
@@ -415,8 +421,40 @@
         			});
             		$('#saveActualPPCModal').button('option', 'label', 'Save');
             		$('#cancelActualPPCModal').button('option', 'label', 'Cancel');
-       			},
-        			
+
+            		
+            		
+            		
+            		
+            		
+            		$("#editPoNumberModal").dialog({
+        				title:'Edit PO Number',
+        				autoOpen: false,
+        				height: 300,
+        				width: 400,
+        				modal: true,
+        				buttons: [
+        					{
+        						id: "cancelPoNumberModal",
+        						click: function() {
+        							$("#editPoNumberModal").dialog( "close" );
+        						}
+        					},{
+        						id: "savePoNumberModal",
+        						click: function($event) {
+        							TICKET_OVERRIDE.saveNewPoNumber();
+        						}
+        					}
+        				],
+        				close: function() {
+        					$("#editPoNumberModal").dialog( "close" );
+        				}
+        			});
+            		$('#savePoNumberModal').button('option', 'label', 'Save');
+            		$('#cancelPoNumberModal').button('option', 'label', 'Cancel');       			
+            	},
+        		
+            	
         			
        			initButtons:function() {
                 	$("#doPopulate").click(function () {
@@ -603,6 +641,12 @@
     				$("#editActualPPCModal").dialog("open");
                	},
                	
+               	doEditPoNumber:function($event) {
+               		$('#editPoNumberModal').find('input[name="newPoNumber"]').val(GLOBAL_DATA['globalTicket'].actPoNumber);
+    				$("#editPoNumberModal").dialog("open");
+
+               	},
+               	
                	populateTicketDetail:function($data) {
            			GLOBAL_DATA['globalTicket'] = $data.ticketDetail;
     				$("#ticketId").html($data.ticketDetail.ticketId);
@@ -710,7 +754,7 @@
     				$("#serviceDescription").html($data.ticketDetail.serviceDescription);
     				$("#jobFrequency").html($data.ticketDetail.jobFrequency);
     				$("#invoiceStyle").html($data.ticketDetail.invoiceStyle);
-    				$("#poNumber").html($data.ticketDetail.poNumber);
+    				$("#poNumber").html($data.ticketDetail.actPoNumber);
     			},
 
     			
@@ -915,6 +959,15 @@
     			},
     			
     			
+    			saveNewPoNumber : function() {
+    				var $overrideType = "actPoNumber";
+    				var $newPoNumber = $('#editPoNumberModal').find('input[name="newPoNumber"]').val();
+    				
+    				var $overrideList =[ {'actPoNumber':$newPoNumber}];
+    				TICKET_OVERRIDE.doOverride($('#editPoNumberModal'), $overrideType, $overrideList);
+    			},
+    			
+    			
     			doOverride:function($modal, $type, $overrideList) {
     				var $outbound = {'type':$type, 'override':$overrideList};
 					console.debug(JSON.stringify($outbound));
@@ -1097,7 +1150,7 @@
 	        		<th>Job ID</th><td><span id="jobId"></span></td>
 	        		<th>Payment Terms:</th><td><span id="invoiceStyle"></span></td>
 	        		<th>Frequency</th><td><span id="jobFrequency"></span></td>
-	        		<th>PO #</th><td><span id="poNumber"></span></td>
+	        		<th>PO #</th><td><span id="poNumber"></span> <webthing:edit styleClass="editPoNumber action-link">Edit</webthing:edit></td>
         		</tr>
         		<tr>
 	        		<th colspan="2">Service Description:</th><td colspan="8"><span id="serviceDescription"></span></td>
@@ -1443,6 +1496,19 @@
     			</tr>
     		</table>
     	</div>
+    	
+    	
+    	<div id="editPoNumberModal">
+    		<div class="err modalErr" ></div>
+    		<table>
+    			<tr>
+    				<td><span class="formLabel">PO Number:</span></td>
+    				<td><input type="text" name="newPoNumber" /></td>
+    			</tr>
+    		</table>
+    	</div>
+    	
+    	
     	
     	<div id="editProcessDateModal">
     		<div class="err modalErr" ></div>

@@ -85,6 +85,7 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 	private String taxRateLocation;
 	private BigDecimal taxRate;
 	private String poNumber;
+	private String actPoNumber;
 	
 	/* ******************************************** */
 	/* ******************************************** */
@@ -163,6 +164,15 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		this.taxRateLocation = taxRate.getLocation();
 		this.taxRate = taxRate.getRate();
 		this.poNumber = job.getPoNumber();
+		// populate actual po with actual if we have one.
+		// else populate with job's po if we have one
+		if ( StringUtils.isBlank(ticket.getActPoNumber())) {
+			if ( ! StringUtils.isBlank(job.getPoNumber())) {
+				this.actPoNumber = job.getPoNumber();
+			}
+		} else {
+			this.actPoNumber = ticket.getActPoNumber();
+		}
 	}
 
 	public Integer getTicketId() {
@@ -491,6 +501,14 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 
 	public void setPoNumber(String poNumber) {
 		this.poNumber = poNumber;
+	}
+
+	public String getActPoNumber() {
+		return actPoNumber;
+	}
+
+	public void setActPoNumber(String actPoNumber) {
+		this.actPoNumber = actPoNumber;
 	}
 
 	

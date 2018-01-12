@@ -289,6 +289,11 @@ public class TicketServlet extends AbstractServlet {
 				} else {
 					ticket.setProcessNotes(ticketReturnRequest.getProcessNotes());
 				} 
+				if ( StringUtils.isBlank(ticketReturnRequest.getActPoNumber())) {
+					ticket.setActPoNumber(null);
+				} else {
+					ticket.setActPoNumber(ticketReturnRequest.getActPoNumber());
+				}
 				if (ticketReturnRequest.getCustomerSignature() != null && ticketReturnRequest.getCustomerSignature()){
 					ticket.setCustomerSignature(Ticket.CUSTOMER_SIGNATURE_IS_YES);
 				} 
@@ -474,7 +479,7 @@ public class TicketServlet extends AbstractServlet {
 
 	private void doTicketUpdate(Connection conn, Ticket ticket, SessionUser sessionUser) throws Exception {
 		Ticket key = new Ticket();
-//		updateTicketHistory(conn, ticket);
+		//updateTicketHistory(conn, ticket);
 		key.setTicketId(ticket.getTicketId());
 		ticket.setUpdatedBy(sessionUser.getUserId());
 		Date today = new Date();
@@ -483,98 +488,16 @@ public class TicketServlet extends AbstractServlet {
 	}
 	
 
+	/*
 	private void updateTicketHistory(Connection conn, Ticket ticket) throws Exception {
-//		Ticket testTicket = new Ticket();
-//		testTicket.setTicketId(ticket.getTicketId());
-//		testTicket.selectOne(conn);
-//		testTicket.insertHistory(conn);
-	}	
-
-/*	@Override
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		SessionUser sessionUser = AppUtils.getSessionUser(request);
-		String url = request.getRequestURI();
-		logger.log(Level.DEBUG, "TicketReturn(): doPost(): Url:" + url);
-		if(parsePanelUrl("/ticket/",url)) {
-			logger.log(Level.DEBUG, "Ticket(): doPost(): panel:" + this.panel);
-			logger.log(Level.DEBUG, "Ticket(): doPost(): ticketId:" + this.id);
-			if ( this.panel.equals("return")) { // ticket return panel?
-				logger.log(Level.DEBUG, "Ticket(): doPost(): process ticket return panel");
-				String jsonString = super.makeJsonString(request);
-				try {
-					TicketReturnRequest ticketReturnRequest = (TicketReturnRequest) AppUtils.json2object(jsonString, TicketReturnRequest.class);
-					processTicketReturnPostRequest(conn, response, command, sessionUser, ticketReturnRequest);
-				} catch ( InvalidFormatException formatException) {
-					processBadPostRequest(conn, response, formatException);
-				}
-
-				SessionUser sessionUser = AppUtils.getSessionUser(request);
-				String url = request.getRequestURI();
-				
-===============
-				Connection conn = null;
-				try {
-					conn = AppUtils.getDBCPConn();
-					conn.setAutoCommit(false);
-
-					// figure out if this is an "add" or an "update"
-					int idx = url.indexOf("/division/");
-					String myString = url.substring(idx + "/division/".length());		
-					String[] urlPieces = myString.split("/");
-					String command = urlPieces[0];
-					String jsonString = super.makeJsonString(request);
-					try {
-						DivisionRequest divisionRequest = (DivisionRequest) AppUtils.json2object(jsonString, DivisionRequest.class);
-						processPostRequest(conn, response, command, sessionUser, divisionRequest);
-					} catch ( InvalidFormatException formatException) {
-						processBadPostRequest(conn, response, formatException);
-					}
-				} catch ( Exception e ) {
-					AppUtils.logException(e);
-					AppUtils.rollbackQuiet(conn);
-					throw new ServletException(e);
-				} finally {
-					AppUtils.closeQuiet(conn);
-				}
-				
-				
-
-			} else if ( this.panel.equals("invoice")) { // ticket invoice panel?
-*/				/* Needs to return:
-				 * 		for Ticket = ticketId
-				 * 			act_price_per_cleaning
-				 * 			act_tax_amt
-				 * 			sum(ticket_payment.amount)
-				 * 			sum(ticket_payment.tax_amt)
-				 * 			balance(total of ppc + tax - (payment amt + payment tax))
-				 * 			daysToPay(today, invoiceDate, balance) 
-				 * 					if balance == 0, daysToPay = max(paymentDate)-invoiceDate
-				 * 					if balance <> 0, daysToPay = today - invoiceDate
-				 * 			**ticket write off amount - stub for v 2.0
-
-				 * 		for Invoice = invoiceId
-				 * 			invoice_id (this is the invoice number)
-				 * 			sum(act_price_per_cleaning)
-				 * 			sum(act_tax_amt)
-				 * 			sum(ticket_payment.amount)
-				 * 			sum(ticket_payment.tax_amt)
-				 * 			balance(total of inv.ppc + inv.tax - (inv.payment amt + inv.payment tax))
-				 * 			**invoice write off amount - stub for v 2.0
-				 * 			**invoice MSFC amount - stub for v 2.0
-				 * 			**invoice excess payment amount - stub for v 2.0
-				 * 
-				 */
-/*				logger.log(Level.DEBUG, "Ticket(): doGet(): process ticket invoice panel");
-				super.sendNotFound(response); // not coded yet
-			} else {
-				super.sendNotFound(response); // unexpected panel
-			}
-		} else {
-			super.sendNotFound(response);
-		}
+		Ticket testTicket = new Ticket();
+		testTicket.setTicketId(ticket.getTicketId());
+		testTicket.selectOne(conn);
+		testTicket.insertHistory(conn);
 	}
-*/
+	*/	
+
+
 
 
 	

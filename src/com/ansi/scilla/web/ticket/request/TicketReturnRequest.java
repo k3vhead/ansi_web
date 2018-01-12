@@ -43,6 +43,7 @@ public class TicketReturnRequest extends AbstractRequest {
 	private String processNotes;
 	private String status;
 	private Integer ticketId;
+	private String actPoNumber;
 	
 	public TicketReturnRequest() {
 		super();
@@ -135,6 +136,14 @@ public class TicketReturnRequest extends AbstractRequest {
 	
 	public Integer getTicketId() {
 		return this.ticketId;
+	}
+
+	public String getActPoNumber() {
+		return actPoNumber;
+	}
+
+	public void setActPoNumber(String actPoNumber) {
+		this.actPoNumber = actPoNumber;
 	}
 
 

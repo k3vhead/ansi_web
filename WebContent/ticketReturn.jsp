@@ -340,7 +340,7 @@
 					
 					$("#processDateLabel").html($processLabel);
 					$("#processDate").html($data.ticketDetail.processDate);
-					$("#processNotes").html($data.ticketDetail.processNotes);
+					$("#processNotes").html($data.ticketDetail.processNotes);					
 				}
 			}			
 			
@@ -396,7 +396,7 @@
 				$("#serviceDescription").html($data.ticketDetail.serviceDescription);
 				$("#jobFrequency").html($data.ticketDetail.jobFrequency);
 				$("#invoiceStyle").html($data.ticketDetail.invoiceStyle);
-				$("#poNumber").html($data.ticketDetail.poNumber);
+				$("#poNumber").html($data.ticketDetail.actPoNumber);
 			}
 
 			
@@ -421,6 +421,7 @@
    				$("#COMPLETED input[name=actDlPct]").val($actDlPct);
    				$("#COMPLETED span[class=actDlPct]").html(($actDlPct * 100).toFixed(3));		       				
    				$("#COMPLETED input[name=actDlAmt]").val($actDlAmt);
+   				$("#COMPLETED input[name=actPoNumber]").val($data.ticketDetail.actPoNumber);
 			}
 
 			
@@ -767,6 +768,13 @@
 				    		</td>
 				    		<td><span class="err actDlAmtErr"></span></td>
 				    	</tr>
+				    	<tr>
+				    		<td><span class="formLabel">Actual PO Number:</span></td>
+				    		<td>
+				    			<input type="text" name="actPoNumber"/>
+				    		</td>
+				    		<td><span class="err actPoNumberErr"></span></td>
+				    	</tr>
 						<tr>
 				    		<td><span class="formLabel">Completion Notes:</span></td>
 				    		<td>
@@ -931,8 +939,8 @@
 		   		</tr>
 		   		<tr>
 		   			<td style="border-bottom:solid 1px #000000;">
-		   				<span id="ticketId"></span>&nbsp;
-		   				<span id="ticketOverride" class="green fa fa-pencil tooltip action-link" ari-hidden="true"><span class="tooltiptext">Override</span></span>
+		   				<span id="ticketId"></span>&nbsp;		   				
+		   				<webthing:override styleId="ticketOverride" styleClass="action-link">Override</webthing:override>
 		   			</td>
 		   			<td style="border-bottom:solid 1px #000000;"><span id="actPricePerCleaning"></span></td>
 		   			<td style="border-bottom:solid 1px #000000;"><span id="totalVolPaid"></span></td>
