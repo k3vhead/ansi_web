@@ -474,7 +474,7 @@ public class TicketServlet extends AbstractServlet {
 
 	private void doTicketUpdate(Connection conn, Ticket ticket, SessionUser sessionUser) throws Exception {
 		Ticket key = new Ticket();
-		updateTicketHistory(conn, ticket);
+//		updateTicketHistory(conn, ticket);
 		key.setTicketId(ticket.getTicketId());
 		ticket.setUpdatedBy(sessionUser.getUserId());
 		Date today = new Date();
@@ -484,10 +484,10 @@ public class TicketServlet extends AbstractServlet {
 	
 
 	private void updateTicketHistory(Connection conn, Ticket ticket) throws Exception {
-		Ticket testTicket = new Ticket();
-		testTicket.setTicketId(ticket.getTicketId());
-		testTicket.selectOne(conn);
-		testTicket.insertHistory(conn);
+//		Ticket testTicket = new Ticket();
+//		testTicket.setTicketId(ticket.getTicketId());
+//		testTicket.selectOne(conn);
+//		testTicket.insertHistory(conn);
 	}	
 
 /*	@Override
