@@ -67,7 +67,8 @@ $( document ).ready(function() {
 			return $returnValue;
 		},
 		
-		// get a list of divisions
+		
+		// get User info
 		getUser: function($userid) {
 			var $returnValue = null;
 			var jqxhr3 = $.ajax({
@@ -87,6 +88,7 @@ $( document ).ready(function() {
 			});
 			return $returnValue;
 		},
+		
 		
 		makeBuildingTypeList:function() {							
 			var $returnValue = null;
@@ -134,6 +136,7 @@ $( document ).ready(function() {
 
 		},
 		
+		
 		getFieldValue: function($namespace, $field) {
 			$selectorName = "#" + $namespace + "_" + $field;
 			return $($selectorName).val();
@@ -166,43 +169,43 @@ $( document ).ready(function() {
 	}	
 	
 	;ADDRESSPANEL = {
-			init: function($namespace, $countryList, $selectedCountry) {
-				$.each($('input'), function () {
-			        $(this).css("height","20px");
-			        $(this).css("max-height", "20px");
-			    });
-				$("#"+$namespace+"_address select[name='"+$namespace+"_state']").selectmenu({ width : '150px', maxHeight: '400 !important', style: 'dropdown'});
-				$("select[name='"+$namespace+"_city']").addClass("ui-corner-all");
-				$("select[name='"+$namespace+"_zip']").addClass("ui-corner-all");
-				$("#"+$namespace+"_address select[name='"+$namespace+"_country']").selectmenu({ width : '80px', maxHeight: '400 !important', style: 'dropdown'});
-
-				 $( "input[name='"+$namespace+"_name']" ).autocomplete({
-				     'source':"addressTypeAhead?term=",
-				      select: function( event, ui ) {
-				        ADDRESSPANEL.clearAddress($namespace);
-				        var data = ADDRESSPANEL.getAddress(ui.item.id);
-				        ADDRESSPANEL.setAddress($namespace,data[0]);
-				      },
-		              response: function(event, ui) {
-		            	  if (ui.content.length === 0) {
-		            		  alert("No Matching Address")
-		            	  }
-		              }
-				  });
+		init: function($namespace, $countryList, $selectedCountry) {
+			$.each($('input'), function () {
+		        $(this).css("height","20px");
+		        $(this).css("max-height", "20px");
+		    });
+			$("#"+$namespace+"_address select[name='"+$namespace+"_state']").selectmenu({ width : '150px', maxHeight: '400 !important', style: 'dropdown'});
+			$("select[name='"+$namespace+"_city']").addClass("ui-corner-all");
+			$("select[name='"+$namespace+"_zip']").addClass("ui-corner-all");
+			$("#"+$namespace+"_address select[name='"+$namespace+"_country']").selectmenu({ width : '80px', maxHeight: '400 !important', style: 'dropdown'});
+	
+			 $( "input[name='"+$namespace+"_name']" ).autocomplete({
+			     'source':"addressTypeAhead?term=",
+			      select: function( event, ui ) {
+			    	  ADDRESSPANEL.clearAddress($namespace);
+			    	  var data = ADDRESSPANEL.getAddress(ui.item.id);
+			    	  ADDRESSPANEL.setAddress($namespace,data[0]);
+			      },
+			      response: function(event, ui) {
+			          if (ui.content.length === 0) {
+			        	  alert("No Matching Address")
+			          }
+			      }
+			 });
 				 
-				 $( "input[name='"+$namespace+"_jobContactName']" ).autocomplete({
-				     'source':"contactTypeAhead?term=",
-				      select: function( event, ui ) {
-				        var data = ADDRESSPANEL.getContact(ui.item.id);
-				        var id = ADDRESSPANEL.setContact($namespace+"_job",data);
-				        $("input[name='"+$namespace+"_Con1id']").val(id);
-				      },
-		              response: function(event, ui) {
-		            	  if (ui.content.length === 0) {
-		            		  alert("No Matching Address")
-		            	  }
+			 $( "input[name='"+$namespace+"_jobContactName']" ).autocomplete({
+				 'source':"contactTypeAhead?term=",
+				 select: function( event, ui ) {
+					 var data = ADDRESSPANEL.getContact(ui.item.id);
+					 var id = ADDRESSPANEL.setContact($namespace+"_job",data);
+					 $("input[name='"+$namespace+"_Con1id']").val(id);
+				 },
+				 response: function(event, ui) {
+					 if (ui.content.length === 0) {
+						 alert("No Matching Address")
+					 }
 		              }
-				  });
+			 	 });
 				 $( "input[name='"+$namespace+"_siteContactName']" ).autocomplete({
 				     'source':"contactTypeAhead?term=",
 				      select: function( event, ui ) {
@@ -245,10 +248,10 @@ $( document ).ready(function() {
 				
 				this.setCountryList($namespace, $countryList);
 				this.setStateList($namespace, $countryList);
-				
-				
-				
-			}, setCountryList: function($namespace, $countryList) {
+			}, 
+			
+			
+			setCountryList: function($namespace, $countryList) {
 
 				var $select = "#"+$namespace+"_address select[name='<%=namespace%>_country']";
 				$select = $("select[name='"+$namespace+"_country']");
@@ -258,7 +261,10 @@ $( document ).ready(function() {
 				});
 				
 				$select.selectmenu();
-			}, setStateList: function($namespace, $countryList) {
+			}, 
+			
+			
+			setStateList: function($namespace, $countryList) {
 
 				var $select = $("select[name='"+$namespace+"_state']");
 				$('option', $select).remove();
@@ -275,6 +281,8 @@ $( document ).ready(function() {
 				
 				$select.selectmenu();
 			},
+			
+			
 			getAddress:function($addressId) {						
 				var $returnValue = null;
 				var jqxhr4 = $.ajax({
@@ -301,52 +309,67 @@ $( document ).ready(function() {
 				return $returnValue;
 
 			},
+			
+			
 			setError: function($namespace, $id){
 				$("#"+$namespace+$id).addClass('error');
 				setTimeout(function() {
 					$("#"+$namespace+$id).removeClass('error');
-			        }, 8000);
+			    }, 8000);
 			},
+			
+			
 			setAddress: function($namespace, $addressData) {
 				console.log("Address Data;");
 				console.log($addressData);
 				if($addressData.name != null) {
 					$("input[name='"+$namespace+"_name']").val($addressData.name);
-				} if($addressData.address1 != null) {
+				} 
+				if($addressData.address1 != null) {
 					$("input[name='"+$namespace+"_address1']").val($addressData.address1);
-				} if($addressData.address2 != null) {
+				} 
+				if($addressData.address2 != null) {
 					$("input[name='"+$namespace+"_address2']").val($addressData.address2);
-				} if($addressData.city != null) {
+				} 
+				if($addressData.city != null) {
 					$("input[name='"+$namespace+"_city']").val($addressData.city);
-				} if($addressData.state != null) {
+				} 
+				if($addressData.state != null) {
 					$("select[name='"+$namespace+"_state']").val($addressData.state);
 					$("select[name='"+$namespace+"_state']").selectmenu("refresh");
-				} if($addressData.zip != null) {
+				} 
+				if($addressData.zip != null) {
 					$("input[name='"+$namespace+"_zip']").val($addressData.zip);
-				} if($addressData.county != null) {
+				} 
+				if($addressData.county != null) {
 					$("input[name='"+$namespace+"_county']").val($addressData.county);
-				} if($addressData.country != null) {
+				}
+				if($addressData.country != null) {
 					$("select[name='"+$namespace+"_country']").val($addressData.country);
 					$("select[name='"+$namespace+"_country']").selectmenu("refresh");
-				} if($addressData.jobContactName != null) {
+				}
+				if($addressData.jobContactName != null) {
 					$("input[name='"+$namespace+"_jobContactName']").val($addressData.jobContactName);
-				} if($addressData.jobContactInfo != null) {
+				}
+				if($addressData.jobContactInfo != null) {
 					$("input[name='"+$namespace+"_jobContactInfo']").val($addressData.jobContactInfo);
-				} if($addressData.siteContactName != null) {
+				}
+				if($addressData.siteContactName != null) {
 					$("input[name='"+$namespace+"_siteContactName']").val($addressData.siteContactName);
-				} if($addressData.siteContactInfo != null) {
+				}
+				if($addressData.siteContactInfo != null) {
 					$("input[name='"+$namespace+"_siteContactInfo']").val($addressData.siteContactInfo);
-				} if($addressData.addressId != null) {
+				}
+				if($addressData.addressId != null) {
 //					console.log("Address Id:" + $addressData.addressId);
 					$("input[name='"+$namespace+"_id']").val($addressData.addressId);
 //					console.log("Id Input:" + $("input[name='"+$namespace+"_id']").val());
 				}
-				
-				
-				
 				//.selectmenu("refresh");
 				
 			},
+			
+			
 			setContact: function($namespace, $contactData) {
 //				console.log("Contact Data;");
 //				console.log($contactData);
@@ -369,23 +392,29 @@ $( document ).ready(function() {
 				
 				//.selectmenu("refresh");
 				
-			}, clearAddress: function($namespace){
+			}, 
+			
+			
+			clearAddress: function($namespace){
 
-					$("input[name='"+$namespace+"_name']").val("");
-					$("input[name='"+$namespace+"_address1']").val("");
-					$("input[name='"+$namespace+"_address2']").val("");
-					$("input[name='"+$namespace+"_city']").val("");
-					$("select[name='"+$namespace+"_state']").selectmenu("refresh");
-					$("input[name='"+$namespace+"_zip']").val("");
-					$("input[name='"+$namespace+"_county']").val("");
-					$("select[name='"+$namespace+"_country']").selectmenu("refresh");
-					$("input[name='"+$namespace+"_jobContactName']").val("");
-					$("input[name='"+$namespace+"_jobContactInfo']").val("");
-					$("input[name='"+$namespace+"_siteContactName']").val("");
-					$("input[name='"+$namespace+"_siteContactInfo']").val("");
+				$("input[name='"+$namespace+"_name']").val("");
+				$("input[name='"+$namespace+"_address1']").val("");
+				$("input[name='"+$namespace+"_address2']").val("");
+				$("input[name='"+$namespace+"_city']").val("");
+				$("select[name='"+$namespace+"_state']").selectmenu("refresh");
+				$("input[name='"+$namespace+"_zip']").val("");
+				$("input[name='"+$namespace+"_county']").val("");
+				$("select[name='"+$namespace+"_country']").selectmenu("refresh");
+				$("input[name='"+$namespace+"_jobContactName']").val("");
+				$("input[name='"+$namespace+"_jobContactInfo']").val("");
+				$("input[name='"+$namespace+"_siteContactName']").val("");
+				$("input[name='"+$namespace+"_siteContactInfo']").val("");
 			},
+			
+			
 			getContact: function($contactId){
 				var $returnValue = [];
+				if ( $contactId != null ) {
 					var $url = "contact/"+$contactId;
 					var jqxhr = $.ajax({
 						type: 'GET',
@@ -412,7 +441,7 @@ $( document ).ready(function() {
 						async:false
 					});
 				//console.log($returnValue);
-
+				}
 				return $returnValue;
 			}
 		}
