@@ -120,8 +120,7 @@
 			<tbody>
 				<tr><td>&nbsp;</td></tr>
 			</tbody>
-		</table>  
-    	
+		</table>      	
 		<webthing:jobActivateCancel page="JOB" namespace="activateModal" />
 		<webthing:jobInvoice namespace="invoiceModal" cssId="invoiceModal" page="QUOTE" />
 		<webthing:ansiCalendar id="ansiDate" monthsToDisplay="12" triggerSize="2" label="Manual Job Schedule" />

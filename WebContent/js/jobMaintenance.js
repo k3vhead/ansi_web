@@ -539,7 +539,16 @@ $( document ).ready(function() {
     		$outbound["billingNotes"]				= $($pre+"_jobActivation_billingNotes").val();
     		$outbound["budget"]						= $($pre+"_jobActivation_directLaborBudget").val();
 //    		$outbound["buildingType"]				= $($pre+"_jobActivation_buildingType").val();//0_jobActivation_buildingType
-    		$outbound["buildingType"]				= $("#buildingType").val();
+//    		$outbound["buildingType"]				= $("#buildingType").val();
+    		
+    		var $buildingType = $("#buildingType").val();   // this comes from the form in quote maintenance
+    		if ( $buildingType == null || $buildingType == '' ) {
+    			// this happens in the job maintenance
+    			$buildingType = JOB_DATA.jobDetail.buildingType;  // this is what we got from the database. ie No change applied
+    		}
+    		$outbound["buildingType"] = $buildingType;
+    		
+    		
     		$outbound["cancelDate"]					= $($pre+"_jobDates_cancelDate").html();
     		$outbound["cancelReason"]				= $($pre+"_jobDates_cancelReason").html();
     		$outbound["contractContactId"]			= QUOTEUTILS.getcontractContactId();
