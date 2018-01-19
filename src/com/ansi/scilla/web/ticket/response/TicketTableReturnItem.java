@@ -36,6 +36,10 @@ public class TicketTableReturnItem extends ReportQuery {
 	public static final String DIVISION_NBR = "division_nbr";
 	public static final String DIVISION_CODE = "division_code";
 	public static final String FLEETMATICS_ID = "fleetmatics_id";
+	/* Ticket Payment Totals */
+	public static final String PAID_AMOUNT = "paid_amount";
+	public static final String PAID_TAX_AMT = "paid_tax_amt";
+	public static final String AMOUNT_DUE = "amount_due";
 
 	
 
@@ -61,6 +65,10 @@ public class TicketTableReturnItem extends ReportQuery {
 	private Integer divisionNbr;
 	private String divisionCode;
 	private String fleetmaticsId;
+
+	private BigDecimal paidAmount;
+	private BigDecimal paidTaxAmt;
+	private BigDecimal amountDue;
 
 	public TicketTableReturnItem()  {
 		super();
@@ -89,6 +97,9 @@ public class TicketTableReturnItem extends ReportQuery {
 		this.divisionCode = rs.getString(DIVISION_CODE);
 		this.fleetmaticsId = rs.getString(FLEETMATICS_ID);
 		this.DT_RowId = rs.getInt(TICKET_ID) + "";
+		this.paidAmount = rs.getBigDecimal(PAID_AMOUNT);
+		this.paidTaxAmt = rs.getBigDecimal(PAID_TAX_AMT);
+		this.amountDue = rs.getBigDecimal(AMOUNT_DUE);
 	}
 
 	public TicketTableReturnItem(TicketLookupSearchItem item) throws Exception {
@@ -115,6 +126,9 @@ public class TicketTableReturnItem extends ReportQuery {
 		this.divisionCode = item.getDivision().getDivisionCode();
 		this.fleetmaticsId = item.getTicket().getFleetmaticsId();
 		this.DT_RowId = String.valueOf(item.getTicket().getTicketId());
+		this.paidAmount = item.getPaidAmount();
+		this.paidTaxAmt = item.getPaidTaxAmt();
+		this.amountDue = item.getAmountDue();
 
 	}
 	
@@ -344,4 +358,37 @@ public class TicketTableReturnItem extends ReportQuery {
 		this.fleetmaticsId = fleetmaticsId;
 	}
 
+	@DBColumn(PAID_AMOUNT)
+	@JsonSerialize(using = AnsiCurrencyFormatter.class)
+	public BigDecimal getPaidAmount() {
+		return paidAmount;
+	}
+
+	@DBColumn(PAID_AMOUNT)
+	public void setPaidAmount(BigDecimal paidAmount) {
+		this.pricePerCleaning = paidAmount;
+	}
+	
+	@DBColumn(PAID_TAX_AMT)
+	@JsonSerialize(using = AnsiCurrencyFormatter.class)
+	public BigDecimal getPaidTaxAmt() {
+		return paidTaxAmt;
+	}
+
+	@DBColumn(PAID_TAX_AMT)
+	public void setPaidTaxAmt(BigDecimal paidTaxAmt) {
+		this.paidTaxAmt = paidTaxAmt;
+	}
+	
+	@DBColumn(AMOUNT_DUE)
+	@JsonSerialize(using = AnsiCurrencyFormatter.class)
+	public BigDecimal getAmountDue() {
+		return amountDue;
+	}
+
+	@DBColumn(AMOUNT_DUE)
+	public void setAmountDue(BigDecimal amountDue) {
+		this.amountDue = amountDue;
+	}
+	
 }

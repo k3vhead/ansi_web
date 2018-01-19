@@ -98,8 +98,8 @@
         	        "columnDefs": [
          	            { "orderable": false, "targets": -1 },
         	            { className: "dt-head-left", "targets": [0,2,3,4,5,6,10,11,12,13] },
-        	            { className: "dt-body-center", "targets": [1,7,9,-1] },
-        	            { className: "dt-right", "targets": [8]}
+        	            { className: "dt-body-center", "targets": [1,7,9] },
+        	            { className: "dt-right", "targets": [8,14]}
         	         ],
         	        "paging": true,
 			        "ajax": {
@@ -151,8 +151,8 @@
 			            { title: "Invoice", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.invoiceId != null){return (row.invoiceId+"");} 
 			            } },
-			            { title: "FM ID", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-			            	if(row.fleetmaticsId != null){return (row.fleetmaticsId+"");} 
+			            { title: "Amount Due", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            	if(row.amountDue != null){return (row.amountDue+"");} 
 			            } },
 			            { title: "Action",  data: function ( row, type, set ) {	
 			            	//console.log(row);
@@ -239,7 +239,7 @@
 				        		$("#serviceDescription").val(($data.data.codeList[0]).serviceDescription);
 				        		$("#processDate").val(($data.data.codeList[0]).processDate);
 				        		$("#invoiceId").val(($data.data.codeList[0]).invoiceId);
-				        		$("#fleetmaticsId").val(($data.data.codeList[0]).fleetmaticsId);
+				        		$("#amountDue").val(($data.data.codeList[0]).amountDue);
 				        		
 				        		$("#tId").val(($data.data.codeList[0]).ticketId);
 				        		$("#updateOrAdd").val("update");
@@ -310,7 +310,7 @@
     			<th>Service Description</th>
     			<th>Process Date</th>
     			<th>Invoice</th>
-    			<th>FM ID</th>
+    			<th>Amount Due</th>
     			<th>Action</th>
             </tr>
         </thead>
@@ -330,7 +330,7 @@
     			<th>Service Description</th>
     			<th>Process Date</th>
     			<th>Invoice</th>
-    			<th>FM ID</th>
+    			<th>Amount Due</th>
     			<th>Action</th>    			
             </tr>
         </tfoot>
