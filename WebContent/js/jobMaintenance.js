@@ -23,7 +23,9 @@ $( document ).ready(function() {
 			
 			JOB_DATA.jobId = $jobId;
 			
-			JOB_UTILS.panelLoad("0",$jobId);			
+			JOB_UTILS.panelLoad("0",$jobId);
+			
+			
 		},
 			
 		panelLoad:function($namespace,$jobId) {			
@@ -476,8 +478,7 @@ $( document ).ready(function() {
 		},
 		changeFieldState: function($namespace,$disabledBoolean){
 
-			//$("#" + $namespace + "_jobActivation_automanual").selectmenu( "option", "disabled", $disabledBoolean );
-			$("#" + $namespace + "_jobActivation_automanual").prop("disabled", $disabledBoolean);
+			$("#" + $namespace + "_jobActivation_automanual").selectmenu( "option", "disabled", $disabledBoolean );
 			//$("#" + $namespace + "_jobActivation_buildingType").selectmenu( "option", "disabled", $disabledBoolean );
 			$("#" + $namespace + "_jobActivation_directLaborPct").prop('disabled', $disabledBoolean);
 			$("#" + $namespace + "_jobActivation_directLaborBudget").prop('disabled', $disabledBoolean);
@@ -539,16 +540,7 @@ $( document ).ready(function() {
     		$outbound["billingNotes"]				= $($pre+"_jobActivation_billingNotes").val();
     		$outbound["budget"]						= $($pre+"_jobActivation_directLaborBudget").val();
 //    		$outbound["buildingType"]				= $($pre+"_jobActivation_buildingType").val();//0_jobActivation_buildingType
-//    		$outbound["buildingType"]				= $("#buildingType").val();
-    		
-    		var $buildingType = $("#buildingType").val();   // this comes from the form in quote maintenance
-    		if ( $buildingType == null || $buildingType == '' ) {
-    			// this happens in the job maintenance
-    			$buildingType = JOB_DATA.jobDetail.buildingType;  // this is what we got from the database. ie No change applied
-    		}
-    		$outbound["buildingType"] = $buildingType;
-    		
-    		
+    		$outbound["buildingType"]				= $("#buildingType").val();
     		$outbound["cancelDate"]					= $($pre+"_jobDates_cancelDate").html();
     		$outbound["cancelReason"]				= $($pre+"_jobDates_cancelReason").html();
     		$outbound["contractContactId"]			= QUOTEUTILS.getcontractContactId();
@@ -842,16 +834,14 @@ $( document ).ready(function() {
 					$select.append(new Option("",""));
 					$select.append(new Option("Auto","auto"));
 					$select.append(new Option("Manual","manual"));
-					//$select.selectmenu({ width : '75px', maxHeight: '400 !important', style: 'dropdown'});
-					JOBACTIVATION.initAutoManual($namespace);
-					
+					$select.selectmenu({ width : '75px', maxHeight: '400 !important', style: 'dropdown'});
 					
 					if($jobDetail.requestSpecialScheduling == 0){
 						$select.val("auto");
 					} else if($jobDetail.requestSpecialScheduling == 1){
 						$select.val("manual");
 					}
-					//DCL $select.selectmenu("refresh");
+					$select.selectmenu("refresh");
 					
 					$selectorName = "#" + $namespace + "_activationEdit";
 					$($selectorName).click(function($event) {
@@ -859,16 +849,8 @@ $( document ).ready(function() {
 					$id = $("#"+$namespace.substring(0,$namespace.indexOf("_"))+"_jobPanel_jobId").val();
 					console.log("#"+$namespace.substring(0,$namespace.indexOf("_"))+"_jobPanel_jobId");
 					if($("#" + $namespace + "_activationEdit").hasClass( "fa-pencil" )){
-						console.log("jobmaintenance.js 853 Clicked: Pencil");
-						//$("#" + $namespace + "_automanual").selectmenu( "option", "disabled", false );
-						$("#" + $namespace + "_automanual").prop("disabled", false);
-						var $automanualVal = $("#" + $namespace + "_automanual").val();
-						var $calendarSelector = "#" + $namespace + "_jobActivationForm .ansi-date-show-calendar";
-						if ( $automanualVal == 'manual' ) {
-							$($calendarSelector).show();
-						} else {
-							$($calendarSelector).hide();
-						}
+						console.log("Clicked: Pencil");
+						$("#" + $namespace + "_automanual").selectmenu( "option", "disabled", false );
 //						$("#" + $namespace + "_buildingType").selectmenu( "option", "disabled", false );
 						$("#" + $namespace + "_directLaborPct").prop('disabled', false);
 						$("#" + $namespace + "_directLaborBudget").prop('disabled', false);
@@ -883,11 +865,8 @@ $( document ).ready(function() {
 						$("#" + $namespace + "_activationEdit").removeClass('fa-pencil');
 						$("#" + $namespace + "_activationEdit").addClass('fa-save');
 					} else if($("#" + $namespace + "_activationEdit").hasClass( "fa-save" )){
-						console.log("jobmaintenance.js 870 Clicked: Save");
-						//$("#" + $namespace + "_automanual").selectmenu( "option", "disabled", true );
-						$("#" + $namespace + "_automanual").prop("disabled", true);
-						var $calendarSelector = "#" + $namespace + "_jobActivationForm .ansi-date-show-calendar";
-						$($calendarSelector).hide();
+						console.log("Clicked: Save");
+						$("#" + $namespace + "_automanual").selectmenu( "option", "disabled", true );
 //						$("#" + $namespace + "_buildingType").selectmenu( "option", "disabled", true );
 						$("#" + $namespace + "_directLaborPct").prop('disabled', true);
 						$("#" + $namespace + "_directLaborBudget").prop('disabled', true);
@@ -931,30 +910,7 @@ $( document ).ready(function() {
 					$select.selectmenu({ width : '175px', maxHeight: '400 !important', style: 'dropdown'});
 
 
-				},
-				
-
-				
-				
-				
-				initAutoManual: function($namespace) {
-					console.debug("Init automanual for namespace: " + $namespace);
-					$(".automanual").change(function($event) {
-						console.debug("automanual changed");
-						console.debug($event);
-						console.debug($(this).attr("id"));
-						var $id = "#" + $(this).attr("id");
-						console.debug("This id: " + $id);
-						var $selectedValue = $($id).val();
-						console.debug("This selected value: " + $selectedValue);
-						var $selector = "#" + $namespace + "_jobActivationForm .ansi-date-show-calendar";
-						if ( $selectedValue == "manual" ) {
-							$($selector).show();
-						} else {
-							$($selector).hide();
-						}
-					});
-				},
+				}
 				
 				
 			}
@@ -1673,7 +1629,6 @@ $( document ).ready(function() {
 			var $selectorName = "select[name='" + $namespace + "_jobFrequency']";
 			ANSI_UTILS.setOptionList($selectorName, $optionList, $selectedValue)
 		},
-		
 
 	}
 

@@ -39,6 +39,12 @@ public enum ReportType {
 			"com.ansi.scilla.web.report.request.ValidateStartEnd", 
 			new String[] {"startDate", "endDate"}
 		),
+	DISPATCHED_OUTSTANDING_TICKET_REPORT(
+			"reportByDivEnd",
+			"com.ansi.scilla.report.ticket.DispatchedOutstandingTicketReport",
+			"com.ansi.scilla.web.report.request.ValidateDivEnd", 
+			new String[] {"divisionId", "endDate"}
+		),
 	INVOICE_REGISTER_REPORT(
 			"reportByDivMonthYear",
 			"com.ansi.scilla.report.invoiceRegisterReport.InvoiceRegisterReport",
