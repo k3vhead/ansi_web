@@ -25,9 +25,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
-import com.ansi.scilla.common.utils.PropertyNames;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.MinMax;
 import com.ansi.scilla.web.common.request.RequiredForAdd;
@@ -37,7 +36,6 @@ import com.ansi.scilla.web.common.response.AnsiResponse;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
-import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
 
 

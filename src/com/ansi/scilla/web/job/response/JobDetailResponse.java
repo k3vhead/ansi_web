@@ -2,8 +2,8 @@ package com.ansi.scilla.web.job.response;
 
 import java.sql.Connection;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.db.Address;
 import com.ansi.scilla.common.db.Job;

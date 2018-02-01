@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.util.Calendar;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.utils.PropertyNames;

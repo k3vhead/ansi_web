@@ -19,8 +19,9 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.PermissionLevel;
@@ -62,7 +63,7 @@ public class InvoiceTypeAheadServlet extends AbstractServlet {
 	private final String PARAMETER_BILLTO = "billTo";
 	private final String PARAMETER_TERM = "term";
 
-	private Logger logger = Logger.getLogger(this.getClass());
+	private Logger logger = LogManager.getLogger(this.getClass());
 	
 	@Override
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response)

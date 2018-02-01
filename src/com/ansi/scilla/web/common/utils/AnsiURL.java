@@ -8,7 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.utils.PropertyNames;
 import com.ansi.scilla.web.common.struts.SessionUser;
@@ -52,7 +53,7 @@ public class AnsiURL extends ApplicationWebObject {
 		
         SessionUser user = AppUtils.getSessionUser(request);
         String userEmail = user == null ? "n/a" : user.getEmail();
-        Logger logger = Logger.getLogger(PropertyNames.TRANSACTION_LOG.toString());
+        Logger logger = LogManager.getLogger(PropertyNames.TRANSACTION_LOG.toString());
         logger.info("User: " + userEmail + "\tURL: " + request.getRequestURI());
 
 		this.filterList = new ArrayList<String>();
