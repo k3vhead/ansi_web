@@ -1,6 +1,6 @@
 /* NOTE: All labels are based on Cash Reciepts Register Report*/
 .ansi-stdrpt {
-	width: 1300px;
+	width: 100%;
 }
 /*All Headers*/
 .ansi-stdrpt-header-table {
@@ -87,12 +87,13 @@
 }
 /*Extra Date Through Header*/
 .ansi-stdrpt-subtitle {
-	display:none;  	
+	/*display:none;*/  
+	text-align: center;
 	
 }
 /*????????????*/
 .ansi-stdrpt-subtitle-text {
-	display:none;  
+	/*display:none;  */
 
 }
 /*??????????*/
@@ -108,18 +109,19 @@
 .css-data-header-left {
 	width: 50px;
 	font-weight:bold;
-	text-alignment:left;	
+	/*text-align:left;*/	
 }
 /*Dates Created and For*/
+/*building name, street name column (6mo vol)*/
 .css-data-left {
 	width: 150px;
 	font-weight:normal;
-	text-align:left;
+	/*text-align:left;*/
 }
 /*Also Created and For*/
 .css-data-header-left-text {
 	font-weight:bold;
-	text-align:left;
+	/*text-align:left;*/
 }
 /*Also Dates Created and For*/
 .css-data-left-text {
@@ -130,19 +132,20 @@
 	font-weight:bold;
 }
 /*To and From Date Detail Page*/
+/*data under the dated columns*/
 .css-data-right {
 	width: 150px;
 	font-weight: normal;
-	text-align: left;
+	/*text-align:left;*/
 }
 /*To and From Detail Page*/
 .css-data-header-right-text {
 	font-weight:normal;
-	text-align:left;
+	/*text-align:left;*/
 }
 /*To and From Date Detail Page*/
 .css-data-right-text {
-	text-align:left;
+	/*text-align:left;*/
 }
 /*?????????????????*/
 .css-data-center {
