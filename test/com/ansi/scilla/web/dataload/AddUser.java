@@ -39,11 +39,11 @@ public class AddUser extends ApplicationObject {
 
 		String[] myargs = new String[] {
 				"DB=DEV",
-				"FIRST_NAME=Jim",
-		    	"LAST_NAME=Ruzycki",
-		    	"EMAIL=jer@ansi.com",
+				"FIRST_NAME=George",
+		    	"LAST_NAME=Washington",
+		    	"EMAIL=geo@whitehouse.gov",
 //		    	"PHONE=",
-		    	"PERMISSION_GROUP=1",
+		    	"PERMISSION_GROUP=7",
 		    	"ADDED_BY=5",
 		    	"TITLE=Division Manager"
 		};

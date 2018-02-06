@@ -220,7 +220,7 @@
 			            	editText = '<a href="quoteMaintenance.html?id='+row.quoteId+'" class="editAction ui-icon ui-icon-pencil" data-id="'+row.quoteId+'"></a>';
 			            	printText = '<i class="fa fa-print quotePrint" aria=hidden="true" data-id="'+row.quoteId+'" data-quotenumber="'+ row.quoteCode + '"></i>';
 			            	copyText = '<i class="fa fa-files-o copyQuote" aria-hidden="true" data-id="'+row.quoteId+'"></i>';
-			            	{return '<ansi:hasPermission permissionRequired="QUOTE">'+ editText +  '&nbsp;' + printText + '&nbsp;' + copyText + '<ansi:hasWrite></ansi:hasWrite></ansi:hasPermission>';}
+			            	{return '<ansi:hasPermission permissionRequired="QUOTE"><ansi:hasWrite>'+ editText +  '&nbsp;' + printText + '&nbsp;' + copyText + '</ansi:hasWrite></ansi:hasPermission>';}
 			            	
 			            } }],
 			            //"initComplete": function(settings, json) {
