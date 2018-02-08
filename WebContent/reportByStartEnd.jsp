@@ -85,7 +85,7 @@
        			},
        			
        			go : function($clickEvent) {
-       				$("#resultsDiv").html('<div style="width:100%; text-align:center;">.... Thinking ...<br /><i class="fa fa-spinner fa-pulse fa-fw fa-5x"></i></div>')
+       				//$("#resultsDiv").html('<div style="width:100%; text-align:center;">.... Thinking ...<br /><i class="fa fa-spinner fa-pulse fa-fw fa-5x"></i></div>')
        				$("#resultsDiv").fadeIn(2000);
        				// These values must match the 'doAccordion' function
        				var $reportDisplay = {'ul':'accordionList', 'li':'accordionItem', 'titleTag':'h4','titleClass':'accHdr'};
@@ -147,7 +147,8 @@
     		</tr>
     	</table>
 		
-		<div id="resultsDiv">			
+		<div id="resultsDiv">	
+			<webthing:thinking style="width:100%" />		
 		</div>
     
 	    <p align="center">

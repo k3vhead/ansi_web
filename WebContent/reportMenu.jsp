@@ -52,14 +52,22 @@
         $(document).ready(function() {
         	
         	;REPORT = {
+        			reports : [],
+        			
+        	
         			init : function() {
+        				<c:forEach var="row" items="${com_ansi_scilla_report_types}">
+    	    				REPORT.reports.push( {"type":"${row.reportType}","title":"${row.reportTitle}"} );			
+	        	    	</c:forEach>
+        				
+        				
+        				
         				// put init stuff here
         				REPORT.doBindings();
+        				REPORT.createTable()
         			},
         			
-        			methodName1 : function($parmName) {
-        				// put code here
-        			},
+        			
         			
         			doBindings : function() {
         	     	  	$('.ScrollTop').click(function() {
@@ -67,7 +75,30 @@
         	      	  		return false;
         	     	    });
         				
-        			}
+        			},
+        			
+        			
+        			
+        			
+        			
+        			createTable : function() {
+                		var dataTable = $('#reportTable').DataTable( {
+                	        "order":[[0,"asc"]],
+                	        "paging": false,
+                	        "columnDefs": [
+                	            { className: "dt-left", "targets": [0] },
+                	            { className: "dt-center", "targets": [1] }
+                	        ],
+                			data: REPORT.reports,
+                			columns: [
+                				{title:"Report", data:'title'},
+                				{ title: "Action",  data: function ( row, type, set ) {	
+        			            	printText = '<a href="report.html?id=' + row.type + '" style="color:#000000; text-decoration:none;"><i class="fa fa-print"></i>';
+        			            	{return printText;}
+        			            } }
+                			]
+       				    });
+                	}
         	}
 
         	
@@ -81,7 +112,31 @@
     	<h1>Report Menu</h1>
     	
 		
-    
+	<div style="text-align:center; width:45%;">
+		<table id="reportTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt; width:45%;">
+			<colgroup>
+				<col style="width:90%;" />
+				<col style="width:10%;" />
+			</colgroup>        			
+	        <thead>
+	            <tr>
+	                <th>Report</th>
+	    			<th>Action</th>
+	            </tr>
+	        </thead>
+	        <tfoot>
+	            <tr>
+	                <th>Report</th>
+	    			<th>Action</th>
+	            </tr>
+	        </tfoot>
+	    </table>
+	</div>
+	
+    <div style="clear:both;">
+    	&nbsp;
+    </div>
+    <%--
     <p align="center">
     	<c:forEach var="row" items="${com_ansi_scilla_report_types}">
     	<a href="report.html?id=<c:out value="${row.reportType}" />"><c:out value="${row.reportTitle}" /></a><br />
@@ -90,6 +145,7 @@
     	<a href="#" title="Scroll to Top" class="ScrollTop">Scroll To Top</a>
     	</br>
     </p>
+     --%>
     
     </tiles:put>
 		

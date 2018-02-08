@@ -11,7 +11,7 @@
 	String classString = className == null ? "" : "class=\"" + className + "\"";
 	String idString = idName == null ? "" : "id=\"" + idName + "\"";
 	String styleString = styleName == null ? "" : styleName;
-	String[] textOption = new String[] {"Thinking...", "Hang on a minute...", "Patience", "Working...", "Just a Moment..."};
+	String[] textOption = new String[] {"Thinking...", "Hang on a minute...", "Patience...", "Working...", "Just a Moment...","I haven't had my coffee yet..."};
 	String thinking = text == null ? textOption[java.util.Calendar.getInstance().get(java.util.Calendar.MILLISECOND) % textOption.length] : text;
 %>
 
