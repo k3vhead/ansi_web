@@ -57,7 +57,9 @@
         	
         			init : function() {
         				<c:forEach var="row" items="${com_ansi_scilla_report_types}">
-    	    				REPORT.reports.push( {"type":"${row.reportType}","title":"${row.reportTitle}"} );			
+        					<webthing:hasPermission permissionRequired="${row.requiredPermission}">
+    	    					REPORT.reports.push( {"type":"${row.reportType}","title":"${row.reportTitle}"} );
+    	    				</webthing:hasPermission>
 	        	    	</c:forEach>
         				
         				
@@ -91,9 +93,12 @@
                 	        ],
                 			data: REPORT.reports,
                 			columns: [
-                				{title:"Report", data:'title'},
+                				{title:"Report", data:function ( row, type, set ) {	
+        			            	printText = '<a href="report.html?id=' + row.type + '" style="color:#000000; text-decoration:none;">'+ row.title +'</a>';
+        			            	{return printText;}
+        			            } },
                 				{ title: "Action",  data: function ( row, type, set ) {	
-        			            	printText = '<a href="report.html?id=' + row.type + '" style="color:#000000; text-decoration:none;"><i class="fa fa-print"></i>';
+        			            	printText = '<a href="report.html?id=' + row.type + '" style="color:#000000; text-decoration:none;"><i class="fa fa-print"></i></a>';
         			            	{return printText;}
         			            } }
                 			]

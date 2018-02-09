@@ -90,7 +90,7 @@
 			            	if(row.jobId != null){return (row.jobId+"");}
 			            } },
 			            { title: "Quote", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.quoteId != null){return ('<a href="quoteMaintenance.html?id='+ row.quoteId+ '" style="color:#404040">' + row.quoteNumber + row.revision +'</a>');}
+			            	if(row.quoteId != null){return ('<ansi:hasPermission permissionRequired="QUOTE"><ansi:hasWrite><a href="quoteMaintenance.html?id='+ row.quoteId+ '" style="color:#404040"></ansi:hasWrite></ansi:hasPermission>' + row.quoteNumber + row.revision +'<ansi:hasPermission permissionRequired="QUOTE"><ansi:hasWrite></a></ansi:hasWrite></ansi:hasPermission>');}
 			            } },
 			            { title: "Status", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.jobStatus != null){return (row.jobStatus+"");}

@@ -347,6 +347,25 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 
 
 	
+	/**
+	 * Ensure that a user is logged in. There is no permission/level requirement
+	 * @param request
+	 * @return
+	 * @throws TimeoutException 
+	 * @throws Exception
+	 */
+	public static SessionData validateSession(HttpServletRequest request) throws TimeoutException  {
+		HttpSession session = request.getSession();
+		SessionData sessionData = (SessionData)session.getAttribute(SessionData.KEY);
+		
+		// check for login
+		if ( sessionData == null || sessionData.getUser() == null ) {
+			throw new TimeoutException();
+		} 
+		
+		return sessionData;
+	}
+	
 	
 	/**
 	 * Ensure that a user is logged in and has permission to execute the current function

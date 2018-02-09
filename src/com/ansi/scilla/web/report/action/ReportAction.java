@@ -16,6 +16,7 @@ import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.web.common.action.SessionPageDisplayAction;
 import com.ansi.scilla.web.common.actionForm.IdForm;
 import com.ansi.scilla.web.common.struts.SessionData;
+import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.report.common.ReportType;
 import com.thewebthing.commons.lang.StringUtils;
 
@@ -63,7 +64,8 @@ public class ReportAction extends SessionPageDisplayAction {
 						Class<?> reportClass = Class.forName(reportClassName);
 						Field field = reportClass.getDeclaredField("REPORT_TITLE");
 						String title = (String)field.get(null);
-						reportRowList.add(new ReportRow(reportType.toString(), title));
+						Permission requiredPermission = reportType.getPermission();
+						reportRowList.add(new ReportRow(reportType.toString(), title, requiredPermission));
 					}
 					request.setAttribute("com_ansi_scilla_report_types", reportRowList);
 					forward = mapping.findForward(FORWARD_IS_VALID);
@@ -95,9 +97,11 @@ public class ReportAction extends SessionPageDisplayAction {
 		private static final long serialVersionUID = 1L;
 		public String reportTitle;
 		public String reportType;
-		public ReportRow(String reportType, String reportTitle) {
+		public String requiredPermission;
+		public ReportRow(String reportType, String reportTitle, Permission permission) {
 			this.reportType = reportType;
 			this.reportTitle = reportTitle;
+			this.requiredPermission = permission.toString();
 		}
 		public String getReportTitle() {
 			return reportTitle;
@@ -105,6 +109,8 @@ public class ReportAction extends SessionPageDisplayAction {
 		public String getReportType() {
 			return reportType;
 		}		
-		
+		public String getRequiredPermission() {
+			return requiredPermission;
+		}
 	}
 }

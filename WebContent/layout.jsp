@@ -121,8 +121,12 @@
 			        			<li>
 			        				<a href="#"><bean:message key="menu.label.lookup" /></a>
 									<ul class="sub_menu" style="z-index:1000">
+										<ansi:hasPermission permissionRequired="SYSADMIN">
 										<li><html:link action="addressMaintenance"><bean:message key="menu.label.addresses" /></html:link></li>
-										<li><html:link action="/contactMaintenance">Contacts</html:link></li>
+										</ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="SYSADMIN">
+										<li><html:link action="contactMaintenance">Contacts</html:link></li>
+										</ansi:hasPermission>
 										<ansi:hasPermission permissionRequired="QUOTE">
 										<li><html:link action="quoteLookup"><bean:message key="menu.label.quotes" /></html:link></li>
 										</ansi:hasPermission>
@@ -146,16 +150,26 @@
 										<ansi:hasPermission permissionRequired="TICKET">
 										<li><html:link action="ticketView"><bean:message key="menu.label.drv30" /></html:link></li>
 										</ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="INVOICE">
 										<li><html:link action="invoiceRegisterReport">Invoice Register</html:link></li>
+										</ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="INVOICE">
 										<li><html:link action="cashReceiptsRegisterReport">Cash Receipts Register</html:link></li>
+										</ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="JOB">
 										<li><html:link action="proposedActiveCancelledReport">Proposed Active Cancelled (PAC)</html:link></li>
+										</ansi:hasPermission>
 									</ul>
 								</li>
 			        			<li>
 			        				<a href="#">Quick Links</a>
 									<ul class="sub_menu" style="z-index:1000">
+										<ansi:hasPermission permissionRequired="SYSADMIN">
+										<ansi:hasWrite>
 										<li><html:link action="newContact">New Contact</html:link></li>
 										<li><html:link action="newAddress">New Address</html:link></li>
+										</ansi:hasWrite>
+										</ansi:hasPermission>
 										<ansi:hasPermission permissionRequired="QUOTE">
 										<ansi:hasWrite>
 										<li><html:link action="quoteMaintenance">New Quote</html:link></li>
@@ -175,7 +189,9 @@
 										</ansi:hasPermission>
 										 --%>
 										<ansi:hasPermission permissionRequired="TICKET">
+										<ansi:hasWrite>
 										<li><html:link action="ticketReturn">Ticket Return</html:link></li>
+										</ansi:hasWrite>
 										</ansi:hasPermission>
 										<ansi:hasPermission permissionRequired="INVOICE">
 										<ansi:hasWrite>

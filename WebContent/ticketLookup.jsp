@@ -62,13 +62,11 @@
         <script type="text/javascript">    
         
         $(document).ready(function(){
-        	  $('.ScrollTop').click(function() {
-        	    $('html, body').animate({scrollTop: 0}, 800);
-        	  return false;
-        	    });
-        	});
-        
-        	$(document).ready(function() {
+			$('.ScrollTop').click(function() {
+				$('html, body').animate({scrollTop: 0}, 800);
+				return false;
+       	    });
+
         	var dataTable = null;
         	
         	function createTable(){
@@ -140,7 +138,7 @@
 			            } },
 			            { title: "Job ID", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	//if(row.jobId != null){return ('<span class="editJob" data-jobid="'+ row.jobId +'">'+row.jobId+"</span>");} 
-			            	if(row.jobId != null){return ('<a href="jobMaintenance.html?id='+ row.jobId +'" class="jobLink">'+row.jobId+"</span>");}
+			            	if(row.jobId != null){return ('<ansi:hasPermission permissionRequired="JOB"><ansi:hasWrite><a href="jobMaintenance.html?id='+ row.jobId +'" class="jobLink"></ansi:hasWrite></ansi:hasPermission>'+row.jobId+'<ansi:hasPermission permissionRequired="JOB"><ansi:hasWrite></a></ansi:hasWrite></ansi:hasPermission>');}
 			            } },
 			            { title: "Service Description", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.serviceDescription != null){return (row.serviceDescription+"");}

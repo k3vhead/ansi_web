@@ -67,7 +67,7 @@ public class DivisionServlet extends AbstractServlet {
 		try {
 			AnsiURL url = new AnsiURL(request, REALM, (String[])null);
 			SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
-			
+
 			Connection conn = null;
 			try {
 				conn = AppUtils.getDBCPConn();
@@ -94,7 +94,7 @@ public class DivisionServlet extends AbstractServlet {
 					super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, divisionResponse);
 				} catch(RecordNotFoundException recordNotFoundEx) {
 					super.sendNotFound(response);
-				}
+				}			
 			} catch ( Exception e) {
 				AppUtils.logException(e);
 				throw new ServletException(e);
@@ -104,7 +104,7 @@ public class DivisionServlet extends AbstractServlet {
 		
 		} catch (ResourceNotFoundException e1) {
 			super.sendNotFound(response);
-		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e ) {
 			super.sendForbidden(response);
 		}
 		
@@ -116,7 +116,7 @@ public class DivisionServlet extends AbstractServlet {
 				
 		try {
 			AnsiURL url = new AnsiURL(request, REALM, new String[] { ACTION_IS_LIST });
-			SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			SessionData sessionData = AppUtils.validateSession(request);
 		
 			Connection conn = null;
 			try {
@@ -145,7 +145,7 @@ public class DivisionServlet extends AbstractServlet {
 			
 		} catch (ResourceNotFoundException e) {
 			super.sendNotFound(response);
-		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+		} catch (TimeoutException e) {
 			super.sendForbidden(response);
 		}
 		

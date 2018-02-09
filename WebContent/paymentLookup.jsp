@@ -136,7 +136,7 @@
 			            	if(row.paymentNote != null){return (row.paymentNote+"");}
 			            } },
 			            { title: "Action",  data: function ( row, type, set ) {	
-			            	{return '<i class="edit-action-link ui-icon ui-icon-pencil" data-paymentId="' +row.paymentId+'" />"';}
+			            	{return '<ansi:hasPermission permissionRequired="INVOICE"><ansi:hasWrite><i class="edit-action-link ui-icon ui-icon-pencil" data-paymentId="' +row.paymentId+'" />"</ansi:hasWrite></ansi:hasPermission>';}
 			            } }
 			            ],
 			            "initComplete": function(settings, json) {

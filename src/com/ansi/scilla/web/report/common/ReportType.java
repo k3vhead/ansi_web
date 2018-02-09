@@ -1,5 +1,7 @@
 package com.ansi.scilla.web.report.common;
 
+import com.ansi.scilla.web.common.utils.Permission;
+
 /**
  * These are here so we can make sure we didn't typo the object name in the enum
  */
@@ -25,61 +27,71 @@ public enum ReportType {
 			"reportNoInput",
 			"com.ansi.scilla.report.datadumps.AddressUsage",
 			"com.ansi.scilla.web.report.request.NoValidate", 
-			new String[] {}
+			new String[] {},
+			Permission.SYSADMIN
 		),
 	CLIENT_CONTACT_REPORT(
 			"reportNoInput",
 			"com.ansi.scilla.report.datadumps.ClientContact",
 			"com.ansi.scilla.web.report.request.NoValidate", 
-			new String[] {}
+			new String[] {},
+			Permission.SYSADMIN
 		),
 	CASH_RECEIPTS_REGISTER(
 			"reportByStartEnd", 
 			"com.ansi.scilla.report.cashReceiptsRegister.CashReceiptsRegisterReport",
 			"com.ansi.scilla.web.report.request.ValidateStartEnd", 
-			new String[] {"startDate", "endDate"}
+			new String[] {"startDate", "endDate"},
+			Permission.INVOICE
 		),
 	DISPATCHED_OUTSTANDING_TICKET_REPORT(
 			"reportByDivEnd",
 			"com.ansi.scilla.report.ticket.DispatchedOutstandingTicketReport",
 			"com.ansi.scilla.web.report.request.ValidateDivEnd", 
-			new String[] {"divisionId", "endDate"}
+			new String[] {"divisionId", "endDate"},
+			Permission.TICKET
 		),
 	INVOICE_REGISTER_REPORT(
 			"reportByDivMonthYear",
 			"com.ansi.scilla.report.invoiceRegisterReport.InvoiceRegisterReport",
 			"com.ansi.scilla.web.report.request.ValidateDivMonthYear", 
-			new String[] {"divisionId", "month", "year"}
+			new String[] {"divisionId", "month", "year"},
+			Permission.INVOICE
 		),
 	PAC_REPORT(
 			"reportByDivStartEnd", 
 			"com.ansi.scilla.report.pac.PacReport",
 			"com.ansi.scilla.web.report.request.ValidateDivStartEnd", 
-			new String[] {"divisionId", "startDate", "endDate"}
+			new String[] {"divisionId", "startDate", "endDate"},
+			Permission.JOB
 		),
 	SIX_MONTH_ROLLING_VOLUME_REPORT(
 			"reportByDivMonthYear", 
 			"com.ansi.scilla.web.report.webReport.SixMonthRollingVolumeWebReport",
 			"com.ansi.scilla.web.report.request.ValidateDivMonthYear",  
-			new String[] {"divisionId", "month", "year"}
+			new String[] {"divisionId", "month", "year"},
+			Permission.JOB
 		),
 	TICKET_STATUS_REPORT(
 			"reportByDivStartEnd", 
 			"com.ansi.scilla.report.ticket.TicketStatusReport",
 			"com.ansi.scilla.web.report.request.ValidateDivStartEnd", 
-			new String[] {"divisionId", "startDate", "endDate"}
+			new String[] {"divisionId", "startDate", "endDate"},
+			Permission.TICKET
 		);
 		
 	private final String jsp;
 	private final String reportClassName;
 	private final String validatorClassName;
 	private final String[] builderParms;
+	private final Permission permission;
 	
-	ReportType(String jsp, String reportClassName, String validatorClassName, String[] builderParms) {
+	ReportType(String jsp, String reportClassName, String validatorClassName, String[] builderParms, Permission permission) {
 		this.jsp = jsp;
 		this.reportClassName = reportClassName;
 		this.validatorClassName = validatorClassName;
 		this.builderParms = builderParms;
+		this.permission = permission;
 	}
 	
 	
@@ -97,5 +109,10 @@ public enum ReportType {
 	
 	public String[] builderParms() {
 		return this.builderParms;
+	}
+
+
+	public Permission getPermission() {
+		return permission;
 	}
 }
