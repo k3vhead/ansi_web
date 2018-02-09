@@ -10,6 +10,7 @@ import java.util.List;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.queries.DivisionUserCount;
 import com.ansi.scilla.web.common.response.MessageResponse;
+import com.ansi.scilla.web.common.struts.SessionUser;
 
 /** 
  * Used to return a list of "code" objects to the client
@@ -48,6 +49,14 @@ public class DivisionListResponse extends MessageResponse implements Serializabl
 		this.divisionList = Arrays.asList(new DivisionCountRecord[] { record });
 	}
 
+	public DivisionListResponse(Connection conn, SessionUser user) throws Exception {
+		List<DivisionUserCount> divisionCountList = DivisionUserCount.selectByUser(conn, user.getUserId());
+		this.divisionList = new ArrayList<DivisionCountRecord>();
+		for ( DivisionUserCount record : divisionCountList ) {
+			this.divisionList.add(new DivisionCountRecord(record));
+		}
+	}
+	
 	public List<DivisionCountRecord> getDivisionList() {
 		return divisionList;
 	}

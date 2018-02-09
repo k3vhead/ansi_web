@@ -124,7 +124,7 @@ public class DivisionServlet extends AbstractServlet {
 
 				DivisionListResponse divisionListResponse = new DivisionListResponse();
 				if( ! StringUtils.isBlank(url.getCommand()) && url.getCommand().equals(ACTION_IS_LIST)){
-					divisionListResponse = new DivisionListResponse(conn);
+					divisionListResponse = new DivisionListResponse(conn, sessionData.getUser());
 				} else if (url.getId() != null) {
 					divisionListResponse = new DivisionListResponse(conn, url.getId());
 				} else {
