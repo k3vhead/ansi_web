@@ -180,9 +180,9 @@
 					invoicePrint($clickevent);
 				});
 	        	$('.dataTables_filter input').keyup( function(e) {
-	        		if ( e.keyCode == 13 ) {
+	        		//if ( e.keyCode == 13 ) {
 	        			dataTable.search(this.value).draw();
-	        		}
+	        		//}
 	        	});
 			}
 				
