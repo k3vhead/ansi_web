@@ -73,7 +73,9 @@ public class TicketDRVResponse extends MessageResponse {
 		calendar.clear();
 		calendar.set(year, month, 1);
 		startDate = calendar.getTime();
-		calendar.set(Calendar.DAY_OF_MONTH, calendar.getMaximum(Calendar.DAY_OF_MONTH));
+//		calendar.set(Calendar.DAY_OF_MONTH, calendar.getMaximum(Calendar.DAY_OF_MONTH));
+		calendar.add(Calendar.MONTH, 1);
+		calendar.add(Calendar.DAY_OF_MONTH, -1);
 		endDate = calendar.getTime();
 		
 		responseItemList = new ArrayList<TicketDRVResponseItem>();
