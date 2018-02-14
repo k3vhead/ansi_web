@@ -1,6 +1,7 @@
 package com.ansi.scilla.web.quote.response;
 
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.apache.commons.beanutils.PropertyUtils;
@@ -38,8 +39,8 @@ public class QuoteSearchRecord extends ApplicationObject {
 	private String jobSiteAddress;
 	private String jobSiteName;
 	private String managerName;
-	private String quoteJobCount;
-	private String quotePpcSum;
+	private Integer quoteJobCount;
+	private BigDecimal quotePpcSum;
 	
 	public QuoteSearchRecord(QuoteSearch quoteSearch) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		this();
@@ -209,16 +210,16 @@ public class QuoteSearchRecord extends ApplicationObject {
 	public void setManagerName(String managerName) {
 		this.managerName = managerName;
 	}
-	public String getQuoteJobCount() {
+	public Integer getQuoteJobCount() {
 		return quoteJobCount;
 	}
-	public void setQuoteJobCount(String quoteJobCount) {
+	public void setQuoteJobCount(Integer quoteJobCount) {
 		this.quoteJobCount = quoteJobCount;
 	}
-	public String getQuotePpcSum() {
+	public BigDecimal getQuotePpcSum() {
 		return quotePpcSum;
 	}
-	public void setQuotePpcSum(String quotePpcSum) {
+	public void setQuotePpcSum(BigDecimal quotePpcSum) {
 		this.quotePpcSum = quotePpcSum;
 	}
 }

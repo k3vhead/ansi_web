@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.Date;
 
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
+import com.ansi.scilla.common.queries.QuoteSearch;
 import com.ansi.scilla.common.queries.ReportQuery;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -75,6 +76,27 @@ public class QuoteTableReturnItem extends ReportQuery {
 
 		}
 
+		public QuoteTableReturnItem(QuoteSearch qs) {
+			super();
+			this.quoteId = qs.getQuote().getQuoteId();
+			this.quoteCode = qs.getQuoteCode();
+			this.quoteNumber = qs.getQuote().getQuoteNumber();
+			this.revision = qs.getQuote().getRevision();
+			this.billToName = qs.getBillToName();
+			this.jobSiteName = qs.getJobSiteName();
+			this.jobSiteAddress = qs.getJobSiteAddress();
+			this.managerName = qs.getManagerName();
+			this.proposalDate = qs.getQuote().getProposalDate();
+			this.quoteJobCount = qs.getQuoteJobCount();
+			this.quotePpcSum = qs.getQuotePpcSum();			
+			this.billToAddressId = qs.getQuote().getBillToAddressId();
+			this.jobSiteAddressId = qs.getQuote().getJobSiteAddressId();
+			this.divisionId = qs.getQuote().getDivisionId();
+			this.divisionNbr = qs.getDivision().getDivisionNbr();
+			this.divisionCode = qs.getDivision().getDivisionCode();
+			this.DT_RowId = qs.getQuote().getQuoteId()+"";
+		}
+		
 		@DBColumn(QUOTE_ID)
 		public Integer getQuoteId() {
 			return quoteId;

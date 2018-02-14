@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.PermissionLevel;
+import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.queries.QuoteSearch;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.utils.AppUtils;
@@ -111,56 +112,55 @@ public class QuoteTableServlet extends AbstractServlet {
 	    	}
 
 	    	String colName = cols[col];
-	    	int total = 0;
-	    	String sql = "select count(*)"
-	    			+ " from quote";
-	    	Statement s = conn.createStatement();
-	    	ResultSet rs0 = s.executeQuery(sql);
-	    	if(rs0.next()){
-	    		total = rs0.getInt(1);
-	    	}
+	    	int total = new Quote().selectCount(conn);
 
 	    	int totalAfterFilter = total;
 
 	    	List<QuoteTableReturnItem> resultList = new ArrayList<QuoteTableReturnItem>();
-	    	sql = QuoteSearch.sql;
-
-	    	String search = QuoteSearch.generateWhereClause(term);
-
-	    	logger.log(Level.DEBUG, sql);
-	    	sql += search;
-	    	logger.log(Level.DEBUG, sql);
-	    	sql += " order by " + colName + " " + dir;
-	    	logger.log(Level.DEBUG, sql);
-	    	if ( amount != -1) {
-	    		sql += " OFFSET "+ start+" ROWS"
-	    				+ " FETCH NEXT " + amount + " ROWS ONLY";
-	    	}
-	    	logger.log(Level.DEBUG, sql);
-
-	    	s = conn.createStatement();
-	    	ResultSet rs = s.executeQuery(sql);
-	    	ResultSetMetaData rsmd = rs.getMetaData();
-	    	while ( rs.next() ) {
-	    		QuoteTableReturnItem item = new QuoteTableReturnItem();				
-	    		QuoteTableReturnItem.rs2Object(item, rsmd, rs);
-	    		resultList.add(item);
-	    		//				resultList.add(new QuoteTableReturnItem(rs));
+	    	List<QuoteSearch> quoteSearchList = QuoteSearch.select(conn, term, start, amount, colName, dir);
+	    	for ( QuoteSearch item : quoteSearchList ) {
+	    		resultList.add(new QuoteTableReturnItem(item));
 	    	}
 
-	    	String sql2 = "select count(*)" + QuoteSearch.sqlFromClause;
-
-	    	if (search != "") {
-	    		sql2 += search;
-	    	}
-	    	Statement s2 = conn.createStatement();
-	    	ResultSet rs2 = s2.executeQuery(sql2);
-	    	if(rs2.next()){
-	    		totalAfterFilter = rs2.getInt(1);
-	    	}
-	    	rs.close();
-	    	rs0.close();
-	    	rs2.close();
+//	    	sql = QuoteSearch.sql;
+//
+//	    	String search = QuoteSearch.generateWhereClause(term);
+//
+//	    	logger.log(Level.DEBUG, sql);
+//	    	sql += search;
+//	    	logger.log(Level.DEBUG, sql);
+//	    	sql += " order by " + colName + " " + dir;
+//	    	logger.log(Level.DEBUG, sql);
+//	    	if ( amount != -1) {
+//	    		sql += " OFFSET "+ start+" ROWS"
+//	    				+ " FETCH NEXT " + amount + " ROWS ONLY";
+//	    	}
+//	    	logger.log(Level.DEBUG, sql);
+//
+//	    	s = conn.createStatement();
+//	    	ResultSet rs = s.executeQuery(sql);
+//	    	ResultSetMetaData rsmd = rs.getMetaData();
+//	    	while ( rs.next() ) {
+//	    		QuoteTableReturnItem item = new QuoteTableReturnItem();				
+//	    		QuoteTableReturnItem.rs2Object(item, rsmd, rs);
+//	    		resultList.add(item);
+//	    		//				resultList.add(new QuoteTableReturnItem(rs));
+//	    	}
+//	    	rs.close();
+//
+//	    	
+//	    	
+//	    	String sql2 = "select count(*)" + QuoteSearch.sqlFromClause;
+//
+//	    	if (search != "") {
+//	    		sql2 += search;
+//	    	}
+//	    	Statement s2 = conn.createStatement();
+//	    	ResultSet rs2 = s2.executeQuery(sql2);
+//	    	if(rs2.next()){
+//	    		totalAfterFilter = rs2.getInt(1);
+//	    	}
+//	    	rs2.close();
 
 	    	response.setStatus(HttpServletResponse.SC_OK);
 	    	response.setContentType("application/json");
