@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.Date;
 
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
+import com.ansi.scilla.common.queries.JobSearch;
 import com.ansi.scilla.common.queries.ReportQuery;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -63,7 +64,7 @@ public class JobTableReturnItem extends ReportQuery {
 		super();
 	}
 	public JobTableReturnItem(ResultSet rs) throws SQLException {
-		super();
+		this();
 		this.jobId = rs.getInt(JOB_ID);
 		this.jobStatus = rs.getString(JOB_STATUS);
 		this.billToName = rs.getString(BILL_TO_NAME);
@@ -86,6 +87,30 @@ public class JobTableReturnItem extends ReportQuery {
 		this.revision = rs.getString(REVISION);
 	}
 
+	public JobTableReturnItem(JobSearch jobSearch) throws SQLException {
+		this();
+		this.jobId = jobSearch.getJob().getJobId();
+		this.jobStatus = jobSearch.getJob().getStatus();
+		this.billToName = jobSearch.getBillToName();
+		this.jobSiteName = jobSearch.getJobSiteName();
+		this.jobSiteAddress = jobSearch.getJobSiteAddress();
+		this.startDate = jobSearch.getJob().getStartDate();
+		this.jobFrequency = jobSearch.getJob().getJobFrequency();
+		this.pricePerCleaning = jobSearch.getJob().getPricePerCleaning();
+		this.jobNbr = jobSearch.getJob().getJobNbr();
+		this.serviceDescription = jobSearch.getJob().getServiceDescription();
+		this.poNumber = jobSearch.getJob().getPoNumber();
+		this.billToAddressId = jobSearch.getQuote().getBillToAddressId();
+		this.jobSiteAddressId = jobSearch.getQuote().getJobSiteAddressId();
+		this.divisionId = jobSearch.getDivision().getDivisionId();
+		this.divisionNbr = jobSearch.getDivision().getDivisionNbr();
+		this.divisionCode = jobSearch.getDivision().getDivisionCode();
+		this.DT_RowId = jobSearch.getJob().getJobId() + "";
+		this.quoteId = jobSearch.getQuote().getQuoteId();
+		this.quoteNumber = jobSearch.getQuote().getQuoteNumber();
+		this.revision = jobSearch.getQuote().getRevision();
+	}
+	
 	@DBColumn(JOB_ID)
 	public Integer getJobId() {
 		return jobId;

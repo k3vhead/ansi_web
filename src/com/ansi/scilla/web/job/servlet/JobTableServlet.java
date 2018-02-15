@@ -3,9 +3,6 @@ package com.ansi.scilla.web.job.servlet;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,9 +13,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.Level;
 
+import com.ansi.scilla.common.db.Job;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.queries.JobSearch;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
+import com.ansi.scilla.web.common.struts.SessionData;
+import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
@@ -73,7 +73,8 @@ public class JobTableServlet extends AbstractServlet {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			SessionUser user = sessionData.getUser();
 //			String qs = request.getQueryString();
 
 			String term = "";
@@ -111,57 +112,61 @@ public class JobTableServlet extends AbstractServlet {
 		    }
 		    
 		    String colName = cols[col];
-		    int total = 0;
-		    String sql = "select count(*)"
-					+ " from job";
-			Statement s = conn.createStatement();
-			ResultSet rs0 = s.executeQuery(sql);
-			if(rs0.next()){
-		        total = rs0.getInt(1);
-		    }
+		    int total = Job.selectCount(conn, user.getUserId());
+//		    String sql = "select count(*)"
+//					+ " from job";
+//			Statement s = conn.createStatement();
+//			ResultSet rs0 = s.executeQuery(sql);
+//			if(rs0.next()){
+//		        total = rs0.getInt(1);
+//		    }
 			
-		    int totalAfterFilter = total;
+		    int totalAfterFilter = JobSearch.selectFilteredCount(conn, user.getUserId(), term);
 			
 			List<JobTableReturnItem> resultList = new ArrayList<JobTableReturnItem>();
-			sql = JobSearch.sql;
-
-			String search = JobSearch.generateWhereClause(term);
-			
-			logger.log(Level.DEBUG, sql);
-			sql += search;
-			logger.log(Level.DEBUG, sql);
-			sql += " order by " + colName + " " + dir;
-			logger.log(Level.DEBUG, sql);
-			if ( amount != -1) {
-				sql += " OFFSET "+ start+" ROWS"
-					+ " FETCH NEXT " + amount + " ROWS ONLY";
+			List<JobSearch> jobSearchList = JobSearch.select(conn, user.getUserId(), term, start, amount, colName, dir);
+			for ( JobSearch jobSearch : jobSearchList) {
+				resultList.add(new JobTableReturnItem(jobSearch));
 			}
-			logger.log(Level.DEBUG, sql);
+//			sql = JobSearch.sql;
+//
+//			String search = JobSearch.generateWhereClause(term);
+//			
+//			logger.log(Level.DEBUG, sql);
+//			sql += search;
+//			logger.log(Level.DEBUG, sql);
+//			sql += " order by " + colName + " " + dir;
+//			logger.log(Level.DEBUG, sql);
+//			if ( amount != -1) {
+//				sql += " OFFSET "+ start+" ROWS"
+//					+ " FETCH NEXT " + amount + " ROWS ONLY";
+//			}
+//			logger.log(Level.DEBUG, sql);
+//			
+//			s = conn.createStatement();
+//			ResultSet rs = s.executeQuery(sql);
+//			ResultSetMetaData rsmd = rs.getMetaData();
+//			while ( rs.next() ) {
+//				JobTableReturnItem item = new JobTableReturnItem();				
+//				JobTableReturnItem.rs2Object(item, rsmd, rs);
+//				resultList.add(item);
+//				// resultList.add(new JobTableReturnItem(rs));
+//			}
 			
-			s = conn.createStatement();
-			ResultSet rs = s.executeQuery(sql);
-			ResultSetMetaData rsmd = rs.getMetaData();
-			while ( rs.next() ) {
-				JobTableReturnItem item = new JobTableReturnItem();				
-				JobTableReturnItem.rs2Object(item, rsmd, rs);
-				resultList.add(item);
-				// resultList.add(new JobTableReturnItem(rs));
-			}
-			
-			String sql2 = "select count(*) "
-					+ JobSearch.sqlFromClause;
-			
-			if (search != "") {
-				sql2 += search;
-			}
-			Statement s2 = conn.createStatement();
-			ResultSet rs2 = s2.executeQuery(sql2);
-			if(rs2.next()){
-				totalAfterFilter = rs2.getInt(1);
-		    }
-			rs.close();
-			rs0.close();
-			rs2.close();
+//			String sql2 = "select count(*) "
+//					+ JobSearch.sqlFromClause;
+//			
+//			if (search != "") {
+//				sql2 += search;
+//			}
+//			Statement s2 = conn.createStatement();
+//			ResultSet rs2 = s2.executeQuery(sql2);
+//			if(rs2.next()){
+//				totalAfterFilter = rs2.getInt(1);
+//		    }
+//			rs.close();
+//			rs0.close();
+//			rs2.close();
 			
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("application/json");
