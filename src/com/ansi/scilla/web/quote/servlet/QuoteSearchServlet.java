@@ -16,6 +16,8 @@ import org.apache.logging.log4j.Level;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
+import com.ansi.scilla.web.common.struts.SessionData;
+import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
@@ -60,7 +62,8 @@ public class QuoteSearchServlet extends AbstractServlet {
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		String url = request.getRequestURI();
+    	
+    	String url = request.getRequestURI();
 		logger.log(Level.DEBUG, "QuoteSearchServlet(): doGet(): url =" + url);
 		int idx = url.indexOf("/quoteSearch/");
 		if ( idx > -1 ) {
@@ -76,6 +79,7 @@ public class QuoteSearchServlet extends AbstractServlet {
 			if ( StringUtils.isBlank(command)) {
 				super.sendNotFound(response);
 			} else {
+
 				if ( command.equals("list") || StringUtils.isNumeric(command)) {
 					Connection conn = null;
 					try {
@@ -83,9 +87,10 @@ public class QuoteSearchServlet extends AbstractServlet {
 							throw new RecordNotFoundException();
 						}
 						conn = AppUtils.getDBCPConn();
-						AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+						SessionData sessionData = AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+						SessionUser user = sessionData.getUser();
 
-						QuoteSearchListResponse quoteSearchListResponse = doGetWork(conn, myString, queryString);
+						QuoteSearchListResponse quoteSearchListResponse = doGetWork(conn, user, myString, queryString);
 						super.sendResponse(conn, response, ResponseCode.SUCCESS, quoteSearchListResponse);
 					} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
 						super.sendForbidden(response);
@@ -107,9 +112,10 @@ public class QuoteSearchServlet extends AbstractServlet {
 			Connection conn = null;
 			try {
 				conn = AppUtils.getDBCPConn();
-				AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+				SessionData sessionData = AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+				SessionUser user = sessionData.getUser();
 
-				QuoteSearchListResponse quoteSearchListQueryResponse = doGetWork(conn, queryString);
+				QuoteSearchListResponse quoteSearchListQueryResponse = doGetWork(conn, user, queryString);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, quoteSearchListQueryResponse);
 			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
 				super.sendForbidden(response);
@@ -125,11 +131,11 @@ public class QuoteSearchServlet extends AbstractServlet {
 		}
 	}
 
-	public QuoteSearchListResponse doGetWork(Connection conn, String url, String qs) throws RecordNotFoundException, Exception {
+	public QuoteSearchListResponse doGetWork(Connection conn, SessionUser user, String url, String qs) throws RecordNotFoundException, Exception {
 		QuoteSearchListResponse quoteSearchListResponse = new QuoteSearchListResponse();
 		String[] x = url.split("/");
 		if(x[0].equals("list")){
-			quoteSearchListResponse = new QuoteSearchListResponse(conn);
+			quoteSearchListResponse = new QuoteSearchListResponse(conn, user.getUserId());
 		} else if (StringUtils.isNumeric(x[0])) {
 			Integer quoteId = Integer.valueOf(x[0]);
 			quoteSearchListResponse = new QuoteSearchListResponse(conn, quoteId);
@@ -140,6 +146,27 @@ public class QuoteSearchServlet extends AbstractServlet {
 		
 	}
 	
+	public QuoteSearchListResponse doGetWork(Connection conn, SessionUser user, String qs) throws RecordNotFoundException, Exception {
+		QuoteSearchListResponse quoteSearchListResponse = new QuoteSearchListResponse();
+		String term = "";
+		if ( ! StringUtils.isBlank(qs)) {
+			int idx = qs.indexOf("term=");
+			if ( idx > -1 ) {
+				term = getQueryString(qs, "term");
+				Map<String, String> map = AppUtils.getQueryMap(qs);
+				String sort = map.get("sort");
+				if (! StringUtils.isBlank(sort)){
+					String[] sortParms = map.get("sort").split(",");
+					quoteSearchListResponse = new QuoteSearchListResponse(conn, user.getUserId(), term, sortParms);
+				} else {
+					quoteSearchListResponse = new QuoteSearchListResponse(conn, user.getUserId(), term);
+				}
+			}
+		}
+		return quoteSearchListResponse;
+		
+	}
+
 	private String getQueryString( String qs, String qm) throws UnsupportedEncodingException, Exception {
 		String term = "";
 		Map<String, String> map = AppUtils.getQueryMap(qs);
@@ -157,27 +184,6 @@ public class QuoteSearchServlet extends AbstractServlet {
 		} 
 		term = term.toLowerCase();
 		return term;
-	}
-	
-	public QuoteSearchListResponse doGetWork(Connection conn, String qs) throws RecordNotFoundException, Exception {
-		QuoteSearchListResponse quoteSearchListResponse = new QuoteSearchListResponse();
-		String term = "";
-		if ( ! StringUtils.isBlank(qs)) {
-			int idx = qs.indexOf("term=");
-			if ( idx > -1 ) {
-				term = getQueryString(qs, "term");
-				Map<String, String> map = AppUtils.getQueryMap(qs);
-				String sort = map.get("sort");
-				if (! StringUtils.isBlank(sort)){
-					String[] sortParms = map.get("sort").split(",");
-					quoteSearchListResponse = new QuoteSearchListResponse(conn, term, sortParms);
-				} else {
-					quoteSearchListResponse = new QuoteSearchListResponse(conn, term);
-				}
-			}
-		}
-		return quoteSearchListResponse;
-		
 	}
 	
 }

@@ -3,9 +3,6 @@ package com.ansi.scilla.web.quote.servlet;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +17,8 @@ import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.queries.QuoteSearch;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
+import com.ansi.scilla.web.common.struts.SessionData;
+import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
@@ -73,7 +72,8 @@ public class QuoteTableServlet extends AbstractServlet {
 	    Connection conn = null;
 	    try {
 	    	conn = AppUtils.getDBCPConn();
-	    	AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+	    	SessionData sessionData = AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+	    	SessionUser user = sessionData.getUser();
 
 	    	String term = "";
 
@@ -112,12 +112,12 @@ public class QuoteTableServlet extends AbstractServlet {
 	    	}
 
 	    	String colName = cols[col];
-	    	int total = new Quote().selectCount(conn);
+	    	int total = Quote.selectCount(conn, user.getUserId());
 
-	    	int totalAfterFilter = total;
+	    	int totalAfterFilter = QuoteSearch.selectFilteredCount(conn, user.getUserId(), term);
 
 	    	List<QuoteTableReturnItem> resultList = new ArrayList<QuoteTableReturnItem>();
-	    	List<QuoteSearch> quoteSearchList = QuoteSearch.select(conn, term, start, amount, colName, dir);
+	    	List<QuoteSearch> quoteSearchList = QuoteSearch.select(conn, user.getUserId(), term, start, amount, colName, dir);
 	    	for ( QuoteSearch item : quoteSearchList ) {
 	    		resultList.add(new QuoteTableReturnItem(item));
 	    	}

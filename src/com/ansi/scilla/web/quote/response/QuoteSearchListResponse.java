@@ -31,32 +31,32 @@ public class QuoteSearchListResponse extends MessageResponse implements Serializ
 	 * @param conn
 	 * @throws Exception
 	 */
-	public QuoteSearchListResponse(Connection conn) throws Exception {
-		List<QuoteSearch> quoteSearchList = QuoteSearch.select(conn);
+	public QuoteSearchListResponse(Connection conn, Integer userId) throws Exception {
+		List<QuoteSearch> quoteSearchList = QuoteSearch.select(conn, userId);
 		this.quoteSearchList = new ArrayList<QuoteSearchRecord>();
 		for ( QuoteSearch record : quoteSearchList ) {
 			this.quoteSearchList.add(new QuoteSearchRecord(record));
 		}
 	}
 	
-	public QuoteSearchListResponse(Connection conn, String queryTerm) throws Exception {
-		List<QuoteSearch> quoteSearchList = QuoteSearch.select(conn, queryTerm);
+	public QuoteSearchListResponse(Connection conn, Integer userId, String queryTerm) throws Exception {
+		List<QuoteSearch> quoteSearchList = QuoteSearch.select(conn, userId, queryTerm);
 		this.quoteSearchList = new ArrayList<QuoteSearchRecord>();
 		for ( QuoteSearch record : quoteSearchList ) {
 			this.quoteSearchList.add(new QuoteSearchRecord(record));
 		}
 	}
 	
-	public QuoteSearchListResponse(Connection conn, String queryTerm, String[] sortField) throws Exception {
-		List<QuoteSearch> quoteSearchList = QuoteSearch.select(conn, queryTerm, sortField);
+	public QuoteSearchListResponse(Connection conn, Integer userId, String queryTerm, String[] sortField) throws Exception {
+		List<QuoteSearch> quoteSearchList = QuoteSearch.select(conn, userId, queryTerm, sortField);
 		this.quoteSearchList = new ArrayList<QuoteSearchRecord>();
 		for ( QuoteSearch record : quoteSearchList ) {
 			this.quoteSearchList.add(new QuoteSearchRecord(record));
 		}
 	}
 	
-	public QuoteSearchListResponse(Connection conn, Integer quoteId) throws Exception {
-		QuoteSearch quoteSearch = QuoteSearch.select(conn, quoteId);
+	public QuoteSearchListResponse(Connection conn, Integer userId, Integer quoteId) throws Exception {
+		QuoteSearch quoteSearch = QuoteSearch.select(conn, userId, quoteId);
 		QuoteSearchRecord record = new QuoteSearchRecord(quoteSearch);
 		this.quoteSearchList = Arrays.asList(new QuoteSearchRecord[] { record });
 	}
