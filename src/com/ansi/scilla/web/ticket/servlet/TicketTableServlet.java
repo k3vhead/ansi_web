@@ -20,6 +20,8 @@ import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.queries.TicketLookupSearch;
 import com.ansi.scilla.common.queries.TicketLookupSearchItem;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
+import com.ansi.scilla.web.common.struts.SessionData;
+import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
@@ -78,7 +80,8 @@ public class TicketTableServlet extends AbstractServlet {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			SessionUser user = sessionData.getUser();
 			String term = "";
 			Integer parmJobId = null;
 			Integer parmDivisionId = null;
@@ -202,7 +205,7 @@ public class TicketTableServlet extends AbstractServlet {
 			*/
 			
 			
-			TicketLookupSearch ticketSearch = new TicketLookupSearch(start, amount);
+			TicketLookupSearch ticketSearch = new TicketLookupSearch(user.getUserId(), start, amount);
 			ticketSearch.setSearchTerm(term);
 			ticketSearch.setDivisionId(parmDivisionId);
 			ticketSearch.setJobId(parmJobId);
