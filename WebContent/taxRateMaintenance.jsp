@@ -34,7 +34,6 @@ change log
 
 <tiles:insert page="layout.jsp" flush="true">
     <tiles:put name="title" type="string">
-		<!-- modthis -->
         Tax Rate Maintenance
     </tiles:put>
     <tiles:put name="headextra" type="string">
