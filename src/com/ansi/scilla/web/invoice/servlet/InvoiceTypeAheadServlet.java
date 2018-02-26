@@ -5,9 +5,9 @@ import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,6 +28,8 @@ import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.jsonFormat.AnsiFormat;
 import com.ansi.scilla.common.queries.InvoiceSearch;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
+import com.ansi.scilla.web.common.struts.SessionData;
+import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
@@ -81,8 +83,9 @@ public class InvoiceTypeAheadServlet extends AbstractServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
-			AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
-			processRequest(request, response);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			SessionUser user = sessionData.getUser();
+			processRequest(user, request, response);
 
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
 			super.sendForbidden(response);
@@ -93,7 +96,7 @@ public class InvoiceTypeAheadServlet extends AbstractServlet {
 
 	}
 	
-	private void processRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	private void processRequest(SessionUser user, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String url = request.getRequestURI();
 		logger.debug("InvoiceTypeAheadServlet(): doGet(): url =" + url);
 		int idx = url.indexOf("/invoiceTypeAhead/");
@@ -117,7 +120,7 @@ public class InvoiceTypeAheadServlet extends AbstractServlet {
 				Connection conn = null;
 				try {
 					conn = AppUtils.getDBCPConn();					
-					makeQueryResult(conn, queryTerm, billTo, response);
+					makeQueryResult(conn, user, queryTerm, billTo, response);
 				} finally {
 					AppUtils.closeQuiet(conn);
 				}
@@ -132,7 +135,7 @@ public class InvoiceTypeAheadServlet extends AbstractServlet {
 	 * @param response
 	 * @throws Exception
 	 */
-	private void makeQueryResult(Connection conn, String queryTerm, String billTo, HttpServletResponse response) throws Exception {
+	private void makeQueryResult(Connection conn, SessionUser user, String queryTerm, String billTo, HttpServletResponse response) throws Exception {
 
 		String term = queryTerm.toLowerCase();
 		logger.log(Level.DEBUG, "InvoiceTypeAheadServlet(): doGet(): term =[" + term +"]  billTo=[" + billTo + "]" );
@@ -145,8 +148,9 @@ public class InvoiceTypeAheadServlet extends AbstractServlet {
 		logger.log(Level.DEBUG, "Invoice SQL:\n" + sql);
 		logger.log(Level.DEBUG, "******");
 
-		Statement s = conn.createStatement();
-		ResultSet rs = s.executeQuery(sql);
+		PreparedStatement s = conn.prepareStatement(sql);
+		s.setInt(1, user.getUserId());
+		ResultSet rs = s.executeQuery();
 		while ( rs.next() ) {
 			resultList.add(new ReturnItem(rs));
 		}

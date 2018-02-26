@@ -16,6 +16,8 @@ import org.apache.logging.log4j.Level;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.queries.InvoiceSearch;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
+import com.ansi.scilla.web.common.struts.SessionData;
+import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
@@ -73,7 +75,8 @@ public class InvoiceLookupServlet extends AbstractServlet {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.INVOICE, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.INVOICE, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			SessionUser user = sessionData.getUser();
 
 			String term = "";
 
@@ -117,9 +120,9 @@ public class InvoiceLookupServlet extends AbstractServlet {
 			logger.log(Level.DEBUG, term);
 			logger.log(Level.DEBUG, filterDivisionId);
 			logger.log(Level.DEBUG, filterPPC);
-			Integer totalFiltered = InvoiceSearch.makeFilteredCount(conn, term, filterDivisionId, filterPPC);		    
-			List<InvoiceLookupResponseItem> resultList = makeFetchData(conn, amount, start, term, filterDivisionId, filterPPC, colName, dir);
-			Integer totalUnfiltered = InvoiceSearch.makeUnfilteredCount(conn);
+			Integer totalFiltered = InvoiceSearch.makeFilteredCount(conn, user.getUserId(), term, filterDivisionId, filterPPC);		    
+			List<InvoiceLookupResponseItem> resultList = makeFetchData(conn, user.getUserId(), amount, start, term, filterDivisionId, filterPPC, colName, dir);
+			Integer totalUnfiltered = InvoiceSearch.makeUnfilteredCount(conn, user.getUserId());
 
 
 			response.setStatus(HttpServletResponse.SC_OK);
@@ -153,7 +156,7 @@ public class InvoiceLookupServlet extends AbstractServlet {
 
 
 
-	private List<InvoiceLookupResponseItem> makeFetchData(Connection conn, Integer amount, Integer start, String term, String filterDivisionId, Boolean filterPPC, String colName, String dir) throws Exception {
+	private List<InvoiceLookupResponseItem> makeFetchData(Connection conn, Integer userId, Integer amount, Integer start, String term, String filterDivisionId, Boolean filterPPC, String colName, String dir) throws Exception {
 		logger.log(Level.DEBUG, "Getting fetch data");
 		logger.log(Level.DEBUG, "Amount: " + amount);
 		logger.log(Level.DEBUG, "Start: " + start);
@@ -163,7 +166,7 @@ public class InvoiceLookupServlet extends AbstractServlet {
 		logger.log(Level.DEBUG, "colName: " + colName);
 		logger.log(Level.DEBUG, "dir: " + dir);
 				
-		List<InvoiceSearch> invoiceSearchList = InvoiceSearch.makeFetchData(conn, amount, start, term, filterDivisionId, filterPPC, colName, dir);
+		List<InvoiceSearch> invoiceSearchList = InvoiceSearch.makeFetchData(conn, userId, amount, start, term, filterDivisionId, filterPPC, colName, dir);
 		List<InvoiceLookupResponseItem> resultList = new ArrayList<InvoiceLookupResponseItem>();
 		for ( InvoiceSearch invoiceSearch : invoiceSearchList ) {
 			resultList.add(new InvoiceLookupResponseItem(invoiceSearch));

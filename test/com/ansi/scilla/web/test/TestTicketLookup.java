@@ -22,7 +22,8 @@ public class TestTicketLookup {
 		System.out.println("Start");
 		try {
 			conn = AppUtils.getDevConn();
-			TicketLookupSearch x = new TicketLookupSearch(0, 10);
+			Integer userId = 5;
+			TicketLookupSearch x = new TicketLookupSearch(userId, 0, 10);
 //			x.setSearchTerm("710004");
 			x.setJobId(17);
 			List<TicketLookupSearchItem> ilist = x.select(conn);
