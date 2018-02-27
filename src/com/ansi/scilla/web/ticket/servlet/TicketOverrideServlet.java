@@ -24,9 +24,12 @@ import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Address;
 import com.ansi.scilla.common.db.Invoice;
+import com.ansi.scilla.common.db.Job;
 import com.ansi.scilla.common.db.PermissionLevel;
+import com.ansi.scilla.common.db.TaxRate;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.invoice.InvoiceUtils;
+import com.ansi.scilla.common.jobticket.JobUtils;
 import com.ansi.scilla.common.jobticket.TicketUtils;
 import com.ansi.scilla.common.utils.PropertyNames;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -352,6 +355,17 @@ public class TicketOverrideServlet extends TicketServlet {
 				ticket.setActPricePerCleaning(new BigDecimal(actPricePerCleaning));
 				Double actDlAmt = actPricePerCleaning * ticket.getActDlPct().doubleValue();
 				ticket.setActDlAmt( new BigDecimal(actDlAmt) );
+				Job job = new Job();
+				job.setJobId(ticket.getJobId());
+				job.selectOne(conn);
+				if (job.getTaxExempt() == 0) {
+					TaxRate taxRate = JobUtils.getTaxRate( conn, ticket.getJobId(), ticket.getProcessDate(), sessionUser.getUserId());
+					ticket.setActTaxAmt(ticket.getActPricePerCleaning().multiply(taxRate.getRate()));
+					ticket.setActTaxRateId(taxRate.getTaxRateId());
+				} else {
+					ticket.setActTaxAmt(new BigDecimal( "0.00" ));
+					ticket.setActTaxRateId(0);
+				}
 				success = true;
 				message = MESSAGE_SUCCESS;
 			} catch ( NumberFormatException e ) {

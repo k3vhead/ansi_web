@@ -13,6 +13,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.PermissionLevel;
+import com.ansi.scilla.common.db.TaxRate;
+import com.ansi.scilla.common.db.Job;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.jobticket.JobUtils;
 import com.ansi.scilla.common.jobticket.TicketStatus;
@@ -283,6 +285,17 @@ public class TicketServlet extends AbstractServlet {
 				ticket.setActPricePerCleaning(ticketReturnRequest.getActPricePerCleaning());
 				ticket.setActDlPct(ticketReturnRequest.getActDlPct());
 				ticket.setActDlAmt(ticketReturnRequest.getActDlAmt());
+				Job job = new Job();
+				job.setJobId(ticket.getJobId());
+				job.selectOne(conn);
+				if (job.getTaxExempt() == 0) {
+					TaxRate taxRate = JobUtils.getTaxRate( conn, ticket.getJobId(), ticketReturnRequest.getProcessDate(), sessionUser.getUserId());
+					ticket.setActTaxAmt(ticket.getActPricePerCleaning().multiply(taxRate.getRate()));
+					ticket.setActTaxRateId(taxRate.getTaxRateId());
+				} else {
+					ticket.setActTaxAmt(new BigDecimal( "0.00" ));
+					ticket.setActTaxRateId(0);
+				}
 				//optional fields
 				if(StringUtils.isBlank(ticketReturnRequest.getProcessNotes())){
 					ticket.setProcessNotes("");
