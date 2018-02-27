@@ -26,7 +26,6 @@
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
   	    <link rel="stylesheet" href="css/datepicker.css" type="text/css" />
   	    <link rel="stylesheet" href="css/accordion.css" type="text/css" />
-        <link rel="stylesheet" href="css/report.css" type="text/css" />
     	
         <style type="text/css">
 			#resultsDiv {
@@ -91,7 +90,6 @@
        			},
        			
        			go : function($clickEvent) {
-       				//$("#resultsDiv").html('<div style="width:100%; text-align:center;">.... Thinking ...<br /><i class="fa fa-spinner fa-pulse fa-fw fa-5x"></i></div>')
        				$("#resultsDiv").fadeIn(2000);
        				// These values must match the 'doAccordion' function
        				var $reportDisplay = {'ul':'accordionList', 'li':'accordionItem', 'titleTag':'h4','titleClass':'accHdr'}; 
@@ -155,7 +153,10 @@
     	</table>
 		
 		<div id="resultsDiv">
-			<webthing:thinking style="width:100%" />
+			.... Thinking ...<br />
+			<div style="width:80px;">
+			<i class="fa fa-spinner fa-pulse fa-fw fa-5x"></i>
+			</div>
 		</div>
     
     <p align="center">

@@ -15,33 +15,37 @@
 	font-weight: bold;
 }
 /*All Headers*/
-.ansi-stdrpt-header-row {	
+.ansi-stdrpt-header-row {
 	font-weight:bold;
 	/*text-align: center;*/
 }
-/*??????????*/
+/*Empty Header PAC*/
 .ansi-stdrpt-empty-header {
+	text-align: right;
 	
 
 	
 }
-/*???????????*/
+/*Text Empty Header PAC */
 .ansi-stdrpt-col-header-text {
+	text-align: right;
 
 	
 }
-/*Inside all tables*/
+/*Inside all tables Background and Font-Weight*/
 .ansi-stdrpt-data-row {
 	text-align: right;
 	font-weight: normal;
 }
 /*Totals Font Only*/
 .ansi-stdrpt-summary-row {
+	text-align: right; 
 	
 	
 }
-/*Totals*/
+/*Totals CRR*/
 .ansi-stdrpt-summary {	
+	text-align: right;
 	/*border:solid 1px #000000;*/
 }
 /*Tighter around Totals*/
@@ -68,7 +72,7 @@
  	
 	
 }
-/*Also ANSI Headers*/
+/*Also ANSI Headers Background*/
 .ansi-stdrpt-banner-text {
 
 }
@@ -80,9 +84,8 @@
 	
 }
 
-/*Report Header*/
+/*Report Header Background*/
 .ansi-stdrpt-title-text {
-	text-align:center;
 
 }
 /*Extra Date Through Header*/
@@ -91,22 +94,25 @@
 	text-align: center;
 	
 }
-/*????????????*/
+/*Tight around Extra Date Header*/
 .ansi-stdrpt-subtitle-text {
 	/*display:none;  */
 
 }
 /*??????????*/
 .ansi-stdrpt-notes {
+	text-align: right;
 
  	
 	
 }
 /*????????????*/
 .ansi-stdrpt-notes-text {
+	text-align: right;
 }
-/*Create and For Header*/
+/*Create and For Headers*/
 .css-data-header-left {
+	text-align: right;
 	width: 50px;
 	font-weight:bold;
 	/*text-align:left;*/	
@@ -114,46 +120,53 @@
 /*Dates Created and For*/
 /*building name, street name column (6mo vol)*/
 .css-data-left {
+	text-align: right;
 	width: 150px;
 	font-weight:normal;
 	/*text-align:left;*/
 }
-/*Also Created and For*/
+/*Dates Created and For Tighter*/
 .css-data-header-left-text {
-	font-weight:bold;
 	/*text-align:left;*/
 }
 /*Also Dates Created and For*/
 .css-data-left-text {
+	text-align: right;
 }
 /*To and From*/
 .css-data-header-right {
+	text-align: right;
 	width: 150px;
 	font-weight:bold;
 }
 /*To and From Date Detail Page*/
 /*data under the dated columns*/
 .css-data-right {
+	text-align: right;
 	width: 150px;
 	font-weight: normal;
 	/*text-align:left;*/
 }
-/*To and From Detail Page*/
+/*To and From Detail Page Tighter*/
 .css-data-header-right-text {
+	text-align: right;
 	font-weight:normal;
 	/*text-align:left;*/
 }
-/*To and From Date Detail Page*/
+/*To and From Date Detail Page Tighter*/
 .css-data-right-text {
+	text-align: right;
 	/*text-align:left;*/
 }
 /*?????????????????*/
 .css-data-center {
+	text-align: right;
 	
 
 }
 /*?????????????*/
 .css-data-center-text {
+	text-align: right;
 
 
 } 

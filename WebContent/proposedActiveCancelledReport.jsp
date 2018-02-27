@@ -24,6 +24,7 @@
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
         <link rel="stylesheet" href="css/datepicker.css" type="text/css" />
         <link rel="stylesheet" href="css/accordion.css" type="text/css" />
+        <link rel="stylesheet" href="css/report.css" type="text/css" />
         <style type="text/css">
 			#confirmDelete {
 				display:none;
@@ -105,9 +106,6 @@
 				display:none;
 			}
 			td, th {
-    			border: 1px solid #dddddd;
-    			text-align: left;
-    			padding: 8px;
     		}
 			.workPanel {
 				width:95%;
