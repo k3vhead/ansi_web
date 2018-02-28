@@ -10,5 +10,7 @@ public enum ResponseOption {
 	COUNTRY,
 	PAYMENT_METHOD,
 	PERMISSION,
-	ACCOUNT_TYPE;
+	ACCOUNT_TYPE,
+	REPORT_TYPE,
+	;
 }

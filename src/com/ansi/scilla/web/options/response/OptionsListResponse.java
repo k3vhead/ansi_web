@@ -1,6 +1,7 @@
 package com.ansi.scilla.web.options.response;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -17,6 +18,7 @@ import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.common.payment.PaymentMethod;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.web.report.common.ReportType;
 
 public class OptionsListResponse extends MessageResponse {
 	private static final long serialVersionUID = 1L;
@@ -30,6 +32,7 @@ public class OptionsListResponse extends MessageResponse {
 	private List<InvoiceStyleOption> invoiceStyle;
 	private List<AccountTypeOption> accountType;
 	private List<PaymentMethodOption> paymentMethod;
+	private List<ReportTypeOption> reportType;
 
 	public OptionsListResponse(List<ResponseOption> options) throws ClassNotFoundException, Exception {
 		if ( options.contains(ResponseOption.JOB_FREQUENCY)) {
@@ -61,6 +64,9 @@ public class OptionsListResponse extends MessageResponse {
 		}
 		if ( options.contains(ResponseOption.PAYMENT_METHOD)) {
 			makePaymentMethodList();
+		}
+		if ( options.contains(ResponseOption.REPORT_TYPE)) {
+			makeReportTypeList();
 		}
 	}
 
@@ -144,6 +150,22 @@ public class OptionsListResponse extends MessageResponse {
 		//don't sort country; we want USA first
 	}
 		
+	
+	private void makeReportTypeList() throws NoSuchFieldException, SecurityException, ClassNotFoundException, IllegalArgumentException, IllegalAccessException {
+		this.reportType = new ArrayList<ReportTypeOption>();
+		for ( ReportType reportType : ReportType.values()) {
+			String reportClassName = reportType.reportClassName();
+			Class<?> reportClass = Class.forName(reportClassName);
+			Field field = reportClass.getDeclaredField("REPORT_TITLE");
+			String title = (String)field.get(null);
+			Permission requiredPermission = reportType.getPermission();
+			this.reportType.add(new ReportTypeOption(reportType.toString(), title, requiredPermission));
+		}
+		Collections.sort(this.reportType);
+
+	}
+	
+	
 	public List<JobFrequencyOption> getJobFrequency() {
 		return jobFrequency;
 	}
@@ -222,6 +244,14 @@ public class OptionsListResponse extends MessageResponse {
 
 	public void setInvoiceStyle(List<InvoiceStyleOption> invoiceStyle) {
 		this.invoiceStyle = invoiceStyle;
+	}
+
+	public List<ReportTypeOption> getReportType() {
+		return reportType;
+	}
+
+	public void setReportType(List<ReportTypeOption> reportType) {
+		this.reportType = reportType;
 	}
 
 
