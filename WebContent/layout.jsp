@@ -146,10 +146,16 @@
 			        			</li>
 			        			<li>
 			        				<a href="report.html">Reports</a>
-									<ul class="sub_menu" style="z-index:1000">
+			        				<ul class="sub_menu" style="z-index:1000" id="ansi_report_menu">
 										<ansi:hasPermission permissionRequired="TICKET">
 										<li><html:link action="ticketView"><bean:message key="menu.label.drv30" /></html:link></li>
 										</ansi:hasPermission>
+			        				</ul>
+								</li>
+								<%--
+								<li>
+									<a href="#">More Reports</a>
+									<ul class="sub_menu" style="z-index:1000">
 										<ansi:hasPermission permissionRequired="INVOICE">
 										<li><html:link action="invoiceRegisterReport">Invoice Register</html:link></li>
 										</ansi:hasPermission>
@@ -159,8 +165,9 @@
 										<ansi:hasPermission permissionRequired="JOB">
 										<li><html:link action="proposedActiveCancelledReport">Proposed Active Cancelled (PAC)</html:link></li>
 										</ansi:hasPermission>
-									</ul>
+									</ul>								
 								</li>
+								 --%>
 			        			<li>
 			        				<a href="#">Quick Links</a>
 									<ul class="sub_menu" style="z-index:1000">

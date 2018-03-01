@@ -11,13 +11,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
+import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
-import com.ansi.scilla.web.exceptions.ExpiredLoginException;
-import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.options.response.OptionsListResponse;
 import com.ansi.scilla.web.options.response.ResponseOption;
@@ -42,7 +39,8 @@ public class OptionsServlet extends AbstractServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		
 		try {
-			AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			SessionData sessionData = AppUtils.validateSession(request);
+			
 			List<ResponseOption> requestedOptions = new ArrayList<ResponseOption>();
 			if ( StringUtils.isBlank(request.getQueryString())) {
 				super.sendNotFound(response);
@@ -58,7 +56,7 @@ public class OptionsServlet extends AbstractServlet {
 							requestedOptions.add(o);
 						}
 					}
-					OptionsListResponse optionsListResponse = new OptionsListResponse(requestedOptions);
+					OptionsListResponse optionsListResponse = new OptionsListResponse(requestedOptions, sessionData);
 					super.sendResponse(conn, response, ResponseCode.SUCCESS, optionsListResponse);
 				} catch ( Exception e) {
 					AppUtils.logException(e);
@@ -67,7 +65,7 @@ public class OptionsServlet extends AbstractServlet {
 					AppUtils.closeQuiet(conn);
 				}
 			}	
-		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+		} catch (TimeoutException e) {
 			super.sendForbidden(response);
 		}
 

@@ -17,6 +17,7 @@ import com.ansi.scilla.common.jobticket.JobStatus;
 import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.common.payment.PaymentMethod;
 import com.ansi.scilla.web.common.response.MessageResponse;
+import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.report.common.ReportType;
 
@@ -34,7 +35,7 @@ public class OptionsListResponse extends MessageResponse {
 	private List<PaymentMethodOption> paymentMethod;
 	private List<ReportTypeOption> reportType;
 
-	public OptionsListResponse(List<ResponseOption> options) throws ClassNotFoundException, Exception {
+	public OptionsListResponse(List<ResponseOption> options, SessionData sessionData) throws ClassNotFoundException, Exception {
 		if ( options.contains(ResponseOption.JOB_FREQUENCY)) {
 			makeJobFrequencyList();
 		}
@@ -66,7 +67,7 @@ public class OptionsListResponse extends MessageResponse {
 			makePaymentMethodList();
 		}
 		if ( options.contains(ResponseOption.REPORT_TYPE)) {
-			makeReportTypeList();
+			makeReportTypeList(sessionData);
 		}
 	}
 
@@ -151,15 +152,17 @@ public class OptionsListResponse extends MessageResponse {
 	}
 		
 	
-	private void makeReportTypeList() throws NoSuchFieldException, SecurityException, ClassNotFoundException, IllegalArgumentException, IllegalAccessException {
+	private void makeReportTypeList(SessionData sessionData) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException  {
 		this.reportType = new ArrayList<ReportTypeOption>();
 		for ( ReportType reportType : ReportType.values()) {
-			String reportClassName = reportType.reportClassName();
-			Class<?> reportClass = Class.forName(reportClassName);
-			Field field = reportClass.getDeclaredField("REPORT_TITLE");
-			String title = (String)field.get(null);
-			Permission requiredPermission = reportType.getPermission();
-			this.reportType.add(new ReportTypeOption(reportType.toString(), title, requiredPermission));
+			if ( sessionData.hasPermission(reportType.getPermission().name())) {
+				String reportClassName = reportType.reportClassName();
+				Class<?> reportClass = Class.forName(reportClassName);
+				Field field = reportClass.getDeclaredField("REPORT_TITLE");
+				String title = (String)field.get(null);
+				Permission requiredPermission = reportType.getPermission();
+				this.reportType.add(new ReportTypeOption(reportType.toString(), title, requiredPermission));
+			}
 		}
 		Collections.sort(this.reportType);
 

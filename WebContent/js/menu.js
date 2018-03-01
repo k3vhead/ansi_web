@@ -1,5 +1,43 @@
 $(function(){
-
+    ;MENU_SPACE = {
+        	makeReportList : function() {
+        		var jqxhr = $.ajax({
+    				type: 'GET',
+    				url: 'options',
+    				data: 'REPORT_TYPE',
+    				statusCode: {
+    					200: function($data) {
+    						$.each($data.data.reportType, function($index, $value){
+    							$("#ansi_report_menu").append(
+	    							$('<li>').append(
+	    								$('<a>').attr('href','report.html?id='+$value.reportType).append(
+	    									$value.display
+	    								)
+	    							)
+	    						);
+    						});
+    					},
+    					403: function($data) {
+    						//$("#globalMsg").html("Session Timeout. Log in and try again").show();
+    					}, 
+    					404: function($data) {
+    						$("#globalMsg").html("System Error 404 (report menu): Contact Support").show();
+    					}, 
+    					405: function($data) {
+    						$("#globalMsg").html("System Error 405 (report menu): Contact Support").show();
+    					}, 
+    					500: function($data) {
+    						$("#globalMsg").html("System Error 500 (report menu): Contact Support").show();
+    					} 
+    				},
+    				dataType: 'json'
+    			});
+    	    }
+        }
+    
+    
+	MENU_SPACE.makeReportList();    
+	
     $("ul.dropdown li").hover(function(){
     
         $(this).addClass("hover");
@@ -54,5 +92,7 @@ $(function(){
         	dataType: 'html'
    		});
     });
+
+    
 
 });
