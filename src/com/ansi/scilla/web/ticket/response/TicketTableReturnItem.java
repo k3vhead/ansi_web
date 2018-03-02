@@ -45,6 +45,7 @@ public class TicketTableReturnItem extends ReportQuery {
 
 	private Integer ticketId;
 	private String ticketStatus;
+	private String ticketType;
 	private String billToName;
 	private String jobSiteName;
 	private String jobSiteAddress;
@@ -106,6 +107,7 @@ public class TicketTableReturnItem extends ReportQuery {
 		this();
 		this.ticketId = item.getViewTicketLog().getTicketId();
 		this.ticketStatus = item.getViewTicketLog().getStatus();
+		this.ticketType = item.getTicket().getTicketType();
 		this.billToName = item.getBillToName();
 		this.jobSiteName = item.getJobSiteName();
 		this.jobSiteAddress = item.getJobSiteAddress();
@@ -142,6 +144,13 @@ public class TicketTableReturnItem extends ReportQuery {
 		this.ticketId = ticketId;
 	}
 
+	public String getTicketType() {
+		return this.ticketType;
+	}
+	
+	public void setTicketType(String ticketType) {
+		this.ticketType = ticketType;
+	}
 	public String getDT_RowId() {
 		return DT_RowId;
 	}

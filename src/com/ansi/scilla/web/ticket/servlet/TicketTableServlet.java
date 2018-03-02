@@ -64,7 +64,7 @@ public class TicketTableServlet extends AbstractServlet {
 		int draw = 0;
 		int col = 0;
 		String dir = "asc";
-		String[] cols = { "view_ticket_log.ticket_id", "view_ticket_log.ticket_status", "division_nbr", "bill_to_name", "job_site_name", "job_site_address", 
+		String[] cols = { "view_ticket_log.ticket_id", "view_ticket_log.ticket_status", "ticket.ticket_type", "division_nbr", "bill_to_name", "job_site_name", "job_site_address", 
 				"view_ticket_log.start_date", "job_frequency", "job.price_per_cleaning", "job_nbr", "job.job_id", "service_description","process_date", "invoice_id", "case ticket.ticket_status \r\n" + 
 						"		when 'i' then isnull(isnull(ticket.act_price_per_cleaning,'0.00')-isnull(ticket_payment_totals.amount,'0.00'),'0.00')\r\n" + 
 						"		when 'p' then isnull(isnull(ticket.act_price_per_cleaning,'0.00')-isnull(ticket_payment_totals.amount,'0.00'),'0.00')\r\n" + 

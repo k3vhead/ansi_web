@@ -112,6 +112,9 @@
 			            { title: "Status", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.ticketStatus != null){return (row.ticketStatus+"");}
 			            } },
+			            { title: "Type", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            	if(row.ticketType != null){return (row.ticketType+"");}
+			            } },
 			            { title: "Div", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.divisionNbr != null){return (row.divisionNbr+"-"+row.divisionCode);}
 			            } },
@@ -277,6 +280,7 @@
         <colgroup>
         	<col style="width:5%;" />
     		<col style="width:5%;" />
+    		<col style="width:5%;" />
     		<col style="width:4%;" />
     		<col style="width:8%;" />
     		<col style="width:8%;" />
@@ -296,6 +300,7 @@
             <tr>
                 <th>Ticket</th>
     			<th>Status</th>
+    			<th>Type</th>
     			<th>Div</th>
     			<th>Bill To</th>
     			<th>Job Site</th>
@@ -316,6 +321,7 @@
             <tr>
                 <th>Ticket</th>
     			<th>Status</th>
+    			<th>Type</th>
     			<th>Div</th>
     			<th>Bill To</th>
     			<th>Job Site</th>
