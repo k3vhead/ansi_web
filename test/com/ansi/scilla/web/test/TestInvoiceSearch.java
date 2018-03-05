@@ -14,9 +14,12 @@ import com.ansi.scilla.web.invoice.response.InvoiceLookupResponseItem;
 
 public class TestInvoiceSearch {
 
+	Integer userId = 5;
+	
 	public static void main(String[] args) {
 		try {
 			String term = "Harry Carry";
+			
 //			new TestInvoiceSearch().testSearch(term);
 			new TestInvoiceSearch().testLookup(10, 0, term, null, false, "invoice_id", "asc");
 		} catch (Exception e) {
@@ -34,7 +37,7 @@ public class TestInvoiceSearch {
 			conn.setAutoCommit(false);
 
 //			testMakeFilteredCount(conn, amount, start, term, filterDivisionId, filterPPC, colName, dir);
-			Integer totalFiltered = InvoiceSearch.makeFilteredCount(conn, (String)null, "200000", false);		    
+			Integer totalFiltered = InvoiceSearch.makeFilteredCount(conn, userId, (String)null, "200000", false);		    
 
 
 			conn.rollback();
@@ -62,9 +65,9 @@ public class TestInvoiceSearch {
 	
 	
 	private void testMakeFilteredCount(Connection conn, Integer amount, Integer start, String term, String filterDivisionId, Boolean filterPPC, String colName, String dir) throws Exception {
-		Integer totalFiltered = InvoiceSearch.makeFilteredCount(conn, term, filterDivisionId, filterPPC);		    
-		List<InvoiceSearch> records = InvoiceSearch.makeFetchData(conn, amount, start, term, filterDivisionId, filterPPC, colName, dir);
-		Integer totalUnfiltered = InvoiceSearch.makeUnfilteredCount(conn);
+		Integer totalFiltered = InvoiceSearch.makeFilteredCount(conn, userId, term, filterDivisionId, filterPPC);		    
+		List<InvoiceSearch> records = InvoiceSearch.makeFetchData(conn, amount, userId, start, term, filterDivisionId, filterPPC, colName, dir);
+		Integer totalUnfiltered = InvoiceSearch.makeUnfilteredCount(conn, userId);
 		
 		System.out.println("TotalFiltered: " + totalFiltered);
 		System.out.println(records.size() + " records");

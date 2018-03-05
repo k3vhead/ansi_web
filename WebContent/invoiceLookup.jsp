@@ -87,7 +87,7 @@
 	        	        	'print',
 	        	        	{extend: 'colvis',	label: function () {doFunctionBinding();}},
 	        	        	{
-	        	        		text:'PPC Filter <i class="'+$filterIcon+'"></i>',
+	        	        		text:'Due Filter <i class="'+$filterIcon+'"></i>',
 	        	        		action: function(e, dt, node, config) {
 	        	        			if ( $filterPPC == 'yes' ) {
 	        	        				$filterPPC = 'no';
