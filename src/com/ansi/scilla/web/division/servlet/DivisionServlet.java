@@ -66,7 +66,7 @@ public class DivisionServlet extends AbstractServlet {
 		
 		try {
 			AnsiURL url = new AnsiURL(request, REALM, (String[])null);
-			SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 
 			Connection conn = null;
 			try {
