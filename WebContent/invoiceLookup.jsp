@@ -157,10 +157,10 @@
 				            ],
 				            "initComplete": function(settings, json) {
 				            	//console.log(json);
-				            	doFunctionBinding();
+				            	//doFunctionBinding();
 				            },
 				            "drawCallback": function( settings ) {
-//				            	doFunctionBinding();
+				            	doFunctionBinding();
 				            }
 				    } );
 				$('.dataTables_filter input').unbind();        			
