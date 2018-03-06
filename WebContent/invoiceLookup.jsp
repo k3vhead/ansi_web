@@ -160,7 +160,7 @@
 				            	doFunctionBinding();
 				            },
 				            "drawCallback": function( settings ) {
-				            	doFunctionBinding();
+//				            	doFunctionBinding();
 				            }
 				    } );
 				$('.dataTables_filter input').unbind();        			
