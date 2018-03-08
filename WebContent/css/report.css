@@ -67,7 +67,7 @@
 /*All ANSI Headers*/
 .ansi-stdrpt-banner {
 	font-size:larger;
-	text-align: center;
+	text-align: left;
 
  	
 	
@@ -120,7 +120,7 @@
 /*Dates Created and For*/
 /*building name, street name column (6mo vol)*/
 .css-data-left {
-	text-align: right;
+	text-align: left;
 	width: 150px;
 	font-weight:normal;
 	/*text-align:left;*/
@@ -150,7 +150,7 @@
 /*To and From Detail Page Tighter*/
 .css-data-header-right-text {
 	text-align: right;
-	font-weight:normal;
+	font-weight:bold;
 	/*text-align:left;*/
 }
 /*To and From Date Detail Page Tighter*/
@@ -170,3 +170,12 @@
 
 
 } 
+
+/*CRR Data Table 1 Column 1: Company*/
+.ansi-stdrpt-column-0 {
+	text-align: left;
+}
+/*CRR Detail Page: Client Name*/
+.ansi-stdrpt-summary.ansi-stdrpt-column-0 {
+	font-weight: bold;
+}
