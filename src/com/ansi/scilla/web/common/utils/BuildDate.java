@@ -8,6 +8,8 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.ansi.scilla.common.ApplicationObject;
 
 public class BuildDate extends ApplicationObject {
@@ -66,6 +68,7 @@ public class BuildDate extends ApplicationObject {
         		
         }
         
+        buildDate = StringUtils.replace(buildDate, "\\", "");
         return buildDate;
 	}
 
