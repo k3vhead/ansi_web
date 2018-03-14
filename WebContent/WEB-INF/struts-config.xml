@@ -270,6 +270,12 @@
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
+            path="/userLookup"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/userLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		<action
             path="/usertitleMaintenance"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/usertitleMaintenance.jsp" />

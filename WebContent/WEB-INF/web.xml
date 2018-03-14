@@ -584,6 +584,8 @@
 		<servlet-name>ticketTable</servlet-name>
 		<url-pattern>/ticketTable/*</url-pattern>
 	</servlet-mapping>
+	
+	
 	<servlet>
 		<servlet-name>ticketTypeAhead</servlet-name>
 		<servlet-class>com.ansi.scilla.web.ticket.servlet.TicketTypeAheadServlet</servlet-class>
@@ -591,6 +593,17 @@
 	<servlet-mapping>
 		<servlet-name>ticketTypeAhead</servlet-name>
 		<url-pattern>/ticketTypeAhead/*</url-pattern>
+	</servlet-mapping>
+
+
+
+	<servlet>
+		<servlet-name>userLookup</servlet-name>
+		<servlet-class>com.ansi.scilla.web.user.servlet.UserLookupServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>userLookup</servlet-name>
+		<url-pattern>/userLookup</url-pattern>
 	</servlet-mapping>
 
 

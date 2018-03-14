@@ -9,11 +9,11 @@ import com.ansi.scilla.web.options.response.ResponseOption;
 public class TestOptions {
 
 	public static void main(String[] args) {
-		TesterUtils.makeLoggers();
+//		TesterUtils.makeLoggers();
 		try {
 			for ( ResponseOption x : ResponseOption.values() ) {
 				List<ResponseOption> o = Arrays.asList(new ResponseOption[] {x});
-				OptionsListResponse r = new OptionsListResponse(o);
+				OptionsListResponse r = new OptionsListResponse(o, null);
 				String json = r.toJson();
 //				String json = TesterUtils.getJson("http://127.0.0.1:8080/ansi_web/options?INVOICE_STYLE");
 				System.out.println(json);
