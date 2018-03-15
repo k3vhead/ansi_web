@@ -69,6 +69,8 @@ public class JobTableReturnItem extends ReportQuery {
 		this.jobStatus = rs.getString(JOB_STATUS);
 		this.billToName = rs.getString(BILL_TO_NAME);
 		this.jobSiteName = rs.getString(JOB_SITE_NAME);
+		this.jobSiteCity = rs.getString(JOB_SITE_CITY);
+		this.jobSiteState = rs.getString(JOB_SITE_STATE);
 		this.jobSiteAddress = rs.getString(JOB_SITE_ADDRESS);
 		this.startDate = rs.getDate(START_DATE);
 		this.jobFrequency = rs.getString(JOB_FREQUENCY);
@@ -93,6 +95,8 @@ public class JobTableReturnItem extends ReportQuery {
 		this.jobStatus = jobSearch.getJob().getStatus();
 		this.billToName = jobSearch.getBillToName();
 		this.jobSiteName = jobSearch.getJobSiteName();
+		this.jobSiteCity = jobSearch.getJobSiteCity();
+		this.jobSiteState = jobSearch.getJobSiteState();
 		this.jobSiteAddress = jobSearch.getJobSiteAddress();
 		this.startDate = jobSearch.getJob().getStartDate();
 		this.jobFrequency = jobSearch.getJob().getJobFrequency();
