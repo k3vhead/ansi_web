@@ -102,7 +102,7 @@
 }
 /*??????????*/
 .ansi-stdrpt-notes {
-	text-align: right;
+	text-align: left;
 
  	
 	
@@ -145,7 +145,7 @@
 .css-data-right {
 	width: 150px;
 	font-weight: normal;
-	text-align:left;
+	text-align:right;
 }
 /*To and From Detail Page Tighter*/
 .css-data-header-right-text {
