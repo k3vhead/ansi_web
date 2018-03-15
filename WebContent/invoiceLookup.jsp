@@ -157,76 +157,44 @@
 				            ],
 				            "initComplete": function(settings, json) {
 				            	//console.log(json);
-				            	//doFunctionBinding();
+				            	doFunctionBinding();
 				            },
 				            "drawCallback": function( settings ) {
 				            	doFunctionBinding();
 				            }
 				    } );
-				$('.dataTables_filter input').unbind();        			
-				return dataTable;	        	
+//				$('.dataTables_filter input').unbind();        			
+//				return dataTable;	        	
 			}
+        	init();
+        			
+            
+            function init(){
+					$.each($('input'), function () {
+				        $(this).css("height","20px");
+				        $(this).css("max-height", "20px");
+				    });
+					
+					createTable();
+            }; 
         	
         	        	
-        	$.each($('input'), function () {
-		        $(this).css("height","20px");
-		        $(this).css("max-height", "20px");
-		    });
-			var dataTable = createTable();
+//        	$.each($('input'), function () {
+//		        $(this).css("height","20px");
+//		        $(this).css("max-height", "20px");
+//		    });
         	
 
 			function doFunctionBinding() {
 				$( ".invoicePrint" ).on( "click", function($clickevent) {
 					invoicePrint($clickevent);
 				});
-	        	$('.dataTables_filter input').keyup( function(e) {
-	        		//if ( e.keyCode == 13 ) {
-	        			dataTable.search(this.value).draw();
-	        		//}
-	        	});
 			}
 				
 				
 				function invoicePrint($clickevent) {
 					var $invoiceId = $clickevent.currentTarget.attributes['data-invoiceId'].value;
 					INVOICE_PRINT.reprintInvoice($invoiceId);
-				}
-				function doEdit($clickevent) {
-					var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
-
-						var $url = 'invoiceLookup/' + $rowid;
-						//console.log("YOU PASSED ROW ID:" + $rowid);
-						var jqxhr = $.ajax({
-							type: 'GET',
-							url: $url,
-							success: function($data) {
-								//console.log($data);
-								
-				        		$("#jobId").val(($data.data.codeList[0]).jobId);
-				        		$("#jobStatus").val(($data.data.codeList[0]).jobStatus);
-				        		$("#divisionNbr").val(($data.data.codeList[0]).divisionNbr);
-				        		$("#billToName").val(($data.data.codeList[0]).billToName);
-				        		$("#jobSiteName").val(($data.data.codeList[0]).jobSiteName);
-				        		$("#jobSiteAddress").val(($data.data.codeList[0]).jobSiteAddress);
-				        		$("#startDate").val(($data.data.codeList[0]).startDate);
-				        		$("#jobFrequency").val(($data.data.codeList[0]).startDate);
-				        		$("#pricePerCleaning").val(($data.data.codeList[0]).pricePerCleaning);
-				        		$("#jobNbr").val(($data.data.codeList[0]).jobNbr);
-				        		$("#serviceDescription").val(($data.data.codeList[0]).serviceDescription);
-				        		$("#poNumber").val(($data.data.codeList[0]).processDate);
-				        		
-				        		$("#jId").val(($data.data.codeList[0]).jobId);
-				        		$("#updateOrAdd").val("update");
-				        		$("#addinvoiceTableForm").dialog( "open" );
-							},
-							statusCode: {
-								403: function($data) {
-									$("#useridMsg").html("Session Timeout. Log in and try again");
-								} 
-							},
-							dataType: 'json'
-						});
-					//console.log("Edit Button Clicked: " + $rowid);
 				}
         });
         </script>
