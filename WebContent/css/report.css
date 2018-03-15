@@ -1,4 +1,4 @@
-/* NOTE: All labels are based on Cash Reciepts Register Report*/
+/* NOTE: All labels are based on Cash Receipts Register Report*/
 .ansi-stdrpt {
 	width: 100%;
 }
@@ -10,7 +10,7 @@
 }
 /*Totals*/
 .ansi-stdrpt-data-table {	
-	text-align: right;
+	text-align: left;
 	width:100%;
 	font-weight: bold;
 }
@@ -34,18 +34,18 @@
 }
 /*Inside all tables Background and Font-Weight*/
 .ansi-stdrpt-data-row {
-	text-align: right;
+	text-align: left;
 	font-weight: normal;
 }
 /*Totals Font Only*/
 .ansi-stdrpt-summary-row {
-	text-align: right; 
+	text-align: left; 
 	
 	
 }
 /*Totals CRR*/
 .ansi-stdrpt-summary {	
-	text-align: right;
+	text-align: left;
 	/*border:solid 1px #000000;*/
 }
 /*Tighter around Totals*/
@@ -66,14 +66,15 @@
 }
 /*All ANSI Headers*/
 .ansi-stdrpt-banner {
-	font-size:larger;
-	text-align: left;
+	text-align: center;
 
  	
 	
 }
 /*Also ANSI Headers Background*/
 .ansi-stdrpt-banner-text {
+	font-weight: bolder;
+	font-size: larger
 
 }
 /*Report Header*/
@@ -101,7 +102,7 @@
 }
 /*??????????*/
 .ansi-stdrpt-notes {
-	text-align: right;
+	text-align: left;
 
  	
 	
@@ -140,12 +141,11 @@
 	font-weight:bold;
 }
 /*To and From Date Detail Page*/
-/*data under the dated columns*/
+/*Data under Dated Columns Six Month Rolling Volume*/
 .css-data-right {
-	text-align: right;
 	width: 150px;
 	font-weight: normal;
-	/*text-align:left;*/
+	text-align:right;
 }
 /*To and From Detail Page Tighter*/
 .css-data-header-right-text {
@@ -153,20 +153,19 @@
 	font-weight:bold;
 	/*text-align:left;*/
 }
-/*To and From Date Detail Page Tighter*/
+/**/
 .css-data-right-text {
-	text-align: right;
+	text-align: left;
 	/*text-align:left;*/
 }
-/*?????????????????*/
+/*Date within table 6 Month Rolling Volume*/
 .css-data-center {
-	text-align: right;
+	text-align: left;
 	
 
 }
 /*?????????????*/
 .css-data-center-text {
-	text-align: right;
 
 
 } 
