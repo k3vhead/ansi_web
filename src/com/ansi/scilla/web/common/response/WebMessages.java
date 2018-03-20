@@ -1,5 +1,6 @@
 package com.ansi.scilla.web.common.response;
 
+import java.sql.Connection;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +44,15 @@ public class WebMessages extends HashMap<String, List<String>> {
 
 	 public String toJson() throws Exception {
          return AppUtils.object2json(this);
+	 }
+
+	 public void addRequiredFieldMessages(Connection conn, List<String> missingFields) throws Exception {
+		 if ( missingFields != null ) {
+			 String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
+			 for ( String field : missingFields ) {
+				 addMessage(field, messageText);
+			 }
+		 }
 	 }
 
 }
