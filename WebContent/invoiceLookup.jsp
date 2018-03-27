@@ -113,40 +113,40 @@
 				        	},
 				        columns: [
 				        	
-				            { title: "Invoice", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				            { title: "<bean:message key="field.label.invoiceId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 				            	if(row.invoiceId != null){return (row.invoiceId+"");}
 				            } },
-				            { title: "FM Inv", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.fleetmaticsInvoiceNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.fleetmaticsInvoiceNbr != null){return (row.fleetmaticsInvoiceNbr+"");}
 				            } },
-				            { title: "Div", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.div" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.div != null){return (row.div+"");}
 				            } },
-				            { title: "Bill To", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.billToName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.billToName != null){return (row.billToName+"");}
 				            } },
-				            { title: "Tickets" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				            { title: "<bean:message key="field.label.ticketCount" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 				            	if(row.ticketCount != null){return (row.ticketCount+"");}
 				            } },
-				            { title: "Invoice Date", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.invoiceDate" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.invoiceDate != null){return (row.invoiceDate+"");}
 				            } },
-				            { title: "Amount",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.invoiceAmount" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.invoiceAmount != null){return (row.invoiceAmount+"");}
 				            } },
-				            { title: "Tax",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.invoiceTax" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.invoiceTax != null){return (row.invoiceTax+"");}
 				            } },
-				            { title: "Total",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.invoiceTotal" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.invoiceTotal != null){return (row.invoiceTotal+"");}
 				            } },
-				            { title: "Paid",  "defaultContent": "<i>-</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.invoicePaid" />",  "defaultContent": "<i>-</i>", data: function ( row, type, set ) {
 				            	if(row.invoicePaid != null){return (row.invoicePaid+"");}
 				            } },
-				            { title: "Balance",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.invoiceBalance" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.invoiceBalance != null){return (row.invoiceBalance+"");}else{return(row.invoiceTotal+"");}
 				            } },
-				            { title: "Action",  data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {
 				            	if ( row.printCount > 0 ) {
 				            		$printText =  '<i class="fa fa-print invoicePrint tooltip" aria=hidden="true" data-invoiceId="'+row.invoiceId+'"><span class="tooltiptext">Reprint</span></i>';
 				            	} else {
@@ -221,34 +221,34 @@
    		</colgroup>
         <thead>
             <tr>
-                <th>Invoice</th>
-                <th>FM Inv</th>
-    			<th>Div</th>
-    			<th>Bill To</th>
-    			<th>Tickets</th>
-    			<th>Invoice Date</th>
-    			<th>Amount</th>
-    			<th>Tax</th>
-    			<th>Total</th>
-    			<th>Paid</th>
-    			<th>Balance</th>
-    			<th>Action</th>
+                <th><bean:message key="field.label.invoiceId" /></th>
+                <th><bean:message key="field.label.fleetmaticsInvoiceNbr" /></th>
+    			<th><bean:message key="field.label.div" /></th>
+    			<th><bean:message key="field.label.billToName" /></th>
+    			<th><bean:message key="field.label.ticketCount" /></th>
+    			<th><bean:message key="field.label.invoiceDate" /></th>
+    			<th><bean:message key="field.label.invoiceAmount" /></th>
+    			<th><bean:message key="field.label.invoiceTax" /></th>
+    			<th><bean:message key="field.label.invoiceTotal" /></th>
+    			<th><bean:message key="field.label.invoicePaid" /></th>
+    			<th><bean:message key="field.label.invoiceBalance" /></th>
+    			<th><bean:message key="field.label.action" /></th>
             </tr>
         </thead>
         <tfoot>
             <tr>
-                <th>Invoice</th>
-                <th>FM Inv</th>
-    			<th>Div</th>
-    			<th>Bill To</th>
-    			<th>Tickets</th>
-    			<th>Invoice Date</th>
-    			<th>Amount</th>
-    			<th>Tax</th>
-    			<th>Total</th>
-    			<th>Paid</th>
-    			<th>Balance</th>
-    			<th>Action</th>
+                <th><bean:message key="field.label.invoiceId" /></th>
+                <th><bean:message key="field.label.fleetmaticsInvoiceNbr" /></th>
+    			<th><bean:message key="field.label.div" /></th>
+    			<th><bean:message key="field.label.billToName" /></th>
+    			<th><bean:message key="field.label.ticketCount" /></th>
+    			<th><bean:message key="field.label.invoiceDate" /></th>
+    			<th><bean:message key="field.label.invoiceAmount" /></th>
+    			<th><bean:message key="field.label.invoiceTax" /></th>
+    			<th><bean:message key="field.label.invoiceTotal" /></th>
+    			<th><bean:message key="field.label.invoicePaid" /></th>
+    			<th><bean:message key="field.label.invoiceBalance" /></th>
+    			<th><bean:message key="field.label.action" /></th>
             </tr>
         </tfoot>
     </table>
