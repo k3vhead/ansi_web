@@ -152,13 +152,13 @@
 			        	},
 			        columns: [
 			        	
-			            { title: "Last Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            { title: "<bean:message key="field.label.lastName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.lastName != null){return (row.lastName+"");}
 			            } },
-			            { title: "First Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "<bean:message key="field.label.firstName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.firstName != null){return (row.firstName+"");}
 			            } },
-			            { title: "Business Phone", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "<bean:message key="field.label.businessPhone" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.businessPhone != null){
 			            		if ( row.preferredContact=='business_phone') {
 			            			value = '<span style="font-weight:bold;">' + row.businessPhone + '</span>';
@@ -168,7 +168,7 @@
 			            		return (value);
 			            	}
 			            } },
-			            { title: "Email", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "<bean:message key="field.label.email" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.businessPhone != null){
 			            		if ( row.preferredContact=='email') {
 			            			value = '<span style="font-weight:bold;">' + row.email + '</span>';
@@ -178,7 +178,7 @@
 			            		return (value);
 			            	}
 			            } },
-			            { title: "Fax" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            { title: "<bean:message key="field.label.fax" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 		            		if ( row.preferredContact=='fax') {
 		            			value = '<span style="font-weight:bold;">' + row.fax + '</span>';
 		            		} else {
@@ -186,7 +186,7 @@
 		            		}			            		
 		            		return (value);
 			            } },
-			            { title: "Mobile" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            { title: "<bean:message key="field.label.mobilePhone" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 		            		if ( row.preferredContact=='mobile_phone') {
 		            			value = '<span style="font-weight:bold;">' + row.mobilePhone + '</span>';
 		            		} else {
@@ -194,7 +194,7 @@
 		            		}			            		
 		            		return (value);
 			            } },
-			            { title: "Action",  data: function ( row, type, set ) {	
+			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
 			            	{
 			            		return '<span class="tooltip"><i class="editAction ui-icon ui-icon-pencil" data-id="'+ row.contactId + '" /><span class="tooltiptext">Edit</span></span>';}
 			            } }
@@ -379,24 +379,24 @@
    		</colgroup>
         <thead>
             <tr>
-                <th>Last Name</th>
-    			<th>First Name</th>
-    			<th>Business Phone</th>
-    			<th>Email</th>
-    			<th>Fax</th>
-    			<th>Mobile Phone</th>
-    			<th>Action</th>
+                <th><bean:message key="field.label.lastName" /></th>
+    			<th><bean:message key="field.label.firstName" /></th>
+    			<th><bean:message key="field.label.businessPhone" /></th>
+    			<th><bean:message key="field.label.email" /></th>
+    			<th><bean:message key="field.label.fax" /></th>
+    			<th><bean:message key="field.label.mobilePhone" /></th>
+    			<th><bean:message key="field.label.action" /></th>
             </tr>
         </thead>
         <tfoot>
             <tr>
-                <th>Last Name</th>
-    			<th>First Name</th>
-    			<th>Business Phone</th>
-    			<th>Email</th>
-    			<th>Fax</th>
-    			<th>Mobile Phone</th>
-    			<th>Action</th>
+                <th><bean:message key="field.label.lastName" /></th>
+    			<th><bean:message key="field.label.firstName" /></th>
+    			<th><bean:message key="field.label.businessPhone" /></th>
+    			<th><bean:message key="field.label.email" /></th>
+    			<th><bean:message key="field.label.fax" /></th>
+    			<th><bean:message key="field.label.mobilePhone" /></th>
+    			<th><bean:message key="field.label.action" /></th>
             </tr>
         </tfoot>
     </table>

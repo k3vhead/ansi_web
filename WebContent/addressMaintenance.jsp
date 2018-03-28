@@ -137,37 +137,37 @@
 				        	"type": "GET"
 				        	},
 				        columns: [
-				            { title: "Id", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				            { title: "<bean:message key="field.label.addressId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 				            	if(row.addressId != null){return (row.addressId+"");}
 				            } },
-				            { title: "Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.name" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.name != null){return (row.name+"");}
 				            } },
-				            { title: "Status" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				            { title: "<bean:message key="field.label.address_status" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 				            	if(row.address_status != null){return (row.address_status+"");}
 				            } },
-				            { title: "Address 1", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.address1" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.address1 != null){return (row.address1+"");}
 				            } },
-				            { title: "Address 2",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.address2" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.address2 != null){return (row.address2+"");}
 				            } },
-				            { title: "City", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.city" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.city != null){return (row.city+"");}
 				            } },
-				            { title: "County", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.county" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.county != null){return (row.county+"");}
 				            } },
-				            { title: "Country", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.countryCode" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.countryCode != null){return (row.countryCode+"");}
 				            } },
-				            { title: "State", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
+				            { title: "<bean:message key="field.label.state" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
 				            	if(row.state != null){return (row.state+"");}
 				            } },
-				            { title: "Zip", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				            { title: "<bean:message key="field.label.action" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 				            	if(row.zip != null){return (row.zip+"");} 
 				            } },
-				            { title: "Action",  data: function ( row, type, set ) {	
+				            { title: "<bean:message key="field.label.paymentId" />",  data: function ( row, type, set ) {	
 				            	$viewLink = "<a href=\"#\" class=\"viewAction fa fa-search-plus tooltip\" aria-hidden=\"true\" data-id='"+row.addressId+"'><span class=\"tooltiptext\">View</span></a> ";
 				            	$editLink = "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' class=\"editAction ui-icon ui-icon-pencil tooltip\" data-id='"+row.addressId+"'><span class=\"tooltiptext\">Edit</span></a></ansi:hasWrite></ansi:hasPermission>";
 				            	$copyLink = "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' class=\"copyAction fa fa-files-o tooltip\" data-id='"+row.addressId+"'><span class=\"tooltiptext\">Copy</span></a></ansi:hasWrite></ansi:hasPermission>";
@@ -564,32 +564,32 @@
  		<table id="addressTable" class="display" cellspacing="0" style="font-size:9pt;">
 	        <thead>
 	            <tr>
-	                <th>Id</th>
-	    			<th>Name</th>
-	    			<th>Status</th>
-	    			<th>Address 1</th>
-	    			<th>Address 2</th>
-	    			<th>City</th>
-	    			<th>County</th>
-	    			<th>Country</th>
-	    			<th>State</th>
-	    			<th>Zip</th>
-	    			<th>Action</th>
+	                <th><bean:message key="field.label.addressId" /></th>
+	    			<th><bean:message key="field.label.name" /></th>
+	    			<th><bean:message key="field.label.address_status" /></th>
+	    			<th><bean:message key="field.label.address1" /></th>
+	    			<th><bean:message key="field.label.address2" /></th>
+	    			<th><bean:message key="field.label.city" /></th>
+	    			<th><bean:message key="field.label.county" /></th>
+	    			<th><bean:message key="field.label.countryCode" /></th>
+	    			<th><bean:message key="field.label.state" /></th>
+	    			<th><bean:message key="field.label.zip" /></th>
+	    			<th><bean:message key="field.label.action" /></th>
 	            </tr>
 	        </thead>
 	        <tfoot>
 	            <tr>
-	                <th>Id</th>
-	    			<th>Name</th>
-	    			<th>Status</th>
-	    			<th>Address 1</th>
-	    			<th>Address 2</th>
-	    			<th>City</th>
-	    			<th>County</th>
-	    			<th>Country</th>
-	    			<th>State</th>
-	    			<th>Zip</th>
-	    			<th>Action</th>
+	                <th><bean:message key="field.label.addressId" /></th>
+	    			<th><bean:message key="field.label.name" /></th>
+	    			<th><bean:message key="field.label.address_status" /></th>
+	    			<th><bean:message key="field.label.address1" /></th>
+	    			<th><bean:message key="field.label.address2" /></th>
+	    			<th><bean:message key="field.label.city" /></th>
+	    			<th><bean:message key="field.label.county" /></th>
+	    			<th><bean:message key="field.label.countryCode" /></th>
+	    			<th><bean:message key="field.label.state" /></th>
+	    			<th><bean:message key="field.label.zip" /></th>
+	    			<th><bean:message key="field.label.action" /></th>
 	    			
 	            </tr>
 	        </tfoot>

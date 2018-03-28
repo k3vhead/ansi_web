@@ -185,37 +185,37 @@
 			        	"type": "GET"
 			        	},
 			        columns: [
-			            { title: "ID", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            { title: "<bean:message key="field.label.quoteId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.quoteId != null){return (row.quoteId+"");}
 			            } },
-			            { title: "Quote", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "<bean:message key="field.label.quoteCode" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.quoteCode != null){return (row.quoteCode+"");}
 			            } },
-			            { title: "Div", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.divisionNbr != null){return (row.divisionNbr+"-"+row.divisionCode);}
 			            } },
-			            { title: "Bill To" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            { title: "<bean:message key="field.label.billToName" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.billToName != null){return (row.billToName+"");}
 			            } },
-			            { title: "Job Site", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "<bean:message key="field.label.jobSiteName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.jobSiteName != null){return (row.jobSiteName+"");}
 			            } },
-			            { title: "Job Address",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "<bean:message key="field.label.jobSiteAddress" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.jobSiteAddress != null){return (row.jobSiteAddress+"");}
 			            } },
-			            { title: "Manager", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "<bean:message key="field.label.managerName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.managerName != null){return (row.managerName+"");}
 			            } },
-			            { title: "Proposal Date", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "<bean:message key="field.label.proposalDate" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.proposalDate != null){return (row.proposalDate+"");}
 			            } },
-			            { title: "Job Count", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
+			            { title: "<bean:message key="field.label.quoteJobCount" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
 			            	if(row.quoteJobCount != null){return (row.quoteJobCount+"");}
 			            } },
-			            { title: "PPC Sum", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            { title: "<bean:message key="field.label.quotePpcSum" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.quotePpcSum != null){return (row.quotePpcSum+"");} 
 			            } },
-			            { title: "Action",  data: function ( row, type, set ) {	
+			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
 			            	//console.log(row);
 			            	editText = '<a href="quoteMaintenance.html?id='+row.quoteId+'" class="editAction ui-icon ui-icon-pencil" data-id="'+row.quoteId+'"></a>';
 			            	printText = '<i class="fa fa-print quotePrint" aria=hidden="true" data-id="'+row.quoteId+'" data-quotenumber="'+ row.quoteCode + '"></i>';
@@ -265,32 +265,32 @@
     	</colgroup> 
         <thead>
             <tr>
-                <th>ID</th>
-    			<th>Quote</th>
-    			<th>Div</th>
-    			<th>Bill To</th>
-    			<th>Job Site</th>
-    			<th>Job Address</th>
-    			<th>Manager</th>
-    			<th>Proposal Date</th>
-    			<th>Job Count</th>
-    			<th>PPC Sum</th>
-    			<th>Action</th>
+                <th><bean:message key="field.label.quoteId" /></th>
+    			<th><bean:message key="field.label.quoteCode" /></th>
+    			<th><bean:message key="field.label.divisionNbr" /></th>
+    			<th><bean:message key="field.label.billToName" /></th>
+    			<th><bean:message key="field.label.jobSiteName" /></th>
+    			<th><bean:message key="field.label.jobSiteAddress" /></th>
+    			<th><bean:message key="field.label.managerName" /></th>
+    			<th><bean:message key="field.label.proposalDate" /></th>
+    			<th><bean:message key="field.label.quoteJobCount" /></th>
+    			<th><bean:message key="field.label.quotePpcSum" /></th>
+    			<th><bean:message key="field.label.action" /></th>
             </tr>
         </thead>
         <tfoot>
             <tr>
-                <th>ID</th>
-    			<th>Quote</th>
-    			<th>Div</th>
-    			<th>Bill To</th>
-    			<th>Job Site</th>
-    			<th>Job Address</th>
-    			<th>Manager</th>
-    			<th>Proposal Date</th>
-    			<th>Job Count</th>
-    			<th>PPC Sum</th>
-    			<th>Action</th>
+                <th><bean:message key="field.label.quoteId" /></th>
+    			<th><bean:message key="field.label.quoteCode" /></th>
+    			<th><bean:message key="field.label.divisionNbr" /></th>
+    			<th><bean:message key="field.label.billToName" /></th>
+    			<th><bean:message key="field.label.jobSiteName" /></th>
+    			<th><bean:message key="field.label.jobSiteAddress" /></th>
+    			<th><bean:message key="field.label.managerName" /></th>
+    			<th><bean:message key="field.label.proposalDate" /></th>
+    			<th><bean:message key="field.label.quoteJobCount" /></th>
+    			<th><bean:message key="field.label.quotePpcSum" /></th>
+    			<th><bean:message key="field.label.action" /></th>
     			
             </tr>
         </tfoot>

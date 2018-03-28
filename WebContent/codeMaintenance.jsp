@@ -58,7 +58,43 @@
         <script type="text/javascript">        
         $(function() {     
         	
-			function getCodes($filter) {
+        	GLOBAL_DATA = {};
+        	;CODE_MAINTENANCE = {
+        		init:function() {       
+        			GLOBAL_DATA.globalTableName = 0;
+        			GLOBAL_DATA.globalFieldName = 0;
+        			GLOBAL_DATA.globalValue = 0;
+        			CODE_MAINTENANCE.getCodes();
+        			CODE_MAINTENANCE.doFilter();
+        			CODE_MAINTENANCE.addRow();
+        			CODE_MAINTENANCE.doFunctionBinding();
+        			CODE_MAINTENANCE.makeRow();
+        			CODE_MAINTENANCE.doUpdate();
+        			CODE_MAINTENANCE.doDelete();
+        			CODE_MAINTENANCE.buttonEvents();
+        			/*$("#addButton").click( function($clickevent) {
+        				$clickevent.preventDefault();
+       				$("#cancelUpdate").click( function($clickevent) {
+       					$clickevent.preventDefault();
+    				$("#goUpdate").click( function($clickevent) {
+    					$clickevent.preventDefault();
+   					$("#cancelDelete").click( function($event) {
+   		            	$event.preventDefault();
+  		            $("#doDelete").click(function($event) {
+  		             	$event.preventDefault();
+  		            $(".columnhider").click(function($clickevent) {
+  		              	$clickevent.preventDefault();
+  		            $("#showhidden").click(function($clickevent) {
+  		            	$clickevent.preventDefault();*/
+        			CODE_MAINTENANCE.clearAddForm();
+        			CODE_MAINTENANCE.markValid();
+        			CODE_MAINTENANCE.getTableList();
+        			
+        			$tableName + "/" + $fieldName + "/" + $value;
+        },
+        	
+  		    getCodes: function(){
+			/*function getCodes($filter) {*/
 				var $url = 'code/' + $filter;
 				var jqxhr = $.ajax({
 					type: 'GET',
@@ -94,26 +130,29 @@
 					},
 					dataType: 'json'
 				});
-			}
+			},
 			getCodes("list");
 			getTableFieldList(null, $("#addForm select[name='tableName']"));
 			
-			function doFilter($event) {
+			doFilter: function () {
+			/*function doFilter($event) {*/
 				$event.preventDefault();
 				var $filtervalue = $event.currentTarget.attributes['data-filter'].value;				
 				$("#displayTable").find("tr:gt(0)").remove();
 				getCodes($filtervalue);
-			}
+			},
         
-			function addRow(index, $code) {	
+			addRow: function () {
+			/*function addRow(index, $code) {*/	
 				var $rownum = index + 1;
        			//$('#displayTable tr:last').before(row);
        			rowTd = makeRow($code, $rownum);
        			row = '<tr class="dataRow">' + rowTd + "</tr>";
        			$('#displayTable').append(row);
-			}
+			},
 			
-			function doFunctionBinding() {
+			doFuntionBinding: function () {
+			/*function doFunctionBinding() {*/
 				$('.updAction').bind("click", function($clickevent) {
 					doUpdate($clickevent);
 				});
@@ -126,9 +165,10 @@
 				$('.dataRow').bind("mouseout", function() {
 					$(this).css('background-color','transparent');
 				});
-			}
+			},
 			
-			function makeRow($code, $rownum) {
+			makeRow: function () {
+			/*function makeRow($code, $rownum) {*/
 				var row = "";
 				row = row + '<td class="tablecol">' + $code.tableName + '</td>';
 				row = row + '<td class="fieldcol">' + $code.fieldName + '</td>';
@@ -162,9 +202,10 @@
        			</ansi:hasWrite>
        			</ansi:hasPermission>       			
 				return row;
-			}
+			},
 			
-			function doUpdate($clickevent) {
+			doUpdate: function () {
+			/*function doUpdate($clickevent) {*/
 				$clickevent.preventDefault();
 				clearAddForm();
 				var $tableName = $clickevent.currentTarget.attributes['data-tableName'].value;
@@ -214,9 +255,10 @@
 					positionStyle: 'fixed' //'fixed' or 'absolute'
 				});		
             	$("#addForm input[name='value']").select();
-			}
+			},
 			
-			function doDelete($clickevent) {
+			doDelete: function () {
+			/*function doDelete($clickevent) {*/
 				$clickevent.preventDefault();
 
 				var $tableName = $clickevent.currentTarget.attributes['data-tableName'].value;
@@ -253,77 +295,170 @@
 					opacity: 0.6,
 					positionStyle: 'fixed' //'fixed' or 'absolute'
 				});
-			}
+			},
 			
-			$("#addButton").click( function($clickevent) {
-				$clickevent.preventDefault();
-				clearAddForm();
-				$("#addFormTitle").html("Add a Code");
-             	$('#addFormDiv').bPopup({
-					modalClose: false,
-					opacity: 0.6,
-					positionStyle: 'fixed' //'fixed' or 'absolute'
-				});			
-             	$("#addForm select[name='tableName']").focus();
-			});
-			
-			$("#cancelUpdate").click( function($clickevent) {
-				$clickevent.preventDefault();
-				clearAddForm();
-				$('#addFormDiv').bPopup().close();
-			});
-
-			$("#goUpdate").click( function($clickevent) {
-				$clickevent.preventDefault();
-				$outbound = {};
-				$.each( $('#addForm :input'), function(index, value) {
-					if ( value.name ) {
-						$fieldName = value.name;
-						$id = "#addForm input[name='" + $fieldName + "']";
-						$val = $($id).val();
-						$outbound[$fieldName] = $val;
-					}
+			buttonEvents: function () {			
+				$("#addButton").click( function($clickevent) {
+					$clickevent.preventDefault();
+					clearAddForm();
+					$("#addFormTitle").html("Add a Code");
+	             	$('#addFormDiv').bPopup({
+						modalClose: false,
+						opacity: 0.6,
+						positionStyle: 'fixed' //'fixed' or 'absolute'
+					});			
+	             	$("#addForm select[name='tableName']").focus();
 				});
-				$outbound['tableName'] = $("#addForm select[name='tableName'] option:selected").val();
-				$outbound['fieldName'] = $("#addForm select[name='fieldName'] option:selected").val();
-				$outbound['seq'] = $("#addForm select[name='seq'] option:selected").val();
-				$outbound['status'] = $("#addForm select[name='status'] option:selected").val();
-
-				if ( $('#addForm').data('tableName') == null ) {
-					$url = "code/add";
-				} else {
-					//$rownum = $('#addForm').data('rownum')
-					//var $tableData = [];
-	                //$("#displayTable").find('tr').each(function (rowIndex, r) {
-	                //    var cols = [];
-	                //    $(this).find('th,td').each(function (colIndex, c) {
-	                //        cols.push(c.textContent);
-	                //    });
-	                //    $tableData.push(cols);
-	                //});
-
+				
+				$("#cancelUpdate").click( function($clickevent) {
+					$clickevent.preventDefault();
+					clearAddForm();
+					$('#addFormDiv').bPopup().close();
+				});
+	
+				$("#goUpdate").click( function($clickevent) {
+					$clickevent.preventDefault();
+					$outbound = {};
+					$.each( $('#addForm :input'), function(index, value) {
+						if ( value.name ) {
+							$fieldName = value.name;
+							$id = "#addForm input[name='" + $fieldName + "']";
+							$val = $($id).val();
+							$outbound[$fieldName] = $val;
+						}
+					});
+					$outbound['tableName'] = $("#addForm select[name='tableName'] option:selected").val();
+					$outbound['fieldName'] = $("#addForm select[name='fieldName'] option:selected").val();
+					$outbound['seq'] = $("#addForm select[name='seq'] option:selected").val();
+					$outbound['status'] = $("#addForm select[name='status'] option:selected").val();
+	
+					if ( $('#addForm').data('tableName') == null ) {
+						$url = "code/add";
+					} else {
+						//$rownum = $('#addForm').data('rownum')
+						//var $tableData = [];
+		                //$("#displayTable").find('tr').each(function (rowIndex, r) {
+		                //    var cols = [];
+		                //    $(this).find('th,td').each(function (colIndex, c) {
+		                //        cols.push(c.textContent);
+		                //    });
+		                //    $tableData.push(cols);
+		                //});
+	
+		            	//var $tableName = $tableData[$rownum][0];
+		            	//var $fieldName = $tableData[$rownum][1];
+		            	//var $value = $tableData[$rownum][2];
+		            	
+	      	            var $tableName = $('#addForm').data('tableName');
+	            		var $fieldName = $("#addForm").data('fieldName');
+	            		var $value = $("#addForm").data('value');
+	
+		            	$url = "code/" + $tableName + "/" + $fieldName + "/" + $value;
+					}
+					
+					var jqxhr = $.ajax({
+						type: 'POST',
+						url: $url,
+						data: JSON.stringify($outbound),
+						success: function($data) {
+							if ( $data.responseHeader.responseCode == 'SUCCESS') {
+								if ( $url == "code/add" ) {
+									var count = $('#displayTable tr').length - 1;
+									addRow(count, $data.data.code);
+								} else {
+	     				            $("#displayTable").find('tr').each(function (rowIndex, r) {
+					                    var cols = [];
+					                    $(this).find('th,td').each(function (colIndex, c) {
+					                        cols.push(c.textContent);
+					                    });
+					                    if ( cols[0] == $tableName ) {
+					                    	if ( cols[1] == $fieldName ) {
+					                    		if ( cols[2] == $value ) {
+									            	var $rowTd = makeRow($data.data.code, rowIndex);
+					                    			var $rowFinder = "#displayTable tr:nth-child(" + rowIndex + ")";
+					                    			$($rowFinder).html($rowTd);				                    			
+					                    		}
+					                    	}
+					                    }
+					                });
+	
+					            	
+					            	
+					            	
+					            	//$($rowFinder).html($rowTd);
+								}
+								doFunctionBinding();
+								clearAddForm();
+								$('#addFormDiv').bPopup().close();
+								if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
+									$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
+								}
+							} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+								$.each($data.data.webMessages, function(key, messageList) {
+									var identifier = "#" + key + "Err";
+									msgHtml = "<ul>";
+									$.each(messageList, function(index, message) {
+										msgHtml = msgHtml + "<li>" + message + "</li>";
+									});
+									msgHtml = msgHtml + "</ul>";
+									$(identifier).html(msgHtml);
+								});		
+								if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
+									$("#addFormMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]);
+								}
+							} else {
+								
+							}
+						},
+						statusCode: {
+							403: function($data) {
+								$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+							}, 
+		         	    	404: function($data) {
+		         	    		$('#addFormDiv').bPopup().close();
+		         	    		$("#globalMsg").html("Record does not exist").fadeIn(10).fadeOut(6000);
+		        	    	} 
+						},
+						dataType: 'json'
+					});
+				});
+	
+	            $("#cancelDelete").click( function($event) {
+	            	$event.preventDefault();
+	            	$('#confirmDelete').bPopup().close();
+	            });         
+	
+	            $("#doDelete").click(function($event) {
+	            	$event.preventDefault();
+	            	var $tableData = [];
+	                $("#displayTable").find('tr').each(function (rowIndex, r) {
+	                    var cols = [];
+	                    $(this).find('th,td').each(function (colIndex, c) {
+	                        cols.push(c.textContent);
+	                    });
+	                    $tableData.push(cols);
+	                });
+	
+	            	var $rownum = $('#confirmDelete').data('rownum');
 	            	//var $tableName = $tableData[$rownum][0];
 	            	//var $fieldName = $tableData[$rownum][1];
 	            	//var $value = $tableData[$rownum][2];
-	            	
-      	            var $tableName = $('#addForm').data('tableName');
-            		var $fieldName = $("#addForm").data('fieldName');
-            		var $value = $("#addForm").data('value');
-
-	            	$url = "code/" + $tableName + "/" + $fieldName + "/" + $value;
-				}
-				
-				var jqxhr = $.ajax({
-					type: 'POST',
-					url: $url,
-					data: JSON.stringify($outbound),
-					success: function($data) {
-						if ( $data.responseHeader.responseCode == 'SUCCESS') {
-							if ( $url == "code/add" ) {
-								var count = $('#displayTable tr').length - 1;
-								addRow(count, $data.data.code);
-							} else {
-     				            $("#displayTable").find('tr').each(function (rowIndex, r) {
+	            	var $tableName = $('#confirmDelete').data('tableName');
+	            	var $fieldName = $("#confirmDelete").data('fieldName');
+	            	var $value = $("#confirmDelete").data('value');
+	            	$outbound = JSON.stringify({});            	
+	            	$url = 'code/' + $tableName + "/" + $fieldName + "/" + $value;
+	            	//$outbound = JSON.stringify({'tableName':$tableName, 'fieldName':$fieldName,'value':$value});
+	            	var jqxhr = $.ajax({
+	            	    type: 'delete',
+	            	    url: $url,
+	            	    data: $outbound,
+	            	    success: function($data) {
+	            	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
+							if ( $data.responseHeader.responseCode == 'SUCCESS') {
+								//$rowfinder = "tr:eq(" + $rownum + ")"
+								//$("#displayTable").find($rowfinder).remove();
+				                $("#displayTable").find('tr').each(function (rowIndex, r) {
 				                    var cols = [];
 				                    $(this).find('th,td').each(function (colIndex, c) {
 				                        cols.push(c.textContent);
@@ -331,160 +466,70 @@
 				                    if ( cols[0] == $tableName ) {
 				                    	if ( cols[1] == $fieldName ) {
 				                    		if ( cols[2] == $value ) {
-								            	var $rowTd = makeRow($data.data.code, rowIndex);
-				                    			var $rowFinder = "#displayTable tr:nth-child(" + rowIndex + ")";
-				                    			$($rowFinder).html($rowTd);				                    			
+				                    			this.remove();
 				                    		}
 				                    	}
 				                    }
 				                });
-
-				            	
-				            	
-				            	
-				            	//$($rowFinder).html($rowTd);
+								$('#confirmDelete').bPopup().close();
 							}
-							doFunctionBinding();
-							clearAddForm();
-							$('#addFormDiv').bPopup().close();
-							if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
-								$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
-							}
-						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-							$.each($data.data.webMessages, function(key, messageList) {
-								var identifier = "#" + key + "Err";
-								msgHtml = "<ul>";
-								$.each(messageList, function(index, message) {
-									msgHtml = msgHtml + "<li>" + message + "</li>";
-								});
-								msgHtml = msgHtml + "</ul>";
-								$(identifier).html(msgHtml);
-							});		
-							if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
-								$("#addFormMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]);
-							}
-						} else {
-							
-						}
-					},
-					statusCode: {
-						403: function($data) {
-							$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-						}, 
-	         	    	404: function($data) {
-	         	    		$('#addFormDiv').bPopup().close();
-	         	    		$("#globalMsg").html("Record does not exist").fadeIn(10).fadeOut(6000);
-	        	    	} 
-					},
-					dataType: 'json'
-				});
-			});
-
-            $("#cancelDelete").click( function($event) {
-            	$event.preventDefault();
-            	$('#confirmDelete').bPopup().close();
-            });         
-
-            $("#doDelete").click(function($event) {
-            	$event.preventDefault();
-            	var $tableData = [];
-                $("#displayTable").find('tr').each(function (rowIndex, r) {
-                    var cols = [];
-                    $(this).find('th,td').each(function (colIndex, c) {
-                        cols.push(c.textContent);
-                    });
-                    $tableData.push(cols);
-                });
-
-            	var $rownum = $('#confirmDelete').data('rownum');
-            	//var $tableName = $tableData[$rownum][0];
-            	//var $fieldName = $tableData[$rownum][1];
-            	//var $value = $tableData[$rownum][2];
-            	var $tableName = $('#confirmDelete').data('tableName');
-            	var $fieldName = $("#confirmDelete").data('fieldName');
-            	var $value = $("#confirmDelete").data('value');
-            	$outbound = JSON.stringify({});            	
-            	$url = 'code/' + $tableName + "/" + $fieldName + "/" + $value;
-            	//$outbound = JSON.stringify({'tableName':$tableName, 'fieldName':$fieldName,'value':$value});
-            	var jqxhr = $.ajax({
-            	    type: 'delete',
-            	    url: $url,
-            	    data: $outbound,
-            	    success: function($data) {
-            	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
-						if ( $data.responseHeader.responseCode == 'SUCCESS') {
-							//$rowfinder = "tr:eq(" + $rownum + ")"
-							//$("#displayTable").find($rowfinder).remove();
-			                $("#displayTable").find('tr').each(function (rowIndex, r) {
-			                    var cols = [];
-			                    $(this).find('th,td').each(function (colIndex, c) {
-			                        cols.push(c.textContent);
-			                    });
-			                    if ( cols[0] == $tableName ) {
-			                    	if ( cols[1] == $fieldName ) {
-			                    		if ( cols[2] == $value ) {
-			                    			this.remove();
-			                    		}
-			                    	}
-			                    }
-			                });
-							$('#confirmDelete').bPopup().close();
-						}
-            	     },
-            	     statusCode: {
-            	    	403: function($data) {
-            	    		$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-            	    	}, 
-	         	    	404: function($data) {
-	         	    		$('#confirmDelete').bPopup().close();
-	         	    		$("#globalMsg").html("Record does not exist").fadeIn(10).fadeOut(6000);
-	        	    	} 
-            	     },
-            	     dataType: 'json'
-            	});
-            });
-
-            $('#addForm').find("input").on('focus',function(e) {
-            	$required = $(this).data('required');
-            	if ( $required == true ) {
-            		markValid(this);
-            	}
-            });
-            
-            $('#addForm').find("input").on('input',function(e) {
-            	$required = $(this).data('required');
-            	if ( $required == true ) {
-            		markValid(this);
-            	}
-            });
-            
-            $("#addForm select[name='tableName']").change(function () {
-				var $selectedTable = $('#addForm select[name="tableName"] option:selected').val();
-				getTableFieldList($selectedTable, $("#addForm select[name='fieldName']"));
-            });
-            
-            $(".columnhider").click(function($clickevent) {
-            	$clickevent.preventDefault();
-            	var $column = "." + $clickevent.currentTarget.attributes['data-col'].value;
-            	$($column).fadeOut(1500);
-            	$("#showhidden").fadeIn(1500);
-            });
-            
-            $("#showhidden").click(function($clickevent) {
-            	$clickevent.preventDefault();
-            	$(".tablecol").show();
-            	$(".fieldcol").show();
-            	$(".valuecol").show();
-            	$(".displaycol").show();
-            	$(".seqcol").show();
-            	$(".desccol").show();
-            	$(".statuscol").show();
-            	$(".actioncol").show();
-            	$("#showhidden").fadeOut(1500);
-            });
+	            	     },
+	            	     statusCode: {
+	            	    	403: function($data) {
+	            	    		$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+	            	    	}, 
+		         	    	404: function($data) {
+		         	    		$('#confirmDelete').bPopup().close();
+		         	    		$("#globalMsg").html("Record does not exist").fadeIn(10).fadeOut(6000);
+		        	    	} 
+	            	     },
+	            	     dataType: 'json'
+	            	});
+	            });
+	
+	            $('#addForm').find("input").on('focus',function(e) {
+	            	$required = $(this).data('required');
+	            	if ( $required == true ) {
+	            		markValid(this);
+	            	}
+	            });
+	            
+	            $('#addForm').find("input").on('input',function(e) {
+	            	$required = $(this).data('required');
+	            	if ( $required == true ) {
+	            		markValid(this);
+	            	}
+	            });
+	            
+	            $("#addForm select[name='tableName']").change(function () {
+					var $selectedTable = $('#addForm select[name="tableName"] option:selected').val();
+					getTableFieldList($selectedTable, $("#addForm select[name='fieldName']"));
+	            });
+	            
+	            $(".columnhider").click(function($clickevent) {
+	            	$clickevent.preventDefault();
+	            	var $column = "." + $clickevent.currentTarget.attributes['data-col'].value;
+	            	$($column).fadeOut(1500);
+	            	$("#showhidden").fadeIn(1500);
+	            });
+	            
+	            $("#showhidden").click(function($clickevent) {
+	            	$clickevent.preventDefault();
+	            	$(".tablecol").show();
+	            	$(".fieldcol").show();
+	            	$(".valuecol").show();
+	            	$(".displaycol").show();
+	            	$(".seqcol").show();
+	            	$(".desccol").show();
+	            	$(".statuscol").show();
+	            	$(".actioncol").show();
+	            	$("#showhidden").fadeOut(1500);
+	            });
+			},
             
             
-            function clearAddForm() {
+			clearAddForm: function () {
+            /*function clearAddForm() {*/
             	$.each( $('#addForm').find("select"), function(index, $inputField) {
             		$fieldName = $($inputField).attr('name');
             		$selectName = "#addForm select[name='" + $fieldName + "']"
@@ -505,9 +550,10 @@
         		$("#addForm").data('fieldName', null);
         		$("#addForm").data('value', null);
 
-            }
+            },
             
-            function markValid($inputField) {
+            markValid: function () {
+            /*function markValid($inputField) {*/
             	$fieldName = $($inputField).attr('name');
             	$fieldGetter = "input[name='" + $fieldName + "']";
             	$fieldValue = $($fieldGetter).val();
@@ -524,9 +570,10 @@
             		$($valid).addClass("fa-ban");
             		$($valid).addClass("inputIsInvalid");
             	}
-            }
+            },
             
-            function getTableFieldList(tableName, $select, $selectedValue) {
+            getTableFieldList: function () {
+            /*function getTableFieldList(tableName, $select, $selectedValue) */
             	if ( tableName == null ) {
             		$url = "tableFieldList"
            			//select = $("#addForm select[name='tableName']");
