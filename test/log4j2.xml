@@ -11,7 +11,7 @@
 	
 	
 	<Loggers>
-		<Logger name="com.ansi.scilla" level="error">
+		<Logger name="com.ansi.scilla" level="debug">
 			<appender-ref ref="STDOUT" level="debug" />
 		</Logger>
 		<Logger name="TRANSACTION_LOG" level="info">
