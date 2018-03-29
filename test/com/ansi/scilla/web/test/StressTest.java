@@ -40,6 +40,8 @@ public class StressTest {
 	private final String userId="geo@whitehouse.gov";
 	private final String password="password1";
 	private final Integer threadCount = 10;
+	private final String hostname = "127.0.0.1";
+	private final Integer hostport = 8080;
 
 	private Logger logger;
 
@@ -52,7 +54,7 @@ public class StressTest {
 		this.logger = LogManager.getLogger(this.getClass());
 	}
 
-	public void threadTest() throws ClientProtocolException, IOException {
+	public void threadTest() throws ClientProtocolException, IOException, URISyntaxException {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss.S");
 
 		Calendar start = Calendar.getInstance();
@@ -61,7 +63,7 @@ public class StressTest {
 		
 		List<Thread> threadList = new ArrayList<Thread>();
 		for ( int i = 0; i < threadCount; i++ ) {
-			StressRunnable h = new StressRunnable(i, sessionCookie);
+			StressRunnable h = new StressRunnable(i, this.logger, sessionCookie, this.hostname, this.hostport);
 			Thread t = new Thread(h);
 			threadList.add(t);
 		}
@@ -83,12 +85,18 @@ public class StressTest {
 		System.out.println("main: " + sdf.format(end.getTimeInMillis()));
 	}
 	
-	protected Header doLogin() throws ClientProtocolException, IOException {
+	protected Header doLogin() throws ClientProtocolException, IOException, URISyntaxException {
+		this.logger.log(Level.DEBUG, "Loggin In");
 		Calendar start = Calendar.getInstance();
 		String pageContent = "Failed!";
 		CloseableHttpClient httpClient = HttpClients.createDefault();
-		String url = "http://127.0.0.1:8080/ansi_web/login";
-		HttpPost httpPost = new HttpPost(url);
+//		String url = "http://127.0.0.1:8080/ansi_web/login";
+		URIBuilder builder = new URIBuilder();
+		builder.setScheme("http");
+		builder.setHost(this.hostname);
+		builder.setPort(this.hostport);
+		builder.setPath("/ansi_web/login");
+		HttpPost httpPost = new HttpPost(builder.build());
 		LoginRequest loginRequest = new LoginRequest();
 		loginRequest.setUserid(this.userId);
 		loginRequest.setPassword(this.password);
@@ -130,16 +138,23 @@ public class StressTest {
 
 		private Integer threadId;
 		private Header sessionCookie;
+		private String hostname;
+		private Integer hostport;
+		private Logger logger;
 
-		public StressRunnable(Integer threadId, Header sessionCookie) {
+		public StressRunnable(Integer threadId, Logger logger, Header sessionCookie, String hostname, Integer hostport) {
 			super();
 			this.threadId = threadId;
+			this.logger = logger;
 			this.sessionCookie = sessionCookie;
+			this.hostname = hostname;
+			this.hostport = hostport;
 		}
 
 		@Override
 		public void run() {
 			try {
+				this.logger.log(Level.INFO, "Starting thread " + this.threadId);
 				Calendar start = Calendar.getInstance();
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss.S");
 				doInvoiceLookup();
@@ -148,7 +163,7 @@ public class StressTest {
 				doCashReceipts();
 				doDispatchedOutstanding();
 				Calendar end = Calendar.getInstance();
-				System.out.println("thread: " + threadId + "\t" + sdf.format(start.getTimeInMillis()) + "\t" + sdf.format(end.getTimeInMillis()));
+				this.logger.log(Level.INFO, "Ending thread " + threadId + "\t" + sdf.format(start.getTimeInMillis()) + "\t" + sdf.format(end.getTimeInMillis()));
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -181,8 +196,8 @@ public class StressTest {
 			CloseableHttpClient httpClient = HttpClients.createDefault();
 			URIBuilder builder = new URIBuilder();
 			builder.setScheme("http");
-			builder.setHost("127.0.0.1");
-			builder.setPort(8080);
+			builder.setHost(this.hostname);
+			builder.setPort(this.hostport);
 			builder.setPath(url);
 			for ( Map.Entry<String, String> entry : parmMap.entrySet() ) {
 				builder.setParameter(entry.getKey(), entry.getValue());
@@ -213,8 +228,8 @@ public class StressTest {
 			CloseableHttpClient httpClient = HttpClients.createDefault();
 			URIBuilder builder = new URIBuilder();
 			builder.setScheme("http");
-			builder.setHost("127.0.0.1");
-			builder.setPort(8080);
+			builder.setHost(this.hostname);
+			builder.setPort(this.hostport);
 			builder.setPath(url);
 			URI uri = builder.build();
 			HttpPost httpPost = new HttpPost(uri);
