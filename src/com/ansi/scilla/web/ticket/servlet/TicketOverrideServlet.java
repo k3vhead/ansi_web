@@ -359,7 +359,12 @@ public class TicketOverrideServlet extends TicketServlet {
 				job.setJobId(ticket.getJobId());
 				job.selectOne(conn);
 				if (job.getTaxExempt().equals( Job.TAX_EXEMPT_IS_NO)) {
-					TaxRate taxRate = JobUtils.getTaxRate( conn, ticket.getJobId(), ticket.getProcessDate(), sessionUser.getUserId());
+					TaxRate taxRate = null;
+					if ( ticket.getProcessDate() == null ) {
+						taxRate = JobUtils.getTaxRate( conn, ticket.getJobId(), ticket.getStartDate(), sessionUser.getUserId());
+					} else {
+						taxRate = JobUtils.getTaxRate( conn, ticket.getJobId(), ticket.getProcessDate(), sessionUser.getUserId());
+					}
 					ticket.setActTaxAmt(ticket.getActPricePerCleaning().multiply(taxRate.getRate()));
 					ticket.setActTaxRateId(taxRate.getTaxRateId());
 				} else {
