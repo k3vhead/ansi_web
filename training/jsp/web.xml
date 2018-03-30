@@ -1,0 +1,11 @@
+
+	<servlet>
+        <servlet-name>myAccount</servlet-name>
+        <servlet-class>com.ansi.scilla.web.user.servlet.MyAccountServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>myAccount</servlet-name>
+        <url-pattern>/myAccount</url-pattern>
+    </servlet-mapping>
+
+
