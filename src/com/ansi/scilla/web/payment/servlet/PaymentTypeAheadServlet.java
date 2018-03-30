@@ -27,6 +27,8 @@ import com.ansi.scilla.common.jsonFormat.AnsiFormat;
 import com.ansi.scilla.common.queries.PaymentSearch;
 import com.ansi.scilla.common.queries.PaymentSearchResult;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
+import com.ansi.scilla.web.common.struts.SessionData;
+import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
@@ -104,7 +106,8 @@ public class PaymentTypeAheadServlet extends AbstractServlet {
 							term = queryTerm.toLowerCase();
 							try {
 								conn = AppUtils.getDBCPConn();
-								AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+								SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+								SessionUser user = sessionData.getUser();
 								logger.log(Level.DEBUG, "PaymentTypeAheadServlet(): doGet(): term =$" + term +"$");
 								List<ReturnItem> resultList = new ArrayList<ReturnItem>();
 //								String sql = PaymentSearch.sql + PaymentSearch.generateWhereClause(term);
@@ -114,8 +117,14 @@ public class PaymentTypeAheadServlet extends AbstractServlet {
 //									resultList.add(new ReturnItem(rs));
 //								}
 //								rs.close();
+								PaymentSearch paymentSearch = new PaymentSearch(user.getUserId());
+								paymentSearch.setSearchTerm(term);
+								Integer start = 0;
 								Integer resultSizeLimit = 250;
-								List<PaymentSearchResult> searchResultList = new PaymentSearch(null, null, resultSizeLimit).search(conn, term);
+								List<PaymentSearchResult> searchResultList = paymentSearch.select(conn, start, resultSizeLimit);
+//								String sortField = null;
+//								String whereClause = null;							
+//								List<PaymentSearchResult> searchResultList = new PaymentSearch(sortField, whereClause, resultSizeLimit).search(conn, term);
 								for ( PaymentSearchResult result : searchResultList ) {
 									resultList.add(new ReturnItem(result));
 								}

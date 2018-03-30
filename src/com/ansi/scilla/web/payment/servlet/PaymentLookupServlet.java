@@ -11,12 +11,15 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.queries.PaymentSearch;
 import com.ansi.scilla.common.queries.PaymentSearchResult;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
+import com.ansi.scilla.web.common.struts.SessionData;
+import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
@@ -70,11 +73,18 @@ public class PaymentLookupServlet extends AbstractServlet {
 	    String sCol = request.getParameter("order[0][column]");
 	    String sdir = request.getParameter("order[0][dir]");
 
-	   
+	    logger.log(Level.INFO, "sStart: " + sStart );
+	    logger.log(Level.INFO, "sAmount: " +  sAmount );
+	    logger.log(Level.INFO, "sDraw: " +  sDraw );
+	    logger.log(Level.INFO, "sCol: " +  sCol );
+	    logger.log(Level.INFO, "sdir: " +  sdir );
+	    
+	    
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.PAYMENT, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.PAYMENT, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			SessionUser user = sessionData.getUser();
 
 			String term = "";
 			
@@ -101,7 +111,7 @@ public class PaymentLookupServlet extends AbstractServlet {
 		    }
 		    if (sCol != null) {
 		        col = Integer.parseInt(sCol);
-		        if (col < 0 || col > 10)
+		        if (col < 0 || col > (cols.length-1))
 		            col = 0;
 		    }
 		    if (sdir != null) {
@@ -111,70 +121,40 @@ public class PaymentLookupServlet extends AbstractServlet {
 		    }
 		    
 		    String colName = cols[col];
-		    int total = 0;
-//		    String sql = "select count(1) from ("
-//					+ PaymentSearch.sql
-//					+ ") t";
-//			logger.log(Level.DEBUG, "total count: " + sql);
-//
-//			Statement s = conn.createStatement();
-//			ResultSet rs0 = s.executeQuery(sql);
-//			if(rs0.next()){
-//		        total = rs0.getInt(1);
-//		    }
-		    total = new PaymentSearch().getSearchCount(conn, term); 
+		    
+		    logger.log(Level.INFO, "term: " + term);
+		    logger.log(Level.INFO, "colName: " + colName);
+		    logger.log(Level.INFO, "dir: " + dir);
+		    
+		    PaymentSearch paymentSearch = new PaymentSearch(user.getUserId());
+		    int total = paymentSearch.selectCountAll(conn);
+		    if ( ! StringUtils.isBlank(term)) {
+		    	paymentSearch.setSearchTerm(term);
+		    }
+		    paymentSearch.setSortBy(colName);
+		    paymentSearch.setSortIsAscending(dir.equals("asc"));
+//		    int total = 0;
+//		    total = new PaymentSearch().getSearchCount(conn, term); 
 		    int totalAfterFilter = total;
 			
 			List<PaymentLookupResponseItem> resultList = new ArrayList<PaymentLookupResponseItem>();
-//			sql = PaymentSearch.sql;
-//
-//			String search = PaymentSearch.generateWhereClause(term);
-//			
-//			logger.log(Level.DEBUG, sql);
-//			sql += search;
-//			logger.log(Level.DEBUG, sql);
-//			sql += " order by " + colName + " " + dir;
-//			logger.log(Level.DEBUG, sql);
-//			if ( amount != -1) {
-//				sql += " OFFSET "+ start+" ROWS"
-//					+ " FETCH NEXT " + amount + " ROWS ONLY";
-//			}
-//			logger.log(Level.DEBUG, sql);
-//			
-//			s = conn.createStatement();
-//			ResultSet rs = s.executeQuery(sql);
-//			while ( rs.next() ) {
-//				resultList.add(new PaymentLookupResponseItem(rs));
-//			}
+
 			List<PaymentSearchResult> searchResultList = null;
-			if ( amount != -1 ) {
-				searchResultList = new PaymentSearch().search(conn, term, start, amount, colName, dir);
-			} else {
-				searchResultList = new PaymentSearch().search(conn, term);
-			}
+//			if ( amount != -1 ) {
+//				searchResultList = new PaymentSearch().search(conn, term, start, amount, colName, dir);
+//			} else {
+//				searchResultList = new PaymentSearch().search(conn, term);
+//			}
+			Integer rowCount = amount == -1 ? total : amount;
+			searchResultList = paymentSearch.select(conn, start, rowCount);
 			for ( PaymentSearchResult result : searchResultList ) {
 				resultList.add(new PaymentLookupResponseItem(result));
 			}
 			
-//			String sql2 = "select count(1) from ("
-//					+ PaymentSearch.sql;
-//			
-//			if (search != "") {
-//				sql2 += search;
-//			}
-//			sql2 += ") t";
-//			
-//			logger.log(Level.DEBUG, "filtered count: " + sql2);
-//			Statement s2 = conn.createStatement();
-//			ResultSet rs2 = s2.executeQuery(sql2);
-//			if(rs2.next()){
-//				totalAfterFilter = rs2.getInt(1);
-//		    }
-//			rs.close();
-//			rs0.close();
-//			rs2.close();
-			
-			totalAfterFilter = new PaymentSearch().getSearchCount(conn, term);
+
+
+//			totalAfterFilter = new PaymentSearch().getSearchCount(conn, term);
+			totalAfterFilter = paymentSearch.selectCount(conn);
 			
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("application/json");
