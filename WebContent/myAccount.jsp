@@ -97,6 +97,21 @@
        					MYACCOUNT.clear();
        					$("#passwordModal").dialog("open");
        				});
+       				$("#myAccountForm input").on('input',function(e) {
+       			    	var $name = $(this).attr("name");
+       			    	var $required = $(this).attr("data-required");
+       			    	var $regex = $(this).attr("data-format");
+       			    	if ( $required != null && $required=='true') {
+       			    		value = $(this).val();
+	       			    	var $errName = "#" + $name + "Err";
+	       			    	var re = new RegExp($regex);
+	       			    	if ( re.test(value) ) {
+	       			    		$($errName).html('');
+	       			    	} else {
+	       			    		$($errName).html('Required Data is Missing');
+	       			    	}    	
+       			    	}
+       			    });
        			},
        			
        			
@@ -287,13 +302,13 @@
 	    			<td class="formValue"><span class="formValueText" id="permissionGroup"></span></td>
 	    		</tr>
 	    		<tr>
-	    			<td class="formLabel"><span class="formLabelText">Last Name:</span></td>
-	    			<td class="formValue"><input type="text" class="formValueText" name="lastName" /></td>
+	    			<td class="formLabel"><span class="required">*</span><span class="formLabelText">Last Name:</span></td>
+	    			<td class="formValue"><input type="text" class="formValueText" name="lastName" data-required="true" data-format=".+" /></td>
 	    			<td class="formErr"><span class="err" id="lastNameErr"></span></td>
 	    		</tr>
 	    		<tr>
-	    			<td class="formLabel"><span class="formLabelText">First Name:</span></td>
-	    			<td class="formValue"><input type="text" class="formValueText" name="firstName" /></td>
+	    			<td class="formLabel"><span class="required">*</span><span class="formLabelText">First Name:</span></td>
+	    			<td class="formValue"><input type="text" class="formValueText" name="firstName" data-required="true" data-format=".+" /></td>
 	    			<td class="formErr"><span class="err" id="firstNameErr"></span></td>
 	    		</tr>
 	    		<tr>
@@ -302,13 +317,13 @@
 	    			<td class="formErr"><span class="err" id="titleErr"></span></td>
 	    		</tr>
 	    		<tr>
-	    			<td class="formLabel"><span class="formLabelText">EMail:</span></td>
-	    			<td class="formValue"><input type="text" class="formValueText" name="email" /></span></td>
-	    			<td class="formErr"><span class="err" id="lastNameErr"></span></td>
+	    			<td class="formLabel"><span class="required">*</span><span class="formLabelText">EMail:</span></td>
+	    			<td class="formValue"><input type="text" class="formValueText" name="email" data-required="true" data-format="^.+@.+\..+$" /></span></td>
+	    			<td class="formErr"><span class="err" id="emailErr"></span></td>
 	    		</tr>
 	    		<tr>
-	    			<td class="formLabel"><span class="formLabelText">Phone:</span></td>
-	    			<td class="formValue"><input type="text" class="formValueText" name="phone" /></td>
+	    			<td class="formLabel"><span class="required">*</span><span class="formLabelText">Phone:</span></td>
+	    			<td class="formValue"><input type="text" class="formValueText" name="phone" data-required="true"  data-format=".+" /></td>
 	    			<td class="formErr"><span class="err" id="phoneErr"></span></td>
 	    		</tr>
 	    		<tr>
