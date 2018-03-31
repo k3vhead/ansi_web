@@ -110,7 +110,7 @@
 		        			<li>
 		        				<a href="#">My ANSI</a>
 		        				<ul class="sub_menu" style="z-index:1000">
-		        			 		<%-- <li><html:link action="myAccount">My Account</html:link></li> --%>
+										<li><html:link action="myAccount">My Account</html:link></li>
 		        			 		<li><html:link action="logoff">Logoff</html:link></li>
 		        				</ul>
 		        			</li>
