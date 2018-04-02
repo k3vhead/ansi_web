@@ -22,322 +22,267 @@
     
     <tiles:put name="headextra" type="string">
         <style type="text/css">
-			#confirmDelete {
+			#passwordModal {
 				display:none;
-				background-color:#FFFFFF;
-				color:#000000;
-				width:300px;
-				text-align:center;
-				padding:15px;
 			}
-			#displayTable {
-				width:90%;
-			}
-			#addFormDiv {
+			#confirmModal {
 				display:none;
-				background-color:#FFFFFF;
-				color:#000000;
-				width:400px;
-				padding:15px;
 			}
         </style>
         
         <script type="text/javascript">
-        $(function() {        
-			var jqxhr = $.ajax({
-				type: 'GET',
-				url: 'code/list',
-				data: {},
-				success: function($data) {
-					$.each($data.data.codeList, function(index, value) {
-						addRow(index, value);
-					});
-					doFunctionBinding();
-				},
-				statusCode: {
-					403: function($data) {
-						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-					} 
-				},
-				dataType: 'json'
-			});
-			
-			function addRow(index, $code) {	
-				var $rownum = index + 1;
-       			//$('#displayTable tr:last').before(row);
-       			rowTd = makeRow($code, $rownum);
-       			row = '<tr class="dataRow">' + rowTd + "</tr>";
-       			$('#displayTable').append(row);
-			}
-			
-			function doFunctionBinding() {
-				$('.updAction').bind("click", function($clickevent) {
-					doUpdate($clickevent);
-				});
-				$('.delAction').bind("click", function($clickevent) {
-					doDelete($clickevent);
-				});
-				$('.dataRow').bind("mouseover", function() {
-					$(this).css('background-color','#CCCCCC');
-				});
-				$('.dataRow').bind("mouseout", function() {
-					$(this).css('background-color','transparent');
-				});
-			}
-			
-			function makeRow($code, $rownum) {
-				var row = "";
-				row = row + '<td>' + $code.tableName + '</td>';
-				row = row + '<td>' + $code.fieldName + '</td>';
-				row = row + '<td>' + $code.value + '</td>';
-       			row = row + '<td>' + $code.displayValue + '</td>';
-       			row = row + '<td>' + $code.seq + '</td>';
-       			if ( $code.description == null ) {
-       				row = row + '<td></td>';
-       			} else {
-       				row = row + '<td>' + $code.description + '</td>';
-       			}       			
-       			row = row + '<td>' + $code.status + '</td>';
-       	    	<ansi:hasPermission permissionRequired="SYSADMIN">
-        		<ansi:hasWrite>
-       			row = row + '<td>';
-       			row = row + '<a href="#" class="updAction" data-row="' + $rownum +'"><span class="green fa fa-pencil" ari-hidden="true"></span></a> | ';
-       			row = row + '<a href="#" class="delAction" data-row="' + $rownum +'"><span class="red fa fa-trash" aria-hidden="true"></span></a>';
-       			row = row + '</td>';
-       			</ansi:hasWrite>
-       			</ansi:hasPermission>       			
-				return row;
-			}
-			
-			function doUpdate($clickevent) {
-				$clickevent.preventDefault();
-				clearAddForm();
-				var $rownum = $clickevent.currentTarget.attributes['data-row'].value;
-				$("#addFormTitle").html("Update Account Information");
-				$('#addForm').data('rownum',$rownum);
-				
-                var $rowId = eval($rownum) + 1;
-            	var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")"
-            	var $row = $($rowFinder)  
-            	var tdList = $row.children("td");
-            	var $tableName = $row.children("td")[0].textContent;
-            	var $fieldName = $row.children("td")[1].textContent;
-            	var $value = $row.children("td")[2].textContent;
-            	var $display = $row.children("td")[3].textContent;
-            	var $seq = $row.children("td")[4].textContent;
-            	var $description = $row.children("td")[5].textContent;
-            	var $status = $row.children("td")[6].textContent;
+        $(function() {   
+        	;MYACCOUNT = {
+       			init : function() {
+       				MYACCOUNT.getUser();     
+       				MYACCOUNT.makeConfirmModal();
+       				MYACCOUNT.makePasswordModal();
+       				MYACCOUNT.makeButtons();
+       			},
+       			
+       			
+       			clear : function() {
+					$(".err").html('');
+       			},
+       			
+       			
+       			closeModals : function() {
+   					$("#passwordModal").dialog("close");
+    	    		$("#confirmModal").dialog("close");
+    	    		$("#passwordForm input[name='password']").val('');
+    	    		$("#passwordForm input[name='newPassword']").val('');
+    	    		$("#passwordForm input[name='confirmPassword']").val('');
+    	    		$("#confirmForm input[name='password']").val('');
+    	    		$(".passwordErr").html('');
+       			},
+       			
+       			
+       			getUser : function() {
+       				var jqxhr = $.ajax({
+       					type: 'GET',
+       					url: 'myAccount',
+       					data: {},       					
+       					statusCode: {
+       						200: function($data) {
+								console.debug($data);
+								MYACCOUNT.populateForm($data.data);
+    		       			},
+    	       				404: function($data) {
+    	        	    		$("#globalMsg").html("System Error: Contact Support").show();
+    	        	    	},       						
+    						403: function($data) {
+    							$("#globalMsg").html("Session Timeout. Log in and try again").show();
+    						},
+    		       			500: function($data) {
+    	            	    	$("#globalMsg").html("System Error: Contact Support").show();
+    	            		}       						
+       					},
+       					dataType: 'json'
+       				});
+       			},
+       			
 
-            	$("#addForm input[name='tableName']").val($tableName);
-            	$("#addForm input[name='fieldName']").val($fieldName);
-            	$("#addForm input[name='value']").val($value);
-            	$("#addForm input[name='displayValue']").val($display);
-            	$("#addForm select[name='seq']").val($seq);
-            	$("#addForm input[name='description']").val($description);
-            	$("#addForm select[name='status']").val($status);
-            	
-				$.each( $('#addForm :input'), function(index, value) {
-					markValid(value);
-				});
-
-             	$('#addFormDiv').bPopup({
-					modalClose: false,
-					opacity: 0.6,
-					positionStyle: 'fixed' //'fixed' or 'absolute'
-				});				
-			}
-			
-			function doDelete($clickevent) {
-				$clickevent.preventDefault();
-				var rownum = $clickevent.currentTarget.attributes['data-row'].value;
-				$('#confirmDelete').data('rownum',rownum);
-             	$('#confirmDelete').bPopup({
-					modalClose: false,
-					opacity: 0.6,
-					positionStyle: 'fixed' //'fixed' or 'absolute'
-				});
-			}
-			
-			$("#addButton").click( function($clickevent) {
-				$clickevent.preventDefault();
-				$("#addFormTitle").html("Add Account Information");
-             	$('#addFormDiv').bPopup({
-					modalClose: false,
-					opacity: 0.6,
-					positionStyle: 'fixed' //'fixed' or 'absolute'
-				});				
-			});
-			
-			$("#cancelUpdate").click( function($clickevent) {
-				$clickevent.preventDefault();
-				clearAddForm();
-				$('#addFormDiv').bPopup().close();
-			});
-
-			$("#goUpdate").click( function($clickevent) {
-				$clickevent.preventDefault();
-				$outbound = {};
-				$.each( $('#addForm :input'), function(index, value) {
-					if ( value.name ) {
-						$fieldName = value.name;
-						$id = "#addForm input[name='" + $fieldName + "']";
-						$val = $($id).val();
-						$outbound[$fieldName] = $val;
-					}
-				});
-				$outbound['seq'] = $("#addForm select[name='seq'] option:selected").val();
-				$outbound['status'] = $("#addForm select[name='status'] option:selected").val();
-
-				if ( $('#addForm').data('rownum') == null ) {
-					$url = "code/add";
-				} else {
-					$rownum = $('#addForm').data('rownum')
-					var $tableData = [];
-	                $("#displayTable").find('tr').each(function (rowIndex, r) {
-	                    var cols = [];
-	                    $(this).find('th,td').each(function (colIndex, c) {
-	                        cols.push(c.textContent);
-	                    });
-	                    $tableData.push(cols);
-	                });
-
-	            	var $tableName = $tableData[$rownum][0];
-	            	var $fieldName = $tableData[$rownum][1];
-	            	var $value = $tableData[$rownum][2];
-	            	$url = "code/" + $tableName + "/" + $fieldName + "/" + $value;
-				}
-				
-				var jqxhr = $.ajax({
-					type: 'POST',
-					url: $url,
-					data: JSON.stringify($outbound),
-					success: function($data) {
-						if ( $data.responseHeader.responseCode == 'SUCCESS') {
-							if ( $url == "code/add" ) {
-								var count = $('#displayTable tr').length - 1;
-								addRow(count, $data.data.code);
-							} else {
-				            	var $rownum = $('#addForm').data('rownum');
-				                var $rowId = eval($rownum) + 1;
-				            	var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")"
-				            	var $rowTd = makeRow($data.data.code, $rownum);
-				            	$($rowFinder).html($rowTd);
-							}
-							doFunctionBinding();
-							clearAddForm();
-							$('#addFormDiv').bPopup().close();
-							$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
-						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-							$.each($data.data.webMessages, function(key, messageList) {
-								var identifier = "#" + key + "Err";
-								msgHtml = "<ul>";
-								$.each(messageList, function(index, message) {
-									msgHtml = msgHtml + "<li>" + message + "</li>";
-								});
-								msgHtml = msgHtml + "</ul>";
-								$(identifier).html(msgHtml);
-							});		
-							$("#addFormMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]);
-						} else {
-							
-						}
-					},
-					statusCode: {
-						403: function($data) {
-							$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-						} 
-					},
-					dataType: 'json'
-				});
-			});
-
-            $("#cancelDelete").click( function($event) {
-            	$event.preventDefault();
-            	$('#confirmDelete').bPopup().close();
-            });         
-
-            $("#doDelete").click(function($event) {
-            	$event.preventDefault();
-            	var $tableData = [];
-                $("#displayTable").find('tr').each(function (rowIndex, r) {
-                    var cols = [];
-                    $(this).find('th,td').each(function (colIndex, c) {
-                        cols.push(c.textContent);
-                    });
-                    $tableData.push(cols);
-                });
-
-            	var $rownum = $('#confirmDelete').data('rownum');
-            	var $tableName = $tableData[$rownum][0];
-            	var $fieldName = $tableData[$rownum][1];
-            	var $value = $tableData[$rownum][2];
-            	$outbound = JSON.stringify({'tableName':$tableName, 'fieldName':$fieldName,'value':$value});
-            	var jqxhr = $.ajax({
-            	    type: 'delete',
-            	    url: 'code/delete',
-            	    data: $outbound,
-            	    success: function($data) {
-            	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
-						if ( $data.responseHeader.responseCode == 'SUCCESS') {
-							$rowfinder = "tr:eq(" + $rownum + ")"
-							$("#displayTable").find($rowfinder).remove();
-							$('#confirmDelete').bPopup().close();
-						}
-            	     },
-            	     statusCode: {
-            	    	403: function($data) {
-            	    		$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-            	    	} 
-            	     },
-            	     dataType: 'json'
-            	});
-            });
-
-            $('#addForm').find("input").on('focus',function(e) {
-            	$required = $(this).data('required');
-            	if ( $required == true ) {
-            		markValid(this);
-            	}
-            });
-            
-            $('#addForm').find("input").on('input',function(e) {
-            	$required = $(this).data('required');
-            	if ( $required == true ) {
-            		markValid(this);
-            	}
-            });
-            
-            function clearAddForm() {
-				$.each( $('#addForm').find("input"), function(index, $inputField) {
-					$fieldName = $($inputField).attr('name');
-					if ( $($inputField).attr("type") == "text" ) {
-						$($inputField).val("");
-						markValid($inputField);
-					}
-				});
-				$('.err').html("");
-				$('#addForm').data('rownum',null);
-            }
-            
-            function markValid($inputField) {
-            	$fieldName = $($inputField).attr('name');
-            	$fieldGetter = "input[name='" + $fieldName + "']";
-            	$fieldValue = $($fieldGetter).val();
-            	$valid = '#' + $($inputField).data('valid');
-	            var re = /.+/;	            	 
-            	if ( re.test($fieldValue) ) {
-            		$($valid).removeClass("fa-ban");
-            		$($valid).removeClass("inputIsInvalid");
-            		$($valid).addClass("fa-check-square-o");
-            		$($valid).addClass("inputIsValid");
-            	} else {
-            		$($valid).removeClass("fa-check-square-o");
-            		$($valid).removeClass("inputIsValid");
-            		$($valid).addClass("fa-ban");
-            		$($valid).addClass("inputIsInvalid");
-            	}
-            }
-            
+       			makeButtons : function() {
+       				$("#cancelButton").click(function() {
+       					MYACCOUNT.clear();
+       					MYACCOUNT.closeModals();
+       					MYACCOUNT.getUser();       					
+       					$("#globalMsg").html("Update Canceled").show().fadeOut(3000);
+       				});
+       				$("#saveButton").click(function() {
+       					MYACCOUNT.clear();
+       					$("#confirmModal").dialog("open");
+       				});
+       				$("#changePasswordButton").click(function() {
+       					MYACCOUNT.clear();
+       					$("#passwordModal").dialog("open");
+       				});
+       				$("#myAccountForm input").on('input',function(e) {
+       			    	var $name = $(this).attr("name");
+       			    	var $required = $(this).attr("data-required");
+       			    	var $regex = $(this).attr("data-format");
+       			    	if ( $required != null && $required=='true') {
+       			    		value = $(this).val();
+	       			    	var $errName = "#" + $name + "Err";
+	       			    	var re = new RegExp($regex);
+	       			    	if ( re.test(value) ) {
+	       			    		$($errName).html('');
+	       			    	} else {
+	       			    		$($errName).html('Required Data is Missing');
+	       			    	}    	
+       			    	}
+       			    });
+       			},
+       			
+       			
+       			makeConfirmModal : function() {
+       				$("#confirmModal").dialog({
+       					title:'Confirm',
+       					autoOpen: false,
+       					height: 160,
+       					width: 300,
+       					modal: true,
+       					buttons: [
+       						{
+       							id: "cancelConfirmModal",
+       							click: function() {
+       								MYACCOUNT.closeModals();
+       							}
+       						},{
+       							id: "saveConfirmModal",
+       							click: function($event) {
+       								MYACCOUNT.save()
+       							}
+       						}
+       					],
+       					close: function() {
+       						MYACCOUNT.closeModals();
+       					}
+       				});
+       	    		$('#saveConfirmModal').button('option', 'label', 'Save');
+       	    		$('#cancelConfirmModal').button('option', 'label', 'Cancel');
+       			},
+       			
+       			
+       			makePasswordModal : function() {
+       				$("#passwordModal").dialog({
+       					title:'New Password',
+       					autoOpen: false,
+       					height: 215,
+       					width: 350,
+       					modal: true,
+       					buttons: [
+       						{
+       							id: "cancelPasswordModal",
+       							click: function() {
+       								MYACCOUNT.closeModals();
+       							}
+       						},{
+       							id: "savePasswordModal",
+       							click: function($event) {
+       								MYACCOUNT.save()
+       							}
+       						}
+       					],
+       					close: function() {
+       						MYACCOUNT.closeModals();
+       					}
+       				});
+       	    		$('#savePasswordModal').button('option', 'label', 'Save');
+       	    		$('#cancelPasswordModal').button('option', 'label', 'Cancel');
+       			},
+       			
+       			populateForm : function($user) {
+       				$("#userId").html($user.userId);
+       				$("#permissionGroup").html($user.permissionGroup);
+       				$("#myAccountForm input[name='lastName']").val($user.lastName);
+       				$("#myAccountForm input[name='firstName']").val($user.firstName);
+       				$("#myAccountForm input[name='title']").val($user.title);
+       				$("#myAccountForm input[name='email']").val($user.email);
+       				$("#myAccountForm input[name='phone']").val($user.phone);
+       				$("#myAccountForm input[name='address1']").val($user.address1);
+       				$("#myAccountForm input[name='address2']").val($user.address2);
+       				$("#myAccountForm input[name='city']").val($user.city);
+       				$("#myAccountForm input[name='state']").val($user.state);
+       				$("#myAccountForm input[name='zip']").val($user.zip);
+       			},
+       			
+       			
+       			processError : function($data) {
+       				var $messageMap = {
+       					'password':'.passwordErr',
+       					'newPassword':'.passwordErr',
+       					'confirmPassword':'.passwordErr',
+       					'city':'#address3Err',
+       					'state':'#address3Err',
+       					'zip':'#address3Err'
+       				};
+       				var isPasswordError = false;
+       				$.each($data.webMessages, function($index, $value) {
+       					console.debug($index + "  " + $value);
+       					var $id = $messageMap[$index];
+       					if ( $id == null || $id == '') {
+       						$id = '#' + $index + 'Err';
+       					}
+       					if ( $index == 'password' || $index == 'newPassword' || $index == 'confirmPassword') {
+       						console.debug("Setting password err to true")
+       						isPasswordError = true;
+       					}
+						if ( $value != null && $value != '' ) {
+							console.debug("Setting " + $id + " to " + $value);
+							$($id).html($value);
+						}      		
+						
+       				});	
+       				console.debug("Pass err: " + isPasswordError);
+       				if ( isPasswordError == false ) {
+       					MYACCOUNT.closeModals();
+       				}
+       			},
+       			
+       			
+       			processSuccess : function($data) {
+       				MYACCOUNT.clear();
+   					MYACCOUNT.closeModals();
+   					MYACCOUNT.getUser();       					
+   					$("#globalMsg").html("Update Complete").show().fadeOut(3000);
+       			},
+       			
+       			
+       			save : function() {
+       				$outbound = {};
+       				$outbound['lastName'] = $("#myAccountForm input[name='lastName']").val();
+       				$outbound['firstName'] = $("#myAccountForm input[name='firstName']").val();
+       				$outbound['title'] = $("#myAccountForm input[name='title']").val();
+       				$outbound['email'] = $("#myAccountForm input[name='email']").val();
+       				$outbound['phone'] = $("#myAccountForm input[name='phone']").val();
+       				$outbound['address1'] = $("#myAccountForm input[name='address1']").val();
+       				$outbound['address2'] = $("#myAccountForm input[name='address2']").val();
+       				$outbound['city'] = $("#myAccountForm input[name='city']").val();
+       				$outbound['state'] = $("#myAccountForm input[name='state']").val();
+       				$outbound['zip'] = $("#myAccountForm input[name='zip']").val();
+       				
+       				if ( $("#passwordForm input[name='password']").val() != '' ) {
+       					$outbound['password'] = $("#passwordForm input[name='password']").val();	
+       				} else {
+       					$outbound['password'] = $("#confirmForm input[name='password']").val();
+       				}
+       				
+       				$outbound['newPassword'] = $("#passwordForm input[name='newPassword']").val();
+       				$outbound['confirmPassword'] = $("#passwordForm input[name='confirmPassword']").val();
+       				
+       				var jqxhr = $.ajax({
+       					type: 'POST',
+       					url: 'myAccount',
+       					data: JSON.stringify($outbound),     					
+       					statusCode: {
+       						200: function($data) {
+       							console.debug($data);
+       							if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+       								MYACCOUNT.processError($data.data);
+       							} else {
+       								MYACCOUNT.processSuccess($data.data)
+       							}
+    		       			},
+    	       				404: function($data) {
+    	        	    		$("#globalMsg").html("System Error: Contact Support").show();
+    	        	    		MYACCOUNT.clear();
+    	        	    	},       						
+    						403: function($data) {
+    							$("#globalMsg").html("Session Timeout. Log in and try again").show();
+    	        	    		MYACCOUNT.clear();
+    						},
+    		       			500: function($data) {
+    	            	    	$("#globalMsg").html("System Error: Contact Support").show();
+    	        	    		MYACCOUNT.clear();
+    	            		}       						
+       					},
+       					dataType: 'json'
+       				});
+       			}
+        	}
+        	
+        	MYACCOUNT.init();
         });
         </script>        
     </tiles:put>
@@ -346,112 +291,112 @@
     <tiles:put name="content" type="string">
     	<h1>My Account</h1>
     	
-    	<table id="displayTable">
-    		<tr>
-    			<th>Table</th>
-    			<th>Field</th>
-    			<th>Value</th>
-    			<th>Display</th>
-    			<th>Seq</th>
-    			<th>Description</th>
-    			<th>Status</th>
- 			    <ansi:hasPermission permissionRequired="SYSADMIN">
-    				<ansi:hasWrite>
-    					<th>Action</th>
-    				</ansi:hasWrite>
-    			</ansi:hasPermission>
-    		</tr>
-    	</table>
-    	<div class="addButtonDiv">
-    		<input type="button" id="addButton" class="prettyWideButton" value="New" />
+    	<form id="myAccountForm">
+	    	<table class="myAccountFormTable">
+	    		<tr>
+	    			<td class="formLabel"><span class="formLabelText">User Id:</span></td>
+	    			<td class="formValue"><span class="formValueText" id="userId"></span></td>
+	    		</tr>
+	    		<tr>
+	    			<td class="formLabel"><span class="formLabelText">Permission Group:</span></td>
+	    			<td class="formValue"><span class="formValueText" id="permissionGroup"></span></td>
+	    		</tr>
+	    		<tr>
+	    			<td class="formLabel"><span class="required">*</span><span class="formLabelText">Last Name:</span></td>
+	    			<td class="formValue"><input type="text" class="formValueText" name="lastName" data-required="true" data-format=".+" /></td>
+	    			<td class="formErr"><span class="err" id="lastNameErr"></span></td>
+	    		</tr>
+	    		<tr>
+	    			<td class="formLabel"><span class="required">*</span><span class="formLabelText">First Name:</span></td>
+	    			<td class="formValue"><input type="text" class="formValueText" name="firstName" data-required="true" data-format=".+" /></td>
+	    			<td class="formErr"><span class="err" id="firstNameErr"></span></td>
+	    		</tr>
+	    		<tr>
+	    			<td class="formLabel"><span class="formLabelText">Title:</span></td>
+	    			<td class="formValue"><input type="text" class="formValueText" name="title" /></td>
+	    			<td class="formErr"><span class="err" id="titleErr"></span></td>
+	    		</tr>
+	    		<tr>
+	    			<td class="formLabel"><span class="required">*</span><span class="formLabelText">EMail:</span></td>
+	    			<td class="formValue"><input type="text" class="formValueText" name="email" data-required="true" data-format="^.+@.+\..+$" /></span></td>
+	    			<td class="formErr"><span class="err" id="emailErr"></span></td>
+	    		</tr>
+	    		<tr>
+	    			<td class="formLabel"><span class="required">*</span><span class="formLabelText">Phone:</span></td>
+	    			<td class="formValue"><input type="text" class="formValueText" name="phone" data-required="true"  data-format=".+" /></td>
+	    			<td class="formErr"><span class="err" id="phoneErr"></span></td>
+	    		</tr>
+	    		<tr>
+	    			<td class="formLabel"><span class="formLabelText">Address:</span></td>
+	    			<td class="formValue"><input type="text" class="formValueText" name="address1" /></td>
+	    			<td class="formErr"><span class="err" id="addressErr"></span></td>
+	    		</tr>
+	    		<tr>
+	    			<td class="formLabel"><span class="formLabelText">Address2:</span></td>
+	    			<td class="formValue"><input type="text" class="formValueText" name="address2" /></td>
+	    			<td class="formErr"><span class="err" id="address2Err"></span></td>
+	    		</tr>
+	    		<tr>
+	    			<td class="formLabel"><span class="formLabelText">City/State/Zip:</span></td>
+	    			<td class="formValue">
+	    				<input type="text" class="formValueText" name="city" style="width:115px"; />
+	    				<input type="text" class="formValueText" name="state" style="width:25px"; />
+	    				<input type="text" class="formValueText" name="zip" style="width:50px"; />
+	    			</td>
+	    			<td class="formErr"><span class="err" id="address3Err"></span></td>
+	    		</tr>
+	    		<tr>
+	    			<td colspan="3" class="button-row">
+	    				<input type="button" value="Change Password" id="changePasswordButton" />
+	    				<input type="button" value="Cancel" id="cancelButton" />
+	    				<input type="button" value="Save" id="saveButton" />
+	    			</td>
+	    		</tr>
+	    	</table>
+    	</form>
+    	
+    	
+    	
+    	<div id="confirmModal">
+    		<span class="err passwordErr"></span>
+    		<form id="confirmForm">
+    			<table id="confirmFormTable">
+    				<tr>
+	    				<td class="formLabel"><span class="formLabelText">Password</span></td>
+		    			<td class="formValue">
+		    				<input type="password" class="formValueText" name="password" />
+		    			</td>
+    				</tr>
+    			</table>
+    		</form>
     	</div>
     	
-    	<ansi:hasPermission permissionRequired="SYSADMIN">
-    		<ansi:hasWrite>
-		    	<div id="confirmDelete">
-		    		Are You Sure You Want to Delete this Account Information?<br />
-		    		<input type="button" id="cancelDelete" value="No" />
-		    		<input type="button" id="doDelete" value="Yes" />
-		    	</div>
-		    	
-		    	<div id="addFormDiv">
-		    		<h2 id="addFormTitle"></h2>
-		    		<div id="addFormMsg" class="err"></div>
-		    		<form action="#" method="post" id="addForm">
-		    			<table>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Table:</span></td>
-		    					<td>
-		    						<input type="text" name="tableName" data-required="true" data-valid="validTable" />
-		    						<i id="validTable" class="fa" aria-hidden="true"></i>
-		    					</td>
-		    					<td><span class="err" id="tableNameErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Field:</span></td>
-		    					<td>
-		    						<input type="text" name="fieldName" data-required="true" data-valid="validField" />
-		    						<i id="validField" class="fa" aria-hidden="true"></i>
-		    					</td>
-		    					<td><span class="err" id="fieldNameErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Value:</span></td>
-		    					<td>
-		    						<input type="text" name="value" data-required="true" data-valid="validValue" />
-		    						<i id="validValue" class="fa" aria-hidden="true"></i>
-		    					</td>
-		    					<td><span class="err" id="valueErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Display:</span></td>
-		    					<td>
-		    						<input type="text" name="displayValue" data-required="true" data-valid="validDisplay" />
-		    						<i id="validDisplay" class="fa" aria-hidden="true"></i>
-		    					</td>
-		    					<td><span class="err" id="displayErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Sequence:</span></td>
-		    					<td>
-		    						<select name="seq">
-		    							<% for (int i = 1; i < 21; i++ ) { %>
-		    							<option value="<%= i %>"><%= i %></option>
-		    							<% } %>
-		    						</select>
-		    						<i class="fa fa-check-square-o inputIsValid" aria-hidden="true"></i>
-		    					</td>
-		    					<td><span class="err" id="sequenceErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="formLabel">Description:</span></td>
-		    					<td><input type="text" name="description" /></td>
-		    					<td><span class="err" id="decriptionErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Status:</span></td>
-		    					<td>
-		    						<select name="status">
-		    							<option value="1">Active</option>
-		    							<option value="0">Inactive</option>
-		    						</select>
-		    						<i class="fa fa-check-square-o inputIsValid" aria-hidden="true"></i>
-		    					</td>
-		    					<td><span class="err" id="statusErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td colspan="2" style="text-align:center;">
-		    						<input type="button" class="prettyButton" value="Save" id="goUpdate" />
-		    						<input type="button" class="prettyButton" value="Cancel" id="cancelUpdate" />
-		    					</td>
-		    				</tr>
-		    			</table>
-		    		</form>
-		    	</div>
-		    	
-		    	
-	    	</ansi:hasWrite>
-    	</ansi:hasPermission>
+    	
+    	<div id="passwordModal">
+    		<span class="err passwordErr"></span>
+    		<form id="passwordForm">
+    			<table id="passwordFormTable">
+    				<tr>
+	    				<td class="formLabel"><span class="formLabelText">Password</span></td>
+		    			<td class="formValue">
+		    				<input type="password" class="formValueText" name="password" />
+		    			</td>
+    				</tr>
+    				<tr>
+	    				<td class="formLabel"><span class="formLabelText">New Password</span></td>
+		    			<td class="formValue">
+		    				<input type="password" class="formValueText" name="newPassword" />
+		    			</td>
+    				</tr>
+    				<tr>
+	    				<td class="formLabel"><span class="formLabelText">Confirm</span></td>
+		    			<td class="formValue">
+		    				<input type="password" class="formValueText" name="confirmPassword" />
+		    			</td>
+    				</tr>
+    			</table>
+    		</form>
+    	</div>
     </tiles:put>
 
 </tiles:insert>

@@ -144,6 +144,13 @@
             type="com.ansi.scilla.web.login.action.LogoffAction">
             <forward name="valid" path="/login.jsp" />
         </action>
+        
+		<action
+            path="/myAccount"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/myAccount.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
 		<action
             path="/payment"
             type="com.ansi.scilla.web.payment.action.PaymentAction"
