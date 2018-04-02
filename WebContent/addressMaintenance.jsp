@@ -164,10 +164,10 @@
 				            { title: "<bean:message key="field.label.state" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
 				            	if(row.state != null){return (row.state+"");}
 				            } },
-				            { title: "<bean:message key="field.label.action" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				            { title: "<bean:message key="field.label.zip" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 				            	if(row.zip != null){return (row.zip+"");} 
 				            } },
-				            { title: "<bean:message key="field.label.paymentId" />",  data: function ( row, type, set ) {	
+				            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
 				            	$viewLink = "<a href=\"#\" class=\"viewAction fa fa-search-plus tooltip\" aria-hidden=\"true\" data-id='"+row.addressId+"'><span class=\"tooltiptext\">View</span></a> ";
 				            	$editLink = "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' class=\"editAction ui-icon ui-icon-pencil tooltip\" data-id='"+row.addressId+"'><span class=\"tooltiptext\">Edit</span></a></ansi:hasWrite></ansi:hasPermission>";
 				            	$copyLink = "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='#' class=\"copyAction fa fa-files-o tooltip\" data-id='"+row.addressId+"'><span class=\"tooltiptext\">Copy</span></a></ansi:hasWrite></ansi:hasPermission>";
