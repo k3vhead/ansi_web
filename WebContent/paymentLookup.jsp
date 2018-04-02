@@ -70,6 +70,7 @@
         	        rowId: 				'dt_RowId',
         	        dom: 				'Bfrtip',
         	        "searching": 		true,
+        	        "searchDelay":		800,
         	        lengthMenu: [
         	        	[ 10, 50, 100, 500, 1000 ],
         	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
