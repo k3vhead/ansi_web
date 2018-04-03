@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
@@ -30,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
@@ -354,9 +356,16 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 	 * @throws TimeoutException 
 	 * @throws Exception
 	 */
-	public static SessionData validateSession(HttpServletRequest request) throws TimeoutException  {
-		HttpSession session = request.getSession();
-		SessionData sessionData = (SessionData)session.getAttribute(SessionData.KEY);
+	public static SessionData validateSession(HttpServletRequest request) throws TimeoutException  {		
+		HttpSession session = null;
+		SessionData sessionData = null;
+		try {
+			session = request.getSession();
+			sessionData = (SessionData)session.getAttribute(SessionData.KEY);			
+		} catch ( Exception e ) {
+			logBadRequestSession(request);
+			throw new RuntimeException(e);
+		}
 		
 		// check for login
 		if ( sessionData == null || sessionData.getUser() == null ) {
@@ -378,8 +387,15 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 	 * @throws ExpiredLoginException
 	 */
 	public static SessionData validateSession(HttpServletRequest request, Permission requiredPermission, Integer requiredLevel) throws TimeoutException, NotAllowedException, ExpiredLoginException {
-		HttpSession session = request.getSession();
-		SessionData sessionData = (SessionData)session.getAttribute(SessionData.KEY);
+		HttpSession session = null;
+		SessionData sessionData = null;
+		try {
+			session = request.getSession();
+			sessionData = (SessionData)session.getAttribute(SessionData.KEY);			
+		} catch ( Exception e ) {
+			logBadRequestSession(request);
+			throw new RuntimeException(e);
+		}
 		
 		// check for login
 		if ( sessionData == null || sessionData.getUser() == null ) {
@@ -405,6 +421,30 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 		
 		return sessionData;
 	}
+
+	private static void logBadRequestSession(HttpServletRequest request) {
+		Logger logger = LogManager.getLogger(AppUtils.class);
+		logger.log(Level.FATAL, "**********  NULL SESSSION ERRROR ********");
+		logger.log(Level.FATAL, "URI: " + request.getRequestURI());
+		logger.log(Level.FATAL, "Query String: " + request.getQueryString());
+		Enumeration<String> attrNames = request.getAttributeNames();
+		if ( attrNames != null ) {
+			while ( attrNames.hasMoreElements() ) {
+				String name = attrNames.nextElement();
+				logger.log(Level.FATAL, "Attr: " + name + "\t" + request.getAttribute(name));
+			}
+		}
+		try {
+			logger.log(Level.FATAL, "Post Data: " + jsonPost(request));
+		} catch (UnsupportedEncodingException e1) {
+			logger.log(Level.FATAL, e1.getMessage());
+		} catch (IOException e1) {
+			logger.log(Level.FATAL, e1.getMessage());
+		}			
+		
+	}
+
+
 
 	/**
 	 * @throws UnsupportedEncodingException 
@@ -475,5 +515,25 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
         Logger logger = LogManager.getLogger(PropertyNames.TRANSACTION_LOG.toString());
         logger.info("User Login: " + userEmail + "\tParameters: " + logString);
 		
+	}
+	
+	
+	
+	public static String jsonPost(HttpServletRequest request) throws UnsupportedEncodingException, IOException {
+		Writer writer = new StringWriter();
+		 
+        char[] buffer = new char[1024];
+        try {
+            Reader reader = new BufferedReader(new InputStreamReader(request.getInputStream(), "UTF-8"));
+            int n;
+            while ((n = reader.read(buffer)) != -1) {
+                writer.write(buffer, 0, n);
+            }
+        } finally {
+        	request.getInputStream().close();
+        }
+        String jsonString = writer.toString();
+        AppUtils.logTransaction(request, jsonString);
+        return jsonString;        
 	}
 }
