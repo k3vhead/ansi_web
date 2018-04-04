@@ -1651,11 +1651,36 @@ $( document ).ready(function() {
 				ANSI_UTILS.setCheckbox($namespace, "annualRepeat", false);
 			}
 			
+			
+			
+			
 			var $ticketListSelector = "#" + $namespace + "_showTicketList";
-			$($ticketListSelector).click(function($event){
+			//$($ticketListSelector).click(function($event){
+			//	var $jobId = $jobDetail.jobId;
+			//	location.href="ticketLookup.html?jobId=" + $jobId;
+			//});
+			$($ticketListSelector).mousedown(function($event){
 				var $jobId = $jobDetail.jobId;
-				location.href="ticketLookup.html?jobId=" + $jobId;
+				var $ticketUrl = "ticketLookup.html?jobId=" + $jobId;
+				switch($event.which) {
+				case 1:
+					location.href=$ticketUrl;
+					break;
+				case 2:
+					location.href=$ticketUrl;
+					break;
+				case 3:
+					var win = window.open($ticketUrl, '_blank');
+					win.focus();
+					break;
+				default:
+					location.href=$ticketUrl;
+				}
 			});
+			
+			
+			
+			
 //			console.log("Job Scheduling JobDetail");
 //			console.log($jobDetail);
 			var $repeatSelectorName = "#" + $namespace + "_" + "annualRepeat";
