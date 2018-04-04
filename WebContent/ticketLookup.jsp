@@ -57,6 +57,9 @@
 				text-decoration:none;
 				color:#000000;
 			}
+			.dataTables_wrapper {
+				padding-top:10px;
+			}
         </style>
         
         <script type="text/javascript">    
@@ -276,7 +279,20 @@
     </tiles:put>
     
    <tiles:put name="content" type="string">
-    	<h1>Ticket Lookup</h1>    	
+    	<h1>Ticket Lookup</h1> 
+    	<c:if test="${not empty ANSI_JOB_ID}">
+    		<span class="orange">Job Filter: <c:out value="${ANSI_JOB_ID}" /></span><br />
+    	</c:if>
+    	<c:if test="${not empty ANSI_DIVISION_ID}">
+    		<span class="orange">Division Filter: <c:out value="${ANSI_DIVISION_ID}" /></span><br />
+    	</c:if>
+    	<c:if test="${not empty ANSI_TICKET_LOOKUP_START_DATE}">
+    		<span class="orange">Start Date: <c:out value="${ANSI_TICKET_LOOKUP_START_DATE}" /></span><br />
+    	</c:if>
+    	<c:if test="${not empty ANSI_TICKET_LOOKUP_STATUS}">
+    		<span class="orange">Status Filter: <c:out value="${ANSI_TICKET_LOOKUP_STATUS}" /></span><br />
+    	</c:if>
+    	  	
  	<table id="ticketTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
         <colgroup>
         	<col style="width:5%;" />
