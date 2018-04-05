@@ -10,19 +10,20 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.db.PermissionLevel;
-import com.ansi.scilla.common.queries.UserLookup;
-import com.ansi.scilla.common.queries.UserLookupItem;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
+import com.ansi.scilla.web.user.query.UserLookup;
+import com.ansi.scilla.web.user.query.UserLookupItem;
 import com.ansi.scilla.web.user.response.UserLookupJsonResponse;
 
 public class UserLookupServlet extends AbstractServlet {
@@ -68,8 +69,11 @@ public class UserLookupServlet extends AbstractServlet {
 		String sDraw = request.getParameter("draw");
 		String sCol = request.getParameter("order[0][column]");
 		String sdir = request.getParameter("order[0][dir]");
+		
+		String permissionGroupParm = request.getParameter("permissionGroupId");
+		Integer permissionGroupId = StringUtils.isBlank(permissionGroupParm) ? null : Integer.valueOf(permissionGroupParm);
 
-
+		logger.log(Level.DEBUG, "PermissionGroupId: " + permissionGroupId);
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
@@ -114,7 +118,7 @@ public class UserLookupServlet extends AbstractServlet {
 			logger.log(Level.DEBUG, "Start: " + start + "\tAmount: " + amount + "\tTerm: " + term);
 			
 			
-			UserLookup userLookup = new UserLookup(start, amount);
+			UserLookup userLookup = new UserLookup(permissionGroupId, start, amount);
 			userLookup.setSearchTerm(term);
 			userLookup.setSortBy(colName);
 			userLookup.setSortIsAscending(dir.equals("asc"));

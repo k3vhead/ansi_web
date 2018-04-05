@@ -39,7 +39,7 @@ public class StressTest {
 
 	private final String userId="geo@whitehouse.gov";
 	private final String password="password1";
-	private final Integer threadCount = 10;
+	private final Integer threadCount = 100;
 	private final String hostname = "127.0.0.1";
 	private final Integer hostport = 8080;
 

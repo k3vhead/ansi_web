@@ -3,7 +3,7 @@ package com.ansi.scilla.web.user.response;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ansi.scilla.common.queries.UserLookupItem;
+import com.ansi.scilla.web.user.query.UserLookupItem;
 
 public class UserLookupJsonResponse {
 

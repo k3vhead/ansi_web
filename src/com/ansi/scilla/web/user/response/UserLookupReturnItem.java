@@ -1,7 +1,7 @@
 package com.ansi.scilla.web.user.response;
 
 import com.ansi.scilla.common.queries.ReportQuery;
-import com.ansi.scilla.common.queries.UserLookupItem;
+import com.ansi.scilla.web.user.query.UserLookupItem;
 
 public class UserLookupReturnItem extends ReportQuery {
 	private static final long serialVersionUID = 1L;

@@ -85,6 +85,9 @@ h1 {
     font-size:1px;
     background:transparent;
 }
+.this_is_a_link {
+	cursor:pointer;
+}
 .trailerText {
 	font-family:times roman, serif;
 	font-size:12px;
