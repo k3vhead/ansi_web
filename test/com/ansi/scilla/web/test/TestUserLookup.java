@@ -22,7 +22,8 @@ public class TestUserLookup {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDevConn();
-			UserLookup ul = new UserLookup(0, 10);
+			Integer permissionGroupId = 4;
+			UserLookup ul = new UserLookup(permissionGroupId, 0, 10);
 			ul.setSearchTerm("lewis");
 			List<UserLookupItem> ulList = ul.select(conn);
 			for ( UserLookupItem uli : ulList ) {
