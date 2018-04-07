@@ -137,7 +137,7 @@
 			            	if(row.paymentNote != null){return (row.paymentNote+"");}
 			            } },
 			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
-			            	{return '<ansi:hasPermission permissionRequired="INVOICE"><ansi:hasWrite><i class="edit-action-link ui-icon ui-icon-pencil" data-paymentId="' +row.paymentId+'" />"</ansi:hasWrite></ansi:hasPermission>';}
+			            	{return '<ansi:hasPermission permissionRequired="INVOICE"><ansi:hasWrite><i class="edit-action-link fas fa-pencil-alt" data-paymentId="' +row.paymentId+'" />"</ansi:hasWrite></ansi:hasPermission>';}
 			            } }
 			            ],
 			            "initComplete": function(settings, json) {

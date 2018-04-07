@@ -164,7 +164,7 @@
 			            	if ( row.ticketId == null ) {
 			            		$actionData = "";
 			            	} else {
-				            	//var $editLink = "<a href='ticketReturn.html?id="+row.ticketId+"' class=\"editAction ui-icon ui-icon-pencil\" data-id='"+row.ticketId+"'></a>";
+				            	//var $editLink = "<a href='ticketReturn.html?id="+row.ticketId+"' class=\"editAction fas fa-pencil-alt\" data-id='"+row.ticketId+"'></a>";
 				            	var $editLink = '<a href="ticketReturn.html?id='+row.ticketId+'" class="editAction" data-id="'+row.ticketId+'"><webthing:edit>Edit</webthing:edit></a>';
 				            	//var $overrideLink = "<a href='ticketOverride.html?id="+row.ticketId+"' class=\"overrideAction fa fa-magic\" data-id='"+row.ticketId+"'></a>";
 				            	if ( row.ticketStatus == 'F' ) {

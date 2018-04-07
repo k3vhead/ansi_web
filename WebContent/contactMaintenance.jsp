@@ -196,7 +196,7 @@
 			            } },
 			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
 			            	{
-			            		return '<span class="tooltip"><i class="editAction ui-icon ui-icon-pencil" data-id="'+ row.contactId + '" /><span class="tooltiptext">Edit</span></span>';}
+			            		return '<span class="tooltip"><i class="editAction fas fa-pencil-alt" data-id="'+ row.contactId + '" /><span class="tooltiptext">Edit</span></span>';}
 			            } }
 			            ],
 			            "initComplete": function(settings, json) {

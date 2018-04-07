@@ -218,9 +218,9 @@
 			            } },
 			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
 			            	//console.log(row);
-			            	editText = '<a href="quoteMaintenance.html?id='+row.quoteId+'" class="editAction ui-icon ui-icon-pencil" data-id="'+row.quoteId+'"></a>';
+			            	editText = '<a href="quoteMaintenance.html?id='+row.quoteId+'" class="editAction" data-id="'+row.quoteId+'"><webthing:edit>Edit</webthing:edit></a>';
 			            	printText = '<i class="fa fa-print quotePrint" aria=hidden="true" data-id="'+row.quoteId+'" data-quotenumber="'+ row.quoteCode + '"></i>';
-			            	copyText = '<i class="fa fa-files-o copyQuote" aria-hidden="true" data-id="'+row.quoteId+'"></i>';
+			            	copyText = '<i class="far fa-copy copyQuote" aria-hidden="true" data-id="'+row.quoteId+'"></i>';
 			            	{return '<ansi:hasPermission permissionRequired="QUOTE"><ansi:hasWrite>'+ editText +  '&nbsp;' + printText + '&nbsp;' + copyText + '</ansi:hasWrite></ansi:hasPermission>';}
 			            	
 			            } }],

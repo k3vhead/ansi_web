@@ -890,7 +890,7 @@
     		<tr>
     			<td class="black_border">
     				<span class="paymentId"></span>
-    				<span style="float:right;" id="editPaymentIcon" class="action-link green fa fa-pencil" ari-hidden="true"></span>
+    				<span style="float:right;" id="editPaymentIcon" class="action-link green fas fa-pencil-alt" ari-hidden="true"></span>
     			</td>
     			<td class="black_border"><span class="paymentDate"></span></td>
     			<td class="black_border"><span class="paymentType"></span></td>

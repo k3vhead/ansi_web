@@ -958,7 +958,7 @@
 		   			<td class="bottomRow" colspan="2">
 		   				<span class="formLabel">Manager Approval: </span> <i id="managerApproval" class="fa" aria-hidden="true"></i>
 		   				<div style="float:right;">
-		   					<span class="green fa fa-pencil tooltip action-link editApprovals" ari-hidden="true"><span class="tooltiptext">Edit</span></span>
+		   					<span class="green fas fa-pencil-alt tooltip action-link editApprovals" ari-hidden="true"><span class="tooltiptext">Edit</span></span>
 		   				</div>
 		   			</td>
 		   		</tr>

@@ -93,7 +93,7 @@
        	    	<ansi:hasPermission permissionRequired="SYSADMIN">
         		<ansi:hasWrite>
        			row = row + '<td>';
-       			row = row + '<a href="#" class="updAction" data-row="' + $rownum +'"><span class="green fa fa-pencil" ari-hidden="true"></span></a> | ';
+       			row = row + '<a href="#" class="updAction" data-row="' + $rownum +'"><span class="green fas fa-pencil-alt" ari-hidden="true"></span></a> | ';
        			row = row + '<a href="#" class="delAction" data-row="' + $rownum +'"><span class="red fa fa-trash" aria-hidden="true"></span></a>';
        			row = row + '</td>';
        			</ansi:hasWrite>

@@ -143,7 +143,7 @@ change log
        	    	<ansi:hasPermission permissionRequired="SYSADMIN">
 					<ansi:hasWrite>
 						_td = _td + '<td id="col_06">';
-						_td = _td + '<a href="#" class="updAction" data-item-id="' + $data_item_id +'"><span class="green fa fa-pencil" ari-hidden="true"></span></a> | ';
+						_td = _td + '<a href="#" class="updAction" data-item-id="' + $data_item_id +'"><span class="green fas fa-pencil-alt" ari-hidden="true"></span></a> | ';
 						_td = _td + '<a href="#" class="delAction" data-item-id="' + $data_item_id +'"><span class="red fa fa-trash" aria-hidden="true"></span></a>';
 						_td = _td + '</td>';
 					</ansi:hasWrite>
