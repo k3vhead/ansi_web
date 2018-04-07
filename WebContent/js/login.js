@@ -50,13 +50,17 @@ $(function() {
     	userid = $("input[name='userid']").val();
     	var re = /.+\@.+\..+/;
     	if ( re.test(userid) ) {
+    		$("#validUser").removeClass("fa");
     		$("#validUser").removeClass("fa-ban");
     		$("#validUser").removeClass("inputIsInvalid");
-    		$("#validUser").addClass("fa-check-square-o");
+    		$("#validUser").addClass("far");
+    		$("#validUser").addClass("fa-check-square");
     		$("#validUser").addClass("inputIsValid");
     	} else {
-    		$("#validUser").removeClass("fa-check-square-o");
+    		$("#validUser").removeClass("far");
+    		$("#validUser").removeClass("fa-check-square");
     		$("#validUser").removeClass("inputIsValid");
+    		$("#validUser").addClass("fa");
     		$("#validUser").addClass("fa-ban");
     		$("#validUser").addClass("inputIsInvalid");
     	}
@@ -66,13 +70,17 @@ $(function() {
     	password = $("input[name='password']").val();
     	var re = /.+/;
     	if ( re.test(password) ) {
+    		$("#validPass").removeClass("fa");
     		$("#validPass").removeClass("fa-ban");
     		$("#validPass").removeClass("inputIsInvalid");
-    		$("#validPass").addClass("fa-check-square-o");
+    		$("#validPass").addClass("far");
+    		$("#validPass").addClass("fa-check-square");
     		$("#validPass").addClass("inputIsValid");
     	} else {
-    		$("#validPass").removeClass("fa-check-square-o");
+    		$("#validPass").removeClass("far");
+    		$("#validPass").removeClass("fa-check-square");
     		$("#validPass").removeClass("inputIsValid");
+    		$("#validPass").addClass("fa");
     		$("#validPass").addClass("fa-ban");
     		$("#validPass").addClass("inputIsInvalid");
     	}    	

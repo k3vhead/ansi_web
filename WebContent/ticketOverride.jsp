@@ -787,14 +787,14 @@
     	    		$item.removeClass("fa-ban");
     				$item.removeClass("inputIsInvalid");
 
-    				$item.addClass("fa");
-    	    		$item.addClass("fa-check-square-o");
+    				$item.addClass("far");
+    	    		$item.addClass("fa-check-square");
     				$item.addClass("inputIsValid");
     			},
     			
     			markInvalid:function($item) {
-    				$item.removeClass("fa");
-    	    		$item.removeClass("fa-check-square-o");
+    				$item.removeClass("far");
+    	    		$item.removeClass("fa-check-square");
     				$item.removeClass("inputIsValid");
 
     				$item.addClass("fa");

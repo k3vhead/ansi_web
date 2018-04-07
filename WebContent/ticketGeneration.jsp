@@ -236,13 +236,17 @@
                 	$valid = '#' + $($inputField).data('valid');
     	            var re = /.+/;	            	 
                 	if ( re.test($fieldValue) ) {
+                		$($valid).removeClass("fa");
                 		$($valid).removeClass("fa-ban");
                 		$($valid).removeClass("inputIsInvalid");
-                		$($valid).addClass("fa-check-square-o");
+                		$($valid).addClass("far");
+                		$($valid).addClass("fa-check-square");
                 		$($valid).addClass("inputIsValid");
                 	} else {
-                		$($valid).removeClass("fa-check-square-o");
+                		$($valid).removeClass("far");
+                		$($valid).removeClass("fa-check-square");
                 		$($valid).removeClass("inputIsValid");
+                		$($valid).addClass("fa");
                 		$($valid).addClass("fa-ban");
                 		$($valid).addClass("inputIsInvalid");
                 	}

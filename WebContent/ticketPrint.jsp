@@ -179,7 +179,7 @@
 					$( ".action-link" ).on( "click", function($clickevent) {
 			        	var $divisionId = $clickevent.currentTarget.attributes['data-division'].value;
 		        		doPrint($divisionId);
-		        		$clickevent.currentTarget.attributes['class'].value = "fa fa-check-square-o inputIsValid";
+		        		$clickevent.currentTarget.attributes['class'].value = "far fa-check-square inputIsValid";
 					});
 				}
 

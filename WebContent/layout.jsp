@@ -46,8 +46,8 @@
     	<script src="js/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
         --%>
          
-        <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">   
-        <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.9/css/all.css" integrity="sha384-5SOiIsAziJl6AWe0HWRKTXlfcSHKmYV4RBF18PPJ173Kzn7jzMyFuTtk8JA7QQG1" crossorigin="anonymous">        
+		<link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
         
         <link rel="stylesheet" href="css/menuStyle.css" type="text/css" media="screen, projection"/>
 		<!--[if lte IE 7]>

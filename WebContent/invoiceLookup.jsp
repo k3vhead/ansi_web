@@ -53,7 +53,7 @@
         	var $filterDivisionId = '<c:out value="${ANSI_DIVISION_ID}" />';
         	var $filterPPC = '<c:out value="${ANSI_PPC_FILTER}" />';
         	if ( $filterPPC == 'yes' ) {
-        		$filterIcon = "fa fa-check-square-o";
+        		$filterIcon = "far fa-check-square";
         	} else {
         		$filterIcon = "fa fa-ban";
         	}

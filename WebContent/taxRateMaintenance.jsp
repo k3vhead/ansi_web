@@ -496,14 +496,18 @@ change log
             	if ( re.test($fieldValue) ) {
 					// if the field is valid ( I think as long as it doens't contain // )
 					// then flag it as valid.
+					$($valid).removeClass("fa");
             		$($valid).removeClass("fa-ban");
             		$($valid).removeClass("inputIsInvalid");
-            		$($valid).addClass("fa-check-square-o");
+            		$($valid).addClass("far");
+            		$($valid).addClass("fa-check-square");
             		$($valid).addClass("inputIsValid");
             	} else {
 					// else flag it as invalid
-            		$($valid).removeClass("fa-check-square-o");
+					$($valid).removeClass("far");
+            		$($valid).removeClass("fa-check-square");
             		$($valid).removeClass("inputIsValid");
+            		$($valid).addClass("fa");
             		$($valid).addClass("fa-ban");
             		$($valid).addClass("inputIsInvalid");
             	}
