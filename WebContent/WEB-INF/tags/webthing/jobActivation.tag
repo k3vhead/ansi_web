@@ -63,7 +63,7 @@
 					Schedule (Auto/Manual):
 					<select class="automanual" name="<%=namespace%>_automanual" id="<%=namespace%>_automanual" <%=disabled%>> 
 					</select>
-					<span class="ansi-date-show-calendar"><i class="fa fa-calendar-check-o fa-2x" aria-hidden="true"></i></span>
+					<span class="ansi-date-show-calendar"><i class="far fa-calendar-check fa-2x" aria-hidden="true"></i></span>
 				</td>
 				<%--
 				<td colspan="3">

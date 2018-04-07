@@ -118,6 +118,29 @@ $( document ).ready(function() {
 		},
 
 		
+		// displays a red "ban" (crossed-off circle) icon
+		markInvalid: function($selector) {
+			$($selector).removeClass("far");
+    		$($selector).removeClass("fa-check-square");
+    		$($selector).removeClass("inputIsValid");
+    		$($selector).addClass("fa");
+    		$($selector).addClass("fa-ban");
+    		$($selector).addClass("inputIsInvalid");
+		},
+		
+		
+		// displays a green checkmark
+		markValid : function($selector) {
+			$($selector).removeClass("fa");
+    		$($selector).removeClass("fa-ban");
+    		$($selector).removeClass("inputIsInvalid");
+    		$($selector).addClass("far");
+    		$($selector).addClass("fa-check-square-o");
+    		$($selector).addClass("inputIsValid");
+		},
+		
+		
+		
 		// Set the values in an html select tag
 		setOptionList: function($selectorName, $optionList, $selectedValue) {
 		
@@ -132,7 +155,7 @@ $( document ).ready(function() {
 			if ( $selectedValue != null ) {
 				$select.val($selectedValue);
 			}
-			$select.selectmenu({ width : '175px', maxHeight: '400 !important', style: 'dropdown'});
+			//$select.selectmenu({ width : '175px', maxHeight: '400 !important', style: 'dropdown'});
 
 		},
 		
