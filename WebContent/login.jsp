@@ -114,7 +114,6 @@
 							<tr>
 								<td colspan="2" style="text-align:right; vertica-align:top;">
 									<a href="#" class="forgotPassLink">Forgot My Password</a>
-									<i class="far fa-check-square"></i>
 								</td>
 							</tr>
 						</table>
