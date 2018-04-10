@@ -80,8 +80,9 @@ $( document ).ready(function() {
 				
 				//console.log(ANSI_UTILS.getCodes("quote","account_type"));
 				QUOTEUTILS.setSelectMenu("manager",QUOTEUTILS.getUsers());
-				QUOTEUTILS.setSelectMenu("accountType",ANSI_UTILS.getCodes("quote","account_type"));
-				QUOTEUTILS.setSelectMenu("leadType",ANSI_UTILS.getCodes("quote","lead_type"));
+				// parms: table name, field name, select to be populated, key field, value field
+				ANSI_UTILS.populateCodeSelect("quote", "account_type", "select[name='accountType']", "value", "displayValue")
+				ANSI_UTILS.populateCodeSelect("quote", "lead_type", "select[name='leadType']", "value", "displayValue")
 				
 				$divisionList = ANSI_UTILS.getDivisionList();
 				$buildingTypeList = ANSI_UTILS.makeBuildingTypeList();
@@ -121,7 +122,7 @@ $( document ).ready(function() {
 					
 						$("select[name='division']").val($quoteData.divisionId);
 						$divisionId = $quoteData.divisionId;
-						$("select[name='division").selectmenu("refresh");
+						//$("select[name='division").selectmenu("refresh");
 						
 
 					$("#printCount").html($quoteData.printCount);
@@ -131,18 +132,18 @@ $( document ).ready(function() {
 					//console.log(($quoteData.accountType).length < 128);
 					if($quoteData.accountType.length < 128){
 						$("select[name='accountType']").val($quoteData.accountType);
-						$("select[name='accountType").selectmenu("refresh");
+						//$("select[name='accountType").selectmenu("refresh");
 					} else {
 						$("select[name='leadType']").val(null);
-						$("select[name='leadType").selectmenu("refresh");
+						//$("select[name='leadType").selectmenu("refresh");
 					}
 					
 					if($quoteData.leadType.length < 128){
 						$("select[name='leadType']").val($quoteData.leadType);
-						$("select[name='leadType").selectmenu("refresh");
+						//$("select[name='leadType").selectmenu("refresh");
 					} else {
 						$("select[name='leadType']").val(null);
-						$("select[name='leadType").selectmenu("refresh");
+						//$("select[name='leadType").selectmenu("refresh");
 					}
 					
 					if($quoteData.proposalDate != ''){
@@ -155,7 +156,7 @@ $( document ).ready(function() {
 					//var $manager = $quoteData.managerFirstName + " " + $quoteData.managerLastName + " (" + $quoteData.managerEmail + ")";
 					//console.log("ManagerId: " + $quoteData.managerId);
 					$("select[name='manager']").val($quoteData.managerId);
-					$("select[name='manager']").selectmenu("refresh");
+					//$("select[name='manager']").selectmenu("refresh");
 					
 					var $jobs = QUOTEUTILS.getJobs($quoteId);
 					//console.log($jobs);
@@ -499,7 +500,7 @@ $( document ).ready(function() {
 			setDivisionList:function($divisionList) {
 				
 				var $select = $("select[name='division']");
-				$select.selectmenu({ width : '175px', maxHeight: '400 !important', style: 'dropdown'});
+				//$select.selectmenu({ width : '175px', maxHeight: '400 !important', style: 'dropdown'});
 				
 				$('option', $select).remove();
 				$.each($divisionList, function($index, $division) {
@@ -507,7 +508,7 @@ $( document ).ready(function() {
 					$select.append(new Option($displayValue, $division.divisionId));
 				});
 
-				$select.selectmenu();
+				//$select.selectmenu();
 			},
 			buttonsInit:function() {
 				
@@ -848,18 +849,18 @@ $( document ).ready(function() {
 								}
 								$("#"+$row+'_jobProposal_jobNbr').val(($maxJobNbr+1));
 								$('#'+$row+'_jobActivation_automanual').val("auto");
-								$('#'+$row+'_jobActivation_automanual').selectmenu("refresh");
+								//$('#'+$row+'_jobActivation_automanual').selectmenu("refresh");
 								$("#"+$row+'_jobActivation_equipment').val('BASIC');
 								$("#"+$row+'_jobSchedule_annualRepeat').prop('checked', true);
 								
 								$('#'+$row+'_jobInvoice_invoiceStyle').val("INVOICE");
-								$('#'+$row+'_jobInvoice_invoiceStyle').selectmenu("refresh");
+								//$('#'+$row+'_jobInvoice_invoiceStyle').selectmenu("refresh");
 								
 								$('#'+$row+'_jobInvoice_invoiceGrouping').val("BY_JOB_SITE");
-								$('#'+$row+'_jobInvoice_invoiceGrouping').selectmenu("refresh");
+								//$('#'+$row+'_jobInvoice_invoiceGrouping').selectmenu("refresh");
 								
 								$('#'+$row+'_jobInvoice_invoiceTerms').val("DAY10");
-								$('#'+$row+'_jobInvoice_invoiceTerms').selectmenu("refresh");
+								//$('#'+$row+'_jobInvoice_invoiceTerms').selectmenu("refresh");
 								//console.log(QUOTE_DATA['data']);
 								if(QUOTE_DATA['data'] != null && QUOTE_DATA['data'].divisionCode != null){
 									$("#"+$row+'_jobPanel_divisionId').text(QUOTE_DATA['data'].divisionCode);
@@ -977,7 +978,7 @@ $( document ).ready(function() {
 					$select.append(new Option($val.displayValue,$val.value));
 				});
 
-				$select.selectmenu({ width : '175px', maxHeight: '400 !important', style: 'dropdown'});
+				//$select.selectmenu({ width : '175px', maxHeight: '400 !important', style: 'dropdown'});
 			},
 			bindAndFormat:function(){
 				$.each($('input'), function () {

@@ -44,6 +44,41 @@ $( document ).ready(function() {
 			});
 		},
 		
+		
+		populateCodeSelect : function($tableName, $fieldName, $selectorName, $keyField, $valueField ) {
+			var $url = "code/" + $tableName;
+			if ( $fieldName != null ) {
+				$url = $url + "/" + $fieldName;
+			}
+			
+			var jqxhr = $.ajax({
+				type: 'GET',
+				url: $url,
+				data: {},
+				statusCode: {
+					200: function($data) {
+						var $select = $($selectorName);
+						$('option', $select).remove();
+						$select.append(new Option("",""));
+						$.each($data.data.codeList, function(index, val) {
+						    $select.append(new Option(val[$valueField], val[$keyField]));
+						});						
+					},					
+					403: function($data) {
+						$("#globalMsg").html("Session expired. Login and try again").show();
+					},
+					404: function($data) {
+						$("#globalMsg").html("Code Error 404. Contact Support").show();
+					},
+					500: function($data) {
+						$("#globalMsg").html("Code Error 500. Contact Support").show();
+					}
+				},
+				dataType: 'json'
+			});
+		},
+		
+		
 		// get a list of divisions
 		getDivisionList: function() {
 			var $returnValue = null;
@@ -195,10 +230,10 @@ $( document ).ready(function() {
 		        $(this).css("height","20px");
 		        $(this).css("max-height", "20px");
 		    });
-			$("#"+$namespace+"_address select[name='"+$namespace+"_state']").selectmenu({ width : '150px', maxHeight: '400 !important', style: 'dropdown'});
+			//$("#"+$namespace+"_address select[name='"+$namespace+"_state']").selectmenu({ width : '150px', maxHeight: '400 !important', style: 'dropdown'});
 			$("select[name='"+$namespace+"_city']").addClass("ui-corner-all");
 			$("select[name='"+$namespace+"_zip']").addClass("ui-corner-all");
-			$("#"+$namespace+"_address select[name='"+$namespace+"_country']").selectmenu({ width : '80px', maxHeight: '400 !important', style: 'dropdown'});
+			//$("#"+$namespace+"_address select[name='"+$namespace+"_country']").selectmenu({ width : '80px', maxHeight: '400 !important', style: 'dropdown'});
 	
 			 $( "input[name='"+$namespace+"_name']" ).autocomplete({
 			     'source':"addressTypeAhead?term=",
@@ -281,7 +316,7 @@ $( document ).ready(function() {
 					$select.append(new Option($country.abbrev));
 				});
 				
-				$select.selectmenu();
+				//$select.selectmenu();
 			}, 
 			
 			
@@ -300,7 +335,7 @@ $( document ).ready(function() {
 						group.appendTo($select);
 					});
 				
-				$select.selectmenu();
+				//$select.selectmenu();
 			},
 			
 			
@@ -357,7 +392,7 @@ $( document ).ready(function() {
 				} 
 				if($addressData.state != null) {
 					$("select[name='"+$namespace+"_state']").val($addressData.state);
-					$("select[name='"+$namespace+"_state']").selectmenu("refresh");
+					//$("select[name='"+$namespace+"_state']").selectmenu("refresh");
 				} 
 				if($addressData.zip != null) {
 					$("input[name='"+$namespace+"_zip']").val($addressData.zip);
@@ -367,7 +402,7 @@ $( document ).ready(function() {
 				}
 				if($addressData.country != null) {
 					$("select[name='"+$namespace+"_country']").val($addressData.country);
-					$("select[name='"+$namespace+"_country']").selectmenu("refresh");
+					//$("select[name='"+$namespace+"_country']").selectmenu("refresh");
 				}
 				if($addressData.jobContactName != null) {
 					$("input[name='"+$namespace+"_jobContactName']").val($addressData.jobContactName);
