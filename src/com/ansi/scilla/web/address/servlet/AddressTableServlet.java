@@ -131,18 +131,19 @@ public class AddressTableServlet extends AbstractServlet {
 		    int totalAfterFilter = total;
 			term = term.toLowerCase();
 			List<AddressReturnItem> resultList = new ArrayList<AddressReturnItem>();
-			sql = "select a.address_id, a.name, a.address_status, a.address1, a.address2, a.city, a.county, a.state, a.zip, a.country_code, (a3.jobCount + a3.billCount) as count"
-					+ " from address a"
-					+ " left join (select a2.address_id, count(q1.job_site_address_id) as jobCount, count(q1.bill_to_address_id) as billCount from address a2"
-					+ " inner join quote q1 on (a2.address_id = q1.job_site_address_id or a2.address_id = q1.bill_to_address_id) group by a2.address_id ) a3 on a.address_id = a3.address_id";
-			String search = " where lower(a.name) like '%" + term + "%'"
-					+ " OR lower(a.address1) like '%" + term + "%'"
-					+ " OR lower(a.address2) like '%" + term + "%'"
-					+ " OR lower(a.city) like '%" + term + "%'"
-					+ " OR lower(a.county) like '%" + term + "%'"
-					+ " OR lower(a.state) like '%" + term + "%'"
-					+ " OR lower(a.zip) like '%" + term + "%'"
-					+ " OR lower(a.country_code) like '%" + term + "%'";
+			sql = "select a.address_id, a.name, a.address_status, a.address1, a.address2, a.city, a.county, a.state, a.zip, a.country_code, (a3.jobCount + a3.billCount) as count, "
+					+ "a.invoice_style_default, a.invoice_grouping_default, a.invoice_batch_default, a.invoice_terms_default, a.our_vendor_nbr_default "
+					+ "\n from address a"
+					+ "\n left join (select a2.address_id, count(q1.job_site_address_id) as jobCount, count(q1.bill_to_address_id) as billCount from address a2"
+					+ "\n inner join quote q1 on (a2.address_id = q1.job_site_address_id or a2.address_id = q1.bill_to_address_id) group by a2.address_id ) a3 on a.address_id = a3.address_id";
+			String search = "\n where lower(a.name) like '%" + term + "%'"
+					+ "\n OR lower(a.address1) like '%" + term + "%'"
+					+ "\n OR lower(a.address2) like '%" + term + "%'"
+					+ "\n OR lower(a.city) like '%" + term + "%'"
+					+ "\n OR lower(a.county) like '%" + term + "%'"
+					+ "\n OR lower(a.state) like '%" + term + "%'"
+					+ "\n OR lower(a.zip) like '%" + term + "%'"
+					+ "\n OR lower(a.country_code) like '%" + term + "%'";
 //					String group = " group by a.address_id, a.name, a.status, a.address1, a.address2, a.city, a.county, a.state, a.zip, a.country_code";
 			
 			

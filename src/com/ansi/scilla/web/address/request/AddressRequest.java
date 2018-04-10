@@ -9,6 +9,7 @@ import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequiredForAdd;
 import com.ansi.scilla.web.common.request.RequiredForUpdate;
 import com.ansi.scilla.web.common.utils.AppUtils;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.thewebthing.commons.lang.JsonException;
@@ -28,7 +29,11 @@ import com.thewebthing.commons.lang.JsonException;
 		private String state;
 		private String status;
 		private String zip;
-
+		private String invoiceStyleDefault;
+		private String invoiceGroupingDefault;
+		private Integer invoiceBatchDefault;
+		private String invoiceTermsDefault;
+		private String invoiceOurVendorNbrDefault;
 		
 		public AddressRequest() {
 			super();
@@ -125,6 +130,48 @@ import com.thewebthing.commons.lang.JsonException;
 		public String getZip() {
 			return this.zip;
 		}
+		@JsonProperty("invoiceStyle")
+		public String getInvoiceStyleDefault() {
+			return invoiceStyleDefault;
+		}
+		@JsonProperty("invoiceStyle")
+		public void setInvoiceStyleDefault(String invoiceStyleDefault) {
+			this.invoiceStyleDefault = invoiceStyleDefault;
+		}
+		@JsonProperty("invoiceGrouping")
+		public String getInvoiceGroupingDefault() {
+			return invoiceGroupingDefault;
+		}
+		@JsonProperty("invoiceGrouping")
+		public void setInvoiceGroupingDefault(String invoiceGroupingDefault) {
+			this.invoiceGroupingDefault = invoiceGroupingDefault;
+		}
+		@JsonProperty("invoiceBatch")
+		public Integer getInvoiceBatchDefault() {
+			return invoiceBatchDefault;
+		}
+		@JsonProperty("invoiceBatch")
+		public void setInvoiceBatchDefault(Integer invoiceBatchDefault) {
+			this.invoiceBatchDefault = invoiceBatchDefault;
+		}
+		@JsonProperty("invoiceTerms")
+		public String getInvoiceTermsDefault() {
+			return invoiceTermsDefault;
+		}
+		@JsonProperty("invoiceTerms")
+		public void setInvoiceTermsDefault(String invoiceTermsDefault) {
+			this.invoiceTermsDefault = invoiceTermsDefault;
+		}
+		@JsonProperty("invoiceOurVendorNbr")
+		public String getInvoiceOurVendorNbrDefault() {
+			return invoiceOurVendorNbrDefault;
+		}
+		@JsonProperty("invoiceOurVendorNbr")
+		public void setInvoiceOurVendorNbrDefault(String invoiceOurVendorNbrDefault) {
+			this.invoiceOurVendorNbrDefault = invoiceOurVendorNbrDefault;
+		}
+
+		
 		
 
 	

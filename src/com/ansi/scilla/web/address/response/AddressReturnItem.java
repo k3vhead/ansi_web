@@ -19,6 +19,11 @@ public class AddressReturnItem extends ApplicationObject {
 		private String countryCode;
 		private String DT_RowId;
 		private int count;
+		private String invoiceStyleDefault;
+		private String invoiceGroupingDefault;
+		private int invoiceBatchDefault;
+		private String invoiceTermsDefault;
+		private String ourVendorNbrDefault;
 		
 		
 		public AddressReturnItem(ResultSet rs) throws SQLException {
@@ -35,6 +40,12 @@ public class AddressReturnItem extends ApplicationObject {
 			this.countryCode = rs.getString("country_code");
 			this.DT_RowId = rs.getInt("address_id")+"";
 			this.count = rs.getInt("count");
+			
+			this.invoiceStyleDefault = rs.getString("invoice_style_default");
+			this.invoiceGroupingDefault = rs.getString("invoice_grouping_default");
+			this.invoiceBatchDefault = rs.getInt("invoice_batch_default");
+			this.invoiceTermsDefault = rs.getString("invoice_terms_default");
+			this.ourVendorNbrDefault = rs.getString("our_vendor_nbr_default");
 
 		}
 
@@ -131,6 +142,62 @@ public class AddressReturnItem extends ApplicationObject {
 
 		public void setCountryCode(String countryCode) {
 			this.countryCode = countryCode;
+		}
+
+		public Integer getAddress_id() {
+			return address_id;
+		}
+
+		public void setAddress_id(Integer address_id) {
+			this.address_id = address_id;
+		}
+
+		public String getAddress_status() {
+			return address_status;
+		}
+
+		public void setAddress_status(String address_status) {
+			this.address_status = address_status;
+		}
+
+		public String getInvoiceStyleDefault() {
+			return invoiceStyleDefault;
+		}
+
+		public void setInvoiceStyleDefault(String invoiceStyleDefault) {
+			this.invoiceStyleDefault = invoiceStyleDefault;
+		}
+
+		public String getInvoiceGroupingDefault() {
+			return invoiceGroupingDefault;
+		}
+
+		public void setInvoiceGroupingDefault(String invoiceGroupingDefault) {
+			this.invoiceGroupingDefault = invoiceGroupingDefault;
+		}
+
+		public int getInvoiceBatchDefault() {
+			return invoiceBatchDefault;
+		}
+
+		public void setInvoiceBatchDefault(int invoiceBatchDefault) {
+			this.invoiceBatchDefault = invoiceBatchDefault;
+		}
+
+		public String getInvoiceTermsDefault() {
+			return invoiceTermsDefault;
+		}
+
+		public void setInvoiceTermsDefault(String invoiceTermsDefault) {
+			this.invoiceTermsDefault = invoiceTermsDefault;
+		}
+
+		public String getOurVendorNbrDefault() {
+			return ourVendorNbrDefault;
+		}
+
+		public void setOurVendorNbrDefault(String ourVendorNbrDefault) {
+			this.ourVendorNbrDefault = ourVendorNbrDefault;
 		}
 
 	}

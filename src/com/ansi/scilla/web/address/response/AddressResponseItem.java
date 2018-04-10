@@ -25,6 +25,11 @@ public class AddressResponseItem extends ApplicationObject implements Comparable
 //	private Date updatedDate;
 	private String zip;
 	private String countryCode;
+	private String invoiceStyleDefault;
+	private String invoiceGroupingDefault;
+	private Integer invoiceBatchDefault;
+	private String invoiceTermsDefault;
+	private String ourVendorNbrDefault;
 
 	
 	public AddressResponseItem(Address address) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
@@ -130,6 +135,56 @@ public class AddressResponseItem extends ApplicationObject implements Comparable
 	public String getCountryCode() {
 		return this.countryCode;
 	}
+
+	public String getInvoiceStyleDefault() {
+		return invoiceStyleDefault;
+	}
+
+
+	public void setInvoiceStyleDefault(String invoiceStyleDefault) {
+		this.invoiceStyleDefault = invoiceStyleDefault;
+	}
+
+
+	public String getInvoiceGroupingDefault() {
+		return invoiceGroupingDefault;
+	}
+
+
+	public void setInvoiceGroupingDefault(String invoiceGroupingDefault) {
+		this.invoiceGroupingDefault = invoiceGroupingDefault;
+	}
+
+
+	public Integer getInvoiceBatchDefault() {
+		return invoiceBatchDefault;
+	}
+
+
+	public void setInvoiceBatchDefault(Integer invoiceBatchDefault) {
+		this.invoiceBatchDefault = invoiceBatchDefault;
+	}
+
+
+	public String getInvoiceTermsDefault() {
+		return invoiceTermsDefault;
+	}
+
+
+	public void setInvoiceTermsDefault(String invoiceTermsDefault) {
+		this.invoiceTermsDefault = invoiceTermsDefault;
+	}
+
+
+	public String getOurVendorNbrDefault() {
+		return ourVendorNbrDefault;
+	}
+
+
+	public void setOurVendorNbrDefault(String ourVendorNbrDefault) {
+		this.ourVendorNbrDefault = ourVendorNbrDefault;
+	}
+
 
 	@Override
 	public int compareTo(AddressResponseItem o) {

@@ -57,11 +57,6 @@
 				min-height:30px;
 				border:solid 1px #404040;
 			}
-			select	{
-				width:80px !important;
-				max-width:80px !important;
-			}
-			
 			#addAddressForm{
 				display: none;
 			}
@@ -87,12 +82,15 @@
 				text-decoration:none;
 				color:#000000;
 			}
-			#addressView {
+			#addressViewModal {
 				display:none;
 				width:400px;
 			}
 			.ansi-address-label {
 				font-weight:bold;
+			}
+			.ansi-address-label-container {
+				width:120px;
 			}
 			.copyAction {
 				text-decoration:none;
@@ -158,7 +156,7 @@
 	        	            	[ '10 rows', '25 rows', '50 rows', 'Show all' ]
 	        	        	],
 		        	        buttons: [
-		        	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}}
+		        	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {ADDRESSMAINTENANCE.doFunctionBinding();}}
 		        	        ],
 		        	        "columnDefs": [
 		        	            { "orderable": false, "targets": -1 }
@@ -199,8 +197,33 @@
 					            { title: "<bean:message key="field.label.zip" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 					            	if(row.zip != null){return (row.zip+"");} 
 					            } },
+					            
+					            // Invoice default value columns:
+					            { title: "<bean:message key="field.label.invoice.style" />", "defaultContent": "<i>N/A</i>", "visible":false, data: function ( row, type, set ) {	
+					            	if(row.invoiceStyleDefault != null){return (row.invoiceStyleDefault+"");} 
+					            } },
+					            { title: "<bean:message key="field.label.invoice.grouping" />", "defaultContent": "<i>N/A</i>", "visible":false, data: function ( row, type, set ) {	
+					            	if(row.invoiceGroupingDefault != null){return (row.invoiceGroupingDefault+"");} 
+					            } },
+					            { title: "<bean:message key="field.label.invoice.batch" />", "defaultContent": "<i>N/A</i>", "visible":false, data: function ( row, type, set ) {	
+					            	if(row.invoiceBatchDefault != null){
+					            		var $batchStatus = '<webthing:ban>Not Batched</webthing:ban>';
+					            		if ( row.invoiceBatchDefault == 1 ) {
+					            			$batchStatus = '<webthing:checkmark>Batch Invoice</webthing:checkmark>';
+					            		}
+					            		return ($batchStatus);
+					            	} 
+					            } },
+					            { title: "<bean:message key="field.label.invoice.terms" />", "defaultContent": "<i>N/A</i>", "visible":false, data: function ( row, type, set ) {	
+					            	if(row.invoiceTermsDefault != null){return (row.invoiceTermsDefault+"");} 
+					            } },
+					            { title: "<bean:message key="field.label.invoice.ourVendorNbr" />", "defaultContent": "<i>N/A</i>", "visible":false, data: function ( row, type, set ) {	
+					            	if(row.ourVendorNbrDefault != null){return (row.ourVendorNbrDefault+"");} 
+					            } },
+					            
+					            
 					            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
-					            	$viewLink = "<a href=\"#\" class=\"viewAction fa fa-search-plus tooltip\" aria-hidden=\"true\" data-id='"+row.addressId+"'><span class=\"tooltiptext\">View</span></a> ";
+					            	$viewLink = '<a href="#" class="viewAction" data-id="'+row.addressId+'"><webthing:view>View</webthing:view></a>';
 					            	$editLink = '<ansi:hasPermission permissionRequired="SYSADMIN"><ansi:hasWrite><a href="#" class="editAction" data-id="'+row.addressId+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasWrite></ansi:hasPermission>';
 					            	$copyLink = '<ansi:hasPermission permissionRequired="SYSADMIN"><ansi:hasWrite><a href="#" class="copyAction" data-id="'+row.addressId+'"><webthing:copy>Copy</webthing:copy></a></ansi:hasWrite></ansi:hasPermission>';
 					            	$deleteLink = '<ansi:hasPermission permissionRequired="SYSADMIN"><ansi:hasWrite><a href="#" class="delAction" data-id="'+row.addressId+'"><webthing:delete>Delete</webthing:delete></a></ansi:hasWrite></ansi:hasPermission>';					            	
@@ -212,10 +235,10 @@
 					            	return $action;	
 					            } }],
 					            "initComplete": function(settings, json) {
-					            	doFunctionBinding();
+					            	ADDRESSMAINTENANCE.doFunctionBinding();
 					            },
 					            "drawCallback": function( settings ) {
-					            	doFunctionBinding();
+					            	ADDRESSMAINTENANCE.doFunctionBinding();
 					            }
 					    	} );
 	        		},
@@ -231,7 +254,7 @@
 		        			$outbound[$(this).attr("name")] = $(this).val();
 		        		});
 	        		
-		        		if ( $("#addForm input[name='invoiceBatch']").prop("checked") == true ) {
+		        		if ( $("#addForm input[name='invoiceBatchDefault']").prop("checked") == true ) {
 		        			$outbound['invoiceBatch'] = 1;
 		        		} else {
 		        			$outbound['invoiceBatch'] = 0;
@@ -291,7 +314,12 @@
 	        		
 	        		clearAddForm : function() {
 		            	$("#addForm input").val("");
-			        	$("#addForm select")[0].selectedIndex = 0;
+			        	$.each($("#addForm select"), function($index, $value) {
+			        		$value.selectedIndex = 0;
+			        	});
+			        	$.each($("#addForm input[type='checkbox']"), function($index, $value) {
+			        		$($value).prop('checked', false);;
+			        	});
 			        	ADDRESSMAINTENANCE.clearErrIcons();
 		            },
 		            
@@ -302,6 +330,99 @@
 			        	$("#addForm .errIcon").removeClass("fa-check-square-o");
 			        	$("#addForm .errIcon").removeClass("inputIsValid");
 			        	
+		            },
+		            
+		            
+		            doCopy : function($clickEvent) {
+		            	$clickEvent.preventDefault();
+						var $rowid = $clickEvent.currentTarget.attributes['data-id'].value;
+						ADDRESSMAINTENANCE.populateAddressForm($rowid, "copy");
+					},
+					
+					doDelete : function($clickEvent) {
+						$clickEvent.preventDefault();
+						var $rowid = $clickEvent.currentTarget.attributes['data-id'].value;
+						
+						$( "#deleteConfirmDialog" ).dialog({
+							resizable: false,
+							height: "auto",
+							width: 400,
+							modal: true,
+							buttons: {
+								"Delete Address": function() {ADDRESSMAINTENANCE.doDelete2($rowid);$( this ).dialog( "close" );},
+						        Cancel: function() {
+									$( this ).dialog( "close" );
+								}
+							}
+						});
+						$( "#deleteConfirmDialog" ).dialog( "open" );	
+					},
+					
+				
+					doDelete2 : function($rowid){
+						$url = 'address/' + $rowid;
+	            		var jqxhr = $.ajax({
+		            	    type: 'delete',
+		            	    url: $url,
+		            	    success: function($data) {
+	            	    		$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
+								if ( $data.responseHeader.responseCode == 'SUCCESS') {
+									$("#addressTable").DataTable().row($rowid).remove();
+									$("#addressTable").DataTable().draw();
+								}
+	            	     	},
+	            	     	statusCode: {
+	            	    		403: function($data) {
+	            	    			$("#globalMsg").html("Session Timeout. Log in and try again");
+	            	    		},
+	            	    		500: function($data) {
+	            	    			$( "#deleteErrorDialog" ).dialog({
+										modal: true,
+	            	    		      	buttons: {
+	            	    		        	Ok: function() {
+												$( this ).dialog( "close" );
+											}
+										}
+									});
+								} 
+							},
+							dataType: 'json'
+						});
+					}, 
+					
+		            doEdit : function($clickEvent) {
+		            	$clickEvent.preventDefault();
+						var $rowid = $clickEvent.currentTarget.attributes['data-id'].value;
+						ADDRESSMAINTENANCE.populateAddressForm($rowid, "edit");
+					},
+		            
+					
+					doFunctionBinding : function() {
+						$( ".editAction" ).on( "click", function($clickEvent) {
+			        		$("#addAddressForm").dialog( "option", "title", "Update Address" );
+							 ADDRESSMAINTENANCE.doEdit($clickEvent);
+						});
+						$('.delAction').on('click', function($clickEvent) {
+							ADDRESSMAINTENANCE.doDelete($clickEvent);
+						});
+						
+						$('#addressTable_next').on('click', function($clickEvent) {
+			        		window.scrollTo(0, 0);
+			        	});
+						$('.viewAction').on('click', function($clickEvent) {
+							ADDRESSMAINTENANCE.doView($clickEvent);
+						});
+						$( ".copyAction" ).on( "click", function($clickEvent) {
+			        		$("#addAddressForm").dialog( "option", "title", "Add Address" );
+							 ADDRESSMAINTENANCE.doCopy($clickEvent);
+						});
+					},
+					
+		            doView : function($clickEvent) {
+		            	$clickEvent.preventDefault();
+						var $addressId = $clickEvent.currentTarget.attributes['data-id'].value;
+						ADDRESS_UTILS.getAddress($addressId, "#addressViewModal");
+						$("#addressViewModal").dialog("open");
 		            },
 		            
 		            
@@ -332,7 +453,7 @@
 	        		
 	        		
 	        		makeViewAddressModal : function() {
-	        			$( "#addressView" ).dialog({
+	        			$( "#addressViewModal" ).dialog({
 	    					title:"View Address",        			
 	    					autoOpen: false,
 	    					height: "auto",
@@ -341,11 +462,11 @@
 	    					buttons: [{
 	    						id: 'closeViewButton',
 	    						click: function() {
-	    							$( "#addressView" ).dialog( "close" );
+	    							$( "#addressViewModal" ).dialog( "close" );
 	    						}
 	    					}],
 	    					close: function() {
-	    						$( "#addressView" ).dialog( "close" );
+	    						$( "#addressViewModal" ).dialog( "close" );
 	    						//allFields.removeClass( "ui-state-error" );
 	    					}
 	    				});	        			
@@ -378,14 +499,14 @@
 			        		$("#addAddressForm").dialog( "option", "title", "Add Address" );
 			        		$('#addFormButton').button('option', 'label', 'Save');
 			        	    $("#addAddressForm").dialog( "open" );
-			        	      	
+			        	    $("#addressFieldContainer").click();
 			            });
 						
 						var $billToNameComplete = $( "#addAddressForm input[name='name']" ).autocomplete({
 							'source':"addressTypeAhead?",
 							select: function( event, ui ) {
 								$addressId = ui.item.id;
-								populateAddressForm($addressId, "edit");
+								ADDRESSMAINTENANCE.populateAddressForm($addressId, "edit");
 						   	}
 						}).data('ui-autocomplete');
 					},
@@ -412,228 +533,86 @@
 		                });
 		                
 		                
-		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceGrouping']", $optionData.invoiceGrouping, null);
-		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceTerms']", $optionData.invoiceTerm, null);
-		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceStyle']", $optionData.invoiceStyle,null);
+		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceGroupDefault']", $optionData.invoiceGrouping, null);
+		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceTermsDefault']", $optionData.invoiceTerm, null);
+		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceStyleDefault']", $optionData.invoiceStyle,null);
 		            },
+		            
+		            
+		            
+		            populateAddressForm : function($rowid, $action) {
+						var $url = 'address/' + $rowid;
+						var jqxhr = $.ajax({
+							type: 'GET',
+							url: $url,
+							statusCode: {
+								200: function($data) {
+									ADDRESSMAINTENANCE.clearAddForm();
+									var $address = $data.data.addressList[0];  // we're only getting one address
+									$.each($address, function($fieldName, $value) {									
+										$selector = "#addForm input[name=" + $fieldName + "]";
+										if ( $($selector).length > 0 ) {
+											$($selector).val($value);
+										}
+			        				});
+									
+									$("#addForm select[name=countryCode]").val($address.countryCode);
+									$("#addForm select[name=state]").val($address.state);
+									$("#addForm select[name='invoiceStyleDefault']").val($address.invoiceStyleDefault);
+									$("#addForm select[name='invoiceGroupDefault']").val($address.invoiceGroupingDefault);
+									$("#addForm select[name='invoiceTermsDefault']").val($address.invoiceTermsDefault);									
+									$("#addForm input[name='invoiceourVendorNbrDefault']").val($address.ourVendorNbrDefault);
+									
+									if ( $address.invoiceBatchDefault == 1 ) {
+										$("#addForm input[name='invoiceBatchDefault']").prop("checked", true);
+									} else {
+										$("#addForm input[name='invoiceBatchDefault']").prop("checked", false);
+									}
+									
+									
+									if ( $action == "copy" ) {
+										$('#addFormButton').button('option', 'label', 'Add Address');
+										$("#addAddressForm").dialog( "option", "title", "Add Address" );
+										$("#updateOrAdd").val("add");
+						        		$("#addAddressForm").dialog( "open" );
+						        		$("#addressFieldContainer").click();
+									} else if ( $action == "edit" ) {
+						        		$("#aId").val($address.addressId);
+						        		$("#updateOrAdd").val("update");
+								    	$('#addFormButton').button('option', 'label', 'Save');
+								    	$("#addAddressForm").dialog( "option", "title", "Update Address" );
+						        		$("#addAddressForm").dialog( "open" );
+						        		$("#addressFieldContainer").click();
+									} else {
+										$("#globalMsg").html("Invalid session state. Reload the page and try again");
+									}
+								},
+								403: function($data) {
+									$("#globalMsg").html("Session Timeout. Log in and try again");
+								},
+								404: function($data) {
+									$("#globalMsg").html("System Error 404: Contact Support");
+								},
+								405: function($data) {
+									$("#globalMsg").html("System Error 405: Contact Support");
+								},
+								500: function($data) {
+									$("#globalMsg").html("System Error 500: Contact Support");
+								} 
+							},
+							dataType: 'json'
+						});
+					}
 				};
         		
 				
 				ADDRESSMAINTENANCE.init();
-        		
-        		
-        		
-        		
-        		
-        		
-        		
-        		
-        		
-        		
-        		
-        		
-        		
-        		
-        		
-        		
-        		
-        		
-        		
-        	
-    			
-
-	        	
-        	
-        	
-        		
-        		
-        		
-        		
-        		
-        		
-				
-
-				
-				
-				//$billToNameComplete._renderMenu = function( ul, items ) {
-				//	console.debug("Matched " + items.length + " items");
-				//	if ( items.length == 0 ) {
-				//   	alert("No matches")
-				//	}
-				//	var that = this;
-				//	$.each( items, function( index, item ) {
-				//		that._renderItemData( ul, item );
-				//	});
-				//	if ( items.length == 1 ) {
-				//		$addressId = items[0].id;
-				// 		populateAddressForm($addressId);
-				//	}
-				//};
-
-				
-				
-				
-        		
-        	
-        	
-        	
-	            
-	            
-	            
-            
-            
-            
-	            
-
-
-	            function doFunctionBinding() {
-					$( ".editAction" ).on( "click", function($clickEvent) {
-		        		$("#addAddressForm").dialog( "option", "title", "Update Address" );
-						 doEdit($clickEvent);
-					});
-					$('.delAction').on('click', function($clickEvent) {
-						doDelete($clickEvent);
-					});
-					
-					$('#addressTable_next').on('click', function($clickEvent) {
-		        		window.scrollTo(0, 0);
-		        	});
-					$('.viewAction').on('click', function($clickEvent) {
-						doView($clickEvent);
-					});
-					$( ".copyAction" ).on( "click", function($clickEvent) {
-		        		$("#addAddressForm").dialog( "option", "title", "Add Address" );
-						 doCopy($clickEvent);
-					});
-				}
-	            
-	            function doView($clickEvent) {
-	            	$clickEvent.preventDefault();
-					var $addressId = $clickEvent.currentTarget.attributes['data-id'].value;
-					ADDRESS_UTILS.getAddress($addressId, "#addressView");
-					$("#addressView").dialog("open");
-	            }
-			
-				function doEdit($clickEvent) {
-	            	$clickEvent.preventDefault();
-					var $rowid = $clickEvent.currentTarget.attributes['data-id'].value;
-					populateAddressForm($rowid, "edit");
-				}
-				
-				function doCopy($clickEvent) {
-	            	$clickEvent.preventDefault();
-					var $rowid = $clickEvent.currentTarget.attributes['data-id'].value;
-					populateAddressForm($rowid, "copy");
-				}
-				
-				function populateAddressForm($rowid, $action) {
-					var $url = 'address/' + $rowid;
-					var jqxhr = $.ajax({
-						type: 'GET',
-						url: $url,
-						statusCode: {
-							200: function($data) {
-								ADDRESSMAINTENANCE.clearAddForm();
-								var $address = $data.data.addressList[0];  // we're only getting one address
-								$.each($address, function($fieldName, $value) {									
-									$selector = "#addForm input[name=" + $fieldName + "]";
-									if ( $($selector).length > 0 ) {
-										$($selector).val($value);
-									}
-		        				});
-								$("#addForm select[name=countryCode]").val($address.countryCode);
-								$("#addForm select[name=state]").val($address.state);
-
-								
-								if ( $action == "copy" ) {
-									$('#addFormButton').button('option', 'label', 'Add Address');
-									$("#addAddressForm").dialog( "option", "title", "Add Address" );
-									$("#updateOrAdd").val("add");
-					        		$("#addAddressForm").dialog( "open" );
-								} else if ( $action == "edit" ) {
-					        		$("#aId").val($address.addressId);
-					        		$("#updateOrAdd").val("update");
-							    	$('#addFormButton').button('option', 'label', 'Save');
-							    	$("#addAddressForm").dialog( "option", "title", "Update Address" );
-					        		$("#addAddressForm").dialog( "open" );
-								} else {
-									$("#globalMsg").html("Invalid session state. Reload the page and try again");
-								}
-							},
-							403: function($data) {
-								$("#globalMsg").html("Session Timeout. Log in and try again");
-							},
-							404: function($data) {
-								$("#globalMsg").html("System Error 404: Contact Support");
-							},
-							405: function($data) {
-								$("#globalMsg").html("System Error 405: Contact Support");
-							},
-							500: function($data) {
-								$("#globalMsg").html("System Error 500: Contact Support");
-							} 
-						},
-						dataType: 'json'
-					});
-				}
-			
-				function doDelete($clickEvent) {
-					$clickEvent.preventDefault();
-					var $rowid = $clickEvent.currentTarget.attributes['data-id'].value;
-					
-					$( "#deleteConfirmDialog" ).dialog({
-						resizable: false,
-						height: "auto",
-						width: 400,
-						modal: true,
-						buttons: {
-							"Delete Address": function() {doDelete2($rowid);$( this ).dialog( "close" );},
-					        Cancel: function() {
-								$( this ).dialog( "close" );
-							}
-						}
-					});
-					$( "#deleteConfirmDialog" ).dialog( "open" );	
-				}
-			
-				function doDelete2($rowid){
-					$url = 'address/' + $rowid;
-            		var jqxhr = $.ajax({
-	            	    type: 'delete',
-	            	    url: $url,
-	            	    success: function($data) {
-            	    		$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
-							if ( $data.responseHeader.responseCode == 'SUCCESS') {
-								$("#addressTable").DataTable().row($rowid).remove();
-								$("#addressTable").DataTable().draw();
-							}
-            	     	},
-            	     	statusCode: {
-            	    		403: function($data) {
-            	    			$("#globalMsg").html("Session Timeout. Log in and try again");
-            	    		},
-            	    		500: function($data) {
-            	    			$( "#deleteErrorDialog" ).dialog({
-									modal: true,
-            	    		      	buttons: {
-            	    		        	Ok: function() {
-											$( this ).dialog( "close" );
-										}
-									}
-								});
-							} 
-						},
-						dataType: 'json'
-					});
-				}
-			
-				
 	        });
         </script>        
     </tiles:put>
     
     <tiles:put name="content" type="string">
-    	<h1><bean:message key="page.label.address" /> <bean:message key="menu.label.lookup" /></h1>
+    	<h1><bean:message key="page.label.address" /> <bean:message key="menu.label.lookup" /></h1>    	
     	
 	    <ansi:hasPermission permissionRequired="SYSADMIN">
 			<ansi:hasWrite>
@@ -655,6 +634,11 @@
 	    			<th><bean:message key="field.label.countryCode" /></th>
 	    			<th><bean:message key="field.label.state" /></th>
 	    			<th><bean:message key="field.label.zip" /></th>
+	    			<th><bean:message key="field.label.invoice.style" /></th>
+	    			<th><bean:message key="field.label.invoice.grouping" /></th>
+	    			<th><bean:message key="field.label.invoice.batch" /></th>
+	    			<th><bean:message key="field.label.invoice.terms" /></th>
+	    			<th><bean:message key="field.label.invoice.ourVendorNbr" /></th>
 	    			<th><bean:message key="field.label.action" /></th>
 	            </tr>
 	        </thead>
@@ -670,6 +654,11 @@
 	    			<th><bean:message key="field.label.countryCode" /></th>
 	    			<th><bean:message key="field.label.state" /></th>
 	    			<th><bean:message key="field.label.zip" /></th>
+	    			<th><bean:message key="field.label.invoice.style" /></th>
+	    			<th><bean:message key="field.label.invoice.grouping" /></th>
+	    			<th><bean:message key="field.label.invoice.batch" /></th>
+	    			<th><bean:message key="field.label.invoice.terms" /></th>
+	    			<th><bean:message key="field.label.invoice.ourVendorNbr" /></th>
 	    			<th><bean:message key="field.label.action" /></th>
 	    			
 	            </tr>
@@ -771,23 +760,23 @@
 							<td><span class="required"></span></td>
 							<td><span class="formLabel"><bean:message key="field.label.invoice.style" />:</span></td>
 							<td colspan="3">
-								<select name="invoiceStyle"></select>
-								<i id="invoiceStyleErr" class="fa errIcon" aria-hidden="true"></i>
+								<select name="invoiceStyleDefault"></select>
+								<i id="invoiceStyleDefaultErr" class="fa errIcon" aria-hidden="true"></i>
 							</td>
 						</tr>
 						<tr>
 							<td><span class="required"></span></td>
 							<td><span class="formLabel"><bean:message key="field.label.invoice.grouping" />:</span></td>
 							<td colspan="3">
-								<select name="invoiceGrouping"></select>
-								<i id="invoiceGroupingErr" class="fa errIcon" aria-hidden="true"></i>
+								<select name="invoiceGroupDefault"></select>
+								<i id="invoiceGroupDefaultErr" class="fa errIcon" aria-hidden="true"></i>
 							</td>
 						</tr>
 						<tr>
 							<td><span class="required"></span></td>
 							<td><span class="formLabel"><bean:message key="field.label.invoice.batch" />:</span></td>
 							<td colspan="3">
-								<input type="checkbox" name="invoiceBatch" value="yes" />
+								<input type="checkbox" name="invoiceBatchDefault" value="yes" />
 								<i id="batchErr" class="fa errIcon" aria-hidden="true"></i>
 							</td>
 						</tr>
@@ -795,16 +784,16 @@
 							<td><span class="required"></span></td>
 							<td><span class="formLabel"><bean:message key="field.label.invoice.terms" />:</span></td>
 							<td colspan="3">
-								<select name="invoiceTerms"></select>
-								<i id="invoiceTermsErr" class="fa errIcon" aria-hidden="true"></i>
+								<select name="invoiceTermsDefault"></select>
+								<i id="invoiceTermsDefaultErr" class="fa errIcon" aria-hidden="true"></i>
 							</td>
 						</tr>
 						<tr>
 							<td><span class="required"></span></td>
 							<td><span class="formLabel"><bean:message key="field.label.invoice.ourVendorNbr" />:</span></td>
 							<td colspan="3">
-								<input type="text" name="invoiceOurVendorNbr" style="width:315px" />
-								<i id="invoiceOurVendorNbrErr" class="fa errIcon" aria-hidden="true"></i>
+								<input type="text" name="invoiceourVendorNbrDefault" style="width:315px" />
+								<i id="invoiceourVendorNbrDefaultErr" class="fa errIcon" aria-hidden="true"></i>
 							</td>
 						</tr>
 					</table>
@@ -820,64 +809,12 @@
 		<%-- 
 		with optional label:
 		<webthing:addressDisplayPanel cssId="addressView" label="Keegan's mansion"/>
-		--%>				
-		<%-- <webthing:addressDisplayPanel cssId="addressView" />--%>
-		<div id="addressView">
-			<table style="width:100%;">
-				<tr>
-					<td><span class="ansi-address-label"><bean:message key="field.label.name" />:</span></td>
-					<td colspan="3">
-						<span class="ansi-address-name ansi-address-value" style="width:315px"></span>
-					</td>
-				</tr>
-				<tr>
-					<td><span class="ansi-address-label"><bean:message key="field.label.address1" />:</span></td>
-					<td colspan="3">
-						<span class="ansi-address-address1 ansi-address-value" style="width:315px"></span>
-					</td>						
-				</tr>
-				<tr>
-					<td><span class="ansi-address-label"><bean:message key="field.label.address2" />:</span></td>
-					<td colspan="3">
-						<span class="ansi-address-address2 ansi-address-value" style="width:315px"></span>
-					</td>						
-				</tr>
-				<tr>
-					<td><span class="ansi-address-label"><span class="formLabel"><bean:message key="field.label.city" />/<bean:message key="field.label.state" />/<bean:message key="field.label.zip" />:</span></td>
-					<td colspan="3" style="padding:0; margin:0;">
-						<table style="border-collapse: collapse;padding:0; margin:0;">
-							<tr>
-								<td>
-									<span class="ansi-address-city ansi-address-value" style="width:90px;"></span>
-								</td>
-								<td>
-									<span class="ansi-address-state ansi-address-value" style="width:85px"></span>
-								</td>
-								<td>
-									<span class="ansi-address-zip ansi-address-value" style="width:47px"></span>
-								</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-				<tr>
-					<td><span class="ansi-address-label"><bean:message key="field.label.county" />:</span></td>
-					<td>
-						<span class="ansi-address-county ansi-address-value" style="width:90%"></span>
-					</td>
-					<td colspan="2">
-						<table>
-							<tr>
-								<td><span class="ansi-address-label"><bean:message key="field.label.countryCode" />:</span></td>
-								<td align="right">
-									<span class="ansi-address-countryCode ansi-address-value"></span>
-								</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-			</table>
+		--%>
+		<div id="addressViewModal">			
+			<webthing:addressDisplayPanel cssId="addressView" />
+			<webthing:addressInvoicePanel cssId="invoiceDefault" />
 		</div>
+		
 		
 		<input  type="text" id="updateOrAdd" style="display:none" />
 		<input  type="text" id="aId" style="display:none" />

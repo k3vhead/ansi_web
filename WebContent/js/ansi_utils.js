@@ -33,17 +33,15 @@ $( document ).ready(function() {
 				url: $url,
 				data: {},
 				success: function($data) {
-					$returnValue = $data.data;
+					return $data.data;
 				},
 				statusCode: {
 					403: function($data) {
 						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
 					} 
 				},
-				dataType: 'json',
-				async:false
+				dataType: 'json'
 			});
-			return $returnValue;
 		},
 		
 		// get a list of divisions

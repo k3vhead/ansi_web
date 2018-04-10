@@ -180,35 +180,6 @@ public class AddressServlet extends AbstractServlet {
 	}
 
 
-	private void processAddRequest(Connection conn, HttpServletResponse response, AddressRequest addressRequest, Country country, SessionUser sessionUser) throws Exception {
-		Address address = new Address();
-		ResponseCode responseCode = null;
-		
-		List<String> badFields = super.validateRequiredAddFields(addressRequest);
-		WebMessages webMessages = makeWebMessages(conn, badFields);
-		if (webMessages.isEmpty()) {
-			try {
-				address = doAdd(conn, addressRequest, country, sessionUser);
-				String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
-				responseCode = ResponseCode.SUCCESS;
-				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
-			} catch ( DuplicateEntryException e ) {
-				String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
-				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-				responseCode = ResponseCode.EDIT_FAILURE;
-			} catch ( Exception e ) {
-				responseCode = ResponseCode.SYSTEM_FAILURE;
-				AppUtils.logException(e);
-				String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
-				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-			}
-		} else {
-			responseCode = ResponseCode.EDIT_FAILURE;
-		}
-		AddressResponse addressResponse = new AddressResponse(address, webMessages);
-		super.sendResponse(conn, response, responseCode, addressResponse);
-	}
-
 	protected Address doAdd(Connection conn, AddressRequest addressRequest, Country country, SessionUser sessionUser) throws Exception {
 		Date today = new Date();
 		Address address = new Address();
@@ -247,6 +218,32 @@ public class AddressServlet extends AbstractServlet {
 			// this is good -- means no duplicates
 		}
 		
+		if ( StringUtils.isBlank(addressRequest.getInvoiceStyleDefault())) {
+			address.setInvoiceStyleDefault(null);
+		} else {
+			address.setInvoiceStyleDefault(addressRequest.getInvoiceStyleDefault());
+		} 
+		if ( StringUtils.isBlank(addressRequest.getInvoiceGroupingDefault())) {
+			address.setInvoiceGroupingDefault(null);
+		} else {
+			address.setInvoiceGroupingDefault(addressRequest.getInvoiceGroupingDefault());
+		}
+		if ( addressRequest.getInvoiceBatchDefault() != null && addressRequest.getInvoiceBatchDefault() == 1) {
+			address.setInvoiceBatchDefault(Address.INVOICE_BATCH_DEFAULT_IS_YES);
+		} else {
+			address.setInvoiceBatchDefault(Address.INVOICE_BATCH_DEFAULT_IS_NO);
+		}
+		if ( StringUtils.isBlank(addressRequest.getInvoiceTermsDefault())) {
+			address.setInvoiceTermsDefault(null);
+		} else {
+			address.setInvoiceTermsDefault(addressRequest.getInvoiceTermsDefault());
+		} 
+		if ( StringUtils.isBlank(addressRequest.getInvoiceOurVendorNbrDefault())) {
+			address.setOurVendorNbrDefault(null);
+		} else {
+			address.setOurVendorNbrDefault(addressRequest.getInvoiceOurVendorNbrDefault());
+		} 
+		
 		address.setAddedBy(sessionUser.getUserId());
 		address.setAddedDate(today);
 		address.setUpdatedBy(sessionUser.getUserId());
@@ -266,6 +263,89 @@ public class AddressServlet extends AbstractServlet {
 	}
 
 
+
+	protected Address doUpdate(Connection conn, Address key, AddressRequest addressRequest, Country country, SessionUser sessionUser) throws Exception {
+		logger.log(Level.DEBUG, "This is the key:");
+		logger.log(Level.DEBUG, key);
+		Date today = new Date();
+		Address address = new Address();
+		
+		address.setAddedBy(sessionUser.getUserId());
+		address.setAddedDate(today);
+		address.setCountryCode(country.abbrev());
+		address.setAddressId(addressRequest.getAddressId());
+		address.setAddress1(addressRequest.getAddress1());
+		address.setAddress2(addressRequest.getAddress2());
+		address.setCity(addressRequest.getCity());
+		address.setCounty(addressRequest.getCounty());
+		address.setName(addressRequest.getName());
+		address.setState(addressRequest.getState());
+		address.setStatus(addressRequest.getStatus());
+		address.setZip(addressRequest.getZip());
+		
+		if ( StringUtils.isBlank(addressRequest.getInvoiceStyleDefault())) {
+			address.setInvoiceStyleDefault(null);
+		} else {
+			address.setInvoiceStyleDefault(addressRequest.getInvoiceStyleDefault());
+		} 
+		if ( StringUtils.isBlank(addressRequest.getInvoiceGroupingDefault())) {
+			address.setInvoiceGroupingDefault(null);
+		} else {
+			address.setInvoiceGroupingDefault(addressRequest.getInvoiceGroupingDefault());
+		}
+		if ( addressRequest.getInvoiceBatchDefault() != null && addressRequest.getInvoiceBatchDefault() == 1) {
+			address.setInvoiceBatchDefault(Address.INVOICE_BATCH_DEFAULT_IS_YES);
+		} else {
+			address.setInvoiceBatchDefault(Address.INVOICE_BATCH_DEFAULT_IS_NO);
+		}
+		if ( StringUtils.isBlank(addressRequest.getInvoiceTermsDefault())) {
+			address.setInvoiceTermsDefault(null);
+		} else {
+			address.setInvoiceTermsDefault(addressRequest.getInvoiceTermsDefault());
+		} 
+		if ( StringUtils.isBlank(addressRequest.getInvoiceOurVendorNbrDefault())) {
+			address.setOurVendorNbrDefault(null);
+		} else {
+			address.setOurVendorNbrDefault(addressRequest.getInvoiceOurVendorNbrDefault());
+		} 
+	
+		address.setUpdatedBy(sessionUser.getUserId());
+		address.setUpdatedDate(today);
+		
+		// if we update something that isn't there, a RecordNotFoundException gets thrown
+		// that exception get propagated and turned into a 404
+		address.update(conn, key);		
+		return address;
+	}
+
+	private void processAddRequest(Connection conn, HttpServletResponse response, AddressRequest addressRequest, Country country, SessionUser sessionUser) throws Exception {
+		Address address = new Address();
+		ResponseCode responseCode = null;
+		
+		List<String> badFields = super.validateRequiredAddFields(addressRequest);
+		WebMessages webMessages = makeWebMessages(conn, badFields);
+		if (webMessages.isEmpty()) {
+			try {
+				address = doAdd(conn, addressRequest, country, sessionUser);
+				String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
+				responseCode = ResponseCode.SUCCESS;
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+			} catch ( DuplicateEntryException e ) {
+				String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+				responseCode = ResponseCode.EDIT_FAILURE;
+			} catch ( Exception e ) {
+				responseCode = ResponseCode.SYSTEM_FAILURE;
+				AppUtils.logException(e);
+				String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+			}
+		} else {
+			responseCode = ResponseCode.EDIT_FAILURE;
+		}
+		AddressResponse addressResponse = new AddressResponse(address, webMessages);
+		super.sendResponse(conn, response, responseCode, addressResponse);
+	}
 
 	private void processUpdateRequest(Connection conn, HttpServletResponse response, Integer addressId, AddressRequest addressRequest, Country country, SessionUser sessionUser) throws Exception {
 		logger.log(Level.DEBUG, "Doing Update Stuff");	
@@ -304,34 +384,6 @@ public class AddressServlet extends AbstractServlet {
 			AddressResponse addressResponse = new AddressResponse(address, webMessages);
 			super.sendResponse(conn, response, responseCode, addressResponse);
 		}
-	}
-
-	protected Address doUpdate(Connection conn, Address key, AddressRequest addressRequest, Country country, SessionUser sessionUser) throws Exception {
-		logger.log(Level.DEBUG, "This is the key:");
-		logger.log(Level.DEBUG, key);
-		Date today = new Date();
-		Address address = new Address();
-		
-		address.setAddedBy(sessionUser.getUserId());
-		address.setAddedDate(today);
-		address.setCountryCode(country.abbrev());
-		address.setAddressId(addressRequest.getAddressId());
-		address.setAddress1(addressRequest.getAddress1());
-		address.setAddress2(addressRequest.getAddress2());
-		address.setCity(addressRequest.getCity());
-		address.setCounty(addressRequest.getCounty());
-		address.setName(addressRequest.getName());
-		address.setState(addressRequest.getState());
-		address.setStatus(addressRequest.getStatus());
-		address.setZip(addressRequest.getZip());
-
-		address.setUpdatedBy(sessionUser.getUserId());
-		address.setUpdatedDate(today);
-		
-		// if we update something that isn't there, a RecordNotFoundException gets thrown
-		// that exception get propagated and turned into a 404
-		address.update(conn, key);		
-		return address;
 	}
 
 	private AddressListResponse makeAddressListResponse(Connection conn) throws Exception {
