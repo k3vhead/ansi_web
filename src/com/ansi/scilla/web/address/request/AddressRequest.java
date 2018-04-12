@@ -20,6 +20,19 @@ import com.thewebthing.commons.lang.JsonException;
 	
 		private static final long serialVersionUID = 1L;
 		
+		public static final String NAME = "name";
+		public static final String ADDRESS1 = "address1";
+		public static final String ADDRESS2 = "address2";
+		public static final String CITY = "city";
+		public static final String ZIP = "zip";
+		public static final String COUNTY = "county";
+		public static final String INVOICE_BATCH_DEFAULT = "invoiceBatchDefault";
+		public static final String INVOICE_OUR_VENDOR_NBR_DEFAULT = "invoiceOurVendorNbrDefault";
+		public static final String STATE = "state";
+		public static final String INVOICE_STYLE_DEFAULT = "invoiceStyleDefault";
+		public static final String INVOICE_GROUPING_DEFAULT = "invoiceGroupingDefault";
+		public static final String INVOICE_TERMS_DEFAULT = "invoiceTermsDefault";
+		
 		private String address1;
 		private String address2;
 		private Integer addressId;
@@ -130,43 +143,43 @@ import com.thewebthing.commons.lang.JsonException;
 		public String getZip() {
 			return this.zip;
 		}
-		@JsonProperty("invoiceStyle")
+		@JsonProperty(INVOICE_STYLE_DEFAULT)
 		public String getInvoiceStyleDefault() {
 			return invoiceStyleDefault;
 		}
-		@JsonProperty("invoiceStyle")
+		@JsonProperty(INVOICE_STYLE_DEFAULT)
 		public void setInvoiceStyleDefault(String invoiceStyleDefault) {
 			this.invoiceStyleDefault = invoiceStyleDefault;
 		}
-		@JsonProperty("invoiceGrouping")
+		@JsonProperty(INVOICE_GROUPING_DEFAULT)
 		public String getInvoiceGroupingDefault() {
 			return invoiceGroupingDefault;
 		}
-		@JsonProperty("invoiceGrouping")
+		@JsonProperty(INVOICE_GROUPING_DEFAULT)
 		public void setInvoiceGroupingDefault(String invoiceGroupingDefault) {
 			this.invoiceGroupingDefault = invoiceGroupingDefault;
 		}
-		@JsonProperty("invoiceBatch")
+		@JsonProperty(INVOICE_BATCH_DEFAULT)
 		public Integer getInvoiceBatchDefault() {
 			return invoiceBatchDefault;
 		}
-		@JsonProperty("invoiceBatch")
+		@JsonProperty(INVOICE_BATCH_DEFAULT)
 		public void setInvoiceBatchDefault(Integer invoiceBatchDefault) {
 			this.invoiceBatchDefault = invoiceBatchDefault;
 		}
-		@JsonProperty("invoiceTerms")
+		@JsonProperty(INVOICE_TERMS_DEFAULT)
 		public String getInvoiceTermsDefault() {
 			return invoiceTermsDefault;
 		}
-		@JsonProperty("invoiceTerms")
+		@JsonProperty(INVOICE_TERMS_DEFAULT)
 		public void setInvoiceTermsDefault(String invoiceTermsDefault) {
 			this.invoiceTermsDefault = invoiceTermsDefault;
 		}
-		@JsonProperty("invoiceOurVendorNbr")
+		@JsonProperty(INVOICE_OUR_VENDOR_NBR_DEFAULT)
 		public String getInvoiceOurVendorNbrDefault() {
 			return invoiceOurVendorNbrDefault;
 		}
-		@JsonProperty("invoiceOurVendorNbr")
+		@JsonProperty(INVOICE_OUR_VENDOR_NBR_DEFAULT)
 		public void setInvoiceOurVendorNbrDefault(String invoiceOurVendorNbrDefault) {
 			this.invoiceOurVendorNbrDefault = invoiceOurVendorNbrDefault;
 		}

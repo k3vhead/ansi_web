@@ -255,9 +255,9 @@
 		        		});
 	        		
 		        		if ( $("#addForm input[name='invoiceBatchDefault']").prop("checked") == true ) {
-		        			$outbound['invoiceBatch'] = 1;
+		        			$outbound['invoiceBatchDefault'] = 1;
 		        		} else {
-		        			$outbound['invoiceBatch'] = 0;
+		        			$outbound['invoiceBatchDefault'] = 0;
 		        		}
 		        		
 	        			if($("#updateOrAdd").val() =="add"){
@@ -533,7 +533,7 @@
 		                });
 		                
 		                
-		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceGroupDefault']", $optionData.invoiceGrouping, null);
+		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceGroupingDefault']", $optionData.invoiceGrouping, null);
 		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceTermsDefault']", $optionData.invoiceTerm, null);
 		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceStyleDefault']", $optionData.invoiceStyle,null);
 		            },
@@ -559,9 +559,9 @@
 									$("#addForm select[name=countryCode]").val($address.countryCode);
 									$("#addForm select[name=state]").val($address.state);
 									$("#addForm select[name='invoiceStyleDefault']").val($address.invoiceStyleDefault);
-									$("#addForm select[name='invoiceGroupDefault']").val($address.invoiceGroupingDefault);
+									$("#addForm select[name='invoiceGroupingDefault']").val($address.invoiceGroupingDefault);
 									$("#addForm select[name='invoiceTermsDefault']").val($address.invoiceTermsDefault);									
-									$("#addForm input[name='invoiceourVendorNbrDefault']").val($address.ourVendorNbrDefault);
+									$("#addForm input[name='invoiceOurVendorNbrDefault']").val($address.ourVendorNbrDefault);
 									
 									if ( $address.invoiceBatchDefault == 1 ) {
 										$("#addForm input[name='invoiceBatchDefault']").prop("checked", true);
@@ -768,8 +768,8 @@
 							<td><span class="required"></span></td>
 							<td><span class="formLabel"><bean:message key="field.label.invoice.grouping" />:</span></td>
 							<td colspan="3">
-								<select name="invoiceGroupDefault"></select>
-								<i id="invoiceGroupDefaultErr" class="fa errIcon" aria-hidden="true"></i>
+								<select name="invoiceGroupingDefault"></select>
+								<i id="invoiceGroupingDefaultErr" class="fa errIcon" aria-hidden="true"></i>
 							</td>
 						</tr>
 						<tr>
@@ -777,7 +777,7 @@
 							<td><span class="formLabel"><bean:message key="field.label.invoice.batch" />:</span></td>
 							<td colspan="3">
 								<input type="checkbox" name="invoiceBatchDefault" value="yes" />
-								<i id="batchErr" class="fa errIcon" aria-hidden="true"></i>
+								<i id="invoiceBatchDefaultErr" class="fa errIcon" aria-hidden="true"></i>
 							</td>
 						</tr>
 						<tr>
@@ -792,8 +792,8 @@
 							<td><span class="required"></span></td>
 							<td><span class="formLabel"><bean:message key="field.label.invoice.ourVendorNbr" />:</span></td>
 							<td colspan="3">
-								<input type="text" name="invoiceourVendorNbrDefault" style="width:315px" />
-								<i id="invoiceourVendorNbrDefaultErr" class="fa errIcon" aria-hidden="true"></i>
+								<input type="text" name="invoiceOurVendorNbrDefault" style="width:315px" />
+								<i id="invoiceOurVendorNbrDefaultErr" class="fa errIcon" aria-hidden="true"></i>
 							</td>
 						</tr>
 					</table>
