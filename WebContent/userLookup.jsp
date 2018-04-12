@@ -76,6 +76,22 @@
         			USERLOOKUP.createTable();
         		},
         		
+        		
+        		doFunctionBinding : function() {
+					$( ".editAction" ).on( "click", function($clickevent) {
+						 doEdit($clickevent);
+					});					
+					$(".print-link").on( "click", function($clickevent) {
+						doPrint($clickevent);
+					});
+					//$(".editJob").on( "click", function($clickevent) {
+					//	console.debug("clicked a job")
+					//	var $jobId = $(this).data("jobid");
+					//	location.href="jobMaintenance.html?id=" + $jobId;
+					//});
+				},
+				
+				
         		enableClicks : function() {
         			$('.ScrollTop').click(function() {
         				$('html, body').animate({scrollTop: 0}, 800);
@@ -108,7 +124,7 @@
             	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
             	        ],
             	        buttons: [
-            	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}}
+            	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {USERLOOKUP.doFunctionBinding();}}
             	        ],
             	        
             	        "columnDefs": [
@@ -172,10 +188,10 @@
     			            } }],
     			            "initComplete": function(settings, json) {
     			            	//console.log(json);
-    			            	doFunctionBinding();
+    			            	USERLOOKUP.doFunctionBinding();
     			            },
     			            "drawCallback": function( settings ) {
-    			            	doFunctionBinding();
+    			            	USERLOOKUP.doFunctionBinding();
     			            }
     			    } );
             	},
