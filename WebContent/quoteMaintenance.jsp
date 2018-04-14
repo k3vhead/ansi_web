@@ -233,12 +233,12 @@
         	}
         	#quoteButtonContainer {
         		float:left;
-        		width:110px;
+        		width:30px;
         		text-align:left;
         	}
         	#quoteDataContainer {
         		float:right;
-        		width:1175px;
+        		width:1250px;
         	}
 			#quotePanel {
 				display:none;
@@ -246,10 +246,11 @@
 				padding:8px;
 				width:1300px;
 			}
-			.quoteButton {
-				width:100px;
-				margin-top:4px;
-				margin-bottom:4px;
+			.quote-button {
+				margin-top:2px;
+				margin-bottom:2px;
+				padding-top:2px;
+				padding-bottom:2px;
 			}
 			.spacer {
 				font-size:1px;
@@ -268,42 +269,54 @@
 	    		<colgroup>
 	    			<!-- Manager -->
 		        	<col style="width:8px;" />  <!-- req -->
-		        	<col style="width:100px;" />  <!-- label -->
-		        	<col style="width:150px;" />  <!-- input -->
-		        	<col style="width:8px;" />  <!-- err -->
+		        	<col style="width:120px;" />  <!-- label -->
+		        	<col style="width:200px;" />  <!-- input -->
+		        	<col style="width:10px;" />  <!-- err -->
+		        	<col style="width:32px;" />	<!-- spacer -->
 		        	
 		    		<!-- Division -->
 		        	<col style="width:8px;" />  <!-- req -->
-		        	<col style="width:130px;" />  <!-- label -->
-		        	<col style="width:150px;" />  <!-- input -->
-		        	<col style="width:8px;" />  <!-- err -->
+		        	<col style="width:120px;" />  <!-- label -->
+		        	<col style="width:200px;" />  <!-- input -->
+		        	<col style="width:10px;" />  <!-- err -->
+		        	<col style="width:32px;" />	<!-- spacer -->
+		        	
+		        	<!-- Quote -->
+		        	<col style="width:8px;" />  <!-- req -->
+		        	<col style="width:120px;" />  <!-- label -->
+		        	<col style="width:200px;" />  <!-- input -->
+		        	<col style="width:10px;" />  <!-- err -->
+		        	<col style="width:32px;" />	<!-- spacer -->
 		        	
 		        	<!--  rest of it -->
-		        	<col style="width:120px;" />  <!--  quote -->
-		        	<col style="width:180px;" />  <!--  revision -->
-		        	
-		        	<col style="width:145px;" />  <!--  icons -->
-		        	
+		        	<col style="width:140px" />  <!--  icons -->		        	
 	    		</colgroup> 
     			<tr>
     				<td><span class="required">*</span></td>
     				<td><span class="formLabel">Manager:</span></td>
     				<td><select name="managerId"></select></td>
     				<td><span class="err" id="managerIdErr"></span></td>
+    				<td>&nbsp;</td>
     				
     				<td><span class="required">*</span></td>
     				<td><span class="formLabel">Division:</span></td>
     				<td><select name="divisionId"></select></td>
     				<td><span class="err" id="divisionIdErr"></span></td>
+    				<td>&nbsp;</td>
     				
-    				<td><span class="formLabel">Quote</span></td>
-    				<td><span class="formLabel">Revision</span></td>
+    				<td><span class="required"></span></td>
+    				<td colspan="3">
+    					<span class="formLabel">Quote:</span> 
+    					<span id="quoteNbrDisplay">12345</span><span id="revisionDisplay">A</span>
+    				</td>
+    				<td>&nbsp;</td>
     				
-    				<td rowspan="3">
+    				
+    				<td rowspan="4" style="text-align:center;">
     					<span class="fa-stack fa-2x tooltip" style="color:#444444;">
 							<i class="fa fa-print fa-stack-2x" id="printButton" aria=hidden="true"><span class="tooltiptext">Print</span></i>
 						</span>
-						<%-- <i class="fa fa-list-alt fa-3x" id="viewPrintHistory" aria=hidden="true"></i>--%>
+						<br />
 						<span class="fa-stack fa-2x tooltip" id="viewPrintHistory" style="color:#444444;">
 							<i class="fa fa-list-alt fa-stack-2x"><span class="tooltiptext">Print History<br />Print Count</span></i>
 							<i class="fa fa-stack-1x"><span style="color:#FFFFFF; text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000, 1px 1px 0 #000; font-weight:bold;" id="printCount">N/A</span></i>
@@ -313,39 +326,74 @@
     			
     			<tr>
     				<td><span class="required">*</span></td>
-    				<td><span class="formLabel">Lead Type:</span></td>
-    				<td><select name="leadType"></select></td>
-    				<td><span class="err" id="leadTypeErr"></span></td>
-    				
-    				<td><span class="required">*</span></td>
     				<td><span class="formLabel">Account Type:</span></td>
     				<td><select name="accountType"></select></td>
     				<td><span class="err" id="accountTypeErr"></span></td>
+    				<td>&nbsp;</td>
     				
-    				<td><input type="text" name="quoteNbr" style="width:80px;" /></td>
-    				<td><input type="text" name="revision" style="width:80px;" /></td>
+    				<td><span class="required">*</span></td>
+    				<td><span class="formLabel">Invoice Terms:</span></td>
+    				<td><select name="invoiceTerms"></select></td>
+    				<td><span class="err" id="invoiceTermsErr"></span></td>   				
+    				<td>&nbsp;</td>
+    				
+    				<td><span class="required"></span></td>
+    				<td><span class="formLabel">Proposed Date:</span></td>
+    				<td><span id="proposedDate">N/A</span></td>
+    				<td><span class="err" id="proposedDateErr"></span></td>
+    				<td>&nbsp;</td>
+    			</tr>
+    			
+    			<tr>    				    				    				
+    				<td><span class="required">*</span></td>
+    				<td><span class="formLabel">Lead Type:</span></td>
+    				<td><select name="leadType"></select></td>
+    				<td><span class="err" id="leadTypeErr"></span></td>
+    				<td>&nbsp;</td>
+
+    				<td><span class="required">*</span></td>
+    				<td><span class="formLabel">Invoice Style:</span></td>
+    				<td><select name="invoiceStyle"></select></td>
+    				<td><span class="err" id="invoiceStyleErr"></span></td>
+    				<td>&nbsp;</td>
+    				
+    				<td><span class="required"></span></td>    				
+    				<td><span class="formLabel">Signed By:</span></td>
+    				<td><input type="text" name="signedBy" /></td>
+    				<td><span class="err" id="signedByErr"></span></td>
+    				<td>&nbsp;</td>
     			</tr>
     			
     			<tr>
     				<td><span class="required">*</span></td>
-    				<td><span class="formLabel">Signed By:</span></td>
-    				<td><input type="text" name="signedfBy" /></td>
-    				<td><span class="err" id="signedByErr"></span></td>
+    				<td><span class="formLabel">Building Type:</span></td>
+					<td><select name="buildingType"></select></td>
+    				<td><span class="err" id="invoiceGroupingErr"></span></td>
+    				<td>&nbsp;</td>
+					
+					<td><span class="required">*</span></td>
+    				<td><span class="formLabel">Grouping:</span></td>
+    				<td><select name="invoiceGrouping"></select></td>
+    				<td><span class="err" id="invoiceGroupingErr"></span></td> 
+    				<td>&nbsp;</td>
     				
-    				<td><span class="required">*</span></td>
-    				<td><span class="formLabel">Proposed Date:</span></td>
-    				<td><input type="text" name="proposedDate" class="dateField" /></td>
-    				<td><span class="err" id="proposedDateErr"></span></td>
-    				
-    				<td colspan="2">
-    					<span class="formLabel">Building Type:</span>&nbsp;<select name="buildingType"></select>
-					</td>
+    				<td><span class="required"></span></td>
+    				<td><span class="formLabel">Batch:</span> <input type="checkbox" name="invoiceBatch" /></td>    					
+    				<td><span class="formLabel">Tax Exempt:</span> <input type="checkbox" name="taxExempt" /></td>
+    				<td><span class="err" id="invoiceTermsErr"></span></td>
+    				<td>&nbsp;</td>
     			</tr>
     		</table>
     		<div id="quoteButtonContainer">
+    			<webthing:edit styleClass="fa-2x quote-button">Edit</webthing:edit><br />
+    			<webthing:copy styleClass="fa-2x quote-button">Copy</webthing:copy><br />
+    			<webthing:view styleClass="fa-2x quote-button">Search</webthing:view><br />
+    			<webthing:addNew styleClass="fa-2x quote-button">New</webthing:addNew><br />
+    			<%--
     			<input type="button" class="quoteButton" id="buttonModifyQuote" value="Modify" /><br />
     			<input type="button" class="quoteButton" id="buttonCopyQuote" value="Copy" /><br />
     			<input type="button" class="quoteButton" id="buttonNewQuote" value="New" /><br />
+    			 --%>
     		</div>
     		<div class="spacer">&nbsp;</div>
     	</div>
