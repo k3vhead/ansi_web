@@ -48,6 +48,7 @@
 					
 					init : function() {
 						QUOTEMAINTENANCE.makeOptionLists();
+						QUOTEMAINTENANCE.populateOptionSelects();
 						QUOTEMAINTENANCE.makeButtons();
 						if (QUOTEMAINTENANCE.quoteId != '' ) {
 							QUOTEMAINTENANCE.getQuote(QUOTEMAINTENANCE.quoteId);	
@@ -214,6 +215,30 @@
 		            },
 		            
 		            
+		            populateOptionSelects : function() {
+						var $select = $("#quoteDataContainer select[name='invoiceTerms']");
+						$('option', $select).remove();
+						$select.append(new Option("",""));
+						$.each(QUOTEMAINTENANCE.invoiceTermList, function(index, val) {
+						    $select.append(new Option(val.display, val.abbrev));
+						});
+						
+						var $select = $("#quoteDataContainer select[name='invoiceStyle']");
+						$('option', $select).remove();
+						$select.append(new Option("",""));
+						$.each(QUOTEMAINTENANCE.invoiceStyleList, function(index, val) {
+						    $select.append(new Option(val.display, val.abbrev));
+						});
+						
+						var $select = $("#quoteDataContainer select[name='invoiceGrouping']");
+						$('option', $select).remove();
+						$select.append(new Option("",""));
+						$.each(QUOTEMAINTENANCE.invoiceGroupingList, function(index, val) {
+						    $select.append(new Option(val.display, val.abbrev));
+						});
+		            },
+		            
+		            
 		            populateQuotePanel : function($quote) {
 		            	
 		            },
@@ -332,7 +357,7 @@
     				<td>&nbsp;</td>
     				
     				<td><span class="required">*</span></td>
-    				<td><span class="formLabel">Invoice Terms:</span></td>
+    				<td><span class="formLabel"><bean:message key="field.label.invoice.terms" />:</span></td>
     				<td><select name="invoiceTerms"></select></td>
     				<td><span class="err" id="invoiceTermsErr"></span></td>   				
     				<td>&nbsp;</td>
@@ -352,7 +377,7 @@
     				<td>&nbsp;</td>
 
     				<td><span class="required">*</span></td>
-    				<td><span class="formLabel">Invoice Style:</span></td>
+    				<td><span class="formLabel"><bean:message key="field.label.invoice.style" />:</span></td>
     				<td><select name="invoiceStyle"></select></td>
     				<td><span class="err" id="invoiceStyleErr"></span></td>
     				<td>&nbsp;</td>
@@ -372,7 +397,7 @@
     				<td>&nbsp;</td>
 					
 					<td><span class="required">*</span></td>
-    				<td><span class="formLabel">Grouping:</span></td>
+    				<td><span class="formLabel"><bean:message key="field.label.invoice.grouping" />:</span></td>
     				<td><select name="invoiceGrouping"></select></td>
     				<td><span class="err" id="invoiceGroupingErr"></span></td> 
     				<td>&nbsp;</td>
@@ -386,6 +411,7 @@
     		</table>
     		<div id="quoteButtonContainer">
     			<webthing:edit styleClass="fa-2x quote-button">Edit</webthing:edit><br />
+    			<webthing:revise styleClass="fa-2x quote-button">Revise</webthing:revise><br />
     			<webthing:copy styleClass="fa-2x quote-button">Copy</webthing:copy><br />
     			<webthing:view styleClass="fa-2x quote-button">Search</webthing:view><br />
     			<webthing:addNew styleClass="fa-2x quote-button">New</webthing:addNew><br />
