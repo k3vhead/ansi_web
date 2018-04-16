@@ -162,43 +162,43 @@
         	        "paging": false,
         	        data: $data.responseItemList,
 			        columns: [
-			            { title: "Ticket", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            { title: "<bean:message key="field.label.ticketNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.ticketId != null){return (row.ticketId+"");}
 			            } },
-			            { title: "Status", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "<bean:message key="field.label.ticketNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.status != null){return (row.status+"");}
 			            } },
-			            { title: "Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "<bean:message key="field.label.name" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.name != null){return (row.name+"");}
 			            } },
-			            { title: "Address",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "<bean:message key="field.label.address1TV" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.address1 != null){return (row.address1+"");}
 			            } },
-			            { title: "City", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "<bean:message key="field.label.city" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.city != null){return (row.city+"");}
 			            } },
-			            { title: "Last Done", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "<bean:message key="field.label.lastDone" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.lastDone != null){return (row.lastDone+"");}
 			            } },
-			            { title: "Start Date", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "<bean:message key="field.label.startDate" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.startDate != null){return (row.startDate+"");}
 			            } },
-			            { title: "Job #", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
+			            { title: "<bean:message key="field.label.jobNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
 			            	if(row.jobNum != null){return (row.jobNum+"");}
 			            } },
-			            { title: "Freq", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "<bean:message key="field.label.frequency" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.frequency != null){return (row.frequency+"");}
 			            } },
-			            { title: "Budget", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "<bean:message key="field.label.budget" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.budget!= null){return (row.budget+"");}
 			            } },
-			            { title: "PPC", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "<bean:message key="field.label.pricePerCleaning" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.ppc != null){return (row.ppc+"");}
 			            } },
-			            { title: "COD", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            { title: "<bean:message key="field.label.cod" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.cod != null){return (row.cod+"");} 
 			            } },
-			            { title: "Job Id", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            { title: "<bean:message key="field.label.jobId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.jobId != null){return (row.jobId+"");} 
 			            } },
 			            ],
@@ -257,18 +257,18 @@
 		</select>
 		<select id="month">  
 			<option value=""></option>
-			<option value="<%= Calendar.JANUARY %>">January</option>
-			<option value="<%= Calendar.FEBRUARY %>">February</option>
-			<option value="<%= Calendar.MARCH %>">March</option>
-			<option value="<%= Calendar.APRIL %>">April</option>
-			<option value="<%= Calendar.MAY %>">May</option>
-			<option value="<%= Calendar.JUNE %>">June</option>
-			<option value="<%= Calendar.JULY %>">July</option>
-			<option value="<%= Calendar.AUGUST %>">August</option>
-			<option value="<%= Calendar.SEPTEMBER %>">September</option>
-			<option value="<%= Calendar.OCTOBER %>">October</option>
-			<option value="<%= Calendar.NOVEMBER %>">November</option>
-			<option value="<%= Calendar.DECEMBER %>">December</option>
+			<option value="<%= Calendar.JANUARY %>"><bean:message key="field.label.january" /></option>
+			<option value="<%= Calendar.FEBRUARY %>"<bean:message key="field.label.february" /></option>
+			<option value="<%= Calendar.MARCH %>"><bean:message key="field.label.march" /></option>
+			<option value="<%= Calendar.APRIL %>"><bean:message key="field.label.april" /></option>
+			<option value="<%= Calendar.MAY %>"><bean:message key="field.label.may" /></option>
+			<option value="<%= Calendar.JUNE %>"><bean:message key="field.label.june" /></option>
+			<option value="<%= Calendar.JULY %>"><bean:message key="field.label.july" /></option>
+			<option value="<%= Calendar.AUGUST %>"><bean:message key="field.label.august" /></option>
+			<option value="<%= Calendar.SEPTEMBER %>"><bean:message key="field.label.september" /></option>
+			<option value="<%= Calendar.OCTOBER %>"><bean:message key="field.label.october" /></option>
+			<option value="<%= Calendar.NOVEMBER %>"><bean:message key="field.label.november" /></option>
+			<option value="<%= Calendar.DECEMBER %>"><bean:message key="field.label.december" /></option>
  		</select>
  		<input id="doPopulate" type="button" value="Go" />
 		
@@ -323,36 +323,36 @@
    		</colgroup>        
         <thead>
             <tr>
-                <th>Ticket</th>
-    			<th>Status</th>
-    			<th>Name</th>
-    			<th>Address</th>
-    			<th>City</th>
-    			<th>Last Done</th>
-    			<th>Start Date</th>
-    			<th>Job #</th>
-    			<th>Frq</th>
-    			<th>Budget</th>
-    			<th>PPC</th>
-    			<th>COD</th>
-    			<th>Job ID</th>
+                <th><bean:message key="field.label.ticketNbr" /></th>
+    			<th><bean:message key="field.label.status" /></th>
+    			<th><bean:message key="field.label.name" /></th>
+    			<th><bean:message key="field.label.address1TV" /></th>
+    			<th><bean:message key="field.label.city" /></th>
+    			<th><bean:message key="field.label.lastDone" /></th>
+    			<th><bean:message key="field.label.startDate" /></th>
+    			<th><bean:message key="field.label.jobNbr" /></th>
+    			<th><bean:message key="field.label.frequency" /></th>
+    			<th><bean:message key="field.label.budget" /></th>
+    			<th><bean:message key="field.label.pricePerCleaning" /></th>
+    			<th><bean:message key="field.label.cod" /></th>
+    			<th><bean:message key="field.label.jobId" /></th>
             </tr>
         </thead>
         <tfoot>
             <tr>
-                <th>Ticket</th>
-    			<th>Status</th>
-    			<th>Name</th>
-    			<th>Address</th>
-    			<th>City</th>
-    			<th>Last Done</th>
-    			<th>Start Date</th>
-    			<th>Job #</th>
-    			<th>Frq</th>
-    			<th>Budget</th>
-    			<th>PPC</th>
-    			<th>COD</th>
-    			<th>Job ID</th>
+                <th><bean:message key="field.label.ticketNbr" /></th>
+    			<th><bean:message key="field.label.status" /></th>
+    			<th><bean:message key="field.label.name" /></th>
+    			<th><bean:message key="field.label.address1TV" /></th>
+    			<th><bean:message key="field.label.city" /></th>
+    			<th><bean:message key="field.label.lastDone" /></th>
+    			<th><bean:message key="field.label.startDate" /></th>
+    			<th><bean:message key="field.label.jobNbr" /></th>
+    			<th><bean:message key="field.label.frequency" /></th>
+    			<th><bean:message key="field.label.budget" /></th>
+    			<th><bean:message key="field.label.pricePerCleaning" /></th>
+    			<th><bean:message key="field.label.cod" /></th>
+    			<th><bean:message key="field.label.jobId" /></th>
             </tr>
         </tfoot>
     </table>

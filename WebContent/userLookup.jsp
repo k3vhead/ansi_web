@@ -18,7 +18,7 @@
 <tiles:insert page="layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        User Lookup
+        <bean:message key="field.label.userLookupTitle" />
     </tiles:put>
     
     
@@ -76,22 +76,6 @@
         			USERLOOKUP.createTable();
         		},
         		
-        		
-        		doFunctionBinding : function() {
-					$( ".editAction" ).on( "click", function($clickevent) {
-						 doEdit($clickevent);
-					});					
-					$(".print-link").on( "click", function($clickevent) {
-						doPrint($clickevent);
-					});
-					//$(".editJob").on( "click", function($clickevent) {
-					//	console.debug("clicked a job")
-					//	var $jobId = $(this).data("jobid");
-					//	location.href="jobMaintenance.html?id=" + $jobId;
-					//});
-				},
-				
-				
         		enableClicks : function() {
         			$('.ScrollTop').click(function() {
         				$('html, body').animate({scrollTop: 0}, 800);
@@ -124,7 +108,7 @@
             	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
             	        ],
             	        buttons: [
-            	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {USERLOOKUP.doFunctionBinding();}}
+            	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}}
             	        ],
             	        
             	        "columnDefs": [
@@ -141,28 +125,28 @@
     			        	},
     			        aaSorting:[1],
     			        columns: [
-    			        	{ title: "ID", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			        	{ title: "<bean:message key="field.label.userId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
     			            	if(row.userId != null){return (row.userId+"");}
     			            } },
-    			            { title: "Last Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "<bean:message key="field.label.lastName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.lastName != null){return (row.lastName+"");}
     			            } },
-    			            { title: "First Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "<bean:message key="field.label.firstName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.firstName != null){return (row.firstName+"");}
     			            } },
-    			            { title: "Email", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "<bean:message key="field.label.email" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.email != null){return (row.email+"");}
     			            } },
-    			            { title: "Phone" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			            { title: "<bean:message key="field.label.phone" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
     			            	if(row.phone != null){return (row.phone+"");}
     			            } },
-    			            { title: "Location", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "<bean:message key="field.label.cityUL" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.city != null){return (row.city+", " + row.state);}
     			            } },
-    			            { title: "Group",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "<bean:message key="field.label.permissionGroupName" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.permissionGroupName != null){return (row.permissionGroupName+"");}
     			            } },
-    			            { title: "Action",  data: function ( row, type, set ) {	
+    			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
     			            	//console.log(row);
     			            	if ( row.ticketId == null ) {
     			            		$actionData = "";
@@ -188,10 +172,10 @@
     			            } }],
     			            "initComplete": function(settings, json) {
     			            	//console.log(json);
-    			            	USERLOOKUP.doFunctionBinding();
+    			            	doFunctionBinding();
     			            },
     			            "drawCallback": function( settings ) {
-    			            	USERLOOKUP.doFunctionBinding();
+    			            	doFunctionBinding();
     			            }
     			    } );
             	},
@@ -225,26 +209,26 @@
 	    	</colgroup>
 	        <thead>
 	            <tr>
-	                <th>ID</th>
-	    			<th>Last Name</th>
-	    			<th>First Name</th>
-	    			<th>Email</th>
-	    			<th>Phone</th>
-	    			<th>Location</th>
-	    			<th>Group</th>
-	    			<th>Action</th>
+	                <th><bean:message key="field.label.userId" /></th>
+	    			<th><bean:message key="field.label.lastName" /></th>
+	    			<th><bean:message key="field.label.firstName" /></th>
+	    			<th><bean:message key="field.label.email" /></th>
+	    			<th><bean:message key="field.label.phone" /></th>
+	    			<th><bean:message key="field.label.cityUL" /></th>
+	    			<th><bean:message key="field.label.permissionGroupName" /></th>
+	    			<th><bean:message key="field.label.action" /></th>
 	            </tr>
 	        </thead>
 	        <tfoot>
 	            <tr>
-	                <th>ID</th>
-	    			<th>Last Name</th>
-	    			<th>First Name</th>
-	    			<th>Email</th>
-	    			<th>Phone</th>
-	    			<th>Location</th>
-	    			<th>Group</th>
-	    			<th>Action</th>
+	                <th><bean:message key="field.label.userId" /></th>
+	    			<th><bean:message key="field.label.lastName" /></th>
+	    			<th><bean:message key="field.label.firstName" /></th>
+	    			<th><bean:message key="field.label.email" /></th>
+	    			<th><bean:message key="field.label.phone" /></th>
+	    			<th><bean:message key="field.label.cityUL" /></th>
+	    			<th><bean:message key="field.label.permissionGroupName" /></th>
+	    			<th><bean:message key="field.label.action" /></th>
 	            </tr>
 	        </tfoot>
 	    </table>

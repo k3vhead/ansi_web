@@ -398,15 +398,15 @@
     	
     	<table id="displayTable">
     		<tr>
-    			<th>Div ID</th>
-    			<th>Div Code</th>
-				<th>Div #</th>
-    			<th>Description</th>
-    			<th>Default<br>DL %</br></th>
-    			<th>Status</th>
+    			<th><bean:message key="field.label.divisionId" /></th>
+    			<th><bean:message key="field.label.divisionCode" /></th>
+				<th><bean:message key="field.label.divisionNbrDA" /></th>
+    			<th><bean:message key="field.label.description" /></th>
+    			<th><bean:message key="field.label.defaultDirectLaborPctDefault" /><br><bean:message key="field.label.defaultDirectLaborPctDL%" /></br></th>
+    			<th><bean:message key="field.label.status" /></th>
  			    <ansi:hasPermission permissionRequired="SYSADMIN">
     				<ansi:hasWrite>
-    					<th>Action</th>
+    					<th><bean:message key="field.label.action" /></th>
     				</ansi:hasWrite>
     			</ansi:hasPermission>
     		</tr>
@@ -442,7 +442,7 @@
 		    		<form action="#" method="post" id="addForm">
 		    			<table>
 		    				<tr>
-		    					<td><span class="formLabel">Div. ID:</span></td>
+		    					<td><span class="formLabel"><bean:message key="field.label.divisionId" />:</span></td>
 		    					<td>
 		    						<input style="border:none" type="text" name="divisionId" readonly/>
 		    						<i id="validDivisionId" class="fa" aria-hidden="true"></i>
@@ -450,7 +450,7 @@
 		    					<td><span class="err" id="divisionIdErr"></span></td>
 		    				</tr>
 		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Div. Code:</span></td>
+		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.divisionCode" />:</span></td>
 		    					<td>
 		    						<input type="text" name="divisionCode" data-required="true" data-valid="validDivisionCode" />
 		    						<i id="validDivisionCode" class="fa" aria-hidden="true"></i>
@@ -458,7 +458,7 @@
 		    					<td><span class="err" id="divisionCodeErr"></span></td>
 		    				</tr>
 		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Div Nbr:</span></td>
+		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.divisionNbrDA" />:</span></td>
 		    					<td>
 		    						<input type="text" name="divisionNbr" data-required="true" data-valid="validDivisionNbr" />
 		    						<i id="validDivisionNbr" class="fa" aria-hidden="true"></i>
@@ -466,7 +466,7 @@
 		    					<td><span class="err" id="divisionNbrErr"></span></td>
 		    				</tr>
 							<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Description:</span></td>
+		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.description" />:</span></td>
 		    					<td>
 		    						<input type="text" name="description" data-required="true" data-valid="validDescription" />
 		    						<i id="validDescription" class="fa" aria-hidden="true"></i>
@@ -474,7 +474,7 @@
 		    					<td><span class="err" id="descriptionErr"></span></td>
 		    				</tr>
 		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Default DL %:</span></td>
+		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.defaultDirectLaborPctDefault" /> <bean:message key="field.label.defaultDirectLaborPctDL%" />:</span></td>
 		    					<td>
 		    						<input type="text" name="defaultDirectLaborPct" data-required="true" data-valid="validDefaultDirectLaborPct" />
 		    						<i id="validDefaultDirectLaborPct" class="fa" aria-hidden="true"></i>
@@ -482,7 +482,7 @@
 		    					<td><span class="err" id="defaultDirectLaborPctErr"></span></td>
 		    				</tr>
 		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Status:</span></td>
+		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.status" />:</span></td>
 		    					<td>
 		    						<select name="status">
 		    							<option value="1">Active</option>
