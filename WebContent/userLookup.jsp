@@ -76,6 +76,20 @@
         			USERLOOKUP.createTable();
         		},
         		
+        		doFunctionBinding : function() {
+					$( ".editAction" ).on( "click", function($clickevent) {
+						 doEdit($clickevent);
+					});					
+					$(".print-link").on( "click", function($clickevent) {
+						doPrint($clickevent);
+					});
+					//$(".editJob").on( "click", function($clickevent) {
+					//	console.debug("clicked a job")
+					//	var $jobId = $(this).data("jobid");
+					//	location.href="jobMaintenance.html?id=" + $jobId;
+					//});
+				},
+				
         		enableClicks : function() {
         			$('.ScrollTop').click(function() {
         				$('html, body').animate({scrollTop: 0}, 800);
@@ -108,13 +122,13 @@
             	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
             	        ],
             	        buttons: [
-            	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}}
+            	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {USERLOOKUP.doFunctionBinding();}}
             	        ],
             	        
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
             	            { className: "dt-head-left", "targets": [1,2,3,4,5,6] },
-            	            { className: "dt-body-center", "targets": [0,7] },
+            	            { className: "dt-body-center", "targets": [0,7,8] },
             	            { className: "dt-right", "targets": []}
             	         ],
             	        "paging": true,
@@ -146,6 +160,18 @@
     			            { title: "<bean:message key="field.label.permissionGroupName" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.permissionGroupName != null){return (row.permissionGroupName+"");}
     			            } },
+    			            { title: "<bean:message key="field.label.status" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	var status = '<span style="font-style:italic;">N/A</span>';    			            	
+    			            	if(row.userStatus != null){
+    			            		if ( row.userStatus == 1 ) {
+    			            			status = '<webthing:checkmark>Active</webthing:checkmark>';
+    			            		}
+    			            		if ( row.userStatus == 0 ) {
+    			            			status = '<webthing:ban>Inactive</webthing:ban>';
+    			            		}
+    			            	}
+    			            	return status;
+    			            } },
     			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
     			            	//console.log(row);
     			            	if ( row.ticketId == null ) {
@@ -172,10 +198,10 @@
     			            } }],
     			            "initComplete": function(settings, json) {
     			            	//console.log(json);
-    			            	doFunctionBinding();
+    			            	USERLOOKUP.doFunctionBinding();
     			            },
     			            "drawCallback": function( settings ) {
-    			            	doFunctionBinding();
+    			            	USERLOOKUP.doFunctionBinding();
     			            }
     			    } );
             	},
@@ -205,7 +231,8 @@
 	    		<col style="width:13%;" />
 	    		<col style="width:13%;" />
 	    		<col style="width:13%;" />
-	    		<col style="width:13%;" />
+	    		<col style="width:5%;" />
+	    		<col style="width:8%;" />
 	    	</colgroup>
 	        <thead>
 	            <tr>
@@ -216,6 +243,7 @@
 	    			<th><bean:message key="field.label.phone" /></th>
 	    			<th><bean:message key="field.label.cityUL" /></th>
 	    			<th><bean:message key="field.label.permissionGroupName" /></th>
+	    			<th><bean:message key="field.label.status" /></th>
 	    			<th><bean:message key="field.label.action" /></th>
 	            </tr>
 	        </thead>
@@ -228,6 +256,7 @@
 	    			<th><bean:message key="field.label.phone" /></th>
 	    			<th><bean:message key="field.label.cityUL" /></th>
 	    			<th><bean:message key="field.label.permissionGroupName" /></th>
+	    			<th><bean:message key="field.label.status" /></th>
 	    			<th><bean:message key="field.label.action" /></th>
 	            </tr>
 	        </tfoot>
