@@ -20,14 +20,18 @@ import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.common.exceptions.InvalidDeleteException;
+import com.ansi.scilla.web.address.response.AddressListResponse;
+import com.ansi.scilla.web.address.servlet.AddressServlet.ParsedUrl;
 import com.ansi.scilla.web.common.response.MessageKey;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
+import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.web.contact.response.ContactListResponse;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -131,6 +135,40 @@ public class PermissionGroupServlet extends AbstractServlet {
 		}
 		
 	}
+	
+	
+	/**
+	 * This is the "doGet" method copied from ContactServlet.   It is a good pattern to follow
+	 * for parsing the URL and building the response. The "doGet" for PermissionGroup
+	 * is version 0 code and should be replaced
+	 
+	 protected void doGet(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		AnsiURL url = null;
+		Connection conn = null;
+		WebMessages webMessages = new WebMessages();
+		try {
+			conn = AppUtils.getDBCPConn();
+			AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);  // make sure we're allowed to be here
+			url = new AnsiURL(request, "contact",(String[])null);										// parse the URL and look for "contact"
+			ContactListResponse contactListResponse = makeSingleListResponse(conn, url.getId());		// get the data we're looking for
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");								// add messages to the response
+			contactListResponse.setWebMessages(webMessages);
+			super.sendResponse(conn, response, ResponseCode.SUCCESS, contactListResponse);				// send the response
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {					// these are thrown by session validation
+			super.sendForbidden(response);
+		} catch ( RecordNotFoundException e ) {															// if they're asking for an id that doesn't exist
+			super.sendNotFound(response);						
+		} catch ( Exception e) {																		// something bad happened
+			AppUtils.logException(e);
+			throw new ServletException(e);
+		} finally {
+			AppUtils.closeQuiet(conn);																	// return the connection to the pool
+		}
+	}
+	  
+	 
+	 */
 	
 	@Override
 	protected void doGet(HttpServletRequest request,
