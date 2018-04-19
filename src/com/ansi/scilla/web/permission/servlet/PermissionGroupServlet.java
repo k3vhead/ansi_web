@@ -11,6 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.db.PermissionGroup;
 import com.ansi.scilla.common.db.PermissionLevel;
@@ -31,6 +34,7 @@ import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.permission.request.PermGroupRequest;
 import com.ansi.scilla.web.permission.response.PermissionGroupListResponse;
 import com.ansi.scilla.web.permission.response.PermissionGroupResponse;
+import com.ansi.scilla.web.test.TestServlet;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -40,6 +44,9 @@ public class PermissionGroupServlet extends AbstractServlet {
 	 * 
 	 * @author jwlewis
 	 */
+	
+	protected final Logger logger = LogManager.getLogger(PermissionGroupServlet.class);
+		
 	private static final long serialVersionUID = 1L;
 
 	@Override
@@ -48,6 +55,8 @@ public class PermissionGroupServlet extends AbstractServlet {
 				
 		String url = request.getRequestURI();
 		int idx = url.indexOf("/permissionGroup/");
+		// idx is the position of the first character of "/permissionGroup/"
+		
 		if ( idx > -1 ) {
 			// we're in the right place
 			Connection conn = null;
@@ -58,20 +67,27 @@ public class PermissionGroupServlet extends AbstractServlet {
 				SessionData sessionData = AppUtils.validateSession(request, Permission.USER_ADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 				
 				// Figure out what we've got:
+				// get everything following the "/permissionGroup/" tag.. 
 				String myString = url.substring(idx + "/permissionGroup/".length());
 				
+				// split it all into a handy array.. 
 				String[] urlPieces = myString.split("/");
+				
+				// first item should be a number... 
 				String command = urlPieces[0];
 				
 				if ( StringUtils.isBlank(command) || ! StringUtils.isNumeric(command)) {
-					super.sendNotFound(response);
+					super.sendNotFound(response);  // first item was either blank or not a number.. 
 				} else {
 					try {
+						//  we've got a number to work with.. try to delete the record with that id.
 						doDeleteWork(conn, Integer.valueOf(command));
 						conn.commit();
 						PermissionGroupResponse permissionGroupResponse = new PermissionGroupResponse();
 						super.sendResponse(conn, response, ResponseCode.SUCCESS, permissionGroupResponse);
 					} catch (InvalidDeleteException e) {
+						// an exception was thrown when we tried to delete it.. 
+						// let the user know.. 
 						String message = AppUtils.getMessageText(conn, MessageKey.DELETE_FAILED, "Invalid Delete");
 						WebMessages webMessages = new WebMessages();
 						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
@@ -79,20 +95,22 @@ public class PermissionGroupServlet extends AbstractServlet {
 						permissionGroupResponse.setWebMessages(webMessages);
 						super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, permissionGroupResponse);
 					} catch(RecordNotFoundException recordNotFoundEx) {
+						// couldn't find the record..
+						// let the parent class handle this alert..
 						super.sendNotFound(response);
 					}
 				}
 			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
-				super.sendForbidden(response);
+				super.sendForbidden(response);  	// permission related or network error exceptions.. 
 			} catch ( Exception e) {
-				AppUtils.logException(e);
+				AppUtils.logException(e);			// unaccounted for exceptions. 
 				throw new ServletException(e);
-			} finally {
+			} finally {								// do this no matter what.. 
 				AppUtils.closeQuiet(conn);
 			}
 			
 		} else {
-			super.sendNotFound(response);
+			super.sendNotFound(response); 			// '/permissionGroup/' was not found in the url...
 		}
 		
 	}
@@ -118,15 +136,23 @@ public class PermissionGroupServlet extends AbstractServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		
+		this.logger.log(Level.DEBUG, "Here we are.. ");
+
+		System.out.println("kilroy : here we are in the doGet member.. ");
+
 		String url = request.getRequestURI();
 		int idx = url.indexOf("/permissionGroup/");
+		// idx contains the position of the first character of '/permissionGroup/' within the uri
+		// idx will be a negative value if that was not found.
+		
 		if ( idx > -1 ) {
-			//String queryString = request.getQueryString();
-			
-			// Figure out what we've got:
-			// "myString" is the piece of the URL that we actually care about
+			// found the correct tag.. get everything after the tag... 
 			String myString = url.substring(idx + "/permissionGroup/".length());
+			
+			// split it all into a handy array.. 
 			String[] urlPieces = myString.split("/");
+			
+			// first value should be the command...
 			String command = urlPieces[0];
 
 			Connection conn = null;
@@ -151,11 +177,13 @@ public class PermissionGroupServlet extends AbstractServlet {
 			super.sendNotFound(response);
 		}
 	}
-	
-	
+		
 	public PermissionGroupListResponse doGetWork(Connection conn, String url) throws RecordNotFoundException, Exception {
 		PermissionGroupListResponse permListResponse = new PermissionGroupListResponse();
 		String[] x = url.split("/");
+
+		System.out.println("kilroy : here we are in the doGetWork member.. ");
+				
 		if(x[0].equals("list")){
 			permListResponse = new PermissionGroupListResponse(conn);
 		} else if (StringUtils.isNumeric(x[0])) {
@@ -170,9 +198,11 @@ public class PermissionGroupServlet extends AbstractServlet {
 	@Override
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
+		this.logger.log(Level.DEBUG, "Here we are.. ");
 		
 		SessionUser sessionUser = AppUtils.getSessionUser(request);
 		String url = request.getRequestURI();
+		System.out.println("kilroy : here we are in the doPost member.. ");
 		
 		Connection conn = null;
 		try {
@@ -309,6 +339,9 @@ public class PermissionGroupServlet extends AbstractServlet {
 	protected PermissionGroup doAdd(Connection conn, PermGroupRequest permissionGroupRequest, SessionUser sessionUser) throws Exception {
 		Date today = new Date();
 		PermissionGroup permissionGroup = new PermissionGroup();
+
+		this.logger.log(Level.DEBUG, "Here we are.. ");
+		
 		makePermissionGroup(permissionGroup, permissionGroupRequest, sessionUser, today);
 		permissionGroup.setAddedBy(sessionUser.getUserId());
 		permissionGroup.setAddedDate(today);
@@ -382,7 +415,7 @@ public class PermissionGroupServlet extends AbstractServlet {
 		}
 		return webMessages;
 	}
-	
+
 	private PermissionGroup makePermissionGroup(PermissionGroup permissionGroup, PermGroupRequest permGroupRequest,
 			SessionUser sessionUser, Date today) {
 		if ( ! StringUtils.isBlank(permGroupRequest.getDescription())) {
