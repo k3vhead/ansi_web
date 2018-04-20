@@ -147,10 +147,12 @@ public abstract class TestServlet {
 		builder.setPath(url);
 		URI uri = builder.build();
 		HttpPost httpPost = new HttpPost(uri);
+		httpPost.addHeader("Cookie", sessionCookie.getValue());
 		StringEntity params = new StringEntity(parmString);
 		httpPost.addHeader("content-type","application/json");
 		httpPost.setEntity(params);
 		CloseableHttpResponse response = httpClient.execute(httpPost);
+		this.logger.log(Level.DEBUG, response.getStatusLine());
 		try {
 			HttpEntity entity = response.getEntity();
 			StringWriter writer = new StringWriter();
