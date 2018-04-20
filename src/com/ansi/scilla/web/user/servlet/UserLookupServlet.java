@@ -58,12 +58,22 @@ public class UserLookupServlet extends AbstractServlet {
 				"ansi_user.first_name",
 				"ansi_user.email",
 				"ansi_user.phone",
-				"ansi_user.state",
 				"ansi_user.city",
-				"permission_group.name as permission_group_name",
+				"permission_group.name",
 				"ansi_user.user_status",
-				"ansi_user.title",
 				};
+//		String[] cols = { 
+//				"ansi_user.user_id",
+//				"ansi_user.last_name",
+//				"ansi_user.first_name",
+//				"ansi_user.email",
+//				"ansi_user.phone",
+//				"ansi_user.state",
+//				"ansi_user.city",
+//				"permission_group.name as permission_group_name",
+//				"ansi_user.user_status",
+//				"ansi_user.title",
+//				};
 		String sStart = request.getParameter("start");
 		String sAmount = request.getParameter("length");
 		String sDraw = request.getParameter("draw");
