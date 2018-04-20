@@ -10,7 +10,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
@@ -39,9 +38,8 @@ public abstract class TestServlet {
 	protected String password=null;
 	protected String hostname = "127.0.0.1";
 	protected Integer hostport = 8080;
-	protected boolean LogDebugMsgs;
 	
-		
+	
 	public String getUserId() {
 		return userId;
 	}
@@ -73,15 +71,9 @@ public abstract class TestServlet {
 		return logger;
 	}
 
-	public Boolean getLogDebugMsgs() {
-		return this.LogDebugMsgs;
-	}
-	public void setLogDebugMsgs(Boolean LogMsgs) {
-		this.LogDebugMsgs = LogMsgs;
-	}
 
 	protected Header doLogin() throws ClientProtocolException, IOException, URISyntaxException {
-		if(this.LogDebugMsgs) this.logger.log(Level.DEBUG, "Logging In:" + this.userId);
+		this.logger.log(Level.DEBUG, "Logging In:" + this.userId);
 		String pageContent = "Failed!";
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		URIBuilder builder = new URIBuilder();
@@ -113,7 +105,7 @@ public abstract class TestServlet {
 	
 	
 	protected String doGet(Header sessionCookie, String url, HashMap<String, String> parmMap) throws URISyntaxException, ClientProtocolException, IOException {		
-		if(this.LogDebugMsgs) this.logger.log(Level.DEBUG, url);
+		this.logger.log(Level.DEBUG, "Get: " + url);
 		String pageContent = "Failure!";
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		URIBuilder builder = new URIBuilder();
@@ -127,35 +119,25 @@ public abstract class TestServlet {
 			}
 		}
 		URI uri = builder.build();
-		if(this.LogDebugMsgs) this.logger.log(Level.DEBUG, "uri = " + uri);
-		if(this.LogDebugMsgs) this.logger.log(Level.DEBUG, "Creating HttpGet Object");
 		HttpGet httpGet = new HttpGet(uri);
-		if(this.LogDebugMsgs) this.logger.log(Level.DEBUG, "Addiing sessionCookie to HttpGet Object");
 		httpGet.addHeader("Cookie", sessionCookie.getValue());
-		if(this.LogDebugMsgs) this.logger.log(Level.DEBUG, "httpClient.execute");
 		CloseableHttpResponse response = httpClient.execute(httpGet);
 		try {
-			if(this.LogDebugMsgs) this.logger.log(Level.DEBUG, "in the try");
 			HttpEntity entity = response.getEntity();
-			if(this.LogDebugMsgs) this.logger.log(Level.DEBUG, response.getStatusLine());
 //			Long length = entity.getContentLength();
 			StringWriter writer = new StringWriter();
 			IOUtils.copy(entity.getContent(), writer, "UTF-8");
 			pageContent = writer.toString();
 			EntityUtils.consume(entity);
-			if(this.LogDebugMsgs) this.logger.log(Level.DEBUG, "Consumed.." + pageContent);
 		} finally {
 			response.close();
 		}
 		return pageContent;		
 	}
 
-//	protected String doPost(Header sessionCookie, String url, String parmString) throws ClientProtocolException, IOException, URISyntaxException {
-	protected String doPost(Header sessionCookie, String url, HashMap<String, String> params) throws ClientProtocolException, IOException, URISyntaxException {
 
-		if(this.LogDebugMsgs) 
-			this.logger.log(Level.DEBUG, "Post: " + url);
-		
+	protected String doPost(Header sessionCookie, String url, String parmString) throws ClientProtocolException, IOException, URISyntaxException {
+		this.logger.log(Level.DEBUG, "Post: " + url);
 		String pageContent = "Failed!";
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		URIBuilder builder = new URIBuilder();
@@ -163,41 +145,25 @@ public abstract class TestServlet {
 		builder.setHost(this.hostname);
 		builder.setPort(this.hostport);
 		builder.setPath(url);
-		
-		for(Entry<String, String> entry : params.entrySet())
-		{
-			builder.addParameter(entry.getKey(), entry.getValue());
-		}
-		
 		URI uri = builder.build();
-
-		System.out.println("uri used is : " + uri);
-		
 		HttpPost httpPost = new HttpPost(uri);
-
-		//StringEntity params = new StringEntity(parmString);		
-		//System.out.println("parmString used is : " + parmString);		
-		//httpPost.addHeader("content-type","application/json");
-		//httpPost.setEntity(params);
-		
-		System.out.println("httpPost used is : " + httpPost.getURI());
-
+		StringEntity params = new StringEntity(parmString);
+		httpPost.addHeader("content-type","application/json");
+		httpPost.setEntity(params);
 		CloseableHttpResponse response = httpClient.execute(httpPost);
 		try {
-			System.out.println("inside the try..");
 			HttpEntity entity = response.getEntity();
 			StringWriter writer = new StringWriter();
 			IOUtils.copy(entity.getContent(), writer, "UTF-8");
 			pageContent = writer.toString();
-			writer.close();
 			EntityUtils.consume(entity);
-			System.out.println("after consumption..");
 		} finally {
 			response.close();
 		}
 		return pageContent;
 	}
-
+	
+	
 	protected HashMap<String, String> makeParmMap(String parms) throws UnsupportedEncodingException {
 		HashMap<String, String> parmMap = new HashMap<String, String>();
 		String[] parmList = parms.split("&");
