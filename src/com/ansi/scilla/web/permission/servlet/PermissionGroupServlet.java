@@ -2,8 +2,7 @@ package com.ansi.scilla.web.permission.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -18,10 +17,8 @@ import org.apache.logging.log4j.Logger;
 import com.ansi.scilla.common.db.PermissionGroup;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.User;
-import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.common.exceptions.InvalidDeleteException;
-import com.ansi.scilla.web.address.response.AddressListResponse;
-import com.ansi.scilla.web.address.servlet.AddressServlet.ParsedUrl;
+import com.ansi.scilla.common.queries.PermissionGroupUserCount;
 import com.ansi.scilla.web.common.response.MessageKey;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -31,14 +28,13 @@ import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
-import com.ansi.scilla.web.contact.response.ContactListResponse;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.permission.request.PermGroupRequest;
+import com.ansi.scilla.web.permission.response.PermGroupCountRecord;
 import com.ansi.scilla.web.permission.response.PermissionGroupListResponse;
 import com.ansi.scilla.web.permission.response.PermissionGroupResponse;
-import com.ansi.scilla.web.test.TestServlet;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -48,11 +44,12 @@ public class PermissionGroupServlet extends AbstractServlet {
 	 * 
 	 * @author jwlewis
 	 */
-	
 	protected final Logger logger = LogManager.getLogger(PermissionGroupServlet.class);
-		
+	protected final Boolean LogDebugMsgs = true;
+	
 	private static final long serialVersionUID = 1L;
-
+	
+	
 	@Override
 	protected void doDelete(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -136,25 +133,21 @@ public class PermissionGroupServlet extends AbstractServlet {
 		
 	}
 	
-	
-	/**
-	 * This is the "doGet" method copied from ContactServlet.   It is a good pattern to follow
-	 * for parsing the URL and building the response. The "doGet" for PermissionGroup
-	 * is version 0 code and should be replaced
-	 
-	 protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	 @Override
+	 protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException { //  Note : modeled after recommended uri parsing pattern 2018-04-19 kjw
+		//if(LogDebugMsgs == true) this.logger.log(Level.DEBUG, "Begin");
+		this.logger.log(Level.DEBUG, "Begin");
 		AnsiURL url = null;
 		Connection conn = null;
 		WebMessages webMessages = new WebMessages();
 		try {
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);  // make sure we're allowed to be here
-			url = new AnsiURL(request, "contact",(String[])null);										// parse the URL and look for "contact"
-			ContactListResponse contactListResponse = makeSingleListResponse(conn, url.getId());		// get the data we're looking for
-			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");								// add messages to the response
-			contactListResponse.setWebMessages(webMessages);
-			super.sendResponse(conn, response, ResponseCode.SUCCESS, contactListResponse);				// send the response
+			AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_READ);  // make sure we're allowed to be here
+			url = new AnsiURL(request, "permissionGroup",new String[] { ACTION_IS_LIST });												// parse the URL and look for "contact"
+			PermissionGroupListResponse permissionGroupListResponse = makeSingleListResponse(conn, url);				// get the data we're looking for
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");										// add messages to the response
+			permissionGroupListResponse.setWebMessages(webMessages);
+			super.sendResponse(conn, response, ResponseCode.SUCCESS, permissionGroupListResponse);						// send the response
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {					// these are thrown by session validation
 			super.sendForbidden(response);
 		} catch ( RecordNotFoundException e ) {															// if they're asking for an id that doesn't exist
@@ -166,56 +159,7 @@ public class PermissionGroupServlet extends AbstractServlet {
 			AppUtils.closeQuiet(conn);																	// return the connection to the pool
 		}
 	}
-	  
-	 
-	 */
-	
-	@Override
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		
-		this.logger.log(Level.DEBUG, "Here we are.. ");
-
-		System.out.println("kilroy : here we are in the doGet member.. ");
-
-		String url = request.getRequestURI();
-		int idx = url.indexOf("/permissionGroup/");
-		// idx contains the position of the first character of '/permissionGroup/' within the uri
-		// idx will be a negative value if that was not found.
-		
-		if ( idx > -1 ) {
-			// found the correct tag.. get everything after the tag... 
-			String myString = url.substring(idx + "/permissionGroup/".length());
 			
-			// split it all into a handy array.. 
-			String[] urlPieces = myString.split("/");
-			
-			// first value should be the command...
-			String command = urlPieces[0];
-
-			Connection conn = null;
-			try {
-				if ( StringUtils.isBlank(command)) {
-					throw new RecordNotFoundException();
-				}
-				conn = AppUtils.getDBCPConn();
-
-				PermissionGroupListResponse permListResponse = doGetWork(conn, myString);
-				super.sendResponse(conn, response, ResponseCode.SUCCESS, permListResponse);
-			} catch(RecordNotFoundException recordNotFoundEx) {
-				super.sendNotFound(response);
-			} catch ( Exception e) {
-				AppUtils.logException(e);
-				throw new ServletException(e);
-			} finally {
-				AppUtils.closeQuiet(conn);
-			}
-
-		} else {
-			super.sendNotFound(response);
-		}
-	}
-		
 	public PermissionGroupListResponse doGetWork(Connection conn, String url) throws RecordNotFoundException, Exception {
 		PermissionGroupListResponse permListResponse = new PermissionGroupListResponse();
 		String[] x = url.split("/");
@@ -232,32 +176,46 @@ public class PermissionGroupServlet extends AbstractServlet {
 		}
 		return permListResponse;
 	}
-	
+			
 	@Override
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		this.logger.log(Level.DEBUG, "Here we are.. ");
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {  // note : from contactServlet..
+		this.logger.log(Level.DEBUG, "Begin");
 		
-		SessionUser sessionUser = AppUtils.getSessionUser(request);
-		String url = request.getRequestURI();
-		System.out.println("kilroy : here we are in the doPost member.. ");
-		
+		AnsiURL url = null;
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
+			
+			SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			SessionUser sessionUser = sessionData.getUser();
 
-			// figure out if this is an "add" or an "update"
-			int idx = url.indexOf("/permissionGroup/");
-			String myString = url.substring(idx + "/permissionGroup/".length());		
-			String[] urlPieces = myString.split("/");
-			String command = urlPieces[0];
-			String jsonString = super.makeJsonString(request);
 			try {
-				PermGroupRequest permGroupRequest = (PermGroupRequest) AppUtils.json2object(jsonString, PermGroupRequest.class);
-				processPostRequest(conn, response, command, sessionUser, permGroupRequest);
-			} catch ( InvalidFormatException formatException) {
-				processBadPostRequest(conn, response, formatException);
+				String jsonString = super.makeJsonString(request);
+				PermGroupRequest permGroupRequest = (PermGroupRequest)AppUtils.json2object(jsonString, PermGroupRequest.class);
+				url = new AnsiURL(request,"permissionGroup", new String[] {ACTION_IS_ADD});
+
+				if ( url.getId() != null ) {
+					// THis is an update
+					processUpdate(conn, response, url.getId(), permGroupRequest, sessionUser);
+				} else if ( url.getCommand().equalsIgnoreCase(ACTION_IS_ADD)) {
+					// this is an add
+					processAdd(conn, response, permGroupRequest, sessionUser);
+				} else {
+					// this is messed up
+					super.sendNotFound(response);
+				}
+			} catch ( InvalidFormatException e ) {
+				String badField = super.findBadField(e.toString());
+				PermissionGroupResponse data = new PermissionGroupResponse();
+				WebMessages messages = new WebMessages();
+				messages.addMessage(badField, "Invalid Format");
+				data.setWebMessages(messages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+				super.sendForbidden(response);
+			} catch ( RecordNotFoundException e ) {
+				super.sendNotFound(response);
 			}
 		} catch ( Exception e ) {
 			AppUtils.logException(e);
@@ -266,9 +224,263 @@ public class PermissionGroupServlet extends AbstractServlet {
 		} finally {
 			AppUtils.closeQuiet(conn);
 		}
+	}			
+				
+	// copied from contactServlet
+	protected PermissionGroup doAdd(Connection conn, PermGroupRequest permGroupRequest, SessionUser sessionUser) throws Exception {
+		this.logger.log(Level.DEBUG, "trying to add item.. ");
+		
+		PermissionGroup permissionGroup = new PermissionGroup();
+		permissionGroup.setDescription(permGroupRequest.getDescription());
+		permissionGroup.setName(permGroupRequest.getName());
+		permissionGroup.setStatus(permGroupRequest.getStatus());
+
+		permissionGroup.setAddedBy(sessionUser.getUserId());		
+		permissionGroup.setUpdatedBy(sessionUser.getUserId());
+
+		Integer permGroupId = permissionGroup.insertWithKey(conn);
+		permissionGroup.setPermissionGroupId(permGroupId);
+		conn.commit();
+		return permissionGroup;
 	}
 	
-	private void processPostRequest(Connection conn, HttpServletResponse response, String command,
+	protected PermissionGroup doUpdate (Connection conn, Integer permGroupId, PermissionGroup permissionGroup, PermGroupRequest permGroupRequest, SessionUser sessionUser) throws Exception {
+
+		permissionGroup.setDescription(permGroupRequest.getDescription());
+		permissionGroup.setName(permGroupRequest.getName());
+		permissionGroup.setStatus(permGroupRequest.getStatus());
+		permissionGroup.setUpdatedBy(sessionUser.getUserId());
+		permissionGroup.setPermissionGroupId(permGroupId);
+
+		PermissionGroup key = new PermissionGroup ();
+		key.setPermissionGroupId(permGroupId);  
+		permissionGroup.update(conn, key);	
+		return permissionGroup;
+
+		//Integer permGroupId = permissionGroup.insertWithKey(conn);
+	}
+	
+	
+	protected void processUpdate(Connection conn, HttpServletResponse response, Integer permGroupId, PermGroupRequest permGroupReequestRequest, SessionUser sessionUser) throws RecordNotFoundException, Exception {
+		PermissionGroup permissionGroup = new PermissionGroup();
+		PermissionGroupResponse data = new PermissionGroupResponse();
+		
+		permissionGroup.setPermissionGroupId(permGroupId);
+		permissionGroup.selectOne(conn);		// this throws RecordNotFound, which is propagated up the line into a 404 return
+
+		WebMessages webMessages = validateUpdate(conn, permissionGroup, permGroupReequestRequest);
+		 
+		if (webMessages.isEmpty()) {
+			permissionGroup = doUpdate(conn, permGroupId, permissionGroup, permGroupReequestRequest, sessionUser);
+			conn.commit();
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update successful!");
+			//data.setPermGroupCountRecord(permGroupCountRecord);
+			data.setWebMessages(webMessages);
+			super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
+		} else {
+			data.setWebMessages(webMessages);
+			super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+		}
+	}
+
+
+	protected WebMessages validateUpdate(Connection conn, PermissionGroup PermissionGroup, PermGroupRequest permGroupRequest) throws RecordNotFoundException, Exception {
+		WebMessages webMessages = new WebMessages();
+		List<String> missingFields = super.validateRequiredUpdateFields(permGroupRequest);
+		if ( missingFields.isEmpty() ) {
+			List<String> badFormatFieldList = super.validateFormat(permGroupRequest);
+			/* need to complete this.. 
+			if ( badFormatFieldList.isEmpty() ) {
+				if (permGroupRequest.    .isValidPreferredContact(conn)) {
+					validatePreferredContact(permGroupRequest, webMessages);
+				} else {
+					webMessages.addMessage(permGroupRequest.PREFERRED_CONTACT, "Invalid value");
+				}
+			} else {
+				for ( String field : badFormatFieldList ) {
+					webMessages.addMessage(field, "Invalid Format");
+				}
+			}
+			*/
+		} else {
+			// we have required fields that are not populated
+			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
+			for ( String field : missingFields ) {
+				webMessages.addMessage(field, messageText);
+			}
+		}
+		return webMessages;
+	}
+	
+	
+	protected  PermissionGroupListResponse makeSingleListResponse(Connection conn, AnsiURL url) throws Exception {
+		PermissionGroupListResponse permissionGroupListResponse = new PermissionGroupListResponse();		
+
+		List<PermissionGroupUserCount> permissionGroupUserCount = new ArrayList<PermissionGroupUserCount>();
+		
+		this.logger.log(Level.DEBUG, url);
+
+		if(StringUtils.isBlank(url.getCommand())){			
+			permissionGroupUserCount.add(PermissionGroupUserCount.select(conn, url.getId()));
+		}else {
+			permissionGroupUserCount = PermissionGroupUserCount.select(conn, new String[] {PermissionGroup.NAME});			
+		}
+		List<PermGroupCountRecord> recordList = new ArrayList<PermGroupCountRecord>();
+		
+		for(PermissionGroupUserCount rec : permissionGroupUserCount) {
+			recordList.add(new PermGroupCountRecord(rec));
+		}
+		permissionGroupListResponse.setPermGroupItemList(recordList);
+		return permissionGroupListResponse;
+	}
+
+	
+	protected void processAdd(Connection conn, HttpServletResponse response, PermGroupRequest permissionGroupRequest, SessionUser sessionUser) throws Exception {
+	ResponseCode responseCode = null;
+	PermissionGroup permissionGroup = new PermissionGroup();
+	
+	WebMessages webMessages = validateAdd(conn, permissionGroupRequest);
+	if (webMessages.isEmpty()) {			
+		permissionGroup = doAdd(conn, permissionGroupRequest, sessionUser);
+		String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");		
+		webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+		responseCode = ResponseCode.SUCCESS;
+	} else {
+		responseCode = ResponseCode.EDIT_FAILURE;
+	}
+	// need to correct this... just setting this so it will compile..
+	PermGroupCountRecord tmpPermGroupRecord = new PermGroupCountRecord();
+	PermissionGroupResponse permissionGroupResponse = new PermissionGroupResponse(tmpPermGroupRecord); 
+	super.sendResponse(conn, response, responseCode, permissionGroupResponse);
+	}
+
+
+	protected WebMessages validateAdd(Connection conn, PermGroupRequest permGroupRequest) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		List<String> missingFields = super.validateRequiredAddFields(permGroupRequest);
+		/* need to complete this
+		if ( missingFields.isEmpty() ) {
+			List<String> badFormatFieldList = super.validateFormat(permGroupRequest);
+			if ( badFormatFieldList.isEmpty() ) {
+				if ( permGroupRequest.isValidPreferredContact(conn)) {
+					validatePreferredContact(contactRequest, webMessages);
+				} else {
+					webMessages.addMessage(ContactRequest.PREFERRED_CONTACT, "Invalid value");
+				}
+				boolean isDupe = isDuplicateContact(conn, contactRequest);
+				if ( isDupe ) {
+					webMessages.addMessage(ContactRequest.LAST_NAME, "Duplicate Contact");
+				}
+			} else {
+				for ( String field : badFormatFieldList ) {
+					webMessages.addMessage(field, "Invalid Format");
+				}
+			}
+		} else {
+			// we have required fields that are not populated
+			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
+			for ( String field : missingFields ) {
+				webMessages.addMessage(field, messageText);
+			}
+		}
+		*/
+		return webMessages;
+	}
+
+	
+	
+	/*
+	//replacing this..  maybe not needed?
+	protected WebMessages old_validateUpdate(Connection conn, PermGroupRequest permGroupRequest) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		List<String> missingFields = super.validateRequiredUpdateFields(permGroupRequest);
+		if ( ! missingFields.isEmpty() ) {
+			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
+			for ( String field : missingFields ) {
+				webMessages.addMessage(field, messageText);
+			}
+		}
+		return webMessages;
+	}
+	*/
+	
+	/*
+	//..maybe not needed?
+	protected WebMessages validateFormat(Connection conn, PermGroupRequest permGroupRequest) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		List<String> missingFields = super.validateFormat(permGroupRequest);
+		if ( ! missingFields.isEmpty() ) {
+			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
+			for ( String field : missingFields ) {
+				webMessages.addMessage(field, messageText);
+			}
+		}
+		return webMessages;
+	}
+	*/
+	
+	/*
+	// don't think this is needed anymore.. 
+	private PermissionGroup makePermissionGroup(PermissionGroup permissionGroup, PermGroupRequest permGroupRequest,
+			SessionUser sessionUser, Date today) {
+		if ( ! StringUtils.isBlank(permGroupRequest.getDescription())) {
+			permissionGroup.setDescription(permGroupRequest.getDescription());
+		}
+		if ( permGroupRequest.getPermissionGroupId() != null) {
+			permissionGroup.setPermissionGroupId(permGroupRequest.getPermissionGroupId());
+		}
+		permissionGroup.setStatus(permGroupRequest.getStatus());
+		permissionGroup.setName(permGroupRequest.getName());
+		permissionGroup.setUpdatedBy(sessionUser.getUserId());
+		permissionGroup.setUpdatedDate(today);
+		
+		return permissionGroup;
+	}
+	*/
+
+	
+	/*
+	
+	//replacing this.
+	protected WebMessages old_validateAdd(Connection conn, PermGroupRequest permGroupRequest) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		List<String> missingFields = super.validateRequiredAddFields(permGroupRequest);
+		if ( ! missingFields.isEmpty() ) {
+			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
+			for ( String field : missingFields ) {
+				webMessages.addMessage(field, messageText);
+			}
+		}
+		return webMessages;
+	}
+	*/
+	
+	
+	/*
+	//replacing this
+	protected PermissionGroup old_doUpdate(Connection conn, PermissionGroup key,
+			PermGroupRequest permGroupRequest, SessionUser sessionUser) throws Exception{
+		
+		Date today = new Date();
+		PermissionGroup permissionGroup = new PermissionGroup();
+		permissionGroup.setPermissionGroupId(key.getPermissionGroupId());
+		permissionGroup.selectOne(conn);
+		makePermissionGroup(permissionGroup, permGroupRequest, sessionUser, today);
+
+		try {
+			permissionGroup.update(conn, key);
+			conn.commit();
+		} catch ( SQLException e) {
+			AppUtils.logException(e);
+			throw e;
+		} 
+		return permissionGroup;
+	}
+	*/
+	
+	/*
+	//replacing this.. method not found in the contactServlet.. maybe not needed anymore?
+	private void old_processPostRequest(Connection conn, HttpServletResponse response, String command,
 			SessionUser sessionUser, PermGroupRequest permGroupRequest) throws Exception {
 		PermissionGroup permissionGroup = null;
 		ResponseCode responseCode = null;
@@ -310,7 +522,7 @@ public class PermissionGroupServlet extends AbstractServlet {
 		
 		/*
 		This is the Update portion of the doPost
-		*/
+		/
 		} else if ( StringUtils.isNumeric(command) ) {   
 			WebMessages webMessages = validateUpdate(conn, permGroupRequest);
 			if (webMessages.isEmpty()) {
@@ -344,7 +556,7 @@ public class PermissionGroupServlet extends AbstractServlet {
 			}
 			if ( ! webMessages.isEmpty()) {
 				divisionResponse.setWebMessages(webMessages);
-			} */
+			} 
 			
 			PermissionGroupResponse permissionGroupResponse = new PermissionGroupResponse();
 			if ( permissionGroup != null ) {
@@ -360,7 +572,10 @@ public class PermissionGroupServlet extends AbstractServlet {
 		}
 			
 	}
+	*/
 	
+	/*
+	//only used by old_doPost.. 
 	private void processBadPostRequest(Connection conn, HttpServletResponse response,
 			InvalidFormatException formatException) throws Exception {
 		
@@ -373,8 +588,11 @@ public class PermissionGroupServlet extends AbstractServlet {
 		super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, permissionGroupResponse);
 		
 	}
+	*/
 	
-	protected PermissionGroup doAdd(Connection conn, PermGroupRequest permissionGroupRequest, SessionUser sessionUser) throws Exception {
+	/*
+	//replacing this..  method not found in the contactServlet.. maybe not needed anymore?
+	protected PermissionGroup old_doAdd(Connection conn, PermGroupRequest permissionGroupRequest, SessionUser sessionUser) throws Exception {
 		Date today = new Date();
 		PermissionGroup permissionGroup = new PermissionGroup();
 
@@ -398,76 +616,45 @@ public class PermissionGroupServlet extends AbstractServlet {
 		} 
 		return permissionGroup;
 	}
-	
-	protected WebMessages validateAdd(Connection conn, PermGroupRequest permGroupRequest) throws Exception {
-		WebMessages webMessages = new WebMessages();
-		List<String> missingFields = super.validateRequiredAddFields(permGroupRequest);
-		if ( ! missingFields.isEmpty() ) {
-			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
-			for ( String field : missingFields ) {
-				webMessages.addMessage(field, messageText);
-			}
-		}
-		return webMessages;
-	}
+	*/
 
-	protected PermissionGroup doUpdate(Connection conn, PermissionGroup key,
-			PermGroupRequest permGroupRequest, SessionUser sessionUser) throws Exception{
+	/*
+	// replacing this.. 
+	@Override
+	protected void old_doPost(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		this.logger.log(Level.DEBUG, "Here we are.. ");
 		
-		Date today = new Date();
-		PermissionGroup permissionGroup = new PermissionGroup();
-		permissionGroup.setPermissionGroupId(key.getPermissionGroupId());
-		permissionGroup.selectOne(conn);
-		makePermissionGroup(permissionGroup, permGroupRequest, sessionUser, today);
-
+		SessionUser sessionUser = AppUtils.getSessionUser(request);
+		String url = request.getRequestURI();
+		System.out.println("kilroy : here we are in the doPost member.. ");
+		
+		Connection conn = null;
 		try {
-			permissionGroup.update(conn, key);
-			conn.commit();
-		} catch ( SQLException e) {
-			AppUtils.logException(e);
-			throw e;
-		} 
-		return permissionGroup;
-	}
-	
-	protected WebMessages validateUpdate(Connection conn, PermGroupRequest permGroupRequest) throws Exception {
-		WebMessages webMessages = new WebMessages();
-		List<String> missingFields = super.validateRequiredUpdateFields(permGroupRequest);
-		if ( ! missingFields.isEmpty() ) {
-			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
-			for ( String field : missingFields ) {
-				webMessages.addMessage(field, messageText);
-			}
-		}
-		return webMessages;
-	}
-	
-	protected WebMessages validateFormat(Connection conn, PermGroupRequest permGroupRequest) throws Exception {
-		WebMessages webMessages = new WebMessages();
-		List<String> missingFields = super.validateFormat(permGroupRequest);
-		if ( ! missingFields.isEmpty() ) {
-			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
-			for ( String field : missingFields ) {
-				webMessages.addMessage(field, messageText);
-			}
-		}
-		return webMessages;
-	}
+			conn = AppUtils.getDBCPConn();
+			conn.setAutoCommit(false);
 
-	private PermissionGroup makePermissionGroup(PermissionGroup permissionGroup, PermGroupRequest permGroupRequest,
-			SessionUser sessionUser, Date today) {
-		if ( ! StringUtils.isBlank(permGroupRequest.getDescription())) {
-			permissionGroup.setDescription(permGroupRequest.getDescription());
+			// figure out if this is an "add" or an "update"
+			int idx = url.indexOf("/permissionGroup/");
+			String myString = url.substring(idx + "/permissionGroup/".length());		
+			String[] urlPieces = myString.split("/");
+			String command = urlPieces[0];
+			String jsonString = super.makeJsonString(request);
+			try {
+				PermGroupRequest permGroupRequest = (PermGroupRequest) AppUtils.json2object(jsonString, PermGroupRequest.class);
+				processPostRequest(conn, response, command, sessionUser, permGroupRequest);
+			} catch ( InvalidFormatException formatException) {
+				processBadPostRequest(conn, response, formatException);
+			}
+		} catch ( Exception e ) {
+			AppUtils.logException(e);
+			AppUtils.rollbackQuiet(conn);
+			throw new ServletException(e);
+		} finally {
+			AppUtils.closeQuiet(conn);
 		}
-		if ( permGroupRequest.getPermissionGroupId() != null) {
-			permissionGroup.setPermissionGroupId(permGroupRequest.getPermissionGroupId());
-		}
-		permissionGroup.setStatus(permGroupRequest.getStatus());
-		permissionGroup.setName(permGroupRequest.getName());
-		permissionGroup.setUpdatedBy(sessionUser.getUserId());
-		permissionGroup.setUpdatedDate(today);
-		
-		return permissionGroup;
 	}
+	*/
+	
 	
 }

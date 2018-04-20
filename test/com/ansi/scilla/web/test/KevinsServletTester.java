@@ -6,6 +6,8 @@ import org.apache.http.Header;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import java.net.URLEncoder;
+
 
 public class KevinsServletTester extends TestServlet {
 	
@@ -41,14 +43,14 @@ public class KevinsServletTester extends TestServlet {
 		Header sessionCookie = doLogin();
 		String pageContent1;
 		
-		if(LogDebugMsgs) this.logger.log(Level.DEBUG, "Testing /list function ");
+		if(LogDebugMsgs == true) this.logger.log(Level.DEBUG, "Testing /list function ");
 		
 		pageContent1 = super.doGet(sessionCookie, "/ansi_web/" + this.realm + "/list", new HashMap<String,String>());
 		
 		System.out.println("response to /list \n=================\n"+pageContent1);		
 	}
 	
-	private void TestGetItem(int ItemRecordId) throws Exception 
+	private void TestGetItem(int itemRecordId) throws Exception 
 	{
 		//******************************************
 		//*
@@ -56,11 +58,15 @@ public class KevinsServletTester extends TestServlet {
 		//*
 		Header sessionCookie = doLogin();
 		String pageContent1;
+		String _url;
 		
-		if(LogDebugMsgs) this.logger.log(Level.DEBUG, "Testing GetItem Method.. ");
-		pageContent1 = super.doGet(sessionCookie, "/ansi_web/" + this.realm + "/" + ItemRecordId, new HashMap<String,String>());
+		_url = "/ansi_web/" + this.realm + "/" + itemRecordId;
+		System.out.println("Sending url : " + _url);		
+		
+		if(LogDebugMsgs == true) this.logger.log(Level.DEBUG, "Testing GetItem Method.. ");
+		pageContent1 = super.doGet(sessionCookie, _url, new HashMap<String,String>());
 
-		System.out.println("response to /" + ItemRecordId + "\n=================\n"+pageContent1);		
+		System.out.println("response to /" + itemRecordId + "\n=================\n"+pageContent1);		
 	}
 
 
@@ -70,27 +76,47 @@ public class KevinsServletTester extends TestServlet {
 		//*
 		//* Test the /id# function of the servlet.. 
 		//*
-		if(LogDebugMsgs) this.logger.log(Level.DEBUG, "begin");
+		//if(LogDebugMsgs == true) this.logger.log(Level.DEBUG, "begin");
 
 		Header sessionCookie = doLogin();
 		String pageContent1="Failed!";
 		HashMap<String, String> ValuesToAdd;
+		
+		//String _url="";
 		
 		ValuesToAdd = new HashMap<String, String>();
 		ValuesToAdd.put("name", ItemName);
 		ValuesToAdd.put("description", "A group used to test adding groups");
 		ValuesToAdd.put("status","0");
 		
-		if(LogDebugMsgs) this.logger.log(Level.DEBUG, "Testing Add Method via doPost.. ");
-		//pageContent1 = super.doPost(sessionCookie, "/ansi_web/" + this.realm + "/add", ValuesToAdd);
+		String p ="";
+		p = "?";
+		p = p + "name=" + ItemName;
+		p = p + "&description=A permission group used to test adding permission groups";
+		p = p + "&status=0";
 
-		System.out.println("response to /add : " + pageContent1);		
+		p = URLEncoder.encode(p);
+		
+		
+		if(LogDebugMsgs == true) this.logger.log(Level.DEBUG, "parmString = " + p);
+		
+		String _url="/ansi_web/" + this.realm + "/ADD";
+		
+		if(LogDebugMsgs == true) this.logger.log(Level.DEBUG, "Testing Add Method via doPost.. ");
+		
+		//pageContent1 = super.doPost(sessionCookie, _url , p);
+		pageContent1 = super.doPost(sessionCookie, _url , ValuesToAdd);
+		
+		System.out.println("url sent was : " + _url);		
+		System.out.println("response to /add : \n" + pageContent1);		
+		System.out.println("p = " + p);		
 	}
 
 	
 	
 	private void testAddViaJSON(String ItemName) throws Exception {
 		if(LogDebugMsgs) this.logger.log(Level.DEBUG, "Begin");
+		
 
 		Header sessionCookie = doLogin();
 
@@ -108,34 +134,39 @@ public class KevinsServletTester extends TestServlet {
 		j = j + "\"status\": 0";
 		j = j + "}";
 		
-		if(LogDebugMsgs) this.logger.log(Level.DEBUG, "Sending json :" + j);
+		
+		if(LogDebugMsgs == true) this.logger.log(Level.DEBUG, "Sending json :" + j);
 
 		String URL = "http://127.0.0.1:8080/ansi_web/" + this.realm;
 		
 		String url = URL + "/add";
 
-		if(LogDebugMsgs) this.logger.log(Level.DEBUG, "Sending url :" + url);
+		if(LogDebugMsgs == true) this.logger.log(Level.DEBUG, "Sending url :" + url);
 		
 		System.out.println(url);
 		String json = TesterUtils.postJson(url, j);
 		System.out.println(json);
 	}	
 	
-	public void go() throws Exception {
-
-		
+	public void go() throws Exception {		
 		Boolean RunWorkingTests;
+		Boolean StillTestingThese;
+		
 		
 		// Set this to true to spew debug messages to console..
-		this.LogDebugMsgs = true;  
-		
+		this.LogDebugMsgs = super.LogDebugMsgs = true;  
+		// = this.LogDebugMsgs; 
 		
 		this.realm = "permissionGroup";
 
-		super.userId = "geo@whitehouse.gov";
+		//super.userId = "geo@whitehouse.gov";
+		//super.password = "password1";
+		
+		super.userId = "kjw@ansi.com";
 		super.password = "password1";
 		
 		RunWorkingTests = false;
+		StillTestingThese = true;
 		
 		if(RunWorkingTests) 
 		{
@@ -146,17 +177,22 @@ public class KevinsServletTester extends TestServlet {
 		}
 		else
 		{
-			this.logger.log(Level.DEBUG, "Skipping tests that work already..");
+			if(LogDebugMsgs) this.logger.log(Level.DEBUG, "Skipping tests that work already..");
 		}
 
-		//Failed nicely.. 
-		this.testAddViaJSON("TestGroup1");  	//testing this now..fails for some reason
+		if(StillTestingThese)
+		{
+			//this.TestListFunction();	//works..
+			//this.TestGetItem(2);		//works..
+			this.TestListFunction();	//works..
+			//Failed nicely.. 
+			//this.testAddViaJSON("TestGroup1");  	//testing this now..fails for some reason
 
-		//Still working on this one.. 
-		this.TestAddItem("AnotherTestGroup");	//started working on this way... 
-		
-		
-		
+			//Still working on this one.. 
+			//this.TestAddItem("AnotherTestGroup");	//started working on this way... 
+		}
+				
+		if(LogDebugMsgs) this.logger.log(Level.DEBUG, "End");
 		
 	}
 }
