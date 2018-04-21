@@ -7,7 +7,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,6 +15,7 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
@@ -122,6 +122,7 @@ public abstract class TestServlet {
 		HttpGet httpGet = new HttpGet(uri);
 		httpGet.addHeader("Cookie", sessionCookie.getValue());
 		CloseableHttpResponse response = httpClient.execute(httpGet);
+		this.logger.log(Level.DEBUG, response.getStatusLine());
 		try {
 			HttpEntity entity = response.getEntity();
 //			Long length = entity.getContentLength();
@@ -164,6 +165,42 @@ public abstract class TestServlet {
 		}
 		return pageContent;
 	}
+	
+	
+	
+	
+	protected String doDelete(Header sessionCookie, String url, HashMap<String, String> parmMap) throws URISyntaxException, ClientProtocolException, IOException {		
+		this.logger.log(Level.DEBUG, "Delete: " + url);
+		String pageContent = "Failure!";
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		URIBuilder builder = new URIBuilder();
+		builder.setScheme("http");
+		builder.setHost(this.hostname);
+		builder.setPort(this.hostport);
+		builder.setPath(url);
+		if ( parmMap != null && ! parmMap.isEmpty() ) {
+			for ( Map.Entry<String, String> entry : parmMap.entrySet() ) {
+				builder.setParameter(entry.getKey(), entry.getValue());
+			}
+		}
+		URI uri = builder.build();
+		HttpDelete httpDelete = new HttpDelete(uri);
+		httpDelete.addHeader("Cookie", sessionCookie.getValue());
+		CloseableHttpResponse response = httpClient.execute(httpDelete);
+		this.logger.log(Level.DEBUG, response.getStatusLine());
+		try {
+			HttpEntity entity = response.getEntity();
+//			Long length = entity.getContentLength();
+			StringWriter writer = new StringWriter();
+			IOUtils.copy(entity.getContent(), writer, "UTF-8");
+			pageContent = writer.toString();
+			EntityUtils.consume(entity);
+		} finally {
+			response.close();
+		}
+		return pageContent;			
+	}
+	
 	
 	
 	protected HashMap<String, String> makeParmMap(String parms) throws UnsupportedEncodingException {

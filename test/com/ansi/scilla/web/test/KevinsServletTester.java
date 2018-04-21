@@ -9,8 +9,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.utils.AppUtils;
 
-import java.net.URLEncoder;
-
 
 public class KevinsServletTester extends TestServlet {
 	
@@ -36,14 +34,13 @@ public class KevinsServletTester extends TestServlet {
 	}
 
 	
-	private void TestListFunction() throws Exception 
+	private void testListFunction(Header sessionCookie) throws Exception 
 	{
 		//******************************************
 		//*
 		//* Test the /list function of the servlet.. 
 		//*
 		//******************************************kjw
-		Header sessionCookie = doLogin();
 		String pageContent1;
 		
 		if(logDebugMsgs == true) this.logger.log(Level.DEBUG, "Testing /list function ");
@@ -53,13 +50,12 @@ public class KevinsServletTester extends TestServlet {
 		System.out.println("response to /list \n=================\n"+pageContent1);		
 	}
 	
-	private void TestGetItem(int itemRecordId) throws Exception 
+	private void testGetItem(Header sessionCookie, int itemRecordId) throws Exception 
 	{
 		//******************************************
 		//*
 		//* Test the /id# function of the servlet.. 
 		//*
-		Header sessionCookie = doLogin();
 		String pageContent1;
 		String _url;
 		
@@ -73,7 +69,23 @@ public class KevinsServletTester extends TestServlet {
 	}
 
 
-	private void TestAddItem(Header sessionCookie, String itemName) throws Exception 
+	
+	
+	private void testDelete(Header sessionCookie, int itemRecordId) throws Exception { 
+			
+		String pageContent = null;
+		String url = "/ansi_web/" + this.realm + "/" + itemRecordId;
+		System.out.println("Sending url : " + url);		
+		
+		if(logDebugMsgs == true) this.logger.log(Level.DEBUG, "Testing GetItem Method.. ");
+		pageContent = super.doDelete(sessionCookie, url, new HashMap<String,String>());
+
+		System.out.println("response to " + url + "\n=================\n"+pageContent);		
+	}
+	
+	
+	
+	private void testAddItem(Header sessionCookie, String itemName) throws Exception 
 	{
 		//******************************************
 		//*
@@ -150,8 +162,17 @@ public class KevinsServletTester extends TestServlet {
 			//this.testAddViaJSON("TestGroup1");  	//testing this now..fails for some reason
 
 			//Still working on this one.. 
-			this.TestAddItem(sessionCookie, "AnotherTestGroup");	//started working on this way... 
+			//this.TestAddItem(sessionCookie, "AnotherTestGroup");	//started working on this way... 
 //		}
+		
+		
+		
+		
+		
+//		this.testAddItem(sessionCookie, "Test Group 9");
+//		this.testGetItem(sessionCookie, 9);
+//		this.testListFunction(sessionCookie);
+		this.testDelete(sessionCookie, 8);
 				
 		if(logDebugMsgs) this.logger.log(Level.DEBUG, "End");
 		
