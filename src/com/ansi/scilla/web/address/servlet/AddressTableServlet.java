@@ -72,7 +72,7 @@ public class AddressTableServlet extends AbstractServlet {
 		int draw = 0;
 		int col = 0;
 		String dir = "asc";
-		String[] cols = { "address_id", "name", "status", "address1", "address2", "city", "county", "state", "zip", "countryCode" };
+		String[] cols = { "address_id", "name", "address_status", "address1", "address2", "city", "county", "state", "zip" };
 		String sStart = request.getParameter("start");
 	    String sAmount = request.getParameter("length");
 	    String sDraw = request.getParameter("draw");

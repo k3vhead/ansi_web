@@ -522,11 +522,11 @@ change log
     	<table id="displayTable">
     		<tr>
 				<!-- // modthis -->
-				<th id="col_01_hdr">taxRate Id</th>
-				<th id="col_02_hdr">Location</th>
-				<th id="col_03_hdr">Rate</th>
-				<th id="col_04_hdr">Amount</th>
-				<th id="col_05_hdr">Effective Date</th>
+				<th id="col_01_hdr"><bean:message key="field.label.data_item.data_item_id" /></th>
+				<th id="col_02_hdr"><bean:message key="field.label.data_item.location" /></th>
+				<th id="col_03_hdr"><bean:message key="field.label.data_item.rate" /></th>
+				<th id="col_04_hdr"><bean:message key="field.label.data_item.amount" /></th>
+				<th id="col_05_hdr"><bean:message key="field.label.data_item.effectiveDate" /></th>
        	    	<ansi:hasPermission permissionRequired="SYSADMIN">
 					<ansi:hasWrite>
 						<th id="col_06_hdr">Action</th>
@@ -557,7 +557,7 @@ change log
 		    			<table>
 							<!-- MAKE SURE THE 'name' FIELD MATCH THE NAMES USED IN THE DATABASE!! -->
 		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Location:</span></td>
+		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.data_item.location" />:</span></td>
 		    					<td>
 		    						<input type="text" name="location" data-required="true" data-valid="validLocation" />
 		    						<i id="validTable" class="fa" aria-hidden="true"></i>
@@ -565,7 +565,7 @@ change log
 		    					<td><span class="err" id="locationErr"></span></td>
 		    				</tr>
 							<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Tax Rate:</span></td>
+		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.data_item.rate" />:</span></td>
 		    					<td>
 		    						<input type="text" name="rate" data-required="true" data-valid="validRate" />
 		    						<i id="validField" class="fa" aria-hidden="true"></i>
@@ -573,7 +573,7 @@ change log
 		    					<td><span class="err" id="rateErr"></span></td>
 		    				</tr>
 		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Tax Amount:</span></td>
+		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.data_item.amount" />:</span></td>
 		    					<td>
 		    						<input type="text" name="amount" data-required="true" data-valid="validtaxAmount" />
 		    						<i id="validField" class="fa" aria-hidden="true"></i>
@@ -581,7 +581,7 @@ change log
 		    					<td><span class="err" id="amountErr"></span></td>
 		    				</tr>
 		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Effective Date:</span></td>
+		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.data_item.effectiveDate" />:</span></td>
 		    					<td>
 		    						<input type="text" class="dateField" name="effectiveDate" data-required="true" data-valid="validEffectiveDate" />
 		    						<i id="validValue" class="fa" aria-hidden="true"></i>

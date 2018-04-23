@@ -18,7 +18,7 @@
 <tiles:insert page="layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        User Lookup
+        <bean:message key="field.label.userLookupTitle" />
     </tiles:put>
     
     
@@ -76,7 +76,6 @@
         			USERLOOKUP.createTable();
         		},
         		
-        		
         		doFunctionBinding : function() {
 					$( ".editAction" ).on( "click", function($clickevent) {
 						 doEdit($clickevent);
@@ -90,7 +89,6 @@
 					//	location.href="jobMaintenance.html?id=" + $jobId;
 					//});
 				},
-				
 				
         		enableClicks : function() {
         			$('.ScrollTop').click(function() {
@@ -130,7 +128,7 @@
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
             	            { className: "dt-head-left", "targets": [1,2,3,4,5,6] },
-            	            { className: "dt-body-center", "targets": [0,7] },
+            	            { className: "dt-body-center", "targets": [0,7,8] },
             	            { className: "dt-right", "targets": []}
             	         ],
             	        "paging": true,
@@ -141,28 +139,40 @@
     			        	},
     			        aaSorting:[1],
     			        columns: [
-    			        	{ title: "ID", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			        	{ title: "<bean:message key="field.label.userId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
     			            	if(row.userId != null){return (row.userId+"");}
     			            } },
-    			            { title: "Last Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "<bean:message key="field.label.lastName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.lastName != null){return (row.lastName+"");}
     			            } },
-    			            { title: "First Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "<bean:message key="field.label.firstName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.firstName != null){return (row.firstName+"");}
     			            } },
-    			            { title: "Email", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "<bean:message key="field.label.email" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.email != null){return (row.email+"");}
     			            } },
-    			            { title: "Phone" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			            { title: "<bean:message key="field.label.phone" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
     			            	if(row.phone != null){return (row.phone+"");}
     			            } },
-    			            { title: "Location", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "<bean:message key="field.label.cityUL" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.city != null){return (row.city+", " + row.state);}
     			            } },
-    			            { title: "Group",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "<bean:message key="field.label.permissionGroupName" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.permissionGroupName != null){return (row.permissionGroupName+"");}
     			            } },
-    			            { title: "Action",  data: function ( row, type, set ) {	
+    			            { title: "<bean:message key="field.label.status" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	var status = '<span style="font-style:italic;">N/A</span>';    			            	
+    			            	if(row.userStatus != null){
+    			            		if ( row.userStatus == 1 ) {
+    			            			status = '<webthing:checkmark>Active</webthing:checkmark>';
+    			            		}
+    			            		if ( row.userStatus == 0 ) {
+    			            			status = '<webthing:ban>Inactive</webthing:ban>';
+    			            		}
+    			            	}
+    			            	return status;
+    			            } },
+    			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
     			            	//console.log(row);
     			            	if ( row.ticketId == null ) {
     			            		$actionData = "";
@@ -221,30 +231,33 @@
 	    		<col style="width:13%;" />
 	    		<col style="width:13%;" />
 	    		<col style="width:13%;" />
-	    		<col style="width:13%;" />
+	    		<col style="width:5%;" />
+	    		<col style="width:8%;" />
 	    	</colgroup>
 	        <thead>
 	            <tr>
-	                <th>ID</th>
-	    			<th>Last Name</th>
-	    			<th>First Name</th>
-	    			<th>Email</th>
-	    			<th>Phone</th>
-	    			<th>Location</th>
-	    			<th>Group</th>
-	    			<th>Action</th>
+	                <th><bean:message key="field.label.userId" /></th>
+	    			<th><bean:message key="field.label.lastName" /></th>
+	    			<th><bean:message key="field.label.firstName" /></th>
+	    			<th><bean:message key="field.label.email" /></th>
+	    			<th><bean:message key="field.label.phone" /></th>
+	    			<th><bean:message key="field.label.cityUL" /></th>
+	    			<th><bean:message key="field.label.permissionGroupName" /></th>
+	    			<th><bean:message key="field.label.status" /></th>
+	    			<th><bean:message key="field.label.action" /></th>
 	            </tr>
 	        </thead>
 	        <tfoot>
 	            <tr>
-	                <th>ID</th>
-	    			<th>Last Name</th>
-	    			<th>First Name</th>
-	    			<th>Email</th>
-	    			<th>Phone</th>
-	    			<th>Location</th>
-	    			<th>Group</th>
-	    			<th>Action</th>
+	                <th><bean:message key="field.label.userId" /></th>
+	    			<th><bean:message key="field.label.lastName" /></th>
+	    			<th><bean:message key="field.label.firstName" /></th>
+	    			<th><bean:message key="field.label.email" /></th>
+	    			<th><bean:message key="field.label.phone" /></th>
+	    			<th><bean:message key="field.label.cityUL" /></th>
+	    			<th><bean:message key="field.label.permissionGroupName" /></th>
+	    			<th><bean:message key="field.label.status" /></th>
+	    			<th><bean:message key="field.label.action" /></th>
 	            </tr>
 	        </tfoot>
 	    </table>
