@@ -35,112 +35,106 @@ public class KevinsServletTester extends TestServlet {
 	}
 
 	
-	private void testListFunction(Header sessionCookie) throws Exception 
-	{
-		//******************************************
-		//*
-		//* Test the /list function of the servlet.. 
-		//*
-		//******************************************kjw
-		String jsonResult="failed!";
-		String url="";
+	private String makeOutput(String message, String method, String url, String data, String result) {
+		String s = "\n\n";
+		s = s + "[ " + message + " ]";
+		s = s + "(" + method + ")";
+		s = s + "\nurl sent : \t";
+		s = s + url;
+		s = s + "\ndata sent :";
+		s = s + "\t" + data;
+		s = s + "\nreturned : \t"; 
+		s = s + result; 
+//		s = s + "\n";
 		
-		if(logDebugMsgs) 
-			logger.log(Level.DEBUG, "Testing /list function ");
-		
-		url = "/ansi_web/" + this.realm + "/list";
-		
-		jsonResult = super.doGet(sessionCookie, url , new HashMap<String,String>());
-		
-		if(logDebugMsgs) 
-			logger.log(Level.DEBUG, url);
-		
-		if(logDebugMsgs) 
-			logger.log(Level.DEBUG, jsonResult);
-		
+		return s;		
 	}
 	
-	private void testGetItem(Header sessionCookie, int itemId) throws Exception 
+	private String testList(Header sessionCookie) throws Exception 
 	{
-		//******************************************
-		//*
+		//* Test the /list function of the servlet.. 
+		String sResult="failed!";
+		String url = "/ansi_web/" + this.realm + "/list";
+		String msg = "Testing Get List";
+		String method = "GET";
+		
+		sResult = super.doGet(sessionCookie, url , new HashMap<String,String>());
+		
+		String sOutput = makeOutput(msg, method, url, "n/a", sResult);
+		if(logDebugMsgs) logger.log(Level.DEBUG, sOutput);
+		return sOutput;
+	}
+	
+	private String testGetById(Header sessionCookie, int itemId) throws Exception 
+	{
 		//* Test the /id# function of the servlet.. 
-		//*
-		String pageContent1 = "Failed!";
-				
-		String _url = "/ansi_web/" + this.realm + "/" + itemId;
-		System.out.println("Sending url : " + _url);		
+		String sResult = "Failed!";
+		String url = "/ansi_web/" + this.realm + "/" + itemId;
+		String msg = "Testing Get by ID";
+		String method = "GET";
 		
-		if(logDebugMsgs == true) this.logger.log(Level.DEBUG, "Testing GetItem Method.. ");
-		pageContent1 = super.doGet(sessionCookie, _url, new HashMap<String,String>());
+		sResult = super.doGet(sessionCookie, url, new HashMap<String,String>());
 		
-		String s = "response to /" + itemId + "\n=================\n"+pageContent1;
-		if(logDebugMsgs == true) this.logger.log(Level.DEBUG, s);
+		String sOutput = makeOutput(msg, method, url, "n/a", sResult);
+		if(logDebugMsgs) logger.log(Level.DEBUG, sOutput);
+		return sOutput;
 	}
 
-	private void testUpdate(Header sessionCookie, int itemId) {
-		//******************************************
-		//*
+	private String testUpdate(Header sessionCookie, int itemId) {
 		//* Test the /add function of the servlet.. 
-		//*
-		//if(LogDebugMsgs == true) this.logger.log(Level.DEBUG, "begin");
-		
-		String _url = "/ansi_web/" + this.realm + "/" + itemId;				
-		
-		String pageContent1="Failed!";
-		HashMap<String, String> valuesToAdd;
-				
-		valuesToAdd = new HashMap<String, String>();
-		valuesToAdd.put("name", "This used to be test group 3");
-		valuesToAdd.put("description", "Kevin Just Updated this Group");
-		valuesToAdd.put("status","1");
-		valuesToAdd.put("permissionGroupId", Integer.toString(itemId));
-		
+		String sResult="Failed!";
+		String url = "/ansi_web/" + this.realm + "/" + itemId;
+		String msg = "Testing Update";
+		String method = "POST";
 		String paramString="";
+		HashMap<String, String> params = new HashMap<String, String>();;
+				
+		params.put("name", "This used to be test group 3");
+		params.put("description", "Kevin Just Updated this Group");
+		params.put("status","1");
+		params.put("permissionGroupId", Integer.toString(itemId));
+		
 		try {
-			paramString = AppUtils.object2json(valuesToAdd);
+			paramString = AppUtils.object2json(params);
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println(paramString);
 				
-		//String _url="/ansi_web/" + this.realm + "/3";
-		
-		if(logDebugMsgs == true) this.logger.log(Level.DEBUG, "Testing Update Method via doPost.. ");
-		
 		try {
-			pageContent1 = super.doPost(sessionCookie, _url , paramString);
+			sResult = super.doPost(sessionCookie, url , paramString);
 		} catch (IOException | URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		
-		System.out.println("url sent was : " + _url);		
-		System.out.println("response to update of permissionGroupId " + itemId + " : \n" + pageContent1);		
+		}		
+		String sOutput = makeOutput(msg, method, url, paramString, sResult);
+		if(logDebugMsgs) logger.log(Level.DEBUG, sOutput);
+		return sOutput;
 	}
 	
 	
-	private void testDelete(Header sessionCookie, int itemId) throws Exception { 
+	private String testDelete(Header sessionCookie, int itemId) throws Exception { 
 		String sResult = null;
 		String url = "/ansi_web/" + this.realm + "/" + itemId;
-		
-		if(logDebugMsgs) logger.log(Level.DEBUG, "Sending url : " + url);
+		String msg = "Testing Delete";
+		String method = "DELETE";
+				
 		sResult = super.doDelete(sessionCookie, url, new HashMap<String,String>());
 
-		System.out.println("\nJSON Returned is :\n " + sResult);		
+		String sOutput = makeOutput(msg, method, url, "n/a", sResult);
+		if(logDebugMsgs) logger.log(Level.DEBUG, sOutput);
+		return sOutput;
 	}
 	
-	private void testAddItem(Header sessionCookie, String itemName) throws Exception 
+	private String testAdd(Header sessionCookie, String itemName) throws Exception 
 	{
 		//*  Test the /add function of the servlet..
-		
-		if(logDebugMsgs) 
-			logger.log(Level.DEBUG, "begin");
 
 		String sResult="Failed!";
 		String paramString = "";
 		String url = "/ansi_web/" + this.realm + "/add";
+		String msg = "Testing Add";
+		String method = "POST";
 
 		HashMap<String, String> params = new HashMap<String, String>(); 
 
@@ -150,26 +144,18 @@ public class KevinsServletTester extends TestServlet {
 
 		paramString = AppUtils.object2json(params);
 		
-		if(logDebugMsgs) 
-			logger.log(Level.DEBUG, "\nSending url: " + url);
-
-		if(logDebugMsgs) 
-			logger.log(Level.DEBUG, "\nSending Data: \n" + paramString);
-				
 		sResult = super.doPost(sessionCookie, url , paramString);
 		
-		if(logDebugMsgs) 
-			logger.log(Level.DEBUG, "\nReturned Json = \n " +  sResult);
-	}
-
-	private void testDeleteItem(Header sessionCookie, String itemName) {
-		
+		String sOutput = makeOutput(msg, method, url, paramString, sResult);
+		if(logDebugMsgs) logger.log(Level.DEBUG, sOutput);
+		return sOutput;
 	}
 	
 	public void go() throws Exception {		
-		this.logDebugMsgs = true; 
-		
+		this.logDebugMsgs = false; 
 		this.realm = "permissionGroup";
+		
+		String s ="";
 
 		//super.userId = "geo@whitehouse.gov";
 		//super.password = "password1";
@@ -179,10 +165,14 @@ public class KevinsServletTester extends TestServlet {
 		
 		Header sessionCookie = super.doLogin();
 		
-		testListFunction(sessionCookie);
-		testAddItem(sessionCookie, "The Tuesday Group 1");
-		testUpdate(sessionCookie, 3);
-		testDelete(sessionCookie, 19);
+		s = s + testList(sessionCookie);
+		s = s + testGetById(sessionCookie, 3);
+		// Note : you need to determine id num to delete manually.. 
+		s = s + testDelete(sessionCookie, 52);	 
+		s = s + testAdd(sessionCookie, "The Tuesday Group 3");
+		s = s + testUpdate(sessionCookie, 3);
+		
+		logger.log(Level.DEBUG, s);
 		
 		if(logDebugMsgs) 
 			logger.log(Level.DEBUG, "End");
