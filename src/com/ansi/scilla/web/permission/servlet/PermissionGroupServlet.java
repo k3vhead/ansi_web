@@ -39,11 +39,25 @@ import com.ansi.scilla.web.permission.response.PermissionGroupListResponse;
 import com.ansi.scilla.web.permission.response.PermissionGroupResponse;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
-
+/**
+ * The url for delete will be of the form :
+ * 		 /permissionGroup/id# 	(deletes the record with this id)
+ * 
+ * The url for get will be one of:
+ * 		/permissionGroup/list  	(retrieves everything)
+ * 		/permissionGroup/id#,	(returns one permission group)
+ * 
+ * The url for adding a new record will be a POST to:
+ * 		/permissionGroup/add   	with parameters in the JSON
+ * 
+ * The url for update will be a POST to:
+ * 		/permissionGroup/id# 		with parameters in the JSON
+ *
+ */
 public class PermissionGroupServlet extends AbstractServlet {
-	
 	/**
 	 * @author jwlewis
+	 * @author kwagner;
 	 */
 	protected final Logger logger = LogManager.getLogger(PermissionGroupServlet.class);
 	protected final Boolean LogDebugMsgs = true;

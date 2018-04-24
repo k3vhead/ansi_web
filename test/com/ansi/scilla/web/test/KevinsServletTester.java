@@ -168,7 +168,7 @@ public class KevinsServletTester extends TestServlet {
 		s = s + testList(sessionCookie);
 		s = s + testGetById(sessionCookie, 3);
 		// Note : you need to determine id num to delete manually.. 
-		s = s + testDelete(sessionCookie, 52);	 
+		s = s + testDelete(sessionCookie, 53);	 
 		s = s + testAdd(sessionCookie, "The Tuesday Group 3");
 		s = s + testUpdate(sessionCookie, 3);
 		
