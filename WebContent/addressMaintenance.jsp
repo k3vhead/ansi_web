@@ -52,6 +52,15 @@
 			#state-menu {
 			  max-height: 300px;
 			}
+			#noMatchModal {
+				display:none;
+			}
+			#noAddress {
+				display:none;
+			}
+			#noContact {
+				display:none;
+			}
 			.prettyWideButton {
 				height:30px;
 				min-height:30px;
@@ -111,10 +120,10 @@
 			.invoiceDetails {
 				display:none;
 			}
-			#addressFieldContainer {
-				cursor:pointer;
+			.jobSiteDetails {
+				display:none;
 			}
-			#invoiceFieldContainer {
+			.field-container {
 				cursor:pointer;
 			}
         </style>
@@ -130,8 +139,10 @@
 						ADDRESSMAINTENANCE.makeOptionLists();
 						ADDRESSMAINTENANCE.makeAddAddressModal();
 						ADDRESSMAINTENANCE.makeViewAddressModal();
+						ADDRESSMAINTENANCE.makeNoMatchModal();
 						ADDRESSMAINTENANCE.makeButtons();
 						ADDRESSMAINTENANCE.createTable();
+						ADDRESSMAINTENANCE.makeAutoComplete();
 						if ( ADDRESSMAINTENANCE.ansiModal != '' ) {
 							$(".addButton").click();
 						}
@@ -188,9 +199,9 @@
 					            { title: "<bean:message key="field.label.county" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 					            	if(row.county != null){return (row.county+"");}
 					            } },
-					            { title: "<bean:message key="field.label.countryCode" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-					            	if(row.countryCode != null){return (row.countryCode+"");}
-					            } },
+					            //{ title: "<bean:message key="field.label.countryCode" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+					            //	if(row.countryCode != null){return (row.countryCode+"");}
+					            //} },
 					            { title: "<bean:message key="field.label.state" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
 					            	if(row.state != null){return (row.state+"");}
 					            } },
@@ -283,6 +294,7 @@
 									} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
 										$.each($data.data.webMessages, function(key, messageList) {
 											var $identifier = "#" + key + "Err";
+											console.debug("Bad Field: " + $identifier);
 											ANSI_UTILS.markInvalid( $($identifier) );
 										});		
 										if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
@@ -400,7 +412,7 @@
 					doFunctionBinding : function() {
 						$( ".editAction" ).on( "click", function($clickEvent) {
 			        		$("#addAddressForm").dialog( "option", "title", "Update Address" );
-							 ADDRESSMAINTENANCE.doEdit($clickEvent);
+							ADDRESSMAINTENANCE.doEdit($clickEvent);
 						});
 						$('.delAction').on('click', function($clickEvent) {
 							ADDRESSMAINTENANCE.doDelete($clickEvent);
@@ -430,7 +442,7 @@
 	        			$( "#addAddressForm" ).dialog({
 	    					autoOpen: false,
 	    					height: "auto",
-	    					width: 550,
+	    					width: 600,
 	    					modal: true,
 	    					buttons: [{
 	    						id: 'addFormCloseButton',
@@ -450,6 +462,118 @@
 	    				});
 	        			$('#addFormCloseButton').button('option', 'label', 'Close');
 	        		},
+	        		
+	        		
+	        		
+	        		makeAutoComplete : function() {
+						var $jobsiteBillTo = $( "#addAddressForm input[name='jobsiteBillTo']" ).autocomplete({
+							'source':"addressTypeAhead?",
+							select: function( event, ui ) {
+								$( "#addAddressForm input[name='jobsiteBilltoAddressDefault']" ).val(ui.item.id);
+	   				      	},
+							response: function(event, ui) {
+								if (ui.content.length === 0) {
+									$( "#addAddressForm input[name='jobsiteBilltoAddressDefault']" ).val(-1); //server side will see this and mark it invalid
+									$("#noAddress").show();
+									$("#noContact").hide();
+									$( "#noMatchModal" ).dialog("open");
+								}
+							}
+						}).data('ui-autocomplete');
+						
+						$jobsiteBillTo._renderMenu = function( ul, items ) {
+							var that = this;
+							$.each( items, function( index, item ) {
+								that._renderItemData( ul, item );
+							});
+							if ( items.length == 1 ) {
+								$( "#addAddressForm input[name='jobsiteBillTo']" ).val(items[0].value);
+								$( "#addAddressForm input[name='jobsiteBilltoAddressDefault']" ).val(items[0].id);
+							}
+						};	
+						
+						
+						
+						var $jobsiteJobContact = $( "#addAddressForm input[name='jobsiteJobContact']" ).autocomplete({
+							'source':"contactTypeAhead?",
+							select: function( event, ui ) {
+								$( "#addAddressForm input[name='jobsiteJobContactDefault']" ).val(ui.item.id);
+	   				      	},
+							response: function(event, ui) {
+								if (ui.content.length === 0) {
+									$( "#addAddressForm input[name='jobsiteJobContactDefault']" ).val(-1); //server side will see this and mark it invalid
+									$("#noAddress").hide();
+									$("#noContact").show();
+									$( "#noMatchModal" ).dialog("open");
+								}
+							}
+						}).data('ui-autocomplete');
+						
+						$jobsiteJobContact._renderMenu = function( ul, items ) {
+							var that = this;
+							$.each( items, function( index, item ) {
+								that._renderItemData( ul, item );
+							});
+							if ( items.length == 1 ) {
+								$( "#addAddressForm input[name='jobsiteJobContact']" ).val(items[0].value);
+								$( "#addAddressForm input[name='jobsiteJobContactDefault']" ).val(items[0].id);
+							}
+						};
+						
+						
+						var $jobsiteSiteContact = $( "#addAddressForm input[name='jobsiteSiteContact']" ).autocomplete({
+							'source':"contactTypeAhead?",
+							select: function( event, ui ) {
+								$( "#addAddressForm input[name='jobsiteSiteContactDefault']" ).val(ui.item.id);
+	   				      	},
+							response: function(event, ui) {
+								if (ui.content.length === 0) {
+									$( "#addAddressForm input[name='jobsiteSiteContactDefault']" ).val(-1); //server side will see this and mark it invalid
+									$("#noAddress").hide();
+									$("#noContact").show();
+									$( "#noMatchModal" ).dialog("open");
+								}
+							}
+						}).data('ui-autocomplete');
+						
+						$jobsiteSiteContact._renderMenu = function( ul, items ) {
+							var that = this;
+							$.each( items, function( index, item ) {
+								that._renderItemData( ul, item );
+							});
+							if ( items.length == 1 ) {
+								$( "#addAddressForm input[name='jobsiteSiteContact']" ).val(items[0].value);
+								$( "#addAddressForm input[name='jobsiteSiteContactDefault']" ).val(items[0].id);
+							}
+						};
+						
+						
+	        		},
+	        		
+	        		
+	        		
+	        		makeNoMatchModal : function() {
+	        			$( "#noMatchModal" ).dialog({
+	        				title:"No Matches Found",
+	    					autoOpen: false,
+	    					height: "auto",
+	    					width: 600,
+	    					modal: true,
+	    					buttons: [{
+	    						id: 'noMatchCloseButton',
+	    						click: function() {
+	    							$( "#noMatchModal" ).dialog( "close" );
+	    						}								
+	    					}],
+	    					close: function() {
+	    						$( "#noMatchModal" ).dialog( "close" );
+	    						//allFields.removeClass( "ui-state-error" );
+	    					}
+	    				});
+	        			$('#noMatchCloseButton').button('option', 'label', 'Close');
+	        		},
+	        		
+	        		
 	        		
 	        		
 	        		makeViewAddressModal : function() {
@@ -475,22 +599,31 @@
 	        		
 					
 					makeButtons : function() {
-						$("#invoiceFieldContainer").click(function($event) {
-							$("#addressFieldContainer").removeClass("button_is_active");
-							$("#addressFieldContainer").addClass("button_is_inactive");
-							$("#invoiceFieldContainer").removeClass("button_is_inactive");
-							$("#invoiceFieldContainer").addClass("button_is_active");
-							$("#addAddressForm .addressDetails").hide();
-							$("#addAddressForm .invoiceDetails").show();
+						$("#addressFieldContainer").click(function($event) {
+							$(".field-container").removeClass("button_is_active");
+							$(".field-container").addClass("button_is_inactive");
+							$("#addressFieldContainer").removeClass("button_is_inactive");
+							$("#addressFieldContainer").addClass("button_is_active");		
+							$(".details").hide();
+							$("#addAddressForm .addressDetails").show();
 						});
 						
-						$("#addressFieldContainer").click(function($event) {
-							$("#invoiceFieldContainer").removeClass("button_is_active");
-							$("#invoiceFieldContainer").addClass("button_is_inactive");
-							$("#addressFieldContainer").removeClass("button_is_inactive");
-							$("#addressFieldContainer").addClass("button_is_active");
-							$("#addAddressForm .invoiceDetails").hide();
-							$("#addAddressForm .addressDetails").show();
+						$("#jobSiteFieldContainer").click(function($event) {
+							$(".field-container").removeClass("button_is_active");
+							$(".field-container").addClass("button_is_inactive");
+							$("#jobSiteFieldContainer").removeClass("button_is_inactive");
+							$("#jobSiteFieldContainer").addClass("button_is_active");			
+							$(".details").hide();
+							$("#addAddressForm .jobSiteDetails").show();
+						});
+						
+						$("#invoiceFieldContainer").click(function($event) {
+							$(".field-container").removeClass("button_is_active");
+							$(".field-container").addClass("button_is_inactive");
+							$("#invoiceFieldContainer").removeClass("button_is_inactive");
+							$("#invoiceFieldContainer").addClass("button_is_active");	
+							$(".details").hide();
+							$("#addAddressForm .invoiceDetails").show();
 						});
 						
 						$(".addButton").button().on( "click", function() {
@@ -509,6 +642,39 @@
 								ADDRESSMAINTENANCE.populateAddressForm($addressId, "edit");
 						   	}
 						}).data('ui-autocomplete');
+						
+						
+						$("#addAddressForm input[name='jobsiteFloorsDefault']").spinner({
+							disabled: false,
+							spin: function( event, ui ) {
+								if ( ui.value < 0 ) {
+									$( this ).spinner( {value: 0 });
+									return false;
+								}
+								if ( ui.value > 500 ) {
+									alert("Ladders are too short");
+									$( this ).spinner( {value: 500 });
+									return false;
+								}
+							}
+						});
+						
+						$( "#addAddressForm input[name='jobsiteBillto']" ).focus(function($event) {
+							$("#jobsiteBilltoAddressDefaultErr").hide();
+						});
+						$( "#addAddressForm input[name='jobsiteJobContact']" ).focus(function() {
+							$("#jobsiteJobContactDefaultErr").hide();
+						});
+						$( "#addAddressForm input[name='jobsiteSiteContact']" ).focus(function() {
+							$("#jobsiteSiteContactDefaultErr").hide();
+						});
+						
+						$( "#addAddressForm input[name='jobsiteFloorsDefault']" ).focus(function() {
+							$("#jobsiteFloorsDefaultErr").hide();
+						});
+						$( "#addAddressForm select[name='jobsiteBuildingTypeDefault']" ).focus(function() {
+							$("#jobsiteBuildingTypeDefaultErr").hide();
+						});
 					},
 					
 					
@@ -536,6 +702,10 @@
 		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceGroupingDefault']", $optionData.invoiceGrouping, null);
 		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceTermsDefault']", $optionData.invoiceTerm, null);
 		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceStyleDefault']", $optionData.invoiceStyle,null);
+		                
+		                
+		                // get building type options
+		                ANSI_UTILS.populateCodeSelect("job","building_type","#addAddressForm select[name='jobsiteBuildingTypeDefault']","value","displayValue");
 		            },
 		            
 		            
@@ -631,7 +801,7 @@
 	    			<th><bean:message key="field.label.address2" /></th>
 	    			<th><bean:message key="field.label.city" /></th>
 	    			<th><bean:message key="field.label.county" /></th>
-	    			<th><bean:message key="field.label.countryCode" /></th>
+	    			<%-- <th><bean:message key="field.label.countryCode" /></th> --%>
 	    			<th><bean:message key="field.label.state" /></th>
 	    			<th><bean:message key="field.label.zip" /></th>
 	    			<th><bean:message key="field.label.invoice.style" /></th>
@@ -651,7 +821,7 @@
 	    			<th><bean:message key="field.label.address2" /></th>
 	    			<th><bean:message key="field.label.city" /></th>
 	    			<th><bean:message key="field.label.county" /></th>
-	    			<th><bean:message key="field.label.countryCode" /></th>
+	    			<%-- <th><bean:message key="field.label.countryCode" /></th> --%>
 	    			<th><bean:message key="field.label.state" /></th>
 	    			<th><bean:message key="field.label.zip" /></th>
 	    			<th><bean:message key="field.label.invoice.style" /></th>
@@ -687,16 +857,17 @@
 			--%>
 				<table style="width:500px;">
 					<colgroup>
-			        	<col style="width:50%;" />
-			        	<col style="width:50%;" />
+			        	<col style="width:33%;" />
+			        	<col style="width:33%;" />
 					</colgroup>
 					<tr>
-						<td id="addressFieldContainer" class="button_is_active"><i id="addressFieldButton" class="action-link far fa-address-card fa-lg tooltip" aria-hidden="true"><span class="tooltiptextleft">Address</span></i></td>
-						<td id="invoiceFieldContainer" class="button_is_inactive"><i id="invoiceFieldButton" class="action-link far fa-money-bill-alt fa-lg tooltip" aria-hidden="true"><span class="tooltiptextleft">Invoice Defaults</span></i></td>
+						<td id="addressFieldContainer" class="field-container button_is_active"><webthing:addressIcon styleId="addressFieldButton" styleClass="action-link fa-lg">Address</webthing:addressIcon></td>
+						<td id="jobSiteFieldContainer" class="field-container button_is_inactive"><webthing:jobSiteIcon styleId="jobSiteFieldButton" styleClass="action-link fa-lg">Job Site Defaults</webthing:jobSiteIcon></td>
+						<td id="invoiceFieldContainer" class="field-container button_is_inactive"><webthing:invoiceIcon styleId="invoiceFieldButton" styleClass="action-link fa-lg">Invoice Defaults</webthing:invoiceIcon></td>
 						<td>&nbsp;</td>
 					</tr>
 				</table>
-				<div class="addressDetails">
+				<div class="details addressDetails">
 					<table style="width:500px;">
 						<tr>
 							<td><span class="required">*</span></td>
@@ -754,7 +925,60 @@
 						</tr>
 					</table>
 				</div>
-				<div class="invoiceDetails">
+				
+				
+				
+				<div class="details jobSiteDetails">
+					<table style="width:500px;">
+						<tr>
+							<td><span class="required"></span></td>
+							<td><span class="formLabel">Bill To:</span></td>
+							<td colspan="3">
+								<input type="hidden" name="jobsiteBilltoAddressDefault" />
+								<input type="text" name="jobsiteBillTo" />
+								<i id="jobsiteBilltoAddressDefaultErr" class="fa errIcon" aria-hidden="true"></i>
+							</td>
+						</tr>
+						<tr>
+							<td><span class="required"></span></td>
+							<td><span class="formLabel">Job Contact:</span></td>
+							<td colspan="3">
+								<input type="hidden" name="jobsiteJobContactDefault" />  
+								<input type="text" name="jobsiteJobContact" />
+								<i id="jobsiteJobContactDefaultErr" class="fa errIcon" aria-hidden="true"></i>
+							</td>
+						</tr>
+						<tr>
+							<td><span class="required"></span></td>
+							<td><span class="formLabel">Site Contact:</span></td>
+							<td colspan="3">
+								<input type="hidden" name="jobsiteSiteContactDefault" />
+								<input type="text" name="jobsiteSiteContact" />
+								<i id="jobsiteSiteContactDefaultErr" class="fa errIcon" aria-hidden="true"></i>
+							</td>
+						</tr>
+						<tr>
+							<td><span class="required"></span></td>
+							<td><span class="formLabel">Floors:</span></td>
+							<td colspan="3">
+								<input type="text" name="jobsiteFloorsDefault" />
+								<i id="jobsiteFloorsDefaultErr" class="fa errIcon" aria-hidden="true"></i>
+							</td>
+						</tr>
+						<tr>
+							<td><span class="required"></span></td>
+							<td><span class="formLabel">Building Type:</span></td>
+							<td colspan="3">
+								<select name="jobsiteBuildingTypeDefault"></select>
+								<i id="jobsiteBuildingTypeDefaultErr" class="fa errIcon" aria-hidden="true"></i>
+							</td>
+						</tr>
+					</table>
+				</div>
+				
+				
+				
+				<div class="details invoiceDetails">
 					<table style="width:500px;">
 						<tr>
 							<td><span class="required"></span></td>
@@ -815,7 +1039,10 @@
 			<webthing:addressInvoicePanel cssId="invoiceDefault" />
 		</div>
 		
-		
+		<div id="noMatchModal">
+			<div id="noAddress">No matching address was found. <a href="newAddress.html">Add a new address</a>?</div>
+			<div id="noContact">No matching contact was found. <a href="newContact.html">Add a new contact</a>?</div>
+		</div>
 		<input  type="text" id="updateOrAdd" style="display:none" />
 		<input  type="text" id="aId" style="display:none" />
     </tiles:put>	
