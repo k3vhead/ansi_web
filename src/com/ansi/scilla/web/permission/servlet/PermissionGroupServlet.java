@@ -43,7 +43,6 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
 public class PermissionGroupServlet extends AbstractServlet {
 	
 	/**
-	 * 
 	 * @author jwlewis
 	 */
 	protected final Logger logger = LogManager.getLogger(PermissionGroupServlet.class);
@@ -122,16 +121,15 @@ public class PermissionGroupServlet extends AbstractServlet {
 		PermissionGroup perm = new PermissionGroup();
 		perm.setPermissionGroupId(permGroupId);
 
-		User user = new User();
-		user.setPermissionGroupId(permGroupId);
-
+		User user = new User();						//	Create a user object
+		user.setPermissionGroupId(permGroupId);		//	Set the user object's group ID 
+													//		to the ID of the group being deleted
 		try {
-			user.selectOne(conn);
-			throw new InvalidDeleteException();
-		} catch (RecordNotFoundException e) {
-			perm.delete(conn);
+			user.selectOne(conn);					//	Query to see if anybody at all is using this group ID
+			throw new InvalidDeleteException();		//		throw an error that it cannot yet be deleted.
+		} catch (RecordNotFoundException e) {		//  Nobody is using this ID
+			perm.delete(conn);						//		Delete the permission group
 		}
-		
 	}
 	
 	@Override

@@ -121,23 +121,20 @@ public class KevinsServletTester extends TestServlet {
 	}
 	
 	
-	private void testDelete(Header sessionCookie, int itemRecordId) throws Exception { 
-		String pageContent = null;
-		String url = "/ansi_web/" + this.realm + "/" + itemRecordId;
-		System.out.println("Sending url : " + url);		
+	private void testDelete(Header sessionCookie, int itemId) throws Exception { 
+		String sResult = null;
+		String url = "/ansi_web/" + this.realm + "/" + itemId;
 		
-		if(logDebugMsgs == true) this.logger.log(Level.DEBUG, "Testing GetItem Method.. ");
-		pageContent = super.doDelete(sessionCookie, url, new HashMap<String,String>());
+		if(logDebugMsgs) logger.log(Level.DEBUG, "Sending url : " + url);
+		sResult = super.doDelete(sessionCookie, url, new HashMap<String,String>());
 
-		System.out.println("response to " + url + "\n=================\n"+pageContent);		
+		System.out.println("\nJSON Returned is :\n " + sResult);		
 	}
 	
 	private void testAddItem(Header sessionCookie, String itemName) throws Exception 
 	{
-		//******************************************
-		//*
-		//* 	Test the /add function of the servlet.. 
-		//*
+		//*  Test the /add function of the servlet..
+		
 		if(logDebugMsgs) 
 			logger.log(Level.DEBUG, "begin");
 
@@ -159,13 +156,15 @@ public class KevinsServletTester extends TestServlet {
 		if(logDebugMsgs) 
 			logger.log(Level.DEBUG, "\nSending Data: \n" + paramString);
 				
-		
 		sResult = super.doPost(sessionCookie, url , paramString);
 		
 		if(logDebugMsgs) 
 			logger.log(Level.DEBUG, "\nReturned Json = \n " +  sResult);
 	}
 
+	private void testDeleteItem(Header sessionCookie, String itemName) {
+		
+	}
 	
 	public void go() throws Exception {		
 		this.logDebugMsgs = true; 
@@ -181,10 +180,9 @@ public class KevinsServletTester extends TestServlet {
 		Header sessionCookie = super.doLogin();
 		
 		testListFunction(sessionCookie);
-		
-		testAddItem(sessionCookie, "The Monday Group 2");
-		
+		testAddItem(sessionCookie, "The Tuesday Group 1");
 		testUpdate(sessionCookie, 3);
+		testDelete(sessionCookie, 19);
 		
 		if(logDebugMsgs) 
 			logger.log(Level.DEBUG, "End");
