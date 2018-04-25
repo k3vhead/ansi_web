@@ -32,6 +32,16 @@ import com.thewebthing.commons.lang.JsonException;
 		public static final String INVOICE_STYLE_DEFAULT = "invoiceStyleDefault";
 		public static final String INVOICE_GROUPING_DEFAULT = "invoiceGroupingDefault";
 		public static final String INVOICE_TERMS_DEFAULT = "invoiceTermsDefault";
+		public static final String JOBSITE_BILLTO_ADDRESS_DEFAULT = "jobsiteBilltoAddressDefault";
+		public static final String JOBSITE_JOB_CONTACT_DEFAULT = "jobsiteJobContactDefault";
+		public static final String JOBSITE_SITE_CONTACT_DEFAULT = "jobsiteSiteContactDefault";
+		public static final String JOBSITE_FLOORS_DEFAULT = "jobsiteFloorsDefault";
+		public static final String JOBSITE_BUILDING_TYPE_DEFAULT = "jobsiteBuildingTypeDefault";
+		public static final String BILLTO_ACCOUNT_TYPE_DEFAULT = "billtoAccountTypeDefault";
+		public static final String BILLTO_CONTRACT_CONTACT_DEFAULT = "billtoContractContactDefault";
+		public static final String BILLTO_BILLING_CONTACT_DEFAULT = "billtoBillingContactDefault";
+		public static final String BILLTO_TAX_EXEMPT = "billtoTaxExempt";
+		public static final String BILLTO_TAX_EXEMPT_REASON = "billtoTaxExemptReason";
 		
 		private String address1;
 		private String address2;
@@ -47,6 +57,16 @@ import com.thewebthing.commons.lang.JsonException;
 		private Integer invoiceBatchDefault;
 		private String invoiceTermsDefault;
 		private String invoiceOurVendorNbrDefault;
+		private Integer jobsiteBilltoAddressDefault;
+		private Integer jobsiteJobContactDefault;
+		private Integer jobsiteSiteContactDefault;
+		private Integer jobsiteFloorsDefault;
+		private String jobsiteBuildingTypeDefault;
+		private String billtoAccountTypeDefault;
+		private Integer billtoContractContactDefault;
+		private Integer billtoBillingContactDefault;
+		private Integer billtoTaxExempt;
+		private String billtoTaxExemptReason;
 		
 		public AddressRequest() {
 			super();
@@ -182,6 +202,106 @@ import com.thewebthing.commons.lang.JsonException;
 		@JsonProperty(INVOICE_OUR_VENDOR_NBR_DEFAULT)
 		public void setInvoiceOurVendorNbrDefault(String invoiceOurVendorNbrDefault) {
 			this.invoiceOurVendorNbrDefault = invoiceOurVendorNbrDefault;
+		}
+
+		@JsonProperty(JOBSITE_BILLTO_ADDRESS_DEFAULT)
+		public Integer getJobsiteBilltoAddressDefault() {
+			return jobsiteBilltoAddressDefault;
+		}
+
+		@JsonProperty(JOBSITE_BILLTO_ADDRESS_DEFAULT)
+		public void setJobsiteBilltoAddressDefault(Integer jobsiteBilltoAddressDefault) {
+			this.jobsiteBilltoAddressDefault = jobsiteBilltoAddressDefault;
+		}
+
+		@JsonProperty(JOBSITE_JOB_CONTACT_DEFAULT)
+		public Integer getJobsiteJobContactDefault() {
+			return jobsiteJobContactDefault;
+		}
+
+		@JsonProperty(JOBSITE_JOB_CONTACT_DEFAULT)
+		public void setJobsiteJobContactDefault(Integer jobsiteJobContactDefault) {
+			this.jobsiteJobContactDefault = jobsiteJobContactDefault;
+		}
+
+		@JsonProperty(JOBSITE_SITE_CONTACT_DEFAULT)
+		public Integer getJobsiteSiteContactDefault() {
+			return jobsiteSiteContactDefault;
+		}
+
+		@JsonProperty(JOBSITE_SITE_CONTACT_DEFAULT)
+		public void setJobsiteSiteContactDefault(Integer jobsiteSiteContactDefault) {
+			this.jobsiteSiteContactDefault = jobsiteSiteContactDefault;
+		}
+
+		@JsonProperty(JOBSITE_FLOORS_DEFAULT)
+		public Integer getJobsiteFloorsDefault() {
+			return jobsiteFloorsDefault;
+		}
+
+		@JsonProperty(JOBSITE_FLOORS_DEFAULT)
+		public void setJobsiteFloorsDefault(Integer jobsiteFloorsDefault) {
+			this.jobsiteFloorsDefault = jobsiteFloorsDefault;
+		}
+
+		@JsonProperty(JOBSITE_BUILDING_TYPE_DEFAULT)
+		public String getJobsiteBuildingTypeDefault() {
+			return jobsiteBuildingTypeDefault;
+		}
+
+		@JsonProperty(JOBSITE_BUILDING_TYPE_DEFAULT)
+		public void setJobsiteBuildingTypeDefault(String jobsiteBuildingTypeDefault) {
+			this.jobsiteBuildingTypeDefault = jobsiteBuildingTypeDefault;
+		}
+
+		@JsonProperty(BILLTO_ACCOUNT_TYPE_DEFAULT)
+		public String getBilltoAccountTypeDefault() {
+			return billtoAccountTypeDefault;
+		}
+
+		@JsonProperty(BILLTO_ACCOUNT_TYPE_DEFAULT)
+		public void setBilltoAccountTypeDefault(String billtoAccountTypeDefault) {
+			this.billtoAccountTypeDefault = billtoAccountTypeDefault;
+		}
+
+		@JsonProperty(BILLTO_CONTRACT_CONTACT_DEFAULT)
+		public Integer getBilltoContractContactDefault() {
+			return billtoContractContactDefault;
+		}
+
+		@JsonProperty(BILLTO_CONTRACT_CONTACT_DEFAULT)
+		public void setBilltoContractContactDefault(Integer billtoContractContactDefault) {
+			this.billtoContractContactDefault = billtoContractContactDefault;
+		}
+
+		@JsonProperty(BILLTO_BILLING_CONTACT_DEFAULT)
+		public Integer getBilltoBillingContactDefault() {
+			return billtoBillingContactDefault;
+		}
+
+		@JsonProperty(BILLTO_BILLING_CONTACT_DEFAULT)
+		public void setBilltoBillingContactDefault(Integer billtoBillingContactDefault) {
+			this.billtoBillingContactDefault = billtoBillingContactDefault;
+		}
+
+		@JsonProperty(BILLTO_TAX_EXEMPT)
+		public Integer getBilltoTaxExempt() {
+			return billtoTaxExempt;
+		}
+
+		@JsonProperty(BILLTO_TAX_EXEMPT)
+		public void setBilltoTaxExempt(Integer billtoTaxExempt) {
+			this.billtoTaxExempt = billtoTaxExempt;
+		}
+
+		@JsonProperty(BILLTO_TAX_EXEMPT_REASON)
+		public String getBilltoTaxExemptReason() {
+			return billtoTaxExemptReason;
+		}
+
+		@JsonProperty(BILLTO_TAX_EXEMPT_REASON)
+		public void setBilltoTaxExemptReason(String billtoTaxExemptReason) {
+			this.billtoTaxExemptReason = billtoTaxExemptReason;
 		}
 
 		
