@@ -39,7 +39,6 @@ public class PermGroupRequest extends AbstractRequest {
 		this.name = name;
 	}
 	
-	@RequiredForUpdate
 	public Integer getPermissionGroupId() {
 		return permissionGroupId;
 	}

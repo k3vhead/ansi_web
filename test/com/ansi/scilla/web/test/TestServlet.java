@@ -6,11 +6,15 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
@@ -29,6 +33,9 @@ import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.utils.AppUtils;
 import com.ansi.scilla.web.login.request.LoginRequest;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.thewebthing.commons.lang.JsonException;
+import com.thewebthing.commons.lang.JsonUtils;
 
 public abstract class TestServlet {
 
@@ -72,6 +79,7 @@ public abstract class TestServlet {
 	}
 
 
+	@SuppressWarnings("unused")
 	protected Header doLogin() throws ClientProtocolException, IOException, URISyntaxException {
 		this.logger.log(Level.DEBUG, "Logging In:" + this.userId);
 		String pageContent = "Failed!";
@@ -139,6 +147,7 @@ public abstract class TestServlet {
 
 	protected String doPost(Header sessionCookie, String url, String parmString) throws ClientProtocolException, IOException, URISyntaxException {
 		this.logger.log(Level.DEBUG, "Post: " + url);
+		this.logger.log(Level.DEBUG, parmString);
 		String pageContent = "Failed!";
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		URIBuilder builder = new URIBuilder();
@@ -149,9 +158,11 @@ public abstract class TestServlet {
 		URI uri = builder.build();
 		HttpPost httpPost = new HttpPost(uri);
 		httpPost.addHeader("Cookie", sessionCookie.getValue());
-		StringEntity params = new StringEntity(parmString);
+		if ( ! StringUtils.isBlank(parmString)) {
+			StringEntity params = new StringEntity(parmString);
+			httpPost.setEntity(params);
+		}
 		httpPost.addHeader("content-type","application/json");
-		httpPost.setEntity(params);
 		CloseableHttpResponse response = httpClient.execute(httpPost);
 		this.logger.log(Level.DEBUG, response.getStatusLine());
 		try {
@@ -202,7 +213,12 @@ public abstract class TestServlet {
 	}
 	
 	
-	
+	/**
+	 * Turns a HTTP Get query string into a hashmap 
+	 * @param parms
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
 	protected HashMap<String, String> makeParmMap(String parms) throws UnsupportedEncodingException {
 		HashMap<String, String> parmMap = new HashMap<String, String>();
 		String[] parmList = parms.split("&");
@@ -215,4 +231,34 @@ public abstract class TestServlet {
 		return parmMap;
 	}
 
+	
+	/**
+	 * Turn hashmap into url parameters for an HTTP Get query string
+	 * @param parmMap
+	 * @return
+	 * @throws UnsupportedEncodingException 
+	 */
+	protected String makeParmString(HashMap<String, String> parmMap) throws UnsupportedEncodingException {
+		List<String> parmString = new ArrayList<String>();
+		
+		for (Map.Entry<String, String> entry : parmMap.entrySet()) {
+			String value = URLEncoder.encode(entry.getValue(), "UTF-8");
+			parmString.add(entry.getKey() + "=" + value);
+		}
+		
+		return StringUtils.join(parmString, "&");
+	}
+	
+	
+	/**
+	 * Turn hashmap into json, suitable for HTTP POST
+	 * @param parmMap
+	 * @return
+	 * @throws JsonException 
+	 * @throws JsonProcessingException 
+	 * @throws UnsupportedEncodingException 
+	 */
+	protected String makeJson(HashMap<String, String> parmMap) throws JsonException, JsonProcessingException {		
+		return parmMap == null ? null : AppUtils.object2json(parmMap);
+	}
 }
