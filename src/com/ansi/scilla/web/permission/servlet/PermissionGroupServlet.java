@@ -39,12 +39,25 @@ import com.ansi.scilla.web.permission.response.PermissionGroupListResponse;
 import com.ansi.scilla.web.permission.response.PermissionGroupResponse;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
-
+/**
+ * The url for delete will be of the form :
+ * 		 /permissionGroup/id# 	(deletes the record with this id)
+ * 
+ * The url for get will be one of:
+ * 		/permissionGroup/list  	(retrieves everything)
+ * 		/permissionGroup/id#,	(returns one permission group)
+ * 
+ * The url for adding a new record will be a POST to:
+ * 		/permissionGroup/add   	with parameters in the JSON
+ * 
+ * The url for update will be a POST to:
+ * 		/permissionGroup/id# 		with parameters in the JSON
+ *
+ */
 public class PermissionGroupServlet extends AbstractServlet {
-	
 	/**
-	 * 
 	 * @author jwlewis
+	 * @author kwagner;
 	 */
 	protected final Logger logger = LogManager.getLogger(PermissionGroupServlet.class);
 	protected final Boolean LogDebugMsgs = true;
@@ -122,16 +135,15 @@ public class PermissionGroupServlet extends AbstractServlet {
 		PermissionGroup perm = new PermissionGroup();
 		perm.setPermissionGroupId(permGroupId);
 
-		User user = new User();
-		user.setPermissionGroupId(permGroupId);
-
+		User user = new User();						//	Create a user object
+		user.setPermissionGroupId(permGroupId);		//	Set the user object's group ID 
+													//		to the ID of the group being deleted
 		try {
-			user.selectOne(conn);
-			throw new InvalidDeleteException();
-		} catch (RecordNotFoundException e) {
-			perm.delete(conn);
+			user.selectOne(conn);					//	Query to see if anybody at all is using this group ID
+			throw new InvalidDeleteException();		//		throw an error that it cannot yet be deleted.
+		} catch (RecordNotFoundException e) {		//  Nobody is using this ID
+			perm.delete(conn);						//		Delete the permission group
 		}
-		
 	}
 	
 	@Override
