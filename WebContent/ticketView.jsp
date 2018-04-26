@@ -258,7 +258,7 @@
 		<select id="month">  
 			<option value=""></option>
 			<option value="<%= Calendar.JANUARY %>"><bean:message key="field.label.january" /></option>
-			<option value="<%= Calendar.FEBRUARY %>"<bean:message key="field.label.february" /></option>
+			<option value="<%= Calendar.FEBRUARY %>"><bean:message key="field.label.february" /></option>
 			<option value="<%= Calendar.MARCH %>"><bean:message key="field.label.march" /></option>
 			<option value="<%= Calendar.APRIL %>"><bean:message key="field.label.april" /></option>
 			<option value="<%= Calendar.MAY %>"><bean:message key="field.label.may" /></option>
