@@ -2,8 +2,6 @@ package com.ansi.scilla.web.address.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -174,39 +172,28 @@ public class AddressServlet extends AbstractServlet {
 		Address address = new Address();
 		ResponseCode responseCode = null;
 		
-		List<String> badFields = super.validateRequiredAddFields(addressRequest);
-		
+		List<String> badFields = super.validateRequiredAddFields(addressRequest);		
 		WebMessages webMessages = makeWebMessages(conn, badFields);
+		
 		// if all required fields are here, make sure optional fields are valid
 		if (webMessages.isEmpty()) {
-			logger.log(Level.DEBUG, "Checking optional fields");
-			if ( ! isValidAddress(conn, addressRequest.getJobsiteBilltoAddressDefault())) {
-				webMessages.addMessage(AddressRequest.JOBSITE_BILLTO_ADDRESS_DEFAULT, "Invalid Address");
-			}
-			if ( ! isValidContact(conn, addressRequest.getJobsiteJobContactDefault())) {
-				webMessages.addMessage(AddressRequest.JOBSITE_JOB_CONTACT_DEFAULT, "Invalid Contact");
-			}
-			if ( ! isValidContact(conn, addressRequest.getJobsiteSiteContactDefault())) {
-				webMessages.addMessage(AddressRequest.JOBSITE_SITE_CONTACT_DEFAULT, "Invalid Contact");
-			}
-			if ( ! isValidFloor(addressRequest.getJobsiteFloorsDefault())) {
-				webMessages.addMessage(AddressRequest.JOBSITE_FLOORS_DEFAULT, "Invalid Value");
-			}
-			if ( ! isValidBuildingType(conn, addressRequest.getJobsiteBuildingTypeDefault())) {
-				webMessages.addMessage(AddressRequest.JOBSITE_BUILDING_TYPE_DEFAULT, "Invalid Value");
-			}
+			validateOptionalFields(conn, addressRequest, webMessages);			
 		}
 		
+		try {
+			validateDuplicate(conn, addressRequest, country);
+		} catch (DuplicateEntryException e) {
+			String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+			responseCode = ResponseCode.EDIT_FAILURE;
+		}
+
 		if (webMessages.isEmpty()) {			
 			try {
 				address = doAdd(conn, addressRequest, country, sessionUser);
 				String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 				responseCode = ResponseCode.SUCCESS;
-				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
-			} catch ( DuplicateEntryException e ) {
-				String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
-				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-				responseCode = ResponseCode.EDIT_FAILURE;
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);			
 			} catch ( Exception e ) {
 				responseCode = ResponseCode.SYSTEM_FAILURE;
 				AppUtils.logException(e);
@@ -218,6 +205,134 @@ public class AddressServlet extends AbstractServlet {
 		}
 		AddressResponse addressResponse = new AddressResponse(address, webMessages);
 		super.sendResponse(conn, response, responseCode, addressResponse);
+	}
+
+	protected Address doAdd(Connection conn, AddressRequest addressRequest, Country country, SessionUser sessionUser) throws Exception {
+		Address address = new Address();
+
+		request2addr(addressRequest, address, country, sessionUser);
+		address.setAddedBy(sessionUser.getUserId());
+
+		Integer addressId = address.insertWithKey(conn);
+		address.setAddressId(addressId);
+		return address;
+	}
+
+	private void processUpdateRequest(Connection conn, HttpServletResponse response, Integer addressId, AddressRequest addressRequest, Country country, SessionUser sessionUser) throws Exception {
+		logger.log(Level.DEBUG, "Doing Update Stuff");	
+		ResponseCode responseCode = null;
+		WebMessages webMessages = new WebMessages();
+		Address address = new Address();
+		address.setAddressId(addressId);
+		
+		try {
+			address.selectOne(conn);  // make sure we're working with a valid address
+			
+			List<String> badFields = super.validateRequiredUpdateFields(addressRequest);
+			webMessages = makeWebMessages(conn, badFields);
+			
+			// if all required fields are here, make sure optional fields are valid
+			if (webMessages.isEmpty()) {
+				validateOptionalFields(conn, addressRequest, webMessages);			
+			}
+			
+			if (webMessages.isEmpty()) {
+				logger.log(Level.DEBUG, "passed validation");
+				address = doUpdate(conn, address, addressRequest, country, sessionUser);
+				String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
+				responseCode = ResponseCode.SUCCESS;
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+				AddressResponse addressResponse = new AddressResponse(address, webMessages);
+				super.sendResponse(conn, response, responseCode, addressResponse);
+			} else {
+				logger.log(Level.DEBUG, "Doing Edit Fail");
+				responseCode = ResponseCode.EDIT_FAILURE;
+				AddressResponse addressResponse = new AddressResponse(address, webMessages);
+				super.sendResponse(conn, response, responseCode, addressResponse);
+			}
+		} catch ( RecordNotFoundException e) {
+			logger.log(Level.DEBUG, "Doing 404");
+			super.sendNotFound(response);
+		} catch ( Exception e) {
+			logger.log(Level.DEBUG, "Doing SysFailure");
+			responseCode = ResponseCode.SYSTEM_FAILURE;
+			AppUtils.logException(e);
+			String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+			AddressResponse addressResponse = new AddressResponse(address, webMessages);
+			super.sendResponse(conn, response, responseCode, addressResponse);
+		}
+	}
+
+
+	protected Address doUpdate(Connection conn, Address address, AddressRequest addressRequest, Country country, SessionUser sessionUser) throws Exception {
+
+		request2addr(addressRequest, address, country, sessionUser);
+		address.setUpdatedBy(sessionUser.getUserId());
+
+		Address key = new Address();
+		key.setAddressId(address.getAddressId());
+		// if we update something that isn't there, a RecordNotFoundException gets thrown
+		// that exception get propagated and turned into a 404
+		address.update(conn, key);		
+		return address;
+	}
+
+	/**
+	 * Duplicate is defined as: same name, address1, address2, city, state, zip
+	 * @param conn
+	 * @param addressRequest
+	 * @param country
+	 * @throws DuplicateEntryException
+	 * @throws Exception
+	 */
+	private void validateDuplicate(Connection conn, AddressRequest addressRequest, Country country) throws DuplicateEntryException, Exception {
+		Address address = new Address();
+		
+		address.setName(addressRequest.getName());
+		address.setCountryCode(country.abbrev());
+		if ( ! StringUtils.isBlank(addressRequest.getAddress1())) {
+			address.setAddress1(addressRequest.getAddress1());
+		} 
+		if ( ! StringUtils.isBlank(addressRequest.getAddress2())) {
+			address.setAddress2(addressRequest.getAddress2());
+		} 
+		if ( ! StringUtils.isBlank(addressRequest.getCity())) {
+			address.setCity(addressRequest.getCity());
+		} 		
+		if ( ! StringUtils.isBlank(addressRequest.getState())) {
+			address.setState(addressRequest.getState());
+		} 		
+		if ( ! StringUtils.isBlank(addressRequest.getZip())) {
+			address.setZip(addressRequest.getZip());
+		} 
+		
+		try {
+			address.selectOne(conn);
+			throw new DuplicateEntryException();
+		} catch ( RecordNotFoundException e ) {
+			// this is good -- means no duplicates
+		}		
+	}
+
+	private void validateOptionalFields(Connection conn, AddressRequest addressRequest, WebMessages webMessages) throws Exception {
+		logger.log(Level.DEBUG, "Checking optional fields");
+		if ( ! isValidAddress(conn, addressRequest.getJobsiteBilltoAddressDefault())) {
+			webMessages.addMessage(AddressRequest.JOBSITE_BILLTO_ADDRESS_DEFAULT, "Invalid Address");
+		}
+		if ( ! isValidContact(conn, addressRequest.getJobsiteJobContactDefault())) {
+			webMessages.addMessage(AddressRequest.JOBSITE_JOB_CONTACT_DEFAULT, "Invalid Contact");
+		}
+		if ( ! isValidContact(conn, addressRequest.getJobsiteSiteContactDefault())) {
+			webMessages.addMessage(AddressRequest.JOBSITE_SITE_CONTACT_DEFAULT, "Invalid Contact");
+		}
+		if ( ! isValidFloor(addressRequest.getJobsiteFloorsDefault())) {
+			webMessages.addMessage(AddressRequest.JOBSITE_FLOORS_DEFAULT, "Invalid Value");
+		}
+		if ( ! isValidBuildingType(conn, addressRequest.getJobsiteBuildingTypeDefault())) {
+			webMessages.addMessage(AddressRequest.JOBSITE_BUILDING_TYPE_DEFAULT, "Invalid Value");
+		}
+		
 	}
 
 	private boolean isValidAddress(Connection conn, Integer addressId) throws Exception {
@@ -275,179 +390,46 @@ public class AddressServlet extends AbstractServlet {
 		return isValid;
 	}
 
-	protected Address doAdd(Connection conn, AddressRequest addressRequest, Country country, SessionUser sessionUser) throws Exception {
-			Date today = new Date();
-			Address address = new Address();
-			
 	
-	
-	//		address.setAddressId(addressRequest.getAddressId());
-			address.setName(addressRequest.getName());
-			address.setCountryCode(country.abbrev());
-			if ( ! StringUtils.isBlank(addressRequest.getAddress1())) {
-				address.setAddress1(addressRequest.getAddress1());
-			} 
-			if ( ! StringUtils.isBlank(addressRequest.getAddress2())) {
-				address.setAddress2(addressRequest.getAddress2());
-			} 
-			if ( ! StringUtils.isBlank(addressRequest.getCity())) {
-				address.setCity(addressRequest.getCity());
-			} 
-			if ( ! StringUtils.isBlank(addressRequest.getCounty())) {
-				address.setCounty(addressRequest.getCounty());
-			} 
-			if ( ! StringUtils.isBlank(addressRequest.getState())) {
-				address.setState(addressRequest.getState());
-			} 
-			if ( ! StringUtils.isBlank(addressRequest.getStatus())) {
-				address.setStatus(addressRequest.getStatus());
-			} 
-			if ( ! StringUtils.isBlank(addressRequest.getZip())) {
-				address.setZip(addressRequest.getZip());
-			} 
-			
-			try {
-				address.selectOne(conn);
-				throw new DuplicateEntryException();
-			} catch ( RecordNotFoundException e ) {
-				// this is good -- means no duplicates
-			}
-			
-			if ( StringUtils.isBlank(addressRequest.getInvoiceStyleDefault())) {
-				address.setInvoiceStyleDefault(null);
-			} else {
-				address.setInvoiceStyleDefault(addressRequest.getInvoiceStyleDefault());
-			} 
-			if ( StringUtils.isBlank(addressRequest.getInvoiceGroupingDefault())) {
-				address.setInvoiceGroupingDefault(null);
-			} else {
-				address.setInvoiceGroupingDefault(addressRequest.getInvoiceGroupingDefault());
-			}
-			if ( addressRequest.getInvoiceBatchDefault() != null && addressRequest.getInvoiceBatchDefault() == 1) {
-				address.setInvoiceBatchDefault(Address.INVOICE_BATCH_DEFAULT_IS_YES);
-			} else {
-				address.setInvoiceBatchDefault(Address.INVOICE_BATCH_DEFAULT_IS_NO);
-			}
-			if ( StringUtils.isBlank(addressRequest.getInvoiceTermsDefault())) {
-				address.setInvoiceTermsDefault(null);
-			} else {
-				address.setInvoiceTermsDefault(addressRequest.getInvoiceTermsDefault());
-			} 
-			if ( StringUtils.isBlank(addressRequest.getInvoiceOurVendorNbrDefault())) {
-				address.setOurVendorNbrDefault(null);
-			} else {
-				address.setOurVendorNbrDefault(addressRequest.getInvoiceOurVendorNbrDefault());
-			} 
-			
-			address.setAddedBy(sessionUser.getUserId());
-			address.setAddedDate(today);
-			address.setUpdatedBy(sessionUser.getUserId());
-			address.setUpdatedDate(today);
-			
-			try {
-				address.insertWithKey(conn);
-			} catch ( SQLException e) {
-				if ( e.getMessage().contains("duplicate key")) {
-					throw new DuplicateEntryException();
-				} else {
-					AppUtils.logException(e);
-					throw e;
-				}
-			} 
-			return address;
-		}
+	/**
+	 * Populate address record from request record (common to add / update)
+	 * @param addressRequest
+	 * @param address
+	 * @param country
+	 * @param sessionUser
+	 */
+	private void request2addr(AddressRequest addressRequest, Address address, Country country, SessionUser sessionUser) {
 
-	private void processUpdateRequest(Connection conn, HttpServletResponse response, Integer addressId, AddressRequest addressRequest, Country country, SessionUser sessionUser) throws Exception {
-		logger.log(Level.DEBUG, "Doing Update Stuff");	
-		ResponseCode responseCode = null;
-		Address address = new Address();
-		
-		List<String> badFields = super.validateRequiredUpdateFields(addressRequest);
-		WebMessages webMessages = makeWebMessages(conn, badFields);
-		if (webMessages.isEmpty()) {
-			logger.log(Level.DEBUG, "passed validation");
-			try {
-				Address key = new Address();
-				key.setAddressId(addressId);
-				logger.log(Level.DEBUG, "Trying to do update");
-				address = doUpdate(conn, key, addressRequest, country, sessionUser);
-				String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
-				responseCode = ResponseCode.SUCCESS;
-				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
-				AddressResponse addressResponse = new AddressResponse(address, webMessages);
-				super.sendResponse(conn, response, responseCode, addressResponse);
-			} catch ( RecordNotFoundException e ) {
-				logger.log(Level.DEBUG, "Doing 404");
-				super.sendNotFound(response);						
-			} catch ( Exception e) {
-				logger.log(Level.DEBUG, "Doing SysFailure");
-				responseCode = ResponseCode.SYSTEM_FAILURE;
-				AppUtils.logException(e);
-				String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
-				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-				AddressResponse addressResponse = new AddressResponse(address, webMessages);
-				super.sendResponse(conn, response, responseCode, addressResponse);
-			}
-		} else {
-			logger.log(Level.DEBUG, "Doing Edit Fail");
-			responseCode = ResponseCode.EDIT_FAILURE;
-			AddressResponse addressResponse = new AddressResponse(address, webMessages);
-			super.sendResponse(conn, response, responseCode, addressResponse);
-		}
-	}
-
-	protected Address doUpdate(Connection conn, Address key, AddressRequest addressRequest, Country country, SessionUser sessionUser) throws Exception {
-		logger.log(Level.DEBUG, "This is the key:");
-		logger.log(Level.DEBUG, key);
-		Date today = new Date();
-		Address address = new Address();
-		
-		address.setAddedBy(sessionUser.getUserId());
-		address.setAddedDate(today);
-		address.setCountryCode(country.abbrev());
-		address.setAddressId(addressRequest.getAddressId());
 		address.setAddress1(addressRequest.getAddress1());
 		address.setAddress2(addressRequest.getAddress2());
+//		address.setAddressId(addressRequest.getAddressId());
 		address.setCity(addressRequest.getCity());
 		address.setCounty(addressRequest.getCounty());
 		address.setName(addressRequest.getName());
 		address.setState(addressRequest.getState());
 		address.setStatus(addressRequest.getStatus());
 		address.setZip(addressRequest.getZip());
-		
-		if ( StringUtils.isBlank(addressRequest.getInvoiceStyleDefault())) {
-			address.setInvoiceStyleDefault(null);
-		} else {
-			address.setInvoiceStyleDefault(addressRequest.getInvoiceStyleDefault());
-		} 
-		if ( StringUtils.isBlank(addressRequest.getInvoiceGroupingDefault())) {
-			address.setInvoiceGroupingDefault(null);
-		} else {
-			address.setInvoiceGroupingDefault(addressRequest.getInvoiceGroupingDefault());
-		}
+		address.setCountryCode(country.abbrev());
+		address.setInvoiceStyleDefault(addressRequest.getInvoiceStyleDefault());
+		address.setInvoiceGroupingDefault(addressRequest.getInvoiceGroupingDefault());
 		if ( addressRequest.getInvoiceBatchDefault() != null && addressRequest.getInvoiceBatchDefault() == 1) {
 			address.setInvoiceBatchDefault(Address.INVOICE_BATCH_DEFAULT_IS_YES);
 		} else {
 			address.setInvoiceBatchDefault(Address.INVOICE_BATCH_DEFAULT_IS_NO);
 		}
-		if ( StringUtils.isBlank(addressRequest.getInvoiceTermsDefault())) {
-			address.setInvoiceTermsDefault(null);
-		} else {
-			address.setInvoiceTermsDefault(addressRequest.getInvoiceTermsDefault());
-		} 
-		if ( StringUtils.isBlank(addressRequest.getInvoiceOurVendorNbrDefault())) {
-			address.setOurVendorNbrDefault(null);
-		} else {
-			address.setOurVendorNbrDefault(addressRequest.getInvoiceOurVendorNbrDefault());
-		} 
-	
+		address.setInvoiceTermsDefault(addressRequest.getInvoiceTermsDefault());
+		address.setOurVendorNbrDefault(addressRequest.getInvoiceOurVendorNbrDefault());
+		address.setJobsiteBilltoAddressDefault(addressRequest.getJobsiteBilltoAddressDefault());
+		address.setJobsiteJobContactDefault(addressRequest.getJobsiteJobContactDefault());
+		address.setJobsiteSiteContactDefault(addressRequest.getJobsiteSiteContactDefault());
+		address.setJobsiteFloorsDefault(addressRequest.getJobsiteFloorsDefault());
+		address.setJobsiteBuildingTypeDefault(addressRequest.getJobsiteBuildingTypeDefault());
+		address.setBilltoAccountTypeDefault(addressRequest.getBilltoAccountTypeDefault());
+		address.setBilltoContractContactDefault(addressRequest.getBilltoContractContactDefault());
+		address.setBilltoBillingContactDefault(addressRequest.getBilltoBillingContactDefault());
+		address.setBilltoTaxExempt(addressRequest.getBilltoTaxExempt());
+		address.setBilltoTaxExemptReason(addressRequest.getBilltoTaxExemptReason());
 		address.setUpdatedBy(sessionUser.getUserId());
-		address.setUpdatedDate(today);
-		
-		// if we update something that isn't there, a RecordNotFoundException gets thrown
-		// that exception get propagated and turned into a 404
-		address.update(conn, key);		
-		return address;
 	}
 
 	private AddressListResponse makeAddressListResponse(Connection conn) throws Exception {
