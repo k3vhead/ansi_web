@@ -31,8 +31,11 @@ public class AddressResponseItem extends ApplicationObject implements Comparable
 	private String invoiceTermsDefault;
 	private String ourVendorNbrDefault;
 	private Integer jobsiteBilltoAddressDefault;
+	private String jobsiteBillToName;
 	private Integer jobsiteJobContactDefault;
+	private String jobsiteJobContactName;
 	private Integer jobsiteSiteContactDefault;
+	private String jobsiteSiteContactName;
 	private Integer jobsiteFloorsDefault;
 	private String jobsiteBuildingTypeDefault;
 	private String billtoAccountTypeDefault;
@@ -42,6 +45,21 @@ public class AddressResponseItem extends ApplicationObject implements Comparable
 	private String billtoTaxExemptReason;
 
 	
+	public AddressResponseItem() {
+		super();
+	}
+	
+	/**
+	 * Create an item to be included in the AddressListResponse, based on an address record. 
+	 * Deprecated because the response needs to have display values for jobsite/billing/invoice default address
+	 * and contact id's. Use AddressResponseQuery to completely populate this record.
+	 * 
+	 * @param address
+	 * @throws IllegalAccessException
+	 * @throws InvocationTargetException
+	 * @throws NoSuchMethodException
+	 */
+	@Deprecated
 	public AddressResponseItem(Address address) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		super();
 		PropertyUtils.copyProperties(this, address);
@@ -197,6 +215,30 @@ public class AddressResponseItem extends ApplicationObject implements Comparable
 	}
 	public void setBilltoTaxExemptReason(String billtoTaxExemptReason) {
 		this.billtoTaxExemptReason = billtoTaxExemptReason;
+	}
+
+	public String getJobsiteBillToName() {
+		return jobsiteBillToName;
+	}
+
+	public void setJobsiteBillToName(String jobsiteBillToName) {
+		this.jobsiteBillToName = jobsiteBillToName;
+	}
+
+	public String getJobsiteJobContactName() {
+		return jobsiteJobContactName;
+	}
+
+	public void setJobsiteJobContactName(String jobsiteJobContactName) {
+		this.jobsiteJobContactName = jobsiteJobContactName;
+	}
+
+	public String getJobsiteSiteContactName() {
+		return jobsiteSiteContactName;
+	}
+
+	public void setJobsiteSiteContactName(String jobsiteSiteContactName) {
+		this.jobsiteSiteContactName = jobsiteSiteContactName;
 	}
 
 	@Override

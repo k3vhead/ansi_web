@@ -77,7 +77,12 @@
 			#deleteConfirmDialog{
 				display: none;
 			}
-		
+			#invoiceDefault {
+				margin-top:12px;
+			}
+			#jobsiteDefault {
+				margin-top:12px;
+			}
 			.dataTables_scrollBody, .dataTables_scrollHead, .display dataTable, .dataTables_scroll {
 				width:1360px;
 			}
@@ -732,6 +737,14 @@
 									$("#addForm select[name='invoiceGroupingDefault']").val($address.invoiceGroupingDefault);
 									$("#addForm select[name='invoiceTermsDefault']").val($address.invoiceTermsDefault);									
 									$("#addForm input[name='invoiceOurVendorNbrDefault']").val($address.ourVendorNbrDefault);
+
+									// job site fields:
+									$("#addForm input[name='jobsiteJobContact']").val($address.jobsiteJobContactName);
+									$("#addForm input[name='jobsiteSiteContact']").val($address.jobsiteSiteContactName);
+									$("#addForm input[name='jobsiteBillTo']").val($address.jobsiteBillToName);
+									$("#addForm select[name='jobsiteBuildingTypeDefault']").val($address.jobsiteBuildingTypeDefault);
+
+									
 									
 									if ( $address.invoiceBatchDefault == 1 ) {
 										$("#addForm input[name='invoiceBatchDefault']").prop("checked", true);
@@ -1036,6 +1049,7 @@
 		--%>
 		<div id="addressViewModal">			
 			<webthing:addressDisplayPanel cssId="addressView" />
+			<webthing:addressJobsitePanel cssId="jobsiteDefault" />
 			<webthing:addressInvoicePanel cssId="invoiceDefault" />
 		</div>
 		

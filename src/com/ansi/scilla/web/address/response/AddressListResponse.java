@@ -2,11 +2,10 @@ package com.ansi.scilla.web.address.response;
 
 import java.io.Serializable;
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
-import com.ansi.scilla.common.db.Address;
+import com.ansi.scilla.web.address.query.AddressResponseQuery;
 import com.ansi.scilla.web.common.response.MessageResponse;
 
 /** 
@@ -32,23 +31,14 @@ public class AddressListResponse extends MessageResponse implements Serializable
 	 * @throws Exception
 	 */
 	public AddressListResponse(Connection conn) throws Exception {
-		List<Address> addressList = Address.cast(new Address().selectAll(conn));
-		this.addressList = new ArrayList<AddressResponseItem>();
-		for ( Address address : addressList ) {
-			this.addressList.add(new AddressResponseItem(address));
-		}
-		Collections.sort(this.addressList);
+		super();
+		this.addressList = AddressResponseQuery.select(conn);
 	}
 
 	public AddressListResponse(Connection conn, String addressId) throws Exception {
-		Address key = new Address();
-		key.setAddressId(Integer.parseInt(addressId));
-		List<Address> addressList = Address.cast(key.selectSome(conn));
-		this.addressList = new ArrayList<AddressResponseItem>();
-		for ( Address address : addressList ) {
-			this.addressList.add(new AddressResponseItem(address));
-		}
-		Collections.sort(this.addressList);
+		super();
+		AddressResponseItem item = AddressResponseQuery.selectOne(conn, Integer.valueOf(addressId));
+		this.addressList = Arrays.asList( new AddressResponseItem[] {item} );
 	}
 
 	public List<AddressResponseItem> getAddressList() {
