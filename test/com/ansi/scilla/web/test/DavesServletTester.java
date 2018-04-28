@@ -33,22 +33,23 @@ public class DavesServletTester extends TestServlet {
 		Header sessionCookie = super.doLogin();
 		
 		HashMap<String, String> parmMap = new HashMap<String, String>();
-		String url = "/ansi_web/permissionGroup/";
+		String url = "/ansi_web/permissionGroup/107";
 		
 		
 //		String results = super.doGet(sessionCookie, url, parmMap);
 		
 		
 		
-//		parmMap.put("name", "Dave's 2 Update Test");
-//		parmMap.put("description", "Dave's 2 Update Description");
-//		parmMap.put("status", "0");		
-//		String results = super.doPost(sessionCookie, url, super.makeJson(parmMap));
+		parmMap.put("name", "Dave's 3b Update Test");
+		parmMap.put("description", "Dave's 3b Update Description");
+		parmMap.put("status", "1");		
+		String results = super.doPost(sessionCookie, url, super.makeJson(parmMap));
 		
 		
 		
 		
-		String results = super.doDelete(sessionCookie, url, parmMap);
+//		String results = super.doDelete(sessionCookie, url, parmMap);
+		super.doLogoff(sessionCookie);
 		
 		logger.log(Level.DEBUG, results);
 	}

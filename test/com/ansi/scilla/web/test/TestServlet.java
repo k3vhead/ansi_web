@@ -112,6 +112,13 @@ public abstract class TestServlet {
 	}
 	
 	
+	
+	protected void doLogoff(Header sessionCookie) throws ClientProtocolException, URISyntaxException, IOException  {
+		String url = "/ansi_web/logoff.html";
+		doGet(sessionCookie, url, null);
+	}
+	
+	
 	protected String doGet(Header sessionCookie, String url, HashMap<String, String> parmMap) throws URISyntaxException, ClientProtocolException, IOException {		
 		this.logger.log(Level.DEBUG, "Get: " + url);
 		String pageContent = "Failure!";

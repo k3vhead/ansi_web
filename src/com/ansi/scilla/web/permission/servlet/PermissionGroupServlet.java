@@ -215,21 +215,35 @@ public class PermissionGroupServlet extends AbstractServlet {
 				messages.addMessage(badField, "Invalid Format");
 				data.setWebMessages(messages);
 				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+			/**
+			 * Notes from DCL:
+			 * TimeoutException | NotAllowedException | ExpiredLoginException are thrown by the "validateSession" method. So this
+			 * "catch" cannot be reached. It should be with the outer "try" 
+			 */
 			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
 				super.sendForbidden(response);
 			} catch ( RecordNotFoundException e ) {
 				super.sendNotFound(response);
 			}
+		/**
+		 * NOtes from DCL:
+		 * Since the Timeout exception from the inner try should be moved to this level, 
+		 * this "catch" is redundant and should be removed.
+		 */
 		} catch ( NotAllowedException e ) {
 			PermissionGroupResponse data = new PermissionGroupResponse();
 			WebMessages messages = new WebMessages();
-			messages.addMessage("Permission", "Not Allowed");
+			messages.addMessage("Permission", "Not Allowed");   /**  Notes from DCL: The key for addMessage referes to the place in JSP where the message should be displayed. If this catch
+			 														were going to stay, it should be WebMessages.GLOBAL_MESSAGE instead of "permission"    **/
 			data.setWebMessages(messages);
 			try {
 				super.sendResponse(conn, response, ResponseCode.INVALID_LOGIN, data);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				e1.printStackTrace();							/** Notes from DCL: this exception is caught, and a stack trace printed, but then processing is continued.
+																	So, there is no indication to the user that there's a problem.  The exception should 
+																	be propagated up to the point where a 500 is throws
+																	**/
 			}
 //			super.sendNotAllowed(response);
 		} catch (ResourceNotFoundException e) {
