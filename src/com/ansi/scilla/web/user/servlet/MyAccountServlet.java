@@ -2,7 +2,6 @@ package com.ansi.scilla.web.user.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -47,9 +46,8 @@ public class MyAccountServlet extends AbstractServlet {
 
 	
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		SessionData sessionData;
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		SessionData sessionData = null;
 		try {
 			sessionData = AppUtils.validateSession(request);
 			SessionUser user = sessionData.getUser();
@@ -140,20 +138,18 @@ public class MyAccountServlet extends AbstractServlet {
 		
 		// do update
 		if ( webMessages.isEmpty()) {
-			user.setLastName(myAccountRequest.getLastName());
-			user.setFirstName(myAccountRequest.getFirstName());
-			user.setTitle(myAccountRequest.getTitle());
-			user.setEmail(myAccountRequest.getEmail());
-			user.setPhone(myAccountRequest.getPhone());
-			user.setAddress1(StringUtils.isBlank(myAccountRequest.getAddress1()) ? null : myAccountRequest.getAddress1()); 
-			user.setAddress2(StringUtils.isBlank(myAccountRequest.getAddress2()) ? null : myAccountRequest.getAddress2());
-			user.setCity(StringUtils.isBlank(myAccountRequest.getCity()) ? null : myAccountRequest.getCity()); 
-			user.setState(StringUtils.isBlank(myAccountRequest.getState()) ? null : myAccountRequest.getState());
-			user.setZip(StringUtils.isBlank(myAccountRequest.getZip()) ? null : myAccountRequest.getZip());			
-			if ( ! StringUtils.isBlank(myAccountRequest.getNewPassword())) {
-				String encryptedPass = AppUtils.encryptPassword(myAccountRequest.getNewPassword(), sessionUser.getUserId());
-				user.setPassword(encryptedPass);
-			}
+//			user.setLastName(myAccountRequest.getLastName());
+//			user.setFirstName(myAccountRequest.getFirstName());
+//			user.setTitle(myAccountRequest.getTitle());
+//			user.setEmail(myAccountRequest.getEmail());
+//			user.setPhone(myAccountRequest.getPhone());
+//			user.setAddress1(StringUtils.isBlank(myAccountRequest.getAddress1()) ? null : myAccountRequest.getAddress1()); 
+//			user.setAddress2(StringUtils.isBlank(myAccountRequest.getAddress2()) ? null : myAccountRequest.getAddress2());
+//			user.setCity(StringUtils.isBlank(myAccountRequest.getCity()) ? null : myAccountRequest.getCity()); 
+//			user.setState(StringUtils.isBlank(myAccountRequest.getState()) ? null : myAccountRequest.getState());
+//			user.setZip(StringUtils.isBlank(myAccountRequest.getZip()) ? null : myAccountRequest.getZip());			
+			String encryptedPass = AppUtils.encryptPassword(myAccountRequest.getNewPassword(), sessionUser.getUserId());
+			user.setPassword(encryptedPass);
 			user.setUpdatedBy(sessionUser.getUserId());
 			
 			User key = new User();
