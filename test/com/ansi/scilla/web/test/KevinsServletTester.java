@@ -8,11 +8,8 @@ import org.apache.http.Header;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONObject;
 
-import com.ansi.scilla.common.db.PermissionGroup;
 import com.ansi.scilla.common.utils.AppUtils;
-import com.ansi.scilla.web.permission.response.PermissionGroupResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 
@@ -35,10 +32,16 @@ public class KevinsServletTester extends TestServlet {
 	}
 
 	
+//	private String makeOutput(Header sessionCookie, String message, String method, String url, String data, String result) {
 	private String makeOutput(String message, String method, String url, String data, String result) {
-		String s = "\n\n";
-		s = s + "[ " + message + " ]";
-		s = s + "(" + method + ")";
+		String s = "\n";
+//		sessionCookie.
+		s = s + "\ntesting : \t";
+		s = s + message;
+		s = s + "\nas user : \t";
+		s = s + super.getUserId();
+		s = s + "\nhttp method : \t";
+		s = s + method;
 		s = s + "\nurl sent : \t";
 		s = s + url;
 		s = s + "\ndata sent :";
@@ -49,13 +52,29 @@ public class KevinsServletTester extends TestServlet {
 		
 		return s;		
 	}
+
+	private String testGetNoCmdOrID(Header sessionCookie) throws Exception 
+	{
+		//* Test the /list function of the servlet.. 
+		String sResult="failed!";
+		String url = "/ansi_web/" + this.realm + "/";
+		String msg = "Get with no command or ID";
+		String method = "GET";
+		
+		sResult = super.doGet(sessionCookie, url , new HashMap<String,String>());
+		
+		String sOutput = makeOutput(msg, method, url, "n/a", sResult);
+		if(logDebugMsgs) logger.log(Level.DEBUG, sOutput);
+		return sOutput;
+	}
+	
 	
 	private String testList(Header sessionCookie) throws Exception 
 	{
 		//* Test the /list function of the servlet.. 
 		String sResult="failed!";
 		String url = "/ansi_web/" + this.realm + "/list";
-		String msg = "Testing Get List";
+		String msg = "Get List";
 		String method = "GET";
 		
 		sResult = super.doGet(sessionCookie, url , new HashMap<String,String>());
@@ -70,7 +89,7 @@ public class KevinsServletTester extends TestServlet {
 		//* Test the /id# function of the servlet.. 
 		String sResult = "Failed!";
 		String url = "/ansi_web/" + this.realm + "/" + itemId;
-		String msg = "Testing Get by ID";
+		String msg = "Get by ID";
 		String method = "GET";
 		
 		sResult = super.doGet(sessionCookie, url, new HashMap<String,String>());
@@ -84,7 +103,7 @@ public class KevinsServletTester extends TestServlet {
 		//* Test the /add function of the servlet.. 
 		String sResult="Failed!";
 		String url = "/ansi_web/" + this.realm + "/" + itemId;
-		String msg = "Testing Update";
+		String msg = "Update";
 		String method = "POST";
 		String paramString="";
 		HashMap<String, String> params = new HashMap<String, String>();;
@@ -111,12 +130,192 @@ public class KevinsServletTester extends TestServlet {
 		if(logDebugMsgs) logger.log(Level.DEBUG, sOutput);
 		return sOutput;
 	}
+
+
+	private String testUpdateWithNoJsonData(Header sessionCookie, int itemId) {
+		//* Test the /add function of the servlet.. 
+		String sResult="Failed!";
+		String url = "/ansi_web/" + this.realm + "/" + itemId;
+		String msg = "Update with No json data";
+		String method = "POST";
+		String paramString="";
+		HashMap<String, String> params = new HashMap<String, String>();;
+		
+		// works.. fails gracefully..
+//		params.put("", "");
+		
+		// works.. fails gracefully..
+//		params.put("name", "This used to be test group 3");
+
+		// works..
+//		params.put("name", "This used to be test group 3");
+//		params.put("description", "Kevin Just Updated this Group");
+//		params.put("status","1");
+//		params.put("permissionGroupId", Integer.toString(itemId));
+
+		// works.. completely empty params work as well
+		
+		
+		try {
+			paramString = AppUtils.object2json(params);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+				
+		try {
+			sResult = super.doPost(sessionCookie, url , paramString);
+		} catch (IOException | URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+		String sOutput = makeOutput(msg, method, url, paramString, sResult);
+		if(logDebugMsgs) logger.log(Level.DEBUG, sOutput);
+		return sOutput;
+	}
+
+	private String testUpdateWithPartialJsonData(Header sessionCookie, int itemId) {
+		//* Test the /add function of the servlet.. 
+		String sResult="Failed!";
+		String url = "/ansi_web/" + this.realm + "/" + itemId;
+		String msg = "Update with No json data";
+		String method = "POST";
+		String paramString="";
+		HashMap<String, String> params = new HashMap<String, String>();;
+		
+		
+//		params.put("", "");
+		params.put("name", "This is - INTERRUPTING COW!! MMOOooo!!-- ed to be test group 3");
+//		params.put("description", "Kevin Just Updated this Group");
+//		params.put("status","1");
+//		params.put("permissionGroupId", Integer.toString(itemId));
+		
+		try {
+			paramString = AppUtils.object2json(params);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+				
+		try {
+			sResult = super.doPost(sessionCookie, url , paramString);
+		} catch (IOException | URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+		String sOutput = makeOutput(msg, method, url, paramString, sResult);
+		if(logDebugMsgs) logger.log(Level.DEBUG, sOutput);
+		return sOutput;
+	}
+
+	
+	
+	private String testUpdateWithoutPermission() {
+		String s="";
+		
+		super.userId = "geo@whitehouse.gov";
+		super.password = "password1";
+		Header sessionCookie;
+		
+		s = s + "\n\nswitching login to " + super.userId + " test access control";		
+		sessionCookie = null;
+		try {
+			sessionCookie = super.doLogin();
+		} catch (IOException | URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		s = s + testUpdate(sessionCookie, 3);
+		
+		super.userId = "kjw@ansi.com";
+		super.password = "password1";
+		try {
+			sessionCookie = super.doLogin();
+		} catch (IOException | URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return s;
+	}
+	
+	
+	private String testPostNoCmdOrId(Header sessionCookie) {
+		//* Test the /add function of the servlet.. 
+		String sResult="Failed!";
+		String url = "/ansi_web/" + this.realm + "/";
+		String msg = "Call to POST without command or id";
+		String method = "POST";
+		String paramString="";
+
+		HashMap<String, String> params = new HashMap<String, String>();;
+				
+		params.put("name", "This used to be test group 3");
+		params.put("description", "Kevin Just Updated this Group");
+		params.put("status","1");
+		params.put("permissionGroupId", Integer.toString(0));
+		
+		try {
+			paramString = AppUtils.object2json(params);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+				
+		try {
+			sResult = super.doPost(sessionCookie, url , paramString);
+		} catch (IOException | URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+		String sOutput = makeOutput(msg, method, url, paramString, sResult);
+		if(logDebugMsgs) logger.log(Level.DEBUG, sOutput);
+		return sOutput;
+	}
+	
+	
+	private String testPostWithNonNumericId(Header sessionCookie) {
+		//* Test the /add function of the servlet.. 
+		String sResult="Failed!";
+		String url = "/ansi_web/" + this.realm + "/xxx";
+		String msg = "Call to POST using a non numeric Id";
+		String method = "POST";
+		String paramString="";
+
+		HashMap<String, String> params = new HashMap<String, String>();;
+				
+		params.put("name", "This used to be test group 3");
+		params.put("description", "Kevin Just Updated this Group");
+		params.put("status","1");
+		params.put("permissionGroupId", Integer.toString(0));
+		
+		try {
+			paramString = AppUtils.object2json(params);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+				
+		try {
+			sResult = super.doPost(sessionCookie, url , paramString);
+		} catch (IOException | URISyntaxException e) {
+			// TODO Auto-generated catch block
+			logger.log(Level.DEBUG, "oh, here?");
+			e.printStackTrace();
+		} catch (Exception e) {
+			logger.log(Level.DEBUG, "oh, or... here?");
+		}
+		String sOutput = makeOutput(msg, method, url, paramString, sResult);
+		// would be cool to be able to determine if 404 was returned here somehow.. 
+		if(logDebugMsgs) logger.log(Level.DEBUG, sOutput);
+		return sOutput;
+	}
 	
 	
 	private String testDelete(Header sessionCookie, int itemId) throws Exception { 
 		String sResult = null;
 		String url = "/ansi_web/" + this.realm + "/" + itemId;
-		String msg = "Testing Delete";
+		String msg = "Delete";
 		String method = "DELETE";
 				
 		sResult = super.doDelete(sessionCookie, url, new HashMap<String,String>());
@@ -125,6 +324,72 @@ public class KevinsServletTester extends TestServlet {
 		if(logDebugMsgs) logger.log(Level.DEBUG, sOutput);
 		return sOutput;
 	}
+
+	
+	private String testAddWithoutSendingJsonData(Header sessionCookie) throws Exception 
+	{
+		//*  Test the /add function of the servlet..
+
+		String sResult="Failed!";
+		String paramString = "";
+		String url = "/ansi_web/" + this.realm + "/add";
+		String msg = "Add with empty JSON Data";
+		String method = "POST";
+
+		HashMap<String, String> params = new HashMap<String, String>(); 
+		
+		
+//		params.put("name", "Some Item Name 1");
+//		params.put("description", "A group used to test adding groups");
+//		params.put("status","1");
+		
+
+		params.put("", "");
+		
+		paramString = AppUtils.object2json(params);
+		
+		sResult = super.doPost(sessionCookie, url , paramString);
+		
+		String sOutput = makeOutput(msg, method, url, paramString, sResult);
+		if(logDebugMsgs) logger.log(Level.DEBUG, sOutput);
+		return sOutput;
+	}
+	
+	private String testAddPartialJsonData(Header sessionCookie) throws Exception 
+	{
+		//*  Test the /add function of the servlet..
+
+		String sResult="Failed!";
+		String paramString = "";
+		String url = "/ansi_web/" + this.realm + "/add";
+		String msg = "Add with partial JSON Data";
+		String method = "POST";
+
+		HashMap<String, String> params = new HashMap<String, String>(); 
+		
+		// doesn't work... 
+//		params.put("", "");
+
+		// works if all are secified.. 
+//		params.put("name", "Some other name..");
+//		params.put("description", "A group used to test adding groups");
+//		params.put("status","1");
+
+		// doesn't work..  
+		params.put("name", "Some other name..");
+//		params.put("description", "A group used to test adding groups");
+//		params.put("status","1");
+
+		
+		paramString = AppUtils.object2json(params);
+		
+		sResult = super.doPost(sessionCookie, url , paramString);
+		
+		String sOutput = makeOutput(msg, method, url, paramString, sResult);
+		if(logDebugMsgs) logger.log(Level.DEBUG, sOutput);
+		return sOutput;
+	}
+	
 	
 	private String testAdd(Header sessionCookie, String itemName) throws Exception 
 	{
@@ -133,7 +398,7 @@ public class KevinsServletTester extends TestServlet {
 		String sResult="Failed!";
 		String paramString = "";
 		String url = "/ansi_web/" + this.realm + "/add";
-		String msg = "Testing Add";
+		String msg = "Add";
 		String method = "POST";
 
 		HashMap<String, String> params = new HashMap<String, String>(); 
@@ -157,20 +422,25 @@ public class KevinsServletTester extends TestServlet {
 		
 		String s ="";
 
-		//super.userId = "geo@whitehouse.gov";
-		//super.password = "password1";
-		
 		super.userId = "kjw@ansi.com";
 		super.password = "password1";
 		
 		Header sessionCookie = super.doLogin();
 		
-		s = s + testList(sessionCookie);
-		s = s + testGetById(sessionCookie, 3);
-		// Note : you need to determine id num to delete manually.. 
-		s = s + testDelete(sessionCookie, 53);	 
-		s = s + testAdd(sessionCookie, "The Tuesday Group 3");
-		s = s + testUpdate(sessionCookie, 3);
+//		s = s + testList(sessionCookie);						// works
+//		s = s + testGetById(sessionCookie, 3);					// works
+//		s = s + testGetNoCmdOrID(sessionCookie);				// works - returns 404
+		 
+		// Note : you need to determine id num to delete manually..
+//		s = s + testDelete(sessionCookie, 90);					// works - still need to convert to new pattern.	 
+//		s = s + testAdd(sessionCookie, "The Friday Group 5");	// works
+//		s = s + testUpdate(sessionCookie, 3);					// works
+//		s = s + testUpdateWithoutPermission();					// works <-- this does work.. 
+		s = s + testUpdateWithNoJsonData(sessionCookie, 3);		// works - returns 200
+//		s = s + testPostNoCmdOrId(sessionCookie);		  		// works
+//		s = s + testAddWithoutSendingJsonData(sessionCookie);	// need help - can't catch empty json data.. 
+//		s = s + this.testAddPartialJsonData(sessionCookie);		// need help - can't catch missing fields.. not sure why @requred for add isn't doing the trick.. 
+//		s = s + testPostWithNonNumericId(sessionCookie);  		// works
 		
 		logger.log(Level.DEBUG, s);
 		

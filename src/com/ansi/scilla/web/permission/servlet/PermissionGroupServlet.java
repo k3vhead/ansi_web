@@ -32,6 +32,7 @@ import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
+import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.permission.request.PermGroupRequest;
 import com.ansi.scilla.web.permission.response.PermGroupCountRecord;
@@ -165,6 +166,8 @@ public class PermissionGroupServlet extends AbstractServlet {
 			super.sendForbidden(response);
 		} catch ( RecordNotFoundException e ) {															// if they're asking for an id that doesn't exist
 			super.sendNotFound(response);						
+		} catch ( ResourceNotFoundException e) {
+			super.sendNotFound(response);
 		} catch ( Exception e) {																		// something bad happened
 			AppUtils.logException(e);
 			throw new ServletException(e);
@@ -173,23 +176,6 @@ public class PermissionGroupServlet extends AbstractServlet {
 		}
 	}
 			
-	public PermissionGroupListResponse doGetWork(Connection conn, String url) throws RecordNotFoundException, Exception {
-		PermissionGroupListResponse permListResponse = new PermissionGroupListResponse();
-		String[] x = url.split("/");
-
-		System.out.println("kilroy : here we are in the doGetWork member.. ");
-				
-		if(x[0].equals("list")){
-			permListResponse = new PermissionGroupListResponse(conn);
-		} else if (StringUtils.isNumeric(x[0])) {
-			Integer permGroupId = Integer.valueOf(x[0]);
-			permListResponse = new PermissionGroupListResponse(conn, permGroupId);
-		} else {
-			throw new RecordNotFoundException();
-		}
-		return permListResponse;
-	}
-				
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {  // note : from contactServlet..
 		this.logger.log(Level.DEBUG, "Begin");
 		
@@ -208,15 +194,18 @@ public class PermissionGroupServlet extends AbstractServlet {
 				AppUtils.json2object(jsonString, permGroupRequest);
 				
 				url = new AnsiURL(request,"permissionGroup", new String[] {ACTION_IS_ADD});
-
+				
 				if ( url.getId() != null ) {
 					// THis is an update
+					this.logger.log(Level.DEBUG, "ID Found is " + Integer.toString(url.getId()));
 					processUpdate(conn, response, url.getId(), permGroupRequest, sessionUser);
-				} else if ( url.getCommand().equalsIgnoreCase(ACTION_IS_ADD)) {
+					
+				} else if (url.getCommand().equalsIgnoreCase(ACTION_IS_ADD)) {
 					// this is an add
 					processAdd(conn, response, permGroupRequest, sessionUser);
 				} else {
 					// this is messed up
+					this.logger.log(Level.DEBUG, "...this is messed up");
 					super.sendNotFound(response);
 				}
 			} catch ( InvalidFormatException e ) {
@@ -231,6 +220,21 @@ public class PermissionGroupServlet extends AbstractServlet {
 			} catch ( RecordNotFoundException e ) {
 				super.sendNotFound(response);
 			}
+		} catch ( NotAllowedException e ) {
+			PermissionGroupResponse data = new PermissionGroupResponse();
+			WebMessages messages = new WebMessages();
+			messages.addMessage("Permission", "Not Allowed");
+			data.setWebMessages(messages);
+			try {
+				super.sendResponse(conn, response, ResponseCode.INVALID_LOGIN, data);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+//			super.sendNotAllowed(response);
+		} catch (ResourceNotFoundException e) {
+			this.logger.log(Level.DEBUG, "Hi! Let's go BOOM!");			
+			super.sendNotFound(response);
 		} catch ( Exception e ) {
 			AppUtils.logException(e);
 			AppUtils.rollbackQuiet(conn);
@@ -241,6 +245,7 @@ public class PermissionGroupServlet extends AbstractServlet {
 	}			
 				
 	protected void processAdd(Connection conn, HttpServletResponse response, PermGroupRequest permissionGroupRequest, SessionUser sessionUser) throws Exception {   // copied from contactServlet
+		this.logger.log(Level.DEBUG, "Hi! Let's go BOOM!");
 		ResponseCode responseCode = null;
 		PermissionGroup permissionGroup = new PermissionGroup();
 	
@@ -255,9 +260,10 @@ public class PermissionGroupServlet extends AbstractServlet {
 			responseCode = ResponseCode.EDIT_FAILURE;
 		}
 		
-		PermGroupCountRecord permGroupItem = new PermGroupCountRecord();
-		PropertyUtils.copyProperties(permGroupItem, permissionGroup);
-		PermissionGroupResponse permissionGroupResponse = new PermissionGroupResponse(permGroupItem);		
+		PermGroupCountRecord permGroupCountItem = new PermGroupCountRecord();
+		PropertyUtils.copyProperties(permGroupCountItem, permissionGroup);
+		permGroupCountItem.setUserCount(0);
+		PermissionGroupResponse permissionGroupResponse = new PermissionGroupResponse(permGroupCountItem);
 		permissionGroupResponse.setWebMessages(webMessages);		
 		
 		super.sendResponse(conn, response, responseCode, permissionGroupResponse);
@@ -286,6 +292,8 @@ public class PermissionGroupServlet extends AbstractServlet {
 						webMessages.addMessage(field, messageText);
 					}
 				}
+				
+				
 			}
 			// so, if no validation problems were found, this will be an empty list..
 			return webMessages;   
@@ -339,6 +347,7 @@ public class PermissionGroupServlet extends AbstractServlet {
 			List<String> badFormatFieldList = super.validateFormat(permGroupRequest);
 			if ( badFormatFieldList.isEmpty() ) {
 				Integer status = permGroupRequest.getStatus();
+				
 				// make sure that status us one of the enumerated values.. 
 				if ( ! Arrays.asList(new Integer[] { PermissionGroup.STATUS_IS_ACTIVE, PermissionGroup.STATUS_IS_INACTIVE}).contains(status)) {
 					// add an error message to pass back to be displayed to the user.. 
