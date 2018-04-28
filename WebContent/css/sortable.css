@@ -1,0 +1,39 @@
+.sortable {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	width:220px;
+}
+
+.sortable_wide {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width:400px;
+}
+		
+.sortable_li {
+    margin-top: 0pt;
+	margin-right: 0px;
+	margin-bottom: 0px;
+	margin-left: 0px;
+	padding-top: 0.4em;
+	padding-right: 0.4em;
+	padding-bottom: 0.4em;
+	padding-left: 1.5em;
+	cursor: pointer;
+	height: 22px;
+}
+
+.sortable_li_wide {
+    margin-top: 0pt;
+    margin-right: 3px;
+    margin-bottom: 3px;
+    margin-left: 3px;
+    padding-top: 0.4em;
+    padding-right: 0.4em;
+    padding-bottom: 0.4em;
+    padding-left: 1.5em;
+    cursor: pointer;
+    height: 22px;
+}

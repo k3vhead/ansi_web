@@ -10,6 +10,7 @@
 <%@ taglib uri="WEB-INF/struts-bean.tld"  prefix="bean"  %>
 <%@ taglib uri="WEB-INF/struts-tiles.tld" prefix="tiles" %>
 <%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="webthing" %>
+<%@ taglib tagdir="/WEB-INF/tags/quote" prefix="quote" %>
 <%@ taglib uri="WEB-INF/theTagThing.tld" prefix="ansi" %>
 
 
@@ -21,6 +22,7 @@
     
     
     <tiles:put name="headextra" type="string">
+    	<link rel="stylesheet" href="css/sortable.css" type="text/css" />
         <script type="text/javascript" src="js/ansi_utils.js"></script>
         <%--
         <script type="text/javascript" src="js/jobMaintenance.js"></script>
@@ -55,6 +57,36 @@
 						}
 						$("#loadingDiv").hide();
 						$("#quotePanel").fadeIn(1000);
+						QUOTEMAINTENANCE.makeItSortable();
+						QUOTEMAINTENANCE.makeItClickable();
+					},
+					
+					
+					makeItClickable : function() {
+						$(".jobTitleRow").click(function($event) {
+							var $jobId = $(this).data("jobid");
+							console.debug("Clicked: " + $jobId);
+							var $tableSelector = "#job" + $jobId + " .job-data-row";
+							var $closedSelector = "#job" + $jobId + " .job-data-closed";
+							var $openSelector = "#job" + $jobId + " .job-data-open";
+							$($tableSelector).toggle();
+							$($closedSelector).toggle();
+							$($openSelector).toggle();
+						});
+					},
+					
+					
+					makeItSortable : function() {
+						$("#jobList").sortable({
+							stop:function($event, $ui) {
+								console.debug($ui.item);
+								console.debug($ui.item.attr("data-jobid"));
+								var $jobId = $ui.item.attr("data-jobid");
+								var $selector = "#job" + $jobId + " .jobTitleRow";
+								console.debug($selector);
+								$($selector).click();
+							}
+						});	
 					},
 					
 					
@@ -257,19 +289,20 @@
         		width:100%;
         	}
         	#quoteButtonContainer {
-        		float:left;
-        		width:30px;
-        		text-align:left;
-        	}
-        	#quoteDataContainer {
         		float:right;
-        		width:1250px;
+        		text-align:right;
         	}
 			#quotePanel {
 				display:none;
 				border:solid 1px #000000;
 				padding:8px;
 				width:1300px;
+			}
+			#jobList .job-data-row {
+				display:none;
+			}
+			#jobList .job-data-open {
+				display:none;
 			}
 			.quote-button {
 				margin-top:2px;
@@ -289,149 +322,66 @@
     <tiles:put name="content" type="string">
     	<h1>Quote Maintenance</h1>
     	<div id="loadingDiv"><webthing:thinking style="width:100%" /></div>
-    	<div id="quotePanel">
-    		<table id="quoteDataContainer">
-	    		<colgroup>
-	    			<!-- Manager -->
-		        	<col style="width:8px;" />  <!-- req -->
-		        	<col style="width:120px;" />  <!-- label -->
-		        	<col style="width:200px;" />  <!-- input -->
-		        	<col style="width:10px;" />  <!-- err -->
-		        	<col style="width:32px;" />	<!-- spacer -->
-		        	
-		    		<!-- Division -->
-		        	<col style="width:8px;" />  <!-- req -->
-		        	<col style="width:120px;" />  <!-- label -->
-		        	<col style="width:200px;" />  <!-- input -->
-		        	<col style="width:10px;" />  <!-- err -->
-		        	<col style="width:32px;" />	<!-- spacer -->
-		        	
-		        	<!-- Quote -->
-		        	<col style="width:8px;" />  <!-- req -->
-		        	<col style="width:120px;" />  <!-- label -->
-		        	<col style="width:200px;" />  <!-- input -->
-		        	<col style="width:10px;" />  <!-- err -->
-		        	<col style="width:32px;" />	<!-- spacer -->
-		        	
-		        	<!--  rest of it -->
-		        	<col style="width:140px" />  <!--  icons -->		        	
-	    		</colgroup> 
-    			<tr>
-    				<td><span class="required">*</span></td>
-    				<td><span class="formLabel">Manager:</span></td>
-    				<td><select name="managerId"></select></td>
-    				<td><span class="err" id="managerIdErr"></span></td>
-    				<td>&nbsp;</td>
-    				
-    				<td><span class="required">*</span></td>
-    				<td><span class="formLabel">Division:</span></td>
-    				<td><select name="divisionId"></select></td>
-    				<td><span class="err" id="divisionIdErr"></span></td>
-    				<td>&nbsp;</td>
-    				
-    				<td><span class="required"></span></td>
-    				<td colspan="3">
-    					<span class="formLabel">Quote:</span> 
-    					<span id="quoteNbrDisplay">12345</span><span id="revisionDisplay">A</span>
-    				</td>
-    				<td>&nbsp;</td>
-    				
-    				
-    				<td rowspan="4" style="text-align:center;">
-    					<span class="fa-stack fa-2x tooltip" style="color:#444444;">
-							<i class="fa fa-print fa-stack-2x" id="printButton" aria=hidden="true"><span class="tooltiptext">Print</span></i>
-						</span>
-						<br />
-						<span class="fa-stack fa-2x tooltip" id="viewPrintHistory" style="color:#444444;">
-							<i class="fa fa-list-alt fa-stack-2x"><span class="tooltiptext">Print History<br />Print Count</span></i>
-							<i class="fa fa-stack-1x"><span style="color:#FFFFFF; text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000, 1px 1px 0 #000; font-weight:bold;" id="printCount">N/A</span></i>
-						</span>
-    				</td>
-    			</tr>
-    			
-    			<tr>
-    				<td><span class="required">*</span></td>
-    				<td><span class="formLabel">Account Type:</span></td>
-    				<td><select name="accountType"></select></td>
-    				<td><span class="err" id="accountTypeErr"></span></td>
-    				<td>&nbsp;</td>
-    				
-    				<td><span class="required">*</span></td>
-    				<td><span class="formLabel"><bean:message key="field.label.invoice.terms" />:</span></td>
-    				<td><select name="invoiceTerms"></select></td>
-    				<td><span class="err" id="invoiceTermsErr"></span></td>   				
-    				<td>&nbsp;</td>
-    				
-    				<td><span class="required"></span></td>
-    				<td><span class="formLabel">Proposed Date:</span></td>
-    				<td><span id="proposedDate">N/A</span></td>
-    				<td><span class="err" id="proposedDateErr"></span></td>
-    				<td>&nbsp;</td>
-    			</tr>
-    			
-    			<tr>    				    				    				
-    				<td><span class="required">*</span></td>
-    				<td><span class="formLabel">Lead Type:</span></td>
-    				<td><select name="leadType"></select></td>
-    				<td><span class="err" id="leadTypeErr"></span></td>
-    				<td>&nbsp;</td>
-
-    				<td><span class="required">*</span></td>
-    				<td><span class="formLabel"><bean:message key="field.label.invoice.style" />:</span></td>
-    				<td><select name="invoiceStyle"></select></td>
-    				<td><span class="err" id="invoiceStyleErr"></span></td>
-    				<td>&nbsp;</td>
-    				
-    				<td><span class="required"></span></td>    				
-    				<td><span class="formLabel">Signed By:</span></td>
-    				<td><input type="text" name="signedBy" /></td>
-    				<td><span class="err" id="signedByErr"></span></td>
-    				<td>&nbsp;</td>
-    			</tr>
-    			
-    			<tr>
-    				<td><span class="required">*</span></td>
-    				<td><span class="formLabel">Building Type:</span></td>
-					<td><select name="buildingType"></select></td>
-    				<td><span class="err" id="invoiceGroupingErr"></span></td>
-    				<td>&nbsp;</td>
-					
-					<td><span class="required">*</span></td>
-    				<td><span class="formLabel"><bean:message key="field.label.invoice.grouping" />:</span></td>
-    				<td><select name="invoiceGrouping"></select></td>
-    				<td><span class="err" id="invoiceGroupingErr"></span></td> 
-    				<td>&nbsp;</td>
-    				
-    				<td><span class="required"></span></td>
-    				<td><span class="formLabel">Batch:</span> <input type="checkbox" name="invoiceBatch" /></td>    					
-    				<td><span class="formLabel">Tax Exempt:</span> <input type="checkbox" name="taxExempt" /></td>
-    				<td><span class="err" id="invoiceTermsErr"></span></td>
-    				<td>&nbsp;</td>
-    			</tr>
-    		</table>
-    		<div id="quoteButtonContainer">
-    			<webthing:edit styleClass="fa-2x quote-button">Edit</webthing:edit><br />
-    			<webthing:revise styleClass="fa-2x quote-button">Revise</webthing:revise><br />
-    			<webthing:copy styleClass="fa-2x quote-button">Copy</webthing:copy><br />
-    			<webthing:view styleClass="fa-2x quote-button">Search</webthing:view><br />
-    			<webthing:addNew styleClass="fa-2x quote-button">New</webthing:addNew><br />
+    	<div style="width:1300px;">	    	
+    		<div id="quoteButtonContainer" style="width:30px;">
+    			<webthing:edit styleClass="fa-2x quote-button">Edit</webthing:edit>
+    			<webthing:revise styleClass="fa-2x quote-button">Revise</webthing:revise>
+    			<webthing:copy styleClass="fa-2x quote-button">Copy</webthing:copy>
+    			<webthing:view styleClass="fa-2x quote-button">Search</webthing:view>
+    			<webthing:addNew styleClass="fa-2x quote-button">New</webthing:addNew>
+    			<webthing:print styleClass="fa-2x quote-button">Print</webthing:print>
     			<%--
     			<input type="button" class="quoteButton" id="buttonModifyQuote" value="Modify" /><br />
     			<input type="button" class="quoteButton" id="buttonCopyQuote" value="Copy" /><br />
     			<input type="button" class="quoteButton" id="buttonNewQuote" value="New" /><br />
     			 --%>
-    		</div>
-    		<div class="spacer">&nbsp;</div>
-    	</div>
-    	<div id="addressPanel"> 
-    		<table style="width:100%;">
-    			<tr>
-    				<td>
-    					<div id="billToLoading"></div>
-    				</td>
-    			</tr>
-    		</table>
-    	</div>
+	    	</div>
+	    	<div id="addressPanel" style="width:1269px; float:left;">
+	    		<div id="addressContainerBillTo" style="float:right; width:50%; border:solid 1px #404040;">
+	    			<quote:addressDisplayPanel label="Bill To" cssId="addressBillTo" />
+	    			<div id="billToContactContainer" style="width:80%;">
+	    				<quote:addressContact label="Contract Contact" cssId="contractContact" />
+	    				<quote:addressContact label="Billing Contact" cssId="billingContact" />
+	    			</div>
+	    		</div>
+	    		<div id="addressContainerJobSite" style="float:left; width:49%; border:solid 1px #404040;">
+	    			<quote:addressDisplayPanel label="Job Site" cssId="addressJobSite" />
+	    			<div id="jobSiteContactContainer" style="width:80%;">
+	    				<quote:addressContact label="Job Contact" cssId="jobContact" />
+	    				<quote:addressContact label="Site Contact" cssId="siteContact" />
+	    			</div>
+	    		</div>
+	    		<div class="spacer">&nbsp;</div>
+	    	</div>
+	    	<div id="quotePanel" style="width:1251px; clear:left;">
+	    		<jsp:include page="quoteMaintenance/quoteDataContainer.jsp" />
+	    		<div class="spacer">&nbsp;</div>
+	    	</div> 
+	    	<div id="jobPanelContainer" style="width:1260px; clear:both; margin-top:12px;">
+	    		<ul id="jobList" class="sortable" style="width:100%;">
+	    			<li data-jobid="1">
+	    				<jsp:include page="quoteMaintenance/jobDisplay.jsp">
+	    					<jsp:param name="jobid" value="1" />
+	    				</jsp:include>
+	    			</li>
+	    			<li data-jobid="2">
+	    				<jsp:include page="quoteMaintenance/jobDisplay.jsp">
+	    					<jsp:param name="jobid" value="2" />
+	    				</jsp:include>
+	    			</li>
+	    			<li data-jobid="3">
+	    				<jsp:include page="quoteMaintenance/jobDisplay.jsp">
+	    					<jsp:param name="jobid" value="3" />
+	    				</jsp:include>
+	    			</li>
+	    			<li data-jobid="4">
+	    				<jsp:include page="quoteMaintenance/jobDisplay.jsp">
+	    					<jsp:param name="jobid" value="4" />
+	    				</jsp:include>
+	    			</li>
+	    		</ul>
+	    	</div>
+	    </div>   	
     </tiles:put>
 
 </tiles:insert>

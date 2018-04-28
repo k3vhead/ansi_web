@@ -297,11 +297,7 @@
         </tfoot>
     </table>
     
-    <p align="center">
-    	<br>
-    	<a href="#" title="Scroll to Top" class="ScrollTop">Scroll To Top</a>
-    	</br>
-    </p>
+    <webthing:scrolltop />
     
     <webthing:quotePrint modalName="<%= quotePrintModal %>" />
   
