@@ -432,14 +432,14 @@ public class KevinsServletTester extends TestServlet {
 //		s = s + testGetNoCmdOrID(sessionCookie);				// works - returns 404
 		 
 		// Note : you need to determine id num to delete manually..
-//		s = s + testDelete(sessionCookie, 90);					// works - still need to convert to new pattern.	 
+		s = s + testDelete(sessionCookie, 60);					// works - still need to convert to new pattern.	 
 //		s = s + testAdd(sessionCookie, "The Friday Group 5");	// works
 //		s = s + testUpdate(sessionCookie, 3);					// works
 //		s = s + testUpdateWithoutPermission();					// works <-- this does work.. 
 //		s = s + testUpdateWithNoJsonData(sessionCookie, 3);		// works - returns 200
 //		s = s + testPostNoCmdOrId(sessionCookie);		  		// works
-		s = s + testAddWithoutSendingJsonData(sessionCookie);	// works - returns 200 
-		s = s + this.testAddPartialJsonData(sessionCookie);		// works - returns 200 
+//		s = s + testAddWithoutSendingJsonData(sessionCookie);	// works - returns 200 
+//		s = s + this.testAddPartialJsonData(sessionCookie);		// works - returns 200 
 //		s = s + testPostWithNonNumericId(sessionCookie);  		// works
 		
 		logger.log(Level.DEBUG, s);

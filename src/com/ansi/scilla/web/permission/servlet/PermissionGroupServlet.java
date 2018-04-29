@@ -40,6 +40,7 @@ import com.ansi.scilla.web.permission.request.PermGroupRequest;
 import com.ansi.scilla.web.permission.response.PermGroupCountRecord;
 import com.ansi.scilla.web.permission.response.PermissionGroupListResponse;
 import com.ansi.scilla.web.permission.response.PermissionGroupResponse;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 /**
@@ -66,9 +67,65 @@ public class PermissionGroupServlet extends AbstractServlet {
 	protected final Boolean LogDebugMsgs = true;
 	
 	private static final long serialVersionUID = 1L;
-	
+
 	@Override
 	protected void doDelete(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+
+		AnsiURL url = null;
+		Connection conn = null;
+		try {
+			conn = AppUtils.getDBCPConn();
+			conn.setAutoCommit(false);
+			
+			SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			SessionUser sessionUser = sessionData.getUser();
+		
+			try {
+//				String jsonString = super.makeJsonString(request);
+				PermGroupRequest permGroupRequest = new PermGroupRequest();
+//				AppUtils.json2object(jsonString, permGroupRequest);
+
+				url = new AnsiURL(request,"permissionGroup", new String[] {""});
+
+				if (url.getId() != null) {			// if true.. this is a delete and we have am id to delete
+					doDeleteWork(conn, url.getId());
+					conn.commit();
+					PermissionGroupResponse permissionGroupResponse = new PermissionGroupResponse();
+					super.sendResponse(conn, response, ResponseCode.SUCCESS, permissionGroupResponse);
+				} else { // this is a call to DELETE with no id.. send an error.. 
+					super.sendForbidden(response);
+				}
+			} catch (JsonMappingException e_json2object) {
+				// this probably won't ever happen..
+			} catch (InvalidDeleteException e) {	// doDeleteWork Exceptions
+				// an exception was thrown when we tried to delete it.. 
+				// let the user know.. 
+				String message = AppUtils.getMessageText(conn, MessageKey.DELETE_FAILED, "Invalid Delete");
+				WebMessages webMessages = new WebMessages();
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+				PermissionGroupResponse permissionGroupResponse = new PermissionGroupResponse();
+				permissionGroupResponse.setWebMessages(webMessages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, permissionGroupResponse);
+			} catch(RecordNotFoundException e_doDeleteWork) {
+				super.sendNotFound(response);
+			}
+		} catch (SQLException | NamingException conn_exceptions) 	{
+			// getDBCPConn Exceptions   
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e_validateSession) {
+			// validateSession Exceptions
+			super.sendForbidden(response);  	// permission related or network error exceptions.. 
+		} catch ( Exception e) {
+			AppUtils.logException(e);			// unaccounted for exceptions. 
+			throw new ServletException(e);
+		} finally {								// do this no matter what.. 
+			AppUtils.closeQuiet(conn);
+		}
+	}
+	
+	
+	//@Override
+	protected void doDeletex(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 				
 		String url = request.getRequestURI();
