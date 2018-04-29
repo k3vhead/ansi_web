@@ -436,10 +436,10 @@ public class KevinsServletTester extends TestServlet {
 //		s = s + testAdd(sessionCookie, "The Friday Group 5");	// works
 //		s = s + testUpdate(sessionCookie, 3);					// works
 //		s = s + testUpdateWithoutPermission();					// works <-- this does work.. 
-		s = s + testUpdateWithNoJsonData(sessionCookie, 3);		// works - returns 200
+//		s = s + testUpdateWithNoJsonData(sessionCookie, 3);		// works - returns 200
 //		s = s + testPostNoCmdOrId(sessionCookie);		  		// works
-//		s = s + testAddWithoutSendingJsonData(sessionCookie);	// need help - can't catch empty json data.. 
-//		s = s + this.testAddPartialJsonData(sessionCookie);		// need help - can't catch missing fields.. not sure why @requred for add isn't doing the trick.. 
+		s = s + testAddWithoutSendingJsonData(sessionCookie);	// works - returns 200 
+		s = s + this.testAddPartialJsonData(sessionCookie);		// works - returns 200 
 //		s = s + testPostWithNonNumericId(sessionCookie);  		// works
 		
 		logger.log(Level.DEBUG, s);

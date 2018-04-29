@@ -2,10 +2,12 @@ package com.ansi.scilla.web.permission.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -101,7 +103,7 @@ public class PermissionGroupServlet extends AbstractServlet {
 						conn.commit();
 						PermissionGroupResponse permissionGroupResponse = new PermissionGroupResponse();
 						super.sendResponse(conn, response, ResponseCode.SUCCESS, permissionGroupResponse);
-					} catch (InvalidDeleteException e) {
+					} catch (InvalidDeleteException e) {	// doDeleteWork Exceptions
 						// an exception was thrown when we tried to delete it.. 
 						// let the user know.. 
 						String message = AppUtils.getMessageText(conn, MessageKey.DELETE_FAILED, "Invalid Delete");
@@ -116,7 +118,10 @@ public class PermissionGroupServlet extends AbstractServlet {
 						super.sendNotFound(response);
 					}
 				}
+			} catch (SQLException | NamingException conn_exceptions) 	{
+				// getDBCPConn Exceptions   
 			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+				// validateSession Exceptions
 				super.sendForbidden(response);  	// permission related or network error exceptions.. 
 			} catch ( Exception e) {
 				AppUtils.logException(e);			// unaccounted for exceptions. 
@@ -156,29 +161,29 @@ public class PermissionGroupServlet extends AbstractServlet {
 		WebMessages webMessages = new WebMessages();
 		try {
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_READ);  // make sure we're allowed to be here
-			url = new AnsiURL(request, "permissionGroup",new String[] { ACTION_IS_LIST });												// parse the URL and look for "contact"
-			PermissionGroupListResponse permissionGroupListResponse = makeSingleListResponse(conn, url);				// get the data we're looking for
-			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");										// add messages to the response
+			AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_READ);  		// make sure we're allowed to be here
+			url = new AnsiURL(request, "permissionGroup",new String[] { ACTION_IS_LIST });							// parse the URL and look for "contact"
+			PermissionGroupListResponse permissionGroupListResponse = makeSingleListResponse(conn, url);			// get the data we're looking for
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");											// add messages to the response
 			permissionGroupListResponse.setWebMessages(webMessages);
-			super.sendResponse(conn, response, ResponseCode.SUCCESS, permissionGroupListResponse);						// send the response
-		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {					// these are thrown by session validation
+			super.sendResponse(conn, response, ResponseCode.SUCCESS, permissionGroupListResponse);					// send the response
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {								// these are thrown by session validation
 			super.sendForbidden(response);
-		} catch ( RecordNotFoundException e ) {															// if they're asking for an id that doesn't exist
+		} catch ( RecordNotFoundException e ) {			// if they're asking for an id that doesn't exist
 			super.sendNotFound(response);						
-		} catch ( ResourceNotFoundException e) {
+		} catch ( ResourceNotFoundException e) {		
 			super.sendNotFound(response);
-		} catch ( Exception e) {																		// something bad happened
+		} catch ( Exception e) {						// something bad happened
 			AppUtils.logException(e);
 			throw new ServletException(e);
 		} finally {
-			AppUtils.closeQuiet(conn);																	// return the connection to the pool
+			AppUtils.closeQuiet(conn);					// return the connection to the pool
 		}
 	}
-			
+	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {  // note : from contactServlet..
 		this.logger.log(Level.DEBUG, "Begin");
-		
+
 		AnsiURL url = null;
 		Connection conn = null;
 		try {
@@ -192,14 +197,14 @@ public class PermissionGroupServlet extends AbstractServlet {
 				String jsonString = super.makeJsonString(request);
 				PermGroupRequest permGroupRequest = new PermGroupRequest();
 				AppUtils.json2object(jsonString, permGroupRequest);
-				
+
 				url = new AnsiURL(request,"permissionGroup", new String[] {ACTION_IS_ADD});
-				
+
 				if ( url.getId() != null ) {
 					// THis is an update
 					this.logger.log(Level.DEBUG, "ID Found is " + Integer.toString(url.getId()));
 					processUpdate(conn, response, url.getId(), permGroupRequest, sessionUser);
-					
+
 				} else if (url.getCommand().equalsIgnoreCase(ACTION_IS_ADD)) {
 					// this is an add
 					processAdd(conn, response, permGroupRequest, sessionUser);
@@ -215,40 +220,17 @@ public class PermissionGroupServlet extends AbstractServlet {
 				messages.addMessage(badField, "Invalid Format");
 				data.setWebMessages(messages);
 				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
-			/**
-			 * Notes from DCL:
-			 * TimeoutException | NotAllowedException | ExpiredLoginException are thrown by the "validateSession" method. So this
-			 * "catch" cannot be reached. It should be with the outer "try" 
-			 */
-			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
-				super.sendForbidden(response);
 			} catch ( RecordNotFoundException e ) {
 				super.sendNotFound(response);
+			} catch (ResourceNotFoundException e_AnsiURL) {
+				super.sendNotFound(response);
+			} catch ( NotAllowedException e_validateSession ) {
+				super.sendNotAllowed(response);
 			}
-		/**
-		 * NOtes from DCL:
-		 * Since the Timeout exception from the inner try should be moved to this level, 
-		 * this "catch" is redundant and should be removed.
-		 */
-		} catch ( NotAllowedException e ) {
-			PermissionGroupResponse data = new PermissionGroupResponse();
-			WebMessages messages = new WebMessages();
-			messages.addMessage("Permission", "Not Allowed");   /**  Notes from DCL: The key for addMessage referes to the place in JSP where the message should be displayed. If this catch
-			 														were going to stay, it should be WebMessages.GLOBAL_MESSAGE instead of "permission"    **/
-			data.setWebMessages(messages);
-			try {
-				super.sendResponse(conn, response, ResponseCode.INVALID_LOGIN, data);
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();							/** Notes from DCL: this exception is caught, and a stack trace printed, but then processing is continued.
-																	So, there is no indication to the user that there's a problem.  The exception should 
-																	be propagated up to the point where a 500 is throws
-																	**/
-			}
-//			super.sendNotAllowed(response);
-		} catch (ResourceNotFoundException e) {
-			this.logger.log(Level.DEBUG, "Hi! Let's go BOOM!");			
-			super.sendNotFound(response);
+		} catch (TimeoutException | ExpiredLoginException e_validateSession) {
+			super.sendForbidden(response);
+		} catch ( NamingException | SQLException e_getDBCPConn) {
+			
 		} catch ( Exception e ) {
 			AppUtils.logException(e);
 			AppUtils.rollbackQuiet(conn);
@@ -257,7 +239,13 @@ public class PermissionGroupServlet extends AbstractServlet {
 			AppUtils.closeQuiet(conn);
 		}
 	}			
-				
+	
+	
+
+	
+	
+	
+	
 	protected void processAdd(Connection conn, HttpServletResponse response, PermGroupRequest permissionGroupRequest, SessionUser sessionUser) throws Exception {   // copied from contactServlet
 		this.logger.log(Level.DEBUG, "Hi! Let's go BOOM!");
 		ResponseCode responseCode = null;
