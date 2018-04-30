@@ -132,6 +132,74 @@ public class PermissionGroupServlet extends AbstractServlet {
 	}
 	
 	
+	//@Override
+	protected void doDeletex(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+				
+		String url = request.getRequestURI();
+		int idx = url.indexOf("/permissionGroup/");
+		// idx is the position of the first character of "/permissionGroup/"
+		
+		if ( idx > -1 ) {
+			// we're in the right place
+			Connection conn = null;
+			try {
+				conn = AppUtils.getDBCPConn();
+				conn.setAutoCommit(false);
+			
+				SessionData sessionData = AppUtils.validateSession(request, Permission.USER_ADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+				
+				// Figure out what we've got:
+				// get everything following the "/permissionGroup/" tag.. 
+				String myString = url.substring(idx + "/permissionGroup/".length());
+				
+				// split it all into a handy array.. 
+				String[] urlPieces = myString.split("/");
+				
+				// first item should be a number... 
+				String command = urlPieces[0];
+				
+				if ( StringUtils.isBlank(command) || ! StringUtils.isNumeric(command)) {
+					super.sendNotFound(response);  // first item was either blank or not a number.. 
+				} else {
+					try {
+						//  we've got a number to work with.. try to delete the record with that id.
+						doDeleteWork(conn, Integer.valueOf(command));
+						conn.commit();
+						PermissionGroupResponse permissionGroupResponse = new PermissionGroupResponse();
+						super.sendResponse(conn, response, ResponseCode.SUCCESS, permissionGroupResponse);
+					} catch (InvalidDeleteException e) {	// doDeleteWork Exceptions
+						// an exception was thrown when we tried to delete it.. 
+						// let the user know.. 
+						String message = AppUtils.getMessageText(conn, MessageKey.DELETE_FAILED, "Invalid Delete");
+						WebMessages webMessages = new WebMessages();
+						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+						PermissionGroupResponse permissionGroupResponse = new PermissionGroupResponse();
+						permissionGroupResponse.setWebMessages(webMessages);
+						super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, permissionGroupResponse);
+					} catch(RecordNotFoundException recordNotFoundEx) {
+						// couldn't find the record..
+						// let the parent class handle this alert..
+						super.sendNotFound(response);
+					}
+				}
+			} catch (SQLException | NamingException conn_exceptions) 	{
+				// getDBCPConn Exceptions   
+			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+				// validateSession Exceptions
+				super.sendForbidden(response);  	// permission related or network error exceptions.. 
+			} catch ( Exception e) {
+				AppUtils.logException(e);			// unaccounted for exceptions. 
+				throw new ServletException(e);
+			} finally {								// do this no matter what.. 
+				AppUtils.closeQuiet(conn);
+			}
+			
+		} else {
+			super.sendNotFound(response); 			// '/permissionGroup/' was not found in the url...
+		}
+		
+	}
 	
 	public void doDeleteWork(Connection conn, Integer permGroupId) throws RecordNotFoundException, InvalidDeleteException, Exception {
 		
@@ -223,7 +291,7 @@ public class PermissionGroupServlet extends AbstractServlet {
 				super.sendNotFound(response);
 			}
 		} catch (NotAllowedException | TimeoutException | ExpiredLoginException e_validateSession) {
-			super.sendForbidden(response);
+			super.sendNotAllowed(response);
 		} catch ( NamingException | SQLException e_getDBCPConn) {			
 		} catch ( Exception e ) {
 			AppUtils.logException(e);

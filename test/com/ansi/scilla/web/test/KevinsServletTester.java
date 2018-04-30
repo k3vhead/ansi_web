@@ -429,10 +429,10 @@ public class KevinsServletTester extends TestServlet {
 //		s = s + testGetNoCmdOrID(sessionCookie);				// works - returns 404
 		 
 		// Note : you need to determine id num to delete manually..
-		s = s + testDelete(sessionCookie, 64);					// works	 
+//		s = s + testDelete(sessionCookie, 64);					// works	 
 //		s = s + testAdd(sessionCookie, "The Friday Group 5");	// works
 //		s = s + testUpdate(sessionCookie, 3);					// works
-//		s = s + testUpdateWithoutPermission();					// works - returns 403 
+		s = s + testUpdateWithoutPermission();					// works - returns 403 
 //		s = s + testUpdateWithNoJsonData(sessionCookie, 3);		// works - returns 200
 //		s = s + testPostNoCmdOrId(sessionCookie);		  		// works
 //		s = s + testAddWithoutSendingJsonData(sessionCookie);	// works - returns 200 
