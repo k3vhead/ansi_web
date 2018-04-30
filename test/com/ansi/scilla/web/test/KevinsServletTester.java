@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 
 import org.apache.http.Header;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -139,7 +140,30 @@ public class KevinsServletTester extends TestServlet {
 		String msg = "Update with No json data";
 		String method = "POST";
 		String paramString="";
-		HashMap<String, String> params = new HashMap<String, String>();;
+		String sOutput = "";
+		HashMap<String, String> params = new HashMap<String, String>();
+				
+		paramString=null;
+
+		try {
+			paramString = AppUtils.object2json(params);
+			sResult = super.doPost(sessionCookie, url , null);
+			sOutput = makeOutput(msg, method, url, paramString, sResult);
+			if(logDebugMsgs) logger.log(Level.DEBUG, sOutput);
+		} catch (JsonProcessingException e_object2json) {
+			if(logDebugMsgs) e_object2json.printStackTrace();
+		} catch (ClientProtocolException e_doPost) {
+			// TODO Auto-generated catch block
+			if(e_doPost.getMessage() != null) sOutput = sOutput + e_doPost.getMessage(); 
+			//e.printStackTrace();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return sOutput;
 		
 		// works.. fails gracefully..
 //		params.put("", "");
@@ -155,23 +179,6 @@ public class KevinsServletTester extends TestServlet {
 
 		// works.. completely empty params work as well
 		
-		
-		try {
-			paramString = AppUtils.object2json(params);
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-				
-		try {
-			sResult = super.doPost(sessionCookie, url , paramString);
-		} catch (IOException | URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
-		String sOutput = makeOutput(msg, method, url, paramString, sResult);
-		if(logDebugMsgs) logger.log(Level.DEBUG, sOutput);
-		return sOutput;
 	}
 
 	private String testUpdateWithPartialJsonData(Header sessionCookie, int itemId) {
@@ -432,8 +439,8 @@ public class KevinsServletTester extends TestServlet {
 //		s = s + testDelete(sessionCookie, 64);					// works	 
 //		s = s + testAdd(sessionCookie, "The Friday Group 5");	// works
 //		s = s + testUpdate(sessionCookie, 3);					// works
-		s = s + testUpdateWithoutPermission();					// works - returns 403 
-//		s = s + testUpdateWithNoJsonData(sessionCookie, 3);		// works - returns 200
+//		s = s + testUpdateWithoutPermission();					// works - returns 403 
+		s = s + testUpdateWithNoJsonData(sessionCookie, 3);		// works - returns 200
 //		s = s + testPostNoCmdOrId(sessionCookie);		  		// works
 //		s = s + testAddWithoutSendingJsonData(sessionCookie);	// works - returns 200 
 //		s = s + this.testAddPartialJsonData(sessionCookie);		// works - returns 200 
