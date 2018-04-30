@@ -226,7 +226,7 @@ public class PermissionGroupServlet extends AbstractServlet {
 				super.sendNotFound(response);
 			}
 		} catch (NotAllowedException | TimeoutException | ExpiredLoginException e_validateSession) {
-			super.sendNotAllowed(response);
+			super.sendForbidden(response);
 		} catch ( NamingException | SQLException e_getDBCPConn) {			
 		} catch ( Exception e ) {
 			AppUtils.logException(e);
