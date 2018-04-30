@@ -70,21 +70,18 @@ public class PermissionGroupServlet extends AbstractServlet {
 
 	@Override
 	protected void doDelete(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-
+			HttpServletResponse response) throws ServletException {
 		AnsiURL url = null;
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
-			
+
 			SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 			SessionUser sessionUser = sessionData.getUser();
-		
+
 			try {
-//				String jsonString = super.makeJsonString(request);
 				PermGroupRequest permGroupRequest = new PermGroupRequest();
-//				AppUtils.json2object(jsonString, permGroupRequest);
 
 				url = new AnsiURL(request,"permissionGroup", new String[] {""});
 
@@ -101,23 +98,34 @@ public class PermissionGroupServlet extends AbstractServlet {
 			} catch (InvalidDeleteException e) {	// doDeleteWork Exceptions
 				// an exception was thrown when we tried to delete it.. 
 				// let the user know.. 
-				String message = AppUtils.getMessageText(conn, MessageKey.DELETE_FAILED, "Invalid Delete");
+				String message;
+				try {
+					message = AppUtils.getMessageText(conn, MessageKey.DELETE_FAILED, "Invalid Delete");
+				} catch (Exception e_getMessageText) {
+					throw new ServletException(e);
+				}
 				WebMessages webMessages = new WebMessages();
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
 				PermissionGroupResponse permissionGroupResponse = new PermissionGroupResponse();
 				permissionGroupResponse.setWebMessages(webMessages);
-				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, permissionGroupResponse);
+				try {
+					super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, permissionGroupResponse);
+				} catch (Exception e_sendResponse) {
+					throw new ServletException(e);
+				}
 			} catch(RecordNotFoundException e_doDeleteWork) {
 				super.sendNotFound(response);
-			}
+			} catch (ResourceNotFoundException e_AnsiURL) {
+				super.sendNotFound(response);
+			} catch ( Exception e) {
+				AppUtils.logException(e);			// unaccounted for exceptions. 
+				throw new ServletException(e);
+			}	
 		} catch (SQLException | NamingException conn_exceptions) 	{
-			// getDBCPConn Exceptions   
+			// getDBCPConn Exceptions 
+			//   ...?
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e_validateSession) {
-			// validateSession Exceptions
 			super.sendForbidden(response);  	// permission related or network error exceptions.. 
-		} catch ( Exception e) {
-			AppUtils.logException(e);			// unaccounted for exceptions. 
-			throw new ServletException(e);
 		} finally {								// do this no matter what.. 
 			AppUtils.closeQuiet(conn);
 		}
@@ -281,7 +289,7 @@ public class PermissionGroupServlet extends AbstractServlet {
 				super.sendNotFound(response);
 			} catch (ResourceNotFoundException e_AnsiURL) {
 				super.sendNotFound(response);
-			} catch ( NotAllowedException e_validateSession ) {
+			} catch (NotAllowedException e_validateSession ) {
 				super.sendNotAllowed(response);
 			}
 		} catch (TimeoutException | ExpiredLoginException e_validateSession) {
