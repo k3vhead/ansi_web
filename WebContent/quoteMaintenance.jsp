@@ -330,6 +330,10 @@
     			<webthing:view styleClass="fa-2x quote-button">Search</webthing:view>
     			<webthing:addNew styleClass="fa-2x quote-button">New</webthing:addNew>
     			<webthing:print styleClass="fa-2x quote-button">Print</webthing:print>
+    			<span class="fa-stack tooltip" id="viewPrintHistory" style="color:#444444;">
+					<i class="fa fa-list-alt fa-stack-2x"><span class="tooltiptext">Print History<br />Print Count</span></i>
+					<i class="fa fa-stack-1x"><span style="color:#FFFFFF; text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000, 1px 1px 0 #000; font-weight:bold;" id="printCount">N/A</span></i>
+				</span>
     			<%--
     			<input type="button" class="quoteButton" id="buttonModifyQuote" value="Modify" /><br />
     			<input type="button" class="quoteButton" id="buttonCopyQuote" value="Copy" /><br />

@@ -27,24 +27,20 @@
 			        	<col style="width:120px;" />  <!-- label -->
 			        	<col style="width:200px;" />  <!-- input -->
 			        	<col style="width:10px;" />  <!-- err -->
-			        	<col style="width:32px;" />	<!-- spacer -->
+			        	<col style="width:25px;" />	<!-- spacer -->
 			        	
 			    		<!-- Division -->
 			        	<col style="width:8px;" />  <!-- req -->
 			        	<col style="width:120px;" />  <!-- label -->
 			        	<col style="width:200px;" />  <!-- input -->
 			        	<col style="width:10px;" />  <!-- err -->
-			        	<col style="width:32px;" />	<!-- spacer -->
+			        	<col style="width:25px;" />	<!-- spacer -->
 			        	
 			        	<!-- Quote -->
 			        	<col style="width:8px;" />  <!-- req -->
 			        	<col style="width:120px;" />  <!-- label -->
-			        	<col style="width:200px;" />  <!-- input -->
+			        	<col style="width:356px;" />  <!-- input -->
 			        	<col style="width:10px;" />  <!-- err -->
-			        	<col style="width:32px;" />	<!-- spacer -->
-			        	
-			        	<!--  rest of it -->
-			        	<col style="width:110px" />  <!--  icons -->		        	
 		    		</colgroup> 
 	    			<tr>
 	    				<td><span class="required">*</span></td>
@@ -64,21 +60,20 @@
 	    					<span class="formLabel">Quote:</span> 
 	    					<span id="quoteNbrDisplay">12345</span><span id="revisionDisplay">A</span>
 	    				</td>
-	    				<td>&nbsp;</td>
 	    				
 	    				
-	    				<td rowspan="4" style="text-align:center;">
 	    					<%--
+	    				<td rowspan="3" style="text-align:center;">
 	    					<span class="fa-stack fa-2x tooltip" style="color:#444444;">
 								<i class="fa fa-print fa-stack-2x" id="printButton" aria=hidden="true"><span class="tooltiptext">Print</span></i>
 							</span>
 							<br />
-							 --%>
 							<span class="fa-stack fa-2x tooltip" id="viewPrintHistory" style="color:#444444;">
 								<i class="fa fa-list-alt fa-stack-2x"><span class="tooltiptext">Print History<br />Print Count</span></i>
 								<i class="fa fa-stack-1x"><span style="color:#FFFFFF; text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000, 1px 1px 0 #000; font-weight:bold;" id="printCount">N/A</span></i>
 							</span>
 	    				</td>
+							 --%>
 	    			</tr>
 	    			
 	    			<tr>
@@ -98,7 +93,6 @@
 	    				<td><span class="formLabel">Proposed Date:</span></td>
 	    				<td><span id="proposedDate">N/A</span></td>
 	    				<td><span class="err" id="proposedDateErr"></span></td>
-	    				<td>&nbsp;</td>
 	    			</tr>
 	    			
 	    			<tr>    				    				    				
@@ -118,7 +112,6 @@
 	    				<td><span class="formLabel">Signed By:</span></td>
 	    				<td><input type="text" name="signedBy" /></td>
 	    				<td><span class="err" id="signedByErr"></span></td>
-	    				<td>&nbsp;</td>
 	    			</tr>
 	    			
 	    			<tr>
@@ -135,10 +128,12 @@
 	    				<td>&nbsp;</td>
 	    				
 	    				<td><span class="required"></span></td>
-	    				<td><span class="formLabel">Batch:</span> <input type="checkbox" name="invoiceBatch" /></td>    					
-	    				<td><span class="formLabel">Tax Exempt:</span> <input type="checkbox" name="taxExempt" /></td>
+	    				<td colspan="3" style="whitespace:no-break;">
+	    					<span class="formLabel">Batch:</span> <input type="checkbox" name="invoiceBatch" />
+	    					<span class="formLabel">Tax Exempt:</span> <input type="checkbox" name="taxExempt" />
+							<span class="formLabel">Reason:</span> <input type="text" name="taxExemptReason" />
+						</td>
 	    				<td><span class="err" id="invoiceTermsErr"></span></td>
-	    				<td>&nbsp;</td>
 	    			</tr>
 	    		</table>
 </body>
