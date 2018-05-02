@@ -76,13 +76,9 @@ public class PermissionGroupServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
-
-			SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
-			SessionUser sessionUser = sessionData.getUser();
+			AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 
 			try {
-				PermGroupRequest permGroupRequest = new PermGroupRequest();
-
 				url = new AnsiURL(request,"permissionGroup", new String[] {""});
 
 				if (url.getId() != null) {			// if true.. this is a delete and we have am id to delete
@@ -93,48 +89,32 @@ public class PermissionGroupServlet extends AbstractServlet {
 				} else { // this is a call to DELETE with no id.. send an error.. 
 					super.sendForbidden(response);
 				}
-			} catch (JsonMappingException e_json2object) {
-				// this probably won't ever happen..
 			} catch (InvalidDeleteException e) {	// doDeleteWork Exceptions
 				// an exception was thrown when we tried to delete it.. 
 				// let the user know.. 
 				String message;
-				try {
-					message = AppUtils.getMessageText(conn, MessageKey.DELETE_FAILED, "Invalid Delete");
-				} catch (Exception e_getMessageText) {
-					throw new ServletException(e);
-				}
+				message = AppUtils.getMessageText(conn, MessageKey.DELETE_FAILED, "Invalid Delete");
 				WebMessages webMessages = new WebMessages();
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
 				PermissionGroupResponse permissionGroupResponse = new PermissionGroupResponse();
 				permissionGroupResponse.setWebMessages(webMessages);
-				try {
-					super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, permissionGroupResponse);
-				} catch (Exception e_sendResponse) {
-					throw new ServletException(e);
-				}
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, permissionGroupResponse);
 			} catch(RecordNotFoundException e_doDeleteWork) {
 				super.sendNotFound(response);
 			} catch (ResourceNotFoundException e_AnsiURL) {
 				super.sendNotFound(response);
-			} catch ( Exception e) {
-				AppUtils.logException(e);			// unaccounted for exceptions. 
-				throw new ServletException(e);
 			}	
-		} catch (SQLException | NamingException conn_exceptions) 	{
-			// getDBCPConn Exceptions 
-			//   ...?
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e_validateSession) {
 			super.sendForbidden(response);  	// permission related or network error exceptions.. 
+		} catch ( Exception e_getMessage_sendResponse) {
+			AppUtils.logException(e_getMessage_sendResponse);			// unaccounted for exceptions. 
+			throw new ServletException(e_getMessage_sendResponse);
 		} finally {								// do this no matter what.. 
 			AppUtils.closeQuiet(conn);
 		}
 	}
 	
-	
-	
-	public void doDeleteWork(Connection conn, Integer permGroupId) throws RecordNotFoundException, InvalidDeleteException, Exception {
-		
+	public void doDeleteWork(Connection conn, Integer permGroupId) throws RecordNotFoundException, InvalidDeleteException, Exception {		
 		PermissionGroup perm = new PermissionGroup();
 		perm.setPermissionGroupId(permGroupId);
 
@@ -151,8 +131,6 @@ public class PermissionGroupServlet extends AbstractServlet {
 	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException { //  Note : modeled after recommended uri parsing pattern 2018-04-19 kjw
-		//if(LogDebugMsgs == true) this.logger.log(Level.DEBUG, "Begin");
-		this.logger.log(Level.DEBUG, "Begin");
 		AnsiURL url = null;
 		Connection conn = null;
 		WebMessages webMessages = new WebMessages();
@@ -179,8 +157,6 @@ public class PermissionGroupServlet extends AbstractServlet {
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {  // note : from contactServlet..
-		this.logger.log(Level.DEBUG, "Begin");
-
 		AnsiURL url = null;
 		Connection conn = null;
 		try {
@@ -191,8 +167,7 @@ public class PermissionGroupServlet extends AbstractServlet {
 			SessionUser sessionUser = sessionData.getUser();
 
 			try {
-				String jsonString = super.makeJsonString(request);
-								
+				String jsonString = super.makeJsonString(request);								
 				PermGroupRequest permGroupRequest = new PermGroupRequest();
 
 				if (!StringUtils.isBlank(jsonString))
@@ -202,15 +177,11 @@ public class PermissionGroupServlet extends AbstractServlet {
 
 				if ( url.getId() != null ) {
 					// THis is an update
-					this.logger.log(Level.DEBUG, "ID Found is " + Integer.toString(url.getId()));
 					processUpdate(conn, response, url.getId(), permGroupRequest, sessionUser);
-
 				} else if (url.getCommand().equalsIgnoreCase(ACTION_IS_ADD)) {
 					// this is an add
 					processAdd(conn, response, permGroupRequest, sessionUser);
 				} else {
-					// this is messed up
-					this.logger.log(Level.DEBUG, "...this is messed up");
 					super.sendNotFound(response);
 				}
 			} catch ( InvalidFormatException e ) {
@@ -227,8 +198,7 @@ public class PermissionGroupServlet extends AbstractServlet {
 			}
 		} catch (NotAllowedException | TimeoutException | ExpiredLoginException e_validateSession) {
 			super.sendForbidden(response);
-		} catch ( NamingException | SQLException e_getDBCPConn) {			
-		} catch ( Exception e ) {
+		} catch ( Exception e ) {   // SQLException and NamingException are subclasses of Exception 
 			AppUtils.logException(e);
 			AppUtils.rollbackQuiet(conn);
 			throw new ServletException(e);
@@ -238,7 +208,6 @@ public class PermissionGroupServlet extends AbstractServlet {
 	}			
 	
 	protected void processAdd(Connection conn, HttpServletResponse response, PermGroupRequest permissionGroupRequest, SessionUser sessionUser) throws Exception {   // copied from contactServlet
-		this.logger.log(Level.DEBUG, "Hi! Let's go BOOM!");
 		ResponseCode responseCode = null;
 		PermissionGroup permissionGroup = new PermissionGroup();
 	
@@ -285,16 +254,12 @@ public class PermissionGroupServlet extends AbstractServlet {
 						webMessages.addMessage(field, messageText);
 					}
 				}
-				
-				
 			}
 			// so, if no validation problems were found, this will be an empty list..
 			return webMessages;   
 		}
 
 	protected PermissionGroup doAdd(Connection conn, PermGroupRequest permGroupRequest, SessionUser sessionUser) throws Exception {
-		this.logger.log(Level.DEBUG, "trying to add item.. ");
-		
 		PermissionGroup permissionGroup = new PermissionGroup();
 		permissionGroup.setDescription(permGroupRequest.getDescription());
 		permissionGroup.setName(permGroupRequest.getName());
@@ -328,9 +293,7 @@ public class PermissionGroupServlet extends AbstractServlet {
 		} else {
 			data.setWebMessages(webMessages);
 			super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
-		}
-		
-		
+		}		
 	}
 
 	protected WebMessages validateUpdate(Connection conn, PermissionGroup permissionGroup, PermGroupRequest permGroupRequest) throws RecordNotFoundException, Exception {
@@ -362,7 +325,6 @@ public class PermissionGroupServlet extends AbstractServlet {
 	}
 
 	protected PermissionGroup doUpdate (Connection conn, Integer permGroupId, PermissionGroup permissionGroup, PermGroupRequest permGroupRequest, SessionUser sessionUser) throws Exception {
-		
 		permissionGroup.setDescription(permGroupRequest.getDescription());
 		permissionGroup.setName(permGroupRequest.getName());
 		permissionGroup.setStatus(permGroupRequest.getStatus());
@@ -374,17 +336,12 @@ public class PermissionGroupServlet extends AbstractServlet {
 		permissionGroup.update(conn, key);	
 		
 		return permissionGroup;
-
-		//Integer permGroupId = permissionGroup.insertWithKey(conn);
 	}
 	
 	protected  PermissionGroupListResponse makeSingleListResponse(Connection conn, AnsiURL url) throws Exception {
 		PermissionGroupListResponse permissionGroupListResponse = new PermissionGroupListResponse();		
-
 		List<PermissionGroupUserCount> permissionGroupUserCount = new ArrayList<PermissionGroupUserCount>();
 		
-		this.logger.log(Level.DEBUG, url);
-
 		if(StringUtils.isBlank(url.getCommand())){			
 			permissionGroupUserCount.add(PermissionGroupUserCount.select(conn, url.getId()));
 		}else {
