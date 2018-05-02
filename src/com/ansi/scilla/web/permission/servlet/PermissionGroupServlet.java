@@ -175,11 +175,9 @@ public class PermissionGroupServlet extends AbstractServlet {
 				
 				url = new AnsiURL(request,"permissionGroup", new String[] {ACTION_IS_ADD});
 
-				if ( url.getId() != null ) {
-					// THis is an update
+				if ( url.getId() != null ) {									// this is an update
 					processUpdate(conn, response, url.getId(), permGroupRequest, sessionUser);
-				} else if (url.getCommand().equalsIgnoreCase(ACTION_IS_ADD)) {
-					// this is an add
+				} else if (url.getCommand().equalsIgnoreCase(ACTION_IS_ADD)) {  // this is an add
 					processAdd(conn, response, permGroupRequest, sessionUser);
 				} else {
 					super.sendNotFound(response);
@@ -212,9 +210,9 @@ public class PermissionGroupServlet extends AbstractServlet {
 		PermissionGroup permissionGroup = new PermissionGroup();
 	
 		WebMessages webMessages = validateAdd(conn, permissionGroupRequest);
-		if (webMessages.isEmpty()) {  // if validateAdd returned no messages/errors.. 
-			// do the add.. 
-			permissionGroup = doAdd(conn, permissionGroupRequest, sessionUser);
+		
+		if (webMessages.isEmpty()) {  														// if validateAdd returned no messages/errors..  
+			permissionGroup = doAdd(conn, permissionGroupRequest, sessionUser);				// do the add..
 			String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");		
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
 			responseCode = ResponseCode.SUCCESS;
@@ -233,30 +231,33 @@ public class PermissionGroupServlet extends AbstractServlet {
 
 	protected WebMessages validateAdd(Connection conn, PermGroupRequest permGroupRequest) throws Exception {
 			WebMessages webMessages = new WebMessages();
-			// Use @RequiredForAdd annotations in the <realm>Request Class to check for missing fields.
-			List<String> missingFields = super.validateRequiredAddFields(permGroupRequest);
-		
+			List<String> missingFields = super.validateRequiredAddFields(permGroupRequest);		// Use @RequiredForAdd annotations in the <realm>Request Class to check for missing fields.
+			List<String> badFormatFieldList;												// if any fields with invalid formats are found
+			
 			if ( missingFields.isEmpty() ) {	// if there aren't any missing fields
-				// check that all special format fields are correct.. 
-				List<String> badFormatFieldList = super.validateFormat(permGroupRequest);
-				if ( badFormatFieldList.isEmpty() ) {	// if all required formats are valud.. 
+				badFormatFieldList = super.validateFormat(permGroupRequest);					//      they will be added to this list.
+				if ( badFormatFieldList.isEmpty() ) {											// if all required formats are valid.. 
 					Integer status = permGroupRequest.getStatus();
-					// make sure that status us one of the enumerated values.. 
-					if ( ! Arrays.asList(new Integer[] { PermissionGroup.STATUS_IS_ACTIVE, PermissionGroup.STATUS_IS_INACTIVE}).contains(status)) {
-						// add an error message to pass back to be displayed to the user.. 
-						webMessages.addMessage("status", "Invalid Status");
+					Integer[] permittedValues = new Integer[2];									// build list of allowable values
+					permittedValues[0] = PermissionGroup.STATUS_IS_ACTIVE;
+					permittedValues[1] = PermissionGroup.STATUS_IS_INACTIVE;
+					
+					if ( ! Arrays.asList(permittedValues).contains(status)) {					// make sure that status us one of the enumerated values..											 
+						webMessages.addMessage("status", "Invalid Status");						// add an error message to pass back to be displayed to the user..				
 					}
-				} else {
-					// we have required fields that are not populated
-					String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
-					// add a an error message for each missing field.. 
-					for ( String field : missingFields ) {
+				} else {																		// we have required fields that are not populated
+					String messageText = AppUtils.getMessageText(conn, MessageKey.INVALID_DATA, "Invalid Entry");	 
+					for ( String field : badFormatFieldList ) {									// add a an error message for each missing field..
 						webMessages.addMessage(field, messageText);
 					}
 				}
+			} else {																		// we have required fields that are not populated
+				String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");	 
+				for ( String field : missingFields ) {										// add a an error message for each missing field..
+					webMessages.addMessage(field, messageText);
+				}
 			}
-			// so, if no validation problems were found, this will be an empty list..
-			return webMessages;   
+			return webMessages;	// so, if no validation problems were found, this will be an empty list..   
 		}
 
 	protected PermissionGroup doAdd(Connection conn, PermGroupRequest permGroupRequest, SessionUser sessionUser) throws Exception {

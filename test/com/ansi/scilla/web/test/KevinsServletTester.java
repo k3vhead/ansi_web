@@ -374,19 +374,20 @@ public class KevinsServletTester extends TestServlet {
 		// doesn't work... 
 //		params.put("", "");
 
-		// works if all are secified.. 
+		// works if all are specified.. 
 //		params.put("name", "Some other name..");
 //		params.put("description", "A group used to test adding groups");
 //		params.put("status","1");
 
 		// doesn't work..  
-		params.put("name", "Some other name..");
-//		params.put("description", "A group used to test adding groups");
+//		params.put("name", "Some other name..");
+
+		//		params.put("description", "A group used to test adding groups");
 //		params.put("status","1");
 
-		
 		paramString = AppUtils.object2json(params);
 		
+		if(logDebugMsgs) logger.log(Level.DEBUG, "calling super.doPost()");
 		sResult = super.doPost(sessionCookie, url , paramString);
 		
 		String sOutput = makeOutput(msg, method, url, paramString, sResult);
@@ -421,7 +422,7 @@ public class KevinsServletTester extends TestServlet {
 	}
 	
 	public void go() throws Exception {		
-		this.logDebugMsgs = false; 
+		this.logDebugMsgs = true; 
 		this.realm = "permissionGroup";
 		
 		String s ="";
@@ -439,11 +440,11 @@ public class KevinsServletTester extends TestServlet {
 //		s = s + testDelete(sessionCookie, 64);					// works	 
 //		s = s + testAdd(sessionCookie, "The Friday Group 5");	// works
 //		s = s + testUpdate(sessionCookie, 3);					// works
-		s = s + testUpdateWithoutPermission();					// works - returns 403 
+//		s = s + testUpdateWithoutPermission();					// works - returns 403 
 //		s = s + testUpdateWithNoJsonData(sessionCookie, 3);		// works - returns 200
 //		s = s + testPostNoCmdOrId(sessionCookie);		  		// works
 //		s = s + testAddWithoutSendingJsonData(sessionCookie);	// works - returns 200 
-//		s = s + this.testAddPartialJsonData(sessionCookie);		// works - returns 200 
+		s = s + testAddPartialJsonData(sessionCookie);			// works - returns 200 
 //		s = s + testPostWithNonNumericId(sessionCookie);  		// works
 		
 		logger.log(Level.DEBUG, s);
