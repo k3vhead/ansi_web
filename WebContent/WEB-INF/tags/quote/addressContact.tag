@@ -9,18 +9,16 @@
 <%@ taglib uri="/WEB-INF/struts-bean.tld"  prefix="bean"  %>
 <%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="webthing" %>
 
-<%@ attribute name="cssId" required="true" rtexprvalue="true" %>
+<%@ attribute name="id" required="true" rtexprvalue="true" %>
 <%@ attribute name="label" required="false" rtexprvalue="true" %>
 
 
 <%
-	String cssId = (String)jspContext.getAttribute("cssId");
+	String styleId = (String)jspContext.getAttribute("id");	
 	String label = (String)jspContext.getAttribute("label");
-	
-	String cssIdString = "id=\"" + cssId + "\"";			 
 	String labelString = label == null || label.length()==0 ? "Name" : label;
 %>
-<table style="width: 100%" <%= cssIdString %>>
+<table id="<%= styleId %>" class="ansi-contact-container">
 	<tr>
 		<td style="width: 30%;"><span style="font-weight: bold;"><%= label %>:</span></td>
 		<td style="width: 30%;"><span>John Smith</span></td>
