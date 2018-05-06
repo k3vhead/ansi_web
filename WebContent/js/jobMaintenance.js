@@ -478,7 +478,8 @@ $( document ).ready(function() {
 		},
 		changeFieldState: function($namespace,$disabledBoolean){
 
-			$("#" + $namespace + "_jobActivation_automanual").selectmenu( "option", "disabled", $disabledBoolean );
+			//$("#" + $namespace + "_jobActivation_automanual").selectmenu( "option", "disabled", $disabledBoolean );
+			$("#" + $namespace + "_jobActivation_automanual").prop('disabled', $disabledBoolean);
 			//$("#" + $namespace + "_jobActivation_buildingType").selectmenu( "option", "disabled", $disabledBoolean );
 			$("#" + $namespace + "_jobActivation_directLaborPct").prop('disabled', $disabledBoolean);
 			$("#" + $namespace + "_jobActivation_directLaborBudget").prop('disabled', $disabledBoolean);
@@ -488,17 +489,21 @@ $( document ).ready(function() {
 			$("#" + $namespace + "_jobActivation_omNotes").prop('disabled', $disabledBoolean);
 			$("#" + $namespace + "_jobActivation_billingNotes").prop('disabled', $disabledBoolean);
 			
-			$("#" + $namespace + "_jobInvoice_invoiceStyle").selectmenu( "option", "disabled", $disabledBoolean );
+			//$("#" + $namespace + "_jobInvoice_invoiceStyle").selectmenu( "option", "disabled", $disabledBoolean );
+			$("#" + $namespace + "_jobInvoice_invoiceStyle").prop( "disabled", $disabledBoolean );
 			$("#" + $namespace + "_jobInvoice_invoiceBatch").prop('disabled', $disabledBoolean);
 			$("#" + $namespace + "_jobInvoice_invoiceTaxExempt").prop('disabled', true);
-			$("#" + $namespace + "_jobInvoice_invoiceGrouping").selectmenu( "option", "disabled", $disabledBoolean );
-			$("#" + $namespace + "_jobInvoice_invoiceTerms").selectmenu( "option", "disabled", $disabledBoolean );
+			//$("#" + $namespace + "_jobInvoice_invoiceGrouping").selectmenu( "option", "disabled", $disabledBoolean );
+			$("#" + $namespace + "_jobInvoice_invoiceGrouping").prop( "disabled", $disabledBoolean );
+			//$("#" + $namespace + "_jobInvoice_invoiceTerms").selectmenu( "option", "disabled", $disabledBoolean );
+			$("#" + $namespace + "_jobInvoice_invoiceTerms").prop( "disabled", $disabledBoolean );
 			$("#" + $namespace + "_jobInvoice_invoicePO").prop('disabled', $disabledBoolean);
 			$("#" + $namespace + "_jobInvoice_invoiceOurVendorNbr").prop('disabled', $disabledBoolean);
 			$("#" + $namespace + "_jobInvoice_invoiceExpire").prop('disabled', $disabledBoolean);
 			$("#" + $namespace + "_jobInvoice_invoiceExpireReason").prop('disabled', $disabledBoolean);
 			
-			$("#" + $namespace + "_jobProposal_jobFrequency").selectmenu( "option", "disabled", $disabledBoolean );
+//			$("#" + $namespace + "_jobProposal_jobFrequency").selectmenu( "option", "disabled", $disabledBoolean );
+			$("#" + $namespace + "_jobProposal_jobFrequency").prop( "disabled", $disabledBoolean );
 			$("#" + $namespace + "_jobProposal_jobNbr").prop('disabled', $disabledBoolean);
 			$("#" + $namespace + "_jobProposal_ppc").prop('disabled', $disabledBoolean);
 			$("#" + $namespace + "_jobProposal_serviceDescription").prop('disabled', $disabledBoolean);
@@ -834,23 +839,24 @@ $( document ).ready(function() {
 					$select.append(new Option("",""));
 					$select.append(new Option("Auto","auto"));
 					$select.append(new Option("Manual","manual"));
-					$select.selectmenu({ width : '75px', maxHeight: '400 !important', style: 'dropdown'});
+					//$select.selectmenu({ width : '75px', maxHeight: '400 !important', style: 'dropdown'});
 					
 					if($jobDetail.requestSpecialScheduling == 0){
 						$select.val("auto");
 					} else if($jobDetail.requestSpecialScheduling == 1){
 						$select.val("manual");
 					}
-					$select.selectmenu("refresh");
+					//$select.selectmenu("refresh");
 					
 					$selectorName = "#" + $namespace + "_activationEdit";
 					$($selectorName).click(function($event) {
 					$event.preventDefault();
 					$id = $("#"+$namespace.substring(0,$namespace.indexOf("_"))+"_jobPanel_jobId").val();
 					console.log("#"+$namespace.substring(0,$namespace.indexOf("_"))+"_jobPanel_jobId");
-					if($("#" + $namespace + "_activationEdit").hasClass( "fa-pencil" )){
+					if($("#" + $namespace + "_activationEdit").hasClass( "fa-pencil-alt" )){
 						console.log("Clicked: Pencil");
-						$("#" + $namespace + "_automanual").selectmenu( "option", "disabled", false );
+//						$("#" + $namespace + "_automanual").selectmenu( "option", "disabled", false );
+						$("#" + $namespace + "_automanual").prop( "disabled", false );
 //						$("#" + $namespace + "_buildingType").selectmenu( "option", "disabled", false );
 						$("#" + $namespace + "_directLaborPct").prop('disabled', false);
 						$("#" + $namespace + "_directLaborBudget").prop('disabled', false);
@@ -862,11 +868,12 @@ $( document ).ready(function() {
 						
 						$("#" + $namespace + "tooltiptext").text("Save");
 						
-						$("#" + $namespace + "_activationEdit").removeClass('fa-pencil');
+						$("#" + $namespace + "_activationEdit").removeClass('fa-pencil-alt');
 						$("#" + $namespace + "_activationEdit").addClass('fa-save');
 					} else if($("#" + $namespace + "_activationEdit").hasClass( "fa-save" )){
 						console.log("Clicked: Save");
-						$("#" + $namespace + "_automanual").selectmenu( "option", "disabled", true );
+						//$("#" + $namespace + "_automanual").selectmenu( "option", "disabled", true );
+						$("#" + $namespace + "_automanual").prop( "disabled", true );
 //						$("#" + $namespace + "_buildingType").selectmenu( "option", "disabled", true );
 						$("#" + $namespace + "_directLaborPct").prop('disabled', true);
 						$("#" + $namespace + "_directLaborBudget").prop('disabled', true);
@@ -884,7 +891,7 @@ $( document ).ready(function() {
 						$("#" + $namespace + "tooltiptext").text("Edit");
 		        	
 						$("#" + $namespace + "_activationEdit").removeClass('fa-save');
-						$("#" + $namespace + "_activationEdit").addClass('fa-pencil');
+						$("#" + $namespace + "_activationEdit").addClass('fa-pencil-alt');
 					}
 				});
 				
@@ -907,7 +914,7 @@ $( document ).ready(function() {
 					if ( $selectedValue != null ) {
 						$select.val($selectedValue);
 					}
-					$select.selectmenu({ width : '175px', maxHeight: '400 !important', style: 'dropdown'});
+					//$select.selectmenu({ width : '175px', maxHeight: '400 !important', style: 'dropdown'});
 
 
 				}
@@ -1034,12 +1041,15 @@ $( document ).ready(function() {
 				$($selectorName).click(function($event) {
 					$event.preventDefault();
 					$id = $("#"+$namespace.substring(0,$namespace.indexOf("_"))+"_jobPanel_jobId").val();
-					if($("#" + $namespace + "_invoiceEdit").hasClass( "fa-pencil" )){
-						$("#" + $namespace + "_invoiceStyle").selectmenu( "option", "disabled", false );
+					if($("#" + $namespace + "_invoiceEdit").hasClass( "fa-pencil-alt" )){
+						//$("#" + $namespace + "_invoiceStyle").selectmenu( "option", "disabled", false );
+						$("#" + $namespace + "_invoiceStyle").prop( "disabled", false );
 						$("#" + $namespace + "_invoiceBatch").prop('disabled', false);
 						$("#" + $namespace + "_invoiceTaxExempt").prop('disabled', false);
-						$("#" + $namespace + "_invoiceGrouping").selectmenu( "option", "disabled", false );
-						$("#" + $namespace + "_invoiceTerms").selectmenu( "option", "disabled", false );
+						//$("#" + $namespace + "_invoiceGrouping").selectmenu( "option", "disabled", false );
+						$("#" + $namespace + "_invoiceGrouping").prop( "disabled", false );
+						//$("#" + $namespace + "_invoiceTerms").selectmenu( "option", "disabled", false );
+						$("#" + $namespace + "_invoiceTerms").prop( "disabled", false );
 						$("#" + $namespace + "_invoicePO").prop('disabled', false);
 						$("#" + $namespace + "_invoiceOurVendorNbr").prop('disabled', false);
 						$("#" + $namespace + "_invoiceExpire").prop('disabled', false);
@@ -1047,14 +1057,17 @@ $( document ).ready(function() {
 						
 						$("#" + $namespace + "tooltiptext").text("Save");
 						
-						$("#" + $namespace + "_invoiceEdit").removeClass('fa-pencil');
+						$("#" + $namespace + "_invoiceEdit").removeClass('fa-pencil-alt');
 						$("#" + $namespace + "_invoiceEdit").addClass('fa-save');
 					} else if($("#" + $namespace + "_invoiceEdit").hasClass( "fa-save" )){
-						$("#" + $namespace + "_invoiceStyle").selectmenu( "option", "disabled", true );
+						//$("#" + $namespace + "_invoiceStyle").selectmenu( "option", "disabled", true );
+						$("#" + $namespace + "_invoiceStyle").prop( "disabled", true );
 						$("#" + $namespace + "_invoiceBatch").prop('disabled', true);
 						$("#" + $namespace + "_invoiceTaxExempt").prop('disabled', true);
-						$("#" + $namespace + "_invoiceGrouping").selectmenu( "option", "disabled", true );
-						$("#" + $namespace + "_invoiceTerms").selectmenu( "option", "disabled", true );
+						//$("#" + $namespace + "_invoiceGrouping").selectmenu( "option", "disabled", true );
+						$("#" + $namespace + "_invoiceGrouping").prop( "disabled", true );
+						//$("#" + $namespace + "_invoiceTerms").selectmenu( "option", "disabled", true );
+						$("#" + $namespace + "_invoiceTerms").prop( "disabled", true );
 						$("#" + $namespace + "_invoicePO").prop('disabled', true);
 						$("#" + $namespace + "_invoiceOurVendorNbr").prop('disabled', true);
 						$("#" + $namespace + "_invoiceExpire").prop('disabled', true);
@@ -1078,7 +1091,7 @@ $( document ).ready(function() {
 						$("#" + $namespace + "tooltiptext").text("Edit");
 						
 						$("#" + $namespace + "_invoiceEdit").removeClass('fa-save');
-						$("#" + $namespace + "_invoiceEdit").addClass('fa-pencil');
+						$("#" + $namespace + "_invoiceEdit").addClass('fa-pencil-alt');
 					}
 				});
 			},
@@ -1130,7 +1143,7 @@ $( document ).ready(function() {
 				});
 				if($("#" + $namespace + "_divisionId").is("select")){
 					JOBPANEL.setDivisionList($namespace, $divisionList);
-					$("#" + $namespace + "_divisionId").selectmenu({ width : '150px', maxHeight: '400 !important', style: 'dropdown'});
+					//$("#" + $namespace + "_divisionId").selectmenu({ width : '150px', maxHeight: '400 !important', style: 'dropdown'});
 				}
 			}
 			JOBPANEL.initActivateModal($namespace, $modalNamespace);
@@ -1160,7 +1173,7 @@ $( document ).ready(function() {
 				  //QUOTEUTILS.setDivision($jobDetail.divisionId);
 				} else {
 					$("#" + $namespace + "_divisionId").val($jobDetail.divisionId);
-					$("#" + $namespace + "_divisionId").selectmenu("refresh");
+					//$("#" + $namespace + "_divisionId").selectmenu("refresh");
 				}
 				ANSI_UTILS.setTextValue($namespace, "quoteId", $jobDetail.jobId);
 				
@@ -1574,18 +1587,20 @@ $( document ).ready(function() {
 			$($selectorName).click(function($event) {
 				$event.preventDefault();
 				$id = $("#"+$namespace.substring(0,$namespace.indexOf("_"))+"_jobPanel_jobId").val();
-				if($("#" + $namespace + "_proposalEdit").hasClass( "fa-pencil" )){
-					$("#" + $namespace + "_jobFrequency").selectmenu( "option", "disabled", false );
+				if($("#" + $namespace + "_proposalEdit").hasClass( "fa-pencil-alt" )){
+					//$("#" + $namespace + "_jobFrequency").selectmenu( "option", "disabled", false );
+					$("#" + $namespace + "_jobFrequency").prop( "disabled", false );
 					$("#" + $namespace + "_jobNbr").prop('disabled', false);
 					$("#" + $namespace + "_ppc").prop('disabled', false);
 					$("#" + $namespace + "_serviceDescription").prop('disabled', false);
 					
 					$("#" + $namespace + "tooltiptext").text("Save");
 					
-					$("#" + $namespace + "_proposalEdit").removeClass('fa-pencil');
+					$("#" + $namespace + "_proposalEdit").removeClass('fa-pencil-alt');
 					$("#" + $namespace + "_proposalEdit").addClass('fa-save');
 				} else if($("#" + $namespace + "_proposalEdit").hasClass( "fa-save" )){
-					$("#" + $namespace + "_jobFrequency").selectmenu( "option", "disabled", true );
+					//$("#" + $namespace + "_jobFrequency").selectmenu( "option", "disabled", true );
+					$("#" + $namespace + "_jobFrequency").prop( "disabled", true );
 					$("#" + $namespace + "_jobNbr").prop('disabled', true);
 					$("#" + $namespace + "_ppc").prop('disabled', true);
 					$("#" + $namespace + "_serviceDescription").prop('disabled', true);
@@ -1602,7 +1617,7 @@ $( document ).ready(function() {
 					$("#" + $namespace + "tooltiptext").text("Edit");
 					
 					$("#" + $namespace + "_proposalEdit").removeClass('fa-save');
-					$("#" + $namespace + "_proposalEdit").addClass('fa-pencil');
+					$("#" + $namespace + "_proposalEdit").addClass('fa-pencil-alt');
 				}
 			});
 			
