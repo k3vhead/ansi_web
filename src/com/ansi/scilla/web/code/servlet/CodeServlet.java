@@ -73,7 +73,7 @@ public class CodeServlet extends AbstractServlet {
 			String sortBy = request.getParameter("sortBy");
 			
 			Logger logger = AppUtils.getLogger();
-			logger.debug(sessionData);
+//			logger.debug(sessionData);
 			String url = request.getRequestURI();
 			ParsedUrl parsedUrl = new ParsedUrl(url);			
 			

@@ -11,15 +11,26 @@
 <%@ taglib uri="/WEB-INF/struts-bean.tld"  prefix="bean"  %>
 <%@ taglib uri="/WEB-INF/struts-tiles.tld" prefix="tiles" %>
 <%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="webthing" %>
-<%@ taglib tagdir="/WEB-INF/tags/address" prefix="address" %>
+<%@ taglib tagdir="/WEB-INF/tags/quote" prefix="quote" %>
 <%@ taglib uri="/WEB-INF/theTagThing.tld" prefix="ansi" %>
 
+<c:choose>
+	<c:when test="${param.action eq 'view'}">
+		<c:set var="action" value="view" />
+	</c:when>
+	<c:when test="${param.action eq 'edit'}">
+		<c:set var="action" value="edit" />
+	</c:when>
+	<c:otherwise>
+		<c:set var="action" value="view" />
+	</c:otherwise>
+</c:choose>
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<title>Quote Data Container</title>
 	</head>
-	<body>
+	<body>				
 		<table id="quoteDataContainer">
 			<colgroup>
 				<!-- Manager -->
