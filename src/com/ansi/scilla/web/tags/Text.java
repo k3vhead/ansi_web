@@ -24,6 +24,7 @@ public class Text extends AbstractInput {
 	private String autocomplete;		
 	private String autofocus;
 	private String capture;
+	private String checked;
 	private String disabled;
 	private String form;
 	private String formaction;
@@ -69,6 +70,12 @@ public class Text extends AbstractInput {
 	}
 	public void setCapture(String capture) {
 		this.capture = capture;
+	}
+	public String getChecked() {
+		return checked;
+	}
+	public void setChecked(String checked) {
+		this.checked = checked;
 	}
 	public String getDisabled() {
 		return disabled;
@@ -281,21 +288,19 @@ public class Text extends AbstractInput {
 		}
 
 		for ( Field field : fieldList ) {
-			System.out.println(field.getName());
 			if ( ! Modifier.isFinal(field.getModifiers())) {
-				System.out.println("Abstract 113: " + field.getName());
 				String fieldName = field.getName().equalsIgnoreCase("styleClass") ? "class" : field.getName();
 				Object value = field.get(this);
-				if ( fieldName.equalsIgnoreCase("readonly")) {
+				if ( fieldName.equalsIgnoreCase("disabled")) {
 					// if we want input to be readonly, make it readonly.
 					// if we want input to be editable, make it readonly based on permission and action
 					if ( String.valueOf(value).equalsIgnoreCase("true")) {
-						pieces.add("readonly=\"true\"");
+						pieces.add("disabled=\"true\"");
 					} else {
 						if ( this.action.equals(ACTION_IS_EDIT) && canEdit ) {
 							// do nothing
 						} else {
-							pieces.add("readonly=\"true\"");
+							pieces.add("disabled=\"true\"");
 						}
 					}
 				} else if ( ! fieldName.equalsIgnoreCase("action")) {					

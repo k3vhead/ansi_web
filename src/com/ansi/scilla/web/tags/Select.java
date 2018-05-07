@@ -92,15 +92,33 @@ public class Select extends AbstractInput {
 			e.printStackTrace();
 			throw new JspException(e);
 		}
-//		return EVAL_BODY_BUFFERED;
-		return SKIP_BODY;
+		return EVAL_BODY_INCLUDE;
+//		return SKIP_BODY;
 	}
 
 	
+	@Override
+	public int doAfterBody() throws JspException {
+		//return EVAL_BODY_BUFFERED;
+		return SKIP_BODY;
+	}
+	
+	
+	@Override
+	public int doEndTag() throws JspException {
+		JspWriter out = pageContext.getOut(); //= getPreviousOut();
+		try {
+			out.write("</select>");
+		} catch (IOException e) {
+			throw new JspException(e);
+		}
+		return EVAL_PAGE;
+	}
+	
+	
 	protected String makeTagString(String inputType, boolean canEdit) throws IllegalArgumentException, IllegalAccessException {
 		List<String> pieces = new ArrayList<String>();
-		pieces.add("<input");
-		pieces.add("type=\"" + inputType + "\"");
+		pieces.add("<select");
 		List<Field> fieldList = new ArrayList<Field>();
 		Field[] textList = Select.class.getDeclaredFields();
 		Field[] abstractList = AbstractInput.class.getDeclaredFields();
@@ -112,21 +130,19 @@ public class Select extends AbstractInput {
 		}
 
 		for ( Field field : fieldList ) {
-			System.out.println(field.getName());
 			if ( ! Modifier.isFinal(field.getModifiers())) {
-				System.out.println("Abstract 113: " + field.getName());
 				String fieldName = field.getName().equalsIgnoreCase("styleClass") ? "class" : field.getName();
 				Object value = field.get(this);
-				if ( fieldName.equalsIgnoreCase("readonly")) {
+				if ( fieldName.equalsIgnoreCase("disabled")) {
 					// if we want input to be readonly, make it readonly.
 					// if we want input to be editable, make it readonly based on permission and action
 					if ( String.valueOf(value).equalsIgnoreCase("true")) {
-						pieces.add("readonly=\"true\"");
+						pieces.add("disabled=\"true\"");
 					} else {
 						if ( this.action.equals(ACTION_IS_EDIT) && canEdit ) {
 							// do nothing
 						} else {
-							pieces.add("readonly=\"true\"");
+							pieces.add("disabled=\"true\"");
 						}
 					}
 				} else if ( ! fieldName.equalsIgnoreCase("action")) {					
@@ -137,7 +153,7 @@ public class Select extends AbstractInput {
 				
 			}
 		}
-		pieces.add("/>");
+		pieces.add(">");
 		return StringUtils.join(pieces, " ");
 	}
 	

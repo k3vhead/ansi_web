@@ -33,6 +33,43 @@
 	</tag>
 	
 	
+	
+	<tag>
+		<name>checkbox</name>
+		<tagclass>com.ansi.scilla.web.tags.Checkbox</tagclass>
+		<bodycontent>empty</bodycontent>
+		<info>
+			Changes input to/from readonly depending on permissions and requested action
+		</info>
+		<attribute><name>action</name><required>true</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>name</name><required>true</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>autocomplete</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>		
+		<attribute><name>autofocus</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>checked</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>disabled</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>form</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>formaction</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>formmethod</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>formnovalidate</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>formtarget</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>height</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>inputmode</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>max</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>maxlength</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>		
+		<attribute><name>min</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>placeholder</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>required</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>selectionDirection</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>selectionEnd</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>selectionStart</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>		
+		<attribute><name>spellcheck</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>step</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>tabindex</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>value</name><required>true</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>style</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>styleClass</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>id</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+	</tag>
 	<tag>
     	<name>loggedIn</name>
     	<tagclass>com.ansi.scilla.web.tags.LoggedIn</tagclass>
@@ -131,6 +168,46 @@
 	</tag>
 
 
+
+	<tag>
+		<name>radio</name>
+		<tagclass>com.ansi.scilla.web.tags.Radio</tagclass>
+		<bodycontent>empty</bodycontent>
+		<info>
+			Changes input to/from readonly depending on permissions and requested action
+		</info>
+		<attribute><name>action</name><required>true</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>name</name><required>true</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>autocomplete</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>		
+		<attribute><name>autofocus</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>checked</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>disabled</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>form</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>formaction</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>formmethod</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>formnovalidate</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>formtarget</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>height</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>inputmode</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>max</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>maxlength</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>		
+		<attribute><name>min</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>placeholder</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>required</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>selectionDirection</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>selectionEnd</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>selectionStart</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>		
+		<attribute><name>spellcheck</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>step</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>tabindex</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>value</name><required>true</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>style</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>styleClass</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+		<attribute><name>id</name><required>false</required><rtexprvalue>true</rtexprvalue></attribute>
+	</tag>
+	
+	
+	
 	<tag>
 		<name>select</name>
 		<tagclass>com.ansi.scilla.web.tags.Select</tagclass>

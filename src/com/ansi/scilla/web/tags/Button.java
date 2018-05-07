@@ -146,9 +146,7 @@ public class Button extends AbstractInput {
 		}
 
 		for ( Field field : fieldList ) {
-			System.out.println(field.getName());
 			if ( ! Modifier.isFinal(field.getModifiers())) {
-				System.out.println("Abstract 113: " + field.getName());
 				String fieldName = field.getName().equalsIgnoreCase("styleClass") ? "class" : field.getName();
 				Object value = field.get(this);
 				if ( ! fieldName.equalsIgnoreCase("action")) {					

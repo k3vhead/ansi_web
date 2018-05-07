@@ -10,7 +10,7 @@ import javax.servlet.jsp.JspWriter;
 
 import com.ansi.scilla.web.common.struts.SessionData;
 
-public class Password extends Text {
+public class Radio extends Text {
 
 	private static final long serialVersionUID = 1L;	
 	
@@ -34,7 +34,7 @@ public class Password extends Text {
 		
 		
 		try {
-			String tagString = makeTagString("password", canEdit);
+			String tagString = makeTagString("radio", canEdit);
 //			System.out.println(bc.getString());
 			out.write(tagString);
 		} catch (IOException | IllegalArgumentException | IllegalAccessException e) {
