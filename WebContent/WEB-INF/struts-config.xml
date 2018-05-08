@@ -167,9 +167,9 @@
             <forward name="login" path="/login.jsp" />
         </action>
 		<action
-            path="/permissiongroupAdmin"
+            path="/permissionGroupAdmin"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
-            <forward name="valid" path="/permissiongroupAdmin.jsp" />
+            <forward name="valid" path="/permissionGroupAdmin.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
         <action
