@@ -353,7 +353,7 @@ public class TicketOverrideServlet extends TicketServlet {
 				String value = values.get(FIELDNAME_ACT_PRICE_PER_CLEANING);
 				Double actPricePerCleaning = Double.valueOf(value);
 				ticket.setActPricePerCleaning(new BigDecimal(actPricePerCleaning));
-				Double actDlAmt = actPricePerCleaning * ticket.getActDlPct().doubleValue();
+				Double actDlAmt = actPricePerCleaning * ticket.getActDlPct().doubleValue() / 100;
 				ticket.setActDlAmt( new BigDecimal(actDlAmt) );
 				Job job = new Job();
 				job.setJobId(ticket.getJobId());
