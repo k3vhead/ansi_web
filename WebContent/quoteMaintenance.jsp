@@ -52,41 +52,34 @@
 						QUOTEMAINTENANCE.makeOptionLists();
 						QUOTEMAINTENANCE.populateOptionSelects();
 						QUOTEMAINTENANCE.makeButtons();
+						QUOTEMAINTENANCE.makeOtherClickables();
 						if (QUOTEMAINTENANCE.quoteId != '' ) {
 							QUOTEMAINTENANCE.getQuote(QUOTEMAINTENANCE.quoteId);	
 						}
-						$("#loadingDiv").hide();
+						$("#loading-container").hide();
 						$("#quotePanel").fadeIn(1000);
-						QUOTEMAINTENANCE.makeItSortable();
-						QUOTEMAINTENANCE.makeItClickable();
-					},
-					
-					
-					makeItClickable : function() {
-						$(".jobTitleRow").click(function($event) {
-							var $jobId = $(this).data("jobid");
-							console.debug("Clicked: " + $jobId);
-							var $tableSelector = "#job" + $jobId + " .job-data-row";
-							var $closedSelector = "#job" + $jobId + " .job-data-closed";
-							var $openSelector = "#job" + $jobId + " .job-data-open";
-							$($tableSelector).toggle();
-							$($closedSelector).toggle();
-							$($openSelector).toggle();
-						});
-					},
-					
-					
-					makeItSortable : function() {
-						$("#jobList").sortable({
-							stop:function($event, $ui) {
-								console.debug($ui.item);
-								console.debug($ui.item.attr("data-jobid"));
-								var $jobId = $ui.item.attr("data-jobid");
-								var $selector = "#job" + $jobId + " .jobTitleRow";
-								console.debug($selector);
-								$($selector).click();
-							}
-						});	
+						$("#address-container").fadeIn(1000);
+						$("#job-list-container").fadeIn(1000);
+						//console.debug("country");
+						//console.debug(QUOTEMAINTENANCE.countryList);
+						console.debug("buildingTypeList");
+						console.debug(QUOTEMAINTENANCE.buildingTypeList);
+						//console.debug("divisionList");
+						//console.debug(QUOTEMAINTENANCE.divisionList);
+						//console.debug("invoiceGroupingList");
+						//console.debug(QUOTEMAINTENANCE.invoiceGroupingList);
+						//console.debug("invoiceStyleList");
+						//console.debug(QUOTEMAINTENANCE.invoiceStyleList);
+						//console.debug("invoiceTermList");
+						//console.debug(QUOTEMAINTENANCE.invoiceTermList);
+						//console.debug("jobStatusList");
+						//console.debug(QUOTEMAINTENANCE.jobStatusList);
+						console.debug("jobFrequencyList");
+						console.debug(QUOTEMAINTENANCE.jobFrequencyList);
+						console.debug("leadTypeList");
+						console.debug(QUOTEMAINTENANCE.leadTypeList);
+						console.debug("managerList");
+						console.debug(QUOTEMAINTENANCE.managerList);
 					},
 					
 					
@@ -105,7 +98,63 @@
 					},
 					
 					
-					getQuote : function($quoteId) {
+					getDivisionList: function($callback) {
+						var $returnValue = null;
+						var jqxhr3 = $.ajax({
+							type: 'GET',
+							url: 'division/list',
+							data: {},
+							statusCode: {
+								200:function($data) {
+									$callback($data.data);
+								},
+								403: function($data) {								
+									$("#globalMsg").html("Session Expired. Log In and try again").show();
+								},
+								404: function($data) {
+									$("#globalMsg").html("System Error Division 404. Contact Support").show();
+								},
+								500: function($data) {
+									$("#globalMsg").html("System Error Division 500. Contact Support").show();
+								}
+							},
+							dataType: 'json',
+							async:false
+						});
+						return $returnValue;
+					},
+					
+					
+					getOptions: function($optionList, $callBack) {
+		    			var $returnValue = null;
+		    			var jqxhr1 = $.ajax({
+		    				type: 'GET',
+		    				url: 'options',
+		    				data: $optionList,			    				
+		    				statusCode: {
+		    					200: function($data) {
+		    						$callBack($data.data);		    						
+		    					},			    				
+		    					403: function($data) {
+		    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+		    					}, 
+		    					404: function($data) {
+		    						$("#globalMsg").html("System Error Option 404. Contact Support").show();
+		    					}, 
+		    					405: function($data) {
+		    						$("#globalMsg").html("System Error Option 405. Contact Support").show();
+		    					}, 
+		    					500: function($data) {
+		    						$("#globalMsg").html("System Error Option 500. Contact Support").show();
+		    					}, 
+		    				},
+		    				dataType: 'json'
+		    			});
+		    		},
+		            
+		            
+		            
+		            getQuote : function($quoteId) {
 						if ( $quoteId != null ) {
 							var $url = "quote/" + $quoteId
 							var jqxhr = $.ajax({
@@ -178,24 +227,37 @@
 					
 					
 		    		
-					makeOptionLists : function(){
-						$optionData = ANSI_UTILS.getOptions('JOB_STATUS,JOB_FREQUENCY,COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM');
-						QUOTEMAINTENANCE.countryList = $optionData.country;
-						QUOTEMAINTENANCE.invoiceGroupingList = $optionData.invoiceGrouping;
-						QUOTEMAINTENANCE.invoiceStyleList = $optionData.invoiceTerm;
-						QUOTEMAINTENANCE.invoiceTermList = $optionData.invoiceStyle;
-						QUOTEMAINTENANCE.jobStatusList = $optionData.jobStatus;
-						QUOTEMAINTENANCE.jobFrequencyList = $optionData.jobFrequencyList;
-						QUOTEMAINTENANCE.divisionList = ANSI_UTILS.getDivisionList();
-						QUOTEMAINTENANCE.makeManagerList();	
-						QUOTEMAINTENANCE.makeCodeList("job","building_type", QUOTEMAINTENANCE.code2options, "#quoteDataContainer select[name='buildingType']");
-						QUOTEMAINTENANCE.makeCodeList("quote","account_type", QUOTEMAINTENANCE.code2options, "#quoteDataContainer select[name='accountType']");
-						QUOTEMAINTENANCE.makeCodeList("quote","lead_type", QUOTEMAINTENANCE.code2options, "#quoteDataContainer select[name='leadType']");
-						QUOTEMAINTENANCE.populateDivisionList(QUOTEMAINTENANCE.divisionList);
-		            },
-		            
-		            
-		            makeManagerList: function(){
+					makeJobExpansion : function() {
+						$(".jobTitleRow").click(function($event) {
+							var $jobId = $(this).data("jobid");
+							console.debug("Clicked: " + $jobId);
+							var $tableSelector = "#job" + $jobId + " .job-data-row";
+							var $closedSelector = "#job" + $jobId + " .job-data-closed";
+							var $openSelector = "#job" + $jobId + " .job-data-open";
+							$($tableSelector).toggle();
+							$($closedSelector).toggle();
+							$($openSelector).toggle();
+						});
+					},
+					
+					
+					
+					makeJobSort : function() {
+						$("#jobList").sortable({
+							stop:function($event, $ui) {
+								console.debug($ui.item);
+								console.debug($ui.item.attr("data-jobid"));
+								var $jobId = $ui.item.attr("data-jobid");
+								var $selector = "#job" + $jobId + " .jobTitleRow";
+								console.debug($selector);
+								$($selector).click();
+							}
+						});	
+					},
+					
+					
+					
+					makeManagerList: function(){
 	    				var $url = "user/manager";
 	    				var jqxhr = $.ajax({
 	    					type: 'GET',
@@ -220,17 +282,50 @@
 		    		},
 		    		
 		    		
+		    		
+		    		makeOptionLists : function(){
+						QUOTEMAINTENANCE.getOptions('JOB_STATUS,JOB_FREQUENCY,COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM', QUOTEMAINTENANCE.populateOptions);						
+						QUOTEMAINTENANCE.getDivisionList(QUOTEMAINTENANCE.populateDivisionList);
+						
+						QUOTEMAINTENANCE.makeManagerList();	
+						QUOTEMAINTENANCE.makeCodeList("job","building_type", QUOTEMAINTENANCE.code2options, "#quoteDataContainer select[name='buildingType']");
+						QUOTEMAINTENANCE.makeCodeList("quote","account_type", QUOTEMAINTENANCE.code2options, "#quoteDataContainer select[name='accountType']");
+						QUOTEMAINTENANCE.makeCodeList("quote","lead_type", QUOTEMAINTENANCE.code2options, "#quoteDataContainer select[name='leadType']");
+		            },
+		            
+		            
+		            
+		            
+		            
+		            makeOtherClickables : function() {
+						QUOTEMAINTENANCE.makeJobSort();
+						QUOTEMAINTENANCE.makeJobExpansion();
+
+		    			$("#address-panel-hider").click(function($event) {
+		    				$("#address-panel-open").toggle();
+		    				$("#address-panel-closed").toggle();
+		    				$("#addressPanel").toggle();
+		    			});
+		    		},
+		    		
+		    		
+		    		
+		    		
 		            populateAddressPanel : function($selectorId, $address) {
 		            	console.debug("Populating address: " + $selectorId);	
 		            },
 		            
 		            
-		            populateDivisionList : function($optionList) {
+		            
+		            
+		            populateDivisionList : function($data) {
+		            	QUOTEMAINTENANCE.divisionList = $data.divisionList
+		            	
 		            	var $select = $("#quoteDataContainer select[name='divisionId']");
 						$('option', $select).remove();
 
 						$select.append(new Option("",""));
-						$.each($optionList, function(index, val) {
+						$.each(QUOTEMAINTENANCE.divisionList, function(index, val) {
 						    $select.append(new Option(val.divisionNbr + "-" + val.divisionCode, val.divisionId));
 						});
 		            },
@@ -245,6 +340,17 @@
 						    $select.append(new Option(val.firstName + " " + val.lastName, val.userId));
 						});
 		            },
+		            
+		            
+		            populateOptions : function($optionData) {
+		            	QUOTEMAINTENANCE.countryList = $optionData.country;
+		            	QUOTEMAINTENANCE.invoiceGroupingList = $optionData.invoiceGrouping;
+						QUOTEMAINTENANCE.invoiceStyleList = $optionData.invoiceTerm;
+						QUOTEMAINTENANCE.invoiceTermList = $optionData.invoiceStyle;
+						QUOTEMAINTENANCE.jobStatusList = $optionData.jobStatus;
+						QUOTEMAINTENANCE.jobFrequencyList = $optionData.jobFrequencyList;
+		            },
+		            
 		            
 		            
 		            populateOptionSelects : function() {
@@ -284,9 +390,20 @@
          
         
         
-        <style type="text/css">        	
+        <style type="text/css">   
+        	#address-container {
+        		display:none;
+        	}     	
         	#addressPanel {
         		width:100%;
+        	}
+        	#address-panel-closed {
+        		display:none;
+        	}
+        	#address-panel-open {
+        	}
+        	#job-list-container {
+        		display:none;
         	}
         	.ansi-address-container {
         		width:90%;
@@ -327,7 +444,7 @@
     
     <tiles:put name="content" type="string">
     	<h1>Quote Maintenance</h1>
-    	<div id="loadingDiv"><webthing:thinking style="width:100%" /></div>
+    	<div id="loading-container"><webthing:thinking style="width:100%" /></div>
     	<div style="width:1300px;">	    	
     		<div id="quoteButtonContainer" style="width:30px;">
     			<webthing:edit styleClass="fa-2x quote-button">Edit</webthing:edit>
@@ -342,30 +459,39 @@
     			<input type="button" class="quoteButton" id="buttonNewQuote" value="New" /><br />
     			 --%>
 	    	</div>
-	    	<div id="addressPanel" style="width:1269px; float:left;">
-	    		<div id="addressContainerBillTo" style="float:right; width:50%; border:solid 1px #404040;">
-	    			<quote:addressDisplayPanel label="Bill To" id="addressBillTo" />
-	    			<div id="billToContactContainer" style="width:80%;">
-	    				<quote:addressContact label="Contract Contact" id="contractContact" />
-	    				<quote:addressContact label="Billing Contact" id="billingContact" />
+	    	<div id="address-container">
+		    	<div id="address-panel-hider" style="color:#FFFFFF; background-color:#404040; cursor:pointer; width:1269px; margin-bottom:1px;">
+		    		Addresses
+	    			<div style="float:left; padding-left:4px;">
+	    				<span id="address-panel-closed"><i class="fas fa-caret-right" style="color:#FFFFFF;"></i></span>
+	    				<span id="address-panel-open"><i class="fas fa-caret-down" style="color:#FFFFFF;"></i></span>
 	    			</div>
 	    		</div>
-	    		<div id="addressContainerJobSite" style="float:left; width:49%; border:solid 1px #404040;">
-	    			<quote:addressDisplayPanel label="Job Site" id="addressJobSite" />
-	    			<div id="jobSiteContactContainer" style="width:80%;">
-	    				<quote:addressContact label="Job Contact" id="jobContact" />
-	    				<quote:addressContact label="Site Contact" id="siteContact" />
-	    			</div>
-	    		</div>
-	    		<div class="spacer">&nbsp;</div>
-	    	</div>
+		    	<div id="addressPanel" style="width:1269px; float:left;">
+		    		<div id="addressContainerBillTo" style="float:right; width:50%; border:solid 1px #404040;">
+		    			<quote:addressDisplayPanel label="Bill To" id="addressBillTo" />
+		    			<div id="billToContactContainer" style="width:80%;">
+		    				<quote:addressContact label="Contract Contact" id="contractContact" />
+		    				<quote:addressContact label="Billing Contact" id="billingContact" />
+		    			</div>
+		    		</div>
+		    		<div id="addressContainerJobSite" style="float:left; width:49%; border:solid 1px #404040;">
+		    			<quote:addressDisplayPanel label="Job Site" id="addressJobSite" />
+		    			<div id="jobSiteContactContainer" style="width:80%;">
+		    				<quote:addressContact label="Job Contact" id="jobContact" />
+		    				<quote:addressContact label="Site Contact" id="siteContact" />
+		    			</div>
+		    		</div>
+		    		<div class="spacer">&nbsp;</div>
+		    	</div>
+	    	</div>  <!-- Address container -->
 	    	<div id="quotePanel" style="width:1251px; clear:left;">
 	    		<jsp:include page="quoteMaintenance/quoteDataContainer.jsp">
 	    			<jsp:param name="action" value="view" />
 	    		</jsp:include>
 	    		<div class="spacer">&nbsp;</div>
 	    	</div> 
-	    	<div id="jobPanelContainer" style="width:1260px; clear:both; margin-top:12px;">
+	    	<div id="job-list-container" style="width:1260px; clear:both; margin-top:12px;">
 	    		<ul id="jobList" class="sortable" style="width:100%;">
 	    			<li data-jobid="1">
 	    				<jsp:include page="quoteMaintenance/jobDisplay.jsp">
@@ -390,6 +516,7 @@
 	    		</ul>
 	    	</div>
 	    </div>   	
+	    <div class="spacer">&nbsp;</div>
     </tiles:put>
 
 </tiles:insert>

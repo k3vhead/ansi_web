@@ -31,7 +31,7 @@ String dataString = "data-jobid=\"" + jobId + "\"";
 	    		<col style="width:50%;" />
 	    	</colgroup>
 	 		<tr class="jobTitleRow" <%= dataString %>>
-	  			<td colspan="2" style="background-color:#404040; cursor:pointer;">
+	  			<td colspan="2" style="background-color:#404040; cursor:pointer; padding-left:4px;">
 	   				<div style="color:#FFFFFF;">
 	    				<span class="job-data-closed"><i class="fas fa-caret-right" style="color:#FFFFFF;"></i></span>
 	    				<span class="job-data-open"><i class="fas fa-caret-down" style="color:#FFFFFF;"></i></span>
