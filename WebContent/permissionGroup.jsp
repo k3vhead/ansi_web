@@ -94,7 +94,6 @@
         		$('#goEdit').button('option', 'label', 'Save');
         		$('#closeEditPanel').button('option', 'label', 'Close');
         		
-				$("#editPanel input[name='ID']").val("");
 				$("#editPanel input[name='Name']").val("");
 				$("#editPanel input[name='Description']").val("");
 				$("#editPanel input[name='Status']").val("");			        		
@@ -136,7 +135,7 @@
 			        	"type": "GET",
 			        	"data": {}
 			        	},
-//			        aaSorting:[1],
+			        aaSorting:[1],
 			        columns: [
 			        	{ title: "ID", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.permissionGroupId != null){return (row.permissionGroupId+"");}
@@ -200,7 +199,7 @@
 				
 			function doFunctionBinding() {
 				$( ".editAction" ).on( "click", function($clickevent) {
-					doEdit($clickevent);
+					showEdit($clickevent);
 				});	
 				$('.updAction').bind("click", function($clickevent) {
 					doUpdate($clickevent);
@@ -230,7 +229,7 @@
 						},{
 							id: "goEdit",
 							click: function($event) {
-								updatePermissionGroupLookup();
+								updatePermissionGroup();
 							}
 						}	      	      
 					],
@@ -241,15 +240,15 @@
 				});
 				
 				
-				function updatePermissionGroupLookup() {
-					console.debug("Updating Permission");
+				function updatePermissionGroup() {
+					console.debug("Updating Permissions");
 					var $permissionGroupId = $("#goEdit").data("permissionGroupId");
 					console.debug("permissionGroupId: " + $permissionGroupId);
 					
 					if ( $permissionGroupId == null || $permissionGroupId == '') {
-						$url = 'permissionGroupLookup/add';
+						$url = 'permissionGroup/add';
 					} else {
-						$url = 'permissionGroupLookup/' + $permissionGroupId;
+						$url = 'permissionGroup/' + $permissionGroupId;
 					}
 					console.debug($url);
 						
@@ -257,7 +256,7 @@
 					$outbound['permissionGroupId'] = $("#editPanel input[name='permissionGroupId']").val();
 					$outbound['name'] = $("#editPanel input[name='name']").val();
 					$outbound['description'] = $("#editPanel input[name='description']").val();
-					$outbound['status'] = $("#editPanel input[name='status']").val();		        		
+					$outbound['status'] = $("#editPanel select[name='status']").val();		        		
 					console.debug($outbound);
 					
 					var jqxhr = $.ajax({
@@ -292,10 +291,101 @@
 					});
 				}
 				
+				
+/*				function doDelete($clickevent) {
+					$clickevent.preventDefault();
+					var $permissionGroupId = $clickevent.currentTarget.attributes['data-row'].value;
+	            	var $tableData = [];
+	                $("#permissionGroupTable").find('tr').each(function (rowIndex, r) {
+	                    var cols = [];
+	                    $(this).find('th,td').each(function (colIndex, c) {
+	                        cols.push(c.textContent);
+	                    });
+	                    $tableData.push(cols);
+	                });
+	            	$("#delPermissionGroupId").html($tableData[$rownum][0]);
+	            	$("#delName").html($tableData[$rownum][1]);
+	            	$("#delDescription").html($tableData[$rownum][2]);
+	            	$("#delStatus").html($tableData[$rownum][3]);
+	            	$("#delUserCount").html($tableData[$rownum][4]);
+
+					$('#confirmDelete').data('rownum',$rownum);
+	             	$('#confirmDelete').bPopup({
+						modalClose: false,
+						opacity: 0.6,
+						positionStyle: 'fixed' //'fixed' or 'absolute'
+					});
+				}				
+				
+				$("#cancelDelete").click( function($event) {
+	            	$event.preventDefault();
+	            	$('#confirmDelete').bPopup().close();
+	            });         
+
+	            $("#doDelete").click(function($event) {
+	            	$event.preventDefault();
+	            	var $tableData = [];
+	                $("#permissionGroupTable").find('tr').each(function (rowIndex, r) {
+	                    var cols = [];
+	                    $(this).find('th,td').each(function (colIndex, c) {
+	                        cols.push(c.textContent);
+	                    });
+	                    $tableData.push(cols);
+	                });
+
+	                var $rownum = $('#confirmDelete').data('rownum');
+	            	var $permissionGroupId = $tableData[$rownum][0];
+	            	var $name = $tableData[$rownum][1];
+	            	var $description = $tableData[$rownum][2];
+	            	var $status = $tableData[$rownum][3];
+	            	var $userCount= $tableData[$rownum][4];
+	            	
+	            	$outbound = JSON.stringify({});
+	            	$url = 'permissionGroup/' + $permissionGroupId;
+	            	
+	            	var jqxhr = $.ajax({
+	            	    type: 'delete',
+	            	    url: $url,
+	            	    data: $outbound,
+	            	    success: function($data) {
+	            	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
+							if ( $data.responseHeader.responseCode == 'SUCCESS') {
+								$rowfinder = "tr:eq(" + $rownum + ")"
+								$("#permissionGroupTable").find($rowfinder).remove();
+								$('#confirmDelete').bPopup().close();
+							}
+	            	     },
+	            	     statusCode: {
+	             	    	403: function($data) {
+	             	    		$('#confirmDelete').bPopup().close();
+	             	    		$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+	             	    	}, 
+		         	    	404: function($data) {
+		         	    		$('#confirmDelete').bPopup().close();
+		         	    		$("#globalMsg").html("Record does not exist").fadeIn(10).fadeOut(6000);
+	             	    	},
+	             	    	500: function($data) {
+	             	    		$('#confirmDelete').bPopup().close();
+	             	    		$("#globalMsg").html("Unhandled Exception").fadeIn(10).fadeOut(6000);
+	             	    	} 
+	             	     },
+	             	     dataType: 'json'
+	             	});
+	             });
+		
+				
+			
+*/	
+
+
+
+
+
+
 				function doDelete($clickevent) {
 					$clickevent.preventDefault();
 //	            	var $permissionGroupId = $clickEvent.currentTarget.attributes['data-id'].value;
-					$('#confirmDelete').data('permissionGroupLookup', $permissionGroupId);
+//					$('#confirmDelete').data('permissionGroup', $permissionGroupId);
 	             	$('#confirmDelete').bPopup({
 						modalClose: false,
 						opacity: 0.6,
@@ -313,9 +403,9 @@
 	            $("#doDelete").click(function($event) {
 	            	$event.preventDefault();
 	            	var $permissionGroupId = $clickEvent.currentTarget.attributes['data-id'].value;
-//					var $data_item_id = $('#confirmDelete').data('permissionGroupId');
-					var $deleteUrl = 'permissionGroupLookup/' + $permissionGroupId;
-//					$outbound = JSON.stringify({'permissionGroupLookup':$permissionGroupId});
+					var $data_id = $('#confirmDelete').data('permissionGroupId');
+					var $deleteUrl = 'permissionGroup/' + $permissionGroupId;
+					$outbound = JSON.stringify({'permissionGroup':$permissionGroupId});
 
 				
 	            	var jqxhr = $.ajax({
@@ -338,32 +428,38 @@
 	            	     dataType: 'json'
 	            	});
 	            });
-				
+			
 				
 					
-				function doEdit($clickevent) {
+	            function showEdit($clickevent) {
 					var $permissionGroupId = $clickevent.currentTarget.attributes['data-id'].value;
-//					console.debug("permissionGroupId: " + $permissionGroupId);
+					console.debug("permissionGroupId: " + $permissionGroupId);
 					$("#goEdit").data("permissionGroupId: " + $permissionGroupId);
 	        		$('#goEdit').button('option', 'label', 'Save');
 	        		$('#closeEditPanel').button('option', 'label', 'Close');
-	        		populateEditPanel($permissionGroupId, "edit");
 	        		
 	        		
-					var $url = 'permissionGroupLookup/'+ $permissionGroupId;
+					var $url = 'permissionGroup/'+ $permissionGroupId;
 					var jqxhr = $.ajax({
 						type: 'GET',
 						url: $url,
-						success: function($data) {
-							//console.log($data);
-							var $permission = $data.data.permissionGroupList[0];
-							$("#editPanel input[name='name']").val($permissionGroupLookup.name);
-							$("#editPanel input[name='description']").val($permissionGroupLookup.description);
-							$("#editPanel input[name='status']").val($permissionGroupLookup.status);			        		
-			        		$("#editPanel .err").html("");
-			        		$("#editPanel").dialog("open");
-						},
 						statusCode: {
+							200: function($data) {
+								//console.log($data);
+								var $permissionGroup = $data.data.permissionGroupLookup[0];
+								$.each($permissionGroup, function($fieldName, $value) {									
+									$selector = "#editPanel input[name=" + $fieldName + "]";
+									if ( $($selector).length > 0 ) {
+										$($selector).val($value);
+									}
+		        				});
+								$("#editPanel input[name='permissionGroupId']").val($permissionGroup.permissionGroupId);
+								$("#editPanel input[name='name']").val($permissionGroup.name);
+								$("#editPanel input[name='description']").val($permissionGroup.description);
+								$("#editPanel input[name='status']").val($permissionGroup.status);			        		
+				        		$("#editPanel .err").html("");
+				        		$("#editPanel").dialog("open");
+							},
 							403: function($data) {
 								$("#globalMsg").html("Session Timeout. Log in and try again");
 							},
@@ -440,13 +536,13 @@
     		<tr>
 				<td><span class="required">*</span><span class="formLabel">Status:</span></td>
 				<td>
-					<select name="permissionGroupStatus">
+					<select name="status">
 						<option value="1">Active</option>
 						<option value="0">Inactive</option>
 					</select>
 					<i class="fa fa-check-square-o inputIsValid" aria-hidden="true"></i>
 				</td>
-				<td><span class="err" id="permissionGroupStatusErr"></span></td>
+				<td><span class="err" id="statusErr"></span></td>
 			</tr> 		
     	</table>
     </div>
