@@ -14,15 +14,16 @@
 <%@ taglib tagdir="/WEB-INF/tags/quote" prefix="quote" %>
 <%@ taglib uri="/WEB-INF/theTagThing.tld" prefix="ansi" %>
 
+<% String action="view"; %>
 <c:choose>
 	<c:when test="${param.action eq 'view'}">
-		<c:set var="action" value="view" />
+		<% action="view"; %>
 	</c:when>
 	<c:when test="${param.action eq 'edit'}">
-		<c:set var="action" value="edit" />
+		<% action="edit"; %>
 	</c:when>
 	<c:otherwise>
-		<c:set var="action" value="view" />
+		<% action="view"; %>
 	</c:otherwise>
 </c:choose>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -30,7 +31,8 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<title>Quote Data Container</title>
 	</head>
-	<body>				
+	<body>		
+		<ansi:hasPermission permissionRequired="QUOTE">
 		<table id="quoteDataContainer">
 			<colgroup>
 				<!-- Manager -->
@@ -58,19 +60,19 @@
 			<tr>
 				<td><span class="required">*</span></td>
 				<td><span class="formLabel">Manager:</span></td>
-				<td><select name="managerId"></select></td>
+				<td><ansi:select name="managerId" action="<%= action %>"></ansi:select></td>
 				<td><span class="err" id="managerIdErr"></span></td>
 				<td>&nbsp;</td>
 				
 				<td><span class="required">*</span></td>
 				<td><span class="formLabel">Division:</span></td>
-				<td><select name="divisionId"></select></td>
+				<td><ansi:select name="divisionId" action="<%= action %>"></ansi:select></td>
 				<td><span class="err" id="divisionIdErr"></span></td>
 				<td>&nbsp;</td>
 				
 				<td><span class="required"></span></td>
 				<td><span class="formLabel">Quote:</span></td> 
-				<td><span id="quoteNbrDisplay">12345</span><span id="revisionDisplay">A</span></td>
+				<td><input type="hidden" name="quoteId" /><span class="quoteNbrDisplay">n/a</span><span class="revisionDisplay"></span></td>
 				<td>&nbsp;</td>
 		
 				<td rowspan="3" style="text-align:center;">
@@ -82,7 +84,7 @@
 					--%>
 					<span class="fa-stack fa-2x tooltip" id="viewPrintHistory" style="color:#444444;">
 						<i class="fa fa-list-alt fa-stack-2x"><span class="tooltiptext">Print History<br />Print Count</span></i>
-						<i class="fa fa-stack-1x"><span style="color:#FFFFFF; text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000, 1px 1px 0 #000; font-weight:bold;" id="printCount">N/A</span></i>
+						<i class="fa fa-stack-1x"><span style="color:#FFFFFF; text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000, 1px 1px 0 #000; font-weight:bold;" class="printCount">N/A</span></i>
 					</span>
 				</td>
 			</tr>
@@ -90,61 +92,62 @@
 			<tr>
 				<td><span class="required">*</span></td>
 				<td><span class="formLabel">Account Type:</span></td>
-				<td><select name="accountType"></select></td>
+				<td><ansi:select name="accountType" action="<%= action %>"></ansi:select></td>
 				<td><span class="err" id="accountTypeErr"></span></td>
 				<td>&nbsp;</td>
 				
 				<td><span class="required">*</span></td>
 				<td><span class="formLabel"><bean:message key="field.label.invoice.terms" />:</span></td>
-				<td><select name="invoiceTerms"></select></td>
+				<td><ansi:select name="invoiceTerms" action="<%= action %>"></ansi:select></td>
 				<td><span class="err" id="invoiceTermsErr"></span></td>   				
 				<td>&nbsp;</td>
 		
 				<td><span class="required"></span></td>
-				<td><span class="formLabel">Proposed Date:</span></td>
-				<td><span id="proposedDate">N/A</span></td>
+				<td><span class="formLabel">Proposed&nbsp;Date:</span></td>
+				<td><span class="proposedDate">N/A</span></td>
 				<td><span class="err" id="proposedDateErr"></span></td>
 			</tr>
 	
 			<tr>    				    				    				
 				<td><span class="required">*</span></td>
 				<td><span class="formLabel">Lead Type:</span></td>
-				<td><select name="leadType"></select></td>
+				<td><ansi:select name="leadType" action="<%= action %>"></ansi:select></td>
 				<td><span class="err" id="leadTypeErr"></span></td>
 				<td>&nbsp;</td>
 			
 				<td><span class="required">*</span></td>
 				<td><span class="formLabel"><bean:message key="field.label.invoice.style" />:</span></td>
-				<td><select name="invoiceStyle"></select></td>
+				<td><ansi:select name="invoiceStyle" action="<%= action %>"></ansi:select></td>
 				<td><span class="err" id="invoiceStyleErr"></span></td>
 				<td>&nbsp;</td>
 				
 				<td><span class="required"></span></td>    				
 				<td><span class="formLabel">Signed By:</span></td>
-				<td><input type="text" name="signedBy" /></td>
+				<td><input type="hidden" name="signedByContactId" /><ansi:text name="signedBy"  action="<%= action %>"/></td>
 				<td><span class="err" id="signedByErr"></span></td>
 			</tr>
 					
 			<tr>
 				<td><span class="required">*</span></td>
 				<td><span class="formLabel">Building Type:</span></td>
-				<td><select name="buildingType"></select></td>
+				<td><ansi:select name="buildingType" action="<%= action %>"></ansi:select></td>
 				<td><span class="err" id="invoiceGroupingErr"></span></td>
 				<td>&nbsp;</td>
 	
 				<td><span class="required">*</span></td>
 				<td><span class="formLabel"><bean:message key="field.label.invoice.grouping" />:</span></td>
-				<td><select name="invoiceGrouping"></select></td>
+				<td><ansi:select name="invoiceGrouping" action="<%= action %>"></ansi:select></td>
 				<td><span class="err" id="invoiceGroupingErr"></span></td> 
 				<td>&nbsp;</td>
 	
 				<td><span class="required"></span></td>
 				<td colspan="4" style="whitespace:no-break;">
-					<span class="formLabel">Batch:</span> <input type="checkbox" name="invoiceBatch" />
-					<span class="formLabel">Tax Exempt:</span> <input type="checkbox" name="taxExempt" />
-					<span class="formLabel">Reason:</span> <input type="text" name="taxExemptReason" />
+					<span class="formLabel">Batch:</span> <ansi:checkbox name="invoiceBatch" action="<%= action %>" value="true" />
+					<span class="formLabel">Tax Exempt:</span> <ansi:checkbox name="taxExempt" action="<%= action %>" value="true" />
+					<span class="formLabel">Reason:</span> <ansi:text name="taxExemptReason"  action="<%= action %>"/>
 				</td>
 			</tr>
 		</table>
+		</ansi:hasPermission>
 	</body>
 </html>

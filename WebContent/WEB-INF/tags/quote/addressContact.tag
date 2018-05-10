@@ -20,11 +20,11 @@
 %>
 <table id="<%= styleId %>" class="ansi-contact-container">
 	<tr>
-		<td style="width: 30%;"><span style="font-weight: bold;"><%= label %>:</span></td>
-		<td style="width: 30%;"><span>John Smith</span></td>
-		<td style="width: 30%;">
-			<span><i class="fa fa-phone" aria-hidden="true"></i></span> 
-			<span>123-123-1234</span>
+		<td class="ansi-address-form-label-container"><span class="formLabel"><%= label %>:</span></td>
+		<td class="ansi-address-value"><span class="ansi-contact-name">John Smith</span></td>
+		<td>
+			<span class="ansi-contact-method"><i class="fa fa-phone" aria-hidden="true"></i></span> 
+			<span class="ansi-contact-number">123-123-1234</span>
 		</td>
 	</tr>
 </table>

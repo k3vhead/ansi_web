@@ -36,6 +36,7 @@
         	$(document).ready(function() {
 				; QUOTEMAINTENANCE = {
 					quoteId : '<c:out value="${ANSI_QUOTE_ID}" />',
+					accountTypeList : null,
 					countryList : null,
 					buildingTypeList : null,
 					divisionList : null,
@@ -59,42 +60,7 @@
 						$("#loading-container").hide();
 						$("#quotePanel").fadeIn(1000);
 						$("#address-container").fadeIn(1000);
-						$("#job-list-container").fadeIn(1000);
-						//console.debug("country");
-						//console.debug(QUOTEMAINTENANCE.countryList);
-						console.debug("buildingTypeList");
-						console.debug(QUOTEMAINTENANCE.buildingTypeList);
-						//console.debug("divisionList");
-						//console.debug(QUOTEMAINTENANCE.divisionList);
-						//console.debug("invoiceGroupingList");
-						//console.debug(QUOTEMAINTENANCE.invoiceGroupingList);
-						//console.debug("invoiceStyleList");
-						//console.debug(QUOTEMAINTENANCE.invoiceStyleList);
-						//console.debug("invoiceTermList");
-						//console.debug(QUOTEMAINTENANCE.invoiceTermList);
-						//console.debug("jobStatusList");
-						//console.debug(QUOTEMAINTENANCE.jobStatusList);
-						console.debug("jobFrequencyList");
-						console.debug(QUOTEMAINTENANCE.jobFrequencyList);
-						console.debug("leadTypeList");
-						console.debug(QUOTEMAINTENANCE.leadTypeList);
-						console.debug("managerList");
-						console.debug(QUOTEMAINTENANCE.managerList);
-					},
-					
-					
-					code2options : function($selectorName, $optionList, $selectedValue) {						
-						var $select = $($selectorName);
-						$('option', $select).remove();
-
-						$select.append(new Option("",""));
-						$.each($optionList, function(index, val) {
-						    $select.append(new Option(val.displayValue, val.value));
-						});
-						
-						if ( $selectedValue != null ) {
-							$select.val($selectedValue);
-						}	
+						$("#job-list-container").fadeIn(1000);						
 					},
 					
 					
@@ -164,8 +130,8 @@
 								statusCode: {
 									200: function($data) {
 										QUOTEMAINTENANCE.populateQuotePanel($data.data.quoteList[0].quote);
-										QUOTEMAINTENANCE.populateAddressPanel( "#billToAddress", $data.data.quoteList[0].billTo);
-										QUOTEMAINTENANCE.populateAddressPanel( "#jobSiteAddress", $data.data.quoteList[0].jobSite);
+										QUOTEMAINTENANCE.populateAddressPanel( "#address-bill-to", $data.data.quoteList[0].billTo);
+										QUOTEMAINTENANCE.populateAddressPanel( "#address-job-site", $data.data.quoteList[0].jobSite);
 									},					
 									403: function($data) {
 										$("#globalMsg").html("Session Expired. Log In and try again").show();
@@ -193,7 +159,7 @@
 					},
 					
 					
-					makeCodeList: function($tableName, $fieldName, $function, $selectorName) {
+					getCodeList: function($tableName, $fieldName, $function) {
 						var $returnValue = null;
 						var $url = "code/" + $tableName;
 						if ( $fieldName != null ) {
@@ -202,13 +168,10 @@
 						var jqxhr2 = $.ajax({
 							type: 'GET',
 							url: $url,
-							data: {},
-							success: function($data) {
-								return $data.data;
-							},
+							data: {},							
 							statusCode: {
 								200: function($data) {
-									$function($selectorName, $data.data.codeList, null)
+									$function($data.data)
 								},					
 								403: function($data) {
 									$("#globalMsg").html("Session Expired. Log In and try again").show();
@@ -265,6 +228,7 @@
 	    					data: {"sortBy":"firstName"},    // you can do firstName,lastName or email
 	    					statusCode: {
 	    						200: function($data) {
+	    							QUOTEMAINTENANCE.managerList = $data.data.userList;
 	    							QUOTEMAINTENANCE.populateManagerList($data.data.userList);
 	    						},					
 	    						403: function($data) {
@@ -285,12 +249,11 @@
 		    		
 		    		makeOptionLists : function(){
 						QUOTEMAINTENANCE.getOptions('JOB_STATUS,JOB_FREQUENCY,COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM', QUOTEMAINTENANCE.populateOptions);						
-						QUOTEMAINTENANCE.getDivisionList(QUOTEMAINTENANCE.populateDivisionList);
-						
+						QUOTEMAINTENANCE.getDivisionList(QUOTEMAINTENANCE.populateDivisionList);						
+						QUOTEMAINTENANCE.getCodeList("job", "building_type", QUOTEMAINTENANCE.populateBuildingType);
+						QUOTEMAINTENANCE.getCodeList("quote","account_type", QUOTEMAINTENANCE.populateAccountType); 
+						QUOTEMAINTENANCE.getCodeList("quote","lead_type", QUOTEMAINTENANCE.populateLeadType); 
 						QUOTEMAINTENANCE.makeManagerList();	
-						QUOTEMAINTENANCE.makeCodeList("job","building_type", QUOTEMAINTENANCE.code2options, "#quoteDataContainer select[name='buildingType']");
-						QUOTEMAINTENANCE.makeCodeList("quote","account_type", QUOTEMAINTENANCE.code2options, "#quoteDataContainer select[name='accountType']");
-						QUOTEMAINTENANCE.makeCodeList("quote","lead_type", QUOTEMAINTENANCE.code2options, "#quoteDataContainer select[name='leadType']");
 		            },
 		            
 		            
@@ -311,14 +274,47 @@
 		    		
 		    		
 		    		
-		            populateAddressPanel : function($selectorId, $address) {
-		            	console.debug("Populating address: " + $selectorId);	
+		    		populateAccountType : function($data) {
+						QUOTEMAINTENANCE.accountTypeList = $data.codeList;
+						$selectorName = "#quoteDataContainer select[name='accountType']";
+						var $select = $($selectorName);
+						$('option', $select).remove();
+
+						$select.append(new Option("",""));
+						$.each($data.codeList, function(index, val) {
+						    $select.append(new Option(val.displayValue, val.value));
+						});
+					},
+					
+					
+					populateAddressPanel : function($selectorId, $address) {
+		            	$($selectorId + " .ansi-address-name").html($address.name);
+		            	$($selectorId + " .ansi-address-address1").html($address.address1);
+            			$($selectorId + " .ansi-address-address2").html($address.address2);
+        				$($selectorId + " .ansi-address-city").html($address.city);
+      					$($selectorId + " .ansi-address-state").html($address.state);
+      					$($selectorId + " .ansi-address-zip").html($address.zip);
+						$($selectorId + " .ansi-address-county").html($address.county);
+ 						$($selectorId + " .ansi-address-countryCode").html($address.countryCode);
 		            },
 		            
 		            
 		            
 		            
-		            populateDivisionList : function($data) {
+		            populateBuildingType : function($data) {
+						QUOTEMAINTENANCE.buildingTypeList = $data.codeList;
+						$selectorName = "#quoteDataContainer select[name='buildingType']";
+						var $select = $($selectorName);
+						$('option', $select).remove();
+
+						$select.append(new Option("",""));
+						$.each($data.codeList, function(index, val) {
+						    $select.append(new Option(val.displayValue, val.value));
+						});
+					},
+					
+					
+					populateDivisionList : function($data) {
 		            	QUOTEMAINTENANCE.divisionList = $data.divisionList
 		            	
 		            	var $select = $("#quoteDataContainer select[name='divisionId']");
@@ -331,7 +327,22 @@
 		            },
 		            
 		            
-		            populateManagerList : function($optionList) {
+		            populateLeadType : function($data) {
+						QUOTEMAINTENANCE.leadTypeList = $data.codeList;
+						$selectorName = "#quoteDataContainer select[name='leadType']";
+						var $select = $($selectorName);
+						$('option', $select).remove();
+
+						$select.append(new Option("",""));
+						$.each($data.codeList, function(index, val) {
+						    $select.append(new Option(val.displayValue, val.value));
+						});
+					},
+					
+					
+					
+					
+					populateManagerList : function($optionList) {
 		            	var $select = $("#quoteDataContainer select[name='managerId']");
 						$('option', $select).remove();
 
@@ -348,7 +359,7 @@
 						QUOTEMAINTENANCE.invoiceStyleList = $optionData.invoiceTerm;
 						QUOTEMAINTENANCE.invoiceTermList = $optionData.invoiceStyle;
 						QUOTEMAINTENANCE.jobStatusList = $optionData.jobStatus;
-						QUOTEMAINTENANCE.jobFrequencyList = $optionData.jobFrequencyList;
+						QUOTEMAINTENANCE.jobFrequencyList = $optionData.jobFrequency;
 		            },
 		            
 		            
@@ -378,7 +389,42 @@
 		            
 		            
 		            populateQuotePanel : function($quote) {
+		            	console.debug("Populating quote panel");
 		            	
+		            	$("#quoteDataContainer input[name='quoteId']").val($quote.quoteId);
+		            	$("#quoteDataContainer select[name='managerId']").val($quote.managerId);
+		            	$("#quoteDataContainer select[name='divisionId']").val($quote.divisionId);
+		            	$("#quoteDataContainer .quoteNbrDisplay").html($quote.quoteNumber);
+		            	$("#quoteDataContainer .revisionDisplay").html($quote.revision);
+		            	
+		            	$("#quoteDataContainer select[name='accountType']").val($quote.accountType);
+		            	$("#quoteDataContainer select[name='invoiceTerms']").val($quote.paymentTerms);
+		            	$("#quoteDataContainer .proposedDate").html($quote.proposalDate);
+		            	$("#quoteDataContainer select[name='leadType']").val($quote.leadType);
+		            	// ***** $("#quoteDataContainer select[name='invoiceStyle']").val($quote.divisionId);
+		            	// ***** $("#quoteDataContainer input[name='signedBy']").val($quote.divisionId);
+		            	$("#quoteDataContainer input[name='signedByContactId']").val($quote.signedByContactId);
+		            	// ***** $("#quoteDataContainer select[name='buildingType']").val($quote.divisionId);
+		            	// ***** $("#quoteDataContainer select[name='invoiceGrouping']").val($quote.divisionId);
+		            	
+		            	
+		            	// ***** $("#quoteDataContainer input[name='invoiceBatch']").val($quote.divisionId);
+		            	// ***** $("#quoteDataContainer input[name='taxExempt']").val($quote.divisionId);
+		            	// ***** $("#quoteDataContainer input[name='taxExemptReason']").val($quote.divisionId);
+		            	
+		            	$("#quoteDataContainer .printCount").html($quote.printCount);
+		            	<%--
+		            	"address": null,
+						"billToAddressId": 52568,
+						"copiedFromQuoteId": null,
+						"jobSiteAddressId": 52567,
+						"status": null,
+						"templateId": 0,
+						"managerFirstName": "Cameron",
+						"managerLastName": "McDaniel",
+						"managerEmail": "clm@ansi.com",
+						"divisionCode": "IN03",
+						--%>
 		            },
 		            
 				};
@@ -407,6 +453,9 @@
         	}
         	.ansi-address-container {
         		width:90%;
+        	}
+        	.ansi-address-form-label-container {
+        		width:125px;
         	}
         	.ansi-contact-container {
         		width:90%;
@@ -469,14 +518,14 @@
 	    		</div>
 		    	<div id="addressPanel" style="width:1269px; float:left;">
 		    		<div id="addressContainerBillTo" style="float:right; width:50%; border:solid 1px #404040;">
-		    			<quote:addressDisplayPanel label="Bill To" id="addressBillTo" />
+		    			<quote:addressDisplayPanel label="Bill To" id="address-bill-to" />
 		    			<div id="billToContactContainer" style="width:80%;">
 		    				<quote:addressContact label="Contract Contact" id="contractContact" />
 		    				<quote:addressContact label="Billing Contact" id="billingContact" />
 		    			</div>
 		    		</div>
 		    		<div id="addressContainerJobSite" style="float:left; width:49%; border:solid 1px #404040;">
-		    			<quote:addressDisplayPanel label="Job Site" id="addressJobSite" />
+		    			<quote:addressDisplayPanel label="Job Site" id="address-job-site" />
 		    			<div id="jobSiteContactContainer" style="width:80%;">
 		    				<quote:addressContact label="Job Contact" id="jobContact" />
 		    				<quote:addressContact label="Site Contact" id="siteContact" />
@@ -515,7 +564,7 @@
 	    			</li>
 	    		</ul>
 	    	</div>
-	    </div>   	
+	    </div>
 	    <div class="spacer">&nbsp;</div>
     </tiles:put>
 
