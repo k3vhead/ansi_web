@@ -242,9 +242,10 @@
 				
 				function updatePermissionGroup() {
 					console.debug("Updating Permissions");
-					var $permissionGroupId = $("#goEdit").data("permissionGroupId");
+					var $permissionGroupId = $("#editPanel input[name='permissionGroupId']").val();
 					console.debug("permissionGroupId: " + $permissionGroupId);
 					
+
 					if ( $permissionGroupId == null || $permissionGroupId == '') {
 						$url = 'permissionGroup/add';
 					} else {
@@ -253,7 +254,6 @@
 					console.debug($url);
 						
 					var $outbound = {};
-					$outbound['permissionGroupId'] = $("#editPanel input[name='permissionGroupId']").val();
 					$outbound['name'] = $("#editPanel input[name='name']").val();
 					$outbound['description'] = $("#editPanel input[name='description']").val();
 					$outbound['status'] = $("#editPanel select[name='status']").val();		        		
@@ -292,100 +292,11 @@
 				}
 				
 				
-/*				function doDelete($clickevent) {
-					$clickevent.preventDefault();
-					var $permissionGroupId = $clickevent.currentTarget.attributes['data-row'].value;
-	            	var $tableData = [];
-	                $("#permissionGroupTable").find('tr').each(function (rowIndex, r) {
-	                    var cols = [];
-	                    $(this).find('th,td').each(function (colIndex, c) {
-	                        cols.push(c.textContent);
-	                    });
-	                    $tableData.push(cols);
-	                });
-	            	$("#delPermissionGroupId").html($tableData[$rownum][0]);
-	            	$("#delName").html($tableData[$rownum][1]);
-	            	$("#delDescription").html($tableData[$rownum][2]);
-	            	$("#delStatus").html($tableData[$rownum][3]);
-	            	$("#delUserCount").html($tableData[$rownum][4]);
-
-					$('#confirmDelete').data('rownum',$rownum);
-	             	$('#confirmDelete').bPopup({
-						modalClose: false,
-						opacity: 0.6,
-						positionStyle: 'fixed' //'fixed' or 'absolute'
-					});
-				}				
 				
-				$("#cancelDelete").click( function($event) {
-	            	$event.preventDefault();
-	            	$('#confirmDelete').bPopup().close();
-	            });         
-
-	            $("#doDelete").click(function($event) {
-	            	$event.preventDefault();
-	            	var $tableData = [];
-	                $("#permissionGroupTable").find('tr').each(function (rowIndex, r) {
-	                    var cols = [];
-	                    $(this).find('th,td').each(function (colIndex, c) {
-	                        cols.push(c.textContent);
-	                    });
-	                    $tableData.push(cols);
-	                });
-
-	                var $rownum = $('#confirmDelete').data('rownum');
-	            	var $permissionGroupId = $tableData[$rownum][0];
-	            	var $name = $tableData[$rownum][1];
-	            	var $description = $tableData[$rownum][2];
-	            	var $status = $tableData[$rownum][3];
-	            	var $userCount= $tableData[$rownum][4];
-	            	
-	            	$outbound = JSON.stringify({});
-	            	$url = 'permissionGroup/' + $permissionGroupId;
-	            	
-	            	var jqxhr = $.ajax({
-	            	    type: 'delete',
-	            	    url: $url,
-	            	    data: $outbound,
-	            	    success: function($data) {
-	            	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
-							if ( $data.responseHeader.responseCode == 'SUCCESS') {
-								$rowfinder = "tr:eq(" + $rownum + ")"
-								$("#permissionGroupTable").find($rowfinder).remove();
-								$('#confirmDelete').bPopup().close();
-							}
-	            	     },
-	            	     statusCode: {
-	             	    	403: function($data) {
-	             	    		$('#confirmDelete').bPopup().close();
-	             	    		$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-	             	    	}, 
-		         	    	404: function($data) {
-		         	    		$('#confirmDelete').bPopup().close();
-		         	    		$("#globalMsg").html("Record does not exist").fadeIn(10).fadeOut(6000);
-	             	    	},
-	             	    	500: function($data) {
-	             	    		$('#confirmDelete').bPopup().close();
-	             	    		$("#globalMsg").html("Unhandled Exception").fadeIn(10).fadeOut(6000);
-	             	    	} 
-	             	     },
-	             	     dataType: 'json'
-	             	});
-	             });
-		
-				
-			
-*/	
-
-
-
-
-
-
 				function doDelete($clickevent) {
 					$clickevent.preventDefault();
-//	            	var $permissionGroupId = $clickEvent.currentTarget.attributes['data-id'].value;
-//					$('#confirmDelete').data('permissionGroup', $permissionGroupId);
+	            	var $permissionGroupId = $clickevent.currentTarget.attributes['data-id'].value;
+					$('#confirmDelete').data('permissionGroup', $permissionGroupId);
 	             	$('#confirmDelete').bPopup({
 						modalClose: false,
 						opacity: 0.6,
@@ -402,15 +313,14 @@
 
 	            $("#doDelete").click(function($event) {
 	            	$event.preventDefault();
-	            	var $permissionGroupId = $clickEvent.currentTarget.attributes['data-id'].value;
-					var $data_id = $('#confirmDelete').data('permissionGroupId');
-					var $deleteUrl = 'permissionGroup/' + $permissionGroupId;
-					$outbound = JSON.stringify({'permissionGroup':$permissionGroupId});
+					var $permissionGroupId = $('#confirmDelete').data('permissionGroupId');
+					$outbound = JSON.stringify({});
+					var $url = 'permissionGroup/' + $permissionGroupId;
 
 				
 	            	var jqxhr = $.ajax({
 	            	    type: 'delete',
-	            	    url: $deleteUrl,
+	            	    url: $url,
 	            	    data: $outbound,
 	            	    success: function($data) {
 	            	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
@@ -421,10 +331,19 @@
 							}
 	            	     },
 	            	     statusCode: {
-	            	    	403: function($data) {
-	            	    		$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-	            	    	} 
-	            	     },
+		             	    	403: function($data) {
+		             	    		$('#confirmDelete').bPopup().close();
+		             	    		$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+		             	    	}, 
+			         	    	404: function($data) {
+			         	    		$('#confirmDelete').bPopup().close();
+			         	    		$("#globalMsg").html("Record does not exist").fadeIn(10).fadeOut(6000);
+		             	    	},
+		             	    	500: function($data) {
+		             	    		$('#confirmDelete').bPopup().close();
+		             	    		$("#globalMsg").html("Unhandled Exception").fadeIn(10).fadeOut(6000);
+		             	    	} 
+		             	     },
 	            	     dataType: 'json'
 	            	});
 	            });
@@ -446,7 +365,7 @@
 						statusCode: {
 							200: function($data) {
 								//console.log($data);
-								var $permissionGroup = $data.data.permissionGroupLookup[0];
+								var $permissionGroup = $data.data.permGroupItemList[0];
 								$.each($permissionGroup, function($fieldName, $value) {									
 									$selector = "#editPanel input[name=" + $fieldName + "]";
 									if ( $($selector).length > 0 ) {
