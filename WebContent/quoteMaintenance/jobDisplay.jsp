@@ -30,38 +30,7 @@ String dataString = "data-jobid=\"" + jobId + "\"";
 	        	<col style="width:50%;" />
 	    		<col style="width:50%;" />
 	    	</colgroup>
-	 		<tr class="jobTitleRow" <%= dataString %>>
-	  			<td colspan="2" style="background-color:#404040; cursor:pointer; padding-left:4px;">
-	   				<div style="color:#FFFFFF;">
-	    				<span class="job-data-closed"><i class="fas fa-caret-right" style="color:#FFFFFF;"></i></span>
-	    				<span class="job-data-open"><i class="fas fa-caret-down" style="color:#FFFFFF;"></i></span>
-	    				<div style="display:inline; margin-right:10px;">
-		    				<span class="formLabel">Job:</span>
-							<span><%= jobId %></span>
-	    				</div>
-	    				<div style="display:inline; margin-right:10px;">
-	    					Voluptatem aut dolorum...  
-	    				</div>					    				
-	    				<div style="display:inline; margin-right:10px;">
-		    				<span class="formLabel">Division:</span>
-							<span>15-IL05</span>
-	    				</div>
-	    				<div style="display:inline; margin-right:10px;">
-		    				<span class="formLabel">Status:</span>
-							<span>P</span>
-	    				</div>
-	    				<div style="display:inline; margin-right:10px;">
-		    				<span class="formLabel">Freq:</span>
-							<span>3/Y</span>
-	    				</div>
-	    				<div style="display:inline; margin-right:10px;">
-		    				<span class="formLabel">PPC:</span>
-							<span>$123</span>
-	    				</div>
-	   				</div>
-	 			</td>
-	  		</tr>			    			
-			<tr class="job-data-row">
+			<tr>
 				<td style="vertical-align:top;">
 					Job Proposal
 				</td>
@@ -69,7 +38,7 @@ String dataString = "data-jobid=\"" + jobId + "\"";
 					Job Activation
 				</td>
 			</tr>
-			<tr class="job-data-row">
+			<tr>
 				<td style="vertical-align:top; border:solid 1px #404040;">
 					<quote:jobProposalDisplayPanel />			    					
 				</td>
@@ -77,7 +46,7 @@ String dataString = "data-jobid=\"" + jobId + "\"";
 					<quote:jobActivationDisplayPanel />
 				</td>
 			</tr>
-			<tr class="job-data-row">
+			<tr>
 				<td>Job Dates</td>
 				<td>Job Invoice</td>
 			</tr>
@@ -89,11 +58,11 @@ String dataString = "data-jobid=\"" + jobId + "\"";
 					<quote:jobInvoiceDisplayPanel />
 				</td>
 			</tr>
-			<tr class="job-data-row">
+			<tr>
 				<td>Job Schedule</td>
 				<td>Job Audit</td>
 			</tr>
-			<tr class="job-data-row">
+			<tr>
 				<td style="vertical-align:top; border:solid 1px #404040;">
 					<quote:jobScheduleDisplayPanel />
 				</td>

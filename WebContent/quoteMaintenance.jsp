@@ -132,6 +132,12 @@
 										QUOTEMAINTENANCE.populateQuotePanel($data.data.quoteList[0].quote);
 										QUOTEMAINTENANCE.populateAddressPanel( "#address-bill-to", $data.data.quoteList[0].billTo);
 										QUOTEMAINTENANCE.populateAddressPanel( "#address-job-site", $data.data.quoteList[0].jobSite);
+										QUOTEMAINTENANCE.populateContactPanel( "#job-contact", $data.data.quoteList[0].jobContact.jobContact);
+										QUOTEMAINTENANCE.populateContactPanel( "#site-contact", $data.data.quoteList[0].jobContact.siteContact);
+										QUOTEMAINTENANCE.populateContactPanel( "#billing-contact", $data.data.quoteList[0].jobContact.billingContact);
+										QUOTEMAINTENANCE.populateContactPanel( "#contract-contact", $data.data.quoteList[0].jobContact.contractContact);
+										QUOTEMAINTENANCE.populateJobHeader($data.data.quoteList[0].jobHeaderList)
+										QUOTEMAINTENANCE.makeJobExpansion();
 									},					
 									403: function($data) {
 										$("#globalMsg").html("Session Expired. Log In and try again").show();
@@ -194,12 +200,19 @@
 						$(".jobTitleRow").click(function($event) {
 							var $jobId = $(this).data("jobid");
 							console.debug("Clicked: " + $jobId);
+							<%--
 							var $tableSelector = "#job" + $jobId + " .job-data-row";
 							var $closedSelector = "#job" + $jobId + " .job-data-closed";
 							var $openSelector = "#job" + $jobId + " .job-data-open";
+							--%>
+							$openSelector = "#job" + $jobId + " .jobTitleRow .job-data-open";
+							$closedSelector = "#job" + $jobId + " .jobTitleRow .job-data-closed";
+							$tableSelector = "#job" + $jobId + " .job-data-row";
 							$($tableSelector).toggle();
 							$($closedSelector).toggle();
 							$($openSelector).toggle();
+							
+							
 						});
 					},
 					
@@ -314,6 +327,24 @@
 					},
 					
 					
+					
+					populateContactPanel : function($selector, $data) {
+						console.debug("Populating contact panel: " + $selector);
+						console.debug($data);
+						$($selector + " .ansi-contact-name").html($data.firstName + " " + $data.lastName);						
+						$($selector + " .ansi-contact-number").html($data.method);
+						$($selector + " .ansi-contact-method-is-business-phone").hide();
+						$($selector + " .ansi-contact-method-is-mobile-phone").hide();
+						$($selector + " .ansi-contact-method-is-fax").hide();
+						$($selector + " .ansi-contact-method-is-email").hide();
+						if ( $data.preferredContact == "business_phone") { $($selector + " .ansi-contact-method-is-business-phone").show(); }
+						if ( $data.preferredContact == "mobile_phone") { $($selector + " .ansi-contact-method-is-mobile-phone").show(); }
+						if ( $data.preferredContact == "fax") { $($selector + " .ansi-contact-method-is-fax").show(); }
+						if ( $data.preferredContact == "email") { $($selector + " .ansi-contact-method-is-email").show(); }
+					},
+					
+					
+					
 					populateDivisionList : function($data) {
 		            	QUOTEMAINTENANCE.divisionList = $data.divisionList
 		            	
@@ -325,6 +356,71 @@
 						    $select.append(new Option(val.divisionNbr + "-" + val.divisionCode, val.divisionId));
 						});
 		            },
+		            
+		            
+		            
+		            populateJobHeader : function($jobHeaderList) {
+		            	$.each($jobHeaderList, function($index, $value) {
+		            		console.debug($value.jobId + " " + $value.jobNbr);
+		            		//$("#jobList").append('<li data-jobid="' + $value.jobId + '">' + $value.jobNbr + '</li>');
+		            		$jobListItem = $("<li>");
+		            		$jobListItem.attr("data-jobid", $value.jobId);
+		            		$jobListItem.attr("id","job" + $value.jobId)
+
+		            		
+		            		$jobHeader = $("<div>");
+		            		$jobHeader.attr("data-jobid", $value.jobId);
+		            		$jobHeader.attr("class","jobTitleRow");
+		            		
+		            		
+		            		$jobHeader.append('<span class="job-data-closed"><i class="fas fa-caret-right"></i></span>');
+		            		$jobHeader.append('<span class="job-data-open"><i class="fas fa-caret-down"></i></span>');
+		            		$jobHeader.append('&nbsp;');
+		            		
+		            		$jobDiv = $("<div>");
+		            		$jobDiv.attr("class","job-header-job-div");
+		            		$jobDiv.append('<span class="formLabel">Job: </span>');
+		            		$jobDiv.append('<span>' + $value.jobNbr + '</span>');
+		            		$jobHeader.append($jobDiv);
+		            		
+		            		$descDiv = $("<div>");
+		            		$descDiv.attr("class","job-header-job-div");
+		            		$descDiv.append($value.abbrDescription);
+		            		$jobHeader.append($descDiv);
+		            		
+		            		$divDiv = $("<div>");
+		            		$divDiv.attr("class","job-header-job-div");
+		            		$divDiv.append('<span class="formLabel">Division: </span>');
+		            		$divDiv.append('<span>' + $value.divisionNbr + '-' + $value.divisionCode + '</span>');
+		            		$jobHeader.append($divDiv);
+		            		
+		            		$statusDiv = $("<div>");
+		            		$statusDiv.attr("class","job-header-job-div");
+		            		$statusDiv.append('<span class="formLabel">Status: </span>');
+		            		$statusDiv.append('<span>' + $value.jobStatus +'</span>');
+		            		$jobHeader.append($statusDiv);
+		            		
+		            		$freqDiv = $("<div>");
+		            		$freqDiv.attr("class","job-header-job-div");
+		            		$freqDiv.append('<span class="formLabel">Freq: </span>');
+		            		$freqDiv.append('<span>' + $value.jobFrequency +'</span>');
+		            		$jobHeader.append($freqDiv);
+		            		
+		            		$ppcDiv = $("<div>");
+		            		$ppcDiv.attr("class","job-header-job-div");
+		            		$ppcDiv.append('<span class="formLabel">PPC: </span>');
+		            		$ppcDiv.append('<span>$' + $value.pricePerCleaning +'</span>');
+		            		$jobHeader.append($ppcDiv);
+		            		
+		            		$detailDiv = $("#job-loading-pattern .job-data-row").clone()
+		            		$detailDiv.attr("data-jobid", $value.jobId);
+		            		
+		            		$jobListItem.append($jobHeader);
+		            		$jobListItem.append($detailDiv);
+		            		$("#jobList").append($jobListItem);
+		            	});	
+		            },
+		            
 		            
 		            
 		            populateLeadType : function($data) {
@@ -356,8 +452,8 @@
 		            populateOptions : function($optionData) {
 		            	QUOTEMAINTENANCE.countryList = $optionData.country;
 		            	QUOTEMAINTENANCE.invoiceGroupingList = $optionData.invoiceGrouping;
-						QUOTEMAINTENANCE.invoiceStyleList = $optionData.invoiceTerm;
-						QUOTEMAINTENANCE.invoiceTermList = $optionData.invoiceStyle;
+						QUOTEMAINTENANCE.invoiceStyleList = $optionData.invoiceStyle;
+						QUOTEMAINTENANCE.invoiceTermList = $optionData.invoiceTerm;
 						QUOTEMAINTENANCE.jobStatusList = $optionData.jobStatus;
 						QUOTEMAINTENANCE.jobFrequencyList = $optionData.jobFrequency;
 		            },
@@ -398,19 +494,20 @@
 		            	$("#quoteDataContainer .revisionDisplay").html($quote.revision);
 		            	
 		            	$("#quoteDataContainer select[name='accountType']").val($quote.accountType);
-		            	$("#quoteDataContainer select[name='invoiceTerms']").val($quote.paymentTerms);
+		            	$("#quoteDataContainer select[name='invoiceTerms']").val($quote.invoiceTerms);
 		            	$("#quoteDataContainer .proposedDate").html($quote.proposalDate);
 		            	$("#quoteDataContainer select[name='leadType']").val($quote.leadType);
-		            	// ***** $("#quoteDataContainer select[name='invoiceStyle']").val($quote.divisionId);
+		            	$("#quoteDataContainer select[name='invoiceStyle']").val($quote.invoiceStyle);
 		            	// ***** $("#quoteDataContainer input[name='signedBy']").val($quote.divisionId);
 		            	$("#quoteDataContainer input[name='signedByContactId']").val($quote.signedByContactId);
-		            	// ***** $("#quoteDataContainer select[name='buildingType']").val($quote.divisionId);
-		            	// ***** $("#quoteDataContainer select[name='invoiceGrouping']").val($quote.divisionId);
+		            	$("#quoteDataContainer select[name='buildingType']").val($quote.buildingType);
+		            	$("#quoteDataContainer select[name='invoiceGrouping']").val($quote.invoiceGrouping);
 		            	
-		            	
-		            	// ***** $("#quoteDataContainer input[name='invoiceBatch']").val($quote.divisionId);
-		            	// ***** $("#quoteDataContainer input[name='taxExempt']").val($quote.divisionId);
-		            	// ***** $("#quoteDataContainer input[name='taxExemptReason']").val($quote.divisionId);
+		            	var $invoiceBatch = $quote.invoiceBatch == 1;
+		            	$("#quoteDataContainer input[name='invoiceBatch']").prop("checked", $invoiceBatch);
+		            	var $taxExempt = $quote.taxExempt == 1;
+		            	$("#quoteDataContainer input[name='taxExempt']").prop("checked", $taxExempt);
+		            	$("#quoteDataContainer input[name='taxExemptReason']").val($quote.taxExemptReason);
 		            	
 		            	$("#quoteDataContainer .printCount").html($quote.printCount);
 		            	<%--
@@ -448,18 +545,21 @@
         	}
         	#address-panel-open {
         	}
+        	#job-loading-pattern {
+        		display:none;
+        	}
         	#job-list-container {
         		display:none;
         	}
-        	.ansi-address-container {
-        		width:90%;
+        	#jobList li {
+        		margin-top:2px;
         	}
-        	.ansi-address-form-label-container {
-        		width:125px;
-        	}
-        	.ansi-contact-container {
-        		width:90%;
-        	}
+			#jobList .job-data-row {
+				display:none;
+			}
+			#jobList .job-data-open {
+				display:none;
+			}
         	#quoteButtonContainer {
         		float:right;
         		text-align:right;
@@ -470,11 +570,37 @@
 				padding:8px;
 				width:1300px;
 			}
-			#jobList .job-data-row {
-				display:none;
+        	.ansi-address-container {
+        		width:90%;
+        	}
+        	.ansi-address-form-label-container {
+        		width:125px;
+        	}
+        	.ansi-contact-container {
+        		width:90%;
+        	}
+        	.ansi-contact-method-is-business-phone { display:none; } 
+			.ansi-contact-method-is-mobile-phone { display:none; }
+			.ansi-contact-method-is-fax { display:none; }
+			.ansi-contact-method-is-email { display:none; }
+        	.job-data-row {
+        		display:none;
+        	}
+			.jobTitleRow {
+				background-color:#404040; 
+				cursor:pointer; 
+				padding-left:4px;
+				color:#FFFFFF;
 			}
-			#jobList .job-data-open {
-				display:none;
+			.job-data-closed {
+				color:#FFFFFF;
+			}
+			.job-data-open {
+				color:#FFFFFF;
+			}
+			.job-header-job-div {
+				display:inline; 
+				margin-right:10px;
 			}
 			.quote-button {
 				margin-top:2px;
@@ -520,15 +646,15 @@
 		    		<div id="addressContainerBillTo" style="float:right; width:50%; border:solid 1px #404040;">
 		    			<quote:addressDisplayPanel label="Bill To" id="address-bill-to" />
 		    			<div id="billToContactContainer" style="width:80%;">
-		    				<quote:addressContact label="Contract Contact" id="contractContact" />
-		    				<quote:addressContact label="Billing Contact" id="billingContact" />
+		    				<quote:addressContact label="Contract Contact" id="contract-contact" />
+		    				<quote:addressContact label="Billing Contact" id="billing-contact" />
 		    			</div>
 		    		</div>
 		    		<div id="addressContainerJobSite" style="float:left; width:49%; border:solid 1px #404040;">
 		    			<quote:addressDisplayPanel label="Job Site" id="address-job-site" />
 		    			<div id="jobSiteContactContainer" style="width:80%;">
-		    				<quote:addressContact label="Job Contact" id="jobContact" />
-		    				<quote:addressContact label="Site Contact" id="siteContact" />
+		    				<quote:addressContact label="Job Contact" id="job-contact" />
+		    				<quote:addressContact label="Site Contact" id="site-contact" />
 		    			</div>
 		    		</div>
 		    		<div class="spacer">&nbsp;</div>
@@ -541,31 +667,14 @@
 	    		<div class="spacer">&nbsp;</div>
 	    	</div> 
 	    	<div id="job-list-container" style="width:1260px; clear:both; margin-top:12px;">
-	    		<ul id="jobList" class="sortable" style="width:100%;">
-	    			<li data-jobid="1">
-	    				<jsp:include page="quoteMaintenance/jobDisplay.jsp">
-	    					<jsp:param name="jobid" value="1" />
-	    				</jsp:include>
-	    			</li>
-	    			<li data-jobid="2">
-	    				<jsp:include page="quoteMaintenance/jobDisplay.jsp">
-	    					<jsp:param name="jobid" value="2" />
-	    				</jsp:include>
-	    			</li>
-	    			<li data-jobid="3">
-	    				<jsp:include page="quoteMaintenance/jobDisplay.jsp">
-	    					<jsp:param name="jobid" value="3" />
-	    				</jsp:include>
-	    			</li>
-	    			<li data-jobid="4">
-	    				<jsp:include page="quoteMaintenance/jobDisplay.jsp">
-	    					<jsp:param name="jobid" value="4" />
-	    				</jsp:include>
-	    			</li>
+	    		<ul id="jobList" class="sortable" style="width:100%;">	    			
 	    		</ul>
 	    	</div>
 	    </div>
 	    <div class="spacer">&nbsp;</div>
+	    <div id="job-loading-pattern">
+	    	<div class="job-data-row"><webthing:thinking style="width:100%" /></div>
+	    </div>
     </tiles:put>
 
 </tiles:insert>

@@ -137,7 +137,6 @@ public class QuoteServlet extends AbstractServlet {
 			AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_READ);
 			
 			if ( parsedUrl.quoteId.equals("list")) {
-				// we're getting all the codes in the database
 				QuoteListResponse quotesListResponse = makeQuotesListResponse(conn);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, quotesListResponse);
 			} else if(parsedUrl.quoteId.equals("delete")){

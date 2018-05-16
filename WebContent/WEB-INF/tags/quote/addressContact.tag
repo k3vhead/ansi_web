@@ -21,10 +21,13 @@
 <table id="<%= styleId %>" class="ansi-contact-container">
 	<tr>
 		<td class="ansi-address-form-label-container"><span class="formLabel"><%= label %>:</span></td>
-		<td class="ansi-address-value"><span class="ansi-contact-name">John Smith</span></td>
+		<td class="ansi-address-value"><span class="ansi-contact-name"></span></td>
 		<td>
-			<span class="ansi-contact-method"><i class="fa fa-phone" aria-hidden="true"></i></span> 
-			<span class="ansi-contact-number">123-123-1234</span>
+			<span class="ansi-contact-method-is-business-phone"><webthing:phoneIcon>Business Phone</webthing:phoneIcon></span> 
+			<span class="ansi-contact-method-is-mobile-phone"><webthing:mobilePhoneIcon>Mobile Phone</webthing:mobilePhoneIcon></span>
+			<span class="ansi-contact-method-is-fax"><webthing:faxIcon>Fax</webthing:faxIcon></span>
+			<span class="ansi-contact-method-is-email"><webthing:emailIcon>Email</webthing:emailIcon></span>
+			<span class="ansi-contact-number"></span>
 		</td>
 	</tr>
 </table>

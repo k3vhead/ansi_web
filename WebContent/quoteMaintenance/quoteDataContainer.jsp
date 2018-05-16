@@ -58,13 +58,13 @@
 	   		 	--%>
 			</colgroup> 
 			<tr>
-				<td><span class="required">*</span></td>
+				<td><ansi:required action="<%= action %>" /></td>
 				<td><span class="formLabel">Manager:</span></td>
 				<td><ansi:select name="managerId" action="<%= action %>"></ansi:select></td>
 				<td><span class="err" id="managerIdErr"></span></td>
 				<td>&nbsp;</td>
 				
-				<td><span class="required">*</span></td>
+				<td><ansi:required action="<%= action %>" /></td>
 				<td><span class="formLabel">Division:</span></td>
 				<td><ansi:select name="divisionId" action="<%= action %>"></ansi:select></td>
 				<td><span class="err" id="divisionIdErr"></span></td>
@@ -72,7 +72,7 @@
 				
 				<td><span class="required"></span></td>
 				<td><span class="formLabel">Quote:</span></td> 
-				<td><input type="hidden" name="quoteId" /><span class="quoteNbrDisplay">n/a</span><span class="revisionDisplay"></span></td>
+				<td><ansi:hidden name="quoteId" action="<%= action %>" /><span class="quoteNbrDisplay">n/a</span><span class="revisionDisplay"></span></td>
 				<td>&nbsp;</td>
 		
 				<td rowspan="3" style="text-align:center;">
@@ -90,13 +90,13 @@
 			</tr>
 		
 			<tr>
-				<td><span class="required">*</span></td>
+				<td><ansi:required action="<%= action %>" /></td>
 				<td><span class="formLabel">Account Type:</span></td>
 				<td><ansi:select name="accountType" action="<%= action %>"></ansi:select></td>
 				<td><span class="err" id="accountTypeErr"></span></td>
 				<td>&nbsp;</td>
 				
-				<td><span class="required">*</span></td>
+				<td><ansi:required action="<%= action %>" /></td>
 				<td><span class="formLabel"><bean:message key="field.label.invoice.terms" />:</span></td>
 				<td><ansi:select name="invoiceTerms" action="<%= action %>"></ansi:select></td>
 				<td><span class="err" id="invoiceTermsErr"></span></td>   				
@@ -109,13 +109,13 @@
 			</tr>
 	
 			<tr>    				    				    				
-				<td><span class="required">*</span></td>
+				<td><ansi:required action="<%= action %>" /></td>
 				<td><span class="formLabel">Lead Type:</span></td>
 				<td><ansi:select name="leadType" action="<%= action %>"></ansi:select></td>
 				<td><span class="err" id="leadTypeErr"></span></td>
 				<td>&nbsp;</td>
 			
-				<td><span class="required">*</span></td>
+				<td><ansi:required action="<%= action %>" /></td>
 				<td><span class="formLabel"><bean:message key="field.label.invoice.style" />:</span></td>
 				<td><ansi:select name="invoiceStyle" action="<%= action %>"></ansi:select></td>
 				<td><span class="err" id="invoiceStyleErr"></span></td>
@@ -123,18 +123,18 @@
 				
 				<td><span class="required"></span></td>    				
 				<td><span class="formLabel">Signed By:</span></td>
-				<td><input type="hidden" name="signedByContactId" /><ansi:text name="signedBy"  action="<%= action %>"/></td>
+				<td><ansi:hidden name="signedByContactId"  action="<%= action %>" /><ansi:text name="signedBy"  action="<%= action %>"/></td>
 				<td><span class="err" id="signedByErr"></span></td>
 			</tr>
 					
 			<tr>
-				<td><span class="required">*</span></td>
+				<td><ansi:required action="<%= action %>" /></td>
 				<td><span class="formLabel">Building Type:</span></td>
 				<td><ansi:select name="buildingType" action="<%= action %>"></ansi:select></td>
 				<td><span class="err" id="invoiceGroupingErr"></span></td>
 				<td>&nbsp;</td>
 	
-				<td><span class="required">*</span></td>
+				<td><ansi:required action="<%= action %>" /></td>
 				<td><span class="formLabel"><bean:message key="field.label.invoice.grouping" />:</span></td>
 				<td><ansi:select name="invoiceGrouping" action="<%= action %>"></ansi:select></td>
 				<td><span class="err" id="invoiceGroupingErr"></span></td> 
