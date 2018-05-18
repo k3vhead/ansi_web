@@ -68,7 +68,7 @@ public class CodeServlet extends AbstractServlet {
 		Connection conn = null;
 		try {			
 			conn = AppUtils.getDBCPConn();			
-			sessionData = AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			sessionData = AppUtils.validateSession(request);
 			
 			String sortBy = request.getParameter("sortBy");
 			

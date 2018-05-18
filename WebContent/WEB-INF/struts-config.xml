@@ -117,6 +117,15 @@
             <forward name="valid" path="/invoiceRegisterReport.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
+        <action
+            path="/jobDisplay"
+            type="com.ansi.scilla.web.job.action.JobMaintenanceAction"
+            name="idForm"
+            input="/quoteMaintenance/jobDisplay.jsp"
+            scope="request">
+            <forward name="valid" path="/quoteMaintenance/jobDisplay.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
 		<action
             path="/jobLookup"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">

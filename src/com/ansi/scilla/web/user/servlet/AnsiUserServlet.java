@@ -11,15 +11,11 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
-import com.ansi.scilla.web.exceptions.ExpiredLoginException;
-import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.user.response.UserResponse;
@@ -40,9 +36,9 @@ public class AnsiUserServlet extends AbstractServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 
 		try {
-			AppUtils.validateSession(request, Permission.USER_ADMIN, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			AppUtils.validateSession(request);
 			doGetWork(request, response);
-		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+		} catch (TimeoutException e) {
 			super.sendForbidden(response);
 		}
 	}

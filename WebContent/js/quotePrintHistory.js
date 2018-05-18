@@ -31,7 +31,9 @@
 		
 		
 		getHistory : function() {
-			var $quoteId = QUOTEUTILS.getQuoteId();
+			//var $quoteId = QUOTEUTILS.getQuoteId();
+			
+			$quoteId = $(QUOTE_PRINT_HISTORY.modalName).data("quoteid");
 			var $URL = "quotePrintHistory/" + $quoteId;
 	        var jqxhr = $.ajax({
 	        	type: 'GET',
@@ -45,10 +47,10 @@
 		   				$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage).show();
 		   			},
 		   			404: function($data) {
-		 				$("#globalMsg").html("System Error: Contact Support").show();
+		 				$("#globalMsg").html("System Error Quote History 404: Contact Support").show();
 		   			},
 		   			500: function($data) {
-		   				$("#globalMsg").html("System Error: Contact Support").show();
+		   				$("#globalMsg").html("System Error Quote History 500: Contact Support").show();
 		   			} 
 		   		},
 		   		dataType: 'json'

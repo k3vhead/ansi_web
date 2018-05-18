@@ -15,17 +15,16 @@
 <%@ taglib uri="/WEB-INF/theTagThing.tld" prefix="ansi" %>
 
 <%
-String jobId = request.getParameter("jobid");
-String idString = "id=\"job" + jobId + "\"";
-String dataString = "data-jobid=\"" + jobId + "\"";
+String jobId = (String)request.getAttribute("ANSI_JOB_ID");
 %>
+
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>Job Display</title>
 </head>
-	<body>
-		<table style="width:100%;" <%= idString %>>
+	<body>		
+		<table style="width:100%;" class="job-detail-display">
 			<colgroup>
 	        	<col style="width:50%;" />
 	    		<col style="width:50%;" />
@@ -50,7 +49,7 @@ String dataString = "data-jobid=\"" + jobId + "\"";
 				<td>Job Dates</td>
 				<td>Job Invoice</td>
 			</tr>
-			<tr class="job-data-row">
+			<tr>
 				<td style="vertical-align:top; border:solid 1px #404040;">
 					<quote:jobDatesDisplayPanel />			    					
 				</td>
@@ -64,7 +63,11 @@ String dataString = "data-jobid=\"" + jobId + "\"";
 			</tr>
 			<tr>
 				<td style="vertical-align:top; border:solid 1px #404040;">
-					<quote:jobScheduleDisplayPanel />
+					<%-- <quote:jobScheduleDisplayPanel action="view" /> --%>
+					<jsp:include page="jobScheduleDisplayPanel.jsp">
+						<jsp:param name="action" value="view" />
+						<jsp:param name="jobId" value="<%= jobId %>" />
+					</jsp:include>
 				</td>
 				<td style="vertical-align:top; border:solid 1px #404040;">
 					<quote:jobAuditDisplayPanel />

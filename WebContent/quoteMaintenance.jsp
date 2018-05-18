@@ -24,12 +24,12 @@
     <tiles:put name="headextra" type="string">
     	<link rel="stylesheet" href="css/sortable.css" type="text/css" />
         <script type="text/javascript" src="js/ansi_utils.js"></script>
+        <script type="text/javascript" src="js/quotePrintHistory.js"></script>
         <%--
         <script type="text/javascript" src="js/jobMaintenance.js"></script>
         <script type="text/javascript" src="js/quoteMaintenance.js"></script>
         <script type="text/javascript" src="js/quotePrint.js"></script>
         <script type="text/javascript" src="js/addressUtils.js"></script>
-        <script type="text/javascript" src="js/quotePrintHistory.js"></script>
          --%>
         <script type="text/javascript">        
         
@@ -57,6 +57,7 @@
 						if (QUOTEMAINTENANCE.quoteId != '' ) {
 							QUOTEMAINTENANCE.getQuote(QUOTEMAINTENANCE.quoteId);	
 						}
+						QUOTE_PRINT_HISTORY.init("#printHistoryDiv", "#viewPrintHistory");
 						$("#loading-container").hide();
 						$("#quotePanel").fadeIn(1000);
 						$("#address-container").fadeIn(1000);
@@ -88,6 +89,65 @@
 							async:false
 						});
 						return $returnValue;
+					},
+					
+					
+					getJobPanel : function($jobId) {
+						var jqxhr1 = $.ajax({
+		    				type: 'GET',
+		    				url: "jobDisplay.html",
+		    				data: null,			    				
+		    				statusCode: {
+		    					200: function($data) {
+		    						QUOTEMAINTENANCE.getJob($jobId, $data);
+		    					},			    				
+		    					403: function($data) {
+		    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+		    					}, 
+		    					404: function($data) {
+		    						$("#globalMsg").html("System Error JobDisplay 404. Contact Support").show();
+		    					}, 
+		    					405: function($data) {
+		    						$("#globalMsg").html("System Error JobDisplay 405. Contact Support").show();
+		    					}, 
+		    					500: function($data) {
+		    						$("#globalMsg").html("System Error JobDisplay 500. Contact Support").show();
+		    					}, 
+		    				},
+		    				dataType: 'html'
+		    			});
+					},
+					
+					
+					
+					
+					getJob : function($jobId, $html) {
+						var $url = "job/" + $jobId;
+						var jqxhr1 = $.ajax({
+		    				type: 'GET',
+		    				url: $url,
+		    				data: null,			    				
+		    				statusCode: {
+		    					200: function($data) {
+		    						var $destination = "#job" + $jobId + " .job-data-row";
+		    						$($destination).html($html);
+		    						QUOTEMAINTENANCE.populateJobPanel($jobId, $destination, $data.data);		    						
+		    					},			    				
+		    					403: function($data) {
+		    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+		    					}, 
+		    					404: function($data) {
+		    						$("#globalMsg").html("System Error Option 404. Contact Support").show();
+		    					}, 
+		    					405: function($data) {
+		    						$("#globalMsg").html("System Error Option 405. Contact Support").show();
+		    					}, 
+		    					500: function($data) {
+		    						$("#globalMsg").html("System Error Option 500. Contact Support").show();
+		    					}, 
+		    				},
+		    				dataType: 'json'
+		    			});
 					},
 					
 					
@@ -156,15 +216,6 @@
 					},
 					
 					
-					makeButtons : function() {
-						$('.dateField').datepicker({
-			                prevText:'&lt;&lt;',
-			                nextText: '&gt;&gt;',
-			                showButtonPanel:true
-			            });
-					},
-					
-					
 					getCodeList: function($tableName, $fieldName, $function) {
 						var $returnValue = null;
 						var $url = "code/" + $tableName;
@@ -196,15 +247,18 @@
 					
 					
 		    		
+					makeButtons : function() {
+						$('.dateField').datepicker({
+			                prevText:'&lt;&lt;',
+			                nextText: '&gt;&gt;',
+			                showButtonPanel:true
+			            });
+					},
+					
+					
 					makeJobExpansion : function() {
 						$(".jobTitleRow").click(function($event) {
 							var $jobId = $(this).data("jobid");
-							console.debug("Clicked: " + $jobId);
-							<%--
-							var $tableSelector = "#job" + $jobId + " .job-data-row";
-							var $closedSelector = "#job" + $jobId + " .job-data-closed";
-							var $openSelector = "#job" + $jobId + " .job-data-open";
-							--%>
 							$openSelector = "#job" + $jobId + " .jobTitleRow .job-data-open";
 							$closedSelector = "#job" + $jobId + " .jobTitleRow .job-data-closed";
 							$tableSelector = "#job" + $jobId + " .job-data-row";
@@ -212,6 +266,10 @@
 							$($closedSelector).toggle();
 							$($openSelector).toggle();
 							
+							$detailSelector = "#job" + $jobId + " .job-data-row .job-detail-display";
+							if ( ! $($detailSelector).length ) {
+								QUOTEMAINTENANCE.getJobPanel($jobId);								
+							}
 							
 						});
 					},
@@ -221,11 +279,8 @@
 					makeJobSort : function() {
 						$("#jobList").sortable({
 							stop:function($event, $ui) {
-								console.debug($ui.item);
-								console.debug($ui.item.attr("data-jobid"));
 								var $jobId = $ui.item.attr("data-jobid");
 								var $selector = "#job" + $jobId + " .jobTitleRow";
-								console.debug($selector);
 								$($selector).click();
 							}
 						});	
@@ -274,7 +329,6 @@
 		            
 		            
 		            makeOtherClickables : function() {
-						QUOTEMAINTENANCE.makeJobSort();
 						QUOTEMAINTENANCE.makeJobExpansion();
 
 		    			$("#address-panel-hider").click(function($event) {
@@ -329,8 +383,6 @@
 					
 					
 					populateContactPanel : function($selector, $data) {
-						console.debug("Populating contact panel: " + $selector);
-						console.debug($data);
 						$($selector + " .ansi-contact-name").html($data.firstName + " " + $data.lastName);						
 						$($selector + " .ansi-contact-number").html($data.method);
 						$($selector + " .ansi-contact-method-is-business-phone").hide();
@@ -361,7 +413,6 @@
 		            
 		            populateJobHeader : function($jobHeaderList) {
 		            	$.each($jobHeaderList, function($index, $value) {
-		            		console.debug($value.jobId + " " + $value.jobNbr);
 		            		//$("#jobList").append('<li data-jobid="' + $value.jobId + '">' + $value.jobNbr + '</li>');
 		            		$jobListItem = $("<li>");
 		            		$jobListItem.attr("data-jobid", $value.jobId);
@@ -419,6 +470,54 @@
 		            		$jobListItem.append($detailDiv);
 		            		$("#jobList").append($jobListItem);
 		            	});	
+		            },
+		            
+		            
+		            populateJobPanel : function($jobId, $destination, $data) {		            	
+		            	$($destination + " .jobProposalDisplayPanel .job-proposal-job-nbr").html($data.job.jobNbr);
+		            	$($destination + " .jobProposalDisplayPanel .job-proposal-ppc").html("$" + $data.job.pricePerCleaning);
+		            	$($destination + " .jobProposalDisplayPanel .job-proposal-freq").html($data.job.jobFrequency);
+		            	$($destination + " .jobProposalDisplayPanel .job-proposal-desc").html($data.job.serviceDescription);
+		            	
+		            	$($destination + " .jobActivationDisplayPanel .job-activation-dl-pct").html($data.job.directLaborPct);
+		            	$($destination + " .jobActivationDisplayPanel .job-activation-dl-budget").html($data.job.budget);
+		            	$($destination + " .jobActivationDisplayPanel .job-activation-floors").html($data.job.floors);
+		            	if ( $data.job.requestSpecialScheduling == 1 ) {
+		            		$($destination + " .jobActivationDisplayPanel .job-activation-schedule").html("Manual");
+		            	} else {
+		            		$($destination + " .jobActivationDisplayPanel .job-activation-schedule").html("Auto");
+		            	}
+		            	$($destination + " .jobActivationDisplayPanel .job-activation-equipment").html($data.job.equipment);
+		            	$($destination + " .jobActivationDisplayPanel .job-activation-washer-notes").html($data.job.washerNotes);
+		            	$($destination + " .jobActivationDisplayPanel .job-activation-om-notes").html($data.job.omNotes);
+		            	$($destination + " .jobActivationDisplayPanel .job-activation-billing-notes").html($data.job.billingNotes);
+
+		            	$($destination + " .jobDatesDisplayPanel .job-dates-proposed-date").html($data.quote.proposalDate);
+		            	$($destination + " .jobDatesDisplayPanel .job-dates-activation-date").html($data.job.activationDate);
+		            	$($destination + " .jobDatesDisplayPanel .job-dates-start-date").html($data.job.startDate);
+		            	$($destination + " .jobDatesDisplayPanel .job-dates-cancel-date").html($data.job.cancelDate);
+		            	$($destination + " .jobDatesDisplayPanel .job-dates-cancel-reason").html($data.job.cancelReason);
+		            			            	
+		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-purchase-order").html($data.job.poNumber);
+		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-vendor-nbr").html($data.job.ourVendorNbr);
+		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-expire-date").html($data.job.expirationDate);
+		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-expire-reason").html($data.job.expirationReason);
+		            	
+		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-last-run").html($data.lastRun.startDate);		            	
+		            	if ( $data.job.repeatScheduleAnnually == 1 ) {
+		            		$($destination + " input[name='repeatedAnnually']").prop("checked", true);
+		            	} else {
+		            		$($destination + " input[name='repeatedAnnually']").prop("checked", false);
+		            	}
+		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-next-due").html($data.nextDue.startDate);
+		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-created-thru").html($data.lastCreated.startDate);
+		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-ticket-list").attr("href", "ticketLookup.html?jobId="+$jobId);
+		            	
+		            	
+		            	$($destination + " .jobAuditDisplayPanel .job-audit-created-by").html($data.job.addedFirstName + " " + $data.job.addedLastName);	
+		            	$($destination + " .jobAuditDisplayPanel .job-audit-created-date").html($data.job.addedDate);	
+		            	$($destination + " .jobAuditDisplayPanel .job-audit-updated-by").html($data.job.updatedFirstName + " " + $data.job.updatedLastName);	
+		            	$($destination + " .jobAuditDisplayPanel .job-audit-updated-date").html($data.job.updatedDate);	
 		            },
 		            
 		            
@@ -485,8 +584,8 @@
 		            
 		            
 		            populateQuotePanel : function($quote) {
-		            	console.debug("Populating quote panel");
-		            	
+		            	$("#printHistoryDiv").attr("data-quoteid", $quote.quoteId);	//this is so the gethistory method has an id to work with
+		            
 		            	$("#quoteDataContainer input[name='quoteId']").val($quote.quoteId);
 		            	$("#quoteDataContainer select[name='managerId']").val($quote.managerId);
 		            	$("#quoteDataContainer select[name='divisionId']").val($quote.divisionId);
@@ -560,6 +659,12 @@
 			#jobList .job-data-open {
 				display:none;
 			}
+			#printHistoryDiv {
+                display:none;
+            }
+            #viewPrintHistory {
+                cursor:pointer;
+            }
         	#quoteButtonContainer {
         		float:right;
         		text-align:right;
@@ -622,11 +727,11 @@
     	<div id="loading-container"><webthing:thinking style="width:100%" /></div>
     	<div style="width:1300px;">	    	
     		<div id="quoteButtonContainer" style="width:30px;">
-    			<webthing:edit styleClass="fa-2x quote-button">Edit</webthing:edit>
-    			<webthing:revise styleClass="fa-2x quote-button">Revise</webthing:revise>
-    			<webthing:copy styleClass="fa-2x quote-button">Copy</webthing:copy>
-    			<webthing:view styleClass="fa-2x quote-button">Search</webthing:view>
-    			<webthing:addNew styleClass="fa-2x quote-button">New</webthing:addNew>
+    			<ansi:hasPermission permissionRequired="QUOTE"><ansi:hasWrite><webthing:edit styleClass="fa-2x quote-button">Edit</webthing:edit></ansi:hasWrite></ansi:hasPermission>
+ 			    <ansi:hasPermission permissionRequired="QUOTE"><ansi:hasWrite><webthing:revise styleClass="fa-2x quote-button">Revise</webthing:revise></ansi:hasWrite></ansi:hasPermission>
+    			<ansi:hasPermission permissionRequired="QUOTE"><ansi:hasWrite><webthing:copy styleClass="fa-2x quote-button">Copy</webthing:copy></ansi:hasWrite></ansi:hasPermission>
+    			<a href="quoteLookup.html" style="text-decoration:none; color:#404040;"><webthing:view styleClass="fa-2x quote-button">Lookup</webthing:view></a>
+    			<ansi:hasPermission permissionRequired="QUOTE"><ansi:hasWrite><webthing:addNew styleClass="fa-2x quote-button">New</webthing:addNew></ansi:hasWrite></ansi:hasPermission>
     			<webthing:print styleClass="fa-2x quote-button">Print</webthing:print>    			
     			<%--
     			<input type="button" class="quoteButton" id="buttonModifyQuote" value="Modify" /><br />
@@ -672,9 +777,26 @@
 	    	</div>
 	    </div>
 	    <div class="spacer">&nbsp;</div>
+	    
+	    
 	    <div id="job-loading-pattern">
 	    	<div class="job-data-row"><webthing:thinking style="width:100%" /></div>
 	    </div>
+	    
+	    
+	    <webthing:quotePrintHistory modalName="printHistoryDiv" />
+	    
+	    
+	    <ansi:hasPermission permissionRequired="QUOTE">
+	    <ansi:hasWrite>
+	    <script type="text/javascript">
+	    $(document).ready(function() {
+ 			QUOTEMAINTENANCE.makeJobSort();
+		});
+	    </script>
+		</ansi:hasWrite>
+		</ansi:hasPermission>
+	    
     </tiles:put>
 
 </tiles:insert>

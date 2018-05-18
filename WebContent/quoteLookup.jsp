@@ -219,9 +219,10 @@
 			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
 			            	//console.log(row);
 			            	editText = '<a href="quoteMaintenance.html?id='+row.quoteId+'" class="editAction" data-id="'+row.quoteId+'"><webthing:edit>Edit</webthing:edit></a>';
+			            	viewText = '<a href="quoteMaintenance.html?id='+row.quoteId+'" class="editAction" data-id="'+row.quoteId+'"><webthing:view style="color:#404040;">View</webthing:view></a>';
 			            	printText = '<i class="fa fa-print quotePrint" aria=hidden="true" data-id="'+row.quoteId+'" data-quotenumber="'+ row.quoteCode + '"></i>';
 			            	copyText = '<i class="far fa-copy copyQuote" aria-hidden="true" data-id="'+row.quoteId+'"></i>';
-			            	{return '<ansi:hasPermission permissionRequired="QUOTE"><ansi:hasWrite>'+ editText +  '&nbsp;' + printText + '&nbsp;' + copyText + '</ansi:hasWrite></ansi:hasPermission>';}
+			            	{return '<ansi:hasPermission permissionRequired="QUOTE"><ansi:hasRead>'+ viewText + '&nbsp;</ansi:hasRead><ansi:hasWrite>'+ editText +'</ansi:hasWrite>&nbsp;' + printText + '&nbsp;<ansi:hasWrite>' + copyText + '</ansi:hasWrite></ansi:hasPermission>';}
 			            	
 			            } }],
 			            //"initComplete": function(settings, json) {
