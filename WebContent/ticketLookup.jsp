@@ -18,7 +18,7 @@
 <tiles:insert page="layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        Ticket Lookup
+        <bean:message key="page.label.ticket" /> <bean:message key="menu.label.lookup" />
     </tiles:put>
     
     
@@ -279,18 +279,18 @@
     </tiles:put>
     
    <tiles:put name="content" type="string">
-    	<h1>Ticket Lookup</h1> 
+    	<h1><bean:message key="page.label.ticket" /> <bean:message key="menu.label.lookup" /></h1> 
     	<c:if test="${not empty ANSI_JOB_ID}">
-    		<span class="orange">Job Filter: <c:out value="${ANSI_JOB_ID}" /></span><br />
+    		<span class="orange"><bean:message key="field.label.jobFilter" />: <c:out value="${ANSI_JOB_ID}" /></span><br />
     	</c:if>
     	<c:if test="${not empty ANSI_DIVISION_ID}">
-    		<span class="orange">Division Filter: <c:out value="${ANSI_DIVISION_ID}" /></span><br />
+    		<span class="orange"><bean:message key="field.label.divisionFilter" />: <c:out value="${ANSI_DIVISION_ID}" /></span><br />
     	</c:if>
     	<c:if test="${not empty ANSI_TICKET_LOOKUP_START_DATE}">
-    		<span class="orange">Start Date: <c:out value="${ANSI_TICKET_LOOKUP_START_DATE}" /></span><br />
+    		<span class="orange"><bean:message key="field.label.startDate" />: <c:out value="${ANSI_TICKET_LOOKUP_START_DATE}" /></span><br />
     	</c:if>
     	<c:if test="${not empty ANSI_TICKET_LOOKUP_STATUS}">
-    		<span class="orange">Status Filter: <c:out value="${ANSI_TICKET_LOOKUP_STATUS}" /></span><br />
+    		<span class="orange"><bean:message key="field.label.statusFilter" />: <c:out value="${ANSI_TICKET_LOOKUP_STATUS}" /></span><br />
     	</c:if>
     	  	
  	<table id="ticketTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
@@ -359,7 +359,7 @@
     
     <p align="center">
     	<br>
-    	<a href="#" title="Scroll to Top" class="ScrollTop">Scroll To Top</a>
+    	<a href="#" title="Scroll to Top" class="ScrollTop"><bean:message key="field.label.scrollToTop" /></a>
     	</br>
     </p>
 

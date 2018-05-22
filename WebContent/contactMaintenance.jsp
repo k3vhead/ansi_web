@@ -18,7 +18,7 @@
 <tiles:insert page="layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        Contact <bean:message key="menu.label.lookup" />
+        <bean:message key="page.label.contact" /> <bean:message key="menu.label.lookup" />
     </tiles:put>
     
     
@@ -364,7 +364,7 @@
     </tiles:put>
     
    <tiles:put name="content" type="string">
-    	<h1>Contact <bean:message key="menu.label.lookup" /></h1>
+    	<h1><bean:message key="page.label.contact" /> <bean:message key="menu.label.lookup" /></h1>
     	
     	    <input type="button" class="prettyWideButton showNew" value="New" />
  	<table id="contactTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:800px;width:800px;">
@@ -404,7 +404,7 @@
     
     <p align="center">
     	<br>
-    	<a href="#" title="Scroll to Top" class="ScrollTop">Scroll To Top</a>
+    	<a href="#" title="Scroll to Top" class="ScrollTop"><bean:message key="field.label.scrollToTop" /></a>
     	</br>
     </p>
     
@@ -412,32 +412,32 @@
     <div id="editPanel">
     	<table>
     		<tr>
-    			<td><span class="formHdr">First Name</span></td>
+    			<td><span class="formHdr"><bean:message key="field.label.firstName" /></span></td>
     			<td><input type="text" name="firstName" /> <i class="fa fa-level-down swap-name" aria-hidden="true"></i></td>
     			<td><span class="err" id="firstNameErr"></span></td>
     		</tr>
     		<tr>
-    			<td><span class="formHdr">Last Name</span></td>
+    			<td><span class="formHdr"><bean:message key="field.label.lastName" /></span></td>
     			<td></i><input type="text" name="lastName" /> <i class="fa fa-level-up swap-name" aria-hidden="true"></td>
     			<td><span class="err" id="lastNameErr"></span></td>
     		</tr>
     		<tr>
-    			<td><span class="formHdr">Business Phone</span></td>
+    			<td><span class="formHdr"><bean:message key="field.label.businessPhone" /></span></td>
     			<td><input type="text" name="businessPhone" /></td>
     			<td><span class="err" id="businessPhoneErr"></span></td>
     		</tr>
     		<tr>
-    			<td><span class="formHdr">Email</span></td>
+    			<td><span class="formHdr"><bean:message key="field.label.email" /></span></td>
     			<td><input type="text" name="email" /></td>
     			<td><span class="err" id="emailErr"></span></td>
     		</tr>
     		<tr>
-    			<td><span class="formHdr">Fax</span></td>
+    			<td><span class="formHdr"><bean:message key="field.label.fax" /></span></td>
     			<td><input type="text" name="fax" /></td>
     			<td><span class="err" id="faxErr"></span></td>
     		</tr>
     		<tr>
-    			<td><span class="formHdr">Mobile Phone</span></td>
+    			<td><span class="formHdr"><bean:message key="field.label.mobilePhone" /></span></td>
     			<td><input type="text" name="mobilePhone" /></td>
     			<td><span class="err" id="mobilePhoneErr"></span></td>
     		</tr>

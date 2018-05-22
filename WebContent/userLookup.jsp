@@ -215,10 +215,10 @@
     </tiles:put>
     
    <tiles:put name="content" type="string">
-    	<h1>User Lookup</h1>    	
+    	<h1><bean:message key="page.label.user" /><bean:message key="menu.label.lookup" /></h1>    	
     	<c:if test="${not empty ANSI_PERMISSION_GROUP_NAME}">
     		<div id="filterLabel">
-	    		<span class="orange">Permission Group Filter: <c:out value="${ANSI_PERMISSION_GROUP_NAME}" /></span>
+	    		<span class="orange"><bean:message key="field.label.permissionGroupFilter" />: <c:out value="${ANSI_PERMISSION_GROUP_NAME}" /></span>
 	    		<span id="clearFilter"><i class="fa fa-ban inputIsInvalid this_is_a_link" aria-hidden="true"></i></span><br />
     		</div>
     	</c:if>
@@ -264,7 +264,7 @@
 	    
 	    <p align="center">
 	    	<br>
-	    	<a href="#" title="Scroll to Top" class="ScrollTop">Scroll To Top</a>
+	    	<a href="#" title="Scroll to Top" class="ScrollTop"><bean:message key="field.label.scrollToTop" /></a>
 	    	</br>
 	    </p>
 

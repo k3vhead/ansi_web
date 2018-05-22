@@ -18,7 +18,7 @@
 <tiles:insert page="layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        Invoice <bean:message key="menu.label.lookup" />
+        <bean:message key="page.label.invoice" /> <bean:message key="menu.label.lookup" />
     </tiles:put>
     
     
@@ -120,7 +120,7 @@
 				            { title: "<bean:message key="field.label.fleetmaticsInvoiceNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.fleetmaticsInvoiceNbr != null){return (row.fleetmaticsInvoiceNbr+"");}
 				            } },
-				            { title: "<bean:message key="field.label.div" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.div != null){return (row.div+"");}
 				            } },
 				            { title: "<bean:message key="field.label.billToName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
@@ -224,7 +224,7 @@
             <tr>
                 <th><bean:message key="field.label.invoiceId" /></th>
                 <th><bean:message key="field.label.fleetmaticsInvoiceNbr" /></th>
-    			<th><bean:message key="field.label.div" /></th>
+    			<th><bean:message key="field.label.divisionNbr" /></th>
     			<th><bean:message key="field.label.billToName" /></th>
     			<th><bean:message key="field.label.ticketCount" /></th>
     			<th><bean:message key="field.label.invoiceDate" /></th>
@@ -240,7 +240,7 @@
             <tr>
                 <th><bean:message key="field.label.invoiceId" /></th>
                 <th><bean:message key="field.label.fleetmaticsInvoiceNbr" /></th>
-    			<th><bean:message key="field.label.div" /></th>
+    			<th><bean:message key="field.label.divisionNbr" /></th>
     			<th><bean:message key="field.label.billToName" /></th>
     			<th><bean:message key="field.label.ticketCount" /></th>
     			<th><bean:message key="field.label.invoiceDate" /></th>
@@ -256,7 +256,7 @@
     
     <p align="center">
     	<br>
-    	<a href="#" title="Scroll to Top" class="ScrollTop">Scroll To Top</a>
+    	<a href="#" title="Scroll to Top" class="ScrollTop"><bean:message key="field.label.scrollToTop" /></a>
     	</br>
     </p>
     
