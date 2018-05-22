@@ -99,9 +99,9 @@
         	        
         	        "columnDefs": [
          	            { "orderable": false, "targets": -1 },
-        	            { className: "dt-head-left", "targets": [0,2,3,4,5,6,10,11,12,13] },
-        	            { className: "dt-body-center", "targets": [1,7,9] },
-        	            { className: "dt-right", "targets": [8,14]}
+        	            { className: "dt-head-left", "targets": [4,5,6,12] },
+        	            { className: "dt-body-center", "targets": [0,1,2,3,7,8,10,11,13,14] },
+        	            { className: "dt-right", "targets": [9,15]}
         	         ],
         	        "paging": true,
 			        "ajax": {

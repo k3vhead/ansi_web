@@ -76,9 +76,9 @@
         	        ],
         	        "columnDefs": [
          	            { "orderable": false, "targets": -1 },
-        	            { className: "dt-left", "targets": [0,2,3,4,5,6,10,11] },
-        	            { className: "dt-center", "targets": [1,7,9,12,-1] },
-        	            { className: "dt-right", "targets": [8]}
+        	            { className: "dt-left", "targets": [4,5,6,11] },
+        	            { className: "dt-center", "targets": [0,1,2,3,7,8,10,12,-1] },
+        	            { className: "dt-right", "targets": [9]}
         	         ],
         	        "paging": true,
 			        "ajax": {
