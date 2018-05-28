@@ -94,6 +94,7 @@
         		$('#goEdit').button('option', 'label', 'Save');
         		$('#closeEditPanel').button('option', 'label', 'Close');
         		
+        		$("#editPanel display[name='']").val("");
 				$("#editPanel input[name='Name']").val("");
 				$("#editPanel input[name='Description']").val("");
 				$("#editPanel input[name='Status']").val("");			        		
@@ -158,21 +159,29 @@
 			            	}
 			            } },
 			           { title: "User Count" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	$userLink = '<a href="userLookup.html?id=' + row.permissionGroupId + '" style="color:#404040;">' + row.userCount+ '</a>';
-			            	if(row.userCount != null){return $userLink;}
+			            	if(row.userCount != null){return (row.userCount+"");}
 			            } },
 			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
 			            	$updateLink = '<ansi:hasPermission permissionRequired="SYSADMIN"><ansi:hasWrite><a href="#" class="addNewAction" data-id="'+row.permissionGroupId+'"><webthing:addNew>Permissions</webthing:addNew></ansi:hasWrite></ansi:hasPermission></a>';
 			            	$editLink = '<ansi:hasPermission permissionRequired="SYSADMIN"><ansi:hasWrite><a href="#" class="editAction" data-id="'+row.permissionGroupId+'"><webthing:edit>Update</webthing:edit></a></ansi:hasWrite></ansi:hasPermission>';
 			            	$deleteLink = '<ansi:hasPermission permissionRequired="SYSADMIN"><ansi:hasWrite><a href="#" class="delAction" data-id="'+row.permissionGroupId+'"><webthing:delete>Delete</webthing:delete></a></ansi:hasWrite></ansi:hasPermission>';
-			           			
+			           		
+			            	$action = $editLink + " " + $deleteLink + " " + $updateLink;
+			            	$updates = $editLink + " " + $updateLink;
+			            	if(row.userCount != null){
+			            		if ( row.userCount == 1 ) {
+			            			return $updates;
+			            		} else {
+			            			return $action;
+			            		}
+			            	}			            	
 			            				            	
 			            	
-			            	$action = $editLink + " " + $deleteLink + " " + $updateLink;
+//			            	$action = $editLink + " " + $deleteLink + " " + $updateLink;
 			            	//if(row.count < 1) {
 			            	//	$action = $action + " " + $deleteLink;
 			            	//}				            	
-			            	return $action;	
+//			            	return $action;	
 			            }  }],
 			            "initComplete": function(settings, json) {
 			            	//console.log(json);
@@ -292,8 +301,13 @@
 				}
 				
 				
+
 				
-				function doDelete($clickevent) {
+				
+				
+				
+
+/*				function doDelete($clickevent) {
 					$clickevent.preventDefault();
 	            	var $permissionGroupId = $clickevent.currentTarget.attributes['data-id'].value;
 					$('#confirmDelete').data('permissionGroup', $permissionGroupId);
@@ -308,7 +322,7 @@
 				
 				$("#cancelDelete").click( function($event) {
 	            	$event.preventDefault();
-	            	$('#confirmDelete').bPopup().close();
+	            	$('#confirmDelete').modal('close');
 	            });         
 
 	            $("#doDelete").click(function($event) {
@@ -316,8 +330,31 @@
 					var $permissionGroupId = $('#confirmDelete').data('permissionGroupId');
 					$outbound = JSON.stringify({});
 					var $url = 'permissionGroup/' + $permissionGroupId;
+*/
+				function doDelete ($clickevent) {
+					$clickevent.preventDefault();
+					var $permissionGroupId = $clickevent.currentTarget.attributes['data-id'].value;
+					$('#confirmDelete').data('permissionGroup', $permissionGroupId);
 
-				
+					
+					
+					$('.doDelete').on('click', function (e) {
+			            e.preventDefault();
+			            var permissionGroupId = $(this).closest('tr').data('permissionGroupId');
+			            $('#confirmDelete').data('permissionGroupId', permissionGroupId).modal('show');
+			        });
+			        
+			        $('#doDelete').click(function () {
+			            var permissionGroupId = $('#confirmDelete').data('permissionGroupId');
+			            $('[data-permissionGroupId=' + permissionGroupId + ']').remove();
+			            $('#confirmDelete').modal('hide');
+			        });					
+					
+			        
+			        $outbound = JSON.stringify({});
+					var $url = 'permissionGroup/' + $permissionGroupId;
+					
+			
 	            	var jqxhr = $.ajax({
 	            	    type: 'delete',
 	            	    url: $url,
@@ -325,9 +362,9 @@
 	            	    success: function($data) {
 	            	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
 							if ( $data.responseHeader.responseCode == 'SUCCESS') {
-								$("#permissionGroupTable").DataTable().row($rowid).remove();
+//								$("#permissionGroupTable").DataTable().row($permissionGroupId).remove();
 								$("#permissionGroupTable").DataTable().draw();
-								$('#confirmDelete').bPopup().close();
+								$('#confirmDelete').modal('show');
 							}
 	            	     },
 	            	     statusCode: {
@@ -346,7 +383,7 @@
 		             	     },
 	            	     dataType: 'json'
 	            	});
-	            });
+	            };
 			
 				
 					
@@ -440,7 +477,7 @@
     	<table>
     		<tr>
     			<td><span class="formHdr">ID</span></td>
-    			<td><input type="text" name="permissionGroupId" /></td>
+    			<td><input type="text" name="permissionGroupId" style="border-style: hidden" readOnly/></td>
     			<td><span class="err" id="permissionGroupIdErr"></span></td>
     		</tr>
     		<tr>
