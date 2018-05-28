@@ -175,11 +175,11 @@
         	        ],
         	        "columnDefs": [
          	            { "orderable": false, "targets": -1 },
-        	            { className: "dt-left", "targets": [0,2,3,4,5,7] },
-        	            { className: "dt-center", "targets": [1,8,-1] },
+        	            { className: "dt-left", "targets": [0,2,3,4,5] },
+        	            { className: "dt-center", "targets": [1,7,8,-1] },
         	            { className: "dt-right", "targets": [9]}
         	         ],
-        	        "order":[[7,"desc"]],
+//        	        "order":[[7,"desc"]],
         	        "paging": true,
 			        "ajax": {
 			        	"url": "quoteTable",

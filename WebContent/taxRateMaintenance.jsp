@@ -34,7 +34,7 @@ change log
 
 <tiles:insert page="layout.jsp" flush="true">
     <tiles:put name="title" type="string">
-        Tax Rate Maintenance
+        <bean:message key="menu.label.taxrates" /> <bean:message key="menu.label.maintenance" />
     </tiles:put>
     <tiles:put name="headextra" type="string">
     	<link rel="stylesheet" href="css/datepicker.css" type="text/css" />
@@ -529,7 +529,7 @@ change log
 				<th id="col_05_hdr"><bean:message key="field.label.data_item.effectiveDate" /></th>
        	    	<ansi:hasPermission permissionRequired="SYSADMIN">
 					<ansi:hasWrite>
-						<th id="col_06_hdr">Action</th>
+						<th id="col_06_hdr"><bean:message key="field.label.action" /></th>
 					</ansi:hasWrite>
        	    	</ansi:hasPermission>
     		</tr>
@@ -538,7 +538,7 @@ change log
 		<ansi:hasPermission permissionRequired="SYSADMIN">
 			<ansi:hasWrite>
 				<div class="addButtonDiv">
-					<input type="button" id="addButton" class="prettyWideButton" value="New" />
+					<input type="button" id="addButton" class="prettyWideButton" value="<bean:message key="field.label.new" />" />
 				</div>
 			</ansi:hasWrite>
 		</ansi:hasPermission>
@@ -590,8 +590,8 @@ change log
 		    				</tr>
 		    				<tr>
 		    					<td colspan="2" style="text-align:center;">
-		    						<input type="button" class="prettyButton" value="Save" id="goUpdate" />
-		    						<input type="button" class="prettyButton" value="Cancel" id="cancelUpdate" />
+		    						<input type="button" class="prettyButton" value="<bean:message key="field.label.save" />" id="goUpdate" />
+		    						<input type="button" class="prettyButton" value="<bean:message key="field.label.cancel" />" id="cancelUpdate" />
 		    					</td>
 		    				</tr>
 		    			</table>

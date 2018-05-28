@@ -263,7 +263,7 @@ public class TicketServlet extends AbstractServlet {
 			logger.log(Level.DEBUG, "No act dl pct");
 			messages.addMessage(TicketReturnRequest.ACT_DL_PCT, "Required Field");
 		} else {
-			BigDecimal testPct = ticketReturnRequest.getActDlPct().multiply(new BigDecimal(100D));
+			BigDecimal testPct = ticketReturnRequest.getActDlPct();
 			if ( ! JobUtils.isValidDLPct(testPct)) {
 				messages.addMessage(TicketReturnRequest.ACT_DL_PCT, "Invalid Direct Labor");
 			}

@@ -419,7 +419,7 @@
    				
    				$("#COMPLETED input[name=actPricePerCleaning]").val($actPricePerCleaning);
    				$("#COMPLETED input[name=actDlPct]").val($actDlPct);
-   				$("#COMPLETED span[class=actDlPct]").html(($actDlPct * 100).toFixed(3));		       				
+   				$("#COMPLETED span[class=actDlPct]").html($actDlPct.toFixed(1));		       				
    				$("#COMPLETED input[name=actDlAmt]").val($actDlAmt);
    				$("#COMPLETED input[name=actPoNumber]").val($data.ticketDetail.actPoNumber);
 			}
@@ -452,7 +452,7 @@
 					markInvalid($("#validActPricePerCleaning"));
 				} else {
 					markValid($("#validActPricePerCleaning"));
-					var $actDlAmt = ($actPricePerCleaning * $actDlPct);
+					var $actDlAmt = ($actPricePerCleaning * $actDlPct / 100);
 					$("#COMPLETED input[name=actDlAmt]").val($actDlAmt.toFixed(2));					
 				}
 			});
@@ -465,9 +465,9 @@
 					markInvalid($("#validActDlAmt"));
 				} else {
 					markValid($("#validActDlAmt"));
-					var $actDlPct = ($actDlAmt / $actPricePerCleaning);
+					var $actDlPct = ($actDlAmt / $actPricePerCleaning * 100);
 					$("#COMPLETED input[name=actDlPct]").val($actDlPct);					
-					$("#COMPLETED span[class=actDlPct]").html(($actDlPct*100).toFixed(3));
+					$("#COMPLETED span[class=actDlPct]").html($actDlPct.toFixed(1));
 				}
 			});
 			

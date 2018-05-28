@@ -118,9 +118,13 @@
        			row = row + '<td>';
        			row = row + '<a href="#" class="updAction" data-row="' + $rownum +'"><span class="green fas fa-pencil-alt" ari-hidden="true"></span></a> | ';
        			if ( $division.userCount == 0 ) {
-       			row = row + '<a href="#" class="delAction" data-row="' + $rownum +'"><span class="red fas fa-trash-alt" aria-hidden="true"></span></a>';
+       			row = row + '<a href="#" class="delAction" data-row="' + row.permissionGroupId +'"><span class="red fas fa-trash-alt" aria-hidden="true"></span></a>';
        			}
        			row = row + '</td>';
+       			
+       			
+       			$viewLink = '<a href="#" class="viewAction" data-id="'+row.permissionGroupId+'"><webthing:view>View</webthing:view></a>';
+       			
        			</ansi:hasWrite>
        			</ansi:hasPermission>       			
 				return row;
@@ -428,12 +432,12 @@
 		    		<span class="formLabel">Are You Sure You Want to Delete this Division?</span><br />
 		    		<table id="delData">
 		    			<tr>
-		    				<td><span class="formLabel">Div. Code:</span></td>
+		    				<td><span class="formLabel"><bean:message key="field.label.divisionCode" />:</span></td>
 		    				<td id="delDivisionCode"></td>
 		    			</tr>
 		    		</table>
-		    		<input type="button" id="cancelDelete" value="No" />
-		    		<input type="button" id="doDelete" value="Yes" />
+		    		<input type="button" id="cancelDelete" value="<bean:message key="field.label.no" />" />
+		    		<input type="button" id="doDelete" value="<bean:message key="field.label.yes" />" />
 		    	</div>
 		    	
 		    	<div id="addFormDiv">
@@ -485,8 +489,8 @@
 		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.status" />:</span></td>
 		    					<td>
 		    						<select name="status">
-		    							<option value="1">Active</option>
-		    							<option value="0">Inactive</option>
+		    							<option value="1"><bean:message key="field.label.active" /></option>
+		    							<option value="0"><bean:message key="field.label.inactive" /></option>
 		    						</select>
 		    						<i class="fa fa-check-square-o inputIsValid" aria-hidden="true"></i>
 		    					</td>
@@ -494,8 +498,8 @@
 		    				</tr>
 		    				<tr>
 		    					<td colspan="2" style="text-align:center;">
-		    						<input type="button" class="prettyButton" value="Save" id="goUpdate" />
-		    						<input type="button" class="prettyButton" value="Cancel" id="cancelUpdate" />
+		    						<input type="button" class="prettyButton" value="<bean:message key="field.label.save" />" id="goUpdate" />
+		    						<input type="button" class="prettyButton" value="<bean:message key="field.label.cancel" />" id="cancelUpdate" />
 		    					</td>
 		    				</tr>
 		    			</table>

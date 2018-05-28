@@ -18,7 +18,7 @@
 <tiles:insert page="layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        Payment <bean:message key="menu.label.lookup" />
+        <bean:message key="page.label.payment" /> <bean:message key="menu.label.lookup" />
     </tiles:put>
     
     
@@ -175,7 +175,7 @@
     </tiles:put>
     
    <tiles:put name="content" type="string">
-    	<h1>Payment <bean:message key="menu.label.lookup" /></h1>
+    	<h1><bean:message key="page.label.payment" /> <bean:message key="menu.label.lookup" /></h1>
     	
  	<table id="paymentTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:800px;width:800px;">
        	<colgroup>
@@ -237,7 +237,7 @@
     
     <p align="center">
     	<br>
-    	<a href="#" title="Scroll to Top" class="ScrollTop">Scroll To Top</a>
+    	<a href="#" title="Scroll to Top" class="ScrollTop"><bean:message key="field.label.scrollToTop" /></a>
     	</br>
     </p>
     
