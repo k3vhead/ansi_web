@@ -132,11 +132,10 @@
     </tiles:put>
     
    <tiles:put name="content" type="string">
-    	<h1><c:out value="${com_ansi_scilla_report_title}" /></h1>
-    	
+		<h1><c:out value="${com_ansi_scilla_report_title}" /></h1>
+		
     	<div id="xlsDiv" class="tooltip">
-			<span class="tooltiptext">Download</span>
-			<a href="#"  id="xlsDownload"><i class="fa fa-file-excel-o fa-2x" aria-hidden="true" style="cursor:pointer"></i></a>
+			<a href="#"  id="xlsDownload"><webthing:excel styleClass="fa-2x" style="cursor:pointer">Download</webthing:excel></a>
 		</div>
     	
     	<table>
