@@ -25,10 +25,10 @@
     	<link rel="stylesheet" href="css/sortable.css" type="text/css" />
         <script type="text/javascript" src="js/ansi_utils.js"></script>
         <script type="text/javascript" src="js/quotePrintHistory.js"></script>
+        <script type="text/javascript" src="js/quotePrint.js"></script>
         <%--
         <script type="text/javascript" src="js/jobMaintenance.js"></script>
-        <script type="text/javascript" src="js/quoteMaintenance.js"></script>
-        <script type="text/javascript" src="js/quotePrint.js"></script>
+        <script type="text/javascript" src="js/quoteMaintenance.js"></script>        
         <script type="text/javascript" src="js/addressUtils.js"></script>
          --%>
         <script type="text/javascript">        
@@ -57,11 +57,65 @@
 						if (QUOTEMAINTENANCE.quoteId != '' ) {
 							QUOTEMAINTENANCE.getQuote(QUOTEMAINTENANCE.quoteId);	
 						}
+						QUOTE_PRINT.init_modal("#printQuoteDiv");
 						QUOTE_PRINT_HISTORY.init("#printHistoryDiv", "#viewPrintHistory");
 						$("#loading-container").hide();
 						$("#quotePanel").fadeIn(1000);
 						$("#address-container").fadeIn(1000);
 						$("#job-list-container").fadeIn(1000);						
+					},
+					
+					
+					
+					doCopyQuote : function($quoteId) {
+						console.debug("Making a copy of " + $quoteId);	
+						var $url = "quote/copy/" + $quoteId;
+						var jqxhr = $.ajax({
+							type: 'POST',
+							url: $url,
+							data: {},
+							statusCode: {
+								200: function($data) {
+									location.href="quoteMaintenance.html?id=" + $data.data.quote.quoteId;
+								},					
+								403: function($data) {
+									$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+								},
+								404: function($data) {
+									$("#globalMsg").html("System Error Copy 404. Contact Support");
+								},
+								500: function($data) {
+									$("#globalMsg").html("System Error Copy 500. Contact Support");
+								}
+							},
+							dataType: 'json'
+						});
+					},
+					
+					
+					doReviseQuote : function($quoteId) {
+						console.debug("Making a revise of " + $quoteId);	
+						var $url = "quote/revise/" + $quoteId;
+						var jqxhr = $.ajax({
+							type: 'POST',
+							url: $url,
+							data: {},
+							statusCode: {
+								200: function($data) {
+									location.href="quoteMaintenance.html?id=" + $data.data.quote.quoteId;
+								},					
+								403: function($data) {
+									$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+								},
+								404: function($data) {
+									$("#globalMsg").html("System Error Revise 404. Contact Support");
+								},
+								500: function($data) {
+									$("#globalMsg").html("System Error Revise 500. Contact Support");
+								}
+							},
+							dataType: 'json'
+						});
 					},
 					
 					
@@ -189,6 +243,8 @@
 								data: {},
 								statusCode: {
 									200: function($data) {
+										$(".action-button").attr("data-quoteid",$data.data.quoteList[0].quote.quoteId); //This is so copy/revise buttons know what to copy/revise
+										$(".action-button").attr("data-quotenumber",$data.data.quoteList[0].quote.quoteNumber + $data.data.quoteList[0].quote.revision);
 										QUOTEMAINTENANCE.populateQuotePanel($data.data.quoteList[0].quote);
 										QUOTEMAINTENANCE.populateAddressPanel( "#address-bill-to", $data.data.quoteList[0].billTo);
 										QUOTEMAINTENANCE.populateAddressPanel( "#address-job-site", $data.data.quoteList[0].jobSite);
@@ -335,6 +391,24 @@
 		    				$("#address-panel-open").toggle();
 		    				$("#address-panel-closed").toggle();
 		    				$("#addressPanel").toggle();
+		    			});
+		    			
+		    			$("#copy-button").click(function($event) {
+		    				var $quoteId = $(this).attr("data-quoteid");
+		    				QUOTEMAINTENANCE.doCopyQuote($quoteId);
+		    			});
+		    			
+		    			$("#revise-button").click(function($event) {
+		    				var $quoteId = $(this).attr("data-quoteid");
+		    				QUOTEMAINTENANCE.doReviseQuote($quoteId);
+		    			});
+		    			
+		    			$("#print-button").click(function($event) {
+		    				var $quoteId = $(this).attr("data-quoteid");
+		    				var $quoteNumber = $(this).attr("data-quotenumber");
+		    				//QUOTEMAINTENANCE.doReviseQuote($quoteId);
+		    				console.debug("Printing " + $quoteId);
+		    				QUOTE_PRINT.showQuotePrint("#printQuoteDiv", $quoteId, $quoteNumber);
 		    			});
 		    		},
 		    		
@@ -662,6 +736,9 @@
 			#printHistoryDiv {
                 display:none;
             }
+			#printQuoteDiv {
+                display:none;
+            }
             #viewPrintHistory {
                 cursor:pointer;
             }
@@ -675,6 +752,9 @@
 				padding:8px;
 				width:1300px;
 			}
+        	.action-button {
+        		cursor:pointer;
+        	}
         	.ansi-address-container {
         		width:90%;
         	}
@@ -728,11 +808,11 @@
     	<div style="width:1300px;">	    	
     		<div id="quoteButtonContainer" style="width:30px;">
     			<ansi:hasPermission permissionRequired="QUOTE"><ansi:hasWrite><webthing:edit styleClass="fa-2x quote-button">Edit</webthing:edit></ansi:hasWrite></ansi:hasPermission>
- 			    <ansi:hasPermission permissionRequired="QUOTE"><ansi:hasWrite><webthing:revise styleClass="fa-2x quote-button">Revise</webthing:revise></ansi:hasWrite></ansi:hasPermission>
-    			<ansi:hasPermission permissionRequired="QUOTE"><ansi:hasWrite><webthing:copy styleClass="fa-2x quote-button">Copy</webthing:copy></ansi:hasWrite></ansi:hasPermission>
+ 			    <ansi:hasPermission permissionRequired="QUOTE"><ansi:hasWrite><webthing:revise styleClass="fa-2x quote-button action-button" styleId="revise-button">Revise</webthing:revise></ansi:hasWrite></ansi:hasPermission>
+    			<ansi:hasPermission permissionRequired="QUOTE"><ansi:hasWrite><webthing:copy styleClass="fa-2x quote-button action-button" styleId="copy-button">Copy</webthing:copy></ansi:hasWrite></ansi:hasPermission>
     			<a href="quoteLookup.html" style="text-decoration:none; color:#404040;"><webthing:view styleClass="fa-2x quote-button">Lookup</webthing:view></a>
     			<ansi:hasPermission permissionRequired="QUOTE"><ansi:hasWrite><webthing:addNew styleClass="fa-2x quote-button">New</webthing:addNew></ansi:hasWrite></ansi:hasPermission>
-    			<webthing:print styleClass="fa-2x quote-button">Print</webthing:print>    			
+    			<ansi:hasPermission permissionRequired="QUOTE_EDIT"><ansi:hasWrite><webthing:print styleClass="fa-2x quote-button action-button" styleId="print-button">Print</webthing:print></ansi:hasWrite></ansi:hasPermission>    			
     			<%--
     			<input type="button" class="quoteButton" id="buttonModifyQuote" value="Modify" /><br />
     			<input type="button" class="quoteButton" id="buttonCopyQuote" value="Copy" /><br />
@@ -784,6 +864,8 @@
 	    </div>
 	    
 	    
+		<webthing:quotePrint modalName="printQuoteDiv" />
+		
 	    <webthing:quotePrintHistory modalName="printHistoryDiv" />
 	    
 	    
