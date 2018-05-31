@@ -249,9 +249,9 @@
 
 	</tiles:put>
     <tiles:put name="content" type="string">
-    	<h1 >Division and Month Select</h1>
+    	<h1>Division and Month Select</h1>
     	<div id="xlsDownloadDiv">
-    		<a href="#" id="xlsDownload"><i class="fa fa-file-excel-o fa-2x" aria-hidden="true" style="cursor:pointer"></i></a>
+    		<a href="#" id="xlsDownload"><webthing:excel styleClass="fa-2x" style="cursor:pointer">Download</webthing:excel></a>
     	</div>
 		<select id="divisionId">			
 		</select>
