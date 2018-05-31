@@ -5,4 +5,4 @@
 	String classString = className == null ? "" : className;
 	String idString = idName == null ? "" : "id=\"" + idName + "\"";
 	String styleString = styleName == null ? "" : "style=\"" + styleName + "\"";
-%><span class="red fa fa-trash-alt tooltip <%= classString %>" <%= idString %> <%= styleString %> ari-hidden="true"><span class="tooltiptext"><jsp:doBody /></span></span>
+%><span class="fas fa-envelope tooltip <%= classString %>" <%= idString %> <%= styleString %> ari-hidden="true"><span class="tooltiptext"><jsp:doBody /></span></span>
