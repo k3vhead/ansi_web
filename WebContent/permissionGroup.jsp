@@ -159,7 +159,8 @@
 			            	}
 			            } },
 			           { title: "User Count" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.userCount != null){return (row.userCount+"");}
+			            	$userLink = '<a href="userLookup.html?id=' + row.permissionGroupId + '" style="color:#404040;">' + row.userCount+ '</a>';
+			            	if(row.userCount != null){return $userLink;}
 			            } },
 			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
 			            	$updateLink = '<ansi:hasPermission permissionRequired="SYSADMIN"><ansi:hasWrite><a href="#" class="addNewAction" data-id="'+row.permissionGroupId+'"><webthing:addNew>Permissions</webthing:addNew></ansi:hasWrite></ansi:hasPermission></a>';
