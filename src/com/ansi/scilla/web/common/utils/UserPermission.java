@@ -8,9 +8,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ansi.scilla.common.db.PermissionGroupLevel;
 import com.ansi.scilla.common.db.PermissionLevel;
 
-public class UserPermission extends ApplicationWebObject {
+public class UserPermission extends ApplicationWebObject implements Comparable<UserPermission> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -66,6 +67,32 @@ public class UserPermission extends ApplicationWebObject {
 		this.level = level;
 	}
 	
+	@Override
+	public int compareTo(UserPermission o) {
+		int ret = this.getPermissionName().compareTo(o.getPermissionName());
+		if ( ret == 0 ) {
+			ret = this.getLevel().compareTo(o.getLevel());
+		}
+		return ret;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		boolean ret = true;
+		if ( o instanceof UserPermission) {
+			UserPermission up = (UserPermission)o;
+			if ( ! this.getPermissionName().equals(up.getPermissionName())) {
+				ret = false;
+			}
+			if ( ! this.getLevel().equals(up.getLevel())) {
+				ret = false;
+			}
+		} else {
+			ret = false;
+		}
+		return ret;
+	}
+
 	/**
 	 * Get a list of permissions for a permission group
 	 * @param conn
@@ -74,18 +101,35 @@ public class UserPermission extends ApplicationWebObject {
 	 */
 	public static List<UserPermission> getUserPermissions(Connection conn, Integer permissionGroupId) throws Exception {
 		List<UserPermission> userPermissionList = new ArrayList<UserPermission>();
-		String sql = "select permission_group_level.permission_name, permission_group_level.permission_level" +
-					" from permission_group " +
-					" inner join permission_group_level on permission_group_level.permission_group_id=permission_group.permission_group_id " + 
-					" where permission_group.permission_group_id=?";
-		PreparedStatement ps = conn.prepareStatement(sql);
-		ps.setInt(1,  permissionGroupId);
-		ResultSet rs = ps.executeQuery();
-		ResultSetMetaData rsmd = rs.getMetaData();
-		while ( rs.next() ) {
-			userPermissionList.add( new UserPermission(rsmd, rs) );			
+//		String sql = "select permission_group_level.permission_name, permission_group_level.permission_level" +
+//					" from permission_group " +
+//					" inner join permission_group_level on permission_group_level.permission_group_id=permission_group.permission_group_id " + 
+//					" where permission_group.permission_group_id=?";
+//		PreparedStatement ps = conn.prepareStatement(sql);
+//		ps.setInt(1,  permissionGroupId);
+//		ResultSet rs = ps.executeQuery();
+//		ResultSetMetaData rsmd = rs.getMetaData();
+//		while ( rs.next() ) {
+//			userPermissionList.add( new UserPermission(rsmd, rs) );			
+//		}
+//		rs.close();
+		PermissionGroupLevel key = new PermissionGroupLevel();
+		key.setPermissionGroupId(permissionGroupId);
+		List<PermissionGroupLevel> pglList = PermissionGroupLevel.cast(key.selectSome(conn));
+		List<String> tempList = new ArrayList<String>();
+		for ( PermissionGroupLevel pgl : pglList ) {
+			Permission p = Permission.valueOf(pgl.getPermissionName());
+			List<Permission> parentList = p.makeParentList();
+			for ( Permission permission : parentList ) {
+				tempList.add(permission.name());
+			}
 		}
-		rs.close();
+		for (String permissionName : tempList ) {
+			UserPermission up = new UserPermission(permissionName, 0);
+			if ( ! userPermissionList.contains(up)) {
+				userPermissionList.add(up);
+			}
+		}
 		return userPermissionList;
 		
 	}

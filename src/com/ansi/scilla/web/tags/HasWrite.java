@@ -31,12 +31,16 @@ public class HasWrite extends ConditionalTagSupport {
 			if ( sessionData.getUser().getSuperUser().equals(new Integer(1)) ) {
 				canWrite = true;
 			} else {
+				String writePermission = permissionRequired + "_WRITE";
 				for ( UserPermission userPermission : sessionData.getUserPermissionList() ) {
-					if ( userPermission.getPermissionName().equalsIgnoreCase(permissionRequired)) {
-						if ( userPermission.getLevel().equals(new Integer(1))) {
-							canWrite = true;
-						}
+					if ( userPermission.getPermissionName().equalsIgnoreCase(writePermission)) {
+						canWrite = true;
 					}
+//					if ( userPermission.getPermissionName().equalsIgnoreCase(permissionRequired)) {
+//						if ( userPermission.getLevel().equals(new Integer(1))) {
+//							canWrite = true;
+//						}
+//					}
 				}
 			}
 		}

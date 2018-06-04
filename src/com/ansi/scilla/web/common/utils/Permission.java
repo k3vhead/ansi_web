@@ -17,9 +17,8 @@ public enum Permission {
 	QUOTE_WRITE(QUOTE_READ, false),		// this is for backwards compatibility
 	QUOTE_CREATE(QUOTE_WRITE, false),		// can create quotes and edit them until they have been proposed
 	QUOTE_UPDATE(QUOTE_CREATE, false),    // can create quotes, edit them at any time (including after proposal)
-	QUOTE_PRINT(QUOTE_READ, false),			// allows print; whether it is preview or propose is decided by further granularity
-	QUOTE_PREVIEW(QUOTE_PRINT, false),
-	QUOTE_PROPOSE(QUOTE_PRINT, false),
+	QUOTE_PREVIEW(QUOTE_READ, false),
+	QUOTE_PROPOSE(QUOTE_UPDATE, false),
 	
 	JOB(null, true),
 	JOB_READ(JOB, true),		// this is for backwards compatibility
@@ -70,7 +69,7 @@ public enum Permission {
 		return divisionSpecific;
 	}
 	
-	public List<Permission> makePermissionTree() {
+	public List<Permission> makeParentList() {
 		List<Permission> permissionTree = new ArrayList<Permission>();
 		permissionTree.add(this);
 		if ( this.parent != null ) {
@@ -105,25 +104,26 @@ public enum Permission {
 	
 	
 	
-	public static void main(String[] args) {
-		for ( Permission p : Permission.values() ) {
-			if ( p.getParent() == null ) {
-				printPerm(p,0);
-				
-			}
-		}
-	}
-	private static void printPerm(Permission p, int indent) {
-		
-		for ( int i = 0; i < indent; i++ ) {
-			System.out.print("\t");
-		}
-		System.out.println(p);
 	
-		for ( Permission x : p.makeChildList() ) {
-			printPerm(x, indent+1);
-		}
-	
-		
-	}
+//	public static void main(String[] args) {
+//		for ( Permission p : Permission.values() ) {
+//			if ( p.getParent() == null ) {
+//				printPerm(p,0);
+//				
+//			}
+//		}
+//	}
+//	private static void printPerm(Permission p, int indent) {
+//		
+//		for ( int i = 0; i < indent; i++ ) {
+//			System.out.print("\t");
+//		}
+//		System.out.println(p);
+//	
+//		for ( Permission x : p.makeChildList() ) {
+//			printPerm(x, indent+1);
+//		}
+//	
+//		
+//	}
 }
