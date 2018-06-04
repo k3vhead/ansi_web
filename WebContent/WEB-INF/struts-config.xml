@@ -181,12 +181,6 @@
             <forward name="valid" path="/permissionGroup.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
-        <action
-            path="/permissionGroupLookup"
-            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
-            <forward name="valid" path="/permissionGroupLookup.jsp" />
-            <forward name="login" path="/login.jsp" />            
-        </action>
 		<action
             path="/printHistory"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
