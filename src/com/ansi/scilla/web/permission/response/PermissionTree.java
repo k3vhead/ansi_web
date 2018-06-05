@@ -16,7 +16,7 @@ public class PermissionTree extends HashMap<Permission,PermissionTreeItem> {
 		for ( Permission p1 : Permission.values() ) {
 			List<Permission> childList = p1.makeChildList();
 			String parentName = p1.getParent()==null ? null : p1.getParent().name();
-			this.put(p1, new PermissionTreeItem(p1.name(), parentName, childList));
+			this.put(p1, new PermissionTreeItem(p1, parentName, childList));
 		}
 	}
 	
@@ -26,7 +26,6 @@ public class PermissionTree extends HashMap<Permission,PermissionTreeItem> {
 			String json = AppUtils.object2json(new PermissionTree());
 			System.out.println(json);
 		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

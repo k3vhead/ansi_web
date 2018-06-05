@@ -13,14 +13,18 @@ public class PermissionTreeItem extends ApplicationObject {
 	private static final long serialVersionUID = 1L;
 
 	private String permission;
+	private String description;
 	private String parent;
 	private List<String> childList;
-	public PermissionTreeItem(String permission, String parent, List<Permission> childList) {
+	
+	public PermissionTreeItem(Permission permission, String parent, List<Permission> childList) {
 		super();
-		this.permission = permission;
+		this.permission = permission.name();
+		this.description = permission.getDescription();
 		this.parent = parent;
 		this.childList = makeChildList(childList);
 	}
+	
 	public String getPermission() {
 		return permission;
 	}
@@ -32,6 +36,12 @@ public class PermissionTreeItem extends ApplicationObject {
 	}
 	public void setParent(String parent) {
 		this.parent = parent;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	public List<String> getChildList() {
 		return childList;
