@@ -343,7 +343,7 @@ public class TicketDRVResponse extends MessageResponse {
 		
 		//row = 0
 		cell = row.createCell(0);
-		cell.setCellValue("Ruin");
+		cell.setCellValue("Run");
 		cell.setCellStyle(vertical);
 		sheet.autoSizeColumn(0);
 		cell = row.createCell(1);
