@@ -99,7 +99,6 @@
 			        			 		<%-- <li><html:link action="permissiongroupAdmin"><bean:message key="menu.label.permissions" /></html:link></li> --%> 
 										<li><html:link action="divisionAdmin"><bean:message key="menu.label.divisions" /></html:link></li>
 										<li><html:link action="userLookup">User Lookup</html:link></li>
-										<li><html:link action="permissionGroupLookup">Group Lookup</html:link></li>
 										<li><html:link action="permissionGroup">Permissions</html:link></li>
 										<%-- <li><html:link action="applicationpropertyAdmin"><bean:message key="menu.label.properties" /></html:link></li>  --%>
 										<%-- <li><html:link action="printHistory"><bean:message key="menu.label.printhistory" /></html:link></li> --%>

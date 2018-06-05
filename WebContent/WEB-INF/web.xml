@@ -415,6 +415,15 @@
         <url-pattern>/permissionGroup/*</url-pattern>
     </servlet-mapping>
 
+	<servlet>
+        <servlet-name>permission</servlet-name>
+        <servlet-class>com.ansi.scilla.web.permission.servlet.PermissionServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>permission</servlet-name>
+        <url-pattern>/permission/*</url-pattern>
+    </servlet-mapping>
+
 
 	<servlet>
 		<servlet-name>permissionGroupLookup</servlet-name>

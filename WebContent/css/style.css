@@ -59,6 +59,10 @@ h1 {
 	background-color:#000000;
 	color:#FFFFFF;
 }
+.moreInfo {
+	color:#3399FF;
+	cursor:pointer;
+}
 .orange {
 	color:#CC6600;
 }

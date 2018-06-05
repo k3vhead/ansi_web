@@ -409,9 +409,10 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 			for ( UserPermission userPermission : sessionData.getUserPermissionList()) {
 				Permission myPermission = Permission.valueOf(userPermission.getPermissionName());
 				if ( myPermission.equals(requiredPermission)) {
-					if ( userPermission.getLevel() >= requiredLevel ) {
-						isAllowed = true;
-					}
+					isAllowed = true;
+//					if ( userPermission.getLevel() >= requiredLevel ) {
+//						isAllowed = true;
+//					}
 				}
 			}
 			if ( ! isAllowed ) {

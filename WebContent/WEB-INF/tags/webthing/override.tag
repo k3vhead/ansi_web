@@ -3,5 +3,5 @@
 	String idName = (String)jspContext.getAttribute("styleId");
 	String styleName = (String)jspContext.getAttribute("style");
 	String idString = idName == null ? "" : "id=\"" + idName + "\"";
-	String styleString = idName == null ? "" : "style=\"" + styleName + "\"";
+	String styleString = styleName == null ? "" : "style=\"" + styleName + "\"";
 %><span class="orange fa fa-magic tooltip <%= className %>" <%= idString %> <%= styleString %> ari-hidden="true"><span class="tooltiptext"><jsp:doBody /></span></span>

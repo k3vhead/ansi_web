@@ -55,6 +55,7 @@ public class QuoteServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
 	public static final String ACTION_IS_UPDATE = "update";
+	public static final String ACTION_IS_REVISE = "revise";
 	
 	@Override
 	protected void doDelete(HttpServletRequest request,
@@ -137,7 +138,6 @@ public class QuoteServlet extends AbstractServlet {
 			AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_READ);
 			
 			if ( parsedUrl.quoteId.equals("list")) {
-				// we're getting all the codes in the database
 				QuoteListResponse quotesListResponse = makeQuotesListResponse(conn);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, quotesListResponse);
 			} else if(parsedUrl.quoteId.equals("delete")){
@@ -224,6 +224,29 @@ public class QuoteServlet extends AbstractServlet {
 				try {
 					logger.log(Level.DEBUG, "Doing Copy");
 					quote = doCopy(conn, Integer.parseInt(urlPieces[1]), sessionUser);
+					
+					String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
+					responseCode = ResponseCode.SUCCESS;
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+				} catch ( DuplicateEntryException e ) {
+					String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+					responseCode = ResponseCode.EDIT_FAILURE;
+				} catch ( Exception e ) {
+					responseCode = ResponseCode.SYSTEM_FAILURE;
+					logger.log(Level.DEBUG, "Fail: System Failure");
+					AppUtils.logException(e);
+					String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+				}
+				QuoteResponse quoteResponse = new QuoteResponse(quote, webMessages);
+				super.sendResponse(conn, response, responseCode, quoteResponse);
+				
+			}  else if ( command.equals(ACTION_IS_REVISE) ) { 
+				WebMessages webMessages = new WebMessages();
+				try {
+					logger.log(Level.DEBUG, "Doing Revise");
+					quote = doRevise(conn, Integer.parseInt(urlPieces[1]), sessionUser);
 					
 					String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 					responseCode = ResponseCode.SUCCESS;
@@ -381,6 +404,23 @@ public class QuoteServlet extends AbstractServlet {
 		return quote;
 	}
 
+	
+	
+	protected Quote doRevise(Connection conn, Integer sourceQuoteId, SessionUser sessionUser) throws Exception {
+
+		logger.log(Level.DEBUG, "Quote servlet call reviseQuote:" + sourceQuoteId);
+
+		Quote quote = new Quote();
+		try {
+			quote = QuoteUtils.reviseQuote(conn, sourceQuoteId, sessionUser.getUserId());
+		} catch ( SQLException e) {
+			AppUtils.logException(e);
+			throw e;
+		} 
+		return quote;
+	}
+	
+	
 
 	protected Quote doUpdate(Connection conn, Quote key, QuoteRequest quoteRequest, SessionUser sessionUser) throws Exception {
 		logger.log(Level.DEBUG, "This is the key:");

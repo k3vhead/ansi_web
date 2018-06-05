@@ -10,8 +10,13 @@ import com.ansi.scilla.web.common.response.MessageResponse;
 
 public class PermissionGroupListResponse extends MessageResponse {
 	/**
-	 * 
-	 */
+	 *   A class extending MessageResponse..
+	 * 	    Creates A List of permission groups 
+	 *     	   FIelds
+	 *     	   ======================
+	 *     	   permission_group_id
+	 *     	   user_count
+	 **/
 	private static final long serialVersionUID = 1L;
 	
 	private List<PermGroupCountRecord> permGroupItemList;
