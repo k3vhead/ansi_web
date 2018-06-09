@@ -3,8 +3,8 @@ package com.ansi.scilla.web.test;
 import java.sql.Connection;
 
 import com.ansi.scilla.common.utils.AppUtils;
+import com.ansi.scilla.web.user.query.UserLookupItem;
 import com.ansi.scilla.web.user.response.UserResponse;
-import com.ansi.scilla.web.user.response.UserResponseItem;
 
 public class TestUser {
 
@@ -22,9 +22,9 @@ public class TestUser {
 		try {
 			conn = AppUtils.getDevConn();
 			UserResponse r = new UserResponse(conn, UserResponse.UserListType.MANAGER);
-			r.sort("email");
+//			r.sort("email");
 //			System.out.println(r.toJson());
-			for ( UserResponseItem i : r.getUserList() ) {
+			for ( UserLookupItem i : r.getUserList() ) {
 				System.out.println(i.getFirstName() + "\t" + i.getLastName() + "\t" + i.getEmail());
 			}
 		} finally {

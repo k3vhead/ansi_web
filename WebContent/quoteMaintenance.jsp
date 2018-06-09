@@ -51,7 +51,6 @@
 					
 					init : function() {
 						QUOTEMAINTENANCE.makeOptionLists();
-						QUOTEMAINTENANCE.populateOptionSelects();
 						QUOTEMAINTENANCE.makeButtons();
 						QUOTEMAINTENANCE.makeOtherClickables();
 						if (QUOTEMAINTENANCE.quoteId != '' ) {
@@ -68,7 +67,7 @@
 					
 					
 					doCopyQuote : function($quoteId) {
-						console.debug("Making a copy of " + $quoteId);	
+						console.log("Making a copy of " + $quoteId);	
 						var $url = "quote/copy/" + $quoteId;
 						var jqxhr = $.ajax({
 							type: 'POST',
@@ -94,7 +93,7 @@
 					
 					
 					doReviseQuote : function($quoteId) {
-						console.debug("Making a revise of " + $quoteId);	
+						console.log("Making a revise of " + $quoteId);	
 						var $url = "quote/revise/" + $quoteId;
 						var jqxhr = $.ajax({
 							type: 'POST',
@@ -120,7 +119,6 @@
 					
 					
 					getDivisionList: function($callback) {
-						var $returnValue = null;
 						var jqxhr3 = $.ajax({
 							type: 'GET',
 							url: 'division/list',
@@ -142,7 +140,6 @@
 							dataType: 'json',
 							async:false
 						});
-						return $returnValue;
 					},
 					
 					
@@ -243,17 +240,7 @@
 								data: {},
 								statusCode: {
 									200: function($data) {
-										$(".action-button").attr("data-quoteid",$data.data.quoteList[0].quote.quoteId); //This is so copy/revise buttons know what to copy/revise
-										$(".action-button").attr("data-quotenumber",$data.data.quoteList[0].quote.quoteNumber + $data.data.quoteList[0].quote.revision);
-										QUOTEMAINTENANCE.populateQuotePanel($data.data.quoteList[0].quote);
-										QUOTEMAINTENANCE.populateAddressPanel( "#address-bill-to", $data.data.quoteList[0].billTo);
-										QUOTEMAINTENANCE.populateAddressPanel( "#address-job-site", $data.data.quoteList[0].jobSite);
-										QUOTEMAINTENANCE.populateContactPanel( "#job-contact", $data.data.quoteList[0].jobContact.jobContact);
-										QUOTEMAINTENANCE.populateContactPanel( "#site-contact", $data.data.quoteList[0].jobContact.siteContact);
-										QUOTEMAINTENANCE.populateContactPanel( "#billing-contact", $data.data.quoteList[0].jobContact.billingContact);
-										QUOTEMAINTENANCE.populateContactPanel( "#contract-contact", $data.data.quoteList[0].jobContact.contractContact);
-										QUOTEMAINTENANCE.populateJobHeader($data.data.quoteList[0].jobHeaderList)
-										QUOTEMAINTENANCE.makeJobExpansion();
+										QUOTEMAINTENANCE.populateQuotePanels($data.data);										
 									},					
 									403: function($data) {
 										$("#globalMsg").html("Session Expired. Log In and try again").show();
@@ -271,9 +258,46 @@
 						}
 					},
 					
+
+					
+					populateQuotePanels : function($data) {
+	        			var $canPopulate = true;
+	        			
+	        			if ( QUOTEMAINTENANCE.accountTypeList == null ) { $canPopulate=false; }
+	        			if ( QUOTEMAINTENANCE.countryList == null ) { $canPopulate=false; }
+       					if ( QUOTEMAINTENANCE.buildingTypeList == null ) { $canPopulate=false; }
+    					if ( QUOTEMAINTENANCE.divisionList == null ) { $canPopulate=false; }
+    					if ( QUOTEMAINTENANCE.invoiceGroupingList == null ) { $canPopulate=false; }
+    					if ( QUOTEMAINTENANCE.invoiceStyleList == null ) { $canPopulate=false; }
+    					if ( QUOTEMAINTENANCE.invoiceTermList == null ) { $canPopulate=false; }
+    					if ( QUOTEMAINTENANCE.jobStatusList == null ) { $canPopulate=false; }
+    					if ( QUOTEMAINTENANCE.jobFrequencyList == null ) { $canPopulate=false; }
+  						if ( QUOTEMAINTENANCE.leadTypeList == null ) { $canPopulate=false; }
+						if ( QUOTEMAINTENANCE.managerList == null ) { $canPopulate=false; }
+						
+						
+	        			if ( $canPopulate == true ) {
+	        				$(".action-button").attr("data-quoteid",$data.quoteList[0].quote.quoteId); //This is so copy/revise buttons know what to copy/revise
+							$(".action-button").attr("data-quotenumber",$data.quoteList[0].quote.quoteNumber + $data.quoteList[0].quote.revision);
+							QUOTEMAINTENANCE.populateQuotePanel($data.quoteList[0].quote);
+							QUOTEMAINTENANCE.populateAddressPanel( "#address-bill-to", $data.quoteList[0].billTo);
+							QUOTEMAINTENANCE.populateAddressPanel( "#address-job-site", $data.quoteList[0].jobSite);
+							QUOTEMAINTENANCE.populateContactPanel( "#job-contact", $data.quoteList[0].jobContact.jobContact);
+							QUOTEMAINTENANCE.populateContactPanel( "#site-contact", $data.quoteList[0].jobContact.siteContact);
+							QUOTEMAINTENANCE.populateContactPanel( "#billing-contact", $data.quoteList[0].jobContact.billingContact);
+							QUOTEMAINTENANCE.populateContactPanel( "#contract-contact", $data.quoteList[0].jobContact.contractContact);
+							QUOTEMAINTENANCE.populateJobHeader($data.quoteList[0].jobHeaderList)
+							QUOTEMAINTENANCE.makeJobExpansion();
+	        			} else {
+	        				setTimeout(function() {
+	            				QUOTEMAINTENANCE.populateQuotePanels($data);
+	            			},1000);
+	        			}
+					},
+					
+					
 					
 					getCodeList: function($tableName, $fieldName, $function) {
-						var $returnValue = null;
 						var $url = "code/" + $tableName;
 						if ( $fieldName != null ) {
 							$url = $url + "/" + $fieldName;
@@ -407,7 +431,7 @@
 		    				var $quoteId = $(this).attr("data-quoteid");
 		    				var $quoteNumber = $(this).attr("data-quotenumber");
 		    				//QUOTEMAINTENANCE.doReviseQuote($quoteId);
-		    				console.debug("Printing " + $quoteId);
+		    				console.log("Printing " + $quoteId);
 		    				QUOTE_PRINT.showQuotePrint("#printQuoteDiv", $quoteId, $quoteNumber);
 		    			});
 		    		},
@@ -629,6 +653,8 @@
 						QUOTEMAINTENANCE.invoiceTermList = $optionData.invoiceTerm;
 						QUOTEMAINTENANCE.jobStatusList = $optionData.jobStatus;
 						QUOTEMAINTENANCE.jobFrequencyList = $optionData.jobFrequency;
+						
+						QUOTEMAINTENANCE.populateOptionSelects();
 		            },
 		            
 		            
@@ -807,12 +833,12 @@
     	<div id="loading-container"><webthing:thinking style="width:100%" /></div>
     	<div style="width:1300px;">	    	
     		<div id="quoteButtonContainer" style="width:30px;">
-    			<ansi:hasPermission permissionRequired="QUOTE"><ansi:hasWrite><webthing:edit styleClass="fa-2x quote-button">Edit</webthing:edit></ansi:hasWrite></ansi:hasPermission>
- 			    <ansi:hasPermission permissionRequired="QUOTE"><ansi:hasWrite><webthing:revise styleClass="fa-2x quote-button action-button" styleId="revise-button">Revise</webthing:revise></ansi:hasWrite></ansi:hasPermission>
-    			<ansi:hasPermission permissionRequired="QUOTE"><ansi:hasWrite><webthing:copy styleClass="fa-2x quote-button action-button" styleId="copy-button">Copy</webthing:copy></ansi:hasWrite></ansi:hasPermission>
-    			<a href="quoteLookup.html" style="text-decoration:none; color:#404040;"><webthing:view styleClass="fa-2x quote-button">Lookup</webthing:view></a>
-    			<ansi:hasPermission permissionRequired="QUOTE"><ansi:hasWrite><webthing:addNew styleClass="fa-2x quote-button">New</webthing:addNew></ansi:hasWrite></ansi:hasPermission>
-    			<ansi:hasPermission permissionRequired="QUOTE_EDIT"><ansi:hasWrite><webthing:print styleClass="fa-2x quote-button action-button" styleId="print-button">Print</webthing:print></ansi:hasWrite></ansi:hasPermission>    			
+    			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:edit styleClass="fa-2x quote-button">Edit</webthing:edit></ansi:hasPermission>
+ 			    <ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:revise styleClass="fa-2x quote-button action-button" styleId="revise-button">Revise</webthing:revise></ansi:hasPermission>
+    			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:copy styleClass="fa-2x quote-button action-button" styleId="copy-button">Copy</webthing:copy></ansi:hasPermission>
+    			<ansi:hasPermission permissionRequired="QUOTE_READ"><a href="quoteLookup.html" style="text-decoration:none; color:#404040;"><webthing:view styleClass="fa-2x quote-button">Lookup</webthing:view></a></ansi:hasPermission>
+    			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:addNew styleClass="fa-2x quote-button">New</webthing:addNew></ansi:hasPermission>
+    			<ansi:hasPermission permissionRequired="QUOTE_PROPOSE"><webthing:print styleClass="fa-2x quote-button action-button" styleId="print-button">Print</webthing:print></ansi:hasPermission>    			
     			<%--
     			<input type="button" class="quoteButton" id="buttonModifyQuote" value="Modify" /><br />
     			<input type="button" class="quoteButton" id="buttonCopyQuote" value="Copy" /><br />

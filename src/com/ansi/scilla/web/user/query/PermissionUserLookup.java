@@ -18,9 +18,15 @@ import org.apache.logging.log4j.Logger;
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.utils.WhereFieldLikeTransformer;
+import com.ansi.scilla.web.common.utils.Permission;
 import com.thewebthing.commons.lang.CollectionUtils;
 
-public class UserLookup extends ApplicationObject {
+/**
+ * List of all users with a given permission.  (Use UserLookup for users within a permission group)
+ * @author dclewis
+ *
+ */
+public class PermissionUserLookup extends ApplicationObject {
 
 	private static final long serialVersionUID = 1L;
 
@@ -40,9 +46,11 @@ public class UserLookup extends ApplicationObject {
 			+ "ansi_user.zip, "
 			+ "permission_group.name as permission_group_name";
 	public static final String sqlFromClause = 
-			"\n FROM ansi_user  "
-			+ "\n LEFT OUTER JOIN permission_group ON permission_group.permission_group_id=ansi_user.permission_group_id" 
-			+ "\n $WHERECLAUSE$ "
+			"\n from ansi_user "
+			+ "\n inner join permission_group on permission_group.permission_group_id=ansi_user.permission_group_id "
+			+ "\n inner join permission_group_level on permission_group_level.permission_group_id=permission_group.permission_group_id " 
+			+ "\n\t and permission_group_level.permission_name in ($PERMISSIONLIST$) "
+			+ "\n $WHERECLAUSE$"
 			+ "\n $ORDERBY$ "
 			+ "\n $OFFSET$ "
 			+ "\n $FETCH$ ";
@@ -50,7 +58,7 @@ public class UserLookup extends ApplicationObject {
 	public static final String sql = sqlSelect + sqlFromClause;
 	public static final String sqlCount = "select count(*) as record_count " + sqlFromClause;
 		
-	private Integer permissionGroupId;
+	private Permission permission;
 	private Integer offset = 0;
 	private Integer rowCount = 10;	
 	private String	sortBy;
@@ -60,21 +68,28 @@ public class UserLookup extends ApplicationObject {
 	private Logger logger;
 	
 
-	
-	public UserLookup(Integer permissionGroupId, Integer offset, Integer rowCount) {
+	public PermissionUserLookup(String permission) {
 		super();
 		this.logger = LogManager.getLogger(this.getClass());
-		this.permissionGroupId = permissionGroupId;
+		this.permission = Permission.valueOf(permission);
+	}
+	
+	public PermissionUserLookup(Permission permission) {
+		this(permission.name());
+	}
+	
+	public PermissionUserLookup(String permission, Integer offset, Integer rowCount) {
+		this(permission);
 		this.offset = offset;
 		this.rowCount = rowCount;
 	}
 
-	public Integer getPermissionGroupId() {
-		return permissionGroupId;
+	public Permission getPermission() {
+		return permission;
 	}
 
-	public void setPermissionGroupId(Integer permissionGroupId) {
-		this.permissionGroupId = permissionGroupId;
+	public void setPermission(Permission permission) {
+		this.permission = permission;
 	}
 
 	public Integer getOffset() {
@@ -110,22 +125,24 @@ public class UserLookup extends ApplicationObject {
 
 	
 	protected String makeSQL(SelectType selectType) throws Exception {
-		String searchSQL =	selectType.equals(SelectType.DATA) ? sql : sqlCount;
+		String searchSQL =	selectType.equals(SelectType.DATA) || selectType.equals(SelectType.ALL_DATA) ? sql : sqlCount;
 
-		String offsetPhrase = makeOffset(selectType);
-		String fetchPhrase = makeFetch(selectType);
+		String offsetPhrase = selectType.equals(SelectType.ALL_DATA) ? "" : makeOffset(selectType);
+		String fetchPhrase = selectType.equals(SelectType.ALL_DATA) ? "" : makeFetch(selectType);
 
 		String wherePhrase = "";
 		String orderBy = makeOrderBy(selectType);
 
 		if (! selectType.equals(SelectType.COUNTALL)) {
-			wherePhrase = StringUtils.isBlank(searchTerm) && this.permissionGroupId == null ? "" : "\n\twhere " + generateWhereClause(); 			
+			wherePhrase = StringUtils.isBlank(searchTerm) ? "" : "\n\twhere " + generateWhereClause(); 			
 		}
 
+		String permissionPhrase = makePermissionPhrase();
 		searchSQL = searchSQL.replaceAll("\\$ORDERBY\\$", orderBy);
 		searchSQL = searchSQL.replaceAll("\\$WHERECLAUSE\\$", wherePhrase);
 		searchSQL = searchSQL.replaceAll("\\$OFFSET\\$", offsetPhrase);
 		searchSQL = searchSQL.replaceAll("\\$FETCH\\$", fetchPhrase);
+		searchSQL = searchSQL.replaceAll("\\$PERMISSIONLIST\\$", permissionPhrase);
 		
 		logger.log(Level.DEBUG, "Select type: " + selectType);
 		logger.log(Level.DEBUG, searchSQL);
@@ -136,7 +153,7 @@ public class UserLookup extends ApplicationObject {
 
 	private String makeOrderBy(SelectType selectType) {
 		String orderBy = "";
-		if ( selectType.equals(SelectType.DATA)) {
+		if ( selectType.equals(SelectType.DATA) || selectType.equals(SelectType.ALL_DATA)) {
 			if ( StringUtils.isBlank(sortBy)) {
 				orderBy = "order by ansi_user." + User.LAST_NAME + " asc, ansi_user." + User.FIRST_NAME + " asc ";
 			} else {
@@ -163,7 +180,6 @@ public class UserLookup extends ApplicationObject {
 	protected String generateWhereClause() throws Exception {
 		List<String> whereClause = new ArrayList<String>();
 		String filterClause = "";
-		String permissionClause = "";
 		if (! StringUtils.isBlank(this.searchTerm)) {
 			Collection<String> stringFields= Arrays.asList(new String[] {
 				"ansi_user.user_status",
@@ -186,27 +202,39 @@ public class UserLookup extends ApplicationObject {
 			whereClause.add(filterClause);
 
 		}
-		if ( this.permissionGroupId != null ) {
-			permissionClause = "(ansi_user.permission_group_id=?)";
-			whereClause.add(permissionClause);
-		}
+//		if ( this.permission != null ) {
+//			permissionClause = "(ansi_user.permission_group_id=?)";
+//			whereClause.add(permissionClause);
+//		}
 		
 		
 		return StringUtils.join(whereClause, " and ");
 	}
 	
-	/** ******* **/
 	
+	/**
+	 * Make a list of permissions to look for. If we filter by a permission, people with higher-level
+	 * permissions (ie lower in the tree) also have that permission. For example, if we're filtering
+	 * by QUOTE_READ, people with QUOTE_PROPOSE also have that permission.
+	 * @return
+	 */
+	private String makePermissionPhrase() {
+		List<Permission> permissionList = this.permission.makeChildTree();
+		List<String> permissionMaker = new ArrayList<String>();
+		for ( Permission p : permissionList ) {
+			permissionMaker.add(p.name());
+		}
+		return "'" + StringUtils.join(permissionMaker, "','") + "'";
+	}
+
 	private PreparedStatement makePreparedStatement(Connection conn, SelectType selectType, String searchSQL) throws SQLException {
 		PreparedStatement ps = conn.prepareStatement(searchSQL);
-		if (selectType != SelectType.COUNTALL) {
-			int idx = 1;  // because JDBC is not zero-based
-//			ps.setInt(idx, userId);
-//			idx++;
-			if ( this.permissionGroupId != null ) {
-				ps.setInt(idx, this.permissionGroupId);
-			}
-		}
+//		if (selectType != SelectType.COUNTALL) {
+//			int idx = 1;  // because JDBC is not zero-based
+//			if ( this.permission != null ) {
+//				ps.setString(idx, this.permission.name());
+//			}
+//		}
 		return ps;
 	}
 
@@ -221,6 +249,28 @@ public class UserLookup extends ApplicationObject {
 	 */
 	public List<UserLookupItem> select(Connection conn) throws Exception {
 		SelectType selectType = SelectType.DATA;
+		List<UserLookupItem> items = new ArrayList<UserLookupItem>();
+		String searchSQL = makeSQL(selectType);
+		
+		PreparedStatement ps = makePreparedStatement(conn, selectType, searchSQL);
+		ResultSet rs = ps.executeQuery();
+		ResultSetMetaData rsmd = rs.getMetaData();
+		while ( rs.next() ) {
+			items.add(new UserLookupItem(rs, rsmd));
+		}
+		rs.close();
+		return items;
+	}
+	
+	/**
+	 * Returns data, based on stuff that has been entered into the object
+	 * @param conn
+	 * @param offset
+	 * @param rowCount
+	 * @return
+	 */
+	public List<UserLookupItem> selectAll(Connection conn) throws Exception {
+		SelectType selectType = SelectType.ALL_DATA;
 		List<UserLookupItem> items = new ArrayList<UserLookupItem>();
 		String searchSQL = makeSQL(selectType);
 		
@@ -264,6 +314,7 @@ public class UserLookup extends ApplicationObject {
 	}
 	
 	public enum SelectType {
+		ALL_DATA,
 		DATA,
 		COUNT,
 		COUNTALL

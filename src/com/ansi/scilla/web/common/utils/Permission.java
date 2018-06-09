@@ -12,12 +12,19 @@ import org.apache.commons.collections.CollectionUtils;
  *
  */
 public enum Permission {
+	/**
+	 * 	QUOTE
+	 * 		QUOTE_READ
+	 * 			QUOTE_CREATE
+	 * 				QUOTE_PROPOSE
+	 * 					QUOTE_UPDATE
+	 */
+	
 	QUOTE(null, false, "Functional area: Quotes"),  
 	QUOTE_READ(QUOTE, false, "Read-only access to quotes"),		// this is for backwards compatibility
-	QUOTE_WRITE(QUOTE_READ, false, "Allowed to create quotes (Backward Compatibility)"),		// this is for backwards compatibility
-	QUOTE_CREATE(QUOTE_WRITE, false, "Create quotes; edit until quotes are proposed"),		// can create quotes and edit them until they have been proposed
-	QUOTE_UPDATE(QUOTE_CREATE, false, "Edit quotes at any time, including after they are proposed"),    // can create quotes, edit them at any time (including after proposal)
-	QUOTE_PROPOSE(QUOTE_UPDATE, false, "Can propose quotes"),
+	QUOTE_CREATE(QUOTE_READ, false, "Create quotes; edit until quotes are proposed"),		// can create quotes and edit them until they have been proposed
+	QUOTE_PROPOSE(QUOTE_CREATE, false, "Can propose quotes"),
+	QUOTE_UPDATE(QUOTE_PROPOSE, false, "Edit quotes at any time, including after they are proposed"),    // can create quotes, edit them at any time (including after proposal)
 	
 	JOB(null, true, "Functional area: Job"),
 	JOB_READ(JOB, true, "Read-only access to Jobs  (Backward Compatibiity)"),		// this is for backwards compatibility
@@ -91,6 +98,28 @@ public enum Permission {
 			}
 		}
 		return childList;
+	}
+	
+	/**
+	 * List of all permissions that include this one. For example, if this is
+	 * QUOTE_CREATE, this list will include QUOTE_PROPOSE and QUOTE_UPDATE,
+	 * but not QUOTE_READ 
+	 * @return
+	 */
+	public List<Permission> makeChildTree() {
+		List<Permission> permissionList = new ArrayList<Permission>();
+		makeChildTree(this, permissionList);
+		return permissionList;
+	}
+	
+	private void makeChildTree(Permission permission, List<Permission> permissionList) {
+		permissionList.add(permission);
+		List<Permission> childList = permission.makeChildList();
+		if ( childList != null ) {
+			for ( Permission p : childList ) {
+				makeChildTree(p, permissionList);
+			}
+		}
 	}
 	
 	private void makePermissionTree(Permission permission, List<Permission> permissionTree) {

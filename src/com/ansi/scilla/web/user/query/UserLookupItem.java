@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
+import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.queries.ReportQuery;
 
 public class UserLookupItem extends ReportQuery {
@@ -23,6 +24,10 @@ public class UserLookupItem extends ReportQuery {
 	public static final String STATE = "state";
 	public static final String PERMISSION_GROUP_ID = "permission_group_id";
 	public static final String PERMISSON_GROUP_NAME = "permission_group_name";
+
+	public static final String ADDRESS1 = "address1";
+	public static final String ADDRESS2 = "address2";
+	public static final String ZIP = "zip";
 	
 	private Integer userId;
 	private Integer userStatus;
@@ -35,9 +40,30 @@ public class UserLookupItem extends ReportQuery {
 	private String state;
 	private Integer permissionGroupId;
 	private String permissionGroupName;
+	private String address1;
+	private String address2;
+	private String zip;
 	
 	public UserLookupItem() {
 		super();
+	}
+	
+	public UserLookupItem(User user) {
+		super();
+		this.userId = user.getUserId();
+		this.userStatus = user.getStatus();
+		this.firstName = user.getFirstName();
+		this.lastName = user.getLastName();
+		this.title = user.getTitle();
+		this.email = user.getEmail();
+		this.phone = user.getPhone();
+		this.city = user.getCity();
+		this.state = user.getState();
+		this.permissionGroupId = user.getPermissionGroupId();
+		this.permissionGroupName = null;
+		this.address1 = user.getAddress1();
+		this.address2 = user.getAddress2();
+		this.zip = user.getZip();
 	}
 	
 	public UserLookupItem(ResultSet rs, ResultSetMetaData rsmd) throws SQLException  {
@@ -53,6 +79,9 @@ public class UserLookupItem extends ReportQuery {
 		this.state = rs.getString(STATE);
 		this.permissionGroupId = rs.getInt(PERMISSION_GROUP_ID);
 		this.permissionGroupName = rs.getString(PERMISSON_GROUP_NAME);
+		this.address1 = rs.getString(ADDRESS1);
+		this.address2 = rs.getString(ADDRESS2);
+		this.zip = rs.getString(ZIP);
 	}
 
 	public Integer getUserId() {
@@ -141,6 +170,30 @@ public class UserLookupItem extends ReportQuery {
 
 	public void setPermissionGroupName(String permissionGroupName) {
 		this.permissionGroupName = permissionGroupName;
+	}
+
+	public String getAddress1() {
+		return address1;
+	}
+
+	public void setAddress1(String address1) {
+		this.address1 = address1;
+	}
+
+	public String getAddress2() {
+		return address2;
+	}
+
+	public void setAddress2(String address2) {
+		this.address2 = address2;
+	}
+
+	public String getZip() {
+		return zip;
+	}
+
+	public void setZip(String zip) {
+		this.zip = zip;
 	}
 
 	
