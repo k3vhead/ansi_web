@@ -20,6 +20,8 @@ import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.web.address.query.AddressResponseQuery;
 import com.ansi.scilla.web.address.response.AddressResponseItem;
 import com.ansi.scilla.web.common.response.MessageResponse;
+import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.web.common.utils.UserPermission;
 import com.ansi.scilla.web.job.query.JobContact;
 import com.ansi.scilla.web.job.query.JobHeader;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -34,8 +36,9 @@ public class QuoteResponseItem extends MessageResponse {
 	private AddressResponseItem jobSite;
 	private JobContact jobContact;
 	private List<JobHeader> jobHeaderList;
+	private Boolean canEdit;
 
-	public QuoteResponseItem(Connection conn, Quote quote) throws Exception {
+	public QuoteResponseItem(Connection conn, Quote quote, List<UserPermission> permissionList) throws Exception {
 		super();
 		PropertyUtils.copyProperties(this, quote);
 		
@@ -70,6 +73,8 @@ public class QuoteResponseItem extends MessageResponse {
 		
 		this.jobContact = JobContact.getQuoteContact(conn, quote.getQuoteId());
 		this.jobHeaderList = JobHeader.getJobHeaderList(conn, quote.getQuoteId());
+		
+		this.canEdit = makeEditFlag(permissionList);
 	}
 	
 	public QuoteDetail getQuote() {
@@ -108,6 +113,14 @@ public class QuoteResponseItem extends MessageResponse {
 		this.jobHeaderList = jobHeaderList;
 	}
 
+	public Boolean getCanEdit() {
+		return canEdit;
+	}
+
+	public void setCanEdit(Boolean canEdit) {
+		this.canEdit = canEdit;
+	}
+
 	private Integer makePrintCount(Connection conn, Integer quoteId) throws SQLException {
 		Integer printCount = 0;
 		String sql = "select count(*) as print_count from print_history where " + PrintHistory.QUOTE_ID + "=?";
@@ -118,6 +131,30 @@ public class QuoteResponseItem extends MessageResponse {
 			printCount = rs.getInt("print_count");
 		}
 		return printCount;
+	}
+
+
+	private Boolean makeEditFlag(List<UserPermission> permissionList) {
+		Boolean canEdit = false;
+		if ( this.quote.getProposalDate() == null ) {
+			// proposal is still a work in progress; go ahead and make changes
+			canEdit = hasPermission(permissionList, Permission.QUOTE_CREATE);
+		} else {
+			// this quote has been sent to a customer; only special people can edit it
+			canEdit = hasPermission(permissionList, Permission.QUOTE_UPDATE);
+		}
+		return canEdit;
+	}
+
+
+	private Boolean hasPermission(List<UserPermission> permissionList, Permission requiredPermission) {
+		boolean hasPermission = false;
+		for ( UserPermission p : permissionList ) {
+			if (p.getPermissionName().equals(requiredPermission.name())) {
+				hasPermission = true;
+			}
+		}
+		return hasPermission;
 	}
 
 

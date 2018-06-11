@@ -22,9 +22,11 @@ import com.ansi.scilla.web.common.response.MessageKey;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
+import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.web.common.utils.UserPermission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -135,15 +137,16 @@ public class QuoteServlet extends AbstractServlet {
 		try {			
 			ParsedUrl parsedUrl = new ParsedUrl(url);
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_READ);
 			
 			if ( parsedUrl.quoteId.equals("list")) {
-				QuoteListResponse quotesListResponse = makeQuotesListResponse(conn);
+				QuoteListResponse quotesListResponse = makeQuotesListResponse(conn, sessionData.getUserPermissionList());
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, quotesListResponse);
 			} else if(parsedUrl.quoteId.equals("delete")){
-				doNewDelete(request,response);			
+//				doNewDelete(request,response);	
+				super.sendForbidden(response);
 			} else {
-				QuoteListResponse quotesListResponse = makeFilteredListResponse(conn, parsedUrl.quoteId);
+				QuoteListResponse quotesListResponse = makeFilteredListResponse(conn, parsedUrl.quoteId, sessionData.getUserPermissionList());
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, quotesListResponse);
 			}
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
@@ -480,18 +483,15 @@ public class QuoteServlet extends AbstractServlet {
 		return quote;
 	}
 
-	private QuoteListResponse makeQuotesListResponse(Connection conn) throws Exception {
-		QuoteListResponse quotesListResponse = new QuoteListResponse(conn);
+	private QuoteListResponse makeQuotesListResponse(Connection conn, List<UserPermission> permissionList) throws Exception {
+		QuoteListResponse quotesListResponse = new QuoteListResponse(conn, permissionList);
 		return quotesListResponse;
 	}
 
-	private QuoteListResponse makeFilteredListResponse(Connection conn, ParsedUrl parsedUrl) throws Exception {
-		QuoteListResponse quoteListResponse = new QuoteListResponse(conn, parsedUrl.quoteNumber, parsedUrl.revision);
-		return quoteListResponse;
-	}
+	
 
-	private QuoteListResponse makeFilteredListResponse(Connection conn, String quoteId) throws Exception {
-		QuoteListResponse quoteListResponse = new QuoteListResponse(conn, quoteId);
+	private QuoteListResponse makeFilteredListResponse(Connection conn, String quoteId, List<UserPermission> permissionList) throws Exception {
+		QuoteListResponse quoteListResponse = new QuoteListResponse(conn, quoteId, permissionList);
 		return quoteListResponse;
 	}
 

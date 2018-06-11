@@ -48,8 +48,12 @@
 					leadTypeList : null,
 					managerList : null,
 					
+					progressbar : $("#progressbar"),
+					progressLabel : $("#progress-label"),
+					
 					
 					init : function() {
+						QUOTEMAINTENANCE.makeProgressbar();
 						QUOTEMAINTENANCE.makeOptionLists();
 						QUOTEMAINTENANCE.makeButtons();
 						QUOTEMAINTENANCE.makeOtherClickables();
@@ -58,10 +62,10 @@
 						}
 						QUOTE_PRINT.init_modal("#printQuoteDiv");
 						QUOTE_PRINT_HISTORY.init("#printHistoryDiv", "#viewPrintHistory");
-						$("#loading-container").hide();
-						$("#quotePanel").fadeIn(1000);
-						$("#address-container").fadeIn(1000);
-						$("#job-list-container").fadeIn(1000);						
+						//$("#loading-container").hide();
+						//$("#quotePanel").fadeIn(1000);
+						//$("#address-container").fadeIn(1000);
+						//$("#job-list-container").fadeIn(1000);						
 					},
 					
 					
@@ -126,6 +130,7 @@
 							statusCode: {
 								200:function($data) {
 									$callback($data.data);
+									QUOTEMAINTENANCE.incrementProgress("Division List");
 								},
 								403: function($data) {								
 									$("#globalMsg").html("Session Expired. Log In and try again").show();
@@ -297,7 +302,7 @@
 					
 					
 					
-					getCodeList: function($tableName, $fieldName, $function) {
+					getCodeList: function($tableName, $fieldName, $callback) {
 						var $url = "code/" + $tableName;
 						if ( $fieldName != null ) {
 							$url = $url + "/" + $fieldName;
@@ -308,7 +313,7 @@
 							data: {},							
 							statusCode: {
 								200: function($data) {
-									$function($data.data)
+									$callback($data.data)
 								},					
 								403: function($data) {
 									$("#globalMsg").html("Session Expired. Log In and try again").show();
@@ -325,6 +330,13 @@
 					},
 					
 					
+					
+					incrementProgress : function($label) {
+		            	var val = QUOTEMAINTENANCE.progressbar.progressbar("value") || 0;
+						QUOTEMAINTENANCE.progressbar.progressbar("value", val+1);
+						QUOTEMAINTENANCE.progressLabel.text( $label );
+						console.log($label + ": " + QUOTEMAINTENANCE.progressbar.progressbar("value"));
+					},
 					
 		    		
 					makeButtons : function() {
@@ -378,6 +390,7 @@
 	    						200: function($data) {
 	    							QUOTEMAINTENANCE.managerList = $data.data.userList;
 	    							QUOTEMAINTENANCE.populateManagerList($data.data.userList);
+	    							QUOTEMAINTENANCE.incrementProgress("Manager List");
 	    						},					
 	    						403: function($data) {
 	    							$("#globalMsg").html("Session Expired. Log In and try again").show();
@@ -396,11 +409,23 @@
 		    		
 		    		
 		    		makeOptionLists : function(){
-						QUOTEMAINTENANCE.getOptions('JOB_STATUS,JOB_FREQUENCY,COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM', QUOTEMAINTENANCE.populateOptions);						
-						QUOTEMAINTENANCE.getDivisionList(QUOTEMAINTENANCE.populateDivisionList);						
+						QUOTEMAINTENANCE.getOptions('JOB_STATUS,JOB_FREQUENCY,COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM', QUOTEMAINTENANCE.populateOptions);
+						QUOTEMAINTENANCE.incrementProgress("Job Status List");
+						QUOTEMAINTENANCE.incrementProgress("Job Frequency List");
+						
+						
+						QUOTEMAINTENANCE.getDivisionList(QUOTEMAINTENANCE.populateDivisionList);
+						
+						
 						QUOTEMAINTENANCE.getCodeList("job", "building_type", QUOTEMAINTENANCE.populateBuildingType);
+						QUOTEMAINTENANCE.incrementProgress("Building Type List");
+						
 						QUOTEMAINTENANCE.getCodeList("quote","account_type", QUOTEMAINTENANCE.populateAccountType); 
+						QUOTEMAINTENANCE.incrementProgress("Account Type List");
+						
 						QUOTEMAINTENANCE.getCodeList("quote","lead_type", QUOTEMAINTENANCE.populateLeadType); 
+						QUOTEMAINTENANCE.incrementProgress("Lead Type List");
+						
 						QUOTEMAINTENANCE.makeManagerList();	
 		            },
 		            
@@ -415,6 +440,12 @@
 		    				$("#address-panel-open").toggle();
 		    				$("#address-panel-closed").toggle();
 		    				$("#addressPanel").toggle();
+		    			});
+		    			
+		    			$("#quote-panel-hider").click(function($event) {
+		    				$("#quote-panel-open").toggle();
+		    				$("#quote-panel-closed").toggle();
+		    				$("#quotePanel").toggle();
 		    			});
 		    			
 		    			$("#copy-button").click(function($event) {
@@ -433,6 +464,31 @@
 		    				//QUOTEMAINTENANCE.doReviseQuote($quoteId);
 		    				console.log("Printing " + $quoteId);
 		    				QUOTE_PRINT.showQuotePrint("#printQuoteDiv", $quoteId, $quoteNumber);
+		    			});
+		    		},
+		    		
+		    		
+		    		
+		    		makeProgressbar : function() {
+		    			//var progressbar = $("#progressbar");
+		    			//var progressLabel = $("#progress-label");
+		    			QUOTEMAINTENANCE.progressbar.progressbar({
+		    				value: false,
+		    				change: function() {
+		    					//progressLabel.text( progressbar.progressbar("value") + "%" );
+		    					//console.log("progress value: " + QUOTEMAINTENANCE.progressbar.progressbar("value"));
+		    				},
+		    				complete: function() {
+		    					console.log("Progress complete");
+		    					QUOTEMAINTENANCE.progressLabel.text("Complete");
+		    					//$("#progressbar").hide();
+		    					$("#loading-container").hide();
+								$("#quote-container").fadeIn(1000);
+								$("#address-container").fadeIn(1000);
+								$("#job-list-container").fadeIn(1000);
+								$("#quoteButtonContainer").fadeIn(1000);
+		    				},
+		    				max: 11
 		    			});
 		    		},
 		    		
@@ -660,12 +716,16 @@
 		            
 		            
 		            populateOptionSelects : function() {
+		            	QUOTEMAINTENANCE.incrementProgress("Country List");
+						
+						
 						var $select = $("#quoteDataContainer select[name='invoiceTerms']");
 						$('option', $select).remove();
 						$select.append(new Option("",""));
 						$.each(QUOTEMAINTENANCE.invoiceTermList, function(index, val) {
 						    $select.append(new Option(val.display, val.abbrev));
 						});
+						QUOTEMAINTENANCE.incrementProgress("Invoice Terms");
 						
 						var $select = $("#quoteDataContainer select[name='invoiceStyle']");
 						$('option', $select).remove();
@@ -673,6 +733,8 @@
 						$.each(QUOTEMAINTENANCE.invoiceStyleList, function(index, val) {
 						    $select.append(new Option(val.display, val.abbrev));
 						});
+						QUOTEMAINTENANCE.incrementProgress("Invoice Style List");
+						
 						
 						var $select = $("#quoteDataContainer select[name='invoiceGrouping']");
 						$('option', $select).remove();
@@ -680,6 +742,7 @@
 						$.each(QUOTEMAINTENANCE.invoiceGroupingList, function(index, val) {
 						    $select.append(new Option(val.display, val.abbrev));
 						});
+						QUOTEMAINTENANCE.incrementProgress("Invoice Grouping List");
 		            },
 		            
 		            
@@ -726,6 +789,8 @@
 				};
 				
 				QUOTEMAINTENANCE.init();
+				
+				
         	});
          
         </script>
@@ -733,6 +798,21 @@
         
         
         <style type="text/css">   
+        	#progress-label {
+				position: absolute;
+				left:50%;
+				top:4px;
+				font-weight:bold;
+				text-shadow: 1px 1px 0 #fff;
+			}
+			#progressbar .ui-progressbar-value {
+				background-color:#C9C9C9;
+			}
+			.ui-progressbar {
+				position:relative;
+			}
+			
+			
         	#address-container {
         		display:none;
         	}     	
@@ -764,20 +844,28 @@
             }
 			#printQuoteDiv {
                 display:none;
-            }
-            #viewPrintHistory {
-                cursor:pointer;
-            }
+            }            
         	#quoteButtonContainer {
+        		display:none;
         		float:right;
         		text-align:right;
         	}
+        	#quote-container {
+        		display:none;
+        	}
+        	#quote-panel-closed {
+        		display:none;
+        	}
+        	#quote-panel-open {
+        	}
 			#quotePanel {
-				display:none;
 				border:solid 1px #000000;
 				padding:8px;
 				width:1300px;
 			}
+            #viewPrintHistory {
+                cursor:pointer;
+            }
         	.action-button {
         		cursor:pointer;
         	}
@@ -830,7 +918,15 @@
     
     <tiles:put name="content" type="string">
     	<h1>Quote Maintenance</h1>
+    	<%--
     	<div id="loading-container"><webthing:thinking style="width:100%" /></div>
+    	<div style="width:1200px;">
+    		<div id="progressbar"><div id="progress-label">Loading...</div></div>
+    	</div>
+    	--%>
+    	<div id="loading-container">
+    		<div id="progressbar"><div id="progress-label">Loading...</div></div>
+    	</div>
     	<div style="width:1300px;">	    	
     		<div id="quoteButtonContainer" style="width:30px;">
     			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:edit styleClass="fa-2x quote-button">Edit</webthing:edit></ansi:hasPermission>
@@ -849,8 +945,8 @@
 		    	<div id="address-panel-hider" style="color:#FFFFFF; background-color:#404040; cursor:pointer; width:1269px; margin-bottom:1px;">
 		    		Addresses
 	    			<div style="float:left; padding-left:4px;">
-	    				<span id="address-panel-closed"><i class="fas fa-caret-right" style="color:#FFFFFF;"></i></span>
-	    				<span id="address-panel-open"><i class="fas fa-caret-down" style="color:#FFFFFF;"></i></span>
+	    				<span id="address-panel-closed"><i class="fas fa-caret-right" style="color:#FFFFFF;"></i>&nbsp;</span>
+	    				<span id="address-panel-open"><i class="fas fa-caret-down" style="color:#FFFFFF;"></i>&nbsp;</span>
 	    			</div>
 	    		</div>
 		    	<div id="addressPanel" style="width:1269px; float:left;">
@@ -871,12 +967,21 @@
 		    		<div class="spacer">&nbsp;</div>
 		    	</div>
 	    	</div>  <!-- Address container -->
-	    	<div id="quotePanel" style="width:1251px; clear:left;">
-	    		<jsp:include page="quoteMaintenance/quoteDataContainer.jsp">
-	    			<jsp:param name="action" value="view" />
-	    		</jsp:include>
-	    		<div class="spacer">&nbsp;</div>
-	    	</div> 
+	    	<div id="quote-container" style="width:1260px; clear:both; margin-top:12px;">
+		    	<div id="quote-panel-hider" style="color:#FFFFFF; background-color:#404040; cursor:pointer; width:1269px; margin-bottom:1px;">
+		    		Quote
+	    			<div style="float:left; padding-left:4px;">
+	    				<span id="quote-panel-closed"><i class="fas fa-caret-right" style="color:#FFFFFF;"></i>&nbsp;</span>
+	    				<span id="quote-panel-open"><i class="fas fa-caret-down" style="color:#FFFFFF;"></i>&nbsp;</span>
+	    			</div>
+	    		</div>
+		    	<div id="quotePanel" style="width:1251px; clear:left;">
+		    		<jsp:include page="quoteMaintenance/quoteDataContainer.jsp">
+		    			<jsp:param name="action" value="view" />
+		    		</jsp:include>
+		    		<div class="spacer">&nbsp;</div>
+		    	</div> 
+	    	</div>  <!--  quote container -->
 	    	<div id="job-list-container" style="width:1260px; clear:both; margin-top:12px;">
 	    		<ul id="jobList" class="sortable" style="width:100%;">	    			
 	    		</ul>
