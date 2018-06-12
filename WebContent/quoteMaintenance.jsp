@@ -47,6 +47,7 @@
 					jobFrequencyList : null,
 					leadTypeList : null,
 					managerList : null,
+					quote : null,
 					
 					progressbar : $("#progressbar"),
 					progressLabel : $("#progress-label"),
@@ -245,7 +246,12 @@
 								data: {},
 								statusCode: {
 									200: function($data) {
-										QUOTEMAINTENANCE.populateQuotePanels($data.data);										
+										console.log("Got the quote");
+										QUOTEMAINTENANCE.quote = $data.data.quoteList[0];
+										QUOTEMAINTENANCE.populateQuotePanels($data.data);	
+										if ( QUOTEMAINTENANCE.quote.canEdit == true ) {
+											$(".edit-this-panel").show();
+										}
 									},					
 									403: function($data) {
 										$("#globalMsg").html("Session Expired. Log In and try again").show();
@@ -279,6 +285,7 @@
     					if ( QUOTEMAINTENANCE.jobFrequencyList == null ) { $canPopulate=false; }
   						if ( QUOTEMAINTENANCE.leadTypeList == null ) { $canPopulate=false; }
 						if ( QUOTEMAINTENANCE.managerList == null ) { $canPopulate=false; }
+						if ( QUOTEMAINTENANCE.quoteId != null && QUOTEMAINTENANCE.quoteId != "" && QUOTEMAINTENANCE.quote == null ) { $canPopulate = false; }
 						
 						
 	        			if ( $canPopulate == true ) {
@@ -482,11 +489,7 @@
 		    					console.log("Progress complete");
 		    					QUOTEMAINTENANCE.progressLabel.text("Complete");
 		    					//$("#progressbar").hide();
-		    					$("#loading-container").hide();
-								$("#quote-container").fadeIn(1000);
-								$("#address-container").fadeIn(1000);
-								$("#job-list-container").fadeIn(1000);
-								$("#quoteButtonContainer").fadeIn(1000);
+		    					QUOTEMAINTENANCE.showQuote();
 		    				},
 		    				max: 11
 		    			});
@@ -786,6 +789,15 @@
 						--%>
 		            },
 		            
+		            
+		            
+		            showQuote : function() {
+		            	$("#loading-container").hide();
+						$("#quote-container").fadeIn(1000);
+						$("#address-container").fadeIn(1000);
+						$("#job-list-container").fadeIn(1000);
+						$("#quoteButtonContainer").fadeIn(1000);
+		            }
 				};
 				
 				QUOTEMAINTENANCE.init();
@@ -798,21 +810,6 @@
         
         
         <style type="text/css">   
-        	#progress-label {
-				position: absolute;
-				left:50%;
-				top:4px;
-				font-weight:bold;
-				text-shadow: 1px 1px 0 #fff;
-			}
-			#progressbar .ui-progressbar-value {
-				background-color:#C9C9C9;
-			}
-			.ui-progressbar {
-				position:relative;
-			}
-			
-			
         	#address-container {
         		display:none;
         	}     	
@@ -844,7 +841,17 @@
             }
 			#printQuoteDiv {
                 display:none;
-            }            
+            }     
+			#progressbar .ui-progressbar-value {
+				background-color:#C9C9C9;
+			}       
+            #progress-label {
+				position: absolute;
+				left:50%;
+				top:4px;
+				font-weight:bold;
+				text-shadow: 1px 1px 0 #fff;
+			}
         	#quoteButtonContainer {
         		display:none;
         		float:right;
@@ -882,6 +889,9 @@
 			.ansi-contact-method-is-mobile-phone { display:none; }
 			.ansi-contact-method-is-fax { display:none; }
 			.ansi-contact-method-is-email { display:none; }
+			.edit-this-panel {
+				display:none;
+			}
         	.job-data-row {
         		display:none;
         	}
@@ -901,6 +911,14 @@
 				display:inline; 
 				margin-right:10px;
 			}
+			.panel-button-container {
+				float:right; 
+				margin-right:8px;
+				width:6%; 
+				background-color:#e5e5e5; 
+				border:solid 1px #404040; 
+				text-align:center;
+			}
 			.quote-button {
 				margin-top:2px;
 				margin-bottom:2px;
@@ -911,6 +929,9 @@
 				font-size:1px;
 				clear:both;
 				width:100%;
+			}
+			.ui-progressbar {
+				position:relative;
 			}
         </style>
     </tiles:put>
@@ -929,12 +950,13 @@
     	</div>
     	<div style="width:1300px;">	    	
     		<div id="quoteButtonContainer" style="width:30px;">
-    			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:edit styleClass="fa-2x quote-button">Edit</webthing:edit></ansi:hasPermission>
+    			<%-- <ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:edit styleClass="fa-2x quote-button">Edit</webthing:edit></ansi:hasPermission>--%>
  			    <ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:revise styleClass="fa-2x quote-button action-button" styleId="revise-button">Revise</webthing:revise></ansi:hasPermission>
     			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:copy styleClass="fa-2x quote-button action-button" styleId="copy-button">Copy</webthing:copy></ansi:hasPermission>
     			<ansi:hasPermission permissionRequired="QUOTE_READ"><a href="quoteLookup.html" style="text-decoration:none; color:#404040;"><webthing:view styleClass="fa-2x quote-button">Lookup</webthing:view></a></ansi:hasPermission>
     			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:addNew styleClass="fa-2x quote-button">New</webthing:addNew></ansi:hasPermission>
-    			<ansi:hasPermission permissionRequired="QUOTE_PROPOSE"><webthing:print styleClass="fa-2x quote-button action-button" styleId="print-button">Print</webthing:print></ansi:hasPermission>    			
+    			<ansi:hasPermission permissionRequired="QUOTE_READ"><webthing:print styleClass="orange fa-2x quote-button action-button" styleId="print-button">Preview</webthing:print></ansi:hasPermission>    			
+    			<ansi:hasPermission permissionRequired="QUOTE_PROPOSE"><webthing:print styleClass="green fa-2x quote-button action-button" styleId="print-button">Propose</webthing:print></ansi:hasPermission>    			
     			<%--
     			<input type="button" class="quoteButton" id="buttonModifyQuote" value="Modify" /><br />
     			<input type="button" class="quoteButton" id="buttonCopyQuote" value="Copy" /><br />
@@ -944,6 +966,9 @@
 	    	<div id="address-container">
 		    	<div id="address-panel-hider" style="color:#FFFFFF; background-color:#404040; cursor:pointer; width:1269px; margin-bottom:1px;">
 		    		Addresses
+		    		<div class="panel-button-container">
+		    			<webthing:edit styleId="edit-this-address" styleClass="edit-this-panel">Edit</webthing:edit>
+		    		</div>
 	    			<div style="float:left; padding-left:4px;">
 	    				<span id="address-panel-closed"><i class="fas fa-caret-right" style="color:#FFFFFF;"></i>&nbsp;</span>
 	    				<span id="address-panel-open"><i class="fas fa-caret-down" style="color:#FFFFFF;"></i>&nbsp;</span>
@@ -967,9 +992,12 @@
 		    		<div class="spacer">&nbsp;</div>
 		    	</div>
 	    	</div>  <!-- Address container -->
-	    	<div id="quote-container" style="width:1260px; clear:both; margin-top:12px;">
+	    	<div id="quote-container" style="width:1260px; clear:left; margin-top:12px;">
 		    	<div id="quote-panel-hider" style="color:#FFFFFF; background-color:#404040; cursor:pointer; width:1269px; margin-bottom:1px;">
 		    		Quote
+		    		<div class="panel-button-container">
+		    			<webthing:edit styleId="edit-this-quote" styleClass="edit-this-panel">Edit</webthing:edit>
+		    		</div>
 	    			<div style="float:left; padding-left:4px;">
 	    				<span id="quote-panel-closed"><i class="fas fa-caret-right" style="color:#FFFFFF;"></i>&nbsp;</span>
 	    				<span id="quote-panel-open"><i class="fas fa-caret-down" style="color:#FFFFFF;"></i>&nbsp;</span>
