@@ -123,13 +123,13 @@
 			        			<li>
 			        				<a href="#"><bean:message key="menu.label.lookup" /></a>
 									<ul class="sub_menu" style="z-index:1000">
-										<ansi:hasPermission permissionRequired="SYSADMIN">
+										<ansi:hasPermission permissionRequired="ADDRESS_READ">
 										<li><html:link action="addressMaintenance"><bean:message key="menu.label.addresses" /></html:link></li>
 										</ansi:hasPermission>
-										<ansi:hasPermission permissionRequired="SYSADMIN">
+										<ansi:hasPermission permissionRequired="CONTACT_READ">
 										<li><html:link action="contactMaintenance">Contacts</html:link></li>
 										</ansi:hasPermission>
-										<ansi:hasPermission permissionRequired="QUOTE">
+										<ansi:hasPermission permissionRequired="QUOTE_READ">
 										<li><html:link action="quoteLookup"><bean:message key="menu.label.quotes" /></html:link></li>
 										</ansi:hasPermission>
 										<ansi:hasPermission permissionRequired="JOB">
@@ -173,17 +173,9 @@
 			        			<li>
 			        				<a href="#">Quick Links</a>
 									<ul class="sub_menu" style="z-index:1000">
-										<ansi:hasPermission permissionRequired="SYSADMIN">
-										<ansi:hasWrite>
-										<li><html:link action="newContact">New Contact</html:link></li>
-										<li><html:link action="newAddress">New Address</html:link></li>
-										</ansi:hasWrite>
-										</ansi:hasPermission>
-										<ansi:hasPermission permissionRequired="QUOTE">
-										<ansi:hasWrite>
-										<li><html:link action="quoteMaintenance">New Quote</html:link></li>
-										</ansi:hasWrite>
-										</ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="CONTACT_WRITE"><li><html:link action="newContact">New Contact</html:link></li></ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="ADDRESS_WRITE"><li><html:link action="newAddress">New Address</html:link></li></ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="QUOTE_WRITE"><li><html:link action="quoteMaintenance">New Quote</html:link></li></ansi:hasPermission>
 										<ansi:hasPermission permissionRequired="TICKET">
 										<ansi:hasWrite>
 										<li><html:link action="ticketGeneration">Generate Tickets</html:link></li>

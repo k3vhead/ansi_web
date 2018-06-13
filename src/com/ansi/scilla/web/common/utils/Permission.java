@@ -58,6 +58,14 @@ public enum Permission {
 	TECH_ADMIN(null, false, "Functional Area: Technical Admin"),
 	TECH_ADMIN_READ(TECH_ADMIN, true, "See technical system parameters"),		// this is for backwards compatibility
 	TECH_ADMIN_WRITE(TECH_ADMIN_READ, true, "Add/Edit technical system parameters"),		// this is for backwards compatibility
+	
+	ADDRESS(null, false, "Functional Area: Customer Addresses"),
+	ADDRESS_READ(ADDRESS, false, "Read customer addresses"),
+	ADDRESS_WRITE(ADDRESS_READ, false, "Add/Update customer addresses"),
+	
+	CONTACT(null, false, "Functional Area: Customer Contact"),
+	CONTACT_READ(CONTACT, false, "Read customer contact info"),
+	CONTACT_WRITE(CONTACT_READ, false, "Write customer contact info"),
 	;
 	
 	

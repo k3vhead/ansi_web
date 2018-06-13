@@ -17,7 +17,6 @@ import com.ansi.scilla.common.address.Country;
 import com.ansi.scilla.common.db.Address;
 import com.ansi.scilla.common.db.Code;
 import com.ansi.scilla.common.db.Contact;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.web.address.request.AddressRequest;
 import com.ansi.scilla.web.address.response.AddressListResponse;
@@ -55,7 +54,7 @@ public class AddressServlet extends AbstractServlet {
 			ParsedUrl parsedUrl = new ParsedUrl(url);
 
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			AppUtils.validateSession(request, Permission.ADDRESS_WRITE);
 			conn.setAutoCommit(false);
 			
 			Address address = new Address();
@@ -87,7 +86,7 @@ public class AddressServlet extends AbstractServlet {
 		try {			
 			ParsedUrl parsedUrl = new ParsedUrl(url);
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			AppUtils.validateSession(request, Permission.ADDRESS_READ);
 			
 			if ( parsedUrl.addressId.equals("list")) {
 				// we're getting all the addresses in the database
@@ -120,7 +119,7 @@ public class AddressServlet extends AbstractServlet {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
-			SessionData sessionData = AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.ADDRESS_WRITE);
 			SessionUser sessionUser = sessionData.getUser();
 			conn.setAutoCommit(false);
 

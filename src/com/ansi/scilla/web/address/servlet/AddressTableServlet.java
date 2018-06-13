@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.Level;
 
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.address.response.AddressJsonResponse;
 import com.ansi.scilla.web.address.response.AddressReturnItem;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
@@ -83,7 +82,7 @@ public class AddressTableServlet extends AbstractServlet {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			AppUtils.validateSession(request, Permission.ADDRESS_READ);
 			String qs = request.getQueryString();
 
 			String term = "";

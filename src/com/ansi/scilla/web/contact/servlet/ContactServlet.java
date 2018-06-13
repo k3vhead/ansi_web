@@ -13,7 +13,6 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.db.Contact;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.response.MessageKey;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -63,7 +62,7 @@ public class ContactServlet extends AbstractServlet {
 //			String jsonString = super.makeJsonString(request);
 //			ContactRequest contactRequest = (ContactRequest)AppUtils.json2object(jsonString, ContactRequest.class);
 			url = new AnsiURL(request, "contact", (String[])null);
-			AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			AppUtils.validateSession(request, Permission.CONTACT_WRITE);
 			conn.setAutoCommit(false);
 			Contact key = new Contact();
 			key.setContactId(url.getId());
@@ -91,7 +90,7 @@ public class ContactServlet extends AbstractServlet {
 		WebMessages webMessages = new WebMessages();
 		try {
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			AppUtils.validateSession(request, Permission.CONTACT_READ);
 			url = new AnsiURL(request, "contact",(String[])null);
 			ContactListResponse contactListResponse = makeSingleListResponse(conn, url.getId());
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
@@ -120,7 +119,7 @@ public class ContactServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
 			
-			SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.CONTACT_WRITE);
 			SessionUser sessionUser = sessionData.getUser();
 
 			try {

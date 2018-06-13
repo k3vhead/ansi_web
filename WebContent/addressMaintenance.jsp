@@ -240,9 +240,9 @@
 					            
 					            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
 					            	$viewLink = '<a href="#" class="viewAction" data-id="'+row.addressId+'"><webthing:view>View</webthing:view></a>';
-					            	$editLink = '<ansi:hasPermission permissionRequired="SYSADMIN"><ansi:hasWrite><a href="#" class="editAction" data-id="'+row.addressId+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasWrite></ansi:hasPermission>';
-					            	$copyLink = '<ansi:hasPermission permissionRequired="SYSADMIN"><ansi:hasWrite><a href="#" class="copyAction" data-id="'+row.addressId+'"><webthing:copy>Copy</webthing:copy></a></ansi:hasWrite></ansi:hasPermission>';
-					            	$deleteLink = '<ansi:hasPermission permissionRequired="SYSADMIN"><ansi:hasWrite><a href="#" class="delAction" data-id="'+row.addressId+'"><webthing:delete>Delete</webthing:delete></a></ansi:hasWrite></ansi:hasPermission>';					            	
+					            	$editLink = '<ansi:hasPermission permissionRequired="ADDRESS_WRITE"><a href="#" class="editAction" data-id="'+row.addressId+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>';
+					            	$copyLink = '<ansi:hasPermission permissionRequired="ADDRESS_WRITE"><a href="#" class="copyAction" data-id="'+row.addressId+'"><webthing:copy>Copy</webthing:copy></a></ansi:hasPermission>';
+					            	$deleteLink = '<ansi:hasPermission permissionRequired="ADDRESS_WRITE"><a href="#" class="delAction" data-id="'+row.addressId+'"><webthing:delete>Delete</webthing:delete></a></ansi:hasPermission>';					            	
 					            	
 					            	$action = $viewLink + " " + $editLink + " " + $copyLink;
 					            	if(row.count < 1) {
@@ -796,13 +796,11 @@
     
     <tiles:put name="content" type="string">
     	<h1><bean:message key="page.label.address" /> <bean:message key="menu.label.lookup" /></h1>    	
-    	
-	    <ansi:hasPermission permissionRequired="SYSADMIN">
-			<ansi:hasWrite>
-    			<div class="addButtonDiv">
-    				<input type="button" class="addButton prettyWideButton" value="New" />
-    			</div>
-			</ansi:hasWrite>
+
+	    <ansi:hasPermission permissionRequired="ADDRESS_WRITE">
+   			<div class="addButtonDiv">
+   				<input type="button" class="addButton prettyWideButton" value="New" />
+   			</div>
 		</ansi:hasPermission>
  		<table id="addressTable" class="display" cellspacing="0" style="font-size:9pt;">
 	        <thead>
@@ -847,12 +845,10 @@
 	            </tr>
 	        </tfoot>
 	    </table>
-	    <ansi:hasPermission permissionRequired="SYSADMIN">
-			<ansi:hasWrite>
-    			<div class="addButtonDiv">
-    				<input type="button" class="addButton prettyWideButton" value="New" />
-    			</div>
-			</ansi:hasWrite>
+	    <ansi:hasPermission permissionRequired="ADDRESS_WRITE">
+   			<div class="addButtonDiv">
+   				<input type="button" class="addButton prettyWideButton" value="New" />
+   			</div>
 		</ansi:hasPermission>
 
 		<div id="deleteErrorDialog" title="Delete Failed!" class="ui-widget" style="display:none;">
