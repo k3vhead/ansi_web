@@ -173,7 +173,7 @@ public class QuoteServlet extends AbstractServlet {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			AppUtils.validateSession(request, Permission.QUOTE_CREATE);
 			conn.setAutoCommit(false);
 
 			// figure out if this is an "add" or an "update"

@@ -55,6 +55,8 @@
 					
 					init : function() {
 						QUOTEMAINTENANCE.makeProgressbar();
+						QUOTEMAINTENANCE.init_modal();
+						QUOTEMAINTENANCE.makeAutoComplete();
 						QUOTEMAINTENANCE.makeOptionLists();
 						QUOTEMAINTENANCE.makeButtons();
 						QUOTEMAINTENANCE.makeOtherClickables();
@@ -97,6 +99,7 @@
 					},
 					
 					
+					
 					doReviseQuote : function($quoteId) {
 						console.log("Making a revise of " + $quoteId);	
 						var $url = "quote/revise/" + $quoteId;
@@ -121,6 +124,16 @@
 							dataType: 'json'
 						});
 					},
+					
+					
+					
+					doUpdate : function($modalName, $quoteId, $data) {
+						$outbound = JSON.stringify($data);
+						console.log($outbound);
+						$($modalName).dialog("close");
+						$("#globalMsg").html("Update faked").fadeOut(3000);
+					},
+					
 					
 					
 					getDivisionList: function($callback) {
@@ -271,44 +284,6 @@
 					
 
 					
-					populateQuotePanels : function($data) {
-	        			var $canPopulate = true;
-	        			
-	        			if ( QUOTEMAINTENANCE.accountTypeList == null ) { $canPopulate=false; }
-	        			if ( QUOTEMAINTENANCE.countryList == null ) { $canPopulate=false; }
-       					if ( QUOTEMAINTENANCE.buildingTypeList == null ) { $canPopulate=false; }
-    					if ( QUOTEMAINTENANCE.divisionList == null ) { $canPopulate=false; }
-    					if ( QUOTEMAINTENANCE.invoiceGroupingList == null ) { $canPopulate=false; }
-    					if ( QUOTEMAINTENANCE.invoiceStyleList == null ) { $canPopulate=false; }
-    					if ( QUOTEMAINTENANCE.invoiceTermList == null ) { $canPopulate=false; }
-    					if ( QUOTEMAINTENANCE.jobStatusList == null ) { $canPopulate=false; }
-    					if ( QUOTEMAINTENANCE.jobFrequencyList == null ) { $canPopulate=false; }
-  						if ( QUOTEMAINTENANCE.leadTypeList == null ) { $canPopulate=false; }
-						if ( QUOTEMAINTENANCE.managerList == null ) { $canPopulate=false; }
-						if ( QUOTEMAINTENANCE.quoteId != null && QUOTEMAINTENANCE.quoteId != "" && QUOTEMAINTENANCE.quote == null ) { $canPopulate = false; }
-						
-						
-	        			if ( $canPopulate == true ) {
-	        				$(".action-button").attr("data-quoteid",$data.quoteList[0].quote.quoteId); //This is so copy/revise buttons know what to copy/revise
-							$(".action-button").attr("data-quotenumber",$data.quoteList[0].quote.quoteNumber + $data.quoteList[0].quote.revision);
-							QUOTEMAINTENANCE.populateQuotePanel($data.quoteList[0].quote);
-							QUOTEMAINTENANCE.populateAddressPanel( "#address-bill-to", $data.quoteList[0].billTo);
-							QUOTEMAINTENANCE.populateAddressPanel( "#address-job-site", $data.quoteList[0].jobSite);
-							QUOTEMAINTENANCE.populateContactPanel( "#job-contact", $data.quoteList[0].jobContact.jobContact);
-							QUOTEMAINTENANCE.populateContactPanel( "#site-contact", $data.quoteList[0].jobContact.siteContact);
-							QUOTEMAINTENANCE.populateContactPanel( "#billing-contact", $data.quoteList[0].jobContact.billingContact);
-							QUOTEMAINTENANCE.populateContactPanel( "#contract-contact", $data.quoteList[0].jobContact.contractContact);
-							QUOTEMAINTENANCE.populateJobHeader($data.quoteList[0].jobHeaderList)
-							QUOTEMAINTENANCE.makeJobExpansion();
-	        			} else {
-	        				setTimeout(function() {
-	            				QUOTEMAINTENANCE.populateQuotePanels($data);
-	            			},1000);
-	        			}
-					},
-					
-					
-					
 					getCodeList: function($tableName, $fieldName, $callback) {
 						var $url = "code/" + $tableName;
 						if ( $fieldName != null ) {
@@ -346,6 +321,76 @@
 					},
 					
 		    		
+					
+					
+					init_modal : function() {						
+						$( "#contact-edit-modal" ).dialog({
+							title:'Edit Contact',
+							autoOpen: false,
+							height: 225,
+							width: 500,
+							modal: true,
+							closeOnEscape:true,
+							//open: function(event, ui) {
+							//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+							//},
+							buttons: [
+								{
+									id: "contact-cancel-button",
+									click: function($event) {
+										$( "#contact-edit-modal" ).dialog("close");
+									}
+								},
+								{
+									id: "contact-save-button",
+									click: function($event) {
+										QUOTEMAINTENANCE.saveContact();
+									}
+								}
+							]
+						});	
+						$("#contact-save-button").button('option', 'label', 'Save');
+						$("#contact-cancel-button").button('option', 'label', 'Cancel');
+					},
+					
+					
+					
+					makeAutoComplete : function() {
+						$selector = $("#contact-edit-modal input[name='contact-name']");
+						$( $selector ).autocomplete({
+							source:"contactTypeAhead?term=",
+						    select: function( event, ui ) {
+								console.log(ui.item);
+								$("#contact-edit-modal").data("id",ui.item.id);
+						    	
+						    	var $contactSelector = "#contact-edit-display";
+						    	$($contactSelector + " .ansi-contact-name").html(ui.item.value);
+						    	var $preferred = ui.item.preferredContactValue.split(":");
+						    	$($contactSelector + " .ansi-contact-number").html($preferred[1]);
+						    	
+						    	$($contactSelector + " .ansi-contact-method-is-business-phone").hide();
+								$($contactSelector + " .ansi-contact-method-is-mobile-phone").hide();
+								$($contactSelector + " .ansi-contact-method-is-fax").hide();
+								$($contactSelector + " .ansi-contact-method-is-email").hide();
+								if ( $preferred[0] == "business_phone") { $($contactSelector + " .ansi-contact-method-is-business-phone").show(); }
+								if ( $preferred[0] == "mobile_phone") { $($contactSelector + " .ansi-contact-method-is-mobile-phone").show(); }
+								if ( $preferred[0] == "fax") { $($contactSelector + " .ansi-contact-method-is-fax").show(); }
+								if ( $preferred[0] == "email") { $($contactSelector + " .ansi-contact-method-is-email").show(); }
+								$($contactSelector).show();
+							},
+						    response: function(event, ui) {
+								if (ui.content.length === 0) {
+									$("#contact-edit-modal .none-found").show();
+						        } else {
+									$("#contact-edit-display").hide();								
+						        	$("#contact-edit-modal .none-found").hide();
+						        }
+						    }
+						});
+					},
+					
+					
+					
 					makeButtons : function() {
 						$('.dateField').datepicker({
 			                prevText:'&lt;&lt;',
@@ -471,6 +516,25 @@
 		    				//QUOTEMAINTENANCE.doReviseQuote($quoteId);
 		    				console.log("Printing " + $quoteId);
 		    				QUOTE_PRINT.showQuotePrint("#printQuoteDiv", $quoteId, $quoteNumber);
+		    			});
+		    			
+		    			$("#edit-this-address .edit-address").click(function($event) {
+		    				var $type = $(this).data("type");
+		    				console.log("Editing addr: " + $type);
+		    			});
+		    			$("#edit-this-address .edit-contact").click(function($event) {
+		    				var $type = $(this).data("type");
+		    				var $title = "Edit Contact";
+		    				if ( $type == "job") { $title = "Job Contact"; }
+		    				if ( $type == "site") { $title = "Site Contact"; }
+		    				if ( $type == "contract") { $title = "Contract Contact"; }
+		    				if ( $type == "billing") { $title = "Billing Contact"; }
+		    				$("#contact-edit-modal input[name='contact-name']").val("");
+		    				$("#contact-edit-modal").dialog("option","title",$title);
+		    				$("#contact-edit-modal .none-found").hide();
+		    				$("#contact-edit-display").hide();
+		    				$("#contact-edit-modal").data("type",$type);
+		    				$("#contact-edit-modal").dialog("open");
 		    			});
 		    		},
 		    		
@@ -791,7 +855,70 @@
 		            
 		            
 		            
-		            showQuote : function() {
+		            populateQuotePanels : function($data) {
+	        			var $canPopulate = true;
+	        			
+	        			if ( QUOTEMAINTENANCE.accountTypeList == null ) { $canPopulate=false; }
+	        			if ( QUOTEMAINTENANCE.countryList == null ) { $canPopulate=false; }
+       					if ( QUOTEMAINTENANCE.buildingTypeList == null ) { $canPopulate=false; }
+    					if ( QUOTEMAINTENANCE.divisionList == null ) { $canPopulate=false; }
+    					if ( QUOTEMAINTENANCE.invoiceGroupingList == null ) { $canPopulate=false; }
+    					if ( QUOTEMAINTENANCE.invoiceStyleList == null ) { $canPopulate=false; }
+    					if ( QUOTEMAINTENANCE.invoiceTermList == null ) { $canPopulate=false; }
+    					if ( QUOTEMAINTENANCE.jobStatusList == null ) { $canPopulate=false; }
+    					if ( QUOTEMAINTENANCE.jobFrequencyList == null ) { $canPopulate=false; }
+  						if ( QUOTEMAINTENANCE.leadTypeList == null ) { $canPopulate=false; }
+						if ( QUOTEMAINTENANCE.managerList == null ) { $canPopulate=false; }
+						if ( QUOTEMAINTENANCE.quoteId != null && QUOTEMAINTENANCE.quoteId != "" && QUOTEMAINTENANCE.quote == null ) { $canPopulate = false; }
+						
+						
+	        			if ( $canPopulate == true ) {
+	        				$(".action-button").attr("data-quoteid",$data.quoteList[0].quote.quoteId); //This is so copy/revise buttons know what to copy/revise
+							$(".action-button").attr("data-quotenumber",$data.quoteList[0].quote.quoteNumber + $data.quoteList[0].quote.revision);
+							QUOTEMAINTENANCE.populateQuotePanel($data.quoteList[0].quote);
+							QUOTEMAINTENANCE.populateAddressPanel( "#address-bill-to", $data.quoteList[0].billTo);
+							QUOTEMAINTENANCE.populateAddressPanel( "#address-job-site", $data.quoteList[0].jobSite);
+							QUOTEMAINTENANCE.populateContactPanel( "#job-contact", $data.quoteList[0].jobContact.jobContact);
+							QUOTEMAINTENANCE.populateContactPanel( "#site-contact", $data.quoteList[0].jobContact.siteContact);
+							QUOTEMAINTENANCE.populateContactPanel( "#billing-contact", $data.quoteList[0].jobContact.billingContact);
+							QUOTEMAINTENANCE.populateContactPanel( "#contract-contact", $data.quoteList[0].jobContact.contractContact);
+							QUOTEMAINTENANCE.populateJobHeader($data.quoteList[0].jobHeaderList)
+							QUOTEMAINTENANCE.makeJobExpansion();
+	        			} else {
+	        				setTimeout(function() {
+	            				QUOTEMAINTENANCE.populateQuotePanels($data);
+	            			},1000);
+	        			}
+					},
+					
+					
+					
+					saveContact : function() {
+						var $contactLabels = {
+								"contract":"contractContactId",
+								"billing":"billingContactId",
+								"job":"jobContactId",
+								"site":"siteContact"
+						}
+					
+						console.log(QUOTEMAINTENANCE.quote.quote);
+						var $quoteId = QUOTEMAINTENANCE.quote.quote.quoteId;
+						var $contactType = $("#contact-edit-modal").data("type");
+						var $contactId = $("#contact-edit-modal").data("id");
+						console.log("Saving contact");
+						console.log("Quote id: " + $quoteId);
+						console.log("contact type: " + $contactType);
+						console.log("contact id: " + $contactId);
+						var $contactLabel = $contactLabels[$contactType];
+						var $outbound = {};
+						$outbound["quoteId"]=$quoteId;
+						$outbound[$contactLabel]=$contactId;
+						QUOTEMAINTENANCE.doUpdate("#contact-edit-modal", $quoteId, $outbound)
+					},
+					
+					
+					
+					showQuote : function() {
 		            	$("#loading-container").hide();
 						$("#quote-container").fadeIn(1000);
 						$("#address-container").fadeIn(1000);
@@ -820,6 +947,9 @@
         		display:none;
         	}
         	#address-panel-open {
+        	}
+        	#contact-edit-modal .none-found {
+        		display:none;
         	}
         	#job-loading-pattern {
         		display:none;
@@ -889,6 +1019,10 @@
 			.ansi-contact-method-is-mobile-phone { display:none; }
 			.ansi-contact-method-is-fax { display:none; }
 			.ansi-contact-method-is-email { display:none; }
+			.edit-modal {
+        		display:none;
+        	}
+			
 			.edit-this-panel {
 				display:none;
 			}
@@ -964,14 +1098,17 @@
     			 --%>
 	    	</div>
 	    	<div id="address-container">
-		    	<div id="address-panel-hider" style="color:#FFFFFF; background-color:#404040; cursor:pointer; width:1269px; margin-bottom:1px;">
-		    		Addresses
+		    	<div style="color:#FFFFFF; background-color:#404040; cursor:pointer; width:1269px; margin-bottom:1px;">
 		    		<div class="panel-button-container">
-		    			<webthing:edit styleId="edit-this-address" styleClass="edit-this-panel">Edit</webthing:edit>
+		    			<%-- <webthing:edit styleId="edit-this-address" styleClass="edit-this-panel">Edit</webthing:edit> --%>
+		    			<quote:editAddressMenu styleId="edit-this-address" styleClass="edit-this-panel" />
 		    		</div>
+		    		<div id="address-panel-hider">
+		    		Addresses
 	    			<div style="float:left; padding-left:4px;">
 	    				<span id="address-panel-closed"><i class="fas fa-caret-right" style="color:#FFFFFF;"></i>&nbsp;</span>
 	    				<span id="address-panel-open"><i class="fas fa-caret-down" style="color:#FFFFFF;"></i>&nbsp;</span>
+	    			</div>
 	    			</div>
 	    		</div>
 		    	<div id="addressPanel" style="width:1269px; float:left;">
@@ -1028,14 +1165,24 @@
 	    <webthing:quotePrintHistory modalName="printHistoryDiv" />
 	    
 	    
-	    <ansi:hasPermission permissionRequired="QUOTE">
-	    <ansi:hasWrite>
+	    <ansi:hasPermission permissionRequired="QUOTE_CREATE">
+		    <div id="contact-edit-modal" class="edit-modal">
+		    	<span class="formLabel">Name:</span> <input type="text" name="contact-name" />
+		    	<br /><hr /><br />
+		    	<quote:addressContact id="contact-edit-display" label="Name" />
+		    	<div class="none-found">
+		    		<span class="err">No Matching Contacts</span>
+		    	</div>
+		    </div>
+	    </ansi:hasPermission>
+	    
+	    
+	    <ansi:hasPermission permissionRequired="QUOTE_CREATE">
 	    <script type="text/javascript">
 	    $(document).ready(function() {
  			QUOTEMAINTENANCE.makeJobSort();
 		});
 	    </script>
-		</ansi:hasWrite>
 		</ansi:hasPermission>
 	    
     </tiles:put>
