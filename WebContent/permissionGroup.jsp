@@ -149,8 +149,8 @@
 			            	if(row.description != null){return (row.description+"");}
 			            } },
 			            { title: "Status", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	var $isActive = '<i class="fa fa-check-square-o inputIsValid" aria-hidden="true"></i>'
-			            	var $isNotActive = '<i class="fa fa-ban inputIsInvalid" aria-hidden="true"></i>'
+			            	var $isActive = '<webthing:checkmark styleClass="inputIsValid">Active</webthing:checkmark>';
+			            	var $isNotActive = '<webthing:ban styleClass="inputIsInvalid">Inactive</webthing:ban>';
 			            	if(row.permissionGroupStatus != null){
 			            		if ( row.permissionGroupStatus == 1 ) {
 			            			return $isActive;
