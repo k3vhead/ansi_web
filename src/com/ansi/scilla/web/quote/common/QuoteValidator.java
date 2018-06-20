@@ -25,6 +25,10 @@ public class QuoteValidator extends ApplicationObject {
 		
 		validatorMap.put(QuoteRequest.JOB_SITE_ADDRESS_ID, new AddressValidator());
 		validatorMap.put(QuoteRequest.BILL_TO_ADDRESS_ID, new AddressValidator());
+
+		validatorMap.put(QuoteRequest.MANAGER_ID, new ManagerIdValidator());
+		validatorMap.put(QuoteRequest.DIVISION_ID, new DivisionIdValidator());
+		validatorMap.put(QuoteRequest.LEAD_TYPE, new LeadTypeValidator());
 	}
 	
 	public static void validate(Connection conn, QuoteRequest quoteRequest, String fieldName, WebMessages webMessages ) throws Exception {
