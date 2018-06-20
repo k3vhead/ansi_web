@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -30,9 +33,11 @@ import com.ansi.scilla.web.common.utils.UserPermission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
+import com.ansi.scilla.web.quote.common.QuoteValidator;
 import com.ansi.scilla.web.quote.request.QuoteRequest;
 import com.ansi.scilla.web.quote.response.QuoteListResponse;
 import com.ansi.scilla.web.quote.response.QuoteResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 /**
  * The url for delete will be of the form /quote/&lt;quoteId&gt;/<quoteNumber>/<revision>
@@ -168,8 +173,10 @@ public class QuoteServlet extends AbstractServlet {
 		
 		SessionUser sessionUser = AppUtils.getSessionUser(request);
 		String url = request.getRequestURI();
+		logger.log(Level.DEBUG, "URL: " + url);
 //		String queryString = request.getQueryString();
 		
+		PostedUrl postedUrl = null;
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
@@ -177,139 +184,39 @@ public class QuoteServlet extends AbstractServlet {
 			conn.setAutoCommit(false);
 
 			// figure out if this is an "add" or an "update"
-			int idx = url.indexOf("/quote/");
-			String myString = url.substring(idx + "/quote/".length());				
-			String[] urlPieces = myString.split("/");
-			String command = urlPieces[0];
+//			int idx = url.indexOf("/quote/");
+//			String myString = url.substring(idx + "/quote/".length());				
+//			String[] urlPieces = myString.split("/");
+//			String command = urlPieces[0];
+			postedUrl = new PostedUrl(url);
 
 			String jsonString = super.makeJsonString(request);
 			logger.log(Level.DEBUG, "Quote Json: " + jsonString);
 			QuoteRequest quoteRequest = StringUtils.isBlank(jsonString) ? new QuoteRequest() : new QuoteRequest(jsonString);
-			
 			Quote quote = null;
 			ResponseCode responseCode = null;
-			if ( command.equals(ACTION_IS_ADD) ) {
-				logger.log(Level.DEBUG, "Call validateAdd"+quoteRequest);
-				WebMessages webMessages = validateAdd(conn, quoteRequest);
-				if (webMessages.isEmpty()) {
-					try {
-//						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, sessionUser.toString());
-						logger.log(Level.DEBUG, "Doing Add");
-						quote = doAdd(conn, quoteRequest, sessionUser);
-						
-						/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CANT GET QUOTE NUMBER OR REVISION TO UPDATE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
-						//conn.commit();
-						//quote.update(conn, quote);
-						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
-						responseCode = ResponseCode.SUCCESS;
-						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
-						//quote.update(conn, quote);
-					} catch ( DuplicateEntryException e ) {
-						String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
-						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-						responseCode = ResponseCode.EDIT_FAILURE;
-					} catch ( Exception e ) {
-						responseCode = ResponseCode.SYSTEM_FAILURE;
-						logger.log(Level.DEBUG, "Fail: System Failure");
-						AppUtils.logException(e);
-						String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
-						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-					}
-				} else {
-					responseCode = ResponseCode.EDIT_FAILURE;
-				}
-				QuoteResponse quoteResponse = new QuoteResponse(quote, webMessages);
-				super.sendResponse(conn, response, responseCode, quoteResponse);
-				
-			}  else if ( command.equals(ACTION_IS_COPY) ) {   
-				
-				WebMessages webMessages = new WebMessages();
-				try {
-					logger.log(Level.DEBUG, "Doing Copy");
-					quote = doCopy(conn, Integer.parseInt(urlPieces[1]), sessionUser);
-					
-					String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
-					responseCode = ResponseCode.SUCCESS;
-					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
-				} catch ( DuplicateEntryException e ) {
-					String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
-					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-					responseCode = ResponseCode.EDIT_FAILURE;
-				} catch ( Exception e ) {
-					responseCode = ResponseCode.SYSTEM_FAILURE;
-					logger.log(Level.DEBUG, "Fail: System Failure");
-					AppUtils.logException(e);
-					String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
-					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-				}
-				QuoteResponse quoteResponse = new QuoteResponse(quote, webMessages);
-				super.sendResponse(conn, response, responseCode, quoteResponse);
-				
-			}  else if ( command.equals(ACTION_IS_REVISE) ) { 
-				WebMessages webMessages = new WebMessages();
-				try {
-					logger.log(Level.DEBUG, "Doing Revise");
-					quote = doRevise(conn, Integer.parseInt(urlPieces[1]), sessionUser);
-					
-					String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
-					responseCode = ResponseCode.SUCCESS;
-					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
-				} catch ( DuplicateEntryException e ) {
-					String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
-					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-					responseCode = ResponseCode.EDIT_FAILURE;
-				} catch ( Exception e ) {
-					responseCode = ResponseCode.SYSTEM_FAILURE;
-					logger.log(Level.DEBUG, "Fail: System Failure");
-					AppUtils.logException(e);
-					String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
-					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-				}
-				QuoteResponse quoteResponse = new QuoteResponse(quote, webMessages);
-				super.sendResponse(conn, response, responseCode, quoteResponse);
-				
-			}  else if ( urlPieces.length >= 2 ) {   //  /<tableName>/<fieldName>/<value> = 3 pieces
-				logger.log(Level.DEBUG, "Doing Update Stuff");				
-				logger.log(Level.DEBUG, "Call validateUpdate:"+quoteRequest);
-				Quote key = new Quote();
-				key.setQuoteId(Integer.parseInt(urlPieces[0]));
-				logger.log(Level.DEBUG, "Key:"+key);
-				WebMessages webMessages = validateUpdate(conn, key, quoteRequest);
-				if (webMessages.isEmpty()) {
-					logger.log(Level.DEBUG, "passed validation");
-					logger.log(Level.DEBUG, urlPieces);
-					try {
-						logger.log(Level.DEBUG, "Trying to do update for quote "+key.getQuoteId());
-						quote = doUpdate(conn, key, quoteRequest, sessionUser);
-						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
-						responseCode = ResponseCode.SUCCESS;
-						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
-					} catch ( RecordNotFoundException e ) {
-						logger.log(Level.DEBUG, "Doing 404");
-						super.sendNotFound(response);						
-					} catch ( Exception e) {
-						logger.log(Level.DEBUG, "Doing SysFailure");
-						responseCode = ResponseCode.SYSTEM_FAILURE;
-						AppUtils.logException(e);
-						String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
-						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-					}
-				} else {
-					logger.log(Level.DEBUG, "Doing Edit Fail");
-					responseCode = ResponseCode.EDIT_FAILURE;
-				}
-				QuoteResponse codeResponse = new QuoteResponse(quote, webMessages);
-				logger.log(Level.DEBUG, "Response:");
-				logger.log(Level.DEBUG, "responseCode: " + responseCode);
-				logger.log(Level.DEBUG, "codeResponse: " + codeResponse);
-				logger.log(Level.DEBUG, "response: " + response);
-
-				super.sendResponse(conn, response, responseCode, codeResponse);
+			if ( postedUrl.command.equals(ACTION_IS_ADD) ) {
+				processAddRequest(conn, quoteRequest, quote, sessionUser, responseCode, response);
+			}  else if ( postedUrl.command.equals(ACTION_IS_COPY) ) {  				
+				processCopyRequest(conn, postedUrl.quoteId, quoteRequest, quote, sessionUser, responseCode, response);
+			}  else if ( postedUrl.command.equals(ACTION_IS_REVISE) ) { 				
+				processReviseRequest(conn, postedUrl.quoteId, quoteRequest, quote, sessionUser, responseCode, response);
+			}  else if ( postedUrl.command.equals(ACTION_IS_UPDATE) ) {   
+				ObjectMapper mapper = new ObjectMapper();
+				Map<String, Object> fieldMap = new HashMap<String, Object>();
+				fieldMap = mapper.readValue(jsonString, fieldMap.getClass());
+				// get a list of fields that we're actually going to try to update
+				Set<String> keyset = fieldMap.keySet();
+				processUpdateRequest(conn, postedUrl.quoteId, quoteRequest, keyset, quote, sessionUser, responseCode, response);				
 			} else {
+				logger.log(Level.DEBUG, "Sending not found ");
 				super.sendNotFound(response);
 			}
 			
 			conn.commit();
+		} catch ( ArrayIndexOutOfBoundsException | NumberFormatException e ) {
+			// the url didn't have enough pieces, or they were in the wrong order, or had mismatch format
+			super.sendNotFound(response);
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
 			super.sendForbidden(response);
 		} catch ( Exception e ) {
@@ -322,6 +229,135 @@ public class QuoteServlet extends AbstractServlet {
 		
 	}
 
+	
+	
+	private void processAddRequest(Connection conn, QuoteRequest quoteRequest, Quote quote, SessionUser sessionUser, ResponseCode responseCode, HttpServletResponse response) throws Exception {
+			logger.log(Level.DEBUG, "Processing Add: ");
+			logger.log(Level.DEBUG, "Call validateAdd"+quoteRequest);
+			WebMessages webMessages = validateAdd(conn, quoteRequest);
+			if (webMessages.isEmpty()) {
+				try {
+	//				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, sessionUser.toString());
+					logger.log(Level.DEBUG, "Doing Add");
+					quote = doAdd(conn, quoteRequest, sessionUser);
+					
+					/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CANT GET QUOTE NUMBER OR REVISION TO UPDATE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
+					//conn.commit();
+					//quote.update(conn, quote);
+					String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
+					responseCode = ResponseCode.SUCCESS;
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+					//quote.update(conn, quote);
+				} catch ( DuplicateEntryException e ) {
+					String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+					responseCode = ResponseCode.EDIT_FAILURE;
+				} catch ( Exception e ) {
+					responseCode = ResponseCode.SYSTEM_FAILURE;
+					logger.log(Level.DEBUG, "Fail: System Failure");
+					AppUtils.logException(e);
+					String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+				}
+			} else {
+				responseCode = ResponseCode.EDIT_FAILURE;
+			}
+			QuoteResponse quoteResponse = new QuoteResponse(quote, webMessages);
+			super.sendResponse(conn, response, responseCode, quoteResponse);		
+		}
+
+	private void processCopyRequest(Connection conn, Integer quoteId, QuoteRequest quoteRequest, Quote quote, SessionUser sessionUser,
+			ResponseCode responseCode, HttpServletResponse response) throws Exception {
+		logger.log(Level.DEBUG, "Processing Copy: ");
+		WebMessages webMessages = new WebMessages();
+		try {
+			logger.log(Level.DEBUG, "Doing Copy");
+			quote = doCopy(conn, quoteId, sessionUser);
+			
+			String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
+			responseCode = ResponseCode.SUCCESS;
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+		} catch ( DuplicateEntryException e ) {
+			String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+			responseCode = ResponseCode.EDIT_FAILURE;
+		} catch ( Exception e ) {
+			responseCode = ResponseCode.SYSTEM_FAILURE;
+			logger.log(Level.DEBUG, "Fail: System Failure");
+			AppUtils.logException(e);
+			String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+		}
+		QuoteResponse quoteResponse = new QuoteResponse(quote, webMessages);
+		super.sendResponse(conn, response, responseCode, quoteResponse);		
+	}
+
+	private void processReviseRequest(Connection conn, Integer quoteId, QuoteRequest quoteRequest, Quote quote,
+			SessionUser sessionUser, ResponseCode responseCode, HttpServletResponse response) throws Exception {
+		logger.log(Level.DEBUG, "Processing Revise: ");
+		WebMessages webMessages = new WebMessages();
+		try {
+			logger.log(Level.DEBUG, "Doing Revise");
+			quote = doRevise(conn, quoteId, sessionUser);
+			
+			String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
+			responseCode = ResponseCode.SUCCESS;
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+		} catch ( DuplicateEntryException e ) {
+			String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+			responseCode = ResponseCode.EDIT_FAILURE;
+		} catch ( Exception e ) {
+			responseCode = ResponseCode.SYSTEM_FAILURE;
+			logger.log(Level.DEBUG, "Fail: System Failure");
+			AppUtils.logException(e);
+			String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+		}
+		QuoteResponse quoteResponse = new QuoteResponse(quote, webMessages);
+		super.sendResponse(conn, response, responseCode, quoteResponse);		
+	}
+
+	private void processUpdateRequest(Connection conn, Integer quoteId, QuoteRequest quoteRequest, Set<String> keyset, Quote quote, SessionUser sessionUser, ResponseCode responseCode, HttpServletResponse response) throws RecordNotFoundException, Exception {
+		logger.log(Level.DEBUG, "Doing Update Stuff");			
+		logger.log(Level.DEBUG, "Call validateUpdate:"+quoteRequest);
+		Quote key = new Quote();
+		key.setQuoteId(quoteId);
+		logger.log(Level.DEBUG, "Key:"+key);
+		WebMessages webMessages = validateUpdate(conn, key, quoteRequest, keyset);
+		if (webMessages.isEmpty()) {
+			logger.log(Level.DEBUG, "passed validation");
+			try {
+				logger.log(Level.DEBUG, "Trying to do update for quote "+key.getQuoteId());
+				quote = doUpdate(conn, key, quoteRequest, sessionUser);
+				String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
+				responseCode = ResponseCode.SUCCESS;
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+			} catch ( RecordNotFoundException e ) {
+				logger.log(Level.DEBUG, "Doing 404");
+				super.sendNotFound(response);						
+			} catch ( Exception e) {
+				logger.log(Level.DEBUG, "Doing SysFailure");
+				responseCode = ResponseCode.SYSTEM_FAILURE;
+				AppUtils.logException(e);
+				String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+			}
+		} else {
+			logger.log(Level.DEBUG, "Doing Edit Fail");
+			responseCode = ResponseCode.EDIT_FAILURE;
+		}
+		QuoteResponse codeResponse = new QuoteResponse(quote, webMessages);
+		logger.log(Level.DEBUG, "Response:");
+		logger.log(Level.DEBUG, "responseCode: " + responseCode);
+		logger.log(Level.DEBUG, "codeResponse: " + codeResponse);
+		logger.log(Level.DEBUG, "response: " + response);
+
+		super.sendResponse(conn, response, responseCode, codeResponse);		
+	}
+
+	
+	
 	protected Quote doAdd(Connection conn, QuoteRequest quoteRequest, SessionUser sessionUser) throws Exception {
 		Date today = new Date();
 		Quote quote = new Quote();
@@ -512,15 +548,23 @@ public class QuoteServlet extends AbstractServlet {
 		return webMessages;
 	}
 
-	protected WebMessages validateUpdate(Connection conn, Quote key, QuoteRequest quoteRequest) throws RecordNotFoundException, Exception {
+	protected WebMessages validateUpdate(Connection conn, Quote key, QuoteRequest quoteRequest, Set<String> keyset) throws RecordNotFoundException, Exception {
 		WebMessages webMessages = new WebMessages();
-		List<String> missingFields = super.validateRequiredUpdateFields(quoteRequest);
-		if ( ! missingFields.isEmpty() ) {
-			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
-			for ( String field : missingFields ) {
-				webMessages.addMessage(field, messageText);
-			}
+		if ( keyset.isEmpty() ) {
+			// no fields were passed to be updated
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Nothing to Update");
 		}
+		for ( String fieldName : keyset ) {
+			QuoteValidator.validate(conn, quoteRequest, fieldName, webMessages);			
+		}
+		
+//		List<String> missingFields = super.validateRequiredUpdateFields(quoteRequest);
+//		if ( ! missingFields.isEmpty() ) {
+//			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
+//			for ( String field : missingFields ) {
+//				webMessages.addMessage(field, messageText);
+//			}
+//		}
 		// if we "select" the key, and it isn't found, a "RecordNotFoundException" is thrown.
 		// That exception will propagate up the tree until it turns into a 404 message sent to the client
 		Quote testKey = (Quote)key.clone(); 
@@ -554,6 +598,43 @@ public class QuoteServlet extends AbstractServlet {
 				this.revision = (urlPieces[2]);
 			}
 		
+		}
+	}
+	
+	/**
+	 * Figures out which of the URLs is being posted:
+	 *		/quote/copy/nnnn	- Copy existing quote nnnn to a new quote
+	 *		/quote/revise/nnnn	- Revise existing quote nnnn (keep the quote number, increment the revision)
+	 *		/quote/new			- Add a new quote
+	 *		/quote/nnnn			- Update an existing quote
+	 * @author dclewis
+	 *
+	 */
+	public class PostedUrl extends ApplicationObject {
+
+		private static final long serialVersionUID = 1L;
+		public Integer quoteId;
+		public String command;
+		
+		public PostedUrl(String url) {
+			int idx = url.indexOf("/quote/");				
+			String myString = url.substring(idx + "/quote/".length());	
+			String[] urlPieces = myString.split("/");
+			
+			if ( urlPieces[0].equalsIgnoreCase(ACTION_IS_COPY)) {
+				command = ACTION_IS_COPY;
+				quoteId = Integer.parseInt(urlPieces[1]);
+			} else if ( urlPieces[0].equalsIgnoreCase(ACTION_IS_REVISE) ) {
+				command = ACTION_IS_REVISE;
+				quoteId = Integer.parseInt(urlPieces[1]);
+			} else if ( urlPieces[0].equalsIgnoreCase(ACTION_IS_ADD) ) {
+				command = ACTION_IS_ADD;
+				quoteId = null;
+			} else {
+				command = ACTION_IS_UPDATE;
+				quoteId = Integer.parseInt(urlPieces[0]);
+			}
+			
 		}
 	}
 }

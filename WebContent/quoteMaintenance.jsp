@@ -127,11 +127,33 @@
 					
 					
 					
-					doUpdate : function($modalName, $quoteId, $data) {
-						$outbound = JSON.stringify($data);
+					doUpdate : function($quoteId, $data, $successCallback, $errCallback) {
+						var $outbound = JSON.stringify($data);
+						var $url = "quote/" + $quoteId;
 						console.log($outbound);
-						$($modalName).dialog("close");
-						$("#globalMsg").html("Update faked").fadeOut(3000);
+						//$($modalName).dialog("close");
+						//$("#globalMsg").html("Update faked").fadeOut(3000);
+						
+						var jqxhr3 = $.ajax({
+							type: 'POST',
+							url: $url,
+							data: $outbound,
+							statusCode: {
+								200:function($data) {
+									$successCallback($data);
+								},
+								403: function($data) {	
+									$errCallback(403);									
+								},
+								404: function($data) {
+									$errCallback(404);
+								},
+								500: function($data) {
+									$errCallback(500);
+								}
+							},
+							dataType: 'json'
+						});
 					},
 					
 					
@@ -534,6 +556,7 @@
 		    				$("#contact-edit-modal .none-found").hide();
 		    				$("#contact-edit-display").hide();
 		    				$("#contact-edit-modal").data("type",$type);
+				        	$("#contact-edit-modal").data("id","");
 		    				$("#contact-edit-modal").dialog("open");
 		    			});
 		    		},
@@ -913,9 +936,43 @@
 						var $outbound = {};
 						$outbound["quoteId"]=$quoteId;
 						$outbound[$contactLabel]=$contactId;
-						QUOTEMAINTENANCE.doUpdate("#contact-edit-modal", $quoteId, $outbound)
+						QUOTEMAINTENANCE.doUpdate($quoteId, $outbound, QUOTEMAINTENANCE.saveContactSuccess, QUOTEMAINTENANCE.saveContactErr);
 					},
 					
+					
+					saveContactErr : function($statusCode) {
+						var $messages = {
+								403:"Session Expired. Log in and try again",
+								404:"System Error Quote 404. Contact Support",
+								500:"System Error Quote 500. Contact Support"
+						}
+						$("#contact-edit-modal").dialog("close");
+						$("#globalMsg").html( $messages[$statusCode] );
+					},
+					
+					
+					saveContactSuccess : function($data) {
+						console.log($data);
+						var $type = $("#contact-edit-modal").data("type");
+						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {							
+							if ( $type == 'job' ) {
+								$message = $data.data.webMessages.jobContactId[0]; 
+							} else if ( $type == 'site' ) {
+								$message = $data.data.webMessages.siteContact[0]; 
+							} else if ( $type == 'contract' ) {
+								$message = $data.data.webMessages.contractContactId[0]; 
+							} else if ( $type == 'billing' ) {
+								$message = $data.data.webMessages.billingContactId[0]; 
+							} else {
+								$message = "Unexpected Response. Contact Support: " + $type;
+							}
+							$("#contact-edit-modal .errMsg").html($message).show().fadeOut(3000);
+						} else {
+							$("#globalMsg").html("Update Successful").fadeOut(3000);
+							$("#contact-edit-modal").dialog("close");
+						}
+						
+					},
 					
 					
 					showQuote : function() {
@@ -1166,8 +1223,9 @@
 	    
 	    
 	    <ansi:hasPermission permissionRequired="QUOTE_CREATE">
-		    <div id="contact-edit-modal" class="edit-modal">
+		    <div id="contact-edit-modal" class="edit-modal">		    	
 		    	<span class="formLabel">Name:</span> <input type="text" name="contact-name" />
+		    	<span class="errMsg err"></span>
 		    	<br /><hr /><br />
 		    	<quote:addressContact id="contact-edit-display" label="Name" />
 		    	<div class="none-found">

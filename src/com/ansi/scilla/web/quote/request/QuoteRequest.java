@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
-import org.apache.commons.beanutils.BeanUtils;
-
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequiredForAdd;
 import com.ansi.scilla.web.common.request.RequiredForUpdate;
@@ -18,9 +16,31 @@ import com.thewebthing.commons.lang.JsonException;
 
 	public class QuoteRequest extends AbstractRequest{
 
-	
-		private static final long serialVersionUID = 1L;
+		public static final String ADDRESS = "address";
+		public static final String BILL_TO_ADDRESS_ID = "billToAddressId";
+		public static final String COPIED_FROM_QUOTE_ID = "copiedFromQuoteId";
+		public static final String JOB_SITE_ADDRESS_ID = "jobSiteAddressId";
+		public static final String LEAD_TYPE = "leadType";
+		public static final String MANAGER_ID = "managerId";
+		public static final String NAME = "name";
+		public static final String PAYMENT_TERMS = "paymentTerms";
+		public static final String PROPOSOAL_DATE = "proposalDate";
+		public static final String QUOTE_ID = "quoteId";
+		public static final String QUOTE_NUMBER = "quoteNumber";
+		public static final String REVISION = "revision";
+		public static final String SIGNED_BY_CONTACT_ID = "signedByContactId";
+		public static final String STATUS = "status";
+		public static final String TEMPLATE_ID = "templateId";
+		public static final String DIVISION_ID = "divisionId";
+		public static final String ACCOUNT_TYPE = "accountType";
+		public static final String ADDED_BY = "addedBy";
+		public static final String ADDED_DATE = "addedDate";
+		public static final String CONTRACT_CONTACT_ID = "contractContactId";
+		public static final String BILLING_CONTACT_ID = "billingContactId";
+		public static final String JOB_CONTACT_ID = "jobContactId";
+		public static final String SITE_CONTACT = "siteContact";
 		
+		private static final long serialVersionUID = 1L;		
 
 		private String address;
 		private Integer billToAddressId;
@@ -51,10 +71,11 @@ import com.thewebthing.commons.lang.JsonException;
 			super();
 		}
 		
-		public QuoteRequest(String jsonString) throws JsonException, IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException {
+		public QuoteRequest(String jsonString) throws JsonException, IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException, InstantiationException, NoSuchMethodException {
 			this();
 //			AppUtils.json2object(jsonString, QuoteRequest.class, this);
-			QuoteRequest req = (QuoteRequest) AppUtils.json2object(jsonString, QuoteRequest.class);
+			QuoteRequest req = new QuoteRequest();
+			AppUtils.json2object(jsonString, req);
 			this.setAddress(req.getAddress());
 			this.setBillToAddressId(req.getBillToAddressId());
 			this.setCopiedFromQuoteId(req.getCopiedFromQuoteId());
