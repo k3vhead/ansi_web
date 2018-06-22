@@ -2,6 +2,7 @@ package com.ansi.scilla.web.quote.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
@@ -17,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.db.Job;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
@@ -142,7 +144,7 @@ public class QuoteServlet extends AbstractServlet {
 		try {			
 			ParsedUrl parsedUrl = new ParsedUrl(url);
 			conn = AppUtils.getDBCPConn();
-			SessionData sessionData = AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.QUOTE_READ);
 			
 			if ( parsedUrl.quoteId.equals("list")) {
 				QuoteListResponse quotesListResponse = makeQuotesListResponse(conn, sessionData.getUserPermissionList());
@@ -168,10 +170,10 @@ public class QuoteServlet extends AbstractServlet {
 	}
 
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		SessionUser sessionUser = AppUtils.getSessionUser(request);
 		String url = request.getRequestURI();
 		logger.log(Level.DEBUG, "URL: " + url);
 //		String queryString = request.getQueryString();
@@ -180,7 +182,7 @@ public class QuoteServlet extends AbstractServlet {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.QUOTE_CREATE);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.QUOTE_CREATE);
 			conn.setAutoCommit(false);
 
 			// figure out if this is an "add" or an "update"
@@ -196,18 +198,18 @@ public class QuoteServlet extends AbstractServlet {
 			Quote quote = null;
 			ResponseCode responseCode = null;
 			if ( postedUrl.command.equals(ACTION_IS_ADD) ) {
-				processAddRequest(conn, quoteRequest, quote, sessionUser, responseCode, response);
+				processAddRequest(conn, quoteRequest, quote, sessionData, responseCode, response);
 			}  else if ( postedUrl.command.equals(ACTION_IS_COPY) ) {  				
-				processCopyRequest(conn, postedUrl.quoteId, quoteRequest, quote, sessionUser, responseCode, response);
+				processCopyRequest(conn, postedUrl.quoteId, quoteRequest, quote, sessionData, responseCode, response);
 			}  else if ( postedUrl.command.equals(ACTION_IS_REVISE) ) { 				
-				processReviseRequest(conn, postedUrl.quoteId, quoteRequest, quote, sessionUser, responseCode, response);
+				processReviseRequest(conn, postedUrl.quoteId, quoteRequest, quote, sessionData, responseCode, response);
 			}  else if ( postedUrl.command.equals(ACTION_IS_UPDATE) ) {   
 				ObjectMapper mapper = new ObjectMapper();
 				Map<String, Object> fieldMap = new HashMap<String, Object>();
 				fieldMap = mapper.readValue(jsonString, fieldMap.getClass());
 				// get a list of fields that we're actually going to try to update
 				Set<String> keyset = fieldMap.keySet();
-				processUpdateRequest(conn, postedUrl.quoteId, quoteRequest, keyset, quote, sessionUser, responseCode, response);				
+				processUpdateRequest(conn, postedUrl.quoteId, quoteRequest, keyset, quote, sessionData, responseCode, response);				
 			} else {
 				logger.log(Level.DEBUG, "Sending not found ");
 				super.sendNotFound(response);
@@ -231,45 +233,47 @@ public class QuoteServlet extends AbstractServlet {
 
 	
 	
-	private void processAddRequest(Connection conn, QuoteRequest quoteRequest, Quote quote, SessionUser sessionUser, ResponseCode responseCode, HttpServletResponse response) throws Exception {
-			logger.log(Level.DEBUG, "Processing Add: ");
-			logger.log(Level.DEBUG, "Call validateAdd"+quoteRequest);
-			WebMessages webMessages = validateAdd(conn, quoteRequest);
-			if (webMessages.isEmpty()) {
-				try {
-	//				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, sessionUser.toString());
-					logger.log(Level.DEBUG, "Doing Add");
-					quote = doAdd(conn, quoteRequest, sessionUser);
-					
-					/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CANT GET QUOTE NUMBER OR REVISION TO UPDATE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
-					//conn.commit();
-					//quote.update(conn, quote);
-					String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
-					responseCode = ResponseCode.SUCCESS;
-					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
-					//quote.update(conn, quote);
-				} catch ( DuplicateEntryException e ) {
-					String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
-					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-					responseCode = ResponseCode.EDIT_FAILURE;
-				} catch ( Exception e ) {
-					responseCode = ResponseCode.SYSTEM_FAILURE;
-					logger.log(Level.DEBUG, "Fail: System Failure");
-					AppUtils.logException(e);
-					String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
-					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-				}
-			} else {
-				responseCode = ResponseCode.EDIT_FAILURE;
-			}
-			QuoteResponse quoteResponse = new QuoteResponse(quote, webMessages);
-			super.sendResponse(conn, response, responseCode, quoteResponse);		
-		}
+	private void processAddRequest(Connection conn, QuoteRequest quoteRequest, Quote quote, SessionData sessionData, ResponseCode responseCode, HttpServletResponse response) throws Exception {
+		logger.log(Level.DEBUG, "Processing Add: ");
+		logger.log(Level.DEBUG, "Call validateAdd"+quoteRequest);
+		WebMessages webMessages = validateAdd(conn, quoteRequest);
+		if (webMessages.isEmpty()) {
+			try {
+				//				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, sessionUser.toString());
+				logger.log(Level.DEBUG, "Doing Add");
+				quote = doAdd(conn, quoteRequest, sessionData);
 
-	private void processCopyRequest(Connection conn, Integer quoteId, QuoteRequest quoteRequest, Quote quote, SessionUser sessionUser,
+				/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CANT GET QUOTE NUMBER OR REVISION TO UPDATE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
+				//conn.commit();
+				//quote.update(conn, quote);
+				String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
+				responseCode = ResponseCode.SUCCESS;
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+				//quote.update(conn, quote);
+			} catch ( DuplicateEntryException e ) {
+				String messageText = AppUtils.getMessageText(conn, MessageKey.DUPLICATE_ENTRY, "Record already Exists");
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+				responseCode = ResponseCode.EDIT_FAILURE;
+			} catch ( Exception e ) {
+				responseCode = ResponseCode.SYSTEM_FAILURE;
+				logger.log(Level.DEBUG, "Fail: System Failure");
+				AppUtils.logException(e);
+				String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+			}
+		} else {
+			responseCode = ResponseCode.EDIT_FAILURE;
+		}
+		QuoteResponse quoteResponse = new QuoteResponse(conn, quote, webMessages, sessionData.getUserPermissionList());
+		super.sendResponse(conn, response, responseCode, quoteResponse);		
+	}
+
+	private void processCopyRequest(Connection conn, Integer quoteId, QuoteRequest quoteRequest, Quote quote, SessionData sessionData,
 			ResponseCode responseCode, HttpServletResponse response) throws Exception {
 		logger.log(Level.DEBUG, "Processing Copy: ");
 		WebMessages webMessages = new WebMessages();
+		SessionUser sessionUser = sessionData.getUser();
+		
 		try {
 			logger.log(Level.DEBUG, "Doing Copy");
 			quote = doCopy(conn, quoteId, sessionUser);
@@ -288,13 +292,16 @@ public class QuoteServlet extends AbstractServlet {
 			String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
 		}
-		QuoteResponse quoteResponse = new QuoteResponse(quote, webMessages);
+		QuoteResponse quoteResponse = new QuoteResponse(conn, quote, webMessages, sessionData.getUserPermissionList());
 		super.sendResponse(conn, response, responseCode, quoteResponse);		
 	}
 
+	
+	
 	private void processReviseRequest(Connection conn, Integer quoteId, QuoteRequest quoteRequest, Quote quote,
-			SessionUser sessionUser, ResponseCode responseCode, HttpServletResponse response) throws Exception {
+			SessionData sessionData, ResponseCode responseCode, HttpServletResponse response) throws Exception {
 		logger.log(Level.DEBUG, "Processing Revise: ");
+		SessionUser sessionUser = sessionData.getUser();
 		WebMessages webMessages = new WebMessages();
 		try {
 			logger.log(Level.DEBUG, "Doing Revise");
@@ -314,13 +321,16 @@ public class QuoteServlet extends AbstractServlet {
 			String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
 		}
-		QuoteResponse quoteResponse = new QuoteResponse(quote, webMessages);
+		QuoteResponse quoteResponse = new QuoteResponse(conn, quote, webMessages, sessionData.getUserPermissionList());
 		super.sendResponse(conn, response, responseCode, quoteResponse);		
 	}
 
-	private void processUpdateRequest(Connection conn, Integer quoteId, QuoteRequest quoteRequest, Set<String> keyset, Quote quote, SessionUser sessionUser, ResponseCode responseCode, HttpServletResponse response) throws RecordNotFoundException, Exception {
+	
+	
+	private void processUpdateRequest(Connection conn, Integer quoteId, QuoteRequest quoteRequest, Set<String> keyset, Quote quote, SessionData sessionData, ResponseCode responseCode, HttpServletResponse response) throws RecordNotFoundException, Exception {
 		logger.log(Level.DEBUG, "Doing Update Stuff");			
 		logger.log(Level.DEBUG, "Call validateUpdate:"+quoteRequest);
+		SessionUser sessionUser = sessionData.getUser();
 		Quote key = new Quote();
 		key.setQuoteId(quoteId);
 		logger.log(Level.DEBUG, "Key:"+key);
@@ -329,7 +339,7 @@ public class QuoteServlet extends AbstractServlet {
 			logger.log(Level.DEBUG, "passed validation");
 			try {
 				logger.log(Level.DEBUG, "Trying to do update for quote "+key.getQuoteId());
-				quote = doUpdate(conn, key, quoteRequest, sessionUser);
+				quote = doUpdate(conn, key, quoteRequest, sessionUser, keyset);
 				String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 				responseCode = ResponseCode.SUCCESS;
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
@@ -347,7 +357,7 @@ public class QuoteServlet extends AbstractServlet {
 			logger.log(Level.DEBUG, "Doing Edit Fail");
 			responseCode = ResponseCode.EDIT_FAILURE;
 		}
-		QuoteResponse codeResponse = new QuoteResponse(quote, webMessages);
+		QuoteResponse codeResponse = new QuoteResponse(conn, quote, webMessages, sessionData.getUserPermissionList());
 		logger.log(Level.DEBUG, "Response:");
 		logger.log(Level.DEBUG, "responseCode: " + responseCode);
 		logger.log(Level.DEBUG, "codeResponse: " + codeResponse);
@@ -358,16 +368,14 @@ public class QuoteServlet extends AbstractServlet {
 
 	
 	
-	protected Quote doAdd(Connection conn, QuoteRequest quoteRequest, SessionUser sessionUser) throws Exception {
+	protected Quote doAdd(Connection conn, QuoteRequest quoteRequest, SessionData sessionData) throws Exception {
 		Date today = new Date();
 		Quote quote = new Quote();
-
-		quote.setAddedBy(sessionUser.getUserId());
+		SessionUser sessionUser = sessionData.getUser();
 		
+		quote.setAddedBy(sessionUser.getUserId());		
 		quote.setAddedDate(today);
-
 		quote.setUpdatedBy(sessionUser.getUserId());
-
 		quote.setUpdatedDate(today);
 		
 //		quote.setAddress(quoteRequest.getAddress());
@@ -444,7 +452,14 @@ public class QuoteServlet extends AbstractServlet {
 	}
 
 	
-	
+	/**
+	 * Make a copy of the quote; increment the revision, but leave the quote number the same
+	 * @param conn
+	 * @param sourceQuoteId
+	 * @param sessionUser
+	 * @return
+	 * @throws Exception
+	 */
 	protected Quote doRevise(Connection conn, Integer sourceQuoteId, SessionUser sessionUser) throws Exception {
 
 		logger.log(Level.DEBUG, "Quote servlet call reviseQuote:" + sourceQuoteId);
@@ -461,16 +476,20 @@ public class QuoteServlet extends AbstractServlet {
 	
 	
 
-	protected Quote doUpdate(Connection conn, Quote key, QuoteRequest quoteRequest, SessionUser sessionUser) throws Exception {
+	protected Quote doUpdate(Connection conn, Quote keyQuote, QuoteRequest quoteRequest, SessionUser sessionUser, Set<String> keyset) throws Exception {
 		logger.log(Level.DEBUG, "This is the key:");
-		logger.log(Level.DEBUG, key);
+		logger.log(Level.DEBUG, keyQuote);
 		logger.log(Level.DEBUG, "************");
+		
+		for ( String x : keyset ) {
+			logger.log(Level.DEBUG, x);
+		}
 		Date today = new Date();
 		Quote quote = new Quote();
-		quote.setQuoteId(key.getQuoteId());
+		quote.setQuoteId(keyQuote.getQuoteId());
 		quote.selectOne(conn);
-
-		//		quote.setQuoteId(quoteRequest.getQuoteId());
+		
+//		quote.setQuoteId(quoteRequest.getQuoteId());
 	
 		quote.setUpdatedBy(sessionUser.getUserId());
 		quote.setUpdatedDate(today);
@@ -481,31 +500,31 @@ public class QuoteServlet extends AbstractServlet {
 //		String next = String.valueOf( (char) (charValue + 1));
 		
 //		quote.setAddress(quoteRequest.getAddress());
-		quote.setBillToAddressId(quoteRequest.getBillToAddressId());
+		if ( keyset.contains(QuoteRequest.BILL_TO_ADDRESS_ID)) { quote.setBillToAddressId(quoteRequest.getBillToAddressId()); }
 //		quote.setQuoteNumber(quoteRequest.getQuoteNumber());
 //		quote.setRevision(quoteRequest.getRevisionNumber());
-		quote.setCopiedFromQuoteId(quoteRequest.getCopiedFromQuoteId());
-		quote.setJobSiteAddressId(quoteRequest.getJobSiteAddressId());
-		quote.setLeadType(quoteRequest.getLeadType());
-		quote.setManagerId(quoteRequest.getManagerId());
-		quote.setDivisionId(quoteRequest.getDivisionId());
+		if ( keyset.contains(QuoteRequest.COPIED_FROM_QUOTE_ID)) { quote.setCopiedFromQuoteId(quoteRequest.getCopiedFromQuoteId()); }
+		if ( keyset.contains(QuoteRequest.JOB_SITE_ADDRESS_ID)) { quote.setJobSiteAddressId(quoteRequest.getJobSiteAddressId()); }
+		if ( keyset.contains(QuoteRequest.LEAD_TYPE)) { quote.setLeadType(quoteRequest.getLeadType()); }
+		if ( keyset.contains(QuoteRequest.MANAGER_ID)) { quote.setManagerId(quoteRequest.getManagerId()); }
+		if ( keyset.contains(QuoteRequest.DIVISION_ID)) { quote.setDivisionId(quoteRequest.getDivisionId()); }
 //		quote.setName(quoteRequest.getName());
 
-		if ( quoteRequest.getProposalDate() != null) {
+		if ( keyset.contains(QuoteRequest.PROPOSAL_DATE) && quoteRequest.getProposalDate() != null) {
 			quote.setProposalDate(quoteRequest.getProposalDate());
 		}
-		if ( ! StringUtils.isBlank(quoteRequest.getAccountType())) {
+		if ( keyset.contains(QuoteRequest.ACCOUNT_TYPE) && ! StringUtils.isBlank(quoteRequest.getAccountType())) {
 			quote.setAccountType(quoteRequest.getAccountType());
 		}
 
 	
 //		quote.setQuoteNumber(AppUtils.getNextQuoteNumber(conn));
 //		quote.setRevision(App);
-		if ( (quoteRequest.getSignedByContactId() != null) && (quoteRequest.getSignedByContactId() != 0) ) {
+		if ( keyset.contains(QuoteRequest.SIGNED_BY_CONTACT_ID) && (quoteRequest.getSignedByContactId() != null) && (quoteRequest.getSignedByContactId() != 0) ) {
 			logger.log(Level.DEBUG, "signed by: " + quoteRequest.getSignedByContactId());
 			quote.setSignedByContactId(quoteRequest.getSignedByContactId());
 		}
-		quote.setTemplateId(quoteRequest.getTemplateId());
+		if ( keyset.contains(QuoteRequest.TEMPLATE_ID) ) { quote.setTemplateId(quoteRequest.getTemplateId()); }
 		
 //		 if we update something that isn't there, a RecordNotFoundException gets thrown
 //		 that exception get propagated and turned into a 404
@@ -513,12 +532,38 @@ public class QuoteServlet extends AbstractServlet {
 		logger.log(Level.DEBUG, "This is the update quote:");
 		logger.log(Level.DEBUG, quote);
 
-		QuoteUtils.updateQuoteHistory(conn, key.getQuoteId());
+		QuoteUtils.updateQuoteHistory(conn, keyQuote.getQuoteId());
 		
-		quote.update(conn, key);		
+		quote.update(conn, keyQuote);
+		
+		if ( keyset.contains(QuoteRequest.BILLING_CONTACT_ID)) {
+			updateJobContacts(conn, Job.BILLING_CONTACT_ID, keyQuote.getQuoteId(), quoteRequest.getBillingContactId(), sessionUser, today);
+		}
+		if ( keyset.contains(QuoteRequest.CONTRACT_CONTACT_ID)) {
+			updateJobContacts(conn, Job.CONTRACT_CONTACT_ID, keyQuote.getQuoteId(), quoteRequest.getContractContactId(), sessionUser, today);
+		}
+		if ( keyset.contains(QuoteRequest.JOB_CONTACT_ID)) {
+			updateJobContacts(conn, Job.JOB_CONTACT_ID, keyQuote.getQuoteId(), quoteRequest.getJobContactId(), sessionUser, today);
+		}
+		if ( keyset.contains(QuoteRequest.SITE_CONTACT)) {
+			updateJobContacts(conn, Job.SITE_CONTACT, keyQuote.getQuoteId(), quoteRequest.getSiteContact(), sessionUser, today);
+		}
 		return quote;
 	}
 
+	
+	private void updateJobContacts(Connection conn, String fieldName, Integer quoteId, Integer contactId, SessionUser sessionUser, Date today) throws SQLException {
+		String sql = "update job set " + fieldName + "=?, updated_by=?, updated_date=? where " + Job.QUOTE_ID + "=?";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, contactId);
+		ps.setInt(2, sessionUser.getUserId());
+		ps.setDate(3, new java.sql.Date(today.getTime()));
+		ps.setInt(4, quoteId);
+		ps.executeUpdate();
+	}
+
+	
+	
 	private QuoteListResponse makeQuotesListResponse(Connection conn, List<UserPermission> permissionList) throws Exception {
 		QuoteListResponse quotesListResponse = new QuoteListResponse(conn, permissionList);
 		return quotesListResponse;

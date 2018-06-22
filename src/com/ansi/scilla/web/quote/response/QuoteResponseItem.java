@@ -38,8 +38,19 @@ public class QuoteResponseItem extends MessageResponse {
 	private List<JobHeader> jobHeaderList;
 	private Boolean canEdit;
 
+	public QuoteResponseItem(Connection conn, Quote quote, Boolean canEdit) throws Exception {
+		super();
+		makeQuoteDetail(conn, quote);
+		this.canEdit = canEdit;
+	}
+	
 	public QuoteResponseItem(Connection conn, Quote quote, List<UserPermission> permissionList) throws Exception {
 		super();
+		makeQuoteDetail(conn, quote);
+		this.canEdit = makeEditFlag(permissionList);
+	}
+	
+	private void makeQuoteDetail(Connection conn, Quote quote) throws Exception {
 		PropertyUtils.copyProperties(this, quote);
 		
 		User manager = new User();
@@ -72,10 +83,9 @@ public class QuoteResponseItem extends MessageResponse {
 		this.quote = new QuoteDetail(quote, manager, division, printCount, job);
 		
 		this.jobContact = JobContact.getQuoteContact(conn, quote.getQuoteId());
-		this.jobHeaderList = JobHeader.getJobHeaderList(conn, quote.getQuoteId());
-		
-		this.canEdit = makeEditFlag(permissionList);
+		this.jobHeaderList = JobHeader.getJobHeaderList(conn, quote.getQuoteId());		
 	}
+	
 	
 	public QuoteDetail getQuote() {
 		return quote;

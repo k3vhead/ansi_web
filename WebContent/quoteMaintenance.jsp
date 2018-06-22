@@ -127,7 +127,7 @@
 					
 					
 					
-					doUpdate : function($quoteId, $data, $successCallback, $errCallback) {
+					doQuoteUpdate : function($quoteId, $data, $successCallback, $errCallback) {
 						var $outbound = JSON.stringify($data);
 						var $url = "quote/" + $quoteId;
 						console.log($outbound);
@@ -927,16 +927,12 @@
 						console.log(QUOTEMAINTENANCE.quote.quote);
 						var $quoteId = QUOTEMAINTENANCE.quote.quote.quoteId;
 						var $contactType = $("#contact-edit-modal").data("type");
-						var $contactId = $("#contact-edit-modal").data("id");
-						console.log("Saving contact");
-						console.log("Quote id: " + $quoteId);
-						console.log("contact type: " + $contactType);
-						console.log("contact id: " + $contactId);
+						var $contactId = $("#contact-edit-modal").data("id");						
 						var $contactLabel = $contactLabels[$contactType];
 						var $outbound = {};
 						$outbound["quoteId"]=$quoteId;
 						$outbound[$contactLabel]=$contactId;
-						QUOTEMAINTENANCE.doUpdate($quoteId, $outbound, QUOTEMAINTENANCE.saveContactSuccess, QUOTEMAINTENANCE.saveContactErr);
+						QUOTEMAINTENANCE.doQuoteUpdate($quoteId, $outbound, QUOTEMAINTENANCE.saveContactSuccess, QUOTEMAINTENANCE.saveContactErr);
 					},
 					
 					
@@ -968,6 +964,10 @@
 							}
 							$("#contact-edit-modal .errMsg").html($message).show().fadeOut(3000);
 						} else {
+							QUOTEMAINTENANCE.populateContactPanel( "#job-contact", $data.data.quote.jobContact.jobContact);
+							QUOTEMAINTENANCE.populateContactPanel( "#site-contact", $data.data.quote.jobContact.siteContact);
+							QUOTEMAINTENANCE.populateContactPanel( "#billing-contact", $data.data.quote.jobContact.billingContact);
+							QUOTEMAINTENANCE.populateContactPanel( "#contract-contact", $data.data.quote.jobContact.contractContact);
 							$("#globalMsg").html("Update Successful").fadeOut(3000);
 							$("#contact-edit-modal").dialog("close");
 						}

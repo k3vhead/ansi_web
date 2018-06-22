@@ -24,7 +24,7 @@ import com.thewebthing.commons.lang.JsonException;
 		public static final String MANAGER_ID = "managerId";
 		public static final String NAME = "name";
 		public static final String PAYMENT_TERMS = "paymentTerms";
-		public static final String PROPOSOAL_DATE = "proposalDate";
+		public static final String PROPOSAL_DATE = "proposalDate";
 		public static final String QUOTE_ID = "quoteId";
 		public static final String QUOTE_NUMBER = "quoteNumber";
 		public static final String REVISION = "revision";
