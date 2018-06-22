@@ -29,6 +29,7 @@ public class QuoteValidator extends ApplicationObject {
 		validatorMap.put(QuoteRequest.MANAGER_ID, new ManagerIdValidator());
 		validatorMap.put(QuoteRequest.DIVISION_ID, new DivisionIdValidator());
 		validatorMap.put(QuoteRequest.LEAD_TYPE, new LeadTypeValidator());
+		validatorMap.put(QuoteRequest.ACCOUNT_TYPE, new AccountTypeValidator());
 	}
 	
 	public static void validate(Connection conn, QuoteRequest quoteRequest, String fieldName, WebMessages webMessages ) throws Exception {
