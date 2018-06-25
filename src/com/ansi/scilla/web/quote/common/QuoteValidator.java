@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.util.HashMap;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.web.common.fieldValidator.FieldValidator;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.quote.request.QuoteRequest;
 

@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.quote.common;
+package com.ansi.scilla.web.common.fieldValidator;
 
 import java.sql.Connection;
 

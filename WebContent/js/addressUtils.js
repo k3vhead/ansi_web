@@ -1,6 +1,41 @@
 $( document ).ready(function() {
-	;ADDRESS_UTILS = {
+	// this is the new & improved address utilities. Methods are set up to be called
+	// with a callback function parameter to make asynchronous call work correctly.
+	// The old version of thing ("ADDRESS_UTILS") is here for backwards compatability
+	// and will go away at some point.
+	;ADDRESSUTILS = {
+		getAddress : function($addressId, $callback) {
+			var $url = 'address/' + $addressId;
 
+			var jqxhr = $.ajax({
+				type: 'GET',
+				url: $url,
+				statusCode: {
+					200: function($data) {
+						$callback(200, $data);
+					},
+					403: function($data) {
+						$callback(403, $data);
+					},
+					404: function($data) {
+						$callback(404, $data);
+					},
+					405: function($data) {
+						$callback(405, $data);
+					},
+					500: function($data) {
+						$callback(500, $data);
+					} 
+				},
+				dataType: 'json'
+			});			
+		},
+			
+	}
+	
+	
+	;ADDRESS_UTILS = {
+		
 		getAddress : function($addressId, $tagName) {
 			var $url = 'address/' + $addressId;
 
