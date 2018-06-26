@@ -27,12 +27,16 @@ public class QuoteResponse extends MessageResponse implements Serializable {
 	
 	public QuoteResponse(Connection conn, Quote quote, WebMessages webMessages, Boolean canEdit) throws Exception {
 		super(webMessages);
-		this.quote = new QuoteResponseItem(conn, quote, canEdit);
+		if ( quote != null ) {
+			this.quote = new QuoteResponseItem(conn, quote, canEdit);
+		}
 	}
 	
 	public QuoteResponse(Connection conn, Quote quote, WebMessages webMessages, List<UserPermission>permissionList) throws Exception {
 		super(webMessages);
-		this.quote = new QuoteResponseItem(conn, quote, permissionList);
+		if ( quote != null ) {
+			this.quote = new QuoteResponseItem(conn, quote, permissionList);
+		}
 	}
 
 	public QuoteResponseItem getQuote() {

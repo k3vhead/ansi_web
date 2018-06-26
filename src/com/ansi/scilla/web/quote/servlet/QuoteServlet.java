@@ -353,10 +353,12 @@ public class QuoteServlet extends AbstractServlet {
 				String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
 			}
-		} else {
+		} else {			
 			logger.log(Level.DEBUG, "Doing Edit Fail");
 			responseCode = ResponseCode.EDIT_FAILURE;
 		}
+		logger.log(Level.DEBUG, "Making a response with this quote:");
+		logger.log(Level.DEBUG, quote);
 		QuoteResponse codeResponse = new QuoteResponse(conn, quote, webMessages, sessionData.getUserPermissionList());
 		logger.log(Level.DEBUG, "Response:");
 		logger.log(Level.DEBUG, "responseCode: " + responseCode);

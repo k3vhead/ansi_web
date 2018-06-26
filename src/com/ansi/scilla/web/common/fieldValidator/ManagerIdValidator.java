@@ -14,7 +14,7 @@ import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
-public class ManagerIdValidator extends ApplicationObject implements FieldValidator {
+public abstract class ManagerIdValidator extends ApplicationObject implements FieldValidator {
 
 	private static final long serialVersionUID = 1L;
 	

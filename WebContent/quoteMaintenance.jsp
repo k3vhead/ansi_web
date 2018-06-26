@@ -29,8 +29,8 @@
         <%--
         <script type="text/javascript" src="js/jobMaintenance.js"></script>
         <script type="text/javascript" src="js/quoteMaintenance.js"></script>        
-        <script type="text/javascript" src="js/addressUtils.js"></script>
          --%>
+        <script type="text/javascript" src="js/addressUtils.js"></script>
         <script type="text/javascript">        
         
         	$(document).ready(function() {
@@ -373,11 +373,76 @@
 						});	
 						$("#contact-save-button").button('option', 'label', 'Save');
 						$("#contact-cancel-button").button('option', 'label', 'Cancel');
+						
+						
+						
+						
+						
+						
+						$( "#address-edit-modal" ).dialog({
+							title:'Edit Address',
+							autoOpen: false,
+							height: 300,
+							width: 500,
+							modal: true,
+							closeOnEscape:true,
+							//open: function(event, ui) {
+							//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+							//},
+							buttons: [
+								{
+									id: "address-cancel-button",
+									click: function($event) {
+										$( "#address-edit-modal" ).dialog("close");
+									}
+								},
+								{
+									id: "address-save-button",
+									click: function($event) {
+										QUOTEMAINTENANCE.saveAddress();
+									}
+								}
+							]
+						});	
+						$("#address-save-button").button('option', 'label', 'Save');
+						$("#address-cancel-button").button('option', 'label', 'Cancel');
 					},
 					
 					
 					
+					
 					makeAutoComplete : function() {
+						QUOTEMAINTENANCE.makeAutoCompleteAddress();
+						QUOTEMAINTENANCE.makeAutoCompleteContact();
+					},
+					
+					
+					
+					
+					makeAutoCompleteAddress : function() {
+						var $selector = $("#address-edit-modal input[name='address-name']");						
+				    	
+						var $addressAutoComplete = $( $selector ).autocomplete({
+							source: "addressTypeAhead?",
+							select: function( event, ui ) {
+								$( $selector ).val(ui.item.id);								
+								console.log(ui.item);	
+								ADDRESSUTILS.getAddress(ui.item.id, QUOTEMAINTENANCE.populateAddressModal);
+	   				      	},
+							response: function(event, ui) {
+								if (ui.content.length === 0) {
+									$("#address-edit-modal .none-found").show();
+						        } else {
+									$("#address-edit-display").hide();								
+						        	$("#address-edit-modal .none-found").hide();
+						        }
+							}
+						}); 	
+					},
+					
+					
+					
+					makeAutoCompleteContact : function() {
 						$selector = $("#contact-edit-modal input[name='contact-name']");
 						$( $selector ).autocomplete({
 							source:"contactTypeAhead?term=",
@@ -543,7 +608,18 @@
 		    			$("#edit-this-address .edit-address").click(function($event) {
 		    				var $type = $(this).data("type");
 		    				console.log("Editing addr: " + $type);
+		    				var $title = "Edit Address";
+		    				if ( $type == "jobsite") { $title = "Job Site"; }
+		    				if ( $type == "billto") { $title = "Bill To"; }		    				
+		    				$("#address-edit-modal input[name='address-name']").val("");
+		    				$("#address-edit-modal").dialog("option","title",$title);
+		    				$("#address-edit-modal .none-found").hide();
+		    				$("#address-edit-display").hide();
+		    				$("#address-edit-modal").data("type",$type);
+				        	$("#address-edit-modal").data("id","");
+		    				$("#address-edit-modal").dialog("open");
 		    			});
+		    			
 		    			$("#edit-this-address .edit-contact").click(function($event) {
 		    				var $type = $(this).data("type");
 		    				var $title = "Edit Contact";
@@ -595,6 +671,32 @@
 						$.each($data.codeList, function(index, val) {
 						    $select.append(new Option(val.displayValue, val.value));
 						});
+					},
+					
+					
+					
+					
+					populateAddressModal : function($statusCode, $data) {
+						console.log("Populating address modal: " + $statusCode);
+						console.log($data);
+						if ( $statusCode == 200 ) {
+							var $addressSelector = "#address-edit-display";
+							$("#address-edit-modal").data("id",$data.data.addressList[0].addressId); //ui.item.id);	
+							QUOTEMAINTENANCE.populateAddressPanel("#address-edit-display", $data.data.addressList[0]);
+							$($addressSelector).show();
+						}
+						if ( $statusCode == 403 ) {
+							$("#globalMsg").html("Session expired. Log in and try again").show();
+							$("#address-edit-modal").dialog("close");
+						}
+						if ( $statusCode == 404 ) {
+							$("#globalMsg").html("Address Error 404. Contact Support").show();
+							$("#address-edit-modal").dialog("close");
+						}
+						if ( $statusCode == 500 ) {
+							$("#globalMsg").html("Address Error 500. Contact Support").show();
+							$("#address-edit-modal").dialog("close");
+						}
 					},
 					
 					
@@ -916,6 +1018,60 @@
 					
 					
 					
+					saveAddress : function() {						
+						var $addressType = $("#address-edit-modal").data("type");
+						var $addressId = $("#address-edit-modal").data("id");
+						console.log("Saving an address: " + $addressType + " " + $addressId);
+
+						// this maps the address type we use in the jquery to the field in the quote update request object
+						var $addressLabels = {
+								"jobsite":"jobSiteAddressId",
+								"billto":"billToAddressId"
+						}
+					
+						var $quoteId = QUOTEMAINTENANCE.quote.quote.quoteId;
+						var $addressLabel = $addressLabels[$addressType];
+						var $outbound = {};
+						$outbound["quoteId"]=$quoteId;
+						$outbound[$addressLabel]=$addressId;
+						QUOTEMAINTENANCE.doQuoteUpdate($quoteId, $outbound, QUOTEMAINTENANCE.saveAddressSuccess, QUOTEMAINTENANCE.saveAddressErr);
+					},
+					
+					
+					
+					saveAddressErr : function($statusCode) {
+						var $messages = {
+								403:"Session Expired. Log in and try again",
+								404:"System Error Address 404. Contact Support",
+								500:"System Error Address 500. Contact Support"
+						}
+						$("#address-edit-modal").dialog("close");
+						$("#globalMsg").html( $messages[$statusCode] );
+					},
+					
+					
+					
+					saveAddressSuccess : function($data) {
+						console.log($data);
+						var $type = $("#address-edit-modal").data("type");
+						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {							
+							if ( $type == 'jobsite' ) {
+								$message = $data.data.webMessages.jobSiteAddressId[0]; 
+							} else if ( $type == 'billto' ) {
+								$message = $data.data.webMessages.billToAddressId[0];
+							} else {
+								$message = "Unexpected Response. Contact Support: " + $type;
+							}
+							$("#address-edit-modal .errMsg").html($message).show().fadeOut(3000);
+						} else {
+							QUOTEMAINTENANCE.populateAddressPanel( "#address-bill-to", $data.data.quote.billTo);
+							QUOTEMAINTENANCE.populateAddressPanel( "#address-job-site", $data.data.quote.jobSite);
+							$("#globalMsg").html("Update Successful").fadeOut(3000);
+							$("#address-edit-modal").dialog("close");
+						}
+					}, 
+						
+						
 					saveContact : function() {
 						var $contactLabels = {
 								"contract":"contractContactId",
@@ -1233,6 +1389,20 @@
 		    	</div>
 		    </div>
 	    </ansi:hasPermission>
+	    
+	    
+	    <ansi:hasPermission permissionRequired="QUOTE_CREATE">
+		    <div id="address-edit-modal" class="edit-modal">		    	
+		    	<span class="formLabel">Address:</span> <input type="text" name="address-name" />
+		    	<span class="errMsg err"></span>
+		    	<br /><hr /><br />
+		    	<quote:addressDisplayPanel id="address-edit-display" label="Name" />
+		    	<div class="none-found">
+		    		<span class="err">No Matching Addresses</span>
+		    	</div>
+		    </div>
+	    </ansi:hasPermission>
+	    
 	    
 	    
 	    <ansi:hasPermission permissionRequired="QUOTE_CREATE">

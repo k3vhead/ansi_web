@@ -9,6 +9,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Address;
@@ -51,6 +54,10 @@ public class QuoteResponseItem extends MessageResponse {
 	}
 	
 	private void makeQuoteDetail(Connection conn, Quote quote) throws Exception {
+		Logger logger = LogManager.getLogger(this.getClass());
+		logger.log(Level.DEBUG, "Making a detail");
+		logger.log(Level.DEBUG, this);
+		logger.log(Level.DEBUG, quote);
 		PropertyUtils.copyProperties(this, quote);
 		
 		User manager = new User();
