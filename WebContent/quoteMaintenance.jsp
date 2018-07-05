@@ -414,6 +414,7 @@
 					makeAutoComplete : function() {
 						QUOTEMAINTENANCE.makeAutoCompleteAddress();
 						QUOTEMAINTENANCE.makeAutoCompleteContact();
+						QUOTEMAINTENANCE.makeAutoCompleteSignedBy();
 					},
 					
 					
@@ -471,6 +472,42 @@
 						        } else {
 									$("#contact-edit-display").hide();								
 						        	$("#contact-edit-modal .none-found").hide();
+						        }
+						    }
+						});
+					},
+					
+					
+					
+					makeAutoCompleteSignedBy : function() {
+						$selector = $("#quotePanel input[name='signedBy']");
+						$( $selector ).autocomplete({
+							source:"contactTypeAhead?term=",
+						    select: function( event, ui ) {
+								console.log(ui.item);
+								//$("#contact-edit-modal").data("id",ui.item.id);
+						    	$("#quotePanel input[name='signedBy']").attr("id", ui.item.id);
+						    	//var $contactSelector = "#contact-edit-display";
+						    	//$($contactSelector + " .ansi-contact-name").html(ui.item.value);
+						    	//var $preferred = ui.item.preferredContactValue.split(":");
+						    	//$($contactSelector + " .ansi-contact-number").html($preferred[1]);
+						    	
+						    	//$($contactSelector + " .ansi-contact-method-is-business-phone").hide();
+								//$($contactSelector + " .ansi-contact-method-is-mobile-phone").hide();
+								//$($contactSelector + " .ansi-contact-method-is-fax").hide();
+								//$($contactSelector + " .ansi-contact-method-is-email").hide();
+								//if ( $preferred[0] == "business_phone") { $($contactSelector + " .ansi-contact-method-is-business-phone").show(); }
+								//if ( $preferred[0] == "mobile_phone") { $($contactSelector + " .ansi-contact-method-is-mobile-phone").show(); }
+								//if ( $preferred[0] == "fax") { $($contactSelector + " .ansi-contact-method-is-fax").show(); }
+								//if ( $preferred[0] == "email") { $($contactSelector + " .ansi-contact-method-is-email").show(); }
+								//$($contactSelector).show();
+							},
+						    response: function(event, ui) {
+								if (ui.content.length === 0) {
+									alert("No matches");
+						        } else {
+									//$("#contact-edit-display").hide();								
+						        	//$("#contact-edit-modal .none-found").hide();
 						        }
 						    }
 						});
@@ -648,7 +685,7 @@
 		    			
 		    			$("#quote-container .panel-button-container .cancel-edit").click(function($event) {
 		    				console.log("Cancel Editing a quote");
-		    				QUOTEMAINTENANCE.populateQuotePanel(QUOTEMAINTENANCE.quote.quote);
+		    				QUOTEMAINTENANCE.populateQuotePanel(QUOTEMAINTENANCE.quote);
 		    				$("#quotePanel input").prop("disabled", true);
 		    				$("#quotePanel select").prop("disabled", true);
 		    				$("#quotePanel select").removeClass("edit-err");
@@ -970,31 +1007,34 @@
 		            	console.log("populating quote panel");
 		            	console.log($quote);
 		            
-		            	$("#printHistoryDiv").attr("data-quoteid", $quote.quoteId);	//this is so the gethistory method has an id to work with
+		            	$("#printHistoryDiv").attr("data-quoteid", $quote.quote.quoteId);	//this is so the gethistory method has an id to work with
 		            
-		            	$("#quoteDataContainer input[name='quoteId']").val($quote.quoteId);
-		            	$("#quoteDataContainer select[name='managerId']").val($quote.managerId);
-		            	$("#quoteDataContainer select[name='divisionId']").val($quote.divisionId);
-		            	$("#quoteDataContainer .quoteNbrDisplay").html($quote.quoteNumber);
-		            	$("#quoteDataContainer .revisionDisplay").html($quote.revision);
+		            	$("#quoteDataContainer input[name='quoteId']").val($quote.quote.quoteId);
+		            	$("#quoteDataContainer select[name='managerId']").val($quote.quote.managerId);
+		            	$("#quoteDataContainer select[name='divisionId']").val($quote.quote.divisionId);
+		            	$("#quoteDataContainer .quoteNbrDisplay").html($quote.quote.quoteNumber);
+		            	$("#quoteDataContainer .revisionDisplay").html($quote.quote.revision);
 		            	
-		            	$("#quoteDataContainer select[name='accountType']").val($quote.accountType);
-		            	$("#quoteDataContainer select[name='invoiceTerms']").val($quote.invoiceTerms);
-		            	$("#quoteDataContainer .proposedDate").html($quote.proposalDate);
-		            	$("#quoteDataContainer select[name='leadType']").val($quote.leadType);
-		            	$("#quoteDataContainer select[name='invoiceStyle']").val($quote.invoiceStyle);
-		            	// ***** $("#quoteDataContainer input[name='signedBy']").val($quote.divisionId);
-		            	$("#quoteDataContainer input[name='signedByContactId']").val($quote.signedByContactId);
-		            	$("#quoteDataContainer select[name='buildingType']").val($quote.buildingType);
-		            	$("#quoteDataContainer select[name='invoiceGrouping']").val($quote.invoiceGrouping);
+		            	$("#quoteDataContainer select[name='accountType']").val($quote.quote.accountType);
+		            	$("#quoteDataContainer select[name='invoiceTerms']").val($quote.quote.invoiceTerms);
+		            	$("#quoteDataContainer .proposedDate").html($quote.quote.proposalDate);
+		            	$("#quoteDataContainer select[name='leadType']").val($quote.quote.leadType);
+		            	$("#quoteDataContainer select[name='invoiceStyle']").val($quote.quote.invoiceStyle);
+		            	if ( $quote.signedBy != null ) {
+		            		$("#quoteDataContainer input[name='signedBy']").val($quote.signedBy.firstName + " " + $quote.signedBy.lastName);
+		            		$("#quoteDataContainer input[name='signedBy']").attr("id", $quote.signedBy.contactid);
+		            	}		            	
+		            	$("#quoteDataContainer input[name='signedByContactId']").val($quote.quote.signedByContactId);
+		            	$("#quoteDataContainer select[name='buildingType']").val($quote.quote.buildingType);
+		            	$("#quoteDataContainer select[name='invoiceGrouping']").val($quote.quote.invoiceGrouping);
 		            	
-		            	var $invoiceBatch = $quote.invoiceBatch == 1;
+		            	var $invoiceBatch = $quote.quote.invoiceBatch == 1;
 		            	$("#quoteDataContainer input[name='invoiceBatch']").prop("checked", $invoiceBatch);
-		            	var $taxExempt = $quote.taxExempt == 1;
+		            	var $taxExempt = $quote.quote.taxExempt == 1;
 		            	$("#quoteDataContainer input[name='taxExempt']").prop("checked", $taxExempt);
-		            	$("#quoteDataContainer input[name='taxExemptReason']").val($quote.taxExemptReason);
+		            	$("#quoteDataContainer input[name='taxExemptReason']").val($quote.quote.taxExemptReason);
 		            	
-		            	$("#quoteDataContainer .printCount").html($quote.printCount);
+		            	$("#quoteDataContainer .printCount").html($quote.quote.printCount);
 		            	<%--
 		            	"address": null,
 						"billToAddressId": 52568,
@@ -1031,7 +1071,7 @@
 	        			if ( $canPopulate == true ) {
 	        				$(".action-button").attr("data-quoteid",$data.quoteList[0].quote.quoteId); //This is so copy/revise buttons know what to copy/revise
 							$(".action-button").attr("data-quotenumber",$data.quoteList[0].quote.quoteNumber + $data.quoteList[0].quote.revision);
-							QUOTEMAINTENANCE.populateQuotePanel($data.quoteList[0].quote);
+							QUOTEMAINTENANCE.populateQuotePanel($data.quoteList[0]);
 							QUOTEMAINTENANCE.populateAddressPanel( "#address-bill-to", $data.quoteList[0].billTo);
 							QUOTEMAINTENANCE.populateAddressPanel( "#address-job-site", $data.quoteList[0].jobSite);
 							QUOTEMAINTENANCE.populateContactPanel( "#job-contact", $data.quoteList[0].jobContact.jobContact);
@@ -1168,13 +1208,19 @@
 	    				console.log("saveQuoteHeader");
 	    				var $outbound = {};
 	    				$.each( $("#quotePanel input"), function($index, $value) {
-	    					$selector = "#quotePanel input[name='" + $value.name + "']";
-	    					$outbound[$value.name] = $($selector).val();
+	    					if ( $value.name == 'signedBy') {
+	    						$outbound['signedByContactId'] = $("#quotePanel input[name='signedBy']").attr("id");
+	    					} else {
+		    					$selector = "#quotePanel input[name='" + $value.name + "']";
+		    					console.log($selector);
+		    					$outbound[$value.name] = $($selector).val();
+	    					}
 	    				});
 	    				$.each( $("#quotePanel select"), function($index, $value) {
 	    					$selector = "#quotePanel select[name='" + $value.name + "']";
 	    					$outbound[$value.name] = $($selector).val();
 	    				});
+	    				
 	    				var $quoteId = QUOTEMAINTENANCE.quote.quote.quoteId;
 	    				console.log($outbound);
 	    				QUOTEMAINTENANCE.doQuoteUpdate($quoteId, $outbound, QUOTEMAINTENANCE.saveQuoteHeaderSuccess, QUOTEMAINTENANCE.saveQuoteHeaderErr);
@@ -1214,7 +1260,7 @@
 							console.log("Update header success:");
 							console.log($data);
 							QUOTEMAINTENANCE.quote = $data.data.quote;
-							QUOTEMAINTENANCE.populateQuotePanel(QUOTEMAINTENANCE.quote.quote);
+							QUOTEMAINTENANCE.populateQuotePanel(QUOTEMAINTENANCE.quote);
 							$("#globalMsg").html("Update Successful").fadeOut(3000);
 							$("#quotePanel input").prop("disabled", true);
 		    				$("#quotePanel select").prop("disabled", true);

@@ -123,7 +123,7 @@
 				
 				<td><span class="required"></span></td>    				
 				<td><span class="formLabel">Signed By:</span></td>
-				<td><ansi:hidden name="signedByContactId"  action="<%= action %>" /><ansi:text name="signedBy"  action="<%= action %>"/></td>
+				<td><ansi:text name="signedBy"  action="<%= action %>"/></td>
 				<td><span class="err" id="signedByErr"></span></td>
 			</tr>
 					

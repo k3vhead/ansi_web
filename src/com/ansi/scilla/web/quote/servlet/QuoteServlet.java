@@ -360,13 +360,13 @@ public class QuoteServlet extends AbstractServlet {
 		}
 		logger.log(Level.DEBUG, "Making a response with this quote:");
 		logger.log(Level.DEBUG, quote);
-		QuoteResponse codeResponse = new QuoteResponse(conn, quote, webMessages, sessionData.getUserPermissionList());
+		QuoteResponse quoteResponse = new QuoteResponse(conn, quote, webMessages, sessionData.getUserPermissionList());
 		logger.log(Level.DEBUG, "Response:");
 		logger.log(Level.DEBUG, "responseCode: " + responseCode);
-		logger.log(Level.DEBUG, "codeResponse: " + codeResponse);
+		logger.log(Level.DEBUG, "codeResponse: " + quoteResponse);
 		logger.log(Level.DEBUG, "response: " + response);
 
-		super.sendResponse(conn, response, responseCode, codeResponse);		
+		super.sendResponse(conn, response, responseCode, quoteResponse);		
 	}
 
 	

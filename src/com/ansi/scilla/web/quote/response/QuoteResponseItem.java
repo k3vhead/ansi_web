@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Address;
+import com.ansi.scilla.common.db.Contact;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.Job;
 import com.ansi.scilla.common.db.PrintHistory;
@@ -25,9 +26,11 @@ import com.ansi.scilla.web.address.response.AddressResponseItem;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.common.utils.UserPermission;
+import com.ansi.scilla.web.job.query.ContactItem;
 import com.ansi.scilla.web.job.query.JobContact;
 import com.ansi.scilla.web.job.query.JobHeader;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.thewebthing.commons.db2.RecordNotFoundException;
 
 
 public class QuoteResponseItem extends MessageResponse {
@@ -40,6 +43,7 @@ public class QuoteResponseItem extends MessageResponse {
 	private JobContact jobContact;
 	private List<JobHeader> jobHeaderList;
 	private Boolean canEdit;
+	private ContactItem signedBy;
 
 	public QuoteResponseItem(Connection conn, Quote quote, Boolean canEdit) throws Exception {
 		super();
@@ -90,7 +94,11 @@ public class QuoteResponseItem extends MessageResponse {
 		this.quote = new QuoteDetail(quote, manager, division, printCount, job);
 		
 		this.jobContact = JobContact.getQuoteContact(conn, quote.getQuoteId());
-		this.jobHeaderList = JobHeader.getJobHeaderList(conn, quote.getQuoteId());		
+		this.jobHeaderList = JobHeader.getJobHeaderList(conn, quote.getQuoteId());	
+		
+		if ( quote.getSignedByContactId() != null ) {
+			makeSignedBy(conn, quote.getSignedByContactId());
+		}
 	}
 	
 	
@@ -138,6 +146,14 @@ public class QuoteResponseItem extends MessageResponse {
 		this.canEdit = canEdit;
 	}
 
+	public ContactItem getSignedBy() {
+		return signedBy;
+	}
+
+	public void setSignedBy(ContactItem signedBy) {
+		this.signedBy = signedBy;
+	}
+
 	private Integer makePrintCount(Connection conn, Integer quoteId) throws SQLException {
 		Integer printCount = 0;
 		String sql = "select count(*) as print_count from print_history where " + PrintHistory.QUOTE_ID + "=?";
@@ -164,6 +180,32 @@ public class QuoteResponseItem extends MessageResponse {
 	}
 
 
+	private void makeSignedBy(Connection conn, Integer signedByContactId) throws Exception {
+		Contact contact = new Contact();
+		contact.setContactId(signedByContactId);
+		try {
+			contact.selectOne(conn);
+			this.signedBy = new ContactItem();
+			this.signedBy.setContactId(signedByContactId);
+			this.signedBy.setFirstName(contact.getFirstName());
+			this.signedBy.setLastName(contact.getLastName());
+			if ( contact.getPreferredContact().equalsIgnoreCase("business_phone")) {
+				this.signedBy.setMethod(contact.getBusinessPhone());
+			} else if ( contact.getPreferredContact().equalsIgnoreCase("email")) {
+				this.signedBy.setMethod(contact.getEmail());
+			} else if ( contact.getPreferredContact().equalsIgnoreCase("fax")) {
+				this.signedBy.setMethod(contact.getFax());
+			} else if ( contact.getPreferredContact().equalsIgnoreCase("mobile_phone")) {
+				this.signedBy.setMethod(contact.getMobilePhone());
+			}
+			this.signedBy.setPreferredContact(contact.getPreferredContact());
+		} catch ( RecordNotFoundException e ) {
+			this.signedBy.setLastName("Invalid Contact Id");
+		}
+		
+	}
+
+	
 	private Boolean hasPermission(List<UserPermission> permissionList, Permission requiredPermission) {
 		boolean hasPermission = false;
 		for ( UserPermission p : permissionList ) {
