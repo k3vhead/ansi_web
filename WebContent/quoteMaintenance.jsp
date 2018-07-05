@@ -635,6 +635,34 @@
 				        	$("#contact-edit-modal").data("id","");
 		    				$("#contact-edit-modal").dialog("open");
 		    			});
+		    			
+		    			$("#edit-this-quote").click(function($event) {
+		    				console.log("Editing a quote");
+		    				$("#quotePanel input").prop("disabled", false);
+		    				$("#quotePanel select").prop("disabled", false);
+		    				$("#edit-this-quote").hide();
+		    				$("#quote-container .panel-button-container .save-quote").show();
+		    				$("#quote-container .panel-button-container .cancel-edit").show();
+		    			});
+		    			
+		    			
+		    			$("#quote-container .panel-button-container .cancel-edit").click(function($event) {
+		    				console.log("Cancel Editing a quote");
+		    				QUOTEMAINTENANCE.populateQuotePanel(QUOTEMAINTENANCE.quote.quote);
+		    				$("#quotePanel input").prop("disabled", true);
+		    				$("#quotePanel select").prop("disabled", true);
+		    				$("#quotePanel select").removeClass("edit-err");
+						    $("#quotePanel input").removeClass("edit-err");
+		    				$("#edit-this-quote").show();
+		    				$("#quote-container .panel-button-container .save-quote").hide();
+		    				$("#quote-container .panel-button-container .cancel-edit").hide();
+		    			});
+		    			
+		    			
+		    			$("#quote-container .panel-button-container .save-quote").click(function($event) {
+		    				console.log("Saving quote header");
+		    				QUOTEMAINTENANCE.saveQuoteHeader();
+		    			});
 		    		},
 		    		
 		    		
@@ -939,6 +967,9 @@
 		            
 		            
 		            populateQuotePanel : function($quote) {
+		            	console.log("populating quote panel");
+		            	console.log($quote);
+		            
 		            	$("#printHistoryDiv").attr("data-quoteid", $quote.quoteId);	//this is so the gethistory method has an id to work with
 		            
 		            	$("#quoteDataContainer input[name='quoteId']").val($quote.quoteId);
@@ -1064,6 +1095,7 @@
 							}
 							$("#address-edit-modal .errMsg").html($message).show().fadeOut(3000);
 						} else {
+							QUOTEMAINTENANCE.quote = $data.quote;
 							QUOTEMAINTENANCE.populateAddressPanel( "#address-bill-to", $data.data.quote.billTo);
 							QUOTEMAINTENANCE.populateAddressPanel( "#address-job-site", $data.data.quote.jobSite);
 							$("#globalMsg").html("Update Successful").fadeOut(3000);
@@ -1080,7 +1112,6 @@
 								"site":"siteContact"
 						}
 					
-						console.log(QUOTEMAINTENANCE.quote.quote);
 						var $quoteId = QUOTEMAINTENANCE.quote.quote.quoteId;
 						var $contactType = $("#contact-edit-modal").data("type");
 						var $contactId = $("#contact-edit-modal").data("id");						
@@ -1095,8 +1126,8 @@
 					saveContactErr : function($statusCode) {
 						var $messages = {
 								403:"Session Expired. Log in and try again",
-								404:"System Error Quote 404. Contact Support",
-								500:"System Error Quote 500. Contact Support"
+								404:"System Error Contact 404. Contact Support",
+								500:"System Error Contact 500. Contact Support"
 						}
 						$("#contact-edit-modal").dialog("close");
 						$("#globalMsg").html( $messages[$statusCode] );
@@ -1120,6 +1151,7 @@
 							}
 							$("#contact-edit-modal .errMsg").html($message).show().fadeOut(3000);
 						} else {
+							QUOTEMAINTENANCE.quote = $data.quote;
 							QUOTEMAINTENANCE.populateContactPanel( "#job-contact", $data.data.quote.jobContact.jobContact);
 							QUOTEMAINTENANCE.populateContactPanel( "#site-contact", $data.data.quote.jobContact.siteContact);
 							QUOTEMAINTENANCE.populateContactPanel( "#billing-contact", $data.data.quote.jobContact.billingContact);
@@ -1129,6 +1161,74 @@
 						}
 						
 					},
+					
+					
+					
+					saveQuoteHeader : function() {
+	    				console.log("saveQuoteHeader");
+	    				var $outbound = {};
+	    				$.each( $("#quotePanel input"), function($index, $value) {
+	    					$selector = "#quotePanel input[name='" + $value.name + "']";
+	    					$outbound[$value.name] = $($selector).val();
+	    				});
+	    				$.each( $("#quotePanel select"), function($index, $value) {
+	    					$selector = "#quotePanel select[name='" + $value.name + "']";
+	    					$outbound[$value.name] = $($selector).val();
+	    				});
+	    				var $quoteId = QUOTEMAINTENANCE.quote.quote.quoteId;
+	    				console.log($outbound);
+	    				QUOTEMAINTENANCE.doQuoteUpdate($quoteId, $outbound, QUOTEMAINTENANCE.saveQuoteHeaderSuccess, QUOTEMAINTENANCE.saveQuoteHeaderErr);
+					},
+					
+					
+					
+					saveQuoteHeaderErr : function($statusCode) {
+						var $messages = {
+								403:"Session Expired. Log in and try again",
+								404:"System Error Quote 404. Contact Support",
+								500:"System Error Quote 500. Contact Support"
+						}
+						$("#globalMsg").html( $messages[$statusCode] );
+						$("#quotePanel input").prop("disabled", true);
+	    				$("#quotePanel select").prop("disabled", true);
+	    				$("#quotePanel select").removeClass("edit-err");
+					    $("#quotePanel input").removeClass("edit-err");
+	    				$("#edit-this-quote").show();
+	    				$("#quote-container .panel-button-container .save-quote").hide();
+	    				$("#quote-container .panel-button-container .cancel-edit").hide();
+					},
+					
+					
+					saveQuoteHeaderSuccess : function($data) {
+						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+							console.log($data);
+							$.each($data.data.webMessages, function(index, val) {							    
+							    // it's too much work to figure out if the field is input or select, so do both
+							    $selector = "#quotePanel select[name='"+ index +"']";							    
+							    $($selector).addClass("edit-err");
+							    $selector = "#quotePanel input[name='"+ index +"']";							    
+							    $($selector).addClass("edit-err");
+							});
+							alert("Invalid input. Correct the indicated fields and resubmit");
+						} else {
+							console.log("Update header success:");
+							console.log($data);
+							QUOTEMAINTENANCE.quote = $data.data.quote;
+							QUOTEMAINTENANCE.populateQuotePanel(QUOTEMAINTENANCE.quote.quote);
+							$("#globalMsg").html("Update Successful").fadeOut(3000);
+							$("#quotePanel input").prop("disabled", true);
+		    				$("#quotePanel select").prop("disabled", true);
+						    $("#quotePanel select").removeClass("edit-err");
+						    $("#quotePanel input").removeClass("edit-err");
+		    				$("#edit-this-quote").show();
+		    				$("#quote-container .panel-button-container .save-quote").hide();
+		    				$("#quote-container .panel-button-container .cancel-edit").hide();
+						}
+						
+						
+					},
+					
+					
 					
 					
 					showQuote : function() {
@@ -1163,6 +1263,9 @@
         	}
         	#contact-edit-modal .none-found {
         		display:none;
+        	}
+        	#edit-this-quote {
+        		cursor:pointer;
         	}
         	#job-loading-pattern {
         		display:none;
@@ -1213,6 +1316,19 @@
 				padding:8px;
 				width:1300px;
 			}
+			
+			
+			#quote-container .panel-button-container .save-quote {
+				display:none;
+				cursor:pointer;
+			}
+	    	#quote-container .panel-button-container .cancel-edit {
+				display:none;
+				cursor:pointer;
+			}		
+	    			
+	    			
+	    			
             #viewPrintHistory {
                 cursor:pointer;
             }
@@ -1232,16 +1348,10 @@
 			.ansi-contact-method-is-mobile-phone { display:none; }
 			.ansi-contact-method-is-fax { display:none; }
 			.ansi-contact-method-is-email { display:none; }
-			.edit-modal {
-        		display:none;
-        	}
-			
-			.edit-this-panel {
-				display:none;
-			}
-        	.job-data-row {
-        		display:none;
-        	}
+			.edit-modal { display:none; }
+			.edit-this-panel { display:none; }
+			.edit-err { border:solid 1px #FF0000; }
+        	.job-data-row { display:none; }
 			.jobTitleRow {
 				background-color:#404040; 
 				cursor:pointer; 
@@ -1317,11 +1427,11 @@
 		    			<quote:editAddressMenu styleId="edit-this-address" styleClass="edit-this-panel" />
 		    		</div>
 		    		<div id="address-panel-hider">
-		    		Addresses
-	    			<div style="float:left; padding-left:4px;">
-	    				<span id="address-panel-closed"><i class="fas fa-caret-right" style="color:#FFFFFF;"></i>&nbsp;</span>
-	    				<span id="address-panel-open"><i class="fas fa-caret-down" style="color:#FFFFFF;"></i>&nbsp;</span>
-	    			</div>
+			    		Addresses
+		    			<div style="float:left; padding-left:4px;">
+		    				<span id="address-panel-closed"><i class="fas fa-caret-right" style="color:#FFFFFF;"></i>&nbsp;</span>
+		    				<span id="address-panel-open"><i class="fas fa-caret-down" style="color:#FFFFFF;"></i>&nbsp;</span>
+		    			</div>
 	    			</div>
 	    		</div>
 		    	<div id="addressPanel" style="width:1269px; float:left;">
@@ -1343,11 +1453,13 @@
 		    	</div>
 	    	</div>  <!-- Address container -->
 	    	<div id="quote-container" style="width:1260px; clear:left; margin-top:12px;">
+	    		<div class="panel-button-container">
+	    			<webthing:edit styleId="edit-this-quote" styleClass="edit-this-panel">Edit</webthing:edit>
+	    			<webthing:save styleClass="save-quote">Save</webthing:save>
+	    			<webthing:ban styleClass="cancel-edit">Cancel</webthing:ban>	    			
+	    		</div>
 		    	<div id="quote-panel-hider" style="color:#FFFFFF; background-color:#404040; cursor:pointer; width:1269px; margin-bottom:1px;">
 		    		Quote
-		    		<div class="panel-button-container">
-		    			<webthing:edit styleId="edit-this-quote" styleClass="edit-this-panel">Edit</webthing:edit>
-		    		</div>
 	    			<div style="float:left; padding-left:4px;">
 	    				<span id="quote-panel-closed"><i class="fas fa-caret-right" style="color:#FFFFFF;"></i>&nbsp;</span>
 	    				<span id="quote-panel-open"><i class="fas fa-caret-down" style="color:#FFFFFF;"></i>&nbsp;</span>

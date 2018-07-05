@@ -39,6 +39,12 @@ import com.thewebthing.commons.lang.JsonException;
 		public static final String BILLING_CONTACT_ID = "billingContactId";
 		public static final String JOB_CONTACT_ID = "jobContactId";
 		public static final String SITE_CONTACT = "siteContact";
+		public static final String TAX_EXEMPT = "taxExempt";
+		public static final String TAX_EXEMPT_REASON = "taxExemptReason";
+		public static final String INVOICE_BATCH = "invoiceBatch";
+		public static final String INVOICE_STYLE = "invoiceStyle";
+		public static final String BUILDING_TYPE = "buildingType";
+		public static final String INVOICE_GROUPING = "invoiceGrouping";
 		
 		private static final long serialVersionUID = 1L;		
 
@@ -65,6 +71,12 @@ import com.thewebthing.commons.lang.JsonException;
 		private Integer billingContactId;
 		private Integer jobContactId;
 		private Integer siteContact;
+		private Boolean taxExempt;
+		private String taxExemptReason;
+		private Boolean invoiceBatch;
+		private String invoiceStyle;
+		private String buildingType;
+		private String invoiceGrouping;
 
 		
 		public QuoteRequest() {
@@ -99,6 +111,9 @@ import com.thewebthing.commons.lang.JsonException;
 			this.setBillingContactId(req.getBillingContactId());
 			this.setJobContactId(req.getJobContactId());
 			this.setSiteContact(req.getSiteContact());
+			this.setBuildingType(req.getBuildingType());
+			this.setInvoiceStyle(req.getInvoiceStyle());
+			this.setInvoiceGrouping(req.getInvoiceGrouping());
 		}
 		
 
@@ -350,6 +365,54 @@ import com.thewebthing.commons.lang.JsonException;
 //		@RequiredForUpdate
 		public Integer getTemplateId() {
 			return this.templateId;
+		}
+
+		public Boolean getTaxExempt() {
+			return taxExempt;
+		}
+
+		public void setTaxExempt(Boolean taxExempt) {
+			this.taxExempt = taxExempt;
+		}
+
+		public String getTaxExemptReason() {
+			return taxExemptReason;
+		}
+
+		public void setTaxExemptReason(String taxExemptReason) {
+			this.taxExemptReason = taxExemptReason;
+		}
+
+		public Boolean getInvoiceBatch() {
+			return invoiceBatch;
+		}
+
+		public void setInvoiceBatch(Boolean invoiceBatch) {
+			this.invoiceBatch = invoiceBatch;
+		}
+
+		public String getInvoiceStyle() {
+			return invoiceStyle;
+		}
+
+		public void setInvoiceStyle(String invoiceStyle) {
+			this.invoiceStyle = invoiceStyle;
+		}
+
+		public String getBuildingType() {
+			return buildingType;
+		}
+
+		public void setBuildingType(String buildingType) {
+			this.buildingType = buildingType;
+		}
+
+		public String getInvoiceGrouping() {
+			return invoiceGrouping;
+		}
+
+		public void setInvoiceGrouping(String invoiceGrouping) {
+			this.invoiceGrouping = invoiceGrouping;
 		}
 
 		

@@ -195,6 +195,7 @@ public class QuoteServlet extends AbstractServlet {
 			String jsonString = super.makeJsonString(request);
 			logger.log(Level.DEBUG, "Quote Json: " + jsonString);
 			QuoteRequest quoteRequest = StringUtils.isBlank(jsonString) ? new QuoteRequest() : new QuoteRequest(jsonString);
+			logger.log(Level.DEBUG, "Quote Request: " + quoteRequest);
 			Quote quote = null;
 			ResponseCode responseCode = null;
 			if ( postedUrl.command.equals(ACTION_IS_ADD) ) {

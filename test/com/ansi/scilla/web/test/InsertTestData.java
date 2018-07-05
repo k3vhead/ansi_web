@@ -42,10 +42,8 @@ public class InsertTestData extends TesterUtils {
 			itd.insertPermissionGroup();
 			System.out.println("insertPermissionGroupLevel");
 			itd.insertPermissionGroupLevel();
-			*/
 			System.out.println("insertDivision");
 			itd.insertDivision();
-			/*
 			System.out.println("insertTitle");
 			itd.insertTitle();
 			System.out.println("insertUser");
@@ -54,9 +52,9 @@ public class InsertTestData extends TesterUtils {
 			itd.insertDivisionUser();
 			System.out.println("insertAllUsers");
 			itd.insertAllUsers();
+			*/
 			System.out.println("setPasswords");
 			itd.setPasswords();
-			*/
 			System.out.println("Done");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -65,7 +63,7 @@ public class InsertTestData extends TesterUtils {
 	
 	private void setPasswords() throws Exception {
 		Connection conn = null;
-		String sql = "select user_id, email from ansi_user";		
+		String sql = "select user_id, email from ansi_user where user_id in (66,67,68)";		
 		try {
 			conn = AppUtils.getDevConn();
 			conn.setAutoCommit(false);
