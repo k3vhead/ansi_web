@@ -525,8 +525,9 @@
 					
 					
 					makeJobExpansion : function() {
-						$(".jobTitleRow").click(function($event) {
+						$(".job-hider").click(function($event) {
 							var $jobId = $(this).data("jobid");
+							console.log("Toggling display for job: " + $jobId); 
 							$openSelector = "#job" + $jobId + " .jobTitleRow .job-data-open";
 							$closedSelector = "#job" + $jobId + " .jobTitleRow .job-data-closed";
 							$tableSelector = "#job" + $jobId + " .job-data-row";
@@ -700,6 +701,7 @@
 		    				console.log("Saving quote header");
 		    				QUOTEMAINTENANCE.saveQuoteHeader();
 		    			});
+		    			
 		    		},
 		    		
 		    		
@@ -833,54 +835,105 @@
 		            		$jobHeader = $("<div>");
 		            		$jobHeader.attr("data-jobid", $value.jobId);
 		            		$jobHeader.attr("class","jobTitleRow");
+
+		            		
+		            		$panelButtonContainer = $("<div>");
+		            		$panelButtonContainer.attr("class","panel-button-container");
+		            		$panelButtonContainer.attr("data-jobid",$value.jobId);
+		            		$panelButtonContainer.append('<webthing:edit styleClass="edit-this-job edit-this-panel">Edit</webthing:edit>');
+		            		$panelButtonContainer.append('<webthing:save styleClass="save-job">Save</webthing:save>');
+            				$panelButtonContainer.append('<webthing:ban styleClass="cancel-job-edit">Cancel</webthing:ban>');
+		            		$jobHeader.append($panelButtonContainer);
+		            		
+		            		//<div class="panel-button-container">
+			    			//<webthing:edit styleId="edit-this-quote" styleClass="edit-this-panel">Edit</webthing:edit>
+			    			//<webthing:save styleClass="save-quote">Save</webthing:save>
+			    			//<webthing:ban styleClass="cancel-edit">Cancel</webthing:ban>	    			
+			    			//</div>
 		            		
 		            		
-		            		$jobHeader.append('<span class="job-data-closed"><i class="fas fa-caret-right"></i></span>');
-		            		$jobHeader.append('<span class="job-data-open"><i class="fas fa-caret-down"></i></span>');
-		            		$jobHeader.append('&nbsp;');
+		            		$jobHider = $("<div>");
+		            		$jobHider.attr("data-jobid", $value.jobId);
+		            		$jobHider.attr("class","job-hider");
+		            		
+		            		
+		            		$jobHider.append('<span class="job-data-closed"><i class="fas fa-caret-right"></i></span>');
+		            		$jobHider.append('<span class="job-data-open"><i class="fas fa-caret-down"></i></span>');
+		            		$jobHider.append('&nbsp;');
 		            		
 		            		$jobDiv = $("<div>");
 		            		$jobDiv.attr("class","job-header-job-div");
 		            		$jobDiv.append('<span class="formLabel">Job: </span>');
 		            		$jobDiv.append('<span>' + $value.jobNbr + '</span>');
-		            		$jobHeader.append($jobDiv);
+		            		$jobHider.append($jobDiv);
 		            		
 		            		$descDiv = $("<div>");
 		            		$descDiv.attr("class","job-header-job-div");
 		            		$descDiv.append($value.abbrDescription);
-		            		$jobHeader.append($descDiv);
+		            		$jobHider.append($descDiv);
 		            		
 		            		$divDiv = $("<div>");
 		            		$divDiv.attr("class","job-header-job-div");
 		            		$divDiv.append('<span class="formLabel">Division: </span>');
 		            		$divDiv.append('<span>' + $value.divisionNbr + '-' + $value.divisionCode + '</span>');
-		            		$jobHeader.append($divDiv);
+		            		$jobHider.append($divDiv);
 		            		
 		            		$statusDiv = $("<div>");
 		            		$statusDiv.attr("class","job-header-job-div");
 		            		$statusDiv.append('<span class="formLabel">Status: </span>');
 		            		$statusDiv.append('<span>' + $value.jobStatus +'</span>');
-		            		$jobHeader.append($statusDiv);
+		            		$jobHider.append($statusDiv);
 		            		
 		            		$freqDiv = $("<div>");
 		            		$freqDiv.attr("class","job-header-job-div");
 		            		$freqDiv.append('<span class="formLabel">Freq: </span>');
 		            		$freqDiv.append('<span>' + $value.jobFrequency +'</span>');
-		            		$jobHeader.append($freqDiv);
+		            		$jobHider.append($freqDiv);
 		            		
 		            		$ppcDiv = $("<div>");
 		            		$ppcDiv.attr("class","job-header-job-div");
 		            		$ppcDiv.append('<span class="formLabel">PPC: </span>');
 		            		$ppcDiv.append('<span>$' + $value.pricePerCleaning +'</span>');
-		            		$jobHeader.append($ppcDiv);
+		            		$jobHider.append($ppcDiv);
 		            		
 		            		$detailDiv = $("#job-loading-pattern .job-data-row").clone()
 		            		$detailDiv.attr("data-jobid", $value.jobId);
 		            		
+		            		
+		            		$jobHeader.append($jobHider);
 		            		$jobListItem.append($jobHeader);
 		            		$jobListItem.append($detailDiv);
+		            		console.log($jobHeader);
 		            		$("#jobList").append($jobListItem);
+		            		
+		            		
 		            	});	
+		            	
+		            	$(".edit-this-job").click(function($event) {
+		    				var $jobId = this.parentElement.attributes['data-jobid'].value;
+		    				console.log("clicked a job edit: " + $jobId);
+		    				
+		    				// hide edit icon & show save/cancel
+		    				$editSelector = "#job" + $jobId + " .jobTitleRow .panel-button-container .edit-this-job";
+		    				$saveSelector = "#job" + $jobId + " .jobTitleRow .panel-button-container .save-job";
+		    				$cancelSelector = "#job" + $jobId + " .jobTitleRow .panel-button-container .cancel-job-edit";
+		    				$($editSelector).hide();
+		    				$($saveSelector).show();
+		    				$($cancelSelector).show();
+		    				
+		    				// open the job display panel
+		    				$openSelector = "#job" + $jobId + " .jobTitleRow .job-data-open";
+							$closedSelector = "#job" + $jobId + " .jobTitleRow .job-data-closed";
+							$tableSelector = "#job" + $jobId + " .job-data-row";
+							$($tableSelector).show();
+							$($closedSelector).hide();
+							$($openSelector).show();
+							
+							$detailSelector = "#job" + $jobId + " .job-data-row .job-detail-display";
+							if ( ! $($detailSelector).length ) {
+								QUOTEMAINTENANCE.getJobPanel($jobId);								
+							}
+		    			});
 		            },
 		            
 		            
@@ -1403,6 +1456,12 @@
 				cursor:pointer; 
 				padding-left:4px;
 				color:#FFFFFF;
+			}
+			.jobTitleRow .panel-button-container .save-job {
+				display:none;
+			}
+			.jobTitleRow .panel-button-container .cancel-job-edit {
+				display:none;
 			}
 			.job-data-closed {
 				color:#FFFFFF;
