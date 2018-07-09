@@ -94,12 +94,25 @@
         		$('#goEdit').button('option', 'label', 'Save');
         		$('#closeEditPanel').button('option', 'label', 'Close');
         		
-        		$("#editPanel display[name='']").val("");
+ //       		$("#editPanel display[name='']").val("");
 				$("#editPanel input[name='Name']").val("");
 				$("#editPanel input[name='Description']").val("");
 				$("#editPanel input[name='Status']").val("");			        		
         		$("#editPanel .err").html("");
         		$("#editPanel").dialog("open");
+			});
+			
+			
+			$(".showDelete").click(function($event) {
+				$('#doDelete').data("permissionGroupId",null);
+        		$('#doDelete').button('option', 'label', 'Save');
+        		$('#closeDeleteModal').button('option', 'label', 'Close');
+        		
+//				$("#editPanel input[name='Name']").val("");
+//				$("#editPanel input[name='Description']").val("");
+//				$("#editPanel input[name='Status']").val("");			        		
+//	      		$("#deleteModal .err").html("");
+        		$("#deleteModal").dialog("open");
 			});
 
 
@@ -215,7 +228,7 @@
 				$('.updAction').bind("click", function($clickevent) {
 					doUpdate($clickevent);
 				});
-				$('.delAction').bind("click", function($clickevent) {
+				$(".delAction").on("click", function($clickevent) {
 					showDelete($clickevent);
 				});
 				//$(".editJob").on( "click", function($clickevent) {
@@ -245,52 +258,16 @@
 						}	      	      
 					],
 					close: function() {
-						clearAddForm();
+						//clearAddForm();
 						$("#editPanel").dialog( "close" );
 						//allFields.removeClass( "ui-state-error" );
 					}
 				});
 				
-							
-			$(".showDelete").click(function($event) {
-				$('#doDelete').data("permissionGroupId",null);
-        		$('#doDelete').button('option', 'label', 'Save');
-        		$('#closeDeleteModal').button('option', 'label', 'Close');
-        		
-//				$("#editPanel input[name='Name']").val("");
-//				$("#editPanel input[name='Description']").val("");
-//				$("#editPanel input[name='Status']").val("");			        		
-//       		$("#deleteModal .err").html("");
-        		$("#deleteModal").dialog("open");
-			});
-				
-				$("#deleteModal" ).dialog({
-					title:'Are you sure you want to DELETE this Permission Group?',
-					autoOpen: false,
-					height: 300,
-					width: 300,
-					modal: true,
-					buttons: [
-						{
-							id: "closeDeleteModal",
-							click: function() {
-								$("#deleteModal").dialog( "close" );
-							}
-						},{
-							id: "doDelete",
-							click: function($event) {
-								updatePermissionGroup();
-							}
-						}	      	      
-					],
-					close: function() {
-						$("#deleteModal").dialog( "close" );
-						//allFields.removeClass( "ui-state-error" );
-					}
-				});
+
 				
 				function updatePermissionGroup() {
-        			clearAddForm();
+        			//clearAddForm();
 					console.debug("Updating Permissions");
 					var $permissionGroupId = $("#editPanel input[name='permissionGroupId']").val();
 					console.debug("permissionGroupId: " + $permissionGroupId);
@@ -321,11 +298,11 @@
 			    						$($selectorName).show();
 			    						$($selectorName).html(value[0]).fadeOut(10000);
 			    					});
-			    				} else {
-			    					clearAddForm();			    				
+			    				} else {	    				
 					        		$("#editPanel").dialog("close");
 			    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
 			    					$('#permissionGroupTable').DataTable().ajax.reload();
+			    					clearAddForm();	
 			    				}
 							},
 							403: function($data) {
@@ -378,6 +355,43 @@
 	            	}
 	            }
 				
+	            
+				
+
+					
+				$("#deleteModal" ).dialog({
+					title:'Are you sure you want to DELETE this Permission Group?',
+					autoOpen: false,
+					height: 300,
+					width: 300,
+					modal: true,
+					buttons: [
+						{
+							id: "closeDeleteModal",
+							click: function() {
+								$("#deleteModal").dialog( "close" );
+							}
+						},{
+							id: "doDelete",
+							click: function() {
+								deletePermissionGroup();
+							}
+						}	      	      
+					],
+					close: function() {
+						$("#deleteModal").dialog( "close" );
+						//allFields.removeClass( "ui-state-error" );
+					}
+				});
+				
+				
+//				$("#cancelDelete").click( function($event) {
+//	            	$event.preventDefault();
+//	            	$('#deleteModal').dialog("close");
+//	            });   
+            
+            
+	            
 				
 //				function doDelete($clickevent) {
 //					$clickevent.preventDefault();
@@ -395,22 +409,79 @@
 //				$("#cancelDelete").click( function($event) {
 //	            	$event.preventDefault();
 //	            	$('#confirmDelete').bPopup().close();
-//	            });         
-
-	            function showDelete($clickevent) {
-					var $permissionGroupId = $clickevent.currentTarget.attributes['data-id'].value;
-					console.debug("permissionGroupId: " + $permissionGroupId);
-					$("#doDelete").data("permissionGroupId: " + $permissionGroupId);
-	        		$('#doDelete').button('option', 'label', 'Save');
-	        		$('#closeDeleteModal').button('option', 'label', 'Close');
+//	            });     	            
+				
+				
+				function deletePermissionGroup () {
+//				$("#deleteModal").click(function($event) {
+					var $permissionGroupId = $("#deleteModal input[name='permissionGroupId']").val();
+					
+					//var $permissionGroupId = $("permissionGroupId").val();
+					console.debug("Delete Function");
 	        		
-	        		
-					var $url = 'permissionGroup/'+ $permissionGroupId;
+	        		$outbound = JSON.stringify({});
+					$url = 'permissionGroup/'+ $permissionGroupId;
 					var jqxhr = $.ajax({
 	            	    type: 'delete',
 	            	    url: $url,
 	            	    data: $outbound,
-	            	    success: function($data) {
+//	            	    success: function($data) {
+//							if ( $data.responseHeader.responseCode == 'SUCCESS') {
+//								$("#deleteModal").dialog("close");
+//								$("#permissionGroupTable").DataTable().row($permissionGroupId).remove();
+//		    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
+//		    					$('#permissionGroupTable').DataTable().ajax.reload();
+//								clearAddForm();
+//								$('#confirmDelete').bPopup().close();
+//							}
+//	            	     },
+	            	     statusCode: {
+	            	    		200: function($data) {
+				    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+				    					$.each($data.data.webMessages, function (key, value) {
+				    						var $selectorName = "#" + key + "Err";
+				    						$($selectorName).show();
+				    						$($selectorName).html(value[0]).fadeOut(10000);
+				    					});
+				    				} else {
+						        		$("#deleteModal").dialog("close");
+				    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
+				    					$("#permissionGroupTable").DataTable().row($permissionGroupId).remove();
+				    					$('#permissionGroupTable').DataTable().ajax.reload();
+				    					clearAddForm();
+				    				}
+								},
+	            	    		403: function($data) {
+									$("#globalMsg").html("Session Timeout. Log in and try again");
+								},
+								404: function($data) {
+									$("#globalMsg").html("Invalid Selection").show().fadeOut(100000);
+								},
+								500: function($data) {
+									$("#globalMsg").html("System Error; Contact Support");
+								}
+		             	     },
+	            	     dataType: 'json'
+	            	});
+	            }    
+
+
+				
+
+	            function showDelete($clickevent) {
+					var $permissionGroupId = $clickevent.currentTarget.attributes['data-id'].value;
+					console.debug("Show Delete");
+					$("#doDelete").data("permissionGroupId: " + $permissionGroupId);
+	        		$('#doDelete').button('option', 'label', 'Confirm');
+	        		$('#closeDeleteModal').button('option', 'label', 'Cancel');
+	        		
+	        		
+					var $url = 'permissionGroup/'+ $permissionGroupId;
+					var jqxhr = $.ajax({
+	            	    type: 'GET',
+	            	    url: $url,
+//	            	    data: $outbound,
+/*	            	    success: function($data) {
 	            	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
 							if ( $data.responseHeader.responseCode == 'SUCCESS') {
 								$("#permissionGroupTable").DataTable().row($permissionGroupId).remove();
@@ -418,19 +489,29 @@
 //								$('#confirmDelete').bPopup().close();
 							}
 	            	     },
-	            	     statusCode: {
-		             	    	403: function($data) {
-//		             	    		$('#confirmDelete').bPopup().close();
-		             	    		$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-		             	    	}, 
-			         	    	404: function($data) {
-//			         	    		$('#confirmDelete').bPopup().close();
-			         	    		$("#globalMsg").html("Record does not exist").fadeIn(10).fadeOut(6000);
-		             	    	},
-		             	    	500: function($data) {
-//		             	    		$('#confirmDelete').bPopup().close();
-		             	    		$("#globalMsg").html("Unhandled Exception").fadeIn(10).fadeOut(6000);
-		             	    	} 
+*/	            	     statusCode: {
+	            	    	 200: function($data) {
+									//console.log($data);
+								var $permissionGroup = $data.data.permGroupItemList[0];
+								$.each($permissionGroup, function($fieldName, $value) {									
+									$selector = "#deleteModal input[name=" + $fieldName + "]";
+									if ( $($selector).length > 0 ) {
+											$($selector).val($value);
+										}
+		        					});
+									$("#deleteModal input[name='permissionGroupId']").val($permissionGroup.permissionGroupId);
+					        		$("#deleteModal").dialog("open");
+								},
+
+	            	    		403: function($data) {
+									$("#globalMsg").html("Session Timeout. Log in and try again");
+								},
+								404: function($data) {
+									$("#globalMsg").html("Invalid Selection").show().fadeOut(100000);
+								},
+								500: function($data) {
+									$("#globalMsg").html("System Error; Contact Support");
+								}
 		             	     },
 	            	     dataType: 'json'
 	            	});
@@ -599,7 +680,7 @@
     	</table>
     </div>
     	
-    	<div id="confirmDelete">
+    	<div id="deleteModal">
 	    		<span class="formLabel">Are You Sure You Want to Delete this Permission Group?</span><br />
 	    		<table id="delData">
 	    			<tr>
@@ -607,8 +688,6 @@
 	    				<td id="delPermissionGroupId"></td>
 	    			</tr>
 	    		</table>
-	    		<input type="button" id="cancelDelete" value="<bean:message key="field.label.no" />" />
-	    		<input type="button" id="doDelete" value="<bean:message key="field.label.yes" />" />
 	    	</div>
    
 	    <webthing:scrolltop />
