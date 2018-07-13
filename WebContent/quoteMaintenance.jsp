@@ -49,6 +49,8 @@
 					managerList : null,
 					quote : null,
 					
+					joblist : {},
+					
 					progressbar : $("#progressbar"),
 					progressLabel : $("#progress-label"),
 					
@@ -221,6 +223,7 @@
 		    				data: null,			    				
 		    				statusCode: {
 		    					200: function($data) {
+		    						QUOTEMAINTENANCE.joblist[$jobId] = $data.data;
 		    						var $destination = "#job" + $jobId + " .job-data-row";
 		    						$($destination).html($html);
 		    						QUOTEMAINTENANCE.populateJobPanel($jobId, $destination, $data.data);		    						
@@ -406,6 +409,39 @@
 						});	
 						$("#address-save-button").button('option', 'label', 'Save');
 						$("#address-cancel-button").button('option', 'label', 'Cancel');
+
+						
+						
+						
+						
+						
+						$( "#job-edit-modal" ).dialog({
+							title:'Job Edit',
+							autoOpen: false,
+							height: 300,
+							width: 600,
+							modal: true,
+							closeOnEscape:true,
+							//open: function(event, ui) {
+							//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+							//},
+							buttons: [
+								{
+									id: "job-edit-cancel-button",
+									click: function($event) {
+										$( "#job-edit-modal" ).dialog("close");
+									}
+								},
+								{
+									id: "job-edit-save-button",
+									click: function($event) {
+										QUOTEMAINTENANCE.saveJob();
+									}
+								}
+							]
+						});	
+						$("#job-edit-save-button").button('option', 'label', 'Save');
+						$("#job-edit-cancel-button").button('option', 'label', 'Cancel');
 					},
 					
 					
@@ -840,9 +876,10 @@
 		            		$panelButtonContainer = $("<div>");
 		            		$panelButtonContainer.attr("class","panel-button-container");
 		            		$panelButtonContainer.attr("data-jobid",$value.jobId);
-		            		$panelButtonContainer.append('<webthing:edit styleClass="edit-this-job edit-this-panel">Edit</webthing:edit>');
-		            		$panelButtonContainer.append('<webthing:save styleClass="save-job">Save</webthing:save>');
-            				$panelButtonContainer.append('<webthing:ban styleClass="cancel-job-edit">Cancel</webthing:ban>');
+		            		$panelButtonContainer.append('<quote:editJobMenu />');
+		            		//$panelButtonContainer.append('<webthing:edit styleClass="edit-this-job edit-this-panel">Edit</webthing:edit>');
+		            		//$panelButtonContainer.append('<webthing:save styleClass="save-job">Save</webthing:save>');
+            				//$panelButtonContainer.append('<webthing:ban styleClass="cancel-job-edit">Cancel</webthing:ban>');
 		            		$jobHeader.append($panelButtonContainer);
 		            		
 		            		//<div class="panel-button-container">
@@ -909,17 +946,21 @@
 		            		
 		            	});	
 		            	
+		            	
 		            	$(".edit-this-job").click(function($event) {
-		    				var $jobId = this.parentElement.attributes['data-jobid'].value;
-		    				console.log("clicked a job edit: " + $jobId);
-		    				
+		            		//var $jobId = this.parentElement.attributes['data-jobid'].value;
+		            		var $jobId = $(this).closest("div.panel-button-container")[0].attributes['data-jobid'].value;
+		            		console.log("clicked a job edit: " + $jobId);
+		            		var $type = $(this).attr("data-type");
+		            		console.log($type);
+
 		    				// hide edit icon & show save/cancel
-		    				$editSelector = "#job" + $jobId + " .jobTitleRow .panel-button-container .edit-this-job";
-		    				$saveSelector = "#job" + $jobId + " .jobTitleRow .panel-button-container .save-job";
-		    				$cancelSelector = "#job" + $jobId + " .jobTitleRow .panel-button-container .cancel-job-edit";
-		    				$($editSelector).hide();
-		    				$($saveSelector).show();
-		    				$($cancelSelector).show();
+		    				//$editSelector = "#job" + $jobId + " .jobTitleRow .panel-button-container .edit-this-job";
+		    				//$saveSelector = "#job" + $jobId + " .jobTitleRow .panel-button-container .save-job";
+		    				//$cancelSelector = "#job" + $jobId + " .jobTitleRow .panel-button-container .cancel-job-edit";
+		    				//$($editSelector).hide();
+		    				//$($saveSelector).show();
+		    				//$($cancelSelector).show();
 		    				
 		    				// open the job display panel
 		    				$openSelector = "#job" + $jobId + " .jobTitleRow .job-data-open";
@@ -933,11 +974,65 @@
 							if ( ! $($detailSelector).length ) {
 								QUOTEMAINTENANCE.getJobPanel($jobId);								
 							}
+							
+							$("#job-edit-modal .job-edit-panel").hide();
+							var $editPanel = "#job-edit-modal ." + $type;
+							$($editPanel).show();
+							$("#job-edit-modal").dialog("open");
+							
+							if ( $type == 'proposal') {
+								console.log(QUOTEMAINTENANCE.joblist[$jobId]);
+								//populate frequency select:
+								var $select = $("#job-edit-modal .proposal select[name='job-proposal-freq']");
+								$('option', $select).remove();
+
+								$select.append(new Option("",""));
+								$.each(QUOTEMAINTENANCE.jobFrequencyList, function(index, val) {
+								    $select.append(new Option(val.display, val.abbrev));
+								});
+								
+								$("#job-edit-modal .proposal input[name='job-proposal-job-nbr']").val(QUOTEMAINTENANCE.joblist[$jobId].job.jobNbr);
+								$("#job-edit-modal .proposal input[name='job-proposal-ppc']").val(QUOTEMAINTENANCE.joblist[$jobId].job.pricePerCleaning);
+								$("#job-edit-modal .proposal select[name='job-proposal-freq']").val(QUOTEMAINTENANCE.joblist[$jobId].job.jobFrequency);
+								$("#job-edit-modal .proposal textarea[name='job-proposal-desc']").val(QUOTEMAINTENANCE.joblist[$jobId].job.serviceDescription);
+							}
 		    			});
+		            	
+		            	$(".cancel-job-edit").click(function($event) {
+		            		var $jobId = this.parentElement.attributes['data-jobid'].value;
+		    				console.log("clicked a job edit cancel: " + $jobId);
+		    				
+		    				// hide edit icon & show save/cancel
+		    				$editSelector = "#job" + $jobId + " .jobTitleRow .panel-button-container .edit-this-job";
+		    				$saveSelector = "#job" + $jobId + " .jobTitleRow .panel-button-container .save-job";
+		    				$cancelSelector = "#job" + $jobId + " .jobTitleRow .panel-button-container .cancel-job-edit";
+		    				$($editSelector).show();
+		    				$($saveSelector).hide();
+		    				$($cancelSelector).hide();
+		    				
+		    				// close the job display panel
+		    				$openSelector = "#job" + $jobId + " .jobTitleRow .job-data-open";
+							$closedSelector = "#job" + $jobId + " .jobTitleRow .job-data-closed";
+							$tableSelector = "#job" + $jobId + " .job-data-row";
+							$($tableSelector).hide();
+							$($closedSelector).show();
+							$($openSelector).hide();
+							
+							// repopulate the detail so canceled updateds don't get displayed
+							var $destination = "#job" + $jobId + " .job-data-row";
+    						QUOTEMAINTENANCE.populateJobPanel($jobId, $destination, QUOTEMAINTENANCE.joblist[$jobId]);
+		            	});
+		            	
+		            	$(".cancel-job-edit").click(function($event) {
+		            		var $jobId = this.parentElement.attributes['data-jobid'].value;
+		    				console.log("clicked a job edit cancel: " + $jobId);
+		            	});
 		            },
 		            
 		            
-		            populateJobPanel : function($jobId, $destination, $data) {		            	
+		            populateJobPanel : function($jobId, $destination, $data) {	
+		            	console.log("Populate Job Panel");
+		            	console.log($data);
 		            	$($destination + " .jobProposalDisplayPanel .job-proposal-job-nbr").html($data.job.jobNbr);
 		            	$($destination + " .jobProposalDisplayPanel .job-proposal-ppc").html("$" + $data.job.pricePerCleaning);
 		            	$($destination + " .jobProposalDisplayPanel .job-proposal-freq").html($data.job.jobFrequency);
@@ -1257,6 +1352,16 @@
 					
 					
 					
+					
+					saveJob : function() {
+						console.log("If I were saving jobs, it would happen here");
+						$("#globalMsg").html("Faked saving a job").show().fadeOut(3000);
+						$("#job-edit-modal").dialog("close");
+					},
+					
+					
+					
+					
 					saveQuoteHeader : function() {
 	    				console.log("saveQuoteHeader");
 	    				var $outbound = {};
@@ -1365,6 +1470,9 @@
         	}
         	#edit-this-quote {
         		cursor:pointer;
+        	}
+        	#job-edit-modal {
+        		display:none;
         	}
         	#job-loading-pattern {
         		display:none;
@@ -1620,7 +1728,22 @@
 		    </div>
 	    </ansi:hasPermission>
 	    
-	    
+	    <ansi:hasPermission permissionRequired="QUOTE_CREATE">
+	    	<div id="job-edit-modal" class="edit-modal">
+	    		<div class="job-edit-panel proposal">
+	    			<jsp:include page="quoteMaintenance/jobProposalEditPanel.jsp" />
+	    		</div>
+	    		<div class="job-edit-panel activation">
+	    			Activation edit panel goes here
+	    		</div>
+	    		<div class="job-edit-panel invoice">
+	    			Invoice edit panel goes here
+	    		</div>
+	    		<div class="job-edit-panel schedule">
+	    			Schedule edit panel goes here
+	    		</div>
+	    	</div>
+	    </ansi:hasPermission>
 	    
 	    <ansi:hasPermission permissionRequired="QUOTE_CREATE">
 	    <script type="text/javascript">
