@@ -15,7 +15,7 @@
 	<head>
 	</head>
 	<body>
-		<table style="width:100%" class="jobProposalDisplayPanel">
+		<table style="width:100%" class="jobProposalEditPanel">
 			<colgroup>
 				<col style="width:25%" />
 				<col style="width:25%" />
@@ -24,20 +24,20 @@
 			</colgroup>
 			<tr>
 				<td><span class="formLabel">Job #:</span></td>
-				<td><input type="text" name="job-proposal-job-nbr" style="width:50px;" /></td>
+				<td><input type="text" name="job-proposal-job-nbr" data-apiname="jobNbr" style="width:50px;" /></td>
 				<td><span class="formLabel">Price&nbsp;Per&nbsp;Cleaning:</span></td>
-				<td><input type="text"  name="job-proposal-ppc" style="wdith:75px;" /></td>
+				<td><input type="text"  name="job-proposal-ppc" data-apiname="pricePerCleaning" style="width:75px;" /></td>
 			</tr>
 			<tr>
 				<td><span class="formLabel">&nbsp;</span></td>
 				<td>&nbsp;</td>
 				<td><span class="formLabel">Frequency:</span></td>
-				<td><select name="job-proposal-freq"></select></td>
+				<td><select name="job-proposal-freq" data-apiname="jobFrequency"></select></td>
 			</tr>
 			<tr>
 				<td colspan="4">
 					<span class="formLabel">Service Description</span><br />
-					<textarea name="job-proposal-desc" rows="5" cols="40"></textarea>
+					<textarea name="job-proposal-desc"  data-apiname="serviceDescription" rows="5" cols="40"></textarea>
 				</td>
 			</tr>
 		</table>

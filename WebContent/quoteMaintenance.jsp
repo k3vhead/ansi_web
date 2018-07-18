@@ -102,6 +102,37 @@
 					
 					
 					
+					
+					doJobUpdate : function($jobId, $data, $successCallback, $errCallback) {
+						var $outbound = JSON.stringify($data);
+						var $url = "job/" + $jobId;
+						console.log($outbound);						
+						
+						var jqxhr3 = $.ajax({
+							type: 'POST',
+							url: $url,
+							data: $outbound,
+							statusCode: {
+								200:function($data) {
+									$successCallback($data);
+								},
+								403: function($data) {	
+									$errCallback(403);									
+								},
+								404: function($data) {
+									$errCallback(404);
+								},
+								500: function($data) {
+									$errCallback(500);
+								}
+							},
+							dataType: 'json'
+						});
+					},
+					
+					
+					
+					
 					doReviseQuote : function($quoteId) {
 						console.log("Making a revise of " + $quoteId);	
 						var $url = "quote/revise/" + $quoteId;
@@ -133,8 +164,7 @@
 						var $outbound = JSON.stringify($data);
 						var $url = "quote/" + $quoteId;
 						console.log($outbound);
-						//$($modalName).dialog("close");
-						//$("#globalMsg").html("Update faked").fadeOut(3000);
+						
 						
 						var jqxhr3 = $.ajax({
 							type: 'POST',
@@ -576,6 +606,10 @@
 								QUOTEMAINTENANCE.getJobPanel($jobId);								
 							}
 							
+							console.log("Scrolling");
+							$anchorName = "job" + $jobId;
+							$anchor = $("a[name='" + $anchorName + "']");
+							$('html,body').animate({scrollTop: $anchor.offset().top},'slow');
 						});
 					},
 					
@@ -866,11 +900,11 @@
 		            		$jobListItem = $("<li>");
 		            		$jobListItem.attr("data-jobid", $value.jobId);
 		            		$jobListItem.attr("id","job" + $value.jobId)
-
-		            		
+							
 		            		$jobHeader = $("<div>");
 		            		$jobHeader.attr("data-jobid", $value.jobId);
 		            		$jobHeader.attr("class","jobTitleRow");
+		            		
 
 		            		
 		            		$panelButtonContainer = $("<div>");
@@ -898,10 +932,18 @@
 		            		$jobHider.append('<span class="job-data-open"><i class="fas fa-caret-down"></i></span>');
 		            		$jobHider.append('&nbsp;');
 		            		
+		            		
+		            		$anchorName = "job" + $value.jobId;
+		            		$anchor = $("<a>");
+		            		$anchor.attr("name", $anchorName);
+		            		$anchor.append('<span class="formLabel">Job: </span>');
+		            		$anchor.append('<span>' + $value.jobNbr + '</span>');
+		            		
 		            		$jobDiv = $("<div>");
 		            		$jobDiv.attr("class","job-header-job-div");
-		            		$jobDiv.append('<span class="formLabel">Job: </span>');
-		            		$jobDiv.append('<span>' + $value.jobNbr + '</span>');
+		            		//$jobDiv.append('<span class="formLabel">Job: </span>');
+		            		//$jobDiv.append('<span>' + $value.jobNbr + '</span>');
+		            		$jobDiv.append($anchor);
 		            		$jobHider.append($jobDiv);
 		            		
 		            		$descDiv = $("<div>");
@@ -975,27 +1017,61 @@
 								QUOTEMAINTENANCE.getJobPanel($jobId);								
 							}
 							
+							$("#job-edit-modal").attr("data-jobid", $jobId);
+							$("#job-edit-modal").attr("data-type", $type);
+							
 							$("#job-edit-modal .job-edit-panel").hide();
 							var $editPanel = "#job-edit-modal ." + $type;
 							$($editPanel).show();
 							$("#job-edit-modal").dialog("open");
 							
-							if ( $type == 'proposal') {
-								console.log(QUOTEMAINTENANCE.joblist[$jobId]);
-								//populate frequency select:
-								var $select = $("#job-edit-modal .proposal select[name='job-proposal-freq']");
-								$('option', $select).remove();
+							// populate Proposal edit panel
+							console.log(QUOTEMAINTENANCE.joblist[$jobId]);
+							//populate frequency select:
+							var $select = $("#job-edit-modal .proposal select[name='job-proposal-freq']");
+							$('option', $select).remove();
 
-								$select.append(new Option("",""));
-								$.each(QUOTEMAINTENANCE.jobFrequencyList, function(index, val) {
-								    $select.append(new Option(val.display, val.abbrev));
-								});
-								
-								$("#job-edit-modal .proposal input[name='job-proposal-job-nbr']").val(QUOTEMAINTENANCE.joblist[$jobId].job.jobNbr);
-								$("#job-edit-modal .proposal input[name='job-proposal-ppc']").val(QUOTEMAINTENANCE.joblist[$jobId].job.pricePerCleaning);
-								$("#job-edit-modal .proposal select[name='job-proposal-freq']").val(QUOTEMAINTENANCE.joblist[$jobId].job.jobFrequency);
-								$("#job-edit-modal .proposal textarea[name='job-proposal-desc']").val(QUOTEMAINTENANCE.joblist[$jobId].job.serviceDescription);
-							}
+							$select.append(new Option("",""));
+							$.each(QUOTEMAINTENANCE.jobFrequencyList, function(index, val) {
+							    $select.append(new Option(val.display, val.abbrev));
+							});
+							
+							$("#job-edit-modal .proposal input[name='job-proposal-job-nbr']").val(QUOTEMAINTENANCE.joblist[$jobId].job.jobNbr);
+							$("#job-edit-modal .proposal input[name='job-proposal-ppc']").val(QUOTEMAINTENANCE.joblist[$jobId].job.pricePerCleaning);
+							$("#job-edit-modal .proposal select[name='job-proposal-freq']").val(QUOTEMAINTENANCE.joblist[$jobId].job.jobFrequency);
+							$("#job-edit-modal .proposal textarea[name='job-proposal-desc']").val(QUOTEMAINTENANCE.joblist[$jobId].job.serviceDescription);
+							
+							
+							// populate activation edit panel
+							$("#job-edit-modal .activation input[name='job-activation-dl-pct']").val(QUOTEMAINTENANCE.joblist[$jobId].job.directLaborPct);
+			            	$("#job-edit-modal .activation input[name='job-activation-dl-budget']").val(QUOTEMAINTENANCE.joblist[$jobId].job.budget);
+			            	$("#job-edit-modal .activation input[name='job-activation-floors']").val(QUOTEMAINTENANCE.joblist[$jobId].job.floors);
+			            	if ( QUOTEMAINTENANCE.joblist[$jobId].job.requestSpecialScheduling == 1 ) {
+			            		$("#job-edit-modal .activation select[name='job-activation-schedule']").val("manual");
+			            	} else {
+			            		$("#job-edit-modal .activation select[name='job-activation-schedule']").val("auto");
+			            	}
+			            	$("#job-edit-modal .activation input[name='job-activation-equipment']").val(QUOTEMAINTENANCE.joblist[$jobId].job.equipment);
+			            	$("#job-edit-modal .activation input[name='job-activation-washer-notes']").val(QUOTEMAINTENANCE.joblist[$jobId].job.washerNotes);
+			            	$("#job-edit-modal .activation input[name='job-activation-om-notes']").val(QUOTEMAINTENANCE.joblist[$jobId].job.omNotes);
+			            	$("#job-edit-modal .activation input[name='job-activation-billing-notes']").val(QUOTEMAINTENANCE.joblist[$jobId].job.billingNotes);
+
+							// populate invoice edit panel
+							$("#job-edit-modal .invoice input[name='job-invoice-purchase-order']").val(QUOTEMAINTENANCE.joblist[$jobId].job.poNumber);
+			            	$("#job-edit-modal .invoice input[name='job-invoice-vendor-nbr']").val(QUOTEMAINTENANCE.joblist[$jobId].job.ourVendorNbr);
+			            	$("#job-edit-modal .invoice input[name='job-invoice-expire-date']").val(QUOTEMAINTENANCE.joblist[$jobId].job.expirationDate);
+			            	$("#job-edit-modal .invoice input[name='job-invoice-expire-reason']").val(QUOTEMAINTENANCE.joblist[$jobId].job.expirationReason);
+			            	
+							// populate schedule edit panel
+							$("#job-edit-modal .schedule .job-schedule-last-run").html(QUOTEMAINTENANCE.joblist[$jobId].lastRun.startDate);		            	
+			            	if ( QUOTEMAINTENANCE.joblist[$jobId].job.repeatScheduleAnnually == 1 ) {
+			            		$("#job-edit-modal .schedule input[name='repeatedAnnually']").prop("checked", true);
+			            	} else {
+			            		$("#job-edit-modal .schedule input[name='repeatedAnnually']").prop("checked", false);
+			            	}
+			            	$("#job-edit-modal .schedule .job-schedule-next-due").html(QUOTEMAINTENANCE.joblist[$jobId].nextDue.startDate);
+			            	$("#job-edit-modal .schedule .job-schedule-created-thru").html(QUOTEMAINTENANCE.joblist[$jobId].lastCreated.startDate);
+			            	$("#job-edit-modal .schedule .job-schedule-ticket-list").attr("href", "ticketLookup.html?jobId="+$jobId);
 		    			});
 		            	
 		            	$(".cancel-job-edit").click(function($event) {
@@ -1354,12 +1430,79 @@
 					
 					
 					saveJob : function() {
-						console.log("If I were saving jobs, it would happen here");
-						$("#globalMsg").html("Faked saving a job").show().fadeOut(3000);
+						var $jobId = $("#job-edit-modal").attr("data-jobid");
+						var $type = $("#job-edit-modal").attr("data-type");
+						console.log("If I were saving jobs, it would happen here " + $jobId + "  " + $type);
+						var $panelSelector = "#job-edit-modal ." + $type;
+						var $inputSelector = $panelSelector + " select";
+						var $outbound = {};
+						$.each( $($inputSelector), function($index, $value) {
+							$selector = $panelSelector + " select[name='" + $value.name + "']";	 
+							$apiname = $($selector).attr("data-apiname");
+	    					$outbound[$apiname] = $($selector).val();
+	    				});
+						$inputSelector = $panelSelector + " input";
+						$.each( $($inputSelector), function($index, $value) {							
+							$selector = $panelSelector + " input[name='" + $value.name + "']";
+							$apiname = $($selector).attr("data-apiname");
+	    					$outbound[$apiname] = $($selector).val();
+	    				});
+						$inputSelector = $panelSelector + " textarea";
+						$.each( $($inputSelector), function($index, $value) {
+							$selector = $panelSelector + " textarea[name='" + $value.name + "']";	
+							$apiname = $($selector).attr("data-apiname");
+	    					$outbound[$apiname] = $($selector).val();
+	    				});
+						$outbound['updateType'] = $type;
+						console.log(JSON.stringify($outbound) )
+						
+						
+						QUOTEMAINTENANCE.doJobUpdate($jobId, $outbound, QUOTEMAINTENANCE.saveJobSuccess, QUOTEMAINTENANCE.saveJobErr);
+						//$("#globalMsg").html("Faked saving a job").show().fadeOut(3000);
+						//$("#job-edit-modal").dialog("close");
+					},
+					
+					
+					saveJobErr : function($statusCode) {
+						console.log("Job error");
+						var $messages = {
+								403:"Session Expired. Log in and try again",
+								404:"System Error Job 404. Contact Support",
+								500:"System Error Job 500. Contact Support"
+						}
+						$("#globalMsg").html( $messages[$statusCode] );
 						$("#job-edit-modal").dialog("close");
 					},
 					
 					
+					saveJobSuccess : function($data) {
+						console.log("Job success");
+						console.log($data);
+						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+							console.log($data);
+							$.each($data.data.webMessages, function(index, val) {							    
+							    // it's too much work to figure out if the field is input or select, so do both
+							    $selector = "#quotePanel select[name='"+ index +"']";							    
+							    $($selector).addClass("edit-err");
+							    $selector = "#quotePanel input[name='"+ index +"']";							    
+							    $($selector).addClass("edit-err");
+							});
+							alert("Invalid input. Correct the indicated fields and resubmit");
+						} else {
+							console.log("Update header success:");
+							console.log($data);
+							QUOTEMAINTENANCE.quote = $data.data.quote;
+							QUOTEMAINTENANCE.populateQuotePanel(QUOTEMAINTENANCE.quote);
+							$("#globalMsg").html("Update Successful").fadeOut(3000);
+							$("#quotePanel input").prop("disabled", true);
+		    				$("#quotePanel select").prop("disabled", true);
+						    $("#quotePanel select").removeClass("edit-err");
+						    $("#quotePanel input").removeClass("edit-err");
+		    				$("#edit-this-quote").show();
+		    				$("#quote-container .panel-button-container .save-quote").hide();
+		    				$("#quote-container .panel-button-container .cancel-edit").hide();
+						}
+					},
 					
 					
 					saveQuoteHeader : function() {
@@ -1734,13 +1877,13 @@
 	    			<jsp:include page="quoteMaintenance/jobProposalEditPanel.jsp" />
 	    		</div>
 	    		<div class="job-edit-panel activation">
-	    			Activation edit panel goes here
+	    			<jsp:include page="quoteMaintenance/jobActivationEditPanel.jsp" />
 	    		</div>
 	    		<div class="job-edit-panel invoice">
-	    			Invoice edit panel goes here
+	    			<jsp:include page="quoteMaintenance/jobInvoiceEditPanel.jsp" />
 	    		</div>
 	    		<div class="job-edit-panel schedule">
-	    			Schedule edit panel goes here
+	    			<jsp:include page="quoteMaintenance/jobScheduleEditPanel.jsp" />
 	    		</div>
 	    	</div>
 	    </ansi:hasPermission>
