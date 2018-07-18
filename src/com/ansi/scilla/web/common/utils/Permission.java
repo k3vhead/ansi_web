@@ -68,7 +68,6 @@ public enum Permission {
 	CONTACT_WRITE(CONTACT_READ, false, "Write customer contact info"),
 	;
 	
-	
 	private final Boolean divisionSpecific;
 	private final Permission parent;
 	private final String description;

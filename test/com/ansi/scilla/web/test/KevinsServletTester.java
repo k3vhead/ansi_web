@@ -527,11 +527,10 @@ public class KevinsServletTester extends TestServlet {
 			return sOutput;
 		}
 	
-		
 		private String RunTests() throws Exception{
 			this.logDebugMsgs = false; 
 			this.realm = "permission";
-			
+			// TODO Try out using TODO
 			String s ="";
 
 			super.userId = "kjw@ansi.com";
@@ -541,7 +540,7 @@ public class KevinsServletTester extends TestServlet {
 			try {
 				s = s + testGetById(sessionCookie, 1);					// works				 
 				// Note : you need to determine id num to delete manually..
-				s = s + testUpdate(sessionCookie, 3);					// works
+				//s = s + testUpdate(sessionCookie, 3);					// works
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -552,7 +551,7 @@ public class KevinsServletTester extends TestServlet {
 				logger.log(Level.DEBUG, "End");
 			
 			return s;
-		}
+		}		
 }
 	
 	

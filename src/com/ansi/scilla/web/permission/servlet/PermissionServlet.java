@@ -40,16 +40,19 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 /**
  * The url for GET will be one of:
- * 		/permission/<permissionGroupId#>,	(returns a list of permissions having the same groupId)
  * 
- * 		data returned will look like : 
- *		{	"webMessages": null,
- *			"permissionList": [
- *			 	{ 	permissionName:"QUOTE", permissionLevel: -1 },
- *			 	{	permissionName:"JOB",permissionLevel: 0},
- *			 	{	permissionName:"SYSADMIN", permissionLevel: 1}
- *			]
- *		}
+ *		GET permission/<permissionGroupId> returns:
+ *		{
+ * 			"webMessages": null,
+ * 			"permissionList": [
+ * 				"QUOTE",
+ * 				"QUOTE_READ",
+ * 				"QUOTE_WRITE",
+ * 				"INVOICE",
+ * 				"INVOICE_READ",
+ * 				]
+ * 		}
+ ***********************************************************************************
  * 
  * The url for update will be a POST to:
  * 		/permission/<permissionGroupId#>,	(returns a list of permissions having the same groupId)
@@ -72,67 +75,70 @@ public class PermissionServlet extends AbstractServlet {
 	
 	private static final long serialVersionUID = 1L;
 
+/*
+	@Override
+	protected void doDelete(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException {
+		AnsiURL url = null;
+		Connection conn = null;
+		try {
+			conn = AppUtils.getDBCPConn();
+			conn.setAutoCommit(false);
+			AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
 
-//	@Override
-//	protected void doDelete(HttpServletRequest request,
-//			HttpServletResponse response) throws ServletException {
-//		AnsiURL url = null;
-//		Connection conn = null;
-//		try {
-//			conn = AppUtils.getDBCPConn();
-//			conn.setAutoCommit(false);
-//			AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
-//
-//			try {
-//				url = new AnsiURL(request,"permissionGroup", new String[] {""});
-//
-//				if (url.getId() != null) {			// if true.. this is a delete and we have am id to delete
-//					doDeleteWork(conn, url.getId());
-//					conn.commit();
-//					PermissionGroupResponse permissionGroupResponse = new PermissionGroupResponse();
-//					super.sendResponse(conn, response, ResponseCode.SUCCESS, permissionGroupResponse);
-//				} else { // this is a call to DELETE with no id.. send an error.. 
-//					super.sendForbidden(response);
-//				}
-//			} catch (InvalidDeleteException e) {	// doDeleteWork Exceptions
-//				// an exception was thrown when we tried to delete it.. 
-//				// let the user know.. 
-//				String message;
-//				message = AppUtils.getMessageText(conn, MessageKey.DELETE_FAILED, "Invalid Delete");
-//				WebMessages webMessages = new WebMessages();
-//				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
-//				PermissionGroupResponse permissionGroupResponse = new PermissionGroupResponse();
-//				permissionGroupResponse.setWebMessages(webMessages);
-//				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, permissionGroupResponse);
-//			} catch(RecordNotFoundException e_doDeleteWork) {
-//				super.sendNotFound(response);
-//			} catch (ResourceNotFoundException e_AnsiURL) {
-//				super.sendNotFound(response);
-//			}	
-//		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e_validateSession) {
-//			super.sendForbidden(response);  	// permission related or network error exceptions.. 
-//		} catch ( Exception e_getMessage_sendResponse) {
-//			AppUtils.logException(e_getMessage_sendResponse);			// unaccounted for exceptions. 
-//			throw new ServletException(e_getMessage_sendResponse);
-//		} finally {								// do this no matter what.. 
-//			AppUtils.closeQuiet(conn);
-//		}
-//	}
+			try {
+				url = new AnsiURL(request,"permissionGroup", new String[] {""});
+
+				if (url.getId() != null) {			// if true.. this is a delete and we have am id to delete
+					doDeleteWork(conn, url.getId());
+					conn.commit();
+					PermissionGroupResponse permissionGroupResponse = new PermissionGroupResponse();
+					super.sendResponse(conn, response, ResponseCode.SUCCESS, permissionGroupResponse);
+				} else { // this is a call to DELETE with no id.. send an error.. 
+					super.sendForbidden(response);
+				}
+			} catch (InvalidDeleteException e) {	// doDeleteWork Exceptions
+				// an exception was thrown when we tried to delete it.. 
+				// let the user know.. 
+				String message;
+				message = AppUtils.getMessageText(conn, MessageKey.DELETE_FAILED, "Invalid Delete");
+				WebMessages webMessages = new WebMessages();
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+				PermissionGroupResponse permissionGroupResponse = new PermissionGroupResponse();
+				permissionGroupResponse.setWebMessages(webMessages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, permissionGroupResponse);
+			} catch(RecordNotFoundException e_doDeleteWork) {
+				super.sendNotFound(response);
+			} catch (ResourceNotFoundException e_AnsiURL) {
+				super.sendNotFound(response);
+			}	
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e_validateSession) {
+			super.sendForbidden(response);  	// permission related or network error exceptions.. 
+		} catch ( Exception e_getMessage_sendResponse) {
+			AppUtils.logException(e_getMessage_sendResponse);			// unaccounted for exceptions. 
+			throw new ServletException(e_getMessage_sendResponse);
+		} finally {								// do this no matter what.. 
+			AppUtils.closeQuiet(conn);
+		}
+	}
+*/
 	
-//	public void doDeleteWork(Connection conn, Integer permGroupId) throws RecordNotFoundException, InvalidDeleteException, Exception {		
-//		PermissionGroup perm = new PermissionGroup();
-//		perm.setPermissionGroupId(permGroupId);
-//
-//		User user = new User();						//	Create a user object
-//		user.setPermissionGroupId(permGroupId);		//	Set the user object's group ID 
-//													//		to the ID of the group being deleted
-//		try {
-//			user.selectOne(conn);					//	Query to see if anybody at all is using this group ID
-//			throw new InvalidDeleteException();		//		throw an error that it cannot yet be deleted.
-//		} catch (RecordNotFoundException e) {		//  Nobody is using this ID
-//			perm.delete(conn);						//		Delete the permission group
-//		}
-//	}
+/*
+	public void doDeleteWork(Connection conn, Integer permGroupId) throws RecordNotFoundException, InvalidDeleteException, Exception {		
+		PermissionGroup perm = new PermissionGroup();
+		perm.setPermissionGroupId(permGroupId);
+
+		User user = new User();						//	Create a user object
+		user.setPermissionGroupId(permGroupId);		//	Set the user object's group ID 
+													//		to the ID of the group being deleted
+		try {
+			user.selectOne(conn);					//	Query to see if anybody at all is using this group ID
+			throw new InvalidDeleteException();		//		throw an error that it cannot yet be deleted.
+		} catch (RecordNotFoundException e) {		//  Nobody is using this ID
+			perm.delete(conn);						//		Delete the permission group
+		}
+	}
+*/
 
 	
 	@Override
@@ -142,13 +148,15 @@ public class PermissionServlet extends AbstractServlet {
 		WebMessages webMessages = new WebMessages();
 		try {
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_READ);  		// make sure we're allowed to be here
+			AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_READ);  	// make sure we're allowed to be here
 			url = new AnsiURL(request, "permission",new String[] { ACTION_IS_LIST });							// parse the URL and look for "contact"
 			PermissionListResponse permissionListResponse = makePermissionListResponse(conn, url);
-			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");											// add messages to the response			
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");										// add messages to the response
+			
 			permissionListResponse.setWebMessages(webMessages);
+			
 			super.sendResponse(conn, response, ResponseCode.SUCCESS, permissionListResponse);					// send the response
-		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {								// these are thrown by session validation
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {							// these are thrown by session validation
 			super.sendForbidden(response);
 		} catch ( RecordNotFoundException e ) {			// if they're asking for an id that doesn't exist
 			super.sendNotFound(response);						

@@ -1,6 +1,8 @@
 package com.ansi.scilla.web.permission.response;
+import com.ansi.scilla.web.common.utils.Permission;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
@@ -18,6 +20,7 @@ public class PermissionItem extends ApplicationObject implements Comparable<Perm
 	private static final long serialVersionUID = 1L;
 	private String permissionName;
 	private Integer permissionLevel;
+	private List<Permission> permissionList;
 	
 	
 	public PermissionItem() {
@@ -33,6 +36,7 @@ public class PermissionItem extends ApplicationObject implements Comparable<Perm
 	}
 	public void setPermissionName(String permissionName) {
 		this.permissionName = permissionName;
+		this.permissionList =  Permission.valueOf(permissionName).makeParentList();
 	}
 	public Integer getPermissionLevel() {
 		return permissionLevel;
@@ -40,6 +44,15 @@ public class PermissionItem extends ApplicationObject implements Comparable<Perm
 	public void setPermissionLevel(Integer permissionLevel) {
 		this.permissionLevel = permissionLevel;
 	}
+	
+	public List<Permission> getPermissionList() {
+		return permissionList;
+	}
+	public void setPermissionList(List<Permission> permissionList) {
+		this.permissionList = permissionList;
+	}
+	
+	
 	@Override
 	public int compareTo(PermissionItem o) {
 		return this.permissionName.compareTo(o.getPermissionName());

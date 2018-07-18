@@ -2,12 +2,19 @@ package com.ansi.scilla.web.permission.response;
 
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
-import com.ansi.scilla.common.queries.PermissionGroupUserCount;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.ansi.scilla.web.common.response.MessageResponse;
+import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.web.permission.query.PermissionItemLookupSearch;
+import com.ansi.scilla.web.permission.query.PermissionItemSearchResponse;
+import com.ansi.scilla.common.db.PermissionGroupLevel;
+
+//import com.ansi.scilla.web.test.TestServlet;
 
 public class PermissionListResponse extends MessageResponse {
 	/**
@@ -19,50 +26,31 @@ public class PermissionListResponse extends MessageResponse {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+//	protected final Logger logger = LogManager.getLogger(TestServlet.class);
 	
-	private List<PermissionGroupItem> permissionGroupItemList;
-	
+	private List<Permission> permissionList;
+
 	public PermissionListResponse() {
 		super();
 	}
-		
+
 	public PermissionListResponse(Connection conn, Integer permGroupId) throws Exception {
-		/**
-		 *  Dave - I think I need a database object here to populate this list
-		 *  		...maybe
-		 */        
-		// If I had the db object to use.. I would instantiate a collection of permissions
-		// using it.. it would look something like this..
-		// kjw
-		//
-		//  --Get the list from the database.. 
-		// 	List<PermissionGroupItem> list = new PermissionGroupItemList(int groupId);
-			
-		//	--Add the list to collection for this class 
-		//	for ( PermissionGroupItem record : list ) {
-		//		this.permissionGroupItemList.add(new PermissionGroupItem(record));
-		//	}
-		//	Collections.sort(this.permissionGroupItemList);
+		Integer offset=0; 
+		Integer rowCount=1000;
 		
+		//17this.permissionItemList = new ArrayList<PermissionItem>();
+		this.permissionList = new ArrayList<Permission>();
 		
-		// for now I'll put in stub.. 
-		// kjw
-			//initialize the class member holding the collection.. 
-			this.permissionGroupItemList = new ArrayList<PermissionGroupItem>();		
-			
-			PermissionGroupItem temp = new PermissionGroupItem();
-			temp.setPermissionGroupId(-444);
-			temp.setPermissionLevel(1);
-			temp.setPermissionName("Some Permission Group Name");
-			
-			this.permissionGroupItemList.add(temp);
-	}
-	
-	public List<PermissionGroupItem> getPermGroupItemList() {
-		return permissionGroupItemList;
-	}
-	public void setPermGroupItemList(List<PermissionGroupItem> permGroupItemList) {
-		this.permissionGroupItemList = permGroupItemList;
+		//Get the info from the database.. 
+		PermissionItemLookupSearch lookup = new PermissionItemLookupSearch(permGroupId.toString()); 
+		List<PermissionItemSearchResponse> permissionItemSearchResponses = lookup.select(conn, offset, rowCount); 
+		
+		for(PermissionItemSearchResponse response:permissionItemSearchResponses) {
+			this.permissionList.addAll(response.getPermissionList());
+		}	
 	}
 
+	public List<Permission> getPermissionList() {
+		return permissionList;
+	}	
 }
