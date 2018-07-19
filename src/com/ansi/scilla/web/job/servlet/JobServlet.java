@@ -14,13 +14,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.Job;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.common.jobticket.JobUtils;
 import com.ansi.scilla.web.common.response.MessageKey;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
+import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
@@ -41,6 +41,11 @@ public class JobServlet extends AbstractServlet {
 
 	public static final String REALM = "job";
 	
+	// these update types are at the bottom of quoteMaintenance.jsp
+	public static final String UPDATE_TYPE_IS_PROPOSAL_PANEL = "proposal";
+	public static final String UPDATE_TYPE_IS_ACTIVATION_PANEL = "activation";
+	public static final String UPDATE_TYPE_IS_INVOICE_PANEL = "invoice";
+	public static final String UPDATE_TYPE_IS_SCHEDULE_PANEL = "schedule";
 	
 	@Override
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
@@ -57,7 +62,7 @@ public class JobServlet extends AbstractServlet {
 		
 		try {
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			AppUtils.validateSession(request, Permission.JOB_READ);
 			AnsiURL url = new AnsiURL(request, REALM, (String[])null);	
 			
 			if( url.getId() == null || ! StringUtils.isBlank(url.getCommand())) {	
@@ -83,8 +88,122 @@ public class JobServlet extends AbstractServlet {
 	}
 
 
+	
+	
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		AnsiURL url = null;
+		Connection conn = null;
+		WebMessages messages = new WebMessages();
+		JobDetailResponse jobDetailResponse = new JobDetailResponse();
+		ResponseCode responseCode = null;
+		
+		try {
+			conn = AppUtils.getDBCPConn();
+			conn.setAutoCommit(false);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.JOB_WRITE);
+			SessionUser user = sessionData.getUser();
+			String jsonString = super.makeJsonString(request);
+			url = new AnsiURL(request, "job", (String[])null);
+			if ( url.getId() == null ) {
+				super.sendNotFound(response);
+			} else {
+				Job job = getJob(conn, url.getId());
+				logger.log(Level.DEBUG, jsonString);
+				JobRequest jobRequest = new JobRequest(jsonString);
+				WebMessages webMessages = new WebMessages();
+				
+				try {
+					if ( jobRequest.getUpdateType().equalsIgnoreCase(UPDATE_TYPE_IS_PROPOSAL_PANEL)) {
+						makeProposalUpdate(conn, user, job, jobRequest, webMessages);
+					} else if ( jobRequest.getUpdateType().equalsIgnoreCase(UPDATE_TYPE_IS_ACTIVATION_PANEL)) {
+						makeActivationUpdate(conn, user, job, jobRequest, webMessages);
+					} else if ( jobRequest.getUpdateType().equalsIgnoreCase(UPDATE_TYPE_IS_INVOICE_PANEL)) {
+						makeInvoiceUpdate(conn, user, job, jobRequest, webMessages);
+					} else if ( jobRequest.getUpdateType().equalsIgnoreCase(UPDATE_TYPE_IS_SCHEDULE_PANEL)) {
+						makeScheduleUpdate(conn, user, job, jobRequest, webMessages);
+					} else {
+						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Update Type");
+						throw new JobProcessException("Invalid Update Type");
+					}
+					conn.commit();
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
+					responseCode = ResponseCode.SUCCESS;
+					jobDetailResponse = new JobDetailResponse(conn, url.getId());
+				} catch ( JobProcessException e ) {
+					conn.rollback();
+					responseCode = ResponseCode.EDIT_FAILURE;
+				}
+
+				jobDetailResponse.setWebMessages(webMessages);
+				super.sendResponse(conn, response, responseCode, jobDetailResponse);
+			}
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+			super.sendForbidden(response);
+		} catch (ResourceNotFoundException e) {
+			super.sendNotAllowed(response);
+		} catch ( RecordNotFoundException e ) {
+			super.sendNotFound(response);
+		} catch ( Exception e ) {
+			AppUtils.logException(e);
+			AppUtils.rollbackQuiet(conn);
+			throw new ServletException(e);
+		} finally {
+			AppUtils.closeQuiet(conn);
+		}
+	}
+
+	private void makeProposalUpdate(Connection conn, SessionUser user, Job job, JobRequest jobRequest, WebMessages webMessages) throws Exception {
+		job.setJobFrequency(jobRequest.getJobFrequency());
+		job.setJobNbr(jobRequest.getJobNbr());
+		job.setPricePerCleaning(jobRequest.getPricePerCleaning());
+		job.setServiceDescription(jobRequest.getServiceDescription());
+		updateJob(conn, user, job);
+	}
+
+	private void makeActivationUpdate(Connection conn, SessionUser user, Job job, JobRequest jobRequest, WebMessages webMessages) throws Exception {
+		job.setRequestSpecialScheduling(jobRequest.getRequestSpecialScheduling());
+		job.setDirectLaborPct(jobRequest.getDirectLaborPct());
+		job.setBudget(jobRequest.getBudget());
+		job.setFloors(jobRequest.getFloors());
+		job.setEquipment(jobRequest.getEquipment());
+		job.setWasherNotes(jobRequest.getWasherNotes());
+		job.setOmNotes(jobRequest.getOmNotes());
+		job.setBillingNotes(jobRequest.getBillingNotes());		
+		updateJob(conn, user, job);
+	}
+
+	private void makeInvoiceUpdate(Connection conn, SessionUser user, Job job, JobRequest jobRequest, WebMessages webMessages) throws Exception {
+		job.setPoNumber(jobRequest.getPoNumber());
+		job.setOurVendorNbr(jobRequest.getOurVendorNbr());
+		job.setExpirationDate(jobRequest.getExpirationDate());
+		job.setExpirationReason(jobRequest.getExpirationReason());
+		updateJob(conn, user, job);
+		
+	}
+
+	private void makeScheduleUpdate(Connection conn, SessionUser user, Job job, JobRequest jobRequest, WebMessages webMessages) throws Exception {
+		job.setRepeatScheduleAnnually(jobRequest.getRepeatScheduleAnnually());
+		updateJob(conn, user, job);
+		
+	}
+
+	private Job getJob(Connection conn, Integer jobId) throws RecordNotFoundException, Exception {
+		Job job = new Job();
+		job.setJobId(jobId);
+		job.selectOne(conn);
+		return job;
+	}
+
+	private void updateJob(Connection conn, SessionUser user, Job job) throws Exception {
+		Job key = new Job();
+		key.setJobId(job.getJobId());
+		job.setUpdatedBy(user.getUserId());
+		job.update(conn, key);
+	}
+	
+	protected void doPost_xx(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
 		AnsiURL url = null;
@@ -741,4 +860,11 @@ public class JobServlet extends AbstractServlet {
 	}
 
 	
+	public class JobProcessException extends Exception {
+		public JobProcessException(String string) {
+			// TODO Auto-generated constructor stub
+		}
+
+		private static final long serialVersionUID = 1L;		
+	}
 }

@@ -24,7 +24,7 @@ public class KevinsServletTester extends TestServlet {
 		super.password = pw;
 	}
 	
-	public Header DoLogin() {
+	public Header DoLogin() throws ClientProtocolException, IOException, URISyntaxException {
 		Header sessionCookie = super.doLogin();
 		return sessionCookie;
 	}

@@ -62,6 +62,7 @@ public class JobRequest extends AbstractRequest{
 	private String washerNotes;
 	private Integer addedBy;
 	private Date addedDate;
+	private String updateType;
 	
 	public JobRequest() {
 		super();
@@ -456,6 +457,14 @@ public class JobRequest extends AbstractRequest{
 
 	public String getWasherNotes() {
 		return this.washerNotes;
+	}
+
+	public String getUpdateType() {
+		return updateType;
+	}
+
+	public void setUpdateType(String updateType) {
+		this.updateType = updateType;
 	}
 	
 }

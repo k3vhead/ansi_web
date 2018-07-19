@@ -1453,6 +1453,23 @@
 							$apiname = $($selector).attr("data-apiname");
 	    					$outbound[$apiname] = $($selector).val();
 	    				});
+						
+						// do some panel-specific fixes:
+						if ($type == "activation") {
+							if ( $("#job-edit-modal .activation input[name='requestSpecialScheduling']").prop("checked") == true ) {
+								$outbound['requestSpecialScheduling'] = 1;
+							} else {
+								$outbound['requestSpecialScheduling'] = 0;
+							}
+						}
+						if ($type == "schedule") {
+							if ( $("#job-edit-modal .invoice input[name='repeatScheduleAnnually']").prop("checked") == true ) {
+								$outbound['repeatScheduleAnnually'] = 1;
+							} else {
+								$outbound['repeatScheduleAnnually'] = 0;
+							}
+						}
+						
 						$outbound['updateType'] = $type;
 						console.log(JSON.stringify($outbound) )
 						
@@ -1491,16 +1508,12 @@
 						} else {
 							console.log("Update header success:");
 							console.log($data);
-							QUOTEMAINTENANCE.quote = $data.data.quote;
-							QUOTEMAINTENANCE.populateQuotePanel(QUOTEMAINTENANCE.quote);
-							$("#globalMsg").html("Update Successful").fadeOut(3000);
-							$("#quotePanel input").prop("disabled", true);
-		    				$("#quotePanel select").prop("disabled", true);
-						    $("#quotePanel select").removeClass("edit-err");
-						    $("#quotePanel input").removeClass("edit-err");
-		    				$("#edit-this-quote").show();
-		    				$("#quote-container .panel-button-container .save-quote").hide();
-		    				$("#quote-container .panel-button-container .cancel-edit").hide();
+							QUOTEMAINTENANCE.joblist[$data.data.job.jobId] = $data.data;
+							console.log("do something to populate the job panels here");
+							var $destination = "#job" + $data.data.job.jobId + " .job-data-row";
+    						QUOTEMAINTENANCE.populateJobPanel($data.data.job.jobId, $destination, $data.data);
+							$("#globalMsg").html("Update Successful").show().fadeOut(3000);
+							$("#job-edit-modal").dialog("close");
 						}
 					},
 					

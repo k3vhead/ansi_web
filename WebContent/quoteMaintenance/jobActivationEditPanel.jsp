@@ -35,7 +35,7 @@
 			<tr>
 				<td colspan="4">
 					<span class="formLabel">Schedule:</span>
-					<select name="job-activation-schedule" data-apiname="repeatScheduleAnnually">
+					<select name="job-activation-schedule" data-apiname="requestSpecialScheduling">
 						<option value="auto">Auto</option>
 						<option value="manual">manual</option>
 					</select>
