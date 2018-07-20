@@ -24,14 +24,16 @@
 		},
 		
 		
-		showQuotePrint : function($modalName, $quoteId, $quoteNumber) {
+		showQuotePrint : function($modalName, $quoteId, $quoteNumber, $printType) {
 			$quoteIdSelector = $modalName + ' input[name="quoteId"]'
 			$quoteNumberSelector = $modalName + ' .quoteNumber';
 			$quoteFormSelector = $modalName + ' form';
+			$printTypeSelector = $modalName + ' input[name="printType"]';
 			$("#goPrint").button('option', 'label', 'Print');
-			$($quoteIdSelector).val($quoteId);
+			$($quoteIdSelector).val($quoteId);			
 			$($quoteNumberSelector).html($quoteNumber);
 			$($quoteFormSelector).attr("action", "quotePrint/" + $quoteId);
+			$($printTypeSelector).val($printType);
 			$($modalName).dialog("open");
 		},
 		

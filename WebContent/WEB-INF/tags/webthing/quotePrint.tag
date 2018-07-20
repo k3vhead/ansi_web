@@ -21,12 +21,14 @@
     		<input type="hidden" name="quoteId" />
     		<span class="formLabel">Quote Number:</span> <span class="quoteNumber"></span><br />
     		<span class="formLabel">Quote Date:</span> <input type="text" class="dateField" name="<%= QuotePrintServlet.QUOTE_DATE %>" /><br />
+    		<input type="hidden" name="printType" value="none" />
+    		<%--
     		<div style="margin-top:8px;">
     			<span class="formLabel">Print Type:</span><br />
 	    		<input type="radio" name="<%= QuotePrintServlet.PRINT_TYPE %>" value="<%= QuotePrintServlet.PRINT_TYPE_IS_PREVIEW %>" checked="checked"/> Preview<br />
 	    		<input type="radio" name="<%= QuotePrintServlet.PRINT_TYPE %>" value="<%= QuotePrintServlet.PRINT_TYPE_IS_PROPOSE %>" /> Propose<br />
 	    	</div>
-    		 
+    		--%>
     	</form>
     </div>
 

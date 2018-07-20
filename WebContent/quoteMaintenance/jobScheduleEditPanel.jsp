@@ -15,13 +15,13 @@
 	<head>
 	</head>
 	<body>
-		<table style="width:100%" class="jobScheduleEditPanel">	
+		<table style="width:95%" class="jobScheduleEditPanel">	
 			<colgroup>
 				<col style="width:20%;" />
 				<col style="width:20%;" />
-				<col style="width:20%;" />
-				<col style="width:20%;" />
-				<col style="width:20%;" />
+				<col style="width:30%;" />
+				<col style="width:10%;" />
+				<col style="width:10%;" />
 			</colgroup>		    					
 			<tr>
 				<td><span class="formLabel">Last Run:</span></td>
@@ -31,7 +31,7 @@
 					<input type="checkbox" name="repeatedAnnually" data-apiname="repeatScheduleAnnually" value="true" />
 				</td>
 				<td rowspan="2" style="text-align:center;">
-					<i style="cursor:pointer;" class="fa fa-list-alt fa-2x tooltip job-schedule-ticket-list" aria-hidden="true"><span class="tooltiptext">Ticket List</span></i>
+					<a href="#" class="job-schedule-ticket-list-link"><i style="cursor:pointer;" class="fa fa-list-alt fa-2x tooltip job-schedule-ticket-list" aria-hidden="true"><span class="tooltiptext">Ticket List</span></i></a>
 				</td>
 			</tr>
 			<tr>

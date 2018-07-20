@@ -20,15 +20,15 @@
 				<td colspan="4">
 					<div style="display:inline; margin-right:10px;">
 						<span class="formLabel">DL%:</span>
-						<input type="text" name="job-activation-dl-pct" data-apiname="directLaborPct" />
+						<input type="text" name="job-activation-dl-pct" data-apiname="directLaborPct" style="width:75px;" />
 					</div>
 					<div style="display:inline; margin-right:10px;">
 						<span class="formLabel">DL Budget:</span>
-						<input type="text" name="job-activation-dl-budget" data-apiname="budget" />
+						<input type="text" name="job-activation-dl-budget" data-apiname="budget" style="width:75px;" />
 					</div>
 					<div style="display:inline; margin-right:10px;">
 						<span class="formLabel"># Floors:</span>
-						<input type="text" name="job-activation-floors" data-apiname="floors" />
+						<input type="text" name="job-activation-floors" data-apiname="floors" style="width:75px;" />
 					</div>
 				</td>
 			</tr>
@@ -43,15 +43,15 @@
 			</tr>
 			<tr>
 				<td><span class="formLabel">Equipment:</span></td>
-				<td colspan="3"><input type="text" name="job-activation-equipment" data-apiname="equipment" /></td>
+				<td colspan="3"><input type="text" name="job-activation-equipment" data-apiname="equipment" style="width:225px;" /></td>
 			</tr>
 			<tr>
 				<td><span class="formLabel">Washer Notes:</span></td>
-				<td colspan="3"><input type="text" name="job-activation-washer-notes" data-apiname="washerNotes" /></td>
+				<td colspan="3"><input type="text" name="job-activation-washer-notes" data-apiname="washerNotes" style="width:225px;" /></td>
 			</tr>
 			<tr>
 				<td><span class="formLabel">OM Notes:</span></td>
-				<td colspan="3"><input type="text" name="job-activation-om-notes" data-apiname="omNotes" /></td>
+				<td colspan="3"><input type="text" name="job-activation-om-notes" data-apiname="omNotes" style="width:225px;" /></td>
 			</tr>
 			<tr>
 				<td><span class="formLabel">Billing Notes:</span></td>
