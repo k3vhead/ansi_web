@@ -258,7 +258,7 @@
 						}	      	      
 					],
 					close: function() {
-						//clearAddForm();
+						clearAddForm();
 						$("#editPanel").dialog( "close" );
 						//allFields.removeClass( "ui-state-error" );
 					}
@@ -267,7 +267,6 @@
 
 				
 				function updatePermissionGroup() {
-        			//clearAddForm();
 					console.debug("Updating Permissions");
 					var $permissionGroupId = $("#editPanel input[name='permissionGroupId']").val();
 					console.debug("permissionGroupId: " + $permissionGroupId);
@@ -379,6 +378,7 @@
 						}	      	      
 					],
 					close: function() {
+						clearAddForm();   
 						$("#deleteModal").dialog( "close" );
 						//allFields.removeClass( "ui-state-error" );
 					}
@@ -414,7 +414,7 @@
 				
 				function deletePermissionGroup () {
 //				$("#deleteModal").click(function($event) {
-					var $permissionGroupId = $("#deleteModal input[name='permissionGroupId']").val();
+//					var $permissionGroupId = {return permissionGroup.permissionGroupId};
 					
 					//var $permissionGroupId = $("permissionGroupId").val();
 					console.debug("Delete Function");
