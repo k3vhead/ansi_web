@@ -485,6 +485,16 @@
 
 
 	<servlet>
+		<servlet-name>reorderJobs</servlet-name>
+		<servlet-class>com.ansi.scilla.web.quote.servlet.ReorderJobListServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>reorderJobs</servlet-name>
+		<url-pattern>/reorderJobs/*</url-pattern>
+	</servlet-mapping>
+
+
+	<servlet>
 		<servlet-name>report</servlet-name>
 		<servlet-class>com.ansi.scilla.web.report.servlet.StandardReportServlet</servlet-class>
 	</servlet>

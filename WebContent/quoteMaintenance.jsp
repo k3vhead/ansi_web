@@ -753,8 +753,37 @@
 								    $jobIdList.push($thisJobId);
 								});
 								
-								console.log($jobIdList);
+								var $outbound = {};
+								$outbound['jobIdList'] = $jobIdList
+								console.log(JSON.stringify($outbound));
 								
+								var $quoteId = QUOTEMAINTENANCE.quote.quote.quoteId;
+								var $url = "reorderJobs/" + $quoteId;
+								var jqxhr = $.ajax({
+									type: 'POST',
+									url: $url,
+									data: JSON.stringify($outbound),
+									statusCode: {
+										200: function($data) {
+											console.log($data);
+											// clear the list of job headers
+											$("#jobList").html("");
+											// then fill it back it
+											QUOTEMAINTENANCE.populateJobHeader($data.data.quote.jobHeaderList)
+											QUOTEMAINTENANCE.makeJobExpansion();
+										},					
+										403: function($data) {
+											$("#globalMsg").html("Session Timeout. Log in and try again");
+										},
+										404: function($data) {
+											$("#globalMsg").html("System Error Reorder 404. Contact Support");
+										},
+										500: function($data) {
+											$("#globalMsg").html("System Error Reorder 500. Contact Support");
+										}
+									},
+									dataType: 'json'
+								});
 							}
 						});	
 					},
