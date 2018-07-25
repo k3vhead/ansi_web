@@ -1315,7 +1315,7 @@
 		            	$("#quoteDataContainer .revisionDisplay").html($quote.quote.revision);
 		            	
 		            	if ( $quote.quote.copiedFromQuoteId != null ) {
-		            		var $copyLink = '(Copied from: <a href="quoteMaintenance.html?id=' + $quote.quote.copiedFromQuoteId + '" style="color:#404040">'+$quote.quote.copiedFromQuoteNbrRev+'</a>)'
+		            		var $copyLink = '(Previous: <a href="quoteMaintenance.html?id=' + $quote.quote.copiedFromQuoteId + '" style="color:#404040">'+$quote.quote.copiedFromQuoteNbrRev+'</a>)'
 		            		$("#quoteDataContainer .quoteCopyDisplay").html($copyLink);
 		            	}
 		            	
