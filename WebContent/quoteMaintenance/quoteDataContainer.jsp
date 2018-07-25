@@ -72,7 +72,11 @@
 				
 				<td><span class="required"></span></td>
 				<td><span class="formLabel">Quote:</span></td> 
-				<td><ansi:hidden name="quoteId" action="<%= action %>" /><span class="quoteNbrDisplay">n/a</span><span class="revisionDisplay"></span></td>
+				<td>
+					<ansi:hidden name="quoteId" action="<%= action %>" />
+					<span class="quoteNbrDisplay">n/a</span><span class="revisionDisplay"></span>
+					&nbsp;<span class="quoteCopyDisplay"></span>
+				</td>
 				<td>&nbsp;</td>
 		
 				<td rowspan="3" style="text-align:center;">

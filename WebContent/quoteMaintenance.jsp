@@ -1314,6 +1314,11 @@
 		            	$("#quoteDataContainer .quoteNbrDisplay").html($quote.quote.quoteNumber);
 		            	$("#quoteDataContainer .revisionDisplay").html($quote.quote.revision);
 		            	
+		            	if ( $quote.quote.copiedFromQuoteId != null ) {
+		            		var $copyLink = '(Copied from: <a href="quoteMaintenance.html?id=' + $quote.quote.copiedFromQuoteId + '" style="color:#404040">'+$quote.quote.copiedFromQuoteNbrRev+'</a>)'
+		            		$("#quoteDataContainer .quoteCopyDisplay").html($copyLink);
+		            	}
+		            	
 		            	$("#quoteDataContainer select[name='accountType']").val($quote.quote.accountType);
 		            	$("#quoteDataContainer select[name='invoiceTerms']").val($quote.quote.invoiceTerms);
 		            	$("#quoteDataContainer .proposedDate").html($quote.quote.proposalDate);

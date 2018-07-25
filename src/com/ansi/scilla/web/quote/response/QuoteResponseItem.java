@@ -99,6 +99,10 @@ public class QuoteResponseItem extends MessageResponse {
 		if ( quote.getSignedByContactId() != null ) {
 			makeSignedBy(conn, quote.getSignedByContactId());
 		}
+		
+		if ( quote.getCopiedFromQuoteId() != null ) {
+			this.quote.setCopiedFromQuoteNbrRev(makeCopiedFrom(conn, quote.getCopiedFromQuoteId()));
+		}
 	}
 	
 	
@@ -206,6 +210,19 @@ public class QuoteResponseItem extends MessageResponse {
 	}
 
 	
+	private String makeCopiedFrom(Connection conn, Integer copiedFromQuoteId) throws Exception {
+		Quote copyFrom = new Quote();
+		copyFrom.setQuoteId(copiedFromQuoteId);
+		String copiedFrom = null;
+		try {
+			copyFrom.selectOne(conn);
+			copiedFrom = copyFrom.getQuoteNumber() + copyFrom.getRevision();
+		} catch ( RecordNotFoundException e) {
+			copiedFrom = null;
+		}
+		return copiedFrom;
+	}
+
 	private Boolean hasPermission(List<UserPermission> permissionList, Permission requiredPermission) {
 		boolean hasPermission = false;
 		for ( UserPermission p : permissionList ) {
@@ -251,6 +268,7 @@ public class QuoteResponseItem extends MessageResponse {
 		private Integer invoiceBatch;
 		private Integer taxExempt;
 		private String taxExemptReason;
+		private String copiedFromQuoteNbrRev;
 		
 		public QuoteDetail() {
 			super();
@@ -490,6 +508,14 @@ public class QuoteResponseItem extends MessageResponse {
 
 		public void setTaxExemptReason(String taxExemptReason) {
 			this.taxExemptReason = taxExemptReason;
+		}
+
+		public String getCopiedFromQuoteNbrRev() {
+			return copiedFromQuoteNbrRev;
+		}
+
+		public void setCopiedFromQuoteNbrRev(String copiedFromQuoteNbrRev) {
+			this.copiedFromQuoteNbrRev = copiedFromQuoteNbrRev;
 		}
 
 
