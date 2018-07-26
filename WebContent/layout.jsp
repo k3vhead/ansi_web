@@ -148,6 +148,7 @@
 			        			</li>
 			        			<li>
 			        				<a href="report.html">Reports</a>
+			        				<%-- report menu is build in menu.js --%>
 			        				<ul class="sub_menu" style="z-index:1000" id="ansi_report_menu">
 										<ansi:hasPermission permissionRequired="TICKET">
 										<li><html:link action="ticketView"><bean:message key="menu.label.drv30" /></html:link></li>

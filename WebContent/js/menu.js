@@ -16,6 +16,8 @@ $(function(){
 	    							)
 	    						);
     						});
+    						
+    						$("#ansi_report_menu").append($('<li>').append($('<a>').attr('href','pastDueReport.html').append("Past Due")));
     					},
     					403: function($data) {
     						//$("#globalMsg").html("Session Timeout. Log in and try again").show();

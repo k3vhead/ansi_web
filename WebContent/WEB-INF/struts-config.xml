@@ -160,6 +160,12 @@
             <forward name="valid" path="/myAccount.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
+        <action
+            path="/pastDueReport"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/pastDueReport.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
 		<action
             path="/payment"
             type="com.ansi.scilla.web.payment.action.PaymentAction"
@@ -219,7 +225,7 @@
             <forward name="reportByDivMonthYear" path="/reportByDivMonthYear.jsp" />
             <forward name="reportByDivStartEnd" path="/reportByDivStartEnd.jsp" />
             <forward name="reportByStartEnd" path="/reportByStartEnd.jsp" />
-            <forward name="reportNoInput" path="/reportNoInput.jsp" />      
+            <forward name="reportNoInput" path="/reportNoInput.jsp" /> 
             <forward name="login" path="/login.jsp" />            
         </action>  
         <action

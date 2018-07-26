@@ -377,6 +377,16 @@
     
 
 	<servlet>
+        <servlet-name>pastDueReport</servlet-name>
+        <servlet-class>com.ansi.scilla.web.report.servlet.PastDueReportServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>pastDueReport</servlet-name>
+        <url-pattern>/pastDueReport</url-pattern>
+    </servlet-mapping>
+    
+    
+	<servlet>
 		<servlet-name>payment</servlet-name>
 		<servlet-class>com.ansi.scilla.web.payment.servlet.PaymentServlet</servlet-class>
 	</servlet>
