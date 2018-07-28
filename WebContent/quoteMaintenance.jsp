@@ -36,6 +36,7 @@
         	$(document).ready(function() {
 				; QUOTEMAINTENANCE = {
 					quoteId : '<c:out value="${ANSI_QUOTE_ID}" />',
+					jobId : '<c:out value="${ANSI_JOB_ID}" />',
 					accountTypeList : null,
 					countryList : null,
 					buildingTypeList : null,
@@ -1384,6 +1385,19 @@
 							QUOTEMAINTENANCE.populateContactPanel( "#contract-contact", $data.quoteList[0].jobContact.contractContact);
 							QUOTEMAINTENANCE.populateJobHeader($data.quoteList[0].jobHeaderList)
 							QUOTEMAINTENANCE.makeJobExpansion();
+							
+							// when the page loads the first time, check for a job id
+							// if it is there, expand that job
+							// then delete the input parameter so it doesn't get accidentally referenced later
+							if ( QUOTEMAINTENANCE.jobId != null ) {
+								$.each( $("#jobList li .job-hider"), function($index, $value) {
+									var $jobid = $($value).attr("data-jobid");
+									if ( $jobid == QUOTEMAINTENANCE.jobId ) {
+										$($value).click();
+									}
+								});
+								QUOTEMAINTENANCE.jobId = null;
+							}
 	        			} else {
 	        				setTimeout(function() {
 	            				QUOTEMAINTENANCE.populateQuotePanels($data);

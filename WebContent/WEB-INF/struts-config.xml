@@ -10,6 +10,7 @@
     	<form-bean name="namespaceForm"     type="com.ansi.scilla.web.common.actionForm.NamespaceForm" />
     	<form-bean name="invoiceLookupForm" type="com.ansi.scilla.web.invoice.actionForm.InvoiceLookupForm" />
     	<form-bean name="jobIdForm"         type="com.ansi.scilla.web.job.actionForm.JobIdForm" />
+    	<form-bean name="quoteMaintenanceForm" type="com.ansi.scilla.web.quote.actionForm.QuoteMaintenanceForm" />
     	<form-bean name="reportIdForm"      type="com.ansi.scilla.web.report.actionForm.ReportIdForm" />
     	<form-bean name="ticketLookupForm"  type="com.ansi.scilla.web.ticket.actionForm.TicketLookupForm" />
     </form-beans>
@@ -136,9 +137,9 @@
             path="/jobMaintenance"
             type="com.ansi.scilla.web.job.action.JobMaintenanceAction"
             name="idForm"
-            input="/jobMaintenance.jsp"
+            input="/quoteMaintenance.jsp"
             scope="request">
-            <forward name="valid" path="/jobMaintenance.jsp" />
+            <forward name="valid" path="/quoteMaintenance.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
