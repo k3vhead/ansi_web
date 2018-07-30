@@ -95,6 +95,9 @@ public class QuoteResponseItem extends MessageResponse {
 		
 		this.jobContact = JobContact.getQuoteContact(conn, quote.getQuoteId());
 		this.jobHeaderList = JobHeader.getJobHeaderList(conn, quote.getQuoteId());	
+		if ( this.jobHeaderList.size() == 1 ) {
+			this.jobHeaderList.get(0).setCanDelete(false); // don't delete the only job you've got
+		}
 		
 		if ( quote.getSignedByContactId() != null ) {
 			makeSignedBy(conn, quote.getSignedByContactId());

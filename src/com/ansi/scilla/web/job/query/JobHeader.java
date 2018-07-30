@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.jobticket.JobStatus;
 import com.thewebthing.commons.lang.StringUtils;
 
 public class JobHeader extends ApplicationObject implements Comparable<JobHeader> {
@@ -39,6 +40,10 @@ public class JobHeader extends ApplicationObject implements Comparable<JobHeader
 	private String jobStatus;
 	private String jobFrequency;
 	private Double pricePerCleaning;
+	private Boolean canDelete;
+	private Boolean canActivate;
+	private Boolean canCancel;
+
 	
 	private JobHeader(ResultSet rs) throws SQLException {
 		this.jobId = rs.getInt("job_id");
@@ -51,6 +56,9 @@ public class JobHeader extends ApplicationObject implements Comparable<JobHeader
 		this.jobStatus = rs.getString("job_status");
 		this.jobFrequency = rs.getString("job_frequency");
 		this.pricePerCleaning = rs.getBigDecimal("price_per_cleaning").doubleValue();
+		this.canDelete = this.jobStatus.equals(JobStatus.NEW.code());
+		this.canActivate = this.jobStatus.equals(JobStatus.PROPOSED.code());
+		this.canCancel = this.jobStatus.equals(JobStatus.ACTIVE.code());
 	}
 	
 	public Integer getJobId() {
@@ -123,6 +131,30 @@ public class JobHeader extends ApplicationObject implements Comparable<JobHeader
 
 	public void setPricePerCleaning(Double pricePerCleaning) {
 		this.pricePerCleaning = pricePerCleaning;
+	}
+
+	public Boolean getCanDelete() {
+		return canDelete;
+	}
+
+	public void setCanDelete(Boolean canDelete) {
+		this.canDelete = canDelete;
+	}
+
+	public Boolean getCanActivate() {
+		return canActivate;
+	}
+
+	public void setCanActivate(Boolean canActivate) {
+		this.canActivate = canActivate;
+	}
+
+	public Boolean getCanCancel() {
+		return canCancel;
+	}
+
+	public void setCanCancel(Boolean canCancel) {
+		this.canCancel = canCancel;
 	}
 
 	public static String getSql() {
