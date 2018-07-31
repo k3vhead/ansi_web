@@ -30,6 +30,41 @@ public enum ReportType {
 			new String[] {},
 			Permission.SYSADMIN
 		),
+	AGING_AR_TOTALS_REPORT(
+			"reportNoInput",
+			"com.ansi.scilla.report.datadumps.AgingARTotals",
+			"com.ansi.scilla.web.report.request.NoValidate", 
+			new String[] {},
+			Permission.SYSADMIN
+		),
+	AGING_CASH_TOTALS_REPORT(
+			"reportNoInput",
+			"com.ansi.scilla.report.datadumps.AgingCashTotals",
+			"com.ansi.scilla.web.report.request.NoValidate", 
+			new String[] {},
+			Permission.SYSADMIN
+		),
+	AGING_SERVICE_TAX_TOTALS_REPORT(
+			"reportNoInput",
+			"com.ansi.scilla.report.datadumps.AgingServiceTaxTotals",
+			"com.ansi.scilla.web.report.request.NoValidate", 
+			new String[] {},
+			Permission.SYSADMIN
+		),
+	AGING_PAYMENT_TOTALS_REPORT(
+			"reportNoInput",
+			"com.ansi.scilla.report.datadumps.AgingPaymentTotals",
+			"com.ansi.scilla.web.report.request.NoValidate", 
+			new String[] {},
+			Permission.SYSADMIN
+		),
+	AGING_INVOICE_TOTALS_REPORT(
+			"reportNoInput",
+			"com.ansi.scilla.report.datadumps.AgingInvoiceTotals",
+			"com.ansi.scilla.web.report.request.NoValidate", 
+			new String[] {},
+			Permission.SYSADMIN
+		),
 	CLIENT_CONTACT_REPORT(
 			"reportNoInput",
 			"com.ansi.scilla.report.datadumps.ClientContact",
