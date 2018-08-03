@@ -93,6 +93,13 @@ public enum ReportType {
 			new String[] {"divisionId", "month", "year"},
 			Permission.INVOICE
 		),
+	JOB_SCHEDULE_REPORT(
+			"reportByStartEnd",
+			"com.ansi.scilla.report.jobSchedule.JobScheduleReport",
+			"com.ansi.scilla.web.report.request.ValidateStartEnd", 
+			new String[] {"startDate", "endDate"},
+			Permission.JOB_READ
+		),
 	PAC_REPORT(
 			"reportByDivStartEnd", 
 			"com.ansi.scilla.report.pac.PacReport",

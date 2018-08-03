@@ -184,7 +184,7 @@
 			            	$action = $editLink + " " + $deleteLink + " " + $updateLink;
 			            	$updates = $editLink + " " + $updateLink;
 			            	if(row.userCount != null){
-			            		if ( row.userCount == 1 ) {
+			            		if ( row.userCount >= 1 ) {
 			            			return $updates;
 			            		} else {
 			            			return $action;
@@ -440,14 +440,14 @@
 				    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
 				    					$.each($data.data.webMessages, function (key, value) {
 				    						var $selectorName = "#" + key + "Err";
-				    						$($selectorName).show();
-				    						$($selectorName).html(value[0]).fadeOut(10000);
+
 				    					});
 				    				} else {
 						        		$("#deleteModal").dialog("close");
-				    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
+				    					//$("#globalMsg").html("Update Successful").show().fadeOut(10000);
 				    					$("#permissionGroupTable").DataTable().row($permissionGroupId).remove();
 				    					$('#permissionGroupTable').DataTable().ajax.reload();
+				    					$("#globalMsg").html("Success").show().fadeOut(3000)
 				    					clearAddForm();
 				    				}
 								},
