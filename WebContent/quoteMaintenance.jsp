@@ -216,6 +216,24 @@
 					
 					
 					
+					activateThisJob : function($jobId, $type) {
+	            		console.log("clicked a job activateThisJob: " + $jobId);
+					},
+					
+					
+					
+					cancelThisJob : function($jobId, $type) {
+	            		console.log("clicked a job cancel: " + $jobId);
+					},
+					
+					
+					
+					deleteThisJob : function($jobId, $type) {
+	            		console.log("clicked a job deleteThisJob: " + $jobId);
+					},
+					
+					
+					
 					editThisJob : function($jobId, $type) {
 	            		console.log("clicked a job edit: " + $jobId);
 	            		console.log($type);
@@ -1084,6 +1102,15 @@
 		            		$panelButtonContainer.attr("class","panel-button-container");
 		            		$panelButtonContainer.attr("data-jobid",$value.jobId);
 		            		$panelButtonContainer.append('<quote:editJobMenu />');
+							if ( $value.canActivate == true ) {
+								$panelButtonContainer.append('<webthing:activate styleClass="activate-this-job">Activate</webthing:activate>');
+							}
+							if ( $value.canCancel == true ) {
+								$panelButtonContainer.append('<webthing:ban styleClass="cancel-this-job">Cancel</webthing:ban>');
+							}
+							if ( $value.canDelete == true ) {
+								$panelButtonContainer.append('<webthing:delete styleClass="delete-this-job">Delete</webthing:delete>');
+							}
 		            		//$panelButtonContainer.append('<webthing:edit styleClass="edit-this-job edit-this-panel">Edit</webthing:edit>');
 		            		//$panelButtonContainer.append('<webthing:save styleClass="save-job">Save</webthing:save>');
             				//$panelButtonContainer.append('<webthing:ban styleClass="cancel-job-edit">Cancel</webthing:ban>');
@@ -1169,6 +1196,22 @@
 		            		QUOTEMAINTENANCE.editThisJob($jobId, $type);
 		            	});
 		            	
+		            	$(".cancel-this-job").click(function($event) {
+		            		//var $jobId = this.parentElement.attributes['data-jobid'].value;
+		            		var $jobId = $(this).closest("div.panel-button-container")[0].attributes['data-jobid'].value;
+		            		QUOTEMAINTENANCE.cancelThisJob($jobId);
+		            	});
+		            	
+		            	$(".activate-this-job").click(function($event) {
+		            		//var $jobId = this.parentElement.attributes['data-jobid'].value;
+		            		var $jobId = $(this).closest("div.panel-button-container")[0].attributes['data-jobid'].value;
+		            		QUOTEMAINTENANCE.activateThisJob($jobId);
+		            	});
+		            	$(".delete-this-job").click(function($event) {
+		            		//var $jobId = this.parentElement.attributes['data-jobid'].value;
+		            		var $jobId = $(this).closest("div.panel-button-container")[0].attributes['data-jobid'].value;
+		            		QUOTEMAINTENANCE.deleteThisJob($jobId);
+		            	});
 		            	
 		            	
 		            	$(".cancel-job-edit").click(function($event) {

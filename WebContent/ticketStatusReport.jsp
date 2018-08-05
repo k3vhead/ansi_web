@@ -205,11 +205,7 @@
 		<div id="ticketData">
 			<div id="ticketReport">
 			</div>
-		    <p align="center">
-		    	<br>
-		    	<a href="#" title="Scroll to Top" class="ScrollTop">Scroll To Top</a>
-		    	</br>
-		    </p>
+		    <webthing:scrolltop />
 		</div>			
     </tiles:put>
 		

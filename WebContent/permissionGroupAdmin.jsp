@@ -463,11 +463,7 @@
 	    		<input type="button" id="doDelete" value="<bean:message key="field.label.yes" />" />
 	    	</div>
    
-	    <p align="center">
-	    	<br>
-	    	<a href="#" title="Scroll to Top" class="ScrollTop"><bean:message key="field.label.scrollToTop" /></a>
-	    	</br>
-	    </p>
+			<webthing:scrolltop />
 
     </tiles:put>
 		

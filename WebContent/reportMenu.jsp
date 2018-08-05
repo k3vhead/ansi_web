@@ -141,16 +141,8 @@
     <div style="clear:both;">
     	&nbsp;
     </div>
-    <%--
-    <p align="center">
-    	<c:forEach var="row" items="${com_ansi_scilla_report_types}">
-    	<a href="report.html?id=<c:out value="${row.reportType}" />"><c:out value="${row.reportTitle}" /></a><br />
-    	</c:forEach>
-		<br>
-    	<a href="#" title="Scroll to Top" class="ScrollTop">Scroll To Top</a>
-    	</br>
-    </p>
-     --%>
+   
+	
     
     </tiles:put>
 		

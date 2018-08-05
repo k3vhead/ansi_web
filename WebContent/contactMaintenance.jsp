@@ -402,11 +402,7 @@
     </table>
     <input type="button" class="prettyWideButton showNew" value="New" />
     
-    <p align="center">
-    	<br>
-    	<a href="#" title="Scroll to Top" class="ScrollTop"><bean:message key="field.label.scrollToTop" /></a>
-    	</br>
-    </p>
+    <webthing:scrolltop />
     
     
     <div id="editPanel">
