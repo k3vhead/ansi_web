@@ -62,15 +62,19 @@ public class JobRequest extends AbstractRequest{
 	private String washerNotes;
 	private Integer addedBy;
 	private Date addedDate;
-	private String updateType;
+	private String updateType;	
+	private String action;
+	private Date proposalDate;
+	private Boolean annualRepeat;
 	
 	public JobRequest() {
 		super();
 	}
 	
-	public JobRequest(String jsonString) throws JsonException, IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException, NoSuchMethodException {
+	public JobRequest(String jsonString) throws JsonException, IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException, NoSuchMethodException, InstantiationException {
 		this();
-		JobRequest req = (JobRequest) AppUtils.json2object(jsonString, JobRequest.class);
+		JobRequest req = new JobRequest();
+		AppUtils.json2object(jsonString, req);
 		PropertyUtils.copyProperties(this, req);
 	}
 	
@@ -465,6 +469,30 @@ public class JobRequest extends AbstractRequest{
 
 	public void setUpdateType(String updateType) {
 		this.updateType = updateType;
+	}
+
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
+	}
+
+	public Date getProposalDate() {
+		return proposalDate;
+	}
+
+	public void setProposalDate(Date proposalDate) {
+		this.proposalDate = proposalDate;
+	}
+
+	public Boolean getAnnualRepeat() {
+		return annualRepeat;
+	}
+
+	public void setAnnualRepeat(Boolean annualRepeat) {
+		this.annualRepeat = annualRepeat;
 	}
 	
 }

@@ -5,6 +5,12 @@ import java.util.Date;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+/**
+ * Use JobRequest instead (which has a superset of these attributes/methods)
+ * @author dclewis
+ *
+ */
+@Deprecated
 public class JobDetailRequest extends AbstractRequest {
 
 	private static final long serialVersionUID = 1L;
@@ -76,6 +82,12 @@ public class JobDetailRequest extends AbstractRequest {
 		this.annualRepeat = annualRepeat;
 	}
 
+	/**
+	 * Use JobReqeustAction enum instead
+	 * @author dclewis
+	 *
+	 */
+	@Deprecated
 	public static enum JobDetailRequestAction {
 		ACTIVATE_JOB,
 		CANCEL_JOB,

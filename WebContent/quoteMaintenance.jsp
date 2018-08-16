@@ -76,6 +76,53 @@
 					
 					
 					
+					activateJob : function() {
+						var $outbound = {};
+						$jobId = $("#job-activate-modal").attr("jobid");
+						$outbound["jobId"] = $jobId;
+						$outbound["action"] = "ACTIVATE_JOB";
+						
+						$.each($("#job-activate-modal input"), function($index, $val) {
+							$outbound[$($val).attr('name')] = $($val).val() 
+						});
+						
+						QUOTEMAINTENANCE.doJobUpdate($jobId, $outbound, QUOTEMAINTENANCE.activateJobSuccess, QUOTEMAINTENANCE.activateJobErr);
+					},
+					
+					
+					activateJobErr : function($statusCode) {
+						var $messages = {
+								403:"Session Expired. Log in and try again",
+								404:"System Error Activate 404. Contact Support",
+								500:"System Error Activate 500. Contact Support"
+						}
+						$("#job-activate-modal").dialog("close");
+						$("#globalMsg").html( $messages[$statusCode] );
+					},
+					
+					
+					
+					activateJobSuccess : function($data) {
+						console.log($data);
+						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {	
+							$.each($data.data.webMessages, function($index, $val) {
+								console.log($index);
+								console.log($val);
+								var $fieldName = "." + $index + "Err";
+								var $selector = "#job-activate-modal " + $fieldName;
+								$($selector).html($val[0]).show().fadeOut(3000);
+							});							
+						} else {
+							QUOTEMAINTENANCE.quote = $data.data.quote;
+							// call this:  populateJobPanel : function($jobId, $destination, $data
+							var $destination = "#job" + $data.data.job.jobId + " .job-data-row";
+							QUOTEMAINTENANCE.populateJobPanel($data.data.job.jobId, $destination, $data.data);
+							$("#job-activate-modal").dialog("close");
+							$("#globalMsg").html("Job Activated").show().fadeOut(3000);
+						}
+					}, 
+					
+					
 					cancelThisJobEdit : function($jobId) {
 	    				console.log("clicked a job edit cancel: " + $jobId);
 	    				
@@ -129,15 +176,15 @@
 					
 					
 					
-					doJobUpdate : function($jobId, $data, $successCallback, $errCallback) {
-						var $outbound = JSON.stringify($data);
+					
+					doJobUpdate : function($jobId, $outbound, $successCallback, $errCallback) {
 						var $url = "job/" + $jobId;
 						console.log($outbound);						
 						
 						var jqxhr3 = $.ajax({
 							type: 'POST',
 							url: $url,
-							data: $outbound,
+							data: JSON.stringify($outbound),
 							statusCode: {
 								200:function($data) {
 									$successCallback($data);
@@ -216,8 +263,12 @@
 					
 					
 					
-					activateThisJob : function($jobId, $type) {
+					activateThisJob : function($jobId) {
 	            		console.log("clicked a job activateThisJob: " + $jobId);
+	            		$("#job-activate-modal").attr("jobid", $jobId);
+	            		$("#job-activate-modal input").val("");
+	            		$("#job-activate-modal .errMsg").html("");
+	            		$("#job-activate-modal").dialog("open");	            		
 					},
 					
 					
@@ -601,6 +652,39 @@
 						});	
 						$("#job-edit-save-button").button('option', 'label', 'Save');
 						$("#job-edit-cancel-button").button('option', 'label', 'Cancel');
+
+						
+						
+						
+						
+						
+						$( "#job-activate-modal" ).dialog({
+							title:'Activate Job',
+							autoOpen: false,
+							height: 250,
+							width: 450,
+							modal: true,
+							closeOnEscape:true,
+							//open: function(event, ui) {
+							//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+							//},
+							buttons: [
+								{
+									id: "job-activate-cancel-button",
+									click: function($event) {
+										$( "#job-activate-modal" ).dialog("close");
+									}
+								},
+								{
+									id: "job-activate-save-button",
+									click: function($event) {
+										QUOTEMAINTENANCE.activateJob();
+									}
+								}
+							]
+						});	
+						$("#job-activate-save-button").button('option', 'label', 'Save');
+						$("#job-activate-cancel-button").button('option', 'label', 'Cancel');						
 					},
 					
 					
@@ -2037,6 +2121,25 @@
 	    		</div>
 	    	</div>
 	    </ansi:hasPermission>
+	    
+	    
+	    <ansi:hasPermission permissionRequired="JOB_WRITE">
+	    	<div id="job-activate-modal" class="edit-modal">
+	    		<table>
+	    			<tr>
+	    				<td><span class="formLabel">Activation Date:</span></td>
+	    				<td><input type="text" name="activationDate" class="dateField" /></td>
+	    				<td><span class="activationDateErr err errMsg"></span></td>
+	    			</tr>
+	    			<tr>
+	    				<td><span class="formLabel">Start Date:</span></td>
+	    				<td><input type="text" name="startDate" class="dateField" /></td>
+	    				<td><span class="startDateErr err errMsg"></span><br /></td>
+	    			</tr>
+	    		</table>
+	    	</div>
+	    </ansi:hasPermission>
+	    
 	    
 	    <ansi:hasPermission permissionRequired="QUOTE_CREATE">
 	    <script type="text/javascript">

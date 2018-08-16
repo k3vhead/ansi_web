@@ -32,6 +32,7 @@ import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.job.request.JobDetailRequest;
 import com.ansi.scilla.web.job.request.JobDetailRequest.JobDetailRequestAction;
 import com.ansi.scilla.web.job.request.JobRequest;
+import com.ansi.scilla.web.job.request.JobRequestAction;
 import com.ansi.scilla.web.job.response.JobDetailResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -115,18 +116,7 @@ public class JobServlet extends AbstractServlet {
 				WebMessages webMessages = new WebMessages();
 				
 				try {
-					if ( jobRequest.getUpdateType().equalsIgnoreCase(UPDATE_TYPE_IS_PROPOSAL_PANEL)) {
-						makeProposalUpdate(conn, user, job, jobRequest, webMessages);
-					} else if ( jobRequest.getUpdateType().equalsIgnoreCase(UPDATE_TYPE_IS_ACTIVATION_PANEL)) {
-						makeActivationUpdate(conn, user, job, jobRequest, webMessages);
-					} else if ( jobRequest.getUpdateType().equalsIgnoreCase(UPDATE_TYPE_IS_INVOICE_PANEL)) {
-						makeInvoiceUpdate(conn, user, job, jobRequest, webMessages);
-					} else if ( jobRequest.getUpdateType().equalsIgnoreCase(UPDATE_TYPE_IS_SCHEDULE_PANEL)) {
-						makeScheduleUpdate(conn, user, job, jobRequest, webMessages);
-					} else {
-						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Update Type");
-						throw new JobProcessException("Invalid Update Type");
-					}
+					trafficCop(conn, response, user, job, jobRequest, webMessages);					
 					conn.commit();
 					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
 					responseCode = ResponseCode.SUCCESS;
@@ -152,6 +142,42 @@ public class JobServlet extends AbstractServlet {
 		} finally {
 			AppUtils.closeQuiet(conn);
 		}
+	}
+
+	private void trafficCop(Connection conn, HttpServletResponse response, SessionUser user, Job job, JobRequest jobRequest, WebMessages webMessages) throws Exception {
+		if ( StringUtils.isBlank(jobRequest.getAction()) ) {
+			// THis is a panel edit update
+			if ( jobRequest.getUpdateType().equalsIgnoreCase(UPDATE_TYPE_IS_PROPOSAL_PANEL)) {
+				makeProposalUpdate(conn, user, job, jobRequest, webMessages);
+			} else if ( jobRequest.getUpdateType().equalsIgnoreCase(UPDATE_TYPE_IS_ACTIVATION_PANEL)) {
+				makeActivationUpdate(conn, user, job, jobRequest, webMessages);
+			} else if ( jobRequest.getUpdateType().equalsIgnoreCase(UPDATE_TYPE_IS_INVOICE_PANEL)) {
+				makeInvoiceUpdate(conn, user, job, jobRequest, webMessages);
+			} else if ( jobRequest.getUpdateType().equalsIgnoreCase(UPDATE_TYPE_IS_SCHEDULE_PANEL)) {
+				makeScheduleUpdate(conn, user, job, jobRequest, webMessages);
+			} else {
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Update Type");
+				throw new JobProcessException("Invalid Update Type");
+			}
+		} else {
+			// this is an action update
+			JobRequestAction action = JobRequestAction.valueOf(jobRequest.getAction());
+			if (action.equals(JobRequestAction.CANCEL_JOB)) {
+				doCancelJob(conn, job, jobRequest, user, response);					
+			} else if ( action.equals(JobRequestAction.ACTIVATE_JOB)) {
+				doActivateJob(conn, job, jobRequest, user, response);				
+			} else if ( action.equals(JobRequestAction.DELETE_JOB)) {
+				doDeleteJob(conn, job, jobRequest, user, response);				
+			} else if ( action.equals(JobRequestAction.SCHEDULE_JOB)) {
+				doScheduleJob(conn, job, jobRequest, user, response);
+			} else if ( action.equals(JobRequestAction.REPEAT_JOB)) {
+				doRepeatJob(conn, job, jobRequest, user, response);
+			} else {
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Job Action");
+				throw new JobProcessException("Invalid Job Action");
+			}
+		}
+		
 	}
 
 	private void makeProposalUpdate(Connection conn, SessionUser user, Job job, JobRequest jobRequest, WebMessages webMessages) throws Exception {
@@ -263,7 +289,7 @@ public class JobServlet extends AbstractServlet {
 				url = new AnsiURL(request, "job", (String[])null);
 				
 				logger.log(Level.DEBUG, "URL:"+url);
-				
+				/* DCL
 				try {
 
 					JobDetailRequest jobDetailRequest = (JobDetailRequest) AppUtils.json2object(jsonString, JobDetailRequest.class);
@@ -309,6 +335,7 @@ public class JobServlet extends AbstractServlet {
 					jobDetailResponse.setWebMessages(messages);
 					super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, jobDetailResponse);
 				}
+				DCL */
 			}
 			conn.commit();
 		} catch (ResourceNotFoundException e) {
@@ -323,7 +350,8 @@ public class JobServlet extends AbstractServlet {
 	}
 
 	
-	private void doCancelJob(Connection conn, Integer jobId, JobDetailRequest jobDetailRequest, SessionUser sessionUser, HttpServletResponse response) throws Exception {
+	private void doCancelJob(Connection conn, Job job, JobRequest jobDetailRequest, SessionUser sessionUser, HttpServletResponse response) throws Exception {
+		Integer jobId = job.getJobId();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		WebMessages messages = new WebMessages();
 		ResponseCode responseCode = null;
@@ -352,7 +380,8 @@ public class JobServlet extends AbstractServlet {
 	}
 
 	
-	private void doDeleteJob(Connection conn, Integer jobId, JobDetailRequest jobDetailRequest, SessionUser sessionUser, HttpServletResponse response) throws Exception {
+	private void doDeleteJob(Connection conn, Job job, JobRequest jobDetailRequest, SessionUser sessionUser, HttpServletResponse response) throws Exception {
+		Integer jobId = job.getJobId();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		WebMessages messages = new WebMessages();
 		ResponseCode responseCode = null;
@@ -375,7 +404,8 @@ public class JobServlet extends AbstractServlet {
 	}
 
 	
-	private void doActivateJob(Connection conn, Integer jobId, JobDetailRequest jobDetailRequest, SessionUser sessionUser, HttpServletResponse response) throws Exception {
+	private void doActivateJob(Connection conn, Job job, JobRequest jobDetailRequest, SessionUser sessionUser, HttpServletResponse response) throws Exception {
+		Integer jobId = job.getJobId();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		WebMessages messages = new WebMessages();
 		ResponseCode responseCode = null;
@@ -412,7 +442,8 @@ public class JobServlet extends AbstractServlet {
 	}
 
 
-	private void doScheduleJob(Connection conn, Integer jobId, JobDetailRequest jobDetailRequest, SessionUser sessionUser, HttpServletResponse response) throws Exception {
+	private void doScheduleJob(Connection conn, Job job, JobRequest jobDetailRequest, SessionUser sessionUser, HttpServletResponse response) throws Exception {
+		Integer jobId = job.getJobId();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		WebMessages messages = new WebMessages();
 		ResponseCode responseCode = null;
@@ -445,8 +476,9 @@ public class JobServlet extends AbstractServlet {
 		
 	}
 
-	private void doRepeatJob(Connection conn, Integer jobId, JobDetailRequest jobDetailRequest, SessionUser sessionUser,
+	private void doRepeatJob(Connection conn, Job job, JobRequest jobDetailRequest, SessionUser sessionUser,
 			HttpServletResponse response) throws Exception {
+		Integer jobId = job.getJobId();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		WebMessages messages = new WebMessages();
 		ResponseCode responseCode = null;
