@@ -123,6 +123,55 @@
 					}, 
 					
 					
+					
+					
+					cancelJob : function() {
+						var $outbound = {};
+						$jobId = $("#job-cancel-modal").attr("jobid");
+						$outbound["jobId"] = $jobId;
+						$outbound["action"] = "CANCEL_JOB";
+						
+						$.each($("#job-cancel-modal input"), function($index, $val) {
+							$outbound[$($val).attr('name')] = $($val).val() 
+						});
+						
+						QUOTEMAINTENANCE.doJobUpdate($jobId, $outbound, QUOTEMAINTENANCE.cancelJobSuccess, QUOTEMAINTENANCE.cancelJobErr);
+					},
+					
+					
+					cancelJobErr : function($statusCode) {
+						var $messages = {
+								403:"Session Expired. Log in and try again",
+								404:"System Error Activate 404. Contact Support",
+								500:"System Error Activate 500. Contact Support"
+						}
+						$("#job-cancel-modal").dialog("close");
+						$("#globalMsg").html( $messages[$statusCode] );
+					},
+					
+					
+					
+					cancelJobSuccess : function($data) {
+						console.log($data);
+						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {	
+							$.each($data.data.webMessages, function($index, $val) {								
+								var $fieldName = "." + $index + "Err";
+								var $selector = "#job-cancel-modal " + $fieldName;
+								$($selector).html($val[0]).show().fadeOut(3000);
+							});							
+						} else {
+							QUOTEMAINTENANCE.quote = $data.data.quote;
+							// call this:  populateJobPanel : function($jobId, $destination, $data
+							var $destination = "#job" + $data.data.job.jobId + " .job-data-row";
+							QUOTEMAINTENANCE.populateJobPanel($data.data.job.jobId, $destination, $data.data);
+							$("#job-cancel-modal").dialog("close");
+							$("#globalMsg").html("Job Canceled").show().fadeOut(3000);
+						}
+					}, 
+					
+					
+					
+					
 					cancelThisJobEdit : function($jobId) {
 	    				console.log("clicked a job edit cancel: " + $jobId);
 	    				
@@ -275,6 +324,10 @@
 					
 					cancelThisJob : function($jobId, $type) {
 	            		console.log("clicked a job cancel: " + $jobId);
+	            		$("#job-cancel-modal").attr("jobid", $jobId);
+	            		$("#job-cancel-modal input").val("");
+	            		$("#job-cancel-modal .errMsg").html("");
+	            		$("#job-cancel-modal").dialog("open");
 					},
 					
 					
@@ -684,8 +737,44 @@
 							]
 						});	
 						$("#job-activate-save-button").button('option', 'label', 'Save');
-						$("#job-activate-cancel-button").button('option', 'label', 'Cancel');						
+						$("#job-activate-cancel-button").button('option', 'label', 'Cancel');	
+						
+						
+						
+						$( "#job-cancel-modal" ).dialog({
+							title:'Cancel Job',
+							autoOpen: false,
+							height: 250,
+							width: 450,
+							modal: true,
+							closeOnEscape:true,
+							//open: function(event, ui) {
+							//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+							//},
+							buttons: [
+								{
+									id: "job-cancel-cancel-button",
+									click: function($event) {
+										$( "#job-cancel-modal" ).dialog("close");
+									}
+								},
+								{
+									id: "job-cancel-save-button",
+									click: function($event) {
+										QUOTEMAINTENANCE.cancelJob();
+									}
+								}
+							]
+						});	
+						$("#job-cancel-save-button").button('option', 'label', 'Save');
+						$("#job-cancel-cancel-button").button('option', 'label', 'Cancel');						
+
 					},
+					
+					
+					
+					
+					
 					
 					
 					
@@ -1848,6 +1937,12 @@
         	#edit-this-quote {
         		cursor:pointer;
         	}
+        	#job-activate-modal {
+        		display:none;
+        	}
+        	#job-cancel-modal {
+        		display:none;
+        	}
         	#job-edit-modal {
         		display:none;
         	}
@@ -2135,6 +2230,22 @@
 	    				<td><span class="formLabel">Start Date:</span></td>
 	    				<td><input type="text" name="startDate" class="dateField" /></td>
 	    				<td><span class="startDateErr err errMsg"></span><br /></td>
+	    			</tr>
+	    		</table>
+	    	</div>
+	    	
+	    	
+	    	<div id="job-cancel-modal" class="edit-modal">
+	    		<table>
+	    			<tr>
+	    				<td><span class="formLabel">Cancel Reason:</span></td>
+	    				<td><input type="text" name="cancelReason"  /></td>
+	    				<td><span class="cancelReasonErr err errMsg"></span></td>
+	    			</tr>
+	    			<tr>
+	    				<td><span class="formLabel">Cancel Date:</span></td>
+	    				<td><input type="text" name="cancelDate" class="dateField" /></td>
+	    				<td><span class="cancelDateErr err errMsg"></span><br /></td>
 	    			</tr>
 	    		</table>
 	    	</div>
