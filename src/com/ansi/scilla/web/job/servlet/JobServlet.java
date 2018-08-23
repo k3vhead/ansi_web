@@ -29,6 +29,7 @@ import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
+import com.ansi.scilla.web.job.query.JobHeader;
 import com.ansi.scilla.web.job.request.JobDetailRequest;
 import com.ansi.scilla.web.job.request.JobDetailRequest.JobDetailRequestAction;
 import com.ansi.scilla.web.job.request.JobRequest;
@@ -116,11 +117,23 @@ public class JobServlet extends AbstractServlet {
 				WebMessages webMessages = new WebMessages();
 				
 				try {
-					trafficCop(conn, response, user, job, jobRequest, webMessages);					
+					JobRequestAction action = trafficCop(conn, response, user, job, jobRequest, webMessages);					
 					conn.commit();
 					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
 					responseCode = ResponseCode.SUCCESS;
-					jobDetailResponse = new JobDetailResponse(conn, url.getId());
+					
+					// After we delete, there are no job details to return, but we still need the job headers
+					// so the page can redisplay them
+					if ( action == JobRequestAction.DELETE_JOB ) {
+						jobDetailResponse = new JobDetailResponse();
+						List<JobHeader> jobHeaderList = JobHeader.getJobHeaderList(conn, job.getQuoteId());	
+						if ( jobHeaderList.size() == 1 ) {
+							jobHeaderList.get(0).setCanDelete(false); // don't delete the only job you've got
+						}
+						jobDetailResponse.setJobHeaderList(jobHeaderList);
+					} else {
+						jobDetailResponse = new JobDetailResponse(conn, url.getId());
+					}
 				} catch ( JobProcessException e ) {
 					conn.rollback();
 					responseCode = ResponseCode.EDIT_FAILURE;
@@ -144,7 +157,8 @@ public class JobServlet extends AbstractServlet {
 		}
 	}
 
-	private void trafficCop(Connection conn, HttpServletResponse response, SessionUser user, Job job, JobRequest jobRequest, WebMessages webMessages) throws Exception {
+	private JobRequestAction trafficCop(Connection conn, HttpServletResponse response, SessionUser user, Job job, JobRequest jobRequest, WebMessages webMessages) throws Exception {
+		JobRequestAction action = null;
 		if ( StringUtils.isBlank(jobRequest.getAction()) ) {
 			// THis is a panel edit update
 			if ( jobRequest.getUpdateType().equalsIgnoreCase(UPDATE_TYPE_IS_PROPOSAL_PANEL)) {
@@ -161,7 +175,7 @@ public class JobServlet extends AbstractServlet {
 			}
 		} else {
 			// this is an action update
-			JobRequestAction action = JobRequestAction.valueOf(jobRequest.getAction());
+			action = JobRequestAction.valueOf(jobRequest.getAction());
 			if (action.equals(JobRequestAction.CANCEL_JOB)) {
 				doCancelJob(conn, job, jobRequest, user, response);					
 			} else if ( action.equals(JobRequestAction.ACTIVATE_JOB)) {
@@ -178,6 +192,7 @@ public class JobServlet extends AbstractServlet {
 			}
 		}
 		
+		return action;
 	}
 
 	private void makeProposalUpdate(Connection conn, SessionUser user, Job job, JobRequest jobRequest, WebMessages webMessages) throws Exception {
@@ -382,28 +397,12 @@ public class JobServlet extends AbstractServlet {
 	
 	private void doDeleteJob(Connection conn, Job job, JobRequest jobDetailRequest, SessionUser sessionUser, HttpServletResponse response) throws Exception {
 		Integer jobId = job.getJobId();
-		JobDetailResponse jobDetailResponse = new JobDetailResponse();
-		WebMessages messages = new WebMessages();
-		ResponseCode responseCode = null;
-		if ( messages.isEmpty() ) {
-			try {
-				JobUtils.deleteJob(conn, jobId, sessionUser.getUserId());
-				conn.commit();
-				responseCode = ResponseCode.SUCCESS;
-				messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Delete Successful");
-//				jobDetailResponse = new JobDetailResponse(conn,jobId);
-			} catch ( RecordNotFoundException e) {
-				responseCode = ResponseCode.EDIT_FAILURE;
-				messages.addMessage("jobId", "Invalid Job ID");
-			}
-		} else { 
-			responseCode = ResponseCode.EDIT_FAILURE;
-		}
-		jobDetailResponse.setWebMessages(messages);
-		super.sendResponse(conn, response, responseCode, jobDetailResponse);
+		JobUtils.deleteJob(conn, jobId, sessionUser.getUserId());
+		JobUtils.renumberJobs(conn, job.getQuoteId(), sessionUser.getUserId());
 	}
 
 	
+
 	private void doActivateJob(Connection conn, Job job, JobRequest jobDetailRequest, SessionUser sessionUser, HttpServletResponse response) throws Exception {
 		Integer jobId = job.getJobId();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();

@@ -197,6 +197,53 @@
 	            	},
 	            	
 	            	
+	            	
+	            	
+	            	
+	            	
+	            	deleteJob : function() {
+						var $outbound = {};
+						$jobId = $("#job-delete-modal").attr("jobid");
+						$outbound["jobId"] = $jobId;
+						$outbound["action"] = "DELETE_JOB";
+						
+						QUOTEMAINTENANCE.doJobUpdate($jobId, $outbound, QUOTEMAINTENANCE.deleteJobSuccess, QUOTEMAINTENANCE.deleteJobErr);
+					},
+					
+					
+					deleteJobErr : function($statusCode) {
+						var $messages = {
+								403:"Session Expired. Log in and try again",
+								404:"System Error Activate 404. Contact Support",
+								500:"System Error Activate 500. Contact Support"
+						}
+						$("#job-delete-modal").dialog("close");
+						$("#globalMsg").html( $messages[$statusCode] );
+					},
+					
+					
+					
+					deleteJobSuccess : function($data) {
+						console.log($data);
+						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {	
+							$.each($data.data.webMessages, function($index, $val) {								
+								var $fieldName = "." + $index + "Err";
+								var $selector = "#job-delete-modal " + $fieldName;
+								$($selector).html($val[0]).show().fadeOut(3000);
+							});							
+						} else {
+							QUOTEMAINTENANCE.quote = $data.data.quote;
+							// call this:  populateJobPanel : function($jobId, $destination, $data
+							// var $destination = "#job" + $data.data.job.jobId + " .job-data-row";
+							//QUOTEMAINTENANCE.populateJobPanel($data.data.job.jobId, $destination, $data.data);
+							//QUOTEMAINTENANCE.populateJobHeader($data.quoteList[0].jobHeaderList)
+							$("#job-delete-modal").dialog("close");
+							$("#globalMsg").html("Job Deleted").show().fadeOut(3000);
+						}
+					},
+	            	
+	            	
+	            	
 					doCopyQuote : function($quoteId) {
 						console.log("Making a copy of " + $quoteId);	
 						var $url = "quote/copy/" + $quoteId;
@@ -236,6 +283,8 @@
 							data: JSON.stringify($outbound),
 							statusCode: {
 								200:function($data) {
+									QUOTEMAINTENANCE.populateJobHeader($data.data.jobHeaderList)
+									QUOTEMAINTENANCE.makeJobExpansion();
 									$successCallback($data);
 								},
 								403: function($data) {	
@@ -334,6 +383,8 @@
 					
 					deleteThisJob : function($jobId, $type) {
 	            		console.log("clicked a job deleteThisJob: " + $jobId);
+	            		$("#job-delete-modal").attr("jobid", $jobId);
+	            		$( "#job-delete-modal" ).dialog("open");
 					},
 					
 					
@@ -769,6 +820,36 @@
 						$("#job-cancel-save-button").button('option', 'label', 'Save');
 						$("#job-cancel-cancel-button").button('option', 'label', 'Cancel');						
 
+						
+						
+						
+						$( "#job-delete-modal" ).dialog({
+							title:'Delete Job',
+							autoOpen: false,
+							height: 125,
+							width: 450,
+							modal: true,
+							closeOnEscape:true,
+							//open: function(event, ui) {
+							//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+							//},
+							buttons: [
+								{
+									id: "job-delete-cancel-button",
+									click: function($event) {
+										$( "#job-delete-modal" ).dialog("close");
+									}
+								},
+								{
+									id: "job-delete-save-button",
+									click: function($event) {
+										QUOTEMAINTENANCE.deleteJob();
+									}
+								}
+							]
+						});	
+						$("#job-delete-save-button").button('option', 'label', 'Delete');
+						$("#job-delete-cancel-button").button('option', 'label', 'Cancel');
 					},
 					
 					
@@ -1259,6 +1340,7 @@
 		            
 		            
 		            populateJobHeader : function($jobHeaderList) {
+		            	$("#jobList").html("");
 		            	$.each($jobHeaderList, function($index, $value) {
 		            		//$("#jobList").append('<li data-jobid="' + $value.jobId + '">' + $value.jobNbr + '</li>');
 		            		$jobListItem = $("<li>");
@@ -2248,6 +2330,11 @@
 	    				<td><span class="cancelDateErr err errMsg"></span><br /></td>
 	    			</tr>
 	    		</table>
+	    	</div>
+	    	
+	    	
+	    	<div id="job-delete-modal" class="edit-modal">
+	    		Are you sure you want to delete this job?
 	    	</div>
 	    </ansi:hasPermission>
 	    

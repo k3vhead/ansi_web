@@ -1,6 +1,7 @@
 package com.ansi.scilla.web.job.response;
 
 import java.sql.Connection;
+import java.util.List;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
@@ -14,6 +15,7 @@ import com.ansi.scilla.common.db.ViewTicketLog;
 import com.ansi.scilla.web.address.response.AddressResponseItem;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.job.query.JobHeader;
 import com.ansi.scilla.web.quote.response.QuoteDetail;
 import com.ansi.scilla.web.ticket.response.TicketLogRecord;
 import com.ansi.scilla.web.ticket.response.TicketRecord;
@@ -30,6 +32,7 @@ public class JobDetailResponse extends MessageResponse {
 	private TicketLogRecord nextDue;
 	private QuoteDetail quote;
 	private TicketLogRecord lastCreated;
+	private List<JobHeader> jobHeaderList;
 	
 	public JobDetailResponse() {
 		super();
@@ -94,6 +97,11 @@ public class JobDetailResponse extends MessageResponse {
 			this.lastCreated = new TicketLogRecord();
 		}
 		
+		this.jobHeaderList = JobHeader.getJobHeaderList(conn, quote.getQuoteId());	
+		if ( this.jobHeaderList.size() == 1 ) {
+			this.jobHeaderList.get(0).setCanDelete(false); // don't delete the only job you've got
+		}
+		
 	}
 	
 	public JobDetail getJob() {
@@ -147,6 +155,14 @@ public class JobDetailResponse extends MessageResponse {
 
 	public void setLastCreated(TicketLogRecord lastCreated) {
 		this.lastCreated = lastCreated;
+	}
+
+	public List<JobHeader> getJobHeaderList() {
+		return jobHeaderList;
+	}
+
+	public void setJobHeaderList(List<JobHeader> jobHeaderList) {
+		this.jobHeaderList = jobHeaderList;
 	}
 
 
