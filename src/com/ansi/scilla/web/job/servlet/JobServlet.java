@@ -30,8 +30,6 @@ import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.job.query.JobHeader;
-import com.ansi.scilla.web.job.request.JobDetailRequest;
-import com.ansi.scilla.web.job.request.JobDetailRequest.JobDetailRequestAction;
 import com.ansi.scilla.web.job.request.JobRequest;
 import com.ansi.scilla.web.job.request.JobRequestAction;
 import com.ansi.scilla.web.job.response.JobDetailResponse;
@@ -184,8 +182,8 @@ public class JobServlet extends AbstractServlet {
 				doDeleteJob(conn, job, jobRequest, user, response);				
 			} else if ( action.equals(JobRequestAction.SCHEDULE_JOB)) {
 				doScheduleJob(conn, job, jobRequest, user, response);
-			} else if ( action.equals(JobRequestAction.REPEAT_JOB)) {
-				doRepeatJob(conn, job, jobRequest, user, response);
+//			} else if ( action.equals(JobRequestAction.REPEAT_JOB)) {
+//				doRepeatJob(conn, job, jobRequest, user, response);
 			} else {
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Job Action");
 				throw new JobProcessException("Invalid Job Action");
@@ -475,6 +473,7 @@ public class JobServlet extends AbstractServlet {
 		
 	}
 
+	/*
 	private void doRepeatJob(Connection conn, Job job, JobRequest jobDetailRequest, SessionUser sessionUser,
 			HttpServletResponse response) throws Exception {
 		Integer jobId = job.getJobId();
@@ -507,6 +506,8 @@ public class JobServlet extends AbstractServlet {
 		jobDetailResponse.setWebMessages(messages);
 		super.sendResponse(conn, response, responseCode, jobDetailResponse);		
 	}
+	*/
+	
 	
 	protected Job doAdd(Connection conn, JobRequest jobRequest, SessionUser sessionUser, HttpServletResponse response) throws Exception {
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
