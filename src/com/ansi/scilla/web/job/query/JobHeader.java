@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.jobticket.JobStatus;
+import com.ansi.scilla.common.jobticket.JobUtils;
 import com.thewebthing.commons.lang.StringUtils;
 
 public class JobHeader extends ApplicationObject implements Comparable<JobHeader> {
@@ -23,6 +25,8 @@ public class JobHeader extends ApplicationObject implements Comparable<JobHeader
 		"\n\t job.job_status, " +
 		"\n\t job.job_frequency, " +
 		"\n\t job.price_per_cleaning, " + 
+		"\n\t job.activation_date, " +
+		"\n\t job.start_date, " +
 		"\n\t division.division_nbr,  " +
 		"\n\t division.division_code " +
 		"\n from job " +
@@ -43,9 +47,10 @@ public class JobHeader extends ApplicationObject implements Comparable<JobHeader
 	private Boolean canDelete;
 	private Boolean canActivate;
 	private Boolean canCancel;
+	private Boolean canSchedule;
 
 	
-	private JobHeader(ResultSet rs) throws SQLException {
+	private JobHeader(ResultSet rs) throws Exception {
 		this.jobId = rs.getInt("job_id");
 		this.jobNbr = rs.getInt("job_nbr");
 		String description = rs.getString("service_description");
@@ -59,6 +64,11 @@ public class JobHeader extends ApplicationObject implements Comparable<JobHeader
 		this.canDelete = this.jobStatus.equals(JobStatus.NEW.code());
 		this.canActivate = this.jobStatus.equals(JobStatus.PROPOSED.code());
 		this.canCancel = this.jobStatus.equals(JobStatus.ACTIVE.code());
+		JobStatus jobStatus = JobStatus.lookup(this.jobStatus);
+		JobFrequency jobFrequency  = JobFrequency.get(this.jobFrequency);
+		java.util.Date activationDate = new java.util.Date(rs.getDate("activation_date").getTime());
+		java.util.Date startDate = new java.util.Date(rs.getDate("start_date").getTime());
+		this.canSchedule = JobUtils.canReschedule(this.jobId, jobStatus, jobFrequency, activationDate, startDate);
 	}
 	
 	public Integer getJobId() {
@@ -157,6 +167,14 @@ public class JobHeader extends ApplicationObject implements Comparable<JobHeader
 		this.canCancel = canCancel;
 	}
 
+	public Boolean getCanSchedule() {
+		return canSchedule;
+	}
+
+	public void setCanSchedule(Boolean canSchedule) {
+		this.canSchedule = canSchedule;
+	}
+
 	public static String getSql() {
 		return sql;
 	}
@@ -173,7 +191,7 @@ public class JobHeader extends ApplicationObject implements Comparable<JobHeader
 	 * @return
 	 * @throws SQLException
 	 */
-	public static List<JobHeader> getJobHeaderList(Connection conn, Integer quoteId) throws SQLException {
+	public static List<JobHeader> getJobHeaderList(Connection conn, Integer quoteId) throws Exception {
 		List<JobHeader> jobHeaderList = new ArrayList<JobHeader>();
 		PreparedStatement ps = conn.prepareStatement(sql);
 		ps.setInt(1, quoteId);

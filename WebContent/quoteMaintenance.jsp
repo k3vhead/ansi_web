@@ -850,6 +850,40 @@
 						});	
 						$("#job-delete-save-button").button('option', 'label', 'Delete');
 						$("#job-delete-cancel-button").button('option', 'label', 'Cancel');
+						
+						
+						
+						$( "#job-schedule-modal" ).dialog({
+							title:'Schedule Job',
+							autoOpen: false,
+							height: 250,
+							width: 450,
+							modal: true,
+							closeOnEscape:true,
+							//open: function(event, ui) {
+							//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+							//},
+							buttons: [
+								{
+									id: "job-schedule-cancel-button",
+									click: function($event) {
+										$( "#job-schedule-modal" ).dialog("close");
+									}
+								},
+								{
+									id: "job-schedule-save-button",
+									click: function($event) {
+										QUOTEMAINTENANCE.scheduleJob();
+									}
+								}
+							]
+						});	
+						$("#job-schedule-save-button").button('option', 'label', 'Save');
+						$("#job-schedule-cancel-button").button('option', 'label', 'Cancel');	
+						
+						
+						
+						
 					},
 					
 					
@@ -1366,6 +1400,9 @@
 							if ( $value.canDelete == true ) {
 								$panelButtonContainer.append('<webthing:delete styleClass="delete-this-job">Delete</webthing:delete>');
 							}
+							if ( $value.canSchedule == true ) {
+								$panelButtonContainer.append('<webthing:schedule styleClass="schedule-this-job">Schedule</webthing:schedule>');
+							}
 		            		//$panelButtonContainer.append('<webthing:edit styleClass="edit-this-job edit-this-panel">Edit</webthing:edit>');
 		            		//$panelButtonContainer.append('<webthing:save styleClass="save-job">Save</webthing:save>');
             				//$panelButtonContainer.append('<webthing:ban styleClass="cancel-job-edit">Cancel</webthing:ban>');
@@ -1467,11 +1504,13 @@
 		            		var $jobId = $(this).closest("div.panel-button-container")[0].attributes['data-jobid'].value;
 		            		QUOTEMAINTENANCE.deleteThisJob($jobId);
 		            	});
-		            	
-		            	
 		            	$(".cancel-job-edit").click(function($event) {
 		            		var $jobId = this.parentElement.attributes['data-jobid'].value;
 		            		QUOTEMAINTENANCE.cancelThisJobEdit($jobId);
+		            	});
+		            	$(".schedule-this-job").click(function($event) {
+		            		var $jobId = this.parentElement.attributes['data-jobid'].value;
+		            		QUOTEMAINTENANCE.scheduleThisJob($jobId);
 		            	});
 		            },
 		            
@@ -1983,6 +2022,65 @@
 					
 					
 					
+					scheduleJob : function() {
+						var $outbound = {};
+						$jobId = $("#job-schedule-modal").attr("jobid");
+						$outbound["jobId"] = $jobId;
+						$outbound["action"] = "SCHEDULE_JOB";
+						
+						$.each($("#job-schedule-modal input"), function($index, $val) {
+							$outbound[$($val).attr('name')] = $($val).val() 
+						});
+						
+						QUOTEMAINTENANCE.doJobUpdate($jobId, $outbound, QUOTEMAINTENANCE.scheduleJobSuccess, QUOTEMAINTENANCE.scheduleJobErr);
+					},
+					
+					
+					scheduleJobErr : function($statusCode) {
+						var $messages = {
+								403:"Session Expired. Log in and try again",
+								404:"System Error Activate 404. Contact Support",
+								500:"System Error Activate 500. Contact Support"
+						}
+						$("#job-schedule-modal").dialog("close");
+						$("#globalMsg").html( $messages[$statusCode] );
+					},
+					
+					
+					
+					scheduleJobSuccess : function($data) {
+						console.log($data);
+						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {	
+							$.each($data.data.webMessages, function($index, $val) {
+								console.log($index);
+								console.log($val);
+								var $fieldName = "." + $index + "Err";
+								var $selector = "#job-schedule-modal " + $fieldName;
+								$($selector).html($val[0]).show().fadeOut(3000);
+							});							
+						} else {
+							QUOTEMAINTENANCE.quote = $data.data.quote;
+							// call this:  populateJobPanel : function($jobId, $destination, $data
+							var $destination = "#job" + $data.data.job.jobId + " .job-data-row";
+							QUOTEMAINTENANCE.populateJobPanel($data.data.job.jobId, $destination, $data.data);
+							$("#job-schedule-modal").dialog("close");
+							$("#globalMsg").html("Job Scheduled").show().fadeOut(3000);
+						}
+					}, 
+					
+					
+					
+					
+					scheduleThisJob : function($jobId) {
+	            		console.log("clicked a job scheduleThisJob: " + $jobId);
+	            		$("#job-schedule-modal").attr("jobid", $jobId);
+	            		$("#job-schedule-modal input").val("");
+	            		$("#job-schedule-modal .errMsg").html("");
+	            		$("#job-schedule-modal").dialog("open");	            		
+					},
+					
+					
+					
 					showQuote : function() {
 		            	$("#loading-container").hide();
 						$("#quote-container").fadeIn(1000);
@@ -2032,6 +2130,9 @@
         		display:none;
         	}
         	#job-list-container {
+        		display:none;
+        	}
+        	#job-schedule-modal {
         		display:none;
         	}
         	#jobList li {
@@ -2335,6 +2436,17 @@
 	    	
 	    	<div id="job-delete-modal" class="edit-modal">
 	    		Are you sure you want to delete this job?
+	    	</div>
+	    	
+	    	
+	    	<div id="job-schedule-modal" class="edit-modal">
+	    		<table>
+	    			<tr>
+	    				<td><span class="formLabel">Start Date:</span></td>
+	    				<td><input type="text" name="startDate" class="dateField" /></td>
+	    				<td><span class="startDateErr err errMsg"></span><br /></td>
+	    			</tr>
+	    		</table>
 	    	</div>
 	    </ansi:hasPermission>
 	    

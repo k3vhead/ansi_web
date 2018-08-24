@@ -448,7 +448,7 @@ public class JobServlet extends AbstractServlet {
 		ResponseCode responseCode = null;
 		try {
 			if ( jobDetailRequest.getStartDate() == null ) {
-				messages.addMessage("scheduleStartDate", "Required Field");
+				messages.addMessage("startDate", "Required Field");
 			}
 			if ( messages.isEmpty() ) {
 				try {
