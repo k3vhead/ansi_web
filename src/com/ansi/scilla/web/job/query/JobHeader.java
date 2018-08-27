@@ -66,9 +66,15 @@ public class JobHeader extends ApplicationObject implements Comparable<JobHeader
 		this.canCancel = this.jobStatus.equals(JobStatus.ACTIVE.code());
 		JobStatus jobStatus = JobStatus.lookup(this.jobStatus);
 		JobFrequency jobFrequency  = JobFrequency.get(this.jobFrequency);
-		java.util.Date activationDate = new java.util.Date(rs.getDate("activation_date").getTime());
-		java.util.Date startDate = new java.util.Date(rs.getDate("start_date").getTime());
-		this.canSchedule = JobUtils.canReschedule(this.jobId, jobStatus, jobFrequency, activationDate, startDate);
+		Object activationDateRS = rs.getObject("activation_date");
+		Object startDateRS = rs.getObject("start_date");
+		if ( activationDateRS != null && startDateRS != null ) {
+			java.util.Date activationDate = new java.util.Date( ((java.sql.Date)activationDateRS).getTime() );
+			java.util.Date startDate = new java.util.Date( ((java.sql.Date)startDateRS).getTime() );
+			this.canSchedule = JobUtils.canReschedule(this.jobId, jobStatus, jobFrequency, activationDate, startDate);
+		} else {
+			this.canSchedule = false;
+		}
 	}
 	
 	public Integer getJobId() {
