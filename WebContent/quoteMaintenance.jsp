@@ -425,13 +425,7 @@
 						// populate Proposal edit panel
 						console.log(QUOTEMAINTENANCE.joblist[$jobId]);
 						//populate frequency select:
-						var $select = $("#job-edit-modal .proposal select[name='job-proposal-freq']");
-						$('option', $select).remove();
-	
-						$select.append(new Option("",""));
-						$.each(QUOTEMAINTENANCE.jobFrequencyList, function(index, val) {
-						    $select.append(new Option(val.display, val.abbrev));
-						});
+						QUOTEMAINTENANCE.populateJobFequencySelect();
 						
 						$("#job-edit-modal .proposal input[name='job-proposal-job-nbr']").val(QUOTEMAINTENANCE.joblist[$jobId].job.jobNbr);
 						$("#job-edit-modal .proposal input[name='job-proposal-ppc']").val(QUOTEMAINTENANCE.joblist[$jobId].job.pricePerCleaning);
@@ -1191,7 +1185,31 @@
 		    				QUOTE_PRINT.showQuotePrint("#printQuoteDiv", $quoteId, $quoteNumber, "PROPOSE");
 		    			});
 		    			
-
+		    			
+		    			
+		    			$("#new-job-button").click(function($event) {
+		    				var $quoteId = $(this).attr("data-quoteid");
+		    				var $quoteNumber = $(this).attr("data-quotenumber");
+		    				console.debug("Adding job to " + $quoteId);
+		    				
+		    				
+		    				//Clear all job forms
+		    				$(".job-edit-panel input").val("");
+		    				$(".job-edit-panel select").val("");
+		    				$(".job-edit-panel textarea").val("");
+		    				//set all job forms to visible
+							$(".job-edit-panel").show();		    				
+		    				//Populate frequncy dropdown
+		    				QUOTEMAINTENANCE.populateJobFequencySelect();
+		    				console.debug("Set jobid attr to new/add/something");
+		    				$("#job-edit-modal").attr("data-jobid", "add");
+							$("#job-edit-modal").attr("data-type", "add");
+		    				$("#job-edit-modal").dialog("open");
+		    			});
+	
+		    			
+		    			
+		    			
 		    			$("#edit-this-address .edit-address").click(function($event) {
 		    				var $type = $(this).data("type");
 		    				console.log("Editing addr: " + $type);
@@ -1206,6 +1224,7 @@
 				        	$("#address-edit-modal").data("id","");
 		    				$("#address-edit-modal").dialog("open");
 		    			});
+		    			
 		    			
 		    			$("#edit-this-address .edit-contact").click(function($event) {
 		    				var $type = $(this).data("type");
@@ -1368,6 +1387,18 @@
 						$select.append(new Option("",""));
 						$.each(QUOTEMAINTENANCE.divisionList, function(index, val) {
 						    $select.append(new Option(val.divisionNbr + "-" + val.divisionCode, val.divisionId));
+						});
+		            },
+		            
+		            
+		            
+		            populateJobFequencySelect : function() {
+		            	var $select = $("#job-edit-modal .proposal select[name='job-proposal-freq']");
+						$('option', $select).remove();
+	
+						$select.append(new Option("",""));
+						$.each(QUOTEMAINTENANCE.jobFrequencyList, function(index, val) {
+						    $select.append(new Option(val.display, val.abbrev));
 						});
 		            },
 		            
@@ -1862,52 +1893,86 @@
 					
 					saveJob : function() {
 						var $jobId = $("#job-edit-modal").attr("data-jobid");
-						var $type = $("#job-edit-modal").attr("data-type");
-						console.log("If I were saving jobs, it would happen here " + $jobId + "  " + $type);
-						var $panelSelector = "#job-edit-modal ." + $type;
-						var $inputSelector = $panelSelector + " select";
+						var $updateType = $("#job-edit-modal").attr("data-type");
+						console.log("If I were saving jobs, it would happen here " + $jobId + "  " + $updateType);
+						
+						// if we're doing an update, just process the one panel
+						// if we're adding a new job, do them all
+						if ( $updateType == "add" ) {
+							var $typeList = ['proposal','activation','invoice','schedule']
+						} else {
+							var $typeList = [$updateType]
+						}
 						var $outbound = {};
-						$.each( $($inputSelector), function($index, $value) {
-							$selector = $panelSelector + " select[name='" + $value.name + "']";	 
-							$apiname = $($selector).attr("data-apiname");
-	    					$outbound[$apiname] = $($selector).val();
-	    				});
-						$inputSelector = $panelSelector + " input";
-						$.each( $($inputSelector), function($index, $value) {							
-							$selector = $panelSelector + " input[name='" + $value.name + "']";
-							$apiname = $($selector).attr("data-apiname");
-	    					$outbound[$apiname] = $($selector).val();
-	    				});
-						$inputSelector = $panelSelector + " textarea";
-						$.each( $($inputSelector), function($index, $value) {
-							$selector = $panelSelector + " textarea[name='" + $value.name + "']";	
-							$apiname = $($selector).attr("data-apiname");
-	    					$outbound[$apiname] = $($selector).val();
-	    				});
 						
-						// do some panel-specific fixes:
-						if ($type == "activation") {
-							if ( $("#job-edit-modal .activation input[name='requestSpecialScheduling']").prop("checked") == true ) {
-								$outbound['requestSpecialScheduling'] = 1;
-							} else {
-								$outbound['requestSpecialScheduling'] = 0;
+						
+						$.each($typeList, function(index, $type) {
+							console.log("Looping thru: " + $type);
+							var $panelSelector = "#job-edit-modal ." + $type;
+							var $inputSelector = $panelSelector + " select";
+							$.each( $($inputSelector), function($index, $value) {
+								$selector = $panelSelector + " select[name='" + $value.name + "']";	 
+								$apiname = $($selector).attr("data-apiname");
+		    					$outbound[$apiname] = $($selector).val();
+		    				});
+							$inputSelector = $panelSelector + " input";
+							$.each( $($inputSelector), function($index, $value) {							
+								$selector = $panelSelector + " input[name='" + $value.name + "']";
+								$apiname = $($selector).attr("data-apiname");
+		    					$outbound[$apiname] = $($selector).val();
+		    				});
+							$inputSelector = $panelSelector + " textarea";
+							$.each( $($inputSelector), function($index, $value) {
+								$selector = $panelSelector + " textarea[name='" + $value.name + "']";	
+								$apiname = $($selector).attr("data-apiname");
+		    					$outbound[$apiname] = $($selector).val();
+		    				});
+							
+							// do some panel-specific fixes:
+							if ($type == "activation") {
+								if ( $("#job-edit-modal .activation input[name='requestSpecialScheduling']").prop("checked") == true ) {
+									$outbound['requestSpecialScheduling'] = 1;
+								} else {
+									$outbound['requestSpecialScheduling'] = 0;
+								}
 							}
-						}
-						if ($type == "schedule") {
-							if ( $("#job-edit-modal .invoice input[name='repeatScheduleAnnually']").prop("checked") == true ) {
-								$outbound['repeatScheduleAnnually'] = 1;
-							} else {
-								$outbound['repeatScheduleAnnually'] = 0;
+							if ($type == "schedule") {
+								if ( $("#job-edit-modal .invoice input[name='repeatScheduleAnnually']").prop("checked") == true ) {
+									$outbound['repeatScheduleAnnually'] = 1;
+								} else {
+									$outbound['repeatScheduleAnnually'] = 0;
+								}
 							}
+						});
+
+						// if this is a new job -- add all the other stuff, too
+						if ( $updateType == 'add') {
+							console.log("This is an add:")
+							console.log(QUOTEMAINTENANCE.quote);
+							console.log("********************)");
+							$outbound['billingContactId'] = QUOTEMAINTENANCE.quote.jobContact.billingContact.contactId;
+							$outbound['buildingType'] = QUOTEMAINTENANCE.quote.quote.buildingType;
+							$outbound['contractContactId'] = QUOTEMAINTENANCE.quote.jobContact.contractContact.contactId;
+							$outbound['divisionId'] = QUOTEMAINTENANCE.quote.quote.divisionId;
+							$outbound['invoiceBatch'] = QUOTEMAINTENANCE.quote.quote.invoiceBatch;
+							$outbound['invoiceGrouping'] = QUOTEMAINTENANCE.quote.quote.invoiceGrouping;
+							$outbound['invoiceStyle'] = QUOTEMAINTENANCE.quote.quote.invoiceStyle;
+							$outbound['invoiceTerms'] = QUOTEMAINTENANCE.quote.quote.invoiceTerms;
+							$outbound['jobContactId'] = QUOTEMAINTENANCE.quote.jobContact.jobContact.contactId;
+							//$outbound['jobTypeId'] = QUOTEMAINTENANCE.quote
+							$outbound['paymentTerms'] = QUOTEMAINTENANCE.quote.quote.paymentTerms;
+							$outbound['quoteId'] = QUOTEMAINTENANCE.quote.quote.quoteId;
+							$outbound['siteContact'] = QUOTEMAINTENANCE.quote.jobContact.siteContact.contactId;
+							$outbound['taxExempt'] = QUOTEMAINTENANCE.quote.quote.taxExempt;
+							$outbound['taxExemptReason'] = QUOTEMAINTENANCE.quote.quote.taxExemptReason;
 						}
 						
-						$outbound['updateType'] = $type;
+						$outbound['updateType'] = $updateType;
+						$outbound['quoteId'] = QUOTEMAINTENANCE.quote.quote.quoteId;
 						console.log(JSON.stringify($outbound) )
 						
 						
 						QUOTEMAINTENANCE.doJobUpdate($jobId, $outbound, QUOTEMAINTENANCE.saveJobSuccess, QUOTEMAINTENANCE.saveJobErr);
-						//$("#globalMsg").html("Faked saving a job").show().fadeOut(3000);
-						//$("#job-edit-modal").dialog("close");
 					},
 					
 					
@@ -2279,9 +2344,10 @@
  			    <ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:revise styleClass="fa-2x quote-button action-button" styleId="revise-button">Revise</webthing:revise></ansi:hasPermission>
     			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:copy styleClass="fa-2x quote-button action-button" styleId="copy-button">Copy</webthing:copy></ansi:hasPermission>
     			<ansi:hasPermission permissionRequired="QUOTE_READ"><a href="quoteLookup.html" style="text-decoration:none; color:#404040;"><webthing:view styleClass="fa-2x quote-button">Lookup</webthing:view></a></ansi:hasPermission>
-    			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:addNew styleClass="fa-2x quote-button">New</webthing:addNew></ansi:hasPermission>
+    			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:addNew styleClass="fa-2x quote-button action-button">New Quote</webthing:addNew></ansi:hasPermission>
     			<ansi:hasPermission permissionRequired="QUOTE_READ"><webthing:print styleClass="orange fa-2x quote-button action-button" styleId="preview-button">Preview</webthing:print></ansi:hasPermission>    			
-    			<ansi:hasPermission permissionRequired="QUOTE_PROPOSE"><webthing:print styleClass="green fa-2x quote-button action-button" styleId="propose-button">Propose</webthing:print></ansi:hasPermission>    			
+    			<ansi:hasPermission permissionRequired="QUOTE_PROPOSE"><webthing:print styleClass="green fa-2x quote-button action-button" styleId="propose-button">Propose</webthing:print></ansi:hasPermission>
+    			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:addNew styleClass="fa-2x quote-button action-button orange" styleId="new-job-button">New Job</webthing:addNew></ansi:hasPermission>    			
     			<%--
     			<input type="button" class="quoteButton" id="buttonModifyQuote" value="Modify" /><br />
     			<input type="button" class="quoteButton" id="buttonCopyQuote" value="Copy" /><br />

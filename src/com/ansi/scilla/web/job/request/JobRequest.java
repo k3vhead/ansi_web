@@ -59,6 +59,7 @@ public class JobRequest extends AbstractRequest{
 	private Date startDate;
 //	private String status;
 	private Integer taxExempt;
+	private String taxExemptReason;
 	private String washerNotes;
 	private Integer addedBy;
 	private Date addedDate;
@@ -453,6 +454,14 @@ public class JobRequest extends AbstractRequest{
 	@RequiredForUpdate
 	public Integer getTaxExempt() {
 		return this.taxExempt;
+	}
+
+	public String getTaxExemptReason() {
+		return taxExemptReason;
+	}
+
+	public void setTaxExemptReason(String taxExemptReason) {
+		this.taxExemptReason = taxExemptReason;
 	}
 
 	public void setWasherNotes(String washerNotes) {
