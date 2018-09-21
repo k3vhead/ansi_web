@@ -1821,7 +1821,9 @@
 							}
 							$("#address-edit-modal .errMsg").html($message).show().fadeOut(3000);
 						} else {
-							QUOTEMAINTENANCE.quote = $data.quote;
+							console.log("Saving quote stuff from address update");
+							console.log($data);
+							QUOTEMAINTENANCE.quote = $data.data.quote;
 							QUOTEMAINTENANCE.populateAddressPanel( "#address-bill-to", $data.data.quote.billTo);
 							QUOTEMAINTENANCE.populateAddressPanel( "#address-job-site", $data.data.quote.jobSite);
 							$("#globalMsg").html("Update Successful").fadeOut(3000);
