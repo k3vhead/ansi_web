@@ -3,13 +3,18 @@ package com.ansi.scilla.web.job.request;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Date;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
+import com.ansi.scilla.common.jobticket.JobStatus;
 import com.ansi.scilla.web.common.request.AbstractRequest;
+import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.request.RequiredForAdd;
 import com.ansi.scilla.web.common.request.RequiredForUpdate;
+import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -504,4 +509,124 @@ public class JobRequest extends AbstractRequest{
 		this.annualRepeat = annualRepeat;
 	}
 	
+	
+	public WebMessages validateProposalUpdate() {
+		WebMessages webMessages = new WebMessages();
+		
+		RequestValidator.validateJobFreqency(webMessages, "jobFrequency", this.jobFrequency, true);
+		RequestValidator.validateInteger(webMessages, "jobNbr", this.jobNbr, true, 1, null);
+		RequestValidator.validateBigDecimal(webMessages, "pricePerCleaning", this.pricePerCleaning, true);
+		RequestValidator.validateString(webMessages, "serviceDescription", this.serviceDescription, true);
+		
+		return webMessages;
+	}
+
+	
+	
+	/**
+{
+	"requestSpecialScheduling": 0,
+	"directLaborPct": "30",
+	"budget": "618",
+	"floors": "3",
+	"equipment": "BASIC, IPC EAGLE HIGH RISE CLEANER",
+	"washerNotes": "",
+	"omNotes": "",
+	"billingNotes": "",
+	"updateType": "activation",
+	"quoteId": 18888
+}
+
+	 * @return
+	 */
+	public WebMessages validateActivationUpdate() {
+		WebMessages webMessages = new WebMessages();
+		
+		RequestValidator.validateBoolean(webMessages, "requestSpecialScheduling", this.requestSpecialScheduling, true);
+		RequestValidator.validateBigDecimal(webMessages, "directLaborPct", this.directLaborPct, true);
+		RequestValidator.validateBigDecimal(webMessages, "budget", this.budget, true);
+		RequestValidator.validateInteger(webMessages, "floors", this.floors, true, 0, null);
+		RequestValidator.validateString(webMessages, "equipment", this.equipment, true);
+		RequestValidator.validateString(webMessages, "washerNotes", this.washerNotes, false);
+		RequestValidator.validateString(webMessages, "omNotes", this.omNotes, false);
+		RequestValidator.validateString(webMessages, "billingNotes", this.billingNotes, false);
+		
+		return webMessages;
+	}
+
+	
+	/**
+{
+	"poNumber": "",
+	"ourVendorNbr": "",
+	"expirationDate": "",
+	"expirationReason": "",
+	"updateType": "invoice",
+	"quoteId": 18888
+}
+	 * @return
+	 */
+	public WebMessages validateInvoiceUpdate() {
+		WebMessages webMessages = new WebMessages();
+		
+		RequestValidator.validateString(webMessages, "poNumber", this.poNumber, true);
+		RequestValidator.validateString(webMessages, "ourVendorNbr", this.ourVendorNbr, true);
+		RequestValidator.validateDate(webMessages, "expirationDate", this.expirationDate, true, null, null);
+		RequestValidator.validateString(webMessages, "expirationReason", this.expirationReason, true);
+		
+		return webMessages;
+	}
+
+	
+	
+	
+	/**
+{
+	"repeatScheduleAnnually": 0,
+	"updateType": "schedule",
+	"quoteId": 18888
+}
+	 * @return
+	 */
+	public WebMessages validateScheduleUpdate() {
+		WebMessages webMessages = new WebMessages();
+		
+		RequestValidator.validateBoolean(webMessages, "repeatScheduleAnnually", this.repeatScheduleAnnually, true);
+		
+		return webMessages;
+	}
+
+	public WebMessages validateNewJob(Connection conn) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		
+		WebMessages proposalMessages = validateProposalUpdate();
+		WebMessages activationMessages = validateProposalUpdate();
+		WebMessages invoiceMessages = validateProposalUpdate();
+		WebMessages scheduleMessages = validateProposalUpdate();
+		
+		for ( WebMessages messages : new WebMessages[] {proposalMessages, activationMessages, invoiceMessages, scheduleMessages} ) {
+			if ( ! messages.isEmpty() ) {
+				webMessages.addAllMessages(messages);
+			}
+		}
+		
+
+		RequestValidator.validateId(conn, webMessages, "contact", "contact_id", "billingContactId", this.billingContactId, true);
+		RequestValidator.validateCode(conn, webMessages, "job", "building_type", "buildingType", this.buildingType, true);
+		RequestValidator.validateId(conn, webMessages, "contact", "contact_id", "contractContactId", this.contractContactId, true);
+		RequestValidator.validateId(conn, webMessages, "division", "division_id", "divisionId", this.divisionId, true);
+		RequestValidator.validateBoolean(webMessages, "invoiceBatch", this.getInvoiceBatch(), true);
+		RequestValidator.validateInvoiceGrouping(webMessages, "invoiceGrouping", this.invoiceGrouping, true);
+		RequestValidator.validateInvoiceStyle(webMessages, "invoiceStyle", this.invoiceStyle, true);
+		RequestValidator.validateInvoiceTerms(webMessages, "invoiceTerms", this.invoiceTerms, true);
+		RequestValidator.validateId(conn, webMessages, "contact", "contact_id", "jobContactId", this.jobContactId, true);
+//		job.setJobTypeId(this.getJobTypeId());
+		RequestValidator.validatePaymentTerms(webMessages, "paymentTerms", this.paymentTerms, true);
+		RequestValidator.validateId(conn, webMessages, "quote", "quote_id", "quoteId", this.quoteId, true);
+		RequestValidator.validateId(conn, webMessages, "contact", "contact_id", "siteContact", this.siteContact, true);
+		RequestValidator.validateBoolean(webMessages, "taxExempt", this.taxExempt, true);
+		RequestValidator.validateString(webMessages, "taxExemptReason", this.taxExemptReason, true);
+		
+		return webMessages;
+	}
 }

@@ -209,7 +209,7 @@ public class JobServlet extends AbstractServlet {
 		ResponseCode responseCode = null;
 		
 		try {
-			webMessages = validateProposalUpdate(jobRequest);
+			webMessages = jobRequest.validateProposalUpdate();
 			if ( webMessages.isEmpty() ) {
 				populateJobProposal(job, jobRequest);
 				updateJob(conn, user, job);
@@ -239,14 +239,7 @@ public class JobServlet extends AbstractServlet {
 		job.setServiceDescription(jobRequest.getServiceDescription());		
 	}
 
-	private WebMessages validateProposalUpdate(JobRequest jobRequest) {
-		System.out.println("Add edits for proposal update");
-		System.out.println("Add edits for proposal update");
-		System.out.println("Add edits for proposal update");
-		System.out.println("Add edits for proposal update");
-		WebMessages webMessages = new WebMessages();
-		return webMessages;
-	}
+	
 
 	
 	
@@ -260,7 +253,7 @@ public class JobServlet extends AbstractServlet {
 		ResponseCode responseCode = null;
 		
 		try {
-			webMessages = validateActivation(jobRequest);
+			webMessages = jobRequest.validateActivationUpdate();
 			if ( webMessages.isEmpty() ) {
 				populateJobActivation(job, jobRequest);
 				updateJob(conn, user, job);
@@ -294,14 +287,7 @@ public class JobServlet extends AbstractServlet {
 		job.setBillingNotes(jobRequest.getBillingNotes());		
 	}
 
-	private WebMessages validateActivation(JobRequest jobRequest) {
-		System.out.println("Add edits for activation update");
-		System.out.println("Add edits for activation update");
-		System.out.println("Add edits for activation update");
-		System.out.println("Add edits for activation update");
-		WebMessages webMessages = new WebMessages();
-		return webMessages;
-	}
+	
 	
 	
 	
@@ -319,7 +305,7 @@ public class JobServlet extends AbstractServlet {
 		ResponseCode responseCode = null;
 		
 		try {
-			webMessages = validateInvoiceUpdate(jobRequest);
+			webMessages = jobRequest.validateInvoiceUpdate();
 			if ( webMessages.isEmpty() ) {
 				populateInvoiceUpdate(job, jobRequest);
 				updateJob(conn, user, job);
@@ -349,14 +335,7 @@ public class JobServlet extends AbstractServlet {
 		job.setExpirationReason(jobRequest.getExpirationReason());		
 	}
 
-	private WebMessages validateInvoiceUpdate(JobRequest jobRequest) {
-		System.out.println("Add edits for invoice update");
-		System.out.println("Add edits for invoice update");
-		System.out.println("Add edits for invoice update");
-		System.out.println("Add edits for invoice update");
-		WebMessages webMessages = new WebMessages();
-		return webMessages;
-	}
+	
 	
 	
 	
@@ -368,7 +347,7 @@ public class JobServlet extends AbstractServlet {
 		ResponseCode responseCode = null;
 		
 		try {
-			webMessages = validateScheduleUpdate(jobRequest);
+			webMessages = jobRequest.validateScheduleUpdate();
 			if ( webMessages.isEmpty() ) {
 				populateScheduleUpdate(job, jobRequest);
 				updateJob(conn, user, job);
@@ -395,14 +374,7 @@ public class JobServlet extends AbstractServlet {
 		job.setRepeatScheduleAnnually(jobRequest.getRepeatScheduleAnnually());			
 	}
 
-	private WebMessages validateScheduleUpdate(JobRequest jobRequest) {
-		System.out.println("Add edits for schedule update");
-		System.out.println("Add edits for schedule update");
-		System.out.println("Add edits for schedule update");
-		System.out.println("Add edits for schedule update");
-		WebMessages webMessages = new WebMessages();
-		return webMessages;
-	}
+	
 	
 	
 	
@@ -416,7 +388,7 @@ public class JobServlet extends AbstractServlet {
 		ResponseCode responseCode = null;
 		
 		try {
-			webMessages = validateNewJob(jobRequest);
+			webMessages = jobRequest.validateNewJob(conn);
 			if ( webMessages.isEmpty() ) {
 				populateNewJob(job, jobRequest);
 				Integer newJobId = insertJob(conn, user, job);
@@ -462,14 +434,7 @@ public class JobServlet extends AbstractServlet {
 		job.setTaxExemptReason(jobRequest.getTaxExemptReason());		
 	}
 
-	private WebMessages validateNewJob(JobRequest jobRequest) {
-		System.out.println("Add edits for new Job");
-		System.out.println("Add edits for new Job");
-		System.out.println("Add edits for new Job");
-		System.out.println("Add edits for new Job");
-		WebMessages webMessages = new WebMessages();
-		return webMessages;
-	}
+	
 	
 
 	

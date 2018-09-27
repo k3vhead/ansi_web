@@ -1,6 +1,7 @@
 package com.ansi.scilla.web.common.response;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -28,14 +29,30 @@ public class WebMessages extends HashMap<String, List<String>> {
 
 	public void addMessage(String key, String message) {
 		if ( this.containsKey(key)) {
-			List<String> messageList = this.get(key);
+			List<String> messageList = new ArrayList<String>();
+			for ( String msg : this.get(key) ) {
+				messageList.add(msg);
+			}
 			messageList.add(message);
 			this.put(key, messageList);
 		} else {
 			this.put(key, Arrays.asList(new String[] { message }));
 		}
 	}
+	
+	/**
+	 * Merge webMessages
+	 * @param webMessages
+	 */
+	public void addAllMessages(WebMessages webMessages) {
+		for ( String key : webMessages.keySet() ) {
+			for ( String message : webMessages.get(key)) {
+				addMessage(key, message);
+			}
+		}
+	}
 
+	
 	@Override
 	public String toString() {
 		ReflectionToStringBuilder builder = new ReflectionToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE);
