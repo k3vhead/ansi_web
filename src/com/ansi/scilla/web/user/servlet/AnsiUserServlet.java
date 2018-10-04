@@ -2,6 +2,8 @@ package com.ansi.scilla.web.user.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -11,13 +13,20 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
+import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
+import com.ansi.scilla.web.common.struts.SessionData;
+import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.web.exceptions.ExpiredLoginException;
+import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
+import com.ansi.scilla.web.user.request.AnsiUserRequest;
 import com.ansi.scilla.web.user.response.UserResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -30,6 +39,14 @@ public class AnsiUserServlet extends AbstractServlet {
 	private static final long serialVersionUID = 1L;
 
 	public static final String REALM = "user";
+	
+	private static HashMap<Integer, Integer> statusMap = new HashMap<Integer, Integer>();
+	
+	static {
+		statusMap.put(AnsiUserRequest.USER_STATUS_IS_ACTIVE, User.STATUS_IS_GOOD);
+		statusMap.put(AnsiUserRequest.USER_STATUS_IS_INACTIVE, User.STATUS_IS_INACTIVE);
+		statusMap.put(AnsiUserRequest.USER_STATUS_IS_LOCKED, User.STATUS_IS_LOCKED);
+	}
 
 	@Override
 	protected void doGet(HttpServletRequest request,
@@ -42,6 +59,50 @@ public class AnsiUserServlet extends AbstractServlet {
 			super.sendForbidden(response);
 		}
 	}
+
+	
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		AnsiURL url = null;
+		Connection conn = null;
+		
+		try {
+			conn = AppUtils.getDBCPConn();
+			conn.setAutoCommit(false);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.USER_ADMIN_WRITE);
+			SessionUser sessionUser = sessionData.getUser();
+			String jsonString = super.makeJsonString(request);
+			url = new AnsiURL(request, REALM, new String[] {ACTION_IS_ADD});
+			if ( url.getId() == null && StringUtils.isBlank(url.getCommand())) {
+				super.sendNotFound(response);
+			} else {
+				AnsiUserRequest userRequest = new AnsiUserRequest();
+				AppUtils.json2object(jsonString, userRequest);
+				User user = new User();
+				if ( url.getId() == null ) {
+					addUser(conn, request, response, user, userRequest, sessionUser);
+				} else {
+					user.setUserId(url.getId());
+					user.selectOne(conn);
+					updateUser(conn, request, response, user, userRequest, sessionUser);
+				}
+			}
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+			super.sendForbidden(response);
+		} catch (ResourceNotFoundException e) {
+			super.sendNotAllowed(response);
+		} catch ( RecordNotFoundException e ) {
+			super.sendNotFound(response);
+		} catch ( Exception e ) {
+			AppUtils.logException(e);
+			AppUtils.rollbackQuiet(conn);
+			throw new ServletException(e);
+		} finally {
+			AppUtils.closeQuiet(conn);
+		}
+	}
+
 
 	private void doGetWork(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		Connection conn = null;
@@ -58,7 +119,7 @@ public class AnsiUserServlet extends AbstractServlet {
 				}
 			}
 			logger.log(Level.DEBUG, "Still sorting by: " + sortField);
-
+	
 			if( url.getId() == null && StringUtils.isBlank(url.getCommand())) {
 				logger.log(Level.DEBUG, "user servlet 43");
 				throw new ResourceNotFoundException();
@@ -92,9 +153,110 @@ public class AnsiUserServlet extends AbstractServlet {
 		} finally {
 			AppUtils.closeQuiet(conn);
 		}
-
+	
 	}
 
 
+	private void addUser(Connection conn, HttpServletRequest request, HttpServletResponse response,
+			User user, AnsiUserRequest userRequest, SessionUser sessionUser) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		ResponseCode responseCode = null;
+		UserResponse userResponse = new UserResponse();
+		
+		try {
+			webMessages = userRequest.validateAdd(conn);
+			if ( webMessages.isEmpty() ) {
+				populateUser(user, userRequest, sessionUser);
+				user.setAddedBy(sessionUser.getUserId());
+				user.setPassword("New Pass");
+				Integer userId = user.insertWithKey(conn);
+				conn.commit();
+				updatePassword(conn, userId, userRequest.getPassword());
+				conn.commit();
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
+				responseCode = ResponseCode.SUCCESS;
+				userResponse = new UserResponse(conn, userId);
+			} else {
+				responseCode = ResponseCode.EDIT_FAILURE;
+			}
+		} catch (Exception e) {
+			AppUtils.logException(e);
+			conn.rollback();
+			responseCode = ResponseCode.SYSTEM_FAILURE;
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "System Failure");
+		}
+		
+		userResponse.setWebMessages(webMessages);
+		super.sendResponse(conn, response, responseCode, userResponse);
+	}
+
+
+	
+	private void updateUser(Connection conn, HttpServletRequest request, HttpServletResponse response,
+			User user, AnsiUserRequest userRequest, SessionUser sessionUser) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		ResponseCode responseCode = null;
+		UserResponse userResponse = new UserResponse();
+		
+		try {
+			webMessages = userRequest.validateUpdate(conn);
+			if ( webMessages.isEmpty() ) {
+				populateUser(user, userRequest, sessionUser);
+				User key = new User();
+				key.setUserId(userRequest.getUserId());
+				user.update(conn, key);
+				conn.commit();
+				if ( ! StringUtils.isBlank(userRequest.getPassword())) {
+					updatePassword(conn, userRequest.getUserId(), userRequest.getPassword());
+				}
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
+				responseCode = ResponseCode.SUCCESS;
+				userResponse = new UserResponse(conn, key.getUserId());
+			} else {
+				responseCode = ResponseCode.EDIT_FAILURE;
+			}
+		} catch (Exception e) {
+			AppUtils.logException(e);
+			conn.rollback();
+			responseCode = ResponseCode.SYSTEM_FAILURE;
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "System Failure");
+		}
+		
+		userResponse.setWebMessages(webMessages);
+		super.sendResponse(conn, response, responseCode, userResponse);
+	}
+
+
+	private void populateUser(User user, AnsiUserRequest userRequest, SessionUser sessionUser) {
+		user.setAddress1(userRequest.getAddress1());
+		user.setAddress2(userRequest.getAddress2());
+		user.setCity(userRequest.getCity());
+		user.setEmail(userRequest.getEmail());
+		user.setFirstName(userRequest.getFirstName());
+		user.setLastName(userRequest.getLastName());
+//		if ( ! StringUtils.isBlank(userRequest.getPassword())) {
+//			String password = userRequest.getUserId() == null ? "New Pass" : AppUtils.encryptPassword(userRequest.getPassword(), userRequest.getUserId());user.setPassword("New Pass");
+//			user.setPassword(password);
+//		}
+		user.setPermissionGroupId(userRequest.getPermissionGroupId());
+		user.setPhone(userRequest.getPhone());
+		user.setState(userRequest.getPhone());		
+		user.setStatus(statusMap.get(userRequest.getStatus()));
+		user.setSuperUser(User.SUPER_USER_IS_NO);
+		user.setTitle(userRequest.getTitle());
+		user.setUpdatedBy(sessionUser.getUserId());
+		if ( userRequest.getUserId() != null ) {
+			user.setUserId(userRequest.getUserId());
+		}
+		user.setZip(userRequest.getZip());
+	}
+
+	private void updatePassword(Connection conn, Integer userId, String password) throws Exception {
+		String encryptedPassword = AppUtils.encryptPassword(password, userId);
+		PreparedStatement ps = conn.prepareStatement("update ansi_user set password=? where user_id=?");
+		ps.setString(1, encryptedPassword);
+		ps.setInt(2,  userId);
+		ps.executeUpdate();
+	}
 
 }

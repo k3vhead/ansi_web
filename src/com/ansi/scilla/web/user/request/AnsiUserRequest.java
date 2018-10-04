@@ -1,6 +1,10 @@
 package com.ansi.scilla.web.user.request;
 
+import java.sql.Connection;
+
 import com.ansi.scilla.web.common.request.AbstractRequest;
+import com.ansi.scilla.web.common.request.RequestValidator;
+import com.ansi.scilla.web.common.response.WebMessages;
 
 public class AnsiUserRequest extends AbstractRequest {
 	
@@ -8,6 +12,10 @@ public class AnsiUserRequest extends AbstractRequest {
 	 * @author jwlewis
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	public static Integer USER_STATUS_IS_ACTIVE = new Integer(1);
+	public static Integer USER_STATUS_IS_INACTIVE = new Integer(0);
+	public static Integer USER_STATUS_IS_LOCKED = new Integer(-1);
 	
 	private String address1;
 	private String address2;
@@ -21,7 +29,6 @@ public class AnsiUserRequest extends AbstractRequest {
 	private Integer permissionGroupId;
 	private String phone;
 	private Integer status;
-	private Integer superUser; //DON'T MESS WITH THIS!!!
 	private String title;
 	private Integer userId;
 	
@@ -122,14 +129,6 @@ public class AnsiUserRequest extends AbstractRequest {
 		this.status = status;
 	}
 	
-	public Integer getSuperUser() {
-		return superUser;
-	}
-	
-	public void setSuperUser(Integer superUser) {
-		this.superUser = superUser;
-	}
-	
 	public String getTitle() {
 		return title;
 	}
@@ -146,9 +145,52 @@ public class AnsiUserRequest extends AbstractRequest {
 		this.userId = userId;
 	}
 	
-	public static long getSerialversionuid() {
-		return serialVersionUID;
+	
+	public WebMessages validateAdd(Connection conn) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		
+		RequestValidator.validateString(webMessages, "address1", this.address1, false);
+		RequestValidator.validateString(webMessages, "address2", this.address2, false);
+		RequestValidator.validateString(webMessages, "city", this.city, false);
+		RequestValidator.validateString(webMessages, "state", this.state, false);
+		RequestValidator.validateString(webMessages, "zip", this.zip, false);
+		RequestValidator.validateEmail(webMessages, "email", this.email, true);
+		RequestValidator.validateString(webMessages, "firstName", this.firstName, true);
+		RequestValidator.validateString(webMessages, "lastName", this.lastName, true);
+		RequestValidator.validateString(webMessages, "password", this.password, true);
+		RequestValidator.validateId(conn, webMessages, "permission_group", "permission_group_id", "permissionGroupId", this.permissionGroupId, true);
+		RequestValidator.validateString(webMessages, "phone", this.phone, false);
+		RequestValidator.validateBoolean(webMessages, "status", this.status, false);
+		RequestValidator.validateString(webMessages, "title", this.title, false);
+		RequestValidator.validateUserStatus(webMessages, "status", this.status, true);
+		
+		return webMessages;
+	}
+	
+	public WebMessages validateUpdate(Connection conn) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		
+		RequestValidator.validateString(webMessages, "address1", this.address1, false);
+		RequestValidator.validateString(webMessages, "address2", this.address2, false);
+		RequestValidator.validateString(webMessages, "city", this.city, false);
+		RequestValidator.validateString(webMessages, "state", this.state, false);
+		RequestValidator.validateString(webMessages, "zip", this.zip, false);
+		RequestValidator.validateEmail(webMessages, "email", this.email, true);
+		RequestValidator.validateString(webMessages, "firstName", this.firstName, true);
+		RequestValidator.validateString(webMessages, "lastName", this.lastName, true);
+		RequestValidator.validateString(webMessages, "password", this.password, false);
+		RequestValidator.validateId(conn, webMessages, "permission_group", "permission_group_id", "permissionGroupId", this.permissionGroupId, true);
+		RequestValidator.validateString(webMessages, "phone", this.phone, false);
+		RequestValidator.validateString(webMessages, "title", this.title, false);
+		RequestValidator.validateId(conn, webMessages, "ansi_user", "user_id", "userId", this.userId, true);
+		RequestValidator.validateUserStatus(webMessages, "status", this.status, true);
+		
+		return webMessages;
 	}
 
-
+	public WebMessages validateDelete(Connection conn) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		RequestValidator.validateId(conn, webMessages, "ansi_user", "user_id", "userId", this.userId, true);
+		return webMessages;
+	}
 }
