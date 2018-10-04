@@ -191,15 +191,9 @@
             	
             	
             	displayEditErrors : function($data) {
-            		console.log("display Edit Errors 224");
             		$.each($data.data.webMessages, function(index, val) {
-            			var $errField = "#addForm .errField." + index;
-						console.log(index);
-						console.log(val);
-						console.log($errField);
-						console.log(val[0]);
+            			var $errField = "#addForm .errField." + index;						
             			$($errField).html(val[0]);
-						console.log("******");
 					});
             	},
             	
@@ -327,7 +321,6 @@
             	
             	
             	saveUser : function() {
-            		console.log("save user");
             		if ( $("#addForm input[name='userId']").val() == null || $("#addForm input[name='userId']").val() == "") {
 	            			$url = "user/add";
 	            	} else {
@@ -357,7 +350,6 @@
 						statusCode: {
 							200: function($data) {								
 								if ( $data.responseHeader.responseCode == "SUCCESS") {
-									console.log("Reload table");
 									$("#user-form-modal").dialog("close");
 			    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
 			    					$('#userTable').DataTable().ajax.reload();
