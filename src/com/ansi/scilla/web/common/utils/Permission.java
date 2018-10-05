@@ -66,6 +66,9 @@ public enum Permission {
 	CONTACT(null, false, "Functional Area: Customer Contact"),
 	CONTACT_READ(CONTACT, false, "Read customer contact info"),
 	CONTACT_WRITE(CONTACT_READ, false, "Write customer contact info"),
+	
+	ACTIVITIES(null, false, "Can Perform External Activities"),
+	CAN_RUN_TICKETS(ACTIVITIES, true, "Can wash windows, etc"),
 	;
 	
 	private final Boolean divisionSpecific;
