@@ -116,8 +116,11 @@ public class PaymentLookupServlet extends AbstractServlet {
 		    }
 		    if (sdir != null) {
 		    	logger.log(Level.DEBUG, "sdir: " + sdir);
-		        if (!sdir.equals("asc"))
+		        if (sdir.equals("asc")) {
+		            dir = "asc";
+		        } else if (sdir.equals("desc")) {
 		            dir = "desc";
+		        }
 		    }
 		    
 		    String colName = cols[col];

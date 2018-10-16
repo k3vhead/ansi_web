@@ -159,6 +159,7 @@
 			
 			function createTable(){
         		var dataTable = $('#quoteTable').DataTable( {
+        			"aaSorting":		[[0,'desc']],
         			"processing": 		true,
         	        "serverSide": 		true,
         	        "autoWidth": 		false,
@@ -182,7 +183,6 @@
         	            { className: "dt-center", "targets": [1,7,8,-1] },
         	            { className: "dt-right", "targets": [9]}
         	         ],
-//        	        "order":[[7,"desc"]],
         	        "paging": true,
 			        "ajax": {
 			        	"url": "quoteTable",

@@ -61,6 +61,7 @@
         	
         	function createTable(){
         		var dataTable = $('#paymentTable').DataTable( {
+        			"aaSorting":		[[0,'desc']],
         			"processing": 		true,
         	        "serverSide": 		true,
         	        "autoWidth": 		false,
