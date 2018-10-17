@@ -57,6 +57,7 @@
         	
         	function createTable(){
         		var dataTable = $('#jobTable').DataTable( {
+        			"aaSorting":		[[0,'desc']],
         			"processing": 		true,
         	        "serverSide": 		true,
         	        "autoWidth": 		false,

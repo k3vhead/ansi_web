@@ -79,6 +79,7 @@
 				var $statusFilter = '<c:out value="${ANSI_TICKET_LOOKUP_STATUS}" />';
 
         		var dataTable = $('#ticketTable').DataTable( {
+        			"aaSorting":		[[0,'desc']],
         			"processing": 		true,
         	        "serverSide": 		true,
         	        "autoWidth": 		false,
