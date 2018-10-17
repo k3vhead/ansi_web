@@ -226,7 +226,8 @@
 					doUpdate($clickevent);
 				});
 				$(".delAction").on("click", function($clickevent) {
-					deleteThisPermissionGroup($clickevent);
+					var $permissionGroupId = $(this).data("id");
+					deleteThisPermissionGroup($permissionGroupId);
 				});
 				//$(".editJob").on( "click", function($clickevent) {
 				//	console.debug("clicked a job")
@@ -477,7 +478,7 @@
 			
 			
 			function deleteThisPermissionGroup ($permissionGroupId, $type) {
-        		console.log("clicked a permissionGroup deleteThisPermissionGroup: " + $permissiongGroupId);
+        		console.log("clicked a permissionGroup deleteThisPermissionGroup: " + $permissionGroupId);
         		$("#deleteModal").attr("permissionGroupId", $permissionGroupId);
         		$("#deleteModal").dialog("open");
 			}
