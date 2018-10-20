@@ -33,7 +33,7 @@ public class JoshuaServletTester extends TestServlet {
 		Header sessionCookie = super.doLogin();
 		
 		HashMap<String, String> parmMap = new HashMap<String, String>();
-		String url = "/ansi_web/permission/list";
+		String url = "/ansi_web/permission/1158";
 		
 		
 //		String results = super.doGet(sessionCookie, url, parmMap);
