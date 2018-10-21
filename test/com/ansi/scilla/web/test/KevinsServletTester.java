@@ -324,7 +324,7 @@ public class KevinsServletTester extends TestServlet {
 		private String testAddWithoutSendingJsonData(Header sessionCookie) throws Exception 
 		{
 			//*  Test the /add function of the servlet..
-	
+	 
 			String sResult="Failed!";
 			String paramString = "";
 			String url = "/ansi_web/" + this.realm + "/add";
@@ -491,7 +491,7 @@ public class KevinsServletTester extends TestServlet {
 			sResult = super.doGet(sessionCookie, url, new HashMap<String,String>());
 			
 			String sOutput = makeOutput(msg, method, url, "n/a", sResult);
-			if(logDebugMsgs) logger.log(Level.DEBUG, sOutput);
+			//if(logDebugMsgs) logger.log(Level.DEBUG, sOutput);
 			return sOutput;
 		}
 	
@@ -526,7 +526,23 @@ public class KevinsServletTester extends TestServlet {
 			if(logDebugMsgs) logger.log(Level.DEBUG, sOutput);
 			return sOutput;
 		}
-	
+
+		private String testList(Header sessionCookie) throws Exception 
+		{
+			//* Test the /list function of the servlet.. 
+			String sResult="failed!";
+			String url = "/ansi_web/" + this.realm + "/list";
+			String msg = "Get List";
+			String method = "GET";
+			
+			sResult = super.doGet(sessionCookie, url , new HashMap<String,String>());
+			
+			String sOutput = makeOutput(msg, method, url, "n/a", sResult);
+			if(logDebugMsgs) logger.log(Level.DEBUG, sOutput);
+			return sOutput;
+		}
+
+		
 		private String RunTests() throws Exception{
 			this.logDebugMsgs = false; 
 			this.realm = "permission";
@@ -538,14 +554,15 @@ public class KevinsServletTester extends TestServlet {
 			Header sessionCookie = super.doLogin();
 
 			try {
-				s = s + testGetById(sessionCookie, 1);					// works				 
-				// Note : you need to determine id num to delete manually..
+				//s = s + testGetById(sessionCookie, 1159);					// works				 
+				s = s + this.testList(sessionCookie);
+
 				//s = s + testUpdate(sessionCookie, 3);					// works
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			
-			logger.log(Level.DEBUG, s);
+			//logger.log(Level.DEBUG, "Hey!" + s);
 			
 			if(logDebugMsgs) 
 				logger.log(Level.DEBUG, "End");

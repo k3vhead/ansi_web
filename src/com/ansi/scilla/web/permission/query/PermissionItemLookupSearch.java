@@ -15,8 +15,10 @@ import org.apache.log4j.Logger;
 
 import com.ansi.scilla.common.queries.ReportQuery;
 import com.ansi.scilla.common.queries.SelectType;
-//import com.ansi.scilla.web.test.TestServlet;
 import com.ansi.scilla.common.db.PermissionGroupLevel;
+//import com.ansi.scilla.web.test.TestServlet;
+//import com.ansi.scilla.common.db.PermissionGroupLevel;
+import com.ansi.scilla.common.db.PermissionLevel;
 
 public class PermissionItemLookupSearch extends ReportQuery {
 
@@ -24,30 +26,36 @@ public class PermissionItemLookupSearch extends ReportQuery {
 
 	private String sortBy;
 	private Boolean sortIsAscending = true;
-	//private Integer permissionGroupId;
+	private Integer permissionGroupId;
 	private String searchTerm;
 	private Logger logger;
 	
-		
+	// To return permission_level records..
+	
 //	private static final String sqlSelectClause = 
-//			"select permission_group_level.permission_group_id, "
-//			+ "permission_group_level.permission_name, "
-//			+ "permission_group_level.permission_level ";
-
+//			"select " + PermissionLevel.PERMISSION_NAME   
+//			   + ", " + PermissionLevel.LEVEL;
+//
+//	private static final String sqlFromClause = "\n  " 
+//					+ " from permission_level   ";  
+//	private static final String baseWhereClause = "Where " + PermissionLevel.PERMISSION_NAME + " = "; 
+		
+	
+	
+	// To return permission_group_level records.. 	
 	private static final String sqlSelectClause = 
-			"select " + PermissionGroupLevel.PERMISSION_GROUP_ID 
-			+ ", " + PermissionGroupLevel.PERMISSION_NAME
-			+ ", " + PermissionGroupLevel.PERMISSION_LEVEL;
+				"select " + PermissionGroupLevel.PERMISSION_GROUP_ID 
+  	     		   + ", " + PermissionGroupLevel.PERMISSION_NAME    
+			       + ", " + PermissionGroupLevel.PERMISSION_LEVEL;
 
-	private static final String sqlFromClause = "\n  "
-			+ " from permission_group_level   "; 
+	private static final String sqlFromClause = "\n  " 
+					+ " from permission_group_level   ";   
 
-	private static final String baseWhereClause = "Where permission_group_id = ";
+	private static final String baseWhereClause = "Where " + PermissionGroupLevel.PERMISSION_GROUP_ID + " = "; 
 		
 	private static final String sql = sqlSelectClause + sqlFromClause;
 	private static final String sqlCount = "select count(*) as record_count " + sqlFromClause;
-	
-	
+		
 	public PermissionItemLookupSearch() {
 		super();
 		this.logger = LogManager.getLogger(this.getClass());
@@ -59,10 +67,11 @@ public class PermissionItemLookupSearch extends ReportQuery {
 		this.searchTerm = permissionGroupId.toString();
 	}
 
-	public PermissionItemLookupSearch(String permissionGroupId) {
+	public PermissionItemLookupSearch(Integer permissionGroupId, String permissionName) {
 		super();
 		this.logger = LogManager.getLogger(this.getClass());
-		this.searchTerm = permissionGroupId;
+		this.permissionGroupId = permissionGroupId;
+		this.searchTerm = permissionName;
 	}
 
 	public String getSortBy() {
@@ -95,6 +104,14 @@ public class PermissionItemLookupSearch extends ReportQuery {
 
 	public void setSearchTerm(String searchTerm) {
 		this.searchTerm = searchTerm;
+	}
+
+	public Integer getPermissionGroupId() {
+		return this.permissionGroupId;
+	}
+
+	public void setPermissionGroupId(Integer permissionGroupId) {
+		this.permissionGroupId = permissionGroupId;
 	}
 
 	
@@ -152,19 +169,23 @@ public class PermissionItemLookupSearch extends ReportQuery {
 	
 	private String makeSQL(SelectType selectType, Integer offset, Integer rowCount) {
 		String searchSQL =	selectType.equals(SelectType.DATA) ? sql : sqlCount;
-
 		String offsetPhrase = makeOffset(selectType, offset);
 		String fetchPhrase = makeFetch(selectType, rowCount);
 		String orderByPhrase = makeOrderBy(selectType);
+		
 		String wherePhrase = selectType.equals(SelectType.COUNTALL) ? PermissionItemLookupSearch.baseWhereClause : makeWhereClause(this.searchTerm);
 		
+		//if(this.searchTerm != null) {			
+		//	if(this.searchTerm.isEmpty()) wherePhrase = " ";
+		//}
+			
 		String sql = searchSQL + wherePhrase + orderByPhrase + offsetPhrase + fetchPhrase;
+		
+		this.logger.log(Level.DEBUG, "Search Term was - " + this.searchTerm);
 		this.logger.log(Level.DEBUG, sql);
 				
 		return sql;
 	}
-	
-	
 	
 	private String makeFetch(SelectType selectType, Integer rowCount) {
 		return selectType.equals(SelectType.DATA) ? "\n FETCH NEXT " + rowCount + " ROWS ONLY " : "";
@@ -178,7 +199,7 @@ public class PermissionItemLookupSearch extends ReportQuery {
 		String orderBy = "";
 		if ( selectType.equals(SelectType.DATA)) {
 			if ( StringUtils.isBlank(sortBy)) {
-				orderBy = " order by " + PermissionGroupLevel.PERMISSION_NAME + " asc ";
+				orderBy = " order by " + PermissionLevel.PERMISSION_NAME + " asc ";
 			} else {
 				orderBy = " order by " + sortBy;
 				orderBy = sortIsAscending ? orderBy + " asc " : orderBy + " desc ";
@@ -204,11 +225,13 @@ public class PermissionItemLookupSearch extends ReportQuery {
 	 */
 	
 	private String makeWhereClause(String queryTerm)  {
-		String whereClause = PermissionItemLookupSearch.baseWhereClause;
-		if (! StringUtils.isBlank(queryTerm)) {
-				whereClause =  whereClause + queryTerm;
+		String whereClause = " "; 
+		if(queryTerm != null) {
+			whereClause = PermissionItemLookupSearch.baseWhereClause;
+			if (! StringUtils.isBlank(queryTerm)) {
+					whereClause =  whereClause + queryTerm;
+			}
 		}
 		return whereClause;
 	}
-	
 }

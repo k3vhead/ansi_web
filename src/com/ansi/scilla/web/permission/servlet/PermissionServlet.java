@@ -2,7 +2,6 @@ package com.ansi.scilla.web.permission.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,8 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.db.PermissionGroup;
-import com.ansi.scilla.common.db.PermissionLevel;
-import com.ansi.scilla.common.queries.PermissionGroupUserCount;
+import com.ansi.scilla.common.db.PermissionGroupLevel;
 import com.ansi.scilla.web.common.response.MessageKey;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -33,36 +31,49 @@ import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.permission.request.PermGroupRequest;
 import com.ansi.scilla.web.permission.response.PermGroupCountRecord;
-import com.ansi.scilla.web.permission.response.PermissionGroupItem;
 import com.ansi.scilla.web.permission.response.PermissionGroupResponse;
 import com.ansi.scilla.web.permission.response.PermissionListResponse;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 /**
- * The url for GET will be one of:
- * 
- *		GET permission/<permissionGroupId> returns:
- *		{
- * 			"webMessages": null,
- * 			"permissionList": [
- * 				"QUOTE",
- * 				"QUOTE_READ",
- * 				"QUOTE_WRITE",
- * 				"INVOICE",
- * 				"INVOICE_READ",
- * 				]
- * 		}
+  The url for GET will be one of:
+  
+ 		GET permission/<permissionGroupId> returns:
+ 		{
+  			"webMessages": null,
+  			"permissionList": [
+  				"QUOTE",
+  				"QUOTE_READ",
+  				"QUOTE_WRITE",
+  				"INVOICE",
+  				"INVOICE_READ",
+  				]
+  		}
  ***********************************************************************************
- * 
- * The url for update will be a POST to:
- * 		/permission/<permissionGroupId#>,	(returns a list of permissions having the same groupId)
- * 
- * 		data to pass in will look like : 
- *			{	"permissionGroupId": 123,
- *				permissionName:	"QUOTE",
- *				permissionLevel: -1
- *			}
- *
+ 		GET permission/list returns:
+ 		{
+  			"webMessages": null,
+ 			"permmissionList": [{
+ 				"permissionName": "INVOICE",
+ 				"level": 1 }, {
+ 				"permissionName": "INVOICE",
+ 				"level": 0 }, {
+				"permissionName": "JOB",
+				"level": 1 }, {
+				"permissionName": "JOB",
+				"level": 0 }]
+		}
+ 
+ ***********************************************************************************
+  
+  The url for update will be a POST to:
+  		/permission/<permissionGroupId#>,	(returns a list of permissions having the same groupId)
+  
+  		data to pass in will look like : 
+ 			{	"permissionGroupId": 123,
+ 				permissionName:	"QUOTE",
+ 				permissionLevel: -1
+ 			}
  */
 
 public class PermissionServlet extends AbstractServlet {
@@ -148,7 +159,9 @@ public class PermissionServlet extends AbstractServlet {
 		WebMessages webMessages = new WebMessages();
 		try {
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_READ);  	// make sure we're allowed to be here
+			SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN_READ);
+			SessionUser sessionUser = sessionData.getUser();
+
 			url = new AnsiURL(request, "permission",new String[] { ACTION_IS_LIST });							// parse the URL and look for "contact"
 			PermissionListResponse permissionListResponse = makePermissionListResponse(conn, url);
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");										// add messages to the response
@@ -176,8 +189,9 @@ public class PermissionServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
-			
-			SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			//validateSession()
+			//SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN_WRITE);
 			SessionUser sessionUser = sessionData.getUser();
 
 			try {
@@ -187,7 +201,7 @@ public class PermissionServlet extends AbstractServlet {
 				if (!StringUtils.isBlank(jsonString))
 					AppUtils.json2object(jsonString, permGroupRequest);
 				
-				url = new AnsiURL(request,"permissionGroup", new String[] {ACTION_IS_ADD});
+				url = new AnsiURL(request,"permission", new String[] {ACTION_IS_ADD});
 
 				if ( url.getId() != null ) {									// this is an update
 					processUpdate(conn, response, url.getId(), permGroupRequest, sessionUser);
@@ -290,8 +304,12 @@ public class PermissionServlet extends AbstractServlet {
 	}
 
 	protected void processUpdate(Connection conn, HttpServletResponse response, Integer permGroupId, PermGroupRequest permGroupReequestRequest, SessionUser sessionUser) throws RecordNotFoundException, Exception {
-		PermissionGroup permissionGroup = new PermissionGroup();
-		PermissionGroupResponse data = new PermissionGroupResponse();
+		/*
+		PermissionGroupLevel permissionGroupLevel = new PermissionGroupLevel();
+		PermissionItemResponse data = new PermissionGroupResponse();
+//		PermissionGroup permissionGroup = new PermissionGroup();
+//		PermissionGroupResponse data = new PermissionGroupResponse();
+		
 		
 		permissionGroup.setPermissionGroupId(permGroupId);
 		permissionGroup.selectOne(conn);		// this throws RecordNotFound, which is propagated up the line into a 404 return
@@ -308,7 +326,8 @@ public class PermissionServlet extends AbstractServlet {
 		} else {
 			data.setWebMessages(webMessages);
 			super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
-		}		
+		}
+		*/		
 	}
 
 	protected WebMessages validateUpdate(Connection conn, PermissionGroup permissionGroup, PermGroupRequest permGroupRequest) throws RecordNotFoundException, Exception {
@@ -353,14 +372,18 @@ public class PermissionServlet extends AbstractServlet {
 		return permissionGroup;
 	}
 	
-	protected  PermissionListResponse makePermissionListResponse(Connection conn, AnsiURL url) throws Exception {
+	protected PermissionListResponse makePermissionListResponse(Connection conn, AnsiURL url) throws Exception {
 		
 		PermissionListResponse permissionListResponse;
 		
 		if (url.getId() != null) {
+			// if an ID was passed in, then get all permissions having that group ID.
+			// note : this queries the permission_group_level table.
 			permissionListResponse = new PermissionListResponse(conn, url.getId());			
-		}else {
-			permissionListResponse = new PermissionListResponse();			
+		} else {
+			// If no ID return LIST of all permissions
+			// then return all permissions in all groups
+			permissionListResponse = new PermissionListResponse(conn);			
 		}
 		return permissionListResponse;
 	}	

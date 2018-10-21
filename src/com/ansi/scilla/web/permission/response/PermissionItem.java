@@ -8,6 +8,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.PermissionGroupLevel;
+import com.ansi.scilla.common.db.PermissionLevel;
 
 /**
  * name and permission level response
@@ -22,13 +23,12 @@ public class PermissionItem extends ApplicationObject implements Comparable<Perm
 	private Integer permissionLevel;
 	private List<Permission> permissionList;
 	
-	
 	public PermissionItem() {
 		super();
 	}
-	public PermissionItem(PermissionGroupLevel permissionGroupLevel) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	public PermissionItem(PermissionLevel permissionLevel) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		this();
-		PropertyUtils.copyProperties(this, permissionGroupLevel);
+		PropertyUtils.copyProperties(this, permissionLevel);
 	}
 	
 	public String getPermissionName() {
@@ -39,7 +39,7 @@ public class PermissionItem extends ApplicationObject implements Comparable<Perm
 		this.permissionList =  Permission.valueOf(permissionName).makeParentList();
 	}
 	public Integer getPermissionLevel() {
-		return permissionLevel;
+		return this.permissionLevel;
 	}
 	public void setPermissionLevel(Integer permissionLevel) {
 		this.permissionLevel = permissionLevel;
