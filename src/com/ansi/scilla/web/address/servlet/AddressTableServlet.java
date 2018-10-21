@@ -113,8 +113,11 @@ public class AddressTableServlet extends AbstractServlet {
 		            col = 0;
 		    }
 		    if (sdir != null) {
-		        if (!sdir.equals("asc"))
+		        if (sdir.equals("asc")) {
+		            dir = "asc";
+		        } else if (sdir.equals("desc")) {
 		            dir = "desc";
+		        }
 		    }
 		    
 		    String colName = cols[col];

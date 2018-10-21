@@ -278,6 +278,7 @@ public class QuoteServlet extends AbstractServlet {
 		try {
 			logger.log(Level.DEBUG, "Doing Copy");
 			quote = doCopy(conn, quoteId, sessionUser);
+			logger.log(Level.DEBUG, "Copy Done: "+quote);
 			
 			String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 			responseCode = ResponseCode.SUCCESS;

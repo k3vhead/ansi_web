@@ -106,9 +106,12 @@ public class QuoteTableServlet extends AbstractServlet {
 	    		}
 	    	}
 	    	if (sdir != null) {
-	    		if (!sdir.equals("asc")) {
+	    		if (sdir.equals("desc")) {
 	    			dir = "desc";
+	    		} else if (sdir.equals("asc")) {
+	    			dir = "asc";
 	    		}
+
 	    	}
 
 	    	String colName = cols[col];

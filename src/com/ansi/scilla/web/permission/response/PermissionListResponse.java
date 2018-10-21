@@ -39,6 +39,10 @@ public class PermissionListResponse extends MessageResponse {
 
 	public PermissionListResponse() {
 		super();
+		this.permissionList = new ArrayList<Permission>();
+		for (Permission p : Permission.values()) {
+			permissionList.add(p);
+		}
 	}
 	
 	public PermissionListResponse(Connection conn) throws Exception{

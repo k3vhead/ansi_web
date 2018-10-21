@@ -65,6 +65,7 @@
             	       	
 			function createTable() {
 	        	var dataTable =  $('#invoiceTable').DataTable( {
+        				"aaSorting":		[[0,'desc']],
 	        			"processing": 		true,
 	        	        "serverSide": 		true,
 	        	        "autoWidth": 		false,

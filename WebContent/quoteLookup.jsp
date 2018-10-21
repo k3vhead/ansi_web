@@ -92,15 +92,12 @@
 				$( ".quotePrint" ).on( "click", function($clickevent) {
 					 QUOTE_PRINT.showQuotePrint(<%= "\"#" + quotePrintModal + "\"" %>, $(this).data("id"), $(this).data("quotenumber"), "PREVIEW");
 				});
-				
-    			
-
-    			
 				$( ".copyQuote" ).on( "click", function($clickevent) {
 					doCopy($(this).data("id"));
 				});
 			}
 
+			
 			function doEdit($clickevent) {
 				var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
 				var $url = 'quoteTable/' + $rowid;
@@ -140,8 +137,8 @@
 					data: {},
 					statusCode: {
 						200: function($data) {
-							$returnValue = $data.data;
-							location.href="quoteMaintenance.html?id=" + $data.data.quote.quoteId;
+							$quoteId = $data.data.quote.quote.quoteId;
+							location.href="quoteMaintenance.html?id=" + $quoteId;
 						},					
 						403: function($data) {
 							$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
@@ -159,6 +156,7 @@
 			
 			function createTable(){
         		var dataTable = $('#quoteTable').DataTable( {
+        			"aaSorting":		[[0,'desc']],
         			"processing": 		true,
         	        "serverSide": 		true,
         	        "autoWidth": 		false,
@@ -182,7 +180,6 @@
         	            { className: "dt-center", "targets": [1,7,8,-1] },
         	            { className: "dt-right", "targets": [9]}
         	         ],
-//        	        "order":[[7,"desc"]],
         	        "paging": true,
 			        "ajax": {
 			        	"url": "quoteTable",

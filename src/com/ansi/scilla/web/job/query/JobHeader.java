@@ -69,8 +69,10 @@ public class JobHeader extends ApplicationObject implements Comparable<JobHeader
 		Object activationDateRS = rs.getObject("activation_date");
 		Object startDateRS = rs.getObject("start_date");
 		if ( activationDateRS != null && startDateRS != null ) {
-			java.util.Date activationDate = new java.util.Date( ((java.sql.Date)activationDateRS).getTime() );
-			java.util.Date startDate = new java.util.Date( ((java.sql.Date)startDateRS).getTime() );
+			java.sql.Date activationDateRsDate = rs.getDate("activation_date");
+			java.util.Date activationDate = new java.util.Date( activationDateRsDate.getTime() );
+			java.sql.Date startDateRsDate = rs.getDate("start_date");
+			java.util.Date startDate = new java.util.Date( startDateRsDate.getTime() );
 			this.canSchedule = JobUtils.canReschedule(this.jobId, jobStatus, jobFrequency, activationDate, startDate);
 		} else {
 			this.canSchedule = false;
