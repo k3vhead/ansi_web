@@ -231,12 +231,12 @@ public class ApplyPaymentServlet extends AbstractServlet {
 		ticket.setBillSheet(Ticket.BILL_SHEET_IS_NO);
 		ticket.setCustomerSignature(Ticket.CUSTOMER_SIGNATURE_IS_NO);
 		ticket.setFleetmaticsId(null);
-		ticket.setInvoiceDate(today.getTime());
+		ticket.setInvoiceDate(payment.getPaymentDate());
 		ticket.setInvoiceId(invoiceId);
 		ticket.setJobId(ticketPattern.getJobId());
 		ticket.setMgrApproval(Ticket.MGR_APPROVAL_IS_NO);
 		ticket.setPrintCount(0);
-		ticket.setProcessDate(today.getTime());
+		ticket.setProcessDate(payment.getPaymentDate());
 		if (ticketType == TicketType.FEE) {
 			ticket.setProcessNotes("Fee");
 		} else if (ticketType == TicketType.EXCESS) {
