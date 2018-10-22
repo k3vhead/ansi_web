@@ -554,7 +554,7 @@
 					},
 					
 					
-					getOptions: function($optionList, $callBack) {
+					getOptions : function($optionList, $callBack) {
 		    			var $returnValue = null;
 		    			var jqxhr1 = $.ajax({
 		    				type: 'GET',
@@ -1467,40 +1467,53 @@
 		            		//$jobDiv.append('<span class="formLabel">Job: </span>');
 		            		//$jobDiv.append('<span>' + $value.jobNbr + '</span>');
 		            		$jobDiv.append($anchor);
-		            		$jobHider.append($jobDiv);
 		            		
 		            		$descDiv = $("<div>");
 		            		$descDiv.attr("class","job-header-job-div");
 		            		$descDiv.append($value.abbrDescription);
-		            		$jobHider.append($descDiv);
+		            		
+		            		$jobIdDiv = $("<div>");
+		            		$jobIdDiv.attr("class","job-header-job-div");
+		            		$jobIdDiv.append('<span class="formLabel">ID: </span>');
+		            		$jobIdDiv.append('<span>' + $value.jobId +'</span>');
 		            		
 		            		$divDiv = $("<div>");
 		            		$divDiv.attr("class","job-header-job-div");
 		            		$divDiv.append('<span class="formLabel">Division: </span>');
 		            		$divDiv.append('<span>' + $value.divisionNbr + '-' + $value.divisionCode + '</span>');
-		            		$jobHider.append($divDiv);
 		            		
 		            		$statusDiv = $("<div>");
 		            		$statusDiv.attr("class","job-header-job-div");
 		            		$statusDiv.append('<span class="formLabel">Status: </span>');
 		            		$statusDiv.append('<span>' + $value.jobStatus +'</span>');
-		            		$jobHider.append($statusDiv);
 		            		
 		            		$freqDiv = $("<div>");
 		            		$freqDiv.attr("class","job-header-job-div");
 		            		$freqDiv.append('<span class="formLabel">Freq: </span>');
 		            		$freqDiv.append('<span>' + $value.jobFrequency +'</span>');
-		            		$jobHider.append($freqDiv);
 		            		
 		            		$ppcDiv = $("<div>");
 		            		$ppcDiv.attr("class","job-header-job-div");
 		            		$ppcDiv.append('<span class="formLabel">PPC: </span>');
 		            		$ppcDiv.append('<span>$' + $value.pricePerCleaning +'</span>');
+		            		
+		            		
+		            		
+		            		// Now that we've build all the pieces, this bit determines the order they're displayed
+		            		$jobHider.append($jobDiv);
+		            		$jobHider.append($jobIdDiv);
+		            		$jobHider.append($divDiv);
+		            		$jobHider.append($statusDiv);
+		            		$jobHider.append($freqDiv);
 		            		$jobHider.append($ppcDiv);
+		            		$jobHider.append($descDiv);
+
+		            		
+		            		
+		            		
 		            		
 		            		$detailDiv = $("#job-loading-pattern .job-data-row").clone()
 		            		$detailDiv.attr("data-jobid", $value.jobId);
-		            		
 		            		
 		            		$jobHeader.append($jobHider);
 		            		$jobListItem.append($jobHeader);
