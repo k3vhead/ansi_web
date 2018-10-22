@@ -1459,7 +1459,7 @@
 		            		$anchorName = "job" + $value.jobId;
 		            		$anchor = $("<a>");
 		            		$anchor.attr("name", $anchorName);
-		            		$anchor.append('<span class="formLabel">Job: </span>');
+		            		$anchor.append('<span class="formLabel">Job#: </span>');
 		            		$anchor.append('<span>' + $value.jobNbr + '</span>');
 		            		
 		            		$jobDiv = $("<div>");
@@ -1474,17 +1474,17 @@
 		            		
 		            		$jobIdDiv = $("<div>");
 		            		$jobIdDiv.attr("class","job-header-job-div");
-		            		$jobIdDiv.append('<span class="formLabel">ID: </span>');
+		            		$jobIdDiv.append('<span class="formLabel">Job: </span>');
 		            		$jobIdDiv.append('<span>' + $value.jobId +'</span>');
 		            		
 		            		$divDiv = $("<div>");
 		            		$divDiv.attr("class","job-header-job-div");
-		            		$divDiv.append('<span class="formLabel">Division: </span>');
+		            		$divDiv.append('<span class="formLabel">Div: </span>');
 		            		$divDiv.append('<span>' + $value.divisionNbr + '-' + $value.divisionCode + '</span>');
 		            		
 		            		$statusDiv = $("<div>");
 		            		$statusDiv.attr("class","job-header-job-div");
-		            		$statusDiv.append('<span class="formLabel">Status: </span>');
+//		            		$statusDiv.append('<span class="formLabel">Status: </span>');
 		            		$statusDiv.append('<span>' + $value.jobStatus +'</span>');
 		            		
 		            		$freqDiv = $("<div>");
@@ -1500,10 +1500,10 @@
 		            		
 		            		
 		            		// Now that we've build all the pieces, this bit determines the order they're displayed
+		            		$jobHider.append($statusDiv);
 		            		$jobHider.append($jobDiv);
 		            		$jobHider.append($jobIdDiv);
 		            		$jobHider.append($divDiv);
-		            		$jobHider.append($statusDiv);
 		            		$jobHider.append($freqDiv);
 		            		$jobHider.append($ppcDiv);
 		            		$jobHider.append($descDiv);
