@@ -1470,6 +1470,7 @@
 		            		
 		            		$descDiv = $("<div>");
 		            		$descDiv.attr("class","job-header-job-div");
+		            		$descDiv.append('<span class="formLabel">Desc: </span>');
 		            		$descDiv.append($value.abbrDescription);
 		            		
 		            		$jobIdDiv = $("<div>");
@@ -1484,7 +1485,7 @@
 		            		
 		            		$statusDiv = $("<div>");
 		            		$statusDiv.attr("class","job-header-job-div");
-//		            		$statusDiv.append('<span class="formLabel">Status: </span>');
+		            		$statusDiv.append('<span class="formLabel"></span>');
 		            		$statusDiv.append('<span>' + $value.jobStatus +'</span>');
 		            		
 		            		$freqDiv = $("<div>");
@@ -1501,11 +1502,11 @@
 		            		
 		            		// Now that we've build all the pieces, this bit determines the order they're displayed
 		            		$jobHider.append($statusDiv);
-		            		$jobHider.append($jobDiv);
 		            		$jobHider.append($jobIdDiv);
-		            		$jobHider.append($divDiv);
-		            		$jobHider.append($freqDiv);
+		            		$jobHider.append($jobDiv);
 		            		$jobHider.append($ppcDiv);
+		            		$jobHider.append($freqDiv);
+		            		$jobHider.append($divDiv);
 		            		$jobHider.append($descDiv);
 
 		            		
