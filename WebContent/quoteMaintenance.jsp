@@ -1953,7 +1953,7 @@
 								}
 							}
 							if ($type == "schedule") {
-								if ( $("#job-edit-modal .invoice input[name='repeatScheduleAnnually']").prop("checked") == true ) {
+								if ( $("#job-edit-modal .schedule input[name='repeatedAnnually']").prop("checked") == true ) {
 									$outbound['repeatScheduleAnnually'] = 1;
 								} else {
 									$outbound['repeatScheduleAnnually'] = 0;
