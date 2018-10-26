@@ -304,11 +304,11 @@ public class PermissionServlet extends AbstractServlet {
 	}
 
 	protected void processUpdate(Connection conn, HttpServletResponse response, Integer permGroupId, PermGroupRequest permGroupReequestRequest, SessionUser sessionUser) throws RecordNotFoundException, Exception {
-		/*
+		
 		PermissionGroupLevel permissionGroupLevel = new PermissionGroupLevel();
-		PermissionItemResponse data = new PermissionGroupResponse();
-//		PermissionGroup permissionGroup = new PermissionGroup();
-//		PermissionGroupResponse data = new PermissionGroupResponse();
+//		PermissionItemResponse data = new PermissionGroupResponse();
+		PermissionGroup permissionGroup = new PermissionGroup();
+		PermissionGroupResponse data = new PermissionGroupResponse();
 		
 		
 		permissionGroup.setPermissionGroupId(permGroupId);
@@ -327,7 +327,7 @@ public class PermissionServlet extends AbstractServlet {
 			data.setWebMessages(webMessages);
 			super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
 		}
-		*/		
+			
 	}
 
 	protected WebMessages validateUpdate(Connection conn, PermissionGroup permissionGroup, PermGroupRequest permGroupRequest) throws RecordNotFoundException, Exception {
