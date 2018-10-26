@@ -9,6 +9,7 @@ import com.ansi.scilla.web.common.request.RequiredForAdd;
 import com.ansi.scilla.web.common.request.RequiredForUpdate;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.thewebthing.commons.lang.JsonException;
@@ -114,6 +115,10 @@ import com.thewebthing.commons.lang.JsonException;
 			this.setBuildingType(req.getBuildingType());
 			this.setInvoiceStyle(req.getInvoiceStyle());
 			this.setInvoiceGrouping(req.getInvoiceGrouping());
+			
+			this.setTaxExempt(req.getTaxExempt());
+			this.setTaxExemptReason(req.getTaxExemptReason());
+			this.setInvoiceBatch(req.getInvoiceBatch());
 		}
 		
 
@@ -262,13 +267,14 @@ import com.thewebthing.commons.lang.JsonException;
 			return this.name;
 		}
 
-		
+		@JsonProperty("invoiceTerms")
 		public void setPaymentTerms(String paymentTerms) {
 			this.paymentTerms = paymentTerms;
 		}
 
 //		@RequiredForAdd
 //		@RequiredForUpdate
+		@JsonProperty("invoiceTerms")
 		public String getPaymentTerms() {
 			return this.paymentTerms;
 		}

@@ -247,7 +247,7 @@ public class QuoteResponseItem extends MessageResponse {
 		private String leadType;
 		private Integer managerId;
 		private String name;
-		private String paymentTerms;
+//		private String paymentTerms;
 		private Date proposalDate;
 		private Integer quoteId;
 		private Integer divisionId;
@@ -380,12 +380,12 @@ public class QuoteResponseItem extends MessageResponse {
 		public String getName() {
 			return this.name;
 		}
-		public void setPaymentTerms(String paymentTerms) {
-			this.paymentTerms = paymentTerms;
-		}
-		public String getPaymentTerms() {
-			return this.paymentTerms;
-		}
+//		public void setPaymentTerms(String paymentTerms) {
+//			this.paymentTerms = paymentTerms;
+//		}
+//		public String getPaymentTerms() {
+//			return this.paymentTerms;
+//		}
 		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public void setProposalDate(Date proposalDate) {
 			this.proposalDate = proposalDate;

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -342,6 +344,7 @@ public class QuoteServlet extends AbstractServlet {
 			try {
 				logger.log(Level.DEBUG, "Trying to do update for quote "+key.getQuoteId());
 				quote = doUpdate(conn, key, quoteRequest, sessionUser, keyset);
+				doJobUpdate(conn, quoteId, quoteRequest, sessionUser, keyset);
 				String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 				responseCode = ResponseCode.SUCCESS;
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
@@ -567,6 +570,39 @@ public class QuoteServlet extends AbstractServlet {
 	}
 
 	
+	
+	private void doJobUpdate(Connection conn, Integer quoteId, QuoteRequest quoteRequest, SessionUser sessionUser, Set<String> keyset) throws Exception {
+		List<String> jobFieldNames = Arrays.asList(new String[] {
+			Job.INVOICE_TERMS, //"invoice_terms",
+			Job.INVOICE_STYLE, //"invoice_style",
+			Job.INVOICE_BATCH, //"invoice_batch",
+			Job.INVOICE_GROUPING, //"invoice_grouping",
+			Job.TAX_EXEMPT, //"tax_exempt",
+			Job.TAX_EXEMPT_REASON, //"tax_exempt_reason"
+		});
+		
+		String sql = "update job set " + StringUtils.join(jobFieldNames, "=?,") + "=? where quote_id=?";
+		System.out.println("Updating jobs for quote");
+		System.out.println(sql);
+		PreparedStatement ps = conn.prepareStatement(sql);
+		int n = 1;
+		ps.setString(n, quoteRequest.getPaymentTerms());
+		n++;
+		ps.setString(n, quoteRequest.getInvoiceStyle());
+		n++;
+		ps.setInt(n, quoteRequest.getInvoiceBatch() ? 1 : 0);
+		n++;
+		ps.setString(n, quoteRequest.getInvoiceGrouping());
+		n++;
+		ps.setInt(n, quoteRequest.getTaxExempt() ? 1 : 0);
+		n++;
+		ps.setString(n, quoteRequest.getTaxExemptReason());
+		n++;
+		ps.setInt(n, quoteId);
+		ps.executeUpdate();
+		
+	}
+
 	
 	private QuoteListResponse makeQuotesListResponse(Connection conn, List<UserPermission> permissionList) throws Exception {
 		QuoteListResponse quotesListResponse = new QuoteListResponse(conn, permissionList);
