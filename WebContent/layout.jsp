@@ -46,7 +46,7 @@
     	<script src="js/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
         --%>
          
-		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.9/css/all.css" integrity="sha384-5SOiIsAziJl6AWe0HWRKTXlfcSHKmYV4RBF18PPJ173Kzn7jzMyFuTtk8JA7QQG1" crossorigin="anonymous">        
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css" integrity="sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns" crossorigin="anonymous">        
 		<link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
         
         <link rel="stylesheet" href="css/menuStyle.css" type="text/css" media="screen, projection"/>

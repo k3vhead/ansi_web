@@ -72,7 +72,7 @@ public enum Permission {
 	
 	PERMISSIONS(null, false, "Functional Area: Permissions"),
 	PERMISSIONS_READ(PERMISSIONS, false, "Can read permission group assignments"),
-	PERMSSSIONS_WRITE(PERMISSIONS_READ, false, "Can edit permission groups, assign permissions to group"),
+	PERMISSIONS_WRITE(PERMISSIONS_READ, false, "Can edit permission groups, assign permissions to group"),
 	;
 	
 	private final Boolean divisionSpecific;

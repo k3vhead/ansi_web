@@ -42,6 +42,9 @@ h1 {
 .formLabel {
 	font-weight:bold;
 }
+.gray {
+	color:#404040;
+}
 .green {
 	color:#008000;
 }
