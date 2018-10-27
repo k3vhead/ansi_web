@@ -69,6 +69,10 @@ public enum Permission {
 	
 	ACTIVITIES(null, false, "Can Perform External Activities"),
 	CAN_RUN_TICKETS(ACTIVITIES, true, "Can wash windows, etc"),
+	
+	PERMISSIONS(null, false, "Functional Area: Permissions"),
+	PERMISSIONS_READ(PERMISSIONS, false, "Can read permission group assignments"),
+	PERMSSSIONS_WRITE(PERMISSIONS_READ, false, "Can edit permission groups, assign permissions to group"),
 	;
 	
 	private final Boolean divisionSpecific;
