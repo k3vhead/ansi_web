@@ -411,15 +411,55 @@
 
 
 			function deletePermissionGroup () {
-				var $outbound = {};
 				$permissionGroupId = $("#deleteModal").attr("permissionGroupId");
-				$outbound ["permissionGroupId"] = $permissionGroupId;
-				$outbound ["action"] = "DELETE_PERMISSIONGROUP";
+				var $url = 'permissionGroup/'+ $permissionGroupId;
+				var jqxhr = $.ajax({
+            	    type: 'delete',
+            	    url: $url,
+//            	    data: $outbound,
+/*	            	    success: function($data) {
+            	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
+						if ( $data.responseHeader.responseCode == 'SUCCESS') {
+							$("#permissionGroupTable").DataTable().row($permissionGroupId).remove();
+							$("#permissionGroupTable").DataTable().draw();
+//							$('#confirmDelete').bPopup().close();
+						}
+            	     },
+*/	            	     statusCode: {
+            	    	 200: function($data) {
+            	    		 	$("#deleteModal").dialog("close");
+            	    		 	$('#permissionGroupTable').DataTable().ajax.reload();
+		    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
+							},
+
+            	    		403: function($data) {
+								$("#globalMsg").html("Session Timeout. Log in and try again");
+							},
+							404: function($data) {
+								$("#globalMsg").html("Invalid Selection").show().fadeOut(100000);
+							},
+							500: function($data) {
+								$("#globalMsg").html("System Error; Contact Support");
+							}
+	             	     },
+            	     dataType: 'json'
+            	});
+            //}
 				
-				doPermissionGroupUpdate($permissionGroupId, $outbound, deletePermissionGroupSuccess, deletePermissionGroupErr);
+				
+				
+				
+				
+				//var $outbound = {};
+				//$permissionGroupId = $("#deleteModal").attr("permissionGroupId");
+				//$outbound ["permissionGroupId"] = $permissionGroupId;
+			//	$outbound ["action"] = "DELETE_PERMISSIONGROUP";
+				//$(".permissionGroupId").remove();
+				
+//				doPermissionGroupUpdate($permissionGroupId, $outbound, deletePermissionGroupSuccess, deletePermissionGroupErr);
 			}
 			
-			function doPermissionGroupUpdate ($permissionGroupId, $outbound, $successCallback, $errCallback) {
+/*			function doPermissionGroupUpdate ($permissionGroupId, $outbound, $successCallback, $errCallback) {
 				var $url = "permissionGroup/" + $permissionGroupId;
 				console.log($outbound);						
 				
@@ -431,21 +471,21 @@
 						200:function($data) {
 						//	QUOTEMAINTENANCE.populateJobHeader($data.data.jobHeaderList)
 						//	QUOTEMAINTENANCE.makeJobExpansion();
-							$successCallback($data);
+							$("#globalMsg").html("Update Successful").show().fadeOut(10000);
 						},
-						403: function($data) {	
-							$errCallback(403);									
+						403: function($data) {
+							$("#globalMsg").html("Session Timeout. Log in and try again");
 						},
 						404: function($data) {
-							$errCallback(404);
+							$("#globalMsg").html("Invalid Selection").show().fadeOut(100000);
 						},
 						500: function($data) {
-							$errCallback(500);
+							$("#globalMsg").html("System Error; Contact Support");
 						}
-					},
+             	     },
 					dataType: 'json'
 				});
-			}
+			} */
 
 			function deletePermissionGroupErr ($statusCode) {
 				var $messages = {
