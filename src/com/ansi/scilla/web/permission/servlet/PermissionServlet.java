@@ -383,7 +383,7 @@ public class PermissionServlet extends AbstractServlet {
 		} else {
 			// If no ID return LIST of all permissions
 			// then return all permissions in all groups
-			permissionListResponse = new PermissionListResponse(conn);			
+			permissionListResponse = new PermissionListResponse();			
 		}
 		return permissionListResponse;
 	}	
