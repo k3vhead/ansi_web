@@ -296,10 +296,10 @@
 			    						$($selectorName).html(value[0]).fadeOut(10000);
 			    					});
 			    				} else {	    				
-					        		$("#editPanel").dialog("close");
+			    					$("#editPanel").dialog("close");
+			    					$('#permissionGroupTable').DataTable().ajax.reload();		
+			    					clearAddForm();		    					
 			    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
-			    					$('#permissionGroupTable').DataTable().ajax.reload();
-			    					clearAddForm();	
 			    				}
 							},
 							403: function($data) {
