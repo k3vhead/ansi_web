@@ -53,7 +53,7 @@ public class JoshuaServletTester extends TestServlet {
 	
 	
 	public void go() throws Exception {		
-		super.userId = "admin.tester@ansi.com";
+		super.userId = "jwlewis@thewebthing.com";
 //		super.userId = "geo@whitehouse.gov";
 		super.password = "password1";
 		
@@ -92,7 +92,7 @@ public class JoshuaServletTester extends TestServlet {
 	 * @throws Exception
 	 */
 	private String testListOfGroupPermission(Header sessionCookie) throws Exception {
-		String url = "/ansi_web/permission/1234";
+		String url = "/ansi_web/permission/9999999";
 		String results = super.doGet(sessionCookie, url, (HashMap<String,String>)null);
 		return results;
 	}
