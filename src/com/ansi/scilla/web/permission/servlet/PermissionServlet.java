@@ -159,7 +159,7 @@ public class PermissionServlet extends AbstractServlet {
 		WebMessages webMessages = new WebMessages();
 		try {
 			conn = AppUtils.getDBCPConn();
-			SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN_READ);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.PERMISSIONS_READ);
 			SessionUser sessionUser = sessionData.getUser();
 
 			url = new AnsiURL(request, "permission",new String[] { ACTION_IS_LIST });							// parse the URL and look for "contact"
@@ -191,7 +191,7 @@ public class PermissionServlet extends AbstractServlet {
 			conn.setAutoCommit(false);
 			//validateSession()
 			//SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
-			SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN_WRITE);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.PERMISSIONS_WRITE);
 			SessionUser sessionUser = sessionData.getUser();
 
 			try {
