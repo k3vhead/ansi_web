@@ -61,17 +61,22 @@ public class QuotePrintServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
 			ansiURL = new AnsiURL(request, "quotePrint", (String[])null); 
-			SessionData sessionData = AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			// This is the minimum level permission needed to print a quote
+			SessionData sessionData = AppUtils.validateSession(request, Permission.QUOTE_READ);
 			Integer quoteId = ansiURL.getId();
 			String dateString = request.getParameter(QUOTE_DATE);
-			String quoteType = request.getParameter(PRINT_TYPE);
+			String printType = request.getParameter(PRINT_TYPE);
+			
+			if( printType.equalsIgnoreCase(PRINT_TYPE_IS_PROPOSE) ) {
+				AppUtils.checkPermission(Permission.QUOTE_PROPOSE, sessionData.getUserPermissionList());
+			}
 
 			SessionUser sessionUser = sessionData.getUser();			
 			Date quoteDate = makeQuoteDate(dateString);
 			
 			try {
 				validateQuote(conn, quoteId);
-				processPrint(conn, response, quoteId, quoteDate, quoteType, sessionUser);
+				processPrint(conn, response, quoteId, quoteDate, printType, sessionUser);
 			} catch ( RecordNotFoundException e) {
 				super.sendNotFound(response);
 			}

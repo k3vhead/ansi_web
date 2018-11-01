@@ -456,22 +456,28 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 		// check for superuser, or that user has permission
 		SessionUser user = sessionData.getUser();
 		if ( ! user.getSuperUser().equals(User.SUPER_USER_IS_YES)) {
-			boolean isAllowed = false;
-			for ( UserPermission userPermission : sessionData.getUserPermissionList()) {
-				Permission myPermission = Permission.valueOf(userPermission.getPermissionName());
-				if ( myPermission.equals(requiredPermission)) {
-					isAllowed = true;
-				}
-			}
-			if ( ! isAllowed ) {
-	            throw new NotAllowedException();
-	        }
+			checkPermission(requiredPermission, sessionData.getUserPermissionList());			
 		}
 		
 		return sessionData;
 	}
 	
 	
+
+	public static void checkPermission(Permission requiredPermission, List<UserPermission> userPermissionList) throws NotAllowedException {
+		boolean isAllowed = false;
+		for ( UserPermission userPermission : userPermissionList) {
+			Permission myPermission = Permission.valueOf(userPermission.getPermissionName());
+			if ( myPermission.equals(requiredPermission)) {
+				isAllowed = true;
+			}
+		}
+		if ( ! isAllowed ) {
+            throw new NotAllowedException();
+        }		
+	}
+
+
 
 	private static void logBadRequestSession(HttpServletRequest request) {
 		Logger logger = LogManager.getLogger(AppUtils.class);

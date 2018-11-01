@@ -178,20 +178,16 @@ public class QuoteServlet extends AbstractServlet {
 		
 		String url = request.getRequestURI();
 		logger.log(Level.DEBUG, "URL: " + url);
-//		String queryString = request.getQueryString();
 		
 		PostedUrl postedUrl = null;
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
+			// QUOTE_CREATE is the minimum permission required to do something here. 
+			// We'll get more specific later
 			SessionData sessionData = AppUtils.validateSession(request, Permission.QUOTE_CREATE);
 			conn.setAutoCommit(false);
-
-			// figure out if this is an "add" or an "update"
-//			int idx = url.indexOf("/quote/");
-//			String myString = url.substring(idx + "/quote/".length());				
-//			String[] urlPieces = myString.split("/");
-//			String command = urlPieces[0];
+			
 			postedUrl = new PostedUrl(url);
 
 			String jsonString = super.makeJsonString(request);
@@ -201,10 +197,13 @@ public class QuoteServlet extends AbstractServlet {
 			Quote quote = null;
 			ResponseCode responseCode = null;
 			if ( postedUrl.command.equals(ACTION_IS_ADD) ) {
+				AppUtils.checkPermission(Permission.QUOTE_CREATE, sessionData.getUserPermissionList());
 				processAddRequest(conn, quoteRequest, quote, sessionData, responseCode, response);
-			}  else if ( postedUrl.command.equals(ACTION_IS_COPY) ) {  				
+			}  else if ( postedUrl.command.equals(ACTION_IS_COPY) ) {
+				AppUtils.checkPermission(Permission.QUOTE_CREATE, sessionData.getUserPermissionList());
 				processCopyRequest(conn, postedUrl.quoteId, quoteRequest, quote, sessionData, responseCode, response);
-			}  else if ( postedUrl.command.equals(ACTION_IS_REVISE) ) { 				
+			}  else if ( postedUrl.command.equals(ACTION_IS_REVISE) ) {
+				AppUtils.checkPermission(Permission.QUOTE_CREATE, sessionData.getUserPermissionList());
 				processReviseRequest(conn, postedUrl.quoteId, quoteRequest, quote, sessionData, responseCode, response);
 			}  else if ( postedUrl.command.equals(ACTION_IS_UPDATE) ) {   
 				ObjectMapper mapper = new ObjectMapper();
@@ -331,19 +330,19 @@ public class QuoteServlet extends AbstractServlet {
 
 	
 	
-	private void processUpdateRequest(Connection conn, Integer quoteId, QuoteRequest quoteRequest, Set<String> keyset, Quote quote, SessionData sessionData, ResponseCode responseCode, HttpServletResponse response) throws RecordNotFoundException, Exception {
+	private void processUpdateRequest(Connection conn, Integer quoteId, QuoteRequest quoteRequest, Set<String> keyset, Quote quote, SessionData sessionData, ResponseCode responseCode, HttpServletResponse response) throws NotAllowedException, RecordNotFoundException, Exception {
 		logger.log(Level.DEBUG, "Doing Update Stuff");			
 		logger.log(Level.DEBUG, "Call validateUpdate:"+quoteRequest);
 		SessionUser sessionUser = sessionData.getUser();
 		Quote key = new Quote();
 		key.setQuoteId(quoteId);
 		logger.log(Level.DEBUG, "Key:"+key);
-		WebMessages webMessages = validateUpdate(conn, key, quoteRequest, keyset);
+		WebMessages webMessages = validateUpdate(conn, key, quoteRequest, keyset, sessionData);
 		if (webMessages.isEmpty()) {
 			logger.log(Level.DEBUG, "passed validation");
 			try {
 				logger.log(Level.DEBUG, "Trying to do update for quote "+key.getQuoteId());
-				quote = doUpdate(conn, key, quoteRequest, sessionUser, keyset);
+				quote = doQuoteUpdate(conn, key, quoteRequest, sessionUser, keyset);
 				doJobUpdate(conn, quoteId, quoteRequest, sessionUser, keyset);
 				String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 				responseCode = ResponseCode.SUCCESS;
@@ -483,7 +482,7 @@ public class QuoteServlet extends AbstractServlet {
 	
 	
 
-	protected Quote doUpdate(Connection conn, Quote keyQuote, QuoteRequest quoteRequest, SessionUser sessionUser, Set<String> keyset) throws Exception {
+	protected Quote doQuoteUpdate(Connection conn, Quote keyQuote, QuoteRequest quoteRequest, SessionUser sessionUser, Set<String> keyset) throws Exception {
 		logger.log(Level.DEBUG, "This is the key:");
 		logger.log(Level.DEBUG, keyQuote);
 		logger.log(Level.DEBUG, "************");
@@ -633,14 +632,20 @@ public class QuoteServlet extends AbstractServlet {
 		return webMessages;
 	}
 
-	protected WebMessages validateUpdate(Connection conn, Quote key, QuoteRequest quoteRequest, Set<String> keyset) throws RecordNotFoundException, Exception {
+	protected WebMessages validateUpdate(Connection conn, Quote key, QuoteRequest quoteRequest, Set<String> keyset, SessionData sessionData) throws NotAllowedException, RecordNotFoundException, Exception {
 		WebMessages webMessages = new WebMessages();
+		Quote testKey = (Quote)key.clone(); 
+		testKey.selectOne(conn);
+		if ( testKey.getProposalDate() != null ) {
+			AppUtils.checkPermission(Permission.QUOTE_UPDATE, sessionData.getUserPermissionList());
+		}
 		if ( keyset.isEmpty() ) {
 			// no fields were passed to be updated
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Nothing to Update");
-		}
-		for ( String fieldName : keyset ) {
-			QuoteValidator.validate(conn, quoteRequest, fieldName, webMessages);			
+		} else {
+			for ( String fieldName : keyset ) {
+				QuoteValidator.validate(conn, quoteRequest, fieldName, webMessages);			
+			}
 		}
 		
 //		List<String> missingFields = super.validateRequiredUpdateFields(quoteRequest);
@@ -652,8 +657,7 @@ public class QuoteServlet extends AbstractServlet {
 //		}
 		// if we "select" the key, and it isn't found, a "RecordNotFoundException" is thrown.
 		// That exception will propagate up the tree until it turns into a 404 message sent to the client
-		Quote testKey = (Quote)key.clone(); 
-		testKey.selectOne(conn);
+		
 		return webMessages;
 	}
 
