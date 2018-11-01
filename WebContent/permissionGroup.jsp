@@ -174,9 +174,9 @@
 			            	if(row.userCount != null){return $userLink;}
 			            } },
 			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
-			            	$updateLink = '<ansi:hasPermission permissionRequired="SYSADMIN"><ansi:hasWrite><a href="#" class="addNewAction" data-id="'+row.permissionGroupId+'"><webthing:permissionIcon>Permissions</webthing:permissionIcon></ansi:hasWrite></ansi:hasPermission></a>';
-			            	$editLink = '<ansi:hasPermission permissionRequired="SYSADMIN"><ansi:hasWrite><a href="#" class="editAction" data-id="'+row.permissionGroupId+'"><webthing:edit>Update</webthing:edit></a></ansi:hasWrite></ansi:hasPermission>';
-			            	$deleteLink = '<ansi:hasPermission permissionRequired="SYSADMIN"><ansi:hasWrite><a href="#" class="delAction" data-id="'+row.permissionGroupId+'"><webthing:delete>Delete</webthing:delete></a></ansi:hasWrite></ansi:hasPermission>';
+			            	$updateLink = '<ansi:hasPermission permissionRequired="PERMISSIONS_WRITE"><a href="#" class="addNewAction" data-id="'+row.permissionGroupId+'"><webthing:permissionIcon>Permissions</webthing:permissionIcon></ansi:hasPermission></a>';
+			            	$editLink = '<ansi:hasPermission permissionRequired="PERMISSIONS_WRITE"><a href="#" class="editAction" data-id="'+row.permissionGroupId+'"><webthing:edit>Update</webthing:edit></a></ansi:hasPermission>';
+			            	$deleteLink = '<ansi:hasPermission permissionRequired="PERMISSIONS_WRITE"><a href="#" class="delAction" data-id="'+row.permissionGroupId+'"><webthing:delete>Delete</webthing:delete></a></ansi:hasPermission>';
 			           		
 			            	$action = $editLink + " " + $deleteLink + " " + $updateLink;
 			            	$updates = $editLink + " " + $updateLink;
