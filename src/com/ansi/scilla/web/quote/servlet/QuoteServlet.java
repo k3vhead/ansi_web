@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
+import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Job;
 import com.ansi.scilla.common.db.PermissionLevel;
@@ -577,10 +578,11 @@ public class QuoteServlet extends AbstractServlet {
 			Job.INVOICE_BATCH, //"invoice_batch",
 			Job.INVOICE_GROUPING, //"invoice_grouping",
 			Job.TAX_EXEMPT, //"tax_exempt",
-			Job.TAX_EXEMPT_REASON, //"tax_exempt_reason"
+			Job.TAX_EXEMPT_REASON, //"tax_exempt_reason",
+			Job.UPDATED_BY,
 		});
 		
-		String sql = "update job set " + StringUtils.join(jobFieldNames, "=?,") + "=? where quote_id=?";
+		String sql = "update job set " + StringUtils.join(jobFieldNames, "=?,") + "=?, updated_date=SYSDATETIME() where quote_id=?";
 		System.out.println("Updating jobs for quote");
 		System.out.println(sql);
 		PreparedStatement ps = conn.prepareStatement(sql);
@@ -596,6 +598,8 @@ public class QuoteServlet extends AbstractServlet {
 		ps.setInt(n, quoteRequest.getTaxExempt() ? 1 : 0);
 		n++;
 		ps.setString(n, quoteRequest.getTaxExemptReason());
+		n++;
+		ps.setInt(n, sessionUser.getUserId());
 		n++;
 		ps.setInt(n, quoteId);
 		ps.executeUpdate();
