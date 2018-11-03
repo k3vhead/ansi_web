@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -159,11 +160,10 @@ public class PermissionServlet extends AbstractServlet {
 		WebMessages webMessages = new WebMessages();
 		try {
 			conn = AppUtils.getDBCPConn();
-			SessionData sessionData = AppUtils.validateSession(request, Permission.PERMISSIONS_READ);
-			SessionUser sessionUser = sessionData.getUser();
+			AppUtils.validateSession(request, Permission.PERMISSIONS_READ);
 
-			url = new AnsiURL(request, "permission", new String[] { ACTION_IS_LIST });							// parse the URL and look for "contact"
-			validateGroupId(conn, sessionUser.getPermissionGroupId());
+			url = new AnsiURL(request, "permission", new String[] { ACTION_IS_LIST });	
+			validateGroupId(conn, url.getId());
 			PermissionListResponse permissionListResponse = makePermissionListResponse(conn, url);
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");										// add messages to the response
 			
@@ -182,18 +182,6 @@ public class PermissionServlet extends AbstractServlet {
 		} finally {
 			AppUtils.closeQuiet(conn);					// return the connection to the pool
 		}
-	}
-	
-	protected void validateGroupId(Connection conn, Integer permissionGroupId) throws RecordNotFoundException, Exception{
-		PermissionGroup permissionGroup = new PermissionGroup();
-		//PermissionGroupResponse data = new PermissionGroupResponse();
-		
-		permissionGroup.setPermissionGroupId(permissionGroupId);
-		
-		permissionGroup.selectOne(conn);		// this throws RecordNotFound, which is propagated up the line into a 404 return
-		
-		//return null;
-		
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {  // note : from contactServlet..
@@ -246,6 +234,13 @@ public class PermissionServlet extends AbstractServlet {
 		}
 	}			
 	
+	protected void validateGroupId(Connection conn, Integer permissionGroupId) throws RecordNotFoundException, Exception{
+		logger.log(Level.DEBUG, "validating group id: " + permissionGroupId);
+		PermissionGroup permissionGroup = new PermissionGroup();
+		permissionGroup.setPermissionGroupId(permissionGroupId);
+		permissionGroup.selectOne(conn);		// this throws RecordNotFound, which is propagated up the line into a 404 return
+	}
+
 	protected void processAdd(Connection conn, HttpServletResponse response, PermGroupRequest permissionGroupRequest, SessionUser sessionUser) throws Exception {   // copied from contactServlet
 		ResponseCode responseCode = null;
 		PermissionGroup permissionGroup = new PermissionGroup();
