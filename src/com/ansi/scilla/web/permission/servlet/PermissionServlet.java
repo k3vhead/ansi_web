@@ -162,7 +162,8 @@ public class PermissionServlet extends AbstractServlet {
 			SessionData sessionData = AppUtils.validateSession(request, Permission.PERMISSIONS_READ);
 			SessionUser sessionUser = sessionData.getUser();
 
-			url = new AnsiURL(request, "permission",new String[] { ACTION_IS_LIST });							// parse the URL and look for "contact"
+			url = new AnsiURL(request, "permission", new String[] { ACTION_IS_LIST });							// parse the URL and look for "contact"
+			validateGroupId(conn, sessionUser.getPermissionGroupId());
 			PermissionListResponse permissionListResponse = makePermissionListResponse(conn, url);
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");										// add messages to the response
 			
@@ -181,6 +182,18 @@ public class PermissionServlet extends AbstractServlet {
 		} finally {
 			AppUtils.closeQuiet(conn);					// return the connection to the pool
 		}
+	}
+	
+	protected void validateGroupId(Connection conn, Integer permissionGroupId) throws RecordNotFoundException, Exception{
+		PermissionGroup permissionGroup = new PermissionGroup();
+		//PermissionGroupResponse data = new PermissionGroupResponse();
+		
+		permissionGroup.setPermissionGroupId(permissionGroupId);
+		
+		permissionGroup.selectOne(conn);		// this throws RecordNotFound, which is propagated up the line into a 404 return
+		
+		//return null;
+		
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {  // note : from contactServlet..

@@ -92,7 +92,7 @@ public class JoshuaServletTester extends TestServlet {
 	 * @throws Exception
 	 */
 	private String testListOfGroupPermission(Header sessionCookie) throws Exception {
-		String url = "/ansi_web/permission/9999999";
+		String url = "/ansi_web/permission/999999999";
 		String results = super.doGet(sessionCookie, url, (HashMap<String,String>)null);
 		return results;
 	}
