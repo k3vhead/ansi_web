@@ -72,7 +72,7 @@ public class JobScheduleServlet extends AbstractServlet {
 			Calendar theFirstOfTheMonth = Calendar.getInstance(new AnsiTime());
 			theFirstOfTheMonth.set(Calendar.DAY_OF_MONTH, 1);
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			AppUtils.validateSession(request, Permission.QUOTE_READ);
 			AnsiURL url = new AnsiURL(request, REALM, (String[])null);	
 			
 			if( url.getId() == null || ! StringUtils.isBlank(url.getCommand())) {	
@@ -117,7 +117,7 @@ public class JobScheduleServlet extends AbstractServlet {
 			Calendar theFirstOfTheMonth = Calendar.getInstance(new AnsiTime());
 			theFirstOfTheMonth.set(Calendar.DAY_OF_MONTH, 1);
 			conn = AppUtils.getDBCPConn();
-			SessionData sessionData = AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.QUOTE_UPDATE);
 			
 			try {
 				String jsonString = super.makeJsonString(request);

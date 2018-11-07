@@ -98,21 +98,21 @@ public enum ReportType {
 			"com.ansi.scilla.report.jobSchedule.JobScheduleReport",
 			"com.ansi.scilla.web.report.request.ValidateStartEnd", 
 			new String[] {"startDate", "endDate"},
-			Permission.JOB_READ
+			Permission.QUOTE_READ
 		),
 	PAC_REPORT(
 			"reportByDivStartEnd", 
 			"com.ansi.scilla.report.pac.PacReport",
 			"com.ansi.scilla.web.report.request.ValidateDivStartEnd", 
 			new String[] {"divisionId", "startDate", "endDate"},
-			Permission.JOB
+			Permission.QUOTE_READ
 		),
 	SIX_MONTH_ROLLING_VOLUME_REPORT(
 			"reportByDivMonthYear", 
 			"com.ansi.scilla.web.report.webReport.SixMonthRollingVolumeWebReport",
 			"com.ansi.scilla.web.report.request.ValidateDivMonthYear",  
 			new String[] {"divisionId", "month", "year"},
-			Permission.JOB
+			Permission.QUOTE_READ
 		),
 	TICKET_STATUS_REPORT(
 			"reportByDivStartEnd", 

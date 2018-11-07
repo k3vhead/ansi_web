@@ -2483,7 +2483,7 @@
 	    </ansi:hasPermission>
 	    
 	    
-	    <ansi:hasPermission permissionRequired="JOB_WRITE">
+	    <ansi:hasPermission permissionRequired="QUOTE_PROPOSE">
 	    	<div id="job-activate-modal" class="edit-modal">
 	    		<table>
 	    			<tr>

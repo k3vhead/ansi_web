@@ -26,9 +26,13 @@ public enum Permission {
 	QUOTE_PROPOSE(QUOTE_CREATE, false, "Can propose quotes"),
 	QUOTE_UPDATE(QUOTE_PROPOSE, false, "Edit quotes at any time, including after they are proposed"),    // can create quotes, edit them at any time (including after proposal)
 	
+	/**
+	 * 11/5/2018 - Job permissions are merged into quote permissions. (You need quote permission to do anything with jobs)
+	 * 
 	JOB(null, true, "Functional area: Job"),
 	JOB_READ(JOB, true, "Read-only access to Jobs  (Backward Compatibility)"),		// this is for backwards compatibility
 	JOB_WRITE(JOB_READ, true, "Can Edit jobs"),   // this is for backwards compatibility
+	**/
 	
 	TICKET(null, true, "Functional area: Tickets"),
 	TICKET_READ(TICKET, true, "Read-only access to Tickets"),		// this is for backwards compatibility

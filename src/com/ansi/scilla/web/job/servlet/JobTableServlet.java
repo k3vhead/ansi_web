@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.Job;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.queries.JobSearch;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
@@ -73,7 +72,7 @@ public class JobTableServlet extends AbstractServlet {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
-			SessionData sessionData = AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.QUOTE_READ);
 			SessionUser user = sessionData.getUser();
 //			String qs = request.getQueryString();
 

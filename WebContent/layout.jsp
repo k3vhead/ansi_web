@@ -132,7 +132,7 @@
 										<ansi:hasPermission permissionRequired="QUOTE_READ">
 										<li><html:link action="quoteLookup"><bean:message key="menu.label.quotes" /></html:link></li>
 										</ansi:hasPermission>
-										<ansi:hasPermission permissionRequired="JOB">
+										<ansi:hasPermission permissionRequired="QUOTE_READ">
 										<li><html:link action="jobLookup"><bean:message key="menu.label.jobs" /></html:link></li>
 										</ansi:hasPermission>
 										<ansi:hasPermission permissionRequired="TICKET">

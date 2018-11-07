@@ -146,7 +146,7 @@
 			            } },
 			            { title: "<bean:message key="field.label.jobId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	//if(row.jobId != null){return ('<span class="editJob" data-jobid="'+ row.jobId +'">'+row.jobId+"</span>");} 
-			            	if(row.jobId != null){return ('<ansi:hasPermission permissionRequired="JOB"><ansi:hasWrite><a href="jobMaintenance.html?id='+ row.jobId +'" class="jobLink"></ansi:hasWrite></ansi:hasPermission>'+row.jobId+'<ansi:hasPermission permissionRequired="JOB"><ansi:hasWrite></a></ansi:hasWrite></ansi:hasPermission>');}
+			            	if(row.jobId != null){return ('<ansi:hasPermission permissionRequired="QUOTE_CREATE"><a href="jobMaintenance.html?id='+ row.jobId +'" class="jobLink"></ansi:hasPermission>'+row.jobId+'<ansi:hasPermission permissionRequired="QUOTE_CREATE"></a></ansi:hasPermission>');}
 			            } },
 			            { title: "<bean:message key="field.label.serviceDescription" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.serviceDescription != null){return (row.serviceDescription+"");}

@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
@@ -103,7 +102,7 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 					}
 					try {
 						conn = AppUtils.getDBCPConn();
-						AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+						AppUtils.validateSession(request, Permission.CONTACT_READ);
 						logger.log(Level.DEBUG, "ContactTypeAheadServlet(): doGet(): term =$" + term +"$");
 						List<ReturnItem> resultList = new ArrayList<ReturnItem>();
 						String sql = "select contact_id, "
@@ -162,7 +161,7 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 						}
 						try {
 							conn = AppUtils.getDBCPConn();
-							AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+							AppUtils.validateSession(request, Permission.CONTACT_READ);
 							logger.log(Level.DEBUG, "ContactTypeAheadServlet(): doGet(): term =$" + term +"$");
 							List<ReturnItem> resultList = new ArrayList<ReturnItem>();
 							String sql = "select contact_id, "

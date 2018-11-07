@@ -75,7 +75,7 @@ public class QuoteServlet extends AbstractServlet {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			AppUtils.validateSession(request, Permission.QUOTE_CREATE);
 			conn.setAutoCommit(false);
 			
 			String jsonString = super.makeJsonString(request);
@@ -102,6 +102,7 @@ public class QuoteServlet extends AbstractServlet {
 		}
 	}
 	
+	/*
 	protected void doNewDelete(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		logger.log(Level.TRACE, "QuoteServlet 54");
@@ -138,7 +139,9 @@ public class QuoteServlet extends AbstractServlet {
 			AppUtils.closeQuiet(conn);
 		}
 	}
-
+	*/
+	
+	
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {

@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
@@ -110,7 +109,7 @@ public class AddressTypeAheadServlet extends AbstractServlet {
 							term = queryTerm.toLowerCase();
 							try {
 								conn = AppUtils.getDBCPConn();
-								AppUtils.validateSession(request, Permission.JOB, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+								AppUtils.validateSession(request, Permission.ADDRESS_READ);
 								logger.log(Level.DEBUG, "AddresTypeAheadServlet(): doGet(): term =$" + term +"$");
 								
 								String sql = "select address_id, name, address1, address2, city, county, state, zip "

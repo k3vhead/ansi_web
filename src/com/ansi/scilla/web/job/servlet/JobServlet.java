@@ -68,7 +68,7 @@ public class JobServlet extends AbstractServlet {
 		
 		try {
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.JOB_READ);
+			AppUtils.validateSession(request, Permission.QUOTE_READ);
 			AnsiURL url = new AnsiURL(request, REALM, (String[])null);	
 			
 			if( url.getId() == null || ! StringUtils.isBlank(url.getCommand())) {	
@@ -107,7 +107,8 @@ public class JobServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
-			SessionData sessionData = AppUtils.validateSession(request, Permission.JOB_WRITE);
+			// this is the minimum necessary permission. More granular checks will be made later
+			SessionData sessionData = AppUtils.validateSession(request, Permission.QUOTE_CREATE);
 			SessionUser user = sessionData.getUser();
 			String jsonString = super.makeJsonString(request);
 			url = new AnsiURL(request, REALM, new String[] {ACTION_IS_ADD});
