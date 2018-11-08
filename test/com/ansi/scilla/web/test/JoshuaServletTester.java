@@ -53,7 +53,8 @@ public class JoshuaServletTester extends TestServlet {
 	
 	
 	public void go() throws Exception {		
-		super.userId = "jwlewis@thewebthing.com";
+//		super.userId = "jwlewis@thewebthing.com";
+		super.userId = "admin.tester@ansi.com";
 //		super.userId = "geo@whitehouse.gov";
 		super.password = "password1";
 		
@@ -61,8 +62,8 @@ public class JoshuaServletTester extends TestServlet {
 		
 		
 //		String results = testListOfAllPermission(sessionCookie);
-		String results = testListOfGroupPermission(sessionCookie);
-//		String results = testChangePermissionsForGroup(sessionCookie);
+//		String results = testListOfGroupPermission(sessionCookie);
+		String results = testChangePermissionsForGroup(sessionCookie);
 		
 		super.doLogoff(sessionCookie);
 		
