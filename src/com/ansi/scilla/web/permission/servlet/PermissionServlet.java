@@ -313,7 +313,7 @@ public class PermissionServlet extends AbstractServlet {
 
 	protected void processUpdate(Connection conn, HttpServletResponse response, Integer permGroupId, PermGroupRequest permGroupReequestRequest, SessionUser sessionUser) throws RecordNotFoundException, Exception {
 		
-		PermissionGroupLevel permissionGroupLevel = new PermissionGroupLevel();
+//		PermissionGroupLevel permissionGroupLevel = new PermissionGroupLevel();
 //		PermissionItemResponse data = new PermissionGroupResponse();
 		PermissionGroup permissionGroup = new PermissionGroup();
 		PermissionGroupResponse data = new PermissionGroupResponse();

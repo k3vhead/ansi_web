@@ -53,8 +53,8 @@ public class JoshuaServletTester extends TestServlet {
 	
 	
 	public void go() throws Exception {		
-//		super.userId = "jwlewis@thewebthing.com";
-		super.userId = "admin.tester@ansi.com";
+		super.userId = "jwlewis@thewebthing.com";
+//		super.userId = "admin.tester@ansi.com";
 //		super.userId = "geo@whitehouse.gov";
 		super.password = "password1";
 		
@@ -105,7 +105,7 @@ public class JoshuaServletTester extends TestServlet {
 		
 		PermissionRequest request = new PermissionRequest();
 		request.setPermissionName(Permission.CONTACT_WRITE.name());
-		request.setPermissionIsActive(true);
+		request.setPermissionIsActive(false);
 		String json = AppUtils.object2json(request);
 		logger.log(Level.DEBUG,  json);
 		String results = super.doPost(sessionCookie, url, json);
