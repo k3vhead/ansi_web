@@ -7,6 +7,9 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.web.permission.request.PermissionRequest;
+
 
 public class DavesServletTester extends TestServlet {
 	
@@ -26,25 +29,29 @@ public class DavesServletTester extends TestServlet {
 	
 	
 	public void go() throws Exception {		
-		super.userId = "kjw@ansi.com";
-//		super.userId = "geo@whitehouse.gov";
+		super.userId = null;
+//		userId = "admin.tester@.com";  // admin
+		userId = "keegan.ovitt@gmail.com";  // permission group 1
+//		userId = "geo@whitehouse.gov"; //division manager
+//		userId = "dm.readonly@ansi.com"; // div mgr ro
+//		userId = "dmt@ansi.com";  // special override
 		super.password = "password1";
 		
 		Header sessionCookie = super.doLogin();
 		
 		HashMap<String, String> parmMap = new HashMap<String, String>();
-		String url = "/ansi_web/permission/list";
+//		String url = "/ansi_web/permission/2196"; // valid permission group id
+		String url = "/ansi_web/permission/xx"; // invalid permission group id
 		
 		
 //		String results = super.doGet(sessionCookie, url, parmMap);
 		
 		
 		
-		parmMap.put("name", "Dave's 3b Update Test");
-		parmMap.put("description", "Dave's 3b Update Description");
-		parmMap.put("status", "1");		
-		//String results = super.doPost(sessionCookie, url, super.makeJson(parmMap));
-		String results = super.doGet(sessionCookie, url, (HashMap<String,String>)null);
+		parmMap.put(PermissionRequest.PERMISSION_NAME, Permission.ADDRESS_WRITE.name());
+		parmMap.put(PermissionRequest.PERMISSION_IS_ACTIVE, String.valueOf(new Boolean(true)));
+		String results = super.doPost(sessionCookie, url, super.makeJson(parmMap));
+//		String results = super.doGet(sessionCookie, url, (HashMap<String,String>)null);
 		
 		
 		
