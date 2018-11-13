@@ -12,10 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.db.Job;
+import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.exceptions.ActionNotPermittedException;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.common.exceptions.InvalidJobStatusException;
@@ -95,7 +94,6 @@ public class JobServlet extends AbstractServlet {
 
 
 	
-	
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -109,42 +107,45 @@ public class JobServlet extends AbstractServlet {
 			conn.setAutoCommit(false);
 			// this is the minimum necessary permission. More granular checks will be made later
 			SessionData sessionData = AppUtils.validateSession(request, Permission.QUOTE_CREATE);
-			SessionUser user = sessionData.getUser();
 			String jsonString = super.makeJsonString(request);
 			url = new AnsiURL(request, REALM, new String[] {ACTION_IS_ADD});
 			if ( url.getId() == null && StringUtils.isBlank(url.getCommand())) {
-				super.sendNotFound(response);
-			} else {
-				String command = url.getCommand();
-				Job job = (! StringUtils.isBlank(command)) && url.getCommand().equals(UPDATE_TYPE_IS_NEW_JOB) ? new Job() : getJob(conn, url.getId());
-				logger.log(Level.DEBUG, jsonString);
-				JobRequest jobRequest = new JobRequest(jsonString);
-				
-				try {
-					JobRequestAction action = trafficCop(conn, response, user, job, jobRequest);					
-					
-					
-					// After we delete, there are no job details to return, but we still need the job headers
-					// so the page can redisplay them
-					if ( action == JobRequestAction.DELETE_JOB ) {
-						jobDetailResponse = new JobDetailResponse();
-						List<JobHeader> jobHeaderList = JobHeader.getJobHeaderList(conn, job.getQuoteId());	
-						if ( jobHeaderList.size() == 1 ) {
-							jobHeaderList.get(0).setCanDelete(false); // don't delete the only job you've got
-						}
-						jobDetailResponse.setJobHeaderList(jobHeaderList);
-					} else {
-						jobDetailResponse = new JobDetailResponse(conn, url.getId());
-					}
-				} catch ( JobProcessException e ) {
-					conn.rollback();
-					responseCode = ResponseCode.SYSTEM_FAILURE;
-					WebMessages webMessages = new WebMessages();
-					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, e.getMessage());
-					jobDetailResponse.setWebMessages(webMessages);
-					super.sendResponse(conn, response, responseCode, jobDetailResponse);
-				}
+				throw new ResourceNotFoundException();
+			} 
+			
+			Job job = new Job();
+			if ( url.getId() != null ) {
+				job = selectJob(conn, url.getId());
 			}
+			logger.log(Level.DEBUG, jsonString);
+			JobRequest jobRequest = new JobRequest(jsonString);
+			
+			try {
+				Quote quote = selectQuote(conn, job, jobRequest);
+				JobRequestAction action = trafficCop(conn, response, sessionData, job, quote, jobRequest);					
+				
+				
+				// After we delete, there are no job details to return, but we still need the job headers
+				// so the page can redisplay them
+				if ( action == JobRequestAction.DELETE_JOB ) {
+					jobDetailResponse = new JobDetailResponse();
+					List<JobHeader> jobHeaderList = JobHeader.getJobHeaderList(conn, job.getQuoteId());	
+					if ( jobHeaderList.size() == 1 ) {
+						jobHeaderList.get(0).setCanDelete(false); // don't delete the only job you've got
+					}
+					jobDetailResponse.setJobHeaderList(jobHeaderList);
+				} else {
+					jobDetailResponse = new JobDetailResponse(conn, url.getId());
+				}
+			} catch ( JobProcessException e ) {
+				conn.rollback();
+				responseCode = ResponseCode.SYSTEM_FAILURE;
+				WebMessages webMessages = new WebMessages();
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, e.getMessage());
+				jobDetailResponse.setWebMessages(webMessages);
+				super.sendResponse(conn, response, responseCode, jobDetailResponse);
+			}
+			
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
 			super.sendForbidden(response);
 		} catch (ResourceNotFoundException e) {
@@ -160,8 +161,12 @@ public class JobServlet extends AbstractServlet {
 		}
 	}
 
-	private JobRequestAction trafficCop(Connection conn, HttpServletResponse response, SessionUser user, Job job, JobRequest jobRequest) throws Exception {
+	
+	
+	private JobRequestAction trafficCop(Connection conn, HttpServletResponse response, SessionData sessionData, Job job, Quote quote, JobRequest jobRequest) throws NotAllowedException, Exception {
+		SessionUser user = sessionData.getUser();
 		JobRequestAction action = null;
+		validateStateTransition(quote, sessionData);
 		if ( StringUtils.isBlank(jobRequest.getAction()) ) {
 			// THis is a panel edit update
 			if ( jobRequest.getUpdateType().equalsIgnoreCase(UPDATE_TYPE_IS_PROPOSAL_PANEL)) {
@@ -182,7 +187,7 @@ public class JobServlet extends AbstractServlet {
 		} else {
 			// this is an action update
 			action = JobRequestAction.valueOf(jobRequest.getAction());
-			if (action.equals(JobRequestAction.CANCEL_JOB)) {
+			if (action.equals(JobRequestAction.CANCEL_JOB)) {				
 				doCancelJob(conn, job, jobRequest, user, response);					
 			} else if ( action.equals(JobRequestAction.ACTIVATE_JOB)) {
 				doActivateJob(conn, job, jobRequest, user, response);				
@@ -204,6 +209,20 @@ public class JobServlet extends AbstractServlet {
 
 	
 	
+	/**
+	 * Throws a "you can't do this" if your permission set doesn't match the current status of the quuote
+	 * @param quote
+	 * @param sessionData
+	 * @throws NotAllowedException
+	 */
+	private void validateStateTransition(Quote quote, SessionData sessionData) throws NotAllowedException {
+		if ( quote.getProposalDate() == null ) {
+			AppUtils.checkPermission(Permission.QUOTE_CREATE, sessionData.getUserPermissionList());
+		} else {
+			AppUtils.checkPermission(Permission.QUOTE_UPDATE, sessionData.getUserPermissionList());
+		}
+	}
+
 	private void makeProposalUpdate(Connection conn, HttpServletResponse response, SessionUser user, Job job, JobRequest jobRequest) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
@@ -439,7 +458,7 @@ public class JobServlet extends AbstractServlet {
 	
 
 	
-	private Job getJob(Connection conn, Integer jobId) throws RecordNotFoundException, Exception {
+	private Job selectJob(Connection conn, Integer jobId) throws RecordNotFoundException, Exception {
 		Job job = new Job();
 		job.setJobId(jobId);
 		job.selectOne(conn);
@@ -447,6 +466,15 @@ public class JobServlet extends AbstractServlet {
 	}
 
 	
+	
+	private Quote selectQuote(Connection conn, Job job, JobRequest jobRequest) throws RecordNotFoundException, Exception {
+		Integer quoteId = job == null ? jobRequest.getQuoteId() : job.getQuoteId();
+		Quote quote =new Quote();
+		quote.setQuoteId(quoteId);
+		quote.selectOne(conn);
+		return quote;
+	}
+
 	
 	private void updateJob(Connection conn, SessionUser user, Job job) throws Exception {
 		Job key = new Job();
@@ -623,7 +651,7 @@ public class JobServlet extends AbstractServlet {
 	private void doDeleteJob(Connection conn, Job job, JobRequest jobDetailRequest, SessionUser sessionUser, HttpServletResponse response) throws Exception {
 		Integer jobId = job.getJobId();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
-		WebMessages messages = new WebMessages();
+		WebMessages messages = jobDetailRequest.validateDeleteJob(job);
 		ResponseCode responseCode = null;
 		
 		if ( messages.isEmpty() ) {
@@ -636,7 +664,7 @@ public class JobServlet extends AbstractServlet {
 				jobDetailResponse = new JobDetailResponse(conn,jobId);
 			} catch ( RecordNotFoundException e) {
 				responseCode = ResponseCode.EDIT_FAILURE;
-				messages.addMessage("cancelDate", "Invalid Job ID");
+				messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Job ID");
 			} catch (Exception e) {
 				AppUtils.logException(e);
 				conn.rollback();
@@ -1158,7 +1186,7 @@ public class JobServlet extends AbstractServlet {
 	
 	public class JobProcessException extends Exception {
 		public JobProcessException(String string) {
-			// TODO Auto-generated constructor stub
+			super(string);
 		}
 
 		private static final long serialVersionUID = 1L;		
