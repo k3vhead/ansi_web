@@ -216,7 +216,7 @@ public class RequestValidator {
 			}
 		} else {
 			try {
-				JobFrequency jobFrequency = JobFrequency.valueOf(value);
+				JobFrequency jobFrequency = JobFrequency.lookup(value);
 				if ( jobFrequency == null ) {
 					webMessages.addMessage(fieldName, "Invalid Value");
 				}

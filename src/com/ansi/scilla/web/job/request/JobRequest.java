@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.Date;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
+import com.ansi.scilla.common.db.Job;
 import com.ansi.scilla.common.jobticket.JobStatus;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
@@ -626,6 +626,19 @@ public class JobRequest extends AbstractRequest{
 		RequestValidator.validateId(conn, webMessages, "contact", "contact_id", "siteContact", this.siteContact, true);
 		RequestValidator.validateBoolean(webMessages, "taxExempt", this.taxExempt, true);
 		RequestValidator.validateString(webMessages, "taxExemptReason", this.taxExemptReason, true);
+		
+		return webMessages;
+	}
+	
+	
+	
+	public WebMessages validateDeleteJob(Job job) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		
+		JobStatus status = JobStatus.lookup(job.getStatus());
+		if ( ! status.equals(JobStatus.NEW)) {
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Only new jobs can be deleted");
+		}
 		
 		return webMessages;
 	}
