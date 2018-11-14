@@ -174,7 +174,7 @@
 			            	if(row.userCount != null){return $userLink;}
 			            } },
 			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
-			            	$updateLink = '<ansi:hasPermission permissionRequired="PERMISSIONS_WRITE"><a href="#" class="addNewAction" data-id="'+row.permissionGroupId+'"><webthing:permissionIcon>Permissions</webthing:permissionIcon></ansi:hasPermission></a>';
+			            	$updateLink = '<ansi:hasPermission permissionRequired="PERMISSIONS_WRITE"><a href="#" class="updAction" data-id="'+row.permissionGroupId+'"><webthing:permissionIcon>Permissions</webthing:permissionIcon></ansi:hasPermission></a>';
 			            	$editLink = '<ansi:hasPermission permissionRequired="PERMISSIONS_WRITE"><a href="#" class="editAction" data-id="'+row.permissionGroupId+'"><webthing:edit>Update</webthing:edit></a></ansi:hasPermission>';
 			            	$deleteLink = '<ansi:hasPermission permissionRequired="PERMISSIONS_WRITE"><a href="#" class="delAction" data-id="'+row.permissionGroupId+'"><webthing:delete>Delete</webthing:delete></a></ansi:hasPermission>';
 			           		
@@ -223,7 +223,7 @@
 					showEdit($clickevent);
 				});	
 				$('.updAction').bind("click", function($clickevent) {
-					doUpdate($clickevent);
+					updatePermissionGroupPermissions($clickevent);
 				});
 				$(".delAction").on("click", function($clickevent) {
 					var $permissionGroupId = $(this).data("id");
@@ -658,7 +658,181 @@
 					}
 				})
 			}
+		
 */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		function updatePermissionGroupPermissions () {
+ 			$("#permissionsModal").dialog("open");
+//			$permissionGroupId = $("#permissionsModal").attr("permissionGroupId");
+//			var $url = 'permissionGroup/'+ $permissionGroupId;
+//			var jqxhr = $.ajax({
+//			    type: 'get',
+//			    url: $url,
+		//	    data: $outbound,
+		/*	            	    success: function($data) {
+			    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
+					if ( $data.responseHeader.responseCode == 'SUCCESS') {
+						$("#permissionGroupTable").DataTable().row($permissionGroupId).remove();
+						$("#permissionGroupTable").DataTable().draw();
+		//				$('#confirmDelete').bPopup().close();
+					}
+			     },
+		*/	//            	     statusCode: {
+//			    	 200: function($data) {
+//			    		 	$("#permissionsModal").dialog("close");
+//			    		 	$('#permissionGroupTable').DataTable().ajax.reload();
+//							$("#globalMsg").html("Update Successful").show().fadeOut(10000);
+//						},
+//		
+//			    		403: function($data) {
+//							$("#globalMsg").html("Session Timeout. Log in and try again");
+//						},
+//						404: function($data) {
+//							$("#globalMsg").html("Invalid Selection").show().fadeOut(100000);
+//						},
+//						500: function($data) {
+//							$("#globalMsg").html("System Error; Contact Support");
+//						}
+//		     	     },
+//			     dataType: 'json'
+			}
+		//}
+			
+			
+			
+			
+			
+			//var $outbound = {};
+			//$permissionGroupId = $("#deleteModal").attr("permissionGroupId");
+			//$outbound ["permissionGroupId"] = $permissionGroupId;
+		//	$outbound ["action"] = "DELETE_PERMISSIONGROUP";
+			//$(".permissionGroupId").remove();
+			
+		//	doPermissionGroupUpdate($permissionGroupId, $outbound, deletePermissionGroupSuccess, deletePermissionGroupErr);
+//		}
+		
+		/*			function doPermissionGroupUpdate ($permissionGroupId, $outbound, $successCallback, $errCallback) {
+			var $url = "permissionGroup/" + $permissionGroupId;
+			console.log($outbound);						
+			
+			var jqxhr3 = $.ajax({
+				type: 'POST',
+				url: $url,
+				data: JSON.stringify($outbound),
+				statusCode: {
+					200:function($data) {
+					//	QUOTEMAINTENANCE.populateJobHeader($data.data.jobHeaderList)
+					//	QUOTEMAINTENANCE.makeJobExpansion();
+						$("#globalMsg").html("Update Successful").show().fadeOut(10000);
+					},
+					403: function($data) {
+						$("#globalMsg").html("Session Timeout. Log in and try again");
+					},
+					404: function($data) {
+						$("#globalMsg").html("Invalid Selection").show().fadeOut(100000);
+					},
+					500: function($data) {
+						$("#globalMsg").html("System Error; Contact Support");
+					}
+		 	     },
+				dataType: 'json'
+			});
+		} */
+		
+		function permissionGroupPermissionsErr ($statusCode) {
+			var $messages = {
+					403:"Session Expired. Log in and try again",
+					404:"System Error Activate 404. Contact Support",
+					500:"System Error Activate 500. Contact Support"
+			}
+			$("#permissionsModal").dialog("close");
+			$("#globalMsg").html( $messages[$statusCode] );
+		}
+		
+		function permissionGroupPermissionsSuccess ($data) {
+			console.log($data);
+			if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {	
+				$.each($data.data.webMessages, function($index, $val) {								
+					var $fieldName = "." + $index + "Err";
+					var $selector = "#permissionsModal " + $fieldName;
+					$($selector).html($val[0]).show().fadeOut(3000);
+				});							
+			} else {
+				permissionGroup = $data.data.permissionGroupId;
+				// call this:  populateJobPanel : function($jobId, $destination, $data
+				// var $destination = "#job" + $data.data.job.jobId + " .job-data-row";
+				//QUOTEMAINTENANCE.populateJobPanel($data.data.job.jobId, $destination, $data.data);
+				//QUOTEMAINTENANCE.populateJobHeader($data.quoteList[0].jobHeaderList)
+				$("#permissionsModal").dialog("close");
+				$("#globalMsg").html("Update Successful").show().fadeOut(3000);
+			}
+		}
+		
+		
+		function updateThisPermissionGroupPermissions ($permissionGroupId, $type) {
+			console.log("clicked a permissionGroup updateThisPermissionGroupPermissions: " + $permissionGroupId);
+			$("#permissionsModal").attr("permissionGroupId", $permissionGroupId);
+			$("#permissionsModal").dialog("open");
+		}
+		
+		
+		$( "#permissionsModal" ).dialog({
+			title:'Update Permissions',
+			autoOpen: false,
+			height: 350,
+			width: 550,
+			modal: true,
+			closeOnEscape:true,
+			//open: function(event, ui) {
+			//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+			//},
+			buttons: [
+				{
+					id: "permissionsCancelButton",
+					click: function($event) {
+						$( "#permissionsModal" ).dialog("close");
+					}
+				},
+				{
+					id: "permissionsSaveButton",
+					click: function($event) {
+						deletePermissionGroup();
+					}
+				}
+			]
+		});	
+		$("#permissionsSaveButton").button('option', 'label', 'Update Group Permissions');
+		$("#permissionsCancelButton").button('option', 'label', 'Cancel');
+		
+		
+		//if ( $value.canDelete == true ) {
+		//		$panelButtonContainer.append('<webthing:delete styleClass="deleteThisPermissionGroup">Delete</webthing:delete>');
+		//	}
+		
+		
+//		$(".deleteThisPermissionGroupPermissions").click(function($event) {
+//			//var $jobId = this.parentElement.attributes['data-jobid'].value;
+//			var $permissionGroupId = $(this).closest("div.panel-button-container")[0].attributes['data-permissionGroupId'].value;
+//			deleteThisPermissionGroup($permissionGroupId);
+//		});
 
 
 
@@ -792,6 +966,37 @@
     	<div id="deleteModal">
     		Are You Sure You Want to Delete this Permission Group?
 	    	</div>
+	    	
+	    	
+	    <div id="permissionsModal">
+    	<table>
+    		<tr>
+    			<td><span class="formHdr">ID</span></td>
+    			<td><input type="text" name="permissionGroupId" style="border-style: hidden" readOnly/></td>
+    			<td><span class="err" id="permissionGroupIdErr"></span></td>
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">Name</span></td>
+    			<td></i><input type="text" name="name" /></td>
+    			<td><span class="err" id="nameErr"></span></td>
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">Description</span></td>
+    			<td><input type="text" name="description" /></td>
+    		</tr>
+    		<tr>
+				<td><span class="required">*</span><span class="formLabel">Status:</span></td>
+				<td>
+					<select name="status">
+						<option value="1">Active</option>
+						<option value="0">Inactive</option>
+					</select>
+					<i class="fa fa-check-square-o inputIsValid" aria-hidden="true"></i>
+				</td>
+				<td><span class="err" id="statusErr"></span></td>
+			</tr> 		
+    	</table>
+    </div>
    
 	    <webthing:scrolltop />
 
