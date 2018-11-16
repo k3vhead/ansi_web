@@ -597,6 +597,11 @@
 										QUOTEMAINTENANCE.populateQuotePanels($data.data);	
 										if ( QUOTEMAINTENANCE.quote.canEdit == true ) {
 											$(".edit-this-panel").show();
+										} 
+										if ( QUOTEMAINTENANCE.quote.canAddJob == true ) {
+											$("#new-job-button").show();
+										} else {
+											$("#new-job-button").hide();
 										}
 									},					
 									403: function($data) {

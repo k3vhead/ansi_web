@@ -42,9 +42,11 @@ public class QuoteResponseItem extends MessageResponse {
 	private AddressResponseItem jobSite;
 	private JobContact jobContact;
 	private List<JobHeader> jobHeaderList;
-	private Boolean canEdit;
 	private ContactItem signedBy;
+	private Boolean canEdit;
+	private Boolean canAddJob;
 
+	
 	public QuoteResponseItem(Connection conn, Quote quote, Boolean canEdit) throws Exception {
 		super();
 		makeQuoteDetail(conn, quote);
@@ -55,13 +57,15 @@ public class QuoteResponseItem extends MessageResponse {
 		super();
 		makeQuoteDetail(conn, quote);
 		this.canEdit = makeEditFlag(permissionList);
+		this.canAddJob = this.canEdit;
+		if ( this.quote.getProposalDate() != null ) {
+			this.canAddJob = false;
+		}
 	}
 	
 	private void makeQuoteDetail(Connection conn, Quote quote) throws Exception {
 		Logger logger = LogManager.getLogger(this.getClass());
 		logger.log(Level.DEBUG, "Making a detail");
-		logger.log(Level.DEBUG, this);
-		logger.log(Level.DEBUG, quote);
 		PropertyUtils.copyProperties(this, quote);
 		
 		User manager = new User();
@@ -151,6 +155,14 @@ public class QuoteResponseItem extends MessageResponse {
 
 	public void setCanEdit(Boolean canEdit) {
 		this.canEdit = canEdit;
+	}
+
+	public Boolean getCanAddJob() {
+		return canAddJob;
+	}
+
+	public void setCanAddJob(Boolean canAddJob) {
+		this.canAddJob = canAddJob;
 	}
 
 	public ContactItem getSignedBy() {
