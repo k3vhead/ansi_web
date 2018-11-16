@@ -60,6 +60,9 @@
 			#editPanel {
 				display:none;
 			}
+			#permissions option {
+				width: 150px;
+			}
 			.formHdr {
 				font-weight:bold;				
 			}
@@ -223,7 +226,8 @@
 					showEdit($clickevent);
 				});	
 				$('.updAction').bind("click", function($clickevent) {
-					updatePermissionGroupPermissions($clickevent);
+					$("#permissionsModal").dialog("open");
+//					updatePermissionGroupPermissions($clickevent);
 				});
 				$(".delAction").on("click", function($clickevent) {
 					var $permissionGroupId = $(this).data("id");
@@ -680,7 +684,7 @@
 
 
 		function updatePermissionGroupPermissions () {
- 			$("#permissionsModal").dialog("open");
+ //			$("#permissionsModal").dialog("open");
 //			$permissionGroupId = $("#permissionsModal").attr("permissionGroupId");
 //			var $url = 'permissionGroup/'+ $permissionGroupId;
 //			var jqxhr = $.ajax({
@@ -697,9 +701,9 @@
 			     },
 		*/	//            	     statusCode: {
 //			    	 200: function($data) {
-//			    		 	$("#permissionsModal").dialog("close");
-//			    		 	$('#permissionGroupTable').DataTable().ajax.reload();
-//							$("#globalMsg").html("Update Successful").show().fadeOut(10000);
+			    		 	$("#permissionsModal").dialog("close");
+			    		 	$('#permissionGroupTable').DataTable().ajax.reload();
+							$("#globalMsg").html("Update Successful").show().fadeOut(10000);
 //						},
 //		
 //			    		403: function($data) {
@@ -814,7 +818,7 @@
 				{
 					id: "permissionsSaveButton",
 					click: function($event) {
-						deletePermissionGroup();
+						updatePermissionGroupPermissions();
 					}
 				}
 			]
@@ -971,30 +975,137 @@
 	    <div id="permissionsModal">
     	<table>
     		<tr>
-    			<td><span class="formHdr">ID</span></td>
-    			<td><input type="text" name="permissionGroupId" style="border-style: hidden" readOnly/></td>
-    			<td><span class="err" id="permissionGroupIdErr"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr">Name</span></td>
-    			<td></i><input type="text" name="name" /></td>
-    			<td><span class="err" id="nameErr"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr">Description</span></td>
-    			<td><input type="text" name="description" /></td>
-    		</tr>
-    		<tr>
-				<td><span class="required">*</span><span class="formLabel">Status:</span></td>
-				<td>
-					<select name="status">
-						<option value="1">Active</option>
-						<option value="0">Inactive</option>
+    			<td><span class="formHdr">Quote</span></td>
+    			<td>
+					<select name="permissions" style="width: 100px;">
+						<option value="1">Quote_Read</option>
+						<option value="2">Quote_Create</option>
+						<option value="3">Quote_Propose</option>
+						<option value="4">Quote_Update</option>
 					</select>
-					<i class="fa fa-check-square-o inputIsValid" aria-hidden="true"></i>
 				</td>
-				<td><span class="err" id="statusErr"></span></td>
-			</tr> 		
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">Ticket</span></td>
+    			<td>
+					<select name="permissions" style="width: 50px;">
+						<option value="1">Ticket_Read</option>
+						<option value="2">Ticket_Create</option>
+						<option value="3">Ticket_Propose</option>
+						<option value="4">Ticket_Update</option>
+					</select>
+				</td>
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">Ticket Special Override</span></td>
+    			<td>
+					<select name="permissions" style="width: 50px;">
+						<option value="1">Ticket_Special_Override_Read</option>
+						<option value="2">Ticket_Special_Override_Create</option>
+						<option value="3">Ticket_Special_Override_Propose</option>
+						<option value="4">Ticket_Special_Override_Update</option>
+					</select>
+				</td>
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">Payment</span></td>
+    			<td>
+					<select name="permissions" style="width: 50px;">
+						<option value="1">Payment_Read</option>
+						<option value="2">Payment_Create</option>
+						<option value="3">Payment_Propose</option>
+						<option value="4">Payment_Update</option>
+					</select>
+				</td>
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">Invoice</span></td>
+    			<td>
+					<select name="permissions" style="width: 50px;">
+						<option value="1">Invoice_Read</option>
+						<option value="2">Invoice_Create</option>
+						<option value="3">Invoice_Propose</option>
+						<option value="4">Invoice_Update</option>
+					</select>
+				</td>
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">System Admin</span></td>
+    			<td>
+					<select name="permissions" style="width: 50px;">
+						<option value="1">SystemAdmin_Read</option>
+						<option value="2">SystemAdmin_Create</option>
+						<option value="3">SystemAdmin_Propose</option>
+						<option value="4">SystemAdmin_Update</option>
+					</select>
+				</td>
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">User Admin</span></td>
+    			<td>
+					<select name="permissions" style="width: 50px;">
+						<option value="1">User_Admin_Read</option>
+						<option value="2">User_Admin_Create</option>
+						<option value="3">User_Admin_Propose</option>
+						<option value="4">User_Admin_Update</option>
+					</select>
+				</td>
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">Tech Admin</span></td>
+    			<td>
+					<select name="permissions" style="width: 50px;">
+						<option value="1">Tech_Admin_Read</option>
+						<option value="2">Tech_Admin_Create</option>
+						<option value="3">Tech_Admin_Propose</option>
+						<option value="4">Tech_Admin_Update</option>
+					</select>
+				</td>
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">Address</span></td>
+    			<td>
+					<select name="permissions" style="width: 50px;">
+						<option value="1">Address_Read</option>
+						<option value="2">Address_Create</option>
+						<option value="3">Address_Propose</option>
+						<option value="4">Address_Update</option>
+					</select>
+				</td>
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">Contact</span></td>
+    			<td>
+					<select name="permissions" style="width: 50px;">
+						<option value="1">Contact_Read</option>
+						<option value="2">Contact_Create</option>
+						<option value="3">Contact_Propose</option>
+						<option value="4">Contact_Update</option>
+					</select>
+				</td>
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">Activities</span></td>
+    			<td>
+					<select name="permissions" style="width: 50px;">
+						<option value="1">Activities_Read</option>
+						<option value="2">Activities_Create</option>
+						<option value="3">Activities_Propose</option>
+						<option value="4">Activities_Update</option>
+					</select>
+				</td>
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">Permissions</span></td>
+    			<td>
+					<select name="permissions" style="width: 50px;">
+						<option value="1">Permissions_Read</option>
+						<option value="2">Permissions_Create</option>
+						<option value="3">Permissions_Propose</option>
+						<option value="4">Permissions_Update</option>
+					</select>
+				</td>
+    		</tr>
     	</table>
     </div>
    
