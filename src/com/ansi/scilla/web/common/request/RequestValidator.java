@@ -97,25 +97,6 @@ public class RequestValidator {
 
 
 
-	public static void validateId(Connection conn, WebMessages webMessages, String dbTableName, String dbFieldName,
-			String fieldName, Integer value, boolean required) throws Exception {
-		if ( value == null ) {
-			if ( required ) {
-				webMessages.addMessage(fieldName, "Required Value");
-			}
-		} else {
-			String sql = "select * from " + dbTableName + " where " + dbFieldName + "=?";
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setInt(1,  value);
-			ResultSet rs = ps.executeQuery();
-			if ( ! rs.next() ) {
-				webMessages.addMessage(fieldName, "Invalid Value");
-			}
-		}
-	}
-
-
-
 	public static void validateEmail(WebMessages webMessages, String fieldName, String value, boolean required) {
 		String regex = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}$"; //"^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}$.";
 		Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
@@ -131,6 +112,25 @@ public class RequestValidator {
 			}
 		}
 		
+	}
+
+
+
+	public static void validateId(Connection conn, WebMessages webMessages, String dbTableName, String dbFieldName,
+			String fieldName, Integer value, boolean required) throws Exception {
+		if ( value == null ) {
+			if ( required ) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			String sql = "select * from " + dbTableName + " where " + dbFieldName + "=?";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1,  value);
+			ResultSet rs = ps.executeQuery();
+			if ( ! rs.next() ) {
+				webMessages.addMessage(fieldName, "Invalid Value");
+			}
+		}
 	}
 
 

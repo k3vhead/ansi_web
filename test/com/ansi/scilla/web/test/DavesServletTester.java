@@ -30,8 +30,9 @@ public class DavesServletTester extends TestServlet {
 	
 	public void go() throws Exception {		
 		super.userId = null;
+		userId = "dclewis@thewebthing.com";
 //		userId = "admin.tester@.com";  // admin
-		userId = "keegan.ovitt@gmail.com";  // permission group 1
+//		userId = "keegan.ovitt@gmail.com";  // permission group 1
 //		userId = "geo@whitehouse.gov"; //division manager
 //		userId = "dm.readonly@ansi.com"; // div mgr ro
 //		userId = "dmt@ansi.com";  // special override
@@ -40,8 +41,8 @@ public class DavesServletTester extends TestServlet {
 		Header sessionCookie = super.doLogin();
 		
 		HashMap<String, String> parmMap = new HashMap<String, String>();
-//		String url = "/ansi_web/permission/2196"; // valid permission group id
-		String url = "/ansi_web/permission/xx"; // invalid permission group id
+		String url = "/ansi_web/permission/2196"; // valid permission group id
+//		String url = "/ansi_web/permission/xx"; // invalid permission group id
 		
 		
 //		String results = super.doGet(sessionCookie, url, parmMap);
