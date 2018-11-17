@@ -11,6 +11,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 
 import com.ansi.scilla.common.db.PermissionGroup;
 import com.ansi.scilla.web.common.response.MessageResponse;
+import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class PermissionGroupResponse extends MessageResponse implements Serializable {
 
@@ -28,10 +29,20 @@ public class PermissionGroupResponse extends MessageResponse implements Serializ
 	}
 	
 	public PermissionGroupResponse(PermGroupCountRecord permGroupItem) {
-		super();
+		this();
 		this.permGroupCountRecord = permGroupItem;
 	}
 	
+	public PermissionGroupResponse(Connection conn, Integer permissionGroupId) throws RecordNotFoundException, Exception {
+		this();
+		PermissionGroup permissionGroup = new PermissionGroup();
+		permissionGroup.setPermissionGroupId(permissionGroupId);
+		permissionGroup.selectOne(conn);
+		this.permGroupCountRecord = new PermGroupCountRecord();
+		PropertyUtils.copyProperties(this.permGroupCountRecord, permissionGroup);
+		Integer userCount = this.makeUserCount(conn, permissionGroup.getPermissionGroupId());
+		this.permGroupCountRecord.setUserCount(userCount);
+	}
 	
 	public PermissionGroupResponse(Connection conn, PermissionGroup perm) throws IllegalAccessException, InvocationTargetException, SQLException, NoSuchMethodException {
 		this();
