@@ -17,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.db.PermissionGroup;
 import com.ansi.scilla.common.db.PermissionGroupLevel;
+import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.MessageKey;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -203,14 +204,12 @@ public class PermissionServlet extends AbstractServlet {
 				if (!StringUtils.isBlank(jsonString))
 					AppUtils.json2object(jsonString, permRequest);
 				
-				url = new AnsiURL(request,"permission", new String[] {ACTION_IS_ADD});
+				url = new AnsiURL(request,"permission", (String []) null);
 
-				if ( url.getId() != null ) {									// this is an update
-					processUpdate(conn, response, url.getId(), permRequest, sessionUser);
-				} else if (url.getCommand().equalsIgnoreCase(ACTION_IS_ADD)) {  // this is an add
-					processAdd(conn, response, permRequest, sessionUser);
-				} else {
+				if ( url.getId() == null ) {									// this is an update
 					super.sendNotFound(response);
+				} else {
+					processUpdate(conn, response, url.getId(), permRequest, sessionUser);
 				}
 			} catch ( InvalidFormatException e ) {
 				String badField = super.findBadField(e.toString());
@@ -315,27 +314,23 @@ public class PermissionServlet extends AbstractServlet {
 
 	protected void processUpdate(Connection conn, HttpServletResponse response, Integer permGroupId, PermissionRequest permRequest, SessionUser sessionUser) throws RecordNotFoundException, Exception {
 		
-//		PermissionGroupLevel permissionGroupLevel = new PermissionGroupLevel();
-//		PermissionItemResponse data = new PermissionGroupResponse();
-		PermissionGroup permissionGroup = new PermissionGroup();
-		PermissionGroupResponse data = new PermissionGroupResponse();
 		
-		
-		permissionGroup.setPermissionGroupId(permGroupId);
-		permissionGroup.selectOne(conn);		// this throws RecordNotFound, which is propagated up the line into a 404 return
-	
-		WebMessages webMessages = validateUpdate(conn, permissionGroup, permRequest);
-		 
+		//WebMessages webMessages = validateUpdate(conn, permissionGroup, permRequest);
+		WebMessages webMessages = new WebMessages();
+		RequestValidator.validateId(conn, webMessages, "permission_group", PermissionGroup.PERMISSION_GROUP_ID, WebMessages.GLOBAL_MESSAGE, permGroupId, true);
+		RequestValidator.validatePermissionName(webMessages, PermissionRequest.PERMISSION_NAME, permRequest.getPermissionName(), true);
 		if (webMessages.isEmpty()) {
-			permissionGroup = doUpdate(conn, permGroupId, permissionGroup, permRequest, sessionUser);
+			doUpdate(conn, permGroupId, permRequest, sessionUser);
 			conn.commit();
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update successful!");
-			//data.setPermGroupCountRecord(permGroupCountRecord);
-			data.setWebMessages(webMessages);
-			super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
+			
+			PermissionGroupResponse permGroupResp = new PermissionGroupResponse();
+			permGroupResp = new PermissionGroupResponse(conn, permGroupId);
+			super.sendResponse(conn, response, ResponseCode.SUCCESS, permGroupResp);
+			
 		} else {
-			data.setWebMessages(webMessages);
-			super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+			PermissionGroupResponse permGroupResp = new PermissionGroupResponse(conn, permGroupId);
+			super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, permGroupResp);
 		}
 			
 	}
@@ -368,18 +363,18 @@ public class PermissionServlet extends AbstractServlet {
 		return webMessages;
 	}
 
-	protected PermissionGroup doUpdate (Connection conn, Integer permGroupId, PermissionGroup permissionGroup, PermissionRequest permRequest, SessionUser sessionUser) throws Exception {
-		//permissionGroup.setDescription(permRequest.getDescription());
-		permissionGroup.setName(permRequest.getPermissionName());
-		//permissionGroup.setStatus(permRequest.isPermissionIsActive());
-		permissionGroup.setUpdatedBy(sessionUser.getUserId());
-		permissionGroup.setPermissionGroupId(permGroupId);
-
-		PermissionGroup key = new PermissionGroup ();
-		key.setPermissionGroupId(permGroupId);  
-		permissionGroup.update(conn, key);	
+	protected void doUpdate (Connection conn, Integer permGroupId, PermissionRequest permRequest, SessionUser sessionUser) throws Exception {
+//		//permissionGroup.setDescription(permRequest.getDescription());
+//		permissionGroup.setName(permRequest.getPermissionName());
+//		//permissionGroup.setStatus(permRequest.isPermissionIsActive());
+//		permissionGroup.setUpdatedBy(sessionUser.getUserId());
+//		permissionGroup.setPermissionGroupId(permGroupId);
+//
+//		PermissionGroup key = new PermissionGroup ();
+//		key.setPermissionGroupId(permGroupId);  
+//		permissionGroup.update(conn, key);	
 		
-		return permissionGroup;
+		//return permissionGroup;
 	}
 	
 	protected PermissionListResponse makePermissionListResponse(Connection conn, AnsiURL url) throws Exception {
