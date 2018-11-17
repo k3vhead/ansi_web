@@ -31,6 +31,7 @@ import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.permission.request.PermGroupRequest;
+import com.ansi.scilla.web.permission.request.PermissionRequest;
 import com.ansi.scilla.web.permission.response.PermGroupCountRecord;
 import com.ansi.scilla.web.permission.response.PermissionGroupResponse;
 import com.ansi.scilla.web.permission.response.PermissionListResponse;
@@ -197,17 +198,17 @@ public class PermissionServlet extends AbstractServlet {
 
 			try {
 				String jsonString = super.makeJsonString(request);								
-				PermGroupRequest permGroupRequest = new PermGroupRequest();
+				PermissionRequest permRequest = new PermissionRequest();
 
 				if (!StringUtils.isBlank(jsonString))
-					AppUtils.json2object(jsonString, permGroupRequest);
+					AppUtils.json2object(jsonString, permRequest);
 				
 				url = new AnsiURL(request,"permission", new String[] {ACTION_IS_ADD});
 
 				if ( url.getId() != null ) {									// this is an update
-					processUpdate(conn, response, url.getId(), permGroupRequest, sessionUser);
+					processUpdate(conn, response, url.getId(), permRequest, sessionUser);
 				} else if (url.getCommand().equalsIgnoreCase(ACTION_IS_ADD)) {  // this is an add
-					processAdd(conn, response, permGroupRequest, sessionUser);
+					processAdd(conn, response, permRequest, sessionUser);
 				} else {
 					super.sendNotFound(response);
 				}
@@ -241,14 +242,14 @@ public class PermissionServlet extends AbstractServlet {
 		permissionGroup.selectOne(conn);		// this throws RecordNotFound, which is propagated up the line into a 404 return
 	}
 
-	protected void processAdd(Connection conn, HttpServletResponse response, PermGroupRequest permissionGroupRequest, SessionUser sessionUser) throws Exception {   // copied from contactServlet
+	protected void processAdd(Connection conn, HttpServletResponse response, PermissionRequest permRequest, SessionUser sessionUser) throws Exception {   // copied from contactServlet
 		ResponseCode responseCode = null;
 		PermissionGroup permissionGroup = new PermissionGroup();
 	
-		WebMessages webMessages = validateAdd(conn, permissionGroupRequest);
+		WebMessages webMessages = validateAdd(conn, permRequest);
 		
 		if (webMessages.isEmpty()) {  														// if validateAdd returned no messages/errors..  
-			permissionGroup = doAdd(conn, permissionGroupRequest, sessionUser);				// do the add..
+			permissionGroup = doAdd(conn, permRequest, sessionUser);				// do the add..
 			String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");		
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
 			responseCode = ResponseCode.SUCCESS;
@@ -265,15 +266,16 @@ public class PermissionServlet extends AbstractServlet {
 		super.sendResponse(conn, response, responseCode, permissionGroupResponse);
 	}
 
-	protected WebMessages validateAdd(Connection conn, PermGroupRequest permGroupRequest) throws Exception {
+	protected WebMessages validateAdd(Connection conn, PermissionRequest permRequest) throws Exception {
 			WebMessages webMessages = new WebMessages();
-			List<String> missingFields = super.validateRequiredAddFields(permGroupRequest);		// Use @RequiredForAdd annotations in the <realm>Request Class to check for missing fields.
+			List<String> missingFields = super.validateRequiredAddFields(permRequest);		// Use @RequiredForAdd annotations in the <realm>Request Class to check for missing fields.
+			
 			List<String> badFormatFieldList;												// if any fields with invalid formats are found
 			
 			if ( missingFields.isEmpty() ) {	// if there aren't any missing fields
-				badFormatFieldList = super.validateFormat(permGroupRequest);					//      they will be added to this list.
+				badFormatFieldList = super.validateFormat(permRequest);					//      they will be added to this list.
 				if ( badFormatFieldList.isEmpty() ) {											// if all required formats are valid.. 
-					Integer status = permGroupRequest.getStatus();
+					boolean status = permRequest.isPermissionIsActive();
 					Integer[] permittedValues = new Integer[2];									// build list of allowable values
 					permittedValues[0] = PermissionGroup.STATUS_IS_ACTIVE;
 					permittedValues[1] = PermissionGroup.STATUS_IS_INACTIVE;
@@ -296,11 +298,11 @@ public class PermissionServlet extends AbstractServlet {
 			return webMessages;	// so, if no validation problems were found, this will be an empty list..   
 		}
 
-	protected PermissionGroup doAdd(Connection conn, PermGroupRequest permGroupRequest, SessionUser sessionUser) throws Exception {
+	protected PermissionGroup doAdd(Connection conn, PermissionRequest permRequest, SessionUser sessionUser) throws Exception {
 		PermissionGroup permissionGroup = new PermissionGroup();
-		permissionGroup.setDescription(permGroupRequest.getDescription());
-		permissionGroup.setName(permGroupRequest.getName());
-		permissionGroup.setStatus(permGroupRequest.getStatus());
+		//permissionGroup.setDescription(permRequest.getDescription());
+		permissionGroup.setName(permRequest.getPermissionName());
+		//permissionGroup.setStatus(permRequest.isPermissionIsActive());
 	
 		permissionGroup.setAddedBy(sessionUser.getUserId());		
 		permissionGroup.setUpdatedBy(sessionUser.getUserId());
@@ -311,7 +313,7 @@ public class PermissionServlet extends AbstractServlet {
 		return permissionGroup;
 	}
 
-	protected void processUpdate(Connection conn, HttpServletResponse response, Integer permGroupId, PermGroupRequest permGroupReequestRequest, SessionUser sessionUser) throws RecordNotFoundException, Exception {
+	protected void processUpdate(Connection conn, HttpServletResponse response, Integer permGroupId, PermissionRequest permRequest, SessionUser sessionUser) throws RecordNotFoundException, Exception {
 		
 //		PermissionGroupLevel permissionGroupLevel = new PermissionGroupLevel();
 //		PermissionItemResponse data = new PermissionGroupResponse();
@@ -322,10 +324,10 @@ public class PermissionServlet extends AbstractServlet {
 		permissionGroup.setPermissionGroupId(permGroupId);
 		permissionGroup.selectOne(conn);		// this throws RecordNotFound, which is propagated up the line into a 404 return
 	
-		WebMessages webMessages = validateUpdate(conn, permissionGroup, permGroupReequestRequest);
+		WebMessages webMessages = validateUpdate(conn, permissionGroup, permRequest);
 		 
 		if (webMessages.isEmpty()) {
-			permissionGroup = doUpdate(conn, permGroupId, permissionGroup, permGroupReequestRequest, sessionUser);
+			permissionGroup = doUpdate(conn, permGroupId, permissionGroup, permRequest, sessionUser);
 			conn.commit();
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update successful!");
 			//data.setPermGroupCountRecord(permGroupCountRecord);
@@ -338,13 +340,13 @@ public class PermissionServlet extends AbstractServlet {
 			
 	}
 
-	protected WebMessages validateUpdate(Connection conn, PermissionGroup permissionGroup, PermGroupRequest permGroupRequest) throws RecordNotFoundException, Exception {
+	protected WebMessages validateUpdate(Connection conn, PermissionGroup permissionGroup, PermissionRequest permRequest) throws RecordNotFoundException, Exception {
 		WebMessages webMessages = new WebMessages();
-		List<String> missingFields = super.validateRequiredUpdateFields(permGroupRequest);
+		List<String> missingFields = super.validateRequiredUpdateFields(permRequest);
 		if ( missingFields.isEmpty() ) {
-			List<String> badFormatFieldList = super.validateFormat(permGroupRequest);
+			List<String> badFormatFieldList = super.validateFormat(permRequest);
 			if ( badFormatFieldList.isEmpty() ) {
-				Integer status = permGroupRequest.getStatus();
+				boolean status = permRequest.isPermissionIsActive();
 				
 				// make sure that status us one of the enumerated values.. 
 				if ( ! Arrays.asList(new Integer[] { PermissionGroup.STATUS_IS_ACTIVE, PermissionGroup.STATUS_IS_INACTIVE}).contains(status)) {
@@ -366,10 +368,10 @@ public class PermissionServlet extends AbstractServlet {
 		return webMessages;
 	}
 
-	protected PermissionGroup doUpdate (Connection conn, Integer permGroupId, PermissionGroup permissionGroup, PermGroupRequest permGroupRequest, SessionUser sessionUser) throws Exception {
-		permissionGroup.setDescription(permGroupRequest.getDescription());
-		permissionGroup.setName(permGroupRequest.getName());
-		permissionGroup.setStatus(permGroupRequest.getStatus());
+	protected PermissionGroup doUpdate (Connection conn, Integer permGroupId, PermissionGroup permissionGroup, PermissionRequest permRequest, SessionUser sessionUser) throws Exception {
+		//permissionGroup.setDescription(permRequest.getDescription());
+		permissionGroup.setName(permRequest.getPermissionName());
+		//permissionGroup.setStatus(permRequest.isPermissionIsActive());
 		permissionGroup.setUpdatedBy(sessionUser.getUserId());
 		permissionGroup.setPermissionGroupId(permGroupId);
 
