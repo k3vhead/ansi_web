@@ -330,6 +330,7 @@ public class PermissionServlet extends AbstractServlet {
 			
 		} else {
 			PermissionGroupResponse permGroupResp = new PermissionGroupResponse(conn, permGroupId);
+			permGroupResp.setWebMessages(webMessages);
 			super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, permGroupResp);
 		}
 			
