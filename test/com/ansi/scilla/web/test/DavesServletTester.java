@@ -49,8 +49,8 @@ public class DavesServletTester extends TestServlet {
 		
 		
 		
-		parmMap.put(PermissionRequest.PERMISSION_NAME, Permission.ADDRESS_WRITE.name());
-		parmMap.put(PermissionRequest.PERMISSION_IS_ACTIVE, String.valueOf(new Boolean(true)));
+//		parmMap.put(PermissionRequest.PERMISSION_NAME, Permission.ADDRESS_WRITE.name());
+//		parmMap.put(PermissionRequest.PERMISSION_IS_ACTIVE, String.valueOf(new Boolean(true)));
 		String results = super.doPost(sessionCookie, url, super.makeJson(parmMap));
 //		String results = super.doGet(sessionCookie, url, (HashMap<String,String>)null);
 		

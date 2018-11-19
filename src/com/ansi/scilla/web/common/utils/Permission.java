@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.list.SetUniqueList;
 
 /**, ""
  * Enumerates permissions. These are the permissions that will be grouped to make a
@@ -98,6 +99,12 @@ public enum Permission {
 		return description;
 	}
 	
+	
+	/**
+	 * Make a list of permissions that you get because you have this one (ie, this permission,
+	 * its parent, its parent's parent, etc)
+	 * @return
+	 */
 	public List<Permission> makeParentList() {
 		List<Permission> permissionTree = new ArrayList<Permission>();
 		permissionTree.add(this);
@@ -108,6 +115,11 @@ public enum Permission {
 		return permissionTree;
 	}
 	
+	
+	/**
+	 * Make a list of Permissions that have this one as a parent
+	 * @return
+	 */
 	public List<Permission> makeChildList() {
 		List<Permission> childList = new ArrayList<Permission>();
 		for ( Permission permission : Permission.values() ) {
@@ -140,6 +152,8 @@ public enum Permission {
 		}
 	}
 	
+	
+	
 	private void makePermissionTree(Permission permission, List<Permission> permissionTree) {
 		if ( permission!= null && ! permissionTree.contains(permission)) {
 			permissionTree.add(permission);
@@ -154,7 +168,20 @@ public enum Permission {
 	}
 	
 	
-	
+	/**
+	 * Make a list of all permissions in this functional area
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Permission> makeFunctionalAreaList() {
+		List<Permission> functionalAreaList = new ArrayList<Permission>();
+		CollectionUtils.addAll(functionalAreaList, makeChildTree().iterator());
+		CollectionUtils.addAll(functionalAreaList, makeParentList().iterator());
+		// remove duplicate values (this permission will be in both lists)
+		List<Permission> uniqueList = SetUniqueList.decorate(new ArrayList<Permission>()); 
+		uniqueList.addAll(functionalAreaList);
+		return uniqueList;
+	}
 	
 //	public static void main(String[] args) {
 //		for ( Permission p : Permission.values() ) {

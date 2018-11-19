@@ -365,17 +365,29 @@ public class PermissionServlet extends AbstractServlet {
 	}
 
 	protected void doUpdate (Connection conn, Integer permGroupId, PermissionRequest permRequest, SessionUser sessionUser) throws Exception {
-//		//permissionGroup.setDescription(permRequest.getDescription());
-//		permissionGroup.setName(permRequest.getPermissionName());
-//		//permissionGroup.setStatus(permRequest.isPermissionIsActive());
-//		permissionGroup.setUpdatedBy(sessionUser.getUserId());
-//		permissionGroup.setPermissionGroupId(permGroupId);
-//
-//		PermissionGroup key = new PermissionGroup ();
-//		key.setPermissionGroupId(permGroupId);  
-//		permissionGroup.update(conn, key);	
-		
-		//return permissionGroup;
+		/*
+		 * Basic logic for the update:
+		 * // this turns the string into a permission enum object
+		 * Permission requestedPermission = Permission.valueOf(permRequest.getPermissionName()); 
+		 * // this gets the list of all permissions in the functional area
+		 * List<Permission> functionalAreaList = Permission.getFunctionalArea(requestedPermission);
+		 * // delete everything in the functiona area
+		 * String bindvariables = AppUtils.makeBindVariables(funcationAreaList);
+		 * String sql = "delete from  permission_group_level where permission_group_id=? and permission_name in " + bindvariables;
+		 * PreparedSTatement ps = conn.prepareSTatement(sql);
+		 * ps.setInt(1, permissionGroupId);
+		 * for ( int n = 0; n < functionalAreaList.size(); n++ ) {
+		 *     ps.setString(n+2,funcationAreaList.get(n).getName())
+		 * }
+		 * ps.executeUpdate();
+		 * // if this is an "add", put the requested permission into the system
+		 * if ( permRequest active is true ) {
+		 * 		PermissionGroupLevel pgl = new PermissionGroupLevel();
+		 * 		pgl.set values from input
+		 * 		pgl.insertWithNoKey(conn);  
+		 * }
+		 */
+
 	}
 	
 	protected PermissionListResponse makePermissionListResponse(Connection conn, AnsiURL url) throws Exception {
