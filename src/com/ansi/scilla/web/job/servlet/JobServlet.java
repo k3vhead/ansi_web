@@ -29,6 +29,7 @@ import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.web.common.utils.UserPermission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
@@ -67,13 +68,14 @@ public class JobServlet extends AbstractServlet {
 		
 		try {
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.QUOTE_READ);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.QUOTE_READ);
+			List<UserPermission> permissionList = sessionData.getUserPermissionList();
 			AnsiURL url = new AnsiURL(request, REALM, (String[])null);	
 			
 			if( url.getId() == null || ! StringUtils.isBlank(url.getCommand())) {	
 				throw new ResourceNotFoundException();
 			} else if (url.getId() != null) {
-				jobDetailResponse = new JobDetailResponse(conn, url.getId());
+				jobDetailResponse = new JobDetailResponse(conn, url.getId(), permissionList);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, jobDetailResponse);
 			} else {
 				// according to the URI parsing, this shouldn't happen, but it gives me warm fuzzies
@@ -107,6 +109,7 @@ public class JobServlet extends AbstractServlet {
 			conn.setAutoCommit(false);
 			// this is the minimum necessary permission. More granular checks will be made later
 			SessionData sessionData = AppUtils.validateSession(request, Permission.QUOTE_CREATE);
+			List<UserPermission> permissionList = sessionData.getUserPermissionList();
 			String jsonString = super.makeJsonString(request);
 			url = new AnsiURL(request, REALM, new String[] {ACTION_IS_ADD});
 			if ( url.getId() == null && StringUtils.isBlank(url.getCommand())) {
@@ -129,13 +132,13 @@ public class JobServlet extends AbstractServlet {
 				// so the page can redisplay them
 				if ( action == JobRequestAction.DELETE_JOB ) {
 					jobDetailResponse = new JobDetailResponse();
-					List<JobHeader> jobHeaderList = JobHeader.getJobHeaderList(conn, job.getQuoteId());	
+					List<JobHeader> jobHeaderList = JobHeader.getJobHeaderList(conn, quote, permissionList);	
 					if ( jobHeaderList.size() == 1 ) {
 						jobHeaderList.get(0).setCanDelete(false); // don't delete the only job you've got
 					}
 					jobDetailResponse.setJobHeaderList(jobHeaderList);
 				} else {
-					jobDetailResponse = new JobDetailResponse(conn, url.getId());
+					jobDetailResponse = new JobDetailResponse(conn, url.getId(), permissionList);
 				}
 			} catch ( JobProcessException e ) {
 				conn.rollback();
@@ -170,15 +173,15 @@ public class JobServlet extends AbstractServlet {
 		if ( StringUtils.isBlank(jobRequest.getAction()) ) {
 			// THis is a panel edit update
 			if ( jobRequest.getUpdateType().equalsIgnoreCase(UPDATE_TYPE_IS_PROPOSAL_PANEL)) {
-				makeProposalUpdate(conn, response, user, job, jobRequest);				
+				makeProposalUpdate(conn, response, user, job, jobRequest, sessionData.getUserPermissionList());				
 			} else if ( jobRequest.getUpdateType().equalsIgnoreCase(UPDATE_TYPE_IS_ACTIVATION_PANEL)) {
-				makeActivationUpdate(conn, response, user, job, jobRequest);
+				makeActivationUpdate(conn, response, user, job, jobRequest, sessionData.getUserPermissionList());
 			} else if ( jobRequest.getUpdateType().equalsIgnoreCase(UPDATE_TYPE_IS_INVOICE_PANEL)) {
-				makeInvoiceUpdate(conn, response, user, job, jobRequest);
+				makeInvoiceUpdate(conn, response, user, job, jobRequest, sessionData.getUserPermissionList());
 			} else if ( jobRequest.getUpdateType().equalsIgnoreCase(UPDATE_TYPE_IS_SCHEDULE_PANEL)) {
-				makeScheduleUpdate(conn, response, user, job, jobRequest);
+				makeScheduleUpdate(conn, response, user, job, jobRequest, sessionData.getUserPermissionList());
 			} else if ( jobRequest.getUpdateType().equalsIgnoreCase(UPDATE_TYPE_IS_NEW_JOB)) {
-				makeNewJob(conn, response, user, job, jobRequest);
+				makeNewJob(conn, response, user, job, jobRequest, sessionData.getUserPermissionList());
 			} else {
 				WebMessages webMessages = new WebMessages();
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Update Type");
@@ -188,13 +191,13 @@ public class JobServlet extends AbstractServlet {
 			// this is an action update
 			action = JobRequestAction.valueOf(jobRequest.getAction());
 			if (action.equals(JobRequestAction.CANCEL_JOB)) {				
-				doCancelJob(conn, job, jobRequest, user, response);					
+				doCancelJob(conn, job, jobRequest, user, response, sessionData.getUserPermissionList());					
 			} else if ( action.equals(JobRequestAction.ACTIVATE_JOB)) {
-				doActivateJob(conn, job, jobRequest, user, response);				
+				doActivateJob(conn, job, jobRequest, user, response, sessionData.getUserPermissionList());				
 			} else if ( action.equals(JobRequestAction.DELETE_JOB)) {
-				doDeleteJob(conn, job, jobRequest, user, response);				
+				doDeleteJob(conn, job, jobRequest, user, response, sessionData.getUserPermissionList());				
 			} else if ( action.equals(JobRequestAction.SCHEDULE_JOB)) {
-				doScheduleJob(conn, job, jobRequest, user, response);
+				doScheduleJob(conn, job, jobRequest, user, response, sessionData.getUserPermissionList());
 //			} else if ( action.equals(JobRequestAction.REPEAT_JOB)) {
 //				doRepeatJob(conn, job, jobRequest, user, response);
 			} else {
@@ -223,7 +226,7 @@ public class JobServlet extends AbstractServlet {
 		}
 	}
 
-	private void makeProposalUpdate(Connection conn, HttpServletResponse response, SessionUser user, Job job, JobRequest jobRequest) throws Exception {
+	private void makeProposalUpdate(Connection conn, HttpServletResponse response, SessionUser user, Job job, JobRequest jobRequest, List<UserPermission> permissionList) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		ResponseCode responseCode = null;
@@ -236,7 +239,7 @@ public class JobServlet extends AbstractServlet {
 				conn.commit();
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
 				responseCode = ResponseCode.SUCCESS;
-				jobDetailResponse = new JobDetailResponse(conn, job.getJobId());
+				jobDetailResponse = new JobDetailResponse(conn, job.getJobId(), permissionList);
 			} else {
 				responseCode = ResponseCode.EDIT_FAILURE;
 			}
@@ -267,7 +270,7 @@ public class JobServlet extends AbstractServlet {
 	
 
 	
-	private void makeActivationUpdate(Connection conn, HttpServletResponse response, SessionUser user, Job job, JobRequest jobRequest) throws Exception {
+	private void makeActivationUpdate(Connection conn, HttpServletResponse response, SessionUser user, Job job, JobRequest jobRequest, List<UserPermission> permissionList) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		ResponseCode responseCode = null;
@@ -280,7 +283,7 @@ public class JobServlet extends AbstractServlet {
 				conn.commit();
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
 				responseCode = ResponseCode.SUCCESS;
-				jobDetailResponse = new JobDetailResponse(conn, job.getJobId());
+				jobDetailResponse = new JobDetailResponse(conn, job.getJobId(), permissionList);
 			} else {
 				responseCode = ResponseCode.EDIT_FAILURE;
 			}
@@ -319,7 +322,7 @@ public class JobServlet extends AbstractServlet {
 	
 	
 	
-	private void makeInvoiceUpdate(Connection conn, HttpServletResponse response, SessionUser user, Job job, JobRequest jobRequest) throws Exception {
+	private void makeInvoiceUpdate(Connection conn, HttpServletResponse response, SessionUser user, Job job, JobRequest jobRequest, List<UserPermission> permissionList) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		ResponseCode responseCode = null;
@@ -332,7 +335,7 @@ public class JobServlet extends AbstractServlet {
 				conn.commit();
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
 				responseCode = ResponseCode.SUCCESS;
-				jobDetailResponse = new JobDetailResponse(conn, job.getJobId());
+				jobDetailResponse = new JobDetailResponse(conn, job.getJobId(), permissionList);
 			} else {
 				responseCode = ResponseCode.EDIT_FAILURE;
 			}
@@ -361,7 +364,7 @@ public class JobServlet extends AbstractServlet {
 	
 
 	
-	private void makeScheduleUpdate(Connection conn, HttpServletResponse response, SessionUser user, Job job, JobRequest jobRequest) throws Exception {
+	private void makeScheduleUpdate(Connection conn, HttpServletResponse response, SessionUser user, Job job, JobRequest jobRequest, List<UserPermission> permissionList) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		ResponseCode responseCode = null;
@@ -374,7 +377,7 @@ public class JobServlet extends AbstractServlet {
 				conn.commit();
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
 				responseCode = ResponseCode.SUCCESS;
-				jobDetailResponse = new JobDetailResponse(conn, job.getJobId());
+				jobDetailResponse = new JobDetailResponse(conn, job.getJobId(), permissionList);
 			} else {
 				responseCode = ResponseCode.EDIT_FAILURE;
 			}
@@ -402,7 +405,7 @@ public class JobServlet extends AbstractServlet {
 	
 
 	
-	private void makeNewJob(Connection conn, HttpServletResponse response, SessionUser user, Job job, JobRequest jobRequest) throws Exception {
+	private void makeNewJob(Connection conn, HttpServletResponse response, SessionUser user, Job job, JobRequest jobRequest, List<UserPermission> permissionList) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		ResponseCode responseCode = null;
@@ -415,7 +418,7 @@ public class JobServlet extends AbstractServlet {
 				conn.commit();
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
 				responseCode = ResponseCode.SUCCESS;
-				jobDetailResponse = new JobDetailResponse(conn, newJobId);
+				jobDetailResponse = new JobDetailResponse(conn, newJobId, permissionList);
 			} else {
 				responseCode = ResponseCode.EDIT_FAILURE;
 			}
@@ -492,128 +495,10 @@ public class JobServlet extends AbstractServlet {
 		return jobId;
 	}
 
-	protected void doPost_xx(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		
-		AnsiURL url = null;
-		String url2 = request.getRequestURI();
-		SessionUser sessionUser = AppUtils.getSessionUser(request);
-		logger.log(Level.DEBUG, "Session user: "+sessionUser);
-		WebMessages messages = new WebMessages();
-		JobDetailResponse jobDetailResponse = new JobDetailResponse();
-		ResponseCode responseCode = null;
-		Connection conn = null;
-		try {
-			conn = AppUtils.getDBCPConn();
-			conn.setAutoCommit(false);
-			String jsonString = super.makeJsonString(request);
-			logger.log(Level.DEBUG, jsonString);
-			
-			int idx = url2.indexOf("/job/");
-			String myString = url2.substring(idx + "/job/".length());				
-			String[] urlPieces = myString.split("/");
-			String command = urlPieces[0];
-			
-			logger.log(Level.DEBUG, "Servlet Output: [0]"+urlPieces[0]);
-			
-			JobRequest jobRequest = new JobRequest(jsonString);
-			
-			if ( command.equalsIgnoreCase("add") ) {
-				
-				doAdd(conn, jobRequest, sessionUser, response);
-			} /*else if ( action.equals(JobDetailRequestAction.UPDATE_JOB) ){
-								
-				try {
-					Job key = new Job();
-					key.setJobId(Integer.parseInt(urlPieces[1]));
-					//key.selectOne(conn);
-					
-					
-					//key.setRevision((urlPieces[2]));
-					Job job = doUpdate(conn, key, jobRequest, sessionUser, response);
-					String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
-					responseCode = ResponseCode.SUCCESS;
-					messages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
-				} catch ( RecordNotFoundException e ) {
-					logger.log(Level.DEBUG, "Doing 404");
-					logger.log(Level.DEBUG, e);
-					super.sendNotFound(response);						
-				} catch ( Exception e) {
-					logger.log(Level.DEBUG, "Doing SysFailure");
-					responseCode = ResponseCode.SYSTEM_FAILURE;
-					AppUtils.logException(e);
-					String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
-					messages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
-				}
-				
-				
-			} */else {
-			
-				url = new AnsiURL(request, "job", (String[])null);
-				
-				logger.log(Level.DEBUG, "URL:"+url);
-				/* DCL
-				try {
-
-					JobDetailRequest jobDetailRequest = (JobDetailRequest) AppUtils.json2object(jsonString, JobDetailRequest.class);
-					logger.log(Level.DEBUG, jobDetailRequest);
-					JobDetailRequest.JobDetailRequestAction action = JobDetailRequest.JobDetailRequestAction.valueOf(jobDetailRequest.getAction());
-					if (action.equals(JobDetailRequestAction.CANCEL_JOB)) {
-						doCancelJob(conn, url.getId(), jobDetailRequest, sessionUser, response);					
-					} else if ( action.equals(JobDetailRequestAction.ACTIVATE_JOB)) {
-						doActivateJob(conn, url.getId(), jobDetailRequest, sessionUser, response);				
-					} else if ( action.equals(JobDetailRequestAction.DELETE_JOB)) {
-						doDeleteJob(conn, url.getId(), jobDetailRequest, sessionUser, response);				
-					} else if ( action.equals(JobDetailRequestAction.SCHEDULE_JOB)) {
-						doScheduleJob(conn, url.getId(), jobDetailRequest, sessionUser, response);
-					} else if ( action.equals(JobDetailRequestAction.REPEAT_JOB)) {
-						doRepeatJob(conn, url.getId(), jobDetailRequest, sessionUser, response);
-					} else if ( action.equals(JobDetailRequestAction.UPDATE_JOB)) {
-						Job key = new Job();
-						key.setJobId(url.getId());
-						//key.selectOne(conn);
-						
-						logger.log(Level.DEBUG, "This is the key:");
-						logger.log(Level.DEBUG, key);
-						logger.log(Level.DEBUG, "************");
-						
-						//key.setRevision((urlPieces[2]));
-						logger.log(Level.DEBUG, "Trying to do update");
-						Job job = doUpdate(conn, key, jobRequest, sessionUser, response);
-						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
-						responseCode = ResponseCode.SUCCESS;
-						messages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
-						jobDetailResponse = new JobDetailResponse(conn, job.getJobId());
-//						JobResponse jobResponse = new JobResponse(job, messages);
-						super.sendResponse(conn, response, responseCode, jobDetailResponse);		
-
-					}
-				} catch ( RecordNotFoundException e ) {
-					logger.log(Level.DEBUG, "Doing 404");
-					logger.log(Level.DEBUG, e);
-					super.sendNotFound(response);						
-				} catch ( IllegalArgumentException e) {
-					conn.rollback();
-					messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Missing Required Data: action");
-					jobDetailResponse.setWebMessages(messages);
-					super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, jobDetailResponse);
-				}
-				DCL */
-			}
-			conn.commit();
-		} catch (ResourceNotFoundException e) {
-			super.sendNotFound(response);
-		} catch ( Exception e) {
-			AppUtils.logException(e);
-			throw new ServletException(e);
-		} finally {
-			AppUtils.closeQuiet(conn);
-		}
-		
-	}
+	
 
 	
-	private void doCancelJob(Connection conn, Job job, JobRequest jobDetailRequest, SessionUser sessionUser, HttpServletResponse response) throws Exception  {
+	private void doCancelJob(Connection conn, Job job, JobRequest jobDetailRequest, SessionUser sessionUser, HttpServletResponse response, List<UserPermission> permissionList) throws Exception  {
 		Integer jobId = job.getJobId();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		WebMessages messages = new WebMessages();
@@ -630,7 +515,7 @@ public class JobServlet extends AbstractServlet {
 				conn.commit();
 				responseCode = ResponseCode.SUCCESS;
 				messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
-				jobDetailResponse = new JobDetailResponse(conn,jobId);
+				jobDetailResponse = new JobDetailResponse(conn,jobId, permissionList);
 			} catch ( RecordNotFoundException e) {
 				responseCode = ResponseCode.EDIT_FAILURE;
 				messages.addMessage("cancelDate", "Invalid Job ID");
@@ -648,7 +533,7 @@ public class JobServlet extends AbstractServlet {
 	}
 
 	
-	private void doDeleteJob(Connection conn, Job job, JobRequest jobDetailRequest, SessionUser sessionUser, HttpServletResponse response) throws Exception {
+	private void doDeleteJob(Connection conn, Job job, JobRequest jobDetailRequest, SessionUser sessionUser, HttpServletResponse response, List<UserPermission> permissionList) throws Exception {
 		Integer jobId = job.getJobId();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		WebMessages messages = jobDetailRequest.validateDeleteJob(job);
@@ -661,7 +546,7 @@ public class JobServlet extends AbstractServlet {
 				conn.commit();
 				responseCode = ResponseCode.SUCCESS;
 				messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
-				jobDetailResponse = new JobDetailResponse(conn,jobId);
+				jobDetailResponse = new JobDetailResponse(conn,jobId, permissionList);
 			} catch ( RecordNotFoundException e) {
 				responseCode = ResponseCode.EDIT_FAILURE;
 				messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Job ID");
@@ -680,7 +565,7 @@ public class JobServlet extends AbstractServlet {
 
 	
 
-	private void doActivateJob(Connection conn, Job job, JobRequest jobDetailRequest, SessionUser sessionUser, HttpServletResponse response) throws Exception {
+	private void doActivateJob(Connection conn, Job job, JobRequest jobDetailRequest, SessionUser sessionUser, HttpServletResponse response, List<UserPermission> permissionList) throws Exception {
 		Integer jobId = job.getJobId();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		WebMessages messages = new WebMessages();
@@ -712,7 +597,7 @@ public class JobServlet extends AbstractServlet {
 			} else {
 				responseCode = ResponseCode.EDIT_FAILURE;
 			}
-			jobDetailResponse = new JobDetailResponse(conn,jobId);
+			jobDetailResponse = new JobDetailResponse(conn,jobId, permissionList);
 		} catch ( RecordNotFoundException e) {
 			responseCode = ResponseCode.EDIT_FAILURE;
 			messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Job ID");
@@ -723,7 +608,7 @@ public class JobServlet extends AbstractServlet {
 	}
 
 
-	private void doScheduleJob(Connection conn, Job job, JobRequest jobDetailRequest, SessionUser sessionUser, HttpServletResponse response) throws Exception {
+	private void doScheduleJob(Connection conn, Job job, JobRequest jobDetailRequest, SessionUser sessionUser, HttpServletResponse response, List<UserPermission> permissionList) throws Exception {
 		Integer jobId = job.getJobId();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		WebMessages messages = new WebMessages();
@@ -756,7 +641,7 @@ public class JobServlet extends AbstractServlet {
 			} else {
 				responseCode = ResponseCode.EDIT_FAILURE;
 			}
-			jobDetailResponse = new JobDetailResponse(conn,jobId);
+			jobDetailResponse = new JobDetailResponse(conn,jobId, permissionList);
 		} catch ( RecordNotFoundException e) {
 			responseCode = ResponseCode.EDIT_FAILURE;
 			messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Job ID");
@@ -802,7 +687,7 @@ public class JobServlet extends AbstractServlet {
 	*/
 	
 	
-	protected Job doAdd(Connection conn, JobRequest jobRequest, SessionUser sessionUser, HttpServletResponse response) throws Exception {
+	protected Job doAdd(Connection conn, JobRequest jobRequest, SessionUser sessionUser, List<UserPermission> permissionList, HttpServletResponse response) throws Exception {
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		ResponseCode responseCode = null;
 		Date today = new Date();
@@ -943,7 +828,7 @@ public class JobServlet extends AbstractServlet {
 				}
 			} 
 			job.setJobId(j);
-			jobDetailResponse = new JobDetailResponse(conn, job.getJobId());
+			jobDetailResponse = new JobDetailResponse(conn, job.getJobId(), permissionList);
 		} else {
 			responseCode = ResponseCode.EDIT_FAILURE;
 		}
@@ -954,7 +839,7 @@ public class JobServlet extends AbstractServlet {
 		return job;
 	}
 	
-	protected Job doUpdate(Connection conn, Job key,JobRequest jobRequest, SessionUser sessionUser, HttpServletResponse response) throws Exception {
+	protected Job doUpdate(Connection conn, Job key,JobRequest jobRequest, SessionUser sessionUser, List<UserPermission> permissionList, HttpServletResponse response) throws Exception {
 		WebMessages messages = new WebMessages();
 		ResponseCode responseCode = null;
 		
@@ -1129,7 +1014,7 @@ public class JobServlet extends AbstractServlet {
 			logger.log(Level.DEBUG, "Doing Edit Fail");
 			responseCode = ResponseCode.EDIT_FAILURE;
 		}
-		JobDetailResponse jobDetailResponse = new JobDetailResponse(conn, job.getJobId());
+		JobDetailResponse jobDetailResponse = new JobDetailResponse(conn, job.getJobId(), permissionList);
 //		JobResponse codeResponse = new JobResponse(job, webMessages);
 		logger.log(Level.DEBUG, "Response:");
 		logger.log(Level.DEBUG, "responseCode: " + responseCode);

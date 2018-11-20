@@ -15,6 +15,7 @@ import com.ansi.scilla.common.db.ViewTicketLog;
 import com.ansi.scilla.web.address.response.AddressResponseItem;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.common.utils.UserPermission;
 import com.ansi.scilla.web.job.query.JobHeader;
 import com.ansi.scilla.web.quote.response.QuoteDetail;
 import com.ansi.scilla.web.ticket.response.TicketLogRecord;
@@ -38,7 +39,7 @@ public class JobDetailResponse extends MessageResponse {
 		super();
 	}
 	
-	public JobDetailResponse(Connection conn, Integer jobId) throws RecordNotFoundException, Exception {
+	public JobDetailResponse(Connection conn, Integer jobId, List<UserPermission> permissionList) throws RecordNotFoundException, Exception {
 		this();
 		Logger logger = AppUtils.getLogger();
 		Job job = new Job();
@@ -97,7 +98,7 @@ public class JobDetailResponse extends MessageResponse {
 			this.lastCreated = new TicketLogRecord();
 		}
 		
-		this.jobHeaderList = JobHeader.getJobHeaderList(conn, quote.getQuoteId());	
+		this.jobHeaderList = JobHeader.getJobHeaderList(conn, quote, permissionList);	
 		if ( this.jobHeaderList.size() == 1 ) {
 			this.jobHeaderList.get(0).setCanDelete(false); // don't delete the only job you've got
 		}

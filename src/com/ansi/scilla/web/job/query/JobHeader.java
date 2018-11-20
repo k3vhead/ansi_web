@@ -8,9 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.jobticket.JobStatus;
 import com.ansi.scilla.common.jobticket.JobUtils;
+import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.web.common.utils.UserPermission;
+import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.thewebthing.commons.lang.StringUtils;
 
 public class JobHeader extends ApplicationObject implements Comparable<JobHeader> {
@@ -48,9 +53,10 @@ public class JobHeader extends ApplicationObject implements Comparable<JobHeader
 	private Boolean canActivate;
 	private Boolean canCancel;
 	private Boolean canSchedule;
+	private Boolean canEdit;
 
 	
-	private JobHeader(ResultSet rs) throws Exception {
+	private JobHeader(ResultSet rs, Quote quote, List<UserPermission> permissionList) throws Exception {
 		this.jobId = rs.getInt("job_id");
 		this.jobNbr = rs.getInt("job_nbr");
 		String description = rs.getString("service_description");
@@ -61,22 +67,36 @@ public class JobHeader extends ApplicationObject implements Comparable<JobHeader
 		this.jobStatus = rs.getString("job_status");
 		this.jobFrequency = rs.getString("job_frequency");
 		this.pricePerCleaning = rs.getBigDecimal("price_per_cleaning").doubleValue();
-		this.canDelete = this.jobStatus.equals(JobStatus.NEW.code());
-		this.canActivate = this.jobStatus.equals(JobStatus.PROPOSED.code());
-		this.canCancel = this.jobStatus.equals(JobStatus.ACTIVE.code());
-		JobStatus jobStatus = JobStatus.lookup(this.jobStatus);
-		JobFrequency jobFrequency  = JobFrequency.get(this.jobFrequency);
-		Object activationDateRS = rs.getObject("activation_date");
-		Object startDateRS = rs.getObject("start_date");
-		if ( activationDateRS != null && startDateRS != null ) {
-			java.sql.Date activationDateRsDate = rs.getDate("activation_date");
-			java.util.Date activationDate = new java.util.Date( activationDateRsDate.getTime() );
-			java.sql.Date startDateRsDate = rs.getDate("start_date");
-			java.util.Date startDate = new java.util.Date( startDateRsDate.getTime() );
-			this.canSchedule = JobUtils.canReschedule(this.jobId, jobStatus, jobFrequency, activationDate, startDate);
-		} else {
+		
+		try {
+			validateStateTransition(quote, permissionList);
+			this.canDelete = this.jobStatus.equals(JobStatus.NEW.code());
+			this.canActivate = this.jobStatus.equals(JobStatus.PROPOSED.code());
+			this.canCancel = this.jobStatus.equals(JobStatus.ACTIVE.code());
+			this.canEdit = true;
+			
+			JobStatus jobStatus = JobStatus.lookup(this.jobStatus);
+			JobFrequency jobFrequency  = JobFrequency.lookup(this.jobFrequency);
+			Object activationDateRS = rs.getObject("activation_date");
+			Object startDateRS = rs.getObject("start_date");
+			if ( activationDateRS != null && startDateRS != null ) {
+				java.sql.Date activationDateRsDate = rs.getDate("activation_date");
+				java.util.Date activationDate = new java.util.Date( activationDateRsDate.getTime() );
+				java.sql.Date startDateRsDate = rs.getDate("start_date");
+				java.util.Date startDate = new java.util.Date( startDateRsDate.getTime() );
+				this.canSchedule = JobUtils.canReschedule(this.jobId, jobStatus, jobFrequency, activationDate, startDate);
+			} else {
+				this.canSchedule = false;
+			}
+		} catch ( NotAllowedException e) {
+			this.canDelete = false;
+			this.canActivate = false;
+			this.canCancel = false;
 			this.canSchedule = false;
+			this.canEdit = false;
 		}
+		
+		
 	}
 	
 	public Integer getJobId() {
@@ -183,8 +203,12 @@ public class JobHeader extends ApplicationObject implements Comparable<JobHeader
 		this.canSchedule = canSchedule;
 	}
 
-	public static String getSql() {
-		return sql;
+	public Boolean getCanEdit() {
+		return canEdit;
+	}
+
+	public void setCanEdit(Boolean canEdit) {
+		this.canEdit = canEdit;
 	}
 
 	@Override
@@ -192,20 +216,34 @@ public class JobHeader extends ApplicationObject implements Comparable<JobHeader
 		return this.jobNbr.compareTo(o.getJobNbr());
 	}
 
+	private void validateStateTransition(Quote quote, List<UserPermission> permissionList) throws NotAllowedException {
+		if ( quote.getProposalDate() == null ) {
+			AppUtils.checkPermission(Permission.QUOTE_CREATE, permissionList);
+		} else {
+			AppUtils.checkPermission(Permission.QUOTE_UPDATE, permissionList);
+		}
+	}
+
+	public static String getSql() {
+		return sql;
+	}
+
 	/**
 	 * Get basic job information for display on quote maintenance screen.
 	 * @param conn
 	 * @param quoteId
+	 * @param permissionList 
 	 * @return
 	 * @throws SQLException
 	 */
-	public static List<JobHeader> getJobHeaderList(Connection conn, Integer quoteId) throws Exception {
+	public static List<JobHeader> getJobHeaderList(Connection conn, Quote quote, List<UserPermission> permissionList) throws Exception {
+		Integer quoteId = quote.getQuoteId();
 		List<JobHeader> jobHeaderList = new ArrayList<JobHeader>();
 		PreparedStatement ps = conn.prepareStatement(sql);
 		ps.setInt(1, quoteId);
 		ResultSet rs = ps.executeQuery();
 		while (rs.next()) {
-			jobHeaderList.add(new JobHeader(rs));
+			jobHeaderList.add(new JobHeader(rs, quote, permissionList));
 		}
 		rs.close();
 		return jobHeaderList;

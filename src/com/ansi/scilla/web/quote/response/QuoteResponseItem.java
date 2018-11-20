@@ -47,15 +47,15 @@ public class QuoteResponseItem extends MessageResponse {
 	private Boolean canAddJob;
 
 	
-	public QuoteResponseItem(Connection conn, Quote quote, Boolean canEdit) throws Exception {
-		super();
-		makeQuoteDetail(conn, quote);
-		this.canEdit = canEdit;
-	}
+//	public QuoteResponseItem(Connection conn, Quote quote, Boolean canEdit) throws Exception {
+//		super();
+//		makeQuoteDetail(conn, quote);
+//		this.canEdit = canEdit;
+//	}
 	
 	public QuoteResponseItem(Connection conn, Quote quote, List<UserPermission> permissionList) throws Exception {
 		super();
-		makeQuoteDetail(conn, quote);
+		makeQuoteDetail(conn, quote, permissionList);
 		this.canEdit = makeEditFlag(permissionList);
 		this.canAddJob = this.canEdit;
 		if ( this.quote.getProposalDate() != null ) {
@@ -63,7 +63,7 @@ public class QuoteResponseItem extends MessageResponse {
 		}
 	}
 	
-	private void makeQuoteDetail(Connection conn, Quote quote) throws Exception {
+	private void makeQuoteDetail(Connection conn, Quote quote, List<UserPermission> permissionList) throws Exception {
 		Logger logger = LogManager.getLogger(this.getClass());
 		logger.log(Level.DEBUG, "Making a detail");
 		PropertyUtils.copyProperties(this, quote);
@@ -98,7 +98,7 @@ public class QuoteResponseItem extends MessageResponse {
 		this.quote = new QuoteDetail(quote, manager, division, printCount, job);
 		
 		this.jobContact = JobContact.getQuoteContact(conn, quote.getQuoteId());
-		this.jobHeaderList = JobHeader.getJobHeaderList(conn, quote.getQuoteId());	
+		this.jobHeaderList = JobHeader.getJobHeaderList(conn, quote, permissionList);	
 		if ( this.jobHeaderList.size() == 1 ) {
 			this.jobHeaderList.get(0).setCanDelete(false); // don't delete the only job you've got
 		}

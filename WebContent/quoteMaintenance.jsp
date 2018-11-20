@@ -1426,7 +1426,9 @@
 		            		$panelButtonContainer = $("<div>");
 		            		$panelButtonContainer.attr("class","panel-button-container");
 		            		$panelButtonContainer.attr("data-jobid",$value.jobId);
-		            		$panelButtonContainer.append('<quote:editJobMenu />');
+		            		if ( $value.canEdit == true ) {
+		            			$panelButtonContainer.append('<quote:editJobMenu />');
+		            		}
 							if ( $value.canActivate == true ) {
 								$panelButtonContainer.append('<webthing:activate styleClass="activate-this-job">Activate</webthing:activate>');
 							}
