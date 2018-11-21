@@ -1031,7 +1031,9 @@
 							
 							$detailSelector = "#job" + $jobId + " .job-data-row .job-detail-display";
 							if ( ! $($detailSelector).length ) {
-								QUOTEMAINTENANCE.getJobPanel($jobId);								
+								QUOTEMAINTENANCE.getJobPanel($jobId);
+								$selector = "#job" + $jobId + " .panel-button-container";
+								$($selector).show();
 							}
 							
 							console.log("Scrolling");
@@ -1441,16 +1443,7 @@
 							if ( $value.canSchedule == true ) {
 								$panelButtonContainer.append('<webthing:schedule styleClass="schedule-this-job">Schedule</webthing:schedule>');
 							}
-		            		//$panelButtonContainer.append('<webthing:edit styleClass="edit-this-job edit-this-panel">Edit</webthing:edit>');
-		            		//$panelButtonContainer.append('<webthing:save styleClass="save-job">Save</webthing:save>');
-            				//$panelButtonContainer.append('<webthing:ban styleClass="cancel-job-edit">Cancel</webthing:ban>');
 		            		$jobHeader.append($panelButtonContainer);
-		            		
-		            		//<div class="panel-button-container">
-			    			//<webthing:edit styleId="edit-this-quote" styleClass="edit-this-panel">Edit</webthing:edit>
-			    			//<webthing:save styleClass="save-quote">Save</webthing:save>
-			    			//<webthing:ban styleClass="cancel-edit">Cancel</webthing:ban>	    			
-			    			//</div>
 		            		
 		            		
 		            		$jobHider = $("<div>");
@@ -2331,6 +2324,7 @@
 				background-color:#e5e5e5; 
 				border:solid 1px #404040; 
 				text-align:center;
+				display:none;
 			}
 			.quote-button {
 				margin-top:2px;
