@@ -62,8 +62,8 @@ public class JoshuaServletTester extends TestServlet {
 		
 		
 //		String results = testListOfAllPermission(sessionCookie);
-//		String results = testListOfGroupPermission(sessionCookie);
-		String results = testChangePermissionsForGroup(sessionCookie);
+		String results = testListOfGroupPermission(sessionCookie);
+//		String results = testChangePermissionsForGroup(sessionCookie);
 		
 		super.doLogoff(sessionCookie);
 		
@@ -93,7 +93,7 @@ public class JoshuaServletTester extends TestServlet {
 	 * @throws Exception
 	 */
 	private String testListOfGroupPermission(Header sessionCookie) throws Exception {
-		String url = "/ansi_web/permission/999999999";
+		String url = "/ansi_web/permission/2196";
 		String results = super.doGet(sessionCookie, url, (HashMap<String,String>)null);
 		return results;
 	}
@@ -104,9 +104,9 @@ public class JoshuaServletTester extends TestServlet {
 		String url = "/ansi_web/permission/2196";
 		
 		PermissionRequest request = new PermissionRequest();
-		//request.setPermissionName(Permission.CONTACT_WRITE.name());
-		request.setPermissionName("xxx");
-		request.setPermissionIsActive(false);
+		request.setPermissionName(Permission.CONTACT_WRITE.name());
+		//request.setPermissionName("xxx");
+		request.setPermissionIsActive(true);
 		String json = AppUtils.object2json(request);
 		logger.log(Level.DEBUG,  json);
 		String results = super.doPost(sessionCookie, url, json);

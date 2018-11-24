@@ -2,7 +2,9 @@ package com.ansi.scilla.web.permission.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -387,6 +389,31 @@ public class PermissionServlet extends AbstractServlet {
 		 * 		pgl.insertWithNoKey(conn);  
 		 * }
 		 */
+		
+		Permission reqPermission = Permission.valueOf(permRequest.getPermissionName());
+		
+		List<Permission> functionalAreaList = reqPermission.makeFunctionalAreaList();
+		String bindVar = ""; //AppUtils.makeBindVariables(functionalAreaList);
+		String sql = "delete from permission_group_level where permission_group_id = ? and permission_name in " + bindVar;
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, permGroupId);
+		for(int n = 0; n < functionalAreaList.size(); n++) {
+			ps.setString(n + 2, functionalAreaList.get(n).name());
+		}
+		ps.executeUpdate();
+		if(permRequest.isPermissionIsActive() == true) {
+			PermissionGroupLevel pgl = new PermissionGroupLevel();
+			pgl.setAddedBy(sessionUser.getUserId());
+			//pgl.setAddedDate(Calendar.getInstance());
+			pgl.setPermissionGroupId(permGroupId);
+			//pgl.setPermissionLevel();
+			pgl.setPermissionName(permRequest.getPermissionName());
+			pgl.setUpdatedBy(sessionUser.getUserId());
+			//pgl.setUpdatedDate(Calendar.getInstance());
+			//pgl.setUseSystemDate(true);
+			pgl.insertWithNoKey(conn);
+			
+		}
 
 	}
 	
