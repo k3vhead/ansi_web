@@ -367,33 +367,10 @@ public class PermissionServlet extends AbstractServlet {
 	}
 
 	protected void doUpdate (Connection conn, Integer permGroupId, PermissionRequest permRequest, SessionUser sessionUser) throws Exception {
-		/*
-		 * Basic logic for the update:
-		 * // this turns the string into a permission enum object
-		 * Permission requestedPermission = Permission.valueOf(permRequest.getPermissionName()); 
-		 * // this gets the list of all permissions in the functional area
-		 * List<Permission> functionalAreaList = Permission.getFunctionalArea(requestedPermission);
-		 * // delete everything in the functiona area
-		 * String bindvariables = AppUtils.makeBindVariables(funcationAreaList);
-		 * String sql = "delete from  permission_group_level where permission_group_id=? and permission_name in " + bindvariables;
-		 * PreparedSTatement ps = conn.prepareSTatement(sql);
-		 * ps.setInt(1, permissionGroupId);
-		 * for ( int n = 0; n < functionalAreaList.size(); n++ ) {
-		 *     ps.setString(n+2,funcationAreaList.get(n).getName())
-		 * }
-		 * ps.executeUpdate();
-		 * // if this is an "add", put the requested permission into the system
-		 * if ( permRequest active is true ) {
-		 * 		PermissionGroupLevel pgl = new PermissionGroupLevel();
-		 * 		pgl.set values from input
-		 * 		pgl.insertWithNoKey(conn);  
-		 * }
-		 */
-		
 		Permission reqPermission = Permission.valueOf(permRequest.getPermissionName());
 		
 		List<Permission> functionalAreaList = reqPermission.makeFunctionalAreaList();
-		String bindVar = ""; //AppUtils.makeBindVariables(functionalAreaList);
+		String bindVar = AppUtils.makeBindVariables(functionalAreaList);
 		String sql = "delete from permission_group_level where permission_group_id = ? and permission_name in " + bindVar;
 		PreparedStatement ps = conn.prepareStatement(sql);
 		ps.setInt(1, permGroupId);
@@ -406,7 +383,7 @@ public class PermissionServlet extends AbstractServlet {
 			pgl.setAddedBy(sessionUser.getUserId());
 			//pgl.setAddedDate(Calendar.getInstance());
 			pgl.setPermissionGroupId(permGroupId);
-			//pgl.setPermissionLevel();
+			pgl.setPermissionLevel(1);
 			pgl.setPermissionName(permRequest.getPermissionName());
 			pgl.setUpdatedBy(sessionUser.getUserId());
 			//pgl.setUpdatedDate(Calendar.getInstance());

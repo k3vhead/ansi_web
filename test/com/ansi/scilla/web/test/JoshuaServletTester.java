@@ -106,7 +106,7 @@ public class JoshuaServletTester extends TestServlet {
 		PermissionRequest request = new PermissionRequest();
 		request.setPermissionName(Permission.CONTACT_WRITE.name());
 		//request.setPermissionName("xxx");
-		request.setPermissionIsActive(true);
+		request.setPermissionIsActive(false);
 		String json = AppUtils.object2json(request);
 		logger.log(Level.DEBUG,  json);
 		String results = super.doPost(sessionCookie, url, json);
