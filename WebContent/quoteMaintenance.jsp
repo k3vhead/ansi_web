@@ -2007,16 +2007,37 @@
 					saveJobSuccess : function($data) {
 						console.log("Job success");
 						console.log($data);
+						$('#job-edit-modal input').bind("focus", function() {
+							$(this).removeClass("edit-err");
+						});
+						$('#job-edit-modal select').bind("focus", function() {
+							$(this).removeClass("edit-err");
+						});
 						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-							console.log($data);
-							$.each($data.data.webMessages, function(index, val) {							    
-							    // it's too much work to figure out if the field is input or select, so do both
-							    $selector = "#quotePanel select[name='"+ index +"']";							    
-							    $($selector).addClass("edit-err");
-							    $selector = "#quotePanel input[name='"+ index +"']";							    
-							    $($selector).addClass("edit-err");
+							$.each($data.data.webMessages, function(index, val) {	
+								// index matches up with attr data-apiname in the form
+								// loop through the input/selects and apply a class to the input
+								$.each( $("#job-edit-modal input"), function(fieldIdx, fieldVal) {
+									var $apiName = $(fieldVal).attr("data-apiname");
+									console.log($apiName);
+									if ( index == $apiName ) {
+										var $fieldName = $(fieldVal).attr("name");
+										var $selector = "#job-edit-modal input[name='"+ $fieldName +"']";
+										console.log("This is a bad field: " + $selector );
+										$($selector).addClass("edit-err");
+									}
+								});
+								$.each( $("#job-edit-modal select"), function(fieldIdx, fieldVal) {
+									var $apiName = $(fieldVal).attr("data-apiname");
+									console.log($apiName);
+									if ( index == $apiName ) {
+										var $fieldName = $(fieldVal).attr("name");
+										var $selector = "#job-edit-modal select[name='"+ $fieldName +"']";
+										console.log("This is a bad field: " + $selector );
+										$($selector).addClass("edit-err");
+									}
+								});
 							});
-							alert("Invalid input. Correct the indicated fields and resubmit");
 						} else {
 							console.log("Update header success:");
 							console.log($data);
@@ -2293,7 +2314,10 @@
 			.ansi-contact-method-is-email { display:none; }
 			.edit-modal { display:none; }
 			.edit-this-panel { display:none; }
-			.edit-err { border:solid 1px #FF0000; }
+			.edit-err { 
+				background-color:#FF0000; 
+				opacity:0.20;
+			}
         	.job-data-row { display:none; }
 			.jobTitleRow {
 				background-color:#404040; 
