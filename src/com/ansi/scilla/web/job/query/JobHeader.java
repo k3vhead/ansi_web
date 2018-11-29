@@ -7,6 +7,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.jobticket.JobFrequency;
@@ -57,6 +61,7 @@ public class JobHeader extends ApplicationObject implements Comparable<JobHeader
 
 	
 	private JobHeader(ResultSet rs, Quote quote, List<UserPermission> permissionList) throws Exception {
+		Logger logger = LogManager.getLogger(this.getClass());
 		this.jobId = rs.getInt("job_id");
 		this.jobNbr = rs.getInt("job_nbr");
 		String description = rs.getString("service_description");
@@ -70,9 +75,10 @@ public class JobHeader extends ApplicationObject implements Comparable<JobHeader
 		
 		try {
 			validateStateTransition(quote, permissionList);
-			this.canDelete = this.jobStatus.equals(JobStatus.NEW.code());
-			this.canActivate = this.jobStatus.equals(JobStatus.PROPOSED.code());
-			this.canCancel = this.jobStatus.equals(JobStatus.ACTIVE.code());
+			logger.log(Level.DEBUG, "User has permission to change job");
+			this.canDelete = JobUtils.canDeleteJob(this.jobStatus);
+			this.canActivate = JobUtils.canActivateJob(this.jobStatus);
+			this.canCancel = JobUtils.canCancelJob(this.jobStatus);
 			this.canEdit = true;
 			
 			JobStatus jobStatus = JobStatus.lookup(this.jobStatus);
@@ -89,6 +95,7 @@ public class JobHeader extends ApplicationObject implements Comparable<JobHeader
 				this.canSchedule = false;
 			}
 		} catch ( NotAllowedException e) {
+			logger.log(Level.DEBUG, "User does not have permission to change job");
 			this.canDelete = false;
 			this.canActivate = false;
 			this.canCancel = false;
