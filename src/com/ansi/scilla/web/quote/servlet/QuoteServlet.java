@@ -5,7 +5,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -19,10 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
-import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Job;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.common.quote.QuoteUtils;
@@ -347,7 +344,9 @@ public class QuoteServlet extends AbstractServlet {
 			try {
 				logger.log(Level.DEBUG, "Trying to do update for quote "+key.getQuoteId());
 				quote = doQuoteUpdate(conn, key, quoteRequest, sessionUser, keyset);
-				doJobUpdate(conn, quoteId, quoteRequest, sessionUser, keyset);
+				if ( quoteRequest.hasJobUpdates() ) {
+					doJobUpdate(conn, quoteId, quoteRequest, sessionUser, keyset);
+				}
 				String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 				responseCode = ResponseCode.SUCCESS;
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);

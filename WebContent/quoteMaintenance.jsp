@@ -596,7 +596,9 @@
 										QUOTEMAINTENANCE.quote = $data.data.quoteList[0];
 										QUOTEMAINTENANCE.populateQuotePanels($data.data);	
 										if ( QUOTEMAINTENANCE.quote.canEdit == true ) {
-											$(".edit-this-panel").show();
+											$("#edit-this-address").show();
+											$(".quote-button-container").show();
+											$("#edit-this-quote").show();
 										} 
 										if ( QUOTEMAINTENANCE.quote.canAddJob == true ) {
 											$("#new-job-button").show();
@@ -1254,12 +1256,12 @@
 		    				$("#quotePanel input").prop("disabled", false);
 		    				$("#quotePanel select").prop("disabled", false);
 		    				$("#edit-this-quote").hide();
-		    				$("#quote-container .panel-button-container .save-quote").show();
-		    				$("#quote-container .panel-button-container .cancel-edit").show();
+		    				$("#quote-container .quote-button-container .save-quote").show();
+		    				$("#quote-container .quote-button-container .cancel-edit").show();
 		    			});
 		    			
 		    			
-		    			$("#quote-container .panel-button-container .cancel-edit").click(function($event) {
+		    			$("#quote-container .quote-button-container .cancel-edit").click(function($event) {
 		    				console.log("Cancel Editing a quote");
 		    				QUOTEMAINTENANCE.populateQuotePanel(QUOTEMAINTENANCE.quote);
 		    				$("#quotePanel input").prop("disabled", true);
@@ -1267,12 +1269,12 @@
 		    				$("#quotePanel select").removeClass("edit-err");
 						    $("#quotePanel input").removeClass("edit-err");
 		    				$("#edit-this-quote").show();
-		    				$("#quote-container .panel-button-container .save-quote").hide();
-		    				$("#quote-container .panel-button-container .cancel-edit").hide();
+		    				$("#quote-container .quote-button-container .save-quote").hide();
+		    				$("#quote-container .quote-button-container .cancel-edit").hide();
 		    			});
 		    			
 		    			
-		    			$("#quote-container .panel-button-container .save-quote").click(function($event) {
+		    			$("#quote-container .quote-button-container .save-quote").click(function($event) {
 		    				console.log("Saving quote header");
 		    				QUOTEMAINTENANCE.saveQuoteHeader();
 		    			});
@@ -2087,8 +2089,8 @@
 	    				$("#quotePanel select").removeClass("edit-err");
 					    $("#quotePanel input").removeClass("edit-err");
 	    				$("#edit-this-quote").show();
-	    				$("#quote-container .panel-button-container .save-quote").hide();
-	    				$("#quote-container .panel-button-container .cancel-edit").hide();
+	    				$("#quote-container .quote-button-container .save-quote").hide();
+	    				$("#quote-container .quote-button-container .cancel-edit").hide();
 					},
 					
 					
@@ -2114,8 +2116,8 @@
 						    $("#quotePanel select").removeClass("edit-err");
 						    $("#quotePanel input").removeClass("edit-err");
 		    				$("#edit-this-quote").show();
-		    				$("#quote-container .panel-button-container .save-quote").hide();
-		    				$("#quote-container .panel-button-container .cancel-edit").hide();
+		    				$("#quote-container .quote-button-container .save-quote").hide();
+		    				$("#quote-container .quote-button-container .cancel-edit").hide();
 						}
 						
 						
@@ -2282,11 +2284,11 @@
 			}
 			
 			
-			#quote-container .panel-button-container .save-quote {
+			#quote-container .quote-button-container .save-quote {
 				display:none;
 				cursor:pointer;
 			}
-	    	#quote-container .panel-button-container .cancel-edit {
+	    	#quote-container .quote-button-container .cancel-edit {
 				display:none;
 				cursor:pointer;
 			}		
@@ -2299,6 +2301,14 @@
         	.action-button {
         		cursor:pointer;
         	}
+        	.address-button-container {
+				float:right; 
+				margin-right:8px;
+				width:6%; 
+				background-color:#e5e5e5; 
+				border:solid 1px #404040; 
+				text-align:center;
+			}
         	.ansi-address-container {
         		width:90%;
         	}
@@ -2356,6 +2366,16 @@
 				padding-top:2px;
 				padding-bottom:2px;
 			}
+			.quote-button-container {
+				float:right; 
+				margin-right:8px;
+				width:6%; 
+				background-color:#e5e5e5; 
+				border:solid 1px #404040; 
+				text-align:center;
+				display:none;
+			}
+			
 			.spacer {
 				font-size:1px;
 				clear:both;
@@ -2397,7 +2417,7 @@
 	    	</div>
 	    	<div id="address-container">
 		    	<div style="color:#FFFFFF; background-color:#404040; cursor:pointer; width:1269px; margin-bottom:1px;">
-		    		<div class="panel-button-container">
+		    		<div class="address-button-container">
 		    			<%-- <webthing:edit styleId="edit-this-address" styleClass="edit-this-panel">Edit</webthing:edit> --%>
 		    			<quote:editAddressMenu styleId="edit-this-address" styleClass="edit-this-panel" />
 		    		</div>
@@ -2427,8 +2447,10 @@
 		    		<div class="spacer">&nbsp;</div>
 		    	</div>
 	    	</div>  <!-- Address container -->
+	    	
+	    	
 	    	<div id="quote-container" style="width:1260px; clear:left; margin-top:12px;">
-	    		<div class="panel-button-container">
+	    		<div class="quote-button-container">
 	    			<webthing:edit styleId="edit-this-quote" styleClass="edit-this-panel">Edit</webthing:edit>
 	    			<webthing:save styleClass="save-quote">Save</webthing:save>
 	    			<webthing:ban styleClass="cancel-edit">Cancel</webthing:ban>	    			
@@ -2447,10 +2469,12 @@
 		    		<div class="spacer">&nbsp;</div>
 		    	</div> 
 	    	</div>  <!--  quote container -->
+	    	
+	    	
 	    	<div id="job-list-container" style="width:1260px; clear:both; margin-top:12px;">
 	    		<ul id="jobList" class="sortable" style="width:100%;">	    			
 	    		</ul>
-	    	</div>
+	    	</div> <!--  job list container -->
 	    </div>
 	    <div class="spacer">&nbsp;</div>
 	    

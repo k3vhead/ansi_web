@@ -2,6 +2,7 @@ package com.ansi.scilla.web.quote.request;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Date;
 
 import com.ansi.scilla.web.common.request.AbstractRequest;
@@ -275,6 +276,7 @@ import com.thewebthing.commons.lang.JsonException;
 //		@RequiredForAdd
 //		@RequiredForUpdate
 		@JsonProperty("invoiceTerms")
+		@JobUpdateField
 		public String getPaymentTerms() {
 			return this.paymentTerms;
 		}
@@ -372,7 +374,7 @@ import com.thewebthing.commons.lang.JsonException;
 		public Integer getTemplateId() {
 			return this.templateId;
 		}
-
+		@JobUpdateField
 		public Boolean getTaxExempt() {
 			return taxExempt;
 		}
@@ -380,7 +382,7 @@ import com.thewebthing.commons.lang.JsonException;
 		public void setTaxExempt(Boolean taxExempt) {
 			this.taxExempt = taxExempt;
 		}
-
+		@JobUpdateField
 		public String getTaxExemptReason() {
 			return taxExemptReason;
 		}
@@ -388,7 +390,7 @@ import com.thewebthing.commons.lang.JsonException;
 		public void setTaxExemptReason(String taxExemptReason) {
 			this.taxExemptReason = taxExemptReason;
 		}
-
+		@JobUpdateField
 		public Boolean getInvoiceBatch() {
 			return invoiceBatch;
 		}
@@ -396,7 +398,7 @@ import com.thewebthing.commons.lang.JsonException;
 		public void setInvoiceBatch(Boolean invoiceBatch) {
 			this.invoiceBatch = invoiceBatch;
 		}
-
+		@JobUpdateField
 		public String getInvoiceStyle() {
 			return invoiceStyle;
 		}
@@ -412,13 +414,37 @@ import com.thewebthing.commons.lang.JsonException;
 		public void setBuildingType(String buildingType) {
 			this.buildingType = buildingType;
 		}
-
+		@JobUpdateField
 		public String getInvoiceGrouping() {
 			return invoiceGrouping;
 		}
 
 		public void setInvoiceGrouping(String invoiceGrouping) {
 			this.invoiceGrouping = invoiceGrouping;
+		}
+
+		/**
+		 * Loop through methods defined in this class. If the getter is annotated with @JobUpdateField
+		 * and if the method returns a non-null value, this quote request contains values that need
+		 * to go into the job table
+		 * 
+		 * @return
+		 * @throws IllegalAccessException
+		 * @throws IllegalArgumentException
+		 * @throws InvocationTargetException
+		 */
+		public boolean hasJobUpdates() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+			boolean hasJobUpdate = false;
+			for ( Method method : this.getClass().getMethods() ) {
+				if ( method.getAnnotation(JobUpdateField.class) != null ) {
+					Object returnValue = method.invoke(this, (Object[])null);
+					if ( returnValue != null ) {
+						hasJobUpdate = true;
+					}
+				}
+			}
+			
+			return hasJobUpdate;
 		}
 
 		
