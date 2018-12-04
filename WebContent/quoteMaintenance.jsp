@@ -283,8 +283,6 @@
 							data: JSON.stringify($outbound),
 							statusCode: {
 								200:function($data) {
-									QUOTEMAINTENANCE.populateJobHeader($data.data.jobHeaderList)
-									QUOTEMAINTENANCE.makeJobExpansion();
 									$successCallback($data);
 								},
 								403: function($data) {	
@@ -744,6 +742,8 @@
 								{
 									id: "job-edit-cancel-button",
 									click: function($event) {
+										$( "#job-edit-modal input").removeClass("edit-err");
+										$( "#job-edit-modal select").removeClass("edit-err");
 										$( "#job-edit-modal" ).dialog("close");
 									}
 								},
@@ -2007,6 +2007,9 @@
 					
 					
 					saveJobSuccess : function($data) {
+						//QUOTEMAINTENANCE.populateJobHeader($data.data.jobHeaderList)
+						//QUOTEMAINTENANCE.makeJobExpansion();
+						
 						console.log("Job success");
 						console.log($data);
 						$('#job-edit-modal input').bind("focus", function() {
@@ -2021,21 +2024,17 @@
 								// loop through the input/selects and apply a class to the input
 								$.each( $("#job-edit-modal input"), function(fieldIdx, fieldVal) {
 									var $apiName = $(fieldVal).attr("data-apiname");
-									console.log($apiName);
 									if ( index == $apiName ) {
 										var $fieldName = $(fieldVal).attr("name");
 										var $selector = "#job-edit-modal input[name='"+ $fieldName +"']";
-										console.log("This is a bad field: " + $selector );
 										$($selector).addClass("edit-err");
 									}
 								});
 								$.each( $("#job-edit-modal select"), function(fieldIdx, fieldVal) {
 									var $apiName = $(fieldVal).attr("data-apiname");
-									console.log($apiName);
 									if ( index == $apiName ) {
 										var $fieldName = $(fieldVal).attr("name");
 										var $selector = "#job-edit-modal select[name='"+ $fieldName +"']";
-										console.log("This is a bad field: " + $selector );
 										$($selector).addClass("edit-err");
 									}
 								});
