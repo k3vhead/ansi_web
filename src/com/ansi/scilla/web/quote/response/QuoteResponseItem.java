@@ -45,6 +45,7 @@ public class QuoteResponseItem extends MessageResponse {
 	private ContactItem signedBy;
 	private Boolean canEdit;
 	private Boolean canAddJob;
+	private Boolean canPropose;
 
 	
 //	public QuoteResponseItem(Connection conn, Quote quote, Boolean canEdit) throws Exception {
@@ -61,6 +62,7 @@ public class QuoteResponseItem extends MessageResponse {
 		if ( this.quote.getProposalDate() != null ) {
 			this.canAddJob = false;
 		}
+		this.canPropose = makeProposeFlag(permissionList);
 	}
 	
 	private void makeQuoteDetail(Connection conn, Quote quote, List<UserPermission> permissionList) throws Exception {
@@ -165,6 +167,14 @@ public class QuoteResponseItem extends MessageResponse {
 		this.canAddJob = canAddJob;
 	}
 
+	public Boolean getCanPropose() {
+		return canPropose;
+	}
+
+	public void setCanPropose(Boolean canPropose) {
+		this.canPropose = canPropose;
+	}
+
 	public ContactItem getSignedBy() {
 		return signedBy;
 	}
@@ -198,6 +208,18 @@ public class QuoteResponseItem extends MessageResponse {
 		return canEdit;
 	}
 
+
+	private Boolean makeProposeFlag(List<UserPermission> permissionList) {
+		Boolean canPropose = false;
+		if ( this.quote.getProposalDate() == null ) {
+			if ( hasPermission(permissionList, Permission.QUOTE_PROPOSE) ) {
+				if ( this.jobHeaderList.size() > 0 ) {
+					canPropose = true;
+				}
+			}
+		}
+		return canPropose;
+	}
 
 	private void makeSignedBy(Connection conn, Integer signedByContactId) throws Exception {
 		Contact contact = new Contact();

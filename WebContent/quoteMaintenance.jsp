@@ -603,6 +603,11 @@
 										} else {
 											$("#new-job-button").hide();
 										}
+										if ( QUOTEMAINTENANCE.quote.canPropose == true ) {
+											$("#propose-button").show();
+										} else {
+											$("#propose-button").hide();
+										}
 									},					
 									403: function($data) {
 										$("#globalMsg").html("Session Expired. Log In and try again").show();
