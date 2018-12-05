@@ -57,6 +57,7 @@
 					
 					
 					init : function() {
+						console.log("init");
 						QUOTEMAINTENANCE.makeProgressbar();
 						QUOTEMAINTENANCE.init_modal();
 						QUOTEMAINTENANCE.makeAutoComplete();
@@ -77,6 +78,7 @@
 					
 					
 					activateJob : function() {
+						console.log("activateJob");
 						var $outbound = {};
 						$jobId = $("#job-activate-modal").attr("jobid");
 						$outbound["jobId"] = $jobId;
@@ -91,6 +93,7 @@
 					
 					
 					activateJobErr : function($statusCode) {
+						console.log("activateJobErr");
 						var $messages = {
 								403:"Session Expired. Log in and try again",
 								404:"System Error Activate 404. Contact Support",
@@ -103,6 +106,7 @@
 					
 					
 					activateJobSuccess : function($data) {
+						console.log("activateJobSuccess");
 						console.log($data);
 						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {	
 							$.each($data.data.webMessages, function($index, $val) {
@@ -126,6 +130,7 @@
 					
 					
 					cancelJob : function() {
+						console.log("cancelJob");
 						var $outbound = {};
 						$jobId = $("#job-cancel-modal").attr("jobid");
 						$outbound["jobId"] = $jobId;
@@ -140,6 +145,7 @@
 					
 					
 					cancelJobErr : function($statusCode) {
+						console.log("cancelJobErr");
 						var $messages = {
 								403:"Session Expired. Log in and try again",
 								404:"System Error Activate 404. Contact Support",
@@ -152,6 +158,7 @@
 					
 					
 					cancelJobSuccess : function($data) {
+						console.log("cancelJobSuccess");
 						console.log($data);
 						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {	
 							$.each($data.data.webMessages, function($index, $val) {								
@@ -202,6 +209,7 @@
 	            	
 	            	
 	            	deleteJob : function() {
+	            		console.log("deleteJob");
 						var $outbound = {};
 						$jobId = $("#job-delete-modal").attr("jobid");
 						$outbound["jobId"] = $jobId;
@@ -212,6 +220,7 @@
 					
 					
 					deleteJobErr : function($statusCode) {
+						console.log("deleteJobErr");
 						var $messages = {
 								403:"Session Expired. Log in and try again",
 								404:"System Error Activate 404. Contact Support",
@@ -224,6 +233,7 @@
 					
 					
 					deleteJobSuccess : function($data) {
+						console.log("deleteJobSuccess");
 						console.log($data);
 						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {	
 							$.each($data.data.webMessages, function($index, $val) {								
@@ -244,7 +254,7 @@
 	            	
 	            	
 	            	
-					doCopyQuote : function($quoteId) {
+					doCopyQuote : function($quoteId) {						
 						console.log("Making a copy of " + $quoteId);	
 						var $url = "quote/copy/" + $quoteId;
 						var jqxhr = $.ajax({
@@ -274,6 +284,7 @@
 					
 					
 					doJobUpdate : function($jobId, $outbound, $successCallback, $errCallback) {
+						console.log("doJobUpdate");
 						var $url = "job/" + $jobId;
 						console.log($outbound);						
 						
@@ -330,6 +341,7 @@
 					
 					
 					doQuoteUpdate : function($quoteId, $data, $successCallback, $errCallback) {
+						console.log("doQuoteUpdate");
 						var $outbound = JSON.stringify($data);
 						var $url = "quote/" + $quoteId;
 						console.log($outbound);
@@ -467,6 +479,7 @@
 	    			
 	    			
 					getDivisionList: function($callback) {
+						console.log("getDivisionList");
 						var jqxhr3 = $.ajax({
 							type: 'GET',
 							url: 'division/list',
@@ -493,6 +506,7 @@
 					
 					
 					getJobPanel : function($jobId) {
+						console.log("getJobPanel");
 						var jqxhr1 = $.ajax({
 		    				type: 'GET',
 		    				url: "jobDisplay.html",
@@ -522,6 +536,7 @@
 					
 					
 					getJob : function($jobId, $html) {
+						console.log("getJob");
 						var $url = "job/" + $jobId;
 						var jqxhr1 = $.ajax({
 		    				type: 'GET',
@@ -553,6 +568,7 @@
 					
 					
 					getOptions : function($optionList, $callBack) {
+						console.log("getOptions");
 		    			var $returnValue = null;
 		    			var jqxhr1 = $.ajax({
 		    				type: 'GET',
@@ -582,6 +598,7 @@
 		            
 		            
 		            getQuote : function($quoteId) {
+		            	console.log("getQuote");
 						if ( $quoteId != null ) {
 							var $url = "quote/" + $quoteId
 							var jqxhr = $.ajax({
@@ -628,6 +645,7 @@
 
 					
 					getCodeList: function($tableName, $fieldName, $callback) {
+						console.log("getCodeList");
 						var $url = "code/" + $tableName;
 						if ( $fieldName != null ) {
 							$url = $url + "/" + $fieldName;
@@ -657,6 +675,7 @@
 					
 					
 					incrementProgress : function($label) {
+						console.log("incrementProgress");
 		            	var val = QUOTEMAINTENANCE.progressbar.progressbar("value") || 0;
 						QUOTEMAINTENANCE.progressbar.progressbar("value", val+1);
 						QUOTEMAINTENANCE.progressLabel.text( $label );
@@ -666,7 +685,8 @@
 		    		
 					
 					
-					init_modal : function() {						
+					init_modal : function() {
+						console.log("init_modal");
 						$( "#contact-edit-modal" ).dialog({
 							title:'Edit Contact',
 							autoOpen: false,
@@ -901,6 +921,7 @@
 					
 					
 					makeAutoComplete : function() {
+						console.log("makeAutoComplete");
 						QUOTEMAINTENANCE.makeAutoCompleteAddress();
 						QUOTEMAINTENANCE.makeAutoCompleteContact();
 						QUOTEMAINTENANCE.makeAutoCompleteSignedBy();
@@ -910,6 +931,7 @@
 					
 					
 					makeAutoCompleteAddress : function() {
+						console.log("makeAutoCompleteAddress");
 						var $selector = $("#address-edit-modal input[name='address-name']");						
 				    	
 						var $addressAutoComplete = $( $selector ).autocomplete({
@@ -933,6 +955,7 @@
 					
 					
 					makeAutoCompleteContact : function() {
+						console.log("makeAutoCompleteContact");
 						$selector = $("#contact-edit-modal input[name='contact-name']");
 						$( $selector ).autocomplete({
 							source:"contactTypeAhead?term=",
@@ -1796,7 +1819,8 @@
 					
 					
 					
-					saveAddress : function() {						
+					saveAddress : function() {	
+						console.log("saveAddress");
 						var $addressType = $("#address-edit-modal").data("type");
 						var $addressId = $("#address-edit-modal").data("id");
 						console.log("Saving an address: " + $addressType + " " + $addressId);
@@ -1806,8 +1830,17 @@
 								"jobsite":"jobSiteAddressId",
 								"billto":"billToAddressId"
 						}
-					
-						var $quoteId = QUOTEMAINTENANCE.quote.quote.quoteId;
+						console.log("QUOTEMAINTENANCE.quote");
+						console.log(QUOTEMAINTENANCE.quote);
+						console.log("QUOTEMAINTENANCE.quote.data");
+						console.log(QUOTEMAINTENANCE.quote.data);
+						console.log("QUOTEMAINTENANCE.quote.data.quote");
+						console.log(QUOTEMAINTENANCE.quote.data.quote);
+						console.log("QUOTEMAINTENANCE.quote.data.quote.quote");
+						console.log(QUOTEMAINTENANCE.quote.data.quote.quote);
+						console.log("QUOTEMAINTENANCE.quote.data.quote.quote.quoteId");
+						console.log(QUOTEMAINTENANCE.quote.data.quote.quote.quoteId);
+						var $quoteId = QUOTEMAINTENANCE.quote.data.quote.quote.quoteId;
 						var $addressLabel = $addressLabels[$addressType];
 						var $outbound = {};
 						$outbound["quoteId"]=$quoteId;
@@ -1884,6 +1917,9 @@
 					
 					
 					saveContactSuccess : function($data) {
+						console.log("save contact success");
+						console.log("QUOTEMAINTENANCE.quote");
+						console.log(QUOTEMAINTENANCE.quote);
 						console.log($data);
 						var $type = $("#contact-edit-modal").data("type");
 						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {							
@@ -1900,7 +1936,7 @@
 							}
 							$("#contact-edit-modal .errMsg").html($message).show().fadeOut(3000);
 						} else {
-							QUOTEMAINTENANCE.quote = $data.quote;
+							QUOTEMAINTENANCE.quote = $data; //.data.quote;
 							QUOTEMAINTENANCE.populateContactPanel( "#job-contact", $data.data.quote.jobContact.jobContact);
 							QUOTEMAINTENANCE.populateContactPanel( "#site-contact", $data.data.quote.jobContact.siteContact);
 							QUOTEMAINTENANCE.populateContactPanel( "#billing-contact", $data.data.quote.jobContact.billingContact);
@@ -2409,7 +2445,7 @@
  			    <ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:revise styleClass="fa-2x quote-button action-button" styleId="revise-button">Revise</webthing:revise></ansi:hasPermission>
     			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:copy styleClass="fa-2x quote-button action-button" styleId="copy-button">Copy</webthing:copy></ansi:hasPermission>
     			<ansi:hasPermission permissionRequired="QUOTE_READ"><a href="quoteLookup.html" style="text-decoration:none; color:#404040;"><webthing:view styleClass="fa-2x quote-button">Lookup</webthing:view></a></ansi:hasPermission>
-    			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:addNew styleClass="fa-2x quote-button action-button">New Quote</webthing:addNew></ansi:hasPermission>
+    			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><a href="quoteMaintenance.html"><webthing:addNew styleClass="fa-2x quote-button action-button" styleId="new-quote-button">New Quote</webthing:addNew></a></ansi:hasPermission>
     			<ansi:hasPermission permissionRequired="QUOTE_READ"><webthing:print styleClass="orange fa-2x quote-button action-button" styleId="preview-button">Preview</webthing:print></ansi:hasPermission>    			
     			<ansi:hasPermission permissionRequired="QUOTE_PROPOSE"><webthing:print styleClass="green fa-2x quote-button action-button" styleId="propose-button">Propose</webthing:print></ansi:hasPermission>
     			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:addNew styleClass="fa-2x quote-button action-button orange" styleId="new-job-button">New Job</webthing:addNew></ansi:hasPermission>    			
