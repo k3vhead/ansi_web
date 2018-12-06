@@ -118,9 +118,33 @@
 							});							
 						} else {
 							QUOTEMAINTENANCE.quote = $data.data.quote;
-							// call this:  populateJobPanel : function($jobId, $destination, $data
-							var $destination = "#job" + $data.data.job.jobId + " .job-data-row";
-							QUOTEMAINTENANCE.populateJobPanel($data.data.job.jobId, $destination, $data.data);
+							var $replacementJobHeader = null
+							$.each($data.data.jobHeaderList, function($index, $value) {
+								if ( $value.jobId == $data.data.job.jobId ) {
+									$replacementJobHeader = QUOTEMAINTENANCE.makeJobHeader(
+											$value.jobId, 
+											$value.jobNbr, 
+											$value.abbrDescription, 
+											$value.divisionNbr, 
+											$value.divisionCode, 
+											$value.jobStatus, 
+											$value.jobFrequency, 
+											$value.pricePerCleaning,
+											$value.canEdit,
+											$value.canActivate,
+											$value.canCancel,
+											$value.canDelete,
+											$value.canSchedule);
+								}
+							});
+							// header
+							var $headerDestination = "#job" + $data.data.job.jobId + " .jobTitleRow";
+							$($headerDestination).html("");
+							$($headerDestination).append($replacementJobHeader);
+							QUOTEMAINTENANCE.makeJobClickers();
+							// detail
+							var $dataDestination = "#job" + $data.data.job.jobId + " .job-data-row";
+							QUOTEMAINTENANCE.populateJobPanel($data.data.job.jobId, $dataDestination, $data.data);
 							$("#job-activate-modal").dialog("close");
 							$("#globalMsg").html("Job Activated").show().fadeOut(3000);
 						}
@@ -1048,6 +1072,46 @@
 					},
 					
 					
+					
+					
+					
+					makeJobClickers : function() {
+						$(".edit-this-job").click(function($event) {
+		            		//var $jobId = this.parentElement.attributes['data-jobid'].value;
+		            		var $jobId = $(this).closest("div.panel-button-container")[0].attributes['data-jobid'].value;
+		            		var $type = $(this).attr("data-type");
+		            		QUOTEMAINTENANCE.editThisJob($jobId, $type);
+		            	});
+		            	
+		            	$(".cancel-this-job").click(function($event) {
+		            		//var $jobId = this.parentElement.attributes['data-jobid'].value;
+		            		var $jobId = $(this).closest("div.panel-button-container")[0].attributes['data-jobid'].value;
+		            		QUOTEMAINTENANCE.cancelThisJob($jobId);
+		            	});
+		            	
+		            	$(".activate-this-job").click(function($event) {
+		            		//var $jobId = this.parentElement.attributes['data-jobid'].value;
+		            		var $jobId = $(this).closest("div.panel-button-container")[0].attributes['data-jobid'].value;
+		            		QUOTEMAINTENANCE.activateThisJob($jobId);
+		            	});
+		            	$(".delete-this-job").click(function($event) {
+		            		//var $jobId = this.parentElement.attributes['data-jobid'].value;
+		            		var $jobId = $(this).closest("div.panel-button-container")[0].attributes['data-jobid'].value;
+		            		QUOTEMAINTENANCE.deleteThisJob($jobId);
+		            	});
+		            	$(".cancel-job-edit").click(function($event) {
+		            		var $jobId = this.parentElement.attributes['data-jobid'].value;
+		            		QUOTEMAINTENANCE.cancelThisJobEdit($jobId);
+		            	});
+		            	$(".schedule-this-job").click(function($event) {
+		            		var $jobId = this.parentElement.attributes['data-jobid'].value;
+		            		QUOTEMAINTENANCE.scheduleThisJob($jobId);
+		            	});
+					},
+					
+					
+					
+					
 					makeJobExpansion : function() {
 						$(".job-hider").click(function($event) {
 							var $jobId = $(this).data("jobid");
@@ -1075,7 +1139,119 @@
 					
 					
 					
-					makeJobSort : function() {
+		            makeJobHeader : function(
+								$jobId, 
+								$jobNbr, 
+								$abbrDescription, 
+								$divisionNbr, 
+								$divisionCode, 
+								$jobStatus, 
+								$jobFrequency, 
+								$pricePerCleaning,
+								$canEdit,
+								$canActivate,
+								$canCancel,
+								$canDelete,
+								$canSchedule) {
+		            	$jobHeader = $("<div>");
+	            		$jobHeader.attr("data-jobid", $jobId);
+	            		$jobHeader.attr("class","jobTitleRow");
+	            		
+
+	            		
+	            		$panelButtonContainer = $("<div>");
+	            		$panelButtonContainer.attr("class","panel-button-container");
+	            		$panelButtonContainer.attr("data-jobid",$jobId);
+	            		if ( $canEdit == true ) {
+	            			$panelButtonContainer.append('<quote:editJobMenu />');
+	            		}
+						if ( $canActivate == true ) {
+							$panelButtonContainer.append('<webthing:activate styleClass="activate-this-job">Activate</webthing:activate>');
+						}
+						if ( $canCancel == true ) {
+							$panelButtonContainer.append('<webthing:ban styleClass="cancel-this-job">Cancel</webthing:ban>');
+						}
+						if ( $canDelete == true ) {
+							$panelButtonContainer.append('<webthing:delete styleClass="delete-this-job">Delete</webthing:delete>');
+						}
+						if ( $canSchedule == true ) {
+							$panelButtonContainer.append('<webthing:schedule styleClass="schedule-this-job">Schedule</webthing:schedule>');
+						}
+	            		$jobHeader.append($panelButtonContainer);
+	            		
+	            		
+	            		$jobHider = $("<div>");
+	            		$jobHider.attr("data-jobid", $jobId);
+	            		$jobHider.attr("class","job-hider");
+	            		
+	            		
+	            		$jobHider.append('<span class="job-data-closed"><i class="fas fa-caret-right"></i></span>');
+	            		$jobHider.append('<span class="job-data-open"><i class="fas fa-caret-down"></i></span>');
+	            		$jobHider.append('&nbsp;');
+	            		
+	            		
+	            		$anchorName = "job" + $jobId;
+	            		$anchor = $("<a>");
+	            		$anchor.attr("name", $anchorName);
+	            		$anchor.append('<span class="formLabel">Job#: </span>');
+	            		$anchor.append('<span>' + $jobNbr + '</span>');
+	            		
+	            		$jobDiv = $("<div>");
+	            		$jobDiv.attr("class","job-header-job-div");
+	            		//$jobDiv.append('<span class="formLabel">Job: </span>');
+	            		//$jobDiv.append('<span>' + $value.jobNbr + '</span>');
+	            		$jobDiv.append($anchor);
+	            		
+	            		$descDiv = $("<div>");
+	            		$descDiv.attr("class","job-header-job-div");
+	            		$descDiv.append('<span class="formLabel">Desc: </span>');
+	            		$descDiv.append($abbrDescription);
+	            		
+	            		$jobIdDiv = $("<div>");
+	            		$jobIdDiv.attr("class","job-header-job-div");
+	            		$jobIdDiv.append('<span class="formLabel">Job: </span>');
+	            		$jobIdDiv.append('<span>' + $jobId +'</span>');
+	            		
+	            		$divDiv = $("<div>");
+	            		$divDiv.attr("class","job-header-job-div");
+	            		$divDiv.append('<span class="formLabel">Div: </span>');
+	            		$divDiv.append('<span>' + $divisionNbr + '-' + $divisionCode + '</span>');
+	            		
+	            		$statusDiv = $("<div>");
+	            		$statusDiv.attr("class","job-header-job-div");
+	            		$statusDiv.append('<span class="formLabel"></span>');
+	            		$statusDiv.append('<span>' + $jobStatus +'</span>');
+	            		
+	            		$freqDiv = $("<div>");
+	            		$freqDiv.attr("class","job-header-job-div");
+	            		$freqDiv.append('<span class="formLabel">Freq: </span>');
+	            		$freqDiv.append('<span>' + $jobFrequency +'</span>');
+	            		
+	            		$ppcDiv = $("<div>");
+	            		$ppcDiv.attr("class","job-header-job-div");
+	            		$ppcDiv.append('<span class="formLabel">PPC: </span>');
+	            		$ppcDiv.append('<span>$' + $pricePerCleaning +'</span>');
+	            		
+	            		
+	            		
+	            		// Now that we've build all the pieces, this bit determines the order they're displayed
+	            		$jobHider.append($statusDiv);
+	            		$jobHider.append($jobIdDiv);
+	            		$jobHider.append($jobDiv);
+	            		$jobHider.append($ppcDiv);
+	            		$jobHider.append($freqDiv);
+	            		$jobHider.append($divDiv);
+	            		$jobHider.append($descDiv);
+
+	            		$jobHeader.append($jobHider);	
+	            		
+	            		return $jobHeader;
+		            },
+		            
+		            
+		            
+		            
+		            makeJobSort : function() {
 						$("#jobList").sortable({
 							stop:function($event, $ui) {
 								//var $jobId = $ui.item.attr("data-jobid");
@@ -1441,112 +1617,35 @@
 		            
 		            
 		            
+		            
 		            populateJobHeader : function($jobHeaderList) {
+		            	console.log("populageJobHeader");
 		            	$("#jobList").html("");
 		            	$.each($jobHeaderList, function($index, $value) {
-		            		//$("#jobList").append('<li data-jobid="' + $value.jobId + '">' + $value.jobNbr + '</li>');
 		            		$jobListItem = $("<li>");
 		            		$jobListItem.attr("data-jobid", $value.jobId);
 		            		$jobListItem.attr("id","job" + $value.jobId)
 							
-		            		$jobHeader = $("<div>");
-		            		$jobHeader.attr("data-jobid", $value.jobId);
-		            		$jobHeader.attr("class","jobTitleRow");
+		            		var $jobHeader = QUOTEMAINTENANCE.makeJobHeader(
+		            				$value.jobId, 
+		            				$value.jobNbr, 
+		            				$value.abbrDescription, 
+		            				$value.divisionNbr, 
+		            				$value.divisionCode,
+		            				$value.jobStatus,
+		            				$value.jobFrequency,
+		            				$value.pricePerCleaning,
+									$value.canEdit,
+									$value.canActivate,
+									$value.canCancel,
+									$value.canDelete,
+									$value.canSchedule
+		            				);
 		            		
-
-		            		
-		            		$panelButtonContainer = $("<div>");
-		            		$panelButtonContainer.attr("class","panel-button-container");
-		            		$panelButtonContainer.attr("data-jobid",$value.jobId);
-		            		if ( $value.canEdit == true ) {
-		            			$panelButtonContainer.append('<quote:editJobMenu />');
-		            		}
-							if ( $value.canActivate == true ) {
-								$panelButtonContainer.append('<webthing:activate styleClass="activate-this-job">Activate</webthing:activate>');
-							}
-							if ( $value.canCancel == true ) {
-								$panelButtonContainer.append('<webthing:ban styleClass="cancel-this-job">Cancel</webthing:ban>');
-							}
-							if ( $value.canDelete == true ) {
-								$panelButtonContainer.append('<webthing:delete styleClass="delete-this-job">Delete</webthing:delete>');
-							}
-							if ( $value.canSchedule == true ) {
-								$panelButtonContainer.append('<webthing:schedule styleClass="schedule-this-job">Schedule</webthing:schedule>');
-							}
-		            		$jobHeader.append($panelButtonContainer);
-		            		
-		            		
-		            		$jobHider = $("<div>");
-		            		$jobHider.attr("data-jobid", $value.jobId);
-		            		$jobHider.attr("class","job-hider");
-		            		
-		            		
-		            		$jobHider.append('<span class="job-data-closed"><i class="fas fa-caret-right"></i></span>');
-		            		$jobHider.append('<span class="job-data-open"><i class="fas fa-caret-down"></i></span>');
-		            		$jobHider.append('&nbsp;');
-		            		
-		            		
-		            		$anchorName = "job" + $value.jobId;
-		            		$anchor = $("<a>");
-		            		$anchor.attr("name", $anchorName);
-		            		$anchor.append('<span class="formLabel">Job#: </span>');
-		            		$anchor.append('<span>' + $value.jobNbr + '</span>');
-		            		
-		            		$jobDiv = $("<div>");
-		            		$jobDiv.attr("class","job-header-job-div");
-		            		//$jobDiv.append('<span class="formLabel">Job: </span>');
-		            		//$jobDiv.append('<span>' + $value.jobNbr + '</span>');
-		            		$jobDiv.append($anchor);
-		            		
-		            		$descDiv = $("<div>");
-		            		$descDiv.attr("class","job-header-job-div");
-		            		$descDiv.append('<span class="formLabel">Desc: </span>');
-		            		$descDiv.append($value.abbrDescription);
-		            		
-		            		$jobIdDiv = $("<div>");
-		            		$jobIdDiv.attr("class","job-header-job-div");
-		            		$jobIdDiv.append('<span class="formLabel">Job: </span>');
-		            		$jobIdDiv.append('<span>' + $value.jobId +'</span>');
-		            		
-		            		$divDiv = $("<div>");
-		            		$divDiv.attr("class","job-header-job-div");
-		            		$divDiv.append('<span class="formLabel">Div: </span>');
-		            		$divDiv.append('<span>' + $value.divisionNbr + '-' + $value.divisionCode + '</span>');
-		            		
-		            		$statusDiv = $("<div>");
-		            		$statusDiv.attr("class","job-header-job-div");
-		            		$statusDiv.append('<span class="formLabel"></span>');
-		            		$statusDiv.append('<span>' + $value.jobStatus +'</span>');
-		            		
-		            		$freqDiv = $("<div>");
-		            		$freqDiv.attr("class","job-header-job-div");
-		            		$freqDiv.append('<span class="formLabel">Freq: </span>');
-		            		$freqDiv.append('<span>' + $value.jobFrequency +'</span>');
-		            		
-		            		$ppcDiv = $("<div>");
-		            		$ppcDiv.attr("class","job-header-job-div");
-		            		$ppcDiv.append('<span class="formLabel">PPC: </span>');
-		            		$ppcDiv.append('<span>$' + $value.pricePerCleaning +'</span>');
-		            		
-		            		
-		            		
-		            		// Now that we've build all the pieces, this bit determines the order they're displayed
-		            		$jobHider.append($statusDiv);
-		            		$jobHider.append($jobIdDiv);
-		            		$jobHider.append($jobDiv);
-		            		$jobHider.append($ppcDiv);
-		            		$jobHider.append($freqDiv);
-		            		$jobHider.append($divDiv);
-		            		$jobHider.append($descDiv);
-
-		            		
-		            		
-		            		
-		            		
+		            		// make the "loading" thing
 		            		$detailDiv = $("#job-loading-pattern .job-data-row").clone()
 		            		$detailDiv.attr("data-jobid", $value.jobId);
 		            		
-		            		$jobHeader.append($jobHider);
 		            		$jobListItem.append($jobHeader);
 		            		$jobListItem.append($detailDiv);
 		            		console.log($jobHeader);
@@ -1555,38 +1654,9 @@
 		            		
 		            	});	
 		            	
+		            	QUOTEMAINTENANCE.makeJobClickers();
 		            	
-		            	$(".edit-this-job").click(function($event) {
-		            		//var $jobId = this.parentElement.attributes['data-jobid'].value;
-		            		var $jobId = $(this).closest("div.panel-button-container")[0].attributes['data-jobid'].value;
-		            		var $type = $(this).attr("data-type");
-		            		QUOTEMAINTENANCE.editThisJob($jobId, $type);
-		            	});
 		            	
-		            	$(".cancel-this-job").click(function($event) {
-		            		//var $jobId = this.parentElement.attributes['data-jobid'].value;
-		            		var $jobId = $(this).closest("div.panel-button-container")[0].attributes['data-jobid'].value;
-		            		QUOTEMAINTENANCE.cancelThisJob($jobId);
-		            	});
-		            	
-		            	$(".activate-this-job").click(function($event) {
-		            		//var $jobId = this.parentElement.attributes['data-jobid'].value;
-		            		var $jobId = $(this).closest("div.panel-button-container")[0].attributes['data-jobid'].value;
-		            		QUOTEMAINTENANCE.activateThisJob($jobId);
-		            	});
-		            	$(".delete-this-job").click(function($event) {
-		            		//var $jobId = this.parentElement.attributes['data-jobid'].value;
-		            		var $jobId = $(this).closest("div.panel-button-container")[0].attributes['data-jobid'].value;
-		            		QUOTEMAINTENANCE.deleteThisJob($jobId);
-		            	});
-		            	$(".cancel-job-edit").click(function($event) {
-		            		var $jobId = this.parentElement.attributes['data-jobid'].value;
-		            		QUOTEMAINTENANCE.cancelThisJobEdit($jobId);
-		            	});
-		            	$(".schedule-this-job").click(function($event) {
-		            		var $jobId = this.parentElement.attributes['data-jobid'].value;
-		            		QUOTEMAINTENANCE.scheduleThisJob($jobId);
-		            	});
 		            },
 		            
 		            
