@@ -14,6 +14,12 @@
 				//},
 				buttons: [
 					{
+						id: "cancelPrint",
+							click: function($event) {
+							$($modalName).dialog("close");
+						}
+					},
+					{
 						id: "goPrint",
 							click: function($event) {
 							QUOTE_PRINT.goPrint($modalName);
@@ -29,6 +35,7 @@
 			$quoteNumberSelector = $modalName + ' .quoteNumber';
 			$quoteFormSelector = $modalName + ' form';
 			$printTypeSelector = $modalName + ' input[name="printType"]';
+			$("#cancelPrint").button('option', 'label', 'Cancel');
 			$("#goPrint").button('option', 'label', 'Print');
 			$($quoteIdSelector).val($quoteId);			
 			$($quoteNumberSelector).html($quoteNumber);
