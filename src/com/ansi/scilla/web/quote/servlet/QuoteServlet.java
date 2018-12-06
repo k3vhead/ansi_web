@@ -345,6 +345,7 @@ public class QuoteServlet extends AbstractServlet {
 				logger.log(Level.DEBUG, "Trying to do update for quote "+key.getQuoteId());
 				quote = doQuoteUpdate(conn, key, quoteRequest, sessionUser, keyset);
 				if ( quoteRequest.hasJobUpdates() ) {
+					System.out.println("Quote: " + quoteId + " doing job updates");
 					doJobUpdate(conn, quoteId, quoteRequest, sessionUser, keyset);
 				}
 				String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
@@ -581,25 +582,32 @@ public class QuoteServlet extends AbstractServlet {
 			Job.INVOICE_GROUPING, //"invoice_grouping",
 			Job.TAX_EXEMPT, //"tax_exempt",
 			Job.TAX_EXEMPT_REASON, //"tax_exempt_reason",
+			Job.BUILDING_TYPE,
 			Job.UPDATED_BY,
 		});
 		
 		String sql = "update job set " + StringUtils.join(jobFieldNames, "=?,") + "=?, updated_date=SYSDATETIME() where quote_id=?";
 		System.out.println("Updating jobs for quote");
 		System.out.println(sql);
+		
+		boolean taxExempt = quoteRequest.getTaxExempt() != null && quoteRequest.getTaxExempt();
+		boolean invoiceBatch = quoteRequest.getInvoiceBatch() != null && quoteRequest.getInvoiceBatch();
+		
 		PreparedStatement ps = conn.prepareStatement(sql);
 		int n = 1;
 		ps.setString(n, quoteRequest.getPaymentTerms());
 		n++;
 		ps.setString(n, quoteRequest.getInvoiceStyle());
 		n++;
-		ps.setInt(n, quoteRequest.getInvoiceBatch() ? 1 : 0);
+		ps.setInt(n, invoiceBatch ? 1 : 0);
 		n++;
 		ps.setString(n, quoteRequest.getInvoiceGrouping());
 		n++;
-		ps.setInt(n, quoteRequest.getTaxExempt() ? 1 : 0);
+		ps.setInt(n, taxExempt ? 1 : 0);
 		n++;
 		ps.setString(n, quoteRequest.getTaxExemptReason());
+		n++;
+		ps.setString(n,  quoteRequest.getBuildingType());
 		n++;
 		ps.setInt(n, sessionUser.getUserId());
 		n++;

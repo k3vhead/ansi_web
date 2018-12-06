@@ -406,7 +406,7 @@ import com.thewebthing.commons.lang.JsonException;
 		public void setInvoiceStyle(String invoiceStyle) {
 			this.invoiceStyle = invoiceStyle;
 		}
-
+		@JobUpdateField
 		public String getBuildingType() {
 			return buildingType;
 		}

@@ -1751,19 +1751,7 @@
 		            	$("#quoteDataContainer input[name='taxExempt']").prop("checked", $taxExempt);
 		            	$("#quoteDataContainer input[name='taxExemptReason']").val($quote.quote.taxExemptReason);
 		            	
-		            	$("#quoteDataContainer .printCount").html($quote.quote.printCount);
-		            	<%--
-		            	"address": null,
-						"billToAddressId": 52568,
-						"copiedFromQuoteId": null,
-						"jobSiteAddressId": 52567,
-						"status": null,
-						"templateId": 0,
-						"managerFirstName": "Cameron",
-						"managerLastName": "McDaniel",
-						"managerEmail": "clm@ansi.com",
-						"divisionCode": "IN03",
-						--%>
+		            	$("#quoteDataContainer .printCount").html($quote.quote.printCount);		            	
 		            },
 		            
 		            
@@ -2109,6 +2097,8 @@
 	    					$selector = "#quotePanel select[name='" + $value.name + "']";
 	    					$outbound[$value.name] = $($selector).val();
 	    				});
+	    				$outbound['taxExempt'] = $("#quotePanel input[name='taxExempt']").prop("checked");
+	    				$outbound['invoiceBatch'] = $("#quotePanel input[name='invoiceBatch']").prop("checked");
 	    				
 	    				var $quoteId = QUOTEMAINTENANCE.quote.quote.quoteId;
 	    				console.log($outbound);
