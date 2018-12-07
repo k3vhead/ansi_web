@@ -13,9 +13,24 @@ public class DivisionUserRequest extends AbstractRequest{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	public static Integer USER_STATUS_IS_ACTIVE = new Integer(1);
-	public static Integer USER_STATUS_IS_INACTIVE = new Integer(0);
-	public static Integer USER_STATUS_IS_LOCKED = new Integer(-1);
+	public static Integer divisionId;
+	public static boolean active;
+	
+	public static Integer getDivisionId() {
+		return divisionId;
+	}
+	
+	public static void setDivisionId(Integer divisionId) {
+		DivisionUserRequest.divisionId = divisionId;
+	}
+	
+	public static boolean isActive() {
+		return active;
+	}
+	
+	public static void setActive(boolean active) {
+		DivisionUserRequest.active = active;
+	}
 	
 	
 }

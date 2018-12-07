@@ -16,7 +16,11 @@ import com.ansi.scilla.web.common.response.MessageResponse;
 
 public class DivisionUserResponse extends MessageResponse{
 
-    private List<DivisionUserItem> itemList;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private List<DivisionUserItem> itemList;
     
 	public DivisionUserResponse() {
         super();
@@ -43,7 +47,11 @@ public class DivisionUserResponse extends MessageResponse{
     }
 
     public class DivisionUserItem extends ApplicationObject {
-        private Integer divisionId;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private Integer divisionId;
         private String div;
         private String description;
         private Boolean active;
