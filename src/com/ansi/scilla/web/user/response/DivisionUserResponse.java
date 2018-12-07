@@ -1,17 +1,17 @@
 package com.ansi.scilla.web.user.response;
 
-import java.lang.reflect.Method;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
-import com.ansi.scilla.common.db.User;
+import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.common.db.DivisionUser;
 import com.ansi.scilla.web.common.response.MessageResponse;
-import com.ansi.scilla.web.common.utils.Permission;
-import com.ansi.scilla.web.user.query.PermissionUserLookup;
-import com.ansi.scilla.web.user.query.UserLookupItem;
+
 
 
 public class DivisionUserResponse extends MessageResponse{
@@ -22,7 +22,7 @@ public class DivisionUserResponse extends MessageResponse{
         super();
     }
 
-    public DivisionUserResponse(Connection conn, Integer userId) {
+    public DivisionUserResponse(Connection conn, Integer userId) throws SQLException {
         this();
         makeDivisionUserList(conn, userId);
     }
@@ -48,11 +48,11 @@ public class DivisionUserResponse extends MessageResponse{
         private String description;
         private Boolean active;
 
-        public DivisionUserItem(ResultSet rs) {
+        public DivisionUserItem(ResultSet rs) throws SQLException {
             super();
             this.divisionId = rs.getInt(Division.DIVISION_ID);
             this.div = rs.getString("div");
-            this.descrition = rs.getString(Division.DESCRIPTION);
+            this.description = rs.getString(Division.DESCRIPTION);
             this.active = rs.getObject(DivisionUser.TITLE_ID) != null;
         }
     }
