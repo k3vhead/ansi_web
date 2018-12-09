@@ -99,44 +99,7 @@ public class QuoteServlet extends AbstractServlet {
 		}
 	}
 	
-	/*
-	protected void doNewDelete(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		logger.log(Level.TRACE, "QuoteServlet 54");
-		String url = request.getRequestURI();
-		
-		Connection conn = null;
-		try {
-			ParsedUrl parsedUrl = new ParsedUrl(url);
-			logger.log(Level.TRACE, "QuoteServlet 60");
-			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
-			conn.setAutoCommit(false);
-			
-			Quote quote = new Quote();
-			if(parsedUrl.quoteId != null){
-				quote.setQuoteId(Integer.parseInt(parsedUrl.quoteId));
-				QuoteUtils.updateQuoteHistory(conn, Integer.parseInt(parsedUrl.quoteId));
-			} 
-			
-			quote.delete(conn);
-			logger.log(Level.TRACE, "QuoteServlet 69");
-			QuoteResponse quoteResponse = new QuoteResponse();
-			super.sendResponse(conn, response, ResponseCode.SUCCESS, quoteResponse);
-			logger.log(Level.TRACE, "QuoteServlet 72");
-			conn.commit();
-		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
-			super.sendForbidden(response);
-		} catch ( Exception e) {
-			logger.log(Level.TRACE, "QuoteServlet 75");
-			AppUtils.logException(e);
-			throw new ServletException(e);
-		} finally {
-			logger.log(Level.TRACE, "QuoteServlet 79");
-			AppUtils.closeQuiet(conn);
-		}
-	}
-	*/
+	
 	
 	
 	@Override
@@ -153,11 +116,13 @@ public class QuoteServlet extends AbstractServlet {
 				QuoteListResponse quotesListResponse = makeQuotesListResponse(conn, sessionData.getUserPermissionList());
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, quotesListResponse);
 			} else if(parsedUrl.quoteId.equals("delete")){
-//				doNewDelete(request,response);	
+//				doNewDelete(request,response);	quoteResponse
 				super.sendForbidden(response);
 			} else {
 				QuoteListResponse quotesListResponse = makeFilteredListResponse(conn, parsedUrl.quoteId, sessionData.getUserPermissionList());
-				super.sendResponse(conn, response, ResponseCode.SUCCESS, quotesListResponse);
+				QuoteResponse quoteResponse = new QuoteResponse();
+				quoteResponse.setQuote(quotesListResponse.getQuoteList().get(0));
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, quoteResponse);
 			}
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
 			super.sendForbidden(response);

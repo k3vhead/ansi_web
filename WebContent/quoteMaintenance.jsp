@@ -632,7 +632,7 @@
 								statusCode: {
 									200: function($data) {
 										console.log("Got the quote");
-										QUOTEMAINTENANCE.quote = $data.data.quoteList[0];
+										QUOTEMAINTENANCE.quote = $data.data.quote;
 										QUOTEMAINTENANCE.populateQuotePanels($data.data);	
 										if ( QUOTEMAINTENANCE.quote.canEdit == true ) {
 											$("#edit-this-address").show();
@@ -1844,16 +1844,16 @@
 						
 						
 	        			if ( $canPopulate == true ) {
-	        				$(".action-button").attr("data-quoteid",$data.quoteList[0].quote.quoteId); //This is so copy/revise buttons know what to copy/revise
-							$(".action-button").attr("data-quotenumber",$data.quoteList[0].quote.quoteNumber + $data.quoteList[0].quote.revision);
-							QUOTEMAINTENANCE.populateQuotePanel($data.quoteList[0]);
-							QUOTEMAINTENANCE.populateAddressPanel( "#address-bill-to", $data.quoteList[0].billTo);
-							QUOTEMAINTENANCE.populateAddressPanel( "#address-job-site", $data.quoteList[0].jobSite);
-							QUOTEMAINTENANCE.populateContactPanel( "#job-contact", $data.quoteList[0].jobContact.jobContact);
-							QUOTEMAINTENANCE.populateContactPanel( "#site-contact", $data.quoteList[0].jobContact.siteContact);
-							QUOTEMAINTENANCE.populateContactPanel( "#billing-contact", $data.quoteList[0].jobContact.billingContact);
-							QUOTEMAINTENANCE.populateContactPanel( "#contract-contact", $data.quoteList[0].jobContact.contractContact);
-							QUOTEMAINTENANCE.populateJobHeader($data.quoteList[0].jobHeaderList)
+	        				$(".action-button").attr("data-quoteid",$data.quote.quote.quoteId); //This is so copy/revise buttons know what to copy/revise
+							$(".action-button").attr("data-quotenumber",$data.quote.quote.quoteNumber + $data.quote.quote.revision);
+							QUOTEMAINTENANCE.populateQuotePanel($data.quote);
+							QUOTEMAINTENANCE.populateAddressPanel( "#address-bill-to", $data.quote.billTo);
+							QUOTEMAINTENANCE.populateAddressPanel( "#address-job-site", $data.quote.jobSite);
+							QUOTEMAINTENANCE.populateContactPanel( "#job-contact", $data.quote.jobContact.jobContact);
+							QUOTEMAINTENANCE.populateContactPanel( "#site-contact", $data.quote.jobContact.siteContact);
+							QUOTEMAINTENANCE.populateContactPanel( "#billing-contact", $data.quote.jobContact.billingContact);
+							QUOTEMAINTENANCE.populateContactPanel( "#contract-contact", $data.quote.jobContact.contractContact);
+							QUOTEMAINTENANCE.populateJobHeader($data.quote.jobHeaderList)
 							QUOTEMAINTENANCE.makeJobExpansion();
 							
 							// when the page loads the first time, check for a job id
