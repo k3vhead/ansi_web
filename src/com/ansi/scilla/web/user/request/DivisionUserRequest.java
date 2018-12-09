@@ -32,5 +32,13 @@ public class DivisionUserRequest extends AbstractRequest{
 		DivisionUserRequest.active = active;
 	}
 	
+	public WebMessages validate(Connection conn) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		
+		RequestValidator.validateId(conn, webMessages, "division_user", "division_id", "divisionId", divisionId, true);
+		RequestValidator.validateBoolean(webMessages, "active", DivisionUserRequest.active, true);
+		
+		return webMessages;
+	}
 	
 }

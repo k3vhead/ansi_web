@@ -22,6 +22,14 @@ public class DivisionUserResponse extends MessageResponse{
 	private static final long serialVersionUID = 1L;
 	private List<DivisionUserItem> itemList;
     
+	public List<DivisionUserItem> getItemList(){
+		return itemList;
+	}
+	
+	public void setItemList(List<DivisionUserItem> itemList) {
+		this.itemList = itemList;
+	}
+	
 	public DivisionUserResponse() {
         super();
     }
@@ -63,5 +71,38 @@ public class DivisionUserResponse extends MessageResponse{
             this.description = rs.getString(Division.DESCRIPTION);
             this.active = rs.getObject(DivisionUser.TITLE_ID) != null;
         }
+
+		public Integer getDivisionId() {
+			return divisionId;
+		}
+		
+		public void setDivisionId(Integer divisionId) {
+			this.divisionId = divisionId;
+		}
+		
+		public String getDiv() {
+			return div;
+		}
+		
+		public void setDiv(String div) {
+			this.div = div;
+		}
+		
+		public String getDescription() {
+			return description;
+		}
+		
+		public void setDescription(String description) {
+			this.description = description;
+		}
+		
+		public Boolean getActive() {
+			return active;
+		}
+		
+		public void setActive(Boolean active) {
+			this.active = active;
+		}
+        
     }
 }

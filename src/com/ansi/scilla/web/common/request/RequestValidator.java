@@ -46,6 +46,18 @@ public class RequestValidator {
 			}
 		}
 	}
+	
+	public static void validateBoolean(WebMessages webMessages, String fieldName, boolean value, boolean required) {
+		if ( value == required ) {
+			if ( required ) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			if ( value != required ) {
+				webMessages.addMessage(fieldName,  "Invalid Value");
+			}
+		}
+	}
 
 
 
