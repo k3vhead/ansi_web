@@ -13,30 +13,30 @@ public class DivisionUserRequest extends AbstractRequest{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	public static Integer divisionId;
-	public static boolean active;
+	private Integer divisionId;
+	private boolean active;
 	
-	public static Integer getDivisionId() {
-		return divisionId;
+	public Integer getDivisionId() {
+		return this.divisionId;
 	}
 	
-	public static void setDivisionId(Integer divisionId) {
-		DivisionUserRequest.divisionId = divisionId;
+	public void setDivisionId(Integer divisionId) {
+		this.divisionId = divisionId;
 	}
 	
-	public static boolean isActive() {
-		return active;
+	public boolean isActive() {
+		return this.active;
 	}
 	
-	public static void setActive(boolean active) {
-		DivisionUserRequest.active = active;
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 	
 	public WebMessages validate(Connection conn) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		
 		RequestValidator.validateId(conn, webMessages, "division_user", "division_id", "divisionId", divisionId, true);
-		RequestValidator.validateBoolean(webMessages, "active", DivisionUserRequest.active, true);
+		RequestValidator.validateBoolean(webMessages, "active", this.active, true);
 		
 		return webMessages;
 	}
