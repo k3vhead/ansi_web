@@ -85,6 +85,46 @@
 				border:solid 1px #404040; 
 				text-align:center;
 			}
+			#permissionsModal {
+				width: 1248px;
+				margin: 0 auto;
+				position: relative;
+			}
+			.display-none{
+    			display: none;
+			}
+	
+			#main_menu > li{
+			    position: relative;
+			    display: inline;
+			}
+			
+			.sub-menu{
+			    position: absolute;
+			    left: 0;
+			    top: 15px;
+			    list-style-type: none;
+  				margin: 0;
+			    padding: 0;
+			    width: 500px;
+			}
+			
+			.sub-menu li{
+			    display: inline;
+			    margin: 0;
+			}
+			li div { 
+				vertical-align:middle;
+			}
+			li div span { 
+				float:left; 
+			}
+			ul {
+  				list-style-type: none;
+			}
+			.color {
+    			background-color: gray;
+			}
         </style>
         
         <script type="text/javascript">    
@@ -545,12 +585,6 @@
 							$( "#deleteModal" ).dialog("close");
 						}
 					},
-					{
-						id: "deleteSaveButton",
-						click: function($event) {
-							deletePermissionGroup();
-						}
-					}
 				]
 			});	
 			$("#deleteSaveButton").button('option', 'label', 'Delete');
@@ -667,23 +701,50 @@
 
 
 
+			$('#permissionsModal li').on('click', function(e) {
+			    e.stopPropagation();
+			    $(this).siblings('li').children('ul').hide();
+			    $(this).children('ul').toggle(); 
+			    $('#permissionsModal li').removeClass('selected');
+			    $(this).addClass('selected');
+			});
+			
+			$('#permissionsModal ul').on('click', function(e) {
+			    e.stopPropagation();
+			    $('#permissionsModal li').removeClass('selected');
+			    $(this).addClass('selected');
+			});
+			
+			$('body').on("click", function () {
+			    $("#permissionsModal ul").hide();
+			});   
+//			$("#permissionsModal li").click(function() {
+//				$("#globalMsg").html("Success!").show().fadeOut(10000);
+//			});
+			$("#permissionsModal li div").click(function() {
+			    this.id = 'newId';
+
+			    // longer method using .attr()
+			    $(this).attr('id', 'newId');
+
+				$("#globalMsg").html("Success!").show().fadeOut(10000);
+			});
+			
+			var addclass = 'color';
+			var $cols = $('.selected').click(function(e) {
+			    $cols.removeClass(addclass);
+			    $(this).addClass(addclass);
+			});
 
 
 
 
 
 
+			
+			
+	
 
-
-
-
-
-
-
-
-
-
-		function updatePermissionGroupPermissions () {
  //			$("#permissionsModal").dialog("open");
 //			$permissionGroupId = $("#permissionsModal").attr("permissionGroupId");
 //			var $url = 'permissionGroup/'+ $permissionGroupId;
@@ -701,9 +762,9 @@
 			     },
 		*/	//            	     statusCode: {
 //			    	 200: function($data) {
-			    		 	$("#permissionsModal").dialog("close");
-			    		 	$('#permissionGroupTable').DataTable().ajax.reload();
-							$("#globalMsg").html("Update Successful").show().fadeOut(10000);
+//			    		 	$("#permissionsModal").dialog("close");
+//			    		 	$('#permissionGroupTable').DataTable().ajax.reload();
+//							$("#globalMsg").html("Update Successful").show().fadeOut(10000);
 //						},
 //		
 //			    		403: function($data) {
@@ -717,7 +778,7 @@
 //						}
 //		     	     },
 //			     dataType: 'json'
-			}
+//			}
 		//}
 			
 			
@@ -761,6 +822,16 @@
 			});
 		} */
 		
+		$("#pageId").change(function() {
+			  if ($(this).data('options') === undefined) {
+			    /*Taking an array of all options-2 and kind of embedding it on the select1*/
+			    $(this).data('options', $('#permissionsSelect option').clone());
+			  }
+			  var id = $(this).val();
+			  var options = $(this).data('options').filter('[value=' + id + ']');
+			  $('#permissionsSelect').html(options);
+			});
+		
 		function permissionGroupPermissionsErr ($statusCode) {
 			var $messages = {
 					403:"Session Expired. Log in and try again",
@@ -799,10 +870,10 @@
 		
 		
 		$( "#permissionsModal" ).dialog({
-			title:'Update Permissions',
+			title:'Division Manager Create',
 			autoOpen: false,
 			height: 350,
-			width: 550,
+			width: 400,
 			modal: true,
 			closeOnEscape:true,
 			//open: function(event, ui) {
@@ -815,16 +886,9 @@
 						$( "#permissionsModal" ).dialog("close");
 					}
 				},
-				{
-					id: "permissionsSaveButton",
-					click: function($event) {
-						updatePermissionGroupPermissions();
-					}
-				}
 			]
 		});	
-		$("#permissionsSaveButton").button('option', 'label', 'Update Group Permissions');
-		$("#permissionsCancelButton").button('option', 'label', 'Cancel');
+		$("#permissionsCancelButton").button('option', 'label', 'Done');
 		
 		
 		//if ( $value.canDelete == true ) {
@@ -972,142 +1036,88 @@
 	    	</div>
 	    	
 	    	
-	    <div id="permissionsModal">
-    	<table>
-    		<tr>
-    			<td><span class="formHdr">Quote</span></td>
-    			<td>
-					<select name="permissions" style="width: 100px;">
-						<option value="1">Quote_Read</option>
-						<option value="2">Quote_Create</option>
-						<option value="3">Quote_Propose</option>
-						<option value="4">Quote_Update</option>
-					</select>
-				</td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr">Ticket</span></td>
-    			<td>
-					<select name="permissions" style="width: 50px;">
-						<option value="1">Ticket_Read</option>
-						<option value="2">Ticket_Create</option>
-						<option value="3">Ticket_Propose</option>
-						<option value="4">Ticket_Update</option>
-					</select>
-				</td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr">Ticket Special Override</span></td>
-    			<td>
-					<select name="permissions" style="width: 50px;">
-						<option value="1">Ticket_Special_Override_Read</option>
-						<option value="2">Ticket_Special_Override_Create</option>
-						<option value="3">Ticket_Special_Override_Propose</option>
-						<option value="4">Ticket_Special_Override_Update</option>
-					</select>
-				</td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr">Payment</span></td>
-    			<td>
-					<select name="permissions" style="width: 50px;">
-						<option value="1">Payment_Read</option>
-						<option value="2">Payment_Create</option>
-						<option value="3">Payment_Propose</option>
-						<option value="4">Payment_Update</option>
-					</select>
-				</td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr">Invoice</span></td>
-    			<td>
-					<select name="permissions" style="width: 50px;">
-						<option value="1">Invoice_Read</option>
-						<option value="2">Invoice_Create</option>
-						<option value="3">Invoice_Propose</option>
-						<option value="4">Invoice_Update</option>
-					</select>
-				</td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr">System Admin</span></td>
-    			<td>
-					<select name="permissions" style="width: 50px;">
-						<option value="1">SystemAdmin_Read</option>
-						<option value="2">SystemAdmin_Create</option>
-						<option value="3">SystemAdmin_Propose</option>
-						<option value="4">SystemAdmin_Update</option>
-					</select>
-				</td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr">User Admin</span></td>
-    			<td>
-					<select name="permissions" style="width: 50px;">
-						<option value="1">User_Admin_Read</option>
-						<option value="2">User_Admin_Create</option>
-						<option value="3">User_Admin_Propose</option>
-						<option value="4">User_Admin_Update</option>
-					</select>
-				</td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr">Tech Admin</span></td>
-    			<td>
-					<select name="permissions" style="width: 50px;">
-						<option value="1">Tech_Admin_Read</option>
-						<option value="2">Tech_Admin_Create</option>
-						<option value="3">Tech_Admin_Propose</option>
-						<option value="4">Tech_Admin_Update</option>
-					</select>
-				</td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr">Address</span></td>
-    			<td>
-					<select name="permissions" style="width: 50px;">
-						<option value="1">Address_Read</option>
-						<option value="2">Address_Create</option>
-						<option value="3">Address_Propose</option>
-						<option value="4">Address_Update</option>
-					</select>
-				</td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr">Contact</span></td>
-    			<td>
-					<select name="permissions" style="width: 50px;">
-						<option value="1">Contact_Read</option>
-						<option value="2">Contact_Create</option>
-						<option value="3">Contact_Propose</option>
-						<option value="4">Contact_Update</option>
-					</select>
-				</td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr">Activities</span></td>
-    			<td>
-					<select name="permissions" style="width: 50px;">
-						<option value="1">Activities_Read</option>
-						<option value="2">Activities_Create</option>
-						<option value="3">Activities_Propose</option>
-						<option value="4">Activities_Update</option>
-					</select>
-				</td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr">Permissions</span></td>
-    			<td>
-					<select name="permissions" style="width: 50px;">
-						<option value="1">Permissions_Read</option>
-						<option value="2">Permissions_Create</option>
-						<option value="3">Permissions_Propose</option>
-						<option value="4">Permissions_Update</option>
-					</select>
-				</td>
-    		</tr>
-    	</table>
-    </div>
+	    	
+    	<ul id="permissionsModal">
+	        <li><span class="selected">QUOTE</span>
+	            <ul>
+	                <li class="selected" id='1'><div>QUOTE_READ</div></li>
+	                <li class="selected" id='2'><div>QUOTE_CREATE</div></li>
+	                <li class="selected" id='3'><div>QUOTE_PROPOSE</div></li>
+	                <li class="selected" id='4'><div>QUOTE_UPDATE</div></li>
+	            </ul>
+	        </li>
+	        <li><span class="selected">TICKET</span>
+	            <ul>
+	                <li class="selected" id='5'><div>TICKET_READ</div></li>
+	                <li class="selected" id='6'><div>TICKET_CREATE</div></li>
+	                <li class="selected" id='7'><div>TICKET_PROPOSE</div></li>
+	                <li class="selected" id='8'><div>TICKET_UPDATE</div></li>
+	            </ul>
+	        </li>
+	        <li><span class="selected">TICKET_SPECIAL_OVERRIDE</span>
+	            <ul>
+	                <li class="selected" id='9'><div>TICKET_SPECIAL_OVERRIDE_READ</div></li>
+	                <li class="selected" id='10'><div>TICKET_SPECIAL_OVERRIDE_UPDATE</div></li>
+	            </ul>
+	        </li>
+	        <li><span class="selected">PAYMENT</span>
+	            <ul>
+	                <li class="selected" id='11'><div>PAYMENT_READ</div></li>
+	                <li class="selected" id='12'><div>PAYMENT_CREATE</div></li>
+	                <li class="selected" id='13'><div>PAYMENT_UPDATE</div></li>
+	            </ul>
+	        </li>
+	        <li><span class="selected">INVOICE</span>
+	            <ul>
+	                <li class="selected" id='14'><div>INVOICE_READ</div></li>
+	                <li class="selected" id='15'><div>INVOICE_CREATE</div></li>
+	                <li class="selected" id='16'><div>INVOICE_PROPOSE</div></li>
+	                <li class="selected" id='17'><div>INVOICE_UPDATE</div></li>
+	            </ul>
+	        </li>
+	        <li><span class="selected">SYSADMIN</span>
+	            <ul>
+	                <li class="selected" id='18'><div>SYSADMIN_READ</div></li>
+	                <li class="selected" id='19'><div>SYSADMIN_WRITE</div></li>
+	            </ul>
+	        </li>
+	        <li><span class="selected">USER_ADMIN</span>
+	            <ul>
+	                <li class="selected" id='20'><div>USER_ADMIN_READ</div></li>
+	                <li class="selected" id='21'><div>USER_ADMIN_WRITE</div></li>
+	            </ul>
+	        </li>
+	        <li><span class="selected">TECH_ADMIN</span>
+	            <ul>
+	                <li class="selected" id='22'><div>TECH_ADMIN_READ</div></li>
+	                <li class="selected" id='23'><div>TECH_ADMIN_WRITE</div></li>
+	            </ul>
+	        </li>
+	        <li><span class="selected">ADDRESS</span>
+	            <ul>
+	                <li class="selected" id='24'><div>ADDRESS_READ</div></li>
+	                <li class="selected" id='25'><div>ADDRESS_WRITE/</div></li>
+	            </ul>
+	        </li>
+	        <li><span class="selected">CONTACT</span>
+	            <ul>
+	                <li class="selected" id='26'><div>CONTACT_READ</div></li>
+	                <li class="selected" id='27'><div>CONTACT_WRITE</div></li>
+	            </ul>
+	        </li>
+	        <li><span class="selected">ACTIVITIES</span>
+	            <ul>
+	                <li class="selected" id='28'><div>ACTIVITIES_READ</div></li>
+	                <li class="selected" id='29'><div>ACTIVITIES_CREATE</div></li>
+	            </ul>
+	        </li>
+	        <li><span class="selected">PERMISSIONS</span>
+	            <ul>
+	                <li class="selected" id='30'><div>PERMISSIONS_READ</div></li>
+	                <li class="selected" id='31'><div>PERMISSIONS_WRITE</div></li>
+	            </ul>
+	        </li>
+		</ul>
    
 	    <webthing:scrolltop />
 
