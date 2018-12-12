@@ -34,10 +34,10 @@ import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.job.query.JobHeader;
 import com.ansi.scilla.web.job.request.JobRequest;
 import com.ansi.scilla.web.job.request.JobRequestAction;
 import com.ansi.scilla.web.job.response.JobDetailResponse;
+import com.ansi.scilla.web.quote.response.QuoteResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class JobServlet extends AbstractServlet {
@@ -76,7 +76,9 @@ public class JobServlet extends AbstractServlet {
 				throw new ResourceNotFoundException();
 			} else if (url.getId() != null) {
 				jobDetailResponse = new JobDetailResponse(conn, url.getId(), permissionList);
-				super.sendResponse(conn, response, ResponseCode.SUCCESS, jobDetailResponse);
+				QuoteResponse quoteResponse = new QuoteResponse(conn, url.getId(), permissionList);
+				quoteResponse.getQuote().setJobDetail(jobDetailResponse);
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, quoteResponse);
 			} else {
 				// according to the URI parsing, this shouldn't happen, but it gives me warm fuzzies
 				throw new ResourceNotFoundException();
@@ -101,7 +103,9 @@ public class JobServlet extends AbstractServlet {
 			throws ServletException, IOException {
 		AnsiURL url = null;
 		Connection conn = null;
-		JobDetailResponse jobDetailResponse = new JobDetailResponse();
+//		JobDetailResponse jobDetailResponse = new JobDetailResponse();
+		QuoteResponse quoteResponse = new QuoteResponse();
+		WebMessages webMessages = new WebMessages();
 		ResponseCode responseCode = null;
 		
 		try {
@@ -131,22 +135,24 @@ public class JobServlet extends AbstractServlet {
 				// After we delete, there are no job details to return, but we still need the job headers
 				// so the page can redisplay them
 				if ( action == JobRequestAction.DELETE_JOB ) {
-					jobDetailResponse = new JobDetailResponse();
-					List<JobHeader> jobHeaderList = JobHeader.getJobHeaderList(conn, quote, permissionList);	
-					if ( jobHeaderList.size() == 1 ) {
-						jobHeaderList.get(0).setCanDelete(false); // don't delete the only job you've got
-					}
-					jobDetailResponse.setJobHeaderList(jobHeaderList);
+					quoteResponse = new QuoteResponse(conn, quote, webMessages, permissionList);
+//					jobDetailResponse = new JobDetailResponse();
+//					List<JobHeader> jobHeaderList = JobHeader.getJobHeaderList(conn, quote, permissionList);	
+//					if ( jobHeaderList.size() == 1 ) {
+//						jobHeaderList.get(0).setCanDelete(false); // don't delete the only job you've got
+//					}
+//					jobDetailResponse.setJobHeaderList(jobHeaderList);
 				} else {
-					jobDetailResponse = new JobDetailResponse(conn, url.getId(), permissionList);
+					JobDetailResponse jobDetail = new JobDetailResponse(conn, url.getId(), permissionList);
+					quoteResponse = new QuoteResponse(conn, url.getId(), permissionList);
+					quoteResponse.getQuote().setJobDetail(jobDetail);
 				}
 			} catch ( JobProcessException e ) {
 				conn.rollback();
 				responseCode = ResponseCode.SYSTEM_FAILURE;
-				WebMessages webMessages = new WebMessages();
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, e.getMessage());
-				jobDetailResponse.setWebMessages(webMessages);
-				super.sendResponse(conn, response, responseCode, jobDetailResponse);
+				quoteResponse.setWebMessages(webMessages);
+				super.sendResponse(conn, response, responseCode, quoteResponse);
 			}
 			
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
@@ -230,6 +236,7 @@ public class JobServlet extends AbstractServlet {
 		WebMessages webMessages = new WebMessages();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		ResponseCode responseCode = null;
+		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
 		
 		try {
 			webMessages = jobRequest.validateProposalUpdate();
@@ -250,8 +257,9 @@ public class JobServlet extends AbstractServlet {
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "System Failure");
 		}
 		
-		jobDetailResponse.setWebMessages(webMessages);
-		super.sendResponse(conn, response, responseCode, jobDetailResponse);
+		quoteResponse.getQuote().setJobDetail(jobDetailResponse);
+		quoteResponse.setWebMessages(webMessages);
+		super.sendResponse(conn, response, responseCode, quoteResponse);
 	}
 
 	
@@ -274,6 +282,7 @@ public class JobServlet extends AbstractServlet {
 		WebMessages webMessages = new WebMessages();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		ResponseCode responseCode = null;
+		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
 		
 		try {
 			webMessages = jobRequest.validateActivationUpdate();
@@ -294,8 +303,9 @@ public class JobServlet extends AbstractServlet {
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "System Failure");
 		}
 		
-		jobDetailResponse.setWebMessages(webMessages);
-		super.sendResponse(conn, response, responseCode, jobDetailResponse);
+		quoteResponse.getQuote().setJobDetail(jobDetailResponse);
+		quoteResponse.setWebMessages(webMessages);
+		super.sendResponse(conn, response, responseCode, quoteResponse);
 	}
 
 	
@@ -326,6 +336,7 @@ public class JobServlet extends AbstractServlet {
 		WebMessages webMessages = new WebMessages();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		ResponseCode responseCode = null;
+		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
 		
 		try {
 			webMessages = jobRequest.validateInvoiceUpdate();
@@ -346,8 +357,9 @@ public class JobServlet extends AbstractServlet {
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "System Failure");
 		}
 		
-		jobDetailResponse.setWebMessages(webMessages);
-		super.sendResponse(conn, response, responseCode, jobDetailResponse);
+		quoteResponse.getQuote().setJobDetail(jobDetailResponse);
+		quoteResponse.setWebMessages(webMessages);
+		super.sendResponse(conn, response, responseCode, quoteResponse);
 	}
 
 	
@@ -368,6 +380,7 @@ public class JobServlet extends AbstractServlet {
 		WebMessages webMessages = new WebMessages();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		ResponseCode responseCode = null;
+		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
 		
 		try {
 			webMessages = jobRequest.validateScheduleUpdate();
@@ -388,8 +401,9 @@ public class JobServlet extends AbstractServlet {
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "System Failure");
 		}
 		
-		jobDetailResponse.setWebMessages(webMessages);
-		super.sendResponse(conn, response, responseCode, jobDetailResponse);
+		quoteResponse.getQuote().setJobDetail(jobDetailResponse);
+		quoteResponse.setWebMessages(webMessages);
+		super.sendResponse(conn, response, responseCode, quoteResponse);
 	}
 
 	
@@ -409,6 +423,7 @@ public class JobServlet extends AbstractServlet {
 		WebMessages webMessages = new WebMessages();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		ResponseCode responseCode = null;
+		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
 		
 		try {
 			webMessages = jobRequest.validateNewJob(conn);
@@ -429,8 +444,9 @@ public class JobServlet extends AbstractServlet {
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "System Failure");
 		}
 		
-		jobDetailResponse.setWebMessages(webMessages);
-		super.sendResponse(conn, response, responseCode, jobDetailResponse);
+		quoteResponse.getQuote().setJobDetail(jobDetailResponse);
+		quoteResponse.setWebMessages(webMessages);
+		super.sendResponse(conn, response, responseCode, quoteResponse);
 	}	
 	
 	private void populateNewJob(Job job, JobRequest jobRequest) throws InvalidJobStatusException {
@@ -501,66 +517,71 @@ public class JobServlet extends AbstractServlet {
 	private void doCancelJob(Connection conn, Job job, JobRequest jobDetailRequest, SessionUser sessionUser, HttpServletResponse response, List<UserPermission> permissionList) throws Exception  {
 		Integer jobId = job.getJobId();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
-		WebMessages messages = new WebMessages();
+		WebMessages webMessages = new WebMessages();
 		ResponseCode responseCode = null;
+		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
+		
 		if ( StringUtils.isBlank(jobDetailRequest.getCancelReason())) {
-			messages.addMessage("cancelReason", "Required Field");
+			webMessages.addMessage("cancelReason", "Required Field");
 		}
 		if ( jobDetailRequest.getCancelDate() == null ) {
-			messages.addMessage("cancelDate", "Required Field");
+			webMessages.addMessage("cancelDate", "Required Field");
 		}
-		if ( messages.isEmpty() ) {
+		if ( webMessages.isEmpty() ) {
 			try {
 				JobUtils.cancelJob(conn, jobId, jobDetailRequest.getCancelDate(), jobDetailRequest.getCancelReason(), sessionUser.getUserId());
 				conn.commit();
 				responseCode = ResponseCode.SUCCESS;
-				messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
 				jobDetailResponse = new JobDetailResponse(conn,jobId, permissionList);
 			} catch ( RecordNotFoundException e) {
 				responseCode = ResponseCode.EDIT_FAILURE;
-				messages.addMessage("cancelDate", "Invalid Job ID");
+				webMessages.addMessage("cancelDate", "Invalid Job ID");
 			} catch (Exception e) {
 				AppUtils.logException(e);
 				conn.rollback();
 				responseCode = ResponseCode.SYSTEM_FAILURE;
-				messages.addMessage(WebMessages.GLOBAL_MESSAGE, "System Error");
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "System Error");
 			} 			
 		} else { 
 			responseCode = ResponseCode.EDIT_FAILURE;
 		}
-		jobDetailResponse.setWebMessages(messages);
-		super.sendResponse(conn, response, responseCode, jobDetailResponse);
+		quoteResponse.getQuote().setJobDetail(jobDetailResponse);
+		quoteResponse.setWebMessages(webMessages);
+		super.sendResponse(conn, response, responseCode, quoteResponse);
 	}
 
 	
 	private void doDeleteJob(Connection conn, Job job, JobRequest jobDetailRequest, SessionUser sessionUser, HttpServletResponse response, List<UserPermission> permissionList) throws Exception {
 		Integer jobId = job.getJobId();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
-		WebMessages messages = jobDetailRequest.validateDeleteJob(job);
+		WebMessages webMessages = jobDetailRequest.validateDeleteJob(job);
 		ResponseCode responseCode = null;
+		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
 		
-		if ( messages.isEmpty() ) {
+		if ( webMessages.isEmpty() ) {
 			try {
 				JobUtils.deleteJob(conn, jobId, sessionUser.getUserId());
 				JobUtils.renumberJobs(conn, job.getQuoteId(), sessionUser.getUserId());
 				conn.commit();
 				responseCode = ResponseCode.SUCCESS;
-				messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
 				jobDetailResponse = new JobDetailResponse(conn,jobId, permissionList);
 			} catch ( RecordNotFoundException e) {
 				responseCode = ResponseCode.EDIT_FAILURE;
-				messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Job ID");
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Job ID");
 			} catch (Exception e) {
 				AppUtils.logException(e);
 				conn.rollback();
 				responseCode = ResponseCode.SYSTEM_FAILURE;
-				messages.addMessage(WebMessages.GLOBAL_MESSAGE, "System Error");
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "System Error");
 			} 			
 		} else { 
 			responseCode = ResponseCode.EDIT_FAILURE;
 		}
-		jobDetailResponse.setWebMessages(messages);
-		super.sendResponse(conn, response, responseCode, jobDetailResponse);
+		quoteResponse.getQuote().setJobDetail(jobDetailResponse);
+		quoteResponse.setWebMessages(webMessages);
+		super.sendResponse(conn, response, responseCode, quoteResponse);
 	}
 
 	
@@ -568,31 +589,33 @@ public class JobServlet extends AbstractServlet {
 	private void doActivateJob(Connection conn, Job job, JobRequest jobDetailRequest, SessionUser sessionUser, HttpServletResponse response, List<UserPermission> permissionList) throws Exception {
 		Integer jobId = job.getJobId();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
-		WebMessages messages = new WebMessages();
+		WebMessages webMessages = new WebMessages();
 		ResponseCode responseCode = null;
+		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
+		
 		try {
 			if ( jobDetailRequest.getStartDate() == null ) {
-				messages.addMessage("startDate", "Required Field");
+				webMessages.addMessage("startDate", "Required Field");
 			}
 			if ( jobDetailRequest.getActivationDate() == null ) {
-				messages.addMessage("activationDate", "Required Field");
+				webMessages.addMessage("activationDate", "Required Field");
 			}
-			if ( messages.isEmpty() ) {
+			if ( webMessages.isEmpty() ) {
 				try {
 					logger.log(Level.DEBUG, "JobServlet 156");
 					JobUtils.activateJob(conn, jobId, jobDetailRequest.getStartDate(), jobDetailRequest.getActivationDate(), sessionUser.getUserId());
 					conn.commit();
 					responseCode = ResponseCode.SUCCESS;
-					messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
 				} catch ( RecordNotFoundException e) {
 					conn.rollback();
 					responseCode = ResponseCode.EDIT_FAILURE;
-					messages.addMessage("activationDate", "Invalid Job ID");
+					webMessages.addMessage("activationDate", "Invalid Job ID");
 				} catch (Exception e) {
 					AppUtils.logException(e);
 					conn.rollback();
 					responseCode = ResponseCode.SYSTEM_FAILURE;
-					messages.addMessage(WebMessages.GLOBAL_MESSAGE, "System Error");
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "System Error");
 				}
 			} else {
 				responseCode = ResponseCode.EDIT_FAILURE;
@@ -600,10 +623,11 @@ public class JobServlet extends AbstractServlet {
 			jobDetailResponse = new JobDetailResponse(conn,jobId, permissionList);
 		} catch ( RecordNotFoundException e) {
 			responseCode = ResponseCode.EDIT_FAILURE;
-			messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Job ID");
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Job ID");
 		}
-		jobDetailResponse.setWebMessages(messages);
-		super.sendResponse(conn, response, responseCode, jobDetailResponse);
+		quoteResponse.getQuote().setJobDetail(jobDetailResponse);
+		quoteResponse.setWebMessages(webMessages);
+		super.sendResponse(conn, response, responseCode, quoteResponse);
 		
 	}
 
@@ -611,32 +635,34 @@ public class JobServlet extends AbstractServlet {
 	private void doScheduleJob(Connection conn, Job job, JobRequest jobDetailRequest, SessionUser sessionUser, HttpServletResponse response, List<UserPermission> permissionList) throws Exception {
 		Integer jobId = job.getJobId();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
-		WebMessages messages = new WebMessages();
+		WebMessages webMessages = new WebMessages();
 		ResponseCode responseCode = null;
+		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
+		
 		try {
 			if ( jobDetailRequest.getStartDate() == null ) {
-				messages.addMessage("startDate", "Required Field");
+				webMessages.addMessage("startDate", "Required Field");
 			}
-			if ( messages.isEmpty() ) {
+			if ( webMessages.isEmpty() ) {
 				try {
 					logger.log(Level.DEBUG, "JobServlet 193");
 					JobUtils.rescheduleJob(conn, jobId, jobDetailRequest.getStartDate(), sessionUser.getUserId());
 					conn.commit();
 					responseCode = ResponseCode.SUCCESS;
-					messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
 				} catch ( RecordNotFoundException e) {
 					conn.rollback();
 					responseCode = ResponseCode.EDIT_FAILURE;
-					messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Job ID");
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Job ID");
 				} catch ( ActionNotPermittedException e) {
 					conn.rollback();
 					responseCode = ResponseCode.EDIT_FAILURE;
-					messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Action Not Permitted for this job");
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Action Not Permitted for this job");
 				} catch (Exception e) {
 					AppUtils.logException(e);
 					conn.rollback();
 					responseCode = ResponseCode.SYSTEM_FAILURE;
-					messages.addMessage(WebMessages.GLOBAL_MESSAGE, "System Error");
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "System Error");
 				}
 			} else {
 				responseCode = ResponseCode.EDIT_FAILURE;
@@ -644,10 +670,11 @@ public class JobServlet extends AbstractServlet {
 			jobDetailResponse = new JobDetailResponse(conn,jobId, permissionList);
 		} catch ( RecordNotFoundException e) {
 			responseCode = ResponseCode.EDIT_FAILURE;
-			messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Job ID");
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Job ID");
 		}
-		jobDetailResponse.setWebMessages(messages);
-		super.sendResponse(conn, response, responseCode, jobDetailResponse);
+		quoteResponse.getQuote().setJobDetail(jobDetailResponse);
+		quoteResponse.setWebMessages(webMessages);
+		super.sendResponse(conn, response, responseCode, quoteResponse);
 		
 	}
 
@@ -693,11 +720,11 @@ public class JobServlet extends AbstractServlet {
 		Date today = new Date();
 		Job job = new Job();
 
-		WebMessages messages = validateAdd(conn, jobRequest);
+		WebMessages webMessages = validateAdd(conn, jobRequest);
 		if(jobRequest.getQuoteId() != null && jobRequest.getQuoteId() ==0){
 			responseCode = ResponseCode.EDIT_FAILURE;
-			messages.addMessage(WebMessages.GLOBAL_MESSAGE, "No Quote ID, Try saving quote first");
-		} else if (messages.isEmpty()) {
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "No Quote ID, Try saving quote first");
+		} else if (webMessages.isEmpty()) {
 			job.setAddedBy(sessionUser.getUserId());
 			
 			job.setAddedDate(today);
@@ -834,13 +861,16 @@ public class JobServlet extends AbstractServlet {
 		}
 //		JobDetailResponse jobDetailResponse = new JobDetailResponse(conn, job.getJobId());
 //		JobResponse jobResponse = new JobResponse(job, messages);
-		jobDetailResponse.setWebMessages(messages);
-		super.sendResponse(conn, response, responseCode, jobDetailResponse);		
+
+		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
+		quoteResponse.getQuote().setJobDetail(jobDetailResponse);
+		quoteResponse.setWebMessages(webMessages);
+		super.sendResponse(conn, response, responseCode, quoteResponse);		
 		return job;
 	}
 	
 	protected Job doUpdate(Connection conn, Job key,JobRequest jobRequest, SessionUser sessionUser, List<UserPermission> permissionList, HttpServletResponse response) throws Exception {
-		WebMessages messages = new WebMessages();
+		WebMessages webMessages = new WebMessages();
 		ResponseCode responseCode = null;
 		
 
@@ -848,8 +878,8 @@ public class JobServlet extends AbstractServlet {
 		job.setJobId(key.getJobId());
 		job.selectOne(conn);
 
-		messages = validateUpdate(conn, key, jobRequest);
-		if (messages.isEmpty()) {
+		webMessages = validateUpdate(conn, key, jobRequest);
+		if (webMessages.isEmpty()) {
 //			job.insertHistory(conn);
 			if(jobRequest.getJobFrequency() != null) {
 				job.setJobFrequency(jobRequest.getJobFrequency());
@@ -1021,8 +1051,11 @@ public class JobServlet extends AbstractServlet {
 		logger.log(Level.DEBUG, "jobDetailResponse: " + jobDetailResponse);
 		logger.log(Level.DEBUG, "response: " + response);
 
-		jobDetailResponse.setWebMessages(messages);
-		super.sendResponse(conn, response, responseCode, jobDetailResponse);
+
+		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
+		quoteResponse.getQuote().setJobDetail(jobDetailResponse);
+		quoteResponse.setWebMessages(webMessages);
+		super.sendResponse(conn, response, responseCode, quoteResponse);
 
 		return job;
 	}
