@@ -167,7 +167,9 @@ public class PermissionServlet extends AbstractServlet {
 			AppUtils.validateSession(request, Permission.PERMISSIONS_READ);
 
 			url = new AnsiURL(request, "permission", new String[] { ACTION_IS_LIST });	
-			validateGroupId(conn, url.getId());
+			if ( StringUtils.isBlank(url.getCommand() )) {
+				validateGroupId(conn, url.getId());
+			}			
 			PermissionListResponse permissionListResponse = makePermissionListResponse(conn, url);
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");										// add messages to the response
 			
