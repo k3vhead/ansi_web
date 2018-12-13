@@ -568,7 +568,7 @@
 		    				data: null,			    				
 		    				statusCode: {
 		    					200: function($data) {
-		    						QUOTEMAINTENANCE.joblist[$jobId] = $data.data;
+		    						QUOTEMAINTENANCE.joblist[$jobId] = $data.data.quote.jobDetail;
 		    						var $destination = "#job" + $jobId + " .job-data-row";
 		    						$($destination).html($html);
 		    						QUOTEMAINTENANCE.populateJobPanel($jobId, $destination, $data.data);		    						
@@ -1663,50 +1663,51 @@
 		            populateJobPanel : function($jobId, $destination, $data) {	
 		            	console.log("Populate Job Panel");
 		            	console.log($data);
-		            	$($destination + " .jobProposalDisplayPanel .job-proposal-job-nbr").html($data.job.jobNbr);
-		            	$($destination + " .jobProposalDisplayPanel .job-proposal-ppc").html("$" + $data.job.pricePerCleaning);
-		            	$($destination + " .jobProposalDisplayPanel .job-proposal-freq").html($data.job.jobFrequency);
-		            	$($destination + " .jobProposalDisplayPanel .job-proposal-desc").html($data.job.serviceDescription);
+		            	$jobDetail = $data.quote.jobDetail
+		            	$($destination + " .jobProposalDisplayPanel .job-proposal-job-nbr").html($jobDetail.job.jobNbr);
+		            	$($destination + " .jobProposalDisplayPanel .job-proposal-ppc").html("$" + $jobDetail.job.pricePerCleaning);
+		            	$($destination + " .jobProposalDisplayPanel .job-proposal-freq").html($jobDetail.job.jobFrequency);
+		            	$($destination + " .jobProposalDisplayPanel .job-proposal-desc").html($jobDetail.job.serviceDescription);
 		            	
-		            	$($destination + " .jobActivationDisplayPanel .job-activation-dl-pct").html($data.job.directLaborPct);
-		            	$($destination + " .jobActivationDisplayPanel .job-activation-dl-budget").html($data.job.budget);
-		            	$($destination + " .jobActivationDisplayPanel .job-activation-floors").html($data.job.floors);
-		            	if ( $data.job.requestSpecialScheduling == 1 ) {
+		            	$($destination + " .jobActivationDisplayPanel .job-activation-dl-pct").html($jobDetail.job.directLaborPct);
+		            	$($destination + " .jobActivationDisplayPanel .job-activation-dl-budget").html($jobDetail.job.budget);
+		            	$($destination + " .jobActivationDisplayPanel .job-activation-floors").html($jobDetail.job.floors);
+		            	if ( $jobDetail.job.requestSpecialScheduling == 1 ) {
 		            		$($destination + " .jobActivationDisplayPanel .job-activation-schedule").html("Manual");
 		            	} else {
 		            		$($destination + " .jobActivationDisplayPanel .job-activation-schedule").html("Auto");
 		            	}
-		            	$($destination + " .jobActivationDisplayPanel .job-activation-equipment").html($data.job.equipment);
-		            	$($destination + " .jobActivationDisplayPanel .job-activation-washer-notes").html($data.job.washerNotes);
-		            	$($destination + " .jobActivationDisplayPanel .job-activation-om-notes").html($data.job.omNotes);
-		            	$($destination + " .jobActivationDisplayPanel .job-activation-billing-notes").html($data.job.billingNotes);
+		            	$($destination + " .jobActivationDisplayPanel .job-activation-equipment").html($jobDetail.job.equipment);
+		            	$($destination + " .jobActivationDisplayPanel .job-activation-washer-notes").html($jobDetail.job.washerNotes);
+		            	$($destination + " .jobActivationDisplayPanel .job-activation-om-notes").html($jobDetail.job.omNotes);
+		            	$($destination + " .jobActivationDisplayPanel .job-activation-billing-notes").html($jobDetail.job.billingNotes);
 
 		            	$($destination + " .jobDatesDisplayPanel .job-dates-proposed-date").html($data.quote.proposalDate);
-		            	$($destination + " .jobDatesDisplayPanel .job-dates-activation-date").html($data.job.activationDate);
-		            	$($destination + " .jobDatesDisplayPanel .job-dates-start-date").html($data.job.startDate);
-		            	$($destination + " .jobDatesDisplayPanel .job-dates-cancel-date").html($data.job.cancelDate);
-		            	$($destination + " .jobDatesDisplayPanel .job-dates-cancel-reason").html($data.job.cancelReason);
+		            	$($destination + " .jobDatesDisplayPanel .job-dates-activation-date").html($jobDetail.job.activationDate);
+		            	$($destination + " .jobDatesDisplayPanel .job-dates-start-date").html($jobDetail.job.startDate);
+		            	$($destination + " .jobDatesDisplayPanel .job-dates-cancel-date").html($jobDetail.job.cancelDate);
+		            	$($destination + " .jobDatesDisplayPanel .job-dates-cancel-reason").html($jobDetail.job.cancelReason);
 		            			            	
-		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-purchase-order").html($data.job.poNumber);
-		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-vendor-nbr").html($data.job.ourVendorNbr);
-		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-expire-date").html($data.job.expirationDate);
-		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-expire-reason").html($data.job.expirationReason);
+		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-purchase-order").html($jobDetail.job.poNumber);
+		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-vendor-nbr").html($jobDetail.job.ourVendorNbr);
+		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-expire-date").html($jobDetail.job.expirationDate);
+		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-expire-reason").html($jobDetail.job.expirationReason);
 		            	
-		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-last-run").html($data.lastRun.startDate);		            	
-		            	if ( $data.job.repeatScheduleAnnually == 1 ) {
+		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-last-run").html($jobDetail.lastRun.startDate);		            	
+		            	if ( $jobDetail.job.repeatScheduleAnnually == 1 ) {
 		            		$($destination + " input[name='repeatedAnnually']").prop("checked", true);
 		            	} else {
 		            		$($destination + " input[name='repeatedAnnually']").prop("checked", false);
 		            	}
-		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-next-due").html($data.nextDue.startDate);
-		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-created-thru").html($data.lastCreated.startDate);
+		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-next-due").html($jobDetail.nextDue.startDate);
+		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-created-thru").html($jobDetail.lastCreated.startDate);
 		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-ticket-list").attr("href", "ticketLookup.html?jobId="+$jobId);
 		            	
 		            	
-		            	$($destination + " .jobAuditDisplayPanel .job-audit-created-by").html($data.job.addedFirstName + " " + $data.job.addedLastName);	
-		            	$($destination + " .jobAuditDisplayPanel .job-audit-created-date").html($data.job.addedDate);	
-		            	$($destination + " .jobAuditDisplayPanel .job-audit-updated-by").html($data.job.updatedFirstName + " " + $data.job.updatedLastName);	
-		            	$($destination + " .jobAuditDisplayPanel .job-audit-updated-date").html($data.job.updatedDate);
+		            	$($destination + " .jobAuditDisplayPanel .job-audit-created-by").html($jobDetail.job.addedFirstName + " " + $jobDetail.job.addedLastName);	
+		            	$($destination + " .jobAuditDisplayPanel .job-audit-created-date").html($jobDetail.job.addedDate);	
+		            	$($destination + " .jobAuditDisplayPanel .job-audit-updated-by").html($jobDetail.job.updatedFirstName + " " + $jobDetail.job.updatedLastName);	
+		            	$($destination + " .jobAuditDisplayPanel .job-audit-updated-date").html($jobDetail.job.updatedDate);
 		            	
 		            	$anchorName = "job" + $jobId;
 						$anchor = $("a[name='" + $anchorName + "']");
@@ -2141,10 +2142,11 @@
 						} else {
 							console.log("Update header success:");
 							console.log($data);
-							QUOTEMAINTENANCE.joblist[$data.data.job.jobId] = $data.data;
+							var $jobId = $data.data.quote.jobDetail.job.jobId;
+							QUOTEMAINTENANCE.joblist[$jobId] = $data.data.quote.jobDetail;
 							console.log("do something to populate the job panels here");
-							var $destination = "#job" + $data.data.job.jobId + " .job-data-row";
-    						QUOTEMAINTENANCE.populateJobPanel($data.data.job.jobId, $destination, $data.data);
+							var $destination = "#job" + $jobId + " .job-data-row";
+    						QUOTEMAINTENANCE.populateJobPanel($jobId, $destination, $data.data);
 							$("#globalMsg").html("Update Successful").show().fadeOut(3000);
 							$("#job-edit-modal").dialog("close");
 						}

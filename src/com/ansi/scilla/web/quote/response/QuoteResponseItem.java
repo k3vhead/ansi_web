@@ -29,6 +29,7 @@ import com.ansi.scilla.web.common.utils.UserPermission;
 import com.ansi.scilla.web.job.query.ContactItem;
 import com.ansi.scilla.web.job.query.JobContact;
 import com.ansi.scilla.web.job.query.JobHeader;
+import com.ansi.scilla.web.job.response.JobDetailResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -42,6 +43,7 @@ public class QuoteResponseItem extends MessageResponse {
 	private AddressResponseItem jobSite;
 	private JobContact jobContact;
 	private List<JobHeader> jobHeaderList;
+	private JobDetailResponse jobDetail;
 	private ContactItem signedBy;
 	private Boolean canEdit;
 	private Boolean canAddJob;
@@ -149,6 +151,14 @@ public class QuoteResponseItem extends MessageResponse {
 
 	public void setJobHeaderList(List<JobHeader> jobHeaderList) {
 		this.jobHeaderList = jobHeaderList;
+	}
+
+	public JobDetailResponse getJobDetail() {
+		return jobDetail;
+	}
+
+	public void setJobDetail(JobDetailResponse jobDetail) {
+		this.jobDetail = jobDetail;
 	}
 
 	public Boolean getCanEdit() {

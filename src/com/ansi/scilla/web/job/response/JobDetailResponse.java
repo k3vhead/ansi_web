@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
+import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Address;
 import com.ansi.scilla.common.db.Job;
 import com.ansi.scilla.common.db.Quote;
@@ -13,7 +14,6 @@ import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.db.ViewTicketLog;
 import com.ansi.scilla.web.address.response.AddressResponseItem;
-import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.UserPermission;
 import com.ansi.scilla.web.job.query.JobHeader;
@@ -22,7 +22,7 @@ import com.ansi.scilla.web.ticket.response.TicketLogRecord;
 import com.ansi.scilla.web.ticket.response.TicketRecord;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
-public class JobDetailResponse extends MessageResponse {
+public class JobDetailResponse extends ApplicationObject {
 
 	private static final long serialVersionUID = 1L;
 	
