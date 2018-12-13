@@ -236,7 +236,6 @@ public class JobServlet extends AbstractServlet {
 		WebMessages webMessages = new WebMessages();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		ResponseCode responseCode = null;
-		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
 		
 		try {
 			webMessages = jobRequest.validateProposalUpdate();
@@ -257,6 +256,7 @@ public class JobServlet extends AbstractServlet {
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "System Failure");
 		}
 		
+		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
 		quoteResponse.getQuote().setJobDetail(jobDetailResponse);
 		quoteResponse.setWebMessages(webMessages);
 		super.sendResponse(conn, response, responseCode, quoteResponse);
@@ -282,7 +282,6 @@ public class JobServlet extends AbstractServlet {
 		WebMessages webMessages = new WebMessages();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		ResponseCode responseCode = null;
-		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
 		
 		try {
 			webMessages = jobRequest.validateActivationUpdate();
@@ -303,6 +302,7 @@ public class JobServlet extends AbstractServlet {
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "System Failure");
 		}
 		
+		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
 		quoteResponse.getQuote().setJobDetail(jobDetailResponse);
 		quoteResponse.setWebMessages(webMessages);
 		super.sendResponse(conn, response, responseCode, quoteResponse);
@@ -336,7 +336,6 @@ public class JobServlet extends AbstractServlet {
 		WebMessages webMessages = new WebMessages();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		ResponseCode responseCode = null;
-		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
 		
 		try {
 			webMessages = jobRequest.validateInvoiceUpdate();
@@ -357,6 +356,7 @@ public class JobServlet extends AbstractServlet {
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "System Failure");
 		}
 		
+		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
 		quoteResponse.getQuote().setJobDetail(jobDetailResponse);
 		quoteResponse.setWebMessages(webMessages);
 		super.sendResponse(conn, response, responseCode, quoteResponse);
@@ -380,7 +380,6 @@ public class JobServlet extends AbstractServlet {
 		WebMessages webMessages = new WebMessages();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		ResponseCode responseCode = null;
-		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
 		
 		try {
 			webMessages = jobRequest.validateScheduleUpdate();
@@ -401,6 +400,7 @@ public class JobServlet extends AbstractServlet {
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "System Failure");
 		}
 		
+		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
 		quoteResponse.getQuote().setJobDetail(jobDetailResponse);
 		quoteResponse.setWebMessages(webMessages);
 		super.sendResponse(conn, response, responseCode, quoteResponse);
@@ -423,7 +423,6 @@ public class JobServlet extends AbstractServlet {
 		WebMessages webMessages = new WebMessages();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		ResponseCode responseCode = null;
-		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
 		
 		try {
 			webMessages = jobRequest.validateNewJob(conn);
@@ -444,6 +443,7 @@ public class JobServlet extends AbstractServlet {
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "System Failure");
 		}
 		
+		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
 		quoteResponse.getQuote().setJobDetail(jobDetailResponse);
 		quoteResponse.setWebMessages(webMessages);
 		super.sendResponse(conn, response, responseCode, quoteResponse);
@@ -519,7 +519,6 @@ public class JobServlet extends AbstractServlet {
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		WebMessages webMessages = new WebMessages();
 		ResponseCode responseCode = null;
-		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
 		
 		if ( StringUtils.isBlank(jobDetailRequest.getCancelReason())) {
 			webMessages.addMessage("cancelReason", "Required Field");
@@ -546,6 +545,7 @@ public class JobServlet extends AbstractServlet {
 		} else { 
 			responseCode = ResponseCode.EDIT_FAILURE;
 		}
+		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
 		quoteResponse.getQuote().setJobDetail(jobDetailResponse);
 		quoteResponse.setWebMessages(webMessages);
 		super.sendResponse(conn, response, responseCode, quoteResponse);
@@ -557,7 +557,6 @@ public class JobServlet extends AbstractServlet {
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		WebMessages webMessages = jobDetailRequest.validateDeleteJob(job);
 		ResponseCode responseCode = null;
-		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
 		
 		if ( webMessages.isEmpty() ) {
 			try {
@@ -579,6 +578,7 @@ public class JobServlet extends AbstractServlet {
 		} else { 
 			responseCode = ResponseCode.EDIT_FAILURE;
 		}
+		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
 		quoteResponse.getQuote().setJobDetail(jobDetailResponse);
 		quoteResponse.setWebMessages(webMessages);
 		super.sendResponse(conn, response, responseCode, quoteResponse);
@@ -591,7 +591,6 @@ public class JobServlet extends AbstractServlet {
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		WebMessages webMessages = new WebMessages();
 		ResponseCode responseCode = null;
-		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
 		
 		try {
 			if ( jobDetailRequest.getStartDate() == null ) {
@@ -625,6 +624,7 @@ public class JobServlet extends AbstractServlet {
 			responseCode = ResponseCode.EDIT_FAILURE;
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Job ID");
 		}
+		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
 		quoteResponse.getQuote().setJobDetail(jobDetailResponse);
 		quoteResponse.setWebMessages(webMessages);
 		super.sendResponse(conn, response, responseCode, quoteResponse);
@@ -637,7 +637,6 @@ public class JobServlet extends AbstractServlet {
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		WebMessages webMessages = new WebMessages();
 		ResponseCode responseCode = null;
-		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
 		
 		try {
 			if ( jobDetailRequest.getStartDate() == null ) {
@@ -672,6 +671,7 @@ public class JobServlet extends AbstractServlet {
 			responseCode = ResponseCode.EDIT_FAILURE;
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Job ID");
 		}
+		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
 		quoteResponse.getQuote().setJobDetail(jobDetailResponse);
 		quoteResponse.setWebMessages(webMessages);
 		super.sendResponse(conn, response, responseCode, quoteResponse);
