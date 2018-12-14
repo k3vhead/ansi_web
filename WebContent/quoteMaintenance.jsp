@@ -2149,6 +2149,8 @@
     						QUOTEMAINTENANCE.populateJobPanel($jobId, $destination, $data.data);
 							$("#globalMsg").html("Update Successful").show().fadeOut(3000);
 							$("#job-edit-modal").dialog("close");
+							
+							QUOTEMAINTENANCE.showJobUpdates($data.data);
 						}
 					},
 					
@@ -2285,6 +2287,29 @@
 	            		$("#job-schedule-modal").dialog("open");	            		
 					},
 					
+					
+					
+					showJobUpdates : function($data) {
+						console.log("showJobUpdates");
+						console.log(QUOTEMAINTENANCE.quote);
+						QUOTEMAINTENANCE.jobId = $data.quote.jobDetail.job.jobId
+						//repopulate QUOTEMAINTENANCE.quote
+						QUOTEMAINTENANCE.quote = $data.quote;
+						QUOTEMAINTENANCE.joblist = {};
+						//put job headers in job table
+						QUOTEMAINTENANCE.joblist[QUOTEMAINTENANCE.jobId] = $data
+						QUOTEMAINTENANCE.populateJobHeader($data.quote.jobHeaderList)
+						QUOTEMAINTENANCE.makeJobExpansion();
+						
+						
+						$.each( $("#jobList li .job-hider"), function($index, $value) {
+							var $jobid = $($value).attr("data-jobid");
+							if ( $jobid == QUOTEMAINTENANCE.jobId ) {
+								$($value).click();
+							}
+						});
+						QUOTEMAINTENANCE.jobId = null;
+					},
 					
 					
 					showQuote : function() {
