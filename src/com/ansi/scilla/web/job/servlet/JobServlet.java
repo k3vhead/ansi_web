@@ -554,7 +554,7 @@ public class JobServlet extends AbstractServlet {
 	
 	private void doDeleteJob(Connection conn, Job job, JobRequest jobDetailRequest, SessionUser sessionUser, HttpServletResponse response, List<UserPermission> permissionList) throws Exception {
 		Integer jobId = job.getJobId();
-		JobDetailResponse jobDetailResponse = new JobDetailResponse();
+//		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		WebMessages webMessages = jobDetailRequest.validateDeleteJob(job);
 		ResponseCode responseCode = null;
 		
@@ -565,7 +565,7 @@ public class JobServlet extends AbstractServlet {
 				conn.commit();
 				responseCode = ResponseCode.SUCCESS;
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
-				jobDetailResponse = new JobDetailResponse(conn,jobId, permissionList);
+//				jobDetailResponse = new JobDetailResponse(conn,jobId, permissionList);
 			} catch ( RecordNotFoundException e) {
 				responseCode = ResponseCode.EDIT_FAILURE;
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Job ID");
@@ -579,7 +579,8 @@ public class JobServlet extends AbstractServlet {
 			responseCode = ResponseCode.EDIT_FAILURE;
 		}
 		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
-		quoteResponse.getQuote().setJobDetail(jobDetailResponse);
+//		All the other actions populate a jobDetail here. Since we're deleting, there is no job to detail
+//		quoteResponse.getQuote().setJobDetail(jobDetailResponse);
 		quoteResponse.setWebMessages(webMessages);
 		super.sendResponse(conn, response, responseCode, quoteResponse);
 	}

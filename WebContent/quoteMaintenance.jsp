@@ -138,15 +138,18 @@
 								}
 							});
 							// header
-							var $headerDestination = "#job" + $data.data.job.jobId + " .jobTitleRow";
+							var $jobId = $data.data.quote.jobDetail.job.jobId;
+							var $headerDestination = "#job" + $jobId + " .jobTitleRow";
 							$($headerDestination).html("");
 							$($headerDestination).append($replacementJobHeader);
 							QUOTEMAINTENANCE.makeJobClickers();
 							// detail
-							var $dataDestination = "#job" + $data.data.job.jobId + " .job-data-row";
-							QUOTEMAINTENANCE.populateJobPanel($data.data.job.jobId, $dataDestination, $data.data);
+							var $dataDestination = "#job" + $jobId + " .job-data-row";
+							QUOTEMAINTENANCE.populateJobPanel($data.jobId, $dataDestination, $data.data);
 							$("#job-activate-modal").dialog("close");
 							$("#globalMsg").html("Job Activated").show().fadeOut(3000);
+							
+							QUOTEMAINTENANCE.showJobUpdates($data.data);
 						}
 					}, 
 					
@@ -192,11 +195,13 @@
 							});							
 						} else {
 							QUOTEMAINTENANCE.quote = $data.data.quote;
-							// call this:  populateJobPanel : function($jobId, $destination, $data
-							var $destination = "#job" + $data.data.job.jobId + " .job-data-row";
-							QUOTEMAINTENANCE.populateJobPanel($data.data.job.jobId, $destination, $data.data);
+							$jobId = $data.data.quote.jobDetail.job.jobId;
+							var $destination = "#job" + $jobId + " .job-data-row";
+							QUOTEMAINTENANCE.populateJobPanel($jobId, $destination, $data.data);
 							$("#job-cancel-modal").dialog("close");
 							$("#globalMsg").html("Job Canceled").show().fadeOut(3000);
+							
+							QUOTEMAINTENANCE.showJobUpdates($data.data);
 						}
 					}, 
 					
@@ -273,6 +278,8 @@
 							//QUOTEMAINTENANCE.populateJobHeader($data.quoteList[0].jobHeaderList)
 							$("#job-delete-modal").dialog("close");
 							$("#globalMsg").html("Job Deleted").show().fadeOut(3000);
+							
+							QUOTEMAINTENANCE.showJobUpdates($data.data);
 						}
 					},
 	            	
@@ -1709,7 +1716,8 @@
 		            	$($destination + " .jobAuditDisplayPanel .job-audit-updated-by").html($jobDetail.job.updatedFirstName + " " + $jobDetail.job.updatedLastName);	
 		            	$($destination + " .jobAuditDisplayPanel .job-audit-updated-date").html($jobDetail.job.updatedDate);
 		            	
-		            	$anchorName = "job" + $jobId;
+		            	$anchorName = "job" + $jobDetail.job.jobId;
+		            	console.log($anchorName);
 						$anchor = $("a[name='" + $anchorName + "']");
 						$('html,body').animate({scrollTop: $anchor.offset().top},'slow');
 		            },
@@ -2107,9 +2115,6 @@
 					
 					
 					saveJobSuccess : function($data) {
-						//QUOTEMAINTENANCE.populateJobHeader($data.data.jobHeaderList)
-						//QUOTEMAINTENANCE.makeJobExpansion();
-						
 						console.log("Job success");
 						console.log($data);
 						$('#job-edit-modal input').bind("focus", function() {
@@ -2268,11 +2273,13 @@
 							});							
 						} else {
 							QUOTEMAINTENANCE.quote = $data.data.quote;
-							// call this:  populateJobPanel : function($jobId, $destination, $data
-							var $destination = "#job" + $data.data.job.jobId + " .job-data-row";
-							QUOTEMAINTENANCE.populateJobPanel($data.data.job.jobId, $destination, $data.data);
+							$jobId = $data.data.quote.jobDetail.job.jobId;
+							var $destination = "#job" + $jobId + " .job-data-row";
+							QUOTEMAINTENANCE.populateJobPanel($jobId, $destination, $data.data);
 							$("#job-schedule-modal").dialog("close");
 							$("#globalMsg").html("Job Scheduled").show().fadeOut(3000);
+							
+							QUOTEMAINTENANCE.showJobUpdates($data.data);
 						}
 					}, 
 					
