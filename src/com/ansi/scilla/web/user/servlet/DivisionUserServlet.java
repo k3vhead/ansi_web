@@ -29,7 +29,9 @@ public class DivisionUserServlet extends AbstractServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
+	
+	public static final String REALM = "user";
+	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
@@ -51,7 +53,7 @@ public class DivisionUserServlet extends AbstractServlet {
 			SessionData sessionData = AppUtils.validateSession(request, Permission.USER_ADMIN_WRITE);
 			SessionUser sessionUser = sessionData.getUser();
 			String jsonString = super.makeJsonString(request);
-			//url = new AnsiURL(request, REALM, new String[] {ACTION_IS_ADD});
+			url = new AnsiURL(request, REALM, new String[] {ACTION_IS_ADD});
 			if ( url.getId() == null && StringUtils.isBlank(url.getCommand())) {
 				super.sendNotFound(response);
 			} else {
