@@ -1626,7 +1626,7 @@
 		            
 		            
 		            populateJobHeader : function($jobHeaderList) {
-		            	console.log("populageJobHeader");
+		            	console.log("populateJobHeader");
 		            	$("#jobList").html("");
 		            	$.each($jobHeaderList, function($index, $value) {
 		            		$jobListItem = $("<li>");
@@ -2086,7 +2086,7 @@
 							$outbound['invoiceTerms'] = QUOTEMAINTENANCE.quote.quote.invoiceTerms;
 							$outbound['jobContactId'] = QUOTEMAINTENANCE.quote.jobContact.jobContact.contactId;
 							//$outbound['jobTypeId'] = QUOTEMAINTENANCE.quote
-							$outbound['paymentTerms'] = QUOTEMAINTENANCE.quote.quote.paymentTerms;
+							$outbound['paymentTerms'] = QUOTEMAINTENANCE.quote.quote.invoiceTerms;
 							$outbound['quoteId'] = QUOTEMAINTENANCE.quote.quote.quoteId;
 							$outbound['siteContact'] = QUOTEMAINTENANCE.quote.jobContact.siteContact.contactId;
 							$outbound['taxExempt'] = QUOTEMAINTENANCE.quote.quote.taxExempt;
@@ -2150,8 +2150,8 @@
 							var $jobId = $data.data.quote.jobDetail.job.jobId;
 							QUOTEMAINTENANCE.joblist[$jobId] = $data.data.quote.jobDetail;
 							console.log("do something to populate the job panels here");
-							var $destination = "#job" + $jobId + " .job-data-row";
-    						QUOTEMAINTENANCE.populateJobPanel($jobId, $destination, $data.data);
+							//var $destination = "#job" + $jobId + " .job-data-row";
+    						//QUOTEMAINTENANCE.populateJobPanel($jobId, $destination, $data.data);
 							$("#globalMsg").html("Update Successful").show().fadeOut(3000);
 							$("#job-edit-modal").dialog("close");
 							

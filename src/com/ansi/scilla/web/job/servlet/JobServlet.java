@@ -134,19 +134,13 @@ public class JobServlet extends AbstractServlet {
 				
 				// After we delete, there are no job details to return, but we still need the job headers
 				// so the page can redisplay them
-				if ( action == JobRequestAction.DELETE_JOB ) {
-					quoteResponse = new QuoteResponse(conn, quote, webMessages, permissionList);
-//					jobDetailResponse = new JobDetailResponse();
-//					List<JobHeader> jobHeaderList = JobHeader.getJobHeaderList(conn, quote, permissionList);	
-//					if ( jobHeaderList.size() == 1 ) {
-//						jobHeaderList.get(0).setCanDelete(false); // don't delete the only job you've got
-//					}
-//					jobDetailResponse.setJobHeaderList(jobHeaderList);
-				} else {
-					JobDetailResponse jobDetail = new JobDetailResponse(conn, url.getId(), permissionList);
-					quoteResponse = new QuoteResponse(conn, url.getId(), permissionList);
-					quoteResponse.getQuote().setJobDetail(jobDetail);
-				}
+//				if ( action == JobRequestAction.DELETE_JOB ) {
+//					quoteResponse = new QuoteResponse(conn, quote, webMessages, permissionList);
+//				} else {
+//					JobDetailResponse jobDetail = new JobDetailResponse(conn, url.getId(), permissionList);
+//					quoteResponse = new QuoteResponse(conn, url.getId(), permissionList);
+//					quoteResponse.getQuote().setJobDetail(jobDetail);
+//				}
 			} catch ( JobProcessException e ) {
 				conn.rollback();
 				responseCode = ResponseCode.SYSTEM_FAILURE;
@@ -423,12 +417,13 @@ public class JobServlet extends AbstractServlet {
 		WebMessages webMessages = new WebMessages();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		ResponseCode responseCode = null;
+		Integer newJobId = null;
 		
 		try {
 			webMessages = jobRequest.validateNewJob(conn);
 			if ( webMessages.isEmpty() ) {
 				populateNewJob(job, jobRequest);
-				Integer newJobId = insertJob(conn, user, job);
+				newJobId = insertJob(conn, user, job);
 				conn.commit();
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
 				responseCode = ResponseCode.SUCCESS;
@@ -442,8 +437,11 @@ public class JobServlet extends AbstractServlet {
 			responseCode = ResponseCode.SYSTEM_FAILURE;
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "System Failure");
 		}
-		
-		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
+		logger.log(Level.DEBUG, "Job id: " + newJobId);
+		logger.log(Level.DEBUG, "responseCode: " + responseCode);
+		logger.log(Level.DEBUG, "responwebMessagesseCode: " + webMessages);
+		Quote quote = selectQuote(conn, job, jobRequest);
+		QuoteResponse quoteResponse = new QuoteResponse(conn, quote, webMessages, permissionList);
 		quoteResponse.getQuote().setJobDetail(jobDetailResponse);
 		quoteResponse.setWebMessages(webMessages);
 		super.sendResponse(conn, response, responseCode, quoteResponse);
@@ -487,7 +485,7 @@ public class JobServlet extends AbstractServlet {
 	
 	
 	private Quote selectQuote(Connection conn, Job job, JobRequest jobRequest) throws RecordNotFoundException, Exception {
-		Integer quoteId = job == null ? jobRequest.getQuoteId() : job.getQuoteId();
+		Integer quoteId = job == null || job.getQuoteId() == null ? jobRequest.getQuoteId() : job.getQuoteId();
 		Quote quote =new Quote();
 		quote.setQuoteId(quoteId);
 		quote.selectOne(conn);
@@ -508,6 +506,7 @@ public class JobServlet extends AbstractServlet {
 		job.setAddedBy(user.getUserId());
 		job.setUpdatedBy(user.getUserId());
 		Integer jobId = job.insertWithKey(conn);
+		logger.log(Level.DEBUG, "Job id: " + jobId);
 		return jobId;
 	}
 

@@ -7,6 +7,9 @@ import java.sql.Connection;
 import java.util.Date;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.db.Job;
 import com.ansi.scilla.common.jobticket.JobStatus;
@@ -73,8 +76,11 @@ public class JobRequest extends AbstractRequest{
 	private Date proposalDate;
 	private Boolean annualRepeat;
 	
+	private Logger logger;
+	
 	public JobRequest() {
 		super();
+		this.logger = LogManager.getLogger(this.getClass());
 	}
 	
 	public JobRequest(String jsonString) throws JsonException, IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException, NoSuchMethodException, InstantiationException {
@@ -621,7 +627,8 @@ public class JobRequest extends AbstractRequest{
 		RequestValidator.validateInvoiceTerms(webMessages, "invoiceTerms", this.invoiceTerms, true);
 		RequestValidator.validateId(conn, webMessages, "contact", "contact_id", "jobContactId", this.jobContactId, true);
 //		job.setJobTypeId(this.getJobTypeId());
-		RequestValidator.validatePaymentTerms(webMessages, "paymentTerms", this.paymentTerms, true);
+		logger.log(Level.INFO, "Payment terms -- is that a thing?");
+//		RequestValidator.validatePaymentTerms(webMessages, "paymentTerms", this.paymentTerms, true);
 		RequestValidator.validateId(conn, webMessages, "quote", "quote_id", "quoteId", this.quoteId, true);
 		RequestValidator.validateId(conn, webMessages, "contact", "contact_id", "siteContact", this.siteContact, true);
 		RequestValidator.validateBoolean(webMessages, "taxExempt", this.taxExempt, true);

@@ -29,7 +29,7 @@ public class QuoteResponse extends MessageResponse implements Serializable {
 	}
 	
 	public QuoteResponse(Connection conn, Integer jobId, List<UserPermission>permissionList) throws Exception {
-		super();
+		this();
 		String sql = "select quote.* from job inner join quote on quote.quote_id=job.quote_id where job.job_id=?";
 		PreparedStatement ps = conn.prepareStatement(sql);
 		ps.setInt(1,  jobId);
