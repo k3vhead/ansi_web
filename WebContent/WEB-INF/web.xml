@@ -187,6 +187,15 @@
     	<servlet-name>divisionTypeAhead</servlet-name>
     	<url-pattern>/divisionTypeAhead/*</url-pattern>
     </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>divisionUser</servlet-name>
+        <servlet-class>com.ansi.scilla.web.user.servlet.DivisionUserServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>divisionUser</servlet-name>
+        <url-pattern>/divisionUser/*</url-pattern>
+    </servlet-mapping>
 
 
     <servlet>
