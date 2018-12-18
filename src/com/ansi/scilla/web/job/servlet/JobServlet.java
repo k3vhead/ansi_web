@@ -577,7 +577,8 @@ public class JobServlet extends AbstractServlet {
 		} else { 
 			responseCode = ResponseCode.EDIT_FAILURE;
 		}
-		QuoteResponse quoteResponse = new QuoteResponse(conn, job.getJobId(), permissionList);
+		Quote quote = selectQuote(conn, job, jobDetailRequest);
+		QuoteResponse quoteResponse = new QuoteResponse(conn, quote, webMessages, permissionList);
 //		All the other actions populate a jobDetail here. Since we're deleting, there is no job to detail
 //		quoteResponse.getQuote().setJobDetail(jobDetailResponse);
 		quoteResponse.setWebMessages(webMessages);

@@ -2299,22 +2299,25 @@
 					showJobUpdates : function($data) {
 						console.log("showJobUpdates");
 						console.log(QUOTEMAINTENANCE.quote);
-						QUOTEMAINTENANCE.jobId = $data.quote.jobDetail.job.jobId
 						//repopulate QUOTEMAINTENANCE.quote
 						QUOTEMAINTENANCE.quote = $data.quote;
 						QUOTEMAINTENANCE.joblist = {};
-						//put job headers in job table
-						QUOTEMAINTENANCE.joblist[QUOTEMAINTENANCE.jobId] = $data
 						QUOTEMAINTENANCE.populateJobHeader($data.quote.jobHeaderList)
 						QUOTEMAINTENANCE.makeJobExpansion();
 						
+						//deletes don't return a job detail -- so check
+						if ( $data.quote.jobDetail != null ) {
+							QUOTEMAINTENANCE.jobId = $data.quote.jobDetail.job.jobId
+							//put job headers in job table
+							QUOTEMAINTENANCE.joblist[QUOTEMAINTENANCE.jobId] = $data
+							$.each( $("#jobList li .job-hider"), function($index, $value) {
+								var $jobid = $($value).attr("data-jobid");
+								if ( $jobid == QUOTEMAINTENANCE.jobId ) {
+									$($value).click();
+								}
+							});
+						}
 						
-						$.each( $("#jobList li .job-hider"), function($index, $value) {
-							var $jobid = $($value).attr("data-jobid");
-							if ( $jobid == QUOTEMAINTENANCE.jobId ) {
-								$($value).click();
-							}
-						});
 						QUOTEMAINTENANCE.jobId = null;
 					},
 					
