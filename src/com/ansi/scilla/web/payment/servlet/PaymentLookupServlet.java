@@ -66,7 +66,7 @@ public class PaymentLookupServlet extends AbstractServlet {
 		String dir = "asc";
 		String[] cols = { "payment.payment_id", "payment.amount", "payment.payment_date", "payment.type", "payment.check_nbr", 
 						"payment.check_date", "ticket_payment.ticket_id", "ticket_payment.amount", "ticket_payment.tax_amt", 
-						"ticket_div", "ticket.invoice_id", "bill_to.name", "job_site.name",  "payment.note" };
+						"ticket_div", "ticket.invoice_id", "ticket.ticket_status", "bill_to.name", "job_site.name",  "payment.note" };
 		String sStart = request.getParameter("start");
 	    String sAmount = request.getParameter("length");
 	    String sDraw = request.getParameter("draw");
