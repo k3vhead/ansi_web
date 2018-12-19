@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.permission.request.PermissionRequest;
+import com.ansi.scilla.web.user.request.DivisionUserRequest;
 
 
 public class JoshuaServletTester extends TestServlet {
@@ -62,8 +63,9 @@ public class JoshuaServletTester extends TestServlet {
 		
 		
 //		String results = testListOfAllPermission(sessionCookie);
-		String results = testListOfGroupPermission(sessionCookie);
+//		String results = testListOfGroupPermission(sessionCookie);
 //		String results = testChangePermissionsForGroup(sessionCookie);
+		String results = testDivUserServUpdate(sessionCookie);
 		
 		super.doLogoff(sessionCookie);
 		
@@ -113,7 +115,17 @@ public class JoshuaServletTester extends TestServlet {
 		return results;
 	}
 
-
+	private String testDivUserServUpdate(Header sessionCookie) throws Exception {
+		String url = "/ansi_web/divisionUser/1";
+		
+		DivisionUserRequest request = new DivisionUserRequest();
+		request.setDivisionId(1);
+		request.setActive(true);
+		String json = AppUtils.object2json(request);
+		logger.log(Level.DEBUG, json);
+		String results = super.doPost(sessionCookie, url, json);
+		return results;
+	}
 
 
 	private void xxxx(Header sessionCookie) throws Exception {
