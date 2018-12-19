@@ -1914,15 +1914,8 @@
 						}
 						console.log("QUOTEMAINTENANCE.quote");
 						console.log(QUOTEMAINTENANCE.quote);
-						console.log("QUOTEMAINTENANCE.quote.data");
-						console.log(QUOTEMAINTENANCE.quote.data);
-						console.log("QUOTEMAINTENANCE.quote.data.quote");
-						console.log(QUOTEMAINTENANCE.quote.data.quote);
-						console.log("QUOTEMAINTENANCE.quote.data.quote.quote");
-						console.log(QUOTEMAINTENANCE.quote.data.quote.quote);
-						console.log("QUOTEMAINTENANCE.quote.data.quote.quote.quoteId");
-						console.log(QUOTEMAINTENANCE.quote.data.quote.quote.quoteId);
-						var $quoteId = QUOTEMAINTENANCE.quote.data.quote.quote.quoteId;
+						var $quoteId = QUOTEMAINTENANCE.quote.quote.quoteId;
+						console.log("QUOTE ID: " + $quoteId);
 						var $addressLabel = $addressLabels[$addressType];
 						var $outbound = {};
 						$outbound["quoteId"]=$quoteId;
@@ -2654,34 +2647,7 @@
 	    </ansi:hasPermission>
 	    
 	    
-	    <ansi:hasPermission permissionRequired="QUOTE_CREATE">
-		    <div id="address-edit-modal" class="edit-modal">		    	
-		    	<span class="formLabel">Address:</span> <input type="text" name="address-name" />
-		    	<span class="errMsg err"></span>
-		    	<br /><hr /><br />
-		    	<quote:addressDisplayPanel id="address-edit-display" label="Name" />
-		    	<div class="none-found">
-		    		<span class="err">No Matching Addresses</span>
-		    	</div>
-		    </div>
-	    </ansi:hasPermission>
-	    
-	    <ansi:hasPermission permissionRequired="QUOTE_CREATE">
-	    	<div id="job-edit-modal" class="edit-modal">
-	    		<div class="job-edit-panel proposal">
-	    			<jsp:include page="quoteMaintenance/jobProposalEditPanel.jsp" />
-	    		</div>
-	    		<div class="job-edit-panel activation">
-	    			<jsp:include page="quoteMaintenance/jobActivationEditPanel.jsp" />
-	    		</div>
-	    		<div class="job-edit-panel invoice">
-	    			<jsp:include page="quoteMaintenance/jobInvoiceEditPanel.jsp" />
-	    		</div>
-	    		<div class="job-edit-panel schedule">
-	    			<jsp:include page="quoteMaintenance/jobScheduleEditPanel.jsp" />
-	    		</div>
-	    	</div>
-	    </ansi:hasPermission>
+	    <jsp:include page="quoteModals.jsp" />
 	    
 	    
 	    <ansi:hasPermission permissionRequired="QUOTE_PROPOSE">
