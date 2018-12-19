@@ -34,18 +34,23 @@ public class DivisionUserResponse extends MessageResponse{
         super();
     }
 
-    public DivisionUserResponse(Connection conn, Integer userId) throws SQLException {
+    public DivisionUserResponse(Connection conn, Integer userId, Integer loginId) throws SQLException {
         this();
-        makeDivisionUserList(conn, userId);
+        makeDivisionUserList(conn, userId, loginId);
     }
 
-    private void makeDivisionUserList(Connection conn, Integer userId) throws SQLException {
-        String sql = "select division.division_id, concat(division_nbr,'-',division_code) as div, division.description, division_user.title_id "
-                        + "\n from division  "
-                        + "\n left outer join division_user on division_user.division_id=division.division_id and division_user.user_id=? "
-                        + "\n order by div";
+    private void makeDivisionUserList(Connection conn, Integer userId, Integer loginId) throws SQLException {
+        String sql = "select abc.division_id, abc.div, abc.description, abc.title_id from "
+        		+ "\n (select division.division_id, concat(division_nbr,'-',division_code) as div, division.description, division_user.title_id "
+        		+ "\n from division "
+        		+ "\n left outer join division_user on " 
+        		+ "\n division_user.division_id=division.division_id "
+        		+ "\n and division_user.user_id=?) abc "
+        		+ "\n inner join division_user on division_user.division_id=abc.division_id and division_user.user_id=? "
+        		+ "\n order by div";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setInt(1, userId);
+        ps.setInt(2,  loginId);
         ResultSet rs = ps.executeQuery();
         this.itemList = new ArrayList<DivisionUserItem>();
         while ( rs.next() ) {

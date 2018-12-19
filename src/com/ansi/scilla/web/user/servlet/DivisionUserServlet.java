@@ -16,6 +16,8 @@ import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
+import com.ansi.scilla.web.common.struts.SessionData;
+import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
@@ -39,8 +41,9 @@ public class DivisionUserServlet extends AbstractServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
-			AppUtils.validateSession(request, Permission.USER_ADMIN_READ);
-			doGetWork(request, response);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.USER_ADMIN_READ);
+			SessionUser sessionUser = sessionData.getUser();
+			doGetWork(request, response, sessionUser);
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
 			super.sendForbidden(response);
 		} catch ( Exception e) {
@@ -52,8 +55,9 @@ public class DivisionUserServlet extends AbstractServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
-			AppUtils.validateSession(request, Permission.USER_ADMIN_WRITE);
-			doPostWork(request, response);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.USER_ADMIN_WRITE);
+			SessionUser sessionUser = sessionData.getUser();
+			doPostWork(request, response, sessionUser);
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
 			super.sendForbidden(response);
 		} catch ( Exception e) {
@@ -62,7 +66,7 @@ public class DivisionUserServlet extends AbstractServlet {
 		} 
 	}
 	
-	private void doGetWork(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	private void doGetWork(HttpServletRequest request, HttpServletResponse response, SessionUser sessionUser) throws ServletException {
 		Connection conn = null;
 		DivisionUserResponse userResponse = new DivisionUserResponse();
 		WebMessages messages = new WebMessages();
@@ -80,7 +84,7 @@ public class DivisionUserServlet extends AbstractServlet {
 				User ansiUser = new User();
 				ansiUser.setUserId(url.getId());
 				ansiUser.selectOne(conn);
-				userResponse = new DivisionUserResponse(conn, url.getId());
+				userResponse = new DivisionUserResponse(conn, url.getId(), sessionUser.getUserId());
 			} else {
 				// according to the URI parsing, this shouldn't happen, but it gives me warm fuzzies
 				throw new ResourceNotFoundException();
@@ -105,7 +109,7 @@ public class DivisionUserServlet extends AbstractServlet {
 	
 	}
 	
-	private void doPostWork(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnsupportedEncodingException, IOException {
+	private void doPostWork(HttpServletRequest request, HttpServletResponse response, SessionUser sessionUser) throws ServletException, UnsupportedEncodingException, IOException {
 		Connection conn = null;
 		DivisionUserResponse userResponse = new DivisionUserResponse();
 		String jsonString = super.makeJsonString(request);
@@ -126,8 +130,8 @@ public class DivisionUserServlet extends AbstractServlet {
 				ansiUser.selectOne(conn); //throws RecordNotFoundException
 				DivisionUserRequest userRequest = new DivisionUserRequest();
 				AppUtils.json2object(jsonString, userRequest);
-				doUpdate(conn, url.getId(), userRequest.getDivisionId(), userRequest.isActive());
-				userResponse = new DivisionUserResponse(conn, url.getId());
+				doUpdate(conn, sessionUser.getUserId(), userRequest.getDivisionId(), userRequest.isActive());
+				userResponse = new DivisionUserResponse(conn, url.getId(), sessionUser.getUserId());
 			} else {
 				// according to the URI parsing, this shouldn't happen, but it gives me warm fuzzies
 				throw new ResourceNotFoundException();
