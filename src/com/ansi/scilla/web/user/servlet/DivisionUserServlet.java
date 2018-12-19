@@ -1,6 +1,7 @@
 package com.ansi.scilla.web.user.servlet;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 
 import javax.servlet.ServletException;
@@ -15,8 +16,6 @@ import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
-import com.ansi.scilla.web.common.struts.SessionData;
-import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
@@ -24,7 +23,6 @@ import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.user.request.AnsiUserRequest;
 import com.ansi.scilla.web.user.request.DivisionUserRequest;
 import com.ansi.scilla.web.user.response.DivisionUserResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
@@ -53,44 +51,6 @@ public class DivisionUserServlet extends AbstractServlet {
 	
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//		AnsiURL url = null;
-//		Connection conn = null;
-//		
-//		try {
-//			conn = AppUtils.getDBCPConn();
-//			conn.setAutoCommit(false);
-//			SessionData sessionData = AppUtils.validateSession(request, Permission.USER_ADMIN_WRITE);
-//			SessionUser sessionUser = sessionData.getUser();
-//			String jsonString = super.makeJsonString(request);
-//			url = new AnsiURL(request, REALM, new String[] {ACTION_IS_ADD});
-//			if ( url.getId() == null && StringUtils.isBlank(url.getCommand())) {
-//				super.sendNotFound(response);
-//			} else {
-//				AnsiUserRequest userRequest = new AnsiUserRequest();
-//				AppUtils.json2object(jsonString, userRequest);
-//				User user = new User();
-//				if ( url.getId() == null ) {
-//					//addUser(conn, request, response, user, userRequest, sessionUser);
-//				} else {
-//					user.setUserId(url.getId());
-//					user.selectOne(conn);
-//					//updateUser(conn, request, response, user, userRequest, sessionUser);
-//				}
-//			}
-//		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
-//			super.sendForbidden(response);
-//		} catch (ResourceNotFoundException e) {
-//			super.sendNotAllowed(response);
-//		} catch ( RecordNotFoundException e ) {
-//			super.sendNotFound(response);
-//		} catch ( Exception e ) {
-//			AppUtils.logException(e);
-//			AppUtils.rollbackQuiet(conn);
-//			throw new ServletException(e);
-//		} finally {
-//			AppUtils.closeQuiet(conn);
-//		}
-		
 		try {
 			AppUtils.validateSession(request, Permission.USER_ADMIN_WRITE);
 			doPostWork(request, response);
@@ -145,10 +105,10 @@ public class DivisionUserServlet extends AbstractServlet {
 	
 	}
 	
-	private void doPostWork(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	private void doPostWork(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnsupportedEncodingException, IOException {
 		Connection conn = null;
 		DivisionUserResponse userResponse = new DivisionUserResponse();
-		DivisionUserRequest userRequest = (DivisionUserRequest) request;
+		String jsonString = super.makeJsonString(request);
 		WebMessages messages = new WebMessages();
 		try {
 			conn = AppUtils.getDBCPConn();
@@ -164,12 +124,9 @@ public class DivisionUserServlet extends AbstractServlet {
 				User ansiUser = new User();
 				ansiUser.setUserId(url.getId());
 				ansiUser.selectOne(conn);
-				if(userRequest.isActive()) {
-					doUpdate(url.getId(), userRequest.getDivisionId());
-				} else if(!userRequest.isActive()) {
-					//doUpdate(url.getId(), userRequest.getDivisionId());
-					doUpdate(null, null);
-				}
+				DivisionUserRequest userRequest = new DivisionUserRequest();
+				AppUtils.json2object(jsonString, userRequest);
+				doUpdate(conn, url.getId(), userRequest.getDivisionId(), userRequest.isActive());
 				userResponse = new DivisionUserResponse(conn, url.getId());
 			} else {
 				// according to the URI parsing, this shouldn't happen, but it gives me warm fuzzies
@@ -195,10 +152,16 @@ public class DivisionUserServlet extends AbstractServlet {
 	
 	}
 
-	private void doUpdate(Integer userId, Integer divisionId) {
+	private void doUpdate(Connection conn, Integer userId, Integer divisionId, boolean active) throws Exception {
 		DivisionUser divUser = new DivisionUser();
 		divUser.setUserId(userId);
 		divUser.setDivisionId(divisionId);
+		
+		if(active) {
+			divUser.insertWithNoKey(conn);
+		} else if(!active) {
+			divUser.delete(conn);
+		}
 	}
 	
 }
