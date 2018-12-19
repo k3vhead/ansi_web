@@ -123,7 +123,7 @@ public class DivisionUserServlet extends AbstractServlet {
 				logger.log(Level.DEBUG, "divisionUser servlet 46");
 				User ansiUser = new User();
 				ansiUser.setUserId(url.getId());
-				ansiUser.selectOne(conn);
+				ansiUser.selectOne(conn); //throws RecordNotFoundException
 				DivisionUserRequest userRequest = new DivisionUserRequest();
 				AppUtils.json2object(jsonString, userRequest);
 				doUpdate(conn, url.getId(), userRequest.getDivisionId(), userRequest.isActive());
@@ -157,11 +157,17 @@ public class DivisionUserServlet extends AbstractServlet {
 		divUser.setUserId(userId);
 		divUser.setDivisionId(divisionId);
 		
+
 		if(active) {
+			divUser.setTitleId(17);
+			divUser.setAddedBy(userId);
+			divUser.setUpdatedBy(userId);
 			divUser.insertWithNoKey(conn);
 		} else if(!active) {
 			divUser.delete(conn);
 		}
+
+
 	}
 	
 }
