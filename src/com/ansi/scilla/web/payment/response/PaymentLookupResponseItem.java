@@ -32,6 +32,7 @@ public class PaymentLookupResponseItem extends ReportQuery {
 	public static final String INVOICE_ID = "invoice_id";
 	public static final String BILL_TO_NAME = "bill_to_name";
 	public static final String JOB_SITE_NAME = "job_site_name";
+	public static final String STATUS = "ticket_status";
 	
 	/*
 	 invoice.invoice_id, sum(ticket.act_price_per_cleaning) as invoice_total, " + 
@@ -74,6 +75,7 @@ public class PaymentLookupResponseItem extends ReportQuery {
 		this.invoiceId = rs.getInt(INVOICE_ID);
 		this.billToName = rs.getString(BILL_TO_NAME);
 		this.jobSiteName = rs.getString(JOB_SITE_NAME);
+		this.ticketStatus = rs.getString(STATUS);
 	}
 
 	public PaymentLookupResponseItem(PaymentSearchResult result) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
@@ -199,13 +201,14 @@ public class PaymentLookupResponseItem extends ReportQuery {
 	public void setJobSiteName(String jobSiteName) {
 		this.jobSiteName = jobSiteName;
 	}
+	@DBColumn(STATUS)
 	public String getTicketStatus() {
 		return ticketStatus;
 	}
+	@DBColumn(STATUS)
 	public void setTicketStatus(String ticketStatus) {
 		this.ticketStatus = ticketStatus;
 	}
-
 	
 	
 }
