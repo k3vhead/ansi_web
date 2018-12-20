@@ -66,6 +66,7 @@ public class PaymentLookupServlet extends AbstractServlet {
 		String dir = "asc";
 		String[] cols = { "payment.payment_id", "payment.amount", "payment.payment_date", "payment.type", "payment.check_nbr", 
 						"payment.check_date", "ticket_payment.ticket_id", "ticket_payment.amount", "ticket_payment.tax_amt", 
+						"ticket_status",
 						"ticket_div", "ticket.invoice_id", "ticket.ticket_status", "bill_to.name", "job_site.name",  "payment.note" };
 		String sStart = request.getParameter("start");
 	    String sAmount = request.getParameter("length");
@@ -83,7 +84,7 @@ public class PaymentLookupServlet extends AbstractServlet {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
-			SessionData sessionData = AppUtils.validateSession(request, Permission.PAYMENT, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.PAYMENT_READ);
 			SessionUser user = sessionData.getUser();
 
 			String term = "";

@@ -52,6 +52,7 @@ public class PaymentLookupResponseItem extends ReportQuery {
 	private Integer invoiceId;
 	private String billToName;
 	private String jobSiteName;
+	private String ticketStatus;
 	
 	
 	public PaymentLookupResponseItem() {
@@ -197,6 +198,12 @@ public class PaymentLookupResponseItem extends ReportQuery {
 	@DBColumn(JOB_SITE_NAME)
 	public void setJobSiteName(String jobSiteName) {
 		this.jobSiteName = jobSiteName;
+	}
+	public String getTicketStatus() {
+		return ticketStatus;
+	}
+	public void setTicketStatus(String ticketStatus) {
+		this.ticketStatus = ticketStatus;
 	}
 
 	

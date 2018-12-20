@@ -122,6 +122,9 @@
 			            { title: "<bean:message key="field.label.ticketTax" />",  "defaultContent": "<i>-</i>", data: function ( row, type, set ) {
 			            	if(row.ticketTax != null){return (row.ticketTax+"");}
 			            } },
+			            { title: "Ticket Status",  "defaultContent": "<i>-</i>", data: function ( row, type, set ) {
+			            	if(row.ticketStatus != null){return (row.ticketStatus+"");}
+			            } },
 			            { title: "<bean:message key="field.label.ticketDiv" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.ticketDiv != null){return (row.ticketDiv+"");}
 			            } },
@@ -180,21 +183,22 @@
     	
  	<table id="paymentTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:800px;width:800px;">
        	<colgroup>
+			<col style="width:4%;" />
+			<col style="width:5%;" />
+			<col style="width:5%;" />
+			<col style="width:5%;" />
 			<col style="width:5%;" />
 			<col style="width:6%;" />
 			<col style="width:5%;" />
-			<col style="width:5%;" />
-			<col style="width:5%;" />
 			<col style="width:6%;" />
 			<col style="width:5%;" />
-			<col style="width:6%;" />
+			<col style="width:4%;" />
+			<col style="width:4%;" />
 			<col style="width:5%;" />
-			<col style="width:5%;" />
-			<col style="width:5%;" />
-			<col style="width:12%;" />
-			<col style="width:12%;" />
-			<col style="width:12%;" />
-			<col style="width:5%;" />
+			<col style="width:11%;" />
+			<col style="width:11%;" />
+			<col style="width:11%;" />
+			<col style="width:4%;" />
    		</colgroup>
         <thead>
             <tr>
@@ -207,6 +211,7 @@
     			<th><bean:message key="field.label.ticketId" /></th>
     			<th><bean:message key="field.label.ticketAmount" /></th>
     			<th><bean:message key="field.label.ticketTax" /></th>
+    			<th>Ticket Status</th>
     			<th><bean:message key="field.label.ticketDiv" /></th>
     			<th><bean:message key="field.label.invoiceId" /></th>
     			<th><bean:message key="field.label.billToName" /></th>
@@ -226,6 +231,7 @@
     			<th><bean:message key="field.label.ticketId" /></th>
     			<th><bean:message key="field.label.ticketAmount" /></th>
     			<th><bean:message key="field.label.ticketTax" /></th>
+    			<th>Ticket Status</th>
     			<th><bean:message key="field.label.ticketDiv" /></th>
     			<th><bean:message key="field.label.invoiceId" /></th>
     			<th><bean:message key="field.label.billToName" /></th>
