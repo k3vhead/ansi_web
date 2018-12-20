@@ -54,7 +54,8 @@ public class JoshuaServletTester extends TestServlet {
 	
 	
 	public void go() throws Exception {		
-		super.userId = "jwlewis@thewebthing.com";
+//		super.userId = "jwlewis@thewebthing.com";
+		super.userId = "dclewis@thewebthing.com";
 //		super.userId = "admin.tester@ansi.com";
 //		super.userId = "geo@whitehouse.gov";
 		super.password = "password1";
@@ -120,7 +121,7 @@ public class JoshuaServletTester extends TestServlet {
 		
 		DivisionUserRequest request = new DivisionUserRequest();
 		request.setDivisionId(101);
-		request.setActive(false);
+		request.setActive(true);
 		String json = AppUtils.object2json(request);
 		logger.log(Level.DEBUG, json);
 		String results = super.doPost(sessionCookie, url, json);

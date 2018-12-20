@@ -130,7 +130,7 @@ public class DivisionUserServlet extends AbstractServlet {
 				ansiUser.selectOne(conn); //throws RecordNotFoundException
 				DivisionUserRequest userRequest = new DivisionUserRequest();
 				AppUtils.json2object(jsonString, userRequest);
-				doUpdate(conn, sessionUser.getUserId(), userRequest.getDivisionId(), userRequest.isActive());
+				doUpdate(conn, sessionUser.getUserId(), url.getId(), userRequest.getDivisionId(), userRequest.isActive(), response);
 				userResponse = new DivisionUserResponse(conn, url.getId(), sessionUser.getUserId());
 			} else {
 				// according to the URI parsing, this shouldn't happen, but it gives me warm fuzzies
@@ -156,19 +156,26 @@ public class DivisionUserServlet extends AbstractServlet {
 	
 	}
 
-	private void doUpdate(Connection conn, Integer userId, Integer divisionId, boolean active) throws Exception {
-		DivisionUser divUser = new DivisionUser();
-		divUser.setUserId(userId);
+	private void doUpdate(Connection conn, Integer userId, Integer urlId, Integer divisionId, boolean active, HttpServletResponse response) throws Exception {
+		DivisionUser divUser = new DivisionUser(); //person recieving the change
+		divUser.setUserId(urlId);
 		divUser.setDivisionId(divisionId);
-		
-
-		if(active) {
-			divUser.setTitleId(17);
-			divUser.setAddedBy(userId);
-			divUser.setUpdatedBy(userId);
-			divUser.insertWithNoKey(conn);
-		} else if(!active) {
-			divUser.delete(conn);
+		DivisionUser divChange = new DivisionUser(); //person doing the change
+		divChange.setUserId(userId);
+		divChange.setDivisionId(divisionId);
+		try {
+			divChange.selectOne(conn);
+			if(active) {
+				divUser.setTitleId(17);
+				divUser.setAddedBy(userId);
+				divUser.setUpdatedBy(userId);
+				divUser.insertWithNoKey(conn);
+			} else if(!active) {
+				divUser.delete(conn);
+			}
+		} catch(RecordNotFoundException e) {
+			logger.log(Level.DEBUG, "user servlet 60");
+			super.sendNotFound(response);
 		}
 
 
