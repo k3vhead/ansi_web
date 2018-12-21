@@ -147,7 +147,9 @@ public class DivisionUserServlet extends AbstractServlet {
 		} catch(ResourceNotFoundException e) {
 			logger.log(Level.DEBUG, "user servlet 63");
 			super.sendNotFound(response);
-		} catch ( Exception e) {
+		} catch (NotAllowedException e) {
+			super.sendForbidden(response);
+		} catch (Exception e) {
 			AppUtils.logException(e);
 			throw new ServletException(e);
 		} finally {
@@ -176,6 +178,7 @@ public class DivisionUserServlet extends AbstractServlet {
 		} catch(RecordNotFoundException e) {
 			logger.log(Level.DEBUG, "user servlet 60");
 			super.sendNotFound(response);
+			throw new NotAllowedException();
 		}
 
 
