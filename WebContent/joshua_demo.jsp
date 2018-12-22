@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>Permission Demo</title>
+        <title>Division User Demo</title>
         <script type="text/javascript" src="jQuery/jquery-3.1.1.min.js"></script>        
         <script type="text/javascript" src="jQuery/jquery-ui.min.js"></script>
         <script type="text/javascript" src="jQuery/jcookie.js"></script>
@@ -13,9 +13,9 @@
         </style>
         <script type="text/javascript">
         $(function() {
-            ;PERMSTUFF = {
+            ;DIVUSER = {
                 init : function() {
-                	PERMSTUFF.getTotalList();
+                	DIVUSER.getTotalList();
                     
                 },
 
@@ -23,12 +23,12 @@
                 getTotalList : function() {
                 	var jqxhr = $.ajax({
 						type: 'GET',
-						url: "permission/1158",
+						url: "divisionUser/1",
 						data: {},
 						statusCode: {
 							200: function($data) {
-								PERMSTUFF.makeTable($data.data);
-								PERMSTUFF.makeClickers();
+								DIVUSER.makeTable($data.data);
+								DIVUSER.makeClickers();
 							},					
 							403: function($data) {
 								$("#globalMsg").html("Session Timeout. Log in and try again");

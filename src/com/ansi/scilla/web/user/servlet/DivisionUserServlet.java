@@ -176,8 +176,6 @@ public class DivisionUserServlet extends AbstractServlet {
 				divUser.delete(conn);
 			}
 		} catch(RecordNotFoundException e) {
-			logger.log(Level.DEBUG, "user servlet 60");
-			super.sendNotFound(response);
 			throw new NotAllowedException();
 		}
 
