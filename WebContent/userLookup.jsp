@@ -316,6 +316,7 @@
             		$("#addForm select[name='status']").val($user.userStatus);
             		$("#addForm input[name='title']").val($user.title);
             		$("#addForm input[name='userId']").val($user.userId);
+            		$("#addForm input[name='minimumHourlyPay']").val($user.minimumHourlyPay);
             		$("#user-form-modal").dialog("open");
             	},
             	
@@ -342,6 +343,7 @@
             		$outbound['status'] = $("#addForm select[name='status']").val();
             		$outbound['title'] = $("#addForm input[name='title']").val();
             		$outbound['userId'] = $("#addForm input[name='userId']").val();
+            		$outbound['minimumHourlyPay'] = $("#addForm input[name='minimumHourlyPay']").val();
             		
             		var jqxhr = $.ajax({
 						type: 'POST',
@@ -501,6 +503,11 @@
 						<td><span class="formLabel">Permission Group:</span></td>
 						<td><select class="userField" name="permissionGroupId"></select></td>
 						<td><span class="err errField permissionGroupId"></span></td>
+					</tr>
+					<tr>
+						<td><span class="formLabel">Minimum Hourly Pay:</span></td>
+						<td><input type="text" class="userField" name="minimumHourlyPay" /></td>
+						<td><span class="err errField minimumHourlyPay"></span></td>
 					</tr>
 					<tr>
 						<td><span class="formLabel">Status:</span></td>

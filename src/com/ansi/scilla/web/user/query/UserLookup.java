@@ -38,6 +38,7 @@ public class UserLookup extends ApplicationObject {
 			+ "ansi_user.address1, "
 			+ "ansi_user.address2, "
 			+ "ansi_user.zip, "
+			+ "ansi_user.minimum_hourly_pay, "
 			+ "permission_group.name as permission_group_name";
 	public static final String sqlFromClause = 
 			"\n FROM ansi_user  "

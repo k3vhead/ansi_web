@@ -36,7 +36,19 @@ public class DivisionResponse extends MessageResponse implements Serializable {
 	public DivisionResponse(Connection conn, Division division) throws IllegalAccessException, InvocationTargetException, SQLException, NoSuchMethodException {
 		this();
 		this.division = new DivisionCountRecord();
-		PropertyUtils.copyProperties(this.division, division);
+		this.division.setDefaultDirectLaborPct(division.getDefaultDirectLaborPct());
+		this.division.setDescription(division.getDescription());
+		this.division.setDivisionCode(division.getDivisionCode());
+		this.division.setDivisionId(division.getDivisionId());
+		this.division.setDivisionNbr(division.getDivisionNbr());
+		this.division.setHourlyRateIsFixed(division.getHourlyRateIsFixed());
+		this.division.setMaxRegHrsPerDay(division.getMaxRegHrsPerDay());
+		this.division.setMaxRegHrsPerWeek(division.getMaxRegHrsPerWeek());
+		this.division.setOvertimeRate(division.getOvertimeRate());
+		this.division.setParentId(division.getParentId());
+//		this.division.setStatus(status);
+//		this.division.setUserCount(userCount);
+		this.division.setWeekendIsOt(division.getWeekendIsOt());
 		Integer userCount = this.makeUserCount(conn, division.getDivisionId());
 		this.division.setUserCount(userCount);
 		if ( division.getStatus().equals(Division.STATUS_IS_ACTIVE)) {

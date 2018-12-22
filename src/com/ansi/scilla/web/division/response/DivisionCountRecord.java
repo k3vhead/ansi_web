@@ -25,6 +25,11 @@ public class DivisionCountRecord extends ApplicationObject implements Comparable
 	private Integer parentId;
 	private Integer userCount;
 	private String status;
+	private Integer maxRegHrsPerDay;
+    private Integer maxRegHrsPerWeek;
+    private BigDecimal overtimeRate;
+    private Integer weekendIsOt;
+    private Integer hourlyRateIsFixed;
 	
 	
 	public DivisionCountRecord() {
@@ -109,6 +114,46 @@ public class DivisionCountRecord extends ApplicationObject implements Comparable
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public Integer getMaxRegHrsPerDay() {
+		return maxRegHrsPerDay;
+	}
+
+	public void setMaxRegHrsPerDay(Integer maxRegHrsPerDay) {
+		this.maxRegHrsPerDay = maxRegHrsPerDay;
+	}
+
+	public Integer getMaxRegHrsPerWeek() {
+		return maxRegHrsPerWeek;
+	}
+
+	public void setMaxRegHrsPerWeek(Integer maxRegHrsPerWeek) {
+		this.maxRegHrsPerWeek = maxRegHrsPerWeek;
+	}
+
+	public BigDecimal getOvertimeRate() {
+		return overtimeRate;
+	}
+
+	public void setOvertimeRate(BigDecimal overtimeRate) {
+		this.overtimeRate = overtimeRate;
+	}
+
+	public Integer getWeekendIsOt() {
+		return weekendIsOt;
+	}
+
+	public void setWeekendIsOt(Integer weekendIsOt) {
+		this.weekendIsOt = weekendIsOt;
+	}
+
+	public Integer getHourlyRateIsFixed() {
+		return hourlyRateIsFixed;
+	}
+
+	public void setHourlyRateIsFixed(Integer hourlyRateIsFixed) {
+		this.hourlyRateIsFixed = hourlyRateIsFixed;
 	}
 
 	@Override

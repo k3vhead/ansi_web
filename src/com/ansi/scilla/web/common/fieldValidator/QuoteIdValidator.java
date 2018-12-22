@@ -15,6 +15,10 @@ public abstract class QuoteIdValidator extends ApplicationObject implements Fiel
 	private static final long serialVersionUID = 1L;
 
 	@Override
+	@Deprecated
+	/**
+	 * Use RequestValidator.validateId() instead
+	 */
 	public void validate(Connection conn, String fieldName, Object value, WebMessages webMessages) throws Exception {
 		if ( value == null ) {
 			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");

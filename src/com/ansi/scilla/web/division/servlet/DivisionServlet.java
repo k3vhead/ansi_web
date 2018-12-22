@@ -66,7 +66,7 @@ public class DivisionServlet extends AbstractServlet {
 		
 		try {
 			AnsiURL url = new AnsiURL(request, REALM, (String[])null);
-			AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			AppUtils.validateSession(request, Permission.SYSADMIN_WRITE);
 
 			Connection conn = null;
 			try {
@@ -178,7 +178,7 @@ public class DivisionServlet extends AbstractServlet {
 		try {
 			String jsonString = super.makeJsonString(request);
 			AnsiURL url = new AnsiURL(request, REALM, new String[] {ACTION_IS_ADD});
-			SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN_WRITE);
 			Connection conn = null;
 			try {
 				conn = AppUtils.getDBCPConn();
@@ -187,7 +187,8 @@ public class DivisionServlet extends AbstractServlet {
 				
 				// figure out if this is an "add" or an "update"								
 				try {
-					DivisionRequest divisionRequest = (DivisionRequest) AppUtils.json2object(jsonString, DivisionRequest.class);
+					DivisionRequest divisionRequest = new DivisionRequest();
+					AppUtils.json2object(jsonString, divisionRequest);
 					if ( ! StringUtils.isBlank(url.getCommand()) && url.getCommand().equals(ACTION_IS_ADD)) {
 						processAddRequest(conn, response, sessionUser, divisionRequest);
 					} else if ( url.getId() != null ) {
@@ -259,7 +260,7 @@ public class DivisionServlet extends AbstractServlet {
 	private void processUpdateRequest(Connection conn, HttpServletResponse response, Integer id, SessionUser sessionUser, DivisionRequest divisionRequest) throws Exception {	
 		Division division = null;
 		ResponseCode responseCode = null;
-		WebMessages webMessages = validateAdd(conn, divisionRequest);
+		WebMessages webMessages = validateUpdate(conn, divisionRequest);
 		if (webMessages.isEmpty()) {
 			webMessages = validateFormat(conn, divisionRequest);
 		}
@@ -363,6 +364,11 @@ public class DivisionServlet extends AbstractServlet {
 		division.setUpdatedDate(today);
 		division.setDivisionNbr(divisionRequest.getDivisionNbr());
 		division.setDivisionCode(divisionRequest.getDivisionCode());
+		division.setMaxRegHrsPerWeek(divisionRequest.getMaxRegHrsPerWeek());
+		division.setMaxRegHrsPerDay(divisionRequest.getMaxRegHrsPerDay());
+		division.setOvertimeRate(divisionRequest.getOvertimeRate());
+		division.setWeekendIsOt(divisionRequest.getWeekendIsOt());
+		division.setHourlyRateIsFixed(divisionRequest.getHourlyRateIsFixed());
 		
 		return division;
 	}
@@ -376,8 +382,28 @@ public class DivisionServlet extends AbstractServlet {
 				webMessages.addMessage(field, messageText);
 			}
 		}
+		if ( webMessages.isEmpty()) {
+			webMessages = divisionRequest.validateAdd();
+		}
 		return webMessages;
 	}
+	
+	protected WebMessages validateUpdate(Connection conn, DivisionRequest divisionRequest) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		List<String> missingFields = super.validateRequiredUpdateFields(divisionRequest);
+		if ( ! missingFields.isEmpty() ) {
+			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
+			for ( String field : missingFields ) {
+				webMessages.addMessage(field, messageText);
+			}
+		}
+		if ( webMessages.isEmpty()) {
+			webMessages = divisionRequest.validateUpdate(conn);
+		}
+		return webMessages;
+	}
+	
+	
 	
 	protected WebMessages validateFormat(Connection conn, DivisionRequest divisionRequest) throws Exception {
 		WebMessages webMessages = new WebMessages();

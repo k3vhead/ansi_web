@@ -18,9 +18,7 @@ import com.ansi.scilla.common.invoice.InvoiceTerm;
 import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.payment.PaymentMethod;
 import com.ansi.scilla.web.common.response.WebMessages;
-import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
-import com.ansi.scilla.web.user.request.AnsiUserRequest;
 import com.thewebthing.commons.lang.StringUtils;
 
 public class RequestValidator {

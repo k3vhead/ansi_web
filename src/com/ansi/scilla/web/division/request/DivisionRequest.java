@@ -1,12 +1,15 @@
 package com.ansi.scilla.web.division.request;
 
 import java.math.BigDecimal;
-//import java.util.Date;
+import java.sql.Connection;
 
+import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.web.common.request.AbstractRequest;
+import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.request.RequiredForAdd;
 import com.ansi.scilla.web.common.request.RequiredForUpdate;
 import com.ansi.scilla.web.common.request.RequiredFormat;
+import com.ansi.scilla.web.common.response.WebMessages;
 
 /**
  * 
@@ -27,6 +30,11 @@ public class DivisionRequest extends AbstractRequest {
 	private String divisionCode;	//String Division Code
 	private String description;		//String Division Description
 	private Integer status;			//Integer Division Status: 0-inactive, 1-active
+	private Integer maxRegHrsPerDay;
+    private Integer maxRegHrsPerWeek;
+    private BigDecimal overtimeRate;
+    private Integer weekendIsOt;
+    private Integer hourlyRateIsFixed;
 	
 	public DivisionRequest() {
 		super();
@@ -109,4 +117,68 @@ public class DivisionRequest extends AbstractRequest {
 		}
 	}
 
+	@RequiredForAdd
+	@RequiredForUpdate
+	public Integer getMaxRegHrsPerDay() {
+		return maxRegHrsPerDay;
+	}
+
+	public void setMaxRegHrsPerDay(Integer maxRegHrsPerDay) {
+		this.maxRegHrsPerDay = maxRegHrsPerDay;
+	}
+
+	@RequiredForAdd
+	@RequiredForUpdate
+	public Integer getMaxRegHrsPerWeek() {
+		return maxRegHrsPerWeek;
+	}
+
+	public void setMaxRegHrsPerWeek(Integer maxRegHrsPerWeek) {
+		this.maxRegHrsPerWeek = maxRegHrsPerWeek;
+	}
+
+	@RequiredForAdd
+	@RequiredForUpdate
+	public BigDecimal getOvertimeRate() {
+		return overtimeRate;
+	}
+
+	public void setOvertimeRate(BigDecimal overtimeRate) {
+		this.overtimeRate = overtimeRate;
+	}
+
+	@RequiredForAdd
+	@RequiredForUpdate
+	public Integer getWeekendIsOt() {
+		return weekendIsOt;
+	}
+
+	public void setWeekendIsOt(Integer weekendIsOt) {
+		this.weekendIsOt = weekendIsOt;
+	}
+
+	@RequiredForAdd
+	@RequiredForUpdate
+	public Integer getHourlyRateIsFixed() {
+		return hourlyRateIsFixed;
+	}
+
+	public void setHourlyRateIsFixed(Integer hourlyRateIsFixed) {
+		this.hourlyRateIsFixed = hourlyRateIsFixed;
+	}
+
+	public WebMessages validateAdd() {
+		WebMessages webMessages = new WebMessages();
+		RequestValidator.validateInteger(webMessages, "weekendIsOt", this.weekendIsOt, true, 0, 1);
+		RequestValidator.validateInteger(webMessages, "hourlyRateIsFixed", this.hourlyRateIsFixed, true, 0, 1);
+		RequestValidator.validateInteger(webMessages, "maxRegHrsPerDay", this.maxRegHrsPerDay, true, 0, 24);
+		RequestValidator.validateInteger(webMessages, "maxRegHrsPerWeek", this.maxRegHrsPerWeek, true, 0, 168);
+		return webMessages;		
+	}
+	
+	public WebMessages validateUpdate(Connection conn) throws Exception {
+		WebMessages webMessages = validateAdd();
+		RequestValidator.validateId(conn, webMessages, "division", Division.DIVISION_ID, "divisionId", this.divisionId, true);		
+		return webMessages;		
+	}
 }

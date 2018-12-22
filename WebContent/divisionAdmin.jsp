@@ -38,10 +38,18 @@
 				display:none;
 				background-color:#FFFFFF;
 				color:#000000;
-				width:475px;
+				width:700px;
 				padding:15px;
 			}
-						
+			#displayTable th {
+				text-align:left
+			}	
+			.text-center {
+				text-align:center;
+			}
+			.text-left {
+				text-align:left;
+			}
         </style>
         
         <script type="text/javascript">
@@ -93,15 +101,33 @@
 			
 			function makeRow($division, $rownum) {
 				var row = "";
-				row = row + '<td>' + $division.divisionId + '</td>';
-				row = row + '<td>' + $division.divisionCode + '</td>';
-				row = row + '<td>' + $division.divisionNbr + '</td>';
+				row = row + '<td class="text-left">' + $division.divisionId + '</td>';
+				row = row + '<td class="text-left">' + $division.divisionNbr + "-" + $division.divisionCode + '</td>';
 				if ( $division.description == null ) {
-       				row = row + '<td></td>';
+       				row = row + '<td>&nbsp;</td>';
        			} else {
-       				row = row + '<td>' + $division.description + '</td>';
+       				row = row + '<td class="text-left">' + $division.description + '</td>';
        			} 
-				row = row + '<td>' + $division.defaultDirectLaborPct + '</td>';
+				row = row + '<td class="text-center">' + $division.defaultDirectLaborPct + '</td>';
+				row = row + '<td class="text-center">' + $division.maxRegHrsPerDay + "/" + $division.maxRegHrsPerWeek + "</td>";
+				if ( $division.overtimeRate == null ) {
+					$otRate = "N/A";
+				} else {
+					$otRate = $division.overtimeRate
+				}
+				row = row + '<td class="text-center">' + $otRate + "</td>";
+				if ( $division.weekendIsOt == 1 ) {
+					$otIcon = '<webthing:checkmark>Yes</webthing:checkmark>'
+				} else {
+					$otIcon = '<webthing:ban>No</webthing:ban>'
+				}
+				row = row + '<td class="text-center">' + $otIcon + "</td>";
+				if ( $division.hourlyRateIsFixed == 1 ) {
+					$hourlyRateIcon = '<webthing:checkmark>Yes</webthing:checkmark>'
+				} else {
+					$hourlyRateIcon = '<webthing:ban>No</webthing:ban>'
+				}
+				row = row + '<td class="text-center">' + $hourlyRateIcon + "</td>";
 				if ( $division.status == 'Active' ) {
        				$iconcolor="green";
        				$divisionText = '<i class="fa fa-check-square" aria-hidden="true"></i>';
@@ -115,8 +141,8 @@
        			row = row + '<td class="status centered ' + $iconcolor + '">' + $divisionText + '</td>';
        	    	<ansi:hasPermission permissionRequired="SYSADMIN">
         		<ansi:hasWrite>
-       			row = row + '<td>';
-       			row = row + '<a href="#" class="updAction" data-row="' + $rownum +'"><span class="green fas fa-pencil-alt" ari-hidden="true"></span></a> | ';
+       			row = row + '<td class="text-left">';
+       			row = row + '<a href="#" class="updAction" data-id="' + $division.divisionId + '"data-row="' + $rownum +'"><span class="green fas fa-pencil-alt" ari-hidden="true"></span></a> | ';
        			if ( $division.userCount == 0 ) {
        			row = row + '<a href="#" class="delAction" data-row="' + row.permissionGroupId +'"><span class="red fas fa-trash-alt" aria-hidden="true"></span></a>';
        			}
@@ -133,38 +159,74 @@
 			function doUpdate($clickevent) {
 				$clickevent.preventDefault();
 				clearAddForm();
+				var $divisionId = $clickevent.currentTarget.attributes["data-id"].value;
+				console.log("div id: " + $divisionId);
 				var $rownum = $clickevent.currentTarget.attributes['data-row'].value;
 				$("#addFormTitle").html("Update Division");
 				$('#addForm').data('rownum',$rownum);
 				
-				var $rowId = eval($rownum) + 1;
-            	var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")"
-            	var $row = $($rowFinder)  
-            	var tdList = $row.children("td");
-            	var $divisionId = $row.children("td")[0].textContent;
-            	var $divisionCode = $row.children("td")[1].textContent;
-            	var $divisionNbr = $row.children("td")[2].textContent;
-            	var $description = $row.children("td")[3].textContent;
-            	var $defaultDirectLaborPct = $row.children("td")[4].textContent;
-            	var $status = $row.children("td")[5].textContent;
+				var $url = "division/" + $divisionId
+				var jqxhr = $.ajax({
+					type: 'GET',
+					url: $url,
+					data: {},
+					success: function($data) {
+						if ( $data.responseHeader.responseCode == 'SUCCESS') {
+							var $division = $data.data.divisionList[0];
+						
+							$("#addForm input[name='divisionId']").val($division.divisionId);
+			            	$("#addForm input[name='divisionCode']").val($division.divisionCode);
+			            	$("#addForm input[name='divisionNbr']").val($division.divisionNbr);
+			            	$("#addForm input[name='description']").val($division.description);
+			            	$("#addForm input[name='defaultDirectLaborPct']").val($division.defaultDirectLaborPct);
+			            	if ( $division.status == "Active" ) {
+			            		$("#addForm select[name='status']").val("1");
+			            	} else {
+			            		$("#addForm select[name='status']").val("0");
+			            	}
+			            	$("#addForm input[name='maxRegHrsPerDay']").val($division.maxRegHrsPerDay);
+			            	$("#addForm input[name='maxRegHrsPerWeek']").val($division.maxRegHrsPerWeek);
+			            	$("#addForm input[name='overtimeRate']").val($division.overtimeRate);
+			            	$("#addForm select[name='weekendIsOt']").val($division.weekendIsOt.toString());
+			            	$("#addForm select[name='hourlyRateIsFixed']").val($division.hourlyRateIsFixed.toString());
+			            	
+							
+			            	
+							$.each( $('#addForm :input'), function(index, value) {
+								markValid(value);
+							});
 
-            	$("#addForm input[name='divisionId']").val($divisionId);
-            	$("#addForm input[name='divisionCode']").val($divisionCode);
-            	$("#addForm input[name='divisionNbr']").val($divisionNbr);
-            	$("#addForm input[name='description']").val($description);
-            	$("#addForm input[name='defaultDirectLaborPct']").val($defaultDirectLaborPct);
-            	$("#addForm input[name='status']").val($status);
-				
-            	
-				$.each( $('#addForm :input'), function(index, value) {
-					markValid(value);
+			             	$('#addFormDiv').bPopup({
+								modalClose: false,
+								opacity: 0.6,
+								positionStyle: 'fixed' //'fixed' or 'absolute'
+							});	
+						} else {
+							$("#globalMsg").html("Invalid system state - reload and try again");
+						}
+					},
+					statusCode: {
+						403: function($data) {
+							$("#addFormMsg").html($data.responseJSON.responseHeader.responseMessage);
+						},
+						500: function($data) {
+             	    		$("#addFormMsg").html("Unhandled Exception").fadeIn(10).fadeOut(6000);
+             	    	} 
+					},
+					dataType: 'json'
 				});
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
 
-             	$('#addFormDiv').bPopup({
-					modalClose: false,
-					opacity: 0.6,
-					positionStyle: 'fixed' //'fixed' or 'absolute'
-				});				
+            				
 			}
 			
 			function doDelete($clickevent) {
@@ -218,8 +280,11 @@
 						$outbound[$fieldName] = $val;
 					}
 				});
-				
+
 				$outbound['status'] = $("#addForm select[name='status'] option:selected").val();
+				$outbound['weekendIsOt'] = $("#addForm select[name='weekendIsOt'] option:selected").val();
+				$outbound['hourlyRateIsFixed'] = $("#addForm select[name='hourlyRateIsFixed'] option:selected").val();
+				
 
 				if ( $('#addForm').data('rownum') == null ) {
 					$url = "division/add";
@@ -401,16 +466,31 @@
     	<h1><bean:message key="page.label.division" /> <bean:message key="menu.label.maintenance" /></h1>
     	
     	<table id="displayTable">
+    		<colgroup>
+	        	<col style="width:5%;" />
+	        	<col style="width:5%;" />
+	    		<col style="width:30%;" />    		
+	    		<col style="width:10%;" />
+	    		<col style="width:10%;" />
+	    		<col style="width:5%;" />
+	    		<col style="width:5%;" />
+	    		<col style="width:10%;" />
+	    		<col style="width:5%;" />
+	    		<col style="width:10%;" />
+	   		</colgroup>
     		<tr>
-    			<th><bean:message key="field.label.divisionId" /></th>
-    			<th><bean:message key="field.label.divisionCode" /></th>
-				<th><bean:message key="field.label.divisionNbrDA" /></th>
-    			<th><bean:message key="field.label.description" /></th>
-    			<th><bean:message key="field.label.defaultDirectLaborPctDefault" /><br><bean:message key="field.label.defaultDirectLaborPctDL%" /></br></th>
-    			<th><bean:message key="field.label.status" /></th>
+    			<th class="text-left"><bean:message key="field.label.divisionId" /></th>
+    			<th class="text-left">Div</th>
+    			<th class="text-left"><bean:message key="field.label.description" /></th>
+    			<th class="text-center" style="text-align:center;"><bean:message key="field.label.defaultDirectLaborPctDefault" /><br><bean:message key="field.label.defaultDirectLaborPctDL%" /></br></th>
+    			<th class="text-center" style="text-align:center;">Max Reg Hrs Day/Week</th>
+    			<th class="text-center" style="text-align:center;">OT Rate</th>
+    			<th class="text-center" style="text-align:center;">Wknd is OT</th>
+    			<th class="text-center" style="text-align:center;">Fixed Hourly Rate</th>
+    			<th class="text-center" style="text-align:center;"><bean:message key="field.label.status" /></th>
  			    <ansi:hasPermission permissionRequired="SYSADMIN">
     				<ansi:hasWrite>
-    					<th><bean:message key="field.label.action" /></th>
+    					<th class="text-left"><bean:message key="field.label.action" /></th>
     				</ansi:hasWrite>
     			</ansi:hasPermission>
     		</tr>
@@ -454,20 +534,20 @@
 		    					<td><span class="err" id="divisionIdErr"></span></td>
 		    				</tr>
 		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.divisionCode" />:</span></td>
-		    					<td>
-		    						<input type="text" name="divisionCode" data-required="true" data-valid="validDivisionCode" />
-		    						<i id="validDivisionCode" class="fa" aria-hidden="true"></i>
-		    					</td>
-		    					<td><span class="err" id="divisionCodeErr"></span></td>
-		    				</tr>
-		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.divisionNbrDA" />:</span></td>
 		    					<td>
 		    						<input type="text" name="divisionNbr" data-required="true" data-valid="validDivisionNbr" />
 		    						<i id="validDivisionNbr" class="fa" aria-hidden="true"></i>
 		    					</td>
 		    					<td><span class="err" id="divisionNbrErr"></span></td>
+		    				</tr>
+		    				<tr>
+		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.divisionCode" />:</span></td>
+		    					<td>
+		    						<input type="text" name="divisionCode" data-required="true" data-valid="validDivisionCode" />
+		    						<i id="validDivisionCode" class="fa" aria-hidden="true"></i>
+		    					</td>
+		    					<td><span class="err" id="divisionCodeErr"></span></td>
 		    				</tr>
 							<tr>
 		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.description" />:</span></td>
@@ -485,6 +565,62 @@
 		    					</td>
 		    					<td><span class="err" id="defaultDirectLaborPctErr"></span></td>
 		    				</tr>
+		    				
+		    				
+		    				
+		    				<tr>
+		    					<td><span class="required">*</span><span class="formLabel">Max Regular Hours Per Day:</span></td>
+		    					<td>
+		    						<input type="text" name="maxRegHrsPerDay" data-required="true" data-valid="validMaxRegHrsPerDay" />
+		    						<i id="validMaxRegHrsPerDay" class="fa" aria-hidden="true"></i>
+		    					</td>
+		    					<td><span class="err" id="maxRegHrsPerDayErr"></span></td>
+		    				</tr>
+		    				<tr>
+		    					<td><span class="required">*</span><span class="formLabel">Max Regular Hours Per Week:</span></td>
+		    					<td>
+		    						<input type="text" name="maxRegHrsPerWeek" data-required="true" data-valid="validMaxRegHrsPerWeek" />
+		    						<i id="validMaxRegHrsPerWeek" class="fa" aria-hidden="true"></i>
+		    					</td>
+		    					<td><span class="err" id="maxRegHrsPerWeekErr"></span></td>
+		    				</tr>
+		    				<tr>
+		    					<td><span class="formLabel">Overtime Rate:</span></td>
+		    					<td>
+		    						<input type="text" name="overtimeRate" data-required="true" data-valid="validOvertimeRate" />
+		    						<i id="validOvertimeRate" class="fa" aria-hidden="true"></i>
+		    					</td>
+		    					<td><span class="err" id="overtimeRateErr"></span></td>
+		    				</tr>
+		    				<tr>
+		    					<td><span class="formLabel"><span class="required">*</span>Weekend is Overtime:</span></td>
+		    					<td>
+		    						<select name="weekendIsOt" data-required="true" data-valid="validWeekendIsOt">
+		    							<option value=""></option>
+			    						<option value="1">Yes</option>
+			    						<option value="0">No</option>
+		    						</select>
+		    						<i id="validWeekendIsOt" class="fa" aria-hidden="true"></i>
+		    					</td>
+		    					<td><span class="err" id="weekendIsOtErr"></span></td>
+		    				</tr>
+		    				<tr>
+		    					<td><span class="formLabel"><span class="required">*</span>Hourly Rate is Fixed:</span></td>
+		    					<td>
+		    						<select name="hourlyRateIsFixed" data-required="true" data-valid="validHourlyRateIsFixed">
+			    						<option value=""></option>
+			    						<option value="1">Yes</option>
+			    						<option value="0">No</option>
+		    						</select>
+		    						<i id="validhourlyRateIsFixed" class="fa" aria-hidden="true"></i>
+		    					</td>
+		    					<td><span class="err" id="hourlyRateIsFixedErr"></span></td>
+		    				</tr>
+		    				
+		    				
+		    				
+		    				
+		    				
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.status" />:</span></td>
 		    					<td>

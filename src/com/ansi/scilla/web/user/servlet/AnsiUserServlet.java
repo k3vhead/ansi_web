@@ -26,8 +26,10 @@ import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
+import com.ansi.scilla.web.ticket.response.TicketReturnResponse;
 import com.ansi.scilla.web.user.request.AnsiUserRequest;
 import com.ansi.scilla.web.user.response.UserResponse;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class AnsiUserServlet extends AbstractServlet {
@@ -77,17 +79,27 @@ public class AnsiUserServlet extends AbstractServlet {
 			if ( url.getId() == null && StringUtils.isBlank(url.getCommand())) {
 				super.sendNotFound(response);
 			} else {
-				AnsiUserRequest userRequest = new AnsiUserRequest();
-				AppUtils.json2object(jsonString, userRequest);
-				User user = new User();
-				if ( url.getId() == null ) {
-					addUser(conn, request, response, user, userRequest, sessionUser);
-				} else {
-					user.setUserId(url.getId());
-					user.selectOne(conn);
-					updateUser(conn, request, response, user, userRequest, sessionUser);
+				try {
+					AnsiUserRequest userRequest = new AnsiUserRequest();
+					AppUtils.json2object(jsonString, userRequest);
+					User user = new User();
+					if ( url.getId() == null ) {
+						addUser(conn, request, response, user, userRequest, sessionUser);
+					} else {
+						user.setUserId(url.getId());
+						user.selectOne(conn);
+						updateUser(conn, request, response, user, userRequest, sessionUser);
+					}
+				}  catch ( InvalidFormatException e ) {
+					String badField = super.findBadField(e.toString());
+					TicketReturnResponse data = new TicketReturnResponse();
+					WebMessages messages = new WebMessages();
+					messages.addMessage(badField, "Invalid Format");
+					data.setWebMessages(messages);
+					super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
 				}
 			}
+			
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
 			super.sendForbidden(response);
 		} catch (ResourceNotFoundException e) {
@@ -249,6 +261,7 @@ public class AnsiUserServlet extends AbstractServlet {
 			user.setUserId(userRequest.getUserId());
 		}
 		user.setZip(userRequest.getZip());
+		user.setMinimumHourlyPay(userRequest.getMinimumHourlyPay());
 	}
 
 	private void updatePassword(Connection conn, Integer userId, String password) throws Exception {

@@ -21,6 +21,10 @@ public abstract class ManagerIdValidator extends ApplicationObject implements Fi
 	Logger logger = LogManager.getLogger(this.getClass());
 
 	@Override
+	@Deprecated
+	/**
+	 * Use RequestValidator.validateId() instead
+	 */
 	public void validate(Connection conn, String fieldName, Object value, WebMessages webMessages) throws Exception {
 		if ( value == null ) {
 			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");

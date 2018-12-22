@@ -1,5 +1,6 @@
 package com.ansi.scilla.web.user.request;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 
 import com.ansi.scilla.web.common.request.AbstractRequest;
@@ -31,6 +32,7 @@ public class AnsiUserRequest extends AbstractRequest {
 	private Integer status;
 	private String title;
 	private Integer userId;
+	private BigDecimal minimumHourlyPay;
 	
 	
 	public String getAddress1() {
@@ -146,6 +148,14 @@ public class AnsiUserRequest extends AbstractRequest {
 	}
 	
 	
+	public BigDecimal getMinimumHourlyPay() {
+		return minimumHourlyPay;
+	}
+
+	public void setMinimumHourlyPay(BigDecimal minimumHourlyPay) {
+		this.minimumHourlyPay = minimumHourlyPay;
+	}
+
 	public WebMessages validateAdd(Connection conn) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		
@@ -163,6 +173,7 @@ public class AnsiUserRequest extends AbstractRequest {
 		RequestValidator.validateBoolean(webMessages, "status", this.status, false);
 		RequestValidator.validateString(webMessages, "title", this.title, false);
 		RequestValidator.validateUserStatus(webMessages, "status", this.status, true);
+		RequestValidator.validateBigDecimal(webMessages, "minimumHourlyPay", this.minimumHourlyPay, false);
 		
 		return webMessages;
 	}
@@ -184,6 +195,7 @@ public class AnsiUserRequest extends AbstractRequest {
 		RequestValidator.validateString(webMessages, "title", this.title, false);
 		RequestValidator.validateId(conn, webMessages, "ansi_user", "user_id", "userId", this.userId, true);
 		RequestValidator.validateUserStatus(webMessages, "status", this.status, true);
+		RequestValidator.validateBigDecimal(webMessages, "minimumHourlyPay", this.minimumHourlyPay, false);
 		
 		return webMessages;
 	}

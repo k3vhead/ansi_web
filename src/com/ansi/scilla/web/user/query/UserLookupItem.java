@@ -1,5 +1,6 @@
 package com.ansi.scilla.web.user.query;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -28,6 +29,7 @@ public class UserLookupItem extends ReportQuery {
 	public static final String ADDRESS1 = "address1";
 	public static final String ADDRESS2 = "address2";
 	public static final String ZIP = "zip";
+	public static final String MINIMUM_HOURLY_PAY = "minimum_hourly_pay";
 	
 	private Integer userId;
 	private Integer userStatus;
@@ -43,6 +45,7 @@ public class UserLookupItem extends ReportQuery {
 	private String address1;
 	private String address2;
 	private String zip;
+	private BigDecimal minimumHourlyPay;
 	
 	public UserLookupItem() {
 		super();
@@ -64,6 +67,7 @@ public class UserLookupItem extends ReportQuery {
 		this.address1 = user.getAddress1();
 		this.address2 = user.getAddress2();
 		this.zip = user.getZip();
+		this.minimumHourlyPay = user.getMinimumHourlyPay();
 	}
 	
 	public UserLookupItem(ResultSet rs, ResultSetMetaData rsmd) throws SQLException  {
@@ -82,6 +86,7 @@ public class UserLookupItem extends ReportQuery {
 		this.address1 = rs.getString(ADDRESS1);
 		this.address2 = rs.getString(ADDRESS2);
 		this.zip = rs.getString(ZIP);
+		this.minimumHourlyPay = rs.getBigDecimal(MINIMUM_HOURLY_PAY);
 	}
 
 	public Integer getUserId() {
@@ -194,6 +199,14 @@ public class UserLookupItem extends ReportQuery {
 
 	public void setZip(String zip) {
 		this.zip = zip;
+	}
+
+	public BigDecimal getMinimumHourlyPay() {
+		return minimumHourlyPay;
+	}
+
+	public void setMinimumHourlyPay(BigDecimal minimumHourlyPay) {
+		this.minimumHourlyPay = minimumHourlyPay;
 	}
 
 	
