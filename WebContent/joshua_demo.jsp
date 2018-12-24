@@ -52,31 +52,31 @@
                 	
                 	var $rowNum = 0;  // this is the row in the table we're working with
                 	
-                	$.each($data.permissionList, function($index, $value) {
+                	$.each($data.divisionList, function($index, $value) {
                 		var $funcAreaTR = $("<tr>");
                 		
                 		// this TD is the first column -- contains the functional areas
                 		var $funcAreaTD = $("<td>");
                 		$funcAreaTD.attr("class","funcarea");
-                		$funcAreaTD.attr("data-id",$value[0].permissionName);
-                		$funcAreaTD.append($value[0].permissionName);
-                		console.log($value[0].permissionName);
+                		$funcAreaTD.attr("data-id",$value[0].divisionName);
+                		$funcAreaTD.append($value[0].divisionName);
+                		console.log($value[0].divisionName);
                 		$funcAreaTR.append($funcAreaTD);
                 		
                 		// this set of TD's is the rest of the row, contains the permission names
-                		$.each($data.permissionList, function($permIdx, $permValue) {
-            				var $permTD = $("<td>");
+                		$.each($data.divisionList, function($divIdx, $divValue) {
+            				var $divTD = $("<td>");
             				var $myColumn = $rowNum+1;
-            				var $myPermission = $data.permissionList[$permIdx][$myColumn];
-            				if ( $myPermission == null ) {
+            				var $myDivision = $data.divisionList[$divIDx][$myColumn];
+            				if ( $myDivision == null ) {
             					// no more permissions in this area
             					$permTD.append("&nbsp;");	
             				} else {
-            					$permTD.append($myPermission.permissionName);
-            					var $classString = "perm " + $myPermission.permissionName + " " + $data.permissionList[$permIdx][0].permissionName;
+            					$permTD.append($myDivision.divisionName);
+            					var $classString = "div " + $myDivision.divisionName + " " + $data.divisionList[$divIdx][0].divisionName;
             					$permTD.attr("class", $classString);
-            					$permTD.attr("data-permissionname",$myPermission.permissionName);
-            					$permTD.attr("data-funcarea",$data.permissionList[$permIdx][0].permissionName);
+            					$permTD.attr("data-divisionname",$myDivision.divisionName);
+            					$permTD.attr("data-funcarea",$data.divisionList[$divIdx][0].divisionName);
             					if ( $myPermission.included == true ) {
             						$permTD.addClass("hilite");
             					}
@@ -97,12 +97,12 @@
                         var $id = $(this).attr("data-id");
                         $(".funcarea").removeClass("hilite");
                         $(this).addClass("hilite");
-                        $(".perm").hide();
+                        $(".div").hide();
                         $selector = "." + $id;
                         $($selector).show();
                     });
 
-                    $(".perm").click(function($event) {
+                    $(".div").click(function($event) {
                         var $id = $(this).attr("data-id");
                         var $functionalArea = $(this).attr("data-funcarea");
                         if ( $(this).hasClass("hilite")) {
@@ -117,7 +117,7 @@
                 }
             }
 
-            PERMSTUFF.init();
+            DIVUSER.init();
         });
         </script>
     </head>
@@ -131,10 +131,10 @@
             	
                 <tr>
                     <td class="funcarea" data-id="fa1">Functional Area 1</td>                    
-                    <td class="perm fa1" data-funcarea="fa1" data-id="perm1.1">Perm 1.1</td>
-                    <td class="perm fa2" data-funcarea="fa2" data-id="perm1.1">Perm 2.1</td>
-                    <td class="perm fa3" data-funcarea="fa3" data-id="perm1.1">Perm 3.1</td>
-                    <td class="perm fa4" data-funcarea="fa4" data-id="perm1.1">Perm 4.1</td>
+                    <td class="div fa1" data-funcarea="fa1" data-id="div1.1">Perm 1.1</td>
+                    <td class="div fa2" data-funcarea="fa2" data-id="div1.1">Perm 2.1</td>
+                    <td class="div fa3" data-funcarea="fa3" data-id="div1.1">Perm 3.1</td>
+                    <td class="div fa4" data-funcarea="fa4" data-id="div1.1">Perm 4.1</td>
                 </tr>
                 <tr>
                     <td class="funcarea" data-id="fa2">Functional Area 2</td>                    
