@@ -20,10 +20,11 @@
                 },
 
                 
-                getTotalList : function() {
+                getTotalList : function($userId) {
+                	var $url = "divisionUser/" + $userId;
                 	var jqxhr = $.ajax({
 						type: 'GET',
-						url: "divisionUser/1",
+						url: $url,
 						data: {},
 						statusCode: {
 							200: function($data) {
@@ -50,7 +51,6 @@
                 	var $funcAreaTable = $("<table>");
                 	$funcAreaTable.attr("style","border:solid 1px #000000; margin-left:30px; margin-top:10px;margin-bottom:10px;");
                 	
-                	var $rowNum = 0;  // this is the row in the table we're working with
                 	
                 	$.each($data.divisionList, function($index, $value) {
                 		var $funcAreaTR = $("<tr>");
@@ -58,35 +58,15 @@
                 		// this TD is the first column -- contains the functional areas
                 		var $funcAreaTD = $("<td>");
                 		$funcAreaTD.attr("class","funcarea");
-                		$funcAreaTD.attr("data-id",$value[0].divisionName);
-                		$funcAreaTD.append($value[0].divisionName);
-                		console.log($value[0].divisionName);
+                		$funcAreaTD.attr("data-id",$value.divisionId);
+                		$funcAreaTD.append($value.div);
+                		console.log($value.div);
                 		$funcAreaTR.append($funcAreaTD);
                 		
-                		// this set of TD's is the rest of the row, contains the permission names
-                		$.each($data.divisionList, function($divIdx, $divValue) {
-            				var $divTD = $("<td>");
-            				var $myColumn = $rowNum+1;
-            				var $myDivision = $data.divisionList[$divIDx][$myColumn];
-            				if ( $myDivision == null ) {
-            					// no more permissions in this area
-            					$permTD.append("&nbsp;");	
-            				} else {
-            					$permTD.append($myDivision.divisionName);
-            					var $classString = "div " + $myDivision.divisionName + " " + $data.divisionList[$divIdx][0].divisionName;
-            					$permTD.attr("class", $classString);
-            					$permTD.attr("data-divisionname",$myDivision.divisionName);
-            					$permTD.attr("data-funcarea",$data.divisionList[$divIdx][0].divisionName);
-            					if ( $myPermission.included == true ) {
-            						$permTD.addClass("hilite");
-            					}
-            				}
-                			$funcAreaTR.append($permTD);
-                		});
+                		
                 		
                 		
                 		$funcAreaTable.append($funcAreaTR);
-                		$rowNum++;
                 	});
                 	$("#tableGoesHere").append($funcAreaTable);
                 },
@@ -125,130 +105,7 @@
 		<div style="width:1024px; border:solid 1px #000000;">
 			<div id="tableGoesHere"></div>
 		</div>
-		<%--
 		
-            <table style="width: 600px; border:solid 1px #000000; margin-left:30px; margin-top:10px;margin-bottom:10px;">
-            	
-                <tr>
-                    <td class="funcarea" data-id="fa1">Functional Area 1</td>                    
-                    <td class="div fa1" data-funcarea="fa1" data-id="div1.1">Perm 1.1</td>
-                    <td class="div fa2" data-funcarea="fa2" data-id="div1.1">Perm 2.1</td>
-                    <td class="div fa3" data-funcarea="fa3" data-id="div1.1">Perm 3.1</td>
-                    <td class="div fa4" data-funcarea="fa4" data-id="div1.1">Perm 4.1</td>
-                </tr>
-                <tr>
-                    <td class="funcarea" data-id="fa2">Functional Area 2</td>                    
-                    <td class="perm fa1" data-funcarea="fa1" data-id="perm1.1">Perm 1.2</td>
-                    <td class="perm fa2" data-funcarea="fa2" data-id="perm1.1">Perm 2.2</td>
-                    <td class="perm fa3" data-funcarea="fa3" data-id="perm1.1">Perm 3.2</td>
-                    <td class="perm fa4" data-funcarea="fa4" data-id="perm1.1">Perm 4.2</td>
-                </tr>
-                <tr>
-                    <td class="funcarea" data-id="fa3">Functional Area 3</td>                    
-                    <td class="perm fa1" data-funcarea="fa1" data-id="perm1.1">Perm 1.3</td>
-                    <td class="perm fa2" data-funcarea="fa2" data-id="perm1.1">Perm 2.3</td>
-                    <td class="perm fa3" data-funcarea="fa3" data-id="perm1.1">Perm 3.3</td>
-                    <td class="perm fa4" data-funcarea="fa4" data-id="perm1.1">Perm 4.3</td>
-                </tr>
-                <tr>
-                    <td class="funcarea" data-id="fa4">Functional Area 4</td>                    
-                    <td class="perm fa1" data-funcarea="fa1" data-id="perm1.1">Perm 1.4</td>
-                    <td class="perm fa2" data-funcarea="fa2" data-id="perm1.1">Perm 2.4</td>
-                    <td class="perm fa3" data-funcarea="fa3" data-id="perm1.1">Perm 3.4</td>
-                    <td class="perm fa4" data-funcarea="fa4" data-id="perm1.1">Perm 4.4</td>
-                </tr>
-            </table>
-		</div>
-		<br />
-		<div id="tableGoesHere">
-            <table style="width: 600px; border:solid 1px #000000; margin-left:30px; margin-top:10px;margin-bottom:10px;">
-            	
-                <tr>
-                    <td class="funcarea" data-id="fa1">QUOTE</td>                    
-                    <td class="perm fa1" data-funcarea="fa1" data-id="QUOTE_READ">QUOTE_READ</td>
-                    <td class="perm fa2" data-funcarea="fa2" data-id="TICKET_READ">TICKET_READ</td>
-                    <td class="perm fa3" data-funcarea="fa3" data-id="TICKET_SPECIAL_OVERRIDE_READ">TICKET_SPECIAL_OVERRIDE_READ</td>
-                    <td class="perm fa4" data-funcarea="fa4" data-id="PAYMENT_READ">PAYMENT_READ</td>            
-                </tr>
-                <tr>
-                    <td class="funcarea" data-id="fa2">TICKET</td>                          
-                    <td class="perm fa1" data-funcarea="fa1" data-id="QUOTE_CREATE">QUOTE_CREATE</td>
-                    <td class="perm fa2" data-funcarea="fa2" data-id="TICKET_CREATE">TICKET_CREATE</td>
-                    <td class="perm fa3" data-funcarea="fa3" data-id="TICKET_SPECIAL_OVERRIDE_WRITE">TICKET_SPECIAL_OVERRIDE_WRITE</td>
-                    <td class="perm fa4" data-funcarea="fa4" data-id="PAYMENT_WRITE">PAYMENT_WRITE</td>              
-                </tr>
-                <tr>
-                    <td class="funcarea" data-id="fa3">TICKET_SPECIAL_OVERRIDE</td>                      
-                    <td class="perm fa1" data-funcarea="fa1" data-id="QUOTE_PROPOSE">QUOTE_PROPOSE</td>
-                    <td class="perm fa2" data-funcarea="fa2" data-id="TICKET_PROPOSE">TICKET_PROPOSE</td>
-                    <td class="perm fa3" data-funcarea="fa3" data-id="&nbsp"></td>
-                    <td class="perm fa4" data-funcarea="fa4" data-id="&nbsp"></td>            
-                </tr>
-                <tr>
-                    <td class="funcarea" data-id="fa4">PAYMENT</td>                    
-                    <td class="perm fa1" data-funcarea="fa1" data-id="QUOTE_UPDATE">QUOTE_UPDATE</td>
-                    <td class="perm fa2" data-funcarea="fa2" data-id="TICKET_UPDATE">TICKET_UPDATE</td>
-                    <td class="perm fa3" data-funcarea="fa3" data-id="&nbsp"></td>
-                    <td class="perm fa4" data-funcarea="fa4" data-id="&nbsp"></td>           
-                </tr>
-                <tr>
-                    <td class="funcarea" data-id="fa5">INVOICE</td>                                   
-                    <td class="perm fa5" data-funcarea="fa5" data-id="INVOICE_READ">INVOICE_READ</td>
-                    <td class="perm fa6" data-funcarea="fa6" data-id="SYSADMIN_READ">SYSADMIN_READ</td>
-                    <td class="perm fa7" data-funcarea="fa7" data-id="USER_ADMIN_READ">USER_ADMIN_READ</td>
-                    <td class="perm fa8" data-funcarea="fa8" data-id="TECH_ADMIN_READ">TECH_ADMIN_READ</td>  
-                </tr>
-                <tr>
-                    <td class="funcarea" data-id="fa6">SYSADMIN</td>                                   
-                    <td class="perm fa5" data-funcarea="fa5" data-id="INVOICE_WRITE">INVOICE_WRITE</td>
-                    <td class="perm fa6" data-funcarea="fa6" data-id="SYSADMIN_WRITE">SYSADMIN_WRITE</td>
-                    <td class="perm fa7" data-funcarea="fa7" data-id="USER_ADMIN_WRITE">USER_ADMIN_WRITE</td>
-                    <td class="perm fa8" data-funcarea="fa8" data-id="TECH_ADMIN_WRITE">TECH_ADMIN_WRITE</td>    
-                </tr>
-                <tr>
-                    <td class="funcarea" data-id="fa7">USER_ADMIN</td>                                  
-                    <td class="perm fa5" data-funcarea="fa5" data-id="&nbsp"></td>
-                    <td class="perm fa6" data-funcarea="fa6" data-id="&nbsp"></td>
-                    <td class="perm fa7" data-funcarea="fa7" data-id="&nbsp"></td>
-                    <td class="perm fa8" data-funcarea="fa8" data-id="&nbsp"></td>       
-                </tr>
-                <tr>
-                    <td class="funcarea" data-id="fa8">TECH_ADMIN</td>                                   
-                    <td class="perm fa5" data-funcarea="fa5" data-id="&nbsp"></td>
-                    <td class="perm fa6" data-funcarea="fa6" data-id="&nbsp"></td>
-                    <td class="perm fa7" data-funcarea="fa7" data-id="&nbsp"></td>
-                    <td class="perm fa8" data-funcarea="fa8" data-id="&nbsp"></td>    
-                <tr>
-                    <td class="funcarea" data-id="fa9">ADDRESS</td>                               
-                    <td class="perm fa9" data-funcarea="fa9" data-id="ADDRESS_READ">ADDRESS_READ</td>
-                    <td class="perm fa10" data-funcarea="fa10" data-id="CONTACT_READ">CONTACT_READ</td>
-                    <td class="perm fa11" data-funcarea="fa11" data-id="ACTIVITIES_READ">ACTIVITIES_READ</td>
-                    <td class="perm fa12" data-funcarea="fa12" data-id="PERMISSIONS_READ">PERMISSIONS_READ</td>
-                </tr>
-                <tr>
-                    <td class="funcarea" data-id="fa10">CONTACT</td>                                  
-                    <td class="perm fa9" data-funcarea="fa9" data-id="ADDRESS_WRITE">ADDRESS_WRITE</td>
-                    <td class="perm fa10" data-funcarea="fa10" data-id="CONTACT_WRITE">CONTACT_WRITE</td>
-                    <td class="perm fa11" data-funcarea="fa11" data-id="ACTIVITIES_WRITE">ACTIVITIES_WRITE</td>
-                    <td class="perm fa12" data-funcarea="fa12" data-id="PERMISSIONS_WRITE">PERMISSIONS_WRITE</td>
-                </tr>
-                <tr>
-                    <td class="funcarea" data-id="fa11">ACTIVITIES</td>                             
-                    <td class="perm fa9" data-funcarea="fa9" data-id="&nbsp"></td>
-                    <td class="perm fa10" data-funcarea="fa10" data-id="&nbsp"></td>
-                    <td class="perm fa11" data-funcarea="fa11" data-id="&nbsp"></td>
-                    <td class="perm fa12" data-funcarea="fa12" data-id="&nbsp"></td>
-                </tr>
-                <tr>
-                    <td class="funcarea" data-id="fa12">PERMISSIONS</td>                                
-                    <td class="perm fa9" data-funcarea="fa9" data-id="&nbsp"></td>
-                    <td class="perm fa10" data-funcarea="fa10" data-id="&nbsp"></td>
-                    <td class="perm fa11" data-funcarea="fa11" data-id="&nbsp"></td>
-                    <td class="perm fa12" data-funcarea="fa12" data-id="&nbsp"></td>
-                </tr>
-            </table>
-		</div>
-		 --%>
 		EOF
     </body>
 </html>
