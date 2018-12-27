@@ -87,6 +87,7 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 	 * @throws IOException
 	 * @deprecated
 	 */
+	@Deprecated
 	public static void makeApplicationLogger() throws IOException {
 //		Properties properties = System.getProperties();
 //		String catalinaBase = properties.getProperty("catalina.base");
@@ -113,6 +114,7 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 	 * @throws IOException
 	 * @deprecated
 	 */
+	@Deprecated
 	public static void makeApacheLogger() throws IOException {
 //		Properties properties = System.getProperties();
 //		String catalinaBase = properties.getProperty("catalina.base");
@@ -137,6 +139,7 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 	 * @throws IOException
 	 * @deprecated
 	 */
+	@Deprecated
 	public static void makeWebthingLogger() throws IOException {
 //		Properties properties = System.getProperties();
 //		String catalinaBase = properties.getProperty("catalina.base");
@@ -161,6 +164,7 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 	 * @throws IOException
 	 * @deprecated
 	 */
+	@Deprecated
 	public static void makeTransactionLogger() throws IOException {
 //		Properties properties = System.getProperties();
 //		String catalinaBase = properties.getProperty("catalina.base");
