@@ -22,6 +22,7 @@ import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
+import com.ansi.scilla.web.exceptions.MissingRequiredDataException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -130,8 +131,14 @@ public class DivisionUserServlet extends AbstractServlet {
 				ansiUser.selectOne(conn); //throws RecordNotFoundException
 				DivisionUserRequest userRequest = new DivisionUserRequest();
 				AppUtils.json2object(jsonString, userRequest);
-				doUpdate(conn, sessionUser.getUserId(), url.getId(), userRequest.getDivisionId(), userRequest.isActive(), response);
-				userResponse = new DivisionUserResponse(conn, url.getId(), sessionUser.getUserId());
+				try {
+					doUpdate(conn, sessionUser.getUserId(), url.getId(), userRequest.getDivisionId(), userRequest.isActive(), response);
+					userResponse = new DivisionUserResponse(conn, url.getId(), sessionUser.getUserId());
+				} catch (MissingRequiredDataException e) {
+					messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid System State. Reload and try again");
+					userResponse.setWebMessages(messages);
+					super.sendResponse(conn, response, ResponseCode.SUCCESS, userResponse);
+				}
 			} else {
 				// according to the URI parsing, this shouldn't happen, but it gives me warm fuzzies
 				throw new ResourceNotFoundException();
@@ -140,7 +147,7 @@ public class DivisionUserServlet extends AbstractServlet {
 			logger.log(Level.DEBUG, "user servlet 55");
 			messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
 			userResponse.setWebMessages(messages);
-			super.sendResponse(conn, response, ResponseCode.SUCCESS, userResponse);
+			super.sendResponse(conn, response, ResponseCode.SUCCESS, userResponse);		
 		} catch(RecordNotFoundException e) {
 			logger.log(Level.DEBUG, "user servlet 60");
 			super.sendNotFound(response);
@@ -176,7 +183,9 @@ public class DivisionUserServlet extends AbstractServlet {
 				divUser.delete(conn);
 			}
 		} catch(RecordNotFoundException e) {
-			throw new NotAllowedException();
+			// This happens when we try to delete a non-existent record
+			// or when we try to add a record that already exists
+			throw new MissingRequiredDataException();
 		}
 
 
