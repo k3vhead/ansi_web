@@ -15,7 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 //import com.ansi.scilla.common.db.Code;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.DivisionUser;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.common.exceptions.InvalidDeleteException;
 import com.ansi.scilla.web.common.response.MessageKey;

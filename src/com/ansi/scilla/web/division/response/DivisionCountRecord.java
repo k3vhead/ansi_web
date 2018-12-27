@@ -38,10 +38,23 @@ public class DivisionCountRecord extends ApplicationObject implements Comparable
 
 	public DivisionCountRecord(DivisionUserCount divisionUserCount) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		this();		
-		BeanUtils.copyProperties(this, divisionUserCount.getDivision());
-		if ( divisionUserCount.getDivision().getDivisionId() == null ) {
-			this.divisionId = null;
-		}
+//		BeanUtils.copyProperties(this, divisionUserCount.getDivision());
+		
+		this.defaultDirectLaborPct = divisionUserCount.getDivision().getDefaultDirectLaborPct();
+		this.divisionCode = divisionUserCount.getDivision().getDivisionCode();
+		this.divisionNbr = divisionUserCount.getDivision().getDivisionNbr();
+		this.description = divisionUserCount.getDivision().getDescription();
+		this.parentId = divisionUserCount.getDivision().getParentId();
+		this.maxRegHrsPerDay = divisionUserCount.getDivision().getMaxRegHrsPerDay();
+		this.maxRegHrsPerWeek = divisionUserCount.getDivision().getMaxRegHrsPerWeek();
+		this.overtimeRate = divisionUserCount.getDivision().getOvertimeRate();
+		this.weekendIsOt = divisionUserCount.getDivision().getWeekendIsOt();
+		this.hourlyRateIsFixed = divisionUserCount.getDivision().getHourlyRateIsFixed();
+		this.divisionId = divisionUserCount.getDivision().getDivisionId();
+		
+//		if ( divisionUserCount.getDivision().getDivisionId() == null ) {
+//			this.divisionId = null;
+//		}
 		this.userCount = divisionUserCount.getUserCount();	
 		if ( divisionUserCount.getDivision().getStatus().equals(Division.STATUS_IS_ACTIVE)) {
 			this.status = "Active";

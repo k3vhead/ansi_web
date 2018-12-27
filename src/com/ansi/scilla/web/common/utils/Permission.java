@@ -78,6 +78,10 @@ public enum Permission {
 	PERMISSIONS(null, false, "Functional Area: Permissions"),
 	PERMISSIONS_READ(PERMISSIONS, false, "Can read permission group assignments"),
 	PERMISSIONS_WRITE(PERMISSIONS_READ, false, "Can edit permission groups, assign permissions to group"),
+	
+	CLAIMS(null, false, "Functional Area: Claims"),
+	CLAIMS_READ(CLAIMS, false, "Can read ticket claims"),
+	CLAIMS_WRITE(CLAIMS_READ, false, "Can edit ticket claims"),
 	;
 	
 	private final Boolean divisionSpecific;

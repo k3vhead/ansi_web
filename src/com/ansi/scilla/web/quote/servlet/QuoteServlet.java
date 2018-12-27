@@ -549,6 +549,7 @@ public class QuoteServlet extends AbstractServlet {
 			Job.TAX_EXEMPT_REASON, //"tax_exempt_reason",
 			Job.BUILDING_TYPE,
 			Job.UPDATED_BY,
+			Job.DIVISION_ID, 
 		});
 		
 		String sql = "update job set " + StringUtils.join(jobFieldNames, "=?,") + "=?, updated_date=SYSDATETIME() where quote_id=?";
@@ -575,6 +576,8 @@ public class QuoteServlet extends AbstractServlet {
 		ps.setString(n,  quoteRequest.getBuildingType());
 		n++;
 		ps.setInt(n, sessionUser.getUserId());
+		n++;
+		ps.setInt(n, quoteRequest.getDivisionId());
 		n++;
 		ps.setInt(n, quoteId);
 		ps.executeUpdate();

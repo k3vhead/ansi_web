@@ -254,6 +254,7 @@ import com.thewebthing.commons.lang.JsonException;
 
 		@RequiredForAdd
 		@RequiredForUpdate
+		@JobUpdateField
 		public Integer getDivisionId() {
 			return this.divisionId;
 		}

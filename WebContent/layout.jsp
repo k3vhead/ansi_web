@@ -144,6 +144,10 @@
 										<ansi:hasPermission permissionRequired="PAYMENT">
 										<li><html:link action="paymentLookup"><bean:message key="menu.label.payments" /></html:link></li>
 										</ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="CLAIMS_READ">
+										<li><html:link action="nonDirectLaborLookup">Non-Direct Labor</html:link></li>
+										</ansi:hasPermission>
+										
 									</ul>
 			        			</li>
 			        			<li>

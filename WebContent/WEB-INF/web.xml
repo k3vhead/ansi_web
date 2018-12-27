@@ -122,6 +122,16 @@
     
 
     <servlet>
+        <servlet-name>nonDirectLaborLookup</servlet-name>
+        <servlet-class>com.ansi.scilla.web.claims.servlet.NonDirectLaborLookupServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>nonDirectLaborLookup</servlet-name>
+        <url-pattern>/claims/nonDirectLaborLookup</url-pattern>
+    </servlet-mapping>
+    
+
+    <servlet>
         <servlet-name>code</servlet-name>
         <servlet-class>com.ansi.scilla.web.code.servlet.CodeServlet</servlet-class>
     </servlet>

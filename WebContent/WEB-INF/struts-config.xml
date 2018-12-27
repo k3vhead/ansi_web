@@ -162,6 +162,12 @@
             <forward name="login" path="/login.jsp" />            
         </action>
         <action
+            path="/nonDirectLaborLookup"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/claims/nonDirectLaborLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+        <action
             path="/pastDueReport"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/pastDueReport.jsp" />
