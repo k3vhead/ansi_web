@@ -252,7 +252,7 @@ public class AnsiUserServlet extends AbstractServlet {
 //		}
 		user.setPermissionGroupId(userRequest.getPermissionGroupId());
 		user.setPhone(userRequest.getPhone());
-		user.setState(userRequest.getPhone());		
+		user.setState(userRequest.getState());		
 		user.setStatus(statusMap.get(userRequest.getStatus()));
 		user.setSuperUser(User.SUPER_USER_IS_NO);
 		user.setTitle(userRequest.getTitle());
