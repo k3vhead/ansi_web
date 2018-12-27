@@ -524,7 +524,7 @@
 	    			
 	    			
 	    			
-					getDivisionList: function($callback) {
+					getDivisionList : function($callback) {
 						console.log("getDivisionList");
 						var jqxhr3 = $.ajax({
 							type: 'GET',
@@ -2227,6 +2227,7 @@
 							console.log($data);
 							QUOTEMAINTENANCE.quote = $data.data.quote;
 							QUOTEMAINTENANCE.populateQuotePanel(QUOTEMAINTENANCE.quote);
+							QUOTEMAINTENANCE.showJobUpdates($data.data);
 							$("#globalMsg").html("Update Successful").fadeOut(3000);
 							$("#quotePanel input").prop("disabled", true);
 		    				$("#quotePanel select").prop("disabled", true);
