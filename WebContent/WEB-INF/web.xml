@@ -208,6 +208,16 @@
     </servlet-mapping>
 
 
+	<servlet>
+        <servlet-name>employeeExpense</servlet-name>
+        <servlet-class>com.ansi.scilla.web.employeeExpense.servlet.EmployeeExpenseServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>employeeExpense</servlet-name>
+        <url-pattern>/employeeExpense/*</url-pattern>
+    </servlet-mapping>
+
+
     <servlet>
         <servlet-name>heartbeat</servlet-name>
         <servlet-class>com.ansi.scilla.web.common.servlet.Heartbeat</servlet-class>
@@ -664,6 +674,16 @@
 
 
 
+	<servlet>
+		<servlet-name>userList</servlet-name>
+		<servlet-class>com.ansi.scilla.web.user.servlet.UserListServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>userList</servlet-name>
+		<url-pattern>/userList/*</url-pattern>
+	</servlet-mapping>
+	
+	
 	<servlet>
 		<servlet-name>userLookup</servlet-name>
 		<servlet-class>com.ansi.scilla.web.user.servlet.UserLookupServlet</servlet-class>
