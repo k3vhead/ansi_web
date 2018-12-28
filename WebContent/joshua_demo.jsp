@@ -15,7 +15,7 @@
         $(function() {
             ;DIVUSER = {
                 init : function() {
-                	DIVUSER.getTotalList();
+                	DIVUSER.getTotalList(75);
                     
                 },
 
@@ -28,7 +28,7 @@
 						data: {},
 						statusCode: {
 							200: function($data) {
-								DIVUSER.makeTable($data.data);
+								DIVUSER.makeTable($data.data, $userId);
 								DIVUSER.makeClickers();
 							},					
 							403: function($data) {
@@ -47,20 +47,25 @@
                 
                 
                 
-                makeTable : function($data) {
+                makeTable : function($data, $userId) {
                 	var $funcAreaTable = $("<table>");
                 	$funcAreaTable.attr("style","border:solid 1px #000000; margin-left:30px; margin-top:10px;margin-bottom:10px;");
                 	
                 	
-                	$.each($data.divisionList, function($index, $value) {
+                	$.each($data.itemList, function($index, $value) {
                 		var $funcAreaTR = $("<tr>");
                 		
                 		// this TD is the first column -- contains the functional areas
                 		var $funcAreaTD = $("<td>");
-                		$funcAreaTD.attr("class","funcarea");
-                		$funcAreaTD.attr("data-id",$value.divisionId);
+                		if($value.active == true){
+                			$funcAreaTD.addClass("hilite");
+                		}
+                		$funcAreaTD.addClass("funcarea");
+                		$funcAreaTD.attr("data-id", $value.divisionId);
+                		$funcAreaTD.attr("data-userid", $userId);
                 		$funcAreaTD.append($value.div);
                 		console.log($value.div);
+                		
                 		$funcAreaTR.append($funcAreaTD);
                 		
                 		
@@ -75,8 +80,15 @@
                 makeClickers : function() {
                     $(".funcarea").click(function($event) {
                         var $id = $(this).attr("data-id");
-                        $(".funcarea").removeClass("hilite");
-                        $(this).addClass("hilite");
+                        var $userId = $(this).attr("data-userid");
+                        if ( $(this).hasClass("hilite")) {
+                            $(this).removeClass("hilite");
+                            DIVUSER.doPost($id, $userId, false);
+                        } else {
+                            $(this).addClass("hilite");
+                            DIVUSER.doPost($id, $userId, true);
+                        }
+                        //$(this).addClass("hilite");
                         $(".div").hide();
                         $selector = "." + $id;
                         $($selector).show();
@@ -88,13 +100,39 @@
                         if ( $(this).hasClass("hilite")) {
                             $(this).removeClass("hilite");
                         } else {
-                            var $selector1 = "." + $functionalArea;
-                            $($selector1).removeClass("hilite");
+                           
                             $(this).addClass("hilite");
                         }
                         
                     });
-                }
+                },
+            
+            
+            	doPost : function($id, $userId, $active){
+            		var $url = 'divisionUser/' + $userId;
+					//console.log("YOU PASSED ROW ID:" + $rowid);
+					$outbound = {"divisionId": $id, "active": $active};
+					
+					var jqxhr = $.ajax({
+						type: 'POST',
+						url: $url,
+						data: JSON.stringify($outbound),
+						success: function($data) {
+							//console.log($data);
+							
+	        				$("#divisionId").val(($data.data.codeList[0]).divisionId);
+	        				$("#div").val(($data.data.codeList[0]).div);
+	        				$("#description").val(($data.data.codeList[0]).description);
+	        				$("#active").val(($data.data.codeList[0]).active);
+						},
+						statusCode: {
+							403: function($data) {
+								$("#useridMsg").html("Session Timeout. Log in and try again");
+							} 
+						},
+						dataType: 'json'
+					});
+            	}
             }
 
             DIVUSER.init();

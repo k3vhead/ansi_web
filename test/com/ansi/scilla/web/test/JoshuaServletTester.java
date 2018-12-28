@@ -120,7 +120,7 @@ public class JoshuaServletTester extends TestServlet {
 		String url = "/ansi_web/divisionUser/1";
 		
 		DivisionUserRequest request = new DivisionUserRequest();
-		request.setDivisionId(101);
+		request.setDivisionId(100);
 		request.setActive(true);
 		String json = AppUtils.object2json(request);
 		logger.log(Level.DEBUG, json);
