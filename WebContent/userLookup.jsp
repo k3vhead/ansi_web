@@ -411,6 +411,7 @@
                 		
                 		$funcAreaTable.append($funcAreaTR);
                 	});
+                	$("#user-division-modal").html("");
                 	$("#user-division-modal").append($funcAreaTable);
                 },
             	
