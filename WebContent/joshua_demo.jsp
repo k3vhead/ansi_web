@@ -7,7 +7,7 @@
     	<link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
         <style type="text/css">
             .perm { display:none; width:200px; } 
-            .hilite { background-color: #404040;}
+            .hilite { background-color: #F71313;}
             .lowlite { background-color: #FFFFFF; }
             .funcArea { width: 300px; }
         </style>

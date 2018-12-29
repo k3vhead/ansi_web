@@ -34,6 +34,10 @@
 				width:400px;
 				padding:15px;
 			}
+			#user-division-modal {
+				float:right;
+				width:30%;
+			}
 			.prettyWideButton {
 				height:30px;
 				min-height:30px;
@@ -43,6 +47,9 @@
 			}
 			.edit-link {
 				cursor:pointer;
+			}
+			.hilite { 
+				background-color: #CCCCCC;
 			}
 			.dataTables_wrapper {
 				padding-top:10px;
@@ -78,6 +85,7 @@
 					$('.edit-link').click(function() {
         				var $userId = $(this).data("id");
         				USERLOOKUP.getUser($userId);
+        				USERLOOKUP.getTotalList($userId);
         			});
 				},
 				
@@ -201,6 +209,8 @@
             	
             	initSelects : function() {
             		var $select = $("#user-form-modal select[name='status']");
+            		//var $userDivSel = $("#user-division-modal userDivSel[name = 'userdiv']");
+            		
 					$('option', $select).remove();
 					$select.append(new Option("",""));
 					$select.append(new Option("Active", "1"));
@@ -241,6 +251,61 @@
 					});
             	},
             	
+            	makeClickers : function() {
+                    $(".funcarea").click(function($event) {
+                        var $id = $(this).attr("data-id");
+                        var $userId = $(this).attr("data-userid");
+                        if ( $(this).hasClass("hilite")) {
+                            $(this).removeClass("hilite");
+                            USERLOOKUP.doPost($id, $userId, false);
+                        } else {
+                            $(this).addClass("hilite");
+                            USERLOOKUP.doPost($id, $userId, true);
+                        }
+                        //$(this).addClass("hilite");
+                        $(".div").hide();
+                        $selector = "." + $id;
+                        $($selector).show();
+                    });
+
+                    $(".div").click(function($event) {
+                        var $id = $(this).attr("data-id");
+                        var $functionalArea = $(this).attr("data-funcarea");
+                        if ( $(this).hasClass("hilite")) {
+                            $(this).removeClass("hilite");
+                        } else {
+                           
+                            $(this).addClass("hilite");
+                        }
+                        
+                    });
+                },
+                
+                doPost : function($id, $userId, $active){
+            		var $url = 'divisionUser/' + $userId;
+					//console.log("YOU PASSED ROW ID:" + $rowid);
+					$outbound = {"divisionId": $id, "active": $active};
+					
+					var jqxhr = $.ajax({
+						type: 'POST',
+						url: $url,
+						data: JSON.stringify($outbound),
+						success: function($data) {
+							//console.log($data);
+							
+	        				$("#divisionId").val(($data.data.codeList[0]).divisionId);
+	        				$("#div").val(($data.data.codeList[0]).div);
+	        				$("#description").val(($data.data.codeList[0]).description);
+	        				$("#active").val(($data.data.codeList[0]).active);
+						},
+						statusCode: {
+							403: function($data) {
+								$("#useridMsg").html("Session Timeout. Log in and try again");
+							} 
+						},
+						dataType: 'json'
+					});
+            	},
             	
             	makeModal : function() {
             		$( "#user-form-modal" ).dialog({
@@ -272,9 +337,34 @@
 					$("#user-cancel-button").button('option', 'label', 'Cancel');
             	},
             	
-            	
+            	getTotalList : function($userId) {
+                	var $url = "divisionUser/" + $userId;
+                	var jqxhr = $.ajax({
+						type: 'GET',
+						url: $url,
+						data: {},
+						statusCode: {
+							200: function($data) {
+								USERLOOKUP.makeTable($data.data, $userId);
+								USERLOOKUP.makeClickers();
+							},					
+							403: function($data) {
+								$("#globalMsg").html("Session Timeout. Log in and try again");
+							},
+							404: function($data) {
+								$("#globalMsg").html("System Error Reorder 404. Contact Support");
+							},
+							500: function($data) {
+								$("#globalMsg").html("System Error Reorder 500. Contact Support");
+							}
+						},
+						dataType: 'json'
+					});
+                },
             	
             	getUser : function($userId) {
+            		//var $urlDiv = "divisionUser/" + &userId;
+            		
             		var $url = "user/" + $userId
             		var jqxhr = $.ajax({
 						type: 'GET',
@@ -297,6 +387,32 @@
 						dataType: 'json'
 					});
             	},
+            	
+            	makeTable : function($data, $userId) {
+                	var $funcAreaTable = $("<table>");
+                	$funcAreaTable.attr("style","border:solid 1px #000000; margin-left:30px; margin-top:10px;margin-bottom:10px;");
+                	
+                	
+                	$.each($data.itemList, function($index, $value) {
+                		var $funcAreaTR = $("<tr>");
+                		
+                		// this TD is the first column -- contains the functional areas
+                		var $funcAreaTD = $("<td>");
+                		if($value.active == true){
+                			$funcAreaTD.addClass("hilite");
+                		}
+                		$funcAreaTD.addClass("funcarea");
+                		$funcAreaTD.attr("data-id", $value.divisionId);
+                		$funcAreaTD.attr("data-userid", $userId);
+                		$funcAreaTD.append($value.div);
+                		console.log($value.div);
+                		
+                		$funcAreaTR.append($funcAreaTD);
+                		
+                		$funcAreaTable.append($funcAreaTR);
+                	});
+                	$("#user-division-modal").append($funcAreaTable);
+                },
             	
             	
             	populateModal : function($data) {
@@ -436,6 +552,7 @@
 
 		<ansi:hasPermission permissionRequired='USER_ADMIN_WRITE'>
 		<div id="user-form-modal">
+			<div id="user-division-modal"></div>
 			<form id="addForm">
 				<input type="hidden" name="userId" class="userField" />
 				<table>
