@@ -75,6 +75,7 @@
         		
         		clearEditForm : function() {
         			$("#addForm input").val("");
+        			$("#userIdDisplay").html("");
         			$("#addForm select[class='userField']").val("");
         			$("#addForm .errField").html("");
         			$("#addForm .displayField").html("");
@@ -434,6 +435,7 @@
             		$("#addForm input[name='title']").val($user.title);
             		$("#addForm input[name='userId']").val($user.userId);
             		$("#addForm input[name='minimumHourlyPay']").val($user.minimumHourlyPay);
+            		$("#userIdDisplay").html($user.userId);
             		$("#user-form-modal").dialog("open");
             	},
             	
@@ -559,7 +561,7 @@
 				<table>
 					<tr>
 						<td><span class="formLabel">User Id:</span></td>
-						<td><span class="displayField userId"></span></td>
+						<td><span class="displayField userId" id="userIdDisplay"></span></td>
 						<td><span class="err errField userId"></span></td>
 					</tr>
 					<tr>
