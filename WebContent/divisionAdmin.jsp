@@ -192,12 +192,15 @@
 			            	} else {
 			            		$("#addForm select[name='weekendIsOt']").val($division.weekendIsOt.toString());
 			            	}
-			            	if ( $division.weekendIsOt == null ) {
+			            	if ( $division.hourlyRateIsFixed == null ) {
 			            		$("#addForm select[name='hourlyRateIsFixed']").val("");
 			            	} else {
 			            		$("#addForm select[name='hourlyRateIsFixed']").val($division.hourlyRateIsFixed.toString());
 			            	}
-
+			            	
+			            	
+							
+			            	
 							$.each( $('#addForm :input'), function(index, value) {
 								markValid(value);
 							});
