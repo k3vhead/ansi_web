@@ -699,8 +699,20 @@
 		<servlet-class>com.ansi.scilla.web.user.servlet.AnsiUserServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-	<servlet-name>userServlet</servlet-name>
+		<servlet-name>userServlet</servlet-name>
 		<url-pattern>/user/*</url-pattern>
+	</servlet-mapping>
+	
+	
+	
+	
+	<servlet>
+		<servlet-name>washerTypeAhead</servlet-name>
+		<servlet-class>com.ansi.scilla.web.user.servlet.WasherTypeAheadServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	<servlet-name>washerTypeAhead</servlet-name>
+		<url-pattern>/washerTypeAhead</url-pattern>
 	</servlet-mapping>
 
 
