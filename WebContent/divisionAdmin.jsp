@@ -187,11 +187,17 @@
 			            	$("#addForm input[name='maxRegHrsPerDay']").val($division.maxRegHrsPerDay);
 			            	$("#addForm input[name='maxRegHrsPerWeek']").val($division.maxRegHrsPerWeek);
 			            	$("#addForm input[name='overtimeRate']").val($division.overtimeRate);
-			            	$("#addForm select[name='weekendIsOt']").val($division.weekendIsOt.toString());
-			            	$("#addForm select[name='hourlyRateIsFixed']").val($division.hourlyRateIsFixed.toString());
-			            	
-							
-			            	
+			            	if ( $division.weekendIsOt == null ) {
+			            		$("#addForm select[name='weekendIsOt']").val("");
+			            	} else {
+			            		$("#addForm select[name='weekendIsOt']").val($division.weekendIsOt.toString());
+			            	}
+			            	if ( $division.weekendIsOt == null ) {
+			            		$("#addForm select[name='hourlyRateIsFixed']").val("");
+			            	} else {
+			            		$("#addForm select[name='hourlyRateIsFixed']").val($division.hourlyRateIsFixed.toString());
+			            	}
+
 							$.each( $('#addForm :input'), function(index, value) {
 								markValid(value);
 							});
