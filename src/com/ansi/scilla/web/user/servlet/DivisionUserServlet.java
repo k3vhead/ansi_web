@@ -21,6 +21,7 @@ import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.web.division.response.DivisionListResponse;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.MissingRequiredDataException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
@@ -44,6 +45,7 @@ public class DivisionUserServlet extends AbstractServlet {
 		try {
 			SessionData sessionData = AppUtils.validateSession(request, Permission.USER_ADMIN_READ);
 			SessionUser sessionUser = sessionData.getUser();
+			//AnsiURL url = new AnsiURL(request, "divisionuser", new String[] { ACTION_IS_LIST });
 			doGetWork(request, response, sessionUser);
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
 			super.sendForbidden(response);
@@ -85,6 +87,8 @@ public class DivisionUserServlet extends AbstractServlet {
 				User ansiUser = new User();
 				ansiUser.setUserId(url.getId());
 				ansiUser.selectOne(conn);
+				userResponse = new DivisionUserResponse(conn, url.getId(), sessionUser.getUserId());
+			} else if(! StringUtils.isBlank(url.getCommand()) && url.getCommand().equals(ACTION_IS_LIST)) {
 				userResponse = new DivisionUserResponse(conn, url.getId(), sessionUser.getUserId());
 			} else {
 				// according to the URI parsing, this shouldn't happen, but it gives me warm fuzzies
