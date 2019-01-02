@@ -28,6 +28,7 @@ import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.user.request.DivisionUserRequest;
+import com.ansi.scilla.web.user.response.DivisionUserListResponse;
 import com.ansi.scilla.web.user.response.DivisionUserResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -87,18 +88,27 @@ public class DivisionUserServlet extends AbstractServlet {
 				User ansiUser = new User();
 				ansiUser.setUserId(url.getId());
 				ansiUser.selectOne(conn);
-				userResponse = new DivisionUserResponse(conn, url.getId(), sessionUser.getUserId());
+				userResponse = new DivisionUserResponse(conn, url.getId(), sessionUser.getUserId());//urlId is id making changes towards, sessionUser is the person doing changes
+				logger.log(Level.DEBUG, "user servlet 55");
+				messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
+				userResponse.setWebMessages(messages);
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, userResponse);
 			} else if(! StringUtils.isBlank(url.getCommand()) && url.getCommand().equals(ACTION_IS_LIST)) {
-				userResponse = new DivisionUserResponse(conn, url.getId(), sessionUser.getUserId());
+				DivisionUserListResponse userListResponse = new DivisionUserListResponse();
+				userListResponse = new DivisionUserListResponse(conn, url.getId(), sessionUser.getUserId()); 
+				logger.log(Level.DEBUG, "user servlet 55");
+				messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
+				userListResponse.setWebMessages(messages);
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, userListResponse);
 			} else {
 				// according to the URI parsing, this shouldn't happen, but it gives me warm fuzzies
 				throw new ResourceNotFoundException();
 			}
 			
-			logger.log(Level.DEBUG, "user servlet 55");
-			messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
-			userResponse.setWebMessages(messages);
-			super.sendResponse(conn, response, ResponseCode.SUCCESS, userResponse);
+//			logger.log(Level.DEBUG, "user servlet 55");
+//			messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
+//			userResponse.setWebMessages(messages);
+//			super.sendResponse(conn, response, ResponseCode.SUCCESS, userResponse);
 		} catch(RecordNotFoundException e) {
 			logger.log(Level.DEBUG, "user servlet 60");
 			super.sendNotFound(response);
