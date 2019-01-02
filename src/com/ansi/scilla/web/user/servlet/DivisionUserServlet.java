@@ -76,7 +76,7 @@ public class DivisionUserServlet extends AbstractServlet {
 		WebMessages messages = new WebMessages();
 		try {
 			conn = AppUtils.getDBCPConn();
-			String[] str = new String[0];
+			String[] str = new String[] { ACTION_IS_LIST };
 			AnsiURL url = new AnsiURL(request, REALM, str);	
 			
 	
@@ -95,7 +95,7 @@ public class DivisionUserServlet extends AbstractServlet {
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, userResponse);
 			} else if(! StringUtils.isBlank(url.getCommand()) && url.getCommand().equals(ACTION_IS_LIST)) {
 				DivisionUserListResponse userListResponse = new DivisionUserListResponse();
-				userListResponse = new DivisionUserListResponse(conn, url.getId(), sessionUser.getUserId()); 
+				userListResponse = new DivisionUserListResponse(conn, sessionUser.getUserId()); 
 				logger.log(Level.DEBUG, "user servlet 55");
 				messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
 				userListResponse.setWebMessages(messages);

@@ -53,7 +53,8 @@ public class DivisionUserListResponse extends MessageResponse{
      * @throws SQLException
      */
     private void makeDivisionUserList(Connection conn, Integer loginId) throws SQLException  {
-    	String sql = "select division.division_id, concat(division_nbr,'-',division_code) as div, division.description, division_user.title_id " + 
+    	String sql = "select division.division_id, "
+    			+ " concat(division_nbr,'-',division_code) as div, division.description, null as title_id " + 
     			"\n from division  " +
     			"\n inner join division_user on division_user.division_id=division.division_id and division_user.user_id=? " +
     			"\n order by div";	

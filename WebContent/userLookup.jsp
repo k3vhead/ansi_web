@@ -79,6 +79,7 @@
         			$("#addForm select[class='userField']").val("");
         			$("#addForm .errField").html("");
         			$("#addForm .displayField").html("");
+        			$("#modal-message").html("");
         		},
         		
         		
@@ -107,7 +108,7 @@
         			
         			$("#newUserButton").click(function($event) {
         				USERLOOKUP.clearEditForm();
-        				USERLOOKUP.getTotalList("list");
+        				$("#user-division-modal").html("");
         				$("#user-form-modal").attr("data-updatetype","add");
         				$("#user-form-modal").dialog("open");
         			});
@@ -294,11 +295,11 @@
 						data: JSON.stringify($outbound),
 						success: function($data) {
 							//console.log($data);
-							
-	        				$("#divisionId").val(($data.data.codeList[0]).divisionId);
-	        				$("#div").val(($data.data.codeList[0]).div);
-	        				$("#description").val(($data.data.codeList[0]).description);
-	        				$("#active").val(($data.data.codeList[0]).active);
+							$("#modal-message").html("Success").show().fadeOut(3000);
+	        				//$("#divisionId").val(($data.data.codeList[0]).divisionId);
+	        				//$("#div").val(($data.data.codeList[0]).div);
+	        				//$("#description").val(($data.data.codeList[0]).description);
+	        				//$("#active").val(($data.data.codeList[0]).active);
 						},
 						statusCode: {
 							403: function($data) {
@@ -443,9 +444,11 @@
             	
             	saveUser : function() {
             		if ( $("#addForm input[name='userId']").val() == null || $("#addForm input[name='userId']").val() == "") {
-	            			$url = "user/add";
+            			$url = "user/add";
+            			thisIsAnAdd = true;
 	            	} else {
 	            		$url = "user/" + $("#addForm input[name='userId']").val()
+	            		thisIsAnAdd = false;
 	            	}
             		
             		$outbound = {}
@@ -472,9 +475,14 @@
 						statusCode: {
 							200: function($data) {								
 								if ( $data.responseHeader.responseCode == "SUCCESS") {
-									$("#user-form-modal").dialog("close");
-			    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
-			    					$('#userTable').DataTable().ajax.reload();
+									if ( thisIsAnAdd ) {
+				    					$('#userTable').DataTable().ajax.reload();
+				    					USERLOOKUP.getTotalList($data.data.userList[0].userId);
+									} else {
+										$("#user-form-modal").dialog("close");
+				    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
+				    					$('#userTable').DataTable().ajax.reload();
+									}
 								} else {
 									USERLOOKUP.displayEditErrors($data);
 								}
@@ -556,6 +564,7 @@
 
 		<ansi:hasPermission permissionRequired='USER_ADMIN_WRITE'>
 		<div id="user-form-modal">
+			<div id="modal-message" class="err"></div>
 			<div id="user-division-modal"></div>
 			<form id="addForm">
 				<input type="hidden" name="userId" class="userField" />
