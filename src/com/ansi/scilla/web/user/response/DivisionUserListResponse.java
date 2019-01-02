@@ -34,12 +34,49 @@ public class DivisionUserListResponse extends MessageResponse{
         super();
     }
 
+	public DivisionUserListResponse(Connection conn, Integer loginId) throws SQLException {
+        this();
+        makeDivisionUserList(conn, loginId);
+    }
+	
     public DivisionUserListResponse(Connection conn, Integer userId, Integer loginId) throws SQLException {
         this();
         makeDivisionUserList(conn, userId, loginId);
     }
 
-    private void makeDivisionUserList(Connection conn, Integer userId, Integer loginId) throws SQLException {
+    /**
+     * This is a list of divisions that the loginid has access to. This will generally be called when a new user 
+     * is being added, so there is no userid with which to filter. THe login cannot grant access to a division to which he
+     * does not have access. 
+     * @param conn
+     * @param loginId - the guy making the change
+     * @throws SQLException
+     */
+    private void makeDivisionUserList(Connection conn, Integer loginId) throws SQLException  {
+    	String sql = "select division.division_id, concat(division_nbr,'-',division_code) as div, division.description, division_user.title_id " + 
+    			"\n from division  " +
+    			"\n inner join division_user on division_user.division_id=division.division_id and division_user.user_id=? " +
+    			"\n order by div";	
+    	PreparedStatement ps = conn.prepareStatement(sql);
+    	ps.setInt(1,  loginId);
+    	ResultSet rs = ps.executeQuery();
+    	this.itemList = new ArrayList<DivisionUserItem>();
+    	while ( rs.next() ) {
+    		this.itemList.add(new DivisionUserItem(rs));
+    	}
+    	rs.close();
+    }
+
+    /**
+     * Create a list of divisions that the userid has access to (this is the guy whose access we're changing)
+     * and the loginId has access to (This is the guy making the changes). THe Login cannot grant access to the user
+     * to a division that the login does not have access to)
+     * @param conn
+     * @param userId - the guy whose access we're changing
+     * @param loginId - the guy who is making the change
+     * @throws SQLException
+     */
+	private void makeDivisionUserList(Connection conn, Integer userId, Integer loginId) throws SQLException {
         String sql = "select abc.division_id, abc.div, abc.description, abc.title_id from "
         		+ "\n (select division.division_id, concat(division_nbr,'-',division_code) as div, division.description, division_user.title_id "
         		+ "\n from division "
@@ -60,9 +97,6 @@ public class DivisionUserListResponse extends MessageResponse{
     }
 
     public class DivisionUserItem extends ApplicationObject {
-        /**
-		 * 
-		 */
 		private static final long serialVersionUID = 1L;
 		private Integer divisionId;
         private String div;

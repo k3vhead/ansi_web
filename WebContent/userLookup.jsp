@@ -107,6 +107,7 @@
         			
         			$("#newUserButton").click(function($event) {
         				USERLOOKUP.clearEditForm();
+        				USERLOOKUP.getTotalList("list");
         				$("#user-form-modal").attr("data-updatetype","add");
         				$("#user-form-modal").dialog("open");
         			});
