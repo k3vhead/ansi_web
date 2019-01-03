@@ -2,9 +2,12 @@ package com.ansi.scilla.web.claims.query;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class NonDirectLaborSearchResult extends ApplicationObject {
 
@@ -36,8 +39,8 @@ public class NonDirectLaborSearchResult extends ApplicationObject {
 	
 	public NonDirectLaborSearchResult(ResultSet rs) throws SQLException {
 		this();
-		this.divisionId=123;
-		this.div = "99-XX88";
+		this.divisionId=rs.getInt(DIVISION_ID);
+		this.div = rs.getString(DIV);
 		this.washerId = rs.getInt(WASHER_ID);		
 		this.lastName = rs.getString(LAST_NAME);	
 		this.firstName = rs.getString(FIRST_NAME);	
@@ -83,9 +86,11 @@ public class NonDirectLaborSearchResult extends ApplicationObject {
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Date getWorkDate() {
 		return workDate;
 	}
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setWorkDate(Date workDate) {
 		this.workDate = workDate;
 	}
@@ -106,6 +111,12 @@ public class NonDirectLaborSearchResult extends ApplicationObject {
 	}
 	public void setNotes(String notes) {
 		this.notes = notes;
+	}
+	public Integer getWeek() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.clear();
+		calendar.setTime(this.workDate);
+		return calendar.get(Calendar.WEEK_OF_YEAR);
 	}
 	
 	

@@ -71,7 +71,7 @@
         		
         		createTable : function() {
             		var dataTable = $('#displayTable').DataTable( {
-            			"aaSorting":		[[0,'asc']],
+            			"aaSorting":		[[0,'asc'],[1,'asc']],
             			"processing": 		true,
             	        "serverSide": 		true,
             	        "autoWidth": 		false,
@@ -91,9 +91,9 @@
             	        ],
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
-            	            { className: "dt-left", "targets": [4,5,6,11] },
-            	            { className: "dt-center", "targets": [0,1,2,3,7,8,10,12,-1] },
-            	            { className: "dt-right", "targets": [9]}
+            	            { className: "dt-left", "targets": [0,3,6] },
+            	            { className: "dt-center", "targets": [1,2,4,5,7] },
+            	            { className: "dt-right", "targets": []}
             	         ],
             	        "paging": true,
     			        "ajax": {
@@ -103,7 +103,7 @@
     			        columns: [
     			        	
     			            { title: "Div", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-    			            	if(row.division != null){return (row.division+"");}
+    			            	if(row.div != null){return (row.div+"");}
     			            } },
     			            { title: "Week", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.week != null){return (row.week);}
@@ -112,7 +112,7 @@
     			            	if(row.workDate != null){return (row.workDate+"");}
     			            } },
     			            { title: "Washer", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.washer_id != null){return (row.lastName+", "+row.firstName);}
+    			            	if(row.washerId != null){return (row.lastName+", "+row.firstName);}
     			            } },
     			            { title: "Hrs Type" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
     			            	if(row.hoursType != null){return (row.hoursType+"");}
