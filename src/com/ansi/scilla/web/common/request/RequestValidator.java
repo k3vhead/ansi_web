@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.ansi.scilla.common.claims.WorkHoursType;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.invoice.InvoiceGrouping;
 import com.ansi.scilla.common.invoice.InvoiceStyle;
@@ -302,6 +303,59 @@ public class RequestValidator {
 	}
 
 
+	
+	
+	/**
+	 * Make sure the user belongs to a permission group that contains "CAN_RUN_TICKETS" permission
+	 * @param conn
+	 * @param webMessages
+	 * @param fieldName
+	 * @param value
+	 * @param required
+	 * @throws Exception
+	 */
+	public static void validateWasherId(Connection conn, WebMessages webMessages, String fieldName, Integer value, boolean required) throws Exception {
+		if ( value == null ) {
+			if ( required ) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			String sql = "select ansi_user.user_id\n" + 
+					" from ansi_user\n" + 
+					" inner join permission_group on permission_group.permission_group_id=ansi_user.permission_group_id\n" + 
+					" inner join permission_group_level on permission_group_level.permission_group_id = permission_group.permission_group_id\n" + 
+					" 		and permission_group_level.permission_name='CAN_RUN_TICKETS'\n" + 
+					" where ansi_user.user_id=?";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, value);
+			ResultSet rs = ps.executeQuery();
+			if ( ! rs.next() ) {
+				webMessages.addMessage(fieldName, "Invalid Value");
+			}
+			rs.close();
+		}	
+	}
 
 
+
+	public static void validateWorkHoursType(WebMessages webMessages, String fieldName, String value, boolean required) {
+		if ( StringUtils.isBlank(value) ) {
+			if ( required ) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			try {
+				WorkHoursType workHoursType = WorkHoursType.valueOf(value);
+				if ( workHoursType == null ) {
+					webMessages.addMessage(fieldName, "Invalid Value");
+				}
+			} catch ( IllegalArgumentException e) {
+				webMessages.addMessage(fieldName, "Invalid Value");
+			}
+		}		
+	}
+
+
+
+	
 }

@@ -378,13 +378,24 @@
     </servlet-mapping>
 
 	<servlet>
-	        <servlet-name>myAccount</servlet-name>
-	        <servlet-class>com.ansi.scilla.web.user.servlet.MyAccountServlet</servlet-class>
-	    </servlet>
-	    <servlet-mapping>
-	        <servlet-name>myAccount</servlet-name>
-	        <url-pattern>/myAccount</url-pattern>
-	   </servlet-mapping>
+		<servlet-name>myAccount</servlet-name>
+		<servlet-class>com.ansi.scilla.web.user.servlet.MyAccountServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>myAccount</servlet-name>
+		<url-pattern>/myAccount</url-pattern>
+	</servlet-mapping>
+
+
+    <servlet>
+		<servlet-name>nonDirectLabor</servlet-name>
+		<servlet-class>com.ansi.scilla.web.claims.servlet.NonDirectLaborServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>nonDirectLabor</servlet-name>
+		<url-pattern>/nonDirectLabor/*</url-pattern>
+	</servlet-mapping>
+
 
     <servlet>
         <servlet-name>options</servlet-name>

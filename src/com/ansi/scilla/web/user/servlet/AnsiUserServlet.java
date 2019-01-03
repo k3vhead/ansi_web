@@ -41,6 +41,8 @@ public class AnsiUserServlet extends AbstractServlet {
 	private static final long serialVersionUID = 1L;
 
 	public static final String REALM = "user";
+	public static final String FILTER_IS_MANAGER = "manager";
+	public static final String FILTER_IS_LIST = "list";
 	
 	private static HashMap<Integer, Integer> statusMap = new HashMap<Integer, Integer>();
 	
@@ -122,7 +124,7 @@ public class AnsiUserServlet extends AbstractServlet {
 		WebMessages messages = new WebMessages();
 		try {
 			conn = AppUtils.getDBCPConn();
-			AnsiURL url = new AnsiURL(request, REALM, new String[] {"list","manager"});	
+			AnsiURL url = new AnsiURL(request, REALM, new String[] {FILTER_IS_LIST,FILTER_IS_MANAGER});	
 			String sortField = request.getParameter("sortBy");
 			logger.log(Level.DEBUG, "Sortig by: " + sortField);
 			if ( ! StringUtils.isBlank(sortField)) {
