@@ -47,7 +47,7 @@ public class DavesServletTester extends TestServlet {
 		super.password = "password1";
 		
 		Header sessionCookie = super.doLogin();
-		String results = testNDL(sessionCookie);
+		String results = testNDL(sessionCookie, MyTestType.UPDATE);
 
 //		String results = super.doPost(sessionCookie, url, super.makeJson(parmMap));
 //		String results = super.doGet(sessionCookie, url, (HashMap<String,String>)null);
@@ -60,37 +60,42 @@ public class DavesServletTester extends TestServlet {
 
 
 
-	private String testNDL(Header sessionCookie) throws Exception {
-		// check the get
-//		String url = "/ansi_web/nonDirectLabor/1";
-//		String results = super.doGet(sessionCookie, url, null);
-//		return results;
-		
-		
-		// check the list
-//		String url = "/ansi_web/nonDirectLabor/list";
-//		String results = super.doGet(sessionCookie, url, null);
-//		return results;
-		
-		
-		
-		// check the add
-		String url = "/ansi_web/nonDirectLabor/add";
-		String json = "{\"washerId\":5,\"divisionId\":106,\"workDate\":\"12/24/2018\",\"hours\":455,\"hoursType\":\"T\",\"notes\":\"NGH\"}";
-		logger.log(Level.DEBUG, json);
-		String results = super.doPost(sessionCookie, url, json);
+	private String testNDL(Header sessionCookie, MyTestType type) throws Exception {
+		String url = null;
+		String results = null;
+		String json = null;
+
+		if ( type.equals(MyTestType.ITEM)) {
+			url = "/ansi_web/nonDirectLabor/1";
+			results = super.doGet(sessionCookie, url, null);
+		} else if ( type.equals(MyTestType.LIST)) {		
+			url = "/ansi_web/nonDirectLabor/list";
+			results = super.doGet(sessionCookie, url, null);
+		} else if ( type.equals(MyTestType.ADD)) {	
+			url = "/ansi_web/nonDirectLabor/add";
+			json = "{\"washerId\":5,\"divisionId\":106,\"workDate\":\"12/21/2018\",\"hours\":4,\"hoursType\":\"V\",\"notes\":\"NGH\"}";
+			logger.log(Level.DEBUG, json);
+			results = super.doPost(sessionCookie, url, json);
+		} else if ( type.equals(MyTestType.UPDATE)) {	
+			url = "/ansi_web/nonDirectLabor/13";
+			json = "{\"washerId\":1,\"divisionId\":106,\"workDate\":\"12/11/2018\",\"hours\":5,\"hoursType\":\"V\",\"notes\":\"NGH2\"}";
+			logger.log(Level.DEBUG, json);
+			results = super.doPost(sessionCookie, url, json);
+		} else if ( type.equals(MyTestType.DELETE)) {
+			url = "/ansi_web/nonDirectLabor/8";
+			json = "{\"washerId\":1,\"divisionId\":106,\"workDate\":\"12/01/2018\",\"hours\":5,\"hoursType\":\"some third type\",\"notes\":\"NGH2\"}";
+			logger.log(Level.DEBUG, json);
+			results = super.doDelete(sessionCookie, url, null);
+			return results;
+		} else {
+			throw new Exception("Huh?");
+		}
 		return results;
-		
-		
-		// check the update
-//		String url = "/ansi_web/nonDirectLabor/8";
-//		String json = "{\"washerId\":1,\"divisionId\":106,\"workDate\":\"12/01/2018\",\"hours\":5,\"hoursType\":\"some third type\",\"notes\":\"NGH2\"}";
-//		logger.log(Level.DEBUG, json);
-//		String results = super.doPost(sessionCookie, url, json);
-//		return results;
+
 	}
 
 
+	public enum MyTestType { ITEM,LIST,ADD,UPDATE,DELETE; }
 	
 
 

@@ -16,12 +16,21 @@ public class FieldMap extends ApplicationObject {
 	public String jsonField;
 	public String dbField;
 	public JsonFieldFormat format;
+	public Boolean updateField;
 	
-	public FieldMap(String formField, String dbField, JsonFieldFormat format) {
+	/**
+	 * 
+	 * @param jsonField - key into the json node / field name from the HTML form
+	 * @param dbField - field name in the database table
+	 * @param format - Field format (for conversion purposes)
+	 * @param updateField - "True" indicates field will be populated in the database; "False" indicates this is display only
+	 */
+	public FieldMap(String jsonField, String dbField, JsonFieldFormat format, Boolean updateField) {
 		super();
-		this.jsonField = formField;
+		this.jsonField = jsonField;
 		this.dbField = dbField;
 		this.format = format;
+		this.updateField = updateField;
 	}
 	
 	

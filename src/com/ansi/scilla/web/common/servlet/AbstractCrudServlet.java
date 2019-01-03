@@ -59,6 +59,24 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 	protected final SimpleDateFormat standardDateFormat = new SimpleDateFormat("MM/DD/yyyy");
 	protected final Logger logger = LogManager.getLogger(this.getClass());
 	
+	private String displaySql;
+	
+	public String getDisplaySql() {
+		return displaySql;
+	}
+	/**
+	 * When the display of the data requires a more complex query than a simple "get one record from one table",
+	 * populate displaySql with the more complex query. If populated, this query will be used as-is for a list
+	 * response. "where key=value" will be appended for the item response, where "key" and "value" are deduced from the
+	 * MSTable object passed into the processGet(), processPost() and processDelete() methods
+	 * 
+	 * @param displaySql
+	 */
+	public void setDisplaySql(String displaySql) {
+		this.displaySql = displaySql;
+	}
+	
+	
 	protected abstract WebMessages validateAdd(Connection conn, JsonNode addRequest) throws Exception;
 	protected abstract WebMessages validateUpdate(Connection conn, JsonNode updateRequest) throws Exception;
 	
@@ -146,6 +164,64 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 	
 	
 	
+	protected void processDelete(HttpServletRequest request, HttpServletResponse response, Permission permission, String realm, String[] actionList, MSTable table, List<FieldMap> fieldMap) throws ServletException {
+		logger.log(Level.DEBUG, "Processing Post");
+//		SessionUser sessionUser = AppUtils.getSessionUser(request);
+		try {
+//			String jsonString = super.makeJsonString(request);
+			AnsiURL url = new AnsiURL(request, realm, actionList);
+			SessionData sessionData = AppUtils.validateSession(request, permission);
+			Connection conn = null;
+			try {
+				conn = AppUtils.getDBCPConn();
+				conn.setAutoCommit(false);
+
+				String tableName = table.getClass().getAnnotation(DBTable.class).value();
+				String keyFieldName = table.getClass().getAnnotation(AutoIncrement.class).value();
+				
+				String sqlCheckId = "select * from " + tableName + " where " + keyFieldName + "=?";
+				PreparedStatement ps = conn.prepareStatement(sqlCheckId);
+				logger.log(Level.DEBUG, sqlCheckId);
+				ps.setInt(1, url.getId());
+				ResultSet rs = ps.executeQuery();
+				if ( rs.next() ) {			
+					String sqlDelete = "delete from " + tableName + " where " + keyFieldName + "=?";
+					logger.log(Level.DEBUG, sqlDelete);
+					PreparedStatement psDelete = conn.prepareStatement(sqlDelete);
+					psDelete.setInt(1, url.getId());
+					psDelete.executeUpdate();
+					super.sendResponse(conn, response, ResponseCode.SUCCESS, null);
+					conn.commit();
+				} else {
+					super.sendNotFound(response);
+				}
+				rs.close();
+				
+			} catch ( IOException formatException) {
+				super.sendResponse(conn, response, ResponseCode.SYSTEM_FAILURE, null);
+			} catch ( Exception e ) {
+				AppUtils.logException(e);
+				AppUtils.rollbackQuiet(conn);
+				throw new ServletException(e);
+			} finally {
+				AppUtils.closeQuiet(conn);
+			}
+
+		} catch ( ResourceNotFoundException e) {
+			super.sendNotFound(response);
+		} catch (TimeoutException  | NotAllowedException | ExpiredLoginException e1) {
+			super.sendForbidden(response);
+		} catch ( Exception e) {
+			AppUtils.logException(e);
+			throw new ServletException(e);
+		}
+	}
+	
+	
+	
+	
+	
+	
 	private void processAddRequest(Connection conn, HttpServletResponse response, MSTable table, SessionUser sessionUser, String jsonString, List<FieldMap> fieldMapList) throws Exception {
 		logger.log(Level.DEBUG, "Processing add");
 		ObjectMapper mapper = new ObjectMapper();
@@ -175,20 +251,22 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 		
 		// insert into non_direct_labor (field, field) values (?,?)
 		for ( FieldMap mapItem : fieldMapList ) {
-			if ( ! mapItem.dbField.equalsIgnoreCase(keyFieldName) ) {
-				fieldList.add(mapItem.dbField);
-				if ( mapItem.format.equals(JsonFieldFormat.INTEGER)) {
-					valueList.add(jsonNode.get(mapItem.jsonField).asInt());
-				} else if (mapItem.format.equals(JsonFieldFormat.DECIMAL)) {
-					valueList.add(jsonNode.get(mapItem.jsonField).asLong());
-				} else if (mapItem.format.equals(JsonFieldFormat.STRING)) {
-					valueList.add(jsonNode.get(mapItem.jsonField).asText());
-				} else if (mapItem.format.equals(JsonFieldFormat.DATE)) {
-					String dateString = jsonNode.get(mapItem.jsonField).asText();
-					java.util.Date date = standardDateFormat.parse(dateString);
-					valueList.add(new java.sql.Date(date.getTime()));
-				} else {
-					throw new ServletException("Invalid data format");
+			if ( mapItem.updateField ) {
+				if ( ! mapItem.dbField.equalsIgnoreCase(keyFieldName) ) {
+					fieldList.add(mapItem.dbField);
+					if ( mapItem.format.equals(JsonFieldFormat.INTEGER)) {
+						valueList.add(jsonNode.get(mapItem.jsonField).asInt());
+					} else if (mapItem.format.equals(JsonFieldFormat.DECIMAL)) {
+						valueList.add(jsonNode.get(mapItem.jsonField).asLong());
+					} else if (mapItem.format.equals(JsonFieldFormat.STRING)) {
+						valueList.add(jsonNode.get(mapItem.jsonField).asText());
+					} else if (mapItem.format.equals(JsonFieldFormat.DATE)) {
+						String dateString = jsonNode.get(mapItem.jsonField).asText();
+						java.util.Date date = standardDateFormat.parse(dateString);
+						valueList.add(new java.sql.Date(date.getTime()));
+					} else {
+						throw new ServletException("Invalid data format");
+					}
 				}
 			}
 		}
@@ -231,18 +309,32 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 		logger.log(Level.DEBUG, "Processing Update");
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		JsonNode jsonNode = mapper.readTree(jsonString);
-		WebMessages webMessages = this.validateAdd(conn, jsonNode);
 		
-		if ( webMessages.isEmpty() ) {
-			doUpdate(conn, response, table, id, sessionUser, jsonNode, fieldMapList);
+		
+		String tableName = table.getClass().getAnnotation(DBTable.class).value();
+		String keyFieldName = table.getClass().getAnnotation(AutoIncrement.class).value();
+		
+		PreparedStatement ps = conn.prepareStatement("select * from " + tableName + " where " + keyFieldName + " =?");
+		ps.setInt(1, id);
+		ResultSet rs = ps.executeQuery();
+		if ( rs.next() ) {			
+			JsonNode jsonNode = mapper.readTree(jsonString);
+			WebMessages webMessages = this.validateUpdate(conn, jsonNode);
+			
+			if ( webMessages.isEmpty() ) {
+				doUpdate(conn, response, table, id, sessionUser, jsonNode, fieldMapList);
+			} else {
+				CrudResponse crudResponse = new CrudResponse();
+				crudResponse.setWebMessages(webMessages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, crudResponse);
+			}
 		} else {
-			CrudResponse crudResponse = new CrudResponse();
-			crudResponse.setWebMessages(webMessages);
-			super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, crudResponse);
+			super.sendNotFound(response);
 		}
-		
+		rs.close();
 	}
+
+	
 	
 	
 	@SuppressWarnings("unchecked")
@@ -255,20 +347,22 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 		java.sql.Date today = new java.sql.Date(new java.util.Date().getTime());
 		
 		for ( FieldMap mapItem : fieldMapList ) {
-			if ( ! mapItem.dbField.equalsIgnoreCase(keyFieldName) ) {
-				fieldList.add(mapItem.dbField);
-				if ( mapItem.format.equals(JsonFieldFormat.INTEGER)) {
-					valueList.add(jsonNode.get(mapItem.jsonField).asInt());
-				} else if (mapItem.format.equals(JsonFieldFormat.DECIMAL)) {
-					valueList.add(jsonNode.get(mapItem.jsonField).asLong());
-				} else if (mapItem.format.equals(JsonFieldFormat.STRING)) {
-					valueList.add(jsonNode.get(mapItem.jsonField).asText());
-				} else if (mapItem.format.equals(JsonFieldFormat.DATE)) {
-					String dateString = jsonNode.get(mapItem.jsonField).asText();
-					java.util.Date date = standardDateFormat.parse(dateString);
-					valueList.add(new java.sql.Date(date.getTime()));
-				} else {
-					throw new ServletException("Invalid data format");
+			if ( mapItem.updateField ) {
+				if ( ! mapItem.dbField.equalsIgnoreCase(keyFieldName) ) {
+					fieldList.add(mapItem.dbField);
+					if ( mapItem.format.equals(JsonFieldFormat.INTEGER)) {
+						valueList.add(jsonNode.get(mapItem.jsonField).asInt());
+					} else if (mapItem.format.equals(JsonFieldFormat.DECIMAL)) {
+						valueList.add(jsonNode.get(mapItem.jsonField).asLong());
+					} else if (mapItem.format.equals(JsonFieldFormat.STRING)) {
+						valueList.add(jsonNode.get(mapItem.jsonField).asText());
+					} else if (mapItem.format.equals(JsonFieldFormat.DATE)) {
+						String dateString = jsonNode.get(mapItem.jsonField).asText();
+						java.util.Date date = standardDateFormat.parse(dateString);
+						valueList.add(new java.sql.Date(date.getTime()));
+					} else {
+						throw new ServletException("Invalid data format");
+					}
 				}
 			}
 		}
@@ -317,7 +411,7 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 
 		String tableName = table.getClass().getAnnotation(DBTable.class).value();
 		Statement s = conn.createStatement();
-		ResultSet rs = s.executeQuery("select * from " + tableName);
+		ResultSet rs = StringUtils.isBlank(displaySql) ? s.executeQuery("select * from " + tableName) : s.executeQuery(displaySql);
 		while ( rs.next() ) {
 			itemList.add(makeItem(rs, db2json));
 		}
@@ -334,17 +428,22 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 		
 		String tableName = table.getClass().getAnnotation(DBTable.class).value();
 		String keyFieldName = table.getClass().getAnnotation(AutoIncrement.class).value();
-		
-		PreparedStatement ps = conn.prepareStatement("select * from " + tableName + " where " + keyFieldName + " =?");
+		String sqlSelect = StringUtils.isBlank(displaySql) ? "select * from " + tableName : displaySql;
+		String sql = sqlSelect + " where " + keyFieldName + "=?";
+		logger.log(Level.DEBUG, sql);
+		PreparedStatement ps = conn.prepareStatement(sql);
 		ps.setInt(1, id);
 		ResultSet rs = ps.executeQuery();
 		if ( rs.next() ) {			
 			item = makeItem(rs, db2json);
+			CrudResponse crudResponse = new CrudResponse(item);
+			super.sendResponse(conn, response, ResponseCode.SUCCESS, crudResponse);
+		} else {
+			super.sendNotFound(response);
 		}
 		rs.close();
 
-		CrudResponse crudResponse = new CrudResponse(item);
-		super.sendResponse(conn, response, ResponseCode.SUCCESS, crudResponse);
+		
 		
 	}
 
