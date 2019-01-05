@@ -122,7 +122,9 @@ public class EmployeeExpenseServlet extends AbstractServlet {
 		User user = new User();
 		user.setUserId(employeeExpense.getWasherId());
 		user.selectOne(conn);
-		employeeExpenseResponseItem.setWasherName(user.getFirstName() + " " + user.getLastName());
+		employeeExpenseResponseItem.setFirstName(user.getFirstName());
+		employeeExpenseResponseItem.setLastName(user.getLastName());
+		employeeExpenseResponseItem.setDetail(employeeExpense.getDetail());
 		return employeeExpenseResponseItem;
 	}
 
@@ -140,6 +142,7 @@ public class EmployeeExpenseServlet extends AbstractServlet {
 			try {
 				conn = AppUtils.getDBCPConn();
 				EmployeeExpenseRequest employeeExpenseRequest = new EmployeeExpenseRequest();
+				AppUtils.json2object(jsonString, employeeExpenseRequest);
 
 				if (!StringUtils.isBlank(url.getCommand()) && url.getCommand().equals(ACTION_IS_ADD)) {
 					processAddRequest(conn, response, sessionUser, employeeExpenseRequest);
@@ -245,7 +248,7 @@ public class EmployeeExpenseServlet extends AbstractServlet {
 
 	private void processAddRequest(Connection conn, HttpServletResponse response, SessionUser sessionUser,
 			EmployeeExpenseRequest employeeExpenseRequest) throws Exception {
-		EmployeeExpense employeeExpense = new EmployeeExpense();
+		EmployeeExpense employeeExpense = null;
 		ResponseCode responseCode = null;
 
 		WebMessages webMessages = validateAdd(conn, employeeExpenseRequest);
@@ -274,6 +277,14 @@ public class EmployeeExpenseServlet extends AbstractServlet {
 		} else {
 			responseCode = ResponseCode.EDIT_FAILURE;
 		}
+		EmployeeExpenseResponse employeeExpenseResponse = new EmployeeExpenseResponse();
+		if (employeeExpense != null) {
+			employeeExpenseResponse = new EmployeeExpenseResponse(conn, employeeExpense);
+		}
+		if (!webMessages.isEmpty()) {
+			employeeExpenseResponse.setWebMessages(webMessages);
+		}
+		super.sendResponse(conn, response, responseCode, employeeExpenseResponse);
 
 	}
 
@@ -284,6 +295,8 @@ public class EmployeeExpenseServlet extends AbstractServlet {
 		makeEmployeeExpense(employeeExpense, employeeExpenseRequest, sessionUser, today);
 		employeeExpense.setAddedBy(sessionUser.getUserId());
 		employeeExpense.setAddedDate(today);
+		employeeExpense.setUpdatedBy(sessionUser.getUserId());
+		employeeExpense.setUpdatedDate(today);
 
 		try {
 			Integer expenseId = employeeExpense.insertWithKey(conn);

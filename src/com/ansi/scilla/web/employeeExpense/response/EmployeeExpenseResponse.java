@@ -28,8 +28,10 @@ public class EmployeeExpenseResponse extends MessageResponse implements Serializ
 		User user = new User();
 		user.setUserId(employeeExpense.getWasherId());
 		user.selectOne(conn);
-		this.item.setWasherName(user.getFirstName() + " " + user.getLastName());
+		this.item.setFirstName(user.getFirstName());
+		this.item.setLastName(user.getLastName());
 		this.item.setExpenseId(employeeExpense.getExpenseId());
+		this.item.setDetail(employeeExpense.getDetail());
 	}
 
 	public EmployeeExpenseResponseItem getItem() {
