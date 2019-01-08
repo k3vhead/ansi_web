@@ -4,15 +4,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.claims.WorkHoursType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class NonDirectLaborSearchResult extends ApplicationObject {
 
 	private static final long serialVersionUID = 1L;
 
+	public static final String LABOR_ID = "labor_id";
 	public static final String DIVISION_ID = "division_id";
 	public static final String DIV = "div";
 	public static final String WASHER_ID = "washer_id";
@@ -23,6 +24,7 @@ public class NonDirectLaborSearchResult extends ApplicationObject {
 	public static final String HOURS_TYPE = "hours_type";
 	public static final String NOTES = "notes";
 	
+	private Integer laborId;
 	private Integer divisionId;
 	private String div;
 	private Integer washerId;
@@ -31,6 +33,7 @@ public class NonDirectLaborSearchResult extends ApplicationObject {
 	private Date workDate;
 	private Integer hours;
 	private String hoursType;
+	private String hoursDescription;
 	private String notes;
 	
 	public NonDirectLaborSearchResult() {
@@ -39,6 +42,7 @@ public class NonDirectLaborSearchResult extends ApplicationObject {
 	
 	public NonDirectLaborSearchResult(ResultSet rs) throws SQLException {
 		this();
+		this.laborId = rs.getInt(LABOR_ID);
 		this.divisionId=rs.getInt(DIVISION_ID);
 		this.div = rs.getString(DIV);
 		this.washerId = rs.getInt(WASHER_ID);		
@@ -49,9 +53,21 @@ public class NonDirectLaborSearchResult extends ApplicationObject {
 		this.hours = rs.getInt(HOURS);	
 		this.hoursType = rs.getString(HOURS_TYPE);	
 		this.notes = rs.getString(NOTES);	
+		if ( this.hoursType != null ) {
+			WorkHoursType workHoursType = WorkHoursType.valueOf(this.hoursType);
+			this.hoursDescription = workHoursType.getDescription();
+		}
 		
 	}
 	
+	public Integer getLaborId() {
+		return laborId;
+	}
+
+	public void setLaborId(Integer laborId) {
+		this.laborId = laborId;
+	}
+
 	public Integer getDivisionId() {
 		return divisionId;
 	}
@@ -106,6 +122,14 @@ public class NonDirectLaborSearchResult extends ApplicationObject {
 	public void setHoursType(String hoursType) {
 		this.hoursType = hoursType;
 	}
+	public String getHoursDescription() {
+		return hoursDescription;
+	}
+
+	public void setHoursDescription(String hoursDescription) {
+		this.hoursDescription = hoursDescription;
+	}
+
 	public String getNotes() {
 		return notes;
 	}

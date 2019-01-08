@@ -31,9 +31,7 @@
 				width:400px;
 				padding:15px;
         	}
-			#displayTable {
-				width:90%;
-			}
+			
 			
 			.prettyWideButton {
 				height:30px;
@@ -51,6 +49,7 @@
         		init : function() {
         			NONDIRECTLABOR.createTable();
         			NONDIRECTLABOR.makeModal();
+        			NONDIRECTLABOR.makeOptionList('WORK_HOURS_TYPE', NONDIRECTLABOR.populateOptionList)
         			NONDIRECTLABOR.makeClickers();
         			NONDIRECTLABOR.makeDivisionList();
         			NONDIRECTLABOR.makeAutoComplete();
@@ -59,11 +58,18 @@
         		
         		
         		clearForm : function() {
-        			console.log("Clearing form");
         			$("#ndl-crud-form select[name='divisionId']").val();
         			$.each( $("#ndl-crud-form input"), function($index, $value) {        				
         				var $selector = '#ndl-crud-form input[name="' + $value.name + '"]';
         				$($selector).val("");
+        				var $errSelector = '#' + $value.name + "Err";
+        				$($errSelector).html("");
+        			});
+        			$.each( $("#ndl-crud-form select"), function($index, $value) {        				
+        				var $selector = '#ndl-crud-form select[name="' + $value.name + '"]';
+        				$($selector).val("");
+        				var $errSelector = '#' + $value.name + "Err";
+        				$($errSelector).html("");
         			});
         		},
         		
@@ -114,8 +120,8 @@
     			            { title: "Washer", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.washerId != null){return (row.lastName+", "+row.firstName);}
     			            } },
-    			            { title: "Hrs Type" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-    			            	if(row.hoursType != null){return (row.hoursType+"");}
+    			            { title: "Hrs Type" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	return '<span class="tooltip">' + row.hoursType + '<span class="tooltiptext">' + row.hoursDescription + '</span></span>'
     			            } },
     			            { title: "Hours", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.hours != null){return (row.hours+"");}
@@ -124,20 +130,17 @@
     			            	if(row.notes != null){return (row.notes+"");}
     			            } },			            
     			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
-    			            	//console.log(row);
     			            	{
-    				            	var $edit = '<a href="jobMaintenance.html?id='+row.jobId+'" class="editAction" data-id="'+row.jobId+'"><webthing:edit>View</webthing:edit></a>';
-    			            		return "<ansi:hasPermission permissionRequired='QUOTE_READ'>"+$edit+"</ansi:hasPermission>";
-    			            		//return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='jobMaintenance.html?id="+row.jobId+"' class=\"editAction fas fa-pencil-alt\" data-id='"+row.jobId+"'></a></ansi:hasWrite></ansi:hasPermission>";
+    				            	var $edit = '<a href="#" class="editAction" data-id="'+row.laborId+'"><webthing:edit>Edit</webthing:edit></a>';
+    			            		return "<ansi:hasPermission permissionRequired='CLAIMS_WRITE'>"+$edit+"</ansi:hasPermission>";
     			            	}
     			            	
     			            } }],
     			            "initComplete": function(settings, json) {
-    			            	//console.log(json);
-    			            	doFunctionBinding();
+    			            	NONDIRECTLABOR.doFunctionBinding();
     			            },
     			            "drawCallback": function( settings ) {
-    			            	doFunctionBinding();
+    			            	NONDIRECTLABOR.doFunctionBinding();
     			            }
     			    } );
             		//new $.fn.dataTable.FixedColumns( dataTable );
@@ -145,9 +148,105 @@
         		
         		
             	
+            	doFunctionBinding : function () {
+					$( ".editAction" ).on( "click", function($clickevent) {
+						var $laborId = $(this).attr("data-id");
+						NONDIRECTLABOR.doGetLabor($laborId);
+					});
+				},
+            	
+            	
+            	
+				
+				doGetLabor : function($laborId) {
+					console.log("getting labor: " + $laborId)
+					var $url = 'claims/nonDirectLabor/' + $laborId;
+					var jqxhr = $.ajax({
+						type: 'GET',
+						url: $url,
+						statusCode: {
+							200 : function($data) {
+								$("#ndl-crud-form").attr("data-laborid",$laborId);
+								$.each( $("#ndl-crud-form input"), function($index, $value) {
+									var $name = $($value).attr("name");
+									var $selectorName = '#ndl-crud-form input[name="' + $name + '"]';
+									$($selectorName).val($data.data.item[$name]);
+			            		});
+								$('#ndl-crud-form input[name="washerName"]').val($data.data.item.firstName + " " + $data.data.item.lastName);
+			            		$.each( $("#ndl-crud-form select"), function($index, $value) {
+			            			var $name = $($value).attr("name");
+									var $selectorName = '#ndl-crud-form select[name="' + $name + '"]';
+									$($selectorName).val($data.data.item[$name]);
+			            		});
+								$("#ndl-crud-form").dialog("open");
+							},
+							403: function($data) {
+								$("#globalMsg").html("Session Timeout. Log in and try again").show();
+							},
+							404: function($data) {
+								$("#globalMsg").html("Invalid labor id. Reload and try again").show();
+							},
+							405: function($data) {
+								$("#globalMsg").html("System Error 405. Contact Support").show();
+							},
+							500: function($data) {
+								$("#globalMsg").html("System Error 500. Contact Support").show();
+							},
+						},
+						dataType: 'json'
+					});
+				},
+				
+				
+            	
             	doPost : function() {
-            		console.log("Doing a post");
-            		$("#ndl-crud-form").dialog("close");
+            		console.log("doPost");
+        			var $laborId = $( "#ndl-crud-form ").attr("data-laborid");
+					var $url = 'claims/nonDirectLabor/' + $laborId;
+        			
+            		var $outbound = {};
+            		$.each( $("#ndl-crud-form input"), function($index, $value) {
+            			$outbound[$($value).attr("name")] = $($value).val();
+            		});
+            		$.each( $("#ndl-crud-form select"), function($index, $value) {
+            			$outbound[$($value).attr("name")] = $($value).val();
+            		});
+            		var jqxhr3 = $.ajax({
+						type: 'POST',
+						url: $url,
+						data: JSON.stringify($outbound),
+						statusCode: {
+							200:function($data) {
+								$("#ndl-crud-form .err").html("");
+								if ( $data.responseHeader.responseCode == 'SUCCESS') {
+									$("#displayTable").DataTable().ajax.reload();
+									$("#globalMsg").html("Success").show().fadeOut(3000);
+									$("#ndl-crud-form").dialog("close");
+								} else if ($data.responseHeader.responseCode == 'EDIT_FAILURE') {
+									$.each($data.data.webMessages, function($index, $value) {
+										var $errSelector = '#' + $index + "Err";
+				        				$($errSelector).html($value[0]);
+									});
+								} else {
+									$("#globalMsg").html("Invalid response code " + $data.responseHeader.responseCode + ". Contact Support").show();
+									$("#ndl-crud-form").dialog("close");
+								}
+
+							},
+							403: function($data) {								
+								$("#globalMsg").html("Session Expired. Log In and try again").show();
+							},
+							404: function($data) {
+								$("#globalMsg").html("System Error Division 404. Contact Support").show();
+							},
+							500: function($data) {
+								$("#globalMsg").html("System Error Division 500. Contact Support").show();
+							}
+						},
+						dataType: 'json'
+					});
+            		
+            		
             	},
             	
             	
@@ -159,12 +258,9 @@
 						source: "washerTypeAhead?",
 						select: function( event, ui ) {
 							$( $idSelector ).val(ui.item.id);								
-							console.log(ui.item);	
-							//ADDRESSUTILS.getAddress(ui.item.id, QUOTEMAINTENANCE.populateAddressModal);
    				      	},
 						response: function(event, ui) {
 							if (ui.content.length === 0) {
-								console.log("No match");
 								$("#washerIdErr").html("No Washer Found");
 					        } else {
 					        	$("#washerIdErr").html("");
@@ -184,6 +280,7 @@
             		
             		$("#new-NDL-button").click(function($event) {
             			NONDIRECTLABOR.clearForm();
+            			$( "#ndl-crud-form ").attr("data-laborid","add")
             			$( "#ndl-crud-form" ).dialog("open");
             		});
             		
@@ -192,6 +289,8 @@
                         nextText: '&gt;&gt;',
                         showButtonPanel:true
                     });
+            		
+            		
             	},
             	
             	
@@ -257,59 +356,54 @@
 					$("#ndl-save-button").button('option', 'label', 'Save');
 					$("#ndl-cancel-button").button('option', 'label', 'Cancel');
         		},
+        		
+        		
+        		
+        		
+        		makeOptionList : function($optionList, $callBack) {
+					console.log("getOptions");
+	    			var $returnValue = null;
+	    			var jqxhr1 = $.ajax({
+	    				type: 'GET',
+	    				url: 'options',
+	    				data: $optionList,			    				
+	    				statusCode: {
+	    					200: function($data) {
+	    						$callBack($data.data);		    						
+	    					},			    				
+	    					403: function($data) {
+	    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+	    					}, 
+	    					404: function($data) {
+	    						$("#globalMsg").html("System Error Option 404. Contact Support").show();
+	    					}, 
+	    					405: function($data) {
+	    						$("#globalMsg").html("System Error Option 405. Contact Support").show();
+	    					}, 
+	    					500: function($data) {
+	    						$("#globalMsg").html("System Error Option 500. Contact Support").show();
+	    					}, 
+	    				},
+	    				dataType: 'json'
+	    			});
+	    		},
+	    		
+	    		
+	    		
+	    		populateOptionList : function($data) {
+	    			var $select = $("#ndl-crud-form select[name='hoursType']");
+					$('option', $select).remove();
+					$select.append(new Option("",""));
+					$.each($data.workHoursType, function(index, val) {
+					    $select.append(new Option(val.display, val.code));
+					});
+	    		},
+	    		
         	}
       	  	
 
         	NONDIRECTLABOR.init();
         	
-        	        	
-        			
-            
-             
-				
-				function doFunctionBinding() {
-					$( ".editAction" ).on( "click", function($clickevent) {
-						 doEdit($clickevent);
-					});
-				}
-				
-				function doEdit($clickevent) {
-					var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
-
-						var $url = 'jobTable/' + $rowid;
-						//console.log("YOU PASSED ROW ID:" + $rowid);
-						var jqxhr = $.ajax({
-							type: 'GET',
-							url: $url,
-							success: function($data) {
-								//console.log($data);
-								
-				        		$("#jobId").val(($data.data.codeList[0]).jobId);
-				        		$("#jobStatus").val(($data.data.codeList[0]).jobStatus);
-				        		$("#divisionNbr").val(($data.data.codeList[0]).divisionNbr);
-				        		$("#billToName").val(($data.data.codeList[0]).billToName);
-				        		$("#jobSiteName").val(($data.data.codeList[0]).jobSiteName);
-				        		$("#jobSiteAddress").val(($data.data.codeList[0]).jobSiteAddress);
-				        		$("#startDate").val(($data.data.codeList[0]).startDate);
-				        		$("#jobFrequency").val(($data.data.codeList[0]).startDate);
-				        		$("#pricePerCleaning").val(($data.data.codeList[0]).pricePerCleaning);
-				        		$("#jobNbr").val(($data.data.codeList[0]).jobNbr);
-				        		$("#serviceDescription").val(($data.data.codeList[0]).serviceDescription);
-				        		$("#poNumber").val(($data.data.codeList[0]).processDate);
-				        		
-				        		$("#jId").val(($data.data.codeList[0]).jobId);
-				        		$("#updateOrAdd").val("update");
-				        		$("#addJobTableForm").dialog( "open" );
-							},
-							statusCode: {
-								403: function($data) {
-									$("#useridMsg").html("Session Timeout. Log in and try again");
-								} 
-							},
-							dataType: 'json'
-						});
-					//console.log("Edit Button Clicked: " + $rowid);
-				}
         });
         </script>        
     </tiles:put>
@@ -367,7 +461,7 @@
     		<tr>
     			<td><span class="formLabel">Date</span></td>
     			<td><input type="text" name="workDate" class="dateField" /></td>
-    			<td><span id="dateErr" class="err"></span></td>
+    			<td><span id="workDateErr" class="err"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formLabel">Washer</span></td>
@@ -381,7 +475,7 @@
     		</tr>
     		<tr>
     			<td><span class="formLabel">Type</span></td>
-    			<td><input type="text"  name="hoursType" /></td>
+    			<td><select  name="hoursType"></select></td>
     			<td><span id="hoursTypeErr" class="err"></span></td>
     		</tr>
     		<tr>

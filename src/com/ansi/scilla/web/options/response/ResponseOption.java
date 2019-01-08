@@ -12,5 +12,6 @@ public enum ResponseOption {
 	PERMISSION,
 	ACCOUNT_TYPE,
 	REPORT_TYPE,
+	WORK_HOURS_TYPE,
 	;
 }

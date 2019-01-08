@@ -29,6 +29,7 @@ public class NonDirectLaborLookupQuery extends ReportQuery {
 	private static final String sqlSelectClause = 
 					"select division.division_id, "
 					+ "\n concat(division.division_nbr,'-',division.division_code) as div, "
+					+ "\n non_direct_labor.labor_id, "
 					+ "\n non_direct_labor.washer_id, "
 					+ "\n ansi_user.last_name, "
 					+ "\n ansi_user.first_name, "
@@ -207,9 +208,10 @@ public class NonDirectLaborLookupQuery extends ReportQuery {
 		String whereClause = NonDirectLaborLookupQuery.baseWhereClause;
 		if (! StringUtils.isBlank(queryTerm)) {
 				whereClause =  whereClause + " and (\n"
-						+ " ansi_user.first_name like '%" + queryTerm + "%' " +
-						"\n OR ansi_user.last_name like '%" + queryTerm + "%'" +
-						"\n OR non_direct_labor.notes like '%" + queryTerm + "%'" +
+						+ " lower(concat(ansi_user.last_name, ', ', ansi_user.first_name)) like '%" + queryTerm.toLowerCase() + "%'" +
+						"\n OR lower(concat(ansi_user.first_name, ' ', ansi_user.last_name)) like '%" + queryTerm.toLowerCase() + "%'" +
+						"\n OR lower(concat(division.division_nbr, '-', division.division_code)) like '%" + queryTerm.toLowerCase() + "%'" +
+						"\n OR lower(non_direct_labor.notes) like '%" + queryTerm.toLowerCase() + "%'" +
 						")" ;
 		}
 		return whereClause;
