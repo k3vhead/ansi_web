@@ -121,27 +121,7 @@
     </servlet-mapping>
     
 
-    <servlet>
-        <servlet-name>nonDirectLabor</servlet-name>
-        <servlet-class>com.ansi.scilla.web.claims.servlet.NonDirectLaborServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>nonDirectLabor</servlet-name>
-        <url-pattern>/claims/nonDirectLabor/*</url-pattern>
-    </servlet-mapping>
-    
-
-    <servlet>
-        <servlet-name>nonDirectLaborLookup</servlet-name>
-        <servlet-class>com.ansi.scilla.web.claims.servlet.NonDirectLaborLookupServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>nonDirectLaborLookup</servlet-name>
-        <url-pattern>/claims/nonDirectLaborLookup</url-pattern>
-    </servlet-mapping>
-    
-
-    <servlet>
+	<servlet>
         <servlet-name>code</servlet-name>
         <servlet-class>com.ansi.scilla.web.code.servlet.CodeServlet</servlet-class>
     </servlet>
@@ -228,6 +208,18 @@
     </servlet-mapping>
 
 
+	<servlet>
+        <servlet-name>employeeExpenseLookup</servlet-name>
+        <servlet-class>com.ansi.scilla.web.employeeExpense.servlet.EmployeeExpenseLookupServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>employeeExpenseLookup</servlet-name>
+        <url-pattern>/employeeExpenseLookup</url-pattern>
+    </servlet-mapping>
+
+
+    
+    
     <servlet>
         <servlet-name>heartbeat</servlet-name>
         <servlet-class>com.ansi.scilla.web.common.servlet.Heartbeat</servlet-class>
@@ -397,15 +389,26 @@
 	</servlet-mapping>
 
 
+    
     <servlet>
-		<servlet-name>nonDirectLabor</servlet-name>
-		<servlet-class>com.ansi.scilla.web.claims.servlet.NonDirectLaborServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>nonDirectLabor</servlet-name>
-		<url-pattern>/nonDirectLabor/*</url-pattern>
-	</servlet-mapping>
+        <servlet-name>nonDirectLabor</servlet-name>
+        <servlet-class>com.ansi.scilla.web.claims.servlet.NonDirectLaborServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>nonDirectLabor</servlet-name>
+        <url-pattern>/claims/nonDirectLabor/*</url-pattern>
+    </servlet-mapping>
+    
 
+    <servlet>
+        <servlet-name>nonDirectLaborLookup</servlet-name>
+        <servlet-class>com.ansi.scilla.web.claims.servlet.NonDirectLaborLookupServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>nonDirectLaborLookup</servlet-name>
+        <url-pattern>/claims/nonDirectLaborLookup</url-pattern>
+    </servlet-mapping>
+    
 
     <servlet>
         <servlet-name>options</servlet-name>
