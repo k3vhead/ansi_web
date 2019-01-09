@@ -11,6 +11,11 @@ import com.ansi.scilla.web.common.response.MessageResponse;
 
 public class EmployeeExpenseResponse extends MessageResponse implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private EmployeeExpenseResponseItem item;
 
 	public EmployeeExpenseResponse() {
