@@ -3,6 +3,7 @@ package com.ansi.scilla.web.employeeExpense.servlet;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.sql.Connection;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -20,6 +21,7 @@ import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.employeeExpense.query.EmployeeExpenseLookupQuery;
 import com.ansi.scilla.web.employeeExpense.response.EmployeeExpenseLookupResponse;
+import com.ansi.scilla.web.employeeExpense.response.EmployeeExpenseResponseItem;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -114,18 +116,18 @@ public class EmployeeExpenseLookupServlet extends AbstractServlet {
 			lookup.setSearchTerm(term);
 			lookup.setSortBy(colName);
 			lookup.setSortIsAscending(dir.equals("asc"));
-//			List<EmployeeExpenseSearchResult> itemList = lookup.select(conn, start, amount);
-//			logger.log(Level.DEBUG, "Records: " + itemList.size());
-//			Integer filteredCount = lookup.selectCount(conn);
-//			Integer totalCount = lookup.selectCountAll(conn);
+			List<EmployeeExpenseResponseItem> itemList = lookup.select(conn);
+			logger.log(Level.DEBUG, "Records: " + itemList.size());
+			Integer filteredCount = lookup.selectCount(conn);
+			Integer totalCount = lookup.countAll(conn);
 			
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("application/json");
 
 			EmployeeExpenseLookupResponse jsonResponse = new EmployeeExpenseLookupResponse();
-//			jsonResponse.setRecordsFiltered(filteredCount);
-//			jsonResponse.setRecordsTotal(totalCount);
-//			jsonResponse.setData(itemList);
+			jsonResponse.setRecordsFiltered(filteredCount);
+			jsonResponse.setRecordsTotal(totalCount);
+			jsonResponse.setData(itemList);
 			jsonResponse.setDraw(draw);
 
 			String json = AppUtils.object2json(jsonResponse);
