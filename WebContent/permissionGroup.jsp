@@ -259,9 +259,10 @@
 				    });
 					
 					createTable();
+					getTotalList();
             }; 
 				
-			function doFunctionBinding() {
+            function doFunctionBinding() {
 				$( ".editAction" ).on( "click", function($clickevent) {
 					showEdit($clickevent);
 				});	
@@ -699,181 +700,140 @@
 		
 */
 
-
-
-			$('#permissionsModal li').on('click', function(e) {
-			    e.stopPropagation();
-			    $(this).siblings('li').children('ul').hide();
-			    $(this).children('ul').toggle(); 
-			    $('#permissionsModal li').removeClass('selected');
-			    $(this).addClass('selected');
-			});
-			
-			$('#permissionsModal ul').on('click', function(e) {
-			    e.stopPropagation();
-			    $('#permissionsModal li').removeClass('selected');
-			    $(this).addClass('selected');
-			});
-			
-			$('body').on("click", function () {
-			    $("#permissionsModal ul").hide();
-			});   
-//			$("#permissionsModal li").click(function() {
-//				$("#globalMsg").html("Success!").show().fadeOut(10000);
-//			});
-			$("#permissionsModal li div").click(function() {
-			    this.id = 'newId';
-
-			    // longer method using .attr()
-			    $(this).attr('id', 'newId');
-
-				$("#globalMsg").html("Success!").show().fadeOut(10000);
-			});
-			
-			var addclass = 'color';
-			var $cols = $('.selected').click(function(e) {
-			    $cols.removeClass(addclass);
-			    $(this).addClass(addclass);
-			});
-
-
-
-
-
-
-			
-			
-	
-
- //			$("#permissionsModal").dialog("open");
-//			$permissionGroupId = $("#permissionsModal").attr("permissionGroupId");
-//			var $url = 'permissionGroup/'+ $permissionGroupId;
-//			var jqxhr = $.ajax({
-//			    type: 'get',
-//			    url: $url,
-		//	    data: $outbound,
-		/*	            	    success: function($data) {
-			    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
-					if ( $data.responseHeader.responseCode == 'SUCCESS') {
-						$("#permissionGroupTable").DataTable().row($permissionGroupId).remove();
-						$("#permissionGroupTable").DataTable().draw();
-		//				$('#confirmDelete').bPopup().close();
-					}
-			     },
-		*/	//            	     statusCode: {
-//			    	 200: function($data) {
-//			    		 	$("#permissionsModal").dialog("close");
-//			    		 	$('#permissionGroupTable').DataTable().ajax.reload();
-//							$("#globalMsg").html("Update Successful").show().fadeOut(10000);
-//						},
-//		
-//			    		403: function($data) {
-//							$("#globalMsg").html("Session Timeout. Log in and try again");
-//						},
-//						404: function($data) {
-//							$("#globalMsg").html("Invalid Selection").show().fadeOut(100000);
-//						},
-//						500: function($data) {
-//							$("#globalMsg").html("System Error; Contact Support");
-//						}
-//		     	     },
-//			     dataType: 'json'
-//			}
-		//}
-			
-			
-			
-			
-			
-			//var $outbound = {};
-			//$permissionGroupId = $("#deleteModal").attr("permissionGroupId");
-			//$outbound ["permissionGroupId"] = $permissionGroupId;
-		//	$outbound ["action"] = "DELETE_PERMISSIONGROUP";
-			//$(".permissionGroupId").remove();
-			
-		//	doPermissionGroupUpdate($permissionGroupId, $outbound, deletePermissionGroupSuccess, deletePermissionGroupErr);
-//		}
-		
-		/*			function doPermissionGroupUpdate ($permissionGroupId, $outbound, $successCallback, $errCallback) {
-			var $url = "permissionGroup/" + $permissionGroupId;
-			console.log($outbound);						
-			
-			var jqxhr3 = $.ajax({
-				type: 'POST',
-				url: $url,
-				data: JSON.stringify($outbound),
+		function getTotalList () {
+			var jqxhr = $.ajax({
+				type: 'GET',
+				url: "permission/1158",
+				data: {},
 				statusCode: {
-					200:function($data) {
-					//	QUOTEMAINTENANCE.populateJobHeader($data.data.jobHeaderList)
-					//	QUOTEMAINTENANCE.makeJobExpansion();
-						$("#globalMsg").html("Update Successful").show().fadeOut(10000);
-					},
+					200: function($data) {
+						makeTable($data.data);
+						makeClickers();
+					},					
 					403: function($data) {
 						$("#globalMsg").html("Session Timeout. Log in and try again");
 					},
 					404: function($data) {
-						$("#globalMsg").html("Invalid Selection").show().fadeOut(100000);
+						$("#globalMsg").html("System Error Reorder 404. Contact Support");
 					},
 					500: function($data) {
-						$("#globalMsg").html("System Error; Contact Support");
+						$("#globalMsg").html("System Error Reorder 500. Contact Support");
 					}
-		 	     },
+				},
 				dataType: 'json'
 			});
-		} */
-		
-		$("#pageId").change(function() {
-			  if ($(this).data('options') === undefined) {
-			    /*Taking an array of all options-2 and kind of embedding it on the select1*/
-			    $(this).data('options', $('#permissionsSelect option').clone());
-			  }
-			  var id = $(this).val();
-			  var options = $(this).data('options').filter('[value=' + id + ']');
-			  $('#permissionsSelect').html(options);
+		}
+
+
+
+		function makeTable ($data) {
+			var $funcAreaTable = $("<table>");
+			$funcAreaTable.attr("style","border:solid 1px #000000; margin-left:30px; margin-top:10px;margin-bottom:10px;");
+			
+			var $rowNum = 0;
+			
+			$.each($data.permissionList, function($index, $value) {
+				var $funcAreaTR = $("<tr>");
+				var $funcAreaTD = $("<td>");
+				$funcAreaTD.attr("class","funcarea");
+				$funcAreaTD.attr("data-id",$value[0].permissionName);
+				$funcAreaTD.append($value[0].permissionName);
+				console.log($value[0].permissionName);
+				
+				$funcAreaTR.append($funcAreaTD);    
+				
+				$.each($data.permissionList, function($permIdx, $permValue) {
+					var $permTD = $("<td>");
+					var $myColumn = $rowNum+1;
+					var $myPermission = $data.permissionList[$permIdx][0][$myColumn];
+					if ($myPermission == null ) {
+						$permTD.append("&nbsp");
+					}else{						
+						$permTD.append($myPermission.permissionName);
+						var $classString = "perm" + $myPermission.permissionName + " " + $data.permissionList[$permIdx][0].permissionName;
+						$permTD.attr("class", $classString);
+						$permTD.attr("data-permissionname", $myPermission.permissionName);
+						$permTD.attr("data-funcarea", $data.permissionList[permIdx][0].permissionName);
+						if ($myPermission.included == true) {
+							$permTD.addClass("hilite");
+						}
+					}
+					$funcAreaTR.append($permTD);
+										
+				});
+				
+				
+				$funcAreaTable.append($funcAreaTR);
+				$rowNum++;
 			});
-		
-		function permissionGroupPermissionsErr ($statusCode) {
-			var $messages = {
-					403:"Session Expired. Log in and try again",
-					404:"System Error Activate 404. Contact Support",
-					500:"System Error Activate 500. Contact Support"
-			}
-			$("#permissionsModal").dialog("close");
-			$("#globalMsg").html( $messages[$statusCode] );
-		}
-		
-		function permissionGroupPermissionsSuccess ($data) {
-			console.log($data);
-			if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {	
-				$.each($data.data.webMessages, function($index, $val) {								
-					var $fieldName = "." + $index + "Err";
-					var $selector = "#permissionsModal " + $fieldName;
-					$($selector).html($val[0]).show().fadeOut(3000);
-				});							
-			} else {
-				permissionGroup = $data.data.permissionGroupId;
-				// call this:  populateJobPanel : function($jobId, $destination, $data
-				// var $destination = "#job" + $data.data.job.jobId + " .job-data-row";
-				//QUOTEMAINTENANCE.populateJobPanel($data.data.job.jobId, $destination, $data.data);
-				//QUOTEMAINTENANCE.populateJobHeader($data.quoteList[0].jobHeaderList)
-				$("#permissionsModal").dialog("close");
-				$("#globalMsg").html("Update Successful").show().fadeOut(3000);
-			}
+			
+			$("#permissionsModal").append($funcAreaTable);
 		}
 		
 		
-		function updateThisPermissionGroupPermissions ($permissionGroupId, $type) {
-			console.log("clicked a permissionGroup updateThisPermissionGroupPermissions: " + $permissionGroupId);
-			$("#permissionsModal").attr("permissionGroupId", $permissionGroupId);
-			$("#permissionsModal").dialog("open");
+		function makeClickers () {
+		    $(".funcarea").click(function($event) {
+		        var $id = $(this).attr("data-id");
+		       	var $permissionGroupId = $(this).attr("data-permissionGroupId")
+		        $(".funcarea").removeClass("hilite");
+		        $(this).addClass("hilite");
+		        $(".perm").hide();
+		        $selector = "." + $id;
+		        $($selector).show();
+		    });
+		
+		    $(".perm").click(function($event) {
+		    	var $id = $(this).attr("data-id")
+		        var $permissionName = $(this).attr("data-permissionname");
+		        if ( $(this).hasClass("hilite")) {
+		            $(this).removeClass("hilite");
+		           	$active = false;
+		          	doPost($id, $permissionId, false);
+		        } else {
+		            var $selector1 = "." + $permissionName;
+		            $($selector1).removeClass("hilite");
+		            $(this).addClass("hilite");
+		        	$active = true;
+		        	doPost($id, $permissionId, true);
+		        }
+		        
+		    });
 		}
+		
+		
+		function doPost ($id, $permissionGroupId, $active){
+    		var $url = 'permission/' + $permissionGroupId;
+			//console.log("YOU PASSED ROW ID:" + $rowid);
+			$outbound = {"permissionGroupId": $id, "active": $active};
+			
+			var jqxhr = $.ajax({
+				type: 'POST',
+				url: $url,
+				data: JSON.stringify($outbound),
+				success: function($data) {
+					//console.log($data);
+					
+    				$("#permissionGroupId").val(($data.data.permissionList[0]).permissionGroupId);
+    				$("#permissionName").val(($data.data.permissionList[0]).permissionName);
+    				$("#active").val(($data.data.permissionList[0]).active);
+				},
+				statusCode: {
+					403: function($data) {
+						$("#useridMsg").html("Session Timeout. Log in and try again");
+					} 
+				},
+				dataType: 'json'
+			});
+    	}
+		
+		
 		
 		
 		$( "#permissionsModal" ).dialog({
 			title:'Division Manager Create',
 			autoOpen: false,
-			height: 350,
-			width: 400,
+			height: 450,
+			width: 650,
 			modal: true,
 			closeOnEscape:true,
 			//open: function(event, ui) {
@@ -1037,87 +997,13 @@
 	    	
 	    	
 	    	
-    	<ul id="permissionsModal">
-	        <li><span class="selected">QUOTE</span>
-	            <ul>
-	                <li class="selected" id='1'><div>QUOTE_READ</div></li>
-	                <li class="selected" id='2'><div>QUOTE_CREATE</div></li>
-	                <li class="selected" id='3'><div>QUOTE_PROPOSE</div></li>
-	                <li class="selected" id='4'><div>QUOTE_UPDATE</div></li>
-	            </ul>
-	        </li>
-	        <li><span class="selected">TICKET</span>
-	            <ul>
-	                <li class="selected" id='5'><div>TICKET_READ</div></li>
-	                <li class="selected" id='6'><div>TICKET_CREATE</div></li>
-	                <li class="selected" id='7'><div>TICKET_PROPOSE</div></li>
-	                <li class="selected" id='8'><div>TICKET_UPDATE</div></li>
-	            </ul>
-	        </li>
-	        <li><span class="selected">TICKET_SPECIAL_OVERRIDE</span>
-	            <ul>
-	                <li class="selected" id='9'><div>TICKET_SPECIAL_OVERRIDE_READ</div></li>
-	                <li class="selected" id='10'><div>TICKET_SPECIAL_OVERRIDE_UPDATE</div></li>
-	            </ul>
-	        </li>
-	        <li><span class="selected">PAYMENT</span>
-	            <ul>
-	                <li class="selected" id='11'><div>PAYMENT_READ</div></li>
-	                <li class="selected" id='12'><div>PAYMENT_CREATE</div></li>
-	                <li class="selected" id='13'><div>PAYMENT_UPDATE</div></li>
-	            </ul>
-	        </li>
-	        <li><span class="selected">INVOICE</span>
-	            <ul>
-	                <li class="selected" id='14'><div>INVOICE_READ</div></li>
-	                <li class="selected" id='15'><div>INVOICE_CREATE</div></li>
-	                <li class="selected" id='16'><div>INVOICE_PROPOSE</div></li>
-	                <li class="selected" id='17'><div>INVOICE_UPDATE</div></li>
-	            </ul>
-	        </li>
-	        <li><span class="selected">SYSADMIN</span>
-	            <ul>
-	                <li class="selected" id='18'><div>SYSADMIN_READ</div></li>
-	                <li class="selected" id='19'><div>SYSADMIN_WRITE</div></li>
-	            </ul>
-	        </li>
-	        <li><span class="selected">USER_ADMIN</span>
-	            <ul>
-	                <li class="selected" id='20'><div>USER_ADMIN_READ</div></li>
-	                <li class="selected" id='21'><div>USER_ADMIN_WRITE</div></li>
-	            </ul>
-	        </li>
-	        <li><span class="selected">TECH_ADMIN</span>
-	            <ul>
-	                <li class="selected" id='22'><div>TECH_ADMIN_READ</div></li>
-	                <li class="selected" id='23'><div>TECH_ADMIN_WRITE</div></li>
-	            </ul>
-	        </li>
-	        <li><span class="selected">ADDRESS</span>
-	            <ul>
-	                <li class="selected" id='24'><div>ADDRESS_READ</div></li>
-	                <li class="selected" id='25'><div>ADDRESS_WRITE/</div></li>
-	            </ul>
-	        </li>
-	        <li><span class="selected">CONTACT</span>
-	            <ul>
-	                <li class="selected" id='26'><div>CONTACT_READ</div></li>
-	                <li class="selected" id='27'><div>CONTACT_WRITE</div></li>
-	            </ul>
-	        </li>
-	        <li><span class="selected">ACTIVITIES</span>
-	            <ul>
-	                <li class="selected" id='28'><div>ACTIVITIES_READ</div></li>
-	                <li class="selected" id='29'><div>ACTIVITIES_CREATE</div></li>
-	            </ul>
-	        </li>
-	        <li><span class="selected">PERMISSIONS</span>
-	            <ul>
-	                <li class="selected" id='30'><div>PERMISSIONS_READ</div></li>
-	                <li class="selected" id='31'><div>PERMISSIONS_WRITE</div></li>
-	            </ul>
-	        </li>
-		</ul>
+    	<div id="permissionsModal">
+    		<table style="width: 600px; border:solid 1px #000000; margin-left:30px; margin-top:10px;margin-bottom:10px;">
+            
+            	
+               
+            </table>
+		</div>
    
 	    <webthing:scrolltop />
 
