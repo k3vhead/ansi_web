@@ -147,6 +147,9 @@
 										<ansi:hasPermission permissionRequired="CLAIMS_READ">
 										<li><html:link action="nonDirectLaborLookup">Non-Direct Labor</html:link></li>
 										</ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="CLAIMS_READ">
+										<li><html:link action="employeeExpenseLookup">Employee Expense Lookup</html:link></li>
+										</ansi:hasPermission>
 										
 									</ul>
 			        			</li>

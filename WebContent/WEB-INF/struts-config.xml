@@ -71,6 +71,12 @@
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
+            path="/employeeExpenseLookup"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/claims/employeeExpenseLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+        <action
             path="/newContact"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayModalAction">
             <forward name="valid" path="/contactMaintenance.jsp" />

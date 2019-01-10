@@ -9,6 +9,7 @@ import java.util.List;
 
 import com.ansi.scilla.common.account.AccountType;
 import com.ansi.scilla.common.address.Country;
+import com.ansi.scilla.common.claims.WorkHoursType;
 import com.ansi.scilla.common.invoice.InvoiceGrouping;
 import com.ansi.scilla.common.invoice.InvoiceStyle;
 import com.ansi.scilla.common.invoice.InvoiceTerm;
@@ -34,6 +35,7 @@ public class OptionsListResponse extends MessageResponse {
 	private List<AccountTypeOption> accountType;
 	private List<PaymentMethodOption> paymentMethod;
 	private List<ReportTypeOption> reportType;
+	private List<WorkHoursTypeOption> workHoursType;
 
 	public OptionsListResponse(List<ResponseOption> options, SessionData sessionData) throws ClassNotFoundException, Exception {
 		if ( options.contains(ResponseOption.JOB_FREQUENCY)) {
@@ -68,6 +70,9 @@ public class OptionsListResponse extends MessageResponse {
 		}
 		if ( options.contains(ResponseOption.REPORT_TYPE)) {
 			makeReportTypeList(sessionData);
+		}
+		if ( options.contains(ResponseOption.WORK_HOURS_TYPE)) {
+			makeWorkHoursTypeList(sessionData);
 		}
 	}
 
@@ -169,6 +174,16 @@ public class OptionsListResponse extends MessageResponse {
 	}
 	
 	
+	
+	private void makeWorkHoursTypeList(SessionData sessionData) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException  {
+		this.workHoursType = new ArrayList<WorkHoursTypeOption>();
+		for ( WorkHoursType workHoursType : WorkHoursType.values()) {
+			this.workHoursType.add(new WorkHoursTypeOption(workHoursType));
+		}
+		Collections.sort(this.workHoursType);
+
+	}
+	
 	public List<JobFrequencyOption> getJobFrequency() {
 		return jobFrequency;
 	}
@@ -255,6 +270,14 @@ public class OptionsListResponse extends MessageResponse {
 
 	public void setReportType(List<ReportTypeOption> reportType) {
 		this.reportType = reportType;
+	}
+
+	public List<WorkHoursTypeOption> getWorkHoursType() {
+		return workHoursType;
+	}
+
+	public void setWorkHoursType(List<WorkHoursTypeOption> workHoursType) {
+		this.workHoursType = workHoursType;
 	}
 
 

@@ -42,8 +42,8 @@ public class NonDirectLaborServlet extends AbstractCrudServlet {
 		fieldMap.add(new FieldMap("hours", NonDirectLabor.HOURS, JsonFieldFormat.DECIMAL, true));
 		fieldMap.add(new FieldMap("hoursType", NonDirectLabor.HOURS_TYPE, JsonFieldFormat.STRING, true));
 		fieldMap.add(new FieldMap("notes", NonDirectLabor.NOTES, JsonFieldFormat.STRING, true));
-		fieldMap.add(new FieldMap("first_name", User.FIRST_NAME, JsonFieldFormat.STRING, false));
-		fieldMap.add(new FieldMap("last_name", User.LAST_NAME, JsonFieldFormat.STRING, false));
+		fieldMap.add(new FieldMap("firstName", User.FIRST_NAME, JsonFieldFormat.STRING, false));
+		fieldMap.add(new FieldMap("lastName", User.LAST_NAME, JsonFieldFormat.STRING, false));
 	}
 
 	

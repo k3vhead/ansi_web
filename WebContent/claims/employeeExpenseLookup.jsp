@@ -18,7 +18,7 @@
 <tiles:insert page="../layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        Non-Direct Labor
+        Employee Expense Lookup
     </tiles:put>
     
     
@@ -330,7 +330,7 @@
             	
 				makeModal : function() {
 					$( "#ndl-crud-form" ).dialog({
-						title:'Non-Direct Labor',
+						title:'Employee Expense',
 						autoOpen: false,
 						height: 500,
 						width: 700,
@@ -409,7 +409,7 @@
     </tiles:put>
     
    <tiles:put name="content" type="string">
-    	<h1>Non Direct Labor</h1>
+    	<h1>Employee Expense</h1>
     	
  	<table id="displayTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
        	<colgroup>
