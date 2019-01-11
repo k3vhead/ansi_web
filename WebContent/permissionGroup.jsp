@@ -122,8 +122,11 @@
 			ul {
   				list-style-type: none;
 			}
-			.color {
+			.hilite {
     			background-color: gray;
+			}
+			.perm {
+				display:none;
 			}
         </style>
         
@@ -240,7 +243,7 @@
 			            }  }],
 			            "initComplete": function(settings, json) {
 			            	//console.log(json);
-			            	doFunctionBinding();
+			            	//doFunctionBinding();
 			            },
 			            "drawCallback": function( settings ) {
 			            	doFunctionBinding();
@@ -259,7 +262,6 @@
 				    });
 					
 					createTable();
-					getTotalList();
             }; 
 				
             function doFunctionBinding() {
@@ -267,7 +269,9 @@
 					showEdit($clickevent);
 				});	
 				$('.updAction').bind("click", function($clickevent) {
-					$("#permissionsModal").dialog("open");
+					$permissionGroupId = $(this).attr("data-id");
+					getTotalList($permissionGroupId);
+					//$("#permissionsModal").dialog("open");
 //					updatePermissionGroupPermissions($clickevent);
 				});
 				$(".delAction").on("click", function($clickevent) {
@@ -543,7 +547,6 @@
 			}
 			
 			function deletePermissionGroupSuccess ($data) {
-				console.log($data);
 				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {	
 					$.each($data.data.webMessages, function($index, $val) {								
 						var $fieldName = "." + $index + "Err";
@@ -563,7 +566,6 @@
 			
 			
 			function deleteThisPermissionGroup ($permissionGroupId, $type) {
-        		console.log("clicked a permissionGroup deleteThisPermissionGroup: " + $permissionGroupId);
         		$("#deleteModal").attr("permissionGroupId", $permissionGroupId);
         		$("#deleteModal").dialog("open");
 			}
@@ -700,15 +702,17 @@
 		
 */
 
-		function getTotalList () {
+		function getTotalList ($permissionGroupId) {
+			$url = "permission/" + $permissionGroupId;
 			var jqxhr = $.ajax({
 				type: 'GET',
-				url: "permission/1158",
+				url: $url,
 				data: {},
 				statusCode: {
 					200: function($data) {
-						makeTable($data.data);
+						makeTable($permissionGroupId, $data.data);
 						makeClickers();
+						$("#permissionsModal").dialog("open");
 					},					
 					403: function($data) {
 						$("#globalMsg").html("Session Timeout. Log in and try again");
@@ -726,7 +730,10 @@
 
 
 
-		function makeTable ($data) {
+		function makeTable ($permissionGroupId, $data) {
+			$("#permissionsModal").html('<div id="modalMessage" class="err"></div>');
+			$("#permissionsModal").attr("data-permissionGroupId", $permissionGroupId);
+			
 			var $funcAreaTable = $("<table>");
 			$funcAreaTable.attr("style","border:solid 1px #000000; margin-left:30px; margin-top:10px;margin-bottom:10px;");
 			
@@ -738,22 +745,22 @@
 				$funcAreaTD.attr("class","funcarea");
 				$funcAreaTD.attr("data-id",$value[0].permissionName);
 				$funcAreaTD.append($value[0].permissionName);
-				console.log($value[0].permissionName);
 				
 				$funcAreaTR.append($funcAreaTD);    
 				
 				$.each($data.permissionList, function($permIdx, $permValue) {
 					var $permTD = $("<td>");
 					var $myColumn = $rowNum+1;
-					var $myPermission = $data.permissionList[$permIdx][0][$myColumn];
+					var $myPermission = $data.permissionList[$permIdx][$myColumn];
 					if ($myPermission == null ) {
-						$permTD.append("&nbsp");
+						$permTD.append("&nbsp;");
 					}else{						
 						$permTD.append($myPermission.permissionName);
-						var $classString = "perm" + $myPermission.permissionName + " " + $data.permissionList[$permIdx][0].permissionName;
-						$permTD.attr("class", $classString);
+						$permTD.addClass("perm" + $myPermission.permissionName);
+						$permTD.addClass($data.permissionList[$permIdx][0].permissionName);
+						$permTD.addClass("perm");
 						$permTD.attr("data-permissionname", $myPermission.permissionName);
-						$permTD.attr("data-funcarea", $data.permissionList[permIdx][0].permissionName);
+						$permTD.attr("data-funcarea", $data.permissionList[$permIdx][0].permissionName);
 						if ($myPermission.included == true) {
 							$permTD.addClass("hilite");
 						}
@@ -783,44 +790,49 @@
 		    });
 		
 		    $(".perm").click(function($event) {
-		    	var $id = $(this).attr("data-id")
+		    	$permissionGroupId = $("#permissionsModal").attr("data-permissionGroupId");
 		        var $permissionName = $(this).attr("data-permissionname");
 		        if ( $(this).hasClass("hilite")) {
 		            $(this).removeClass("hilite");
 		           	$active = false;
-		          	doPost($id, $permissionId, false);
+		          	doPost($permissionGroupId, $permissionName, false);
 		        } else {
 		            var $selector1 = "." + $permissionName;
 		            $($selector1).removeClass("hilite");
 		            $(this).addClass("hilite");
 		        	$active = true;
-		        	doPost($id, $permissionId, true);
+		        	doPost($permissionGroupId, $permissionName, true);
 		        }
 		        
 		    });
 		}
 		
 		
-		function doPost ($id, $permissionGroupId, $active){
-    		var $url = 'permission/' + $permissionGroupId;
+		function doPost ($id, $permissionName, $active){
+    		var $url = 'permission/' + $id;
 			//console.log("YOU PASSED ROW ID:" + $rowid);
-			$outbound = {"permissionGroupId": $id, "active": $active};
+			$outbound = {"permissionName": $permissionName, "active": $active};
 			
 			var jqxhr = $.ajax({
 				type: 'POST',
 				url: $url,
-				data: JSON.stringify($outbound),
-				success: function($data) {
-					//console.log($data);
-					
-    				$("#permissionGroupId").val(($data.data.permissionList[0]).permissionGroupId);
-    				$("#permissionName").val(($data.data.permissionList[0]).permissionName);
-    				$("#active").val(($data.data.permissionList[0]).active);
-				},
+				data: JSON.stringify($outbound),				
 				statusCode: {
+					200: function($data) {
+						$("#modalMessage").html("Success!").show().fadeOut(3000);
+					},
 					403: function($data) {
-						$("#useridMsg").html("Session Timeout. Log in and try again");
-					} 
+						$("permissionsModal").dialog("close");
+						$("#globalMsg").html("Session Timeout. Log in and try again").show();
+					},
+					404: function($data) {
+						$("permissionsModal").dialog("close");
+						$("#globalMsg").html("Inconsistent System State. Reload and try again").show();
+					},
+					500: function($data) {
+						$("permissionsModal").dialog("close");
+						$("#globalMsg").html("System Error 500. Contact Support").show();
+					},
 				},
 				dataType: 'json'
 			});
@@ -889,7 +901,6 @@
 						url: $url,
 						statusCode: {
 							200: function($data) {
-								//console.log($data);
 								var $permissionGroup = $data.data.permGroupItemList[0];
 								$.each($permissionGroup, function($fieldName, $value) {									
 									$selector = "#editPanel input[name=" + $fieldName + "]";
@@ -996,13 +1007,8 @@
 	    	</div>
 	    	
 	    	
-	    	
-    	<div id="permissionsModal">
-    		<table style="width: 600px; border:solid 1px #000000; margin-left:30px; margin-top:10px;margin-bottom:10px;">
-            
-            	
-               
-            </table>
+	    <div id="permissionsModal">
+    		
 		</div>
    
 	    <webthing:scrolltop />
