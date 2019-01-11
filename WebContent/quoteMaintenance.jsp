@@ -2011,13 +2011,15 @@
 							}
 							$("#contact-edit-modal .errMsg").html($message).show().fadeOut(3000);
 						} else {
-							QUOTEMAINTENANCE.quote = $data; //.data.quote;
+							console.log("Saving quote stuff from contact update");
+							console.log($data);
+							QUOTEMAINTENANCE.quote = $data.data.quote;
 							QUOTEMAINTENANCE.populateContactPanel( "#job-contact", $data.data.quote.jobContact.jobContact);
 							QUOTEMAINTENANCE.populateContactPanel( "#site-contact", $data.data.quote.jobContact.siteContact);
 							QUOTEMAINTENANCE.populateContactPanel( "#billing-contact", $data.data.quote.jobContact.billingContact);
 							QUOTEMAINTENANCE.populateContactPanel( "#contract-contact", $data.data.quote.jobContact.contractContact);
 							$("#globalMsg").html("Update Successful").fadeOut(3000);
-							$("#contact-edit-modal").dialog("close");
+							$("#contact-edit-modal").dialog("close");							
 						}
 						
 					},
