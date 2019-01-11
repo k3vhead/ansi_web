@@ -43,16 +43,16 @@
         <script type="text/javascript">
         
         $(document).ready(function() {
-        	;NONDIRECTLABOR = {
+        	;EMPLOYEEEXPENSELOOKUP = {
         		datatable : null,
         		
         		init : function() {
-        			NONDIRECTLABOR.createTable();
-        			NONDIRECTLABOR.makeModal();
-        			NONDIRECTLABOR.makeOptionList('WORK_HOURS_TYPE', NONDIRECTLABOR.populateOptionList)
-        			NONDIRECTLABOR.makeClickers();
-        			NONDIRECTLABOR.makeDivisionList();
-        			NONDIRECTLABOR.makeAutoComplete();
+        			EMPLOYEEEXPENSELOOKUP.createTable();
+        			EMPLOYEEEXPENSELOOKUP.makeModal();
+        			EMPLOYEEEXPENSELOOKUP.makeOptionList('WORK_HOURS_TYPE', EMPLOYEEEXPENSELOOKUP.populateOptionList)
+        			EMPLOYEEEXPENSELOOKUP.makeClickers();
+        			EMPLOYEEEXPENSELOOKUP.makeDivisionList();
+        			EMPLOYEEEXPENSELOOKUP.makeAutoComplete();
         		},
         		
         		
@@ -103,7 +103,7 @@
             	         ],
             	        "paging": true,
     			        "ajax": {
-    			        	"url": "claims/nonDirectLaborLookup",
+    			        	"url": "claims/employeeExpenseLookup",
     			        	"type": "GET"
     			        	},
     			        columns: [
@@ -137,10 +137,10 @@
     			            	
     			            } }],
     			            "initComplete": function(settings, json) {
-    			            	NONDIRECTLABOR.doFunctionBinding();
+    			            	EMPLOYEEEXPENSELOOKUP.doFunctionBinding();
     			            },
     			            "drawCallback": function( settings ) {
-    			            	NONDIRECTLABOR.doFunctionBinding();
+    			            	EMPLOYEEEXPENSELOOKUP.doFunctionBinding();
     			            }
     			    } );
             		//new $.fn.dataTable.FixedColumns( dataTable );
@@ -151,7 +151,7 @@
             	doFunctionBinding : function () {
 					$( ".editAction" ).on( "click", function($clickevent) {
 						var $laborId = $(this).attr("data-id");
-						NONDIRECTLABOR.doGetLabor($laborId);
+						EMPLOYEEEXPENSELOOKUP.doGetLabor($laborId);
 					});
 				},
             	
@@ -160,7 +160,7 @@
 				
 				doGetLabor : function($laborId) {
 					console.log("getting labor: " + $laborId)
-					var $url = 'claims/nonDirectLabor/' + $laborId;
+					var $url = 'claims/employeeExpenseLookup/' + $laborId;
 					var jqxhr = $.ajax({
 						type: 'GET',
 						url: $url,
@@ -202,7 +202,7 @@
             	doPost : function() {
             		console.log("doPost");
         			var $laborId = $( "#ndl-crud-form ").attr("data-laborid");
-					var $url = 'claims/nonDirectLabor/' + $laborId;
+					var $url = 'claims/employeeExpenseLookup/' + $laborId;
         			
             		var $outbound = {};
             		$.each( $("#ndl-crud-form input"), function($index, $value) {
@@ -279,7 +279,7 @@
               	    });
             		
             		$("#new-NDL-button").click(function($event) {
-            			NONDIRECTLABOR.clearForm();
+            			EMPLOYEEEXPENSELOOKUP.clearForm();
             			$( "#ndl-crud-form ").attr("data-laborid","add")
             			$( "#ndl-crud-form" ).dialog("open");
             		});
@@ -348,7 +348,7 @@
 							},{
 								id: "ndl-save-button",
 								click: function($event) {
-									NONDIRECTLABOR.doPost();
+									EMPLOYEEEXPENSELOOKUP.doPost();
 								}
 							}
 						]
@@ -402,7 +402,7 @@
         	}
       	  	
 
-        	NONDIRECTLABOR.init();
+        	EMPLOYEEEXPENSELOOKUP.init();
         	
         });
         </script>        
