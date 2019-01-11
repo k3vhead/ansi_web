@@ -811,7 +811,7 @@
 		function doPost ($id, $permissionName, $active){
     		var $url = 'permission/' + $id;
 			//console.log("YOU PASSED ROW ID:" + $rowid);
-			$outbound = {"permissionName": $permissionName, "active": $active};
+			$outbound = {"permissionName": $permissionName, "permissionIsActive": $active};
 			
 			var jqxhr = $.ajax({
 				type: 'POST',
