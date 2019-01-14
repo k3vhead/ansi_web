@@ -224,7 +224,7 @@
 			            	$editLink = '<ansi:hasPermission permissionRequired="PERMISSIONS_WRITE"><a href="#" class="editAction" data-id="'+row.permissionGroupId+'"><webthing:edit>Update</webthing:edit></a></ansi:hasPermission>';
 			            	$deleteLink = '<ansi:hasPermission permissionRequired="PERMISSIONS_WRITE"><a href="#" class="delAction" data-id="'+row.permissionGroupId+'"><webthing:delete>Delete</webthing:delete></a></ansi:hasPermission>';
 			           		
-			            	$action = $editLink + " " + $deleteLink + " " + $updateLink;
+			            	$action = $editLink + " " + $updateLink + " " + $deleteLink;
 			            	$updates = $editLink + " " + $updateLink;
 			            	if(row.userCount != null){
 			            		if ( row.userCount >= 1 ) {
