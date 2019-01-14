@@ -807,6 +807,7 @@
 		          	doPost($permissionGroupId, $permissionName, false);
 		        } else {
 		            var $selector1 = "." + $permissionName;
+		            $(".perm").removeClass("hilite");
 		            $($selector1).removeClass("hilite");
 		            $(this).addClass("hilite");
 		        	$active = true;
