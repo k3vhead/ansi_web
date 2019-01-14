@@ -69,6 +69,9 @@
 			.editAction {
 				cursor:pointer;
 			}
+			.showNew {
+				cursor:pointer;
+			}
 			#confirmDelete {
 				display:none;
 				background-color:#FFFFFF;
@@ -124,6 +127,12 @@
 			}
 			.hilite {
     			background-color: gray;
+			}
+			tr:hover {
+				cursor: pointer;
+			}
+			td:hover {
+				cursor: pointer;
 			}
 			.perm {
 				display:none;
@@ -806,6 +815,9 @@
 		        
 		    });
 		}
+		
+		
+		
 		
 		
 		function doPost ($id, $permissionName, $active){
