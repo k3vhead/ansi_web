@@ -141,17 +141,38 @@
         
         <script type="text/javascript">    
         
-        $(document).ready(function(){
+        $(document).ready(function() {
         	
-        	var $ansiModal = '<c:out value="${ANSI_MODAL}" />';
+        	;PERMISSIONGROUP = {
+					ansiModal : '<c:out value="${ANSI_MODAL}" />',
+					dataTable : null,
+        			
+        	
+        			init : function (){
+        				PERMISSIONGROUP.createTable();
+        				PERMISSIONGROUP.doFunctionBinding();
+        				PERMISSIONGROUP.showNew();
+        				PERMISSIONGROUP.clearAddForm();
+        				PERMISSIONGROUP.markValid();
+        				PERMISSIONGROUP.makeDeleteModal();
+        				PERMISSIONGROUP.makeEditPanel();
+        				PERMISSIONGROUP.makePermissionsModal();
+        				if ( PERMISSIONGROUP.ansiModal != '' ) {
+							$(".showNew").click();
+						}
+        			},
+        
+        	
+//        	var $ansiModal = '<c:out value="${ANSI_MODAL}" />';
+        	
         	
         
-			$('.ScrollTop').click(function() {
-				$('html, body').animate({scrollTop: 0}, 800);
-				return false;
-       	    });
-			
-			
+//			$('.ScrollTop').click(function() {
+//				$('html, body').animate({scrollTop: 0}, 800);
+//				return false;
+//       	    });
+//			
+			showNew : function () {
 			$(".showNew").click(function($event) {
 				$('#goEdit').data("permissionGroupId",null);
         		$('#goEdit').button('option', 'label', 'Save');
@@ -164,13 +185,14 @@
         		$("#editPanel .err").html("");
         		$("#editPanel").dialog("open");
 			});
+			},
 			
 			
 
 
-        	var dataTable = null;
+//        	var dataTable = null;
         	
-        	function createTable(){
+        	createTable : function (){
 
         		var dataTable = $('#permissionGroupTable').DataTable( {
         			"processing": 		true,
@@ -255,45 +277,37 @@
 			            	//doFunctionBinding();
 			            },
 			            "drawCallback": function( settings ) {
-			            	doFunctionBinding();
+			            	PERMISSIONGROUP.doFunctionBinding();
 			            }
 			    } );
-        	}
-        	        	
-        	init();
-        			
-        			
-            
-            function init(){
-					$.each($('input'), function () {
-				        $(this).css("height","20px");
-				        $(this).css("max-height", "20px");
-				    });
-					
-					createTable();
-            }; 
+        	},
 				
-            function doFunctionBinding() {
+        	doFunctionBinding : function () {
 				$( ".editAction" ).on( "click", function($clickevent) {
-					showEdit($clickevent);
+					PERMISSIONGROUP.showEdit($clickevent);
 				});	
 				$('.updAction').bind("click", function($clickevent) {
 					$permissionGroupId = $(this).attr("data-id");
-					getTotalList($permissionGroupId);
+					PERMISSIONGROUP.getTotalList($permissionGroupId);
 					//$("#permissionsModal").dialog("open");
 //					updatePermissionGroupPermissions($clickevent);
 				});
 				$(".delAction").on("click", function($clickevent) {
 					var $permissionGroupId = $(this).data("id");
-					deleteThisPermissionGroup($permissionGroupId);
+					PERMISSIONGROUP.deleteThisPermissionGroup($permissionGroupId);
 				});
+				$(".deleteThisPermissionGroup").click(function($event) {
+	        		//var $jobId = this.parentElement.attributes['data-jobid'].value;
+	        		var $permissionGroupId = $(this).closest("div.panel-button-container")[0].attributes['data-permissionGroupId'].value;
+	        		PERMISSIONGROUP.deleteThisPermissionGroup($permissionGroupId);
+	        	});
 				//$(".editJob").on( "click", function($clickevent) {
 				//	console.debug("clicked a job")
 				//	var $jobId = $(this).data("jobid");
 				//	location.href="jobMaintenance.html?id=" + $jobId;
 				//});
-			}
-				
+			},
+			makeEditPanel : function() {	
 				$("#editPanel" ).dialog({
 					title:'Edit Group Permissions',
 					autoOpen: false,
@@ -309,20 +323,20 @@
 						},{
 							id: "goEdit",
 							click: function($event) {
-								updatePermissionGroup();
+								PERMISSIONGROUP.updatePermissionGroup();
 							}
 						}	      	      
 					],
 					close: function() {
-						clearAddForm();
+						PERMISSIONGROUP.clearAddForm();
 						$("#editPanel").dialog( "close" );
 						//allFields.removeClass( "ui-state-error" );
 					}
 				});
+			},
 				
 
-				
-				function updatePermissionGroup() {
+				updatePermissionGroup : function () {
 					console.debug("Updating Permissions");
 					var $permissionGroupId = $("#editPanel input[name='permissionGroupId']").val();
 					console.debug("permissionGroupId: " + $permissionGroupId);
@@ -356,7 +370,7 @@
 			    				} else {	    				
 			    					$("#editPanel").dialog("close");
 			    					$('#permissionGroupTable').DataTable().ajax.reload();		
-			    					clearAddForm();		    					
+			    					PERMISSIONGROUP.clearAddForm();		    					
 			    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
 			    				}
 							},
@@ -372,22 +386,22 @@
 						},
 						dataType: 'json'
 					});
-				}
+				},
 				
 				
-				function clearAddForm() {
+				clearAddForm : function () {
 					$.each( $('#editPanel').find("input"), function(index, $inputField) {
 						$fieldName = $($inputField).attr('name');
 						if ( $($inputField).attr("type") == "text" ) {
 							$($inputField).val("");
-							markValid($inputField);
+							PERMISSIONGROUP.markValid($inputField);
 						}
 					});
 					$('.err').html("");
 					$('#editPanel').data('rownum',null);
-	            }
+	            },
 	            
-	            function markValid($inputField) {
+				markValid : function ($inputField) {
 	            	$fieldName = $($inputField).attr('name');
 	            	$fieldGetter = "input[name='" + $fieldName + "']";
 	            	$fieldValue = $($fieldGetter).val();
@@ -408,7 +422,7 @@
 	            		$($valid).addClass("fa-ban");
 	            		$($valid).addClass("inputIsInvalid");
 	            	}
-	            }
+	            },
 				
 	            
 				
@@ -468,7 +482,7 @@
 
 
 
-			function deletePermissionGroup () {
+			deletePermissionGroup : function () {
 				$permissionGroupId = $("#deleteModal").attr("permissionGroupId");
 				var $url = 'permissionGroup/'+ $permissionGroupId;
 				var jqxhr = $.ajax({
@@ -515,7 +529,7 @@
 				//$(".permissionGroupId").remove();
 				
 //				doPermissionGroupUpdate($permissionGroupId, $outbound, deletePermissionGroupSuccess, deletePermissionGroupErr);
-			}
+			},
 			
 /*			function doPermissionGroupUpdate ($permissionGroupId, $outbound, $successCallback, $errCallback) {
 				var $url = "permissionGroup/" + $permissionGroupId;
@@ -545,7 +559,7 @@
 				});
 			} */
 
-			function deletePermissionGroupErr ($statusCode) {
+			deletePermissionGroupErr : function ($statusCode) {
 				var $messages = {
 						403:"Session Expired. Log in and try again",
 						404:"System Error Activate 404. Contact Support",
@@ -553,9 +567,9 @@
 				}
 				$("#deleteModal").dialog("close");
 				$("#globalMsg").html( $messages[$statusCode] );
-			}
+			},
 			
-			function deletePermissionGroupSuccess ($data) {
+			deletePermissionGroupSuccess : function ($data) {
 				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {	
 					$.each($data.data.webMessages, function($index, $val) {								
 						var $fieldName = "." + $index + "Err";
@@ -571,15 +585,16 @@
 					$("#deleteModal").dialog("close");
 					$("#globalMsg").html("Permission Group Deleted").show().fadeOut(3000);
 				}
-			}
+			},
 			
 			
-			function deleteThisPermissionGroup ($permissionGroupId, $type) {
+			deleteThisPermissionGroup : function ($permissionGroupId, $type) {
         		$("#deleteModal").attr("permissionGroupId", $permissionGroupId);
         		$("#deleteModal").dialog("open");
-			}
+			},
 			
 			
+			makeDeleteModal : function() {
 			$( "#deleteModal" ).dialog({
 				title:'Delete Permission Group',
 				autoOpen: false,
@@ -601,6 +616,7 @@
 			});	
 			$("#deleteSaveButton").button('option', 'label', 'Delete');
 			$("#deleteCancelButton").button('option', 'label', 'Cancel');
+			},
 			
 			
 			//if ( $value.canDelete == true ) {
@@ -608,11 +624,7 @@
 			//	}
 		
 		
-			$(".deleteThisPermissionGroup").click(function($event) {
-        		//var $jobId = this.parentElement.attributes['data-jobid'].value;
-        		var $permissionGroupId = $(this).closest("div.panel-button-container")[0].attributes['data-permissionGroupId'].value;
-        		deleteThisPermissionGroup($permissionGroupId);
-        	});
+			
 			
 			
 			
@@ -711,7 +723,7 @@
 		
 */
 
-		function getTotalList ($permissionGroupId) {
+		getTotalList : function ($permissionGroupId) {
 			$url = "permission/" + $permissionGroupId;
 			var jqxhr = $.ajax({
 				type: 'GET',
@@ -719,8 +731,8 @@
 				data: {},
 				statusCode: {
 					200: function($data) {
-						makeTable($permissionGroupId, $data.data);
-						makeClickers();
+						PERMISSIONGROUP.makeTable($permissionGroupId, $data.data);
+						PERMISSIONGROUP.makeClickers();
 						$("#permissionsModal").dialog("open");
 					},					
 					403: function($data) {
@@ -735,11 +747,11 @@
 				},
 				dataType: 'json'
 			});
-		}
+		},
 
 
 
-		function makeTable ($permissionGroupId, $data) {
+		makeTable : function ($permissionGroupId, $data) {
 			$("#permissionsModal").html('<div id="modalMessage" class="err"></div>');
 			$("#permissionsModal").attr("data-permissionGroupId", $permissionGroupId);
 			
@@ -784,10 +796,10 @@
 			});
 			
 			$("#permissionsModal").append($funcAreaTable);
-		}
+		},
 		
 		
-		function makeClickers () {
+		makeClickers : function () {
 		    $(".funcarea").click(function($event) {
 		        var $id = $(this).attr("data-id");
 		       	var $permissionGroupId = $(this).attr("data-permissionGroupId")
@@ -804,24 +816,24 @@
 		        if ( $(this).hasClass("hilite")) {
 		            $(this).removeClass("hilite");
 		           	$active = false;
-		          	doPost($permissionGroupId, $permissionName, false);
+		          	PERMISSIONGROUP.doPost($permissionGroupId, $permissionName, false);
 		        } else {
 		            var $selector1 = "." + $permissionName;
 		            $(".perm").removeClass("hilite");
 		            $($selector1).removeClass("hilite");
 		            $(this).addClass("hilite");
 		        	$active = true;
-		        	doPost($permissionGroupId, $permissionName, true);
+		        	PERMISSIONGROUP.doPost($permissionGroupId, $permissionName, true);
 		        }
 		        
 		    });
-		}
+		},
 		
 		
 		
 		
 		
-		function doPost ($id, $permissionName, $active){
+		doPost : function ($id, $permissionName, $active){
     		var $url = 'permission/' + $id;
 			//console.log("YOU PASSED ROW ID:" + $rowid);
 			$outbound = {"permissionName": $permissionName, "permissionIsActive": $active};
@@ -849,11 +861,11 @@
 				},
 				dataType: 'json'
 			});
-    	}
+    	},
 		
 		
 		
-		
+    	makePermissionsModal : function() {
 		$( "#permissionsModal" ).dialog({
 			title:'Division Manager Create',
 			autoOpen: false,
@@ -874,6 +886,7 @@
 			]
 		});	
 		$("#permissionsCancelButton").button('option', 'label', 'Done');
+    	},
 		
 		
 		//if ( $value.canDelete == true ) {
@@ -900,7 +913,7 @@
 			
 				
 					
-	            function showEdit($clickevent) {
+	            showEdit : function ($clickevent) {
 					var $permissionGroupId = $clickevent.currentTarget.attributes['data-id'].value;
 					console.debug("permissionGroupId: " + $permissionGroupId);
 					$("#goEdit").data("permissionGroupId: " + $permissionGroupId);
@@ -940,13 +953,13 @@
 						},
 						dataType: 'json'
 					});
-				}
+				},
 				
-				if ( $ansiModal != '' ) {
-					$(".showNew").click();
-				}
+				
+        	}
+
+            PERMISSIONGROUP.init();
         });
-        		
         </script>        
     </tiles:put>
     
