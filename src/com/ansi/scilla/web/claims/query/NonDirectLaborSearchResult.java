@@ -54,8 +54,12 @@ public class NonDirectLaborSearchResult extends ApplicationObject {
 		this.hoursType = rs.getString(HOURS_TYPE);	
 		this.notes = rs.getString(NOTES);	
 		if ( this.hoursType != null ) {
-			WorkHoursType workHoursType = WorkHoursType.valueOf(this.hoursType);
-			this.hoursDescription = workHoursType.getDescription();
+			try {
+				WorkHoursType workHoursType = WorkHoursType.valueOf(this.hoursType);
+				this.hoursDescription = workHoursType.getDescription();
+			} catch ( IllegalArgumentException e) {
+				this.hoursDescription = "Invalid value: " + this.hoursType;
+			}
 		}
 		
 	}
