@@ -122,7 +122,9 @@ public class EmployeeExpenseServlet extends AbstractServlet {
 		User user = new User();
 		user.setUserId(employeeExpense.getWasherId());
 		user.selectOne(conn);
-		employeeExpenseResponseItem.setWasherName(user.getFirstName() + " " + user.getLastName());
+		employeeExpenseResponseItem.setFirstName(user.getFirstName());
+		employeeExpenseResponseItem.setLastName(user.getLastName());
+
 		return employeeExpenseResponseItem;
 	}
 

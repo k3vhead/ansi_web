@@ -4,11 +4,14 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class EmployeeExpenseResponseItem implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	
-	private String washerName;
+	private String lastName;
+	private String firstName;
 	private Date date;
 	private String expenseType;
 	private BigDecimal amount;
@@ -19,14 +22,25 @@ public class EmployeeExpenseResponseItem implements Serializable{
 		super();
 	}
 	
-	public String getWasherName() {
-		return washerName;
+	public String getLastName() {
+		return lastName;
 	}
-	
-	public void setWasherName(String washerName) {
-		this.washerName = washerName;
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
-	
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+
+
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Date getDate() {
 		return date;
 	}
