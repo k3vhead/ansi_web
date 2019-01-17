@@ -56,8 +56,8 @@ public class EmployeeExpenseLookupServlet extends AbstractServlet {
 		
 		String[] cols = { 
 				"last_name",
-				"work_date",
-				"work_date",
+				"work_date", //week of the year
+				"work_date", //date of year: mm/dd/yyyy
 				"expense_type",
 				"amount",
 				"notes"

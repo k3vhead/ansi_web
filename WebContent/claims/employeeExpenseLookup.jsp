@@ -108,7 +108,7 @@
     			        	},
     			        columns: [
     			        	
-    			            { title: "Div", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			            { title: "Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
     			            	if(row.div != null){return (row.div+"");}
     			            } },
     			            { title: "Week", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
@@ -117,13 +117,13 @@
     			            { title: "Date", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.workDate != null){return (row.workDate+"");}
     			            } },
-    			            { title: "Washer", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "Expense Type", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.washerId != null){return (row.lastName+", "+row.firstName);}
     			            } },
-    			            { title: "Hrs Type" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	return '<span class="tooltip">' + row.hoursType + '<span class="tooltiptext">' + row.hoursDescription + '</span></span>'
-    			            } },
-    			            { title: "Hours", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+//    			            { title: "Hrs Type" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+//    			            	return '<span class="tooltip">' + row.hoursType + '<span class="tooltiptext">' + row.hoursDescription + '</span></span>'
+//    			            } },
+    			            { title: "amount", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.hours != null){return (row.hours+"");}
     			            } },
     			            { title: "Notes",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
