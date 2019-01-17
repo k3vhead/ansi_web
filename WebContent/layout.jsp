@@ -183,7 +183,7 @@
 									<ul class="sub_menu" style="z-index:1000">
 										<ansi:hasPermission permissionRequired="CONTACT_WRITE"><li><html:link action="newContact">New Contact</html:link></li></ansi:hasPermission>
 										<ansi:hasPermission permissionRequired="ADDRESS_WRITE"><li><html:link action="newAddress">New Address</html:link></li></ansi:hasPermission>
-										<ansi:hasPermission permissionRequired="QUOTE_CREATE"><li><html:link action="quoteMaintenance">New Quote</html:link></li></ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="QUOTE_CREATE"><li><html:link action="newQuote">New Quote</html:link></li></ansi:hasPermission>
 										<ansi:hasPermission permissionRequired="TICKET">
 										<ansi:hasWrite>
 										<li><html:link action="ticketGeneration">Generate Tickets</html:link></li>

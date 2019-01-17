@@ -17,7 +17,7 @@
 <tiles:insert page="layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        Quote Maintenance
+        New Quote
     </tiles:put>
     
     
@@ -26,6 +26,10 @@
         <script type="text/javascript" src="js/ansi_utils.js"></script>
         <script type="text/javascript" src="js/quotePrintHistory.js"></script>
         <script type="text/javascript" src="js/quotePrint.js"></script>
+        <%--
+        <script type="text/javascript" src="js/jobMaintenance.js"></script>
+        <script type="text/javascript" src="js/quoteMaintenance.js"></script>        
+         --%>
         <script type="text/javascript" src="js/addressUtils.js"></script>
         <script type="text/javascript">        
         
@@ -2533,7 +2537,7 @@
     
     
     <tiles:put name="content" type="string">
-    	<h1>Quote Maintenance</h1>
+    	<h1>New Quote</h1>
     	<%--
     	<div id="loading-container"><webthing:thinking style="width:100%" /></div>
     	<div style="width:1200px;">
@@ -2545,14 +2549,8 @@
     	</div>
     	<div style="width:1300px;">	    	
     		<div id="quoteButtonContainer" style="width:30px;">
-    			<%-- <ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:edit styleClass="fa-2x quote-button">Edit</webthing:edit></ansi:hasPermission>--%>
- 			    <ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:revise styleClass="fa-2x quote-button action-button" styleId="revise-button">Revise</webthing:revise></ansi:hasPermission>
-    			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:copy styleClass="fa-2x quote-button action-button" styleId="copy-button">Copy</webthing:copy></ansi:hasPermission>
     			<ansi:hasPermission permissionRequired="QUOTE_READ"><a href="quoteLookup.html" style="text-decoration:none; color:#404040;"><webthing:view styleClass="fa-2x quote-button">Lookup</webthing:view></a></ansi:hasPermission>
-    			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><a href="newQuote.html"><webthing:addNew styleClass="fa-2x quote-button action-button" styleId="new-quote-button">New Quote</webthing:addNew></a></ansi:hasPermission>
-    			<ansi:hasPermission permissionRequired="QUOTE_READ"><webthing:print styleClass="orange fa-2x quote-button action-button" styleId="preview-button">Preview</webthing:print></ansi:hasPermission>    			
-    			<ansi:hasPermission permissionRequired="QUOTE_PROPOSE"><webthing:print styleClass="green fa-2x quote-button action-button" styleId="propose-button">Propose</webthing:print></ansi:hasPermission>
-    			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:addNew styleClass="fa-2x quote-button action-button orange" styleId="new-job-button">New Job</webthing:addNew></ansi:hasPermission>    			
+    			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><a href="quoteMaintenance.html"><webthing:addNew styleClass="fa-2x quote-button action-button" styleId="new-quote-button">New Quote</webthing:addNew></a></ansi:hasPermission>
     			<%--
     			<input type="button" class="quoteButton" id="buttonModifyQuote" value="Modify" /><br />
     			<input type="button" class="quoteButton" id="buttonCopyQuote" value="Copy" /><br />

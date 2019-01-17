@@ -60,7 +60,7 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
  * 
  *
  */
-public class QuoteServlet extends AbstractServlet {
+public class QuoteServlet extends AbstractQuoteServlet {
 
 	private static final long serialVersionUID = 1L;
 	public static final String ACTION_IS_UPDATE = "update";

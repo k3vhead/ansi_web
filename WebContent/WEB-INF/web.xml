@@ -390,6 +390,17 @@
 
 
     
+	<servlet>
+        <servlet-name>newQuote</servlet-name>
+        <servlet-class>com.ansi.scilla.web.quote.servlet.NewQuoteServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>newQuote</servlet-name>
+        <url-pattern>/quote/new</url-pattern>
+    </servlet-mapping>
+
+
+
     <servlet>
         <servlet-name>nonDirectLabor</servlet-name>
         <servlet-class>com.ansi.scilla.web.claims.servlet.NonDirectLaborServlet</servlet-class>
