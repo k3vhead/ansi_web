@@ -4,21 +4,12 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-<<<<<<< HEAD
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class EmployeeExpenseResponseItem implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private String firstName;
-	private String lastName;
-	private String detail;
-=======
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-public class EmployeeExpenseResponseItem implements Serializable{
-	
-	private static final long serialVersionUID = 1L;
-	
 	private String lastName;
 	private String firstName;
 	private Date date;
@@ -26,6 +17,7 @@ public class EmployeeExpenseResponseItem implements Serializable{
 	private BigDecimal amount;
 	private String notes;
 	private Integer expenseId;
+	private String detail;
 
 	public EmployeeExpenseResponseItem() {
 		super();
@@ -39,17 +31,23 @@ public class EmployeeExpenseResponseItem implements Serializable{
 		this.firstName = firstName;
 	}
 
+	public String getLastName() {
+		return lastName;
+	}
 
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
 
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy", timezone = "America/Chicago")
 	public Date getDate() {
 		return date;
 	}
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy/ww", timezone="America/Chicago")
+
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/ww", timezone = "America/Chicago")
 	public Date getWeek() {
 		return date;
 	}
-	
 
 	public void setDate(Date date) {
 		this.date = date;
@@ -87,4 +85,12 @@ public class EmployeeExpenseResponseItem implements Serializable{
 		this.expenseId = expenseId;
 	}
 
-}}
+	public String getDetail() {
+		return this.detail;
+	}
+
+	public void setDetail(String detail) {
+		this.detail = detail;
+	}
+
+}
