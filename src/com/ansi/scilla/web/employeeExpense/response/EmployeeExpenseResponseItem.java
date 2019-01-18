@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
+<<<<<<< HEAD
 public class EmployeeExpenseResponseItem implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -11,6 +12,16 @@ public class EmployeeExpenseResponseItem implements Serializable {
 	private String firstName;
 	private String lastName;
 	private String detail;
+=======
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+public class EmployeeExpenseResponseItem implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
+	
+	private String lastName;
+	private String firstName;
+//>>>>>>> ff03802305f228cb58c33e2ce876d103012cdd08
 	private Date date;
 	private String expenseType;
 	private BigDecimal amount;
@@ -20,35 +31,63 @@ public class EmployeeExpenseResponseItem implements Serializable {
 	public EmployeeExpenseResponseItem() {
 		super();
 	}
-
-	public String getFirstName() {
-		return firstName;
-	}
-
+//<<<<<<< HEAD
+//
+//	public String getFirstName() {
+//		return firstName;
+//	}
+//
+//	public String getLastName() {
+//		return lastName;
+//	}
+//
+//	public String getDetail() {
+//		return detail;
+//	}
+//
+//	public void setFirstName(String firstName) {
+//		this.firstName = firstName;
+//=======
+	
 	public String getLastName() {
 		return lastName;
-	}
-
-	public String getDetail() {
-		return detail;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+//>>>>>>> ff03802305f228cb58c33e2ce876d103012cdd08
 	}
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
 
-	public void setDetail(String detail) {
-		this.detail = detail;
+//<<<<<<< HEAD
+//	public void setDetail(String detail) {
+//		this.detail = detail;
+//	}
+//
+//	public Date getDate() {
+//		return date;
+//	}
+//
+//=======
+	public String getFirstName() {
+		return firstName;
 	}
 
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+
+
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Date getDate() {
 		return date;
 	}
-
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy/ww", timezone="America/Chicago")
+	public Date getWeek() {
+		return date;
+	}
+	
+//>>>>>>> ff03802305f228cb58c33e2ce876d103012cdd08
 	public void setDate(Date date) {
 		this.date = date;
 	}

@@ -210,8 +210,12 @@ public class EmployeeExpenseLookupQuery extends ApplicationObject {
 		// ResultSetMetaData rsmd = rs.getMetaData();
 		while (rs.next()) {
 			EmployeeExpenseResponseItem item = new EmployeeExpenseResponseItem();
-			String washerName = makeWasherName(rs);
-
+//<<<<<<< HEAD
+//			String washerName = makeWasherName(rs);
+//
+//=======
+			
+//>>>>>>> ff03802305f228cb58c33e2ce876d103012cdd08
 			java.sql.Date workDate = rs.getDate("work_date");
 			item.setAmount(rs.getBigDecimal("amount"));
 			item.setDate(new Date(workDate.getTime()));
@@ -219,26 +223,35 @@ public class EmployeeExpenseLookupQuery extends ApplicationObject {
 			item.setExpenseType(rs.getString("expense_type"));
 			item.setNotes(rs.getString("notes"));
 			item.setFirstName(rs.getString("first_name"));
-			item.setLastName(rs.getString("last_name"));
+//<<<<<<< HEAD
+//			item.setLastName(rs.getString("last_name"));
+//=======
+			item.setLastName(rs.getString("last_name"));			
+//>>>>>>> ff03802305f228cb58c33e2ce876d103012cdd08
 			items.add(item);
 		}
 		rs.close();
 		return items;
 	}
-
-	private String makeWasherName(ResultSet rs) throws SQLException {
-		String firstName = rs.getString("first_name");
-		String lastName = rs.getString("last_name");
-		StringBuffer washerName = new StringBuffer();
-		if (!StringUtils.isBlank(firstName)) {
-			washerName.append(firstName);
-			washerName.append(" ");
-		}
-		if (!StringUtils.isBlank(lastName)) {
-			washerName.append(lastName);
-		}
-		return washerName.toString();
-	}
+//<<<<<<< HEAD
+//
+//	private String makeWasherName(ResultSet rs) throws SQLException {
+//		String firstName = rs.getString("first_name");
+//		String lastName = rs.getString("last_name");
+//		StringBuffer washerName = new StringBuffer();
+//		if (!StringUtils.isBlank(firstName)) {
+//			washerName.append(firstName);
+//			washerName.append(" ");
+//		}
+//		if (!StringUtils.isBlank(lastName)) {
+//			washerName.append(lastName);
+//		}
+//		return washerName.toString();
+//	}
+//=======
+	
+	
+//>>>>>>> ff03802305f228cb58c33e2ce876d103012cdd08
 
 	public Integer selectCount(Connection conn) throws Exception {
 		SelectType selectType = SelectType.COUNT;

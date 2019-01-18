@@ -1,14 +1,8 @@
 package com.ansi.scilla.web.employeeExpense.response;
 
 import java.io.Serializable;
-import java.sql.Connection;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
-import com.ansi.scilla.common.db.EmployeeExpense;
-import com.ansi.scilla.common.db.User;
-import com.ansi.scilla.web.claims.query.NonDirectLaborSearchResult;
 import com.ansi.scilla.web.common.response.MessageResponse;
 
 public class EmployeeExpenseLookupResponse extends MessageResponse implements Serializable {
@@ -23,7 +17,7 @@ public class EmployeeExpenseLookupResponse extends MessageResponse implements Se
 	private int draw;
 	private String columns;
 
-	//private List<EmployeeExpenseSearchResult> data;
+	private List<EmployeeExpenseResponseItem> data;
 
 	public int getRecordsTotal() {
 		return recordsTotal;
@@ -57,14 +51,14 @@ public class EmployeeExpenseLookupResponse extends MessageResponse implements Se
 		this.columns = columns;
 	}
 
-//	public List<EmployeeExpenseSearchResult> getData() {
-//		return data;
-//	}
-//
-//	
-//
-//	public void setData(List<EmployeeExpenseSearchResult> data) {
-//		this.data = data;
-//	}
+	public List<EmployeeExpenseResponseItem> getData() {
+		return data;
+	}
+
+	
+
+	public void setData(List<EmployeeExpenseResponseItem> data) {
+		this.data = data;
+	}
 
 }
