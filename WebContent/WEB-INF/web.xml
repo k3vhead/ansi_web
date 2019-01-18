@@ -204,7 +204,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>employeeExpense</servlet-name>
-        <url-pattern>/employeeExpense/*</url-pattern>
+        <url-pattern>/claims/employeeExpense/*</url-pattern>
     </servlet-mapping>
 
 
@@ -214,7 +214,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>employeeExpenseLookup</servlet-name>
-        <url-pattern>/employeeExpenseLookup</url-pattern>
+        <url-pattern>/claims/employeeExpenseLookup</url-pattern>
     </servlet-mapping>
 
 

@@ -44,6 +44,10 @@ public class EmployeeExpenseResponseItem implements Serializable{
 	public Date getDate() {
 		return date;
 	}
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy/ww", timezone="America/Chicago")
+	public Date getWeek() {
+		return date;
+	}
 	
 	public void setDate(Date date) {
 		this.date = date;
