@@ -98,7 +98,7 @@
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
             	            { className: "dt-left", "targets": [0,3,6] },
-            	            { className: "dt-center", "targets": [1,2,4,5,7] },
+            	            { className: "dt-center", "targets": [1,2,4,5] },
             	            { className: "dt-right", "targets": []}
             	         ],
             	        "paging": true,
@@ -109,22 +109,22 @@
     			        columns: [
     			        	
     			            { title: "Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-    			            	if(row.div != null){return (row.div+"");}
+    			            	if(row.div != null){return (row.lastName+", "+row.firstName);}
     			            } },
     			            { title: "Week", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.week != null){return (row.week);}
+    			            	if(row.week != null){return (row.week+"");}
     			            } },
     			            { title: "Date", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.workDate != null){return (row.workDate+"");}
     			            } },
     			            { title: "Expense Type", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.washerId != null){return (row.lastName+", "+row.firstName);}
+    			            	if(row.washerId != null){return (row.expenseType+"");}
     			            } },
 //    			            { title: "Hrs Type" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 //    			            	return '<span class="tooltip">' + row.hoursType + '<span class="tooltiptext">' + row.hoursDescription + '</span></span>'
 //    			            } },
-    			            { title: "amount", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.hours != null){return (row.hours+"");}
+    			            { title: "Amount", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.hours != null){return (row.amount+"");}
     			            } },
     			            { title: "Notes",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.notes != null){return (row.notes+"");}
@@ -424,24 +424,22 @@
    		</colgroup>
         <thead>
             <tr>
-                <th>Div</th>
+                <th>Name</th>
                 <th>Week</th>
     			<th>Date</th>
-    			<th>Washer</th>
-    			<th>Hours Type</th>
-    			<th>Hours</th>
+    			<th>Expense Type</th>
+    			<th>Amount</th>
     			<th>Notes</th>
     			<th>Action</th>    			
             </tr>
         </thead>
         <tfoot>
             <tr>
-                <th>Div</th>
+                <th>Name</th>
                 <th>Week</th>
     			<th>Date</th>
-    			<th>Washer</th>
-    			<th>Hours Type</th>
-    			<th>Hours</th>
+    			<th>Expense Type</th>
+    			<th>Amount</th>
     			<th>Notes</th>   
     			<th>Action</th>  			
             </tr>
