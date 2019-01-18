@@ -21,7 +21,6 @@ public class EmployeeExpenseResponseItem implements Serializable{
 	
 	private String lastName;
 	private String firstName;
-//>>>>>>> ff03802305f228cb58c33e2ce876d103012cdd08
 	private Date date;
 	private String expenseType;
 	private BigDecimal amount;
@@ -31,43 +30,7 @@ public class EmployeeExpenseResponseItem implements Serializable{
 	public EmployeeExpenseResponseItem() {
 		super();
 	}
-//<<<<<<< HEAD
-//
-//	public String getFirstName() {
-//		return firstName;
-//	}
-//
-//	public String getLastName() {
-//		return lastName;
-//	}
-//
-//	public String getDetail() {
-//		return detail;
-//	}
-//
-//	public void setFirstName(String firstName) {
-//		this.firstName = firstName;
-//=======
-	
-	public String getLastName() {
-		return lastName;
-//>>>>>>> ff03802305f228cb58c33e2ce876d103012cdd08
-	}
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-//<<<<<<< HEAD
-//	public void setDetail(String detail) {
-//		this.detail = detail;
-//	}
-//
-//	public Date getDate() {
-//		return date;
-//	}
-//
-//=======
 	public String getFirstName() {
 		return firstName;
 	}
@@ -87,7 +50,7 @@ public class EmployeeExpenseResponseItem implements Serializable{
 		return date;
 	}
 	
-//>>>>>>> ff03802305f228cb58c33e2ce876d103012cdd08
+
 	public void setDate(Date date) {
 		this.date = date;
 	}
@@ -124,4 +87,4 @@ public class EmployeeExpenseResponseItem implements Serializable{
 		this.expenseId = expenseId;
 	}
 
-}
+}}
