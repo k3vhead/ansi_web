@@ -166,6 +166,7 @@
 						url: $url,
 						statusCode: {
 							200 : function($data) {
+								NONDIRECTLABOR.clearForm();
 								$("#ndl-crud-form").attr("data-laborid",$laborId);
 								$.each( $("#ndl-crud-form input"), function($index, $value) {
 									var $name = $($value).attr("name");
@@ -332,8 +333,8 @@
 					$( "#ndl-crud-form" ).dialog({
 						title:'Non-Direct Labor',
 						autoOpen: false,
-						height: 500,
-						width: 700,
+						height: 375,
+						width: 500,
 						modal: true,
 						closeOnEscape:true,
 						//open: function(event, ui) {
