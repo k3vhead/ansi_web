@@ -632,7 +632,9 @@ public class JobRequest extends AbstractRequest{
 		RequestValidator.validateId(conn, webMessages, "quote", "quote_id", "quoteId", this.quoteId, true);
 		RequestValidator.validateId(conn, webMessages, "contact", "contact_id", "siteContact", this.siteContact, true);
 		RequestValidator.validateBoolean(webMessages, "taxExempt", this.taxExempt, true);
-		RequestValidator.validateString(webMessages, "taxExemptReason", this.taxExemptReason, true);
+		if ( this.taxExempt != null && this.taxExempt == 1 ) {
+			RequestValidator.validateString(webMessages, "taxExemptReason", this.taxExemptReason, true);
+		}
 		
 		return webMessages;
 	}
