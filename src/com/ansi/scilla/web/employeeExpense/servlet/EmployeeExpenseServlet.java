@@ -83,8 +83,7 @@ public class EmployeeExpenseServlet extends AbstractCrudServlet {
 		RequestValidator.validateWasherId(conn, webMessages, "washerId", addRequest.get("washerId").asInt(), true);
 		RequestValidator.validateDate(webMessages, "workDate", workDate, true, null, null);
 		RequestValidator.validateExpenseType(webMessages, "expenseType", addRequest.get("expenseType").asText(), true);
-		// RequestValidator.validateBigDecimal(webMessages, "amount",
-		// addRequest.get("amount").asLong(), true);
+		RequestValidator.validateBigDecimal(webMessages, "amount", addRequest.get("amount").decimalValue(), true);
 		RequestValidator.validateString(webMessages, "detail", addRequest.get("detail").asText(), false);
 		RequestValidator.validateString(webMessages, "notes", addRequest.get("notes").asText(), false);
 
@@ -93,8 +92,8 @@ public class EmployeeExpenseServlet extends AbstractCrudServlet {
 
 	@Override
 	protected WebMessages validateUpdate(Connection conn, JsonNode updateRequest) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		WebMessages webMessages = validateAdd(conn, updateRequest);
+		return webMessages;
 	}
 
 }
