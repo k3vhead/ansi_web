@@ -73,9 +73,6 @@ public class EmployeeExpenseServlet extends AbstractCrudServlet {
 	@Override
 	protected WebMessages validateAdd(Connection conn, JsonNode addRequest) throws Exception {
 		WebMessages webMessages = new WebMessages();
-		Integer expenseId = addRequest.get("expenseId").asInt();
-		RequestValidator.validateId(conn, webMessages, EmployeeExpense.TABLE, EmployeeExpense.EXPENSE_ID, "expenseId",
-				expenseId, true);
 
 		String workDateText = addRequest.get("workDate").asText();
 		Date workDate = StringUtils.isBlank(workDateText) ? null : standardDateFormat.parse(workDateText);
@@ -93,6 +90,9 @@ public class EmployeeExpenseServlet extends AbstractCrudServlet {
 	@Override
 	protected WebMessages validateUpdate(Connection conn, JsonNode updateRequest) throws Exception {
 		WebMessages webMessages = validateAdd(conn, updateRequest);
+		Integer expenseId = updateRequest.get("expenseId").asInt();
+		RequestValidator.validateId(conn, webMessages, EmployeeExpense.TABLE, EmployeeExpense.EXPENSE_ID, "expenseId",
+				expenseId, true);
 		return webMessages;
 	}
 
