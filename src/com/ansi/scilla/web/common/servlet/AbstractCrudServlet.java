@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +31,6 @@ import com.ansi.scilla.web.common.response.CrudResponse;
 import com.ansi.scilla.web.common.response.MessageKey;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
-import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
@@ -77,15 +77,30 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 	}
 	
 	
-	protected abstract WebMessages validateAdd(Connection conn, JsonNode addRequest) throws Exception;
-	protected abstract WebMessages validateUpdate(Connection conn, JsonNode updateRequest) throws Exception;
+	protected abstract WebMessages validateAdd(Connection conn, HashMap<String, Object> addRequest) throws Exception;
+	protected abstract WebMessages validateUpdate(Connection conn, HashMap<String, Object> updateRequest) throws Exception;
 	
-	
-	protected void processGet(HttpServletRequest request, HttpServletResponse response, Permission claimsRead,
+	/**
+	 * 
+	 * @param request
+	 * @param response
+	 * @param permission Permission required to see this data. Null indicates only a valid login is required
+	 * @param realm
+	 * @param actionList
+	 * @param table
+	 * @param fieldMap
+	 * @throws ServletException
+	 */
+	protected void processGet(HttpServletRequest request, HttpServletResponse response, Permission permission,
 			String realm, String[] actionList, MSTable table, List<FieldMap> fieldMap) throws ServletException {
 		try {
 			AnsiURL url = new AnsiURL(request, realm, actionList);
-			SessionData sessionData = AppUtils.validateSession(request);
+			if ( permission == null ) {
+				AppUtils.validateSession(request);
+			} else {
+				AppUtils.validateSession(request, permission);
+			}
+			
 		
 			Connection conn = null;
 			try {
@@ -110,7 +125,7 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 			}
 		} catch (ResourceNotFoundException e) {
 			super.sendNotFound(response);
-		} catch (TimeoutException e) {
+		} catch (TimeoutException  | NotAllowedException | ExpiredLoginException e) {
 			super.sendForbidden(response);
 		}
 	}
@@ -123,7 +138,7 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 		try {
 			String jsonString = super.makeJsonString(request);
 			AnsiURL url = new AnsiURL(request, realm, actionList);
-			SessionData sessionData = AppUtils.validateSession(request, permission);
+			AppUtils.validateSession(request, permission);
 			Connection conn = null;
 			try {
 				conn = AppUtils.getDBCPConn();
@@ -143,6 +158,7 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 					processBadPostRequest(conn, response, formatException);
 				}
 			} catch ( IOException formatException) {
+				AppUtils.logException(formatException);
 				super.sendResponse(conn, response, ResponseCode.SYSTEM_FAILURE, null);
 			} catch ( Exception e ) {
 				AppUtils.logException(e);
@@ -169,8 +185,8 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 //		SessionUser sessionUser = AppUtils.getSessionUser(request);
 		try {
 //			String jsonString = super.makeJsonString(request);
-			AnsiURL url = new AnsiURL(request, realm, actionList);
-			SessionData sessionData = AppUtils.validateSession(request, permission);
+			AnsiURL url = new AnsiURL(request, realm, actionList);			 
+			AppUtils.validateSession(request, permission);
 			Connection conn = null;
 			try {
 				conn = AppUtils.getDBCPConn();
@@ -227,7 +243,8 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		JsonNode jsonNode = mapper.readTree(jsonString);
-		WebMessages webMessages = this.validateAdd(conn, jsonNode);
+		HashMap<String, Object> addRequest = makeRequestMap(fieldMapList, jsonNode);
+		WebMessages webMessages = this.validateAdd(conn, addRequest);
 		
 		if ( webMessages.isEmpty() ) {
 			doAdd(conn, response, table, sessionUser, jsonNode, fieldMapList);
@@ -319,7 +336,8 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 		ResultSet rs = ps.executeQuery();
 		if ( rs.next() ) {			
 			JsonNode jsonNode = mapper.readTree(jsonString);
-			WebMessages webMessages = this.validateUpdate(conn, jsonNode);
+			HashMap<String, Object> updateRequest = makeRequestMap(fieldMapList, jsonNode);
+			WebMessages webMessages = this.validateUpdate(conn, updateRequest);
 			
 			if ( webMessages.isEmpty() ) {
 				doUpdate(conn, response, table, id, sessionUser, jsonNode, fieldMapList);
@@ -457,13 +475,13 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 	}
 
 
-	private HashMap<String, FieldMap> makeJson2Db(List<FieldMap> fieldMap) {
-		HashMap<String, FieldMap> db2Json = new HashMap<String, FieldMap>();
-		for ( FieldMap map : fieldMap ) {
-			db2Json.put(map.jsonField, map);
-		}
-		return db2Json;
-	}
+//	private HashMap<String, FieldMap> makeJson2Db(List<FieldMap> fieldMap) {
+//		HashMap<String, FieldMap> db2Json = new HashMap<String, FieldMap>();
+//		for ( FieldMap map : fieldMap ) {
+//			db2Json.put(map.jsonField, map);
+//		}
+//		return db2Json;
+//	}
 
 
 
@@ -490,6 +508,61 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 	}
 	
 	
+	private HashMap<String, Object> makeRequestMap(List<FieldMap> fieldMapList, JsonNode jsonNode) throws ParseException, Exception {
+		HashMap<String, Object> requestMap = new HashMap<String, Object>();
+				
+		for ( FieldMap fieldMap: fieldMapList ) {
+			if ( fieldMap.updateField ) {
+				Object value = jsonNode.get(fieldMap.jsonField);
+				if ( value == null ) {
+					requestMap.put(fieldMap.jsonField, null);
+				} else {
+					logger.log(Level.DEBUG, fieldMap.jsonField + " " + value.getClass().getName());
+					if ( fieldMap.format.equals(JsonFieldFormat.DATE)) {
+//						String dateString = jsonNode.get(fieldMap.jsonField).asText();
+//						Date date = this.standardDateFormat.parse(dateString);
+						requestMap.put(fieldMap.jsonField, jsonNode.get(fieldMap.jsonField).asText());
+					} else if (fieldMap.format.equals(JsonFieldFormat.STRING)) {
+						requestMap.put(fieldMap.jsonField, jsonNode.get(fieldMap.jsonField).asText());
+					} else if (fieldMap.format.equals(JsonFieldFormat.INTEGER)) {
+						if ( value instanceof com.fasterxml.jackson.databind.node.TextNode ) {
+							// this indicates that a non-integer value is in the input
+							// but it could be a stringified number (eg "106" instead of 106) so we check for that, too
+							try {
+								Integer intValue = Integer.valueOf(jsonNode.get(fieldMap.jsonField).asText());
+								requestMap.put(fieldMap.jsonField, intValue);
+							} catch ( NumberFormatException e ) {
+								requestMap.put(fieldMap.jsonField, jsonNode.get(fieldMap.jsonField).asText());
+							}							
+						} else {
+							requestMap.put(fieldMap.jsonField, jsonNode.get(fieldMap.jsonField).asInt());
+						}						
+					} else if (fieldMap.format.equals(JsonFieldFormat.DECIMAL)) {
+						if ( value instanceof com.fasterxml.jackson.databind.node.TextNode ) {
+							// this indicates that a non-decimal value is in the input
+							// but it could be a stringified number (eg "106.4" instead of 106.4) so we check for that, too
+							try {
+								Double doubleValue = Double.valueOf(jsonNode.get(fieldMap.jsonField).asText());
+								requestMap.put(fieldMap.jsonField, doubleValue);
+							} catch ( NumberFormatException e ) {
+								requestMap.put(fieldMap.jsonField, jsonNode.get(fieldMap.jsonField).asText());
+							}							
+						} else {
+							requestMap.put(fieldMap.jsonField, jsonNode.get(fieldMap.jsonField).asInt());
+						}	
+					} else {
+						throw new Exception("Invalid json field format: " + fieldMap.format);
+					}
+				}
+			}
+		}
+		
+		String jsonString = AppUtils.object2json(requestMap);
+		logger.log(Level.DEBUG, jsonString);
+		return requestMap;
+	}
+
+
 	public class SQLSetTransformer implements Transformer {
 
 		@Override

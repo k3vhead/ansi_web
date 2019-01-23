@@ -86,7 +86,7 @@ public class EmployeeExpenseRequest extends AbstractRequest {
 
 	public WebMessages validateAdd(Connection conn) throws Exception {
 		WebMessages webMessages = new WebMessages();
-		RequestValidator.validateBigDecimal(webMessages, "amount", this.amount, true);
+		RequestValidator.validateBigDecimal(webMessages, "amount", this.amount, null, null, true);
 		// RequestValidator.validateDate(webMessages, "date", this.date, true,
 		// new Date(0), new Date(500, 1, 1));
 		RequestValidator.validateId(conn, webMessages, "ansi_user", User.USER_ID, "washerId", this.washerId, true);

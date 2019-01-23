@@ -1,22 +1,11 @@
 package com.ansi.scilla.web.test;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.HashMap;
+import java.math.BigDecimal;
 
 import org.apache.http.Header;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import com.ansi.scilla.common.db.NonDirectLabor;
-import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.FieldMap;
-import com.ansi.scilla.web.common.utils.JsonFieldFormat;
-import com.ansi.scilla.web.common.utils.Permission;
-import com.ansi.scilla.web.permission.request.PermissionRequest;
-import com.ansi.scilla.web.user.request.DivisionUserRequest;
 
 
 public class DavesServletTester extends TestServlet {
@@ -46,8 +35,10 @@ public class DavesServletTester extends TestServlet {
 //		userId = "dmt@ansi.com";  // special override
 		super.password = "password1";
 		
+
 		Header sessionCookie = super.doLogin();
-		String results = testNDL(sessionCookie, MyTestType.UPDATE);
+		String results = testNDL(sessionCookie, MyTestType.ADD);
+//		String results = testEmployeeExpense(sessionCookie, MyTestType.ADD);
 
 //		String results = super.doPost(sessionCookie, url, super.makeJson(parmMap));
 //		String results = super.doGet(sessionCookie, url, (HashMap<String,String>)null);
@@ -64,25 +55,26 @@ public class DavesServletTester extends TestServlet {
 		String url = null;
 		String results = null;
 		String json = null;
+		String baseUrl = "/ansi_web/claims/nonDirectLabor/";
 
 		if ( type.equals(MyTestType.ITEM)) {
-			url = "/ansi_web/nonDirectLabor/1";
+			url = baseUrl + "1";
 			results = super.doGet(sessionCookie, url, null);
 		} else if ( type.equals(MyTestType.LIST)) {		
-			url = "/ansi_web/nonDirectLabor/list";
+			url = baseUrl + "list";
 			results = super.doGet(sessionCookie, url, null);
 		} else if ( type.equals(MyTestType.ADD)) {	
-			url = "/ansi_web/nonDirectLabor/add";
-			json = "{\"washerId\":5,\"divisionId\":106,\"workDate\":\"12/21/2018\",\"hours\":4,\"hoursType\":\"V\",\"notes\":\"NGH\"}";
+			url = baseUrl + "add";
+			json = "{\"washerId\":5,\"divisionId\":\"106\",\"workDate\":\"12/28/2018\",\"hours\":\"abc\",\"hoursType\":\"V\",\"notes\":\"NGH\"}";
 			logger.log(Level.DEBUG, json);
 			results = super.doPost(sessionCookie, url, json);
 		} else if ( type.equals(MyTestType.UPDATE)) {	
-			url = "/ansi_web/nonDirectLabor/13";
+			url = baseUrl + "13";
 			json = "{\"washerId\":1,\"divisionId\":106,\"workDate\":\"12/11/2018\",\"hours\":5,\"hoursType\":\"V\",\"notes\":\"NGH2\"}";
 			logger.log(Level.DEBUG, json);
 			results = super.doPost(sessionCookie, url, json);
 		} else if ( type.equals(MyTestType.DELETE)) {
-			url = "/ansi_web/nonDirectLabor/8";
+			url = baseUrl + "8";
 			json = "{\"washerId\":1,\"divisionId\":106,\"workDate\":\"12/01/2018\",\"hours\":5,\"hoursType\":\"some third type\",\"notes\":\"NGH2\"}";
 			logger.log(Level.DEBUG, json);
 			results = super.doDelete(sessionCookie, url, null);
@@ -94,6 +86,40 @@ public class DavesServletTester extends TestServlet {
 
 	}
 
+	
+	private String testEmployeeExpense(Header sessionCookie, MyTestType type) throws Exception {
+		String url = null;
+		String results = null;
+		String json = null;
+
+		if ( type.equals(MyTestType.ITEM)) {
+			url = "/ansi_web/claims/employeeExpense/1";
+			results = super.doGet(sessionCookie, url, null);
+		} else if ( type.equals(MyTestType.LIST)) {		
+			url = "/ansi_web/claims/employeeExpense/list";
+			results = super.doGet(sessionCookie, url, null);
+		} else if ( type.equals(MyTestType.ADD)) {	
+			url = "/ansi_web/claims/employeeExpense/add";
+			json = "{\"washerId\":5,\"divisionId\":106,\"workDate\":\"12/21/2018\",\"hours\":4,\"hoursType\":\"V\",\"notes\":\"NGH\"}";
+			logger.log(Level.DEBUG, json);
+			results = super.doPost(sessionCookie, url, json);
+		} else if ( type.equals(MyTestType.UPDATE)) {	
+			url = "/ansi_web/claims/employeeExpense/13";
+			json = "{\"washerId\":1,\"divisionId\":106,\"workDate\":\"12/11/2018\",\"hours\":5,\"hoursType\":\"V\",\"notes\":\"NGH2\"}";
+			logger.log(Level.DEBUG, json);
+			results = super.doPost(sessionCookie, url, json);
+		} else if ( type.equals(MyTestType.DELETE)) {
+			url = "/ansi_web/claims/employeeExpense/8";
+			json = "{\"washerId\":1,\"divisionId\":106,\"workDate\":\"12/01/2018\",\"hours\":5,\"hoursType\":\"some third type\",\"notes\":\"NGH2\"}";
+			logger.log(Level.DEBUG, json);
+			results = super.doDelete(sessionCookie, url, null);
+			return results;
+		} else {
+			throw new Exception("Huh?");
+		}
+		return results;
+
+	}
 
 	public enum MyTestType { ITEM,LIST,ADD,UPDATE,DELETE; }
 	

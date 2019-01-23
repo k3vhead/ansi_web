@@ -169,10 +169,10 @@ public class DivisionRequest extends AbstractRequest {
 
 	public WebMessages validateAdd() {
 		WebMessages webMessages = new WebMessages();
-		RequestValidator.validateInteger(webMessages, "weekendIsOt", this.weekendIsOt, true, 0, 1);
-		RequestValidator.validateInteger(webMessages, "hourlyRateIsFixed", this.hourlyRateIsFixed, true, 0, 1);
-		RequestValidator.validateInteger(webMessages, "maxRegHrsPerDay", this.maxRegHrsPerDay, true, 0, 24);
-		RequestValidator.validateInteger(webMessages, "maxRegHrsPerWeek", this.maxRegHrsPerWeek, true, 0, 168);
+		RequestValidator.validateBoolean(webMessages, "weekendIsOt", this.weekendIsOt, true);
+		RequestValidator.validateBoolean(webMessages, "hourlyRateIsFixed", this.hourlyRateIsFixed, true);
+		RequestValidator.validateInteger(webMessages, "maxRegHrsPerDay", this.maxRegHrsPerDay, 0, 24, true);
+		RequestValidator.validateInteger(webMessages, "maxRegHrsPerWeek", this.maxRegHrsPerWeek, 0, 24*7, true);
 		return webMessages;		
 	}
 	

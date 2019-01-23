@@ -135,6 +135,7 @@ public abstract class TestServlet {
 		}
 		URI uri = builder.build();
 		HttpGet httpGet = new HttpGet(uri);
+		this.logger.log(Level.DEBUG, "Get: " + uri);
 		httpGet.addHeader("Cookie", sessionCookie.getValue());
 		CloseableHttpResponse response = httpClient.execute(httpGet);
 		this.logger.log(Level.DEBUG, response.getStatusLine());

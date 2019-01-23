@@ -520,8 +520,8 @@ public class JobRequest extends AbstractRequest{
 		WebMessages webMessages = new WebMessages();
 		
 		RequestValidator.validateJobFreqency(webMessages, "jobFrequency", this.jobFrequency, true);
-		RequestValidator.validateInteger(webMessages, "jobNbr", this.jobNbr, true, 1, null);
-		RequestValidator.validateBigDecimal(webMessages, "pricePerCleaning", this.pricePerCleaning, true);
+		RequestValidator.validateInteger(webMessages, "jobNbr", this.jobNbr, 1, null, true);
+		RequestValidator.validateBigDecimal(webMessages, "pricePerCleaning", this.pricePerCleaning, new BigDecimal(0.01D), null, true);
 		RequestValidator.validateString(webMessages, "serviceDescription", this.serviceDescription, true);
 		
 		return webMessages;
@@ -549,9 +549,9 @@ public class JobRequest extends AbstractRequest{
 		WebMessages webMessages = new WebMessages();
 		
 		RequestValidator.validateBoolean(webMessages, "requestSpecialScheduling", this.requestSpecialScheduling, true);
-		RequestValidator.validateBigDecimal(webMessages, "directLaborPct", this.directLaborPct, true);
-		RequestValidator.validateBigDecimal(webMessages, "budget", this.budget, true);
-		RequestValidator.validateInteger(webMessages, "floors", this.floors, true, 0, null);
+		RequestValidator.validateBigDecimal(webMessages, "directLaborPct", this.directLaborPct, null, null, true);
+		RequestValidator.validateBigDecimal(webMessages, "budget", this.budget, null, null, true);
+		RequestValidator.validateInteger(webMessages, "floors", this.floors, 0, null, true);
 		RequestValidator.validateString(webMessages, "equipment", this.equipment, true);
 		RequestValidator.validateString(webMessages, "washerNotes", this.washerNotes, false);
 		RequestValidator.validateString(webMessages, "omNotes", this.omNotes, false);

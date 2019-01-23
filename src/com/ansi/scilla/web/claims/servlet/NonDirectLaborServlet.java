@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -22,7 +23,6 @@ import com.ansi.scilla.web.common.servlet.AbstractCrudServlet;
 import com.ansi.scilla.web.common.utils.FieldMap;
 import com.ansi.scilla.web.common.utils.JsonFieldFormat;
 import com.ansi.scilla.web.common.utils.Permission;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class NonDirectLaborServlet extends AbstractCrudServlet {
@@ -105,36 +105,34 @@ public class NonDirectLaborServlet extends AbstractCrudServlet {
 
 
 	@Override
-	protected WebMessages validateAdd(Connection conn, JsonNode addRequest) throws Exception {
+	protected WebMessages validateAdd(Connection conn, HashMap<String, Object> addRequest) throws Exception {
 		WebMessages webMessages = new WebMessages();
-		Integer divisionId = addRequest.get("divisionId").asInt();
+		Integer divisionId = (Integer)addRequest.get("divisionId");
 		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, "divisionId", divisionId, true);
 		
 		try {
 			Division division = new Division();
-			division.setDivisionId(addRequest.get("divisionId").asInt());
+			division.setDivisionId((Integer)addRequest.get("divisionId"));
 			division.selectOne(conn);
 			logger.log(Level.DEBUG, division);
-			RequestValidator.validateInteger(webMessages, "hours", addRequest.get("hours").asInt(), true, 0, division.getMaxRegHrsPerDay());;
+			Double maxRegHrsPerDay = division.getMaxRegHrsPerDay() == null ? 24.0D : division.getMaxRegHrsPerDay() * 1.0D;  // make java 11 happy because they deprecated all the good constructors
+			RequestValidator.validateNumber(webMessages, "hours", addRequest.get("hours"), 0.0D, maxRegHrsPerDay, true);
 		} catch ( RecordNotFoundException e) {
 			// this would have been caught with the divisionid validation
 			logger.log(Level.DEBUG, "Hours validation was skipped b/c of Record Not Found");
 		}
 		
-		String workDateText = addRequest.get("workDate").asText();
-		Date workDate = StringUtils.isBlank(workDateText) ? null : standardDateFormat.parse(workDateText);
-		
-		RequestValidator.validateDate(webMessages, "washerId", workDate, true, null, null);
-		RequestValidator.validateWorkHoursType(webMessages, "hoursType", addRequest.get("hoursType").asText(), true);
-		RequestValidator.validateString(webMessages, "notes", addRequest.get("notes").asText(), false);
-		RequestValidator.validateWasherId(conn, webMessages, "washerId", addRequest.get("washerId").asInt(), true);
+		RequestValidator.validateDate(webMessages, "workDate",(String)addRequest.get("workDate"), standardDateFormat, true, null, null);		
+		RequestValidator.validateWorkHoursType(webMessages, "hoursType", (String)addRequest.get("hoursType"), true);
+		RequestValidator.validateString(webMessages, "notes", (String)addRequest.get("notes"), false);
+		RequestValidator.validateWasherId(conn, webMessages, "washerId", (Integer)addRequest.get("washerId"), true);
 		
 		return webMessages;
 	}
 
 
 	@Override
-	protected WebMessages validateUpdate(Connection conn, JsonNode updateRequest) throws Exception {
+	protected WebMessages validateUpdate(Connection conn, HashMap<String, Object> updateRequest) throws Exception {
 		WebMessages webMessages = validateAdd(conn, updateRequest);
 		return webMessages;
 	}

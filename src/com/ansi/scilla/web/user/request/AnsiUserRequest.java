@@ -14,9 +14,9 @@ public class AnsiUserRequest extends AbstractRequest {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	public static Integer USER_STATUS_IS_ACTIVE = new Integer(1);
-	public static Integer USER_STATUS_IS_INACTIVE = new Integer(0);
-	public static Integer USER_STATUS_IS_LOCKED = new Integer(-1);
+	public static Integer USER_STATUS_IS_ACTIVE = Integer.valueOf(1);
+	public static Integer USER_STATUS_IS_INACTIVE = Integer.valueOf(0);
+	public static Integer USER_STATUS_IS_LOCKED = Integer.valueOf(-1);
 	
 	private String address1;
 	private String address2;
@@ -173,7 +173,7 @@ public class AnsiUserRequest extends AbstractRequest {
 		RequestValidator.validateBoolean(webMessages, "status", this.status, false);
 		RequestValidator.validateString(webMessages, "title", this.title, false);
 		RequestValidator.validateUserStatus(webMessages, "status", this.status, true);
-		RequestValidator.validateBigDecimal(webMessages, "minimumHourlyPay", this.minimumHourlyPay, false);
+		RequestValidator.validateBigDecimal(webMessages, "minimumHourlyPay", this.minimumHourlyPay, new BigDecimal(0.0D), null, false);
 		
 		return webMessages;
 	}
@@ -195,7 +195,7 @@ public class AnsiUserRequest extends AbstractRequest {
 		RequestValidator.validateString(webMessages, "title", this.title, false);
 		RequestValidator.validateId(conn, webMessages, "ansi_user", "user_id", "userId", this.userId, true);
 		RequestValidator.validateUserStatus(webMessages, "status", this.status, true);
-		RequestValidator.validateBigDecimal(webMessages, "minimumHourlyPay", this.minimumHourlyPay, false);
+		RequestValidator.validateBigDecimal(webMessages, "minimumHourlyPay", this.minimumHourlyPay, new BigDecimal(0.0D), null, false);
 		
 		return webMessages;
 	}

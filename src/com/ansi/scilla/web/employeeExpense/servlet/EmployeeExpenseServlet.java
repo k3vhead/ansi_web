@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -11,11 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
 
-import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.EmployeeExpense;
-import com.ansi.scilla.common.db.NonDirectLabor;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -23,8 +21,6 @@ import com.ansi.scilla.web.common.servlet.AbstractCrudServlet;
 import com.ansi.scilla.web.common.utils.FieldMap;
 import com.ansi.scilla.web.common.utils.JsonFieldFormat;
 import com.ansi.scilla.web.common.utils.Permission;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class EmployeeExpenseServlet extends AbstractCrudServlet {
 
@@ -71,26 +67,23 @@ public class EmployeeExpenseServlet extends AbstractCrudServlet {
 	}
 
 	@Override
-	protected WebMessages validateAdd(Connection conn, JsonNode addRequest) throws Exception {
+	protected WebMessages validateAdd(Connection conn, HashMap<String, Object> addRequest) throws Exception {
 		WebMessages webMessages = new WebMessages();
 
-		String workDateText = addRequest.get("workDate").asText();
-		Date workDate = StringUtils.isBlank(workDateText) ? null : standardDateFormat.parse(workDateText);
-
-		RequestValidator.validateWasherId(conn, webMessages, "washerId", addRequest.get("washerId").asInt(), true);
-		RequestValidator.validateDate(webMessages, "workDate", workDate, true, null, null);
-		RequestValidator.validateExpenseType(webMessages, "expenseType", addRequest.get("expenseType").asText(), true);
-		RequestValidator.validateBigDecimal(webMessages, "amount", addRequest.get("amount").decimalValue(), true);
-		RequestValidator.validateString(webMessages, "detail", addRequest.get("detail").asText(), false);
-		RequestValidator.validateString(webMessages, "notes", addRequest.get("notes").asText(), false);
+		RequestValidator.validateWasherId(conn, webMessages, "washerId", (Integer)addRequest.get("washerId"), true);
+		RequestValidator.validateDate(webMessages, "workDate",(String)addRequest.get("workDate"), standardDateFormat, true, null, null);
+		RequestValidator.validateExpenseType(webMessages, "expenseType", (String)addRequest.get("expenseType"), true);
+		RequestValidator.validateNumber(webMessages, "amount", addRequest.get("amount"), 0.0D, null, true);
+		RequestValidator.validateString(webMessages, "detail", (String)addRequest.get("detail"), false);
+		RequestValidator.validateString(webMessages, "notes", (String)addRequest.get("notes"), false);
 
 		return webMessages;
 	}
 
 	@Override
-	protected WebMessages validateUpdate(Connection conn, JsonNode updateRequest) throws Exception {
+	protected WebMessages validateUpdate(Connection conn, HashMap<String, Object> updateRequest) throws Exception {
 		WebMessages webMessages = validateAdd(conn, updateRequest);
-		Integer expenseId = updateRequest.get("expenseId").asInt();
+		Integer expenseId = (Integer)updateRequest.get("expenseId");
 		RequestValidator.validateId(conn, webMessages, EmployeeExpense.TABLE, EmployeeExpense.EXPENSE_ID, "expenseId",
 				expenseId, true);
 		return webMessages;
