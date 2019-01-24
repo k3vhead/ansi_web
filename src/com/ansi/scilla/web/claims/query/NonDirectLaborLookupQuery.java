@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -172,11 +173,14 @@ public class NonDirectLaborLookupQuery extends ReportQuery {
 		if ( selectType.equals(SelectType.DATA)) {
 			if ( StringUtils.isBlank(sortBy)) {
 				orderBy = " order by " + NonDirectLaborSearchResult.DIV + "asc, " + 
+							NonDirectLaborSearchResult.WORK_DATE + " asc, " +
 							NonDirectLaborSearchResult.LAST_NAME + " asc," + 
 							NonDirectLaborSearchResult.FIRST_NAME + " asc ";
 			} else {
-				orderBy = " order by " + sortBy;
-				orderBy = sortIsAscending ? orderBy + " asc " : orderBy + " desc ";
+				List<String> sortList = Arrays.asList(StringUtils.split(sortBy, ","));
+				String sortDir = sortIsAscending ? orderBy + " asc " : orderBy + " desc ";
+				String sortBy = StringUtils.join(sortList, sortDir + ", ");
+				orderBy = " order by " + sortBy + " " + sortDir;
 			}
 		}
 

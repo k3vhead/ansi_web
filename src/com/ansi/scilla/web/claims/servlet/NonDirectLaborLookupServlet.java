@@ -53,12 +53,12 @@ public class NonDirectLaborLookupServlet extends AbstractServlet {
 		int col = 0;
 		String dir = "asc";
 		String[] cols = { 
-				"div",
-				"week",
-				"date",
-				"washer",
-				"hours_type",
-				"hours",
+				"division_nbr, division_code, work_date, last_name, first_name",
+				"work_date, division_nbr, division_code, last_name, first_name",
+				"work_date, division_nbr, division_code, last_name, first_name",
+				"last_name, first_name, division_nbr, division_code, work_date",
+				"hours_type, division_nbr, division_code, work_date, last_name, first_name",
+				"hours, division_nbr, division_code, work_date, last_name, first_name",
 				"notes"
 				};
 		String sStart = request.getParameter("start");

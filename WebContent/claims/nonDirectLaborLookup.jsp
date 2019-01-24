@@ -77,7 +77,7 @@
         		
         		createTable : function() {
             		var dataTable = $('#displayTable').DataTable( {
-            			"aaSorting":		[[0,'asc'],[1,'asc']],
+            			"aaSorting":		[[0,'asc']],
             			"processing": 		true,
             	        "serverSide": 		true,
             	        "autoWidth": 		false,
@@ -414,13 +414,13 @@
     	
  	<table id="displayTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
        	<colgroup>
-        	<col style="width:5%;" />
+        	<col style="width:10%;" />
         	<col style="width:5%;" />
     		<col style="width:5%;" />    		
     		<col style="width:10%;" />
     		<col style="width:10%;" />
     		<col style="width:5%;" />
-    		<col style="width:50%;" />
+    		<col style="width:45%;" />
     		<col style="width:10%;" />
    		</colgroup>
         <thead>
