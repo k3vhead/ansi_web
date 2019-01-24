@@ -70,12 +70,13 @@ public class EmployeeExpenseServlet extends AbstractCrudServlet {
 	protected WebMessages validateAdd(Connection conn, HashMap<String, Object> addRequest) throws Exception {
 		WebMessages webMessages = new WebMessages();
 
-		RequestValidator.validateWasherId(conn, webMessages, "washerId", (Integer)addRequest.get("washerId"), true);
-		RequestValidator.validateDate(webMessages, "workDate",(String)addRequest.get("workDate"), standardDateFormat, true, null, null);
-		RequestValidator.validateExpenseType(webMessages, "expenseType", (String)addRequest.get("expenseType"), true);
+		RequestValidator.validateWasherId(conn, webMessages, "washerId", (Integer) addRequest.get("washerId"), true);
+		RequestValidator.validateDate(webMessages, "workDate", (String) addRequest.get("workDate"), standardDateFormat,
+				true, null, null);
+		RequestValidator.validateExpenseType(webMessages, "expenseType", (String) addRequest.get("expenseType"), true);
 		RequestValidator.validateNumber(webMessages, "amount", addRequest.get("amount"), 0.0D, null, true);
-		RequestValidator.validateString(webMessages, "detail", (String)addRequest.get("detail"), false);
-		RequestValidator.validateString(webMessages, "notes", (String)addRequest.get("notes"), false);
+		RequestValidator.validateString(webMessages, "detail", (String) addRequest.get("detail"), false);
+		RequestValidator.validateString(webMessages, "notes", (String) addRequest.get("notes"), false);
 
 		return webMessages;
 	}
@@ -83,7 +84,7 @@ public class EmployeeExpenseServlet extends AbstractCrudServlet {
 	@Override
 	protected WebMessages validateUpdate(Connection conn, HashMap<String, Object> updateRequest) throws Exception {
 		WebMessages webMessages = validateAdd(conn, updateRequest);
-		Integer expenseId = (Integer)updateRequest.get("expenseId");
+		Integer expenseId = (Integer) updateRequest.get("expenseId");
 		RequestValidator.validateId(conn, webMessages, EmployeeExpense.TABLE, EmployeeExpense.EXPENSE_ID, "expenseId",
 				expenseId, true);
 		return webMessages;
