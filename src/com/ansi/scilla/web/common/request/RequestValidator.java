@@ -12,6 +12,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.ansi.scilla.common.claims.WorkHoursType;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.employee.EmployeeHoursType;
@@ -309,11 +313,13 @@ public class RequestValidator {
 	
 	
 	public static void validateNumber(WebMessages webMessages, String fieldName, Object value, Object minValue, Object maxValue, boolean required) {
+		Logger logger = LogManager.getLogger(RequestValidator.class);
 		if (value == null) {
 			if (required) {
 				webMessages.addMessage(fieldName, "Required Value");
 			}
 		} else {
+			logger.log(Level.DEBUG, fieldName + "\t" + value + "\t" + value.getClass().getName());
 			if ( value instanceof Double ) {
 				validateDouble(webMessages, fieldName, (Double)value, (Double)minValue, (Double)maxValue, required);
 			} else if ( value instanceof BigDecimal ) {

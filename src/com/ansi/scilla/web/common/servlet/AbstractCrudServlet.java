@@ -263,47 +263,58 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 		String keyFieldName = table.getClass().getAnnotation(AutoIncrement.class).value();
 		
 		List<String> fieldList = new ArrayList<String>();
-		List<Object> valueList = new ArrayList<Object>();
 		java.sql.Date today = new java.sql.Date(new java.util.Date().getTime());
 		
-		// insert into non_direct_labor (field, field) values (?,?)
 		for ( FieldMap mapItem : fieldMapList ) {
 			if ( mapItem.updateField ) {
 				if ( ! mapItem.dbField.equalsIgnoreCase(keyFieldName) ) {
 					fieldList.add(mapItem.dbField);
-					if ( mapItem.format.equals(JsonFieldFormat.INTEGER)) {
-						valueList.add(jsonNode.get(mapItem.jsonField).asInt());
-					} else if (mapItem.format.equals(JsonFieldFormat.DECIMAL)) {
-						valueList.add(jsonNode.get(mapItem.jsonField).asLong());
-					} else if (mapItem.format.equals(JsonFieldFormat.STRING)) {
-						valueList.add(jsonNode.get(mapItem.jsonField).asText());
-					} else if (mapItem.format.equals(JsonFieldFormat.DATE)) {
-						String dateString = jsonNode.get(mapItem.jsonField).asText();
-						java.util.Date date = standardDateFormat.parse(dateString);
-						valueList.add(new java.sql.Date(date.getTime()));
-					} else {
-						throw new ServletException("Invalid data format");
-					}
 				}
 			}
 		}
 		fieldList.add(MSTable.ADDED_BY);
-		valueList.add(sessionUser.getUserId());
-		fieldList.add(MSTable.UPDATED_BY);
-		valueList.add(sessionUser.getUserId());
 		fieldList.add(MSTable.ADDED_DATE);
-		valueList.add(today);
+		fieldList.add(MSTable.UPDATED_BY);
 		fieldList.add(MSTable.UPDATED_DATE);
-		valueList.add(today);
 		
-		String sql = "insert into " + tableName + "(" + StringUtils.join(fieldList, ",") + ") values " + AppUtils.makeBindVariables(valueList);
+		
+		String sql = "insert into " + tableName + " (" + StringUtils.join(fieldList, ",") + ") values " + AppUtils.makeBindVariables(fieldList);
 		logger.log(Level.DEBUG, sql);
 		PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 		int n = 1;
-		for ( Object value : valueList ) {
-			ps.setObject(n, value);
-			n++;
+		for ( FieldMap mapItem : fieldMapList ) {
+			if ( mapItem.updateField ) {
+				if ( ! mapItem.dbField.equalsIgnoreCase(keyFieldName) ) {
+					JsonNode jsonValue = jsonNode.get(mapItem.jsonField);
+					if ( jsonValue == null ) {
+						ps.setNull(n, mapItem.format.getTypes());
+					} else {
+						if ( mapItem.format.equals(JsonFieldFormat.STRING)) {
+							ps.setString(n, jsonValue.asText());
+						} else if ( mapItem.format.equals(JsonFieldFormat.INTEGER)) {
+							ps.setInt(n, jsonValue.asInt());
+						} else if ( mapItem.format.equals(JsonFieldFormat.DECIMAL)) {
+							ps.setDouble(n, jsonValue.asDouble());
+						} else if ( mapItem.format.equals(JsonFieldFormat.DATE)) {
+							String dateString = jsonNode.get(mapItem.jsonField).asText();
+							java.util.Date date = standardDateFormat.parse(dateString);
+							ps.setDate(n, new java.sql.Date(date.getTime()));
+						} else {
+							throw new Exception("Invalid json format");
+						}
+					}
+					n++;
+				}
+			}
 		}
+		ps.setInt(n, sessionUser.getUserId());
+		n++;
+		ps.setDate(n, today);
+		n++;
+		ps.setInt(n, sessionUser.getUserId());
+		n++;
+		ps.setDate(n, today);
+				
 		ps.executeUpdate();
 		
 		Integer id = null;
@@ -548,7 +559,7 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 								requestMap.put(fieldMap.jsonField, jsonNode.get(fieldMap.jsonField).asText());
 							}							
 						} else {
-							requestMap.put(fieldMap.jsonField, jsonNode.get(fieldMap.jsonField).asInt());
+							requestMap.put(fieldMap.jsonField, jsonNode.get(fieldMap.jsonField).asDouble());
 						}	
 					} else {
 						throw new Exception("Invalid json field format: " + fieldMap.format);
