@@ -2,13 +2,17 @@ package com.ansi.scilla.web.common.request;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.claims.WorkHoursType;
+import com.ansi.scilla.common.db.MSTable;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.employee.EmployeeHoursType;
 import com.ansi.scilla.common.invoice.InvoiceGrouping;
@@ -25,11 +30,33 @@ import com.ansi.scilla.common.invoice.InvoiceTerm;
 import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.payment.PaymentMethod;
 import com.ansi.scilla.web.common.response.WebMessages;
+import com.ansi.scilla.web.common.utils.FieldMap;
 import com.ansi.scilla.web.common.utils.Permission;
+import com.thewebthing.commons.db2.DBTable;
 import com.thewebthing.commons.lang.StringUtils;
 
 public class RequestValidator {
 
+	public static void checkForDuplicates(Connection conn, WebMessages webMessages, MSTable table, HashMap<String, Object> addRequest, List<FieldMap> fieldMap) throws Exception {
+		String tableName = table.getClass().getAnnotation(DBTable.class).value();
+		HashMap<String, List<String>> indexMap = new HashMap<String, List<String>>(); //index name -> list of column in that index
+		DatabaseMetaData dbmd = conn.getMetaData();
+		ResultSet rs = dbmd.getIndexInfo(null, null, tableName, true, false);
+		while ( rs.next() ) {
+			String indexName = rs.getString("INDEX_NAME");
+			String columnName = rs.getString("COLUMN_NAME");
+			List<String> columnList = indexMap.containsKey(indexName) ? indexMap.get(indexName) : new ArrayList<String>();
+			columnList.add(columnName);				
+			indexMap.put(indexName, columnList);
+		}
+		rs.close();
+		for ( Entry<String, List<String>>  entry : indexMap.entrySet()) {
+			
+		}
+		throw new Exception("Still working on this one");
+	}
+	
+	
 	public static void validateBigDecimal(WebMessages webMessages, String fieldName, BigDecimal value, BigDecimal minValue, BigDecimal maxValue, boolean required) {
 		if (value == null) {
 			if (required) {
