@@ -109,7 +109,7 @@
     			        columns: [
     			        	
     			            { title: "Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-    			            	if(row.div != null){return (row.lastName+", "+row.firstName);}
+    			            	if(row.lastName != null || row.firstName != null){return (row.lastName+", "+row.firstName);}
     			            } },
     			            { title: "Week", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.week != null){return (row.week+"");}
@@ -118,13 +118,13 @@
     			            	if(row.workDate != null){return (row.workDate+"");}
     			            } },
     			            { title: "Expense Type", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.washerId != null){return (row.expenseType+"");}
+    			            	if(row.expenseType != null){return (row.expenseType+"");}
     			            } },
 //    			            { title: "Hrs Type" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 //    			            	return '<span class="tooltip">' + row.hoursType + '<span class="tooltiptext">' + row.hoursDescription + '</span></span>'
 //    			            } },
     			            { title: "Amount", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.hours != null){return (row.amount+"");}
+    			            	if(row.amount != null){return (row.amount+"");}
     			            } },
     			            { title: "Notes",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.notes != null){return (row.notes+"");}
