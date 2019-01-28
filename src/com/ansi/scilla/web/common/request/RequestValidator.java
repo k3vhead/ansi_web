@@ -37,23 +37,30 @@ import com.thewebthing.commons.lang.StringUtils;
 
 public class RequestValidator {
 
-	public static void checkForDuplicates(Connection conn, WebMessages webMessages, MSTable table, HashMap<String, Object> addRequest, List<FieldMap> fieldMap) throws Exception {
+	public static void checkForDuplicates(Connection conn, WebMessages webMessages, MSTable table, HashMap<String, Object> addRequest, List<FieldMap> fieldMap, SimpleDateFormat standardDateFormat) throws Exception {
+		Logger logger = LogManager.getLogger(RequestValidator.class);
 		String tableName = table.getClass().getAnnotation(DBTable.class).value();
+		logger.log(Level.DEBUG, "Table: " + tableName);
 		HashMap<String, List<String>> indexMap = new HashMap<String, List<String>>(); //index name -> list of column in that index
 		DatabaseMetaData dbmd = conn.getMetaData();
 		ResultSet rs = dbmd.getIndexInfo(null, null, tableName, true, false);
 		while ( rs.next() ) {
 			String indexName = rs.getString("INDEX_NAME");
 			String columnName = rs.getString("COLUMN_NAME");
-			List<String> columnList = indexMap.containsKey(indexName) ? indexMap.get(indexName) : new ArrayList<String>();
-			columnList.add(columnName);				
-			indexMap.put(indexName, columnList);
+			if ( ! StringUtils.isBlank(indexName) && ! StringUtils.isBlank(columnName)) {
+				logger.log(Level.DEBUG, "Index: " + indexName + "\tColumn: " + columnName);
+				List<String> columnList = indexMap.containsKey(indexName) ? indexMap.get(indexName) : new ArrayList<String>();
+				columnList.add(columnName);				
+				indexMap.put(indexName, columnList);
+			}
 		}
 		rs.close();
+		
+		DupeChecker dupeChecker = new DupeChecker(table, addRequest, fieldMap);
 		for ( Entry<String, List<String>>  entry : indexMap.entrySet()) {
-			
+			logger.log(Level.DEBUG, "Checking: " + entry.getKey());
+			dupeChecker.checkForDupes(conn, entry.getValue(), webMessages, standardDateFormat);
 		}
-		throw new Exception("Still working on this one");
 	}
 	
 	

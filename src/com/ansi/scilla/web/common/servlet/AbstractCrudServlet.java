@@ -56,7 +56,7 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 
 	public static final String ACTION_IS_LIST = "list";
 
-	protected final SimpleDateFormat standardDateFormat = new SimpleDateFormat("MM/DD/yyyy");
+	protected final SimpleDateFormat standardDateFormat = new SimpleDateFormat("MM/dd/yyyy");
 	protected final Logger logger = LogManager.getLogger(this.getClass());
 	
 	private String displaySql;
