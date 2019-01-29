@@ -77,7 +77,7 @@
         		
         		createTable : function() {
             		var dataTable = $('#displayTable').DataTable( {
-            			"aaSorting":		[[0,'asc'],[1,'asc']],
+            			"aaSorting":		[[0,'asc']],
             			"processing": 		true,
             	        "serverSide": 		true,
             	        "autoWidth": 		false,
@@ -97,8 +97,8 @@
             	        ],
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
-            	            { className: "dt-left", "targets": [0,3,6] },
-            	            { className: "dt-center", "targets": [1,2,4,5] },
+            	            { className: "dt-left", "targets": [0] },
+            	            { className: "dt-center", "targets": [1,2,3,4,5,6] },
             	            { className: "dt-right", "targets": []}
             	         ],
             	        "paging": true,
@@ -115,7 +115,7 @@
     			            	if(row.week != null){return (row.week+"");}
     			            } },
     			            { title: "Date", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.workDate != null){return (row.workDate+"");}
+    			            	if(row.date != null){return (row.date+"");}
     			            } },
     			            { title: "Expense Type", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.expenseType != null){return (row.expenseType+"");}
@@ -413,7 +413,7 @@
     	
  	<table id="displayTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
        	<colgroup>
-        	<col style="width:5%;" />
+        	<col style="width:10%;" />
         	<col style="width:5%;" />
     		<col style="width:5%;" />    		
     		<col style="width:10%;" />
