@@ -451,29 +451,24 @@
     <div id="ndl-crud-form">
     	<table>
     		<tr>
-    			<td><span class="formLabel">Division</span></td>
-    			<td><select name="divisionId"></select></td>
-    			<td><span id="divisionIdErr" class="err"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formLabel">Date</span></td>
-    			<td><input type="text" name="workDate" class="dateField" /></td>
-    			<td><span id="workDateErr" class="err"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formLabel">Washer</span></td>
-    			<td><input type="text" name="washerName" /><input type="hidden" name="washerId" /></td>
+    			<td><span class="formLabel">Name</span></td>
+    			<td><input name="washerName" /><input type="hidden" name="washerId" /></td>
     			<td><span id="washerIdErr" class="err"></span></td>
     		</tr>
     		<tr>
-    			<td><span class="formLabel">Hours</span></td>
-    			<td><input type="text" name="hours" /></td>
-    			<td><span id="hoursErr" class="err"></span></td>
+    			<td><span class="formLabel">Date</span></td>
+    			<td><input type="text" name="date" class="dateField" /></td>
+    			<td><span id="dateErr" class="err"></span></td>
     		</tr>
     		<tr>
-    			<td><span class="formLabel">Type</span></td>
-    			<td><select  name="hoursType"></select></td>
-    			<td><span id="hoursTypeErr" class="err"></span></td>
+    			<td><span class="formLabel">Expense Type</span></td>
+    			<td><input type="text" name="expenseType" /></td>
+    			<td><span id="expenseTypeErr" class="err"></span></td>
+    		</tr>
+    		<tr>
+    			<td><span class="formLabel">Amount</span></td>
+    			<td><input type="text" name="amount" /></td>
+    			<td><span id="amountErr" class="err"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formLabel">Notes</span></td>
