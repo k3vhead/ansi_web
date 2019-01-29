@@ -157,6 +157,7 @@
         				PERMISSIONGROUP.makeDeleteModal();
         				PERMISSIONGROUP.makeEditPanel();
         				PERMISSIONGROUP.makePermissionsModal();
+        				PERMISSIONGROUP.makeDeletePermissionButton();
         				if ( PERMISSIONGROUP.ansiModal != '' ) {
 							$(".showNew").click();
 						}
@@ -296,11 +297,6 @@
 					var $permissionGroupId = $(this).data("id");
 					PERMISSIONGROUP.deleteThisPermissionGroup($permissionGroupId);
 				});
-				$(".deleteThisPermissionGroup").click(function($event) {
-	        		//var $jobId = this.parentElement.attributes['data-jobid'].value;
-	        		var $permissionGroupId = $(this).closest("div.panel-button-container")[0].attributes['data-permissionGroupId'].value;
-	        		PERMISSIONGROUP.deleteThisPermissionGroup($permissionGroupId);
-	        	});
 				//$(".editJob").on( "click", function($clickevent) {
 				//	console.debug("clicked a job")
 				//	var $jobId = $(this).data("jobid");
@@ -607,6 +603,12 @@
 				//},
 				buttons: [
 					{
+						id: "deleteSaveButton",
+						click: function($event) {
+							PERMISSIONGROUP.deletePermissionGroup();
+						}
+					},
+					{
 						id: "deleteCancelButton",
 						click: function($event) {
 							$( "#deleteModal" ).dialog("close");
@@ -624,9 +626,13 @@
 			//	}
 		
 		
-			
-			
-			
+			makeDeletePermissionButton : function () {
+				$(".deleteThisPermissionGroup").click(function($event) {
+	        		//var $jobId = this.parentElement.attributes['data-jobid'].value;
+	        		var $permissionGroupId = $(this).closest("div.panel-button-container")[0].attributes['data-permissionGroupId'].value;
+	        		PERMISSIONGROUP.deleteThisPermissionGroup($permissionGroupId);
+	        	});
+			},
 			
 			
 			
@@ -728,6 +734,8 @@
 			var jqxhr = $.ajax({
 				type: 'GET',
 				url: $url,
+				height: 125,
+				width: 450,
 				data: {},
 				statusCode: {
 					200: function($data) {
