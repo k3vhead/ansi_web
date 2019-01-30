@@ -1,0 +1,30 @@
+package com.ansi.scilla.web.options.response;
+
+import com.ansi.scilla.common.employee.EmployeeHoursType;;
+
+public class ExpenseTypeOption extends WebOption  {
+	private static final long serialVersionUID = 1L;
+	private String code;
+	private String name;
+
+	public ExpenseTypeOption(EmployeeHoursType expenseType) {
+		super();
+		this.code = expenseType.name();
+		this.display = expenseType.get(code) + " (" + expenseType.name() + ")";
+		this.name = expenseType.name();
+	}
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+
+}
