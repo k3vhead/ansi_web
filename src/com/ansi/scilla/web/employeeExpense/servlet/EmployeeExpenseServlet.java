@@ -78,6 +78,11 @@ public class EmployeeExpenseServlet extends AbstractCrudServlet {
 		RequestValidator.validateString(webMessages, "detail", (String) addRequest.get("detail"), false);
 		RequestValidator.validateString(webMessages, "notes", (String) addRequest.get("notes"), false);
 
+		if (webMessages.isEmpty()) {
+			RequestValidator.checkForDuplicates(conn, webMessages, new EmployeeExpense(), addRequest, fieldMap,
+					standardDateFormat);
+		}
+
 		return webMessages;
 	}
 
