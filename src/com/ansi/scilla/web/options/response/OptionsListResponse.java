@@ -294,6 +294,14 @@ public class OptionsListResponse extends MessageResponse {
 		this.workHoursType = workHoursType;
 	}
 
+	public List<ExpenseTypeOption> getExpenseType() {
+		return expenseType;
+	}
+
+	public void setExpenseType(List<ExpenseTypeOption> expenseType) {
+		this.expenseType = expenseType;
+	}
+
 
 	
 }

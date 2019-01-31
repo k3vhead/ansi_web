@@ -49,7 +49,7 @@
         		init : function() {
         			EMPLOYEEEXPENSELOOKUP.createTable();
         			EMPLOYEEEXPENSELOOKUP.makeModal();
-        			EMPLOYEEEXPENSELOOKUP.makeOptionList('EXPENSE_TYPE', EMPLOYEEEXPENSELOOKUP.populateOptionList)
+        			EMPLOYEEEXPENSELOOKUP.makeOptionList('EXPENSE_TYPE', EMPLOYEEEXPENSELOOKUP.populateOptionList);
         			EMPLOYEEEXPENSELOOKUP.makeClickers();
         			EMPLOYEEEXPENSELOOKUP.makeDivisionList();
         			EMPLOYEEEXPENSELOOKUP.makeAutoComplete();
@@ -394,7 +394,7 @@
 	    			var $select = $("#ndl-crud-form select[name='expenseType']");
 					$('option', $select).remove();
 					$select.append(new Option("",""));
-					$.each($data.workHoursType, function(index, val) {
+					$.each($data.expenseType, function(index, val) {
 					    $select.append(new Option(val.display, val.code));
 					});
 	    		},

@@ -10,7 +10,7 @@ public class ExpenseTypeOption extends WebOption  {
 	public ExpenseTypeOption(EmployeeHoursType expenseType) {
 		super();
 		this.code = expenseType.name();
-		this.display = expenseType.get(code) + " (" + expenseType.name() + ")";
+		this.display = expenseType.name() + " (" + expenseType.display() + ")";
 		this.name = expenseType.name();
 	}
 	public String getCode() {
