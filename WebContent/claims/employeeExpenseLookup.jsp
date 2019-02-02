@@ -131,7 +131,7 @@
     			            } },			            
     			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
     			            	{
-    				            	var $edit = '<a href="#" class="editAction" data-id="'+row.laborId+'"><webthing:edit>Edit</webthing:edit></a>';
+    				            	var $edit = '<a href="#" class="editAction" data-id="'+row.expenseId+'"><webthing:edit>Edit</webthing:edit></a>';
     			            		return "<ansi:hasPermission permissionRequired='CLAIMS_WRITE'>"+$edit+"</ansi:hasPermission>";
     			            	}
     			            	
@@ -150,23 +150,23 @@
             	
             	doFunctionBinding : function () {
 					$( ".editAction" ).on( "click", function($clickevent) {
-						var $laborId = $(this).attr("data-id");
-						EMPLOYEEEXPENSELOOKUP.doGetLabor($laborId);
+						var $expenseId = $(this).attr("data-id");
+						EMPLOYEEEXPENSELOOKUP.doGetLabor($expenseId);
 					});
 				},
             	
             	
             	
 				
-				doGetLabor : function($laborId) {
-					console.log("getting labor: " + $laborId)
-					var $url = 'claims/employeeExpenseLookup/' + $laborId;
+				doGetLabor : function($expenseId) {
+					console.log("getting labor: " + $expenseId)
+					var $url = 'claims/employeeExpense/' + $expenseId;
 					var jqxhr = $.ajax({
 						type: 'GET',
 						url: $url,
 						statusCode: {
 							200 : function($data) {
-								$("#ndl-crud-form").attr("data-laborid",$laborId);
+								$("#ndl-crud-form").attr("data-expenseid",$expenseId);
 								$.each( $("#ndl-crud-form input"), function($index, $value) {
 									var $name = $($value).attr("name");
 									var $selectorName = '#ndl-crud-form input[name="' + $name + '"]';
@@ -184,7 +184,7 @@
 								$("#globalMsg").html("Session Timeout. Log in and try again").show();
 							},
 							404: function($data) {
-								$("#globalMsg").html("Invalid labor id. Reload and try again").show();
+								$("#globalMsg").html("Invalid expense id. Reload and try again").show();
 							},
 							405: function($data) {
 								$("#globalMsg").html("System Error 405. Contact Support").show();
@@ -201,8 +201,8 @@
             	
             	doPost : function() {
             		console.log("doPost");
-        			var $laborId = $( "#ndl-crud-form ").attr("data-laborid");
-					var $url = 'claims/employeeExpenseLookup/' + $laborId;
+        			var $expenseId = $( "#ndl-crud-form ").attr("data-expenseid");
+					var $url = 'claims/employeeExpense/' + $expenseId;
         			
             		var $outbound = {};
             		$.each( $("#ndl-crud-form input"), function($index, $value) {
@@ -280,7 +280,7 @@
             		
             		$("#new-NDL-button").click(function($event) {
             			EMPLOYEEEXPENSELOOKUP.clearForm();
-            			$( "#ndl-crud-form ").attr("data-laborid","add")
+            			$( "#ndl-crud-form ").attr("data-expenseid","add")
             			$( "#ndl-crud-form" ).dialog("open");
             		});
             		
