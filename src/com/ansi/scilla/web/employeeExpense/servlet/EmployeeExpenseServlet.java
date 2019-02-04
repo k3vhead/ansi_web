@@ -89,6 +89,16 @@ public class EmployeeExpenseServlet extends AbstractCrudServlet {
 	@Override
 	protected WebMessages validateUpdate(Connection conn, HashMap<String, Object> updateRequest) throws Exception {
 		WebMessages webMessages = validateAdd(conn, updateRequest);
+
+		RequestValidator.validateWasherId(conn, webMessages, "washerId", (Integer) updateRequest.get("washerId"), true);
+		RequestValidator.validateDate(webMessages, "workDate", (String) updateRequest.get("workDate"),
+				standardDateFormat, true, null, null);
+		RequestValidator.validateExpenseType(webMessages, "expenseType", (String) updateRequest.get("expenseType"),
+				true);
+		RequestValidator.validateNumber(webMessages, "amount", updateRequest.get("amount"), 0.0D, null, true);
+		RequestValidator.validateString(webMessages, "detail", (String) updateRequest.get("detail"), false);
+		RequestValidator.validateString(webMessages, "notes", (String) updateRequest.get("notes"), false);
+
 		Integer expenseId = (Integer) updateRequest.get("expenseId");
 		RequestValidator.validateId(conn, webMessages, EmployeeExpense.TABLE, EmployeeExpense.EXPENSE_ID, "expenseId",
 				expenseId, true);
