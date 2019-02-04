@@ -49,7 +49,7 @@
         		init : function() {
         			EMPLOYEEEXPENSELOOKUP.createTable();
         			EMPLOYEEEXPENSELOOKUP.makeModal();
-        			EMPLOYEEEXPENSELOOKUP.makeOptionList('WORK_HOURS_TYPE', EMPLOYEEEXPENSELOOKUP.populateOptionList)
+        			EMPLOYEEEXPENSELOOKUP.makeOptionList('EXPENSE_TYPE', EMPLOYEEEXPENSELOOKUP.populateOptionList);
         			EMPLOYEEEXPENSELOOKUP.makeClickers();
         			EMPLOYEEEXPENSELOOKUP.makeDivisionList();
         			EMPLOYEEEXPENSELOOKUP.makeAutoComplete();
@@ -77,7 +77,7 @@
         		
         		createTable : function() {
             		var dataTable = $('#displayTable').DataTable( {
-            			"aaSorting":		[[0,'asc'],[1,'asc']],
+            			"aaSorting":		[[0,'asc']],
             			"processing": 		true,
             	        "serverSide": 		true,
             	        "autoWidth": 		false,
@@ -97,8 +97,8 @@
             	        ],
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
-            	            { className: "dt-left", "targets": [0,3,6] },
-            	            { className: "dt-center", "targets": [1,2,4,5] },
+            	            { className: "dt-left", "targets": [0] },
+            	            { className: "dt-center", "targets": [1,2,3,4,5,6] },
             	            { className: "dt-right", "targets": []}
             	         ],
             	        "paging": true,
@@ -115,7 +115,7 @@
     			            	if(row.week != null){return (row.week+"");}
     			            } },
     			            { title: "Date", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.workDate != null){return (row.workDate+"");}
+    			            	if(row.date != null){return (row.date+"");}
     			            } },
     			            { title: "Expense Type", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.expenseType != null){return (row.expenseType+"");}
@@ -131,7 +131,7 @@
     			            } },			            
     			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
     			            	{
-    				            	var $edit = '<a href="#" class="editAction" data-id="'+row.laborId+'"><webthing:edit>Edit</webthing:edit></a>';
+    				            	var $edit = '<a href="#" class="editAction" data-id="'+row.expenseId+'"><webthing:edit>Edit</webthing:edit></a>';
     			            		return "<ansi:hasPermission permissionRequired='CLAIMS_WRITE'>"+$edit+"</ansi:hasPermission>";
     			            	}
     			            	
@@ -150,23 +150,23 @@
             	
             	doFunctionBinding : function () {
 					$( ".editAction" ).on( "click", function($clickevent) {
-						var $laborId = $(this).attr("data-id");
-						EMPLOYEEEXPENSELOOKUP.doGetLabor($laborId);
+						var $expenseId = $(this).attr("data-id");
+						EMPLOYEEEXPENSELOOKUP.doGetLabor($expenseId);
 					});
 				},
             	
             	
             	
 				
-				doGetLabor : function($laborId) {
-					console.log("getting labor: " + $laborId)
-					var $url = 'claims/employeeExpenseLookup/' + $laborId;
+				doGetLabor : function($expenseId) {
+					console.log("getting labor: " + $expenseId)
+					var $url = 'claims/employeeExpense/' + $expenseId;
 					var jqxhr = $.ajax({
 						type: 'GET',
 						url: $url,
 						statusCode: {
 							200 : function($data) {
-								$("#ndl-crud-form").attr("data-laborid",$laborId);
+								$("#ndl-crud-form").attr("data-expenseid",$expenseId);
 								$.each( $("#ndl-crud-form input"), function($index, $value) {
 									var $name = $($value).attr("name");
 									var $selectorName = '#ndl-crud-form input[name="' + $name + '"]';
@@ -184,7 +184,7 @@
 								$("#globalMsg").html("Session Timeout. Log in and try again").show();
 							},
 							404: function($data) {
-								$("#globalMsg").html("Invalid labor id. Reload and try again").show();
+								$("#globalMsg").html("Invalid expense id. Reload and try again").show();
 							},
 							405: function($data) {
 								$("#globalMsg").html("System Error 405. Contact Support").show();
@@ -201,8 +201,8 @@
             	
             	doPost : function() {
             		console.log("doPost");
-        			var $laborId = $( "#ndl-crud-form ").attr("data-laborid");
-					var $url = 'claims/employeeExpenseLookup/' + $laborId;
+        			var $expenseId = $( "#ndl-crud-form ").attr("data-expenseid");
+					var $url = 'claims/employeeExpense/' + $expenseId;
         			
             		var $outbound = {};
             		$.each( $("#ndl-crud-form input"), function($index, $value) {
@@ -280,7 +280,7 @@
             		
             		$("#new-NDL-button").click(function($event) {
             			EMPLOYEEEXPENSELOOKUP.clearForm();
-            			$( "#ndl-crud-form ").attr("data-laborid","add")
+            			$( "#ndl-crud-form ").attr("data-expenseid","add")
             			$( "#ndl-crud-form" ).dialog("open");
             		});
             		
@@ -391,10 +391,10 @@
 	    		
 	    		
 	    		populateOptionList : function($data) {
-	    			var $select = $("#ndl-crud-form select[name='hoursType']");
+	    			var $select = $("#ndl-crud-form select[name='expenseType']");
 					$('option', $select).remove();
 					$select.append(new Option("",""));
-					$.each($data.workHoursType, function(index, val) {
+					$.each($data.expenseType, function(index, val) {
 					    $select.append(new Option(val.display, val.code));
 					});
 	    		},
@@ -413,7 +413,7 @@
     	
  	<table id="displayTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
        	<colgroup>
-        	<col style="width:5%;" />
+        	<col style="width:10%;" />
         	<col style="width:5%;" />
     		<col style="width:5%;" />    		
     		<col style="width:10%;" />
@@ -451,29 +451,24 @@
     <div id="ndl-crud-form">
     	<table>
     		<tr>
-    			<td><span class="formLabel">Division</span></td>
-    			<td><select name="divisionId"></select></td>
-    			<td><span id="divisionIdErr" class="err"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formLabel">Date</span></td>
-    			<td><input type="text" name="workDate" class="dateField" /></td>
-    			<td><span id="workDateErr" class="err"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formLabel">Washer</span></td>
-    			<td><input type="text" name="washerName" /><input type="hidden" name="washerId" /></td>
+    			<td><span class="formLabel">Name</span></td>
+    			<td><input name="washerName" /><input type="hidden" name="washerId" /></td>
     			<td><span id="washerIdErr" class="err"></span></td>
     		</tr>
     		<tr>
-    			<td><span class="formLabel">Hours</span></td>
-    			<td><input type="text" name="hours" /></td>
-    			<td><span id="hoursErr" class="err"></span></td>
+    			<td><span class="formLabel">Date</span></td>
+    			<td><input type="text" name="date" class="dateField" /></td>
+    			<td><span id="dateErr" class="err"></span></td>
     		</tr>
     		<tr>
-    			<td><span class="formLabel">Type</span></td>
-    			<td><select  name="hoursType"></select></td>
-    			<td><span id="hoursTypeErr" class="err"></span></td>
+    			<td><span class="formLabel">Expense Type</span></td>
+    			<td><select name="expenseType" /></td>
+    			<td><span id="expenseTypeErr" class="err"></span></td>
+    		</tr>
+    		<tr>
+    			<td><span class="formLabel">Amount</span></td>
+    			<td><input type="text" name="amount" /></td>
+    			<td><span id="amountErr" class="err"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formLabel">Notes</span></td>

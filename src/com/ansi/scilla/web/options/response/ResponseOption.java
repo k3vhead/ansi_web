@@ -13,5 +13,6 @@ public enum ResponseOption {
 	ACCOUNT_TYPE,
 	REPORT_TYPE,
 	WORK_HOURS_TYPE,
+	EXPENSE_TYPE,
 	;
 }

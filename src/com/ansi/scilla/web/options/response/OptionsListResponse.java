@@ -10,6 +10,7 @@ import java.util.List;
 import com.ansi.scilla.common.account.AccountType;
 import com.ansi.scilla.common.address.Country;
 import com.ansi.scilla.common.claims.WorkHoursType;
+import com.ansi.scilla.common.employee.EmployeeHoursType;
 import com.ansi.scilla.common.invoice.InvoiceGrouping;
 import com.ansi.scilla.common.invoice.InvoiceStyle;
 import com.ansi.scilla.common.invoice.InvoiceTerm;
@@ -36,6 +37,7 @@ public class OptionsListResponse extends MessageResponse {
 	private List<PaymentMethodOption> paymentMethod;
 	private List<ReportTypeOption> reportType;
 	private List<WorkHoursTypeOption> workHoursType;
+	private List<ExpenseTypeOption> expenseType;
 
 	public OptionsListResponse(List<ResponseOption> options, SessionData sessionData) throws ClassNotFoundException, Exception {
 		if ( options.contains(ResponseOption.JOB_FREQUENCY)) {
@@ -73,6 +75,9 @@ public class OptionsListResponse extends MessageResponse {
 		}
 		if ( options.contains(ResponseOption.WORK_HOURS_TYPE)) {
 			makeWorkHoursTypeList(sessionData);
+		}
+		if ( options.contains(ResponseOption.EXPENSE_TYPE)) {
+			makeExpenseTypeList(sessionData);
 		}
 	}
 
@@ -184,6 +189,15 @@ public class OptionsListResponse extends MessageResponse {
 
 	}
 	
+	private void makeExpenseTypeList(SessionData sessionData) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException  {
+		this.expenseType = new ArrayList<ExpenseTypeOption>();
+		for ( EmployeeHoursType expenseType : EmployeeHoursType.values()) {
+			this.expenseType.add(new ExpenseTypeOption(expenseType));
+		}
+		Collections.sort(this.expenseType);
+
+	}
+	
 	public List<JobFrequencyOption> getJobFrequency() {
 		return jobFrequency;
 	}
@@ -278,6 +292,14 @@ public class OptionsListResponse extends MessageResponse {
 
 	public void setWorkHoursType(List<WorkHoursTypeOption> workHoursType) {
 		this.workHoursType = workHoursType;
+	}
+
+	public List<ExpenseTypeOption> getExpenseType() {
+		return expenseType;
+	}
+
+	public void setExpenseType(List<ExpenseTypeOption> expenseType) {
+		this.expenseType = expenseType;
 	}
 
 

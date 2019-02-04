@@ -2,12 +2,10 @@ package com.ansi.scilla.web.permission.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,6 +17,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.db.PermissionGroup;
+import com.ansi.scilla.common.db.PermissionGroupLevel;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.exceptions.InvalidDeleteException;
@@ -40,7 +39,6 @@ import com.ansi.scilla.web.permission.request.PermGroupRequest;
 import com.ansi.scilla.web.permission.response.PermGroupCountRecord;
 import com.ansi.scilla.web.permission.response.PermissionGroupListResponse;
 import com.ansi.scilla.web.permission.response.PermissionGroupResponse;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 /**
@@ -125,7 +123,11 @@ public class PermissionGroupServlet extends AbstractServlet {
 		try {
 			user.selectOne(conn);					//	Query to see if anybody at all is using this group ID
 			throw new InvalidDeleteException();		//		throw an error that it cannot yet be deleted.
-		} catch (RecordNotFoundException e) {		//  Nobody is using this ID
+		} catch (RecordNotFoundException e) {
+			//  Nobody is using this ID
+			PermissionGroupLevel pgl = new PermissionGroupLevel();
+			pgl.setPermissionGroupId(permGroupId);
+			pgl.delete(conn);
 			perm.delete(conn);						//		Delete the permission group
 		}
 	}
