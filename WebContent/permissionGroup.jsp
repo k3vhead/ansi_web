@@ -149,49 +149,33 @@
         			
         	
         			init : function (){
+        				PERMISSIONGROUP.clearAddForm();
         				PERMISSIONGROUP.createTable();
         				PERMISSIONGROUP.doFunctionBinding();
-        				PERMISSIONGROUP.showNew();
-        				PERMISSIONGROUP.clearAddForm();
-        				PERMISSIONGROUP.markValid();
         				PERMISSIONGROUP.makeDeleteModal();
+        				PERMISSIONGROUP.makeDeletePermissionButton();
         				PERMISSIONGROUP.makeEditPanel();
         				PERMISSIONGROUP.makePermissionsModal();
-        				PERMISSIONGROUP.makeDeletePermissionButton();
+        				PERMISSIONGROUP.markValid();
+        				PERMISSIONGROUP.showNew();
         				if ( PERMISSIONGROUP.ansiModal != '' ) {
 							$(".showNew").click();
 						}
         			},
-        
-        	
-//        	var $ansiModal = '<c:out value="${ANSI_MODAL}" />';
-        	
-        	
-        
-//			$('.ScrollTop').click(function() {
-//				$('html, body').animate({scrollTop: 0}, 800);
-//				return false;
-//       	    });
-//			
-			showNew : function () {
-			$(".showNew").click(function($event) {
-				$('#goEdit').data("permissionGroupId",null);
-        		$('#goEdit').button('option', 'label', 'Save');
-        		$('#closeEditPanel').button('option', 'label', 'Close');
-        		
- //       		$("#editPanel display[name='']").val("");
-				$("#editPanel input[name='Name']").val("");
-				$("#editPanel input[name='Description']").val("");
-				$("#editPanel input[name='Status']").val("");			        		
-        		$("#editPanel .err").html("");
-        		$("#editPanel").dialog("open");
-			});
-			},
+				
 			
-			
-
-
-//        	var dataTable = null;
+			clearAddForm : function () {
+				$.each( $('#editPanel').find("input"), function(index, $inputField) {
+					$fieldName = $($inputField).attr('name');
+					if ( $($inputField).attr("type") == "text" ) {
+						$($inputField).val("");
+						PERMISSIONGROUP.markValid($inputField);
+					}
+				});
+				$('.err').html("");
+				$('#editPanel').data('rownum',null);
+            },
+            
         	
         	createTable : function (){
 
@@ -264,14 +248,7 @@
 			            		} else {
 			            			return $action;
 			            		}
-			            	}			            	
-			            				            	
-			            	
-//			            	$action = $editLink + " " + $deleteLink + " " + $updateLink;
-			            	//if(row.count < 1) {
-			            	//	$action = $action + " " + $deleteLink;
-			            	//}				            	
-//			            	return $action;	
+			            	}			     
 			            }  }],
 			            "initComplete": function(settings, json) {
 			            	//console.log(json);
@@ -283,26 +260,144 @@
 			    } );
         	},
 				
-        	doFunctionBinding : function () {
+	   		deleteThisPermissionGroup : function ($permissionGroupId, $type) {
+        		$("#deleteModal").attr("permissionGroupId", $permissionGroupId);
+        		$("#deleteModal").dialog("open");
+			},         
+
+			deletePermissionGroup : function () {
+				$permissionGroupId = $("#deleteModal").attr("permissionGroupId");
+				var $url = 'permissionGroup/'+ $permissionGroupId;
+				var jqxhr = $.ajax({
+            	    type: 'delete',
+            	    url: $url,            	     
+            	    statusCode: {
+            	    	 200: function($data) {
+            	    		 	$("#deleteModal").dialog("close");
+            	    		 	$('#permissionGroupTable').DataTable().ajax.reload();
+		    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
+							},
+
+            	    		403: function($data) {
+								$("#globalMsg").html("Session Timeout. Log in and try again");
+							},
+							404: function($data) {
+								$("#globalMsg").html("Invalid Selection").show().fadeOut(100000);
+							},
+							500: function($data) {
+								$("#globalMsg").html("System Error; Contact Support");
+							}
+	             	     },
+            	     dataType: 'json'
+            	});
+			},
+	
+			doFunctionBinding : function () {
 				$( ".editAction" ).on( "click", function($clickevent) {
 					PERMISSIONGROUP.showEdit($clickevent);
 				});	
 				$('.updAction').bind("click", function($clickevent) {
 					$permissionGroupId = $(this).attr("data-id");
 					PERMISSIONGROUP.getTotalList($permissionGroupId);
-					//$("#permissionsModal").dialog("open");
-//					updatePermissionGroupPermissions($clickevent);
 				});
 				$(".delAction").on("click", function($clickevent) {
 					var $permissionGroupId = $(this).data("id");
 					PERMISSIONGROUP.deleteThisPermissionGroup($permissionGroupId);
 				});
-				//$(".editJob").on( "click", function($clickevent) {
-				//	console.debug("clicked a job")
-				//	var $jobId = $(this).data("jobid");
-				//	location.href="jobMaintenance.html?id=" + $jobId;
-				//});
 			},
+						
+			doPost : function ($id, $permissionName, $active){
+	    		var $url = 'permission/' + $id;
+				//console.log("YOU PASSED ROW ID:" + $rowid);
+				$outbound = {"permissionName": $permissionName, "permissionIsActive": $active};
+				
+				var jqxhr = $.ajax({
+					type: 'POST',
+					url: $url,
+					data: JSON.stringify($outbound),				
+					statusCode: {
+						200: function($data) {
+							$("#modalMessage").html("Success!").show().fadeOut(3000);
+						},
+						403: function($data) {
+							$("permissionsModal").dialog("close");
+							$("#globalMsg").html("Session Timeout. Log in and try again").show();
+						},
+						404: function($data) {
+							$("permissionsModal").dialog("close");
+							$("#globalMsg").html("Inconsistent System State. Reload and try again").show();
+						},
+						500: function($data) {
+							$("permissionsModal").dialog("close");
+							$("#globalMsg").html("System Error 500. Contact Support").show();
+						},
+					},
+					dataType: 'json'
+				});
+	    	},	
+			
+
+
+			getTotalList : function ($permissionGroupId) {
+				$url = "permission/" + $permissionGroupId;
+				var jqxhr = $.ajax({
+					type: 'GET',
+					url: $url,
+					height: 125,
+					width: 450,
+					data: {},
+					statusCode: {
+						200: function($data) {
+							PERMISSIONGROUP.makeTable($permissionGroupId, $data.data);
+							PERMISSIONGROUP.makeClickers();
+							$("#permissionsModal").dialog("open");
+						},					
+						403: function($data) {
+							$("#globalMsg").html("Session Timeout. Log in and try again");
+						},
+						404: function($data) {
+							$("#globalMsg").html("System Error Reorder 404. Contact Support");
+						},
+						500: function($data) {
+							$("#globalMsg").html("System Error Reorder 500. Contact Support");
+						}
+					},
+					dataType: 'json'
+				});
+			},
+			
+			
+			makeClickers : function () {
+			    $(".funcarea").click(function($event) {
+			        var $id = $(this).attr("data-id");
+			       	var $permissionGroupId = $(this).attr("data-permissionGroupId")
+			        $(".funcarea").removeClass("hilite");
+			        $(this).addClass("hilite");
+			        $(".perm").hide();
+			        $selector = "." + $id;
+			        $($selector).show();
+			    });
+			
+			    $(".perm").click(function($event) {
+			    	$permissionGroupId = $("#permissionsModal").attr("data-permissionGroupId");
+			        var $permissionName = $(this).attr("data-permissionname");
+			        if ( $(this).hasClass("hilite")) {
+			            $(this).removeClass("hilite");
+			           	$active = false;
+			          	PERMISSIONGROUP.doPost($permissionGroupId, $permissionName, false);
+			        } else {
+			            var $selector1 = "." + $permissionName;
+			            $(".perm").removeClass("hilite");
+			            $($selector1).removeClass("hilite");
+			            $(this).addClass("hilite");
+			        	$active = true;
+			        	PERMISSIONGROUP.doPost($permissionGroupId, $permissionName, true);
+			        }
+			        
+			    });
+			},
+			
+			
 			makeEditPanel : function() {	
 				$("#editPanel" ).dialog({
 					title:'Edit Group Permissions',
@@ -330,264 +425,6 @@
 					}
 				});
 			},
-				
-
-				updatePermissionGroup : function () {
-					console.debug("Updating Permissions");
-					var $permissionGroupId = $("#editPanel input[name='permissionGroupId']").val();
-					console.debug("permissionGroupId: " + $permissionGroupId);
-					
-
-					if ( $permissionGroupId == null || $permissionGroupId == '') {
-						$url = 'permissionGroup/add';
-					} else {
-						$url = 'permissionGroup/' + $permissionGroupId;
-					}
-					console.debug($url);
-						
-					var $outbound = {};
-					$outbound['name'] = $("#editPanel input[name='name']").val();
-					$outbound['description'] = $("#editPanel input[name='description']").val();
-					$outbound['status'] = $("#editPanel select[name='status']").val();		        		
-					console.debug($outbound);
-					
-					var jqxhr = $.ajax({
-						type: 'POST',
-						url: $url,
-						data: JSON.stringify($outbound),
-						statusCode: {
-							200: function($data) {
-			    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-			    					$.each($data.data.webMessages, function (key, value) {
-			    						var $selectorName = "#" + key + "Err";
-			    						$($selectorName).show();
-			    						$($selectorName).html(value[0]).fadeOut(10000);
-			    					});
-			    				} else {	    				
-			    					$("#editPanel").dialog("close");
-			    					$('#permissionGroupTable').DataTable().ajax.reload();		
-			    					PERMISSIONGROUP.clearAddForm();		    					
-			    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
-			    				}
-							},
-							403: function($data) {
-								$("#globalMsg").html("Session Timeout. Log in and try again");
-							},
-							404: function($data) {
-								$("#globalMsg").html("Invalid Selection").show().fadeOut(100000);
-							},
-							500: function($data) {
-								$("#globalMsg").html("System Error; Contact Support");
-							}
-						},
-						dataType: 'json'
-					});
-				},
-				
-				
-				clearAddForm : function () {
-					$.each( $('#editPanel').find("input"), function(index, $inputField) {
-						$fieldName = $($inputField).attr('name');
-						if ( $($inputField).attr("type") == "text" ) {
-							$($inputField).val("");
-							PERMISSIONGROUP.markValid($inputField);
-						}
-					});
-					$('.err').html("");
-					$('#editPanel').data('rownum',null);
-	            },
-	            
-				markValid : function ($inputField) {
-	            	$fieldName = $($inputField).attr('name');
-	            	$fieldGetter = "input[name='" + $fieldName + "']";
-	            	$fieldValue = $($fieldGetter).val();
-	            	$valid = '#' + $($inputField).data('valid');
-		            var re = /.+/;	            	 
-	            	if ( re.test($fieldValue) ) {
-	            		$($valid).removeClass("fa");
-	            		$($valid).removeClass("fa-ban");
-	            		$($valid).removeClass("inputIsInvalid");
-	            		$($valid).addClass("far");
-	            		$($valid).addClass("fa-check-square");
-	            		$($valid).addClass("inputIsValid");
-	            	} else {
-	            		$($valid).removeClass("far");
-	            		$($valid).removeClass("fa-check-square");
-	            		$($valid).removeClass("inputIsValid");
-	            		$($valid).addClass("fa");
-	            		$($valid).addClass("fa-ban");
-	            		$($valid).addClass("inputIsInvalid");
-	            	}
-	            },
-				
-	            
-				
-
-					
-/*	            $("#deleteModal" ).dialog({
-					title:'Are you sure you want to DELETE this Permission Group?',
-					autoOpen: false,
-					height: 300,
-					width: 300,
-					modal: true,
-					buttons: [
-						{
-							id: "closeDeleteModal",
-							click: function() {
-								$("#deleteModal").dialog( "close" );
-							}
-						},{
-							id: "doDelete",
-							click: function() {
-								$("#deleteModal").dialog("close");
-							}
-						}	      	      
-					],
-					close: function() {
-						$("#deleteModal").dialog( "close" );
-						//allFields.removeClass( "ui-state-error" );
-					}
-				}); */
-				
-				
-//				$("#cancelDelete").click( function($event) {
-//	            	$event.preventDefault();
-//	            	$('#deleteModal').dialog("close");
-//	            });   
-            
-            
-	            
-				
-//				function doDelete($clickevent) {
-//					$clickevent.preventDefault();
-//	            	var $permissionGroupId = $clickevent.currentTarget.attributes['data-id'].value;
-//					$('#confirmDelete').data('delPermissionGroupId', $permissionGroupId);
-//	             	$('#confirmDelete').bPopup({
-//						modalClose: false,
-//						opacity: 0.6,
-//						positionStyle: 'fixed' 
-//					});
-//				}
-				
-				
-				
-//				$("#cancelDelete").click( function($event) {
-//	            	$event.preventDefault();
-//	            	$('#confirmDelete').bPopup().close();
-//	            });     	            
-
-
-
-			deletePermissionGroup : function () {
-				$permissionGroupId = $("#deleteModal").attr("permissionGroupId");
-				var $url = 'permissionGroup/'+ $permissionGroupId;
-				var jqxhr = $.ajax({
-            	    type: 'delete',
-            	    url: $url,
-//            	    data: $outbound,
-/*	            	    success: function($data) {
-            	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
-						if ( $data.responseHeader.responseCode == 'SUCCESS') {
-							$("#permissionGroupTable").DataTable().row($permissionGroupId).remove();
-							$("#permissionGroupTable").DataTable().draw();
-//							$('#confirmDelete').bPopup().close();
-						}
-            	     },
-*/	            	     statusCode: {
-            	    	 200: function($data) {
-            	    		 	$("#deleteModal").dialog("close");
-            	    		 	$('#permissionGroupTable').DataTable().ajax.reload();
-		    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
-							},
-
-            	    		403: function($data) {
-								$("#globalMsg").html("Session Timeout. Log in and try again");
-							},
-							404: function($data) {
-								$("#globalMsg").html("Invalid Selection").show().fadeOut(100000);
-							},
-							500: function($data) {
-								$("#globalMsg").html("System Error; Contact Support");
-							}
-	             	     },
-            	     dataType: 'json'
-            	});
-            //}
-				
-				
-				
-				
-				
-				//var $outbound = {};
-				//$permissionGroupId = $("#deleteModal").attr("permissionGroupId");
-				//$outbound ["permissionGroupId"] = $permissionGroupId;
-			//	$outbound ["action"] = "DELETE_PERMISSIONGROUP";
-				//$(".permissionGroupId").remove();
-				
-//				doPermissionGroupUpdate($permissionGroupId, $outbound, deletePermissionGroupSuccess, deletePermissionGroupErr);
-			},
-			
-/*			function doPermissionGroupUpdate ($permissionGroupId, $outbound, $successCallback, $errCallback) {
-				var $url = "permissionGroup/" + $permissionGroupId;
-				console.log($outbound);						
-				
-				var jqxhr3 = $.ajax({
-					type: 'POST',
-					url: $url,
-					data: JSON.stringify($outbound),
-					statusCode: {
-						200:function($data) {
-						//	QUOTEMAINTENANCE.populateJobHeader($data.data.jobHeaderList)
-						//	QUOTEMAINTENANCE.makeJobExpansion();
-							$("#globalMsg").html("Update Successful").show().fadeOut(10000);
-						},
-						403: function($data) {
-							$("#globalMsg").html("Session Timeout. Log in and try again");
-						},
-						404: function($data) {
-							$("#globalMsg").html("Invalid Selection").show().fadeOut(100000);
-						},
-						500: function($data) {
-							$("#globalMsg").html("System Error; Contact Support");
-						}
-             	     },
-					dataType: 'json'
-				});
-			} */
-
-			deletePermissionGroupErr : function ($statusCode) {
-				var $messages = {
-						403:"Session Expired. Log in and try again",
-						404:"System Error Activate 404. Contact Support",
-						500:"System Error Activate 500. Contact Support"
-				}
-				$("#deleteModal").dialog("close");
-				$("#globalMsg").html( $messages[$statusCode] );
-			},
-			
-			deletePermissionGroupSuccess : function ($data) {
-				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {	
-					$.each($data.data.webMessages, function($index, $val) {								
-						var $fieldName = "." + $index + "Err";
-						var $selector = "#deleteModal " + $fieldName;
-						$($selector).html($val[0]).show().fadeOut(3000);
-					});							
-				} else {
-					permissionGroup = $data.data.permissionGroupId;
-					// call this:  populateJobPanel : function($jobId, $destination, $data
-					// var $destination = "#job" + $data.data.job.jobId + " .job-data-row";
-					//QUOTEMAINTENANCE.populateJobPanel($data.data.job.jobId, $destination, $data.data);
-					//QUOTEMAINTENANCE.populateJobHeader($data.quoteList[0].jobHeaderList)
-					$("#deleteModal").dialog("close");
-					$("#globalMsg").html("Permission Group Deleted").show().fadeOut(3000);
-				}
-			},
-			
-			
-			deleteThisPermissionGroup : function ($permissionGroupId, $type) {
-        		$("#deleteModal").attr("permissionGroupId", $permissionGroupId);
-        		$("#deleteModal").dialog("open");
-			},
 			
 			
 			makeDeleteModal : function() {
@@ -598,9 +435,6 @@
 				width: 450,
 				modal: true,
 				closeOnEscape:true,
-				//open: function(event, ui) {
-				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-				//},
 				buttons: [
 					{
 						id: "deleteSaveButton",
@@ -619,11 +453,6 @@
 			$("#deleteSaveButton").button('option', 'label', 'Delete');
 			$("#deleteCancelButton").button('option', 'label', 'Cancel');
 			},
-			
-			
-			//if ( $value.canDelete == true ) {
-			//		$panelButtonContainer.append('<webthing:delete styleClass="deleteThisPermissionGroup">Delete</webthing:delete>');
-			//	}
 		
 		
 			makeDeletePermissionButton : function () {
@@ -633,335 +462,214 @@
 	        		PERMISSIONGROUP.deleteThisPermissionGroup($permissionGroupId);
 	        	});
 			},
-			
-			
-			
-
-
-			
-	/*		$("#cancelDelete").click( function($event) {
-            	$event.preventDefault();
-            	$('#confirmDelete').bPopup().close();
-            });         
-
-            $("#doDelete").click(function($event) {
-            	$event.preventDefault();
-            	var $tableData = [];
-                $("#displayTable").find('tr').each(function (rowIndex, r) {
-                    var cols = [];
-                    $(this).find('th,td').each(function (colIndex, c) {
-                        cols.push(c.textContent);
-                    });
-                    $tableData.push(cols);
-                });
-
-            	var $rownum = $('#confirmDelete').data('rownum');
-            	//var $tableName = $tableData[$rownum][0];
-            	//var $fieldName = $tableData[$rownum][1];
-            	//var $value = $tableData[$rownum][2];
-            	var $tableName = $('#confirmDelete').data('tableName');
-            	var $fieldName = $("#confirmDelete").data('fieldName');
-            	var $value = $("#confirmDelete").data('value');
-            	$outbound = JSON.stringify({});            	
-            	$url = 'code/' + $tableName + "/" + $fieldName + "/" + $value;
-            	//$outbound = JSON.stringify({'tableName':$tableName, 'fieldName':$fieldName,'value':$value});
-            	var jqxhr = $.ajax({
-            	    type: 'delete',
-            	    url: $url,
-            	    data: $outbound,
-            	    success: function($data) {
-            	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
-						if ( $data.responseHeader.responseCode == 'SUCCESS') {
-							//$rowfinder = "tr:eq(" + $rownum + ")"
-							//$("#displayTable").find($rowfinder).remove();
-			                $("#displayTable").find('tr').each(function (rowIndex, r) {
-			                    var cols = [];
-			                    $(this).find('th,td').each(function (colIndex, c) {
-			                        cols.push(c.textContent);
-			                    });
-			                    if ( cols[0] == $tableName ) {
-			                    	if ( cols[1] == $fieldName ) {
-			                    		if ( cols[2] == $value ) {
-			                    			this.remove();
-			                    		}
-			                    	}
-			                    }
-			                });
-							$('#confirmDelete').bPopup().close();
-						}
-            	     },
-            	     statusCode: {
-            	    	403: function($data) {
-            	    		$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-            	    	}, 
-	         	    	404: function($data) {
-	         	    		$('#confirmDelete').bPopup().close();
-	         	    		$("#globalMsg").html("Record does not exist").fadeIn(10).fadeOut(6000);
-	        	    	} 
-            	     },
-            	     dataType: 'json'
-            	});
-            });	
-
-
-
-			var confirmDelete = function (permissionGroupId) {
-				$("#permissionGroupId").val(permissionGroupId);
-				$("#deleteModal").modal('show');
-			}
-			
-			var deletePermissionGroup = function () {
-				$("#deleteSomethingElse").show();
-				var empId = $("#permissionGroupId").val();
-				
-				$.ajax({
-					
-					type: "POST",
-					url:  'permissionGroup/'+ $permissionGroupId;
-					data: { permissionGroup: permissionGroupId },
-					success: function () {
-						$("#deleteSomethingElse").hide();
-						$("#deleteModal").modal("hide");
-						$("row_" + permissionGroupId).remove();
-					}
-				})
-			}
 		
-*/
-
-		getTotalList : function ($permissionGroupId) {
-			$url = "permission/" + $permissionGroupId;
-			var jqxhr = $.ajax({
-				type: 'GET',
-				url: $url,
-				height: 125,
-				width: 450,
-				data: {},
-				statusCode: {
-					200: function($data) {
-						PERMISSIONGROUP.makeTable($permissionGroupId, $data.data);
-						PERMISSIONGROUP.makeClickers();
-						$("#permissionsModal").dialog("open");
-					},					
-					403: function($data) {
-						$("#globalMsg").html("Session Timeout. Log in and try again");
-					},
-					404: function($data) {
-						$("#globalMsg").html("System Error Reorder 404. Contact Support");
-					},
-					500: function($data) {
-						$("#globalMsg").html("System Error Reorder 500. Contact Support");
-					}
-				},
-				dataType: 'json'
-			});
-		},
-
-
-
-		makeTable : function ($permissionGroupId, $data) {
-			$("#permissionsModal").html('<div id="modalMessage" class="err"></div>');
-			$("#permissionsModal").attr("data-permissionGroupId", $permissionGroupId);
+		
 			
-			var $funcAreaTable = $("<table>");
-			$funcAreaTable.attr("style","border:solid 1px #000000; margin-left:30px; margin-top:10px;margin-bottom:10px;");
-			
-			var $rowNum = 0;
-			
-			$.each($data.permissionList, function($index, $value) {
-				var $funcAreaTR = $("<tr>");
-				var $funcAreaTD = $("<td>");
-				$funcAreaTD.attr("class","funcarea");
-				$funcAreaTD.attr("data-id",$value[0].permissionName);
-				$funcAreaTD.append($value[0].permissionName);
-				
-				$funcAreaTR.append($funcAreaTD);    
-				
-				$.each($data.permissionList, function($permIdx, $permValue) {
-					var $permTD = $("<td>");
-					var $myColumn = $rowNum+1;
-					var $myPermission = $data.permissionList[$permIdx][$myColumn];
-					if ($myPermission == null ) {
-						$permTD.append("&nbsp;");
-					}else{						
-						$permTD.append($myPermission.permissionName);
-						$permTD.addClass("perm" + $myPermission.permissionName);
-						$permTD.addClass($data.permissionList[$permIdx][0].permissionName);
-						$permTD.addClass("perm");
-						$permTD.attr("data-permissionname", $myPermission.permissionName);
-						$permTD.attr("data-funcarea", $data.permissionList[$permIdx][0].permissionName);
-						if ($myPermission.included == true) {
-							$permTD.addClass("hilite");
+	    	makePermissionsModal : function() {
+			$( "#permissionsModal" ).dialog({
+				title:'Division Manager Create',
+				autoOpen: false,
+				height: 450,
+				width: 650,
+				modal: true,
+				closeOnEscape:true,
+				buttons: [
+					{
+						id: "permissionsCancelButton",
+						click: function($event) {
+							$( "#permissionsModal" ).dialog("close");
 						}
-					}
-					$funcAreaTR.append($permTD);
-										
+					},
+				]
+			});	
+			$("#permissionsCancelButton").button('option', 'label', 'Done');
+	    	},	
+			
+
+
+
+			makeTable : function ($permissionGroupId, $data) {
+				$("#permissionsModal").html('<div id="modalMessage" class="err"></div>');
+				$("#permissionsModal").attr("data-permissionGroupId", $permissionGroupId);
+				
+				var $funcAreaTable = $("<table>");
+				$funcAreaTable.attr("style","border:solid 1px #000000; margin-left:30px; margin-top:10px;margin-bottom:10px;");
+				
+				var $rowNum = 0;
+				
+				$.each($data.permissionList, function($index, $value) {
+					var $funcAreaTR = $("<tr>");
+					var $funcAreaTD = $("<td>");
+					$funcAreaTD.attr("class","funcarea");
+					$funcAreaTD.attr("data-id",$value[0].permissionName);
+					$funcAreaTD.append($value[0].permissionName);
+					
+					$funcAreaTR.append($funcAreaTD);    
+					
+					$.each($data.permissionList, function($permIdx, $permValue) {
+						var $permTD = $("<td>");
+						var $myColumn = $rowNum+1;
+						var $myPermission = $data.permissionList[$permIdx][$myColumn];
+						if ($myPermission == null ) {
+							$permTD.append("&nbsp;");
+						}else{						
+							$permTD.append($myPermission.permissionName);
+							$permTD.addClass("perm" + $myPermission.permissionName);
+							$permTD.addClass($data.permissionList[$permIdx][0].permissionName);
+							$permTD.addClass("perm");
+							$permTD.attr("data-permissionname", $myPermission.permissionName);
+							$permTD.attr("data-funcarea", $data.permissionList[$permIdx][0].permissionName);
+							if ($myPermission.included == true) {
+								$permTD.addClass("hilite");
+							}
+						}
+						$funcAreaTR.append($permTD);
+											
+					});
+					
+					
+					$funcAreaTable.append($funcAreaTR);
+					$rowNum++;
 				});
 				
-				
-				$funcAreaTable.append($funcAreaTR);
-				$rowNum++;
-			});
-			
-			$("#permissionsModal").append($funcAreaTable);
-		},
-		
-		
-		makeClickers : function () {
-		    $(".funcarea").click(function($event) {
-		        var $id = $(this).attr("data-id");
-		       	var $permissionGroupId = $(this).attr("data-permissionGroupId")
-		        $(".funcarea").removeClass("hilite");
-		        $(this).addClass("hilite");
-		        $(".perm").hide();
-		        $selector = "." + $id;
-		        $($selector).show();
-		    });
-		
-		    $(".perm").click(function($event) {
-		    	$permissionGroupId = $("#permissionsModal").attr("data-permissionGroupId");
-		        var $permissionName = $(this).attr("data-permissionname");
-		        if ( $(this).hasClass("hilite")) {
-		            $(this).removeClass("hilite");
-		           	$active = false;
-		          	PERMISSIONGROUP.doPost($permissionGroupId, $permissionName, false);
-		        } else {
-		            var $selector1 = "." + $permissionName;
-		            $(".perm").removeClass("hilite");
-		            $($selector1).removeClass("hilite");
-		            $(this).addClass("hilite");
-		        	$active = true;
-		        	PERMISSIONGROUP.doPost($permissionGroupId, $permissionName, true);
-		        }
-		        
-		    });
-		},
-		
-		
-		
-		
-		
-		doPost : function ($id, $permissionName, $active){
-    		var $url = 'permission/' + $id;
-			//console.log("YOU PASSED ROW ID:" + $rowid);
-			$outbound = {"permissionName": $permissionName, "permissionIsActive": $active};
-			
-			var jqxhr = $.ajax({
-				type: 'POST',
-				url: $url,
-				data: JSON.stringify($outbound),				
-				statusCode: {
-					200: function($data) {
-						$("#modalMessage").html("Success!").show().fadeOut(3000);
-					},
-					403: function($data) {
-						$("permissionsModal").dialog("close");
-						$("#globalMsg").html("Session Timeout. Log in and try again").show();
-					},
-					404: function($data) {
-						$("permissionsModal").dialog("close");
-						$("#globalMsg").html("Inconsistent System State. Reload and try again").show();
-					},
-					500: function($data) {
-						$("permissionsModal").dialog("close");
-						$("#globalMsg").html("System Error 500. Contact Support").show();
-					},
-				},
-				dataType: 'json'
-			});
-    	},
-		
-		
-		
-    	makePermissionsModal : function() {
-		$( "#permissionsModal" ).dialog({
-			title:'Division Manager Create',
-			autoOpen: false,
-			height: 450,
-			width: 650,
-			modal: true,
-			closeOnEscape:true,
-			//open: function(event, ui) {
-			//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-			//},
-			buttons: [
-				{
-					id: "permissionsCancelButton",
-					click: function($event) {
-						$( "#permissionsModal" ).dialog("close");
-					}
-				},
-			]
-		});	
-		$("#permissionsCancelButton").button('option', 'label', 'Done');
-    	},
-		
-		
-		//if ( $value.canDelete == true ) {
-		//		$panelButtonContainer.append('<webthing:delete styleClass="deleteThisPermissionGroup">Delete</webthing:delete>');
-		//	}
-		
-		
-//		$(".deleteThisPermissionGroupPermissions").click(function($event) {
-//			//var $jobId = this.parentElement.attributes['data-jobid'].value;
-//			var $permissionGroupId = $(this).closest("div.panel-button-container")[0].attributes['data-permissionGroupId'].value;
-//			deleteThisPermissionGroup($permissionGroupId);
-//		});
+				$("#permissionsModal").append($funcAreaTable);
+			},
 
-
-
-
-
-
-
-
-
-
-
-			
+            
+			markValid : function ($inputField) {
+            	$fieldName = $($inputField).attr('name');
+            	$fieldGetter = "input[name='" + $fieldName + "']";
+            	$fieldValue = $($fieldGetter).val();
+            	$valid = '#' + $($inputField).data('valid');
+	            var re = /.+/;	            	 
+            	if ( re.test($fieldValue) ) {
+            		$($valid).removeClass("fa");
+            		$($valid).removeClass("fa-ban");
+            		$($valid).removeClass("inputIsInvalid");
+            		$($valid).addClass("far");
+            		$($valid).addClass("fa-check-square");
+            		$($valid).addClass("inputIsValid");
+            	} else {
+            		$($valid).removeClass("far");
+            		$($valid).removeClass("fa-check-square");
+            		$($valid).removeClass("inputIsValid");
+            		$($valid).addClass("fa");
+            		$($valid).addClass("fa-ban");
+            		$($valid).addClass("inputIsInvalid");
+            	}
+            },
 				
 					
-	            showEdit : function ($clickevent) {
-					var $permissionGroupId = $clickevent.currentTarget.attributes['data-id'].value;
-					console.debug("permissionGroupId: " + $permissionGroupId);
-					$("#goEdit").data("permissionGroupId: " + $permissionGroupId);
-	        		$('#goEdit').button('option', 'label', 'Save');
-	        		$('#closeEditPanel').button('option', 'label', 'Close');
-	        		
-	        		
-					var $url = 'permissionGroup/'+ $permissionGroupId;
-					var jqxhr = $.ajax({
-						type: 'GET',
-						url: $url,
-						statusCode: {
-							200: function($data) {
-								var $permissionGroup = $data.data.permGroupItemList[0];
-								$.each($permissionGroup, function($fieldName, $value) {									
-									$selector = "#editPanel input[name=" + $fieldName + "]";
-									if ( $($selector).length > 0 ) {
-										$($selector).val($value);
-									}
-		        				});
-								$("#editPanel input[name='permissionGroupId']").val($permissionGroup.permissionGroupId);
-								$("#editPanel input[name='name']").val($permissionGroup.name);
-								$("#editPanel input[name='description']").val($permissionGroup.description);
-								$("#editPanel input[name='status']").val($permissionGroup.status);			        		
-				        		$("#editPanel .err").html("");
-				        		$("#editPanel").dialog("open");
-							},
-							403: function($data) {
-								$("#globalMsg").html("Session Timeout. Log in and try again");
-							},
-							404: function($data) {
-								$("#globalMsg").html("Invalid Request");
-							},
-							500: function($data) {
-								$("#globalMsg").html("System Error; Contact Support");
-							}
+            showEdit : function ($clickevent) {
+				var $permissionGroupId = $clickevent.currentTarget.attributes['data-id'].value;
+				console.debug("permissionGroupId: " + $permissionGroupId);
+				$("#goEdit").data("permissionGroupId: " + $permissionGroupId);
+        		$('#goEdit').button('option', 'label', 'Save');
+        		$('#closeEditPanel').button('option', 'label', 'Close');
+        		
+        		
+				var $url = 'permissionGroup/'+ $permissionGroupId;
+				var jqxhr = $.ajax({
+					type: 'GET',
+					url: $url,
+					statusCode: {
+						200: function($data) {
+							var $permissionGroup = $data.data.permGroupItemList[0];
+							$.each($permissionGroup, function($fieldName, $value) {									
+								$selector = "#editPanel input[name=" + $fieldName + "]";
+								if ( $($selector).length > 0 ) {
+									$($selector).val($value);
+								}
+	        				});
+							$("#editPanel input[name='permissionGroupId']").val($permissionGroup.permissionGroupId);
+							$("#editPanel input[name='name']").val($permissionGroup.name);
+							$("#editPanel input[name='description']").val($permissionGroup.description);
+							$("#editPanel input[name='status']").val($permissionGroup.status);			        		
+			        		$("#editPanel .err").html("");
+			        		$("#editPanel").dialog("open");
 						},
-						dataType: 'json'
-					});
-				},
+						403: function($data) {
+							$("#globalMsg").html("Session Timeout. Log in and try again");
+						},
+						404: function($data) {
+							$("#globalMsg").html("Invalid Request");
+						},
+						500: function($data) {
+							$("#globalMsg").html("System Error; Contact Support");
+						}
+					},
+					dataType: 'json'
+				});
+			},
+
+				
+			showNew : function () {
+			$(".showNew").click(function($event) {
+				$('#goEdit').data("permissionGroupId",null);
+        		$('#goEdit').button('option', 'label', 'Save');
+        		$('#closeEditPanel').button('option', 'label', 'Close');
+        		
+ //       		$("#editPanel display[name='']").val("");
+				$("#editPanel input[name='Name']").val("");
+				$("#editPanel input[name='Description']").val("");
+				$("#editPanel input[name='Status']").val("");			        		
+        		$("#editPanel .err").html("");
+        		$("#editPanel").dialog("open");
+			});
+			},
+				
+
+			updatePermissionGroup : function () {
+				console.debug("Updating Permissions");
+				var $permissionGroupId = $("#editPanel input[name='permissionGroupId']").val();
+				console.debug("permissionGroupId: " + $permissionGroupId);
+				
+
+				if ( $permissionGroupId == null || $permissionGroupId == '') {
+					$url = 'permissionGroup/add';
+				} else {
+					$url = 'permissionGroup/' + $permissionGroupId;
+				}
+				console.debug($url);
+					
+				var $outbound = {};
+				$outbound['name'] = $("#editPanel input[name='name']").val();
+				$outbound['description'] = $("#editPanel input[name='description']").val();
+				$outbound['status'] = $("#editPanel select[name='status']").val();		        		
+				console.debug($outbound);
+				
+				var jqxhr = $.ajax({
+					type: 'POST',
+					url: $url,
+					data: JSON.stringify($outbound),
+					statusCode: {
+						200: function($data) {
+		    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+		    					$.each($data.data.webMessages, function (key, value) {
+		    						var $selectorName = "#" + key + "Err";
+		    						$($selectorName).show();
+		    						$($selectorName).html(value[0]).fadeOut(10000);
+		    					});
+		    				} else {	    				
+		    					$("#editPanel").dialog("close");
+		    					$('#permissionGroupTable').DataTable().ajax.reload();		
+		    					PERMISSIONGROUP.clearAddForm();		    					
+		    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
+		    				}
+						},
+						403: function($data) {
+							$("#globalMsg").html("Session Timeout. Log in and try again");
+						},
+						404: function($data) {
+							$("#globalMsg").html("Invalid Selection").show().fadeOut(100000);
+						},
+						500: function($data) {
+							$("#globalMsg").html("System Error; Contact Support");
+						}
+					},
+					dataType: 'json'
+				});
+			},
 				
 				
         	}
