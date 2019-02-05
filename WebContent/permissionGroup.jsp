@@ -502,6 +502,7 @@
 					var $funcAreaTD = $("<td>");
 					$funcAreaTD.attr("class","funcarea");
 					$funcAreaTD.attr("data-id",$value[0].permissionName);
+					console.log("Working row: " + $value[0].permissionName)
 					$funcAreaTD.append($value[0].permissionName);
 					
 					$funcAreaTR.append($funcAreaTD);    
@@ -509,6 +510,10 @@
 					$.each($data.permissionList, function($permIdx, $permValue) {
 						var $permTD = $("<td>");
 						var $myColumn = $rowNum+1;
+						if ( $data.permissionList[$permIdx].length == 2 ) {
+							// handle groups with only 1 option
+							$myColumn = $rowNum;
+						} 
 						var $myPermission = $data.permissionList[$permIdx][$myColumn];
 						if ($myPermission == null ) {
 							$permTD.append("&nbsp;");
@@ -523,6 +528,7 @@
 								$permTD.addClass("hilite");
 							}
 						}
+						
 						$funcAreaTR.append($permTD);
 											
 					});
