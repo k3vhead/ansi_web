@@ -74,6 +74,7 @@ public enum Permission {
 	
 	ACTIVITIES(null, false, "Can Perform External Activities"),
 	CAN_RUN_TICKETS(ACTIVITIES, true, "Can wash windows, etc"),
+	CAN_COMPLETE_TICKETS(CAN_RUN_TICKETS, true, "Can set tickets to ready-to-bill"),
 	
 	PERMISSIONS(null, false, "Functional Area: Permissions"),
 	PERMISSIONS_READ(PERMISSIONS, false, "Can read permission group assignments"),
