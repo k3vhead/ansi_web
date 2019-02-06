@@ -70,12 +70,12 @@ public class CodeResponseItem extends ApplicationObject implements Comparable<Co
 	public int compareTo(CodeResponseItem o) {
 		int ret = this.getTableName().compareTo(o.getTableName());
 		if ( ret == 0 ) {
-			ret = this.fieldName.compareTo(o.getFieldName());
-		}
-		if ( ret == 0 ) {
 			ret = this.seq.compareTo(o.getSeq());
 		}
-		return 0;
+		if ( ret == 0 ) {
+			ret = this.fieldName.compareTo(o.getFieldName());
+		}
+		return ret;
 	}
 
 	
