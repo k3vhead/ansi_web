@@ -97,8 +97,8 @@
             	        ],
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
-            	            { className: "dt-left", "targets": [0] },
-            	            { className: "dt-center", "targets": [1,2,3,4,5,6] },
+            	            { className: "dt-left", "targets": [0,1] },
+            	            { className: "dt-center", "targets": [2,3,4,5,6,7,8] },
             	            { className: "dt-right", "targets": []}
             	         ],
             	        "paging": true,
@@ -107,7 +107,9 @@
     			        	"type": "GET"
     			        	},
     			        columns: [
-    			        	
+    			        	{ title: "Expense Id", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			            	if(row.expenseId != null){return (row.expenseId+"");}
+    			            } },
     			            { title: "Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
     			            	if(row.lastName != null || row.firstName != null){return (row.lastName+", "+row.firstName);}
     			            } },
@@ -128,6 +130,9 @@
     			            } },
     			            { title: "Notes",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.notes != null){return (row.notes+"");}
+    			            } },
+    			            { title: "Detail",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.detail != null){return (row.detail+"");}
     			            } },			            
     			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
     			            	{
@@ -413,34 +418,40 @@
     	
  	<table id="displayTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
        	<colgroup>
+       		<col style="width:5%;" />
         	<col style="width:10%;" />
         	<col style="width:5%;" />
     		<col style="width:5%;" />    		
-    		<col style="width:10%;" />
+    		<col style="width:5%;" />
     		<col style="width:10%;" />
     		<col style="width:50%;" />
     		<col style="width:10%;" />
+    		<col style="width:5%;" />
    		</colgroup>
         <thead>
             <tr>
+            	<th>Expense Id</th>
                 <th>Name</th>
                 <th>Week</th>
     			<th>Date</th>
     			<th>Expense Type</th>
     			<th>Amount</th>
     			<th>Notes</th>
-    			<th>Action</th>    			
+    			<th>Detail</th>
+    			<th>Action</th>
             </tr>
         </thead>
         <tfoot>
             <tr>
+           		<th>Expense Id</th>
                 <th>Name</th>
                 <th>Week</th>
     			<th>Date</th>
     			<th>Expense Type</th>
     			<th>Amount</th>
-    			<th>Notes</th>   
-    			<th>Action</th>  			
+    			<th>Notes</th>
+    			<th>Detail</th>
+    			<th>Action</th>
             </tr>
         </tfoot>
     </table>
@@ -451,14 +462,19 @@
     <div id="ndl-crud-form">
     	<table>
     		<tr>
+    			<td><span class="formLabel">Expense Id</span></td>
+    			<td><input type="text" name="expenseId" /></td>
+    			<td><span id="expenseIdErr" class="err"></span></td>
+    		</tr>
+    		<tr>
     			<td><span class="formLabel">Name</span></td>
     			<td><input name="washerName" /><input type="hidden" name="washerId" /></td>
     			<td><span id="washerIdErr" class="err"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formLabel">Date</span></td>
-    			<td><input type="text" name="date" class="dateField" /></td>
-    			<td><span id="dateErr" class="err"></span></td>
+    			<td><input type="text" name="workDate" class="dateField" /></td>
+    			<td><span id="workDateErr" class="err"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formLabel">Expense Type</span></td>
@@ -475,6 +491,12 @@
     			<td><input type="text" name="notes" /></td>
     			<td><span id="notesErr" class="err"></span></td>
     		</tr>
+    		<tr>
+    			<td><span class="formLabel">Detail</span></td>
+    			<td><input type="text" name="detail" /></td>
+    			<td><span id="detailErr" class="err"></span></td>
+    		</tr>
+    		
     	</table>
     </div>
     </tiles:put>
