@@ -57,21 +57,6 @@ public class JobSearchListResponse extends MessageResponse implements Serializab
 	
 	
 	
-	/**
-	 * This method is not correct. It is passing a quoteId to the jobsearch when the jobsearch
-	 * requires a job id. The servlet (JobSearchServlet) is not called anywhere that I can find
-	 * and is likely a candidate for deletion
-	 * @param conn
-	 * @param quoteId
-	 * @throws Exception
-	 */
-	@Deprecated
-	public JobSearchListResponse(Connection conn, Integer quoteId) throws Exception {
-//		JobSearch jobSearch = JobSearch.select(conn, quoteId);		
-		JobSearch jobSearch = null;
-		JobSearchRecord record = new JobSearchRecord(jobSearch);
-		this.jobSearchList = Arrays.asList(new JobSearchRecord[] { record });
-	}
 	
 
 	public List<JobSearchRecord> getJobSearchList() {
