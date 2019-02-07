@@ -7,6 +7,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.ansi.scilla.common.db.Address;
 import com.ansi.scilla.web.address.response.AddressResponseItem;
 import com.thewebthing.commons.db2.RecordNotFoundException;
@@ -35,7 +39,10 @@ public class AddressResponseQuery {
 	
 	private AddressResponseQuery(Connection conn, Integer addressId) throws RecordNotFoundException, Exception {
 		super();
-		preparedStatement = conn.prepareStatement(sql + idFilter);
+		Logger logger = LogManager.getLogger(this.getClass());
+		String sql = this.sql + this.idFilter;
+		logger.log(Level.DEBUG, sql);
+		preparedStatement = conn.prepareStatement(sql);
 		preparedStatement.setInt(1, addressId);		
 	}
 	
@@ -53,6 +60,7 @@ public class AddressResponseQuery {
 	}
 	
 	private static AddressResponseItem makeAddressResponseItem(ResultSet rs) throws SQLException {
+		Logger logger = LogManager.getLogger(AddressResponseQuery.class);
 		AddressResponseItem item = new AddressResponseItem();
 		item.setAddress1(rs.getString(Address.ADDRESS1));
 		item.setAddress2(rs.getString(Address.ADDRESS2));
@@ -84,6 +92,7 @@ public class AddressResponseQuery {
 		item.setJobsiteJobContactName(rs.getString(JOBCONTACT_NAME));
 		item.setJobsiteSiteContactName(rs.getString(SITECONTACT_NAME));
 		
+		logger.debug(item);
 		return item;
 	}
 

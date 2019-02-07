@@ -7,6 +7,10 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.ansi.scilla.common.db.EmployeeExpense;
+import com.ansi.scilla.web.common.utils.FieldMap;
+import com.ansi.scilla.web.common.utils.JsonFieldFormat;
+
 
 public class DavesServletTester extends TestServlet {
 	
@@ -37,8 +41,8 @@ public class DavesServletTester extends TestServlet {
 		
 
 		Header sessionCookie = super.doLogin();
-		String results = testNDL(sessionCookie, MyTestType.ADD);
-//		String results = testEmployeeExpense(sessionCookie, MyTestType.ADD);
+//		String results = testNDL(sessionCookie, MyTestType.ADD);
+		String results = testEmployeeExpense(sessionCookie, MyTestType.ADD);
 
 //		String results = super.doPost(sessionCookie, url, super.makeJson(parmMap));
 //		String results = super.doGet(sessionCookie, url, (HashMap<String,String>)null);
@@ -100,7 +104,7 @@ public class DavesServletTester extends TestServlet {
 			results = super.doGet(sessionCookie, url, null);
 		} else if ( type.equals(MyTestType.ADD)) {	
 			url = "/ansi_web/claims/employeeExpense/add";
-			json = "{\"washerId\":5,\"divisionId\":106,\"workDate\":\"12/21/2018\",\"hours\":4,\"hoursType\":\"V\",\"notes\":\"NGH\"}";
+			json = "{\"washerId\":5,\"workDate\":\"12/22/2018\",\"expenseType\":\"V\", \"amount\":5.0}";
 			logger.log(Level.DEBUG, json);
 			results = super.doPost(sessionCookie, url, json);
 		} else if ( type.equals(MyTestType.UPDATE)) {	

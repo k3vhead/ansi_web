@@ -34,7 +34,7 @@
         <script type="text/javascript">        
         
         	$(document).ready(function() {
-				; QUOTEMAINTENANCE = {
+				; NEWQUOTE = {
 					quoteId : '<c:out value="${ANSI_QUOTE_ID}" />',
 					jobId : '<c:out value="${ANSI_JOB_ID}" />',
 					accountTypeList : null,
@@ -58,14 +58,14 @@
 					
 					init : function() {
 						console.log("init");
-						QUOTEMAINTENANCE.makeProgressbar();
-						QUOTEMAINTENANCE.init_modal();
-						QUOTEMAINTENANCE.makeAutoComplete();
-						QUOTEMAINTENANCE.makeOptionLists();
-						QUOTEMAINTENANCE.makeButtons();
-						QUOTEMAINTENANCE.makeOtherClickables();
-						if (QUOTEMAINTENANCE.quoteId != '' ) {
-							QUOTEMAINTENANCE.getQuote(QUOTEMAINTENANCE.quoteId);	
+						NEWQUOTE.makeProgressbar();
+						NEWQUOTE.init_modal();
+						NEWQUOTE.makeAutoComplete();
+						NEWQUOTE.makeOptionLists();
+						NEWQUOTE.makeButtons();
+						NEWQUOTE.makeOtherClickables();
+						if (NEWQUOTE.quoteId != '' ) {
+							NEWQUOTE.getQuote(NEWQUOTE.quoteId);	
 						}
 						QUOTE_PRINT.init_modal("#printQuoteDiv");
 						QUOTE_PRINT_HISTORY.init("#printHistoryDiv", "#viewPrintHistory");
@@ -77,319 +77,14 @@
 					
 					
 					
-					activateJob : function() {
-						console.log("activateJob");
-						var $outbound = {};
-						$jobId = $("#job-activate-modal").attr("jobid");
-						$outbound["jobId"] = $jobId;
-						$outbound["action"] = "ACTIVATE_JOB";
-						
-						$.each($("#job-activate-modal input"), function($index, $val) {
-							$outbound[$($val).attr('name')] = $($val).val() 
-						});
-						
-						QUOTEMAINTENANCE.doJobUpdate($jobId, $outbound, QUOTEMAINTENANCE.activateJobSuccess, QUOTEMAINTENANCE.activateJobErr);
-					},
-					
-					
-					activateJobErr : function($statusCode) {
-						console.log("activateJobErr");
-						var $messages = {
-								403:"Session Expired. Log in and try again",
-								404:"System Error Activate 404. Contact Support",
-								500:"System Error Activate 500. Contact Support"
-						}
-						$("#job-activate-modal").dialog("close");
-						$("#globalMsg").html( $messages[$statusCode] );
-					},
-					
-					
-					
-					activateJobSuccess : function($data) {
-						console.log("activateJobSuccess");
-						console.log($data);
-						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {	
-							$.each($data.data.webMessages, function($index, $val) {
-								console.log($index);
-								console.log($val);
-								var $fieldName = "." + $index + "Err";
-								var $selector = "#job-activate-modal " + $fieldName;
-								$($selector).html($val[0]).show().fadeOut(3000);
-							});							
-						} else {
-							//QUOTEMAINTENANCE.quote = $data.data.quote;
-							//var $replacementJobHeader = null
-							//$.each($data.data.jobHeaderList, function($index, $value) {
-						//		if ( $value.jobId == $data.data.job.jobId ) {
-						//			$replacementJobHeader = QUOTEMAINTENANCE.makeJobHeader(
-							//				$value.jobId, 
-								//			$value.jobNbr, 
-								//			$value.abbrDescription, 
-								//			$value.divisionNbr, 
-								//			$value.divisionCode, 
-								//			$value.jobStatus, 
-								//			$value.jobFrequency, 
-								//			$value.pricePerCleaning,
-								//			$value.canEdit,
-								//			$value.canActivate,
-								//			$value.canCancel,
-								//			$value.canDelete,
-								//			$value.canSchedule);
-								//}
-							//});
-							// header
-							//var $jobId = $data.data.quote.jobDetail.job.jobId;
-							//var $headerDestination = "#job" + $jobId + " .jobTitleRow";
-							//$($headerDestination).html("");
-							//$($headerDestination).append($replacementJobHeader);
-							//QUOTEMAINTENANCE.makeJobClickers();
-							// detail
-							//var $dataDestination = "#job" + $jobId + " .job-data-row";
-							//QUOTEMAINTENANCE.populateJobPanel($data.jobId, $dataDestination, $data.data);
-							//$("#job-activate-modal").dialog("close");
-							//$("#globalMsg").html("Job Activated").show().fadeOut(3000);
-							
-							//QUOTEMAINTENANCE.showJobUpdates($data.data);
-							
-							
-							
-							
-							
-							
-							
-							var $jobId = $data.data.quote.jobDetail.job.jobId;
-							QUOTEMAINTENANCE.joblist[$jobId] = $data.data.quote.jobDetail;
-							console.log("populate the job panels after activate");
-							$("#globalMsg").html("Job Activated").show().fadeOut(3000);
-							$("#job-activate-modal").dialog("close");
-							
-							QUOTEMAINTENANCE.showJobUpdates($data.data);
 
-						}
-					}, 
 					
 					
 					
-					
-					cancelJob : function() {
-						console.log("cancelJob");
-						var $outbound = {};
-						$jobId = $("#job-cancel-modal").attr("jobid");
-						$outbound["jobId"] = $jobId;
-						$outbound["action"] = "CANCEL_JOB";
-						
-						$.each($("#job-cancel-modal input"), function($index, $val) {
-							$outbound[$($val).attr('name')] = $($val).val() 
-						});
-						
-						QUOTEMAINTENANCE.doJobUpdate($jobId, $outbound, QUOTEMAINTENANCE.cancelJobSuccess, QUOTEMAINTENANCE.cancelJobErr);
-					},
-					
-					
-					cancelJobErr : function($statusCode) {
-						console.log("cancelJobErr");
-						var $messages = {
-								403:"Session Expired. Log in and try again",
-								404:"System Error Activate 404. Contact Support",
-								500:"System Error Activate 500. Contact Support"
-						}
-						$("#job-cancel-modal").dialog("close");
-						$("#globalMsg").html( $messages[$statusCode] );
-					},
-					
-					
-					
-					cancelJobSuccess : function($data) {
-						console.log("cancelJobSuccess");
-						console.log($data);
-						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {	
-							$.each($data.data.webMessages, function($index, $val) {								
-								var $fieldName = "." + $index + "Err";
-								var $selector = "#job-cancel-modal " + $fieldName;
-								$($selector).html($val[0]).show().fadeOut(3000);
-							});							
-						} else {
-							QUOTEMAINTENANCE.quote = $data.data.quote;
-							$jobId = $data.data.quote.jobDetail.job.jobId;
-							var $destination = "#job" + $jobId + " .job-data-row";
-							QUOTEMAINTENANCE.populateJobPanel($jobId, $destination, $data.data);
-							$("#job-cancel-modal").dialog("close");
-							$("#globalMsg").html("Job Canceled").show().fadeOut(3000);
-							
-							QUOTEMAINTENANCE.showJobUpdates($data.data);
-						}
-					}, 
-					
-					
-					
-					
-					cancelThisJobEdit : function($jobId) {
-	    				console.log("clicked a job edit cancel: " + $jobId);
-	    				
-	    				// hide edit icon & show save/cancel
-	    				$editSelector = "#job" + $jobId + " .jobTitleRow .panel-button-container .edit-this-job";
-	    				$saveSelector = "#job" + $jobId + " .jobTitleRow .panel-button-container .save-job";
-	    				$cancelSelector = "#job" + $jobId + " .jobTitleRow .panel-button-container .cancel-job-edit";
-	    				$($editSelector).show();
-	    				$($saveSelector).hide();
-	    				$($cancelSelector).hide();
-	    				
-	    				// close the job display panel
-	    				$openSelector = "#job" + $jobId + " .jobTitleRow .job-data-open";
-						$closedSelector = "#job" + $jobId + " .jobTitleRow .job-data-closed";
-						$tableSelector = "#job" + $jobId + " .job-data-row";
-						$($tableSelector).hide();
-						$($closedSelector).show();
-						$($openSelector).hide();
-						
-						// repopulate the detail so canceled updateds don't get displayed
-						var $destination = "#job" + $jobId + " .job-data-row";
-						QUOTEMAINTENANCE.populateJobPanel($jobId, $destination, QUOTEMAINTENANCE.joblist[$jobId]);
-	            	},
-	            	
-	            	
-	            	
-	            	
-	            	
-	            	
-	            	deleteJob : function() {
-	            		console.log("deleteJob");
-						var $outbound = {};
-						$jobId = $("#job-delete-modal").attr("jobid");
-						$outbound["jobId"] = $jobId;
-						$outbound["action"] = "DELETE_JOB";
-						
-						QUOTEMAINTENANCE.doJobUpdate($jobId, $outbound, QUOTEMAINTENANCE.deleteJobSuccess, QUOTEMAINTENANCE.deleteJobErr);
-					},
-					
-					
-					deleteJobErr : function($statusCode) {
-						console.log("deleteJobErr");
-						var $messages = {
-								403:"Session Expired. Log in and try again",
-								404:"System Error Activate 404. Contact Support",
-								500:"System Error Activate 500. Contact Support"
-						}
-						$("#job-delete-modal").dialog("close");
-						$("#globalMsg").html( $messages[$statusCode] );
-					},
-					
-					
-					
-					deleteJobSuccess : function($data) {
-						console.log("deleteJobSuccess");
-						console.log($data);
-						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {	
-							$.each($data.data.webMessages, function($index, $val) {								
-								var $fieldName = "." + $index + "Err";
-								var $selector = "#job-delete-modal " + $fieldName;
-								$($selector).html($val[0]).show().fadeOut(3000);
-							});							
-						} else {
-							QUOTEMAINTENANCE.quote = $data.data.quote;
-							// call this:  populateJobPanel : function($jobId, $destination, $data
-							// var $destination = "#job" + $data.data.job.jobId + " .job-data-row";
-							//QUOTEMAINTENANCE.populateJobPanel($data.data.job.jobId, $destination, $data.data);
-							//QUOTEMAINTENANCE.populateJobHeader($data.quoteList[0].jobHeaderList)
-							$("#job-delete-modal").dialog("close");
-							$("#globalMsg").html("Job Deleted").show().fadeOut(3000);
-							
-							QUOTEMAINTENANCE.showJobUpdates($data.data);
-						}
-					},
-	            	
-	            	
-	            	
-					doCopyQuote : function($quoteId) {						
-						console.log("Making a copy of " + $quoteId);	
-						var $url = "quote/copy/" + $quoteId;
-						var jqxhr = $.ajax({
-							type: 'POST',
-							url: $url,
-							data: {},
-							statusCode: {
-								200: function($data) {
-									location.href="quoteMaintenance.html?id=" + $data.data.quote.quote.quoteId;
-								},					
-								403: function($data) {
-									$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-								},
-								404: function($data) {
-									$("#globalMsg").html("System Error Copy 404. Contact Support");
-								},
-								500: function($data) {
-									$("#globalMsg").html("System Error Copy 500. Contact Support");
-								}
-							},
-							dataType: 'json'
-						});
-					},
-					
-					
-					
-					
-					
-					doJobUpdate : function($jobId, $outbound, $successCallback, $errCallback) {
-						console.log("doJobUpdate");
-						var $url = "job/" + $jobId;
-						console.log($outbound);						
-						
-						var jqxhr3 = $.ajax({
-							type: 'POST',
-							url: $url,
-							data: JSON.stringify($outbound),
-							statusCode: {
-								200:function($data) {
-									$successCallback($data);
-								},
-								403: function($data) {	
-									$errCallback(403);									
-								},
-								404: function($data) {
-									$errCallback(404);
-								},
-								500: function($data) {
-									$errCallback(500);
-								}
-							},
-							dataType: 'json'
-						});
-					},
-					
-					
-					
-					
-					doReviseQuote : function($quoteId) {
-						console.log("Making a revise of " + $quoteId);	
-						var $url = "quote/revise/" + $quoteId;
-						var jqxhr = $.ajax({
-							type: 'POST',
-							url: $url,
-							data: {},
-							statusCode: {
-								200: function($data) {
-									location.href="quoteMaintenance.html?id=" + $data.data.quote.quote.quoteId;
-								},					
-								403: function($data) {
-									$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-								},
-								404: function($data) {
-									$("#globalMsg").html("System Error Revise 404. Contact Support");
-								},
-								500: function($data) {
-									$("#globalMsg").html("System Error Revise 500. Contact Support");
-								}
-							},
-							dataType: 'json'
-						});
-					},
-					
-					
-					
-					doQuoteUpdate : function($quoteId, $data, $successCallback, $errCallback) {
+					doQuoteUpdate : function($data, $successCallback, $errCallback) {
 						console.log("doQuoteUpdate");
 						var $outbound = JSON.stringify($data);
-						var $url = "quote/" + $quoteId;
+						var $url = "quote/new";
 						console.log($outbound);
 						
 						
@@ -417,109 +112,7 @@
 					
 					
 					
-					activateThisJob : function($jobId) {
-	            		console.log("clicked a job activateThisJob: " + $jobId);
-	            		$("#job-activate-modal").attr("jobid", $jobId);
-	            		$("#job-activate-modal input").val("");
-	            		$("#job-activate-modal .errMsg").html("");
-	            		$("#job-activate-modal").dialog("open");	            		
-					},
 					
-					
-					
-					cancelThisJob : function($jobId, $type) {
-	            		console.log("clicked a job cancel: " + $jobId);
-	            		$("#job-cancel-modal").attr("jobid", $jobId);
-	            		$("#job-cancel-modal input").val("");
-	            		$("#job-cancel-modal .errMsg").html("");
-	            		$("#job-cancel-modal").dialog("open");
-					},
-					
-					
-					
-					deleteThisJob : function($jobId, $type) {
-	            		console.log("clicked a job deleteThisJob: " + $jobId);
-	            		$("#job-delete-modal").attr("jobid", $jobId);
-	            		$( "#job-delete-modal" ).dialog("open");
-					},
-					
-					
-					
-					editThisJob : function($jobId, $type) {
-	            		console.log("clicked a job edit: " + $jobId);
-	            		console.log($type);
-	
-	    				// hide edit icon & show save/cancel
-	    				//$editSelector = "#job" + $jobId + " .jobTitleRow .panel-button-container .edit-this-job";
-	    				//$saveSelector = "#job" + $jobId + " .jobTitleRow .panel-button-container .save-job";
-	    				//$cancelSelector = "#job" + $jobId + " .jobTitleRow .panel-button-container .cancel-job-edit";
-	    				//$($editSelector).hide();
-	    				//$($saveSelector).show();
-	    				//$($cancelSelector).show();
-	    				
-	    				// open the job display panel
-	    				$openSelector = "#job" + $jobId + " .jobTitleRow .job-data-open";
-						$closedSelector = "#job" + $jobId + " .jobTitleRow .job-data-closed";
-						$tableSelector = "#job" + $jobId + " .job-data-row";
-						$($tableSelector).show();
-						$($closedSelector).hide();
-						$($openSelector).show();
-						
-						$detailSelector = "#job" + $jobId + " .job-data-row .job-detail-display";
-						if ( ! $($detailSelector).length ) {
-							QUOTEMAINTENANCE.getJobPanel($jobId);								
-						}
-						
-						$("#job-edit-modal").attr("data-jobid", $jobId);
-						$("#job-edit-modal").attr("data-type", $type);
-						
-						$("#job-edit-modal .job-edit-panel").hide();
-						var $editPanel = "#job-edit-modal ." + $type;
-						$($editPanel).show();
-						$("#job-edit-modal").dialog("open");
-						
-						// populate Proposal edit panel
-						console.log(QUOTEMAINTENANCE.joblist[$jobId]);
-						//populate frequency select:
-						QUOTEMAINTENANCE.populateJobFequencySelect();
-						
-						$("#job-edit-modal .proposal input[name='job-proposal-job-nbr']").val(QUOTEMAINTENANCE.joblist[$jobId].job.jobNbr);
-						$("#job-edit-modal .proposal input[name='job-proposal-ppc']").val(QUOTEMAINTENANCE.joblist[$jobId].job.pricePerCleaning);
-						$("#job-edit-modal .proposal select[name='job-proposal-freq']").val(QUOTEMAINTENANCE.joblist[$jobId].job.jobFrequency);
-						$("#job-edit-modal .proposal textarea[name='job-proposal-desc']").val(QUOTEMAINTENANCE.joblist[$jobId].job.serviceDescription);
-						
-						
-						// populate activation edit panel
-						$("#job-edit-modal .activation input[name='job-activation-dl-pct']").val(QUOTEMAINTENANCE.joblist[$jobId].job.directLaborPct);
-		            	$("#job-edit-modal .activation input[name='job-activation-dl-budget']").val(QUOTEMAINTENANCE.joblist[$jobId].job.budget);
-		            	$("#job-edit-modal .activation input[name='job-activation-floors']").val(QUOTEMAINTENANCE.joblist[$jobId].job.floors);
-		            	if ( QUOTEMAINTENANCE.joblist[$jobId].job.requestSpecialScheduling == 1 ) {
-		            		$("#job-edit-modal .activation select[name='job-activation-schedule']").val("manual");
-		            	} else {
-		            		$("#job-edit-modal .activation select[name='job-activation-schedule']").val("auto");
-		            	}
-		            	$("#job-edit-modal .activation input[name='job-activation-equipment']").val(QUOTEMAINTENANCE.joblist[$jobId].job.equipment);
-		            	$("#job-edit-modal .activation input[name='job-activation-washer-notes']").val(QUOTEMAINTENANCE.joblist[$jobId].job.washerNotes);
-		            	$("#job-edit-modal .activation input[name='job-activation-om-notes']").val(QUOTEMAINTENANCE.joblist[$jobId].job.omNotes);
-		            	$("#job-edit-modal .activation input[name='job-activation-billing-notes']").val(QUOTEMAINTENANCE.joblist[$jobId].job.billingNotes);
-	
-						// populate invoice edit panel
-						$("#job-edit-modal .invoice input[name='job-invoice-purchase-order']").val(QUOTEMAINTENANCE.joblist[$jobId].job.poNumber);
-		            	$("#job-edit-modal .invoice input[name='job-invoice-vendor-nbr']").val(QUOTEMAINTENANCE.joblist[$jobId].job.ourVendorNbr);
-		            	$("#job-edit-modal .invoice input[name='job-invoice-expire-date']").val(QUOTEMAINTENANCE.joblist[$jobId].job.expirationDate);
-		            	$("#job-edit-modal .invoice input[name='job-invoice-expire-reason']").val(QUOTEMAINTENANCE.joblist[$jobId].job.expirationReason);
-		            	
-						// populate schedule edit panel
-						$("#job-edit-modal .schedule .job-schedule-last-run").html(QUOTEMAINTENANCE.joblist[$jobId].lastRun.startDate);		            	
-		            	if ( QUOTEMAINTENANCE.joblist[$jobId].job.repeatScheduleAnnually == 1 ) {
-		            		$("#job-edit-modal .schedule input[name='repeatedAnnually']").prop("checked", true);
-		            	} else {
-		            		$("#job-edit-modal .schedule input[name='repeatedAnnually']").prop("checked", false);
-		            	}
-		            	$("#job-edit-modal .schedule .job-schedule-next-due").html(QUOTEMAINTENANCE.joblist[$jobId].nextDue.startDate);
-		            	$("#job-edit-modal .schedule .job-schedule-created-thru").html(QUOTEMAINTENANCE.joblist[$jobId].lastCreated.startDate);
-		            	$("#job-edit-modal .schedule .job-schedule-ticket-list-link").attr("href", "ticketLookup.html?jobId="+$jobId);
-	    			},
 	    			
 	    			
 	    			
@@ -533,7 +126,7 @@
 							statusCode: {
 								200:function($data) {
 									$callback($data.data);
-									QUOTEMAINTENANCE.incrementProgress("Division List");
+									NEWQUOTE.incrementProgress("Division List");
 								},
 								403: function($data) {								
 									$("#globalMsg").html("Session Expired. Log In and try again").show();
@@ -551,66 +144,7 @@
 					},
 					
 					
-					getJobPanel : function($jobId) {
-						console.log("getJobPanel");
-						var jqxhr1 = $.ajax({
-		    				type: 'GET',
-		    				url: "jobDisplay.html",
-		    				data: null,			    				
-		    				statusCode: {
-		    					200: function($data) {
-		    						QUOTEMAINTENANCE.getJob($jobId, $data);
-		    					},			    				
-		    					403: function($data) {
-		    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-		    					}, 
-		    					404: function($data) {
-		    						$("#globalMsg").html("System Error JobDisplay 404. Contact Support").show();
-		    					}, 
-		    					405: function($data) {
-		    						$("#globalMsg").html("System Error JobDisplay 405. Contact Support").show();
-		    					}, 
-		    					500: function($data) {
-		    						$("#globalMsg").html("System Error JobDisplay 500. Contact Support").show();
-		    					}, 
-		    				},
-		    				dataType: 'html'
-		    			});
-					},
 					
-					
-					
-					
-					getJob : function($jobId, $html) {
-						console.log("getJob");
-						var $url = "job/" + $jobId;
-						var jqxhr1 = $.ajax({
-		    				type: 'GET',
-		    				url: $url,
-		    				data: null,			    				
-		    				statusCode: {
-		    					200: function($data) {
-		    						QUOTEMAINTENANCE.joblist[$jobId] = $data.data.quote.jobDetail;
-		    						var $destination = "#job" + $jobId + " .job-data-row";
-		    						$($destination).html($html);
-		    						QUOTEMAINTENANCE.populateJobPanel($jobId, $destination, $data.data);		    						
-		    					},			    				
-		    					403: function($data) {
-		    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-		    					}, 
-		    					404: function($data) {
-		    						$("#globalMsg").html("System Error Option 404. Contact Support").show();
-		    					}, 
-		    					405: function($data) {
-		    						$("#globalMsg").html("System Error Option 405. Contact Support").show();
-		    					}, 
-		    					500: function($data) {
-		    						$("#globalMsg").html("System Error Option 500. Contact Support").show();
-		    					}, 
-		    				},
-		    				dataType: 'json'
-		    			});
-					},
 					
 					
 					getOptions : function($optionList, $callBack) {
@@ -654,19 +188,19 @@
 								statusCode: {
 									200: function($data) {
 										console.log("Got the quote");
-										QUOTEMAINTENANCE.quote = $data.data.quote;
-										QUOTEMAINTENANCE.populateQuotePanels($data.data);	
-										if ( QUOTEMAINTENANCE.quote.canEdit == true ) {
+										NEWQUOTE.quote = $data.data.quote;
+										NEWQUOTE.populateQuotePanels($data.data);	
+										if ( NEWQUOTE.quote.canEdit == true ) {
 											$("#edit-this-address").show();
 											$(".quote-button-container").show();
 											$("#edit-this-quote").show();
 										} 
-										if ( QUOTEMAINTENANCE.quote.canAddJob == true ) {
+										if ( NEWQUOTE.quote.canAddJob == true ) {
 											$("#new-job-button").show();
 										} else {
 											$("#new-job-button").hide();
 										}
-										if ( QUOTEMAINTENANCE.quote.canPropose == true ) {
+										if ( NEWQUOTE.quote.canPropose == true ) {
 											$("#propose-button").show();
 										} else {
 											$("#propose-button").hide();
@@ -722,10 +256,10 @@
 					
 					incrementProgress : function($label) {
 						console.log("incrementProgress");
-		            	var val = QUOTEMAINTENANCE.progressbar.progressbar("value") || 0;
-						QUOTEMAINTENANCE.progressbar.progressbar("value", val+1);
-						QUOTEMAINTENANCE.progressLabel.text( $label );
-						console.log($label + ": " + QUOTEMAINTENANCE.progressbar.progressbar("value"));
+		            	var val = NEWQUOTE.progressbar.progressbar("value") || 0;
+						NEWQUOTE.progressbar.progressbar("value", val+1);
+						NEWQUOTE.progressLabel.text( $label );
+						console.log($label + ": " + NEWQUOTE.progressbar.progressbar("value"));
 					},
 					
 		    		
@@ -753,7 +287,7 @@
 								{
 									id: "contact-save-button",
 									click: function($event) {
-										QUOTEMAINTENANCE.saveContact();
+										NEWQUOTE.saveContact();
 									}
 								}
 							]
@@ -786,7 +320,7 @@
 								{
 									id: "address-save-button",
 									click: function($event) {
-										QUOTEMAINTENANCE.saveAddress();
+										NEWQUOTE.saveAddress();
 									}
 								}
 							]
@@ -794,167 +328,6 @@
 						$("#address-save-button").button('option', 'label', 'Save');
 						$("#address-cancel-button").button('option', 'label', 'Cancel');
 
-						
-						
-						
-						
-						
-						$( "#job-edit-modal" ).dialog({
-							title:'Job Edit',
-							autoOpen: false,
-							height: 350,
-							width: 600,
-							modal: true,
-							closeOnEscape:true,
-							//open: function(event, ui) {
-							//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-							//},
-							buttons: [
-								{
-									id: "job-edit-cancel-button",
-									click: function($event) {
-										$( "#job-edit-modal input").removeClass("edit-err");
-										$( "#job-edit-modal select").removeClass("edit-err");
-										$( "#job-edit-modal" ).dialog("close");
-									}
-								},
-								{
-									id: "job-edit-save-button",
-									click: function($event) {
-										QUOTEMAINTENANCE.saveJob();
-									}
-								}
-							]
-						});	
-						$("#job-edit-save-button").button('option', 'label', 'Save');
-						$("#job-edit-cancel-button").button('option', 'label', 'Cancel');
-
-						
-						
-						
-						
-						
-						$( "#job-activate-modal" ).dialog({
-							title:'Activate Job',
-							autoOpen: false,
-							height: 250,
-							width: 450,
-							modal: true,
-							closeOnEscape:true,
-							//open: function(event, ui) {
-							//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-							//},
-							buttons: [
-								{
-									id: "job-activate-cancel-button",
-									click: function($event) {
-										$( "#job-activate-modal" ).dialog("close");
-									}
-								},
-								{
-									id: "job-activate-save-button",
-									click: function($event) {
-										QUOTEMAINTENANCE.activateJob();
-									}
-								}
-							]
-						});	
-						$("#job-activate-save-button").button('option', 'label', 'Save');
-						$("#job-activate-cancel-button").button('option', 'label', 'Cancel');	
-						
-						
-						
-						$( "#job-cancel-modal" ).dialog({
-							title:'Cancel Job',
-							autoOpen: false,
-							height: 250,
-							width: 450,
-							modal: true,
-							closeOnEscape:true,
-							//open: function(event, ui) {
-							//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-							//},
-							buttons: [
-								{
-									id: "job-cancel-cancel-button",
-									click: function($event) {
-										$( "#job-cancel-modal" ).dialog("close");
-									}
-								},
-								{
-									id: "job-cancel-save-button",
-									click: function($event) {
-										QUOTEMAINTENANCE.cancelJob();
-									}
-								}
-							]
-						});	
-						$("#job-cancel-save-button").button('option', 'label', 'Save');
-						$("#job-cancel-cancel-button").button('option', 'label', 'Cancel');						
-
-						
-						
-						
-						$( "#job-delete-modal" ).dialog({
-							title:'Delete Job',
-							autoOpen: false,
-							height: 125,
-							width: 450,
-							modal: true,
-							closeOnEscape:true,
-							//open: function(event, ui) {
-							//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-							//},
-							buttons: [
-								{
-									id: "job-delete-cancel-button",
-									click: function($event) {
-										$( "#job-delete-modal" ).dialog("close");
-									}
-								},
-								{
-									id: "job-delete-save-button",
-									click: function($event) {
-										QUOTEMAINTENANCE.deleteJob();
-									}
-								}
-							]
-						});	
-						$("#job-delete-save-button").button('option', 'label', 'Delete');
-						$("#job-delete-cancel-button").button('option', 'label', 'Cancel');
-						
-						
-						
-						$( "#job-schedule-modal" ).dialog({
-							title:'Schedule Job',
-							autoOpen: false,
-							height: 250,
-							width: 450,
-							modal: true,
-							closeOnEscape:true,
-							//open: function(event, ui) {
-							//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-							//},
-							buttons: [
-								{
-									id: "job-schedule-cancel-button",
-									click: function($event) {
-										$( "#job-schedule-modal" ).dialog("close");
-									}
-								},
-								{
-									id: "job-schedule-save-button",
-									click: function($event) {
-										QUOTEMAINTENANCE.scheduleJob();
-									}
-								}
-							]
-						});	
-						$("#job-schedule-save-button").button('option', 'label', 'Save');
-						$("#job-schedule-cancel-button").button('option', 'label', 'Cancel');	
-						
-						
-						
 						
 					},
 					
@@ -968,9 +341,9 @@
 					
 					makeAutoComplete : function() {
 						console.log("makeAutoComplete");
-						QUOTEMAINTENANCE.makeAutoCompleteAddress();
-						QUOTEMAINTENANCE.makeAutoCompleteContact();
-						QUOTEMAINTENANCE.makeAutoCompleteSignedBy();
+						NEWQUOTE.makeAutoCompleteAddress();
+						NEWQUOTE.makeAutoCompleteContact();
+						NEWQUOTE.makeAutoCompleteSignedBy();
 					},
 					
 					
@@ -985,7 +358,7 @@
 							select: function( event, ui ) {
 								$( $selector ).val(ui.item.id);								
 								console.log(ui.item);	
-								ADDRESSUTILS.getAddress(ui.item.id, QUOTEMAINTENANCE.populateAddressModal);
+								ADDRESSUTILS.getAddress(ui.item.id, NEWQUOTE.populateAddressModal);
 	   				      	},
 							response: function(event, ui) {
 								if (ui.content.length === 0) {
@@ -1079,250 +452,14 @@
 			                nextText: '&gt;&gt;',
 			                showButtonPanel:true
 			            });
-						
-						$("#job-edit-modal .activation input[name='job-activation-floors']").spinner({
-							spin : function( $event, $ui ) {
-								if ( $ui.value > 200 ) {
-									alert("Seriously?");
-									return false;
-								} else if ( $ui.value < 0 ) {
-									$( this ).spinner("value", 0);
-									return false;
-								}	
-							}
-						});
+												
 					},
 					
 					
 					
 					
 					
-					makeJobClickers : function() {
-						$(".edit-this-job").click(function($event) {
-		            		//var $jobId = this.parentElement.attributes['data-jobid'].value;
-		            		var $jobId = $(this).closest("div.panel-button-container")[0].attributes['data-jobid'].value;
-		            		var $type = $(this).attr("data-type");
-		            		QUOTEMAINTENANCE.editThisJob($jobId, $type);
-		            	});
-		            	
-		            	$(".cancel-this-job").click(function($event) {
-		            		//var $jobId = this.parentElement.attributes['data-jobid'].value;
-		            		var $jobId = $(this).closest("div.panel-button-container")[0].attributes['data-jobid'].value;
-		            		QUOTEMAINTENANCE.cancelThisJob($jobId);
-		            	});
-		            	
-		            	$(".activate-this-job").click(function($event) {
-		            		//var $jobId = this.parentElement.attributes['data-jobid'].value;
-		            		var $jobId = $(this).closest("div.panel-button-container")[0].attributes['data-jobid'].value;
-		            		QUOTEMAINTENANCE.activateThisJob($jobId);
-		            	});
-		            	$(".delete-this-job").click(function($event) {
-		            		//var $jobId = this.parentElement.attributes['data-jobid'].value;
-		            		var $jobId = $(this).closest("div.panel-button-container")[0].attributes['data-jobid'].value;
-		            		QUOTEMAINTENANCE.deleteThisJob($jobId);
-		            	});
-		            	$(".cancel-job-edit").click(function($event) {
-		            		var $jobId = this.parentElement.attributes['data-jobid'].value;
-		            		QUOTEMAINTENANCE.cancelThisJobEdit($jobId);
-		            	});
-		            	$(".schedule-this-job").click(function($event) {
-		            		var $jobId = this.parentElement.attributes['data-jobid'].value;
-		            		QUOTEMAINTENANCE.scheduleThisJob($jobId);
-		            	});
-					},
 					
-					
-					
-					
-					makeJobExpansion : function() {
-						$(".job-hider").click(function($event) {
-							var $jobId = $(this).data("jobid");
-							console.log("Toggling display for job: " + $jobId); 
-							$openSelector = "#job" + $jobId + " .jobTitleRow .job-data-open";
-							$closedSelector = "#job" + $jobId + " .jobTitleRow .job-data-closed";
-							$tableSelector = "#job" + $jobId + " .job-data-row";
-							$($tableSelector).toggle();
-							$($closedSelector).toggle();
-							$($openSelector).toggle();
-							
-							$detailSelector = "#job" + $jobId + " .job-data-row .job-detail-display";
-							if ( ! $($detailSelector).length ) {
-								QUOTEMAINTENANCE.getJobPanel($jobId);
-								$selector = "#job" + $jobId + " .panel-button-container";
-								$($selector).show();
-							}
-							
-							console.log("Scrolling");
-							$anchorName = "job" + $jobId;
-							$anchor = $("a[name='" + $anchorName + "']");
-							$('html,body').animate({scrollTop: $anchor.offset().top},'slow');
-						});
-					},
-					
-					
-					
-		            makeJobHeader : function(
-								$jobId, 
-								$jobNbr, 
-								$abbrDescription, 
-								$divisionNbr, 
-								$divisionCode, 
-								$jobStatus, 
-								$jobFrequency, 
-								$pricePerCleaning,
-								$canEdit,
-								$canActivate,
-								$canCancel,
-								$canDelete,
-								$canSchedule) {
-		            	$jobHeader = $("<div>");
-	            		$jobHeader.attr("data-jobid", $jobId);
-	            		$jobHeader.attr("class","jobTitleRow");
-	            		
-
-	            		
-	            		$panelButtonContainer = $("<div>");
-	            		$panelButtonContainer.attr("class","panel-button-container");
-	            		$panelButtonContainer.attr("data-jobid",$jobId);
-	            		if ( $canEdit == true ) {
-	            			$panelButtonContainer.append('<quote:editJobMenu />');
-	            		}
-						if ( $canActivate == true ) {
-							$panelButtonContainer.append('<webthing:activate styleClass="activate-this-job">Activate</webthing:activate>');
-						}
-						if ( $canCancel == true ) {
-							$panelButtonContainer.append('<webthing:ban styleClass="cancel-this-job">Cancel</webthing:ban>');
-						}
-						if ( $canDelete == true ) {
-							$panelButtonContainer.append('<webthing:delete styleClass="delete-this-job">Delete</webthing:delete>');
-						}
-						if ( $canSchedule == true ) {
-							$panelButtonContainer.append('<webthing:schedule styleClass="schedule-this-job">Schedule</webthing:schedule>');
-						}
-	            		$jobHeader.append($panelButtonContainer);
-	            		
-	            		
-	            		$jobHider = $("<div>");
-	            		$jobHider.attr("data-jobid", $jobId);
-	            		$jobHider.attr("class","job-hider");
-	            		
-	            		
-	            		$jobHider.append('<span class="job-data-closed"><i class="fas fa-caret-right"></i></span>');
-	            		$jobHider.append('<span class="job-data-open"><i class="fas fa-caret-down"></i></span>');
-	            		$jobHider.append('&nbsp;');
-	            		
-	            		
-	            		$anchorName = "job" + $jobId;
-	            		$anchor = $("<a>");
-	            		$anchor.attr("name", $anchorName);
-	            		$anchor.append('<span class="formLabel">Job#: </span>');
-	            		$anchor.append('<span>' + $jobNbr + '</span>');
-	            		
-	            		$jobDiv = $("<div>");
-	            		$jobDiv.attr("class","job-header-job-div");
-	            		//$jobDiv.append('<span class="formLabel">Job: </span>');
-	            		//$jobDiv.append('<span>' + $value.jobNbr + '</span>');
-	            		$jobDiv.append($anchor);
-	            		
-	            		$descDiv = $("<div>");
-	            		$descDiv.attr("class","job-header-job-div");
-	            		$descDiv.append('<span class="formLabel">Desc: </span>');
-	            		$descDiv.append($abbrDescription);
-	            		
-	            		$jobIdDiv = $("<div>");
-	            		$jobIdDiv.attr("class","job-header-job-div");
-	            		$jobIdDiv.append('<span class="formLabel">Job: </span>');
-	            		$jobIdDiv.append('<span>' + $jobId +'</span>');
-	            		
-	            		$divDiv = $("<div>");
-	            		$divDiv.attr("class","job-header-job-div");
-	            		$divDiv.append('<span class="formLabel">Div: </span>');
-	            		$divDiv.append('<span>' + $divisionNbr + '-' + $divisionCode + '</span>');
-	            		
-	            		$statusDiv = $("<div>");
-	            		$statusDiv.attr("class","job-header-job-div");
-	            		$statusDiv.append('<span class="formLabel"></span>');
-	            		$statusDiv.append('<span>' + $jobStatus +'</span>');
-	            		
-	            		$freqDiv = $("<div>");
-	            		$freqDiv.attr("class","job-header-job-div");
-	            		$freqDiv.append('<span class="formLabel">Freq: </span>');
-	            		$freqDiv.append('<span>' + $jobFrequency +'</span>');
-	            		
-	            		$ppcDiv = $("<div>");
-	            		$ppcDiv.attr("class","job-header-job-div");
-	            		$ppcDiv.append('<span class="formLabel">PPC: </span>');
-	            		$ppcDiv.append('<span>$' + $pricePerCleaning +'</span>');
-	            		
-	            		
-	            		
-	            		// Now that we've build all the pieces, this bit determines the order they're displayed
-	            		$jobHider.append($statusDiv);
-	            		$jobHider.append($jobIdDiv);
-	            		$jobHider.append($jobDiv);
-	            		$jobHider.append($ppcDiv);
-	            		$jobHider.append($freqDiv);
-	            		$jobHider.append($divDiv);
-	            		$jobHider.append($descDiv);
-
-	            		$jobHeader.append($jobHider);	
-	            		
-	            		return $jobHeader;
-		            },
-		            
-		            
-		            
-		            
-		            makeJobSort : function() {
-						$("#jobList").sortable({
-							stop:function($event, $ui) {
-								//var $jobId = $ui.item.attr("data-jobid");
-								//var $selector = "#job" + $jobId + " .jobTitleRow";
-								console.log("Stopping");
-								console.log($ui);
-								//$($selector).click();
-								
-								var $jobIdList = []
-								$.each( $("#jobList li"), function(index, val) {
-								    console.log(val);
-								    var $thisJobId = $(val).attr("data-jobid");
-								    $jobIdList.push($thisJobId);
-								});
-								
-								var $outbound = {};
-								$outbound['jobIdList'] = $jobIdList
-								console.log(JSON.stringify($outbound));
-								
-								var $quoteId = QUOTEMAINTENANCE.quote.quote.quoteId;
-								var $url = "reorderJobs/" + $quoteId;
-								var jqxhr = $.ajax({
-									type: 'POST',
-									url: $url,
-									data: JSON.stringify($outbound),
-									statusCode: {
-										200: function($data) {
-											console.log($data);
-											// clear the list of job headers
-											$("#jobList").html("");
-											// then fill it back it
-											QUOTEMAINTENANCE.populateJobHeader($data.data.quote.jobHeaderList)
-											QUOTEMAINTENANCE.makeJobExpansion();
-										},					
-										403: function($data) {
-											$("#globalMsg").html("Session Timeout. Log in and try again");
-										},
-										404: function($data) {
-											$("#globalMsg").html("System Error Reorder 404. Contact Support");
-										},
-										500: function($data) {
-											$("#globalMsg").html("System Error Reorder 500. Contact Support");
-										}
-									},
-									dataType: 'json'
-								});
-							}
-						});	
-					},
 					
 					
 					
@@ -1334,9 +471,9 @@
 	    					data: {"sortBy":"firstName"},    // you can do firstName,lastName or email
 	    					statusCode: {
 	    						200: function($data) {
-	    							QUOTEMAINTENANCE.managerList = $data.data.userList;
-	    							QUOTEMAINTENANCE.populateManagerList($data.data.userList);
-	    							QUOTEMAINTENANCE.incrementProgress("Manager List");
+	    							NEWQUOTE.managerList = $data.data.userList;
+	    							NEWQUOTE.populateManagerList($data.data.userList);
+	    							NEWQUOTE.incrementProgress("Manager List");
 	    						},					
 	    						403: function($data) {
 	    							$("#globalMsg").html("Session Expired. Log In and try again").show();
@@ -1355,24 +492,24 @@
 		    		
 		    		
 		    		makeOptionLists : function(){
-						QUOTEMAINTENANCE.getOptions('JOB_STATUS,JOB_FREQUENCY,COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM', QUOTEMAINTENANCE.populateOptions);
-						QUOTEMAINTENANCE.incrementProgress("Job Status List");
-						QUOTEMAINTENANCE.incrementProgress("Job Frequency List");
+						NEWQUOTE.getOptions('JOB_STATUS,JOB_FREQUENCY,COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM', NEWQUOTE.populateOptions);
+						NEWQUOTE.incrementProgress("Job Status List");
+						NEWQUOTE.incrementProgress("Job Frequency List");
 						
 						
-						QUOTEMAINTENANCE.getDivisionList(QUOTEMAINTENANCE.populateDivisionList);
+						NEWQUOTE.getDivisionList(NEWQUOTE.populateDivisionList);
 						
 						
-						QUOTEMAINTENANCE.getCodeList("job", "building_type", QUOTEMAINTENANCE.populateBuildingType);
-						QUOTEMAINTENANCE.incrementProgress("Building Type List");
+						NEWQUOTE.getCodeList("job", "building_type", NEWQUOTE.populateBuildingType);
+						NEWQUOTE.incrementProgress("Building Type List");
 						
-						QUOTEMAINTENANCE.getCodeList("quote","account_type", QUOTEMAINTENANCE.populateAccountType); 
-						QUOTEMAINTENANCE.incrementProgress("Account Type List");
+						NEWQUOTE.getCodeList("quote","account_type", NEWQUOTE.populateAccountType); 
+						NEWQUOTE.incrementProgress("Account Type List");
 						
-						QUOTEMAINTENANCE.getCodeList("quote","lead_type", QUOTEMAINTENANCE.populateLeadType); 
-						QUOTEMAINTENANCE.incrementProgress("Lead Type List");
+						NEWQUOTE.getCodeList("quote","lead_type", NEWQUOTE.populateLeadType); 
+						NEWQUOTE.incrementProgress("Lead Type List");
 						
-						QUOTEMAINTENANCE.makeManagerList();	
+						NEWQUOTE.makeManagerList();	
 		            },
 		            
 		            
@@ -1380,8 +517,6 @@
 		            
 		            
 		            makeOtherClickables : function() {
-						QUOTEMAINTENANCE.makeJobExpansion();
-
 		    			$("#address-panel-hider").click(function($event) {
 		    				$("#address-panel-open").toggle();
 		    				$("#address-panel-closed").toggle();
@@ -1394,53 +529,6 @@
 		    				$("#quotePanel").toggle();
 		    			});
 		    			
-		    			$("#copy-button").click(function($event) {
-		    				var $quoteId = $(this).attr("data-quoteid");
-		    				QUOTEMAINTENANCE.doCopyQuote($quoteId);
-		    			});
-		    			
-		    			$("#revise-button").click(function($event) {
-		    				var $quoteId = $(this).attr("data-quoteid");
-		    				QUOTEMAINTENANCE.doReviseQuote($quoteId);
-		    			});
-		    			
-		    			$("#preview-button").click(function($event) {
-		    				var $quoteId = $(this).attr("data-quoteid");
-		    				var $quoteNumber = $(this).attr("data-quotenumber");
-		    				//QUOTEMAINTENANCE.doReviseQuote($quoteId);
-		    				console.log("Printing " + $quoteId);
-		    				QUOTE_PRINT.showQuotePrint("#printQuoteDiv", $quoteId, $quoteNumber,"PREVIEW");
-		    			});
-
-		    			$("#propose-button").click(function($event) {
-		    				var $quoteId = $(this).attr("data-quoteid");
-		    				var $quoteNumber = $(this).attr("data-quotenumber");
-		    				//QUOTEMAINTENANCE.doReviseQuote($quoteId);
-		    				console.log("Printing " + $quoteId);
-		    				QUOTE_PRINT.showQuotePrint("#printQuoteDiv", $quoteId, $quoteNumber, "PROPOSE");
-		    			});
-		    			
-		    			
-		    			
-		    			$("#new-job-button").click(function($event) {
-		    				var $quoteId = $(this).attr("data-quoteid");
-		    				var $quoteNumber = $(this).attr("data-quotenumber");
-		    				console.debug("Adding job to " + $quoteId);
-		    				
-		    				
-		    				//Clear all job forms
-		    				$(".job-edit-panel input").val("");
-		    				$(".job-edit-panel select").val("");
-		    				$(".job-edit-panel textarea").val("");
-		    				//set all job forms to visible
-							$(".job-edit-panel").show();		    				
-		    				//Populate frequncy dropdown
-		    				QUOTEMAINTENANCE.populateJobFequencySelect();
-		    				console.debug("Set jobid attr to new/add/something");
-		    				$("#job-edit-modal").attr("data-jobid", "add");
-							$("#job-edit-modal").attr("data-type", "add");
-		    				$("#job-edit-modal").dialog("open");
-		    			});
 	
 		    			
 		    			
@@ -1489,7 +577,7 @@
 		    			
 		    			$("#quote-container .quote-button-container .cancel-edit").click(function($event) {
 		    				console.log("Cancel Editing a quote");
-		    				QUOTEMAINTENANCE.populateQuotePanel(QUOTEMAINTENANCE.quote);
+		    				NEWQUOTE.populateQuotePanel(NEWQUOTE.quote);
 		    				$("#quotePanel input").prop("disabled", true);
 		    				$("#quotePanel select").prop("disabled", true);
 		    				$("#quotePanel select").removeClass("edit-err");
@@ -1502,7 +590,7 @@
 		    			
 		    			$("#quote-container .quote-button-container .save-quote").click(function($event) {
 		    				console.log("Saving quote header");
-		    				QUOTEMAINTENANCE.saveQuoteHeader();
+		    				NEWQUOTE.saveQuoteHeader();
 		    			});
 		    			
 		    		},
@@ -1512,17 +600,17 @@
 		    		makeProgressbar : function() {
 		    			//var progressbar = $("#progressbar");
 		    			//var progressLabel = $("#progress-label");
-		    			QUOTEMAINTENANCE.progressbar.progressbar({
+		    			NEWQUOTE.progressbar.progressbar({
 		    				value: false,
 		    				change: function() {
 		    					//progressLabel.text( progressbar.progressbar("value") + "%" );
-		    					//console.log("progress value: " + QUOTEMAINTENANCE.progressbar.progressbar("value"));
+		    					//console.log("progress value: " + NEWQUOTE.progressbar.progressbar("value"));
 		    				},
 		    				complete: function() {
 		    					console.log("Progress complete");
-		    					QUOTEMAINTENANCE.progressLabel.text("Complete");
+		    					NEWQUOTE.progressLabel.text("Complete");
 		    					//$("#progressbar").hide();
-		    					QUOTEMAINTENANCE.showQuote();
+		    					NEWQUOTE.showQuote();
 		    				},
 		    				max: 11
 		    			});
@@ -1532,7 +620,7 @@
 		    		
 		    		
 		    		populateAccountType : function($data) {
-						QUOTEMAINTENANCE.accountTypeList = $data.codeList;
+						NEWQUOTE.accountTypeList = $data.codeList;
 						$selectorName = "#quoteDataContainer select[name='accountType']";
 						var $select = $($selectorName);
 						$('option', $select).remove();
@@ -1552,7 +640,7 @@
 						if ( $statusCode == 200 ) {
 							var $addressSelector = "#address-edit-display";
 							$("#address-edit-modal").data("id",$data.data.addressList[0].addressId); //ui.item.id);	
-							QUOTEMAINTENANCE.populateAddressPanel("#address-edit-display", $data.data.addressList[0]);
+							NEWQUOTE.populateAddressPanel("#address-edit-display", $data.data.addressList[0]);
 							$($addressSelector).show();
 						}
 						if ( $statusCode == 403 ) {
@@ -1585,7 +673,7 @@
 		            
 		            
 		            populateBuildingType : function($data) {
-						QUOTEMAINTENANCE.buildingTypeList = $data.codeList;
+						NEWQUOTE.buildingTypeList = $data.codeList;
 						$selectorName = "#quoteDataContainer select[name='buildingType']";
 						var $select = $($selectorName);
 						$('option', $select).remove();
@@ -1614,133 +702,21 @@
 					
 					
 					populateDivisionList : function($data) {
-		            	QUOTEMAINTENANCE.divisionList = $data.divisionList
+		            	NEWQUOTE.divisionList = $data.divisionList
 		            	
 		            	var $select = $("#quoteDataContainer select[name='divisionId']");
 						$('option', $select).remove();
 
 						$select.append(new Option("",""));
-						$.each(QUOTEMAINTENANCE.divisionList, function(index, val) {
+						$.each(NEWQUOTE.divisionList, function(index, val) {
 						    $select.append(new Option(val.divisionNbr + "-" + val.divisionCode, val.divisionId));
 						});
 		            },
 		            
 		            
 		            
-		            populateJobFequencySelect : function() {
-		            	var $select = $("#job-edit-modal .proposal select[name='job-proposal-freq']");
-						$('option', $select).remove();
-	
-						$select.append(new Option("",""));
-						$.each(QUOTEMAINTENANCE.jobFrequencyList, function(index, val) {
-						    $select.append(new Option(val.display, val.abbrev));
-						});
-		            },
-		            
-		            
-		            
-		            
-		            populateJobHeader : function($jobHeaderList) {
-		            	console.log("populateJobHeader");
-		            	$("#jobList").html("");
-		            	$.each($jobHeaderList, function($index, $value) {
-		            		$jobListItem = $("<li>");
-		            		$jobListItem.attr("data-jobid", $value.jobId);
-		            		$jobListItem.attr("id","job" + $value.jobId)
-							
-		            		var $jobHeader = QUOTEMAINTENANCE.makeJobHeader(
-		            				$value.jobId, 
-		            				$value.jobNbr, 
-		            				$value.abbrDescription, 
-		            				$value.divisionNbr, 
-		            				$value.divisionCode,
-		            				$value.jobStatus,
-		            				$value.jobFrequency,
-		            				$value.pricePerCleaning,
-									$value.canEdit,
-									$value.canActivate,
-									$value.canCancel,
-									$value.canDelete,
-									$value.canSchedule
-		            				);
-		            		
-		            		// make the "loading" thing
-		            		$detailDiv = $("#job-loading-pattern .job-data-row").clone()
-		            		$detailDiv.attr("data-jobid", $value.jobId);
-		            		
-		            		$jobListItem.append($jobHeader);
-		            		$jobListItem.append($detailDiv);
-		            		console.log($jobHeader);
-		            		$("#jobList").append($jobListItem);
-		            		
-		            		
-		            	});	
-		            	
-		            	QUOTEMAINTENANCE.makeJobClickers();
-		            	
-		            	
-		            },
-		            
-		            
-		            populateJobPanel : function($jobId, $destination, $data) {	
-		            	console.log("Populate Job Panel");
-		            	console.log($data);
-		            	$jobDetail = $data.quote.jobDetail
-		            	$($destination + " .jobProposalDisplayPanel .job-proposal-job-nbr").html($jobDetail.job.jobNbr);
-		            	$($destination + " .jobProposalDisplayPanel .job-proposal-ppc").html("$" + $jobDetail.job.pricePerCleaning);
-		            	$($destination + " .jobProposalDisplayPanel .job-proposal-freq").html($jobDetail.job.jobFrequency);
-		            	$($destination + " .jobProposalDisplayPanel .job-proposal-desc").html($jobDetail.job.serviceDescription);
-		            	
-		            	$($destination + " .jobActivationDisplayPanel .job-activation-dl-pct").html($jobDetail.job.directLaborPct);
-		            	$($destination + " .jobActivationDisplayPanel .job-activation-dl-budget").html($jobDetail.job.budget);
-		            	$($destination + " .jobActivationDisplayPanel .job-activation-floors").html($jobDetail.job.floors);
-		            	if ( $jobDetail.job.requestSpecialScheduling == 1 ) {
-		            		$($destination + " .jobActivationDisplayPanel .job-activation-schedule").html("Manual");
-		            	} else {
-		            		$($destination + " .jobActivationDisplayPanel .job-activation-schedule").html("Auto");
-		            	}
-		            	$($destination + " .jobActivationDisplayPanel .job-activation-equipment").html($jobDetail.job.equipment);
-		            	$($destination + " .jobActivationDisplayPanel .job-activation-washer-notes").html($jobDetail.job.washerNotes);
-		            	$($destination + " .jobActivationDisplayPanel .job-activation-om-notes").html($jobDetail.job.omNotes);
-		            	$($destination + " .jobActivationDisplayPanel .job-activation-billing-notes").html($jobDetail.job.billingNotes);
-
-		            	$($destination + " .jobDatesDisplayPanel .job-dates-proposed-date").html($data.quote.proposalDate);
-		            	$($destination + " .jobDatesDisplayPanel .job-dates-activation-date").html($jobDetail.job.activationDate);
-		            	$($destination + " .jobDatesDisplayPanel .job-dates-start-date").html($jobDetail.job.startDate);
-		            	$($destination + " .jobDatesDisplayPanel .job-dates-cancel-date").html($jobDetail.job.cancelDate);
-		            	$($destination + " .jobDatesDisplayPanel .job-dates-cancel-reason").html($jobDetail.job.cancelReason);
-		            			            	
-		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-purchase-order").html($jobDetail.job.poNumber);
-		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-vendor-nbr").html($jobDetail.job.ourVendorNbr);
-		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-expire-date").html($jobDetail.job.expirationDate);
-		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-expire-reason").html($jobDetail.job.expirationReason);
-		            	
-		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-last-run").html($jobDetail.lastRun.startDate);		            	
-		            	if ( $jobDetail.job.repeatScheduleAnnually == 1 ) {
-		            		$($destination + " input[name='repeatedAnnually']").prop("checked", true);
-		            	} else {
-		            		$($destination + " input[name='repeatedAnnually']").prop("checked", false);
-		            	}
-		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-next-due").html($jobDetail.nextDue.startDate);
-		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-created-thru").html($jobDetail.lastCreated.startDate);
-		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-ticket-list").attr("href", "ticketLookup.html?jobId="+$jobId);
-		            	
-		            	
-		            	$($destination + " .jobAuditDisplayPanel .job-audit-created-by").html($jobDetail.job.addedFirstName + " " + $jobDetail.job.addedLastName);	
-		            	$($destination + " .jobAuditDisplayPanel .job-audit-created-date").html($jobDetail.job.addedDate);	
-		            	$($destination + " .jobAuditDisplayPanel .job-audit-updated-by").html($jobDetail.job.updatedFirstName + " " + $jobDetail.job.updatedLastName);	
-		            	$($destination + " .jobAuditDisplayPanel .job-audit-updated-date").html($jobDetail.job.updatedDate);
-		            	
-		            	$anchorName = "job" + $jobDetail.job.jobId;
-		            	console.log($anchorName);
-						$anchor = $("a[name='" + $anchorName + "']");
-						$('html,body').animate({scrollTop: $anchor.offset().top},'slow');
-		            },
-		            
-		            
-		            
 		            populateLeadType : function($data) {
-						QUOTEMAINTENANCE.leadTypeList = $data.codeList;
+						NEWQUOTE.leadTypeList = $data.codeList;
 						$selectorName = "#quoteDataContainer select[name='leadType']";
 						var $select = $($selectorName);
 						$('option', $select).remove();
@@ -1766,46 +742,46 @@
 		            
 		            
 		            populateOptions : function($optionData) {
-		            	QUOTEMAINTENANCE.countryList = $optionData.country;
-		            	QUOTEMAINTENANCE.invoiceGroupingList = $optionData.invoiceGrouping;
-						QUOTEMAINTENANCE.invoiceStyleList = $optionData.invoiceStyle;
-						QUOTEMAINTENANCE.invoiceTermList = $optionData.invoiceTerm;
-						QUOTEMAINTENANCE.jobStatusList = $optionData.jobStatus;
-						QUOTEMAINTENANCE.jobFrequencyList = $optionData.jobFrequency;
+		            	NEWQUOTE.countryList = $optionData.country;
+		            	NEWQUOTE.invoiceGroupingList = $optionData.invoiceGrouping;
+						NEWQUOTE.invoiceStyleList = $optionData.invoiceStyle;
+						NEWQUOTE.invoiceTermList = $optionData.invoiceTerm;
+						NEWQUOTE.jobStatusList = $optionData.jobStatus;
+						NEWQUOTE.jobFrequencyList = $optionData.jobFrequency;
 						
-						QUOTEMAINTENANCE.populateOptionSelects();
+						NEWQUOTE.populateOptionSelects();
 		            },
 		            
 		            
 		            
 		            populateOptionSelects : function() {
-		            	QUOTEMAINTENANCE.incrementProgress("Country List");
+		            	NEWQUOTE.incrementProgress("Country List");
 						
 						
 						var $select = $("#quoteDataContainer select[name='invoiceTerms']");
 						$('option', $select).remove();
 						$select.append(new Option("",""));
-						$.each(QUOTEMAINTENANCE.invoiceTermList, function(index, val) {
+						$.each(NEWQUOTE.invoiceTermList, function(index, val) {
 						    $select.append(new Option(val.display, val.abbrev));
 						});
-						QUOTEMAINTENANCE.incrementProgress("Invoice Terms");
+						NEWQUOTE.incrementProgress("Invoice Terms");
 						
 						var $select = $("#quoteDataContainer select[name='invoiceStyle']");
 						$('option', $select).remove();
 						$select.append(new Option("",""));
-						$.each(QUOTEMAINTENANCE.invoiceStyleList, function(index, val) {
+						$.each(NEWQUOTE.invoiceStyleList, function(index, val) {
 						    $select.append(new Option(val.display, val.abbrev));
 						});
-						QUOTEMAINTENANCE.incrementProgress("Invoice Style List");
+						NEWQUOTE.incrementProgress("Invoice Style List");
 						
 						
 						var $select = $("#quoteDataContainer select[name='invoiceGrouping']");
 						$('option', $select).remove();
 						$select.append(new Option("",""));
-						$.each(QUOTEMAINTENANCE.invoiceGroupingList, function(index, val) {
+						$.each(NEWQUOTE.invoiceGroupingList, function(index, val) {
 						    $select.append(new Option(val.display, val.abbrev));
 						});
-						QUOTEMAINTENANCE.incrementProgress("Invoice Grouping List");
+						NEWQUOTE.incrementProgress("Invoice Grouping List");
 		            },
 		            
 		            
@@ -1853,48 +829,48 @@
 		            populateQuotePanels : function($data) {
 	        			var $canPopulate = true;
 	        			
-	        			if ( QUOTEMAINTENANCE.accountTypeList == null ) { $canPopulate=false; }
-	        			if ( QUOTEMAINTENANCE.countryList == null ) { $canPopulate=false; }
-       					if ( QUOTEMAINTENANCE.buildingTypeList == null ) { $canPopulate=false; }
-    					if ( QUOTEMAINTENANCE.divisionList == null ) { $canPopulate=false; }
-    					if ( QUOTEMAINTENANCE.invoiceGroupingList == null ) { $canPopulate=false; }
-    					if ( QUOTEMAINTENANCE.invoiceStyleList == null ) { $canPopulate=false; }
-    					if ( QUOTEMAINTENANCE.invoiceTermList == null ) { $canPopulate=false; }
-    					if ( QUOTEMAINTENANCE.jobStatusList == null ) { $canPopulate=false; }
-    					if ( QUOTEMAINTENANCE.jobFrequencyList == null ) { $canPopulate=false; }
-  						if ( QUOTEMAINTENANCE.leadTypeList == null ) { $canPopulate=false; }
-						if ( QUOTEMAINTENANCE.managerList == null ) { $canPopulate=false; }
-						if ( QUOTEMAINTENANCE.quoteId != null && QUOTEMAINTENANCE.quoteId != "" && QUOTEMAINTENANCE.quote == null ) { $canPopulate = false; }
+	        			if ( NEWQUOTE.accountTypeList == null ) { $canPopulate=false; }
+	        			if ( NEWQUOTE.countryList == null ) { $canPopulate=false; }
+       					if ( NEWQUOTE.buildingTypeList == null ) { $canPopulate=false; }
+    					if ( NEWQUOTE.divisionList == null ) { $canPopulate=false; }
+    					if ( NEWQUOTE.invoiceGroupingList == null ) { $canPopulate=false; }
+    					if ( NEWQUOTE.invoiceStyleList == null ) { $canPopulate=false; }
+    					if ( NEWQUOTE.invoiceTermList == null ) { $canPopulate=false; }
+    					if ( NEWQUOTE.jobStatusList == null ) { $canPopulate=false; }
+    					if ( NEWQUOTE.jobFrequencyList == null ) { $canPopulate=false; }
+  						if ( NEWQUOTE.leadTypeList == null ) { $canPopulate=false; }
+						if ( NEWQUOTE.managerList == null ) { $canPopulate=false; }
+						if ( NEWQUOTE.quoteId != null && NEWQUOTE.quoteId != "" && NEWQUOTE.quote == null ) { $canPopulate = false; }
 						
 						
 	        			if ( $canPopulate == true ) {
 	        				$(".action-button").attr("data-quoteid",$data.quote.quote.quoteId); //This is so copy/revise buttons know what to copy/revise
 							$(".action-button").attr("data-quotenumber",$data.quote.quote.quoteNumber + $data.quote.quote.revision);
-							QUOTEMAINTENANCE.populateQuotePanel($data.quote);
-							QUOTEMAINTENANCE.populateAddressPanel( "#address-bill-to", $data.quote.billTo);
-							QUOTEMAINTENANCE.populateAddressPanel( "#address-job-site", $data.quote.jobSite);
-							QUOTEMAINTENANCE.populateContactPanel( "#job-contact", $data.quote.jobContact.jobContact);
-							QUOTEMAINTENANCE.populateContactPanel( "#site-contact", $data.quote.jobContact.siteContact);
-							QUOTEMAINTENANCE.populateContactPanel( "#billing-contact", $data.quote.jobContact.billingContact);
-							QUOTEMAINTENANCE.populateContactPanel( "#contract-contact", $data.quote.jobContact.contractContact);
-							QUOTEMAINTENANCE.populateJobHeader($data.quote.jobHeaderList)
-							QUOTEMAINTENANCE.makeJobExpansion();
+							NEWQUOTE.populateQuotePanel($data.quote);
+							NEWQUOTE.populateAddressPanel( "#address-bill-to", $data.quote.billTo);
+							NEWQUOTE.populateAddressPanel( "#address-job-site", $data.quote.jobSite);
+							NEWQUOTE.populateContactPanel( "#job-contact", $data.quote.jobContact.jobContact);
+							NEWQUOTE.populateContactPanel( "#site-contact", $data.quote.jobContact.siteContact);
+							NEWQUOTE.populateContactPanel( "#billing-contact", $data.quote.jobContact.billingContact);
+							NEWQUOTE.populateContactPanel( "#contract-contact", $data.quote.jobContact.contractContact);
+							NEWQUOTE.populateJobHeader($data.quote.jobHeaderList)
+							NEWQUOTE.makeJobExpansion();
 							
 							// when the page loads the first time, check for a job id
 							// if it is there, expand that job
 							// then delete the input parameter so it doesn't get accidentally referenced later
-							if ( QUOTEMAINTENANCE.jobId != null ) {
+							if ( NEWQUOTE.jobId != null ) {
 								$.each( $("#jobList li .job-hider"), function($index, $value) {
 									var $jobid = $($value).attr("data-jobid");
-									if ( $jobid == QUOTEMAINTENANCE.jobId ) {
+									if ( $jobid == NEWQUOTE.jobId ) {
 										$($value).click();
 									}
 								});
-								QUOTEMAINTENANCE.jobId = null;
+								NEWQUOTE.jobId = null;
 							}
 	        			} else {
 	        				setTimeout(function() {
-	            				QUOTEMAINTENANCE.populateQuotePanels($data);
+	            				NEWQUOTE.populateQuotePanels($data);
 	            			},1000);
 	        			}
 					},
@@ -1912,15 +888,12 @@
 								"jobsite":"jobSiteAddressId",
 								"billto":"billToAddressId"
 						}
-						console.log("QUOTEMAINTENANCE.quote");
-						console.log(QUOTEMAINTENANCE.quote);
-						var $quoteId = QUOTEMAINTENANCE.quote.quote.quoteId;
-						console.log("QUOTE ID: " + $quoteId);
+						console.log("NEWQUOTE.quote");
+						console.log(NEWQUOTE.quote);
 						var $addressLabel = $addressLabels[$addressType];
 						var $outbound = {};
-						$outbound["quoteId"]=$quoteId;
 						$outbound[$addressLabel]=$addressId;
-						QUOTEMAINTENANCE.doQuoteUpdate($quoteId, $outbound, QUOTEMAINTENANCE.saveAddressSuccess, QUOTEMAINTENANCE.saveAddressErr);
+						NEWQUOTE.doQuoteUpdate($outbound, NEWQUOTE.saveAddressSuccess, NEWQUOTE.saveAddressErr);
 					},
 					
 					
@@ -1952,9 +925,9 @@
 						} else {
 							console.log("Saving quote stuff from address update");
 							console.log($data);
-							QUOTEMAINTENANCE.quote = $data.data.quote;
-							QUOTEMAINTENANCE.populateAddressPanel( "#address-bill-to", $data.data.quote.billTo);
-							QUOTEMAINTENANCE.populateAddressPanel( "#address-job-site", $data.data.quote.jobSite);
+							NEWQUOTE.quote = $data.data.quote;
+							NEWQUOTE.populateAddressPanel( "#address-bill-to", $data.data.quote.billTo);
+							NEWQUOTE.populateAddressPanel( "#address-job-site", $data.data.quote.jobSite);
 							$("#globalMsg").html("Update Successful").fadeOut(3000);
 							$("#address-edit-modal").dialog("close");
 						}
@@ -1969,14 +942,14 @@
 								"site":"siteContact"
 						}
 					
-						var $quoteId = QUOTEMAINTENANCE.quote.quote.quoteId;
+						var $quoteId = NEWQUOTE.quote.quote.quoteId;
 						var $contactType = $("#contact-edit-modal").data("type");
 						var $contactId = $("#contact-edit-modal").data("id");						
 						var $contactLabel = $contactLabels[$contactType];
 						var $outbound = {};
 						$outbound["quoteId"]=$quoteId;
 						$outbound[$contactLabel]=$contactId;
-						QUOTEMAINTENANCE.doQuoteUpdate($quoteId, $outbound, QUOTEMAINTENANCE.saveContactSuccess, QUOTEMAINTENANCE.saveContactErr);
+						NEWQUOTE.doQuoteUpdate($quoteId, $outbound, NEWQUOTE.saveContactSuccess, NEWQUOTE.saveContactErr);
 					},
 					
 					
@@ -1993,8 +966,8 @@
 					
 					saveContactSuccess : function($data) {
 						console.log("save contact success");
-						console.log("QUOTEMAINTENANCE.quote");
-						console.log(QUOTEMAINTENANCE.quote);
+						console.log("NEWQUOTE.quote");
+						console.log(NEWQUOTE.quote);
 						console.log($data);
 						var $type = $("#contact-edit-modal").data("type");
 						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {							
@@ -2013,11 +986,11 @@
 						} else {
 							console.log("Saving quote stuff from contact update");
 							console.log($data);
-							QUOTEMAINTENANCE.quote = $data.data.quote;
-							QUOTEMAINTENANCE.populateContactPanel( "#job-contact", $data.data.quote.jobContact.jobContact);
-							QUOTEMAINTENANCE.populateContactPanel( "#site-contact", $data.data.quote.jobContact.siteContact);
-							QUOTEMAINTENANCE.populateContactPanel( "#billing-contact", $data.data.quote.jobContact.billingContact);
-							QUOTEMAINTENANCE.populateContactPanel( "#contract-contact", $data.data.quote.jobContact.contractContact);
+							NEWQUOTE.quote = $data.data.quote;
+							NEWQUOTE.populateContactPanel( "#job-contact", $data.data.quote.jobContact.jobContact);
+							NEWQUOTE.populateContactPanel( "#site-contact", $data.data.quote.jobContact.siteContact);
+							NEWQUOTE.populateContactPanel( "#billing-contact", $data.data.quote.jobContact.billingContact);
+							NEWQUOTE.populateContactPanel( "#contract-contact", $data.data.quote.jobContact.contractContact);
 							$("#globalMsg").html("Update Successful").fadeOut(3000);
 							$("#contact-edit-modal").dialog("close");							
 						}
@@ -2027,148 +1000,7 @@
 					
 					
 					
-					saveJob : function() {
-						var $jobId = $("#job-edit-modal").attr("data-jobid");
-						var $updateType = $("#job-edit-modal").attr("data-type");
-						console.log("If I were saving jobs, it would happen here " + $jobId + "  " + $updateType);
-						
-						// if we're doing an update, just process the one panel
-						// if we're adding a new job, do them all
-						if ( $updateType == "add" ) {
-							var $typeList = ['proposal','activation','invoice','schedule']
-						} else {
-							var $typeList = [$updateType]
-						}
-						var $outbound = {};
-						
-						
-						$.each($typeList, function(index, $type) {
-							console.log("Looping thru: " + $type);
-							var $panelSelector = "#job-edit-modal ." + $type;
-							var $inputSelector = $panelSelector + " select";
-							$.each( $($inputSelector), function($index, $value) {
-								$selector = $panelSelector + " select[name='" + $value.name + "']";	 
-								$apiname = $($selector).attr("data-apiname");
-		    					$outbound[$apiname] = $($selector).val();
-		    				});
-							$inputSelector = $panelSelector + " input";
-							$.each( $($inputSelector), function($index, $value) {							
-								$selector = $panelSelector + " input[name='" + $value.name + "']";
-								$apiname = $($selector).attr("data-apiname");
-		    					$outbound[$apiname] = $($selector).val();
-		    				});
-							$inputSelector = $panelSelector + " textarea";
-							$.each( $($inputSelector), function($index, $value) {
-								$selector = $panelSelector + " textarea[name='" + $value.name + "']";	
-								$apiname = $($selector).attr("data-apiname");
-		    					$outbound[$apiname] = $($selector).val();
-		    				});
-							
-							// do some panel-specific fixes:
-							if ($type == "activation") {
-								if ( $("#job-edit-modal .activation input[name='requestSpecialScheduling']").prop("checked") == true ) {
-									$outbound['requestSpecialScheduling'] = 1;
-								} else {
-									$outbound['requestSpecialScheduling'] = 0;
-								}
-							}
-							if ($type == "schedule") {
-								if ( $("#job-edit-modal .schedule input[name='repeatedAnnually']").prop("checked") == true ) {
-									$outbound['repeatScheduleAnnually'] = 1;
-								} else {
-									$outbound['repeatScheduleAnnually'] = 0;
-								}
-							}
-						});
 
-						// if this is a new job -- add all the other stuff, too
-						if ( $updateType == 'add') {
-							console.log("This is an add:")
-							console.log(QUOTEMAINTENANCE.quote);
-							console.log("********************)");
-							$outbound['billingContactId'] = QUOTEMAINTENANCE.quote.jobContact.billingContact.contactId;
-							$outbound['buildingType'] = QUOTEMAINTENANCE.quote.quote.buildingType;
-							$outbound['contractContactId'] = QUOTEMAINTENANCE.quote.jobContact.contractContact.contactId;
-							$outbound['divisionId'] = QUOTEMAINTENANCE.quote.quote.divisionId;
-							$outbound['invoiceBatch'] = QUOTEMAINTENANCE.quote.quote.invoiceBatch;
-							$outbound['invoiceGrouping'] = QUOTEMAINTENANCE.quote.quote.invoiceGrouping;
-							$outbound['invoiceStyle'] = QUOTEMAINTENANCE.quote.quote.invoiceStyle;
-							$outbound['invoiceTerms'] = QUOTEMAINTENANCE.quote.quote.invoiceTerms;
-							$outbound['jobContactId'] = QUOTEMAINTENANCE.quote.jobContact.jobContact.contactId;
-							//$outbound['jobTypeId'] = QUOTEMAINTENANCE.quote
-							$outbound['paymentTerms'] = QUOTEMAINTENANCE.quote.quote.invoiceTerms;
-							$outbound['quoteId'] = QUOTEMAINTENANCE.quote.quote.quoteId;
-							$outbound['siteContact'] = QUOTEMAINTENANCE.quote.jobContact.siteContact.contactId;
-							$outbound['taxExempt'] = QUOTEMAINTENANCE.quote.quote.taxExempt;
-							$outbound['taxExemptReason'] = QUOTEMAINTENANCE.quote.quote.taxExemptReason;
-						}
-						
-						$outbound['updateType'] = $updateType;
-						$outbound['quoteId'] = QUOTEMAINTENANCE.quote.quote.quoteId;
-						console.log(JSON.stringify($outbound) )
-						
-						
-						QUOTEMAINTENANCE.doJobUpdate($jobId, $outbound, QUOTEMAINTENANCE.saveJobSuccess, QUOTEMAINTENANCE.saveJobErr);
-					},
-					
-					
-					saveJobErr : function($statusCode) {
-						console.log("Job error");
-						var $messages = {
-								403:"Session Expired. Log in and try again",
-								404:"System Error Job 404. Contact Support",
-								500:"System Error Job 500. Contact Support"
-						}
-						$("#globalMsg").html( $messages[$statusCode] );
-						$("#job-edit-modal").dialog("close");
-					},
-					
-					
-					saveJobSuccess : function($data) {
-						console.log("Job success");
-						console.log($data);
-						$('#job-edit-modal input').bind("focus", function() {
-							$(this).removeClass("edit-err");
-						});
-						$('#job-edit-modal select').bind("focus", function() {
-							$(this).removeClass("edit-err");
-						});
-						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-							$.each($data.data.webMessages, function(index, val) {	
-								// index matches up with attr data-apiname in the form
-								// loop through the input/selects and apply a class to the input
-								$.each( $("#job-edit-modal input"), function(fieldIdx, fieldVal) {
-									var $apiName = $(fieldVal).attr("data-apiname");
-									if ( index == $apiName ) {
-										var $fieldName = $(fieldVal).attr("name");
-										var $selector = "#job-edit-modal input[name='"+ $fieldName +"']";
-										$($selector).addClass("edit-err");
-									}
-								});
-								$.each( $("#job-edit-modal select"), function(fieldIdx, fieldVal) {
-									var $apiName = $(fieldVal).attr("data-apiname");
-									if ( index == $apiName ) {
-										var $fieldName = $(fieldVal).attr("name");
-										var $selector = "#job-edit-modal select[name='"+ $fieldName +"']";
-										$($selector).addClass("edit-err");
-									}
-								});
-							});
-						} else {
-							console.log("Update header success:");
-							console.log($data);
-							var $jobId = $data.data.quote.jobDetail.job.jobId;
-							QUOTEMAINTENANCE.joblist[$jobId] = $data.data.quote.jobDetail;
-							console.log("do something to populate the job panels here");
-							//var $destination = "#job" + $jobId + " .job-data-row";
-    						//QUOTEMAINTENANCE.populateJobPanel($jobId, $destination, $data.data);
-							$("#globalMsg").html("Update Successful").show().fadeOut(3000);
-							$("#job-edit-modal").dialog("close");
-							
-							QUOTEMAINTENANCE.showJobUpdates($data.data);
-						}
-					},
-					
 					
 					saveQuoteHeader : function() {
 	    				console.log("saveQuoteHeader");
@@ -2189,9 +1021,9 @@
 	    				$outbound['taxExempt'] = $("#quotePanel input[name='taxExempt']").prop("checked");
 	    				$outbound['invoiceBatch'] = $("#quotePanel input[name='invoiceBatch']").prop("checked");
 	    				
-	    				var $quoteId = QUOTEMAINTENANCE.quote.quote.quoteId;
+	    				var $quoteId = NEWQUOTE.quote.quote.quoteId;
 	    				console.log($outbound);
-	    				QUOTEMAINTENANCE.doQuoteUpdate($quoteId, $outbound, QUOTEMAINTENANCE.saveQuoteHeaderSuccess, QUOTEMAINTENANCE.saveQuoteHeaderErr);
+	    				NEWQUOTE.doQuoteUpdate($quoteId, $outbound, NEWQUOTE.saveQuoteHeaderSuccess, NEWQUOTE.saveQuoteHeaderErr);
 					},
 					
 					
@@ -2227,9 +1059,9 @@
 						} else {
 							console.log("Update header success:");
 							console.log($data);
-							QUOTEMAINTENANCE.quote = $data.data.quote;
-							QUOTEMAINTENANCE.populateQuotePanel(QUOTEMAINTENANCE.quote);
-							QUOTEMAINTENANCE.showJobUpdates($data.data);
+							NEWQUOTE.quote = $data.data.quote;
+							NEWQUOTE.populateQuotePanel(NEWQUOTE.quote);
+							NEWQUOTE.showJobUpdates($data.data);
 							$("#globalMsg").html("Update Successful").fadeOut(3000);
 							$("#quotePanel input").prop("disabled", true);
 		    				$("#quotePanel select").prop("disabled", true);
@@ -2246,91 +1078,7 @@
 					
 					
 					
-					scheduleJob : function() {
-						var $outbound = {};
-						$jobId = $("#job-schedule-modal").attr("jobid");
-						$outbound["jobId"] = $jobId;
-						$outbound["action"] = "SCHEDULE_JOB";
-						
-						$.each($("#job-schedule-modal input"), function($index, $val) {
-							$outbound[$($val).attr('name')] = $($val).val() 
-						});
-						
-						QUOTEMAINTENANCE.doJobUpdate($jobId, $outbound, QUOTEMAINTENANCE.scheduleJobSuccess, QUOTEMAINTENANCE.scheduleJobErr);
-					},
 					
-					
-					scheduleJobErr : function($statusCode) {
-						var $messages = {
-								403:"Session Expired. Log in and try again",
-								404:"System Error Activate 404. Contact Support",
-								500:"System Error Activate 500. Contact Support"
-						}
-						$("#job-schedule-modal").dialog("close");
-						$("#globalMsg").html( $messages[$statusCode] );
-					},
-					
-					
-					
-					scheduleJobSuccess : function($data) {
-						console.log($data);
-						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {	
-							$.each($data.data.webMessages, function($index, $val) {
-								console.log($index);
-								console.log($val);
-								var $fieldName = "." + $index + "Err";
-								var $selector = "#job-schedule-modal " + $fieldName;
-								$($selector).html($val[0]).show().fadeOut(3000);
-							});							
-						} else {
-							QUOTEMAINTENANCE.quote = $data.data.quote;
-							$jobId = $data.data.quote.jobDetail.job.jobId;
-							var $destination = "#job" + $jobId + " .job-data-row";
-							QUOTEMAINTENANCE.populateJobPanel($jobId, $destination, $data.data);
-							$("#job-schedule-modal").dialog("close");
-							$("#globalMsg").html("Job Scheduled").show().fadeOut(3000);
-							
-							QUOTEMAINTENANCE.showJobUpdates($data.data);
-						}
-					}, 
-					
-					
-					
-					
-					scheduleThisJob : function($jobId) {
-	            		console.log("clicked a job scheduleThisJob: " + $jobId);
-	            		$("#job-schedule-modal").attr("jobid", $jobId);
-	            		$("#job-schedule-modal input").val("");
-	            		$("#job-schedule-modal .errMsg").html("");
-	            		$("#job-schedule-modal").dialog("open");	            		
-					},
-					
-					
-					
-					showJobUpdates : function($data) {
-						console.log("showJobUpdates");
-						console.log(QUOTEMAINTENANCE.quote);
-						//repopulate QUOTEMAINTENANCE.quote
-						QUOTEMAINTENANCE.quote = $data.quote;
-						QUOTEMAINTENANCE.joblist = {};
-						QUOTEMAINTENANCE.populateJobHeader($data.quote.jobHeaderList)
-						QUOTEMAINTENANCE.makeJobExpansion();
-						
-						//deletes don't return a job detail -- so check
-						if ( $data.quote.jobDetail != null ) {
-							QUOTEMAINTENANCE.jobId = $data.quote.jobDetail.job.jobId
-							//put job headers in job table
-							QUOTEMAINTENANCE.joblist[QUOTEMAINTENANCE.jobId] = $data
-							$.each( $("#jobList li .job-hider"), function($index, $value) {
-								var $jobid = $($value).attr("data-jobid");
-								if ( $jobid == QUOTEMAINTENANCE.jobId ) {
-									$($value).click();
-								}
-							});
-						}
-						
-						QUOTEMAINTENANCE.jobId = null;
-					},
 					
 					
 					showQuote : function() {
@@ -2339,10 +1087,21 @@
 						$("#address-container").fadeIn(1000);
 						$("#job-list-container").fadeIn(1000);
 						$("#quoteButtonContainer").fadeIn(1000);
+						
+						// after init is done -- show bill-to modal
+						var $type = "jobsite"
+	    				$title = "Job Site";		    				
+	    				$("#address-edit-modal input[name='address-name']").val("");
+	    				$("#address-edit-modal").dialog("option","title",$title);
+	    				$("#address-edit-modal .none-found").hide();
+	    				$("#address-edit-display").hide();
+	    				$("#address-edit-modal").data("type",$type);
+			        	$("#address-edit-modal").data("id","");
+	    				$("#address-edit-modal").dialog("open");
 		            }
 				};
 				
-				QUOTEMAINTENANCE.init();
+				NEWQUOTE.init();
 				
 				
         	});
@@ -2369,33 +1128,6 @@
         	#edit-this-quote {
         		cursor:pointer;
         	}
-        	#job-activate-modal {
-        		display:none;
-        	}
-        	#job-cancel-modal {
-        		display:none;
-        	}
-        	#job-edit-modal {
-        		display:none;
-        	}
-        	#job-loading-pattern {
-        		display:none;
-        	}
-        	#job-list-container {
-        		display:none;
-        	}
-        	#job-schedule-modal {
-        		display:none;
-        	}
-        	#jobList li {
-        		margin-top:2px;
-        	}
-			#jobList .job-data-row {
-				display:none;
-			}
-			#jobList .job-data-open {
-				display:none;
-			}
 			#printHistoryDiv {
                 display:none;
             }
@@ -2476,29 +1208,6 @@
 				background-color:#FF0000; 
 				opacity:0.20;
 			}
-        	.job-data-row { display:none; }
-			.jobTitleRow {
-				background-color:#404040; 
-				cursor:pointer; 
-				padding-left:4px;
-				color:#FFFFFF;
-			}
-			.jobTitleRow .panel-button-container .save-job {
-				display:none;
-			}
-			.jobTitleRow .panel-button-container .cancel-job-edit {
-				display:none;
-			}
-			.job-data-closed {
-				color:#FFFFFF;
-			}
-			.job-data-open {
-				color:#FFFFFF;
-			}
-			.job-header-job-div {
-				display:inline; 
-				margin-right:10px;
-			}
 			.panel-button-container {
 				float:right; 
 				margin-right:8px;
@@ -2550,12 +1259,7 @@
     	<div style="width:1300px;">	    	
     		<div id="quoteButtonContainer" style="width:30px;">
     			<ansi:hasPermission permissionRequired="QUOTE_READ"><a href="quoteLookup.html" style="text-decoration:none; color:#404040;"><webthing:view styleClass="fa-2x quote-button">Lookup</webthing:view></a></ansi:hasPermission>
-    			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><a href="quoteMaintenance.html"><webthing:addNew styleClass="fa-2x quote-button action-button" styleId="new-quote-button">New Quote</webthing:addNew></a></ansi:hasPermission>
-    			<%--
-    			<input type="button" class="quoteButton" id="buttonModifyQuote" value="Modify" /><br />
-    			<input type="button" class="quoteButton" id="buttonCopyQuote" value="Copy" /><br />
-    			<input type="button" class="quoteButton" id="buttonNewQuote" value="New" /><br />
-    			 --%>
+    			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><a href="newQuote.html"><webthing:addNew styleClass="fa-2x quote-button action-button" styleId="new-quote-button">New Quote</webthing:addNew></a></ansi:hasPermission>
 	    	</div>
 	    	<div id="address-container">
 		    	<div style="color:#FFFFFF; background-color:#404040; cursor:pointer; width:1269px; margin-bottom:1px;">
@@ -2613,17 +1317,10 @@
 	    	</div>  <!--  quote container -->
 	    	
 	    	
-	    	<div id="job-list-container" style="width:1260px; clear:both; margin-top:12px;">
-	    		<ul id="jobList" class="sortable" style="width:100%;">	    			
-	    		</ul>
-	    	</div> <!--  job list container -->
 	    </div>
 	    <div class="spacer">&nbsp;</div>
 	    
 	    
-	    <div id="job-loading-pattern">
-	    	<div class="job-data-row"><webthing:thinking style="width:100%" /></div>
-	    </div>
 	    
 	    
 		<webthing:quotePrint modalName="printQuoteDiv" />
@@ -2647,63 +1344,8 @@
 	    <jsp:include page="quoteModals.jsp" />
 	    
 	    
-	    <ansi:hasPermission permissionRequired="QUOTE_PROPOSE">
-	    	<div id="job-activate-modal" class="edit-modal">
-	    		<table>
-	    			<tr>
-	    				<td><span class="formLabel">Activation Date:</span></td>
-	    				<td><input type="text" name="activationDate" class="dateField" /></td>
-	    				<td><span class="activationDateErr err errMsg"></span></td>
-	    			</tr>
-	    			<tr>
-	    				<td><span class="formLabel">Start Date:</span></td>
-	    				<td><input type="text" name="startDate" class="dateField" /></td>
-	    				<td><span class="startDateErr err errMsg"></span><br /></td>
-	    			</tr>
-	    		</table>
-	    	</div>
-	    	
-	    	
-	    	<div id="job-cancel-modal" class="edit-modal">
-	    		<table>
-	    			<tr>
-	    				<td><span class="formLabel">Cancel Reason:</span></td>
-	    				<td><input type="text" name="cancelReason"  /></td>
-	    				<td><span class="cancelReasonErr err errMsg"></span></td>
-	    			</tr>
-	    			<tr>
-	    				<td><span class="formLabel">Cancel Date:</span></td>
-	    				<td><input type="text" name="cancelDate" class="dateField" /></td>
-	    				<td><span class="cancelDateErr err errMsg"></span><br /></td>
-	    			</tr>
-	    		</table>
-	    	</div>
-	    	
-	    	
-	    	<div id="job-delete-modal" class="edit-modal">
-	    		Are you sure you want to delete this job?
-	    	</div>
-	    	
-	    	
-	    	<div id="job-schedule-modal" class="edit-modal">
-	    		<table>
-	    			<tr>
-	    				<td><span class="formLabel">Start Date:</span></td>
-	    				<td><input type="text" name="startDate" class="dateField" /></td>
-	    				<td><span class="startDateErr err errMsg"></span><br /></td>
-	    			</tr>
-	    		</table>
-	    	</div>
-	    </ansi:hasPermission>
 	    
 	    
-	    <ansi:hasPermission permissionRequired="QUOTE_CREATE">
-	    <script type="text/javascript">
-	    $(document).ready(function() {
- 			QUOTEMAINTENANCE.makeJobSort();
-		});
-	    </script>
-		</ansi:hasPermission>
 	    
     </tiles:put>
 

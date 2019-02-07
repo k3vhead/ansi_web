@@ -48,6 +48,12 @@ public class QuoteResponse extends MessageResponse implements Serializable {
 		}
 	}
 
+	
+	public QuoteResponse(QuoteResponseItem quoteResponseItem) {
+		super();
+		this.quote = quoteResponseItem;
+	}
+
 	public QuoteResponseItem getQuote() {
 		return quote;
 	}
