@@ -35,8 +35,6 @@
         
         	$(document).ready(function() {
 				; NEWQUOTE = {
-					quoteId : '<c:out value="${ANSI_QUOTE_ID}" />',
-					jobId : '<c:out value="${ANSI_JOB_ID}" />',
 					accountTypeList : null,
 					countryList : null,
 					buildingTypeList : null,
@@ -48,7 +46,15 @@
 					jobFrequencyList : null,
 					leadTypeList : null,
 					managerList : null,
-					quote : null,
+
+					// save the pieces of the quote
+					jobSiteAddress : null,
+					billToAddress : null,
+					jobsiteJobContact : null,
+					jobsiteSiteContact : null,
+					billtoContractContact : null,
+					billtoBIllingContact : null,
+					
 					
 					joblist : {},
 					
@@ -315,6 +321,7 @@
 									id: "address-cancel-button",
 									click: function($event) {
 										$( "#address-edit-modal" ).dialog("close");
+										location.href="quoteLookup.html";
 									}
 								},
 								{
@@ -659,6 +666,9 @@
 					
 					
 					populateAddressPanel : function($selectorId, $address) {
+						console.log("populateAddressPanel");
+						console.log($selectorId);
+						console.log($address);
 		            	$($selectorId + " .ansi-address-name").html($address.name);
 		            	$($selectorId + " .ansi-address-address1").html($address.address1);
             			$($selectorId + " .ansi-address-address2").html($address.address2);
@@ -697,6 +707,39 @@
 						if ( $data.preferredContact == "mobile_phone") { $($selector + " .ansi-contact-method-is-mobile-phone").show(); }
 						if ( $data.preferredContact == "fax") { $($selector + " .ansi-contact-method-is-fax").show(); }
 						if ( $data.preferredContact == "email") { $($selector + " .ansi-contact-method-is-email").show(); }
+					},
+					
+					
+					
+					populateDefaultQuoteHeader : function() {
+						console.log("populateDefaultQuoteHeader");
+						if ( NEWQUOTE.jobSiteAddress.invoiceStyleDefault != null ) {
+							$("#quoteDataContainer select[name='invoiceStyle']").val(NEWQUOTE.jobSiteAddress.invoiceStyleDefault);
+						}	
+						if ( NEWQUOTE.jobSiteAddress.invoiceGroupingDefault != null ) {
+							$("#quoteDataContainer select[name='invoiceGrouping']").val(NEWQUOTE.jobSiteAddress.invoiceGroupingDefault);
+						}
+						if ( NEWQUOTE.jobSiteAddress.invoiceBatchDefault != null ) {
+							var $invoiceBatch = NEWQUOTE.jobSiteAddress.invoiceBatchDefault == 1;
+							$("#quoteDataContainer input[name='invoiceBatch']").prop("checked", $invoiceBatch);
+						}
+						if ( NEWQUOTE.jobSiteAddress.invoiceTermsDefault != null ) {
+							$("#quoteDataContainer select[name='invoiceTerms']").val(NEWQUOTE.jobSiteAddress.invoiceTermsDefault);
+						}
+						if ( NEWQUOTE.jobSiteAddress.jobsiteBuildingTypeDefault != null ) {
+							$("#quoteDataContainer select[name='buildingType']").val(NEWQUOTE.jobSiteAddress.jobsiteBuildingTypeDefault);
+						}
+						if ( NEWQUOTE.jobSiteAddress.billtoAccountTypeDefault != null ) {
+							$("#quoteDataContainer select[name='accountType']").val(NEWQUOTE.jobSiteAddress.billtoAccountTypeDefault);
+						}
+						if ( NEWQUOTE.jobSiteAddress.billToTaxExempt != null ) {
+							var $taxExempt = NEWQUOTE.jobSiteAddress.billToTaxExempt == 1;
+			            	$("#quoteDataContainer input[name='taxExempt']").prop("checked", $taxExempt);
+			            }
+						if ( NEWQUOTE.jobSiteAddress.billToTaxExemptReason != null ) {
+							$("#quoteDataContainer input[name='taxExemptReason']").val(NEWQUOTE.jobSiteAddress.billToTaxExemptReason);
+						}
+		            	
 					},
 					
 					
@@ -911,6 +954,7 @@
 					
 					
 					saveAddressSuccess : function($data) {
+						console.log("saveAddressSuccess");
 						console.log($data);
 						var $type = $("#address-edit-modal").data("type");
 						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {							
@@ -924,12 +968,50 @@
 							$("#address-edit-modal .errMsg").html($message).show().fadeOut(3000);
 						} else {
 							console.log("Saving quote stuff from address update");
-							console.log($data);
-							NEWQUOTE.quote = $data.data.quote;
-							NEWQUOTE.populateAddressPanel( "#address-bill-to", $data.data.quote.billTo);
-							NEWQUOTE.populateAddressPanel( "#address-job-site", $data.data.quote.jobSite);
-							$("#globalMsg").html("Update Successful").fadeOut(3000);
+							console.log("We've got a '" + $type + "' address");
+							if ( $type == 'jobsite' ) {
+								// job site stuff
+								NEWQUOTE.jobSiteAddress = $data.data.jobSiteAddress;								
+								NEWQUOTE.populateAddressPanel( "#address-job-site", NEWQUOTE.jobSiteAddress);
+								if ( $data.data.jobsiteSiteContact != null ) {
+									NEWQUOTE.jobsiteSiteContact = $data.data.jobsiteSiteContact
+									NEWQUOTE.populateContactPanel( "#site-contact", NEWQUOTE.jobsiteSiteContact);
+								}
+								if ( $data.data.jobsiteJobContact != null ) {
+									NEWQUOTE.jobsiteJobContact = $data.data.jobsiteJobContact
+									NEWQUOTE.populateContactPanel( "#job-contact", NEWQUOTE.jobsiteJobContact);
+								}
+								// billto stuff
+								NEWQUOTE.billToAddress = $data.data.billToAddress
+								NEWQUOTE.populateAddressPanel( "#address-bill-to", NEWQUOTE.billToAddress );
+								if ( $data.data.billtoContractContact != null ) {
+									NEWQUOTE.billtoContractContact = $data.data.billtoContractContact
+									NEWQUOTE.populateContactPanel( "#contract-contact", NEWQUOTE.billtoContractContact);
+								}
+								if ( $data.data.billtoBillingContact != null ) {
+									NEWQUOTE.billtoBillingContact = $data.data.billtoBillingContact
+									NEWQUOTE.populateContactPanel( "#billing-contact", NEWQUOTE.billtoBillingContact);
+								}
+								NEWQUOTE.populateDefaultQuoteHeader();
+							} else if ( $type == 'billto' ){
+								// billto stuff
+								NEWQUOTE.billToAddress = $data.data.billToAddress
+								NEWQUOTE.populateAddressPanel( "#address-bill-to", NEWQUOTE.billToAddress );
+								if ( $data.data.billtoContractContact != null ) {
+									NEWQUOTE.billtoContractContact = $data.data.billtoContractContact
+									NEWQUOTE.populateContactPanel( "#contract-contact", NEWQUOTE.billtoContractContact);
+								}
+								if ( $data.data.billtoBillingContact != null ) {
+									NEWQUOTE.billtoBillingContact = $data.data.billtoBillingContact
+									NEWQUOTE.populateContactPanel( "#billing-contact", NEWQUOTE.billtoBillingContact);
+								}
+							} else {
+								$("#globalMsg").html( "Unknown address type " + $type + ". Contact support" );
+							}
 							$("#address-edit-modal").dialog("close");
+							$("#edit-this-address").show();
+							$(".quote-button-container").show();
+							$("#edit-this-quote").show();
 						}
 					}, 
 						

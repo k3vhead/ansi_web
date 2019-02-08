@@ -35,11 +35,12 @@ public class AddressResponseQuery {
 	
 	private Integer addressId;
 	private PreparedStatement preparedStatement;
+	private Logger logger;
 	
 	
 	private AddressResponseQuery(Connection conn, Integer addressId) throws RecordNotFoundException, Exception {
 		super();
-		Logger logger = LogManager.getLogger(this.getClass());
+		logger = LogManager.getLogger(this.getClass());
 		String sql = this.sql + this.idFilter;
 		logger.log(Level.DEBUG, sql);
 		preparedStatement = conn.prepareStatement(sql);
@@ -48,6 +49,7 @@ public class AddressResponseQuery {
 	
 	private AddressResponseQuery(Connection conn) throws Exception {
 		super();
+		logger = LogManager.getLogger(this.getClass());
 		preparedStatement = conn.prepareStatement(sql + sortPhrase);		
 	}
 
@@ -96,9 +98,9 @@ public class AddressResponseQuery {
 		return item;
 	}
 
-	private static Integer makeIntResponse(ResultSet rs, String columnName) throws SQLException {
+	private static Integer makeIntResponse(ResultSet rs, String columnName) throws SQLException {	
 		Integer value = null;
-		Object o = rs.getObject(columnName);
+		Object o = rs.getObject(columnName);		
 		if ( o != null ) {
 			value = (Integer)o;
 		}

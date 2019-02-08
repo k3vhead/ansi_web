@@ -248,6 +248,42 @@ public class AddressResponseItem extends ApplicationObject implements Comparable
 		return ret;
 	}
 
+	@Override
+	public AddressResponseItem clone() throws CloneNotSupportedException {
+		AddressResponseItem clone = new AddressResponseItem();
+		
+		clone.setAddress1(this.address1);
+		clone.setAddress2(address2);
+		clone.setAddressId(addressId);
+		clone.setCity(city);
+		clone.setCounty(county);
+		clone.setName(name);
+		clone.setState(state);
+		clone.setStatus(status);
+		clone.setZip(zip);
+		clone.setCountryCode(countryCode);
+		clone.setInvoiceStyleDefault(invoiceStyleDefault);
+		clone.setInvoiceGroupingDefault(invoiceGroupingDefault);
+		clone.setInvoiceBatchDefault(invoiceBatchDefault);
+		clone.setInvoiceTermsDefault(invoiceTermsDefault);
+		clone.setOurVendorNbrDefault(ourVendorNbrDefault);
+		clone.setJobsiteBilltoAddressDefault(jobsiteBilltoAddressDefault);
+		clone.setJobsiteBillToName(jobsiteBillToName);
+		clone.setJobsiteJobContactDefault(jobsiteJobContactDefault);
+		clone.setJobsiteJobContactName(jobsiteJobContactName);
+		clone.setJobsiteSiteContactDefault(jobsiteSiteContactDefault);
+		clone.setJobsiteSiteContactName(jobsiteSiteContactName);
+		clone.setJobsiteFloorsDefault(jobsiteFloorsDefault);
+		clone.setJobsiteBuildingTypeDefault(jobsiteBuildingTypeDefault);
+		clone.setBilltoAccountTypeDefault(billtoAccountTypeDefault);
+		clone.setBilltoContractContactDefault(billtoContractContactDefault);
+		clone.setBilltoBillingContactDefault(billtoBillingContactDefault);
+		clone.setBilltoTaxExempt(billtoTaxExempt);
+		clone.setBilltoTaxExemptReason(billtoTaxExemptReason);
+		
+		return clone;
+	}
+
 
 
 	

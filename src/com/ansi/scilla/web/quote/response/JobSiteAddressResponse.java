@@ -30,32 +30,52 @@ public class JobSiteAddressResponse extends MessageResponse implements Serializa
 		this.logger = LogManager.getLogger(this.getClass());
 	}
 	
-	public JobSiteAddressResponse(Connection conn, Integer jobSiteAddressId) throws RecordNotFoundException, Exception {
-		this();
-		makeJobSiteAddressResponse(conn, jobSiteAddressId);
-	}
 	
-	private void makeJobSiteAddressResponse(Connection conn, Integer jobSiteAddressId) throws RecordNotFoundException, Exception {
+	
+	public void makeJobSiteAddressResponse(Connection conn, Integer jobSiteAddressId) throws RecordNotFoundException, Exception {
 		this.jobSiteAddress = AddressResponseQuery.selectOne(conn, jobSiteAddressId);
 		logger.log(Level.DEBUG, this.jobSiteAddress);
-		if ( this.jobSiteAddress.getJobsiteBilltoAddressDefault() != null ) {
+		if ( this.jobSiteAddress.getJobsiteBilltoAddressDefault() == null ) {
+			logger.log(Level.DEBUG, "Using job site as bill-to");
+			this.billToAddress = this.jobSiteAddress.clone();
+		} else {
 			logger.log(Level.DEBUG, "Getting billtodefault: " + this.jobSiteAddress.getJobsiteBilltoAddressDefault());
 			// if it's populated, the address must exist because of foreign key restraints
 			this.billToAddress = AddressResponseQuery.selectOne(conn, this.jobSiteAddress.getJobsiteBilltoAddressDefault());
 		}
 		if ( this.jobSiteAddress.getJobsiteJobContactDefault() != null ) {
+			logger.log(Level.DEBUG, "Getting Job Contact: " + this.jobSiteAddress.getJobsiteJobContactDefault());
 			this.jobsiteJobContact = ContactItem.makeContactItem(conn, this.jobSiteAddress.getJobsiteJobContactDefault());
 		}
 		if ( this.jobSiteAddress.getJobsiteSiteContactDefault() != null ) {
+			logger.log(Level.DEBUG, "Getting Site Contact: " + this.jobSiteAddress.getJobsiteSiteContactDefault());
 			this.jobsiteSiteContact = ContactItem.makeContactItem(conn, this.jobSiteAddress.getJobsiteSiteContactDefault());
 		}
-		if ( this.jobSiteAddress.getBilltoContractContactDefault() != null ) {
-			this.billtoContractContact = ContactItem.makeContactItem(conn, this.jobSiteAddress.getBilltoContractContactDefault());
+		if ( this.billToAddress.getBilltoContractContactDefault() != null ) {
+			logger.log(Level.DEBUG, "Getting Contract Contact: " + this.billToAddress.getBilltoContractContactDefault());
+			this.billtoContractContact = ContactItem.makeContactItem(conn, this.billToAddress.getBilltoContractContactDefault());
 		}
-		if ( this.jobSiteAddress.getBilltoBillingContactDefault() != null ) {
-			this.billtoBillingContact = ContactItem.makeContactItem(conn, this.jobSiteAddress.getBilltoBillingContactDefault());
+		if ( this.billToAddress.getBilltoBillingContactDefault() != null ) {
+			logger.log(Level.DEBUG, "Getting Billing Contact: " + this.billToAddress.getBilltoBillingContactDefault());
+			this.billtoBillingContact = ContactItem.makeContactItem(conn, this.billToAddress.getBilltoBillingContactDefault());
 		}
 	}
+
+	
+	public void makeBillToAddressResponse(Connection conn, Integer billToAddressId) throws RecordNotFoundException, Exception {
+		this.billToAddress = AddressResponseQuery.selectOne(conn, billToAddressId);
+		logger.log(Level.DEBUG, this.billToAddress);		
+		if ( this.billToAddress.getBilltoContractContactDefault() != null ) {
+			logger.log(Level.DEBUG, "Getting Contract Contact: " + this.billToAddress.getBilltoContractContactDefault());
+			this.billtoContractContact = ContactItem.makeContactItem(conn, this.billToAddress.getBilltoContractContactDefault());
+		}
+		if ( this.billToAddress.getBilltoBillingContactDefault() != null ) {
+			logger.log(Level.DEBUG, "Getting Billing Contact: " + this.billToAddress.getBilltoBillingContactDefault());
+			this.billtoBillingContact = ContactItem.makeContactItem(conn, this.billToAddress.getBilltoBillingContactDefault());
+		}
+	}
+
+
 
 	public AddressResponseItem getBillToAddress() {
 		return billToAddress;

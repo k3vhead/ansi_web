@@ -70,7 +70,19 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 		
 		if ( quoteRequest.getJobSiteAddressId() != null ) {
 			try {
-				JobSiteAddressResponse jobSiteAddressResponse = new JobSiteAddressResponse(conn, quoteRequest.getJobSiteAddressId());
+				JobSiteAddressResponse jobSiteAddressResponse = new JobSiteAddressResponse();
+				jobSiteAddressResponse.makeJobSiteAddressResponse(conn, quoteRequest.getJobSiteAddressId());
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, jobSiteAddressResponse);
+			} catch (RecordNotFoundException e) {
+				webMessages.addMessage(QuoteRequest.JOB_SITE_ADDRESS_ID, "Invalid address");
+				JobSiteAddressResponse jobSiteAddressResponse = new JobSiteAddressResponse();
+				jobSiteAddressResponse.setWebMessages(webMessages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, jobSiteAddressResponse);
+			}
+		} else if ( quoteRequest.getBillToAddressId() != null ) {
+			try {
+				JobSiteAddressResponse jobSiteAddressResponse = new JobSiteAddressResponse();
+				jobSiteAddressResponse.makeBillToAddressResponse(conn, quoteRequest.getBillToAddressId());
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, jobSiteAddressResponse);
 			} catch (RecordNotFoundException e) {
 				webMessages.addMessage(QuoteRequest.BILL_TO_ADDRESS_ID, "Invalid address");
@@ -88,12 +100,7 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 
 	}
 
-	private Address makeAddress(Connection conn, Integer addressId) throws RecordNotFoundException, Exception {
-		Address address = new Address();
-		address.setAddressId(addressId);
-		address.selectOne(conn);
-		return address;
-	}
+	
 
 	
 
