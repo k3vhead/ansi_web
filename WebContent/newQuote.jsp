@@ -47,13 +47,27 @@
 					leadTypeList : null,
 					managerList : null,
 
-					// save the pieces of the quote
+					// pieces of the quote that are required
 					jobSiteAddress : null,
 					billToAddress : null,
 					jobsiteJobContact : null,
 					jobsiteSiteContact : null,
 					billtoContractContact : null,
-					billtoBIllingContact : null,
+					billtoBillingContact : null,
+					divisionId : null,
+					managerId : null,
+					leadType : null,
+					
+					// pieces of the quote that are not required
+					accountType : null,
+					buildingType : null,
+					invoiceTerms : null,
+					invoiceStyle : null,
+					invoiceGrouping : null,
+					invoiceBatch : null,
+					taxExempt : null,
+					taxExemptReason : null,
+				
 					
 					
 					joblist : {},
@@ -584,7 +598,7 @@
 		    			
 		    			$("#quote-container .quote-button-container .cancel-edit").click(function($event) {
 		    				console.log("Cancel Editing a quote");
-		    				NEWQUOTE.populateQuotePanel(NEWQUOTE.quote);
+		    				NEWQUOTE.populateQuotePanel();
 		    				$("#quotePanel input").prop("disabled", true);
 		    				$("#quotePanel select").prop("disabled", true);
 		    				$("#quotePanel select").removeClass("edit-err");
@@ -714,29 +728,37 @@
 					populateDefaultQuoteHeader : function() {
 						console.log("populateDefaultQuoteHeader");
 						if ( NEWQUOTE.jobSiteAddress.invoiceStyleDefault != null ) {
+							NEWQUOTE.invoiceStyle = NEWQUOTE.jobSiteAddress.invoiceStyleDefault;
 							$("#quoteDataContainer select[name='invoiceStyle']").val(NEWQUOTE.jobSiteAddress.invoiceStyleDefault);
 						}	
 						if ( NEWQUOTE.jobSiteAddress.invoiceGroupingDefault != null ) {
+							NEWQUOTE.invoiceGrouping = NEWQUOTE.jobSiteAddress.invoiceGroupingDefault
 							$("#quoteDataContainer select[name='invoiceGrouping']").val(NEWQUOTE.jobSiteAddress.invoiceGroupingDefault);
 						}
 						if ( NEWQUOTE.jobSiteAddress.invoiceBatchDefault != null ) {
+							NEWQUOTE.invoiceBatch = NEWQUOTE.jobSiteAddress.invoiceBatchDefault;
 							var $invoiceBatch = NEWQUOTE.jobSiteAddress.invoiceBatchDefault == 1;
 							$("#quoteDataContainer input[name='invoiceBatch']").prop("checked", $invoiceBatch);
 						}
 						if ( NEWQUOTE.jobSiteAddress.invoiceTermsDefault != null ) {
+							NEWQUOTE.invoiceTerms = NEWQUOTE.jobSiteAddress.invoiceTermsDefault;
 							$("#quoteDataContainer select[name='invoiceTerms']").val(NEWQUOTE.jobSiteAddress.invoiceTermsDefault);
 						}
 						if ( NEWQUOTE.jobSiteAddress.jobsiteBuildingTypeDefault != null ) {
+							NEWQUOTE.buildingType = NEWQUOTE.jobSiteAddress.jobsiteBuildingTypeDefault;
 							$("#quoteDataContainer select[name='buildingType']").val(NEWQUOTE.jobSiteAddress.jobsiteBuildingTypeDefault);
 						}
 						if ( NEWQUOTE.jobSiteAddress.billtoAccountTypeDefault != null ) {
+							NEWQUOTE.accountType = NEWQUOTE.jobSiteAddress.billtoAccountTypeDefault;
 							$("#quoteDataContainer select[name='accountType']").val(NEWQUOTE.jobSiteAddress.billtoAccountTypeDefault);
 						}
 						if ( NEWQUOTE.jobSiteAddress.billToTaxExempt != null ) {
+							NEWQUOTE.taxExempt = NEWQUOTE.jobSiteAddress.billToTaxExempt;
 							var $taxExempt = NEWQUOTE.jobSiteAddress.billToTaxExempt == 1;
 			            	$("#quoteDataContainer input[name='taxExempt']").prop("checked", $taxExempt);
 			            }
 						if ( NEWQUOTE.jobSiteAddress.billToTaxExemptReason != null ) {
+							NEWQUOTE.taxExemptReason = NEWQUOTE.jobSiteAddress.billToTaxExemptReason;
 							$("#quoteDataContainer input[name='taxExemptReason']").val(NEWQUOTE.jobSiteAddress.billToTaxExemptReason);
 						}
 		            	
@@ -828,43 +850,42 @@
 		            },
 		            
 		            
-		            populateQuotePanel : function($quote) {
+		            populateQuotePanel : function() {
 		            	console.log("populating quote panel");
-		            	console.log($quote);
 		            
-		            	$("#printHistoryDiv").attr("data-quoteid", $quote.quote.quoteId);	//this is so the gethistory method has an id to work with
+		            	//$("#printHistoryDiv").attr("data-quoteid", $quote.quote.quoteId);	//this is so the gethistory method has an id to work with
 		            
-		            	$("#quoteDataContainer input[name='quoteId']").val($quote.quote.quoteId);
-		            	$("#quoteDataContainer select[name='managerId']").val($quote.quote.managerId);
-		            	$("#quoteDataContainer select[name='divisionId']").val($quote.quote.divisionId);
-		            	$("#quoteDataContainer .quoteNbrDisplay").html($quote.quote.quoteNumber);
-		            	$("#quoteDataContainer .revisionDisplay").html($quote.quote.revision);
+		            	//$("#quoteDataContainer input[name='quoteId']").val($quote.quote.quoteId);
+		            	$("#quoteDataContainer select[name='managerId']").val(NEWQUOTE.managerId);
+		            	$("#quoteDataContainer select[name='divisionId']").val(NEWQUOTE.divisionId);
+		            	//$("#quoteDataContainer .quoteNbrDisplay").html($quote.quote.quoteNumber);
+		            	//$("#quoteDataContainer .revisionDisplay").html($quote.quote.revision);
 		            	
-		            	if ( $quote.quote.copiedFromQuoteId != null ) {
-		            		var $copyLink = '(Previous: <a href="quoteMaintenance.html?id=' + $quote.quote.copiedFromQuoteId + '" style="color:#404040">'+$quote.quote.copiedFromQuoteNbrRev+'</a>)'
-		            		$("#quoteDataContainer .quoteCopyDisplay").html($copyLink);
-		            	}
+		            	//if ( $quote.quote.copiedFromQuoteId != null ) {
+		            	//	var $copyLink = '(Previous: <a href="quoteMaintenance.html?id=' + $quote.quote.copiedFromQuoteId + '" style="color:#404040">'+$quote.quote.copiedFromQuoteNbrRev+'</a>)'
+		            	//	$("#quoteDataContainer .quoteCopyDisplay").html($copyLink);
+		            	//}
 		            	
-		            	$("#quoteDataContainer select[name='accountType']").val($quote.quote.accountType);
-		            	$("#quoteDataContainer select[name='invoiceTerms']").val($quote.quote.invoiceTerms);
-		            	$("#quoteDataContainer .proposedDate").html($quote.quote.proposalDate);
-		            	$("#quoteDataContainer select[name='leadType']").val($quote.quote.leadType);
-		            	$("#quoteDataContainer select[name='invoiceStyle']").val($quote.quote.invoiceStyle);
-		            	if ( $quote.signedBy != null ) {
-		            		$("#quoteDataContainer input[name='signedBy']").val($quote.signedBy.firstName + " " + $quote.signedBy.lastName);
-		            		$("#quoteDataContainer input[name='signedBy']").attr("id", $quote.signedBy.contactid);
-		            	}		            	
-		            	$("#quoteDataContainer input[name='signedByContactId']").val($quote.quote.signedByContactId);
-		            	$("#quoteDataContainer select[name='buildingType']").val($quote.quote.buildingType);
-		            	$("#quoteDataContainer select[name='invoiceGrouping']").val($quote.quote.invoiceGrouping);
+		            	$("#quoteDataContainer select[name='accountType']").val(NEWQUOTE.accountType);
+		            	$("#quoteDataContainer select[name='invoiceTerms']").val(NEWQUOTE.invoiceTerms);
+		            	$("#quoteDataContainer .proposedDate").html(NEWQUOTE.proposalDate);
+		            	$("#quoteDataContainer select[name='leadType']").val(NEWQUOTE.leadType);
+		            	$("#quoteDataContainer select[name='invoiceStyle']").val(NEWQUOTE.invoiceStyle);
+		            	//if ( $quote.signedBy != null ) {
+		            	//	$("#quoteDataContainer input[name='signedBy']").val($quote.signedBy.firstName + " " + $quote.signedBy.lastName);
+		            	//	$("#quoteDataContainer input[name='signedBy']").attr("id", $quote.signedBy.contactid);
+		            	//}		            	
+		            	//$("#quoteDataContainer input[name='signedByContactId']").val($quote.quote.signedByContactId);
+		            	$("#quoteDataContainer select[name='buildingType']").val(NEWQUOTE.buildingType);
+		            	$("#quoteDataContainer select[name='invoiceGrouping']").val(NEWQUOTE.invoiceGrouping);
 		            	
-		            	var $invoiceBatch = $quote.quote.invoiceBatch == 1;
+		            	var $invoiceBatch = NEWQUOTE.invoiceBatch == 1;
 		            	$("#quoteDataContainer input[name='invoiceBatch']").prop("checked", $invoiceBatch);
-		            	var $taxExempt = $quote.quote.taxExempt == 1;
+		            	var $taxExempt = NEWQUOTE.taxExempt == 1;
 		            	$("#quoteDataContainer input[name='taxExempt']").prop("checked", $taxExempt);
-		            	$("#quoteDataContainer input[name='taxExemptReason']").val($quote.quote.taxExemptReason);
+		            	$("#quoteDataContainer input[name='taxExemptReason']").val(NEWQUOTE.taxExemptReason);
 		            	
-		            	$("#quoteDataContainer .printCount").html($quote.quote.printCount);		            	
+		            	//$("#quoteDataContainer .printCount").html($quote.quote.printCount);		            	
 		            },
 		            
 		            
@@ -1012,6 +1033,8 @@
 							$("#edit-this-address").show();
 							$(".quote-button-container").show();
 							$("#edit-this-quote").show();
+							
+							NEWQUOTE.showNextModal();
 						}
 					}, 
 						
@@ -1024,14 +1047,12 @@
 								"site":"siteContact"
 						}
 					
-						var $quoteId = NEWQUOTE.quote.quote.quoteId;
 						var $contactType = $("#contact-edit-modal").data("type");
 						var $contactId = $("#contact-edit-modal").data("id");						
 						var $contactLabel = $contactLabels[$contactType];
 						var $outbound = {};
-						$outbound["quoteId"]=$quoteId;
 						$outbound[$contactLabel]=$contactId;
-						NEWQUOTE.doQuoteUpdate($quoteId, $outbound, NEWQUOTE.saveContactSuccess, NEWQUOTE.saveContactErr);
+						NEWQUOTE.doQuoteUpdate($outbound, NEWQUOTE.saveContactSuccess, NEWQUOTE.saveContactErr);
 					},
 					
 					
@@ -1048,8 +1069,6 @@
 					
 					saveContactSuccess : function($data) {
 						console.log("save contact success");
-						console.log("NEWQUOTE.quote");
-						console.log(NEWQUOTE.quote);
 						console.log($data);
 						var $type = $("#contact-edit-modal").data("type");
 						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {							
@@ -1067,14 +1086,25 @@
 							$("#contact-edit-modal .errMsg").html($message).show().fadeOut(3000);
 						} else {
 							console.log("Saving quote stuff from contact update");
-							console.log($data);
-							NEWQUOTE.quote = $data.data.quote;
-							NEWQUOTE.populateContactPanel( "#job-contact", $data.data.quote.jobContact.jobContact);
-							NEWQUOTE.populateContactPanel( "#site-contact", $data.data.quote.jobContact.siteContact);
-							NEWQUOTE.populateContactPanel( "#billing-contact", $data.data.quote.jobContact.billingContact);
-							NEWQUOTE.populateContactPanel( "#contract-contact", $data.data.quote.jobContact.contractContact);
-							$("#globalMsg").html("Update Successful").fadeOut(3000);
-							$("#contact-edit-modal").dialog("close");							
+							var $message = "Update Successful";
+							if ( $type == 'job' ) {
+								NEWQUOTE.jobsiteJobContact = $data.data.contact;
+								NEWQUOTE.populateContactPanel( "#job-contact", NEWQUOTE.jobsiteJobContact);
+							} else if ( $type == 'site' ) {
+								NEWQUOTE.jobsiteSiteContact = $data.data.contact;
+								NEWQUOTE.populateContactPanel( "#site-contact", NEWQUOTE.jobsiteSiteContact);
+							} else if ( $type == 'contract' ) {
+								NEWQUOTE.billtoContractContact = $data.data.contact; 
+								NEWQUOTE.populateContactPanel( "#billing-contact", NEWQUOTE.billtoContractContact);
+							} else if ( $type == 'billing' ) {
+								NEWQUOTE.billtoBillingContact = $data.data.contact; 
+								NEWQUOTE.populateContactPanel( "#contract-contact", NEWQUOTE.billtoBillingContact);
+							} else {
+								$message = "Unexpected Response. Contact Support: " + $type;
+							}
+							$("#globalMsg").html($message).fadeOut(3000);
+							$("#contact-edit-modal").dialog("close");	
+							NEWQUOTE.showNextModal();
 						}
 						
 					},
@@ -1105,7 +1135,7 @@
 	    				
 	    				var $quoteId = NEWQUOTE.quote.quote.quoteId;
 	    				console.log($outbound);
-	    				NEWQUOTE.doQuoteUpdate($quoteId, $outbound, NEWQUOTE.saveQuoteHeaderSuccess, NEWQUOTE.saveQuoteHeaderErr);
+	    				NEWQUOTE.doQuoteUpdate($outbound, NEWQUOTE.saveQuoteHeaderSuccess, NEWQUOTE.saveQuoteHeaderErr);
 					},
 					
 					
@@ -1160,6 +1190,70 @@
 					
 					
 					
+					showNextModal : function() {
+						if ( NEWQUOTE.jobSiteAddress == null) {
+							var $type = "jobsite"
+		    				$title = "Job Site";		    				
+		    				$("#address-edit-modal input[name='address-name']").val("");
+		    				$("#address-edit-modal").dialog("option","title",$title);
+		    				$("#address-edit-modal .none-found").hide();
+		    				$("#address-edit-display").hide();
+		    				$("#address-edit-modal").data("type",$type);
+				        	$("#address-edit-modal").data("id","");
+		    				$("#address-edit-modal").dialog("open");							
+						} else if ( NEWQUOTE.billToAddress == null) {
+							var $type = "billto"
+		    				$title = "Bill To";		    				
+		    				$("#address-edit-modal input[name='address-name']").val("");
+		    				$("#address-edit-modal").dialog("option","title",$title);
+		    				$("#address-edit-modal .none-found").hide();
+		    				$("#address-edit-display").hide();
+		    				$("#address-edit-modal").data("type",$type);
+				        	$("#address-edit-modal").data("id","");
+		    				$("#address-edit-modal").dialog("open");
+						} else if ( NEWQUOTE.jobsiteJobContact == null) {
+		    				$("#contact-edit-modal input[name='contact-name']").val("");
+		    				$("#contact-edit-modal").dialog("option","title","Job Contact");
+		    				$("#contact-edit-modal .none-found").hide();
+		    				$("#contact-edit-display").hide();
+		    				$("#contact-edit-modal").data("type","job");
+				        	$("#contact-edit-modal").data("id","");
+		    				$("#contact-edit-modal").dialog("open");
+						} else if ( NEWQUOTE.jobsiteSiteContact == null) {
+		    				$("#contact-edit-modal input[name='contact-name']").val("");
+		    				$("#contact-edit-modal").dialog("option","title","Site Contact");
+		    				$("#contact-edit-modal .none-found").hide();
+		    				$("#contact-edit-display").hide();
+		    				$("#contact-edit-modal").data("type","site");
+				        	$("#contact-edit-modal").data("id","");
+		    				$("#contact-edit-modal").dialog("open");
+						} else if ( NEWQUOTE.billtoContractContact == null) {
+		    				$("#contact-edit-modal input[name='contact-name']").val("");
+		    				$("#contact-edit-modal").dialog("option","title","Contract Contact");
+		    				$("#contact-edit-modal .none-found").hide();
+		    				$("#contact-edit-display").hide();
+		    				$("#contact-edit-modal").data("type","contract");
+				        	$("#contact-edit-modal").data("id","");
+		    				$("#contact-edit-modal").dialog("open");
+						} else if ( NEWQUOTE.billtoBillingContact == null) {
+		    				$("#contact-edit-modal input[name='contact-name']").val("");
+		    				$("#contact-edit-modal").dialog("option","title","Billing Contact");
+		    				$("#contact-edit-modal .none-found").hide();
+		    				$("#contact-edit-display").hide();
+		    				$("#contact-edit-modal").data("type","billing");
+				        	$("#contact-edit-modal").data("id","");
+		    				$("#contact-edit-modal").dialog("open");
+						} else if ( NEWQUOTE.divisionId == null ) {
+							$("#edit-this-quote").click();
+						} else if ( NEWQUOTE.managerId == null ) {
+							$("#edit-this-quote").click();
+						} else if ( NEWQUOTE.leadType == null ) {
+							$("#edit-this-quote").click();
+						} else {
+							alert("Show a save button");
+						}
+						
+					},
 					
 					
 					

@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
-import com.ansi.scilla.common.db.Address;
 import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -21,7 +20,8 @@ import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.quote.request.QuoteRequest;
-import com.ansi.scilla.web.quote.response.JobSiteAddressResponse;
+import com.ansi.scilla.web.quote.response.NewQuoteAddressResponse;
+import com.ansi.scilla.web.quote.response.NewQuoteContactResponse;
 import com.ansi.scilla.web.quote.response.QuoteResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -70,23 +70,63 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 		
 		if ( quoteRequest.getJobSiteAddressId() != null ) {
 			try {
-				JobSiteAddressResponse jobSiteAddressResponse = new JobSiteAddressResponse();
+				NewQuoteAddressResponse jobSiteAddressResponse = new NewQuoteAddressResponse();
 				jobSiteAddressResponse.makeJobSiteAddressResponse(conn, quoteRequest.getJobSiteAddressId());
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, jobSiteAddressResponse);
 			} catch (RecordNotFoundException e) {
 				webMessages.addMessage(QuoteRequest.JOB_SITE_ADDRESS_ID, "Invalid address");
-				JobSiteAddressResponse jobSiteAddressResponse = new JobSiteAddressResponse();
+				NewQuoteAddressResponse jobSiteAddressResponse = new NewQuoteAddressResponse();
 				jobSiteAddressResponse.setWebMessages(webMessages);
 				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, jobSiteAddressResponse);
 			}
 		} else if ( quoteRequest.getBillToAddressId() != null ) {
 			try {
-				JobSiteAddressResponse jobSiteAddressResponse = new JobSiteAddressResponse();
+				NewQuoteAddressResponse jobSiteAddressResponse = new NewQuoteAddressResponse();
 				jobSiteAddressResponse.makeBillToAddressResponse(conn, quoteRequest.getBillToAddressId());
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, jobSiteAddressResponse);
 			} catch (RecordNotFoundException e) {
 				webMessages.addMessage(QuoteRequest.BILL_TO_ADDRESS_ID, "Invalid address");
-				JobSiteAddressResponse jobSiteAddressResponse = new JobSiteAddressResponse();
+				NewQuoteAddressResponse jobSiteAddressResponse = new NewQuoteAddressResponse();
+				jobSiteAddressResponse.setWebMessages(webMessages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, jobSiteAddressResponse);
+			}
+		} else if ( quoteRequest.getJobContactId() != null ) {
+			try {
+				NewQuoteContactResponse contactResponse = new NewQuoteContactResponse(conn, quoteRequest.getJobContactId());
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, contactResponse);
+			} catch (RecordNotFoundException e) {
+				webMessages.addMessage(QuoteRequest.JOB_CONTACT_ID, "Invalid contact");
+				NewQuoteAddressResponse jobSiteAddressResponse = new NewQuoteAddressResponse();
+				jobSiteAddressResponse.setWebMessages(webMessages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, jobSiteAddressResponse);
+			}
+		} else if ( quoteRequest.getSiteContact() != null ) {
+			try {
+				NewQuoteContactResponse contactResponse = new NewQuoteContactResponse(conn, quoteRequest.getSiteContact());
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, contactResponse);
+			} catch (RecordNotFoundException e) {
+				webMessages.addMessage(QuoteRequest.SITE_CONTACT, "Invalid contact");
+				NewQuoteAddressResponse jobSiteAddressResponse = new NewQuoteAddressResponse();
+				jobSiteAddressResponse.setWebMessages(webMessages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, jobSiteAddressResponse);
+			}
+		} else if ( quoteRequest.getContractContactId() != null ) {
+			try {
+				NewQuoteContactResponse contactResponse = new NewQuoteContactResponse(conn, quoteRequest.getContractContactId());
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, contactResponse);
+			} catch (RecordNotFoundException e) {
+				webMessages.addMessage(QuoteRequest.CONTRACT_CONTACT_ID, "Invalid contact");
+				NewQuoteAddressResponse jobSiteAddressResponse = new NewQuoteAddressResponse();
+				jobSiteAddressResponse.setWebMessages(webMessages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, jobSiteAddressResponse);
+			}
+		} else if ( quoteRequest.getBillingContactId() != null ) {
+			try {
+				NewQuoteContactResponse contactResponse = new NewQuoteContactResponse(conn, quoteRequest.getBillingContactId());
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, contactResponse);
+			} catch (RecordNotFoundException e) {
+				webMessages.addMessage(QuoteRequest.BILLING_CONTACT_ID, "Invalid contact");
+				NewQuoteAddressResponse jobSiteAddressResponse = new NewQuoteAddressResponse();
 				jobSiteAddressResponse.setWebMessages(webMessages);
 				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, jobSiteAddressResponse);
 			}

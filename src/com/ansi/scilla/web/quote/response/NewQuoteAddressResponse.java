@@ -13,7 +13,7 @@ import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.job.query.ContactItem;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
-public class JobSiteAddressResponse extends MessageResponse implements Serializable {
+public class NewQuoteAddressResponse extends MessageResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -25,7 +25,7 @@ public class JobSiteAddressResponse extends MessageResponse implements Serializa
 	private ContactItem billtoBillingContact;
 	private Logger logger;
 	
-	public JobSiteAddressResponse() {
+	public NewQuoteAddressResponse() {
 		super();
 		this.logger = LogManager.getLogger(this.getClass());
 	}

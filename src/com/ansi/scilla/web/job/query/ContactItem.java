@@ -76,7 +76,7 @@ public class ContactItem extends ApplicationObject {
 			item.setLastName(rs.getString("contact_last_name"));
 			item.setFirstName(rs.getString("contact_first_name"));
 			item.setPreferredContact(rs.getString("contact_preferred_contact"));
-			item.setPreferredContact(rs.getString("job_contact_method"));
+			item.setMethod(rs.getString("job_contact_method"));
 		} else {
 			throw new RecordNotFoundException();
 		}
