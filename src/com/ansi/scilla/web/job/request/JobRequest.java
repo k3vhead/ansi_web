@@ -618,7 +618,7 @@ public class JobRequest extends AbstractRequest{
 		
 
 		RequestValidator.validateId(conn, webMessages, "contact", "contact_id", "billingContactId", this.billingContactId, true);
-		RequestValidator.validateCode(conn, webMessages, "job", "building_type", "buildingType", this.buildingType, true);
+		RequestValidator.validateBuildingType(conn, webMessages, "buildingType", this.buildingType, true);
 		RequestValidator.validateId(conn, webMessages, "contact", "contact_id", "contractContactId", this.contractContactId, true);
 		RequestValidator.validateId(conn, webMessages, "division", "division_id", "divisionId", this.divisionId, true);
 		RequestValidator.validateBoolean(webMessages, "invoiceBatch", this.getInvoiceBatch(), true);

@@ -88,7 +88,7 @@
 							NEWQUOTE.getQuote(NEWQUOTE.quoteId);	
 						}
 						QUOTE_PRINT.init_modal("#printQuoteDiv");
-						QUOTE_PRINT_HISTORY.init("#printHistoryDiv", "#viewPrintHistory");
+						//QUOTE_PRINT_HISTORY.init("#printHistoryDiv", "#viewPrintHistory");
 						//$("#loading-container").hide();
 						//$("#quotePanel").fadeIn(1000);
 						//$("#address-container").fadeIn(1000);
@@ -957,6 +957,7 @@
 						var $addressLabel = $addressLabels[$addressType];
 						var $outbound = {};
 						$outbound[$addressLabel]=$addressId;
+						$outbound['action'] = 'validate';
 						NEWQUOTE.doQuoteUpdate($outbound, NEWQUOTE.saveAddressSuccess, NEWQUOTE.saveAddressErr);
 					},
 					
@@ -1052,6 +1053,7 @@
 						var $contactLabel = $contactLabels[$contactType];
 						var $outbound = {};
 						$outbound[$contactLabel]=$contactId;
+						$outbound['action'] = 'validate';
 						NEWQUOTE.doQuoteUpdate($outbound, NEWQUOTE.saveContactSuccess, NEWQUOTE.saveContactErr);
 					},
 					
@@ -1122,7 +1124,6 @@
 	    						$outbound['signedByContactId'] = $("#quotePanel input[name='signedBy']").attr("id");
 	    					} else {
 		    					$selector = "#quotePanel input[name='" + $value.name + "']";
-		    					console.log($selector);
 		    					$outbound[$value.name] = $($selector).val();
 	    					}
 	    				});
@@ -1133,8 +1134,8 @@
 	    				$outbound['taxExempt'] = $("#quotePanel input[name='taxExempt']").prop("checked");
 	    				$outbound['invoiceBatch'] = $("#quotePanel input[name='invoiceBatch']").prop("checked");
 	    				
-	    				var $quoteId = NEWQUOTE.quote.quote.quoteId;
 	    				console.log($outbound);
+	    				$outbound['action'] = 'validate';
 	    				NEWQUOTE.doQuoteUpdate($outbound, NEWQUOTE.saveQuoteHeaderSuccess, NEWQUOTE.saveQuoteHeaderErr);
 					},
 					
@@ -1351,9 +1352,7 @@
 	    			
 	    			
 	    			
-            #viewPrintHistory {
-                cursor:pointer;
-            }
+
         	.action-button {
         		cursor:pointer;
         	}

@@ -64,6 +64,13 @@ public class RequestValidator {
 	}
 	
 	
+	public static void validateAccountType(Connection conn, WebMessages webMessages, String fieldName, String value, boolean required) throws Exception {
+		validateCode(conn, webMessages, "quote", "account_type", fieldName, value, required);
+	}
+	
+	
+
+	
 	public static void validateBigDecimal(WebMessages webMessages, String fieldName, BigDecimal value, BigDecimal minValue, BigDecimal maxValue, boolean required) {
 		if (value == null) {
 			if (required) {
@@ -102,7 +109,12 @@ public class RequestValidator {
 		}
 	}
 
-	public static void validateCode(Connection conn, WebMessages webMessages, String dbTableName, String dbFieldName,
+	public static void validateBuildingType(Connection conn, WebMessages webMessages, String fieldName, String value, boolean required) throws Exception {
+		validateCode(conn, webMessages, "job", "building_type", fieldName, value, required);
+	}
+	
+	
+	private static void validateCode(Connection conn, WebMessages webMessages, String dbTableName, String dbFieldName,
 			String fieldName, String value, boolean required) throws Exception {
 		if (value == null) {
 			if (required) {
@@ -344,6 +356,10 @@ public class RequestValidator {
 		}
 	}
 
+	
+	public static void validateLeadType(Connection conn, WebMessages webMessages, String fieldName, String value, boolean required) throws Exception {
+		validateCode(conn, webMessages, "quote", "lead_type", fieldName, value, required);
+	}
 	
 	
 	public static void validateNumber(WebMessages webMessages, String fieldName, Object value, Object minValue, Object maxValue, boolean required) {

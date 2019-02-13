@@ -10,7 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
+import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.Quote;
+import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.struts.SessionData;
@@ -19,6 +21,7 @@ import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
+import com.ansi.scilla.web.quote.request.NewQuoteRequest;
 import com.ansi.scilla.web.quote.request.QuoteRequest;
 import com.ansi.scilla.web.quote.response.NewQuoteAddressResponse;
 import com.ansi.scilla.web.quote.response.NewQuoteContactResponse;
@@ -38,7 +41,6 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 		Quote quote = new Quote();
 		Connection conn = null;
 		WebMessages webMessages = new WebMessages();
-		QuoteResponse quoteResponse = new QuoteResponse();
 		ResponseCode responseCode = null;
 		
 		try {
@@ -48,9 +50,18 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 			
 			String jsonString = super.makeJsonString(request);
 			logger.log(Level.DEBUG, "Quote Json: " + jsonString);
-			QuoteRequest quoteRequest = StringUtils.isBlank(jsonString) ? new QuoteRequest() : new QuoteRequest(jsonString);
+			NewQuoteRequest quoteRequest = StringUtils.isBlank(jsonString) ? new NewQuoteRequest() : new NewQuoteRequest(jsonString);
 			
-			trafficCop(conn, response, sessionData, quoteRequest);
+			if ( quoteRequest.getAction().equalsIgnoreCase(NewQuoteRequest.ACTION_IS_VALIDATE)) {
+				doValidate(conn, response, sessionData, quoteRequest);
+			} else if ( quoteRequest.getAction().equalsIgnoreCase(NewQuoteRequest.ACTION_IS_SAVE) ) {
+				doSave(conn, response, sessionData, quoteRequest);
+			} else {
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid New Quote Action");
+				QuoteResponse quoteResponse = new QuoteResponse();
+				quoteResponse.setWebMessages(webMessages);
+				super.sendResponse(conn, response, ResponseCode.SYSTEM_FAILURE, quoteResponse);
+			}
 			
 			
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
@@ -65,7 +76,7 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 		
 	}
 
-	private void trafficCop(Connection conn, HttpServletResponse response, SessionData sessionData, QuoteRequest quoteRequest) throws Exception {
+	private void doValidate(Connection conn, HttpServletResponse response, SessionData sessionData, NewQuoteRequest quoteRequest) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		
 		if ( quoteRequest.getJobSiteAddressId() != null ) {
@@ -130,14 +141,52 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 				jobSiteAddressResponse.setWebMessages(webMessages);
 				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, jobSiteAddressResponse);
 			}
+		} else if ( quoteRequest.hasJobUpdates() || quoteRequest.hasQuoteHeaderUpdates() ) {
+			validateQuoteHeader(conn, sessionData, response, quoteRequest);
 		} else {
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Quote Request Type");
 			QuoteResponse quoteResponse = new QuoteResponse();
 			quoteResponse.setWebMessages(webMessages);
 			super.sendResponse(conn, response, ResponseCode.SYSTEM_FAILURE, quoteResponse);
-
+	
 		}
+	
+	}
 
+	private void doSave(Connection conn, HttpServletResponse response, SessionData sessionData, NewQuoteRequest quoteRequest) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Not Coded Yet");
+		QuoteResponse quoteResponse = new QuoteResponse();
+		quoteResponse.setWebMessages(webMessages);
+		super.sendResponse(conn, response, ResponseCode.SYSTEM_FAILURE, quoteResponse);
+	}
+
+	
+	
+	private void validateQuoteHeader(Connection conn, SessionData sessionData, HttpServletResponse response, NewQuoteRequest quoteRequest) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		
+		RequestValidator.validateLeadType(conn, webMessages, NewQuoteRequest.LEAD_TYPE, quoteRequest.getLeadType(), true);
+		RequestValidator.validateId(conn, webMessages, "ansi_user", "user_id", NewQuoteRequest.MANAGER_ID, quoteRequest.getManagerId(), true);
+		RequestValidator.validatePaymentTerms(webMessages, NewQuoteRequest.PAYMENT_TERMS, quoteRequest.getPaymentTerms(), true);
+		RequestValidator.validateAccountType(conn, webMessages, NewQuoteRequest.ACCOUNT_TYPE, quoteRequest.getAccountType(), true);
+		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, NewQuoteRequest.DIVISION_ID, quoteRequest.getDivisionId(), true);
+		RequestValidator.validateBoolean(webMessages, NewQuoteRequest.TAX_EXEMPT, quoteRequest.getTaxExempt(), false);
+		if ( quoteRequest.getTaxExempt() != null && quoteRequest.getTaxExempt() ) {
+			RequestValidator.validateString(webMessages, NewQuoteRequest.TAX_EXEMPT_REASON, quoteRequest.getTaxExemptReason(), true);
+		}
+		RequestValidator.validateBoolean(webMessages, NewQuoteRequest.INVOICE_BATCH, quoteRequest.getInvoiceBatch(), false);
+		RequestValidator.validateInvoiceStyle(webMessages, NewQuoteRequest.INVOICE_STYLE, quoteRequest.getInvoiceStyle(), true);
+		RequestValidator.validateBuildingType(conn, webMessages, NewQuoteRequest.BUILDING_TYPE, quoteRequest.getBuildingType(), true);
+		RequestValidator.validateInvoiceGrouping(webMessages, NewQuoteRequest.INVOICE_GROUPING, quoteRequest.getInvoiceGrouping(), true);
+		
+		QuoteResponse quoteResponse = new QuoteResponse();
+		if ( webMessages.isEmpty() ) {
+			quoteResponse.setWebMessages(webMessages);
+			super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, quoteResponse);
+		} else {
+			doSave(conn, response, sessionData, quoteRequest);
+		}
 	}
 
 	
