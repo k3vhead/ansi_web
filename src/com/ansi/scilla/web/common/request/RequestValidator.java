@@ -97,16 +97,12 @@ public class RequestValidator {
 		}
 	}
 
-	public static void validateBoolean(WebMessages webMessages, String fieldName, boolean value, boolean required) {
-		if (value == required) {
-			if (required) {
+	public static void validateBoolean(WebMessages webMessages, String fieldName, Boolean value, boolean required) {
+		if (required) {
+			if ( value == null ) {
 				webMessages.addMessage(fieldName, "Required Value");
 			}
-		} else {
-			if (value != required) {
-				webMessages.addMessage(fieldName, "Invalid Value");
-			}
-		}
+		} 
 	}
 
 	public static void validateBuildingType(Connection conn, WebMessages webMessages, String fieldName, String value, boolean required) throws Exception {

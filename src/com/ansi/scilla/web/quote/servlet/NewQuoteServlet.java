@@ -38,10 +38,8 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 		
 		String url = request.getRequestURI();
 		logger.log(Level.DEBUG, "URL: " + url);
-		Quote quote = new Quote();
 		Connection conn = null;
 		WebMessages webMessages = new WebMessages();
-		ResponseCode responseCode = null;
 		
 		try {
 			conn = AppUtils.getDBCPConn();
@@ -51,7 +49,7 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 			String jsonString = super.makeJsonString(request);
 			logger.log(Level.DEBUG, "Quote Json: " + jsonString);
 			NewQuoteRequest quoteRequest = StringUtils.isBlank(jsonString) ? new NewQuoteRequest() : new NewQuoteRequest(jsonString);
-			
+			logger.log(Level.DEBUG, quoteRequest);
 			if ( quoteRequest.getAction().equalsIgnoreCase(NewQuoteRequest.ACTION_IS_VALIDATE)) {
 				doValidate(conn, response, sessionData, quoteRequest);
 			} else if ( quoteRequest.getAction().equalsIgnoreCase(NewQuoteRequest.ACTION_IS_SAVE) ) {
@@ -153,22 +151,12 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 	
 	}
 
-	private void doSave(Connection conn, HttpServletResponse response, SessionData sessionData, NewQuoteRequest quoteRequest) throws Exception {
-		WebMessages webMessages = new WebMessages();
-		webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Not Coded Yet");
-		QuoteResponse quoteResponse = new QuoteResponse();
-		quoteResponse.setWebMessages(webMessages);
-		super.sendResponse(conn, response, ResponseCode.SYSTEM_FAILURE, quoteResponse);
-	}
-
-	
-	
 	private void validateQuoteHeader(Connection conn, SessionData sessionData, HttpServletResponse response, NewQuoteRequest quoteRequest) throws Exception {
 		WebMessages webMessages = new WebMessages();
-		
+
 		RequestValidator.validateLeadType(conn, webMessages, NewQuoteRequest.LEAD_TYPE, quoteRequest.getLeadType(), true);
 		RequestValidator.validateId(conn, webMessages, "ansi_user", "user_id", NewQuoteRequest.MANAGER_ID, quoteRequest.getManagerId(), true);
-		RequestValidator.validatePaymentTerms(webMessages, NewQuoteRequest.PAYMENT_TERMS, quoteRequest.getPaymentTerms(), true);
+		RequestValidator.validateInvoiceTerms(webMessages, NewQuoteRequest.PAYMENT_TERMS, quoteRequest.getPaymentTerms(), true);
 		RequestValidator.validateAccountType(conn, webMessages, NewQuoteRequest.ACCOUNT_TYPE, quoteRequest.getAccountType(), true);
 		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, NewQuoteRequest.DIVISION_ID, quoteRequest.getDivisionId(), true);
 		RequestValidator.validateBoolean(webMessages, NewQuoteRequest.TAX_EXEMPT, quoteRequest.getTaxExempt(), false);
@@ -179,14 +167,19 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 		RequestValidator.validateInvoiceStyle(webMessages, NewQuoteRequest.INVOICE_STYLE, quoteRequest.getInvoiceStyle(), true);
 		RequestValidator.validateBuildingType(conn, webMessages, NewQuoteRequest.BUILDING_TYPE, quoteRequest.getBuildingType(), true);
 		RequestValidator.validateInvoiceGrouping(webMessages, NewQuoteRequest.INVOICE_GROUPING, quoteRequest.getInvoiceGrouping(), true);
-		
+
 		QuoteResponse quoteResponse = new QuoteResponse();
-		if ( webMessages.isEmpty() ) {
-			quoteResponse.setWebMessages(webMessages);
-			super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, quoteResponse);
-		} else {
-			doSave(conn, response, sessionData, quoteRequest);
-		}
+		ResponseCode responseCode = webMessages.isEmpty() ? ResponseCode.SUCCESS : ResponseCode.EDIT_FAILURE;
+		quoteResponse.setWebMessages(webMessages);
+		super.sendResponse(conn, response, responseCode, quoteResponse);
+	}
+
+	private void doSave(Connection conn, HttpServletResponse response, SessionData sessionData, NewQuoteRequest quoteRequest) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Not Coded Yet");
+		QuoteResponse quoteResponse = new QuoteResponse();
+		quoteResponse.setWebMessages(webMessages);
+		super.sendResponse(conn, response, ResponseCode.SYSTEM_FAILURE, quoteResponse);
 	}
 
 	

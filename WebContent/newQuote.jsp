@@ -614,6 +614,10 @@
 		    				NEWQUOTE.saveQuoteHeader();
 		    			});
 		    			
+		    			
+		    			$("#save-quote-button").click(function($event) {
+		    				NEWQUOTE.saveTheNewQuote();
+		    			});
 		    		},
 		    		
 		    		
@@ -964,6 +968,7 @@
 					
 					
 					saveAddressErr : function($statusCode) {
+						$("#save-quote-button").hide(2500);
 						var $messages = {
 								403:"Session Expired. Log in and try again",
 								404:"System Error Address 404. Contact Support",
@@ -979,7 +984,8 @@
 						console.log("saveAddressSuccess");
 						console.log($data);
 						var $type = $("#address-edit-modal").data("type");
-						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {							
+						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {	
+							$("#save-quote-button").hide(2500);
 							if ( $type == 'jobsite' ) {
 								$message = $data.data.webMessages.jobSiteAddressId[0]; 
 							} else if ( $type == 'billto' ) {
@@ -1059,6 +1065,7 @@
 					
 					
 					saveContactErr : function($statusCode) {
+						$("#save-quote-button").hide(2500);
 						var $messages = {
 								403:"Session Expired. Log in and try again",
 								404:"System Error Contact 404. Contact Support",
@@ -1073,7 +1080,8 @@
 						console.log("save contact success");
 						console.log($data);
 						var $type = $("#contact-edit-modal").data("type");
-						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {							
+						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {	
+							$("#save-quote-button").hide(2500);
 							if ( $type == 'job' ) {
 								$message = $data.data.webMessages.jobContactId[0]; 
 							} else if ( $type == 'site' ) {
@@ -1142,12 +1150,15 @@
 					
 					
 					saveQuoteHeaderErr : function($statusCode) {
+						console.log("saveQuoteHeaderErr " + $statusCode)
+						$("#save-quote-button").hide(2500);
 						var $messages = {
 								403:"Session Expired. Log in and try again",
 								404:"System Error Quote 404. Contact Support",
 								500:"System Error Quote 500. Contact Support"
 						}
 						$("#globalMsg").html( $messages[$statusCode] );
+						$("#globalMsg").show();
 						$("#quotePanel input").prop("disabled", true);
 	    				$("#quotePanel select").prop("disabled", true);
 	    				$("#quotePanel select").removeClass("edit-err");
@@ -1160,6 +1171,7 @@
 					
 					saveQuoteHeaderSuccess : function($data) {
 						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+							$("#save-quote-button").hide(2500);
 							console.log($data);
 							$.each($data.data.webMessages, function(index, val) {							    
 							    // it's too much work to figure out if the field is input or select, so do both
@@ -1171,10 +1183,23 @@
 							alert("Invalid input. Correct the indicated fields and resubmit");
 						} else {
 							console.log("Update header success:");
-							console.log($data);
-							NEWQUOTE.quote = $data.data.quote;
-							NEWQUOTE.populateQuotePanel(NEWQUOTE.quote);
-							NEWQUOTE.showJobUpdates($data.data);
+
+							
+							$.each( $("#quotePanel input"), function($index, $value) {
+		    					if ( $value.name == 'signedBy') {
+		    						// skip this one; we're not using it
+		    					} else {
+			    					$selector = "#quotePanel input[name='" + $value.name + "']";
+			    					NEWQUOTE[$value.name] = $($selector).val();
+		    					}
+		    				});
+		    				$.each( $("#quotePanel select"), function($index, $value) {
+		    					$selector = "#quotePanel select[name='" + $value.name + "']";
+		    					NEWQUOTE[$value.name] = $($selector).val();
+		    				});
+							
+							
+							
 							$("#globalMsg").html("Update Successful").fadeOut(3000);
 							$("#quotePanel input").prop("disabled", true);
 		    				$("#quotePanel select").prop("disabled", true);
@@ -1183,6 +1208,7 @@
 		    				$("#edit-this-quote").show();
 		    				$("#quote-container .quote-button-container .save-quote").hide();
 		    				$("#quote-container .quote-button-container .cancel-edit").hide();
+		    				NEWQUOTE.showNextModal();
 						}
 						
 						
@@ -1191,8 +1217,46 @@
 					
 					
 					
+					
+					saveTheNewQuote : function() {
+						console.log("saveTheNewQuote")
+						var $outbound = {}
+						$outbound['action'] = 'save';
+						
+						// pieces of the quote that are required
+						$.each(["jobSiteAddress","billToAddress","jobsiteJobContact","jobsiteSiteContact","billtoContractContact","billtoBillingContact","divisionId","managerId","leadType"], function($index, $value) {
+							$outbound[$value] = NEWQUOTE[$value];
+						});
+						
+						
+						// pieces of the quote that are not required
+						$.each(["accountType","buildingType","invoiceTerms","invoiceStyle","invoiceGrouping","invoiceBatch","taxExempt","taxExemptReason"], function($index, $value) {
+							$outbound[$value] = NEWQUOTE[$value];
+						});
+						
+						NEWQUOTE.doQuoteUpdate($outbound, NEWQUOTE.saveTheQuoteSuccess, NEWQUOTE.saveTheQuoteErr);
+					},
+					
+					
+					
+					saveTheQuoteErr : function($data) {
+						console.log("saveTheQuoteErr");
+						$("#globalMsg").html("not coded yet -- hang tight for a few").show();
+					},
+					
+					
+					
+					saveTheQuoteSuccess : function($data) {
+						console.log("saveTheQuoteSuccess");
+						$("#globalMsg").html("not coded yet -- hang tight for a few").show();
+					},
+					
+					
+					
+					
 					showNextModal : function() {
 						if ( NEWQUOTE.jobSiteAddress == null) {
+							$("#save-quote-button").hide(2500);
 							var $type = "jobsite"
 		    				$title = "Job Site";		    				
 		    				$("#address-edit-modal input[name='address-name']").val("");
@@ -1203,6 +1267,7 @@
 				        	$("#address-edit-modal").data("id","");
 		    				$("#address-edit-modal").dialog("open");							
 						} else if ( NEWQUOTE.billToAddress == null) {
+							$("#save-quote-button").hide(2500);
 							var $type = "billto"
 		    				$title = "Bill To";		    				
 		    				$("#address-edit-modal input[name='address-name']").val("");
@@ -1213,6 +1278,7 @@
 				        	$("#address-edit-modal").data("id","");
 		    				$("#address-edit-modal").dialog("open");
 						} else if ( NEWQUOTE.jobsiteJobContact == null) {
+							$("#save-quote-button").hide(2500);
 		    				$("#contact-edit-modal input[name='contact-name']").val("");
 		    				$("#contact-edit-modal").dialog("option","title","Job Contact");
 		    				$("#contact-edit-modal .none-found").hide();
@@ -1221,6 +1287,7 @@
 				        	$("#contact-edit-modal").data("id","");
 		    				$("#contact-edit-modal").dialog("open");
 						} else if ( NEWQUOTE.jobsiteSiteContact == null) {
+							$("#save-quote-button").hide(2500);
 		    				$("#contact-edit-modal input[name='contact-name']").val("");
 		    				$("#contact-edit-modal").dialog("option","title","Site Contact");
 		    				$("#contact-edit-modal .none-found").hide();
@@ -1229,6 +1296,7 @@
 				        	$("#contact-edit-modal").data("id","");
 		    				$("#contact-edit-modal").dialog("open");
 						} else if ( NEWQUOTE.billtoContractContact == null) {
+							$("#save-quote-button").hide(2500);
 		    				$("#contact-edit-modal input[name='contact-name']").val("");
 		    				$("#contact-edit-modal").dialog("option","title","Contract Contact");
 		    				$("#contact-edit-modal .none-found").hide();
@@ -1237,6 +1305,7 @@
 				        	$("#contact-edit-modal").data("id","");
 		    				$("#contact-edit-modal").dialog("open");
 						} else if ( NEWQUOTE.billtoBillingContact == null) {
+							$("#save-quote-button").hide(2500);
 		    				$("#contact-edit-modal input[name='contact-name']").val("");
 		    				$("#contact-edit-modal").dialog("option","title","Billing Contact");
 		    				$("#contact-edit-modal .none-found").hide();
@@ -1245,13 +1314,16 @@
 				        	$("#contact-edit-modal").data("id","");
 		    				$("#contact-edit-modal").dialog("open");
 						} else if ( NEWQUOTE.divisionId == null ) {
+							$("#save-quote-button").hide(2500);
 							$("#edit-this-quote").click();
 						} else if ( NEWQUOTE.managerId == null ) {
+							$("#save-quote-button").hide(2500);
 							$("#edit-this-quote").click();
 						} else if ( NEWQUOTE.leadType == null ) {
+							$("#save-quote-button").hide(2500);
 							$("#edit-this-quote").click();
 						} else {
-							alert("Show a save button");
+							$("#save-quote-button").fadeIn(2500);
 						}
 						
 					},
@@ -1349,7 +1421,10 @@
 				display:none;
 				cursor:pointer;
 			}		
-	    			
+	    	
+	    	#save-quote-button {
+	    		display:none;
+	    	}
 	    			
 	    			
 
@@ -1434,7 +1509,10 @@
     	<div style="width:1300px;">	    	
     		<div id="quoteButtonContainer" style="width:30px;">
     			<ansi:hasPermission permissionRequired="QUOTE_READ"><a href="quoteLookup.html" style="text-decoration:none; color:#404040;"><webthing:view styleClass="fa-2x quote-button">Lookup</webthing:view></a></ansi:hasPermission>
-    			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><a href="newQuote.html"><webthing:addNew styleClass="fa-2x quote-button action-button" styleId="new-quote-button">New Quote</webthing:addNew></a></ansi:hasPermission>
+    			<ansi:hasPermission permissionRequired="QUOTE_CREATE">
+    				<a href="newQuote.html"><webthing:addNew styleClass="fa-2x quote-button action-button" styleId="new-quote-button">New Quote</webthing:addNew></a>
+    				<webthing:save styleClass="fa-2x quote-button action-button" styleId="save-quote-button">Save</webthing:save>
+    			</ansi:hasPermission>
 	    	</div>
 	    	<div id="address-container">
 		    	<div style="color:#FFFFFF; background-color:#404040; cursor:pointer; width:1269px; margin-bottom:1px;">
