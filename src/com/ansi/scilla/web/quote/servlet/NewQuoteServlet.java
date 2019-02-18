@@ -2,6 +2,8 @@ package com.ansi.scilla.web.quote.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -12,10 +14,12 @@ import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.Quote;
+import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.struts.SessionData;
+import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
@@ -25,6 +29,7 @@ import com.ansi.scilla.web.quote.request.NewQuoteRequest;
 import com.ansi.scilla.web.quote.request.QuoteRequest;
 import com.ansi.scilla.web.quote.response.NewQuoteAddressResponse;
 import com.ansi.scilla.web.quote.response.NewQuoteContactResponse;
+import com.ansi.scilla.web.quote.response.NewQuoteDisplayResponse;
 import com.ansi.scilla.web.quote.response.QuoteResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -156,7 +161,7 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 
 		RequestValidator.validateLeadType(conn, webMessages, NewQuoteRequest.LEAD_TYPE, quoteRequest.getLeadType(), true);
 		RequestValidator.validateId(conn, webMessages, "ansi_user", "user_id", NewQuoteRequest.MANAGER_ID, quoteRequest.getManagerId(), true);
-		RequestValidator.validateInvoiceTerms(webMessages, NewQuoteRequest.PAYMENT_TERMS, quoteRequest.getPaymentTerms(), true);
+		RequestValidator.validateInvoiceTerms(webMessages, NewQuoteRequest.INVOICE_TERMS, quoteRequest.getInvoiceTerms(), true);
 		RequestValidator.validateAccountType(conn, webMessages, NewQuoteRequest.ACCOUNT_TYPE, quoteRequest.getAccountType(), true);
 		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, NewQuoteRequest.DIVISION_ID, quoteRequest.getDivisionId(), true);
 		RequestValidator.validateBoolean(webMessages, NewQuoteRequest.TAX_EXEMPT, quoteRequest.getTaxExempt(), false);
@@ -176,10 +181,70 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 
 	private void doSave(Connection conn, HttpServletResponse response, SessionData sessionData, NewQuoteRequest quoteRequest) throws Exception {
 		WebMessages webMessages = new WebMessages();
-		webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Not Coded Yet");
-		QuoteResponse quoteResponse = new QuoteResponse();
-		quoteResponse.setWebMessages(webMessages);
-		super.sendResponse(conn, response, ResponseCode.SYSTEM_FAILURE, quoteResponse);
+		try {
+			Date today = new Date();
+			Quote quote = new Quote();
+			SessionUser sessionUser = sessionData.getUser();
+
+			quote.setAddedBy(sessionUser.getUserId());		
+			quote.setAddedDate(today);
+			quote.setUpdatedBy(sessionUser.getUserId());
+			quote.setUpdatedDate(today);
+
+			quote.setBillToAddressId(quoteRequest.getBillToAddressId());
+			quote.setJobSiteAddressId(quoteRequest.getJobSiteAddressId());
+			quote.setLeadType(quoteRequest.getLeadType());
+			quote.setDivisionId(quoteRequest.getDivisionId());
+			quote.setAccountType(quoteRequest.getAccountType());
+			quote.setManagerId(quoteRequest.getManagerId());
+			quote.setTemplateId(0);
+
+			if ( ! StringUtils.isBlank(quoteRequest.getAccountType())) {
+				quote.setAccountType(quoteRequest.getAccountType());
+			}
+
+			quote.setQuoteNumber(AppUtils.getNextQuoteNumber(conn));
+			quote.setRevision("A");
+			quote.setSignedByContactId(null);
+
+			logger.log(Level.DEBUG, "new Quote servlet Add Data:");
+			logger.log(Level.DEBUG, quote.toString());
+			int quoteId = 0;
+			try {
+				quoteId = quote.insertWithKey(conn);
+			} catch ( SQLException e) {
+				if ( e.getMessage().contains("duplicate key")) {
+					throw new DuplicateEntryException();
+				} else {
+					AppUtils.logException(e);
+					throw e;
+				}
+			} 
+			quote.setQuoteId(quoteId);
+			
+			
+			conn.commit();
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Quote Inserted");
+			NewQuoteDisplayResponse quoteResponse = new NewQuoteDisplayResponse();
+			quoteResponse.setQuoteId(quoteId);
+			quoteResponse.setInvoiceGrouping(quoteRequest.getInvoiceGrouping());
+			quoteResponse.setInvoiceStyle(quoteRequest.getInvoiceStyle());
+			quoteResponse.setBuildingType(quoteRequest.getBuildingType());
+			quoteResponse.setInvoiceBatch(quoteRequest.getInvoiceBatch());
+			quoteResponse.setInvoiceTerms(quoteRequest.getInvoiceTerms());
+			if ( quoteRequest.getTaxExempt() ) {
+				quoteRequest.setTaxExempt(true);
+				quoteRequest.setTaxExemptReason(quoteRequest.getTaxExemptReason());
+			} else {
+				quoteRequest.setTaxExempt(false);
+				quoteRequest.setTaxExemptReason(null);
+			}			
+			quoteResponse.setWebMessages(webMessages);
+			super.sendResponse(conn, response, ResponseCode.SUCCESS, quoteResponse);
+		} catch ( Exception e ) {
+			conn.rollback();
+			throw e;
+		}
 	}
 
 	

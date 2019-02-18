@@ -1223,16 +1223,24 @@
 						var $outbound = {}
 						$outbound['action'] = 'save';
 						
-						// pieces of the quote that are required
-						$.each(["jobSiteAddress","billToAddress","jobsiteJobContact","jobsiteSiteContact","billtoContractContact","billtoBillingContact","divisionId","managerId","leadType"], function($index, $value) {
-							$outbound[$value] = NEWQUOTE[$value];
-						});
-						
-						
-						// pieces of the quote that are not required
-						$.each(["accountType","buildingType","invoiceTerms","invoiceStyle","invoiceGrouping","invoiceBatch","taxExempt","taxExemptReason"], function($index, $value) {
-							$outbound[$value] = NEWQUOTE[$value];
-						});
+						$outbound['billToAddressId'] = NEWQUOTE.billToAddress['addressId'] ;
+						$outbound['jobSiteAddressId'] = NEWQUOTE.jobSiteAddress['addressId'] ;
+						$outbound['leadType'] = NEWQUOTE.leadType ;
+						$outbound['managerId'] = NEWQUOTE.managerId ;
+						$outbound['invoiceTerms'] = NEWQUOTE.invoiceTerms;
+						$outbound['templateId'] = "" ;
+						$outbound['divisionId'] = NEWQUOTE.divisionId;
+						$outbound['accountType'] = NEWQUOTE.accountType ;
+						$outbound['contractContactId'] = NEWQUOTE.billtoContractContact['contactId'] ;
+						$outbound['billingContactId'] = NEWQUOTE.billtoBillingContact['contactId'] ;
+						$outbound['jobContactId'] = NEWQUOTE.jobsiteJobContact['contactId'];
+						$outbound['siteContact'] = NEWQUOTE.jobsiteSiteContact['contactId'];
+						$outbound['taxExempt'] = NEWQUOTE.taxExempt ;
+						$outbound['taxExemptReason'] = NEWQUOTE.taxExemptReason ;
+						$outbound['invoiceBatch'] = NEWQUOTE.invoiceBatch ;
+						$outbound['invoiceStyle'] = NEWQUOTE.invoiceStyle ;
+						$outbound['buildingType'] = NEWQUOTE.buildingType ;
+						$outbound['invoiceGrouping'] = NEWQUOTE.invoiceGrouping ;
 						
 						NEWQUOTE.doQuoteUpdate($outbound, NEWQUOTE.saveTheQuoteSuccess, NEWQUOTE.saveTheQuoteErr);
 					},
@@ -1241,14 +1249,31 @@
 					
 					saveTheQuoteErr : function($data) {
 						console.log("saveTheQuoteErr");
-						$("#globalMsg").html("not coded yet -- hang tight for a few").show();
+						console.log("saveQuoteHeaderErr " + $statusCode)
+						$("#save-quote-button").hide(2500);
+						var $messages = {
+								403:"Session Expired. Log in and try again",
+								404:"System Error Quote 404. Contact Support",
+								500:"System Error Quote 500. Contact Support"
+						}
+						$("#globalMsg").html( $messages[$statusCode] );
+						$("#globalMsg").show();
 					},
 					
 					
 					
 					saveTheQuoteSuccess : function($data) {
 						console.log("saveTheQuoteSuccess");
-						$("#globalMsg").html("not coded yet -- hang tight for a few").show();
+						console.log($data);
+						$("#newQuoteDisplayForm input[name='quoteId']").val($data.data.quoteId);
+						$("#newQuoteDisplayForm input[name='invoiceGrouping']").val($data.data.invoiceGrouping);
+						$("#newQuoteDisplayForm input[name='invoiceStyle']").val($data.data.invoiceStyle);
+						$("#newQuoteDisplayForm input[name='buildingType']").val($data.data.buildingType);
+						$("#newQuoteDisplayForm input[name='invoiceBatch']").val($data.data.invoiceBatch);
+						$("#newQuoteDisplayForm input[name='invoiceTerms']").val($data.data.invoiceTerms);
+						$("#newQuoteDisplayForm input[name='taxExempt']").val($data.data.taxExempt);
+						$("#newQuoteDisplayForm input[name='taxExemptReason']").val($data.data.taxExemptReason);
+						$("#newQuoteDisplayForm").submit();
 					},
 					
 					
@@ -1379,6 +1404,9 @@
         	}
 			#printHistoryDiv {
                 display:none;
+            }
+            #newQuoteDisplay {
+            	display:none;
             }
 			#printQuoteDiv {
                 display:none;
@@ -1597,7 +1625,16 @@
 	    <jsp:include page="quoteModals.jsp" />
 	    
 	    
-	    
+	    <html:form action="newQuoteDisplay" styleId="newQuoteDisplay">
+	    	<html:hidden property="quoteId" />
+			<html:hidden property="invoiceGrouping" />
+			<html:hidden property="invoiceStyle" />
+			<html:hidden property="buildingType" />
+			<html:hidden property="invoiceBatch" />
+			<html:hidden property="invoiceTerms" />
+			<html:hidden property="taxExempt" />
+			<html:hidden property="taxExemptReason" />
+	    </html:form>
 	    
 	    
     </tiles:put>

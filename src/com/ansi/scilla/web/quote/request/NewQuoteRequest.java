@@ -3,12 +3,9 @@ package com.ansi.scilla.web.quote.request;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Date;
 
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.thewebthing.commons.lang.JsonException;
@@ -20,25 +17,14 @@ import com.thewebthing.commons.lang.JsonException;
 		public static final String ACTION_IS_SAVE = "save";
 		
 		public static final String ACTION = "action";
-		public static final String ADDRESS = "address";
 		public static final String BILL_TO_ADDRESS_ID = "billToAddressId";
-		public static final String COPIED_FROM_QUOTE_ID = "copiedFromQuoteId";
 		public static final String JOB_SITE_ADDRESS_ID = "jobSiteAddressId";
 		public static final String LEAD_TYPE = "leadType";
 		public static final String MANAGER_ID = "managerId";
-		public static final String NAME = "name";
-		public static final String PAYMENT_TERMS = "paymentTerms";
-		public static final String PROPOSAL_DATE = "proposalDate";
-		public static final String QUOTE_ID = "quoteId";
-		public static final String QUOTE_NUMBER = "quoteNumber";
-		public static final String REVISION = "revision";
-		public static final String SIGNED_BY_CONTACT_ID = "signedByContactId";
-		public static final String STATUS = "status";
+		public static final String INVOICE_TERMS = "invoiceTerms";
 		public static final String TEMPLATE_ID = "templateId";
 		public static final String DIVISION_ID = "divisionId";
 		public static final String ACCOUNT_TYPE = "accountType";
-		public static final String ADDED_BY = "addedBy";
-		public static final String ADDED_DATE = "addedDate";
 		public static final String CONTRACT_CONTACT_ID = "contractContactId";
 		public static final String BILLING_CONTACT_ID = "billingContactId";
 		public static final String JOB_CONTACT_ID = "jobContactId";
@@ -53,25 +39,14 @@ import com.thewebthing.commons.lang.JsonException;
 		private static final long serialVersionUID = 1L;		
 
 		private String action;
-		private String address;
 		private Integer billToAddressId;
-		private Integer copiedFromQuoteId;
 		private Integer jobSiteAddressId;
 		private String leadType;
 		private Integer managerId;
-		private String name;
-		private String paymentTerms;
-		private Date proposalDate;
-		private Integer quoteId;
-		private Integer quoteNumber;
-		private String revision;
-		private Integer signedByContactId;
-		private Integer status;
+		private String invoiceTerms;
 		private Integer templateId;
 		private Integer divisionId;
 		private String accountType;
-		private Integer addedBy;
-		private Date addedDate;
 		private Integer contractContactId;
 		private Integer billingContactId;
 		private Integer jobContactId;
@@ -90,29 +65,17 @@ import com.thewebthing.commons.lang.JsonException;
 		
 		public NewQuoteRequest(String jsonString) throws JsonException, IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException, InstantiationException, NoSuchMethodException {
 			this();
-//			AppUtils.json2object(jsonString, QuoteRequest.class, this);
 			NewQuoteRequest req = new NewQuoteRequest();
 			AppUtils.json2object(jsonString, req);
 			this.setAction(req.getAction());
-			this.setAddress(req.getAddress());
 			this.setBillToAddressId(req.getBillToAddressId());
-			this.setCopiedFromQuoteId(req.getCopiedFromQuoteId());
 			this.setJobSiteAddressId(req.getJobSiteAddressId());
 			this.setLeadType(req.getLeadType());
 			this.setManagerId(req.getManagerId());
-			this.setName(req.getName());
-			this.setPaymentTerms(req.getPaymentTerms());
-			this.setProposalDate(req.getProposalDate());
-			this.setQuoteId(req.getQuoteId());
-			this.setQuoteNumber(req.getQuoteNumber());
-			this.setRevision(req.getRevision());
-			this.setSignedByContactId(req.getSignedByContactId());
-			this.setStatus(req.getStatus());
+			this.setInvoiceTerms(req.getInvoiceTerms());
 			this.setTemplateId(req.getTemplateId());
 			this.setDivisionId(req.getDivisionId());
 			this.setAccountType(req.getAccountType());
-			this.setAddedBy(req.getAddedBy());
-			this.setAddedDate(req.getAddedDate());
 			this.setContractContactId(req.getContractContactId());
 			this.setBillingContactId(req.getBillingContactId());
 			this.setJobContactId(req.getJobContactId());
@@ -135,36 +98,6 @@ import com.thewebthing.commons.lang.JsonException;
 			this.action = action;
 		}
 
-		public Integer getAddedBy() {
-			return this.addedBy;
-		}
-		
-		
-		public void setAddedBy(Integer addedBy) {
-			this.addedBy = addedBy;
-		}
-
-		
-		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
-		public Date getAddedDate() {
-			return this.addedDate;
-		}
-		
-		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
-		public void setAddedDate(Date addedDate) {
-			this.addedDate = addedDate;
-		}
-		
-		public void setAddress(String address) {
-			this.address = address;
-		}
- 
-//		@RequiredForAdd
-//		@RequiredForUpdate
-		public String getAddress() {
-			return this.address;
-		}
-
 		
 		public void setBillToAddressId(Integer billToAddressId) {
 			this.billToAddressId = billToAddressId;
@@ -172,16 +105,6 @@ import com.thewebthing.commons.lang.JsonException;
 
 		public Integer getBillToAddressId() {
 			return this.billToAddressId;
-		}
-
-		
-		public void setCopiedFromQuoteId(Integer copiedFromQuoteId) {
-			this.copiedFromQuoteId = copiedFromQuoteId;
-		}
-
-		
-		public Integer getCopiedFromQuoteId() {
-			return this.copiedFromQuoteId;
 		}
 
 		
@@ -255,90 +178,15 @@ import com.thewebthing.commons.lang.JsonException;
 			return this.divisionId;
 		}
 		
-		public void setName(String name) {
-			this.name = name;
-		}
-
-//		@RequiredForAdd
-//		@RequiredForUpdate
-		public String getName() {
-			return this.name;
-		}
-
-		
-		@JsonProperty("invoiceTerms")
 		@QuoteHeaderField
-		public void setPaymentTerms(String paymentTerms) {
-			this.paymentTerms = paymentTerms;
+		public String getInvoiceTerms() {
+			return invoiceTerms;
 		}
 
-//		@RequiredForAdd
-//		@RequiredForUpdate
-		@JsonProperty("invoiceTerms")
-		@JobUpdateField
-		public String getPaymentTerms() {
-			return this.paymentTerms;
-		}
-		
-		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
-		public void setProposalDate(Date proposalDate) {
-			this.proposalDate = proposalDate;
+		public void setInvoiceTerms(String invoiceTerms) {
+			this.invoiceTerms = invoiceTerms;
 		}
 
-
-		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
-		public Date getProposalDate() {
-			return this.proposalDate;
-		}
-
-		/*
-		public void setQuoteGroupId(Integer quoteGroupId) {
-			this.quoteGroupId = quoteGroupId;
-		}
-
-		
-		@RequiredForAdd
-		@RequiredForUpdate
-		public Integer getQuoteGroupId() {
-			return this.quoteGroupId;
-		}
-		*/
-		
-		public void setQuoteId(Integer quoteId) {
-			this.quoteId = quoteId;
-		}
-
-		public Integer getQuoteId() {
-			return this.quoteId;
-		}
-		
-		public void setQuoteNumber(Integer quoteNumber) {
-			this.quoteNumber = quoteNumber;
-		}
-
-		public Integer getQuoteNumber() {
-			return this.quoteNumber;
-		}
-
-		
-		public void setRevision(String revision) {
-			this.revision = revision;
-		}
-
-		public String getRevision() {
-			return this.revision;
-		}
-
-		
-		public void setSignedByContactId(Integer signedByContactId) {
-			this.signedByContactId = signedByContactId;
-		}
-
-
-		public Integer getSignedByContactId() {
-			return this.signedByContactId;
-		}
-		
 		public void setAccountType(String accountType) {
 			this.accountType = accountType;
 		}
@@ -350,14 +198,6 @@ import com.thewebthing.commons.lang.JsonException;
 		}
 
 		
-		public void setStatus(Integer status) {
-			this.status = status;
-		}
-
-//		@RequiredForUpdate
-		public Integer getStatus() {
-			return this.status;
-		}
 
 		
 		public void setTemplateId(Integer templateId) {
