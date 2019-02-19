@@ -65,6 +65,7 @@
 						}
 						QUOTE_PRINT.init_modal("#printQuoteDiv");
 						QUOTE_PRINT_HISTORY.init("#printHistoryDiv", "#viewPrintHistory");
+						QUOTEMAINTENANCE.populateNewQuoteJobFields();
 						//$("#loading-container").hide();
 						//$("#quotePanel").fadeIn(1000);
 						//$("#address-container").fadeIn(1000);
@@ -1761,6 +1762,24 @@
 		            },
 		            
 		            
+		            
+		            populateNewQuoteJobFields : function() {
+		            	// when a new quote is created, the action puts this attribute in the request
+		            	<c:if test="${not empty newQuoteDisplayForm}">
+		            		$("#quoteDataContainer select[name='invoiceGrouping']").val('<c:out value="${newQuoteDisplayForm.invoiceGrouping}" />');
+    		            	$("#quoteDataContainer select[name='invoiceStyle']").val('<c:out value="${newQuoteDisplayForm.invoiceStyle}" />');
+	            			$("#quoteDataContainer select[name='buildingType']").val('<c:out value="${newQuoteDisplayForm.buildingType}" />');
+	            			var $invoiceBatch = '<c:out value="${newQuoteDisplayForm.invoiceBatch}" />' == '1';
+    		            	$("#quoteDataContainer input[name='invoiceBatch']").prop("checked", $invoiceBatch);
+    		            	$("#quoteDataContainer select[name='invoiceTerms']").val('<c:out value="${newQuoteDisplayForm.invoiceTerms}" />');
+    		            	var $taxExempt = '<c:out value="${newQuoteDisplayForm.taxExempt}" />' == '1';
+    		            	$("#quoteDataContainer input[name='taxExempt']").prop("checked", $taxExempt);
+    		            	$("#quoteDataContainer input[name='taxExemptReason']").val('<c:out value="${newQuoteDisplayForm.taxExemptReason}" />');
+		            	</c:if>
+		            },
+		            
+		            
+		            
 		            populateOptions : function($optionData) {
 		            	QUOTEMAINTENANCE.countryList = $optionData.country;
 		            	QUOTEMAINTENANCE.invoiceGroupingList = $optionData.invoiceGrouping;
@@ -2707,6 +2726,7 @@
 	    </script>
 		</ansi:hasPermission>
 	    
+	    [[[<c:out value="${newQuoteDisplayForm}" />]]]
     </tiles:put>
 
 </tiles:insert>

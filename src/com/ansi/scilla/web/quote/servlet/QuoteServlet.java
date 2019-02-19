@@ -591,7 +591,7 @@ public class QuoteServlet extends AbstractQuoteServlet {
 
 	
 
-	private QuoteListResponse makeFilteredListResponse(Connection conn, String quoteId, List<UserPermission> permissionList) throws Exception {
+	private QuoteListResponse makeFilteredListResponse(Connection conn, String quoteId, List<UserPermission> permissionList) throws RecordNotFoundException, Exception {
 		QuoteListResponse quoteListResponse = new QuoteListResponse(conn, quoteId, permissionList);
 		return quoteListResponse;
 	}

@@ -51,8 +51,8 @@ public class QuoteResponseItemDetail extends ApplicationObject {
 	public QuoteResponseItemDetail() {
 		super();
 	}
-
-	public QuoteResponseItemDetail(Quote quote, User manager, Division division, Integer printCount, Job job) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	
+	public QuoteResponseItemDetail(Quote quote, User manager, Division division, Integer printCount) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		this();
 		PropertyUtils.copyProperties(this, quote);
 		this.managerLastName = manager.getLastName();
@@ -62,6 +62,11 @@ public class QuoteResponseItemDetail extends ApplicationObject {
 		//				this.printDate = printHistory.getPrintDate();
 		//				this.quoteDate = printHistory.getQuoteDate();
 		this.printCount = printCount;
+				
+	}
+
+	public QuoteResponseItemDetail(Quote quote, User manager, Division division, Integer printCount, Job job) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		this(quote, manager, division, printCount);
 		this.buildingType = job.getBuildingType();
 		this.invoiceTerms = job.getInvoiceTerms();
 		this.invoiceStyle = job.getInvoiceStyle();

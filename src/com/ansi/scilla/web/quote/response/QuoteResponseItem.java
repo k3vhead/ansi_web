@@ -97,10 +97,15 @@ public class QuoteResponseItem extends MessageResponse {
 		
 		Job job = new Job();
 		job.setQuoteId(quote.getQuoteId());
-		job.selectOne(conn);
-		this.quote = new QuoteResponseItemDetail(quote, manager, division, printCount, job);
+		try {
+			job.selectOne(conn);
+			this.quote = new QuoteResponseItemDetail(quote, manager, division, printCount, job);
+			this.jobContact = JobContact.getQuoteContact(conn, quote.getQuoteId());
+		} catch ( RecordNotFoundException e) {
+			// this happens when there are no jobs for a quote, like with a new quote
+			this.quote = new QuoteResponseItemDetail(quote, manager, division, printCount);
+		}
 		
-		this.jobContact = JobContact.getQuoteContact(conn, quote.getQuoteId());
 		this.jobHeaderList = JobHeader.getJobHeaderList(conn, quote, permissionList);	
 		if ( this.jobHeaderList.size() == 1 ) {
 			this.jobHeaderList.get(0).setCanDelete(false); // don't delete the only job you've got

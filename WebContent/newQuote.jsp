@@ -1265,15 +1265,15 @@
 					saveTheQuoteSuccess : function($data) {
 						console.log("saveTheQuoteSuccess");
 						console.log($data);
-						$("#newQuoteDisplayForm input[name='quoteId']").val($data.data.quoteId);
-						$("#newQuoteDisplayForm input[name='invoiceGrouping']").val($data.data.invoiceGrouping);
-						$("#newQuoteDisplayForm input[name='invoiceStyle']").val($data.data.invoiceStyle);
-						$("#newQuoteDisplayForm input[name='buildingType']").val($data.data.buildingType);
-						$("#newQuoteDisplayForm input[name='invoiceBatch']").val($data.data.invoiceBatch);
-						$("#newQuoteDisplayForm input[name='invoiceTerms']").val($data.data.invoiceTerms);
-						$("#newQuoteDisplayForm input[name='taxExempt']").val($data.data.taxExempt);
-						$("#newQuoteDisplayForm input[name='taxExemptReason']").val($data.data.taxExemptReason);
-						$("#newQuoteDisplayForm").submit();
+						$("#newQuoteDisplay input[name='quoteId']").val($data.data.quoteId);
+						$("#newQuoteDisplay input[name='invoiceGrouping']").val($data.data.invoiceGrouping);
+						$("#newQuoteDisplay input[name='invoiceStyle']").val($data.data.invoiceStyle);
+						$("#newQuoteDisplay input[name='buildingType']").val($data.data.buildingType);
+						$("#newQuoteDisplay input[name='invoiceBatch']").val($data.data.invoiceBatch);
+						$("#newQuoteDisplay input[name='invoiceTerms']").val($data.data.invoiceTerms);
+						$("#newQuoteDisplay input[name='taxExempt']").val($data.data.taxExempt);
+						$("#newQuoteDisplay input[name='taxExemptReason']").val($data.data.taxExemptReason);
+						$("#newQuoteDisplay").submit();
 					},
 					
 					
