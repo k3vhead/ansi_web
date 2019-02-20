@@ -1,6 +1,7 @@
 package com.ansi.scilla.web.quote.response;
 
 import com.ansi.scilla.web.common.response.MessageResponse;
+import com.ansi.scilla.web.job.query.ContactItem;
 
 public class NewQuoteDisplayResponse extends MessageResponse {
 
@@ -14,6 +15,11 @@ public class NewQuoteDisplayResponse extends MessageResponse {
 	private String invoiceTerms;
 	private Boolean taxExempt;
 	private String taxExemptReason;
+	
+	private ContactItem jobContact;
+	private ContactItem siteContact;
+	private ContactItem contractContact;
+	private ContactItem billingContact;
 	
 	public Integer getQuoteId() {
 		return quoteId;
@@ -63,6 +69,31 @@ public class NewQuoteDisplayResponse extends MessageResponse {
 	public void setTaxExemptReason(String taxExemptReason) {
 		this.taxExemptReason = taxExemptReason;
 	}
+	public ContactItem getJobContact() {
+		return jobContact;
+	}
+	public void setJobContact(ContactItem jobContact) {
+		this.jobContact = jobContact;
+	}
+	public ContactItem getSiteContact() {
+		return siteContact;
+	}
+	public void setSiteContact(ContactItem siteContact) {
+		this.siteContact = siteContact;
+	}
+	public ContactItem getContractContact() {
+		return contractContact;
+	}
+	public void setContractContact(ContactItem contractContact) {
+		this.contractContact = contractContact;
+	}
+	public ContactItem getBillingContact() {
+		return billingContact;
+	}
+	public void setBillingContact(ContactItem billingContact) {
+		this.billingContact = billingContact;
+	}
+
 	
 	
 }

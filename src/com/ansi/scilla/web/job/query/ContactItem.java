@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.db.Contact;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class ContactItem extends ApplicationObject {
@@ -20,6 +21,39 @@ public class ContactItem extends ApplicationObject {
 	private String preferredContact;
 	private String method;
 	
+	public ContactItem() {
+		super();
+	}
+	
+	public ContactItem(Connection conn, Integer contactId ) throws RecordNotFoundException, Exception {
+		this();
+		Contact contact = new Contact();
+		contact.setContactId(contactId);
+		contact.selectOne(conn);
+		makeContactItem(contact);
+	}
+	
+	public ContactItem(Contact contact) {
+		this();
+		makeContactItem(contact);
+	}
+	
+	private void makeContactItem(Contact contact) {
+		this.setContactId(contact.getContactId());
+		this.setFirstName(contact.getFirstName());
+		this.setLastName(contact.getLastName());
+		if ( contact.getPreferredContact().equalsIgnoreCase("business_phone")) {
+			this.setMethod(contact.getBusinessPhone());
+		} else if ( contact.getPreferredContact().equalsIgnoreCase("email")) {
+			this.setMethod(contact.getEmail());
+		} else if ( contact.getPreferredContact().equalsIgnoreCase("fax")) {
+			this.setMethod(contact.getFax());
+		} else if ( contact.getPreferredContact().equalsIgnoreCase("mobile_phone")) {
+			this.setMethod(contact.getMobilePhone());
+		}
+		this.setPreferredContact(contact.getPreferredContact());
+	}
+
 	public Integer getContactId() {
 		return contactId;
 	}

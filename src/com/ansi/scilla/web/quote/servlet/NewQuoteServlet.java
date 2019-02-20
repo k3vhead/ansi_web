@@ -25,6 +25,7 @@ import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
+import com.ansi.scilla.web.job.query.ContactItem;
 import com.ansi.scilla.web.quote.request.NewQuoteRequest;
 import com.ansi.scilla.web.quote.request.QuoteRequest;
 import com.ansi.scilla.web.quote.response.NewQuoteAddressResponse;
@@ -233,12 +234,16 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 			quoteResponse.setInvoiceBatch(quoteRequest.getInvoiceBatch());
 			quoteResponse.setInvoiceTerms(quoteRequest.getInvoiceTerms());
 			if ( quoteRequest.getTaxExempt() ) {
-				quoteRequest.setTaxExempt(true);
-				quoteRequest.setTaxExemptReason(quoteRequest.getTaxExemptReason());
+				quoteResponse.setTaxExempt(true);
+				quoteResponse.setTaxExemptReason(quoteRequest.getTaxExemptReason());
 			} else {
-				quoteRequest.setTaxExempt(false);
-				quoteRequest.setTaxExemptReason(null);
+				quoteResponse.setTaxExempt(false);
+				quoteResponse.setTaxExemptReason(null);
 			}			
+			quoteResponse.setJobContact(new ContactItem(conn, quoteRequest.getJobContactId()));
+			quoteResponse.setSiteContact(new ContactItem(conn, quoteRequest.getSiteContact()));
+			quoteResponse.setContractContact(new ContactItem(conn, quoteRequest.getContractContactId()));
+			quoteResponse.setBillingContact(new ContactItem(conn, quoteRequest.getBillingContactId()));
 			quoteResponse.setWebMessages(webMessages);
 			super.sendResponse(conn, response, ResponseCode.SUCCESS, quoteResponse);
 		} catch ( Exception e ) {
@@ -246,6 +251,8 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 			throw e;
 		}
 	}
+
+	
 
 	
 

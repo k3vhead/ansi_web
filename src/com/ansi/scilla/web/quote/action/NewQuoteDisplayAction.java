@@ -3,6 +3,9 @@ package com.ansi.scilla.web.quote.action;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -18,6 +21,8 @@ public class NewQuoteDisplayAction extends SessionPageDisplayAction {
 		
 		NewQuoteDisplayForm form = (NewQuoteDisplayForm)actionForm;
 		if ( form != null ) {
+			Logger logger = LogManager.getLogger(this.getClass());
+			logger.log(Level.DEBUG, form);
 			request.setAttribute("ANSI_QUOTE_ID", form.getQuoteId());
 			request.setAttribute(NewQuoteDisplayForm.KEY, form);
 		}

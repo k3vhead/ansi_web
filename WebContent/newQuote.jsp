@@ -1273,6 +1273,30 @@
 						$("#newQuoteDisplay input[name='invoiceTerms']").val($data.data.invoiceTerms);
 						$("#newQuoteDisplay input[name='taxExempt']").val($data.data.taxExempt);
 						$("#newQuoteDisplay input[name='taxExemptReason']").val($data.data.taxExemptReason);
+						
+						$("#newQuoteDisplay input[name='jobContactContactId']").val($data.data.jobContact.contactId);
+						$("#newQuoteDisplay input[name='jobContactLastName']").val($data.data.jobContact.lastName);
+						$("#newQuoteDisplay input[name='jobContactFirstName']").val($data.data.jobContact.firstName);
+						$("#newQuoteDisplay input[name='jobContactPreferredContact']").val($data.data.jobContact.preferredContact);
+						$("#newQuoteDisplay input[name='jobContactMethod']").val($data.data.jobContact.method);
+
+						$("#newQuoteDisplay input[name='siteContactContactId']").val($data.data.siteContact.contactId);
+						$("#newQuoteDisplay input[name='siteContactLastName']").val($data.data.siteContact.lastName);
+						$("#newQuoteDisplay input[name='siteContactFirstName']").val($data.data.siteContact.firstName);
+						$("#newQuoteDisplay input[name='siteContactPreferredContact']").val($data.data.siteContact.preferredContact);
+						$("#newQuoteDisplay input[name='siteContactMethod']").val($data.data.siteContact.method);
+
+						$("#newQuoteDisplay input[name='contractContactContactId']").val($data.data.contractContact.contactId);
+						$("#newQuoteDisplay input[name='contractContactLastName']").val($data.data.contractContact.lastName);
+						$("#newQuoteDisplay input[name='contractContactFirstName']").val($data.data.contractContact.firstName);
+						$("#newQuoteDisplay input[name='contractContactPreferredContact']").val($data.data.contractContact.preferredContact);
+						$("#newQuoteDisplay input[name='contractContactMethod']").val($data.data.contractContact.method);
+
+						$("#newQuoteDisplay input[name='billingContactContactId']").val($data.data.billingContact.contactId);
+						$("#newQuoteDisplay input[name='billingContactLastName']").val($data.data.billingContact.lastName);
+						$("#newQuoteDisplay input[name='billingContactFirstName']").val($data.data.billingContact.firstName);
+						$("#newQuoteDisplay input[name='billingContactPreferredContact']").val($data.data.billingContact.preferredContact);
+						$("#newQuoteDisplay input[name='billingContactMethod']").val($data.data.billingContact.method);
 						$("#newQuoteDisplay").submit();
 					},
 					
@@ -1634,6 +1658,30 @@
 			<html:hidden property="invoiceTerms" />
 			<html:hidden property="taxExempt" />
 			<html:hidden property="taxExemptReason" />
+			
+			<html:hidden property="jobContactContactId" />
+			<html:hidden property="jobContactLastName" />
+			<html:hidden property="jobContactFirstName" />
+			<html:hidden property="jobContactPreferredContact" />
+			<html:hidden property="jobContactMethod" />
+		
+			<html:hidden property="siteContactContactId" />
+			<html:hidden property="siteContactLastName" />
+			<html:hidden property="siteContactFirstName" />
+			<html:hidden property="siteContactPreferredContact" />
+			<html:hidden property="siteContactMethod" />
+		
+			<html:hidden property="contractContactContactId" />
+			<html:hidden property="contractContactLastName" />
+			<html:hidden property="contractContactFirstName" />
+			<html:hidden property="contractContactPreferredContact" />
+			<html:hidden property="contractContactMethod" />
+		
+			<html:hidden property="billingContactContactId" />
+			<html:hidden property="billingContactLastName" />
+			<html:hidden property="billingContactFirstName" />
+			<html:hidden property="billingContactPreferredContact" />
+			<html:hidden property="billingContactMethod" />
 	    </html:form>
 	    
 	    

@@ -1769,12 +1769,13 @@
 		            		$("#quoteDataContainer select[name='invoiceGrouping']").val('<c:out value="${newQuoteDisplayForm.invoiceGrouping}" />');
     		            	$("#quoteDataContainer select[name='invoiceStyle']").val('<c:out value="${newQuoteDisplayForm.invoiceStyle}" />');
 	            			$("#quoteDataContainer select[name='buildingType']").val('<c:out value="${newQuoteDisplayForm.buildingType}" />');
-	            			var $invoiceBatch = '<c:out value="${newQuoteDisplayForm.invoiceBatch}" />' == '1';
+	            			var $invoiceBatch = '<c:out value="${newQuoteDisplayForm.invoiceBatch}" />' == 'true';
     		            	$("#quoteDataContainer input[name='invoiceBatch']").prop("checked", $invoiceBatch);
     		            	$("#quoteDataContainer select[name='invoiceTerms']").val('<c:out value="${newQuoteDisplayForm.invoiceTerms}" />');
-    		            	var $taxExempt = '<c:out value="${newQuoteDisplayForm.taxExempt}" />' == '1';
+    		            	var $taxExempt = '<c:out value="${newQuoteDisplayForm.taxExempt}" />' == 'true';
     		            	$("#quoteDataContainer input[name='taxExempt']").prop("checked", $taxExempt);
     		            	$("#quoteDataContainer input[name='taxExemptReason']").val('<c:out value="${newQuoteDisplayForm.taxExemptReason}" />');
+    		            	$("#new-job-button").click();
 		            	</c:if>
 		            },
 		            
@@ -1888,11 +1889,16 @@
 							QUOTEMAINTENANCE.populateQuotePanel($data.quote);
 							QUOTEMAINTENANCE.populateAddressPanel( "#address-bill-to", $data.quote.billTo);
 							QUOTEMAINTENANCE.populateAddressPanel( "#address-job-site", $data.quote.jobSite);
-							QUOTEMAINTENANCE.populateContactPanel( "#job-contact", $data.quote.jobContact.jobContact);
-							QUOTEMAINTENANCE.populateContactPanel( "#site-contact", $data.quote.jobContact.siteContact);
-							QUOTEMAINTENANCE.populateContactPanel( "#billing-contact", $data.quote.jobContact.billingContact);
-							QUOTEMAINTENANCE.populateContactPanel( "#contract-contact", $data.quote.jobContact.contractContact);
-							QUOTEMAINTENANCE.populateJobHeader($data.quote.jobHeaderList)
+							if ( $data.quote.jobContact != null) {
+								// for new quotes, jobContact could be empty
+								QUOTEMAINTENANCE.populateContactPanel( "#job-contact", $data.quote.jobContact.jobContact);
+								QUOTEMAINTENANCE.populateContactPanel( "#site-contact", $data.quote.jobContact.siteContact);
+								QUOTEMAINTENANCE.populateContactPanel( "#billing-contact", $data.quote.jobContact.billingContact);
+								QUOTEMAINTENANCE.populateContactPanel( "#contract-contact", $data.quote.jobContact.contractContact);
+							}
+							if ( $data.quote.jobHeaderList != null && $data.quote.jobHeaderList.length > 0 ) {
+								QUOTEMAINTENANCE.populateJobHeader($data.quote.jobHeaderList)
+							}
 							QUOTEMAINTENANCE.makeJobExpansion();
 							
 							// when the page loads the first time, check for a job id
