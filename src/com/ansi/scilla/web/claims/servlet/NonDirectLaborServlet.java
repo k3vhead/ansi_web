@@ -3,7 +3,6 @@ package com.ansi.scilla.web.claims.servlet;
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -11,7 +10,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.Division;
@@ -37,7 +35,7 @@ public class NonDirectLaborServlet extends AbstractCrudServlet {
 		fieldMap = new ArrayList<FieldMap>();
 		fieldMap.add(new FieldMap("laborId",NonDirectLabor.LABOR_ID, JsonFieldFormat.INTEGER, true));
 		fieldMap.add(new FieldMap("washerId", NonDirectLabor.WASHER_ID, JsonFieldFormat.INTEGER, true));
-		fieldMap.add(new FieldMap("divisionId", NonDirectLabor.DIVISION_ID, JsonFieldFormat.INTEGER, true));
+//		fieldMap.add(new FieldMap("divisionId", NonDirectLabor.DIVISION_ID, JsonFieldFormat.INTEGER, true));
 		fieldMap.add(new FieldMap("workDate", NonDirectLabor.WORK_DATE, JsonFieldFormat.DATE, true));
 		fieldMap.add(new FieldMap("hours", NonDirectLabor.HOURS, JsonFieldFormat.DECIMAL, true));
 		fieldMap.add(new FieldMap("hoursType", NonDirectLabor.HOURS_TYPE, JsonFieldFormat.STRING, true));
