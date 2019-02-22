@@ -107,24 +107,18 @@
     			        	"type": "GET"
     			        	},
     			        columns: [
-    			        	{ title: "Expense Id", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-    			            	if(row.expenseId != null){return (row.expenseId+"");}
-    			            } },
-    			            { title: "Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-    			            	if(row.lastName != null || row.firstName != null){return (row.lastName+", "+row.firstName);}
+    			        	{ title: "Date", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.date != null){return (row.date+"");}
     			            } },
     			            { title: "Week", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.week != null){return (row.week+"");}
     			            } },
-    			            { title: "Date", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.date != null){return (row.date+"");}
+    			            { title: "Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			            	if(row.lastName != null || row.firstName != null){return (row.lastName+", "+row.firstName);}
     			            } },
     			            { title: "Expense Type", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.expenseType != null){return (row.expenseType+"");}
     			            } },
-//    			            { title: "Hrs Type" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-//    			            	return '<span class="tooltip">' + row.hoursType + '<span class="tooltiptext">' + row.hoursDescription + '</span></span>'
-//    			            } },
     			            { title: "Amount", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.amount != null){return (row.amount+"");}
     			            } },
@@ -134,13 +128,14 @@
     			            { title: "Detail",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.detail != null){return (row.detail+"");}
     			            } },			            
-    			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
-    			            	{
-    				            	var $edit = '<a href="#" class="editAction" data-id="'+row.expenseId+'"><webthing:edit>Edit</webthing:edit></a>';
-    			            		return "<ansi:hasPermission permissionRequired='CLAIMS_WRITE'>"+$edit+"</ansi:hasPermission>";
-    			            	}
-    			            	
-    			            } }],
+//    			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
+//    			            	{
+//    				            	var $edit = '<a href="#" class="editAction" data-id="'+row.expenseId+'"><webthing:edit>Edit</webthing:edit></a>';
+//    			            		return "<ansi:hasPermission permissionRequired='CLAIMS_WRITE'>"+$edit+"</ansi:hasPermission>";
+//    			            	}
+//    			            	
+//    			            } }
+    			            ],
     			            "initComplete": function(settings, json) {
     			            	EMPLOYEEEXPENSELOOKUP.doFunctionBinding();
     			            },
@@ -418,40 +413,34 @@
     	
  	<table id="displayTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
        	<colgroup>
-       		<col style="width:5%;" />
-        	<col style="width:10%;" />
         	<col style="width:5%;" />
-    		<col style="width:5%;" />    		
+        	<col style="width:5%;" />
+    		<col style="width:10%;" />    		
     		<col style="width:5%;" />
     		<col style="width:10%;" />
     		<col style="width:50%;" />
     		<col style="width:10%;" />
-    		<col style="width:5%;" />
    		</colgroup>
         <thead>
             <tr>
-            	<th>Expense Id</th>
-                <th>Name</th>
+                <th>Date</th>
                 <th>Week</th>
-    			<th>Date</th>
+    			<th>Name</th>
     			<th>Expense Type</th>
     			<th>Amount</th>
     			<th>Notes</th>
     			<th>Detail</th>
-    			<th>Action</th>
             </tr>
         </thead>
         <tfoot>
             <tr>
-           		<th>Expense Id</th>
-                <th>Name</th>
+                <th>Date</th>
                 <th>Week</th>
-    			<th>Date</th>
+    			<th>Name</th>
     			<th>Expense Type</th>
     			<th>Amount</th>
     			<th>Notes</th>
     			<th>Detail</th>
-    			<th>Action</th>
             </tr>
         </tfoot>
     </table>
@@ -461,11 +450,6 @@
     
     <div id="ndl-crud-form">
     	<table>
-    		<tr>
-    			<td><span class="formLabel">Expense Id</span></td>
-    			<td><input type="text" name="expenseId" /></td>
-    			<td><span id="expenseIdErr" class="err"></span></td>
-    		</tr>
     		<tr>
     			<td><span class="formLabel">Name</span></td>
     			<td><input name="washerName" /><input type="hidden" name="washerId" /></td>
