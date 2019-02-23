@@ -97,9 +97,9 @@
             	        ],
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
-            	            { className: "dt-left", "targets": [0,1] },
-            	            { className: "dt-center", "targets": [2,3,4,5,6,7,8] },
-            	            { className: "dt-right", "targets": []}
+            	            { className: "dt-left", "targets": [0,1,2,5] },
+            	            { className: "dt-center", "targets": [3] },
+            	            { className: "dt-right", "targets": [4]}
             	         ],
             	        "paging": true,
     			        "ajax": {
@@ -124,10 +124,10 @@
     			            } },
     			            { title: "Notes",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.notes != null){return (row.notes+"");}
-    			            } },
-    			            { title: "Detail",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.detail != null){return (row.detail+"");}
-    			            } },			            
+    			            } }
+//    			            { title: "Detail",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+//    			            	if(row.detail != null){return (row.detail+"");}
+//    			            } },			            
 //    			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
 //    			            	{
 //    				            	var $edit = '<a href="#" class="editAction" data-id="'+row.expenseId+'"><webthing:edit>Edit</webthing:edit></a>';
@@ -419,7 +419,6 @@
     		<col style="width:5%;" />
     		<col style="width:10%;" />
     		<col style="width:50%;" />
-    		<col style="width:10%;" />
    		</colgroup>
         <thead>
             <tr>
@@ -429,7 +428,6 @@
     			<th>Expense Type</th>
     			<th>Amount</th>
     			<th>Notes</th>
-    			<th>Detail</th>
             </tr>
         </thead>
         <tfoot>
@@ -440,7 +438,6 @@
     			<th>Expense Type</th>
     			<th>Amount</th>
     			<th>Notes</th>
-    			<th>Detail</th>
             </tr>
         </tfoot>
     </table>
