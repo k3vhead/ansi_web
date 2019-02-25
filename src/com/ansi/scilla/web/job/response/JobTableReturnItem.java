@@ -8,6 +8,7 @@ import java.util.Date;
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
 import com.ansi.scilla.common.queries.JobSearch;
 import com.ansi.scilla.common.queries.ReportQuery;
+import com.ansi.scilla.common.queries.JobSearch.JobSearchContact;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.thewebthing.commons.db2.DBColumn;
@@ -16,18 +17,18 @@ public class JobTableReturnItem extends ReportQuery {
 	private static final long serialVersionUID = 1L;
 
 	public static final String JOB_ID = "job_id";
-	public static final String JOB_STATUS ="job_status";
-	public static final String BILL_TO_NAME ="bill_to_name";
-	public static final String JOB_SITE_NAME ="job_site_name";
-	public static final String JOB_SITE_ADDRESS ="job_site_address";
+	public static final String JOB_STATUS = "job_status";
+	public static final String BILL_TO_NAME = "bill_to_name";
+	public static final String JOB_SITE_NAME = "job_site_name";
+	public static final String JOB_SITE_ADDRESS = "job_site_address";
 	public static final String JOB_SITE_CITY = "job_site_city";
 	public static final String JOB_SITE_STATE = "job_site_state";
-	public static final String START_DATE ="start_date";
-	public static final String JOB_NBR ="job_nbr";
-	public static final String JOB_FREQUENCY ="job_frequency";
-	public static final String PRICE_PER_CLEANING ="price_per_cleaning";
-	public static final String SERVICE_DESCRIPTION ="service_description";
-	public static final String PO_NUMBER ="po_number";
+	public static final String START_DATE = "start_date";
+	public static final String JOB_NBR = "job_nbr";
+	public static final String JOB_FREQUENCY = "job_frequency";
+	public static final String PRICE_PER_CLEANING = "price_per_cleaning";
+	public static final String SERVICE_DESCRIPTION = "service_description";
+	public static final String PO_NUMBER = "po_number";
 	public static final String BILL_TO_ADDRESS_ID = "bill_to_address_id";
 	public static final String JOB_SITE_ADDRESS_ID = "job_site_address_id";
 	public static final String DIVISION_ID = "division_id";
@@ -36,6 +37,11 @@ public class JobTableReturnItem extends ReportQuery {
 	public static final String QUOTE_ID = "quote_id";
 	public static final String QUOTE_NUMBER = "quote_number";
 	public static final String REVISION = "revision";
+
+	public static final String JOB_CONTACT = "job_contact";
+	public static final String SITE_CONTACT = "site_contact";
+	public static final String CONTRACT_CONTACT = "contract_contact";
+	public static final String BILLING_CONTACT = "billing_contact";
 
 	private Integer jobId;
 	private String jobStatus;
@@ -60,9 +66,15 @@ public class JobTableReturnItem extends ReportQuery {
 	private String jobSiteCity;
 	private String jobSiteState;
 
+	private JobSearchContact jobContact;
+	private JobSearchContact siteContact;
+	private JobSearchContact contractContact;
+	private JobSearchContact billingContact;
+
 	public JobTableReturnItem() throws SQLException {
 		super();
 	}
+
 	public JobTableReturnItem(ResultSet rs) throws SQLException {
 		this();
 		this.jobId = rs.getInt(JOB_ID);
@@ -87,6 +99,12 @@ public class JobTableReturnItem extends ReportQuery {
 		this.quoteId = rs.getInt(QUOTE_ID);
 		this.quoteNumber = rs.getInt(QUOTE_NUMBER);
 		this.revision = rs.getString(REVISION);
+		
+		
+//		this.jobContact = rs.getString(JOB_CONTACT);
+//		this.siteContact = rs.getString(SITE_CONTACT);
+//		this.contractContact = rs.getString(CONTRACT_CONTACT);
+//		this.billingContact = rs.getString(BILLING_CONTACT);
 	}
 
 	public JobTableReturnItem(JobSearch jobSearch) throws SQLException {
@@ -113,8 +131,13 @@ public class JobTableReturnItem extends ReportQuery {
 		this.quoteId = jobSearch.getQuote().getQuoteId();
 		this.quoteNumber = jobSearch.getQuote().getQuoteNumber();
 		this.revision = jobSearch.getQuote().getRevision();
+
+		this.jobContact = jobSearch.getJobContact();
+		this.siteContact = jobSearch.getSiteContact();
+		this.contractContact = jobSearch.getContractContact();
+		this.billingContact = jobSearch.getBillingContact();
 	}
-	
+
 	@DBColumn(JOB_ID)
 	public Integer getJobId() {
 		return jobId;
@@ -285,42 +308,52 @@ public class JobTableReturnItem extends ReportQuery {
 	public void setDivisionCode(String divisionCode) {
 		this.divisionCode = divisionCode;
 	}
+
 	@DBColumn(QUOTE_ID)
 	public Integer getQuoteId() {
 		return quoteId;
 	}
+
 	@DBColumn(QUOTE_ID)
 	public void setQuoteId(Integer quoteId) {
 		this.quoteId = quoteId;
 	}
+
 	@DBColumn(QUOTE_NUMBER)
 	public Integer getQuoteNumber() {
 		return quoteNumber;
 	}
+
 	@DBColumn(QUOTE_NUMBER)
 	public void setQuoteNumber(Integer quoteNumber) {
 		this.quoteNumber = quoteNumber;
 	}
+
 	@DBColumn(REVISION)
 	public String getRevision() {
 		return revision;
 	}
+
 	@DBColumn(REVISION)
 	public void setRevision(String revision) {
 		this.revision = revision;
 	}
+
 	@DBColumn(JOB_SITE_CITY)
 	public String getJobSiteCity() {
 		return jobSiteCity;
 	}
+
 	@DBColumn(JOB_SITE_CITY)
 	public void setJobSiteCity(String jobSiteCity) {
 		this.jobSiteCity = jobSiteCity;
 	}
+
 	@DBColumn(JOB_SITE_STATE)
 	public String getJobSiteState() {
 		return jobSiteState;
 	}
+
 	@DBColumn(JOB_SITE_STATE)
 	public void setJobSiteState(String jobSiteState) {
 		this.jobSiteState = jobSiteState;
