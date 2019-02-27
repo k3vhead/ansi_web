@@ -478,7 +478,7 @@
 						// populate Proposal edit panel
 						console.log(QUOTEMAINTENANCE.joblist[$jobId]);
 						//populate frequency select:
-						QUOTEMAINTENANCE.populateJobFequencySelect();
+						QUOTEMAINTENANCE.populateJobFrequencySelect();
 						
 						$("#job-edit-modal .proposal input[name='job-proposal-job-nbr']").val(QUOTEMAINTENANCE.joblist[$jobId].job.jobNbr);
 						$("#job-edit-modal .proposal input[name='job-proposal-ppc']").val(QUOTEMAINTENANCE.joblist[$jobId].job.pricePerCleaning);
@@ -1432,7 +1432,7 @@
 		    				//set all job forms to visible
 							$(".job-edit-panel").show();		    				
 		    				//Populate frequncy dropdown
-		    				QUOTEMAINTENANCE.populateJobFequencySelect();
+		    				QUOTEMAINTENANCE.populateJobFrequencySelect();
 		    				console.debug("Set jobid attr to new/add/something");
 		    				$("#job-edit-modal").attr("data-jobid", "add");
 							$("#job-edit-modal").attr("data-type", "add");
@@ -1624,7 +1624,7 @@
 		            
 		            
 		            
-		            populateJobFequencySelect : function() {
+		            populateJobFrequencySelect : function() {
 		            	var $select = $("#job-edit-modal .proposal select[name='job-proposal-freq']");
 						$('option', $select).remove();
 	
@@ -2140,9 +2140,11 @@
 								404:"System Error Job 404. Contact Support",
 								500:"System Error Job 500. Contact Support"
 						}
-						$("#globalMsg").html( $messages[$statusCode] );
+						$("#globalMsg").html( $messages[$statusCode] ).show();
 						$("#job-edit-modal").dialog("close");
 					},
+					
+					
 					
 					
 					saveJobSuccess : function($data) {

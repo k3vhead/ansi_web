@@ -70,7 +70,7 @@
 				
 					
 					
-					joblist : {},
+					joblist : null,
 					
 					progressbar : $("#progressbar"),
 					progressLabel : $("#progress-label"),
@@ -98,7 +98,27 @@
 					
 					
 
+					displayJobModal : function() {
+	    				console.debug("displayJobModal ");
+	    				
+	    				
+	    				//Clear all job forms
+	    				$(".job-edit-panel input").val("");
+	    				$(".job-edit-panel select").val("");
+	    				$(".job-edit-panel textarea").val("");
+	    				//set all job forms to visible
+						$(".job-edit-panel").show();		    				
+	    				//Populate frequncy dropdown
+	    				NEWQUOTE.populateJobFrequencySelect();
+	    				console.debug("Set jobid attr to new/add/something");
+	    				$("#job-edit-modal").attr("data-jobid", "add");
+						$("#job-edit-modal").attr("data-type", "add");
+	    				$("#job-edit-modal").dialog("open");
+	    			},
+	    			
+	    			
 					
+	    			
 					
 					
 					doQuoteUpdate : function($data, $successCallback, $errCallback) {
@@ -350,6 +370,36 @@
 						$("#address-cancel-button").button('option', 'label', 'Cancel');
 
 						
+						
+						$( "#job-edit-modal" ).dialog({
+							title:'Job Edit',
+							autoOpen: false,
+							height: 350,
+							width: 600,
+							modal: true,
+							closeOnEscape:true,
+							//open: function(event, ui) {
+							//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+							//},
+							buttons: [
+								{
+									id: "job-edit-cancel-button",
+									click: function($event) {
+										$( "#job-edit-modal input").removeClass("edit-err");
+										$( "#job-edit-modal select").removeClass("edit-err");
+										$( "#job-edit-modal" ).dialog("close");
+									}
+								},
+								{
+									id: "job-edit-save-button",
+									click: function($event) {
+										NEWQUOTE.saveJob();
+									}
+								}
+							]
+						});	
+						$("#job-edit-save-button").button('option', 'label', 'Save');
+						$("#job-edit-cancel-button").button('option', 'label', 'Cancel');
 					},
 					
 					
@@ -784,6 +834,19 @@
 		            
 		            
 		            
+		            populateJobFrequencySelect : function() {
+		            	var $select = $("#job-edit-modal .proposal select[name='job-proposal-freq']");
+						$('option', $select).remove();
+	
+						$select.append(new Option("",""));
+						$.each(NEWQUOTE.jobFrequencyList, function(index, val) {
+						    $select.append(new Option(val.display, val.abbrev));
+						});
+		            },
+		            
+		            
+		            
+		            
 		            populateLeadType : function($data) {
 						NEWQUOTE.leadTypeList = $data.codeList;
 						$selectorName = "#quoteDataContainer select[name='leadType']";
@@ -1122,6 +1185,128 @@
 					
 					
 					
+					
+					saveJob : function() {
+						var $jobId = $("#job-edit-modal").attr("data-jobid");
+						var $updateType = "add";
+						console.log("If I were saving jobs, it would happen here " + $jobId + "  " + $updateType);
+						
+						// if we're doing an update, just process the one panel
+						// if we're adding a new job, do them all
+						var $typeList = ['proposal','activation','invoice','schedule']
+						var $outbound = {};
+						
+						
+						$.each($typeList, function(index, $type) {
+							console.log("Looping thru: " + $type);
+							var $panelSelector = "#job-edit-modal ." + $type;
+							var $inputSelector = $panelSelector + " select";
+							$.each( $($inputSelector), function($index, $value) {
+								$selector = $panelSelector + " select[name='" + $value.name + "']";	 
+								$apiname = $($selector).attr("data-apiname");
+		    					$outbound[$apiname] = $($selector).val();
+		    				});
+							$inputSelector = $panelSelector + " input";
+							$.each( $($inputSelector), function($index, $value) {							
+								$selector = $panelSelector + " input[name='" + $value.name + "']";
+								$apiname = $($selector).attr("data-apiname");
+		    					$outbound[$apiname] = $($selector).val();
+		    				});
+							$inputSelector = $panelSelector + " textarea";
+							$.each( $($inputSelector), function($index, $value) {
+								$selector = $panelSelector + " textarea[name='" + $value.name + "']";	
+								$apiname = $($selector).attr("data-apiname");
+		    					$outbound[$apiname] = $($selector).val();
+		    				});
+							
+							// do some panel-specific fixes:
+							if ($type == "activation") {
+								if ( $("#job-edit-modal .activation input[name='requestSpecialScheduling']").prop("checked") == true ) {
+									$outbound['requestSpecialScheduling'] = 1;
+								} else {
+									$outbound['requestSpecialScheduling'] = 0;
+								}
+							}
+							if ($type == "schedule") {
+								if ( $("#job-edit-modal .schedule input[name='repeatedAnnually']").prop("checked") == true ) {
+									$outbound['repeatScheduleAnnually'] = 1;
+								} else {
+									$outbound['repeatScheduleAnnually'] = 0;
+								}
+							}
+						});
+
+
+						
+						$outbound['updateType'] = $updateType;
+						$outbound['action'] = 'job';
+						//$outbound['quoteId'] = QUOTEMAINTENANCE.quote.quote.quoteId;
+						console.log(JSON.stringify($outbound) )
+						
+						
+						NEWQUOTE.doQuoteUpdate($outbound, NEWQUOTE.saveJobSuccess, NEWQUOTE.saveJobErr);
+					},
+					
+					
+					saveJobErr : function($statusCode) {
+						console.log("Job error");
+						var $messages = {
+								403:"Session Expired. Log in and try again",
+								404:"System Error Job 404. Contact Support",
+								500:"System Error Job 500. Contact Support"
+						}
+						$("#globalMsg").html( $messages[$statusCode] ).show();
+						$("#job-edit-modal").dialog("close");
+					},
+					
+					
+					saveJobSuccess : function($data) {
+						console.log("Job success");
+						console.log($data);
+						$('#job-edit-modal input').bind("focus", function() {
+							$(this).removeClass("edit-err");
+						});
+						$('#job-edit-modal select').bind("focus", function() {
+							$(this).removeClass("edit-err");
+						});
+						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+							$.each($data.data.webMessages, function(index, val) {	
+								// index matches up with attr data-apiname in the form
+								// loop through the input/selects and apply a class to the input
+								$.each( $("#job-edit-modal input"), function(fieldIdx, fieldVal) {
+									var $apiName = $(fieldVal).attr("data-apiname");
+									if ( index == $apiName ) {
+										var $fieldName = $(fieldVal).attr("name");
+										var $selector = "#job-edit-modal input[name='"+ $fieldName +"']";
+										$($selector).addClass("edit-err");
+									}
+								});
+								$.each( $("#job-edit-modal select"), function(fieldIdx, fieldVal) {
+									var $apiName = $(fieldVal).attr("data-apiname");
+									if ( index == $apiName ) {
+										var $fieldName = $(fieldVal).attr("name");
+										var $selector = "#job-edit-modal select[name='"+ $fieldName +"']";
+										$($selector).addClass("edit-err");
+									}
+								});
+							});
+						} else {
+							console.log("Update header success:");
+							console.log($data);
+							var $jobId = $data.data.quote.jobDetail.job.jobId;
+							QUOTEMAINTENANCE.joblist[$jobId] = $data.data.quote.jobDetail;
+							console.log("do something to populate the job panels here");
+							//var $destination = "#job" + $jobId + " .job-data-row";
+    						//QUOTEMAINTENANCE.populateJobPanel($jobId, $destination, $data.data);
+							$("#globalMsg").html("Update Successful").show().fadeOut(3000);
+							$("#job-edit-modal").dialog("close");
+							
+							QUOTEMAINTENANCE.showJobUpdates($data.data);
+						}
+					},
+					
+					
+					
 
 					
 					saveQuoteHeader : function() {
@@ -1265,45 +1450,47 @@
 					saveTheQuoteSuccess : function($data) {
 						console.log("saveTheQuoteSuccess");
 						console.log($data);
-						$("#newQuoteDisplay input[name='quoteId']").val($data.data.quoteId);
-						$("#newQuoteDisplay input[name='invoiceGrouping']").val($data.data.invoiceGrouping);
-						$("#newQuoteDisplay input[name='invoiceStyle']").val($data.data.invoiceStyle);
-						$("#newQuoteDisplay input[name='buildingType']").val($data.data.buildingType);
-						$("#newQuoteDisplay input[name='invoiceBatch']").val($data.data.invoiceBatch);
-						$("#newQuoteDisplay input[name='invoiceTerms']").val($data.data.invoiceTerms);
-						$("#newQuoteDisplay input[name='taxExempt']").val($data.data.taxExempt);
-						$("#newQuoteDisplay input[name='taxExemptReason']").val($data.data.taxExemptReason);
+						location.href = "quoteMaintenance.html?id=" + $data.data.quoteId;
+						//$("#newQuoteDisplay input[name='quoteId']").val($data.data.quoteId);
+						//$("#newQuoteDisplay input[name='invoiceGrouping']").val($data.data.invoiceGrouping);
+						//$("#newQuoteDisplay input[name='invoiceStyle']").val($data.data.invoiceStyle);
+						//$("#newQuoteDisplay input[name='buildingType']").val($data.data.buildingType);
+						//$("#newQuoteDisplay input[name='invoiceBatch']").val($data.data.invoiceBatch);
+						//$("#newQuoteDisplay input[name='invoiceTerms']").val($data.data.invoiceTerms);
+						////$("#newQuoteDisplay input[name='taxExempt']").val($data.data.taxExempt);
+						//$("#newQuoteDisplay input[name='taxExemptReason']").val($data.data.taxExemptReason);
 						
-						$("#newQuoteDisplay input[name='jobContactContactId']").val($data.data.jobContact.contactId);
-						$("#newQuoteDisplay input[name='jobContactLastName']").val($data.data.jobContact.lastName);
-						$("#newQuoteDisplay input[name='jobContactFirstName']").val($data.data.jobContact.firstName);
-						$("#newQuoteDisplay input[name='jobContactPreferredContact']").val($data.data.jobContact.preferredContact);
-						$("#newQuoteDisplay input[name='jobContactMethod']").val($data.data.jobContact.method);
+						//$("#newQuoteDisplay input[name='jobContactContactId']").val($data.data.jobContact.contactId);
+						//$("#newQuoteDisplay input[name='jobContactLastName']").val($data.data.jobContact.lastName);
+						//$("#newQuoteDisplay input[name='jobContactFirstName']").val($data.data.jobContact.firstName);
+						//$("#newQuoteDisplay input[name='jobContactPreferredContact']").val($data.data.jobContact.preferredContact);
+						//$("#newQuoteDisplay input[name='jobContactMethod']").val($data.data.jobContact.method);
 
-						$("#newQuoteDisplay input[name='siteContactContactId']").val($data.data.siteContact.contactId);
-						$("#newQuoteDisplay input[name='siteContactLastName']").val($data.data.siteContact.lastName);
-						$("#newQuoteDisplay input[name='siteContactFirstName']").val($data.data.siteContact.firstName);
-						$("#newQuoteDisplay input[name='siteContactPreferredContact']").val($data.data.siteContact.preferredContact);
-						$("#newQuoteDisplay input[name='siteContactMethod']").val($data.data.siteContact.method);
+						//$("#newQuoteDisplay input[name='siteContactContactId']").val($data.data.siteContact.contactId);
+						//$("#newQuoteDisplay input[name='siteContactLastName']").val($data.data.siteContact.lastName);
+						//$("#newQuoteDisplay input[name='siteContactFirstName']").val($data.data.siteContact.firstName);
+						//$("#newQuoteDisplay input[name='siteContactPreferredContact']").val($data.data.siteContact.preferredContact);
+						//$("#newQuoteDisplay input[name='siteContactMethod']").val($data.data.siteContact.method);
 
-						$("#newQuoteDisplay input[name='contractContactContactId']").val($data.data.contractContact.contactId);
-						$("#newQuoteDisplay input[name='contractContactLastName']").val($data.data.contractContact.lastName);
-						$("#newQuoteDisplay input[name='contractContactFirstName']").val($data.data.contractContact.firstName);
-						$("#newQuoteDisplay input[name='contractContactPreferredContact']").val($data.data.contractContact.preferredContact);
-						$("#newQuoteDisplay input[name='contractContactMethod']").val($data.data.contractContact.method);
+						//$("#newQuoteDisplay input[name='contractContactContactId']").val($data.data.contractContact.contactId);
+						//$("#newQuoteDisplay input[name='contractContactLastName']").val($data.data.contractContact.lastName);
+						//$("#newQuoteDisplay input[name='contractContactFirstName']").val($data.data.contractContact.firstName);
+						//$("#newQuoteDisplay input[name='contractContactPreferredContact']").val($data.data.contractContact.preferredContact);
+						//$("#newQuoteDisplay input[name='contractContactMethod']").val($data.data.contractContact.method);
 
-						$("#newQuoteDisplay input[name='billingContactContactId']").val($data.data.billingContact.contactId);
-						$("#newQuoteDisplay input[name='billingContactLastName']").val($data.data.billingContact.lastName);
-						$("#newQuoteDisplay input[name='billingContactFirstName']").val($data.data.billingContact.firstName);
-						$("#newQuoteDisplay input[name='billingContactPreferredContact']").val($data.data.billingContact.preferredContact);
-						$("#newQuoteDisplay input[name='billingContactMethod']").val($data.data.billingContact.method);
-						$("#newQuoteDisplay").submit();
+						//$("#newQuoteDisplay input[name='billingContactContactId']").val($data.data.billingContact.contactId);
+						//$("#newQuoteDisplay input[name='billingContactLastName']").val($data.data.billingContact.lastName);
+						//$("#newQuoteDisplay input[name='billingContactFirstName']").val($data.data.billingContact.firstName);
+						//$("#newQuoteDisplay input[name='billingContactPreferredContact']").val($data.data.billingContact.preferredContact);
+						//$("#newQuoteDisplay input[name='billingContactMethod']").val($data.data.billingContact.method);
+						//$("#newQuoteDisplay").submit();
 					},
 					
 					
 					
 					
 					showNextModal : function() {
+						console.log("showNextModal");
 						if ( NEWQUOTE.jobSiteAddress == null) {
 							$("#save-quote-button").hide(2500);
 							var $type = "jobsite"
@@ -1371,7 +1558,11 @@
 						} else if ( NEWQUOTE.leadType == null ) {
 							$("#save-quote-button").hide(2500);
 							$("#edit-this-quote").click();
+						} else if ( NEWQUOTE.joblist == null ) {
+							console.log("Trying to show job modal");
+    		            	NEWQUOTE.displayJobModal();
 						} else {
+							console.log(NEWQUOTE.joblist);
 							$("#save-quote-button").fadeIn(2500);
 						}
 						

@@ -3,8 +3,12 @@ package com.ansi.scilla.web.quote.request;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.Connection;
 
+import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.web.common.request.AbstractRequest;
+import com.ansi.scilla.web.common.request.RequestValidator;
+import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -301,6 +305,25 @@ import com.thewebthing.commons.lang.JsonException;
 			}
 			
 			return hasUpdate;
+		}
+
+		public WebMessages validateQuoteHeader(Connection conn) throws Exception {
+			WebMessages webMessages = new WebMessages();
+			RequestValidator.validateLeadType(conn, webMessages, NewQuoteRequest.LEAD_TYPE, this.getLeadType(), true);
+			RequestValidator.validateId(conn, webMessages, "ansi_user", "user_id", NewQuoteRequest.MANAGER_ID, this.getManagerId(), true);
+			RequestValidator.validateInvoiceTerms(webMessages, NewQuoteRequest.INVOICE_TERMS, this.getInvoiceTerms(), true);
+			RequestValidator.validateAccountType(conn, webMessages, NewQuoteRequest.ACCOUNT_TYPE, this.getAccountType(), true);
+			RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, NewQuoteRequest.DIVISION_ID, this.getDivisionId(), true);
+			RequestValidator.validateBoolean(webMessages, NewQuoteRequest.TAX_EXEMPT, this.getTaxExempt(), false);
+			if ( this.getTaxExempt() != null && this.getTaxExempt() ) {
+				RequestValidator.validateString(webMessages, NewQuoteRequest.TAX_EXEMPT_REASON, this.getTaxExemptReason(), true);
+			}
+			RequestValidator.validateBoolean(webMessages, NewQuoteRequest.INVOICE_BATCH, this.getInvoiceBatch(), false);
+			RequestValidator.validateInvoiceStyle(webMessages, NewQuoteRequest.INVOICE_STYLE, this.getInvoiceStyle(), true);
+			RequestValidator.validateBuildingType(conn, webMessages, NewQuoteRequest.BUILDING_TYPE, this.getBuildingType(), true);
+			RequestValidator.validateInvoiceGrouping(webMessages, NewQuoteRequest.INVOICE_GROUPING, this.getInvoiceGrouping(), true);
+			
+			return webMessages;
 		}
 
 		
