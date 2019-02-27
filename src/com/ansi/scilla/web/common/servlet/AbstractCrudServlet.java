@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +61,12 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 	protected final Logger logger = LogManager.getLogger(this.getClass());
 	
 	private String displaySql;
+	private List<PermittedAction> permittedActionList;
+	
+	public AbstractCrudServlet() {
+		super();
+		this.permittedActionList = Arrays.asList(new PermittedAction[] {PermittedAction.ADD, PermittedAction.UPDATE, PermittedAction.DELETE, PermittedAction.GET});
+	}
 	
 	public String getDisplaySql() {
 		return displaySql;
@@ -76,7 +83,17 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 		this.displaySql = displaySql;
 	}
 	
-	
+	public List<PermittedAction> getPermittedActionList() {
+		return permittedActionList;
+	}
+	/**
+	 * Indicate what actions are allowed to happen. Default values are ADD,UPDATE,DELETE,GET
+	 * When a non-permitted action is attempted, a "Not Allowed" is returned.
+	 * @param permittedActionList
+	 */
+	public void setPermittedActionList(List<PermittedAction> permittedActionList) {
+		this.permittedActionList = permittedActionList;
+	}
 	protected abstract WebMessages validateAdd(Connection conn, HashMap<String, Object> addRequest) throws Exception;
 	protected abstract WebMessages validateUpdate(Connection conn, HashMap<String, Object> updateRequest) throws Exception;
 	
@@ -101,7 +118,10 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 				AppUtils.validateSession(request, permission);
 			}
 			
-		
+			if ( ! this.permittedActionList.contains(PermittedAction.GET)) {
+				throw new NotAllowedException();
+			}
+			
 			Connection conn = null;
 			try {
 				conn = AppUtils.getDBCPConn();
@@ -181,10 +201,14 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 	
 	
 	protected void processDelete(HttpServletRequest request, HttpServletResponse response, Permission permission, String realm, String[] actionList, MSTable table, List<FieldMap> fieldMap) throws ServletException {
-		logger.log(Level.DEBUG, "Processing Post");
-//		SessionUser sessionUser = AppUtils.getSessionUser(request);
+		logger.log(Level.DEBUG, "Processing Delete");
+		
 		try {
-//			String jsonString = super.makeJsonString(request);
+			
+			if ( ! this.permittedActionList.contains(PermittedAction.DELETE)) {
+				throw new NotAllowedException();
+			}
+			
 			AnsiURL url = new AnsiURL(request, realm, actionList);			 
 			AppUtils.validateSession(request, permission);
 			Connection conn = null;
@@ -240,6 +264,11 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 	
 	private void processAddRequest(Connection conn, HttpServletResponse response, MSTable table, SessionUser sessionUser, String jsonString, List<FieldMap> fieldMapList) throws Exception {
 		logger.log(Level.DEBUG, "Processing add");
+		
+		if ( ! this.permittedActionList.contains(PermittedAction.ADD)) {
+			throw new NotAllowedException();
+		}
+		
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		JsonNode jsonNode = mapper.readTree(jsonString);
@@ -335,6 +364,11 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 
 	private void processUpdateRequest(Connection conn, HttpServletResponse response, MSTable table, Integer id, SessionUser sessionUser, String jsonString, List<FieldMap> fieldMapList) throws Exception {
 		logger.log(Level.DEBUG, "Processing Update");
+		
+		if ( ! this.permittedActionList.contains(PermittedAction.UPDATE)) {
+			throw new NotAllowedException();
+		}
+		
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		
@@ -583,4 +617,6 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 		}
 		
 	}
+	
+	
 }

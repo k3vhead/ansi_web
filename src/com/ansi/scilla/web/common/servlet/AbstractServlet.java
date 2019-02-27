@@ -255,6 +255,16 @@ public class AbstractServlet extends HttpServlet {
 	}
 	
 	
+	/**
+	 * Validate values based on annotation.
+	 * Use RequestValidator instead
+	 * @param request
+	 * @return
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */
+	@Deprecated
 	public List<String> validateValues(AbstractRequest request) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		List<String> nonMatchingValues = new ArrayList<String>();
 		
