@@ -2734,7 +2734,6 @@
 	    </script>
 		</ansi:hasPermission>
 	    
-	    [[[<c:out value="${newQuoteDisplayForm}" />]]]
     </tiles:put>
 
 </tiles:insert>

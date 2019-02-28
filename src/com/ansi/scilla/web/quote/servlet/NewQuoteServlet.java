@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.Job;
 import com.ansi.scilla.common.db.Quote;
+import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.common.exceptions.InvalidJobStatusException;
 import com.ansi.scilla.common.jobticket.JobStatus;
@@ -28,6 +29,7 @@ import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.job.query.ContactItem;
 import com.ansi.scilla.web.job.request.JobRequest;
+import com.ansi.scilla.web.job.response.JobDetail;
 import com.ansi.scilla.web.job.response.JobDetailResponse;
 import com.ansi.scilla.web.quote.request.NewQuoteRequest;
 import com.ansi.scilla.web.quote.request.QuoteRequest;
@@ -189,16 +191,17 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 		WebMessages webMessages = new WebMessages();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		ResponseCode responseCode = null;
-		Integer newJobId = null;
 		Job job = new Job();
 		
 		try {
-			webMessages = jobRequest.validateNewJob(conn);
+			webMessages = jobRequest.validateNewQuote(conn);
 			if ( webMessages.isEmpty() ) {
 				populateNewJob(job, jobRequest);
+				JobDetail jobDetail = new JobDetail(job, new User(), new User());
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
 				responseCode = ResponseCode.SUCCESS;
-				jobDetailResponse = new JobDetailResponse(conn, newJobId, sessionData.getUserPermissionList());
+				jobDetailResponse = new JobDetailResponse();
+				jobDetailResponse.setJob(jobDetail);
 			} else {
 				responseCode = ResponseCode.EDIT_FAILURE;
 			}

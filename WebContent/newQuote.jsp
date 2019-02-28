@@ -1291,17 +1291,17 @@
 								});
 							});
 						} else {
-							console.log("Update header success:");
+							console.log("Update job header success:");
 							console.log($data);
-							var $jobId = $data.data.quote.jobDetail.job.jobId;
-							QUOTEMAINTENANCE.joblist[$jobId] = $data.data.quote.jobDetail;
+							var $jobId = "New";
+							NEWQUOTE.joblist[$jobId] = $data.data.quote.jobDetail;
 							console.log("do something to populate the job panels here");
 							//var $destination = "#job" + $jobId + " .job-data-row";
     						//QUOTEMAINTENANCE.populateJobPanel($jobId, $destination, $data.data);
 							$("#globalMsg").html("Update Successful").show().fadeOut(3000);
 							$("#job-edit-modal").dialog("close");
 							
-							QUOTEMAINTENANCE.showJobUpdates($data.data);
+							NEWQUOTE.showJobUpdates($data.data);
 						}
 					},
 					
@@ -1486,6 +1486,32 @@
 						//$("#newQuoteDisplay").submit();
 					},
 					
+					
+					
+					
+					showJobUpdates : function($data) {
+						console.log("showJobUpdates");
+						console.log(NEWQUOTE.quote);
+						//repopulate QUOTEMAINTENANCE.quote
+						//NEWQUOTE.quote = $data.quote;
+						//NEWQUOTE.joblist = {};
+						//NEWQUOTE.populateJobHeader($data.quote.jobHeaderList)
+						NEWQUOTE.makeJobExpansion();
+						
+						//deletes don't return a job detail -- so check
+						if ( $data.quote.jobDetail != null ) {
+							//put job headers in job table
+							NEWQUOTE.joblist[NEWQUOTE.jobId] = $data
+							$.each( $("#jobList li .job-hider"), function($index, $value) {
+								var $jobid = $($value).attr("data-jobid");
+								if ( $jobid == NEWQUOTE.jobId ) {
+									$($value).click();
+								}
+							});
+						}
+						
+						NEWQUOTE.jobId = null;
+					},
 					
 					
 					
@@ -1812,7 +1838,10 @@
 		    	</div> 
 	    	</div>  <!--  quote container -->
 	    	
-	    	
+	    	<div id="job-list-container" style="width:1260px; clear:both; margin-top:12px;">
+	    		<ul id="jobList" class="sortable" style="width:100%;">	    			
+	    		</ul>
+	    	</div> <!--  job list container -->
 	    </div>
 	    <div class="spacer">&nbsp;</div>
 	    

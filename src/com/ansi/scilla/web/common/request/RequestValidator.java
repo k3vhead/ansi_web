@@ -335,7 +335,7 @@ public class RequestValidator {
 		}
 	}
 
-	public static void validateJobFreqency(WebMessages webMessages, String fieldName, String value, boolean required) {
+	public static void validateJobFrequency(WebMessages webMessages, String fieldName, String value, boolean required) {
 		if (StringUtils.isBlank(value)) {
 			if (required) {
 				webMessages.addMessage(fieldName, "Required Value");

@@ -28,6 +28,26 @@ public class JobRequest extends AbstractRequest{
 
 	private static final long serialVersionUID = 1L;
 	
+	public static final String JOB_FREQUENCY = "jobFrequency";
+	public static final String JOB_NBR = "jobNbr";
+	public static final String PRICE_PER_CLEANING = "pricePerCleaning";
+	public static final String SERVICE_DESCRIPTION = "serviceDescription";
+	public static final String REQUEST_SPECIAL_SCHEDULING = "requestSpecialScheduling";
+	public static final String DIRECT_LABOR_PCT = "directLaborPct";
+	public static final String BUDGET = "budget";
+	public static final String FLOORS = "floors";
+	public static final String EQUIPMENT = "equipment";
+	public static final String WASHER_NOTES = "washerNotes";
+	public static final String OM_NOTES = "omNotes";
+	public static final String BILLING_NOTES = "billingNotes";
+	public static final String PO_NUMBER = "poNumber";
+	public static final String OUR_VENDOR_NBR = "ourVendorNbr";
+	public static final String EXPIRATION_DATE = "expirationDate";
+	public static final String EXPIRATION_REASON = "expirationReason";
+	public static final String REPEAT_SCHEDULE_ANNUALLY = "repeatScheduleAnnually";
+	public static final String UPDATE_TYPE = "updateType";
+	public static final String ACTION = "action";
+		
 
 	private Date activationDate;
 	private Integer billingContactId;
@@ -519,7 +539,7 @@ public class JobRequest extends AbstractRequest{
 	public WebMessages validateProposalUpdate() {
 		WebMessages webMessages = new WebMessages();
 		
-		RequestValidator.validateJobFreqency(webMessages, "jobFrequency", this.jobFrequency, true);
+		RequestValidator.validateJobFrequency(webMessages, "jobFrequency", this.jobFrequency, true);
 		RequestValidator.validateInteger(webMessages, "jobNbr", this.jobNbr, 1, null, true);
 		RequestValidator.validateBigDecimal(webMessages, "pricePerCleaning", this.pricePerCleaning, new BigDecimal(0.01D), null, true);
 		RequestValidator.validateString(webMessages, "serviceDescription", this.serviceDescription, true);
@@ -602,6 +622,13 @@ public class JobRequest extends AbstractRequest{
 		return webMessages;
 	}
 
+	/**
+	 * Validate input for adding a job to a new quote
+	 * 
+	 * @param conn
+	 * @return
+	 * @throws Exception
+	 */
 	public WebMessages validateNewJob(Connection conn) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		
@@ -638,6 +665,42 @@ public class JobRequest extends AbstractRequest{
 		
 		return webMessages;
 	}
+	
+	
+	
+	
+	/**
+	 * Add a job to a new quote (ie a quote that is being created, but does not already exist. Since the quote stuff doesn't
+	 * actually exist yet, this is a subset of the validateNewJob() method
+	 * 
+	 * @param conn
+	 * @return
+	 * @throws Exception
+	 */
+	public WebMessages validateNewQuote(Connection conn) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		RequestValidator.validateJobFrequency(webMessages, JOB_FREQUENCY, this.getJobFrequency(), true);
+		RequestValidator.validateInteger(webMessages, JOB_NBR, this.jobNbr, 1, null, true);
+		RequestValidator.validateNumber(webMessages, PRICE_PER_CLEANING, this.getPricePerCleaning(), new BigDecimal(0), null, true);
+		RequestValidator.validateString(webMessages, SERVICE_DESCRIPTION, this.getServiceDescription(), true);
+		RequestValidator.validateBoolean(webMessages, REQUEST_SPECIAL_SCHEDULING, this.getRequestSpecialScheduling(), false);
+		RequestValidator.validateNumber(webMessages, DIRECT_LABOR_PCT, this.getDirectLaborPct(), new BigDecimal(0), new BigDecimal(100), true);
+		RequestValidator.validateNumber(webMessages,BUDGET, this.getBudget(), new BigDecimal(0), null, true);
+		RequestValidator.validateInteger(webMessages,FLOORS, this.getFloors(), 0, null, true);
+		RequestValidator.validateString(webMessages, EQUIPMENT, this.getEquipment(), false);
+		RequestValidator.validateString(webMessages, WASHER_NOTES, this.getWasherNotes(), false);
+		RequestValidator.validateString(webMessages, OM_NOTES, this.getOmNotes(), false);
+		RequestValidator.validateString(webMessages, BILLING_NOTES, this.getBillingNotes(), false);
+		RequestValidator.validateString(webMessages, PO_NUMBER, this.getPoNumber(), false);
+		RequestValidator.validateString(webMessages, OUR_VENDOR_NBR, this.getOurVendorNbr(), false);
+		RequestValidator.validateDate(webMessages, EXPIRATION_DATE, this.getExpirationDate(), false, null, null);
+		boolean expireReasonIsRequired = this.getExpirationDate() != null;
+		RequestValidator.validateString(webMessages, EXPIRATION_REASON, this.getExpirationReason(), expireReasonIsRequired);
+		RequestValidator.validateBoolean(webMessages, REPEAT_SCHEDULE_ANNUALLY, this.getRepeatScheduleAnnually(), false);
+			
+		return webMessages;
+	}
+	
 	
 	
 	
