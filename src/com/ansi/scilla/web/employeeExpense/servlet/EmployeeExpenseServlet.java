@@ -3,6 +3,7 @@ package com.ansi.scilla.web.employeeExpense.servlet;
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractCrudServlet;
+import com.ansi.scilla.web.common.servlet.PermittedAction;
 import com.ansi.scilla.web.common.utils.FieldMap;
 import com.ansi.scilla.web.common.utils.JsonFieldFormat;
 import com.ansi.scilla.web.common.utils.Permission;
@@ -46,6 +48,7 @@ public class EmployeeExpenseServlet extends AbstractCrudServlet {
 				+ "left outer join ansi_user on ansi_user.user_id=employee_expense.washer_id\n";
 
 		super.setDisplaySql(displaySql);
+		super.setPermittedActionList(Arrays.asList(new PermittedAction[] { PermittedAction.ADD, PermittedAction.GET }));
 	}
 
 	@Override
@@ -85,7 +88,7 @@ public class EmployeeExpenseServlet extends AbstractCrudServlet {
 
 	@Override
 	protected WebMessages validateUpdate(Connection conn, HashMap<String, Object> updateRequest) throws Exception {
-		WebMessages webMessages = validateAdd(conn, updateRequest);
+		WebMessages webMessages = new WebMessages();
 
 		RequestValidator.validateWasherId(conn, webMessages, "washerId", (Integer) updateRequest.get("washerId"), true);
 		RequestValidator.validateDate(webMessages, "workDate", (String) updateRequest.get("workDate"),

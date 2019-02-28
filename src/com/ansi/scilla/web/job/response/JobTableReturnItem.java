@@ -37,11 +37,11 @@ public class JobTableReturnItem extends ReportQuery {
 	public static final String QUOTE_ID = "quote_id";
 	public static final String QUOTE_NUMBER = "quote_number";
 	public static final String REVISION = "revision";
+	
+	public static final String CONTACT_FIRST_NAME = "contact_first_name";
+	public static final String CONTACT_LAST_NAME = "contact_last_name";
+	public static final String PREFERRED_CONTACT = "preferred_contact";
 
-	public static final String JOB_CONTACT = "job_contact";
-	public static final String SITE_CONTACT = "site_contact";
-	public static final String CONTRACT_CONTACT = "contract_contact";
-	public static final String BILLING_CONTACT = "billing_contact";
 
 	private Integer jobId;
 	private String jobStatus;
@@ -65,11 +65,10 @@ public class JobTableReturnItem extends ReportQuery {
 	private String revision;
 	private String jobSiteCity;
 	private String jobSiteState;
-
-	private JobSearchContact jobContact;
-	private JobSearchContact siteContact;
-	private JobSearchContact contractContact;
-	private JobSearchContact billingContact;
+	
+	private String contactFirstName;
+	private String contactLastName;
+	private String preferredContact;
 
 	public JobTableReturnItem() throws SQLException {
 		super();
@@ -100,11 +99,9 @@ public class JobTableReturnItem extends ReportQuery {
 		this.quoteNumber = rs.getInt(QUOTE_NUMBER);
 		this.revision = rs.getString(REVISION);
 		
-		
-//		this.jobContact = rs.getString(JOB_CONTACT);
-//		this.siteContact = rs.getString(SITE_CONTACT);
-//		this.contractContact = rs.getString(CONTRACT_CONTACT);
-//		this.billingContact = rs.getString(BILLING_CONTACT);
+		this.contactFirstName = rs.getString(CONTACT_FIRST_NAME);
+		this.contactLastName = rs.getString(CONTACT_LAST_NAME);
+		this.preferredContact = rs.getString(PREFERRED_CONTACT);
 	}
 
 	public JobTableReturnItem(JobSearch jobSearch) throws SQLException {
@@ -131,11 +128,10 @@ public class JobTableReturnItem extends ReportQuery {
 		this.quoteId = jobSearch.getQuote().getQuoteId();
 		this.quoteNumber = jobSearch.getQuote().getQuoteNumber();
 		this.revision = jobSearch.getQuote().getRevision();
-
-		this.jobContact = jobSearch.getJobContact();
-		this.siteContact = jobSearch.getSiteContact();
-		this.contractContact = jobSearch.getContractContact();
-		this.billingContact = jobSearch.getBillingContact();
+		
+		this.contactFirstName = jobSearch.getJobContact().getFirstName();
+		this.contactLastName = jobSearch.getJobContact().getLastName();
+		this.preferredContact = jobSearch.getJobContact().getPreferredContact();
 	}
 
 	@DBColumn(JOB_ID)
@@ -357,6 +353,36 @@ public class JobTableReturnItem extends ReportQuery {
 	@DBColumn(JOB_SITE_STATE)
 	public void setJobSiteState(String jobSiteState) {
 		this.jobSiteState = jobSiteState;
+	}
+	
+	@DBColumn(CONTACT_FIRST_NAME)
+	public String getContactFirstName() {
+		return contactFirstName;
+	}
+	
+	@DBColumn(CONTACT_FIRST_NAME)
+	public void setContactFirstName(String contactFirstName) {
+		this.contactFirstName = contactFirstName;
+	}
+	
+	@DBColumn(CONTACT_LAST_NAME)
+	public String getContactLastName() {
+		return contactLastName;
+	}
+	
+	@DBColumn(CONTACT_LAST_NAME)
+	public void setContactLastName(String contactLastName) {
+		this.contactLastName = contactLastName;
+	}
+	
+	@DBColumn(PREFERRED_CONTACT)
+	public String getPreferredContact() {
+		return preferredContact;
+	}
+	
+	@DBColumn(PREFERRED_CONTACT)
+	public void setPreferredContact(String preferredContact) {
+		this.preferredContact = preferredContact;
 	}
 
 }
