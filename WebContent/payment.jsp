@@ -674,7 +674,7 @@
 				            } },
 				            { title: "Pay Tax", "defaultContent": "<i>0.00</i>", data: function ( row, type, set ) {
 				            	$myTabIndex = $tabIndex + $data.ticketList.length;
-				            	if ( row.actTaxAmt == "$0.00") {
+				            	if ( row.actTaxAmt == "$0.00" && row.totalTaxPaid == "$0.00") {
 				            		$display="display:none;";
 				            	} else {
 				            		$display="";
