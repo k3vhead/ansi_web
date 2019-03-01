@@ -365,7 +365,8 @@
 	    			var $returnValue = null;
 	    			var jqxhr1 = $.ajax({
 	    				type: 'GET',
-	    				url: 'options',
+	    				//url: 'options',
+	    				url: 'code/employee_expense/expense_type',
 	    				data: $optionList,			    				
 	    				statusCode: {
 	    					200: function($data) {
@@ -472,12 +473,6 @@
     			<td><input type="text" name="notes" /></td>
     			<td><span id="notesErr" class="err"></span></td>
     		</tr>
-    		<tr>
-    			<td><span class="formLabel">Detail</span></td>
-    			<td><input type="text" name="detail" /></td>
-    			<td><span id="detailErr" class="err"></span></td>
-    		</tr>
-    		
     	</table>
     </div>
     </tiles:put>
