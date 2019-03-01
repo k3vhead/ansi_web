@@ -37,49 +37,58 @@ import com.thewebthing.commons.lang.StringUtils;
 
 public class RequestValidator {
 
-	public static void checkForDuplicates(Connection conn, WebMessages webMessages, MSTable table, HashMap<String, Object> addRequest, List<FieldMap> fieldMap, SimpleDateFormat standardDateFormat) throws Exception {
+	public static void checkForDuplicates(Connection conn, WebMessages webMessages, MSTable table,
+			HashMap<String, Object> addRequest, List<FieldMap> fieldMap, SimpleDateFormat standardDateFormat)
+			throws Exception {
 		Logger logger = LogManager.getLogger(RequestValidator.class);
 		String tableName = table.getClass().getAnnotation(DBTable.class).value();
 		logger.log(Level.DEBUG, "Table: " + tableName);
-		HashMap<String, List<String>> indexMap = new HashMap<String, List<String>>(); //index name -> list of column in that index
+		HashMap<String, List<String>> indexMap = new HashMap<String, List<String>>(); // index
+																						// name
+																						// ->
+																						// list
+																						// of
+																						// column
+																						// in
+																						// that
+																						// index
 		DatabaseMetaData dbmd = conn.getMetaData();
 		ResultSet rs = dbmd.getIndexInfo(null, null, tableName, true, false);
-		while ( rs.next() ) {
+		while (rs.next()) {
 			String indexName = rs.getString("INDEX_NAME");
 			String columnName = rs.getString("COLUMN_NAME");
-			if ( ! StringUtils.isBlank(indexName) && ! StringUtils.isBlank(columnName)) {
+			if (!StringUtils.isBlank(indexName) && !StringUtils.isBlank(columnName)) {
 				logger.log(Level.DEBUG, "Index: " + indexName + "\tColumn: " + columnName);
-				List<String> columnList = indexMap.containsKey(indexName) ? indexMap.get(indexName) : new ArrayList<String>();
-				columnList.add(columnName);				
+				List<String> columnList = indexMap.containsKey(indexName) ? indexMap.get(indexName)
+						: new ArrayList<String>();
+				columnList.add(columnName);
 				indexMap.put(indexName, columnList);
 			}
 		}
 		rs.close();
-		
+
 		DupeChecker dupeChecker = new DupeChecker(table, addRequest, fieldMap);
-		for ( Entry<String, List<String>>  entry : indexMap.entrySet()) {
+		for (Entry<String, List<String>> entry : indexMap.entrySet()) {
 			logger.log(Level.DEBUG, "Checking: " + entry.getKey());
 			dupeChecker.checkForDupes(conn, entry.getValue(), webMessages, standardDateFormat);
 		}
 	}
-	
-	
-	public static void validateAccountType(Connection conn, WebMessages webMessages, String fieldName, String value, boolean required) throws Exception {
+
+	public static void validateAccountType(Connection conn, WebMessages webMessages, String fieldName, String value,
+			boolean required) throws Exception {
 		validateCode(conn, webMessages, "quote", "account_type", fieldName, value, required);
 	}
-	
-	
 
-	
-	public static void validateBigDecimal(WebMessages webMessages, String fieldName, BigDecimal value, BigDecimal minValue, BigDecimal maxValue, boolean required) {
+	public static void validateBigDecimal(WebMessages webMessages, String fieldName, BigDecimal value,
+			BigDecimal minValue, BigDecimal maxValue, boolean required) {
 		if (value == null) {
 			if (required) {
 				webMessages.addMessage(fieldName, "Required Value");
 			}
 		} else {
-			if ( minValue != null && value.compareTo(minValue) < 0 ) {
+			if (minValue != null && value.compareTo(minValue) < 0) {
 				webMessages.addMessage(fieldName, "Must be at least " + minValue.doubleValue());
-			} else if ( maxValue != null && value.compareTo(maxValue) > 0 ) {
+			} else if (maxValue != null && value.compareTo(maxValue) > 0) {
 				webMessages.addMessage(fieldName, "Can be no more than " + maxValue.doubleValue());
 			}
 		}
@@ -99,17 +108,17 @@ public class RequestValidator {
 
 	public static void validateBoolean(WebMessages webMessages, String fieldName, Boolean value, boolean required) {
 		if (required) {
-			if ( value == null ) {
+			if (value == null) {
 				webMessages.addMessage(fieldName, "Required Value");
 			}
-		} 
+		}
 	}
 
-	public static void validateBuildingType(Connection conn, WebMessages webMessages, String fieldName, String value, boolean required) throws Exception {
+	public static void validateBuildingType(Connection conn, WebMessages webMessages, String fieldName, String value,
+			boolean required) throws Exception {
 		validateCode(conn, webMessages, "job", "building_type", fieldName, value, required);
 	}
-	
-	
+
 	private static void validateCode(Connection conn, WebMessages webMessages, String dbTableName, String dbFieldName,
 			String fieldName, String value, boolean required) throws Exception {
 		if (value == null) {
@@ -129,13 +138,14 @@ public class RequestValidator {
 		}
 	}
 
-	public static void validateDate(WebMessages webMessages, String fieldName, String value, String format, boolean required, Date minValue, Date maxValue) {
+	public static void validateDate(WebMessages webMessages, String fieldName, String value, String format,
+			boolean required, Date minValue, Date maxValue) {
 		SimpleDateFormat sdf = new SimpleDateFormat(format);
 		validateDate(webMessages, fieldName, value, sdf, required, minValue, maxValue);
 	}
-	
-	
-	public static void validateDate(WebMessages webMessages, String fieldName, String value, SimpleDateFormat format, boolean required, Date minValue, Date maxValue) {
+
+	public static void validateDate(WebMessages webMessages, String fieldName, String value, SimpleDateFormat format,
+			boolean required, Date minValue, Date maxValue) {
 		if (value == null) {
 			if (required) {
 				webMessages.addMessage(fieldName, "Required Value");
@@ -151,15 +161,15 @@ public class RequestValidator {
 					String maxLabel = format.format(maxValue);
 					webMessages.addMessage(fieldName, "Date must be before " + maxLabel);
 				}
-			} catch ( ParseException e ) {
+			} catch (ParseException e) {
 				webMessages.addMessage(fieldName, "Invalid Date Format: " + format.toPattern());
 			}
 		}
 
 	}
 
-	
-	public static void validateDate(WebMessages webMessages, String fieldName, Date value, boolean required, Date minValue, Date maxValue) {
+	public static void validateDate(WebMessages webMessages, String fieldName, Date value, boolean required,
+			Date minValue, Date maxValue) {
 		if (value == null) {
 			if (required) {
 				webMessages.addMessage(fieldName, "Required Value");
@@ -177,42 +187,39 @@ public class RequestValidator {
 
 		}
 	}
-	
-	public static void validateDouble(WebMessages webMessages, String fieldName, Double value, Double minValue, Double maxValue, boolean required) {
+
+	public static void validateDouble(WebMessages webMessages, String fieldName, Double value, Double minValue,
+			Double maxValue, boolean required) {
 		if (value == null) {
 			if (required) {
 				webMessages.addMessage(fieldName, "Required Value");
 			}
 		} else {
-			if ( minValue != null && value < minValue ) {
+			if (minValue != null && value < minValue) {
 				webMessages.addMessage(fieldName, "Must be at least " + minValue.toString());
-			} else if ( maxValue != null && value > maxValue ) {
+			} else if (maxValue != null && value > maxValue) {
 				webMessages.addMessage(fieldName, "Cannot be more than " + maxValue.toString());
 			}
 		}
 	}
-	
-	
-	
-	public static void validateFloat(WebMessages webMessages, String fieldName, Float value, Float minValue, Float maxValue, boolean required) {
+
+	public static void validateFloat(WebMessages webMessages, String fieldName, Float value, Float minValue,
+			Float maxValue, boolean required) {
 		if (value == null) {
 			if (required) {
 				webMessages.addMessage(fieldName, "Required Value");
 			}
 		} else {
-			if ( minValue != null && value < minValue ) {
+			if (minValue != null && value < minValue) {
 				webMessages.addMessage(fieldName, "Must be at least " + minValue.toString());
-			} else if ( maxValue != null && value > maxValue ) {
+			} else if (maxValue != null && value > maxValue) {
 				webMessages.addMessage(fieldName, "Cannot be more than " + maxValue.toString());
 			}
 		}
 	}
-	
-	
-	
-	
-	
-	public static void validateFutureDate(WebMessages webMessages, String fieldName, String value, String format, boolean required) {
+
+	public static void validateFutureDate(WebMessages webMessages, String fieldName, String value, String format,
+			boolean required) {
 		Date minDate = new Date();
 		validateDate(webMessages, fieldName, value, format, required, minDate, null);
 	}
@@ -234,22 +241,40 @@ public class RequestValidator {
 
 	}
 
-	public static void validateExpenseType(WebMessages webMessages, String fieldName, String value, boolean required) {
+	public static void validateExpenseType(Connection conn, WebMessages webMessages, String dbTableName,
+			String dbFieldName, String fieldName, String value, boolean required) throws Exception {
 		if (StringUtils.isBlank(value)) {
 			if (required) {
 				webMessages.addMessage(fieldName, "Required Value");
 			}
 		} else {
-			try {
-				EmployeeHoursType employeeHoursType = EmployeeHoursType.valueOf(value);
-				if (employeeHoursType == null) {
-					webMessages.addMessage(fieldName, "Invalid Value");
-				}
-			} catch (IllegalArgumentException e) {
+			String sql = "select * from " + dbTableName + " where " + dbFieldName + "=?";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, value);
+			ResultSet rs = ps.executeQuery();
+			if (!rs.next()) {
 				webMessages.addMessage(fieldName, "Invalid Value");
 			}
 		}
 	}
+
+//	public static void validateExpenseType(WebMessages webMessages, String fieldName, String value, boolean required) {
+//		if (StringUtils.isBlank(value)) {
+//			if (required) {
+//				webMessages.addMessage(fieldName, "Required Value");
+//			}
+//		} else {
+//
+//			try {
+//				EmployeeHoursType employeeHoursType = EmployeeHoursType.valueOf(value);
+//				if (employeeHoursType == null) {
+//					webMessages.addMessage(fieldName, "Invalid Value");
+//				}
+//			} catch (IllegalArgumentException e) {
+//				webMessages.addMessage(fieldName, "Invalid Value");
+//			}
+//		}
+//	}
 
 	public static void validateId(Connection conn, WebMessages webMessages, String dbTableName, String dbFieldName,
 			String fieldName, Integer value, boolean required) throws Exception {
@@ -268,7 +293,8 @@ public class RequestValidator {
 		}
 	}
 
-	public static void validateInteger(WebMessages webMessages, String fieldName, Integer value, Integer minValue, Integer maxValue, boolean required) {
+	public static void validateInteger(WebMessages webMessages, String fieldName, Integer value, Integer minValue,
+			Integer maxValue, boolean required) {
 		if (value == null) {
 			if (required) {
 				webMessages.addMessage(fieldName, "Required Value");
@@ -352,13 +378,13 @@ public class RequestValidator {
 		}
 	}
 
-	
-	public static void validateLeadType(Connection conn, WebMessages webMessages, String fieldName, String value, boolean required) throws Exception {
+	public static void validateLeadType(Connection conn, WebMessages webMessages, String fieldName, String value,
+			boolean required) throws Exception {
 		validateCode(conn, webMessages, "quote", "lead_type", fieldName, value, required);
 	}
-	
-	
-	public static void validateNumber(WebMessages webMessages, String fieldName, Object value, Object minValue, Object maxValue, boolean required) {
+
+	public static void validateNumber(WebMessages webMessages, String fieldName, Object value, Object minValue,
+			Object maxValue, boolean required) {
 		Logger logger = LogManager.getLogger(RequestValidator.class);
 		if (value == null) {
 			if (required) {
@@ -366,23 +392,23 @@ public class RequestValidator {
 			}
 		} else {
 			logger.log(Level.DEBUG, fieldName + "\t" + value + "\t" + value.getClass().getName());
-			if ( value instanceof Double ) {
-				validateDouble(webMessages, fieldName, (Double)value, (Double)minValue, (Double)maxValue, required);
-			} else if ( value instanceof BigDecimal ) {
-				validateBigDecimal(webMessages, fieldName, (BigDecimal)value, (BigDecimal)minValue, (BigDecimal)maxValue, required);
-			} else if ( value instanceof Integer ) {
-				validateInteger(webMessages, fieldName, (Integer)value, (Integer)minValue, (Integer)maxValue, required);
-			} else if ( value instanceof Float ) {
-				validateFloat(webMessages, fieldName, (Float)value, (Float)minValue, (Float)maxValue, required);
+			if (value instanceof Double) {
+				validateDouble(webMessages, fieldName, (Double) value, (Double) minValue, (Double) maxValue, required);
+			} else if (value instanceof BigDecimal) {
+				validateBigDecimal(webMessages, fieldName, (BigDecimal) value, (BigDecimal) minValue,
+						(BigDecimal) maxValue, required);
+			} else if (value instanceof Integer) {
+				validateInteger(webMessages, fieldName, (Integer) value, (Integer) minValue, (Integer) maxValue,
+						required);
+			} else if (value instanceof Float) {
+				validateFloat(webMessages, fieldName, (Float) value, (Float) minValue, (Float) maxValue, required);
 			} else {
 				webMessages.addMessage(fieldName, "Invalid Format");
 			}
-				
+
 		}
 	}
-	
-	
-	
+
 	public static void validatePaymentTerms(WebMessages webMessages, String fieldName, String value, boolean required) {
 		if (StringUtils.isBlank(value)) {
 			if (required) {
