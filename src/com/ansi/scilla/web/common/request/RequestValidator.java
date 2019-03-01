@@ -21,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.claims.WorkHoursType;
+import com.ansi.scilla.common.db.EmployeeExpense;
 import com.ansi.scilla.common.db.MSTable;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.employee.EmployeeHoursType;
@@ -241,40 +242,27 @@ public class RequestValidator {
 
 	}
 
-	public static void validateExpenseType(Connection conn, WebMessages webMessages, String dbTableName,
-			String dbFieldName, String fieldName, String value, boolean required) throws Exception {
-		if (StringUtils.isBlank(value)) {
-			if (required) {
-				webMessages.addMessage(fieldName, "Required Value");
-			}
-		} else {
-			String sql = "select * from " + dbTableName + " where " + dbFieldName + "=?";
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setString(1, value);
-			ResultSet rs = ps.executeQuery();
-			if (!rs.next()) {
-				webMessages.addMessage(fieldName, "Invalid Value");
-			}
-		}
-	}
+	public static void validateExpenseType(Connection conn, WebMessages webMessages, String fieldName, String value,
+			boolean required) throws Exception {
 
-//	public static void validateExpenseType(WebMessages webMessages, String fieldName, String value, boolean required) {
-//		if (StringUtils.isBlank(value)) {
-//			if (required) {
-//				webMessages.addMessage(fieldName, "Required Value");
-//			}
-//		} else {
-//
-//			try {
-//				EmployeeHoursType employeeHoursType = EmployeeHoursType.valueOf(value);
-//				if (employeeHoursType == null) {
-//					webMessages.addMessage(fieldName, "Invalid Value");
-//				}
-//			} catch (IllegalArgumentException e) {
-//				webMessages.addMessage(fieldName, "Invalid Value");
-//			}
-//		}
-//	}
+		validateCode(conn, webMessages, EmployeeExpense.TABLE, EmployeeExpense.EXPENSE_TYPE, fieldName, value,
+				required);
+
+		// if (StringUtils.isBlank(value)) {
+		// if (required) {
+		// webMessages.addMessage(fieldName, "Required Value");
+		// }
+		// } else {
+		// String sql = "select * from " + dbTableName + " where " + dbFieldName
+		// + "=?";
+		// PreparedStatement ps = conn.prepareStatement(sql);
+		// ps.setString(1, value);
+		// ResultSet rs = ps.executeQuery();
+		// if (!rs.next()) {
+		// webMessages.addMessage(fieldName, "Invalid Value");
+		// }
+		// }
+	}
 
 	public static void validateId(Connection conn, WebMessages webMessages, String dbTableName, String dbFieldName,
 			String fieldName, Integer value, boolean required) throws Exception {

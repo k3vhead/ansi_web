@@ -37,11 +37,11 @@ public class JobTableReturnItem extends ReportQuery {
 	public static final String QUOTE_ID = "quote_id";
 	public static final String QUOTE_NUMBER = "quote_number";
 	public static final String REVISION = "revision";
-	
-	public static final String CONTACT_FIRST_NAME = "contact_first_name";
-	public static final String CONTACT_LAST_NAME = "contact_last_name";
-	public static final String PREFERRED_CONTACT = "preferred_contact";
 
+	public static final String JOB_CONTACT = "job_contact";
+	public static final String SITE_CONTACT = "site_contact";
+	public static final String CONTRACT_CONTACT = "contract_contact";
+	public static final String BILLING_CONTACT = "billing_contact";
 
 	private Integer jobId;
 	private String jobStatus;
@@ -65,44 +65,16 @@ public class JobTableReturnItem extends ReportQuery {
 	private String revision;
 	private String jobSiteCity;
 	private String jobSiteState;
-	
-	private String contactFirstName;
-	private String contactLastName;
-	private String preferredContact;
+
+	private JobSearchContact jobContact;
+	private JobSearchContact siteContact;
+	private JobSearchContact contractContact;
+	private JobSearchContact billingContact;
 
 	public JobTableReturnItem() throws SQLException {
 		super();
 	}
 
-	public JobTableReturnItem(ResultSet rs) throws SQLException {
-		this();
-		this.jobId = rs.getInt(JOB_ID);
-		this.jobStatus = rs.getString(JOB_STATUS);
-		this.billToName = rs.getString(BILL_TO_NAME);
-		this.jobSiteName = rs.getString(JOB_SITE_NAME);
-		this.jobSiteCity = rs.getString(JOB_SITE_CITY);
-		this.jobSiteState = rs.getString(JOB_SITE_STATE);
-		this.jobSiteAddress = rs.getString(JOB_SITE_ADDRESS);
-		this.startDate = rs.getDate(START_DATE);
-		this.jobFrequency = rs.getString(JOB_FREQUENCY);
-		this.pricePerCleaning = rs.getBigDecimal(PRICE_PER_CLEANING);
-		this.jobNbr = rs.getInt(JOB_NBR);
-		this.serviceDescription = rs.getString(SERVICE_DESCRIPTION);
-		this.poNumber = rs.getString(PO_NUMBER);
-		this.billToAddressId = rs.getInt(BILL_TO_ADDRESS_ID);
-		this.jobSiteAddressId = rs.getInt(JOB_SITE_ADDRESS_ID);
-		this.divisionId = rs.getInt(DIVISION_ID);
-		this.divisionNbr = rs.getInt(DIVISION_NBR);
-		this.divisionCode = rs.getString(DIVISION_CODE);
-		this.DT_RowId = rs.getInt(JOB_ID) + "";
-		this.quoteId = rs.getInt(QUOTE_ID);
-		this.quoteNumber = rs.getInt(QUOTE_NUMBER);
-		this.revision = rs.getString(REVISION);
-		
-		this.contactFirstName = rs.getString(CONTACT_FIRST_NAME);
-		this.contactLastName = rs.getString(CONTACT_LAST_NAME);
-		this.preferredContact = rs.getString(PREFERRED_CONTACT);
-	}
 
 	public JobTableReturnItem(JobSearch jobSearch) throws SQLException {
 		this();
@@ -128,10 +100,11 @@ public class JobTableReturnItem extends ReportQuery {
 		this.quoteId = jobSearch.getQuote().getQuoteId();
 		this.quoteNumber = jobSearch.getQuote().getQuoteNumber();
 		this.revision = jobSearch.getQuote().getRevision();
-		
-		this.contactFirstName = jobSearch.getJobContact().getFirstName();
-		this.contactLastName = jobSearch.getJobContact().getLastName();
-		this.preferredContact = jobSearch.getJobContact().getPreferredContact();
+
+		this.jobContact = jobSearch.getJobContact();
+		this.contractContact = jobSearch.getContractContact();
+		this.billingContact = jobSearch.getBillingContact();
+		this.siteContact = jobSearch.getSiteContact();
 	}
 
 	@DBColumn(JOB_ID)
@@ -354,35 +327,45 @@ public class JobTableReturnItem extends ReportQuery {
 	public void setJobSiteState(String jobSiteState) {
 		this.jobSiteState = jobSiteState;
 	}
-	
-	@DBColumn(CONTACT_FIRST_NAME)
-	public String getContactFirstName() {
-		return contactFirstName;
+
+	@DBColumn(BILLING_CONTACT)
+	public JobSearchContact getBillingContact() {
+		return billingContact;
 	}
-	
-	@DBColumn(CONTACT_FIRST_NAME)
-	public void setContactFirstName(String contactFirstName) {
-		this.contactFirstName = contactFirstName;
+
+	@DBColumn(BILLING_CONTACT)
+	public void setBillingContact(JobSearchContact billingContact) {
+		this.billingContact = billingContact;
 	}
-	
-	@DBColumn(CONTACT_LAST_NAME)
-	public String getContactLastName() {
-		return contactLastName;
+
+	@DBColumn(CONTRACT_CONTACT)
+	public JobSearchContact getContractContact() {
+		return contractContact;
 	}
-	
-	@DBColumn(CONTACT_LAST_NAME)
-	public void setContactLastName(String contactLastName) {
-		this.contactLastName = contactLastName;
+
+	@DBColumn(CONTRACT_CONTACT)
+	public void setContractContact(JobSearchContact contractContact) {
+		this.contractContact = contractContact;
 	}
-	
-	@DBColumn(PREFERRED_CONTACT)
-	public String getPreferredContact() {
-		return preferredContact;
+
+	@DBColumn(JOB_CONTACT)
+	public JobSearchContact getJobContact() {
+		return jobContact;
 	}
-	
-	@DBColumn(PREFERRED_CONTACT)
-	public void setPreferredContact(String preferredContact) {
-		this.preferredContact = preferredContact;
+
+	@DBColumn(JOB_CONTACT)
+	public void setJobContact(JobSearchContact jobContact) {
+		this.jobContact = jobContact;
+	}
+
+	@DBColumn(SITE_CONTACT)
+	public JobSearchContact getSiteContact() {
+		return siteContact;
+	}
+
+	@DBColumn(SITE_CONTACT)
+	public void setSiteContact(JobSearchContact siteContact) {
+		this.siteContact = siteContact;
 	}
 
 }
