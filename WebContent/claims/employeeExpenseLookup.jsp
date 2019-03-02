@@ -365,8 +365,8 @@
 	    			var $returnValue = null;
 	    			var jqxhr1 = $.ajax({
 	    				type: 'GET',
-	    				//url: 'options',
-	    				url: 'code/employee_expense/expense_type',
+	    				url: 'options',
+	    				//url: 'code/employee_expense/expense_type',
 	    				data: $optionList,			    				
 	    				statusCode: {
 	    					200: function($data) {
@@ -414,12 +414,12 @@
     	
  	<table id="displayTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
        	<colgroup>
+        	<col style="width:8%;" />
         	<col style="width:5%;" />
-        	<col style="width:5%;" />
-    		<col style="width:10%;" />    		
+    		<col style="width:12%;" />    		
     		<col style="width:5%;" />
     		<col style="width:10%;" />
-    		<col style="width:50%;" />
+    		<col style="width:40%;" />
    		</colgroup>
         <thead>
             <tr>
