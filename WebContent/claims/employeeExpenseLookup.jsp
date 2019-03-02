@@ -361,27 +361,33 @@
         		
         		
         		makeOptionList : function($optionList, $callBack) {
-					console.log("getOptions");
+					console.log("getOptionList");
 	    			var $returnValue = null;
 	    			var jqxhr1 = $.ajax({
 	    				type: 'GET',
-	    				url: 'options',
-	    				//url: 'code/employee_expense/expense_type',
+	    				//url: 'options',
+	    				url: 'code/employee_expense/expense_type',
 	    				data: $optionList,			    				
 	    				statusCode: {
 	    					200: function($data) {
+	    						console.log("Successful Log");
+	    						console.log($data);
 	    						$callBack($data.data);		    						
 	    					},			    				
 	    					403: function($data) {
+	    						console.log("403");
 	    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
 	    					}, 
 	    					404: function($data) {
+	    						console.log("404");
 	    						$("#globalMsg").html("System Error Option 404. Contact Support").show();
 	    					}, 
 	    					405: function($data) {
+	    						console.log("405");
 	    						$("#globalMsg").html("System Error Option 405. Contact Support").show();
 	    					}, 
 	    					500: function($data) {
+	    						console.log("500");
 	    						$("#globalMsg").html("System Error Option 500. Contact Support").show();
 	    					}, 
 	    				},
@@ -395,8 +401,8 @@
 	    			var $select = $("#ndl-crud-form select[name='expenseType']");
 					$('option', $select).remove();
 					$select.append(new Option("",""));
-					$.each($data.expenseType, function(index, val) {
-					    $select.append(new Option(val.display, val.code));
+					$.each($data.codeList, function(index, val) {
+					    $select.append(new Option(val.value, val.displayValue));
 					});
 	    		},
 	    		
