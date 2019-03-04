@@ -43,6 +43,11 @@ public class JobTableReturnItem extends ReportQuery {
 	public static final String CONTRACT_CONTACT = "contract_contact";
 	public static final String BILLING_CONTACT = "billing_contact";
 
+	public static final String PROPOSAL_DATE = "proposal_date";
+	public static final String ACTIVATION_DATE = "activation_date";
+	public static final String CANCEL_DATE = "cancel_date";
+	public static final String CANCEL_REASON = "cancel_reason";
+
 	private Integer jobId;
 	private String jobStatus;
 	private String billToName;
@@ -70,6 +75,11 @@ public class JobTableReturnItem extends ReportQuery {
 	private JobSearchContact siteContact;
 	private JobSearchContact contractContact;
 	private JobSearchContact billingContact;
+
+	private Date proposalDate;
+	private Date activationDate;
+	private Date cancelDate;
+	private String cancelReason;
 
 	public JobTableReturnItem() throws SQLException {
 		super();
@@ -105,6 +115,12 @@ public class JobTableReturnItem extends ReportQuery {
 		this.contractContact = jobSearch.getContractContact();
 		this.billingContact = jobSearch.getBillingContact();
 		this.siteContact = jobSearch.getSiteContact();
+
+		this.proposalDate = jobSearch.getQuote().getProposalDate();
+		this.activationDate = jobSearch.getJob().getActivationDate();
+		this.cancelDate = jobSearch.getJob().getCancelDate();
+		this.cancelReason = jobSearch.getJob().getCancelReason();
+	
 	}
 
 	@DBColumn(JOB_ID)
@@ -366,6 +382,52 @@ public class JobTableReturnItem extends ReportQuery {
 	@DBColumn(SITE_CONTACT)
 	public void setSiteContact(JobSearchContact siteContact) {
 		this.siteContact = siteContact;
+	}
+
+	@DBColumn(PROPOSAL_DATE)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
+	public Date getProposalDate() {
+		return proposalDate;
+	}
+
+	@DBColumn(PROPOSAL_DATE)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
+	public void setProposalDate(Date proposalDate) {
+		this.proposalDate = proposalDate;
+	}
+
+	@DBColumn(ACTIVATION_DATE)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
+	public Date getActivationDate() {
+		return activationDate;
+	}
+
+	@DBColumn(ACTIVATION_DATE)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
+	public void setActivationDate(Date activationDate) {
+		this.activationDate = activationDate;
+	}
+
+	@DBColumn(CANCEL_DATE)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
+	public Date getCancelDate() {
+		return cancelDate;
+	}
+
+	@DBColumn(CANCEL_DATE)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
+	public void setCancelDate(Date cancelDate) {
+		this.cancelDate = cancelDate;
+	}
+
+	@DBColumn(CANCEL_REASON)
+	public String getCancelReason() {
+		return cancelReason;
+	}
+
+	@DBColumn(CANCEL_REASON)
+	public void setCancelReason(String cancelReason) {
+		this.cancelReason = cancelReason;
 	}
 
 }
