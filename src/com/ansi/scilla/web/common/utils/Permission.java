@@ -26,6 +26,7 @@ public enum Permission {
 	QUOTE_CREATE(QUOTE_READ, false, "Create quotes; edit until quotes are proposed"),		// can create quotes and edit them until they have been proposed
 	QUOTE_PROPOSE(QUOTE_CREATE, false, "Can propose quotes"),
 	QUOTE_UPDATE(QUOTE_PROPOSE, false, "Edit quotes at any time, including after they are proposed"),    // can create quotes, edit them at any time (including after proposal)
+	QUOTE_OVERRIDE(QUOTE_UPDATE, false, "Override quote data"),
 	
 	/**
 	 * 11/5/2018 - Job permissions are merged into quote permissions. (You need quote permission to do anything with jobs)
@@ -38,6 +39,7 @@ public enum Permission {
 	TICKET(null, true, "Functional area: Tickets"),
 	TICKET_READ(TICKET, true, "Read-only access to Tickets"),		// this is for backwards compatibility
 	TICKET_WRITE(TICKET_READ, true, "Edit Tickets"),		// this is for backwards compatibility
+	TICKET_OVERRIDE(TICKET_WRITE, true, "Ticket Override"),
 	
 	TICKET_SPECIAL_OVERRIDE(null, false, "Functional Area: Ticket Override"),    // specifically needed for invoice date
 	TICKET_SPECIAL_OVERRIDE_READ(TICKET_SPECIAL_OVERRIDE, false, "Bakcward compatibility"),    // this is for backwards compatibility
@@ -81,8 +83,8 @@ public enum Permission {
 	PERMISSIONS_WRITE(PERMISSIONS_READ, false, "Can edit permission groups, assign permissions to group"),
 	
 	CLAIMS(null, false, "Functional Area: Claims"),
-	CLAIMS_READ(CLAIMS, false, "Can read ticket claims"),
-	CLAIMS_WRITE(CLAIMS_READ, false, "Can edit ticket claims"),
+	CLAIMS_READ(CLAIMS, true, "Can read ticket claims"),
+	CLAIMS_WRITE(CLAIMS_READ, true, "Can edit ticket claims"),
 	;
 	
 	private final Boolean divisionSpecific;
