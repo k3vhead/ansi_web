@@ -3,7 +3,6 @@ package com.ansi.scilla.web.employeeExpense.servlet;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.sql.Connection;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -16,8 +15,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
-import com.ansi.scilla.web.common.struts.SessionData;
-import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.employeeExpense.query.EmployeeExpenseLookupQuery;
@@ -55,9 +52,9 @@ public class EmployeeExpenseLookupServlet extends AbstractServlet {
 		String dir = "asc";
 		
 		String[] cols = { 
-				"last_name",
 				"work_date", //week of the year
 				"work_date", //date of year: mm/dd/yyyy
+				"last_name",
 				"expense_type",
 				"amount",
 				"notes"
@@ -72,8 +69,8 @@ public class EmployeeExpenseLookupServlet extends AbstractServlet {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
-			SessionData sessionData = AppUtils.validateSession(request, Permission.CLAIMS_READ);
-			SessionUser user = sessionData.getUser();
+			AppUtils.validateSession(request, Permission.CLAIMS_READ);
+//			SessionUser user = sessionData.getUser();
 			String term = "";
 
 			if(request.getParameter("search[value]") != null){
