@@ -1,5 +1,6 @@
 package com.ansi.scilla.web.claims.query;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
@@ -23,6 +24,8 @@ public class NonDirectLaborSearchResult extends ApplicationObject {
 	public static final String HOURS = "hours";
 	public static final String HOURS_TYPE = "hours_type";
 	public static final String NOTES = "notes";
+	public static final String ACT_PAYOUT_AMT = "act_payout_amt";
+	public static final String CALC_PAYOUT_AMT = "calc_payout_amt";
 	
 	private Integer laborId;
 	private Integer divisionId;
@@ -35,6 +38,8 @@ public class NonDirectLaborSearchResult extends ApplicationObject {
 	private String hoursType;
 	private String hoursDescription;
 	private String notes;
+	private BigDecimal actPayoutAmt;
+	private BigDecimal calcPayoutAmt;
 	
 	public NonDirectLaborSearchResult() {
 		super();
@@ -61,6 +66,8 @@ public class NonDirectLaborSearchResult extends ApplicationObject {
 				this.hoursDescription = "Invalid value: " + this.hoursType;
 			}
 		}
+		this.actPayoutAmt = rs.getBigDecimal(ACT_PAYOUT_AMT);
+		this.calcPayoutAmt = rs.getBigDecimal(CALC_PAYOUT_AMT);
 		
 	}
 	
@@ -145,6 +152,22 @@ public class NonDirectLaborSearchResult extends ApplicationObject {
 		calendar.clear();
 		calendar.setTime(this.workDate);
 		return calendar.get(Calendar.WEEK_OF_YEAR);
+	}
+
+	public BigDecimal getActPayoutAmt() {
+		return actPayoutAmt;
+	}
+
+	public void setActPayoutAmt(BigDecimal actPayoutAmt) {
+		this.actPayoutAmt = actPayoutAmt;
+	}
+
+	public BigDecimal getCalcPayoutAmt() {
+		return calcPayoutAmt;
+	}
+
+	public void setCalcPayoutAmt(BigDecimal calcPayoutAmt) {
+		this.calcPayoutAmt = calcPayoutAmt;
 	}
 	
 	

@@ -97,9 +97,9 @@
             	        ],
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
-            	            { className: "dt-left", "targets": [0,3,6] },
-            	            { className: "dt-center", "targets": [1,2,4,5,7] },
-            	            { className: "dt-right", "targets": []}
+            	            { className: "dt-left", "targets": [0,3,8] },
+            	            { className: "dt-center", "targets": [1,2,4,5,9] },
+            	            { className: "dt-right", "targets": [6,7]}
             	         ],
             	        "paging": true,
     			        "ajax": {
@@ -125,6 +125,12 @@
     			            } },
     			            { title: "Hours", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.hours != null){return (row.hours+"");}
+    			            } },
+    			            { title: "Calc Pay", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.hours != null){return ( NONDIRECTLABOR.formatPay(row.calcPayoutAmt));}
+    			            } },
+    			            { title: "Act Pay", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.hours != null){return ( NONDIRECTLABOR.formatPay(row.actPayoutAmt));}
     			            } },
     			            { title: "Notes",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.notes != null){return (row.notes+"");}
@@ -249,6 +255,12 @@
 					});
             		
             		
+            	},
+            	
+            	
+            	
+            	formatPay : function($amt) {
+            		return "$" + $amt.toFixed(2);
             	},
             	
             	
@@ -421,7 +433,9 @@
     		<col style="width:10%;" />
     		<col style="width:10%;" />
     		<col style="width:5%;" />
-    		<col style="width:45%;" />
+    		<col style="width:5%;" />
+    		<col style="width:5%;" />
+    		<col style="width:35%;" />
     		<col style="width:10%;" />
    		</colgroup>
         <thead>
@@ -432,6 +446,8 @@
     			<th>Washer</th>
     			<th>Hours Type</th>
     			<th>Hours</th>
+    			<th>Calc Pay</th>
+    			<th>Act Pay</th>
     			<th>Notes</th>
     			<th>Action</th>    			
             </tr>
@@ -444,6 +460,8 @@
     			<th>Washer</th>
     			<th>Hours Type</th>
     			<th>Hours</th>
+    			<th>Calc Pay</th>
+    			<th>Act Pay</th>
     			<th>Notes</th>   
     			<th>Action</th>  			
             </tr>

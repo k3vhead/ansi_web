@@ -37,7 +37,9 @@ public class NonDirectLaborLookupQuery extends ReportQuery {
 					+ "\n non_direct_labor.work_date, "
 					+ "\n non_direct_labor.hours, "
 					+ "\n non_direct_labor.hours_type, "
-					+ "\n non_direct_labor.notes "; 
+					+ "\n non_direct_labor.notes, "
+					+ "\n non_direct_labor.act_payout_amt, "
+					+ "\n non_direct_labor.calc_payout_amt "; 
 		
 
 	private static final String sqlFromClause = "\n  "
