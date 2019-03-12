@@ -151,11 +151,12 @@ public class NonDirectLaborServlet extends AbstractCrudServlet {
 		RequestValidator.validateWasherId(conn, webMessages, WASHER_ID, (Integer)addRequest.get(WASHER_ID), true);
 		
 		if ( webMessages.isEmpty() ) {
-			// we can only check they pay amount if the other fields are valid
+			// we can only check the pay amount if the other fields are valid
 			WorkHoursType workType = WorkHoursType.valueOf((String)addRequest.get(HOURS_TYPE));
 			Integer workerId = (Integer)addRequest.get(WASHER_ID);
 			Double hours = (Double)addRequest.get(HOURS);
-			Double minimumPay = workType.calculateDefaultPay(conn, divisionId, workerId, hours);
+			Date workDate = standardDateFormat.parse((String)addRequest.get(WORK_DATE));
+			Double minimumPay = workType.calculateDefaultPay(conn, divisionId, workerId, workDate, hours);
 			RequestValidator.validateNumber(webMessages, ACT_PAYOUT_AMT, addRequest.get(ACT_PAYOUT_AMT), minimumPay, null, true);
 		}
 		
@@ -176,11 +177,11 @@ public class NonDirectLaborServlet extends AbstractCrudServlet {
 		java.util.Date workDate = standardDateFormat.parse(dateString);
 		Integer divisionId = jsonNode.get("divisionId").asInt();
 		Integer washerId = jsonNode.get(WASHER_ID).asInt();
-		Double workHours = jsonNode.get(HOURS).asDouble();
+		Double workHours = jsonNode.get(HOURS).asDouble();		
 		
 		String workHoursString = jsonNode.get(HOURS_TYPE).asText();
 		WorkHoursType workHoursType = WorkHoursType.valueOf(workHoursString);
-		Double calcPayoutAmt = workHoursType.calculateDefaultPay(conn, divisionId, washerId, workHours);
+		Double calcPayoutAmt = workHoursType.calculateDefaultPay(conn, divisionId, washerId, workDate, workHours);
 		
 		NonDirectLabor nonDirectLabor = new NonDirectLabor();
 		nonDirectLabor.setActPayoutAmt(new BigDecimal(jsonNode.get(ACT_PAYOUT_AMT).asDouble()));

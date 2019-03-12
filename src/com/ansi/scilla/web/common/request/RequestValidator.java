@@ -24,7 +24,6 @@ import com.ansi.scilla.common.claims.WorkHoursType;
 import com.ansi.scilla.common.db.EmployeeExpense;
 import com.ansi.scilla.common.db.MSTable;
 import com.ansi.scilla.common.db.User;
-import com.ansi.scilla.common.employee.EmployeeHoursType;
 import com.ansi.scilla.common.invoice.InvoiceGrouping;
 import com.ansi.scilla.common.invoice.InvoiceStyle;
 import com.ansi.scilla.common.invoice.InvoiceTerm;

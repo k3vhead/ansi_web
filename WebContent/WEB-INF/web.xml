@@ -112,6 +112,16 @@
 
 
     <servlet>
+        <servlet-name>calculateNdlPay</servlet-name>
+        <servlet-class>com.ansi.scilla.web.claims.servlet.CalculateNdlPay</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>calculateNdlPay</servlet-name>
+        <url-pattern>/claims/calculateNdlPay</url-pattern>
+    </servlet-mapping>
+    
+
+    <servlet>
         <servlet-name>cashReceiptsRegisterReport</servlet-name>
         <servlet-class>com.ansi.scilla.web.report.servlet.CashReceiptsRegisterReportServlet</servlet-class>
     </servlet>

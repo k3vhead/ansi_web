@@ -57,6 +57,49 @@
         		
         		
         		
+        		calculatePay : function() {
+        			console.log("calculatePay");
+					var $url = 'claims/calculateNdlPay';
+        			
+            		var $outbound = {};
+            		$.each( $("#ndl-crud-form input"), function($index, $value) {
+            			$outbound[$($value).attr("name")] = $($value).val();
+            		});
+            		$.each( $("#ndl-crud-form select"), function($index, $value) {
+            			$outbound[$($value).attr("name")] = $($value).val();
+            		});
+            		console.log($outbound);
+            		var jqxhr3 = $.ajax({
+						type: 'POST',
+						url: $url,
+						data: JSON.stringify($outbound),
+						statusCode: {
+							200:function($data) {
+								$("#ndl-crud-form .err").html("");
+								if ( $data.responseHeader.responseCode == 'SUCCESS') {
+									$("#calcPayAmt").html($data.data.calculatedPay);
+								} else {
+									$("#calcPayAmt").html("ERR");
+									//$("#globalMsg").html("Invalid response code " + $data.responseHeader.responseCode + ". Contact Support").show();
+									//$("#ndl-crud-form").dialog("close");
+								}
+							},
+							403: function($data) {								
+								$("#globalMsg").html("Session Expired. Log In and try again").show();
+							},
+							404: function($data) {
+								$("#globalMsg").html("System Error NDLPAY 404. Contact Support").show();
+							},
+							500: function($data) {
+								$("#globalMsg").html("System Error NDLPAY 500. Contact Support").show();
+							}
+						},
+						dataType: 'json'
+					});
+        		},
+        		
+        		
+        		
         		clearForm : function() {
         			$("#ndl-crud-form select[name='divisionId']").val();
         			$.each( $("#ndl-crud-form input"), function($index, $value) {        				
@@ -245,10 +288,10 @@
 								$("#globalMsg").html("Session Expired. Log In and try again").show();
 							},
 							404: function($data) {
-								$("#globalMsg").html("System Error Division 404. Contact Support").show();
+								$("#globalMsg").html("System Error NDL 404. Contact Support").show();
 							},
 							500: function($data) {
-								$("#globalMsg").html("System Error Division 500. Contact Support").show();
+								$("#globalMsg").html("System Error NDL 500. Contact Support").show();
 							}
 						},
 						dataType: 'json'
@@ -304,7 +347,7 @@
                         showButtonPanel:true
                     });
             		
-            		
+            		$('.calcPayTrigger').bind("change", NONDIRECTLABOR.calculatePay);
             	},
             	
             	
@@ -475,27 +518,27 @@
     	<table>
     		<tr>
     			<td><span class="formLabel">Division</span></td>
-    			<td><select name="divisionId"></select></td>
+    			<td><select name="divisionId" class="calcPayTrigger"></select></td>
     			<td><span id="divisionIdErr" class="err"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formLabel">Date</span></td>
-    			<td><input type="text" name="workDate" class="dateField" /></td>
+    			<td><input type="text" name="workDate" class="dateField calcPayTrigger" /></td>
     			<td><span id="workDateErr" class="err"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formLabel">Washer</span></td>
-    			<td><input type="text" name="washerName" /><input type="hidden" name="washerId" /></td>
+    			<td><input type="text" name="washerName" class="calcPayTrigger" /><input type="hidden" name="washerId" /></td>
     			<td><span id="washerIdErr" class="err"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formLabel">Hours</span></td>
-    			<td><input type="text" name="hours" /></td>
+    			<td><input type="text" name="hours" class="calcPayTrigger" /></td>
     			<td><span id="hoursErr" class="err"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formLabel">Type</span></td>
-    			<td><select  name="hoursType"></select></td>
+    			<td><select  name="hoursType" class="calcPayTrigger"></select></td>
     			<td><span id="hoursTypeErr" class="err"></span></td>
     		</tr>
     		<tr>
