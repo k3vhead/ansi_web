@@ -1,6 +1,8 @@
 package com.ansi.scilla.web.common.servlet;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -57,11 +59,13 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 
 	public static final String ACTION_IS_LIST = "list";
 
-	protected final SimpleDateFormat standardDateFormat = new SimpleDateFormat("MM/dd/yyyy");
+	public static final SimpleDateFormat standardDateFormat = new SimpleDateFormat("MM/dd/yyyy");
 	protected final Logger logger = LogManager.getLogger(this.getClass());
 	
 	private String displaySql;
 	private List<PermittedAction> permittedActionList;
+	private Method overrideAdd;
+	private Method overrideUpdate;
 	
 	public AbstractCrudServlet() {
 		super();
@@ -94,6 +98,36 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 	public void setPermittedActionList(List<PermittedAction> permittedActionList) {
 		this.permittedActionList = permittedActionList;
 	}
+	
+	/**
+	 * When the standard method to populate the database record does not fit requirements, create a method to populate
+	 * and insert the database record. The signature must match:<br />
+	 * public static Integer overrideAdd(Connection conn, HttpServletResponse response, SessionUser sessionUser, JsonNode jsonNode) throws Exception {
+	 * 
+	 * @return
+	 */
+	public Method getOverrideAdd() {
+		return overrideAdd;
+	}
+
+	public void setOverrideAdd(Method overrideAdd) {
+		this.overrideAdd = overrideAdd;
+	}
+
+	/**
+	 * When the standard method to populate the database record does not fit requirements, create a method to populate
+	 * and insert the database record. The signature must match:<br />
+	 * public void overrideUpdate(Connection conn, HttpServletResponse response, Integer id, SessionUser sessionUser, JsonNode jsonNode) throws Exception {
+	 * @return
+	 */
+	public Method getOverrideUpdate() {
+		return overrideUpdate;
+	}
+
+	public void setOverrideUpdate(Method overrideUpdate) {
+		this.overrideUpdate = overrideUpdate;
+	}
+
 	protected abstract WebMessages validateAdd(Connection conn, HashMap<String, Object> addRequest) throws Exception;
 	protected abstract WebMessages validateUpdate(Connection conn, HashMap<String, Object> updateRequest) throws Exception;
 	
@@ -276,7 +310,20 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 		WebMessages webMessages = this.validateAdd(conn, addRequest);
 		
 		if ( webMessages.isEmpty() ) {
-			doAdd(conn, response, table, sessionUser, jsonNode, fieldMapList);
+			if ( overrideAdd == null ) {
+				Integer id = doAdd(conn, response, table, sessionUser, jsonNode, fieldMapList);
+				sendItemResponse(conn, response, table, fieldMapList, id);
+			} else {
+				try {
+					Integer id = (Integer)overrideAdd.invoke(null, new Object[] {conn, response, sessionUser, jsonNode});
+					sendItemResponse(conn, response, table, fieldMapList, id);
+				} catch ( InvocationTargetException ite ) {
+					Throwable t = ite.getCause();
+					t.printStackTrace();
+					throw new RuntimeException(t);
+				}
+			}		
+			
 		} else {
 			CrudResponse crudResponse = new CrudResponse();
 			crudResponse.setWebMessages(webMessages);
@@ -287,7 +334,7 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 	
 
 	
-	private void doAdd(Connection conn, HttpServletResponse response, MSTable table, SessionUser sessionUser, JsonNode jsonNode, List<FieldMap> fieldMapList) throws Exception {		
+	private Integer doAdd(Connection conn, HttpServletResponse response, MSTable table, SessionUser sessionUser, JsonNode jsonNode, List<FieldMap> fieldMapList) throws Exception {		
 		String tableName = table.getClass().getAnnotation(DBTable.class).value();
 		String keyFieldName = table.getClass().getAnnotation(AutoIncrement.class).value();
 		
@@ -356,8 +403,8 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 		rs.close();
 				
 		conn.commit();
+		return id;
 
-		sendItemResponse(conn, response, table, fieldMapList, id);		
 	}
 
 
@@ -385,7 +432,19 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 			WebMessages webMessages = this.validateUpdate(conn, updateRequest);
 			
 			if ( webMessages.isEmpty() ) {
-				doUpdate(conn, response, table, id, sessionUser, jsonNode, fieldMapList);
+				if ( overrideUpdate == null ) {
+					doUpdate(conn, response, table, id, sessionUser, jsonNode, fieldMapList);
+				} else {
+					try {
+						overrideUpdate.invoke(null, new Object[] {conn, response, id, sessionUser, jsonNode});
+						sendItemResponse(conn, response, table, fieldMapList, id);
+					} catch ( InvocationTargetException ite ) {
+						Throwable t = ite.getCause();
+						t.printStackTrace();
+						throw new RuntimeException(t);
+					}
+				}
+				sendItemResponse(conn, response, table, fieldMapList, id);
 			} else {
 				CrudResponse crudResponse = new CrudResponse();
 				crudResponse.setWebMessages(webMessages);
@@ -448,7 +507,6 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 		
 		conn.commit();
 
-		sendItemResponse(conn, response, table, fieldMapList, id);
 		
 	}
 
@@ -485,7 +543,7 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 	}
 
 
-	private void sendItemResponse(Connection conn, HttpServletResponse response, MSTable table, List<FieldMap> fieldMap, Integer id) throws Exception {
+	protected void sendItemResponse(Connection conn, HttpServletResponse response, MSTable table, List<FieldMap> fieldMap, Integer id) throws Exception {
 		HashMap<String, FieldMap> db2json = makeDb2Json(fieldMap);
 		HashMap<String, Object> item = null;
 		

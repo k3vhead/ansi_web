@@ -212,6 +212,7 @@
             		$.each( $("#ndl-crud-form select"), function($index, $value) {
             			$outbound[$($value).attr("name")] = $($value).val();
             		});
+            		console.log($outbound);
             		var jqxhr3 = $.ajax({
 						type: 'POST',
 						url: $url,
@@ -333,7 +334,7 @@
 					$( "#ndl-crud-form" ).dialog({
 						title:'Non-Direct Labor',
 						autoOpen: false,
-						height: 375,
+						height: 400,
 						width: 500,
 						modal: true,
 						closeOnEscape:true,
@@ -478,6 +479,16 @@
     			<td><span class="formLabel">Type</span></td>
     			<td><select  name="hoursType"></select></td>
     			<td><span id="hoursTypeErr" class="err"></span></td>
+    		</tr>
+    		<tr>
+    			<td><span class="formLabel">Calculated Pay</span></td>
+    			<td><span  id="calcPayAmt"></span></td>
+    			<td>&nbsp;</td>
+    		</tr>
+    		<tr>
+    			<td><span class="formLabel">Actual Pay</span></td>
+    			<td><input type="text" name="actPayoutAmt" /></td>
+    			<td><span id="actPayAmtErr" class="err"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formLabel">Notes</span></td>

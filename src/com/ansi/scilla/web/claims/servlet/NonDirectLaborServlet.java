@@ -1,8 +1,11 @@
 package com.ansi.scilla.web.claims.servlet;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -12,15 +15,18 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.Level;
 
+import com.ansi.scilla.common.claims.WorkHoursType;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.NonDirectLabor;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractCrudServlet;
+import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.FieldMap;
 import com.ansi.scilla.web.common.utils.JsonFieldFormat;
 import com.ansi.scilla.web.common.utils.Permission;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class NonDirectLaborServlet extends AbstractCrudServlet {
@@ -29,17 +35,28 @@ public class NonDirectLaborServlet extends AbstractCrudServlet {
 
 	private static final String REALM = "nonDirectLabor";
 	
-	private static List<FieldMap> fieldMap;
+	private static final String ACT_PAYOUT_AMT = "actPayoutAmt";
+	private static final String LABOR_ID = "laborId";
+	private static final String WASHER_ID = "washerId";
+	private static final String DIVISION_ID =  "divisionId";
+	private static final String WORK_DATE =  "workDate";
+	private static final String HOURS =  "hours";
+	private static final String HOURS_TYPE =  "hoursType";
+	private static final String NOTES =  "notes";
 	
+	
+	private static List<FieldMap> fieldMap;
+		
 	static {
 		fieldMap = new ArrayList<FieldMap>();
-		fieldMap.add(new FieldMap("laborId",NonDirectLabor.LABOR_ID, JsonFieldFormat.INTEGER, true));
-		fieldMap.add(new FieldMap("washerId", NonDirectLabor.WASHER_ID, JsonFieldFormat.INTEGER, true));
-//		fieldMap.add(new FieldMap("divisionId", NonDirectLabor.DIVISION_ID, JsonFieldFormat.INTEGER, true));
-		fieldMap.add(new FieldMap("workDate", NonDirectLabor.WORK_DATE, JsonFieldFormat.DATE, true));
-		fieldMap.add(new FieldMap("hours", NonDirectLabor.HOURS, JsonFieldFormat.DECIMAL, true));
-		fieldMap.add(new FieldMap("hoursType", NonDirectLabor.HOURS_TYPE, JsonFieldFormat.STRING, true));
-		fieldMap.add(new FieldMap("notes", NonDirectLabor.NOTES, JsonFieldFormat.STRING, true));
+		fieldMap.add(new FieldMap(LABOR_ID,NonDirectLabor.LABOR_ID, JsonFieldFormat.INTEGER, true));
+		fieldMap.add(new FieldMap(WASHER_ID, NonDirectLabor.WASHER_ID, JsonFieldFormat.INTEGER, true));
+		fieldMap.add(new FieldMap(DIVISION_ID, NonDirectLabor.DIVISION_ID, JsonFieldFormat.INTEGER, true));
+		fieldMap.add(new FieldMap(WORK_DATE, NonDirectLabor.WORK_DATE, JsonFieldFormat.DATE, true));
+		fieldMap.add(new FieldMap(HOURS, NonDirectLabor.HOURS, JsonFieldFormat.DECIMAL, true));
+		fieldMap.add(new FieldMap(HOURS_TYPE, NonDirectLabor.HOURS_TYPE, JsonFieldFormat.STRING, true));
+		fieldMap.add(new FieldMap(NOTES, NonDirectLabor.NOTES, JsonFieldFormat.STRING, true));
+		fieldMap.add(new FieldMap(ACT_PAYOUT_AMT, NonDirectLabor.ACT_PAYOUT_AMT, JsonFieldFormat.DECIMAL, true));
 		fieldMap.add(new FieldMap("firstName", User.FIRST_NAME, JsonFieldFormat.STRING, false));
 		fieldMap.add(new FieldMap("lastName", User.LAST_NAME, JsonFieldFormat.STRING, false));
 	}
@@ -47,12 +64,19 @@ public class NonDirectLaborServlet extends AbstractCrudServlet {
 	
 	public NonDirectLaborServlet() {
 		super();
-		final String displaySql = "select ndl.labor_id, ndl.washer_id, ndl.work_date, ndl.division_id, ndl.hours, ndl.hours_type, ndl.notes,\n" + 
-				"	ansi_user.first_name, ansi_user.last_name\n" + 
-				"from non_direct_labor ndl\n" + 
-				"left outer join ansi_user on ansi_user.user_id=ndl.washer_id";
-		
-		super.setDisplaySql(displaySql);
+		try {
+			final String displaySql = "select ndl.labor_id, ndl.washer_id, ndl.work_date, ndl.division_id, ndl.hours, "
+					+ " ndl.hours_type, ndl.notes, ndl.act_payout_amt, ndl.calc_payout_amt, \n"
+					+ "	ansi_user.first_name, ansi_user.last_name\n"
+					+ "from non_direct_labor ndl\n"
+					+ "left outer join ansi_user on ansi_user.user_id=ndl.washer_id";
+			
+			super.setDisplaySql(displaySql);
+			Method overrideAdd = NonDirectLaborServlet.class.getMethod("overrideAdd", new Class[] {Connection.class, HttpServletResponse.class, SessionUser.class, JsonNode.class} );
+			super.setOverrideAdd(overrideAdd);
+		} catch ( Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 
@@ -110,7 +134,8 @@ public class NonDirectLaborServlet extends AbstractCrudServlet {
 		
 		try {
 			Division division = new Division();
-			division.setDivisionId((Integer)addRequest.get("divisionId"));
+			logger.log(Level.DEBUG, "Getting division");
+			division.setDivisionId(divisionId);
 			division.selectOne(conn);
 			logger.log(Level.DEBUG, division);
 			Double maxRegHrsPerDay = division.getMaxRegHrsPerDay() == null ? 24.0D : division.getMaxRegHrsPerDay() * 1.0D;  // make java 11 happy because they deprecated all the good constructors
@@ -120,10 +145,19 @@ public class NonDirectLaborServlet extends AbstractCrudServlet {
 			logger.log(Level.DEBUG, "Hours validation was skipped b/c of Record Not Found");
 		}
 		
-		RequestValidator.validateDate(webMessages, "workDate",(String)addRequest.get("workDate"), standardDateFormat, true, null, null);		
-		RequestValidator.validateWorkHoursType(webMessages, "hoursType", (String)addRequest.get("hoursType"), true);
-		RequestValidator.validateString(webMessages, "notes", (String)addRequest.get("notes"), false);
-		RequestValidator.validateWasherId(conn, webMessages, "washerId", (Integer)addRequest.get("washerId"), true);
+		RequestValidator.validateDate(webMessages, WORK_DATE,(String)addRequest.get(WORK_DATE), standardDateFormat, true, null, null);		
+		RequestValidator.validateWorkHoursType(webMessages, HOURS_TYPE, (String)addRequest.get(HOURS_TYPE), true);
+		RequestValidator.validateString(webMessages, NOTES, (String)addRequest.get("notes"), false);
+		RequestValidator.validateWasherId(conn, webMessages, WASHER_ID, (Integer)addRequest.get(WASHER_ID), true);
+		
+		if ( webMessages.isEmpty() ) {
+			// we can only check they pay amount if the other fields are valid
+			WorkHoursType workType = WorkHoursType.valueOf((String)addRequest.get(HOURS_TYPE));
+			Integer workerId = (Integer)addRequest.get(WASHER_ID);
+			Double hours = (Double)addRequest.get(HOURS);
+			Double minimumPay = workType.calculateDefaultPay(conn, divisionId, workerId, hours);
+			RequestValidator.validateNumber(webMessages, ACT_PAYOUT_AMT, addRequest.get(ACT_PAYOUT_AMT), minimumPay, null, true);
+		}
 		
 		return webMessages;
 	}
@@ -134,6 +168,42 @@ public class NonDirectLaborServlet extends AbstractCrudServlet {
 		WebMessages webMessages = validateAdd(conn, updateRequest);
 		return webMessages;
 	}
+
+
+	public static Integer overrideAdd(Connection conn, HttpServletResponse response, SessionUser sessionUser, JsonNode jsonNode) throws Exception {
+		Date today = new Date();
+		String dateString = jsonNode.get(WORK_DATE).asText();
+		java.util.Date workDate = standardDateFormat.parse(dateString);
+		Integer divisionId = jsonNode.get("divisionId").asInt();
+		Integer washerId = jsonNode.get(WASHER_ID).asInt();
+		Double workHours = jsonNode.get(HOURS).asDouble();
+		
+		String workHoursString = jsonNode.get(HOURS_TYPE).asText();
+		WorkHoursType workHoursType = WorkHoursType.valueOf(workHoursString);
+		Double calcPayoutAmt = workHoursType.calculateDefaultPay(conn, divisionId, washerId, workHours);
+		
+		NonDirectLabor nonDirectLabor = new NonDirectLabor();
+		nonDirectLabor.setActPayoutAmt(new BigDecimal(jsonNode.get(ACT_PAYOUT_AMT).asDouble()));
+		nonDirectLabor.setAddedBy(sessionUser.getUserId());
+		nonDirectLabor.setCalcPayoutAmt(new BigDecimal(calcPayoutAmt));
+		nonDirectLabor.setEntryDate(today);
+		nonDirectLabor.setHours(new BigDecimal(workHours));
+		nonDirectLabor.setHoursType(workHoursString);
+		nonDirectLabor.setNotes(jsonNode.get(NOTES).asText());
+		nonDirectLabor.setUpdatedBy(sessionUser.getUserId());
+		nonDirectLabor.setWasherId(washerId);
+		nonDirectLabor.setWorkDate(workDate);
+		nonDirectLabor.setDivisionId(divisionId);
+		Integer laborId = nonDirectLabor.insertWithKey(conn);
+		
+		conn.commit();
+		
+		return laborId;
+		
+		
+	}
+
+
 
 
 	
