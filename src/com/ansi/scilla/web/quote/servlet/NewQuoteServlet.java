@@ -1,6 +1,7 @@
 package com.ansi.scilla.web.quote.servlet;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
@@ -76,7 +77,7 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 				NewQuoteRequest quoteRequest = StringUtils.isBlank(jsonString) ? new NewQuoteRequest() : new NewQuoteRequest(jsonString);
 				logger.log(Level.DEBUG, quoteRequest);
 				doSave(conn, response, sessionData, quoteRequest);
-			} else if ( action.equalsIgnoreCase("job")) {
+			} else if ( action.equalsIgnoreCase(NewQuoteRequest.ACTION_IS_JOB)) {
 				JobRequest jobRequest = new JobRequest(jsonString);
 				logger.log(Level.DEBUG, jobRequest);
 				doValidateJob(conn, response, sessionData, jobRequest);
@@ -191,13 +192,14 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 		WebMessages webMessages = new WebMessages();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		ResponseCode responseCode = null;
-		Job job = new Job();
 		
 		try {
 			webMessages = jobRequest.validateNewQuote(conn);
 			if ( webMessages.isEmpty() ) {
-				populateNewJob(job, jobRequest);
-				JobDetail jobDetail = new JobDetail(job, new User(), new User());
+				Job newJob = populateNewJob(jobRequest);
+				logger.log(Level.DEBUG, newJob);
+				JobDetail jobDetail = new JobDetail(newJob, new User(), new User());
+				logger.log(Level.DEBUG, jobDetail);
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
 				responseCode = ResponseCode.SUCCESS;
 				jobDetailResponse = new JobDetailResponse();
@@ -294,7 +296,9 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 	}
 
 	
-	private void populateNewJob(Job job, JobRequest jobRequest) throws InvalidJobStatusException {
+	private Job populateNewJob(JobRequest jobRequest) throws InvalidJobStatusException {
+		logger.log(Level.DEBUG, jobRequest);
+		Job job = new Job();
 		job.setBillingContactId(jobRequest.getBillingContactId());
 		job.setBuildingType(jobRequest.getBuildingType());
 		job.setContractContactId(jobRequest.getContractContactId());
@@ -310,7 +314,30 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 		job.setSiteContact(jobRequest.getSiteContact());
 		job.setStatus(JobStatus.NEW.code());
 		job.setTaxExempt(jobRequest.getTaxExempt());
-		job.setTaxExemptReason(jobRequest.getTaxExemptReason());		
+		job.setTaxExemptReason(jobRequest.getTaxExemptReason());	
+		
+		job.setBillingNotes(jobRequest.getBillingNotes());
+		job.setBudget(jobRequest.getBudget());
+		job.setCancelDate(jobRequest.getCancelDate());
+		job.setCancelReason(jobRequest.getCancelReason());
+		job.setDirectLaborPct(jobRequest.getDirectLaborPct());
+		job.setEquipment(jobRequest.getEquipment());
+		job.setExpirationDate(jobRequest.getExpirationDate());
+		job.setExpirationReason(jobRequest.getExpirationReason());
+		job.setFloors(jobRequest.getFloors());
+		job.setJobFrequency(jobRequest.getJobFrequency());
+		job.setJobNbr(jobRequest.getJobNbr());
+		job.setOmNotes(jobRequest.getOmNotes());
+		job.setOurVendorNbr(jobRequest.getOurVendorNbr());
+		job.setPoNumber(jobRequest.getPoNumber());
+		job.setPricePerCleaning(jobRequest.getPricePerCleaning());
+		job.setRepeatScheduleAnnually(jobRequest.getRepeatScheduleAnnually());
+		job.setRequestSpecialScheduling(jobRequest.getRequestSpecialScheduling());
+		job.setServiceDescription(jobRequest.getServiceDescription());
+		job.setWasherNotes(jobRequest.getWasherNotes());
+		
+		logger.log(Level.DEBUG, job);
+		return job;
 	}
 	
 

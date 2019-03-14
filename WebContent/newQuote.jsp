@@ -70,7 +70,7 @@
 				
 					
 					
-					joblist : null,
+					job : null,
 					
 					progressbar : $("#progressbar"),
 					progressLabel : $("#progress-label"),
@@ -84,6 +84,7 @@
 						NEWQUOTE.makeOptionLists();
 						NEWQUOTE.makeButtons();
 						NEWQUOTE.makeOtherClickables();
+						NEWQUOTE.getJobPanel();
 						if (NEWQUOTE.quoteId != '' ) {
 							NEWQUOTE.getQuote(NEWQUOTE.quoteId);	
 						}
@@ -185,6 +186,33 @@
 					
 					
 					
+					getJobPanel : function() {
+						console.log("getJobPanel");
+						var jqxhr1 = $.ajax({
+		    				type: 'GET',
+		    				url: "jobDisplay.html",
+		    				data: null,			    				
+		    				statusCode: {
+		    					200: function($data) {
+		    						//QUOTEMAINTENANCE.getJob($jobId, $data);
+		    						$("#job-panel-container").html($data);
+		    					},			    				
+		    					403: function($data) {
+		    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+		    					}, 
+		    					404: function($data) {
+		    						$("#globalMsg").html("System Error JobDisplay 404. Contact Support").show();
+		    					}, 
+		    					405: function($data) {
+		    						$("#globalMsg").html("System Error JobDisplay 405. Contact Support").show();
+		    					}, 
+		    					500: function($data) {
+		    						$("#globalMsg").html("System Error JobDisplay 500. Contact Support").show();
+		    					}, 
+		    				},
+		    				dataType: 'html'
+		    			});
+					},
 					
 					
 					getOptions : function($optionList, $callBack) {
@@ -847,6 +875,65 @@
 		            
 		            
 		            
+					populateJobPanel : function($jobId, $destination, $data) {	
+		            	console.log("Populate Job Panel");
+		            	console.log($data);
+		            	$jobDetail = $data.quote.jobDetail
+		            	$($destination + " .jobProposalDisplayPanel .job-proposal-job-nbr").html($jobDetail.job.jobNbr);
+		            	$($destination + " .jobProposalDisplayPanel .job-proposal-ppc").html("$" + $jobDetail.job.pricePerCleaning);
+		            	$($destination + " .jobProposalDisplayPanel .job-proposal-freq").html($jobDetail.job.jobFrequency);
+		            	$($destination + " .jobProposalDisplayPanel .job-proposal-desc").html($jobDetail.job.serviceDescription);
+		            	
+		            	$($destination + " .jobActivationDisplayPanel .job-activation-dl-pct").html($jobDetail.job.directLaborPct);
+		            	$($destination + " .jobActivationDisplayPanel .job-activation-dl-budget").html($jobDetail.job.budget);
+		            	$($destination + " .jobActivationDisplayPanel .job-activation-floors").html($jobDetail.job.floors);
+		            	if ( $jobDetail.job.requestSpecialScheduling == 1 ) {
+		            		$($destination + " .jobActivationDisplayPanel .job-activation-schedule").html("Manual");
+		            	} else {
+		            		$($destination + " .jobActivationDisplayPanel .job-activation-schedule").html("Auto");
+		            	}
+		            	$($destination + " .jobActivationDisplayPanel .job-activation-equipment").html($jobDetail.job.equipment);
+		            	$($destination + " .jobActivationDisplayPanel .job-activation-washer-notes").html($jobDetail.job.washerNotes);
+		            	$($destination + " .jobActivationDisplayPanel .job-activation-om-notes").html($jobDetail.job.omNotes);
+		            	$($destination + " .jobActivationDisplayPanel .job-activation-billing-notes").html($jobDetail.job.billingNotes);
+
+		            	$($destination + " .jobDatesDisplayPanel .job-dates-proposed-date").html($data.quote.proposalDate);
+		            	$($destination + " .jobDatesDisplayPanel .job-dates-activation-date").html($jobDetail.job.activationDate);
+		            	$($destination + " .jobDatesDisplayPanel .job-dates-start-date").html($jobDetail.job.startDate);
+		            	$($destination + " .jobDatesDisplayPanel .job-dates-cancel-date").html($jobDetail.job.cancelDate);
+		            	$($destination + " .jobDatesDisplayPanel .job-dates-cancel-reason").html($jobDetail.job.cancelReason);
+		            			            	
+		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-purchase-order").html($jobDetail.job.poNumber);
+		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-vendor-nbr").html($jobDetail.job.ourVendorNbr);
+		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-expire-date").html($jobDetail.job.expirationDate);
+		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-expire-reason").html($jobDetail.job.expirationReason);
+		            	
+		            	//$($destination + " .jobScheduleDisplayPanel .job-schedule-last-run").html($jobDetail.lastRun.startDate);		            	
+		            	if ( $jobDetail.job.repeatScheduleAnnually == 1 ) {
+		            		$($destination + " input[name='repeatedAnnually']").prop("checked", true);
+		            	} else {
+		            		$($destination + " input[name='repeatedAnnually']").prop("checked", false);
+		            	}
+		            	//$($destination + " .jobScheduleDisplayPanel .job-schedule-next-due").html($jobDetail.nextDue.startDate);
+		            	//$($destination + " .jobScheduleDisplayPanel .job-schedule-created-thru").html($jobDetail.lastCreated.startDate);
+		            	//$($destination + " .jobScheduleDisplayPanel .job-schedule-ticket-list").attr("href", "ticketLookup.html?jobId="+$jobId);
+		            	
+		            	
+		            	//$($destination + " .jobAuditDisplayPanel .job-audit-created-by").html($jobDetail.job.addedFirstName + " " + $jobDetail.job.addedLastName);	
+		            	//$($destination + " .jobAuditDisplayPanel .job-audit-created-date").html($jobDetail.job.addedDate);	
+		            	//$($destination + " .jobAuditDisplayPanel .job-audit-updated-by").html($jobDetail.job.updatedFirstName + " " + $jobDetail.job.updatedLastName);	
+		            	//$($destination + " .jobAuditDisplayPanel .job-audit-updated-date").html($jobDetail.job.updatedDate);
+		            	
+		            	//$anchorName = "jobNew";
+		            	//console.log($anchorName);
+						//$anchor = $("a[name='" + $anchorName + "']");
+						//$('html,body').animate({scrollTop: $anchor.offset().top},'slow');
+		            },
+		            
+		            
+					
+
+					
 		            populateLeadType : function($data) {
 						NEWQUOTE.leadTypeList = $data.codeList;
 						$selectorName = "#quoteDataContainer select[name='leadType']";
@@ -1293,21 +1380,14 @@
 						} else {
 							console.log("Update job header success:");
 							console.log($data);
-							var $jobId = "New";
-							NEWQUOTE.joblist[$jobId] = $data.data.quote.jobDetail;
-							console.log("do something to populate the job panels here");
-							//var $destination = "#job" + $jobId + " .job-data-row";
-    						//QUOTEMAINTENANCE.populateJobPanel($jobId, $destination, $data.data);
-							$("#globalMsg").html("Update Successful").show().fadeOut(3000);
-							$("#job-edit-modal").dialog("close");
-							
-							NEWQUOTE.showJobUpdates($data.data);
+							NEWQUOTE.job = $data.data.quote.jobDetail;
+    						NEWQUOTE.populateJobPanel("New", "#job-panel-container .job-detail-display", $data.data);
+    						$("#job-edit-modal").dialog("close");
+    						NEWQUOTE.showNextModal();
 						}
 					},
 					
 					
-					
-
 					
 					saveQuoteHeader : function() {
 	    				console.log("saveQuoteHeader");
@@ -1450,7 +1530,132 @@
 					saveTheQuoteSuccess : function($data) {
 						console.log("saveTheQuoteSuccess");
 						console.log($data);
-						location.href = "quoteMaintenance.html?id=" + $data.data.quoteId;
+						$quoteId = $data.data.quoteId;
+						
+						console.log("THis is NEWQUOTE.quote:");
+						// pieces of the quote that are required
+						console.log("jobSiteAddress: "+ NEWQUOTE.jobSiteAddress);
+						console.log("billToAddress: "+ NEWQUOTE.billToAddress);
+						console.log("jobsiteJobContact: "+ NEWQUOTE.jobsiteJobContact);
+						console.log("jobsiteSiteContact: "+ NEWQUOTE.jobsiteSiteContact);
+						console.log("billtoContractContact: "+ NEWQUOTE.billtoContractContact);
+						console.log("billtoBillingContact: "+ NEWQUOTE.billtoBillingContact);
+						console.log("divisionId: "+ NEWQUOTE.divisionId);
+						console.log("managerId: "+ NEWQUOTE.managerId);
+						console.log("leadType: "+ NEWQUOTE.leadType);
+						
+						// pieces of the quote that are not required
+						console.log("accountType: "+ NEWQUOTE.accountType);
+						console.log("buildingType: "+ NEWQUOTE.buildingType);
+						console.log("invoiceTerms: "+ NEWQUOTE.invoiceTerms);
+						console.log("invoiceStyle: "+ NEWQUOTE.invoiceStyle);
+						console.log("invoiceGrouping: "+ NEWQUOTE.invoiceGrouping);
+						console.log("invoiceBatch: "+ NEWQUOTE.invoiceBatch);
+						console.log("taxExempt: "+ NEWQUOTE.taxExempt);
+						console.log("taxExemptReason: "+ NEWQUOTE.taxExemptReason);
+						
+						
+						$outbound = {};
+						console.log("This is NEWQUOTE.job");
+						console.log(NEWQUOTE.job);
+						
+						//$outbound['activationDate'] = 
+						$outbound['billingContactId'] = $data.data.billingContact.contactId;
+						$outbound['billingNotes'] = NEWQUOTE.job.job.billingNotes; 
+						$outbound['budget'] = NEWQUOTE.job.job.budget;
+						$outbound['buildingType'] = $data.data.buildingType;
+						//$outbound['cancelDate'] = 
+						//$outbound['cancelReason'] = 
+						$outbound['contractContactId'] = $data.data.contractContact.contactId;
+						$outbound['directLaborPct'] = NEWQUOTE.job.job.directLaborPct;
+						$outbound['divisionId'] = NEWQUOTE.divisionId;
+						$outbound['equipment'] = NEWQUOTE.job.job.equipment;
+						$outbound['expirationDate'] = NEWQUOTE.job.job.expirationDate;
+						$outbound['expirationReason'] = NEWQUOTE.job.job.expirationReason
+						$outbound['floors'] = NEWQUOTE.job.job.floors;
+						$outbound['invoiceBatch'] = $data.data.invoiceBatch;
+						$outbound['invoiceGrouping'] = $data.data.invoiceGrouping;
+						$outbound['invoiceStyle'] = $data.data.invoiceStyle;
+						$outbound['invoiceTerms'] = $data.data.invoiceTerms;
+						$outbound['jobContactId'] = $data.data.jobContact.contactId;
+						$outbound['jobFrequency'] = NEWQUOTE.job.job.jobFrequency;
+						//$outbound['jobId'] = 
+						$outbound['jobNbr'] = NEWQUOTE.job.job.jobNbr;
+						//$outbound['jobTypeId'] = "xxx";
+						//$outbound['lastPriceChange'] = 
+						//$outbound['lastReviewDate'] = 
+						$outbound['omNotes'] = NEWQUOTE.job.job.omNotes;
+						$outbound['ourVendorNbr'] = NEWQUOTE.job.job.ourVendorNbr;
+						$outbound['paymentTerms'] =  "xxx";
+						$outbound['poNumber'] = NEWQUOTE.job.job.poNumber
+						$outbound['pricePerCleaning'] = NEWQUOTE.job.job.pricePerCleaning
+						$outbound['quoteId'] = $data.data.quoteId
+						$outbound['repeatScheduleAnnually'] = NEWQUOTE.job.job.repeatScheduleAnually; 
+						$outbound['requestSpecialScheduling'] = NEWQUOTE.job.job.requestSpecialScheduling
+						$outbound['serviceDescription'] = NEWQUOTE.job.job.serviceDescription;
+						$outbound['siteContact'] = $data.data.siteContact.contactId;
+						//$outbound['startDate'] = 
+//						private String status;
+						$outbound['taxExempt'] = $data.data.taxExempt;
+						$outbound['taxExemptReason'] = $data.data.taxExempt.Reason;
+						$outbound['washerNotes'] = NEWQUOTE.job.job.washerNotes;
+						$outbound['updateType'] =  "add";
+						//$outbound['action'] =  "xxx";
+						//$outbound['proposalDate'] = 
+						$outbound['annualRepeat'] = NEWQUOTE.job.job.repeatScheduleAnually;
+						
+						
+						console.log($outbound);						
+						
+						
+						var jqxhr3 = $.ajax({
+							type: 'POST',
+							url: "job/new",
+							data: JSON.stringify($outbound),
+							statusCode: {
+								200:function($data) {
+									//NEWQUOTE.saveTheJobSuccess($quoteId);
+									alert("Job added -- hashtag yay");
+								},
+								403: function($data) {	
+									NEWQUOTE.saveTheJobErr(403);									
+								},
+								404: function($data) {
+									NEWQUOTE.saveTheJobErr(404);
+								},
+								405: function($data) {
+									NEWQUOTE.saveTheJobErr(405);
+								},
+								500: function($data) {
+									NEWQUOTE.saveTheJobErr(500);
+								}
+							},
+							dataType: 'json'
+						});
+						
+					}, 
+					
+					
+					
+					saveTheJobErr : function($statusCode) {
+						console.log("saveTheJobErr");
+						console.log("saveTheJobErr " + $statusCode)
+						$("#save-quote-button").hide(2500);
+						var $messages = {
+								403:"Session Expired. Log in and try again",
+								404:"System Error Job 404. Contact Support",
+								405:"System Error Job 405. Contact Support",
+								500:"System Error Job 500. Contact Support"
+						}
+						$("#globalMsg").html( $messages[$statusCode] );
+						$("#globalMsg").show();
+					},
+					
+					
+					
+					
+					saveTheJobSucces : function($quoteId) {
+						location.href = "quoteMaintenance.html?id=" + $quoteId;
 						//$("#newQuoteDisplay input[name='quoteId']").val($data.data.quoteId);
 						//$("#newQuoteDisplay input[name='invoiceGrouping']").val($data.data.invoiceGrouping);
 						//$("#newQuoteDisplay input[name='invoiceStyle']").val($data.data.invoiceStyle);
@@ -1584,8 +1789,8 @@
 						} else if ( NEWQUOTE.leadType == null ) {
 							$("#save-quote-button").hide(2500);
 							$("#edit-this-quote").click();
-						} else if ( NEWQUOTE.joblist == null ) {
-							console.log("Trying to show job modal");
+						} else if ( NEWQUOTE.job == null ) {
+							$("#save-quote-button").hide(2500);
     		            	NEWQUOTE.displayJobModal();
 						} else {
 							console.log(NEWQUOTE.joblist);
@@ -1602,6 +1807,7 @@
 						$("#address-container").fadeIn(1000);
 						$("#job-list-container").fadeIn(1000);
 						$("#quoteButtonContainer").fadeIn(1000);
+						$("#job-display-container").fadeIn(1000);
 						
 						// after init is done -- show bill-to modal
 						var $type = "jobsite"
@@ -1642,6 +1848,10 @@
         	}
         	#edit-this-quote {
         		cursor:pointer;
+        	}
+        	#job-display-container {
+        		display:none;
+        		margin-top:2px;
         	}
 			#printHistoryDiv {
                 display:none;
@@ -1838,8 +2048,20 @@
 		    	</div> 
 	    	</div>  <!--  quote container -->
 	    	
+	    	<div id="job-display-container">
+	    		<div style="color:#FFFFFF; background-color:#404040; cursor:pointer; width:1269px; margin-bottom:1px;">
+		    		New Job
+		    		<div style="float:left; padding-left:4px;">
+	    				<i class="fas fa-caret-down" style="color:#FFFFFF;"></i>&nbsp;
+	    			</div>
+	    		</div>
+	    		<div id="job-panel-container"></div>
+	    	</div>
+	    	
+	    	
 	    	<div id="job-list-container" style="width:1260px; clear:both; margin-top:12px;">
-	    		<ul id="jobList" class="sortable" style="width:100%;">	    			
+	    		<ul id="jobList" class="sortable" style="width:100%;">	
+	    			    			
 	    		</ul>
 	    	</div> <!--  job list container -->
 	    </div>

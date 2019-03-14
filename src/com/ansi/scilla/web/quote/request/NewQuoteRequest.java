@@ -19,6 +19,7 @@ import com.thewebthing.commons.lang.JsonException;
 
 		public static final String ACTION_IS_VALIDATE = "validate";
 		public static final String ACTION_IS_SAVE = "save";
+		public static final String ACTION_IS_JOB = "job";
 		
 		public static final String ACTION = "action";
 		public static final String BILL_TO_ADDRESS_ID = "billToAddressId";

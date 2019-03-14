@@ -372,21 +372,17 @@ public class RequestValidator {
 
 	public static void validateNumber(WebMessages webMessages, String fieldName, Object value, Object minValue,
 			Object maxValue, boolean required) {
-		Logger logger = LogManager.getLogger(RequestValidator.class);
 		if (value == null) {
 			if (required) {
 				webMessages.addMessage(fieldName, "Required Value");
 			}
 		} else {
-			logger.log(Level.DEBUG, fieldName + "\t" + value + "\t" + value.getClass().getName());
 			if (value instanceof Double) {
 				validateDouble(webMessages, fieldName, (Double) value, (Double) minValue, (Double) maxValue, required);
 			} else if (value instanceof BigDecimal) {
-				validateBigDecimal(webMessages, fieldName, (BigDecimal) value, (BigDecimal) minValue,
-						(BigDecimal) maxValue, required);
+				validateBigDecimal(webMessages, fieldName, (BigDecimal) value, (BigDecimal) minValue, (BigDecimal) maxValue, required);
 			} else if (value instanceof Integer) {
-				validateInteger(webMessages, fieldName, (Integer) value, (Integer) minValue, (Integer) maxValue,
-						required);
+				validateInteger(webMessages, fieldName, (Integer) value, (Integer) minValue, (Integer) maxValue, required);
 			} else if (value instanceof Float) {
 				validateFloat(webMessages, fieldName, (Float) value, (Float) minValue, (Float) maxValue, required);
 			} else {
