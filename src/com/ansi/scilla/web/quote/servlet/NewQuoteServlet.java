@@ -1,7 +1,6 @@
 package com.ansi.scilla.web.quote.servlet;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
@@ -13,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
+import com.ansi.scilla.common.db.Address;
 import com.ansi.scilla.common.db.Job;
 import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.db.User;
@@ -267,6 +267,8 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 			quote.setQuoteId(quoteId);
 			
 			
+			setAddressDefaults(conn, quoteRequest, sessionUser);
+			
 			conn.commit();
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Quote Inserted");
 			NewQuoteDisplayResponse quoteResponse = new NewQuoteDisplayResponse();
@@ -296,6 +298,36 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 	}
 
 	
+	private void setAddressDefaults(Connection conn, NewQuoteRequest quoteRequest, SessionUser sessionUser) throws RecordNotFoundException, Exception {
+		Address address = new Address();
+		address.setAddressId(quoteRequest.getJobSiteAddressId());
+		address.selectOne(conn);
+		
+		address.setBilltoBillingContactDefault(quoteRequest.getBillingContactId());
+		address.setBilltoAccountTypeDefault(quoteRequest.getAccountType());
+		address.setBilltoContractContactDefault(quoteRequest.getContractContactId());
+		Integer taxExempt = quoteRequest.getTaxExempt() == true ? 1 : 0;
+		address.setBilltoTaxExempt(taxExempt);
+		address.setBilltoTaxExemptReason(quoteRequest.getTaxExemptReason());
+		Integer invoiceBatchDefault = quoteRequest.getInvoiceBatch() == true ? 1 : 0;
+		address.setInvoiceBatchDefault(invoiceBatchDefault);
+		address.setInvoiceGroupingDefault(quoteRequest.getInvoiceGrouping());
+		address.setInvoiceStyleDefault(quoteRequest.getInvoiceStyle());
+		address.setInvoiceTermsDefault(quoteRequest.getInvoiceTerms());
+		address.setJobsiteBilltoAddressDefault(quoteRequest.getBillToAddressId());
+		address.setJobsiteBuildingTypeDefault(quoteRequest.getBuildingType());
+		//address.setJobsiteFloorsDefault(quoteRequest.get());
+		address.setJobsiteJobContactDefault(quoteRequest.getJobContactId());
+		address.setJobsiteSiteContactDefault(quoteRequest.getSiteContact());
+		//address.setOurVendorNbrDefault(quoteRequest.get);
+		address.setUpdatedBy(sessionUser.getUserId());
+		
+		Address key = new Address();
+		key.setAddressId(quoteRequest.getJobSiteAddressId());
+		address.update(conn, key);
+		
+	}
+
 	private Job populateNewJob(JobRequest jobRequest) throws InvalidJobStatusException {
 		logger.log(Level.DEBUG, jobRequest);
 		Job job = new Job();

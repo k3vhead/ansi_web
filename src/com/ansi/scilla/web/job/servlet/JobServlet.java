@@ -117,6 +117,7 @@ public class JobServlet extends AbstractServlet {
 			String jsonString = super.makeJsonString(request);
 			url = new AnsiURL(request, REALM, new String[] {ACTION_IS_ADD});
 			if ( url.getId() == null && StringUtils.isBlank(url.getCommand())) {
+				logger.log(Level.DEBUG, url.getId() + "\t" + url.getCommand());
 				throw new ResourceNotFoundException();
 			} 
 			
@@ -167,6 +168,7 @@ public class JobServlet extends AbstractServlet {
 	
 	
 	private JobRequestAction trafficCop(Connection conn, HttpServletResponse response, SessionData sessionData, Job job, Quote quote, JobRequest jobRequest) throws NotAllowedException, Exception {
+		logger.log(Level.DEBUG, "trafficCop");
 		SessionUser user = sessionData.getUser();
 		JobRequestAction action = null;
 		validateStateTransition(quote, sessionData);
@@ -414,6 +416,7 @@ public class JobServlet extends AbstractServlet {
 
 	
 	private void makeNewJob(Connection conn, HttpServletResponse response, SessionUser user, Job job, JobRequest jobRequest, List<UserPermission> permissionList) throws Exception {
+		logger.log(Level.DEBUG, "makeNewJob");
 		WebMessages webMessages = new WebMessages();
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		ResponseCode responseCode = null;

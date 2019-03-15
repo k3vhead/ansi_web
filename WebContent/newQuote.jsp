@@ -1573,7 +1573,11 @@
 						$outbound['expirationDate'] = NEWQUOTE.job.job.expirationDate;
 						$outbound['expirationReason'] = NEWQUOTE.job.job.expirationReason
 						$outbound['floors'] = NEWQUOTE.job.job.floors;
-						$outbound['invoiceBatch'] = $data.data.invoiceBatch;
+						if ( NEWQUOTE.invoiceBatch == true ) {
+							$outbound['invoiceBatch'] = 1;
+						} else {
+							$outbound['invoiceBatch'] = 0;
+						}
 						$outbound['invoiceGrouping'] = $data.data.invoiceGrouping;
 						$outbound['invoiceStyle'] = $data.data.invoiceStyle;
 						$outbound['invoiceTerms'] = $data.data.invoiceTerms;
@@ -1586,36 +1590,41 @@
 						//$outbound['lastReviewDate'] = 
 						$outbound['omNotes'] = NEWQUOTE.job.job.omNotes;
 						$outbound['ourVendorNbr'] = NEWQUOTE.job.job.ourVendorNbr;
-						$outbound['paymentTerms'] =  "xxx";
+						//$outbound['paymentTerms'] =  "xxx";
 						$outbound['poNumber'] = NEWQUOTE.job.job.poNumber
 						$outbound['pricePerCleaning'] = NEWQUOTE.job.job.pricePerCleaning
 						$outbound['quoteId'] = $data.data.quoteId
-						$outbound['repeatScheduleAnnually'] = NEWQUOTE.job.job.repeatScheduleAnually; 
+						$outbound['repeatScheduleAnnually'] = NEWQUOTE.job.job.repeatScheduleAnnually; 
 						$outbound['requestSpecialScheduling'] = NEWQUOTE.job.job.requestSpecialScheduling
 						$outbound['serviceDescription'] = NEWQUOTE.job.job.serviceDescription;
 						$outbound['siteContact'] = $data.data.siteContact.contactId;
 						//$outbound['startDate'] = 
 //						private String status;
-						$outbound['taxExempt'] = $data.data.taxExempt;
-						$outbound['taxExemptReason'] = $data.data.taxExempt.Reason;
+						if ( NEWQUOTE.taxExempt == true || NEWQUOTE.taxExempt == "true" ) {
+							$outbound['taxExempt'] = 1;
+							$outbound['taxExemptReason'] = NEWQUOTE.taxExemptReason;
+						} else {
+							$outbound['taxExempt'] = 0;
+							$outbound['taxExemptReason'] = null;
+						}
+						
 						$outbound['washerNotes'] = NEWQUOTE.job.job.washerNotes;
 						$outbound['updateType'] =  "add";
 						//$outbound['action'] =  "xxx";
 						//$outbound['proposalDate'] = 
-						$outbound['annualRepeat'] = NEWQUOTE.job.job.repeatScheduleAnually;
+						//$outbound['annualRepeat'] = NEWQUOTE.job.job.repeatScheduleAnually;
 						
-						
+						console.log("Job Outbound:");
 						console.log($outbound);						
 						
 						
 						var jqxhr3 = $.ajax({
 							type: 'POST',
-							url: "job/new",
+							url: "job/add",
 							data: JSON.stringify($outbound),
 							statusCode: {
 								200:function($data) {
-									//NEWQUOTE.saveTheJobSuccess($quoteId);
-									alert("Job added -- hashtag yay");
+									NEWQUOTE.saveTheJobSuccess($quoteId);
 								},
 								403: function($data) {	
 									NEWQUOTE.saveTheJobErr(403);									
@@ -1654,7 +1663,7 @@
 					
 					
 					
-					saveTheJobSucces : function($quoteId) {
+					saveTheJobSuccess : function($quoteId) {
 						location.href = "quoteMaintenance.html?id=" + $quoteId;
 						//$("#newQuoteDisplay input[name='quoteId']").val($data.data.quoteId);
 						//$("#newQuoteDisplay input[name='invoiceGrouping']").val($data.data.invoiceGrouping);
