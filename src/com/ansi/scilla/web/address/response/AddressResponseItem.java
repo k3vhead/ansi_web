@@ -43,6 +43,8 @@ public class AddressResponseItem extends ApplicationObject implements Comparable
 	private Integer billtoBillingContactDefault;
 	private Integer billtoTaxExempt;
 	private String billtoTaxExemptReason;
+	private String jobsiteContractContactName;
+	private String jobsiteBillingContactName;
 
 	
 	public AddressResponseItem() {
@@ -239,6 +241,22 @@ public class AddressResponseItem extends ApplicationObject implements Comparable
 
 	public void setJobsiteSiteContactName(String jobsiteSiteContactName) {
 		this.jobsiteSiteContactName = jobsiteSiteContactName;
+	}
+
+	public String getJobsiteContractContactName() {
+		return jobsiteContractContactName;
+	}
+
+	public void setJobsiteContractContactName(String jobsiteContractContactName) {
+		this.jobsiteContractContactName = jobsiteContractContactName;
+	}
+
+	public String getJobsiteBillingContactName() {
+		return jobsiteBillingContactName;
+	}
+
+	public void setJobsiteBillingContactName(String jobsiteBillingContactName) {
+		this.jobsiteBillingContactName = jobsiteBillingContactName;
 	}
 
 	@Override

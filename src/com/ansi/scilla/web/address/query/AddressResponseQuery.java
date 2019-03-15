@@ -20,15 +20,21 @@ public class AddressResponseQuery {
 	public static final String JOBCONTACT_NAME = "jobcontact_name";
 	public static final String SITECONTACT_NAME = "sitecontact_name";
 	public static final String BILLTO_NAME = "billto_name";
+	public static final String CONTRACTCONTACT_NAME = "contractcontact_name";
+	public static final String BILLINGCONTACT_NAME = "billingcontact_name";
 	
 	private final String sql = "select address.*, " 
 				+ "\n\t billto.name as " + BILLTO_NAME + ", " 
 				+ "\n\t concat(jobcontact.first_name, ' ', jobcontact.last_name) as " + JOBCONTACT_NAME + ", " 
-				+ "\n\t concat(sitecontact.first_name, ' ', sitecontact.last_name) as " + SITECONTACT_NAME  
+				+ "\n\t concat(sitecontact.first_name, ' ', sitecontact.last_name) as " + SITECONTACT_NAME + ", "
+				+ "\n\t concat(contractcontact.first_name, ' ', contractcontact.last_name) as " + CONTRACTCONTACT_NAME + ", "
+				+ "\n\t concat(billingcontact.first_name, ' ', billingcontact.last_name) as " + BILLINGCONTACT_NAME
 				+ "\n from address  "
 				+ "\n left outer join address billto on billto.address_id=address.jobsite_billto_address_default "
 				+ "\n left outer join contact jobcontact on jobcontact.contact_id=address.jobsite_job_contact_default "
-				+ "\n left outer join contact sitecontact on sitecontact.contact_id=address.jobsite_site_contact_default ";
+				+ "\n left outer join contact sitecontact on sitecontact.contact_id=address.jobsite_site_contact_default "
+				+ "\n left outer join contact contractcontact on contractcontact.contact_id=address.billto_contract_contact_default"
+				+ "\n left outer join contact billingcontact on billingcontact.contact_id=address.billto_billing_contact_default";
 	
 	private final String idFilter = "\n where address.address_id=? ";
 	private final String sortPhrase = "\n order by address.name ";
@@ -93,6 +99,8 @@ public class AddressResponseQuery {
 		item.setJobsiteBillToName(rs.getString(BILLTO_NAME));
 		item.setJobsiteJobContactName(rs.getString(JOBCONTACT_NAME));
 		item.setJobsiteSiteContactName(rs.getString(SITECONTACT_NAME));
+		item.setJobsiteContractContactName(rs.getString(CONTRACTCONTACT_NAME));
+		item.setJobsiteBillingContactName(rs.getString(BILLINGCONTACT_NAME));
 		
 		logger.debug(item);
 		return item;
