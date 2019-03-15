@@ -24,8 +24,6 @@ public class AddressReturnItem extends ApplicationObject {
 	private int invoiceBatchDefault;
 	private String invoiceTermsDefault;
 	private String ourVendorNbrDefault;
-	private String contractContact;
-	private String billingContact;
 
 	public AddressReturnItem(ResultSet rs) throws SQLException {
 		super();
@@ -48,8 +46,6 @@ public class AddressReturnItem extends ApplicationObject {
 		this.invoiceTermsDefault = rs.getString("invoice_terms_default");
 		this.ourVendorNbrDefault = rs.getString("our_vendor_nbr_default");
 		
-		this.contractContact = rs.getString("contract_contact");
-		this.billingContact = rs.getString("billing_contact");
 
 	}
 
@@ -205,20 +201,5 @@ public class AddressReturnItem extends ApplicationObject {
 		this.ourVendorNbrDefault = ourVendorNbrDefault;
 	}
 	
-	public String getContractContact() {
-		return contractContact;
-	}
-	
-	public void setContractContact(String contractContact) {
-		this.contractContact = contractContact;
-	}
-	
-	public String getBillingContact() {
-		return billingContact;
-	}
-	
-	public void setBillingContact(String billingContact) {
-		this.billingContact = billingContact;
-	}
 
 }
