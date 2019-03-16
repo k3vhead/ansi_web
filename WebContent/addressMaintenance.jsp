@@ -282,6 +282,7 @@
 	        				$url = "address/" + $("#aId").val();
 	        			}
 
+	        			console.log($outbound);
 						var jqxhr = $.ajax({
 							type: 'POST',
 							url: $url,
@@ -553,6 +554,60 @@
 						};
 						
 						
+						var $billtoBillingContact = $( "#addAddressForm input[name='billtoBillingContact']" ).autocomplete({
+							'source':"contactTypeAhead?",
+							select: function( event, ui ) {
+								$( "#addAddressForm input[name='billtoBillingContactDefault']" ).val(ui.item.id);
+	   				      	},
+							response: function(event, ui) {
+								if (ui.content.length === 0) {
+									$( "#addAddressForm input[name='billtoBillingContactDefault']" ).val(-1); //server side will see this and mark it invalid
+									$("#noAddress").hide();
+									$("#noContact").show();
+									$( "#noMatchModal" ).dialog("open");
+								}
+							}
+						}).data('ui-autocomplete');
+						
+						$billtoBillingContact._renderMenu = function( ul, items ) {
+							var that = this;
+							$.each( items, function( index, item ) {
+								that._renderItemData( ul, item );
+							});
+							if ( items.length == 1 ) {
+								$( "#addAddressForm input[name='billtoBillingContact']" ).val(items[0].value);
+								$( "#addAddressForm input[name='billtoBillingContactDefault']" ).val(items[0].id);
+							}
+						};
+						
+						
+						
+						
+						var $billtoContractContact = $( "#addAddressForm input[name='billtoContractContact']" ).autocomplete({
+							'source':"contactTypeAhead?",
+							select: function( event, ui ) {
+								$( "#addAddressForm input[name='billtoContractContactDefault']" ).val(ui.item.id);
+	   				      	},
+							response: function(event, ui) {
+								if (ui.content.length === 0) {
+									$( "#addAddressForm input[name='billtoContractContactDefault']" ).val(-1); //server side will see this and mark it invalid
+									$("#noAddress").hide();
+									$("#noContact").show();
+									$( "#noMatchModal" ).dialog("open");
+								}
+							}
+						}).data('ui-autocomplete');
+						
+						$billtoContractContact._renderMenu = function( ul, items ) {
+							var that = this;
+							$.each( items, function( index, item ) {
+								that._renderItemData( ul, item );
+							});
+							if ( items.length == 1 ) {
+								$( "#addAddressForm input[name='billtoContractContact']" ).val(items[0].value);
+								$( "#addAddressForm input[name='billtoContractContactDefault']" ).val(items[0].id);
+							}
+						};
 	        		},
 	        		
 	        		
@@ -743,6 +798,10 @@
 									$("#addForm input[name='jobsiteSiteContact']").val($address.jobsiteSiteContactName);
 									$("#addForm input[name='jobsiteBillTo']").val($address.jobsiteBillToName);
 									$("#addForm select[name='jobsiteBuildingTypeDefault']").val($address.jobsiteBuildingTypeDefault);
+									$("#addForm input[name='billtoContractContact']").val($address.jobsiteContractContactName);
+									$("#addForm input[name='billtoBillingContact']").val($address.jobsiteBillingContactName);
+									$("#addForm input[name='billtoContractContactDefault']").val($address.jobsiteContractContactDefault);
+									$("#addForm input[name='billtoBillingContactDefault']").val($address.jobsiteBillingContactDefault);
 
 									
 									
@@ -967,6 +1026,24 @@
 							</td>
 						</tr>
 						<tr>
+							<td><span class="required"></span></td>
+							<td><span class="formLabel">Contract Contact:</span></td>
+							<td colspan="3">
+								<input type="hidden" name="billtoContractContactDefault" />
+								<input type="text" name="billtoContractContact" />
+								<i id="billtoContractContactDefaultErr" class="fa errIcon" aria-hidden="true"></i>
+							</td>
+						</tr>
+						<tr>
+							<td><span class="required"></span></td>
+							<td><span class="formLabel">Billing Contact:</span></td>
+							<td colspan="3">
+								<input type="hidden" name="billtoBillingContactDefault" />
+								<input type="text" name="billtoBillingContact" />
+								<i id="billtoBillingContactDefaultErr" class="fa errIcon" aria-hidden="true"></i>
+							</td>
+						</tr>
+						<tr>						
 							<td><span class="required"></span></td>
 							<td><span class="formLabel">Floors:</span></td>
 							<td colspan="3">
