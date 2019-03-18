@@ -1405,7 +1405,9 @@
 	    					$outbound[$value.name] = $($selector).val();
 	    				});
 	    				$outbound['taxExempt'] = $("#quotePanel input[name='taxExempt']").prop("checked");
+	    				NEWQUOTE.taxExempt = $outbound['taxExempt'];
 	    				$outbound['invoiceBatch'] = $("#quotePanel input[name='invoiceBatch']").prop("checked");
+	    				NEWQUOTE.invoiceBatch = $outbound['invoiceBatch'];
 	    				
 	    				console.log($outbound);
 	    				$outbound['action'] = 'validate';
@@ -1600,13 +1602,23 @@
 						$outbound['siteContact'] = $data.data.siteContact.contactId;
 						//$outbound['startDate'] = 
 //						private String status;
-						if ( NEWQUOTE.taxExempt == true || NEWQUOTE.taxExempt == "true" ) {
+						//if ( NEWQUOTE.taxExempt == true || NEWQUOTE.taxExempt == "true" ) {
+						//	$outbound['taxExempt'] = 1;
+						//	$outbound['taxExemptReason'] = NEWQUOTE.taxExemptReason;
+						//} else {
+						//	$outbound['taxExempt'] = 0;
+						//	$outbound['taxExemptReason'] = null;
+						//}
+						if ( $("#quotePanel input[name='taxExempt']").prop("checked") ) {
 							$outbound['taxExempt'] = 1;
 							$outbound['taxExemptReason'] = NEWQUOTE.taxExemptReason;
 						} else {
 							$outbound['taxExempt'] = 0;
 							$outbound['taxExemptReason'] = null;
 						}
+
+						
+						
 						
 						$outbound['washerNotes'] = NEWQUOTE.job.job.washerNotes;
 						$outbound['updateType'] =  "add";

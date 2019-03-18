@@ -2721,6 +2721,11 @@
 	    				<td><input type="text" name="startDate" class="dateField" /></td>
 	    				<td><span class="startDateErr err errMsg"></span><br /></td>
 	    			</tr>
+	    			<tr>
+	    				<td><span class="formLabel">Cancel Reason:</span></td>
+	    				<td><input type="text" name="cancelReason"  /></td>
+	    				<td><span class="cancelReasonErr err errMsg"></span></td>
+	    			</tr>
 	    		</table>
 	    	</div>
 	    </ansi:hasPermission>

@@ -618,6 +618,7 @@ public class JobRequest extends AbstractRequest{
 		WebMessages webMessages = new WebMessages();
 		
 		RequestValidator.validateBoolean(webMessages, "repeatScheduleAnnually", this.repeatScheduleAnnually, true);
+		RequestValidator.validateString(webMessages, "cancelReason", this.cancelReason, true);
 		
 		return webMessages;
 	}

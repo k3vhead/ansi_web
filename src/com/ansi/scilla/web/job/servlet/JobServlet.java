@@ -649,7 +649,7 @@ public class JobServlet extends AbstractServlet {
 			if ( webMessages.isEmpty() ) {
 				try {
 					logger.log(Level.DEBUG, "JobServlet 193");
-					JobUtils.rescheduleJob(conn, jobId, jobDetailRequest.getStartDate(), sessionUser.getUserId());
+					JobUtils.rescheduleJob(conn, jobId, jobDetailRequest.getStartDate(), jobDetailRequest.getCancelReason(), sessionUser.getUserId());
 					conn.commit();
 					responseCode = ResponseCode.SUCCESS;
 					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
