@@ -111,6 +111,19 @@
 	</servlet-mapping>
 
 
+    
+    <servlet>
+        <servlet-name>budgetControlLookup</servlet-name>
+        <servlet-class>com.ansi.scilla.web.claims.servlet.BudgetControlLookupServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>budgetControlLookup</servlet-name>
+        <url-pattern>/claims/budgetControlLookup</url-pattern>
+    </servlet-mapping>
+
+
+
+
     <servlet>
         <servlet-name>calculateNdlPay</servlet-name>
         <servlet-class>com.ansi.scilla.web.claims.servlet.CalculateNdlPay</servlet-class>
