@@ -467,7 +467,7 @@
 			
 	    	makePermissionsModal : function() {
 			$( "#permissionsModal" ).dialog({
-				title:'Division Manager Create',
+				title:'Permissions',
 				autoOpen: false,
 				height: 450,
 				width: 650,
