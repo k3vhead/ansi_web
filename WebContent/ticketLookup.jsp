@@ -165,22 +165,15 @@
 			            	if ( row.ticketId == null ) {
 			            		$actionData = "";
 			            	} else {
-				            	//var $editLink = "<a href='ticketReturn.html?id="+row.ticketId+"' class=\"editAction fas fa-pencil-alt\" data-id='"+row.ticketId+"'></a>";
-				            	var $editLink = '<a href="ticketReturn.html?id='+row.ticketId+'" class="editAction" data-id="'+row.ticketId+'"><webthing:edit>Edit</webthing:edit></a>';
-				            	//var $overrideLink = "<a href='ticketOverride.html?id="+row.ticketId+"' class=\"overrideAction fa fa-magic\" data-id='"+row.ticketId+"'></a>";
+				            	var $editLink = '<ansi:hasPermission permissionRequired="TICKET_WRITE"><a href="ticketReturn.html?id='+row.ticketId+'" class="editAction" data-id="'+row.ticketId+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
 				            	if ( row.ticketStatus == 'F' ) {
 				            		var $overrideLink = "";
 				            	} else {
-				            		var $overrideLink = '<a href="ticketOverride.html?id='+row.ticketId+'" class="overrideAction" data-id="'+row.ticketId+'"><webthing:override>Override</webthing:override></a>';
+				            		var $overrideLink = '<ansi:hasPermission permissionRequired="TICKET_OVERRIDE"><a href="ticketOverride.html?id='+row.ticketId+'" class="overrideAction" data-id="'+row.ticketId+'"><webthing:override>Override</webthing:override></a></ansi:hasPermission>&nbsp;';
 				            	}
-				            	if ( row.ticketStatus == 'N' || row.ticketStatus == 'D' 
-				            			|| row.ticketStatus == 'C' || row.ticketStatus == 'I' || row.ticketStatus == 'P') {
-				            		var $ticketData = 'data-id="' + row.ticketId + '"';
-				            		$printLink = '<i class="print-link fa fa-print" aria-hidden="true" ' + $ticketData + '></i>'
-				            	} else {
-				            		$printLink = "";
-				            	}
-				            	$actionData = "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite>" + $editLink + ' ' + $printLink + ' ' + $overrideLink + "</ansi:hasWrite></ansi:hasPermission>"
+		            			var $ticketData = 'data-id="' + row.ticketId + '"';
+			            		$printLink = '<ansi:hasPermission permissionRequired="TICKET_READ"><i class="print-link fa fa-print" aria-hidden="true" ' + $ticketData + '></i></ansi:hasPermission>'
+				            	$actionData = $editLink + $printLink + $overrideLink;
 			            	}
 			            	return $actionData;
 			            } }],

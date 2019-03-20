@@ -154,7 +154,7 @@
 				            	} else {
 				            		$printText = ""; 
 				            	}
-				            	{return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite>" + $printText + "</ansi:hasWrite></ansi:hasPermission>";}
+				            	{return "<ansi:hasPermission permissionRequired='INVOICE_READ'>" + $printText + "</ansi:hasPermission>";}
 				            } }
 				            ],
 				            "initComplete": function(settings, json) {

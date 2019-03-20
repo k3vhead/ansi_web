@@ -23,7 +23,6 @@ import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.Division;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.jobticket.TicketPrinter;
 import com.ansi.scilla.common.jobticket.TicketStatus;
@@ -62,7 +61,7 @@ public class TicketPrintServlet extends AbstractServlet {
 			conn.setAutoCommit(false);
 
 			url = new AnsiURL(request, "ticketPrint", new String[] {} );
-			SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET_READ);
 			SessionUser sessionUser = sessionData.getUser();			
 
 			if ( url.getId() == null ) {
@@ -93,7 +92,7 @@ public class TicketPrintServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
 	
-			SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET_READ);
 			String dateString = request.getParameter(PRINT_DATE);
 			Integer divisionId = Integer.valueOf(request.getParameter(DIVISION_ID));
 	

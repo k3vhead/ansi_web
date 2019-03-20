@@ -25,7 +25,6 @@ import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Address;
 import com.ansi.scilla.common.db.Invoice;
 import com.ansi.scilla.common.db.Job;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.TaxRate;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.invoice.InvoiceUtils;
@@ -100,7 +99,7 @@ public class TicketOverrideServlet extends TicketServlet {
 			String jsonString = super.makeJsonString(request);
 			logger.log(Level.DEBUG, "jsonstring:"+jsonString);
 
-			SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET_OVERRIDE);
 			Ticket ticket = new Ticket();
 			try{
 				ansiURL = new AnsiURL(request, REALM, (String[])null); //  .../ticket/etc
