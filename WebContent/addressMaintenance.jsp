@@ -1106,6 +1106,32 @@
 								<i id="invoiceOurVendorNbrDefaultErr" class="fa errIcon" aria-hidden="true"></i>
 							</td>
 						</tr>
+						
+						<tr>
+							<td><span class="required"></span></td>
+							<td><span class="formLabel"><bean:message key="field.label.invoice.accountTypeDefault" />:</span></td>
+							<td colspan="3">
+								<input type="text" name="invoiceAccountTypeDefault" style="width:315px" />
+								<i id="invoiceAccountTypeDefaultErr" class="fa errIcon" aria-hidden="true"></i>
+							</td>
+						</tr>
+						<tr>
+							<td><span class="required"></span></td>
+							<td><span class="formLabel"><bean:message key="field.label.invoice.taxExempt" />:</span></td>
+							<td colspan="3">
+								<input type="checkbox" name="invoiceTaxExempt" value="yes" />
+								<i id="invoiceTaxExemptErr" class="fa errIcon" aria-hidden="true"></i>
+							</td>
+						</tr>
+						<tr>
+							<td><span class="required"></span></td>
+							<td><span class="formLabel"><bean:message key="field.label.invoice.taxExemptReason" />:</span></td>
+							<td colspan="3">
+								<input type="text" name="invoiceTaxExemptReason" style="width:315px" />
+								<i id="invoiceTaxExemptReasonErr" class="fa errIcon" aria-hidden="true"></i>
+							</td>
+						</tr>
+						
 					</table>
 				</div>
 			</form>
