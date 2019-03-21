@@ -23,13 +23,10 @@ public class BudgetControlLookupServlet extends AbstractLookupServlet {
 	public BudgetControlLookupServlet() {
 		super(Permission.CLAIMS_READ);
 		cols = new String[] { 
-				"division_nbr, division_code, work_date, last_name, first_name",
-				"work_date, division_nbr, division_code, last_name, first_name",
-				"work_date, division_nbr, division_code, last_name, first_name",
-				"last_name, first_name, division_nbr, division_code, work_date",
-				"hours_type, division_nbr, division_code, work_date, last_name, first_name",
-				"hours, division_nbr, division_code, work_date, last_name, first_name",
-				"notes"
+				"div, job_site_name, ticket.ticket_id, claimed_dl_amt, claimed_dl_exp",
+				"claimed_dl_total, total_volume, claimed_volume, passthru_volume, claimed_volume_total",
+				"remaining_volume, invoiced_amount, claimed_vs_billed, paid_amount, amount_due",
+				"ticket_status"
 				};
 		super.itemTransformer = new ItemTransformer();
 	}
