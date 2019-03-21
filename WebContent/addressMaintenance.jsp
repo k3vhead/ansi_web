@@ -236,7 +236,15 @@
 					            { title: "<bean:message key="field.label.invoice.ourVendorNbr" />", "defaultContent": "<i>N/A</i>", "visible":false, data: function ( row, type, set ) {	
 					            	if(row.ourVendorNbrDefault != null){return (row.ourVendorNbrDefault+"");} 
 					            } },
-					            
+					            { title: "<bean:message key="field.label.invoice.accountType" />", "defaultContent": "<i>N/A</i>", "visible":false, data: function ( row, type, set ) {	
+					            	if(row.accountTypeDefault != null){return (row.accountTypeDefault+"");} 
+					            } },
+					            { title: "<bean:message key="field.label.invoice.taxExempt" />", "defaultContent": "<i>N/A</i>", "visible":false, data: function ( row, type, set ) {	
+					            	if(row.taxExemptDefault != null){return (row.taxExemptDefault+"");} 
+					            } },
+					            { title: "<bean:message key="field.label.invoice.taxExemptReason" />", "defaultContent": "<i>N/A</i>", "visible":false, data: function ( row, type, set ) {	
+					            	if(row.taxExemptReasonDefault != null){return (row.taxExemptReasonDefault+"");} 
+					            } },
 					            
 					            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
 					            	$viewLink = '<a href="#" class="viewAction" data-id="'+row.addressId+'"><webthing:view>View</webthing:view></a>';
@@ -762,6 +770,7 @@
 		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceGroupingDefault']", $optionData.invoiceGrouping, null);
 		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceTermsDefault']", $optionData.invoiceTerm, null);
 		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceStyleDefault']", $optionData.invoiceStyle,null);
+		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceAccountType']", $optionData.accountType,null);
 		                
 		                
 		                // get building type options
@@ -792,6 +801,9 @@
 									$("#addForm select[name='invoiceGroupingDefault']").val($address.invoiceGroupingDefault);
 									$("#addForm select[name='invoiceTermsDefault']").val($address.invoiceTermsDefault);									
 									$("#addForm input[name='invoiceOurVendorNbrDefault']").val($address.ourVendorNbrDefault);
+									$("#addForm input[name='invoiceAccountTypeDefault']").val($address.accountTypeDefault);
+									$("#addForm input[name='invoiceTaxExemptDefault']").val($address.taxExemptDefault);
+									$("#addForm input[name='invoiceTaxExemptReasonDefault']").val($address.taxExemptReasonDefault);
 
 									// job site fields:
 									$("#addForm input[name='jobsiteJobContact']").val($address.jobsiteJobContactName);
@@ -1111,7 +1123,7 @@
 							<td><span class="required"></span></td>
 							<td><span class="formLabel"><bean:message key="field.label.invoice.accountType" />:</span></td>
 							<td colspan="3">
-								<input type="text" name="invoiceAccountTypeDefault" style="width:315px" />
+								<select name="invoiceAccountTypeDefault" style="width:315px" />
 								<i id="invoiceAccountTypeDefaultErr" class="fa errIcon" aria-hidden="true"></i>
 							</td>
 						</tr>
