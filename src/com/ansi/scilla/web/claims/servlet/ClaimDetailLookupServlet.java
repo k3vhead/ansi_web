@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections4.Transformer;
 
 import com.ansi.scilla.common.claims.WorkHoursType;
-import com.ansi.scilla.web.claims.query.BudgetControlLookupQuery;
+import com.ansi.scilla.web.claims.query.ClaimDetailLookupQuery;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.servlet.AbstractLookupServlet;
 import com.ansi.scilla.web.common.struts.SessionUser;
@@ -42,7 +42,7 @@ public class ClaimDetailLookupServlet extends AbstractLookupServlet {
 		if(request.getParameter("search[value]") != null){
 			searchTerm = request.getParameter("search[value]");
 		}
-		LookupQuery lookupQuery = new BudgetControlLookupQuery(user.getUserId());
+		LookupQuery lookupQuery = new ClaimDetailLookupQuery(user.getUserId());
 		if ( searchTerm != null ) {
 			lookupQuery.setSearchTerm(searchTerm);
 		}

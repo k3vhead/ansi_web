@@ -18,7 +18,7 @@
 <tiles:insert page="../layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        Budget Control
+        Claim Detail
     </tiles:put>
     
     
@@ -146,7 +146,7 @@
             	         ],
             	        "paging": true,
     			        "ajax": {
-    			        	"url": "claims/budgetControlLookup",
+    			        	"url": "claims/claimDetailLookup",
     			        	"type": "GET"
     			        	},
     			        columns: [
@@ -466,7 +466,7 @@
     </tiles:put>
     
    <tiles:put name="content" type="string">
-    	<h1>Budget Control</h1>
+    	<h1>Claim Detail</h1>
     	
  	<table id="displayTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
        	<colgroup>
