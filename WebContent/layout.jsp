@@ -151,7 +151,13 @@
 										<li><html:link action="employeeExpenseLookup">Employee Expense</html:link></li>
 										</ansi:hasPermission>
 										<ansi:hasPermission permissionRequired="CLAIMS_READ">
+										<li><html:link action="ticketStatusLookup">Ticket Status</html:link></li>
+										</ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="CLAIMS_READ">
 										<li><html:link action="budgetControlLookup">Budget Control</html:link></li>
+										</ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="CLAIMS_READ">
+										<li><html:link action="claimDetailLookup">Claim Detail</html:link></li>
 										</ansi:hasPermission>
 									</ul>
 			        			</li>

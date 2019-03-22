@@ -125,6 +125,30 @@
 
 
     <servlet>
+        <servlet-name>ticketStatusLookup</servlet-name>
+        <servlet-class>com.ansi.scilla.web.claims.servlet.TicketStatusLookupServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ticketStatusLookup</servlet-name>
+        <url-pattern>/claims/ticketStatusLookup</url-pattern>
+    </servlet-mapping>
+
+
+
+
+    <servlet>
+        <servlet-name>claimDetailLookup</servlet-name>
+        <servlet-class>com.ansi.scilla.web.claims.servlet.ClaimDetailLookupServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>claimDetailLookup</servlet-name>
+        <url-pattern>/claims/claimDetailLookup</url-pattern>
+    </servlet-mapping>
+
+
+
+
+    <servlet>
         <servlet-name>calculateNdlPay</servlet-name>
         <servlet-class>com.ansi.scilla.web.claims.servlet.CalculateNdlPay</servlet-class>
     </servlet>
