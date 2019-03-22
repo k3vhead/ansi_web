@@ -100,8 +100,12 @@ public class NonDirectLaborLookupServlet extends AbstractServlet {
 					col = 0;
 				}
 			}
-			if (sdir != null) {
-				if (!sdir.equals("asc")) {
+			if (sdir == null) {
+				dir = "asc";
+			} else {
+				if (sdir.equals("asc")) {
+					dir = "asc";
+				} else {
 					dir = "desc";
 				}
 			}
