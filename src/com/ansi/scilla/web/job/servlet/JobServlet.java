@@ -18,6 +18,7 @@ import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.exceptions.ActionNotPermittedException;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.common.exceptions.InvalidJobStatusException;
+import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.jobticket.JobStatus;
 import com.ansi.scilla.common.jobticket.JobUtils;
 import com.ansi.scilla.web.common.response.MessageKey;
@@ -285,6 +286,7 @@ public class JobServlet extends AbstractServlet {
 				populateJobActivation(job, jobRequest);
 				updateJob(conn, user, job);
 				conn.commit();
+								
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
 				responseCode = ResponseCode.SUCCESS;
 				jobDetailResponse = new JobDetailResponse(conn, job.getJobId(), permissionList);
@@ -608,6 +610,19 @@ public class JobServlet extends AbstractServlet {
 					logger.log(Level.DEBUG, "JobServlet 156");
 					JobUtils.activateJob(conn, jobId, jobDetailRequest.getStartDate(), jobDetailRequest.getActivationDate(), sessionUser.getUserId());
 					conn.commit();
+					
+					// for one-time jobs: activate, then create ticket; then cancel
+					// activation is done 2 lines up from here), so ticket then cancel
+					JobFrequency jobFrequency = JobFrequency.lookup(job.getJobFrequency());
+					if ( jobFrequency.isOneTimeOnly() ) {
+						logger.log(Level.DEBUG, "processing one-time job");
+						JobUtils.scheduleJob(conn, job.getJobId(), sessionUser.getUserId());
+						JobUtils.generateTicketsForJob(conn, job.getJobId(), sessionUser.getUserId());
+						JobUtils.cancelJob(conn, job.getJobId(), jobDetailRequest.getActivationDate(), "One Time Job", sessionUser.getUserId());
+						conn.commit();
+					}
+					
+
 					responseCode = ResponseCode.SUCCESS;
 					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Update Successful");
 				} catch ( RecordNotFoundException e) {
