@@ -807,6 +807,20 @@
 					
 					
 					
+					
+					populateDefaultJob : function() {
+						console.log("populateDefaultJob");
+						if ( NEWQUOTE.jobSiteAddress.ourVendorNbrDefault != null ) {
+							console.log("Populating default ovn with: " + NEWQUOTE.jobSiteAddress.ourVendorNbrDefault);
+							$("#job-panel-container .job-detail-display .jobInvoiceDisplayPanel .job-invoice-vendor-nbr").html(NEWQUOTE.jobSiteAddress.ourVendorNbrDefault);
+						}
+						if ( NEWQUOTE.jobSiteAddress.jobsiteFloorsDefault != null ) {
+							$("#job-panel-container .job-detail-display .jobActivationDisplayPanel .job-activation-floors").html(NEWQUOTE.jobSiteAddress.jobsiteFloorsDefault);
+						}
+					},
+					
+					
+					
 					populateDefaultQuoteHeader : function() {
 						console.log("populateDefaultQuoteHeader");
 						if ( NEWQUOTE.jobSiteAddress.invoiceStyleDefault != null ) {
@@ -833,15 +847,15 @@
 						if ( NEWQUOTE.jobSiteAddress.billtoAccountTypeDefault != null ) {
 							NEWQUOTE.accountType = NEWQUOTE.jobSiteAddress.billtoAccountTypeDefault;
 							$("#quoteDataContainer select[name='accountType']").val(NEWQUOTE.jobSiteAddress.billtoAccountTypeDefault);
-						}
-						if ( NEWQUOTE.jobSiteAddress.billToTaxExempt != null ) {
-							NEWQUOTE.taxExempt = NEWQUOTE.jobSiteAddress.billToTaxExempt;
-							var $taxExempt = NEWQUOTE.jobSiteAddress.billToTaxExempt == 1;
+						}						
+						if ( NEWQUOTE.jobSiteAddress.billtoTaxExempt != null ) {
+							NEWQUOTE.taxExempt = NEWQUOTE.jobSiteAddress.billtoTaxExempt;
+							var $taxExempt = NEWQUOTE.jobSiteAddress.billtoTaxExempt == 1 || NEWQUOTE.jobSiteAddress.billtoTaxExempt == "1";
 			            	$("#quoteDataContainer input[name='taxExempt']").prop("checked", $taxExempt);
 			            }
-						if ( NEWQUOTE.jobSiteAddress.billToTaxExemptReason != null ) {
-							NEWQUOTE.taxExemptReason = NEWQUOTE.jobSiteAddress.billToTaxExemptReason;
-							$("#quoteDataContainer input[name='taxExemptReason']").val(NEWQUOTE.jobSiteAddress.billToTaxExemptReason);
+						if ( NEWQUOTE.jobSiteAddress.billtoTaxExemptReason != null ) {
+							NEWQUOTE.taxExemptReason = NEWQUOTE.jobSiteAddress.billtoTaxExemptReason;
+							$("#quoteDataContainer input[name='taxExemptReason']").val(NEWQUOTE.jobSiteAddress.billtoTaxExemptReason);
 						}
 		            	
 					},
@@ -1171,6 +1185,7 @@
 									NEWQUOTE.populateContactPanel( "#billing-contact", NEWQUOTE.billtoBillingContact);
 								}
 								NEWQUOTE.populateDefaultQuoteHeader();
+								NEWQUOTE.populateDefaultJob();
 							} else if ( $type == 'billto' ){
 								// billto stuff
 								NEWQUOTE.billToAddress = $data.data.billToAddress
