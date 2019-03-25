@@ -17,6 +17,11 @@ public class BudgetControlLookupQuery extends LookupQuery {
 	public static final String DIVISION = "div";
 	public static final String JOB_SITE_NAME  = "job_site_name"; 	//== "Account"
 	public static final String TICKET_ID = "ticket_id";
+	public static final String CLAIMED_WEEKLY_DL_AMT = "claimed_weekly_dl_amt";
+	public static final String CLAIMED_WEEKLY_DL_EXP = "claimed_weekly_dl_exp";
+	public static final String CLAIMED_WEEKLY_DL_TOTAL = "claimed_weekly_dl_total";
+	public static final String CLAIMED_WEEKLY_VOLUME = "claimed_weekly_dl_volume";
+	public static final String CLAIMED_WEEKLY_RECORD_COUNT = "claimed_weely_record_count";
 	public static final String CLAIMED_DL_AMT = "claimed_dl_amt";
 	public static final String CLAIMED_DL_EXP = "claimed_dl_exp";
 	public static final String CLAIMED_DL_TOTAL = "claimed_dl_total";
@@ -59,6 +64,13 @@ public class BudgetControlLookupQuery extends LookupQuery {
 			+ " , ticket.job_id"
 			+ "	, job_site.name as job_site_name"
 			+ "	, ticket.ticket_id"
+			+ " , isnull(ticket_claim_weekly_totals.claimed_weekly_dl_amt,0.00) as claimed_weekly_dl_amt\r\n" 
+			+ " , isnull(ticket_claim_weekly_totals.claimed_weekly_dl_exp,0.00) as claimed_weekly_dl_exp\r\n"
+			+ " , isnull(ticket_claim_weekly_totals.claimed_weekly_dl_amt,0.00)-ISNULL(ticket_claim_weekly_totals.claimed_weekly_dl_exp,0.00)\r\n" 
+			+ "	    as claimed_weekly_dl_total"
+			+ " , isnull(ticket_claim_weekly_totals.claimed_weekly_hours,0.00) as claimed_weekly_hours\r\n"
+			+ " , isnull(ticket_claim_weekly_totals.claimed_weekly_volume,0.00) as claimed_weekly_volume\r\n"
+			+ " , isnull(ticket_claim_weekly_totals.claimed_weekly_record_count,0) as claimed_weekly_record_count\r\n"
 			+ "	, isnull(ticket_claim_totals.claimed_dl_amt,0.00) as claimed_dl_amt"
 			+ "	, isnull(ticket_claim_totals.claimed_dl_exp,0.00) as claimed_dl_exp"
 			+ "	, isnull(ticket_claim_totals.claimed_dl_amt,0.00)-ISNULL(ticket_claim_totals.claimed_dl_exp,0.00)"
@@ -90,7 +102,18 @@ public class BudgetControlLookupQuery extends LookupQuery {
 			"		sum(amount) as paid_amount, \n" + 
 			"		sum(tax_amt) as paid_tax_amt \n" + 
 			"		from ticket_payment group by ticket_id) as ticket_payment_totals \n" + 
-			"	on ticket_payment_totals.ticket_id = ticket.ticket_id \n" + 
+			"	on ticket_payment_totals.ticket_id = ticket.ticket_id \n" +
+			"left outer join (\r\n" + 
+			"	select ticket_id\r\n" + 
+			"		, concat(year(work_date),'-',right('00'+CAST(isnull(datepart(wk,work_date),0) as VARCHAR),2)) as claim_week\r\n" + 
+			"		, sum(volume) as claimed_weekly_volume\r\n" + 
+			"		, sum(dl_amt) as claimed_weekly_dl_amt\r\n" + 
+			"		, sum(hours) as claimed_weekly_hours\r\n" + 
+			"		, '0.00' as claimed_weekly_dl_exp\r\n" + 
+			"		, COUNT(1) as claimed_weekly_record_count\r\n" + 
+			"	from ticket_claim \r\n" + 
+			"	group by ticket_id, concat(year(work_date),'-',right('00'+CAST(isnull(datepart(wk,work_date),0) as VARCHAR),2))\r\n" + 
+			"	) as ticket_claim_weekly_totals on ticket_claim_weekly_totals.ticket_id = ticket.ticket_id\r\n" + 
 			"left outer join (\n" + 
 			"	select ticket_id\n" + 
 			"		, sum(volume) as claimed_volume\n" + 
