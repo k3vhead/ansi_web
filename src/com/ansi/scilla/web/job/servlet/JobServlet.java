@@ -114,7 +114,7 @@ public class JobServlet extends AbstractServlet {
 			conn.setAutoCommit(false);
 			// this is the minimum necessary permission. More granular checks will be made later
 			SessionData sessionData = AppUtils.validateSession(request, Permission.QUOTE_CREATE);
-			List<UserPermission> permissionList = sessionData.getUserPermissionList();
+			//List<UserPermission> permissionList = sessionData.getUserPermissionList();
 			String jsonString = super.makeJsonString(request);
 			url = new AnsiURL(request, REALM, new String[] {ACTION_IS_ADD});
 			if ( url.getId() == null && StringUtils.isBlank(url.getCommand())) {
@@ -131,7 +131,7 @@ public class JobServlet extends AbstractServlet {
 			
 			try {
 				Quote quote = selectQuote(conn, job, jobRequest);
-				JobRequestAction action = trafficCop(conn, response, sessionData, job, quote, jobRequest);					
+				trafficCop(conn, response, sessionData, job, quote, jobRequest);					
 				
 				
 				// After we delete, there are no job details to return, but we still need the job headers
@@ -168,7 +168,7 @@ public class JobServlet extends AbstractServlet {
 
 	
 	
-	private JobRequestAction trafficCop(Connection conn, HttpServletResponse response, SessionData sessionData, Job job, Quote quote, JobRequest jobRequest) throws NotAllowedException, Exception {
+	private void trafficCop(Connection conn, HttpServletResponse response, SessionData sessionData, Job job, Quote quote, JobRequest jobRequest) throws NotAllowedException, Exception {
 		logger.log(Level.DEBUG, "trafficCop");
 		SessionUser user = sessionData.getUser();
 		JobRequestAction action = null;
@@ -210,7 +210,6 @@ public class JobServlet extends AbstractServlet {
 			}
 		}
 		
-		return action;
 	}
 
 	
@@ -312,10 +311,16 @@ public class JobServlet extends AbstractServlet {
 		job.setDirectLaborPct(jobRequest.getDirectLaborPct());
 		job.setBudget(jobRequest.getBudget());
 		job.setFloors(jobRequest.getFloors());
-		job.setEquipment(jobRequest.getEquipment());
-		job.setWasherNotes(jobRequest.getWasherNotes());
-		job.setOmNotes(jobRequest.getOmNotes());
-		job.setBillingNotes(jobRequest.getBillingNotes());		
+		
+		String equipment  = StringUtils.trimToNull(jobRequest.getEquipment());
+		String washerNotes = StringUtils.trimToNull(jobRequest.getWasherNotes());
+		String omNotes = StringUtils.trimToNull(jobRequest.getOmNotes());
+		String billingNotes = StringUtils.trimToNull(jobRequest.getBillingNotes());
+		
+		job.setEquipment(equipment);
+		job.setWasherNotes(washerNotes);
+		job.setOmNotes(omNotes);
+		job.setBillingNotes(billingNotes);		
 	}
 
 	
