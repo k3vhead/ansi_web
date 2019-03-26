@@ -56,7 +56,9 @@
         </action>
         <action
             path="/budgetControlLookup"
-            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.claims.action.BudgetControlLookupAction"
+            name="idForm"
+            scope="request">
             <forward name="valid" path="/claims/budgetControlLookup.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>

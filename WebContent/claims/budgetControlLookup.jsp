@@ -45,6 +45,7 @@
         $(document).ready(function() {
         	;BUDGETCONTROL = {
         		datatable : null,
+        		ticketFilter : '<c:out value="${BUDGET_CONTROL_TICKET_FILTER}" />',
         		
         		init : function() {
         			BUDGETCONTROL.createTable();
@@ -195,8 +196,8 @@
     			            --%>
     			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
     			            	{
-    				            	var $claim = '<a href="#" class="editAction" data-id="'+row.ticket_id+'"><webthing:edit>Claim</webthing:edit></a>';
-    				            	var $expense = '<a href="#" class="editAction" data-id="'+row.ticket_id+'"><webthing:edit>Expense</webthing:edit></a>';
+    				            	var $claim = '<a href="#" class="editAction" data-id="'+row.ticket_id+'"><webthing:invoiceIcon styleClass="green">Claim</webthing:invoiceIcon></a>';
+    				            	var $expense = '<a href="#" class="editAction" data-id="'+row.ticket_id+'"><webthing:invoiceIcon styleClass="orange">Expense</webthing:invoiceIcon></a>';
     			            		return "<ansi:hasPermission permissionRequired='CLAIMS_WRITE'>"+$claim+" "+$expense+"</ansi:hasPermission>";
     			            	}
     			            	
