@@ -29,8 +29,8 @@ public class BudgetControlLookupQuery extends LookupQuery {
 	public static final String CLAIMED_VOLUME = "claimed_volume";
 	public static final String PASSTHRU_VOLUME = "passthru_volume";
 	public static final String CLAIMED_VOLUME_TOTAL = "claimed_volume_total";
-	public static final String REMAINING_VOLUME = "remaining_volume";
-	public static final String INVOICED_AMOUNT = "invoiced_amount";
+	public static final String REMAINING_VOLUME = "volume_remaining";
+	public static final String BILLED_AMOUNT = "billed_amount";
 	public static final String CLAIMED_VS_BILLED = "claimed_vs_billed";
 	public static final String PAID_AMOUNT = "paid_amount";
 	public static final String AMOUNT_DUE = "amount_due";
