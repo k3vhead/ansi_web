@@ -23,10 +23,22 @@ public class TicketStatusLookupServlet extends AbstractLookupServlet {
 	public TicketStatusLookupServlet() {
 		super(Permission.CLAIMS_READ);
 		cols = new String[] { 
-				"div, job_site_name, ticket.ticket_id, claimed_dl_amt, claimed_dl_exp",
-				"claimed_dl_total, total_volume, claimed_volume, passthru_volume, claimed_volume_total",
-				"remaining_volume, invoiced_amount, claimed_vs_billed, paid_amount, amount_due",
-				"ticket_status"
+				"div", 
+				"job_site_name", 
+				"ticket.ticket_id", 
+				"claimed_dl_amt", 
+				"claimed_dl_exp",
+				"claimed_dl_total", 
+				"total_volume", 
+				"claimed_volume", 
+				"passthru_volume", 
+				"claimed_volume_total",
+				"volume_remaining", 
+				"billed_amount", 
+				"claimed_vs_billed", 
+				"paid_amt", 
+				"amount_due"
+//				"ticket_status"
 				};
 		super.itemTransformer = new ItemTransformer();
 	}

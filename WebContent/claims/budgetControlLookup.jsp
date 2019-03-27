@@ -159,7 +159,7 @@
     			        	{ title: "Div", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
     			            	if(row.div != null){return (row.div+"");}
     			            } },
-    			            { title: "Account", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			            { width:"23%", title: "Account", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
     			            	if(row.job_site_name != null){return (row.job_site_name+"");}
     			            } },
     			            { title: "Ticket", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
@@ -491,6 +491,7 @@
     	<h1>Budget Control</h1>
     	
  	<table id="displayTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
+ 		<%--
        	<colgroup>
         	<col style="width:7%;" />
         	<col style="width:23%;" />
@@ -505,6 +506,7 @@
         	<col style="width:7%;" />
         	<col style="width:7%;" />
    		</colgroup>
+   		--%>
         <thead>
         	<%--
             <tr>

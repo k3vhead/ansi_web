@@ -140,9 +140,9 @@
             	        ],
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
-            	            { className: "dt-left", "targets": [0,3,8] },
-            	            { className: "dt-center", "targets": [1,2,4,5,9] },
-            	            { className: "dt-right", "targets": [6,7]}
+            	            { className: "dt-left", "targets": [0,1,2] },
+            	            { className: "dt-center", "targets": [15] },
+            	            { className: "dt-right", "targets": [3,4,5,6,7,8,9,10,11,12,13,14]}
             	         ],
             	        "paging": true,
     			        "ajax": {
@@ -154,30 +154,48 @@
     			            { title: "Div", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
     			            	if(row.div != null){return (row.div+"");}
     			            } },
-    			            { title: "Week", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.week != null){return (row.week);}
+    			            { width:"23%", title: "Account", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.job_site_name != null){return (row.job_site_name);}
     			            } },
-    			            { title: "Date", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.work_date != null){return (row.work_date+"");}
+    			            { title: "Ticket", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.ticket_id != null){return (row.ticket_id+"");}
     			            } },
-    			            { title: "Washer", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.washer_id != null){return (row.last_name+", "+row.first_name);}
+    			            { title: "Direct Labor", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.claimed_dl_amt != null){return (parseFloat(row.claimed_dl_amt).toFixed(2));}
     			            } },
-    			            { title: "Hrs Type" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	return '<span class="tooltip">' + row.hours_type + '<span class="tooltiptext">' + row.hours_description + '</span></span>'
+    			            { title: "+ Expenses" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.claimed_dl_exp != null){return (parseFloat(row.claimed_dl_exp).toFixed(2));}
     			            } },
-    			            { title: "Hours", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.hours != null){return (row.hours+"");}
+    			            { title: "= Total", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.claimed_dl_total != null){return (parseFloat(row.claimed_dl_total).toFixed(2)+"");}
     			            } },
-    			            { title: "Calc Pay", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.hours != null){return ( NONDIRECTLABOR.formatPay(row.calc_payout_amt));}
+    			            { title: "Total Volume", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.total_volume != null){return (parseFloat(row.total_volume).toFixed(2)+"");}
     			            } },
-    			            { title: "Act Pay", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.hours != null){return ( NONDIRECTLABOR.formatPay(row.act_payout_amt));}
+    			            { title: "Volume Claimed", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.claimed_volume != null){return (parseFloat(row.claimed_volume).toFixed(2)+"");}
     			            } },
-    			            { title: "Notes",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.notes != null){return (row.notes+"");}
+    			            { title: "Passthru",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.passthru_volume != null){return (parseFloat(row.passthru_volume).toFixed(2)+"");}
     			            } },			            
+    			            { title: "Volume Claimed Total", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.claimed_volume_total != null){return (parseFloat(row.claimed_volume_total).toFixed(2)+"");}
+    			            } },
+    			            { title: "Remaining Volume", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.volume_remaining != null){return (parseFloat(row.volume_remaining).toFixed(2)+"");}
+    			            } },
+    			            { title: "Invoiced Amount", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.billed_amount != null){return (parseFloat(row.billed_amount).toFixed(2)+"");}
+    			            } },
+    			            { title: "Diff CLM/BLD", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.claimed_vs_billed != null){return (parseFloat(row.claimed_vs_billed).toFixed(2)+"");}
+    			            } },
+    			            { title: "Amount Paid", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.paid_amt != null){return (parseFloat(row.paid_amt).toFixed(2)+"");}
+    			            } },
+    			            { title: "Amount Due", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.amount_due != null){return (parseFloat(row.amount_due).toFixed(2)+"");}
+    			            } },
     			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
     			            	{
     				            	var $edit = '<a href="#" class="editAction" data-id="'+row.labor_id+'"><webthing:edit>Edit</webthing:edit></a>';
@@ -469,45 +487,9 @@
     	<h1>Ticket Status</h1>
     	
  	<table id="displayTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
-       	<colgroup>
-        	<col style="width:10%;" />
-        	<col style="width:5%;" />
-    		<col style="width:5%;" />    		
-    		<col style="width:10%;" />
-    		<col style="width:10%;" />
-    		<col style="width:5%;" />
-    		<col style="width:5%;" />
-    		<col style="width:5%;" />
-    		<col style="width:35%;" />
-    		<col style="width:10%;" />
-   		</colgroup>
-        <thead>
-            <tr>
-                <th>Div</th>
-                <th>Week</th>
-    			<th>Date</th>
-    			<th>Washer</th>
-    			<th>Hours Type</th>
-    			<th>Hours</th>
-    			<th>Calc Pay</th>
-    			<th>Act Pay</th>
-    			<th>Notes</th>
-    			<th>Action</th>    			
-            </tr>
+       	<thead>
         </thead>
         <tfoot>
-            <tr>
-                <th>Div</th>
-                <th>Week</th>
-    			<th>Date</th>
-    			<th>Washer</th>
-    			<th>Hours Type</th>
-    			<th>Hours</th>
-    			<th>Calc Pay</th>
-    			<th>Act Pay</th>
-    			<th>Notes</th>   
-    			<th>Action</th>  			
-            </tr>
         </tfoot>
     </table>
     <input type="button" value="New" class="prettyWideButton" id="new-NDL-button" />
