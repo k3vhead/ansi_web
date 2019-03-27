@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
-import com.ansi.scilla.common.account.AccountType;
 import com.ansi.scilla.common.address.Country;
 import com.ansi.scilla.common.claims.WorkHoursType;
 import com.ansi.scilla.common.employee.EmployeeHoursType;
@@ -33,7 +32,6 @@ public class OptionsListResponse extends MessageResponse {
 	private List<InvoiceGroupingOption> invoiceGrouping;
 	private List<InvoiceTermOption> invoiceTerm;
 	private List<InvoiceStyleOption> invoiceStyle;
-	private List<AccountTypeOption> accountType;
 	private List<PaymentMethodOption> paymentMethod;
 	private List<ReportTypeOption> reportType;
 	private List<WorkHoursTypeOption> workHoursType;
@@ -64,9 +62,6 @@ public class OptionsListResponse extends MessageResponse {
 		if ( options.contains(ResponseOption.INVOICE_STYLE)) {
 			makeInvoiceStyleList();
 		}
-		if ( options.contains(ResponseOption.ACCOUNT_TYPE)) {
-			makeAccountTypeList();
-		}
 		if ( options.contains(ResponseOption.PAYMENT_METHOD)) {
 			makePaymentMethodList();
 		}
@@ -89,14 +84,6 @@ public class OptionsListResponse extends MessageResponse {
 		Collections.sort(this.invoiceStyle);
 	}
 	
-	private void makeAccountTypeList() {
-		this.accountType = new ArrayList<AccountTypeOption>();
-		for (AccountType j : EnumSet.allOf(AccountType.class)) {
-			this.accountType.add(new AccountTypeOption(j));
-		}
-		Collections.sort(this.accountType);
-	}
-
 	private void makePaymentMethodList() {
 		this.paymentMethod = new ArrayList<PaymentMethodOption>();
 		for (PaymentMethod j : EnumSet.allOf(PaymentMethod.class)) {
@@ -206,14 +193,6 @@ public class OptionsListResponse extends MessageResponse {
 		this.jobFrequency = jobFrequency;
 	}
 
-	public List<AccountTypeOption> getAccountType() {
-		return accountType;
-	}
-
-	public void setAccountType(List<AccountTypeOption> accountType) {
-		this.accountType = accountType;
-	}
-	
 	public List<JobStatusOption> getJobStatus() {
 		return jobStatus;
 	}
