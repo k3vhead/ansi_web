@@ -139,7 +139,7 @@ public class BudgetControlLookupQuery extends LookupQuery {
 
 	private static final String baseWhereClause = "\n  ";
 	
-	
+	private Integer ticketFilter;
 	
 	
 	public BudgetControlLookupQuery(Integer userId) {
@@ -155,12 +155,16 @@ public class BudgetControlLookupQuery extends LookupQuery {
 
 	
 
+	
+	public Integer getTicketFilter() {
+		return ticketFilter;
+	}
 
+	public void setTicketFilter(Integer ticketFilter) {
+		this.ticketFilter = ticketFilter;
+	}
 
 	
-	
-	
-
 	
 	protected String makeOrderBy(SelectType selectType) {
 		String orderBy = "";
@@ -192,11 +196,20 @@ public class BudgetControlLookupQuery extends LookupQuery {
 	protected String makeWhereClause(String queryTerm)  {
 		String whereClause = BudgetControlLookupQuery.baseWhereClause;
 		String joiner = StringUtils.isBlank(baseWhereClause) ? " where " : " and ";
-		if (! StringUtils.isBlank(queryTerm)) {
-				whereClause =  whereClause + joiner + " (\n"
-						+ " lower(concat(job_site.name, ' ', job_site.address1, ' ', job_site.city)) like '%" + queryTerm.toLowerCase() + "%'" +
-						"\n OR ticket.ticket_id like '%" + queryTerm.toLowerCase() + "%'" +
-						")" ;
+		
+		
+		
+		if ( StringUtils.isBlank(queryTerm) ) {
+			if ( this.ticketFilter != null ) {
+				whereClause = whereClause + joiner + " ticket.ticket_id=" + this.ticketFilter;
+			}
+		} else {
+			String ticketClause = this.ticketFilter == null ? "" : "ticket.ticket_id=" + this.ticketFilter + " and ";
+			whereClause =  whereClause + joiner + " (\n"
+					+ ticketClause
+					+ " lower(concat(job_site.name, ' ', job_site.address1, ' ', job_site.city)) like '%" + queryTerm.toLowerCase() + "%'" +
+					"\n OR ticket.ticket_id like '%" + queryTerm.toLowerCase() + "%'" +
+					")" ;
 		}
 		return whereClause;
 	}

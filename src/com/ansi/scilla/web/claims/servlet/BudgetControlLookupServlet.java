@@ -13,12 +13,16 @@ import com.ansi.scilla.web.claims.query.BudgetControlLookupQuery;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.servlet.AbstractLookupServlet;
 import com.ansi.scilla.web.common.struts.SessionUser;
+import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 
 public class BudgetControlLookupServlet extends AbstractLookupServlet {
 
 	private static final long serialVersionUID = 1L;
+	
+	public static final String REALM = "budgetControlLookup";
 
 	public BudgetControlLookupServlet() {
 		super(Permission.CLAIMS_READ);
@@ -45,15 +49,23 @@ public class BudgetControlLookupServlet extends AbstractLookupServlet {
 	@Override
 	public LookupQuery makeQuery(Connection conn, HttpServletRequest request) {
 		SessionUser user = AppUtils.getSessionUser(request);
-		String searchTerm = null;
-		if(request.getParameter("search[value]") != null){
-			searchTerm = request.getParameter("search[value]");
+		try {
+			AnsiURL url = new AnsiURL(request, REALM, (String[])null);
+			String searchTerm = null;
+			if(request.getParameter("search[value]") != null){
+				searchTerm = request.getParameter("search[value]");
+			}
+			BudgetControlLookupQuery lookupQuery = new BudgetControlLookupQuery(user.getUserId());
+			if ( searchTerm != null ) {
+				lookupQuery.setSearchTerm(searchTerm);
+			}
+			if ( url.getId() != null ) {
+				lookupQuery.setTicketFilter(url.getId());
+			}
+			return lookupQuery;
+		} catch (ResourceNotFoundException e) {
+			throw new RuntimeException(e);
 		}
-		LookupQuery lookupQuery = new BudgetControlLookupQuery(user.getUserId());
-		if ( searchTerm != null ) {
-			lookupQuery.setSearchTerm(searchTerm);
-		}
-		return lookupQuery;
 	}
 
 

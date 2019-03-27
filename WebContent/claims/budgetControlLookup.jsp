@@ -120,6 +120,11 @@
         		
         		
         		createTable : function() {
+        			var $url = "claims/budgetControlLookup";
+        			if ( BUDGETCONTROL.ticketFilter != '' ) {
+        				$url = $url + "/" + BUDGETCONTROL.ticketFilter;
+        			}
+        				
             		var dataTable = $('#displayTable').DataTable( {
             			"aaSorting":		[[0,'asc']],
             			"processing": 		true,
@@ -147,7 +152,7 @@
             	         ],
             	        "paging": true,
     			        "ajax": {
-    			        	"url": "claims/budgetControlLookup",
+    			        	"url": $url,
     			        	"type": "GET"
     			        	},
     			        columns: [

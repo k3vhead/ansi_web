@@ -16,7 +16,8 @@ public class TestBudgetControlLookup {
 			conn.setAutoCommit(false);
 			
 //			BudgetControlLookupQuery query = new BudgetControlLookupQuery(5);
-			BudgetControlLookupQuery query = new BudgetControlLookupQuery(5, "knopf");
+			BudgetControlLookupQuery query = new BudgetControlLookupQuery(5, "harlem irving");
+			query.setTicketFilter(780741);
 			Integer countAll = query.countAll(conn);
 			System.out.println("All:" + countAll);
 			Integer selectCount = query.selectCount(conn);
