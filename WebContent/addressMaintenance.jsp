@@ -747,7 +747,7 @@
 					
 					
 					makeOptionLists : function(){
-						$optionData = ANSI_UTILS.getOptions('COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM,ACCOUNT_TYPE');
+						$optionData = ANSI_UTILS.getOptions('COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM');
 						var $countryList = $optionData.country;
 						//$jobSiteDetail = "";
 
@@ -770,11 +770,11 @@
 		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceGroupingDefault']", $optionData.invoiceGrouping, null);
 		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceTermsDefault']", $optionData.invoiceTerm, null);
 		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceStyleDefault']", $optionData.invoiceStyle,null);
-		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceAccountTypeDefault']", $optionData.accountType,null);
 		                
 		                
 		                // get building type options
 		                ANSI_UTILS.populateCodeSelect("job","building_type","#addAddressForm select[name='jobsiteBuildingTypeDefault']","value","displayValue");
+		                ANSI_UTILS.populateCodeSelect("quote", "account_type", "#addAddressForm select[name='invoiceAccountTypeDefault']", "value","displayValue");
 		            },
 		            
 		            
