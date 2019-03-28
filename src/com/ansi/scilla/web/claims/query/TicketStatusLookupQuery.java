@@ -56,6 +56,7 @@ public class TicketStatusLookupQuery extends LookupQuery {
 			+ "CONCAT(division_code,'-',division_nbr) as div"
 			+ " , ticket.act_division_id"
 			+ " , ticket.ticket_id"
+			+ " , ticket.ticket_status"
 			+ " , ticket.job_id"
 			+ "	, job_site.name as job_site_name"
 			+ "	, ticket.ticket_id"

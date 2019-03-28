@@ -1,14 +1,14 @@
 package com.ansi.scilla.web.claims.servlet;
 
 import java.sql.Connection;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections4.Transformer;
+import org.apache.commons.lang3.StringUtils;
 
-import com.ansi.scilla.common.claims.WorkHoursType;
+import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.web.claims.query.BudgetControlLookupQuery;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.servlet.AbstractLookupServlet;
@@ -30,6 +30,7 @@ public class BudgetControlLookupServlet extends AbstractLookupServlet {
 				"div",
 				"job_site_name",
 				"ticket.ticket_id",
+				"ticket.ticket_status",
 				"claimed_weekly_dl_amt",
 				"claimed_weekly_dl_exp",
 				"claimed_weekly_dl_total",
@@ -37,9 +38,11 @@ public class BudgetControlLookupServlet extends AbstractLookupServlet {
 				"claimed_volume_total",
 				"volume_remaining",
 				"billed_amount",
-				"claimed_vs_billed"				
+				"claimed_vs_billed",
+				"paid_amount",
+				"amount_due"
 				};
-		super.itemTransformer = null; //new ItemTransformer();
+		super.itemTransformer = new ItemTransformer();
 	}
 
 
@@ -73,23 +76,13 @@ public class BudgetControlLookupServlet extends AbstractLookupServlet {
 
 	public class ItemTransformer implements Transformer<HashMap<String, Object>, HashMap<String, Object>> {
 
-		private SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
-		private SimpleDateFormat weekFormatter = new SimpleDateFormat("yyyy-ww");
-		
 		@Override
 		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
-			String hoursType = (String)arg0.get("hours_type");
-			if ( hoursType != null ) {
-				WorkHoursType workHoursType = WorkHoursType.valueOf(hoursType);
-				arg0.put("hours_description", workHoursType.getDescription());
+			String ticketStatus = (String)arg0.get(BudgetControlLookupQuery.TICKET_STATUS);
+			if ( ! StringUtils.isBlank(ticketStatus) ) {
+				TicketStatus status = TicketStatus.lookup(ticketStatus);
+				arg0.put("ticket_status_description", status.display());
 			}
-			
-			java.sql.Timestamp workDate = (java.sql.Timestamp)arg0.get("work_date");
-			if ( workDate != null ) {				
-				arg0.put("work_date", dateFormatter.format(workDate));	
-				arg0.put("week", weekFormatter.format(workDate));
-			}
-			
 			
 			return arg0;
 		}

@@ -141,8 +141,8 @@
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
             	            { className: "dt-left", "targets": [0,1,2] },
-            	            { className: "dt-center", "targets": [15] },
-            	            { className: "dt-right", "targets": [3,4,5,6,7,8,9,10,11,12,13,14]}
+            	            { className: "dt-center", "targets": [3,16] },
+            	            { className: "dt-right", "targets": [4,5,6,7,8,9,10,11,12,13,14,15]}
             	         ],
             	        "paging": true,
     			        "ajax": {
@@ -159,6 +159,9 @@
     			            } },
     			            { title: "Ticket", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.ticket_id != null){return (row.ticket_id+"");}
+    			            } },
+    			            { title: "Status", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			            	if(row.ticket_status != null){return ('<span class="tooltip">' + row.ticket_status + '<span class="tooltiptext">' + row.ticket_status_description + '</span></span>');}
     			            } },
     			            { title: "Direct Labor", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.claimed_dl_amt != null){return (parseFloat(row.claimed_dl_amt).toFixed(2));}

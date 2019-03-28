@@ -6,6 +6,8 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 
+import com.ansi.scilla.common.jobticket.TicketStatus;
+import com.ansi.scilla.common.jobticket.TicketType;
 import com.ansi.scilla.common.queries.SelectType;
 import com.ansi.scilla.web.common.query.LookupQuery;
 
@@ -21,7 +23,7 @@ public class BudgetControlLookupQuery extends LookupQuery {
 	public static final String CLAIMED_WEEKLY_DL_EXP = "claimed_weekly_dl_exp";
 	public static final String CLAIMED_WEEKLY_DL_TOTAL = "claimed_weekly_dl_total";
 	public static final String CLAIMED_WEEKLY_VOLUME = "claimed_weekly_dl_volume";
-	public static final String CLAIMED_WEEKLY_RECORD_COUNT = "claimed_weely_record_count";
+	public static final String CLAIMED_WEEKLY_RECORD_COUNT = "claimed_weekly_record_count";
 	public static final String CLAIMED_DL_AMT = "claimed_dl_amt";
 	public static final String CLAIMED_DL_EXP = "claimed_dl_exp";
 	public static final String CLAIMED_DL_TOTAL = "claimed_dl_total";
@@ -32,7 +34,7 @@ public class BudgetControlLookupQuery extends LookupQuery {
 	public static final String REMAINING_VOLUME = "volume_remaining";
 	public static final String BILLED_AMOUNT = "billed_amount";
 	public static final String CLAIMED_VS_BILLED = "claimed_vs_billed";
-	public static final String PAID_AMOUNT = "paid_amount";
+	public static final String PAID_AMOUNT = "paid_amt";
 	public static final String AMOUNT_DUE = "amount_due";
 	public static final String TICKET_STATUS = "ticket_status";
 
@@ -138,7 +140,9 @@ public class BudgetControlLookupQuery extends LookupQuery {
 			"	group by ticket_id\n" + 
 			"	) as invoice_totals on invoice_totals.ticket_id = ticket.ticket_id";
 
-	private static final String baseWhereClause = "\n  ";
+	private static final String baseWhereClause = "where "
+			+ "ticket.ticket_type in ('" + TicketType.RUN.code() + "','" + TicketType.JOB.code() + "') "
+			+ "and ticket.ticket_status in ('" + TicketStatus.DISPATCHED.code() + "','" + TicketStatus.COMPLETED + "') \n  ";
 	
 	private Integer ticketFilter;
 	

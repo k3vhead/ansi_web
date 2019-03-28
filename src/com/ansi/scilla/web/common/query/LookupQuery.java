@@ -189,7 +189,7 @@ public abstract class LookupQuery extends ApplicationObject {
 		String orderByPhrase = makeOrderBy(selectType);
 		String wherePhrase = selectType.equals(SelectType.COUNTALL) ? baseWhereClause : makeWhereClause(this.searchTerm);
 		
-		String sql = searchSQL + wherePhrase + orderByPhrase + offsetPhrase + fetchPhrase;
+		String sql = searchSQL + " " + wherePhrase + " " + orderByPhrase + " " + offsetPhrase + " " + fetchPhrase;
 		this.logger.log(Level.DEBUG, sql);
 				
 		return sql;

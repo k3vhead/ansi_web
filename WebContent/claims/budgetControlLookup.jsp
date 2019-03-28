@@ -147,8 +147,8 @@
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
             	            { className: "dt-left", "targets": [0,1,2] },
-            	            { className: "dt-center", "targets": [11] },
-            	            { className: "dt-right", "targets": [3,4,5,6,7,8,9,10]}
+            	            { className: "dt-center", "targets": [3,14] },
+            	            { className: "dt-right", "targets": [4,5,6,7,8,9,10,11,12,13]}
             	         ],
             	        "paging": true,
     			        "ajax": {
@@ -164,6 +164,9 @@
     			            } },
     			            { title: "Ticket", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
     			            	if(row.ticket_id != null){return (row.ticket_id+"");}
+    			            } },
+    			            { title: "Status", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			            	if(row.ticket_status != null){return ('<span class="tooltip">' + row.ticket_status + '<span class="tooltiptext">' + row.ticket_status_description + '</span></span>');}
     			            } },
     			            { title: "Direct Labor", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.claimed_weekly_dl_amt != null){return (row.claimed_weekly_dl_amt.toFixed(2));}
@@ -183,22 +186,18 @@
     			            { title: "Volume Remaining", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.volume_remaining != null){return ( row.volume_remaining.toFixed(2));}
     			            } },
-    			            <%-- 
-    			            { title: "Notes", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.hours != null){return ( BUDGETCONTROL.formatPay(row.act_payout_amt));}
-    			            } },
-    			            --%>
     			            { title: "Billed Amount",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.billed_amount != null){return ( row.billed_amount.toFixed(2));}
     			            } },			            
     			            { title: "Diff CLM/BLD",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.claimed_vs_billed != null){return ( row.claimed_vs_billed.toFixed(2));}
     			            } },
-    			            <%--
-    			            { title: "Ticket Status",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.ticket_status != null){return ( row.ticket_status);}
+    			            { title: "Paid Amount",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.paid_amt != null){return ( parseFloat(row.paid_amt).toFixed(2));}
     			            } },
-    			            --%>
+    			            { title: "Amount Due",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.amount_due != null){return ( parseFloat(row.amount_due).toFixed(2));}
+    			            } },
     			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
     			            	{
     				            	var $claim = '<a href="#" class="editAction" data-id="'+row.ticket_id+'"><webthing:invoiceIcon styleClass="green">Claim</webthing:invoiceIcon></a>';
