@@ -19,6 +19,7 @@ public class BudgetControlLookupQuery extends LookupQuery {
 	public static final String DIVISION = "div";
 	public static final String JOB_SITE_NAME  = "job_site_name"; 	//== "Account"
 	public static final String TICKET_ID = "ticket_id";
+	public static final String CLAIM_WEEK = "claim_week";
 	public static final String CLAIMED_WEEKLY_DL_AMT = "claimed_weekly_dl_amt";
 	public static final String CLAIMED_WEEKLY_DL_EXP = "claimed_weekly_dl_exp";
 	public static final String CLAIMED_WEEKLY_DL_TOTAL = "claimed_weekly_dl_total";
@@ -51,14 +52,6 @@ public class BudgetControlLookupQuery extends LookupQuery {
 
 	
 	private static final String sqlSelectClause = 
-//					"select ticket.ticket_id, ticket.job_id, ticket.act_division_id, ticket.ticket_status, ticket.invoice_id, ticket.invoice_date, ticket.act_dl_amt, ticket.act_price_per_cleaning\n" + 
-//					", ticket_payment_totals.paid_amount, ticket_payment_totals.paid_tax_amt\n" + 
-//					", invoice_totals.invoiced_amount\n" + 
-//					", ticket_claim_totals.claimed_volume, ticket_claim_totals.claimed_dl_amt, ticket_claim_totals.claimed_hours\n" + 
-//					", ticket_claim_passthru_totals.passthru_volume\n" + 
-//					", job_site.name as job_site_name, job_site.address1 as job_site_address, job_site.city as job_site_city\n" + 
-//					", job.price_per_cleaning\n" + 
-//					"--, quote.*";
 			"select "
 			+ "CONCAT(division_code,'-',division_nbr) as div"
 			+ " , ticket.act_division_id"
@@ -70,14 +63,14 @@ public class BudgetControlLookupQuery extends LookupQuery {
 			+ " , ticket_claim_weekly_totals.claim_week"
 			+ " , isnull(ticket_claim_weekly_totals.claimed_weekly_dl_amt,0.00) as claimed_weekly_dl_amt\r\n" 
 			+ " , isnull(ticket_claim_weekly_totals.claimed_weekly_dl_exp,0.00) as claimed_weekly_dl_exp\r\n"
-			+ " , isnull(ticket_claim_weekly_totals.claimed_weekly_dl_amt,0.00)-ISNULL(ticket_claim_weekly_totals.claimed_weekly_dl_exp,0.00)\r\n" 
+			+ " , isnull(ticket_claim_weekly_totals.claimed_weekly_dl_amt,0.00)+ISNULL(ticket_claim_weekly_totals.claimed_weekly_dl_exp,0.00)\r\n" 
 			+ "	    as claimed_weekly_dl_total"
 			+ " , isnull(ticket_claim_weekly_totals.claimed_weekly_hours,0.00) as claimed_weekly_hours\r\n"
 			+ " , isnull(ticket_claim_weekly_totals.claimed_weekly_volume,0.00) as claimed_weekly_volume\r\n"
 			+ " , isnull(ticket_claim_weekly_totals.claimed_weekly_record_count,0) as claimed_weekly_record_count\r\n"
 			+ "	, isnull(ticket_claim_totals.claimed_dl_amt,0.00) as claimed_dl_amt"
 			+ "	, isnull(ticket_claim_totals.claimed_dl_exp,0.00) as claimed_dl_exp"
-			+ "	, isnull(ticket_claim_totals.claimed_dl_amt,0.00)-ISNULL(ticket_claim_totals.claimed_dl_exp,0.00)"
+			+ "	, isnull(ticket_claim_totals.claimed_dl_amt,0.00)+ISNULL(ticket_claim_totals.claimed_dl_exp,0.00)"
 			+ "		as claimed_dl_total"
 			+ "	, job.price_per_cleaning as total_volume"
 			+ "	, isnull(ticket_claim_totals.claimed_volume,0.00) as claimed_volume"
