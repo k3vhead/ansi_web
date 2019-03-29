@@ -23,10 +23,24 @@ public class ClaimDetailLookupServlet extends AbstractLookupServlet {
 	public ClaimDetailLookupServlet() {
 		super(Permission.CLAIMS_READ);
 		cols = new String[] { 
-				"div, job_site_name, ticket.ticket_id, claimed_dl_amt, claimed_dl_exp",
-				"claimed_dl_total, total_volume, claimed_volume, passthru_volume, claimed_volume_total",
-				"remaining_volume, invoiced_amount, claimed_vs_billed, paid_amount, amount_due",
-				"ticket_status"
+				"div",
+				"claim_week",
+				"work_date",
+				"ticket.ticket_id",
+				"washer_name",
+				"total_volume",
+				"budget",
+				"ticket_claim_dl_volume",
+				"ticket_claim_dl_amt",
+				"ticket_claim_dl_exp",
+				"ticket_claim_dl_total",
+				"ticket_claim_dl_hours",
+				"claimed_dl_total",
+				"claimed_volume",
+				"passthru_volume",
+				"claimed_volume_total",
+				"volume_remaining",
+				"dl_remaining"
 				};
 		super.itemTransformer = new ItemTransformer();
 	}
@@ -65,11 +79,11 @@ public class ClaimDetailLookupServlet extends AbstractLookupServlet {
 				arg0.put("hours_description", workHoursType.getDescription());
 			}
 			
-			java.sql.Timestamp workDate = (java.sql.Timestamp)arg0.get("work_date");
-			if ( workDate != null ) {				
-				arg0.put("work_date", dateFormatter.format(workDate));	
-				arg0.put("week", weekFormatter.format(workDate));
-			}
+//			java.sql.Timestamp workDate = (java.sql.Timestamp)arg0.get("work_date");
+//			if ( workDate != null ) {				
+//				arg0.put("work_date", dateFormatter.format(workDate));	
+//				arg0.put("week", weekFormatter.format(workDate));
+//			}
 			
 			
 			return arg0;
