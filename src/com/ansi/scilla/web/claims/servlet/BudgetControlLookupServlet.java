@@ -31,6 +31,7 @@ public class BudgetControlLookupServlet extends AbstractLookupServlet {
 				"job_site_name",
 				"ticket.ticket_id",
 				"ticket.ticket_status",
+				"claim_week",
 				"claimed_weekly_dl_amt",
 				"claimed_weekly_dl_exp",
 				"claimed_weekly_dl_total",

@@ -67,6 +67,7 @@ public class BudgetControlLookupQuery extends LookupQuery {
 			+ " , ticket.job_id"
 			+ "	, job_site.name as job_site_name"
 			+ "	, ticket.ticket_id"
+			+ " , ticket_claim_weekly_totals.claim_week"
 			+ " , isnull(ticket_claim_weekly_totals.claimed_weekly_dl_amt,0.00) as claimed_weekly_dl_amt\r\n" 
 			+ " , isnull(ticket_claim_weekly_totals.claimed_weekly_dl_exp,0.00) as claimed_weekly_dl_exp\r\n"
 			+ " , isnull(ticket_claim_weekly_totals.claimed_weekly_dl_amt,0.00)-ISNULL(ticket_claim_weekly_totals.claimed_weekly_dl_exp,0.00)\r\n" 
