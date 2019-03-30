@@ -238,7 +238,7 @@
 			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
 			            	$updateLink = '<ansi:hasPermission permissionRequired="PERMISSIONS_WRITE"><a href="#" class="updAction" data-id="'+row.permissionGroupId+'" data-name="'+row.name+'"><webthing:permissionIcon>Permissions</webthing:permissionIcon></ansi:hasPermission></a>';
 			            	$editLink = '<ansi:hasPermission permissionRequired="PERMISSIONS_WRITE"><a href="#" class="editAction" data-id="'+row.permissionGroupId+'" data-name="'+row.name+'"><webthing:edit>Update</webthing:edit></a></ansi:hasPermission>';
-			            	$deleteLink = '<ansi:hasPermission permissionRequired="PERMISSIONS_WRITE"><a href="#" class="delAction" data-id="'+row.permissionGroupId+'"><webthing:delete>Delete</webthing:delete></a></ansi:hasPermission>';
+			            	$deleteLink = '<ansi:hasPermission permissionRequired="PERMISSIONS_WRITE"><a href="#" class="delAction" data-id="'+row.permissionGroupId+'" data-name="'+row.name+'"><webthing:delete>Delete</webthing:delete></a></ansi:hasPermission>';
 			           		
 			            	$action = $editLink + " " + $updateLink + " " + $deleteLink;
 			            	$updates = $editLink + " " + $updateLink;
@@ -260,9 +260,9 @@
 			    } );
         	},
 				
-	   		deleteThisPermissionGroup : function ($permissionGroupId) {
+	   		deleteThisPermissionGroup : function ($permissionGroupId, $name) {
         		$("#deleteModal").attr("permissionGroupId", $permissionGroupId);
-        		$("#deleteModal").dialog("open");
+        		$("#deleteModal").dialog("option","title", + " " + $name).dialog("open");
 			},         
 
 			deletePermissionGroup : function () {
@@ -303,8 +303,9 @@
 					PERMISSIONGROUP.getTotalList($permissionGroupId, $name);
 				});
 				$(".delAction").on("click", function($clickevent) {
+					var $name = $(this).attr("data-name");
 					var $permissionGroupId = $(this).data("id");
-					PERMISSIONGROUP.deleteThisPermissionGroup($permissionGroupId);
+					PERMISSIONGROUP.deleteThisPermissionGroup($permissionGroupId, $name);
 				});
 			},
 						
@@ -431,7 +432,7 @@
 			makeDeleteModal : function() {
 			$( "#deleteModal" ).dialog({
 				autoOpen: false,
-				height: 125,
+				height: 150,
 				width: 450,
 				modal: true,
 				closeOnEscape:true,
@@ -594,7 +595,7 @@
 							$("#editPanel input[name='description']").val($permissionGroup.description);
 							$("#editPanel input[name='status']").val($permissionGroup.status);			        		
 			        		$("#editPanel .err").html("");
-			        		$("#editPanel").dialog("option","title", $(this).attr('data-name') ).dialog("open");
+			        		$("#editPanel").dialog("option","title", "Edit Permission Group").dialog("open");
 						},
 						403: function($data) {
 							$("#globalMsg").html("Session Timeout. Log in and try again");
