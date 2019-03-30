@@ -6,6 +6,8 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 
+import com.ansi.scilla.common.jobticket.TicketStatus;
+import com.ansi.scilla.common.jobticket.TicketType;
 import com.ansi.scilla.common.queries.SelectType;
 import com.ansi.scilla.web.common.query.LookupQuery;
 
@@ -17,11 +19,12 @@ public class BudgetControlLookupQuery extends LookupQuery {
 	public static final String DIVISION = "div";
 	public static final String JOB_SITE_NAME  = "job_site_name"; 	//== "Account"
 	public static final String TICKET_ID = "ticket_id";
+	public static final String CLAIM_WEEK = "claim_week";
 	public static final String CLAIMED_WEEKLY_DL_AMT = "claimed_weekly_dl_amt";
 	public static final String CLAIMED_WEEKLY_DL_EXP = "claimed_weekly_dl_exp";
 	public static final String CLAIMED_WEEKLY_DL_TOTAL = "claimed_weekly_dl_total";
 	public static final String CLAIMED_WEEKLY_VOLUME = "claimed_weekly_dl_volume";
-	public static final String CLAIMED_WEEKLY_RECORD_COUNT = "claimed_weely_record_count";
+	public static final String CLAIMED_WEEKLY_RECORD_COUNT = "claimed_weekly_record_count";
 	public static final String CLAIMED_DL_AMT = "claimed_dl_amt";
 	public static final String CLAIMED_DL_EXP = "claimed_dl_exp";
 	public static final String CLAIMED_DL_TOTAL = "claimed_dl_total";
@@ -29,10 +32,10 @@ public class BudgetControlLookupQuery extends LookupQuery {
 	public static final String CLAIMED_VOLUME = "claimed_volume";
 	public static final String PASSTHRU_VOLUME = "passthru_volume";
 	public static final String CLAIMED_VOLUME_TOTAL = "claimed_volume_total";
-	public static final String REMAINING_VOLUME = "remaining_volume";
-	public static final String INVOICED_AMOUNT = "invoiced_amount";
+	public static final String REMAINING_VOLUME = "volume_remaining";
+	public static final String BILLED_AMOUNT = "billed_amount";
 	public static final String CLAIMED_VS_BILLED = "claimed_vs_billed";
-	public static final String PAID_AMOUNT = "paid_amount";
+	public static final String PAID_AMOUNT = "paid_amt";
 	public static final String AMOUNT_DUE = "amount_due";
 	public static final String TICKET_STATUS = "ticket_status";
 
@@ -49,31 +52,25 @@ public class BudgetControlLookupQuery extends LookupQuery {
 
 	
 	private static final String sqlSelectClause = 
-//					"select ticket.ticket_id, ticket.job_id, ticket.act_division_id, ticket.ticket_status, ticket.invoice_id, ticket.invoice_date, ticket.act_dl_amt, ticket.act_price_per_cleaning\n" + 
-//					", ticket_payment_totals.paid_amount, ticket_payment_totals.paid_tax_amt\n" + 
-//					", invoice_totals.invoiced_amount\n" + 
-//					", ticket_claim_totals.claimed_volume, ticket_claim_totals.claimed_dl_amt, ticket_claim_totals.claimed_hours\n" + 
-//					", ticket_claim_passthru_totals.passthru_volume\n" + 
-//					", job_site.name as job_site_name, job_site.address1 as job_site_address, job_site.city as job_site_city\n" + 
-//					", job.price_per_cleaning\n" + 
-//					"--, quote.*";
 			"select "
 			+ "CONCAT(division_code,'-',division_nbr) as div"
 			+ " , ticket.act_division_id"
 			+ " , ticket.ticket_id"
+			+ " , ticket.ticket_status"
 			+ " , ticket.job_id"
 			+ "	, job_site.name as job_site_name"
 			+ "	, ticket.ticket_id"
+			+ " , ticket_claim_weekly_totals.claim_week"
 			+ " , isnull(ticket_claim_weekly_totals.claimed_weekly_dl_amt,0.00) as claimed_weekly_dl_amt\r\n" 
 			+ " , isnull(ticket_claim_weekly_totals.claimed_weekly_dl_exp,0.00) as claimed_weekly_dl_exp\r\n"
-			+ " , isnull(ticket_claim_weekly_totals.claimed_weekly_dl_amt,0.00)-ISNULL(ticket_claim_weekly_totals.claimed_weekly_dl_exp,0.00)\r\n" 
+			+ " , isnull(ticket_claim_weekly_totals.claimed_weekly_dl_amt,0.00)+ISNULL(ticket_claim_weekly_totals.claimed_weekly_dl_exp,0.00)\r\n" 
 			+ "	    as claimed_weekly_dl_total"
 			+ " , isnull(ticket_claim_weekly_totals.claimed_weekly_hours,0.00) as claimed_weekly_hours\r\n"
 			+ " , isnull(ticket_claim_weekly_totals.claimed_weekly_volume,0.00) as claimed_weekly_volume\r\n"
 			+ " , isnull(ticket_claim_weekly_totals.claimed_weekly_record_count,0) as claimed_weekly_record_count\r\n"
 			+ "	, isnull(ticket_claim_totals.claimed_dl_amt,0.00) as claimed_dl_amt"
 			+ "	, isnull(ticket_claim_totals.claimed_dl_exp,0.00) as claimed_dl_exp"
-			+ "	, isnull(ticket_claim_totals.claimed_dl_amt,0.00)-ISNULL(ticket_claim_totals.claimed_dl_exp,0.00)"
+			+ "	, isnull(ticket_claim_totals.claimed_dl_amt,0.00)+ISNULL(ticket_claim_totals.claimed_dl_exp,0.00)"
 			+ "		as claimed_dl_total"
 			+ "	, job.price_per_cleaning as total_volume"
 			+ "	, isnull(ticket_claim_totals.claimed_volume,0.00) as claimed_volume"
@@ -137,9 +134,11 @@ public class BudgetControlLookupQuery extends LookupQuery {
 			"	group by ticket_id\n" + 
 			"	) as invoice_totals on invoice_totals.ticket_id = ticket.ticket_id";
 
-	private static final String baseWhereClause = "\n  ";
+	private static final String baseWhereClause = "where "
+			+ "ticket.ticket_type in ('" + TicketType.RUN.code() + "','" + TicketType.JOB.code() + "') "
+			+ "and ticket.ticket_status in ('" + TicketStatus.DISPATCHED.code() + "','" + TicketStatus.COMPLETED + "') \n  ";
 	
-	
+	private Integer ticketFilter;
 	
 	
 	public BudgetControlLookupQuery(Integer userId) {
@@ -155,12 +154,16 @@ public class BudgetControlLookupQuery extends LookupQuery {
 
 	
 
+	
+	public Integer getTicketFilter() {
+		return ticketFilter;
+	}
 
+	public void setTicketFilter(Integer ticketFilter) {
+		this.ticketFilter = ticketFilter;
+	}
 
 	
-	
-	
-
 	
 	protected String makeOrderBy(SelectType selectType) {
 		String orderBy = "";
@@ -192,11 +195,20 @@ public class BudgetControlLookupQuery extends LookupQuery {
 	protected String makeWhereClause(String queryTerm)  {
 		String whereClause = BudgetControlLookupQuery.baseWhereClause;
 		String joiner = StringUtils.isBlank(baseWhereClause) ? " where " : " and ";
-		if (! StringUtils.isBlank(queryTerm)) {
-				whereClause =  whereClause + joiner + " (\n"
-						+ " lower(concat(job_site.name, ' ', job_site.address1, ' ', job_site.city)) like '%" + queryTerm.toLowerCase() + "%'" +
-						"\n OR ticket.ticket_id like '%" + queryTerm.toLowerCase() + "%'" +
-						")" ;
+		
+		
+		
+		if ( StringUtils.isBlank(queryTerm) ) {
+			if ( this.ticketFilter != null ) {
+				whereClause = whereClause + joiner + " ticket.ticket_id=" + this.ticketFilter;
+			}
+		} else {
+			String ticketClause = this.ticketFilter == null ? "" : "ticket.ticket_id=" + this.ticketFilter + " and ";
+			whereClause =  whereClause + joiner + " (\n"
+					+ ticketClause
+					+ " lower(concat(job_site.name, ' ', job_site.address1, ' ', job_site.city)) like '%" + queryTerm.toLowerCase() + "%'" +
+					"\n OR ticket.ticket_id like '%" + queryTerm.toLowerCase() + "%'" +
+					")" ;
 		}
 		return whereClause;
 	}

@@ -770,11 +770,11 @@
 		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceGroupingDefault']", $optionData.invoiceGrouping, null);
 		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceTermsDefault']", $optionData.invoiceTerm, null);
 		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceStyleDefault']", $optionData.invoiceStyle,null);
-		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceAccountType']", $optionData.accountType,null);
 		                
 		                
 		                // get building type options
 		                ANSI_UTILS.populateCodeSelect("job","building_type","#addAddressForm select[name='jobsiteBuildingTypeDefault']","value","displayValue");
+		                ANSI_UTILS.populateCodeSelect("quote", "account_type", "#addAddressForm select[name='invoiceAccountTypeDefault']", "value","displayValue");
 		            },
 		            
 		            
@@ -801,9 +801,9 @@
 									$("#addForm select[name='invoiceGroupingDefault']").val($address.invoiceGroupingDefault);
 									$("#addForm select[name='invoiceTermsDefault']").val($address.invoiceTermsDefault);									
 									$("#addForm input[name='invoiceOurVendorNbrDefault']").val($address.ourVendorNbrDefault);
-									$("#addForm input[name='invoiceAccountTypeDefault']").val($address.accountTypeDefault);
-									$("#addForm input[name='invoiceTaxExemptDefault']").val($address.taxExemptDefault);
-									$("#addForm input[name='invoiceTaxExemptReasonDefault']").val($address.taxExemptReasonDefault);
+									//$("#addForm input[name='invoiceAccountTypeDefault']").val($address.accountTypeDefault);
+									//$("#addForm input[name='invoiceTaxExemptDefault']").val($address.taxExemptDefault);
+									//$("#addForm input[name='invoiceTaxExemptReasonDefault']").val($address.taxExemptReasonDefault);
 
 									// job site fields:
 									$("#addForm input[name='jobsiteJobContact']").val($address.jobsiteJobContactName);

@@ -173,7 +173,8 @@
 				            	}
 		            			var $ticketData = 'data-id="' + row.ticketId + '"';
 			            		$printLink = '<ansi:hasPermission permissionRequired="TICKET_READ"><i class="print-link fa fa-print" aria-hidden="true" ' + $ticketData + '></i></ansi:hasPermission>'
-				            	$actionData = $editLink + $printLink + $overrideLink;
+			            		var $claimLink = '<ansi:hasPermission permissionRequired="CLAIMS_WRITE"><a href="budgetControlLookup.html?id='+row.ticketId+'"><webthing:invoiceIcon styleClass="green">Budget Control</webthing:invoiceIcon></a></ansi:hasPermission>';
+				            	$actionData = $editLink + $printLink + $overrideLink + $claimLink;
 			            	}
 			            	return $actionData;
 			            } }],

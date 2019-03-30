@@ -44,24 +44,17 @@ public class TicketStatusLookupQuery extends LookupQuery {
 
 	
 	private static final String sqlSelectClause = 
-//					"select ticket.ticket_id, ticket.job_id, ticket.act_division_id, ticket.ticket_status, ticket.invoice_id, ticket.invoice_date, ticket.act_dl_amt, ticket.act_price_per_cleaning\n" + 
-//					", ticket_payment_totals.paid_amount, ticket_payment_totals.paid_tax_amt\n" + 
-//					", invoice_totals.invoiced_amount\n" + 
-//					", ticket_claim_totals.claimed_volume, ticket_claim_totals.claimed_dl_amt, ticket_claim_totals.claimed_hours\n" + 
-//					", ticket_claim_passthru_totals.passthru_volume\n" + 
-//					", job_site.name as job_site_name, job_site.address1 as job_site_address, job_site.city as job_site_city\n" + 
-//					", job.price_per_cleaning\n" + 
-//					"--, quote.*";
 			"select "
 			+ "CONCAT(division_code,'-',division_nbr) as div"
 			+ " , ticket.act_division_id"
 			+ " , ticket.ticket_id"
+			+ " , ticket.ticket_status"
 			+ " , ticket.job_id"
 			+ "	, job_site.name as job_site_name"
 			+ "	, ticket.ticket_id"
 			+ "	, isnull(ticket_claim_totals.claimed_dl_amt,0.00) as claimed_dl_amt"
 			+ "	, isnull(ticket_claim_totals.claimed_dl_exp,0.00) as claimed_dl_exp"
-			+ "	, isnull(ticket_claim_totals.claimed_dl_amt,0.00)-ISNULL(ticket_claim_totals.claimed_dl_exp,0.00)"
+			+ "	, isnull(ticket_claim_totals.claimed_dl_amt,0.00)+ISNULL(ticket_claim_totals.claimed_dl_exp,0.00)"
 			+ "		as claimed_dl_total"
 			+ "	, job.price_per_cleaning as total_volume"
 			+ "	, isnull(ticket_claim_totals.claimed_volume,0.00) as claimed_volume"

@@ -63,7 +63,11 @@ public class AnsiURL extends ApplicationWebObject {
 		String searchString = "/" + expectedRealm + "/";
 		int idx = request.getRequestURI().indexOf(searchString);
 		if ( idx < 0 ) {
-			throw new ResourceNotFoundException("No realm");
+			searchString = "/" + expectedRealm;
+			idx = request.getRequestURI().indexOf(searchString);
+			if ( idx < 0 ) {
+				throw new ResourceNotFoundException("No realm");
+			}
 		}
 		String myString = request.getRequestURI().substring(idx + 1);
 		String[] pieces = myString.split("/");

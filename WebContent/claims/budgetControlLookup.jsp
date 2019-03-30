@@ -43,16 +43,17 @@
         <script type="text/javascript">
         
         $(document).ready(function() {
-        	;NONDIRECTLABOR = {
+        	;BUDGETCONTROL = {
         		datatable : null,
+        		ticketFilter : '<c:out value="${BUDGET_CONTROL_TICKET_FILTER}" />',
         		
         		init : function() {
-        			NONDIRECTLABOR.createTable();
-        			NONDIRECTLABOR.makeModal();
-        			NONDIRECTLABOR.makeOptionList('WORK_HOURS_TYPE', NONDIRECTLABOR.populateOptionList)
-        			NONDIRECTLABOR.makeClickers();
-        			NONDIRECTLABOR.makeDivisionList();
-        			NONDIRECTLABOR.makeAutoComplete();
+        			BUDGETCONTROL.createTable();
+        			BUDGETCONTROL.makeModal();
+        			BUDGETCONTROL.makeOptionList('WORK_HOURS_TYPE', BUDGETCONTROL.populateOptionList)
+        			BUDGETCONTROL.makeClickers();
+        			BUDGETCONTROL.makeDivisionList();
+        			BUDGETCONTROL.makeAutoComplete();
         		},
         		
         		
@@ -119,6 +120,11 @@
         		
         		
         		createTable : function() {
+        			var $url = "claims/budgetControlLookup";
+        			if ( BUDGETCONTROL.ticketFilter != '' ) {
+        				$url = $url + "/" + BUDGETCONTROL.ticketFilter;
+        			}
+        				
             		var dataTable = $('#displayTable').DataTable( {
             			"aaSorting":		[[0,'asc']],
             			"processing": 		true,
@@ -140,56 +146,71 @@
             	        ],
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
-            	            { className: "dt-left", "targets": [0,3,8] },
-            	            { className: "dt-center", "targets": [1,2,4,5,9] },
-            	            { className: "dt-right", "targets": [6,7]}
+            	            { className: "dt-left", "targets": [0,1,2] },
+            	            { className: "dt-center", "targets": [3,14] },
+            	            { className: "dt-right", "targets": [4,5,6,7,8,9,10,11,12,13]}
             	         ],
             	        "paging": true,
     			        "ajax": {
-    			        	"url": "claims/budgetControlLookup",
+    			        	"url": $url,
     			        	"type": "GET"
     			        	},
     			        columns: [
-    			        	
-    			            { title: "Div", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			        	{ title: "Div", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
     			            	if(row.div != null){return (row.div+"");}
     			            } },
-    			            { title: "Week", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.week != null){return (row.week);}
+    			            { width:"23%", title: "Account", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			            	if(row.job_site_name != null){return (row.job_site_name+"");}
     			            } },
-    			            { title: "Date", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.work_date != null){return (row.work_date+"");}
+    			            { title: "Ticket", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			            	if(row.ticket_id != null){return (row.ticket_id+"");}
     			            } },
-    			            { title: "Washer", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.washer_id != null){return (row.last_name+", "+row.first_name);}
+    			            { title: "Status", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			            	if(row.ticket_status != null){return ('<span class="tooltip">' + row.ticket_status + '<span class="tooltiptext">' + row.ticket_status_description + '</span></span>');}
     			            } },
-    			            { title: "Hrs Type" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	return '<span class="tooltip">' + row.hours_type + '<span class="tooltiptext">' + row.hours_description + '</span></span>'
+    			            { title: "Direct Labor", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.claimed_weekly_dl_amt != null){return (row.claimed_weekly_dl_amt.toFixed(2));}
     			            } },
-    			            { title: "Hours", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.hours != null){return (row.hours+"");}
+    			            { title: "+ Expenses", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.claimed_weekly_dl_exp != null){return (row.claimed_weekly_dl_exp);}
     			            } },
-    			            { title: "Calc Pay", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.hours != null){return ( NONDIRECTLABOR.formatPay(row.calc_payout_amt));}
+    			            { title: "= Total", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.claimed_weekly_dl_total != null){return (row.claimed_weekly_dl_total.toFixed(2));}
     			            } },
-    			            { title: "Act Pay", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.hours != null){return ( NONDIRECTLABOR.formatPay(row.act_payout_amt));}
+    			            { title: "Total Volume" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.total_volume != null){return (row.total_volume.toFixed(2));}
     			            } },
-    			            { title: "Notes",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.notes != null){return (row.notes+"");}
+    			            { title: "Volume Claimed" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.claimed_volume_total != null){return (row.claimed_volume_total.toFixed(2));}
+    			            } },
+    			            { title: "Volume Remaining", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.volume_remaining != null){return ( row.volume_remaining.toFixed(2));}
+    			            } },
+    			            { title: "Billed Amount",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.billed_amount != null){return ( row.billed_amount.toFixed(2));}
     			            } },			            
+    			            { title: "Diff CLM/BLD",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.claimed_vs_billed != null){return ( row.claimed_vs_billed.toFixed(2));}
+    			            } },
+    			            { title: "Paid Amount",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.paid_amt != null){return ( parseFloat(row.paid_amt).toFixed(2));}
+    			            } },
+    			            { title: "Amount Due",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.amount_due != null){return ( parseFloat(row.amount_due).toFixed(2));}
+    			            } },
     			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
     			            	{
-    				            	var $edit = '<a href="#" class="editAction" data-id="'+row.labor_id+'"><webthing:edit>Edit</webthing:edit></a>';
-    			            		return "<ansi:hasPermission permissionRequired='CLAIMS_WRITE'>"+$edit+"</ansi:hasPermission>";
+    				            	var $claim = '<a href="#" class="editAction" data-id="'+row.ticket_id+'"><webthing:invoiceIcon styleClass="green">Claim</webthing:invoiceIcon></a>';
+    				            	var $expense = '<a href="#" class="editAction" data-id="'+row.ticket_id+'"><webthing:invoiceIcon styleClass="orange">Expense</webthing:invoiceIcon></a>';
+    			            		return "<ansi:hasPermission permissionRequired='CLAIMS_WRITE'>"+$claim+" "+$expense+"</ansi:hasPermission>";
     			            	}
     			            	
     			            } }],
     			            "initComplete": function(settings, json) {
-    			            	NONDIRECTLABOR.doFunctionBinding();
+    			            	BUDGETCONTROL.doFunctionBinding();
     			            },
     			            "drawCallback": function( settings ) {
-    			            	NONDIRECTLABOR.doFunctionBinding();
+    			            	BUDGETCONTROL.doFunctionBinding();
     			            }
     			    } );
             		//new $.fn.dataTable.FixedColumns( dataTable );
@@ -200,7 +221,7 @@
             	doFunctionBinding : function () {
 					$( ".editAction" ).on( "click", function($clickevent) {
 						var $laborId = $(this).attr("data-id");
-						NONDIRECTLABOR.doGetLabor($laborId);
+						BUDGETCONTROL.doGetLabor($laborId);
 					});
 				},
             	
@@ -215,7 +236,7 @@
 						url: $url,
 						statusCode: {
 							200 : function($data) {
-								NONDIRECTLABOR.clearForm();
+								BUDGETCONTROL.clearForm();
 								$("#ndl-crud-form").attr("data-laborid",$laborId);
 								$.each( $("#ndl-crud-form input"), function($index, $value) {
 									var $name = $($value).attr("name");
@@ -336,7 +357,7 @@
               	    });
             		
             		$("#new-NDL-button").click(function($event) {
-            			NONDIRECTLABOR.clearForm();
+            			BUDGETCONTROL.clearForm();
             			$( "#ndl-crud-form ").attr("data-laborid","add")
             			$( "#ndl-crud-form" ).dialog("open");
             		});
@@ -347,7 +368,7 @@
                         showButtonPanel:true
                     });
             		
-            		$('.calcPayTrigger').bind("change", NONDIRECTLABOR.calculatePay);
+            		$('.calcPayTrigger').bind("change", BUDGETCONTROL.calculatePay);
             	},
             	
             	
@@ -405,7 +426,7 @@
 							},{
 								id: "ndl-save-button",
 								click: function($event) {
-									NONDIRECTLABOR.doPost();
+									BUDGETCONTROL.doPost();
 								}
 							}
 						]
@@ -459,7 +480,7 @@
         	}
       	  	
 
-        	NONDIRECTLABOR.init();
+        	BUDGETCONTROL.init();
         	
         });
         </script>        
@@ -469,23 +490,28 @@
     	<h1>Budget Control</h1>
     	
  	<table id="displayTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
+ 		<%--
        	<colgroup>
-        	<col style="width:10%;" />
-        	<col style="width:5%;" />
-    		<col style="width:5%;" />    		
-    		<col style="width:10%;" />
-    		<col style="width:10%;" />
-    		<col style="width:5%;" />
-    		<col style="width:5%;" />
-    		<col style="width:5%;" />
-    		<col style="width:35%;" />
-    		<col style="width:10%;" />
+        	<col style="width:7%;" />
+        	<col style="width:23%;" />
+        	<col style="width:7%;" />
+        	<col style="width:7%;" />
+        	<col style="width:7%;" />
+        	<col style="width:7%;" />
+        	<col style="width:7%;" />
+        	<col style="width:7%;" />
+        	<col style="width:7%;" />
+        	<col style="width:7%;" />
+        	<col style="width:7%;" />
+        	<col style="width:7%;" />
    		</colgroup>
+   		--%>
         <thead>
+        	<%--
             <tr>
                 <th>Div</th>
-                <th>Week</th>
-    			<th>Date</th>
+                <th>Account</th>
+    			<th>Direct Labor</th>
     			<th>Washer</th>
     			<th>Hours Type</th>
     			<th>Hours</th>
@@ -494,20 +520,10 @@
     			<th>Notes</th>
     			<th>Action</th>    			
             </tr>
+             --%>
         </thead>
         <tfoot>
-            <tr>
-                <th>Div</th>
-                <th>Week</th>
-    			<th>Date</th>
-    			<th>Washer</th>
-    			<th>Hours Type</th>
-    			<th>Hours</th>
-    			<th>Calc Pay</th>
-    			<th>Act Pay</th>
-    			<th>Notes</th>   
-    			<th>Action</th>  			
-            </tr>
+            
         </tfoot>
     </table>
     <input type="button" value="New" class="prettyWideButton" id="new-NDL-button" />
