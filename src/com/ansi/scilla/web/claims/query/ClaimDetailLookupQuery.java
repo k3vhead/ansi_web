@@ -42,7 +42,7 @@ public class ClaimDetailLookupQuery extends LookupQuery {
 	
 	private static final String sqlSelectClause = 
 			"select \r\n" + 
-			"CONCAT(division_code,'-',division_nbr) as div\r\n" +
+			"CONCAT(division_nbr,'-',division_code) as div\r\n" +
 			", ticket.act_division_id\r\n" + 
 			", ticket.job_id\r\n" + 
 			", job_site.name as job_site_name\r\n" + 
@@ -133,9 +133,9 @@ public class ClaimDetailLookupQuery extends LookupQuery {
 				orderBy = " order by " + JOB_SITE_NAME + " asc, " + 
 							"ticket."+TICKET_ID + " asc ";
 			} else {
-				List<String> sortList = Arrays.asList(StringUtils.split(sortBy, ","));
+//				List<String> sortList = Arrays.asList(StringUtils.split(sortBy, ","));
 				String sortDir = sortIsAscending ? orderBy + " asc " : orderBy + " desc ";
-				String sortBy = StringUtils.join(sortList, sortDir + ", ");
+//				String sortBy = StringUtils.join(sortList, sortDir + ", ");
 				orderBy = " order by " + sortBy + " " + sortDir;
 			}
 		}

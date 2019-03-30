@@ -53,7 +53,7 @@ public class BudgetControlLookupQuery extends LookupQuery {
 	
 	private static final String sqlSelectClause = 
 			"select "
-			+ "CONCAT(division_code,'-',division_nbr) as div"
+			+ "CONCAT(division_nbr,'-',division_code) as div"
 			+ " , ticket.act_division_id"
 			+ " , ticket.ticket_id"
 			+ " , ticket.ticket_status"

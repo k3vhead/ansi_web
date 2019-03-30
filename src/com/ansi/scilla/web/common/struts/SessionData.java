@@ -1,7 +1,10 @@
 package com.ansi.scilla.web.common.struts;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.web.common.utils.ApplicationWebObject;
 import com.ansi.scilla.web.common.utils.UserPermission;
 import com.ansi.scilla.web.login.response.LoginResponse;
@@ -14,6 +17,8 @@ public class SessionData extends ApplicationWebObject {
 
 	private List<UserPermission> userPermissionList;
 	private SessionUser user;
+	private List<SessionDivision> divisionList;
+	
 	public SessionData() {
 		super();
 	}
@@ -26,6 +31,11 @@ public class SessionData extends ApplicationWebObject {
 		this();
 		this.user = loginResponse.getUser();
 		this.userPermissionList = loginResponse.getUserPermissionList();
+		this.divisionList = new ArrayList<SessionDivision>();
+		for ( Division division : loginResponse.getDivisionList()) {
+			this.divisionList.add(new SessionDivision(division));
+		}
+		Collections.sort(this.divisionList);
 	}
 	
 	public List<UserPermission> getUserPermissionList() {
@@ -40,7 +50,13 @@ public class SessionData extends ApplicationWebObject {
 	public void setUser(SessionUser user) {
 		this.user = user;
 	}
-
+	public List<SessionDivision> getDivisionList() {
+		return divisionList;
+	}
+	public void setDivisionList(List<SessionDivision> divisionList) {
+		this.divisionList = divisionList;
+	}
+	
 	public boolean hasPermission(String permissionName) {
 		boolean foundIt = false;
 		

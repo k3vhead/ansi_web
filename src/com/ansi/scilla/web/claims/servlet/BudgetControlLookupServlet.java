@@ -1,6 +1,7 @@
 package com.ansi.scilla.web.claims.servlet;
 
 import java.sql.Connection;
+import java.util.Enumeration;
 import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,6 +53,13 @@ public class BudgetControlLookupServlet extends AbstractLookupServlet {
 
 	@Override
 	public LookupQuery makeQuery(Connection conn, HttpServletRequest request) {
+		Enumeration<String> ee = request.getParameterNames();
+		while ( ee.hasMoreElements() ) {
+			String key = ee.nextElement();
+			System.out.println( key + " ==> " + request.getParameter(key));
+		}
+
+		
 		SessionUser user = AppUtils.getSessionUser(request);
 		try {
 			AnsiURL url = new AnsiURL(request, REALM, (String[])null);

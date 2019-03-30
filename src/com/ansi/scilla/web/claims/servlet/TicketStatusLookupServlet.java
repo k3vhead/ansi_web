@@ -1,7 +1,6 @@
 package com.ansi.scilla.web.claims.servlet;
 
 import java.sql.Connection;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
 
-import com.ansi.scilla.common.claims.WorkHoursType;
 import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.web.claims.query.BudgetControlLookupQuery;
 import com.ansi.scilla.web.claims.query.TicketStatusLookupQuery;
