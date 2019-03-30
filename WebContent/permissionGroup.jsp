@@ -236,8 +236,8 @@
 			            	if(row.userCount != null){return $userLink;}
 			            } },
 			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
-			            	$updateLink = '<ansi:hasPermission permissionRequired="PERMISSIONS_WRITE"><a href="#" class="updAction" data-id="'+row.permissionGroupId+'"><webthing:permissionIcon>Permissions</webthing:permissionIcon></ansi:hasPermission></a>';
-			            	$editLink = '<ansi:hasPermission permissionRequired="PERMISSIONS_WRITE"><a href="#" class="editAction" data-id="'+row.permissionGroupId+'"><webthing:edit>Update</webthing:edit></a></ansi:hasPermission>';
+			            	$updateLink = '<ansi:hasPermission permissionRequired="PERMISSIONS_WRITE"><a href="#" class="updAction" data-id="'+row.permissionGroupId+'" data-name="'+row.name+'"><webthing:permissionIcon>Permissions</webthing:permissionIcon></ansi:hasPermission></a>';
+			            	$editLink = '<ansi:hasPermission permissionRequired="PERMISSIONS_WRITE"><a href="#" class="editAction" data-id="'+row.permissionGroupId+'" data-name="'+row.name+'"><webthing:edit>Update</webthing:edit></a></ansi:hasPermission>';
 			            	$deleteLink = '<ansi:hasPermission permissionRequired="PERMISSIONS_WRITE"><a href="#" class="delAction" data-id="'+row.permissionGroupId+'"><webthing:delete>Delete</webthing:delete></a></ansi:hasPermission>';
 			           		
 			            	$action = $editLink + " " + $updateLink + " " + $deleteLink;
@@ -262,7 +262,7 @@
 				
 	   		deleteThisPermissionGroup : function ($permissionGroupId, $type) {
         		$("#deleteModal").attr("permissionGroupId", $permissionGroupId);
-        		$("#deleteModal").dialog("open");
+        		$("#deleteModal").dialog("option","title", $(this).attr('data-name') ).dialog("open");
 			},         
 
 			deletePermissionGroup : function () {
@@ -294,6 +294,7 @@
 	
 			doFunctionBinding : function () {
 				$( ".editAction" ).on( "click", function($clickevent) {
+					var $name = $(this).attr("data-name");
 					PERMISSIONGROUP.showEdit($clickevent);
 				});	
 				$('.updAction').bind("click", function($clickevent) {
@@ -350,7 +351,7 @@
 						200: function($data) {
 							PERMISSIONGROUP.makeTable($permissionGroupId, $data.data);
 							PERMISSIONGROUP.makeClickers();
-							$("#permissionsModal").dialog("open");
+							$("#permissionsModal").dialog("option","title", $name ).dialog("open");
 						},					
 						403: function($data) {
 							$("#globalMsg").html("Session Timeout. Log in and try again");
@@ -400,7 +401,6 @@
 			
 			makeEditPanel : function() {	
 				$("#editPanel" ).dialog({
-					title:'Edit Group Permissions',
 					autoOpen: false,
 					height: 300,
 					width: 500,
@@ -429,7 +429,6 @@
 			
 			makeDeleteModal : function() {
 			$( "#deleteModal" ).dialog({
-				title:'Delete Permission Group',
 				autoOpen: false,
 				height: 125,
 				width: 450,
@@ -467,7 +466,6 @@
 			
 	    	makePermissionsModal : function() {
 			$( "#permissionsModal" ).dialog({
-				title:'Permissions',
 				autoOpen: false,
 				height: 450,
 				width: 650,
@@ -567,6 +565,9 @@
 				
 					
             showEdit : function ($clickevent) {
+            	
+            	$name = $("#editModal").attr("data-name");
+		        var $name = $(this).attr("data-name");
 				var $permissionGroupId = $clickevent.currentTarget.attributes['data-id'].value;
 				console.debug("permissionGroupId: " + $permissionGroupId);
 				$("#goEdit").data("permissionGroupId: " + $permissionGroupId);
@@ -592,7 +593,7 @@
 							$("#editPanel input[name='description']").val($permissionGroup.description);
 							$("#editPanel input[name='status']").val($permissionGroup.status);			        		
 			        		$("#editPanel .err").html("");
-			        		$("#editPanel").dialog("open");
+			        		$("#editPanel").dialog("option","title", $(this).attr('data-name') ).dialog("open");
 						},
 						403: function($data) {
 							$("#globalMsg").html("Session Timeout. Log in and try again");
@@ -620,7 +621,7 @@
 				$("#editPanel input[name='Description']").val("");
 				$("#editPanel input[name='Status']").val("");			        		
         		$("#editPanel .err").html("");
-        		$("#editPanel").dialog("open");
+        		$("#editPanel").dialog("option","title", "New Permission Group").dialog("open");
 			});
 			},
 				
@@ -721,6 +722,9 @@
 	    <input type="button" class="prettyWideButton showNew" value="New" />
 	    
 	    <div id="editPanel">
+	    <div class="modal-header">
+	    <h5 class="modal-title" id="name"></h5>
+	    </div>
     	<table>
     		<tr>
     			<td><span class="formHdr">ID</span></td>
