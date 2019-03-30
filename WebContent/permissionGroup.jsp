@@ -262,7 +262,7 @@
 				
 	   		deleteThisPermissionGroup : function ($permissionGroupId, $name) {
         		$("#deleteModal").attr("permissionGroupId", $permissionGroupId);
-        		$("#deleteModal").dialog("option","title", + " " + $name).dialog("open");
+        		$("#deleteModal").dialog("option","title", " " + $name).dialog("open");
 			},         
 
 			deletePermissionGroup : function () {
