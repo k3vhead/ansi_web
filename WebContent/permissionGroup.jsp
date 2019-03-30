@@ -260,9 +260,9 @@
 			    } );
         	},
 				
-	   		deleteThisPermissionGroup : function ($permissionGroupId, $type) {
+	   		deleteThisPermissionGroup : function ($permissionGroupId) {
         		$("#deleteModal").attr("permissionGroupId", $permissionGroupId);
-        		$("#deleteModal").dialog("option","title", $(this).attr('data-name') ).dialog("open");
+        		$("#deleteModal").dialog("open");
 			},         
 
 			deletePermissionGroup : function () {
@@ -299,7 +299,8 @@
 				});	
 				$('.updAction').bind("click", function($clickevent) {
 					$permissionGroupId = $(this).attr("data-id");
-					PERMISSIONGROUP.getTotalList($permissionGroupId);
+					var $name = $(this).attr("data-name");
+					PERMISSIONGROUP.getTotalList($permissionGroupId, $name);
 				});
 				$(".delAction").on("click", function($clickevent) {
 					var $permissionGroupId = $(this).data("id");
@@ -339,7 +340,7 @@
 			
 
 
-			getTotalList : function ($permissionGroupId) {
+			getTotalList : function ($permissionGroupId, $name) {
 				$url = "permission/" + $permissionGroupId;
 				var jqxhr = $.ajax({
 					type: 'GET',
@@ -351,7 +352,7 @@
 						200: function($data) {
 							PERMISSIONGROUP.makeTable($permissionGroupId, $data.data);
 							PERMISSIONGROUP.makeClickers();
-							$("#permissionsModal").dialog("option","title", $name ).dialog("open");
+							$("#permissionsModal").dialog("option","title","Set Permissions for " + $name).dialog("open");
 						},					
 						403: function($data) {
 							$("#globalMsg").html("Session Timeout. Log in and try again");
