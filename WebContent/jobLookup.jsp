@@ -47,161 +47,134 @@
         
         <script type="text/javascript">
         
-        $(document).ready(function(){
-      	  	$('.ScrollTop').click(function() {
-				$('html, body').animate({scrollTop: 0}, 800);
-      	  		return false;
-      	    });
-
-        	var dataTable = null;
-        	
-        	function createTable(){
-        		var dataTable = $('#jobTable').DataTable( {
-        			"aaSorting":		[[0,'desc']],
-        			"processing": 		true,
-        	        "serverSide": 		true,
-        	        "autoWidth": 		false,
-        	        "deferRender": 		true,
-        	        "scrollCollapse": 	true,
-        	        "scrollX": 			true,
-        	        rowId: 				'dt_RowId',
-        	        dom: 				'Bfrtip',
-        	        "searching": 		true,
-        	        "searchDelay":		800,
-        	        lengthMenu: [
-        	        	[ 10, 50, 100, 500, 1000 ],
-        	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
-        	        ],
-        	        buttons: [
-        	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();$('#jobTable').draw();}}
-        	        ],
-        	        "columnDefs": [
-         	            { "orderable": false, "targets": -1 },
-        	            { className: "dt-left", "targets": [4,5,6,11] },
-        	            { className: "dt-center", "targets": [0,1,2,3,7,8,10,12,-1] },
-        	            { className: "dt-right", "targets": [9]}
-        	         ],
-        	        "paging": true,
-			        "ajax": {
-			        	"url": "jobTable",
-			        	"type": "GET"
-			        	},
-			        columns: [
-			        	
-			            { title: "<bean:message key="field.label.jobId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-			            	if(row.jobId != null){return (row.jobId+"");}
-			            } },
-			            { title: "<bean:message key="field.label.quoteName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.quoteId != null){return ('<ansi:hasPermission permissionRequired="QUOTE"><a href="quoteMaintenance.html?id='+ row.quoteId+ '" style="color:#404040"></ansi:hasPermission>' + row.quoteNumber + row.revision +'<ansi:hasPermission permissionRequired="QUOTE"></ansi:hasPermission>');}
-			            } },
-			            { title: "<bean:message key="field.label.jobStatus" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.jobStatus != null){return (row.jobStatus+"");}
-			            } },
-			            { title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.divisionNbr != null){return (row.divisionNbr+"-"+row.divisionCode);}
-			            } },
-			            { title: "<bean:message key="field.label.billToName" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-			            	if(row.billToName != null){return (row.billToName+"");}
-			            } },
-			            { title: "<bean:message key="field.label.jobSiteName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.jobSiteName != null){return (row.jobSiteName+"");}
-			            } },
-			            { title: "<bean:message key="field.label.jobSiteAddress" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.jobSiteAddress != null){return (row.jobSiteAddress+", " + row.jobSiteCity + ", " + row.jobSiteState );}
-			            } },
-			            { title: "<bean:message key="field.label.startDate" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.startDate != null){return (row.startDate+"");}
-			            } },
-			            { title: "<bean:message key="field.label.jobFrequency" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.jobFrequency != null){return (row.jobFrequency+"");}
-			            } },
-			            { title: "<bean:message key="field.label.pricePerCleaning" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.pricePerCleaning != null){return (row.pricePerCleaning+"");}
-			            } },
-			            { title: "<bean:message key="field.label.jobNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
-			            	if(row.jobNbr != null){return (row.jobNbr+"");}
-			            } },
-			            { title: "<bean:message key="field.label.serviceDescription" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.serviceDescription != null){return (row.serviceDescription+"");}
-			            } },
-			            { title: "<bean:message key="field.label.poNumber" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.poNumber != null){return (row.poNumber+"");}
-			            } },
-			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
-			            	//console.log(row);
-			            	{
-				            	var $edit = '<a href="jobMaintenance.html?id='+row.jobId+'" class="editAction" data-id="'+row.jobId+'"><webthing:edit>View</webthing:edit></a>';
-			            		return "<ansi:hasPermission permissionRequired='QUOTE_READ'>"+$edit+"</ansi:hasPermission>";
-			            		//return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='jobMaintenance.html?id="+row.jobId+"' class=\"editAction fas fa-pencil-alt\" data-id='"+row.jobId+"'></a></ansi:hasWrite></ansi:hasPermission>";
-			            	}
-			            	
-			            } }],
-			            "initComplete": function(settings, json) {
-			            	//console.log(json);
-			            	doFunctionBinding();
-			            },
-			            "drawCallback": function( settings ) {
-			            	doFunctionBinding();
-			            }
-			    } );
-        		//new $.fn.dataTable.FixedColumns( dataTable );
-        	}
-        	        	
-        	init();
-        			
-            
-            function init(){
-					$.each($('input'), function () {
-				        $(this).css("height","20px");
-				        $(this).css("max-height", "20px");
-				    });
-					
-					createTable();
-            }; 
-				
-				function doFunctionBinding() {
-					$( ".editAction" ).on( "click", function($clickevent) {
-						 doEdit($clickevent);
+        $(document).ready(function() {
+        	;JOBLOOKUP = {
+       			dataTable : null,
+       			lookupType : '<c:out value="${ANSI_JOB_LOOKUP_TYPE}" />',
+       			
+       			
+        		init : function() {
+    				$.each($('input'), function () {
+						$(this).css("height","20px");
+						$(this).css("max-height", "20px");
 					});
-				}
+    					
+    				$('.ScrollTop').click(function() {
+    					$('html, body').animate({scrollTop: 0}, 800);
+    	      	  		return false;
+    	      	    });
+    				
+    				
+					JOBLOOKUP.createTable();
+                },
+                
+                
+                
+                createTable : function() {
+            		var dataTable = $('#jobTable').DataTable( {
+            			"aaSorting":		[[0,'desc']],
+            			"processing": 		true,
+            	        "serverSide": 		true,
+            	        "autoWidth": 		false,
+            	        "deferRender": 		true,
+            	        "scrollCollapse": 	true,
+            	        "scrollX": 			true,
+            	        rowId: 				'dt_RowId',
+            	        dom: 				'Bfrtip',
+            	        "searching": 		true,
+            	        "searchDelay":		800,
+            	        lengthMenu: [
+            	        	[ 10, 50, 100, 500, 1000 ],
+            	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
+            	        ],
+            	        buttons: [
+            	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();$('#jobTable').draw();}}
+            	        ],
+            	        "columnDefs": [
+             	            { "orderable": false, "targets": -1 },
+            	            { className: "dt-left", "targets": [4,5,6,11] },
+            	            { className: "dt-center", "targets": [0,1,2,3,7,8,10,12,-1] },
+            	            { className: "dt-right", "targets": [9]}
+            	         ],
+            	        "paging": true,
+    			        "ajax": {
+    			        	"url": "jobTable",
+    			        	"type": "GET"
+    			        	},
+    			        columns: [
+    			        	
+    			            { title: "<bean:message key="field.label.jobId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			            	if(row.jobId != null){return (row.jobId+"");}
+    			            } },
+    			            { title: "<bean:message key="field.label.quoteName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.quoteId != null){return ('<ansi:hasPermission permissionRequired="QUOTE"><a href="quoteMaintenance.html?id='+ row.quoteId+ '" style="color:#404040"></ansi:hasPermission>' + row.quoteNumber + row.revision +'<ansi:hasPermission permissionRequired="QUOTE"></ansi:hasPermission>');}
+    			            } },
+    			            { title: "<bean:message key="field.label.jobStatus" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.jobStatus != null){return (row.jobStatus+"");}
+    			            } },
+    			            { title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.divisionNbr != null){return (row.divisionNbr+"-"+row.divisionCode);}
+    			            } },
+    			            { title: "<bean:message key="field.label.billToName" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			            	if(row.billToName != null){return (row.billToName+"");}
+    			            } },
+    			            { title: "<bean:message key="field.label.jobSiteName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.jobSiteName != null){return (row.jobSiteName+"");}
+    			            } },
+    			            { title: "<bean:message key="field.label.jobSiteAddress" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.jobSiteAddress != null){return (row.jobSiteAddress+", " + row.jobSiteCity + ", " + row.jobSiteState );}
+    			            } },
+    			            { title: "<bean:message key="field.label.startDate" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.startDate != null){return (row.startDate+"");}
+    			            } },
+    			            { title: "<bean:message key="field.label.jobFrequency" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.jobFrequency != null){return (row.jobFrequency+"");}
+    			            } },
+    			            { title: "<bean:message key="field.label.pricePerCleaning" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.pricePerCleaning != null){return (row.pricePerCleaning+"");}
+    			            } },
+    			            { title: "<bean:message key="field.label.jobNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
+    			            	if(row.jobNbr != null){return (row.jobNbr+"");}
+    			            } },
+    			            { title: "<bean:message key="field.label.serviceDescription" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.serviceDescription != null){return (row.serviceDescription+"");}
+    			            } },
+    			            { title: "<bean:message key="field.label.poNumber" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.poNumber != null){return (row.poNumber+"");}
+    			            } },
+    			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
+    			            	//console.log(row);
+    			            	{
+    				            	var $edit = '<a href="jobMaintenance.html?id='+row.jobId+'" class="editAction" data-id="'+row.jobId+'"><webthing:edit>View</webthing:edit></a>';
+    			            		return "<ansi:hasPermission permissionRequired='QUOTE_READ'>"+$edit+"</ansi:hasPermission>";
+    			            		//return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='jobMaintenance.html?id="+row.jobId+"' class=\"editAction fas fa-pencil-alt\" data-id='"+row.jobId+"'></a></ansi:hasWrite></ansi:hasPermission>";
+    			            	}
+    			            	
+    			            } }],
+    			            "initComplete": function(settings, json) {
+    			            	//console.log(json);
+    			            	JOBLOOKUP.doFunctionBinding();
+    			            },
+    			            "drawCallback": function( settings ) {
+    			            	JOBLOOKUP.doFunctionBinding();
+    			            }
+    			    } );
+            	},
+            	
+            	
+            	
+            	
+            	
 				
-				function doEdit($clickevent) {
-					var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
-
-						var $url = 'jobTable/' + $rowid;
-						//console.log("YOU PASSED ROW ID:" + $rowid);
-						var jqxhr = $.ajax({
-							type: 'GET',
-							url: $url,
-							success: function($data) {
-								//console.log($data);
-								
-				        		$("#jobId").val(($data.data.codeList[0]).jobId);
-				        		$("#jobStatus").val(($data.data.codeList[0]).jobStatus);
-				        		$("#divisionNbr").val(($data.data.codeList[0]).divisionNbr);
-				        		$("#billToName").val(($data.data.codeList[0]).billToName);
-				        		$("#jobSiteName").val(($data.data.codeList[0]).jobSiteName);
-				        		$("#jobSiteAddress").val(($data.data.codeList[0]).jobSiteAddress);
-				        		$("#startDate").val(($data.data.codeList[0]).startDate);
-				        		$("#jobFrequency").val(($data.data.codeList[0]).startDate);
-				        		$("#pricePerCleaning").val(($data.data.codeList[0]).pricePerCleaning);
-				        		$("#jobNbr").val(($data.data.codeList[0]).jobNbr);
-				        		$("#serviceDescription").val(($data.data.codeList[0]).serviceDescription);
-				        		$("#poNumber").val(($data.data.codeList[0]).processDate);
-				        		
-				        		$("#jId").val(($data.data.codeList[0]).jobId);
-				        		$("#updateOrAdd").val("update");
-				        		$("#addJobTableForm").dialog( "open" );
-							},
-							statusCode: {
-								403: function($data) {
-									$("#useridMsg").html("Session Timeout. Log in and try again");
-								} 
-							},
-							dataType: 'json'
-						});
-					//console.log("Edit Button Clicked: " + $rowid);
+				
+            	
+				doFunctionBinding : function() {
+					<%-- nothing actually happens here, but it's a nice place holder --%>
 				}
+        	} 
+        	
+        	JOBLOOKUP.init();
+        			
         });
         </script>        
     </tiles:put>

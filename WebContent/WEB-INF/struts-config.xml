@@ -5,11 +5,12 @@
  -->
 <struts-config>
     <form-beans>    
-    	<form-bean name="idForm"            type="com.ansi.scilla.web.common.actionForm.IdForm" />
-    	<form-bean name="messageForm"       type="com.ansi.scilla.web.common.actionForm.MessageForm" />
-    	<form-bean name="namespaceForm"     type="com.ansi.scilla.web.common.actionForm.NamespaceForm" />
-    	<form-bean name="invoiceLookupForm" type="com.ansi.scilla.web.invoice.actionForm.InvoiceLookupForm" />
-    	<form-bean name="jobIdForm"         type="com.ansi.scilla.web.job.actionForm.JobIdForm" />
+    	<form-bean name="idForm"               type="com.ansi.scilla.web.common.actionForm.IdForm" />
+    	<form-bean name="jobLookupForm"        type="com.ansi.scilla.web.job.actionForm.JobLookupForm" />
+    	<form-bean name="messageForm"          type="com.ansi.scilla.web.common.actionForm.MessageForm" />
+    	<form-bean name="namespaceForm"        type="com.ansi.scilla.web.common.actionForm.NamespaceForm" />
+    	<form-bean name="invoiceLookupForm"    type="com.ansi.scilla.web.invoice.actionForm.InvoiceLookupForm" />
+    	<form-bean name="jobIdForm"            type="com.ansi.scilla.web.job.actionForm.JobIdForm" />
     	<form-bean name="newQuoteDisplayForm"  type="com.ansi.scilla.web.quote.actionForm.NewQuoteDisplayForm" />
     	<form-bean name="quoteMaintenanceForm" type="com.ansi.scilla.web.quote.actionForm.QuoteMaintenanceForm" />
     	<form-bean name="reportIdForm"         type="com.ansi.scilla.web.report.actionForm.ReportIdForm" />
@@ -156,7 +157,10 @@
         </action>
 		<action
             path="/jobLookup"
-            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.job.action.JobLookupAction"
+            name="jobLookupForm"
+            input="/jobLookup.jsp"
+            scope="request">
             <forward name="valid" path="/jobLookup.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
@@ -169,13 +173,6 @@
             <forward name="valid" path="/quoteMaintenance.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
-		<action
-            path="/jobLookup"
-            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
-            <forward name="valid" path="/jobLookup.jsp" />
-            <forward name="login" path="/login.jsp" />            
-        </action>
-        
      	<action
             path="/logoff"
             type="com.ansi.scilla.web.login.action.LogoffAction">

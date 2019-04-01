@@ -28,70 +28,70 @@ public enum ReportType {
 			"com.ansi.scilla.report.datadumps.AddressUsage",
 			"com.ansi.scilla.web.report.request.NoValidate", 
 			new String[] {},
-			Permission.SYSADMIN
+			Permission.QUOTE_UPDATE
 		),
 	AGING_AR_TOTALS_REPORT(
 			"reportNoInput",
 			"com.ansi.scilla.report.datadumps.AgingARTotals",
 			"com.ansi.scilla.web.report.request.NoValidate", 
 			new String[] {},
-			Permission.SYSADMIN
+			Permission.TECH_ADMIN_READ
 		),
 	AGING_CASH_TOTALS_REPORT(
 			"reportNoInput",
 			"com.ansi.scilla.report.datadumps.AgingCashTotals",
 			"com.ansi.scilla.web.report.request.NoValidate", 
 			new String[] {},
-			Permission.SYSADMIN
+			Permission.TECH_ADMIN_READ
 		),
 	AGING_SERVICE_TAX_TOTALS_REPORT(
 			"reportNoInput",
 			"com.ansi.scilla.report.datadumps.AgingServiceTaxTotals",
 			"com.ansi.scilla.web.report.request.NoValidate", 
 			new String[] {},
-			Permission.SYSADMIN
+			Permission.TECH_ADMIN_READ
 		),
 	AGING_PAYMENT_TOTALS_REPORT(
 			"reportNoInput",
 			"com.ansi.scilla.report.datadumps.AgingPaymentTotals",
 			"com.ansi.scilla.web.report.request.NoValidate", 
 			new String[] {},
-			Permission.SYSADMIN
+			Permission.TECH_ADMIN_READ
 		),
 	AGING_INVOICE_TOTALS_REPORT(
 			"reportNoInput",
 			"com.ansi.scilla.report.datadumps.AgingInvoiceTotals",
 			"com.ansi.scilla.web.report.request.NoValidate", 
 			new String[] {},
-			Permission.SYSADMIN
+			Permission.TECH_ADMIN_READ
 		),
 	CLIENT_CONTACT_REPORT(
 			"reportNoInput",
 			"com.ansi.scilla.report.datadumps.ClientContact",
 			"com.ansi.scilla.web.report.request.NoValidate", 
 			new String[] {},
-			Permission.SYSADMIN
+			Permission.QUOTE_UPDATE
 		),
 	CASH_RECEIPTS_REGISTER(
 			"reportByStartEnd", 
 			"com.ansi.scilla.report.cashReceiptsRegister.CashReceiptsRegisterReport",
 			"com.ansi.scilla.web.report.request.ValidateStartEnd", 
 			new String[] {"startDate", "endDate"},
-			Permission.INVOICE
+			Permission.PAYMENT_READ
 		),
 	DISPATCHED_OUTSTANDING_TICKET_REPORT(
 			"reportByDivEnd",
 			"com.ansi.scilla.report.ticket.DispatchedOutstandingTicketReport",
 			"com.ansi.scilla.web.report.request.ValidateDivEnd", 
 			new String[] {"divisionId", "endDate"},
-			Permission.TICKET
+			Permission.TICKET_READ
 		),
 	INVOICE_REGISTER_REPORT(
 			"reportByDivMonthYear",
 			"com.ansi.scilla.report.invoiceRegisterReport.InvoiceRegisterReport",
 			"com.ansi.scilla.web.report.request.ValidateDivMonthYear", 
 			new String[] {"divisionId", "month", "year"},
-			Permission.INVOICE
+			Permission.INVOICE_READ
 		),
 	JOB_SCHEDULE_REPORT(
 			"reportByStartEnd",
@@ -112,14 +112,14 @@ public enum ReportType {
 			"com.ansi.scilla.web.report.webReport.SixMonthRollingVolumeWebReport",
 			"com.ansi.scilla.web.report.request.ValidateDivMonthYear",  
 			new String[] {"divisionId", "month", "year"},
-			Permission.QUOTE_READ
+			Permission.TECH_ADMIN_READ
 		),
 	TICKET_STATUS_REPORT(
 			"reportByDivStartEnd", 
 			"com.ansi.scilla.report.ticket.TicketStatusReport",
 			"com.ansi.scilla.web.report.request.ValidateDivStartEnd", 
 			new String[] {"divisionId", "startDate", "endDate"},
-			Permission.TICKET
+			Permission.TICKET_READ
 		);
 		
 	private final String jsp;
