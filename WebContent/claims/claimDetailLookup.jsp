@@ -23,7 +23,13 @@
     
     
     <tiles:put name="headextra" type="string">
-        <style type="text/css">
+        <link rel="stylesheet" href="css/lookup.css" />
+    	<script type="text/javascript" src="js/lookup.js"></script>
+    	<style type="text/css">
+        	#filter-container {
+        		width:402px;
+        		float:right;
+        	}
         	#ndl-crud-form {
         		display:none;
         		background-color:#FFFFFF;
@@ -156,61 +162,61 @@
     			        	"type": "GET"
     			        	},
     			        columns: [
-    			        	{ title: "Div", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			        	{ title: "Div", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.div != null){return (row.div+"");}
     			            } },
-    			            { title: "Claim Week", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			            { title: "Claim Week", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.claim_week != null){return (row.claim_week+"");}
     			            } },
-    			            { title: "Work Date", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			            { title: "Work Date", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.work_date != null){return (row.work_date+"");}
     			            } },
-    			            { title: "Ticket", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			            { title: "Ticket", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.ticket_id != null){return (row.ticket_id+"");}
     			            } },
-    			            { title: "Status", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			            { title: "Status", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.ticket_status != null){return ('<span class="tooltip">' + row.ticket_status + '<span class="tooltiptext">' + row.ticket_status_description + '</span></span>');}
     			            } },
-    			            { width:"9%", title: "Washer", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			            { width:"9%", title: "Washer", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.washer_name != null){return (row.washer_name+"");}
     			            } },
-    			            { title: "Total Volume" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "Total Volume" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.total_volume != null){return (row.total_volume.toFixed(2));}
     			            } },
-    			            { title: "Budget" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "Budget" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.budget != null){return (row.budget.toFixed(2));}
     			            } },
-    			            { title: "Direct Labor", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "Direct Labor", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.ticket_claim_dl_amt != null){return (row.ticket_claim_dl_amt.toFixed(2));}
     			            } },
-    			            { title: "+ Expenses", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "+ Expenses", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.ticket_claim_dl_exp != null){return (row.ticket_claim_dl_exp);}
     			            } },
-    			            { title: "= Total", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "= Total", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.ticket_claim_dl_total != null){return (row.ticket_claim_dl_total.toFixed(2));}
     			            } },
-    			            { title: "Hours", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "Hours", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.ticket_claim_dl_hours != null){return (row.ticket_claim_dl_hours.toFixed(2));}
     			            } },
-    			            { title: "DL Volume Claimed" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "DL Volume Claimed" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.claimed_volume != null){return (row.claimed_volume.toFixed(2));}
     			            } },
-    			            { title: "Passthru Volume Claimed" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "Passthru Volume Claimed" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.passthru_volume != null){return (row.passthru_volume.toFixed(2));}
     			            } },
-    			            { title: "Total Volume Claimed" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "Total Volume Claimed" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.claimed_volume_total != null){return (row.claimed_volume_total.toFixed(2));}
     			            } },
-    			            { title: "Unclaimed", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "Unclaimed", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.volume_remaining != null){return ( row.volume_remaining.toFixed(2));}
     			            } },
-    			            { title: "Total DL Claimed", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "Total DL Claimed", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.claimed_dl_total != null){return ( row.claimed_dl_total.toFixed(2));}
     			            } },
-    			            { title: "DL Remaining", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "DL Remaining", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.dl_remaining != null){return ( row.dl_remaining.toFixed(2));}
     			            } },
-    			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
+    			            { title: "<bean:message key="field.label.action" />",  searchable:false, data: function ( row, type, set ) {	
     			            	{
     				            	var $claim = '<a href="#" class="editAction" data-id="'+row.ticket_id+'"><webthing:invoiceIcon styleClass="green">Claim</webthing:invoiceIcon></a>';
     				            	var $expense = '<a href="#" class="editAction" data-id="'+row.ticket_id+'"><webthing:invoiceIcon styleClass="orange">Expense</webthing:invoiceIcon></a>';
@@ -219,6 +225,7 @@
     			            	
     			            } }],
     			            "initComplete": function(settings, json) {
+    			            	LOOKUPUTILS.makeFilters(this, "#filter-container", "#displayTable");
     			            	CLAIMDETAIL.doFunctionBinding();
     			            },
     			            "drawCallback": function( settings ) {
@@ -501,91 +508,19 @@
    <tiles:put name="content" type="string">
     	<h1>Claim Detail</h1>
     	
- 	<table id="displayTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
- 		<%--
-       	<colgroup>
-        	<col style="width:7%;" />
-        	<col style="width:23%;" />
-        	<col style="width:7%;" />
-        	<col style="width:7%;" />
-        	<col style="width:7%;" />
-        	<col style="width:7%;" />
-        	<col style="width:7%;" />
-        	<col style="width:7%;" />
-        	<col style="width:7%;" />
-        	<col style="width:7%;" />
-        	<col style="width:7%;" />
-        	<col style="width:7%;" />
-   		</colgroup>
-   		--%>
-        <thead>
-        	<%--
-            <tr>
-                <th>Div</th>
-                <th>Account</th>
-    			<th>Direct Labor</th>
-    			<th>Washer</th>
-    			<th>Hours Type</th>
-    			<th>Hours</th>
-    			<th>Calc Pay</th>
-    			<th>Act Pay</th>
-    			<th>Notes</th>
-    			<th>Action</th>    			
-            </tr>
-             --%>
-        </thead>
-        <tfoot>
-            
-        </tfoot>
-    </table>
-    <input type="button" value="New" class="prettyWideButton" id="new-NDL-button" />
+   	    <webthing:lookupFilter filterContainer="filter-container" />
+    	
+	 	<table id="displayTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
+	        <thead>
+	        </thead>
+	        <tfoot>
+	            
+	        </tfoot>
+	    </table>
+	    <input type="button" value="New" class="prettyWideButton" id="new-NDL-button" />
+	    
+	    <webthing:scrolltop />
     
-    <webthing:scrolltop />
-    
-    <div id="ndl-crud-form">
-    	<table>
-    		<tr>
-    			<td><span class="formLabel">Division</span></td>
-    			<td><select name="divisionId" class="calcPayTrigger"></select></td>
-    			<td><span id="divisionIdErr" class="err"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formLabel">Date</span></td>
-    			<td><input type="text" name="workDate" class="dateField calcPayTrigger" /></td>
-    			<td><span id="workDateErr" class="err"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formLabel">Washer</span></td>
-    			<td><input type="text" name="washerName" class="calcPayTrigger" /><input type="hidden" name="washerId" /></td>
-    			<td><span id="washerIdErr" class="err"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formLabel">Hours</span></td>
-    			<td><input type="text" name="hours" class="calcPayTrigger" /></td>
-    			<td><span id="hoursErr" class="err"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formLabel">Type</span></td>
-    			<td><select  name="hoursType" class="calcPayTrigger"></select></td>
-    			<td><span id="hoursTypeErr" class="err"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formLabel">Calculated Pay</span></td>
-    			<td><span  id="calcPayAmt"></span></td>
-    			<td>&nbsp;</td>
-    		</tr>
-    		<tr>
-    			<td><span class="formLabel">Actual Pay</span></td>
-    			<td><input type="text" name="actPayoutAmt" /></td>
-    			<td><span id="actPayAmtErr" class="err"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formLabel">Notes</span></td>
-    			<td><input type="text" name="notes" /></td>
-    			<td><span id="notesErr" class="err"></span></td>
-    		</tr>
-    	</table>
-    </div>
     </tiles:put>
 		
 </tiles:insert>

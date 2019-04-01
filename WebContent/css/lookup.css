@@ -1,0 +1,42 @@
+.filter-banner {
+	display:none;
+	background-color:#404040; 
+	cursor:pointer; 
+	padding-left:4px;
+	color:#FFFFFF;
+	width:400px;
+}
+.filter-banner .is-filtered {
+	display:none;
+}
+.filter-div {
+	width:402px;
+	border:solid 1px #000000;
+	display:none;
+}
+.filter-banner .panel-button-container .save-job {
+	display:none;
+}
+.filter-banner .panel-button-container .cancel-job-edit {
+	display:none;
+}
+.filter-data-closed {
+	color:#FFFFFF;
+}
+.filter-data-open {
+	color:#FFFFFF;
+	display:none;
+}
+.filter-banner-filter-div {
+	display:inline; 
+	margin-right:10px;
+}
+.filter-banner .panel-button-container {
+	float:right; 
+	margin-right:8px;
+	width:6%; 
+	background-color:#e5e5e5; 
+	border:solid 1px #404040; 
+	text-align:center;
+	display:none;
+}

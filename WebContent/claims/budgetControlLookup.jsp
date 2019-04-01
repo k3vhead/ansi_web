@@ -23,21 +23,12 @@
     
     
     <tiles:put name="headextra" type="string">
+    	<link rel="stylesheet" href="css/lookup.css" />
+    	<script type="text/javascript" src="js/lookup.js"></script> 
         <style type="text/css">
         	#filter-container {
         		width:402px;
         		float:right;
-        	}
-        	#filter-banner {
-        		display:none;
-        	}
-        	#filter-banner .is-filtered {
-        		display:none;
-        	}
-        	#filter-div {
-        		width:402px;
-        		border:solid 1px #000000;
-        		display:none;
         	}
         	#ndl-crud-form {
         		display:none;
@@ -46,44 +37,9 @@
 				width:400px;
 				padding:15px;
         	}
-			
-			
 			.prettyWideButton {
 				height:30px;
 				min-height:30px;
-			}
-			.jobTitleRow {
-				background-color:#404040; 
-				cursor:pointer; 
-				padding-left:4px;
-				color:#FFFFFF;
-				width:400px;
-			}
-			.jobTitleRow .panel-button-container .save-job {
-				display:none;
-			}
-			.jobTitleRow .panel-button-container .cancel-job-edit {
-				display:none;
-			}
-			.job-data-closed {
-				color:#FFFFFF;
-			}
-			.job-data-open {
-				color:#FFFFFF;
-				display:none;
-			}
-			.job-header-job-div {
-				display:inline; 
-				margin-right:10px;
-			}
-			.panel-button-container {
-				float:right; 
-				margin-right:8px;
-				width:6%; 
-				background-color:#e5e5e5; 
-				border:solid 1px #404040; 
-				text-align:center;
-				display:none;
 			}
         </style>
         
@@ -270,73 +226,7 @@
             	initComplete : function() {
             		var myTable = this;
 	            	BUDGETCONTROL.doFunctionBinding();
-	            	var $filterTable = $("<table>");
-	            	
-	            	var dataTable = $('#displayTable').DataTable();
-	            	var columns = myTable.api().init().columns;
-
-	            	$("#filter-div").append($filterTable);
-
-	            	dataTable.columns().every( function(colIdx) {
-	            		var $column = this;
-				
-	            		if ( columns[colIdx].searchable ) {
-		            		var $filterRow = $("<tr>");
-		            		var $titleCell = $("<td>");
-		            		var $fieldCell = $("<td>");
-		            		
-		            		$titleCell.append($column.header().innerText);
-		            		$inputField = $('<input type="text">')
-		            		$fieldName = "columns["+colIdx+"][search][value]";
-		            		$inputField.attr("name", $fieldName);
-		            		$fieldCell.append($inputField);
-		            		
-		            		
-		            		$filterRow.append($titleCell);
-		            		$filterRow.append($fieldCell);
-		            		$filterTable.append($filterRow);
-		            		
-		            		var $selector = '#filter-div input[name="' + $fieldName + '"]';
-		            		$($selector).on('keyup change', function() {
-	            				var dataTable = $('#displayTable').DataTable();
-	            				myColumn = dataTable.columns(colIdx);
-	            				console.log("searching " + this.value + " in " + colIdx);
-	           					myColumn.search(this.value).draw();
-	           					
-	           					var isFiltered = false;
-	           					$("#filter-div input").each(function(idx, field) {
-	           						if ( $(field).val().length > 0 ) {
-	           							isFiltered = true;
-	           						}
-	           					});
-	           					if ( isFiltered == true ) {
-	           						$("#filter-banner .is-filtered").show();
-	           					} else {
-	           						$("#filter-banner .is-filtered").hide();
-	           					}
-	            			});
-	            		}
-	            	});
-	            	
-	            	$("#filter-banner").show();
-	            	$("#filter-banner .job-hider .job-data-closed").click(function($event) {
-	            		$("#filter-banner .job-hider .job-data-closed").hide();
-	            		$("#filter-banner .job-hider .job-data-open").show();
-	            		$("#filter-div").fadeIn(1000);	            		
-	            		$("#filter-banner .panel-button-container").fadeIn(1000); 
-	            	});
-	            	$("#filter-banner .job-hider .job-data-open").click(function($event) {
-	            		$("#filter-banner .panel-button-container").fadeOut(1000); 
-	            		$("#filter-banner .job-hider .job-data-open").hide();
-	            		$("#filter-banner .job-hider .job-data-closed").show();
-	            		$("#filter-div").fadeOut(1000);
-	            	});
-	            	$("#filter-banner .panel-button-container .clear-filter-button").click(function($event) {
-	            		$("#filter-div input").val("");
-	            		$("#filter-banner .is-filtered").hide();
-	            		$("#filter-banner .job-hider .job-data-open").click();
-	            		$('#displayTable').DataTable().ajax.reload();
-	            	});
+	            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#displayTable");
 
             	},
 	            
@@ -618,26 +508,8 @@
    <tiles:put name="content" type="string">
     	<h1>Budget Control</h1>
     	
-    <div id="filter-container">
-	    <div id="filter-banner" class="jobTitleRow">
-	        <div class="panel-button-container"> 
-	        	<webthing:ban styleClass="clear-filter-button red">Clear</webthing:ban>
-			</div>
-			<div class="job-hider">
-				<span class="job-data-closed"><i class="fas fa-caret-right"></i></span>
-				<span class="job-data-open"><i class="fas fa-caret-down"></i></span>
-	            &nbsp;
-	            <div class="job-header-job-div">
-	            	<span class="formLabel">Filter</span>
-	            	<webthing:checkmark styleClass="green is-filtered">Filter is Active</webthing:checkmark>
-	            </div>
-	        </div>
-	   	</div>
-	   	<div id="filter-div">
-	   	</div>
-   	</div>
-   	
-	<div  style="margin-bottom:5px; width:100%;">&nbsp;</div>
+    	
+    <webthing:lookupFilter filterContainer="filter-container" />
 
 	<table id="displayTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
         <thead>
