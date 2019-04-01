@@ -51,6 +51,10 @@
         	;JOBLOOKUP = {
        			dataTable : null,
        			lookupType : '<c:out value="${ANSI_JOB_LOOKUP_TYPE}" />',
+       			pacColumns : [1,2,3],
+       			contactColumns : [4,5,6],
+       			jobColumns : [7,8,9],
+       			
        			
        			
         		init : function() {
@@ -102,7 +106,7 @@
     			        	"type": "GET"
     			        	},
     			        columns: [
-    			        	
+    			        	// if you change any of these, you'll need to change the jobColumns/pacColumns/contactColumns lists also
     			            { title: "<bean:message key="field.label.jobId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
     			            	if(row.jobId != null){return (row.jobId+"");}
     			            } },
@@ -161,15 +165,26 @@
     			    } );
             	},
             	
-            	
-            	
-            	
-            	
-				
 				
             	
 				doFunctionBinding : function() {
-					<%-- nothing actually happens here, but it's a nice place holder --%>
+					if ( JOBTABLE.lookupType == 'JOB' ) {
+						JOBTABLE.showJobColumns();
+					}
+				},
+				
+				
+				showJobColumns : function() {
+					var myTable = $('#jobTable').DataTable();
+					$.each(pacColumns, function(index, columnNumber) {
+						myTable.columns(columnNumber).visible(false);
+					});
+					$.each(contactColumns, function(index, columnNumber) {
+						myTable.columns(columnNumber).visible(false);
+					});
+					$.each(jobColumns, function(index, columnNumber) {
+						myTable.columns(columnNumber).visible(true);
+					});
 				}
         	} 
         	
@@ -181,63 +196,63 @@
     
    <tiles:put name="content" type="string">
     	<h1>Job Lookup</h1>
-    	
- 	<table id="jobTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
-       	<colgroup>
-        	<col style="width:4%;" />
-        	<col style="width:4%;" />
-    		<col style="width:5%;" />    		
-    		<col style="width:6%;" />
-    		<col style="width:10%;" />
-    		<col style="width:10%;" />
-    		<col style="width:10%;" />
-    		<col style="width:6%;" />
-    		<col style="width:5%;" />
-    		<col style="width:7%;" />
-    		<col style="width:5%;" />
-    		<col style="width:24%;" />
-    		<col style="width:4%;" />
-    		<col style="width:6%;" />
-   		</colgroup>
-        <thead>
-            <tr>
-                <th><bean:message key="field.label.jobId" /></th>
-                <th><bean:message key="field.label.quoteName" /></th>
-    			<th><bean:message key="field.label.jobStatus" /></th>
-    			<th><bean:message key="field.label.divisionNbr" /></th>
-    			<th><bean:message key="field.label.billToName" /></th>
-    			<th><bean:message key="field.label.jobSiteName" /></th>
-    			<th><bean:message key="field.label.jobSiteAddress" /></th>
-    			<th><bean:message key="field.label.startDate" /></th>
-    			<th><bean:message key="field.label.jobFrequency" /></th>
-    			<th><bean:message key="field.label.pricePerCleaning" /></th>
-    			<th><bean:message key="field.label.jobNbr" /></th>
-    			<th><bean:message key="field.label.serviceDescription" /></th>
-    			<th><bean:message key="field.label.poNumber" /></th>
-    			<th><bean:message key="field.label.action" /></th>
-            </tr>
-        </thead>
-        <tfoot>
-            <tr>
-                <th><bean:message key="field.label.jobId" /></th>
-                <th><bean:message key="field.label.quoteName" /></th>
-    			<th><bean:message key="field.label.jobStatus" /></th>
-    			<th><bean:message key="field.label.divisionNbr" /></th>
-    			<th><bean:message key="field.label.billToName" /></th>
-    			<th><bean:message key="field.label.jobSiteName" /></th>
-    			<th><bean:message key="field.label.jobSiteAddress" /></th>
-    			<th><bean:message key="field.label.startDate" /></th>
-    			<th><bean:message key="field.label.jobFrequency" /></th>
-    			<th><bean:message key="field.label.pricePerCleaning" /></th>
-    			<th><bean:message key="field.label.jobNbr" /></th>
-    			<th><bean:message key="field.label.serviceDescription" /></th>
-    			<th><bean:message key="field.label.poNumber" /></th>
-    			<th><bean:message key="field.label.action" /></th>
-            </tr>
-        </tfoot>
-    </table>
-    
-    <webthing:scrolltop />
+    	    	
+	 	<table id="jobTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
+	       	<colgroup>
+	        	<col style="width:4%;" />
+	        	<col style="width:4%;" />
+	    		<col style="width:5%;" />    		
+	    		<col style="width:6%;" />
+	    		<col style="width:10%;" />
+	    		<col style="width:10%;" />
+	    		<col style="width:10%;" />
+	    		<col style="width:6%;" />
+	    		<col style="width:5%;" />
+	    		<col style="width:7%;" />
+	    		<col style="width:5%;" />
+	    		<col style="width:24%;" />
+	    		<col style="width:4%;" />
+	    		<col style="width:6%;" />
+	   		</colgroup>
+	        <thead>
+	            <tr>
+	                <th><bean:message key="field.label.jobId" /></th>
+	                <th><bean:message key="field.label.quoteName" /></th>
+	    			<th><bean:message key="field.label.jobStatus" /></th>
+	    			<th><bean:message key="field.label.divisionNbr" /></th>
+	    			<th><bean:message key="field.label.billToName" /></th>
+	    			<th><bean:message key="field.label.jobSiteName" /></th>
+	    			<th><bean:message key="field.label.jobSiteAddress" /></th>
+	    			<th><bean:message key="field.label.startDate" /></th>
+	    			<th><bean:message key="field.label.jobFrequency" /></th>
+	    			<th><bean:message key="field.label.pricePerCleaning" /></th>
+	    			<th><bean:message key="field.label.jobNbr" /></th>
+	    			<th><bean:message key="field.label.serviceDescription" /></th>
+	    			<th><bean:message key="field.label.poNumber" /></th>
+	    			<th><bean:message key="field.label.action" /></th>
+	            </tr>
+	        </thead>
+	        <tfoot>
+	            <tr>
+	                <th><bean:message key="field.label.jobId" /></th>
+	                <th><bean:message key="field.label.quoteName" /></th>
+	    			<th><bean:message key="field.label.jobStatus" /></th>
+	    			<th><bean:message key="field.label.divisionNbr" /></th>
+	    			<th><bean:message key="field.label.billToName" /></th>
+	    			<th><bean:message key="field.label.jobSiteName" /></th>
+	    			<th><bean:message key="field.label.jobSiteAddress" /></th>
+	    			<th><bean:message key="field.label.startDate" /></th>
+	    			<th><bean:message key="field.label.jobFrequency" /></th>
+	    			<th><bean:message key="field.label.pricePerCleaning" /></th>
+	    			<th><bean:message key="field.label.jobNbr" /></th>
+	    			<th><bean:message key="field.label.serviceDescription" /></th>
+	    			<th><bean:message key="field.label.poNumber" /></th>
+	    			<th><bean:message key="field.label.action" /></th>
+	            </tr>
+	        </tfoot>
+	    </table>
+	    
+	    <webthing:scrolltop />
     
     </tiles:put>
 		
