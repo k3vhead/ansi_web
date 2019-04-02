@@ -28,21 +28,21 @@ public class BudgetControlLookupServlet extends AbstractLookupServlet {
 	public BudgetControlLookupServlet() {
 		super(Permission.CLAIMS_READ);
 		cols = new String[] { 
-				"div",
-				"job_site_name",
+				"CONCAT(division_nbr,'-',division_code)",
+				"job_site.name",
 				"ticket.ticket_id",
 				"ticket.ticket_status",
-				"claim_week",
-				"claimed_weekly_dl_amt",
-				"claimed_weekly_dl_exp",
-				"claimed_weekly_dl_total",
-				"total_volume",
-				"claimed_volume_total",
-				"volume_remaining",
-				"billed_amount",
-				"claimed_vs_billed",
-				"paid_amount",
-				"amount_due"
+				"ticket_claim_weekly_totals.claim_week",
+				"isnull(ticket_claim_weekly_totals.claimed_weekly_dl_amt,0.00)",   //claimed_weekly_dl_amt
+				"isnull(ticket_claim_weekly_totals.claimed_weekly_dl_exp,0.00)", // as claimed_weekly_dl_exp"
+				"isnull(ticket_claim_weekly_totals.claimed_weekly_dl_amt,0.00)+ISNULL(ticket_claim_weekly_totals.claimed_weekly_dl_exp,0.00)", //as claimed_weekly_dl_total"
+				"job.price_per_cleaning", // as total_volume
+				"isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim_passthru_totals.passthru_volume,0.00)", //as claimed_volume_total
+				"job.price_per_cleaning - (isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim_passthru_totals.passthru_volume,0.00))", //as volume_remaining"
+				"isnull(invoice_totals.invoiced_amount,0.00)", // as billed_amount",
+				"(isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim_passthru_totals.passthru_volume,0.00))- isnull(invoice_totals.invoiced_amount,0.00)", // as claimed_vs_billed
+				"ISNULL(ticket_payment_totals.paid_amount,0.00)", // as paid_amt
+				"ISNULL(invoice_totals.invoiced_amount,0.00)-ISNULL(ticket_payment_totals.paid_amount,0.00)" // as amount_due"
 				};
 		super.itemTransformer = new ItemTransformer();
 	}

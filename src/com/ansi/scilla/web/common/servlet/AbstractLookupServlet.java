@@ -17,12 +17,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Transformer;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.common.utils.ColumnFilter;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
@@ -184,13 +186,13 @@ public abstract class AbstractLookupServlet extends AbstractServlet {
 		String sDraw = request.getParameter("draw");
 		String sCol = request.getParameter("order[0][column]");
 		String sdir = request.getParameter("order[0][dir]");		
-
-
+	
+	
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
 			String term = "";
-
+	
 			if(request.getParameter("search[value]") != null){
 				term = request.getParameter("search[value]");
 			}
@@ -212,7 +214,7 @@ public abstract class AbstractLookupServlet extends AbstractServlet {
 			}
 			if (sCol != null) {
 				col = Integer.parseInt(sCol);
-				if (col < 0 || col > 15) {
+				if (col < 0 || col > this.cols.length) {
 					col = 0;
 				}
 			}
@@ -223,10 +225,10 @@ public abstract class AbstractLookupServlet extends AbstractServlet {
 					dir = "desc";
 				}
 			}
-
+	
 			String colName = cols[col];
-
-
+	
+	
 			logger.log(Level.DEBUG, "Start: " + start + "\tAmount: " + amount + "\tTerm: " + term);
 			
 			
@@ -234,7 +236,10 @@ public abstract class AbstractLookupServlet extends AbstractServlet {
 			lookup.setSearchTerm(term);
 			lookup.setSortBy(colName);
 			lookup.setSortIsAscending(dir.equals("asc"));
-
+			
+			List<ColumnFilter> columnFilterList = makeColumnFilter(request);
+			lookup.setColumnFilter(columnFilterList);
+	
 			Integer filteredCount = lookup.selectCount(conn);
 			Integer totalCount = lookup.countAll(conn);
 			
@@ -250,16 +255,16 @@ public abstract class AbstractLookupServlet extends AbstractServlet {
 			
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("application/json");
-
+	
 			HashMap<String, Object> jsonResponse = new HashMap<String, Object>();			
 			jsonResponse.put("recordsTotal", totalCount);
 			jsonResponse.put("recordsFiltered", filteredCount);
 			jsonResponse.put("draw", draw);
 			jsonResponse.put("columns",null);
 			jsonResponse.put("data", dataList);
-
+	
 			String json = AppUtils.object2json(jsonResponse);
-
+	
 			ServletOutputStream o = response.getOutputStream();
 			OutputStreamWriter writer = new OutputStreamWriter(o);
 			writer.write(json);
@@ -274,9 +279,7 @@ public abstract class AbstractLookupServlet extends AbstractServlet {
 			AppUtils.closeQuiet(conn);
 		}
 	}
-	
-	
-	
+
 	private HashMap<String, Object> makeDataItem(ResultSet rs, ResultSetMetaData rsmd) throws SQLException {
 		HashMap<String, Object> dataItem = new HashMap<String, Object>();
 		for ( int i = 0; i < rsmd.getColumnCount(); i++ ) {
@@ -290,5 +293,20 @@ public abstract class AbstractLookupServlet extends AbstractServlet {
 	}
 
 	
+	
+	private List<ColumnFilter> makeColumnFilter(HttpServletRequest request) {
+		List<ColumnFilter> columnFilterList = new ArrayList<ColumnFilter>();
+		for (int i = 0; i < this.cols.length; i++ ) {
+			String parmName = "columns[" + i + "][search][value]";
+			String parmValue = request.getParameter(parmName);
+			if ( ! StringUtils.isBlank(parmValue)) {
+				columnFilterList.add(new ColumnFilter(cols[i],parmValue));
+			}
+		}
+		return columnFilterList;
+	}
+
 	public abstract LookupQuery makeQuery(Connection conn, HttpServletRequest request);
+	
+	
 }

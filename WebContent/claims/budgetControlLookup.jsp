@@ -207,50 +207,7 @@
     
     <webthing:scrolltop />
     
-    <div id="ndl-crud-form">
-    	<table>
-    		<tr>
-    			<td><span class="formLabel">Division</span></td>
-    			<td><select name="divisionId" class="calcPayTrigger"></select></td>
-    			<td><span id="divisionIdErr" class="err"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formLabel">Date</span></td>
-    			<td><input type="text" name="workDate" class="dateField calcPayTrigger" /></td>
-    			<td><span id="workDateErr" class="err"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formLabel">Washer</span></td>
-    			<td><input type="text" name="washerName" class="calcPayTrigger" /><input type="hidden" name="washerId" /></td>
-    			<td><span id="washerIdErr" class="err"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formLabel">Hours</span></td>
-    			<td><input type="text" name="hours" class="calcPayTrigger" /></td>
-    			<td><span id="hoursErr" class="err"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formLabel">Type</span></td>
-    			<td><select  name="hoursType" class="calcPayTrigger"></select></td>
-    			<td><span id="hoursTypeErr" class="err"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formLabel">Calculated Pay</span></td>
-    			<td><span  id="calcPayAmt"></span></td>
-    			<td>&nbsp;</td>
-    		</tr>
-    		<tr>
-    			<td><span class="formLabel">Actual Pay</span></td>
-    			<td><input type="text" name="actPayoutAmt" /></td>
-    			<td><span id="actPayAmtErr" class="err"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formLabel">Notes</span></td>
-    			<td><input type="text" name="notes" /></td>
-    			<td><span id="notesErr" class="err"></span></td>
-    		</tr>
-    	</table>
-    </div>
+   
     </tiles:put>
 		
 </tiles:insert>

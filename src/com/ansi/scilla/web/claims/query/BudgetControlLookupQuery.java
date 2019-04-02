@@ -1,8 +1,5 @@
 package com.ansi.scilla.web.claims.query;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 
@@ -59,7 +56,6 @@ public class BudgetControlLookupQuery extends LookupQuery {
 			+ " , ticket.ticket_status"
 			+ " , ticket.job_id"
 			+ "	, job_site.name as job_site_name"
-			+ "	, ticket.ticket_id"
 			+ " , ticket_claim_weekly_totals.claim_week"
 			+ " , isnull(ticket_claim_weekly_totals.claimed_weekly_dl_amt,0.00) as claimed_weekly_dl_amt\r\n" 
 			+ " , isnull(ticket_claim_weekly_totals.claimed_weekly_dl_exp,0.00) as claimed_weekly_dl_exp\r\n"
@@ -84,8 +80,7 @@ public class BudgetControlLookupQuery extends LookupQuery {
 			+ "	, (isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim_passthru_totals.passthru_volume,0.00))"
 			+ "		- isnull(invoice_totals.invoiced_amount,0.00) as claimed_vs_billed"
 			+ "	, ISNULL(ticket_payment_totals.paid_amount,0.00) as paid_amt"
-			+ "	, ISNULL(invoice_totals.invoiced_amount,0.00)-ISNULL(ticket_payment_totals.paid_amount,0.00)"
-			+ "		as amount_due";
+			+ "	, ISNULL(invoice_totals.invoiced_amount,0.00)-ISNULL(ticket_payment_totals.paid_amount,0.00) as amount_due";
 		
 
 	private static final String sqlFromClause = "\n  "
@@ -172,9 +167,9 @@ public class BudgetControlLookupQuery extends LookupQuery {
 				orderBy = " order by " + JOB_SITE_NAME + " asc, " + 
 							"ticket."+TICKET_ID + " asc ";
 			} else {
-				List<String> sortList = Arrays.asList(StringUtils.split(sortBy, ","));
+//				List<String> sortList = Arrays.asList(StringUtils.split(sortBy, ","));
 				String sortDir = sortIsAscending ? orderBy + " asc " : orderBy + " desc ";
-				String sortBy = StringUtils.join(sortList, sortDir + ", ");
+//				String sortBy = StringUtils.join(sortList, sortDir + ", ");
 				orderBy = " order by " + sortBy + " " + sortDir;
 			}
 		}

@@ -4,12 +4,18 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Transformer;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.queries.SelectType;
+import com.ansi.scilla.web.common.utils.ColumnFilter;
 
 public abstract class LookupQuery extends ApplicationObject {
 	
@@ -28,6 +34,7 @@ public abstract class LookupQuery extends ApplicationObject {
 	protected Boolean sortIsAscending = true;
 	protected Integer userId;
 	protected String searchTerm;
+	protected List<ColumnFilter> columnFilter;
 	
 	
 	protected Logger logger;
@@ -134,6 +141,16 @@ public abstract class LookupQuery extends ApplicationObject {
 	}
 
 
+	public List<ColumnFilter> getColumnFilter() {
+		return columnFilter;
+	}
+
+
+	public void setColumnFilter(List<ColumnFilter> columnFilter) {
+		this.columnFilter = columnFilter;
+	}
+
+
 	public ResultSet select(Connection conn, Integer offset, Integer rowCount) throws Exception {
 		SelectType selectType = SelectType.DATA;
 		String searchSQL = makeSQL(selectType, offset, rowCount);
@@ -188,19 +205,33 @@ public abstract class LookupQuery extends ApplicationObject {
 		String fetchPhrase = makeFetch(selectType, rowCount);
 		String orderByPhrase = makeOrderBy(selectType);
 		String wherePhrase = selectType.equals(SelectType.COUNTALL) ? baseWhereClause : makeWhereClause(this.searchTerm);
+		String filterPhrase = makeFilterPhrase();
 		
-		String sql = searchSQL + " " + wherePhrase + " " + orderByPhrase + " " + offsetPhrase + " " + fetchPhrase;
+		
+		
+		String sql = searchSQL + " \n " + wherePhrase + " " + filterPhrase + " " + orderByPhrase + " " + offsetPhrase + " " + fetchPhrase;
 		this.logger.log(Level.DEBUG, sql);
 				
 		return sql;
 	}
 	
+	protected String makeFilterPhrase() {
+		String filterPhrase = "";
+		if ( this.columnFilter != null && this.columnFilter.size() > 0 ) {
+			String joiner = StringUtils.isBlank(baseWhereClause) ? " where " : " and ";
+			List<String> likeList = new ArrayList<String>();
+			likeList = CollectionUtils.collect(this.columnFilter.iterator(), new FilterMaker(), likeList);
+			filterPhrase = "\n" + joiner + " " + StringUtils.join(likeList, " and " );
+		}
+		return filterPhrase;
+	}
 	
 	
 	private String makeFetch(SelectType selectType, Integer rowCount) {
 		return selectType.equals(SelectType.DATA) ? "\n FETCH NEXT " + rowCount + " ROWS ONLY " : "";
 	}
 
+	
 	private String makeOffset(SelectType selectType, Integer offset) {
 		return selectType.equals(SelectType.DATA) ? "\n OFFSET " + offset + " ROWS " :"";
 	}
@@ -230,4 +261,15 @@ public abstract class LookupQuery extends ApplicationObject {
 	 * @return
 	 */
 	protected abstract String makeWhereClause(String queryTerm);
+	
+	
+	
+	public class FilterMaker implements Transformer<ColumnFilter, String> {
+
+		@Override
+		public String transform(ColumnFilter arg0) {			
+			return arg0.toSqlLike();
+		}
+		
+	}
 }
