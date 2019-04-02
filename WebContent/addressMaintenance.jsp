@@ -214,37 +214,38 @@
 					            	if(row.zip != null){return (row.zip+"");} 
 					            } },
 					            
+					            
 					            // Invoice default value columns:
-					            { title: "<bean:message key="field.label.invoice.style" />", "defaultContent": "<i>N/A</i>", "visible":false, data: function ( row, type, set ) {	
-					            	if(row.invoiceStyleDefault != null){return (row.invoiceStyleDefault+"");} 
-					            } },
-					            { title: "<bean:message key="field.label.invoice.grouping" />", "defaultContent": "<i>N/A</i>", "visible":false, data: function ( row, type, set ) {	
-					            	if(row.invoiceGroupingDefault != null){return (row.invoiceGroupingDefault+"");} 
-					            } },
-					            { title: "<bean:message key="field.label.invoice.batch" />", "defaultContent": "<i>N/A</i>", "visible":false, data: function ( row, type, set ) {	
-					            	if(row.invoiceBatchDefault != null){
-					            		var $batchStatus = '<webthing:ban>Not Batched</webthing:ban>';
-					            		if ( row.invoiceBatchDefault == 1 ) {
-					            			$batchStatus = '<webthing:checkmark>Batch Invoice</webthing:checkmark>';
-					            		}
-					            		return ($batchStatus);
-					            	} 
-					            } },
-					            { title: "<bean:message key="field.label.invoice.terms" />", "defaultContent": "<i>N/A</i>", "visible":false, data: function ( row, type, set ) {	
-					            	if(row.invoiceTermsDefault != null){return (row.invoiceTermsDefault+"");} 
-					            } },
-					            { title: "<bean:message key="field.label.invoice.ourVendorNbr" />", "defaultContent": "<i>N/A</i>", "visible":false, data: function ( row, type, set ) {	
-					            	if(row.ourVendorNbrDefault != null){return (row.ourVendorNbrDefault+"");} 
-					            } },
-					            { title: "<bean:message key="field.label.invoice.accountType" />", "defaultContent": "<i>N/A</i>", "visible":false, data: function ( row, type, set ) {	
-					            	if(row.accountTypeDefault != null){return (row.accountTypeDefault+"");} 
-					            } },
-					            { title: "<bean:message key="field.label.invoice.taxExempt" />", "defaultContent": "<i>N/A</i>", "visible":false, data: function ( row, type, set ) {	
-					            	if(row.taxExemptDefault != null){return (row.taxExemptDefault+"");} 
-					            } },
-					            { title: "<bean:message key="field.label.invoice.taxExemptReason" />", "defaultContent": "<i>N/A</i>", "visible":false, data: function ( row, type, set ) {	
-					            	if(row.taxExemptReasonDefault != null){return (row.taxExemptReasonDefault+"");} 
-					            } },
+//					            { title: "<bean:message key="field.label.invoice.style" />", "defaultContent": "<i>N/A</i>", "visible":false, data: function ( row, type, set ) {	
+//					            	if(row.invoiceStyleDefault != null){return (row.invoiceStyleDefault+"");} 
+//					            } },
+//					            { title: "<bean:message key="field.label.invoice.grouping" />", "defaultContent": "<i>N/A</i>", "visible":false, data: function ( row, type, set ) {	
+//					            	if(row.invoiceGroupingDefault != null){return (row.invoiceGroupingDefault+"");} 
+//					            } },
+//					            { title: "<bean:message key="field.label.invoice.batch" />", "defaultContent": "<i>N/A</i>", "visible":false, data: function ( row, type, set ) {	
+//					            	if(row.invoiceBatchDefault != null){
+//					            		var $batchStatus = '<webthing:ban>Not Batched</webthing:ban>';
+//					            		if ( row.invoiceBatchDefault == 1 ) {
+//					            			$batchStatus = '<webthing:checkmark>Batch Invoice</webthing:checkmark>';
+//					            		}
+//					            		return ($batchStatus);
+//					            	} 
+//					            } },
+//					            { title: "<bean:message key="field.label.invoice.terms" />", "defaultContent": "<i>N/A</i>", "visible":false, data: function ( row, type, set ) {	
+//					            	if(row.invoiceTermsDefault != null){return (row.invoiceTermsDefault+"");} 
+//					            } },
+//					            { title: "<bean:message key="field.label.invoice.ourVendorNbr" />", "defaultContent": "<i>N/A</i>", "visible":false, data: function ( row, type, set ) {	
+//					            	if(row.ourVendorNbrDefault != null){return (row.ourVendorNbrDefault+"");} 
+//					            } },
+//					            { title: "<bean:message key="field.label.invoice.accountType" />", "defaultContent": "<i>N/A</i>", "visible":false, data: function ( row, type, set ) {	
+//					            	if(row.accountTypeDefault != null){return (row.accountTypeDefault+"");} 
+//					            } },
+//					            { title: "<bean:message key="field.label.invoice.taxExempt" />", "defaultContent": "<i>N/A</i>", "visible":false, data: function ( row, type, set ) {	
+//					            	if(row.taxExemptDefault != null){return (row.taxExemptDefault+"");} 
+//					            } },
+//					            { title: "<bean:message key="field.label.invoice.taxExemptReason" />", "defaultContent": "<i>N/A</i>", "visible":false, data: function ( row, type, set ) {	
+//					            	if(row.taxExemptReasonDefault != null){return (row.taxExemptReasonDefault+"");} 
+//					            } },
 					            
 					            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
 					            	$viewLink = '<a href="#" class="viewAction" data-id="'+row.addressId+'"><webthing:view>View</webthing:view></a>';
@@ -264,6 +265,8 @@
 					            "drawCallback": function( settings ) {
 					            	ADDRESSMAINTENANCE.doFunctionBinding();
 					            }
+					            
+					            
 					    	} );
 	        		},
 					
@@ -886,12 +889,13 @@
 	    			<%-- <th><bean:message key="field.label.countryCode" /></th> --%>
 	    			<th><bean:message key="field.label.state" /></th>
 	    			<th><bean:message key="field.label.zip" /></th>
-	    			<th><bean:message key="field.label.invoice.style" /></th>
+	    			<th><bean:message key="field.label.action" /></th>
+<%--	    		<th><bean:message key="field.label.invoice.style" /></th>
 	    			<th><bean:message key="field.label.invoice.grouping" /></th>
 	    			<th><bean:message key="field.label.invoice.batch" /></th>
 	    			<th><bean:message key="field.label.invoice.terms" /></th>
 	    			<th><bean:message key="field.label.invoice.ourVendorNbr" /></th>
-	    			<th><bean:message key="field.label.action" /></th>
+ --%>	    			
 	            </tr>
 	        </thead>
 	        <tfoot>
@@ -906,12 +910,14 @@
 	    			<%-- <th><bean:message key="field.label.countryCode" /></th> --%>
 	    			<th><bean:message key="field.label.state" /></th>
 	    			<th><bean:message key="field.label.zip" /></th>
-	    			<th><bean:message key="field.label.invoice.style" /></th>
+	    			<th><bean:message key="field.label.action" /></th>
+<%--	    		<th><bean:message key="field.label.invoice.style" /></th>
 	    			<th><bean:message key="field.label.invoice.grouping" /></th>
 	    			<th><bean:message key="field.label.invoice.batch" /></th>
 	    			<th><bean:message key="field.label.invoice.terms" /></th>
 	    			<th><bean:message key="field.label.invoice.ourVendorNbr" /></th>
-	    			<th><bean:message key="field.label.action" /></th>
+--%>
+	    			
 	    			
 	            </tr>
 	        </tfoot>
