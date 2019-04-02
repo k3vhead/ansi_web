@@ -106,6 +106,9 @@
     			            { title: "Status", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.ticket_status != null){return ('<span class="tooltip">' + row.ticket_status + '<span class="tooltiptext">' + row.ticket_status_description + '</span></span>');}
     			            } },
+    			            { title: "Claim Week", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+    			            	if(row.claim_week != null){return (row.claim_week+"");}
+    			            } },
     			            { title: "Direct Labor", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.claimed_weekly_dl_amt != null){return (row.claimed_weekly_dl_amt.toFixed(2));}
     			            } },
