@@ -63,7 +63,7 @@
         				$url = $url + "/" + BUDGETCONTROL.ticketFilter;
         			}
         				
-            		var dataTable = $('#displayTable').DataTable( {
+            		BUDGETCONTROL.dataTable = $('#displayTable').DataTable( {
             			"aaSorting":		[[0,'asc']],
             			"processing": 		true,
             	        "serverSide": 		true,
@@ -159,7 +159,7 @@
             	initComplete : function() {
             		var myTable = this;
 	            	BUDGETCONTROL.doFunctionBinding();
-	            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#displayTable");
+	            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#displayTable", BUDGETCONTROL.createTable);
 
             	},
 	            

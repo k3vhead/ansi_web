@@ -60,7 +60,7 @@
         		
         		
 				createTable : function() {
-            		var dataTable = $('#displayTable').DataTable( {
+            		TICKETSTATUS.dataTable = $('#displayTable').DataTable( {
             			"aaSorting":		[[0,'asc']],
             			"processing": 		true,
             	        "serverSide": 		true,
@@ -148,7 +148,7 @@
     			            	
     			            } }],
     			            "initComplete": function(settings, json) {
-    			            	LOOKUPUTILS.makeFilters(this, "#filter-container", "#displayTable");
+    			            	LOOKUPUTILS.makeFilters(this, "#filter-container", "#displayTable", TICKETSTATUS.createTable);
     			            	TICKETSTATUS.doFunctionBinding();
     			            },
     			            "drawCallback": function( settings ) {
