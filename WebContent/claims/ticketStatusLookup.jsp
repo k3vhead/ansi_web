@@ -60,7 +60,7 @@
         		
         		
 				createTable : function() {
-            		var dataTable = $('#displayTable').DataTable( {
+            		TICKETSTATUS.dataTable = $('#displayTable').DataTable( {
             			"aaSorting":		[[0,'asc']],
             			"processing": 		true,
             	        "serverSide": 		true,
@@ -92,7 +92,7 @@
     			        	},
     			        columns: [
     			        	
-    			            { title: "Div", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+    			            { width:"4%", title: "Div", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.div != null){return (row.div+"");}
     			            } },
     			            { width:"23%", title: "Account", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
@@ -148,7 +148,7 @@
     			            	
     			            } }],
     			            "initComplete": function(settings, json) {
-    			            	LOOKUPUTILS.makeFilters(this, "#filter-container", "#displayTable");
+    			            	LOOKUPUTILS.makeFilters(this, "#filter-container", "#displayTable", TICKETSTATUS.createTable);
     			            	TICKETSTATUS.doFunctionBinding();
     			            },
     			            "drawCallback": function( settings ) {

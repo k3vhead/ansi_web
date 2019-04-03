@@ -66,7 +66,7 @@
         				$url = $url + "/" + CLAIMDETAIL.ticketFilter;
         			}
         				
-            		var dataTable = $('#displayTable').DataTable( {
+            		CLAIMDETAIL.dataTable = $('#displayTable').DataTable( {
             			"aaSorting":		[[0,'asc']],
             			"processing": 		true,
             	        "serverSide": 		true,
@@ -160,7 +160,7 @@
     			            	
     			            } }],
     			            "initComplete": function(settings, json) {
-    			            	LOOKUPUTILS.makeFilters(this, "#filter-container", "#displayTable");
+    			            	LOOKUPUTILS.makeFilters(this, "#filter-container", "#displayTable", CLAIMDETAIL.createTable);
     			            	CLAIMDETAIL.doFunctionBinding();
     			            },
     			            "drawCallback": function( settings ) {

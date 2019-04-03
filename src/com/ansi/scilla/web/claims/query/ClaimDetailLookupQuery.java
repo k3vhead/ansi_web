@@ -1,7 +1,7 @@
 package com.ansi.scilla.web.claims.query;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
+import org.apache.logging.log4j.LogManager;
 
 import com.ansi.scilla.common.queries.SelectType;
 import com.ansi.scilla.web.common.query.LookupQuery;

@@ -1,6 +1,6 @@
 $(function() {    	
 	;LOOKUPUTILS = {
-		makeFilters : function($myTable, $filterContainerName, $dataTableName) {
+		makeFilters : function($myTable, $filterContainerName, $dataTableName, $tableMakerFunction) {
 			// parameters
 			//     myTable - the datatables constructor. Easiest way to get is to you "this" from inside initComplete function
 			//     filterContainerName - the CSS selector for the div that will contain the filter table
@@ -69,7 +69,9 @@ $(function() {
         		$($filterContainerName + " .filter-div input").val("");
         		$($filterContainerName + " .filter-banner .is-filtered").hide();
         		$($filterContainerName + " .filter-banner .filter-hider .filter-data-open").click();
-        		$($dataTableName).DataTable().ajax.reload();
+        		//recreate the table from scratch
+        		$($dataTableName).DataTable().destroy(false);
+        		$tableMakerFunction();
         	});
 		}
 			

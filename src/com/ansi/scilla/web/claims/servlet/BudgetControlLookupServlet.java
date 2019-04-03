@@ -1,10 +1,11 @@
 package com.ansi.scilla.web.claims.servlet;
 
 import java.sql.Connection;
-import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
@@ -13,9 +14,10 @@ import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.web.claims.query.BudgetControlLookupQuery;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.servlet.AbstractLookupServlet;
+import com.ansi.scilla.web.common.struts.SessionData;
+import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
-import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 
@@ -53,21 +55,18 @@ public class BudgetControlLookupServlet extends AbstractLookupServlet {
 
 	@Override
 	public LookupQuery makeQuery(Connection conn, HttpServletRequest request) {
-		Enumeration<String> ee = request.getParameterNames();
-		while ( ee.hasMoreElements() ) {
-			String key = ee.nextElement();
-			System.out.println( key + " ==> " + request.getParameter(key));
-		}
-
+		HttpSession session = request.getSession();
+		SessionData sessionData = (SessionData)session.getAttribute(SessionData.KEY);
 		
-		SessionUser user = AppUtils.getSessionUser(request);
+		SessionUser user = sessionData.getUser();
+		List<SessionDivision> divisionList = sessionData.getDivisionList();
 		try {
 			AnsiURL url = new AnsiURL(request, REALM, (String[])null);
 			String searchTerm = null;
 			if(request.getParameter("search[value]") != null){
 				searchTerm = request.getParameter("search[value]");
 			}
-			BudgetControlLookupQuery lookupQuery = new BudgetControlLookupQuery(user.getUserId());
+			BudgetControlLookupQuery lookupQuery = new BudgetControlLookupQuery(user.getUserId(), divisionList);
 			if ( searchTerm != null ) {
 				lookupQuery.setSearchTerm(searchTerm);
 			}

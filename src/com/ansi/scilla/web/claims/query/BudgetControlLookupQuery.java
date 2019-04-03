@@ -1,14 +1,16 @@
 package com.ansi.scilla.web.claims.query;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
+import org.apache.logging.log4j.LogManager;
 
 import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.common.jobticket.TicketType;
 import com.ansi.scilla.common.queries.SelectType;
-import com.ansi.scilla.web.common.query.LookupQuery;
+import com.ansi.scilla.web.common.struts.SessionDivision;
 
-public class BudgetControlLookupQuery extends LookupQuery {
+public class BudgetControlLookupQuery extends ClaimsQuery {
 
 	public static final String JOB_ID = "job_id";
 	public static final String ACT_DIVISION_ID = "act_division_id";
@@ -84,10 +86,10 @@ public class BudgetControlLookupQuery extends LookupQuery {
 		
 
 	private static final String sqlFromClause = "\n  "
-			+ "from ticket\n" + 
+			+ "from ticket\n" + 			
 			"join job on job.job_id = ticket.job_id\n" + 
 			"join quote on quote.quote_id = job.quote_id\n" + 
-			"join division on division.division_id = ticket.act_division_id\n" + 
+			"join division on division.division_id = ticket.act_division_id and division.division_id in ($DIVISION_USER_FILTER$)\n" + 
 			"join address job_site on job_site.address_id = quote.job_site_address_id\n" + 
 			"left outer join (\n" + 
 			"	select ticket_id, \n" + 
@@ -136,20 +138,22 @@ public class BudgetControlLookupQuery extends LookupQuery {
 	private Integer ticketFilter;
 	
 	
-	public BudgetControlLookupQuery(Integer userId) {
-		super(sqlSelectClause, sqlFromClause, baseWhereClause);
+	public BudgetControlLookupQuery(Integer userId, List<SessionDivision> divisionList) {
+		super(sqlSelectClause, makeFromClause(sqlFromClause, divisionList), baseWhereClause);
 		this.logger = LogManager.getLogger(this.getClass());
-		this.userId = userId;		
+		this.userId = userId;	
+		this.divisionList = divisionList;
 	}
 
-	public BudgetControlLookupQuery(Integer userId, String searchTerm) {
-		this(userId);
+	public BudgetControlLookupQuery(Integer userId, List<SessionDivision> divisionList, String searchTerm) {
+		this(userId, divisionList);
 		this.searchTerm = searchTerm;
 	}
 
 	
 
 	
+
 	public Integer getTicketFilter() {
 		return ticketFilter;
 	}
@@ -192,7 +196,6 @@ public class BudgetControlLookupQuery extends LookupQuery {
 		String joiner = StringUtils.isBlank(baseWhereClause) ? " where " : " and ";
 		
 		
-		
 		if ( StringUtils.isBlank(queryTerm) ) {
 			if ( this.ticketFilter != null ) {
 				whereClause = whereClause + joiner + " ticket.ticket_id=" + this.ticketFilter;
@@ -205,8 +208,11 @@ public class BudgetControlLookupQuery extends LookupQuery {
 					"\n OR ticket.ticket_id like '%" + queryTerm.toLowerCase() + "%'" +
 					")" ;
 		}
+		
+		
 		return whereClause;
 	}
+
 	
 	
 	
