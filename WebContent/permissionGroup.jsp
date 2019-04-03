@@ -72,6 +72,9 @@
 			.showNew {
 				cursor:pointer;
 			}
+			.center{
+			  	text-align: center;
+			}
 			#confirmDelete {
 				display:none;
 				background-color:#FFFFFF;
@@ -201,7 +204,13 @@
          	            { "orderable": false, "targets": -1 },
         	            { className: "dt-head-left", "targets": [1,2] },
         	            { className: "dt-body-center", "targets": [0,3] },
-        	            { className: "dt-right", "targets": []}
+        	            { className: "dt-right", "targets": []},
+        	            { width: '10%', "targets": 0 },
+        	            { width: '30%', "targets": 1 },
+        	            { width: '35%', "targets": 2 },
+        	            { width: '10%', "targets": [3,4,5] },
+        	            { "sClass": "center", "targets": [4,5] }
+        	            
         	         ],
         	        "paging": true,
 			        "ajax": {
@@ -691,34 +700,6 @@
    <tiles:put name="content" type="string">
     	<h1>Permissions</h1>
 	 	<table id="permissionGroupTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
-	        <colgroup>
-	        	<col style="width:5%;" />
-	    		<col style="width:30%;" />
-	    		<col style="width:35%;" />
-	    		<col style="width:10%;" />
-	    		<col style="width:10%;" />
-	    		<col style="width:10%;" />
-	    	</colgroup>
-	        <thead>
-	            <tr>
-	                <th>ID</th>
-	    			<th>Name</th>
-	    			<th>Description</th>
-	    			<th>Status</th>
-	    			<th>User Count</th>
-	    			<th>Action</th>
-	            </tr>
-	        </thead>
-	        <tfoot>
-	            <tr>
-	                <th>ID</th>
-	    			<th>Name</th>
-	    			<th>Description</th>
-	    			<th>Status</th>
-	    			<th>User Count</th>
-	    			<th>Action</th>
-	            </tr>
-	        </tfoot>
 	    </table>
 	    
 	    <input type="button" class="prettyWideButton showNew" value="New" />
