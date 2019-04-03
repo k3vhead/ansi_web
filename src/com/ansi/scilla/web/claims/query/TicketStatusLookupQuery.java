@@ -1,12 +1,14 @@
 package com.ansi.scilla.web.claims.query;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
+import org.apache.logging.log4j.LogManager;
 
 import com.ansi.scilla.common.queries.SelectType;
-import com.ansi.scilla.web.common.query.LookupQuery;
+import com.ansi.scilla.web.common.struts.SessionDivision;
 
-public class TicketStatusLookupQuery extends LookupQuery {
+public class TicketStatusLookupQuery extends ClaimsQuery {
 
 	public static final String JOB_ID = "job_id";
 	public static final String ACT_DIVISION_ID = "act_division_id";
@@ -72,7 +74,7 @@ public class TicketStatusLookupQuery extends LookupQuery {
 			+ "from ticket\n" + 
 			"join job on job.job_id = ticket.job_id\n" + 
 			"join quote on quote.quote_id = job.quote_id\n" + 
-			"join division on division.division_id = ticket.act_division_id\n" + 
+			"join division on division.division_id = ticket.act_division_id and division.division_id in ($DIVISION_USER_FILTER$)" + 
 			"join address job_site on job_site.address_id = quote.job_site_address_id\n" + 
 			"left outer join (\n" + 
 			"	select ticket_id, \n" + 
@@ -104,18 +106,18 @@ public class TicketStatusLookupQuery extends LookupQuery {
 			"	) as invoice_totals on invoice_totals.ticket_id = ticket.ticket_id";
 
 	private static final String baseWhereClause = "\n  ";
+
 	
 	
 	
-	
-	public TicketStatusLookupQuery(Integer userId) {
-		super(sqlSelectClause, sqlFromClause, baseWhereClause);
+	public TicketStatusLookupQuery(Integer userId, List<SessionDivision> divisionList) {
+		super(sqlSelectClause, makeFromClause(sqlFromClause, divisionList), baseWhereClause);
 		this.logger = LogManager.getLogger(this.getClass());
 		this.userId = userId;		
 	}
 
-	public TicketStatusLookupQuery(Integer userId, String searchTerm) {
-		this(userId);
+	public TicketStatusLookupQuery(Integer userId, List<SessionDivision> divisionList, String searchTerm) {
+		this(userId, divisionList);
 		this.searchTerm = searchTerm;
 	}
 
@@ -166,8 +168,6 @@ public class TicketStatusLookupQuery extends LookupQuery {
 		}
 		return whereClause;
 	}
-	
-	
 	
 	
 }

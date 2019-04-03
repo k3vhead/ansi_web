@@ -2,8 +2,10 @@ package com.ansi.scilla.web.claims.servlet;
 
 import java.sql.Connection;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
@@ -13,8 +15,9 @@ import com.ansi.scilla.web.claims.query.BudgetControlLookupQuery;
 import com.ansi.scilla.web.claims.query.TicketStatusLookupQuery;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.servlet.AbstractLookupServlet;
+import com.ansi.scilla.web.common.struts.SessionData;
+import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.common.struts.SessionUser;
-import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 
 public class TicketStatusLookupServlet extends AbstractLookupServlet {
@@ -51,12 +54,17 @@ public class TicketStatusLookupServlet extends AbstractLookupServlet {
 
 	@Override
 	public LookupQuery makeQuery(Connection conn, HttpServletRequest request) {
-		SessionUser user = AppUtils.getSessionUser(request);
+		HttpSession session = request.getSession();
+		SessionData sessionData = (SessionData)session.getAttribute(SessionData.KEY);
+		
+		SessionUser user = sessionData.getUser();
+		List<SessionDivision> divisionList = sessionData.getDivisionList();
+		
 		String searchTerm = null;
 		if(request.getParameter("search[value]") != null){
 			searchTerm = request.getParameter("search[value]");
 		}
-		LookupQuery lookupQuery = new TicketStatusLookupQuery(user.getUserId());
+		LookupQuery lookupQuery = new TicketStatusLookupQuery(user.getUserId(), divisionList);
 		if ( searchTerm != null ) {
 			lookupQuery.setSearchTerm(searchTerm);
 		}
