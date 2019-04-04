@@ -5,6 +5,7 @@ $(function() {
 			//     myTable - the datatables constructor. Easiest way to get is to you "this" from inside initComplete function
 			//     filterContainerName - the CSS selector for the div that will contain the filter table
 			//     dataTableName - the CSS selector for the datatables table
+			//	   tableMakerFunction - method that will reinitalize the table
 			var $filterTable = $("<table>");
         	
         	var dataTable = $($dataTableName).DataTable();
@@ -73,6 +74,16 @@ $(function() {
         		$($dataTableName).DataTable().destroy(false);
         		$tableMakerFunction();
         	});
+		},
+		
+		
+		
+		setFilterValue : function($filterContainerName, $colIdx, $value) {
+			console.log("setFilterValue: " + $filterContainerName +  " " + $colIdx + " " + $value)
+			$selector = $filterContainerName + " input[name='columns["+$colIdx+"][search][value]']"
+			console.log($selector);
+			$($selector).val($value);
+			$($filterContainerName + " .filter-banner .is-filtered").show();
 		}
 			
 			

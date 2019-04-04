@@ -160,6 +160,12 @@
             		var myTable = this;
 	            	BUDGETCONTROL.doFunctionBinding();
 	            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#displayTable", BUDGETCONTROL.createTable);
+	            	console.log("Init complete");
+	            	if ( BUDGETCONTROL.ticketFilter != null &&  BUDGETCONTROL.ticketFilter !='' ) {
+	            		console.log("Seting filter");
+	            		LOOKUPUTILS.setFilterValue("#filter-container", 2, BUDGETCONTROL.ticketFilter);
+	            		BUDGETCONTROL.ticketFilter='';
+	            	}
 
             	},
 	            

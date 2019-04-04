@@ -142,8 +142,11 @@
     			            } },
     			            { title: "<bean:message key="field.label.action" />",  searchable:false, data: function ( row, type, set ) {	
     			            	{
-    				            	var $edit = '<a href="#" class="editAction" data-id="'+row.labor_id+'"><webthing:edit>Edit</webthing:edit></a>';
-    			            		return "<ansi:hasPermission permissionRequired='CLAIMS_WRITE'>"+$edit+"</ansi:hasPermission>";
+    				            	var $claim = '';
+    				            	if (row.ticket_status=='D' || row.ticket_status=='C') {
+    				            		$claim = '<a href="#" class="claimAction" data-id="'+row.ticket_id+'"><webthing:invoiceIcon styleClass="green">Budget Control</webthing:invoiceIcon></a>';
+    				            	}
+    			            		return "<ansi:hasPermission permissionRequired='CLAIMS_READ'>"+$claim+"</ansi:hasPermission>";
     			            	}
     			            	
     			            } }],
@@ -161,10 +164,9 @@
         		
             	
             	doFunctionBinding : function () {
-					$( ".editAction" ).on( "click", function($clickevent) {
-						var $laborId = $(this).attr("data-id");
-						alert("Something useful goes here");
-						//TICKETSTATUS.doGetLabor($laborId);
+					$( ".claimAction" ).on( "click", function($clickevent) {
+						var $ticketId = $(this).attr("data-id");
+						location.href="budgetControlLookup.html?id="+$ticketId
 					});
 				},
             	
