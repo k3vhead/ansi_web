@@ -1722,10 +1722,30 @@
 		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-created-thru").html($jobDetail.lastCreated.startDate);
 		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-ticket-list").attr("href", "ticketLookup.html?jobId="+$jobId);
 		            	
+		            	if ($jobDetail.job.updatedFirstName==null) {
+		            		updatedFirstName='';
+		            	} else {
+		            		updatedFirstName=$jobDetail.job.updatedFirstName;
+		            	}
+		            	if ($jobDetail.job.updatedLastName==null) {
+		            		updatedLastName='';
+		            	} else {
+		            		updatedLastName=$jobDetail.job.updatedLastName;
+		            	}
+		            	if ($jobDetail.job.addedFirstName==null) {
+		            		addedFirstName='';
+		            	} else {
+		            		addedFirstName=$jobDetail.job.addedFirstName;
+		            	}
+		            	if ($jobDetail.job.addedLastName==null) {
+		            		addedLastName='';
+		            	} else {
+		            		addedLastName=$jobDetail.job.addedLastName;
+		            	}
 		            	
-		            	$($destination + " .jobAuditDisplayPanel .job-audit-created-by").html($jobDetail.job.addedFirstName + " " + $jobDetail.job.addedLastName);	
+		            	$($destination + " .jobAuditDisplayPanel .job-audit-created-by").html(addedFirstName + " " + addedLastName);	
 		            	$($destination + " .jobAuditDisplayPanel .job-audit-created-date").html($jobDetail.job.addedDate);	
-		            	$($destination + " .jobAuditDisplayPanel .job-audit-updated-by").html($jobDetail.job.updatedFirstName + " " + $jobDetail.job.updatedLastName);	
+		            	$($destination + " .jobAuditDisplayPanel .job-audit-updated-by").html(updatedFirstName + " " + updatedLastName);	
 		            	$($destination + " .jobAuditDisplayPanel .job-audit-updated-date").html($jobDetail.job.updatedDate);
 		            	
 		            	$anchorName = "job" + $jobDetail.job.jobId;

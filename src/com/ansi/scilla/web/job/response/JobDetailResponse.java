@@ -47,12 +47,20 @@ public class JobDetailResponse extends ApplicationObject {
 		job.selectOne(conn);
 		
 		User updatedBy = new User();
-		updatedBy.setUserId(job.getUpdatedBy());
-		updatedBy.selectOne(conn);
+		try {
+			updatedBy.setUserId(job.getUpdatedBy());
+			updatedBy.selectOne(conn);
+		} catch ( RecordNotFoundException e) {
+			// not good, but not fatal
+		}
 		
 		User addedBy = new User();
+		try {
 		addedBy.setUserId(job.getAddedBy());
 		addedBy.selectOne(conn);
+		} catch ( RecordNotFoundException e ) {
+			// not good, but not fatal here either
+		}
 
 		this.job = new JobDetail(job, addedBy, updatedBy);
 
