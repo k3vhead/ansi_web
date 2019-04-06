@@ -23,8 +23,13 @@
     
     
     <tiles:put name="headextra" type="string">
-    	<link rel="stylesheet" href="css/lookup.css" />
+       	<link rel="stylesheet" href="css/lookup.css" />
+    	<link rel="stylesheet" href="css/ticket.css" />
+    	<script type="text/javascript" src="js/ansi_utils.js"></script>
+    	<script type="text/javascript" src="js/addressUtils.js"></script>
     	<script type="text/javascript" src="js/lookup.js"></script> 
+    	<script type="text/javascript" src="js/ticket.js"></script> 
+    
         <style type="text/css">
         	#filter-container {
         		width:402px;
@@ -41,6 +46,12 @@
 				height:30px;
 				min-height:30px;
 			}
+			#ticket-modal {
+				display:none;	
+			}
+			.ticket-clicker {
+				color:#000000;
+			}			
         </style>
         
         <script type="text/javascript">
@@ -53,6 +64,7 @@
         		init : function() {
         			BUDGETCONTROL.createTable();
         			BUDGETCONTROL.makeClickers();
+        			BUDGETCONTROL.makeModals();
         		},
         		
 
@@ -101,7 +113,7 @@
     			            	if(row.job_site_name != null){return (row.job_site_name+"");}
     			            } },
     			            { title: "Ticket", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
-    			            	if(row.ticket_id != null){return (row.ticket_id+"");}
+    			            	if(row.ticket_id != null){return ('<a href="#" data-id="'+row.ticket_id+'" class="ticket-clicker">'+row.ticket_id+'</a>');}
     			            } },
     			            { title: "Status", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.ticket_status != null){return ('<span class="tooltip">' + row.ticket_status + '<span class="tooltiptext">' + row.ticket_status_description + '</span></span>');}
@@ -158,7 +170,7 @@
         		
             	initComplete : function() {
             		var myTable = this;
-	            	BUDGETCONTROL.doFunctionBinding();
+	            	//BUDGETCONTROL.doFunctionBinding();
 	            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#displayTable", BUDGETCONTROL.createTable);
 	            	console.log("Init complete");
 	            	if ( BUDGETCONTROL.ticketFilter != null &&  BUDGETCONTROL.ticketFilter !='' ) {
@@ -181,6 +193,12 @@
 						var $laborId = $(this).attr("data-id");
 						BUDGETCONTROL.doGetLabor($laborId);
 					});
+					$(".ticket-clicker").on("click", function($clickevent) {
+						$clickevent.preventDefault();
+						var $ticketId = $(this).attr("data-id");
+						TICKETUTILS.doTicketViewModal("#ticket-modal",$ticketId);
+						$("#ticket-modal").dialog("open");
+					});
 				},
             	
 
@@ -190,6 +208,12 @@
               	  		return false;
               	    });
             	},
+            	
+            	
+            	
+            	makeModals : function() {
+            		TICKETUTILS.makeTicketViewModal("#ticket-modal")
+            	}
 
         	}
       	  	
@@ -215,6 +239,8 @@
     <input type="button" value="New" class="prettyWideButton" id="new-NDL-button" />
     
     <webthing:scrolltop />
+    
+    <webthing:ticketModal ticketContainer="ticket-modal" />
     
    
     </tiles:put>

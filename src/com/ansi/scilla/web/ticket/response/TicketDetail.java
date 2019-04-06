@@ -60,6 +60,7 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 	private AddressDetail billToAddress;
 	private String serviceDescription;
 	private String jobFrequency;
+	private String jobFrequencyDesc;
 	private String invoiceTerms;
 	private String invoiceStyle;
 	private Date invoiceDate;
@@ -136,7 +137,9 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		this.divisionDisplay = ticketPaymentTotals.getDivisionDisplay();
 		this.serviceDescription = ticketPaymentTotals.getServiceDescription();
 		if ( ! StringUtils.isBlank(ticketPaymentTotals.getJobFrequency() )) {
-			this.jobFrequency = JobFrequency.get(ticketPaymentTotals.getJobFrequency()).display();
+//			this.jobFrequency = JobFrequency.get(ticketPaymentTotals.getJobFrequency()).display();
+			this.jobFrequency = JobFrequency.lookup(ticketPaymentTotals.getJobFrequency()).abbrev();
+			this.jobFrequencyDesc = JobFrequency.lookup(ticketPaymentTotals.getJobFrequency()).display();
 		}
 		if ( ! StringUtils.isBlank(ticketPaymentTotals.getInvoiceStyle())) {
 			this.invoiceStyle = InvoiceStyle.valueOf(ticketPaymentTotals.getInvoiceStyle()).display();
@@ -509,6 +512,14 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 
 	public void setActPoNumber(String actPoNumber) {
 		this.actPoNumber = actPoNumber;
+	}
+
+	public String getJobFrequencyDesc() {
+		return jobFrequencyDesc;
+	}
+
+	public void setJobFrequencyDesc(String jobFrequencyDesc) {
+		this.jobFrequencyDesc = jobFrequencyDesc;
 	}
 
 	

@@ -23,6 +23,13 @@
     
     
     <tiles:put name="headextra" type="string">
+       	<link rel="stylesheet" href="css/lookup.css" />
+    	<link rel="stylesheet" href="css/ticket.css" />
+    	<script type="text/javascript" src="js/ansi_utils.js"></script>
+    	<script type="text/javascript" src="js/addressUtils.js"></script>
+    	<script type="text/javascript" src="js/lookup.js"></script> 
+    	<script type="text/javascript" src="js/ticket.js"></script> 
+    
         <style type="text/css">
 			#displayTable {
 				width:100%;
@@ -34,6 +41,11 @@
 				width:400px;
 				padding:15px;
 			}
+			#filter-container {
+        		width:402px;
+        		float:right;
+        	}
+        	
 			.prettyWideButton {
 				height:30px;
 				min-height:30px;
@@ -59,6 +71,12 @@
 			}
 			.dataTables_wrapper {
 				padding-top:10px;
+			}
+			#ticket-modal {
+				display:none;	
+			}
+			.ticket-clicker {
+				color:#000000;
 			}
         </style>
         
@@ -112,7 +130,7 @@
 			        	},
 			        columns: [
 			            { title: "<bean:message key="field.label.ticketId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-			            	if(row.ticketId != null){return (row.ticketId+"");}
+			            	if(row.ticketId != null){return ('<a href="#" data-id="'+row.ticketId+'" class="ticket-clicker">'+row.ticketId+'</a>');}
 			            } },
 			            { title: "<bean:message key="field.label.ticketStatus" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.ticketStatus != null){return (row.ticketStatus+"");}
@@ -193,81 +211,87 @@
         			
             
             function init(){
-					$.each($('input'), function () {
-				        $(this).css("height","20px");
-				        $(this).css("max-height", "20px");
-				    });
-					
-					createTable();
+				$.each($('input'), function () {
+			        $(this).css("height","20px");
+			        $(this).css("max-height", "20px");
+			    });
+				
+				createTable();
+				
+           		TICKETUTILS.makeTicketViewModal("#ticket-modal")
+
             }; 
 				
-				function doFunctionBinding() {
-					$( ".editAction" ).on( "click", function($clickevent) {
-						 doEdit($clickevent);
-					});					
-					$(".print-link").on( "click", function($clickevent) {
-						doPrint($clickevent);
+			function doFunctionBinding() {
+				$( ".editAction" ).on( "click", function($clickevent) {
+					 doEdit($clickevent);
+				});					
+				$(".print-link").on( "click", function($clickevent) {
+					doPrint($clickevent);
+				});
+				$(".ticket-clicker").on("click", function($clickevent) {
+					$clickevent.preventDefault();
+					var $ticketId = $(this).attr("data-id");
+					TICKETUTILS.doTicketViewModal("#ticket-modal",$ticketId);
+					$("#ticket-modal").dialog("open");
+				});
+
+			}
+				
+			function doEdit($clickevent) {
+				var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
+					var $url = 'ticketTable/' + $rowid;
+					//console.log("YOU PASSED ROW ID:" + $rowid);
+					var jqxhr = $.ajax({
+						type: 'GET',
+						url: $url,
+						success: function($data) {
+							//console.log($data);
+							
+			        		$("#ticketId").val(($data.data.codeList[0]).ticketId);
+			        		$("#ticketStatus").val(($data.data.codeList[0]).ticketStatus);
+			        		$("#divisionNbr").val(($data.data.codeList[0]).divisionNbr);
+			        		$("#billToName").val(($data.data.codeList[0]).billToName);
+			        		$("#jobSiteName").val(($data.data.codeList[0]).jobSiteName);
+			        		$("#jobSiteAddress").val(($data.data.codeList[0]).jobSiteAddress);
+			        		$("#startDate").val(($data.data.codeList[0]).startDate);
+			        		$("#jobFreq").val(($data.data.codeList[0]).jobFreq);
+			        		$("#pricePerCleaning").val(($data.data.codeList[0]).pricePerCleaning);
+			        		$("#jobNbr").val(($data.data.codeList[0]).jobNbr);
+			        		$("#jobId").val(($data.data.codeList[0]).jobId);
+			        		$("#serviceDescription").val(($data.data.codeList[0]).serviceDescription);
+			        		$("#processDate").val(($data.data.codeList[0]).processDate);
+			        		$("#invoiceId").val(($data.data.codeList[0]).invoiceId);
+			        		$("#amountDue").val(($data.data.codeList[0]).amountDue);
+			        		
+			        		$("#tId").val(($data.data.codeList[0]).ticketId);
+			        		$("#updateOrAdd").val("update");
+			        		$("#addTicketTableForm").dialog( "open" );
+						},
+						statusCode: {
+							403: function($data) {
+								$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+							} 
+						},
+						dataType: 'json'
 					});
-					//$(".editJob").on( "click", function($clickevent) {
-					//	console.debug("clicked a job")
-					//	var $jobId = $(this).data("jobid");
-					//	location.href="jobMaintenance.html?id=" + $jobId;
-					//});
-				}
-				
-				function doEdit($clickevent) {
-					var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
-						var $url = 'ticketTable/' + $rowid;
-						//console.log("YOU PASSED ROW ID:" + $rowid);
-						var jqxhr = $.ajax({
-							type: 'GET',
-							url: $url,
-							success: function($data) {
-								//console.log($data);
-								
-				        		$("#ticketId").val(($data.data.codeList[0]).ticketId);
-				        		$("#ticketStatus").val(($data.data.codeList[0]).ticketStatus);
-				        		$("#divisionNbr").val(($data.data.codeList[0]).divisionNbr);
-				        		$("#billToName").val(($data.data.codeList[0]).billToName);
-				        		$("#jobSiteName").val(($data.data.codeList[0]).jobSiteName);
-				        		$("#jobSiteAddress").val(($data.data.codeList[0]).jobSiteAddress);
-				        		$("#startDate").val(($data.data.codeList[0]).startDate);
-				        		$("#jobFreq").val(($data.data.codeList[0]).jobFreq);
-				        		$("#pricePerCleaning").val(($data.data.codeList[0]).pricePerCleaning);
-				        		$("#jobNbr").val(($data.data.codeList[0]).jobNbr);
-				        		$("#jobId").val(($data.data.codeList[0]).jobId);
-				        		$("#serviceDescription").val(($data.data.codeList[0]).serviceDescription);
-				        		$("#processDate").val(($data.data.codeList[0]).processDate);
-				        		$("#invoiceId").val(($data.data.codeList[0]).invoiceId);
-				        		$("#amountDue").val(($data.data.codeList[0]).amountDue);
-				        		
-				        		$("#tId").val(($data.data.codeList[0]).ticketId);
-				        		$("#updateOrAdd").val("update");
-				        		$("#addTicketTableForm").dialog( "open" );
-							},
-							statusCode: {
-								403: function($data) {
-									$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-								} 
-							},
-							dataType: 'json'
-						});
-					//console.log("Edit Button Clicked: " + $rowid);
-				}
+				//console.log("Edit Button Clicked: " + $rowid);
+			}
 				
 				
 				
-				function doPrint($clickevent) {
-					var $ticketId = $clickevent.currentTarget.attributes['data-id'].value;
-					console.debug("ROWID: " + $ticketId);
-					var a = document.createElement('a');
-                    var linkText = document.createTextNode("Download");
-                    a.appendChild(linkText);
-                    a.title = "Download";
-                    a.href = "ticketPrint/" + $ticketId;
-                    a.target = "_new";   // open in a new window
-                    document.body.appendChild(a);
-                    a.click();				}
+			function doPrint($clickevent) {
+				var $ticketId = $clickevent.currentTarget.attributes['data-id'].value;
+				console.debug("ROWID: " + $ticketId);
+				var a = document.createElement('a');
+                var linkText = document.createTextNode("Download");
+                a.appendChild(linkText);
+                a.title = "Download";
+                a.href = "ticketPrint/" + $ticketId;
+                a.target = "_new";   // open in a new window
+                document.body.appendChild(a);
+                a.click();				
+			}
         });
         		
         </script>        
@@ -288,6 +312,9 @@
     		<span class="orange"><bean:message key="field.label.statusFilter" />: <c:out value="${ANSI_TICKET_LOOKUP_STATUS}" /></span><br />
     	</c:if>
     	  	
+    	  	
+ 	<webthing:lookupFilter filterContainer="filter-container" />
+
  	<table id="ticketTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
         <colgroup>
         	<col style="width:5%;" />
@@ -353,6 +380,8 @@
     </table>
     
     <webthing:scrolltop />
+
+    <webthing:ticketModal ticketContainer="ticket-modal" />
 
     </tiles:put>
 		

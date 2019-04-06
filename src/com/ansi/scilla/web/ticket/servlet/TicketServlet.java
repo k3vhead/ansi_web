@@ -12,9 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
-import com.ansi.scilla.common.db.PermissionLevel;
-import com.ansi.scilla.common.db.TaxRate;
 import com.ansi.scilla.common.db.Job;
+import com.ansi.scilla.common.db.TaxRate;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.jobticket.JobUtils;
 import com.ansi.scilla.common.jobticket.TicketStatus;
@@ -138,7 +137,7 @@ public class TicketServlet extends AbstractServlet {
 		AnsiURL ansiURL = null;
 		try {
 			ansiURL = new AnsiURL(request, realm, (String[])null); //which panel to 122
-			AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+			AppUtils.validateSession(request, Permission.TICKET_READ);
 			Connection conn = null;
 			TicketReturnResponse ticketReturnResponse = null;
 			try {
@@ -174,7 +173,7 @@ public class TicketServlet extends AbstractServlet {
 			String jsonString = super.makeJsonString(request);
 			logger.log(Level.DEBUG, "jsonstring:"+jsonString);
 
-			SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET_WRITE);
 			
 			Ticket ticket = new Ticket();
 			try{

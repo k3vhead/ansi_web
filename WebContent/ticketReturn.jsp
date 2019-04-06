@@ -394,7 +394,7 @@
 				//	 location.href="jobMaintenance.html?id=" + $data.ticketDetail.jobId;
 				//});
 				$("#serviceDescription").html($data.ticketDetail.serviceDescription);
-				$("#jobFrequency").html($data.ticketDetail.jobFrequency);
+				$("#jobFrequency").html($data.ticketDetail.jobFrequencyDesc);
 				$("#invoiceStyle").html($data.ticketDetail.invoiceStyle);
 				$("#poNumber").html($data.ticketDetail.actPoNumber);
 			}

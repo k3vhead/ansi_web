@@ -1,0 +1,97 @@
+#jobId {
+	cursor:pointer;
+	text-decoration:underline;
+}
+#jobProposal {
+	border:solid 1px #000000;
+}
+#jobActivation {
+	border:solid 1px #000000;
+	height:100%;
+}
+#jobSchedule {
+	border:solid 1px #000000;
+	height:100%;
+}
+#billTo {
+	border:solid 1px #000000;
+}
+#jobSite {
+	border:solid 1px #000000;
+}
+#jobDates {
+	border:solid 1px #000000;
+}
+#jobInvoice {
+	border:solid 1px #000000;
+}
+td.jobTableCell {
+	width:50%;
+	vertical-align:top;
+}
+.formFieldDisplay {
+	margin-left:30px;
+}
+#invoiceModal {
+	display:none;
+}
+#displayTicketTable {
+ 			border-collapse: collapse;
+	width:90%;
+}
+
+#displayInvoiceTable {
+ 	border-collapse: collapse;
+	width:90%;
+}			
+#displaySummaryTable {
+ 	border-collapse: collapse;
+	width:90%;
+}
+#selectPanel {
+	width:100%;
+	display:none;
+}
+#summaryTable{
+	width:100%;
+}
+#ticketTable {
+	width:100%;
+}
+#invoiceTable {
+	width:100%;
+}
+.ticketModalContainer td {
+	border: 1px solid #dddddd;
+	text-align: left;
+	padding: 8px;
+}
+.ticketModalContainer th {
+	border: 1px solid #dddddd;
+	text-align: left;
+	padding: 8px;
+}
+#displaySummaryTable th {
+	white-space:nowrap;
+}
+.ansi-address-label {
+	font-weight:bold;
+}
+.bottomRow {
+	border-bottom:solid 1px #000000;
+}
+#status {
+	white-space:nowrap;
+}
+.divisionDisplay {
+	white-space:nowrap;
+}
+.jobFrequency {
+	white-space:nowrap;
+}
+.joblink {
+	color:#000000;
+}
+.poNumber {
+	white-space:nowrap;
+}

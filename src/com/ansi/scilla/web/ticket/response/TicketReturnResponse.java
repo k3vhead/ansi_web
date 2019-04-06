@@ -12,6 +12,8 @@ public class TicketReturnResponse extends MessageResponse {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	public static final String KEY = "com_ansi_scilla_ticket_return_response";
+	
 	private TicketDetail ticketDetail;
 	private InvoiceDetail invoiceDetail;
 	

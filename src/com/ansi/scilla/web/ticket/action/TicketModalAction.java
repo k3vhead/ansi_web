@@ -1,9 +1,10 @@
 package com.ansi.scilla.web.ticket.action;
 
+import java.sql.Connection;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -15,8 +16,9 @@ import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
+import com.ansi.scilla.web.ticket.response.TicketReturnResponse;
 
-public class TicketReturnAction extends SessionPageDisplayAction {
+public class TicketModalAction extends SessionPageDisplayAction {
 
 	@Override
 	public ActionForward execute(ActionMapping mapping, ActionForm actionForm, HttpServletRequest request,
@@ -24,15 +26,19 @@ public class TicketReturnAction extends SessionPageDisplayAction {
 		
 		
 		ActionForward forward = mapping.findForward(FORWARD_IS_LOGIN);
+		IdForm form = (IdForm)actionForm;
+		Connection conn = null;
 		try {
-			AppUtils.validateSession(request, Permission.TICKET_WRITE);
-			IdForm form = (IdForm)actionForm;
-			if ( form != null && ! StringUtils.isBlank(form.getId())) {
-				request.setAttribute("ANSI_TICKET_ID", form.getId());
-			}
+			conn = AppUtils.getDBCPConn();
+			conn.setAutoCommit(false);
+			AppUtils.validateSession(request, Permission.TICKET_READ);
+			TicketReturnResponse ticketReturnResponse = new TicketReturnResponse(conn, Integer.valueOf(form.getId()));
+			request.setAttribute(TicketReturnResponse.KEY, ticketReturnResponse);
 			forward = mapping.findForward(FORWARD_IS_VALID);
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
 			forward = mapping.findForward(FORWARD_IS_LOGIN);
+		} finally {
+			AppUtils.closeQuiet(conn);
 		}
 		
 		
