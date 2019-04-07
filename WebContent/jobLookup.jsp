@@ -107,46 +107,46 @@
     			        	},
     			        columns: [
     			        	// if you change any of these, you'll need to change the jobColumns/pacColumns/contactColumns lists also
-    			            { title: "<bean:message key="field.label.jobId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			            { width: "6%", title: "<bean:message key="field.label.jobId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
     			            	if(row.jobId != null){return (row.jobId+"");}
     			            } },
-    			            { title: "<bean:message key="field.label.quoteName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "6%", title: "<bean:message key="field.label.quoteName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.quoteId != null){return ('<ansi:hasPermission permissionRequired="QUOTE"><a href="quoteMaintenance.html?id='+ row.quoteId+ '" style="color:#404040"></ansi:hasPermission>' + row.quoteNumber + row.revision +'<ansi:hasPermission permissionRequired="QUOTE"></ansi:hasPermission>');}
     			            } },
-    			            { title: "<bean:message key="field.label.jobStatus" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "4%", title: "<bean:message key="field.label.jobStatus" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.jobStatus != null){return (row.jobStatus+"");}
     			            } },
-    			            { title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "6%", title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.divisionNbr != null){return (row.divisionNbr+"-"+row.divisionCode);}
     			            } },
-    			            { title: "<bean:message key="field.label.billToName" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			            { width: "10%", title: "<bean:message key="field.label.billToName" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
     			            	if(row.billToName != null){return (row.billToName+"");}
     			            } },
-    			            { title: "<bean:message key="field.label.jobSiteName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "10%", title: "<bean:message key="field.label.jobSiteName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.jobSiteName != null){return (row.jobSiteName+"");}
     			            } },
-    			            { title: "<bean:message key="field.label.jobSiteAddress" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "10%", title: "<bean:message key="field.label.jobSiteAddress" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.jobSiteAddress != null){return (row.jobSiteAddress+", " + row.jobSiteCity + ", " + row.jobSiteState );}
     			            } },
-    			            { title: "<bean:message key="field.label.startDate" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "4%", title: "<bean:message key="field.label.startDate" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.startDate != null){return (row.startDate+"");}
     			            } },
-    			            { title: "<bean:message key="field.label.jobFrequency" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "4%", title: "<bean:message key="field.label.jobFrequency" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.jobFrequency != null){return (row.jobFrequency+"");}
     			            } },
-    			            { title: "<bean:message key="field.label.pricePerCleaning" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "4%", title: "<bean:message key="field.label.pricePerCleaning" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.pricePerCleaning != null){return (row.pricePerCleaning+"");}
     			            } },
-    			            { title: "<bean:message key="field.label.jobNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
+    			            { width: "4%", title: "<bean:message key="field.label.jobNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
     			            	if(row.jobNbr != null){return (row.jobNbr+"");}
     			            } },
-    			            { title: "<bean:message key="field.label.serviceDescription" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "24%", title: "<bean:message key="field.label.serviceDescription" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.serviceDescription != null){return (row.serviceDescription+"");}
     			            } },
-    			            { title: "<bean:message key="field.label.poNumber" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "4%", title: "<bean:message key="field.label.poNumber" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.poNumber != null){return (row.poNumber+"");}
     			            } },
-    			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
+    			            { width: "4%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
     			            	//console.log(row);
     			            	{
     				            	var $edit = '<a href="jobMaintenance.html?id='+row.jobId+'" class="editAction" data-id="'+row.jobId+'"><webthing:edit>View</webthing:edit></a>';
@@ -198,58 +198,7 @@
     	<h1>Job Lookup</h1>
     	    	
 	 	<table id="jobTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
-	       	<colgroup>
-	        	<col style="width:4%;" />
-	        	<col style="width:4%;" />
-	    		<col style="width:5%;" />    		
-	    		<col style="width:6%;" />
-	    		<col style="width:10%;" />
-	    		<col style="width:10%;" />
-	    		<col style="width:10%;" />
-	    		<col style="width:6%;" />
-	    		<col style="width:5%;" />
-	    		<col style="width:7%;" />
-	    		<col style="width:5%;" />
-	    		<col style="width:24%;" />
-	    		<col style="width:4%;" />
-	    		<col style="width:6%;" />
-	   		</colgroup>
-	        <thead>
-	            <tr>
-	                <th><bean:message key="field.label.jobId" /></th>
-	                <th><bean:message key="field.label.quoteName" /></th>
-	    			<th><bean:message key="field.label.jobStatus" /></th>
-	    			<th><bean:message key="field.label.divisionNbr" /></th>
-	    			<th><bean:message key="field.label.billToName" /></th>
-	    			<th><bean:message key="field.label.jobSiteName" /></th>
-	    			<th><bean:message key="field.label.jobSiteAddress" /></th>
-	    			<th><bean:message key="field.label.startDate" /></th>
-	    			<th><bean:message key="field.label.jobFrequency" /></th>
-	    			<th><bean:message key="field.label.pricePerCleaning" /></th>
-	    			<th><bean:message key="field.label.jobNbr" /></th>
-	    			<th><bean:message key="field.label.serviceDescription" /></th>
-	    			<th><bean:message key="field.label.poNumber" /></th>
-	    			<th><bean:message key="field.label.action" /></th>
-	            </tr>
-	        </thead>
-	        <tfoot>
-	            <tr>
-	                <th><bean:message key="field.label.jobId" /></th>
-	                <th><bean:message key="field.label.quoteName" /></th>
-	    			<th><bean:message key="field.label.jobStatus" /></th>
-	    			<th><bean:message key="field.label.divisionNbr" /></th>
-	    			<th><bean:message key="field.label.billToName" /></th>
-	    			<th><bean:message key="field.label.jobSiteName" /></th>
-	    			<th><bean:message key="field.label.jobSiteAddress" /></th>
-	    			<th><bean:message key="field.label.startDate" /></th>
-	    			<th><bean:message key="field.label.jobFrequency" /></th>
-	    			<th><bean:message key="field.label.pricePerCleaning" /></th>
-	    			<th><bean:message key="field.label.jobNbr" /></th>
-	    			<th><bean:message key="field.label.serviceDescription" /></th>
-	    			<th><bean:message key="field.label.poNumber" /></th>
-	    			<th><bean:message key="field.label.action" /></th>
-	            </tr>
-	        </tfoot>
+	       	
 	    </table>
 	    
 	    <webthing:scrolltop />
