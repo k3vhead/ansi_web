@@ -19,6 +19,7 @@ public class ClaimDetailLookupQuery extends LookupQuery {
 	public static final String WORK_DATE = "work_date";
 	public static final String WASHER_NAME = "washer_name";
 	public static final String BUDGET = "budget";
+	public static final String OM_NOTES = "om_notes";
 	public static final String TICKET_CLAIM_DL_AMT = "ticket_claim_dl_amt";
 	public static final String TICKET_CLAIM_DL_EXP = "ticket_claim_dl_exp";
 	public static final String TICKET_CLAIM_DL_TOTAL = "ticket_claim_dl_total";
@@ -50,6 +51,7 @@ public class ClaimDetailLookupQuery extends LookupQuery {
 			", concat(ansi_user.last_name,', ', ansi_user.first_name) as washer_name\r\n" + 
 			", job.price_per_cleaning as total_volume\r\n" + 
 			", job.budget\r\n" + 
+			", job.om_notes\r\n" +
 			", isnull(ticket_claim.volume,0.00) as ticket_claim_dl_volume\r\n" + 
 			", isnull(ticket_claim.dl_amt,0.00) as ticket_claim_dl_amt\r\n" + 
 			", 0.00 as ticket_claim_dl_exp\r\n" + 

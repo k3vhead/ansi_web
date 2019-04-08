@@ -2,9 +2,11 @@ package com.ansi.scilla.web.test.claims;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.util.List;
 
 import com.ansi.scilla.common.utils.AppUtils;
 import com.ansi.scilla.web.claims.query.BudgetControlLookupQuery;
+import com.ansi.scilla.web.common.struts.SessionDivision;
 
 public class TestBudgetControlLookup {
 
@@ -16,7 +18,7 @@ public class TestBudgetControlLookup {
 			conn.setAutoCommit(false);
 			
 //			BudgetControlLookupQuery query = new BudgetControlLookupQuery(5);
-			BudgetControlLookupQuery query = new BudgetControlLookupQuery(5, "harlem irving");
+			BudgetControlLookupQuery query = new BudgetControlLookupQuery(5, (List<SessionDivision>)null, "harlem irving");
 			query.setTicketFilter(780741);
 			Integer countAll = query.countAll(conn);
 			System.out.println("All:" + countAll);

@@ -69,6 +69,14 @@
             <forward name="valid" path="/claims/claimDetailLookup.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
+        <action
+            path="/claimEntry"
+            type="com.ansi.scilla.web.claims.action.ClaimEntryAction"
+            name="idForm"
+            scope="request">
+            <forward name="valid" path="/claims/claimEntry.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
 		<action
             path="/cashReceiptsRegisterReport"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">

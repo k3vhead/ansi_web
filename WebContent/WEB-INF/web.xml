@@ -126,6 +126,18 @@
 
 
     <servlet>
+        <servlet-name>claimEntry</servlet-name>
+        <servlet-class>com.ansi.scilla.web.claims.servlet.ClaimEntryServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>claimEntry</servlet-name>
+        <url-pattern>/claims/claimEntry/*</url-pattern>
+    </servlet-mapping>
+
+
+
+
+    <servlet>
         <servlet-name>ticketStatusLookup</servlet-name>
         <servlet-class>com.ansi.scilla.web.claims.servlet.TicketStatusLookupServlet</servlet-class>
     </servlet>
