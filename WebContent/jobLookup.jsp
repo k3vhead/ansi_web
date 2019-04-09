@@ -157,10 +157,10 @@
     			            } }],
     			            "initComplete": function(settings, json) {
     			            	//console.log(json);
-    			            	JOBLOOKUP.doFunctionBinding();
+    			            	//JOBLOOKUP.doFunctionBinding();
     			            },
     			            "drawCallback": function( settings ) {
-    			            	JOBLOOKUP.doFunctionBinding();
+    			            	//JOBLOOKUP.doFunctionBinding();
     			            }
     			    } );
             	},
