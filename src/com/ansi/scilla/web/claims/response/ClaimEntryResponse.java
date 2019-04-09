@@ -33,6 +33,8 @@ public class ClaimEntryResponse extends MessageResponse {
 	private Double availableDirectLabor;
 	private String omNotes;	
 	
+	private List<PassthruExpenseItem> expenseList;
+	
 	public ClaimEntryResponse(Connection conn, Integer ticketId, Integer userId) throws Exception {
 		super();
 		this.ticketId = ticketId;
@@ -49,6 +51,8 @@ public class ClaimEntryResponse extends MessageResponse {
 		this.availableVolume = ((BigDecimal)claimDetail.get(ClaimDetailLookupQuery.VOLUME_REMAINING)).doubleValue();
 		TicketStatus ticketStatus = TicketStatus.lookup(this.ticketStatus);
 		this.ticketStatusDesc = ticketStatus.display();
+		
+		this.expenseList = PassthruExpenseItem.makePassthruExpenseList(conn, ticketId);
 	}
 	
 	
@@ -124,10 +128,16 @@ public class ClaimEntryResponse extends MessageResponse {
 	public void setOmNotes(String omNotes) {
 		this.omNotes = omNotes;
 	}
+	public List<PassthruExpenseItem> getExpenseList() {
+		return expenseList;
+	}
+	public void setExpenseList(List<PassthruExpenseItem> expenseList) {
+		this.expenseList = expenseList;
+	}
 
-	
-	
-	
+
+
+
 	public class ClaimEntryResponseMaker extends ClaimDetailLookupQuery {
 
 		private static final long serialVersionUID = 1L;
