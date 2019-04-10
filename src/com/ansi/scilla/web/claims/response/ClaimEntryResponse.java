@@ -10,10 +10,15 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.web.claims.query.ClaimDetailLookupQuery;
 import com.ansi.scilla.web.common.response.MessageResponse;
+import com.ansi.scilla.web.common.struts.SessionDivision;
+import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.ColumnFilter;
+import com.ansi.scilla.web.common.utils.Division2SessionDivisionTransformer;
 
 public class ClaimEntryResponse extends MessageResponse {
 
@@ -38,7 +43,7 @@ public class ClaimEntryResponse extends MessageResponse {
 	public ClaimEntryResponse(Connection conn, Integer ticketId, Integer userId) throws Exception {
 		super();
 		this.ticketId = ticketId;
-		HashMap<String, Object> claimDetail = new ClaimEntryResponseMaker(userId).make(conn, ticketId);
+		HashMap<String, Object> claimDetail = new ClaimEntryResponseMaker(conn, userId).make(conn, ticketId);
 		this.ticketStatus = (String)claimDetail.get(ClaimDetailLookupQuery.TICKET_STATUS);
 		this.claimedVolume = ((BigDecimal)claimDetail.get(ClaimDetailLookupQuery.CLAIMED_VOLUME)).doubleValue();
 		this.totalVolume = ((BigDecimal)claimDetail.get(ClaimDetailLookupQuery.TOTAL_VOLUME)).doubleValue();
@@ -142,8 +147,8 @@ public class ClaimEntryResponse extends MessageResponse {
 
 		private static final long serialVersionUID = 1L;
 		
-		public ClaimEntryResponseMaker(Integer userId) {
-			super(userId);
+		public ClaimEntryResponseMaker(Connection conn, Integer userId) throws Exception {
+			super(userId, (List<SessionDivision>) CollectionUtils.collect(AppUtils.makeDivisionList(conn, userId), new Division2SessionDivisionTransformer()));
 		}
 		
 		public HashMap<String, Object> make(Connection conn, Integer ticketId) throws Exception {

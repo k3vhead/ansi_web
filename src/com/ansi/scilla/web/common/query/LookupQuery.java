@@ -68,6 +68,7 @@ public abstract class LookupQuery extends ApplicationObject {
 
 	public void setSqlFromClause(String sqlFromClause) {
 		this.sqlFromClause = sqlFromClause;
+		this.sqlCount = "select count(*) as record_count " + sqlFromClause;
 	}
 
 
@@ -154,6 +155,7 @@ public abstract class LookupQuery extends ApplicationObject {
 	public ResultSet select(Connection conn, Integer offset, Integer rowCount) throws Exception {
 		SelectType selectType = SelectType.DATA;
 		String searchSQL = makeSQL(selectType, offset, rowCount);
+//		logger.log(Level.DEBUG, searchSQL);
 		PreparedStatement ps = makePreparedStatement(conn, selectType, searchSQL);
 		ResultSet rs = ps.executeQuery();		
 

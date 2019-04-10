@@ -204,7 +204,7 @@
                 		var $typeTd =$('<td class="ticket-detail-data dt-center">');
                 		$typeTd.append($val.passthruExpenseType);
                 		var $volumeTd = $('<td class="ticket-detail-data dt-right">');
-                		$volumeTd.append($val.passthruExpenseVolume);
+                		$volumeTd.append($val.passthruExpenseVolume.toFixed(2));
                 		var $notesTd = $('<td class="ticket-detail-data dt-left">');
                 		$notesTd.append($val.notes);
                 		var $nameTd = $('<td class="ticket-detail-data dt-left">');

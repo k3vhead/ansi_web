@@ -29,10 +29,10 @@ public class PassthruExpenseItem extends ApplicationObject {
 			"	ansi_user.first_name as washer_first_name, \n" + 
 			"	ansi_user.last_name as washer_last_name\n" + 
 			"from ticket_claim_passthru\n" + 
-			"inner join code on code.table_name='"+TicketClaimPassthru.TABLE+"' \n" + 
+			"left outer join code on code.table_name='"+TicketClaimPassthru.TABLE+"' \n" + 
 			"	and code.field_name='"+TicketClaimPassthru.PASSTHRU_EXPENSE_TYPE+"' \n" + 
 			"	and code.value=ticket_claim_passthru.passthru_expense_type\n" + 
-			"inner join ansi_user on ansi_user.user_id=ticket_claim_passthru.washer_id\n" + 
+			"left outer join ansi_user on ansi_user.user_id=ticket_claim_passthru.washer_id\n" + 
 			"where ticket_claim_passthru.ticket_id=?\n" + 
 			"order by ticket_claim_passthru.work_date asc";
 	

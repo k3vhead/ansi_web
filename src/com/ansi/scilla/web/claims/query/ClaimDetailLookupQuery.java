@@ -1,12 +1,14 @@
 package com.ansi.scilla.web.claims.query;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 
 import com.ansi.scilla.common.queries.SelectType;
-import com.ansi.scilla.web.common.query.LookupQuery;
+import com.ansi.scilla.web.common.struts.SessionDivision;
 
-public class ClaimDetailLookupQuery extends LookupQuery {
+public class ClaimDetailLookupQuery extends ClaimsQuery {
 
 	public static final String JOB_ID = "job_id";
 	public static final String ACT_DIVISION_ID = "act_division_id";
@@ -44,7 +46,11 @@ public class ClaimDetailLookupQuery extends LookupQuery {
 			", ticket.act_division_id\r\n" + 
 			", ticket.job_id\r\n" + 
 			", job_site.name as job_site_name\r\n" + 
-			", concat(year(work_date),'-',right('00'+CAST(isnull(datepart(wk,work_date),0) as VARCHAR),2)) as claim_week\r\n" + 
+			", claim_week = case ticket_claim.work_date \r\n" +
+			"      when null then null\r\n" +
+			"      else concat(year(work_date),'-',right('00'+CAST(datepart(wk,work_date) as VARCHAR),2))\r\n" +
+			"  end\r\n" +
+			//", concat(year(work_date),'-',right('00'+CAST(isnull(datepart(wk,work_date),0) as VARCHAR),2)) as claim_week\r\n" + 
 			", ticket_claim.work_date\r\n" + 
 			", ticket.ticket_id\r\n" + 
 			", ticket.ticket_status\r\n" + 
@@ -59,14 +65,11 @@ public class ClaimDetailLookupQuery extends LookupQuery {
 			", isnull(ticket_claim.hours,0.00) as ticket_claim_dl_hours\r\n" + 
 			", isnull(ticket_claim_totals.claimed_volume,0.00) as claimed_volume\r\n" + 
 			", isnull(ticket_claim_passthru_totals.passthru_volume,0.00) as passthru_volume\r\n" + 
-			", isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim_passthru_totals.passthru_volume,0.00)\r\n" + 
-			"	as claimed_volume\r\n" + 
+			", isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim_passthru_totals.passthru_volume,0.00) as claimed_volume_total\r\n" + 
 			", isnull(ticket_claim_totals.claimed_dl_amt,0.00) as claimed_dl_amt\r\n" + 
 			", isnull(ticket_claim_totals.claimed_dl_exp,0.00) as claimed_dl_exp\r\n" + 
-			", isnull(ticket_claim_totals.claimed_dl_amt,0.00)+ISNULL(ticket_claim_totals.claimed_dl_exp,0.00)\r\n" + 
-			"	as claimed_dl_total\r\n" + 
-			", job.price_per_cleaning - (isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim_passthru_totals.passthru_volume,0.00))\r\n" + 
-			"	as volume_remaining\r\n" + 
+			", isnull(ticket_claim_totals.claimed_dl_amt,0.00)+ISNULL(ticket_claim_totals.claimed_dl_exp,0.00) as claimed_dl_total\r\n" + 
+			", job.price_per_cleaning - (isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim_passthru_totals.passthru_volume,0.00)) as volume_remaining\r\n" + 
 			", job.budget - (isnull(ticket_claim_totals.claimed_dl_amt,0.00)+ISNULL(ticket_claim_totals.claimed_dl_exp,0.00)) as dl_remaining\r\n" ;
 		
 
@@ -74,7 +77,7 @@ public class ClaimDetailLookupQuery extends LookupQuery {
 			+ "from ticket\r\n" + 
 			"join job on job.job_id = ticket.job_id\r\n" + 
 			"join quote on quote.quote_id = job.quote_id\r\n" + 
-			"join division on division.division_id = ticket.act_division_id\r\n" + 
+			"join division on division.division_id = ticket.act_division_id and division.division_id in ($DIVISION_USER_FILTER$)" + 
 			"join address job_site on job_site.address_id = job_site_address_id\r\n" + 
 			"left outer join ticket_claim on ticket_claim.ticket_id = ticket.ticket_id\r\n" + 
 			"left outer join ansi_user on ansi_user.user_id = ticket_claim.washer_id \r\n" + 
@@ -105,16 +108,12 @@ public class ClaimDetailLookupQuery extends LookupQuery {
 	
 	
 	
-	public ClaimDetailLookupQuery(Integer userId) {
-		super(sqlSelectClause, sqlFromClause, baseWhereClause);
+	public ClaimDetailLookupQuery(Integer userId, List<SessionDivision> divisionList) {
+		super(sqlSelectClause, makeFromClause(sqlFromClause, divisionList), baseWhereClause);
 		this.logger = LogManager.getLogger(this.getClass());
 		this.userId = userId;		
 	}
 
-	public ClaimDetailLookupQuery(Integer userId, String searchTerm) {
-		this(userId);
-		this.searchTerm = searchTerm;
-	}
 
 	
 

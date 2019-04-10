@@ -164,9 +164,8 @@
     			            } },
     			            { title: "<bean:message key="field.label.action" />",  searchable:false, data: function ( row, type, set ) {	
     			            	{
-    				            	var $claim = '<a href="claimEntry.html?id='+row.ticket_id+'" class="claimAction" data-id="'+row.ticket_id+'"><webthing:invoiceIcon styleClass="green">Claim</webthing:invoiceIcon></a>';
-    				            	var $expense = '<a href="#" class="editAction" data-id="'+row.ticket_id+'"><webthing:invoiceIcon styleClass="orange">Expense</webthing:invoiceIcon></a>';
-    			            		return "<ansi:hasPermission permissionRequired='CLAIMS_WRITE'>"+$claim+" "+$expense+"</ansi:hasPermission>";
+    				            	var $claim = '<a href="claimEntry.html?id='+row.ticket_id+'" class="claimAction" data-id="'+row.ticket_id+'"><webthing:invoiceIcon styleClass="green">Claim Entry</webthing:invoiceIcon></a>';
+    			            		return "<ansi:hasPermission permissionRequired='CLAIMS_WRITE'>"+$claim+"</ansi:hasPermission>";
     			            	}
     			            	
     			            } }],

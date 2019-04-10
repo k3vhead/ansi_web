@@ -1,17 +1,22 @@
 package com.ansi.scilla.web.claims.servlet;
 
 import java.sql.Connection;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.collections4.Transformer;
+import org.apache.commons.lang3.StringUtils;
 
-import com.ansi.scilla.common.claims.WorkHoursType;
+import com.ansi.scilla.common.jobticket.TicketStatus;
+import com.ansi.scilla.web.claims.query.BudgetControlLookupQuery;
 import com.ansi.scilla.web.claims.query.ClaimDetailLookupQuery;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.servlet.AbstractLookupServlet;
+import com.ansi.scilla.web.common.struts.SessionData;
+import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
@@ -23,25 +28,35 @@ public class ClaimDetailLookupServlet extends AbstractLookupServlet {
 	public ClaimDetailLookupServlet() {
 		super(Permission.CLAIMS_READ);
 		cols = new String[] { 
-				"div",
-				"claim_week",
-				"work_date",
+				"CONCAT(division_nbr,'-',division_code)",
+				"claim_week = case ticket_claim.work_date \r\n" +
+				"      when null then null\r\n" +
+				"      else concat(year(work_date),'-',right('00'+CAST(datepart(wk,work_date) as VARCHAR),2))\r\n" +
+				"  end",
+				"ticket_claim.work_date",
 				"ticket.ticket_id",
 				"ticket.ticket_status",
 				"concat(ansi_user.last_name,', ', ansi_user.first_name)",
-				"total_volume",
-				"budget",
-				"ticket_claim_dl_volume",
-				"ticket_claim_dl_amt",
-				"ticket_claim_dl_exp",
-				"ticket_claim_dl_total",
-				"ticket_claim_dl_hours",
-				"claimed_dl_total",
-				"claimed_volume",
-				"passthru_volume",
-				"claimed_volume_total",
-				"volume_remaining",
-				"dl_remaining"
+				"job.price_per_cleaning",
+				"job.budget",
+				"isnull(ticket_claim.dl_amt,0.00)",
+				"0.00",
+				"isnull(ticket_claim.dl_amt,0.00) + 0.00",
+				"isnull(ticket_claim.hours,0.00)",
+				"isnull(ticket_claim_totals.claimed_volume,0.00)",
+				"isnull(ticket_claim_passthru_totals.passthru_volume,0.00)",
+				"isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim_passthru_totals.passthru_volume,0.00)",
+				"job.price_per_cleaning - (isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim_passthru_totals.passthru_volume,0.00))",
+				"isnull(ticket_claim_totals.claimed_dl_amt,0.00)+ISNULL(ticket_claim_totals.claimed_dl_exp,0.00) claimed_dl_total",
+				"job.budget - (isnull(ticket_claim_totals.claimed_dl_amt,0.00)+ISNULL(ticket_claim_totals.claimed_dl_exp,0.00))"
+
+//				"ticket.job_id",
+//				"job_site.name",
+//				"job.om_notes",
+//				"isnull(ticket_claim.volume,0.00)",
+//				"isnull(ticket_claim_totals.claimed_dl_amt,0.00)",
+//				"isnull(ticket_claim_totals.claimed_dl_exp,0.00)",
+				
 				};
 		super.itemTransformer = new ItemTransformer();
 	}
@@ -52,12 +67,16 @@ public class ClaimDetailLookupServlet extends AbstractLookupServlet {
 
 	@Override
 	public LookupQuery makeQuery(Connection conn, HttpServletRequest request) {
-		SessionUser user = AppUtils.getSessionUser(request);
+		HttpSession session = request.getSession();
+		SessionData sessionData = (SessionData)session.getAttribute(SessionData.KEY);
+		
+		SessionUser user = sessionData.getUser();
+		List<SessionDivision> divisionList = sessionData.getDivisionList();
 		String searchTerm = null;
 		if(request.getParameter("search[value]") != null){
 			searchTerm = request.getParameter("search[value]");
 		}
-		LookupQuery lookupQuery = new ClaimDetailLookupQuery(user.getUserId());
+		LookupQuery lookupQuery = new ClaimDetailLookupQuery(user.getUserId(), divisionList);
 		if ( searchTerm != null ) {
 			lookupQuery.setSearchTerm(searchTerm);
 		}
@@ -69,23 +88,13 @@ public class ClaimDetailLookupServlet extends AbstractLookupServlet {
 
 	public class ItemTransformer implements Transformer<HashMap<String, Object>, HashMap<String, Object>> {
 
-		private SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
-		private SimpleDateFormat weekFormatter = new SimpleDateFormat("yyyy-ww");
-		
 		@Override
 		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
-			String hoursType = (String)arg0.get("hours_type");
-			if ( hoursType != null ) {
-				WorkHoursType workHoursType = WorkHoursType.valueOf(hoursType);
-				arg0.put("hours_description", workHoursType.getDescription());
+			String ticketStatus = (String)arg0.get(BudgetControlLookupQuery.TICKET_STATUS);
+			if ( ! StringUtils.isBlank(ticketStatus) ) {
+				TicketStatus status = TicketStatus.lookup(ticketStatus);
+				arg0.put("ticket_status_description", status.display());
 			}
-			
-//			java.sql.Timestamp workDate = (java.sql.Timestamp)arg0.get("work_date");
-//			if ( workDate != null ) {				
-//				arg0.put("work_date", dateFormatter.format(workDate));	
-//				arg0.put("week", weekFormatter.format(workDate));
-//			}
-			
 			
 			return arg0;
 		}
