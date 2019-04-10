@@ -777,7 +777,7 @@
 		                
 		                // get building type options
 		                ANSI_UTILS.populateCodeSelect("job","building_type","#addAddressForm select[name='jobsiteBuildingTypeDefault']","value","displayValue");
-		                ANSI_UTILS.populateCodeSelect("quote", "account_type", "#addAddressForm select[name='invoiceAccountTypeDefault']", "value","displayValue");
+		                ANSI_UTILS.populateCodeSelect("quote", "account_type", "#addAddressForm select[name='billtoAccountTypeDefault']", "value","displayValue");
 		            },
 		            
 		            
@@ -804,9 +804,9 @@
 									$("#addForm select[name='invoiceGroupingDefault']").val($address.invoiceGroupingDefault);
 									$("#addForm select[name='invoiceTermsDefault']").val($address.invoiceTermsDefault);									
 									$("#addForm input[name='invoiceOurVendorNbrDefault']").val($address.ourVendorNbrDefault);
-									//$("#addForm input[name='invoiceAccountTypeDefault']").val($address.accountTypeDefault);
-									//$("#addForm input[name='invoiceTaxExemptDefault']").val($address.taxExemptDefault);
-									//$("#addForm input[name='invoiceTaxExemptReasonDefault']").val($address.taxExemptReasonDefault);
+									//$("#addForm input[name='billtoAccountTypeDefault']").val($address.accountTypeDefault);
+									//$("#addForm input[name='billtoTaxExemptDefault']").val($address.taxExemptDefault);
+									//$("#addForm input[name='billtoTaxExemptReasonDefault']").val($address.taxExemptReasonDefault);
 
 									// job site fields:
 									$("#addForm input[name='jobsiteJobContact']").val($address.jobsiteJobContactName);
@@ -1126,27 +1126,24 @@
 						</tr>
 						
 						<tr>
-							<td><span class="required"></span></td>
 							<td><span class="formLabel"><bean:message key="field.label.invoice.accountType" />:</span></td>
 							<td colspan="3">
-								<select name="invoiceAccountTypeDefault" style="width:315px" />
-								<i id="invoiceAccountTypeDefaultErr" class="fa errIcon" aria-hidden="true"></i>
+								<select name="billtoAccountTypeDefault" style="width:315px" />
+								<i id="billtoAccountTypeDefaultErr" class="fa errIcon" aria-hidden="true"></i>
 							</td>
 						</tr>
 						<tr>
-							<td><span class="required"></span></td>
 							<td><span class="formLabel"><bean:message key="field.label.invoice.taxExempt" />:</span></td>
 							<td colspan="3">
-								<input type="checkbox" name="invoiceTaxExempt" value="yes" />
-								<i id="invoiceTaxExemptErr" class="fa errIcon" aria-hidden="true"></i>
+								<input type="checkbox" name="billtoTaxExempt" value="yes" />
+								<i id="billtoTaxExemptErr" class="fa errIcon" aria-hidden="true"></i>
 							</td>
 						</tr>
 						<tr>
-							<td><span class="required"></span></td>
 							<td><span class="formLabel"><bean:message key="field.label.invoice.taxExemptReason" />:</span></td>
 							<td colspan="3">
-								<input type="text" name="invoiceTaxExemptReason" style="width:315px" />
-								<i id="invoiceTaxExemptReasonErr" class="fa errIcon" aria-hidden="true"></i>
+								<input type="text" name="billtoTaxExemptReason" style="width:315px" />
+								<i id="billtoExemptReasonErr" class="fa errIcon" aria-hidden="true"></i>
 							</td>
 						</tr>
 						
