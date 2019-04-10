@@ -98,9 +98,9 @@
             	        ],
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
-            	            { className: "dt-left", "targets": [5] },
-            	            { className: "dt-center", "targets": [0,1,2,3,4,18] },
-            	            { className: "dt-right", "targets": [6,7,8,9,10,11,12,13,14,15,16,17]}
+            	            { className: "dt-left", "targets": [3,6] },
+            	            { className: "dt-center", "targets": [0,1,2,4,5,19] },
+            	            { className: "dt-right", "targets": [7,8,9,10,11,12,13,14,15,16,17,18]}
             	         ],
             	        "paging": true,
     			        "ajax": {
@@ -117,13 +117,16 @@
     			            { title: "Work Date", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.work_date != null){return (row.work_date+"");}
     			            } },
+    			            { width:"12%", title: "Account", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+    			            	if(row.job_site_name != null){return (row.job_site_name+"");}
+    			            } },
     			            { title: "Ticket", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.ticket_id != null){return ('<a href="#" data-id="'+row.ticket_id+'" class="ticket-clicker">'+row.ticket_id+'</a>');}
     			            } },
     			            { title: "Status", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.ticket_status != null){return ('<span class="tooltip">' + row.ticket_status + '<span class="tooltiptext">' + row.ticket_status_description + '</span></span>');}
     			            } },
-    			            { width:"9%", title: "Washer", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+    			            { width:"8%", title: "Washer", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.washer_name != null){return (row.washer_name+"");}
     			            } },
     			            { title: "Total Volume" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {

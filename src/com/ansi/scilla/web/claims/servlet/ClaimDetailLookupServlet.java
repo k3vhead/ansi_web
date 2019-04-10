@@ -34,6 +34,7 @@ public class ClaimDetailLookupServlet extends AbstractLookupServlet {
 				"      else concat(year(work_date),'-',right('00'+CAST(datepart(wk,work_date) as VARCHAR),2))\r\n" +
 				"  end",
 				"ticket_claim.work_date",
+				"job_site.name",
 				"ticket.ticket_id",
 				"ticket.ticket_status",
 				"concat(ansi_user.last_name,', ', ansi_user.first_name)",
