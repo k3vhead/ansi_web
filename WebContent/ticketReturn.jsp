@@ -299,7 +299,7 @@
 					if ( $data.ticketDetail.status == 'R' ) {
 						$processLabel = "Reject Date:";
 					} else if ( $data.ticketDetail.status == 'D' ) {
-						$processLabel = "Dispatch Date:";
+						$processLabel = "Start Date:";
 					} else if ( $data.ticketDetail.status == 'V' ) {
 						$processLabel = "Void Date:";
 					} else if ( $data.ticketDetail.status == 'S' ) {
