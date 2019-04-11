@@ -39,6 +39,13 @@ public class ClaimEntryResponse extends MessageResponse {
 	private String omNotes;	
 	
 	private List<PassthruExpenseItem> expenseList;
+	private List<DirectLaborItem> directLaborList;
+	
+	private Double totalDirectLabor;
+	private Double totalDlAmt;
+	private Double totalDlHours;
+	private Double totalDlExpense;
+	private Double totalPassthruVolume;
 	
 	public ClaimEntryResponse(Connection conn, Integer ticketId, Integer userId) throws Exception {
 		super();
@@ -58,6 +65,13 @@ public class ClaimEntryResponse extends MessageResponse {
 		this.ticketStatusDesc = ticketStatus.display();
 		
 		this.expenseList = PassthruExpenseItem.makePassthruExpenseList(conn, ticketId);
+		this.directLaborList = DirectLaborItem.makeDirectLaborList(conn, ticketId);
+		
+		this.totalDirectLabor = this.directLaborList.stream().mapToDouble(volume -> volume.getVolume()).sum();
+		this.totalDlAmt = this.directLaborList.stream().mapToDouble(volume -> volume.getDlAmt()).sum();
+		this.totalDlHours = this.directLaborList.stream().mapToDouble(volume -> volume.getHours()).sum();
+		this.totalDlExpense = this.directLaborList.stream().mapToDouble(volume -> volume.getExpense()).sum();
+		this.totalPassthruVolume = this.expenseList.stream().mapToDouble(volume -> volume.getPassthruExpenseVolume()).sum();
 	}
 	
 	
@@ -138,6 +152,64 @@ public class ClaimEntryResponse extends MessageResponse {
 	}
 	public void setExpenseList(List<PassthruExpenseItem> expenseList) {
 		this.expenseList = expenseList;
+	}
+	public List<DirectLaborItem> getDirectLaborList() {
+		return directLaborList;
+	}
+	public void setDirectLaborList(List<DirectLaborItem> directLaborList) {
+		this.directLaborList = directLaborList;
+	}
+
+
+
+
+	public Double getTotalDirectLabor() {
+		return totalDirectLabor;
+	}
+
+
+	public void setTotalDirectLabor(Double totalDirectLabor) {
+		this.totalDirectLabor = totalDirectLabor;
+	}
+
+
+	public Double getTotalDlAmt() {
+		return totalDlAmt;
+	}
+
+
+	public void setTotalDlAmt(Double totalDlAmt) {
+		this.totalDlAmt = totalDlAmt;
+	}
+
+
+	public Double getTotalDlHours() {
+		return totalDlHours;
+	}
+
+
+	public void setTotalDlHours(Double totalDlHours) {
+		this.totalDlHours = totalDlHours;
+	}
+
+
+	public Double getTotalDlExpense() {
+		return totalDlExpense;
+	}
+
+
+	public void setTotalDlExpense(Double totalDlExpense) {
+		this.totalDlExpense = totalDlExpense;
+	}
+
+
+	public Double getTotalPassthruVolume() {
+		return totalPassthruVolume;
+	}
+
+
+	public void setTotalPassthruVolume(Double totalPassthruVolume) {
+		this.totalPassthruVolume = totalPassthruVolume;
 	}
 
 
