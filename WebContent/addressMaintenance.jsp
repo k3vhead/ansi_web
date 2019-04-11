@@ -286,6 +286,18 @@
 		        		} else {
 		        			$outbound['invoiceBatchDefault'] = 0;
 		        		}
+		        		// do the checkboxes seperately because they're weird
+		        		if ( $("#addForm input[name='invoiceBatchDefault']").is(':checked') ) {
+		        			$outbound['invoiceBatchDefault'] = 1;
+		        		} else {
+		        			$outbound['invoiceBatchDefault'] = 0;
+		        		}
+		        		if ( $("#addForm input[name='billtoTaxExempt']").is(':checked') ) {
+		        			$outbound['billtoTaxExempt'] = 1;
+		        		} else {
+		        			$outbound['billtoTaxExempt'] = 0;
+		        		}
+		        		
 		        		
 	        			if($("#updateOrAdd").val() =="add"){
 							$url = "address/add";
@@ -804,7 +816,7 @@
 									$("#addForm select[name='invoiceGroupingDefault']").val($address.invoiceGroupingDefault);
 									$("#addForm select[name='invoiceTermsDefault']").val($address.invoiceTermsDefault);									
 									$("#addForm input[name='invoiceOurVendorNbrDefault']").val($address.ourVendorNbrDefault);
-									//$("#addForm input[name='billtoAccountTypeDefault']").val($address.accountTypeDefault);
+									$("#addForm select[name='billtoAccountTypeDefault']").val($address.billtoAccountTypeDefault);
 									//$("#addForm input[name='billtoTaxExemptDefault']").val($address.taxExemptDefault);
 									//$("#addForm input[name='billtoTaxExemptReasonDefault']").val($address.taxExemptReasonDefault);
 
@@ -1126,6 +1138,7 @@
 						</tr>
 						
 						<tr>
+							<td><span class="required"></span></td>
 							<td><span class="formLabel"><bean:message key="field.label.invoice.accountType" />:</span></td>
 							<td colspan="3">
 								<select name="billtoAccountTypeDefault" style="width:315px" />
@@ -1133,13 +1146,15 @@
 							</td>
 						</tr>
 						<tr>
+							<td><span class="required"></span></td>
 							<td><span class="formLabel"><bean:message key="field.label.invoice.taxExempt" />:</span></td>
 							<td colspan="3">
 								<input type="checkbox" name="billtoTaxExempt" value="yes" />
 								<i id="billtoTaxExemptErr" class="fa errIcon" aria-hidden="true"></i>
 							</td>
-						</tr>
+						</tr>	
 						<tr>
+						<td><span class="required"></span></td>
 							<td><span class="formLabel"><bean:message key="field.label.invoice.taxExemptReason" />:</span></td>
 							<td colspan="3">
 								<input type="text" name="billtoTaxExemptReason" style="width:315px" />
@@ -1168,8 +1183,8 @@
 		</div>
 		
 		<div id="noMatchModal">
-			<div id="noAddress">No matching address was found. <a href="newAddress.html">Add a new address</a>?</div>
-			<div id="noContact">No matching contact was found. <a href="newContact.html">Add a new contact</a>?</div>
+			<div id="noAddress">No matching address was found. <a href="newAddress.html" target="_newAddress">Add a new address</a>?</div>
+			<div id="noContact">No matching contact was found. <a href="newContact.html" target="_newContact">Add a new contact</a>?</div>
 		</div>
 		<input  type="text" id="updateOrAdd" style="display:none" />
 		<input  type="text" id="aId" style="display:none" />
