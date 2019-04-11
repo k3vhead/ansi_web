@@ -172,10 +172,8 @@ public class AddressServlet extends AbstractServlet {
 
 		List<String> badFields = super.validateRequiredAddFields(addressRequest);
 		WebMessages webMessages = makeWebMessages(conn, badFields);
-		RequestValidator.validateAccountType(conn, webMessages, AddressRequest.BILLTO_ACCOUNT_TYPE_DEFAULT,
-				addressRequest.getBilltoAccountTypeDefault(), true);
-		RequestValidator.validateBoolean(webMessages, AddressRequest.BILLTO_TAX_EXEMPT,
-				addressRequest.getBilltoTaxExempt(), true);
+		RequestValidator.validateAccountType(conn, webMessages, AddressRequest.BILLTO_ACCOUNT_TYPE_DEFAULT, addressRequest.getBilltoAccountTypeDefault(), false);
+		RequestValidator.validateBoolean(webMessages, AddressRequest.BILLTO_TAX_EXEMPT, addressRequest.getBilltoTaxExempt(), false);
 
 		// if all required fields are here, make sure optional fields are valid
 		if (webMessages.isEmpty()) {

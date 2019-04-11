@@ -121,7 +121,7 @@ public class RequestValidator {
 
 	private static void validateCode(Connection conn, WebMessages webMessages, String dbTableName, String dbFieldName,
 			String fieldName, String value, boolean required) throws Exception {
-		if (value == null) {
+		if (StringUtils.isBlank(value) ) {
 			if (required) {
 				webMessages.addMessage(fieldName, "Required Value");
 			}
