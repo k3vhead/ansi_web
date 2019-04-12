@@ -155,6 +155,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>claimDetailLookup</servlet-name>
+        <url-pattern>/claims/claimDetailLookup/*</url-pattern>
         <url-pattern>/claims/claimDetailLookup</url-pattern>
     </servlet-mapping>
 

@@ -61,7 +61,7 @@
         $(document).ready(function() {
         	;CLAIMDETAIL = {
         		datatable : null,
-        		ticketFilter : '<c:out value="${BUDGET_CONTROL_TICKET_FILTER}" />',
+        		ticketFilter : '<c:out value="${CLAIM_DETAIL_TICKET_FILTER}" />',
         		
         		init : function() {
         			CLAIMDETAIL.createTable();
@@ -73,7 +73,7 @@
         		
 				createTable : function() {
         			var $url = "claims/claimDetailLookup";
-        			if ( CLAIMDETAIL.ticketFilter != '' ) {
+        			if ( CLAIMDETAIL.ticketFilter != '' && CLAIMDETAIL.ticketFilter != null) {
         				$url = $url + "/" + CLAIMDETAIL.ticketFilter;
         			}
         				
@@ -174,7 +174,11 @@
     			            } }],
     			            "initComplete": function(settings, json) {
     			            	LOOKUPUTILS.makeFilters(this, "#filter-container", "#displayTable", CLAIMDETAIL.createTable);
-    			            	//CLAIMDETAIL.doFunctionBinding();
+    			            	if ( CLAIMDETAIL.ticketFilter != null &&  CLAIMDETAIL.ticketFilter !='' ) {
+    			            		console.log("Seting filter");
+    			            		LOOKUPUTILS.setFilterValue("#filter-container", 4, CLAIMDETAIL.ticketFilter);
+    			            		CLAIMDETAIL.ticketFilter='';
+    			            	}
     			            },
     			            "drawCallback": function( settings ) {
     			            	CLAIMDETAIL.doFunctionBinding();

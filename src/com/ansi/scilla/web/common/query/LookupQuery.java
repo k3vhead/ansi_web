@@ -207,7 +207,7 @@ public abstract class LookupQuery extends ApplicationObject {
 		String fetchPhrase = makeFetch(selectType, rowCount);
 		String orderByPhrase = makeOrderBy(selectType);
 		String wherePhrase = selectType.equals(SelectType.COUNTALL) ? baseWhereClause : makeWhereClause(this.searchTerm);
-		String filterPhrase = makeFilterPhrase();
+		String filterPhrase = makeFilterPhrase(wherePhrase);
 		
 		
 		
@@ -217,10 +217,10 @@ public abstract class LookupQuery extends ApplicationObject {
 		return sql;
 	}
 	
-	protected String makeFilterPhrase() {
+	protected String makeFilterPhrase(String wherePhrase) {
 		String filterPhrase = "";
 		if ( this.columnFilter != null && this.columnFilter.size() > 0 ) {
-			String joiner = StringUtils.isBlank(baseWhereClause) ? " where " : " and ";
+			String joiner = StringUtils.isBlank(wherePhrase) ? " where " : " and ";
 			List<String> likeList = new ArrayList<String>();
 			likeList = CollectionUtils.collect(this.columnFilter.iterator(), new FilterMaker(), likeList);
 			filterPhrase = "\n" + joiner + " " + StringUtils.join(likeList, " and " );

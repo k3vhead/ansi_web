@@ -18,12 +18,15 @@ import com.ansi.scilla.web.common.servlet.AbstractLookupServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.common.struts.SessionUser;
-import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 
 public class ClaimDetailLookupServlet extends AbstractLookupServlet {
 
 	private static final long serialVersionUID = 1L;
+
+	public static final String REALM = "claimDetailLookup";
 
 	public ClaimDetailLookupServlet() {
 		super(Permission.CLAIMS_READ);
@@ -73,15 +76,24 @@ public class ClaimDetailLookupServlet extends AbstractLookupServlet {
 		
 		SessionUser user = sessionData.getUser();
 		List<SessionDivision> divisionList = sessionData.getDivisionList();
-		String searchTerm = null;
-		if(request.getParameter("search[value]") != null){
-			searchTerm = request.getParameter("search[value]");
+		try {
+			AnsiURL url = new AnsiURL(request, REALM, (String[])null);
+			String searchTerm = null;
+			if(request.getParameter("search[value]") != null){
+				searchTerm = request.getParameter("search[value]");
+			}
+			ClaimDetailLookupQuery lookupQuery = new ClaimDetailLookupQuery(user.getUserId(), divisionList);
+			if ( searchTerm != null ) {
+				lookupQuery.setSearchTerm(searchTerm);
+			}
+			if ( url.getId() != null ) {
+				lookupQuery.setTicketFilter(url.getId());
+			}
+			return lookupQuery;
+		} catch ( ResourceNotFoundException e) {
+			throw new RuntimeException(e);
 		}
-		LookupQuery lookupQuery = new ClaimDetailLookupQuery(user.getUserId(), divisionList);
-		if ( searchTerm != null ) {
-			lookupQuery.setSearchTerm(searchTerm);
-		}
-		return lookupQuery;
+		
 	}
 
 

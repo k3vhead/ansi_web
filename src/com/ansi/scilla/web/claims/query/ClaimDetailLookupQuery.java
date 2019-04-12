@@ -103,9 +103,10 @@ public class ClaimDetailLookupQuery extends ClaimsQuery {
 			"	group by ticket_id\r\n" + 
 			"	) as ticket_claim_passthru_totals on ticket_claim_passthru_totals.ticket_id = ticket.ticket_id\r\n";
 
-	private static final String baseWhereClause = "\n  ";
+	private static final String baseWhereClause = " ";
 	
-	
+	private Integer ticketFilter;
+
 	
 	
 	public ClaimDetailLookupQuery(Integer userId, List<SessionDivision> divisionList) {
@@ -114,16 +115,23 @@ public class ClaimDetailLookupQuery extends ClaimsQuery {
 		this.userId = userId;		
 	}
 
+	public Integer getTicketFilter() {
+		return ticketFilter;
+	}
+	public void setTicketFilter(Integer ticketFilter) {
+		this.ticketFilter = ticketFilter;
+	}
 
-	
 
 
 
-	
-	
-	
 
-	
+
+
+
+
+
+
 	protected String makeOrderBy(SelectType selectType) {
 		String orderBy = "";
 		if ( selectType.equals(SelectType.DATA)) {
@@ -154,11 +162,18 @@ public class ClaimDetailLookupQuery extends ClaimsQuery {
 	protected String makeWhereClause(String queryTerm)  {
 		String whereClause = ClaimDetailLookupQuery.baseWhereClause;
 		String joiner = StringUtils.isBlank(baseWhereClause) ? " where " : " and ";
-		if (! StringUtils.isBlank(queryTerm)) {
-				whereClause =  whereClause + joiner + " (\n"
-						+ " lower(concat(job_site.name, ' ', job_site.address1, ' ', job_site.city)) like '%" + queryTerm.toLowerCase() + "%'" +
-						"\n OR ticket.ticket_id like '%" + queryTerm.toLowerCase() + "%'" +
-						")" ;
+		if (StringUtils.isBlank(queryTerm)) {
+			if ( this.ticketFilter != null ) {
+				whereClause = whereClause + joiner + " ticket.ticket_id=" + this.ticketFilter;
+			}
+		} else {
+			String ticketClause = this.ticketFilter == null ? "" : "ticket.ticket_id=" + this.ticketFilter + " and ";
+
+			whereClause =  whereClause + joiner + " (\n"
+					+ ticketClause
+					+ " lower(concat(job_site.name, ' ', job_site.address1, ' ', job_site.city)) like '%" + queryTerm.toLowerCase() + "%'" +
+					"\n OR ticket.ticket_id like '%" + queryTerm.toLowerCase() + "%'" +
+					")" ;
 		}
 		return whereClause;
 	}

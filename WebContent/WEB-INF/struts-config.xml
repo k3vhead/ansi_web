@@ -65,7 +65,9 @@
         </action>
         <action
             path="/claimDetailLookup"
-            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.claims.action.ClaimDetailLookupAction"
+            name="idForm"
+            scope="request">
             <forward name="valid" path="/claims/claimDetailLookup.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>

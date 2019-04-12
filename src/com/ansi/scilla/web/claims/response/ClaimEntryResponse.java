@@ -70,7 +70,6 @@ public class ClaimEntryResponse extends MessageResponse {
 		this.totalDirectLabor = this.directLaborList.stream().mapToDouble(volume -> volume.getVolume()).sum();
 		this.totalDlAmt = this.directLaborList.stream().mapToDouble(volume -> volume.getDlAmt()).sum();
 		this.totalDlHours = this.directLaborList.stream().mapToDouble(volume -> volume.getHours()).sum();
-		this.totalDlExpense = this.directLaborList.stream().mapToDouble(volume -> volume.getExpense()).sum();
 		this.totalPassthruVolume = this.expenseList.stream().mapToDouble(volume -> volume.getPassthruExpenseVolume()).sum();
 	}
 	

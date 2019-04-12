@@ -20,8 +20,6 @@ public class DirectLaborItem extends ApplicationObject {
 	public static final String VOLUME = "volume";
 	public static final String DL_AMT = "dl_amt";
 	public static final String HOURS = "hours";
-	public static final String HOURS_TYPE = "hours_type";
-	public static final String EXPENSE = "expense";
 	public static final String NOTES = "notes";
 	public static final String WASHER_FIRST_NAME = "washer_first_name";
 	public static final String WASHER_LAST_NAME = "washer_last_name";
@@ -32,8 +30,6 @@ public class DirectLaborItem extends ApplicationObject {
 			"		ticket_claim.volume,\n" + 
 			"		ticket_claim.dl_amt,\n" + 
 			"		ticket_claim.hours,\n" + 
-			"		'GAG What Goes Here' as hours_type,\n" + 
-			"       -1.0 as expense,\n" +
 			"		ticket_claim.notes\n" + 
 			"from "+TicketClaim.TABLE+"\n" + 
 			"left outer join "+User.TABLE+" on ansi_user.user_id=ticket_claim.washer_id\n" + 
@@ -47,9 +43,7 @@ public class DirectLaborItem extends ApplicationObject {
 	private Double volume;
 	private Double dlAmt;
 	private Double hours;
-	private Double expense;
 	private String notes;
-	private String hoursType;
 	private String washerFirstName;
 	private String washerLastName;
 	
@@ -60,10 +54,8 @@ public class DirectLaborItem extends ApplicationObject {
 			if ( rsmd.getColumnName(idx).equalsIgnoreCase(WORK_DATE)) { this.workDate = new Date(rs.getDate(idx).getTime()); }
 			if ( rsmd.getColumnName(idx).equalsIgnoreCase(VOLUME)) { this.volume = rs.getBigDecimal(idx).doubleValue(); }
 			if ( rsmd.getColumnName(idx).equalsIgnoreCase(DL_AMT)) { this.dlAmt = rs.getBigDecimal(idx).doubleValue(); }
-			if ( rsmd.getColumnName(idx).equalsIgnoreCase(EXPENSE)) { this.expense = rs.getBigDecimal(idx).doubleValue(); }
 			if ( rsmd.getColumnName(idx).equalsIgnoreCase(HOURS)) { this.hours = rs.getBigDecimal(idx).doubleValue(); }
 			if ( rsmd.getColumnName(idx).equalsIgnoreCase(NOTES)) { this.notes = rs.getString(idx); }
-			if ( rsmd.getColumnName(idx).equalsIgnoreCase(HOURS_TYPE)) { this.hoursType = rs.getString(idx); }
 			if ( rsmd.getColumnName(idx).equalsIgnoreCase(WASHER_FIRST_NAME)) { this.washerFirstName = rs.getString(idx); }
 			if ( rsmd.getColumnName(idx).equalsIgnoreCase(WASHER_LAST_NAME)) { this.washerLastName = rs.getString(idx); }
 		}
@@ -100,12 +92,6 @@ public class DirectLaborItem extends ApplicationObject {
 	public void setNotes(String notes) {
 		this.notes = notes;
 	}
-	public String getHoursType() {
-		return hoursType;
-	}
-	public void setHoursType(String hoursType) {
-		this.hoursType = hoursType;
-	}
 	public String getWasherFirstName() {
 		return washerFirstName;
 	}
@@ -117,12 +103,6 @@ public class DirectLaborItem extends ApplicationObject {
 	}
 	public void setWasherLastName(String washerLastName) {
 		this.washerLastName = washerLastName;
-	}
-	public Double getExpense() {
-		return expense;
-	}
-	public void setExpense(Double expense) {
-		this.expense = expense;
 	}
 
 	public static List<DirectLaborItem> makeDirectLaborList(Connection conn, Integer ticketId) throws SQLException {

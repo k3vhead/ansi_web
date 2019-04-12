@@ -218,8 +218,6 @@
                 		var $volumeTd = $('<td class="ticket-detail-data dt-right">').append($val.volume.toFixed(2));
                 		var $dlAmtTd = $('<td class="ticket-detail-data dt-right">').append($val.dlAmt.toFixed(2));
                 		var $hoursTd = $('<td class="ticket-detail-data dt-right">').append($val.hours.toFixed(2));
-                		var $expenseTd = $('<td class="ticket-detail-data dt-right">').append($val.expense.toFixed(2));
-                		var $hourTypeTd = $('<td class="ticket-detail-data dt-left">').append($val.hoursType);
                 		var $notesTd = $('<td class="ticket-detail-data dt-left">').append($val.notes);
                 		
                 		
@@ -228,8 +226,6 @@
                 		$row.append($volumeTd);
                 		$row.append($dlAmtTd);
                 		$row.append($hoursTd);
-                		$row.append($hourTypeTd);
-                		$row.append($expenseTd);
                 		$row.append($notesTd);
                 		$("#direct-labor-table tbody").append($row);
                 		
@@ -238,14 +234,11 @@
                 		var $totalVolumeTd =$('<td class="dt-right">').append($data.totalDirectLabor.toFixed(2));
                 		var $totalDlAmtTd =$('<td class="dt-right">').append($data.totalDlAmt.toFixed(2));
                 		var $totalHoursTd =$('<td class="dt-right">').append($data.totalDlHours.toFixed(2));
-                		var $totalExpenseTd =$('<td class="dt-right">').append($data.totalDlExpense.toFixed(2));
                 		$footer.append( $("<td>") ); // date column
 						$footer.append($labelTd);   
 						$footer.append($totalVolumeTd);
 						$footer.append($totalDlAmtTd);
 						$footer.append($totalHoursTd);
-						$footer.append($("<td>"));	// type
-						$footer.append($totalExpenseTd);
 						$footer.append($("<td>")); // notes
 						$("#direct-labor-table tfoot").append($footer);
             		});
@@ -325,30 +318,7 @@
 					<td class="ticket-detail-data dt-right"><span class="claimedDirectLaborAmt"></span></td>
 					<td class="ticket-detail-data dt-right"><span class="availableDirectLabor"></span></td>
 					<td class="ticket-detail-data dt-left"><span class="omNotes"></span></td>
-				</tr>				
-				<tr>
-					<td class="spacer-row" colspan="10"><br /></td>
-				</tr>
-				<tr>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td class="ticket-detail-hdr dt-right" colspan="2">Volume to Claim:</td>
-					<td class="ticket-detail-data dt-right"><span class="volumeToClaim">0.00</span></td>
-					<td class="ticket-detail-hdr dt-right" colspan="2">DL to Claim:</td>
-					<td class="ticket-detail-data dt-right"><span class="dlToClaim">0.00</span></td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-				</tr>
-				<tr>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td class="ticket-detail-hdr dt-right" colspan="2">Unapplied Volume:</td>
-					<td class="ticket-detail-data dt-right"><span class="uappliedVolume">0.00</span></td>
-					<td class="ticket-detail-hdr dt-right" colspan="2">Unapplied DL:</td>
-					<td class="ticket-detail-data dt-right"><span class="unappliedDL">0.00</span></td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-				</tr>
+				</tr>								
 			</table>
 		</div>    	
 
@@ -362,8 +332,6 @@
 						<td class="ticket-detail-hdr">Volume</td>
 						<td class="ticket-detail-hdr">DL $</td>
 						<td class="ticket-detail-hdr">Hrs</td>
-						<td class="ticket-detail-hdr">Hrs Type</td>
-						<td class="ticket-detail-hdr">Expense $</td>
 						<td class="ticket-detail-hdr">Notes</td>
 					</tr>
 				</thead>

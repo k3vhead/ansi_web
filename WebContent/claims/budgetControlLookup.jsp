@@ -121,6 +121,9 @@
     			            { title: "Claim Week", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.claim_week != null){return (row.claim_week+"");}
     			            } },
+    			            { title: "Budget", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            	if(row.budget != null){return (row.budget.toFixed(2));}
+    			            } },
     			            { title: "Direct Labor", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.claimed_weekly_dl_amt != null){return (row.claimed_weekly_dl_amt.toFixed(2));}
     			            } },
@@ -145,19 +148,12 @@
     			            { title: "Diff CLM/BLD",  "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.claimed_vs_billed != null){return ( row.claimed_vs_billed.toFixed(2));}
     			            } },
-    			            { title: "Paid Amount",  "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-    			            	if(row.paid_amt != null){return ( parseFloat(row.paid_amt).toFixed(2));}
-    			            } },
-    			            { title: "Amount Due",  "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-    			            	if(row.amount_due != null){return ( parseFloat(row.amount_due).toFixed(2));}
-    			            } },
     			            { 
     			            	title: "<bean:message key="field.label.action" />",
     			            	searchable:false,
     			            	data: function ( row, type, set ) {{
-    				            	var $claim = '<a href="claimEntry.html?id='+row.ticket_id+'" class="claimAction" data-id="'+row.ticket_id+'"><webthing:invoiceIcon styleClass="green">Claim</webthing:invoiceIcon></a>';
-    				            	var $expense = '<a href="#" class="expenseAction" data-id="'+row.ticket_id+'"><webthing:invoiceIcon styleClass="orange">Expense</webthing:invoiceIcon></a>';
-    			            		return "<ansi:hasPermission permissionRequired='CLAIMS_WRITE'>"+$claim+" "+$expense+"</ansi:hasPermission>";
+    				            	var $claim = '<a href="claimDetailLookup.html?id='+row.ticket_id+'" class="claimAction" data-id="'+row.ticket_id+'"><webthing:invoiceIcon styleClass="green">Claim Detail</webthing:invoiceIcon></a>';    				            	
+    			            		return "<ansi:hasPermission permissionRequired='CLAIMS_READ'>"+$claim +"</ansi:hasPermission>";
     			            	}}
     			            }],
     			            "initComplete": BUDGETCONTROL.initComplete,
@@ -172,7 +168,6 @@
             		var myTable = this;
 	            	//BUDGETCONTROL.doFunctionBinding();
 	            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#displayTable", BUDGETCONTROL.createTable);
-	            	console.log("Init complete");
 	            	if ( BUDGETCONTROL.ticketFilter != null &&  BUDGETCONTROL.ticketFilter !='' ) {
 	            		console.log("Seting filter");
 	            		LOOKUPUTILS.setFilterValue("#filter-container", 2, BUDGETCONTROL.ticketFilter);
