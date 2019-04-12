@@ -289,7 +289,8 @@
 				$("#actTax").html($data.ticketDetail.actTax);
 				$("#totalTaxPaid").html($data.ticketDetail.totalTaxPaid);
 				$("#ticketBalance").html($data.ticketDetail.balance);
-				
+				$("#processDate").html($data.ticketDetail.processDate);
+
 				$("#completedRow").hide();
 				if ( $data.ticketDetail.status=='N') {
 					$("#processNotesRow").hide();
@@ -300,6 +301,7 @@
 						$processLabel = "Reject Date:";
 					} else if ( $data.ticketDetail.status == 'D' ) {
 						$processLabel = "Start Date:";
+						$("#processDate").html($data.ticketDetail.startDate);
 					} else if ( $data.ticketDetail.status == 'V' ) {
 						$processLabel = "Void Date:";
 					} else if ( $data.ticketDetail.status == 'S' ) {
@@ -339,7 +341,6 @@
 					}
 					
 					$("#processDateLabel").html($processLabel);
-					$("#processDate").html($data.ticketDetail.processDate);
 					$("#processNotes").html($data.ticketDetail.processNotes);					
 				}
 			}			
