@@ -730,6 +730,30 @@
 					
 					init_modal : function() {
 						console.log("init_modal");
+						$( "#copy-modal" ).dialog({
+							title:'Text Copy',
+							autoOpen: false,
+							height: 75,
+							width: 225,
+							modal: true,
+							closeOnEscape:true,
+							show: { effect:"blind",duration:250},
+							hide: { effect:"blind",duration:250},
+							//open: function(event, ui) {
+							//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+							//},
+							//buttons: [
+							//	{
+							//		id: "copy-cancel-button",
+							//		click: function($event) {
+							//			$( "#copy-modal" ).dialog("close");
+							//		}
+							//	}
+							//]
+						});	
+						//$("#copy-cancel-button").button('option', 'label', 'OK');
+						
+						
 						$( "#contact-edit-modal" ).dialog({
 							title:'Edit Contact',
 							autoOpen: false,
@@ -1704,7 +1728,11 @@
 		            		aux.focus();
 		            		aux.select();
 		            		document.execCommand("copy");
-		            		document.body.removeChild(aux);		            		
+		            		document.body.removeChild(aux);	
+		            		$("#copy-modal").dialog("open");
+		            		setTimeout(function() {
+		            			$("#copy-modal").dialog("close");
+		            		},250);
 		    			});
 		            	$($destination + " .jobProposalDisplayPanel .job-proposal-job-nbr").html($jobDetail.job.jobNbr);
 		            	$($destination + " .jobProposalDisplayPanel .job-proposal-ppc").html("$" + $jobDetail.job.pricePerCleaning);
@@ -2782,6 +2810,9 @@
 	    </script>
 		</ansi:hasPermission>
 	    
+	    <div id="copy-modal">
+	    	<span style="font-size:110%; font-style:italic;">Copied</span>
+	    </div>
     </tiles:put>
 
 </tiles:insert>
