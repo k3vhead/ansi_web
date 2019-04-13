@@ -1174,6 +1174,7 @@
 								$canSchedule) {
 		            	$jobHeader = $("<div>");
 	            		$jobHeader.attr("data-jobid", $jobId);
+	            		$jobHeader.attr("data-jobnbr", $jobNbr);
 	            		$jobHeader.attr("class","jobTitleRow");
 	            		
 
@@ -1181,6 +1182,7 @@
 	            		$panelButtonContainer = $("<div>");
 	            		$panelButtonContainer.attr("class","panel-button-container");
 	            		$panelButtonContainer.attr("data-jobid",$jobId);
+
 	            		if ( $canEdit == true ) {
 	            			$panelButtonContainer.append('<quote:editJobMenu />');
 	            		}
@@ -1436,6 +1438,18 @@
 		    				console.debug("Set jobid attr to new/add/something");
 		    				$("#job-edit-modal").attr("data-jobid", "add");
 							$("#job-edit-modal").attr("data-type", "add");
+							$("#job-edit-modal input[name='job-activation-equipment']").val("BASIC");
+							$("#job-edit-modal select[name='job-activation-schedule']").val("auto");
+							var $maxJobNbr = -1;
+							$.each( $("#jobList .jobTitleRow"), function($idx, $jobTitle){
+								$jobNbr = parseInt($($jobTitle).attr("data-jobnbr"));
+								console.log($jobNbr)
+								if( $jobNbr > $maxJobNbr ) {
+									$maxJobNbr = $jobNbr;
+								}
+							});
+							var $nextJobNbr = $maxJobNbr + 1;
+							$("#job-edit-modal input[name='job-proposal-job-nbr']").val($nextJobNbr);
 		    				$("#job-edit-modal").dialog("open");
 		    			});
 	
@@ -1501,7 +1515,6 @@
 		    				console.log("Saving quote header");
 		    				QUOTEMAINTENANCE.saveQuoteHeader();
 		    			});
-		    			
 		    		},
 		    		
 		    		
@@ -1683,6 +1696,16 @@
 		            	console.log("Populate Job Panel");
 		            	console.log($data);
 		            	$jobDetail = $data.quote.jobDetail
+		            	$($destination + " .jobtext").dblclick(function() {
+		            		var $myText = $(this).html();
+		            		var aux =document.createElement("input");
+		            		aux.setAttribute("value", $myText);
+		            		document.body.appendChild(aux);
+		            		aux.focus();
+		            		aux.select();
+		            		document.execCommand("copy");
+		            		document.body.removeChild(aux);		            		
+		    			});
 		            	$($destination + " .jobProposalDisplayPanel .job-proposal-job-nbr").html($jobDetail.job.jobNbr);
 		            	$($destination + " .jobProposalDisplayPanel .job-proposal-ppc").html("$" + $jobDetail.job.pricePerCleaning);
 		            	$($destination + " .jobProposalDisplayPanel .job-proposal-freq").html($jobDetail.job.jobFrequency);
@@ -2621,18 +2644,18 @@
 	    			</div>
 	    		</div>
 		    	<div id="addressPanel" style="width:1269px; float:left;">
-		    		<div id="addressContainerBillTo" style="float:right; width:50%; border:solid 1px #404040;">
-		    			<quote:addressDisplayPanel label="Bill To" id="address-bill-to" />
-		    			<div id="billToContactContainer" style="width:80%;">
-		    				<quote:addressContact label="Contract Contact" id="contract-contact" />
-		    				<quote:addressContact label="Billing Contact" id="billing-contact" />
-		    			</div>
-		    		</div>
-		    		<div id="addressContainerJobSite" style="float:left; width:49%; border:solid 1px #404040;">
+		    		<div id="addressContainerJobSite" style="float:right; width:49%; border:solid 1px #404040;">
 		    			<quote:addressDisplayPanel label="Job Site" id="address-job-site" />
 		    			<div id="jobSiteContactContainer" style="width:80%;">
 		    				<quote:addressContact label="Job Contact" id="job-contact" />
 		    				<quote:addressContact label="Site Contact" id="site-contact" />
+		    			</div>
+		    		</div>
+		    		<div id="addressContainerBillTo" style="float:left; width:50%; border:solid 1px #404040;">
+		    			<quote:addressDisplayPanel label="Bill To" id="address-bill-to" />
+		    			<div id="billToContactContainer" style="width:80%;">
+		    				<quote:addressContact label="Contract Contact" id="contract-contact" />
+		    				<quote:addressContact label="Billing Contact" id="billing-contact" />
 		    			</div>
 		    		</div>
 		    		<div class="spacer">&nbsp;</div>

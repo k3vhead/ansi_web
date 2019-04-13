@@ -20,7 +20,7 @@
 	<tr>
 		<td colspan="4">
 			<span class="formLabel">Service Description</span><br />
-			<span class="job-proposal-desc"></span>
+			<span class="job-proposal-desc jobtext"></span>
 		</td>
 	</tr>
 </table>
