@@ -52,8 +52,9 @@
        			dataTable : null,
        			lookupType : '<c:out value="${ANSI_JOB_LOOKUP_TYPE}" />',
        			pacColumns : [1,2,3],
-       			contactColumns : [4,5,6],
-       			jobColumns : [7,8,9],
+       			contactColumns : [17,18,19,20,21],
+       			jobColumns : [0,1,13,14,15,16,21],
+       			
        			
        			
        			
@@ -68,8 +69,18 @@
     	      	  		return false;
     	      	    });
     				
-    				
-					JOBLOOKUP.createTable();
+    			/*	var $filterJob = dataTable.columns( [0,1,13,14,15,16,21] ).data();
+                	if ( $filterJob == 'yes' ) {
+                		$filterIcon = "far fa-check-square";
+                	} else {
+                		$filterIcon = "fa fa-ban";
+                	}*/
+    				if ( JOBLOOKUP.lookupType == null || JOBLOOKUP.lookupType == '' ) {
+    					JOBLOOKUP.makeModal();
+    					$("#lookupModal").dialog("open");
+    				} else {
+    					JOBLOOKUP.createTable();
+    				}
                 },
                 
                 
@@ -92,7 +103,25 @@
             	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
             	        ],
             	        buttons: [
-            	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();$('#jobTable').draw();}}
+            	        	'pageLength',
+            	        	'copy', 
+            	        	'csv', 
+            	        	'excel', 
+            	        	{extend: 'pdfHtml5', orientation: 'landscape'}, 
+            	        	'print',
+            	        	{extend: 'colvis',	label: function () {doFunctionBinding();$('#jobTable').draw();}},
+            	        	{
+	        	        		text:'Job Filter',
+	        	        		action: function(e, dt, node, config) {
+	        	        			if ( $filterJob == 'yes' ) {
+	        	        				$filterJob = 'no';
+	        	        			} else {
+	        	        				$filterJob = 'yes';
+	        	        			}
+	        	        			var $url = "invoiceLookup.html?divisionId=" + $filterDivisionId + "&ppcFilter=" + $filterPPC;
+	        	        			location.href=$url;
+	        	        		}
+	        	        	}
             	        ],
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
@@ -144,8 +173,8 @@
     			            	if(row.serviceDescription != null){return (row.serviceDescription+"");}
     			            } },
     			            { width: "4%", title: "<bean:message key="field.label.poNumber" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.poNumber != null){return (row.poNumber+"");}
-    			            } },
+    			            	if(row.poNumber != null){return (row.poNumber+"");}	    
+    			            } },	         			         
     			            { width: "4%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
     			            	//console.log(row);
     			            	{
@@ -164,14 +193,89 @@
     			            }
     			    } );
             	},
+
+//        		{ width: "4%", title: "<bean:message key="field.label.jobContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+//        			if(row.jobContact != null){return (row.jobContact+"");}
+//        		} },
+//       			{ width: "4%", title: "<bean:message key="field.label.siteContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+//        			if(row.siteContact != null){return (row.siteContact+"");}
+//        		} },
+//        		{ width: "4%", title: "<bean:message key="field.label.contractContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+//        			if(row.contractContact != null){return (row.contractContact+"");}
+//        		} },
+//        		{ width: "4%", title: "<bean:message key="field.label.billingContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
+//        			if(row.billingContact != null){return (row.billingContact+"");}
+//        		} },
+//        		{ width: "4%", title: "<bean:message key="field.label.contactId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+//        			if(row.contactId != null){return (row.contactId+"");}
+//        		} },
+//        		{ width: "4%", title: "<bean:message key="field.label.lastName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+//        			if(row.lastName != null){return (row.lastName+"");}
+//        		} },
+//        		{ width: "4%", title: "<bean:message key="field.label.firstName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+//        			if(row.firstName != null){return (row.firstName+"");}
+//        		} },
+//        		{ width: "4%", title: "<bean:message key="field.label.preferredContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
+//        			if(row.preferredContact != null){return (row.preferredContact+"");}
+//        		} },  
             	
 				
             	
 				doFunctionBinding : function() {
 					if ( JOBTABLE.lookupType == 'JOB' ) {
-						JOBTABLE.showJobColumns();
+						JOBLOOKUP.showJobColumns();
 					}
 				},
+				
+				
+				displayModal : function () {
+					$(".displayModal").click(function($event) {
+						$('#lookupModal').data("permissionGroupId",null);
+		        		$('#lookupModal').button('option', 'label', 'Search');
+		        		$('#exitButton').button('option', 'label', 'Exit to Dashboard');
+		        		
+		 //       		$("#editPanel display[name='']").val("");
+						$("#lookupModal input[name='JOB']").val("");
+						$("#lookupModal input[name='PAC']").val("");
+						$("#lookupModal input[name='CONTACT']").val("");			        		
+		        		$("#lookupModal .err").html("");
+		        		$("#lookupModal").dialog("option","title", "Select Lookup Screen to View").dialog("open");
+					});
+					},
+					
+					
+					makeLookupModal : function() {	
+						$("#lookupModal" ).dialog({
+							autoOpen: false,
+							height: 300,
+							width: 500,
+							modal: true,
+							closeOnEscape:false,
+							open: function(event, ui) {
+								$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+							},
+							buttons: [
+								{
+									id: "exitButton",
+									click: function($event) {
+										location.href="dashboard.html";
+									}
+								},{
+									id: "goEdit",
+									click: function($event) {
+										PERMISSIONGROUP.updatePermissionGroup();
+									}
+								}	      	      
+							],
+							close: function() {
+								PERMISSIONGROUP.clearAddForm();
+								$("#editPanel").dialog( "close" );
+								//allFields.removeClass( "ui-state-error" );
+							}
+						});
+					},
+				
+				
 				
 				
 				showJobColumns : function() {
@@ -201,6 +305,9 @@
 	       	
 	    </table>
 	    
+	    <div class="addButtonDiv">
+   				<input type="button" class="addButton prettyWideButton" value="lookupModal" />
+   			</div>
 	    <webthing:scrolltop />
     
     </tiles:put>
