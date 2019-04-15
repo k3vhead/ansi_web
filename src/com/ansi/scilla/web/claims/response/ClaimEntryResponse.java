@@ -60,7 +60,7 @@ public class ClaimEntryResponse extends MessageResponse {
 		this.jobId = (Integer)claimDetail.get(ClaimDetailLookupQuery.JOB_ID);
 		this.budget = ((BigDecimal)claimDetail.get(ClaimDetailLookupQuery.BUDGET)).doubleValue();
 		this.omNotes = (String)claimDetail.get(ClaimDetailLookupQuery.OM_NOTES);
-		this.availableVolume = ((BigDecimal)claimDetail.get(ClaimDetailLookupQuery.VOLUME_REMAINING)).doubleValue();
+		//this.availableVolume = ((BigDecimal)claimDetail.get(ClaimDetailLookupQuery.VOLUME_REMAINING)).doubleValue();
 		TicketStatus ticketStatus = TicketStatus.lookup(this.ticketStatus);
 		this.ticketStatusDesc = ticketStatus.display();
 		
@@ -71,6 +71,8 @@ public class ClaimEntryResponse extends MessageResponse {
 		this.totalDlAmt = this.directLaborList.stream().mapToDouble(volume -> volume.getDlAmt()).sum();
 		this.totalDlHours = this.directLaborList.stream().mapToDouble(volume -> volume.getHours()).sum();
 		this.totalPassthruVolume = this.expenseList.stream().mapToDouble(volume -> volume.getPassthruExpenseVolume()).sum();
+		
+		this.availableVolume = this.totalVolume - (this.totalDirectLabor + this.totalPassthruVolume); 
 	}
 	
 	
