@@ -44,7 +44,7 @@ public class UserResponse extends MessageResponse {
 				}
 			});
 		} else if ( listType.equals(UserListType.MANAGER)) {
-			PermissionUserLookup lookup = new PermissionUserLookup(Permission.QUOTE_CREATE);
+			PermissionUserLookup lookup = new PermissionUserLookup(Permission.CAN_WRITE_QUOTE);
 			lookup.setSortBy(UserLookupItem.FIRST_NAME);
 			List<UserLookupItem> userList = lookup.selectAll(conn);
 			this.userList = userList;

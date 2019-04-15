@@ -46,6 +46,8 @@
 					jobFrequencyList : null,
 					leadTypeList : null,
 					managerList : null,
+					lastContactIdUsed : "",
+					lastContactNameUsed : "",
 
 					// pieces of the quote that are required
 					jobSiteAddress : null,
@@ -114,7 +116,11 @@
 	    				console.debug("Set jobid attr to new/add/something");
 	    				$("#job-edit-modal").attr("data-jobid", "add");
 						$("#job-edit-modal").attr("data-type", "add");
+						$("#job-edit-modal input[name='job-proposal-job-nbr']").val(1);
+						$("#job-edit-modal input[name='job-activation-equipment']").val("BASIC");
+						$("#job-edit-modal select[name='job-activation-schedule']").val("auto");
 	    				$("#job-edit-modal").dialog("open");
+						$("#job-edit-modal input[name='job-proposal-ppc']").focus();
 	    			},
 	    			
 	    			
@@ -1224,6 +1230,8 @@
 						var $contactLabel = $contactLabels[$contactType];
 						var $outbound = {};
 						$outbound[$contactLabel]=$contactId;
+						NEWQUOTE.lastContactNameUsed=$("#contact-edit-modal input[name='contact-name']").val();
+						NEWQUOTE.lastContactIdUsed=$contactId;						
 						$outbound['action'] = 'validate';
 						NEWQUOTE.doQuoteUpdate($outbound, NEWQUOTE.saveContactSuccess, NEWQUOTE.saveContactErr);
 					},
@@ -1782,39 +1790,39 @@
 		    				$("#address-edit-modal").dialog("open");
 						} else if ( NEWQUOTE.jobsiteJobContact == null) {
 							$("#save-quote-button").hide(2500);
-		    				$("#contact-edit-modal input[name='contact-name']").val("");
+		    				$("#contact-edit-modal input[name='contact-name']").val(NEWQUOTE.lastContactNameUsed);
 		    				$("#contact-edit-modal").dialog("option","title","Job Contact");
 		    				$("#contact-edit-modal .none-found").hide();
 		    				$("#contact-edit-display").hide();
 		    				$("#contact-edit-modal").data("type","job");
-				        	$("#contact-edit-modal").data("id","");
+				        	$("#contact-edit-modal").data("id",NEWQUOTE.lastContactIdUsed);
 		    				$("#contact-edit-modal").dialog("open");
 						} else if ( NEWQUOTE.jobsiteSiteContact == null) {
 							$("#save-quote-button").hide(2500);
-		    				$("#contact-edit-modal input[name='contact-name']").val("");
+		    				$("#contact-edit-modal input[name='contact-name']").val(NEWQUOTE.lastContactNameUsed);
 		    				$("#contact-edit-modal").dialog("option","title","Site Contact");
 		    				$("#contact-edit-modal .none-found").hide();
 		    				$("#contact-edit-display").hide();
 		    				$("#contact-edit-modal").data("type","site");
-				        	$("#contact-edit-modal").data("id","");
+				        	$("#contact-edit-modal").data("id",NEWQUOTE.lastContactIdUsed);
 		    				$("#contact-edit-modal").dialog("open");
 						} else if ( NEWQUOTE.billtoContractContact == null) {
 							$("#save-quote-button").hide(2500);
-		    				$("#contact-edit-modal input[name='contact-name']").val("");
+		    				$("#contact-edit-modal input[name='contact-name']").val(NEWQUOTE.lastContactNameUsed);
 		    				$("#contact-edit-modal").dialog("option","title","Contract Contact");
 		    				$("#contact-edit-modal .none-found").hide();
 		    				$("#contact-edit-display").hide();
 		    				$("#contact-edit-modal").data("type","contract");
-				        	$("#contact-edit-modal").data("id","");
+				        	$("#contact-edit-modal").data("id",NEWQUOTE.lastContactIdUsed);
 		    				$("#contact-edit-modal").dialog("open");
 						} else if ( NEWQUOTE.billtoBillingContact == null) {
 							$("#save-quote-button").hide(2500);
-		    				$("#contact-edit-modal input[name='contact-name']").val("");
+		    				$("#contact-edit-modal input[name='contact-name']").val(NEWQUOTE.lastContactNameUsed);
 		    				$("#contact-edit-modal").dialog("option","title","Billing Contact");
 		    				$("#contact-edit-modal .none-found").hide();
 		    				$("#contact-edit-display").hide();
 		    				$("#contact-edit-modal").data("type","billing");
-				        	$("#contact-edit-modal").data("id","");
+				        	$("#contact-edit-modal").data("id",NEWQUOTE.lastContactIdUsed);
 		    				$("#contact-edit-modal").dialog("open");
 						} else if ( NEWQUOTE.divisionId == null ) {
 							$("#save-quote-button").hide(2500);
@@ -2044,18 +2052,18 @@
 	    			</div>
 	    		</div>
 		    	<div id="addressPanel" style="width:1269px; float:left;">
-		    		<div id="addressContainerBillTo" style="float:right; width:50%; border:solid 1px #404040;">
-		    			<quote:addressDisplayPanel label="Bill To" id="address-bill-to" />
-		    			<div id="billToContactContainer" style="width:80%;">
-		    				<quote:addressContact label="Contract Contact" id="contract-contact" />
-		    				<quote:addressContact label="Billing Contact" id="billing-contact" />
-		    			</div>
-		    		</div>
-		    		<div id="addressContainerJobSite" style="float:left; width:49%; border:solid 1px #404040;">
+		    		<div id="addressContainerJobSite" style="float:right; width:49%; border:solid 1px #404040;">
 		    			<quote:addressDisplayPanel label="Job Site" id="address-job-site" />
 		    			<div id="jobSiteContactContainer" style="width:80%;">
 		    				<quote:addressContact label="Job Contact" id="job-contact" />
 		    				<quote:addressContact label="Site Contact" id="site-contact" />
+		    			</div>
+		    		</div>
+		    		<div id="addressContainerBillTo" style="float:left; width:50%; border:solid 1px #404040;">
+		    			<quote:addressDisplayPanel label="Bill To" id="address-bill-to" />
+		    			<div id="billToContactContainer" style="width:80%;">
+		    				<quote:addressContact label="Contract Contact" id="contract-contact" />
+		    				<quote:addressContact label="Billing Contact" id="billing-contact" />
 		    			</div>
 		    		</div>
 		    		<div class="spacer">&nbsp;</div>

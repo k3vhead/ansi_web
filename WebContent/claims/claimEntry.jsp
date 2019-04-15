@@ -40,6 +40,9 @@
         	#direct-labor-table td {
         		border:solid 1px #000000;
         	}
+        	#omnotes-modal {
+        		display:none;
+        	}
 			#passthru-expense-container {
 				margin-top:20px;
 				margin-left:80px;
@@ -54,6 +57,9 @@
 			#ticket-modal {
 				display:none;	
 			}
+			.dark-gray {
+				color:#404040;
+			}
 			.dt-center {
 				text-align:center;
 			}
@@ -62,6 +68,10 @@
 			}
 			.dt-right {
 				text-align:right;
+			}
+			.omnotes-view {
+				cursor:pointer;
+				display:none;
 			}
 			.spacer-row {
 				border:0;
@@ -143,9 +153,7 @@
 
         		
         		
-        		makeModals : function () {
-        			TICKETUTILS.makeTicketViewModal("#ticket-modal")
-        		},
+        		
         		
         		
         		
@@ -155,21 +163,42 @@
         				$('html, body').animate({scrollTop: 0}, 800);
               	  		return false;
               	    });
+            		
             	},
             	
             	
+            	makeModals : function () {
+        			TICKETUTILS.makeTicketViewModal("#ticket-modal")
+        			
+        			$( "#omnotes-modal" ).dialog({
+							title:'OM Notes',
+							autoOpen: false,
+							height: 300,
+							width: 500,
+							modal: true,
+							closeOnEscape:true,
+							//open: function(event, ui) {
+							//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+							//},
+							buttons: [
+								{
+									id: "omnotes-cancel-button",
+									click: function($event) {
+										$( "#omnotes-modal" ).dialog("close");
+									}
+								}
+							]
+						});	
+						$("#omnotes-cancel-button").button('option', 'label', 'OK');
+        		},
             	
-            	makeModals : function() {
-            		TICKETUTILS.makeTicketViewModal("#ticket-modal")
-            	},
             	
             	
             	
             	populateDetail : function($data) {
         			var $stringList = ["jobSiteAddress",
 								"ticketId",
-								"ticketStatus",
-								"omNotes"];
+								"ticketStatus"];
         			var $numberList = [
 								"totalVolume",
 								"claimedVolume",
@@ -202,6 +231,19 @@
 						TICKETUTILS.doTicketViewModal("#ticket-modal",$ticketId);
 						$("#ticket-modal").dialog("open");
 					});
+        			
+        			
+        			if ( $data.omNotes == "" || $data.omNotes == null ) {
+        				$("#ticketDetailContainer .omnotes-view").hide();
+        			} else {
+	        			$("#omnotes-modal .omNotes").html($data.omNotes);  
+	        			$("#ticketDetailContainer .omnotes-view").show();
+	        			$("#ticketDetailContainer .omnotes-view").click(function() {
+	            			$("#omnotes-modal").dialog("open");
+	            		});
+        			}
+
+        			
         		},
             	
 	            
@@ -317,7 +359,7 @@
 					<td class="ticket-detail-data dt-right"><span class="budget"></span></td>
 					<td class="ticket-detail-data dt-right"><span class="claimedDirectLaborAmt"></span></td>
 					<td class="ticket-detail-data dt-right"><span class="availableDirectLabor"></span></td>
-					<td class="ticket-detail-data dt-left"><span class="omNotes"></span></td>
+					<td class="ticket-detail-data dt-center"><webthing:view styleClass="dark-gray omnotes-view">View</webthing:view></td>
 				</tr>								
 			</table>
 		</div>    	
@@ -365,7 +407,9 @@
 	    
 	    <webthing:ticketModal ticketContainer="ticket-modal" />
     
-   
+   		<div id="omnotes-modal">
+   			<span class="omNotes"></span>
+   		</div>
     </tiles:put>
 		
 </tiles:insert>

@@ -23,18 +23,18 @@
 	</tr>
 	<tr>
 		<td><span class="formLabel">Equipment:</span></td>
-		<td colspan="3"><span class="job-activation-equipment"></span></td>
+		<td colspan="3"><span class="job-activation-equipment jobtext"></span></td>
 	</tr>
 	<tr>
 		<td><span class="formLabel">Washer Notes:</span></td>
-		<td colspan="3"><span class="job-activation-washer-notes"></span></td>
+		<td colspan="3"><span class="job-activation-washer-notes jobtext"></span></td>
 	</tr>
 	<tr>
 		<td><span class="formLabel">OM Notes:</span></td>
-		<td colspan="3"><span class="job-activation-om-notes"></span></td>
+		<td colspan="3"><span class="job-activation-om-notes jobtext"></span></td>
 	</tr>
 	<tr>
 		<td><span class="formLabel">Billing Notes:</span></td>
-		<td colspan="3"><span class="job-activation-billing-notes"></span></td>
+		<td colspan="3"><span class="job-activation-billing-notes jobtext"></span></td>
 	</tr>
 </table>
