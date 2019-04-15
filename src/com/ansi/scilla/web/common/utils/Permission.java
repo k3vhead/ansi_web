@@ -26,7 +26,7 @@ public enum Permission {
 	QUOTE_CREATE(QUOTE_READ, false, "Create quotes; edit until quotes are proposed"),		// can create quotes and edit them until they have been proposed
 	QUOTE_PROPOSE(QUOTE_CREATE, false, "Can propose quotes"),
 	QUOTE_UPDATE(QUOTE_PROPOSE, false, "Edit quotes at any time, including after they are proposed"),    // can create quotes, edit them at any time (including after proposal)
-	QUOTE_OVERRIDE(QUOTE_UPDATE, false, "Override quote data"),
+	QUOTE_OVERRIDE(QUOTE_UPDATE, false, "Edit locked quote fields at any time, including after they are proposed"),    // can do things like uncancel/unactivate/etc.
 	
 	/**
 	 * 11/5/2018 - Job permissions are merged into quote permissions. (You need quote permission to do anything with jobs)
@@ -39,7 +39,7 @@ public enum Permission {
 	TICKET(null, true, "Functional area: Tickets"),
 	TICKET_READ(TICKET, true, "Read-only access to Tickets"),		// this is for backwards compatibility
 	TICKET_WRITE(TICKET_READ, true, "Edit Tickets"),		// this is for backwards compatibility
-	TICKET_OVERRIDE(TICKET_WRITE, true, "Ticket Override"),
+	TICKET_OVERRIDE(TICKET_WRITE, true, "Change locked fields"),		// this is for backwards compatibility
 	
 	TICKET_SPECIAL_OVERRIDE(null, false, "Functional Area: Ticket Override"),    // specifically needed for invoice date
 	TICKET_SPECIAL_OVERRIDE_READ(TICKET_SPECIAL_OVERRIDE, false, "Bakcward compatibility"),    // this is for backwards compatibility
@@ -74,6 +74,9 @@ public enum Permission {
 	CONTACT_READ(CONTACT, false, "Read customer contact info"),
 	CONTACT_WRITE(CONTACT_READ, false, "Write customer contact info"),
 	
+	CUSTOMER(null, false, "Functional Area: Customer Interaction"),
+	CAN_WRITE_QUOTE(CUSTOMER, false, "Can request a quote to be written (can be in the manager field on a quote)"),
+	
 	ACTIVITIES(null, false, "Can Perform External Activities"),
 	CAN_RUN_TICKETS(ACTIVITIES, true, "Can wash windows, etc"),
 	CAN_COMPLETE_TICKETS(CAN_RUN_TICKETS, true, "Can set tickets to ready-to-bill"),
@@ -83,8 +86,38 @@ public enum Permission {
 	PERMISSIONS_WRITE(PERMISSIONS_READ, false, "Can edit permission groups, assign permissions to group"),
 	
 	CLAIMS(null, false, "Functional Area: Claims"),
-	CLAIMS_READ(CLAIMS, true, "Can read ticket claims"),
-	CLAIMS_WRITE(CLAIMS_READ, true, "Can edit ticket claims"),
+	CLAIMS_READ(CLAIMS, false, "Can read ticket claims"),
+	CLAIMS_WRITE(CLAIMS_READ, false, "Can edit ticket claims"),
+
+	REPORTS_AGING(null, false, "Functional Area: Aging Reports"),
+	REPORTS_AGING_READ(REPORTS_AGING, false, "Can read aging reports"),
+	
+	REPORTS_SIX_MONTH_ROLLING_VOLUME(null, false, "Functional Area: Six Month Rolling Volume Reports"),
+	REPORTS_SIX_MONTH_ROLLING_VOLUME_READ(REPORTS_SIX_MONTH_ROLLING_VOLUME, false, "Can read Six Month Rolling Volume Reports"),
+	
+	REPORTS_CASH_RECEIPTS_REGISTER(null, false, "Functional Area: Cash Receipts Register Reports"),
+	REPORTS_CASH_RECEIPTS_REGISTER_READ(REPORTS_CASH_RECEIPTS_REGISTER, false, "Can read aging reports"),
+	
+	REPORTS_DISPATCHED_AND_OUTSTANDING(null, false, "Functional Area: Dispatched and Outstanding Reports"),
+	REPORTS_DISPATCHED_AND_OUTSTANDING_READ(REPORTS_DISPATCHED_AND_OUTSTANDING, false, "Can read DO lists"),
+	
+	REPORTS_INVOICE_REGISTER(null, false, "Functional Area: Invoice Register Reports"),
+	REPORTS_INVOICE_REGISTER_READ(REPORTS_INVOICE_REGISTER, false, "Can read Invoice Register Reports"),
+	
+	REPORTS_JOB_SCHEDULE(null, false, "Functional Area: Job Schedule Reports"),
+	REPORTS_JOB_SCHEDULE_READ(REPORTS_JOB_SCHEDULE, false, "Can read Job Schedule reports"),
+	
+	REPORTS_PAC(null, false, "Functional Area: PAC Reports"),
+	REPORTS_PAC_READ(REPORTS_PAC, false, "Can read PAC reports"),
+	
+	REPORTS_TICKET_STATUS(null, false, "Functional Area: Ticket Status Reports"),
+	REPORTS_TICKET_STATUS_READ(REPORTS_TICKET_STATUS, false, "Can read Ticket Status reports"),
+	
+	REPORTS_ADDRESS_USAGE(null, false, "Functional Area: Address Usage Reports"),
+	REPORTS_ADDRESS_USAGE_READ(REPORTS_ADDRESS_USAGE, false, "Can read address usage reports"),
+	
+	REPORTS_CLIENT_CONTACT(null, false, "Functional Area: Client Contact Reports"),
+	REPORTS_CLIENT_CONTACT_READ(REPORTS_CLIENT_CONTACT, false, "Can read Client Contaoct reports"),
 	;
 	
 	private final Boolean divisionSpecific;
