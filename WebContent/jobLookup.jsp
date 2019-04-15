@@ -34,6 +34,10 @@
 				width:400px;
 				padding:15px;
 			}
+			#lookupModal {
+				display:none;
+				text-align:center;
+			}
 			.prettyWideButton {
 				height:30px;
 				min-height:30px;
@@ -76,7 +80,7 @@
                 		$filterIcon = "fa fa-ban";
                 	}*/
     				if ( JOBLOOKUP.lookupType == null || JOBLOOKUP.lookupType == '' ) {
-    					JOBLOOKUP.makeModal();
+    					JOBLOOKUP.makeLookupModal();
     					$("#lookupModal").dialog("open");
     				} else {
     					JOBLOOKUP.createTable();
@@ -174,7 +178,14 @@
     			            } },
     			            { width: "4%", title: "<bean:message key="field.label.poNumber" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.poNumber != null){return (row.poNumber+"");}	    
-    			            } },	         			         
+    			            } },	
+    			            <%-- put those columns here --%>
+    		        		{ width: "4%", title: "<bean:message key="field.label.jobContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    	        			if(row.jobContact != null){
+    	        				icon = JOBLOOKUP.makeContactIcon(row.jobContact);
+    	        				return (icon + " " + row.jobContact.lastName+", "+row.jobContact.firstName);
+    	        				}
+	    	        		} },
     			            { width: "4%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
     			            	//console.log(row);
     			            	{
@@ -193,10 +204,8 @@
     			            }
     			    } );
             	},
-
-//        		{ width: "4%", title: "<bean:message key="field.label.jobContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-//        			if(row.jobContact != null){return (row.jobContact+"");}
-//        		} },
+            	
+					<%--
 //       			{ width: "4%", title: "<bean:message key="field.label.siteContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 //        			if(row.siteContact != null){return (row.siteContact+"");}
 //        		} },
@@ -218,8 +227,7 @@
 //        		{ width: "4%", title: "<bean:message key="field.label.preferredContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
 //        			if(row.preferredContact != null){return (row.preferredContact+"");}
 //        		} },  
-            	
-				
+            	--%>
             	
 				doFunctionBinding : function() {
 					if ( JOBTABLE.lookupType == 'JOB' ) {
@@ -241,39 +249,46 @@
 		        		$("#lookupModal .err").html("");
 		        		$("#lookupModal").dialog("option","title", "Select Lookup Screen to View").dialog("open");
 					});
-					},
-					
-					
-					makeLookupModal : function() {	
-						$("#lookupModal" ).dialog({
-							autoOpen: false,
-							height: 300,
-							width: 500,
-							modal: true,
-							closeOnEscape:false,
-							open: function(event, ui) {
-								$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-							},
-							buttons: [
-								{
-									id: "exitButton",
-									click: function($event) {
-										location.href="dashboard.html";
-									}
-								},{
-									id: "goEdit",
-									click: function($event) {
-										PERMISSIONGROUP.updatePermissionGroup();
-									}
-								}	      	      
-							],
-							close: function() {
-								PERMISSIONGROUP.clearAddForm();
-								$("#editPanel").dialog( "close" );
-								//allFields.removeClass( "ui-state-error" );
-							}
-						});
-					},
+				},
+				
+				
+				
+				makeContactIcon : function(contact) {
+					<%--
+						Steal this from quote maintenance.jsp
+						<webthing:phone>BUsiness Phone</webthing:phone> 
+					--%>
+					if (contact.preferredContact=="business")  {
+						icon="x";
+					}	else {
+						icon="y";
+					}
+					return icon;
+				},
+				
+				makeLookupModal : function() {	
+					$("#lookupModal" ).dialog({
+						autoOpen: false,
+						height: 300,
+						width: 500,
+						modal: true,
+						closeOnEscape:false,
+						title:"Job Lookup",
+						open: function(event, ui) {
+							$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+						},
+						buttons: [
+							{
+								id: "exitButton",
+								click: function($event) {
+									location.href="dashboard.html";
+								}
+							}	      	      
+						]
+					});
+					$("#exitButton").button('option', 'label', 'Exit');
+
+				},
 				
 				
 				
@@ -305,11 +320,15 @@
 	       	
 	    </table>
 	    
-	    <div class="addButtonDiv">
-   				<input type="button" class="addButton prettyWideButton" value="lookupModal" />
-   			</div>
 	    <webthing:scrolltop />
     
+    	<div id="lookupModal">
+    		<a href="jobLookup.html?type=JOB">Standard Job Lookup</a><br />
+    		<br/>
+    		<a href="jobLookup.html?type=PAC">Job Lookup With PAC</a><br />
+    		<br />
+    		<a href="jobLookup.html?type=CONTACT">Job Lookup with Contact</a><br />
+    	</div>
     </tiles:put>
 		
 </tiles:insert>
