@@ -60,7 +60,10 @@
 			<tr>
 				<td><ansi:required action="<%= action %>" /></td>
 				<td><span class="formLabel">Manager:</span></td>
-				<td><ansi:select name="managerId" action="<%= action %>"></ansi:select></td>
+				<td>
+					<span class="managerName"><span class="managerFirstName"></span> <span class="managerLastName"></span></span>
+					<ansi:select name="managerId" action="<%= action %>"></ansi:select>
+				</td>
 				<td><span class="err" id="managerIdErr"></span></td>
 				<td>&nbsp;</td>
 				

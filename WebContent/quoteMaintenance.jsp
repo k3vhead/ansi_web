@@ -1517,6 +1517,8 @@
 		    				$("#quotePanel input").prop("disabled", false);
 		    				$("#quotePanel select").prop("disabled", false);
 		    				$("#edit-this-quote").hide();
+		    				$("#quoteDataContainer .managerName").hide();
+		    				$("#quoteDataContainer select[name='managerId']").show();
 		    				$("#quote-container .quote-button-container .save-quote").show();
 		    				$("#quote-container .quote-button-container .cancel-edit").show();
 		    			});
@@ -1530,6 +1532,8 @@
 		    				$("#quotePanel select").removeClass("edit-err");
 						    $("#quotePanel input").removeClass("edit-err");
 		    				$("#edit-this-quote").show();
+		    				$("#quoteDataContainer .managerName").show();
+		    				$("#quoteDataContainer select[name='managerId']").hide();
 		    				$("#quote-container .quote-button-container .save-quote").hide();
 		    				$("#quote-container .quote-button-container .cancel-edit").hide();
 		    			});
@@ -1904,6 +1908,8 @@
 		            
 		            	$("#quoteDataContainer input[name='quoteId']").val($quote.quote.quoteId);
 		            	$("#quoteDataContainer select[name='managerId']").val($quote.quote.managerId);
+		            	$("#quoteDataContainer .managerFirstName").html($quote.quote.managerFirstName);
+		            	$("#quoteDataContainer .managerLastName").html($quote.quote.managerLastName);
 		            	$("#quoteDataContainer select[name='divisionId']").val($quote.quote.divisionId);
 		            	$("#quoteDataContainer .quoteNbrDisplay").html($quote.quote.quoteNumber);
 		            	$("#quoteDataContainer .revisionDisplay").html($quote.quote.revision);
@@ -2512,6 +2518,9 @@
         		text-align:right;
         	}
         	#quote-container {
+        		display:none;
+        	}
+        	#quoteDataContainer select[name='managerId'] {
         		display:none;
         	}
         	#quote-panel-closed {
