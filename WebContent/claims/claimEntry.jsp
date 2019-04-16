@@ -26,14 +26,10 @@
     	<link rel="stylesheet" href="css/ticket.css" />
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
     	<script type="text/javascript" src="js/addressUtils.js"></script>
+    	<script type="text/javascript" src="js/claims.js"></script> 
     	<script type="text/javascript" src="js/ticket.js"></script> 
     
         <style type="text/css">
-        	#direct-labor-container {
-				margin-top:20px;
-				margin-left:80px;
-				width:600px;
-        	}
         	#direct-labor-table {
         		width:100%;        		
         	}
@@ -68,6 +64,16 @@
 			}
 			.dt-right {
 				text-align:right;
+			}
+        	.lookup-container {
+        		margin-top:20px;
+				margin-left:80px;
+				width:800px;
+			}
+			.lookup-table-container {
+				width:100%;
+				border:solid 1px #404040;
+				padding:12px;
 			}
 			.omnotes-view {
 				cursor:pointer;
@@ -112,6 +118,7 @@
         			//CLAIMENTRY.createTable();
         			//CLAIMENTRY.makeClickers();
         			CLAIMENTRY.makeModals();
+        			CLAIMSUTILS.makeDirectLaborLookup("#direct-labor-lookup",CLAIMENTRY.ticketFilter);
         		},
         		
         		
@@ -127,7 +134,7 @@
 								console.log($data);
 								if ( $data.responseHeader.responseCode == 'SUCCESS') {
 									CLAIMENTRY.populateDetail($data.data);
-									CLAIMENTRY.populateDirectLabor($data.data);
+									//CLAIMENTRY.populateDirectLabor($data.data);
 									CLAIMENTRY.populatePassthru($data.data);
 								} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
 								} else {
@@ -270,20 +277,20 @@
                 		$row.append($hoursTd);
                 		$row.append($notesTd);
                 		$("#direct-labor-table tbody").append($row);
-                		
-                		var $footer = $("<tr>");
-                		var $labelTd = $('<td class="dt-right">').append("Totals:");
-                		var $totalVolumeTd =$('<td class="dt-right">').append($data.totalDirectLabor.toFixed(2));
-                		var $totalDlAmtTd =$('<td class="dt-right">').append($data.totalDlAmt.toFixed(2));
-                		var $totalHoursTd =$('<td class="dt-right">').append($data.totalDlHours.toFixed(2));
-                		$footer.append( $("<td>") ); // date column
-						$footer.append($labelTd);   
-						$footer.append($totalVolumeTd);
-						$footer.append($totalDlAmtTd);
-						$footer.append($totalHoursTd);
-						$footer.append($("<td>")); // notes
-						$("#direct-labor-table tfoot").append($footer);
             		});
+            		
+            		var $footer = $("<tr>");
+            		var $labelTd = $('<td class="dt-right">').append("Totals:");
+            		var $totalVolumeTd =$('<td class="dt-right">').append($data.totalDirectLabor.toFixed(2));
+            		var $totalDlAmtTd =$('<td class="dt-right">').append($data.totalDlAmt.toFixed(2));
+            		var $totalHoursTd =$('<td class="dt-right">').append($data.totalDlHours.toFixed(2));
+            		$footer.append( $("<td>") ); // date column
+					$footer.append($labelTd);   
+					$footer.append($totalVolumeTd);
+					$footer.append($totalDlAmtTd);
+					$footer.append($totalHoursTd);
+					$footer.append($("<td>")); // notes
+					$("#direct-labor-table tfoot").append($footer);
             		
             	},
             	
@@ -364,25 +371,10 @@
 			</table>
 		</div>    	
 
-		<div id="direct-labor-container">
-			<span class="table-label-text">Direct Labor</span><br />
-			<table id="direct-labor-table" cellSpacing="0" cellPadding="0">
-				<thead>
-					<tr>
-						<td class="ticket-detail-hdr">Date</td>
-						<td class="ticket-detail-hdr">Washer</td>
-						<td class="ticket-detail-hdr">Volume</td>
-						<td class="ticket-detail-hdr">DL $</td>
-						<td class="ticket-detail-hdr">Hrs</td>
-						<td class="ticket-detail-hdr">Notes</td>
-					</tr>
-				</thead>
-				<tbody>
-				</tbody>
-				<tfoot>
-				</tfoot>
-			</table>
-		</div>
+		<webthing:directLaborLookup tableName="direct-labor-lookup"/>
+		
+		
+		
 		
 		<div id="passthru-expense-container">
 			<span class="table-label-text">Passthru Expense</span>

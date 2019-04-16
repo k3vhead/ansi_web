@@ -137,7 +137,18 @@
 
 
 
-    <servlet>
+	<servlet>
+        <servlet-name>directLaborLookup</servlet-name>
+        <servlet-class>com.ansi.scilla.web.claims.servlet.DirectLaborLookupServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>directLaborLookup</servlet-name>
+        <url-pattern>/claims/directLaborLookup/*</url-pattern>
+    </servlet-mapping>
+    
+    
+    
+   <servlet>
         <servlet-name>ticketStatusLookup</servlet-name>
         <servlet-class>com.ansi.scilla.web.claims.servlet.TicketStatusLookupServlet</servlet-class>
     </servlet>

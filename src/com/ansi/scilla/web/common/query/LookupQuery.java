@@ -35,6 +35,7 @@ public abstract class LookupQuery extends ApplicationObject {
 	protected Integer userId;
 	protected String searchTerm;
 	protected List<ColumnFilter> columnFilter;
+	protected List<Object> baseFilterValue;
 	
 	
 	protected Logger logger;
@@ -151,6 +152,24 @@ public abstract class LookupQuery extends ApplicationObject {
 		this.columnFilter = columnFilter;
 	}
 
+	public List<Object> getBaseFilterValue() {
+		return baseFilterValue;
+	}
+
+	public void setBaseFilterValue(List<Object> baseFilterValue) {
+		this.baseFilterValue = baseFilterValue;
+	}
+
+	/**
+	 * Add a value for the base where clause. Values must be added in the order in which they appear in the "where" clause.
+	 * @param filterValue
+	 */
+	public void addBaseFilter(Object filterValue) {
+		if ( this.baseFilterValue == null ) {
+			this.baseFilterValue = new ArrayList<Object>();
+		}
+		this.baseFilterValue.add(filterValue);
+	}
 
 	public ResultSet select(Connection conn, Integer offset, Integer rowCount) throws Exception {
 		SelectType selectType = SelectType.DATA;
@@ -217,6 +236,9 @@ public abstract class LookupQuery extends ApplicationObject {
 		return sql;
 	}
 	
+	
+
+
 	protected String makeFilterPhrase(String wherePhrase) {
 		String filterPhrase = "";
 		if ( this.columnFilter != null && this.columnFilter.size() > 0 ) {
@@ -242,6 +264,22 @@ public abstract class LookupQuery extends ApplicationObject {
 	
 	private PreparedStatement makePreparedStatement(Connection conn, SelectType selectType, String searchSQL) throws SQLException {
 		PreparedStatement ps = conn.prepareStatement(searchSQL);
+		if ( this.baseFilterValue != null && this.baseFilterValue.size() > 0 ) {
+			int idx = 1;
+			for ( Object o : this.baseFilterValue ) {
+				if ( o instanceof Integer ) {
+					ps.setInt(idx,(Integer)o);
+				} else if ( o instanceof String ) {
+					ps.setString(idx, (String)o);
+				} else if ( o instanceof java.util.Date) {
+					java.util.Date date = (java.util.Date)o;
+					ps.setDate(idx, new java.sql.Date(date.getTime()));
+				} else {
+					throw new RuntimeException("Add another value to the else for " + o.getClass().getName());
+				}
+				idx++;
+			}
+		}
 		return ps;
 	}
 	
