@@ -39,11 +39,6 @@
         	#omnotes-modal {
         		display:none;
         	}
-			#passthru-expense-container {
-				margin-top:20px;
-				margin-left:80px;
-				width:600px;
-			}			
 			#passthru-expense-table {
 				width:100%;
 			}
@@ -119,6 +114,7 @@
         			//CLAIMENTRY.makeClickers();
         			CLAIMENTRY.makeModals();
         			CLAIMSUTILS.makeDirectLaborLookup("#direct-labor-lookup",CLAIMENTRY.ticketFilter);
+        			CLAIMSUTILS.makePassthruExpenseLookup("#passthru-expense-lookup",CLAIMENTRY.ticketFilter);
         		},
         		
         		
@@ -134,8 +130,6 @@
 								console.log($data);
 								if ( $data.responseHeader.responseCode == 'SUCCESS') {
 									CLAIMENTRY.populateDetail($data.data);
-									//CLAIMENTRY.populateDirectLabor($data.data);
-									CLAIMENTRY.populatePassthru($data.data);
 								} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
 								} else {
 									$("#globalMsg").html("System Error: Contact Support").show();
@@ -203,26 +197,19 @@
             	
             	
             	populateDetail : function($data) {
-        			var $stringList = ["jobSiteAddress",
-								"ticketId",
-								"ticketStatus"];
-        			var $numberList = [
+        			var $numberFieldList = [
 								"totalVolume",
 								"claimedVolume",
 								"availableVolume",
 								"budget",
 								"claimedDirectLaborAmt",
 								"availableDirectLabor"]
-								
-        			$.each($stringList, function($idx, $val) {
-        				var $selector = "#ticketDetailContainer .ticket-detail-table ." + $val;
-        				if ( $data[$val] == null ) {
-        					$($selector).html(null);
-        				} else {
-        					$($selector).html( $data[$val]);
-        				}
-        			});
-        			$.each($numberList, function($idx, $val) {
+					
+        			$("#ticketDetailContainer .ticket-detail-table .jobSiteAddress").html($data.jobSiteAddress);
+        			$("#ticketDetailContainer .ticket-detail-table .ticketId").html($data.ticketId);
+        			$("#ticketDetailContainer .ticket-detail-table .ticketStatus").html('<span class="tooltip">'+$data.ticketStatus+'<span class="tooltiptext">'+$data.ticketStatusDesc+'</span></span>');
+
+        			$.each($numberFieldList, function($idx, $val) {
         				var $selector = "#ticketDetailContainer .ticket-detail-table ." + $val;
         				if ( $data[$val] == null ) {
         					$($selector).html(null);
@@ -253,83 +240,6 @@
         			
         		},
             	
-	            
-	            
-            	
-            	
-
-        		populateDirectLabor : function($data) {
-            		$.each($data.directLaborList, function($idx, $val) {
-            			var $row = $("<tr>");
-            			
-                		var $dateTd = $('<td class="ticket-detail-data dt-center">').append($val.workDate);
-                		var $nameTd = $('<td class="ticket-detail-data dt-left">').append($val.washerLastName + ", " + $val.washerFirstName);
-                		var $volumeTd = $('<td class="ticket-detail-data dt-right">').append($val.volume.toFixed(2));
-                		var $dlAmtTd = $('<td class="ticket-detail-data dt-right">').append($val.dlAmt.toFixed(2));
-                		var $hoursTd = $('<td class="ticket-detail-data dt-right">').append($val.hours.toFixed(2));
-                		var $notesTd = $('<td class="ticket-detail-data dt-left">').append($val.notes);
-                		
-                		
-                		$row.append($dateTd);
-                		$row.append($nameTd);
-                		$row.append($volumeTd);
-                		$row.append($dlAmtTd);
-                		$row.append($hoursTd);
-                		$row.append($notesTd);
-                		$("#direct-labor-table tbody").append($row);
-            		});
-            		
-            		var $footer = $("<tr>");
-            		var $labelTd = $('<td class="dt-right">').append("Totals:");
-            		var $totalVolumeTd =$('<td class="dt-right">').append($data.totalDirectLabor.toFixed(2));
-            		var $totalDlAmtTd =$('<td class="dt-right">').append($data.totalDlAmt.toFixed(2));
-            		var $totalHoursTd =$('<td class="dt-right">').append($data.totalDlHours.toFixed(2));
-            		$footer.append( $("<td>") ); // date column
-					$footer.append($labelTd);   
-					$footer.append($totalVolumeTd);
-					$footer.append($totalDlAmtTd);
-					$footer.append($totalHoursTd);
-					$footer.append($("<td>")); // notes
-					$("#direct-labor-table tfoot").append($footer);
-            		
-            	},
-            	
-            	
-            	
-            	
-            	populatePassthru : function($data) {
-            		$.each($data.expenseList, function($idx, $val) {
-            			var $row = $("<tr>");
-            			
-                		var $dateTd = $('<td class="ticket-detail-data dt-center">');
-                		$dateTd.append($val.workDate);
-                		var $typeTd =$('<td class="ticket-detail-data dt-center">');
-                		$typeTd.append($val.passthruExpenseType);
-                		var $volumeTd = $('<td class="ticket-detail-data dt-right">');
-                		$volumeTd.append($val.passthruExpenseVolume.toFixed(2));
-                		var $notesTd = $('<td class="ticket-detail-data dt-left">');
-                		$notesTd.append($val.notes);
-                		var $nameTd = $('<td class="ticket-detail-data dt-left">');
-                		$nameTd.append($val.washerLastName + ", " + $val.washerFirstName);
-                		
-                		$row.append($dateTd);
-                		$row.append($typeTd);
-                		$row.append($volumeTd);
-                		$row.append($nameTd);
-                		$row.append($notesTd);
-                		$("#passthru-expense-table tbody").append($row);
-            		});
-            		
-            		var $footer = $("<tr>");
-            		var $labelTd = $('<td class="dt-right">').append("Totals:");
-            		var $totalVolumeTd =$('<td class="dt-right">').append($data.totalPassthruVolume.toFixed(2));
-            		$footer.append( $("<td>") ); // date column
-					$footer.append($labelTd);   
-					$footer.append($totalVolumeTd);
-					$footer.append($("<td>")); // notes
-					$("#passthru-expense-table tfoot").append($footer);
-            	},
-
         	}
       	  	
 
@@ -373,29 +283,8 @@
 
 		<webthing:directLaborLookup tableName="direct-labor-lookup"/>
 		
+		<webthing:passthruExpenseLookup tableName="passthru-expense-lookup"/>
 		
-		
-		
-		<div id="passthru-expense-container">
-			<span class="table-label-text">Passthru Expense</span>
-			<table id="passthru-expense-table" cellSpacing="0" cellPadding="0">
-				<thead>
-					<tr>
-						<td class="ticket-detail-hdr">Date</td>
-						<td class="ticket-detail-hdr">Type</td>
-						<td class="ticket-detail-hdr">Volume $</td>
-						<td class="ticket-detail-hdr">Washer</td>
-						<td class="ticket-detail-hdr">Notes</td>
-					</tr>
-				</thead>
-				<tbody>
-				</tbody>
-				<tfoot>
-				</tfoot>
-			</table>
-		</div>
-    
-	    <webthing:scrolltop />
 	    
 	    <webthing:ticketModal ticketContainer="ticket-modal" />
     

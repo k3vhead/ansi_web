@@ -26,7 +26,7 @@ public class DirectLaborLookupQuery extends ClaimsQuery {
 
 	
 	private static final String sqlSelectClause = 
-				"select ticket_claim.work_date,\n" + 
+				"select convert(VARCHAR,work_date,101) as work_date,\n" +     // 101 means MM/DD/YYYY is msSql-speak
 				"		ansi_user.last_name as washer_last_name,\n" + 
 				"		ansi_user.first_name as washer_first_name,\n" + 
 				"		ticket_claim.volume,\n" + 
@@ -95,12 +95,14 @@ public class DirectLaborLookupQuery extends ClaimsQuery {
 //			}
 		} else {
 //			String ticketClause = this.ticketFilter == null ? "" : "ticket.ticket_id=" + this.ticketFilter + " and ";
+			String searchTerm = queryTerm.toLowerCase();
 			whereClause =  whereClause + joiner + " (\n" +
 //					ticketClause +
-					"\n ticket_claim.work_date like '%" + queryTerm.toLowerCase() + "%'" +
-					"\n OR ansi_user.first_name like '%" + queryTerm.toLowerCase() + "%'" +
-					"\n OR ansi_user.last_name like '%" + queryTerm.toLowerCase() + "%'" +
-					"\n OR CONCAT(ansi_user.last_name, ', ', ansi_user.last_name) like '%" + queryTerm.toLowerCase() + "%'" +
+					"\n ticket_claim.work_date like '%" + searchTerm + "%'" +
+					"\n OR lower(ansi_user.first_name) like '%" + searchTerm + "%'" +
+					"\n OR lower(ansi_user.last_name) like '%" + searchTerm + "%'" +
+					"\n OR lower(CONCAT(ansi_user.last_name, ', ', ansi_user.first_name)) like '%" + searchTerm + "%'" +
+					"\n OR lower(CONCAT(ansi_user.first_name, ' ', ansi_user.last_name)) like '%"  + searchTerm + "%'" +
 					")" ;
 		}
 		

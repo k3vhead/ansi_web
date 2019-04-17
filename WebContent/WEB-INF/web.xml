@@ -512,6 +512,21 @@
     </servlet-mapping>
     
 
+
+	<servlet>
+        <servlet-name>passthruExpenseLookup</servlet-name>
+        <servlet-class>com.ansi.scilla.web.claims.servlet.PassthruExpenseLookupServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>passthruExpenseLookup</servlet-name>
+        <url-pattern>/claims/passthruExpenseLookup/*</url-pattern>
+    </servlet-mapping>
+    
+    
+    
+   
+   
+   
 	<servlet>
         <servlet-name>pastDueReport</servlet-name>
         <servlet-class>com.ansi.scilla.web.report.servlet.PastDueReportServlet</servlet-class>
