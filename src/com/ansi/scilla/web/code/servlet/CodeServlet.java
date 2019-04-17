@@ -278,7 +278,8 @@ public class CodeServlet extends AbstractServlet {
 		code.setValue(codeRequest.getValue());
 		// if we update something that isn't there, a RecordNotFoundException gets thrown
 		// that exception get propagated and turned into a 404
-		code.update(conn, key);		
+		this.validateUpdate(conn, key, codeRequest);
+		code.update(conn, key);
 		return code;
 	}
 
