@@ -1300,7 +1300,7 @@
 		            	var $canReorder=true;
 		            	$.each( $("#jobList li"), function(index, val) {
 		            		var $jobstatus=$(val).attr("data-jobstatus");
-		            		if ( $jobstatus=="P" || $jobstatus=="A" ) {
+		            		if ( $jobstatus=="P" || $jobstatus=="A" || $jobstatus=="C" ) {
 		            			$canReorder=false;	
 		            		}
 		            	});
