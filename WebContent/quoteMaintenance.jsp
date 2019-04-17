@@ -1297,54 +1297,63 @@
 		            
 		            
 		            makeJobSort : function() {
-						$("#jobList").sortable({
-							stop:function($event, $ui) {
-								//var $jobId = $ui.item.attr("data-jobid");
-								//var $selector = "#job" + $jobId + " .jobTitleRow";
-								console.log("Stopping");
-								console.log($ui);
-								//$($selector).click();
-								
-								var $jobIdList = []
-								$.each( $("#jobList li"), function(index, val) {
-								    console.log(val);
-								    var $thisJobId = $(val).attr("data-jobid");
-								    $jobIdList.push($thisJobId);
-								});
-								
-								var $outbound = {};
-								$outbound['jobIdList'] = $jobIdList
-								console.log(JSON.stringify($outbound));
-								
-								var $quoteId = QUOTEMAINTENANCE.quote.quote.quoteId;
-								var $url = "reorderJobs/" + $quoteId;
-								var jqxhr = $.ajax({
-									type: 'POST',
-									url: $url,
-									data: JSON.stringify($outbound),
-									statusCode: {
-										200: function($data) {
-											console.log($data);
-											// clear the list of job headers
-											$("#jobList").html("");
-											// then fill it back it
-											QUOTEMAINTENANCE.populateJobHeader($data.data.quote.jobHeaderList)
-											QUOTEMAINTENANCE.makeJobExpansion();
-										},					
-										403: function($data) {
-											$("#globalMsg").html("Session Timeout. Log in and try again");
+		            	var $canReorder=true;
+		            	$.each( $("#jobList li"), function(index, val) {
+		            		var $jobstatus=$(val).attr("data-jobstatus");
+		            		if ( $jobstatus=="P" || $jobstatus=="A" ) {
+		            			$canReorder=false;	
+		            		}
+		            	});
+		            	if ( $canReorder == true ) {
+							$("#jobList").sortable({
+								stop:function($event, $ui) {
+									//var $jobId = $ui.item.attr("data-jobid");
+									//var $selector = "#job" + $jobId + " .jobTitleRow";
+									console.log("Stopping");
+									console.log($ui);
+									//$($selector).click();
+									
+									var $jobIdList = []
+									$.each( $("#jobList li"), function(index, val) {
+									    console.log(val);
+									    var $thisJobId = $(val).attr("data-jobid");
+									    $jobIdList.push($thisJobId);
+									});
+									
+									var $outbound = {};
+									$outbound['jobIdList'] = $jobIdList
+									console.log(JSON.stringify($outbound));
+									
+									var $quoteId = QUOTEMAINTENANCE.quote.quote.quoteId;
+									var $url = "reorderJobs/" + $quoteId;
+									var jqxhr = $.ajax({
+										type: 'POST',
+										url: $url,
+										data: JSON.stringify($outbound),
+										statusCode: {
+											200: function($data) {
+												console.log($data);
+												// clear the list of job headers
+												$("#jobList").html("");
+												// then fill it back it
+												QUOTEMAINTENANCE.populateJobHeader($data.data.quote.jobHeaderList)
+												QUOTEMAINTENANCE.makeJobExpansion();
+											},					
+											403: function($data) {
+												$("#globalMsg").html("Session Timeout. Log in and try again");
+											},
+											404: function($data) {
+												$("#globalMsg").html("System Error Reorder 404. Contact Support");
+											},
+											500: function($data) {
+												$("#globalMsg").html("System Error Reorder 500. Contact Support");
+											}
 										},
-										404: function($data) {
-											$("#globalMsg").html("System Error Reorder 404. Contact Support");
-										},
-										500: function($data) {
-											$("#globalMsg").html("System Error Reorder 500. Contact Support");
-										}
-									},
-									dataType: 'json'
-								});
-							}
-						});	
+										dataType: 'json'
+									});
+								}
+							});	
+		            	}
 					},
 					
 					
@@ -1685,6 +1694,7 @@
 		            		$jobListItem = $("<li>");
 		            		$jobListItem.attr("data-jobid", $value.jobId);
 		            		$jobListItem.attr("id","job" + $value.jobId)
+		            		$jobListItem.attr("data-jobstatus", $value.jobStatus);
 							
 		            		var $jobHeader = QUOTEMAINTENANCE.makeJobHeader(
 		            				$value.jobId, 
