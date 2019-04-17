@@ -20,7 +20,7 @@ public class PassthruExpenseLookupQuery extends ClaimsQuery {
 	public static final String WASHER_FIRST_NAME = "washer_first_name";
 	public static final String WASHER_LAST_NAME = "washer_last_name";
 		
-	protected static final String sqlSelectClause = "select convert(VARCHAR,ticket_claim_passthru.work_date,101), \n" + 
+	protected static final String sqlSelectClause = "select convert(VARCHAR,ticket_claim_passthru.work_date,101) as work_date, \n" + 
 			"	ticket_claim_passthru.passthru_expense_volume,\n" + 
 			"	ticket_claim_passthru.notes,\n" + 
 			"	code.display_value as passthru_expense_type,\n" + 
