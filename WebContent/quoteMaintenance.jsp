@@ -1314,6 +1314,16 @@
 		            
 		            
 		            
+		            makeJobSortLengthCheck : function() {
+		            	setTimeout(function() {
+		            		var $jobCount = $("#jobList li").length;
+		            		if ( $jobCount > 0 ) {
+		            			QUOTEMAINTENANCE.makeJobSort();
+		            		} else {
+		            			QUOTEMAINTENANCE.makeJobSortLengthCheck();
+		            		}
+		            	},250);
+		            },
 		            
 		            makeJobSort : function() {
 		            	var $canReorder=true;
@@ -2866,7 +2876,7 @@
 	    <ansi:hasPermission permissionRequired="QUOTE_CREATE">
 	    <script type="text/javascript">
 	    $(document).ready(function() {
- 			QUOTEMAINTENANCE.makeJobSort();
+ 			QUOTEMAINTENANCE.makeJobSortLengthCheck();
 		});
 	    </script>
 		</ansi:hasPermission>
