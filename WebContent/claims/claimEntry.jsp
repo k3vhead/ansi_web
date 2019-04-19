@@ -30,11 +30,17 @@
     	<script type="text/javascript" src="js/ticket.js"></script> 
     
         <style type="text/css">
+        	#direct-labor-modal {
+        		display:none;
+        	}
         	#direct-labor-table {
         		width:100%;        		
         	}
         	#direct-labor-table td {
         		border:solid 1px #000000;
+        	}
+        	#new-dl-button {
+        		cursor:pointer;
         	}
         	#omnotes-modal {
         		display:none;
@@ -59,6 +65,9 @@
 			}
 			.dt-right {
 				text-align:right;
+			}
+			.form-label {
+				font-weight:bold;
 			}
         	.lookup-container {
         		margin-top:20px;
@@ -110,9 +119,9 @@
         		
         		init : function() {
         			CLAIMENTRY.getDetail();
-        			//CLAIMENTRY.createTable();
-        			//CLAIMENTRY.makeClickers();
+        			CLAIMENTRY.makeClickers();
         			CLAIMENTRY.makeModals();
+        			CLAIMENTRY.makeAutoComplete();
         			CLAIMSUTILS.makeDirectLaborLookup("#direct-labor-lookup",CLAIMENTRY.ticketFilter);
         			CLAIMSUTILS.makePassthruExpenseLookup("#passthru-expense-lookup",CLAIMENTRY.ticketFilter);
         		},
@@ -156,6 +165,24 @@
         		
         		
         		
+        		makeAutoComplete : function() {
+            		var $displaySelector = '#direct-labor-form input[name="washerName"]';
+            		var $idSelector = '#direct-labor-form input[name="washerId"]';
+            		var $washerAutoComplete = $($displaySelector).autocomplete({
+						source: "washerTypeAhead?",
+						select: function( event, ui ) {
+							$( $idSelector ).val(ui.item.id);								
+   				      	},
+						response: function(event, ui) {
+							if (ui.content.length === 0) {
+								$("#direct-labor-form .washerIdErr").html("No Washer Found");
+					        } else {
+					        	$("#direct-labor-form .washerIdErr").html("");
+					        }
+						}
+					});	
+            	},
+        		
         		
         		
         		
@@ -165,6 +192,13 @@
               	  		return false;
               	    });
             		
+            		$('.dateField').datepicker({
+		                prevText:'&lt;&lt;',
+		                nextText: '&gt;&gt;',
+		                showButtonPanel:true
+		            });
+					
+					
             	},
             	
             	
@@ -172,25 +206,56 @@
         			TICKETUTILS.makeTicketViewModal("#ticket-modal")
         			
         			$( "#omnotes-modal" ).dialog({
-							title:'OM Notes',
-							autoOpen: false,
-							height: 300,
-							width: 500,
-							modal: true,
-							closeOnEscape:true,
-							//open: function(event, ui) {
-							//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-							//},
-							buttons: [
-								{
-									id: "omnotes-cancel-button",
-									click: function($event) {
-										$( "#omnotes-modal" ).dialog("close");
-									}
+						title:'OM Notes',
+						autoOpen: false,
+						height: 300,
+						width: 500,
+						modal: true,
+						closeOnEscape:true,
+						//open: function(event, ui) {
+						//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+						//},
+						buttons: [
+							{
+								id: "omnotes-cancel-button",
+								click: function($event) {
+									$( "#omnotes-modal" ).dialog("close");
 								}
-							]
-						});	
-						$("#omnotes-cancel-button").button('option', 'label', 'OK');
+							}
+						]
+					});	
+					$("#omnotes-cancel-button").button('option', 'label', 'OK');
+					
+					
+					
+					
+					$( "#direct-labor-modal" ).dialog({
+						title:'Direct Labor',
+						autoOpen: false,
+						height: 375,
+						width: 500,
+						modal: true,
+						closeOnEscape:true,
+						//open: function(event, ui) {
+						//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+						//},
+						buttons: [
+							{
+								id: "dl-cancel-button",
+								click: function($event) {
+									$( "#direct-labor-modal" ).dialog("close");
+								}
+							},
+							{
+								id: "dl-save-button",
+								click: function($event) {
+									CLAIMENTRY.saveDirectLabor();
+								}
+							}
+						]
+					});	
+					$("#dl-cancel-button").button('option', 'label', 'Cancel');
+					$("#dl-save-button").button('option', 'label', 'Save');
         		},
             	
             	
@@ -240,6 +305,59 @@
         			
         		},
             	
+        		
+        		
+        		
+        		saveDirectLabor : function() {
+        			var $outbound = {"type":"DIRECT_LABOR"};
+        			var $url = "claims/claimEntry/" + CLAIMENTRY.ticketFilter;
+        			console.log("Save Direct Labor");
+        			
+        			$.each( $("#direct-labor-form input"), function($idx, $field) {
+        				var $key = $($field).attr("name");
+        				console.log($key);
+        				var $value = $($field).val();
+        				$outbound[$key] = $value;        				
+        			});
+    				console.debug($outbound);
+    				
+    				var jqxhr = $.ajax({
+    					type: 'POST',
+    					url: $url,
+    					data: JSON.stringify($outbound),
+    					statusCode: {
+    						200: function($data) {
+    		    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+    		    					$.each($data.data.webMessages, function (key, value) {
+    		    						var $selectorName = "#" + key + "Err";
+    		    						$($selectorName).show();
+    		    						$($selectorName).html(value[0]).fadeOut(10000);
+    		    					});
+    		    				} else {
+    				        		$("#direct-labor-modal").dialog("close");
+    		    					$("#globalMsg").html("Update Successful").show().fadeOut(4000);
+    		    					$('#contactTable').DataTable().ajax.reload();
+    		    				}
+    						},
+    						403: function($data) {
+    							$("#globalMsg").html("Session Timeout. Log in and try again");
+    						},
+    						404: function($data) {
+    							$("#direct-labor-modal").dialog("close");
+    							$("#globalMsg").html("Invalid Ticket").show();
+    						},
+    						405: function($data) {
+    							$("#direct-labor-modal").dialog("close");
+    							$("#globalMsg").html("System Error DL 405; Contact Support");
+    						},
+    						500: function($data) {
+    							$("#direct-labor-modal").dialog("close");
+    							$("#globalMsg").html("System Error DL 500; Contact Support");
+    						}
+    					},
+    					dataType: 'json'
+    				});
+        		},
         	}
       	  	
 
@@ -290,6 +408,43 @@
     
    		<div id="omnotes-modal">
    			<span class="omNotes"></span>
+   		</div>
+   		
+   		<div id="direct-labor-modal">
+   			<div id="direct-labor-form">
+	   			<table>
+	   				<tr>
+	   					<td class="form-label">Work Date:</td>
+	   					<td class="form-input"><input type="text" class="dateField" name="workDate" /></td>
+	   					<td class="err"><span class="wordDateErr"></span></td>
+	   				</tr>
+	   				<tr>
+	   					<td class="form-label">Washer:</td>
+	   					<td class="form-input"><input type="text" name="washerName" /><input type="hidden" name="washerId" /></td>
+	   					<td class="err"><span class="washerIdErr"></span></td>
+	   				</tr>
+	 			   	<tr>
+	   					<td class="form-label">Volume:</td>
+	   					<td class="form-input"><input type="text" name="volume" /></td>
+	   					<td class="err"><span class="volumeErr"></span></td>
+	   				</tr>
+	   				<tr>
+	   					<td class="form-label">Direct Labor ($):</td>
+	   					<td class="form-input"><input type="text" name="dlAmt" /></td>
+	   					<td class="err"><span class="dlAmtErr"></span></td>
+	   				</tr>
+	   				<tr>
+	   					<td class="form-label">Hours:</td>
+	   					<td class="form-input"><input type="text" name="hours" /></td>
+	   					<td class="err"><span class="hoursErr"></span></td>
+	   				</tr>
+	   				<tr>
+	   					<td class="form-label">Notes:</td>
+	   					<td class="form-input"><input type="text" name="notes" /></td>
+	   					<td class="err"><span class="notesErr"></span></td>
+	   				</tr>
+	   			</table>
+   			</div>
    		</div>
     </tiles:put>
 		
