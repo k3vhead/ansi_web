@@ -47,8 +47,12 @@ public class ClaimEntryResponse extends MessageResponse {
 	private Double totalDlExpense;
 	private Double totalPassthruVolume;
 	
-	public ClaimEntryResponse(Connection conn, Integer ticketId, Integer userId) throws Exception {
+	public ClaimEntryResponse() {
 		super();
+	}
+	
+	public ClaimEntryResponse(Connection conn, Integer ticketId, Integer userId) throws Exception {
+		this();
 		this.ticketId = ticketId;
 		HashMap<String, Object> claimDetail = new ClaimEntryResponseMaker(conn, userId).make(conn, ticketId);
 		this.ticketStatus = (String)claimDetail.get(ClaimDetailLookupQuery.TICKET_STATUS);

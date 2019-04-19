@@ -1,8 +1,11 @@
 package com.ansi.scilla.web.claims.request;
 
+import java.sql.Connection;
 import java.util.Date;
 
 import com.ansi.scilla.web.common.request.AbstractRequest;
+import com.ansi.scilla.web.common.request.RequestValidator;
+import com.ansi.scilla.web.common.response.WebMessages;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class ClaimEntryRequest extends AbstractRequest {
@@ -79,7 +82,17 @@ public class ClaimEntryRequest extends AbstractRequest {
 	
 	
 	
-	
+	protected WebMessages validateAddDirectLabor(Connection conn) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		
+		RequestValidator.validateDate(webMessages, ClaimEntryRequest.WORK_DATE, this.workDate, true, null, null);
+		RequestValidator.validateWasherId(conn, webMessages, ClaimEntryRequest.WASHER_ID, this.washerId, true);
+		RequestValidator.validateDouble(webMessages, ClaimEntryRequest.VOLUME, this.volume, null, null, true);
+		RequestValidator.validateDouble(webMessages, ClaimEntryRequest.DL_AMT, this.dlAmt, null, null, true);
+		RequestValidator.validateDouble(webMessages, ClaimEntryRequest.HOURS, this.hours, null, null, true);
+		RequestValidator.validateString(webMessages, ClaimEntryRequest.NOTES, this.notes, 1024, false);
+		return webMessages;
+	}
 	
 
 }

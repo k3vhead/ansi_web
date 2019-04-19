@@ -116,6 +116,10 @@
         	;CLAIMENTRY = {
         		datatable : null,
         		ticketFilter : '<c:out value="${CLAIM_ENTRY_TICKET_ID}" />',
+        		formSelector : {
+        			"DIRECT_LABOR":"#direct-labor-form",
+        			"PASSTHUR_EXPENSE":"#passthur-expense-form"
+        		},
         		
         		init : function() {
         			CLAIMENTRY.getDetail();
@@ -309,13 +313,13 @@
         		
         		
         		saveDirectLabor : function() {
+        			$(".claimEntryForm .err").html(""); // clear the existing error messages
         			var $outbound = {"type":"DIRECT_LABOR"};
         			var $url = "claims/claimEntry/" + CLAIMENTRY.ticketFilter;
         			console.log("Save Direct Labor");
         			
         			$.each( $("#direct-labor-form input"), function($idx, $field) {
         				var $key = $($field).attr("name");
-        				console.log($key);
         				var $value = $($field).val();
         				$outbound[$key] = $value;        				
         			});
@@ -327,11 +331,13 @@
     					data: JSON.stringify($outbound),
     					statusCode: {
     						200: function($data) {
+    							var $form = CLAIMENTRY.formSelector[$outbound["type"]];
     		    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
     		    					$.each($data.data.webMessages, function (key, value) {
-    		    						var $selectorName = "#" + key + "Err";
-    		    						$($selectorName).show();
-    		    						$($selectorName).html(value[0]).fadeOut(10000);
+    		    						var $selectorName = $form + " ." + key + "Err";
+    		    						console.log($selectorName);
+    		    						//$($selectorName).show();
+    		    						$($selectorName).html(value[0]);
     		    					});
     		    				} else {
     				        		$("#direct-labor-modal").dialog("close");
@@ -411,7 +417,8 @@
    		</div>
    		
    		<div id="direct-labor-modal">
-   			<div id="direct-labor-form">
+   			<div id="direct-labor-form" class="claimEntryForm">
+   				<span class="err typeErr"></span>
 	   			<table>
 	   				<tr>
 	   					<td class="form-label">Work Date:</td>
