@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
@@ -109,6 +110,9 @@ public class CodeServlet extends AbstractServlet {
 		String url = request.getRequestURI();
 //		String queryString = request.getQueryString();
 		
+		//Logger logger = LogManager.getLog(this.getClass);
+		
+		
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
@@ -122,6 +126,9 @@ public class CodeServlet extends AbstractServlet {
 
 			String jsonString = super.makeJsonString(request);
 			CodeRequest codeRequest = new CodeRequest(jsonString);
+			
+			Logger logger = AppUtils.getLogger();
+			logger.log(Level.DEBUG, jsonString);
 			
 			Code code = null;
 			ResponseCode responseCode = null;
@@ -269,6 +276,7 @@ public class CodeServlet extends AbstractServlet {
 		if ( ! StringUtils.isBlank(codeRequest.getDisplayValue())) {
 			code.setDisplayValue(codeRequest.getDisplayValue());
 		}
+		code.setAddedBy(sessionUser.getUserId());
 		code.setFieldName(codeRequest.getFieldName());
 		code.setSeq(codeRequest.getSeq());
 		code.setStatus(codeRequest.getStatus());
