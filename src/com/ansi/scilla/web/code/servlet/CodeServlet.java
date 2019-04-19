@@ -276,7 +276,7 @@ public class CodeServlet extends AbstractServlet {
 		if ( ! StringUtils.isBlank(codeRequest.getDisplayValue())) {
 			code.setDisplayValue(codeRequest.getDisplayValue());
 		}
-		code.setAddedBy(sessionUser.getUserId());
+		//code.setAddedBy(sessionUser.getUserId());
 		code.setFieldName(codeRequest.getFieldName());
 		code.setSeq(codeRequest.getSeq());
 		code.setStatus(codeRequest.getStatus());
