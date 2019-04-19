@@ -1777,7 +1777,7 @@
 		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-expire-date").html($jobDetail.job.expirationDate);
 		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-expire-reason").html($jobDetail.job.expirationReason);
 		            	
-		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-last-run").html($jobDetail.lastRun.startDate);		            	
+		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-last-run").html($jobDetail.lastRun.processDate);		            	
 		            	if ( $jobDetail.job.repeatScheduleAnnually == 1 ) {
 		            		$($destination + " input[name='repeatedAnnually']").prop("checked", true);
 		            	} else {
