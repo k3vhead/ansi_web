@@ -58,6 +58,8 @@ $(document).ready(function() {
 			            ],
 			            "initComplete": function(){
 			            	$("#new-dl-button").click(function() {
+			            		$("#direct-labor-form input").val("");
+			            		$("#direct-labor-form select").val("");
 			            		$("#direct-labor-modal").dialog("open");
 			            	});
 			            },
@@ -125,7 +127,13 @@ $(document).ready(function() {
 			            	if(row.notes != null){return (row.notes);}
 			            } }
 			            ],
-			            "initComplete": function(){},
+			            "initComplete": function(){
+			            	$("#new-pe-button").click(function() {
+			            		$("#passthru-expense-form input").val("");
+			            		$("#passthru-expense-form select").val("");
+			            		$("#passthru-expense-modal").dialog("open");
+			            	});
+			            },
 			            "drawCallback": function(){},
 			            "footerCallback": function(row, data, start, end, display) {
 			            	var api = this.api(), data;

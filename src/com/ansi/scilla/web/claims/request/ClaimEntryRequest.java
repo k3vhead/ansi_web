@@ -20,15 +20,30 @@ public class ClaimEntryRequest extends AbstractRequest {
 	public static final String DL_AMT = "dlAmt";
 	public static final String HOURS = "hours";
 	public static final String NOTES = "notes";
+	public static final String PASSTHRU_EXPENSE_VOLUME = "passthruExpenseVolume";
+	public static final String PASSTHRU_EXPENSE_TYPE = "passthruExpenseType";
 	
 	private String type;
-	private Date workDate;
-	private String washerName;
-	private Integer washerId;
+	
+	// direct Labor
 	private Double volume;
 	private Double dlAmt;
 	private Double hours;
+	
+	// passthru expense
+	private String passthruExpenseType;
+	private Double passthruExpenseVolume;
+	
+	// common
+	private Date workDate;
+	private String washerName;
+	private Integer washerId;
 	private String notes;
+	
+	/**
+	 * The type of request. Needs to match ClaimEntryRequestType enum
+	 * @return
+	 */
 	public String getType() {
 		return type;
 	}
@@ -82,6 +97,18 @@ public class ClaimEntryRequest extends AbstractRequest {
 	
 	
 	
+	public String getPassthruExpenseType() {
+		return passthruExpenseType;
+	}
+	public void setPassthruExpenseType(String passthruExpenseType) {
+		this.passthruExpenseType = passthruExpenseType;
+	}
+	public Double getPassthruExpenseVolume() {
+		return passthruExpenseVolume;
+	}
+	public void setPassthruExpenseVolume(Double passthruExpenseVolume) {
+		this.passthruExpenseVolume = passthruExpenseVolume;
+	}
 	public WebMessages validateAddDirectLabor(Connection conn) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		
@@ -90,6 +117,16 @@ public class ClaimEntryRequest extends AbstractRequest {
 		RequestValidator.validateDouble(webMessages, ClaimEntryRequest.VOLUME, this.volume, null, null, true);
 		RequestValidator.validateDouble(webMessages, ClaimEntryRequest.DL_AMT, this.dlAmt, null, null, true);
 		RequestValidator.validateDouble(webMessages, ClaimEntryRequest.HOURS, this.hours, null, null, true);
+		RequestValidator.validateString(webMessages, ClaimEntryRequest.NOTES, this.notes, 1024, false);
+		return webMessages;
+	}
+	public WebMessages validateAddPassthruExpense(Connection conn) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		
+		RequestValidator.validateDate(webMessages, ClaimEntryRequest.WORK_DATE, this.workDate, true, null, null);
+		RequestValidator.validateWasherId(conn, webMessages, ClaimEntryRequest.WASHER_ID, this.washerId, true);
+		RequestValidator.validateDouble(webMessages, ClaimEntryRequest.PASSTHRU_EXPENSE_VOLUME, this.passthruExpenseVolume, null, null, true);
+		RequestValidator.validatePassthruExpenseType(conn, webMessages, ClaimEntryRequest.PASSTHRU_EXPENSE_TYPE, this.passthruExpenseType, true);
 		RequestValidator.validateString(webMessages, ClaimEntryRequest.NOTES, this.notes, 1024, false);
 		return webMessages;
 	}

@@ -22,6 +22,7 @@ $( document ).ready(function() {
 	
 	
 		// get a list of values from the codes table
+		// this option could fail with asynchronous calls. Use getCodeList() instead
 		getCodes: function($tableName, $fieldName) {
 			var $returnValue = null;
 			var $url = "code/" + $tableName;
@@ -44,6 +45,35 @@ $( document ).ready(function() {
 			});
 		},
 		
+		
+		
+		getCodeList: function($tableName, $fieldName, $callback) {
+			console.log("getCodeList");
+			var $url = "code/" + $tableName;
+			if ( $fieldName != null ) {
+				$url = $url + "/" + $fieldName;
+			}
+			var jqxhr2 = $.ajax({
+				type: 'GET',
+				url: $url,
+				data: {},							
+				statusCode: {
+					200: function($data) {
+						$callback($data.data)
+					},					
+					403: function($data) {
+						$("#globalMsg").html("Session Expired. Log In and try again").show();
+					},
+					404: function($data) {
+						$("#globalMsg").html("Invalid quote").show().fadeOut(4000);
+					},
+					500: function($data) {
+						$("#globalMsg").html("System Error 500. Contact Support").show();
+					}
+				},							
+				dataType: 'json'
+			});
+		},
 		
 		populateCodeSelect : function($tableName, $fieldName, $selectorName, $keyField, $valueField ) {
 			var $url = "code/" + $tableName;

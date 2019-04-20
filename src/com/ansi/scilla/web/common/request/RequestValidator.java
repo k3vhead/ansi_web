@@ -393,6 +393,12 @@ public class RequestValidator {
 		}
 	}
 
+	
+	public static void validatePassthruExpenseType(Connection conn, WebMessages webMessages, String fieldName, String value, boolean required) throws Exception {
+		validateCode(conn, webMessages, "ticket_claim_passthru", "passthru_expense_type", fieldName, value, required);
+	}
+
+	
 	public static void validatePaymentTerms(WebMessages webMessages, String fieldName, String value, boolean required) {
 		if (StringUtils.isBlank(value)) {
 			if (required) {

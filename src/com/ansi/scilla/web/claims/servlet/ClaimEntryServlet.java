@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.TicketClaim;
+import com.ansi.scilla.common.db.TicketClaimPassthru;
 import com.ansi.scilla.web.claims.request.ClaimEntryRequest;
 import com.ansi.scilla.web.claims.request.ClaimEntryRequestType;
 import com.ansi.scilla.web.claims.response.ClaimEntryResponse;
@@ -92,7 +93,7 @@ public class ClaimEntryServlet extends AbstractServlet {
 				if ( requestType.equals(ClaimEntryRequestType.DIRECT_LABOR)) {
 					processDirectLaborRequest(conn, sessionData, ansiURL.getId(), claimEntryRequest, response);
 				} else if ( requestType.equals(ClaimEntryRequestType.PASSTHRU_EXPENSE)) {
-					processPassthruExpenseRequest(conn, sessionData, claimEntryRequest, response);
+					processPassthruExpenseRequest(conn, sessionData, ansiURL.getId(), claimEntryRequest, response);
 				}
 			} catch ( IllegalArgumentException e) {
 				processInvalidType(conn, claimEntryRequest, response);
@@ -148,14 +149,40 @@ public class ClaimEntryServlet extends AbstractServlet {
 	}
 
 
-	private void processPassthruExpenseRequest(Connection conn, SessionData sessionData,
+	private void processPassthruExpenseRequest(Connection conn, SessionData sessionData, Integer ticketId,
 			ClaimEntryRequest claimEntryRequest, HttpServletResponse response) throws Exception {
-		ClaimEntryResponse data = new ClaimEntryResponse();
-		WebMessages webMessages = new WebMessages();
+		ResponseCode responseCode = null;
 		
-		webMessages.addMessage(ClaimEntryRequest.TYPE, "Haven't Built this yet; come back tomorrow");
+		WebMessages webMessages = claimEntryRequest.validateAddPassthruExpense(conn);
+		
+		if ( webMessages.isEmpty() ) {
+			try {
+				TicketClaimPassthru ticketClaim = new TicketClaimPassthru();
+				ticketClaim.setAddedBy(sessionData.getUser().getUserId());
+				ticketClaim.setNotes(claimEntryRequest.getNotes());
+				ticketClaim.setTicketId(ticketId);
+				ticketClaim.setUpdatedBy(sessionData.getUser().getUserId());
+				ticketClaim.setWasherId(claimEntryRequest.getWasherId());
+				ticketClaim.setWorkDate(claimEntryRequest.getWorkDate());
+				ticketClaim.setPassthruExpenseType(claimEntryRequest.getPassthruExpenseType());
+				ticketClaim.setPassthruExpenseVolume(new BigDecimal(claimEntryRequest.getPassthruExpenseVolume()));
+				ticketClaim.insertWithKey(conn);
+				
+				conn.commit();
+				responseCode = ResponseCode.SUCCESS; 
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
+			} catch ( RecordNotFoundException e ) {
+				responseCode = ResponseCode.EDIT_FAILURE; 
+				webMessages.addMessage(ClaimEntryRequest.TYPE, "Invalid Ticket; start again");
+				conn.rollback();
+			}
+		} else {
+			responseCode = ResponseCode.EDIT_FAILURE; 
+		}
+		
+		ClaimEntryResponse data = new ClaimEntryResponse(conn, ticketId, sessionData.getUser().getUserId());
 		data.setWebMessages(webMessages);
-		super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);		
+		super.sendResponse(conn, response, responseCode, data);			
 	}
 
 

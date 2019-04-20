@@ -42,7 +42,13 @@
         	#new-dl-button {
         		cursor:pointer;
         	}
+        	#new-pe-button {
+        		cursor:pointer;
+        	}
         	#omnotes-modal {
+        		display:none;
+        	}
+        	#passthru-expense-modal {
         		display:none;
         	}
 			#passthru-expense-table {
@@ -118,14 +124,16 @@
         		ticketFilter : '<c:out value="${CLAIM_ENTRY_TICKET_ID}" />',
         		formSelector : {
         			"DIRECT_LABOR":"#direct-labor-form",
-        			"PASSTHUR_EXPENSE":"#passthur-expense-form"
+        			"PASSTHRU_EXPENSE":"#passthru-expense-form"
         		},
         		
         		init : function() {
         			CLAIMENTRY.getDetail();
         			CLAIMENTRY.makeClickers();
         			CLAIMENTRY.makeModals();
-        			CLAIMENTRY.makeAutoComplete();
+        			CLAIMENTRY.makeAutoComplete('#direct-labor-form input[name="washerName"]','#direct-labor-form input[name="washerId"]');
+        			CLAIMENTRY.makeAutoComplete('#passthru-expense-form input[name="washerName"]','#passthru-expense-form input[name="washerId"]');
+        			ANSI_UTILS.getCodeList("ticket_claim_passthru","passthru_expense_type",CLAIMENTRY.makeExpenseTypeList);
         			CLAIMSUTILS.makeDirectLaborLookup("#direct-labor-lookup",CLAIMENTRY.ticketFilter);
         			CLAIMSUTILS.makePassthruExpenseLookup("#passthru-expense-lookup",CLAIMENTRY.ticketFilter);
         		},
@@ -169,9 +177,7 @@
         		
         		
         		
-        		makeAutoComplete : function() {
-            		var $displaySelector = '#direct-labor-form input[name="washerName"]';
-            		var $idSelector = '#direct-labor-form input[name="washerId"]';
+        		makeAutoComplete : function($displaySelector, $idSelector) {
             		var $washerAutoComplete = $($displaySelector).autocomplete({
 						source: "washerTypeAhead?",
 						select: function( event, ui ) {
@@ -205,6 +211,22 @@
 					
             	},
             	
+            	
+            	
+            	
+        		makeExpenseTypeList : function($data) {
+        			$selectorName = "#passthru-expense-form select[name='passthruExpenseType']";
+					var $select = $($selectorName);
+					$('option', $select).remove();
+
+					$select.append(new Option("",""));
+					$.each($data.codeList, function(index, val) {
+					    $select.append(new Option(val.displayValue, val.value));
+					});
+        		},
+        		
+        		
+        		
             	
             	makeModals : function () {
         			TICKETUTILS.makeTicketViewModal("#ticket-modal")
@@ -260,11 +282,44 @@
 					});	
 					$("#dl-cancel-button").button('option', 'label', 'Cancel');
 					$("#dl-save-button").button('option', 'label', 'Save');
+					
+					
+					
+					
+					
+					$( "#passthru-expense-modal" ).dialog({
+						title:'Passthru Expense',
+						autoOpen: false,
+						height: 375,
+						width: 500,
+						modal: true,
+						closeOnEscape:true,
+						//open: function(event, ui) {
+						//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+						//},
+						buttons: [
+							{
+								id: "pe-cancel-button",
+								click: function($event) {
+									$( "#passthru-expense-modal" ).dialog("close");
+								}
+							},
+							{
+								id: "pe-save-button",
+								click: function($event) {
+									CLAIMENTRY.savePassthruExpense();
+								}
+							}
+						]
+					});	
+					$("#pe-cancel-button").button('option', 'label', 'Cancel');
+					$("#pe-save-button").button('option', 'label', 'Save');
         		},
             	
             	
             	
-            	
+        		
+        		
             	populateDetail : function($data) {
         			var $numberFieldList = [
 								"totalVolume",
@@ -363,6 +418,63 @@
     					dataType: 'json'
     				});
         		},
+        		
+        		
+        		
+        		
+        		savePassthruExpense : function() {
+        			$(".claim-entry-form td.err span").html(""); // clear the existing error messages
+        			var $outbound = {"type":"PASSTHRU_EXPENSE"};
+        			var $url = "claims/claimEntry/" + CLAIMENTRY.ticketFilter;
+        			console.log("Save Direct Labor");
+        			
+        			$.each( $("#passthru-expense-form input"), function($idx, $field) {
+        				var $key = $($field).attr("name");
+        				var $value = $($field).val();
+        				$outbound[$key] = $value;        				
+        			});
+        			$outbound['passthruExpenseType'] = $("#passthru-expense-form select[name='passthruExpenseType']").val();
+    				console.debug($outbound);
+    				
+    				var jqxhr = $.ajax({
+    					type: 'POST',
+    					url: $url,
+    					data: JSON.stringify($outbound),
+    					statusCode: {
+    						200: function($data) {
+    							var $form = CLAIMENTRY.formSelector[$outbound["type"]];
+    		    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+    		    					$.each($data.data.webMessages, function (key, value) {
+    		    						var $selectorName = $form + " ." + key + "Err";
+    		    						//$($selectorName).show();
+    		    						console.log($selectorName + " -> " + value[0]);
+    		    						$($selectorName).html(value[0]);
+    		    					});
+    		    				} else {
+    				        		$("#passthru-expense-modal").dialog("close");
+    		    					$("#globalMsg").html("Update Successful").show().fadeOut(4000);
+    		    					$('#passthru-expense-lookup').DataTable().ajax.reload();
+    		    				}
+    						},
+    						403: function($data) {
+    							$("#globalMsg").html("Session Timeout. Log in and try again");
+    						},
+    						404: function($data) {
+    							$("#passthru-expense-modal").dialog("close");
+    							$("#globalMsg").html("Invalid Ticket").show();
+    						},
+    						405: function($data) {
+    							$("#passthru-expense-modal").dialog("close");
+    							$("#globalMsg").html("System Error DL 405; Contact Support");
+    						},
+    						500: function($data) {
+    							$("#passthru-expense-modal").dialog("close");
+    							$("#globalMsg").html("System Error DL 500; Contact Support");
+    						}
+    					},
+    					dataType: 'json'
+    				});
+        		},
         	}
       	  	
 
@@ -443,6 +555,43 @@
 	   					<td class="form-label">Hours:</td>
 	   					<td class="form-input"><input type="text" name="hours" /></td>
 	   					<td class="err"><span class="hoursErr"></span></td>
+	   				</tr>
+	   				<tr>
+	   					<td class="form-label">Notes:</td>
+	   					<td class="form-input"><input type="text" name="notes" /></td>
+	   					<td class="err"><span class="notesErr"></span></td>
+	   				</tr>
+	   			</table>
+   			</div>
+   		</div>
+   		
+   		
+   		
+   		
+   		
+   		<div id="passthru-expense-modal">
+   			<div id="passthru-expense-form" class="claim-entry-form">
+   				<span class="err typeErr"></span>
+	   			<table>
+	   				<tr>
+	   					<td class="form-label">Work Date:</td>
+	   					<td class="form-input"><input type="text" class="dateField" name="workDate" /></td>
+	   					<td class="err"><span class="workDateErr"></span></td>
+	   				</tr>
+	   				<tr>
+	   					<td class="form-label">Type:</td>
+	   					<td class="form-input"><select name="passthruExpenseType"></select></td>
+	   					<td class="err"><span class="passthruExpenseTypeErr"></span></td>
+	   				</tr>	   				
+	 			   	<tr>
+	   					<td class="form-label">Volume:</td>
+	   					<td class="form-input"><input type="text" name="passthruExpenseVolume" /></td>
+	   					<td class="err"><span class="passthruExpenseVolumeErr"></span></td>
+	   				</tr>
+	   				<tr>
+	   					<td class="form-label">Washer:</td>
+	   					<td class="form-input"><input type="text" name="washerName" /><input type="hidden" name="washerId" /></td>
+	   					<td class="err"><span class="washerIdErr"></span></td>
 	   				</tr>
 	   				<tr>
 	   					<td class="form-label">Notes:</td>
