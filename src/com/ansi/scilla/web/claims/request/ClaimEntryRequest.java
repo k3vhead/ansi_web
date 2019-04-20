@@ -82,7 +82,7 @@ public class ClaimEntryRequest extends AbstractRequest {
 	
 	
 	
-	protected WebMessages validateAddDirectLabor(Connection conn) throws Exception {
+	public WebMessages validateAddDirectLabor(Connection conn) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		
 		RequestValidator.validateDate(webMessages, ClaimEntryRequest.WORK_DATE, this.workDate, true, null, null);

@@ -313,7 +313,7 @@
         		
         		
         		saveDirectLabor : function() {
-        			$(".claimEntryForm .err").html(""); // clear the existing error messages
+        			$(".claim-entry-form td.err span").html(""); // clear the existing error messages
         			var $outbound = {"type":"DIRECT_LABOR"};
         			var $url = "claims/claimEntry/" + CLAIMENTRY.ticketFilter;
         			console.log("Save Direct Labor");
@@ -335,14 +335,13 @@
     		    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
     		    					$.each($data.data.webMessages, function (key, value) {
     		    						var $selectorName = $form + " ." + key + "Err";
-    		    						console.log($selectorName);
     		    						//$($selectorName).show();
     		    						$($selectorName).html(value[0]);
     		    					});
     		    				} else {
     				        		$("#direct-labor-modal").dialog("close");
     		    					$("#globalMsg").html("Update Successful").show().fadeOut(4000);
-    		    					$('#contactTable').DataTable().ajax.reload();
+    		    					$('#direct-labor-lookup').DataTable().ajax.reload();
     		    				}
     						},
     						403: function($data) {
@@ -417,13 +416,13 @@
    		</div>
    		
    		<div id="direct-labor-modal">
-   			<div id="direct-labor-form" class="claimEntryForm">
+   			<div id="direct-labor-form" class="claim-entry-form">
    				<span class="err typeErr"></span>
 	   			<table>
 	   				<tr>
 	   					<td class="form-label">Work Date:</td>
 	   					<td class="form-input"><input type="text" class="dateField" name="workDate" /></td>
-	   					<td class="err"><span class="wordDateErr"></span></td>
+	   					<td class="err"><span class="workDateErr"></span></td>
 	   				</tr>
 	   				<tr>
 	   					<td class="form-label">Washer:</td>

@@ -1,6 +1,7 @@
 package com.ansi.scilla.web.claims.servlet;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Connection;
 
 import javax.servlet.ServletException;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.Level;
 
+import com.ansi.scilla.common.db.TicketClaim;
 import com.ansi.scilla.web.claims.request.ClaimEntryRequest;
 import com.ansi.scilla.web.claims.request.ClaimEntryRequestType;
 import com.ansi.scilla.web.claims.response.ClaimEntryResponse;
@@ -22,6 +24,7 @@ import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
+import com.thewebthing.commons.db2.RecordNotFoundException;
 
 
 /**
@@ -87,7 +90,7 @@ public class ClaimEntryServlet extends AbstractServlet {
 			try {
 				ClaimEntryRequestType requestType = ClaimEntryRequestType.valueOf(claimEntryRequest.getType());
 				if ( requestType.equals(ClaimEntryRequestType.DIRECT_LABOR)) {
-					processDirectLaborRequest(conn, sessionData, claimEntryRequest, response);
+					processDirectLaborRequest(conn, sessionData, ansiURL.getId(), claimEntryRequest, response);
 				} else if ( requestType.equals(ClaimEntryRequestType.PASSTHRU_EXPENSE)) {
 					processPassthruExpenseRequest(conn, sessionData, claimEntryRequest, response);
 				}
@@ -107,14 +110,41 @@ public class ClaimEntryServlet extends AbstractServlet {
 	}
 
 
-	private void processDirectLaborRequest(Connection conn, SessionData sessionData,
+	private void processDirectLaborRequest(Connection conn, SessionData sessionData, Integer ticketId,
 			ClaimEntryRequest claimEntryRequest, HttpServletResponse response) throws Exception {
-		ClaimEntryResponse data = new ClaimEntryResponse();
-		WebMessages webMessages = new WebMessages();
+		ResponseCode responseCode = null;
 		
-		webMessages.addMessage(ClaimEntryRequest.TYPE, "It's a work in progress");
+		WebMessages webMessages = claimEntryRequest.validateAddDirectLabor(conn);
+		
+		if ( webMessages.isEmpty() ) {
+			try {
+				TicketClaim ticketClaim = new TicketClaim();
+				ticketClaim.setAddedBy(sessionData.getUser().getUserId());
+				ticketClaim.setDlAmt(new BigDecimal(claimEntryRequest.getDlAmt()));
+				ticketClaim.setHours(new BigDecimal(claimEntryRequest.getHours()));
+				ticketClaim.setNotes(claimEntryRequest.getNotes());
+				ticketClaim.setTicketId(ticketId);
+				ticketClaim.setUpdatedBy(sessionData.getUser().getUserId());
+				ticketClaim.setVolume(new BigDecimal(claimEntryRequest.getVolume()));
+				ticketClaim.setWasherId(claimEntryRequest.getWasherId());
+				ticketClaim.setWorkDate(claimEntryRequest.getWorkDate());
+				ticketClaim.insertWithKey(conn);
+				
+				conn.commit();
+				responseCode = ResponseCode.SUCCESS; 
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
+			} catch ( RecordNotFoundException e ) {
+				responseCode = ResponseCode.EDIT_FAILURE; 
+				webMessages.addMessage(ClaimEntryRequest.TYPE, "Invalid Ticket; start again");
+				conn.rollback();
+			}
+		} else {
+			responseCode = ResponseCode.EDIT_FAILURE; 
+		}
+		
+		ClaimEntryResponse data = new ClaimEntryResponse(conn, ticketId, sessionData.getUser().getUserId());
 		data.setWebMessages(webMessages);
-		super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);		
+		super.sendResponse(conn, response, responseCode, data);		
 	}
 
 
