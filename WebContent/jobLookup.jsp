@@ -46,6 +46,13 @@
 				width:80px !important;
 				max-width:80px !important;
 			}
+        	.ansi-contact-container {
+        		width:90%;
+        	}
+        	.ansi-contact-method-is-business-phone { display:none; } 
+			.ansi-contact-method-is-mobile-phone { display:none; }
+			.ansi-contact-method-is-fax { display:none; }
+			.ansi-contact-method-is-email { display:none; }
 			
         </style>
         
@@ -115,7 +122,7 @@
             	        	'print',
             	        	{extend: 'colvis',	label: function () {doFunctionBinding();$('#jobTable').draw();}},
             	        	{
-	        	        		text:'Job Filter',
+	        	        		text:'Contact Filter',
 	        	        		action: function(e, dt, node, config) {
 	        	        			if ( $filterJob == 'yes' ) {
 	        	        				$filterJob = 'no';
@@ -186,6 +193,42 @@
     	        				return (icon + " " + row.jobContact.lastName+", "+row.jobContact.firstName);
     	        				}
 	    	        		} },
+    	        			{ width: "4%", title: "<bean:message key="field.label.siteContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    	        			if(row.siteContact != null){
+        	        			icon = JOBLOOKUP.makeContactIcon(row.siteContact);
+        	        			return (icon + " " + row.siteContact.lastName+", "+row.siteContact.firstName);
+        	        			}
+    	        			} },
+    	        			{ width: "4%", title: "<bean:message key="field.label.contractContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+        	        			if(row.contractContact != null){
+            	        			icon = JOBLOOKUP.makeContactIcon(row.contractContact);
+            	        			return (icon + " " + row.contractContact.lastName+", "+row.contractContact.firstName);
+            	        			}
+        	        		} },
+        	        		{ width: "4%", title: "<bean:message key="field.label.billingContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+            	        		if(row.billingContact != null){
+                	        		icon = JOBLOOKUP.makeContactIcon(row.billingContact);
+                	        		return (icon + " " + row.billingContact.lastName+", "+row.billingContact.firstName);
+                	        		}
+            	        	} },
+    	        			{ width: "4%", title: "<bean:message key="field.label.contactId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    	        				if(row.contactId != null){return (row.contactId+"");}
+    	        			} },
+    	        			{ width: "4%", title: "<bean:message key="field.label.lastName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    	        				if(row.lastName != null){return (row.lastName+"");}
+    	        			} },
+    	        			{ width: "4%", title: "<bean:message key="field.label.firstName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    	        				if(row.firstName != null){return (row.firstName+"");}
+    	        			} },
+    	        			{ width: "4%", title: "<bean:message key="field.label.preferredContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.poNumber != null){return (row.poNumber+"");}	    
+    			            } },	
+    	        			{ width: "4%", title: "<bean:message key="field.label.preferredContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+        	        			if(row.preferredContact != null){
+            	        			icon = JOBLOOKUP.makeContactIcon(row.preferredContact);
+            	        			return (icon + " " + row.preferredContact.contactMethod +"");
+            	        			}
+        	        		} },
     			            { width: "4%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
     			            	//console.log(row);
     			            	{
@@ -233,23 +276,29 @@
 					if ( JOBTABLE.lookupType == 'JOB' ) {
 						JOBLOOKUP.showJobColumns();
 					}
+					if ( JOBTABLE.lookupType == 'PAC' ) {
+						JOBLOOKUP.showPACColumns();
+					}
+					if ( JOBTABLE.lookupType == 'CONTACTS' ) {
+						JOBLOOKUP.showContactColumns();
+					}
 				},
 				
 				
-				displayModal : function () {
+		/*		displayModal : function () {
 					$(".displayModal").click(function($event) {
 						$('#lookupModal').data("permissionGroupId",null);
 		        		$('#lookupModal').button('option', 'label', 'Search');
 		        		$('#exitButton').button('option', 'label', 'Exit to Dashboard');
 		        		
-		 //       		$("#editPanel display[name='']").val("");
+			       		$("#editPanel display[name='']").val("");
 						$("#lookupModal input[name='JOB']").val("");
 						$("#lookupModal input[name='PAC']").val("");
 						$("#lookupModal input[name='CONTACT']").val("");			        		
 		        		$("#lookupModal .err").html("");
 		        		$("#lookupModal").dialog("option","title", "Select Lookup Screen to View").dialog("open");
 					});
-				},
+				}, */
 				
 				
 				
@@ -258,12 +307,70 @@
 						Steal this from quote maintenance.jsp
 						<webthing:phone>BUsiness Phone</webthing:phone> 
 					--%>
-					if (contact.preferredContact=="business")  {
-						icon="x";
+				/*	if (contact.preferredContact=="business_phone")  {
+						icon="fa fa-phone tooltip";
 					}	else {
 						icon="y";
 					}
+					return icon;*/
+					
+
+					
+			    	
+				  	if (contact.preferredContact=="mobile_phone")  {
+			    		icon = "<i class='fa fa-mobile' aria-hidden='true'></i>&nbsp;";
+			    	} else if(contact.preferredContact =="email"){
+			    		icon = "<i class='fa fa-envelope-o' aria-hidden='true'></i>&nbsp";
+			    	} else if(contact.preferredContact == "business_phone"){
+			    		icon = "<i class='fa fa-phone' aria-hidden='true'></i>&nbsp;";
+			    	} else if(contact.preferredContact == "fax"){
+			    		icon = "<i class='fa fa-fax' aria-hidden='true'></i>&nbsp;";
+			    	}{
+						icon="y";
+					}
 					return icon;
+					
+			    	
+			    	
+
+					
+				/*	populateContactPanel : function($selector, $data) {
+						$($selector + " .ansi-contact-name").html($data.firstName + " " + $data.lastName);						
+						$($selector + " .ansi-contact-number").html($data.method);
+						$($selector + " .ansi-contact-method-is-business-phone").hide();
+						$($selector + " .ansi-contact-method-is-mobile-phone").hide();
+						$($selector + " .ansi-contact-method-is-fax").hide();
+						$($selector + " .ansi-contact-method-is-email").hide();
+						if ( $contact.preferredContact == "business_phone") { $($selector + " .ansi-contact-method-is-business-phone").show(); }
+						if ( $data.preferredContact == "mobile_phone") { $($selector + " .ansi-contact-method-is-mobile-phone").show(); }
+						if ( $data.preferredContact == "fax") { $($selector + " .ansi-contact-method-is-fax").show(); }
+						if ( $data.preferredContact == "email") { $($selector + " .ansi-contact-method-is-email").show(); }
+					},
+					
+					
+					
+					
+					var $preferred = ui.item.preferredContactValue.split(":");
+			    	$($contactSelector + " .ansi-contact-number").html($preferred[1]);
+			    	
+			    	$($contactSelector + " .ansi-contact-method-is-business-phone").hide();
+					$($contactSelector + " .ansi-contact-method-is-mobile-phone").hide();
+					$($contactSelector + " .ansi-contact-method-is-fax").hide();
+					$($contactSelector + " .ansi-contact-method-is-email").hide();
+					if ( $preferred[0] == "business_phone") { $($contactSelector + " .ansi-contact-method-is-business-phone").show(); }
+					if ( $preferred[0] == "mobile_phone") { $($contactSelector + " .ansi-contact-method-is-mobile-phone").show(); }
+					if ( $preferred[0] == "fax") { $($contactSelector + " .ansi-contact-method-is-fax").show(); }
+					if ( $preferred[0] == "email") { $($contactSelector + " .ansi-contact-method-is-email").show(); }
+					$($contactSelector).show();
+					if (contact.preferredContact=="business_phone")  {
+						icon="fa fa-phone tooltip";
+					}	else {
+						icon="y";
+					}
+					return icon; */
+					
+					
+					
 				},
 				
 				makeLookupModal : function() {	
