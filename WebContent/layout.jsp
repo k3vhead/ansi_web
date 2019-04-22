@@ -227,6 +227,9 @@
 										<li><html:link action="ticketOverride">Ticket Override</html:link></li>
 										</ansi:hasWrite>
 										</ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="CLAIMS_WRITE">
+										<li><html:link action="claimEntry">Claim Entry</html:link></li>
+										</ansi:hasPermission>
 									</ul>
 								</li>
 							</ul>

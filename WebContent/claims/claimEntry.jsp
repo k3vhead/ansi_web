@@ -54,6 +54,9 @@
 			#passthru-expense-table {
 				width:100%;
 			}
+			#ticketDetailContainer {
+				margin-top:8px;
+			}
         	#ticketDetailContainer .ticket-detail-table {
         		width:100%;
         	}
@@ -128,14 +131,17 @@
         		},
         		
         		init : function() {
-        			CLAIMENTRY.getDetail();
         			CLAIMENTRY.makeClickers();
         			CLAIMENTRY.makeModals();
+        			CLAIMENTRY.makeTicketComplete();
         			CLAIMENTRY.makeAutoComplete('#direct-labor-form input[name="washerName"]','#direct-labor-form input[name="washerId"]');
         			CLAIMENTRY.makeAutoComplete('#passthru-expense-form input[name="washerName"]','#passthru-expense-form input[name="washerId"]');
         			ANSI_UTILS.getCodeList("ticket_claim_passthru","passthru_expense_type",CLAIMENTRY.makeExpenseTypeList);
-        			CLAIMSUTILS.makeDirectLaborLookup("#direct-labor-lookup",CLAIMENTRY.ticketFilter);
-        			CLAIMSUTILS.makePassthruExpenseLookup("#passthru-expense-lookup",CLAIMENTRY.ticketFilter);
+        			if ( CLAIMENTRY.ticketFilter != '' ) {
+            			CLAIMENTRY.getDetail();
+	        			CLAIMSUTILS.makeDirectLaborLookup("#direct-labor-lookup",CLAIMENTRY.ticketFilter);
+	        			CLAIMSUTILS.makePassthruExpenseLookup("#passthru-expense-lookup",CLAIMENTRY.ticketFilter);
+        			}
         		},
         		
         		
@@ -319,6 +325,47 @@
             	
             	
         		
+        		makeTicketComplete: function() {
+        			var $ticketComplete = $( "#ticketNbr" ).autocomplete({
+        				source: "ticketTypeAhead",
+                        minLength: 3,
+                        appendTo: "#someTicket",
+                        select: function( event, ui ) {
+                        	var $ticketNbr = ui.item.id;
+                        	CLAIMENTRY.ticketFilter = $ticketNbr
+        					$("#ticketNbr").val($ticketNbr);
+                        	CLAIMENTRY.getDetail();
+                        	CLAIMSUTILS.makeDirectLaborLookup("#direct-labor-lookup",CLAIMENTRY.ticketFilter);
+    	        			CLAIMSUTILS.makePassthruExpenseLookup("#passthru-expense-lookup",CLAIMENTRY.ticketFilter);
+                        },
+                        response: function(event, ui) {
+                            if (ui.content.length === 0) {
+                            	$("#globalMsg").html("No Matching Ticket");
+                            	clearTicketData()
+                            } else {
+                            	$("#globalMsg").html("");
+                            }
+                        }
+                  	}).data('ui-autocomplete');
+                    
+        			$ticketComplete._renderMenu = function( ul, items ) {
+        				var that = this;
+        				$.each( items, function( index, item ) {
+        					that._renderItemData( ul, item );
+        				});
+        				if ( items.length == 1 ) {
+        					var $ticketNbr = items[0].id;
+        					CLAIMENTRY.ticketFilter = $ticketNbr;
+        					$("#ticketNbr").val($ticketNbr);
+        					$("#ticketNbr").autocomplete("close");
+        					CLAIMENTRY.getDetail();
+        					CLAIMSUTILS.makeDirectLaborLookup("#direct-labor-lookup",CLAIMENTRY.ticketFilter);
+    	        			CLAIMSUTILS.makePassthruExpenseLookup("#passthru-expense-lookup",CLAIMENTRY.ticketFilter);
+        				}
+        			}
+        		},
+        		
+        		
         		
             	populateDetail : function($data) {
         			var $numberFieldList = [
@@ -486,7 +533,11 @@
     
    <tiles:put name="content" type="string">
     	<h1>Claim Entry</h1>
-    	
+    	<div>
+       		<span class="formLabel">Ticket:</span>
+       		<input id="ticketNbr" name="ticketNbr" type="text" maxlength="10" />
+       		<input id="doPopulate" type="button" value="Search" />
+       	</div>
 		<div id="ticketDetailContainer">
 			<table class="ticket-detail-table" cellSpacing="0" cellPadding="0">
 				<tr>

@@ -6,7 +6,8 @@ $(document).ready(function() {
 			
 			makeDirectLaborLookup : function($destination, $ticketId) {
 				var $url = "claims/directLaborLookup/" + $ticketId;
-				CLAIMSUTILS.directLaborTable = $($destination).DataTable( {    				
+				CLAIMSUTILS.directLaborTable = $($destination).DataTable( {   
+					"destroy":			true,
         			"aaSorting":		[[0,'asc']],
         			"processing": 		true,
         	        "serverSide": 		true,
@@ -81,6 +82,7 @@ $(document).ready(function() {
         	makePassthruExpenseLookup : function($destination, $ticketId) {
 				var $url = "claims/passthruExpenseLookup/" + $ticketId;
 				CLAIMSUTILS.directLaborTable = $($destination).DataTable( {    				
+					"destroy":			true,
         			"aaSorting":		[[0,'asc']],
         			"processing": 		true,
         	        "serverSide": 		true,
