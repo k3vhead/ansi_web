@@ -739,19 +739,7 @@
 							closeOnEscape:true,
 							show: { effect:"blind",duration:250},
 							hide: { effect:"blind",duration:250},
-							//open: function(event, ui) {
-							//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-							//},
-							//buttons: [
-							//	{
-							//		id: "copy-cancel-button",
-							//		click: function($event) {
-							//			$( "#copy-modal" ).dialog("close");
-							//		}
-							//	}
-							//]
 						});	
-						//$("#copy-cancel-button").button('option', 'label', 'OK');
 						
 						
 						$( "#contact-edit-modal" ).dialog({
@@ -976,6 +964,37 @@
 						
 						
 						
+						
+						$( "#reorder-job-modal" ).dialog({
+							title:'Reorder Jobs',
+							autoOpen: false,
+							height: 125,
+							width: 450,
+							modal: true,
+							closeOnEscape:false,
+							open: function(event, ui) {
+								$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+							},
+							buttons: [
+								{
+									id: "reorder-job-cancel-button",
+									click: function($event) {
+										$( "#reorder-job-modal" ).dialog("close");
+										console.log(QUOTEMAINTENANCE.quote);
+										QUOTEMAINTENANCE.populateJobHeader(QUOTEMAINTENANCE.quote.jobHeaderList);
+									}
+								},
+								{
+									id: "reorder-job-save-button",
+									click: function($event) {
+										$( "#reorder-job-modal" ).dialog("close");
+										QUOTEMAINTENANCE.reorderJobs();
+									}
+								}
+							]
+						});	
+						$("#reorder-job-save-button").button('option', 'label', 'Reorder');
+						$("#reorder-job-cancel-button").button('option', 'label', 'Undo');
 						
 					},
 					
@@ -1295,6 +1314,16 @@
 		            
 		            
 		            
+		            makeJobSortLengthCheck : function() {
+		            	setTimeout(function() {
+		            		var $jobCount = $("#jobList li").length;
+		            		if ( $jobCount > 0 ) {
+		            			QUOTEMAINTENANCE.makeJobSort();
+		            		} else {
+		            			QUOTEMAINTENANCE.makeJobSortLengthCheck();
+		            		}
+		            	},250);
+		            },
 		            
 		            makeJobSort : function() {
 		            	var $canReorder=true;
@@ -1307,50 +1336,11 @@
 		            	if ( $canReorder == true ) {
 							$("#jobList").sortable({
 								stop:function($event, $ui) {
-									//var $jobId = $ui.item.attr("data-jobid");
-									//var $selector = "#job" + $jobId + " .jobTitleRow";
 									console.log("Stopping");
 									console.log($ui);
-									//$($selector).click();
 									
-									var $jobIdList = []
-									$.each( $("#jobList li"), function(index, val) {
-									    console.log(val);
-									    var $thisJobId = $(val).attr("data-jobid");
-									    $jobIdList.push($thisJobId);
-									});
+									$("#reorder-job-modal").dialog("open");
 									
-									var $outbound = {};
-									$outbound['jobIdList'] = $jobIdList
-									console.log(JSON.stringify($outbound));
-									
-									var $quoteId = QUOTEMAINTENANCE.quote.quote.quoteId;
-									var $url = "reorderJobs/" + $quoteId;
-									var jqxhr = $.ajax({
-										type: 'POST',
-										url: $url,
-										data: JSON.stringify($outbound),
-										statusCode: {
-											200: function($data) {
-												console.log($data);
-												// clear the list of job headers
-												$("#jobList").html("");
-												// then fill it back it
-												QUOTEMAINTENANCE.populateJobHeader($data.data.quote.jobHeaderList)
-												QUOTEMAINTENANCE.makeJobExpansion();
-											},					
-											403: function($data) {
-												$("#globalMsg").html("Session Timeout. Log in and try again");
-											},
-											404: function($data) {
-												$("#globalMsg").html("System Error Reorder 404. Contact Support");
-											},
-											500: function($data) {
-												$("#globalMsg").html("System Error Reorder 500. Contact Support");
-											}
-										},
-										dataType: 'json'
-									});
 								}
 							});	
 		            	}
@@ -1777,7 +1767,7 @@
 		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-expire-date").html($jobDetail.job.expirationDate);
 		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-expire-reason").html($jobDetail.job.expirationReason);
 		            	
-		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-last-run").html($jobDetail.lastRun.startDate);		            	
+		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-last-run").html($jobDetail.lastRun.processDate);		            	
 		            	if ( $jobDetail.job.repeatScheduleAnnually == 1 ) {
 		            		$($destination + " input[name='repeatedAnnually']").prop("checked", true);
 		            	} else {
@@ -2008,6 +1998,47 @@
 					},
 					
 					
+					
+					reorderJobs : function() {
+						var $jobIdList = []
+						$.each( $("#jobList li"), function(index, val) {
+						    console.log(val);
+						    var $thisJobId = $(val).attr("data-jobid");
+						    $jobIdList.push($thisJobId);
+						});
+						
+						var $outbound = {};
+						$outbound['jobIdList'] = $jobIdList
+						console.log(JSON.stringify($outbound));
+						
+						var $quoteId = QUOTEMAINTENANCE.quote.quote.quoteId;
+						var $url = "reorderJobs/" + $quoteId;
+						var jqxhr = $.ajax({
+							type: 'POST',
+							url: $url,
+							data: JSON.stringify($outbound),
+							statusCode: {
+								200: function($data) {
+									console.log($data);
+									// clear the list of job headers
+									$("#jobList").html("");
+									// then fill it back it
+									QUOTEMAINTENANCE.populateJobHeader($data.data.quote.jobHeaderList)
+									QUOTEMAINTENANCE.makeJobExpansion();
+								},					
+								403: function($data) {
+									$("#globalMsg").html("Session Timeout. Log in and try again");
+								},
+								404: function($data) {
+									$("#globalMsg").html("System Error Reorder 404. Contact Support");
+								},
+								500: function($data) {
+									$("#globalMsg").html("System Error Reorder 500. Contact Support");
+								}
+							},
+							dataType: 'json'
+						});
+					},
 					
 					saveAddress : function() {	
 						console.log("saveAddress");
@@ -2476,6 +2507,9 @@
         	#contact-edit-modal .none-found {
         		display:none;
         	}
+        	#copy-modal {
+        		display:none;
+        	}
         	#edit-this-quote {
         		cursor:pointer;
         	}
@@ -2553,11 +2587,22 @@
 				display:none;
 				cursor:pointer;
 			}		
-	    			
+	    		
+	    	#reorder-job-modal {
+	    		display:none;
+	    	}	
 	    			
 	    			
             #viewPrintHistory {
                 cursor:pointer;
+            }
+            .action-button-container {
+            	margin-top:0px;
+            	margin-left:0px;
+            	margin-right:0px;
+            	margin-bottom:8px;
+            	border:0;
+            	clear:both;
             }
         	.action-button {
         		cursor:pointer;
@@ -2663,13 +2708,14 @@
     	<div style="width:1300px;">	    	
     		<div id="quoteButtonContainer" style="width:30px;">
     			<%-- <ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:edit styleClass="fa-2x quote-button">Edit</webthing:edit></ansi:hasPermission>--%>
- 			    <ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:revise styleClass="fa-2x quote-button action-button" styleId="revise-button">Revise</webthing:revise></ansi:hasPermission>
-    			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:copy styleClass="fa-2x quote-button action-button" styleId="copy-button">Copy</webthing:copy></ansi:hasPermission>
-    			<ansi:hasPermission permissionRequired="QUOTE_READ"><a href="quoteLookup.html" style="text-decoration:none; color:#404040;"><webthing:view styleClass="fa-2x quote-button">Lookup</webthing:view></a></ansi:hasPermission>
-    			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><a href="newQuote.html"><webthing:addNew styleClass="fa-2x quote-button action-button" styleId="new-quote-button">New Quote</webthing:addNew></a></ansi:hasPermission>
-    			<ansi:hasPermission permissionRequired="QUOTE_READ"><webthing:print styleClass="orange fa-2x quote-button action-button" styleId="preview-button">Preview</webthing:print></ansi:hasPermission>    			
-    			<ansi:hasPermission permissionRequired="QUOTE_PROPOSE"><webthing:print styleClass="green fa-2x quote-button action-button" styleId="propose-button">Propose</webthing:print></ansi:hasPermission>
-    			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:addNew styleClass="fa-2x quote-button action-button orange" styleId="new-job-button">New Job</webthing:addNew></ansi:hasPermission>    			
+ 			    <ansi:hasPermission permissionRequired="QUOTE_CREATE"><div class="action-button-container"><webthing:revise styleClass="fa-2x quote-button action-button" styleId="revise-button">Revise</webthing:revise></div></ansi:hasPermission>
+    			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><div class="action-button-container"><webthing:copy styleClass="fa-2x quote-button action-button" styleId="copy-button">Copy</webthing:copy></div></ansi:hasPermission>
+    			<ansi:hasPermission permissionRequired="QUOTE_READ"><div class="action-button-container"><a href="quoteLookup.html" style="text-decoration:none; color:#404040;"><webthing:view styleClass="fa-2x quote-button">Lookup</webthing:view></a></div></ansi:hasPermission>
+    			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><div class="action-button-container"><a href="newQuote.html"><webthing:addNew styleClass="fa-2x quote-button action-button" styleId="new-quote-button">New Quote</webthing:addNew></a></div></ansi:hasPermission>
+    			<ansi:hasPermission permissionRequired="QUOTE_READ"><div class="action-button-container"><webthing:print styleClass="orange fa-2x quote-button action-button" styleId="preview-button">Preview</webthing:print></div></ansi:hasPermission>    			
+    			<ansi:hasPermission permissionRequired="QUOTE_PROPOSE"><div class="action-button-container"><webthing:print styleClass="green fa-2x quote-button action-button" styleId="propose-button">Propose</webthing:print></div></ansi:hasPermission>
+    			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><div class="action-button-container"><webthing:job styleClass="fa-2x quote-button action-button orange" styleId="new-job-button">New Job</webthing:job></div></ansi:hasPermission>    			
+    			
     			<%--
     			<input type="button" class="quoteButton" id="buttonModifyQuote" value="Modify" /><br />
     			<input type="button" class="quoteButton" id="buttonCopyQuote" value="Copy" /><br />
@@ -2822,9 +2868,15 @@
 	    
 	    
 	    <ansi:hasPermission permissionRequired="QUOTE_CREATE">
+	    <div id="reorder-job-modal">
+	    	Reorder Jobs?
+	    </div>
+	    </ansi:hasPermission>
+	    
+	    <ansi:hasPermission permissionRequired="QUOTE_CREATE">
 	    <script type="text/javascript">
 	    $(document).ready(function() {
- 			QUOTEMAINTENANCE.makeJobSort();
+ 			QUOTEMAINTENANCE.makeJobSortLengthCheck();
 		});
 	    </script>
 		</ansi:hasPermission>

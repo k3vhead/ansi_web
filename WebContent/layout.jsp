@@ -46,7 +46,8 @@
     	<script src="js/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
         --%>
          
-		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css" integrity="sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns" crossorigin="anonymous">        
+		<%-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css" integrity="sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns" crossorigin="anonymous">  --%>
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">        
 		<link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
         
         <link rel="stylesheet" href="css/menuStyle.css" type="text/css" media="screen, projection"/>
@@ -225,6 +226,9 @@
 										<ansi:hasWrite>
 										<li><html:link action="ticketOverride">Ticket Override</html:link></li>
 										</ansi:hasWrite>
+										</ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="CLAIMS_WRITE">
+										<li><html:link action="claimEntry">Claim Entry</html:link></li>
 										</ansi:hasPermission>
 									</ul>
 								</li>

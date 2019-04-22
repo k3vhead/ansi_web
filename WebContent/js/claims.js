@@ -1,11 +1,13 @@
 $(document).ready(function() {
 	;CLAIMSUTILS={
 			directLaborTable : null,
-			passtrhuExpenseTable : null,
+			passthruExpenseTable : null,
 
+			
 			makeDirectLaborLookup : function($destination, $ticketId) {
 				var $url = "claims/directLaborLookup/" + $ticketId;
-				CLAIMSUTILS.directLaborTable = $($destination).DataTable( {    				
+				CLAIMSUTILS.directLaborTable = $($destination).DataTable( {   
+					"destroy":			true,
         			"aaSorting":		[[0,'asc']],
         			"processing": 		true,
         	        "serverSide": 		true,
@@ -39,13 +41,13 @@ $(document).ready(function() {
 			        	{ title: "Date", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
 			            	if(row.work_date != null){return (row.work_date+"");}
 			            } },
-			            { width:"23%", title: "Washer", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+			            { title: "Washer", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
 			            	if(row.washer_first_name != null){return (row.washer_last_name+", "+row.washer_first_name);}
 			            } },
 			            { title: "Volume", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
 			            	if(row.volume != null){return (row.volume.toFixed(2)+"");}
 			            } },
-			            { title: "DL $", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+			            { title: "Direct Labor ($)", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
 			            	if(row.dl_amt != null){return (row.dl_amt.toFixed(2)+"");}
 			            } },
 			            { title: "Hrs", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
@@ -55,7 +57,13 @@ $(document).ready(function() {
 			            	if(row.notes != null){return (row.notes);}
 			            } }
 			            ],
-			            "initComplete": function(){},
+			            "initComplete": function(){
+			            	$("#new-dl-button").click(function() {
+			            		$("#direct-labor-form input").val("");
+			            		$("#direct-labor-form select").val("");
+			            		$("#direct-labor-modal").dialog("open");
+			            	});
+			            },
 			            "drawCallback": function(){},
 			            "footerCallback": function(row, data, start, end, display) {
 			            	var api = this.api(), data;
@@ -74,6 +82,7 @@ $(document).ready(function() {
         	makePassthruExpenseLookup : function($destination, $ticketId) {
 				var $url = "claims/passthruExpenseLookup/" + $ticketId;
 				CLAIMSUTILS.directLaborTable = $($destination).DataTable( {    				
+					"destroy":			true,
         			"aaSorting":		[[0,'asc']],
         			"processing": 		true,
         	        "serverSide": 		true,
@@ -110,7 +119,7 @@ $(document).ready(function() {
 			            { title: "Type", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
 			            	if(row.passthru_expense_type != null){return (row.passthru_expense_type+"");}
 			            } },
-			            { title: "Volume $", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+			            { title: "Volume ($)", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
 			            	if(row.passthru_expense_volume != null){return (row.passthru_expense_volume.toFixed(2)+"");}
 			            } },			            
 			            { title: "Washer", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
@@ -120,7 +129,13 @@ $(document).ready(function() {
 			            	if(row.notes != null){return (row.notes);}
 			            } }
 			            ],
-			            "initComplete": function(){},
+			            "initComplete": function(){
+			            	$("#new-pe-button").click(function() {
+			            		$("#passthru-expense-form input").val("");
+			            		$("#passthru-expense-form select").val("");
+			            		$("#passthru-expense-modal").dialog("open");
+			            	});
+			            },
 			            "drawCallback": function(){},
 			            "footerCallback": function(row, data, start, end, display) {
 			            	var api = this.api(), data;

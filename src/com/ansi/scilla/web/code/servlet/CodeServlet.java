@@ -13,11 +13,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Code;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.web.code.request.CodeRequest;
 import com.ansi.scilla.web.code.response.CodeListResponse;
@@ -29,7 +29,6 @@ import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -109,6 +108,9 @@ public class CodeServlet extends AbstractServlet {
 		String url = request.getRequestURI();
 //		String queryString = request.getQueryString();
 		
+		//Logger logger = LogManager.getLog(this.getClass);
+		
+		
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
@@ -122,6 +124,9 @@ public class CodeServlet extends AbstractServlet {
 
 			String jsonString = super.makeJsonString(request);
 			CodeRequest codeRequest = new CodeRequest(jsonString);
+			
+			Logger logger = AppUtils.getLogger();
+			logger.log(Level.DEBUG, jsonString);
 			
 			Code code = null;
 			ResponseCode responseCode = null;
@@ -151,14 +156,14 @@ public class CodeServlet extends AbstractServlet {
 				super.sendResponse(conn, response, responseCode, codeResponse);
 				
 			} else if ( urlPieces.length == 3 ) {   //  /<tableName>/<fieldName>/<value> = 3 pieces
-				WebMessages webMessages = validateAdd(conn, codeRequest);
+				ParsedUrl parsedUrl = new ParsedUrl(request.getRequestURI());
+				Code key = new Code();
+				key.setTableName(parsedUrl.tableName);
+				key.setFieldName(parsedUrl.fieldName);
+				key.setValue(parsedUrl.value);
+				WebMessages webMessages = validateUpdate(conn, key, codeRequest);
 				if (webMessages.isEmpty()) {
 					try {
-						ParsedUrl parsedUrl = new ParsedUrl(request.getRequestURI());
-						Code key = new Code();
-						key.setTableName(parsedUrl.tableName);
-						key.setFieldName(parsedUrl.fieldName);
-						key.setValue(parsedUrl.value);
 						code = doUpdate(conn, key, codeRequest, sessionUser);
 						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
 						responseCode = ResponseCode.SUCCESS;
@@ -263,22 +268,25 @@ public class CodeServlet extends AbstractServlet {
 		logger.debug(codeRequest);
 		Date today = new Date();
 		Code code = new Code();
-		if ( ! StringUtils.isBlank(codeRequest.getDescription())) {
+		code.setTableName(key.getTableName());
+		code.setFieldName(key.getFieldName());
+		code.setValue(key.getValue());
+		code.selectOne(conn);
+		
+		if ( StringUtils.isBlank(codeRequest.getDescription())) {
+			code.setDescription(null);
+		} else {
 			code.setDescription(codeRequest.getDescription());
 		}
 		if ( ! StringUtils.isBlank(codeRequest.getDisplayValue())) {
 			code.setDisplayValue(codeRequest.getDisplayValue());
 		}
-		code.setFieldName(codeRequest.getFieldName());
 		code.setSeq(codeRequest.getSeq());
 		code.setStatus(codeRequest.getStatus());
-		code.setTableName(codeRequest.getTableName());
 		code.setUpdatedBy(sessionUser.getUserId());
 		code.setUpdatedDate(today);
-		code.setValue(codeRequest.getValue());
 		// if we update something that isn't there, a RecordNotFoundException gets thrown
 		// that exception get propagated and turned into a 404
-		this.validateUpdate(conn, key, codeRequest);
 		code.update(conn, key);
 		return code;
 	}

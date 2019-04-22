@@ -29,6 +29,7 @@ import com.ansi.scilla.common.invoice.InvoiceStyle;
 import com.ansi.scilla.common.invoice.InvoiceTerm;
 import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.payment.PaymentMethod;
+import com.ansi.scilla.web.claims.request.ClaimEntryRequestType;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.utils.FieldMap;
 import com.ansi.scilla.web.common.utils.Permission;
@@ -117,6 +118,23 @@ public class RequestValidator {
 	public static void validateBuildingType(Connection conn, WebMessages webMessages, String fieldName, String value,
 			boolean required) throws Exception {
 		validateCode(conn, webMessages, "job", "building_type", fieldName, value, required);
+	}
+
+	public static void validateClaimDetailRequestType(WebMessages webMessages, String fieldName, String value, boolean required) {
+		if (StringUtils.isBlank(value)) {
+			if (required) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			try {
+				ClaimEntryRequestType invoiceGrouping = ClaimEntryRequestType.valueOf(value);
+				if (invoiceGrouping == null) {
+					webMessages.addMessage(fieldName, "Invalid Value");
+				}
+			} catch (IllegalArgumentException e) {
+				webMessages.addMessage(fieldName, "Invalid Value");
+			}
+		}
 	}
 
 	private static void validateCode(Connection conn, WebMessages webMessages, String dbTableName, String dbFieldName,
@@ -243,24 +261,7 @@ public class RequestValidator {
 
 	public static void validateExpenseType(Connection conn, WebMessages webMessages, String fieldName, String value,
 			boolean required) throws Exception {
-
-		validateCode(conn, webMessages, EmployeeExpense.TABLE, EmployeeExpense.EXPENSE_TYPE, fieldName, value,
-				required);
-
-		// if (StringUtils.isBlank(value)) {
-		// if (required) {
-		// webMessages.addMessage(fieldName, "Required Value");
-		// }
-		// } else {
-		// String sql = "select * from " + dbTableName + " where " + dbFieldName
-		// + "=?";
-		// PreparedStatement ps = conn.prepareStatement(sql);
-		// ps.setString(1, value);
-		// ResultSet rs = ps.executeQuery();
-		// if (!rs.next()) {
-		// webMessages.addMessage(fieldName, "Invalid Value");
-		// }
-		// }
+		validateCode(conn, webMessages, EmployeeExpense.TABLE, EmployeeExpense.EXPENSE_TYPE, fieldName, value, required);
 	}
 
 	public static void validateId(Connection conn, WebMessages webMessages, String dbTableName, String dbFieldName,
@@ -392,6 +393,12 @@ public class RequestValidator {
 		}
 	}
 
+	
+	public static void validatePassthruExpenseType(Connection conn, WebMessages webMessages, String fieldName, String value, boolean required) throws Exception {
+		validateCode(conn, webMessages, "ticket_claim_passthru", "passthru_expense_type", fieldName, value, required);
+	}
+
+	
 	public static void validatePaymentTerms(WebMessages webMessages, String fieldName, String value, boolean required) {
 		if (StringUtils.isBlank(value)) {
 			if (required) {
@@ -435,6 +442,19 @@ public class RequestValidator {
 		}
 	}
 
+	public static void validateString(WebMessages webMessages, String fieldName, String value, Integer maxLength, boolean required) {
+		if (StringUtils.isBlank(value)) {
+			if (required) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			if (value.length() > maxLength ) {
+				webMessages.addMessage(fieldName, "Must be less than " + maxLength + " characters");
+			}
+		}
+	}
+
+	
 	public static void validateUserStatus(WebMessages webMessages, String fieldName, Integer value, boolean required) {
 		List<Integer> validValues = Arrays
 				.asList(new Integer[] { User.STATUS_IS_GOOD, User.STATUS_IS_INACTIVE, User.STATUS_IS_LOCKED });
