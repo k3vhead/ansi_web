@@ -187,43 +187,43 @@
     			            	if(row.poNumber != null){return (row.poNumber+"");}	    
     			            } },	
     			            <%-- put those columns here --%>
-    		        		{ visible:false, title: "<bean:message key="field.label.jobContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    		        		{ width: "4%", title: "<bean:message key="field.label.jobContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     	        			if(row.jobContact != null){
     	        				icon = JOBLOOKUP.makeContactIcon(row.jobContact);
     	        				return (icon + " " + row.jobContact.lastName+", "+row.jobContact.firstName);
     	        				}
 	    	        		} },
-    	        			{ visible:false, title: "<bean:message key="field.label.siteContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    	        			{ width: "4%", title: "<bean:message key="field.label.siteContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     	        			if(row.siteContact != null){
         	        			icon = JOBLOOKUP.makeContactIcon(row.siteContact);
         	        			return (icon + " " + row.siteContact.lastName+", "+row.siteContact.firstName);
         	        			}
     	        			} },
-    	        			{ visible:false, title: "<bean:message key="field.label.contractContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    	        			{ width: "4%", title: "<bean:message key="field.label.contractContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
         	        			if(row.contractContact != null){
             	        			icon = JOBLOOKUP.makeContactIcon(row.contractContact);
             	        			return (icon + " " + row.contractContact.lastName+", "+row.contractContact.firstName);
             	        			}
         	        		} },
-        	        		{ visible:false, title: "<bean:message key="field.label.billingContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+        	        		{ width: "4%", title: "<bean:message key="field.label.billingContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
             	        		if(row.billingContact != null){
                 	        		icon = JOBLOOKUP.makeContactIcon(row.billingContact);
                 	        		return (icon + " " + row.billingContact.lastName+", "+row.billingContact.firstName);
                 	        		}
             	        	} },
-    	        			{ visible:false, title: "<bean:message key="field.label.contactId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    	        			{ width: "4%", title: "<bean:message key="field.label.contactId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     	        				if(row.contactId != null){return (row.contactId+"");}
     	        			} },
-    	        			{ visible:false, title: "<bean:message key="field.label.lastName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    	        			{ width: "4%", title: "<bean:message key="field.label.lastName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     	        				if(row.lastName != null){return (row.lastName+"");}
     	        			} },
-    	        			{ visible:false, title: "<bean:message key="field.label.firstName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    	        			{ width: "4%", title: "<bean:message key="field.label.firstName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     	        				if(row.firstName != null){return (row.firstName+"");}
     	        			} },
-    	        			{ visible:false, title: "<bean:message key="field.label.preferredContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    	        			{ width: "4%", title: "<bean:message key="field.label.preferredContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.poNumber != null){return (row.poNumber+"");}	    
     			            } },	
-    	        			{ visible:false, title: "<bean:message key="field.label.preferredContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    	        			{ width: "4%", title: "<bean:message key="field.label.preferredContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
         	        			if(row.preferredContact != null){
             	        			icon = JOBLOOKUP.makeContactIcon(row.preferredContact);
             	        			return (icon + " " + row.preferredContact.contactMethod +"");
@@ -241,9 +241,6 @@
     			            "initComplete": function(settings, json) {
     			            	//console.log(json);
     			            	//JOBLOOKUP.doFunctionBinding();
-    			            	$.each([13,14,15,16,17,18,19,20,21], function($idx, $value) {
-    			            		
-    			            	});
     			            },
     			            "drawCallback": function( settings ) {
     			            	//JOBLOOKUP.doFunctionBinding();

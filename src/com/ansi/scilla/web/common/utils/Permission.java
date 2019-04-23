@@ -117,7 +117,10 @@ public enum Permission {
 	REPORTS_ADDRESS_USAGE_READ(REPORTS_ADDRESS_USAGE, false, "Can read address usage reports"),
 	
 	REPORTS_CLIENT_CONTACT(null, false, "Functional Area: Client Contact Reports"),
-	REPORTS_CLIENT_CONTACT_READ(REPORTS_CLIENT_CONTACT, false, "Can read Client Contaoct reports"),
+	REPORTS_CLIENT_CONTACT_READ(REPORTS_CLIENT_CONTACT, false, "Can read Client Contact reports"),
+	
+	DEVELOPMENT(null, false, "Functional Area: System Developers"),
+	DEV(DEVELOPMENT, false, "Can Access Developer Areas"),
 	;
 	
 	private final Boolean divisionSpecific;
