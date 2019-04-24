@@ -39,6 +39,8 @@ public class BudgetControlLookupServlet extends AbstractLookupServlet {
 				"isnull(ticket_claim_weekly_totals.claimed_weekly_dl_exp,0.00)", // as claimed_weekly_dl_exp"
 				"isnull(ticket_claim_weekly_totals.claimed_weekly_dl_amt,0.00)+ISNULL(ticket_claim_weekly_totals.claimed_weekly_dl_exp,0.00)", //as claimed_weekly_dl_total"
 				"job.price_per_cleaning", // as total_volume
+				"isnull(ticket_claim_totals.claimed_volume,0.00)", //as claimed_volume
+				"ISNULL(ticket_claim_passthru_totals.passthru_volume,0.00)", //as passthru_volume
 				"isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim_passthru_totals.passthru_volume,0.00)", //as claimed_volume_total
 				"job.price_per_cleaning - (isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim_passthru_totals.passthru_volume,0.00))", //as volume_remaining"
 				"isnull(invoice_totals.invoiced_amount,0.00)", // as billed_amount",

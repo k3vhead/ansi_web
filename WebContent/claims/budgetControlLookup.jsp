@@ -109,7 +109,7 @@
     			        	{ title: "Div", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.div != null){return (row.div+"");}
     			            } },
-    			            { width:"23%", title: "Account", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+    			            { width:"20%", title: "Account", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.job_site_name != null){return (row.job_site_name+"");}
     			            } },
     			            { title: "Ticket", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
@@ -133,10 +133,16 @@
     			            { title: "= Total", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.claimed_weekly_dl_total != null){return (row.claimed_weekly_dl_total.toFixed(2));}
     			            } },
-    			            { title: "Total Volume" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Total Volume (PPC)" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.total_volume != null){return (row.total_volume.toFixed(2));}
     			            } },
-    			            { title: "Volume Claimed" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Claimed DL Volume" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            	if(row.claimed_volume != null){return (row.claimed_volume.toFixed(2));}
+    			            } },
+    			            { title: "Claimed Passthru Volume" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            	if(row.passthru_volume != null){return (row.passthru_volume.toFixed(2));}
+    			            } },
+    			            { title: "Total Volume Claimed" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.claimed_volume_total != null){return (row.claimed_volume_total.toFixed(2));}
     			            } },
     			            { title: "Volume Remaining", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
