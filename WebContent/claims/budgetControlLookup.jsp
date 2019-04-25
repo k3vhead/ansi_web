@@ -28,9 +28,16 @@
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
     	<script type="text/javascript" src="js/addressUtils.js"></script>
     	<script type="text/javascript" src="js/lookup.js"></script> 
+    	<script type="text/javascript" src="js/claims.js"></script> 
     	<script type="text/javascript" src="js/ticket.js"></script> 
     
         <style type="text/css">
+        	#direct-labor-lookup-modal {
+        		display:none;
+        	}
+        	#direct-labor-lookup-modal .table-label-text {
+        		display:none;
+        	}
         	#filter-container {
         		width:402px;
         		float:right;
@@ -42,6 +49,19 @@
 				width:400px;
 				padding:15px;
         	}
+        	#new-dl-button {
+        		display:none;
+        	}
+        	#new-pe-button {
+        		display:none;
+        	}
+        	
+        	#passthru-expense-lookup-modal{
+        		display:none;
+        	}
+        	#passthru-expense-lookup-modal .table-label-text {
+        		display:none;
+        	}
 			.prettyWideButton {
 				height:30px;
 				min-height:30px;
@@ -51,7 +71,17 @@
 			}
 			.ticket-clicker {
 				color:#000000;
-			}			
+			}	
+			.direct-labor-clicker {
+				color:#000000;
+				text-decoration:underline;
+				cursor:pointer;
+			}
+			.passthru-expense-clicker {
+				color:#000000;
+				text-decoration:underline;
+				cursor:pointer;
+			}		
         </style>
         
         <script type="text/javascript">
@@ -125,7 +155,7 @@
     			            	if(row.budget != null){return (row.budget.toFixed(2));}
     			            } },
     			            { title: "Direct Labor", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-    			            	if(row.claimed_weekly_dl_amt != null){return (row.claimed_weekly_dl_amt.toFixed(2));}
+    			            	if(row.claimed_weekly_dl_amt != null){return ('<span class="direct-labor-clicker" data-id="'+row.ticket_id+'">' + row.claimed_weekly_dl_amt.toFixed(2) + "</span>");}
     			            } },
     			            { title: "+ Expenses", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.claimed_weekly_dl_exp != null){return (row.claimed_weekly_dl_exp);}
@@ -140,7 +170,7 @@
     			            	if(row.claimed_volume != null){return (row.claimed_volume.toFixed(2));}
     			            } },
     			            { title: "Claimed Passthru Volume" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-    			            	if(row.passthru_volume != null){return (row.passthru_volume.toFixed(2));}
+    			            	if(row.passthru_volume != null){return ('<span class="passthru-expense-clicker" data-id="'+row.ticket_id+'">' + row.passthru_volume.toFixed(2) + "</span>");}
     			            } },
     			            { title: "Total Volume Claimed" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.claimed_volume_total != null){return (row.claimed_volume_total.toFixed(2));}
@@ -200,6 +230,16 @@
 						TICKETUTILS.doTicketViewModal("#ticket-modal",$ticketId);
 						$("#ticket-modal").dialog("open");
 					});
+					$(".direct-labor-clicker").on("click", function($clickevent) {
+						var $ticketId = $(this).attr("data-id");
+						CLAIMSUTILS.makeDirectLaborLookup("#direct-labor-lookup",$ticketId);
+						$( "#direct-labor-lookup-modal" ).dialog("open");
+					});
+					$(".passthru-expense-clicker").on("click", function($clickevent) {
+						var $ticketId = $(this).attr("data-id");
+						CLAIMSUTILS.makePassthruExpenseLookup("#passthru-expense-lookup",$ticketId);
+						$( "#passthru-expense-lookup-modal" ).dialog("open");
+					});
 				},
             	
 
@@ -214,7 +254,52 @@
             	
             	makeModals : function() {
             		TICKETUTILS.makeTicketViewModal("#ticket-modal")
+            		
+            		
+            		$( "#direct-labor-lookup-modal" ).dialog({
+						title:'Direct Labor',
+						autoOpen: false,
+						height: 500,
+						width: 900,
+						modal: true,
+						closeOnEscape:true,
+						//open: function(event, ui) {
+						//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+						//},
+						buttons: [
+							{
+								id: "dl-lookup-cancel-button",
+								click: function($event) {
+									$( "#direct-labor-lookup-modal" ).dialog("close");
+								}
+							}
+						]
+					});	
+					$("#dl-lookup-cancel-button").button('option', 'label', 'Done');
+					
+					$( "#passthru-expense-lookup-modal" ).dialog({
+						title:'Passthru Expense',
+						autoOpen: false,
+						height: 500,
+						width: 900,
+						modal: true,
+						closeOnEscape:true,
+						//open: function(event, ui) {
+						//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+						//},
+						buttons: [
+							{
+								id: "pe-lookup-cancel-button",
+								click: function($event) {
+									$( "#passthru-expense-lookup-modal" ).dialog("close");
+								}
+							}
+						]
+					});	
+					$("#pe-lookup-cancel-button").button('option', 'label', 'Done');
             	}
+            	
+            	
 
         	}
       	  	
@@ -229,20 +314,29 @@
     	<h1>Budget Control</h1>
     	
     	
-    <webthing:lookupFilter filterContainer="filter-container" />
-
-	<table id="displayTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
-        <thead>
-        </thead>
-        <tfoot>
-        </tfoot>
-    </table>
-    <input type="button" value="New" class="prettyWideButton" id="new-NDL-button" />
-    
-    <webthing:scrolltop />
-    
-    <webthing:ticketModal ticketContainer="ticket-modal" />
-    
+	    <webthing:lookupFilter filterContainer="filter-container" />
+	
+		<table id="displayTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
+	        <thead>
+	        </thead>
+	        <tfoot>
+	        </tfoot>
+	    </table>
+	    <input type="button" value="New" class="prettyWideButton" id="new-NDL-button" />
+	    
+	    <webthing:scrolltop />
+	    
+	    <webthing:ticketModal ticketContainer="ticket-modal" />
+	    
+	    
+	    <div id="direct-labor-lookup-modal">
+	    	<webthing:directLaborLookup tableName="direct-labor-lookup"/>
+	    </div>
+	    
+	    <div id="passthru-expense-lookup-modal">
+	    	<webthing:passthruExpenseLookup tableName="passthru-expense-lookup"/>
+	    </div>
+   
    
     </tiles:put>
 		
