@@ -57,6 +57,7 @@ public class ReportDefinition extends ApplicationWebObject {
 	private HashMap<String, String> reportDisplay;
 
 	/*
+	<forward name="reportByDiv" path="/reportByDiv.jsp" />
 	<forward name="reportByDivEnd" path="/reportByDivEnd.jsp" />
     <forward name="reportByDivMonthYear" path="/reportByDivMonthYear.jsp" />
     <forward name="reportByDivStartEnd" path="/reportByDivStartEnd.jsp" />

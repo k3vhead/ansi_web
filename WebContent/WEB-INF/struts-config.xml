@@ -280,6 +280,7 @@
             input="/reportMenu.jsp"
             scope="request">
             <forward name="valid" path="/reportMenu.jsp" />
+            <forward name="reportByDiv" path="/reportByDiv.jsp" />
             <forward name="reportByDivEnd" path="/reportByDivEnd.jsp" />
             <forward name="reportByDivMonthYear" path="/reportByDivMonthYear.jsp" />
             <forward name="reportByDivStartEnd" path="/reportByDivStartEnd.jsp" />
