@@ -23,6 +23,34 @@ public enum ReportType {
     <forward name="reportByStartEnd" path="/reportByStartEnd.jsp" />     
 	*/
 	
+	ACCOUNTS_RECEIVABLE_TOTALS_SUMMARY(
+			"reportNoInput",
+			"com.ansi.scilla.report.datadumps.AccountsReceivableTotalsSummary",
+			"com.ansi.scilla.web.report.request.NoValidate", 
+			new String[] {},
+			Permission.INVOICE_READ
+		),
+	ACCOUNTS_RECEIVABLE_TOTALS_SUMMARY_BY_DIVISION(
+			"reportByDiv",
+			"com.ansi.scilla.report.datadumps.AccountsReceivableTotalsSummaryByDiv",
+			"com.ansi.scilla.web.report.request.ValidateDiv", 
+			new String[] {"divisionId"},
+			Permission.INVOICE_READ
+		),
+	ACCOUNTS_RECEIVABLE_TOTALS_OVER_60_DETAIL(
+			"reportNoInput",
+			"com.ansi.scilla.report.datadumps.AccountsReceivableTotalsOver60Detail",
+			"com.ansi.scilla.web.report.request.NoValidate", 
+			new String[] {},
+			Permission.INVOICE_READ
+		),
+	ACCOUNTS_RECEIVABLE_TOTALS_OVER_60_DETAIL_BY_DIVISION(
+			"reportByDiv",
+			"com.ansi.scilla.report.datadumps.AccountsReceivableTotalsOver60DetailByDiv",
+			"com.ansi.scilla.web.report.request.ValidateDiv", 
+			new String[] {"divisionId"},
+			Permission.INVOICE_READ
+		),
 	ADDRESS_USAGE_REPORT(
 			"reportNoInput",
 			"com.ansi.scilla.report.datadumps.AddressUsage",
@@ -99,6 +127,20 @@ public enum ReportType {
 			"com.ansi.scilla.web.report.request.ValidateStartEnd", 
 			new String[] {"startDate", "endDate"},
 			Permission.QUOTE_READ
+		),
+	MONTHLY_SERVICE_TAX_BY_DAY_REPORT(
+			"reportByStartEnd", 
+			"com.ansi.scilla.report.monthlyServiceTaxReport.MonthlyServiceTaxByDayReport",
+			"com.ansi.scilla.web.report.request.ValidateStartEnd", 
+			new String[] {"startDate", "endDate"},
+			Permission.PAYMENT_WRITE
+		),
+	MONTHLY_SERVICE_TAX_REPORT(
+			"reportByStartEnd", 
+			"com.ansi.scilla.report.monthlyServiceTaxReport.MonthlyServiceTaxReport",
+			"com.ansi.scilla.web.report.request.ValidateStartEnd", 
+			new String[] {"startDate", "endDate"},
+			Permission.PAYMENT_WRITE
 		),
 	PAC_REPORT(
 			"reportByDivStartEnd", 
