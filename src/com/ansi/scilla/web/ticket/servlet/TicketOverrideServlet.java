@@ -441,8 +441,10 @@ public class TicketOverrideServlet extends TicketServlet {
 		PROCESS_DATE("processDate", "doProcessDate", Permission.TICKET),
 		INVOICE("invoice", "doInvoice", Permission.TICKET),
 		NEW_INVOICE("newInvoice","doNewInvoice", Permission.TICKET),
-		INVOICE_DATE("invoiceDate","doInvoiceDate", Permission.TICKET_SPECIAL_OVERRIDE),
-		ACT_PRICE_PER_CLEANING("actPricePerCleaning","doPricePerCleaning", Permission.TICKET_SPECIAL_OVERRIDE),
+//		INVOICE_DATE("invoiceDate","doInvoiceDate", Permission.TICKET_SPECIAL_OVERRIDE),
+//		ACT_PRICE_PER_CLEANING("actPricePerCleaning","doPricePerCleaning", Permission.TICKET_SPECIAL_OVERRIDE),
+		INVOICE_DATE("invoiceDate","doInvoiceDate", Permission.TICKET_OVERRIDE),
+		ACT_PRICE_PER_CLEANING("actPricePerCleaning","doPricePerCleaning", Permission.TICKET_OVERRIDE),
 		ACT_PO_NUMBER("actPoNumber","doPoNumber", Permission.TICKET),
 		;
 		

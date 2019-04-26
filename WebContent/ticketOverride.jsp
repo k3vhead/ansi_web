@@ -1369,7 +1369,7 @@
 		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="ticketId"></span></td>
 		   			<td style="border-bottom:solid 1px #000000; width:9%;">
 		   				<span id="actPricePerCleaning"></span>
-		   				<ansi:hasPermission permissionRequired="TICKET_SPECIAL_OVERRIDE">
+		   				<ansi:hasPermission permissionRequired="TICKET_OVERRIDE">
 		    				<ansi:hasWrite>
 		    					<webthing:edit styleClass="action-link editActualPPC">Edit</webthing:edit>
 		    				</ansi:hasWrite>
@@ -1442,7 +1442,7 @@
 		   			</td>
 		   			<td>
 		   				<span id="invoiceDate"></span>
- 				    	<ansi:hasPermission permissionRequired="TICKET_SPECIAL_OVERRIDE">
+ 				    	<ansi:hasPermission permissionRequired="TICKET_OVERRIDE">
 		    				<ansi:hasWrite>
 		    					<webthing:edit styleClass="action-link editInvoiceDate">Edit</webthing:edit>
 		    				</ansi:hasWrite>
@@ -1547,7 +1547,7 @@
     	
     	
     	
-    	<ansi:hasPermission permissionRequired="TICKET_SPECIAL_OVERRIDE">
+    	<ansi:hasPermission permissionRequired="TICKET_OVERRIDE">
 			<ansi:hasWrite>
 				<div id="editInvoiceDateModal">
 		    		<div class="err modalErr" ></div>
@@ -1562,7 +1562,7 @@
  		</ansi:hasPermission>
     	
     	
-    	<ansi:hasPermission permissionRequired="TICKET_SPECIAL_OVERRIDE">
+    	<ansi:hasPermission permissionRequired="TICKET_OVERRIDE">
 			<ansi:hasWrite>
 				<div id="editActualPPCModal">
 		    		<div class="err modalErr" ></div>
