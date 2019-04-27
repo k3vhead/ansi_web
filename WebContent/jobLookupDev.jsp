@@ -62,9 +62,9 @@
         	;JOBLOOKUP = {
        			dataTable : null,
        			lookupType : '<c:out value="${ANSI_JOB_LOOKUP_TYPE}" />',
-       			pacColumns : [1,2,3],
-       			contactColumns : [17,18,19,20,21],
-       			jobColumns : [0,1,13,14,15,16,21],
+       			pacColumns : [17,18,19,20],
+       			contactColumns : [13,14,15,16],
+       			jobColumns : [11,12],
        			
        			
        			
@@ -122,15 +122,19 @@
             	        	'print',
             	        	{extend: 'colvis',	label: function () {doFunctionBinding();$('#jobTable').draw();}},
             	        	{
-	        	        		text:'Contact Filter',
+	        	        		text:'Job',
 	        	        		action: function(e, dt, node, config) {
-	        	        			if ( $filterJob == 'yes' ) {
-	        	        				$filterJob = 'no';
-	        	        			} else {
-	        	        				$filterJob = 'yes';
-	        	        			}
-	        	        			var $url = "invoiceLookup.html?divisionId=" + $filterDivisionId + "&ppcFilter=" + $filterPPC;
-	        	        			location.href=$url;
+	        	        			JOBLOOKUP.showJobColumns();	        	        			
+	        	        		}
+	        	        	},{
+	        	        		text:'Contacts',
+	        	        		action: function(e, dt, node, config) {
+	        	        			JOBLOOKUP.showContactColumns();	        	        			
+	        	        		}
+	        	        	},{
+	        	        		text:'PAC',
+	        	        		action: function(e, dt, node, config) {
+	        	        			JOBLOOKUP.showPacColumns();	        	        			
 	        	        		}
 	        	        	}
             	        ],
@@ -180,13 +184,16 @@
     			            { width: "4%", title: "<bean:message key="field.label.jobNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
     			            	if(row.jobNbr != null){return (row.jobNbr+"");}
     			            } },
+    			            // start of job columns
     			            { width: "24%", title: "<bean:message key="field.label.serviceDescription" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.serviceDescription != null){return (row.serviceDescription+"");}
     			            } },
     			            { width: "4%", title: "<bean:message key="field.label.poNumber" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.poNumber != null){return (row.poNumber+"");}	    
     			            } },	
+    			            // end of job columns
     			            <%-- put those columns here --%>
+    			            // start of contact columns
     		        		{ width: "10%", title: "<bean:message key="field.label.jobContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     	        			if(row.jobContact != null){
     	        				var preferredContact = row.jobContact.preferredContact;
@@ -216,6 +223,21 @@
         	        			
         	        			}
     	    	        	} },
+    	    	        	// end of contact columns
+    	    	        	// start of PAC columns
+    	    	        	{ width: "24%", title: "Proposed", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	return "Proposed";
+    			            } },
+    			            { width: "24%", title: "Active", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	return "Active";
+    			            } },
+    			            { width: "24%", title: "Cancel", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	return "canceled";
+    			            } },
+    			            { width: "24%", title: "Reason", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	return "reason";
+    			            } },
+    			            // end of PAC columns
     			            { width: "4%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
     			            	//console.log(row);
     			            	{
@@ -420,16 +442,42 @@
 				
 				showJobColumns : function() {
 					var myTable = $('#jobTable').DataTable();
-					$.each(pacColumns, function(index, columnNumber) {
+					$.each(JOBLOOKUP.pacColumns, function(index, columnNumber) {
 						myTable.columns(columnNumber).visible(false);
 					});
-					$.each(contactColumns, function(index, columnNumber) {
+					$.each(JOBLOOKUP.contactColumns, function(index, columnNumber) {
 						myTable.columns(columnNumber).visible(false);
 					});
-					$.each(jobColumns, function(index, columnNumber) {
+					$.each(JOBLOOKUP.jobColumns, function(index, columnNumber) {
 						myTable.columns(columnNumber).visible(true);
 					});
-				}
+				},
+				
+				showContactColumns : function() {
+					var myTable = $('#jobTable').DataTable();
+					$.each(JOBLOOKUP.pacColumns, function(index, columnNumber) {
+						myTable.columns(columnNumber).visible(false);
+					});
+					$.each(JOBLOOKUP.contactColumns, function(index, columnNumber) {
+						myTable.columns(columnNumber).visible(true);
+					});
+					$.each(JOBLOOKUP.jobColumns, function(index, columnNumber) {
+						myTable.columns(columnNumber).visible(false);
+					});
+				},
+				
+				showPacColumns : function() {
+					var myTable = $('#jobTable').DataTable();
+					$.each(JOBLOOKUP.pacColumns, function(index, columnNumber) {
+						myTable.columns(columnNumber).visible(true);
+					});
+					$.each(JOBLOOKUP.contactColumns, function(index, columnNumber) {
+						myTable.columns(columnNumber).visible(false);
+					});
+					$.each(JOBLOOKUP.jobColumns, function(index, columnNumber) {
+						myTable.columns(columnNumber).visible(false);
+					});
+				},
         	} 
         	
         	JOBLOOKUP.init();
