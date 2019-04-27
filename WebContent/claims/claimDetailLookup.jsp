@@ -42,14 +42,16 @@
 				width:400px;
 				padding:15px;
         	}
-			
+			#searching-modal {
+				display:none;
+			}
+			#ticket-modal {
+				display:none;	
+			}
 			
 			.prettyWideButton {
 				height:30px;
 				min-height:30px;
-			}
-			#ticket-modal {
-				display:none;	
 			}
 			.ticket-clicker {
 				color:#000000;
@@ -73,9 +75,9 @@
         		
 				createTable : function() {
         			var $url = "claims/claimDetailLookup";
-        			if ( CLAIMDETAIL.ticketFilter != '' && CLAIMDETAIL.ticketFilter != null) {
-        				$url = $url + "/" + CLAIMDETAIL.ticketFilter;
-        			}
+        			//if ( CLAIMDETAIL.ticketFilter != '' && CLAIMDETAIL.ticketFilter != null) {
+        			//	$url = $url + "/" + CLAIMDETAIL.ticketFilter;
+        			//}
         				
             		CLAIMDETAIL.dataTable = $('#displayTable').DataTable( {
             			"aaSorting":		[[0,'asc']],
@@ -173,14 +175,23 @@
     			            	
     			            } }],
     			            "initComplete": function(settings, json) {
+    			            	console.log("initComplete");
     			            	LOOKUPUTILS.makeFilters(this, "#filter-container", "#displayTable", CLAIMDETAIL.createTable);
     			            	if ( CLAIMDETAIL.ticketFilter != null &&  CLAIMDETAIL.ticketFilter !='' ) {
-    			            		console.log("Seting filter");
-    			            		LOOKUPUTILS.setFilterValue("#filter-container", 4, CLAIMDETAIL.ticketFilter);
-    			            		CLAIMDETAIL.ticketFilter='';
+    			            		console.log("Setting filter");
+    			            		$("#searching-modal").dialog("open");
+    			            		LOOKUPUTILS.setFilterValue("#filter-container", 4, CLAIMDETAIL.ticketFilter); //set value in filters
+    			            		setTimeout(function() {
+    			            			console.log("filtering for : " + CLAIMDETAIL.ticketFilter);
+    			            			var dataTable = $('#displayTable').DataTable();
+    			        				myColumn = dataTable.columns(4);
+    			       					myColumn.search(CLAIMDETAIL.ticketFilter).draw();
+    			            		},100)
     			            	}
     			            },
     			            "drawCallback": function( settings ) {
+    			            	console.log("drawCallback");
+    			            	$("#searching-modal").dialog("close");
     			            	CLAIMDETAIL.doFunctionBinding();
     			            }
     			    } );
@@ -216,6 +227,19 @@
             	
             	makeModals : function() {
             		TICKETUTILS.makeTicketViewModal("#ticket-modal")
+            		
+            		
+            		$("#searching-modal" ).dialog({
+						autoOpen: false,
+						height: "auto",
+						width: 300,
+						modal: true,
+						closeOnEscape:false,
+						title:"Searching",
+						open: function(event, ui) {
+							$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+						}
+					});
             	},
             	
         	}
@@ -229,7 +253,7 @@
     
    <tiles:put name="content" type="string">
     	<h1>Claim Detail</h1>
-    	
+
    	    <webthing:lookupFilter filterContainer="filter-container" />
     	
 	 	<table id="displayTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
@@ -244,6 +268,10 @@
 	    <webthing:scrolltop />
     
     	<webthing:ticketModal ticketContainer="ticket-modal" />
+    	
+    	<div id="searching-modal">
+    		<webthing:thinking style="width:100%" />
+    	</div>
     </tiles:put>
 		
 </tiles:insert>
