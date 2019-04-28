@@ -1370,9 +1370,7 @@
 		   			<td style="border-bottom:solid 1px #000000; width:9%;">
 		   				<span id="actPricePerCleaning"></span>
 		   				<ansi:hasPermission permissionRequired="TICKET_OVERRIDE">
-		    				<ansi:hasWrite>
-		    					<webthing:edit styleClass="action-link editActualPPC">Edit</webthing:edit>
-		    				</ansi:hasWrite>
+		    				<webthing:edit styleClass="action-link editActualPPC">Edit</webthing:edit>
 		    			</ansi:hasPermission>
 		   			</td>
 		   			<td style="border-bottom:solid 1px #000000; width:9%;"><span id="totalVolPaid"></span></td>
@@ -1443,9 +1441,7 @@
 		   			<td>
 		   				<span id="invoiceDate"></span>
  				    	<ansi:hasPermission permissionRequired="TICKET_OVERRIDE">
-		    				<ansi:hasWrite>
-		    					<webthing:edit styleClass="action-link editInvoiceDate">Edit</webthing:edit>
-		    				</ansi:hasWrite>
+		    				<webthing:edit styleClass="action-link editInvoiceDate">Edit</webthing:edit>
 		    			</ansi:hasPermission>
 		   			</td>
 		   			<td><span id="sumInvPpc"></span></td>
@@ -1548,32 +1544,28 @@
     	
     	
     	<ansi:hasPermission permissionRequired="TICKET_OVERRIDE">
-			<ansi:hasWrite>
-				<div id="editInvoiceDateModal">
-		    		<div class="err modalErr" ></div>
-		    		<table>		    			
-		    			<tr>
-		    				<td style="width:100px;"><span class="formLabel">Invoice Date:</span></td>
-		    				<td><input type="text" name="overrideInvoiceDate" id="overrideInvoiceDate" class="dateField" /></td>
-		    			</tr>  
-		    		</table>
-		    	</div> 			
-    		</ansi:hasWrite>
+			<div id="editInvoiceDateModal">
+				<div class="err modalErr" ></div>
+				<table>		    			
+					<tr>
+						<td style="width:100px;"><span class="formLabel">Invoice Date:</span></td>
+						<td><input type="text" name="overrideInvoiceDate" id="overrideInvoiceDate" class="dateField" /></td>
+					</tr>  
+				</table>
+			</div> 			
  		</ansi:hasPermission>
     	
     	
     	<ansi:hasPermission permissionRequired="TICKET_OVERRIDE">
-			<ansi:hasWrite>
-				<div id="editActualPPCModal">
-		    		<div class="err modalErr" ></div>
-		    		<table>		    			
-		    			<tr>
-		    				<td style="width:100px;"><span class="formLabel">Ticket Amt:</span></td>
-		    				<td><input type="text" name="overrideActualPPC" id="overrideActualPPC" /></td>
-		    			</tr>  
-		    		</table>
-		    	</div> 			
-    		</ansi:hasWrite>
+			<div id="editActualPPCModal">
+				<div class="err modalErr" ></div>
+				<table>		    			
+					<tr>
+						<td style="width:100px;"><span class="formLabel">Ticket Amt:</span></td>
+						<td><input type="text" name="overrideActualPPC" id="overrideActualPPC" /></td>
+					</tr>  
+				</table>
+			</div> 			
  		</ansi:hasPermission>
     	
     	
