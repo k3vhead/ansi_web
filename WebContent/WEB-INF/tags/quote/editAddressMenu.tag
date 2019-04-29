@@ -12,10 +12,20 @@
 <%--  <jsp:doBody /> --%>
 <table style="width:100%;">
 <tr><td class="edit-address" data-type="jobsite">Edit Job Site</td></tr>
+<tr><td> </td></tr>
+<tr><td> </td></tr>
 <tr><td class="edit-address" data-type="billto">Edit Bill To</td></tr>
+<tr><td> </td></tr>
+<tr><td> </td></tr>
 <tr><td class="edit-contact" data-type="job">Job Contact</td></tr>
+<tr><td> </td></tr>
+<tr><td> </td></tr>
 <tr><td class="edit-contact" data-type="site">Site Contact</td></tr>
+<tr><td> </td></tr>
+<tr><td> </td></tr>
 <tr><td class="edit-contact" data-type="contract">Contract&nbsp;Contact</td></tr>
+<tr><td> </td></tr>
+<tr><td> </td></tr>
 <tr><td class="edit-contact" data-type="billing">Billing Contact</td></tr>
 </table>
 </span>
