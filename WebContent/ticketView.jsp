@@ -165,7 +165,7 @@
 			            { title: "<bean:message key="field.label.ticketNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.ticketId != null){return (row.ticketId+"");}
 			            } },
-			            { title: "<bean:message key="field.label.ticketNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+			            { title: "<bean:message key="field.label.ticketStatus" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.status != null){return (row.status+"");}
 			            } },
 			            { title: "<bean:message key="field.label.name" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
