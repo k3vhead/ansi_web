@@ -1180,8 +1180,8 @@
 									NEWQUOTE.populateContactPanel( "#job-contact", NEWQUOTE.jobsiteJobContact);
 								}
 								// billto stuff
-								NEWQUOTE.billToAddress = $data.data.billToAddress
-								NEWQUOTE.populateAddressPanel( "#address-bill-to", NEWQUOTE.billToAddress );
+								//2019/04/30 Remove default billto address:  NEWQUOTE.billToAddress = $data.data.billToAddress
+								//2019/04/30 Remove default billto address:  NEWQUOTE.populateAddressPanel( "#address-bill-to", NEWQUOTE.billToAddress );
 								if ( $data.data.billtoContractContact != null ) {
 									NEWQUOTE.billtoContractContact = $data.data.billtoContractContact
 									NEWQUOTE.populateContactPanel( "#contract-contact", NEWQUOTE.billtoContractContact);
