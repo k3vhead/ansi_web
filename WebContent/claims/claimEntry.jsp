@@ -139,6 +139,7 @@
         			ANSI_UTILS.getCodeList("ticket_claim_passthru","passthru_expense_type",CLAIMENTRY.makeExpenseTypeList);
         			if ( CLAIMENTRY.ticketFilter != '' ) {
             			CLAIMENTRY.getDetail();
+            			$( "#ticketNbr" ).val(CLAIMENTRY.ticketFilter);
 	        			CLAIMSUTILS.makeDirectLaborLookup("#direct-labor-lookup",CLAIMENTRY.ticketFilter);
 	        			CLAIMSUTILS.makePassthruExpenseLookup("#passthru-expense-lookup",CLAIMENTRY.ticketFilter);
         			}
