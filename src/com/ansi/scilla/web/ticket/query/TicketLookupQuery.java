@@ -3,7 +3,9 @@ package com.ansi.scilla.web.ticket.query;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -14,6 +16,7 @@ import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.queries.SelectType;
 import com.ansi.scilla.common.utils.AppUtils;
+import com.ansi.scilla.common.utils.WhereFieldLikeTransformer;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.common.utils.SessionDivisionTransformer;
@@ -22,11 +25,32 @@ public class TicketLookupQuery extends LookupQuery {
 
 	private static final long serialVersionUID = 1L;
 
+	public static final String TICKET_ID = "view_ticket_log.ticket_id";
+	public static final String STATUS = "view_ticket_log.ticket_status";
+	public static final String TYPE = "view_ticket_log.ticket_type";
+	public static final String DIV = "concat(division.division_nbr,'-',division.division_code)";
+	public static final String BILL_TO = "a1.name";
+	public static final String JOB_SITE = "a2.name";
+	public static final String ADDRESS = "a2.address1";
+	public static final String START_DATE = "ticket.start_date";
+	public static final String FREQ = "job.job_frequency";
+	public static final String PPC = "isnull(ticket.act_price_per_cleaning, job.price_per_cleaning) as price_per_cleaning";
+	public static final String JOB = "job.job_nbr";
+	public static final String JOB_ID = "ticket.job_id";
+	public static final String SERVICE_DESCRIPTION = "job.service_description";
+	public static final String PROCES_DATE = "ticket.process_date";
+	public static final String INVOICE = "ticket.invoice_id";
+	public static final String AMOUNT_DUE = "case ticket.ticket_status "
+			+ " when 'i' then isnull(isnull(ticket.act_price_per_cleaning,'0.00')-isnull(ticket_payment_totals.amount,'0.00'),'0.00') "
+			+ " when 'p' then isnull(isnull(ticket.act_price_per_cleaning,'0.00')-isnull(ticket_payment_totals.amount,'0.00'),'0.00') "
+			+ " else '0.00' "
+			+ " end";
 	
 	public static final String sqlSelect = 
 			"SELECT view_ticket_log.ticket_id as view_ticket_id, view_ticket_log.job_id as view_job_id, " 
 			+ "\n\t view_ticket_log.start_date as view_start_date, "
 			+ "\n\t view_ticket_log.ticket_status as view_ticket_status, view_ticket_log.ticket_type as view_ticket_type, "
+			+ "\n\t concat(division.division_nbr,'-',division.division_code) as div,"
 			+ "\n\t ticket.*, "
 			+ "\n\t division.*,  "
 			+ "\n\t job.job_status, job.service_description,  job.job_frequency, job.job_nbr, "
@@ -109,14 +133,62 @@ public class TicketLookupQuery extends LookupQuery {
 	
 	@Override
 	protected String makeOrderBy(SelectType selectType) {
-		// TODO Auto-generated method stub
-		return null;
+		String orderBy = "";
+		if ( selectType.equals(SelectType.DATA)) {
+			if ( StringUtils.isBlank(sortBy)) {
+				orderBy = " order by " + TICKET_ID + " desc ";
+			} else {
+//				List<String> sortList = Arrays.asList(StringUtils.split(sortBy, ","));
+				String sortDir = sortIsAscending ? orderBy + " asc " : orderBy + " desc ";
+//				String sortBy = StringUtils.join(sortList, sortDir + ", ");
+				orderBy = " order by " + sortBy + " " + sortDir;
+			}
+		}
+
+		return "\n" + orderBy;
 	}
 
 	@Override
 	protected String makeWhereClause(String queryTerm) {
-		// TODO Auto-generated method stub
-		return null;
+		String whereClause = sqlWhereClause;
+		String joiner = StringUtils.isBlank(sqlWhereClause) ? " where " : " and ";
+		
+		
+		if (! StringUtils.isBlank(queryTerm)) {
+			String searchTerm = queryTerm.toLowerCase();
+			Collection<String> stringFields= Arrays.asList(new String[] {
+//					"division.division_code", 
+					"ticket.fleetmatics_id" ,
+					"CONCAT(quote_number,revision)", 
+					"CONCAT(division_nbr,'-',division_code)", 
+					"a2.name" ,
+					"a2.address1", 
+					"a1.name" ,
+					"service_description",
+					"case ticket.ticket_status \r\n" + 
+					"		when 'i' then isnull(isnull(ticket.act_price_per_cleaning,'0.00')-isnull(ticket_payment_totals.amount,'0.00'),'0.00')\r\n" + 
+					"		when 'p' then isnull(isnull(ticket.act_price_per_cleaning,'0.00')-isnull(ticket_payment_totals.amount,'0.00'),'0.00')\r\n" + 
+					"		else '0.00'\r\n" + 
+					"		end"
+			});
+			Collection<String> numericFields = Arrays.asList(new String[] {
+					"view_ticket_log.ticket_id", 
+					"job.job_id" ,
+//					"division.division_nbr", 
+					"ticket.invoice_id" 
+			});
+			
+			List<String> whereFields = new ArrayList<String>();
+			whereFields.addAll(stringFields);
+			if ( StringUtils.isNumeric(searchTerm)) {
+				whereFields.addAll(numericFields);
+			}
+
+			Collection<?> whereClauseList = CollectionUtils.collect(whereFields, new WhereFieldLikeTransformer(searchTerm));
+			whereClause = whereClause + joiner +  "(" + StringUtils.join(whereClauseList, " \n\tOR ") + ")";
+
+		}
+		return whereClause;
 	}
 
 	
@@ -139,8 +211,14 @@ public class TicketLookupQuery extends LookupQuery {
 			List<Division> divisionList = Division.cast(new Division().selectAll(conn));
 			for ( Division d : divisionList) { sdList.add(new SessionDivision(d)); }
 			TicketLookupQuery x = new TicketLookupQuery(5, sdList);
-			x.setDivisionId(112);
+			x.setSearchTerm("Chicago");
+			System.out.println("Count: " + x.countAll(conn));
+//			x.setDivisionId(112);
 			ResultSet rs = x.select(conn,  0, 10);
+			while ( rs.next() ) { 
+				System.out.println(rs.getInt("ticket_id"));
+			}
+			rs.close();
 		} catch ( Exception e) {
 			e.printStackTrace();
 		} finally {

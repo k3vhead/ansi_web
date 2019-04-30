@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -17,10 +18,8 @@ import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.User;
-import com.ansi.scilla.common.utils.AppUtils;
 import com.ansi.scilla.common.utils.WhereFieldLikeTransformer;
 import com.ansi.scilla.web.employeeExpense.response.EmployeeExpenseResponseItem;
-import com.thewebthing.commons.lang.CollectionUtils;
 
 /**
  * Return list of all employee expense. The join with user is left outer in case
@@ -174,8 +173,7 @@ public class EmployeeExpenseLookupQuery extends ApplicationObject {
 			List<String> whereFields = new ArrayList<String>();
 			whereFields.addAll(stringFields);
 
-			Collection<?> whereClauseList = CollectionUtils.collect(whereFields,
-					new WhereFieldLikeTransformer(this.searchTerm));
+			Collection<?> whereClauseList = CollectionUtils.collect(whereFields.iterator(), new WhereFieldLikeTransformer(this.searchTerm));
 			filterClause = "(" + StringUtils.join(whereClauseList, " \n\tOR ") + ")";
 			whereClause.add(filterClause);
 

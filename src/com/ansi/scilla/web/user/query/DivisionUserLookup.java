@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -17,9 +18,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.User;
-import com.ansi.scilla.common.utils.AppUtils;
 import com.ansi.scilla.common.utils.WhereFieldLikeTransformer;
-import com.thewebthing.commons.lang.CollectionUtils;
 
 /**
  * Return list of all users in a division based on ansi_user, division_user, division tables

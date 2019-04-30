@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -19,7 +20,6 @@ import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.utils.WhereFieldLikeTransformer;
 import com.ansi.scilla.web.common.utils.Permission;
-import com.thewebthing.commons.lang.CollectionUtils;
 
 /**
  * List of all users with a given permission.  (Use UserLookup for users within a permission group)
