@@ -15,6 +15,7 @@ import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.AnsiTime;
+import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.common.jobticket.TicketType;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.servlet.AbstractLookupServlet;
@@ -36,6 +37,8 @@ public class TicketLookupServlet extends AbstractLookupServlet {
 	public static final String START_DATE = "start_date";
 	public static final String PROCESS_DATE = "process_date";
 	public static final String TICKET_TYPE = "ticket_type";
+	public static final String TICKET_STATUS = "ticket_status";
+	public static final String TICKET_STATUS_DESC = "ticket_status_desc";
 
 	public TicketLookupServlet() {
 		super(Permission.TICKET_READ);
@@ -133,6 +136,11 @@ public class TicketLookupServlet extends AbstractLookupServlet {
 			if ( ! StringUtils.isBlank(ticketType)) {
 				TicketType type = TicketType.lookup(ticketType);
 				arg0.put(TICKET_TYPE_DESC, type.display());
+			}
+			String ticketStatus = (String)arg0.get(TICKET_STATUS);
+			if ( ! StringUtils.isBlank(ticketStatus) ) {
+				TicketStatus status = TicketStatus.lookup(ticketStatus);
+				arg0.put(TICKET_STATUS_DESC, status.display());
 			}
 			return arg0;
 		}

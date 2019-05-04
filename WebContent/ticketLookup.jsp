@@ -133,10 +133,10 @@
 			            	if(row.ticket_id != null){return ('<a href="#" data-id="'+row.ticket_id+'" class="ticket-clicker">'+row.ticket_id+'</a>');}
 			            } },
 			            { title: "<bean:message key="field.label.ticketStatus" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-			            	if(row.ticket_status != null){return (row.ticket_status+"");}
+			            	if(row.ticket_status != null){return ('<span class="tooltip">' + row.ticket_status+'<span class="tooltiptext">'+row.ticket_status_desc+'</span></span>');}
 			            } },
 			            { title: "<bean:message key="field.label.ticketType" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-			            	if(row.ticket_type != null){return (row.ticket_type+"");}
+			            	if(row.ticket_type_desc != null){return (row.ticket_type_desc+"");}
 			            } },
 			            { title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
 			            	if(row.div != null){return (row.div);}
