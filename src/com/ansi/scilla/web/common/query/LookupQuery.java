@@ -1,5 +1,7 @@
 package com.ansi.scilla.web.common.query;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,6 +37,7 @@ public abstract class LookupQuery extends ApplicationObject {
 	protected Integer userId;
 	protected String searchTerm;
 	protected List<ColumnFilter> columnFilter;
+	protected List<ColumnFilter> constraintList;
 	protected List<Object> baseFilterValue;
 	
 	
@@ -152,6 +155,13 @@ public abstract class LookupQuery extends ApplicationObject {
 		this.columnFilter = columnFilter;
 	}
 
+	public void addColumnFilter(ColumnFilter columnFilter) {
+		if (this.columnFilter == null ) {
+			this.columnFilter = new ArrayList<ColumnFilter>();
+		}
+		this.columnFilter.add(columnFilter);
+	}
+	
 	public List<Object> getBaseFilterValue() {
 		return baseFilterValue;
 	}
@@ -170,6 +180,16 @@ public abstract class LookupQuery extends ApplicationObject {
 		}
 		this.baseFilterValue.add(filterValue);
 	}
+
+	public List<ColumnFilter> getConstraintList() {
+		return constraintList;
+	}
+
+
+	public void setConstraintList(List<ColumnFilter> constraintList) {
+		this.constraintList = constraintList;
+	}
+
 
 	public ResultSet select(Connection conn, Integer offset, Integer rowCount) throws Exception {
 		SelectType selectType = SelectType.DATA;
@@ -244,11 +264,19 @@ public abstract class LookupQuery extends ApplicationObject {
 
 	protected String makeFilterPhrase(String wherePhrase) {
 		String filterPhrase = "";
+		String joiner = StringUtils.isBlank(wherePhrase) ? " where " : " and ";
+		FilterTransformer filterTransformer = new FilterTransformer();
 		if ( this.columnFilter != null && this.columnFilter.size() > 0 ) {
-			String joiner = StringUtils.isBlank(wherePhrase) ? " where " : " and ";
 			List<String> likeList = new ArrayList<String>();
-			likeList = CollectionUtils.collect(this.columnFilter.iterator(), new FilterMaker(), likeList);
+			likeList = CollectionUtils.collect(this.columnFilter.iterator(), filterTransformer, likeList);
 			filterPhrase = "\n" + joiner + " " + StringUtils.join(likeList, " and " );
+		}
+		if ( this.constraintList != null && this.constraintList.size() > 0 ) {
+			List<String> constraints = new ArrayList<String>();
+			constraints = CollectionUtils.collect(this.constraintList.iterator(), filterTransformer, constraints);
+			String joiner2 = StringUtils.isBlank(filterPhrase) ? " where " : " and ";
+			filterPhrase = "\n" + joiner2 + " " + StringUtils.join(constraints, " and " );
+
 		}
 		return filterPhrase;
 	}
@@ -307,12 +335,21 @@ public abstract class LookupQuery extends ApplicationObject {
 	
 	
 	
-	public class FilterMaker implements Transformer<ColumnFilter, String> {
+	public class FilterTransformer implements Transformer<ColumnFilter, String> {
 
 		@Override
-		public String transform(ColumnFilter arg0) {			
-			return arg0.toSqlLike();
+		public String transform(ColumnFilter filter) {
+			Method method;
+			try {
+				method = ColumnFilter.class.getMethod(filter.getComparisonType().getMethodName());
+				String value = (String)method.invoke(filter);
+				return value;
+			} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				throw new RuntimeException(e);
+			}
 		}
 		
 	}
+	
+	
 }

@@ -6,19 +6,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 
 import com.ansi.scilla.common.db.Division;
-import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.queries.SelectType;
-import com.ansi.scilla.common.utils.AppUtils;
 import com.ansi.scilla.common.utils.WhereFieldLikeTransformer;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.struts.SessionDivision;
+import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.common.utils.ColumnFilter;
 import com.ansi.scilla.web.common.utils.SessionDivisionTransformer;
 
 public class TicketLookupQuery extends LookupQuery {
@@ -45,6 +47,7 @@ public class TicketLookupQuery extends LookupQuery {
 			+ " when 'p' then isnull(isnull(ticket.act_price_per_cleaning,'0.00')-isnull(ticket_payment_totals.amount,'0.00'),'0.00') "
 			+ " else '0.00' "
 			+ " end";
+	public static final String DIVISION_ID = "division.division_id";
 	
 	public static final String sqlSelect = 
 			"SELECT view_ticket_log.ticket_id as view_ticket_id, view_ticket_log.job_id as view_job_id, " 
@@ -85,14 +88,13 @@ public class TicketLookupQuery extends LookupQuery {
 	private Integer divisionId;
 	private Calendar startDate;
 	private String status;
-	private List<SessionDivision> divisionList;
-			
+//	private List<SessionDivision> divisionList;
 	
 	public TicketLookupQuery(Integer userId, List<SessionDivision> divisionList) {
 		super(sqlSelect, makeFromClause(sqlFromClause, divisionList, ""), sqlWhereClause);
 		this.logger = LogManager.getLogger(this.getClass());
 		this.userId = userId;
-		this.divisionList = divisionList;
+//		this.divisionList = divisionList;
 	}
 	
 	public Integer getJobId() {
@@ -106,11 +108,11 @@ public class TicketLookupQuery extends LookupQuery {
 	}
 	public void setDivisionId(Integer divisionId) {
 		this.divisionId = divisionId;
-		String divisionFilter = "";
-		if ( divisionId != null ) {
-			divisionFilter = " AND " + Ticket.TABLE + "." + Ticket.ACT_DIVISION_ID + "=?";
-		}
-		super.setSqlFromClause(makeFromClause(sqlFromClause, divisionList, divisionFilter));
+//		String divisionFilter = "";
+//		if ( divisionId != null ) {
+//			divisionFilter = " AND " + Ticket.TABLE + "." + Ticket.ACT_DIVISION_ID + "=?";
+//		}
+//		super.setSqlFromClause(makeFromClause(sqlFromClause, divisionList, divisionFilter));
 	}
 	public Calendar getStartDate() {
 		return startDate;
@@ -150,6 +152,7 @@ public class TicketLookupQuery extends LookupQuery {
 
 	@Override
 	protected String makeWhereClause(String queryTerm) {
+		logger.log(Level.DEBUG, "makeWhereClause");
 		String whereClause = sqlWhereClause;
 		String joiner = StringUtils.isBlank(sqlWhereClause) ? " where " : " and ";
 		
@@ -186,8 +189,35 @@ public class TicketLookupQuery extends LookupQuery {
 
 			Collection<?> whereClauseList = CollectionUtils.collect(whereFields, new WhereFieldLikeTransformer(searchTerm));
 			whereClause = whereClause + joiner +  "(" + StringUtils.join(whereClauseList, " \n\tOR ") + ")";
-
 		}
+
+		List<ColumnFilter> filterList = new ArrayList<ColumnFilter>();
+		if ( divisionId != null ) {
+			filterList.add(new ColumnFilter(DIVISION_ID, divisionId, ColumnFilter.ComparisonType.EQUAL_NUMBER));
+		}
+		if ( jobId != null ) {
+			filterList.add(new ColumnFilter(JOB_ID, jobId, ColumnFilter.ComparisonType.EQUAL_NUMBER));
+		}
+		if ( startDate != null ) {
+			filterList.add(new ColumnFilter(START_DATE, startDate, ColumnFilter.ComparisonType.EQUAL_DATE));			
+		}
+		if ( ! StringUtils.isBlank(status)) {
+			filterList.add(new ColumnFilter(STATUS, status, ColumnFilter.ComparisonType.LIST_STRING));
+//			String[] statusFilter = status.split(",");
+//			List<String> statusList = new ArrayList<String>();
+//			for ( String filter : statusFilter ) {
+//				// we only filter on valid status codes; ignore everything else
+//				TicketStatus ticketStatus = TicketStatus.lookup(filter);
+//				if ( ticketStatus != null ) {
+//					statusList.add("?");
+//				}
+//			}
+//			if ( statusList.size() > 0 ) {
+//				whereClauseParts.add(STATUS + " in (" + StringUtils.join(statusList,",") + ")");
+//			}
+		}
+		super.setConstraintList(filterList);
+
 		return whereClause;
 	}
 
@@ -203,17 +233,23 @@ public class TicketLookupQuery extends LookupQuery {
 		return sql;
 	}
 
+	
 	public static void main(String[] args) {
 		Connection conn = null;
+		Calendar startDate = new GregorianCalendar(2019, Calendar.APRIL, 15);
 		try {
 			conn = AppUtils.getDevConn();
 			List<SessionDivision> sdList = new ArrayList<SessionDivision>();
 			List<Division> divisionList = Division.cast(new Division().selectAll(conn));
 			for ( Division d : divisionList) { sdList.add(new SessionDivision(d)); }
 			TicketLookupQuery x = new TicketLookupQuery(5, sdList);
-			x.setSearchTerm("Chicago");
-			System.out.println("Count: " + x.countAll(conn));
-//			x.setDivisionId(112);
+//			x.setSearchTerm("Chicago");
+			x.setDivisionId(112);
+			x.setJobId(211660);
+			x.setStartDate(startDate);
+			x.setStatus("D,P");
+			System.out.println("Countall: " + x.countAll(conn));
+			System.out.println("Count some: " + x.selectCount(conn));
 			ResultSet rs = x.select(conn,  0, 10);
 			while ( rs.next() ) { 
 				System.out.println(rs.getInt("ticket_id"));

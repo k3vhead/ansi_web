@@ -129,71 +129,71 @@
 			        	"data": {"jobId":$jobId,"divisionId":$divisionId,"startDate":$startDate,"status":$statusFilter}
 			        	},
 			        columns: [
-			            { title: "<bean:message key="field.label.ticketId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-			            	if(row.ticketId != null){return ('<a href="#" data-id="'+row.ticketId+'" class="ticket-clicker">'+row.ticketId+'</a>');}
+			            { title: "<bean:message key="field.label.ticketId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+			            	if(row.ticket_id != null){return ('<a href="#" data-id="'+row.ticket_id+'" class="ticket-clicker">'+row.ticket_id+'</a>');}
 			            } },
-			            { title: "<bean:message key="field.label.ticketStatus" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.ticketStatus != null){return (row.ticketStatus+"");}
+			            { title: "<bean:message key="field.label.ticketStatus" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            	if(row.ticket_status != null){return (row.ticket_status+"");}
 			            } },
-			            { title: "<bean:message key="field.label.ticketType" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.ticketType != null){return (row.ticketType+"");}
+			            { title: "<bean:message key="field.label.ticketType" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            	if(row.ticket_type != null){return (row.ticket_type+"");}
 			            } },
-			            { title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.divisionNbr != null){return (row.divisionNbr+"-"+row.divisionCode);}
+			            { title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            	if(row.div != null){return (row.div);}
 			            } },
-			            { title: "<bean:message key="field.label.billToName" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-			            	if(row.billToName != null){return (row.billToName+"");}
+			            { title: "<bean:message key="field.label.billToName" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+			            	if(row.bill_to_name != null){return (row.bill_to_name+"");}
 			            } },
-			            { title: "<bean:message key="field.label.jobSiteName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.jobSiteName != null){return (row.jobSiteName+"");}
+			            { title: "<bean:message key="field.label.jobSiteName" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            	if(row.job_site_name != null){return (row.job_site_name+"");}
 			            } },
-			            { title: "<bean:message key="field.label.jobSiteAddress" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.jobSiteAddress != null){return (row.jobSiteAddress+"");}
+			            { title: "<bean:message key="field.label.jobSiteAddress" />",  "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            	if(row.job_site_address != null){return (row.job_site_address+"");}
 			            } },
-			            { title: "<bean:message key="field.label.startDate" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.startDate != null){return (row.startDate+"");}
+			            { title: "<bean:message key="field.label.startDate" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            	if(row.start_date != null){return (row.start_date+"");}
 			            } },
-			            { title: "<bean:message key="field.label.jobFrequency" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.jobFrequency != null){return (row.jobFrequency+"");}
+			            { title: "<bean:message key="field.label.jobFrequency" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            	if(row.job_frequency != null){return (row.job_frequency+"");}
 			            } },
-			            { title: "<bean:message key="field.label.pricePerCleaning" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.pricePerCleaning != null){return (row.pricePerCleaning+"");}
+			            { title: "<bean:message key="field.label.pricePerCleaning" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            	if(row.price_per_cleaning != null){return (row.price_per_cleaning+"");}
 			            } },
 			            { title: "<bean:message key="field.label.jobNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
-			            	if(row.jobNbr != null){return (row.jobNbr+"");}
+			            	if(row.job_nbr != null){return (row.job_nbr+"");}
 			            } },
-			            { title: "<bean:message key="field.label.jobId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            { title: "<bean:message key="field.label.jobId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
 			            	//if(row.jobId != null){return ('<span class="editJob" data-jobid="'+ row.jobId +'">'+row.jobId+"</span>");} 
-			            	if(row.jobId != null){return ('<ansi:hasPermission permissionRequired="QUOTE_READ"><a href="jobMaintenance.html?id='+ row.jobId +'" class="jobLink"></ansi:hasPermission>'+row.jobId+'<ansi:hasPermission permissionRequired="QUOTE_READ"></a></ansi:hasPermission>');}
+			            	if(row.job_id != null){return ('<ansi:hasPermission permissionRequired="QUOTE_READ"><a href="jobMaintenance.html?id='+ row.job_id +'" class="jobLink"></ansi:hasPermission>'+row.job_id+'<ansi:hasPermission permissionRequired="QUOTE_READ"></a></ansi:hasPermission>');}
 			            } },
-			            { title: "<bean:message key="field.label.serviceDescription" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.serviceDescription != null){return (row.serviceDescription+"");}
+			            { title: "<bean:message key="field.label.serviceDescription" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            	if(row.service_description != null){return (row.service_description+"");}
 			            } },
-			            { title: "<bean:message key="field.label.processDate" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
-			            	if(row.processDate != null){return (row.processDate+"");}
+			            { title: "<bean:message key="field.label.processDate" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) { 	
+			            	if(row.process_date != null){return (row.process_date+"");}
 			            } },
-			            { title: "<bean:message key="field.label.invoiceId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-			            	if(row.invoiceId != null){return (row.invoiceId+"");} 
+			            { title: "<bean:message key="field.label.invoiceId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+			            	if(row.invoice_id != null){return (row.invoice_id+"");} 
 			            } },
-			            { title: "<bean:message key="field.label.amountDue" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-			            	if(row.amountDue != null){return (row.amountDue+"");} 
+			            { title: "<bean:message key="field.label.amountDue" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+			            	if(row.amount_due != null){return (row.amount_due+"");} 
 			            } },
 			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
 			            	//console.log(row);
-			            	if ( row.ticketId == null ) {
+			            	if ( row.ticket_id == null ) {
 			            		$actionData = "";
 			            	} else {
-				            	var $editLink = '<ansi:hasPermission permissionRequired="TICKET_WRITE"><a href="ticketReturn.html?id='+row.ticketId+'" class="editAction" data-id="'+row.ticketId+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
+				            	var $editLink = '<ansi:hasPermission permissionRequired="TICKET_WRITE"><a href="ticketReturn.html?id='+row.ticket_id+'" class="editAction" data-id="'+row.ticket_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
 				            	if ( row.ticketStatus == 'F' ) {
 				            		var $overrideLink = "";
 				            	} else {
-				            		var $overrideLink = '<ansi:hasPermission permissionRequired="TICKET_OVERRIDE"><a href="ticketOverride.html?id='+row.ticketId+'" class="overrideAction" data-id="'+row.ticketId+'"><webthing:override>Override</webthing:override></a></ansi:hasPermission>&nbsp;';
+				            		var $overrideLink = '<ansi:hasPermission permissionRequired="TICKET_OVERRIDE"><a href="ticketOverride.html?id='+row.ticket_id+'" class="overrideAction" data-id="'+row.ticket_id+'"><webthing:override>Override</webthing:override></a></ansi:hasPermission>&nbsp;';
 				            	}
-		            			var $ticketData = 'data-id="' + row.ticketId + '"';
+		            			var $ticketData = 'data-id="' + row.ticket_id + '"';
 			            		$printLink = '<ansi:hasPermission permissionRequired="TICKET_READ"><i class="print-link fa fa-print" aria-hidden="true" ' + $ticketData + '></i></ansi:hasPermission>'
 			            		var $claimLink = '';
-			            		if ( row.ticketType == 'run' || row.ticketType=='job') {
-			            			$claimLink = '<ansi:hasPermission permissionRequired="CLAIMS_WRITE"><a href="budgetControlLookup.html?id='+row.ticketId+'"><webthing:invoiceIcon styleClass="green">Budget Control</webthing:invoiceIcon></a></ansi:hasPermission>';
+			            		if ( row.ticket_type == 'run' || row.ticket_type=='job') {
+			            			$claimLink = '<ansi:hasPermission permissionRequired="CLAIMS_WRITE"><a href="budgetControlLookup.html?id='+row.ticket_id+'"><webthing:invoiceIcon styleClass="green">Budget Control</webthing:invoiceIcon></a></ansi:hasPermission>';
 			            		}
 				            	$actionData = $editLink + $printLink + $overrideLink + $claimLink;
 			            	}
@@ -201,7 +201,9 @@
 			            } }],
 			            "initComplete": function(settings, json) {
 			            	//console.log(json);
-			            	doFunctionBinding();
+			            	//doFunctionBinding();
+			            	var myTable = this;
+			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#ticketTable", createTable);
 			            },
 			            "drawCallback": function( settings ) {
 			            	doFunctionBinding();

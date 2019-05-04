@@ -238,7 +238,9 @@ public abstract class AbstractLookupServlet extends AbstractServlet {
 			lookup.setSortIsAscending(dir.equals("asc"));
 			
 			List<ColumnFilter> columnFilterList = makeColumnFilter(request);
-			lookup.setColumnFilter(columnFilterList);
+			for ( ColumnFilter filter : columnFilterList ) {
+				lookup.addColumnFilter(filter); // add instead of "set" because other filters may already exist
+			}
 	
 			Integer filteredCount = lookup.selectCount(conn);
 			Integer totalCount = lookup.countAll(conn);

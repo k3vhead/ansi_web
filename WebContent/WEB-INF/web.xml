@@ -777,7 +777,7 @@
 	
 	<servlet>
 		<servlet-name>ticketTable</servlet-name>
-		<servlet-class>com.ansi.scilla.web.ticket.servlet.TicketTableServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.ticket.servlet.TicketLookupServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ticketTable</servlet-name>
