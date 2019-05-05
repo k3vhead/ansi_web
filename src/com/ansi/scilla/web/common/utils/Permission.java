@@ -61,6 +61,7 @@ public enum Permission {
 	USER_ADMIN(null, false, "Functional Area: User Admin"),
 	USER_ADMIN_READ(USER_ADMIN, true, "See user list and details"),		// this is for backwards compatibility
 	USER_ADMIN_WRITE(USER_ADMIN_READ, true, "Add/Edit users; reset passwords"),		// this is for backwards compatibility
+	USER_ADMIN_PAYROLL(USER_ADMIN_WRITE, true, "Administer payroll info for users"),
 	
 	TECH_ADMIN(null, false, "Functional Area: Technical Admin"),
 	TECH_ADMIN_READ(TECH_ADMIN, true, "See technical system parameters"),		// this is for backwards compatibility

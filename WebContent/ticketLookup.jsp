@@ -129,56 +129,56 @@
 			        	"data": {"jobId":$jobId,"divisionId":$divisionId,"startDate":$startDate,"status":$statusFilter}
 			        	},
 			        columns: [
-			            { title: "<bean:message key="field.label.ticketId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+			            { width:"5%", title: "<bean:message key="field.label.ticketId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
 			            	if(row.ticket_id != null){return ('<a href="#" data-id="'+row.ticket_id+'" class="ticket-clicker">'+row.ticket_id+'</a>');}
 			            } },
-			            { title: "<bean:message key="field.label.ticketStatus" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            { width:"5%", title: "<bean:message key="field.label.ticketStatus" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
 			            	if(row.ticket_status != null){return ('<span class="tooltip">' + row.ticket_status+'<span class="tooltiptext">'+row.ticket_status_desc+'</span></span>');}
 			            } },
-			            { title: "<bean:message key="field.label.ticketType" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            { width:"5%", title: "<bean:message key="field.label.ticketType" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
 			            	if(row.ticket_type_desc != null){return (row.ticket_type_desc+"");}
 			            } },
-			            { title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            { width:"4%", title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
 			            	if(row.div != null){return (row.div);}
 			            } },
-			            { title: "<bean:message key="field.label.billToName" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+			            { width:"8%", title: "<bean:message key="field.label.billToName" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
 			            	if(row.bill_to_name != null){return (row.bill_to_name+"");}
 			            } },
-			            { title: "<bean:message key="field.label.jobSiteName" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            { width:"8%", title: "<bean:message key="field.label.jobSiteName" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
 			            	if(row.job_site_name != null){return (row.job_site_name+"");}
 			            } },
-			            { title: "<bean:message key="field.label.jobSiteAddress" />",  "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            { width:"7%", title: "<bean:message key="field.label.jobSiteAddress" />",  "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
 			            	if(row.job_site_address != null){return (row.job_site_address+"");}
 			            } },
-			            { title: "<bean:message key="field.label.startDate" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            { width:"6%", title: "<bean:message key="field.label.startDate" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
 			            	if(row.start_date != null){return (row.start_date+"");}
 			            } },
-			            { title: "<bean:message key="field.label.jobFrequency" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            { width:"5%", title: "<bean:message key="field.label.jobFrequency" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
 			            	if(row.job_frequency != null){return (row.job_frequency+"");}
 			            } },
-			            { title: "<bean:message key="field.label.pricePerCleaning" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            { width:"5%", title: "<bean:message key="field.label.pricePerCleaning" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
 			            	if(row.price_per_cleaning != null){return (row.price_per_cleaning+"");}
 			            } },
-			            { title: "<bean:message key="field.label.jobNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
+			            { width:"5%", title: "<bean:message key="field.label.jobNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
 			            	if(row.job_nbr != null){return (row.job_nbr+"");}
 			            } },
-			            { title: "<bean:message key="field.label.jobId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+			            { width:"4%", title: "<bean:message key="field.label.jobId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
 			            	//if(row.jobId != null){return ('<span class="editJob" data-jobid="'+ row.jobId +'">'+row.jobId+"</span>");} 
 			            	if(row.job_id != null){return ('<ansi:hasPermission permissionRequired="QUOTE_READ"><a href="jobMaintenance.html?id='+ row.job_id +'" class="jobLink"></ansi:hasPermission>'+row.job_id+'<ansi:hasPermission permissionRequired="QUOTE_READ"></a></ansi:hasPermission>');}
 			            } },
-			            { title: "<bean:message key="field.label.serviceDescription" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            { width:"16%", title: "<bean:message key="field.label.serviceDescription" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
 			            	if(row.service_description != null){return (row.service_description+"");}
 			            } },
-			            { title: "<bean:message key="field.label.processDate" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) { 	
+			            { width:"6%", title: "<bean:message key="field.label.processDate" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) { 	
 			            	if(row.process_date != null){return (row.process_date+"");}
 			            } },
-			            { title: "<bean:message key="field.label.invoiceId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+			            { width:"6%", title: "<bean:message key="field.label.invoiceId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
 			            	if(row.invoice_id != null){return (row.invoice_id+"");} 
 			            } },
-			            { title: "<bean:message key="field.label.amountDue" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+			            { width:"6%", title: "<bean:message key="field.label.amountDue" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
 			            	if(row.amount_due != null){return (row.amount_due+"");} 
 			            } },
-			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
+			            { width:"5%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
 			            	//console.log(row);
 			            	if ( row.ticket_id == null ) {
 			            		$actionData = "";
@@ -321,66 +321,9 @@
  	<webthing:lookupFilter filterContainer="filter-container" />
 
  	<table id="ticketTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
-        <colgroup>
-        	<col style="width:5%;" />
-    		<col style="width:5%;" />
-    		<col style="width:5%;" />
-    		<col style="width:4%;" />
-    		<col style="width:8%;" />
-    		<col style="width:8%;" />
-    		<col style="width:7%;" />
-    		<col style="width:6%;" />
-    		<col style="width:5%;" />
-    		<col style="width:5%;" />
-    		<col style="width:4%;" />
-    		<col style="width:4%;" />
-    		<col style="width:16%;" />
-    		<col style="width:6%;" />
-    		<col style="width:6%;" />
-    		<col style="width:6%;" />
-    		<col style="width:5%;" />
-    	</colgroup>
         <thead>
-            <tr>
-                <th><bean:message key="field.label.ticketId" /></th>
-    			<th><bean:message key="field.label.ticketStatus" /></th>
-    			<th><bean:message key="field.label.ticketType" /></th>
-    			<th><bean:message key="field.label.divisionNbr" /></th>
-    			<th><bean:message key="field.label.billToName" /></th>
-    			<th><bean:message key="field.label.jobSiteName" /></th>
-    			<th><bean:message key="field.label.jobSiteAddress" /></th>
-    			<th><bean:message key="field.label.startDate" /></th>
-    			<th><bean:message key="field.label.jobFrequency" /></th>
-    			<th><bean:message key="field.label.pricePerCleaning" /></th>
-    			<th><bean:message key="field.label.jobNbr" /></th>
-    			<th><bean:message key="field.label.jobId" /></th>
-    			<th><bean:message key="field.label.serviceDescription" /></th>
-    			<th><bean:message key="field.label.processDate" /></th>
-    			<th><bean:message key="field.label.invoiceId" /></th>
-    			<th><bean:message key="field.label.amountDue" /></th>
-    			<th><bean:message key="field.label.action" /></th>
-            </tr>
         </thead>
         <tfoot>
-            <tr>
-                <th><bean:message key="field.label.ticketId" /></th>
-    			<th><bean:message key="field.label.ticketStatus" /></th>
-    			<th><bean:message key="field.label.ticketType" /></th>
-    			<th><bean:message key="field.label.divisionNbr" /></th>
-    			<th><bean:message key="field.label.billToName" /></th>
-    			<th><bean:message key="field.label.jobSiteName" /></th>
-    			<th><bean:message key="field.label.jobSiteAddress" /></th>
-    			<th><bean:message key="field.label.startDate" /></th>
-    			<th><bean:message key="field.label.jobFrequency" /></th>
-    			<th><bean:message key="field.label.pricePerCleaning" /></th>
-    			<th><bean:message key="field.label.jobNbr" /></th>
-    			<th><bean:message key="field.label.jobId" /></th>
-    			<th><bean:message key="field.label.serviceDescription" /></th>
-    			<th><bean:message key="field.label.processDate" /></th>
-    			<th><bean:message key="field.label.invoiceId" /></th>
-    			<th><bean:message key="field.label.amountDue" /></th>
-    			<th><bean:message key="field.label.action" /></th>
-            </tr>
         </tfoot>
     </table>
     
