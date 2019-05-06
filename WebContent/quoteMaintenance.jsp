@@ -1495,6 +1495,24 @@
 		    			});
 		    			
 		    			
+		    			$("#edit-this-address .edit-address").mouseover(function($event) {
+		    				var $type = $(this).data("type");
+		    				console.log("mousing addr: " + $type);
+		    				if ( $type == "jobsite") { $("#address-job-site").addClass("pre-edit"); }
+		    				if ( $type == "billto") { $("#address-bill-to").addClass("pre-edit"); }	
+		    			});
+		    			
+		    			
+		    			$("#edit-this-address .edit-address").mouseout(function($event) {
+		    				var $type = $(this).data("type");
+		    				console.log("mousing addr: " + $type);
+		    				if ( $type == "jobsite") { $("#address-job-site").removeClass("pre-edit"); }
+		    				if ( $type == "billto") { $("#address-bill-to").removeClass("pre-edit"); }	
+		    			});
+		    			
+		    			
+		    			
+		    			
 		    			$("#edit-this-address .edit-contact").click(function($event) {
 		    				var $type = $(this).data("type");
 		    				var $title = "Edit Contact";
@@ -1510,6 +1528,26 @@
 				        	$("#contact-edit-modal").data("id","");
 		    				$("#contact-edit-modal").dialog("open");
 		    			});
+		    			
+		    			$("#edit-this-address .edit-contact").mouseover(function($event) {
+		    				var $type = $(this).data("type");
+		    				var $title = "mouse Contact";
+		    				if ( $type == "job") { $("#job-contact").addClass("pre-edit"); }
+		    				if ( $type == "site") { $("#site-contact").addClass("pre-edit"); }
+		    				if ( $type == "contract") { $("#contract-contact").addClass("pre-edit"); }
+		    				if ( $type == "billing") { $("#billing-contact").addClass("pre-edit"); }		    				
+		    			});
+		    			
+		    			
+		    			$("#edit-this-address .edit-contact").mouseout(function($event) {
+		    				var $type = $(this).data("type");
+		    				var $title = "mouse Contact";
+		    				if ( $type == "job") { $("#job-contact").removeClass("pre-edit"); }
+		    				if ( $type == "site") { $("#site-contact").removeClass("pre-edit"); }
+		    				if ( $type == "contract") { $("#contract-contact").removeClass("pre-edit"); }
+		    				if ( $type == "billing") { $("#billing-contact").removeClass("pre-edit"); }		    				
+		    			});
+		    			
 		    			
 		    			$("#edit-this-quote").click(function($event) {
 		    				console.log("Editing a quote");
@@ -2665,6 +2703,10 @@
 				border:solid 1px #404040; 
 				text-align:center;
 				display:none;
+			}
+			.pre-edit {
+				background-color:#CC6600;
+				<%-- border:solid 1px #993300; --%>
 			}
 			.quote-button {
 				margin-top:2px;
