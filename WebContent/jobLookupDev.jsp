@@ -197,29 +197,29 @@
     		        		{ width: "10%", title: "<bean:message key="field.label.jobContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     	        			if(row.jobContact != null){
     	        				var preferredContact = row.jobContact.preferredContact;
-    	        				icon = JOBLOOKUP.makeContactIcon(row.preferredContact);
-    	        				return (icon + " " + row.jobContact.lastName+", "+row.jobContact.firstName+ "<br />" + icon + " " + row.jobContact.contactMethod);
+    	        				icon = JOBLOOKUP.makeContactIcon(preferredContact);    	        				
+    	        				return (row.jobContact.lastName+",&nbsp;"+row.jobContact.firstName+ "<br />" + icon + row.jobContact.contactMethod);
     	        				}
 	    	        		} },
     	        			{ width: "10%", title: "<bean:message key="field.label.siteContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     	        			if(row.siteContact != null){
     	        				var preferredContact = row.siteContact.preferredContact;
         	        			icon = JOBLOOKUP.makeContactIcon(preferredContact);
-        	        			return (icon + " " + row.siteContact.lastName+", "+row.siteContact.firstName+ "<br />" + icon + " " + row.siteContact.contactMethod);
+        	        			return (row.siteContact.lastName+",&nbsp;"+row.siteContact.firstName+ "<br />" + icon + row.siteContact.contactMethod);
         	        			}
     	    	        	} },
     	        			{ width: "10%", title: "<bean:message key="field.label.contractContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     	        			if(row.contractContact != null){
     	        				var preferredContact = row.contractContact.preferredContact;
         	        			icon = JOBLOOKUP.makeContactIcon(preferredContact);
-        	        			return (icon + " " + row.contractContact.lastName+", "+row.contractContact.firstName+ "<br />" + icon + " " + row.contractContact.contactMethod);
+        	        			return (row.contractContact.lastName+",&nbsp;"+row.contractContact.firstName+ "<br />" + icon + row.contractContact.contactMethod);
         	        			}
     	    	        	} },
         	        		{ width: "10%", title: "<bean:message key="field.label.billingContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
         	        		if(row.jobContact != null){
     	        				var preferredContact = row.billingContact.preferredContact;
-        	        			icon = JOBLOOKUP.makeContactIcon(row.preferredContact);
-        	        			return (icon + " " + row.billingContact.lastName+", "+row.billingContact.firstName+ "<br />" + icon + " " + row.billingContact.contactMethod);
+        	        			icon = JOBLOOKUP.makeContactIcon(preferredContact);
+        	        			return (row.billingContact.lastName+",&nbsp;"+row.billingContact.firstName+ "<br />" + icon + row.billingContact.contactMethod);
         	        			
         	        			}
     	    	        	} },
@@ -249,7 +249,7 @@
     			            } }],
     			            "initComplete": function(settings, json) {
     			            	//console.log(json);
-    			            	//JOBLOOKUP.doFunctionBinding();
+    			            	JOBLOOKUP.doFunctionBinding();
     			            },
     			            "drawCallback": function( settings ) {
     			            	//JOBLOOKUP.doFunctionBinding();
@@ -282,13 +282,13 @@
             	--%>
             	
 				doFunctionBinding : function() {
-					if ( JOBTABLE.lookupType == 'JOB' ) {
+					if ( JOBLOOKUP.lookupType == 'JOB' ) {
 						JOBLOOKUP.showJobColumns();
 					}
-					if ( JOBTABLE.lookupType == 'PAC' ) {
-						JOBLOOKUP.showPACColumns();
+					if ( JOBLOOKUP.lookupType == 'PAC' ) {
+						JOBLOOKUP.showPacColumns();
 					}
-					if ( JOBTABLE.lookupType == 'CONTACTS' ) {
+					if ( JOBLOOKUP.lookupType == 'CONTACT' ) {
 						JOBLOOKUP.showContactColumns();
 					}
 				},
@@ -312,16 +312,19 @@
 				
 				
 				makeContactIcon : function(preferredContact) {
-					if (preferredContact == "mobile_phone"){
-						icon = "<i class='fa fa-phone' aria-hidden='true'></i>&nbsp";
-					} else if (preferredContact == "email"){
-						icon = "<i class='fa fa-envelope-o' aria-hidden='true'></i>&nbsp";
-					} else if (preferredContact == "business_phone"){
-						icon = "<i class='fa fa-phone' aria-hidden='true'></i>&nbsp";
-					} else if (preferredContact == "fax"){
-						icon = "<i class='fa fa-fax' aria-hidden='true'></i>&nbsp";
-					}
 					
+					if (preferredContact == "mobile_phone"){
+						icon = '<webthing:mobilePhoneIcon>Mobile Phone</webthing:mobilePhoneIcon>';
+					} else if (preferredContact == "email"){
+						icon = '<webthing:emailIcon>Email</webthing:emailIcon>';
+					} else if (preferredContact == "business_phone"){
+						icon = '<webthing:phoneIcon>Business Phone</webthing:phoneIcon>';
+					} else if (preferredContact == "fax"){
+						icon = '<webthing:faxIcon>Fax</webthing:faxIcon>';
+					} else {
+						icon = preferredContact;
+					}
+					return icon;
 				},
 		/*			if(row.jobContact != null){
 						icon = <span class="ansi-contact-method-is-mobile-phone"><webthing:mobilePhoneIcon>Mobile</webthing:mobilePhoneIcon></span>
