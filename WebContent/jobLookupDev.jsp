@@ -141,7 +141,7 @@
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
             	            { className: "dt-left", "targets": [4,5,6,11] },
-            	            { className: "dt-center", "targets": [0,1,2,3,7,8,10,12,-1] },
+            	            { className: "dt-center", "targets": [0,1,2,3,7,8,10,12,17,18,19,20,-1] },
             	            { className: "dt-right", "targets": [9]}
             	         ],
             	        "paging": true,
@@ -151,25 +151,25 @@
     			        	},
     			        columns: [
     			        	// if you change any of these, you'll need to change the jobColumns/pacColumns/contactColumns lists also
-    			            { width: "6%", title: "<bean:message key="field.label.jobId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			            { width: "4%", title: "<bean:message key="field.label.jobId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
     			            	if(row.jobId != null){return (row.jobId+"");}
     			            } },
-    			            { width: "6%", title: "<bean:message key="field.label.quoteName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "4%", title: "<bean:message key="field.label.quoteName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.quoteId != null){return ('<ansi:hasPermission permissionRequired="QUOTE"><a href="quoteMaintenance.html?id='+ row.quoteId+ '" style="color:#404040"></ansi:hasPermission>' + row.quoteNumber + row.revision +'<ansi:hasPermission permissionRequired="QUOTE"></ansi:hasPermission>');}
     			            } },
     			            { width: "4%", title: "<bean:message key="field.label.jobStatus" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.jobStatus != null){return (row.jobStatus+"");}
     			            } },
-    			            { width: "6%", title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "5%", title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.divisionNbr != null){return (row.divisionNbr+"-"+row.divisionCode);}
     			            } },
-    			            { width: "10%", title: "<bean:message key="field.label.billToName" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			            { width: "8%", title: "<bean:message key="field.label.billToName" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
     			            	if(row.billToName != null){return (row.billToName+"");}
     			            } },
-    			            { width: "10%", title: "<bean:message key="field.label.jobSiteName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "8%", title: "<bean:message key="field.label.jobSiteName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.jobSiteName != null){return (row.jobSiteName+"");}
     			            } },
-    			            { width: "10%", title: "<bean:message key="field.label.jobSiteAddress" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "8%", title: "<bean:message key="field.label.jobSiteAddress" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.jobSiteAddress != null){return (row.jobSiteAddress+", " + row.jobSiteCity + ", " + row.jobSiteState );}
     			            } },
     			            { width: "4%", title: "<bean:message key="field.label.startDate" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
@@ -194,28 +194,28 @@
     			            // end of job columns
     			            <%-- put those columns here --%>
     			            // start of contact columns
-    		        		{ width: "10%", title: "<bean:message key="field.label.jobContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    		        		{ width: "9%", title: "<bean:message key="field.label.jobContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     	        			if(row.jobContact != null){
     	        				var preferredContact = row.jobContact.preferredContact;
     	        				icon = JOBLOOKUP.makeContactIcon(preferredContact);    	        				
     	        				return (row.jobContact.lastName+",&nbsp;"+row.jobContact.firstName+ "<br />" + icon + row.jobContact.contactMethod);
     	        				}
 	    	        		} },
-    	        			{ width: "10%", title: "<bean:message key="field.label.siteContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    	        			{ width: "9%", title: "<bean:message key="field.label.siteContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     	        			if(row.siteContact != null){
     	        				var preferredContact = row.siteContact.preferredContact;
         	        			icon = JOBLOOKUP.makeContactIcon(preferredContact);
         	        			return (row.siteContact.lastName+",&nbsp;"+row.siteContact.firstName+ "<br />" + icon + row.siteContact.contactMethod);
         	        			}
     	    	        	} },
-    	        			{ width: "10%", title: "<bean:message key="field.label.contractContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    	        			{ width: "9%", title: "<bean:message key="field.label.contractContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     	        			if(row.contractContact != null){
     	        				var preferredContact = row.contractContact.preferredContact;
         	        			icon = JOBLOOKUP.makeContactIcon(preferredContact);
         	        			return (row.contractContact.lastName+",&nbsp;"+row.contractContact.firstName+ "<br />" + icon + row.contractContact.contactMethod);
         	        			}
     	    	        	} },
-        	        		{ width: "10%", title: "<bean:message key="field.label.billingContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+        	        		{ width: "9%", title: "<bean:message key="field.label.billingContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
         	        		if(row.jobContact != null){
     	        				var preferredContact = row.billingContact.preferredContact;
         	        			icon = JOBLOOKUP.makeContactIcon(preferredContact);
@@ -225,17 +225,17 @@
     	    	        	} },
     	    	        	// end of contact columns
     	    	        	// start of PAC columns
-    	    	        	{ width: "24%", title: "Proposed", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	return "Proposed";
+    	    	        	{ width: "5%", title: "Proposed", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    	    	        		if(row.proposalDate != null){return (row.proposalDate+"");}	    
     			            } },
-    			            { width: "24%", title: "Active", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	return "Active";
+    			            { width: "5%", title: "Active", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.activationDate != null){return (row.activationDate+"");}	    
     			            } },
-    			            { width: "24%", title: "Cancel", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	return "canceled";
+    			            { width: "5%", title: "Cancel", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.cancelDate != null){return (row.cancelDate+"");}	    
     			            } },
-    			            { width: "24%", title: "Reason", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	return "reason";
+    			            { width: "5%", title: "Reason", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.cancelReason != null){return (row.cancelReason+"");}	    
     			            } },
     			            // end of PAC columns
     			            { width: "4%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
