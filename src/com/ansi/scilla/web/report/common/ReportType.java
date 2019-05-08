@@ -28,7 +28,7 @@ public enum ReportType {
 			"com.ansi.scilla.report.datadumps.AccountsReceivableTotalsSummary",
 			"com.ansi.scilla.web.report.request.NoValidate", 
 			new String[] {},
-			Permission.INVOICE_READ
+			Permission.TECH_ADMIN_READ
 		),
 	ACCOUNTS_RECEIVABLE_TOTALS_SUMMARY_BY_DIVISION(
 			"reportByDiv",
@@ -42,7 +42,7 @@ public enum ReportType {
 			"com.ansi.scilla.report.datadumps.AccountsReceivableTotalsOver60Detail",
 			"com.ansi.scilla.web.report.request.NoValidate", 
 			new String[] {},
-			Permission.INVOICE_READ
+			Permission.TECH_ADMIN_READ
 		),
 	ACCOUNTS_RECEIVABLE_TOTALS_OVER_60_DETAIL_BY_DIVISION(
 			"reportByDiv",
@@ -126,7 +126,7 @@ public enum ReportType {
 			"com.ansi.scilla.report.jobSchedule.JobScheduleReport",
 			"com.ansi.scilla.web.report.request.ValidateStartEnd", 
 			new String[] {"startDate", "endDate"},
-			Permission.QUOTE_READ
+			Permission.TECH_ADMIN_READ
 		),
 	MONTHLY_SERVICE_TAX_BY_DAY_REPORT(
 			"reportByStartEnd", 
