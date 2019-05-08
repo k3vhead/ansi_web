@@ -110,6 +110,7 @@ $( document ).ready(function() {
 		
 		
 		// get a list of divisions
+		// this function can fail with asynchronous calls. Use makeDivisionList() instead
 		getDivisionList: function() {
 			var $returnValue = null;
 			var jqxhr3 = $.ajax({
@@ -128,6 +129,30 @@ $( document ).ready(function() {
 				async:false
 			});
 			return $returnValue;
+		},
+		
+		
+		makeDivisionList: function($successCallback, $failureCallback) {
+			var jqxhr3 = $.ajax({
+				type: 'GET',
+				url: 'division/list',
+				data: {},
+				statusCode: {
+					200: function($data) {
+						$successCallback($data);
+					},					
+					403: function($data) {
+						$failureCallback($data);
+					},
+					404: function($data) {
+						$failureCallback($data);
+					},
+					500: function($data) {
+						$failureCallback($data);
+					}
+				},				
+				dataType: 'json'
+			});
 		},
 		
 		

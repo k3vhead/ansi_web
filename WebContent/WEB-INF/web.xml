@@ -797,6 +797,16 @@
 
 
 	<servlet>
+		<servlet-name>userDivision</servlet-name>
+		<servlet-class>com.ansi.scilla.web.division.servlet.UserDivisionServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>userDivision</servlet-name>
+		<url-pattern>/userDivision/*</url-pattern>
+	</servlet-mapping>
+	
+	
+	<servlet>
 		<servlet-name>userList</servlet-name>
 		<servlet-class>com.ansi.scilla.web.user.servlet.UserListServlet</servlet-class>
 	</servlet>

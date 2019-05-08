@@ -266,15 +266,16 @@ public abstract class LookupQuery extends ApplicationObject {
 		String filterPhrase = "";
 		String joiner = StringUtils.isBlank(wherePhrase) ? " where " : " and ";
 		FilterTransformer filterTransformer = new FilterTransformer();
+		List<String> likeList = new ArrayList<String>();
+		List<String> constraints = new ArrayList<String>();
+
 		if ( this.columnFilter != null && this.columnFilter.size() > 0 ) {
-			List<String> likeList = new ArrayList<String>();
 			likeList = CollectionUtils.collect(this.columnFilter.iterator(), filterTransformer, likeList);
 			filterPhrase = "\n" + joiner + " " + StringUtils.join(likeList, " and " );
 		}
 		if ( this.constraintList != null && this.constraintList.size() > 0 ) {
-			List<String> constraints = new ArrayList<String>();
 			constraints = CollectionUtils.collect(this.constraintList.iterator(), filterTransformer, constraints);
-			String joiner2 = StringUtils.isBlank(filterPhrase) ? " where " : " and ";
+			String joiner2 = likeList.isEmpty() && StringUtils.isBlank(this.baseWhereClause) ? " where " : " and ";
 			filterPhrase = "\n" + joiner2 + " " + StringUtils.join(constraints, " and " );
 
 		}
