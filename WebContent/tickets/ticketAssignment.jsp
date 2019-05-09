@@ -32,14 +32,24 @@
     	<script type="text/javascript" src="js/ticket.js"></script> 
     
         <style type="text/css">
-        	<%-- all 3 columns --%>
+        	#action-container {
+           		width:49%;
+        		float:right; 
+        	}        
+        	#action-button-container {
+        		width:100%;
+        		text-align:center;
+        		display:none;
+        	}
         	#column-container-a {	
         		display:none;
         	}
-        	<%-- columns 2 and 3 columns --%>
         	#column-container-b { 
         		 width:66%;
         		 float:left; 
+        	}
+        	#action-list-container {
+				width:100%;
         	}
         	#division-description {
         		text-align:center;
@@ -50,9 +60,10 @@
         		border:solid 1px #000000;
         		display:none;
         	}
-        	#message-list-container {
-        		width:49%;
-        		float:right; 
+        	#message-button-container {
+        		width:100%;
+        		text-align:center;
+        		display:none;
         	}
         	#ticket-list-container {
         		width:49%; 
@@ -60,9 +71,6 @@
         	}
         	#ticket-modal {
 				display:none;	
-			}
-			#ticket-search-button {
-				display:none;
 			}
         	#user-list-container {
 				width:33%;
@@ -79,7 +87,7 @@
 				background-color:#CC6600;
 			}
         	.user {
-        		border:solid 1px #404040;
+
         	}
         </style>
         
@@ -93,6 +101,8 @@
         		ticketsLoaded : false,
         		userTable : null,
         		ticketTable : null,
+        		selectedTicketList : [],
+        		selectedUserList : {},
         		
         		
         		init : function() {
@@ -104,11 +114,35 @@
 
         		
         		
+        		cancelAssignments : function() {
+        			console.log("cancelAssignments");
+        			TICKETASSIGNMENT.selectedTicketList = [];
+        			TICKETASSIGNMENT.selectedUserList = {};
+        			$("#action-button-container").hide();
+        			$("#ticket-table").DataTable().ajax.reload();
+        			$("#user-list-table").DataTable().ajax.reload();
+        		},
+        		
+        		
+        		
+        		displayActionButtons : function() {
+        			console.log(TICKETASSIGNMENT.selectedTicketList);
+        			console.log(TICKETASSIGNMENT.selectedUserList);
+        			if ( TICKETASSIGNMENT.selectedTicketList.length > 0 && Object.keys(TICKETASSIGNMENT.selectedUserList).length > 0 ) {
+        				console.log("Showing buttons");
+       					$("#action-button-container").show();
+       				} else {
+       					$("#action-button-container").hide();
+        			}
+        		},
+        		
+        		
+        		
+        		
         		displayPanels : function() {
         			if ( TICKETASSIGNMENT.usersLoaded == true && TICKETASSIGNMENT.ticketsLoaded == true) {
     					$("#loading-container").hide();
         				$("#column-container-a").show();
-        				$("#ticket-search-button").show();
         			} else {
         				setTimeout(function() {
 	            			TICKETASSIGNMENT.displayPanels();
@@ -136,9 +170,9 @@
             	        buttons: [],
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
-            	            { className: "dt-head-left", "targets": [1] },
-            	            { className: "dt-body-center", "targets": [0,2,3] },
-            	            { className: "dt-right", "targets": []}
+							{ className: "dt-left", "targets": [4,5,6,12] },
+	           	            { className: "dt-center", "targets": [0,1,2,3,7,8,10,11,13,14] },
+           	            	{ className: "dt-right", "targets": [9,15]}
             	         ],
              	        "pageLength":		50,
             	        "paging": true,
@@ -148,25 +182,70 @@
     			        	"data": {"jobId":null,"divisionId":TICKETASSIGNMENT.division.divisionId,"startDate":null,"status":"D"}
     			        	},
     			        columns: [
-    			            { width:"5%", title: "<bean:message key="field.label.ticketId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
-    			            	if(row.ticket_id != null){return ('<a href="#" data-id="'+row.ticket_id+'" class="ticket-clicker">'+row.ticket_id+'</a>');}
-    			            } },
-    			            { width:"8%", title: "<bean:message key="field.label.jobSiteName" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-    			            	if(row.job_site_name != null){return (row.job_site_name+"");}
-    			            } },
-    			            { width:"6%", title: "<bean:message key="field.label.startDate" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-    			            	if(row.start_date != null){return (row.start_date+"");}
-    			            } },
-    			            { width:"5%", title: "<bean:message key="field.label.jobFrequency" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-    			            	if(row.job_frequency != null){return (row.job_frequency+"");}
-    			            } },
-							],
+    			        { 	searchable:true,
+    			        	width:"5%", 
+    			        	title: "<bean:message key="field.label.ticketId" />", 
+    			        	"defaultContent": "<i>N/A</i>", 
+    			        	searchable:true, 
+    			        	data: function ( row, type, set ) {	
+			            		if(row.ticket_id != null){return ('<a href="#" data-id="'+row.ticket_id+'" class="ticket-clicker">'+row.ticket_id+'</a>');}
+			            	} 
+    			        },
+			            { searchable:false, visible:false, width:"5%", title: "<bean:message key="field.label.ticketStatus" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            	if(row.ticket_status != null){return ('<span class="tooltip">' + row.ticket_status+'<span class="tooltiptext">'+row.ticket_status_desc+'</span></span>');}
+			            } },
+			            { searchable:false, visible:false, width:"5%", title: "<bean:message key="field.label.ticketType" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            	if(row.ticket_type_desc != null){return (row.ticket_type_desc+"");}
+			            } },
+			            { searchable:false, visible:false, width:"4%", title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            	if(row.div != null){return (row.div);}
+			            } },
+			            { searchable:true, visible:false, width:"8%", title: "<bean:message key="field.label.billToName" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+			            	if(row.bill_to_name != null){return (row.bill_to_name+"");}
+			            } },
+			            { searchable:true,width:"8%", title: "<bean:message key="field.label.jobSiteName" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            	if(row.job_site_name != null){return (row.job_site_name+"");}
+			            } },
+			            { searchable:true,visible:false, width:"7%", title: "<bean:message key="field.label.jobSiteAddress" />",  "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            	if(row.job_site_address != null){return (row.job_site_address+"");}
+			            } },
+			            { searchable:true,width:"6%", title: "<bean:message key="field.label.startDate" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            	if(row.start_date != null){return (row.start_date+"");}
+			            } },
+			            { searchable:true,width:"5%", title: "<bean:message key="field.label.jobFrequency" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            	if(row.job_frequency != null){return (row.job_frequency+"");}
+			            } },
+			            { searchable:false, visible:false, width:"5%", title: "<bean:message key="field.label.pricePerCleaning" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            	if(row.price_per_cleaning != null){return (row.price_per_cleaning+"");}
+			            } },
+			            { searchable:false, visible:false, width:"5%", title: "<bean:message key="field.label.jobNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
+			            	if(row.job_nbr != null){return (row.job_nbr+"");}
+			            } },
+			            { searchable:true,visible:false, width:"4%", title: "<bean:message key="field.label.jobId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+			            	if(row.job_id != null){return ('<ansi:hasPermission permissionRequired="QUOTE_READ"><a href="jobMaintenance.html?id='+ row.job_id +'" class="jobLink"></ansi:hasPermission>'+row.job_id+'<ansi:hasPermission permissionRequired="QUOTE_READ"></a></ansi:hasPermission>');}
+			            } },
+			            { searchable:true,visible:false, width:"16%", title: "<bean:message key="field.label.serviceDescription" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            	if(row.service_description != null){return (row.service_description+"");}
+			            } },
+			            { searchable:false, visible:false, width:"6%", title: "<bean:message key="field.label.processDate" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) { 	
+			            	if(row.process_date != null){return (row.process_date+"");}
+			            } },
+			            { searchable:false, visible:false, width:"6%", title: "<bean:message key="field.label.invoiceId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+			            	if(row.invoice_id != null){return (row.invoice_id+"");} 
+			            } },
+			            { searchable:false, visible:false, width:"6%", title: "<bean:message key="field.label.amountDue" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+			            	if(row.amount_due != null){return (row.amount_due+"");} 
+			            } },
+			            { width:"5%", title: "Select",  data: function ( row, type, set ) {	
+			            	return '<input type="checkbox" class="ticket-selector" data-id="'+row.ticket_id+'" >';
+			            } }
+			            ],
     			            "initComplete": function(settings, json) {
     			            	//console.log(json);
     			            	//doFunctionBinding();
     			            	var myTable = this;
     			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#ticket-table", TICKETASSIGNMENT.loadTickets);
-    			            	$("#filter-container .filter-banner .filter-hider .filter-data-closed").click(); //open the filter container inside the modal
+    			            	//$("#filter-container .filter-banner .filter-hider .filter-data-closed").click(); //open the filter container inside the modal
     			            	TICKETASSIGNMENT.ticketsLoaded = true; 
     			            	TICKETASSIGNMENT.displayPanels();
     			            },
@@ -174,16 +253,27 @@
     							$(nRow).addClass("ticket");
     						},
     			            "drawCallback": function( settings ) {
-    			            	$(".ticket").draggable({
-    		        				containment:"#column-container-a",
-    		        				cursor:"move",
-    		        				revert:true,
-    		        				scope:"ticket2user"
-    		        			});
-    		        			$(".ticket").droppable({
-    		        				accept:".user",
-    		        				scope:"user2ticket",
-    		        				drop:TICKETASSIGNMENT.ticketDrop
+    			            	//$(".ticket").draggable({
+    		        			//	containment:"#column-container-a",
+    		        			//	cursor:"move",
+    		        			//	revert:true,
+    		        			//	scope:"ticket2user"
+    		        			//});
+    		        			//$(".ticket").droppable({
+    		        			//	accept:".user",
+    		        			//	scope:"user2ticket",
+    		        			//	drop:TICKETASSIGNMENT.ticketDrop
+    		        			//});
+    		        			$(".ticket-selector").on("click", function($clickevent){
+    		        				var $ticketId = $(this).attr("data-id");
+    		        				if ( $(this).prop('checked') == true ) {
+        		        				console.log("Add ticket: " + $ticketId);
+    		        					TICKETASSIGNMENT.selectedTicketList.push($ticketId);
+    		        				} else {
+        		        				console.log("Drop ticket: " + $ticketId);
+        		        				ANSI_UTILS.removeFromArray(TICKETASSIGNMENT.selectedTicketList, $ticketId);
+    		        				}
+    		        				TICKETASSIGNMENT.displayActionButtons();
     		        			});
     		        			$(".ticket-clicker").on("click", function($clickevent) {
     		    					$clickevent.preventDefault();
@@ -219,7 +309,7 @@
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
             	            { className: "dt-left", "targets": [0] },
-            	            { className: "dt-center", "targets": [] },
+            	            { className: "dt-center", "targets": [1] },
             	            { className: "dt-right", "targets": []},
             	         ],
             	        "paging": true,
@@ -229,8 +319,11 @@
     			        	},
     			        	columns: [
         			        	{ title: "Washer", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
-        			            	if(row.user_id != null){return ('<div class="user" data-id="'+row.user_id+'" data-first="'+row.first_name+'" data-last="'+row.last_name+'">'+row.last_name+', '+row.first_name+'</div>');}
-        			            } }
+        			            	if(row.user_id != null){return row.last_name+', '+row.first_name;}
+        			            } },
+        			            { title: "Select", "defaultContent":"<i>N/A</i>", searchable:false, data: function(row, type, set) {
+        			            	return '<input type="checkbox" class="user-selector" data-id="'+row.user_id+'" data-first="'+row.first_name+'" data-last="'+row.last_name+'" />';
+        			            }}
     							],
     						"fnRowCallback": function(nRow, aData, iDisplayIndex) {
     							$(nRow).addClass("user");
@@ -240,17 +333,34 @@
     			            	TICKETASSIGNMENT.displayPanels();
     			            },    			            
     			            "drawCallback": function() {
-    		        			$(".user").draggable({
-    		        				containment:"#column-container-a",
-    		        				cursor:"move",
-    		        				revert:true,
-    		        				scope:"user2ticket"
+    		        			$(".user-selector").on("click", function($clickevent){
+    		        				var $userId = $(this).attr("data-id");
+    		        				if ( $(this).prop('checked') == true ) {
+    		        					console.log("Add user: " + $userId);
+    		        					var $user = {
+    		        						"userId":$(this).attr("data-id"),
+    		        						"first":$(this).attr("data-first"),
+    		        						"last":$(this).attr("data-last"),
+    		        					};
+    		        					TICKETASSIGNMENT.selectedUserList[$userId]=$user;
+    		        				} else {
+        		        				console.log("Drop ticket: " + $userId);
+        		        				delete TICKETASSIGNMENT.selectedUserList[$userId];
+    		        				}
+    		        				TICKETASSIGNMENT.displayActionButtons();
     		        			});
-    		        			$(".user").droppable({
-    		        				containment:".ticket",
-    		        				scope:"ticket2user",
-    		        				drop:TICKETASSIGNMENT.userDrop
-    		        			});
+
+    		        			//$(".user").draggable({
+    		        			//	containment:"#column-container-a",
+    		        			//	cursor:"move",
+    		        			//	revert:true,
+    		        			//	scope:"user2ticket"
+    		        			//});
+    		        			//$(".user").droppable({
+    		        			//	containment:".ticket",
+    		        			//	scope:"ticket2user",
+    		        			//	drop:TICKETASSIGNMENT.userDrop
+    		        			//});
     			            },
     			    } );
         		},
@@ -262,16 +372,26 @@
         			var $className = "assignment-" + $ticketId + "-" + $userId;
         			$msg.addClass($className);
         			$msg.append("Assigning ticket " + $ticketId + " to " + $firstName + " " + $lastName);
-        			$("#message-list-container").append($msg);
+        			$("#action-list-container").append($msg);
         			$("." + $className).fadeOut(6000);
         		},
         		
         		
         		
-        		makeClickers : function() {
-        			$("#ticket-search-button").click(function() {
-        				$("#ticket-search-modal").dialog("open");
+        		makeAssignments : function() {
+        			console.log("makeAssignments");
+        			$.each(TICKETASSIGNMENT.selectedTicketList, function($tktIdx, $ticket){
+        				$.each(TICKETASSIGNMENT.selectedUserList, function($userIdx, $user){
+        					console.log("Assigning " + $ticket + " to " + $user["userId"]);
+        					TICKETASSIGNMENT.makeAssignment($ticket, $user.userId, $user["first"], $user["last"]);
+        				});
         			});
+        			$("#cancel-button").click();
+        		},
+        		
+        		makeClickers : function() {
+        			$("#save-button").click(TICKETASSIGNMENT.makeAssignments);
+        			$("#cancel-button").click(TICKETASSIGNMENT.cancelAssignments);
         		},
         		
         		
@@ -304,26 +424,7 @@
         		
         		
         		makeModals : function() {
-        			$( "#ticket-search-modal" ).dialog({
-						title:'Ticket Search',
-						autoOpen: false,
-						height: 325,
-						width: 500,
-						modal: true,
-						closeOnEscape:true,
-						//open: function(event, ui) {
-						//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-						//},
-						buttons: [
-							{
-								id: "ticket-search-cancel-button",
-								click: function($event) {
-									$( "#ticket-search-modal" ).dialog("close");
-								}
-							}
-						]
-					});	
-					$("#ticket-search-cancel-button").button('option', 'label', 'Done');
+        			console.log("no modals");
         		},
         		
         		
@@ -332,7 +433,7 @@
         			var $selectedDiv = TICKETASSIGNMENT.divisionMap[$("select[name='divisionId']").val()];
 					$("#division-description").html( $selectedDiv.description + " (" +  $selectedDiv.divisionNbr + "-" + $selectedDiv.divisionCode + ")");
 					$("#column-container-a").hide();
-					$("#ticket-search-button").hide();
+					$("#action-button-container").hide();
 					$("#loading-container").show();
 					TICKETASSIGNMENT.usersLoaded = false;
 					TICKETASSIGNMENT.ticketsLoaded = false;
@@ -380,9 +481,29 @@
    <tiles:put name="content" type="string">
     	<h1>Ticket Assignment</h1>
     	
-    	<span class="formLabel">Division:</span>&nbsp;<select name="divisionId"></select>&nbsp;<webthing:view styleId="ticket-search-button">Ticket Search</webthing:view>
+    	
+    	
+    	<%--
+    	 -----------------------------------------------------------------------------------------------------
+    	 | column-container-a                                                                                |
+		 | ---------------------------------------------------------------  -------------------------------- |
+		 | | column-container-b                                          |  | user-list-container          | |
+		 | | ------------------------- --------------------------------  |  | --------------------------   | |
+		 | | | ticket-list-container | | action-container             |  |  | | user-list-table        |   | |	
+    	 | | | ------------------    | | ---------------------------  |  |  | |                        |   | |
+    	 | | | | ticket-table   |    | | | action-button-container |  |  |  | |                        |   | |
+    	 | | | |                |    | | ---------------------------  |  |  | |                        |   | |
+    	 | | | |                |    | | ---------------------------  |  |  | |                        |   | |
+    	 | | | |                |    | | | action-list-container   |  |  |  | |                        |   | |
+    	 | | | ------------------    | | ---------------------------  |  |  | --------------------------   | |
+    	 | | ------------------------- --------------------------------  |  |                              | |
+    	 | ---------------------------------------------------------------  -------------------------------- |
+    	 -----------------------------------------------------------------------------------------------------
+    	 --%>
+    	<span class="formLabel">Division:</span>&nbsp;<select name="divisionId"></select>
     	<div id="division-description"></div>
     	<div id="loading-container"><webthing:thinking style="width:100%" /></div>
+      	<webthing:lookupFilter filterContainer="filter-container" />
     	<div id="column-container-a">
     		<div id="user-list-container" >
     			<table id="user-list-table">
@@ -400,8 +521,13 @@
     			 --%>
 			</div>
 			<div id="column-container-b">
-				<div id="message-list-container" class="err">
-									
+				<div id="action-container" class="err">
+					<div id="action-button-container">
+						<input type="button" value="Save" id="save-button" />
+						<input type="button" value="Cancel" id="cancel-button" />
+					</div>
+					<div id="action-list-container" class="err">
+					</div>
 				</div>
 				<div id="ticket-list-container">
 					<table id="ticket-table">
@@ -429,9 +555,6 @@
     	</div>
     	
     	
-    	<div id="ticket-search-modal">
-	    	<webthing:lookupFilter filterContainer="filter-container" />
-	    </div>
 	
     	<webthing:scrolltop />
 
