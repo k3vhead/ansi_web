@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 import com.ansi.scilla.common.db.Contact;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.User;
+import com.ansi.scilla.web.common.response.MessageKey;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
@@ -70,7 +71,7 @@ public class UserLookupServlet extends AbstractServlet {
 				url = new AnsiURL(request,"user", new String[] {ACTION_IS_ADD});
 
 				if ( url.getId() != null ) {
-					// THis is an update
+					// This is an update
 					processUpdate(conn, response, url.getId(), ansiUserRequest, sessionUser);
 				} else if ( url.getCommand().equalsIgnoreCase(ACTION_IS_ADD)) {
 					// this is an add
@@ -110,8 +111,8 @@ public class UserLookupServlet extends AbstractServlet {
 		UserResponse data = new UserResponse();
 		user.setUserId(id);
 		user.selectOne(conn);  // this throws RecordNotFound, which is propagated up the line into a 404 return 
-		WebMessages webMessages = validateUpdate(conn, user, ansiUserRequest);
-		
+		//WebMessages webMessages = validateUpdate(conn, user, ansiUserRequest);
+		WebMessages webMessages = ansiUserRequest.validateUpdate(conn);
 		if (webMessages.isEmpty()) {
 			user = doUpdate(conn, id, user, ansiUserRequest, sessionUser);
 			conn.commit();
@@ -127,15 +128,58 @@ public class UserLookupServlet extends AbstractServlet {
 
 	
 
-	private WebMessages validateUpdate(Connection conn, User user, AnsiUserRequest ansiUserRequest) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	private WebMessages validateUpdate(Connection conn, User user, AnsiUserRequest ansiUserRequest) {
+//		WebMessages webMessages = new WebMessages();
+//		List<String> missingFields = super.validateRequiredUpdateFields(ansiUserRequest);
+//		if ( missingFields.isEmpty() ) {
+//			List<String> badFormatFieldList = super.validateFormat(ansiUserRequest);
+//			if ( badFormatFieldList.isEmpty() ) {
+//				if ( ansiUserRequest.isValidPreferredContact(conn)) {
+//					validatePreferredContact(ansiUserRequest, webMessages);
+//				} else {
+//					webMessages.addMessage(ContactRequest.PREFERRED_CONTACT, "Invalid value");
+//				}
+//			} else {
+//				for ( String field : badFormatFieldList ) {
+//					webMessages.addMessage(field, "Invalid Format");
+//				}
+//			}
+//		} else {
+//			// we have required fields that are not populated
+//			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
+//			for ( String field : missingFields ) {
+//				webMessages.addMessage(field, messageText);
+//			}
+//		}
+//		return webMessages;
+//	}
 	
 	private User doUpdate(Connection conn, Integer id, User user, AnsiUserRequest ansiUserRequest,
-			SessionUser sessionUser) {
-		// TODO Auto-generated method stub
-		return null;
+			SessionUser sessionUser) throws Exception {
+		user.setAddedBy(ansiUserRequest.getUserId());
+
+		user.setAddress1(ansiUserRequest.getAddress1());
+		user.setAddress2(ansiUserRequest.getAddress2());
+		user.setCity(ansiUserRequest.getCity());
+		user.setEmail(ansiUserRequest.getEmail());
+		user.setFirstName(ansiUserRequest.getFirstName());
+		user.setLastName(ansiUserRequest.getLastName());
+		user.setMinimumHourlyPay(ansiUserRequest.getMinimumHourlyPay());
+		user.setPassword(ansiUserRequest.getPassword());
+		user.setPermissionGroupId(ansiUserRequest.getPermissionGroupId());
+		user.setPhone(ansiUserRequest.getPhone());
+		user.setState(ansiUserRequest.getState());
+		user.setStatus(ansiUserRequest.getStatus());
+		user.setTitle(ansiUserRequest.getTitle());
+		user.setUpdatedBy(sessionUser.getUserId());
+//		user.setUpdatedDate(today); this gets magically updated for us
+		user.setZip(ansiUserRequest.getZip());
+		user.setUserId(ansiUserRequest.getUserId());
+		
+		User key = new User();
+		key.setUserId(ansiUserRequest.getUserId());
+		user.update(conn, key);	
+		return user;
 	}
 
 	@Override

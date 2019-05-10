@@ -289,6 +289,13 @@
             <forward name="login" path="/login.jsp" />            
         </action>  
         <action
+            path="/ticketAssignment"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">            
+            <forward name="valid" path="/tickets/ticketAssignment.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		
+        <action
             path="/ticketOverride"
             type="com.ansi.scilla.web.ticket.action.TicketReturnAction"
             name="idForm"

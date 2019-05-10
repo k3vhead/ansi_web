@@ -1766,18 +1766,8 @@
 					
 					showNextModal : function() {
 						console.log("showNextModal");
-						if ( NEWQUOTE.jobSiteAddress == null) {
-							$("#save-quote-button").hide(2500);
-							var $type = "jobsite"
-		    				$title = "Job Site";		    				
-		    				$("#address-edit-modal input[name='address-name']").val("");
-		    				$("#address-edit-modal").dialog("option","title",$title);
-		    				$("#address-edit-modal .none-found").hide();
-		    				$("#address-edit-display").hide();
-		    				$("#address-edit-modal").data("type",$type);
-				        	$("#address-edit-modal").data("id","");
-		    				$("#address-edit-modal").dialog("open");							
-						} else if ( NEWQUOTE.billToAddress == null) {
+						if ( NEWQUOTE.billToAddress == null) {
+							console.log("prompt for bill to");
 							$("#save-quote-button").hide(2500);
 							var $type = "billto"
 		    				$title = "Bill To";		    				
@@ -1788,6 +1778,18 @@
 		    				$("#address-edit-modal").data("type",$type);
 				        	$("#address-edit-modal").data("id","");
 		    				$("#address-edit-modal").dialog("open");
+						} else if ( NEWQUOTE.jobSiteAddress == null) {
+							console.log("prompt for bill to");
+							$("#save-quote-button").hide(2500);
+							var $type = "jobsite"
+		    				$title = "Job Site";		    				
+		    				$("#address-edit-modal input[name='address-name']").val("");
+		    				$("#address-edit-modal").dialog("option","title",$title);
+		    				$("#address-edit-modal .none-found").hide();
+		    				$("#address-edit-display").hide();
+		    				$("#address-edit-modal").data("type",$type);
+				        	$("#address-edit-modal").data("id","");
+		    				$("#address-edit-modal").dialog("open");							
 						} else if ( NEWQUOTE.jobsiteJobContact == null) {
 							$("#save-quote-button").hide(2500);
 		    				$("#contact-edit-modal input[name='contact-name']").val(NEWQUOTE.lastContactNameUsed);
@@ -1854,9 +1856,9 @@
 						$("#job-display-container").fadeIn(1000);
 						
 						// after init is done -- show bill-to modal
-						var $type = "jobsite"
-	    				$title = "Job Site";		    				
-	    				$("#address-edit-modal input[name='address-name']").val("");
+						var $type = "billto"
+	    				$title = "Bill To";	
+						$("#address-edit-modal input[name='address-name']").val("");
 	    				$("#address-edit-modal").dialog("option","title",$title);
 	    				$("#address-edit-modal .none-found").hide();
 	    				$("#address-edit-display").hide();

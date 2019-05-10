@@ -193,43 +193,15 @@
 										<ansi:hasPermission permissionRequired="CONTACT_WRITE"><li><html:link action="newContact">New Contact</html:link></li></ansi:hasPermission>
 										<ansi:hasPermission permissionRequired="ADDRESS_WRITE"><li><html:link action="newAddress">New Address</html:link></li></ansi:hasPermission>
 										<ansi:hasPermission permissionRequired="QUOTE_CREATE"><li><html:link action="newQuote">New Quote</html:link></li></ansi:hasPermission>
-										<ansi:hasPermission permissionRequired="TICKET">
-										<ansi:hasWrite>
-										<li><html:link action="ticketGeneration">Generate Tickets</html:link></li>
-										<li><html:link action="ticketPrint">Print Tickets</html:link></li>
-										</ansi:hasWrite>
-										</ansi:hasPermission>
-										<%--
-										<ansi:hasPermission permissionRequired="JOB">
-										<ansi:hasWrite>
-										<li><html:link action="jobMaintenance">New Job</html:link></li>
-										</ansi:hasWrite>
-										</ansi:hasPermission>
-										 --%>
-										<ansi:hasPermission permissionRequired="TICKET">
-										<ansi:hasWrite>
-										<li><html:link action="ticketReturn">Ticket Return</html:link></li>
-										</ansi:hasWrite>
-										</ansi:hasPermission>
-										<ansi:hasPermission permissionRequired="INVOICE">
-										<ansi:hasWrite>
-										<li><html:link action="invoiceGeneration">Generate Invoices</html:link></li>
-										<li><html:link action="invoicePrint">Print Invoices</html:link></li>
-										</ansi:hasWrite>
-										</ansi:hasPermission>
-										<ansi:hasPermission permissionRequired="PAYMENT">
-										<ansi:hasWrite>
-										<li><html:link action="payment">Enter Payment</html:link></li>
-										</ansi:hasWrite>
-										</ansi:hasPermission>
-										<ansi:hasPermission permissionRequired="TICKET">
-										<ansi:hasWrite>
-										<li><html:link action="ticketOverride">Ticket Override</html:link></li>
-										</ansi:hasWrite>
-										</ansi:hasPermission>
-										<ansi:hasPermission permissionRequired="CLAIMS_WRITE">
-										<li><html:link action="claimEntry">Claim Entry</html:link></li>
-										</ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="TICKET_WRITE"><li><html:link action="ticketGeneration">Generate Tickets</html:link></li></ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="TICKET_WRITE"><li><html:link action="ticketPrint">Print Tickets</html:link></li></ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="TICKET_WRITE"><li><html:link action="ticketAssignment">Assign Tickets</html:link></li></ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="TICKET_WRITE"><li><html:link action="ticketReturn">Ticket Return</html:link></li></ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="INVOICE_WRITE"><li><html:link action="invoiceGeneration">Generate Invoices</html:link></li></ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="INVOICE_WRITE"><li><html:link action="invoicePrint">Print Invoices</html:link></li></ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="PAYMENT_WRITE"><li><html:link action="payment">Enter Payment</html:link></li></ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="TICKET_WRITE"><li><html:link action="ticketOverride">Ticket Override</html:link></li></ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="CLAIMS_WRITE"><li><html:link action="claimEntry">Claim Entry</html:link></li></ansi:hasPermission>
 									</ul>
 								</li>
 							</ul>
