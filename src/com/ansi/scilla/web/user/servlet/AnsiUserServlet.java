@@ -222,6 +222,7 @@ public class AnsiUserServlet extends AbstractServlet {
 				conn.commit();
 				if ( ! StringUtils.isBlank(userRequest.getPassword())) {
 					updatePassword(conn, userRequest.getUserId(), userRequest.getPassword());
+					conn.commit();
 				}
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
 				responseCode = ResponseCode.SUCCESS;
