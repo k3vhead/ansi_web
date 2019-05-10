@@ -79,13 +79,6 @@
     					$('html, body').animate({scrollTop: 0}, 800);
     	      	  		return false;
     	      	    });
-    				
-    			/*	var $filterJob = dataTable.columns( [0,1,13,14,15,16,21] ).data();
-                	if ( $filterJob == 'yes' ) {
-                		$filterIcon = "far fa-check-square";
-                	} else {
-                		$filterIcon = "fa fa-ban";
-                	}*/
     				if ( JOBLOOKUP.lookupType == null || JOBLOOKUP.lookupType == '' ) {
     					JOBLOOKUP.makeLookupModal();
     					$("#lookupModal").dialog("open");
@@ -150,50 +143,45 @@
     			        	"type": "GET"
     			        	},
     			        columns: [
-    			        	// if you change any of these, you'll need to change the jobColumns/pacColumns/contactColumns lists also
-    			            { width: "4%", title: "<bean:message key="field.label.jobId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			        	{ width: "4%", title: "<bean:message key="field.label.jobId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
     			            	if(row.jobId != null){return (row.jobId+"");}
     			            } },
     			            { width: "4%", title: "<bean:message key="field.label.quoteName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.quoteId != null){return ('<ansi:hasPermission permissionRequired="QUOTE"><a href="quoteMaintenance.html?id='+ row.quoteId+ '" style="color:#404040"></ansi:hasPermission>' + row.quoteNumber + row.revision +'<ansi:hasPermission permissionRequired="QUOTE"></ansi:hasPermission>');}
     			            } },
-    			            { width: "4%", title: "<bean:message key="field.label.jobStatus" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "3%", title: "<bean:message key="field.label.jobStatus" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.jobStatus != null){return (row.jobStatus+"");}
     			            } },
-    			            { width: "5%", title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "4%", title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.divisionNbr != null){return (row.divisionNbr+"-"+row.divisionCode);}
     			            } },
-    			            { width: "8%", title: "<bean:message key="field.label.billToName" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			            { width: "10%", title: "<bean:message key="field.label.billToName" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
     			            	if(row.billToName != null){return (row.billToName+"");}
     			            } },
-    			            { width: "8%", title: "<bean:message key="field.label.jobSiteName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "10%", title: "<bean:message key="field.label.jobSiteName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.jobSiteName != null){return (row.jobSiteName+"");}
     			            } },
-    			            { width: "8%", title: "<bean:message key="field.label.jobSiteAddress" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "10%", title: "<bean:message key="field.label.jobSiteAddress" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.jobSiteAddress != null){return (row.jobSiteAddress+", " + row.jobSiteCity + ", " + row.jobSiteState );}
     			            } },
-    			            { width: "4%", title: "<bean:message key="field.label.startDate" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "5%", title: "<bean:message key="field.label.startDate" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.startDate != null){return (row.startDate+"");}
     			            } },
-    			            { width: "4%", title: "<bean:message key="field.label.jobFrequency" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "3%", title: "<bean:message key="field.label.jobFrequency" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.jobFrequency != null){return (row.jobFrequency+"");}
     			            } },
-    			            { width: "4%", title: "<bean:message key="field.label.pricePerCleaning" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "5%", title: "<bean:message key="field.label.pricePerCleaning" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.pricePerCleaning != null){return (row.pricePerCleaning+"");}
     			            } },
     			            { width: "4%", title: "<bean:message key="field.label.jobNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
     			            	if(row.jobNbr != null){return (row.jobNbr+"");}
     			            } },
-    			            // start of job columns
     			            { width: "24%", title: "<bean:message key="field.label.serviceDescription" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.serviceDescription != null){return (row.serviceDescription+"");}
     			            } },
     			            { width: "4%", title: "<bean:message key="field.label.poNumber" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.poNumber != null){return (row.poNumber+"");}	    
     			            } },	
-    			            // end of job columns
-    			            <%-- put those columns here --%>
-    			            // start of contact columns
     		        		{ width: "9%", title: "<bean:message key="field.label.jobContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     	        			if(row.jobContact != null){
     	        				var preferredContact = row.jobContact.preferredContact;
@@ -223,8 +211,6 @@
         	        			
         	        			}
     	    	        	} },
-    	    	        	// end of contact columns
-    	    	        	// start of PAC columns
     	    	        	{ width: "5%", title: "Proposed", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     	    	        		if(row.proposalDate != null){return (row.proposalDate+"");}	    
     			            } },
@@ -237,49 +223,20 @@
     			            { width: "5%", title: "Reason", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.cancelReason != null){return (row.cancelReason+"");}	    
     			            } },
-    			            // end of PAC columns
     			            { width: "4%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
-    			            	//console.log(row);
     			            	{
     				            	var $edit = '<a href="jobMaintenance.html?id='+row.jobId+'" class="editAction" data-id="'+row.jobId+'"><webthing:edit>View</webthing:edit></a>';
     			            		return "<ansi:hasPermission permissionRequired='QUOTE_READ'>"+$edit+"</ansi:hasPermission>";
-    			            		//return "<ansi:hasPermission permissionRequired='SYSADMIN'><ansi:hasWrite><a href='jobMaintenance.html?id="+row.jobId+"' class=\"editAction fas fa-pencil-alt\" data-id='"+row.jobId+"'></a></ansi:hasWrite></ansi:hasPermission>";
     			            	}
     			            	
     			            } }],
     			            "initComplete": function(settings, json) {
-    			            	//console.log(json);
     			            	JOBLOOKUP.doFunctionBinding();
     			            },
     			            "drawCallback": function( settings ) {
-    			            	//JOBLOOKUP.doFunctionBinding();
     			            }
     			    } );
             	},
-            	
-					<%--
-//       			{ width: "4%", title: "<bean:message key="field.label.siteContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-//        			if(row.siteContact != null){return (row.siteContact+"");}
-//        		} },
-//        		{ width: "4%", title: "<bean:message key="field.label.contractContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-//        			if(row.contractContact != null){return (row.contractContact+"");}
-//        		} },
-//        		{ width: "4%", title: "<bean:message key="field.label.billingContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
-//        			if(row.billingContact != null){return (row.billingContact+"");}
-//        		} },
-//        		{ width: "4%", title: "<bean:message key="field.label.contactId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-//        			if(row.contactId != null){return (row.contactId+"");}
-//        		} },
-//        		{ width: "4%", title: "<bean:message key="field.label.lastName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-//        			if(row.lastName != null){return (row.lastName+"");}
-//        		} },
-//        		{ width: "4%", title: "<bean:message key="field.label.firstName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-//        			if(row.firstName != null){return (row.firstName+"");}
-//        		} },
-//        		{ width: "4%", title: "<bean:message key="field.label.preferredContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
-//        			if(row.preferredContact != null){return (row.preferredContact+"");}
-//        		} },  
-            	--%>
             	
 				doFunctionBinding : function() {
 					if ( JOBLOOKUP.lookupType == 'JOB' ) {
@@ -292,24 +249,6 @@
 						JOBLOOKUP.showContactColumns();
 					}
 				},
-				
-				
-		/*		displayModal : function () {
-					$(".displayModal").click(function($event) {
-						$('#lookupModal').data("permissionGroupId",null);
-		        		$('#lookupModal').button('option', 'label', 'Search');
-		        		$('#exitButton').button('option', 'label', 'Exit to Dashboard');
-		        		
-			       		$("#editPanel display[name='']").val("");
-						$("#lookupModal input[name='JOB']").val("");
-						$("#lookupModal input[name='PAC']").val("");
-						$("#lookupModal input[name='CONTACT']").val("");			        		
-		        		$("#lookupModal .err").html("");
-		        		$("#lookupModal").dialog("option","title", "Select Lookup Screen to View").dialog("open");
-					});
-				}, */
-				
-				
 				
 				makeContactIcon : function(preferredContact) {
 					
@@ -326,95 +265,6 @@
 					}
 					return icon;
 				},
-		/*			if(row.jobContact != null){
-						icon = <span class="ansi-contact-method-is-mobile-phone"><webthing:mobilePhoneIcon>Mobile</webthing:mobilePhoneIcon></span>
-	        			}
-
-					if(row.contractContact != null){
-						icon = <span class="ansi-contact-method-is-mobile-phone"><webthing:mobilePhoneIcon>Mobile</webthing:mobilePhoneIcon></span>
-	        			}
-
-					if(row.contractContact != null){
-						icon = <span class="ansi-contact-method-is-mobile-phone"><webthing:mobilePhoneIcon>Mobile</webthing:mobilePhoneIcon></span>
-	        			}
-
-					if(row.contractContact != null){
-						icon = <span class="ansi-contact-method-is-mobile-phone"><webthing:mobilePhoneIcon>Mobile</webthing:mobilePhoneIcon></span>
-	        			}
-					<span class="ansi-contact-method-is-fax"><webthing:faxIcon>Fax</webthing:faxIcon></span>
-					<span class="ansi-contact-method-is-email"><webthing:emailIcon>Email</webthing:emailIcon></span>
-					//<span class="ansi-contact-method-is-mobile-phone"><webthing:mobilePhoneIcon>Mobile</webthing:mobilePhoneIcon></span>
-					//(row.jobContact.lastName+", "+row.jobContact.firstName + "<br />" + icon + " " + row.jobContact.contactMethod);
-				},*/
-					<%--
-						Steal this from quote maintenance.jsp
-						<webthing:phone>BUsiness Phone</webthing:phone> 
-					--%>
-				/*	if (contact.preferredContact=="business_phone")  {
-						icon="fa fa-phone tooltip";
-					}	else {
-						icon="y";
-					}
-					return icon;*/
-					
-
-					
-			    	
-				/*  	if (contact.preferredContact=="mobile_phone")  {
-			    		icon = "<i class='fa fa-mobile' aria-hidden='true'></i>&nbsp;";
-			    	} else if(contact.preferredContact =="email"){
-			    		icon = "<i class='fa fa-envelope-o' aria-hidden='true'></i>&nbsp";
-			    	} else if(contact.preferredContact == "business_phone"){
-			    		icon = "<i class='fa fa-phone' aria-hidden='true'></i>&nbsp;";
-			    	} else if(contact.preferredContact == "fax"){
-			    		icon = "<i class='fa fa-fax' aria-hidden='true'></i>&nbsp;";
-			    	}{
-						icon="y";
-					}
-					return icon;
-					
-			    	
-			    	
-
-					
-				/*	populateContactPanel : function($selector, $data) {
-						$($selector + " .ansi-contact-name").html($data.firstName + " " + $data.lastName);						
-						$($selector + " .ansi-contact-number").html($data.method);
-						$($selector + " .ansi-contact-method-is-business-phone").hide();
-						$($selector + " .ansi-contact-method-is-mobile-phone").hide();
-						$($selector + " .ansi-contact-method-is-fax").hide();
-						$($selector + " .ansi-contact-method-is-email").hide();
-						if ( $contact.preferredContact == "business_phone") { $($selector + " .ansi-contact-method-is-business-phone").show(); }
-						if ( $data.preferredContact == "mobile_phone") { $($selector + " .ansi-contact-method-is-mobile-phone").show(); }
-						if ( $data.preferredContact == "fax") { $($selector + " .ansi-contact-method-is-fax").show(); }
-						if ( $data.preferredContact == "email") { $($selector + " .ansi-contact-method-is-email").show(); }
-					},
-					
-					
-					
-					
-					var $preferred = ui.item.preferredContactValue.split(":");
-			    	$($contactSelector + " .ansi-contact-number").html($preferred[1]);
-			    	
-			    	$($contactSelector + " .ansi-contact-method-is-business-phone").hide();
-					$($contactSelector + " .ansi-contact-method-is-mobile-phone").hide();
-					$($contactSelector + " .ansi-contact-method-is-fax").hide();
-					$($contactSelector + " .ansi-contact-method-is-email").hide();
-					if ( $preferred[0] == "business_phone") { $($contactSelector + " .ansi-contact-method-is-business-phone").show(); }
-					if ( $preferred[0] == "mobile_phone") { $($contactSelector + " .ansi-contact-method-is-mobile-phone").show(); }
-					if ( $preferred[0] == "fax") { $($contactSelector + " .ansi-contact-method-is-fax").show(); }
-					if ( $preferred[0] == "email") { $($contactSelector + " .ansi-contact-method-is-email").show(); }
-					$($contactSelector).show();
-					if (contact.preferredContact=="business_phone")  {
-						icon="fa fa-phone tooltip";
-					}	else {
-						icon="y";
-					}
-					return icon; */
-					
-					
-					
-				//},
 				
 				makeLookupModal : function() {	
 					$("#lookupModal" ).dialog({
@@ -439,9 +289,6 @@
 					$("#exitButton").button('option', 'label', 'Exit');
 
 				},
-				
-				
-				
 				
 				showJobColumns : function() {
 					var myTable = $('#jobTable').DataTable();
