@@ -3,7 +3,6 @@ package com.ansi.scilla.web.user.query;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Arrays;
 import java.util.List;
 
 import com.ansi.scilla.web.common.query.AbstractQuery;
@@ -13,7 +12,8 @@ public class DashboardFavoriteQuery extends AbstractQuery {
 
 	private static final long serialVersionUID = 1L;
 
-	private final String selectSql = "select favorite_option.option_id, favorite_option.name as option_name, favorite_option.html_link, count(user_favorite.user_id) as option_selected\n";
+	private final String selectSql = "select favorite_option.option_id, favorite_option.name as option_name, favorite_option.html_link, "
+			+ "(select count(*) from user_favorite where user_favorite.user_id=? and user_favorite.option_id=favorite_option.option_id) as option_selected\n";
 	private final String fromSql =
 			"from favorite_option\n" + 
 			"left outer join user_favorite on user_favorite.option_id=favorite_option.option_id\n";
@@ -23,13 +23,23 @@ public class DashboardFavoriteQuery extends AbstractQuery {
 			"group by favorite_option.option_id, favorite_option.name, favorite_option.html_link\n" +
 			"order by favorite_option.name asc";
 	
+	private Integer userId;
 	private List<String> permissionList;
 	private String optionType;
 	
-	public DashboardFavoriteQuery(List<String> permissionList, String optionType) {
+	public DashboardFavoriteQuery(Integer userId, List<String> permissionList, String optionType) {
 		super();
+		this.userId = userId;
 		this.permissionList = permissionList;
 		this.optionType = optionType;
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
 	}
 
 	public List<String> getPermissionList() {
@@ -70,8 +80,11 @@ public class DashboardFavoriteQuery extends AbstractQuery {
 		System.out.println(sql);
 		PreparedStatement statement = conn.prepareStatement(sql);
 		int n = 1;
+		statement.setInt(n, this.userId);
+		n++;
 		for ( String permission : permissionList ) {
 			statement.setString(n, permission);
+//			System.out.println(n + " " + permission);
 			n++;
 		}
 		statement.setString(n, this.optionType);
@@ -104,13 +117,13 @@ public class DashboardFavoriteQuery extends AbstractQuery {
 		return count;
 	}
 	
-
+	/*
 	public static void main(String[] args) {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDevConn();
-			List<String> permissionList = Arrays.asList(new String[] {"ADDRESS_READ","TICKET_READ","CONTACT_READ","TICKET_WRITE"});
-			DashboardFavoriteQuery fav = new DashboardFavoriteQuery(permissionList, "lookup");
+			List<String> permissionList = Arrays.asList(new String[] {"ADDRESS_READ","TICKET_READ","CONTACT_READ","QUOTE_READ","INVOICE_READ","CONTACT_WRITE"});
+			DashboardFavoriteQuery fav = new DashboardFavoriteQuery(5, permissionList, "lookup");
 			ResultSet rs = fav.select(conn);
 			System.out.println("********");
 			while ( rs.next() ) {
@@ -126,5 +139,6 @@ public class DashboardFavoriteQuery extends AbstractQuery {
 			AppUtils.closeQuiet(conn);
 		}
 	}
+	*/
 	
 }
