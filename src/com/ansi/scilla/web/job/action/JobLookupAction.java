@@ -29,11 +29,7 @@ public class JobLookupAction extends SessionPageDisplayAction {
 			SessionData sessionData = (SessionData)session.getAttribute(SessionData.KEY);
 			if ( sessionData != null ) {
 				forward = mapping.findForward(FORWARD_IS_VALID);
-			}
-			String level = request.getParameter("step");
-			if ( (! StringUtils.isBlank(level)) && level.equalsIgnoreCase("dev")) {
-				forward = mapping.findForward("dev");
-			}
+			}			
 		}
 		
 		

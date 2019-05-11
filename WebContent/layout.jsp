@@ -133,9 +133,9 @@
 										<ansi:hasPermission permissionRequired="QUOTE_READ">
 										<li><html:link action="quoteLookup"><bean:message key="menu.label.quotes" /></html:link></li>
 										</ansi:hasPermission>
-										<ansi:hasPermission permissionRequired="QUOTE_READ">
-										<li><html:link action="jobLookup"><bean:message key="menu.label.jobs" /></html:link></li>
-										</ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="QUOTE_READ"><li><html:link action="jobLookup"><bean:message key="menu.label.jobs" /></html:link></li></ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="QUOTE_READ"><li><a href="jobLookup.html?type=PAC"><bean:message key="menu.label.jobs" /> (PAC)</a></li></ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="QUOTE_READ"><li><a href="jobLookup.html?type=CONTACT"><bean:message key="menu.label.jobs" /> (Contact)</a></li></ansi:hasPermission>
 										<ansi:hasPermission permissionRequired="TICKET">
 										<li><html:link action="ticketLookup"><bean:message key="menu.label.tickets" /></html:link></li>
 										</ansi:hasPermission>

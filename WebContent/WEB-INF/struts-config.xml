@@ -172,7 +172,6 @@
             input="/jobLookup.jsp"
             scope="request">
             <forward name="valid" path="/jobLookup.jsp" />
-            <forward name="dev" path="/jobLookupDev.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
