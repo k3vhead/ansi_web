@@ -332,12 +332,26 @@
 								id: "user-save-button",
 								click: function($event) {
 									USERLOOKUP.saveUser();
+									$("#user-save-button").hide();
+									$("#user-cancel-button").hide();
+									$("#user-done-button").toggle();
+								}
+							},
+							{
+								id: "user-done-button",
+								click: function($event){
+									$("#user-done-button").hide();
+									$("#user-cancel-button").toggle();
+									$("#user-save-button").toggle();
+									$("#user-form-modal").dialog("close");
 								}
 							}
 						]
 					});	
 					$("#user-save-button").button('option', 'label', 'Save');
 					$("#user-cancel-button").button('option', 'label', 'Cancel');
+					$("#user-done-button").button('option', 'label', 'Done');
+					$("#user-done-button").hide();
             	},
             	
             	getTotalList : function($userId) {
