@@ -157,7 +157,7 @@
 			            	if(row.job_frequency != null){return (row.job_frequency+"");}
 			            } },
 			            { width:"5%", title: "<bean:message key="field.label.pricePerCleaning" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-			            	if(row.price_per_cleaning != null){return (row.price_per_cleaning+"");}
+			            	if(row.price_per_cleaning != null){return (row.price_per_cleaning.toFixed(2)+"");}
 			            } },
 			            { width:"5%", title: "<bean:message key="field.label.jobNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
 			            	if(row.job_nbr != null){return (row.job_nbr+"");}
@@ -176,7 +176,7 @@
 			            	if(row.invoice_id != null){return (row.invoice_id+"");} 
 			            } },
 			            { width:"6%", title: "<bean:message key="field.label.amountDue" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
-			            	if(row.amount_due != null){return (row.amount_due+"");} 
+			            	if(row.amount_due != null){return (row.amount_due.toFixed(2)+"");} 
 			            } },
 			            { width:"5%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
 			            	//console.log(row);

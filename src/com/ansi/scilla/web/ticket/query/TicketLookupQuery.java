@@ -28,15 +28,15 @@ public class TicketLookupQuery extends LookupQuery {
 	private static final long serialVersionUID = 1L;
 
 	public static final String TICKET_ID = "view_ticket_log.ticket_id";
-	public static final String STATUS = "view_ticket_status";
-	public static final String TYPE = "view_ticket_type";
+	public static final String STATUS = "view_ticket_log.ticket_status";
+	public static final String TYPE = "view_ticket_log.ticket_type";
 	public static final String DIV = "concat(division.division_nbr,'-',division.division_code)";
 	public static final String BILL_TO = "a1.name";
 	public static final String JOB_SITE = "a2.name";
 	public static final String ADDRESS = "a2.address1";
 	public static final String START_DATE = "ticket.start_date";
 	public static final String FREQ = "job.job_frequency";
-	public static final String PPC = "isnull(ticket.act_price_per_cleaning, job.price_per_cleaning) as price_per_cleaning";
+	public static final String PPC = "isnull(ticket.act_price_per_cleaning, job.price_per_cleaning)";
 	public static final String JOB = "job.job_nbr";
 	public static final String JOB_ID = "view_ticket_log.job_id";
 	public static final String SERVICE_DESCRIPTION = "job.service_description";
