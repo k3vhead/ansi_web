@@ -133,7 +133,7 @@
 			            	if(row.ticket_id != null){return ('<a href="#" data-id="'+row.ticket_id+'" class="ticket-clicker">'+row.ticket_id+'</a>');}
 			            } },
 			            { width:"5%", title: "<bean:message key="field.label.ticketStatus" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-			            	if(row.ticket_status != null){return ('<span class="tooltip">' + row.ticket_status+'<span class="tooltiptext">'+row.ticket_status_desc+'</span></span>');}
+			            	if(row.view_ticket_status != null){return ('<span class="tooltip">' + row.view_ticket_status+'<span class="tooltiptext">'+row.view_ticket_status_desc+'</span></span>');}
 			            } },
 			            { width:"5%", title: "<bean:message key="field.label.ticketType" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
 			            	if(row.ticket_type_desc != null){return (row.ticket_type_desc+"");}
@@ -164,7 +164,7 @@
 			            } },
 			            { width:"4%", title: "<bean:message key="field.label.jobId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
 			            	//if(row.jobId != null){return ('<span class="editJob" data-jobid="'+ row.jobId +'">'+row.jobId+"</span>");} 
-			            	if(row.job_id != null){return ('<ansi:hasPermission permissionRequired="QUOTE_READ"><a href="jobMaintenance.html?id='+ row.job_id +'" class="jobLink"></ansi:hasPermission>'+row.job_id+'<ansi:hasPermission permissionRequired="QUOTE_READ"></a></ansi:hasPermission>');}
+			            	if(row.view_job_id != null){return ('<ansi:hasPermission permissionRequired="QUOTE_READ"><a href="jobMaintenance.html?id='+ row.view_job_id +'" class="jobLink"></ansi:hasPermission>'+row.view_job_id+'<ansi:hasPermission permissionRequired="QUOTE_READ"></a></ansi:hasPermission>');}
 			            } },
 			            { width:"16%", title: "<bean:message key="field.label.serviceDescription" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
 			            	if(row.service_description != null){return (row.service_description+"");}
@@ -192,7 +192,7 @@
 		            			var $ticketData = 'data-id="' + row.ticket_id + '"';
 			            		$printLink = '<ansi:hasPermission permissionRequired="TICKET_READ"><i class="print-link fa fa-print" aria-hidden="true" ' + $ticketData + '></i></ansi:hasPermission>'
 			            		var $claimLink = '';
-			            		if ( row.ticket_type == 'run' || row.ticket_type=='job') {
+			            		if ( row.view_ticket_type == 'run' || row.view_ticket_type=='job') {
 			            			$claimLink = '<ansi:hasPermission permissionRequired="CLAIMS_WRITE"><a href="budgetControlLookup.html?id='+row.ticket_id+'"><webthing:invoiceIcon styleClass="green">Budget Control</webthing:invoiceIcon></a></ansi:hasPermission>';
 			            		}
 				            	$actionData = $editLink + $printLink + $overrideLink + $claimLink;

@@ -36,8 +36,8 @@ public class TicketLookupServlet extends AbstractLookupServlet {
 	public static final String TICKET_TYPE_DESC = "ticket_type_desc";
 	public static final String START_DATE = "start_date";
 	public static final String PROCESS_DATE = "process_date";
-	public static final String TICKET_TYPE = "ticket_type";
-	public static final String TICKET_STATUS = "ticket_status";
+	public static final String TICKET_TYPE = "view_ticket_type";
+	public static final String TICKET_STATUS = "view_ticket_status";
 	public static final String TICKET_STATUS_DESC = "ticket_status_desc";
 
 	public TicketLookupServlet() {
