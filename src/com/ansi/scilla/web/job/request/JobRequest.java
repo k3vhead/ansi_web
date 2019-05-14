@@ -541,7 +541,7 @@ public class JobRequest extends AbstractRequest{
 		
 		RequestValidator.validateJobFrequency(webMessages, "jobFrequency", this.jobFrequency, true);
 		RequestValidator.validateInteger(webMessages, "jobNbr", this.jobNbr, 1, null, true);
-		RequestValidator.validateBigDecimal(webMessages, "pricePerCleaning", this.pricePerCleaning, new BigDecimal(0.01D), null, true);
+		RequestValidator.validateBigDecimal(webMessages, "pricePerCleaning", this.pricePerCleaning, new BigDecimal(0), null, true);
 		RequestValidator.validateString(webMessages, "serviceDescription", this.serviceDescription, true);
 		
 		return webMessages;
