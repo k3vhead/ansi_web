@@ -76,6 +76,9 @@
 				width:33%;
 				float:right;
 			}
+			.action-button {
+				cursor:pointer;
+			}
         	.ticket {
         		border:solid 1px #404040;
         		width:90%;
@@ -119,8 +122,10 @@
         			TICKETASSIGNMENT.selectedTicketList = [];
         			TICKETASSIGNMENT.selectedUserList = {};
         			$("#action-button-container").hide();
-        			$("#ticket-table").DataTable().ajax.reload();
-        			$("#user-list-table").DataTable().ajax.reload();
+        			//$("#ticket-table").DataTable().ajax.reload();
+        			//$("#user-list-table").DataTable().ajax.reload();
+        			$(".user-selector").prop("checked", false);
+        			$(".ticket-selector").prop("checked", false);
         		},
         		
         		
@@ -374,6 +379,41 @@
         			$msg.append("Assigning ticket " + $ticketId + " to " + $firstName + " " + $lastName);
         			$("#action-list-container").append($msg);
         			$("." + $className).fadeOut(6000);
+        			
+        			
+        			
+        			$outbound = {"washerId":$userId, "ticketId":$ticketId};
+        			var jqxhr = $.ajax({
+						type: 'POST',
+						url: "ticket/ticketAssignment",
+						data: JSON.stringify($outbound),
+						statusCode: {
+							200: function($data) {
+								if ( $data.responseHeader.responseCode == 'SUCCESS') {
+									var $responseText = $data.data.webMessages['GLOBAL_MESSAGE'][0];
+									$msg.append(' - <span class="err">' + $responseText + "</span>");
+									$("." + $className).fadeOut(6000);
+								} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+									$msg.append(" - Failed");
+								} else {
+									$("#globalMsg").html("System Error, Invalid response code "+$data.responseHeader.responseCode+": Contact Support").show();
+								}
+							},
+							403: function($data) {
+								$("#globalMsg").html("Session Timeout. Log in and try again").show();
+							}, 
+							404: function($data) {
+								$("#globalMsg").html("System Error 404: Contact Support").show();
+							}, 
+							405: function($data) {
+								$("#globalMsg").html("System Error 405: Contact Support").show();
+							}, 
+							500: function($data) {
+								$("#globalMsg").html("System Error 500: Contact Support").show();
+							} 
+						},
+						dataType: 'json'
+					});
         		},
         		
         		
@@ -511,22 +551,14 @@
     				<tbody></tbody>
     				<tfoot></tfoot>
     			</table>
-    			<%-- 
-    			<div class="user" data-id="1" data-first="F1" data-last="L1">User 1</div>
-    			<div class="user" data-id="2" data-first="F2" data-last="L2">User 2</div>
-    			<div class="user" data-id="3" data-first="F3" data-last="L3">User 3</div>
-    			<div class="user" data-id="4" data-first="F4" data-last="L4">User 4</div>
-    			<div class="user" data-id="5" data-first="F5" data-last="L5">User 5</div>
-    			<div class="user" data-id="6" data-first="F6" data-last="L6">User 6</div>
-    			 --%>
 			</div>
 			<div id="column-container-b">
-				<div id="action-container" class="err">
+				<div id="action-container">
 					<div id="action-button-container">
-						<input type="button" value="Save" id="save-button" />
-						<input type="button" value="Cancel" id="cancel-button" />
+						<webthing:checkmark styleId="save-button" styleClass="action-button green fa-2x">Save</webthing:checkmark>
+						<webthing:ban styleId="cancel-button" styleClass="action-button red fa-2x">Cancel</webthing:ban>
 					</div>
-					<div id="action-list-container" class="err">
+					<div id="action-list-container">
 					</div>
 				</div>
 				<div id="ticket-list-container">
@@ -535,19 +567,6 @@
 						<tbody></tbody>
 						<tfoot></tfoot>
 					</table>
-					<%-- 
-					<div class="ticket" data-id="1">Ticket 1</div>
-					<div class="ticket" data-id="2">Ticket 2</div>
-					<div class="ticket" data-id="3">Ticket 3</div>
-					<div class="ticket" data-id="4">Ticket 4</div>
-					<div class="ticket" data-id="5">Ticket 5</div>
-					<div class="ticket" data-id="6">Ticket 6</div>
-					<div class="ticket" data-id="7">Ticket 7</div>
-					<div class="ticket" data-id="8">Ticket 8</div>
-					<div class="ticket" data-id="9">Ticket 9</div>
-					<div class="ticket" data-id="10">Ticket 10</div>
-					<div class="ticket" data-id="11">Ticket 11</div>
-					 --%>
 				</div>
 				<div class="spacer">&nbsp;</div>
 			</div>
