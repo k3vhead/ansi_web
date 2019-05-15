@@ -23,6 +23,7 @@ import org.apache.logging.log4j.Logger;
 import com.ansi.scilla.common.claims.WorkHoursType;
 import com.ansi.scilla.common.db.EmployeeExpense;
 import com.ansi.scilla.common.db.MSTable;
+import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.invoice.InvoiceGrouping;
 import com.ansi.scilla.common.invoice.InvoiceStyle;
@@ -34,6 +35,7 @@ import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.utils.FieldMap;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.thewebthing.commons.db2.DBTable;
+import com.thewebthing.commons.db2.RecordNotFoundException;
 import com.thewebthing.commons.lang.StringUtils;
 
 public class RequestValidator {
@@ -454,6 +456,23 @@ public class RequestValidator {
 		}
 	}
 
+	
+	public static void validateTicketId(Connection conn, WebMessages webMessages, String fieldName, Integer value, boolean required) throws Exception {
+		if (value == null) {
+			if (required) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			Ticket ticket = new Ticket();
+			ticket.setTicketId(value);
+			try { 
+				ticket.selectOne(conn);
+			} catch ( RecordNotFoundException e) {
+				webMessages.addMessage(fieldName, "Invalid Value");
+			}
+			
+		}
+	}
 	
 	public static void validateUserStatus(WebMessages webMessages, String fieldName, Integer value, boolean required) {
 		List<Integer> validValues = Arrays
