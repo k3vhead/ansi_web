@@ -172,7 +172,9 @@
                 		$event.preventDefault();
                         var $divisionId = $event.currentTarget.attributes['data-id'].value;           
                         var $startDate = $event.currentTarget.attributes['data-startdate'].value;
-                        var $lookupUrl = "ticketLookup.html?status=N&divisionId=" + $divisionId + "&startDate=" + $startDate;
+                        var $lookupUrl = "ticketLookup.html?status=N&divisionId=" + $divisionId
+                        		//+ "&startDate=" + $startDate
+                        		;
 						location.href=$lookupUrl;
                 	});
                 },
