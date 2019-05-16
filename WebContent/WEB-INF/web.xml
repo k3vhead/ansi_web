@@ -725,6 +725,17 @@
 	
 
 	<servlet>
+		<servlet-name>ticketAssignmentLookup</servlet-name>
+		<servlet-class>com.ansi.scilla.web.ticket.servlet.TicketAssignmentLookupServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ticketAssignmentLookup</servlet-name>
+		<url-pattern>/ticket/ticketAssignmentLookup</url-pattern>
+	</servlet-mapping>
+	
+
+	
+	<servlet>
 		<servlet-name>ticketDRV</servlet-name>
 		<servlet-class>com.ansi.scilla.web.ticket.servlet.TicketDRVServlet</servlet-class>
 	</servlet>

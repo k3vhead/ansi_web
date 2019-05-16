@@ -69,12 +69,19 @@
         		width:49%; 
         		float:left; 
         	}
+        	#ticket-table {
+				width:100%;
+			}
+			
         	#ticket-modal {
 				display:none;	
 			}
         	#user-list-container {
 				width:33%;
 				float:right;
+			}
+			#user-list-table {
+				width:100%;
 			}
 			.action-button {
 				cursor:pointer;
@@ -242,7 +249,9 @@
 			            	if(row.amount_due != null){return (row.amount_due+"");} 
 			            } },
 			            { width:"5%", title: "Select",  data: function ( row, type, set ) {	
-			            	return '<input type="checkbox" class="ticket-selector" data-id="'+row.ticket_id+'" >';
+			            	var $search = '<span class="search-by-ticket" data-id="'+ row.ticket_id+'"><webthing:view styleClass="action-button">Search</webthing:view></span>';
+			            	var $checkbox = '<input type="checkbox" class="ticket-selector" data-id="'+row.ticket_id+'" >';
+			            	return $search + " " + $checkbox;
 			            } }
 			            ],
     			            "initComplete": function(settings, json) {
@@ -258,34 +267,7 @@
     							$(nRow).addClass("ticket");
     						},
     			            "drawCallback": function( settings ) {
-    			            	//$(".ticket").draggable({
-    		        			//	containment:"#column-container-a",
-    		        			//	cursor:"move",
-    		        			//	revert:true,
-    		        			//	scope:"ticket2user"
-    		        			//});
-    		        			//$(".ticket").droppable({
-    		        			//	accept:".user",
-    		        			//	scope:"user2ticket",
-    		        			//	drop:TICKETASSIGNMENT.ticketDrop
-    		        			//});
-    		        			$(".ticket-selector").on("click", function($clickevent){
-    		        				var $ticketId = $(this).attr("data-id");
-    		        				if ( $(this).prop('checked') == true ) {
-        		        				console.log("Add ticket: " + $ticketId);
-    		        					TICKETASSIGNMENT.selectedTicketList.push($ticketId);
-    		        				} else {
-        		        				console.log("Drop ticket: " + $ticketId);
-        		        				ANSI_UTILS.removeFromArray(TICKETASSIGNMENT.selectedTicketList, $ticketId);
-    		        				}
-    		        				TICKETASSIGNMENT.displayActionButtons();
-    		        			});
-    		        			$(".ticket-clicker").on("click", function($clickevent) {
-    		    					$clickevent.preventDefault();
-    		    					var $ticketId = $(this).attr("data-id");
-    		    					TICKETUTILS.doTicketViewModal("#ticket-modal",$ticketId);
-    		    					$("#ticket-modal").dialog("open");
-    		    				});
+    			            	TICKETASSIGNMENT.ticketDrawCallback();
     			            }
     			    } );
         		},
@@ -327,7 +309,9 @@
         			            	if(row.user_id != null){return row.last_name+', '+row.first_name;}
         			            } },
         			            { title: "Select", "defaultContent":"<i>N/A</i>", searchable:false, data: function(row, type, set) {
-        			            	return '<input type="checkbox" class="user-selector" data-id="'+row.user_id+'" data-first="'+row.first_name+'" data-last="'+row.last_name+'" />';
+        			            	var $search = '<span class="search-by-user" data-id="'+ row.user_id+'"><webthing:view styleClass="action-button">Search</webthing:view></span>';
+        			            	var $checkbox = '<input type="checkbox" class="user-selector" data-id="'+row.user_id+'" data-first="'+row.first_name+'" data-last="'+row.last_name+'" />';
+        			            	return $search + " " + $checkbox;
         			            }}
     							],
     						"fnRowCallback": function(nRow, aData, iDisplayIndex) {
@@ -338,34 +322,7 @@
     			            	TICKETASSIGNMENT.displayPanels();
     			            },    			            
     			            "drawCallback": function() {
-    		        			$(".user-selector").on("click", function($clickevent){
-    		        				var $userId = $(this).attr("data-id");
-    		        				if ( $(this).prop('checked') == true ) {
-    		        					console.log("Add user: " + $userId);
-    		        					var $user = {
-    		        						"userId":$(this).attr("data-id"),
-    		        						"first":$(this).attr("data-first"),
-    		        						"last":$(this).attr("data-last"),
-    		        					};
-    		        					TICKETASSIGNMENT.selectedUserList[$userId]=$user;
-    		        				} else {
-        		        				console.log("Drop ticket: " + $userId);
-        		        				delete TICKETASSIGNMENT.selectedUserList[$userId];
-    		        				}
-    		        				TICKETASSIGNMENT.displayActionButtons();
-    		        			});
-
-    		        			//$(".user").draggable({
-    		        			//	containment:"#column-container-a",
-    		        			//	cursor:"move",
-    		        			//	revert:true,
-    		        			//	scope:"user2ticket"
-    		        			//});
-    		        			//$(".user").droppable({
-    		        			//	containment:".ticket",
-    		        			//	scope:"ticket2user",
-    		        			//	drop:TICKETASSIGNMENT.userDrop
-    		        			//});
+    			            	TICKETASSIGNMENT.userDrawCallback();
     			            },
     			    } );
         		},
@@ -429,6 +386,14 @@
         			$("#cancel-button").click();
         		},
         		
+        		
+        		
+        		makeAssignmentTable : function($ticketId, $userId) {
+        			console.log("Search for ticket: " + $ticketId + " user: " + $userId)
+        		},
+        		
+        		
+        		
         		makeClickers : function() {
         			$("#save-button").click(TICKETASSIGNMENT.makeAssignments);
         			$("#cancel-button").click(TICKETASSIGNMENT.cancelAssignments);
@@ -491,6 +456,64 @@
         		
         		
         		
+        		ticketDrawCallback : function() {
+        			$(".ticket-selector").on("click", function($clickevent){
+        				var $ticketId = $(this).attr("data-id");
+        				if ( $(this).prop('checked') == true ) {
+	        				console.log("Add ticket: " + $ticketId);
+        					TICKETASSIGNMENT.selectedTicketList.push($ticketId);
+        				} else {
+	        				console.log("Drop ticket: " + $ticketId);
+	        				ANSI_UTILS.removeFromArray(TICKETASSIGNMENT.selectedTicketList, $ticketId);
+        				}
+        				TICKETASSIGNMENT.displayActionButtons();
+        			});
+        			
+        			
+        			$(".ticket-clicker").on("click", function($clickevent) {
+    					$clickevent.preventDefault();
+    					var $ticketId = $(this).attr("data-id");
+    					TICKETUTILS.doTicketViewModal("#ticket-modal",$ticketId);
+    					$("#ticket-modal").dialog("open");
+    				});
+        			
+        			$(".search-by-ticket").click(function($clicevent) {
+        				var $ticketId = $(this).attr("data-id");
+        				TICKETASSIGNMENT.makeAssignmentTable($ticketId, null);
+        			});
+        		},
+        		
+        		
+        		
+        		
+        		userDrawCallback : function() {
+        			$(".user-selector").on("click", function($clickevent){
+        				var $userId = $(this).attr("data-id");
+        				if ( $(this).prop('checked') == true ) {
+        					console.log("Add user: " + $userId);
+        					var $user = {
+        						"userId":$(this).attr("data-id"),
+        						"first":$(this).attr("data-first"),
+        						"last":$(this).attr("data-last"),
+        					};
+        					TICKETASSIGNMENT.selectedUserList[$userId]=$user;
+        				} else {
+	        				console.log("Drop ticket: " + $userId);
+	        				delete TICKETASSIGNMENT.selectedUserList[$userId];
+        				}
+        				TICKETASSIGNMENT.displayActionButtons();
+        			});
+        			
+        			
+        			$(".search-by-user").click(function($clicevent) {
+        				var $userId = $(this).attr("data-id");
+        				TICKETASSIGNMENT.makeAssignmentTable(null, $userId);
+        			});
+        		},
+        		
+        		
+        		
+        		
         		userDrop : function($event, $ui) {
         			console.log("I dropped on a ticket");
         			var $ticketId = $ui.helper.attr("data-id");
@@ -546,10 +569,10 @@
       	<webthing:lookupFilter filterContainer="filter-container" />
     	<div id="column-container-a">
     		<div id="user-list-container" >
-    			<table id="user-list-table">
-    				<thead></thead>
-    				<tbody></tbody>
-    				<tfoot></tfoot>
+    			<table id="user-list-table" style="width:100%;">
+    				<thead style="width:100%;"></thead>
+    				<tbody style="width:100%;"></tbody>
+    				<tfoot style="width:100%;"></tfoot>
     			</table>
 			</div>
 			<div id="column-container-b">
@@ -562,10 +585,10 @@
 					</div>
 				</div>
 				<div id="ticket-list-container">
-					<table id="ticket-table">
-						<thead></thead>
-						<tbody></tbody>
-						<tfoot></tfoot>
+					<table id="ticket-table" style="width:100%;">
+						<thead style="width:100%;"></thead>
+						<tbody style="width:100%;"></tbody>
+						<tfoot style="width:100%;"></tfoot>
 					</table>
 				</div>
 				<div class="spacer">&nbsp;</div>

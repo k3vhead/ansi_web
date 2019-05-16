@@ -136,12 +136,9 @@
 										<ansi:hasPermission permissionRequired="QUOTE_READ"><li><html:link action="jobLookup"><bean:message key="menu.label.jobs" /></html:link></li></ansi:hasPermission>
 										<ansi:hasPermission permissionRequired="QUOTE_READ"><li><a href="jobLookup.html?type=PAC"><bean:message key="menu.label.jobs" /> (PAC)</a></li></ansi:hasPermission>
 										<ansi:hasPermission permissionRequired="QUOTE_READ"><li><a href="jobLookup.html?type=CONTACT"><bean:message key="menu.label.jobs" /> (Contact)</a></li></ansi:hasPermission>
-										<ansi:hasPermission permissionRequired="TICKET">
-										<li><html:link action="ticketLookup"><bean:message key="menu.label.tickets" /></html:link></li>
-										</ansi:hasPermission>
-										<ansi:hasPermission permissionRequired="INVOICE">
-										<li><html:link action="invoiceLookup"><bean:message key="menu.label.invoices" /></html:link></li>
-										</ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="TICKET_READ"><li><html:link action="ticketLookup"><bean:message key="menu.label.tickets" /></html:link></li></ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="TICKET_READ"><li><html:link action="ticketAssignmentLookup">Ticket Assignment</html:link></li></ansi:hasPermission>
+										<ansi:hasPermission permissionRequired="INVOICE_READ"><li><html:link action="invoiceLookup"><bean:message key="menu.label.invoices" /></html:link></li></ansi:hasPermission>
 										<ansi:hasPermission permissionRequired="PAYMENT">
 										<li><html:link action="paymentLookup"><bean:message key="menu.label.payments" /></html:link></li>
 										</ansi:hasPermission>

@@ -19,7 +19,6 @@ import com.ansi.scilla.common.utils.WhereFieldLikeTransformer;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.ColumnFilter;
 import com.ansi.scilla.web.common.utils.SessionDivisionTransformer;
 
 public class TicketAssignmentLookupQuery extends LookupQuery {
@@ -27,6 +26,7 @@ public class TicketAssignmentLookupQuery extends LookupQuery {
 	private static final long serialVersionUID = 1L;
 
 	public static final String TICKET_ID = "view_ticket_log.ticket_id";
+	public static final String DIV = "concat(division.division_nbr,'-',division.division_code)";
 	public static final String JOB_ID = "view_ticket_log.job_id";
 	public static final String START_DATE = "view_ticket_log.start_date";
 	public static final String TICKET_STATUS = "view_ticket_log.ticket_status";
@@ -52,6 +52,7 @@ public class TicketAssignmentLookupQuery extends LookupQuery {
 		+ "\n\t	 view_ticket_log.ticket_status as view_ticket_status, view_ticket_log.ticket_type as view_ticket_type, " 
 		+ "\n\t  ticket.act_price_per_cleaning,  "
 		+ "\n\t	 division.division_id,   "
+		+ "\n\t concat(division.division_nbr,'-',division.division_code) as div,"
 		+ "\n\t	 job.job_status, job.service_description,  job.job_frequency, job.job_nbr, " 
 		+ "\n\t	 isnull(ticket.act_price_per_cleaning, job.price_per_cleaning) as price_per_cleaning, " 
 		+ "\n\t	 quote.quote_id,    "
@@ -70,16 +71,14 @@ public class TicketAssignmentLookupQuery extends LookupQuery {
 			+ "\n JOIN address a2 ON quote.job_site_address_id = a2.address_id  "
 			+ "\n LEFT JOIN ticket_assignment on ticket_assignment.ticket_id=view_ticket_log.ticket_id "
 			+ "\n LEFT JOIN ansi_user on ansi_user.user_id = ticket_assignment.washer_id ";
-//			+ "\n WHERE  division.division_id=102 and view_ticket_log.ticket_status in ('D') " 
-//			+ "\n ORDER by view_ticket_log.ticket_id  desc   ";
 	
 	public static final String sqlWhereClause = "\n WHERE view_ticket_log.ticket_status='"+TicketStatus.DISPATCHED.code()+"'";
 	
 	
-	private Integer jobId;
-	private Integer ticketId;
-	private Integer divisionId;
-	private Integer washerId;
+//	private Integer jobId;
+//	private Integer ticketId;
+//	private Integer divisionId;
+//	private Integer washerId;
 	
 	public TicketAssignmentLookupQuery(Integer userId, List<SessionDivision> divisionList) {
 		super(sqlSelect, makeFromClause(sqlFromClause, divisionList, ""), sqlWhereClause);
@@ -87,30 +86,30 @@ public class TicketAssignmentLookupQuery extends LookupQuery {
 		this.userId = userId;
 	}
 	
-	public Integer getJobId() {
-		return jobId;
-	}
-	public void setJobId(Integer jobId) {
-		this.jobId = jobId;
-	}
-	public Integer getDivisionId() {
-		return divisionId;
-	}
-	public void setDivisionId(Integer divisionId) {
-		this.divisionId = divisionId;
-	}
-	public Integer getWasherId() {
-		return washerId;
-	}
-	public void setWasherId(Integer washerId) {
-		this.washerId = washerId;
-	}
-	public Integer getTicketId() {
-		return ticketId;
-	}
-	public void setTicketId(Integer ticketId) {
-		this.ticketId = ticketId;
-	}
+//	public Integer getJobId() {
+//		return jobId;
+//	}
+//	public void setJobId(Integer jobId) {
+//		this.jobId = jobId;
+//	}
+//	public Integer getDivisionId() {
+//		return divisionId;
+//	}
+//	public void setDivisionId(Integer divisionId) {
+//		this.divisionId = divisionId;
+//	}
+//	public Integer getWasherId() {
+//		return washerId;
+//	}
+//	public void setWasherId(Integer washerId) {
+//		this.washerId = washerId;
+//	}
+//	public Integer getTicketId() {
+//		return ticketId;
+//	}
+//	public void setTicketId(Integer ticketId) {
+//		this.ticketId = ticketId;
+//	}
 
 	@Override
 	protected String makeOrderBy(SelectType selectType) {
@@ -172,20 +171,20 @@ public class TicketAssignmentLookupQuery extends LookupQuery {
 			whereClause = whereClause + joiner +  "(" + StringUtils.join(whereClauseList, " \n\tOR ") + ")";
 		}
 
-		List<ColumnFilter> filterList = new ArrayList<ColumnFilter>();
-		if ( divisionId != null ) {
-			filterList.add(new ColumnFilter(DIVISION_ID, divisionId, ColumnFilter.ComparisonType.EQUAL_NUMBER));
-		}
-		if ( jobId != null ) {
-			filterList.add(new ColumnFilter(JOB_ID, jobId, ColumnFilter.ComparisonType.EQUAL_NUMBER));
-		}
-		if ( washerId != null ) {
-			filterList.add(new ColumnFilter(WASHER_ID, washerId, ColumnFilter.ComparisonType.EQUAL_NUMBER));
-		}
-		if ( ticketId != null ) {
-			filterList.add(new ColumnFilter(TICKET_ID, ticketId, ColumnFilter.ComparisonType.EQUAL_NUMBER));
-		}
-		super.setConstraintList(filterList);
+//		List<ColumnFilter> filterList = new ArrayList<ColumnFilter>();
+//		if ( divisionId != null ) {
+//			filterList.add(new ColumnFilter(DIVISION_ID, divisionId, ColumnFilter.ComparisonType.EQUAL_NUMBER));
+//		}
+//		if ( jobId != null ) {
+//			filterList.add(new ColumnFilter(JOB_ID, jobId, ColumnFilter.ComparisonType.EQUAL_NUMBER));
+//		}
+//		if ( washerId != null ) {
+//			filterList.add(new ColumnFilter(WASHER_ID, washerId, ColumnFilter.ComparisonType.EQUAL_NUMBER));
+//		}
+//		if ( ticketId != null ) {
+//			filterList.add(new ColumnFilter(TICKET_ID, ticketId, ColumnFilter.ComparisonType.EQUAL_NUMBER));
+//		}
+//		super.setConstraintList(filterList);
 
 		return whereClause;
 	}
@@ -212,9 +211,9 @@ public class TicketAssignmentLookupQuery extends LookupQuery {
 			for ( Division d : divisionList) { sdList.add(new SessionDivision(d)); }
 			TicketAssignmentLookupQuery x = new TicketAssignmentLookupQuery(5, sdList);
 //			x.setSearchTerm("Chicago");
-			x.setDivisionId(102);
+//			x.setDivisionId(102);
 //			x.setJobId(212137);
-			x.setTicketId(789391);
+//			x.setTicketId(789391);
 			System.out.println("Countall: " + x.countAll(conn));
 			System.out.println("Count some: " + x.selectCount(conn));
 			ResultSet rs = x.select(conn,  0, 50);

@@ -15,6 +15,7 @@
     	<form-bean name="quoteMaintenanceForm" type="com.ansi.scilla.web.quote.actionForm.QuoteMaintenanceForm" />
     	<form-bean name="reportIdForm"         type="com.ansi.scilla.web.report.actionForm.ReportIdForm" />
     	<form-bean name="ticketLookupForm"     type="com.ansi.scilla.web.ticket.actionForm.TicketLookupForm" />
+    	<form-bean name="ticketAssignmentLookupForm" type="com.ansi.scilla.web.ticket.actionForm.TicketAssignmentLookupForm" />
     </form-beans>
 	<!--
 
@@ -293,7 +294,15 @@
             <forward name="valid" path="/tickets/ticketAssignment.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
-		
+		<action
+            path="/ticketAssignmentLookup"
+            type="com.ansi.scilla.web.ticket.action.TicketAssignmentLookupAction"
+            name="ticketAssignmentLookupForm"
+            input="/ticketAssignmentLookup.jsp"
+            scope="request">            
+            <forward name="valid" path="/tickets/ticketAssignmentLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
         <action
             path="/ticketOverride"
             type="com.ansi.scilla.web.ticket.action.TicketReturnAction"
