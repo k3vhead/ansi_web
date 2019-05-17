@@ -1,11 +1,13 @@
 $(function() {    	
 	;LOOKUPUTILS = {
 		makeFilters : function($myTable, $filterContainerName, $dataTableName, $tableMakerFunction) {
+			console.log("makeFilters");
 			// parameters
 			//     myTable - the datatables constructor. Easiest way to get is to you "this" from inside initComplete function
 			//     filterContainerName - the CSS selector for the div that will contain the filter table
 			//     dataTableName - the CSS selector for the datatables table
 			//	   tableMakerFunction - method that will reinitalize the table
+			$($filterContainerName + " .filter-div").html("");  // first - clear out whatever is in there now
 			var $filterTable = $("<table>");
         	
         	var dataTable = $($dataTableName).DataTable();
@@ -16,7 +18,7 @@ $(function() {
         	dataTable.columns().every( function(colIdx) {
         		var $column = this;
 		
-        		if ( columns[colIdx].searchable ) {
+        		if ( columns[colIdx].searchable == true) {
             		var $filterRow = $("<tr>");
             		var $titleCell = $("<td>");
             		var $fieldCell = $("<td>");
@@ -33,7 +35,9 @@ $(function() {
             		$filterTable.append($filterRow);
             		
             		var $selector = $filterContainerName + ' .filter-div input[name="' + $fieldName + '"]';
+            		console.log("Selector: " + $selector);
             		$($selector).on('keyup change', function() {
+            			console.log($dataTableName + "\tSearching column: " + colIdx + " for " + columns[colIdx].title + " " + this.value);
         				var dataTable = $($dataTableName).DataTable();
         				myColumn = dataTable.columns(colIdx);
        					myColumn.search(this.value).draw();

@@ -35,6 +35,10 @@
         		text-align:center;
         		font-weight:bold;
         	}
+        	#searching-modal {
+        		display:none;
+        	}
+        	
         	#table-container {
         		width:100%;
         	}
@@ -76,17 +80,17 @@
         		//divisionMap : {},
         		//division : null,
         		
-        		divisionId : '<c:out value="${ANSI_DIVISION_ID}" />',
-				jobId : '<c:out value="${ANSI_JOB_ID}" />',
-				ticketId : '<c:out value="${ANSI_TICKET_ID}" />',
-				washerId : '<c:out value="${ANSI_WASHER_ID}" />',
+        		divisionFilter : '<c:out value="${ANSI_DIVISION_ID}" />',	// col 1
+				jobFilter : '<c:out value="${ANSI_JOB_ID}" />', 			// col 7
+				ticketFilter : '<c:out value="${ANSI_TICKET_ID}" />',   	//col 0
+				washerFilter : '<c:out value="${ANSI_WASHER_ID}" />',		//col 9
 
         		
         		
         		init : function() {
+        			TICKETASSIGNMENTLOOKUP.makeModals();
         			TICKETASSIGNMENTLOOKUP.makeTable();
         			TICKETASSIGNMENTLOOKUP.makeClickers();
-               		TICKETUTILS.makeTicketViewModal("#ticket-modal")
                		//ANSI_UTILS.makeDivisionList(TICKETASSIGNMENTLOOKUP.makeDivListSuccess, TICKETASSIGNMENTLOOKUP.makeDivListFailure);               		
         		},
         		
@@ -100,6 +104,37 @@
     					$("#ticket-modal").dialog("open");
     				});
 
+    			},
+    			
+    			
+    			
+    			doTableFilter : function($colNbr, $filterValue) {
+	            	if ( $filterValue != null &&  $filterValue !='' ) {
+	            		console.log("Setting  ticketfilter");
+	        			console.log("filtering for : " + $filterValue);
+	            		LOOKUPUTILS.setFilterValue("#filter-container", $colNbr, $filterValue); //set value in filters
+	        			var dataTable = $('#ticket-assignment-table').DataTable();
+	    				myColumn = dataTable.columns($colNbr);
+	   					myColumn.search($filterValue).draw();
+	            	}
+    			},
+    			
+    			
+    			
+    			isFiltered : function() {
+    				var $isFiltered = false;
+    				
+    				if (TICKETASSIGNMENTLOOKUP.divisionFilter != null && TICKETASSIGNMENTLOOKUP.divisionFilter != '') {
+    					$isFiltered = true;
+    				} else if (TICKETASSIGNMENTLOOKUP.jobFilter != null && TICKETASSIGNMENTLOOKUP.jobFilter != '') {
+    					$isFiltered = true;
+    				} else if (TICKETASSIGNMENTLOOKUP.ticketFilter != null && TICKETASSIGNMENTLOOKUP.ticketFilter != '') {
+    					$isFiltered = true;
+    				} else if (TICKETASSIGNMENTLOOKUP.washerFilter != null && TICKETASSIGNMENTLOOKUP.washerFilter != '') {
+    					$isFiltered = true;
+    				}
+    				
+    				return $isFiltered;
     			},
     			
     			
@@ -142,6 +177,25 @@
         		
         		
         		
+        		
+        		makeModals : function() {
+               		TICKETUTILS.makeTicketViewModal("#ticket-modal")
+
+        			$("#searching-modal" ).dialog({
+						autoOpen: false,
+						height: 190,
+						width: 300,
+						modal: true,
+						closeOnEscape:false,
+						title:"Searching",
+						open: function(event, ui) {
+							$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+						}
+					});	
+        		},
+        		
+        		
+        		
         		makeTable : function(){
             		TICKETASSIGNMENTLOOKUP.dataTable = $('#ticket-assignment-table').DataTable( {
             			"aaSorting":		[[0,'desc']],
@@ -166,8 +220,8 @@
             	        
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
-            	            { className: "dt-left", "targets": [2,3,7] },
-            	            { className: "dt-center", "targets": [0,1,4,5,8] },
+            	            { className: "dt-left", "targets": [2,3,8] },
+            	            { className: "dt-center", "targets": [0,1,4,5,7,9] },
             	            { className: "dt-right", "targets": [6]}
             	         ],
             	        "paging": true,
@@ -198,21 +252,41 @@
     			            { width:"8%", title: "PPC", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.price_per_cleaning != null){return (row.price_per_cleaning.toFixed(2)+"");}
     			            } },
+    			            { width:"8%", title: "<bean:message key="field.label.jobId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            	if(row.view_job_id != null){return '<ansi:hasPermission permissionRequired="QUOTE_READ"><a href="jobMaintenance.html?id='+ row.view_job_id +'" class="jobLink"></ansi:hasPermission>'+row.view_job_id+'<ansi:hasPermission permissionRequired="QUOTE_READ"></a></ansi:hasPermission>';}
+    			            } },
     			            { width:"7%", title: "Washer",  "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-    			            	if(row.last_name != null){return (row.last_name+", "+row.first_name);}
+    			            	if(row.washer != null){return row.washer;}
     			            } },
     			            { width:"5%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
     			            	$actionData = "claim links"
     			            	return "";
     			            } }],
     			            "initComplete": function(settings, json) {
-    			            	$("#table-container").show();
+    			            	console.log("initComplete");
     			            	//console.log(json);
     			            	//doFunctionBinding();
     			            	var myTable = this;
     			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#ticket-assignment-table", TICKETASSIGNMENTLOOKUP.makeTable);
+    			            	
+			            		setTimeout(function() {
+			            			if ( TICKETASSIGNMENTLOOKUP.isFiltered()) {
+			            				$("#searching-modal").dialog("open");
+	    			            		TICKETASSIGNMENTLOOKUP.doTableFilter(0, TICKETASSIGNMENTLOOKUP.ticketFilter);
+	    			            		TICKETASSIGNMENTLOOKUP.doTableFilter(1, TICKETASSIGNMENTLOOKUP.divisionFilter);
+	    			            		TICKETASSIGNMENTLOOKUP.doTableFilter(7, TICKETASSIGNMENTLOOKUP.jobFilter);
+	    			            		TICKETASSIGNMENTLOOKUP.doTableFilter(8, TICKETASSIGNMENTLOOKUP.washerFilter);
+	    			            		//clear filters so we don't reuse them 
+	    			            		TICKETASSIGNMENTLOOKUP.ticketFilter = null;
+	    			            		TICKETASSIGNMENTLOOKUP.divisionFilter = null;
+	    			            		TICKETASSIGNMENTLOOKUP.jobFilter = null;
+	    			            		TICKETASSIGNMENTLOOKUP.washerFilter = null;
+			            			}
+			            		},100)
     			            },
-    			            "drawCallback": function( settings ) {
+    			            "drawCallback": function( settings ) {    			            	
+    			            	console.log("drawCallback");
+    			            	$("#searching-modal").dialog("close");
     			            	TICKETASSIGNMENTLOOKUP.doFunctionBinding();
     			            }
     			    } );
@@ -310,27 +384,31 @@
     	<h1>Ticket Assignment <bean:message key="menu.label.lookup" /></h1> 
 
     	
-    	
+		<%--    	
     	<c:if test="${not empty ANSI_JOB_ID}">
     		<span class="orange"><bean:message key="field.label.jobFilter" />: <c:out value="${ANSI_JOB_ID}" /></span><br />
     	</c:if>
     	<c:if test="${not empty ANSI_DIVISION_ID}">
     		<span class="orange"><bean:message key="field.label.divisionFilter" />: <c:out value="${ANSI_DIVISION_ID}" /></span><br />
     	</c:if>
+    	 --%>
     	  	
-    	  	
- 	<webthing:lookupFilter filterContainer="filter-container" />
-	<div id="table-container">
-	 	<table id="ticket-assignment-table" class="display" cellspacing="0" style="table-layout: fixed; font-size:9pt;min-width:1300px; max-width:1300px;width:1300px;">
-	        <thead></thead>
-	        <tbody></tbody>
-	        <tfoot></tfoot>
-	    </table>
-    </div>
-    
-    <webthing:scrolltop />
-
-    <webthing:ticketModal ticketContainer="ticket-modal" />
+	 	<webthing:lookupFilter filterContainer="filter-container" />
+		<div id="table-container">
+		 	<table id="ticket-assignment-table" class="display" cellspacing="0" style="table-layout: fixed; font-size:9pt;min-width:1300px; max-width:1300px;width:1300px;">
+		        <thead></thead>
+		        <tbody></tbody>
+		        <tfoot></tfoot>
+		    </table>
+	    </div>
+	    
+	    <webthing:scrolltop />
+	
+	    <webthing:ticketModal ticketContainer="ticket-modal" />
+	    
+	    <div id="searching-modal">
+    		<webthing:thinking style="width:100%" />
+    	</div>
 
     </tiles:put>
 		

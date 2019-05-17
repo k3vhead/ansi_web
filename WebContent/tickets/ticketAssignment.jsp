@@ -86,6 +86,10 @@
 			.action-button {
 				cursor:pointer;
 			}
+			.search-button {
+				color:#000000;
+				text-decoration:none;
+			}
         	.ticket {
         		border:solid 1px #404040;
         		width:90%;
@@ -249,7 +253,7 @@
 			            	if(row.amount_due != null){return (row.amount_due+"");} 
 			            } },
 			            { width:"5%", title: "Select",  data: function ( row, type, set ) {	
-			            	var $search = '<span class="search-by-ticket" data-id="'+ row.ticket_id+'"><webthing:view styleClass="action-button">Search</webthing:view></span>';
+			            	var $search = '<a href="ticketAssignmentLookup.html?ticketId='+row.ticket_id+'" class="search-button"><webthing:view styleClass="action-button">Search</webthing:view></a>';
 			            	var $checkbox = '<input type="checkbox" class="ticket-selector" data-id="'+row.ticket_id+'" >';
 			            	return $search + " " + $checkbox;
 			            } }
@@ -309,7 +313,7 @@
         			            	if(row.user_id != null){return row.last_name+', '+row.first_name;}
         			            } },
         			            { title: "Select", "defaultContent":"<i>N/A</i>", searchable:false, data: function(row, type, set) {
-        			            	var $search = '<span class="search-by-user" data-id="'+ row.user_id+'"><webthing:view styleClass="action-button">Search</webthing:view></span>';
+        			            	var $search = '<a href="ticketAssignmentLookup.html?washerId='+row.last_name+', '+row.first_name+'" class="search-button"><webthing:view styleClass="action-button">Search</webthing:view></a>';
         			            	var $checkbox = '<input type="checkbox" class="user-selector" data-id="'+row.user_id+'" data-first="'+row.first_name+'" data-last="'+row.last_name+'" />';
         			            	return $search + " " + $checkbox;
         			            }}

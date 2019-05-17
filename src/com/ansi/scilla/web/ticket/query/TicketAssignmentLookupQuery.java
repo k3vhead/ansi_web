@@ -45,6 +45,7 @@ public class TicketAssignmentLookupQuery extends LookupQuery {
 	public static final String FIRST_NAME = "ansi_user.first_name";
 	public static final String LAST_NAME = "ansi_user.last_name";	
 	public static final String DIVISION_ID = "division.division_id";
+	public static final String WASHER = "concat(ansi_user.last_name, ', ', ansi_user.first_name)";
 	
 	public static final String sqlSelect = 
 		"SELECT view_ticket_log.ticket_id as view_ticket_id, view_ticket_log.job_id as view_job_id, "
@@ -58,7 +59,7 @@ public class TicketAssignmentLookupQuery extends LookupQuery {
 		+ "\n\t	 quote.quote_id,    "
 		+ "\n\t	 a1.name as bill_to_name, " 
 		+ "\n\t	 a2.name as job_site_name, a2.address1 as job_site_address, "
-		+ "\n\t	 ansi_user.user_id, ansi_user.first_name, ansi_user.last_name ";
+		+ "\n\t	 ansi_user.user_id, concat(ansi_user.last_name, ', ', ansi_user.first_name) as washer ";
 		
 	public static final String sqlFromClause = 
 			"\n FROM view_ticket_log   "

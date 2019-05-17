@@ -32,6 +32,7 @@ public class TicketAssignmentLookupServlet extends AbstractLookupServlet {
 	public static final String START_DATE = "view_start_date";
 	public static final String FREQUENCY_DESC = "frequency_desc";
 	public static final String JOB_FREQUENCY = "job_frequency";
+	public static final String WASHER = "washer";
 	
 	public TicketAssignmentLookupServlet() {
 		super(Permission.TICKET_READ);
@@ -43,8 +44,8 @@ public class TicketAssignmentLookupServlet extends AbstractLookupServlet {
 				TicketAssignmentLookupQuery.START_DATE,
 				TicketAssignmentLookupQuery.JOB_FREQUENCY,
 				TicketAssignmentLookupQuery.PRICE_PER_CLEANING,
-				TicketAssignmentLookupQuery.LAST_NAME,
-				TicketAssignmentLookupQuery.FIRST_NAME,
+				TicketAssignmentLookupQuery.JOB_ID,
+				TicketAssignmentLookupQuery.WASHER,
 				};
 		super.itemTransformer = new ItemTransformer();
 	}
