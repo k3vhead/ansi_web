@@ -331,27 +331,19 @@
 							{
 								id: "user-save-button",
 								click: function($event) {
+									//if(USERLOOKUP.saveUser() == 200){
 									USERLOOKUP.saveUser();
-									$("#user-save-button").hide();
-									$("#user-cancel-button").hide();
-									$("#user-done-button").toggle();
+									//$("#addForm input[name='userId']").val($data.data.userList[0].userId);
+										
+									//}
 								}
 							},
-							{
-								id: "user-done-button",
-								click: function($event){
-									$("#user-done-button").hide();
-									$("#user-cancel-button").toggle();
-									$("#user-save-button").toggle();
-									$("#user-form-modal").dialog("close");
-								}
-							}
+							
 						]
 					});	
 					$("#user-save-button").button('option', 'label', 'Save');
 					$("#user-cancel-button").button('option', 'label', 'Cancel');
-					$("#user-done-button").button('option', 'label', 'Done');
-					$("#user-done-button").hide();
+					
             	},
             	
             	getTotalList : function($userId) {
@@ -490,7 +482,9 @@
 							200: function($data) {								
 								if ( $data.responseHeader.responseCode == "SUCCESS") {
 									if ( thisIsAnAdd ) {
+										$("#addForm input[name='userId']").val($data.data.userList[0].userId);
 				    					$('#userTable').DataTable().ajax.reload();
+				    					//$("#addForm input[name='userId']").val($data.data.userList[0].userId);
 				    					USERLOOKUP.getTotalList($data.data.userList[0].userId);
 									} else {
 										$("#user-form-modal").dialog("close");
