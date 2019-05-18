@@ -186,6 +186,7 @@
     			            			var dataTable = $('#displayTable').DataTable();
     			        				myColumn = dataTable.columns(4);
     			       					myColumn.search(CLAIMDETAIL.ticketFilter).draw();
+    			       					CLAIMDETAIL.ticketFilter = null;
     			            		},100)
     			            	}
     			            },
