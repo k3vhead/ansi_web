@@ -331,11 +331,7 @@
 							{
 								id: "user-save-button",
 								click: function($event) {
-									//if(USERLOOKUP.saveUser() == 200){
 									USERLOOKUP.saveUser();
-									//$("#addForm input[name='userId']").val($data.data.userList[0].userId);
-										
-									//}
 								}
 							},
 							
@@ -484,7 +480,6 @@
 									if ( thisIsAnAdd ) {
 										$("#addForm input[name='userId']").val($data.data.userList[0].userId);
 				    					$('#userTable').DataTable().ajax.reload();
-				    					//$("#addForm input[name='userId']").val($data.data.userList[0].userId);
 				    					USERLOOKUP.getTotalList($data.data.userList[0].userId);
 									} else {
 										$("#user-form-modal").dialog("close");
