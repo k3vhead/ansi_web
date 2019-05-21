@@ -5,9 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
 
-import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.common.query.AbstractQuery;
 
-public class DashboardFavoriteQuery extends DashboardFavoriteBaseQuery {
+abstract class DashboardFavoriteBaseQuery extends AbstractQuery {
 
 	private static final long serialVersionUID = 1L;
 
@@ -26,8 +26,8 @@ public class DashboardFavoriteQuery extends DashboardFavoriteBaseQuery {
 	private List<String> permissionList;
 	private String optionType;
 	
-	public DashboardFavoriteQuery(Integer userId, List<String> permissionList, String optionType) {
-		super(userId, permissionList, optionType);
+	public DashboardFavoriteBaseQuery(Integer userId, List<String> permissionList, String optionType) {
+		super();
 		this.userId = userId;
 		this.permissionList = permissionList;
 		this.optionType = optionType;
@@ -57,12 +57,7 @@ public class DashboardFavoriteQuery extends DashboardFavoriteBaseQuery {
 		this.optionType = optionType;
 	}
 	
-	@Override
-	protected String makeWhereClause() {
-		String boundVars = AppUtils.makeBindVariables(this.permissionList);
-		String whereClause = this.whereSql.replaceAll("\\$PERMISSION_FILTER\\$", boundVars);
-		return whereClause;
-	}
+	abstract protected String makeWhereClause();
 	
 	protected String makeSql() {
 		String sql = selectSql + " " + fromSql + " " + makeWhereClause() + " " + orderSql;
