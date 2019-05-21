@@ -118,6 +118,12 @@
         		selectedTicketList : [],
         		selectedUserList : {},
         		
+        		divisionFilter : '<c:out value="${ANSI_DIVISION_ID}" />',	// col 1
+				jobFilter : '<c:out value="${ANSI_JOB_ID}" />', 			// col 7
+				ticketFilter : '<c:out value="${ANSI_TICKET_ID}" />',   	//col 0
+				washerFilter : '<c:out value="${ANSI_WASHER_ID}" />',		//col 9
+
+        		
         		
         		init : function() {
         			ANSI_UTILS.makeDivisionList(TICKETASSIGNMENT.makeDivListSuccess, TICKETASSIGNMENT.makeDivListFailure);
@@ -207,54 +213,54 @@
 			            		if(row.ticket_id != null){return ('<a href="#" data-id="'+row.ticket_id+'" class="ticket-clicker">'+row.ticket_id+'</a>');}
 			            	} 
     			        },
-			            { searchable:false, visible:false, width:"5%", title: "<bean:message key="field.label.ticketStatus" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            { searchable:false, visible:false, width:"5%", title: "<bean:message key="field.label.ticketStatus" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.ticket_status != null){return ('<span class="tooltip">' + row.ticket_status+'<span class="tooltiptext">'+row.ticket_status_desc+'</span></span>');}
 			            } },
-			            { searchable:false, visible:false, width:"5%", title: "<bean:message key="field.label.ticketType" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            { searchable:false, visible:false, width:"5%", title: "<bean:message key="field.label.ticketType" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.ticket_type_desc != null){return (row.ticket_type_desc+"");}
 			            } },
-			            { searchable:false, visible:false, width:"4%", title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            { searchable:false, visible:false, width:"4%", title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.div != null){return (row.div);}
 			            } },
-			            { searchable:true, visible:false, width:"8%", title: "<bean:message key="field.label.billToName" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+			            { searchable:true, visible:false, width:"8%", title: "<bean:message key="field.label.billToName" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.bill_to_name != null){return (row.bill_to_name+"");}
 			            } },
-			            { searchable:true,width:"8%", title: "<bean:message key="field.label.jobSiteName" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            { searchable:true,width:"8%", title: "<bean:message key="field.label.jobSiteName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.job_site_name != null){return (row.job_site_name+"");}
 			            } },
-			            { searchable:true,visible:false, width:"7%", title: "<bean:message key="field.label.jobSiteAddress" />",  "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            { searchable:true,visible:false, width:"7%", title: "<bean:message key="field.label.jobSiteAddress" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.job_site_address != null){return (row.job_site_address+"");}
 			            } },
-			            { searchable:true,width:"6%", title: "<bean:message key="field.label.startDate" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            { searchable:true,width:"6%", title: "<bean:message key="field.label.startDate" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.start_date != null){return (row.start_date+"");}
 			            } },
-			            { searchable:true,width:"5%", title: "<bean:message key="field.label.jobFrequency" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            { searchable:true,width:"5%", title: "<bean:message key="field.label.jobFrequency" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.job_frequency != null){return (row.job_frequency+"");}
 			            } },
-			            { searchable:false, visible:false, width:"5%", title: "<bean:message key="field.label.pricePerCleaning" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            { searchable:false, visible:false, width:"5%", title: "<bean:message key="field.label.pricePerCleaning" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.price_per_cleaning != null){return (row.price_per_cleaning+"");}
 			            } },
 			            { searchable:false, visible:false, width:"5%", title: "<bean:message key="field.label.jobNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
 			            	if(row.job_nbr != null){return (row.job_nbr+"");}
 			            } },
-			            { searchable:true,visible:false, width:"4%", title: "<bean:message key="field.label.jobId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+			            { searchable:true,visible:false, width:"4%", title: "<bean:message key="field.label.jobId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.job_id != null){return ('<ansi:hasPermission permissionRequired="QUOTE_READ"><a href="jobMaintenance.html?id='+ row.job_id +'" class="jobLink"></ansi:hasPermission>'+row.job_id+'<ansi:hasPermission permissionRequired="QUOTE_READ"></a></ansi:hasPermission>');}
 			            } },
-			            { searchable:true,visible:false, width:"16%", title: "<bean:message key="field.label.serviceDescription" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            { searchable:true,visible:false, width:"16%", title: "<bean:message key="field.label.serviceDescription" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.service_description != null){return (row.service_description+"");}
 			            } },
-			            { searchable:false, visible:false, width:"6%", title: "<bean:message key="field.label.processDate" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) { 	
+			            { searchable:false, visible:false, width:"6%", title: "<bean:message key="field.label.processDate" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
 			            	if(row.process_date != null){return (row.process_date+"");}
 			            } },
-			            { searchable:false, visible:false, width:"6%", title: "<bean:message key="field.label.invoiceId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+			            { searchable:false, visible:false, width:"6%", title: "<bean:message key="field.label.invoiceId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.invoice_id != null){return (row.invoice_id+"");} 
 			            } },
-			            { searchable:false, visible:false, width:"6%", title: "<bean:message key="field.label.amountDue" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+			            { searchable:false, visible:false, width:"6%", title: "<bean:message key="field.label.amountDue" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            	if(row.amount_due != null){return (row.amount_due+"");} 
 			            } },
 			            { width:"5%", title: "Select",  data: function ( row, type, set ) {	
 			            	var $search = '<a href="ticketAssignmentLookup.html?ticketId='+row.ticket_id+'" class="search-button"><webthing:view styleClass="action-button">Search</webthing:view></a>';
-			            	var $checkbox = '<input type="checkbox" class="ticket-selector" data-id="'+row.ticket_id+'" >';
+			            	var $checkbox = '<input type="checkbox" class="ticket-selector" data-id="'+row.ticket_id+'" id="ticket-selector-'+row.ticket_id+'">';
 			            	return $search + " " + $checkbox;
 			            } }
 			            ],
@@ -263,6 +269,19 @@
     			            	//doFunctionBinding();
     			            	var myTable = this;
     			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#ticket-table", TICKETASSIGNMENT.loadTickets);
+    			            	
+    			            	setTimeout(function() {
+			            			if ( TICKETASSIGNMENT.isFiltered()) {
+			            				$("#searching-modal").dialog("open");
+	    			            		TICKETASSIGNMENT.doTableFilter(0, TICKETASSIGNMENT.ticketFilter);
+	    			            		TICKETASSIGNMENT.doTableFilter(7, TICKETASSIGNMENT.jobFilter);
+	    			            		TICKETASSIGNMENT.doTableFilter(8, TICKETASSIGNMENT.washerFilter);
+	    			            		//clear filters so we don't reuse them 
+	    			            		TICKETASSIGNMENT.ticketFilter = null;
+	    			            		TICKETASSIGNMENT.jobFilter = null;
+	    			            		TICKETASSIGNMENT.washerFilter = null;
+			            			}
+			            		},100)
     			            	//$("#filter-container .filter-banner .filter-hider .filter-data-closed").click(); //open the filter container inside the modal
     			            	TICKETASSIGNMENT.ticketsLoaded = true; 
     			            	TICKETASSIGNMENT.displayPanels();
@@ -427,6 +446,12 @@
 					$select.change(function() {
 						TICKETASSIGNMENT.processDivChange();						
 					});
+					
+					if ( TICKETASSIGNMENT.divisionFilter != null && TICKETASSIGNMENT.divisionFilter != '') {
+						$select.val(TICKETASSIGNMENT.divisionFilter);
+						TICKETASSIGNMENT.divisionFilter = null;
+						TICKETASSIGNMENT.processDivChange();
+					}
         		},
         		
         		
@@ -481,7 +506,7 @@
     					$("#ticket-modal").dialog("open");
     				});
         			
-        			$(".search-by-ticket").click(function($clicevent) {
+        			$(".search-by-ticket").click(function($clickevent) {
         				var $ticketId = $(this).attr("data-id");
         				TICKETASSIGNMENT.makeAssignmentTable($ticketId, null);
         			});
@@ -537,6 +562,37 @@
         			var $lastName = $ui.helper.attr("data-last");
         			TICKETASSIGNMENT.makeAssignment($ticketId, $userId, $firstName, $lastName);
         		},
+        		
+        		
+        		
+        		
+        		
+        		doTableFilter : function($colNbr, $filterValue) {
+	            	if ( $filterValue != null &&  $filterValue !='' ) {
+	            		console.log("Setting  ticketfilter");
+	        			console.log("filtering for : " + $filterValue);
+	            		LOOKUPUTILS.setFilterValue("#filter-container", $colNbr, $filterValue); //set value in filters
+	        			var dataTable = $('#ticket-assignment-table').DataTable();
+	    				myColumn = dataTable.columns($colNbr);
+	   					myColumn.search($filterValue).draw();
+	            	}
+    			},
+    			
+    			
+    			
+    			isFiltered : function() {
+    				var $isFiltered = false;
+    				
+    				if (TICKETASSIGNMENT.jobFilter != null && TICKETASSIGNMENT.jobFilter != '') {
+    					$isFiltered = true;
+    				} else if (TICKETASSIGNMENT.ticketFilter != null && TICKETASSIGNMENT.ticketFilter != '') {
+    					$isFiltered = true;
+    				} else if (TICKETASSIGNMENT.washerFilter != null && TICKETASSIGNMENT.washerFilter != '') {
+    					$isFiltered = true;
+    				}
+    				
+    				return $isFiltered;
+    			},
         	},
         	
         	TICKETASSIGNMENT.init();

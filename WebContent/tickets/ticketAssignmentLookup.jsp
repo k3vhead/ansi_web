@@ -77,8 +77,6 @@
         $(document).ready(function(){
         	;TICKETASSIGNMENTLOOKUP = {
         		dataTable : null,
-        		//divisionMap : {},
-        		//division : null,
         		
         		divisionFilter : '<c:out value="${ANSI_DIVISION_ID}" />',	// col 1
 				jobFilter : '<c:out value="${ANSI_JOB_ID}" />', 			// col 7
@@ -91,7 +89,6 @@
         			TICKETASSIGNMENTLOOKUP.makeModals();
         			TICKETASSIGNMENTLOOKUP.makeTable();
         			TICKETASSIGNMENTLOOKUP.makeClickers();
-               		//ANSI_UTILS.makeDivisionList(TICKETASSIGNMENTLOOKUP.makeDivListSuccess, TICKETASSIGNMENTLOOKUP.makeDivListFailure);               		
         		},
         		
         		
@@ -147,33 +144,7 @@
         		},
         		
         		
-        		makeDivListFailure : function($data) {
-					$("#globalMsg").html("Failed to load Division List. Contact Support");
-	       		},
-
-	       		
-	       		
-        		makeDivListSuccess : function($data) {
-   			 		console.log("Div List Success");
-   			 		var $select = $("select[name='divisionId']");
-					$('option', $select).remove();
-
-					$select.append(new Option("",""));
-					$.each($data.data.divisionList, function(index, val) {
-    					$select.append(new Option(val.divisionNbr + "-" + val.divisionCode, val.divisionId));
-    					TICKETASSIGNMENTLOOKUP.divisionMap[val.divisionId] = val;
-					});
-					
-					$select.change(function() {
-						TICKETASSIGNMENTLOOKUP.processDivChange();						
-					});
-					
-					if ( TICKETASSIGNMENTLOOKUP.divisionId != '' ) {
-						console.log("Switching to div: " + TICKETASSIGNMENTLOOKUP.divisionId);
-						$($select).val(TICKETASSIGNMENTLOOKUP.divisionId);
-						TICKETASSIGNMENTLOOKUP.processDivChange();						
-					}
-        		},
+        		
         		
         		
         		
@@ -258,9 +229,12 @@
     			            { width:"7%", title: "Washer",  "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.washer != null){return row.washer;}
     			            } },
-    			            { width:"5%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
-    			            	$actionData = "claim links"
-    			            	return "";
+    			            { width:"5%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {
+    			            	var $assign ='<ansi:hasPermission permissionRequired="TICKET_WRITE"><a href="ticketAssignment.html?ticketId='+row.view_ticket_id+'&divisionId='+row.division_id+'"><webthing:assign styleClass="orange">Assign Ticket</webthing:assign></a></ansi:hasPermission>';
+    			            	var $claimTkt = "";
+    			            	var $claimWasher = "";
+    			            	
+    			            	return $assign + " " + $claimTkt + " " + $claimWasher;
     			            } }],
     			            "initComplete": function(settings, json) {
     			            	console.log("initComplete");
@@ -295,16 +269,7 @@
             	
             	
             	
-            	//processDivChange : function() {
-            	//	var $selectedDiv = TICKETASSIGNMENTLOOKUP.divisionMap[$("select[name='divisionId']").val()];
-				//	$("#division-description").html( $selectedDiv.description + " (" +  $selectedDiv.divisionNbr + "-" + $selectedDiv.divisionCode + ")");
-				//	if ( TICKETASSIGNMENTLOOKUP.dataTable != null ) {
-				//		TICKETASSIGNMENTLOOKUP.dataTable.destroy();
-				//	}
-				//	// we do it this way so the load methods can be called later without knowing the division
-				//	TICKETASSIGNMENTLOOKUP.division = $selectedDiv;
-				//	TICKETASSIGNMENTLOOKUP.makeTable();
-            	//}
+            	
         	};
         	
         	TICKETASSIGNMENTLOOKUP.init();

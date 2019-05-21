@@ -290,7 +290,10 @@
         </action>  
         <action
             path="/ticketAssignment"
-            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">            
+            type="com.ansi.scilla.web.ticket.action.TicketAssignmentLookupAction"
+			name="ticketAssignmentLookupForm"
+            input="/tickets/ticketAssignment.jsp"
+            scope="request">              
             <forward name="valid" path="/tickets/ticketAssignment.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
