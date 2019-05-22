@@ -203,18 +203,6 @@ public class TicketLookupQuery extends LookupQuery {
 		}
 		if ( ! StringUtils.isBlank(status)) {
 			filterList.add(new ColumnFilter(STATUS, status, ColumnFilter.ComparisonType.LIST_STRING));
-//			String[] statusFilter = status.split(",");
-//			List<String> statusList = new ArrayList<String>();
-//			for ( String filter : statusFilter ) {
-//				// we only filter on valid status codes; ignore everything else
-//				TicketStatus ticketStatus = TicketStatus.lookup(filter);
-//				if ( ticketStatus != null ) {
-//					statusList.add("?");
-//				}
-//			}
-//			if ( statusList.size() > 0 ) {
-//				whereClauseParts.add(STATUS + " in (" + StringUtils.join(statusList,",") + ")");
-//			}
 		}
 		super.setConstraintList(filterList);
 
@@ -244,10 +232,10 @@ public class TicketLookupQuery extends LookupQuery {
 			for ( Division d : divisionList) { sdList.add(new SessionDivision(d)); }
 			TicketLookupQuery x = new TicketLookupQuery(5, sdList);
 //			x.setSearchTerm("Chicago");
-			x.setDivisionId(112);
-			x.setJobId(211660);
-			x.setStartDate(startDate);
-			x.setStatus("D,P");
+			x.setDivisionId(106);
+//			x.setJobId(211660);
+//			x.setStartDate(startDate);
+//			x.setStatus("D,P");
 			System.out.println("Countall: " + x.countAll(conn));
 			System.out.println("Count some: " + x.selectCount(conn));
 			ResultSet rs = x.select(conn,  0, 10);

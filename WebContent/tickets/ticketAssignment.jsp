@@ -265,26 +265,8 @@
 			            } }
 			            ],
     			            "initComplete": function(settings, json) {
-    			            	//console.log(json);
-    			            	//doFunctionBinding();
     			            	var myTable = this;
-    			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#ticket-table", TICKETASSIGNMENT.loadTickets);
-    			            	
-    			            	setTimeout(function() {
-			            			if ( TICKETASSIGNMENT.isFiltered()) {
-			            				$("#searching-modal").dialog("open");
-	    			            		TICKETASSIGNMENT.doTableFilter(0, TICKETASSIGNMENT.ticketFilter);
-	    			            		TICKETASSIGNMENT.doTableFilter(7, TICKETASSIGNMENT.jobFilter);
-	    			            		TICKETASSIGNMENT.doTableFilter(8, TICKETASSIGNMENT.washerFilter);
-	    			            		//clear filters so we don't reuse them 
-	    			            		TICKETASSIGNMENT.ticketFilter = null;
-	    			            		TICKETASSIGNMENT.jobFilter = null;
-	    			            		TICKETASSIGNMENT.washerFilter = null;
-			            			}
-			            		},100)
-    			            	//$("#filter-container .filter-banner .filter-hider .filter-data-closed").click(); //open the filter container inside the modal
-    			            	TICKETASSIGNMENT.ticketsLoaded = true; 
-    			            	TICKETASSIGNMENT.displayPanels();
+       			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#ticket-table", TICKETASSIGNMENT.loadTickets, TICKETASSIGNMENT.loadTicketComplete);    			            		
     			            },
     			            "fnRowCallback": function(nRow, aData, iDisplayIndex) {
     							$(nRow).addClass("ticket");
@@ -294,6 +276,27 @@
     			            }
     			    } );
         		},
+        		
+        		
+        		loadTicketComplete : function() {
+        			console.log("loadTicketComplete");
+        			//setTimeout(function() {
+            			if ( TICKETASSIGNMENT.isFiltered()) {
+            				$("#searching-modal").dialog("open");
+		            		TICKETASSIGNMENT.doTableFilter(0, TICKETASSIGNMENT.ticketFilter);
+		            		TICKETASSIGNMENT.doTableFilter(7, TICKETASSIGNMENT.jobFilter);
+		            		TICKETASSIGNMENT.doTableFilter(8, TICKETASSIGNMENT.washerFilter);
+		            		//clear filters so we don't reuse them 
+		            		TICKETASSIGNMENT.ticketFilter = null;
+		            		TICKETASSIGNMENT.jobFilter = null;
+		            		TICKETASSIGNMENT.washerFilter = null;
+            			}
+            		//},100)
+	            	//$("#filter-container .filter-banner .filter-hider .filter-data-closed").click(); //open the filter container inside the modal
+	            	TICKETASSIGNMENT.ticketsLoaded = true; 
+	            	TICKETASSIGNMENT.displayPanels();
+        		},
+        		
         		
         		
         		
@@ -568,8 +571,9 @@
         		
         		
         		doTableFilter : function($colNbr, $filterValue) {
+        			console.log("doTableFilter");
 	            	if ( $filterValue != null &&  $filterValue !='' ) {
-	            		console.log("Setting  ticketfilter");
+	            		console.log("Setting  filter");
 	        			console.log("filtering for : " + $filterValue);
 	            		LOOKUPUTILS.setFilterValue("#filter-container", $colNbr, $filterValue); //set value in filters
 	        			var dataTable = $('#ticket-assignment-table').DataTable();
@@ -581,16 +585,18 @@
     			
     			
     			isFiltered : function() {
+    				console.log("isFiltered");
     				var $isFiltered = false;
     				
     				if (TICKETASSIGNMENT.jobFilter != null && TICKETASSIGNMENT.jobFilter != '') {
+    					console.log("by ticket");
     					$isFiltered = true;
     				} else if (TICKETASSIGNMENT.ticketFilter != null && TICKETASSIGNMENT.ticketFilter != '') {
     					$isFiltered = true;
     				} else if (TICKETASSIGNMENT.washerFilter != null && TICKETASSIGNMENT.washerFilter != '') {
     					$isFiltered = true;
     				}
-    				
+    				console.log("isFiltered: " + $isFiltered);
     				return $isFiltered;
     			},
         	},

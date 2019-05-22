@@ -270,15 +270,19 @@ public abstract class LookupQuery extends ApplicationObject {
 		List<String> constraints = new ArrayList<String>();
 
 		if ( this.columnFilter != null && this.columnFilter.size() > 0 ) {
+//			logger.log(Level.DEBUG, "working column filters now");
 			likeList = CollectionUtils.collect(this.columnFilter.iterator(), filterTransformer, likeList);
 			filterPhrase = "\n" + joiner + " " + StringUtils.join(likeList, " and " );
 		}
+//		logger.log(Level.DEBUG, "likeList: " + likeList);
+//		logger.log(Level.DEBUG, "filterPhrase 1: " + filterPhrase);
 		if ( this.constraintList != null && this.constraintList.size() > 0 ) {
 			constraints = CollectionUtils.collect(this.constraintList.iterator(), filterTransformer, constraints);
 			String joiner2 = likeList.isEmpty() && StringUtils.isBlank(this.baseWhereClause) ? " where " : " and ";
-			filterPhrase = "\n" + joiner2 + " " + StringUtils.join(constraints, " and " );
+			filterPhrase = filterPhrase + "\n" + joiner2 + " " + StringUtils.join(constraints, " and " );
 
 		}
+//		logger.log(Level.DEBUG, "filterPhrase 2: " + filterPhrase);
 		return filterPhrase;
 	}
 	

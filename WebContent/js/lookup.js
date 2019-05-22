@@ -1,6 +1,6 @@
 $(function() {    	
 	;LOOKUPUTILS = {
-		makeFilters : function($myTable, $filterContainerName, $dataTableName, $tableMakerFunction) {
+		makeFilters : function($myTable, $filterContainerName, $dataTableName, $tableMakerFunction, $tableMakerCallbackFunction) {
 			console.log("makeFilters");
 			// parameters
 			//     myTable - the datatables constructor. Easiest way to get is to you "this" from inside initComplete function
@@ -17,7 +17,8 @@ $(function() {
 
         	dataTable.columns().every( function(colIdx) {
         		var $column = this;
-		
+        		//console.log($column);
+        		//console.log($column.header().innerText + " " + columns[colIdx].searchable+ " " + columns[colIdx].visible);
         		if ( columns[colIdx].searchable == true) {
             		var $filterRow = $("<tr>");
             		var $titleCell = $("<td>");
@@ -35,7 +36,7 @@ $(function() {
             		$filterTable.append($filterRow);
             		
             		var $selector = $filterContainerName + ' .filter-div input[name="' + $fieldName + '"]';
-            		console.log("Selector: " + $selector);
+//            		console.log("Selector: " + $selector);
             		$($selector).on('keyup change', function() {
             			console.log($dataTableName + "\tSearching column: " + colIdx + " for " + columns[colIdx].title + " " + this.value);
         				var dataTable = $($dataTableName).DataTable();
@@ -78,6 +79,10 @@ $(function() {
         		$($dataTableName).DataTable().destroy(false);
         		$tableMakerFunction();
         	});
+        	
+        	if ( $tableMakerCallbackFunction != null ) {
+        		$tableMakerCallbackFunction();
+        	}
 		},
 		
 		

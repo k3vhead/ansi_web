@@ -59,7 +59,11 @@ public class TicketAssignmentLookupQuery extends LookupQuery {
 		+ "\n\t	 quote.quote_id,    "
 		+ "\n\t	 a1.name as bill_to_name, " 
 		+ "\n\t	 a2.name as job_site_name, a2.address1 as job_site_address, "
-		+ "\n\t	 ansi_user.user_id, concat(ansi_user.last_name, ', ', ansi_user.first_name) as washer ";
+		+ "\n\t	 ansi_user.user_id, "
+		+ "\n\t  CASE\n" 
+		+ "\n\t  	WHEN ansi_user.user_id is NULL then null" 
+		+ "\n\t		ELSE concat(ansi_user.last_name, ', ', ansi_user.first_name) " 
+		+ "\n\t	 END as washer";
 		
 	public static final String sqlFromClause = 
 			"\n FROM view_ticket_log   "
