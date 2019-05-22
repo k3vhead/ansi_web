@@ -17,14 +17,14 @@ public class DashboardFavoriteAdminQuery extends DashboardFavoriteBaseQuery {
 //			"from favorite_option\n" + 
 //			"left outer join user_favorite on user_favorite.option_id=favorite_option.option_id\n";
 	private final String whereSql = 
-			"where favorite_option.permission_required favorite_option.option_type=?\n"; 
+			"where favorite_option.permission_required in favorite_option.option_type=?\n"; 
 //	private final String orderSql =
 //			"group by favorite_option.option_id, favorite_option.name, favorite_option.html_link\n" +
 //			"order by favorite_option.name asc";
 	
-	private Integer userId;
-	private List<String> permissionList;
-	private String optionType;
+//	private Integer userId;
+//	private List<String> permissionList;
+//	private String optionType;
 	
 	public DashboardFavoriteAdminQuery(Integer userId, List<String> permissionList, String optionType) {
 		super(userId, permissionList, optionType);
@@ -36,8 +36,8 @@ public class DashboardFavoriteAdminQuery extends DashboardFavoriteBaseQuery {
 	
 	@Override
 	protected String makeWhereClause() {
-		String boundVars = AppUtils.makeBindVariables(this.permissionList);
-		String whereClause = this.whereSql.replaceAll("", boundVars);
+	//	String boundVars = AppUtils.makeBindVariables(this.permissionList);
+		String whereClause = this.whereSql;
 		return whereClause;
 	}
 	

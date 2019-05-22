@@ -11,20 +11,20 @@ public class DashboardFavoriteQuery extends DashboardFavoriteBaseQuery {
 
 	private static final long serialVersionUID = 1L;
 
-	private final String selectSql = "select favorite_option.option_id, favorite_option.name as option_name, favorite_option.html_link, "
-			+ "(select count(*) from user_favorite where user_favorite.user_id=? and user_favorite.option_id=favorite_option.option_id) as option_selected\n";
-	private final String fromSql =
-			"from favorite_option\n" + 
-			"left outer join user_favorite on user_favorite.option_id=favorite_option.option_id\n";
+//	private final String selectSql = "select favorite_option.option_id, favorite_option.name as option_name, favorite_option.html_link, "
+//			+ "(select count(*) from user_favorite where user_favorite.user_id=? and user_favorite.option_id=favorite_option.option_id) as option_selected\n";
+//	private final String fromSql =
+//			"from favorite_option\n" + 
+//			"left outer join user_favorite on user_favorite.option_id=favorite_option.option_id\n";
 	private final String whereSql = 
 			"where favorite_option.permission_required in $PERMISSION_FILTER$ and favorite_option.option_type=?\n"; 
-	private final String orderSql =
-			"group by favorite_option.option_id, favorite_option.name, favorite_option.html_link\n" +
-			"order by favorite_option.name asc";
+//	private final String orderSql =
+//			"group by favorite_option.option_id, favorite_option.name, favorite_option.html_link\n" +
+//			"order by favorite_option.name asc";
 	
-	private Integer userId;
-	private List<String> permissionList;
-	private String optionType;
+//	private Integer userId;
+//	private List<String> permissionList;
+//	private String optionType;
 	
 	public DashboardFavoriteQuery(Integer userId, List<String> permissionList, String optionType) {
 		super(userId, permissionList, optionType);
@@ -33,29 +33,29 @@ public class DashboardFavoriteQuery extends DashboardFavoriteBaseQuery {
 		this.optionType = optionType;
 	}
 
-	public Integer getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Integer userId) {
-		this.userId = userId;
-	}
-
-	public List<String> getPermissionList() {
-		return permissionList;
-	}
-
-	public void setPermissionList(List<String> permissionList) {
-		this.permissionList = permissionList;
-	}
-
-	public String getOptionType() {
-		return optionType;
-	}
-
-	public void setOptionType(String optionType) {
-		this.optionType = optionType;
-	}
+//	public Integer getUserId() {
+//		return userId;
+//	}
+//
+//	public void setUserId(Integer userId) {
+//		this.userId = userId;
+//	}
+//
+//	public List<String> getPermissionList() {
+//		return permissionList;
+//	}
+//
+//	public void setPermissionList(List<String> permissionList) {
+//		this.permissionList = permissionList;
+//	}
+//
+//	public String getOptionType() {
+//		return optionType;
+//	}
+//
+//	public void setOptionType(String optionType) {
+//		this.optionType = optionType;
+//	}
 	
 	@Override
 	protected String makeWhereClause() {
@@ -64,15 +64,15 @@ public class DashboardFavoriteQuery extends DashboardFavoriteBaseQuery {
 		return whereClause;
 	}
 	
-	protected String makeSql() {
-		String sql = selectSql + " " + fromSql + " " + makeWhereClause() + " " + orderSql;
-		return sql;
-	}
-	
-	protected String makeCountSql() {
-		String sql = "select count(*) as record_count" + " " + fromSql + " " + makeWhereClause();
-		return sql;
-	}
+//	protected String makeSql() {
+//		String sql = selectSql + " " + fromSql + " " + makeWhereClause() + " " + orderSql;
+//		return sql;
+//	}
+//	
+//	protected String makeCountSql() {
+//		String sql = "select count(*) as record_count" + " " + fromSql + " " + makeWhereClause();
+//		return sql;
+//	}
 	
 	@Override
 	public ResultSet select(Connection conn) throws Exception {

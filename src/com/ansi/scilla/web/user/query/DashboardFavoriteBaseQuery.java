@@ -11,20 +11,20 @@ abstract class DashboardFavoriteBaseQuery extends AbstractQuery {
 
 	private static final long serialVersionUID = 1L;
 
-	private final String selectSql = "select favorite_option.option_id, favorite_option.name as option_name, favorite_option.html_link, "
+	protected final String selectSql = "select favorite_option.option_id, favorite_option.name as option_name, favorite_option.html_link, "
 			+ "(select count(*) from user_favorite where user_favorite.user_id=? and user_favorite.option_id=favorite_option.option_id) as option_selected\n";
-	private final String fromSql =
+	protected final String fromSql =
 			"from favorite_option\n" + 
 			"left outer join user_favorite on user_favorite.option_id=favorite_option.option_id\n";
-	private final String whereSql = 
-			"where favorite_option.permission_required in $PERMISSION_FILTER$ and favorite_option.option_type=?\n"; 
-	private final String orderSql =
+//	private final String whereSql = 
+//			"where favorite_option.permission_required in $PERMISSION_FILTER$ and favorite_option.option_type=?\n"; 
+	protected final String orderSql =
 			"group by favorite_option.option_id, favorite_option.name, favorite_option.html_link\n" +
 			"order by favorite_option.name asc";
 	
-	private Integer userId;
-	private List<String> permissionList;
-	private String optionType;
+	protected Integer userId;
+	protected List<String> permissionList;
+	protected String optionType;
 	
 	public DashboardFavoriteBaseQuery(Integer userId, List<String> permissionList, String optionType) {
 		super();
