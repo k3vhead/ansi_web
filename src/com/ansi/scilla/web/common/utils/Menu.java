@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public enum Menu {
-	DASHBOARD("Dashboard", null, null,"#"),
+	DASHBOARD("Dashboard", null, null,"dashboard.html"),
 	
 	
 	LOOKUPS("Lookups", null, null,"#"),
