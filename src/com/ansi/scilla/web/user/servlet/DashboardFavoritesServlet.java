@@ -1,17 +1,11 @@
 package com.ansi.scilla.web.user.servlet;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,14 +13,15 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
 
+import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.common.utils.Menu;
 import com.ansi.scilla.web.common.utils.UserPermission;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.user.query.DashboardFavoriteQuery;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ansi.scilla.web.user.response.DashboardFavoriteResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class DashboardFavoritesServlet extends AbstractServlet {
@@ -47,19 +42,11 @@ public class DashboardFavoritesServlet extends AbstractServlet {
 				conn = AppUtils.getDBCPConn();
 				List<String> permissionList = (List<String>) CollectionUtils.collect(sessionData.getUserPermissionList().iterator(), new PermissionTransformer());
 				String optionTypeParm = request.getParameter(OPTION_TYPE);
-				String optionType = OptionType.isValidKey(optionTypeParm) ? optionTypeParm : OptionType.LOOKUP.getKey();
-				DashboardFavoriteQuery query = new DashboardFavoriteQuery(sessionData.getUser().getUserId(), permissionList, optionType);
+				optionTypeParm = StringUtils.isBlank(optionTypeParm) ? OptionType.LOOKUP.getKey() : optionTypeParm;
+				OptionType optionType = OptionType.lookup(optionTypeParm) == null ? OptionType.LOOKUP : OptionType.lookup(optionTypeParm);
+				DashboardFavoriteResponse data = new DashboardFavoriteResponse(optionType.getMenu(), permissionList);
 				
-				ResultSet rs = query.select(conn);
-				String responseString = makeResponse(rs);
-				
-				response.setStatus(HttpServletResponse.SC_OK);
-				response.setContentType("application/json");
-				ServletOutputStream o = response.getOutputStream();
-				OutputStreamWriter writer = new OutputStreamWriter(o);
-				writer.write(responseString);
-				writer.flush();
-				writer.close();
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, data);				
 			} catch(RecordNotFoundException e) {
 				super.sendNotFound(response);
 			} catch(ResourceNotFoundException e) {
@@ -76,6 +63,7 @@ public class DashboardFavoritesServlet extends AbstractServlet {
 		}
 	}
 
+	/*
 	private String makeResponse(ResultSet rs) throws SQLException, JsonProcessingException {
 		List<HashMap<String, Object>> dataList = new ArrayList<HashMap<String, Object>>();
 		ResultSetMetaData rsmd = rs.getMetaData();
@@ -97,6 +85,7 @@ public class DashboardFavoritesServlet extends AbstractServlet {
 		}
 		return dataItem;
 	}
+	*/
 	
 	public class PermissionTransformer implements Transformer<UserPermission, String> {
 
@@ -108,29 +97,30 @@ public class DashboardFavoritesServlet extends AbstractServlet {
 	}
 	
 	public enum OptionType {
-		LOOKUP("lookup"),
-		REPORT("report"),
-		QUICK_LINK("quickLink"),
+		LOOKUP("lookup", Menu.LOOKUPS),
+		REPORT("report", Menu.REPORTS),
+		QUICK_LINK("quickLink", Menu.QUICK_LINKS),
 		;
 		
+		private static final HashMap<String, OptionType> lookup = new HashMap<String, OptionType>();
 		private final String key;
-		private OptionType(String key) {
+		private final Menu menu;
+		private OptionType(String key, Menu menu) {
 			this.key = key;
+			this.menu = menu;
 		}
 		
-		public String getKey() { return this.key; }
-		
-		public static boolean isValidKey(String key) {
-			boolean isValid = false;
-			if ( ! StringUtils.isBlank(key) ) {
-				for (OptionType type : OptionType.values() ) {
-					if ( type.getKey().equalsIgnoreCase(key)) {
-						isValid = true;
-					}
-				}
+		static {
+			for (OptionType type : OptionType.values() ) {
+				lookup.put(type.getKey(), type);
 			}
-			return isValid;
 		}
+		public static OptionType lookup(String key) { return lookup.get(key); }
+		public String getKey() { return this.key; }
+		public Menu getMenu() { return this.menu; }
+		
+		
+		
 	}
 	
 }
