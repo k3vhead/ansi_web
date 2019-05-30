@@ -231,9 +231,12 @@
     			            } },
     			            { width:"5%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {
     			            	var $assign ='<ansi:hasPermission permissionRequired="TICKET_WRITE"><a href="ticketAssignment.html?ticketId='+row.view_ticket_id+'&divisionId='+row.division_id+'"><webthing:assign styleClass="orange">Assign Ticket</webthing:assign></a></ansi:hasPermission>';
-    			            	var $claimTkt = "";
-    			            	var $claimWasher = "";
-    			            	
+    			            	var $claimTkt = '';
+    			            	var $claimWasher = '';
+    			            	if ( row.user_id != null ) {
+	    			            	$claimTkt = '<ansi:hasPermission permissionRequired="CLAIMS_WRITE"><a href="claimByTicket.html?id='+row.view_ticket_id+'"><webthing:ticket styleClass="green">Claim By Ticket</webthing:ticket></a></ansi:hasPermission>';
+	    			            	$claimWasher = '<ansi:hasPermission permissionRequired="CLAIMS_WRITE"><a href="claimByWasher.html?id='+row.user_id+'"><webthing:user styleClass="green">Claim By Washer</webthing:user></a></ansi:hasPermission>';
+    			            	}
     			            	return $assign + " " + $claimTkt + " " + $claimWasher;
     			            } }],
     			            "initComplete": function(settings, json) {

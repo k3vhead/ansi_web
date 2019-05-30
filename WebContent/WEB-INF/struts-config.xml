@@ -51,17 +51,27 @@
             <forward name="login" path="/login.jsp" />            
         </action>
         <action
-            path="/ticketStatusLookup"
-            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
-            <forward name="valid" path="/claims/ticketStatusLookup.jsp" />
-            <forward name="login" path="/login.jsp" />            
-        </action>
-        <action
             path="/budgetControlLookup"
             type="com.ansi.scilla.web.claims.action.BudgetControlLookupAction"
             name="idForm"
             scope="request">
             <forward name="valid" path="/claims/budgetControlLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+        <action
+            path="/claimByTicket"
+            type="com.ansi.scilla.web.claims.action.ClaimByTicketAction"
+            name="idForm"
+            scope="request">
+            <forward name="valid" path="/claims/claimTicket.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+        <action
+            path="/claimByWasher"
+            type="com.ansi.scilla.web.claims.action.ClaimByWasherAction"
+            name="idForm"
+            scope="request">
+            <forward name="valid" path="/claims/claimTicket.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
         <action
@@ -73,6 +83,14 @@
             <forward name="login" path="/login.jsp" />            
         </action>
         <action
+            path="/claimByTicket"
+            type="com.ansi.scilla.web.claims.action.ClaimByTicketAction"
+            name="idForm"
+            scope="request">
+            <forward name="valid" path="/claims/claimTicket.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		<action
             path="/claimEntry"
             type="com.ansi.scilla.web.claims.action.ClaimEntryAction"
             name="idForm"
@@ -346,6 +364,12 @@
             <forward name="login" path="/login.jsp" />            
         </action>
 		<action
+            path="/ticketStatusLookup"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/claims/ticketStatusLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+        <action
             path="/ticketStatusReport"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/ticketStatusReport.jsp" />
