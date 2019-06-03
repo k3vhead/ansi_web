@@ -30,7 +30,10 @@
     	<script type="text/javascript" src="js/ticket.js"></script> 
     
         <style type="text/css">
-        	#direct-labor-modal {
+        	#claim-by-ticket {
+        		display:none;
+        	}
+        	#claim-by-washer {
         		display:none;
         	}
         	#direct-labor-table {
@@ -46,9 +49,6 @@
         		cursor:pointer;
         	}
         	#omnotes-modal {
-        		display:none;
-        	}
-        	#passthru-expense-modal {
         		display:none;
         	}
 			#passthru-expense-table {
@@ -122,7 +122,7 @@
         <script type="text/javascript">
         
         $(document).ready(function() {
-        	;CLAIMENTRY = {
+        	;CLAIMTICKET = {
         		datatable : null,
         		ticketFilter : '<c:out value="${CLAIM_ENTRY_TICKET_ID}" />',
         		washerFilter : '<c:out value="${CLAIM_ENTRY_WASHER_ID}" />',
@@ -132,24 +132,28 @@
         		},
         		
         		init : function() {
-        			CLAIMENTRY.makeClickers();
-        			CLAIMENTRY.makeModals();
-        			CLAIMENTRY.makeTicketComplete();
-        			CLAIMENTRY.makeAutoComplete('#direct-labor-form input[name="washerName"]','#direct-labor-form input[name="washerId"]');
-        			CLAIMENTRY.makeAutoComplete('#passthru-expense-form input[name="washerName"]','#passthru-expense-form input[name="washerId"]');
-        			ANSI_UTILS.getCodeList("ticket_claim_passthru","passthru_expense_type",CLAIMENTRY.makeExpenseTypeList);
-        			if ( CLAIMENTRY.ticketFilter != '' ) {
-            			CLAIMENTRY.getDetail();
-            			$( "#ticketNbr" ).val(CLAIMENTRY.ticketFilter);
-	        			CLAIMSUTILS.makeDirectLaborLookup("#direct-labor-lookup",CLAIMENTRY.ticketFilter);
-	        			CLAIMSUTILS.makePassthruExpenseLookup("#passthru-expense-lookup",CLAIMENTRY.ticketFilter);
+        			if ( CLAIMTICKET.ticketFilter != null && CLAIMTICKET.ticketFilter != '') {
+        				$("#claim-by-ticket").show();
+        			}
+        			if ( CLAIMTICKET.washerFilter != null && CLAIMTICKET.washerFilter != '') {
+        				$("#claim-by-washer").show();
+        			}
+        			CLAIMTICKET.makeClickers();
+        			CLAIMTICKET.makeModals();
+        			//CLAIMTICKET.makeTicketComplete();
+        			CLAIMTICKET.makeAutoComplete('#direct-labor-form input[name="washerName"]','#direct-labor-form input[name="washerId"]');
+        			CLAIMTICKET.makeAutoComplete('#passthru-expense-form input[name="washerName"]','#passthru-expense-form input[name="washerId"]');
+        			ANSI_UTILS.getCodeList("ticket_claim_passthru","passthru_expense_type",CLAIMTICKET.makeExpenseTypeList);
+        			if ( CLAIMTICKET.ticketFilter != '' ) {
+            			CLAIMTICKET.getDetail();
+            			//$( "#ticketNbr" ).val(CLAIMTICKET.ticketFilter);	        			
         			}
         		},
         		
         		
         		
         		getDetail : function() {
-        			var $url = "claims/claimEntry/" + CLAIMENTRY.ticketFilter;
+        			var $url = "claims/claimEntry/" + CLAIMTICKET.ticketFilter;
         			var jqxhr = $.ajax({
 						type: 'GET',
 						url: $url,
@@ -158,7 +162,7 @@
 							200: function($data) {
 								console.log($data);
 								if ( $data.responseHeader.responseCode == 'SUCCESS') {
-									CLAIMENTRY.populateDetail($data.data);
+									CLAIMTICKET.populateDetail($data.data);
 								} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
 								} else {
 									$("#globalMsg").html("System Error: Contact Support").show();
@@ -261,69 +265,11 @@
 					$("#omnotes-cancel-button").button('option', 'label', 'OK');
 					
 					
-					
-					
-					$( "#direct-labor-modal" ).dialog({
-						title:'Direct Labor',
-						autoOpen: false,
-						height: 375,
-						width: 500,
-						modal: true,
-						closeOnEscape:true,
-						//open: function(event, ui) {
-						//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-						//},
-						buttons: [
-							{
-								id: "dl-cancel-button",
-								click: function($event) {
-									$( "#direct-labor-modal" ).dialog("close");
-								}
-							},
-							{
-								id: "dl-save-button",
-								click: function($event) {
-									CLAIMENTRY.saveDirectLabor();
-								}
-							}
-						]
-					});	
-					$("#dl-cancel-button").button('option', 'label', 'Cancel');
-					$("#dl-save-button").button('option', 'label', 'Save');
+            	},
 					
 					
 					
 					
-					
-					$( "#passthru-expense-modal" ).dialog({
-						title:'Passthru Expense',
-						autoOpen: false,
-						height: 375,
-						width: 500,
-						modal: true,
-						closeOnEscape:true,
-						//open: function(event, ui) {
-						//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-						//},
-						buttons: [
-							{
-								id: "pe-cancel-button",
-								click: function($event) {
-									$( "#passthru-expense-modal" ).dialog("close");
-								}
-							},
-							{
-								id: "pe-save-button",
-								click: function($event) {
-									CLAIMENTRY.savePassthruExpense();
-								}
-							}
-						]
-					});	
-					$("#pe-cancel-button").button('option', 'label', 'Cancel');
-					$("#pe-save-button").button('option', 'label', 'Save');
-        		},
-            	
             	
             	
         		
@@ -334,11 +280,9 @@
                         appendTo: "#someTicket",
                         select: function( event, ui ) {
                         	var $ticketNbr = ui.item.id;
-                        	CLAIMENTRY.ticketFilter = $ticketNbr
+                        	CLAIMTICKET.ticketFilter = $ticketNbr
         					$("#ticketNbr").val($ticketNbr);
-                        	CLAIMENTRY.getDetail();
-                        	CLAIMSUTILS.makeDirectLaborLookup("#direct-labor-lookup",CLAIMENTRY.ticketFilter);
-    	        			CLAIMSUTILS.makePassthruExpenseLookup("#passthru-expense-lookup",CLAIMENTRY.ticketFilter);
+                        	CLAIMTICKET.getDetail();
                         },
                         response: function(event, ui) {
                             if (ui.content.length === 0) {
@@ -357,12 +301,10 @@
         				});
         				if ( items.length == 1 ) {
         					var $ticketNbr = items[0].id;
-        					CLAIMENTRY.ticketFilter = $ticketNbr;
+        					CLAIMTICKET.ticketFilter = $ticketNbr;
         					$("#ticketNbr").val($ticketNbr);
         					$("#ticketNbr").autocomplete("close");
-        					CLAIMENTRY.getDetail();
-        					CLAIMSUTILS.makeDirectLaborLookup("#direct-labor-lookup",CLAIMENTRY.ticketFilter);
-    	        			CLAIMSUTILS.makePassthruExpenseLookup("#passthru-expense-lookup",CLAIMENTRY.ticketFilter);
+        					CLAIMTICKET.getDetail();
         				}
         			}
         		},
@@ -419,7 +361,7 @@
         		saveDirectLabor : function() {
         			$(".claim-entry-form td.err span").html(""); // clear the existing error messages
         			var $outbound = {"type":"DIRECT_LABOR"};
-        			var $url = "claims/claimEntry/" + CLAIMENTRY.ticketFilter;
+        			var $url = "claims/claimEntry/" + CLAIMTICKET.ticketFilter;
         			console.log("Save Direct Labor");
         			
         			$.each( $("#direct-labor-form input"), function($idx, $field) {
@@ -435,7 +377,7 @@
     					data: JSON.stringify($outbound),
     					statusCode: {
     						200: function($data) {
-    							var $form = CLAIMENTRY.formSelector[$outbound["type"]];
+    							var $form = CLAIMTICKET.formSelector[$outbound["type"]];
     		    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
     		    					$.each($data.data.webMessages, function (key, value) {
     		    						var $selectorName = $form + " ." + key + "Err";
@@ -443,24 +385,19 @@
     		    						$($selectorName).html(value[0]);
     		    					});
     		    				} else {
-    				        		$("#direct-labor-modal").dialog("close");
     		    					$("#globalMsg").html("Update Successful").show().fadeOut(4000);
-    		    					$('#direct-labor-lookup').DataTable().ajax.reload();
     		    				}
     						},
     						403: function($data) {
     							$("#globalMsg").html("Session Timeout. Log in and try again");
     						},
     						404: function($data) {
-    							$("#direct-labor-modal").dialog("close");
     							$("#globalMsg").html("Invalid Ticket").show();
     						},
     						405: function($data) {
-    							$("#direct-labor-modal").dialog("close");
     							$("#globalMsg").html("System Error DL 405; Contact Support");
     						},
     						500: function($data) {
-    							$("#direct-labor-modal").dialog("close");
     							$("#globalMsg").html("System Error DL 500; Contact Support");
     						}
     					},
@@ -474,7 +411,7 @@
         		savePassthruExpense : function() {
         			$(".claim-entry-form td.err span").html(""); // clear the existing error messages
         			var $outbound = {"type":"PASSTHRU_EXPENSE"};
-        			var $url = "claims/claimEntry/" + CLAIMENTRY.ticketFilter;
+        			var $url = "claims/claimEntry/" + CLAIMTICKET.ticketFilter;
         			console.log("Save Direct Labor");
         			
         			$.each( $("#passthru-expense-form input"), function($idx, $field) {
@@ -491,7 +428,7 @@
     					data: JSON.stringify($outbound),
     					statusCode: {
     						200: function($data) {
-    							var $form = CLAIMENTRY.formSelector[$outbound["type"]];
+    							var $form = CLAIMTICKET.formSelector[$outbound["type"]];
     		    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
     		    					$.each($data.data.webMessages, function (key, value) {
     		    						var $selectorName = $form + " ." + key + "Err";
@@ -500,24 +437,19 @@
     		    						$($selectorName).html(value[0]);
     		    					});
     		    				} else {
-    				        		$("#passthru-expense-modal").dialog("close");
     		    					$("#globalMsg").html("Update Successful").show().fadeOut(4000);
-    		    					$('#passthru-expense-lookup').DataTable().ajax.reload();
     		    				}
     						},
     						403: function($data) {
     							$("#globalMsg").html("Session Timeout. Log in and try again");
     						},
     						404: function($data) {
-    							$("#passthru-expense-modal").dialog("close");
     							$("#globalMsg").html("Invalid Ticket").show();
     						},
     						405: function($data) {
-    							$("#passthru-expense-modal").dialog("close");
     							$("#globalMsg").html("System Error DL 405; Contact Support");
     						},
     						500: function($data) {
-    							$("#passthru-expense-modal").dialog("close");
     							$("#globalMsg").html("System Error DL 500; Contact Support");
     						}
     					},
@@ -527,19 +459,21 @@
         	}
       	  	
 
-        	CLAIMENTRY.init();
+        	CLAIMTICKET.init();
         	
         });
         </script>        
     </tiles:put>
     
    <tiles:put name="content" type="string">
-    	<h1>Claim Entry</h1>
+    	<h1>Claim Entry <span id="claim-by-ticket" />by Ticket<span id="claim-by-washer" />by Washer</h1>
+    	<%-- 
     	<div>
        		<span class="formLabel">Ticket:</span>
        		<input id="ticketNbr" name="ticketNbr" type="text" maxlength="10" />
        		<input id="doPopulate" type="button" value="Search" />
        	</div>
+       	 --%>
 		<div id="ticketDetailContainer">
 			<table class="ticket-detail-table" cellSpacing="0" cellPadding="0">
 				<tr>
@@ -569,9 +503,6 @@
 			</table>
 		</div>    	
 
-		<webthing:directLaborLookup tableName="direct-labor-lookup"/>
-		
-		<webthing:passthruExpenseLookup tableName="passthru-expense-lookup"/>
 		
 	    
 	    <webthing:ticketModal ticketContainer="ticket-modal" />
@@ -580,80 +511,13 @@
    			<span class="omNotes"></span>
    		</div>
    		
-   		<div id="direct-labor-modal">
-   			<div id="direct-labor-form" class="claim-entry-form">
-   				<span class="err typeErr"></span>
-	   			<table>
-	   				<tr>
-	   					<td class="form-label">Work Date:</td>
-	   					<td class="form-input"><input type="text" class="dateField" name="workDate" /></td>
-	   					<td class="err"><span class="workDateErr"></span></td>
-	   				</tr>
-	   				<tr>
-	   					<td class="form-label">Washer:</td>
-	   					<td class="form-input"><input type="text" name="washerName" /><input type="hidden" name="washerId" /></td>
-	   					<td class="err"><span class="washerIdErr"></span></td>
-	   				</tr>
-	 			   	<tr>
-	   					<td class="form-label">Volume:</td>
-	   					<td class="form-input"><input type="text" name="volume" /></td>
-	   					<td class="err"><span class="volumeErr"></span></td>
-	   				</tr>
-	   				<tr>
-	   					<td class="form-label">Direct Labor ($):</td>
-	   					<td class="form-input"><input type="text" name="dlAmt" /></td>
-	   					<td class="err"><span class="dlAmtErr"></span></td>
-	   				</tr>
-	   				<tr>
-	   					<td class="form-label">Hours:</td>
-	   					<td class="form-input"><input type="text" name="hours" /></td>
-	   					<td class="err"><span class="hoursErr"></span></td>
-	   				</tr>
-	   				<tr>
-	   					<td class="form-label">Notes:</td>
-	   					<td class="form-input"><input type="text" name="notes" /></td>
-	   					<td class="err"><span class="notesErr"></span></td>
-	   				</tr>
-	   			</table>
-   			</div>
-   		</div>
+
    		
    		
    		
    		
    		
-   		<div id="passthru-expense-modal">
-   			<div id="passthru-expense-form" class="claim-entry-form">
-   				<span class="err typeErr"></span>
-	   			<table>
-	   				<tr>
-	   					<td class="form-label">Work Date:</td>
-	   					<td class="form-input"><input type="text" class="dateField" name="workDate" /></td>
-	   					<td class="err"><span class="workDateErr"></span></td>
-	   				</tr>
-	   				<tr>
-	   					<td class="form-label">Type:</td>
-	   					<td class="form-input"><select name="passthruExpenseType"></select></td>
-	   					<td class="err"><span class="passthruExpenseTypeErr"></span></td>
-	   				</tr>	   				
-	 			   	<tr>
-	   					<td class="form-label">Volume:</td>
-	   					<td class="form-input"><input type="text" name="passthruExpenseVolume" /></td>
-	   					<td class="err"><span class="passthruExpenseVolumeErr"></span></td>
-	   				</tr>
-	   				<tr>
-	   					<td class="form-label">Washer:</td>
-	   					<td class="form-input"><input type="text" name="washerName" /><input type="hidden" name="washerId" /></td>
-	   					<td class="err"><span class="washerIdErr"></span></td>
-	   				</tr>
-	   				<tr>
-	   					<td class="form-label">Notes:</td>
-	   					<td class="form-input"><input type="text" name="notes" /></td>
-	   					<td class="err"><span class="notesErr"></span></td>
-	   				</tr>
-	   			</table>
-   			</div>
-   		</div>
+
     </tiles:put>
 		
 </tiles:insert>
