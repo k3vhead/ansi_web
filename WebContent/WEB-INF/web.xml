@@ -133,6 +133,19 @@
         <servlet-name>claimEntry</servlet-name>
         <url-pattern>/claims/claimEntry/*</url-pattern>
     </servlet-mapping>
+    
+    
+    
+    <servlet>
+        <servlet-name>claimTicket</servlet-name>
+        <servlet-class>com.ansi.scilla.web.claims.servlet.ClaimTicketServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>claimTicket</servlet-name>
+        <url-pattern>/claims/claimTicket/ticket/*</url-pattern>
+        <url-pattern>/claims/claimTicket/washer/*</url-pattern>
+        <url-pattern>/claims/claimTicket</url-pattern>
+    </servlet-mapping>
 
 
 

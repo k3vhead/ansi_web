@@ -148,8 +148,49 @@
             			CLAIMTICKET.getDetail();
             			//$( "#ticketNbr" ).val(CLAIMTICKET.ticketFilter);	        			
         			}
+        			CLAIMTICKET.getClaims();
         		},
         		
+        		
+        		
+        		getClaims : function() {
+        			if ( CLAIMTICKET.ticketFilter != null && CLAIMTICKET.ticketFilter != '' ) {
+        				$url = "claims/claimTicket/ticket/" + CLAIMTICKET.ticketFilter;
+        			} else if ( CLAIMTICKET.washerFilter != null && CLAIMTICKET.washerFilter != '' ){
+        				$url = "claims/claimTicket/washer/" + CLAIMTICKET.washerFilter;
+        			} 
+        			
+        			var jqxhr = $.ajax({
+						type: 'GET',
+						url: $url,
+						data: null,
+						statusCode: {
+							200: function($data) {
+								console.log($data);
+								if ( $data.responseHeader.responseCode == 'SUCCESS') {
+									console.log("SUccess");
+								} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+									console.log("Edit failuer");
+								} else {
+									$("#globalMsg").html("System Error: Contact Support").show();
+								}
+							},
+							403: function($data) {
+								$("#globalMsg").html("Session Timeout. Log in and try again").show();
+							}, 
+							404: function($data) {
+								$("#globalMsg").html("System Error 404: Contact Support").show();
+							}, 
+							405: function($data) {
+								$("#globalMsg").html("System Error 405: Contact Support").show();
+							}, 
+							500: function($data) {
+								$("#globalMsg").html("System Error 500: Contact Support").show();
+							} 
+						},
+						dataType: 'json'
+					});
+        		},
         		
         		
         		getDetail : function() {
