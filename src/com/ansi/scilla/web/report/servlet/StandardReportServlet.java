@@ -12,6 +12,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.Level;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.ansi.scilla.report.reportBuilder.AbstractReport;
@@ -70,6 +71,7 @@ public class StandardReportServlet extends AbstractServlet {
         response.setHeader("Pragma", "public");
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         String dispositionHeader = "attachment; filename=" + fileName + ".xlsx";
+        logger.log(Level.DEBUG, "dispositionHeader: " + dispositionHeader);
         response.setHeader("Content-disposition",dispositionHeader);
         workbook.write(out);
         out.flush();
