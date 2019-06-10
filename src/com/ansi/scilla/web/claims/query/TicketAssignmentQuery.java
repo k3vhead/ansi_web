@@ -11,6 +11,17 @@ public class TicketAssignmentQuery extends ApplicationObject {
 
 	private static final long serialVersionUID = 1L;
 
+	public static final String TICKET_ID = "ticket_id";
+	public static final String WASHER_ID = "washer_id";
+	public static final String FIRST_NAME = "first_name";
+	public static final String LAST_NAME = "last_name";
+	public static final String CLAIM_ID = "claim_id";
+	public static final String WORK_DATE = "work_date";
+	public static final String VOLUME = "volume";
+	public static final String DL_AMT = "dl_amt";
+	public static final String HOURS = "hours";
+	public static final String NOTES = "notes";
+	
 	private static final String sql = "select ticket_assignment.ticket_id, ticket_assignment.washer_id,\n" + 
 			"		ansi_user.first_name, ansi_user.last_name,\n" + 
 			"		ticket_claim.claim_id, ticket_claim.work_date, ticket_claim.volume, ticket_claim.dl_amt, ticket_claim.hours, ticket_claim.notes\n" + 
