@@ -41,7 +41,7 @@
         		margin-top:20px;
         	}
         	#claim-table {
-        		width:85%;
+        		width:100%;
         	}
         	#direct-labor-table {
         		width:100%;        		
@@ -73,6 +73,17 @@
 			.claim-hdr {
 				text-align:left;
 			}
+			.claim-view {
+				cursor:pointer;
+			}
+			.col-ticket { width:10%;}
+			.col-washer { width:12%;}
+			.col-workdate { width:10%;}
+			.col-volme { width:10%;}
+			.col-dlAmt { width:10%;}
+			.col-hours { width:10%;}
+			.col-notes { width:15%;}
+			.col-err { width:25%;}
 			.dark-gray {
 				color:#404040;
 			}
@@ -141,6 +152,7 @@
         			"DIRECT_LABOR":"#direct-labor-form",
         			"PASSTHRU_EXPENSE":"#passthru-expense-form"
         		},
+        		ticketDetail : {},
         		
         		init : function() {
         			if ( CLAIMTICKET.ticketFilter != null && CLAIMTICKET.ticketFilter != '') {
@@ -156,7 +168,7 @@
         			CLAIMTICKET.makeAutoComplete('#passthru-expense-form input[name="washerName"]','#passthru-expense-form input[name="washerId"]');
         			ANSI_UTILS.getCodeList("ticket_claim_passthru","passthru_expense_type",CLAIMTICKET.makeExpenseTypeList);
         			if ( CLAIMTICKET.ticketFilter != '' ) {
-            			CLAIMTICKET.getDetail();
+            			CLAIMTICKET.getDetail(CLAIMTICKET.ticketFilter);
             			//$( "#ticketNbr" ).val(CLAIMTICKET.ticketFilter);	        			
         			}
         			CLAIMTICKET.getClaims();
@@ -167,6 +179,7 @@
         		doClaim : function() {
         			console.log("doClaim");	
         			$(".row-msg").html("");
+        			CLAIMTICKET.ticketDetail = {};
         			var $url = null;
         			if ( CLAIMTICKET.ticketFilter != null && CLAIMTICKET.ticketFilter != '' ) {
         				$url = "claims/claimTicket/ticket/" + CLAIMTICKET.ticketFilter;
@@ -185,17 +198,21 @@
 	        				$volume = "input[name='volume-"+$i+"']";
 	        				$dlAmt = "input[name='dlAmt-"+$i+"']";
 	        				$hours = "input[name='hours-"+$i+"']";
-	        				$notes = "input[name='notes-"+$i+"']"
-	        				var $dataRow = {
-	        					"workDate":$($workDate).val(),
-	        					"volume":$($volume).val(),
-	        					"dlAmt":$($dlAmt).val(),
-	        					"hours":$($hours).val(),
-	        					"notes":$($notes).val(),
-	        					"ticketId":$($volume).attr("data-ticketid"),
-	        					"washerId":$($volume).attr("data-washerid"),
-	        				};
-	        				$dataList.push($dataRow);
+	        				$notes = "input[name='notes-"+$i+"']";
+	        				$ticketId = $($volume).attr("data-ticketid");
+	        				$washerId = $($volume).attr("data-washerid");
+	        				if ( $ticketId != null && $washerId != null ) { // skip the display rows
+		        				var $dataRow = {
+		        					"workDate":$($workDate).val(),
+		        					"volume":$($volume).val(),
+		        					"dlAmt":$($dlAmt).val(),
+		        					"hours":$($hours).val(),
+		        					"notes":$($notes).val(),
+		        					"ticketId":$ticketId,
+		        					"washerId":$washerId,
+		        				};		        				
+		        				$dataList.push($dataRow);
+	        				}
 	        			}
 	        			var $outbound = {"claims":$dataList};
 	        			var jqxhr = $.ajax({
@@ -206,7 +223,7 @@
 								200: function($data) {
 									if ( $data.responseHeader.responseCode == 'SUCCESS') {
 										if ( CLAIMTICKET.ticketFilter != '' ) {
-					            			CLAIMTICKET.getDetail();
+					            			CLAIMTICKET.getDetail(CLAIMTICKET.ticketFilter);
 					        			}
 					        			CLAIMTICKET.getClaims();
 									} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
@@ -280,8 +297,9 @@
         		},
         		
         		
-        		getDetail : function() {
-        			var $url = "claims/claimEntry/" + CLAIMTICKET.ticketFilter;
+        		getDetail : function($ticketId) {
+        			console.log("GetDetail: " + $ticketId);
+        			var $url = "claims/claimEntry/" + $ticketId;
         			var jqxhr = $.ajax({
 						type: 'GET',
 						url: $url,
@@ -289,7 +307,8 @@
 						statusCode: {
 							200: function($data) {
 								if ( $data.responseHeader.responseCode == 'SUCCESS') {
-									CLAIMTICKET.populateDetail($data.data);
+									CLAIMTICKET.ticketDetail[$ticketId] = $data.data;
+									CLAIMTICKET.populateDetail($ticketId);
 								} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
 								} else {
 									$("#globalMsg").html("System Error: Contact Support").show();
@@ -349,53 +368,59 @@
             		
             		$.each($data.claims, function($index, $claim) {
             			var $row = $("<tr>");
-            			$row.append( $("<td>").append($claim.ticketId));
-            			$row.append( $("<td>").append($claim.lastName + ", " + $claim.firstName));
+            			$row.append( $('<td class="col-ticketid">').append($claim.ticketId));
+            			$row.append( $('<td class="col-washer">').append($claim.lastName + ", " + $claim.firstName));
             			if ( $claim.claimId == null ) {
             				$needSaveRow = true;
-            				var $workDate = $('<input type="text" class="dateField">');
+            				var $workDate = $('<input type="text" class="dateField claim-field" size="10">');
             				$workDate.attr("name","workDate-" + $index);
             				$workDate.attr("data-ticketId", $claim.ticketId);
             				$workDate.attr("data-washerId", $claim.washerId);
             				$workDate.attr("data-rowNum",$index);
             				$workDate.attr("value", $claim.workDate);
-            				$row.append( $("<td>").append($workDate));
+            				$row.append( $('<td class="col-workdate">').append($workDate));
             				$.each(['volume','dlAmt','hours','notes'], function($inputIdx, $fieldName) {
-            					var $field = $("<input>");
+            					var $field = $('<input>');
+            					if ( $fieldName == 'notes' ) {
+            						$field.attr("size","20");
+            					} else {
+            						$field.attr("size","10");
+            					}
             					$field.attr("name", $fieldName+"-"+$index);
-            					$field.attr("class",$fieldName);
+            					$field.attr("class",$fieldName + " claim-field");
             					$field.attr("data-rowNum",$index);
             					$field.attr("data-ticketId", $claim.ticketId);
                 				$field.attr("data-washerId", $claim.washerId);
-            					$row.append( $("<td>").append($field) );
+            					$row.append( $('<td>').attr("class","col-"+$fieldName).append($field) );
             					
             				});
             				var $err = $("<td>");
             				$err.attr("id", "err-" + $index);
-            				$err.attr("class","err row-msg");
+            				$err.attr("class","err row-msg col-err");
             				$row.append($err);
             			} else {
-            				$row.append( $("<td>").append($claim.workDate));
-            				$row.append( $("<td>").append($claim.volume.toFixed(2)));
-            				$row.append( $("<td>").append($claim.dlAmt.toFixed(2)));
-            				$row.append( $("<td>").append($claim.hours.toFixed(2)));
-            				$row.append( $("<td>").append($claim.notes));
-            				$row.append( $("<td>").append("&nbsp;"));
+            				$row.append( $('<td class="col-workdate">').append($claim.workDate));
+            				$row.append( $('<td class="col-volume">').append($claim.volume.toFixed(2)));
+            				$row.append( $('<td class="col-dlAmt">').append($claim.dlAmt.toFixed(2)));
+            				$row.append( $('<td class="col-hours">').append($claim.hours.toFixed(2)));
+            				$row.append( $('<td class="col-notes">').append($claim.notes));
+            				var $viewer = '<span data-ticketid="'+$claim.ticketId+'" class="claim-view"><webthing:view>Claim Detail</webthing:view></span>';
+            				$row.append( $('<td class="col-err">').append($viewer));
             			}
             			$claimTable.append($row);
             			
             		});
             		if ( $needSaveRow == true ) {
 	            		$row = $('<tr>');
-	        			$row.append( $('<td>').append("Total:") );
-	        			$row.append( $('<td>').append("&nbsp;"));
-	        			$row.append( $('<td>').append("&nbsp;"));
-	        			$row.append( $('<td id="total-volume">').append("&nbsp;"));
-	        			$row.append( $('<td id="total-dlAmt">').append("&nbsp;"));
-	        			$row.append( $('<td id="total-hours">').append("&nbsp;"));
+	        			$row.append( $('<td class="col-ticket">').append("Total:") );
+	        			$row.append( $('<td class="col-washer">').append("&nbsp;"));
+	        			$row.append( $('<td class="col-workdate">').append("&nbsp;"));
+	        			$row.append( $('<td id="total-volume" class="col-volume">').append("&nbsp;"));
+	        			$row.append( $('<td id="total-dlAmt" class="col-dlAmt">').append("&nbsp;"));
+	        			$row.append( $('<td id="total-hours" class="col-hours">').append("&nbsp;"));
 	        			var $goButton = $('<input type="button" value="Save">');
 	    				$goButton.attr("id","save-claim");    				
-	    				$row.append($("<td>").append($goButton));
+	    				$row.append($('<td class="col-notes">').append($goButton));
 	    				$claimTable.append($row);
             		}
     				
@@ -491,52 +516,65 @@
 		                showButtonPanel:true
 		            });
 
-            		$(".volume").on('keyup change', function() {
-            			$me = $(this);
-            			$totalValue = 0;
-            			$("#claim-table .volume").each(function(index, value) {
-            				if ( $(this).val() == null || $(this).val() == '') {
-            					$thisVal = 0;
-            				} else {
-            					$thisVal = parseFloat($(this).val());
-            				}
-            				$totalValue = $totalValue + $thisVal;
-            			});
-        				$("#total-volume").html($totalValue.toFixed(2));
-            		});
-            		
-            		$(".dlAmt").on('keyup change', function() {
-            			$me = $(this);
-            			$totalValue = 0;
-            			$("#claim-table .dlAmt").each(function(index, value) {
-            				if ( $(this).val() == null || $(this).val() == '') {
-            					$thisVal = 0;
-            				} else {
-            					$thisVal = parseFloat($(this).val());
-            				}
-            				$totalValue = $totalValue + $thisVal;
-            			});
-        				$("#total-dlAmt").html($totalValue.toFixed(2));
-            		});
-            		
-            		$(".hours").on('keyup change', function() {
-            			$me = $(this);
-            			$totalValue = 0;
-            			$("#claim-table .hours").each(function(index, value) {
-            				if ( $(this).val() == null || $(this).val() == '') {
-            					$thisVal = 0;
-            				} else {
-            					$thisVal = parseFloat($(this).val());
-            				}
-            				$totalValue = $totalValue + $thisVal;
-            			});
-        				$("#total-hours").html($totalValue.toFixed(2));
-            		});
+            		if ( CLAIMTICKET.ticketFilter != null && CLAIMTICKET.ticketFilter != '') {
+            			// adding up totals only makes sense for claim by ticket
+	            		$(".volume").on('keyup change', function() {
+	            			$me = $(this);
+	            			$totalValue = 0;
+	            			$("#claim-table .volume").each(function(index, value) {
+	            				if ( $(this).val() == null || $(this).val() == '') {
+	            					$thisVal = 0;
+	            				} else {
+	            					$thisVal = parseFloat($(this).val());
+	            				}
+	            				$totalValue = $totalValue + $thisVal;
+	            			});
+	        				$("#total-volume").html($totalValue.toFixed(2));
+	            		});
+	            		
+	            		$(".dlAmt").on('keyup change', function() {
+	            			$me = $(this);
+	            			$totalValue = 0;
+	            			$("#claim-table .dlAmt").each(function(index, value) {
+	            				if ( $(this).val() == null || $(this).val() == '') {
+	            					$thisVal = 0;
+	            				} else {
+	            					$thisVal = parseFloat($(this).val());
+	            				}
+	            				$totalValue = $totalValue + $thisVal;
+	            			});
+	        				$("#total-dlAmt").html($totalValue.toFixed(2));
+	            		});
+	            		
+	            		$(".hours").on('keyup change', function() {
+	            			$me = $(this);
+	            			$totalValue = 0;
+	            			$("#claim-table .hours").each(function(index, value) {
+	            				if ( $(this).val() == null || $(this).val() == '') {
+	            					$thisVal = 0;
+	            				} else {
+	            					$thisVal = parseFloat($(this).val());
+	            				}
+	            				$totalValue = $totalValue + $thisVal;
+	            			});
+	        				$("#total-hours").html($totalValue.toFixed(2));
+	            		});
+            		}
             		
             		$("#save-claim").on("click",function() {
             			CLAIMTICKET.doClaim();
             		});
             		
+            		
+            		$(".claim-field").on("focus", function() {
+            			var $ticketId = $(this).attr("data-ticketid");
+            			CLAIMTICKET.populateDetail($ticketId);
+            		});
+            		
+            		$(".claim-view").on("click", function() {
+            			var $ticketId = $(this).attr("data-ticketid");
+            			CLAIMTICKET.populateDetail($ticketId);
+            		});
             	},
             	
         		
@@ -579,47 +617,52 @@
         		
         		
         		
-            	populateDetail : function($data) {
-        			var $numberFieldList = [
-								"totalVolume",
-								"claimedVolume",
-								"availableVolume",
-								"budget",
-								"claimedDirectLaborAmt",
-								"availableDirectLabor"]
-					
-        			$("#ticketDetailContainer .ticket-detail-table .jobSiteAddress").html($data.jobSiteAddress);
-        			$("#ticketDetailContainer .ticket-detail-table .ticketId").html($data.ticketId);
-        			$("#ticketDetailContainer .ticket-detail-table .ticketStatus").html('<span class="tooltip">'+$data.ticketStatus+'<span class="tooltiptext">'+$data.ticketStatusDesc+'</span></span>');
-
-        			$.each($numberFieldList, function($idx, $val) {
-        				var $selector = "#ticketDetailContainer .ticket-detail-table ." + $val;
-        				if ( $data[$val] == null ) {
-        					$($selector).html(null);
-        				} else {
-        					$($selector).html( $data[$val].toFixed(2));
-        				}
-        			});
-        			
-        			$("#ticketDetailContainer .ticket-detail-table .ticketId").attr("data-id", $data['ticketId']);
-        			$(".ticket-clicker").on("click", function($clickevent) {
-						$clickevent.preventDefault();
-						var $ticketId = $(this).attr("data-id");
-						TICKETUTILS.doTicketViewModal("#ticket-modal",$ticketId);
-						$("#ticket-modal").dialog("open");
-					});
-        			
-        			
-        			if ( $data.omNotes == "" || $data.omNotes == null ) {
-        				$("#ticketDetailContainer .omnotes-view").hide();
-        			} else {
-	        			$("#omnotes-modal .omNotes").html($data.omNotes);  
-	        			$("#ticketDetailContainer .omnotes-view").show();
-	        			$("#ticketDetailContainer .omnotes-view").click(function() {
-	            			$("#omnotes-modal").dialog("open");
-	            		});
-        			}
-
+            	populateDetail : function($ticketId) {
+            		console.log("populateDetail:" + $ticketId);
+            		$data = CLAIMTICKET.ticketDetail[$ticketId];
+            		if ( $data == null ) {
+            			CLAIMTICKET.getDetail($ticketId);
+            		} else {
+	        			var $numberFieldList = [
+									"totalVolume",
+									"claimedVolume",
+									"availableVolume",
+									"budget",
+									"claimedDirectLaborAmt",
+									"availableDirectLabor"]
+						
+	        			$("#ticketDetailContainer .ticket-detail-table .jobSiteAddress").html($data.jobSiteAddress);
+	        			$("#ticketDetailContainer .ticket-detail-table .ticketId").html($data.ticketId);
+	        			$("#ticketDetailContainer .ticket-detail-table .ticketStatus").html('<span class="tooltip">'+$data.ticketStatus+'<span class="tooltiptext">'+$data.ticketStatusDesc+'</span></span>');
+	
+	        			$.each($numberFieldList, function($idx, $val) {
+	        				var $selector = "#ticketDetailContainer .ticket-detail-table ." + $val;
+	        				if ( $data[$val] == null ) {
+	        					$($selector).html(null);
+	        				} else {
+	        					$($selector).html( $data[$val].toFixed(2));
+	        				}
+	        			});
+	        			
+	        			$("#ticketDetailContainer .ticket-detail-table .ticketId").attr("data-id", $data['ticketId']);
+	        			$(".ticket-clicker").on("click", function($clickevent) {
+							$clickevent.preventDefault();
+							var $ticketId = $(this).attr("data-id");
+							TICKETUTILS.doTicketViewModal("#ticket-modal",$ticketId);
+							$("#ticket-modal").dialog("open");
+						});
+	        			
+	        			
+	        			if ( $data.omNotes == "" || $data.omNotes == null ) {
+	        				$("#ticketDetailContainer .omnotes-view").hide();
+	        			} else {
+		        			$("#omnotes-modal .omNotes").html($data.omNotes);  
+		        			$("#ticketDetailContainer .omnotes-view").show();
+		        			$("#ticketDetailContainer .omnotes-view").click(function() {
+		            			$("#omnotes-modal").dialog("open");
+		            		});
+	        			}
+            		}
         			
         		},
             	
@@ -732,8 +775,8 @@
         </script>        
     </tiles:put>
     
-   <tiles:put name="content" type="string">
-    	<h1>Claim Entry <span id="claim-by-ticket" />by Ticket<span id="claim-by-washer" />by Washer</h1>
+   <tiles:put name="content" type="string">   
+    	<h1>Claim Entry <span id="claim-by-ticket">by Ticket</span><span id="claim-by-washer">by Washer</span></h1>
     	<%-- 
     	<div>
        		<span class="formLabel">Ticket:</span>
