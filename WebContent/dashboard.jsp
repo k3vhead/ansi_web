@@ -81,23 +81,26 @@
             .lowlite { background-color: #FFFFFF; }
             .funcArea { width: 300px; }
             #quickLink-container {
-           		width:49%;
-        		float:right; 
+        		width: 33%;
+			    margin-left:auto; 
+			    margin-right:auto;
         	}        
-        	#action-button-container {
-        		width:100%;
-        		text-align:center;
-        		display:none;
+        	#table-quickLink {
+        		width: 33%;
+			    margin-left:auto; 
+			    margin-right:auto;
         	}
         	#column-container-a {	
-        		display:none;
+        		width: 100%;
         	}
         	#column-container-b { 
         		 width:66%;
-        		 float:left; 
+        		 float:right; 
         	}
         	#tableQuickLink {
-				width:100%;
+				width:33%;
+				float:left;
+				
         	}
         	#division-description {
         		text-align:center;
@@ -114,11 +117,13 @@
         		display:none;
         	}
         	#lookup-container {
-        		width:49%; 
+        		width:33%; 
         		float:left; 
         	}
-        	#tableLookup {
-				width:100%;
+        	#table-lookup {
+				width:33%;
+			    margin-left:auto; 
+			    margin-right:auto;
 			}
 			
         	#ticket-modal {
@@ -128,8 +133,10 @@
 				width:33%;
 				float:right;
 			}
-			#tableReport {
-				width:100%;
+			#table-report {
+				width:33%;
+			    margin-left:auto; 
+			    margin-right:auto;
 			}
 			.action-button {
 				cursor:pointer;
@@ -154,12 +161,6 @@
         </style>
         <script type="text/javascript" src="js/dashboard.js"></script>
         <script type="text/javascript" src="js/clock.js"></script>  
-        
-        <script type="text/javascript" src="jQuery/jquery-3.1.1.min.js"></script>        
-        <script type="text/javascript" src="jQuery/jquery-ui.min.js"></script>
-        <script type="text/javascript" src="jQuery/jcookie.js"></script>
-    	<link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" /> 
-    </tiles:put>
     
     
 	
@@ -182,7 +183,7 @@
 						data: {},
 						statusCode: {
 							200: function($data) {
-								DASHBOARD.makeTable($data.data);
+								DASHBOARD.makeTable(type, $data.data);
 								DASHBOARD.makeClickers();
 							},					
 							403: function($data) {
@@ -201,38 +202,36 @@
                 
                 
                 
-                makeTable : function($data) {
+                makeTable : function(type, $data) {
                 	var $funcAreaTable = $("<table>");
                 	$funcAreaTable.attr("style","border:solid 1px #000000; margin-left:30px; margin-top:10px;margin-bottom:10px;");
                 	
-                	$.each($data.user, function($index, $value) {
+                	$.each($data.favoriteList, function($index, $value) {
                 		var $funcAreaTR = $("<tr>");
                 		var $funcAreaTD = $("<td>");
                 		$funcAreaTD.attr("class","funcarea");
                 		
                 		$link = $("<a>");
                 		$link.attr("href", $value.link);
-                		$link.append($value.text);
+                		$link.append($value.displayText);
                 		
                 		
                 		
                 		
-                		$funcAreaTD.attr("data-id",$value[0].favoriteList);
-                		$funcAreaTD.append($value[0].favoriteList);
-                		console.log($value[0].favoriteList);
+                		//$funcAreaTD.attr("data-id",$value[0].favoriteList);
+                		$funcAreaTD.append($link);
+                		//console.log($value[0].favoriteList);
                 		
                 		$funcAreaTR.append($funcAreaTD);    
-                		$funcAreaTR.attr("class","funcarea");
-                		$funcAreaTR.attr("data-id",$value[0].permissionIsActive);
-                		$funcAreaTR.append($value[0].permissionIsActive);
-                		console.log($value[0].permissionIsActive);
+                		//$funcAreaTR.attr("class","funcarea");
+                		//$funcAreaTR.attr("data-id",$value[0].permissionIsActive);
+                		//$funcAreaTR.append($displayText);
+                		//console.log($value[0].permissionIsActive);
                 		
                 		
                 		$funcAreaTable.append($funcAreaTR)
                 	});
-                	$("#tableReport").append($funcAreaTable);
-                	$("#tableQuickLink").append($funcAreaTable);
-                	$("#tableLookUp").append($funcAreaTable);
+                	$("#table-"+type).append($funcAreaTable);
                 },
                 
                 
@@ -268,6 +267,8 @@
     
     
     
+    </tiles:put>
+    
     
     
     <tiles:put name="content" type="string">
@@ -283,59 +284,34 @@
 			</div>
     		<div id="motd"></div>
     	</div>
-	</tiles:put>
-	
-	
-	
-	<tiles:put name="content" type="string">
-    	<h2>Dashboard Favorites</h2>
-    	
-    	
-    	
-    	<%--
-    	 -----------------------------------------------------------------------------------------------------
-    	 | column-container-a                                                                                |
-		 | ---------------------------------------------------------------  -------------------------------- |
-		 | | column-container-b                                          |  | user-list-container          | |
-		 | | ------------------------- --------------------------------  |  | --------------------------   | |
-		 | | | ticket-list-container | | action-container             |  |  | | user-list-table        |   | |	
-    	 | | | ------------------    | | ---------------------------  |  |  | |                        |   | |
-    	 | | | | ticket-table   |    | | | action-button-container |  |  |  | |                        |   | |
-    	 | | | |                |    | | ---------------------------  |  |  | |                        |   | |
-    	 | | | |                |    | | ---------------------------  |  |  | |                        |   | |
-    	 | | | |                |    | | | action-list-container   |  |  |  | |                        |   | |
-    	 | | | ------------------    | | ---------------------------  |  |  | --------------------------   | |
-    	 | | ------------------------- --------------------------------  |  |                              | |
-    	 | ---------------------------------------------------------------  -------------------------------- |
-    	 -----------------------------------------------------------------------------------------------------
-    	 --%>
-    	<div id="column-container-a">
-    		<div id="report-container" >
-    			<table id="tableReport" style="width:100%;">
-    				<thead style="width:100%;"></thead>
-    				<tbody style="width:100%;"></tbody>
-    				<tfoot style="width:100%;"></tfoot>
-    			</table>
+    
+    
+    <div id="column-container-a" style="border:1px solid black;">
+			
+			<div id="lookup-container" style="border:1px solid black;">
+			<span class="formLabel">Lookup List:</span>
+				<div id="table-lookup" style="border:1px solid black;"></div>
 			</div>
-			<div id="column-container-b">
-				<div id="quickLink-container">
-					<table id="tableQuickLink">					
-    				<thead style="width:100%;"></thead>
-    				<tbody style="width:100%;"></tbody>
-    				<tfoot style="width:100%;"></tfoot>
-					</div>
+	
+			<div id="column-container-b style="border:1px solid black;">
+			
+	    		<div id="report-container" style="border:1px solid black;" >
+				<span class="formLabel">Report List:</span>
+				<div id="table-report" style="border:1px solid black;"></div>
 				</div>
-				<div id="lookup-container">
-					<table id="tableLookup style="width:100%;">
-						<thead style="width:100%;"></thead>
-						<tbody style="width:100%;"></tbody>
-						<tfoot style="width:100%;"></tfoot>
-					</table>
+				<div id="quickLink-container" style="border:1px solid black;">
+				<span class="formLabel">Quick Link List:</span>			
+				<div id="table-quickLink" style="border:1px solid black;"></div>
 				</div>
 				<div class="spacer">&nbsp;</div>
 			</div>
 			<div class="spacer">&nbsp;</div>
-    	</div>
+			</div>
+	
+	
+	
+	</div>	
+    	
     	
     	
 	
