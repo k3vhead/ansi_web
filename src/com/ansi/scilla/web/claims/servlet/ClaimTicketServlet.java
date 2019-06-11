@@ -1,7 +1,6 @@
 package com.ansi.scilla.web.claims.servlet;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.sql.Connection;
 
 import javax.servlet.ServletException;
@@ -14,7 +13,6 @@ import org.apache.logging.log4j.Level;
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.TicketClaim;
 import com.ansi.scilla.web.claims.common.ClaimTicketItem;
-import com.ansi.scilla.web.claims.request.ClaimEntryRequest;
 import com.ansi.scilla.web.claims.request.ClaimTicketRequest;
 import com.ansi.scilla.web.claims.response.ClaimTicketResponse;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -29,7 +27,6 @@ import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class ClaimTicketServlet extends AbstractServlet {
 
@@ -50,7 +47,7 @@ public class ClaimTicketServlet extends AbstractServlet {
 		ClaimURL ansiURL = null;
 		try {			
 			conn = AppUtils.getDBCPConn();
-			SessionData sessionData = AppUtils.validateSession(request, Permission.CLAIMS_READ);
+			AppUtils.validateSession(request, Permission.CLAIMS_READ);
 			ansiURL = new ClaimURL(request); 
 			logger.log(Level.DEBUG, ansiURL);
 			ClaimTicketResponse data = ansiURL.claimType.equals(ClaimType.WASHER) ? ClaimTicketResponse.makeFromWasher(conn, ansiURL.id) : ClaimTicketResponse.makeFromTicket(conn, ansiURL.id); 
@@ -114,7 +111,9 @@ public class ClaimTicketServlet extends AbstractServlet {
 		WebMessages webMessages = claimTicketRequest.validateAdd(conn);
 		if ( webMessages.isEmpty() ) {
 			for ( ClaimTicketItem claim : claimTicketRequest.getClaims() ) {
-				claimTicket(conn, claim, user);
+				if ( claim.canBeClaimed() ) {
+					claimTicket(conn, claim, user);
+				}
 			}
 			conn.commit();
 			responseCode = ResponseCode.SUCCESS;
@@ -198,5 +197,7 @@ public class ClaimTicketServlet extends AbstractServlet {
 		WASHER,
 		;
 	}
+	
+	
 	
 }

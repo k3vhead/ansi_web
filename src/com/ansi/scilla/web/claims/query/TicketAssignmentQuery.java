@@ -5,6 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.ansi.scilla.common.ApplicationObject;
 
 public class TicketAssignmentQuery extends ApplicationObject {
@@ -39,14 +43,18 @@ public class TicketAssignmentQuery extends ApplicationObject {
 	
 	
 	public static ResultSet makeTicketQuery(Connection conn, Integer ticketId) throws SQLException {
+		Logger logger = LogManager.getLogger(TicketAssignmentQuery.class);
 		PreparedStatement ps = conn.prepareStatement(sql + ticketQuery);
+		logger.log(Level.DEBUG, sql + ticketQuery);
 		ps.setInt(1, ticketId);
 		ResultSet rs = ps.executeQuery();
 		return rs;
 	}
 	
 	public static ResultSet makeWasherQuery(Connection conn, Integer washerId) throws SQLException {
+		Logger logger = LogManager.getLogger(TicketAssignmentQuery.class);
 		PreparedStatement ps = conn.prepareStatement(sql + washerQuery);
+		logger.log(Level.DEBUG, sql + washerQuery);
 		ps.setInt(1, washerId);
 		ResultSet rs = ps.executeQuery();
 		return rs;

@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.web.claims.query.TicketAssignmentQuery;
 import com.ansi.scilla.web.common.request.RequestValidator;
@@ -52,7 +54,7 @@ public class ClaimTicketItem extends ApplicationObject {
 			this.workDate = new Date();
 		} else {
 			this.claimId = (Integer)claimId;
-			this.workDate = rs.getDate(TicketAssignmentQuery.WORK_DATE);
+			this.workDate = new Date(rs.getDate(TicketAssignmentQuery.WORK_DATE).getTime());
 			this.volume = rs.getBigDecimal(TicketAssignmentQuery.VOLUME); 
 			this.dlAmt = rs.getBigDecimal(TicketAssignmentQuery.DL_AMT); 
 			this.hours = rs.getBigDecimal(TicketAssignmentQuery.HOURS); 
@@ -142,6 +144,15 @@ public class ClaimTicketItem extends ApplicationObject {
 		this.notes = notes;
 	}
 	
+	
+	/**
+	 * this means some data has been entered, so this item can be validated. If valid, the ticket/washer can be claimed.
+	 * @return
+	 */
+	public boolean canBeClaimed() {
+		return this.workDate != null || this.volume != null || this.dlAmt != null || this.hours != null || ! StringUtils.isBlank(this.notes);
+	}
+	
 	/**
 	 * Since this is an item in a list, the rowNum is used as a qualifier, to indentify which (for example) particular
 	 * VOLUME is invalid.  If this item is to be validated individually -- not part of a list -- the rowNum can be omitted.
@@ -152,13 +163,17 @@ public class ClaimTicketItem extends ApplicationObject {
 	 */
 	public WebMessages validateAdd(Connection conn, Integer rowNum) throws Exception {
 		WebMessages webMessages = new WebMessages();
-		String qualifier = rowNum == null ? "" : "-" + rowNum;
-		RequestValidator.validateTicketId(conn, webMessages, TICKET_ID + qualifier, this.ticketId, true);
-		RequestValidator.validateWasherId(conn, webMessages, WASHER_ID + qualifier, this.washerId, true);
-		RequestValidator.validateDate(webMessages, WORK_DATE + qualifier, this.workDate, true, null, null);
-		RequestValidator.validateBigDecimal(webMessages, ClaimTicketItem.VOLUME + qualifier, this.volume, null, null, true);
-		RequestValidator.validateBigDecimal(webMessages, ClaimTicketItem.DL_AMT + qualifier, this.dlAmt, null, null, true);
-		RequestValidator.validateBigDecimal(webMessages, ClaimTicketItem.HOURS + qualifier, this.hours, null, null, true);
+		// we only validate if this is one of many items (so it has a rowNum) 
+		// and something is entered
+		if ( rowNum != null && canBeClaimed() ) {
+			String qualifier = rowNum == null ? "" : "-" + rowNum;
+			RequestValidator.validateTicketId(conn, webMessages, TICKET_ID + qualifier, this.ticketId, true);
+			RequestValidator.validateWasherId(conn, webMessages, WASHER_ID + qualifier, this.washerId, true);
+			RequestValidator.validateDate(webMessages, WORK_DATE + qualifier, this.workDate, true, null, null);
+			RequestValidator.validateBigDecimal(webMessages, ClaimTicketItem.VOLUME + qualifier, this.volume, null, null, true);
+			RequestValidator.validateBigDecimal(webMessages, ClaimTicketItem.DL_AMT + qualifier, this.dlAmt, null, null, true);
+			RequestValidator.validateBigDecimal(webMessages, ClaimTicketItem.HOURS + qualifier, this.hours, null, null, true);
+		}
 		
 		return webMessages;		
 	}

@@ -213,7 +213,7 @@
 		        				};		        				
 		        				$dataList.push($dataRow);
 	        				}
-	        			}
+        				}
 	        			var $outbound = {"claims":$dataList};
 	        			var jqxhr = $.ajax({
 							type: 'POST',
@@ -405,7 +405,10 @@
             				$row.append( $('<td class="col-hours">').append($claim.hours.toFixed(2)));
             				$row.append( $('<td class="col-notes">').append($claim.notes));
             				var $viewer = '<span data-ticketid="'+$claim.ticketId+'" class="claim-view"><webthing:view>Claim Detail</webthing:view></span>';
-            				$row.append( $('<td class="col-err">').append($viewer));
+			            	$claimTkt = '<a href="claimByTicket.html?id='+$claim.ticketId+'"><webthing:ticket styleClass="green">Claim By Ticket</webthing:ticket></a>';
+			            	$claimWasher = '<a href="claimByWasher.html?id='+$claim.washerId+'"><webthing:user styleClass="green">Claim By Washer</webthing:user></a>';
+			            	$claimEntry = '<a href="claimEntry.html?id='+$claim.ticketId+'"><webthing:edit>Claim Entry</webthing:edit></a>';
+            				$row.append( $('<td class="col-err">').append($viewer + "&nbsp;" + $claimTkt + "&nbsp;" + $claimWasher + "&nbsp;" + $claimEntry));
             			}
             			$claimTable.append($row);
             			
