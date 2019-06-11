@@ -188,8 +188,15 @@
     			            	title: "<bean:message key="field.label.action" />",
     			            	searchable:false,
     			            	data: function ( row, type, set ) {{
-    				            	var $claim = '<a href="claimDetailLookup.html?id='+row.ticket_id+'" class="claimAction" data-id="'+row.ticket_id+'"><webthing:invoiceIcon styleClass="green">Claim Detail</webthing:invoiceIcon></a>';    				            	
-    			            		return "<ansi:hasPermission permissionRequired='CLAIMS_READ'>"+$claim +"</ansi:hasPermission>";
+    				            	var $claimDetail = '<ansi:hasPermission permissionRequired="CLAIMS_READ"><a href="claimDetailLookup.html?id='+row.ticket_id+'" class="claimAction" data-id="'+row.ticket_id+'"><webthing:invoiceIcon styleClass="green">Claim Detail</webthing:invoiceIcon></a></ansi:hasPermission>';
+    				            	if ( row.washer_count > 0 && row.claimed_dl_total < row.budget ) {
+    				            		$claimByTicket = '<ansi:hasPermission permissionRequired="CLAIMS_WRITE"><a href="claimByTicket.html?id='+row.ticket_id+'"><webthing:ticket styleClass="green">Claim By Ticket</webthing:ticket></a></ansi:hasPermission>';
+    				            	} else {
+    				            		$claimByTicket = ""
+    				            	}    				            	
+    				            	var $claimEntry = '<ansi:hasPermission permissionRequired="CLAIMS_WRITE"><a href="claimEntry.html?id='+row.ticket_id+'"><webthing:edit>Claim Entry</webthing:edit></a></ansi:hasPermission>';
+    				            		
+    			            		return $claimDetail + "&nbsp;" + $claimEntry + "&nbsp;" + $claimByTicket;
     			            	}}
     			            }],
     			            "initComplete": BUDGETCONTROL.initComplete,

@@ -83,7 +83,8 @@ public class BudgetControlLookupQuery extends ClaimsQuery {
 			+ "	, (isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim_passthru_totals.passthru_volume,0.00))"
 			+ "		- isnull(invoice_totals.invoiced_amount,0.00) as claimed_vs_billed"
 			+ "	, ISNULL(ticket_payment_totals.paid_amount,0.00) as paid_amt"
-			+ "	, ISNULL(invoice_totals.invoiced_amount,0.00)-ISNULL(ticket_payment_totals.paid_amount,0.00) as amount_due";
+			+ "	, ISNULL(invoice_totals.invoiced_amount,0.00)-ISNULL(ticket_payment_totals.paid_amount,0.00) as amount_due"
+			+ " , (select count(*) from ticket_assignment where ticket_assignment.ticket_id=ticket.ticket_id) as washer_count";
 		
 
 	private static final String sqlFromClause = "\n  "
