@@ -14,14 +14,14 @@ public class DashboardFavoriteResponse extends MessageResponse {
 	private List<DashboardFavoriteItem> favoriteList;
 
 	
-	public DashboardFavoriteResponse(Menu parent, List<String> permissionList ) {
+	public DashboardFavoriteResponse(Menu parent, List<String> dashboardFavoriteList, List<String> permissionList ) {
 		super();
 		favoriteList = new ArrayList<DashboardFavoriteItem>();
-
+		
 		for ( Menu menu : Menu.values() ) {
 			if ( menu.getParent() != null && menu.getParent().equals(parent)) {
 				if ( permissionList.contains(menu.getPermissionRequired().name())) {
-					favoriteList.add(new DashboardFavoriteItem(menu, true));
+					favoriteList.add(new DashboardFavoriteItem(menu, dashboardFavoriteList.contains(menu.getLink())));
 				}
 			}
 		}

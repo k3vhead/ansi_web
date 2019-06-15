@@ -13,9 +13,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
 
+import com.ansi.scilla.common.db.UserFavorite;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
+import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Menu;
 import com.ansi.scilla.web.common.utils.UserPermission;
@@ -44,7 +46,8 @@ public class DashboardFavoritesServlet extends AbstractServlet {
 				String optionTypeParm = request.getParameter(OPTION_TYPE);
 				optionTypeParm = StringUtils.isBlank(optionTypeParm) ? OptionType.LOOKUP.getKey() : optionTypeParm;
 				OptionType optionType = OptionType.lookup(optionTypeParm) == null ? OptionType.LOOKUP : OptionType.lookup(optionTypeParm);
-				DashboardFavoriteResponse data = new DashboardFavoriteResponse(optionType.getMenu(), permissionList);
+				List<String> dashboardFavoriteList = makeDashboardFavoriteList(conn, sessionData.getUser());
+				DashboardFavoriteResponse data = new DashboardFavoriteResponse(optionType.getMenu(), dashboardFavoriteList, permissionList);
 				
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, data);				
 			} catch(RecordNotFoundException e) {
@@ -63,29 +66,30 @@ public class DashboardFavoritesServlet extends AbstractServlet {
 		}
 	}
 
-	/*
-	private String makeResponse(ResultSet rs) throws SQLException, JsonProcessingException {
-		List<HashMap<String, Object>> dataList = new ArrayList<HashMap<String, Object>>();
-		ResultSetMetaData rsmd = rs.getMetaData();
-		while ( rs.next() ) {
-			dataList.add(makeDataItem(rs, rsmd));
-		}
-		return AppUtils.object2json(dataList);
+	/**
+	 * Figure out which items have already been favorited
+	 * @param conn
+	 * @param user
+	 * @return
+	 * @throws Exception
+	 */
+	private List<String> makeDashboardFavoriteList(Connection conn, SessionUser user) throws Exception {
+		UserFavorite userFavorite = new UserFavorite();
+		userFavorite.setUserId(user.getUserId());
+		List<UserFavorite> userFavoriteList = UserFavorite.cast(userFavorite.selectSome(conn));		
+		return (List<String>)CollectionUtils.collect(userFavoriteList.iterator(), new FavoriteTransformer());
 	}
 
 	
-	private HashMap<String, Object> makeDataItem(ResultSet rs, ResultSetMetaData rsmd) throws SQLException {
-		HashMap<String, Object> dataItem = new HashMap<String, Object>();
-		for ( int i = 0; i < rsmd.getColumnCount(); i++ ) {
-			int idx = i + 1;
-			String column = rsmd.getColumnName(idx);
-			Object value = rs.getObject(idx);
-			
-			dataItem.put(column, value);
+	
+	public class FavoriteTransformer implements Transformer<UserFavorite, String> {
+
+		@Override
+		public String transform(UserFavorite arg0) {
+			return arg0.getReportId();
 		}
-		return dataItem;
+		
 	}
-	*/
 	
 	public class PermissionTransformer implements Transformer<UserPermission, String> {
 
