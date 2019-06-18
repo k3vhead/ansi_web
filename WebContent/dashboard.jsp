@@ -80,27 +80,29 @@
             .hilite { background-color: #404040;}
             .lowlite { background-color: #FFFFFF; }
             .funcArea { width: 300px; }
-            #quickLink-container {
-        		width: 33%;
-			    margin-left:auto; 
-			    margin-right:auto;
+           	#column-container-b  #quickLink-container {
+        		width: 49%;
+				float: right;
         	}        
-        	#table-quickLink {
-        		width: 33%;
-			    margin-left:auto; 
-			    margin-right:auto;
+			#quickLink-container h1 {
+				 color: white;
+        		 background-color: black;
+				 margin: 0;
+				 padding: 0;
+				 width: 100%;
+				 height: 25px;
+				 float: right;
+			}
+        	#quickLink-container #table-quickLink {
+        		width: 100%;
+				float: right;
         	}
         	#column-container-a {	
-        		width: 100%;
+        		width: 1300px;
         	}
-        	#column-container-b { 
+        	#column-container-a #column-container-b { 
         		 width:66%;
         		 float:right; 
-        	}
-        	#tableQuickLink {
-				width:33%;
-				float:left;
-				
         	}
         	#division-description {
         		text-align:center;
@@ -116,27 +118,42 @@
         		text-align:center;
         		display:none;
         	}
-        	#lookup-container {
+        	#column-container-a #lookup-container {
         		width:33%; 
         		float:left; 
-        	}
-        	#table-lookup {
-				width:33%;
-			    margin-left:auto; 
-			    margin-right:auto;
+        	} 
+        	#lookup-container h1 {
+				 color: white;
+        		 background-color: black;
+				 margin: 0;
+				 padding: 0;
+				 width: 100%;
+				 height: 25px;
+				 float: left;
+			}
+        	#lookup-container #table-lookup {
+				 width: 100%;
 			}
 			
         	#ticket-modal {
 				display:none;	
 			}
-        	#report-container {
-				width:33%;
-				float:right;
+        	#column-container-b #report-container {
+				width:49%;
+				float:left;
 			}
-			#table-report {
-				width:33%;
-			    margin-left:auto; 
-			    margin-right:auto;
+			#report-container h1 {
+				 color: white;
+        		 background-color: black;
+				 margin: 0;
+				 padding: 0;
+				 width: 100%;
+				 height: 25px;
+				 float: left;
+			}
+			#report-container #table-report {
+				width:100%;
+				float:left;
 			}
 			.action-button {
 				cursor:pointer;
@@ -236,6 +253,20 @@
                 
                 
                 makeClickers : function() {
+                /*	var checkBox = document.getElementById("myCheck");
+                	var funcarea = document.getElementById("funcarea");
+                	if (checkBox.checked == true){
+                		funcarea.style.display = "block";
+                	  	} else {
+                	  	funcarea.style.display = "none";
+                	  	}
+                }   */
+                	
+                	
+                	
+                	
+                	
+                	
                     $(".funcarea").click(function($event) {
                         var $id = $(this).attr("data-id");
                         $(".funcarea").removeClass("hilite");
@@ -257,7 +288,7 @@
                         }
                         
                     });
-                }
+                } 
             }
 
             DASHBOARD.init();
@@ -284,33 +315,27 @@
 			</div>
     		<div id="motd"></div>
     	</div>
-    
-    
-    <div id="column-container-a" style="border:1px solid black;">
-			
-			<div id="lookup-container" style="border:1px solid black;">
-			<span class="formLabel">Lookup List:</span>
-				<div id="table-lookup" style="border:1px solid black;"></div>
+    	
+    	
+    	 <body>
+			<div id="column-container-a">
+		 	<div id="lookup-container" style="border:1px solid black;">
+			<h1>Lookup</h1>
+			<div id="table-lookup"></div>
 			</div>
-	
-			<div id="column-container-b style="border:1px solid black;">
-			
-	    		<div id="report-container" style="border:1px solid black;" >
-				<span class="formLabel">Report List:</span>
-				<div id="table-report" style="border:1px solid black;"></div>
-				</div>
-				<div id="quickLink-container" style="border:1px solid black;">
-				<span class="formLabel">Quick Link List:</span>			
-				<div id="table-quickLink" style="border:1px solid black;"></div>
-				</div>
-				<div class="spacer">&nbsp;</div>
+			<div id="column-container-b">
+			<div id="report-container" style="border:1px solid black;">
+			<h1>Report</h1>
+			<div id="table-report""></div>
 			</div>
-			<div class="spacer">&nbsp;</div>
+			<div id="quickLink-container" style="border:1px solid black;">
+			<h1>Quick Link</h1>		
+			<div id="table-quickLink"></div>
 			</div>
-	
-	
-	
-	</div>	
+			</div>
+		 </div>
+		 
+		 </body>
     	
     	
     	
