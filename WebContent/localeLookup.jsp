@@ -18,7 +18,7 @@
 <tiles:insert page="layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        <bean:message key="page.label.ticket" /> <bean:message key="menu.label.lookup" />
+        <bean:message key="page.label.locale" /> <bean:message key="menu.label.lookup" />
     </tiles:put>
     
     
@@ -235,9 +235,9 @@
 				$(".print-link").on( "click", function($clickevent) {
 					doPrint($clickevent);
 				});
-				$(".ticket-clicker").on("click", function($clickevent) {
+				$(".locale-clicker").on("click", function($clickevent) {
 					$clickevent.preventDefault();
-					var $ticketId = $(this).attr("data-id");
+					var $localeId = $(this).attr("data-id");
 					TICKETUTILS.doTicketViewModal("#ticket-modal",$ticketId);
 					$("#ticket-modal").dialog("open");
 				});
@@ -246,7 +246,7 @@
 				
 			function doEdit($clickevent) {
 				var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
-					var $url = 'ticketTable/' + $rowid;
+					var $url = 'localeTable/' + $rowid;
 					//console.log("YOU PASSED ROW ID:" + $rowid);
 					var jqxhr = $.ajax({
 						type: 'GET',
@@ -254,25 +254,14 @@
 						success: function($data) {
 							//console.log($data);
 							
-			        		$("#ticketId").val(($data.data.codeList[0]).ticketId);
-			        		$("#ticketStatus").val(($data.data.codeList[0]).ticketStatus);
-			        		$("#divisionNbr").val(($data.data.codeList[0]).divisionNbr);
-			        		$("#billToName").val(($data.data.codeList[0]).billToName);
-			        		$("#jobSiteName").val(($data.data.codeList[0]).jobSiteName);
-			        		$("#jobSiteAddress").val(($data.data.codeList[0]).jobSiteAddress);
-			        		$("#startDate").val(($data.data.codeList[0]).startDate);
-			        		$("#jobFreq").val(($data.data.codeList[0]).jobFreq);
-			        		$("#pricePerCleaning").val(($data.data.codeList[0]).pricePerCleaning);
-			        		$("#jobNbr").val(($data.data.codeList[0]).jobNbr);
-			        		$("#jobId").val(($data.data.codeList[0]).jobId);
-			        		$("#serviceDescription").val(($data.data.codeList[0]).serviceDescription);
-			        		$("#processDate").val(($data.data.codeList[0]).processDate);
-			        		$("#invoiceId").val(($data.data.codeList[0]).invoiceId);
-			        		$("#amountDue").val(($data.data.codeList[0]).amountDue);
+			        		$("#localeId").val(($data.data.codeList[0]).localeId);
+			        		$("#name").val(($data.data.codeList[0]).name);
+			        		$("#stateName").val(($data.data.codeList[0]).stateName);
+			        		$("#abbreviation").val(($data.data.codeList[0]).abbreviation);
+			        		$("#localeTypeId").val(($data.data.codeList[0]).localeTypeId);
 			        		
-			        		$("#tId").val(($data.data.codeList[0]).ticketId);
 			        		$("#updateOrAdd").val("update");
-			        		$("#addTicketTableForm").dialog( "open" );
+			        		$("#addLocaleForm").dialog( "open" );
 						},
 						statusCode: {
 							403: function($data) {
@@ -287,13 +276,13 @@
 				
 				
 			function doPrint($clickevent) {
-				var $ticketId = $clickevent.currentTarget.attributes['data-id'].value;
+				var $localeId = $clickevent.currentTarget.attributes['data-id'].value;
 				console.debug("ROWID: " + $ticketId);
 				var a = document.createElement('a');
                 var linkText = document.createTextNode("Download");
                 a.appendChild(linkText);
                 a.title = "Download";
-                a.href = "ticketPrint/" + $ticketId;
+                a.href = "ticketPrint/" + $localeId;
                 a.target = "_new";   // open in a new window
                 document.body.appendChild(a);
                 a.click();				
