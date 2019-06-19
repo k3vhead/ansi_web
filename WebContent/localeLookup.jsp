@@ -83,127 +83,136 @@
         <script type="text/javascript">    
         
         $(document).ready(function(){
-			$('.ScrollTop').click(function() {
-				$('html, body').animate({scrollTop: 0}, 800);
-				return false;
-       	    });
-
-        	var dataTable = null;
         	
-        	function createTable(){
-				var $localeId = '<c:out value="${LOCALE_ID}" />';
-				var $name = '<c:out value="${NAME}" />';
-				var $stateName = '<c:out value="${STATE_NAME}" />';
-				var $abbreviation = '<c:out value="${ABBREVIATION}" />';
-				var $localeTypeId = '<c:out value="${LOCALE_TYPE_ID}" />';
+        	,LOCALELOOKUP = {
+                dataTable : null,
 
-        		var dataTable = $('#ticketTable').DataTable( {
-        			"aaSorting":		[[0,'desc']],
-        			"processing": 		true,
-        	        "serverSide": 		true,
-        	        "autoWidth": 		false,
-        	        "deferRender": 		true,
-        	        "scrollCollapse": 	true,
-        	        "scrollX": 			true,
-        	        rowId: 				'dt_RowId',
-        	        dom: 				'Bfrtip',
-        	        "searching": 		true,
-        	        "searchDelay":		800,
-        	        lengthMenu: [
-        	        	[ 10, 50, 100, 500, 1000 ],
-        	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
-        	        ],
-        	        buttons: [
-        	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}}
-        	        ],
-        	        
-        	        "columnDefs": [
-         	            { "orderable": false, "targets": -1 },
-        	            { className: "dt-head-left", "targets": [4,5,6,12] },
-        	            { className: "dt-body-center", "targets": [0,1,2,3,7,8,10,11,13,14] },
-        	            { className: "dt-right", "targets": [9,15]}
-        	         ],
-        	        "paging": true,
-			        "ajax": {
-			        	"url": "localeLookup",
-			        	"type": "GET",
-			        	"data": {"localeId":$localeId,"name":$name,"stateName":$stateName,"abbreviation":$abbreviation,"localeTypeId":$localeTypeId}
-			        	},
-			        columns: [
-			            { width:"5%", title: "<bean:message key="field.label.localeId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
-			            	if(row.locale_id != null){return ('<a href="#" data-id="'+row.locale_id+'" class="ticket-clicker">'+row.locale_id+'</a>');}
-			            } },
-			            { width:"20%", title: "<bean:message key="field.label.name" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-			            	if(row.name != null){return ('<span class="tooltip">' + row.name+'<span class="tooltiptext">'+row.name+'</span></span>');}
-			            } },
-			            { width:"5%", title: "<bean:message key="field.label.stateName" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-			            	if(row.state_name != null){return (row.state_name+"");}
-			            } },
-			            { width:"5%", title: "<bean:message key="field.label.abbreviation" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-			            	if(row.abbreviation != null){return (row.abbreviation);}
-			            } },
-			            { width:"10%", title: "<bean:message key="field.label.localeTypeId" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
-			            	if(row.locale_type_id != null){return (row.locale_type_id+"");}
-			            } },
-			            
-			            { width:"5%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
-			            	//console.log(row);
-			            	if ( row.locale_id == null ) {
-			            		$actionData = "";
-			            	} else {
-				            	var $editLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="localeReturn.html?id='+row.locale_id+'" class="editAction" data-id="'+row.locale_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
-				            	
-		            			var $ticketData = 'data-id="' + row.locale_id + '"';
-			            		$printLink = '<ansi:hasPermission permissionRequired="TAX_READ"><i class="print-link fa fa-print" aria-hidden="true" ' + $localeData + '></i></ansi:hasPermission>'
-			            		var $claimLink = '';
-			            		
-				            	$actionData = $editLink + $printLink;
-			            	}
-			            	return $actionData;
-			            } }],
-			            "initComplete": function(settings, json) {
-			            	//console.log(json);
-			            	//doFunctionBinding();
-			            	var myTable = this;
-			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#ticketTable", createTable);
-			            },
-			            "drawCallback": function( settings ) {
-			            	doFunctionBinding();
-			            }
-			    } );
-        	}
-        	        	
-        	init();
+       			init : function() {
+       				LOCALELOOKUP.createTable();  
+       				LOCALELOOKUP.makeClickers();
+                }, 
+                
+                
+                createTable : function(){
+            		var dataTable = $('#localeTable').DataTable( {
+            			"aaSorting":		[[2,'asc']],
+            			"processing": 		true,
+            	        "serverSide": 		true,
+            	        "autoWidth": 		false,
+            	        "deferRender": 		true,
+            	        "scrollCollapse": 	true,
+            	        "scrollX": 			true,
+            	        rowId: 				'dt_RowId',
+            	        dom: 				'Bfrtip',
+            	        "searching": 		true,
+            	        "searchDelay":		800,
+            	        lengthMenu: [
+            	        	[ 10, 50, 100, 500, 1000 ],
+            	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
+            	        ],
+            	        buttons: [
+            	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}}
+            	        ],
+            	        
+            	        "columnDefs": [
+             	            { "orderable": false, "targets": -1 },
+            	            { className: "dt-head-left", "targets": [4,5,6,12] },
+            	            { className: "dt-body-center", "targets": [0,1,2,3,7,8,10,11,13,14] },
+            	            { className: "dt-right", "targets": [9,15]}
+            	         ],
+            	        "paging": true,
+    			        "ajax": {
+    			        	"url": "localeLookup",
+    			        	"type": "GET",
+    			        	"data": {"localeId":$localeId,"name":$name,"stateName":$stateName,"abbreviation":$abbreviation,"localeTypeId":$localeTypeId}
+    			        	},
+    			        columns: [
+    			            { width:"5%", title: "<bean:message key="field.label.localeId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+    			            	if(row.locale_id != null){return ('<a href="#" data-id="'+row.locale_id+'" class="ticket-clicker">'+row.locale_id+'</a>');}
+    			            } },
+    			            { width:"20%", title: "<bean:message key="field.label.name" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            	if(row.name != null){return ('<span class="tooltip">' + row.name+'<span class="tooltiptext">'+row.name+'</span></span>');}
+    			            } },
+    			            { width:"5%", title: "<bean:message key="field.label.stateName" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            	if(row.state_name != null){return (row.state_name+"");}
+    			            } },
+    			            { width:"5%", title: "<bean:message key="field.label.abbreviation" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            	if(row.abbreviation != null){return (row.abbreviation);}
+    			            } },
+    			            { width:"10%", title: "<bean:message key="field.label.localeTypeId" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+    			            	if(row.locale_type_id != null){return (row.locale_type_id+"");}
+    			            } },
+    			            
+    			            { width:"5%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
+    			            	//console.log(row);
+    			            	if ( row.locale_id == null ) {
+    			            		$actionData = "";
+    			            	} else {
+    				            	var $editLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="localeReturn.html?id='+row.locale_id+'" class="editAction" data-id="'+row.locale_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
+    				            	
+    		            			var $ticketData = 'data-id="' + row.locale_id + '"';
+    			            		$printLink = '<ansi:hasPermission permissionRequired="TAX_READ"><i class="print-link fa fa-print" aria-hidden="true" ' + $localeData + '></i></ansi:hasPermission>'
+    			            		var $claimLink = '';
+    			            		
+    				            	$actionData = $editLink + $printLink;
+    			            	}
+    			            	return $actionData;
+    			            } }],
+    			            "initComplete": function(settings, json) {
+    			            	//console.log(json);
+    			            	//doFunctionBinding();
+    			            	var myTable = this;
+    			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#ticketTable", LOCALELOOKUP.createTable);
+    			            },
+    			            "drawCallback": function( settings ) {
+    			            	LOCALELOOKUP.doFunctionBinding();
+    			            }
+    			    } );
+            	},
+            	
+            	
+            	doFunctionBinding : function() {
+    				$( ".editAction" ).on( "click", function($clickevent) {
+    					 doEdit($clickevent);
+    				});					
+    				$(".print-link").on( "click", function($clickevent) {
+    					doPrint($clickevent);
+    				});
+    				$(".locale-clicker").on("click", function($clickevent) {
+    					$clickevent.preventDefault();
+    					var $localeId = $(this).attr("data-id");
+    					TICKETUTILS.doTicketViewModal("#ticket-modal",$ticketId);
+    					$("#ticket-modal").dialog("open");
+    				});
+
+    			}
+            	
+            	
+            	makeClickers : function() {
+            		$('.ScrollTop').click(function() {
+        				$('html, body').animate({scrollTop: 0}, 800);
+        				return false;
+               	    });
+            	},
+            	    
+        	};
+        	
+        	LOCALELOOKUP.init();
+        	
+        	
+        	
+        	
+        	
+			
+
+        	
+        	    	
         			
         			
             
-            function init(){
-				$.each($('input'), function () {
-			        $(this).css("height","20px");
-			        $(this).css("max-height", "20px");
-			    });
+            
 				
-				createTable();
-				
-           		TICKETUTILS.makeTicketViewModal("#ticket-modal")
-
-            }; 
-				
-			function doFunctionBinding() {
-				$( ".editAction" ).on( "click", function($clickevent) {
-					 doEdit($clickevent);
-				});					
-				$(".print-link").on( "click", function($clickevent) {
-					doPrint($clickevent);
-				});
-				$(".locale-clicker").on("click", function($clickevent) {
-					$clickevent.preventDefault();
-					var $localeId = $(this).attr("data-id");
-					TICKETUTILS.doTicketViewModal("#ticket-modal",$ticketId);
-					$("#ticket-modal").dialog("open");
-				});
-
-			}
+			
 				
 			function doEdit($clickevent) {
 				var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
