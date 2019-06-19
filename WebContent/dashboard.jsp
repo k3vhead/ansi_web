@@ -175,6 +175,9 @@
         	.user {
 
         	}
+        	.is-not-favorite {
+        		display:none;
+        	}
         </style>
         <script type="text/javascript" src="js/dashboard.js"></script>
         <script type="text/javascript" src="js/clock.js"></script>  
@@ -189,9 +192,15 @@
                 	DASHBOARD.getTotalList("report");
                 	DASHBOARD.getTotalList("quickLink");
                 	DASHBOARD.getTotalList("lookup");
-                    
+                    DASHBOARRD.makeIcons();
                 },
 
+                makeIcons : function() {
+                	$(".edit-lookups").click(function() {
+                		$(".checkboxstuff").toggle();
+                		$(".not-a-favorite").toggle();
+                	});
+                },
                 
                 getTotalList : function(type) {
                 	var jqxhr = $.ajax({
@@ -221,10 +230,15 @@
                 
                 makeTable : function(type, $data) {
                 	var $funcAreaTable = $("<table>");
-                	$funcAreaTable.attr("style","border:solid 1px #000000; margin-left:30px; margin-top:10px;margin-bottom:10px;");
+                	$funcAreaTable.attr("style","margin-left:30px; margin-top:10px;margin-bottom:10px;");
                 	
                 	$.each($data.favoriteList, function($index, $value) {
+                		var $selected = "is-not-favorite";
+                		if ( $value.selected == true ) {
+                			$selected = "is-favorite";
+                		}
                 		var $funcAreaTR = $("<tr>");
+                		$funcAreaTR.attr("class", $selected);
                 		var $funcAreaTD = $("<td>");
                 		$funcAreaTD.attr("class","funcarea");
                 		
@@ -245,6 +259,15 @@
                 		//$funcAreaTR.append($displayText);
                 		//console.log($value[0].permissionIsActive);
                 		
+                		$checkboxTD = $("<td>");
+                		$checkbox = $('<input type="checkbox">');
+                		if ( $value.selected == true )  {
+                			$checkbox.attr("checked","checked");
+                		}
+                		$checkbox.attr("name", $value.link);
+                		$checkbox.attr("class","favorite-checkbox");
+                		$checkboxTD.append($checkbox);
+                		$funcAreaTR.append($checkboxTD);
                 		
                 		$funcAreaTable.append($funcAreaTR)
                 	});
@@ -320,8 +343,11 @@
     	 <body>
 			<div id="column-container-a">
 		 	<div id="lookup-container" style="border:1px solid black;">
-			<h1>Lookup</h1>
-			<div id="table-lookup"></div>
+		 		<div style="width:100%; background-color:#000000;">
+					<div style="float:right; width:10%; text-align:right;background-color:inherit; border:0;"><webthing:edit styleClass="edit-lookups">Edit Favorites</webthing:edit></div>
+					<div style="float:left; width:89%;background-color:inherit;color:#FFFFFF; border:0;">Lookup</div>
+				</div>
+				<div id="table-lookup"></div>
 			</div>
 			<div id="column-container-b">
 			<div id="report-container" style="border:1px solid black;">
