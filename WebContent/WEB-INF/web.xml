@@ -441,6 +441,15 @@
 		<servlet-name>jobTable</servlet-name>
 		<url-pattern>/jobTable/*</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>localeLookup</servlet-name>
+		<servlet-class>com.ansi.scilla.web.locale.servlet.localeLookupServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>localeLookup</servlet-name>
+		<url-pattern>/localeLookup</url-pattern>
+	</servlet-mapping>
 
 
     <servlet>

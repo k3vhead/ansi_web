@@ -125,78 +125,39 @@
         	         ],
         	        "paging": true,
 			        "ajax": {
-			        	"url": "ticketTable",
+			        	"url": "localeLookup",
 			        	"type": "GET",
 			        	"data": {"localeId":$localeId,"name":$name,"stateName":$stateName,"abbreviation":$abbreviation,"localeTypeId":$localeTypeId}
 			        	},
 			        columns: [
-			            { width:"5%", title: "<bean:message key="field.label.ticketId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
-			            	if(row.ticket_id != null){return ('<a href="#" data-id="'+row.ticket_id+'" class="ticket-clicker">'+row.ticket_id+'</a>');}
+			            { width:"5%", title: "<bean:message key="field.label.localeId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+			            	if(row.locale_id != null){return ('<a href="#" data-id="'+row.locale_id+'" class="ticket-clicker">'+row.locale_id+'</a>');}
 			            } },
-			            { width:"5%", title: "<bean:message key="field.label.ticketStatus" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-			            	if(row.view_ticket_status != null){return ('<span class="tooltip">' + row.view_ticket_status+'<span class="tooltiptext">'+row.view_ticket_status_desc+'</span></span>');}
+			            { width:"20%", title: "<bean:message key="field.label.name" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            	if(row.name != null){return ('<span class="tooltip">' + row.name+'<span class="tooltiptext">'+row.name+'</span></span>');}
 			            } },
-			            { width:"5%", title: "<bean:message key="field.label.ticketType" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-			            	if(row.ticket_type_desc != null){return (row.ticket_type_desc+"");}
+			            { width:"5%", title: "<bean:message key="field.label.stateName" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            	if(row.state_name != null){return (row.state_name+"");}
 			            } },
-			            { width:"4%", title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-			            	if(row.div != null){return (row.div);}
+			            { width:"5%", title: "<bean:message key="field.label.abbreviation" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            	if(row.abbreviation != null){return (row.abbreviation);}
 			            } },
-			            { width:"8%", title: "<bean:message key="field.label.billToName" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
-			            	if(row.bill_to_name != null){return (row.bill_to_name+"");}
+			            { width:"10%", title: "<bean:message key="field.label.localeTypeId" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+			            	if(row.locale_type_id != null){return (row.locale_type_id+"");}
 			            } },
-			            { width:"8%", title: "<bean:message key="field.label.jobSiteName" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-			            	if(row.job_site_name != null){return (row.job_site_name+"");}
-			            } },
-			            { width:"7%", title: "<bean:message key="field.label.jobSiteAddress" />",  "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-			            	if(row.job_site_address != null){return (row.job_site_address+"");}
-			            } },
-			            { width:"6%", title: "<bean:message key="field.label.startDate" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-			            	if(row.start_date != null){return (row.start_date+"");}
-			            } },
-			            { width:"5%", title: "<bean:message key="field.label.jobFrequency" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-			            	if(row.job_frequency != null){return (row.job_frequency+"");}
-			            } },
-			            { width:"5%", title: "<bean:message key="field.label.pricePerCleaning" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-			            	if(row.price_per_cleaning != null){return (row.price_per_cleaning.toFixed(2)+"");}
-			            } },
-			            { width:"5%", title: "<bean:message key="field.label.jobNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
-			            	if(row.job_nbr != null){return (row.job_nbr+"");}
-			            } },
-			            { width:"4%", title: "<bean:message key="field.label.jobId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
-			            	//if(row.jobId != null){return ('<span class="editJob" data-jobid="'+ row.jobId +'">'+row.jobId+"</span>");} 
-			            	if(row.view_job_id != null){return ('<ansi:hasPermission permissionRequired="QUOTE_READ"><a href="jobMaintenance.html?id='+ row.view_job_id +'" class="jobLink"></ansi:hasPermission>'+row.view_job_id+'<ansi:hasPermission permissionRequired="QUOTE_READ"></a></ansi:hasPermission>');}
-			            } },
-			            { width:"16%", title: "<bean:message key="field.label.serviceDescription" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-			            	if(row.service_description != null){return (row.service_description+"");}
-			            } },
-			            { width:"6%", title: "<bean:message key="field.label.processDate" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) { 	
-			            	if(row.process_date != null){return (row.process_date+"");}
-			            } },
-			            { width:"6%", title: "<bean:message key="field.label.invoiceId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
-			            	if(row.invoice_id != null){return (row.invoice_id+"");} 
-			            } },
-			            { width:"6%", title: "<bean:message key="field.label.amountDue" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
-			            	if(row.amount_due != null){return (row.amount_due.toFixed(2)+"");} 
-			            } },
+			            
 			            { width:"5%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
 			            	//console.log(row);
-			            	if ( row.ticket_id == null ) {
+			            	if ( row.locale_id == null ) {
 			            		$actionData = "";
 			            	} else {
-				            	var $editLink = '<ansi:hasPermission permissionRequired="TICKET_WRITE"><a href="ticketReturn.html?id='+row.ticket_id+'" class="editAction" data-id="'+row.ticket_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
-				            	if ( row.ticketStatus == 'F' ) {
-				            		var $overrideLink = "";
-				            	} else {
-				            		var $overrideLink = '<ansi:hasPermission permissionRequired="TICKET_OVERRIDE"><a href="ticketOverride.html?id='+row.ticket_id+'" class="overrideAction" data-id="'+row.ticket_id+'"><webthing:override>Override</webthing:override></a></ansi:hasPermission>&nbsp;';
-				            	}
-		            			var $ticketData = 'data-id="' + row.ticket_id + '"';
-			            		$printLink = '<ansi:hasPermission permissionRequired="TICKET_READ"><i class="print-link fa fa-print" aria-hidden="true" ' + $ticketData + '></i></ansi:hasPermission>'
+				            	var $editLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="localeReturn.html?id='+row.locale_id+'" class="editAction" data-id="'+row.locale_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
+				            	
+		            			var $ticketData = 'data-id="' + row.locale_id + '"';
+			            		$printLink = '<ansi:hasPermission permissionRequired="TAX_READ"><i class="print-link fa fa-print" aria-hidden="true" ' + $localeData + '></i></ansi:hasPermission>'
 			            		var $claimLink = '';
-			            		if ( row.view_ticket_type == 'run' || row.view_ticket_type=='job') {
-			            			$claimLink = '<ansi:hasPermission permissionRequired="CLAIMS_WRITE"><a href="budgetControlLookup.html?id='+row.ticket_id+'"><webthing:invoiceIcon styleClass="green">Budget Control</webthing:invoiceIcon></a></ansi:hasPermission>';
-			            		}
-				            	$actionData = $editLink + $printLink + $overrideLink + $claimLink;
+			            		
+				            	$actionData = $editLink + $printLink;
 			            	}
 			            	return $actionData;
 			            } }],
@@ -277,7 +238,7 @@
 				
 			function doPrint($clickevent) {
 				var $localeId = $clickevent.currentTarget.attributes['data-id'].value;
-				console.debug("ROWID: " + $ticketId);
+				console.debug("ROWID: " + $localeId);
 				var a = document.createElement('a');
                 var linkText = document.createTextNode("Download");
                 a.appendChild(linkText);
@@ -293,7 +254,7 @@
     </tiles:put>
     
    <tiles:put name="content" type="string">
-    	<h1><bean:message key="page.label.ticket" /> <bean:message key="menu.label.lookup" /></h1> 
+    	<h1><bean:message key="page.label.locale" /> <bean:message key="menu.label.lookup" /></h1> 
     	<c:if test="${not empty ANSI_JOB_ID}">
     		<span class="orange"><bean:message key="field.label.jobFilter" />: <c:out value="${ANSI_JOB_ID}" /></span><br />
     	</c:if>
@@ -310,7 +271,7 @@
     	  	
  	<webthing:lookupFilter filterContainer="filter-container" />
 
- 	<table id="ticketTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
+ 	<table id="localeTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
         <thead>
         </thead>
         <tfoot>
@@ -319,7 +280,7 @@
     
     <webthing:scrolltop />
 
-    <webthing:ticketModal ticketContainer="ticket-modal" />
+    <webthing:ticketModal ticketContainer="locale-modal" />
 
     </tiles:put>
 		
