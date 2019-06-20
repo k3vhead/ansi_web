@@ -2,15 +2,15 @@
     pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-<%@ taglib uri="WEB-INF/c.tld" prefix="c" %>
-<%@ taglib uri="WEB-INF/sql.tld" prefix="sql" %>
-<%@ taglib uri="WEB-INF/fmt.tld" prefix="fmt" %>
-<%@ taglib uri="WEB-INF/struts-html.tld"  prefix="html"  %>
-<%@ taglib uri="WEB-INF/struts-logic.tld" prefix="logic" %>
-<%@ taglib uri="WEB-INF/struts-bean.tld"  prefix="bean"  %>
-<%@ taglib uri="WEB-INF/struts-tiles.tld" prefix="tiles" %>
+<%@ taglib uri="/WEB-INF/c.tld" prefix="c" %>
+<%@ taglib uri="/WEB-INF/sql.tld" prefix="sql" %>
+<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt" %>
+<%@ taglib uri="/WEB-INF/struts-html.tld"  prefix="html"  %>
+<%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
+<%@ taglib uri="/WEB-INF/struts-bean.tld"  prefix="bean"  %>
+<%@ taglib uri="/WEB-INF/struts-tiles.tld" prefix="tiles" %>
 <%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="webthing" %>
-<%@ taglib uri="WEB-INF/theTagThing.tld" prefix="ansi" %>
+<%@ taglib uri="/WEB-INF/theTagThing.tld" prefix="ansi" %>
 
 
 
@@ -18,17 +18,15 @@
 <tiles:insert page="layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        <bean:message key="page.label.locale" /> <bean:message key="menu.label.lookup" />
+        Locale Lookup
     </tiles:put>
     
     
     <tiles:put name="headextra" type="string">
        	<link rel="stylesheet" href="css/lookup.css" />
-    	<link rel="stylesheet" href="css/ticket.css" />
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
-    	<script type="text/javascript" src="js/addressUtils.js"></script>
     	<script type="text/javascript" src="js/lookup.js"></script> 
-    	<script type="text/javascript" src="js/ticket.js"></script> 
+    	
     
         <style type="text/css">
 			#displayTable {
@@ -116,9 +114,9 @@
             	        
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
-            	            { className: "dt-head-left", "targets": [4,5,6,12] },
-            	            { className: "dt-body-center", "targets": [0,1,2,3,7,8,10,11,13,14] },
-            	            { className: "dt-right", "targets": [9,15]}
+            	            { className: "dt-head-left", "targets": [0,1] },
+            	            { className: "dt-body-center", "targets": [2,3,5] },
+            	            { className: "dt-right", "targets": [4]}
             	         ],
             	        "paging": true,
     			        "ajax": {
@@ -148,13 +146,13 @@
     			            	if ( row.locale_id == null ) {
     			            		$actionData = "";
     			            	} else {
-    				            	var $editLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="localeReturn.html?id='+row.locale_id+'" class="editAction" data-id="'+row.locale_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
-    				            	
-    		            			var $ticketData = 'data-id="' + row.locale_id + '"';
-    			            		$printLink = '<ansi:hasPermission permissionRequired="TAX_READ"><i class="print-link fa fa-print" aria-hidden="true" ' + $localeData + '></i></ansi:hasPermission>'
-    			            		var $claimLink = '';
-    			            		
-    				            	$actionData = $editLink + $printLink;
+//    				            	var $editLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="localeReturn.html?id='+row.locale_id+'" class="editAction" data-id="'+row.locale_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
+//    				            	
+//    		            			var $ticketData = 'data-id="' + row.locale_id + '"';
+//    			            		$printLink = '<ansi:hasPermission permissionRequired="TAX_READ"><i class="print-link fa fa-print" aria-hidden="true" ' + $localeData + '></i></ansi:hasPermission>'
+//    			            		var $claimLink = '';
+//    			            		
+//    				            	$actionData = $editLink + $printLink;
     			            	}
     			            	return $actionData;
     			            } }],
@@ -162,7 +160,7 @@
     			            	//console.log(json);
     			            	//doFunctionBinding();
     			            	var myTable = this;
-    			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#ticketTable", LOCALELOOKUP.createTable);
+    			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#localeTable", LOCALELOOKUP.createTable);
     			            },
     			            "drawCallback": function( settings ) {
     			            	LOCALELOOKUP.doFunctionBinding();
@@ -181,11 +179,11 @@
     				$(".locale-clicker").on("click", function($clickevent) {
     					$clickevent.preventDefault();
     					var $localeId = $(this).attr("data-id");
-    					TICKETUTILS.doTicketViewModal("#ticket-modal",$ticketId);
-    					$("#ticket-modal").dialog("open");
+//    					TICKETUTILS.doTicketViewModal("#ticket-modal",$ticketId);
+    					$("#locale-modal").dialog("open");
     				});
 
-    			}
+    			},
             	
             	
             	makeClickers : function() {
@@ -199,20 +197,6 @@
         	
         	LOCALELOOKUP.init();
         	
-        	
-        	
-        	
-        	
-			
-
-        	
-        	    	
-        			
-        			
-            
-            
-				
-			
 				
 			function doEdit($clickevent) {
 				var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
