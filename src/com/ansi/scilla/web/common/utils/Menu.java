@@ -22,6 +22,7 @@ public enum Menu {
 	DIVISIONS("Divisions",SETTINGS,Permission.SYSADMIN_READ,"divisionAdmin.html"),
 	USER_LOOKUP("User Lookup",SETTINGS,Permission.SYSADMIN_READ,"userLookup.html"),
 	PERMISSIONS("Permissions",SETTINGS,Permission.SYSADMIN_READ,"permissionGroup.html"),
+	LOCALE("Locale", SETTINGS, Permission.SYSADMIN_READ, "localeLookup.html"),
 
 	
 	MY_ANSI("My ANSI", null, null,"#"),
