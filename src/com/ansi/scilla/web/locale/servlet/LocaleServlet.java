@@ -23,8 +23,6 @@ import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.locale.request.LocaleRequest;
 import com.ansi.scilla.web.locale.response.LocaleResponse;
-import com.ansi.scilla.web.ticket.request.TicketAssignmentRequest;
-import com.ansi.scilla.web.ticket.response.TicketAssignmentResponse;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -103,21 +101,6 @@ public class LocaleServlet extends AbstractServlet {
 			throws ServletException, IOException {
 		
 		super.sendNotAllowed(response);
-		
-		Connection conn = null;
-		try {
-			conn = AppUtils.getDBCPConn();
-			String jsonString = super.makeJsonString(request);
-			logger.log(Level.DEBUG, "jsonstring:"+jsonString);
-
-			SessionData sessionData = AppUtils.validateSession(request, Permission.TAX_OVERRIDE);
-			LocaleResponse data = new LocaleResponse();
-			WebMessages webMessages = new WebMessages();
-			
-			
-		} catch(Exception e){
-			
-		}
 		
 	}
 	
