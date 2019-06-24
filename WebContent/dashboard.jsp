@@ -23,6 +23,13 @@
     
     <tiles:put name="headextra" type="string">
         <style type="text/css">
+        	a {
+        		color:black;
+        		text-decoration:none;
+        	}
+        	.checkbox {
+        		text-align:right;
+        	}
         	#clockBox {
         		width:100%; 
         		text-align:center; 
@@ -192,13 +199,13 @@
                 	DASHBOARD.getTotalList("report");
                 	DASHBOARD.getTotalList("quickLink");
                 	DASHBOARD.getTotalList("lookup");
-                    DASHBOARRD.makeIcons();
+                    DASHBOARD.makeIcons();
                 },
 
                 makeIcons : function() {
-                	$(".edit-lookups").click(function() {
-                		$(".checkboxstuff").toggle();
-                		$(".not-a-favorite").toggle();
+                	$(".edit-lookups").click(function(event) {
+                		$('#checkbox').show();
+                		$(".is-not-favorite").toggle();
                 	});
                 },
                 
@@ -210,7 +217,6 @@
 						statusCode: {
 							200: function($data) {
 								DASHBOARD.makeTable(type, $data.data);
-								DASHBOARD.makeClickers();
 							},					
 							403: function($data) {
 								$("#globalMsg").html("Session Timeout. Log in and try again");
@@ -270,48 +276,10 @@
                 		$funcAreaTR.append($checkboxTD);
                 		
                 		$funcAreaTable.append($funcAreaTR)
+                		$('#checkbox').hide;
                 	});
                 	$("#table-"+type).append($funcAreaTable);
                 },
-                
-                
-                makeClickers : function() {
-                /*	var checkBox = document.getElementById("myCheck");
-                	var funcarea = document.getElementById("funcarea");
-                	if (checkBox.checked == true){
-                		funcarea.style.display = "block";
-                	  	} else {
-                	  	funcarea.style.display = "none";
-                	  	}
-                }   */
-                	
-                	
-                	
-                	
-                	
-                	
-                    $(".funcarea").click(function($event) {
-                        var $id = $(this).attr("data-id");
-                        $(".funcarea").removeClass("hilite");
-                        $(this).addClass("hilite");
-                        $(".perm").hide();
-                        $selector = "." + $id;
-                        $($selector).fadeIn(2000);
-                    });
-
-                    $(".perm").click(function($event) {
-                        var $id = $(this).attr("data-id");
-                        var $functionalArea = $(this).attr("data-funcarea");
-                        if ( $(this).hasClass("hilite")) {
-                            $(this).removeClass("hilite");
-                        } else {
-                            var $selector1 = "." + $functionalArea;
-                            $($selector1).removeClass("hilite");
-                            $(this).addClass("hilite");
-                        }
-                        
-                    });
-                } 
             }
 
             DASHBOARD.init();
@@ -345,17 +313,23 @@
 		 	<div id="lookup-container" style="border:1px solid black;">
 		 		<div style="width:100%; background-color:#000000;">
 					<div style="float:right; width:10%; text-align:right;background-color:inherit; border:0;"><webthing:edit styleClass="edit-lookups">Edit Favorites</webthing:edit></div>
-					<div style="float:left; width:89%;background-color:inherit;color:#FFFFFF; border:0;">Lookup</div>
+					<div style="float:left; width:89%;background-color:inherit;color:#FFFFFF; border:0;">  Lookup</div>
 				</div>
 				<div id="table-lookup"></div>
 			</div>
 			<div id="column-container-b">
 			<div id="report-container" style="border:1px solid black;">
-			<h1>Report</h1>
+		 		<div style="width:100%; background-color:#000000;">
+					<div style="float:right; width:10%; text-align:right;background-color:inherit; border:0;"><webthing:edit styleClass="edit-lookups">Edit Favorites</webthing:edit></div>
+					<div style="float:left; width:89%;background-color:inherit;color:#FFFFFF; border:0;">  Report</div>
+				</div>
 			<div id="table-report""></div>
 			</div>
 			<div id="quickLink-container" style="border:1px solid black;">
-			<h1>Quick Link</h1>		
+		 		<div style="width:100%; background-color:#000000;">
+					<div style="float:right; width:10%; text-align:right;background-color:inherit; border:0;"><webthing:edit styleClass="edit-lookups">Edit Favorites</webthing:edit></div>
+					<div style="float:left; width:89%;background-color:inherit;color:#FFFFFF; border:0;">  Quick Link</div>
+				</div>	
 			<div id="table-quickLink"></div>
 			</div>
 			</div>
