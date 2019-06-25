@@ -54,13 +54,24 @@ public class LocaleServlet extends AbstractServlet {
 				SessionUser sessionUser = sessionData.getUser(); 
 				
 				Locale locale = new Locale();
-				locale.setLocaleId(localeRequest.getLocaleId());
-				locale.setName(localeRequest.getName());
-				locale.setStateName(localeRequest.getStateName());
-				locale.setAbbreviation(localeRequest.getAbbreviation());
-				locale.setLocaleTypeId(localeRequest.getLocaleTypeId());
+				
+				if(localeRequest.getLocaleId() == null) {
+					//this is add
+					localeRequest.validateAdd(conn);
+					
+					locale = doAdd(locale, localeRequest);
+					
+				} else {
+					//this is update
+					localeRequest.validateUpdate(conn);
+					
+					locale = doUpdate(locale, localeRequest);
+				}
+				
+				
 				data = new LocaleResponse(localeRequest.getLocaleId(), localeRequest.getName(), localeRequest.getStateName(), 
 						localeRequest.getAbbreviation(), localeRequest.getLocaleTypeId());
+				
 				try {
 					locale.selectOne(conn);
 					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Duplicate");
@@ -94,7 +105,26 @@ public class LocaleServlet extends AbstractServlet {
 		}
 	}
 
+	protected Locale doAdd(Locale locale, LocaleRequest localeRequest) {
+		locale.setName(localeRequest.getName());
+		locale.setStateName(localeRequest.getStateName());
+		if(localeRequest.getAbbreviation() != null) {
+			locale.setAbbreviation(localeRequest.getAbbreviation());
+		}
+		locale.setLocaleTypeId(localeRequest.getLocaleTypeId());
+		return locale;
+	}
 	
+	protected Locale doUpdate(Locale locale, LocaleRequest localeRequest) {
+		locale.setLocaleId(localeRequest.getLocaleId());
+		locale.setName(localeRequest.getName());
+		locale.setStateName(localeRequest.getStateName());
+		if(localeRequest.getAbbreviation() != null) {
+			locale.setAbbreviation(localeRequest.getAbbreviation());
+		}
+		locale.setLocaleTypeId(localeRequest.getLocaleTypeId());
+		return locale;
+	}
 	
 	@Override
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response)

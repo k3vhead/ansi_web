@@ -57,11 +57,18 @@ public class LocaleRequest extends AbstractRequest {
 	public WebMessages validateAdd(Connection conn) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		
-		RequestValidator.validateId(conn, webMessages, LOCALE_ID, "localeId", "localeId", this.localeId, true);
 		RequestValidator.validateString(webMessages, NAME, this.name, true);
 		RequestValidator.validateString(webMessages, STATE_NAME, this.stateName, true);
-		RequestValidator.validateString(webMessages, ABBREVIATION, this.abbreviation, true);
 		RequestValidator.validateString(webMessages, LOCALE_TYPE_ID, this.localeTypeId, true);
+		
+		return webMessages;
+	}
+	
+	public WebMessages validateUpdate(Connection conn) throws Exception {
+		WebMessages webMessages = validateAdd(conn);
+		
+		RequestValidator.validateId(conn, webMessages, LOCALE_ID, "locale_id", "localeId", this.localeId, true);
+		RequestValidator.validateString(webMessages, ABBREVIATION, this.abbreviation, false);
 		
 		return webMessages;
 	}
