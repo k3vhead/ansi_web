@@ -65,7 +65,7 @@ public class LocaleServlet extends AbstractServlet {
 					//this is update
 					localeRequest.validateUpdate(conn);
 					
-					locale = doUpdate(locale, localeRequest);
+					locale = doUpdate(conn, locale, localeRequest);
 				}
 				
 				
@@ -108,20 +108,18 @@ public class LocaleServlet extends AbstractServlet {
 	protected Locale doAdd(Locale locale, LocaleRequest localeRequest) {
 		locale.setName(localeRequest.getName());
 		locale.setStateName(localeRequest.getStateName());
-		if(localeRequest.getAbbreviation() != null) {
-			locale.setAbbreviation(localeRequest.getAbbreviation());
-		}
+		locale.setAbbreviation(localeRequest.getAbbreviation());
 		locale.setLocaleTypeId(localeRequest.getLocaleTypeId());
 		return locale;
 	}
 	
-	protected Locale doUpdate(Locale locale, LocaleRequest localeRequest) {
+	protected Locale doUpdate(Connection conn, Locale locale, LocaleRequest localeRequest) throws Exception {
 		locale.setLocaleId(localeRequest.getLocaleId());
+		locale.selectOne(conn);
+		
 		locale.setName(localeRequest.getName());
 		locale.setStateName(localeRequest.getStateName());
-		if(localeRequest.getAbbreviation() != null) {
-			locale.setAbbreviation(localeRequest.getAbbreviation());
-		}
+		locale.setAbbreviation(localeRequest.getAbbreviation());
 		locale.setLocaleTypeId(localeRequest.getLocaleTypeId());
 		return locale;
 	}
