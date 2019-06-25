@@ -184,6 +184,7 @@
             <forward name="valid" path="/quoteMaintenance.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
+       
      	<action
             path="/logoff"
             type="com.ansi.scilla.web.login.action.LogoffAction">
