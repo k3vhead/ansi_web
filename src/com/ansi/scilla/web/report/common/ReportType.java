@@ -154,7 +154,7 @@ public enum ReportType {
 			"com.ansi.scilla.web.report.webReport.SixMonthRollingVolumeWebReport",
 			"com.ansi.scilla.web.report.request.ValidateDivMonthYear",  
 			new String[] {"divisionId", "month", "year"},
-			Permission.TECH_ADMIN_READ
+			Permission.TICKET_READ
 		),
 	TICKET_STATUS_REPORT(
 			"reportByDivStartEnd", 
