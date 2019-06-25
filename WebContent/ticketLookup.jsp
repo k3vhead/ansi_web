@@ -190,7 +190,11 @@
 				            		var $overrideLink = '<ansi:hasPermission permissionRequired="TICKET_OVERRIDE"><a href="ticketOverride.html?id='+row.ticket_id+'" class="overrideAction" data-id="'+row.ticket_id+'"><webthing:override>Override</webthing:override></a></ansi:hasPermission>&nbsp;';
 				            	}
 		            			var $ticketData = 'data-id="' + row.ticket_id + '"';
-				            	var $printLink = '<ansi:hasPermission permissionRequired="TICKET_WRITE"><i class="print-link fa fa-print" aria-hidden="true" ' + $ticketData + '></i></ansi:hasPermission>'
+								if ( row.view_ticket_status == 'N' ) {
+				            		var $printLink = '<ansi:hasPermission permissionRequired="TICKET_WRITE"><i class="print-link fa fa-print" aria-hidden="true" ' + $ticketData + '></i></ansi:hasPermission>'
+				            	} else {
+				            		var $printLink = '<ansi:hasPermission permissionRequired="TICKET_READ"><i class="print-link fa fa-print" aria-hidden="true" ' + $ticketData + '></i></ansi:hasPermission>'
+				            	}
 			            		var $claimLink = '';
 			            		if ( row.view_ticket_type == 'run' || row.view_ticket_type=='job') {
 			            			$claimLink = '<ansi:hasPermission permissionRequired="CLAIMS_WRITE"><a href="budgetControlLookup.html?id='+row.ticket_id+'"><webthing:invoiceIcon styleClass="green">Budget Control</webthing:invoiceIcon></a></ansi:hasPermission>';
