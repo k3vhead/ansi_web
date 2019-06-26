@@ -31,13 +31,14 @@ public class DashboardFavoriteResponse extends MessageResponse {
 				}
 			}
 		}
-//		if ( parent.equals(Menu.REPORTS)) {
-//			for ( ReportType reportType : ReportType.values() ) {
-//				if ( permissionList.contains(reportType.getPermission().name())) {
-//					favoriteList.add(new DashboardFavoriteItem(reportType, ))
-//				}
-//			}
-//		}
+		if ( parent.equals(Menu.REPORTS)) {
+			for ( ReportType reportType : ReportType.values() ) {
+				if ( permissionList.contains(reportType.getPermission().name())) {
+					String link = "report.html?id=" + reportType.name();
+					favoriteList.add(new DashboardFavoriteItem(reportType, dashboardFavoriteList.contains(link)));
+				}
+			}
+		}
 	}
 	
 	public List<DashboardFavoriteItem> getFavoriteList() {
@@ -61,6 +62,23 @@ public class DashboardFavoriteResponse extends MessageResponse {
 			this.displayText = menu.getDisplayText();
 			this.link = menu.getLink();
 			this.selected = selected;
+		}
+		public DashboardFavoriteItem(ReportType reportType, boolean selected)  {
+			super();
+			
+			try {
+				String reportClassName = reportType.reportClassName();
+				Class<?> reportClass = Class.forName(reportClassName);
+				java.lang.reflect.Field field = reportClass.getDeclaredField("REPORT_TITLE");
+				String title = (String)field.get(null);
+				
+				this.menu = reportType.name();
+				this.displayText = title;
+				this.link = "report.html?id=" + reportType.name();
+				this.selected = selected;
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
 		}
 		public String getMenu() {
 			return menu;
