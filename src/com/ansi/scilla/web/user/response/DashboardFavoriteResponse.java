@@ -7,6 +7,7 @@ import java.util.List;
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.common.utils.Menu;
+import com.ansi.scilla.web.report.common.ReportType;
 
 public class DashboardFavoriteResponse extends MessageResponse {
 
@@ -30,6 +31,13 @@ public class DashboardFavoriteResponse extends MessageResponse {
 				}
 			}
 		}
+//		if ( parent.equals(Menu.REPORTS)) {
+//			for ( ReportType reportType : ReportType.values() ) {
+//				if ( permissionList.contains(reportType.getPermission().name())) {
+//					favoriteList.add(new DashboardFavoriteItem(reportType, ))
+//				}
+//			}
+//		}
 	}
 	
 	public List<DashboardFavoriteItem> getFavoriteList() {
