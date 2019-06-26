@@ -1,15 +1,15 @@
 package com.ansi.scilla.web.test;
 
-import java.math.BigDecimal;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 import org.apache.http.Header;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.ansi.scilla.common.db.EmployeeExpense;
-import com.ansi.scilla.web.common.utils.FieldMap;
-import com.ansi.scilla.web.common.utils.JsonFieldFormat;
+import com.ansi.scilla.web.common.utils.Menu;
 
 
 public class DavesServletTester extends TestServlet {
@@ -42,7 +42,8 @@ public class DavesServletTester extends TestServlet {
 
 		Header sessionCookie = super.doLogin();
 //		String results = testNDL(sessionCookie, MyTestType.ADD);
-		String results = testEmployeeExpense(sessionCookie, MyTestType.ADD);
+//		String results = testEmployeeExpense(sessionCookie, MyTestType.ADD);
+		String results = testDashboardFavorite(sessionCookie, Menu.NEW_QUOTE);
 
 //		String results = super.doPost(sessionCookie, url, super.makeJson(parmMap));
 //		String results = super.doGet(sessionCookie, url, (HashMap<String,String>)null);
@@ -50,6 +51,16 @@ public class DavesServletTester extends TestServlet {
 		super.doLogoff(sessionCookie);
 		
 		logger.log(Level.DEBUG, results);
+	}
+
+
+
+
+	private String testDashboardFavorite(Header sessionCookie, Menu newQuote) throws ClientProtocolException, IOException, URISyntaxException {
+		String url = "/ansi_web/user/dashboardFavorites";
+		String json = "{\"menu\":\"NEW_QUOTE\"}";
+		String results = super.doPost(sessionCookie, url, json);
+		return results;
 	}
 
 

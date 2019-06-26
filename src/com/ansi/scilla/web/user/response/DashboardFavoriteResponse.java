@@ -1,6 +1,7 @@
 package com.ansi.scilla.web.user.response;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.ansi.scilla.common.ApplicationObject;
@@ -13,6 +14,10 @@ public class DashboardFavoriteResponse extends MessageResponse {
 
 	private List<DashboardFavoriteItem> favoriteList;
 
+	public DashboardFavoriteResponse(Menu menu, Boolean selected) {
+		super();
+		this.favoriteList = Arrays.asList(new DashboardFavoriteItem[] {new DashboardFavoriteItem(menu, selected)} );
+	}
 	
 	public DashboardFavoriteResponse(Menu parent, List<String> dashboardFavoriteList, List<String> permissionList ) {
 		super();
@@ -37,15 +42,23 @@ public class DashboardFavoriteResponse extends MessageResponse {
 
 	public class DashboardFavoriteItem extends ApplicationObject {
 		private static final long serialVersionUID = 1L;
+		private String menu;
 		private String displayText;
 		private String link;
 		private Boolean selected;
 
 		public DashboardFavoriteItem(Menu menu, Boolean selected) {
 			super();
+			this.menu = menu.name();
 			this.displayText = menu.getDisplayText();
 			this.link = menu.getLink();
 			this.selected = selected;
+		}
+		public String getMenu() {
+			return menu;
+		}
+		public void setMenu(String menu) {
+			this.menu = menu;
 		}
 		public String getDisplayText() {
 			return displayText;

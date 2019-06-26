@@ -1,7 +1,9 @@
 package com.ansi.scilla.web.user.servlet;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -15,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.db.UserFavorite;
 import com.ansi.scilla.web.common.response.ResponseCode;
+import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
@@ -23,6 +26,7 @@ import com.ansi.scilla.web.common.utils.Menu;
 import com.ansi.scilla.web.common.utils.UserPermission;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
+import com.ansi.scilla.web.user.request.DashboardFavoriteRequest;
 import com.ansi.scilla.web.user.response.DashboardFavoriteResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -30,6 +34,7 @@ public class DashboardFavoritesServlet extends AbstractServlet {
 	private static final long serialVersionUID = 1L;
 	
 	public static final String OPTION_TYPE = "type";
+	public static final String REALM = "dashboardFavorite";
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -65,6 +70,73 @@ public class DashboardFavoritesServlet extends AbstractServlet {
 			super.sendForbidden(response);
 		}
 	}
+	
+	
+	
+	
+
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		try {
+			SessionData sessionData = AppUtils.validateSession(request);
+			SessionUser sessionUser = sessionData.getUser();
+			toggleFavorite(request, response, sessionUser);
+		} catch (TimeoutException e) {
+			super.sendForbidden(response);
+		} catch ( Exception e) {
+			AppUtils.logException(e);
+			throw new ServletException(e);
+		} 
+	}
+
+
+	private void toggleFavorite(HttpServletRequest request, HttpServletResponse response, SessionUser sessionUser) throws ServletException, UnsupportedEncodingException, IOException {
+		Connection conn = null;
+		DashboardFavoriteRequest dashboardFavoriteRequest = new DashboardFavoriteRequest();
+		String jsonString = super.makeJsonString(request);
+		Boolean selected = null;
+		WebMessages messages = new WebMessages();
+		try {
+			conn = AppUtils.getDBCPConn();
+			conn.setAutoCommit(false);
+			AppUtils.json2object(jsonString, dashboardFavoriteRequest);
+			Menu menu = Menu.valueOf(dashboardFavoriteRequest.getMenu());
+			UserFavorite userFavorite = new UserFavorite();
+			userFavorite.setUserId(sessionUser.getUserId());
+			userFavorite.setReportId(menu.getLink());
+			try {
+				userFavorite.selectOne(conn);
+				// this menu item is already favorited, so we're going to turn it off
+				selected = false;
+				userFavorite.delete(conn);
+			} catch ( RecordNotFoundException notFound ) {
+				// this menu item is not favorited, so we're going to turn it on
+				selected = true;
+				Date today = new Date();
+				userFavorite.setAddedBy(sessionUser.getUserId());
+				userFavorite.setAddedDate(today);
+				userFavorite.setUpdatedBy(sessionUser.getUserId());
+				userFavorite.setUpdatedDate(today);
+				userFavorite.insertWithNoKey(conn);
+			}
+			conn.commit();
+			
+			DashboardFavoriteResponse dashboardFavoriteResonse = new DashboardFavoriteResponse(menu, selected);
+			messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
+			dashboardFavoriteResonse.setWebMessages(messages);
+			super.sendResponse(conn, response, ResponseCode.SUCCESS, dashboardFavoriteResonse);		
+		} catch(IllegalArgumentException e) {
+			// bad menu name
+			super.sendNotFound(response);
+		} catch (Exception e) {
+			AppUtils.logException(e);
+			throw new ServletException(e);
+		} finally {
+			AppUtils.closeQuiet(conn);
+		}
+	}
+
 
 	/**
 	 * Figure out which items have already been favorited
@@ -125,6 +197,5 @@ public class DashboardFavoritesServlet extends AbstractServlet {
 		
 		
 		
-	}
-	
+	}	
 }
