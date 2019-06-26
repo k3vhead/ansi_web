@@ -15,7 +15,7 @@
 
 
 
-<tiles:insert page="layout.jsp" flush="true">
+<tiles:insert page="../layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
         Locale Lookup
@@ -82,7 +82,7 @@
         
         $(document).ready(function(){
         	
-        	,LOCALELOOKUP = {
+        	LOCALELOOKUP = {
                 dataTable : null,
 
        			init : function() {
@@ -122,7 +122,7 @@
     			        "ajax": {
     			        	"url": "localeLookup",
     			        	"type": "GET",
-    			        	"data": {"localeId":$localeId,"name":$name,"stateName":$stateName,"abbreviation":$abbreviation,"localeTypeId":$localeTypeId}
+    			        	"data": {}
     			        	},
     			        columns: [
     			            { width:"5%", title: "<bean:message key="field.label.localeId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
@@ -131,21 +131,20 @@
     			            { width:"20%", title: "<bean:message key="field.label.name" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.name != null){return ('<span class="tooltip">' + row.name+'<span class="tooltiptext">'+row.name+'</span></span>');}
     			            } },
-    			            { width:"5%", title: "<bean:message key="field.label.stateName" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { width:"5%", title: "<bean:message key="field.label.state" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.state_name != null){return (row.state_name+"");}
     			            } },
     			            { width:"5%", title: "<bean:message key="field.label.abbreviation" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.abbreviation != null){return (row.abbreviation);}
     			            } },
-    			            { width:"10%", title: "<bean:message key="field.label.localeTypeId" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+    			            { width:"10%", title: "<bean:message key="field.label.localeType" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.locale_type_id != null){return (row.locale_type_id+"");}
     			            } },
     			            
     			            { width:"5%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
     			            	//console.log(row);
-    			            	if ( row.locale_id == null ) {
-    			            		$actionData = "";
-    			            	} else {
+    			            	var $actionData = "";
+    			            	if ( row.locale_id != null ) {
 //    				            	var $editLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="localeReturn.html?id='+row.locale_id+'" class="editAction" data-id="'+row.locale_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
 //    				            	
 //    		            			var $ticketData = 'data-id="' + row.locale_id + '"';
@@ -273,7 +272,6 @@
     
     <webthing:scrolltop />
 
-    <webthing:ticketModal ticketContainer="locale-modal" />
 
     </tiles:put>
 		

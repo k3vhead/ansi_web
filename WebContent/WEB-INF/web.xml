@@ -444,7 +444,7 @@
 	
 	<servlet>
 		<servlet-name>localeLookup</servlet-name>
-		<servlet-class>com.ansi.scilla.web.locale.servlet.localeLookupServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.locale.servlet.LocaleLookupServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>localeLookup</servlet-name>

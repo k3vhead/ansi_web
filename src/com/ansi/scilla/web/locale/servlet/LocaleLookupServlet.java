@@ -20,7 +20,7 @@ public class LocaleLookupServlet extends AbstractLookupServlet {
 
 	private static final long serialVersionUID = 1L;
 	
-	public static final String REALM = "localelookup";
+	public static final String REALM = "localeLookup";
 	
 	public static final String LOCALE_ID = "locale_id";
 	public static final String NAME = "name";
