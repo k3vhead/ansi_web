@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.locale.servlet;
+package com.ansi.scilla.web.tax.servlet;
 
 import java.sql.Connection;
 import java.util.List;
@@ -32,9 +32,13 @@ public class TaxRateLookupServlet extends AbstractLookupServlet {
 		super(Permission.TAX_READ);
 		cols = new String[] { 
 				LOCALE_ID,
+				LocaleLookupQuery.NAME,
+				LocaleLookupQuery.LOCALE_TYPE_ID,
+				TYPE_ID,
+				LocaleLookupQuery.STATE_NAME,
 				EFFECTIVE_DATE,
 				RATE_VALUE,
-				TYPE_ID
+				
 				};
 		//super.itemTransformer = new ItemTransformer();
 	}
