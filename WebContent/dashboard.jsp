@@ -27,9 +27,9 @@
         		color:black;
         		text-decoration:none;
         	}
-        	.checkbox {
-        		text-align:right;
-        	}
+        	td input[type="checkbox"] {
+    			float: right;
+			}
         	#clockBox {
         		width:100%; 
         		text-align:center; 
@@ -114,6 +114,9 @@
         	#division-description {
         		text-align:center;
         		font-weight:bold;
+        	}
+        	.checkbox {
+        		float: right;
         	}
         	#loading-container {
         		width:100%;
@@ -236,7 +239,7 @@
                 
                 makeTable : function(type, $data) {
                 	var $funcAreaTable = $("<table>");
-                	$funcAreaTable.attr("style","margin-left:30px; margin-top:10px;margin-bottom:10px;");
+                	$funcAreaTable.attr("style","width: 98%; margin-top:10px;margin-bottom:10px;");
                 	
                 	$.each($data.favoriteList, function($index, $value) {
                 		var $selected = "is-not-favorite";
@@ -311,24 +314,24 @@
     	 <body>
 			<div id="column-container-a">
 		 	<div id="lookup-container" style="border:1px solid black;">
-		 		<div style="width:100%; background-color:#000000;">
-					<div style="float:right; width:10%; text-align:right;background-color:inherit; border:0;"><webthing:edit styleClass="edit-lookups">Edit Favorites</webthing:edit></div>
-					<div style="float:left; width:89%;background-color:inherit;color:#FFFFFF; border:0;">  Lookup</div>
+		 		<div style="width:100%; background-color:#000000;">					
+					<div style="float:left; width:90%;background-color:inherit;color:#FFFFFF; border:0;text-indent: 3px;">Lookup</div>
+					<div style="float:left; display:inline-block; overflow:hidden; width:10%; text-align: center;background-color:inherit; border:0;"><webthing:edit styleClass="edit-lookups">Edit Favorites</webthing:edit></div>
 				</div>
 				<div id="table-lookup"></div>
 			</div>
 			<div id="column-container-b">
 			<div id="report-container" style="border:1px solid black;">
 		 		<div style="width:100%; background-color:#000000;">
-					<div style="float:right; width:10%; text-align:right;background-color:inherit; border:0;"><webthing:edit styleClass="edit-lookups">Edit Favorites</webthing:edit></div>
-					<div style="float:left; width:89%;background-color:inherit;color:#FFFFFF; border:0;">  Report</div>
+					<div style="float:left; width:90%;background-color:inherit;color:#FFFFFF; border:0;text-indent: 3px;">Report</div>
+					<div style="float:left; width:10%; text-align:center;background-color:inherit; border:0;"><webthing:edit styleClass="edit-lookups">Edit Favorites</webthing:edit></div>
 				</div>
 			<div id="table-report""></div>
 			</div>
 			<div id="quickLink-container" style="border:1px solid black;">
 		 		<div style="width:100%; background-color:#000000;">
-					<div style="float:right; width:10%; text-align:right;background-color:inherit; border:0;"><webthing:edit styleClass="edit-lookups">Edit Favorites</webthing:edit></div>
-					<div style="float:left; width:89%;background-color:inherit;color:#FFFFFF; border:0;">  Quick Link</div>
+					<div style="float:left; width:90%;background-color:inherit;color:#FFFFFF; border:0;text-indent: 3px;">Quick Link</div>
+					<div style="float:left; width:10%; text-align:center;background-color:inherit; border:0;"><webthing:edit styleClass="edit-lookups">Edit Favorites</webthing:edit></div>
 				</div>	
 			<div id="table-quickLink"></div>
 			</div>
