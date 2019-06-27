@@ -20,6 +20,11 @@ public class DashboardFavoriteResponse extends MessageResponse {
 		this.favoriteList = Arrays.asList(new DashboardFavoriteItem[] {new DashboardFavoriteItem(menu, selected)} );
 	}
 	
+	public DashboardFavoriteResponse(ReportType reportType, Boolean selected) {
+		super();
+		this.favoriteList = Arrays.asList(new DashboardFavoriteItem[] {new DashboardFavoriteItem(reportType, selected)} );
+	}
+	
 	public DashboardFavoriteResponse(Menu parent, List<String> dashboardFavoriteList, List<String> permissionList ) {
 		super();
 		favoriteList = new ArrayList<DashboardFavoriteItem>();
@@ -34,8 +39,7 @@ public class DashboardFavoriteResponse extends MessageResponse {
 		if ( parent.equals(Menu.REPORTS)) {
 			for ( ReportType reportType : ReportType.values() ) {
 				if ( permissionList.contains(reportType.getPermission().name())) {
-					String link = "report.html?id=" + reportType.name();
-					favoriteList.add(new DashboardFavoriteItem(reportType, dashboardFavoriteList.contains(link)));
+					favoriteList.add(new DashboardFavoriteItem(reportType, dashboardFavoriteList.contains(reportType.getLink())));
 				}
 			}
 		}

@@ -199,4 +199,16 @@ public enum ReportType {
 	public Permission getPermission() {
 		return permission;
 	}
+
+	public String getLink() {
+		return "report.html?id=" + this.name();
+	}
+	
+	public String getTitle() throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		String reportClassName = this.reportClassName();
+		Class<?> reportClass = Class.forName(reportClassName);
+		java.lang.reflect.Field field = reportClass.getDeclaredField("REPORT_TITLE");
+		String title = (String)field.get(null);
+		return title;
+	}
 }

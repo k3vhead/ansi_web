@@ -26,6 +26,7 @@ import com.ansi.scilla.web.common.utils.Menu;
 import com.ansi.scilla.web.common.utils.UserPermission;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
+import com.ansi.scilla.web.report.common.ReportType;
 import com.ansi.scilla.web.user.request.DashboardFavoriteRequest;
 import com.ansi.scilla.web.user.response.DashboardFavoriteResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
@@ -95,39 +96,22 @@ public class DashboardFavoritesServlet extends AbstractServlet {
 		Connection conn = null;
 		DashboardFavoriteRequest dashboardFavoriteRequest = new DashboardFavoriteRequest();
 		String jsonString = super.makeJsonString(request);
-		Boolean selected = null;
-		WebMessages messages = new WebMessages();
+
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
 			AppUtils.json2object(jsonString, dashboardFavoriteRequest);
-			Menu menu = Menu.valueOf(dashboardFavoriteRequest.getMenu());
-			UserFavorite userFavorite = new UserFavorite();
-			userFavorite.setUserId(sessionUser.getUserId());
-			userFavorite.setReportId(menu.getLink());
-			try {
-				userFavorite.selectOne(conn);
-				// this menu item is already favorited, so we're going to turn it off
-				selected = false;
-				userFavorite.delete(conn);
-			} catch ( RecordNotFoundException notFound ) {
-				// this menu item is not favorited, so we're going to turn it on
-				selected = true;
-				Date today = new Date();
-				userFavorite.setAddedBy(sessionUser.getUserId());
-				userFavorite.setAddedDate(today);
-				userFavorite.setUpdatedBy(sessionUser.getUserId());
-				userFavorite.setUpdatedDate(today);
-				userFavorite.insertWithNoKey(conn);
-			}
-			conn.commit();
 			
-			DashboardFavoriteResponse dashboardFavoriteResonse = new DashboardFavoriteResponse(menu, selected);
-			messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
-			dashboardFavoriteResonse.setWebMessages(messages);
-			super.sendResponse(conn, response, ResponseCode.SUCCESS, dashboardFavoriteResonse);		
+			try {
+				Menu menu = Menu.valueOf(dashboardFavoriteRequest.getMenu());
+				processMenuRequest(conn, menu, response, sessionUser);
+			} catch ( IllegalArgumentException iae ) {
+				ReportType reportType = ReportType.valueOf(dashboardFavoriteRequest.getMenu());
+				processReportRequest(conn, reportType, response, sessionUser);
+			}
+	
 		} catch(IllegalArgumentException e) {
-			// bad menu name
+			// bad menu name & bad report name
 			super.sendNotFound(response);
 		} catch (Exception e) {
 			AppUtils.logException(e);
@@ -136,6 +120,65 @@ public class DashboardFavoritesServlet extends AbstractServlet {
 			AppUtils.closeQuiet(conn);
 		}
 	}
+
+
+	private void processMenuRequest(Connection conn, Menu menu, HttpServletResponse response, SessionUser sessionUser) throws Exception {
+		WebMessages messages = new WebMessages();
+		Boolean selected = makeUserFavorite(conn, menu.getLink(), sessionUser);
+
+		DashboardFavoriteResponse dashboardFavoriteResonse = new DashboardFavoriteResponse(menu, selected);
+		messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
+		dashboardFavoriteResonse.setWebMessages(messages);
+		super.sendResponse(conn, response, ResponseCode.SUCCESS, dashboardFavoriteResonse);
+		
+	}
+
+
+
+
+
+	private void processReportRequest(Connection conn, ReportType reportType, HttpServletResponse response, SessionUser sessionUser) throws Exception {
+		WebMessages messages = new WebMessages();
+		Boolean selected = makeUserFavorite(conn, reportType.getLink(), sessionUser);
+
+		DashboardFavoriteResponse dashboardFavoriteResonse = new DashboardFavoriteResponse(reportType, selected);
+		messages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
+		dashboardFavoriteResonse.setWebMessages(messages);
+		super.sendResponse(conn, response, ResponseCode.SUCCESS, dashboardFavoriteResonse);
+		
+	}
+
+
+
+
+
+	private Boolean makeUserFavorite(Connection conn, String link, SessionUser sessionUser) throws Exception {
+		Boolean selected = null;
+		UserFavorite userFavorite = new UserFavorite();
+		userFavorite.setReportId(link);
+		userFavorite.setUserId(sessionUser.getUserId());
+		
+		try {
+			userFavorite.selectOne(conn);
+			// this menu item is already favorited, so we're going to turn it off
+			selected = false;
+			userFavorite.delete(conn);
+		} catch ( RecordNotFoundException notFound ) {
+			// this menu item is not favorited, so we're going to turn it on
+			selected = true;
+			Date today = new Date();
+			userFavorite.setAddedBy(sessionUser.getUserId());
+			userFavorite.setAddedDate(today);
+			userFavorite.setUpdatedBy(sessionUser.getUserId());
+			userFavorite.setUpdatedDate(today);
+			userFavorite.insertWithNoKey(conn);
+		}
+		conn.commit();		
+		return selected;
+	}
+
+
+
 
 
 	/**
