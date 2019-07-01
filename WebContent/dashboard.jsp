@@ -33,7 +33,6 @@
         	#clockBox {
         		width:100%; 
         		text-align:center; 
-        		padding-left:25px;
         	}
 			#helloBox {
 				width:100%; 
@@ -41,16 +40,18 @@
 				text-align:center;
 			}
 			#motd {
-				padding-top:25px;
 				padding-bottom:25px;
 			}
 			
-			
+			#clock-container {
+				float: right;
+				width: 400px;
+				
+			}
 			#clock {
 	        	position: relative;
 	        	width: 300px;
 	        	height: 300px;
-	        	margin: 10px auto 0 auto;
 	        	background: url(images/clock/clockface.jpg);
 	        	background-repeat: no-repeat;
 	        	list-style: none;
@@ -89,7 +90,7 @@
             .funcArea { width: 300px; }
            	#column-container-b  #quickLink-container {
         		width: 49%;
-				float: right;
+				float: left;
         	}        
 			#quickLink-container h1 {
 				 color: white;
@@ -102,14 +103,14 @@
 			}
         	#quickLink-container #table-quickLink {
         		width: 100%;
-				float: right;
+				float: left;
         	}
         	#column-container-a {	
         		width: 1300px;
         	}
         	#column-container-a #column-container-b { 
-        		 width:66%;
-        		 float:right; 
+        		 width:44%;
+        		 float:left; 
         	}
         	#division-description {
         		text-align:center;
@@ -129,7 +130,7 @@
         		display:none;
         	}
         	#column-container-a #lookup-container {
-        		width:33%; 
+        		width:21%; 
         		float:left; 
         	} 
         	#lookup-container h1 {
@@ -142,15 +143,18 @@
 				 float: left;
 			}
         	#lookup-container #table-lookup {
-				 width: 100%;
+				 width: 99%;
 			}
 			
         	#ticket-modal {
 				display:none;	
 			}
         	#column-container-b #report-container {
-				width:49%;
+				width:50%;
 				float:left;
+			}
+			h1 {
+        		text-align:center;				 
 			}
 			#report-container h1 {
 				 color: white;
@@ -188,6 +192,9 @@
         	.is-not-favorite {
         		display:none;
         	}
+        	.favorite-checkbox {
+        		display: none;
+        	}
         </style>
         <script type="text/javascript" src="js/dashboard.js"></script>
         <script type="text/javascript" src="js/clock.js"></script>  
@@ -207,7 +214,7 @@
 
                 makeIcons : function() {
                 	$(".edit-lookups").click(function(event) {
-                		$('#checkbox').show();
+                		$('.favorite-checkbox').toggle();
                 		$(".is-not-favorite").toggle();
                 	});
                 },
@@ -279,7 +286,6 @@
                 		$funcAreaTR.append($checkboxTD);
                 		
                 		$funcAreaTable.append($funcAreaTR)
-                		$('#checkbox').hide;
                 	});
                 	$("#table-"+type).append($funcAreaTable);
                 },
@@ -300,13 +306,6 @@
 		<h1>ANSI Scheduling Dashboard</h1>
     	<div id="helloBox">
     		<h4><span id="helloText">Hello</span> <c:out value="${com_ansi_scilla_session_data.user.firstName}" /></h4>
-    		<div id="clockBox">
-	    		<ul id="clock">	
-				   	<li id="sec"></li>
-				   	<li id="hour"></li>
-					<li id="min"></li>
-				</ul>
-			</div>
     		<div id="motd"></div>
     	</div>
     	
@@ -334,6 +333,15 @@
 					<div style="float:left; width:10%; text-align:center;background-color:inherit; border:0;"><webthing:edit styleClass="edit-lookups">Edit Favorites</webthing:edit></div>
 				</div>	
 			<div id="table-quickLink"></div>
+			</div>
+			</div>
+			<div id="clock-container">
+    		<div id="clockBox">
+	    		<ul id="clock">	
+				   	<li id="sec"></li>
+				   	<li id="hour"></li>
+					<li id="min"></li>
+				</ul>
 			</div>
 			</div>
 		 </div>
