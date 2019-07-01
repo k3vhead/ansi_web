@@ -18,7 +18,7 @@
 <tiles:insert page="../layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        Ticket Assignment
+        <bean:message key="page.label.ticket.assignment" />
     </tiles:put>
     
     
@@ -41,9 +41,11 @@
         		text-align:center;
         		display:none;
         	}
+        	<%--
         	#column-container-a {	
         		display:none;
         	}
+        	--%>
         	#column-container-b { 
         		 width:66%;
         		 float:left; 
@@ -54,6 +56,9 @@
         	#division-description {
         		text-align:center;
         		font-weight:bold;
+        	}
+        	#div-selector-container {
+        		margin-bottom:8px;
         	}
         	#loading-container {
         		width:100%;
@@ -111,8 +116,8 @@
         	;TICKETASSIGNMENT = {
         		divisionMap : {},
         		division : null,
-        		usersLoaded : false,
-        		ticketsLoaded : false,
+        		usersLoaded : true,
+        		ticketsLoaded : true,
         		userTable : null,
         		ticketTable : null,
         		selectedTicketList : [],
@@ -130,6 +135,8 @@
         			TICKETUTILS.makeTicketViewModal("#ticket-modal");
         			TICKETASSIGNMENT.makeModals();
         			TICKETASSIGNMENT.makeClickers();
+        			TICKETASSIGNMENT.loadTickets();
+        			TICKETASSIGNMENT.loadUsers();
         		},
 
         		
@@ -160,8 +167,9 @@
         		
         		
         		
-        		
+        		<%--
         		displayPanels : function() {
+        			console.log("Display panels " + TICKETASSIGNMENT.usersLoaded + " " + TICKETASSIGNMENT.ticketsLoaded);
         			if ( TICKETASSIGNMENT.usersLoaded == true && TICKETASSIGNMENT.ticketsLoaded == true) {
     					$("#loading-container").hide();
         				$("#column-container-a").show();
@@ -171,11 +179,15 @@
 	            		},250);
         			}
         		},
-        		
+        		--%>
         		
         		
         		loadTickets : function() {
-        			console.log("Loading tickets for " + TICKETASSIGNMENT.division.divisionId);
+        			displayDivisionId = null;
+        			if ( TICKETASSIGNMENT.division != null ) {
+        				displayDivisionId = TICKETASSIGNMENT.division.divisionId;
+        			}
+        			console.log("Loading tickets for " + displayDivisionId);
         			TICKETASSIGNMENT.ticketTable = $('#ticket-table').DataTable( {
             			"aaSorting":		[[0,'desc']],
             			"processing": 		true,
@@ -201,7 +213,7 @@
     			        "ajax": {
     			        	"url": "ticketTable",
     			        	"type": "GET",
-    			        	"data": {"jobId":null,"divisionId":TICKETASSIGNMENT.division.divisionId,"startDate":null,"status":"D"}
+    			        	"data": {"jobId":null,"divisionId":displayDivisionId,"startDate":null,"status":"D"}
     			        	},
     			        columns: [
     			        { 	searchable:true,
@@ -294,15 +306,19 @@
             		//},100)
 	            	//$("#filter-container .filter-banner .filter-hider .filter-data-closed").click(); //open the filter container inside the modal
 	            	TICKETASSIGNMENT.ticketsLoaded = true; 
-	            	TICKETASSIGNMENT.displayPanels();
+	            	//TICKETASSIGNMENT.displayPanels();
         		},
         		
         		
         		
         		
         		loadUsers : function() {
-        			console.log("Loading users for " + TICKETASSIGNMENT.division.divisionId);
-        			var $url = "userDivision/" + TICKETASSIGNMENT.division.divisionId;
+        			displayDivisionId = "";
+        			if ( TICKETASSIGNMENT.division != null ) {
+        				displayDivisionId = TICKETASSIGNMENT.division.divisionId;
+        			}
+        			console.log("Loading users for " + displayDivisionId);
+        			var $url = "userDivision/" + displayDivisionId;
         				
             		TICKETASSIGNMENT.userTable = $('#user-list-table').DataTable( {
             			"aaSorting":		[[0,'asc']],
@@ -345,7 +361,7 @@
     						},
     			            "initComplete": function() { 
     			            	TICKETASSIGNMENT.usersLoaded = true; 
-    			            	TICKETASSIGNMENT.displayPanels();
+    			            	//TICKETASSIGNMENT.displayPanels();
     			            },    			            
     			            "drawCallback": function() {
     			            	TICKETASSIGNMENT.userDrawCallback();
@@ -469,9 +485,9 @@
         		processDivChange : function() {
         			var $selectedDiv = TICKETASSIGNMENT.divisionMap[$("select[name='divisionId']").val()];
 					$("#division-description").html( $selectedDiv.description + " (" +  $selectedDiv.divisionNbr + "-" + $selectedDiv.divisionCode + ")");
-					$("#column-container-a").hide();
+					//$("#column-container-a").hide();
 					$("#action-button-container").hide();
-					$("#loading-container").show();
+					//$("#loading-container").show();
 					TICKETASSIGNMENT.usersLoaded = false;
 					TICKETASSIGNMENT.ticketsLoaded = false;
 					if ( TICKETASSIGNMENT.userTable != null ) {
@@ -608,7 +624,7 @@
     </tiles:put>
     
    <tiles:put name="content" type="string">
-    	<h1>Ticket Assignment</h1>
+    	<h1><bean:message key="page.label.ticket.assignment" /></h1>
     	
     	
     	
@@ -629,7 +645,9 @@
     	 | ---------------------------------------------------------------  -------------------------------- |
     	 -----------------------------------------------------------------------------------------------------
     	 --%>
-    	<span class="formLabel">Division:</span>&nbsp;<select name="divisionId"></select>
+    	<div id="div-selector-container">
+    		<span class="formLabel">Division:</span>&nbsp;<select name="divisionId"></select>
+    	</div>
     	<div id="division-description"></div>
     	<div id="loading-container"><webthing:thinking style="width:100%" /></div>
       	<webthing:lookupFilter filterContainer="filter-container" />

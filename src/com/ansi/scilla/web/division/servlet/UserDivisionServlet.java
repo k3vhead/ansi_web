@@ -60,10 +60,9 @@ public class UserDivisionServlet extends AbstractLookupServlet {
 				lookupQuery.setSearchTerm(searchTerm);
 			}
 			divisionIdFilterValue = url.getId();
-			if ( divisionIdFilterValue == null ) {
-				throw new ResourceNotFoundException();
+			if ( divisionIdFilterValue != null ) {
+				lookupQuery.setDivisionId(divisionIdFilterValue);
 			}
-			lookupQuery.setDivisionId(divisionIdFilterValue);
 			
 			return lookupQuery;
 			
