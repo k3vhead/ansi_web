@@ -151,7 +151,9 @@
 			            	if(row.job_site_address != null){return (row.job_site_address+"");}
 			            } },
 			            { width:"6%", title: "<bean:message key="field.label.startDate" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-			            	if(row.start_date != null){return (row.start_date+"");}
+			            	//if(row.start_date != null){return (row.start_date+"");}
+			            	//if(row.view_start_date != null){return (row.view_start_date+"");}
+			            	if ( row.display_start_date != null ) { return row.display_start_date; }
 			            } },
 			            { width:"5%", title: "<bean:message key="field.label.jobFrequency" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
 			            	if(row.job_frequency != null){return (row.job_frequency+"");}
@@ -184,13 +186,17 @@
 			            		$actionData = "";
 			            	} else {
 				            	var $editLink = '<ansi:hasPermission permissionRequired="TICKET_WRITE"><a href="ticketReturn.html?id='+row.ticket_id+'" class="editAction" data-id="'+row.ticket_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
-				            	if ( row.ticketStatus == 'F' ) {
+				            	if ( row.ticket_status == 'F' ) {
 				            		var $overrideLink = "";
 				            	} else {
 				            		var $overrideLink = '<ansi:hasPermission permissionRequired="TICKET_OVERRIDE"><a href="ticketOverride.html?id='+row.ticket_id+'" class="overrideAction" data-id="'+row.ticket_id+'"><webthing:override>Override</webthing:override></a></ansi:hasPermission>&nbsp;';
 				            	}
 		            			var $ticketData = 'data-id="' + row.ticket_id + '"';
-			            		$printLink = '<ansi:hasPermission permissionRequired="TICKET_READ"><i class="print-link fa fa-print" aria-hidden="true" ' + $ticketData + '></i></ansi:hasPermission>'
+								if ( row.view_ticket_status == 'N' ) {
+				            		var $printLink = '<ansi:hasPermission permissionRequired="TICKET_WRITE"><i class="print-link fa fa-print" aria-hidden="true" ' + $ticketData + '></i></ansi:hasPermission>'
+				            	} else {
+				            		var $printLink = '<ansi:hasPermission permissionRequired="TICKET_READ"><i class="print-link fa fa-print" aria-hidden="true" ' + $ticketData + '></i></ansi:hasPermission>'
+				            	}
 			            		var $claimLink = '';
 			            		if ( row.view_ticket_type == 'run' || row.view_ticket_type=='job') {
 			            			$claimLink = '<ansi:hasPermission permissionRequired="CLAIMS_WRITE"><a href="budgetControlLookup.html?id='+row.ticket_id+'"><webthing:invoiceIcon styleClass="green">Budget Control</webthing:invoiceIcon></a></ansi:hasPermission>';
