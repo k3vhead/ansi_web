@@ -41,6 +41,7 @@ public class TicketLookupServlet extends AbstractLookupServlet {
 	public static final String TICKET_STATUS_DESC = "ticket_status_desc";
 	public static final String START_DATE = "start_date";
 	public static final String VIEW_LOG_START_DATE = "view_start_date";
+	public static final String VIEW_START_DATE = "view_start_date";
 
 	public TicketLookupServlet() {
 		super(Permission.TICKET_READ);
@@ -126,8 +127,7 @@ public class TicketLookupServlet extends AbstractLookupServlet {
 
 		@Override
 		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
-
-			Date startDate = (Date)arg0.get(VIEW_LOG_START_DATE);
+			Date startDate = (Date)arg0.get(VIEW_START_DATE);
 			if ( startDate != null ) {
 				arg0.put(DISPLAY_START_DATE, dateFormatter.format(startDate));
 			}

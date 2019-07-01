@@ -36,6 +36,7 @@ public class TicketLookupQuery extends LookupQuery {
 	public static final String JOB_SITE = "a2.name";
 	public static final String ADDRESS = "a2.address1";
 	public static final String TICKET_START_DATE = "ticket.start_date";
+	public static final String START_DATE = "view_ticket_log.start_date";
 	public static final String FREQ = "job.job_frequency";
 	public static final String PPC = "isnull(ticket.act_price_per_cleaning, job.price_per_cleaning)";
 	public static final String JOB = "job.job_nbr";
