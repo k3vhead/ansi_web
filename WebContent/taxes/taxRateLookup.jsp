@@ -131,16 +131,21 @@
     			            { width:"20%", title: "<bean:message key="field.label.name" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.name != null){return ('<span class="tooltip">' + row.name+'<span class="tooltiptext">'+row.name+'</span></span>');}
     			            } },
-    			            { width:"5%", title: "<bean:message key="field.label.state" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-    			            	if(row.state_name != null){return (row.state_name+"");}
-    			            } },
-    			            { width:"5%", title: "<bean:message key="field.label.abbreviation" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-    			            	if(row.abbreviation != null){return (row.abbreviation);}
-    			            } },
-    			            { width:"10%", title: "<bean:message key="field.label.localeType" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+    			            { width:"5%", title: "<bean:message key="field.label.localeTypeId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.locale_type_id != null){return (row.locale_type_id+"");}
     			            } },
-    			            
+    			            { width:"5%", title: "<bean:message key="field.label.typeName" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            	if(row.type_name != null){return (row.type_name);}
+    			            } },
+    			            { width:"10%", title: "<bean:message key="field.label.stateName" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+    			            	if(row.state_name != null){return (row.state_name+"");}
+    			            } },
+    			            { width:"10%", title: "<bean:message key="field.label.effectiveDate" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+    			            	if(row.effective_date != null){return (row.effective_date+"");}
+    			            } },
+    			            { width:"10%", title: "<bean:message key="field.label.rateValue" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+    			            	if(row.rate_value != null){return (row.rate_value+"");}
+    			            } },
     			            { width:"5%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
     			            	//console.log(row);
     			            	var $actionData = "";
@@ -194,24 +199,26 @@
             	    
         	};
         
-        	LOCALELOOKUP.init();
+        	TAXRATELOOKUP.init();
         	
 				
 			function doEdit($clickevent) {
 				var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
-					var $url = 'localeTable/' + $rowid;
+					var $url = 'taxRateTable/' + $rowid;
 					//console.log("YOU PASSED ROW ID:" + $rowid);
 					var jqxhr = $.ajax({
 						type: 'GET',
 						url: $url,
 						success: function($data) {
 							//console.log($data);
-							
+							//localeId, name, localeTypeId, typeName, stateName, effectiveDate, rateValue
 			        		$("#localeId").val(($data.data.codeList[0]).localeId);
 			        		$("#name").val(($data.data.codeList[0]).name);
-			        		$("#stateName").val(($data.data.codeList[0]).stateName);
-			        		$("#abbreviation").val(($data.data.codeList[0]).abbreviation);
 			        		$("#localeTypeId").val(($data.data.codeList[0]).localeTypeId);
+			        		$("#typeName").val(($data.data.codeList[0]).typeName);
+			        		$("#stateName").val(($data.data.codeList[0]).stateName);
+			        		$("#effectiveDate").val(($data.data.codeList[0]).effectiveDate);
+			        		$("#rateValue").val(($data.data.codeList[0]).rateValue);
 			        		
 			        		$("#updateOrAdd").val("update");
 			        		$("#addLocaleForm").dialog( "open" );
