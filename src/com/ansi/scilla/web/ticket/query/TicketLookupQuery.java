@@ -77,7 +77,7 @@ public class TicketLookupQuery extends LookupQuery {
 			+ "\n JOIN job ON job.job_id = view_ticket_log.job_id "
 			+ "\n JOIN quote ON quote.quote_id = job.quote_id  "
 			+ "\n   and quote.division_id in ($USERFILTER$)"
-			+ "\n JOIN division ON division.division_id = job.division_id  $DIVISIONFILTER$" 
+			+ "\n JOIN division ON division.division_id = ticket.act_division_id  $DIVISIONFILTER$" 
 			+ "\n JOIN address a1 ON quote.bill_to_address_id = a1.address_id  "
 			+ "\n JOIN address a2 ON quote.job_site_address_id = a2.address_id "
 			+ "\n left outer join (select ticket_id, sum(amount) as amount, sum(tax_amt) as tax_amt from ticket_payment group by ticket_id) "
