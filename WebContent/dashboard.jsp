@@ -205,7 +205,9 @@
 	<script type="text/javascript">
         $(function() {
             ;DASHBOARD = {
-                init : function() {
+           		donelist : {"report":false, "quickLink":false, "lookup":false},
+           		
+                init : function() {                	
                 	DASHBOARD.getTotalList("report");
                 	DASHBOARD.getTotalList("quickLink");
                 	DASHBOARD.getTotalList("lookup");
@@ -229,13 +231,13 @@
 								DASHBOARD.makeTable(type, $data.data);
 							},					
 							403: function($data) {
-								$("#globalMsg").html("Session Timeout. Log in and try again");
+								$("#globalMsg").html("Session Timeout. Log in and try again").show();
 							},
 							404: function($data) {
-								$("#globalMsg").html("System Error Reorder 404. Contact Support");
+								$("#globalMsg").html("System Error Reorder 404. Contact Support").show();
 							},
 							500: function($data) {
-								$("#globalMsg").html("System Error Reorder 500. Contact Support");
+								$("#globalMsg").html("System Error Reorder 500. Contact Support").show();
 							}
 						},
 						dataType: 'json'
@@ -255,6 +257,7 @@
                 		}
                 		var $funcAreaTR = $("<tr>");
                 		$funcAreaTR.attr("class", $selected);
+                		$funcAreaTR.attr("id",$value.menu);
                 		var $funcAreaTD = $("<td>");
                 		$funcAreaTD.attr("class","funcarea");
                 		
@@ -280,7 +283,7 @@
                 		if ( $value.selected == true )  {
                 			$checkbox.attr("checked","checked");
                 		}
-                		$checkbox.attr("name", $value.link);
+                		$checkbox.attr("name", $value.menu);
                 		$checkbox.attr("class","favorite-checkbox");
                 		$checkboxTD.append($checkbox);
                 		$funcAreaTR.append($checkboxTD);
@@ -288,6 +291,45 @@
                 		$funcAreaTable.append($funcAreaTR)
                 	});
                 	$("#table-"+type).append($funcAreaTable);
+                	DASHBOARD.donelist[type] = true;
+                	
+                	if ( DASHBOARD.donelist["report"] == true && DASHBOARD.donelist["quickLink"] == true && DASHBOARD.donelist["lookup"] == true) {
+	                	$(".favorite-checkbox").click(function() {
+	                		DASHBOARD.toggleFavorite( this.name );
+	                	});
+                	}
+                },
+                
+                
+                toggleFavorite : function(menu) {
+                	var jqxhr = $.ajax({
+						type: 'POST',
+						url: "user/dashboardFavorites",
+						data: JSON.stringify({"menu":menu}),
+						statusCode: {
+							200: function($data) {
+								$("#globalMsg").html("Success").show().fadeOut(3000);
+								var selector = "input[name='" + menu + "']";
+								if ( $(selector).isChecked() ) {
+									$("#"+menu).addClass('is-favorite');
+									$("#"+menu).deleteClass('is-not-favorite');
+								} else {
+									$("#"+menu).deleteClass('is-favorite');
+									$("#"+menu).addClass('is-not-favorite');
+								}
+							},					
+							403: function($data) {
+								$("#globalMsg").html("Session Timeout. Log in and try again").show();
+							},
+							404: function($data) {
+								$("#globalMsg").html("System Error Reorder 404. Contact Support").show();
+							},
+							500: function($data) {
+								$("#globalMsg").html("System Error Reorder 500. Contact Support").show();
+							}
+						},
+						dataType: 'json'
+					});
                 },
             }
 
