@@ -223,24 +223,24 @@ public class ReportDefinition extends ApplicationWebObject {
 		if ( reportType.reportJsp().equals(ReportJsp.reportNoInput)) {
 			names.add("as of " + asOf);
 		} else if ( reportType.reportJsp().equals(ReportJsp.reportByDiv)) {
-			names.add("for Division " + this.divisionId);
+			names.add("for DivId " + this.divisionId);
 			names.add("as of " + asOf);
 		} else if ( reportType.reportJsp().equals(ReportJsp.reportByStartEnd)) {
 			names.add("for " + startDate);
-			names.add("through " + endDate);
+			names.add("to " + endDate);
 			names.add("as of " + asOf);
 		} else if ( reportType.reportJsp().equals(ReportJsp.reportByDivEnd)) {
-			names.add("for Division " + this.divisionId);
-			names.add("through " + endDate);
+			names.add("for DivId " + this.divisionId);
+			names.add("to " + endDate);
 			names.add("as of " + asOf);
 		} else if ( reportType.reportJsp().equals(ReportJsp.reportByDivMonthYear)) {
-			names.add("for Division " + this.divisionId);
+			names.add("for DivId " + this.divisionId);
 			names.add("for " + monthYear);
 			names.add("as of " + asOf);
 		} else if ( reportType.reportJsp().equals(ReportJsp.reportByDivStartEnd)) {
-			names.add("for Division " + this.divisionId);
+			names.add("for DivId " + this.divisionId);
 			names.add("for " + startDate);
-			names.add("through " + endDate);
+			names.add("to " + endDate);
 			names.add("as of " + asOf);
 		} else {
 			logger.log(Level.DEBUG, "No jsp match");
