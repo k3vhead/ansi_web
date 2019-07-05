@@ -195,6 +195,9 @@
         	.favorite-checkbox {
         		display: none;
         	}
+        	.update-favorites {
+        		display:none;
+        	}
         </style>
         <script type="text/javascript" src="js/dashboard.js"></script>
         <script type="text/javascript" src="js/clock.js"></script>  
@@ -217,7 +220,11 @@
                 makeIcons : function() {
                 	$(".edit-lookups").click(function(event) {
                 		$('.favorite-checkbox').toggle();
-                		$(".is-not-favorite").toggle();
+                		$('.is-not-favorite').toggle();
+                    	$('.update-favorites').toggle();
+                	});
+                	$(".update-favorites").click(function(event) {                  	
+                    	location.reload();
                 	});
                 },
                 
@@ -248,7 +255,7 @@
                 
                 makeTable : function(type, $data) {
                 	var $funcAreaTable = $("<table>");
-                	$funcAreaTable.attr("style","width: 98%; margin-top:10px;margin-bottom:10px;");
+                	$funcAreaTable.attr("style","width: 96%; margin-top:10px;margin-bottom:10px;");
                 	
                 	$.each($data.favoriteList, function($index, $value) {
                 		var $selected = "is-not-favorite";
@@ -294,10 +301,10 @@
                 	DASHBOARD.donelist[type] = true;
                 	
                 	if ( DASHBOARD.donelist["report"] == true && DASHBOARD.donelist["quickLink"] == true && DASHBOARD.donelist["lookup"] == true) {
-	                	$(".favorite-checkbox").click(function() {
+	                	$('.favorite-checkbox').click(function() {
 	                		DASHBOARD.toggleFavorite( this.name );
 	                	});
-                	}
+                	} 
                 },
                 
                 
@@ -310,11 +317,11 @@
 							200: function($data) {
 								$("#globalMsg").html("Success").show().fadeOut(3000);
 								var selector = "input[name='" + menu + "']";
-								if ( $(selector).isChecked() ) {
+								if($(this).is(":checked")) {
 									$("#"+menu).addClass('is-favorite');
-									$("#"+menu).deleteClass('is-not-favorite');
+									$("#"+menu).removeClass('is-not-favorite');
 								} else {
-									$("#"+menu).deleteClass('is-favorite');
+									$("#"+menu).removeClass('is-favorite');
 									$("#"+menu).addClass('is-not-favorite');
 								}
 							},					
@@ -356,24 +363,30 @@
 			<div id="column-container-a">
 		 	<div id="lookup-container" style="border:1px solid black;">
 		 		<div style="width:100%; background-color:#000000;">					
-					<div style="float:left; width:90%;background-color:inherit;color:#FFFFFF; border:0;text-indent: 3px;">Lookup</div>
-					<div style="float:left; display:inline-block; overflow:hidden; width:10%; text-align: center;background-color:inherit; border:0;"><webthing:edit styleClass="edit-lookups">Edit Favorites</webthing:edit></div>
+					<div style="float:left; width:80%;background-color:inherit;color:#FFFFFF; border:0;text-indent: 3px;">Lookup</div>
+					<div style="float:left; display:inline-block; overflow:hidden; width:20%; text-align: center;background-color:inherit; border:0;">
+					<webthing:edit styleClass="edit-lookups">Edit Favorites</webthing:edit><webthing:addNew styleClass="update-favorites" style="display:none;">Update Favorites</webthing:addNew></div>
+					
 				</div>
 				<div id="table-lookup"></div>
 			</div>
 			<div id="column-container-b">
 			<div id="report-container" style="border:1px solid black;">
 		 		<div style="width:100%; background-color:#000000;">
-					<div style="float:left; width:90%;background-color:inherit;color:#FFFFFF; border:0;text-indent: 3px;">Report</div>
-					<div style="float:left; width:10%; text-align:center;background-color:inherit; border:0;"><webthing:edit styleClass="edit-lookups">Edit Favorites</webthing:edit></div>
+					<div style="float:left; width:80%;background-color:inherit;color:#FFFFFF; border:0;text-indent: 3px;">Report</div>
+					<div style="float:left; display:inline-block; overflow:hidden; width:20%; text-align: center;background-color:inherit; border:0;">
+					<webthing:edit styleClass="edit-lookups">Edit Favorites</webthing:edit><webthing:addNew styleClass="update-favorites">Update Favorites</webthing:addNew></div>
+					
 				</div>
 			<div id="table-report""></div>
 			</div>
 			<div id="quickLink-container" style="border:1px solid black;">
 		 		<div style="width:100%; background-color:#000000;">
-					<div style="float:left; width:90%;background-color:inherit;color:#FFFFFF; border:0;text-indent: 3px;">Quick Link</div>
-					<div style="float:left; width:10%; text-align:center;background-color:inherit; border:0;"><webthing:edit styleClass="edit-lookups">Edit Favorites</webthing:edit></div>
-				</div>	
+					<div style="float:left; width:80%;background-color:inherit;color:#FFFFFF; border:0;text-indent: 3px;">Quick Link</div>					
+					<div style="float:left; display:inline-block; overflow:hidden; width:20%; text-align: center;background-color:inherit; border:0;">
+					<webthing:edit styleClass="edit-lookups">Edit Favorites</webthing:edit><webthing:addNew styleClass="update-favorites">Update Favorites</webthing:addNew></div>
+					
+				</div>
 			<div id="table-quickLink"></div>
 			</div>
 			</div>
