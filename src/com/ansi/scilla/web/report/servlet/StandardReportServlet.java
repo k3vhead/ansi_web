@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.util.List;
 
@@ -54,8 +55,8 @@ public class StandardReportServlet extends AbstractServlet {
 			this.def = new ReportDefinition(request);
 			List<String> messageList = def.validate(conn);
 			workbook = generateXLSReport(conn);
-			fileName = def.makeReportFileName();
-			
+			fileName = def.makeReportFileName(conn);
+//			fileName = URLEncoder.encode(fileName, "UTF-8");
 		} catch ( Exception e) 	{
 			AppUtils.logException(e);
 			AppUtils.rollbackQuiet(conn);

@@ -28,6 +28,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.AnsiTime;
+import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.report.reportBuilder.AnsiReport;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.ApplicationWebObject;
@@ -204,7 +205,7 @@ public class ReportDefinition extends ApplicationWebObject {
 	 * Based on the report type, effective dates and as of, make a filename.
 	 * @return
 	 */
-	public String makeReportFileName() {
+	public String makeReportFileName(Connection conn) throws Exception {
 		Logger logger = LogManager.getLogger(this.getClass());
 		SimpleDateFormat yyyymmdd = new SimpleDateFormat("yyyy-MM-dd");
 //		SimpleDateFormat yyyymm = new SimpleDateFormat("yyyy-MM");
@@ -223,22 +224,26 @@ public class ReportDefinition extends ApplicationWebObject {
 		if ( reportType.reportJsp().equals(ReportJsp.reportNoInput)) {
 			names.add("as of " + asOf);
 		} else if ( reportType.reportJsp().equals(ReportJsp.reportByDiv)) {
-			names.add("for DivId " + this.divisionId);
+			String div = makeDiv(conn, this.divisionId);
+			names.add("for Div " + div);
 			names.add("as of " + asOf);
 		} else if ( reportType.reportJsp().equals(ReportJsp.reportByStartEnd)) {
 			names.add("for " + startDate);
 			names.add("to " + endDate);
 			names.add("as of " + asOf);
 		} else if ( reportType.reportJsp().equals(ReportJsp.reportByDivEnd)) {
-			names.add("for DivId " + this.divisionId);
+			String div = makeDiv(conn, this.divisionId);
+			names.add("for Div " + div);
 			names.add("to " + endDate);
 			names.add("as of " + asOf);
 		} else if ( reportType.reportJsp().equals(ReportJsp.reportByDivMonthYear)) {
-			names.add("for DivId " + this.divisionId);
+			String div = makeDiv(conn, this.divisionId);
+			names.add("for Div " + div);
 			names.add("for " + monthYear);
 			names.add("as of " + asOf);
 		} else if ( reportType.reportJsp().equals(ReportJsp.reportByDivStartEnd)) {
-			names.add("for DivId " + this.divisionId);
+			String div = makeDiv(conn, this.divisionId);
+			names.add("for Div " + div);
 			names.add("for " + startDate);
 			names.add("to " + endDate);
 			names.add("as of " + asOf);
@@ -250,6 +255,12 @@ public class ReportDefinition extends ApplicationWebObject {
 		logger.log(Level.DEBUG, "Filename: " + reportFileName);
 		// the attachment header sees "end of name" when it finds a space
 		return reportFileName.replaceAll(" ", "_");
+	}
+	private String makeDiv(Connection conn, Integer divisionId) throws Exception {
+		Division division = new Division();
+		division.setDivisionId(divisionId);
+		division.selectOne(conn);
+		return division.getDivisionDisplay();
 	}
 	/**
 	 * Validate the current report definition against the validator class defined in the ReportType enum
