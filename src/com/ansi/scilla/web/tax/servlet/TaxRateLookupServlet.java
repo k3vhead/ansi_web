@@ -1,10 +1,15 @@
 package com.ansi.scilla.web.tax.servlet;
 
 import java.sql.Connection;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import org.apache.commons.collections4.Transformer;
 
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.servlet.AbstractLookupServlet;
@@ -14,7 +19,6 @@ import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
-import com.ansi.scilla.web.locale.query.LocaleLookupQuery;
 import com.ansi.scilla.web.tax.query.TaxRateLookupQuery;
 
 public class TaxRateLookupServlet extends AbstractLookupServlet {
@@ -45,7 +49,7 @@ public class TaxRateLookupServlet extends AbstractLookupServlet {
 				TaxRateLookupQuery.RATE_VALUE,
 				
 				};
-		//super.itemTransformer = new ItemTransformer();
+		super.itemTransformer = new ItemTransformer();
 	}
 
 
@@ -63,7 +67,8 @@ public class TaxRateLookupServlet extends AbstractLookupServlet {
 				searchTerm = request.getParameter("search[value]");
 			}
 
-			LocaleLookupQuery lookupQuery = new LocaleLookupQuery(user.getUserId(), divisionList);
+			//TaxRateLookupQuery lookupQuery = new TaxRateLookupQuery(user.getUserId(), divisionList);
+			TaxRateLookupQuery lookupQuery = new TaxRateLookupQuery();
 			if ( searchTerm != null ) {
 				lookupQuery.setSearchTerm(searchTerm);
 			}
@@ -76,6 +81,26 @@ public class TaxRateLookupServlet extends AbstractLookupServlet {
 		}
 	}
 	
+	public class ItemTransformer implements Transformer<HashMap<String, Object>, HashMap<String, Object>> {
+
+		private SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
+
+		@Override
+		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
+			Date effectiveDate = (Date)arg0.get(EFFECTIVE_DATE);
+			if ( effectiveDate != null ) {
+				arg0.put(EFFECTIVE_DATE, dateFormatter.format(effectiveDate));
+			}
+			
+//			String jobFrequency = (String)arg0.get(JOB_FREQUENCY);
+//			if ( ! StringUtils.isBlank(jobFrequency) ) {
+//				JobFrequency freq = JobFrequency.lookup(jobFrequency);
+//				arg0.put(FREQUENCY_DESC, freq.display());
+//			}
+			return arg0;
+		}
+		
+	}
 	
 	
 }

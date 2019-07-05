@@ -21,17 +21,17 @@ import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.tax.request.TaxRateCrudRequest;
-import com.ansi.scilla.web.tax.response.TaxRateCrudResponse;
+import com.ansi.scilla.web.tax.request.LocaleTaxRateRequest;
+import com.ansi.scilla.web.tax.response.LocaleTaxRateResponse;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 
 
-public class TaxRateCrudServlet extends AbstractServlet {
+public class LocaleTaxRateServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
-	public static final String REALM = "taxRate";
+	public static final String REALM = "localeTaxRate";
 	
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -43,12 +43,12 @@ public class TaxRateCrudServlet extends AbstractServlet {
 			logger.log(Level.DEBUG, "jsonstring:"+jsonString);
 
 			SessionData sessionData = AppUtils.validateSession(request, Permission.TAX_WRITE);
-			TaxRateCrudResponse data = new TaxRateCrudResponse();
+			LocaleTaxRateResponse data = new LocaleTaxRateResponse();
 			WebMessages webMessages = new WebMessages();
 
 			
 			try{
-				TaxRateCrudRequest taxRateRequest = new TaxRateCrudRequest();
+				LocaleTaxRateRequest taxRateRequest = new LocaleTaxRateRequest();
 				AppUtils.json2object(jsonString, taxRateRequest);
 				Date today = new Date();				
 				SessionUser sessionUser = sessionData.getUser(); 
@@ -75,7 +75,7 @@ public class TaxRateCrudServlet extends AbstractServlet {
 				}
 				
 				
-				data = new TaxRateCrudResponse(taxRateRequest.getLocaleId(), taxRateRequest.getName(), taxRateRequest.getStateName(), 
+				data = new LocaleTaxRateResponse(taxRateRequest.getLocaleId(), taxRateRequest.getName(), taxRateRequest.getStateName(), 
 						taxRateRequest.getEffectiveDate(), taxRateRequest.getLocaleTypeId(), 
 						taxRateRequest.getRateValue(), taxRateRequest.getTypeId(), taxRateRequest.getTypeName());
 				
@@ -111,8 +111,12 @@ public class TaxRateCrudServlet extends AbstractServlet {
 			AppUtils.closeQuiet(conn);
 		}
 	}
+	
+	protected LocaleTaxRate doGet(Connection conn, LocaleTaxRate taxRate, LocaleTaxRateRequest taxRateRequest) {
+		return taxRate;
+	}
 
-	protected LocaleTaxRate doAdd(Connection conn, LocaleTaxRate taxRate, TaxRateCrudRequest taxRateRequest) throws Exception {
+	protected LocaleTaxRate doAdd(Connection conn, LocaleTaxRate taxRate, LocaleTaxRateRequest taxRateRequest) throws Exception {
 		
 		taxRate.setEffectiveDate(taxRateRequest.getEffectiveDate());
 		taxRate.setRateValue(taxRateRequest.getRateValue());
@@ -120,7 +124,7 @@ public class TaxRateCrudServlet extends AbstractServlet {
 		return taxRate;
 	}
 	
-	protected LocaleTaxRate doUpdate(Connection conn, LocaleTaxRate taxRate, TaxRateCrudRequest taxRateRequest) throws Exception {
+	protected LocaleTaxRate doUpdate(Connection conn, LocaleTaxRate taxRate, LocaleTaxRateRequest taxRateRequest) throws Exception {
 		
 		taxRate.selectOne(conn);
 		

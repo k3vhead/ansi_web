@@ -1,14 +1,17 @@
-package com.ansi.scilla.web.tax.response;
+package com.ansi.scilla.web.tax.request;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.sql.Date;
 
-import com.ansi.scilla.web.common.response.MessageResponse;
+import com.ansi.scilla.web.common.request.AbstractRequest;
+import com.ansi.scilla.web.common.request.RequestValidator;
+import com.ansi.scilla.web.common.response.WebMessages;
 
-public class TaxRateCrudResponse extends MessageResponse {
+public class LocaleTaxRateRequest extends AbstractRequest {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	public static final String LOCALE_ID = "locale.locale_id";
 	public static final String STATE_NAME = "locale.state_name";
 	public static final String NAME = "locale.name";	
@@ -27,24 +30,6 @@ public class TaxRateCrudResponse extends MessageResponse {
 	private Integer typeId;
 	private String typeName;
 	
-	public TaxRateCrudResponse() {
-		super();
-	}
-	
-	public TaxRateCrudResponse(Integer localeId, String name, String stateName,
-			Date effectiveDate, String localeTypeId, BigDecimal rateValue,
-			Integer typeId, String typeName) {
-		this();
-		this.localeId = localeId;
-		this.name = name;
-		this.stateName = stateName;
-		this.effectiveDate = effectiveDate;
-		this.localeTypeId = localeTypeId;
-		this.rateValue = rateValue;
-		this.typeId = typeId;
-		this.typeName = typeName;
-	}
-
 	public Integer getLocaleId() {
 		return localeId;
 	}
@@ -92,6 +77,29 @@ public class TaxRateCrudResponse extends MessageResponse {
 	}
 	public void setTypeName(String typeName) {
 		this.typeName = typeName;
+	}
+	
+	public WebMessages validateAdd(Connection conn) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		
+		RequestValidator.validateString(webMessages, NAME, this.name, true);
+		RequestValidator.validateString(webMessages, STATE_NAME, this.stateName, true);
+		RequestValidator.validateString(webMessages, LOCALE_TYPE_ID, this.localeTypeId, true);
+		RequestValidator.validateDate(webMessages, EFFECTIVE_DATE, effectiveDate, true, effectiveDate, effectiveDate);
+		RequestValidator.validateBigDecimal(webMessages, RATE_VALUE, rateValue, rateValue, rateValue, true);
+		
+		
+		return webMessages;
+	}
+	
+	public WebMessages validateUpdate(Connection conn) throws Exception {
+		WebMessages webMessages = validateAdd(conn);
+		
+		RequestValidator.validateId(conn, webMessages, LOCALE_ID, "locale_id", "localeId", this.localeId, true);
+		RequestValidator.validateId(conn, webMessages, TYPE_ID, "type_id", "typeId", this.typeId, true);
+		//RequestValidator.validateString(webMessages, ABBREVIATION, this.abbreviation, false);
+		
+		return webMessages;
 	}
 	
 }
