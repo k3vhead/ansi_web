@@ -84,6 +84,7 @@
 	            text-align: center; 
 	            padding: 10px 0 0 0;
 	            }
+	        .edit-lookups { cursor:pointer; }
 	        .perm { display:none; width:200px; } 
             .hilite { background-color: #404040;}
             .lowlite { background-color: #FFFFFF; }
@@ -195,9 +196,6 @@
         	.favorite-checkbox {
         		display: none;
         	}
-        	.update-favorites {
-        		display:none;
-        	}
         </style>
         <script type="text/javascript" src="js/dashboard.js"></script>
         <script type="text/javascript" src="js/clock.js"></script>  
@@ -221,10 +219,7 @@
                 	$(".edit-lookups").click(function(event) {
                 		$('.favorite-checkbox').toggle();
                 		$('.is-not-favorite').toggle();
-                    	$('.update-favorites').toggle();
-                	});
-                	$(".update-favorites").click(function(event) {                  	
-                    	location.reload();
+                		$('.is-favorite').show();
                 	});
                 },
                 
@@ -317,12 +312,12 @@
 							200: function($data) {
 								$("#globalMsg").html("Success").show().fadeOut(3000);
 								var selector = "input[name='" + menu + "']";
-								if($(this).is(":checked")) {
+								if($(selector).is(":checked")) {
 									$("#"+menu).addClass('is-favorite');
 									$("#"+menu).removeClass('is-not-favorite');
 								} else {
 									$("#"+menu).removeClass('is-favorite');
-									$("#"+menu).addClass('is-not-favorite');
+									$("#"+menu).addClass('is-not-favorite').show();
 								}
 							},					
 							403: function($data) {
@@ -365,7 +360,7 @@
 		 		<div style="width:100%; background-color:#000000;">					
 					<div style="float:left; width:80%;background-color:inherit;color:#FFFFFF; border:0;text-indent: 3px;">Lookup</div>
 					<div style="float:left; display:inline-block; overflow:hidden; width:20%; text-align: center;background-color:inherit; border:0;">
-					<webthing:edit styleClass="edit-lookups">Edit Favorites</webthing:edit><webthing:addNew styleClass="update-favorites" style="display:none;">Update Favorites</webthing:addNew></div>
+					<webthing:edit styleClass="edit-lookups">Edit Favorites</webthing:edit></div>
 					
 				</div>
 				<div id="table-lookup"></div>
@@ -375,16 +370,16 @@
 		 		<div style="width:100%; background-color:#000000;">
 					<div style="float:left; width:80%;background-color:inherit;color:#FFFFFF; border:0;text-indent: 3px;">Report</div>
 					<div style="float:left; display:inline-block; overflow:hidden; width:20%; text-align: center;background-color:inherit; border:0;">
-					<webthing:edit styleClass="edit-lookups">Edit Favorites</webthing:edit><webthing:addNew styleClass="update-favorites">Update Favorites</webthing:addNew></div>
+					<webthing:edit styleClass="edit-lookups">Edit Favorites</webthing:edit></div>
 					
 				</div>
-			<div id="table-report""></div>
+			<div id="table-report"></div>
 			</div>
 			<div id="quickLink-container" style="border:1px solid black;">
 		 		<div style="width:100%; background-color:#000000;">
 					<div style="float:left; width:80%;background-color:inherit;color:#FFFFFF; border:0;text-indent: 3px;">Quick Link</div>					
 					<div style="float:left; display:inline-block; overflow:hidden; width:20%; text-align: center;background-color:inherit; border:0;">
-					<webthing:edit styleClass="edit-lookups">Edit Favorites</webthing:edit><webthing:addNew styleClass="update-favorites">Update Favorites</webthing:addNew></div>
+					<webthing:edit styleClass="edit-lookups">Edit Favorites</webthing:edit></div>
 					
 				</div>
 			<div id="table-quickLink"></div>
