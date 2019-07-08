@@ -3,6 +3,7 @@ package com.ansi.scilla.web.user.query;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Arrays;
 import java.util.List;
 
 import com.ansi.scilla.web.common.utils.AppUtils;
@@ -117,7 +118,7 @@ public class DashboardFavoriteQuery extends DashboardFavoriteBaseQuery {
 		return count;
 	}
 	
-	/*
+
 	public static void main(String[] args) {
 		Connection conn = null;
 		try {
@@ -139,6 +140,5 @@ public class DashboardFavoriteQuery extends DashboardFavoriteBaseQuery {
 			AppUtils.closeQuiet(conn);
 		}
 	}
-	*/
 	
 }
