@@ -33,6 +33,15 @@
         <script type="text/javascript" src="js/addressUtils.js"></script>
         <script type="text/javascript">        
         
+        <%--
+        On page load, the pieces needed for dropdowns and selectors are loaded via the methods called by init(). Loading 
+        is tracked by the progress bar, with the current load category being displayed by progress bar and progressLabel variables.
+        
+        Once all the pre-reqs are loaded, showNextModal() is called to display the prompt for the next input.
+        
+        After all the required inputs are in place, the save button is enabled.
+        --%>
+        
         	$(document).ready(function() {
 				; NEWQUOTE = {
 					accountTypeList : null,
@@ -729,6 +738,7 @@
 		    		
 		    		
 		    		populateAccountType : function($data) {
+		    			console.log("populateAccountType");
 						NEWQUOTE.accountTypeList = $data.codeList;
 						$selectorName = "#quoteDataContainer select[name='accountType']";
 						var $select = $($selectorName);
@@ -799,6 +809,7 @@
 					
 					
 					populateContactPanel : function($selector, $data) {
+						console.log("populateContactPanel");
 						$($selector + " .ansi-contact-name").html($data.firstName + " " + $data.lastName);						
 						$($selector + " .ansi-contact-number").html($data.method);
 						$($selector + " .ansi-contact-method-is-business-phone").hide();
@@ -869,6 +880,7 @@
 					
 					
 					populateDivisionList : function($data) {
+						console.log("populateDivisionList");
 		            	NEWQUOTE.divisionList = $data.divisionList
 		            	
 		            	var $select = $("#quoteDataContainer select[name='divisionId']");
@@ -882,7 +894,7 @@
 		            
 		            
 		            
-		            populateJobFrequencySelect : function() {
+		            populateJobFrequencySelect : function() {		            	
 		            	var $select = $("#job-edit-modal .proposal select[name='job-proposal-freq']");
 						$('option', $select).remove();
 	
@@ -1138,6 +1150,7 @@
 					
 					
 					saveAddressErr : function($statusCode) {
+						console.log("saveAddressErr");
 						$("#save-quote-button").hide(2500);
 						var $messages = {
 								403:"Session Expired. Log in and try again",
@@ -1218,6 +1231,7 @@
 						
 						
 					saveContact : function() {
+						console.log("saveContact");
 						var $contactLabels = {
 								"contract":"contractContactId",
 								"billing":"billingContactId",
@@ -1238,6 +1252,7 @@
 					
 					
 					saveContactErr : function($statusCode) {
+						console.log("saveContactErr");
 						$("#save-quote-button").hide(2500);
 						var $messages = {
 								403:"Session Expired. Log in and try again",
@@ -1253,6 +1268,7 @@
 						console.log("save contact success");
 						console.log($data);
 						var $type = $("#contact-edit-modal").data("type");
+						console.log("COntact type: " + $type);
 						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {	
 							$("#save-quote-button").hide(2500);
 							if ( $type == 'job' ) {
@@ -1278,10 +1294,10 @@
 								NEWQUOTE.populateContactPanel( "#site-contact", NEWQUOTE.jobsiteSiteContact);
 							} else if ( $type == 'contract' ) {
 								NEWQUOTE.billtoContractContact = $data.data.contact; 
-								NEWQUOTE.populateContactPanel( "#billing-contact", NEWQUOTE.billtoContractContact);
+								NEWQUOTE.populateContactPanel( "#contract-contact", NEWQUOTE.billtoContractContact);
 							} else if ( $type == 'billing' ) {
 								NEWQUOTE.billtoBillingContact = $data.data.contact; 
-								NEWQUOTE.populateContactPanel( "#contract-contact", NEWQUOTE.billtoBillingContact);
+								NEWQUOTE.populateContactPanel( "#billing-contact", NEWQUOTE.billtoBillingContact);
 							} else {
 								$message = "Unexpected Response. Contact Support: " + $type;
 							}
@@ -1297,6 +1313,7 @@
 					
 					
 					saveJob : function() {
+						console.log("saveJob");
 						var $jobId = $("#job-edit-modal").attr("data-jobid");
 						var $updateType = "add";
 						console.log("If I were saving jobs, it would happen here " + $jobId + "  " + $updateType);
@@ -1460,6 +1477,7 @@
 					
 					
 					saveQuoteHeaderSuccess : function($data) {
+						console.log("saveQuoteHeaderSuccess");
 						if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
 							$("#save-quote-button").hide(2500);
 							console.log($data);
@@ -1699,40 +1717,7 @@
 					
 					
 					saveTheJobSuccess : function($quoteId) {
-						location.href = "quoteMaintenance.html?id=" + $quoteId;
-						//$("#newQuoteDisplay input[name='quoteId']").val($data.data.quoteId);
-						//$("#newQuoteDisplay input[name='invoiceGrouping']").val($data.data.invoiceGrouping);
-						//$("#newQuoteDisplay input[name='invoiceStyle']").val($data.data.invoiceStyle);
-						//$("#newQuoteDisplay input[name='buildingType']").val($data.data.buildingType);
-						//$("#newQuoteDisplay input[name='invoiceBatch']").val($data.data.invoiceBatch);
-						//$("#newQuoteDisplay input[name='invoiceTerms']").val($data.data.invoiceTerms);
-						////$("#newQuoteDisplay input[name='taxExempt']").val($data.data.taxExempt);
-						//$("#newQuoteDisplay input[name='taxExemptReason']").val($data.data.taxExemptReason);
-						
-						//$("#newQuoteDisplay input[name='jobContactContactId']").val($data.data.jobContact.contactId);
-						//$("#newQuoteDisplay input[name='jobContactLastName']").val($data.data.jobContact.lastName);
-						//$("#newQuoteDisplay input[name='jobContactFirstName']").val($data.data.jobContact.firstName);
-						//$("#newQuoteDisplay input[name='jobContactPreferredContact']").val($data.data.jobContact.preferredContact);
-						//$("#newQuoteDisplay input[name='jobContactMethod']").val($data.data.jobContact.method);
-
-						//$("#newQuoteDisplay input[name='siteContactContactId']").val($data.data.siteContact.contactId);
-						//$("#newQuoteDisplay input[name='siteContactLastName']").val($data.data.siteContact.lastName);
-						//$("#newQuoteDisplay input[name='siteContactFirstName']").val($data.data.siteContact.firstName);
-						//$("#newQuoteDisplay input[name='siteContactPreferredContact']").val($data.data.siteContact.preferredContact);
-						//$("#newQuoteDisplay input[name='siteContactMethod']").val($data.data.siteContact.method);
-
-						//$("#newQuoteDisplay input[name='contractContactContactId']").val($data.data.contractContact.contactId);
-						//$("#newQuoteDisplay input[name='contractContactLastName']").val($data.data.contractContact.lastName);
-						//$("#newQuoteDisplay input[name='contractContactFirstName']").val($data.data.contractContact.firstName);
-						//$("#newQuoteDisplay input[name='contractContactPreferredContact']").val($data.data.contractContact.preferredContact);
-						//$("#newQuoteDisplay input[name='contractContactMethod']").val($data.data.contractContact.method);
-
-						//$("#newQuoteDisplay input[name='billingContactContactId']").val($data.data.billingContact.contactId);
-						//$("#newQuoteDisplay input[name='billingContactLastName']").val($data.data.billingContact.lastName);
-						//$("#newQuoteDisplay input[name='billingContactFirstName']").val($data.data.billingContact.firstName);
-						//$("#newQuoteDisplay input[name='billingContactPreferredContact']").val($data.data.billingContact.preferredContact);
-						//$("#newQuoteDisplay input[name='billingContactMethod']").val($data.data.billingContact.method);
-						//$("#newQuoteDisplay").submit();
+						location.href = "quoteMaintenance.html?id=" + $quoteId;						
 					},
 					
 					
@@ -1779,7 +1764,7 @@
 				        	$("#address-edit-modal").data("id","");
 		    				$("#address-edit-modal").dialog("open");
 						} else if ( NEWQUOTE.jobSiteAddress == null) {
-							console.log("prompt for bill to");
+							console.log("prompt for job site");
 							$("#save-quote-button").hide(2500);
 							var $type = "jobsite"
 		    				$title = "Job Site";		    				
@@ -1848,6 +1833,7 @@
 					
 					
 					showQuote : function() {
+						console.log("showQuote");
 		            	$("#loading-container").hide();
 						$("#quote-container").fadeIn(1000);
 						$("#address-container").fadeIn(1000);

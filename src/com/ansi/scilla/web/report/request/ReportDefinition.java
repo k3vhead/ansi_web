@@ -10,6 +10,7 @@ import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,12 +23,17 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.AnsiTime;
+import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.report.reportBuilder.AnsiReport;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.ApplicationWebObject;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
+import com.ansi.scilla.web.report.common.ReportJsp;
 import com.ansi.scilla.web.report.common.ReportType;
 
 /**
@@ -195,13 +201,66 @@ public class ReportDefinition extends ApplicationWebObject {
         return jsonString;        
 	}
 
-	public String makeReportFileName() {
-		List<String> names = new ArrayList<String>();
-		String[] pieces = this.reportType.name().split("_");
-		for ( String piece : pieces ) {
-			names.add(StringUtils.capitalize(piece.toLowerCase()));
+	/**
+	 * Based on the report type, effective dates and as of, make a filename.
+	 * @return
+	 */
+	public String makeReportFileName(Connection conn) throws Exception {
+		Logger logger = LogManager.getLogger(this.getClass());
+		SimpleDateFormat yyyymmdd = new SimpleDateFormat("yyyy-MM-dd");
+//		SimpleDateFormat yyyymm = new SimpleDateFormat("yyyy-MM");
+		DecimalFormat nn = new DecimalFormat("00");
+		
+		String asOf = yyyymmdd.format(new Date());
+		String startDate = this.startDate == null ? null : yyyymmdd.format(this.startDate.getTime());
+		String endDate = this.endDate == null ? null : yyyymmdd.format(this.endDate.getTime());
+		String monthYear = null;
+		if ( this.month != null && this.year != null ) {
+			monthYear = year + "-" + nn.format(this.month);
 		}
-		return StringUtils.join(names, "");
+	
+		List<String> names = new ArrayList<String>();
+		names.add(this.reportType.downloadFileName());		
+		if ( reportType.reportJsp().equals(ReportJsp.reportNoInput)) {
+			names.add("as of " + asOf);
+		} else if ( reportType.reportJsp().equals(ReportJsp.reportByDiv)) {
+			String div = makeDiv(conn, this.divisionId);
+			names.add("for Div " + div);
+			names.add("as of " + asOf);
+		} else if ( reportType.reportJsp().equals(ReportJsp.reportByStartEnd)) {
+			names.add("for " + startDate);
+			names.add("to " + endDate);
+			names.add("as of " + asOf);
+		} else if ( reportType.reportJsp().equals(ReportJsp.reportByDivEnd)) {
+			String div = makeDiv(conn, this.divisionId);
+			names.add("for Div " + div);
+			names.add("to " + endDate);
+			names.add("as of " + asOf);
+		} else if ( reportType.reportJsp().equals(ReportJsp.reportByDivMonthYear)) {
+			String div = makeDiv(conn, this.divisionId);
+			names.add("for Div " + div);
+			names.add("for " + monthYear);
+			names.add("as of " + asOf);
+		} else if ( reportType.reportJsp().equals(ReportJsp.reportByDivStartEnd)) {
+			String div = makeDiv(conn, this.divisionId);
+			names.add("for Div " + div);
+			names.add("for " + startDate);
+			names.add("to " + endDate);
+			names.add("as of " + asOf);
+		} else {
+			logger.log(Level.DEBUG, "No jsp match");
+		}
+		
+		String reportFileName = StringUtils.join(names, " ");
+		logger.log(Level.DEBUG, "Filename: " + reportFileName);
+		// the attachment header sees "end of name" when it finds a space
+		return reportFileName.replaceAll(" ", "_");
+	}
+	private String makeDiv(Connection conn, Integer divisionId) throws Exception {
+		Division division = new Division();
+		division.setDivisionId(divisionId);
+		division.selectOne(conn);
+		return division.getDivisionDisplay();
 	}
 	/**
 	 * Validate the current report definition against the validator class defined in the ReportType enum
