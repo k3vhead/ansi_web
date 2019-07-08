@@ -59,38 +59,46 @@ public class LocaleTaxRateServlet extends AbstractServlet {
 					//this is add
 					webMessages = taxRateRequest.validateAdd(conn);
 					if(webMessages.isEmpty() == true) {
-						taxRate = doAdd(conn, taxRate, taxRateRequest);
+						taxRate = doAdd(conn, taxRate, taxRateRequest, sessionUser, webMessages);
 					}
 					
 				} else {
 					//this is update
 					webMessages = taxRateRequest.validateUpdate(conn);
 					if(webMessages.isEmpty() == true) {
-						LocaleTaxRate key = new LocaleTaxRate();
-						key.setLocaleId(taxRateRequest.getLocaleId());
+						LocaleTaxRate key = doGet(conn, taxRateRequest);
+						//key.setLocaleId(taxRateRequest.getLocaleId());
 						//key.setTaxRateId(taxRateRequest.getTypeId());
-						taxRate = doUpdate(conn, key, taxRateRequest);
+						taxRate = doUpdate(conn, key, taxRateRequest, sessionUser);
 						taxRate.update(conn, key);
 					}
 				}
 				
 				
+//				data = new LocaleTaxRateResponse(taxRateRequest.getLocaleId(), taxRateRequest.getName(), taxRateRequest.getStateName(), 
+//						taxRateRequest.getEffectiveDate(), taxRateRequest.getLocaleTypeId(), 
+//						taxRateRequest.getRateValue(), taxRateRequest.getTypeId(), taxRateRequest.getTypeName());
+				
+//				try {
+//					taxRate.selectOne(conn);
+//					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Duplicate");
+//				} catch ( RecordNotFoundException e) {
+				taxRate.setAddedBy(sessionUser.getUserId());
+				taxRate.setAddedDate(today);
+				taxRate.setUpdatedBy(sessionUser.getUserId());
+				taxRate.setUpdatedDate(today);
+				taxRate.insertWithNoKey(conn);
+				try {
+					conn.commit();
+				} catch(Exception e) {
+					conn.rollback();
+				}
 				data = new LocaleTaxRateResponse(taxRateRequest.getLocaleId(), taxRateRequest.getName(), taxRateRequest.getStateName(), 
 						taxRateRequest.getEffectiveDate(), taxRateRequest.getLocaleTypeId(), 
 						taxRateRequest.getRateValue(), taxRateRequest.getTypeId(), taxRateRequest.getTypeName());
-				
-				try {
-					taxRate.selectOne(conn);
-					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Duplicate");
-				} catch ( RecordNotFoundException e) {
-					taxRate.setAddedBy(sessionUser.getUserId());
-					taxRate.setAddedDate(today);
-					taxRate.setUpdatedBy(sessionUser.getUserId());
-					taxRate.setUpdatedDate(today);
-					taxRate.insertWithNoKey(conn);
-					conn.commit();
-					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
-				}
+
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
+//				}
 				data.setWebMessages(webMessages);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, data);		
 			}  catch ( InvalidFormatException e ) {
@@ -112,24 +120,43 @@ public class LocaleTaxRateServlet extends AbstractServlet {
 		}
 	}
 	
-	protected LocaleTaxRate doGet(Connection conn, LocaleTaxRate taxRate, LocaleTaxRateRequest taxRateRequest) {
+	protected LocaleTaxRate doGet(Connection conn, LocaleTaxRateRequest taxRateRequest) throws Exception {
+		LocaleTaxRate taxRate = new LocaleTaxRate();
+		taxRate.setLocaleId(taxRateRequest.getLocaleId());
+		taxRate.selectOne(conn);
 		return taxRate;
 	}
 
-	protected LocaleTaxRate doAdd(Connection conn, LocaleTaxRate taxRate, LocaleTaxRateRequest taxRateRequest) throws Exception {
+	protected LocaleTaxRate doAdd(Connection conn, LocaleTaxRate taxRate, 
+			LocaleTaxRateRequest taxRateRequest, SessionUser sessionUser, WebMessages webMessages) throws Exception {
 		
+		Date today = new Date();
 		taxRate.setEffectiveDate(taxRateRequest.getEffectiveDate());
 		taxRate.setRateValue(taxRateRequest.getRateValue());
 		
-		return taxRate;
+		try {
+			taxRate.selectOne(conn);
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Duplicate");
+			return null;
+		} catch(RecordNotFoundException e) {
+			taxRate.setAddedBy(sessionUser.getUserId());
+			taxRate.setAddedDate(today);
+			
+			return taxRate;
+		}
+		
+		
 	}
 	
-	protected LocaleTaxRate doUpdate(Connection conn, LocaleTaxRate taxRate, LocaleTaxRateRequest taxRateRequest) throws Exception {
-		
+	protected LocaleTaxRate doUpdate(Connection conn, LocaleTaxRate taxRate, 
+			LocaleTaxRateRequest taxRateRequest, SessionUser sessionUser) throws Exception {
+		Date today = new Date();
 		taxRate.selectOne(conn);
 		
 		taxRate.setEffectiveDate(taxRateRequest.getEffectiveDate());
 		taxRate.setRateValue(taxRateRequest.getRateValue());
+		taxRate.setUpdatedBy(sessionUser.getUserId());
+		taxRate.setUpdatedDate(today);
 		
 		return taxRate;
 	}

@@ -18,7 +18,7 @@
 <tiles:insert page="../layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        Locale Lookup
+        Tax Rate Lookup
     </tiles:put>
     
     
@@ -92,7 +92,7 @@
                 
                 
                 createTable : function(){
-            		var dataTable = $('#localeTable').DataTable( {
+            		var dataTable = $('#taxRateTable').DataTable( {
             			"aaSorting":		[[2,'asc']],
             			"processing": 		true,
             	        "serverSide": 		true,
@@ -180,11 +180,11 @@
     				$(".print-link").on( "click", function($clickevent) {
     					doPrint($clickevent);
     				});
-    				$(".locale-clicker").on("click", function($clickevent) {
+    				$(".tax-rate-clicker").on("click", function($clickevent) {
     					$clickevent.preventDefault();
     					var $localeId = $(this).attr("data-id");
 //    					TICKETUTILS.doTicketViewModal("#ticket-modal",$ticketId);
-    					$("#locale-modal").dialog("open");
+    					$("#tax-rate-modal").dialog("open");
     				});
 
     			},
@@ -253,7 +253,7 @@
     </tiles:put>
     
    <tiles:put name="content" type="string">
-    	<h1><bean:message key="page.label.locale" /> <bean:message key="menu.label.lookup" /></h1> 
+    	<h1><bean:message key="page.label.taxRate" /> <bean:message key="menu.label.lookup" /></h1> 
     	<c:if test="${not empty ANSI_JOB_ID}">
     		<span class="orange"><bean:message key="field.label.jobFilter" />: <c:out value="${ANSI_JOB_ID}" /></span><br />
     	</c:if>
@@ -270,7 +270,7 @@
     	  	
  	<webthing:lookupFilter filterContainer="filter-container" />
 
- 	<table id="localeTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
+ 	<table id="localeTaxRateTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
         <thead>
         </thead>
         <tfoot>

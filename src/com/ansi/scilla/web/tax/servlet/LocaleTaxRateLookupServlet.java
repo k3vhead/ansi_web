@@ -19,9 +19,9 @@ import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
-import com.ansi.scilla.web.tax.query.TaxRateLookupQuery;
+import com.ansi.scilla.web.tax.query.LocaleTaxRateLookupQuery;
 
-public class TaxRateLookupServlet extends AbstractLookupServlet {
+public class LocaleTaxRateLookupServlet extends AbstractLookupServlet {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -37,16 +37,16 @@ public class TaxRateLookupServlet extends AbstractLookupServlet {
 	public static final String TYPE_NAME = "type_name";
 	
 	
-	public TaxRateLookupServlet() {
+	public LocaleTaxRateLookupServlet() {
 		super(Permission.TAX_READ);
 		cols = new String[] { 
-				TaxRateLookupQuery.LOCALE_ID,
-				TaxRateLookupQuery.NAME,
-				TaxRateLookupQuery.LOCALE_TYPE_ID,
-				TaxRateLookupQuery.TYPE_NAME,
-				TaxRateLookupQuery.STATE_NAME,
-				TaxRateLookupQuery.EFFECTIVE_DATE,
-				TaxRateLookupQuery.RATE_VALUE,
+				LocaleTaxRateLookupQuery.LOCALE_ID,
+				LocaleTaxRateLookupQuery.NAME,
+				LocaleTaxRateLookupQuery.LOCALE_TYPE_ID,
+				LocaleTaxRateLookupQuery.TYPE_NAME,
+				LocaleTaxRateLookupQuery.STATE_NAME,
+				LocaleTaxRateLookupQuery.EFFECTIVE_DATE,
+				LocaleTaxRateLookupQuery.RATE_VALUE,
 				
 				};
 		super.itemTransformer = new ItemTransformer();
@@ -68,7 +68,7 @@ public class TaxRateLookupServlet extends AbstractLookupServlet {
 			}
 
 			//TaxRateLookupQuery lookupQuery = new TaxRateLookupQuery(user.getUserId(), divisionList);
-			TaxRateLookupQuery lookupQuery = new TaxRateLookupQuery();
+			LocaleTaxRateLookupQuery lookupQuery = new LocaleTaxRateLookupQuery();
 			if ( searchTerm != null ) {
 				lookupQuery.setSearchTerm(searchTerm);
 			}

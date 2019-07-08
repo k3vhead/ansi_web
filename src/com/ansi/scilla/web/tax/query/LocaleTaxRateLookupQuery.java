@@ -14,7 +14,7 @@ import com.ansi.scilla.common.queries.SelectType;
 import com.ansi.scilla.common.utils.WhereFieldLikeTransformer;
 import com.ansi.scilla.web.common.query.LookupQuery;
 
-public class TaxRateLookupQuery extends LookupQuery {	
+public class LocaleTaxRateLookupQuery extends LookupQuery {	
 	private static final long serialVersionUID = 1L;
 
 	public static final String LOCALE_ID = "locale.locale_id";
@@ -41,7 +41,7 @@ public class TaxRateLookupQuery extends LookupQuery {
 	public static final String sqlWhereClause = " ";
 
 
-	public TaxRateLookupQuery() {
+	public LocaleTaxRateLookupQuery() {
 		super(sqlSelectClause, sqlFromClause, sqlWhereClause);
 		this.logger = LogManager.getLogger(this.getClass());
 	}

@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.tax.query.TaxRateLookupQuery;
+import com.ansi.scilla.web.tax.query.LocaleTaxRateLookupQuery;
 
 public class TestTaxRateLookup {
 
@@ -13,7 +13,7 @@ public class TestTaxRateLookup {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDevConn();
-			TaxRateLookupQuery query = new TaxRateLookupQuery();
+			LocaleTaxRateLookupQuery query = new LocaleTaxRateLookupQuery();
 			
 //			Integer countAll = query.countAll(conn);
 //			System.out.println("Count all: " + countAll);
