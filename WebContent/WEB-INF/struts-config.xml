@@ -110,6 +110,12 @@
             <forward name="valid" path="/codeMaintenance.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
+        <action
+            path="/dashboardFavorites"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/dashboardFavorites.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
 		<action
             path="/deployedTaskList"
             type="com.ansi.scilla.web.common.action.DeployedTaskAction">
