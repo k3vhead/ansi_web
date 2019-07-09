@@ -92,7 +92,7 @@ public class LocaleTaxRateRequest extends AbstractRequest {
 		return webMessages;
 	}
 	
-	public WebMessages validateUpdate(Connection conn) throws Exception {
+	public WebMessages validateUpdate(Connection conn, Integer localeId) throws Exception {
 		WebMessages webMessages = validateAdd(conn);
 		
 		RequestValidator.validateId(conn, webMessages, LOCALE_ID, "locale_id", "localeId", this.localeId, true);

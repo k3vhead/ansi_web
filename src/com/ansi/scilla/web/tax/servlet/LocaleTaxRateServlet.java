@@ -10,16 +10,19 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.Level;
 
+import com.ansi.scilla.common.db.Locale;
 import com.ansi.scilla.common.db.LocaleTaxRate;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
+import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
+import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.tax.request.LocaleTaxRateRequest;
 import com.ansi.scilla.web.tax.response.LocaleTaxRateResponse;
@@ -36,9 +39,12 @@ public class LocaleTaxRateServlet extends AbstractServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Connection conn = null;
+		AnsiURL ansiURL = null;
 		//TicketReturnResponse ticketReturnResponse = null;
 		try {
+			ansiURL = new AnsiURL(request, REALM, (String[])null); 
 			conn = AppUtils.getDBCPConn();
+			conn.setAutoCommit(false);
 			String jsonString = super.makeJsonString(request);
 			logger.log(Level.DEBUG, "jsonstring:"+jsonString);
 
@@ -48,59 +54,31 @@ public class LocaleTaxRateServlet extends AbstractServlet {
 
 			
 			try{
-				LocaleTaxRateRequest taxRateRequest = new LocaleTaxRateRequest();
-				AppUtils.json2object(jsonString, taxRateRequest);
-				Date today = new Date();				
-				SessionUser sessionUser = sessionData.getUser(); 
-				
-				LocaleTaxRate taxRate = new LocaleTaxRate();
-				
-				if(taxRateRequest.getLocaleId() == null) {
+				LocaleTaxRateRequest localeTaxRateRequest = new LocaleTaxRateRequest();
+				AppUtils.json2object(jsonString, localeTaxRateRequest);
+								
+				if(ansiURL.getId() == null) {
 					//this is add
-					webMessages = taxRateRequest.validateAdd(conn);
+					webMessages = localeTaxRateRequest.validateAdd(conn);
 					if(webMessages.isEmpty() == true) {
-						taxRate = doAdd(conn, taxRate, taxRateRequest, sessionUser, webMessages);
+						doAdd(conn, localeTaxRateRequest, sessionData, response);
+					} else {
+						data.setWebMessages(webMessages);
+						super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
 					}
 					
 				} else {
 					//this is update
-					webMessages = taxRateRequest.validateUpdate(conn);
+					webMessages = localeTaxRateRequest.validateUpdate(conn, ansiURL.getId());
 					if(webMessages.isEmpty() == true) {
-						LocaleTaxRate key = doGet(conn, taxRateRequest);
-						//key.setLocaleId(taxRateRequest.getLocaleId());
-						//key.setTaxRateId(taxRateRequest.getTypeId());
-						taxRate = doUpdate(conn, key, taxRateRequest, sessionUser);
-						taxRate.update(conn, key);
+						doUpdate(conn, ansiURL.getId(), localeTaxRateRequest, sessionData, response);
+					} else {
+						data.setWebMessages(webMessages);
+						super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
 					}
 				}
 				
-				
-//				data = new LocaleTaxRateResponse(taxRateRequest.getLocaleId(), taxRateRequest.getName(), taxRateRequest.getStateName(), 
-//						taxRateRequest.getEffectiveDate(), taxRateRequest.getLocaleTypeId(), 
-//						taxRateRequest.getRateValue(), taxRateRequest.getTypeId(), taxRateRequest.getTypeName());
-				
-//				try {
-//					taxRate.selectOne(conn);
-//					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Duplicate");
-//				} catch ( RecordNotFoundException e) {
-				taxRate.setAddedBy(sessionUser.getUserId());
-				taxRate.setAddedDate(today);
-				taxRate.setUpdatedBy(sessionUser.getUserId());
-				taxRate.setUpdatedDate(today);
-				taxRate.insertWithNoKey(conn);
-				try {
-					conn.commit();
-				} catch(Exception e) {
-					conn.rollback();
-				}
-				data = new LocaleTaxRateResponse(taxRateRequest.getLocaleId(), taxRateRequest.getName(), taxRateRequest.getStateName(), 
-						taxRateRequest.getEffectiveDate(), taxRateRequest.getLocaleTypeId(), 
-						taxRateRequest.getRateValue(), taxRateRequest.getTypeId(), taxRateRequest.getTypeName());
-
-				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
-//				}
-				data.setWebMessages(webMessages);
-				super.sendResponse(conn, response, ResponseCode.SUCCESS, data);		
+					
 			}  catch ( InvalidFormatException e ) {
 				String badField = super.findBadField(e.toString());				
 				webMessages.addMessage(badField, "Invalid Format");
@@ -120,45 +98,78 @@ public class LocaleTaxRateServlet extends AbstractServlet {
 		}
 	}
 	
-	protected LocaleTaxRate doGet(Connection conn, LocaleTaxRateRequest taxRateRequest) throws Exception {
-		LocaleTaxRate taxRate = new LocaleTaxRate();
-		taxRate.setLocaleId(taxRateRequest.getLocaleId());
-		taxRate.selectOne(conn);
-		return taxRate;
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		AnsiURL ansiURL = null;
+		try {
+			ansiURL = new AnsiURL(request, REALM, (String[])null); 
+			AppUtils.validateSession(request, Permission.TAX_READ);
+			Connection conn = null;
+			LocaleTaxRateResponse taxRateResponseResponse = null;
+			try {
+				conn = AppUtils.getDBCPConn();
+				taxRateResponseResponse = new LocaleTaxRateResponse(conn, ansiURL.getId());
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, taxRateResponseResponse); 
+				
+			} catch(RecordNotFoundException recordNotFoundEx) {
+				super.sendNotFound(response);
+			} catch ( Exception e) {
+				AppUtils.logException(e);
+				throw new ServletException(e);
+			} finally {
+				AppUtils.closeQuiet(conn);
+			}
+		} catch (ResourceNotFoundException e1) {
+			AppUtils.logException(e1);
+			super.sendNotFound(response);
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+			super.sendForbidden(response);
+		}		
+		
 	}
 
-	protected LocaleTaxRate doAdd(Connection conn, LocaleTaxRate taxRate, 
-			LocaleTaxRateRequest taxRateRequest, SessionUser sessionUser, WebMessages webMessages) throws Exception {
-		
-		Date today = new Date();
-		taxRate.setEffectiveDate(taxRateRequest.getEffectiveDate());
-		taxRate.setRateValue(taxRateRequest.getRateValue());
-		
-		try {
-			taxRate.selectOne(conn);
-			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Duplicate");
-			return null;
-		} catch(RecordNotFoundException e) {
-			taxRate.setAddedBy(sessionUser.getUserId());
-			taxRate.setAddedDate(today);
-			
-			return taxRate;
-		}
-		
-		
+	protected void doAdd(Connection conn, LocaleTaxRateRequest taxRateRequest, SessionData sessionData, HttpServletResponse response) throws Exception {
+		LocaleTaxRate taxRate = new LocaleTaxRate();
+		makeTaxRate(taxRate, taxRateRequest, sessionData.getUser());
+		Integer localeId = taxRate.insertWithKey(conn);
+		conn.commit();
+		taxRate.setLocaleId(localeId);
+		LocaleTaxRateResponse localeTaxRateResponse = new LocaleTaxRateResponse(taxRate);
+		super.sendResponse(conn, response, ResponseCode.SUCCESS, localeTaxRateResponse);
 	}
 	
-	protected LocaleTaxRate doUpdate(Connection conn, LocaleTaxRate taxRate, 
-			LocaleTaxRateRequest taxRateRequest, SessionUser sessionUser) throws Exception {
+	private void makeTaxRate(LocaleTaxRate taxRate, LocaleTaxRateRequest taxRateRequest, SessionUser sessionUser) {
 		Date today = new Date();
-		taxRate.selectOne(conn);
-		
-		taxRate.setEffectiveDate(taxRateRequest.getEffectiveDate());
+
+		if ( taxRateRequest.getLocaleId() != null ) {
+			taxRate.setLocaleId(taxRateRequest.getLocaleId());
+		}
 		taxRate.setRateValue(taxRateRequest.getRateValue());
+		taxRate.setEffectiveDate(taxRateRequest.getEffectiveDate());
+		taxRate.setTypeId(taxRateRequest.getTypeId());
+		if ( taxRate.getAddedBy() == null ) {
+			taxRate.setAddedBy(sessionUser.getUserId());
+			taxRate.setAddedDate(today);
+		}
 		taxRate.setUpdatedBy(sessionUser.getUserId());
 		taxRate.setUpdatedDate(today);
-		
-		return taxRate;
+
+	}
+
+	protected void doUpdate(Connection conn, Integer localeId, 
+			LocaleTaxRateRequest taxRateRequest, SessionData sessionData, HttpServletResponse response) throws Exception {
+		LocaleTaxRate taxRate = new LocaleTaxRate();
+		taxRate.setLocaleId(localeId);
+		taxRate.selectOne(conn);
+		makeTaxRate(taxRate, taxRateRequest, sessionData.getUser());
+		Locale key = new Locale();
+		key.setLocaleId(localeId);
+		taxRate.update(conn, key);
+		conn.commit();
+		LocaleTaxRateResponse taxRateResponse = new LocaleTaxRateResponse(taxRate);
+		super.sendResponse(conn, response, ResponseCode.SUCCESS, taxRateResponse);
 	}
 	
 	@Override

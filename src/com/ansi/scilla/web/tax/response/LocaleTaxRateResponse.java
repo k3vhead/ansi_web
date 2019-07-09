@@ -1,9 +1,13 @@
 package com.ansi.scilla.web.tax.response;
 
 import java.math.BigDecimal;
-import java.sql.Date;
-
+//import java.sql.Date;
+import java.util.Date;
+import com.ansi.scilla.common.db.LocaleTaxRate;
 import com.ansi.scilla.web.common.response.MessageResponse;
+//import com.mysql.jdbc.Connection;
+import java.sql.Connection;
+import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class LocaleTaxRateResponse extends MessageResponse {
 
@@ -31,20 +35,40 @@ public class LocaleTaxRateResponse extends MessageResponse {
 		super();
 	}
 	
-	public LocaleTaxRateResponse(Integer localeId, String name, String stateName,
-			Date effectiveDate, String localeTypeId, BigDecimal rateValue,
-			Integer typeId, String typeName) {
+//	public LocaleTaxRateResponse(Integer localeId, String name, String stateName,
+//			Date effectiveDate, String localeTypeId, BigDecimal rateValue,
+//			Integer typeId, String typeName) {
+//		this();
+//		this.localeId = localeId;
+//		this.name = name;
+//		this.stateName = stateName;
+//		this.effectiveDate = effectiveDate;
+//		this.localeTypeId = localeTypeId;
+//		this.rateValue = rateValue;
+//		this.typeId = typeId;
+//		this.typeName = typeName;
+//	}
+	
+	public LocaleTaxRateResponse(LocaleTaxRate taxRate) {
 		this();
-		this.localeId = localeId;
-		this.name = name;
-		this.stateName = stateName;
-		this.effectiveDate = effectiveDate;
-		this.localeTypeId = localeTypeId;
-		this.rateValue = rateValue;
-		this.typeId = typeId;
-		this.typeName = typeName;
+		make(taxRate);
 	}
-
+	
+	public LocaleTaxRateResponse(Connection conn, Integer localeId) throws RecordNotFoundException, Exception {
+		this();
+		LocaleTaxRate localeTaxRate = new LocaleTaxRate();
+		localeTaxRate.setLocaleId(localeId);
+		localeTaxRate.selectOne(conn);
+		make(localeTaxRate);
+	}
+	
+	private void make(LocaleTaxRate localeTaxRate) {
+		this.localeId = localeTaxRate.getLocaleId();
+		this.effectiveDate = localeTaxRate.getEffectiveDate();
+		this.rateValue = localeTaxRate.getRateValue();
+		this.typeId = localeTaxRate.getTypeId();
+	}
+	
 	public Integer getLocaleId() {
 		return localeId;
 	}
