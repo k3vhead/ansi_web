@@ -33,14 +33,15 @@ public class TicketLookupServlet extends AbstractLookupServlet {
 	
 	public static final String REALM = "ticketTable";
 	
+	public static final String DISPLAY_START_DATE = "display_start_date";
 	public static final String TICKET_TYPE_DESC = "ticket_type_desc";
-	public static final String START_DATE = "start_date";
 	public static final String PROCESS_DATE = "process_date";
 	public static final String TICKET_TYPE = "view_ticket_type";
 	public static final String TICKET_STATUS = "view_ticket_status";
 	public static final String TICKET_STATUS_DESC = "ticket_status_desc";
+	public static final String START_DATE = "start_date";
+	public static final String VIEW_LOG_START_DATE = "view_start_date";
 	public static final String VIEW_START_DATE = "view_start_date";
-
 
 	public TicketLookupServlet() {
 		super(Permission.TICKET_READ);
@@ -52,7 +53,7 @@ public class TicketLookupServlet extends AbstractLookupServlet {
 				TicketLookupQuery.BILL_TO,
 				TicketLookupQuery.JOB_SITE,
 				TicketLookupQuery.ADDRESS,
-				TicketLookupQuery.START_DATE,
+				TicketLookupQuery.VIEW_TICKET_START_DATE,
 				TicketLookupQuery.FREQ,
 				TicketLookupQuery.PPC,
 				TicketLookupQuery.JOB,
@@ -128,7 +129,7 @@ public class TicketLookupServlet extends AbstractLookupServlet {
 		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
 			Date startDate = (Date)arg0.get(VIEW_START_DATE);
 			if ( startDate != null ) {
-				arg0.put(START_DATE, dateFormatter.format(startDate));
+				arg0.put(DISPLAY_START_DATE, dateFormatter.format(startDate));
 			}
 			Date processDate = (Date)arg0.get(PROCESS_DATE);
 			if ( processDate != null ) {

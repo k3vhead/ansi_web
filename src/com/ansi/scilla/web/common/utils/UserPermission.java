@@ -7,6 +7,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.ansi.scilla.common.db.PermissionGroupLevel;
 import com.ansi.scilla.common.db.PermissionLevel;
 
@@ -99,6 +104,7 @@ public class UserPermission extends ApplicationWebObject implements Comparable<U
 	 * @return
 	 */
 	public static List<UserPermission> getUserPermissions(Connection conn, Integer permissionGroupId) throws Exception {
+		Logger logger = LogManager.getLogger(UserPermission.class);
 		List<UserPermission> userPermissionList = new ArrayList<UserPermission>();
 //		String sql = "select permission_group_level.permission_name, permission_group_level.permission_level" +
 //					" from permission_group " +
@@ -116,11 +122,17 @@ public class UserPermission extends ApplicationWebObject implements Comparable<U
 		key.setPermissionGroupId(permissionGroupId);
 		List<PermissionGroupLevel> pglList = PermissionGroupLevel.cast(key.selectSome(conn));
 		List<String> tempList = new ArrayList<String>();
+		List<String> badPermissionList = new ArrayList<String>();
 		for ( PermissionGroupLevel pgl : pglList ) {
-			Permission p = Permission.valueOf(pgl.getPermissionName());
-			List<Permission> parentList = p.makeParentList();
-			for ( Permission permission : parentList ) {
-				tempList.add(permission.name());
+			try {
+				Permission p = Permission.valueOf(pgl.getPermissionName());
+				List<Permission> parentList = p.makeParentList();
+				for ( Permission permission : parentList ) {
+					tempList.add(permission.name());
+				}
+			} catch ( IllegalArgumentException e ) {
+				// there is a permission in the database that we don't recognize
+				badPermissionList.add(pgl.getPermissionName());
 			}
 		}
 		for (String permissionName : tempList ) {
@@ -128,6 +140,10 @@ public class UserPermission extends ApplicationWebObject implements Comparable<U
 			if ( ! userPermissionList.contains(up)) {
 				userPermissionList.add(up);
 			}
+		}
+		if ( badPermissionList.size() > 0 ) {
+			String badPermissions = StringUtils.join(", ", badPermissionList);
+			logger.log(Level.FATAL, "Bad permissions in the database: " + badPermissions);
 		}
 		return userPermissionList;
 		

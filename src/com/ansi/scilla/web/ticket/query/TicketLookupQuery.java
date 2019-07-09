@@ -30,10 +30,12 @@ public class TicketLookupQuery extends LookupQuery {
 	public static final String TICKET_ID = "view_ticket_log.ticket_id";
 	public static final String STATUS = "view_ticket_log.ticket_status";
 	public static final String TYPE = "view_ticket_log.ticket_type";
+	public static final String VIEW_TICKET_START_DATE = "view_ticket_log.start_date";
 	public static final String DIV = "concat(division.division_nbr,'-',division.division_code)";
 	public static final String BILL_TO = "a1.name";
 	public static final String JOB_SITE = "a2.name";
 	public static final String ADDRESS = "a2.address1";
+	public static final String TICKET_START_DATE = "ticket.start_date";
 	public static final String START_DATE = "view_ticket_log.start_date";
 	public static final String FREQ = "job.job_frequency";
 	public static final String PPC = "isnull(ticket.act_price_per_cleaning, job.price_per_cleaning)";
@@ -199,7 +201,7 @@ public class TicketLookupQuery extends LookupQuery {
 			filterList.add(new ColumnFilter(JOB_ID, jobId, ColumnFilter.ComparisonType.EQUAL_NUMBER));
 		}
 		if ( startDate != null ) {
-			filterList.add(new ColumnFilter(START_DATE, startDate, ColumnFilter.ComparisonType.EQUAL_DATE));			
+			filterList.add(new ColumnFilter(TICKET_START_DATE, startDate, ColumnFilter.ComparisonType.EQUAL_DATE));			
 		}
 		if ( ! StringUtils.isBlank(status)) {
 			filterList.add(new ColumnFilter(STATUS, status, ColumnFilter.ComparisonType.LIST_STRING));
