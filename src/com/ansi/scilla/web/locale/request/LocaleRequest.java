@@ -2,6 +2,7 @@ package com.ansi.scilla.web.locale.request;
 
 import java.sql.Connection;
 
+import com.ansi.scilla.common.db.Locale;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -64,10 +65,10 @@ public class LocaleRequest extends AbstractRequest {
 		return webMessages;
 	}
 	
-	public WebMessages validateUpdate(Connection conn) throws Exception {
+	public WebMessages validateUpdate(Connection conn, Integer localeId) throws Exception {
 		WebMessages webMessages = validateAdd(conn);
 		
-		RequestValidator.validateId(conn, webMessages, LOCALE_ID, "locale_id", "localeId", this.localeId, true);
+		RequestValidator.validateId(conn, webMessages, "locale", Locale.LOCALE_ID, "localeId", localeId, true);
 		RequestValidator.validateString(webMessages, ABBREVIATION, this.abbreviation, false);
 		
 		return webMessages;

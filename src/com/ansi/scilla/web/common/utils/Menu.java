@@ -23,6 +23,7 @@ public enum Menu {
 	TICKET_STATUS(		"Ticket Status", 		LOOKUPS, Permission.CLAIMS_READ, 	"ticketStatusLookup.html"),
 	BUDGET_CONTROL(		"Budget Control", 		LOOKUPS, Permission.CLAIMS_READ, 	"budgetControlLookup.html"),
 	CLAIM_DETAIL(		"Claim Detail", 		LOOKUPS, Permission.CLAIMS_READ, 	"claimDetailLookup.html"),
+	LOCALE(             "Locale",               LOOKUPS, Permission.TAX_READ,       "localeLookup.html"),
 	
 	
 	REPORTS("Reports", null, null,"#"),
@@ -47,13 +48,11 @@ public enum Menu {
 	
 	SETTINGS("Settings", null, Permission.SYSADMIN_READ,"#"),
 
-
 	TAX_MAINTENANCE(	"Tax Maintenance",		SETTINGS,	Permission.SYSADMIN_READ,	"taxRateMaintenance.html"),
 	CODES(				"Codes",				SETTINGS,	Permission.SYSADMIN_READ,	"codeMaintenanceMaintenance.html"),
 	DIVISIONS(			"Divisions",			SETTINGS,	Permission.SYSADMIN_READ,	"divisionAdmin.html"),
 	USER_LOOKUP(		"User Lookup",			SETTINGS,	Permission.SYSADMIN_READ,	"userLookup.html"),
 	PERMISSIONS(		"Permissions",			SETTINGS,	Permission.SYSADMIN_READ,	"permissionGroup.html"),
-
 
 	
 	MY_ANSI("My ANSI", null, null,"#"),

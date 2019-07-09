@@ -7,6 +7,9 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.ansi.scilla.common.address.Country;
 import com.ansi.scilla.common.claims.WorkHoursType;
 import com.ansi.scilla.common.employee.EmployeeHoursType;
@@ -17,6 +20,7 @@ import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.jobticket.JobStatus;
 import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.common.payment.PaymentMethod;
+import com.ansi.scilla.common.utils.LocaleType;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.utils.Permission;
@@ -36,6 +40,8 @@ public class OptionsListResponse extends MessageResponse {
 	private List<ReportTypeOption> reportType;
 	private List<WorkHoursTypeOption> workHoursType;
 	private List<ExpenseTypeOption> expenseType;
+	private List<LocaleTypeOption> localeType;
+	
 
 	public OptionsListResponse(List<ResponseOption> options, SessionData sessionData) throws ClassNotFoundException, Exception {
 		if ( options.contains(ResponseOption.JOB_FREQUENCY)) {
@@ -73,6 +79,9 @@ public class OptionsListResponse extends MessageResponse {
 		}
 		if ( options.contains(ResponseOption.EXPENSE_TYPE)) {
 			makeExpenseTypeList(sessionData);
+		}
+		if ( options.contains(ResponseOption.LOCALE_TYPE)) {
+			makeLocaleTypeList(sessionData);
 		}
 	}
 
@@ -185,6 +194,15 @@ public class OptionsListResponse extends MessageResponse {
 
 	}
 	
+	private void makeLocaleTypeList(SessionData sessionData) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException  {
+		this.localeType = new ArrayList<LocaleTypeOption>();
+		for ( LocaleType localeType : LocaleType.values()) {
+			this.localeType.add(new LocaleTypeOption(localeType));
+		}
+		Collections.sort(this.localeType);
+
+	}
+	
 	public List<JobFrequencyOption> getJobFrequency() {
 		return jobFrequency;
 	}
@@ -279,6 +297,14 @@ public class OptionsListResponse extends MessageResponse {
 
 	public void setExpenseType(List<ExpenseTypeOption> expenseType) {
 		this.expenseType = expenseType;
+	}
+
+	public List<LocaleTypeOption> getLocaleType() {
+		return localeType;
+	}
+
+	public void setLocaleType(List<LocaleTypeOption> localeType) {
+		this.localeType = localeType;
 	}
 
 
