@@ -1,6 +1,10 @@
 package com.ansi.scilla.web.locale.response;
 
+import java.sql.Connection;
+
+import com.ansi.scilla.common.db.Locale;
 import com.ansi.scilla.web.common.response.MessageResponse;
+import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class LocaleResponse extends MessageResponse {
 
@@ -22,14 +26,18 @@ public class LocaleResponse extends MessageResponse {
 		super();
 	}
 	
-	public LocaleResponse(Integer localeId, String name, String stateName,
-			String abbreviation, String localeTypeId) {
+	public LocaleResponse(Locale locale) {
 		this();
-		this.localeId = localeId;
-		this.name = name;
-		this.stateName = stateName;
-		this.abbreviation = abbreviation;
-		this.localeTypeId = localeTypeId;
+		make(locale);		
+	}
+
+	public LocaleResponse(Connection conn, Integer localeId) throws RecordNotFoundException, Exception {
+		this();
+		Locale locale = new Locale();
+		locale.setLocaleId(localeId);
+		locale.selectOne(conn);
+		make(locale);
+		
 	}
 
 	public Integer getLocaleId() {
@@ -61,6 +69,14 @@ public class LocaleResponse extends MessageResponse {
 	}
 	public void setLocaleTypeId(String localeTypeId) {
 		this.localeTypeId = localeTypeId;
+	}
+
+	private void make(Locale locale) {
+		this.localeId = locale.getLocaleId();
+		this.name = locale.getName();
+		this.stateName = locale.getStateName();
+		this.abbreviation = locale.getAbbrevation();
+		this.localeTypeId = locale.getLocaleTypeId();
 	}
 	
 }

@@ -443,6 +443,17 @@
 	</servlet-mapping>
 	
 	<servlet>
+		<servlet-name>locale</servlet-name>
+		<servlet-class>com.ansi.scilla.web.locale.servlet.LocaleServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>locale</servlet-name>
+		<url-pattern>/locale</url-pattern>
+		<url-pattern>/locale/*</url-pattern>
+	</servlet-mapping>
+
+
+    <servlet>
 		<servlet-name>localeLookup</servlet-name>
 		<servlet-class>com.ansi.scilla.web.locale.servlet.LocaleLookupServlet</servlet-class>
 	</servlet>

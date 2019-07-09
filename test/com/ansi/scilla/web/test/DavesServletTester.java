@@ -2,6 +2,7 @@ package com.ansi.scilla.web.test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 
 import org.apache.http.Header;
 import org.apache.http.client.ClientProtocolException;
@@ -43,7 +44,8 @@ public class DavesServletTester extends TestServlet {
 		Header sessionCookie = super.doLogin();
 //		String results = testNDL(sessionCookie, MyTestType.ADD);
 //		String results = testEmployeeExpense(sessionCookie, MyTestType.ADD);
-		String results = testDashboardFavorite(sessionCookie, Menu.NEW_QUOTE);
+//		String results = testDashboardFavorite(sessionCookie, Menu.NEW_QUOTE);
+		String results = testLocale(sessionCookie, MyTestType.UPDATE);
 
 //		String results = super.doPost(sessionCookie, url, super.makeJson(parmMap));
 //		String results = super.doGet(sessionCookie, url, (HashMap<String,String>)null);
@@ -51,6 +53,29 @@ public class DavesServletTester extends TestServlet {
 		super.doLogoff(sessionCookie);
 		
 		logger.log(Level.DEBUG, results);
+	}
+
+
+
+
+	private String testLocale(Header sessionCookie, MyTestType type) throws Exception {
+		String results = null;
+		if ( type.equals(MyTestType.ITEM)) {
+			String url = "/ansi_web/locale/100";	
+			results = super.doGet(sessionCookie, url, (HashMap<String,String>)null);
+		} else if ( type.equals(MyTestType.ADD)) {
+			String url = "/ansi_web/locale";
+			String json = "{\"name\":\"Dave\", \"stateName\":\"IL\",\"localeTypeId\":\"COUNTY\"}";
+			results = super.doPost(sessionCookie, url, json);
+		} else if ( type.equals(MyTestType.UPDATE)) {
+			String url = "/ansi_web/locale/181";
+			String json = "{\"name\":\"Dave v2\", \"stateName\":\"IL\",\"localeTypeId\":\"CITY\"}";
+			results = super.doPost(sessionCookie, url, json);
+		} else {
+			throw new Exception("Huh");
+		}
+		
+		return results;
 	}
 
 
