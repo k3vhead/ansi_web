@@ -164,7 +164,7 @@
     			            	//console.log(json);
     			            	//doFunctionBinding();
     			            	var myTable = this;
-    			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#localeTable", LOCALELOOKUP.createTable);
+    			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#localeTaxRateTable", TAXRATELOOKUP.createTable);
     			            },
     			            "drawCallback": function( settings ) {
     			            	TAXRATELOOKUP.doFunctionBinding();
@@ -204,7 +204,7 @@
 				
 			function doEdit($clickevent) {
 				var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
-					var $url = 'taxRateTable/' + $rowid;
+					var $url = 'localeTaxRateTable/' + $rowid;
 					//console.log("YOU PASSED ROW ID:" + $rowid);
 					var jqxhr = $.ajax({
 						type: 'GET',
