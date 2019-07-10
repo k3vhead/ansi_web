@@ -300,6 +300,16 @@
             <forward name="reportNoInput" path="/reportNoInput.jsp" /> 
             <forward name="login" path="/login.jsp" />            
         </action>  
+        
+        
+        <action
+            path="/taxRateLookup"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/taxes/taxRateLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+        
+        
         <action
             path="/ticketAssignment"
             type="com.ansi.scilla.web.ticket.action.TicketAssignmentLookupAction"
