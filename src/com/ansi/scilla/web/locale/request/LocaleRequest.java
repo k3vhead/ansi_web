@@ -59,8 +59,8 @@ public class LocaleRequest extends AbstractRequest {
 		WebMessages webMessages = new WebMessages();
 		
 		RequestValidator.validateString(webMessages, NAME, this.name, true);
-		RequestValidator.validateString(webMessages, STATE_NAME, this.stateName, true);
-		RequestValidator.validateString(webMessages, LOCALE_TYPE_ID, this.localeTypeId, true);
+		RequestValidator.validateState(webMessages, STATE_NAME, this.stateName, true);
+		RequestValidator.validateLocaleType(webMessages, LOCALE_TYPE_ID, this.localeTypeId, true);
 		
 		return webMessages;
 	}

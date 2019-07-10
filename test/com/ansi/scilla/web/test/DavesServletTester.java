@@ -69,7 +69,7 @@ public class DavesServletTester extends TestServlet {
 			results = super.doPost(sessionCookie, url, json);
 		} else if ( type.equals(MyTestType.UPDATE)) {
 			String url = "/ansi_web/locale/181";
-			String json = "{\"name\":\"Dave v2\", \"stateName\":\"IL\",\"localeTypeId\":\"CITY\"}";
+			String json = "{\"name\":\"Dave v2\", \"stateName\":\"QQ\",\"localeTypeId\":\"QQQQ\"}";
 			results = super.doPost(sessionCookie, url, json);
 		} else {
 			throw new Exception("Huh");
