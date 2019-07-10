@@ -468,7 +468,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>localeTaxRateLookup</servlet-name>
-		<url-pattern>/localeTaxRateLookup</url-pattern>
+		<url-pattern>/taxRateLookup</url-pattern>
 	</servlet-mapping>
 
 
