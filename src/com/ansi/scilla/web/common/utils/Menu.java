@@ -24,6 +24,7 @@ public enum Menu {
 	BUDGET_CONTROL(		"Budget Control", 		LOOKUPS, Permission.CLAIMS_READ, 	"budgetControlLookup.html"),
 	CLAIM_DETAIL(		"Claim Detail", 		LOOKUPS, Permission.CLAIMS_READ, 	"claimDetailLookup.html"),
 	LOCALE(             "Locale",               LOOKUPS, Permission.TAX_READ,       "localeLookup.html"),
+	LOCALE_TAX_RATE(	"Locale Tax Rate",		LOOKUPS, Permission.TAX_READ,		"localeTaxRateLookup.html"),
 	
 	
 	REPORTS("Reports", null, null,"#"),

@@ -92,7 +92,7 @@
                 
                 
                 createTable : function(){
-            		var dataTable = $('#taxRateTable').DataTable( {
+            		var dataTable = $('#localeTaxRateTable').DataTable( {
             			"aaSorting":		[[2,'asc']],
             			"processing": 		true,
             	        "serverSide": 		true,
@@ -120,7 +120,7 @@
             	         ],
             	        "paging": true,
     			        "ajax": {
-    			        	"url": "taxRateLookup",
+    			        	"url": "localeTaxRateLookup",
     			        	"type": "GET",
     			        	"data": {}
     			        	},
@@ -131,19 +131,19 @@
     			            { width:"20%", title: "<bean:message key="field.label.name" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.name != null){return ('<span class="tooltip">' + row.name+'<span class="tooltiptext">'+row.name+'</span></span>');}
     			            } },
-    			            { width:"5%", title: "<bean:message key="field.label.localeTypeId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { width:"8%", title: "<bean:message key="field.label.localeTypeId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.locale_type_id != null){return (row.locale_type_id+"");}
     			            } },
-    			            { width:"5%", title: "<bean:message key="field.label.typeName" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { width:"8%", title: "<bean:message key="field.label.typeName" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.type_name != null){return (row.type_name);}
     			            } },
-    			            { width:"10%", title: "<bean:message key="field.label.stateName" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+    			            { width:"5%", title: "<bean:message key="field.label.stateName" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.state_name != null){return (row.state_name+"");}
     			            } },
     			            { width:"10%", title: "<bean:message key="field.label.effectiveDate" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.effective_date != null){return (row.effective_date+"");}
     			            } },
-    			            { width:"10%", title: "<bean:message key="field.label.rateValue" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+    			            { width:"8%", title: "<bean:message key="field.label.rateValue" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.rate_value != null){return (row.rate_value+"");}
     			            } },
     			            { width:"5%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	

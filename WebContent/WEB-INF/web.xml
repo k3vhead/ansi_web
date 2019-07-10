@@ -461,6 +461,15 @@
 		<servlet-name>localeLookup</servlet-name>
 		<url-pattern>/localeLookup</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>localeTaxRateLookup</servlet-name>
+		<servlet-class>com.ansi.scilla.web.tax.servlet.LocaleTaxRateLookupServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>localeTaxRateLookup</servlet-name>
+		<url-pattern>/localeTaxRateLookup</url-pattern>
+	</servlet-mapping>
 
 
     <servlet>
