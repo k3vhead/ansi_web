@@ -244,7 +244,7 @@
 			            	if(row.job_site_address != null){return (row.job_site_address+"");}
 			            } },
 			            { searchable:true,width:"6%", title: "<bean:message key="field.label.startDate" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.start_date != null){return (row.start_date+"");}
+			            	if(row.display_start_date != null){return (row.display_start_date+"");}
 			            } },
 			            { searchable:true,width:"5%", title: "<bean:message key="field.label.jobFrequency" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 			            	if(row.job_frequency != null){return (row.job_frequency+"");}

@@ -1,10 +1,13 @@
 package com.ansi.scilla.web.division.servlet;
 
 import java.sql.Connection;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.servlet.AbstractLookupServlet;
@@ -43,6 +46,11 @@ public class UserDivisionServlet extends AbstractLookupServlet {
 
 	@Override
 	public LookupQuery makeQuery(Connection conn, HttpServletRequest request) {
+		Enumeration<String> parmList = request.getParameterNames();
+		while ( parmList.hasMoreElements() ) {
+			String parmName = parmList.nextElement();
+			logger.log(Level.DEBUG, parmName + "\t" + request.getParameter(parmName));
+		}
 		HttpSession session = request.getSession();
 		SessionData sessionData = (SessionData)session.getAttribute(SessionData.KEY);
 		
