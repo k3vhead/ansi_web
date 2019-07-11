@@ -120,7 +120,7 @@
             	         ],
             	        "paging": true,
     			        "ajax": {
-    			        	"url": "localeTaxRateLookup",
+    			        	"url": "taxRateLookup",
     			        	"type": "GET",
     			        	"data": {}
     			        	},
