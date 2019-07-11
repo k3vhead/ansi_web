@@ -131,7 +131,7 @@
     			            { width:"20%", title: "<bean:message key="field.label.name" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.name != null){return ('<span class="tooltip">' + row.name+'<span class="tooltiptext">'+row.name+'</span></span>');}
     			            } },
-    			            { width:"8%", title: "<bean:message key="field.label.localeTypeId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { width:"8%", title: "<bean:message key="field.label.localeType" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.locale_type_id != null){return (row.locale_type_id+"");}
     			            } },
     			            { width:"8%", title: "<bean:message key="field.label.typeName" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
@@ -144,7 +144,7 @@
     			            	if(row.effective_date != null){return (row.effective_date+"");}
     			            } },
     			            { width:"8%", title: "<bean:message key="field.label.rateValue" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
-    			            	if(row.rate_value != null){return (row.rate_value+"");}
+    			            	if(row.display_rate != null){return (row.display_rate+"");}
     			            } },
     			            { width:"5%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
     			            	//console.log(row);
@@ -253,7 +253,7 @@
     </tiles:put>
     
    <tiles:put name="content" type="string">
-    	<h1><bean:message key="page.label.taxRate" /> <bean:message key="menu.label.lookup" /></h1> 
+    	<h1><bean:message key="page.label.taxrate" /> <bean:message key="menu.label.lookup" /></h1> 
     	<c:if test="${not empty ANSI_JOB_ID}">
     		<span class="orange"><bean:message key="field.label.jobFilter" />: <c:out value="${ANSI_JOB_ID}" /></span><br />
     	</c:if>

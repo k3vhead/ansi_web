@@ -1,6 +1,8 @@
 package com.ansi.scilla.web.tax.servlet;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -35,7 +37,7 @@ public class LocaleTaxRateLookupServlet extends AbstractLookupServlet {
 	public static final String RATE_VALUE = "locale_tax_rate.rate_value";	
 	public static final String TYPE_ID = "locale_tax_rate.type_id";
 	public static final String TYPE_NAME = "type_name";
-	
+	public static final String DISPLAY_RATE = "display_rate";
 	
 	public LocaleTaxRateLookupServlet() {
 		super(Permission.TAX_READ);
@@ -84,6 +86,7 @@ public class LocaleTaxRateLookupServlet extends AbstractLookupServlet {
 	public class ItemTransformer implements Transformer<HashMap<String, Object>, HashMap<String, Object>> {
 
 		private SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
+		private DecimalFormat rateFormatter = new DecimalFormat("#0.000%");
 
 		@Override
 		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
@@ -92,6 +95,10 @@ public class LocaleTaxRateLookupServlet extends AbstractLookupServlet {
 				arg0.put(EFFECTIVE_DATE, dateFormatter.format(effectiveDate));
 			}
 			
+			BigDecimal rateValue = (BigDecimal)arg0.get("rate_value");
+			if ( rateValue != null ) {
+				arg0.put(DISPLAY_RATE, rateFormatter.format(rateValue.doubleValue()));
+			}
 //			String jobFrequency = (String)arg0.get(JOB_FREQUENCY);
 //			if ( ! StringUtils.isBlank(jobFrequency) ) {
 //				JobFrequency freq = JobFrequency.lookup(jobFrequency);
