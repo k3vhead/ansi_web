@@ -278,7 +278,7 @@
 			            ],
     			            "initComplete": function(settings, json) {
     			            	var myTable = this;
-       			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#ticket-table", TICKETASSIGNMENT.loadTickets, TICKETASSIGNMENT.loadTicketComplete);    			            		
+       			            	//LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#ticket-table", TICKETASSIGNMENT.loadTickets, TICKETASSIGNMENT.loadTicketComplete);    			            		
     			            },
     			            "fnRowCallback": function(nRow, aData, iDisplayIndex) {
     							$(nRow).addClass("ticket");
