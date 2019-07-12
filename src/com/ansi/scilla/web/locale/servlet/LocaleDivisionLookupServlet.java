@@ -22,11 +22,11 @@ public class LocaleDivisionLookupServlet extends AbstractLookupServlet {
 	
 	public static final String REALM = "localeDivisionLookup";
 	
-	public static final String DIVISION_ID = "division_id";
-	public static final String LOCALE_ID = "locale_id";
-	public static final String EFFECTIVE_START_DATE = "effective_start_date";
-	public static final String EFFECTIVE_STOP_DATE = "effective_stop_date";
-	public static final String ADDRESS_ID = "address_id";
+	public static final String DIVISION_ID = "division.division_id";
+	public static final String LOCALE_ID = "locale.locale_id";
+	public static final String EFFECTIVE_START_DATE = "locale_division.effective_start_date";
+	public static final String EFFECTIVE_STOP_DATE = "locale_division.effective_stop_date";
+	public static final String ADDRESS_ID = "locale_division.address_id";
 	
 	
 	public LocaleDivisionLookupServlet() {
