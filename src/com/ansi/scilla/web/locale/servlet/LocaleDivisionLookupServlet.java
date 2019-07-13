@@ -1,10 +1,17 @@
 package com.ansi.scilla.web.locale.servlet;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import org.apache.commons.collections4.Transformer;
 
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.servlet.AbstractLookupServlet;
@@ -33,8 +40,8 @@ public class LocaleDivisionLookupServlet extends AbstractLookupServlet {
 		super(Permission.TAX_READ);
 		cols = new String[] { 
 				
-				};
-		//super.itemTransformer = new ItemTransformer();
+		};
+		super.itemTransformer = new ItemTransformer();
 	}
 
 
@@ -65,6 +72,35 @@ public class LocaleDivisionLookupServlet extends AbstractLookupServlet {
 		}
 	}
 	
+	public class ItemTransformer implements Transformer<HashMap<String, Object>, HashMap<String, Object>> {
+
+		private SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
+		private DecimalFormat rateFormatter = new DecimalFormat("#0.000%");
+
+		@Override
+		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
+			Date effectiveStartDate = (Date)arg0.get(EFFECTIVE_START_DATE);
+			if ( effectiveStartDate != null ) {
+				arg0.put(EFFECTIVE_START_DATE, dateFormatter.format(effectiveStartDate));
+			}
+			Date effectiveStopDate = (Date)arg0.get(EFFECTIVE_STOP_DATE);
+			if ( effectiveStopDate != null ) {
+				arg0.put(EFFECTIVE_STOP_DATE, dateFormatter.format(effectiveStopDate));
+			}
+			
+//			BigDecimal rateValue = (BigDecimal)arg0.get("rate_value");
+//			if ( rateValue != null ) {
+//				arg0.put(DISPLAY_RATE, rateFormatter.format(rateValue.doubleValue()));
+//			}
+//			String jobFrequency = (String)arg0.get(JOB_FREQUENCY);
+//			if ( ! StringUtils.isBlank(jobFrequency) ) {
+//				JobFrequency freq = JobFrequency.lookup(jobFrequency);
+//				arg0.put(FREQUENCY_DESC, freq.display());
+//			}
+			return arg0;
+		}
 	
 	
+	
+	}
 }
