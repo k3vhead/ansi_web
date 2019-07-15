@@ -75,7 +75,7 @@ public class LocaleResponse extends MessageResponse {
 		this.localeId = locale.getLocaleId();
 		this.name = locale.getName();
 		this.stateName = locale.getStateName();
-		this.abbreviation = locale.getAbbrevation();
+		this.abbreviation = locale.getAbbreviation();
 		this.localeTypeId = locale.getLocaleTypeId();
 	}
 	

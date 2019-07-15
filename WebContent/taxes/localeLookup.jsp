@@ -265,7 +265,7 @@
 				
 			doEdit: function ($clickevent) {
 				var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
-					var $url = 'localeLookup/' + $rowid;
+					var $url = 'locale/' + $rowid;
 					//console.log("YOU PASSED ROW ID:" + $rowid);
 					var jqxhr = $.ajax({
 						type: 'GET',
@@ -463,7 +463,7 @@
     </table>
     
 	    
-	    <div id="addLocaleForm">
+    <div id="addLocaleForm">
 	    <div class="modal-header">
 	    <h5 class="modal-title" id="name"></h5>
 	    </div>
