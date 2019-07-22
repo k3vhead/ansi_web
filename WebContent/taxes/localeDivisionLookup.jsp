@@ -120,32 +120,27 @@
             	         ],
             	        "paging": true,
     			        "ajax": {
-    			        	"url": "taxRateLookup",
+    			        	"url": "localeDivisionLookup",
     			        	"type": "GET",
     			        	"data": {}
     			        	},
-    			        columns: [	//localeId, name, localeTypeId, typeName, stateName, effectiveDate, rateValue
-    			            { width:"5%", title: "<bean:message key="field.label.localeId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+    			        columns: [	//divisionId, localeId, effectiveStartDate, effectiveStopDate, addressId
+    			            { width:"5%", title: "<bean:message key="field.label.divisionId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.locale_id != null){return (row.locale_id+"");}
     			            } },
-    			            { width:"20%", title: "<bean:message key="field.label.name" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { width:"20%", title: "<bean:message key="field.label.localeId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.name != null){return (row.name+"");}
     			            } },
-    			            { width:"8%", title: "<bean:message key="field.label.localeType" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { width:"8%", title: "<bean:message key=Effective Start Date />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.locale_type_id != null){return (row.locale_type_id+"");}
     			            } },
-    			            { width:"8%", title: "<bean:message key="field.label.typeName" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { width:"8%", title: "<bean:message key=Effective Stop Date />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.type_name != null){return (row.type_name+"");}
     			            } },
-    			            { width:"5%", title: "<bean:message key="field.label.stateName" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+    			            { width:"5%", title: "<bean:message key="field.label.addressId" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.state_name != null){return (row.state_name+"");}
     			            } },
-    			            { width:"10%", title: "<bean:message key="field.label.effectiveDate" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
-    			            	if(row.effective_date != null){return (row.effective_date+"");}
-    			            } },
-    			            { width:"8%", title: "<bean:message key="field.label.rateValue" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
-    			            	if(row.display_rate != null){return (row.display_rate+"");}
-    			            } },
+    			            
     			            { width:"5%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
     			            	//console.log(row);
     			            	var $actionData = "";

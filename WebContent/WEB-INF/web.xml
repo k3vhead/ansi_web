@@ -451,7 +451,15 @@
 		<url-pattern>/locale</url-pattern>
 		<url-pattern>/locale/*</url-pattern>
 	</servlet-mapping>
-
+	
+	<servlet>
+		<servlet-name>localeDivisionLookup</servlet-name>
+		<servlet-class>com.ansi.scilla.web.locale.servlet.LocaleDivisionLookupServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>localeDivisionLookup</servlet-name>
+		<url-pattern>/localeDivisionLookup</url-pattern>
+	</servlet-mapping>
 
     <servlet>
 		<servlet-name>localeLookup</servlet-name>
