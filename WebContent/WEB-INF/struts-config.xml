@@ -196,6 +196,13 @@
             <forward name="valid" path="/taxes/localeLookup.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
+        <action
+            path="/localeDivisionLookup"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/taxes/localeDivisionLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+     	
      	<action
             path="/logoff"
             type="com.ansi.scilla.web.login.action.LogoffAction">
