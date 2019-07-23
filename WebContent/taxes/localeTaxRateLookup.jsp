@@ -188,13 +188,13 @@
     			            	//console.log(row);
     			            	var $actionData = "";
     			            	if ( row.locale_id != null ) {
-//    				            	var $editLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="localeReturn.html?id='+row.locale_id+'" class="editAction" data-id="'+row.locale_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
-//    				            	
+    				            	var $editLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="#" class="editAction" data-id="'+row.locale_id+'" data-name="'+row.locale_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
+    				            	
 //    		            			var $ticketData = 'data-id="' + row.locale_id + '"';
 //    			            		$printLink = '<ansi:hasPermission permissionRequired="TAX_READ"><i class="print-link fa fa-print" aria-hidden="true" ' + $localeData + '></i></ansi:hasPermission>'
 //    			            		var $claimLink = '';
 //    			            		
-//    				            	$actionData = $editLink + $printLink;
+    				            	$actionData = $editLink// + $printLink;
     			            	}
     			            	return $actionData;
     			            } }],
@@ -210,6 +210,16 @@
     			    } );
             	},
             	
+            	populateLocaleSelect:function() {
+                	$data = ANSI_UTILS.getLocaleList();
+                	$select = $("#localeId");
+        			$('option', $select).remove();
+        			$select.append(new Option("",null));
+        			$.each($data, function($index, $val) {
+        				var $display = $val.divisionNbr + "-" + $val.divisionCode;
+        				$select.append(new Option($display, $val.divisionId));
+        			});	
+                },
             	
             	doFunctionBinding : function() {
     				$( ".editAction" ).on( "click", function($clickevent) {
@@ -309,13 +319,13 @@
     				url: $url,
     				statusCode: {
     					200: function($data) {
-    					/*		var $permissionGroup = $data.data.permGroupItemList[0];
+    							var $permissionGroup = $data.data.permGroupItemList[0];
     							$.each($permissionGroup, function($fieldName, $value) {									
     								$selector = "#editPanel input[name=" + $fieldName + "]";
     								if ( $($selector).length > 0 ) {
     									$($selector).val($value);
     								}
-    							}); */
+    							}); 
     						$("#addTaxRateForm 	input[name='localeId']").val($permissionGroup.localeId);
     						$("#addTaxRateForm  input[name='name']").val($permissionGroup.name);
     						$("#addTaxRateForm  input[name='localeTypeId']").val($permissionGroup.localeTypeId);
@@ -348,6 +358,7 @@
     	        		
     	 //       		$("#editPanel display[name='']").val("");
     					$("#addTaxRateForm	input[name='localeId']").val("");
+//    					TAXRATELOOKUP.populateLocaleSelect;
     					$("#addTaxRateForm  input[name='name']").val("");
     					$("#addTaxRateForm  input[name='localeTypeId']").val("");
     					$("#addTaxRateForm  input[name='typeName']").val("");	
@@ -468,7 +479,7 @@
     	<table>
     		<tr>
     			<td><span class="formHdr">Locale ID</span></td>
-    			<td><input type="text" name="localeId" style="border-style: hidden" readOnly/></td>
+    			<td><input type="text" name="localeId" /></td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">Locale Name</span></td>
@@ -492,7 +503,7 @@
     		</tr>
     		<tr>
     			<td><span class="formHdr">Effective Date</span></td>
-    			<td><input type="text" name="effectiveDate" /></td>
+    			<td><input type="text" name="effectiveDate" class="dateField" /></td>
     			<td><span class="err" id="effectiveDateErr"></span></td>
     		</tr>
     		<tr>
@@ -504,8 +515,7 @@
     	</table>
     </div>
     
-	    
-	    <input type="button" class="prettyWideButton showNew" value="New" />
+	   
     
     <webthing:scrolltop />
     
