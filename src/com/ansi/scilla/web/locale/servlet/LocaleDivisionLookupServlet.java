@@ -1,8 +1,6 @@
 package com.ansi.scilla.web.locale.servlet;
 
-import java.math.BigDecimal;
 import java.sql.Connection;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -21,6 +19,7 @@ import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
+import com.ansi.scilla.web.locale.query.LocaleDivisionLookupQuery;
 import com.ansi.scilla.web.locale.query.LocaleLookupQuery;
 
 public class LocaleDivisionLookupServlet extends AbstractLookupServlet {
@@ -29,17 +28,36 @@ public class LocaleDivisionLookupServlet extends AbstractLookupServlet {
 	
 	public static final String REALM = "localeDivisionLookup";
 	
-	public static final String DIVISION_ID = "division.division_id";
-	public static final String LOCALE_ID = "locale.locale_id";
-	public static final String EFFECTIVE_START_DATE = "locale_division.effective_start_date";
-	public static final String EFFECTIVE_STOP_DATE = "locale_division.effective_stop_date";
-	public static final String ADDRESS_ID = "locale_division.address_id";
+	public static final String DIVISION_ID = "locale_division.division_id";
+	public static final String LOCALE_ID = "locale_division.locale_id";
+	public static final String EFF_START_DATE = "locale_division.effective_start_date";
+	public static final String EFF_STOP_DATE = "locale_division.effective_stop_date"; 
+	public static final String ADDRESS_ID = "locale_division.address_id"; 
+	public static final String NAME = "locale.name";
+	public static final String LOCALE_STATE_NAME = "locale.state_name";
+	public static final String LOCALE_TYPE_ID = "locale.locale_type_id";
+	public static final String DIVISION_CODE = "division.division_code";
+	public static final String DIVISION_NBR = "division.division_nbr";
+	public static final String DIVISION_DISPLAY = "concat(division_nbr,'-',division_code)";
+	public static final String DESCRIPTION = "division.description"; 
+	public static final String ADDRESS1 = "address.address1";
+	public static final String ADDRESS2 = "address.address2";
+	public static final String CITY = "address.city";
+	public static final String STATE = "address.state";
+	public static final String ZIP = "address.zip";
 	
+	private static final String ADDRESS = ""+ADDRESS1+"\n"+ADDRESS2+"/n"+CITY+" "+STATE+", "+ZIP+"";
 	
 	public LocaleDivisionLookupServlet() {
 		super(Permission.TAX_READ);
 		cols = new String[] { 
-				
+			LocaleDivisionLookupQuery.DIVISION_CODE,
+			LocaleDivisionLookupQuery.NAME,
+			LocaleDivisionLookupQuery.LOCALE_TYPE_ID,
+			LocaleDivisionLookupQuery.STATE,
+			LocaleDivisionLookupQuery.EFF_START_DATE,
+			LocaleDivisionLookupQuery.EFF_STOP_DATE,
+			LocaleDivisionLookupQuery.ADDRESS1,
 		};
 		super.itemTransformer = new ItemTransformer();
 	}
@@ -75,17 +93,17 @@ public class LocaleDivisionLookupServlet extends AbstractLookupServlet {
 	public class ItemTransformer implements Transformer<HashMap<String, Object>, HashMap<String, Object>> {
 
 		private SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
-		private DecimalFormat rateFormatter = new DecimalFormat("#0.000%");
+//		private DecimalFormat rateFormatter = new DecimalFormat("#0.000%");
 
 		@Override
 		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
-			Date effectiveStartDate = (Date)arg0.get(EFFECTIVE_START_DATE);
+			Date effectiveStartDate = (Date)arg0.get(EFF_START_DATE);
 			if ( effectiveStartDate != null ) {
-				arg0.put(EFFECTIVE_START_DATE, dateFormatter.format(effectiveStartDate));
+				arg0.put(EFF_START_DATE, dateFormatter.format(effectiveStartDate));
 			}
-			Date effectiveStopDate = (Date)arg0.get(EFFECTIVE_STOP_DATE);
+			Date effectiveStopDate = (Date)arg0.get(EFF_STOP_DATE);
 			if ( effectiveStopDate != null ) {
-				arg0.put(EFFECTIVE_STOP_DATE, dateFormatter.format(effectiveStopDate));
+				arg0.put(EFF_STOP_DATE, dateFormatter.format(effectiveStopDate));
 			}
 			
 //			BigDecimal rateValue = (BigDecimal)arg0.get("rate_value");

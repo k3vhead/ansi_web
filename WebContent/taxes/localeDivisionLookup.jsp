@@ -114,9 +114,9 @@
             	        
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
-            	            { className: "dt-head-left", "targets": [0,1] },
-            	            { className: "dt-body-center", "targets": [2,3,4,5,6,7] },
-            	            { className: "dt-right", "targets": []}
+            	            { className: "dt-head-left", "targets": [0,1,2] },
+            	            { className: "dt-body-center", "targets": [3,4,5,7] },
+            	            { className: "dt-right", "targets": [6]}
             	         ],
             	        "paging": true,
     			        "ajax": {
@@ -125,20 +125,26 @@
     			        	"data": {}
     			        	},
     			        columns: [	//divisionId, localeId, effectiveStartDate, effectiveStopDate, addressId
-    			            { width:"5%", title: "<bean:message key="field.label.divisionId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
-    			            	if(row.locale_id != null){return (row.locale_id+"");}
+    			            { width:"10%", title: "<bean:message key="field.label.divisionCode" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+    			            	if(row.division_code != null){return (row.division_code+"");}
     			            } },
-    			            { width:"20%", title: "<bean:message key="field.label.localeId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { width:"15%", title: "<bean:message key="field.label.name" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.name != null){return (row.name+"");}
     			            } },
-    			            { width:"8%", title: "<bean:message key=Effective Start Date />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { width:"10%", title: "<bean:message key="field.label.localeType" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.locale_type_id != null){return (row.locale_type_id+"");}
     			            } },
-    			            { width:"8%", title: "<bean:message key=Effective Stop Date />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-    			            	if(row.type_name != null){return (row.type_name+"");}
-    			            } },
-    			            { width:"5%", title: "<bean:message key="field.label.addressId" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+    			            { width:"15%", title: "<bean:message key="field.label.stateName" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.state_name != null){return (row.state_name+"");}
+    			            } },
+    			            { width:"10%", title: "<bean:message key="field.label.startDate" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            	if(row.effective_start_date != null){return (row.effective_start_date+"");}
+    			            } },
+    			            { width:"10%", title: "<bean:message key="field.label.stopDate" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            	if(row.effective_stop_date != null){return (row.effective_stop_date+"");}
+    			            } },
+    			            { width:"20%", title: "<bean:message key="field.label.address" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+    			            	if(row.address != null){return (row.address+"");}
     			            } },
     			            
     			            { width:"5%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
