@@ -210,7 +210,7 @@
     			    } );
             	},
             	
-            	populateLocaleSelect:function() {
+            	populateLocaleSelect : function() {
                 	$data = ANSI_UTILS.getLocaleList();
                 	$select = $("#localeId");
         			$('option', $select).remove();
@@ -274,32 +274,31 @@
     			
     			doEdit : function($clickevent) {
     				var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
-    					var $url = 'localeTaxRateTable/' + $rowid;
-    					//console.log("YOU PASSED ROW ID:" + $rowid);
-    					var jqxhr = $.ajax({
-    						type: 'GET',
-    						url: $url,
-    						success: function($data) {
-    							//console.log($data);
-    							//localeId, name, localeTypeId, typeName, stateName, effectiveDate, rateValue
-    			        		$("#localeId").val(($data.data.codeList[0]).localeId);
-    			        		$("#name").val(($data.data.codeList[0]).name);
-    			        		$("#localeTypeId").val(($data.data.codeList[0]).localeTypeId);
-    			        		$("#typeName").val(($data.data.codeList[0]).typeName);
-    			        		$("#stateName").val(($data.data.codeList[0]).stateName);
-    			        		$("#effectiveDate").val(($data.data.codeList[0]).effectiveDate);
-    			        		$("#rateValue").val(($data.data.codeList[0]).rateValue);
-    			        		
-    			        		$("#updateOrAdd").val("update");
-    			        		$("#addTaxRateForm").dialog( "open" );
-    						},
-    						statusCode: {
-    							403: function($data) {
-    								$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-    							} 
-    						},
-    						dataType: 'json'
-    					});
+    				var $url = 'taxRateLookup/' + $rowid;
+    				console.log("YOU PASSED ROW ID:" + $rowid);
+    				var jqxhr = $.ajax({
+    					type: 'GET',
+    					url: $url,
+    					success: function($data) {
+    						console.log($data);
+    						$("#localeId").val(($data.data.codeList[0]).locale_id);
+    			       		$("#name").val(($data.data.codeList[0]).name);
+    			       		$("#localeTypeId").val(($data.data.codeList[0]).locale_type_od);
+    			       		$("#typeName").val(($data.data.codeList[0]).type_name);
+    			       		$("#stateName").val(($data.data.codeList[0]).state_name);
+    			       		$("#effectiveDate").val(($data.data.codeList[0]).effective_date);
+    			       		$("#rateValue").val(($data.data.codeList[0]).rate_value);
+    			       		
+    			       		$("#updateOrAdd").val("update");
+    			       		$("#addTaxRateForm").dialog( "open" );
+    					},
+    					statusCode: {
+    						403: function($data) {
+    							$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+    						} 
+    					},
+    					dataType: 'json'
+    				});
     				//console.log("Edit Button Clicked: " + $rowid);
     			},
     			
