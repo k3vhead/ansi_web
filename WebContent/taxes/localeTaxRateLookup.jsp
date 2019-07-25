@@ -26,7 +26,7 @@
        	<link rel="stylesheet" href="css/lookup.css" />
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
     	<script type="text/javascript" src="js/lookup.js"></script> 
-    	
+    	<link rel="stylesheet" href="css/datepicker.css" type="text/css" />
     
         <style type="text/css">
 			#displayTable {
@@ -84,13 +84,17 @@
         	
         	TAXRATELOOKUP = {
                 dataTable : null,
-
+                
        			init : function() {
+       				$('.dateField').datepicker({
+                        prevText:'&lt;&lt;',
+                        nextText: '&gt;&gt;',
+                        showButtonPanel:true
+                    });
        				TAXRATELOOKUP.createTable();  
        				TAXRATELOOKUP.makeClickers();
        				TAXRATELOOKUP.markValid();  
-       				TAXRATELOOKUP.makeEditPanel(); 
-       				TAXRATELOOKUP.makeClickers();
+       				TAXRATELOOKUP.makeEditPanel();
        				TAXRATELOOKUP.showNew();
                 }, 
                 
@@ -223,7 +227,7 @@
             	
             	doFunctionBinding : function() {
     				$( ".editAction" ).on( "click", function($clickevent) {
-    					TAXRATELOOKUP.doEdit($clickevent);
+    					TAXRATELOOKUP.showEdit($clickevent);
     				});					
     				$(".print-link").on( "click", function($clickevent) {
     					doPrint($clickevent);
@@ -281,16 +285,17 @@
     					url: $url,
     					success: function($data) {
     						console.log($data);
-    						$("#localeId").val(($data.data.codeList[0]).locale_id);
-    			       		$("#name").val(($data.data.codeList[0]).name);
-    			       		$("#localeTypeId").val(($data.data.codeList[0]).locale_type_od);
-    			       		$("#typeName").val(($data.data.codeList[0]).type_name);
-    			       		$("#stateName").val(($data.data.codeList[0]).state_name);
-    			       		$("#effectiveDate").val(($data.data.codeList[0]).effective_date);
-    			       		$("#rateValue").val(($data.data.codeList[0]).rate_value);
+    						$("#localeId").val(($data.data[0]).locale_id);
+    			       		$("#name").val(($data.data[0]).name);
+    			       		$("#localeTypeId").val(($data.data[0]).locale_type_od);
+    			       		$("#typeName").val(($data.data[0]).type_name);
+    			       		$("#stateName").val(($data.data[0]).state_name);
+    			       		$("#effectiveDate").val(($data.data[0]).effective_date);
+    			       		$("#rateValue").val(($data.data[0]).rate_value);
     			       		
     			       		$("#updateOrAdd").val("update");
     			       		$("#addTaxRateForm").dialog( "open" );
+    			       		console.log("DoEdit end.");
     					},
     					statusCode: {
     						403: function($data) {
@@ -318,22 +323,24 @@
     				url: $url,
     				statusCode: {
     					200: function($data) {
-    							var $permissionGroup = $data.data.permGroupItemList[0];
-    							$.each($permissionGroup, function($fieldName, $value) {									
-    								$selector = "#editPanel input[name=" + $fieldName + "]";
-    								if ( $($selector).length > 0 ) {
-    									$($selector).val($value);
-    								}
-    							}); 
-    						$("#addTaxRateForm 	input[name='localeId']").val($permissionGroup.localeId);
+    						var $permissionGroup = $data.data[0];
+    						$.each($permissionGroup, function($fieldName, $value) {									
+    							$selector = "#editPanel input[name=" + $fieldName + "]";
+    							if ( $($selector).length > 0 ) {
+    								$($selector).val($value);
+    							}
+    						}); 
+    						console.log("showEdit: 200");
+    						$("#addTaxRateForm 	input[name='localeId']").val($permissionGroup.locale_id);
     						$("#addTaxRateForm  input[name='name']").val($permissionGroup.name);
-    						$("#addTaxRateForm  input[name='localeTypeId']").val($permissionGroup.localeTypeId);
-    						$("#addTaxRateForm  input[name='typeName']").val($permissionGroup.typeName);	
-    						$("#addTaxRateForm  input[name='stateName']").val($permissionGroup.stateName);	
-    						$("#addTaxRateForm  input[name='effectiveDate']").val($permissionGroup.effectiveDate);
-    						$("#addTaxRateForm  input[name='rateValue']").val($permissionGroup.rateValue);	
+    						$("#addTaxRateForm  input[name='localeTypeId']").val($permissionGroup.locale_type_id);
+    						$("#addTaxRateForm  input[name='typeName']").val($permissionGroup.type_name);	
+    						$("#addTaxRateForm  input[name='stateName']").val($permissionGroup.state_name);	
+    						$("#addTaxRateForm  input[name='effectiveDate']").val($permissionGroup.effective_date);
+    						$("#addTaxRateForm  input[name='rateValue']").val($permissionGroup.rate_value);	
     						$("#addTaxRateForm  .err").html("");
     						$("#addTaxRateForm ").dialog("option","title", "Edit Locale").dialog("open");
+    						console.log("showEdit: All data in.");
     					},
     					403: function($data) {
     						$("#globalMsg").html("Session Timeout. Log in and try again");
@@ -478,16 +485,16 @@
     	<table>
     		<tr>
     			<td><span class="formHdr">Locale ID</span></td>
-    			<td><input type="text" name="localeId" /></td>
+    			<td><input type="text" name="localeId" readOnly/></td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">Locale Name</span></td>
-    			<td><input type="text" name="name" /></td>
+    			<td><input type="text" name="name" readOnly/></td>
     			<td><span class="err" id="nameErr"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">Locale Type</span></td>
-    			<td><input type="text" name="localeTypeId" /></td>
+    			<td><input type="text" name="localeTypeId" readOnly/></td>
     			<td><span class="err" id="localeTypeIdErr"></span></td>
     		</tr>
     		<tr>
@@ -497,7 +504,7 @@
     		</tr>
     		<tr>
     			<td><span class="formHdr">State</span></td>
-    			<td><input type="text" name="stateName" /></td>
+    			<td><input type="text" name="stateName" readOnly/></td>
     			<td><span class="err" id="stateNameErr"></span></td>
     		</tr>
     		<tr>
