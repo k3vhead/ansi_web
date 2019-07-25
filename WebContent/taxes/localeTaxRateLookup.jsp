@@ -378,10 +378,10 @@
     				
     			updateTaxRate : function () {
     				console.debug("Updating Tax Rate");
-    				var $permissionGroupId = $("#addTaxRateForm input[name='localeId']").val();
+    				var $localeId = $("#addTaxRateForm input[name='localeId']").val();
     				console.debug("localeId: " + $localeId);
     				
-    				if ( $permissionGroupId == null || $permissionGroupId == '') {
+    				if ( $localeId == null || $localeId == '') {
     					$url = 'localeTaxRateTable/add';
     				} else {
     					$url = 'localeTaxRateTable/' + $localeId;
@@ -389,13 +389,13 @@
     				console.debug($url);
     						
     				var $outbound = {};
-    				$outbound['localeId'] = $("#addLocaleForm input[name='localeId']").val();
-    				$outbound['name'] = $("#addLocaleForm input[name='name']").val();
-    				$outbound['localeTypeId'] = $("#addLocaleForm select[name='localeTypeId']").val();	
-    				$outbound['typeName'] = $("#addLocaleForm input[name='typeName']").val();
-    				$outbound['stateName'] = $("#addLocaleForm select[name='stateName']").val();
-    				$outbound['effectiveDate'] = $("#addLocaleForm select[name='effectiveDate']").val();
-    				$outbound['rateValue'] = $("#addLocaleForm select[name='rateValue']").val();
+    				$outbound['locale_id'] = $("#addTaxRateForm input[name='localeId']").val();
+    				$outbound['name'] = $("#addTaxRateForm input[name='name']").val();
+    				$outbound['locale_type_id'] = $("#addTaxRateForm select[name='localeTypeId']").val();	
+    				$outbound['type_name'] = $("#addTaxRateForm input[name='typeName']").val();
+    				$outbound['state_name'] = $("#addTaxRateForm select[name='stateName']").val();
+    				$outbound['effective_date'] = $("#addTaxRateForm select[name='effectiveDate']").val();
+    				$outbound['rate_value'] = $("#addTaxRateForm select[name='rateValue']").val();
     				console.debug($outbound);
     				
     				var jqxhr = $.ajax({
@@ -485,16 +485,16 @@
     	<table>
     		<tr>
     			<td><span class="formHdr">Locale ID</span></td>
-    			<td><input type="text" name="localeId" readOnly/></td>
+    			<td><input type="text" name="localeId" readonly/></td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">Locale Name</span></td>
-    			<td><input type="text" name="name" readOnly/></td>
+    			<td><input type="text" name="name" readonly/></td>
     			<td><span class="err" id="nameErr"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">Locale Type</span></td>
-    			<td><input type="text" name="localeTypeId" readOnly/></td>
+    			<td><input type="text" name="localeTypeId" readonly/></td>
     			<td><span class="err" id="localeTypeIdErr"></span></td>
     		</tr>
     		<tr>
@@ -504,7 +504,7 @@
     		</tr>
     		<tr>
     			<td><span class="formHdr">State</span></td>
-    			<td><input type="text" name="stateName" readOnly/></td>
+    			<td><input type="text" name="stateName" readonly/></td>
     			<td><span class="err" id="stateNameErr"></span></td>
     		</tr>
     		<tr>
