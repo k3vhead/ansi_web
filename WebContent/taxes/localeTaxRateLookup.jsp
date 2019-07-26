@@ -276,36 +276,7 @@
     				});
     			},
     			
-    			doEdit : function($clickevent) {
-    				var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
-    				var $url = 'taxRateLookup/' + $rowid;
-    				console.log("YOU PASSED ROW ID:" + $rowid);
-    				var jqxhr = $.ajax({
-    					type: 'GET',
-    					url: $url,
-    					success: function($data) {
-    						console.log($data);
-    						$("#localeId").val(($data.data[0]).locale_id);
-    			       		$("#name").val(($data.data[0]).name);
-    			       		$("#localeTypeId").val(($data.data[0]).locale_type_od);
-    			       		$("#typeName").val(($data.data[0]).type_name);
-    			       		$("#stateName").val(($data.data[0]).state_name);
-    			       		$("#effectiveDate").val(($data.data[0]).effective_date);
-    			       		$("#rateValue").val(($data.data[0]).rate_value);
-    			       		
-    			       		$("#updateOrAdd").val("update");
-    			       		$("#addTaxRateForm").dialog( "open" );
-    			       		console.log("DoEdit end.");
-    					},
-    					statusCode: {
-    						403: function($data) {
-    							$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-    						} 
-    					},
-    					dataType: 'json'
-    				});
-    				//console.log("Edit Button Clicked: " + $rowid);
-    			},
+    			
     			
     			showEdit : function ($clickevent) {
                 	
@@ -317,7 +288,7 @@
     			    $('#goEdit').button('option', 'label', 'Save');
     			    $('#closeAddTaxRateForm').button('option', 'label', 'Close');
     			    
-    				var $url = 'taxRateLookup/' + $localeId;
+    				var $url = 'localeTaxRate/' + $localeId;
     				var jqxhr = $.ajax({
     				type: 'GET',
     				url: $url,
@@ -333,7 +304,7 @@
     						console.log("showEdit: 200");
     						$("#addTaxRateForm 	input[name='localeId']").val($permissionGroup.locale_id);
     						$("#addTaxRateForm  input[name='name']").val($permissionGroup.name);
-    						$("#addTaxRateForm  input[name='localeTypeId']").val($permissionGroup.locale_type_id);
+    						$("#localeTypeId").html($permissionGroup.locale_type_id);
     						$("#addTaxRateForm  input[name='typeName']").val($permissionGroup.type_name);	
     						$("#addTaxRateForm  input[name='stateName']").val($permissionGroup.state_name);	
     						$("#addTaxRateForm  input[name='effectiveDate']").val($permissionGroup.effective_date);
@@ -494,7 +465,7 @@
     		</tr>
     		<tr>
     			<td><span class="formHdr">Locale Type</span></td>
-    			<td><input type="text" name="localeTypeId" readonly/></td>
+    			<td><span id="localeTypeId"></span></td>
     			<td><span class="err" id="localeTypeIdErr"></span></td>
     		</tr>
     		<tr>
