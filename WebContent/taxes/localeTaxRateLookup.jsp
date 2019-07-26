@@ -294,7 +294,7 @@
     				url: $url,
     				statusCode: {
     					200: function($data) {
-    						var $permissionGroup = $data.data[0];
+    						var $permissionGroup = $data.data;
     						$.each($permissionGroup, function($fieldName, $value) {									
     							$selector = "#editPanel input[name=" + $fieldName + "]";
     							if ( $($selector).length > 0 ) {
@@ -302,13 +302,15 @@
     							}
     						}); 
     						console.log("showEdit: 200");
-    						$("#addTaxRateForm 	input[name='localeId']").val($permissionGroup.locale_id);
-    						$("#addTaxRateForm  input[name='name']").val($permissionGroup.name);
-    						$("#localeTypeId").html($permissionGroup.locale_type_id);
-    						$("#addTaxRateForm  input[name='typeName']").val($permissionGroup.type_name);	
-    						$("#addTaxRateForm  input[name='stateName']").val($permissionGroup.state_name);	
-    						$("#addTaxRateForm  input[name='effectiveDate']").val($permissionGroup.effective_date);
-    						$("#addTaxRateForm  input[name='rateValue']").val($permissionGroup.rate_value);	
+    						console.log($data);
+    						console.log($data.data);
+    						$("#localeId").html($permissionGroup.localeId);
+    						$("#name").html($permissionGroup.name);
+    						$("#localeTypeId").html($permissionGroup.localeTypeId);
+    						$("#addTaxRateForm  input[name='typeName']").val($permissionGroup.typeName);	
+    						$("#stateName").html($permissionGroup.stateName);	
+    						$("#addTaxRateForm  input[name='effectiveDate']").val($permissionGroup.effectiveDate);
+    						$("#addTaxRateForm  input[name='rateValue']").val($permissionGroup.rateValue);	
     						$("#addTaxRateForm  .err").html("");
     						$("#addTaxRateForm ").dialog("option","title", "Edit Locale").dialog("open");
     						console.log("showEdit: All data in.");
@@ -456,11 +458,11 @@
     	<table>
     		<tr>
     			<td><span class="formHdr">Locale ID</span></td>
-    			<td><input type="text" name="localeId" readonly/></td>
+    			<td><span id="localeId" /></td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">Locale Name</span></td>
-    			<td><input type="text" name="name" readonly/></td>
+    			<td><span id="name" /></td>
     			<td><span class="err" id="nameErr"></span></td>
     		</tr>
     		<tr>
@@ -475,7 +477,7 @@
     		</tr>
     		<tr>
     			<td><span class="formHdr">State</span></td>
-    			<td><input type="text" name="stateName" readonly/></td>
+    			<td><span id="stateName" /></td>
     			<td><span class="err" id="stateNameErr"></span></td>
     		</tr>
     		<tr>
