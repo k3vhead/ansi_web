@@ -86,18 +86,18 @@
                 dataTable : null,
 
        			init : function() {
+       				LOCALELOOKUP.clearAddForm();  
        				LOCALELOOKUP.createTable();  
        				LOCALELOOKUP.makeClickers();
        				LOCALELOOKUP.markValid();  
        				LOCALELOOKUP.makeEditPanel();
-       				LOCALELOOKUP.createTable();  
-       				LOCALELOOKUP.makeClickers();
+       				LOCALELOOKUP.makeLocaleTypeList();
        				LOCALELOOKUP.showNew();
                 }, 
 				
     			
     			clearAddForm : function () {
-    				$.each( $('#editPanel').find("input"), function(index, $inputField) {
+    				$.each( $('#addLocaleForm').find("input"), function(index, $inputField) {
     					$fieldName = $($inputField).attr('name');
     					if ( $($inputField).attr("type") == "text" ) {
     						$($inputField).val("");
@@ -105,7 +105,7 @@
     					}
     				});
     				$('.err').html("");
-    				$('#editPanel').data('rownum',null);
+    				$('#addLocaleForm').data('rownum',null);
                 },
                 
                 
@@ -186,271 +186,268 @@
             	},
             	
             	
-            	doFunctionBinding : function() {
-    				$( ".editAction" ).on( "click", function($clickevent) {
-    					var $localeId = $(this).attr("data-id");
-    				 	LOCALELOOKUP.doEdit($clickevent);
-    				});					
-    				$(".print-link").on( "click", function($clickevent) {
-    					doPrint($clickevent);
-    				});
-    				$(".locale-clicker").on("click", function($clickevent) {
-    					$clickevent.preventDefault();
-    					var $localeId = $(this).attr("data-id");
-//    					TICKETUTILS.doTicketViewModal("#ticket-modal",$ticketId);
-    					$("#locale-modal").dialog("open");
-    				});
-
-    			},
+	            doFunctionBinding : function() {
+	    			$( ".editAction" ).on( "click", function($clickevent) {
+	    				var $name = $(this).attr("data-name");
+	    				 LOCALELOOKUP.showEdit($clickevent);
+	    			});					
+	    			$(".print-link").on( "click", function($clickevent) {
+	    				doPrint($clickevent);
+	    			});
+	    			$(".locale-clicker").on("click", function($clickevent) {
+	    				$clickevent.preventDefault();
+	    				var $locale_id = $(this).attr("data-id");
+	//    				TICKETUTILS.doTicketViewModal("#ticket-modal",$ticketId);
+	    				$("#locale-modal").dialog("open");
+	    			});
+	
+	    		},
             	
             	
-            	makeClickers : function() {
-            		$('.ScrollTop').click(function() {
-        				$('html, body').animate({scrollTop: 0}, 800);
-        				return false;
-               	    });
-            	},
+	            makeClickers : function() {
+	            	$('.ScrollTop').click(function() {
+	        			$('html, body').animate({scrollTop: 0}, 800);
+	        			return false;
+	               	   });
+	            },
+	            
+	            
+	            makeLocaleTypeList: function (){ 			
+	    			
+	    			var jqxhr = $.ajax({
+	    				type: 'GET',
+	    				url: "options?LOCALE_TYPE",
+	    				success: function($data) {
+	    					var $select = $("#addLocaleForm select[name='localeTypeId']")
+	    					$('option', $select).remove();
+	    					$select.append(new Option("",""));
+	    					$.each($data.data.localeType, function(index, val){
+	    						$select.append(new Option(val.display, val.name));
+	    					});
+	    				},
+	    				statusCode: {
+	    					403: function($data) {
+	    						$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+	    					}
+	    				},
+	    				dataType: 'json'
+	    			});
+	    		},	            	 
+	            
+			
+			
+			
 
             
-			markValid : function ($inputField) {
-            	$fieldName = $($inputField).attr('name');
-            	$fieldGetter = "input[name='" + $fieldName + "']";
-            	$fieldValue = $($fieldGetter).val();
-            	$valid = '#' + $($inputField).data('valid');
-	            var re = /.+/;	            	 
-            	if ( re.test($fieldValue) ) {
-            		$($valid).removeClass("fa");
-            		$($valid).removeClass("fa-ban");
-            		$($valid).removeClass("inputIsInvalid");
-            		$($valid).addClass("far");
-            		$($valid).addClass("fa-check-square");
-            		$($valid).addClass("inputIsValid");
-            	} else {
-            		$($valid).removeClass("far");
-            		$($valid).removeClass("fa-check-square");
-            		$($valid).removeClass("inputIsValid");
-            		$($valid).addClass("fa");
-            		$($valid).addClass("fa-ban");
-            		$($valid).addClass("inputIsInvalid");
-            	}
-            },
+				markValid : function ($inputField) {
+	            	$fieldName = $($inputField).attr('name');
+	            	$fieldGetter = "input[name='" + $fieldName + "']";
+	            	$fieldValue = $($fieldGetter).val();
+	            	$valid = '#' + $($inputField).data('valid');
+		            var re = /.+/;	            	 
+	            	if ( re.test($fieldValue) ) {
+	            		$($valid).removeClass("fa");
+	            		$($valid).removeClass("fa-ban");
+	            		$($valid).removeClass("inputIsInvalid");
+	            		$($valid).addClass("far");
+	            		$($valid).addClass("fa-check-square");
+	            		$($valid).addClass("inputIsValid");
+	            	} else {
+	            		$($valid).removeClass("far");
+	            		$($valid).removeClass("fa-check-square");
+	            		$($valid).removeClass("inputIsValid");
+	            		$($valid).addClass("fa");
+	            		$($valid).addClass("fa-ban");
+	            		$($valid).addClass("inputIsInvalid");
+	            	}
+	            },
 			
-			
-			makeEditPanel : function() {	
-				$("#addLocaleForm" ).dialog({
-					autoOpen: false,
-					height: 300,
-					width: 500,
-					modal: true,
-					buttons: [
-						{
-							id: "closeAddLocaleForm",
-							click: function() {
-								$("#addLocaleForm").dialog( "close" );
-							}
-						},{
-							id: "goEdit",
-							click: function($event) {
-								LOCALELOOKUP.updateLocale();
-							}
-						}	      	      
-					],
-					close: function() {
-						LOCALELOOKUP.clearAddForm();
-						$("#addLocaleForm").dialog( "close" );
-						//allFields.removeClass( "ui-state-error" );
-					}
-				});
-			},
 				
-			doEdit: function ($clickevent) {
-				var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
-					var $url = 'locale/' + $rowid;
-					//console.log("YOU PASSED ROW ID:" + $rowid);
+				makeEditPanel : function() {	
+					$("#addLocaleForm" ).dialog({
+						autoOpen: false,
+						height: 300,
+						width: 500,
+						modal: true,
+						buttons: [
+							{
+								id: "closeAddLocaleForm",
+								click: function() {
+									$("#addLocaleForm").dialog( "close" );
+								}
+							},{
+								id: "goEdit",
+								click: function($event) {
+									LOCALELOOKUP.updateLocale();
+								}
+							}	      	      
+						],
+						close: function() {
+							LOCALELOOKUP.clearAddForm();
+							$("#addLocaleForm").dialog( "close" );
+							//allFields.removeClass( "ui-state-error" );
+						}
+					});		
+				},
+					
+						
+	            showEdit : function ($clickevent) {
+	            	
+	            //	$name = $("#addLocaleForm").attr("data-name");
+			    //    var $name = $(this).attr("data-name");
+	            	
+	        /*    	$state_name = $("#addLocaleForm").attr("data-state_name");
+			        var $state_name = $(this).attr("data-state_name");            	
+	            	$abbreviation = $("#addLocaleForm").attr("data-abbreviation");
+			        var $abbreviation = $(this).attr("data-abbreviation");            	
+	            	$locale_type_id = $("#addLocaleForm").attr("data-locale_type_id");
+			        var $locale_type_id = $(this).attr("data-locale_type_id");
+			        */
+					var $localeId = $clickevent.currentTarget.attributes['data-id'].value;
+					$("#goEdit").data("localeId: " + $localeId);
+	        		$('#goEdit').button('option', 'label', 'Save');
+	        		$('#closeAddLocaleForm').button('option', 'label', 'Close');
+	        		
+	        	//	LOCALELOOKUP.populateOptions();
+	        		
+					var $url = 'locale/' + $localeId;
 					var jqxhr = $.ajax({
 						type: 'GET',
 						url: $url,
-						success: function($data) {
-							//console.log($data);
-							
-			        		$("#localeId").val(($data.data.codeList[0]).localeId);
-			        		$("#name").val(($data.data.codeList[0]).name);
-			        		$("#stateName").val(($data.data.codeList[0]).stateName);
-			        		$("#abbreviation").val(($data.data.codeList[0]).abbreviation);
-			        		$("#localeTypeId").val(($data.data.codeList[0]).localeTypeId);
-			        		
-			        		$("#updateOrAdd").val("update");
-			        		$("#addLocaleForm").dialog( "open" );
-						},
 						statusCode: {
+							200: function($data) {								
+								var $locale = $data.data;
+								$.each($locale, function($fieldName, $value) {									
+									$selector = "#addLocaleForm input[name=" + $fieldName + "]";
+									if ( $($selector).length > 0 ) {
+										$($selector).val($value);
+									}
+		        				}); 
+							//	LOCALELOOKUP.makeLocaleTypeList();
+    			        		$("#localeId").val(($data.data).localeId);
+    			        		$("#name").val(($data.data).name);
+    			        		$("#stateName").val(($data.data).stateName);
+    			        		$("#abbreviation").val(($data.data).abbreviation);
+    			        		$("#localeTypeId").val(($data.data).localeTypeId);
+				        		$("#addLocaleForm  .err").html("");
+				        		$("#addLocaleForm ").dialog("option","title", "Edit Locale").dialog("open");
+							},
 							403: function($data) {
-								$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-							} 
+								$("#globalMsg").html("Session Timeout. Log in and try again");
+							},
+							404: function($data) {
+								$("#globalMsg").html("Invalid Request");
+							},
+							500: function($data) {
+								$("#globalMsg").html("System Error; Contact Support");
+							}
 						},
 						dataType: 'json'
 					});
-				//console.log("Edit Button Clicked: " + $rowid);
-			},
-				
+				},
+	
 					
-            showEdit : function ($clickevent) {
-            	
-      //      	$name = $("#addLocaleForm").attr("data-name");
-		//        var $name = $(this).attr("data-name");
-				var $localeId = $clickevent.currentTarget.attributes['data-id'].value;
-				console.debug("localeId: " + $localeId);
-				$("#goEdit").data("localeId: " + $localeId);
-        		$('#goEdit').button('option', 'label', 'Save');
-        		$('#closeAddLocaleForm').button('option', 'label', 'Close');
-        		
-        		
-				var $url = 'localeLookup/' + $localeId;
-				var jqxhr = $.ajax({
-					type: 'GET',
-					url: $url,
-					statusCode: {
-						200: function($data) {
-					/*		var $permissionGroup = $data.data.permGroupItemList[0];
-							$.each($permissionGroup, function($fieldName, $value) {									
-								$selector = "#editPanel input[name=" + $fieldName + "]";
-								if ( $($selector).length > 0 ) {
-									$($selector).val($value);
-								}
-	        				}); */
-							$("#addLocaleForm input[name='localeId']").val($.permissionGroupId);
-							$("#addLocaleForm  input[name='name']").val($permissionGroup.name);
-							$("#addLocaleForm  input[name='stateName']").val($permissionGroup.description);
-							$("#addLocaleForm  input[name='abbreviation']").val($permissionGroup.status);	
-							$("#addLocaleForm  input[name='localeTypeId']").val($permissionGroup.status);				        		
-			        		$("#addLocaleForm  .err").html("");
-			        		$("#addLocaleForm ").dialog("option","title", "Edit Locale").dialog("open");
-						},
-						403: function($data) {
-							$("#globalMsg").html("Session Timeout. Log in and try again");
-						},
-						404: function($data) {
-							$("#globalMsg").html("Invalid Request");
-						},
-						500: function($data) {
-							$("#globalMsg").html("System Error; Contact Support");
-						}
-					},
-					dataType: 'json'
-				});
-			},
-
-				
-			showNew : function () {
-			$(".showNew").click(function($event) {
-				$('#goEdit').data("localeId",null);
-        		$('#goEdit').button('option', 'label', 'Save');
-        		$('#closeAddLocaleForm').button('option', 'label', 'Close');
-        		
- //       		$("#editPanel display[name='']").val("");
-				$("#addLocaleForm input[name='localeId']").val("");
-				$("#addLocaleForm  input[name='name']").val("");
-				$("#addLocaleForm  input[name='stateName']").val("");
-				$("#addLocaleForm  input[name='abbreviation']").val("");	
-				$("#addLocaleForm  input[name='localeTypeId']").val("");				        		
-        		$("#addLocaleForm  .err").html("");
-        		$("#addLocaleForm ").dialog("option","title", "Add New Locale").dialog("open");
-			});
-			},
-
-				
-        	
-
-			updateLocale : function () {
-				console.debug("Updating Locale");
-				var $permissionGroupId = $("#addLocaleForm input[name='localeId']").val();
-				console.debug("localeId: " + $localeId);
-				
-
-				if ( $permissionGroupId == null || $permissionGroupId == '') {
-					$url = 'localeTable/add';
-				} else {
-					$url = 'localeTable/' + $localeId;
-				}
-				console.debug($url);
+				showNew : function () {
+					$(".showNew").click(function($event) {
+						$('#goEdit').data("localeId",null);
+		        		$('#goEdit').button('option', 'label', 'Save');
+		        		$('#closeAddLocaleForm').button('option', 'label', 'Close');
+		        		
+		 //       		$("#editPanel display[name='']").val("");
+						$("#addLocaleForm  input[name='name']").val("");
+						$("#addLocaleForm  select[name='stateName']").val("");
+						$("#addLocaleForm  input[name='abbreviation']").val("");	
+						$("#addLocaleForm  select[name='localeTypeId']").val("");				        		
+		        		$("#addLocaleForm  .err").html("");
+		        		$("#addLocaleForm ").dialog("option","title", "Add New Locale").dialog("open");
+					});
+				},
 					
-				var $outbound = {};
-				$outbound['localeId'] = $("#addLocaleForm input[name='localeId']").val();
-				$outbound['name'] = $("#addLocaleForm input[name='name']").val();
-				$outbound['stateName'] = $("#addLocaleForm select[name='stateName']").val();	
-				$outbound['abbreviation'] = $("#addLocaleForm input[name='abbreviation']").val();
-				$outbound['localeTypeId'] = $("#addLocaleForm select[name='localeTypeId']").val();		        		
-				console.debug($outbound);
-				
-				var jqxhr = $.ajax({
-					type: 'POST',
-					url: $url,
-					data: JSON.stringify($outbound),
-					statusCode: {
-						200: function($data) {
-		    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-		    					$.each($data.data.webMessages, function (key, value) {
-		    						var $selectorName = "#" + key + "Err";
-		    						$($selectorName).show();
-		    						$($selectorName).html(value[0]).fadeOut(10000);
-		    					});
-		    				} else {	    				
-		    					$("#addLocaleForm").dialog("close");
-		    					$('#localeTable').DataTable().ajax.reload();		
-		    					LOCALELOOKUP.clearAddForm();		    					
-		    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
-		    				}
+	        	
+	
+				updateLocale : function () {
+					console.debug("Updating Locale");
+					var $localeId = $("#addLocaleForm input[name='localeId']").val();
+					console.debug("localeId: " + $localeId);
+					
+	
+					if ( $localeId == null || $localeId == '') {
+						$url = 'locale/add';
+					} else {
+						$url = 'locale/' + $localeId;
+					}
+					console.debug($url);
+						
+					var $outbound = {};
+					$outbound['localeId'] = $("#addLocaleForm input[name='localeId']").val();
+					$outbound['name'] = $("#addLocaleForm input[name='name']").val();
+					$outbound['stateName'] = $("#addLocaleForm select[name='stateName']").val();	
+					$outbound['abbreviation'] = $("#addLocaleForm input[name='abbreviation']").val();
+					$outbound['localeTypeId'] = $("#addLocaleForm select[name='localeTypeId']").val();		        		
+					console.debug($outbound);
+					
+					var jqxhr = $.ajax({
+						type: 'POST',
+						url: $url,
+						data: JSON.stringify($outbound),
+						statusCode: {
+							200: function($data) {
+			    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+			    					$.each($data.data.webMessages, function (key, value) {
+			    						var $selectorName = "#" + key + "Err";
+			    						$($selectorName).show();
+			    						$($selectorName).html(value[0]).fadeOut(10000);
+			    					});
+			    				} else {	    				
+			    					$("#addLocaleForm").dialog("close");
+			    					$('#localeTable').DataTable().ajax.reload();		
+			    					LOCALELOOKUP.clearAddForm();		    					
+			    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
+			    				}
+							},
+							403: function($data) {
+								$("#globalMsg").html("Session Timeout. Log in and try again");
+							},
+							404: function($data) {
+								$("#globalMsg").html("Invalid Selection").show().fadeOut(100000);
+							},
+							500: function($data) {
+								$("#globalMsg").html("System Error; Contact Support");
+							}
 						},
-						403: function($data) {
-							$("#globalMsg").html("Session Timeout. Log in and try again");
-						},
-						404: function($data) {
-							$("#globalMsg").html("Invalid Selection").show().fadeOut(100000);
-						},
-						500: function($data) {
-							$("#globalMsg").html("System Error; Contact Support");
-						}
-					},
-					dataType: 'json'
-				});
-			},
+						dataType: 'json'
+					});
+				},
+					
+					
+					
+			/*	function doPrint($clickevent) {
+					var $locale_id = $clickevent.currentTarget.attributes['data-id'].value;
+					console.debug("ROWID: " + $locale_id);
+					var a = document.createElement('a');
+	                var linkText = document.createTextNode("Download");
+	                a.appendChild(linkText);
+	                a.title = "Download";
+	                a.href = "ticketPrint/" + $locale_id;
+	                a.target = "_new";   // open in a new window
+	                document.body.appendChild(a);
+	                a.click();				
+				}*/
 				
-				
-				
-		/*	function doPrint($clickevent) {
-				var $localeId = $clickevent.currentTarget.attributes['data-id'].value;
-				console.debug("ROWID: " + $localeId);
-				var a = document.createElement('a');
-                var linkText = document.createTextNode("Download");
-                a.appendChild(linkText);
-                a.title = "Download";
-                a.href = "ticketPrint/" + $localeId;
-                a.target = "_new";   // open in a new window
-                document.body.appendChild(a);
-                a.click();				
-			}*/
-			
-        	}
-        
-        	LOCALELOOKUP.init();
-        });
-        		
-        </script>        
+	        	}
+	        
+	        	LOCALELOOKUP.init();
+	        });
+	        
+	        /* get code for dropdowns from newQuote */
+	        		
+	        </script>        
     </tiles:put>
     
    <tiles:put name="content" type="string">
-    	<h1><bean:message key="page.label.locale" /> <bean:message key="menu.label.lookup" /></h1> 
-    	<c:if test="${not empty ANSI_JOB_ID}">
-    		<span class="orange"><bean:message key="field.label.jobFilter" />: <c:out value="${ANSI_JOB_ID}" /></span><br />
-    	</c:if>
-    	<c:if test="${not empty ANSI_DIVISION_ID}">
-    		<span class="orange"><bean:message key="field.label.divisionFilter" />: <c:out value="${ANSI_DIVISION_ID}" /></span><br />
-    	</c:if>
-    	<c:if test="${not empty ANSI_TICKET_LOOKUP_START_DATE}">
-    		<span class="orange"><bean:message key="field.label.startDate" />: <c:out value="${ANSI_TICKET_LOOKUP_START_DATE}" /></span><br />
-    	</c:if>
-    	<c:if test="${not empty ANSI_TICKET_LOOKUP_STATUS}">
-    		<span class="orange"><bean:message key="field.label.statusFilter" />: <c:out value="${ANSI_TICKET_LOOKUP_STATUS}" /></span><br />
-    	</c:if>
+    	<h1><bean:message key="page.label.locale" /> <bean:message key="menu.label.lookup" /></h1>
+    	
+    	
     	  	
     	  	
  	<webthing:lookupFilter filterContainer="filter-container" />
@@ -479,7 +476,7 @@
     		</tr>
     		<tr>
     			<td><span class="formHdr">State Name</span></td>
-    			<td><input type="text" name="stateName" /></td>
+    			<td><select name="stateName"><option value=""></option><webthing:states /></select></td>
     			<td><span class="err" id="stateNameErr"></span></td>
     		</tr>
     		<tr>
@@ -487,8 +484,8 @@
     			<td><input type="text" name="abbreviation" /></td>
     		</tr>
     		<tr>
-    			<td><span class="formHdr">Locale Type Id</span></td>
-    			<td><input type="text" name="localeTypeId" /></td>
+    			<td><span class="formHdr">Locale Type</span></td>
+    			<td><select name="localeTypeId"/></select></td>
     			<td><span class="err" id="localeTypeIdErr"></span></td>
     		</tr>		
     	</table>
