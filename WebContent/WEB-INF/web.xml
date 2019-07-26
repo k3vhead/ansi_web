@@ -481,6 +481,17 @@
 	</servlet-mapping>
 
 
+	<servlet>
+		<servlet-name>localeTaxRate</servlet-name>
+		<servlet-class>com.ansi.scilla.web.tax.servlet.LocaleTaxRateServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>localeTaxRate</servlet-name>
+		<url-pattern>/localeTaxRate/*</url-pattern>
+		<url-pattern>/localeTaxRate</url-pattern>
+	</servlet-mapping>
+
+
     <servlet>
         <servlet-name>login</servlet-name>
         <servlet-class>com.ansi.scilla.web.login.servlet.LoginServlet</servlet-class>

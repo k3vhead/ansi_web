@@ -382,20 +382,20 @@
     				console.debug("localeId: " + $localeId);
     				
     				if ( $localeId == null || $localeId == '') {
-    					$url = 'localeTaxRateTable/add';
+    					$url = 'localeTaxRate';
     				} else {
-    					$url = 'localeTaxRateTable/' + $localeId;
+    					$url = 'localeTaxRate/' + $localeId;
     				}
     				console.debug($url);
     						
     				var $outbound = {};
     				$outbound['locale_id'] = $("#addTaxRateForm input[name='localeId']").val();
     				$outbound['name'] = $("#addTaxRateForm input[name='name']").val();
-    				$outbound['locale_type_id'] = $("#addTaxRateForm select[name='localeTypeId']").val();	
+    				$outbound['locale_type_id'] = $("#addTaxRateForm input[name='localeTypeId']").val();	
     				$outbound['type_name'] = $("#addTaxRateForm input[name='typeName']").val();
-    				$outbound['state_name'] = $("#addTaxRateForm select[name='stateName']").val();
-    				$outbound['effective_date'] = $("#addTaxRateForm select[name='effectiveDate']").val();
-    				$outbound['rate_value'] = $("#addTaxRateForm select[name='rateValue']").val();
+    				$outbound['state_name'] = $("#addTaxRateForm input[name='stateName']").val();
+    				$outbound['effective_date'] = $("#addTaxRateForm input[name='effectiveDate']").val();
+    				$outbound['rate_value'] = $("#addTaxRateForm input[name='rateValue']").val();
     				console.debug($outbound);
     				
     				var jqxhr = $.ajax({
