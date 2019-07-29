@@ -314,7 +314,7 @@
     						$("#addTaxRateForm  input[name='rateValue']").val($permissionGroup.rateValue);	
     						$("#addTaxRateForm  .err").html("");
     						$("#addTaxRateForm ").dialog("option","title", "Edit Tax Rate").dialog("open");
-    						console.log("showEdit: All data in.");
+    						console.log("showEdit: End showEdit: 200.");
     					},
     					403: function($data) {
     						$("#globalMsg").html("Session Timeout. Log in and try again");
@@ -334,6 +334,8 @@
     			updateTaxRate : function () {
     				console.debug("Updating Tax Rate");
     				var $localeId = $("#addTaxRateForm input[name='localeId']").val();
+    				//var $localeId = $("#addTaxRateForm id='localeId'").val();
+    				//var $localeId = $("#addTaxRateForm").getElementById("localeId");
     				//var $localeId = $("#localeId").html($permissionGroup.localeId);
     				//var $localeId = $clickevent.currentTarget.attributes['data-id'].value;
     				console.debug("localeId: " + $localeId);
@@ -346,11 +348,11 @@
     				console.debug($url);
     						
     				var $outbound = {};
-    				//$outbound['locale_id'] = $("#addTaxRateForm input[name='localeId']").val();
-    				//$outbound['name'] = $("#addTaxRateForm input[name='name']").val();
-    				//$outbound['locale_type_id'] = $("#addTaxRateForm input[name='localeTypeId']").val();	
+    				$outbound['locale_id'] = $("#addTaxRateForm input[name='localeId']").val();
+    				$outbound['name'] = $("#addTaxRateForm input[name='name']").val();
+    				$outbound['locale_type_id'] = $("#addTaxRateForm input[name='localeTypeId']").val();	
     				$outbound['type_name'] = $("#addTaxRateForm input[name='typeName']").val();
-    				//$outbound['state_name'] = $("#addTaxRateForm input[name='stateName']").val();
+    				$outbound['state_name'] = $("#addTaxRateForm input[name='stateName']").val();
     				$outbound['effective_date'] = $("#addTaxRateForm input[name='effectiveDate']").val();
     				$outbound['rate_value'] = $("#addTaxRateForm input[name='rateValue']").val();
     				console.debug($outbound);

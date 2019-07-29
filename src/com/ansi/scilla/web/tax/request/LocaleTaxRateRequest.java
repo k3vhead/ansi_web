@@ -97,8 +97,7 @@ public class LocaleTaxRateRequest extends AbstractRequest {
 		
 		RequestValidator.validateId(conn, webMessages, LOCALE_ID, "locale_id", "localeId", this.localeId, true);
 		RequestValidator.validateId(conn, webMessages, TYPE_ID, "type_id", "typeId", this.typeId, true);
-		//RequestValidator.validateString(webMessages, ABBREVIATION, this.abbreviation, false);
-		
+		RequestValidator.validateString(webMessages, TYPE_NAME, this.typeName, true);
 		return webMessages;
 	}
 	
