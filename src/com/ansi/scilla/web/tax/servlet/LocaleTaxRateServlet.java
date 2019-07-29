@@ -136,7 +136,7 @@ public class LocaleTaxRateServlet extends AbstractServlet {
 		Integer localeId = taxRate.insertWithKey(conn);
 		conn.commit();
 		taxRate.setLocaleId(localeId);
-		LocaleTaxRateResponse localeTaxRateResponse = new LocaleTaxRateResponse(taxRate);
+		LocaleTaxRateResponse localeTaxRateResponse = new LocaleTaxRateResponse(taxRate, conn);
 		super.sendResponse(conn, response, ResponseCode.SUCCESS, localeTaxRateResponse);
 	}
 	
@@ -159,7 +159,7 @@ public class LocaleTaxRateServlet extends AbstractServlet {
 	}
 
 	protected void doUpdate(Connection conn, Integer localeId, 
-			LocaleTaxRateRequest taxRateRequest, SessionData sessionData, HttpServletResponse response) throws Exception {
+		LocaleTaxRateRequest taxRateRequest, SessionData sessionData, HttpServletResponse response) throws Exception {
 		LocaleTaxRate taxRate = new LocaleTaxRate();
 		taxRate.setLocaleId(localeId);
 		taxRate.selectOne(conn);
@@ -168,7 +168,7 @@ public class LocaleTaxRateServlet extends AbstractServlet {
 		key.setLocaleId(localeId);
 		taxRate.update(conn, key);
 		conn.commit();
-		LocaleTaxRateResponse taxRateResponse = new LocaleTaxRateResponse(taxRate);
+		LocaleTaxRateResponse taxRateResponse = new LocaleTaxRateResponse(taxRate, conn);
 		super.sendResponse(conn, response, ResponseCode.SUCCESS, taxRateResponse);
 	}
 	

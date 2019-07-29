@@ -1,12 +1,15 @@
 package com.ansi.scilla.web.tax.response;
 
 import java.math.BigDecimal;
-//import java.sql.Date;
-import java.util.Date;
-import com.ansi.scilla.common.db.LocaleTaxRate;
-import com.ansi.scilla.web.common.response.MessageResponse;
 //import com.mysql.jdbc.Connection;
 import java.sql.Connection;
+//import java.sql.Date;
+import java.util.Date;
+
+import com.ansi.scilla.common.db.Locale;
+import com.ansi.scilla.common.db.LocaleTaxRate;
+import com.ansi.scilla.common.db.RateType;
+import com.ansi.scilla.web.common.response.MessageResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class LocaleTaxRateResponse extends MessageResponse {
@@ -19,7 +22,7 @@ public class LocaleTaxRateResponse extends MessageResponse {
 	public static final String LOCALE_TYPE_ID = "locale.locale_type_id";	
 	public static final String EFFECTIVE_DATE = "locale_tax_rate.effective_date";	
 	public static final String RATE_VALUE = "locale_tax_rate.rate_value";	
-	public static final String TYPE_ID = "locale_tax_rate.type_id";
+	public static final String TYPE_ID = "type_id";
 	public static final String TYPE_NAME = "type_name";
 		
 	private Integer localeId;
@@ -34,7 +37,7 @@ public class LocaleTaxRateResponse extends MessageResponse {
 	public LocaleTaxRateResponse() {
 		super();
 	}
-	
+	//localeId, name, stateName, effectiveDate, localeTypeId, rateValue, (rate)typeId, typeName
 //	public LocaleTaxRateResponse(Integer localeId, String name, String stateName,
 //			Date effectiveDate, String localeTypeId, BigDecimal rateValue,
 //			Integer typeId, String typeName) {
@@ -49,9 +52,12 @@ public class LocaleTaxRateResponse extends MessageResponse {
 //		this.typeName = typeName;
 //	}
 	
-	public LocaleTaxRateResponse(LocaleTaxRate taxRate) {
+	public LocaleTaxRateResponse(LocaleTaxRate taxRate, Connection conn) throws RecordNotFoundException, Exception {
 		this();
-		make(taxRate);
+		Locale locale = new Locale();
+		locale.setLocaleId(taxRate.getLocaleId());
+		locale.selectOne(conn);
+		make(taxRate, locale, conn);
 	}
 	
 	public LocaleTaxRateResponse(Connection conn, Integer localeId) throws RecordNotFoundException, Exception {
@@ -59,14 +65,25 @@ public class LocaleTaxRateResponse extends MessageResponse {
 		LocaleTaxRate localeTaxRate = new LocaleTaxRate();
 		localeTaxRate.setLocaleId(localeId);
 		localeTaxRate.selectOne(conn);
-		make(localeTaxRate);
+		Locale locale = new Locale();
+		locale.setLocaleId(localeId);
+		locale.selectOne(conn);
+		//RateType rateType = new RateType();
+		make(localeTaxRate, locale, conn);
 	}
-	
-	private void make(LocaleTaxRate localeTaxRate) {
+	//localeId, name, stateName, effectiveDate, localeTypeId, rateValue, (rate)typeId, typeName
+	private void make(LocaleTaxRate localeTaxRate, Locale locale, Connection conn) throws Exception {
 		this.localeId = localeTaxRate.getLocaleId();
+		this.name = locale.getName();
+		this.stateName = locale.getStateName();
 		this.effectiveDate = localeTaxRate.getEffectiveDate();
+		this.localeTypeId = locale.getLocaleTypeId();
 		this.rateValue = localeTaxRate.getRateValue();
 		this.typeId = localeTaxRate.getTypeId();
+		RateType rateType = new RateType();
+		rateType.setTypeId(this.typeId);
+		rateType.selectOne(conn);
+		this.typeName = rateType.getTypeName();
 	}
 	
 	public Integer getLocaleId() {
