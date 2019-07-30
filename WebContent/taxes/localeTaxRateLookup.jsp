@@ -308,8 +308,8 @@
     						$("#addTaxRateForm input[name='localeId']").val($permissionGroup.localeId);
     						$("#localeName").html($permissionGroup.name);
     						$("#localeTypeId").html($permissionGroup.localeTypeId);
-    						//$("#addTaxRateForm  input[name='typeName']").val($permissionGroup.typeName);	
-    						TAXRATELOOKUP.populateTypeSelect;
+    						$("#addTaxRateForm  input[name='typeName']").val($permissionGroup.typeName);	
+    						//TAXRATELOOKUP.populateTypeSelect;
     						$("#stateName").html($permissionGroup.stateName);	
     						$("#addTaxRateForm  input[name='effectiveDate']").val($permissionGroup.effectiveDate);
     						$("#addTaxRateForm  input[name='rateValue']").val($permissionGroup.rateValue);	
@@ -476,7 +476,7 @@
     		</tr>
     		<tr>
     			<td><span class="formHdr">Rate Type</span></td>
-    			<td><select id="typeName" /></td>
+    			<td><input type="text" name="typeName" /></td>
     			<td><span class="err" id="typeNameErr"></span></td>
     		</tr>
     		<tr>
