@@ -18,7 +18,7 @@ public class LocaleTaxRateRequest extends AbstractRequest {
 	public static final String LOCALE_TYPE_ID = "locale.locale_type_id";	
 	public static final String EFFECTIVE_DATE = "locale_tax_rate.effective_date";	
 	public static final String RATE_VALUE = "locale_tax_rate.rate_value";	
-	public static final String TYPE_ID = "locale_tax_rate.type_id";
+	public static final String TYPE_ID = "type_id";
 	public static final String TYPE_NAME = "type_name";
 		
 	private Integer localeId;
@@ -82,12 +82,13 @@ public class LocaleTaxRateRequest extends AbstractRequest {
 	public WebMessages validateAdd(Connection conn) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		
-		RequestValidator.validateString(webMessages, NAME, this.name, true);
-		RequestValidator.validateString(webMessages, STATE_NAME, this.stateName, true);
-		RequestValidator.validateString(webMessages, LOCALE_TYPE_ID, this.localeTypeId, true);
+		//RequestValidator.validateString(webMessages, NAME, this.name, true);
+		//RequestValidator.validateString(webMessages, STATE_NAME, this.stateName, true);
+		//RequestValidator.validateString(webMessages, LOCALE_TYPE_ID, this.localeTypeId, true);
 		RequestValidator.validateDate(webMessages, EFFECTIVE_DATE, effectiveDate, true, effectiveDate, effectiveDate);
 		RequestValidator.validateBigDecimal(webMessages, RATE_VALUE, rateValue, rateValue, rateValue, true);
-		
+		RequestValidator.validateId(conn, webMessages, TYPE_ID, "type_id", "typeId", this.typeId, true);
+		RequestValidator.validateString(webMessages, TYPE_NAME, this.typeName, true);
 		
 		return webMessages;
 	}
@@ -96,8 +97,7 @@ public class LocaleTaxRateRequest extends AbstractRequest {
 		WebMessages webMessages = validateAdd(conn);
 		
 		RequestValidator.validateId(conn, webMessages, LOCALE_ID, "locale_id", "localeId", this.localeId, true);
-		RequestValidator.validateId(conn, webMessages, TYPE_ID, "type_id", "typeId", this.typeId, true);
-		RequestValidator.validateString(webMessages, TYPE_NAME, this.typeName, true);
+		
 		return webMessages;
 	}
 	

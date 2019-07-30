@@ -149,6 +149,7 @@ public class LocaleTaxRateServlet extends AbstractServlet {
 		taxRate.setRateValue(taxRateRequest.getRateValue());
 		taxRate.setEffectiveDate(taxRateRequest.getEffectiveDate());
 		taxRate.setTypeId(taxRateRequest.getTypeId());
+		
 		if ( taxRate.getAddedBy() == null ) {
 			taxRate.setAddedBy(sessionUser.getUserId());
 			taxRate.setAddedDate(today);

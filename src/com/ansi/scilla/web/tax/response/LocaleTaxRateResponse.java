@@ -79,11 +79,14 @@ public class LocaleTaxRateResponse extends MessageResponse {
 		this.effectiveDate = localeTaxRate.getEffectiveDate();
 		this.localeTypeId = locale.getLocaleTypeId();
 		this.rateValue = localeTaxRate.getRateValue();
-		this.typeId = localeTaxRate.getTypeId();
 		RateType rateType = new RateType();
+		//if(localeTaxRate.getTypeId() != null) {
+		this.typeId = localeTaxRate.getTypeId();
 		rateType.setTypeId(this.typeId);
 		rateType.selectOne(conn);
 		this.typeName = rateType.getTypeName();
+		//} 
+		
 	}
 	
 	public Integer getLocaleId() {

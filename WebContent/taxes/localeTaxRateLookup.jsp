@@ -214,14 +214,14 @@
     			    } );
             	},
             	
-            	populateLocaleSelect : function() {
-                	$data = ANSI_UTILS.getLocaleList();
-                	$select = $("#localeId");
+            	populateTypeSelect : function() {
+                	$data = ANSI_UTILS.getTypeList();
+                	$select = $("#typeId");
         			$('option', $select).remove();
         			$select.append(new Option("",null));
         			$.each($data, function($index, $val) {
-        				var $display = $val.divisionNbr + "-" + $val.divisionCode;
-        				$select.append(new Option($display, $val.divisionId));
+        				var $display = $val.typeId + ":" + $val.typeName;
+        				$select.append(new Option($display, $val.typeId));
         			});	
                 },
             	
@@ -252,8 +252,8 @@
             	makeEditPanel : function() {	
     				$("#addTaxRateForm" ).dialog({
     					autoOpen: false,
-    					height: 300,
-    					width: 500,
+    					height: 400,
+    					width: 400,
     					modal: true,
     					buttons: [
     						{
@@ -304,11 +304,12 @@
     						console.log("showEdit: 200");
     						console.log($data);
     						console.log($data.data);
-    						$("#localeId").html($permissionGroup.localeId);
-    						//$("#addTaxRateForm input[name='localeId']").val($permissionGroup.localeId);
+    						//$("#localeId").html($permissionGroup.localeId);
+    						$("#addTaxRateForm input[name='localeId']").val($permissionGroup.localeId);
     						$("#localeName").html($permissionGroup.name);
     						$("#localeTypeId").html($permissionGroup.localeTypeId);
-    						$("#addTaxRateForm  input[name='typeName']").val($permissionGroup.typeName);	
+    						//$("#addTaxRateForm  input[name='typeName']").val($permissionGroup.typeName);	
+    						TAXRATELOOKUP.populateTypeSelect;
     						$("#stateName").html($permissionGroup.stateName);	
     						$("#addTaxRateForm  input[name='effectiveDate']").val($permissionGroup.effectiveDate);
     						$("#addTaxRateForm  input[name='rateValue']").val($permissionGroup.rateValue);	
@@ -334,10 +335,6 @@
     			updateTaxRate : function () {
     				console.debug("Updating Tax Rate");
     				var $localeId = $("#addTaxRateForm input[name='localeId']").val();
-    				//var $localeId = $("#addTaxRateForm id='localeId'").val();
-    				//var $localeId = $("#addTaxRateForm").getElementById("localeId");
-    				//var $localeId = $("#localeId").html($permissionGroup.localeId);
-    				//var $localeId = $clickevent.currentTarget.attributes['data-id'].value;
     				console.debug("localeId: " + $localeId);
     				
     				if ( $localeId == null || $localeId == '') {
@@ -348,13 +345,13 @@
     				console.debug($url);
     						
     				var $outbound = {};
-    				$outbound['locale_id'] = $("#addTaxRateForm input[name='localeId']").val();
-    				$outbound['name'] = $("#addTaxRateForm input[name='name']").val();
-    				$outbound['locale_type_id'] = $("#addTaxRateForm input[name='localeTypeId']").val();	
-    				$outbound['type_name'] = $("#addTaxRateForm input[name='typeName']").val();
-    				$outbound['state_name'] = $("#addTaxRateForm input[name='stateName']").val();
-    				$outbound['effective_date'] = $("#addTaxRateForm input[name='effectiveDate']").val();
-    				$outbound['rate_value'] = $("#addTaxRateForm input[name='rateValue']").val();
+    				$outbound['localeId'] = $("#addTaxRateForm input[name='localeId']").val();
+    				//$outbound['name'] = $("#addTaxRateForm input[name='name']").val();
+    				//$outbound['localeTypeId'] = $("#addTaxRateForm input[name='localeTypeId']").val();	
+    				$outbound['typeName'] = $("#addTaxRateForm input[name='typeName']").val();
+    				//$outbound['stateName'] = $("#addTaxRateForm input[name='stateName']").val();
+    				$outbound['effectiveDate'] = $("#addTaxRateForm input[name='effectiveDate']").val();
+    				$outbound['rateValue'] = $("#addTaxRateForm input[name='rateValue']").val();
     				console.debug($outbound);
     				
     				var jqxhr = $.ajax({
@@ -464,7 +461,7 @@
     	<table>
     		<tr>
     			<td><span class="formHdr">Locale ID</span></td>
-    			<td><span id="localeId" /></td>
+    			<td><input type="hidden" name="localeId" /></td>
     			<td><span class="err" id="localeIdErr"></span></td>
     		</tr>
     		<tr>
@@ -479,7 +476,7 @@
     		</tr>
     		<tr>
     			<td><span class="formHdr">Rate Type</span></td>
-    			<td><input type="text" name="typeName" /></td>
+    			<td><select id="typeName" /></td>
     			<td><span class="err" id="typeNameErr"></span></td>
     		</tr>
     		<tr>
