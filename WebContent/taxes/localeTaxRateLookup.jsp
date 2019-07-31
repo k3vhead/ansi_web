@@ -345,7 +345,7 @@
     				console.debug($url);
     						
     				var $outbound = {};
-    				$outbound['localeId'] = $("#addTaxRateForm input[name='localeId']").val();
+    				//$outbound['localeId'] = $("#addTaxRateForm input[name='localeId']").val();
     				//$outbound['name'] = $("#addTaxRateForm input[name='name']").val();
     				//$outbound['localeTypeId'] = $("#addTaxRateForm input[name='localeTypeId']").val();	
     				$outbound['typeName'] = $("#addTaxRateForm input[name='typeName']").val();

@@ -165,7 +165,7 @@ public class LocaleTaxRateServlet extends AbstractServlet {
 		taxRate.setLocaleId(localeId);
 		taxRate.selectOne(conn);
 		makeTaxRate(taxRate, taxRateRequest, sessionData.getUser());
-		Locale key = new Locale();
+		LocaleTaxRate key = new LocaleTaxRate();
 		key.setLocaleId(localeId);
 		taxRate.update(conn, key);
 		conn.commit();
