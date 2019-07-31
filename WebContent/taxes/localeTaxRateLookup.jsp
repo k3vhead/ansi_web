@@ -313,6 +313,7 @@
     						$("#stateName").html($permissionGroup.stateName);	
     						$("#addTaxRateForm  input[name='effectiveDate']").val($permissionGroup.effectiveDate);
     						$("#addTaxRateForm  input[name='rateValue']").val($permissionGroup.rateValue);	
+    						$("#addTaxRateForm  input[name='typeId']").val($permissionGroup.typeId);	
     						$("#addTaxRateForm  .err").html("");
     						$("#addTaxRateForm ").dialog("option","title", "Edit Tax Rate").dialog("open");
     						console.log("showEdit: End showEdit: 200.");
@@ -345,13 +346,14 @@
     				console.debug($url);
     						
     				var $outbound = {};
-    				//$outbound['localeId'] = $("#addTaxRateForm input[name='localeId']").val();
-    				//$outbound['name'] = $("#addTaxRateForm input[name='name']").val();
+    				$outbound['localeId'] = $("#addTaxRateForm input[name='localeId']").val();
+    				//$outbound['name'] = $("#addTaxRateForm input[name='localeName']").val();
     				//$outbound['localeTypeId'] = $("#addTaxRateForm input[name='localeTypeId']").val();	
     				$outbound['typeName'] = $("#addTaxRateForm input[name='typeName']").val();
     				//$outbound['stateName'] = $("#addTaxRateForm input[name='stateName']").val();
     				$outbound['effectiveDate'] = $("#addTaxRateForm input[name='effectiveDate']").val();
     				$outbound['rateValue'] = $("#addTaxRateForm input[name='rateValue']").val();
+    				//$outbound['typeId'] = $("#addTaxRateForm input[name='typeId']").val();
     				console.debug($outbound);
     				
     				var jqxhr = $.ajax({
@@ -494,7 +496,10 @@
     			<td><input type="text" name="rateValue" /></td>
     			<td><span class="err" id="rateValueErr"></span></td>
     		</tr>
-    				
+    		<tr>
+    			<td><input type="hidden" name="typeid" /></td>
+    			<td><span class="err" id="typeIdErr"></span></td>
+    		</tr>
     	</table>
     </div>
     
