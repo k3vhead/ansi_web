@@ -42,11 +42,11 @@ public class LocaleTaxRateServlet extends AbstractServlet {
 		AnsiURL ansiURL = null;
 		//TicketReturnResponse ticketReturnResponse = null;
 		try {
-			ansiURL = new AnsiURL(request, REALM, (String[])null); 
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
 			String jsonString = super.makeJsonString(request);
 			logger.log(Level.DEBUG, "jsonstring:"+jsonString);
+			ansiURL = new AnsiURL(request, REALM, (String[])null); 
 
 			SessionData sessionData = AppUtils.validateSession(request, Permission.TAX_WRITE);
 			LocaleTaxRateResponse data = new LocaleTaxRateResponse();

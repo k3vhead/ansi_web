@@ -344,6 +344,8 @@ public class RequestValidator {
 		}
 	}
 
+	
+	
 	public static void validateInvoiceTerms(WebMessages webMessages, String fieldName, String value, boolean required) {
 		if (StringUtils.isBlank(value)) {
 			if (required) {
@@ -361,6 +363,8 @@ public class RequestValidator {
 		}
 	}
 
+	
+	
 	public static void validateJobFrequency(WebMessages webMessages, String fieldName, String value, boolean required) {
 		if (StringUtils.isBlank(value)) {
 			if (required) {

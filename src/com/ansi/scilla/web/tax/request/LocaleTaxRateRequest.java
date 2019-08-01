@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Date;
 
+import com.ansi.scilla.common.db.Locale;
+import com.ansi.scilla.common.db.TaxRateType;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -12,14 +14,14 @@ public class LocaleTaxRateRequest extends AbstractRequest {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String LOCALE_ID = "locale.locale_id";
-	public static final String STATE_NAME = "locale.state_name";
-	public static final String NAME = "locale.name";	
-	public static final String LOCALE_TYPE_ID = "locale.locale_type_id";	
-	public static final String EFFECTIVE_DATE = "locale_tax_rate.effective_date";	
-	public static final String RATE_VALUE = "locale_tax_rate.rate_value";	
-	public static final String TYPE_ID = "type_id";
-	public static final String TYPE_NAME = "type_name";
+	public static final String LOCALE_ID = "localeId";
+	public static final String STATE_NAME = "stateName";
+	public static final String NAME = "name";	
+	public static final String LOCALE_TYPE_ID = "localeTypeId";	
+	public static final String EFFECTIVE_DATE = "effectiveDate";	
+	public static final String RATE_VALUE = "rateValue";	
+	public static final String TYPE_ID = "typeId";
+	public static final String TYPE_NAME = "typeName";
 		
 	private Integer localeId;
 	private String name;
@@ -87,7 +89,7 @@ public class LocaleTaxRateRequest extends AbstractRequest {
 		//RequestValidator.validateString(webMessages, LOCALE_TYPE_ID, this.localeTypeId, true);
 		RequestValidator.validateDate(webMessages, EFFECTIVE_DATE, effectiveDate, true, effectiveDate, effectiveDate);
 		RequestValidator.validateBigDecimal(webMessages, RATE_VALUE, rateValue, rateValue, rateValue, true);
-		RequestValidator.validateId(conn, webMessages, TYPE_ID, "type_id", "typeId", this.typeId, true);
+		RequestValidator.validateId(conn, webMessages, TaxRateType.TABLE, TaxRateType.TYPE_ID, TYPE_ID, this.typeId, true);
 		RequestValidator.validateString(webMessages, TYPE_NAME, this.typeName, true);
 		
 		return webMessages;
@@ -96,7 +98,7 @@ public class LocaleTaxRateRequest extends AbstractRequest {
 	public WebMessages validateUpdate(Connection conn, Integer localeId) throws Exception {
 		WebMessages webMessages = validateAdd(conn);
 		
-		RequestValidator.validateId(conn, webMessages, LOCALE_ID, "locale_id", "localeId", this.localeId, true);
+		RequestValidator.validateId(conn, webMessages, Locale.TABLE, Locale.LOCALE_ID, LOCALE_ID, this.localeId, true);
 		
 		return webMessages;
 	}
