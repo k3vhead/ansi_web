@@ -5,10 +5,12 @@ import java.sql.Connection;
 import java.sql.Date;
 
 import com.ansi.scilla.common.db.Locale;
+import com.ansi.scilla.common.db.RateType;
 import com.ansi.scilla.common.db.TaxRateType;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.WebMessages;
+import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class LocaleTaxRateRequest extends AbstractRequest {
 
@@ -81,9 +83,23 @@ public class LocaleTaxRateRequest extends AbstractRequest {
 		this.typeName = typeName;
 	}
 	
+	public void setType(Connection conn) throws RecordNotFoundException, Exception {
+		RateType rateType = new RateType();
+		if((this.typeId == null) && (this.typeName != null)) {
+			rateType.setTypeName(this.typeName);
+			rateType.selectOne(conn);
+			this.typeId = rateType.getTypeId();
+		}
+		if(this.typeId != null && this.typeName == null) {
+			rateType.setTypeId(this.typeId);
+			rateType.selectOne(conn);
+			this.typeName = rateType.getTypeName();
+		}
+	}
+	
 	public WebMessages validateAdd(Connection conn) throws Exception {
 		WebMessages webMessages = new WebMessages();
-		
+		setType(conn);
 		//RequestValidator.validateString(webMessages, NAME, this.name, true);
 		//RequestValidator.validateString(webMessages, STATE_NAME, this.stateName, true);
 		//RequestValidator.validateString(webMessages, LOCALE_TYPE_ID, this.localeTypeId, true);
