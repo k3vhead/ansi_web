@@ -136,7 +136,7 @@ public class LocaleDivisionServlet extends AbstractServlet {
 		Integer localeId = localeDivision.insertWithKey(conn);
 		conn.commit();
 		localeDivision.setLocaleId(localeId);
-		LocaleDivisionResponse localeResponse = new LocaleDivisionResponse(localeDivision);
+		LocaleDivisionResponse localeResponse = new LocaleDivisionResponse(localeDivision, conn);
 		super.sendResponse(conn, response, ResponseCode.SUCCESS, localeResponse);
 	}
 
@@ -151,7 +151,7 @@ public class LocaleDivisionServlet extends AbstractServlet {
 		key.setLocaleId(localeId);
 		localeDivision.update(conn, key);
 		conn.commit();
-		LocaleDivisionResponse localeResponse = new LocaleDivisionResponse(localeDivision);
+		LocaleDivisionResponse localeResponse = new LocaleDivisionResponse(localeDivision, conn);
 		super.sendResponse(conn, response, ResponseCode.SUCCESS, localeResponse);
 	}
 
