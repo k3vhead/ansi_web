@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -50,21 +51,17 @@ public class RequestValidator {
 	} );
 
 	
+
+	
+	
+	
 	public static void checkForDuplicates(Connection conn, WebMessages webMessages, MSTable table,
 			HashMap<String, Object> addRequest, List<FieldMap> fieldMap, SimpleDateFormat standardDateFormat)
 			throws Exception {
 		Logger logger = LogManager.getLogger(RequestValidator.class);
 		String tableName = table.getClass().getAnnotation(DBTable.class).value();
 		logger.log(Level.DEBUG, "Table: " + tableName);
-		HashMap<String, List<String>> indexMap = new HashMap<String, List<String>>(); // index
-																						// name
-																						// ->
-																						// list
-																						// of
-																						// column
-																						// in
-																						// that
-																						// index
+		HashMap<String, List<String>> indexMap = new HashMap<String, List<String>>(); // index name -> list of column in that index
 		DatabaseMetaData dbmd = conn.getMetaData();
 		ResultSet rs = dbmd.getIndexInfo(null, null, tableName, true, false);
 		while (rs.next()) {

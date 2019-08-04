@@ -48,16 +48,15 @@
 				height:30px;
 				min-height:30px;
 			}
-			select	{
-				width:80px !important;
-				max-width:80px !important;
-			}
 			.print-link {
 				cursor:pointer;
 			}
 			.editJob {
 				cursor:pointer;
 				text-decoration:underline;
+			}
+			.formHdr {
+				font-weight:bold;
 			}
 			.jobLink {
 				color:#000000;
@@ -75,6 +74,12 @@
 			}
 			.ticket-clicker {
 				color:#000000;
+			}
+			.type-swap {
+				cursor:pointer;
+			}
+			.type-text {
+				display:none;
 			}
         </style>
         
@@ -214,16 +219,6 @@
     			    } );
             	},
             	
-            	populateTypeSelect : function() {
-                	$data = ANSI_UTILS.getTypeList();
-                	$select = $("#typeId");
-        			$('option', $select).remove();
-        			$select.append(new Option("",null));
-        			$.each($data, function($index, $val) {
-        				var $display = $val.typeId + ":" + $val.typeName;
-        				$select.append(new Option($display, $val.typeId));
-        			});	
-                },
             	
             	doFunctionBinding : function() {
     				$( ".editAction" ).on( "click", function($clickevent) {
@@ -247,13 +242,22 @@
         				$('html, body').animate({scrollTop: 0}, 800);
         				return false;
                	    });
+            		
+            		$('.type-swap').click(function() {
+            			$(".type-text").toggle();
+            			$(".type-select").toggle();
+            			
+        				$("#addTaxRateForm input[name='typeName']").val("");
+        				$("#addTaxRateForm select[name='typeId']").val("");
+            			
+            		});
             	},
             	
             	makeEditPanel : function() {	
     				$("#addTaxRateForm" ).dialog({
     					autoOpen: false,
     					height: 400,
-    					width: 400,
+    					width: 600,
     					modal: true,
     					buttons: [
     						{
@@ -294,8 +298,8 @@
     				url: $url,
     				statusCode: {
     					200: function($data) {
-    						var $permissionGroup = $data.data;
-    						$.each($permissionGroup, function($fieldName, $value) {									
+    						var $taxRate = $data.data;
+    						$.each($taxRate, function($fieldName, $value) {									
     							$selector = "#editPanel input[name=" + $fieldName + "]";
     							if ( $($selector).length > 0 ) {
     								$($selector).val($value);
@@ -303,29 +307,39 @@
     						}); 
     						console.log("showEdit: 200");
     						console.log($data);
-    						console.log($data.data);
-    						//$("#localeId").html($permissionGroup.localeId);
-    						$("#addTaxRateForm input[name='localeId']").val($permissionGroup.localeId);
-    						$("#localeName").html($permissionGroup.name);
-    						$("#localeTypeId").html($permissionGroup.localeTypeId);
-    						$("#addTaxRateForm  input[name='typeName']").val($permissionGroup.typeName);	
-    						//TAXRATELOOKUP.populateTypeSelect;
-    						$("#stateName").html($permissionGroup.stateName);	
-    						$("#addTaxRateForm  input[name='effectiveDate']").val($permissionGroup.effectiveDate);
-    						$("#addTaxRateForm  input[name='rateValue']").val($permissionGroup.rateValue);	
-    						$("#addTaxRateForm  input[name='typeId']").val($permissionGroup.typeId);	
+    						$select = $("select[name='typeId']");
+    	        			$('option', $select).remove();
+    	        			$select.append(new Option("",null));
+    	        			$.each($data.data.taxTypeList, function($index, $val) {
+    	        				$select.append(new Option($val.typeName, $val.typeId));
+    	        			});	
+    	        			
+    	        			
+    						$("#localeId").html($taxRate.localeId);
+    						$("#addTaxRateForm input[name='localeId']").val($taxRate.localeId);
+    						$("#localeName").html($taxRate.name);
+    						$("#localeTypeId").html($taxRate.localeTypeId);
+    						$("#stateName").html($taxRate.stateName);	
+    						$("#addTaxRateForm  input[name='effectiveDate']").val($taxRate.effectiveDate);
+    						$("#addTaxRateForm  input[name='rateValue']").val($taxRate.rateValue);	
+    						$("#addTaxRateForm  select[name='typeId']").val($taxRate.typeId);	
     						$("#addTaxRateForm  .err").html("");
-    						$("#addTaxRateForm ").dialog("option","title", "Edit Tax Rate").dialog("open");
+    						$("#addTaxRateForm").dialog("option","title", "Edit Tax Rate").dialog("open");
+    						
+    						
     						console.log("showEdit: End showEdit: 200.");
     					},
     					403: function($data) {
-    						$("#globalMsg").html("Session Timeout. Log in and try again");
+    						$("#addTaxRateForm").dialog("close");
+    						$("#globalMsg").html("Session Timeout. Log in and try again").show();
     					},
     					404: function($data) {
-    						$("#globalMsg").html("Invalid Request");
+    						$("#addTaxRateForm").dialog("close");
+    						$("#globalMsg").html("Invalid Request").show();
     					},
     					500: function($data) {
-    						$("#globalMsg").html("System Error; Contact Support");
+    						$("#addTaxRateForm").dialog("close");
+    						$("#globalMsg").html("System Error; Contact Support").show();
     					}
     				},
     				dataType: 'json'
@@ -347,13 +361,10 @@
     						
     				var $outbound = {};
     				$outbound['localeId'] = $("#addTaxRateForm input[name='localeId']").val();
-    				//$outbound['name'] = $("#addTaxRateForm input[name='localeName']").val();
-    				//$outbound['localeTypeId'] = $("#addTaxRateForm input[name='localeTypeId']").val();	
     				$outbound['typeName'] = $("#addTaxRateForm input[name='typeName']").val();
-    				//$outbound['stateName'] = $("#addTaxRateForm input[name='stateName']").val();
     				$outbound['effectiveDate'] = $("#addTaxRateForm input[name='effectiveDate']").val();
     				$outbound['rateValue'] = $("#addTaxRateForm input[name='rateValue']").val();
-    				//$outbound['typeId'] = $("#addTaxRateForm input[name='typeId']").val();
+    				$outbound['typeId'] = $("#addTaxRateForm select[name='typeId']").val();
     				console.debug($outbound);
     				
     				var jqxhr = $.ajax({
@@ -364,15 +375,22 @@
     						200: function($data) {
     			    			if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
     			    				$.each($data.data.webMessages, function (key, value) {
-    			    					var $selectorName = "#" + key + "Err";
-    			    					$($selectorName).show();
-    			    					$($selectorName).html(value[0]).fadeOut(10000);
+    			    					console.log(key);
+    			    					if ( key == "GLOBAL_MESSAGE" ) {
+    			    						$("#globalMsg").html(value[0]).show().fadeOut(6000);
+    			    						$("#addTaxRateForm").dialog("close");
+    			    					} else {
+	    			    					var $selectorName = "#" + key + "Err";
+	    			    					$($selectorName).show();
+	    			    					$($selectorName).html(value[0]).fadeOut(6000);
+    			    					}
     			    				});
+    			    				
     			   				} else {	    				
     			    				$("#addTaxRateForm").dialog("close");
     			    				$('#localeTaxRateTable').DataTable().ajax.reload();		
     			    				TAXRATELOOKUP.clearAddForm();		    					
-    			    				$("#globalMsg").html("Update Successful").show().fadeOut(10000);
+    			    				$("#globalMsg").html("Update Successful").show().fadeOut(6000);
     			    			}
     						},
     						403: function($data) {
@@ -463,7 +481,7 @@
     	<table>
     		<tr>
     			<td><span class="formHdr">Locale ID</span></td>
-    			<td><input type="hidden" name="localeId" /></td>
+    			<td><input type="hidden" name="localeId" /><span id="localeId"></span></td>
     			<td><span class="err" id="localeIdErr"></span></td>
     		</tr>
     		<tr>
@@ -477,14 +495,19 @@
     			<td><span class="err" id="localeTypeIdErr"></span></td>
     		</tr>
     		<tr>
-    			<td><span class="formHdr">Rate Type</span></td>
-    			<td><input type="text" name="typeName" /></td>
-    			<td><span class="err" id="typeNameErr"></span></td>
-    		</tr>
-    		<tr>
     			<td><span class="formHdr">State</span></td>
     			<td><span id="stateName" /></td>
     			<td><span class="err" id="stateNameErr"></span></td>
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">Rate Type</span></td>
+    			<td>
+    				<select name="typeId" class="type-select"></select><webthing:addNew styleClass="type-select type-swap">New</webthing:addNew>
+    				<input type="text" name="typeName" class="type-text" /><webthing:ban styleClass="type-text type-swap">Cancel</webthing:ban>
+    			</td>
+    			<td>
+    				<span class="err" id="typeIdErr"></span>
+    			</td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">Effective Date</span></td>
@@ -495,10 +518,6 @@
     			<td><span class="formHdr">Rate</span></td>
     			<td><input type="text" name="rateValue" /></td>
     			<td><span class="err" id="rateValueErr"></span></td>
-    		</tr>
-    		<tr>
-    			<td><input type="hidden" name="typeid" /></td>
-    			<td><span class="err" id="typeIdErr"></span></td>
     		</tr>
     	</table>
     </div>

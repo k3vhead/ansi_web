@@ -29,13 +29,13 @@ public class LocaleTaxRateLookupServlet extends AbstractLookupServlet {
 	
 	public static final String REALM = "taxRateLookup";
 	
-	public static final String LOCALE_ID = "locale.locale_id";
-	public static final String STATE_NAME = "locale.state_name";
-	public static final String NAME = "locale.name";	
-	public static final String LOCALE_TYPE_ID = "locale.locale_type_id";	
-	public static final String EFFECTIVE_DATE = "locale_tax_rate.effective_date";	
-	public static final String RATE_VALUE = "locale_tax_rate.rate_value";	
-	public static final String TYPE_ID = "locale_tax_rate.type_id";
+	public static final String LOCALE_ID = "locale_id";
+	public static final String STATE_NAME = "state_name";
+	public static final String NAME = "name";	
+	public static final String LOCALE_TYPE_ID = "locale_type_id";	
+	public static final String EFFECTIVE_DATE = "effective_date";	
+	public static final String RATE_VALUE = "rate_value";	
+	public static final String TYPE_ID = "type_id";
 	public static final String TYPE_NAME = "type_name";
 	public static final String DISPLAY_RATE = "display_rate";
 	

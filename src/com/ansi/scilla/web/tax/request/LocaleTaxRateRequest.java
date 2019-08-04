@@ -3,33 +3,33 @@ package com.ansi.scilla.web.tax.request;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.db.Locale;
-import com.ansi.scilla.common.db.RateType;
 import com.ansi.scilla.common.db.TaxRateType;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.WebMessages;
-import com.thewebthing.commons.db2.RecordNotFoundException;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class LocaleTaxRateRequest extends AbstractRequest {
 
 	private static final long serialVersionUID = 1L;
 
 	public static final String LOCALE_ID = "localeId";
-	public static final String STATE_NAME = "stateName";
-	public static final String NAME = "name";	
-	public static final String LOCALE_TYPE_ID = "localeTypeId";	
 	public static final String EFFECTIVE_DATE = "effectiveDate";	
 	public static final String RATE_VALUE = "rateValue";	
 	public static final String TYPE_ID = "typeId";
 	public static final String TYPE_NAME = "typeName";
 		
 	private Integer localeId;
-	private String name;
-	private String stateName;
 	private Date effectiveDate;
-	private String localeTypeId;
 	private BigDecimal rateValue;
 	private Integer typeId;
 	private String typeName;
@@ -37,32 +37,16 @@ public class LocaleTaxRateRequest extends AbstractRequest {
 	public Integer getLocaleId() {
 		return localeId;
 	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getStateName() {
-		return stateName;
-	}
-	public void setStateName(String stateName) {
-		this.stateName = stateName;
-	}
+	public void setLocaleId(Integer localeId) {
+		this.localeId = localeId;
+	}	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Date getEffectiveDate() {
 		return effectiveDate;
 	}
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setEffectiveDate(Date effectiveDate) {
 		this.effectiveDate = effectiveDate;
-	}
-	public void setLocaleId(Integer localeId) {
-		this.localeId = localeId;
-	}
-	public String getLocaleTypeId() {
-		return localeTypeId;
-	}
-	public void setLocaleTypeId(String localeTypeId) {
-		this.localeTypeId = localeTypeId;
 	}
 	public BigDecimal getRateValue() {
 		return rateValue;
@@ -82,34 +66,39 @@ public class LocaleTaxRateRequest extends AbstractRequest {
 	public void setTypeName(String typeName) {
 		this.typeName = typeName;
 	}
-	
-	public void setType(Connection conn) throws RecordNotFoundException, Exception {
-		RateType rateType = new RateType();
-		if((this.typeId == null) && (this.typeName != null)) {
-			rateType.setTypeName(this.typeName);
-			rateType.selectOne(conn);
-			this.typeId = rateType.getTypeId();
-		}
-		if(this.typeId != null && this.typeName == null) {
-			rateType.setTypeId(this.typeId);
-			rateType.selectOne(conn);
-			this.typeName = rateType.getTypeName();
-		}
-	}
-	
+
+
 	public WebMessages validateAdd(Connection conn) throws Exception {
+		Logger logger = LogManager.getLogger(this.getClass());
+		logger.log(Level.DEBUG, "Validating: " + this.typeName + "\t" + this.typeId);
 		WebMessages webMessages = new WebMessages();
-		setType(conn);
-		//RequestValidator.validateString(webMessages, NAME, this.name, true);
-		//RequestValidator.validateString(webMessages, STATE_NAME, this.stateName, true);
-		//RequestValidator.validateString(webMessages, LOCALE_TYPE_ID, this.localeTypeId, true);
-		RequestValidator.validateDate(webMessages, EFFECTIVE_DATE, effectiveDate, true, effectiveDate, effectiveDate);
+		RequestValidator.validateDate(webMessages, EFFECTIVE_DATE, effectiveDate, true, null, null);
 		RequestValidator.validateBigDecimal(webMessages, RATE_VALUE, rateValue, rateValue, rateValue, true);
-		RequestValidator.validateId(conn, webMessages, TaxRateType.TABLE, TaxRateType.TYPE_ID, TYPE_ID, this.typeId, true);
-		RequestValidator.validateString(webMessages, TYPE_NAME, this.typeName, true);
-		
+		if ( StringUtils.isBlank(this.typeName )) {
+			logger.log(Level.DEBUG, "Name is blank");
+			if ( this.typeId == null ) {
+				logger.log(Level.DEBUG, "Id is blank");
+				webMessages.addMessage(TYPE_ID, "Required Value");
+			} else {
+				logger.log(Level.DEBUG, "Id is not blank");
+				RequestValidator.validateId(conn, webMessages, TaxRateType.TABLE, TaxRateType.TYPE_ID, TYPE_ID, this.typeId, true);
+			}
+		} else {
+			logger.log(Level.DEBUG, "Name is not blank");
+			if ( this.typeId == null ) {
+				logger.log(Level.DEBUG, "Id is blank");
+				if ( duplicateExists(conn, this.typeName) ) {
+					webMessages.addMessage(LocaleTaxRateRequest.TYPE_ID, "Duplicate value");
+				}
+			} else {
+				logger.log(Level.DEBUG, "ID is not blank");
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Request. Reload page and try again");
+			}
+		}
+	
 		return webMessages;
 	}
+	
 	
 	public WebMessages validateUpdate(Connection conn, Integer localeId) throws Exception {
 		WebMessages webMessages = validateAdd(conn);
@@ -117,6 +106,25 @@ public class LocaleTaxRateRequest extends AbstractRequest {
 		RequestValidator.validateId(conn, webMessages, Locale.TABLE, Locale.LOCALE_ID, LOCALE_ID, this.localeId, true);
 		
 		return webMessages;
+	}
+	
+	
+	private boolean duplicateExists(Connection conn, String name) throws Exception {
+		Logger logger = LogManager.getLogger(this.getClass());
+		String sql = "select count(*) as record_count from tax_rate_type where lower(type_name)=?";
+		logger.log(Level.DEBUG, sql);
+		logger.log(Level.DEBUG, name);
+		
+		String value = name.toLowerCase();
+		boolean duplicateFound = false;
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setString(1, value);
+		ResultSet rs = ps.executeQuery();
+		if ( rs.next() ) {
+			duplicateFound = rs.getInt("record_count") > 0;
+		}
+		rs.close();
+		return duplicateFound;
 	}
 	
 }
