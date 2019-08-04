@@ -44,7 +44,7 @@ public class LocaleTaxRateResponse extends MessageResponse {
 		super();
 	}
 	
-	public LocaleTaxRateResponse(LocaleTaxRate taxRate, Connection conn) throws RecordNotFoundException, Exception {
+	public LocaleTaxRateResponse(Connection conn, LocaleTaxRate taxRate) throws RecordNotFoundException, Exception {
 		this();
 		Locale locale = new Locale();
 		locale.setLocaleId(taxRate.getLocaleId());

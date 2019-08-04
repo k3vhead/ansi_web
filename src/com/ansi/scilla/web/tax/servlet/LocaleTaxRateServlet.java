@@ -8,9 +8,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.LocaleTaxRate;
+import com.ansi.scilla.common.db.TaxRateType;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
@@ -131,44 +133,27 @@ public class LocaleTaxRateServlet extends AbstractServlet {
 
 	protected void doAdd(Connection conn, LocaleTaxRateRequest taxRateRequest, SessionData sessionData, HttpServletResponse response) throws Exception {
 		LocaleTaxRate taxRate = new LocaleTaxRate();
-		makeTaxRate(taxRate, taxRateRequest, sessionData.getUser());
+		makeTaxRate(conn, taxRate, taxRateRequest, sessionData.getUser());
 		Integer localeId = taxRate.insertWithKey(conn);
 		conn.commit();
 		taxRate.setLocaleId(localeId);
-		LocaleTaxRateResponse localeTaxRateResponse = new LocaleTaxRateResponse(taxRate, conn);
+		LocaleTaxRateResponse localeTaxRateResponse = new LocaleTaxRateResponse(conn, taxRate);
 		super.sendResponse(conn, response, ResponseCode.SUCCESS, localeTaxRateResponse);
 	}
 	
-	private void makeTaxRate(LocaleTaxRate taxRate, LocaleTaxRateRequest taxRateRequest, SessionUser sessionUser) {
-		Date today = new Date();
-
-		if ( taxRateRequest.getLocaleId() != null ) {
-			taxRate.setLocaleId(taxRateRequest.getLocaleId());
-		}
-		taxRate.setRateValue(taxRateRequest.getRateValue());
-		taxRate.setEffectiveDate(taxRateRequest.getEffectiveDate());
-		taxRate.setTypeId(taxRateRequest.getTypeId());
-		
-		if ( taxRate.getAddedBy() == null ) {
-			taxRate.setAddedBy(sessionUser.getUserId());
-			taxRate.setAddedDate(today);
-		}
-		taxRate.setUpdatedBy(sessionUser.getUserId());
-		taxRate.setUpdatedDate(today);
-
-	}
-
+	
+	
 	protected void doUpdate(Connection conn, Integer localeId, 
 		LocaleTaxRateRequest taxRateRequest, SessionData sessionData, HttpServletResponse response) throws Exception {
 		LocaleTaxRate taxRate = new LocaleTaxRate();
 		taxRate.setLocaleId(localeId);
 		taxRate.selectOne(conn);
-		makeTaxRate(taxRate, taxRateRequest, sessionData.getUser());
+		makeTaxRate(conn, taxRate, taxRateRequest, sessionData.getUser());
 		LocaleTaxRate key = new LocaleTaxRate();
 		key.setLocaleId(localeId);
 		taxRate.update(conn, key);
 		conn.commit();
-		LocaleTaxRateResponse taxRateResponse = new LocaleTaxRateResponse(taxRate, conn);
+		LocaleTaxRateResponse taxRateResponse = new LocaleTaxRateResponse(conn, taxRate);
 		super.sendResponse(conn, response, ResponseCode.SUCCESS, taxRateResponse);
 	}
 	
@@ -178,6 +163,46 @@ public class LocaleTaxRateServlet extends AbstractServlet {
 		
 		super.sendNotAllowed(response);
 		
+	}
+
+	private void makeTaxRate(Connection conn, LocaleTaxRate taxRate, LocaleTaxRateRequest taxRateRequest, SessionUser sessionUser) throws Exception {
+		Date today = new Date();
+	
+		if ( taxRateRequest.getLocaleId() != null ) {
+			taxRate.setLocaleId(taxRateRequest.getLocaleId());
+		}
+		taxRate.setRateValue(taxRateRequest.getRateValue());
+		taxRate.setEffectiveDate(taxRateRequest.getEffectiveDate());
+		
+		if ( StringUtils.isBlank(taxRateRequest.getTypeName())) {
+			// we're using an existing tax type
+			taxRate.setTypeId(taxRateRequest.getTypeId());
+		} else {
+			// we're adding a new tax type
+			Integer taxRateTypeId = makeTaxRateType(conn, taxRateRequest.getTypeName(), sessionUser);
+			taxRate.setTypeId(taxRateTypeId);
+		}
+		
+		
+		if ( taxRate.getAddedBy() == null ) {
+			taxRate.setAddedBy(sessionUser.getUserId());
+			taxRate.setAddedDate(today);
+		}
+		taxRate.setUpdatedBy(sessionUser.getUserId());
+		taxRate.setUpdatedDate(today);
+	
+	}
+
+	private Integer makeTaxRateType(Connection conn, String typeName, SessionUser sessionUser) throws Exception {
+		Date today = new Date();
+		TaxRateType taxRateType = new TaxRateType();
+		taxRateType.setAddedBy(sessionUser.getUserId());
+		taxRateType.setAddedDate(today);
+		taxRateType.setTypeName(typeName);
+		taxRateType.setUpdatedBy(sessionUser.getUserId());
+		taxRateType.setUpdatedDate(today);
+		Integer taxRateTypeId = taxRateType.insertWithKey(conn);
+		return taxRateTypeId;
 	}
 	
 }

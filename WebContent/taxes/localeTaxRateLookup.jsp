@@ -323,6 +323,7 @@
     						$("#addTaxRateForm  input[name='effectiveDate']").val($taxRate.effectiveDate);
     						$("#addTaxRateForm  input[name='rateValue']").val($taxRate.rateValue);	
     						$("#addTaxRateForm  select[name='typeId']").val($taxRate.typeId);	
+    						$("#addTaxRateForm  input[name='typeName']").val("");
     						$("#addTaxRateForm  .err").html("");
     						$("#addTaxRateForm").dialog("option","title", "Edit Tax Rate").dialog("open");
     						
