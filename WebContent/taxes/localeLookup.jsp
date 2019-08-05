@@ -372,14 +372,14 @@
 					
 	
 					if ( $localeId == null || $localeId == '') {
-						$url = 'locale/add';
+						$url = 'locale/';
 					} else {
 						$url = 'locale/' + $localeId;
 					}
 					console.debug($url);
 						
 					var $outbound = {};
-					$outbound['localeId'] = $("#addLocaleForm input[name='localeId']").val();
+					//$outbound['localeId'] = $("#addLocaleForm input[name='localeId']").val();
 					$outbound['name'] = $("#addLocaleForm input[name='name']").val();
 					$outbound['stateName'] = $("#addLocaleForm select[name='stateName']").val();	
 					$outbound['abbreviation'] = $("#addLocaleForm input[name='abbreviation']").val();
@@ -476,7 +476,7 @@
     		</tr>
     		<tr>
     			<td><span class="formHdr">State Name</span></td>
-    			<td><select name="stateName"><option value=""></option><webthing:states /></select></td>
+    			<td><select name="stateName" id="stateName"><webthing:states /></select></td>
     			<td><span class="err" id="stateNameErr"></span></td>
     		</tr>
     		<tr>
@@ -485,7 +485,7 @@
     		</tr>
     		<tr>
     			<td><span class="formHdr">Locale Type</span></td>
-    			<td><select name="localeTypeId"/></select></td>
+    			<td><select name="localeTypeId" id="localeTypeId"/></select></td>
     			<td><span class="err" id="localeTypeIdErr"></span></td>
     		</tr>		
     	</table>
