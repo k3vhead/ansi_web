@@ -46,18 +46,18 @@ public class LocaleDivisionLookupServlet extends AbstractLookupServlet {
 	public static final String STATE = "address.state";
 	public static final String ZIP = "address.zip";
 	
-	private static final String ADDRESS = ""+ADDRESS1+"\n"+ADDRESS2+"/n"+CITY+" "+STATE+", "+ZIP+"";
+	//private static final String ADDRESS = ""+ADDRESS1+"\n"+ADDRESS2+"/n"+CITY+" "+STATE+", "+ZIP+"";
 	
 	public LocaleDivisionLookupServlet() {
 		super(Permission.TAX_READ);
 		cols = new String[] { 
-			LocaleDivisionLookupQuery.DIVISION_CODE,
+			LocaleDivisionLookupQuery.DIVISION_DISPLAY,
 			LocaleDivisionLookupQuery.NAME,
 			LocaleDivisionLookupQuery.LOCALE_TYPE_ID,
 			LocaleDivisionLookupQuery.STATE,
 			LocaleDivisionLookupQuery.EFF_START_DATE,
 			LocaleDivisionLookupQuery.EFF_STOP_DATE,
-			LocaleDivisionLookupQuery.ADDRESS1,
+			LocaleDivisionLookupQuery.ADDRESS_ID,
 		};
 		super.itemTransformer = new ItemTransformer();
 	}

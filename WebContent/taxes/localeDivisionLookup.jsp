@@ -134,7 +134,7 @@
     			            { width:"10%", title: "<bean:message key="field.label.localeType" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.locale_type_id != null){return (row.locale_type_id+"");}
     			            } },
-    			            { width:"15%", title: "<bean:message key="field.label.stateName" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { width:"8%", title: "<bean:message key="field.label.stateName" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.state_name != null){return (row.state_name+"");}
     			            } },
     			            { width:"10%", title: "<bean:message key="field.label.startDate" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
@@ -144,7 +144,11 @@
     			            	if(row.effective_stop_date != null){return (row.effective_stop_date+"");}
     			            } },
     			            { width:"20%", title: "<bean:message key="field.label.address" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
-    			            	if(row.address != null){return (row.address+"");}
+    			            	if(row.address1 != null){return (row.address1+"\n");}
+    			            	if(row.address2 != null){return (row.address2+"\n");}
+    			            	if(row.city != null){return (row.city+" ");}
+    			            	if(row.state != null){return (row.state+", ");}
+    			            	if(row.zip != null){return (row.zip+"");}
     			            } },
     			            
     			            { width:"5%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
