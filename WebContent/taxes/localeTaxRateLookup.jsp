@@ -89,6 +89,7 @@
         	
         	TAXRATELOOKUP = {
                 dataTable : null,
+                localeFilter : "<c:out value="${ANSI_LOCALE_ID}" />",
                 
        			init : function() {
        				$('.dateField').datepicker({
@@ -100,7 +101,7 @@
        				TAXRATELOOKUP.makeClickers();
        				TAXRATELOOKUP.markValid();  
        				TAXRATELOOKUP.makeEditPanel();
-       				TAXRATELOOKUP.showNew();
+       				TAXRATELOOKUP.showNew();       				
                 }, 
                 
                 clearAddForm : function () {
@@ -114,6 +115,15 @@
     				$('.err').html("");
     				$('#editPanel').data('rownum',null);
                 },
+                
+                
+                
+                doLocaleFilter : function() {
+                	console.log("Doing filter: " + TAXRATELOOKUP.localeFilter);	
+                	$('.filter-div input[name="columns[0][search][value]"]').val(TAXRATELOOKUP.localeFilter);
+                },
+                
+                
                 
                 markValid : function ($inputField) {
                 	$fieldName = $($inputField).attr('name');
@@ -212,6 +222,10 @@
     			            	//doFunctionBinding();
     			            	var myTable = this;
     			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#localeTaxRateTable", TAXRATELOOKUP.createTable);
+    			            	if ( TAXRATELOOKUP.localeFilter != null ) {
+    		       					TAXRATELOOKUP.doLocaleFilter();
+    		       					TAXRATELOOKUP.localeFilter = null;
+    		       				}
     			            },
     			            "drawCallback": function( settings ) {
     			            	TAXRATELOOKUP.doFunctionBinding();

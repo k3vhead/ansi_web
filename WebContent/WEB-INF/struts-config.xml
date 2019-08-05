@@ -311,7 +311,10 @@
         
         <action
             path="/taxRateLookup"
-            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            type="com.ansi.scilla.web.tax.action.TaxRateLookupAction"
+            name="idForm"
+            input="/invoiceLookup.jsp"
+            scope="request">
             <forward name="valid" path="/taxes/localeTaxRateLookup.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>

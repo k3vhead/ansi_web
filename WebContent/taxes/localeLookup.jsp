@@ -164,12 +164,13 @@
     			            	var $actionData = "";
     			            	if ( row.locale_id != null ) {
     				            	var $editLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="#" class="editAction" data-id="'+row.locale_id+'" data-name="'+row.locale_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
-//    				            	
+									var $taxLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="taxRateLookup.html?id='+row.locale_id+'"><webthing:taxes>Taxes</webthing:taxes></a></ansi:hasPermission>&nbsp;';
+
 //    		            			var $ticketData = 'data-id="' + row.locale_id + '"';
 //    			            		$printLink = '<ansi:hasPermission permissionRequired="TAX_READ"><i class="print-link fa fa-print" aria-hidden="true" ' + $localeData + '></i></ansi:hasPermission>'
 //    			            		var $claimLink = '';
 //    			            		
-    				            	$actionData = $editLink;
+    				            	$actionData = $editLink + " " + $taxLink;
     			            	}
     			            	return $actionData;
     			            } }],
