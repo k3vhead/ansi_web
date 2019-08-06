@@ -397,7 +397,7 @@
 			    					$.each($data.data.webMessages, function (key, value) {
 			    						var $selectorName = "#" + key + "Err";
 			    						$($selectorName).show();
-			    						$($selectorName).html(value[0]).show().fadeOut(4000);
+			    						$($selectorName).html(value[0]).show().fadeOut(3000);
 			    					});
 			    				} else {	    				
 			    					$("#addLocaleForm").dialog("close");
