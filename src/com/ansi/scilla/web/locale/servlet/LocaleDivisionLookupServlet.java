@@ -51,7 +51,7 @@ public class LocaleDivisionLookupServlet extends AbstractLookupServlet {
 	public LocaleDivisionLookupServlet() {
 		super(Permission.TAX_READ);
 		cols = new String[] { 
-			LocaleDivisionLookupQuery.DIVISION_DISPLAY,
+			LocaleDivisionLookupQuery.DIVISION_ID,
 			LocaleDivisionLookupQuery.NAME,
 			LocaleDivisionLookupQuery.LOCALE_TYPE_ID,
 			LocaleDivisionLookupQuery.STATE,

@@ -125,8 +125,8 @@
     			        	"data": {}
     			        	},
     			        columns: [	//divisionId, localeId, effectiveStartDate, effectiveStopDate, addressId
-    			            { width:"10%", title: "<bean:message key="field.label.divisionCode" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
-    			            	if(row.division_code != null){return (row.division_code+"");}
+    			            { width:"10%", title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+    			            	if(row.division_display != null){return (row.division_display+"");}
     			            } },
     			            { width:"15%", title: "<bean:message key="field.label.name" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.name != null){return (row.name+"");}
@@ -209,7 +209,7 @@
 				
 			function doEdit($clickevent) {
 				var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
-					var $url = 'localeDivisionTable/' + $rowid;
+					var $url = 'localeDivisionLookup/' + $rowid;
 					//console.log("YOU PASSED ROW ID:" + $rowid);
 					var jqxhr = $.ajax({
 						type: 'GET',
