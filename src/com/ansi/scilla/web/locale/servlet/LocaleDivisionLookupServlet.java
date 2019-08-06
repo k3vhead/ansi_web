@@ -77,7 +77,7 @@ public class LocaleDivisionLookupServlet extends AbstractLookupServlet {
 				searchTerm = request.getParameter("search[value]");
 			}
 
-			LocaleLookupQuery lookupQuery = new LocaleLookupQuery(user.getUserId(), divisionList);
+			LocaleDivisionLookupQuery lookupQuery = new LocaleDivisionLookupQuery(user.getUserId(), divisionList);
 			if ( searchTerm != null ) {
 				lookupQuery.setSearchTerm(searchTerm);
 			}
