@@ -43,7 +43,9 @@
         		width:402px;
         		float:right;
         	}
-        	
+        	#new-taxrate-button {
+        		display:none;
+        	}
 			.prettyWideButton {
 				height:30px;
 				min-height:30px;
@@ -149,6 +151,13 @@
                 },
                 
                 createTable : function(){
+                	if (TAXRATELOOKUP.localeFilter == null || TAXRATELOOKUP.localeFilter == "" ) {
+                		$url = "taxRateLookup";
+                	} else {
+                		$url = "taxRateLookup/" + TAXRATELOOKUP.localeFilter;
+                		$("#new-taxrate-button").show();
+                	}
+                	
             		var dataTable = $('#localeTaxRateTable').DataTable( {
             			"aaSorting":		[[0,'asc']],
             			"processing": 		true,
@@ -177,7 +186,7 @@
             	         ],
             	        "paging": true,
     			        "ajax": {
-    			        	"url": "taxRateLookup",
+    			        	"url": $url,
     			        	"type": "GET",
     			        	"data": {}
     			        	},
@@ -423,7 +432,7 @@
     			},
     			
     			showNew : function () {
-    				$(".showNew").click(function($event) {
+    				$("#new-taxrate-button").click(function($event) {
     					$('#goEdit').data("localeId",null);
     	        		$('#goEdit').button('option', 'label', 'Save');
     	        		$('#closeAddTaxRateForm').button('option', 'label', 'Close');
@@ -466,17 +475,9 @@
     
    <tiles:put name="content" type="string">
     	<h1><bean:message key="page.label.taxrate" /> <bean:message key="menu.label.lookup" /></h1> 
-    	<c:if test="${not empty ANSI_JOB_ID}">
-    		<span class="orange"><bean:message key="field.label.jobFilter" />: <c:out value="${ANSI_JOB_ID}" /></span><br />
-    	</c:if>
-    	<c:if test="${not empty ANSI_DIVISION_ID}">
-    		<span class="orange"><bean:message key="field.label.divisionFilter" />: <c:out value="${ANSI_DIVISION_ID}" /></span><br />
-    	</c:if>
-    	<c:if test="${not empty ANSI_TICKET_LOOKUP_START_DATE}">
-    		<span class="orange"><bean:message key="field.label.startDate" />: <c:out value="${ANSI_TICKET_LOOKUP_START_DATE}" /></span><br />
-    	</c:if>
-    	<c:if test="${not empty ANSI_TICKET_LOOKUP_STATUS}">
-    		<span class="orange"><bean:message key="field.label.statusFilter" />: <c:out value="${ANSI_TICKET_LOOKUP_STATUS}" /></span><br />
+    	<c:if test="${not empty ANSI_LOCALE_ID}">
+    		<span class="orange"><bean:message key="field.label.localeFilter" />: <c:out value="${ANSI_LOCALE_DISPLAY}" /></span>
+    			&nbsp;&nbsp;<html:link action="taxRateLookup" style="text-decoration:none;"><webthing:ban>Clear Filter</webthing:ban></html:link><br />
     	</c:if>
     	  	
     	  	
@@ -488,6 +489,7 @@
         <tfoot>
         </tfoot>
     </table>
+    <input type="button" value="New" class="prettyWideButton" id="new-taxrate-button" />
     
     <div id="addTaxRateForm">
 	    <div class="modal-header">

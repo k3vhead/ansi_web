@@ -13,6 +13,8 @@ import org.apache.logging.log4j.LogManager;
 import com.ansi.scilla.common.queries.SelectType;
 import com.ansi.scilla.common.utils.WhereFieldLikeTransformer;
 import com.ansi.scilla.web.common.query.LookupQuery;
+import com.ansi.scilla.web.common.utils.ColumnFilter;
+import com.ansi.scilla.web.common.utils.ColumnFilter.ComparisonType;
 
 public class LocaleTaxRateLookupQuery extends LookupQuery {	
 	private static final long serialVersionUID = 1L;
@@ -40,11 +42,22 @@ public class LocaleTaxRateLookupQuery extends LookupQuery {
 	
 	public static final String sqlWhereClause = " ";
 
-
+	private Integer localeFilter;
+	
 	public LocaleTaxRateLookupQuery() {
 		super(sqlSelectClause, sqlFromClause, sqlWhereClause);
 		this.logger = LogManager.getLogger(this.getClass());
 	}
+
+	
+
+	public Integer getLocaleFilter() {
+		return localeFilter;
+	}
+	public void setLocaleFilter(Integer locageFilter) {
+		this.localeFilter = locageFilter;
+	}
+
 
 
 	@Override
@@ -90,6 +103,13 @@ public class LocaleTaxRateLookupQuery extends LookupQuery {
 			Collection<?> whereClauseList = CollectionUtils.collect(whereFields, new WhereFieldLikeTransformer(searchTerm));
 			whereClause = whereClause + joiner +  "(" + StringUtils.join(whereClauseList, " \n\tOR ") + ")";		
 		}
+		
+		List<ColumnFilter> filterList = new ArrayList<ColumnFilter>();	
+		if ( this.localeFilter != null ) {
+			filterList.add(new ColumnFilter(LOCALE_ID, this.localeFilter, ComparisonType.EQUAL_NUMBER));
+		}
+		super.setConstraintList(filterList);
+		
 		return whereClause;
 	}
 

@@ -57,11 +57,11 @@ public class LocaleTaxRateLookupServlet extends AbstractLookupServlet {
 
 	@Override
 	public LookupQuery makeQuery(Connection conn, HttpServletRequest request) {
-		HttpSession session = request.getSession();
-		SessionData sessionData = (SessionData)session.getAttribute(SessionData.KEY);
+//		HttpSession session = request.getSession();
+//		SessionData sessionData = (SessionData)session.getAttribute(SessionData.KEY);
 		
-		SessionUser user = sessionData.getUser();
-		List<SessionDivision> divisionList = sessionData.getDivisionList();
+//		SessionUser user = sessionData.getUser();
+//		List<SessionDivision> divisionList = sessionData.getDivisionList();
 		try {
 			AnsiURL url = new AnsiURL(request, REALM, (String[])null);
 			String searchTerm = null;
@@ -74,7 +74,9 @@ public class LocaleTaxRateLookupServlet extends AbstractLookupServlet {
 			if ( searchTerm != null ) {
 				lookupQuery.setSearchTerm(searchTerm);
 			}
-
+			if (url.getId() != null) {
+				lookupQuery.setLocaleFilter(url.getId());
+			}
 			return lookupQuery;
 			
 		} catch (ResourceNotFoundException e) { 

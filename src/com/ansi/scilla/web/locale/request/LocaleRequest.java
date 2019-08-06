@@ -6,6 +6,7 @@ import com.ansi.scilla.common.db.Locale;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.WebMessages;
+import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class LocaleRequest extends AbstractRequest {
 
@@ -61,17 +62,42 @@ public class LocaleRequest extends AbstractRequest {
 		RequestValidator.validateString(webMessages, NAME, this.name, true);
 		RequestValidator.validateState(webMessages, STATE_NAME, this.stateName, true);
 		RequestValidator.validateLocaleType(webMessages, LOCALE_TYPE_ID, this.localeTypeId, true);
-		
+		RequestValidator.validateString(webMessages, ABBREVIATION, this.abbreviation, false);
+		if ( isDuplicate(conn)) {
+			webMessages.addMessage(NAME, "Duplicate Entry");
+		}
+
 		return webMessages;
 	}
 	
 	public WebMessages validateUpdate(Connection conn, Integer localeId) throws Exception {
-		WebMessages webMessages = validateAdd(conn);
-		
+		WebMessages webMessages = new WebMessages();
+	
 		RequestValidator.validateId(conn, webMessages, "locale", Locale.LOCALE_ID, "localeId", localeId, true);
+		RequestValidator.validateString(webMessages, NAME, this.name, true);
+		RequestValidator.validateState(webMessages, STATE_NAME, this.stateName, true);
+		RequestValidator.validateLocaleType(webMessages, LOCALE_TYPE_ID, this.localeTypeId, true);
 		RequestValidator.validateString(webMessages, ABBREVIATION, this.abbreviation, false);
 		
 		return webMessages;
+	}
+	
+	
+	private boolean isDuplicate(Connection conn) throws Exception {
+		boolean dupeFound = false;
+		Locale locale = new Locale();
+		locale.setName(this.name);
+		locale.setStateName(this.stateName);
+		locale.setLocaleTypeId(this.localeTypeId);
+		locale.setAbbreviation(this.abbreviation);
+		
+		try {
+			locale.selectOne(conn);
+			dupeFound = true;
+		} catch ( RecordNotFoundException e) {
+			dupeFound = false;
+		}
+		return dupeFound;
 	}
 	
 }
