@@ -407,7 +407,7 @@
 			    				}
 							},
 							403: function($data) {
-								$("#globalMsg").html("Session Timeout. Log in and try again");
+								$("#globalMsg").html("Session Timeout. Log in and try again").show().fadeOut(100000);
 							},
 							404: function($data) {
 								$("#globalMsg").html("Invalid Selection").show().fadeOut(100000);
