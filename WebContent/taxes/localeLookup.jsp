@@ -397,7 +397,7 @@
 			    					$.each($data.data.webMessages, function (key, value) {
 			    						var $selectorName = "#" + key + "Err";
 			    						$($selectorName).show();
-			    						$($selectorName).html(value[0]).fadeOut(10000);
+			    						$($selectorName).html(value[0]).show().fadeOut(4000);
 			    					});
 			    				} else {	    				
 			    					$("#addLocaleForm").dialog("close");
@@ -413,7 +413,7 @@
 								$("#globalMsg").html("Invalid Selection").show().fadeOut(100000);
 							},
 							500: function($data) {
-								$("#globalMsg").html("System Error; Contact Support");
+								$("#globalMsg").html("System Error; Contact Support").show().fadeOut(100000);
 							}
 						},
 						dataType: 'json'
