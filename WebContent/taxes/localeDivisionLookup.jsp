@@ -88,8 +88,33 @@
        			init : function() {
        				LOCALEDIVISIONLOOKUP.createTable();  
        				LOCALEDIVISIONLOOKUP.makeClickers();
+       				LOCALEDIVISIONLOOKUP.populateDivisionSelect();
+       				TAXRATELOOKUP.markValid();  
+       				TAXRATELOOKUP.makeEditPanel();
                 }, 
                 
+                markValid : function ($inputField) {
+                	$fieldName = $($inputField).attr('name');
+                	$fieldGetter = "input[name='" + $fieldName + "']";
+                	$fieldValue = $($fieldGetter).val();
+                	$valid = '#' + $($inputField).data('valid');
+    	            var re = /.+/;	            	 
+                	if ( re.test($fieldValue) ) {
+                		$($valid).removeClass("fa");
+                		$($valid).removeClass("fa-ban");
+                		$($valid).removeClass("inputIsInvalid");
+                		$($valid).addClass("far");
+                		$($valid).addClass("fa-check-square");
+                		$($valid).addClass("inputIsValid");
+                	} else {
+                		$($valid).removeClass("far");
+                		$($valid).removeClass("fa-check-square");
+                		$($valid).removeClass("inputIsValid");
+                		$($valid).addClass("fa");
+                		$($valid).addClass("fa-ban");
+                		$($valid).addClass("inputIsInvalid");
+                	}
+                },
                 
                 createTable : function(){
             		var dataTable = $('#localeDivisionTable').DataTable( {
@@ -155,13 +180,13 @@
     			            	//console.log(row);
     			            	var $actionData = "";
     			            	if ( row.locale_id != null ) {
-//    				            	var $editLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="localeReturn.html?id='+row.locale_id+'" class="editAction" data-id="'+row.locale_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
-//    				            	
+    				            	var $editLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="localeReturn.html?id='+row.locale_id+'" class="editAction" data-id="'+row.locale_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
+    				            	
 //    		            			var $ticketData = 'data-id="' + row.locale_id + '"';
 //    			            		$printLink = '<ansi:hasPermission permissionRequired="TAX_READ"><i class="print-link fa fa-print" aria-hidden="true" ' + $localeData + '></i></ansi:hasPermission>'
 //    			            		var $claimLink = '';
-//    			            		
-//    				            	$actionData = $editLink + $printLink;
+    			            		
+    				            	$actionData = $editLink; //+ $printLink;
     			            	}
     			            	return $actionData;
     			            } }],
@@ -193,7 +218,104 @@
     				});
 
     			},
+    			
+    			makeEditPanel : function() {	
+    				$("#localeDivisionModal").dialog({
+    					autoOpen: false,
+    					height: 400,
+    					width: 600,
+    					modal: true,
+    					buttons: [
+    						{
+    							id: "closeLocaleDivisionModal",
+    							click: function() {
+    								$("#localeDivisionModal").dialog( "close" );
+    							}
+    						},{
+    							id: "goEdit",
+    							click: function($event) {
+    								LOCALEDIVISIONLOOKUP.updateTaxRate();
+    							}
+    						}	      	      
+    					],
+    					close: function() {
+    						LOCALEDIVISIONLOOKUP.clearAddForm();
+    						$("#localeDivisionModal").dialog( "close" );
+    						//allFields.removeClass( "ui-state-error" );
+    					}
+    				});
+    			},
+    			
+    			updateTaxRate : function () {
+    				console.debug("Updating Tax Rate");
+    				var $localeId = $("#localeDivisionModal input[name='localeId']").val();
+    				console.debug("localeId: " + $localeId);
+    				
+    				if ( $localeId == null || $localeId == '') {
+    					$url = 'localeDivision';
+    				} else {
+    					$url = 'localeDivision/' + $localeId;
+    				}
+    				console.debug($url);
+    						
+    				var $outbound = {};
+    				$outbound['divisionId'] = $("#addTaxRateForm input[name='divisionId']").val();
+    				$outbound['localeName'] = $("#addTaxRateForm input[name='localeName']").val();
+    				$outbound['effectiveStartDate'] = $("#addTaxRateForm input[name='effectiveStartDate']").val();
+    				$outbound['effectiveStopDate'] = $("#addTaxRateForm input[name='effectiveStopDate']").val();
+    				$outbound['addressId'] = $("#addTaxRateForm select[name='addressId']").val();
+    				console.debug($outbound);
+    				
+    				var jqxhr = $.ajax({
+    					type: 'POST',
+    					url: $url,
+    					data: JSON.stringify($outbound),
+    					statusCode: {
+    						200: function($data) {
+    			    			if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+    			    				$.each($data.data.webMessages, function (key, value) {
+    			    					console.log(key);
+    			    					if ( key == "GLOBAL_MESSAGE" ) {
+    			    						$("#globalMsg").html(value[0]).show().fadeOut(6000);
+    			    						$("#addTaxRateForm").dialog("close");
+    			    					} else {
+	    			    					var $selectorName = "#" + key + "Err";
+	    			    					$($selectorName).show();
+	    			    					$($selectorName).html(value[0]).fadeOut(6000);
+    			    					}
+    			    				});
+    			    				
+    			   				} else {	    				
+    			    				$("#addTaxRateForm").dialog("close");
+    			    				$('#localeTaxRateTable').DataTable().ajax.reload();		
+    			    				TAXRATELOOKUP.clearAddForm();		    					
+    			    				$("#globalMsg").html("Update Successful").show().fadeOut(6000);
+    			    			}
+    						},
+    						403: function($data) {
+    							$("#globalMsg").html("Session Timeout. Log in and try again");
+    						},
+    						404: function($data) {
+    							$("#globalMsg").html("Invalid Selection").show().fadeOut(100000);
+    						},
+    						500: function($data) {
+    							$("#globalMsg").html("System Error; Contact Support");
+    						}
+    					},
+    					dataType: 'json'
+    				});
+    			},
             	
+    			populateDivisionSelect:function() {
+                	$data = ANSI_UTILS.getDivisionList();
+                	$select = $("#divisionId");
+        			$('option', $select).remove();
+        			$select.append(new Option("",null));
+        			$.each($data, function($index, $val) {
+        				var $display = $val.divisionNbr + "-" + $val.divisionCode;
+        				$select.append(new Option($display, $val.divisionId));
+        			});	
+                },
             	
             	makeClickers : function() {
             		$('.ScrollTop').click(function() {
@@ -206,40 +328,7 @@
         
         	LOCALEDIVISIONLOOKUP.init();
         	
-				
-			function doEdit($clickevent) {
-				var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
-					var $url = 'localeDivisionLookup/' + $rowid;
-					//console.log("YOU PASSED ROW ID:" + $rowid);
-					var jqxhr = $.ajax({
-						type: 'GET',
-						url: $url,
-						success: function($data) {
-							//console.log($data);
-							//localeId, name, localeTypeId, typeName, stateName, effectiveDate, rateValue
-			        		$("#localeId").val(($data.data.codeList[0]).localeId);
-			        		$("#name").val(($data.data.codeList[0]).name);
-			        		$("#localeTypeId").val(($data.data.codeList[0]).localeTypeId);
-			        		$("#typeName").val(($data.data.codeList[0]).typeName);
-			        		$("#stateName").val(($data.data.codeList[0]).stateName);
-			        		$("#effectiveDate").val(($data.data.codeList[0]).effectiveDate);
-			        		$("#rateValue").val(($data.data.codeList[0]).rateValue);
-			        		
-			        		$("#updateOrAdd").val("update");
-			        		$("#addLocaleForm").dialog( "open" );
-						},
-						statusCode: {
-							403: function($data) {
-								$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-							} 
-						},
-						dataType: 'json'
-					});
-				//console.log("Edit Button Clicked: " + $rowid);
-			}
-				
-				
-				
+			
 			function doPrint($clickevent) {
 				var $localeId = $clickevent.currentTarget.attributes['data-id'].value;
 				console.debug("ROWID: " + $localeId);
@@ -281,6 +370,53 @@
         <tfoot>
         </tfoot>
     </table>
+    
+     <div id="localeDivisionModal">
+	    <div class="modal-header">
+	    	<h5 class="modal-title" id="name"></h5>
+	    </div>
+    	<table>
+    		<tr>
+    			<td><span class="formHdr">Division</span></td>
+    			<td>
+    				<select name="divisionId" class="type-select" />
+    				
+    			</td>
+    			<td><span class="err" id="divisionIdErr"></span></td>
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">Locale Name</span></td>
+    			<td><input type="text" name="localeName" /></td>
+    			<td><span class="err" id="localeNameErr"></span></td>
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">Locale Type</span></td>
+    			<td><input type="text" name="localeTypeId" /></td>
+    			<td><span class="err" id="localeTypeIdErr"></span></td>
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">State</span></td>
+    			<td><span id="stateName" /></td>
+    			<td><span class="err" id="stateNameErr"></span></td>
+    		</tr>
+    		
+    		<tr>
+    			<td><span class="formHdr">Effective Start Date</span></td>
+    			<td><input type="text" name="effectiveStartDate" class="dateField" /></td>
+    			<td><span class="err" id="effectiveStartDateErr"></span></td>
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">Effective End Date</span></td>
+    			<td><input type="text" name="effectiveEndDate" class="dateField" /></td>
+    			<td><span class="err" id="effectiveEndDateErr"></span></td>
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">Address</span></td>
+    			<td><input type="text" name="addressId" /></td>
+    			<td><span class="err" id="addressIdErr"></span></td>
+    		</tr>
+    	</table>
+    </div>
     
     <webthing:scrolltop />
 
