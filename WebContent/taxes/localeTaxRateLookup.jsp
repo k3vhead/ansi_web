@@ -102,8 +102,11 @@
        				TAXRATELOOKUP.createTable();  
        				TAXRATELOOKUP.makeClickers();
        				TAXRATELOOKUP.markValid();  
-       				TAXRATELOOKUP.makeEditPanel();
-       				TAXRATELOOKUP.showNew();       				
+       				TAXRATELOOKUP.makeModal();
+       				if ( TAXRATELOOKUP.localeFilter != null && TAXRATELOOKUP.localeFilter != "" ) {
+                		$("#new-taxrate-button").show();
+                		
+       				}
                 }, 
                 
                 clearAddForm : function () {
@@ -116,13 +119,6 @@
     				});
     				$('.err').html("");
     				$('#editPanel').data('rownum',null);
-                },
-                
-                
-                
-                doLocaleFilter : function() {
-                	console.log("Doing filter: " + TAXRATELOOKUP.localeFilter);	
-                	$('.filter-div input[name="columns[0][search][value]"]').val(TAXRATELOOKUP.localeFilter);
                 },
                 
                 
@@ -155,7 +151,6 @@
                 		$url = "taxRateLookup";
                 	} else {
                 		$url = "taxRateLookup/" + TAXRATELOOKUP.localeFilter;
-                		$("#new-taxrate-button").show();
                 	}
                 	
             		var dataTable = $('#localeTaxRateTable').DataTable( {
@@ -216,13 +211,8 @@
     			            	//console.log(row);
     			            	var $actionData = "";
     			            	if ( row.locale_id != null ) {
-    				            	var $editLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="#" class="editAction" data-id="'+row.locale_id+'" data-name="'+row.locale_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
-    				            	
-//    		            			var $ticketData = 'data-id="' + row.locale_id + '"';
-//    			            		$printLink = '<ansi:hasPermission permissionRequired="TAX_READ"><i class="print-link fa fa-print" aria-hidden="true" ' + $localeData + '></i></ansi:hasPermission>'
-//    			            		var $claimLink = '';
-//    			            		
-    				            	$actionData = $editLink// + $printLink;
+    				            	var $editLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="#" class="editAction" data-id="'+row.locale_id+'" data-effectivedate="'+row.effective_date+'" data-ratetypeid="'+row.type_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
+    				            	$actionData = $editLink;
     			            	}
     			            	return $actionData;
     			            } }],
@@ -230,11 +220,7 @@
     			            	//console.log(json);
     			            	//doFunctionBinding();
     			            	var myTable = this;
-    			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#localeTaxRateTable", TAXRATELOOKUP.createTable);
-    			            	if ( TAXRATELOOKUP.localeFilter != null ) {
-    		       					TAXRATELOOKUP.doLocaleFilter();
-    		       					TAXRATELOOKUP.localeFilter = null;
-    		       				}
+    			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#localeTaxRateTable", TAXRATELOOKUP.createTable);    			            	
     			            },
     			            "drawCallback": function( settings ) {
     			            	TAXRATELOOKUP.doFunctionBinding();
@@ -245,7 +231,10 @@
             	
             	doFunctionBinding : function() {
     				$( ".editAction" ).on( "click", function($clickevent) {
-    					TAXRATELOOKUP.showEdit($clickevent);
+    					var $localeId = $clickevent.currentTarget.attributes['data-id'].value;
+    					var $effectiveDate = $clickevent.currentTarget.attributes['data-effectivedate'].value;
+    					var $rateTypeId = $clickevent.currentTarget.attributes['data-ratetypeid'].value;
+    					TAXRATELOOKUP.showEdit($localeId, $effectiveDate, $rateTypeId);
     				});					
     				$(".print-link").on( "click", function($clickevent) {
     					doPrint($clickevent);
@@ -266,6 +255,7 @@
         				return false;
                	    });
             		
+            		
             		$('.type-swap').click(function() {
             			$(".type-text").toggle();
             			$(".type-select").toggle();
@@ -274,9 +264,19 @@
         				$("#addTaxRateForm select[name='typeId']").val("");
             			
             		});
+            		
+            		
+    				$("#new-taxrate-button").click(function($event) {
+    					$('#goEdit').data("localeId",TAXRATELOOKUP.localeFilter);
+    	        		$('#goEdit').button('option', 'label', 'Save');
+    	        		$('#closeAddTaxRateForm').button('option', 'label', 'Close');
+    	        		$("#addTaxRateForm ").dialog("option","title", "Add New Tax Rate").dialog("open");
+    	        		TAXRATELOOKUP.showEdit(TAXRATELOOKUP.localeFilter, null, null);
+    				});
+
             	},
             	
-            	makeEditPanel : function() {	
+            	makeModal : function() {	
     				$("#addTaxRateForm" ).dialog({
     					autoOpen: false,
     					height: 400,
@@ -305,11 +305,7 @@
     			
     			
     			
-    			showEdit : function ($clickevent) {
-                	
-    			    //$name = $("#addLocaleForm").attr("data-name");
-    				//var $name = $(this).attr("data-name");
-    				var $localeId = $clickevent.currentTarget.attributes['data-id'].value;
+    			showEdit : function ($localeId, $effectiveDate, $rateTypeId) {
     				console.debug("localeId: " + $localeId);
     				$("#goEdit").data("localeId: " + $localeId);
     			    $('#goEdit').button('option', 'label', 'Save');
@@ -317,56 +313,54 @@
     			    
     				var $url = 'localeTaxRate/' + $localeId;
     				var jqxhr = $.ajax({
-    				type: 'GET',
-    				url: $url,
-    				statusCode: {
-    					200: function($data) {
-    						var $taxRate = $data.data;
-    						$.each($taxRate, function($fieldName, $value) {									
-    							$selector = "#editPanel input[name=" + $fieldName + "]";
-    							if ( $($selector).length > 0 ) {
-    								$($selector).val($value);
-    							}
-    						}); 
-    						console.log("showEdit: 200");
-    						console.log($data);
-    						$select = $("select[name='typeId']");
-    	        			$('option', $select).remove();
-    	        			$select.append(new Option("",null));
-    	        			$.each($data.data.taxTypeList, function($index, $val) {
-    	        				$select.append(new Option($val.typeName, $val.typeId));
-    	        			});	
-    	        			
-    	        			
-    						$("#localeId").html($taxRate.localeId);
-    						$("#addTaxRateForm input[name='localeId']").val($taxRate.localeId);
-    						$("#localeName").html($taxRate.name);
-    						$("#localeTypeId").html($taxRate.localeTypeId);
-    						$("#stateName").html($taxRate.stateName);	
-    						$("#addTaxRateForm  input[name='effectiveDate']").val($taxRate.effectiveDate);
-    						$("#addTaxRateForm  input[name='rateValue']").val($taxRate.rateValue);	
-    						$("#addTaxRateForm  select[name='typeId']").val($taxRate.typeId);	
-    						$("#addTaxRateForm  input[name='typeName']").val("");
-    						$("#addTaxRateForm  .err").html("");
-    						$("#addTaxRateForm").dialog("option","title", "Edit Tax Rate").dialog("open");
-    						
-    						
-    						console.log("showEdit: End showEdit: 200.");
-    					},
-    					403: function($data) {
-    						$("#addTaxRateForm").dialog("close");
-    						$("#globalMsg").html("Session Timeout. Log in and try again").show();
-    					},
-    					404: function($data) {
-    						$("#addTaxRateForm").dialog("close");
-    						$("#globalMsg").html("Invalid Request").show();
-    					},
-    					500: function($data) {
-    						$("#addTaxRateForm").dialog("close");
-    						$("#globalMsg").html("System Error; Contact Support").show();
-    					}
-    				},
-    				dataType: 'json'
+	    				type: 'GET',
+	    				url: $url,
+	    				data:{"effectiveDate":$effectiveDate, "rateTypeId":$rateTypeId},
+	    				statusCode: {
+	    					200: function($data) {
+	    						var $taxRate = $data.data;
+	    						$.each($taxRate, function($fieldName, $value) {									
+	    							$selector = "#editPanel input[name=" + $fieldName + "]";
+	    							if ( $($selector).length > 0 ) {
+	    								$($selector).val($value);
+	    							}
+	    						}); 
+	    						$select = $("select[name='typeId']");
+	    	        			$('option', $select).remove();
+	    	        			$select.append(new Option("",null));
+	    	        			$.each($data.data.taxTypeList, function($index, $val) {
+	    	        				$select.append(new Option($val.typeName, $val.typeId));
+	    	        			});	
+	    	        			
+	    	        			
+	    						$("#localeId").html($taxRate.localeId);
+	    						$("#addTaxRateForm input[name='localeId']").val($taxRate.localeId);
+	    						$("#localeName").html($taxRate.name);
+	    						$("#localeTypeId").html($taxRate.localeTypeId);
+	    						$("#stateName").html($taxRate.stateName);	
+	    						$("#addTaxRateForm  input[name='effectiveDate']").val($taxRate.effectiveDate);
+	    						$("#addTaxRateForm  input[name='keyEffectiveDate']").val($taxRate.effectiveDate);
+	    						$("#addTaxRateForm  input[name='rateValue']").val($taxRate.rateValue);	
+	    						$("#addTaxRateForm  select[name='typeId']").val($taxRate.typeId);
+	    						$("#addTaxRateForm  input[name='keyRateTypeId']").val($taxRate.typeId);	
+	    						$("#addTaxRateForm  input[name='typeName']").val("");
+	    						$("#addTaxRateForm  .err").html("");
+	    						$("#addTaxRateForm").dialog("option","title", "Edit Tax Rate").dialog("open");
+	    					},
+	    					403: function($data) {
+	    						$("#addTaxRateForm").dialog("close");
+	    						$("#globalMsg").html("Session Timeout. Log in and try again").show();
+	    					},
+	    					404: function($data) {
+	    						$("#addTaxRateForm").dialog("close");
+	    						$("#globalMsg").html("Invalid Request").show();
+	    					},
+	    					500: function($data) {
+	    						$("#addTaxRateForm").dialog("close");
+	    						$("#globalMsg").html("System Error; Contact Support").show();
+	    					}
+	    				},
+	    				dataType: 'json'
     				});
     			},
     			
@@ -385,6 +379,8 @@
     						
     				var $outbound = {};
     				$outbound['localeId'] = $("#addTaxRateForm input[name='localeId']").val();
+    				$outbound['keyEffectiveDate'] = $("#addTaxRateForm input[name='keyEffectiveDate']").val();
+    				$outbound['keyRateTypeId'] = $("#addTaxRateForm input[name='keyRateTypeId']").val();
     				$outbound['typeName'] = $("#addTaxRateForm input[name='typeName']").val();
     				$outbound['effectiveDate'] = $("#addTaxRateForm input[name='effectiveDate']").val();
     				$outbound['rateValue'] = $("#addTaxRateForm input[name='rateValue']").val();
@@ -431,43 +427,15 @@
     				});
     			},
     			
-    			showNew : function () {
-    				$("#new-taxrate-button").click(function($event) {
-    					$('#goEdit').data("localeId",null);
-    	        		$('#goEdit').button('option', 'label', 'Save');
-    	        		$('#closeAddTaxRateForm').button('option', 'label', 'Close');
-    	        		
-    	 //       		$("#editPanel display[name='']").val("");
-    					$("#addTaxRateForm	input[name='localeId']").val("");
-//    					TAXRATELOOKUP.populateLocaleSelect;
-    					$("#addTaxRateForm  input[name='name']").val("");
-    					$("#addTaxRateForm  input[name='localeTypeId']").val("");
-    					$("#addTaxRateForm  input[name='typeName']").val("");	
-    					$("#addTaxRateForm  input[name='stateName']").val("");	
-    					$("#addTaxRateForm  input[name='effectiveDate']").val("");
-    					$("#addTaxRateForm  input[name='rateValue']").val("");	
-    	        		$("#addTaxRateForm  .err").html("");
-    	        		$("#addTaxRateForm ").dialog("option","title", "Add New Tax Rate").dialog("open");
-    				});
-    			},
+    			
+    			
             	    
         	};
         
         	TAXRATELOOKUP.init();
         		
 				
-			function doPrint($clickevent) {
-				var $localeId = $clickevent.currentTarget.attributes['data-id'].value;
-				console.debug("ROWID: " + $localeId);
-				var a = document.createElement('a');
-                var linkText = document.createTextNode("Download");
-                a.appendChild(linkText);
-                a.title = "Download";
-                a.href = "ticketPrint/" + $localeId;
-                a.target = "_new";   // open in a new window
-                document.body.appendChild(a);
-                a.click();				
-			}
+			
         });
         		
         </script>        
@@ -495,6 +463,8 @@
 	    <div class="modal-header">
 	    <h5 class="modal-title" id="name"></h5>
 	    </div>
+	    <input type="hidden" name="keyEffectiveDate" />
+	    <input type="hidden" name="keyRateTypeId" />
     	<table>
     		<tr>
     			<td><span class="formHdr">Locale ID</span></td>

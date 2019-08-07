@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import com.ansi.scilla.common.ApplicationObject;
@@ -55,34 +56,47 @@ public class LocaleTaxRateResponse extends MessageResponse {
 	
 	
 	
-	public LocaleTaxRateResponse(Connection conn, Integer localeId) throws RecordNotFoundException, Exception {
+	public LocaleTaxRateResponse(Connection conn, Integer localeId, Date effectiveDate, Integer rateTypeId) throws RecordNotFoundException, Exception {
 		this();
-		LocaleTaxRate localeTaxRate = new LocaleTaxRate();
-		localeTaxRate.setLocaleId(localeId);
-		localeTaxRate.selectOne(conn);
 		Locale locale = new Locale();
 		locale.setLocaleId(localeId);
 		locale.selectOne(conn);
+		LocaleTaxRate localeTaxRate = null;
+		if ( effectiveDate != null & rateTypeId != null) {
+			try {
+				localeTaxRate = new LocaleTaxRate();
+				localeTaxRate.setLocaleId(localeId);
+				localeTaxRate.setEffectiveDate(effectiveDate);
+				localeTaxRate.setTypeId(rateTypeId);
+				localeTaxRate.selectOne(conn);
+			} catch ( RecordNotFoundException e) {
+				// this is OK
+				localeTaxRate = null;
+			}
+		}
 		makeLocale(conn, localeTaxRate, locale);
+			
 		makeTypeList(conn);
 	}
 	
 	
 	
 	private void makeLocale(Connection conn, LocaleTaxRate localeTaxRate, Locale locale) throws Exception {
-		this.localeId = localeTaxRate.getLocaleId();
+		this.localeId = locale.getLocaleId();
 		this.name = locale.getName();
 		this.stateName = locale.getStateName();
-		this.effectiveDate = Calendar.getInstance();
-		this.effectiveDate.setTime(localeTaxRate.getEffectiveDate());
 		this.localeTypeId = locale.getLocaleTypeId();
-		this.rateValue = localeTaxRate.getRateValue();
-		RateType rateType = new RateType();
-		this.typeId = localeTaxRate.getTypeId();
-		rateType.setTypeId(this.typeId);
-		rateType.selectOne(conn);
-		this.typeName = rateType.getTypeName();
 		
+		if ( localeTaxRate != null ) {
+			this.effectiveDate = Calendar.getInstance();
+			this.effectiveDate.setTime(localeTaxRate.getEffectiveDate());
+			this.rateValue = localeTaxRate.getRateValue();
+			RateType rateType = new RateType();
+			this.typeId = localeTaxRate.getTypeId();
+			rateType.setTypeId(this.typeId);
+			rateType.selectOne(conn);
+			this.typeName = rateType.getTypeName();
+		}		
 	}
 	
 	private void makeTypeList(Connection conn) throws Exception {

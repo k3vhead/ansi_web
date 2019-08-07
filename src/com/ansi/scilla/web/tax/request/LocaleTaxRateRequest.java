@@ -27,12 +27,17 @@ public class LocaleTaxRateRequest extends AbstractRequest {
 	public static final String RATE_VALUE = "rateValue";	
 	public static final String TYPE_ID = "typeId";
 	public static final String TYPE_NAME = "typeName";
+	// these 2 fields are used (with the locale id) to id existing rows for update
+	public static final String KEY_EFFECTIVE_DATE = "keyEffectiveDate";
+	public static final String KEY_RATE_TYPE_ID = "keyRateTypeId";
 		
 	private Integer localeId;
 	private Date effectiveDate;
 	private BigDecimal rateValue;
 	private Integer typeId;
 	private String typeName;
+	private Date keyEffectiveDate;
+	private Integer keyRateTypeId;
 	
 	public Integer getLocaleId() {
 		return localeId;
@@ -66,27 +71,33 @@ public class LocaleTaxRateRequest extends AbstractRequest {
 	public void setTypeName(String typeName) {
 		this.typeName = typeName;
 	}
-
-
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
+	public Date getKeyEffectiveDate() {
+		return keyEffectiveDate;
+	}
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
+	public void setKeyEffectiveDate(Date keyEffectiveDate) {
+		this.keyEffectiveDate = keyEffectiveDate;
+	}
+	public Integer getKeyRateTypeId() {
+		return keyRateTypeId;
+	}
+	public void setKeyRateTypeId(Integer keyRateTypeId) {
+		this.keyRateTypeId = keyRateTypeId;
+	}
 	public WebMessages validateAdd(Connection conn) throws Exception {
 		Logger logger = LogManager.getLogger(this.getClass());
-		logger.log(Level.DEBUG, "Validating: " + this.typeName + "\t" + this.typeId);
 		WebMessages webMessages = new WebMessages();
 		RequestValidator.validateDate(webMessages, EFFECTIVE_DATE, effectiveDate, true, null, null);
 		RequestValidator.validateBigDecimal(webMessages, RATE_VALUE, rateValue, rateValue, rateValue, true);
 		if ( StringUtils.isBlank(this.typeName )) {
-			logger.log(Level.DEBUG, "Name is blank");
 			if ( this.typeId == null ) {
-				logger.log(Level.DEBUG, "Id is blank");
 				webMessages.addMessage(TYPE_ID, "Required Value");
 			} else {
-				logger.log(Level.DEBUG, "Id is not blank");
 				RequestValidator.validateId(conn, webMessages, TaxRateType.TABLE, TaxRateType.TYPE_ID, TYPE_ID, this.typeId, true);
 			}
 		} else {
-			logger.log(Level.DEBUG, "Name is not blank");
 			if ( this.typeId == null ) {
-				logger.log(Level.DEBUG, "Id is blank");
 				if ( duplicateExists(conn, this.typeName) ) {
 					webMessages.addMessage(LocaleTaxRateRequest.TYPE_ID, "Duplicate value");
 				}

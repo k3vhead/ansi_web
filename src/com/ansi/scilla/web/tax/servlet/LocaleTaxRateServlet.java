@@ -2,6 +2,7 @@ package com.ansi.scilla.web.tax.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.servlet.ServletException;
@@ -37,6 +38,10 @@ public class LocaleTaxRateServlet extends AbstractServlet {
 	private static final long serialVersionUID = 1L;
 	public static final String REALM = "localeTaxRate";
 	
+	public static final String RATE_TYPE_ID = "rateTypeId";
+	public static final String EFFECTIVE_DATE = "effectiveDate";
+	
+	
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Connection conn = null;
@@ -58,7 +63,7 @@ public class LocaleTaxRateServlet extends AbstractServlet {
 				LocaleTaxRateRequest localeTaxRateRequest = new LocaleTaxRateRequest();
 				AppUtils.json2object(jsonString, localeTaxRateRequest);
 								
-				if(ansiURL.getId() == null) {
+				if(localeTaxRateRequest.getKeyRateTypeId() == null || localeTaxRateRequest.getKeyEffectiveDate() == null) {
 					//this is add
 					webMessages = localeTaxRateRequest.validateAdd(conn);
 					if(webMessages.isEmpty() == true) {
@@ -103,15 +108,23 @@ public class LocaleTaxRateServlet extends AbstractServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
+		String effectiveDateParm = request.getParameter(EFFECTIVE_DATE);
+		String rateTypeIdParm = request.getParameter(RATE_TYPE_ID);
+		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+		
+		
 		AnsiURL ansiURL = null;
 		try {
+			Date effectiveDate = StringUtils.isBlank(effectiveDateParm) ? null : sdf.parse(effectiveDateParm);
+			Integer rateTypeId = StringUtils.isBlank(rateTypeIdParm) ? null : Integer.valueOf(rateTypeIdParm);
+
 			ansiURL = new AnsiURL(request, REALM, (String[])null); 
 			AppUtils.validateSession(request, Permission.TAX_READ);
 			Connection conn = null;
 			LocaleTaxRateResponse taxRateResponseResponse = null;
 			try {
 				conn = AppUtils.getDBCPConn();
-				taxRateResponseResponse = new LocaleTaxRateResponse(conn, ansiURL.getId());
+				taxRateResponseResponse = new LocaleTaxRateResponse(conn, ansiURL.getId(), effectiveDate, rateTypeId);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, taxRateResponseResponse); 
 				
 			} catch(RecordNotFoundException recordNotFoundEx) {
@@ -127,17 +140,19 @@ public class LocaleTaxRateServlet extends AbstractServlet {
 			super.sendNotFound(response);
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
 			super.sendForbidden(response);
+		} catch ( Exception e) {
+			AppUtils.logException(e);
+			throw new ServletException(e);
 		}		
 		
 	}
 
 	protected void doAdd(Connection conn, LocaleTaxRateRequest taxRateRequest, SessionData sessionData, HttpServletResponse response) throws Exception {
-		LocaleTaxRate taxRate = new LocaleTaxRate();
-		makeTaxRate(conn, taxRate, taxRateRequest, sessionData.getUser());
-		Integer localeId = taxRate.insertWithKey(conn);
+		LocaleTaxRate localeTaxRate = new LocaleTaxRate();
+		makeTaxRate(conn, localeTaxRate, taxRateRequest, sessionData.getUser());
+		localeTaxRate.insertWithNoKey(conn);
 		conn.commit();
-		taxRate.setLocaleId(localeId);
-		LocaleTaxRateResponse localeTaxRateResponse = new LocaleTaxRateResponse(conn, taxRate);
+		LocaleTaxRateResponse localeTaxRateResponse = new LocaleTaxRateResponse(conn, localeTaxRate);
 		super.sendResponse(conn, response, ResponseCode.SUCCESS, localeTaxRateResponse);
 	}
 	
@@ -151,6 +166,8 @@ public class LocaleTaxRateServlet extends AbstractServlet {
 		makeTaxRate(conn, taxRate, taxRateRequest, sessionData.getUser());
 		LocaleTaxRate key = new LocaleTaxRate();
 		key.setLocaleId(localeId);
+		key.setEffectiveDate(taxRateRequest.getKeyEffectiveDate());
+		key.setTypeId(taxRateRequest.getKeyRateTypeId());
 		taxRate.update(conn, key);
 		conn.commit();
 		LocaleTaxRateResponse taxRateResponse = new LocaleTaxRateResponse(conn, taxRate);
@@ -165,31 +182,29 @@ public class LocaleTaxRateServlet extends AbstractServlet {
 		
 	}
 
-	private void makeTaxRate(Connection conn, LocaleTaxRate taxRate, LocaleTaxRateRequest taxRateRequest, SessionUser sessionUser) throws Exception {
+	private void makeTaxRate(Connection conn, LocaleTaxRate localeTaxRate, LocaleTaxRateRequest taxRateRequest, SessionUser sessionUser) throws Exception {
 		Date today = new Date();
 	
-		if ( taxRateRequest.getLocaleId() != null ) {
-			taxRate.setLocaleId(taxRateRequest.getLocaleId());
-		}
-		taxRate.setRateValue(taxRateRequest.getRateValue());
-		taxRate.setEffectiveDate(taxRateRequest.getEffectiveDate());
+		localeTaxRate.setLocaleId(taxRateRequest.getLocaleId());
+		localeTaxRate.setRateValue(taxRateRequest.getRateValue());
+		localeTaxRate.setEffectiveDate(taxRateRequest.getEffectiveDate());
 		
 		if ( StringUtils.isBlank(taxRateRequest.getTypeName())) {
 			// we're using an existing tax type
-			taxRate.setTypeId(taxRateRequest.getTypeId());
+			localeTaxRate.setTypeId(taxRateRequest.getTypeId());
 		} else {
 			// we're adding a new tax type
 			Integer taxRateTypeId = makeTaxRateType(conn, taxRateRequest.getTypeName(), sessionUser);
-			taxRate.setTypeId(taxRateTypeId);
+			localeTaxRate.setTypeId(taxRateTypeId);
 		}
 		
 		
-		if ( taxRate.getAddedBy() == null ) {
-			taxRate.setAddedBy(sessionUser.getUserId());
-			taxRate.setAddedDate(today);
+		if ( localeTaxRate.getAddedBy() == null ) {
+			localeTaxRate.setAddedBy(sessionUser.getUserId());
+			localeTaxRate.setAddedDate(today);
 		}
-		taxRate.setUpdatedBy(sessionUser.getUserId());
-		taxRate.setUpdatedDate(today);
+		localeTaxRate.setUpdatedBy(sessionUser.getUserId());
+		localeTaxRate.setUpdatedDate(today);
 	
 	}
 
