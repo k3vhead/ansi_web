@@ -533,16 +533,13 @@ change log
     		</tr>
     	</table>
 
-		<ansi:hasPermission permissionRequired="SYSADMIN">
-			<ansi:hasWrite>
+		<ansi:isSuperUser>
 				<div class="addButtonDiv">
 					<input type="button" id="addButton" class="prettyWideButton" value="<bean:message key="field.label.new" />" />
 				</div>
-			</ansi:hasWrite>
-		</ansi:hasPermission>
+		</ansi:isSuperUser>
     	
-    	<ansi:hasPermission permissionRequired="SYSADMIN">
-    		<ansi:hasWrite>
+		<ansi:isSuperUser>
 		    	<div id="confirmDelete">
 					<!-- // modthis -->
 		    		Are You Sure You Want to Delete this Tax Rate?<br />
@@ -595,7 +592,6 @@ change log
 		    			</table>
 		    		</form>
 		    	</div>		    			    	
-	    	</ansi:hasWrite>
-    	</ansi:hasPermission>
+		</ansi:isSuperUser>
     </tiles:put>
 </tiles:insert>
