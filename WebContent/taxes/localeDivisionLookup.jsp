@@ -70,7 +70,7 @@
 			.dataTables_wrapper {
 				padding-top:10px;
 			}
-			#ticket-modal {
+			#localeDivisionModal {
 				display:none;	
 			}
 			.ticket-clicker {
@@ -87,10 +87,13 @@
 
        			init : function() {
        				LOCALEDIVISIONLOOKUP.createTable();  
+       				LOCALEDIVISIONLOOKUP.clearAddForm();
        				LOCALEDIVISIONLOOKUP.makeClickers();
        				LOCALEDIVISIONLOOKUP.populateDivisionSelect();
-       				TAXRATELOOKUP.markValid();  
-       				TAXRATELOOKUP.makeEditPanel();
+       				LOCALEDIVISIONLOOKUP.makeLocaleTypeList();
+       				LOCALEDIVISIONLOOKUP.markValid();  
+       				LOCALEDIVISIONLOOKUP.makeEditPanel();
+       				LOCALEDIVISIONLOOKUP.showNew();
                 }, 
                 
                 markValid : function ($inputField) {
@@ -114,6 +117,18 @@
                 		$($valid).addClass("fa-ban");
                 		$($valid).addClass("inputIsInvalid");
                 	}
+                },
+                
+                clearAddForm : function () {
+    				$.each( $('#localeDivisionModal').find("input"), function(index, $inputField) {
+    					$fieldName = $($inputField).attr('name');
+    					if ( $($inputField).attr("type") == "text" ) {
+    						$($inputField).val("");
+    						LOCALEDIVISIONLOOKUP.markValid($inputField);
+    					}
+    				});
+    				$('.err').html("");
+    				$('#localeDivisionModal').data('rownum',null);
                 },
                 
                 createTable : function(){
@@ -219,6 +234,24 @@
 
     			},
     			
+    			showNew : function () {
+					$(".showNew").click(function($event) {
+						$('#goEdit').data("localeId",null);
+		        		$('#goEdit').button('option', 'label', 'Save');
+		        		$('#closeLocaleDivisionModal').button('option', 'label', 'Close');
+		        		
+						$("#localeDivisionModal  select[name='divisionId']").val("");
+						$("#localeDivisionModal  input[name='localeName']").val("");
+						$("#localeDivisionModal  input[name='localeType']").val("");
+						$("#localeDivisionModal  select[name='stateName']").val("");
+						$("#localeDivisionModal  input[name='effectiveStartDate']").val("");	
+						$("#localeDivisionModal  input[name='effectiveStopDate']").val("");
+						$("#localeDivisionModal  input[name='addressId']").val("");				        		
+		        		$("#localeDivisionModal  .err").html("");
+		        		$("#localeDivisionModal ").dialog("option","title", "Add New Locale/Division").dialog("open");
+					});
+				},
+    			
     			makeEditPanel : function() {	
     				$("#localeDivisionModal").dialog({
     					autoOpen: false,
@@ -316,6 +349,27 @@
         				$select.append(new Option($display, $val.divisionId));
         			});	
                 },
+                
+				makeLocaleTypeList: function (){ 
+	    			var jqxhr = $.ajax({
+	    				type: 'GET',
+	    				url: "options?LOCALE_TYPE",
+	    				success: function($data) {
+	    					var $select = $("#localeDivisionModal select[name='localeTypeId']")
+	    					$('option', $select).remove();
+	    					$select.append(new Option("",""));
+	    					$.each($data.data.localeType, function(index, val){
+	    						$select.append(new Option(val.display, val.name));
+	    					});
+	    				},
+	    				statusCode: {
+	    					403: function($data) {
+	    						$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+	    					}
+	    				},
+	    				dataType: 'json'
+	    			});
+	    		},	  
             	
             	makeClickers : function() {
             		$('.ScrollTop').click(function() {
@@ -379,7 +433,7 @@
     		<tr>
     			<td><span class="formHdr">Division</span></td>
     			<td>
-    				<select name="divisionId" class="type-select" />
+    				<select name="divisionId" />
     				
     			</td>
     			<td><span class="err" id="divisionIdErr"></span></td>
@@ -391,12 +445,14 @@
     		</tr>
     		<tr>
     			<td><span class="formHdr">Locale Type</span></td>
-    			<td><input type="text" name="localeTypeId" /></td>
+    			<td><select name="localeTypeId" /></td>
     			<td><span class="err" id="localeTypeIdErr"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">State</span></td>
-    			<td><span id="stateName" /></td>
+    			<td>
+    				<select name="stateName" ><webthing:states /></select>
+    			</td>
     			<td><span class="err" id="stateNameErr"></span></td>
     		</tr>
     		
@@ -406,9 +462,9 @@
     			<td><span class="err" id="effectiveStartDateErr"></span></td>
     		</tr>
     		<tr>
-    			<td><span class="formHdr">Effective End Date</span></td>
-    			<td><input type="text" name="effectiveEndDate" class="dateField" /></td>
-    			<td><span class="err" id="effectiveEndDateErr"></span></td>
+    			<td><span class="formHdr">Effective Stop Date</span></td>
+    			<td><input type="text" name="effectiveStopDate" class="dateField" /></td>
+    			<td><span class="err" id="effectiveStopDateErr"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">Address</span></td>
@@ -417,7 +473,7 @@
     		</tr>
     	</table>
     </div>
-    
+    <input type="button" class="prettyWideButton showNew" value="New" />
     <webthing:scrolltop />
 
 
