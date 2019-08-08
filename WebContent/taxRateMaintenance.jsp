@@ -140,14 +140,12 @@ change log
 				_td = _td + '	<td id="col_03">' + (($data_item.rate)*100).toFixed(2) + '%</td>';
 				_td = _td + '	<td id="col_04">' + $data_item.amount + 			'</td>'; 
 				_td = _td + '	<td id="col_05">' + $data_item.effectiveDate + 	'</td>';
-       	    	<ansi:hasPermission permissionRequired="SYSADMIN">
-					<ansi:hasWrite>
+       	    	<ansi:isSuperUser>
 						_td = _td + '<td id="col_06">';
 						_td = _td + '<a href="#" class="updAction" data-item-id="' + $data_item_id +'"><span class="green fas fa-pencil-alt" ari-hidden="true"></span></a> | ';
 						_td = _td + '<a href="#" class="delAction" data-item-id="' + $data_item_id +'"><span class="red fa fa-trash" aria-hidden="true"></span></a>';
 						_td = _td + '</td>';
-					</ansi:hasWrite>
-       			</ansi:hasPermission>
+       			</ansi:isSuperUser>
 				return _td;
 			}
 		
