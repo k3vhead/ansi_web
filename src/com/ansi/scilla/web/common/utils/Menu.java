@@ -25,7 +25,7 @@ public enum Menu {
 	CLAIM_DETAIL(		"Claim Detail", 		LOOKUPS, Permission.CLAIMS_READ, 	"claimDetailLookup.html"),
 	LOCALE(             "Locale",               LOOKUPS, Permission.TAX_READ,       "localeLookup.html"),
 	TAXRATE_LOOKUP(	    "Tax Rate Lookup",		LOOKUPS, Permission.TAX_READ,	    "taxRateLookup.html"),
-	LOCALE_DIVISION(	"Locale Division",		LOOKUPS, Permission.TAX_READ,		"localeDivisionLookup.html"),
+	LOCALE_DIVISION(	"Nexus Taxed Lookup",	LOOKUPS, Permission.TAX_READ,		"localeDivisionLookup.html"),
 	
 	
 	REPORTS("Reports", null, null,"#"),

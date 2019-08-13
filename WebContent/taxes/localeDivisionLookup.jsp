@@ -18,7 +18,7 @@
 <tiles:insert page="../layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
-        Locale Division Lookup
+        Nexus Taxed Lookup
     </tiles:put>
     
     
@@ -267,7 +267,7 @@
     						},{
     							id: "goEdit",
     							click: function($event) {
-    								LOCALEDIVISIONLOOKUP.updateTaxRate();
+    								LOCALEDIVISIONLOOKUP.updateLocaleDivision();
     							}
     						}	      	      
     					],
@@ -279,7 +279,7 @@
     				});
     			},
     			
-    			updateTaxRate : function () {
+    			updateLocaleDivision : function () {
     				console.debug("Updating Tax Rate");
     				var $localeId = $("#localeDivisionModal input[name='localeId']").val();
     				console.debug("localeId: " + $localeId);
@@ -321,7 +321,7 @@
     			   				} else {	    				
     			    				$("#addTaxRateForm").dialog("close");
     			    				$('#localeTaxRateTable').DataTable().ajax.reload();		
-    			    				TAXRATELOOKUP.clearAddForm();		    					
+    			    				LOCALEDIVISIONLOOKUP.clearAddForm();		    					
     			    				$("#globalMsg").html("Update Successful").show().fadeOut(6000);
     			    			}
     						},
@@ -341,7 +341,8 @@
             	
     			populateDivisionSelect:function() {
                 	$data = ANSI_UTILS.getDivisionList();
-                	$select = $("#divisionId");
+                	console.log("populateDivSelect");
+                	var $select = $("#localeDivisionModal select[name='divisionId']");
         			$('option', $select).remove();
         			$select.append(new Option("",null));
         			$.each($data, function($index, $val) {
@@ -401,7 +402,7 @@
     </tiles:put>
     
    <tiles:put name="content" type="string">
-    	<h1><bean:message key="page.label.taxrate" /> <bean:message key="menu.label.lookup" /></h1> 
+    	<h1><bean:message key="page.label.localedivision" /> <bean:message key="menu.label.lookup" /></h1> 
     	<c:if test="${not empty ANSI_JOB_ID}">
     		<span class="orange"><bean:message key="field.label.jobFilter" />: <c:out value="${ANSI_JOB_ID}" /></span><br />
     	</c:if>
