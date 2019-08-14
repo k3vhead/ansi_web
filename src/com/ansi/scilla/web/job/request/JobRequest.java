@@ -595,10 +595,10 @@ public class JobRequest extends AbstractRequest{
 	public WebMessages validateInvoiceUpdate() {
 		WebMessages webMessages = new WebMessages();
 		
-		RequestValidator.validateString(webMessages, "poNumber", this.poNumber, true);
-		RequestValidator.validateString(webMessages, "ourVendorNbr", this.ourVendorNbr, true);
-		RequestValidator.validateDate(webMessages, "expirationDate", this.expirationDate, true, null, null);
-		RequestValidator.validateString(webMessages, "expirationReason", this.expirationReason, true);
+		RequestValidator.validateString(webMessages, "poNumber", this.poNumber, false);
+		RequestValidator.validateString(webMessages, "ourVendorNbr", this.ourVendorNbr, false);
+		RequestValidator.validateDate(webMessages, "expirationDate", this.expirationDate, false, null, null);
+		RequestValidator.validateString(webMessages, "expirationReason", this.expirationReason, false);
 		
 		return webMessages;
 	}
