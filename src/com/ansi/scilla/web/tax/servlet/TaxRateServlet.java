@@ -13,9 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.TaxRate;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
+import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.MessageKey;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -63,7 +63,7 @@ public class TaxRateServlet extends AbstractServlet {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			AppUtils.validateSession(request, Permission.SYSADMIN_WRITE);
 			conn.setAutoCommit(false);
 			
 			String url = request.getRequestURI();
@@ -138,7 +138,7 @@ public class TaxRateServlet extends AbstractServlet {
 			Connection conn = null;
 			try {
 				conn = AppUtils.getDBCPConn();
-				AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+				AppUtils.validateSession(request, Permission.SYSADMIN_READ);
 				
 				// Figure out what we've got:				
 				String myString = url.substring(idx + "/taxRate/".length());
@@ -189,7 +189,7 @@ public class TaxRateServlet extends AbstractServlet {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.SYSADMIN, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+			AppUtils.validateSession(request, Permission.SYSADMIN_WRITE);
 			conn.setAutoCommit(false);
 
 			// figure out if this is an "add" or an "update"
@@ -231,7 +231,7 @@ public class TaxRateServlet extends AbstractServlet {
 		ResponseCode responseCode = null;
 		if ( command.equals(ACTION_IS_ADD) ) {
 			logger.log(Level.DEBUG, "TaxRateServlet: doPost() action is add");
-			WebMessages webMessages = validateAdd(conn, taxRateRequest);
+			WebMessages webMessages = taxRateRequest.validateAdd();
 			if (webMessages.isEmpty()) {
 				try {
 					taxRate = doAdd(conn, taxRateRequest, sessionUser);
@@ -260,40 +260,27 @@ public class TaxRateServlet extends AbstractServlet {
 			
 		} else if ( urlPieces.length == 1 ) {   //  /<taxRateId> = 1 pieces
 			logger.log(Level.DEBUG, "TaxRateServlet: doPost() action is update");
-			WebMessages webMessages = validateAdd(conn, taxRateRequest);
-			if (webMessages.isEmpty()) {
-				logger.log(Level.DEBUG, "passed validation");
-				try {
+			if ( StringUtils.isNumeric(urlPieces[0]) ) {
+				WebMessages webMessages = taxRateRequest.validateAdd();
+				Integer taxRateId = Integer.valueOf(urlPieces[0]);
+				RequestValidator.validateId(conn, webMessages, "tax_rate", TaxRate.TAX_RATE_ID, TaxRateRequest.TAX_RATE_ID, taxRateId, true);
+				if ( webMessages.isEmpty() ) {					
 					TaxRate key = new TaxRate();
-					if ( StringUtils.isNumeric(urlPieces[0]) ) {//looks like a taxRateId
-						logger.log(Level.DEBUG, "TaxRateServlet: doPost() trying to update:"+urlPieces[0]);
-						key.setTaxRateId(Integer.valueOf(urlPieces[0]));
-						taxRate = doUpdate(conn, key, taxRateRequest, sessionUser);
-						String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
-						responseCode = ResponseCode.SUCCESS;
-						webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
-					} else { //non-integer taxRateId, probably a bad thing
-						throw new RecordNotFoundException();
-					}
-				} catch ( RecordNotFoundException e ) {
-					logger.log(Level.DEBUG, "Doing 404");
-					super.sendNotFound(response);						
-				} catch ( Exception e) {
-					logger.log(Level.DEBUG, "Doing SysFailure");
-					responseCode = ResponseCode.SYSTEM_FAILURE;
-					AppUtils.logException(e);
-					String messageText = AppUtils.getMessageText(conn, MessageKey.INSERT_FAILED, "Insert Failed");
-					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, messageText);
+					key.setTaxRateId(taxRateId);
+					taxRate = doUpdate(conn, key, taxRateRequest, sessionUser);
+					String message = AppUtils.getMessageText(conn, MessageKey.SUCCESS, "Success!");
+					responseCode = ResponseCode.SUCCESS;
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, message);
+				} else {
+					responseCode = ResponseCode.EDIT_FAILURE;
 				}
+				TaxRateResponse taxRateResponse = new TaxRateResponse(taxRate, webMessages);
+				super.sendResponse(conn, response, responseCode, taxRateResponse);
 			} else {
-				logger.log(Level.DEBUG, "Doing Edit Fail");
-				responseCode = ResponseCode.EDIT_FAILURE;
+				super.sendNotFound(response);
 			}
-			logger.log(Level.DEBUG, "TaxRateServlet: doPost() prepare response");
-			TaxRateResponse taxRateResponse = new TaxRateResponse(taxRate, webMessages);
-			logger.log(Level.DEBUG, "TaxRateServlet: doPost() send response");
-			super.sendResponse(conn, response, responseCode, taxRateResponse);
-			logger.log(Level.DEBUG, "TaxRateServlet: doPost() response sent");
+			
+			
 		} else {
 			super.sendNotFound(response);
 		}
@@ -335,6 +322,9 @@ public class TaxRateServlet extends AbstractServlet {
 		logger.log(Level.DEBUG, "************");
 		Date today = new Date();
 		TaxRate taxRate = new TaxRate();
+		taxRate.setTaxRateId(key.getTaxRateId());
+		taxRate.selectOne(conn);
+		
 		taxRate.setAmount(taxRateRequest.getAmount());
 		taxRate.setEffectiveDate(taxRateRequest.getEffectiveDate());
 		if ( ! StringUtils.isBlank(taxRateRequest.getLocation())) {
@@ -415,20 +405,7 @@ public class TaxRateServlet extends AbstractServlet {
 */
 
 	
-	protected WebMessages validateAdd(Connection conn, TaxRateRequest taxRateRequest) throws Exception {
-		WebMessages webMessages = new WebMessages();
-		logger.log(Level.DEBUG, "TaxRateServlet: validateAdd() before");
-		List<String> missingFields = super.validateRequiredAddFields(taxRateRequest);
-		logger.log(Level.DEBUG, "TaxRateServlet: validateAdd() after");
-		if ( ! missingFields.isEmpty() ) {
-			logger.log(Level.DEBUG, "TaxRateServlet: validateAdd() missing fields");
-			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
-			for ( String field : missingFields ) {
-				webMessages.addMessage(field, messageText);
-			}
-		}
-		return webMessages;
-	}
+	
 
 	protected WebMessages validateUpdate(Connection conn, TaxRate key, TaxRateRequest taxRateRequest) throws RecordNotFoundException, Exception {
 		WebMessages webMessages = new WebMessages();
