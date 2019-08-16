@@ -94,6 +94,12 @@
        				LOCALEDIVISIONLOOKUP.markValid();  
        				LOCALEDIVISIONLOOKUP.makeEditPanel();
        				LOCALEDIVISIONLOOKUP.showNew();
+       				
+       				$('.dateField').datepicker({
+                        prevText:'&lt;&lt;',
+                        nextText: '&gt;&gt;',
+                        showButtonPanel:true
+                    });
                 }, 
                 
                 markValid : function ($inputField) {
