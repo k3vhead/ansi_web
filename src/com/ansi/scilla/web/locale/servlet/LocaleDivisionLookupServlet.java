@@ -20,7 +20,6 @@ import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.locale.query.LocaleDivisionLookupQuery;
-import com.ansi.scilla.web.locale.query.LocaleLookupQuery;
 
 public class LocaleDivisionLookupServlet extends AbstractLookupServlet {
 

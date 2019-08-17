@@ -252,7 +252,11 @@
 						$("#localeDivisionModal  select[name='stateName']").val("");
 						$("#localeDivisionModal  input[name='effectiveStartDate']").val("");	
 						$("#localeDivisionModal  input[name='effectiveStopDate']").val("");
-						$("#localeDivisionModal  input[name='addressId']").val("");				        		
+						$("#localeDivisionModal  input[name='address1']").val("");
+						$("#localeDivisionModal  input[name='address2']").val("");
+						$("#localeDivisionModal  input[name='city']").val("");
+						$("#localeDivisionModal  input[name='state']").val("");
+						$("#localeDivisionModal  input[name='zip']").val("");
 		        		$("#localeDivisionModal  .err").html("");
 		        		$("#localeDivisionModal ").dialog("option","title", "Add New Locale/Division").dialog("open");
 					});
@@ -475,8 +479,27 @@
     		</tr>
     		<tr>
     			<td><span class="formHdr">Address</span></td>
-    			<td><input type="text" name="addressId" /></td>
-    			<td><span class="err" id="addressIdErr"></span></td>
+    			<td><input type="text" name="address1" /></td>
+    			<td><span class="err" id="address1Err"></span></td>
+    		</tr>
+    		<tr>
+    			<td><input type="text" name="address2" /></td>
+    			<td><span class="err" id="address2Err"></span></td>
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">City</span></td>
+    			<td><input type="text" name="city" /></td>
+    			<td><span class="err" id="cityErr"></span></td>
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">State Address</span></td>
+    			<td><input type="text" name="state" /></td>
+    			<td><span class="err" id="stateErr"></span></td>
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">Zip Code</span></td>
+    			<td><input type="text" name="zip" /></td>
+    			<td><span class="err" id="zipErr"></span></td>
     		</tr>
     	</table>
     </div>
