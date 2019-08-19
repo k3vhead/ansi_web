@@ -2,19 +2,19 @@
     pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-<%@ taglib uri="WEB-INF/c.tld" prefix="c" %>
-<%@ taglib uri="WEB-INF/sql.tld" prefix="sql" %>
-<%@ taglib uri="WEB-INF/fmt.tld" prefix="fmt" %>
-<%@ taglib uri="WEB-INF/struts-html.tld"  prefix="html"  %>
-<%@ taglib uri="WEB-INF/struts-logic.tld" prefix="logic" %>
-<%@ taglib uri="WEB-INF/struts-bean.tld"  prefix="bean"  %>
-<%@ taglib uri="WEB-INF/struts-tiles.tld" prefix="tiles" %>
+<%@ taglib uri="/WEB-INF/c.tld" prefix="c" %>
+<%@ taglib uri="/WEB-INF/sql.tld" prefix="sql" %>
+<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt" %>
+<%@ taglib uri="/WEB-INF/struts-html.tld"  prefix="html"  %>
+<%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
+<%@ taglib uri="/WEB-INF/struts-bean.tld"  prefix="bean"  %>
+<%@ taglib uri="/WEB-INF/struts-tiles.tld" prefix="tiles" %>
 <%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="webthing" %>
-<%@ taglib uri="WEB-INF/theTagThing.tld" prefix="ansi" %>
+<%@ taglib uri="/WEB-INF/theTagThing.tld" prefix="ansi" %>
 
 <%@ page import="com.ansi.scilla.common.jobticket.TicketStatus" %>
 
-<tiles:insert page="layout.jsp" flush="true">
+<tiles:insert page="../layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
         Ticket Override
@@ -80,6 +80,12 @@
 				display:none;
 			}
 			#editInvoiceIdModal {
+				display:none;
+			}
+			#editInvoiceDateModal {
+				display:none;
+			}
+			#editDivisionModal {
 				display:none;
 			}
 			#editActualPPCModal {
@@ -166,11 +172,15 @@
         	;TICKET_OVERRIDE = {
         		init:function() {       
         			GLOBAL_DATA.globalTicketId = 0;
+        			ANSI_UTILS.makeDivisionList(TICKET_OVERRIDE.makeDivisionList, TICKET_OVERRIDE.makeDivisionFailure);
         			TICKET_OVERRIDE.makeStatusMap();
         			TICKET_OVERRIDE.initDialog();
         			TICKET_OVERRIDE.initFields();
         			TICKET_OVERRIDE.initButtons();
         			TICKET_OVERRIDE.initTypeAhead();
+        			$(".editDivision").click(function($event) {
+        				TICKET_OVERRIDE.doEditDivision($event);
+        			});
         			$(".editApprovals").click(function($event) {
         				TICKET_OVERRIDE.doEditApprovals($event);
         			});
@@ -233,6 +243,28 @@
         		},
         		
         		
+        		
+        		makeDivisionList : function($data) {
+        			var $select = $('#editDivisionModal').find('select[name="overrideDivision"]');
+        			$('option', $select).remove();
+
+        			$select.append(new Option("",""));
+        			$.each($data.data.divisionList, function(index, val) {
+        			    $select.append(new Option(val.divisionNbr+"-"+val.divisionCode, val.divisionId));
+        			});
+        			
+        		},
+        		
+        		
+        		
+        		
+				makeDivisionFailure : function() {
+        			$("#globalMsg").html("Error retrieving divisions. Reload page and try again");
+        		},
+        		
+        		
+        		
+        		
         		makeStatusMap:function() {
         			var $ticketStatusList = ANSI_UTILS.getOptions("TICKET_STATUS");
         			GLOBAL_DATA.ticketStatusMap = {};   // map codes to display text
@@ -270,6 +302,36 @@
         			});
             		$('#saveModal').button('option', 'label', 'Save');
             		$('#cancelModal').button('option', 'label', 'Cancel');
+            		
+            		
+            		
+            		
+            		
+            		$("#editDivisionModal").dialog({
+        				title:'Edit Division',
+        				autoOpen: false,
+        				height: 300,
+        				width: 400,
+        				modal: true,
+        				buttons: [
+        					{
+        						id: "cancelDivisionModal",
+        						click: function() {
+        							$("#editDivisionModal").dialog( "close" );
+        						}
+        					},{
+        						id: "saveDivisionModal",
+        						click: function($event) {
+        							TICKET_OVERRIDE.saveDivision();
+        						}
+        					}
+        				],
+        				close: function() {
+        					$("#editDivisionModal").dialog( "close" );
+        				}
+        			});
+            		$('#saveDivisionModal').button('option', 'label', 'Save');
+            		$('#cancelDivisionModal').button('option', 'label', 'Cancel');
             		
             		
             		
@@ -610,7 +672,15 @@
     				
     				$("#editApprovalsModal").dialog("open");
                	},
+
+               	doEditDivision:function($event) {
+               		console.log(GLOBAL_DATA['globalTicket']);
+               		$('#editDivisionModal').find('select[name="overrideDivision"]').val(GLOBAL_DATA['globalTicket'].divisionId);
+    				$("#editDivisionModal").dialog("open");
+
+               	},
                	
+
                	
                	doEditStartDate:function($event) {
                		$('#editStartDateModal').find('input[name="newDate"]').val(GLOBAL_DATA['globalTicket'].startDate);
@@ -862,6 +932,17 @@
                 },
                 
 
+                
+                
+                saveDivision:function() {
+               		var $newDivisionId = $('#editDivision').find('select[name="overrideDivision"]').val();
+					var $overrideList =[ {'divisionId':$newDivisionId}];
+					TICKET_OVERRIDE.doOverride($('#editDivision'), "divisionId", $overrideList);
+    			},
+                
+                
+                
+                
                 saveApprovals:function() {
     				var $outbound = {}
     				$outbound['customerSignature'] = $("#editApprovalsModal input[name='modalCustomerSignature']").prop("checked");
@@ -1146,7 +1227,7 @@
 	        <table id="displaySummaryTable">
 	        	<tr>
 	        		<th>Status</th><td><span id="status"></span></td>    		
-	        		<th>Division</th><td><span id="divisionDisplay"></span></td>
+	        		<th>Division</th><td><span id="divisionDisplay"></span><webthing:edit styleClass="editDivision action-link">Edit</webthing:edit></td>
 	        		<th>Job ID</th><td><span id="jobId"></span></td>
 	        		<th>Payment Terms:</th><td><span id="invoiceStyle"></span></td>
 	        		<th>Frequency</th><td><span id="jobFrequency"></span></td>
@@ -1569,6 +1650,18 @@
  		</ansi:hasPermission>
     	
     	
+    	
+    	<ansi:hasPermission permissionRequired="TICKET_OVERRIDE">
+			<div id="editDivisionModal">
+				<div class="err modalErr" ></div>
+				<table>		    			
+					<tr>
+						<td style="width:100px;"><span class="formLabel">Division:</span></td>
+						<td><select id="overrideDivision" name="overrideDivision"></select></td>
+					</tr>  
+				</table>
+			</div> 			
+ 		</ansi:hasPermission>
     </tiles:put>
 
 </tiles:insert>
