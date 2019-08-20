@@ -59,9 +59,11 @@ public class LocaleDivisionRequest extends AbstractRequest {
 		this.setLocaleId(locale.getLocaleId());
 	}
 	
-	public void generateAddressId(Connection conn, String addressName) {
+	public void generateAddressId(Connection conn, String addressName) throws RecordNotFoundException, Exception {
 		Address address = new Address();
-		
+		address.setAddress1(addressName);
+		address.selectOne(conn);
+		this.setAddressId(address.getAddressId());
 	}
 	
 	public Integer getLocaleId() {
@@ -180,6 +182,9 @@ public class LocaleDivisionRequest extends AbstractRequest {
 		WebMessages webMessages = new WebMessages();
 		if((this.getLocaleId() == null) && (this.getName() != null)) {
 			this.generateLocaleId(conn, this.getName());
+		}
+		if((this.getAddressId() == null) && (this.getAddress1() != null)) {
+			this.generateAddressId(conn, this.getAddress1());
 		}
 		RequestValidator.validateId(conn, webMessages, "locale", Locale.LOCALE_ID, "localeId", localeId, true);
 		RequestValidator.validateId(conn, webMessages, "division", Division.DIVISION_ID, "divisionId", divisionId, true);

@@ -483,6 +483,7 @@
     			<td><span class="err" id="address1Err"></span></td>
     		</tr>
     		<tr>
+    		<td><span class="formHdr"></span></td>
     			<td><input type="text" name="address2" /></td>
     			<td><span class="err" id="address2Err"></span></td>
     		</tr>
