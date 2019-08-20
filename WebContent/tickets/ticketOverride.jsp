@@ -935,9 +935,10 @@
                 
                 
                 saveDivision:function() {
-               		var $newDivisionId = $('#editDivision').find('select[name="overrideDivision"]').val();
+               		var $newDivisionId = $('#editDivisionModal').find('select[name="overrideDivision"]').val();
+               		console.log("New division: " + $newDivisionId);
 					var $overrideList =[ {'divisionId':$newDivisionId}];
-					TICKET_OVERRIDE.doOverride($('#editDivision'), "divisionId", $overrideList);
+					TICKET_OVERRIDE.doOverride($('#editDivisionModal'), "divisionId", $overrideList);
     			},
                 
                 
