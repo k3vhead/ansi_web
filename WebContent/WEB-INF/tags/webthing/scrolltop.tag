@@ -3,8 +3,8 @@
 <style type="text/css">
 	.float{
 		position:fixed;
-		bottom: 10%;
-		left: 49%;
+		bottom: 5%;
+		right: 20%;
 		z-index:10;
 	}
 	</style>
