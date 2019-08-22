@@ -177,9 +177,9 @@
     			            { width:"15%", title: "<bean:message key="field.label.name" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.name != null){return (row.name+"");}
     			            } },
-    			            { width:"10%", title: "<bean:message key="field.label.localeType" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-    			            	if(row.locale_type_id != null){return (row.locale_type_id+"");}
-    			            } },
+//    			            { width:"10%", title: "<bean:message key="field.label.localeType" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+//    			            	if(row.locale_type_id != null){return (row.locale_type_id+"");}
+//    			            } },
     			            { width:"8%", title: "<bean:message key="field.label.stateName" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.state_name != null){return (row.state_name+"");}
     			            } },
@@ -248,7 +248,7 @@
 		        		
 						$("#localeDivisionModal  select[name='divisionId']").val("");
 						$("#localeDivisionModal  input[name='localeName']").val("");
-						$("#localeDivisionModal  input[name='localeType']").val("");
+//						$("#localeDivisionModal  input[name='localeType']").val("");
 						$("#localeDivisionModal  select[name='stateName']").val("");
 						$("#localeDivisionModal  input[name='effectiveStartDate']").val("");	
 						$("#localeDivisionModal  input[name='effectiveStopDate']").val("");
@@ -302,11 +302,17 @@
     				console.debug($url);
     						
     				var $outbound = {};
-    				$outbound['divisionId'] = $("#addTaxRateForm input[name='divisionId']").val();
+    				$outbound['divisionId'] = $("#addTaxRateForm select[name='divisionId']").val();
     				$outbound['localeName'] = $("#addTaxRateForm input[name='localeName']").val();
+    				$outbound['stateName'] = $("#addTaxRateForm select[name='stateName']").val();
     				$outbound['effectiveStartDate'] = $("#addTaxRateForm input[name='effectiveStartDate']").val();
     				$outbound['effectiveStopDate'] = $("#addTaxRateForm input[name='effectiveStopDate']").val();
-    				$outbound['addressId'] = $("#addTaxRateForm select[name='addressId']").val();
+    				$outbound['address1'] = $("#addTaxRateForm input[name='address1']").val();
+    				$outbound['address2'] = $("#addTaxRateForm input[name='address1']").val();
+    				$outbound['city'] = $("#addTaxRateForm input[name='city']").val();
+    				$outbound['state'] = $("#addTaxRateForm input[name='state']").val();
+    				$outbound['zip'] = $("#addTaxRateForm input[name='zip']").val();
+    				
     				console.debug($outbound);
     				
     				var jqxhr = $.ajax({
@@ -329,8 +335,8 @@
     			    				});
     			    				
     			   				} else {	    				
-    			    				$("#addTaxRateForm").dialog("close");
-    			    				$('#localeTaxRateTable').DataTable().ajax.reload();		
+    			    				$("#localeDivisionModal").dialog("close");
+    			    				$('#localeDivisionTable').DataTable().ajax.reload();		
     			    				LOCALEDIVISIONLOOKUP.clearAddForm();		    					
     			    				$("#globalMsg").html("Update Successful").show().fadeOut(6000);
     			    			}
@@ -453,11 +459,6 @@
     			<td><span class="formHdr">Locale Name</span></td>
     			<td><input type="text" name="localeName" /></td>
     			<td><span class="err" id="localeNameErr"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr">Locale Type</span></td>
-    			<td><select name="localeTypeId" /></td>
-    			<td><span class="err" id="localeTypeIdErr"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">State</span></td>
