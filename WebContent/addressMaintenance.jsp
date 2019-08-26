@@ -150,7 +150,11 @@
 						ADDRESSMAINTENANCE.makeAutoComplete();
 						if ( ADDRESSMAINTENANCE.ansiModal != '' ) {
 							$(".addButton").click();
-						}
+						}    					
+	    				$('.ScrollTop').click(function() {
+	    					$('html, body').animate({scrollTop: 0}, 800);
+	    	      	  		return false;
+	    	      	    });
 					},	
 					
 					
