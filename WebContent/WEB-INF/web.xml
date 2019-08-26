@@ -446,6 +446,19 @@
 	
 	
 	
+	
+	<servlet>
+		<servlet-name>localeAutocomplete</servlet-name>
+		<servlet-class>com.ansi.scilla.web.locale.servlet.LocaleAutocompleteServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	<servlet-name>localeAutocomplete</servlet-name>
+		<url-pattern>/localeAutocomplete</url-pattern>
+	</servlet-mapping>
+	
+	
+	
+	
 	<servlet>
 		<servlet-name>localeServlet</servlet-name>
 		<servlet-class>com.ansi.scilla.web.locale.servlet.LocaleServlet</servlet-class>
