@@ -1188,6 +1188,7 @@
 		</div>
 		<input  type="text" id="updateOrAdd" style="display:none" />
 		<input  type="text" id="aId" style="display:none" />
+    		<webthing:scrolltop />
     </tiles:put>	
 </tiles:insert>
 
