@@ -104,7 +104,9 @@ public class LocaleDivisionServlet extends AbstractServlet {
 					//this is update
 					webMessages = localeDivisionRequest.validateUpdate(conn);
 					if(webMessages.isEmpty() == true) {
-						doUpdate(conn, ansiURL.getId(), localeDivisionRequest, sessionData, response);
+						Integer divId = ansiURL.getId();
+						Integer localeId = ansiURL.getId();
+						doUpdate(conn, divId, localeId, localeDivisionRequest, sessionData, response);
 					} else {
 						data.setWebMessages(webMessages);
 						super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
@@ -133,22 +135,23 @@ public class LocaleDivisionServlet extends AbstractServlet {
 	private void doAdd(Connection conn, LocaleDivisionRequest localeDivisionRequest, SessionData sessionData, HttpServletResponse response) throws Exception {
 		LocaleDivision localeDivision = new LocaleDivision();
 		makeLocaleDivision(localeDivision, localeDivisionRequest, sessionData.getUser());
-		Integer localeId = localeDivision.insertWithKey(conn);
+		localeDivision.insertWithNoKey(conn);
 		conn.commit();
-		localeDivision.setLocaleId(localeId);
+//		localeDivision.setDivisionId(divisionId);
 		LocaleDivisionResponse localeResponse = new LocaleDivisionResponse(localeDivision, conn);
 		super.sendResponse(conn, response, ResponseCode.SUCCESS, localeResponse);
 	}
 
 	
 
-	private void doUpdate(Connection conn, Integer localeId, LocaleDivisionRequest localeDivisionRequest, SessionData sessionData, HttpServletResponse response) throws Exception {
+	private void doUpdate(Connection conn, Integer divisionId, Integer localeId, LocaleDivisionRequest localeDivisionRequest, SessionData sessionData, HttpServletResponse response) throws Exception {
 		LocaleDivision localeDivision = new LocaleDivision();
+		localeDivision.setDivisionId(divisionId);
 		localeDivision.setLocaleId(localeId);
 		localeDivision.selectOne(conn);
 		makeLocaleDivision(localeDivision, localeDivisionRequest, sessionData.getUser());
 		LocaleDivision key = new LocaleDivision();
-		key.setLocaleId(localeId);
+		key.setDivisionId(divisionId);
 		localeDivision.update(conn, key);
 		conn.commit();
 		LocaleDivisionResponse localeResponse = new LocaleDivisionResponse(localeDivision, conn);
