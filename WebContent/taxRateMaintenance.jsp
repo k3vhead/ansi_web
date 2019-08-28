@@ -120,7 +120,12 @@ change log
                 prevText:'&lt;&lt;',
                 nextText: '&gt;&gt;',
                 showButtonPanel:true
-            });
+            }); 	
+			
+			$('.ScrollTop').click(function() {
+				$('html, body').animate({scrollTop: 0}, 800);
+      	  		return false;
+      	    });
 						
 			function formatDate(dateValue)
 			{
@@ -536,6 +541,7 @@ change log
        	    	</ansi:hasPermission>
     		</tr>
     	</table>
+    				<webthing:scrolltop />
 
 		<ansi:hasPermission permissionRequired="SYSADMIN">
 			<ansi:hasWrite>
