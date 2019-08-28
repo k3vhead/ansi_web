@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -81,8 +81,8 @@ public abstract class AbstractAutocompleteServlet extends AbstractServlet {
 			if ( StringUtils.isBlank(term) ) {
 				super.sendNotFound(response);
 			} else {
-				HashMap<String, String> searchTerms = new HashMap<String, String>();
-				String json = doSearch(conn, term, searchTerms);
+				conn = AppUtils.getDBCPConn();
+				String json = doSearch(conn, request.getParameterMap());
 				response.setStatus(HttpServletResponse.SC_OK);
 				response.setContentType("application/json");
 				
@@ -99,13 +99,15 @@ public abstract class AbstractAutocompleteServlet extends AbstractServlet {
 			AppUtils.logException(e);
 			throw new ServletException(e);
 		} finally {
-			AppUtils.closeQuiet(conn);
+			if ( conn != null ) {
+				AppUtils.closeQuiet(conn);
+			}
 		}			
 
 	}
 	
 	
-	protected abstract String doSearch(Connection conn, String term, HashMap<String, String> searchKeyMap) throws SQLException, IOException;
+	protected abstract String doSearch(Connection conn, Map<String, String[]> map) throws SQLException, IOException;
 	
 	
 	

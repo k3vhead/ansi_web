@@ -44,13 +44,15 @@
         		float:right;
         	}
         	
+			#addLocaleForm {
+				display:none;
+			}
+			.formHdr {
+				font-weight:bold;
+			}
 			.prettyWideButton {
 				height:30px;
 				min-height:30px;
-			}
-			select	{
-				width:80px !important;
-				max-width:80px !important;
 			}
 			.print-link {
 				cursor:pointer;
@@ -209,7 +211,40 @@
 	            	$('.ScrollTop').click(function() {
 	        			$('html, body').animate({scrollTop: 0}, 800);
 	        			return false;
-	               	   });
+	               	});
+	            	
+	            	
+	            	var $localeComplete = $( "#parentName" ).autocomplete({
+	    				source: function(request,response) {
+	    					term = $("#addLocaleForm input[name='parentName']").val();
+	    					localeTypeId = $("#addLocaleForm select[name='localeTypeId']").val();
+	    					stateName = $("#addLocaleForm select[name='stateName']").val();
+	    					$.getJSON("localeAutocomplete", {"term":term, "localeTypeId":localeTypeId, "stateName":stateName}, response);
+	    				},
+	                    minLength: 2,
+	                    select: function( event, ui ) {
+	                    	$("#addLocaleForm input[name='parentId']").val(ui.item.id);
+	                    },
+	                    response: function(event, ui) {
+	                        if (ui.content.length === 0) {
+	                        	$("#globalMsg").html("No Matching Locale");
+	                        	$("#addLocaleForm input[name='parentId']").val("");
+	                        } else {
+	                        	$("#globalMsg").html("");
+	                        }
+	                    }
+	              	}).data('ui-autocomplete');	            	
+	                
+	    			$localeComplete._renderMenu = function( ul, items ) {
+	    				var that = this;
+	    				$.each( items, function( index, item ) {
+	    					that._renderItemData( ul, item );
+	    				});
+	    				if ( items.length == 1 ) {
+	    					$("#addLocaleForm input[name='parentId']").val(items[0].id);
+	    					$("#parentName").autocomplete("close");
+	    				}
+	    			}
 	            },
 	            
 	            
@@ -267,7 +302,7 @@
 				makeEditPanel : function() {	
 					$("#addLocaleForm" ).dialog({
 						autoOpen: false,
-						height: 300,
+						height: 350,
 						width: 500,
 						modal: true,
 						buttons: [
@@ -462,17 +497,14 @@
     
 	    
     <div id="addLocaleForm">
-	    <div class="modal-header">
-	    <h5 class="modal-title" id="name"></h5>
-	    </div>
-    	<table>
+    	<table class="ui-front">
     		<tr>
     			<td><span class="formHdr">ID</span></td>
-    			<td><input type="text" name="localeId" style="border-style: hidden" readOnly/></td>
+    			<td><input type="text" name="localeId" style="border-style:hidden;" readonly="readonly"/></td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">Name</span></td>
-    			<td></i><input type="text" name="name" /></td>
+    			<td><input type="text" name="name" /></td>
     			<td><span class="err" id="nameErr"></span></td>
     		</tr>
     		<tr>
@@ -483,12 +515,18 @@
     		<tr>
     			<td><span class="formHdr">Abbreviation</span></td>
     			<td><input type="text" name="abbreviation" /></td>
+    			<td><span class="err" id="abbreviationErr"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">Locale Type</span></td>
-    			<td><select name="localeTypeId" id="localeTypeId"/></select></td>
+    			<td><select name="localeTypeId" id="localeTypeId"></select></td>
     			<td><span class="err" id="localeTypeIdErr"></span></td>
     		</tr>		
+    		<tr>
+    			<td><span class="formHdr">Parent</span></td>
+    			<td><input type="text" name="parentName" id="parentName" /><input type="hidden" name="parentId" /></td>
+    			<td><span class="err" id="parentIdErr"></span></td>
+    		</tr>
     	</table>
     </div>
     
