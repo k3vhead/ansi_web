@@ -15,21 +15,20 @@ public class LocaleResponse extends MessageResponse {
 	public static final String STATE_NAME = "stateName";
 	public static final String ABBREVIATION = "abbreviation";
 	public static final String LOCALE_TYPE_ID = "localeTypeId";
+	public static final String PARENT_ID = "parentId";
 		
 	private Integer localeId;
 	private String name;
 	private String stateName;
 	private String abbreviation;
 	private String localeTypeId;
+	private Integer parentId;
+	private String parentName;
 	
 	public LocaleResponse() {
 		super();
 	}
 	
-	public LocaleResponse(Locale locale) {
-		this();
-		make(locale);		
-	}
 
 	public LocaleResponse(Connection conn, Integer localeId) throws RecordNotFoundException, Exception {
 		this();
@@ -38,6 +37,12 @@ public class LocaleResponse extends MessageResponse {
 		locale.selectOne(conn);
 		make(locale);
 		
+		if ( locale.getLocaleParentId() != null ) {
+			Locale parent = new Locale();
+			parent.setLocaleId(locale.getLocaleParentId());
+			parent.selectOne(conn);
+			this.parentName = parent.getName();
+		}
 	}
 
 	public Integer getLocaleId() {
@@ -70,13 +75,27 @@ public class LocaleResponse extends MessageResponse {
 	public void setLocaleTypeId(String localeTypeId) {
 		this.localeTypeId = localeTypeId;
 	}
+	public Integer getParentId() {
+		return parentId;
+	}
+	public void setParentId(Integer parentId) {
+		this.parentId = parentId;
+	}
+	public String getParentName() {
+		return parentName;
+	}
+	public void setParentName(String parentName) {
+		this.parentName = parentName;
+	}
 
+	
 	private void make(Locale locale) {
 		this.localeId = locale.getLocaleId();
 		this.name = locale.getName();
 		this.stateName = locale.getStateName();
 		this.abbreviation = locale.getAbbreviation();
 		this.localeTypeId = locale.getLocaleTypeId();
+		this.parentId = locale.getLocaleParentId();
 	}
 	
 }

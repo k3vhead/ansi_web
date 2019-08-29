@@ -1,6 +1,5 @@
 package com.ansi.scilla.web.locale.servlet;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.Date;
@@ -9,7 +8,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.Locale;
@@ -134,73 +132,8 @@ public class LocaleServlet extends AbstractServlet {
 			AppUtils.closeQuiet(conn);
 		}
 	}
-	/*
-	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		AnsiURL ansiURL = null;
-		Connection conn = null;
-		try {
-			ansiURL = new AnsiURL(request, REALM, (String[])null); 
-			conn = AppUtils.getDBCPConn();
-			conn.setAutoCommit(false);
-//			String jsonString = super.makeJsonString(request);
-			String jsonString = makeMyJsonString(request);
-			logger.log(Level.DEBUG, "jsonstring:"+jsonString);
-			
-			SessionData sessionData = AppUtils.validateSession(request, Permission.TAX_WRITE);
-			LocaleResponse data = new LocaleResponse();
-			WebMessages webMessages = new WebMessages();
 
-			
-			try{
-				LocaleRequest localeRequest = new LocaleRequest();
-				AppUtils.json2object(jsonString, localeRequest);
-								
-				if(ansiURL.getId() == null) {
-					//this is add
-					webMessages = localeRequest.validateAdd(conn);
-					if(webMessages.isEmpty() == true) {
-						doAdd(conn, localeRequest, sessionData, response);
-					} else {
-						data.setWebMessages(webMessages);
-						super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
-					}
-					
-				} else {
-					//this is update
-					webMessages = localeRequest.validateUpdate(conn, ansiURL.getId());
-					if(webMessages.isEmpty() == true) {
-						doUpdate(conn, ansiURL.getId(), localeRequest, sessionData, response);
-					} else {
-						data.setWebMessages(webMessages);
-						super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
-					}
-				}
-						
-			}  catch ( InvalidFormatException e ) {
-				String badField = super.findBadField(e.toString());				
-				webMessages.addMessage(badField, "Invalid Format");
-				data.setWebMessages(webMessages);
-				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
-			} catch (RecordNotFoundException e) {
-				//send a Bad Ticket message back
-				super.sendNotFound(response);
-			}
-		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
-			super.sendForbidden(response);
-		} catch ( Exception e) {
-			AppUtils.logException(e);
-			throw new ServletException(e);
-		} finally {
-			AppUtils.closeQuiet(conn);
-		}
-	}
-	*/
 
-	private String makeMyJsonString(HttpServletRequest request) throws IOException {
-		BufferedReader br = request.getReader();
-		return IOUtils.toString(br);
-	}
 
 	private void doAdd(Connection conn, LocaleRequest localeRequest, SessionData sessionData, HttpServletResponse response) throws Exception {
 		Locale locale = new Locale();
@@ -208,7 +141,7 @@ public class LocaleServlet extends AbstractServlet {
 		Integer localeId = locale.insertWithKey(conn);
 		conn.commit();
 		locale.setLocaleId(localeId);
-		LocaleResponse localeResponse = new LocaleResponse(locale);
+		LocaleResponse localeResponse = new LocaleResponse(conn, localeId);
 		super.sendResponse(conn, response, ResponseCode.SUCCESS, localeResponse);
 	}
 
@@ -223,7 +156,7 @@ public class LocaleServlet extends AbstractServlet {
 		key.setLocaleId(localeId);
 		locale.update(conn, key);
 		conn.commit();
-		LocaleResponse localeResponse = new LocaleResponse(locale);
+		LocaleResponse localeResponse = new LocaleResponse(conn, localeId);
 		super.sendResponse(conn, response, ResponseCode.SUCCESS, localeResponse);
 	}
 
@@ -237,6 +170,7 @@ public class LocaleServlet extends AbstractServlet {
 		locale.setStateName(localeRequest.getStateName());
 		locale.setAbbreviation(localeRequest.getAbbreviation());
 		locale.setLocaleTypeId(localeRequest.getLocaleTypeId());
+		locale.setLocaleParentId(localeRequest.getParentId());
 		if ( locale.getAddedBy() == null ) {
 			locale.setAddedBy(sessionUser.getUserId());
 			locale.setAddedDate(today);

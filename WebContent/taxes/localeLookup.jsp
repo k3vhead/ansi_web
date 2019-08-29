@@ -160,6 +160,9 @@
     			            { width:"10%", title: "<bean:message key="field.label.localeType" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.locale_type_id != null){return (row.locale_type_id+"");}
     			            } },
+    			            { width:"10%", title: "Parent" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+    			            	if(row.parent_name != null){return (row.parent);}
+    			            } },
     			            
     			            { width:"5%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
     			            	//console.log(row);
@@ -419,7 +422,8 @@
 					$outbound['name'] = $("#addLocaleForm input[name='name']").val();
 					$outbound['stateName'] = $("#addLocaleForm select[name='stateName']").val();	
 					$outbound['abbreviation'] = $("#addLocaleForm input[name='abbreviation']").val();
-					$outbound['localeTypeId'] = $("#addLocaleForm select[name='localeTypeId']").val();		        		
+					$outbound['localeTypeId'] = $("#addLocaleForm select[name='localeTypeId']").val();	
+					$outbound['parentId'] = $("#addLocaleForm input[name='parentId']").val();
 					console.debug($outbound);
 					
 					var jqxhr = $.ajax({

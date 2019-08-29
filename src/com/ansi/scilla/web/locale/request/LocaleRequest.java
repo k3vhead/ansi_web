@@ -17,12 +17,14 @@ public class LocaleRequest extends AbstractRequest {
 	public static final String STATE_NAME = "stateName";
 	public static final String ABBREVIATION = "abbreviation";
 	public static final String LOCALE_TYPE_ID = "localeTypeId";
+	public static final String PARENT_ID = "parentId";
 		
 	private Integer localeId;
 	private String name;
 	private String stateName;
 	private String abbreviation;
 	private String localeTypeId;
+	private Integer parentId;
 	
 	public Integer getLocaleId() {
 		return localeId;
@@ -54,7 +56,12 @@ public class LocaleRequest extends AbstractRequest {
 	public void setLocaleTypeId(String localeTypeId) {
 		this.localeTypeId = localeTypeId;
 	}
-	
+	public Integer getParentId() {
+		return parentId;
+	}
+	public void setParentId(Integer parentId) {
+		this.parentId = parentId;
+	}
 	
 	public WebMessages validateAdd(Connection conn) throws Exception {
 		WebMessages webMessages = new WebMessages();
@@ -63,6 +70,7 @@ public class LocaleRequest extends AbstractRequest {
 		RequestValidator.validateState(webMessages, STATE_NAME, this.stateName, true);
 		RequestValidator.validateLocaleType(webMessages, LOCALE_TYPE_ID, this.localeTypeId, true);
 		RequestValidator.validateString(webMessages, ABBREVIATION, this.abbreviation, false);
+		RequestValidator.validateId(conn, webMessages, "locale", Locale.LOCALE_ID, PARENT_ID, this.parentId, false);
 		if ( isDuplicate(conn)) {
 			webMessages.addMessage(NAME, "Duplicate Entry");
 		}
@@ -78,6 +86,7 @@ public class LocaleRequest extends AbstractRequest {
 		RequestValidator.validateState(webMessages, STATE_NAME, this.stateName, true);
 		RequestValidator.validateLocaleType(webMessages, LOCALE_TYPE_ID, this.localeTypeId, true);
 		RequestValidator.validateString(webMessages, ABBREVIATION, this.abbreviation, false);
+		RequestValidator.validateId(conn, webMessages, "locale", Locale.LOCALE_ID, PARENT_ID, this.parentId, false);
 		
 		return webMessages;
 	}
