@@ -341,6 +341,11 @@
 	    						$("#localeName").html($taxRate.name);
 	    						$("#localeTypeId").html($taxRate.localeTypeId);
 	    						$("#stateName").html($taxRate.stateName);	
+	    						if ( $taxRate.parentName != null && $taxRate.parentName != "" ) {
+	    							$("#parent").html($taxRate.parentName + ", " + $taxRate.parentStateName + "(" + $taxRate.parentLocaleTypeId + ")")
+	    						} else {
+	    							$("#parent").html("");
+	    						}
 	    						$("#addTaxRateForm  input[name='effectiveDate']").val($taxRate.effectiveDate);
 	    						$("#addTaxRateForm  input[name='keyEffectiveDate']").val($taxRate.effectiveDate);
 	    						$("#addTaxRateForm  input[name='rateValue']").val($taxRate.rateValue);	
@@ -488,6 +493,11 @@
     			<td><span class="formHdr">State</span></td>
     			<td><span id="stateName" /></td>
     			<td><span class="err" id="stateNameErr"></span></td>
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">Parent</span></td>
+    			<td><span id="parent" /></td>
+    			<td><span class="err" id="parentErr"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">Rate Type</span></td>

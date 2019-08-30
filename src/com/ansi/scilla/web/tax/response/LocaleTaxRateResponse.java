@@ -40,6 +40,9 @@ public class LocaleTaxRateResponse extends MessageResponse {
 	private Integer typeId;
 	private String typeName;
 	private List<TaxType> taxTypeList;
+	private String parentName;
+	private String parentStateName;
+	private String parentLocaleTypeId;
 	
 	public LocaleTaxRateResponse() {
 		super();
@@ -86,6 +89,15 @@ public class LocaleTaxRateResponse extends MessageResponse {
 		this.name = locale.getName();
 		this.stateName = locale.getStateName();
 		this.localeTypeId = locale.getLocaleTypeId();
+		
+		if ( locale.getLocaleParentId() != null ) {
+			Locale parent = new Locale();
+			parent.setLocaleId(locale.getLocaleParentId());
+			parent.selectOne(conn);
+			this.parentName = parent.getName();
+			this.parentStateName = parent.getStateName();
+			this.parentLocaleTypeId = parent.getLocaleTypeId();
+		}
 		
 		if ( localeTaxRate != null ) {
 			this.effectiveDate = Calendar.getInstance();
@@ -163,6 +175,24 @@ public class LocaleTaxRateResponse extends MessageResponse {
 	}
 	public void setTaxTypeList(List<TaxType> taxTypeList) {
 		this.taxTypeList = taxTypeList;
+	}
+	public String getParentName() {
+		return parentName;
+	}
+	public void setParentName(String parentName) {
+		this.parentName = parentName;
+	}
+	public String getParentStateName() {
+		return parentStateName;
+	}
+	public void setParentStateName(String parentStateName) {
+		this.parentStateName = parentStateName;
+	}
+	public String getParentLocaleTypeId() {
+		return parentLocaleTypeId;
+	}
+	public void setParentLocaleTypeId(String parentLocaleTypeId) {
+		this.parentLocaleTypeId = parentLocaleTypeId;
 	}
 
 
