@@ -3,9 +3,11 @@ package com.ansi.scilla.web.tax.query;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -33,10 +35,12 @@ public class LocaleTaxRateLookupQuery extends LookupQuery {
 			"select\n" + 
 			"	locale.locale_id, locale.state_name, locale.name, locale.locale_type_id,\n" + 
 			"	locale_tax_rate.effective_date, locale_tax_rate.rate_value,\n" + 
+			"	parent.name as parent_name, parent.state_name as parent_state, parent.locale_type_id as parent_type_id,\n" +
 			"	tax_rate_type.type_id, tax_rate_type.type_name\n"; 
 			 
 	public static final String sqlFromClause = 
 			"from locale \n" + 
+					"left outer join locale parent on parent.locale_id=locale.parent_locale_id\n" +
 					"left outer join locale_tax_rate on locale_tax_rate.locale_id=locale.locale_id\n" + 
 					"inner join tax_rate_type on tax_rate_type.type_id=locale_tax_rate.type_id\n";
 	
@@ -113,4 +117,21 @@ public class LocaleTaxRateLookupQuery extends LookupQuery {
 		return whereClause;
 	}
 
+	
+	public class ItemTransformer implements Transformer<HashMap<String, Object>, HashMap<String,Object>> {
+
+		@Override
+		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
+			String parent = null;
+			if ( arg0.containsKey("parent_name")) {
+				String parentName = (String)arg0.get("parent_name");
+				if ( ! StringUtils.isEmpty(parentName)) {
+					parent = parentName + ", " + arg0.get("parent_state") + " (" + arg0.get("parent_type_id") + ")"; 
+				}
+			}
+			arg0.put("parent", parent);
+			return arg0;
+		}
+		
+	}
 }

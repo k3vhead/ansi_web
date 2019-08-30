@@ -201,6 +201,9 @@
     			            { width:"5%", title: "<bean:message key="field.label.stateName" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.state_name != null){return (row.state_name+"");}
     			            } },
+    			            { width:"10%", title: "Parent" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+    			            	if(row.parent_name != null){return (row.parent);}
+    			            } },
     			            { width:"10%", title: "<bean:message key="field.label.effectiveDate" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.effective_date != null){return (row.effective_date+"");}
     			            } },

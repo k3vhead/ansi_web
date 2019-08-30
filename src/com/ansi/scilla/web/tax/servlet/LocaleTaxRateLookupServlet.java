@@ -6,18 +6,14 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.collections4.Transformer;
+import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.servlet.AbstractLookupServlet;
-import com.ansi.scilla.web.common.struts.SessionData;
-import com.ansi.scilla.web.common.struts.SessionDivision;
-import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
@@ -101,11 +97,16 @@ public class LocaleTaxRateLookupServlet extends AbstractLookupServlet {
 			if ( rateValue != null ) {
 				arg0.put(DISPLAY_RATE, rateFormatter.format(rateValue.doubleValue()));
 			}
-//			String jobFrequency = (String)arg0.get(JOB_FREQUENCY);
-//			if ( ! StringUtils.isBlank(jobFrequency) ) {
-//				JobFrequency freq = JobFrequency.lookup(jobFrequency);
-//				arg0.put(FREQUENCY_DESC, freq.display());
-//			}
+
+			String parent = null;
+			if ( arg0.containsKey("parent_name")) {
+				String parentName = (String)arg0.get("parent_name");
+				if ( ! StringUtils.isEmpty(parentName)) {
+					parent = parentName + ", " + arg0.get("parent_state") + " (" + arg0.get("parent_type_id") + ")"; 
+				}
+			}
+			arg0.put("parent", parent);
+			
 			return arg0;
 		}
 		
