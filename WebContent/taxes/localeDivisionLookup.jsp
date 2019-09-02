@@ -446,7 +446,7 @@
 	    <div class="modal-header">
 	    	<h5 class="modal-title" id="name"></h5>
 	    </div>
-    	<table>
+    	<table class="ui-front">
     		<tr>
     			<td><span class="formHdr">Division</span></td>
     			<td>
