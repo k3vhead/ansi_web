@@ -213,6 +213,15 @@
         <url-pattern>/code/*</url-pattern>
     </servlet-mapping>
     
+    
+    <servlet>
+        <servlet-name>codeLookup</servlet-name>
+        <servlet-class>com.ansi.scilla.web.code.servlet.CodeLookupServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>codeLookup</servlet-name>
+        <url-pattern>/codeLookup</url-pattern>
+    </servlet-mapping>
 
     <servlet>
     	<servlet-name>contact</servlet-name>
