@@ -26,17 +26,14 @@ public class LocaleDivAutocompleteServlet extends AbstractAutocompleteServlet {
 
 	private static final long serialVersionUID = 1L;
 	
-	protected final String LOCALE_TYPE_ID = "localeTypeId";
-	protected final String STATE_NAME = "stateName";
+	protected final String ADDRESS_ID = "addressId";
+	protected final String DIVISION_ID = "divisionId";
 	
 
 	public LocaleDivAutocompleteServlet() {
 		super(null);
 	}
 	
-
-
-
 	
 	@Override
 	protected String doSearch(Connection conn, Map<String, String[]> map) throws SQLException, IOException {
@@ -62,15 +59,15 @@ public class LocaleDivAutocompleteServlet extends AbstractAutocompleteServlet {
 		String sqlTemplate = "select top(50) locale_id, name, state_name, locale_type_id from locale\n" + 
 				"where lower(name) like '%" + term.toLowerCase() + "%'";
 		
-		if ( map.containsKey(STATE_NAME) ) {
-			String stateName = map.get(STATE_NAME)[0];
+		if ( map.containsKey(DIVISION_ID) ) {
+			String stateName = map.get(DIVISION_ID)[0];
 			if ( ! StringUtils.isEmpty(stateName) ) {		
 				sqlTemplate = sqlTemplate + "\n and lower(state_name)='"+ stateName.toLowerCase() +"'";
 			}
 		}
 		
-		if ( map.containsKey(LOCALE_TYPE_ID) ) {
-			String localeTypeId = map.get(LOCALE_TYPE_ID)[0];
+		if ( map.containsKey(ADDRESS_ID) ) {
+			String localeTypeId = map.get(ADDRESS_ID)[0];
 			if ( ! StringUtils.isEmpty(localeTypeId) ) {
 				List<String> localeTypeList = new ArrayList<String>();
 				LocaleType localeType = LocaleType.valueOf(localeTypeId);

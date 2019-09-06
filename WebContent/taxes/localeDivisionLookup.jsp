@@ -252,11 +252,7 @@
 						$("#localeDivisionModal  select[name='stateName']").val("");
 						$("#localeDivisionModal  input[name='effectiveStartDate']").val("");	
 						$("#localeDivisionModal  input[name='effectiveStopDate']").val("");
-						$("#localeDivisionModal  input[name='address1']").val("");
-						$("#localeDivisionModal  input[name='address2']").val("");
-						$("#localeDivisionModal  input[name='city']").val("");
-						$("#localeDivisionModal  input[name='state']").val("");
-						$("#localeDivisionModal  input[name='zip']").val("");
+						$("#localeDivisionModal  input[name='addressId']").val("");
 		        		$("#localeDivisionModal  .err").html("");
 		        		$("#localeDivisionModal ").dialog("option","title", "Add New Locale/Division").dialog("open");
 					});
@@ -307,11 +303,7 @@
     				$outbound['stateName'] = $("#addTaxRateForm select[name='stateName']").val();
     				$outbound['effectiveStartDate'] = $("#addTaxRateForm input[name='effectiveStartDate']").val();
     				$outbound['effectiveStopDate'] = $("#addTaxRateForm input[name='effectiveStopDate']").val();
-    				$outbound['address1'] = $("#addTaxRateForm input[name='address1']").val();
-    				$outbound['address2'] = $("#addTaxRateForm input[name='address1']").val();
-    				$outbound['city'] = $("#addTaxRateForm input[name='city']").val();
-    				$outbound['state'] = $("#addTaxRateForm input[name='state']").val();
-    				$outbound['zip'] = $("#addTaxRateForm input[name='zip']").val();
+    				$outbound['addressId'] = $("#addTaxRateForm input[name='address1']").val();
     				
     				console.debug($outbound);
     				
@@ -480,28 +472,8 @@
     		</tr>
     		<tr>
     			<td><span class="formHdr">Address</span></td>
-    			<td><input type="text" name="address1" /></td>
-    			<td><span class="err" id="address1Err"></span></td>
-    		</tr>
-    		<tr>
-    		<td><span class="formHdr"></span></td>
-    			<td><input type="text" name="address2" /></td>
-    			<td><span class="err" id="address2Err"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr">City</span></td>
-    			<td><input type="text" name="city" /></td>
-    			<td><span class="err" id="cityErr"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr">State Address</span></td>
-    			<td><input type="text" name="state" /></td>
-    			<td><span class="err" id="stateErr"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr">Zip Code</span></td>
-    			<td><input type="text" name="zip" /></td>
-    			<td><span class="err" id="zipErr"></span></td>
+    			<td><input type="text" name="addressId" /></td>
+    			<td><span class="err" id="addressIdErr"></span></td>
     		</tr>
     	</table>
     </div>
