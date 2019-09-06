@@ -215,7 +215,7 @@
     			            	//console.log(json);
     			            	//doFunctionBinding();
     			            	var myTable = this;
-    			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#localeDivisionTable", LOCALEDIVISIONLOOKUP.createTable);
+    			            	//LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#localeDivisionTable", LOCALEDIVISIONLOOKUP.createTable);
     			            },
     			            "drawCallback": function( settings ) {
     			            	LOCALEDIVISIONLOOKUP.doFunctionBinding();
@@ -385,6 +385,47 @@
         				$('html, body').animate({scrollTop: 0}, 800);
         				return false;
                	    });
+            		
+            		
+            		var $localeComplete = $("#localeDivisionModal input[name='localeName']" ).autocomplete({
+    					source: function(request,response) {
+    					term = $("#localeDivisionModal input[name='localeName']").val();
+    					localeTypeId = null;
+    					stateName = null;
+    					$.getJSON("localeAutocomplete", {"term":term, "localeTypeId":localeTypeId, "stateName":stateName}, response);
+    				},
+                    minLength: 2,
+                    select: function( event, ui ) {
+                    	$("#localeDivisionModal input[name='localeId']").val(ui.item.id);
+                    },
+                    response: function(event, ui) {
+                        if (ui.content.length === 0) {
+                        	$("#globalMsg").html("No Matching Locale");
+                        	$("#localeDivisionModal input[name='localeId']").val("");
+                        } else {
+                        	$("#globalMsg").html("");
+                        }
+                    }
+              	}).data('ui-autocomplete');	            	
+                
+    			
+            		
+            		// TODO:  JWL Fix this so it works with your form
+            		var $jobsiteBillTo = $( "#addAddressForm input[name='jobsiteBillTo']" ).autocomplete({
+						'source':"addressTypeAhead?",
+						select: function( event, ui ) {
+							$( "#addAddressForm input[name='jobsiteBilltoAddressDefault']" ).val(ui.item.id);
+   				      	},
+						response: function(event, ui) {
+							if (ui.content.length === 0) {
+								$( "#addAddressForm input[name='jobsiteBilltoAddressDefault']" ).val(-1); //server side will see this and mark it invalid
+								$("#noAddress").show();
+								$("#noContact").hide();
+								$( "#noMatchModal" ).dialog("open");
+							}
+						}
+					}).data('ui-autocomplete');
+            		
             	},
             	    
         	};
@@ -449,17 +490,14 @@
     		</tr>
     		<tr>
     			<td><span class="formHdr">Locale Name</span></td>
-    			<td><input type="text" name="localeName" /></td>
+    			<td><input type="text" name="localeName" /><input type="hidden" name="localeId" /></td>
     			<td><span class="err" id="localeNameErr"></span></td>
     		</tr>
     		<tr>
-    			<td><span class="formHdr">State</span></td>
-    			<td>
-    				<select name="stateName" ><webthing:states /></select>
-    			</td>
-    			<td><span class="err" id="stateNameErr"></span></td>
+    			<td><span class="formHdr">Address</span></td>
+    			<td><input type="text" name="addressId" /></td>
+    			<td><span class="err" id="addressIdErr"></span></td>
     		</tr>
-    		
     		<tr>
     			<td><span class="formHdr">Effective Start Date</span></td>
     			<td><input type="text" name="effectiveStartDate" class="dateField" /></td>
@@ -470,11 +508,7 @@
     			<td><input type="text" name="effectiveStopDate" class="dateField" /></td>
     			<td><span class="err" id="effectiveStopDateErr"></span></td>
     		</tr>
-    		<tr>
-    			<td><span class="formHdr">Address</span></td>
-    			<td><input type="text" name="addressId" /></td>
-    			<td><span class="err" id="addressIdErr"></span></td>
-    		</tr>
+    		
     	</table>
     </div>
     <input type="button" class="prettyWideButton showNew" value="New" />
