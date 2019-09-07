@@ -341,6 +341,9 @@
     						404: function($data) {
     							$("#globalMsg").html("Invalid Selection").show().fadeOut(100000);
     						},
+    						405: function($data) {
+    							$("#globalMsg").html("Check Permissions").show().fadeOut(100000);
+    						},
     						500: function($data) {
     							$("#globalMsg").html("System Error; Contact Support");
     						}

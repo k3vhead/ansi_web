@@ -493,7 +493,7 @@
 		<servlet-class>com.ansi.scilla.web.locale.servlet.LocaleDivisionServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>localeDivision</servlet-name>
+		<servlet-name>localeDivisionServlet</servlet-name>
 		<url-pattern>/localeDivision/*</url-pattern>
 		<url-pattern>/localeDivision</url-pattern>
 	</servlet-mapping>
