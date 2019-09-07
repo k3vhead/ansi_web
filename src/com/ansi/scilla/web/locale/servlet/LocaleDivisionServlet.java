@@ -135,7 +135,7 @@ public class LocaleDivisionServlet extends AbstractServlet {
 	private void doAdd(Connection conn, LocaleDivisionRequest localeDivisionRequest, SessionData sessionData, HttpServletResponse response) throws Exception {
 		LocaleDivision localeDivision = new LocaleDivision();
 		makeLocaleDivision(localeDivision, localeDivisionRequest, sessionData.getUser());
-		localeDivision.insertWithNoKey(conn);
+		localeDivision.insertWithKey(conn);
 		conn.commit();
 //		localeDivision.setDivisionId(divisionId);
 		LocaleDivisionResponse localeResponse = new LocaleDivisionResponse(localeDivision, conn);
@@ -166,8 +166,8 @@ public class LocaleDivisionServlet extends AbstractServlet {
 		}
 		localeDivision.setDivisionId(localeDivisionRequest.getDivisionId());
 		localeDivision.setLocaleId(localeDivisionRequest.getLocaleId());
-		localeDivision.setEffectiveStartDate((java.sql.Date) localeDivisionRequest.getEffectiveStartDate());
-		localeDivision.setEffectiveStopDate((java.sql.Date) localeDivisionRequest.getEffectiveStopDate());
+		localeDivision.setEffectiveStartDate(localeDivisionRequest.getEffectiveStartDate());
+		localeDivision.setEffectiveStopDate(localeDivisionRequest.getEffectiveStopDate());
 		localeDivision.setAddressId(localeDivisionRequest.getAddressId());
 		if ( localeDivision.getAddedBy() == null ) {
 			localeDivision.setAddedBy(sessionUser.getUserId());

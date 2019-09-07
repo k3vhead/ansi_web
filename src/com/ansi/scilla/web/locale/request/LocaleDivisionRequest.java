@@ -52,26 +52,26 @@ public class LocaleDivisionRequest extends AbstractRequest {
 	private String zip;
 	
 	
-	public void generateLocaleId(Connection conn, String localeName) throws RecordNotFoundException, Exception {
-		Locale locale = new Locale();
-		locale.setName(localeName);
-		locale.selectOne(conn);
-		this.setLocaleId(locale.getLocaleId());
-	}
-	
-	public void generateAddressIdFromOne(Connection conn, String addressName) throws RecordNotFoundException, Exception {
-		Address address = new Address();
-		address.setAddress1(addressName);
-		address.selectOne(conn);
-		this.setAddressId(address.getAddressId());
-	}
-	
-	public void generateAddressIdFromTwo(Connection conn, String addressName) throws RecordNotFoundException, Exception {
-		Address address = new Address();
-		address.setAddress2(addressName);
-		address.selectOne(conn);
-		this.setAddressId(address.getAddressId());
-	}
+//	public void generateLocaleId(Connection conn, String localeName) throws RecordNotFoundException, Exception {
+//		Locale locale = new Locale();
+//		locale.setName(localeName);
+//		locale.selectOne(conn);
+//		this.setLocaleId(locale.getLocaleId());
+//	}
+//	
+//	public void generateAddressIdFromOne(Connection conn, String addressName) throws RecordNotFoundException, Exception {
+//		Address address = new Address();
+//		address.setAddress1(addressName);
+//		address.selectOne(conn);
+//		this.setAddressId(address.getAddressId());
+//	}
+//	
+//	public void generateAddressIdFromTwo(Connection conn, String addressName) throws RecordNotFoundException, Exception {
+//		Address address = new Address();
+//		address.setAddress2(addressName);
+//		address.selectOne(conn);
+//		this.setAddressId(address.getAddressId());
+//	}
 	
 	public Integer getLocaleId() {
 		return localeId;
@@ -187,19 +187,21 @@ public class LocaleDivisionRequest extends AbstractRequest {
 
 	public WebMessages validateAdd(Connection conn) throws Exception {
 		WebMessages webMessages = new WebMessages();
-		if((this.getLocaleId() == null) && (this.getName() != null)) {
-			this.generateLocaleId(conn, this.getName());
-		}
-		if((this.getAddressId() == null) && (this.getAddress1() != null)) {
-			this.generateAddressIdFromOne(conn, this.getAddress1());
-		} else if ((this.getAddressId() == null) && (this.getAddress2() != null)) {
-			this.generateAddressIdFromTwo(conn, this.getAddress2());
-		}
+//		if((this.getLocaleId() == null) && (this.getName() != null)) {
+//			this.generateLocaleId(conn, this.getName());
+//		}
+//		if((this.getAddressId() == null) && (this.getAddress1() != null)) {
+//			this.generateAddressIdFromOne(conn, this.getAddress1());
+//		} else if ((this.getAddressId() == null) && (this.getAddress2() != null)) {
+//			this.generateAddressIdFromTwo(conn, this.getAddress2());
+//		}
 		RequestValidator.validateId(conn, webMessages, "locale", Locale.LOCALE_ID, "localeId", localeId, true);
 		RequestValidator.validateId(conn, webMessages, "division", Division.DIVISION_ID, "divisionId", divisionId, true);
 		RequestValidator.validateDate(webMessages, EFF_START_DATE, effectiveStartDate, true, getEffectiveStartDate(), getEffectiveStopDate());
 		RequestValidator.validateDate(webMessages, EFF_STOP_DATE, effectiveStopDate, false, getEffectiveStartDate(), getEffectiveStopDate());
 		RequestValidator.validateId(conn, webMessages, "address", Address.ADDRESS_ID, "addressId", addressId, true);
+		
+		
 		return webMessages;
 	}
 	

@@ -242,7 +242,7 @@
     			
     			showNew : function () {
 					$(".showNew").click(function($event) {
-						$('#goEdit').data("localeId",null);
+						$('#goEdit').data("localeId", null);
 		        		$('#goEdit').button('option', 'label', 'Save');
 		        		$('#closeLocaleDivisionModal').button('option', 'label', 'Close');
 		        		
@@ -287,23 +287,25 @@
     			
     			updateLocaleDivision : function () {
     				console.debug("Updating Tax Rate");
+    				var $divisionId = $("#localeDivisionModal input[name='divisionId']").val();
+    				console.debug("divisionId: " + $divisionId);
     				var $localeId = $("#localeDivisionModal input[name='localeId']").val();
     				console.debug("localeId: " + $localeId);
     				
-    				if ( $localeId == null || $localeId == '') {
-    					$url = 'localeDivision';
+    				if ( $divisionId == null || $divisionId == '') {
+    					$url = 'localeDivisionLookup';
     				} else {
-    					$url = 'localeDivision/' + $localeId;
+    					$url = 'localeDivisionLookup/' + $divisionId;
     				}
     				console.debug($url);
     						
     				var $outbound = {};
-    				$outbound['divisionId'] = $("#addTaxRateForm select[name='divisionId']").val();
-    				$outbound['localeName'] = $("#addTaxRateForm input[name='localeName']").val();
-    				$outbound['stateName'] = $("#addTaxRateForm select[name='stateName']").val();
-    				$outbound['effectiveStartDate'] = $("#addTaxRateForm input[name='effectiveStartDate']").val();
-    				$outbound['effectiveStopDate'] = $("#addTaxRateForm input[name='effectiveStopDate']").val();
-    				$outbound['addressId'] = $("#addTaxRateForm input[name='address1']").val();
+    				$outbound['divisionId'] = $("#localeDivisionModal select[name='divisionId']").val();
+    				$outbound['localeId'] = $("#localeDivisionModal input[name='localeId']").val();
+    				$outbound['addressId'] = $("#localeDivisionModal input[name='addressId']").val();
+    				$outbound['effectiveStartDate'] = $("#localeDivisionModal input[name='effectiveStartDate']").val();
+    				$outbound['effectiveStopDate'] = $("#localeDivisionModal input[name='effectiveStopDate']").val();
+    				
     				
     				console.debug($outbound);
     				
@@ -509,6 +511,8 @@
     		
     	</table>
     </div>
+    
+    
     <input type="button" class="prettyWideButton showNew" value="New" />
     <webthing:scrolltop />
 
