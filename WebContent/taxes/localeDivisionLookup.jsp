@@ -252,7 +252,7 @@
 						$("#localeDivisionModal  select[name='stateName']").val("");
 						$("#localeDivisionModal  input[name='effectiveStartDate']").val("");	
 						$("#localeDivisionModal  input[name='effectiveStopDate']").val("");
-						$("#localeDivisionModal  input[name='addressId']").val("");
+						$("#localeDivisionModal  input[name='addressName']").val("");
 		        		$("#localeDivisionModal  .err").html("");
 		        		$("#localeDivisionModal ").dialog("option","title", "Add New Locale/Division").dialog("open");
 					});
@@ -389,36 +389,34 @@
             		
             		var $localeComplete = $("#localeDivisionModal input[name='localeName']" ).autocomplete({
     					source: function(request,response) {
-    					term = $("#localeDivisionModal input[name='localeName']").val();
-    					localeTypeId = null;
-    					stateName = null;
-    					$.getJSON("localeAutocomplete", {"term":term, "localeTypeId":localeTypeId, "stateName":stateName}, response);
-    				},
-                    minLength: 2,
-                    select: function( event, ui ) {
-                    	$("#localeDivisionModal input[name='localeId']").val(ui.item.id);
-                    },
-                    response: function(event, ui) {
-                        if (ui.content.length === 0) {
-                        	$("#globalMsg").html("No Matching Locale");
-                        	$("#localeDivisionModal input[name='localeId']").val("");
-                        } else {
-                        	$("#globalMsg").html("");
-                        }
-                    }
-              	}).data('ui-autocomplete');	            	
-                
-    			
+    						term = $("#localeDivisionModal input[name='localeName']").val();
+    						localeTypeId = null;
+    						stateName = null;
+    						$.getJSON("localeAutocomplete", {"term":term, "localeTypeId":localeTypeId, "stateName":stateName}, response);
+    					},
+                    	minLength: 2,
+                    	select: function( event, ui ) {
+                    		$("#localeDivisionModal input[name='localeId']").val(ui.item.id);
+                    	},
+                    	response: function(event, ui) {
+                        	if (ui.content.length === 0) {
+                        		$("#globalMsg").html("No Matching Locale");
+                        		$("#localeDivisionModal input[name='localeId']").val("");
+                        	} else {
+                        		$("#globalMsg").html("");
+                        	}
+                    	}
+              		}).data('ui-autocomplete');	
             		
-            		// TODO:  JWL Fix this so it works with your form
-            		var $jobsiteBillTo = $( "#addAddressForm input[name='jobsiteBillTo']" ).autocomplete({
+            		
+            		var $jobsiteBillTo = $( "#localeDivisionModal input[name='addressName']" ).autocomplete({
 						'source':"addressTypeAhead?",
 						select: function( event, ui ) {
-							$( "#addAddressForm input[name='jobsiteBilltoAddressDefault']" ).val(ui.item.id);
+							$( "#localeDivisionModal input[name='addressId']" ).val(ui.item.id);
    				      	},
 						response: function(event, ui) {
 							if (ui.content.length === 0) {
-								$( "#addAddressForm input[name='jobsiteBilltoAddressDefault']" ).val(-1); //server side will see this and mark it invalid
+								$( "#localeDivisionModal input[name='jobsiteBilltoAddressDefault']" ).val(-1); //server side will see this and mark it invalid
 								$("#noAddress").show();
 								$("#noContact").hide();
 								$( "#noMatchModal" ).dialog("open");
@@ -495,7 +493,7 @@
     		</tr>
     		<tr>
     			<td><span class="formHdr">Address</span></td>
-    			<td><input type="text" name="addressId" /></td>
+    			<td><input type="text" name="addressName" /><input type="hidden" name="addressId" /></td>
     			<td><span class="err" id="addressIdErr"></span></td>
     		</tr>
     		<tr>
