@@ -9,6 +9,7 @@ import com.ansi.scilla.common.db.Locale;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.WebMessages;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class LocaleDivisionRequest extends AbstractRequest {
@@ -89,18 +90,22 @@ public class LocaleDivisionRequest extends AbstractRequest {
 		this.divisionId = divisionId;
 	}
 
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Date getEffectiveStartDate() {
 		return effectiveStartDate;
 	}
 
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setEffectiveStartDate(Date effectiveStartDate) {
 		this.effectiveStartDate = effectiveStartDate;
 	}
 
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Date getEffectiveStopDate() {
 		return effectiveStopDate;
 	}
 
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setEffectiveStopDate(Date effectiveStopDate) {
 		this.effectiveStopDate = effectiveStopDate;
 	}
@@ -197,8 +202,8 @@ public class LocaleDivisionRequest extends AbstractRequest {
 //		}
 		RequestValidator.validateId(conn, webMessages, "locale", Locale.LOCALE_ID, "localeId", localeId, true);
 		RequestValidator.validateId(conn, webMessages, "division", Division.DIVISION_ID, "divisionId", divisionId, true);
-		RequestValidator.validateDate(webMessages, EFF_START_DATE, effectiveStartDate, true, getEffectiveStartDate(), getEffectiveStopDate());
-		RequestValidator.validateDate(webMessages, EFF_STOP_DATE, effectiveStopDate, false, getEffectiveStartDate(), getEffectiveStopDate());
+		RequestValidator.validateDate(webMessages, EFF_START_DATE, effectiveStartDate, true, null, null);
+		RequestValidator.validateDate(webMessages, EFF_STOP_DATE, effectiveStopDate, false, getEffectiveStartDate(), null);
 		RequestValidator.validateId(conn, webMessages, "address", Address.ADDRESS_ID, "addressId", addressId, true);
 		
 		

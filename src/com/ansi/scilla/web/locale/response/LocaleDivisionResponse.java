@@ -8,6 +8,7 @@ import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.Locale;
 import com.ansi.scilla.common.db.LocaleDivision;
 import com.ansi.scilla.web.common.response.MessageResponse;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class LocaleDivisionResponse extends MessageResponse {
@@ -83,19 +84,19 @@ public class LocaleDivisionResponse extends MessageResponse {
 	public void setDivisionId(Integer divisionId) {
 		this.divisionId = divisionId;
 	}
-
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Date getEffectiveStartDate() {
 		return effectiveStartDate;
 	}
-
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setEffectiveStartDate(Date effectiveStartDate) {
 		this.effectiveStartDate = effectiveStartDate;
 	}
-
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Date getEffectiveStopDate() {
 		return effectiveStopDate;
 	}
-
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setEffectiveStopDate(Date effectiveStopDate) {
 		this.effectiveStopDate = effectiveStopDate;
 	}

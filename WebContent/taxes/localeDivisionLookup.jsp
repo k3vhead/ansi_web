@@ -160,9 +160,9 @@
             	        
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
-            	            { className: "dt-head-left", "targets": [0,1,2] },
-            	            { className: "dt-body-center", "targets": [3,4,5,7] },
-            	            { className: "dt-right", "targets": [6]}
+            	            { className: "dt-head-left", "targets": [0,1,5] },
+            	            { className: "dt-body-center", "targets": [3,4] },
+            	            { className: "dt-right", "targets": [2]}
             	         ],
             	        "paging": true,
     			        "ajax": {
@@ -293,9 +293,9 @@
     				console.debug("localeId: " + $localeId);
     				
     				if ( $divisionId == null || $divisionId == '') {
-    					$url = 'localeDivisionLookup';
+    					$url = 'localeDivision';
     				} else {
-    					$url = 'localeDivisionLookup/' + $divisionId;
+    					$url = 'localeDivision/' + $divisionId;
     				}
     				console.debug($url);
     						
