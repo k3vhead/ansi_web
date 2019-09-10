@@ -201,7 +201,7 @@
     			            	//console.log(row);
     			            	var $actionData = "";
     			            	if ( row.locale_id != null ) {
-    				            	var $editLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="localeReturn.html?id='+row.locale_id+'" class="editAction" data-id="'+row.locale_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
+    				            	var $editLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="#" class="editAction" data-id="'+row.division_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
     				            	
 //    		            			var $ticketData = 'data-id="' + row.locale_id + '"';
 //    			            		$printLink = '<ansi:hasPermission permissionRequired="TAX_READ"><i class="print-link fa fa-print" aria-hidden="true" ' + $localeData + '></i></ansi:hasPermission>'
@@ -225,9 +225,10 @@
             	
             	
             	doFunctionBinding : function() {
-    				$( ".editAction" ).on( "click", function($clickevent) {
-    					 doEdit($clickevent);
-    				});					
+            		$( ".editAction" ).on( "click", function($clickevent) {
+	    				var $name = $(this).attr("data-name");
+	    				 LOCALEDIVISIONLOOKUP.makeEditPanel($clickevent);
+	    			});					
     				$(".print-link").on( "click", function($clickevent) {
     					doPrint($clickevent);
     				});

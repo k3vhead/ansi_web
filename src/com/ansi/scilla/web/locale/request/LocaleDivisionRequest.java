@@ -10,7 +10,6 @@ import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class LocaleDivisionRequest extends AbstractRequest {
 
