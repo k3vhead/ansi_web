@@ -32,7 +32,6 @@
 			}
 			#displayTable {
 				width:90%;
-				clear:both;
 			}
 			#addFormDiv {
 				display:none;
@@ -55,80 +54,108 @@
 			}
         </style>
         
-        <script type="text/javascript">        
-        $(function() {     
+        <script type="text/javascript">  
+        
+        $(document).ready(function(){
         	
-			function getCodes($filter) {
-				var $url = 'code/' + $filter;
-				var jqxhr = $.ajax({
-					type: 'GET',
-					url: $url,
-					data: {},
-					success: function($data) {
-						$.each($data.data.codeList, function(index, value) {
-							addRow(index, value);
-						});
-						doFunctionBinding();
-						$("#filterList").html("");
-						var $newHTML = "";
-						
-						$.each($data.data.filterRecordList, function(index, value) {
-							
-							$newHTML = $newHTML + '<li><a class="myFilter" href="#" data-filter="' + value.tableName + '">' + value.tableName + '</a>'; 
-							$newHTML = $newHTML + '<ul class="sub_menu">';
-							
-							$.each(value.fieldNameList, function(index, fieldName) {
-								$newHTML = $newHTML + '<li><a class="myFilter" href="#" data-filter="' + value.tableName + '/' + fieldName + '">' + fieldName + '</a></li>';
-							});
-							$newHTML = $newHTML + '</ul></li>';
-						});
-						$("#filterList").html($newHTML);
-						$('.myFilter').bind("click", function($clickevent) {						
-							doFilter($clickevent);
-						});
-					},
-					statusCode: {
-						403: function($data) {
-							$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-						} 
-					},
-					dataType: 'json'
-				});
-			}
-			getCodes("list");
-			getTableFieldList(null, $("#addForm select[name='tableName']"));
+        	;CODEMAINTENANCE = {
+        			
+        		init : function() {	
+        			//CODEMAINTENANCE.getCodes();
+        			CODEMAINTENANCE.createTable();
+        			CODEMAINTENANCE.doFunctionBinding();
+        			CODEMAINTENANCE.clearAddForm();
+        			CODEMAINTENANCE.makeButtons();
+        		//	CODEMAINTENANCE.getTableList();
+	        		},
+	        		
+	        		
+	    		createTable : function() {
+	    			CODEMAINTENANCE.dataTable = $('#codeTable').DataTable( {
+	        			"processing": 		true,
+	        	        "serverSide": 		true,
+	        	        "autoWidth": 		false,
+	        	        "deferRender": 		true,
+	        	        "scrollCollapse": 	true,
+	        	        "scrollX": 			true,
+	        	        rowId: 				'dt_RowId',
+	        	        dom: 				'Bfrtip',
+	        	        "searching": 		true,
+	        	        lengthMenu: [
+	        	        	[ 10, 50, 100, 500, 1000 ],
+	        	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
+	        	        ],
+	        	        buttons: [
+	        	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {CODEMAINTENANCE.doFunctionBinding();}}
+	        	        ],
+	        	        
+	        	        "columnDefs": [
+	         	            { "orderable": false, "targets": -1 },
+	        	         ],
+	        	        "paging": true,
+				        "ajax": {
+				        	"url": "codeLookup",
+				        	"type": "GET",
+				        	},
+				        aaSorting:[1],
+				        columns: [
+				        	{ title: "Table Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				            	if(row.table_name != null){return (row.table_name+"");}
+				            } },
+				            { title: "Field Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            	if(row.field_name != null){return (row.field_name+"");}
+				            } },
+				            { title: "Value", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            	if(row.value != null){return (row.value+"");}
+				            } },
+				            { title: "Display Value" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				            	if(row.display_value != null){return (row.display_value+"");}
+				            } },
+				            { title: "Description", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            	if(row.description != null){return (row.description+"");}
+				            } },
+				            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
+				            	//console.log(row);
+					            	var $editLink = '<span class="edit-link" data-id="' + row.table_name + '"><webthing:edit>Edit</webthing:edit></span>';
+					            		$actionData = "<ansi:hasPermission permissionRequired='USER_ADMIN_WRITE'>" + $editLink + "</ansi:hasPermission>"
+				            		return $actionData;
+				            } }],
+				            "initComplete": function(settings, json) {
+				            	//console.log(json);
+				            	//USERLOOKUP.doFunctionBinding();
+				            },
+				            "drawCallback": function( settings ) {
+				            	CODEMAINTENANCE.doFunctionBinding();
+				            }
+				    } );
+	        	},
+        	
 			
-			function doFilter($event) {
+		/*	doFilter: function ($event) {
 				$event.preventDefault();
 				var $filtervalue = $event.currentTarget.attributes['data-filter'].value;				
 				$("#displayTable").find("tr:gt(0)").remove();
 				getCodes($filtervalue);
-			}
+			},
         
-			function addRow(index, $code) {	
+			 function addRow(index, $code) {	
 				var $rownum = index + 1;
        			//$('#displayTable tr:last').before(row);
        			rowTd = makeRow($code, $rownum);
        			row = '<tr class="dataRow">' + rowTd + "</tr>";
        			$('#displayTable').append(row);
-			}
+			} */
 			
-			function doFunctionBinding() {
+			doFunctionBinding: function () {
 				$('.updAction').bind("click", function($clickevent) {
-					doUpdate($clickevent);
+					CODEMAINTENANCE.doUpdate($clickevent);
 				});
 				$('.delAction').bind("click", function($clickevent) {
-					doDelete($clickevent);
+					CODEMAINTENANCE.doDelete($clickevent);
 				});
-				$('.dataRow').bind("mouseover", function() {
-					$(this).css('background-color','#CCCCCC');
-				});
-				$('.dataRow').bind("mouseout", function() {
-					$(this).css('background-color','transparent');
-				});
-			}
+			},
 			
-			function makeRow($code, $rownum) {
+			/* function makeRow($code, $rownum) {
 				var row = "";
 				row = row + '<td class="tablecol">' + $code.tableName + '</td>';
 				row = row + '<td class="fieldcol">' + $code.fieldName + '</td>';
@@ -162,9 +189,9 @@
        			</ansi:hasWrite>
        			</ansi:hasPermission>       			
 				return row;
-			}
+			} */
 			
-			function doUpdate($clickevent) {
+			doUpdate: function ($clickevent) {
 				$clickevent.preventDefault();
 				clearAddForm();
 				var $tableName = $clickevent.currentTarget.attributes['data-tableName'].value;
@@ -214,9 +241,9 @@
 					positionStyle: 'fixed' //'fixed' or 'absolute'
 				});		
             	$("#addForm input[name='value']").select();
-			}
+			},
 			
-			function doDelete($clickevent) {
+			doDelete: function ($clickevent) {
 				$clickevent.preventDefault();
 
 				var $tableName = $clickevent.currentTarget.attributes['data-tableName'].value;
@@ -253,11 +280,13 @@
 					opacity: 0.6,
 					positionStyle: 'fixed' //'fixed' or 'absolute'
 				});
-			}
+			},
 			
+			
+			makeButtons : function() {
 			$("#addButton").click( function($clickevent) {
 				$clickevent.preventDefault();
-				clearAddForm();
+    			CODEMAINTENANCE.clearAddForm();
 				$("#addFormTitle").html("Add a Code");
              	$('#addFormDiv').bPopup({
 					modalClose: false,
@@ -267,18 +296,13 @@
              	$("#addForm select[name='tableName']").focus();
 			});
 			
-			$('.ScrollTop').click(function() {
-				$('html, body').animate({scrollTop: 0}, 800);
-      	  		return false;
-      	    });
-			
 			$("#cancelUpdate").click( function($clickevent) {
 				$clickevent.preventDefault();
-				clearAddForm();
+				CODEMAINTENANCE.clearAddForm();
 				$('#addFormDiv').bPopup().close();
 			});
 
-			$("#goUpdate").click( function($clickevent) {
+			/* $("#goUpdate").click( function($clickevent) {
 				$clickevent.preventDefault();
 				$outbound = {};
 				$.each( $('#addForm :input'), function(index, value) {
@@ -383,7 +407,7 @@
 					},
 					dataType: 'json'
 				});
-			});
+			}); */
 
             $("#cancelDelete").click( function($event) {
             	$event.preventDefault();
@@ -452,57 +476,39 @@
             $('#addForm').find("input").on('focus',function(e) {
             	$required = $(this).data('required');
             	if ( $required == true ) {
-            		markValid(this);
+            		CODEMAINTENANCE.markValid(this);
             	}
             });
             
             $('#addForm').find("input").on('input',function(e) {
             	$required = $(this).data('required');
             	if ( $required == true ) {
-            		markValid(this);
+            		CODEMAINTENANCE.markValid(this);
             	}
             });
             
             $("#addForm select[name='tableName']").change(function () {
 				var $selectedTable = $('#addForm select[name="tableName"] option:selected').val();
-				getTableFieldList($selectedTable, $("#addForm select[name='fieldName']"));
+				CODEMAINTENANCE.getTableFieldList($selectedTable, $("#addForm select[name='fieldName']"));
             });
             
-            $(".columnhider").click(function($clickevent) {
-            	$clickevent.preventDefault();
-            	var $column = "." + $clickevent.currentTarget.attributes['data-col'].value;
-            	$($column).fadeOut(1500);
-            	$("#showhidden").fadeIn(1500);
-            });
-            
-            $("#showhidden").click(function($clickevent) {
-            	$clickevent.preventDefault();
-            	$(".tablecol").show();
-            	$(".fieldcol").show();
-            	$(".valuecol").show();
-            	$(".displaycol").show();
-            	$(".seqcol").show();
-            	$(".desccol").show();
-            	$(".statuscol").show();
-            	$(".actioncol").show();
-            	$("#showhidden").fadeOut(1500);
-            });
+			},
             
             
-            function clearAddForm() {
+            clearAddForm: function () {
             	$.each( $('#addForm').find("select"), function(index, $inputField) {
             		$fieldName = $($inputField).attr('name');
             		$selectName = "#addForm select[name='" + $fieldName + "']"
             		select = $($selectName);
             		select.val("");
-            		markValid($inputField);
+            		CODEMAINTENANCE.markValid($inputField);
             	});
             	
 				$.each( $('#addForm').find("input"), function(index, $inputField) {
 					$fieldName = $($inputField).attr('name');
 					if ( $($inputField).attr("type") == "text" ) {
 						$($inputField).val("");
-						markValid($inputField);
+						CODEMAINTENANCE.markValid($inputField);
 					}
 				});
 				$('.err').html("");
@@ -510,9 +516,9 @@
         		$("#addForm").data('fieldName', null);
         		$("#addForm").data('value', null);
 
-            }
+            },
             
-            function markValid($inputField) {
+            markValid: function ($inputField) {
             	$fieldName = $($inputField).attr('name');
             	$fieldGetter = "input[name='" + $fieldName + "']";
             	$fieldValue = $($fieldGetter).val();
@@ -529,9 +535,9 @@
             		$($valid).addClass("fa-ban");
             		$($valid).addClass("inputIsInvalid");
             	}
-            }
+            },
             
-            function getTableFieldList(tableName, $select, $selectedValue) {
+         /*   getTableList: function (tableName, $select, $selectedValue) {
             	if ( tableName == null ) {
             		$url = "tableFieldList"
            			//select = $("#addForm select[name='tableName']");
@@ -571,7 +577,11 @@
     				dataType: 'json'
     			});
 
-            }
+            },*/
+            
+       	  };
+       	  
+       	  CODEMAINTENANCE.init();
             
         });
         </script>        
@@ -579,55 +589,38 @@
     
     
     <tiles:put name="content" type="string">
-    	<h1><bean:message key="page.label.code" /> <bean:message key="menu.label.maintenance" /></h1>
-    	<div style="clear:both; text-align:right; width:90%;">
-    		<div style="float:right; width:100px;">
-		    	<ul id="showhidden" class="dropdown">
-		    		<li><a href="#"><i class="fa fa-window-restore fa-lg" aria-hidden="true"></i></a></li>
-		    	</ul>
-    			<ul class="dropdown">
-    				<li><a href="#" class="myFilter" data-filter="list"><i class="fa fa-refresh fa-lg" aria-hidden="true"></i></a></li>
-   				</ul>
-    			<ul class="dropdown">
-					<li>											
-						<a href="#"><i class="fa fa-filter fa-lg" aria-hidden="true"></i></a>
-			        	<ul class="sub_menu" id="filterList">
-        			 		<li><a href="#">Message is</a></li>
-        			 		<li><html:link action="codeMaintenance">Code Maintenance</html:link></li>
-        			 		<li><html:link action="userAdmin">User Admin</html:link></li>
-        			 		<li><html:link action="permissiongroupAdmin">Permission Group Admin</html:link></li> 
-							<li><html:link action="divisionAdmin">Division Admin</html:link></li>
-							<li><html:link action="applicationpropertyAdmin">Application Property Admin</html:link></li>
-							<li><html:link action="printHistory">Print History</html:link></li>
-							<li><html:link action="usertitleMaintenance">User Title Maintenance</html:link></li>
-							<li><html:link action="transactionhistoryView">Transaction History View</html:link></li>
-        				</ul>
-        			</li>
-       			</ul>    
-      		</div>
-       		<div style="width:100%; height:1px; clear:both;">&nbsp;</div>	
-       	</div>
-		    	
-    	<table id="displayTable">
-    		<thead>
-	    		<tr>
-	    			<th class="tablecol"><bean:message key="rpt.hdr.table" /><i class="fa fa-eye-slash columnhider" data-col="tablecol" style="float:right;" aria-hidden="true"></i></th>
-	    			<th class="fieldcol"><bean:message key="rpt.hdr.field" /><i class="fa fa-eye-slash columnhider" data-col="fieldcol" style="float:right;" aria-hidden="true"></i></th>
-	    			<th class="valuecol"><bean:message key="rpt.hdr.value" /><i class="fa fa-eye-slash columnhider" data-col="valuecol" style="float:right;" aria-hidden="true"></i></th>
-	    			<th class="displaycol"><bean:message key="rpt.hdr.display" /><i class="fa fa-eye-slash columnhider" data-col="displaycol" style="float:right;" aria-hidden="true"></i></th>
-	    			<th class="seqcol"><bean:message key="rpt.hdr.sequence" /><i class="fa fa-eye-slash columnhider" data-col="seqcol" style="float:right;" aria-hidden="true"></i></th>
-	    			<th class="desccol"><bean:message key="rpt.hdr.description" /><i class="fa fa-eye-slash columnhider" data-col="desccol" style="float:right;" aria-hidden="true"></i></th>
-	    			<th class="statuscol"><bean:message key="rpt.hdr.status" /><i class="fa fa-eye-slash columnhider" data-col="statuscol" style="float:right;" aria-hidden="true"></i></th>
-	 			    <ansi:hasPermission permissionRequired="SYSADMIN">
-	    				<ansi:hasWrite>
-	    					<th class="actioncol">Action<i class="fa fa-eye-slash columnhider" data-col="actioncol" style="float:right;" aria-hidden="true"></i></th>
-	    				</ansi:hasWrite>
-	    			</ansi:hasPermission>
-	    		</tr>
-    		</thead>
-    		<tbody>
-    		</tbody>
-    	</table>
+
+
+	 	<table id="codeTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;">
+	        <colgroup>
+	    		<col style="width:13%;" />
+	    		<col style="width:13%;" />
+	    		<col style="width:13%;" />
+	    		<col style="width:13%;" />
+	    		<col style="width:13%;" />
+	    		<col style="width:8%;" />
+	    	</colgroup>
+	        <thead>
+	            <tr>
+	                <th>Table Name</th>
+	    			<th>Field Name</th>
+	    			<th>Value</th>
+	    			<th>Display Value</th>
+	    			<th>Description</th>
+	    			<th><bean:message key="field.label.action" /></th>
+	            </tr>
+	        </thead>
+	        <tfoot>
+	            <tr>
+	                <th>Table Name</th>
+	    			<th>Field Name</th>
+	    			<th>Value</th>
+	    			<th>Display Value</th>
+	    			<th>Description</th>
+	    			<th><bean:message key="field.label.action" /></th>
+	            </tr>
+	        </tfoot>
+	    </table>
     				<webthing:scrolltop />
 		<ansi:hasPermission permissionRequired="SYSADMIN">
 			<ansi:hasWrite>
