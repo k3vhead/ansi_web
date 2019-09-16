@@ -123,7 +123,7 @@ public class JobTableServlet extends AbstractServlet {
 		    }
 		    if (sCol != null) {
 		        col = Integer.parseInt(sCol);
-		        if (col < 0 || col > 10)
+		        if (col < 0 || col > 20)
 		            col = 0;
 		    }
 		    if (sdir != null) {

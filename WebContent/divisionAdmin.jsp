@@ -77,6 +77,11 @@
 				dataType: 'json'
 			});
 			
+			$('.ScrollTop').click(function() {
+				$('html, body').animate({scrollTop: 0}, 800);
+      	  		return false;
+      	    });
+			
 			function addRow(index, $division) {	
 				var $rownum = index + 1;
        			rowTd = makeRow($division, $rownum);
@@ -504,6 +509,7 @@
     			</ansi:hasPermission>
     		</tr>
     	</table>
+    				<webthing:scrolltop />
     	<ansi:hasPermission permissionRequired="SYSADMIN">
     		<ansi:hasWrite>
     	<div class="addButtonDiv">
