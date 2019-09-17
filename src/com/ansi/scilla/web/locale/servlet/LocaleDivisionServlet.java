@@ -105,8 +105,8 @@ public class LocaleDivisionServlet extends AbstractServlet {
 					webMessages = localeDivisionRequest.validateUpdate(conn);
 					if(webMessages.isEmpty() == true) {
 						Integer divId = ansiURL.getId();
-						Integer localeId = ansiURL.getId();
-						doUpdate(conn, divId, localeId, localeDivisionRequest, sessionData, response);
+						//Integer localeId = ansiURL.getId();
+						doUpdate(conn, divId, localeDivisionRequest, sessionData, response);
 					} else {
 						data.setWebMessages(webMessages);
 						super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
@@ -144,10 +144,10 @@ public class LocaleDivisionServlet extends AbstractServlet {
 
 	
 
-	private void doUpdate(Connection conn, Integer divisionId, Integer localeId, LocaleDivisionRequest localeDivisionRequest, SessionData sessionData, HttpServletResponse response) throws Exception {
+	private void doUpdate(Connection conn, Integer divisionId, LocaleDivisionRequest localeDivisionRequest, SessionData sessionData, HttpServletResponse response) throws Exception {
 		LocaleDivision localeDivision = new LocaleDivision();
 		localeDivision.setDivisionId(divisionId);
-		localeDivision.setLocaleId(localeId);
+		//localeDivision.setLocaleId(localeId);
 		localeDivision.selectOne(conn);
 		makeLocaleDivision(localeDivision, localeDivisionRequest, sessionData.getUser());
 		LocaleDivision key = new LocaleDivision();

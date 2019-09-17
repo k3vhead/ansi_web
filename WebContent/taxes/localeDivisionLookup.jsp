@@ -202,7 +202,7 @@
     			            	var $actionData = "";
     			            	if ( row.locale_id != null ) {
     				            	var $editLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="#" class="editAction" data-id="'+row.division_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
-    				            	
+    				            	console.log("editLink: " + $editLink);
 //    		            			var $ticketData = 'data-id="' + row.locale_id + '"';
 //    			            		$printLink = '<ansi:hasPermission permissionRequired="TAX_READ"><i class="print-link fa fa-print" aria-hidden="true" ' + $localeData + '></i></ansi:hasPermission>'
 //    			            		var $claimLink = '';
@@ -226,6 +226,7 @@
             	
             	doFunctionBinding : function() {
             		$( ".editAction" ).on( "click", function($clickevent) {
+            			console.log("doFunctionBinding: makeEditPanel");
 	    				var $name = $(this).attr("data-name");
 	    				 LOCALEDIVISIONLOOKUP.makeEditPanel($clickevent);
 	    			});					
@@ -260,6 +261,7 @@
 				},
     			
     			makeEditPanel : function() {	
+    				console.log("make edit panel");
     				$("#localeDivisionModal").dialog({
     					autoOpen: false,
     					height: 400,
@@ -269,16 +271,19 @@
     						{
     							id: "closeLocaleDivisionModal",
     							click: function() {
+    								console.log("make edit panel: close");
     								$("#localeDivisionModal").dialog( "close" );
     							}
     						},{
     							id: "goEdit",
     							click: function($event) {
+    								console.log("make edit panel: updateLocaleDivision");
     								LOCALEDIVISIONLOOKUP.updateLocaleDivision();
     							}
     						}	      	      
     					],
     					close: function() {
+    						console.log("make edit panel: clear add form");
     						LOCALEDIVISIONLOOKUP.clearAddForm();
     						$("#localeDivisionModal").dialog( "close" );
     						//allFields.removeClass( "ui-state-error" );
@@ -287,11 +292,15 @@
     			},
     			
     			updateLocaleDivision : function () {
-    				console.debug("Updating Tax Rate");
+    				console.debug("Updating Locale Division");
+    				
     				var $divisionId = $("#localeDivisionModal input[name='divisionId']").val();
     				console.debug("divisionId: " + $divisionId);
+    				
     				var $localeId = $("#localeDivisionModal input[name='localeId']").val();
     				console.debug("localeId: " + $localeId);
+    				
+    				console.log("localeId: " + $localeId);
     				
     				if ( $divisionId == null || $divisionId == '') {
     					$url = 'localeDivision';
