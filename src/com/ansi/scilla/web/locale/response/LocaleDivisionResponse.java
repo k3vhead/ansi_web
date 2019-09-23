@@ -1,13 +1,16 @@
 package com.ansi.scilla.web.locale.response;
 
 import java.sql.Connection;
-import java.util.Date;
+import java.util.Calendar;
+
+import org.apache.commons.lang3.time.DateUtils;
 
 import com.ansi.scilla.common.db.Address;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.Locale;
 import com.ansi.scilla.common.db.LocaleDivision;
 import com.ansi.scilla.web.common.response.MessageResponse;
+import com.ansi.scilla.web.common.utils.AppUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -15,23 +18,23 @@ public class LocaleDivisionResponse extends MessageResponse {
 
 	private static final long serialVersionUID = 1L;
 	
-	public static final String DIVISION_ID = "locale_division.division_id";
-	public static final String LOCALE_ID = "locale_division.locale_id";
-	public static final String EFF_START_DATE = "locale_division.effective_start_date";
-	public static final String EFF_STOP_DATE = "locale_division.effective_stop_date"; 
-	public static final String ADDRESS_ID = "locale_division.address_id"; 
-	public static final String NAME = "locale.name";
-	public static final String LOCALE_STATE_NAME = "locale.state_name";
-	public static final String LOCALE_TYPE_ID = "locale.locale_type_id";
-	public static final String DIVISION_CODE = "division.division_code";
-	public static final String DIVISION_NBR = "division.division_nbr";
-	public static final String DIVISION_DISPLAY = "concat(division_nbr,'-',division_code)";
-	public static final String DESCRIPTION = "division.description"; 
-	public static final String ADDRESS1 = "address.address1";
-	public static final String ADDRESS2 = "address.address2";
-	public static final String CITY = "address.city";
-	public static final String STATE = "address.state";
-	public static final String ZIP = "address.zip";
+	public static final String DIVISION_ID = "division_id";
+	public static final String LOCALE_ID = "locale_id";
+	public static final String EFF_START_DATE = "effective_start_date";
+	public static final String EFF_STOP_DATE = "effective_stop_date"; 
+	public static final String ADDRESS_ID = "address_id"; 
+	public static final String NAME = "name";
+	public static final String LOCALE_STATE_NAME = "state_name";
+	public static final String LOCALE_TYPE_ID = "locale_type_id";
+	public static final String DIVISION_CODE = "division_code";
+	public static final String DIVISION_NBR = "division_nbr";
+	public static final String DIVISION_DISPLAY = "division_display";
+	public static final String DESCRIPTION = "description"; 
+	public static final String ADDRESS1 = "address1";
+	public static final String ADDRESS2 = "address2";
+	public static final String CITY = "city";
+	public static final String STATE = "state";
+	public static final String ZIP = "zip";
 		
 	private Integer divisionId;
 	private String divisionCode;
@@ -41,10 +44,11 @@ public class LocaleDivisionResponse extends MessageResponse {
 	private String name; //locale name
 	private String stateName;//locale state name
 	
-	private Date effectiveStartDate;
-	private Date effectiveStopDate;
+	private Calendar effectiveStartDate;
+	private Calendar effectiveStopDate;
 	
 	private Integer addressId;
+	private String addressName;
 	private String address1;
 	private String address2;
 	private String city;
@@ -55,17 +59,18 @@ public class LocaleDivisionResponse extends MessageResponse {
 		super();
 	}
 	
-	public LocaleDivisionResponse(LocaleDivision localeDivision, Connection conn) throws RecordNotFoundException, Exception {
+	public LocaleDivisionResponse(Connection conn, LocaleDivision localeDivision) throws RecordNotFoundException, Exception {
 		this();
-		make(localeDivision, conn);		
+		make(conn, localeDivision);		
 	}
 
-	public LocaleDivisionResponse(Connection conn, Integer localeId) throws RecordNotFoundException, Exception {
+	public LocaleDivisionResponse(Connection conn, Integer localeId, Integer divisionId) throws RecordNotFoundException, Exception {
 		this();
 		LocaleDivision localeDivision = new LocaleDivision();
 		localeDivision.setLocaleId(localeId);
+		localeDivision.setDivisionId(divisionId);
 		localeDivision.selectOne(conn);
-		make(localeDivision, conn);
+		make(conn, localeDivision);
 		
 	}
 
@@ -84,25 +89,37 @@ public class LocaleDivisionResponse extends MessageResponse {
 	public void setDivisionId(Integer divisionId) {
 		this.divisionId = divisionId;
 	}
+	
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
-	public Date getEffectiveStartDate() {
+	public Calendar getEffectiveStartDate() {
 		return effectiveStartDate;
 	}
+
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
-	public void setEffectiveStartDate(Date effectiveStartDate) {
+	public void setEffectiveStartDate(Calendar effectiveStartDate) {
 		this.effectiveStartDate = effectiveStartDate;
 	}
+	
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
-	public Date getEffectiveStopDate() {
+	public Calendar getEffectiveStopDate() {
 		return effectiveStopDate;
 	}
+
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
-	public void setEffectiveStopDate(Date effectiveStopDate) {
+	public void setEffectiveStopDate(Calendar effectiveStopDate) {
 		this.effectiveStopDate = effectiveStopDate;
 	}
 
 	public Integer getAddressId() {
 		return addressId;
+	}
+
+	public String getAddressName() {
+		return addressName;
+	}
+
+	public void setAddressName(String addressName) {
+		this.addressName = addressName;
 	}
 
 	public void setAddressId(Integer addressId) {
@@ -181,7 +198,7 @@ public class LocaleDivisionResponse extends MessageResponse {
 		this.stateName = stateName;
 	}
 
-	private void make(LocaleDivision localeDivision, Connection conn) throws RecordNotFoundException, Exception {
+	private void make(Connection conn, LocaleDivision localeDivision) throws RecordNotFoundException, Exception {
 		this.localeId = localeDivision.getLocaleId();
 		Locale locale = new Locale();
 		locale.setLocaleId(this.getLocaleId());
@@ -196,18 +213,21 @@ public class LocaleDivisionResponse extends MessageResponse {
 		this.divisionCode = div.getDivisionCode();
 		this.divisionNbr = div.getDivisionNbr();
 		
-		this.effectiveStartDate = localeDivision.getEffectiveStartDate();
-		this.effectiveStopDate = localeDivision.getEffectiveStopDate();
+		this.effectiveStartDate = DateUtils.toCalendar(localeDivision.getEffectiveStartDate());
+		this.effectiveStopDate = localeDivision.getEffectiveStopDate() == null ? null : DateUtils.toCalendar(localeDivision.getEffectiveStopDate());
 		
 		this.addressId = localeDivision.getAddressId();
 		Address address = new Address();
 		address.setAddressId(this.getAddressId());
 		address.selectOne(conn);
+		this.addressName = address.getName();
 		this.address1 = address.getAddress1();
 		this.address2 = address.getAddress2();
 		this.city = address.getCity();
 		this.state = address.getState();
 		this.zip = address.getZip();
 	}
+	
+	
 	
 }

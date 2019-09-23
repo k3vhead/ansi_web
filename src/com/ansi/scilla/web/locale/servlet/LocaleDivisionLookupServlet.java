@@ -96,24 +96,18 @@ public class LocaleDivisionLookupServlet extends AbstractLookupServlet {
 
 		@Override
 		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
-			Date effectiveStartDate = (Date)arg0.get(EFF_START_DATE);
+			Date effectiveStartDate = (Date)arg0.get("effective_start_date");
 			if ( effectiveStartDate != null ) {
-				arg0.put(EFF_START_DATE, dateFormatter.format(effectiveStartDate));
-			}
-			Date effectiveStopDate = (Date)arg0.get(EFF_STOP_DATE);
-			if ( effectiveStopDate != null ) {
-				arg0.put(EFF_STOP_DATE, dateFormatter.format(effectiveStopDate));
+				arg0.put("effective_start_date", dateFormatter.format(effectiveStartDate));
 			}
 			
-//			BigDecimal rateValue = (BigDecimal)arg0.get("rate_value");
-//			if ( rateValue != null ) {
-//				arg0.put(DISPLAY_RATE, rateFormatter.format(rateValue.doubleValue()));
-//			}
-//			String jobFrequency = (String)arg0.get(JOB_FREQUENCY);
-//			if ( ! StringUtils.isBlank(jobFrequency) ) {
-//				JobFrequency freq = JobFrequency.lookup(jobFrequency);
-//				arg0.put(FREQUENCY_DESC, freq.display());
-//			}
+			Date effectiveStopDate = (Date)arg0.get("effective_stop_date");
+			if ( effectiveStopDate != null ) {
+				arg0.put("effective_stop_date", dateFormatter.format(effectiveStopDate));
+			}
+			
+
+
 			return arg0;
 		}
 	

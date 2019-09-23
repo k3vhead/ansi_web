@@ -102,29 +102,6 @@
                     });
                 }, 
                 
-                markValid : function ($inputField) {
-                	$fieldName = $($inputField).attr('name');
-                	$fieldGetter = "input[name='" + $fieldName + "']";
-                	$fieldValue = $($fieldGetter).val();
-                	$valid = '#' + $($inputField).data('valid');
-    	            var re = /.+/;	            	 
-                	if ( re.test($fieldValue) ) {
-                		$($valid).removeClass("fa");
-                		$($valid).removeClass("fa-ban");
-                		$($valid).removeClass("inputIsInvalid");
-                		$($valid).addClass("far");
-                		$($valid).addClass("fa-check-square");
-                		$($valid).addClass("inputIsValid");
-                	} else {
-                		$($valid).removeClass("far");
-                		$($valid).removeClass("fa-check-square");
-                		$($valid).removeClass("inputIsValid");
-                		$($valid).addClass("fa");
-                		$($valid).addClass("fa-ban");
-                		$($valid).addClass("inputIsInvalid");
-                	}
-                },
-                
                 clearAddForm : function () {
     				$.each( $('#localeDivisionModal').find("input"), function(index, $inputField) {
     					$fieldName = $($inputField).attr('name');
@@ -201,7 +178,7 @@
     			            	//console.log(row);
     			            	var $actionData = "";
     			            	if ( row.locale_id != null ) {
-    				            	var $editLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="#" class="editAction" data-id="'+row.division_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
+    				            	var $editLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="#" class="editAction" data-divisionid="'+row.division_id+'" data-localeid="'+row.locale_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
     				            	console.log("editLink: " + $editLink);
 //    		            			var $ticketData = 'data-id="' + row.locale_id + '"';
 //    			            		$printLink = '<ansi:hasPermission permissionRequired="TAX_READ"><i class="print-link fa fa-print" aria-hidden="true" ' + $localeData + '></i></ansi:hasPermission>'
@@ -226,41 +203,41 @@
             	
             	doFunctionBinding : function() {
             		$( ".editAction" ).on( "click", function($clickevent) {
-            			console.log("doFunctionBinding: makeEditPanel");
-	    				var $name = $(this).attr("data-name");
-	    				 LOCALEDIVISIONLOOKUP.makeEditPanel($clickevent);
+            			console.log("doFunctionBinding: showEdit");
+	    				var $divisionId = $(this).attr("data-divisionId");
+	    				var $localeId = $(this).attr("data-localeId");
+	    				LOCALEDIVISIONLOOKUP.showEdit($divisionId, $localeId);
 	    			});					
-    				$(".print-link").on( "click", function($clickevent) {
-    					doPrint($clickevent);
-    				});
-    				$(".tax-rate-clicker").on("click", function($clickevent) {
-    					$clickevent.preventDefault();
-    					var $localeId = $(this).attr("data-id");
-//    					TICKETUTILS.doTicketViewModal("#ticket-modal",$ticketId);
-    					$("#tax-rate-modal").dialog("open");
-    				});
+  	    		},
+    			
+    			
+  	    		
+                markValid : function ($inputField) {
+                	$fieldName = $($inputField).attr('name');
+                	$fieldGetter = "input[name='" + $fieldName + "']";
+                	$fieldValue = $($fieldGetter).val();
+                	$valid = '#' + $($inputField).data('valid');
+    	            var re = /.+/;	            	 
+                	if ( re.test($fieldValue) ) {
+                		$($valid).removeClass("fa");
+                		$($valid).removeClass("fa-ban");
+                		$($valid).removeClass("inputIsInvalid");
+                		$($valid).addClass("far");
+                		$($valid).addClass("fa-check-square");
+                		$($valid).addClass("inputIsValid");
+                	} else {
+                		$($valid).removeClass("far");
+                		$($valid).removeClass("fa-check-square");
+                		$($valid).removeClass("inputIsValid");
+                		$($valid).addClass("fa");
+                		$($valid).addClass("fa-ban");
+                		$($valid).addClass("inputIsInvalid");
+                	}
+                },
+                
 
-    			},
     			
-    			showNew : function () {
-					$(".showNew").click(function($event) {
-						$('#goEdit').data("localeId", null);
-		        		$('#goEdit').button('option', 'label', 'Save');
-		        		$('#closeLocaleDivisionModal').button('option', 'label', 'Close');
-		        		
-						$("#localeDivisionModal  select[name='divisionId']").val("");
-						$("#localeDivisionModal  input[name='localeName']").val("");
-//						$("#localeDivisionModal  input[name='localeType']").val("");
-						$("#localeDivisionModal  select[name='stateName']").val("");
-						$("#localeDivisionModal  input[name='effectiveStartDate']").val("");	
-						$("#localeDivisionModal  input[name='effectiveStopDate']").val("");
-						$("#localeDivisionModal  input[name='addressName']").val("");
-		        		$("#localeDivisionModal  .err").html("");
-		        		$("#localeDivisionModal ").dialog("option","title", "Add New Locale/Division").dialog("open");
-					});
-				},
-    			
-    			makeEditPanel : function() {	
+makeEditPanel : function() {	
     				console.log("make edit panel");
     				$("#localeDivisionModal").dialog({
     					autoOpen: false,
@@ -291,10 +268,11 @@
     				});
     			},
     			
+    			
     			updateLocaleDivision : function () {
     				console.debug("Updating Locale Division");
     				
-    				var $divisionId = $("#localeDivisionModal input[name='divisionId']").val();
+    				var $divisionId = $("#localeDivisionModal select[name='divisionId']").val();
     				console.debug("divisionId: " + $divisionId);
     				
     				var $localeId = $("#localeDivisionModal input[name='localeId']").val();
@@ -362,19 +340,9 @@
     				});
     			},
             	
-    			populateDivisionSelect:function() {
-                	$data = ANSI_UTILS.getDivisionList();
-                	console.log("populateDivSelect");
-                	var $select = $("#localeDivisionModal select[name='divisionId']");
-        			$('option', $select).remove();
-        			$select.append(new Option("",null));
-        			$.each($data, function($index, $val) {
-        				var $display = $val.divisionNbr + "-" + $val.divisionCode;
-        				$select.append(new Option($display, $val.divisionId));
-        			});	
-                },
-                
-				makeLocaleTypeList: function (){ 
+
+    			
+    			makeLocaleTypeList: function (){ 
 	    			var jqxhr = $.ajax({
 	    				type: 'GET',
 	    				url: "options?LOCALE_TYPE",
@@ -428,6 +396,13 @@
 						'source':"addressTypeAhead?",
 						select: function( event, ui ) {
 							$( "#localeDivisionModal input[name='addressId']" ).val(ui.item.id);
+							
+							addressPieceList = ui.item.label.split(":");
+							$("#nexus_address1").html(addressPieceList[2]);
+							$("#nexus_address2").html(addressPieceList[3]);
+							$("#nexus_city").html(addressPieceList[4]);
+							$("#nexus_state").html(addressPieceList[5]);
+							$("#nexus_zip").html(addressPieceList[6]);
    				      	},
 						response: function(event, ui) {
 							if (ui.content.length === 0) {
@@ -440,24 +415,111 @@
 					}).data('ui-autocomplete');
             		
             	},
-            	    
+            	 
+            	
+            	
+    			populateDivisionSelect:function() {
+                	$data = ANSI_UTILS.getDivisionList();
+                	console.log("populateDivSelect");
+                	var $select = $("#localeDivisionModal select[name='divisionId']");
+        			$('option', $select).remove();
+        			$select.append(new Option("",null));
+        			$.each($data, function($index, $val) {
+        				var $display = $val.divisionNbr + "-" + $val.divisionCode;
+        				$select.append(new Option($display, $val.divisionId));
+        			});	
+                },
+                
+
+            	
+    			showEdit : function($divisionId, $localeId) {
+    				$url = "localeDivision/" + $divisionId;
+    				$outbound = {"localeId":$localeId};
+    				
+    				var jqxhr = $.ajax({
+    					type: 'GET',
+    					url: $url,
+    					data: $outbound,
+    					statusCode: {
+    						200: function($data) {
+    							$('#goEdit').data("localeId", $localeId);
+    			        		$('#goEdit').button('option', 'label', 'Save');
+    			        		$('#closeLocaleDivisionModal').button('option', 'label', 'Close');
+    			        		
+    			        		$("#localeDivisionModal  input[name='localeId']").val($data.data.localeId);
+    			        		$("#localeDivisionModal  input[name='addressId']").val($data.data.addressId);
+    			        		
+    							$("#localeDivisionModal  select[name='divisionId']").val($divisionId);
+    							$("#localeDivisionModal  input[name='localeName']").val($data.data.name);
+    							$("#localeDivisionModal  select[name='stateName']").val($data.data.stateName);
+    							$("#localeDivisionModal  input[name='effectiveStartDate']").val($data.data.effectiveStartDate);	
+    							$("#localeDivisionModal  input[name='effectiveStopDate']").val($data.data.effectiveEndDate);
+    							$("#localeDivisionModal  input[name='addressName']").val($data.data.addressName);
+    							$("#nexus_address1").html($data.data.address1);
+    							$("#nexus_address2").html($data.data.address2);
+    							$("#nexus_city").html($data.data.city);
+    							$("#nexus_state").html($data.data.state);
+    							$("#nexus_zip").html($data.data.zip);
+    			        		$("#localeDivisionModal  .err").html("");
+    			        		$("#localeDivisionModal ").dialog("option","title", "Update Nexus").dialog("open");
+    						},
+    						400: function($data) {
+    							$("#globalMsg").html("System Error 400. Contact Support");
+    						},    						
+    						403: function($data) {
+    							$("#globalMsg").html("Session Timeout. Log in and try again");
+    						},
+    						404: function($data) {
+    							$("#globalMsg").html("Invalid Selection").show().fadeOut(4000);
+    						},
+    						405: function($data) {
+    							$("#globalMsg").html("Insufficient Permissions").show().fadeOut(4000);
+    						},
+    						500: function($data) {
+    							$("#globalMsg").html("System Error; Contact Support");
+    						}
+    					},
+    					dataType: 'json'
+    				});
+    				
+				},
+				
+
+				
+				
+				
+    			showNew : function () {
+					$(".showNew").click(function($event) {
+						$('#goEdit').data("localeId", null);
+		        		$('#goEdit').button('option', 'label', 'Save');
+		        		$('#closeLocaleDivisionModal').button('option', 'label', 'Close');
+		        		
+		        		$("#localeDivisionModal  input[name='localeId']").val("");
+		        		$("#localeDivisionModal  input[name='addressId']").val("");
+		        		
+						$("#localeDivisionModal  select[name='divisionId']").val("");
+						$("#localeDivisionModal  input[name='localeName']").val("");
+						$("#localeDivisionModal  select[name='stateName']").val("");
+						$("#localeDivisionModal  input[name='effectiveStartDate']").val("");	
+						$("#localeDivisionModal  input[name='effectiveStopDate']").val("");
+						$("#localeDivisionModal  input[name='addressName']").val("");
+						$("#nexus_address1").html(null);
+						$("#nexus_address2").html(null);
+						$("#nexus_city").html(null);
+						$("#nexus_state").html(null);
+						$("#nexus_zip").html(null);
+		        		$("#localeDivisionModal  .err").html("");
+		        		$("#localeDivisionModal ").dialog("option","title", "Add New Nexus").dialog("open");
+					});
+				},
+    			
+				
+				
+    			
         	};
         
         	LOCALEDIVISIONLOOKUP.init();
-        	
 			
-			function doPrint($clickevent) {
-				var $localeId = $clickevent.currentTarget.attributes['data-id'].value;
-				console.debug("ROWID: " + $localeId);
-				var a = document.createElement('a');
-                var linkText = document.createTextNode("Download");
-                a.appendChild(linkText);
-                a.title = "Download";
-                a.href = "ticketPrint/" + $localeId;
-                a.target = "_new";   // open in a new window
-                document.body.appendChild(a);
-                a.click();				
-			}
         });
         		
         </script>        
@@ -509,6 +571,14 @@
     		<tr>
     			<td><span class="formHdr">Address</span></td>
     			<td><input type="text" name="addressName" /><input type="hidden" name="addressId" /></td>
+    		</tr>
+    		<tr>
+    			<td>&nbsp;</td>
+    			<td>
+    				<span id="nexus_address1"></span><br />
+    				<span id="nexus_address2"></span><br />
+    				<span id="nexus_city"></span>, <span id="nexus_state"></span> <span id="nexus_zip"></span>
+    			</td>
     			<td><span class="err" id="addressIdErr"></span></td>
     		</tr>
     		<tr>

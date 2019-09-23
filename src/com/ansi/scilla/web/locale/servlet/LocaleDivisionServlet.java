@@ -8,6 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.LocaleDivision;
@@ -34,6 +35,7 @@ public class LocaleDivisionServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
 	public static final String REALM = "localeDivision";
+	public static final String LOCALE_ID = "localeId";
 	
 	
 	@Override
@@ -48,7 +50,12 @@ public class LocaleDivisionServlet extends AbstractServlet {
 			LocaleDivisionResponse localeDivisionResponse = null;
 			try {
 				conn = AppUtils.getDBCPConn();
-				localeDivisionResponse = new LocaleDivisionResponse(conn, ansiURL.getId());
+				String localeId = request.getParameter(LOCALE_ID);
+				Integer divisionId = ansiURL.getId();
+				if ( ! StringUtils.isNumeric(localeId)) {
+					throw new RecordNotFoundException();
+				}
+				localeDivisionResponse = new LocaleDivisionResponse(conn, Integer.valueOf(localeId), divisionId);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, localeDivisionResponse); 
 				
 			} catch(RecordNotFoundException recordNotFoundEx) {
@@ -91,21 +98,11 @@ public class LocaleDivisionServlet extends AbstractServlet {
 				AppUtils.json2object(jsonString, localeDivisionRequest);
 								
 				if(ansiURL.getId() == null) {
-					//this is add
-					webMessages = localeDivisionRequest.validateAdd(conn);
-					if(webMessages.isEmpty() == true) {
-						doAdd(conn, localeDivisionRequest, sessionData, response);
-					} else {
-						data.setWebMessages(webMessages);
-						super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
-					}
-					
+					super.sendNotFound(response);
 				} else {
-					//this is update
-					webMessages = localeDivisionRequest.validateUpdate(conn);
+					webMessages = localeDivisionRequest.validate(conn);
 					if(webMessages.isEmpty() == true) {
 						Integer divId = ansiURL.getId();
-						//Integer localeId = ansiURL.getId();
 						doUpdate(conn, divId, localeDivisionRequest, sessionData, response);
 					} else {
 						data.setWebMessages(webMessages);
@@ -138,7 +135,7 @@ public class LocaleDivisionServlet extends AbstractServlet {
 		localeDivision.insertWithKey(conn);
 		conn.commit();
 //		localeDivision.setDivisionId(divisionId);
-		LocaleDivisionResponse localeResponse = new LocaleDivisionResponse(localeDivision, conn);
+		LocaleDivisionResponse localeResponse = new LocaleDivisionResponse(conn, localeDivision);
 		super.sendResponse(conn, response, ResponseCode.SUCCESS, localeResponse);
 	}
 
@@ -147,15 +144,18 @@ public class LocaleDivisionServlet extends AbstractServlet {
 	private void doUpdate(Connection conn, Integer divisionId, LocaleDivisionRequest localeDivisionRequest, SessionData sessionData, HttpServletResponse response) throws Exception {
 		LocaleDivision localeDivision = new LocaleDivision();
 		localeDivision.setDivisionId(divisionId);
-		//localeDivision.setLocaleId(localeId);
-		localeDivision.selectOne(conn);
-		makeLocaleDivision(localeDivision, localeDivisionRequest, sessionData.getUser());
-		LocaleDivision key = new LocaleDivision();
-		key.setDivisionId(divisionId);
-		localeDivision.update(conn, key);
-		conn.commit();
-		LocaleDivisionResponse localeResponse = new LocaleDivisionResponse(localeDivision, conn);
-		super.sendResponse(conn, response, ResponseCode.SUCCESS, localeResponse);
+		try {
+			localeDivision.selectOne(conn);
+			makeLocaleDivision(localeDivision, localeDivisionRequest, sessionData.getUser());
+			LocaleDivision key = new LocaleDivision();
+			key.setDivisionId(divisionId);
+			localeDivision.update(conn, key);
+			conn.commit();
+			LocaleDivisionResponse localeResponse = new LocaleDivisionResponse(conn, localeDivision);
+			super.sendResponse(conn, response, ResponseCode.SUCCESS, localeResponse);
+		} catch ( RecordNotFoundException e) {
+			doAdd(conn, localeDivisionRequest, sessionData, response);
+		}
 	}
 
 	protected void makeLocaleDivision(LocaleDivision localeDivision, LocaleDivisionRequest localeDivisionRequest, SessionUser sessionUser)  {

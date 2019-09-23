@@ -189,28 +189,13 @@ public class LocaleDivisionRequest extends AbstractRequest {
 		this.zip = zip;
 	}
 
-	public WebMessages validateAdd(Connection conn) throws Exception {
+	public WebMessages validate(Connection conn) throws Exception {
 		WebMessages webMessages = new WebMessages();
-//		if((this.getLocaleId() == null) && (this.getName() != null)) {
-//			this.generateLocaleId(conn, this.getName());
-//		}
-//		if((this.getAddressId() == null) && (this.getAddress1() != null)) {
-//			this.generateAddressIdFromOne(conn, this.getAddress1());
-//		} else if ((this.getAddressId() == null) && (this.getAddress2() != null)) {
-//			this.generateAddressIdFromTwo(conn, this.getAddress2());
-//		}
 		RequestValidator.validateId(conn, webMessages, "locale", Locale.LOCALE_ID, "localeId", localeId, true);
 		RequestValidator.validateId(conn, webMessages, "division", Division.DIVISION_ID, "divisionId", divisionId, true);
 		RequestValidator.validateDate(webMessages, EFF_START_DATE, effectiveStartDate, true, null, null);
 		RequestValidator.validateDate(webMessages, EFF_STOP_DATE, effectiveStopDate, false, getEffectiveStartDate(), null);
 		RequestValidator.validateId(conn, webMessages, "address", Address.ADDRESS_ID, "addressId", addressId, true);
-		
-		
-		return webMessages;
-	}
-	
-	public WebMessages validateUpdate(Connection conn) throws Exception {
-		WebMessages webMessages = validateAdd(conn);
 		
 		
 		return webMessages;
