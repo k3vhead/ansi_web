@@ -272,6 +272,8 @@ makeEditPanel : function() {
     			updateLocaleDivision : function () {
     				console.debug("Updating Locale Division");
     				
+    				$("#localeDivisionModal .err").html("");
+    				
     				var $divisionId = $("#localeDivisionModal select[name='divisionId']").val();
     				console.debug("divisionId: " + $divisionId);
     				
@@ -305,14 +307,14 @@ makeEditPanel : function() {
     						200: function($data) {
     			    			if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
     			    				$.each($data.data.webMessages, function (key, value) {
-    			    					console.log(key);
     			    					if ( key == "GLOBAL_MESSAGE" ) {
     			    						$("#globalMsg").html(value[0]).show().fadeOut(6000);
     			    						$("#addTaxRateForm").dialog("close");
     			    					} else {
 	    			    					var $selectorName = "#" + key + "Err";
-	    			    					$($selectorName).show();
-	    			    					$($selectorName).html(value[0]).fadeOut(6000);
+											console.log($selectorName);
+											console.log(value[0])
+	    			    					$($selectorName).html(value[0]).show();
     			    					}
     			    				});
     			    				
@@ -327,10 +329,10 @@ makeEditPanel : function() {
     							$("#globalMsg").html("Session Timeout. Log in and try again");
     						},
     						404: function($data) {
-    							$("#globalMsg").html("Invalid Selection").show().fadeOut(100000);
+    							$("#divisionIdErr").html("Invalid Selection").show().fadeOut(6000);
     						},
     						405: function($data) {
-    							$("#globalMsg").html("Check Permissions").show().fadeOut(100000);
+    							$("#globalMsg").html("Insufficient Permissions").show();
     						},
     						500: function($data) {
     							$("#globalMsg").html("System Error; Contact Support");
@@ -557,20 +559,18 @@ makeEditPanel : function() {
     	<table class="ui-front">
     		<tr>
     			<td><span class="formHdr">Division</span></td>
-    			<td>
-    				<select name="divisionId" />
-    				
-    			</td>
+    			<td><select name="divisionId"></select></td>
     			<td><span class="err" id="divisionIdErr"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">Locale Name</span></td>
     			<td><input type="text" name="localeName" /><input type="hidden" name="localeId" /></td>
-    			<td><span class="err" id="localeNameErr"></span></td>
+    			<td><span class="err" id="localeIdErr"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">Address</span></td>
     			<td><input type="text" name="addressName" /><input type="hidden" name="addressId" /></td>
+    			<td><span class="err" id="addressIdErr"></span></td>
     		</tr>
     		<tr>
     			<td>&nbsp;</td>
@@ -579,7 +579,7 @@ makeEditPanel : function() {
     				<span id="nexus_address2"></span><br />
     				<span id="nexus_city"></span>, <span id="nexus_state"></span> <span id="nexus_zip"></span>
     			</td>
-    			<td><span class="err" id="addressIdErr"></span></td>
+    			<td>&nbsp;</td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">Effective Start Date</span></td>
