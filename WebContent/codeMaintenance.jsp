@@ -61,12 +61,189 @@
         	;CODEMAINTENANCE = {
         			
         		init : function() {	
-        			//CODEMAINTENANCE.getCodes();
+        			CODEMAINTENANCE.showNew();
         			CODEMAINTENANCE.createTable();
+        			CODEMAINTENANCE.makeAddForm();
         			CODEMAINTENANCE.clearAddForm();
         			CODEMAINTENANCE.makeButtons();
         		//	CODEMAINTENANCE.getTableList();
 	        		},
+	        		
+        		makeAddForm : function() {	
+    				$("#addForm" ).dialog({
+    					autoOpen: false,
+    					height: 300,
+    					width: 500,
+    					modal: true,
+    					buttons: [
+    						{
+    							id: "closeAddForm",
+    							click: function() {
+    								$("#addForm").dialog( "close" );
+    							}
+    						},{
+    							id: "goEdit",
+    							click: function($event) {
+    								CODEMAINTENANCE.goUpdate();
+    							}
+    						}	      	      
+    					],
+    					close: function() {
+    						CODEMAINTENANCE.clearAddForm();
+    						$("#addForm").dialog( "close" );
+    						//allFields.removeClass( "ui-state-error" );
+    					}
+    				});
+    			},
+				
+				
+        		showNew : function() {
+
+        			$(".showNew").click(function($event) {
+        				$('#goEdit').data("table_name",null);
+                		$('#goEdit').button('option', 'label', 'Save');
+                		$('#closeAddForm').button('option', 'label', 'Close');
+                		
+        				$("#addForm input[name='table_name']").val("");
+        				$("#addForm input[name='field_name']").val("");
+        				$("#addForm input[name='value']").val("");
+        				$("#addForm input[name='display_value]").val("");
+        				$("#addForm input[name='description']").val("");		        		
+                		$("#addForm .err").html("");
+                		$("#addForm").dialog("open");
+        			});
+        		/*	$("#clearFilter").click(function($event) {
+        				USERLOOKUP.permissionGroupId='';
+        				USERLOOKUP.permissionGroupName='';
+        				$("#filterLabel").html('');
+        				USERLOOKUP.dataTable.destroy();
+        				USERLOOKUP.createTable();
+        			}); */
+        			
+        		
+        		},
+    			
+    			
+        		
+	        		
+    			
+    			
+    			showEdit : function ($clickevent) {
+    				var $table_name = $clickevent.currentTarget.attributes['data-id'].value;
+    				console.debug("table_name: " + $table_name);
+    				$("#goEdit").data("table_name", $table_name);
+            		$('#goEdit').button('option', 'label', 'Save');
+            		$('#closeAddForm').button('option', 'label', 'Close');
+            		
+            		
+    				var $url = 'code/' + $table_name;
+    				var jqxhr = $.ajax({
+    					type: 'GET',
+    					url: $url,
+    					statusCode: {
+    						200: function($data) {
+    							//console.log($data);
+    							var $code = $data.data.codeList[0];
+    							$("#addForm input[name='tableName']").val($code.tableName);
+    							$("#addForm input[name='fieldName']").val($code.fieldName);
+    							$("#addForm input[name='value']").val($code.value);
+    							$("#addForm input[name='displayValue']").val($code.displayValue);
+    							$("#addForm input[name='description']").val($code.description);	        		
+    			        		$("#addForm .err").html("");
+    			        		$("#addForm").dialog("open");
+    						},
+    						403: function($data) {
+    							$("#globalMsg").html("Session Timeout. Log in and try again");
+    						},
+    						404: function($data) {
+    							$("#globalMsg").html("Invalid Contact");
+    						},
+    						500: function($data) {
+    							$("#globalMsg").html("System Error; Contact Support");
+    						}
+    					},
+    					dataType: 'json'
+    				});
+    			},  			
+    
+    			    			
+        		/*$("#addButton").click( function($clickevent) {
+					$clickevent.preventDefault();
+					CODE_MAINTENANCE.clearAddForm();
+					$("#addFormTitle").html("Add a Code");
+	             	$('#addFormDiv').bPopup({
+						modalClose: false,
+						opacity: 0.6,
+						positionStyle: 'fixed' //'fixed' or 'absolute'
+					});			
+	             	$("#addForm select[name='tableName']").focus();
+				});*/
+	
+				
+				goUpdate : function($clickevent) {		
+				//$("#goUpdate").click( function($clickevent) {
+            		
+	
+				//	if ( $('#addForm').data('table_name') == null ) {
+				//		$url = "codeLookup/add";
+				///	} else {
+						//$rownum = $('#addForm').data('rownum')
+						//var $tableData = [];
+		                //$("#displayTable").find('tr').each(function (rowIndex, r) {
+		                //    var cols = [];
+		                //    $(this).find('th,td').each(function (colIndex, c) {
+		                //        cols.push(c.textContent);
+		                //    });
+		                //    $tableData.push(cols);
+		                //});
+	
+		            	//var $tableName = $tableData[$rownum][0];
+		            	//var $fieldName = $tableData[$rownum][1];
+		            	//var $value = $tableData[$rownum][2];
+		            	
+	      	      //      var $tableName = $('#addForm').data('tableName');
+	            	//	var $fieldName = $("#addForm").data('fieldName');
+	            	//	var $value = $("#addForm").data('value');
+	
+		            	$url = "codeLookup/";
+					//}
+            		
+            		$outbound = {}
+            		$outbound['table_name'] = $("#addForm input[name='table_name']").val();
+            		$outbound['field_name'] = $("#addForm input[name='field_name']").val();
+            		$outbound['value'] = $("#addForm input[name='value']").val();
+            		$outbound['display_value'] = $("#addForm input[name='display_value']").val();
+            		$outbound['description'] = $("#addForm input[name='description']").val();
+            		
+            		var jqxhr = $.ajax({
+						type: 'POST',
+						url: $url,
+						data: JSON.stringify($outbound),
+						statusCode: {
+							200: function($data) {								
+								if ( $data.responseHeader.responseCode == "SUCCESS") {
+										$("#addForm input[name='table_name']").val($data.data.codeLookup[0].table_name);
+				    					$('#codeTable').DataTable().ajax.reload();
+				    					CODELOOKUP.getTotalList($data.data.codeLookup[0].table_name);
+									} else {
+										$("#addForm").dialog("close");
+				    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
+				    					$('#codeTable').DataTable().ajax.reload();
+									}
+							},					
+							403: function($data) {
+								$("#globalMsg").html("Session Timeout. Log in and try again");
+							},
+							404: function($data) {
+								$("#globalMsg").html("System Error Reorder 404. Contact Support");
+							},
+							500: function($data) {
+								$("#globalMsg").html("System Error Reorder 500. Contact Support");
+							}
+						},
+						dataType: 'json'
+					});
+            	},
 	        		
 	        		
 	    		createTable : function() {
@@ -115,7 +292,7 @@
 				            } },
 				            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
 				            	//console.log(row);
-					            	var $editLink = '<span class="edit-link" data-id="' + row.table_name + '"><webthing:edit>Edit</webthing:edit></span>';
+					            	var $editLink = '<span class="updAction" data-id="' + row.table_name + '"><webthing:edit>Edit</webthing:edit></span>';
 					            		$actionData = "<ansi:hasPermission permissionRequired='USER_ADMIN_WRITE'>" + $editLink + "</ansi:hasPermission>"
 				            		return $actionData;
 				            } }],
@@ -147,7 +324,7 @@
 			
 			doFunctionBinding: function () {
 				$('.updAction').bind("click", function($clickevent) {
-					CODEMAINTENANCE.doUpdate($clickevent);
+					CODEMAINTENANCE.showEdit($clickevent);
 				});
 				$('.delAction').bind("click", function($clickevent) {
 					CODEMAINTENANCE.doDelete($clickevent);
@@ -190,7 +367,7 @@
 				return row;
 			} */
 			
-			doUpdate: function ($clickevent) {
+		/*	doUpdate: function ($clickevent) {
 				$clickevent.preventDefault();
 				clearAddForm();
 				var $tableName = $clickevent.currentTarget.attributes['data-tableName'].value;
@@ -240,7 +417,7 @@
 					positionStyle: 'fixed' //'fixed' or 'absolute'
 				});		
             	$("#addForm input[name='value']").select();
-			},
+			},*/
 			
 			doDelete: function ($clickevent) {
 				$clickevent.preventDefault();
@@ -624,7 +801,7 @@
 		<ansi:hasPermission permissionRequired="SYSADMIN">
 			<ansi:hasWrite>
     			<div class="addButtonDiv">
-    				<input type="button" id="addButton" class="prettyWideButton" value="New" />
+    				<input type="button" class="prettyWideButton showNew" value="New" />
     			</div>
 			</ansi:hasWrite>
 		</ansi:hasPermission>
