@@ -66,7 +66,10 @@
         			CODEMAINTENANCE.makeAddForm();
         			CODEMAINTENANCE.clearAddForm();
         			CODEMAINTENANCE.makeButtons();
-        		//	CODEMAINTENANCE.getTableList();
+        		//	CODEMAINTENANCE.makeDropdowns();
+        			CODEMAINTENANCE.getCodes("list");
+        			CODEMAINTENANCE.getTableFieldList(null, $("#addForm select[name='tableName']"));
+        			//CODEMAINTENANCE.getTableFieldList($tableName, $("#addForm select[name='fieldName']"));
 	        		},
 	        		
         		makeAddForm : function() {	
@@ -95,6 +98,19 @@
     					}
     				});
     			},
+    			
+    			
+    			
+    		/*	makeDropdowns : function () {
+		            
+		            $("#addForm select[name='table_name']").change(function () {
+						var $selectedTable = $('#addForm select[name="table_name"] option:selected').val();
+						CODEMAINTENANCE.getTableFieldList($selectedTable, $("#addForm select[name='field_name']"));
+		            });
+    				
+    			
+    			
+    			},*/
 				
 				
         		showNew : function() {
@@ -104,23 +120,19 @@
                 		$('#goEdit').button('option', 'label', 'Save');
                 		$('#closeAddForm').button('option', 'label', 'Close');
                 		
-        				$("#addForm input[name='table_name']").val("");
-        				$("#addForm input[name='field_name']").val("");
+        				$("#addForm select[name='table_name']").val("");
+        				//$("#addForm input[name='field_name']").val("");
+        				$("#addForm select[name='tableName']").change(function () {
+						var $selectedTable = $('#addForm select[name="tableName"] option:selected').val();
+						CODEMAINTENANCE.getTableFieldList($selectedTable, $("#addForm select[name='fieldName']"));
+		            	});
         				$("#addForm input[name='value']").val("");
         				$("#addForm input[name='display_value]").val("");
         				$("#addForm input[name='description']").val("");		        		
                 		$("#addForm .err").html("");
                 		$("#addForm").dialog("open");
         			});
-        		/*	$("#clearFilter").click(function($event) {
-        				USERLOOKUP.permissionGroupId='';
-        				USERLOOKUP.permissionGroupName='';
-        				$("#filterLabel").html('');
-        				USERLOOKUP.dataTable.destroy();
-        				USERLOOKUP.createTable();
-        			}); */
         			
-        		
         		},
     			
     			
@@ -130,10 +142,12 @@
     			
     			showEdit : function ($clickevent) {
     				var $table_name = $clickevent.currentTarget.attributes['data-id'].value;
+					//var $fieldName = $clickevent.currentTarget.attributes['data-fieldName'].value;
     				console.debug("table_name: " + $table_name);
     				$("#goEdit").data("table_name", $table_name);
             		$('#goEdit').button('option', 'label', 'Save');
             		$('#closeAddForm').button('option', 'label', 'Close');
+					$("#addFormTitle").html("Edit a Code");
             		
             		
     				var $url = 'code/' + $table_name;
@@ -143,9 +157,9 @@
     					statusCode: {
     						200: function($data) {
     							//console.log($data);
-    							var $code = $data.data.codeList[0];
-    							$("#addForm input[name='tableName']").val($code.tableName);
-    							$("#addForm input[name='fieldName']").val($code.fieldName);
+    							var $code = $data.data.codeList[0];    							
+    							$("#addForm select[name='tableName']").val($code.tableName);
+    							$("#addForm select[name='fieldName']").val($code.fieldName);
     							$("#addForm input[name='value']").val($code.value);
     							$("#addForm input[name='displayValue']").val($code.displayValue);
     							$("#addForm input[name='description']").val($code.description);	        		
@@ -180,7 +194,8 @@
 				});*/
 	
 				
-				goUpdate : function($clickevent) {		
+				goUpdate : function($clickevent) {	
+					var $table_name = $("#goEdit").data("table_name");	
 				//$("#goUpdate").click( function($clickevent) {
             		
 	
@@ -205,12 +220,26 @@
 	            	//	var $fieldName = $("#addForm").data('fieldName');
 	            	//	var $value = $("#addForm").data('value');
 	
-		            	$url = "codeLookup/";
+		            //	$url = "codeLookup/";
 					//}
+				
+					if ( $table_name == null || $table_name == '') {
+						$url = 'codeLookup/add';
+					} else {
+						$url = 'codeLookup/' + $table_name;
+					}
             		
             		$outbound = {}
-            		$outbound['table_name'] = $("#addForm input[name='table_name']").val();
-            		$outbound['field_name'] = $("#addForm input[name='field_name']").val();
+					$.each( $('#addForm :input'), function(index, value) {
+						if ( value.name ) {
+							$field_name = value.name;
+							$id = "#addForm input[name='" + $field_name + "']";
+							$val = $($id).val();
+							$outbound[$field_name] = $val;
+						}
+					});
+					$outbound['table_name'] = $("#addForm select[name='table_name'] option:selected").val();
+					$outbound['field_name'] = $("#addForm select[name='field_name'] option:selected").val();
             		$outbound['value'] = $("#addForm input[name='value']").val();
             		$outbound['display_value'] = $("#addForm input[name='display_value']").val();
             		$outbound['description'] = $("#addForm input[name='description']").val();
@@ -220,11 +249,13 @@
 						url: $url,
 						data: JSON.stringify($outbound),
 						statusCode: {
-							200: function($data) {								
-								if ( $data.responseHeader.responseCode == "SUCCESS") {
-										$("#addForm input[name='table_name']").val($data.data.codeLookup[0].table_name);
-				    					$('#codeTable').DataTable().ajax.reload();
-				    					CODELOOKUP.getTotalList($data.data.codeLookup[0].table_name);
+							200: function($data) {
+			    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+				    					$.each($data.data.webMessages, function (key, value) {
+				    						var $selectorName = "#" + key + "Err";
+				    						$($selectorName).show();
+				    						$($selectorName).html(value[0]).fadeOut(10000);
+				    					});
 									} else {
 										$("#addForm").dialog("close");
 				    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
@@ -307,14 +338,52 @@
 	        	},
         	
 			
-		/*	doFilter: function ($event) {
+			doFilter: function ($event) {
 				$event.preventDefault();
 				var $filtervalue = $event.currentTarget.attributes['data-filter'].value;				
 				$("#displayTable").find("tr:gt(0)").remove();
-				getCodes($filtervalue);
+				CODEMAINTENANCE.getCodes($filtervalue);
+			},
+			
+			
+			getCodes: function ($filter) {
+				var $url = 'code/' + $filter;
+				var jqxhr = $.ajax({
+					type: 'GET',
+					url: $url,
+					data: {},
+					success: function($data) {
+						//$.each($data.data.codeList, function(index, value) {
+						//	CODEMAINTENANCE.addRow(index, value);
+						//});
+						$("#filterList").html("");
+						var $newHTML = "";
+						
+						$.each($data.data.filterRecordList, function(index, value) {
+							
+							$newHTML = $newHTML + '<li><a class="myFilter" href="#" data-filter="' + value.tableName + '">' + value.tableName + '</a>'; 
+							$newHTML = $newHTML + '<ul class="sub_menu">';
+							
+							$.each(value.fieldNameList, function(index, fieldName) {
+								$newHTML = $newHTML + '<li><a class="myFilter" href="#" data-filter="' + value.tableName + '/' + fieldName + '">' + fieldName + '</a></li>';
+							});
+							$newHTML = $newHTML + '</ul></li>';
+						});
+						$("#filterList").html($newHTML);
+						$('.myFilter').bind("click", function($clickevent) {						
+							CODEMAINTENANCE.doFilter($clickevent);
+						});
+					},
+					statusCode: {
+						403: function($data) {
+							$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+						} 
+					},
+					dataType: 'json'
+				});
 			},
         
-			 function addRow(index, $code) {	
+			/* function addRow(index, $code) {	
 				var $rownum = index + 1;
        			//$('#displayTable tr:last').before(row);
        			rowTd = makeRow($code, $rownum);
@@ -713,13 +782,13 @@
             	}
             },
             
-         /*   getTableList: function (tableName, $select, $selectedValue) {
-            	if ( tableName == null ) {
+            getTableFieldList: function (table_name, $select, $selectedValue) {
+            	if ( table_name == null ) {
             		$url = "tableFieldList"
-           			//select = $("#addForm select[name='tableName']");
+           			select = $("#addForm select[name='tableName']");
             	} else {
-            		$url = "tableFieldList/" + tableName;
-            		//select = $("#addForm select[name='fieldName']");
+            		$url = "tableFieldList/" + table_name;
+            		select = $("#addForm select[name='fieldName']");
             	}            	
 				var jqxhr = $.ajax({
 						type: 'GET',
@@ -753,7 +822,7 @@
     				dataType: 'json'
     			});
 
-            },*/
+            },
             
        	  };
        	  
@@ -873,38 +942,9 @@
 		    					<td><span class="err" id="displayErr"></span></td>
 		    				</tr>
 		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Sequence:</span></td>
-		    					<td>
-		    						<select name="seq">
-		    							<% for (int i = 1; i < 21; i++ ) { %>
-		    							<option value="<%= i %>"><%= i %></option>
-		    							<% } %>
-		    						</select>
-		    						<i class="fa fa-check-square-o inputIsValid" aria-hidden="true"></i>
-		    					</td>
-		    					<td><span class="err" id="sequenceErr"></span></td>
-		    				</tr>
-		    				<tr>
 		    					<td><span class="formLabel">Description:</span></td>
 		    					<td><input type="text" name="description" /></td>
 		    					<td><span class="err" id="decriptionErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Status:</span></td>
-		    					<td>
-		    						<select name="status">
-		    							<option value="1">Active</option>
-		    							<option value="0">Inactive</option>
-		    						</select>
-		    						<i class="fa fa-check-square-o inputIsValid" aria-hidden="true"></i>
-		    					</td>
-		    					<td><span class="err" id="statusErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td colspan="2" style="text-align:center;">
-		    						<input type="button" class="prettyButton" value="Save" id="goUpdate" />
-		    						<input type="button" class="prettyButton" value="Cancel" id="cancelUpdate" />
-		    					</td>
 		    				</tr>
 		    			</table>
 		    		</form>
