@@ -21,6 +21,10 @@ public class LocaleDivisionRequest extends AbstractRequest {
 
 	private static final long serialVersionUID = 1L;
 
+	public static final String ACTION_IS_ADD = "add";
+	public static final String ACTION_IS_UPDATE = "update";
+	
+	public static final String ACTION = "action";
 	public static final String DIVISION_ID = "divisionId";
 	public static final String LOCALE_ID = "localeId";
 	public static final String EFF_START_DATE = "effectiveStartDate";
@@ -38,6 +42,8 @@ public class LocaleDivisionRequest extends AbstractRequest {
 	public static final String CITY = "city";
 	public static final String STATE = "state";
 	public static final String ZIP = "zip";
+	
+	private String action;
 	
 	private Integer divisionId;
 	private String divisionCode;
@@ -58,27 +64,14 @@ public class LocaleDivisionRequest extends AbstractRequest {
 	private String zip;
 	
 	
-//	public void generateLocaleId(Connection conn, String localeName) throws RecordNotFoundException, Exception {
-//		Locale locale = new Locale();
-//		locale.setName(localeName);
-//		locale.selectOne(conn);
-//		this.setLocaleId(locale.getLocaleId());
-//	}
-//	
-//	public void generateAddressIdFromOne(Connection conn, String addressName) throws RecordNotFoundException, Exception {
-//		Address address = new Address();
-//		address.setAddress1(addressName);
-//		address.selectOne(conn);
-//		this.setAddressId(address.getAddressId());
-//	}
-//	
-//	public void generateAddressIdFromTwo(Connection conn, String addressName) throws RecordNotFoundException, Exception {
-//		Address address = new Address();
-//		address.setAddress2(addressName);
-//		address.selectOne(conn);
-//		this.setAddressId(address.getAddressId());
-//	}
-	
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
+	}
+
 	public Integer getLocaleId() {
 		return localeId;
 	}
@@ -207,6 +200,14 @@ public class LocaleDivisionRequest extends AbstractRequest {
 			webMessages.addMessage(EFF_START_DATE, "Date Range already in use");
 		}
 		
+		return webMessages;
+	}
+
+	public WebMessages validateDelete(Connection conn) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		RequestValidator.validateId(conn, webMessages, "locale", Locale.LOCALE_ID, "localeId", localeId, true);
+		RequestValidator.validateId(conn, webMessages, "division", Division.DIVISION_ID, "divisionId", divisionId, true);
+		RequestValidator.validateDate(webMessages, EFF_START_DATE, effectiveStartDate, true, null, null);
 		return webMessages;
 	}
 

@@ -96,14 +96,23 @@ public class LocaleDivisionServlet extends AbstractServlet {
 			try{
 				LocaleDivisionRequest localeDivisionRequest = new LocaleDivisionRequest();
 				AppUtils.json2object(jsonString, localeDivisionRequest);
-								
+
 				if(ansiURL.getId() == null) {
 					super.sendNotFound(response);
 				} else {
 					webMessages = localeDivisionRequest.validate(conn);
 					if(webMessages.isEmpty() == true) {
 						Integer divId = ansiURL.getId();
-						doUpdate(conn, divId, localeDivisionRequest, sessionData, response);
+						if ( localeDivisionRequest.getAction().equals(LocaleDivisionRequest.ACTION_IS_ADD)) {
+							doAdd(conn, localeDivisionRequest, sessionData, response);
+						} else if ( localeDivisionRequest.getAction().equals(LocaleDivisionRequest.ACTION_IS_UPDATE)) {
+							doUpdate(conn, divId, localeDivisionRequest, sessionData, response);
+						} else {
+							webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Action. Reload and try again");
+							data.setWebMessages(webMessages);
+							super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+						}
+						
 					} else {
 						data.setWebMessages(webMessages);
 						super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
@@ -129,6 +138,68 @@ public class LocaleDivisionServlet extends AbstractServlet {
 		}
 	}
 
+	
+	
+	
+	@Override
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		
+		AnsiURL ansiURL = null;
+		Connection conn = null;
+		try {
+			conn = AppUtils.getDBCPConn();
+			conn.setAutoCommit(false);
+			String jsonString = super.makeJsonString(request);
+			logger.log(Level.DEBUG, "jsonstring:"+jsonString);
+			ansiURL = new AnsiURL(request, REALM, (String[])null); 
+
+			SessionData sessionData = AppUtils.validateSession(request, Permission.TAX_WRITE);
+			LocaleDivisionResponse data = new LocaleDivisionResponse();
+			WebMessages webMessages = new WebMessages();
+
+			
+			try{
+				LocaleDivisionRequest localeDivisionRequest = new LocaleDivisionRequest();
+				AppUtils.json2object(jsonString, localeDivisionRequest);
+
+				if(ansiURL.getId() == null) {
+					super.sendNotFound(response);
+				} else {
+					webMessages = localeDivisionRequest.validateDelete(conn);
+					if(webMessages.isEmpty() == true) {
+						Integer divId = ansiURL.getId();
+						LocaleDivision localeDivision = new LocaleDivision();
+						localeDivision.setDivisionId(divId);
+						localeDivision.setLocaleId(localeDivisionRequest.getLocaleId());
+						localeDivision.setEffectiveStartDate(localeDivisionRequest.getEffectiveStartDate());
+						localeDivision.delete(conn);
+						super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
+					} else {
+						data.setWebMessages(webMessages);
+						super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+					}
+				}
+						
+			}  catch ( InvalidFormatException e ) {
+				String badField = super.findBadField(e.toString());				
+				webMessages.addMessage(badField, "Invalid Format");
+				data.setWebMessages(webMessages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+			} catch (RecordNotFoundException e) {
+				//send a Bad Ticket message back
+				super.sendNotFound(response);
+			}
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+			super.sendForbidden(response);
+		} catch ( Exception e) {
+			AppUtils.logException(e);
+			throw new ServletException(e);
+		} finally {
+			AppUtils.closeQuiet(conn);
+		}		
+	}
+
 	private void doAdd(Connection conn, LocaleDivisionRequest localeDivisionRequest, SessionData sessionData, HttpServletResponse response) throws Exception {
 		LocaleDivision localeDivision = new LocaleDivision();
 		makeLocaleDivision(localeDivision, localeDivisionRequest, sessionData.getUser());
@@ -139,6 +210,8 @@ public class LocaleDivisionServlet extends AbstractServlet {
 		super.sendResponse(conn, response, ResponseCode.SUCCESS, localeResponse);
 	}
 
+	
+	
 	
 
 	private void doUpdate(Connection conn, Integer divisionId, LocaleDivisionRequest localeDivisionRequest, SessionData sessionData, HttpServletResponse response) throws Exception {
@@ -175,17 +248,6 @@ public class LocaleDivisionServlet extends AbstractServlet {
 		}
 		localeDivision.setUpdatedBy(sessionUser.getUserId());
 		localeDivision.setUpdatedDate(today);
-	}
-	
-	
-	
-	
-	@Override
-	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		
-		super.sendNotAllowed(response);
-		
 	}
 	
 }

@@ -175,22 +175,16 @@
     			            } },
     			            
     			            { width:"5%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
-    			            	//console.log(row);
     			            	var $actionData = "";
     			            	if ( row.locale_id != null ) {
-    				            	var $editLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="#" class="editAction" data-divisionid="'+row.division_id+'" data-localeid="'+row.locale_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
-    				            	console.log("editLink: " + $editLink);
-//    		            			var $ticketData = 'data-id="' + row.locale_id + '"';
-//    			            		$printLink = '<ansi:hasPermission permissionRequired="TAX_READ"><i class="print-link fa fa-print" aria-hidden="true" ' + $localeData + '></i></ansi:hasPermission>'
-//    			            		var $claimLink = '';
-    			            		
-    				            	$actionData = $editLink; //+ $printLink;
+    				            	//var $editLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="#" class="editAction" data-divisionid="'+row.division_id+'" data-localeid="'+row.locale_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
+    				            	var $deleteLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="#" class="deleteAction" data-divisionid="'+row.division_id+'" data-localeid="'+row.locale_id+'"><webthing:delete>Delete</webthing:delete></a></ansi:hasPermission>&nbsp;';
+    				            	var $endLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="#" class="endAction" data-divisionid="'+row.division_id+'" data-localeid="'+row.locale_id+'"><webthing:schedule>Set End Date</webthing:schedule></a></ansi:hasPermission>&nbsp;';
+    				            	$actionData = $deleteLink + "&nbsp;" + $endLink;
     			            	}
     			            	return $actionData;
     			            } }],
     			            "initComplete": function(settings, json) {
-    			            	//console.log(json);
-    			            	//doFunctionBinding();
     			            	var myTable = this;
     			            	//LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#localeDivisionTable", LOCALEDIVISIONLOOKUP.createTable);
     			            },
@@ -237,7 +231,7 @@
                 
 
     			
-makeEditPanel : function() {	
+				makeEditPanel : function() {	
     				console.log("make edit panel");
     				$("#localeDivisionModal").dialog({
     					autoOpen: false,
@@ -290,6 +284,7 @@ makeEditPanel : function() {
     				console.debug($url);
     						
     				var $outbound = {};
+    				$outbound['action'] = $("#localeDivisionModal input[name='action']").val();
     				$outbound['divisionId'] = $("#localeDivisionModal select[name='divisionId']").val();
     				$outbound['localeId'] = $("#localeDivisionModal input[name='localeId']").val();
     				$outbound['addressId'] = $("#localeDivisionModal input[name='addressId']").val();
@@ -448,6 +443,8 @@ makeEditPanel : function() {
     			        		$('#goEdit').button('option', 'label', 'Save');
     			        		$('#closeLocaleDivisionModal').button('option', 'label', 'Close');
     			        		
+    			        		$("#localeDivisionModal  input[name='action']").val("update");
+    			        		
     			        		$("#localeDivisionModal  input[name='localeId']").val($data.data.localeId);
     			        		$("#localeDivisionModal  input[name='addressId']").val($data.data.addressId);
     			        		
@@ -455,7 +452,7 @@ makeEditPanel : function() {
     							$("#localeDivisionModal  input[name='localeName']").val($data.data.name);
     							$("#localeDivisionModal  select[name='stateName']").val($data.data.stateName);
     							$("#localeDivisionModal  input[name='effectiveStartDate']").val($data.data.effectiveStartDate);	
-    							$("#localeDivisionModal  input[name='effectiveStopDate']").val($data.data.effectiveEndDate);
+    							$("#localeDivisionModal  input[name='effectiveStopDate']").val($data.data.effectiveStopDate);
     							$("#localeDivisionModal  input[name='addressName']").val($data.data.addressName);
     							$("#nexus_address1").html($data.data.address1);
     							$("#nexus_address2").html($data.data.address2);
@@ -495,6 +492,8 @@ makeEditPanel : function() {
 						$('#goEdit').data("localeId", null);
 		        		$('#goEdit').button('option', 'label', 'Save');
 		        		$('#closeLocaleDivisionModal').button('option', 'label', 'Close');
+		        		
+		        		$("#localeDivisionModal  input[name='action']").val("add");
 		        		
 		        		$("#localeDivisionModal  input[name='localeId']").val("");
 		        		$("#localeDivisionModal  input[name='addressId']").val("");
@@ -553,6 +552,7 @@ makeEditPanel : function() {
     </table>
     
      <div id="localeDivisionModal">
+     	<input type="hidden" name="action" />
 	    <div class="modal-header">
 	    	<h5 class="modal-title" id="name"></h5>
 	    </div>
@@ -560,6 +560,52 @@ makeEditPanel : function() {
     		<tr>
     			<td><span class="formHdr">Division</span></td>
     			<td><select name="divisionId"></select></td>
+    			<td><span class="err" id="divisionIdErr"></span></td>
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">Locale Name</span></td>
+    			<td><input type="text" name="localeName" /><input type="hidden" name="localeId" /></td>
+    			<td><span class="err" id="localeIdErr"></span></td>
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">Address</span></td>
+    			<td><input type="text" name="addressName" /><input type="hidden" name="addressId" /></td>
+    			<td><span class="err" id="addressIdErr"></span></td>
+    		</tr>
+    		<tr>
+    			<td>&nbsp;</td>
+    			<td>
+    				<span id="nexus_address1"></span><br />
+    				<span id="nexus_address2"></span><br />
+    				<span id="nexus_city"></span>, <span id="nexus_state"></span> <span id="nexus_zip"></span>
+    			</td>
+    			<td>&nbsp;</td>
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">Effective Start Date</span></td>
+    			<td><input type="text" name="effectiveStartDate" class="dateField" /></td>
+    			<td><span class="err" id="effectiveStartDateErr"></span></td>
+    		</tr>
+    		<tr>
+    			<td><span class="formHdr">Effective Stop Date</span></td>
+    			<td><input type="text" name="effectiveStopDate" class="dateField" /></td>
+    			<td><span class="err" id="effectiveStopDateErr"></span></td>
+    		</tr>
+    		
+    	</table>
+    </div>
+    
+    
+    
+    <div id="deleteModal">
+     	<input type="hidden" name="action" />
+	    <div class="modal-header">
+	    	<h5 class="modal-title" id="name"></h5>
+	    </div>
+    	<table class="ui-front">
+    		<tr>
+    			<td><span class="formHdr">Division</span></td>
+    			<td><input type="hidden" name="divisionId"/><span class="divisioName" ></span></td>
     			<td><span class="err" id="divisionIdErr"></span></td>
     		</tr>
     		<tr>
