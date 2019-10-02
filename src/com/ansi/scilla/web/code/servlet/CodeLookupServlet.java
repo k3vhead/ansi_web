@@ -1,10 +1,17 @@
 package com.ansi.scilla.web.code.servlet;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import org.apache.commons.collections4.Transformer;
+import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.web.code.query.CodeLookupQuery;
 import com.ansi.scilla.web.common.query.LookupQuery;
@@ -22,7 +29,7 @@ public class CodeLookupServlet extends AbstractLookupServlet {
 	
 	public static final String REALM = "codeLookup";
 	
-	
+	public static final String CAN_DELETE = "can_delete";
 	
 	public CodeLookupServlet() {
 		super(Permission.SYSADMIN_READ);
@@ -34,6 +41,7 @@ public class CodeLookupServlet extends AbstractLookupServlet {
 				CodeLookupQuery.SEQ,
 				CodeLookupQuery.DESCRIPTION,
 				CodeLookupQuery.CODE_STATUS,
+				CAN_DELETE,
 				};
 //		super.itemTransformer = new ItemTransformer();
 	}
@@ -50,6 +58,9 @@ public class CodeLookupServlet extends AbstractLookupServlet {
 		SessionUser user = sessionData.getUser();
 		List<SessionDivision> divisionList = sessionData.getDivisionList();
 		try {
+			Statement statement = conn.createStatement();
+			super.itemTransformer = new ItemTransformer(statement);
+
 			AnsiURL url = new AnsiURL(request, REALM, (String[])null);
 			String searchTerm = null;
 			if(request.getParameter("search[value]") != null){
@@ -60,11 +71,12 @@ public class CodeLookupServlet extends AbstractLookupServlet {
 				lookupQuery.setSearchTerm(searchTerm);
 			}
 
-//			}
 			
 			return lookupQuery;
 			
 		} catch (ResourceNotFoundException e) { 
+			throw new RuntimeException(e);
+		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -72,7 +84,34 @@ public class CodeLookupServlet extends AbstractLookupServlet {
 
 
 
+	public class ItemTransformer implements Transformer<HashMap<String, Object>,HashMap<String, Object>> {
+		private Statement statement;
 
+		public ItemTransformer(Statement statement) {
+			super();
+			this.statement = statement;
+		}
+
+		@Override
+		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
+			try {
+				String sql = "select count(*) as record_count from " + (String)arg0.get("table_name") + "\n"
+						+ " where " + (String)arg0.get("field_name") +"='" + (String)arg0.get("value") + "'";
+//				logger.log(Level.DEBUG, sql);
+				ResultSet rs = statement.executeQuery(sql);
+				Boolean canDelete = false;
+				if ( rs.next() ) {
+					canDelete = rs.getInt("record_count") == 0;
+				}
+
+				arg0.put(CAN_DELETE, canDelete);
+				return arg0;
+			} catch ( Exception e) {
+				throw new RuntimeException(e);	
+			}
+		}
+
+	}
 
 
 	
