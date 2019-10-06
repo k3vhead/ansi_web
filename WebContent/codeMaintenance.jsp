@@ -65,7 +65,8 @@
         			CODEMAINTENANCE.createTable();
         			CODEMAINTENANCE.makeAddForm();
         			CODEMAINTENANCE.clearAddForm();
-        			CODEMAINTENANCE.makeButtons();
+        			CODEMAINTENANCE.makeDeleteModal();
+        			//CODEMAINTENANCE.makeButtons();
         		//	CODEMAINTENANCE.makeDropdowns();
         			CODEMAINTENANCE.getCodes("list");
         			CODEMAINTENANCE.getTableFieldList(null, $("#addForm select[name='tableName']"));
@@ -74,6 +75,7 @@
 	        		
         		makeAddForm : function() {	
     				$("#addForm" ).dialog({
+    					title:'Add/Edit Code',
     					autoOpen: false,
     					height: 300,
     					width: 500,
@@ -136,12 +138,78 @@
         		},
     			
     			
+    			makeDeleteModal : function() {
+    			$( "#deleteModal" ).dialog({
+    				title:'Delete Code',
+    				autoOpen: false,
+    				height: 150,
+    				width: 450,
+    				modal: true,
+    				closeOnEscape:true,
+    				buttons: [
+    					{
+    						id: "deleteSaveButton",
+    						click: function($event) {
+    							CODEMAINTENANCE.doDelete();
+    						}
+    					},
+    					{
+    						id: "deleteCancelButton",
+    						click: function($event) {
+    							$( "#deleteModal" ).dialog("close");
+    						}
+    					},
+    				]
+    			});	
+    			$("#deleteSaveButton").button('option', 'label', 'Delete');
+    			$("#deleteCancelButton").button('option', 'label', 'Cancel');
+    			},
+    			
+    			
         		
 	        		
     			
     			
     			showEdit : function ($clickevent) {
+                	
+                	$name = $("#addForm").attr("data-name");
+    		        var $name = $(this).attr("data-name");
     				var $table_name = $clickevent.currentTarget.attributes['data-id'].value;
+    				var $field_name = $clickevent.currentTarget.attributes['data-id'].value;
+    				console.debug("table_name: " + $table_name);
+    				$("#goEdit").data("table_name: " + $table_name);
+            		$('#goEdit').button('option', 'label', 'Save');
+            		$('#closeAddForm').button('option', 'label', 'Close');
+            		
+            		
+    				var $url = 'code/'+ $table_name;
+    				var jqxhr = $.ajax({
+    					type: 'GET',
+    					url: $url,
+    					statusCode: {
+    						200: function($data) {
+    							var $code = $data.data.codeList[0];    							
+    							$("#addForm select[name='tableName']").val($code.tableName);
+    							$("#addForm select[name='fieldName']").val($code.fieldName);
+    							$("#addForm input[name='value']").val($code.value);
+    							$("#addForm input[name='displayValue']").val($code.displayValue);
+    							$("#addForm input[name='description']").val($code.description);	        		
+    			        		$("#addForm .err").html("");
+    			        		$("#addForm").dialog("open");
+    						},
+    						403: function($data) {
+    							$("#globalMsg").html("Session Timeout. Log in and try again");
+    						},
+    						404: function($data) {
+    							$("#globalMsg").html("Invalid Request");
+    						},
+    						500: function($data) {
+    							$("#globalMsg").html("System Error; Contact Support");
+    						}
+    					},
+    					dataType: 'json'
+    				});
+    			/*	var $table_name = $clickevent.currentTarget.attributes['data-id'].value;
 					//var $fieldName = $clickevent.currentTarget.attributes['data-fieldName'].value;
     				console.debug("table_name: " + $table_name);
     				$("#goEdit").data("table_name", $table_name);
@@ -177,7 +245,7 @@
     						}
     					},
     					dataType: 'json'
-    				});
+    				}); */
     			},  			
     
     			    			
@@ -195,81 +263,55 @@
 	
 				
 				goUpdate : function($clickevent) {	
-					var $table_name = $("#goEdit").data("table_name");	
-				//$("#goUpdate").click( function($clickevent) {
-            		
-	
-				//	if ( $('#addForm').data('table_name') == null ) {
-				//		$url = "codeLookup/add";
-				///	} else {
-						//$rownum = $('#addForm').data('rownum')
-						//var $tableData = [];
-		                //$("#displayTable").find('tr').each(function (rowIndex, r) {
-		                //    var cols = [];
-		                //    $(this).find('th,td').each(function (colIndex, c) {
-		                //        cols.push(c.textContent);
-		                //    });
-		                //    $tableData.push(cols);
-		                //});
-	
-		            	//var $tableName = $tableData[$rownum][0];
-		            	//var $fieldName = $tableData[$rownum][1];
-		            	//var $value = $tableData[$rownum][2];
-		            	
-	      	      //      var $tableName = $('#addForm').data('tableName');
-	            	//	var $fieldName = $("#addForm").data('fieldName');
-	            	//	var $value = $("#addForm").data('value');
-	
-		            //	$url = "codeLookup/";
-					//}
-				
-					if ( $table_name == null || $table_name == '') {
-						$url = 'codeLookup/add';
+					console.debug("Updating Code");
+					var $tableName = $("#addForm input[name='tableName']").val();
+					var $fieldName = $("#addForm input[name='fieldName']").val();
+					var $value = $("#addForm input[name='value']").val();
+					//console.debug("table_name: " + $table_name);
+					
+
+					if ( $tableName == null || $tablName == '') {
+						$url = 'code/add/tableName/fieldName/value';
 					} else {
-						$url = 'codeLookup/' + $table_name;
+						$url = 'code/' + $tableName + $fieldName + $value;
 					}
-            		
-            		$outbound = {}
-					$.each( $('#addForm :input'), function(index, value) {
-						if ( value.name ) {
-							$field_name = value.name;
-							$id = "#addForm input[name='" + $field_name + "']";
-							$val = $($id).val();
-							$outbound[$field_name] = $val;
-						}
-					});
-					$outbound['table_name'] = $("#addForm select[name='table_name'] option:selected").val();
-					$outbound['field_name'] = $("#addForm select[name='field_name'] option:selected").val();
-            		$outbound['value'] = $("#addForm input[name='value']").val();
-            		$outbound['display_value'] = $("#addForm input[name='display_value']").val();
-            		$outbound['description'] = $("#addForm input[name='description']").val();
-            		
-            		var jqxhr = $.ajax({
+					console.debug($url);
+						
+					var $outbound = {};
+					$outbound['tableName'] = $("#addForm select[name='tableName'] option:selected").val();
+					$outbound['fieldName'] = $("#addForm select[name='fieldName'] option:selected").val();	
+					$outbound['value'] = $("#addForm input[name='value']").val();
+					$outbound['displayValue'] = $("#addForm input[name='displayValue']").val();
+					$outbound['description'] = $("#addForm input[name='description']").val();		
+					console.debug($outbound);
+					
+					var jqxhr = $.ajax({
 						type: 'POST',
 						url: $url,
 						data: JSON.stringify($outbound),
 						statusCode: {
 							200: function($data) {
 			    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-				    					$.each($data.data.webMessages, function (key, value) {
-				    						var $selectorName = "#" + key + "Err";
-				    						$($selectorName).show();
-				    						$($selectorName).html(value[0]).fadeOut(10000);
-				    					});
-									} else {
-										$("#addForm").dialog("close");
-				    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
-				    					$('#codeTable').DataTable().ajax.reload();
-									}
-							},					
+			    					$.each($data.data.webMessages, function (key, value) {
+			    						var $selectorName = "#" + key + "Err";
+			    						$($selectorName).show();
+			    						$($selectorName).html(value[0]).fadeOut(10000);
+			    					});
+			    				} else {	    				
+			    					$("#addForm").dialog("close");
+			    					$('#codeTable').DataTable().ajax.reload();		
+			    					CODEMAINTENANCE.clearAddForm();		    					
+			    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
+			    				}
+							},
 							403: function($data) {
 								$("#globalMsg").html("Session Timeout. Log in and try again");
 							},
 							404: function($data) {
-								$("#globalMsg").html("System Error Reorder 404. Contact Support");
+								$("#globalMsg").html("Invalid Selection").show().fadeOut(100000);
 							},
 							500: function($data) {
-								$("#globalMsg").html("System Error Reorder 500. Contact Support");
+								$("#globalMsg").html("System Error; Contact Support");
 							}
 						},
 						dataType: 'json'
@@ -322,10 +364,10 @@
 				            	if(row.description != null){return (row.description+"");}
 				            } },
 				            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
-				            	//console.log(row);
-					            	var $editLink = '<span class="updAction" data-id="' + row.table_name + '"><webthing:edit>Edit</webthing:edit></span>';
-					            		$actionData = "<ansi:hasPermission permissionRequired='USER_ADMIN_WRITE'>" + $editLink + "</ansi:hasPermission>"
-				            		return $actionData;
+				            	var $editLink = '<span class="updAction" data-id="' + row.table_name + '"><webthing:edit>Edit</webthing:edit></span>';
+				            	var $deleteLink = '<span class="delAction" data-id="' + row.table_name + '"><webthing:delete>Delete</webthing:delete></span>';
+			            		$actionData = $editLink + " " + $deleteLink;
+		            			return $actionData;
 				            } }],
 				            "initComplete": function(settings, json) {
 				            	//console.log(json);
@@ -336,6 +378,58 @@
 				            }
 				    } );
 	        	},
+				
+		   		deleteThisCode : function ($table_name, $name) {
+	        		$("#deleteModal").attr("table_name", $table_name);
+	        		$("#deleteModal").dialog("option","title", " " + $name).dialog("open");
+				},         
+				
+			/*	doDelete : function($clickEvent) {
+					$clickEvent.preventDefault();
+					var $table_name = $clickEvent.currentTarget.attributes['data-id'].value;
+					
+					$( "#deleteConfirmDialog" ).dialog({
+						resizable: false,
+						height: "auto",
+						width: 400,
+						modal: true,
+						buttons: {
+							"Delete Address": function() {CODEMAINTENANCE.doDelete2($table_name);$( this ).dialog( "close" );},
+					        Cancel: function() {
+								$( this ).dialog( "close" );
+							}
+						}
+					});
+					$( "#deleteConfirmDialog" ).dialog( "open" );	
+				}, */
+				
+			
+				doDelete : function($table_name){
+					$table_name = $("#deleteModal").attr("table_name");
+					var $url = 'codeLookup/' + $table_name;
+            		var jqxhr = $.ajax({
+	            	    type: 'delete',
+	            	    url: $url,
+            	     	statusCode: {
+               	    	 	200: function($data) {
+	         	    		 	$("#deleteModal").dialog("close");
+	         	    		 	$('#codeTable').DataTable().ajax.reload();
+			    				$("#globalMsg").html("Update Successful").show().fadeOut(10000);
+							},
+            	    		403: function($data) {
+            	    			$("#globalMsg").html("Session Timeout. Log in and try again");
+            	    		},
+							404: function($data) {
+								$("#globalMsg").html("Invalid Selection").show().fadeOut(100000);
+							},
+							500: function($data) {
+								$("#globalMsg").html("System Error; Contact Support");
+							}
+	             	     },
+						dataType: 'json'
+					});
+				}, 
+				
         	
 			
 			doFilter: function ($event) {
@@ -395,9 +489,14 @@
 				$('.updAction').bind("click", function($clickevent) {
 					CODEMAINTENANCE.showEdit($clickevent);
 				});
-				$('.delAction').bind("click", function($clickevent) {
-					CODEMAINTENANCE.doDelete($clickevent);
+				$(".delAction").on("click", function($clickevent) {
+					var $name = $(this).attr("data-name");
+					var $table_name = $(this).data("id");
+					CODEMAINTENANCE.deleteThisCode($table_name, $name);
 				});
+				/*$('.delAction').bind("click", function($clickevent) {
+					CODEMAINTENANCE.doDelete($clickevent);
+				});*/
 			},
 			
 			/* function makeRow($code, $rownum) {
@@ -488,16 +587,14 @@
             	$("#addForm input[name='value']").select();
 			},*/
 			
-			doDelete: function ($clickevent) {
+			/*doDelete: function ($clickevent) {
 				$clickevent.preventDefault();
 
 				var $tableName = $clickevent.currentTarget.attributes['data-tableName'].value;
 				var $fieldName = $clickevent.currentTarget.attributes['data-fieldName'].value;
 				var $value = $clickevent.currentTarget.attributes['data-value'].value;
 				var $displayValue = $clickevent.currentTarget.attributes['data-displayValue'].value;
-				var $seq = $clickevent.currentTarget.attributes['data-seq'].value;
 				var $description = $clickevent.currentTarget.attributes['data-description'].value;
-				var $status = $clickevent.currentTarget.attributes['data-status'].value;
 
 				$('#confirmDelete').data('tableName',$tableName);
 				$('#confirmDelete').data('fieldName',$fieldName);
@@ -525,10 +622,10 @@
 					opacity: 0.6,
 					positionStyle: 'fixed' //'fixed' or 'absolute'
 				});
-			},
+			},*/
 			
 			
-			makeButtons : function() {
+			/* makeButtons : function() {
 			$("#addButton").click( function($clickevent) {
 				$clickevent.preventDefault();
     			CODEMAINTENANCE.clearAddForm();
@@ -654,7 +751,7 @@
 				});
 			}); */
 
-            $("#cancelDelete").click( function($event) {
+          /*  $("#cancelDelete").click( function($event) {
             	$event.preventDefault();
             	$('#confirmDelete').bPopup().close();
             });         
@@ -725,19 +822,12 @@
             	}
             });
             
-            $('#addForm').find("input").on('input',function(e) {
-            	$required = $(this).data('required');
-            	if ( $required == true ) {
-            		CODEMAINTENANCE.markValid(this);
-            	}
-            });
-            
             $("#addForm select[name='tableName']").change(function () {
 				var $selectedTable = $('#addForm select[name="tableName"] option:selected').val();
 				CODEMAINTENANCE.getTableFieldList($selectedTable, $("#addForm select[name='fieldName']"));
             });
             
-			},
+			}, */
             
             
             clearAddForm: function () {
@@ -837,34 +927,7 @@
 
 
 	 	<table id="codeTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;">
-	        <colgroup>
-	    		<col style="width:13%;" />
-	    		<col style="width:13%;" />
-	    		<col style="width:13%;" />
-	    		<col style="width:13%;" />
-	    		<col style="width:13%;" />
-	    		<col style="width:8%;" />
-	    	</colgroup>
-	        <thead>
-	            <tr>
-	                <th>Table Name</th>
-	    			<th>Field Name</th>
-	    			<th>Value</th>
-	    			<th>Display Value</th>
-	    			<th>Description</th>
-	    			<th><bean:message key="field.label.action" /></th>
-	            </tr>
-	        </thead>
-	        <tfoot>
-	            <tr>
-	                <th>Table Name</th>
-	    			<th>Field Name</th>
-	    			<th>Value</th>
-	    			<th>Display Value</th>
-	    			<th>Description</th>
-	    			<th><bean:message key="field.label.action" /></th>
-	            </tr>
-	        </tfoot>
+	       
 	    </table>
     				<webthing:scrolltop />
 		<ansi:hasPermission permissionRequired="SYSADMIN">
@@ -875,27 +938,10 @@
 			</ansi:hasWrite>
 		</ansi:hasPermission>
     	
-    	<ansi:hasPermission permissionRequired="SYSADMIN">
-    		<ansi:hasWrite>
-		    	<div id="confirmDelete">
-		    		<span class="formLabel">Are You Sure You Want to Delete this Code?</span><br />
-		    		<table id="delData">
-		    			<tr>
-		    				<td><span class="formLabel">Table:</span></td>
-		    				<td id="delTable"></td>
-		    			</tr>
-		    			<tr>
-		    				<td><span class="formLabel">Field:</span></td>
-		    				<td id="delField"></td>
-		    			</tr>
-		    			<tr>
-		    				<td><span class="formLabel">Value:</span></td>
-		    				<td id="delValue"></td>
-		    			</tr>
-		    		</table>
-		    		<input type="button" id="cancelDelete" value="No" />
-		    		<input type="button" id="doDelete" value="Yes" />
-		    	</div>
+    	<div id="deleteModal">
+    		Are You Sure You Want to Delete this Code?
+	    	</div>
+	    	
 		    	
 		    	<div id="addFormDiv">
 		    		<h2 id="addFormTitle"></h2>
@@ -908,27 +954,27 @@
 		    						<%--
 		    						<input type="text" name="tableName" data-required="true" data-valid="validTable" />		    						
 		    						 --%>
-		    						 <select name="tableName" data-required="true" data-valid="validTable">
+		    						 <select name="tableName" data-required="false" data-valid="validTableName">
 		    						 	<option value=""></option>
 		    						 </select>
-		    						<i id="validTable" class="fa" aria-hidden="true"></i>
+		    						<i id="validTableName" class="fa" aria-hidden="true"></i>
 		    					</td>
 		    					<td><span class="err" id="tableNameErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Field:</span></td>
 		    					<td>
-		    						<select name="fieldName" data-required="true" data-valid="validField">
+		    						<select name="fieldName" data-required="false" data-valid="validFieldName">
 		    							<option value=""></option>
 		    						</select>
-		    						<i id="validField" class="fa" aria-hidden="true"></i>
+		    						<i id="validFieldName" class="fa" aria-hidden="true"></i>
 		    					</td>
 		    					<td><span class="err" id="fieldNameErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Value:</span></td>
 		    					<td>
-		    						<input type="text" name="value" data-required="true" data-valid="validValue" />
+		    						<input type="text" name="value" data-required="false" data-valid="validValue" />
 		    						<i id="validValue" class="fa" aria-hidden="true"></i>
 		    					</td>
 		    					<td><span class="err" id="valueErr"></span></td>
@@ -936,14 +982,14 @@
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Display:</span></td>
 		    					<td>
-		    						<input type="text" name="displayValue" data-required="true" data-valid="validDisplay" />
-		    						<i id="validDisplay" class="fa" aria-hidden="true"></i>
+		    						<input type="text" name="displayValue" data-required="false" data-valid="validDisplayValue" />
+		    						<i id="validDisplayValue" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="displayErr"></span></td>
+		    					<td><span class="err" id="displayValueErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="formLabel">Description:</span></td>
-		    					<td><input type="text" name="description" /></td>
+		    					<td><input type="text" name="description" /></td>F
 		    					<td><span class="err" id="decriptionErr"></span></td>
 		    				</tr>
 		    			</table>
@@ -951,8 +997,6 @@
 		    	</div>
 		    	
 		    	
-	    	</ansi:hasWrite>
-    	</ansi:hasPermission>
     </tiles:put>
 
 </tiles:insert>
