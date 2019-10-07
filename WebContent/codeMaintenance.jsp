@@ -381,8 +381,8 @@
 				            	if(row.description != null){return (row.description+"");}
 				            } },
 				            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
-				            	var $editLink = '<span class="updAction" data-id="' + row.table_name + '"><webthing:edit>Edit</webthing:edit></span>';
-				            	var $deleteLink = '<span class="delAction" data-id="' + row.table_name + '"><webthing:delete>Delete</webthing:delete></span>';
+				            	var $editLink = '<ansi:hasPermission permissionRequired="CODE_WRITE"><span class="updAction" data-id="' + row.table_name + '"><webthing:edit>Edit</webthing:edit></span></ansi:hasPermission>';
+				            	var $deleteLink = '<ansi:hasPermission permissionRequired="CAN_DELETE"><span class="delAction" data-id="' + row.table_name + '"><webthing:delete>Delete</webthing:delete></span></ansi:hasPermission>';
 			            		$actionData = $editLink + " " + $deleteLink;
 		            			return $actionData;
 				            } }],
