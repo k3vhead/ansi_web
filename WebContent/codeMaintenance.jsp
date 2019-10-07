@@ -37,7 +37,7 @@
 				display:none;
 				background-color:#FFFFFF;
 				color:#000000;
-				width:600px;
+				width:650px;
 				padding:15px;
 			}
 			#delData {
@@ -75,10 +75,10 @@
 	        		
         		makeAddForm : function() {	
     				$("#addForm" ).dialog({
-    					title:'Add/Edit Code',
+    					title:'Add/Update Code',
     					autoOpen: false,
     					height: 300,
-    					width: 500,
+    					width: 600,
     					modal: true,
     					buttons: [
     						{
@@ -112,7 +112,11 @@
     				
     			
     			
-    			},*/
+    			},*/ 
+    			getFieldNameVariable :  function (tableName, fieldName) {
+    			    $selectedTable = document.getElementById(tableName).value;
+    			    document.getElementById(fieldName).innerHTML = "Selected value is "+$selectedTable;
+    			 },
 				
 				
         		showNew : function() {
@@ -128,6 +132,12 @@
 						var $selectedTable = $('#addForm select[name="tableName"] option:selected').val();
 						CODEMAINTENANCE.getTableFieldList($selectedTable, $("#addForm select[name='fieldName']"));
 		            	});
+        				/* $select = $("#addFormDiv select[name='tableName']");
+        				$('option', $select).remove();
+        				$select.append(new Option("",null));
+        				$.each($data, function($index, $val) {
+        				       $select.append(new Option(<display>,<value>));
+        				}); */
         				$("#addForm input[name='value']").val("");
         				$("#addForm input[name='display_value]").val("");
         				$("#addForm input[name='description']").val("");		        		
@@ -140,7 +150,6 @@
     			
     			makeDeleteModal : function() {
     			$( "#deleteModal" ).dialog({
-    				title:'Delete Code',
     				autoOpen: false,
     				height: 150,
     				width: 450,
@@ -171,15 +180,13 @@
     			
     			
     			showEdit : function ($clickevent) {
-                	
-                	$name = $("#addForm").attr("data-name");
-    		        var $name = $(this).attr("data-name");
     				var $table_name = $clickevent.currentTarget.attributes['data-id'].value;
-    				var $field_name = $clickevent.currentTarget.attributes['data-id'].value;
+					//var $fieldName = $clickevent.currentTarget.attributes['data-fieldName'].value;
     				console.debug("table_name: " + $table_name);
-    				$("#goEdit").data("table_name: " + $table_name);
+    				$("#goEdit").data("table_name", $table_name);
             		$('#goEdit').button('option', 'label', 'Save');
             		$('#closeAddForm').button('option', 'label', 'Close');
+				//	$("#addFormTitle").html("Edit a Code");
             		
             		
     				var $url = 'code/'+ $table_name;
@@ -188,9 +195,10 @@
     					url: $url,
     					statusCode: {
     						200: function($data) {
-    							var $code = $data.data.codeList[0];    							
+    							var $code = $data.data.codeList[0];    	
     							$("#addForm select[name='tableName']").val($code.tableName);
-    							$("#addForm select[name='fieldName']").val($code.fieldName);
+    							var $table_name = $code.tableName;
+    	    					CODEMAINTENANCE.getTableFieldList($table_name, $("#addForm select[name='fieldName']"));
     							$("#addForm input[name='value']").val($code.value);
     							$("#addForm input[name='displayValue']").val($code.displayValue);
     							$("#addForm input[name='description']").val($code.description);	        		
@@ -271,7 +279,7 @@
 					
 
 					if ( $tableName == null || $tablName == '') {
-						$url = 'code/add/tableName/fieldName/value';
+						$url = 'code/tableName/fieldName/value';
 					} else {
 						$url = 'code/' + $tableName + $fieldName + $value;
 					}
@@ -321,7 +329,7 @@
 	        		
 	    		createTable : function() {
 	    			CODEMAINTENANCE.dataTable = $('#codeTable').DataTable( {
-	        			"processing": 		true,
+	    			    "processing": 		true,
 	        	        "serverSide": 		true,
 	        	        "autoWidth": 		false,
 	        	        "deferRender": 		true,
@@ -337,9 +345,18 @@
 	        	        buttons: [
 	        	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {CODEMAINTENANCE.doFunctionBinding();}}
 	        	        ],
+	    				"pageLength": [
+	    					[ 100 ],
+	    				],
 	        	        
 	        	        "columnDefs": [
 	         	            { "orderable": false, "targets": -1 },
+	        	            { className: "dt-head-left", "targets": [0,1,2,3,4] },
+	        	            { className: "dt-body-center", "targets": [5] },
+	        	            { className: "dt-right", "targets": []},
+	        	            { width: '10%', "targets": 5 },
+	        	            { width: '30%', "targets": [0,1,2,3,4] },
+	        	            { "sClass": "center", "targets": [4,5] }
 	        	         ],
 	        	        "paging": true,
 				        "ajax": {
@@ -379,9 +396,9 @@
 				    } );
 	        	},
 				
-		   		deleteThisCode : function ($table_name, $name) {
+		   		deleteThisCode : function ($table_name) {
 	        		$("#deleteModal").attr("table_name", $table_name);
-	        		$("#deleteModal").dialog("option","title", " " + $name).dialog("open");
+	        		$("#deleteModal").dialog("open");
 				},         
 				
 			/*	doDelete : function($clickEvent) {
@@ -490,9 +507,9 @@
 					CODEMAINTENANCE.showEdit($clickevent);
 				});
 				$(".delAction").on("click", function($clickevent) {
-					var $name = $(this).attr("data-name");
+				//	var $name = $(this).attr("data-name");
 					var $table_name = $(this).data("id");
-					CODEMAINTENANCE.deleteThisCode($table_name, $name);
+					CODEMAINTENANCE.deleteThisCode($table_name);
 				});
 				/*$('.delAction').bind("click", function($clickevent) {
 					CODEMAINTENANCE.doDelete($clickevent);
@@ -831,6 +848,13 @@
             
             
             clearAddForm: function () {
+            /*	$select = $("#addForm select[name='tableName']");
+            	$('option', $select).remove();
+            	$select.append(new Option("",null));
+            	$.each($data, function($index, $val) {
+            	       $select.append(new Option(display, value));
+            	});        */    	
+            	
             	$.each( $('#addForm').find("select"), function(index, $inputField) {
             		$fieldName = $($inputField).attr('name');
             		$selectName = "#addForm select[name='" + $fieldName + "']"
@@ -957,9 +981,8 @@
 		    						 <select name="tableName" data-required="false" data-valid="validTableName">
 		    						 	<option value=""></option>
 		    						 </select>
-		    						<i id="validTableName" class="fa" aria-hidden="true"></i>
+		    						<i id="tableNameErr" class="fa errIcon" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="tableNameErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Field:</span></td>
@@ -967,30 +990,27 @@
 		    						<select name="fieldName" data-required="false" data-valid="validFieldName">
 		    							<option value=""></option>
 		    						</select>
-		    						<i id="validFieldName" class="fa" aria-hidden="true"></i>
+		    						<i id="fieldNameErr" class="fa errIcon" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="fieldNameErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Value:</span></td>
 		    					<td>
 		    						<input type="text" name="value" data-required="false" data-valid="validValue" />
-		    						<i id="validValue" class="fa" aria-hidden="true"></i>
+		    						<i id="valueErr" class="fa errIcon" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="valueErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Display:</span></td>
 		    					<td>
 		    						<input type="text" name="displayValue" data-required="false" data-valid="validDisplayValue" />
-		    						<i id="validDisplayValue" class="fa" aria-hidden="true"></i>
+		    						<i id="displayValueErr" class="fa errIcon" aria-hidden="true"></i>
 		    					</td>
 		    					<td><span class="err" id="displayValueErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="formLabel">Description:</span></td>
-		    					<td><input type="text" name="description" /></td>F
-		    					<td><span class="err" id="decriptionErr"></span></td>
+		    					<td><input type="text" name="description" /></td>
 		    				</tr>
 		    			</table>
 		    		</form>
