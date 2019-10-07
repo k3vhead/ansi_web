@@ -100,7 +100,7 @@ public class LocaleDivisionServlet extends AbstractServlet {
 				if(ansiURL.getId() == null) {
 					super.sendNotFound(response);
 				} else {
-					webMessages = localeDivisionRequest.validate(conn);
+					webMessages = localeDivisionRequest.validateAdd(conn);
 					if(webMessages.isEmpty() == true) {
 						Integer divId = ansiURL.getId();
 						if ( localeDivisionRequest.getAction().equals(LocaleDivisionRequest.ACTION_IS_ADD)) {
@@ -174,6 +174,7 @@ public class LocaleDivisionServlet extends AbstractServlet {
 						localeDivision.setLocaleId(localeDivisionRequest.getLocaleId());
 						localeDivision.setEffectiveStartDate(localeDivisionRequest.getEffectiveStartDate());
 						localeDivision.delete(conn);
+						conn.commit();
 						super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
 					} else {
 						data.setWebMessages(webMessages);

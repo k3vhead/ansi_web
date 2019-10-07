@@ -188,12 +188,12 @@ public class LocaleDivisionRequest extends AbstractRequest {
 		this.zip = zip;
 	}
 
-	public WebMessages validate(Connection conn) throws Exception {
+	public WebMessages validateAdd(Connection conn) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		RequestValidator.validateId(conn, webMessages, "locale", Locale.LOCALE_ID, "localeId", localeId, true);
 		RequestValidator.validateId(conn, webMessages, "division", Division.DIVISION_ID, "divisionId", divisionId, true);
 		RequestValidator.validateDate(webMessages, EFF_START_DATE, effectiveStartDate, true, null, null);
-		RequestValidator.validateDate(webMessages, EFF_STOP_DATE, effectiveStopDate, true, getEffectiveStartDate(), null);
+		RequestValidator.validateDate(webMessages, EFF_STOP_DATE, effectiveStopDate, false, getEffectiveStartDate(), null);
 		RequestValidator.validateId(conn, webMessages, "address", Address.ADDRESS_ID, "addressId", addressId, true);
 		
 		if ( webMessages.isEmpty() && hasOverlappingDates(conn) ) {
