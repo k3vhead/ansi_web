@@ -73,6 +73,9 @@
 			#localeDivisionModal {
 				display:none;	
 			}
+			#delete_modal {
+				display:none;
+			}
 			.ticket-clicker {
 				color:#000000;
 			}
@@ -93,6 +96,7 @@
        				LOCALEDIVISIONLOOKUP.makeLocaleTypeList();
        				LOCALEDIVISIONLOOKUP.markValid();  
        				LOCALEDIVISIONLOOKUP.makeEditPanel();
+       				LOCALEDIVISIONLOOKUP.makeDeletePanel();
        				LOCALEDIVISIONLOOKUP.showNew();
        				
        				$('.dateField').datepicker({
@@ -178,9 +182,9 @@
     			            	var $actionData = "";
     			            	if ( row.locale_id != null ) {
     				            	//var $editLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="#" class="editAction" data-divisionid="'+row.division_id+'" data-localeid="'+row.locale_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
-    				            	var $deleteLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="#" class="deleteAction" data-divisionid="'+row.division_id+'" data-localeid="'+row.locale_id+'"><webthing:delete>Delete</webthing:delete></a></ansi:hasPermission>&nbsp;';
+    				            	var $deleteLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="#" data-divisionid="'+row.division_id+'" data-localeid="'+row.locale_id+'" data-effectivestartdate="'+row.effective_start_date+'"><webthing:delete>Delete</webthing:delete></a></ansi:hasPermission>';
     				            	var $endLink = '<ansi:hasPermission permissionRequired="TAX_WRITE"><a href="#" class="endAction" data-divisionid="'+row.division_id+'" data-localeid="'+row.locale_id+'"><webthing:schedule>Set End Date</webthing:schedule></a></ansi:hasPermission>&nbsp;';
-    				            	$actionData = $deleteLink + "&nbsp;" + $endLink;
+    				            	$actionData = $endLink + "&nbsp;" + $deleteLink;
     			            	}
     			            	return $actionData;
     			            } }],
@@ -201,7 +205,15 @@
 	    				var $divisionId = $(this).attr("data-divisionId");
 	    				var $localeId = $(this).attr("data-localeId");
 	    				LOCALEDIVISIONLOOKUP.showEdit($divisionId, $localeId);
-	    			});					
+	    			});		
+            		
+            		
+            		$( ".delete_action" ).on( "click", function($clickevent) {
+	    				var $divisionId = $(this).attr("data-divisionid");
+	    				var $localeId = $(this).attr("data-localeid");
+	    				var $startDate = $(this).attr("data-startdate");
+	    				LOCALEDIVISIONLOOKUP.showEdit($divisionId, $localeId);
+	    			});
   	    		},
     			
     			
@@ -230,6 +242,36 @@
                 },
                 
 
+                makeDeletePanel : function() {	
+    				console.log("make delete panel");
+    				$("#delete_modal").dialog({
+    					autoOpen: false,
+    					height: 400,
+    					width: 600,
+    					modal: true,
+    					buttons: [
+    						{
+    							id: "closeDeleteModal",
+    							click: function() {
+    								$("#delete_modal").dialog( "close" );
+    							}
+    						},{
+    							id: "goDelete",
+    							click: function($event) {
+    								LOCALEDIVISIONLOOKUP.updateLocaleDivision();
+    							}
+    						}	      	      
+    					],
+    					close: function() {
+    						$("#delete_modal").dialog( "close" );
+    						//allFields.removeClass( "ui-state-error" );
+    					}
+    				});
+    			},
+    			
+    			
+    			
+    			
     			
 				makeEditPanel : function() {	
     				console.log("make edit panel");
@@ -261,6 +303,8 @@
     					}
     				});
     			},
+    			
+    			
     			
     			
     			updateLocaleDivision : function () {
@@ -544,12 +588,17 @@
     	  	
  	<webthing:lookupFilter filterContainer="filter-container" />
 
+
  	<table id="localeDivisionTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
         <thead>
         </thead>
         <tfoot>
         </tfoot>
     </table>
+    <input type="button" class="prettyWideButton showNew" value="New" />
+    <webthing:scrolltop />
+    
+    
     
      <div id="localeDivisionModal">
      	<input type="hidden" name="action" />
@@ -597,7 +646,7 @@
     
     
     
-    <div id="deleteModal">
+    <div id="delete_modal">
      	<input type="hidden" name="action" />
 	    <div class="modal-header">
 	    	<h5 class="modal-title" id="name"></h5>
@@ -605,36 +654,36 @@
     	<table class="ui-front">
     		<tr>
     			<td><span class="formHdr">Division</span></td>
-    			<td><input type="hidden" name="divisionId"/><span class="divisioName" ></span></td>
+    			<td><input type="hidden" name="divisionId"/><span class="division_name" ></span></td>
     			<td><span class="err" id="divisionIdErr"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">Locale Name</span></td>
-    			<td><input type="text" name="localeName" /><input type="hidden" name="localeId" /></td>
+    			<td><input type="hidden" name="localeId" /><span class="locale_name" /></td>
     			<td><span class="err" id="localeIdErr"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">Address</span></td>
-    			<td><input type="text" name="addressName" /><input type="hidden" name="addressId" /></td>
+    			<td><input type="hidden" name="addressId" /><span class="address_name" /></td>
     			<td><span class="err" id="addressIdErr"></span></td>
     		</tr>
     		<tr>
     			<td>&nbsp;</td>
     			<td>
-    				<span id="nexus_address1"></span><br />
-    				<span id="nexus_address2"></span><br />
-    				<span id="nexus_city"></span>, <span id="nexus_state"></span> <span id="nexus_zip"></span>
+    				<span class="nexus_address1"></span><br />
+    				<span class="nexus_address2"></span><br />
+    				<span class="nexus_city"></span>, <span class="nexus_state"></span> <span class="nexus_zip"></span>
     			</td>
     			<td>&nbsp;</td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">Effective Start Date</span></td>
-    			<td><input type="text" name="effectiveStartDate" class="dateField" /></td>
+    			<td><span class="effective_start_date" /></td>
     			<td><span class="err" id="effectiveStartDateErr"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">Effective Stop Date</span></td>
-    			<td><input type="text" name="effectiveStopDate" class="dateField" /></td>
+    			<td><span class="effective_stop_date" /></td>
     			<td><span class="err" id="effectiveStopDateErr"></span></td>
     		</tr>
     		
@@ -642,8 +691,7 @@
     </div>
     
     
-    <input type="button" class="prettyWideButton showNew" value="New" />
-    <webthing:scrolltop />
+    
 
 
     </tiles:put>
