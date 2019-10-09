@@ -61,270 +61,39 @@
         	;CODEMAINTENANCE = {
         			
         		init : function() {	
-        			CODEMAINTENANCE.showNew();
-        			CODEMAINTENANCE.createTable();
-        			CODEMAINTENANCE.makeAddForm();
         			CODEMAINTENANCE.clearAddForm();
-        			CODEMAINTENANCE.makeDeleteModal();
-        			//CODEMAINTENANCE.makeButtons();
-        		//	CODEMAINTENANCE.makeDropdowns();
+        			CODEMAINTENANCE.createTable();
         			CODEMAINTENANCE.getCodes("list");
         			CODEMAINTENANCE.getTableFieldList(null, $("#addForm select[name='tableName']"));
-        			//CODEMAINTENANCE.getTableFieldList($tableName, $("#addForm select[name='fieldName']"));
+        			CODEMAINTENANCE.makeAddForm();
+        			CODEMAINTENANCE.makeDeleteModal();
+        			CODEMAINTENANCE.showNew();
 	        		},
-	        		
-        		makeAddForm : function() {	
-    				$("#addForm" ).dialog({
-    					title:'Add/Update Code',
-    					autoOpen: false,
-    					height: 300,
-    					width: 600,
-    					modal: true,
-    					buttons: [
-    						{
-    							id: "closeAddForm",
-    							click: function() {
-    								$("#addForm").dialog( "close" );
-    							}
-    						},{
-    							id: "goEdit",
-    							click: function($event) {
-    								CODEMAINTENANCE.goUpdate();
-    							}
-    						}	      	      
-    					],
-    					close: function() {
-    						CODEMAINTENANCE.clearAddForm();
-    						$("#addForm").dialog( "close" );
-    						//allFields.removeClass( "ui-state-error" );
+	                
+	                
+                clearAddForm: function () {    	
+                	
+                	$.each( $('#addForm').find("select"), function(index, $inputField) {
+                		$fieldName = $($inputField).attr('name');
+                		$selectName = "#addForm select[name='" + $fieldName + "']"
+                		select = $($selectName);
+                		select.val("");
+                		CODEMAINTENANCE.markValid($inputField);
+                	});
+                	
+    				$.each( $('#addForm').find("input"), function(index, $inputField) {
+    					$fieldName = $($inputField).attr('name');
+    					if ( $($inputField).attr("type") == "text" ) {
+    						$($inputField).val("");
+    						CODEMAINTENANCE.markValid($inputField);
     					}
     				});
-    			},
-    			
-    			
-    			
-    		/*	makeDropdowns : function () {
-		            
-		            $("#addForm select[name='table_name']").change(function () {
-						var $selectedTable = $('#addForm select[name="table_name"] option:selected').val();
-						CODEMAINTENANCE.getTableFieldList($selectedTable, $("#addForm select[name='field_name']"));
-		            });
-    				
-    			
-    			
-    			},*/ 
-    			getFieldNameVariable :  function (tableName, fieldName) {
-    			    $selectedTable = document.getElementById(tableName).value;
-    			    document.getElementById(fieldName).innerHTML = "Selected value is "+$selectedTable;
-    			 },
-				
-				
-        		showNew : function() {
+    				$('.err').html("");
+      	            $('#addForm').data('tableName', null);
+            		$("#addForm").data('fieldName', null);
+            		$("#addForm").data('value', null);
 
-        			$(".showNew").click(function($event) {
-        				$('#goEdit').data("table_name",null);
-                		$('#goEdit').button('option', 'label', 'Save');
-                		$('#closeAddForm').button('option', 'label', 'Close');
-                		
-        				$("#addForm select[name='table_name']").val("");
-        				//$("#addForm input[name='field_name']").val("");
-        				$("#addForm select[name='tableName']").change(function () {
-						var $selectedTable = $('#addForm select[name="tableName"] option:selected').val();
-						CODEMAINTENANCE.getTableFieldList($selectedTable, $("#addForm select[name='fieldName']"));
-		            	});
-        				/* $select = $("#addFormDiv select[name='tableName']");
-        				$('option', $select).remove();
-        				$select.append(new Option("",null));
-        				$.each($data, function($index, $val) {
-        				       $select.append(new Option(<display>,<value>));
-        				}); */
-        				$("#addForm input[name='value']").val("");
-        				$("#addForm input[name='display_value]").val("");
-        				$("#addForm input[name='description']").val("");		        		
-                		$("#addForm .err").html("");
-                		$("#addForm").dialog("open");
-        			});
-        			
-        		},
-    			
-    			
-    			makeDeleteModal : function() {
-    			$( "#deleteModal" ).dialog({
-    				autoOpen: false,
-    				height: 150,
-    				width: 450,
-    				modal: true,
-    				closeOnEscape:true,
-    				buttons: [
-    					{
-    						id: "deleteSaveButton",
-    						click: function($event) {
-    							CODEMAINTENANCE.doDelete();
-    						}
-    					},
-    					{
-    						id: "deleteCancelButton",
-    						click: function($event) {
-    							$( "#deleteModal" ).dialog("close");
-    						}
-    					},
-    				]
-    			});	
-    			$("#deleteSaveButton").button('option', 'label', 'Delete');
-    			$("#deleteCancelButton").button('option', 'label', 'Cancel');
-    			},
-    			
-    			
-        		
-	        		
-    			
-    			
-    			showEdit : function ($clickevent) {
-    				var $table_name = $clickevent.currentTarget.attributes['data-id'].value;
-					//var $fieldName = $clickevent.currentTarget.attributes['data-fieldName'].value;
-    				console.debug("table_name: " + $table_name);
-    				$("#goEdit").data("table_name", $table_name);
-            		$('#goEdit').button('option', 'label', 'Save');
-            		$('#closeAddForm').button('option', 'label', 'Close');
-				//	$("#addFormTitle").html("Edit a Code");
-            		
-            		
-    				var $url = 'code/'+ $table_name;
-    				var jqxhr = $.ajax({
-    					type: 'GET',
-    					url: $url,
-    					statusCode: {
-    						200: function($data) {
-    							var $code = $data.data.codeList[0];    	
-    							$("#addForm select[name='tableName']").val($code.tableName);
-    							var $table_name = $code.tableName;
-    	    					CODEMAINTENANCE.getTableFieldList($table_name, $("#addForm select[name='fieldName']"));
-    							$("#addForm input[name='value']").val($code.value);
-    							$("#addForm input[name='displayValue']").val($code.displayValue);
-    							$("#addForm input[name='description']").val($code.description);	        		
-    			        		$("#addForm .err").html("");
-    			        		$("#addForm").dialog("open");
-    						},
-    						403: function($data) {
-    							$("#globalMsg").html("Session Timeout. Log in and try again");
-    						},
-    						404: function($data) {
-    							$("#globalMsg").html("Invalid Request");
-    						},
-    						500: function($data) {
-    							$("#globalMsg").html("System Error; Contact Support");
-    						}
-    					},
-    					dataType: 'json'
-    				});
-    			/*	var $table_name = $clickevent.currentTarget.attributes['data-id'].value;
-					//var $fieldName = $clickevent.currentTarget.attributes['data-fieldName'].value;
-    				console.debug("table_name: " + $table_name);
-    				$("#goEdit").data("table_name", $table_name);
-            		$('#goEdit').button('option', 'label', 'Save');
-            		$('#closeAddForm').button('option', 'label', 'Close');
-					$("#addFormTitle").html("Edit a Code");
-            		
-            		
-    				var $url = 'code/' + $table_name;
-    				var jqxhr = $.ajax({
-    					type: 'GET',
-    					url: $url,
-    					statusCode: {
-    						200: function($data) {
-    							//console.log($data);
-    							var $code = $data.data.codeList[0];    							
-    							$("#addForm select[name='tableName']").val($code.tableName);
-    							$("#addForm select[name='fieldName']").val($code.fieldName);
-    							$("#addForm input[name='value']").val($code.value);
-    							$("#addForm input[name='displayValue']").val($code.displayValue);
-    							$("#addForm input[name='description']").val($code.description);	        		
-    			        		$("#addForm .err").html("");
-    			        		$("#addForm").dialog("open");
-    						},
-    						403: function($data) {
-    							$("#globalMsg").html("Session Timeout. Log in and try again");
-    						},
-    						404: function($data) {
-    							$("#globalMsg").html("Invalid Contact");
-    						},
-    						500: function($data) {
-    							$("#globalMsg").html("System Error; Contact Support");
-    						}
-    					},
-    					dataType: 'json'
-    				}); */
-    			},  			
-    
-    			    			
-        		/*$("#addButton").click( function($clickevent) {
-					$clickevent.preventDefault();
-					CODE_MAINTENANCE.clearAddForm();
-					$("#addFormTitle").html("Add a Code");
-	             	$('#addFormDiv').bPopup({
-						modalClose: false,
-						opacity: 0.6,
-						positionStyle: 'fixed' //'fixed' or 'absolute'
-					});			
-	             	$("#addForm select[name='tableName']").focus();
-				});*/
-	
-				
-				goUpdate : function($clickevent) {	
-					console.debug("Updating Code");
-					var $tableName = $("#addForm input[name='tableName']").val();
-					var $fieldName = $("#addForm input[name='fieldName']").val();
-					var $value = $("#addForm input[name='value']").val();
-					//console.debug("table_name: " + $table_name);
-					
-
-					if ( $tableName == null || $tablName == '') {
-						$url = 'code/tableName/fieldName/value';
-					} else {
-						$url = 'code/' + $tableName + $fieldName + $value;
-					}
-					console.debug($url);
-						
-					var $outbound = {};
-					$outbound['tableName'] = $("#addForm select[name='tableName'] option:selected").val();
-					$outbound['fieldName'] = $("#addForm select[name='fieldName'] option:selected").val();	
-					$outbound['value'] = $("#addForm input[name='value']").val();
-					$outbound['displayValue'] = $("#addForm input[name='displayValue']").val();
-					$outbound['description'] = $("#addForm input[name='description']").val();		
-					console.debug($outbound);
-					
-					var jqxhr = $.ajax({
-						type: 'POST',
-						url: $url,
-						data: JSON.stringify($outbound),
-						statusCode: {
-							200: function($data) {
-			    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-			    					$.each($data.data.webMessages, function (key, value) {
-			    						var $selectorName = "#" + key + "Err";
-			    						$($selectorName).show();
-			    						$($selectorName).html(value[0]).fadeOut(10000);
-			    					});
-			    				} else {	    				
-			    					$("#addForm").dialog("close");
-			    					$('#codeTable').DataTable().ajax.reload();		
-			    					CODEMAINTENANCE.clearAddForm();		    					
-			    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
-			    				}
-							},
-							403: function($data) {
-								$("#globalMsg").html("Session Timeout. Log in and try again");
-							},
-							404: function($data) {
-								$("#globalMsg").html("Invalid Selection").show().fadeOut(100000);
-							},
-							500: function($data) {
-								$("#globalMsg").html("System Error; Contact Support");
-							}
-						},
-						dataType: 'json'
-					});
-            	},
+                },
 	        		
 	        		
 	    		createTable : function() {
@@ -380,11 +149,16 @@
 				            { title: "Description", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.description != null){return (row.description+"");}
 				            } },
-				            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
-				            	var $editLink = '<ansi:hasPermission permissionRequired="CODE_WRITE"><span class="updAction" data-id="' + row.table_name + '"><webthing:edit>Edit</webthing:edit></span></ansi:hasPermission>';
-				            	var $deleteLink = '<ansi:hasPermission permissionRequired="CAN_DELETE"><span class="delAction" data-id="' + row.table_name + '"><webthing:delete>Delete</webthing:delete></span></ansi:hasPermission>';
-			            		$actionData = $editLink + " " + $deleteLink;
-		            			return $actionData;
+				            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {		
+				            	var $editLink = '<span class="updAction" data-id="' + row.table_name + '"><webthing:edit>Edit</webthing:edit></span>';
+				            	var $deleteLink = '<span class="delAction" data-id="' + row.table_name + '"><webthing:delete>Delete</webthing:delete></span>';
+			            		$actionWithDelete = $editLink + " " + $deleteLink;
+			            		$action = $editLink;
+				            	if ( row.can_delete == 'true') {
+				            		return $actionWithDelete;
+			            		} else {
+			            			return $action;
+			            		}	
 				            } }],
 				            "initComplete": function(settings, json) {
 				            	//console.log(json);
@@ -395,38 +169,44 @@
 				            }
 				    } );
 	        	},
+	    				
+	            	
+	    			
+    			doFilter: function ($event) {
+    				$event.preventDefault();
+    				var $filtervalue = $event.currentTarget.attributes['data-filter'].value;				
+    				$("#displayTable").find("tr:gt(0)").remove();
+    				CODEMAINTENANCE.getCodes($filtervalue);
+    			},
+    			
+    			
+    			doFunctionBinding: function () {
+    				$('.updAction').bind("click", function($clickevent) {
+    					CODEMAINTENANCE.showEdit($clickevent);
+    				});
+    				$(".delAction").on("click", function($clickevent) {
+    					var $table_name = $(this).data("id");
+    					CODEMAINTENANCE.deleteThisCode($table_name);
+    				});
+    			},
 				
 		   		deleteThisCode : function ($table_name) {
 	        		$("#deleteModal").attr("table_name", $table_name);
 	        		$("#deleteModal").dialog("open");
 				},         
 				
-			/*	doDelete : function($clickEvent) {
-					$clickEvent.preventDefault();
-					var $table_name = $clickEvent.currentTarget.attributes['data-id'].value;
-					
-					$( "#deleteConfirmDialog" ).dialog({
-						resizable: false,
-						height: "auto",
-						width: 400,
-						modal: true,
-						buttons: {
-							"Delete Address": function() {CODEMAINTENANCE.doDelete2($table_name);$( this ).dialog( "close" );},
-					        Cancel: function() {
-								$( this ).dialog( "close" );
-							}
-						}
-					});
-					$( "#deleteConfirmDialog" ).dialog( "open" );	
-				}, */
-				
 			
-				doDelete : function($table_name){
-					$table_name = $("#deleteModal").attr("table_name");
-					var $url = 'codeLookup/' + $table_name;
+				doDelete : function($table_name){			
+					var $table_name = $('#deleteModal').data('table_name');
+	            	var $field_name = $("#deleteModal").data('field_name');
+	            	var $value = $("#deleteModal").data('value');
+	            	$outbound = JSON.stringify({}); 
+	            	
+					$url = 'codeLookup/' + $table_name + "/" + $field_name + "/" + $value;
             		var jqxhr = $.ajax({
 	            	    type: 'delete',
 	            	    url: $url,
+	            	    data: $outbound,
             	     	statusCode: {
                	    	 	200: function($data) {
 	         	    		 	$("#deleteModal").dialog("close");
@@ -445,498 +225,298 @@
 	             	     },
 						dataType: 'json'
 					});
-				}, 
+				}, 		
+			    
 				
-        	
-			
-			doFilter: function ($event) {
-				$event.preventDefault();
-				var $filtervalue = $event.currentTarget.attributes['data-filter'].value;				
-				$("#displayTable").find("tr:gt(0)").remove();
-				CODEMAINTENANCE.getCodes($filtervalue);
-			},
-			
-			
-			getCodes: function ($filter) {
-				var $url = 'code/' + $filter;
-				var jqxhr = $.ajax({
-					type: 'GET',
-					url: $url,
-					data: {},
-					success: function($data) {
-						//$.each($data.data.codeList, function(index, value) {
-						//	CODEMAINTENANCE.addRow(index, value);
-						//});
-						$("#filterList").html("");
-						var $newHTML = "";
-						
-						$.each($data.data.filterRecordList, function(index, value) {
-							
-							$newHTML = $newHTML + '<li><a class="myFilter" href="#" data-filter="' + value.tableName + '">' + value.tableName + '</a>'; 
-							$newHTML = $newHTML + '<ul class="sub_menu">';
-							
-							$.each(value.fieldNameList, function(index, fieldName) {
-								$newHTML = $newHTML + '<li><a class="myFilter" href="#" data-filter="' + value.tableName + '/' + fieldName + '">' + fieldName + '</a></li>';
-							});
-							$newHTML = $newHTML + '</ul></li>';
-						});
-						$("#filterList").html($newHTML);
-						$('.myFilter').bind("click", function($clickevent) {						
-							CODEMAINTENANCE.doFilter($clickevent);
-						});
-					},
-					statusCode: {
-						403: function($data) {
-							$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-						} 
-					},
-					dataType: 'json'
-				});
-			},
-        
-			/* function addRow(index, $code) {	
-				var $rownum = index + 1;
-       			//$('#displayTable tr:last').before(row);
-       			rowTd = makeRow($code, $rownum);
-       			row = '<tr class="dataRow">' + rowTd + "</tr>";
-       			$('#displayTable').append(row);
-			} */
-			
-			doFunctionBinding: function () {
-				$('.updAction').bind("click", function($clickevent) {
-					CODEMAINTENANCE.showEdit($clickevent);
-				});
-				$(".delAction").on("click", function($clickevent) {
-				//	var $name = $(this).attr("data-name");
-					var $table_name = $(this).data("id");
-					CODEMAINTENANCE.deleteThisCode($table_name);
-				});
-				/*$('.delAction').bind("click", function($clickevent) {
-					CODEMAINTENANCE.doDelete($clickevent);
-				});*/
-			},
-			
-			/* function makeRow($code, $rownum) {
-				var row = "";
-				row = row + '<td class="tablecol">' + $code.tableName + '</td>';
-				row = row + '<td class="fieldcol">' + $code.fieldName + '</td>';
-				row = row + '<td class="valuecol">' + $code.value + '</td>';
-       			row = row + '<td class="displaycol">' + $code.displayValue + '</td>';
-       			row = row + '<td class="seqcol centered">' + $code.seq + '</td>';
-       			if ( $code.description == null ) {
-       				$description = "";
-       				row = row + '<td class="desccol"></td>';
-       			} else {
-       				$description = $code.description;
-       				row = row + '<td class="desccol">' + $code.description + '</td>';
-       			}       			
-       			if ( $code.status == 1 ) {
-       				$iconcolor="green";
-       				$codeText = '<i class="fa fa-check-square" aria-hidden="true"></i>';
-       			} else if ( $code.status == 0 ) {
-       				$iconcolor="red";
-       				$codeText = '<i class="fa fa-minus-circle" aria-hidden="true"></i>';
-       			} else {
-       				$iconcolor="red";
-       				$codeText = '<i class="fa fa-question-circle" aria-hidden="true"></i>';       				
-       			}
-       			row = row + '<td class="statuscol centered ' + $iconcolor + '">' + $codeText + '</td>';
-       	    	<ansi:hasPermission permissionRequired="SYSADMIN">
-        		<ansi:hasWrite>
-       			row = row + '<td class="centered actioncol">';
-       			row = row + '<a href="#" class="updAction" data-tableName="' + $code.tableName +'" data-fieldName="' + $code.fieldName + '" data-value="' + $code.value + '" data-displayValue="' + $code.displayValue + '" data-seq="' + $code.seq +'" data-description="' + $description + '" data-status="' + $code.status + '"><span class="green fas fa-pencil-alt" ari-hidden="true"></span></a> | ';
-       			row = row + '<a href="#" class="delAction" data-tableName="' + $code.tableName +'" data-fieldName="' + $code.fieldName + '" data-value="' + $code.value + '" data-displayValue="' + $code.displayValue + '" data-seq="' + $code.seq +'" data-description="' + $description + '" data-status="' + $code.status + '"><span class="red fas fa-trash-alt" aria-hidden="true"></span></a>';
-       			row = row + '</td>';
-       			</ansi:hasWrite>
-       			</ansi:hasPermission>       			
-				return row;
-			} */
-			
-		/*	doUpdate: function ($clickevent) {
-				$clickevent.preventDefault();
-				clearAddForm();
-				var $tableName = $clickevent.currentTarget.attributes['data-tableName'].value;
-				var $fieldName = $clickevent.currentTarget.attributes['data-fieldName'].value;
-				var $value = $clickevent.currentTarget.attributes['data-value'].value;
-				var $displayValue = $clickevent.currentTarget.attributes['data-displayValue'].value;
-				var $seq = $clickevent.currentTarget.attributes['data-seq'].value;
-				var $description = $clickevent.currentTarget.attributes['data-description'].value;
-				var $status = $clickevent.currentTarget.attributes['data-status'].value;
-				$("#addFormTitle").html("Update a Code");
-				$('#addForm').data('tableName',$tableName);
-				$('#addForm').data('fieldName',$fieldName);
-				$('#addForm').data('value',$value);
-				
-                //var $rowId = eval($rownum) + 1;
-            	//var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")"
-            	//var $row = $($rowFinder)  
-            	//var tdList = $row.children("td");
-            	//var $tableName = $row.children("td")[0].textContent;
-            	//var $fieldName = $row.children("td")[1].textContent;
-            	//var $value = $row.children("td")[2].textContent;
-            	//var $display = $row.children("td")[3].textContent;
-            	//var $seq = $row.children("td")[4].textContent;
-            	//var $description = $row.children("td")[5].textContent;
-            	//var $status = $row.children("td")[6].textContent;
-
-            	select = $("#addForm select[name='tableName']");
-            	select.val($tableName);
-            	
-            	select = $("#addForm select[name='fieldName']");
-            	getTableFieldList($tableName, select, $fieldName);
-            	//$("#addForm input[name='tableName']").val($tableName);
-            	//$("#addForm input[name='fieldName']").val($fieldName);
-            	$("#addForm input[name='value']").val($value);
-            	$("#addForm input[name='displayValue']").val($displayValue);
-            	$("#addForm select[name='seq']").val($seq);
-            	$("#addForm input[name='description']").val($description);
-            	$("#addForm select[name='status']").val($status);
-            	
-				$.each( $('#addForm :input'), function(index, value) {
-					markValid(value);
-				});
-
-             	$('#addFormDiv').bPopup({
-					modalClose: false,
-					opacity: 0.6,
-					positionStyle: 'fixed' //'fixed' or 'absolute'
-				});		
-            	$("#addForm input[name='value']").select();
-			},*/
-			
-			/*doDelete: function ($clickevent) {
-				$clickevent.preventDefault();
-
-				var $tableName = $clickevent.currentTarget.attributes['data-tableName'].value;
-				var $fieldName = $clickevent.currentTarget.attributes['data-fieldName'].value;
-				var $value = $clickevent.currentTarget.attributes['data-value'].value;
-				var $displayValue = $clickevent.currentTarget.attributes['data-displayValue'].value;
-				var $description = $clickevent.currentTarget.attributes['data-description'].value;
-
-				$('#confirmDelete').data('tableName',$tableName);
-				$('#confirmDelete').data('fieldName',$fieldName);
-				$('#confirmDelete').data('value',$value);
-            	$("#delTable").html($tableName);
-            	$("#delField").html($fieldName);
-            	$("#delValue").html($value);
-
-				//var $rownum = $clickevent.currentTarget.attributes['data-row'].value;
-            	//var $tableData = [];
-                //$("#displayTable").find('tr').each(function (rowIndex, r) {
-                //    var cols = [];
-                //    $(this).find('th,td').each(function (colIndex, c) {
-                //        cols.push(c.textContent);
-                //    });
-                //    $tableData.push(cols);
-                //});
-            	//$("#delTable").html($tableData[$rownum][0]);
-            	//$("#delField").html($tableData[$rownum][1]);
-            	//$("#delValue").html($tableData[$rownum][2]);
-
-				//$('#confirmDelete').data('rownum',$rownum);
-             	$('#confirmDelete').bPopup({
-					modalClose: false,
-					opacity: 0.6,
-					positionStyle: 'fixed' //'fixed' or 'absolute'
-				});
-			},*/
-			
-			
-			/* makeButtons : function() {
-			$("#addButton").click( function($clickevent) {
-				$clickevent.preventDefault();
-    			CODEMAINTENANCE.clearAddForm();
-				$("#addFormTitle").html("Add a Code");
-             	$('#addFormDiv').bPopup({
-					modalClose: false,
-					opacity: 0.6,
-					positionStyle: 'fixed' //'fixed' or 'absolute'
-				});			
-             	$("#addForm select[name='tableName']").focus();
-			});
-			
-			$("#cancelUpdate").click( function($clickevent) {
-				$clickevent.preventDefault();
-				CODEMAINTENANCE.clearAddForm();
-				$('#addFormDiv').bPopup().close();
-			});
-
-			/* $("#goUpdate").click( function($clickevent) {
-				$clickevent.preventDefault();
-				$outbound = {};
-				$.each( $('#addForm :input'), function(index, value) {
-					if ( value.name ) {
-						$fieldName = value.name;
-						$id = "#addForm input[name='" + $fieldName + "']";
-						$val = $($id).val();
-						$outbound[$fieldName] = $val;
-					}
-				});
-				$outbound['tableName'] = $("#addForm select[name='tableName'] option:selected").val();
-				$outbound['fieldName'] = $("#addForm select[name='fieldName'] option:selected").val();
-				$outbound['seq'] = $("#addForm select[name='seq'] option:selected").val();
-				$outbound['status'] = $("#addForm select[name='status'] option:selected").val();
-
-				if ( $('#addForm').data('tableName') == null ) {
-					$url = "code/add";
-				} else {
-					//$rownum = $('#addForm').data('rownum')
-					//var $tableData = [];
-	                //$("#displayTable").find('tr').each(function (rowIndex, r) {
-	                //    var cols = [];
-	                //    $(this).find('th,td').each(function (colIndex, c) {
-	                //        cols.push(c.textContent);
-	                //    });
-	                //    $tableData.push(cols);
-	                //});
-
-	            	//var $tableName = $tableData[$rownum][0];
-	            	//var $fieldName = $tableData[$rownum][1];
-	            	//var $value = $tableData[$rownum][2];
-	            	
-      	            var $tableName = $('#addForm').data('tableName');
-            		var $fieldName = $("#addForm").data('fieldName');
-            		var $value = $("#addForm").data('value');
-
-	            	$url = "code/" + $tableName + "/" + $fieldName + "/" + $value;
-				}
-				
-				var jqxhr = $.ajax({
-					type: 'POST',
-					url: $url,
-					data: JSON.stringify($outbound),
-					success: function($data) {
-						if ( $data.responseHeader.responseCode == 'SUCCESS') {
-							if ( $url == "code/add" ) {
-								var count = $('#displayTable tr').length - 1;
-								addRow(count, $data.data.code);
-							} else {
-     				            $("#displayTable").find('tr').each(function (rowIndex, r) {
-				                    var cols = [];
-				                    $(this).find('th,td').each(function (colIndex, c) {
-				                        cols.push(c.textContent);
-				                    });
-				                    if ( cols[0] == $tableName ) {
-				                    	if ( cols[1] == $fieldName ) {
-				                    		if ( cols[2] == $value ) {
-								            	var $rowTd = makeRow($data.data.code, rowIndex);
-				                    			var $rowFinder = "#displayTable tr:nth-child(" + rowIndex + ")";
-				                    			$($rowFinder).html($rowTd);				                    			
-				                    		}
-				                    	}
-				                    }
-				                });
-
-				            	
-				            	
-				            	
-				            	//$($rowFinder).html($rowTd);
-							}
-							doFunctionBinding();
-							clearAddForm();
-							$('#addFormDiv').bPopup().close();
-							if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
-								$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
-							}
-						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-							$.each($data.data.webMessages, function(key, messageList) {
-								var identifier = "#" + key + "Err";
-								msgHtml = "<ul>";
-								$.each(messageList, function(index, message) {
-									msgHtml = msgHtml + "<li>" + message + "</li>";
-								});
-								msgHtml = msgHtml + "</ul>";
-								$(identifier).html(msgHtml);
-							});		
-							if ( 'GLOBAL_MESSAGE' in $data.data.webMessages ) {
-								$("#addFormMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]);
-							}
-						} else {
-							
-						}
-					},
-					statusCode: {
-						403: function($data) {
-							$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-						}, 
-	         	    	404: function($data) {
-	         	    		$('#addFormDiv').bPopup().close();
-	         	    		$("#globalMsg").html("Record does not exist").fadeIn(10).fadeOut(6000);
-	        	    	} 
-					},
-					dataType: 'json'
-				});
-			}); */
-
-          /*  $("#cancelDelete").click( function($event) {
-            	$event.preventDefault();
-            	$('#confirmDelete').bPopup().close();
-            });         
-
-            $("#doDelete").click(function($event) {
-            	$event.preventDefault();
-            	var $tableData = [];
-                $("#displayTable").find('tr').each(function (rowIndex, r) {
-                    var cols = [];
-                    $(this).find('th,td').each(function (colIndex, c) {
-                        cols.push(c.textContent);
-                    });
-                    $tableData.push(cols);
-                });
-
-            	var $rownum = $('#confirmDelete').data('rownum');
-            	//var $tableName = $tableData[$rownum][0];
-            	//var $fieldName = $tableData[$rownum][1];
-            	//var $value = $tableData[$rownum][2];
-            	var $tableName = $('#confirmDelete').data('tableName');
-            	var $fieldName = $("#confirmDelete").data('fieldName');
-            	var $value = $("#confirmDelete").data('value');
-            	$outbound = JSON.stringify({});            	
-            	$url = 'code/' + $tableName + "/" + $fieldName + "/" + $value;
-            	//$outbound = JSON.stringify({'tableName':$tableName, 'fieldName':$fieldName,'value':$value});
-            	var jqxhr = $.ajax({
-            	    type: 'delete',
-            	    url: $url,
-            	    data: $outbound,
-            	    success: function($data) {
-            	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
-						if ( $data.responseHeader.responseCode == 'SUCCESS') {
-							//$rowfinder = "tr:eq(" + $rownum + ")"
-							//$("#displayTable").find($rowfinder).remove();
-			                $("#displayTable").find('tr').each(function (rowIndex, r) {
-			                    var cols = [];
-			                    $(this).find('th,td').each(function (colIndex, c) {
-			                        cols.push(c.textContent);
-			                    });
-			                    if ( cols[0] == $tableName ) {
-			                    	if ( cols[1] == $fieldName ) {
-			                    		if ( cols[2] == $value ) {
-			                    			this.remove();
-			                    		}
-			                    	}
-			                    }
-			                });
-							$('#confirmDelete').bPopup().close();
-						}
-            	     },
-            	     statusCode: {
-            	    	403: function($data) {
-            	    		$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-            	    	}, 
-	         	    	404: function($data) {
-	         	    		$('#confirmDelete').bPopup().close();
-	         	    		$("#globalMsg").html("Record does not exist").fadeIn(10).fadeOut(6000);
-	        	    	} 
-            	     },
-            	     dataType: 'json'
-            	});
-            });
-
-            $('#addForm').find("input").on('focus',function(e) {
-            	$required = $(this).data('required');
-            	if ( $required == true ) {
-            		CODEMAINTENANCE.markValid(this);
-            	}
-            });
-            
-            $("#addForm select[name='tableName']").change(function () {
-				var $selectedTable = $('#addForm select[name="tableName"] option:selected').val();
-				CODEMAINTENANCE.getTableFieldList($selectedTable, $("#addForm select[name='fieldName']"));
-            });
-            
-			}, */
-            
-            
-            clearAddForm: function () {
-            /*	$select = $("#addForm select[name='tableName']");
-            	$('option', $select).remove();
-            	$select.append(new Option("",null));
-            	$.each($data, function($index, $val) {
-            	       $select.append(new Option(display, value));
-            	});        */    	
-            	
-            	$.each( $('#addForm').find("select"), function(index, $inputField) {
-            		$fieldName = $($inputField).attr('name');
-            		$selectName = "#addForm select[name='" + $fieldName + "']"
-            		select = $($selectName);
-            		select.val("");
-            		CODEMAINTENANCE.markValid($inputField);
-            	});
-            	
-				$.each( $('#addForm').find("input"), function(index, $inputField) {
-					$fieldName = $($inputField).attr('name');
-					if ( $($inputField).attr("type") == "text" ) {
-						$($inputField).val("");
-						CODEMAINTENANCE.markValid($inputField);
-					}
-				});
-				$('.err').html("");
-  	            $('#addForm').data('tableName', null);
-        		$("#addForm").data('fieldName', null);
-        		$("#addForm").data('value', null);
-
-            },
-            
-            markValid: function ($inputField) {
-            	$fieldName = $($inputField).attr('name');
-            	$fieldGetter = "input[name='" + $fieldName + "']";
-            	$fieldValue = $($fieldGetter).val();
-            	$valid = '#' + $($inputField).data('valid');
-	            var re = /.+/;	            	 
-            	if ( re.test($fieldValue) ) {
-            		$($valid).removeClass("fa-ban");
-            		$($valid).removeClass("inputIsInvalid");
-            		$($valid).addClass("fa-check-square-o");
-            		$($valid).addClass("inputIsValid");
-            	} else {
-            		$($valid).removeClass("fa-check-square-o");
-            		$($valid).removeClass("inputIsValid");
-            		$($valid).addClass("fa-ban");
-            		$($valid).addClass("inputIsInvalid");
-            	}
-            },
-            
-            getTableFieldList: function (table_name, $select, $selectedValue) {
-            	if ( table_name == null ) {
-            		$url = "tableFieldList"
-           			select = $("#addForm select[name='tableName']");
-            	} else {
-            		$url = "tableFieldList/" + table_name;
-            		select = $("#addForm select[name='fieldName']");
-            	}            	
-				var jqxhr = $.ajax({
+				getCodes: function ($filter) {
+					var $url = 'code/' + $filter;
+					var jqxhr = $.ajax({
 						type: 'GET',
 						url: $url,
 						data: {},
-
-						success: function($data) {						
-						if ( $data.responseHeader.responseCode == 'SUCCESS') {
-							if($select.prop) {
-								var options = $select.prop('options');
-							} else {
-								var options = $select.attr('options');
-							}
-							$('option', $select).remove();
-
-							options[options.length] = new Option("","");
-							$.each($data.data.nameList, function(index, value) {
-								options[options.length] = new Option(value, value);
+						success: function($data) {
+							//$.each($data.data.codeList, function(index, value) {
+							//	CODEMAINTENANCE.addRow(index, value);
+							//});
+							$("#filterList").html("");
+							var $newHTML = "";
+							
+							$.each($data.data.filterRecordList, function(index, value) {
+								
+								$newHTML = $newHTML + '<li><a class="myFilter" href="#" data-filter="' + value.tableName + '">' + value.tableName + '</a>'; 
+								$newHTML = $newHTML + '<ul class="sub_menu">';
+								
+								$.each(value.fieldNameList, function(index, fieldName) {
+									$newHTML = $newHTML + '<li><a class="myFilter" href="#" data-filter="' + value.tableName + '/' + fieldName + '">' + fieldName + '</a></li>';
+								});
+								$newHTML = $newHTML + '</ul></li>';
 							});
-			            	
-			            	$select.val($selectedValue);
-						} else {
-							$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
-						}
-    				},
-    				statusCode: {
-    					403: function($data) {
-    						$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-    					} 
-    				},
-    				dataType: 'json'
-    			});
+							$("#filterList").html($newHTML);
+							$('.myFilter').bind("click", function($clickevent) {						
+								CODEMAINTENANCE.doFilter($clickevent);
+							});
+						},
+						statusCode: {
+							403: function($data) {
+								$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+							} 
+						},
+						dataType: 'json'
+					});
+				},
+			
+    			
+    			
+    			getFieldNameVariable :  function (tableName, fieldName) {
+    			    $selectedTable = document.getElementById(tableName).value;
+    			    document.getElementById(fieldName).innerHTML = "Selected value is "+$selectedTable;
+    			 },
+    	            
+    	            getTableFieldList: function (table_name, $select, $selectedValue) {
+    	            	if ( table_name == null ) {
+    	            		$url = "tableFieldList"
+    	           			select = $("#addForm select[name='tableName']");
+    	            	} else {
+    	            		$url = "tableFieldList/" + table_name;
+    	            		select = $("#addForm select[name='fieldName']");
+    	            	}            	
+    					var jqxhr = $.ajax({
+    							type: 'GET',
+    							url: $url,
+    							data: {},
 
-            },
+    							success: function($data) {						
+    							if ( $data.responseHeader.responseCode == 'SUCCESS') {
+    								if($select.prop) {
+    									var options = $select.prop('options');
+    								} else {
+    									var options = $select.attr('options');
+    								}
+    								$('option', $select).remove();
+
+    								options[options.length] = new Option("","");
+    								$.each($data.data.nameList, function(index, value) {
+    									options[options.length] = new Option(value, value);
+    								});
+    				            	
+    				            	$select.val($selectedValue);
+    							} else {
+    								$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
+    							}
+    	    				},
+    	    				statusCode: {
+    	    					403: function($data) {
+    	    						$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+    	    					} 
+    	    				},
+    	    				dataType: 'json'
+    	    			});
+
+    	            },
+    				
+ 				
+ 				goUpdate : function($clickevent) {	
+ 					console.debug("Updating Code");
+ 					var $tableName = $("#addForm input[name='tableName']").val();
+ 					var $fieldName = $("#addForm input[name='fieldName']").val();
+ 					var $value = $("#addForm input[name='value']").val();
+ 					//console.debug("table_name: " + $table_name);
+ 						
+ 					var $outbound = {};
+ 					$outbound['tableName'] = $("#addForm select[name='tableName'] option:selected").val();
+ 					$outbound['fieldName'] = $("#addForm select[name='fieldName'] option:selected").val();	
+ 					$outbound['value'] = $("#addForm input[name='value']").val();
+ 					$outbound['displayValue'] = $("#addForm input[name='displayValue']").val();
+ 					$outbound['description'] = $("#addForm input[name='description']").val();		
+ 					console.debug($outbound);
+ 					
+
+ 					if ( $tableName == null || $tableName == '') {
+ 						$url = 'code/add';
+ 					} else {
+ 						$url = 'code/' + $tableName + "/" + $fieldName + '/' + $value;
+ 					}
+ 					console.debug($url);
+ 					
+ 					var jqxhr = $.ajax({
+ 						type: 'POST',
+ 						url: $url,
+ 						data: JSON.stringify($outbound),
+ 						statusCode: {
+ 							200: function($data) {
+ 			    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+ 			    					$.each($data.data.webMessages, function (key, value) {
+ 			    						var $selectorName = "#" + key + "Err";
+ 			    						$($selectorName).show();
+ 			    						$($selectorName).html(value[0]).fadeOut(10000);
+ 			    					});
+ 			    				} else {	    				
+ 			    					$("#addForm").dialog("close");
+ 			    					$('#codeTable').DataTable().ajax.reload();		
+ 			    					CODEMAINTENANCE.clearAddForm();		    					
+ 			    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
+ 			    				}
+ 							},
+ 							403: function($data) {
+ 								$("#globalMsg").html("Session Timeout. Log in and try again");
+ 							},
+ 							404: function($data) {
+ 								$("#globalMsg").html("Invalid Selection").show().fadeOut(100000);
+ 							},
+ 							500: function($data) {
+ 								$("#globalMsg").html("System Error; Contact Support");
+ 							}
+ 						},
+ 						dataType: 'json'
+ 					});
+             	},
+	        		
+        		makeAddForm : function() {	
+    				$("#addForm" ).dialog({
+    					title:'Add/Update Code',
+    					autoOpen: false,
+    					height: 300,
+    					width: 600,
+    					modal: true,
+    					buttons: [
+    						{
+    							id: "closeAddForm",
+    							click: function() {
+    								$("#addForm").dialog( "close" );
+    							}
+    						},{
+    							id: "goEdit",
+    							click: function($event) {
+    								CODEMAINTENANCE.goUpdate();
+    							}
+    						}	      	      
+    					],
+    					close: function() {
+    						CODEMAINTENANCE.clearAddForm();
+    						$("#addForm").dialog( "close" );
+    						//allFields.removeClass( "ui-state-error" );
+    					}
+    				});
+    			},
+    			
+    			
+    			makeDeleteModal : function() {
+    			$( "#deleteModal" ).dialog({
+    				autoOpen: false,
+    				height: 150,
+    				width: 450,
+    				modal: true,
+    				closeOnEscape:true,
+    				buttons: [
+    					{
+    						id: "deleteSaveButton",
+    						click: function($event) {
+    							CODEMAINTENANCE.doDelete();
+    						}
+    					},
+    					{
+    						id: "deleteCancelButton",
+    						click: function($event) {
+    							$( "#deleteModal" ).dialog("close");
+    						}
+    					},
+    				]
+    			});	
+    			$("#deleteSaveButton").button('option', 'label', 'Delete');
+    			$("#deleteCancelButton").button('option', 'label', 'Cancel');
+    			},	
+    			
+                
+                markValid: function ($inputField) {
+                	$fieldName = $($inputField).attr('name');
+                	$fieldGetter = "input[name='" + $fieldName + "']";
+                	$fieldValue = $($fieldGetter).val();
+                	$valid = '#' + $($inputField).data('valid');
+    	            var re = /.+/;	            	 
+                	if ( re.test($fieldValue) ) {
+                		$($valid).removeClass("fa-ban");
+                		$($valid).removeClass("inputIsInvalid");
+                		$($valid).addClass("fa-check-square-o");
+                		$($valid).addClass("inputIsValid");
+                	} else {
+                		$($valid).removeClass("fa-check-square-o");
+                		$($valid).removeClass("inputIsValid");
+                		$($valid).addClass("fa-ban");
+                		$($valid).addClass("inputIsInvalid");
+                	}
+                },
+    			
+        		       		
+    			    			
+    			showEdit : function ($clickevent) {
+    				var $table_name = $clickevent.currentTarget.attributes['data-id'].value;
+					//var $fieldName = $clickevent.currentTarget.attributes['data-fieldName'].value;
+    				console.debug("table_name: " + $table_name);
+    				$("#goEdit").data("table_name", $table_name);
+            		$('#goEdit').button('option', 'label', 'Save');
+            		$('#closeAddForm').button('option', 'label', 'Close');
+				//	$("#addFormTitle").html("Edit a Code");
+            		
+            		
+    				var $url = 'code/'+ $table_name;
+    				var jqxhr = $.ajax({
+    					type: 'GET',
+    					url: $url,
+    					statusCode: {
+    						200: function($data) {
+    							var $code = $data.data.codeList[0];    	
+    							$("#addForm select[name='tableName']").val($code.tableName);
+    							var $table_name = $code.tableName;
+    	    					CODEMAINTENANCE.getTableFieldList($table_name, $("#addForm select[name='fieldName']").val($code.fieldName));
+    							//$("#addForm select[name='fieldName']").val($code.fieldName);
+    							$("#addForm input[name='value']").val($code.value);
+    							$("#addForm input[name='displayValue']").val($code.displayValue);
+    							$("#addForm input[name='description']").val($code.description);	        		
+    			        		$("#addForm .err").html("");
+    			        		$("#addForm").dialog("open");
+    						},
+    						403: function($data) {
+    							$("#globalMsg").html("Session Timeout. Log in and try again");
+    						},
+    						404: function($data) {
+    							$("#globalMsg").html("Invalid Request");
+    						},
+    						500: function($data) {
+    							$("#globalMsg").html("System Error; Contact Support");
+    						}
+    					},
+    					dataType: 'json'
+    				});
+    			},  
+				
+				
+        		showNew : function() {
+
+        			$(".showNew").click(function($event) {
+        				$('#goEdit').data("table_name",null);
+                		$('#goEdit').button('option', 'label', 'Save');
+                		$('#closeAddForm').button('option', 'label', 'Close');
+                		
+        				$("#addForm select[name='table_name']").val("");
+        				//$("#addForm input[name='field_name']").val("");
+        				$("#addForm select[name='tableName']").change(function () {
+						var $selectedTable = $('#addForm select[name="tableName"] option:selected').val();
+						CODEMAINTENANCE.getTableFieldList($selectedTable, $("#addForm select[name='fieldName']"));
+		            	});
+        				/* $select = $("#addFormDiv select[name='tableName']");
+        				$('option', $select).remove();
+        				$select.append(new Option("",null));
+        				$.each($data, function($index, $val) {
+        				       $select.append(new Option(<display>,<value>));
+        				}); */
+        				$("#addForm input[name='value']").val("");
+        				$("#addForm input[name='display_value]").val("");
+        				$("#addForm input[name='description']").val("");		        		
+                		$("#addForm .err").html("");
+                		$("#addForm").dialog("open");
+        			});
+        			
+        		},	
             
        	  };
        	  
