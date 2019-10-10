@@ -27,7 +27,7 @@ public enum Menu {
 	
 	REPORTS("Reports", null, null,"#"),
 	DRV30(				"30 Day DRV",			REPORTS, Permission.TICKET_READ,	"ticketView.html"),
-	PAST_DUE(			"Past Due",				REPORTS, Permission.PAYMENT_READ,	"pastDueReport.html"),
+	PAST_DUE(			"Past Due",				REPORTS, Permission.TECH_ADMIN,		"pastDueReport.html"),
 	
 	
 	
