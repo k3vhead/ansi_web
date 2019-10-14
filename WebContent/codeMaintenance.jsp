@@ -150,11 +150,11 @@
 				            	if(row.description != null){return (row.description+"");}
 				            } },
 				            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {		
-				            	var $editLink = '<span class="updAction" data-id="' + row.table_name + '"><webthing:edit>Edit</webthing:edit></span>';
-				            	var $deleteLink = '<span class="delAction" data-id="' + row.table_name + '"><webthing:delete>Delete</webthing:delete></span>';
+				            	var $editLink = '<span class="updAction" data-id="' + row.table_name + '" data-field_name="' + row.field_name + '"><webthing:edit>Edit</webthing:edit></span>';
+				            	var $deleteLink = '<span class="delAction" data-id="' + row.table_name + '" data-field_name="' + row.field_name + '"><webthing:delete>Delete</webthing:delete></span>';
 			            		$actionWithDelete = $editLink + " " + $deleteLink;
 			            		$action = $editLink;
-				            	if ( row.can_delete == 'true') {
+				            	if ( row.can_delete == true) {
 				            		return $actionWithDelete;
 			            		} else {
 			            			return $action;
@@ -450,7 +450,7 @@
     			    			
     			showEdit : function ($clickevent) {
     				var $table_name = $clickevent.currentTarget.attributes['data-id'].value;
-					//var $fieldName = $clickevent.currentTarget.attributes['data-fieldName'].value;
+					var $field_name = $clickevent.currentTarget.attributes['data-field_name'].value;
     				console.debug("table_name: " + $table_name);
     				$("#goEdit").data("table_name", $table_name);
             		$('#goEdit').button('option', 'label', 'Save');
@@ -458,7 +458,7 @@
 				//	$("#addFormTitle").html("Edit a Code");
             		
             		
-    				var $url = 'code/'+ $table_name;
+    				var $url = 'code/'+ $table_name+ "/" + $field_name;
     				var jqxhr = $.ajax({
     					type: 'GET',
     					url: $url,
