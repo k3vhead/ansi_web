@@ -2,6 +2,7 @@ package com.ansi.scilla.web.locale.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.servlet.ServletException;
@@ -36,6 +37,7 @@ public class LocaleDivisionServlet extends AbstractServlet {
 	private static final long serialVersionUID = 1L;
 	public static final String REALM = "localeDivision";
 	public static final String LOCALE_ID = "localeId";
+	public static final String EFFECTIVE_START_DATE = "effectiveStartDate";
 	
 	
 	@Override
@@ -50,12 +52,18 @@ public class LocaleDivisionServlet extends AbstractServlet {
 			LocaleDivisionResponse localeDivisionResponse = null;
 			try {
 				conn = AppUtils.getDBCPConn();
+				SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
 				String localeId = request.getParameter(LOCALE_ID);
+				String effectiveStartDateString = request.getParameter(EFFECTIVE_START_DATE);
+				if ( StringUtils.isBlank(effectiveStartDateString)) {
+					throw new RecordNotFoundException();
+				}
+				Date effectiveStartDate = sdf.parse(effectiveStartDateString);
 				Integer divisionId = ansiURL.getId();
 				if ( ! StringUtils.isNumeric(localeId)) {
 					throw new RecordNotFoundException();
 				}
-				localeDivisionResponse = new LocaleDivisionResponse(conn, Integer.valueOf(localeId), divisionId);
+				localeDivisionResponse = new LocaleDivisionResponse(conn, Integer.valueOf(localeId), divisionId, effectiveStartDate);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, localeDivisionResponse); 
 				
 			} catch(RecordNotFoundException recordNotFoundEx) {

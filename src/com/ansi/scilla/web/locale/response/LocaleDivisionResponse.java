@@ -2,6 +2,7 @@ package com.ansi.scilla.web.locale.response;
 
 import java.sql.Connection;
 import java.util.Calendar;
+import java.util.Date;
 
 import org.apache.commons.lang3.time.DateUtils;
 
@@ -10,7 +11,6 @@ import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.Locale;
 import com.ansi.scilla.common.db.LocaleDivision;
 import com.ansi.scilla.web.common.response.MessageResponse;
-import com.ansi.scilla.web.common.utils.AppUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
@@ -64,11 +64,12 @@ public class LocaleDivisionResponse extends MessageResponse {
 		make(conn, localeDivision);		
 	}
 
-	public LocaleDivisionResponse(Connection conn, Integer localeId, Integer divisionId) throws RecordNotFoundException, Exception {
+	public LocaleDivisionResponse(Connection conn, Integer localeId, Integer divisionId, Date effectiveStartDate) throws RecordNotFoundException, Exception {
 		this();
 		LocaleDivision localeDivision = new LocaleDivision();
 		localeDivision.setLocaleId(localeId);
 		localeDivision.setDivisionId(divisionId);
+		localeDivision.setEffectiveStartDate(effectiveStartDate);
 		localeDivision.selectOne(conn);
 		make(conn, localeDivision);
 		
