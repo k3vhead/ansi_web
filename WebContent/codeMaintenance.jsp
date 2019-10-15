@@ -121,10 +121,12 @@
 	        	        "columnDefs": [
 	         	            { "orderable": false, "targets": -1 },
 	        	            { className: "dt-head-left", "targets": [0,1,2,3,4] },
-	        	            { className: "dt-body-center", "targets": [5] },
+	        	            { className: "dt-body-center", "targets": [5,6,7] },
 	        	            { className: "dt-right", "targets": []},
-	        	            { width: '10%', "targets": 5 },
-	        	            { width: '30%', "targets": [0,1,2,3,4] },
+	        	            { width: '6%', "targets": [5,6,7] },
+	        	            { width: '15%', "targets": [1,2] },
+	        	            { width: '9%', "targets": [0] },
+	        	            { width: '20%', "targets": [3,4] },
 	        	            { "sClass": "center", "targets": [4,5] }
 	        	         ],
 	        	        "paging": true,
@@ -149,9 +151,24 @@
 				            { title: "Description", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.description != null){return (row.description+"");}
 				            } },
+				            { title: "Seq", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            	if(row.seq != null){return (row.seq+"");}
+				            } },
+    			            { title: "<bean:message key="field.label.status" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	var status = '<span style="font-style:italic;">N/A</span>';    			            	
+    			            	if(row.code_status != null){
+    			            		if ( row.code_status == 1 ) {
+    			            			status = '<webthing:checkmark>Active</webthing:checkmark>';
+    			            		}
+    			            		if ( row.code_status == 0 ) {
+    			            			status = '<webthing:ban>Inactive</webthing:ban>';
+    			            		}
+    			            	}
+    			            	return status;
+    			            } },
 				            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {		
-				            	var $editLink = '<span class="updAction" data-id="' + row.table_name + '" data-field_name="' + row.field_name + '"><webthing:edit>Edit</webthing:edit></span>';
-				            	var $deleteLink = '<span class="delAction" data-id="' + row.table_name + '" data-field_name="' + row.field_name + '"><webthing:delete>Delete</webthing:delete></span>';
+				            	var $editLink = '<span class="updAction" data-id="' + row.table_name + '" data-field_name="' + row.field_name + '" data-value="' + row.value + '"><webthing:edit>Edit</webthing:edit></span>';
+				            	var $deleteLink = '<span class="delAction" data-id="' + row.table_name + '" data-field_name="' + row.field_name + '" data-value="' + row.value + '"><webthing:delete>Delete</webthing:delete></span>';
 			            		$actionWithDelete = $editLink + " " + $deleteLink;
 			            		$action = $editLink;
 				            	if ( row.can_delete == true) {
@@ -317,8 +334,8 @@
  				
  				goUpdate : function($clickevent) {	
  					console.debug("Updating Code");
- 					var $tableName = $("#addForm input[name='tableName']").val();
- 					var $fieldName = $("#addForm input[name='fieldName']").val();
+ 					var $tableName = $("#addForm select[name='tableName']").val();
+ 					var $fieldName = $("#addForm select[name='fieldName']").val();
  					var $value = $("#addForm input[name='value']").val();
  					//console.debug("table_name: " + $table_name);
  						
@@ -328,11 +345,13 @@
  					$outbound['value'] = $("#addForm input[name='value']").val();
  					$outbound['displayValue'] = $("#addForm input[name='displayValue']").val();
  					$outbound['description'] = $("#addForm input[name='description']").val();		
+ 					$outbound['seq'] = $("#addForm select[name='seq']").val();
+ 					$outbound['status'] = $("#addForm select[name='status']").val();	
  					console.debug($outbound);
  					
 
  					if ( $tableName == null || $tableName == '') {
- 						$url = 'code/add';
+ 						$url = 'code/' + $tableName + "/" + $fieldName + '/' + $value;
  					} else {
  						$url = 'code/' + $tableName + "/" + $fieldName + '/' + $value;
  					}
@@ -351,9 +370,9 @@
  			    						$($selectorName).html(value[0]).fadeOut(10000);
  			    					});
  			    				} else {	    				
- 			    					$("#addForm").dialog("close");
- 			    					$('#codeTable').DataTable().ajax.reload();		
- 			    					CODEMAINTENANCE.clearAddForm();		    					
+ 			    					$("#addForm").dialog("close");		
+ 			    					CODEMAINTENANCE.clearAddForm();		    
+ 			    					$('#codeTable').DataTable().ajax.reload();					
  			    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
  			    				}
  							},
@@ -378,10 +397,12 @@
     					height: 300,
     					width: 600,
     					modal: true,
+        				closeOnEscape:true,
     					buttons: [
     						{
     							id: "closeAddForm",
-    							click: function() {
+    							click: function() {		
+ 			    					CODEMAINTENANCE.clearAddForm();		    
     								$("#addForm").dialog( "close" );
     							}
     						},{
@@ -451,6 +472,7 @@
     			showEdit : function ($clickevent) {
     				var $table_name = $clickevent.currentTarget.attributes['data-id'].value;
 					var $field_name = $clickevent.currentTarget.attributes['data-field_name'].value;
+					var $value = $clickevent.currentTarget.attributes['data-value'].value;
     				console.debug("table_name: " + $table_name);
     				$("#goEdit").data("table_name", $table_name);
             		$('#goEdit').button('option', 'label', 'Save');
@@ -458,7 +480,7 @@
 				//	$("#addFormTitle").html("Edit a Code");
             		
             		
-    				var $url = 'code/'+ $table_name+ "/" + $field_name;
+    				var $url = 'code/'+ $table_name+ "/" + $field_name + "/" + $value;
     				var jqxhr = $.ajax({
     					type: 'GET',
     					url: $url,
@@ -466,12 +488,15 @@
     						200: function($data) {
     							var $code = $data.data.codeList[0];    	
     							$("#addForm select[name='tableName']").val($code.tableName);
-    							var $table_name = $code.tableName;
-    	    					CODEMAINTENANCE.getTableFieldList($table_name, $("#addForm select[name='fieldName']").val($code.fieldName));
-    							//$("#addForm select[name='fieldName']").val($code.fieldName);
+    							//var $selectedTable = $('#addForm select[name="tableName"] option:selected').val();
+    							CODEMAINTENANCE.getTableFieldList($table_name, $("#addForm select[name='fieldName']"), $code.fieldName);
+    							//CODEMAINTENANCE.getTableFieldList($selectedTable, $("#addForm select[name='fieldName']").val());
+    							$("#addForm select[name='fieldName']").val($code.fieldName);
     							$("#addForm input[name='value']").val($code.value);
     							$("#addForm input[name='displayValue']").val($code.displayValue);
-    							$("#addForm input[name='description']").val($code.description);	        		
+    							$("#addForm select[name='seq']").val($code.seq);
+    							$("#addForm input[name='description']").val($code.description);	   
+    							$("#addForm select[name='status']").val($code.status);	     		
     			        		$("#addForm .err").html("");
     			        		$("#addForm").dialog("open");
     						},
@@ -511,7 +536,9 @@
         				}); */
         				$("#addForm input[name='value']").val("");
         				$("#addForm input[name='display_value]").val("");
-        				$("#addForm input[name='description']").val("");		        		
+        				$("#addForm select[name='seq']").val("");
+        				$("#addForm input[name='description']").val("");
+        				$("#addForm select[name='code_status']").val("");		        		
                 		$("#addForm .err").html("");
                 		$("#addForm").dialog("open");
         			});
@@ -589,8 +616,31 @@
 		    					<td><span class="err" id="displayValueErr"></span></td>
 		    				</tr>
 		    				<tr>
+		    					<td><span class="required">*</span><span class="formLabel">Sequence:</span></td>
+		    					<td>
+		    						<select name="seq">
+		    							<% for (int i = 1; i < 21; i++ ) { %>
+		    							<option value="<%= i %>"><%= i %></option>
+		    							<% } %>
+		    						</select>
+		    						<i class="fa fa-check-square-o inputIsValid" aria-hidden="true"></i>
+		    					</td>
+		    					<td><span class="err" id="seqErr"></span></td>
+		    				</tr>
+		    				<tr>
 		    					<td><span class="formLabel">Description:</span></td>
 		    					<td><input type="text" name="description" /></td>
+		    				</tr>
+		    				<tr>
+		    					<td><span class="required">*</span><span class="formLabel">Status:</span></td>
+		    					<td>
+		    						<select name="status">
+		    							<option value="1">Active</option>
+		    							<option value="0">Inactive</option>
+		    						</select>
+		    						<i class="fa fa-check-square-o inputIsValid" aria-hidden="true"></i>
+		    					</td>
+		    					<td><span class="err" id="statusErr"></span></td>
 		    				</tr>
 		    			</table>
 		    		</form>
