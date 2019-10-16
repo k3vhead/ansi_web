@@ -103,8 +103,12 @@ public class CodeLookupServlet extends AbstractLookupServlet {
 				if ( rs.next() ) {
 					canDelete = rs.getInt("record_count") == 0;
 				}
-
+				rs.close();
 				arg0.put(CAN_DELETE, canDelete);
+				return arg0;
+			} catch ( SQLException e ) {
+				logger.log(Level.DEBUG, e);
+				arg0.put(CAN_DELETE, true);
 				return arg0;
 			} catch ( Exception e) {
 				throw new RuntimeException(e);	
