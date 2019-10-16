@@ -94,10 +94,9 @@ public class CodeLookupServlet extends AbstractLookupServlet {
 
 		@Override
 		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
-			try {
-				String sql = "select count(*) as record_count from " + (String)arg0.get("table_name") + "\n"
-						+ " where " + (String)arg0.get("field_name") +"='" + (String)arg0.get("value") + "'";
-//				logger.log(Level.DEBUG, sql);
+			String sql = "select count(*) as record_count from " + (String)arg0.get("table_name") + "\n"
+					+ " where " + (String)arg0.get("field_name") +"='" + (String)arg0.get("value") + "'";
+			try {				
 				ResultSet rs = statement.executeQuery(sql);
 				Boolean canDelete = false;
 				if ( rs.next() ) {
@@ -105,14 +104,14 @@ public class CodeLookupServlet extends AbstractLookupServlet {
 				}
 				rs.close();
 				arg0.put(CAN_DELETE, canDelete);
-				return arg0;
-			} catch ( SQLException e ) {
+			} catch ( com.microsoft.sqlserver.jdbc.SQLServerException e ) {
+				logger.log(Level.DEBUG, sql);
 				logger.log(Level.DEBUG, e);
 				arg0.put(CAN_DELETE, true);
-				return arg0;
 			} catch ( Exception e) {
 				throw new RuntimeException(e);	
 			}
+			return arg0;
 		}
 
 	}
