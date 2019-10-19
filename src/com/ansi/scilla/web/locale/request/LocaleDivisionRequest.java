@@ -23,6 +23,7 @@ public class LocaleDivisionRequest extends AbstractRequest {
 
 	public static final String ACTION_IS_ADD = "add";
 	public static final String ACTION_IS_UPDATE = "update";
+	public static final String ACTION_IS_DELETE = "delete";
 	
 	public static final String ACTION = "action";
 	public static final String DIVISION_ID = "divisionId";
@@ -193,11 +194,26 @@ public class LocaleDivisionRequest extends AbstractRequest {
 		RequestValidator.validateId(conn, webMessages, "locale", Locale.LOCALE_ID, "localeId", localeId, true);
 		RequestValidator.validateId(conn, webMessages, "division", Division.DIVISION_ID, "divisionId", divisionId, true);
 		RequestValidator.validateDate(webMessages, EFF_START_DATE, effectiveStartDate, true, null, null);
-		RequestValidator.validateDate(webMessages, EFF_STOP_DATE, effectiveStopDate, false, getEffectiveStartDate(), null);
+//		RequestValidator.validateDate(webMessages, EFF_STOP_DATE, effectiveStopDate, false, getEffectiveStartDate(), null);
 		RequestValidator.validateId(conn, webMessages, "address", Address.ADDRESS_ID, "addressId", addressId, true);
 		
-		if ( webMessages.isEmpty() && hasOverlappingDates(conn) ) {
+		if ( webMessages.isEmpty() && hasOverlappingStartDate(conn, effectiveStartDate) ) {
 			webMessages.addMessage(EFF_START_DATE, "Date Range already in use");
+		}
+		
+		return webMessages;
+	}
+	
+	
+	public WebMessages validateUpdate(Connection conn) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		RequestValidator.validateId(conn, webMessages, "locale", Locale.LOCALE_ID, "localeId", localeId, true);
+		RequestValidator.validateId(conn, webMessages, "division", Division.DIVISION_ID, "divisionId", divisionId, true);
+		RequestValidator.validateDate(webMessages, EFF_STOP_DATE, effectiveStopDate, true, getEffectiveStartDate(), null);
+		RequestValidator.validateId(conn, webMessages, "address", Address.ADDRESS_ID, "addressId", addressId, true);
+		
+		if ( webMessages.isEmpty() && hasOverlappingStopDate(conn, effectiveStartDate, effectiveStopDate) ) {
+			webMessages.addMessage(EFF_STOP_DATE, "Date Range already in use");
 		}
 		
 		return webMessages;
@@ -211,34 +227,46 @@ public class LocaleDivisionRequest extends AbstractRequest {
 		return webMessages;
 	}
 
-	private boolean hasOverlappingDates(Connection conn) throws SQLException {
-		String sql = "select count(*) as record_count from locale_division \n" + 
-				"where division_id=? and locale_id=? and (\n" + 
-				"(effective_start_date <= ? and effective_stop_date > ?)   \n" +   //-- start date is in range 
-				"or ( effective_start_date < ? and effective_stop_date > ?) \n" + //   -- stop date is in range
-				"or ( effective_start_date > ? and effective_stop_date < ?) \n" + //-- start is before, stop is after 
-				")";
+	private boolean hasOverlappingStartDate(Connection conn, Date effectiveDate) throws SQLException {
+		String sql = "select count(*) as record_count from locale_division where\n" + 
+				"locale_id=? and division_id=? and\n" + 
+				"((effective_stop_date is not null and effective_start_date <= ? and effective_stop_date >= ?)\n" + 
+				" or (effective_stop_date is null and effective_start_date=?))";
 		PreparedStatement ps = conn.prepareStatement(sql);	
 		
-		java.sql.Date startDate = new java.sql.Date( DateUtils.truncate(this.effectiveStartDate, Calendar.DAY_OF_MONTH).getTime());
-		java.sql.Date stopDate = new java.sql.Date( DateUtils.truncate(this.effectiveStopDate, Calendar.DAY_OF_MONTH).getTime());
-		int n = 1;
-		ps.setInt(n, this.divisionId);
-		n++;
-		ps.setInt(n, this.localeId);
-		n++;
-		ps.setDate(n, startDate);
-		n++;
-		ps.setDate(n, startDate);
-		n++;
-		ps.setDate(n, stopDate);
-		n++;
-		ps.setDate(n, stopDate);
-		n++;
-		ps.setDate(n, startDate);
-		n++;
-		ps.setDate(n, stopDate);
-		n++;
+		java.sql.Date testDate = new java.sql.Date( DateUtils.truncate(effectiveDate, Calendar.DAY_OF_MONTH).getTime());
+		ps.setInt(1,this.localeId);
+		ps.setInt(2,this.divisionId);
+		ps.setDate(3,testDate);
+		ps.setDate(4,testDate);
+		ps.setDate(5,testDate);
+		
+		ResultSet rs = ps.executeQuery();
+		Integer count = 0;
+		if ( rs.next() ) {
+			count = rs.getInt("record_count");
+		}
+		rs.close();
+		return count > 0;
+	}
+	
+	
+	private boolean hasOverlappingStopDate(Connection conn, Date effectiveStartDate, Date effectiveStopDate) throws SQLException {
+		String sql = "select count(*) as record_count from locale_division where\n" + 
+				"locale_id=? and division_id=? and\n" + 
+				"((effective_stop_date is not null and effective_start_date <= ? and effective_stop_date >= ?)\n" + 
+				" or (effective_stop_date is null and effective_start_date=?)) and \n" +
+				"effective_start_date!=?";
+		PreparedStatement ps = conn.prepareStatement(sql);	
+		
+		java.sql.Date testStopDate = new java.sql.Date( DateUtils.truncate(effectiveStopDate, Calendar.DAY_OF_MONTH).getTime());
+		java.sql.Date testStartDate = new java.sql.Date( DateUtils.truncate(effectiveStartDate, Calendar.DAY_OF_MONTH).getTime());
+		ps.setInt(1,this.localeId);
+		ps.setInt(2,this.divisionId);
+		ps.setDate(3,testStopDate);
+		ps.setDate(4,testStopDate);
+		ps.setDate(5,testStopDate);
+		ps.setDate(6,testStartDate);
 		
 		ResultSet rs = ps.executeQuery();
 		Integer count = 0;

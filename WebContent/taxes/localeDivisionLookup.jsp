@@ -102,8 +102,9 @@
     					}
     				});
     				$('.err').html("");
-    				$('#editEndDateModal').data('rownum',null);
                 },
+                
+                
                 
                 createTable : function(){
             		var dataTable = $('#localeDivisionTable').DataTable( {
@@ -186,12 +187,88 @@
             	},
             	
             	
+            	
+            	
+            	doAdd : function() {
+            		console.log("doAdd");
+            		$("#add_modal .err").html("");
+            		var $outbound = {}
+            		$outbound['action'] = 'add';
+            		$outbound['divisionId'] = $("#add_modal select[name='divisionId']").val();
+            		$outbound['localeId'] = $("#add_modal input[name='localeId']").val();
+            		$outbound['addressId'] = $("#add_modal input[name='addressId']").val();
+            		$outbound['effectiveStartDate'] = $("#add_modal input[name='effectiveStartDate']").val();
+            		//$outbound['effectiveStopDate'] = $("#add_modal input[name='effectiveStopDate']").val();
+            		
+            		LOCALEDIVISIONLOOKUP.doPost("#add_modal", $outbound);
+            		
+            	},
+            	
+            	
+            	
+            	doDelete : function () {
+    				console.debug("doDelete");
+    				
+    				var $outbound = {};
+    				$outbound['action'] = "delete";
+    				$outbound['divisionId'] = $("#delete_modal input[name='divisionId']").val();
+    				$outbound['localeId'] = $("#delete_modal input[name='localeId']").val();
+    				$outbound['addressId'] = $("#delete_modal input[name='addressId']").val();
+    				$outbound['effectiveStartDate'] = $("#delete_modal input[name='effectiveStartDate']").val();
+    				$outbound['effectiveStopDate'] = $("#delete_modal input[name='effectiveStopDate']").val();
+    				
+    				console.debug($outbound);
+
+    				var jqxhr = $.ajax({
+    					type: 'DELETE',
+    					url: "localeDivision",
+    					data: JSON.stringify($outbound),
+    					statusCode: {
+    						200: function($data) {
+    			    			if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+    			    				$.each($data.data.webMessages, function (key, value) {
+    			    					if ( key == "GLOBAL_MESSAGE" ) {
+    			    						$("#globalMsg").html(value[0]).show().fadeOut(6000);
+    			    						$("#delete_modal").dialog("close");
+    			    					} else {
+	    			    					var $selectorName = "#delete_modal ." + key + "Err";
+											console.log($selectorName);
+											console.log(value[0])
+	    			    					$($selectorName).html(value[0]).show();
+    			    					}
+    			    				});
+    			    				
+    			   				} else {	    				
+    			    				$('#localeDivisionTable').DataTable().ajax.reload();		
+    			    				$("#globalMsg").html("Update Successful").show().fadeOut(6000);
+		    						$("#delete_modal").dialog("close");
+    			    			}
+    						},
+    						403: function($data) {
+    							$("#globalMsg").html("Session Timeout. Log in and try again");
+    						},
+    						404: function($data) {
+    							$("#delete_modal .divisionIdErr").html("Invalid Selection").show().fadeOut(6000);
+    						},
+    						405: function($data) {
+    							$("#globalMsg").html("Insufficient Permissions").show();
+    						},
+    						500: function($data) {
+    							$("#globalMsg").html("System Error; Contact Support");
+    						}
+    					},
+    					dataType: 'json'
+    				});
+    			},
+    			
+    			
             	doFunctionBinding : function() {
             		$( ".edit_action" ).on( "click", function($clickevent) {
             			console.log("doFunctionBinding: getCode");
 	    				var $divisionId = $(this).attr("data-divisionId");
 	    				var $localeId = $(this).attr("data-localeId");
 	    				var $effectiveStartDate = $(this).attr("data-effectivestartdate");
+	    				console.log("edit action start date: " + $effectiveStartDate);
 	    				LOCALEDIVISIONLOOKUP.getCode($divisionId, $localeId, $effectiveStartDate, LOCALEDIVISIONLOOKUP.goEdit);
 	    			});		
             		
@@ -207,6 +284,69 @@
     			
     			
   	    		
+  	    		
+  	    		doPost : function($modalId, $outbound) {
+  	    			var jqxhr = $.ajax({
+    					type: 'POST',
+    					url: "localeDivision",
+    					data: JSON.stringify($outbound),
+    					statusCode: {
+    						200: function($data) {
+    			    			if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+    			    				$.each($data.data.webMessages, function (key, value) {
+    			    					if ( key == "GLOBAL_MESSAGE" ) {
+    			    						$("#globalMsg").html(value[0]).show().fadeOut(6000);
+    			    						$($modalId).dialog("close");
+    			    					} else {
+	    			    					var $selectorName = $modalId + " ." + key + "Err";
+											console.log($selectorName);
+											console.log(value[0])
+	    			    					$($selectorName).html(value[0]).show();
+    			    					}
+    			    				});
+    			    				
+    			   				} else {	    				
+    			    				$($modalId).dialog("close");
+    			    				$('#localeDivisionTable').DataTable().ajax.reload();		
+    			    				$("#globalMsg").html("Update Successful").show().fadeOut(6000);
+    			    			}
+    						},
+    						403: function($data) {
+    							$("#globalMsg").html("Session Timeout. Log in and try again");
+    						},
+    						404: function($data) {
+    							$($modalId + " .divisionIdErr").html("Invalid Selection").show().fadeOut(6000);
+    						},
+    						405: function($data) {
+    							$("#globalMsg").html("Insufficient Permissions").show();
+    						},
+    						500: function($data) {
+    							$("#globalMsg").html("System Error; Contact Support").show();
+    						}
+    					},
+    					dataType: 'json'
+    				});
+  	    		},
+  	    		
+  	    		
+  	    		
+    			doUpdate : function () {
+    				console.debug("Updating Locale Division");
+    				
+    				var $outbound = {};
+    				$outbound['action'] = $("#editEndDateModal input[name='action']").val();
+    				$outbound['divisionId'] = $("#editEndDateModal input[name='divisionId']").val();
+    				$outbound['localeId'] = $("#editEndDateModal input[name='localeId']").val();
+    				$outbound['addressId'] = $("#editEndDateModal input[name='addressId']").val();
+    				$outbound['effectiveStartDate'] = $("#editEndDateModal input[name='effectiveStartDate']").val();
+    				$outbound['effectiveStopDate'] = $("#editEndDateModal input[name='effectiveStopDate']").val();
+    				
+    				console.debug($outbound);
+    				LOCALEDIVISIONLOOKUP.doPost("#editEndDateModal", $outbound);    				
+    			},
+            	
+
+    			
   	    		
   	    		getCode : function($divisionId, $localeId, $effectiveStartDate, $goFunction) {
     				$url = "localeDivision/" + $divisionId;
@@ -255,6 +395,7 @@
 	        		$("#delete_modal  input[name='localeId']").val($data.data.localeId);
 	        		$("#delete_modal  input[name='addressId']").val($data.data.addressId);	        		
 					$("#delete_modal  input[name='divisionId']").val($divisionId);
+					$("#delete_modal  input[name='effectiveStartDate']").val($data.data.effectiveStartDate);
 					
 					$("#delete_modal .division_name").html($data.data.divisionNbr + "-" + $data.data.divisionCode);
 					$("#delete_modal .locale_name").html($data.data.name);
@@ -279,6 +420,8 @@
   	    		
   	    		
   	    		goEdit : function($divisionId, $localeId, $effectiveStartDate, $data) {
+  	    			console.log("goEdit");
+  	    			console.log("Effective start date: " + $effectiveStartDate);
   	    			$('#goEdit').data("localeId", $localeId);
 	        		$('#goEdit').button('option', 'label', 'Save');
 	        		$('#closeLocaleDivisionModal').button('option', 'label', 'Close');
@@ -287,7 +430,9 @@
 	        		
 	        		$("#editEndDateModal  input[name='localeId']").val($data.data.localeId);
 	        		$("#editEndDateModal  input[name='addressId']").val($data.data.addressId);	        		
-					$("#editEndDateModal  select[name='divisionId']").val($divisionId);
+					$("#editEndDateModal  input[name='divisionId']").val($divisionId);
+					console.log("data.data start date: " + $data.data.effectiveStartDate);
+					$("#editEndDateModal  input[name='effectiveStartDate']").val($data.data.effectiveStartDate);
 					
 					$("#editEndDateModal .division_name").html($data.data.divisionNbr + "-" + $data.data.divisionCode);
 					$("#editEndDateModal .locale_name").html($data.data.name);
@@ -336,8 +481,8 @@
     						},{
     							id: "goAdd",
     							click: function($event) {
-    								console.log("make edit panel: updateLocaleDivision");
-    								LOCALEDIVISIONLOOKUP.updateLocaleDivision();
+    								console.log("make edit panel: doUpdate");
+    								LOCALEDIVISIONLOOKUP.doAdd();
     							}
     						}	      	      
     					],
@@ -363,7 +508,7 @@
     						},{
     							id: "goDelete",
     							click: function($event) {
-    								LOCALEDIVISIONLOOKUP.updateLocaleDivision();
+    								LOCALEDIVISIONLOOKUP.doDelete();
     							}
     						}	      	      
     					],
@@ -395,8 +540,8 @@
     						},{
     							id: "goEdit",
     							click: function($event) {
-    								console.log("make edit panel: updateLocaleDivision");
-    								LOCALEDIVISIONLOOKUP.updateLocaleDivision();
+    								console.log("make edit panel: doUpdate");
+    								LOCALEDIVISIONLOOKUP.doUpdate();
     							}
     						}	      	      
     					],
@@ -438,82 +583,7 @@
                 
 
     			
-    			updateLocaleDivision : function () {
-    				console.debug("Updating Locale Division");
-    				
-    				$("#editEndDateModal .err").html("");
-    				
-    				var $divisionId = $("#editEndDateModal select[name='divisionId']").val();
-    				console.debug("divisionId: " + $divisionId);
-    				
-    				var $localeId = $("#editEndDateModal input[name='localeId']").val();
-    				console.debug("localeId: " + $localeId);
-    				
-    				console.log("localeId: " + $localeId);
-    				
-    				if ( $divisionId == null || $divisionId == '') {
-    					$url = 'localeDivision';
-    				} else {
-    					$url = 'localeDivision/' + $divisionId;
-    				}
-    				console.debug($url);
-    						
-    				var $outbound = {};
-    				$outbound['action'] = $("#editEndDateModal input[name='action']").val();
-    				$outbound['divisionId'] = $("#editEndDateModal select[name='divisionId']").val();
-    				$outbound['localeId'] = $("#editEndDateModal input[name='localeId']").val();
-    				$outbound['addressId'] = $("#editEndDateModal input[name='addressId']").val();
-    				$outbound['effectiveStartDate'] = $("#editEndDateModal input[name='effectiveStartDate']").val();
-    				$outbound['effectiveStopDate'] = $("#editEndDateModal input[name='effectiveStopDate']").val();
-    				
-    				
-    				console.debug($outbound);
-    				
-    				var jqxhr = $.ajax({
-    					type: 'POST',
-    					url: $url,
-    					data: JSON.stringify($outbound),
-    					statusCode: {
-    						200: function($data) {
-    			    			if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-    			    				$.each($data.data.webMessages, function (key, value) {
-    			    					if ( key == "GLOBAL_MESSAGE" ) {
-    			    						$("#globalMsg").html(value[0]).show().fadeOut(6000);
-    			    						$("#addTaxRateForm").dialog("close");
-    			    					} else {
-	    			    					var $selectorName = "#" + key + "Err";
-											console.log($selectorName);
-											console.log(value[0])
-	    			    					$($selectorName).html(value[0]).show();
-    			    					}
-    			    				});
-    			    				
-    			   				} else {	    				
-    			    				$("#editEndDateModal").dialog("close");
-    			    				$('#localeDivisionTable').DataTable().ajax.reload();		
-    			    				LOCALEDIVISIONLOOKUP.clearAddForm();		    					
-    			    				$("#globalMsg").html("Update Successful").show().fadeOut(6000);
-    			    			}
-    						},
-    						403: function($data) {
-    							$("#globalMsg").html("Session Timeout. Log in and try again");
-    						},
-    						404: function($data) {
-    							$("#divisionIdErr").html("Invalid Selection").show().fadeOut(6000);
-    						},
-    						405: function($data) {
-    							$("#globalMsg").html("Insufficient Permissions").show();
-    						},
-    						500: function($data) {
-    							$("#globalMsg").html("System Error; Contact Support");
-    						}
-    					},
-    					dataType: 'json'
-    				});
-    			},
-            	
 
-    			
     			makeLocaleTypeList: function (){ 
 	    			var jqxhr = $.ajax({
 	    				type: 'GET',
@@ -535,6 +605,9 @@
 	    			});
 	    		},	  
             	
+	    		
+	    		
+	    		
             	makeClickers : function() {
             		$('.ScrollTop').click(function() {
         				$('html, body').animate({scrollTop: 0}, 800);
@@ -611,9 +684,10 @@
             	
     			showNew : function () {
 					$(".showNew").click(function($event) {
+						console.log("function showNew");
 						$('#goAdd').data("localeId", null);
 		        		$('#goAdd').button('option', 'label', 'Save');
-		        		$('#closeAddModal').button('option', 'label', 'Close');
+		        		$('#closeAddModal').button('option', 'label', 'Cancel');
 		        		
 		        		$("#add_modal  input[name='action']").val("add");
 		        		
@@ -626,11 +700,11 @@
 						$("#add_modal  input[name='effectiveStartDate']").val("");	
 						$("#add_modal  input[name='effectiveStopDate']").val("");
 						$("#add_modal  input[name='addressName']").val("");
-						$("#nexus_address1").html(null);
-						$("#nexus_address2").html(null);
-						$("#nexus_city").html(null);
-						$("#nexus_state").html(null);
-						$("#nexus_zip").html(null);
+						$("#add_modal .nexus_address1").html(null);
+						$("#add_modal .nexus_address2").html(null);
+						$("#add_modal .nexus_city").html(null);
+						$("#add_modal .nexus_state").html(null);
+						$("#add_modal .nexus_zip").html(null);
 		        		$("#add_modal  .err").html("");
 		        		$("#add_modal ").dialog("option","title", "Add New Nexus").dialog("open");
 					});
@@ -686,21 +760,18 @@
     	<table class="ui-front">
     		<tr>
     			<td><span class="formHdr">Division</span></td>
-    			<td>
-    				<select name="divisionId" />
-    				
-    			</td>
-    			<td><span class="err" id="divisionIdErr"></span></td>
+    			<td><select name="divisionId"></select></td>
+    			<td><span class="err divisionIdErr"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">Locale Name</span></td>
     			<td><input type="text" name="localeName" /><input type="hidden" name="localeId" /></td>
-    			<td><span class="err" id="localeNameErr"></span></td>
+    			<td><span class="err localeIdErr"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">Address</span></td>
     			<td><input type="text" name="addressName" /><input type="hidden" name="addressId" /></td>
-    			<td><span class="err" id="addressIdErr"></span></td>
+    			<td><span class="err addressIdErr"></span></td>
     		</tr>
     		<tr>
     			<td>&nbsp;</td>
@@ -714,13 +785,15 @@
     		<tr>
     			<td><span class="formHdr">Effective Start Date</span></td>
     			<td><input type="text" name="effectiveStartDate" class="dateField" /></td>
-    			<td><span class="err" id="effectiveStartDateErr"></span></td>
+    			<td><span class="err effectiveStartDateErr"></span></td>
     		</tr>
+    		<%-- 
     		<tr>
     			<td><span class="formHdr">Effective Stop Date</span></td>
     			<td><input type="text" name="effectiveStopDate" class="dateField" /></td>
-    			<td><span class="err" id="effectiveStopDateErr"></span></td>
+    			<td><span class="err effectiveStopDateErr"></span></td>
     		</tr>
+    		 --%>
     		
     	</table>
     </div>
@@ -739,17 +812,17 @@
     		<tr>
     			<td><span class="formHdr">Division</span></td>
     			<td><input type="hidden" name="divisionId"/><span class="division_name" ></span></td>
-    			<td><span class="err" id="divisionIdErr"></span></td>
+    			<td><span class="err divisionIdErr"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">Locale Name</span></td>
     			<td><input type="hidden" name="localeId" /><span class="locale_name" /></td>
-    			<td><span class="err" id="localeIdErr"></span></td>
+    			<td><span class="err localeIdErr"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">Address</span></td>
     			<td><input type="hidden" name="addressId" /><span class="address_name" /></td>
-    			<td><span class="err" id="addressIdErr"></span></td>
+    			<td><span class="err addressIdErr"></span></td>
     		</tr>
     		<tr>
     			<td>&nbsp;</td>
@@ -762,13 +835,13 @@
     		</tr>
     		<tr>
     			<td><span class="formHdr">Effective Start Date</span></td>
-    			<td><span class="effective_start_date" /></td>
-    			<td><span class="err" id="effectiveStartDateErr"></span></td>
+    			<td><input type="hidden" name="effectiveStartDate" /><span class="effective_start_date" /></td>
+    			<td><span class="err effectiveStartDateErr"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">Effective Stop Date</span></td>
     			<td><input type="text" name="effectiveStopDate" class="dateField" /></td>
-    			<td><span class="err" id="effectiveStopDateErr"></span></td>
+    			<td><span class="err effectiveStopDateErr"></span></td>
     		</tr>
     		
     	</table>
@@ -785,17 +858,17 @@
     		<tr>
     			<td><span class="formHdr">Division</span></td>
     			<td><input type="hidden" name="divisionId"/><span class="division_name" ></span></td>
-    			<td><span class="err" id="divisionIdErr"></span></td>
+    			<td><span class="err divisionIdErr"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">Locale Name</span></td>
     			<td><input type="hidden" name="localeId" /><span class="locale_name" /></td>
-    			<td><span class="err" id="localeIdErr"></span></td>
+    			<td><span class="err localeIdErr"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">Address</span></td>
     			<td><input type="hidden" name="addressId" /><span class="address_name" /></td>
-    			<td><span class="err" id="addressIdErr"></span></td>
+    			<td><span class="err addressIdErr"></span></td>
     		</tr>
     		<tr>
     			<td>&nbsp;</td>
@@ -808,13 +881,13 @@
     		</tr>
     		<tr>
     			<td><span class="formHdr">Effective Start Date</span></td>
-    			<td><span class="effective_start_date" /></td>
-    			<td><span class="err" id="effectiveStartDateErr"></span></td>
+    			<td><input type="hidden" name="effectiveStartDate" /><span class="effective_start_date" /></td>
+    			<td><span class="err effectiveStartDateErr"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formHdr">Effective Stop Date</span></td>
     			<td><span class="effective_stop_date" /></td>
-    			<td><span class="err" id="effectiveStopDateErr"></span></td>
+    			<td><span class="err effectiveStopDateErr"></span></td>
     		</tr>
     		
     	</table>

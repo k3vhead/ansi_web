@@ -105,27 +105,16 @@ public class LocaleDivisionServlet extends AbstractServlet {
 				LocaleDivisionRequest localeDivisionRequest = new LocaleDivisionRequest();
 				AppUtils.json2object(jsonString, localeDivisionRequest);
 
-				if(ansiURL.getId() == null) {
-					super.sendNotFound(response);
+				if ( localeDivisionRequest.getAction().equals(LocaleDivisionRequest.ACTION_IS_ADD)) {
+					processAdd(conn, request, response, sessionData, data, localeDivisionRequest);
+				} else if ( localeDivisionRequest.getAction().equals(LocaleDivisionRequest.ACTION_IS_UPDATE)) {
+					processUpdate(conn, request, response, sessionData, data, localeDivisionRequest);
 				} else {
-					webMessages = localeDivisionRequest.validateAdd(conn);
-					if(webMessages.isEmpty() == true) {
-						Integer divId = ansiURL.getId();
-						if ( localeDivisionRequest.getAction().equals(LocaleDivisionRequest.ACTION_IS_ADD)) {
-							doAdd(conn, localeDivisionRequest, sessionData, response);
-						} else if ( localeDivisionRequest.getAction().equals(LocaleDivisionRequest.ACTION_IS_UPDATE)) {
-							doUpdate(conn, divId, localeDivisionRequest, sessionData, response);
-						} else {
-							webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Action. Reload and try again");
-							data.setWebMessages(webMessages);
-							super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
-						}
-						
-					} else {
-						data.setWebMessages(webMessages);
-						super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
-					}
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Action. Reload and try again");
+					data.setWebMessages(webMessages);
+					super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
 				}
+
 						
 			}  catch ( InvalidFormatException e ) {
 				String badField = super.findBadField(e.toString());				
@@ -161,33 +150,29 @@ public class LocaleDivisionServlet extends AbstractServlet {
 			String jsonString = super.makeJsonString(request);
 			logger.log(Level.DEBUG, "jsonstring:"+jsonString);
 			ansiURL = new AnsiURL(request, REALM, (String[])null); 
-
+	
 			SessionData sessionData = AppUtils.validateSession(request, Permission.TAX_WRITE);
 			LocaleDivisionResponse data = new LocaleDivisionResponse();
 			WebMessages webMessages = new WebMessages();
-
+	
 			
 			try{
 				LocaleDivisionRequest localeDivisionRequest = new LocaleDivisionRequest();
 				AppUtils.json2object(jsonString, localeDivisionRequest);
-
-				if(ansiURL.getId() == null) {
-					super.sendNotFound(response);
+	
+				webMessages = localeDivisionRequest.validateDelete(conn);
+				if(webMessages.isEmpty() == true) {
+					Integer divId = ansiURL.getId();
+					LocaleDivision localeDivision = new LocaleDivision();
+					localeDivision.setDivisionId(divId);
+					localeDivision.setLocaleId(localeDivisionRequest.getLocaleId());
+					localeDivision.setEffectiveStartDate(localeDivisionRequest.getEffectiveStartDate());
+					localeDivision.delete(conn);
+					conn.commit();
+					super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
 				} else {
-					webMessages = localeDivisionRequest.validateDelete(conn);
-					if(webMessages.isEmpty() == true) {
-						Integer divId = ansiURL.getId();
-						LocaleDivision localeDivision = new LocaleDivision();
-						localeDivision.setDivisionId(divId);
-						localeDivision.setLocaleId(localeDivisionRequest.getLocaleId());
-						localeDivision.setEffectiveStartDate(localeDivisionRequest.getEffectiveStartDate());
-						localeDivision.delete(conn);
-						conn.commit();
-						super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
-					} else {
-						data.setWebMessages(webMessages);
-						super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
-					}
+					data.setWebMessages(webMessages);
+					super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
 				}
 						
 			}  catch ( InvalidFormatException e ) {
@@ -209,6 +194,30 @@ public class LocaleDivisionServlet extends AbstractServlet {
 		}		
 	}
 
+	private void processAdd(Connection conn, HttpServletRequest request, HttpServletResponse response, SessionData sessionData, LocaleDivisionResponse data, LocaleDivisionRequest localeDivisionRequest) throws Exception {
+		WebMessages webMessages = localeDivisionRequest.validateAdd(conn);
+		if ( webMessages.isEmpty() ) {
+			doAdd(conn, localeDivisionRequest, sessionData, response);
+		} else {
+			data.setWebMessages(webMessages);
+			super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+		}
+	}
+
+
+	
+	private void processUpdate(Connection conn, HttpServletRequest request, HttpServletResponse response, SessionData sessionData, LocaleDivisionResponse data, LocaleDivisionRequest localeDivisionRequest) throws Exception {
+		WebMessages webMessages = localeDivisionRequest.validateUpdate(conn);
+		if ( webMessages.isEmpty() ) {
+			doUpdate(conn, localeDivisionRequest, sessionData, response);
+		} else {
+			data.setWebMessages(webMessages);
+			super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+		}
+	}
+
+
+	
 	private void doAdd(Connection conn, LocaleDivisionRequest localeDivisionRequest, SessionData sessionData, HttpServletResponse response) throws Exception {
 		LocaleDivision localeDivision = new LocaleDivision();
 		makeLocaleDivision(localeDivision, localeDivisionRequest, sessionData.getUser());
@@ -223,20 +232,26 @@ public class LocaleDivisionServlet extends AbstractServlet {
 	
 	
 
-	private void doUpdate(Connection conn, Integer divisionId, LocaleDivisionRequest localeDivisionRequest, SessionData sessionData, HttpServletResponse response) throws Exception {
+	private void doUpdate(Connection conn, LocaleDivisionRequest localeDivisionRequest, SessionData sessionData, HttpServletResponse response) throws Exception {
 		LocaleDivision localeDivision = new LocaleDivision();
-		localeDivision.setDivisionId(divisionId);
+		localeDivision.setDivisionId(localeDivisionRequest.getDivisionId());
+		localeDivision.setLocaleId(localeDivisionRequest.getLocaleId());
+		localeDivision.setEffectiveStartDate(localeDivisionRequest.getEffectiveStartDate());
 		try {
 			localeDivision.selectOne(conn);
 			makeLocaleDivision(localeDivision, localeDivisionRequest, sessionData.getUser());
 			LocaleDivision key = new LocaleDivision();
-			key.setDivisionId(divisionId);
+			key.setDivisionId(localeDivisionRequest.getDivisionId());
+			key.setLocaleId(localeDivisionRequest.getLocaleId());
+			key.setEffectiveStartDate(localeDivisionRequest.getEffectiveStartDate());
 			localeDivision.update(conn, key);
 			conn.commit();
 			LocaleDivisionResponse localeResponse = new LocaleDivisionResponse(conn, localeDivision);
 			super.sendResponse(conn, response, ResponseCode.SUCCESS, localeResponse);
 		} catch ( RecordNotFoundException e) {
-			doAdd(conn, localeDivisionRequest, sessionData, response);
+			logger.log(Level.DEBUG, "Updating non-exestent localeDivision localeid:" + localeDivisionRequest.getLocaleId() +
+					"\tDivision: " + localeDivisionRequest.getDivisionId() + "\tStartDate: " + localeDivisionRequest.getEffectiveStartDate());
+			super.sendNotFound(response);
 		}
 	}
 
