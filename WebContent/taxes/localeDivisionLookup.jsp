@@ -158,12 +158,8 @@
     			            { width:"10%", title: "<bean:message key="field.label.stopDate" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.effective_stop_date != null){return (row.effective_stop_date+"");}
     			            } },
-    			            { width:"20%", title: "<bean:message key="field.label.address" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
-    			            	if(row.address1 != null){return (row.address1+"\n");}
-    			            	if(row.address2 != null){return (row.address2+"\n");}
-    			            	if(row.city != null){return (row.city+" ");}
-    			            	if(row.state != null){return (row.state+", ");}
-    			            	if(row.zip != null){return (row.zip+"");}
+    			            { width:"20%", title: "<bean:message key="field.label.address" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            	if(row.address_name != null) { return row.address_name; }
     			            } },
     			            
     			            { width:"5%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
@@ -178,7 +174,7 @@
     			            } }],
     			            "initComplete": function(settings, json) {
     			            	var myTable = this;
-    			            	//LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#localeDivisionTable", LOCALEDIVISIONLOOKUP.createTable);
+    			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#localeDivisionTable", LOCALEDIVISIONLOOKUP.createTable);
     			            },
     			            "drawCallback": function( settings ) {
     			            	LOCALEDIVISIONLOOKUP.doFunctionBinding();

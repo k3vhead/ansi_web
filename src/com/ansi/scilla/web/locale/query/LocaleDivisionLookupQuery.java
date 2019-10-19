@@ -36,7 +36,8 @@ public class LocaleDivisionLookupQuery extends LookupQuery {
 	public static final String DIVISION_CODE = "division.division_code";
 	public static final String DIVISION_NBR = "division.division_nbr";
 	public static final String DIVISION_DISPLAY = "concat(division_nbr,'-',division_code)";
-	public static final String DESCRIPTION = "division.description"; 
+	public static final String DESCRIPTION = "division.description";
+	public static final String ADDRESS_NAME = "address.name";
 	public static final String ADDRESS1 = "address.address1";
 	public static final String ADDRESS2 = "address.address2";
 	public static final String CITY = "address.city";
@@ -50,7 +51,7 @@ public class LocaleDivisionLookupQuery extends LookupQuery {
 			"		locale.name, locale.state_name, locale.locale_type_id,\n" + 
 			"		division.division_code, division.division_nbr, \n" +
 			"		concat(division_nbr,'-',division_code) as division_display, division.description,\n" + 
-			"		address.address1, address.address2, address.city, address.state, address.zip\n";
+			"		address.name as address_name, address.address1, address.address2, address.city, address.state, address.zip\n";
 			
 
 	public static final String sqlFromClause = 

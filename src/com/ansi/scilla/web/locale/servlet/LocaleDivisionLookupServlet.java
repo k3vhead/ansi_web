@@ -50,13 +50,12 @@ public class LocaleDivisionLookupServlet extends AbstractLookupServlet {
 	public LocaleDivisionLookupServlet() {
 		super(Permission.TAX_READ);
 		cols = new String[] { 
-			LocaleDivisionLookupQuery.DIVISION_ID,
+			LocaleDivisionLookupQuery.DIVISION_DISPLAY,
 			LocaleDivisionLookupQuery.NAME,
-			LocaleDivisionLookupQuery.LOCALE_TYPE_ID,
 			LocaleDivisionLookupQuery.STATE,
 			LocaleDivisionLookupQuery.EFF_START_DATE,
 			LocaleDivisionLookupQuery.EFF_STOP_DATE,
-			LocaleDivisionLookupQuery.ADDRESS_ID,
+			LocaleDivisionLookupQuery.ADDRESS_NAME,
 		};
 		super.itemTransformer = new ItemTransformer();
 	}
