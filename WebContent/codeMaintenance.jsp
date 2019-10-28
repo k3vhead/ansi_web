@@ -69,6 +69,7 @@
         			
         		init : function() {	
         			CODEMAINTENANCE.clearAddForm();
+        			CODEMAINTENANCE.clearEditForm();
         			CODEMAINTENANCE.createTable();
         			CODEMAINTENANCE.getCodes("list");
         			CODEMAINTENANCE.getTableFieldList(null, $("#addForm select[name='tableName']"));
@@ -90,6 +91,18 @@
     				});
     				$('.err').html("");
     				$('#addForm').data('rownum',null);
+                },       
+                
+                clearEditForm: function () {
+					$.each( $('#editForm').find("input"), function(index, $inputField) {
+						$fieldName = $($inputField).attr('name');
+						if ( $($inputField).attr("type") == "text" ) {
+							$($inputField).val("");
+							CODEMAINTENANCE.markValid($inputField);
+						}
+					});
+    				$('.err').html("");
+    				$('#editForm').data('rownum',null);
                 },
 	        		
 	        		
@@ -162,7 +175,7 @@
     			            } },
 				            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {		
 				            	var $editLink = '<span class="updAction" data-id="' + row.table_name + '" data-field_name="' + row.field_name + '" data-value="' + row.value + '"><webthing:edit>Edit</webthing:edit></span>';
-				            	var $deleteLink = '<span class="delAction" data-id="' + row.table_name + '" data-field_name="' + row.field_name + '" data-value="' + row.value + '"><webthing:delete>Delete</webthing:delete></span>';
+				            	var $deleteLink = '<span class="delAction" data-table_name="' + row.table_name + '" data-field_name="' + row.field_name + '" data-value="' + row.value + '"><webthing:delete>Delete</webthing:delete></span>';
 			            		$actionWithDelete = $editLink + " " + $deleteLink;
 			            		$action = $editLink;
 				            	if ( row.can_delete == true) {
@@ -213,11 +226,12 @@
 	        		//$("#deleteModal  input[name='action']").val("delete");
 	        		//$("#deleteModal").attr("table_name", $table_name);
 	        		//$("#deleteModal").attr("field_name", $field_name);
-	        		//$("#deleteModal").attr("value", $value);
-	        		
+	        		//$("#deleteModal").attr("value", $value);        	
+					
 	        		$("#deleteModal  input[name='table_name']").val($table_name);
 	        		$("#deleteModal  input[name='field_name']").val($field_name);	        		
 					$("#deleteModal  input[name='value']").val($value);	
+	        		$("#deleteModal .err").html("");
 	        		$("#deleteModal").dialog("open");
 				},         
 				
@@ -238,16 +252,19 @@
 		         	    		 	$('#codeTable').DataTable().ajax.reload();
 				    				$("#globalMsg").html("Update Successful").show().fadeOut(10000);
                	    	 	},
-            	    		403: function($data) {
-            	    			$("#globalMsg").html("Session Timeout. Log in and try again");
-            	    		},
-							404: function($data) {
-								$("#globalMsg").html("Invalid Selection").show().fadeOut(100000);
-							},
-							500: function($data) {
-								$("#globalMsg").html("System Error; Contact Support");
-							}
-	             	     },
+    						403: function($data) {
+    							$("#globalMsg").html("Session Timeout. Log in and try again");
+    						},
+    						404: function($data) {
+    							$("#deleteModal .divisionIdErr").html("Invalid Selection").show().fadeOut(6000);
+    						},
+    						405: function($data) {
+    							$("#globalMsg").html("Insufficient Permissions").show();
+    						},
+    						500: function($data) {
+    							$("#globalMsg").html("System Error; Contact Support");
+    						},
+    					},
 						dataType: 'json'
 					});
 				}, 		
@@ -382,15 +399,18 @@
    			    				}
    							},
    							403: function($data) {
-   								$("#globalMsg").html("Session Timeout. Log in and try again");
+   								$("#addForm").dialog("close");
+   								$("#globalMsg").html("Session Timeout. Log in and try again").show();
    							},
    							404: function($data) {
-   								$("#globalMsg").html("Invalid Selection").show().fadeOut(100000);
+   								$("#addForm").dialog("close");
+   								$("#globalMsg").html("Inconsistent System State. Reload and try again").show();
    							},
    							500: function($data) {
-   								$("#globalMsg").html("System Error; Contact Support");
-   							}
-   						},
+   								$("#addForm").dialog("close");
+   								$("#globalMsg").html("System Error 500. Contact Support").show();
+   							},
+    					},
    						dataType: 'json'
    					});
                	},
@@ -431,21 +451,24 @@
  			    					});
  			    				} else {	    				
  			    					$("#editForm").dialog("close");		
- 			    					CODEMAINTENANCE.clearAddForm();		    
+ 			    					CODEMAINTENANCE.clearEditForm();		    
  			    					$('#codeTable').DataTable().ajax.reload();					
  			    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
  			    				}
  							},
  							403: function($data) {
- 								$("#globalMsg").html("Session Timeout. Log in and try again");
+ 								$("#editForm").dialog("close");
+ 								$("#globalMsg").html("Session Timeout. Log in and try again").show();
  							},
  							404: function($data) {
- 								$("#globalMsg").html("Invalid Selection").show().fadeOut(100000);
+ 								$("#editForm").dialog("close");
+ 								$("#globalMsg").html("Inconsistent System State. Reload and try again").show();
  							},
  							500: function($data) {
- 								$("#globalMsg").html("System Error; Contact Support");
- 							}
- 						},
+ 								$("#editForm").dialog("close");
+ 								$("#globalMsg").html("System Error 500. Contact Support").show();
+ 							},
+    					},
  						dataType: 'json'
  					});
              	},
@@ -455,7 +478,7 @@
     					title:'Add Code',
     					autoOpen: false,
     					height: 400,
-    					width: 450,
+    					width: 600,
     					modal: true,
         				closeOnEscape:true,
     					buttons: [
@@ -487,14 +510,14 @@
     					title:'Edit Code',
     					autoOpen: false,
     					height: 400,
-    					width: 450,
+    					width: 600,
     					modal: true,
         				closeOnEscape:true,
     					buttons: [
     						{
     							id: "closeEditForm",
     							click: function() {		
- 			    					CODEMAINTENANCE.clearAddForm();		    
+ 			    					CODEMAINTENANCE.clearEditForm();		    
     								$("#editForm").dialog( "close" );
     							}
     						},{
@@ -505,7 +528,7 @@
     						}	      	      
     					],
     					close: function() {
-    						CODEMAINTENANCE.clearAddForm();
+    						CODEMAINTENANCE.clearEditForm();
     						$("#editForm").dialog( "close" );
     						//allFields.removeClass( "ui-state-error" );
     					}
@@ -595,19 +618,29 @@
     							$("#editForm input[name='displayValue']").val($code.displayValue);
     							$("#editForm select[name='seq']").val($code.seq);
     							$("#editForm input[name='description']").val($code.description);	   
-    							$("#editForm select[name='status']").val($code.status);	     		
+    							$("#editForm select[name='status']").val($code.status);	  
+    			        		
+    			        	/*	$("#editForm .table_name").html($table_name);	        		
+    			        		$("#editForm  .field_name").html($field_name);	        		
+    			        		$("#editForm  .value").html($value);	          			        		
+    			        		$("#editForm  .display").html($table_name);	        		
+    			        		$("#editForm  .seq").html($field_name);	        		
+    			        		$("#editForm  .status").html($value);	        */  		
     			        		$("#editForm .err").html("");
     			        		$("#editForm").dialog("open");
     						},
     						403: function($data) {
-    							$("#globalMsg").html("Session Timeout. Log in and try again");
+    							$("#editForm").dialog("close");
+    							$("#globalMsg").html("Session Timeout. Log in and try again").show();
     						},
     						404: function($data) {
-    							$("#globalMsg").html("Invalid Request");
+    							$("#editForm").dialog("close");
+    							$("#globalMsg").html("Inconsistent System State. Reload and try again").show();
     						},
     						500: function($data) {
-    							$("#globalMsg").html("System Error; Contact Support");
-    						}
+    							$("#editForm").dialog("close");
+    							$("#globalMsg").html("System Error 500. Contact Support").show();
+    						},
     					},
     					dataType: 'json'
     				});
@@ -621,7 +654,7 @@
                 		$('#goAdd').button('option', 'label', 'Save');
                 		$('#closeAddForm').button('option', 'label', 'Close');
                 		
-        				$("#addForm select[name='table_name']").val("");
+        				$("#addForm select[name='tableName']").val("");
         				//$("#addForm input[name='field_name']").val("");
         				$("#addForm select[name='tableName']").change(function () {
 						var $selectedTable = $('#addForm select[name="tableName"] option:selected').val();
@@ -638,7 +671,14 @@
         				$("#addForm input[name='display_value]").val("");
         				$("#addForm select[name='seq']").val("");
         				$("#addForm input[name='description']").val("");
-        				$("#addForm select[name='code_status']").val("");		        		
+        				$("#addForm select[name='code_status']").val("");	
+		        		
+		        	/*	$("#addForm  .tableName").html($tableName);	        		
+		        		$("#addForm  .fieldName").html($fieldName);	        		
+		        		$("#addForm  .value").html($value);	          			        		
+		        		$("#addForm  .display").html($table_name);	        		
+		        		$("#addForm  .seq").html($field_name);	        		
+		        		$("#addForm  .status").html($value);	  */       		
                 		$("#addForm .err").html("");
                 		$("#addForm").dialog("open");
         			});
@@ -716,7 +756,7 @@
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Value:</span></td>
 		    					<td><input type="text" name="value" data-required="true" data-valid="validValue" /></td>
-    							<td><span class="err" id="tableValueErr"></span></td>
+    							<td><span class="err" id="valueErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Display:</span></td>
@@ -754,26 +794,31 @@
 		    	
 		    	<div id="editFormDiv">
 		    		<h2 id="editFormTitle"></h2>
+		    		<div id="editFormMsg" class="err"></div>
 		    		<form action="#" method="post" id="editForm">
 		    			<table>
 		    				<tr>
-		    					<td><span class="formLabel">Table:</span></td>
-		    					<td><input type="text" name="tableName" style="border-style: hidden" readOnly /></td>
+		    					<td><span class="required"></span><span class="formLabel">Table:</span></td>
+		    					<td><input type="text" name="tableName" style="border-style: hidden" readOnly /></td>		    					
+    							<td><span class="err" id="tableNameErr"></span></td>
 		    				</tr>
 		    				<tr>
-		    					<td><span class="formLabel">Field:</span></td>
+		    					<td><span class="required"></span><span class="formLabel">Field:</span></td>
 		    					<td><input type="text" name="fieldName" style="border-style: hidden" readOnly /></td>
+		    					<td><span class="err" id="fieldNameErr"></span></td>
 		    				</tr>
 		    				<tr>
-		    					<td><span class="formLabel">Value:</span></td>
+		    					<td><span class="required"></span><span class="formLabel">Value:</span></td>
 		    					<td><input type="text" name="value" style="border-style: hidden" readOnly /></td>
+    							<td><span class="err" id="valueErr"></span></td>
 		    				</tr>
 		    				<tr>
-		    					<td><span class="formLabel">Display:</span></td>
+		    					<td><span class="required"></span><span class="formLabel">Display:</span></td>
 		    					<td><input type="text" name="displayValue"/></td>
+    							<td><span class="err" id="displayValueErr"></span></td>
 		    				</tr>
 		    				<tr>
-		    					<td><span class="formLabel">Sequence:</span></td>
+		    					<td><span class="required"></span><span class="formLabel">Sequence:</span></td>
 		    					<td>
 		    						<select name="seq">
 		    							<% for (int i = 1; i < 21; i++ ) { %>
@@ -781,6 +826,7 @@
 		    							<% } %>
 		    						</select>
 		    					</td>
+    							<td><span class="err" id="seqErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="formLabel">Description:</span></td>
