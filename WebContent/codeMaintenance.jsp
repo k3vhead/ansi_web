@@ -211,7 +211,15 @@
 				            }
 				    } );
 	        	},
-	    				
+
+            	
+    			
+    			doFilter: function ($event) {
+    				$event.preventDefault();
+    				var $filtervalue = $event.currentTarget.attributes['data-filter'].value;				
+    				$("#displayTable").find("tr:gt(0)").remove();
+    				CODEMAINTENANCE.getCodes($filtervalue);
+    			},
 	            	
 	    			
     			doFilter: function ($event) {
@@ -405,7 +413,7 @@
    							200: function($data) {
    			    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
    			    					$.each($data.data.webMessages, function (key, value) {
-   			    						var $selectorName = "#addForm" + key + "Err";
+   			    						var $selectorName = "#addForm ." + key + "Err";
    			    						$($selectorName).show();
    			    						$($selectorName).html(value[0]).fadeOut(10000);
    			    					});
@@ -463,7 +471,7 @@
  							200: function($data) {
  			    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
  			    					$.each($data.data.webMessages, function (key, value) {
- 			    						var $selectorName = "#editForm" + key + "Err";
+ 			    						var $selectorName = "#editForm ." + key + "Err";
  			    						$($selectorName).show();
  			    						$($selectorName).html(value[0]).fadeOut(10000);
  			    					});
