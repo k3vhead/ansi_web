@@ -21,27 +21,7 @@
     
     
     <tiles:put name="headextra" type="string">
-       	<link rel="stylesheet" href="css/lookup.css" />
-    	<script type="text/javascript" src="js/ansi_utils.js"></script>
-    	<script type="text/javascript" src="js/addressUtils.js"></script>
-    	<script type="text/javascript" src="js/lookup.js"></script> 
-    	<script type="text/javascript" src="js/ticket.js"></script> 
-    	
         <style type="text/css">
-			#addFormDiv {
-				display:none;
-				background-color:#FFFFFF;
-				color:#000000;
-				width:650px;
-				padding:15px;
-			}
-			.columnhider {
-				cursor:pointer;
-			}
-			#delData {
-				margin-top:15px;
-				margin-bottom:15px;
-			}
 			#deleteModal {
 				display:none;
 				background-color:#FFFFFF;
@@ -53,6 +33,13 @@
 			#displayTable {
 				width:90%;
 			}
+			#addFormDiv {
+				display:none;
+				background-color:#FFFFFF;
+				color:#000000;
+				width:650px;
+				padding:15px;
+			}
 			#editFormDiv {
 				display:none;
 				background-color:#FFFFFF;
@@ -60,13 +47,19 @@
 				width:650px;
 				padding:15px;
 			}
-			#filter-container {
-        		width:402px;
-        		float:right;
-        	}
+			#delData {
+				margin-top:15px;
+				margin-bottom:15px;
+			}
 			#showhidden { 
 				display:none;
 				text-align:right; 				
+				cursor:pointer;
+			}
+			.actionIcon {
+				cursor:pointer;
+			}
+			.columnhider {
 				cursor:pointer;
 			}
         </style>
@@ -117,11 +110,6 @@
 	        		
 	        		
 	    		createTable : function() {
-					var $jobId = '<c:out value="${ANSI_JOB_ID}" />';
-					var $divisionId = '<c:out value="${ANSI_DIVISION_ID}" />';
-					var $startDate = '<c:out value="${ANSI_TICKET_LOOKUP_START_DATE}" />';
-					var $statusFilter = '<c:out value="${ANSI_TICKET_LOOKUP_STATUS}" />';
-	    		
 	    			CODEMAINTENANCE.dataTable = $('#codeTable').DataTable( {
 	    			    "processing": 		true,
 	        	        "serverSide": 		true,
@@ -155,23 +143,22 @@
 				        "ajax": {
 				        	"url": "codeLookup",
 				        	"type": "GET",
-				        	"data": {"jobId":$jobId,"divisionId":$divisionId,"startDate":$startDate,"status":$statusFilter}
 				        	},
 				        aaSorting:[1],
 				        columns: [
-				        	{ title: "Table Name", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+				        	{ title: "Table Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 				            	if(row.table_name != null){return (row.table_name+"");}
 				            } },
-				            { title: "Field Name", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+				            { title: "Field Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.field_name != null){return (row.field_name+"");}
 				            } },
-				            { title: "Value", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+				            { title: "Value", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.value != null){return (row.value+"");}
 				            } },
-				            { title: "Display Value" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+				            { title: "Display Value" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 				            	if(row.display_value != null){return (row.display_value+"");}
 				            } },
-				            { title: "Description", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+				            { title: "Description", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.description != null){return (row.description+"");}
 				            } },
 				            { title: "Seq", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
@@ -190,8 +177,8 @@
     			            	return status;
     			            } },
 				            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {		
-				            	var $editLink = '<span class="updAction" data-id="' + row.table_name + '" data-field_name="' + row.field_name + '" data-value="' + row.value + '"><webthing:edit>Edit</webthing:edit></span>';
-				            	var $deleteLink = '<span class="delAction" data-table_name="' + row.table_name + '" data-field_name="' + row.field_name + '" data-value="' + row.value + '"><webthing:delete>Delete</webthing:delete></span>';
+				            	var $editLink = '<span class="actionIcon updAction" data-id="' + row.table_name + '" data-field_name="' + row.field_name + '" data-value="' + row.value + '"><webthing:edit>Edit</webthing:edit></span>';
+				            	var $deleteLink = '<span class="actionIcon delAction" data-table_name="' + row.table_name + '" data-field_name="' + row.field_name + '" data-value="' + row.value + '"><webthing:delete>Delete</webthing:delete></span>';
 			            		$actionWithDelete = $editLink + " " + $deleteLink;
 			            		$action = $editLink;
 				            	if ( row.can_delete == true) {
@@ -203,23 +190,13 @@
 				            "initComplete": function(settings, json) {
 				            	//console.log(json);
 				            	//USERLOOKUP.doFunctionBinding();
-				            	var myTable = this;
-				            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#codeTable", CODEMAINTENANCE.createTable);
 				            },
 				            "drawCallback": function( settings ) {
 				            	CODEMAINTENANCE.doFunctionBinding();
 				            }
 				    } );
 	        	},
-
-            	
-    			
-    			doFilter: function ($event) {
-    				$event.preventDefault();
-    				var $filtervalue = $event.currentTarget.attributes['data-filter'].value;				
-    				$("#displayTable").find("tr:gt(0)").remove();
-    				CODEMAINTENANCE.getCodes($filtervalue);
-    			},
+	    				
 	            	
 	    			
     			doFilter: function ($event) {
@@ -413,7 +390,7 @@
    							200: function($data) {
    			    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
    			    					$.each($data.data.webMessages, function (key, value) {
-   			    						var $selectorName = "#addForm ." + key + "Err";
+   			    						var $selectorName = "#addModal ." + key + "Err";
    			    						$($selectorName).show();
    			    						$($selectorName).html(value[0]).fadeOut(10000);
    			    					});
@@ -471,7 +448,8 @@
  							200: function($data) {
  			    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
  			    					$.each($data.data.webMessages, function (key, value) {
- 			    						var $selectorName = "#editForm ." + key + "Err";
+ 			    						var $selectorName = "#" + key + "Err";
+										 console.log("Error selector: " + $selectorName);
  			    						$($selectorName).show();
  			    						$($selectorName).html(value[0]).fadeOut(10000);
  			    					});
@@ -721,21 +699,6 @@
     
     
     <tiles:put name="content" type="string">
-    	<h1><bean:message key="page.label.code" /> Maintenance</h1> 
-    	<c:if test="${not empty ANSI_JOB_ID}">
-    		<span class="orange"><bean:message key="field.label.jobFilter" />: <c:out value="${ANSI_JOB_ID}" /></span><br />
-    	</c:if>
-    	<c:if test="${not empty ANSI_DIVISION_ID}">
-    		<span class="orange"><bean:message key="field.label.divisionFilter" />: <c:out value="${ANSI_DIVISION_ID}" /></span><br />
-    	</c:if>
-    	<c:if test="${not empty ANSI_TICKET_LOOKUP_START_DATE}">
-    		<span class="orange"><bean:message key="field.label.startDate" />: <c:out value="${ANSI_TICKET_LOOKUP_START_DATE}" /></span><br />
-    	</c:if>
-    	<c:if test="${not empty ANSI_TICKET_LOOKUP_STATUS}">
-    		<span class="orange"><bean:message key="field.label.statusFilter" />: <c:out value="${ANSI_TICKET_LOOKUP_STATUS}" /></span><br />
-    	</c:if>
-    
- 		<webthing:lookupFilter filterContainer="filter-container" />
 
 
 	 	<table id="codeTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;">
@@ -783,7 +746,7 @@
 		    						 	<option value=""></option>
 		    						 </select>
 		    					</td>
-    							<td><span class="err tableNameErr"></span></td>
+    							<td><span class="err" id="tableNameErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Field:</span></td>
@@ -792,12 +755,12 @@
 		    							<option value=""></option>
 		    						</select>
 		    					</td>
-    							<td><span class="err fieldNameErr"></span></td>
+    							<td><span class="err" id="fieldNameErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Value:</span></td>
 		    					<td><input type="text" name="value" data-required="true" data-valid="validValue" /></td>
-    							<td><span class="err valueErr"></span></td>
+    							<td><span class="err" id="valueErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Display:</span></td>
@@ -813,7 +776,7 @@
 		    							<% } %>
 		    						</select>
 		    					</td>
-    							<td><span class="err seqErr"></span></td>
+    							<td><span class="err" id="seqErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="formLabel">Description:</span></td>
@@ -846,17 +809,17 @@
 		    				<tr>
 		    					<td><span class="required"></span><span class="formLabel">Field:</span></td>
 		    					<td><input type="text" name="fieldName" style="border-style: hidden" readOnly /></td>
-		    					<td><span class="err fieldNameErr"></span></td>
+		    					<td><span class="err" id="fieldNameErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required"></span><span class="formLabel">Value:</span></td>
 		    					<td><input type="text" name="value" style="border-style: hidden" readOnly /></td>
-    							<td><span class="err valueErr"></span></td>
+    							<td><span class="err" id="valueErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required"></span><span class="formLabel">Display:</span></td>
 		    					<td><input type="text" name="displayValue"/></td>
-    							<td><span class="err displayValueErr"></span></td>
+    							<td><span class="err" id="displayValueErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required"></span><span class="formLabel">Sequence:</span></td>
@@ -867,7 +830,7 @@
 		    							<% } %>
 		    						</select>
 		    					</td>
-    							<td><span class="err seqErr"></span></td>
+    							<td><span class="err" id="seqErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="formLabel">Description:</span></td>

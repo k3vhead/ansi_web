@@ -38,8 +38,8 @@ public class CodeLookupServlet extends AbstractLookupServlet {
 				CodeLookupQuery.FIELD_NAME,
 				CodeLookupQuery.VALUE,
 				CodeLookupQuery.DISPLAY_VALUE,
-				CodeLookupQuery.SEQ,
 				CodeLookupQuery.DESCRIPTION,
+				CodeLookupQuery.SEQ,
 				CodeLookupQuery.CODE_STATUS,
 				CAN_DELETE,
 				};
