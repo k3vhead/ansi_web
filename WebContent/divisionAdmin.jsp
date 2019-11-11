@@ -135,28 +135,26 @@
 				row = row + '<td class="text-center">' + $hourlyRateIcon + "</td>";
 				if ( $division.status == 'Active' ) {
        				$iconcolor="green";
-       				$divisionText = '<i class="fa fa-check-square" aria-hidden="true"></i>';
+       				$divisionText = '<webthing:checkmark>Yes</webthing:checkmark>';
        			} else if ( $division.status == 'Inactive' ) {
        				$iconcolor="red";
-       				$divisionText = '<i class="fa fa-minus-circle" aria-hidden="true"></i>';
+       				$divisionText = '<webthing:ban>No</webthing:ban>';
        			} else {
        				$iconcolor="red";
-       				$divisionText = '<i class="fa fa-question-circle" aria-hidden="true"></i>';       				
+       				$divisionText = '<webthing:questionmark>No</webthing:questionmark>';       				
        			}
        			row = row + '<td class="status centered ' + $iconcolor + '">' + $divisionText + '</td>';
-       	    	<ansi:hasPermission permissionRequired="SYSADMIN">
-        		<ansi:hasWrite>
+       	    	<ansi:hasPermission permissionRequired="SYSADMIN_WRITE">
        			row = row + '<td class="text-left">';
-       			row = row + '<a href="#" class="updAction" data-id="' + $division.divisionId + '"data-row="' + $rownum +'"><span class="green fas fa-pencil-alt" ari-hidden="true"></span></a> | ';
+       			row = row + '<a href="#" class="updAction" data-id="' + $division.divisionId + '"data-row="' + $rownum +'"><webthing:edit>Edit</webthing:edit></a>';
        			if ( $division.userCount == 0 ) {
-       			row = row + '<a href="#" class="delAction" data-row="' + row.permissionGroupId +'"><span class="red fas fa-trash-alt" aria-hidden="true"></span></a>';
+       			row = row + '<a href="#" class="delAction" data-row="' + row.permissionGroupId +'"><webthing:delete>Delete</webthing:delete></a>';
        			}
        			row = row + '</td>';
        			
        			
        			$viewLink = '<a href="#" class="viewAction" data-id="'+row.permissionGroupId+'"><webthing:view>View</webthing:view></a>';
        			
-       			</ansi:hasWrite>
        			</ansi:hasPermission>       			
 				return row;
 			}
