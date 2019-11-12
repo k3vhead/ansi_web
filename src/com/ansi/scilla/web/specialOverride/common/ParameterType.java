@@ -14,6 +14,7 @@ public class ParameterType extends ApplicationObject {
 
 	static Method integerValidatorMethod;
 	static Method dateValidatorMethod;
+	static Method stringValidatorMethod;
 	
 	private String label;
 	private Class<?> type;
@@ -29,11 +30,19 @@ public class ParameterType extends ApplicationObject {
 	}
 	static {
 		try {
-			dateValidatorMethod = ParameterType.class.getMethod("validateDate", new Class<?>[] {Integer.class});
+			dateValidatorMethod = ParameterType.class.getMethod("validateDate", new Class<?>[] {Date.class});
 		} catch ( Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
+	static {
+		try {
+			stringValidatorMethod = ParameterType.class.getMethod("validateString", new Class<?>[] {String.class});
+		} catch ( Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
 	public ParameterType(String label, Class<?> type, Method validateMethod) {
 		super();
 		this.label = label;
@@ -69,6 +78,14 @@ public class ParameterType extends ApplicationObject {
 	public void validateDate(Date value) throws InvalidFormatException {
 		WebMessages webMessages = new WebMessages();
 		RequestValidator.validateDate(webMessages, getLabel(), value, true, value, value);
+		if ( ! webMessages.isEmpty() ) {
+			throw new InvalidFormatException();
+		}
+	}
+	
+	public void validateString(String value) throws InvalidFormatException {
+		WebMessages webMessages = new WebMessages();
+		RequestValidator.validateString(webMessages, getLabel(), value, true);
 		if ( ! webMessages.isEmpty() ) {
 			throw new InvalidFormatException();
 		}
