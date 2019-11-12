@@ -1,6 +1,7 @@
 package com.ansi.scilla.web.specialOverride.common;
 
 import java.lang.reflect.Method;
+import java.sql.Date;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.web.common.exception.InvalidFormatException;
@@ -12,14 +13,23 @@ public class ParameterType extends ApplicationObject {
 	private static final long serialVersionUID = 1L;
 
 	static Method integerValidatorMethod;
+	static Method dateValidatorMethod;
 	
 	private String label;
 	private Class<?> type;
 	private Method validateMethod;
 	
+	
 	static {
 		try {
 			integerValidatorMethod = ParameterType.class.getMethod("validateInteger", new Class<?>[] {Integer.class});
+		} catch ( Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	static {
+		try {
+			dateValidatorMethod = ParameterType.class.getMethod("validateDate", new Class<?>[] {Integer.class});
 		} catch ( Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -51,6 +61,14 @@ public class ParameterType extends ApplicationObject {
 	public void validateInteger(Integer value) throws InvalidFormatException {
 		WebMessages webMessages = new WebMessages();
 		RequestValidator.validateInteger(webMessages, getLabel(), value, 0, null, true);
+		if ( ! webMessages.isEmpty() ) {
+			throw new InvalidFormatException();
+		}
+	}
+	
+	public void validateDate(Date value) throws InvalidFormatException {
+		WebMessages webMessages = new WebMessages();
+		RequestValidator.validateDate(webMessages, getLabel(), value, true, value, value);
 		if ( ! webMessages.isEmpty() ) {
 			throw new InvalidFormatException();
 		}
