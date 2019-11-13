@@ -141,7 +141,7 @@
        				$divisionText = '<webthing:ban>No</webthing:ban>';
        			} else {
        				$iconcolor="red";
-       				$divisionText = '<webthing:questionmark>No</webthing:questionmark>';       				
+       				$divisionText = '<webthing:questionmark>Invalid</webthing:questionmark>';       				
        			}
        			row = row + '<td class="status centered ' + $iconcolor + '">' + $divisionText + '</td>';
        	    	<ansi:hasPermission permissionRequired="SYSADMIN_WRITE">
