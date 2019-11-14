@@ -139,7 +139,12 @@
 			            	if(row.ticket_type_desc != null){return (row.ticket_type_desc+"");}
 			            } },
 			            { width:"4%", title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-			            	if(row.div != null){return (row.div);}
+			            	if ( row.tkt_act_div == null || row.tkt_act_div=='-' ) {
+			            		div = row.div;
+			            	} else {
+			            		div = row.tkt_act_div;
+			            	}
+			            	return div;
 			            } },
 			            { width:"8%", title: "<bean:message key="field.label.billToName" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
 			            	if(row.bill_to_name != null){return (row.bill_to_name+"");}

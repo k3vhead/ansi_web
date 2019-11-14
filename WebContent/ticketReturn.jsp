@@ -212,6 +212,7 @@
         	});
         	
         	
+        	
             var $ticketComplete = $( "#ticketNbr" ).autocomplete({
 				source: "ticketTypeAhead",
                 minLength: 3,
@@ -249,7 +250,7 @@
         	
         	
         	
-			$(".editApprovals").click(function($event) {
+			$("#editApprovals").click(function($event) {
 				$("#editApprovalsModal input[name='modalCustomerSignature']").prop("checked", false);
 				$("#editApprovalsModal input[name='modalManagerApproval']").prop("checked", false);
 				$("#editApprovalsModal input[name='modalBillSheet']").prop("checked", false);
@@ -959,7 +960,7 @@
 		   			<td class="bottomRow" colspan="2">
 		   				<span class="formLabel">Manager Approval: </span> <i id="managerApproval" class="fa" aria-hidden="true"></i>
 		   				<div style="float:right;">
-		   					<span class="green fas fa-pencil-alt tooltip action-link editApprovals" ari-hidden="true"><span class="tooltiptext">Edit</span></span>
+		   					<webthing:edit styleId="editApprovals" styleClass="action-link">Edit</webthing:edit>
 		   				</div>
 		   			</td>
 		   		</tr>
@@ -968,7 +969,7 @@
 		   			<td colspan="3" style="border-top:solid 1px #000000; border-right:solid 1px #000000;">
 		   				<webthing:addressDisplayPanel cssId="jobSiteAddress" label="Job Site" />
 		   			</td>
-		   			<td colspan="3" style="border-top:solid 1px #)00000; border-left:solid 1px #FF0000;">
+		   			<td colspan="3" style="border-top:solid 1px #00000; border-left:solid 1px #FF0000;">
 						<webthing:addressDisplayPanel cssId="billToAddress" label="Bill To" />
 		   			
 		   			</td>
