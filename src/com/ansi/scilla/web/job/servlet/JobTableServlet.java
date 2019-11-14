@@ -61,7 +61,28 @@ public class JobTableServlet extends AbstractServlet {
 		int draw = 0;
 		int col = 0;
 		String dir = "asc";
-		String[] cols = { "job_id", "job.quote_id", "job.job_status", "division_nbr", "bill_to_name", "job_site_name", "job_site_address", "start_date","job_frequency", "price_per_cleaning",  "job_nbr", "service_description", "po_number" };
+		String[] cols = { "job_id"	// column: job
+				, "job.quote_id"	// column: quote
+				, "job.job_status" 	// column: status
+				, "division_nbr"	// column: div
+				, "bill_to_name"	// column: bill to
+				, "job_site_name"	// column: job site
+				, "job_site_address"	// column: address
+				, "start_date"	// column: start date
+				,"job_frequency"	// column: freq
+				, "price_per_cleaning"	// column: PPC
+				, "job_nbr"	// column: job#
+				, "service_description"	// column: service description
+				, "po_number"	// column: PO
+				, "concat(job_contact.last_name,', ',job_contact.first_name)"	// column: job contact
+				, "concat(site_contact.last_name,', ',site_contact.first_name)"	// column: site contact
+				, "concat(contract_contact.last_name,', ',contract_contact.first_name)"	// column: contract contact
+				, "concat(billing_contact.last_name,', ',billing_contact.first_name)"	// column: billing contact
+				, "quote.proposal_date"	// column: proposed
+				, "job.activation_date"	// column: active
+				, "job.cancel_date"	// column: cancel
+				, "job.cancel_reason"	// column: reason
+				};
 		String sStart = request.getParameter("start");
 	    String sAmount = request.getParameter("length");
 	    String sDraw = request.getParameter("draw");
@@ -102,7 +123,7 @@ public class JobTableServlet extends AbstractServlet {
 		    }
 		    if (sCol != null) {
 		        col = Integer.parseInt(sCol);
-		        if (col < 0 || col > 10)
+		        if (col < 0 || col > 20)
 		            col = 0;
 		    }
 		    if (sdir != null) {

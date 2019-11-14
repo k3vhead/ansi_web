@@ -1794,7 +1794,7 @@
 		            	$($destination + " .jobActivationDisplayPanel .job-activation-om-notes").html($jobDetail.job.omNotes);
 		            	$($destination + " .jobActivationDisplayPanel .job-activation-billing-notes").html($jobDetail.job.billingNotes);
 
-		            	$($destination + " .jobDatesDisplayPanel .job-dates-proposed-date").html($data.quote.proposalDate);
+		            	$($destination + " .jobDatesDisplayPanel .job-dates-proposed-date").html($data.quote.jobDetail.quote.proposalDate);
 		            	$($destination + " .jobDatesDisplayPanel .job-dates-activation-date").html($jobDetail.job.activationDate);
 		            	$($destination + " .jobDatesDisplayPanel .job-dates-start-date").html($jobDetail.job.startDate);
 		            	$($destination + " .jobDatesDisplayPanel .job-dates-cancel-date").html($jobDetail.job.cancelDate);

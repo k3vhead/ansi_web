@@ -481,7 +481,10 @@ public class QuoteServlet extends AbstractQuoteServlet {
 		if ( keyset.contains(QuoteRequest.JOB_SITE_ADDRESS_ID)) { quote.setJobSiteAddressId(quoteRequest.getJobSiteAddressId()); }
 		if ( keyset.contains(QuoteRequest.LEAD_TYPE)) { quote.setLeadType(quoteRequest.getLeadType()); }
 		if ( keyset.contains(QuoteRequest.MANAGER_ID)) { quote.setManagerId(quoteRequest.getManagerId()); }
-		if ( keyset.contains(QuoteRequest.DIVISION_ID)) { quote.setDivisionId(quoteRequest.getDivisionId()); }
+		if ( keyset.contains(QuoteRequest.DIVISION_ID)) { 
+			quote.setDivisionId(quoteRequest.getDivisionId()); 
+			changeDivisionOnTickets(conn, keyQuote.getQuoteId(), quoteRequest.getDivisionId());
+		}
 //		quote.setName(quoteRequest.getName());
 
 		if ( keyset.contains(QuoteRequest.PROPOSAL_DATE) && quoteRequest.getProposalDate() != null) {
@@ -584,6 +587,23 @@ public class QuoteServlet extends AbstractQuoteServlet {
 	}
 
 	
+	private void changeDivisionOnTickets(Connection conn, Integer quoteId, Integer divisionId) throws SQLException {
+		String sql = "update ticket set act_division_id=? \n " + 
+				"where ticket.ticket_id in \n" +
+				"( select ticket_id \n" + 
+				"from job\n" + 
+				"inner join ticket on ticket.job_id=job.job_id\n" + 
+				"	and ticket.ticket_status in ('N','D')\n" + 
+				"where job.quote_id=?)";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, divisionId);
+		ps.setInt(2, quoteId);
+		ps.executeUpdate();
+	}
+
+
+
+
 	private QuoteListResponse makeQuotesListResponse(Connection conn, List<UserPermission> permissionList) throws Exception {
 		QuoteListResponse quotesListResponse = new QuoteListResponse(conn, permissionList);
 		return quotesListResponse;

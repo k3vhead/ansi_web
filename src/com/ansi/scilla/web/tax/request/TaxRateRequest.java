@@ -3,13 +3,17 @@ package com.ansi.scilla.web.tax.request;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.util.Date;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
+import com.ansi.scilla.common.db.TaxRate;
 import com.ansi.scilla.web.common.request.AbstractRequest;
+import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.request.RequiredForAdd;
 import com.ansi.scilla.web.common.request.RequiredForUpdate;
+import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -44,6 +48,12 @@ public class TaxRateRequest extends AbstractRequest {
 
 	private static final long serialVersionUID = 1L;
 	
+	public static final String AMOUNT = "amount";
+	public static final String EFFECTIVE_DATE = "effectiveDate";
+	public static final String LOCATION = "location";
+	public static final String RATE = "rate";
+	public static final String TAX_RATE_ID = "taxRateId";
+	
 	private BigDecimal amount;
 	private Date effectiveDate;
 	private String location;
@@ -59,6 +69,7 @@ public class TaxRateRequest extends AbstractRequest {
 	 * Exceptions are thrown when the JSON string does not match expectations<br />
 	 * <br />
 	 * @param jsonString
+	 * @throws InstantiationException 
 	 * @throws IllegalAccessException
 	 * @throws InvocationTargetException
 	 * @throws JsonParseException
@@ -66,9 +77,10 @@ public class TaxRateRequest extends AbstractRequest {
 	 * @throws IOException
 	 * @throws NoSuchMethodException 
 	 */
-	public TaxRateRequest(String jsonString) throws IllegalAccessException, InvocationTargetException, JsonParseException, JsonMappingException, IOException, NoSuchMethodException {
+	public TaxRateRequest(String jsonString) throws JsonParseException, JsonMappingException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, IOException  {
 		this();
-		TaxRateRequest req = (TaxRateRequest) AppUtils.json2object(jsonString, TaxRateRequest.class);
+		TaxRateRequest req = new TaxRateRequest();
+		AppUtils.json2object(jsonString, req);
 		PropertyUtils.copyProperties(this, req);
 	}
 
@@ -148,6 +160,24 @@ public class TaxRateRequest extends AbstractRequest {
 
 	public void setTaxRateId(Integer taxRateId) {
 		this.taxRateId = taxRateId;
+	}
+
+	public WebMessages validateAdd() {
+		WebMessages webMessages = new WebMessages();
+		
+		RequestValidator.validateBigDecimal(webMessages, AMOUNT, this.amount, BigDecimal.ZERO, null, true);
+		RequestValidator.validateDate(webMessages, EFFECTIVE_DATE, this.effectiveDate, false, null, null);
+		RequestValidator.validateString(webMessages, LOCATION, this.location, true);
+		RequestValidator.validateBigDecimal(webMessages, RATE, this.rate, BigDecimal.ZERO, null, true);
+		
+		return webMessages;
+	}
+	
+	
+	public WebMessages validateUpdate(Connection conn) throws Exception {
+		WebMessages webMessages = validateAdd();
+		RequestValidator.validateId(conn, webMessages, "tax_rate", TaxRate.TAX_RATE_ID, TAX_RATE_ID, this.taxRateId, true);
+		return webMessages;
 	}
 
 }
