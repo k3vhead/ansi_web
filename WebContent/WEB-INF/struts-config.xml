@@ -342,9 +342,9 @@
             path="/ticketOverride"
             type="com.ansi.scilla.web.ticket.action.TicketReturnAction"
             name="idForm"
-            input="/ticketOverride.jsp"
+            input="/tickets/ticketOverride.jsp"
             scope="request">            
-            <forward name="valid" path="/ticketOverride.jsp" />
+            <forward name="valid" path="/tickets/ticketOverride.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>      
 		<action

@@ -30,6 +30,7 @@ public enum Menu {
 	
 	REPORTS("Reports", null, null,"#"),
 	DRV30(				"30 Day DRV",			REPORTS, Permission.TICKET_READ,	"ticketView.html"),
+	PAST_DUE(			"Past Due",				REPORTS, Permission.TECH_ADMIN,		"pastDueReport.html"),
 	
 	
 	
@@ -51,7 +52,7 @@ public enum Menu {
 	SETTINGS("Settings", null, Permission.SYSADMIN_READ,"#"),
 
 	TAX_MAINTENANCE(	"Tax Rate Archive",		SETTINGS,	Permission.SYSADMIN_READ,	"taxRateMaintenance.html"),
-	CODES(				"Codes",				SETTINGS,	Permission.SYSADMIN_READ,	"codeMaintenanceMaintenance.html"),
+	CODES(				"Codes",				SETTINGS,	Permission.SYSADMIN_READ,	"codeMaintenance.html"),
 	DIVISIONS(			"Divisions",			SETTINGS,	Permission.SYSADMIN_READ,	"divisionAdmin.html"),
 	USER_LOOKUP(		"User Lookup",			SETTINGS,	Permission.SYSADMIN_READ,	"userLookup.html"),
 	PERMISSIONS(		"Permissions",			SETTINGS,	Permission.SYSADMIN_READ,	"permissionGroup.html"),

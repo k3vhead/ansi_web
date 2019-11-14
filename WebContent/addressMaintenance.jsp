@@ -150,7 +150,11 @@
 						ADDRESSMAINTENANCE.makeAutoComplete();
 						if ( ADDRESSMAINTENANCE.ansiModal != '' ) {
 							$(".addButton").click();
-						}
+						}    					
+	    				$('.ScrollTop').click(function() {
+	    					$('html, body').animate({scrollTop: 0}, 800);
+	    	      	  		return false;
+	    	      	    });
 					},	
 					
 					
@@ -1188,6 +1192,7 @@
 		</div>
 		<input  type="text" id="updateOrAdd" style="display:none" />
 		<input  type="text" id="aId" style="display:none" />
+    		<webthing:scrolltop />
     </tiles:put>	
 </tiles:insert>
 

@@ -17,6 +17,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
@@ -62,15 +63,18 @@ public class TicketOverrideServlet extends TicketServlet {
 	public static final String FIELDNAME_INVOICE_DATE = "invoiceDate";
 	public static final String FIELDNAME_ACT_PRICE_PER_CLEANING = "actPricePerCleaning";
 	public static final String FIELDNAME_ACT_PO_NUMBER = "actPoNumber";
+	public static final String FIELDNAME_DIVISION_ID = "divisionId";
 	
 	private final String MESSAGE_SUCCESS = "Success";
 	private final String MESSAGE_NOT_PROCESSED = "Not Processed";
 	private final String MESSAGE_INSUFFICIENT_PERMISSION = "You do not have permission to do this";
 	private final String MESSAGE_BILLTO_MISMATCH = "New Invoice does not have the same bill-to";
-	private final String MESSAGE_INVALID_DATE = "Invalid Date";
+	private final String MESSAGE_INVALID_DATE = "Invalid Date";	
 	private final String MESSAGE_INVALID_INVOICE_ID = "Invalid Invoice ID";
 	private final String MESSAGE_INVALID_FORMAT = "Invalid Format";
 	private final String MESSAGE_INVALID_OVERRIDE = "Invalid Override";
+	private final String MESSAGE_INVALID_VALUE_DIVISION_ID = "Invalid Division";
+	private final String MESSAGE_MISSING_VALUE_DIVISION_ID = "Missing required value: Division";
 	private final String MESSAGE_MISSING_INVOICE_ID = "Missing required value: Invoice ID";
 	private final String MESSAGE_MISSING_INVOICE_DATE = "Missing required value: Invoice Date";
 	private final String MESSAGE_MISSING_PROCESS_NOTE = "Missing required values: process date/process notes";
@@ -406,6 +410,35 @@ public class TicketOverrideServlet extends TicketServlet {
 	}
 	
 	
+	
+	public OverrideResult doDivisionId(Connection conn, Ticket ticket, HashMap<String, String> values, SessionUser sessionUser) throws Exception {
+		logger.log(Level.DEBUG, "processing DivisionId");
+		Boolean success = null;
+		String message = null;
+		
+
+		if ( values.containsKey(FIELDNAME_DIVISION_ID) ) {
+			String value = values.get(FIELDNAME_DIVISION_ID);
+			if ( StringUtils.isBlank(value)) {
+				success = false;
+				message = MESSAGE_MISSING_VALUE_DIVISION_ID;
+			} else if ( StringUtils.isNumeric(value)) {
+				ticket.setActDivisionId(Integer.valueOf(value));
+				success = true;
+				message = MESSAGE_SUCCESS;
+			} else {
+				success = false;
+				message = MESSAGE_INVALID_VALUE_DIVISION_ID;
+			}
+		} else {
+			success = false;
+			message = MESSAGE_MISSING_VALUE_DIVISION_ID;
+		}
+		return new OverrideResult(success, message, ticket, true);
+	}
+	
+	
+	
 	private boolean isSameBillTo(Connection conn, Integer ticketId, Integer newInvoiceId) throws Exception {
 		try {
 			Address oldBillTo = TicketUtils.getBillToForTicket(conn, ticketId);
@@ -447,6 +480,7 @@ public class TicketOverrideServlet extends TicketServlet {
 		INVOICE_DATE("invoiceDate","doInvoiceDate", Permission.TICKET_OVERRIDE),
 		ACT_PRICE_PER_CLEANING("actPricePerCleaning","doPricePerCleaning", Permission.TICKET_OVERRIDE),
 		ACT_PO_NUMBER("actPoNumber","doPoNumber", Permission.TICKET),
+		DIVISION_ID("divisionId","doDivisionId",Permission.TICKET_OVERRIDE),
 		;
 		
 		private final String id;

@@ -54,7 +54,7 @@ change log
 				display:none;
 				background-color:#FFFFFF;
 				color:#000000;
-				width:300px;
+				width:450px;
 				padding:15px;
 			}
 
@@ -120,7 +120,12 @@ change log
                 prevText:'&lt;&lt;',
                 nextText: '&gt;&gt;',
                 showButtonPanel:true
-            });
+            }); 	
+			
+			$('.ScrollTop').click(function() {
+				$('html, body').animate({scrollTop: 0}, 800);
+      	  		return false;
+      	    });
 						
 			function formatDate(dateValue)
 			{
@@ -203,6 +208,8 @@ change log
 					markValid(value);
 				});
 
+				$("#addForm .err").html("");
+				
 				// show the update record popup
              	$('#addFormDiv').bPopup({
 					modalClose: false,
@@ -248,6 +255,7 @@ change log
 				// button on the 'addFormDiv', after they have
 				// entered the values for the new item
 
+				$("#addForm .err").html("");
 				// This function actually Adds the new taxRate to the database
 				$clickevent.preventDefault();
 				$outbound = {};
@@ -295,58 +303,59 @@ change log
 					type: 'POST',
 					url: $url,
 					data: JSON.stringify($outbound),
-					success: function($data) {
-						if ( $data.responseHeader.responseCode == 'SUCCESS') {
-							// if the row was successfully added to the database
-							// modthis
-							if ( $url == "taxRate/add" ) {
-								// 	( I don't think this is needed anymore -> )   var count = $('#displayTable tr').length - 1;
-								// ...then add it to the table being displayed on-screen as well.
-								addRow($data.data.taxRate.taxRateId, $data.data.taxRate);
-							} else {
-								// if the row was successfully updated in the database
-
-								// get the id of the record that was updated.
-								$data_item_id = $('#addForm').data('data-item-id');
-
-								// find the row on-scree that contains the old values for this record.
-            					var $rowFinder = '#data-item-id-' + $data_item_id;					
-
-								// create a new row containing the updated values for the record.			
-				            	var $rowTd = makeRow($outbound, $data_item_id);
-
-								// replace the row with the old values with the row with the new values.
-				            	$($rowFinder).html($rowTd);
-							}
-							// bind the 'buttons' on the new row.. 
-							doFunctionBinding();
-
-							clearAddForm();
-
-							// close the add/update popup form
-							$('#addFormDiv').bPopup().close();
-
-							// display a message that the update was successful
-							$("#globalMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]).fadeIn(10).fadeOut(6000);
-
-						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-							// if the add/update was NOT successful
-
-							// display the list of errors / messages sent back from the server.
-							$.each($data.data.webMessages, function(key, messageList) {
-								var identifier = "#" + key + "Err";
-								msgHtml = "<ul>";
-								$.each(messageList, function(index, message) {
-									msgHtml = msgHtml + "<li>" + message + "</li>";
-								});
-								msgHtml = msgHtml + "</ul>";
-								$(identifier).html(msgHtml);
-							});		
-							$("#addFormMsg").html($data.data.webMessages['GLOBAL_MESSAGE'][0]);
-						} else {							
-						}
-					},
 					statusCode: {
+						200: function($data) {
+							if ( $data.responseHeader.responseCode == 'SUCCESS') {
+								// if the row was successfully added to the database
+								// modthis
+								if ( $url == "taxRate/add" ) {
+									// 	( I don't think this is needed anymore -> )   var count = $('#displayTable tr').length - 1;
+									// ...then add it to the table being displayed on-screen as well.
+									addRow($data.data.taxRate.taxRateId, $data.data.taxRate);
+								} else {
+									// if the row was successfully updated in the database
+
+									// get the id of the record that was updated.
+									$data_item_id = $('#addForm').data('data-item-id');
+
+									// find the row on-scree that contains the old values for this record.
+	            					var $rowFinder = '#data-item-id-' + $data_item_id;					
+
+									// create a new row containing the updated values for the record.			
+					            	var $rowTd = makeRow($outbound, $data_item_id);
+
+									// replace the row with the old values with the row with the new values.
+					            	$($rowFinder).html($rowTd);
+								}
+								// bind the 'buttons' on the new row.. 
+								doFunctionBinding();
+
+								clearAddForm();
+
+								// close the add/update popup form
+								$('#addFormDiv').bPopup().close();
+
+								// display a message that the update was successful
+								$("#globalMsg").html("Success").show().fadeOut(6000);
+
+							} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+								// if the add/update was NOT successful
+
+								// display the list of errors / messages sent back from the server.
+								$.each($data.data.webMessages, function(key, messageList) {
+									var identifier = "#" + key + "Err";
+									msgHtml = "<ul>";
+									$.each(messageList, function(index, message) {
+										msgHtml = msgHtml + "<li>" + message + "</li>";
+									});
+									msgHtml = msgHtml + "</ul>";
+									$(identifier).html(msgHtml);
+								});		
+							} else {
+								$('#addFormDiv').bPopup().close();
+								$("#globalMsg").html("Unexpected response; Contact Support").show();
+							}
+						},
 						403: function($data) {
 							$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
 						} 
@@ -532,6 +541,7 @@ change log
        	    	</ansi:hasPermission>
     		</tr>
     	</table>
+    				<webthing:scrolltop />
 
 		<ansi:isSuperUser>
 				<div class="addButtonDiv">
