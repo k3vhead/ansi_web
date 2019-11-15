@@ -513,7 +513,7 @@
     </tiles:put>
     
    <tiles:put name="content" type="string">
-    	<h1><bean:message key="page.label.user" /><bean:message key="menu.label.lookup" /></h1>    	
+    	<h1><bean:message key="page.label.user" /> <bean:message key="menu.label.lookup" /></h1>    	
     	<c:if test="${not empty ANSI_PERMISSION_GROUP_NAME}">
     		<div id="filterLabel">
 	    		<span class="orange"><bean:message key="field.label.permissionGroupFilter" />: <c:out value="${ANSI_PERMISSION_GROUP_NAME}" /></span>
