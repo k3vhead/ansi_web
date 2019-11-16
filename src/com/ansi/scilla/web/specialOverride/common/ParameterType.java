@@ -17,35 +17,25 @@ public class ParameterType extends ApplicationObject {
 	static Method stringValidatorMethod;
 	
 	private String label;
+	private String fieldName;
 	private Class<?> type;
 	private Method validateMethod;
 	
 	
 	static {
 		try {
-			integerValidatorMethod = ParameterType.class.getMethod("validateInteger", new Class<?>[] {Integer.class});
-		} catch ( Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-	static {
-		try {
-			dateValidatorMethod = ParameterType.class.getMethod("validateDate", new Class<?>[] {Date.class});
-		} catch ( Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-	static {
-		try {
+			integerValidatorMethod = ParameterType.class.getMethod("validateInteger", new Class<?>[] {Integer.class});		
+			dateValidatorMethod = ParameterType.class.getMethod("validateDate", new Class<?>[] {Date.class});		
 			stringValidatorMethod = ParameterType.class.getMethod("validateString", new Class<?>[] {String.class});
 		} catch ( Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 	
-	public ParameterType(String label, Class<?> type, Method validateMethod) {
+	public ParameterType(String label, String fieldName, Class<?> type, Method validateMethod) {
 		super();
 		this.label = label;
+		this.fieldName = fieldName;
 		this.type = type;
 	}
 	public String getLabel() {
@@ -53,6 +43,12 @@ public class ParameterType extends ApplicationObject {
 	}
 	public void setLabel(String label) {
 		this.label = label;
+	}	
+	public String getFieldName() {
+		return fieldName;
+	}
+	public void setFieldName(String fieldName) {
+		this.fieldName = fieldName;
 	}
 	public Class<?> getType() {
 		return type;

@@ -7,12 +7,12 @@ public enum SpecialOverrideType {
 		"select * from payment where payment_id=? and payment_date=?",
 		"update payment set payment_date=? where payment_id=?",
 		new ParameterType[] { 
-				new ParameterType("Payment Id", Integer.class, ParameterType.integerValidatorMethod),
-				new ParameterType("Payment Date", java.sql.Date.class, ParameterType.dateValidatorMethod)
+				new ParameterType("Payment Id", "payment_id", Integer.class, ParameterType.integerValidatorMethod),
+				new ParameterType("Payment Date", "payment_date", java.sql.Date.class, ParameterType.dateValidatorMethod)
 			},
 		new ParameterType[] { 
-				new ParameterType("New Date", java.sql.Date.class, ParameterType.dateValidatorMethod),
-				new ParameterType("Payment Id", Integer.class, ParameterType.integerValidatorMethod)
+				new ParameterType("New Date", "new_payment_date", java.sql.Date.class, ParameterType.dateValidatorMethod),
+				new ParameterType("Payment Id", "payment_id", Integer.class, ParameterType.integerValidatorMethod)
 			}
 		);
 
