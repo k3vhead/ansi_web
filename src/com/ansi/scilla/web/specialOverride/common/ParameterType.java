@@ -73,7 +73,7 @@ public class ParameterType extends ApplicationObject {
 	
 	public void validateDate(Date value) throws InvalidFormatException {
 		WebMessages webMessages = new WebMessages();
-		RequestValidator.validateDate(webMessages, getLabel(), value, true, value, value);
+		RequestValidator.validateDate(webMessages, getLabel(), value, true, (Date)null, (Date)null);
 		if ( ! webMessages.isEmpty() ) {
 			throw new InvalidFormatException();
 		}
