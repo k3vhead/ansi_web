@@ -25,6 +25,8 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
 public class SpecialOverrideServlet extends AbstractServlet {
 
 	
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException { //  Note : modeled after recommended uri parsing pattern 2018-04-19 kjw
 		AnsiURL url = null;
@@ -32,7 +34,7 @@ public class SpecialOverrideServlet extends AbstractServlet {
 		WebMessages webMessages = new WebMessages();
 		try {
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.PERMISSIONS_READ);
+			AppUtils.validateSession(request, Permission.OVERRIDE_UPDATE_PAYMENTS);
 
 			url = new AnsiURL(request, "permission", new String[] { ACTION_IS_LIST });	
 			if ( StringUtils.isBlank(url.getCommand() )) {

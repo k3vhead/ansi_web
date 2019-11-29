@@ -681,6 +681,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>specialOverride</servlet-name>
+		<url-pattern>/specialOverride</url-pattern>
 		<url-pattern>/specialOverride/*</url-pattern>
 	</servlet-mapping>
 

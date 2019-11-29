@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SpecialOverrideResultSet {
+public class SpecialOverrideUtils {
 	
 	public static ArrayList<List<Object>> makeData(ResultSet rs) throws SQLException {
 		ResultSetMetaData rsmd = rs.getMetaData();

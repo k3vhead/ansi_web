@@ -1,5 +1,7 @@
 package com.ansi.scilla.web.specialOverride.common;
 
+import com.ansi.scilla.web.common.utils.Permission;
+
 public enum SpecialOverrideType {
 	
 	UPDATE_PAYMENT_DATE(
@@ -13,8 +15,9 @@ public enum SpecialOverrideType {
 		new ParameterType[] { 
 				new ParameterType("New Date", "new_payment_date", java.sql.Date.class, ParameterType.dateValidatorMethod),
 				new ParameterType("Payment Id", "payment_id", Integer.class, ParameterType.integerValidatorMethod)
-			}
-		);
+			},
+		Permission.OVERRIDE_UPDATE_PAYMENTS
+	);
 
 	
 
@@ -23,13 +26,16 @@ public enum SpecialOverrideType {
 	private final String updateSql;
 	private final ParameterType[] selectParms;
 	private final ParameterType[] updateParms;
+	private final Permission permission;
 	
-	private SpecialOverrideType(String display, String selectSql, String updateSql, ParameterType[] selectParms, ParameterType[] updateParms) {
+	private SpecialOverrideType(String display, String selectSql, String updateSql, ParameterType[] selectParms, 
+			ParameterType[] updateParms, Permission permission) {
 		this.display = display;
 		this.selectSql = selectSql;
 		this.updateSql = updateSql;
 		this.selectParms = selectParms;
 		this.updateParms = updateParms;
+		this.permission = permission;
 	}
 
 	public String getDisplay() {
@@ -52,5 +58,8 @@ public enum SpecialOverrideType {
 		return updateParms;
 	}
 	
+	public Permission getPermission() {
+		return permission;
+	}
 	
 }
