@@ -194,7 +194,7 @@
 									$("#addFormMsg").html($data.responseJSON.responseHeader.responseMessage);
 								},
 								500: function($data) {
-		             	    		$("#addFormMsg").html("Unhandled Exception").fadeIn(10).fadeOut(6000);
+		             	    		$("#addFormMsg").html("System error contact support").fadeIn(10);
 		             	    	} 
 							},
 							dataType: 'json'
@@ -249,7 +249,7 @@
 									$("#editFormMsg").html($data.responseJSON.responseHeader.responseMessage);
 								},
 								500: function($data) {
-		             	    		$("#editFormMsg").html("Unhandled Exception").fadeIn(10).fadeOut(6000);
+		             	    		$("#editFormMsg").html("System error contact support").fadeIn(10);
 		             	    	} 
 							},
 							dataType: 'json'
@@ -263,18 +263,18 @@
 							type: 'GET',
 							url: 'division/list',
 							data: {},
-							success: function($data) {
+							statusCode: {
+								200: function($data) {
 								$.each($data.data.divisionList, function(index, value) {
 									DIVISIONADMIN.addRow(index, value);
 								});
 								DIVISIONADMIN.doFunctionBinding();
-							},
-							statusCode: {
+								},
 								403: function($data) {
 									$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
 								},
 								500: function($data) {
-			         	    		$("#globalMsg").html("Unhandled Exception").fadeIn(10).fadeOut(6000);
+			         	    		$("#globalMsg").html("System error contact support").fadeIn(10);
 			         	    	} 
 							},
 							dataType: 'json'
@@ -309,15 +309,15 @@
 			            	    type: 'delete',
 			            	    url: $url,
 			            	    data: $outbound,
-			            	    success: function($data) {
-			            	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
-									if ( $data.responseHeader.responseCode == 'SUCCESS') {
-										$rowfinder = "tr:eq(" + $rownum + ")"
-										$("#displayTable").find($rowfinder).remove();
-										$('#confirmDelete').dialog("close");
-									}
-			            	     },
-			            	     statusCode: {
+								statusCode: {
+									200: function($data) {
+				            	    	$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
+										if ( $data.responseHeader.responseCode == 'SUCCESS') {
+											$rowfinder = "tr:eq(" + $rownum + ")"
+											$("#displayTable").find($rowfinder).remove();
+											$('#confirmDelete').dialog("close");
+										}
+				            	     },
 			             	    	403: function($data) {
 			             	    		$('#confirmDelete').dialog("close");
 			             	    		$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
@@ -328,7 +328,7 @@
 			             	    	},
 			             	    	500: function($data) {
 			             	    		$('#confirmDelete').dialog("close");
-			             	    		$("#globalMsg").html("Unhandled Exception").fadeIn(10).fadeOut(6000);
+			             	    		$("#globalMsg").html("System error contact support").fadeIn(10);
 			             	    	} 
 			             	     },
 			             	     dataType: 'json'
@@ -376,44 +376,44 @@
 								type: 'POST',
 								url: $url,
 								data: JSON.stringify($outbound),
-								success: function($data) {
-									if ( $data.responseHeader.responseCode == 'SUCCESS') {
-										if ( $url == "division/add" ) {
-											var count = $('#displayTable tr').length - 1;
-											DIVISIONADMIN.addRow(count, $data.data.division);
-										} else {
-							            	var $rownum = $('#addForm').data('rownum');
-							                var $rowId = eval($rownum) + 1;
-							            	var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")"
-							            	var $rowTd = makeRow($data.data.division, $rownum);
-							            	$($rowFinder).html($rowTd);
-										}
-										DIVISIONADMIN.doFunctionBinding();
-										DIVISIONADMIN.clearAddForm();
-										$('#addFormDiv').dialog("close");
-										$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
-									} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-										$('.err').html("");
-										 $.each($data.data.webMessages, function(key, messageList) {
-											var identifier = "#" + key + "Err";
-											msgHtml = "<ul>";
-											$.each(messageList, function(index, message) {
-												msgHtml = msgHtml + "<li>" + message + "</li>";
-											});
-											msgHtml = msgHtml + "</ul>";
-											$(identifier).html(msgHtml);
-										});	
-										$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
-									} else {
-										
-									}
-								},
 								statusCode: {
+									200: function($data) {
+										if ( $data.responseHeader.responseCode == 'SUCCESS') {
+											if ( $url == "division/add" ) {
+												var count = $('#displayTable tr').length - 1;
+												DIVISIONADMIN.addRow(count, $data.data.division);
+											} else {
+								            	var $rownum = $('#addForm').data('rownum');
+								                var $rowId = eval($rownum) + 1;
+								            	var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")"
+								            	var $rowTd = makeRow($data.data.division, $rownum);
+								            	$($rowFinder).html($rowTd);
+											}
+											DIVISIONADMIN.doFunctionBinding();
+											DIVISIONADMIN.clearAddForm();
+											$('#addFormDiv').dialog("close");
+											$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
+										} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+											$('.err').html("");
+											 $.each($data.data.webMessages, function(key, messageList) {
+												var identifier = "#" + key + "Err";
+												msgHtml = "<ul>";
+												$.each(messageList, function(index, message) {
+													msgHtml = msgHtml + "<li>" + message + "</li>";
+												});
+												msgHtml = msgHtml + "</ul>";
+												$(identifier).html(msgHtml);
+											});	
+											$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
+										} else {
+											
+										}
+									},
 									403: function($data) {
 										$("#addFormMsg").html($data.responseJSON.responseHeader.responseMessage);
 									},
 									500: function($data) {
-			             	    		$("#addFormMsg").html("Unhandled Exception").fadeIn(10).fadeOut(6000);
+			             	    		$("#addFormMsg").html("System error contact support").fadeIn(10);
 			             	    	} 
 								},
 								dataType: 'json'
@@ -460,44 +460,44 @@
 								type: 'POST',
 								url: $url,
 								data: JSON.stringify($outbound),
-								success: function($data) {
-									if ( $data.responseHeader.responseCode == 'SUCCESS') {
-										if ( $url == "division/add" ) {
-											var count = $('#displayTable tr').length - 1;
-											DIVISIONADMIN.addRow(count, $data.data.division);
-										} else {
-							            	var $rownum = $('#editForm').data('rownum');
-							                var $rowId = eval($rownum) + 1;
-							            	var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")"
-							            	var $rowTd = makeRow($data.data.division, $rownum);
-							            	$($rowFinder).html($rowTd);
-										}
-										DIVISIONADMIN.doFunctionBinding();
-										DIVISIONADMIN.clearAddForm();
-										$('#editForm').dialog("close");
-										$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
-									} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-										$('.err').html("");
-										 $.each($data.data.webMessages, function(key, messageList) {
-											var identifier = "#" + key + "Err";
-											msgHtml = "<ul>";
-											$.each(messageList, function(index, message) {
-												msgHtml = msgHtml + "<li>" + message + "</li>";
-											});
-											msgHtml = msgHtml + "</ul>";
-											$(identifier).html(msgHtml);
-										});	
-										$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
-									} else {
-										
-									}
-								},
 								statusCode: {
+									200: function($data) {
+										if ( $data.responseHeader.responseCode == 'SUCCESS') {
+											if ( $url == "division/add" ) {
+												var count = $('#displayTable tr').length - 1;
+												DIVISIONADMIN.addRow(count, $data.data.division);
+											} else {
+								            	var $rownum = $('#editForm').data('rownum');
+								                var $rowId = eval($rownum) + 1;
+								            	var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")"
+								            	var $rowTd = makeRow($data.data.division, $rownum);
+								            	$($rowFinder).html($rowTd);
+											}
+											DIVISIONADMIN.doFunctionBinding();
+											DIVISIONADMIN.clearAddForm();
+											$('#editForm').dialog("close");
+											$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
+										} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+											$('.err').html("");
+											 $.each($data.data.webMessages, function(key, messageList) {
+												var identifier = "#" + key + "Err";
+												msgHtml = "<ul>";
+												$.each(messageList, function(index, message) {
+													msgHtml = msgHtml + "<li>" + message + "</li>";
+												});
+												msgHtml = msgHtml + "</ul>";
+												$(identifier).html(msgHtml);
+											});	
+											$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
+										} else {
+											
+										}
+									},
 									403: function($data) {
 										$("#editFormMsg").html($data.responseJSON.responseHeader.responseMessage);
 									},
 									500: function($data) {
-			             	    		$("#editFormMsg").html("Unhandled Exception").fadeIn(10).fadeOut(6000);
+			             	    		$("#editFormMsg").html("System error contact support").fadeIn(10);
 			             	    	} 
 								},
 								dataType: 'json'
