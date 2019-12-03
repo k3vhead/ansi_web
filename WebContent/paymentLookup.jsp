@@ -28,7 +28,8 @@
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
     	<script type="text/javascript" src="js/addressUtils.js"></script>
     	<script type="text/javascript" src="js/lookup.js"></script> 
-    	<script type="text/javascript" src="js/ticket.js"></script> 
+    	<script type="text/javascript" src="js/ticket.js"></script>
+    	<script type="text/javascript" src="js/callNotes.js"></script>  
     
         <style type="text/css">
 			#displayTable {
@@ -162,8 +163,10 @@
     			            { title: "<bean:message key="field.label.paymentNote" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.paymentNote != null){return (row.paymentNote+"");}
     			            } },
-    			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
-    			            	{return '<ansi:hasPermission permissionRequired="PAYMENT_WRITE"><i class="edit-action-link" data-paymentId="' +row.paymentId+'"><webthing:edit>Edit</webthing:edit></ansi:hasPermission>';}
+    			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {
+    			            	var $editLink = '<ansi:hasPermission permissionRequired="PAYMENT_WRITE"><i class="edit-action-link" data-paymentId="' +row.paymentId+'"><webthing:edit>Edit</webthing:edit></i></ansi:hasPermission>';
+    			            	var $noteLink = '<webthing:notes xrefType="PAYMENT" xrefId="' + row.paymentId + '">Payment Notes</webthing:notes>'
+    			            	{return $editLink + $noteLink;}
     			            } }
     			            ],
     			            "initComplete": function(settings, json) {
@@ -172,6 +175,7 @@
     			            },
     			            "drawCallback": function( settings ) {
     			            	PAYMENTLOOKUP.doFunctionBinding();
+    			            	CALLNOTES.lookupLink();
     			            }
     			    } );
             	},

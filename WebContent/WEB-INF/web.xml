@@ -93,6 +93,16 @@
 	
 
 	<servlet>
+    	<servlet-name>ansiUserAutoComplete</servlet-name>
+    	<servlet-class>com.ansi.scilla.web.user.servlet.AnsiUserAutoCompleteServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+    	<servlet-name>ansiUserAutoComplete</servlet-name>
+    	<url-pattern>/ansiUserAutoComplete</url-pattern>
+    </servlet-mapping>
+    
+    
+   	<servlet>
 		<servlet-name>applyPayment</servlet-name>
 		<servlet-class>com.ansi.scilla.web.payment.servlet.ApplyPaymentServlet</servlet-class>
 	</servlet>
@@ -122,6 +132,17 @@
         <url-pattern>/claims/budgetControlLookup</url-pattern>
     </servlet-mapping>
 
+
+
+
+    <servlet>
+        <servlet-name>callNoteLookup</servlet-name>
+        <servlet-class>com.ansi.scilla.web.callNote.servlet.CallNoteLookupServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>callNoteLookup</servlet-name>
+        <url-pattern>/callNote/callNoteLookup</url-pattern>
+    </servlet-mapping>
 
 
 
