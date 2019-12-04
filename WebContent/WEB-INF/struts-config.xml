@@ -139,6 +139,16 @@
             <forward name="valid" path="/invoiceGeneration.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
+        <action
+            path="/invoiceDetailLookup"
+            type="com.ansi.scilla.web.invoice.action.InvoiceLookupAction"
+            name="invoiceLookupForm"
+            input="/invoiceDetailLookup.jsp"
+            scope="request">
+            <forward name="valid" path="/invoiceDetailLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		
 		<action
             path="/invoiceLookup"
             type="com.ansi.scilla.web.invoice.action.InvoiceLookupAction"
