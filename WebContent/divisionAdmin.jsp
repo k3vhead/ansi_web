@@ -38,14 +38,12 @@
 				display:none;
 				background-color:#FFFFFF;
 				color:#000000;
-				width:700px;
 				padding:15px;
 			}
 			#editFormDiv {
 				display:none;
 				background-color:#FFFFFF;
 				color:#000000;
-				width:700px;
 				padding:15px;
 			}
 			#displayTable th {
@@ -94,7 +92,7 @@
 								DIVISIONADMIN.markValid($inputField);
 							}
 						});
-						$('.err').html("");
+						//$('.err').html("");
 						$('#addForm').data('rownum',null);
 		            },
 		            
@@ -191,10 +189,10 @@
 					             	$("#addForm").dialog("open");
 								},
 								403: function($data) {
-									$("#addFormMsg").html($data.responseJSON.responseHeader.responseMessage);
+									$("#addFormMsg").html("Session Timeout. Log in and try again").show();
 								},
 								500: function($data) {
-		             	    		$("#addFormMsg").html("System error contact support").fadeIn(10);
+		             	    		$("#addFormMsg").html("System error contact support").show();
 		             	    	} 
 							},
 							dataType: 'json'
@@ -246,10 +244,10 @@
 					             	$("#editForm").dialog("open");
 								},
 								403: function($data) {
-									$("#editFormMsg").html($data.responseJSON.responseHeader.responseMessage);
+									$("#editFormMsg").html("Session Timeout. Log in and try again").show();
 								},
 								500: function($data) {
-		             	    		$("#editFormMsg").html("System error contact support").fadeIn(10);
+		             	    		$("#editFormMsg").html("System error contact support").show();
 		             	    	} 
 							},
 							dataType: 'json'
@@ -271,10 +269,10 @@
 								DIVISIONADMIN.doFunctionBinding();
 								},
 								403: function($data) {
-									$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+									$("#globalMsg").html("Session Timeout. Log in and try again").show();
 								},
 								500: function($data) {
-			         	    		$("#globalMsg").html("System error contact support").fadeIn(10);
+			         	    		$("#globalMsg").html("System error contact support").show();
 			         	    	} 
 							},
 							dataType: 'json'
@@ -320,15 +318,15 @@
 				            	     },
 			             	    	403: function($data) {
 			             	    		$('#confirmDelete').dialog("close");
-			             	    		$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+										$("#globalMsg").html("Session Timeout. Log in and try again").show();
 			             	    	}, 
 				         	    	404: function($data) {
 				         	    		$('#confirmDelete').dialog("close");
-				         	    		$("#globalMsg").html("Record does not exist").fadeIn(10).fadeOut(6000);
+				         	    		$("#globalMsg").html("Record does not exist").fadeIn(10).show();
 			             	    	},
 			             	    	500: function($data) {
 			             	    		$('#confirmDelete').dialog("close");
-			             	    		$("#globalMsg").html("System error contact support").fadeIn(10);
+			             	    		$("#globalMsg").html("System error contact support").show();
 			             	    	} 
 			             	     },
 			             	     dataType: 'json'
@@ -410,10 +408,10 @@
 										}
 									},
 									403: function($data) {
-										$("#addFormMsg").html($data.responseJSON.responseHeader.responseMessage);
+										$("#addFormMsg").html("Session Timeout. Log in and try again").show();
 									},
 									500: function($data) {
-			             	    		$("#addFormMsg").html("System error contact support").fadeIn(10);
+			             	    		$("#addFormMsg").html("System error contact support").show();
 			             	    	} 
 								},
 								dataType: 'json'
@@ -474,7 +472,7 @@
 								            	$($rowFinder).html($rowTd);
 											}
 											DIVISIONADMIN.doFunctionBinding();
-											DIVISIONADMIN.clearAddForm();
+											DIVISIONADMIN.clearEditForm();
 											$('#editForm').dialog("close");
 											$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
 										} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
@@ -494,10 +492,10 @@
 										}
 									},
 									403: function($data) {
-										$("#editFormMsg").html($data.responseJSON.responseHeader.responseMessage);
+										$("#editFormMsg").html("Session Timeout. Log in and try again").show();
 									},
 									500: function($data) {
-			             	    		$("#editFormMsg").html("System error contact support").fadeIn(10);
+			             	    		$("#editFormMsg").html("System error contact support").show();
 			             	    	} 
 								},
 								dataType: 'json'
@@ -509,7 +507,7 @@
 	    				$("#addForm" ).dialog({
 	    					title:'Add Division',
 	    					autoOpen: false,
-	    					height: 400,
+	    					height: 445,
 	    					width: 600,
 	    					modal: true,
 	        				closeOnEscape:true,
@@ -546,8 +544,6 @@
 	    						{
 	    							id: "closeDeleteModal",
 	    							click: function() {		
-	 			    					DIVISIONADMIN.clearEditForm();		
-	 		    						DIVISIONADMIN.clearAddForm();    
 	    								$("#confirmDelete").dialog( "close" );
 	    							}
 	    						},{
@@ -558,8 +554,6 @@
 	    						}	      	      
 	    					],
 	    					close: function() {
-	    						DIVISIONADMIN.clearEditForm();
-	    						DIVISIONADMIN.clearAddForm();
 	    						$("#confirmDelete").dialog( "close" );
 	    						//allFields.removeClass( "ui-state-error" );
 	    					}
@@ -570,7 +564,7 @@
 	    				$("#editForm" ).dialog({
 	    					title:'Edit Division',
 	    					autoOpen: false,
-	    					height: 400,
+	    					height: 445,
 	    					width: 600,
 	    					modal: true,
 	        				closeOnEscape:true,
@@ -777,8 +771,6 @@
 		    				<td id="delDivisionCode"></td>
 		    			</tr>
 		    		</table>
-		    		<input type="button" id="cancelDelete" value="<bean:message key="field.label.no" />" />
-		    		<input type="button" id="doDelete" value="<bean:message key="field.label.yes" />" />
 		    	</div>
 		    	
 		    	<div id="addFormDiv">
@@ -792,7 +784,6 @@
 		    						<input style="border:none" type="text" name="divisionId" readonly/>
 		    						<i id="validDivisionId" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="divisionIdErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.divisionNbrDA" />:</span></td>
@@ -800,7 +791,6 @@
 		    						<input type="text" name="divisionNbr" data-required="true" data-valid="validDivisionNbr" />
 		    						<i id="validDivisionNbr" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="divisionNbrErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.divisionCode" />:</span></td>
@@ -808,7 +798,6 @@
 		    						<input type="text" name="divisionCode" data-required="true" data-valid="validDivisionCode" />
 		    						<i id="validDivisionCode" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="divisionCodeErr"></span></td>
 		    				</tr>
 							<tr>
 		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.description" />:</span></td>
@@ -816,7 +805,6 @@
 		    						<input type="text" name="description" data-required="true" data-valid="validDescription" />
 		    						<i id="validDescription" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="descriptionErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.defaultDirectLaborPctDefault" /> <bean:message key="field.label.defaultDirectLaborPctDL%" />:</span></td>
@@ -824,7 +812,6 @@
 		    						<input type="text" name="defaultDirectLaborPct" data-required="true" data-valid="validDefaultDirectLaborPct" />
 		    						<i id="validDefaultDirectLaborPct" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="defaultDirectLaborPctErr"></span></td>
 		    				</tr>
 		    				
 		    				
@@ -835,7 +822,6 @@
 		    						<input type="text" name="maxRegHrsPerDay" data-required="true" data-valid="validMaxRegHrsPerDay" />
 		    						<i id="validMaxRegHrsPerDay" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="maxRegHrsPerDayErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Max Regular Hours Per Week:</span></td>
@@ -843,7 +829,6 @@
 		    						<input type="text" name="maxRegHrsPerWeek" data-required="true" data-valid="validMaxRegHrsPerWeek" />
 		    						<i id="validMaxRegHrsPerWeek" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="maxRegHrsPerWeekErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="formLabel">Overtime Rate:</span></td>
@@ -851,7 +836,6 @@
 		    						<input type="text" name="overtimeRate" data-required="true" data-valid="validOvertimeRate" />
 		    						<i id="validOvertimeRate" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="overtimeRateErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="formLabel"><span class="required">*</span>Weekend is Overtime:</span></td>
@@ -875,7 +859,6 @@
 		    						</select>
 		    						<i id="validhourlyRateIsFixed" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="hourlyRateIsFixedErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.status" />:</span></td>
@@ -886,7 +869,6 @@
 		    						</select>
 		    						<i class="fa fa-check-square-o inputIsValid" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="statusErr"></span></td>
 		    				</tr>
 		    			</table>
 		    		</form>
@@ -911,7 +893,6 @@
 		    						<input type="text" name="divisionNbr" data-required="true" data-valid="validDivisionNbr" />
 		    						<i id="validDivisionNbr" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="divisionNbrErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.divisionCode" />:</span></td>
@@ -919,7 +900,6 @@
 		    						<input type="text" name="divisionCode" data-required="true" data-valid="validDivisionCode" />
 		    						<i id="validDivisionCode" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="divisionCodeErr"></span></td>
 		    				</tr>
 							<tr>
 		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.description" />:</span></td>
@@ -927,7 +907,6 @@
 		    						<input type="text" name="description" data-required="true" data-valid="validDescription" />
 		    						<i id="validDescription" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="descriptionErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.defaultDirectLaborPctDefault" /> <bean:message key="field.label.defaultDirectLaborPctDL%" />:</span></td>
@@ -935,7 +914,6 @@
 		    						<input type="text" name="defaultDirectLaborPct" data-required="true" data-valid="validDefaultDirectLaborPct" />
 		    						<i id="validDefaultDirectLaborPct" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="defaultDirectLaborPctErr"></span></td>
 		    				</tr>
 		    				
 		    				
@@ -946,7 +924,6 @@
 		    						<input type="text" name="maxRegHrsPerDay" data-required="true" data-valid="validMaxRegHrsPerDay" />
 		    						<i id="validMaxRegHrsPerDay" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="maxRegHrsPerDayErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel">Max Regular Hours Per Week:</span></td>
@@ -954,7 +931,6 @@
 		    						<input type="text" name="maxRegHrsPerWeek" data-required="true" data-valid="validMaxRegHrsPerWeek" />
 		    						<i id="validMaxRegHrsPerWeek" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="maxRegHrsPerWeekErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="formLabel">Overtime Rate:</span></td>
@@ -962,7 +938,6 @@
 		    						<input type="text" name="overtimeRate" data-required="true" data-valid="validOvertimeRate" />
 		    						<i id="validOvertimeRate" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="overtimeRateErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="formLabel"><span class="required">*</span>Weekend is Overtime:</span></td>
@@ -974,7 +949,6 @@
 		    						</select>
 		    						<i id="validWeekendIsOt" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="weekendIsOtErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="formLabel"><span class="required">*</span>Hourly Rate is Fixed:</span></td>
@@ -986,7 +960,6 @@
 		    						</select>
 		    						<i id="validhourlyRateIsFixed" class="fa" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="hourlyRateIsFixedErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.status" />:</span></td>
@@ -997,7 +970,6 @@
 		    						</select>
 		    						<i class="fa fa-check-square-o inputIsValid" aria-hidden="true"></i>
 		    					</td>
-		    					<td><span class="err" id="statusErr"></span></td>
 		    				</tr>
 		    			</table>
 		    		</form>
