@@ -22,6 +22,7 @@ import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
+import com.ansi.scilla.web.invoice.actionForm.InvoiceLookupForm;
 import com.ansi.scilla.web.invoice.query.InvoiceDetailLookupQuery;
 
 public class InvoiceDetailLookupServlet extends AbstractLookupServlet {
@@ -30,6 +31,7 @@ public class InvoiceDetailLookupServlet extends AbstractLookupServlet {
 	
 	public static final String REALM = "invoiceDetailLookup";
 	
+	public static final String COMPLETED_DATE = "completed_date";
 	public static final String TICKET_STATUS_DISPLAY = "ticket_status_display";
 	public static final String TICKET_TYPE_DISPLAY = "ticket_type_display";
 	
@@ -115,10 +117,10 @@ public class InvoiceDetailLookupServlet extends AbstractLookupServlet {
 		@Override
 		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
 			
-			Timestamp completedDate = (Timestamp)arg0.get(InvoiceDetailLookupQuery.COMPLETED_DATE);
+			Timestamp completedDate = (Timestamp)arg0.get(COMPLETED_DATE);
 			if ( completedDate != null ) {
 				String completedDateDisplay = sdf.format(completedDate);
-				arg0.put(InvoiceDetailLookupQuery.COMPLETED_DATE, completedDateDisplay);
+				arg0.put(COMPLETED_DATE, completedDateDisplay);
 			}
 			
 			Timestamp invoiceDate = (Timestamp)arg0.get(InvoiceDetailLookupQuery.INVOICE_DATE);

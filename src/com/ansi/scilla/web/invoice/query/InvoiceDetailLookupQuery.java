@@ -4,9 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -20,30 +18,29 @@ import com.ansi.scilla.common.utils.WhereFieldLikeTransformer;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.ColumnFilter;
 import com.ansi.scilla.web.common.utils.SessionDivisionTransformer;
 
 public class InvoiceDetailLookupQuery extends LookupQuery {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String INVOICE_ID = "invoice_id"; 
-	public static final String INVOICE_PPC = "invoice_ppc"; 
-	public static final String INVOICE_TAX = "invoice_tax"; 
-	public static final String DIV = "div"; 
-	public static final String BILL_TO_NAME = "bill_to_name"; 
-	public static final String JOB_SITE_NAME = "job_site_name"; 
-	public static final String JOB_SITE_ADDRESS = "job_site_address"; 
-	public static final String TICKET_ID = "ticket_id"; 
+	public static final String INVOICE_ID = "ticket.invoice_id"; 
+	public static final String INVOICE_PPC = "invoice_totals.amount"; 
+	public static final String INVOICE_TAX = "invoice_totals.tax_amt"; 
+	public static final String DIV = "concat(division_nbr,'-',division_code)"; 
+	public static final String BILL_TO_NAME = "bill_to.name"; 
+	public static final String JOB_SITE_NAME = "job_site.name"; 
+	public static final String JOB_SITE_ADDRESS = "job_site.address1"; 
+	public static final String TICKET_ID = "ticket.ticket_id"; 
 	public static final String TICKET_STATUS = "ticket_status"; 
 	public static final String TICKET_TYPE = "ticket_type"; 
-	public static final String COMPLETED_DATE = "completed_date"; 
+	public static final String COMPLETED_DATE = "process_date"; 
 	public static final String INVOICE_DATE = "invoice_date"; 
-	public static final String PPC = "ppc"; 
-	public static final String TAXES = "taxes"; 
-	public static final String TOTAL = "total"; 
-	public static final String PAID = "paid"; 
-	public static final String DUE = "due";
+	public static final String PPC = "act_price_per_cleaning"; 
+	public static final String TAXES = "act_tax_amt"; 
+	public static final String TOTAL = "isnull(act_price_per_cleaning,0.00) + isnull(act_tax_amt,0.00)"; 
+	public static final String PAID = "isnull(ticket_payment_totals.total,0.00)"; 
+	public static final String DUE = "(isnull(act_price_per_cleaning,0.00) + isnull(act_tax_amt,0.00)) - isnull(ticket_payment_totals.total,0.00)";
 	
 	public static final String sqlSelect = 
 			"select \n" + 
@@ -196,7 +193,7 @@ public class InvoiceDetailLookupQuery extends LookupQuery {
 	
 	public static void main(String[] args) {
 		Connection conn = null;
-		Calendar startDate = new GregorianCalendar(2019, Calendar.APRIL, 15);
+//		Calendar startDate = new GregorianCalendar(2019, Calendar.APRIL, 15);
 		try {
 			conn = AppUtils.getDevConn();
 			List<SessionDivision> sdList = new ArrayList<SessionDivision>();
