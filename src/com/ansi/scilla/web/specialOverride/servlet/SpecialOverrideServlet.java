@@ -2,14 +2,15 @@ package com.ansi.scilla.web.specialOverride.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
 
-import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.utils.AnsiURL;
@@ -19,7 +20,8 @@ import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.permission.response.PermissionListResponse;
+import com.ansi.scilla.web.specialOverride.common.ParameterType;
+import com.ansi.scilla.web.specialOverride.common.SpecialOverrideType;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class SpecialOverrideServlet extends AbstractServlet {
@@ -36,9 +38,9 @@ public class SpecialOverrideServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			AppUtils.validateSession(request, Permission.OVERRIDE_UPDATE_PAYMENTS);
 
-			url = new AnsiURL(request, "permission", new String[] { ACTION_IS_LIST });	
+			url = new AnsiURL(request, "specialOverrides", new String[] { ACTION_IS_LIST });	
 			if ( StringUtils.isBlank(url.getCommand() )) {
-				//validateGroupId(conn, url.getId());
+				validateGroupId(conn, url.getId());
 			}			
 			//PermissionListResponse permissionListResponse = makePermissionListResponse(conn, url);
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");										// add messages to the response
@@ -48,9 +50,9 @@ public class SpecialOverrideServlet extends AbstractServlet {
 			//super.sendResponse(conn, response, ResponseCode.SUCCESS, permissionListResponse);					// send the response
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {							// these are thrown by session validation
 			super.sendForbidden(response);
-		} /*catch ( RecordNotFoundException e ) {			// if they're asking for an id that doesn't exist
+		} catch ( RecordNotFoundException e ) {			// if they're asking for an id that doesn't exist
 			super.sendNotFound(response);						
-		}*/ catch ( ResourceNotFoundException e) {		
+		} catch ( ResourceNotFoundException e) {		
 			super.sendNotFound(response);
 		} catch ( Exception e) {						// something bad happened
 			AppUtils.logException(e);
@@ -59,5 +61,17 @@ public class SpecialOverrideServlet extends AbstractServlet {
 			AppUtils.closeQuiet(conn);					// return the connection to the pool
 		}
 	}
+	
+	@SuppressWarnings("null")
+	protected void validateGroupId(Connection conn, Integer paymentId) throws RecordNotFoundException, Exception{
+		logger.log(Level.DEBUG, "validating group id: " + paymentId);
+		SpecialOverrideType specialOverrideType = null;// = new SpecialOverrideType();
+		ParameterType parameterType = null;
+		parameterType.validateInteger(paymentId);
+//		permissionGroup.setPermissionGroupId(paymentId);
+//		permissionGroup.selectOne(conn);		// this throws RecordNotFound, which is propagated up the line into a 404 return
+	}
+	
+	
 	
 }

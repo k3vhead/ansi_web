@@ -676,13 +676,13 @@
 	</servlet-mapping>
 	
 	<servlet>
-		<servlet-name>specialOverride</servlet-name>
+		<servlet-name>specialOverrides</servlet-name>
 		<servlet-class>com.ansi.scilla.web.specialOverride.servlet.SpecialOverrideServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>specialOverride</servlet-name>
-		<url-pattern>/specialOverride</url-pattern>
-		<url-pattern>/specialOverride/*</url-pattern>
+		<servlet-name>specialOverrides</servlet-name>
+		<url-pattern>/specialOverrides</url-pattern>
+		<url-pattern>/specialOverrides/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
