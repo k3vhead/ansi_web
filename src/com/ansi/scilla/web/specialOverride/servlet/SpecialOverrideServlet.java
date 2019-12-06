@@ -37,6 +37,9 @@ public class SpecialOverrideServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 			AppUtils.validateSession(request, Permission.OVERRIDE_UPDATE_PAYMENTS);
+			
+			ParameterType paramType;
+			
 
 			url = new AnsiURL(request, "specialOverrides", new String[] { ACTION_IS_LIST });	
 			if ( StringUtils.isBlank(url.getCommand() )) {
