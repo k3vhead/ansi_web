@@ -24,11 +24,6 @@
         <style type="text/css">
 			#confirmDelete {
 				display:none;
-				background-color:#FFFFFF;
-				color:#000000;
-				width:300px;
-				text-align:center;
-				padding:15px;
 			}
 			#displayTable {
 				width:90%;
@@ -36,15 +31,9 @@
 			}
 			#addFormDiv {
 				display:none;
-				background-color:#FFFFFF;
-				color:#000000;
-				padding:15px;
 			}
 			#editFormDiv {
 				display:none;
-				background-color:#FFFFFF;
-				color:#000000;
-				padding:15px;
 			}
 			#displayTable th {
 				text-align:left
@@ -70,9 +59,9 @@
 	    			DIVISIONADMIN.doFunctionBinding();
 	    		//	CONTACTMAINTENANCE.getTableFieldList(null, $("#addForm select[name='tableName']"));
 	    			DIVISIONADMIN.makeAddForm();
-	    			DIVISIONADMIN.makeEditForm();
-	    			//DIVISIONADMIN.addRow();
-	    		//	CONTACTMAINTENANCE.makeDeleteModal();
+	    			//DIVISIONADMIN.makeEditForm();
+	    			DIVISIONADMIN.markValid();
+	    			DIVISIONADMIN.makeDeleteModal();
 	    			DIVISIONADMIN.showNew();
 	        		},
 						
@@ -92,20 +81,8 @@
 								DIVISIONADMIN.markValid($inputField);
 							}
 						});
-						//$('.err').html("");
-						$('#addForm').data('rownum',null);
-		            },
-		            
-		            clearEditForm : function () {
-						$.each( $('#editForm').find("input"), function(index, $inputField) {
-							$fieldName = $($inputField).attr('name');
-							if ( $($inputField).attr("type") == "text" ) {
-								$($inputField).val("");
-								DIVISIONADMIN.markValid($inputField);
-							}
-						});
 						$('.err').html("");
-						$('#editForm').data('rownum',null);
+						$('#addForm').data('rownum',null);
 		            },
 						
 					doDelete : function ($clickevent) {
@@ -146,13 +123,13 @@
 						
 					
 					
-					doAdd : function ($clickevent) {
+					doEdit : function ($clickevent) {
 						$clickevent.preventDefault();
 						var $divisionId = $clickevent.currentTarget.attributes["data-id"].value;
 						console.log("div id: " + $divisionId);
 						var $rownum = $clickevent.currentTarget.attributes['data-row'].value;
-						$("#goAdd").data("rownum", $rownum);
-		        		$('#goAdd').button('option', 'label', 'Save');
+						$("#goUpdate").data("rownum", $rownum);
+		        		$('#goUpdate').button('option', 'label', 'Save');
 		        		$('#closeAddForm').button('option', 'label', 'Close');
 						
 						var $url = "division/" + $divisionId
@@ -161,7 +138,13 @@
 							url: $url,
 							statusCode: {
 								200: function($data) {
-									var $division = $data.data.divisionList[0];								
+									var $division = $data.data.divisionList[0];	
+									$.each($division, function($fieldName, $value) {									
+										$selector = "#addForm input[name=" + $fieldName + "]";
+										if ( $($selector).length > 0 ) {
+											$($selector).val($value);
+										}
+			        				});							
 									$("#addForm input[name='divisionId']").val($division.divisionId);
 					            	$("#addForm input[name='divisionCode']").val($division.divisionCode);
 					            	$("#addForm input[name='divisionNbr']").val($division.divisionNbr);
@@ -186,68 +169,13 @@
 					            		$("#addForm select[name='hourlyRateIsFixed']").val($division.hourlyRateIsFixed.toString());
 					            	}		        		
 					        		$("#addForm .err").html("");		
-					             	$("#addForm").dialog("open");
+					             	$("#addForm").dialog("option","title", "Edit Division").dialog("open");
 								},
 								403: function($data) {
 									$("#addFormMsg").html("Session Timeout. Log in and try again").show();
 								},
 								500: function($data) {
 		             	    		$("#addFormMsg").html("System error contact support").show();
-		             	    	} 
-							},
-							dataType: 'json'
-						});
-					},
-						
-					
-					
-					doEdit : function ($clickevent) {
-						$clickevent.preventDefault();
-						var $divisionId = $clickevent.currentTarget.attributes["data-id"].value;
-						console.log("div id: " + $divisionId);
-						var $rownum = $clickevent.currentTarget.attributes['data-row'].value;
-						$("#goEdit").data("rownum", $rownum);
-		        		$('#goEdit').button('option', 'label', 'Save');
-		        		$('#closeEditForm').button('option', 'label', 'Close');
-						
-						var $url = "division/" + $divisionId
-						var jqxhr = $.ajax({
-							type: 'GET',
-							url: $url,
-							statusCode: {
-								200: function($data) {
-									var $division = $data.data.divisionList[0];								
-									$("#editForm input[name='divisionId']").val($division.divisionId);
-					            	$("#editForm input[name='divisionCode']").val($division.divisionCode);
-					            	$("#editForm input[name='divisionNbr']").val($division.divisionNbr);
-					            	$("#editForm input[name='description']").val($division.description);
-					            	$("#editForm input[name='defaultDirectLaborPct']").val($division.defaultDirectLaborPct);
-					            	if ( $division.status == "Active" ) {
-					            		$("#editForm select[name='status']").val("1");
-					            	} else {
-					            		$("#editForm select[name='status']").val("0");
-					            	}
-					            	$("#editForm input[name='maxRegHrsPerDay']").val($division.maxRegHrsPerDay);
-					            	$("#editForm input[name='maxRegHrsPerWeek']").val($division.maxRegHrsPerWeek);
-					            	$("#editForm input[name='overtimeRate']").val($division.overtimeRate);
-					            	if ( $division.weekendIsOt == null ) {
-					            		$("#editForm select[name='weekendIsOt']").val("");
-					            	} else {
-					            		$("#editForm select[name='weekendIsOt']").val($division.weekendIsOt.toString());
-					            	}
-					            	if ( $division.hourlyRateIsFixed == null ) {
-					            		$("#editForm select[name='hourlyRateIsFixed']").val("");
-					            	} else {
-					            		$("#editForm select[name='hourlyRateIsFixed']").val($division.hourlyRateIsFixed.toString());
-					            	}		        		
-					        		$("#editForm .err").html("");		
-					             	$("#editForm").dialog("open");
-								},
-								403: function($data) {
-									$("#editFormMsg").html("Session Timeout. Log in and try again").show();
-								},
-								500: function($data) {
-		             	    		$("#editFormMsg").html("System error contact support").show();
 		             	    	} 
 							},
 							dataType: 'json'
@@ -281,7 +209,7 @@
 					
 					
 					goDelete : function () {
-			            $("#doDelete").click(function($event) {
+			            $("#goDelete").click(function($event) {
 			            	$event.preventDefault();
 			            	var $tableData = [];
 			                $("#displayTable").find('tr').each(function (rowIndex, r) {
@@ -335,8 +263,8 @@
 			            
 					},
 						
-					goAdd : function () {
-						$("#goAdd").click( function($clickevent) {
+					goUpdate : function () {
+						$("#goUpdate").click( function($clickevent) {
 							$clickevent.preventDefault();
 							$outbound = {};
 							$.each( $('#addForm :input'), function(index, value) {
@@ -387,9 +315,8 @@
 								            	var $rowTd = makeRow($data.data.division, $rownum);
 								            	$($rowFinder).html($rowTd);
 											}
-											DIVISIONADMIN.doFunctionBinding();
 											DIVISIONADMIN.clearAddForm();
-											$('#addFormDiv').dialog("close");
+											$('#addForm').dialog("close");
 											$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
 										} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
 											$('.err').html("");
@@ -404,7 +331,8 @@
 											});	
 											$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
 										} else {
-											
+											$("#addForm").dialog("close");
+											$("#globalMsg").html("Unexepected Response, Contact support (" + $data.responseHeader.responseMessage + ")").show();
 										}
 									},
 									403: function($data) {
@@ -418,110 +346,25 @@
 							});
 						});
 					},
-						
-					goEdit : function () {
-						$("#goEdit").click( function($clickevent) {
-							$clickevent.preventDefault();
-							$outbound = {};
-							$.each( $('#editForm :input'), function(index, value) {
-								if ( value.name ) {
-									$fieldName = value.name;
-									$id = "#editForm input[name='" + $fieldName + "']";
-									$val = $($id).val();
-									$outbound[$fieldName] = $val;
-								}
-							}); 
-			
-							$outbound['status'] = $("#editForm select[name='status'] option:selected").val();
-							$outbound['weekendIsOt'] = $("#editForm select[name='weekendIsOt'] option:selected").val();
-							$outbound['hourlyRateIsFixed'] = $("#editForm select[name='hourlyRateIsFixed'] option:selected").val();
-							
-			
-							if ( $('#editForm').data('rownum') == null ) {
-								$url = "division/add";
-							} else {
-								$rownum = $('#editForm').data('rownum')
-								var $tableData = [];
-				                $("#displayTable").find('tr').each(function (rowIndex, r) {
-				                    var cols = [];
-				                    $(this).find('th,td').each(function (colIndex, c) {
-				                        cols.push(c.textContent);
-				                    });
-				                    $tableData.push(cols);
-				                });
-			
-				            	var $divisionId= $tableData[$rownum][0];
-				            	$url = "division/" + $divisionId;
-							}
-							
-							var jqxhr = $.ajax({
-								type: 'POST',
-								url: $url,
-								data: JSON.stringify($outbound),
-								statusCode: {
-									200: function($data) {
-										if ( $data.responseHeader.responseCode == 'SUCCESS') {
-											if ( $url == "division/add" ) {
-												var count = $('#displayTable tr').length - 1;
-												DIVISIONADMIN.addRow(count, $data.data.division);
-											} else {
-								            	var $rownum = $('#editForm').data('rownum');
-								                var $rowId = eval($rownum) + 1;
-								            	var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")"
-								            	var $rowTd = makeRow($data.data.division, $rownum);
-								            	$($rowFinder).html($rowTd);
-											}
-											DIVISIONADMIN.doFunctionBinding();
-											DIVISIONADMIN.clearEditForm();
-											$('#editForm').dialog("close");
-											$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
-										} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-											$('.err').html("");
-											 $.each($data.data.webMessages, function(key, messageList) {
-												var identifier = "#" + key + "Err";
-												msgHtml = "<ul>";
-												$.each(messageList, function(index, message) {
-													msgHtml = msgHtml + "<li>" + message + "</li>";
-												});
-												msgHtml = msgHtml + "</ul>";
-												$(identifier).html(msgHtml);
-											});	
-											$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
-										} else {
-											
-										}
-									},
-									403: function($data) {
-										$("#editFormMsg").html("Session Timeout. Log in and try again").show();
-									},
-									500: function($data) {
-			             	    		$("#editFormMsg").html("System error contact support").show();
-			             	    	} 
-								},
-								dataType: 'json'
-							});
-						});
-					},
 					
 					makeAddForm : function () {
 	    				$("#addForm" ).dialog({
-	    					title:'Add Division',
 	    					autoOpen: false,
-	    					height: 445,
-	    					width: 600,
+	    					height: 550,
+	    					width: 700,
 	    					modal: true,
 	        				closeOnEscape:true,
 	    					buttons: [
 	    						{
 	    							id: "closeAddForm",
 	    							click: function() {		
-	 			    					DIVISIONADMIN.clearAddForm();		    
+										DIVISIONADMIN.clearAddForm();	    
 	    								$("#addForm").dialog( "close" );
 	    							}
 	    						},{
-	    							id: "goAdd",
+	    							id: "goUpdate",
 	    							click: function($event) {
-	    								DIVISIONADMIN.goAdd();
+	    								DIVISIONADMIN.goUpdate();
 	    							}
 	    						}	      	      
 	    					],
@@ -535,15 +378,17 @@
 					
 					makeDeleteModal : function () {
 	    				$("#confirmDelete" ).dialog({
+	    					title: "Are you sure you want to delete this division?",
 	    					autoOpen: false,
-	    					height: 400,
-	    					width: 600,
+	    					height: 150,
+	    					width: 450,
 	    					modal: true,
 	        				closeOnEscape:true,
 	    					buttons: [
 	    						{
 	    							id: "closeDeleteModal",
 	    							click: function() {		
+										DIVISIONADMIN.clearAddForm();
 	    								$("#confirmDelete").dialog( "close" );
 	    							}
 	    						},{
@@ -554,40 +399,13 @@
 	    						}	      	      
 	    					],
 	    					close: function() {
+								DIVISIONADMIN.clearAddForm();
 	    						$("#confirmDelete").dialog( "close" );
 	    						//allFields.removeClass( "ui-state-error" );
 	    					}
 	    				});
-					},
-					
-					makeEditForm : function () {
-	    				$("#editForm" ).dialog({
-	    					title:'Edit Division',
-	    					autoOpen: false,
-	    					height: 445,
-	    					width: 600,
-	    					modal: true,
-	        				closeOnEscape:true,
-	    					buttons: [
-	    						{
-	    							id: "closeEditForm",
-	    							click: function() {		
-	 			    					DIVISIONADMIN.clearEditForm();		    
-	    								$("#editForm").dialog( "close" );
-	    							}
-	    						},{
-	    							id: "goEdit",
-	    							click: function($event) {
-	    								DIVISIONADMIN.goEdit();
-	    							}
-	    						}	      	      
-	    					],
-	    					close: function() {
-	    						DIVISIONADMIN.clearEditForm();
-	    						$("#editForm").dialog( "close" );
-	    						//allFields.removeClass( "ui-state-error" );
-	    					}
-	    				});
+		        		$('#goDelete').button('option', 'label', 'Confirm Delete');
+		        		$('#closeDeleteModal').button('option', 'label', 'Close');
 					},
 						
 					makeRow : function ($division, $rownum) {
@@ -634,7 +452,7 @@
 		       			row = row + '<td class="text-left">';
 		       			row = row + '<a href="#" class="editAction" data-id="' + $division.divisionId + '"data-row="' + $rownum +'"><webthing:edit>Edit</webthing:edit></a>';
 		       			if ( $division.userCount == 0 ) {
-		       			row = row + '<a href="#" class="delAction" data-row="' + $division.divisionId +'"><webthing:delete>Delete</webthing:delete></a>';
+		       			row = row + '<a href="#" class="delAction" data-row="' + $rownum+'"><webthing:delete>Delete</webthing:delete></a>';
 		       			}
 		       			row = row + '</td>';
 		       			
@@ -644,8 +462,9 @@
 		       			</ansi:hasPermission>       			
 						return row;
 					},
+
 		            
-		            markValid : function ($inputField) {
+					markValid : function ($inputField) {
 		            	$fieldName = $($inputField).attr('name');
 		            	$fieldGetter = "input[name='" + $fieldName + "']";
 		            	$fieldValue = $($fieldGetter).val();
@@ -672,8 +491,8 @@
 	        		showNew : function() {
 
 	        			$(".showNew").click(function($event) {
-	        				$('#goAdd').data("rownum",null);
-	                		$('#goAdd').button('option', 'label', 'Save');
+	        				$('#goUpdate').data("rownum",null);
+	                		$('#goUpdate').button('option', 'label', 'Save');
 	                		$('#closeAddForm').button('option', 'label', 'Close');
 	                		
 	                		$("#addForm input[name='divisionId']").val("");
@@ -703,7 +522,7 @@
 			            		$("#addForm select[name='hourlyRateIsFixed']").val($division.hourlyRateIsFixed.toString());
 			            	}*/
 	                		$("#addForm .err").html("");
-	                		$("#addForm").dialog("open");
+	                		$("#addForm").dialog("option","title", "New Division").dialog("open");
 	        			});
 	        			
 	        		},	
@@ -764,7 +583,6 @@
     	<ansi:hasPermission permissionRequired="SYSADMIN">
     		<ansi:hasWrite>
 		    	<div id="confirmDelete">
-		    		<span class="formLabel">Are You Sure You Want to Delete this Division?</span><br />
 		    		<table id="delData">
 		    			<tr>
 		    				<td><span class="formLabel"><bean:message key="field.label.divisionCode" />:</span></td>
@@ -780,85 +598,62 @@
 		    			<table>
 		    				<tr>
 		    					<td><span class="formLabel"><bean:message key="field.label.divisionId" />:</span></td>
-		    					<td>
-		    						<input style="border:none" type="text" name="divisionId" readonly/>
-		    						<i id="validDivisionId" class="fa" aria-hidden="true"></i>
-		    					</td>
+		    					<td><input style="border:none" type="text" name="divisionId" readonly/></td>
+    							<td><span class="err" id="divisionIdErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.divisionNbrDA" />:</span></td>
-		    					<td>
-		    						<input type="text" name="divisionNbr" data-required="true" data-valid="validDivisionNbr" />
-		    						<i id="validDivisionNbr" class="fa" aria-hidden="true"></i>
-		    					</td>
+		    					<td><input type="text" name="divisionNbr"/></td>
+    							<td><span class="err" id="divisionNbrErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.divisionCode" />:</span></td>
-		    					<td>
-		    						<input type="text" name="divisionCode" data-required="true" data-valid="validDivisionCode" />
-		    						<i id="validDivisionCode" class="fa" aria-hidden="true"></i>
-		    					</td>
+		    					<td><input type="text" name="divisionCode"/></td>
+    							<td><span class="err" id="divisionCodeErr"></span></td>
 		    				</tr>
 							<tr>
 		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.description" />:</span></td>
-		    					<td>
-		    						<input type="text" name="description" data-required="true" data-valid="validDescription" />
-		    						<i id="validDescription" class="fa" aria-hidden="true"></i>
-		    					</td>
+		    					<td><input type="text" name="description"/></td>
+    							<td><span class="err" id="descriptionErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.defaultDirectLaborPctDefault" /> <bean:message key="field.label.defaultDirectLaborPctDL%" />:</span></td>
-		    					<td>
-		    						<input type="text" name="defaultDirectLaborPct" data-required="true" data-valid="validDefaultDirectLaborPct" />
-		    						<i id="validDefaultDirectLaborPct" class="fa" aria-hidden="true"></i>
-		    					</td>
-		    				</tr>
-		    				
-		    				
-		    				
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Max Regular Hours Per Day:</span></td>
-		    					<td>
-		    						<input type="text" name="maxRegHrsPerDay" data-required="true" data-valid="validMaxRegHrsPerDay" />
-		    						<i id="validMaxRegHrsPerDay" class="fa" aria-hidden="true"></i>
-		    					</td>
+		    					<td><input type="text" name="defaultDirectLaborPct"/></td>
+    							<td><span class="err" id="defaultDirectLaborPctErr"></span></td>
 		    				</tr>
 		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Max Regular Hours Per Week:</span></td>
-		    					<td>
-		    						<input type="text" name="maxRegHrsPerWeek" data-required="true" data-valid="validMaxRegHrsPerWeek" />
-		    						<i id="validMaxRegHrsPerWeek" class="fa" aria-hidden="true"></i>
-		    					</td>
+		    					<td><span class="formLabel">Max Regular Hours Per Day:</span></td>
+		    					<td><input type="text" name="maxRegHrsPerDay"/></td>
+		    				</tr>
+		    				<tr>
+		    					<td><span class="formLabel">Max Regular Hours Per Week:</span></td>
+		    					<td><input type="text" name="maxRegHrsPerWeek"/></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="formLabel">Overtime Rate:</span></td>
-		    					<td>
-		    						<input type="text" name="overtimeRate" data-required="true" data-valid="validOvertimeRate" />
-		    						<i id="validOvertimeRate" class="fa" aria-hidden="true"></i>
-		    					</td>
+		    					<td><input type="text" name="overtimeRate"/></td>
 		    				</tr>
 		    				<tr>
-		    					<td><span class="formLabel"><span class="required">*</span>Weekend is Overtime:</span></td>
+		    					<td><span class="required">*</span><span class="formLabel">Weekend is Overtime:</span></td>
 		    					<td>
-		    						<select name="weekendIsOt" data-required="true" data-valid="validWeekendIsOt">
+		    						<select name="weekendIsOt">		    						
 		    							<option value=""></option>
 			    						<option value="1">Yes</option>
 			    						<option value="0">No</option>
 		    						</select>
-		    						<i id="validWeekendIsOt" class="fa" aria-hidden="true"></i>
 		    					</td>
 		    					<td><span class="err" id="weekendIsOtErr"></span></td>
 		    				</tr>
 		    				<tr>
-		    					<td><span class="formLabel"><span class="required">*</span>Hourly Rate is Fixed:</span></td>
+		    					<td><span class="required">*</span><span class="formLabel">Hourly Rate is Fixed:</span></td>
 		    					<td>
-		    						<select name="hourlyRateIsFixed" data-required="true" data-valid="validHourlyRateIsFixed">
+		    						<select name="hourlyRateIsFixed">
 			    						<option value=""></option>
 			    						<option value="1">Yes</option>
 			    						<option value="0">No</option>
 		    						</select>
-		    						<i id="validhourlyRateIsFixed" class="fa" aria-hidden="true"></i>
 		    					</td>
+    							<td><span class="err" id="hourlyRateIsFixedErr"></span></td>
 		    				</tr>
 		    				<tr>
 		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.status" />:</span></td>
@@ -867,108 +662,6 @@
 		    							<option value="1"><bean:message key="field.label.active" /></option>
 		    							<option value="0"><bean:message key="field.label.inactive" /></option>
 		    						</select>
-		    						<i class="fa fa-check-square-o inputIsValid" aria-hidden="true"></i>
-		    					</td>
-		    				</tr>
-		    			</table>
-		    		</form>
-		    	</div>
-		    	
-		    	<div id="editFormDiv">
-		    		<h2 id="editFormTitle"></h2>
-		    		<div id="editFormMsg" class="err"></div>
-		    		<form action="#" method="post" id="editForm">
-		    			<table>
-		    				<tr>
-		    					<td><span class="formLabel"><bean:message key="field.label.divisionId" />:</span></td>
-		    					<td>
-		    						<input style="border:none" type="text" name="divisionId" readonly/>
-		    						<i id="validDivisionId" class="fa" aria-hidden="true"></i>
-		    					</td>
-		    					<td><span class="err" id="divisionIdErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.divisionNbrDA" />:</span></td>
-		    					<td>
-		    						<input type="text" name="divisionNbr" data-required="true" data-valid="validDivisionNbr" />
-		    						<i id="validDivisionNbr" class="fa" aria-hidden="true"></i>
-		    					</td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.divisionCode" />:</span></td>
-		    					<td>
-		    						<input type="text" name="divisionCode" data-required="true" data-valid="validDivisionCode" />
-		    						<i id="validDivisionCode" class="fa" aria-hidden="true"></i>
-		    					</td>
-		    				</tr>
-							<tr>
-		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.description" />:</span></td>
-		    					<td>
-		    						<input type="text" name="description" data-required="true" data-valid="validDescription" />
-		    						<i id="validDescription" class="fa" aria-hidden="true"></i>
-		    					</td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.defaultDirectLaborPctDefault" /> <bean:message key="field.label.defaultDirectLaborPctDL%" />:</span></td>
-		    					<td>
-		    						<input type="text" name="defaultDirectLaborPct" data-required="true" data-valid="validDefaultDirectLaborPct" />
-		    						<i id="validDefaultDirectLaborPct" class="fa" aria-hidden="true"></i>
-		    					</td>
-		    				</tr>
-		    				
-		    				
-		    				
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Max Regular Hours Per Day:</span></td>
-		    					<td>
-		    						<input type="text" name="maxRegHrsPerDay" data-required="true" data-valid="validMaxRegHrsPerDay" />
-		    						<i id="validMaxRegHrsPerDay" class="fa" aria-hidden="true"></i>
-		    					</td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Max Regular Hours Per Week:</span></td>
-		    					<td>
-		    						<input type="text" name="maxRegHrsPerWeek" data-required="true" data-valid="validMaxRegHrsPerWeek" />
-		    						<i id="validMaxRegHrsPerWeek" class="fa" aria-hidden="true"></i>
-		    					</td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="formLabel">Overtime Rate:</span></td>
-		    					<td>
-		    						<input type="text" name="overtimeRate" data-required="true" data-valid="validOvertimeRate" />
-		    						<i id="validOvertimeRate" class="fa" aria-hidden="true"></i>
-		    					</td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="formLabel"><span class="required">*</span>Weekend is Overtime:</span></td>
-		    					<td>
-		    						<select name="weekendIsOt" data-required="true" data-valid="validWeekendIsOt">
-		    							<option value=""></option>
-			    						<option value="1">Yes</option>
-			    						<option value="0">No</option>
-		    						</select>
-		    						<i id="validWeekendIsOt" class="fa" aria-hidden="true"></i>
-		    					</td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="formLabel"><span class="required">*</span>Hourly Rate is Fixed:</span></td>
-		    					<td>
-		    						<select name="hourlyRateIsFixed" data-required="true" data-valid="validHourlyRateIsFixed">
-			    						<option value=""></option>
-			    						<option value="1">Yes</option>
-			    						<option value="0">No</option>
-		    						</select>
-		    						<i id="validhourlyRateIsFixed" class="fa" aria-hidden="true"></i>
-		    					</td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.status" />:</span></td>
-		    					<td>
-		    						<select name="status">
-		    							<option value="1"><bean:message key="field.label.active" /></option>
-		    							<option value="0"><bean:message key="field.label.inactive" /></option>
-		    						</select>
-		    						<i class="fa fa-check-square-o inputIsValid" aria-hidden="true"></i>
 		    					</td>
 		    				</tr>
 		    			</table>
