@@ -142,9 +142,9 @@
         </style>
         
         <script type="text/javascript">
-        
-        $(document).ready(function(){
-	   		GLOBAL_DATA = {};
+        $( document ).ready(function() {
+        	
+        	GLOBAL_DATA = {};
         	var $defaultTicketNbr='<c:out value="${ANSI_TICKET_ID}" />';
 			var $ticketStatusList = ANSI_UTILS.getOptions("TICKET_STATUS");
 			var $globalTicketId = 0;
@@ -152,592 +152,546 @@
 			$.each($ticketStatusList.ticketStatus, function($index, $value) {
 			    $ticketStatusMap[$value.code]=$value.display;
 			});
-        	
-	        ;TICKETRETURN = {
-				
-	    		init : function() {	
-	    			//TICKETRETURN.addRow();
-	    			//TICKETRETURN.clearAddForm();
-	    			TICKETRETURN.dateField();
-	    			//TICKETRETURN.createVariables;
-	    			//TICKETRETURN.globalData();
-	    			TICKETRETURN.makeChangers();
-	    			TICKETRETURN.makeClickers();
-	    			TICKETRETURN.makeEditApprovalsModal();
-	    		//	TICKETRETURN.markInvalid();
-	    		//	TICKETRETURN.markValid();
-	    		//	TICKETRETURN.populateDefaultTicketNbr();
-	    		//	TICKETRETURN.populateDefaultValues();
-	    		//	TICKETRETURN.populateInvoiceDetail();
-	    		//	TICKETRETURN.populatePanelSelect();
-	    		//	TICKETRETURN.populateSummary();
-	    		//	TICKETRETURN.populateTicketDetail();
-	    		//	TICKETRETURN.populateTicketOverride();
-	    		//	TICKETRETURN.saveApprovals();
-	    		//	TICKETRETURN.ticketNbrFocus();
-			    },
-			   	
-		        	
-		        	
-		        	
-			   	addRow : function (index, $ticket) {	
-						var $rownum = index + 1;
-		       			rowTd = makeRow($ticket, $rownum);
-		       			row = '<tr class="dataRow">' + rowTd + "</tr>";
-		       			$('#displayTable').append(row);
-				},
-					
-		
-		
-		            
-			   	clearAddForm : function () {
-						$.each( $('.addForm').find("input"), function(index, $inputField) {
-							$('input[name=customerSignature]').prop('checked', false);
-							$('input[name=billSheet]').prop('checked', false);
-							$('input[name=mgrApproval]').prop('checked', false);
-							$fieldName = $($inputField).attr('name');
-							if ( $($inputField).attr("type") == "text" ) {
-								$($inputField).val("");
-							}
-						});
-		            },
-		        	
-		        createVariables : function () {
-			   		GLOBAL_DATA = {};
-		        	var $defaultTicketNbr='<c:out value="${ANSI_TICKET_ID}" />';
-					var $ticketStatusList = ANSI_UTILS.getOptions("TICKET_STATUS");
-					var $globalTicketId = 0;
-					var $ticketStatusMap = {}
-					$.each($ticketStatusList.ticketStatus, function($index, $value) {
-					    $ticketStatusMap[$value.code]=$value.display;
-					});
-			   	},
-		        	
-		        	
-			   	dateField : function () {	
-		        	$('.dateField').datepicker({
-		                prevText:'&lt;&lt;',
-		                nextText: '&gt;&gt;',
-		                showButtonPanel:true
-		            });
-			   	},
-					
-					
-					
-			   	doPopulate : function ($ticketNbr) {    		
-				       	var jqxhr = $.ajax({
-				       		type: 'GET',
-				       		url: "ticket/" + $ticketNbr,
-				       		//data: $ticketNbr,
-				       		success: function($data) {
-								$.each($data.data.ticketList, function(index, value) {
-									TICKETRETURN.addRow(index, value);
-								});
-								$(".workPanel").hide();
-				       			TICKETRETURN.populateTicketDetail($data.data);	       			
-				       			TICKETRETURN.populateSummary($data.data);
-				       			TICKETRETURN.populatePanelSelect($data.data);
-				       			TICKETRETURN.populateDefaultValues($data.data);
-								ADDRESS_UTILS.populateAddress("#jobSiteAddress", $data.data.ticketDetail.jobSiteAddress);
-								ADDRESS_UTILS.populateAddress("#billToAddress", $data.data.ticketDetail.billToAddress);
-				       			
-		    					$("#summaryTable").fadeIn(4000);
-		    					$("#selectPanel").fadeIn(4000);
-		    					$("#ticketTable").fadeIn(4000);
-		    					TICKETRETURN.populateInvoiceDetail($data.data);	  					
-							},
-				       		statusCode: {
-			       				404: function($data) {
-			        	    		$("#globalMsg").html("Invalid Ticket Number").show().fadeOut(6000);
-			        	    	},
-								403: function($data) {
-									$("#globalMsg").html("Session Timeout. Log in and try again").show();
-								},
-				       			500: function($data) {
-			            	    	$("#globalMsg").html("System Error: Contact Support").show();
-			            		},
-				       		},
-				       		dataType: 'json'
-				       	});
-		        },
-		        	
-		        	
-			   	makeChangers : function () {
-					$('#row_dim').hide(); 
-		    			$('#type').change(function(){
-		        			if($('#type').val() == 'parcel') {
-		           				 $('#row_dim').show(); 
-		        			} else {
-		            			$('#row_dim').hide(); 
-		        		} 
-		    		});
-	    			$("#panelSelector").change(function($event) {
-						$(".workPanel").hide();
-						var $selectedPanel = $('#panelSelector option:selected').val();		
-		        		if ($selectedPanel != '' ) {
-		        			$selectedId = "#" + $selectedPanel;
-		        			$($selectedId).fadeIn(1500);
-		        		}
-					});
-					$("#COMPLETED input[name=actDlAmt]").change(function($event) {
-						var $actPricePerCleaning = $("#COMPLETED input[name=actPricePerCleaning]").val();
-						var $actDlAmt = $("#COMPLETED input[name=actDlAmt]").val();
-						if ( isNaN($actDlAmt) ) {
-							TICKETRETURN.markInvalid($("#validActDlAmt"));
-						} else {
-							TICKETRETURN.markValid($("#validActDlAmt"));
-							var $actDlPct = ($actDlAmt / $actPricePerCleaning * 100);
-							$("#COMPLETED input[name=actDlPct]").val($actDlPct);					
-							$("#COMPLETED span[class=actDlPct]").html($actDlPct.toFixed(1));
-						}
-					});
-					$("#COMPLETED input[name=actPricePerCleaning]").change(function($event) {
-						var $actPricePerCleaning = $("#COMPLETED input[name=actPricePerCleaning]").val();
-						var $actDlPct = $("#COMPLETED input[name=actDlPct]").val();
-						if ( isNaN($actPricePerCleaning) ) {
-							TICKETRETURN.markInvalid($("#validActPricePerCleaning"));
-						} else {
-							TICKETRETURN.markValid($("#validActPricePerCleaning"));
-							var $actDlAmt = ($actPricePerCleaning * $actDlPct / 100);
-							$("#COMPLETED input[name=actDlAmt]").val($actDlAmt.toFixed(2));					
-						}
-					});
-			   	},
-					
-			   	makeClickers : function () {	
-					$(".cancelUpdate").click( function($clickevent) {
-						$clickevent.preventDefault();
-						$(".clearMe").val("");
-						$(".err").html("");
-						TICKETRETURN.clearAddForm();
-					});
-					
-					$(".goUpdate").click( function($clickevent) {
-						// the goButton -- $(this) -- tells us which panel is being submitted
-						// loop through all input in that panel and put the values in $outbound
-						var $panelName = $(this).data('panel');
-						var $inputSelector = "#" + $panelName + " :input";				
-		
-						$outbound = {};
-						$.each( $($inputSelector), function(index, value) {
-							if ( value.name ) {
-								var $fieldName = value.name;
-								var $fieldValue = $(this).val();
-								if ( $(this).attr("type") == "checkbox" ) {
-									$fieldValue = $(this).prop("checked");
-								}
-								$outbound[$fieldName]=$fieldValue;
-								if ( $fieldName == "defaultActDlPct" ) { //gag
-									$outbound["actDlPct"] = $fieldValue;	//gag						
-								} //gag
-							}
-						});
-		
-		
-		            	$url = "ticket/" + $globalTicketId;
-		
-						var jqxhr = $.ajax({
-							type: 'POST',
-							url: $url,
-							data: JSON.stringify($outbound),
-							statusCode: {
-								200: function($data) {
-									if ( $data.responseHeader.responseCode == 'SUCCESS') {
-										$("#globalMsg").html("Update Complete").show().fadeOut(6000);
-						        		$("#doPopulate").click();
-						        		$("#ticketNbr").focus();
-									} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-										$('.err').html("");
-										$.each($data.data.webMessages, function(key, messageList) {
-											var identifier = "#" + $panelName + " ." + key + "Err";
-											msgHtml = "<ul>";
-											$.each(messageList, function(index, message) {
-												msgHtml = msgHtml + "<li>" + message + "</li>";
-											});
-											msgHtml = msgHtml + "</ul>";
-											$(identifier).html(msgHtml).show().fadeOut(6000);
-										});	
-										$("#globalMsg").html($data.responseHeader.responseMessage).show().fadeOut(6000);
-									} else {
-										$("#globalMsg").html("Unexepected Response, Contact support (" + $data.responseHeader.responseMessage + ")").show();
-									}
-								},
-			       				404: function($data) {
-			        	    		$("#globalMsg").html("Invalid Ticket Number").show().fadeOut(6000);
-			        	    	},
-								403: function($data) {
-									$("#globalMsg").html("Session Timeout. Log in and try again").show();
-								},
-				       			500: function($data) {
-			            	    	$("#globalMsg").html("System Error: Contact Support").show();
-			            		},  
-							},
-							dataType: 'json'
-						});
-						
-					});	
-					
-		        	$("#doPopulate").click(function () {
-		    			var $ticketNbr = $('#ticketNbr').val();
-		    			$globalTicketId = $('#ticketNbr').val();
-		    			if ($ticketNbr != '') {            		
-		    				TICKETRETURN.doPopulate($ticketNbr)
-		            	}
-		            });	      
-		        	
-		        	
-					$("#editApprovals").click(function($event) {
-						$("#editApprovalsModal input[name='modalCustomerSignature']").prop("checked", false);
-						$("#editApprovalsModal input[name='modalManagerApproval']").prop("checked", false);
-						$("#editApprovalsModal input[name='modalBillSheet']").prop("checked", false);
-						
-						if ( GLOBAL_DATA['globalTicket'].customerSignature == true ) {
-							$("#modalCustomerSignature").show();
-							$("#editApprovalsModal input[name='modalCustomerSignature']").hide();
-						} else {
-							$("#modalCustomerSignature").hide();
-							$("#editApprovalsModal input[name='modalCustomerSignature']").show();					
-						}
-						if ( GLOBAL_DATA['globalTicket'].billSheet == true ) {
-							$("#modalBillSheet").show();
-							$("#editApprovalsModal input[name='modalBillSheet']").hide();
-						} else {
-							$("#modalBillSheet").hide();
-							$("#editApprovalsModal input[name='modalBillSheet']").show();
-						}
-						if ( GLOBAL_DATA['globalTicket'].mgrApproval == true ) {
-							$("#modalManagerApproval").show();
-							$("#editApprovalsModal input[name='modalManagerApproval']").hide();
-						} else {
-							$("#modalManagerApproval").hide();
-							$("#editApprovalsModal input[name='modalManagerApproval']").show();
-						}
-						
-						$("#editApprovalsModal").dialog("open");
-					});	       
-					
-					
-		        	$("#ticketOverride").click(function($event) {
-		        		location.href="ticketOverride.html?id="+$globalTicketId;
-		        	});
-			   		        			        	
-		            var $ticketComplete = $( "#ticketNbr" ).autocomplete({
-						source: "ticketTypeAhead",
-		                minLength: 3,
-		                appendTo: "#someTicket",
-		                select: function( event, ui ) {
-		                	var $ticketNbr = ui.item.id;
-		                	$globalTicketId = $ticketNbr
-							$("#ticketNbr").val($ticketNbr);
-		                	TICKETRETURN.doPopulate($ticketNbr);
-		                },
-		                response: function(event, ui) {
-		                    if (ui.content.length === 0) {
-		                    	$("#globalMsg").html("No Matching Ticket");
-		                    	clearTicketData()
-		                    } else {
-		                    	$("#globalMsg").html("");
-		                    }
-		                }
-		          	}).data('ui-autocomplete');
-		            
-					$ticketComplete._renderMenu = function( ul, items ) {
-						var that = this;
-						$.each( items, function( index, item ) {
-							that._renderItemData( ul, item );
-						});
-						if ( items.length == 1 ) {
-							var $ticketNbr = items[0].id;
-							$globalTicketId = $ticketNbr
-							$("#ticketNbr").val($ticketNbr);
-							$("#ticketNbr").autocomplete("close");
-		            		TICKETRETURN.doPopulate($ticketNbr);
-						}
-					}
-			   	},
-					
-					
-			   	makeEditApprovalsModal : function () {
-					$("#editApprovalsModal").dialog({
-						title:'Edit Approvals',
-						autoOpen: false,
-						height: 300,
-						width: 400,
-						modal: true,
-						buttons: [
-							{
-								id: "cancelModal",
-								click: function() {
-									$("#editApprovalsModal").dialog( "close" );
-								}
-							},{
-								id: "saveModal",
-								click: function($event) {
-									TICKETRETURN.saveApprovals();
-								}
-							}
-						],
-						close: function() {
+			
+			
+			
+			$("#editApprovalsModal").dialog({
+				title:'Edit Approvals',
+				autoOpen: false,
+				height: 300,
+				width: 400,
+				modal: true,
+				buttons: [
+					{
+						id: "cancelModal",
+						click: function() {
 							$("#editApprovalsModal").dialog( "close" );
 						}
-					});
-		    		$('#saveModal').button('option', 'label', 'Save');
-		    		$('#cancelModal').button('option', 'label', 'Cancel');
-			   	},
-			   	
-			   	
-			   	markInvalid : function ($item) {
-						$item.removeClass("far");
-			    		$item.removeClass("fa-check-square");
-						$item.removeClass("inputIsValid");
-		
-						$item.addClass("fa");
-			    		$item.addClass("fa-ban");
-						$item.addClass("inputIsInvalid");
-				},
-		
-				markValid : function ($item) {
-			    		$item.removeClass("fa");
-			    		$item.removeClass("fa-ban");
-						$item.removeClass("inputIsInvalid");
-		
-						$item.addClass("far");
-			    		$item.addClass("fa-check-square");
-						$item.addClass("inputIsValid");
-			   	},
-				
-		        populateDefaultTicketNbr : function () {    
-			        	if ( $defaultTicketNbr != '' ) {
-			        		$("#ticketNbr").val($defaultTicketNbr);
-			        		$("#doPopulate").click();
-			        		$("#ticketNbr").focus();
-			        	}
-		        },
-		
-					
-			   	populateDefaultValues : function ($data) {
-						$actPricePerCleaning = $data.ticketDetail.actPricePerCleaning.substring(1).replace(/,/,"");
-		       			if ( $data.actDlPct == null ) {
-		       				$actDlPct = $data.ticketDetail.defaultDirectLaborPct;
-		       			} else {i
-		       				$actDlPct = $data.ticketDetail.actDlPct;
-		       			}
-		       			if ($data.ticketDetail.actDlAmt == null ) {
-		       				if ( $actPricePerCleaning == null ) {
-		       					$actDlAmt = null;
-		       				} else {
-		       					$actDlAmt = $actPricePerCleaning.substring(1).replace(/,/,"");
-		       				}	
-		       			} else {
-		       				$actDlAmt = $data.ticketDetail.actDlAmt.substring(1).replace(/,/,"");
-		       			}
-		   				
-		   				$("#COMPLETED input[name=actPricePerCleaning]").val($actPricePerCleaning);
-		   				$("#COMPLETED input[name=actDlPct]").val($actDlPct);
-		   				$("#COMPLETED span[class=actDlPct]").html($actDlPct.toFixed(1));		       				
-		   				$("#COMPLETED input[name=actDlAmt]").val($actDlAmt);
-		   				$("#COMPLETED input[name=actPoNumber]").val($data.ticketDetail.actPoNumber);
-				},
-			   	
-			   	
-			   	
-			   	populateInvoiceDetail : function ($data) {
-						if ($data.invoiceDetail) {
-							$("#invoiceId").html($data.invoiceDetail.invoiceId);					
-							$("#sumInvPpc").html($data.invoiceDetail.sumInvPpc);
-							$("#sumInvPpcPaid").html($data.invoiceDetail.sumInvPpcPaid);
-							$("#sumInvTax").html($data.invoiceDetail.sumInvTax);
-							$("#sumInvTaxPaid").html($data.invoiceDetail.sumInvTaxPaid);
-							$("#invoiceBalance").html($data.invoiceDetail.balance);
-			                $("#invoiceTable").show();
-							$("#invoiceTable").fadeIn(4000);  
-						}else{
-							$("#invoiceTable").hide();				
-						}	
-			   	},
-			   	
-			   	
-			   	
-			   	populatePanelSelect : function ($data) {
-						$('option', "#panelSelector").remove();
-		//				if ($data.ticketDetail.status=='N') {
-		//					$("#panelSelector").hide();
-		//					$("#REJECTED").fadeIn(1500);
-		//				} else if ($data.ticketDetail.status=='C') {
-		//					$("#panelSelector").hide();
-		//				} else 
-						if ($data.ticketDetail.status=='I') {
-							$("#panelSelector").hide();
-						} else if ( $data.ticketDetail.nextAllowedStatusList.length == 0 ) {
-							$("#panelSelector").hide();
-		//				} else if ( $data.ticketDetail.nextAllowedStatusList.length == 1 ) {
-		//					$panelId = "#" + $data.ticketDetail.nextAllowedStatusList[0];
-		//					$("#panelSelector").hide();
-		//					$($panelId).fadeIn(1500);
-						} else {
-							$("#panelSelector").append(new Option("", ""));
-			                $.each($data.ticketDetail.nextAllowedStatusList, function($index, $status) {
-								$("#panelSelector").append(new Option($status, $status));
-			                });
-			                $("#panelSelector").show();
+					},{
+						id: "saveModal",
+						click: function($event) {
+							saveApprovals();
 						}
-			   	},
-			   	
+					}
+				],
+				close: function() {
+					$("#editApprovalsModal").dialog( "close" );
+				}
+			});
+    		$('#saveModal').button('option', 'label', 'Save');
+    		$('#cancelModal').button('option', 'label', 'Cancel');
 
-			   	
-			   	
-			   	populateSummary : function ($data) {
-						$("#status").html($ticketStatusMap[$data.ticketDetail.status] + " (" + $data.ticketDetail.status + ")");
-						$("#divisionDisplay").html($data.ticketDetail.divisionDisplay);
-						$("#jobId").html( '<a class="joblink" href="jobMaintenance.html?id='+ $data.ticketDetail.jobId + '">' + $data.ticketDetail.jobId + '</a>');
-						//$("#jobId").attr("data-jobid",$data.ticketDetail.jobId);
-						//$( "#jobId" ).on( "click", function($clickevent) {
-						//	 location.href="jobMaintenance.html?id=" + $data.ticketDetail.jobId;
-						//});
-						$("#serviceDescription").html($data.ticketDetail.serviceDescription);
-						$("#jobFrequency").html($data.ticketDetail.jobFrequencyDesc);
-						$("#invoiceStyle").html($data.ticketDetail.invoiceStyle);
-						$("#poNumber").html($data.ticketDetail.actPoNumber);
-			   	},
-
-
-			   	
-			   	populateTicketDetail : function ($data) {
-			   			GLOBAL_DATA['globalTicket'] = $data.ticketDetail;
-						$("#ticketId").html($data.ticketDetail.ticketId);
-						$("#actPricePerCleaning").html($data.ticketDetail.actPricePerCleaning);
-						$("#totalVolPaid").html($data.ticketDetail.totalVolPaid);
-						$("#actTax").html($data.ticketDetail.actTax);
-						$("#totalTaxPaid").html($data.ticketDetail.totalTaxPaid);
-						$("#ticketBalance").html($data.ticketDetail.balance);
-						$("#processDate").html($data.ticketDetail.processDate);
-		
-						$("#completedRow").hide();
-						if ( $data.ticketDetail.status=='N') {
-							$("#processNotesRow").hide();
-						} else {
-							$("#processNotesRow").show();
-							$("#processNotesRow td").addClass("bottomRow");
-							if ( $data.ticketDetail.status == 'R' ) {
-								$processLabel = "Reject Date:";
-							} else if ( $data.ticketDetail.status == 'D' ) {
-								$processLabel = "Start Date:";
-								$("#processDate").html($data.ticketDetail.startDate);
-							} else if ( $data.ticketDetail.status == 'V' ) {
-								$processLabel = "Void Date:";
-							} else if ( $data.ticketDetail.status == 'S' ) {
-								$processLabel = "Skip Date:";
-							} else if ( ($data.ticketDetail.status == 'C') || ($data.ticketDetail.status == 'I') || ($data.ticketDetail.status == 'P') ) {
-								$processLabel = "Complete Date:";
-								$("#processNotesRow td").removeClass("bottomRow");
-								$("#completedRow").show();
-								if ( $data.ticketDetail.customerSignature == true ) {
-									TICKETRETURN.markValid($("#customerSignature"));
-								} else {
-									TICKETRETURN.markInvalid($("#customerSignature"));
-								}
-								if ( $data.ticketDetail.billSheet == true ) {
-									TICKETRETURN.markValid($("#billSheet"));
-								} else {
-									TICKETRETURN.markInvalid($("#billSheet"));
-								}
-								if ( $data.ticketDetail.mgrApproval == true ) {
-									TICKETRETURN.markValid($("#managerApproval"));
-								} else {
-									TICKETRETURN.markInvalid($("#managerApproval"));
-								}
-								
-								if ($data.ticketDetail.customerSignature == true && $data.ticketDetail.billSheet == true && $data.ticketDetail.mgrApproval == true) {
-									$(".editApprovals").hide();
-								} else {
-									$(".editApprovals").show();
-								}
-								
-							} else if ( $data.ticketDetail.status == 'I' ) {
-								$processLabel = "Invoice Date:";
-							} else if ( $data.ticketDetail.status == 'P' ) {
-								$processLabel = "Paid Date:";
-							} else {
-								$processLabel = "Process Date (" + $data.ticketDetail.status + ")";
-							}
-							
-							$("#processDateLabel").html($processLabel);
-							$("#processNotes").html($data.ticketDetail.processNotes);					
-						}
-			   	},
-			   	
-			   	
-		            
-		
-			   	
-			   	
-			   	saveApprovals : function () {
-						var $outbound = {}
-						$outbound['customerSignature'] = $("#editApprovalsModal input[name='modalCustomerSignature']").prop("checked");
-						$outbound['managerApproval'] = $("#editApprovalsModal input[name='modalManagerApproval']").prop("checked");
-						$outbound['billSheet'] = $("#editApprovalsModal input[name='modalBillSheet']").prop("checked");
-		
-						
-		            	$url = "ticketApprovalOverride/" + $globalTicketId;
-		
-						var jqxhr = $.ajax({
-							type: 'POST',
-							url: $url,
-							data: JSON.stringify($outbound),
-							statusCode: {
-								200: function($data) {
-									if ( $data.responseHeader.responseCode == 'SUCCESS') {
-										$("#editApprovalsModal").dialog("close");
-										$("#globalMsg").html("Update Complete").show().fadeOut(6000);
-										$("#doPopulate").click();
-						        		$("#ticketNbr").focus();
-									} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-										$("#approvalErr").html($data.data.webMessages.GLOBAL_MESSAGE[0]).show().fadeOut(6000);
-									} else {
-										$("#editApprovalsModal").dialog("close");
-										$("#globalMsg").html("Unexepected Response, Contact support (" + $data.responseHeader.responseMessage + ")").show();
-									}
-								},
-			       				404: function($data) {
-									$("#editApprovalsModal").dialog("close");
-			        	    		$("#globalMsg").html("Invalid Ticket Number").show().fadeOut(6000);
-			        	    	},
-								403: function($data) {
-									$("#editApprovalsModal").dialog("close");
-									$("#globalMsg").html("Session Timeout. Log in and try again").show();
-								},
-								405: function($data) {
-									$("#editApprovalsModal").dialog("close");
-									$("#globalMsg").html("You're not allowed to perform this function").show();
-								},
-				       			500: function($data) {
-									$("#editApprovalsModal").dialog("close");
-			            	    	$("#globalMsg").html("System Error: Contact Support").show();
-			            		},  
-							},
-							dataType: 'json'
-						});
-						
-						
-						
-					},
-				   	
-				   	ticketNbrFocus : function () {
 			
-			        	$('#ticketNbr').focus(function($event) {
-			        		$(this).select();	
-			        	});
-			        	
-			        	$("input[type=text]").focus(function() {
-			        		$(this).select();
-			        	});
-			        	
-				   	},
-   	 	};
-		
-		TICKETRETURN.init();
-		 
-	});
+			
+        	$("#doPopulate").click(function () {
+    			var $ticketNbr = $('#ticketNbr').val();
+    			$globalTicketId = $('#ticketNbr').val();
+    			if ($ticketNbr != '') {            		
+            		doPopulate($ticketNbr)
+            	}
+            });
+        	
+        	
+        	
+        	$('.dateField').datepicker({
+                prevText:'&lt;&lt;',
+                nextText: '&gt;&gt;',
+                showButtonPanel:true
+            });
+
+        	$('#ticketNbr').focus(function($event) {
+        		$(this).select();	
+        	});
+        	
+        	$("input[type=text]").focus(function() {
+        		$(this).select();
+        	});
+        	
+        	$("#ticketOverride").click(function($event) {
+        		location.href="ticketOverride.html?id="+$globalTicketId;
+        	});
+        	
+        	
+        	
+            var $ticketComplete = $( "#ticketNbr" ).autocomplete({
+				source: "ticketTypeAhead",
+                minLength: 3,
+                appendTo: "#someTicket",
+                select: function( event, ui ) {
+                	var $ticketNbr = ui.item.id;
+                	$globalTicketId = $ticketNbr
+					$("#ticketNbr").val($ticketNbr);
+            		doPopulate($ticketNbr);
+                },
+                response: function(event, ui) {
+                    if (ui.content.length === 0) {
+                    	$("#globalMsg").html("No Matching Ticket");
+                    	clearTicketData()
+                    } else {
+                    	$("#globalMsg").html("");
+                    }
+                }
+          	}).data('ui-autocomplete');
+            
+			$ticketComplete._renderMenu = function( ul, items ) {
+				var that = this;
+				$.each( items, function( index, item ) {
+					that._renderItemData( ul, item );
+				});
+				if ( items.length == 1 ) {
+					var $ticketNbr = items[0].id;
+					$globalTicketId = $ticketNbr
+					$("#ticketNbr").val($ticketNbr);
+					$("#ticketNbr").autocomplete("close");
+            		doPopulate($ticketNbr);
+				}
+			}
+
+        	
+        	
+        	
+			$("#editApprovals").click(function($event) {
+				$("#editApprovalsModal input[name='modalCustomerSignature']").prop("checked", false);
+				$("#editApprovalsModal input[name='modalManagerApproval']").prop("checked", false);
+				$("#editApprovalsModal input[name='modalBillSheet']").prop("checked", false);
+				
+				if ( GLOBAL_DATA['globalTicket'].customerSignature == true ) {
+					$("#modalCustomerSignature").show();
+					$("#editApprovalsModal input[name='modalCustomerSignature']").hide();
+				} else {
+					$("#modalCustomerSignature").hide();
+					$("#editApprovalsModal input[name='modalCustomerSignature']").show();					
+				}
+				if ( GLOBAL_DATA['globalTicket'].billSheet == true ) {
+					$("#modalBillSheet").show();
+					$("#editApprovalsModal input[name='modalBillSheet']").hide();
+				} else {
+					$("#modalBillSheet").hide();
+					$("#editApprovalsModal input[name='modalBillSheet']").show();
+				}
+				if ( GLOBAL_DATA['globalTicket'].mgrApproval == true ) {
+					$("#modalManagerApproval").show();
+					$("#editApprovalsModal input[name='modalManagerApproval']").hide();
+				} else {
+					$("#modalManagerApproval").hide();
+					$("#editApprovalsModal input[name='modalManagerApproval']").show();
+				}
+				
+				$("#editApprovalsModal").dialog("open");
+			});
+        	
+        	
+        	
+			function populateTicketDetail($data) {
+       			GLOBAL_DATA['globalTicket'] = $data.ticketDetail;
+				$("#ticketId").html($data.ticketDetail.ticketId);
+				$("#actPricePerCleaning").html($data.ticketDetail.actPricePerCleaning);
+				$("#totalVolPaid").html($data.ticketDetail.totalVolPaid);
+				$("#actTax").html($data.ticketDetail.actTax);
+				$("#totalTaxPaid").html($data.ticketDetail.totalTaxPaid);
+				$("#ticketBalance").html($data.ticketDetail.balance);
+				$("#processDate").html($data.ticketDetail.processDate);
+
+				$("#completedRow").hide();
+				if ( $data.ticketDetail.status=='N') {
+					$("#processNotesRow").hide();
+				} else {
+					$("#processNotesRow").show();
+					$("#processNotesRow td").addClass("bottomRow");
+					if ( $data.ticketDetail.status == 'R' ) {
+						$processLabel = "Reject Date:";
+					} else if ( $data.ticketDetail.status == 'D' ) {
+						$processLabel = "Start Date:";
+						$("#processDate").html($data.ticketDetail.startDate);
+					} else if ( $data.ticketDetail.status == 'V' ) {
+						$processLabel = "Void Date:";
+					} else if ( $data.ticketDetail.status == 'S' ) {
+						$processLabel = "Skip Date:";
+					} else if ( ($data.ticketDetail.status == 'C') || ($data.ticketDetail.status == 'I') || ($data.ticketDetail.status == 'P') ) {
+						$processLabel = "Complete Date:";
+						$("#processNotesRow td").removeClass("bottomRow");
+						$("#completedRow").show();
+						if ( $data.ticketDetail.customerSignature == true ) {
+							markValid($("#customerSignature"));
+						} else {
+							markInvalid($("#customerSignature"));
+						}
+						if ( $data.ticketDetail.billSheet == true ) {
+							markValid($("#billSheet"));
+						} else {
+							markInvalid($("#billSheet"));
+						}
+						if ( $data.ticketDetail.mgrApproval == true ) {
+							markValid($("#managerApproval"));
+						} else {
+							markInvalid($("#managerApproval"));
+						}
+						
+						if ($data.ticketDetail.customerSignature == true && $data.ticketDetail.billSheet == true && $data.ticketDetail.mgrApproval == true) {
+							$(".editApprovals").hide();
+						} else {
+							$(".editApprovals").show();
+						}
+						
+					} else if ( $data.ticketDetail.status == 'I' ) {
+						$processLabel = "Invoice Date:";
+					} else if ( $data.ticketDetail.status == 'P' ) {
+						$processLabel = "Paid Date:";
+					} else {
+						$processLabel = "Process Date (" + $data.ticketDetail.status + ")";
+					}
+					
+					$("#processDateLabel").html($processLabel);
+					$("#processNotes").html($data.ticketDetail.processNotes);					
+				}
+			}			
+			
+			function populatePanelSelect ($data) {
+				$('option', "#panelSelector").remove();
+//				if ($data.ticketDetail.status=='N') {
+//					$("#panelSelector").hide();
+//					$("#REJECTED").fadeIn(1500);
+//				} else if ($data.ticketDetail.status=='C') {
+//					$("#panelSelector").hide();
+//				} else 
+				if ($data.ticketDetail.status=='I') {
+					$("#panelSelector").hide();
+				} else if ( $data.ticketDetail.nextAllowedStatusList.length == 0 ) {
+					$("#panelSelector").hide();
+//				} else if ( $data.ticketDetail.nextAllowedStatusList.length == 1 ) {
+//					$panelId = "#" + $data.ticketDetail.nextAllowedStatusList[0];
+//					$("#panelSelector").hide();
+//					$($panelId).fadeIn(1500);
+				} else {
+					$("#panelSelector").append(new Option("", ""));
+	                $.each($data.ticketDetail.nextAllowedStatusList, function($index, $status) {
+						$("#panelSelector").append(new Option($status, $status));
+	                });
+	                $("#panelSelector").show();
+				}
+				
+			}
+			
+			function populateInvoiceDetail ($data) {
+				if ($data.invoiceDetail) {
+					$("#invoiceId").html($data.invoiceDetail.invoiceId);					
+					$("#sumInvPpc").html($data.invoiceDetail.sumInvPpc);
+					$("#sumInvPpcPaid").html($data.invoiceDetail.sumInvPpcPaid);
+					$("#sumInvTax").html($data.invoiceDetail.sumInvTax);
+					$("#sumInvTaxPaid").html($data.invoiceDetail.sumInvTaxPaid);
+					$("#invoiceBalance").html($data.invoiceDetail.balance);
+	                $("#invoiceTable").show();
+					$("#invoiceTable").fadeIn(4000);  
+				}else{
+					$("#invoiceTable").hide();				
+				}				
+			}
+			
+			function populateSummary($data) {
+				$("#status").html($ticketStatusMap[$data.ticketDetail.status] + " (" + $data.ticketDetail.status + ")");
+				$("#divisionDisplay").html($data.ticketDetail.divisionDisplay);
+				$("#jobId").html( '<a class="joblink" href="jobMaintenance.html?id='+ $data.ticketDetail.jobId + '">' + $data.ticketDetail.jobId + '</a>');
+				//$("#jobId").attr("data-jobid",$data.ticketDetail.jobId);
+				//$( "#jobId" ).on( "click", function($clickevent) {
+				//	 location.href="jobMaintenance.html?id=" + $data.ticketDetail.jobId;
+				//});
+				$("#serviceDescription").html($data.ticketDetail.serviceDescription);
+				$("#jobFrequency").html($data.ticketDetail.jobFrequencyDesc);
+				$("#invoiceStyle").html($data.ticketDetail.invoiceStyle);
+				$("#poNumber").html($data.ticketDetail.actPoNumber);
+			}
+
+			
+			function populateDefaultValues($data) {
+				$actPricePerCleaning = $data.ticketDetail.actPricePerCleaning.substring(1).replace(/,/,"");
+       			if ( $data.actDlPct == null ) {
+       				$actDlPct = $data.ticketDetail.defaultDirectLaborPct;
+       			} else {i
+       				$actDlPct = $data.ticketDetail.actDlPct;
+       			}
+       			if ($data.ticketDetail.actDlAmt == null ) {
+       				if ( $actPricePerCleaning == null ) {
+       					$actDlAmt = null;
+       				} else {
+       					$actDlAmt = $actPricePerCleaning.substring(1).replace(/,/,"");
+       				}	
+       			} else {
+       				$actDlAmt = $data.ticketDetail.actDlAmt.substring(1).replace(/,/,"");
+       			}
+   				
+   				$("#COMPLETED input[name=actPricePerCleaning]").val($actPricePerCleaning);
+   				$("#COMPLETED input[name=actDlPct]").val($actDlPct);
+   				$("#COMPLETED span[class=actDlPct]").html($actDlPct.toFixed(1));		       				
+   				$("#COMPLETED input[name=actDlAmt]").val($actDlAmt);
+   				$("#COMPLETED input[name=actPoNumber]").val($data.ticketDetail.actPoNumber);
+			}
+
+			
+			function markValid($item) {
+	    		$item.removeClass("fa");
+	    		$item.removeClass("fa-ban");
+				$item.removeClass("inputIsInvalid");
+
+				$item.addClass("far");
+	    		$item.addClass("fa-check-square");
+				$item.addClass("inputIsValid");
+			}
+			
+			function markInvalid($item) {
+				$item.removeClass("far");
+	    		$item.removeClass("fa-check-square");
+				$item.removeClass("inputIsValid");
+
+				$item.addClass("fa");
+	    		$item.addClass("fa-ban");
+				$item.addClass("inputIsInvalid");
+			}
+			
+			$("#COMPLETED input[name=actPricePerCleaning]").change(function($event) {
+				var $actPricePerCleaning = $("#COMPLETED input[name=actPricePerCleaning]").val();
+				var $actDlPct = $("#COMPLETED input[name=actDlPct]").val();
+				if ( isNaN($actPricePerCleaning) ) {
+					markInvalid($("#validActPricePerCleaning"));
+				} else {
+					markValid($("#validActPricePerCleaning"));
+					var $actDlAmt = ($actPricePerCleaning * $actDlPct / 100);
+					$("#COMPLETED input[name=actDlAmt]").val($actDlAmt.toFixed(2));					
+				}
+			});
+			
+			
+			$("#COMPLETED input[name=actDlAmt]").change(function($event) {
+				var $actPricePerCleaning = $("#COMPLETED input[name=actPricePerCleaning]").val();
+				var $actDlAmt = $("#COMPLETED input[name=actDlAmt]").val();
+				if ( isNaN($actDlAmt) ) {
+					markInvalid($("#validActDlAmt"));
+				} else {
+					markValid($("#validActDlAmt"));
+					var $actDlPct = ($actDlAmt / $actPricePerCleaning * 100);
+					$("#COMPLETED input[name=actDlPct]").val($actDlPct);					
+					$("#COMPLETED span[class=actDlPct]").html($actDlPct.toFixed(1));
+				}
+			});
+			
+			
+        	function doPopulate($ticketNbr) {    		
+		       	var jqxhr = $.ajax({
+		       		type: 'GET',
+		       		url: "ticket/" + $ticketNbr,
+		       		//data: $ticketNbr,
+		       		success: function($data) {
+						$.each($data.data.ticketList, function(index, value) {
+							addRow(index, value);
+						});
+						$(".workPanel").hide();
+		       			populateTicketDetail($data.data);	       			
+		       			populateSummary($data.data);
+		       			populatePanelSelect($data.data);
+		       			populateDefaultValues($data.data);
+						ADDRESS_UTILS.populateAddress("#jobSiteAddress", $data.data.ticketDetail.jobSiteAddress);
+						ADDRESS_UTILS.populateAddress("#billToAddress", $data.data.ticketDetail.billToAddress);
+		       			
+    					$("#summaryTable").fadeIn(4000);
+    					$("#selectPanel").fadeIn(4000);
+    					$("#ticketTable").fadeIn(4000);
+		       			populateInvoiceDetail($data.data);	  					
+					},
+		       		statusCode: {
+	       				404: function($data) {
+	        	    		$("#globalMsg").html("Invalid Ticket Number").show().fadeOut(6000);
+	        	    	},
+						403: function($data) {
+							$("#globalMsg").html("Session Timeout. Log in and try again").show();
+						},
+		       			500: function($data) {
+	            	    	$("#globalMsg").html("System Error: Contact Support").show();
+	            		},
+		       		},
+		       		dataType: 'json'
+		       	});
+        	}
+        	
+        	
+        	
+        	
+        	function addRow(index, $ticket) {	
+				var $rownum = index + 1;
+       			rowTd = makeRow($ticket, $rownum);
+       			row = '<tr class="dataRow">' + rowTd + "</tr>";
+       			$('#displayTable').append(row);
+			}
+        	
+        	
+			$('#row_dim').hide(); 
+    			$('#type').change(function(){
+        			if($('#type').val() == 'parcel') {
+           				 $('#row_dim').show(); 
+        			} else {
+            			$('#row_dim').hide(); 
+        		} 
+    		});
+			
+    			
+			$("#panelSelector").change(function($event) {
+				$(".workPanel").hide();
+				var $selectedPanel = $('#panelSelector option:selected').val();		
+        		if ($selectedPanel != '' ) {
+        			$selectedId = "#" + $selectedPanel;
+        			$($selectedId).fadeIn(1500);
+        		}
+			});
+			
+			
+			$(".cancelUpdate").click( function($clickevent) {
+				$clickevent.preventDefault();
+				$(".clearMe").val("");
+				$(".err").html("");
+				clearAddForm();
+			});
+			
+			
+	
+			$(".goUpdate").click( function($clickevent) {
+				// the goButton -- $(this) -- tells us which panel is being submitted
+				// loop through all input in that panel and put the values in $outbound
+				var $panelName = $(this).data('panel');
+				var $inputSelector = "#" + $panelName + " :input";				
+
+				$outbound = {};
+				$.each( $($inputSelector), function(index, value) {
+					if ( value.name ) {
+						var $fieldName = value.name;
+						var $fieldValue = $(this).val();
+						if ( $(this).attr("type") == "checkbox" ) {
+							$fieldValue = $(this).prop("checked");
+						}
+						$outbound[$fieldName]=$fieldValue;
+						if ( $fieldName == "defaultActDlPct" ) { //gag
+							$outbound["actDlPct"] = $fieldValue;	//gag						
+						} //gag
+					}
+				});
+
+
+            	$url = "ticket/" + $globalTicketId;
+
+				var jqxhr = $.ajax({
+					type: 'POST',
+					url: $url,
+					data: JSON.stringify($outbound),
+					statusCode: {
+						200: function($data) {
+							if ( $data.responseHeader.responseCode == 'SUCCESS') {
+								$("#globalMsg").html("Update Complete").show().fadeOut(6000);
+				        		$("#doPopulate").click();
+				        		$("#ticketNbr").focus();
+							} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+								$('.err').html("");
+								$.each($data.data.webMessages, function(key, messageList) {
+									var identifier = "#" + $panelName + " ." + key + "Err";
+									msgHtml = "<ul>";
+									$.each(messageList, function(index, message) {
+										msgHtml = msgHtml + "<li>" + message + "</li>";
+									});
+									msgHtml = msgHtml + "</ul>";
+									$(identifier).html(msgHtml).show().fadeOut(6000);
+								});	
+								$("#globalMsg").html($data.responseHeader.responseMessage).show().fadeOut(6000);
+							} else {
+								$("#globalMsg").html("Unexepected Response, Contact support (" + $data.responseHeader.responseMessage + ")").show();
+							}
+						},
+	       				404: function($data) {
+	        	    		$("#globalMsg").html("Invalid Ticket Number").show().fadeOut(6000);
+	        	    	},
+						403: function($data) {
+							$("#globalMsg").html("Session Timeout. Log in and try again").show();
+						},
+		       			500: function($data) {
+	            	    	$("#globalMsg").html("System Error: Contact Support").show();
+	            		},  
+					},
+					dataType: 'json'
+				});
+				
+			});
+			
+
+
+            
+            function clearAddForm() {
+				$.each( $('.addForm').find("input"), function(index, $inputField) {
+					$('input[name=customerSignature]').prop('checked', false);
+					$('input[name=billSheet]').prop('checked', false);
+					$('input[name=mgrApproval]').prop('checked', false);
+					$fieldName = $($inputField).attr('name');
+					if ( $($inputField).attr("type") == "text" ) {
+						$($inputField).val("");
+					}
+				});
+            }
+            
+
+			function saveApprovals() {
+				var $outbound = {}
+				$outbound['customerSignature'] = $("#editApprovalsModal input[name='modalCustomerSignature']").prop("checked");
+				$outbound['managerApproval'] = $("#editApprovalsModal input[name='modalManagerApproval']").prop("checked");
+				$outbound['billSheet'] = $("#editApprovalsModal input[name='modalBillSheet']").prop("checked");
+
+				
+            	$url = "ticketApprovalOverride/" + $globalTicketId;
+
+				var jqxhr = $.ajax({
+					type: 'POST',
+					url: $url,
+					data: JSON.stringify($outbound),
+					statusCode: {
+						200: function($data) {
+							if ( $data.responseHeader.responseCode == 'SUCCESS') {
+								$("#editApprovalsModal").dialog("close");
+								$("#globalMsg").html("Update Complete").show().fadeOut(6000);
+								$("#doPopulate").click();
+				        		$("#ticketNbr").focus();
+							} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+								$("#approvalErr").html($data.data.webMessages.GLOBAL_MESSAGE[0]).show().fadeOut(6000);
+							} else {
+								$("#editApprovalsModal").dialog("close");
+								$("#globalMsg").html("Unexepected Response, Contact support (" + $data.responseHeader.responseMessage + ")").show();
+							}
+						},
+	       				404: function($data) {
+							$("#editApprovalsModal").dialog("close");
+	        	    		$("#globalMsg").html("Invalid Ticket Number").show().fadeOut(6000);
+	        	    	},
+						403: function($data) {
+							$("#editApprovalsModal").dialog("close");
+							$("#globalMsg").html("Session Timeout. Log in and try again").show();
+						},
+						405: function($data) {
+							$("#editApprovalsModal").dialog("close");
+							$("#globalMsg").html("You're not allowed to perform this function").show();
+						},
+		       			500: function($data) {
+							$("#editApprovalsModal").dialog("close");
+	            	    	$("#globalMsg").html("System Error: Contact Support").show();
+	            		},  
+					},
+					dataType: 'json'
+				});
+				
+				
+				
+			}
+
+            
+        	if ( $defaultTicketNbr != '' ) {
+        		$("#ticketNbr").val($defaultTicketNbr);
+        		$("#doPopulate").click();
+        		$("#ticketNbr").focus();
+        	}
+
+    });
+
 		</script>
     </tiles:put>
     

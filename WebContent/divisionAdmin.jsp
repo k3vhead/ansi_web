@@ -108,8 +108,11 @@
 						
 					doFunctionBinding : function () {
 						$('.editAction').bind("click", function($clickevent) {
+							$divisionId = $(this).attr("data-id");
+							var $rownum = $(this).attr("data-row");
 							DIVISIONADMIN.doEdit($clickevent);
-						});
+						});						
+						
 						$('.delAction').bind("click", function($clickevent) {
 							DIVISIONADMIN.doDelete($clickevent);
 						});
@@ -125,10 +128,11 @@
 					
 					doEdit : function ($clickevent) {
 						$clickevent.preventDefault();
+						$rownum = $("#addForm").attr("data-row");
 						var $divisionId = $clickevent.currentTarget.attributes["data-id"].value;
 						console.log("div id: " + $divisionId);
 						var $rownum = $clickevent.currentTarget.attributes['data-row'].value;
-						$("#goUpdate").data("rownum", $rownum);
+						$("#goUpdate").data("divisionId", $divisionId);
 		        		$('#goUpdate').button('option', 'label', 'Save');
 		        		$('#closeAddForm').button('option', 'label', 'Close');
 						
@@ -241,7 +245,11 @@
 										if ( $data.responseHeader.responseCode == 'SUCCESS') {
 											$rowfinder = "tr:eq(" + $rownum + ")"
 											$("#displayTable").find($rowfinder).remove();
+							              //  $("#displayTable").html( "divisionAdmin.html #diplayTable" );
+											//$("#displayTable").html("");
+											$('#displayTable').trigger('reflow');
 											$('#confirmDelete').dialog("close");
+											//DIVISIONADMIN.makeRow($data.data.division, $rownum);
 										}
 				            	     },
 			             	    	403: function($data) {
@@ -264,24 +272,8 @@
 					},
 						
 					goUpdate : function () {
-						$("#goUpdate").click( function($clickevent) {
-							$clickevent.preventDefault();
-							$outbound = {};
-							$.each( $('#addForm :input'), function(index, value) {
-								if ( value.name ) {
-									$fieldName = value.name;
-									$id = "#addForm input[name='" + $fieldName + "']";
-									$val = $($id).val();
-									$outbound[$fieldName] = $val;
-								}
-							}); 
-			
-							$outbound['status'] = $("#addForm select[name='status'] option:selected").val();
-							$outbound['weekendIsOt'] = $("#addForm select[name='weekendIsOt'] option:selected").val();
-							$outbound['hourlyRateIsFixed'] = $("#addForm select[name='hourlyRateIsFixed'] option:selected").val();
-							
-			
-							if ( $('#addForm').data('rownum') == null ) {
+						var $divisionId = $("#addForm input[name='divisionId']").val();
+						/*	if ( $('#addForm').data('rownum') == null ) {
 								$url = "division/add";
 							} else {
 								$rownum = $('#addForm').data('rownum')
@@ -296,7 +288,40 @@
 			
 				            	var $divisionId= $tableData[$rownum][0];
 				            	$url = "division/" + $divisionId;
+							} */
+			
+							
+
+							if ( $divisionId == null || $divisionId == '') {
+								$url = 'division/add';
+							} else {
+							/*	$rownum = $('#addForm').data('rownum')
+								var $tableData = [];
+				                $("#displayTable").find('tr').each(function (rowIndex, r) {
+				                    var cols = [];
+				                    $(this).find('th,td').each(function (colIndex, c) {
+				                        cols.push(c.textContent);
+				                    });
+				                    $tableData.push(cols);
+				                }); */
+
+								//var $divisionId = $("#addForm input[name='divisionId']").val();
+								$url = 'division/' + $divisionId;
 							}
+							
+							var $outbound = {};				
+							$outbound['divisionId'] = $("#addForm input[name='divisionId']").val();
+							$outbound['divisionCode'] = $("#addForm input[name='divisionCode']").val();
+							$outbound['divisionNbr'] = $("#addForm input[name='divisionNbr']").val();
+							$outbound['description'] = $("#addForm input[name='description']").val();
+							$outbound['defaultDirectLaborPct'] = $("#addForm input[name='defaultDirectLaborPct']").val();
+							$outbound['maxRegHrsPerDay'] = $("#addForm input[name='maxRegHrsPerDay']").val();
+							$outbound['maxRegHrsPerWeek'] = $("#addForm input[name='maxRegHrsPerWeek']").val();
+							$outbound['overtimeRate'] = $("#addForm input[name='overtimeRate']").val();
+							$outbound['status'] = $("#addForm select[name='status'] option:selected").val();
+							$outbound['weekendIsOt'] = $("#addForm select[name='weekendIsOt'] option:selected").val();
+							$outbound['hourlyRateIsFixed'] = $("#addForm select[name='hourlyRateIsFixed'] option:selected").val();
+
 							
 							var jqxhr = $.ajax({
 								type: 'POST',
@@ -304,37 +329,20 @@
 								data: JSON.stringify($outbound),
 								statusCode: {
 									200: function($data) {
-										if ( $data.responseHeader.responseCode == 'SUCCESS') {
-											if ( $url == "division/add" ) {
-												var count = $('#displayTable tr').length - 1;
-												DIVISIONADMIN.addRow(count, $data.data.division);
-											} else {
-								            	var $rownum = $('#addForm').data('rownum');
-								                var $rowId = eval($rownum) + 1;
-								            	var $rowFinder = "#displayTable tr:nth-child(" + $rowId + ")"
-								            	var $rowTd = makeRow($data.data.division, $rownum);
-								            	$($rowFinder).html($rowTd);
-											}
+					    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+					    					$.each($data.data.webMessages, function (key, value) {
+					    						var $selectorName = "#" + key + "Err";
+					    						$($selectorName).show();
+					    						$($selectorName).html(value[0]).fadeOut(10000);
+					    					});
+					    				} else {	    				
 											DIVISIONADMIN.clearAddForm();
+											$('#displayTable').trigger('reflow');
 											$('#addForm').dialog("close");
-											$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
-										} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-											$('.err').html("");
-											 $.each($data.data.webMessages, function(key, messageList) {
-												var identifier = "#" + key + "Err";
-												msgHtml = "<ul>";
-												$.each(messageList, function(index, message) {
-													msgHtml = msgHtml + "<li>" + message + "</li>";
-												});
-												msgHtml = msgHtml + "</ul>";
-												$(identifier).html(msgHtml);
-											});	
-											$("#globalMsg").html($data.responseHeader.responseMessage).fadeIn(10).fadeOut(6000);
-										} else {
-											$("#addForm").dialog("close");
-											$("#globalMsg").html("Unexepected Response, Contact support (" + $data.responseHeader.responseMessage + ")").show();
-										}
-									},
+							                //$("#displayTable").table("rebuild");
+					    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
+					    				}
+					    			},
 									403: function($data) {
 										$("#addFormMsg").html("Session Timeout. Log in and try again").show();
 									},
@@ -344,7 +352,6 @@
 								},
 								dataType: 'json'
 							});
-						});
 					},
 					
 					makeAddForm : function () {
@@ -486,7 +493,6 @@
 		            		$($valid).addClass("inputIsInvalid");
 		            	}
 		            },
-					
 					
 	        		showNew : function() {
 
