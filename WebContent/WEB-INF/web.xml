@@ -135,6 +135,26 @@
 
 
 
+	<servlet>
+        <servlet-name>callNote</servlet-name>
+        <servlet-class>com.ansi.scilla.web.callNote.servlet.CallNoteServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>callNote</servlet-name>
+        <url-pattern>/callNote/callNote/*</url-pattern>
+    </servlet-mapping>
+
+	<servlet>
+        <servlet-name>callNoteDetail</servlet-name>
+        <servlet-class>com.ansi.scilla.web.callNote.servlet.CallNoteDetailServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>callNoteDetail</servlet-name>
+        <url-pattern>/callNote/callNoteDetail/*</url-pattern>
+    </servlet-mapping>
+
+
+
     <servlet>
         <servlet-name>callNoteLookup</servlet-name>
         <servlet-class>com.ansi.scilla.web.callNote.servlet.CallNoteLookupServlet</servlet-class>

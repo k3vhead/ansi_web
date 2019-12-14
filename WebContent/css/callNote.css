@@ -1,0 +1,30 @@
+#call-note-detail-modal {
+	display:none;
+}
+#call-note-detail-modal table {
+	border-spacing:0;
+	width:95%;
+}
+#new-address-modal {
+	display:none;
+}
+#new-contact-modal {
+	display:none;
+}
+#note-crud-form {
+	display:none;
+	background-color:#FFFFFF;
+	color:#000000;
+}
+.call-note-detail-text {
+	border:solid 1px #000000;
+	vertical-align:top;
+	padding:8px;
+}
+.modal-label {
+	width:100%;
+	text-align:center;
+	font-weight:bold;
+	margin-top:8px;
+	margin-bottom:8px;
+}

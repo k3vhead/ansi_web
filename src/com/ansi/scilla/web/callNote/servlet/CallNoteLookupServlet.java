@@ -1,10 +1,15 @@
 package com.ansi.scilla.web.callNote.servlet;
 
 import java.sql.Connection;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import org.apache.commons.collections4.Transformer;
 
 import com.ansi.scilla.web.callNote.query.CallNoteLookupQuery;
 import com.ansi.scilla.web.common.query.LookupQuery;
@@ -21,7 +26,8 @@ public class CallNoteLookupServlet extends AbstractLookupServlet {
 	private static final long serialVersionUID = 1L;
 	
 	public static final String REALM = "callNoteLookup";
-
+	public static final String START_TIME = "start_time";
+	
 	public CallNoteLookupServlet() {
 		super(Permission.CALL_NOTE_READ);
 		cols = new String[] { 
@@ -35,8 +41,9 @@ public class CallNoteLookupServlet extends AbstractLookupServlet {
 				CallNoteLookupQuery.ANSI_CONTACT,
 				CallNoteLookupQuery.START_TIME,
 				CallNoteLookupQuery.CONTACT_TYPE,
+				CallNoteLookupQuery.XREF,
 				};
-//		super.itemTransformer = new ItemTransformer();
+		super.itemTransformer = new ItemTransformer();
 	}
 
 
@@ -69,20 +76,21 @@ public class CallNoteLookupServlet extends AbstractLookupServlet {
 
 
 
-//	public class ItemTransformer implements Transformer<HashMap<String, Object>, HashMap<String, Object>> {
-//
-//		@Override
-//		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
-//			String ticketStatus = (String)arg0.get(BudgetControlLookupQuery.TICKET_STATUS);
-//			if ( ! StringUtils.isBlank(ticketStatus) ) {
-//				TicketStatus status = TicketStatus.lookup(ticketStatus);
-//				arg0.put("ticket_status_description", status.display());
-//			}
-//			
-//			return arg0;
-//		}
-//		
-//	}
+	public class ItemTransformer implements Transformer<HashMap<String, Object>, HashMap<String, Object>> {
+
+		private final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
+		@Override
+		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
+			Timestamp startTime = (Timestamp)arg0.get(START_TIME);
+			String display = "XXX";
+			if ( startTime != null ) {
+				display = sdf.format(startTime);
+				arg0.put(START_TIME, display);
+			}
+			return arg0;
+		}
+		
+	}
 
 
 	

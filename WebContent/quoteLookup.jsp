@@ -24,6 +24,10 @@
     
     
     <tiles:put name="headextra" type="string">
+		<link rel="stylesheet" href="css/callNote.css" />
+    	<link rel="stylesheet" href="css/accordion.css" type="text/css" />
+    	<script type="text/javascript" src="js/ansi_utils.js"></script>
+    	<script type="text/javascript" src="js/callNote.js"></script>     
   	    <script type="text/javascript" src="js/quotePrint.js"></script>
         <style type="text/css">
 			#displayTable {
@@ -71,7 +75,7 @@
                 showButtonPanel:true
             });
 
-
+        	CALLNOTE.init();
         	QUOTE_PRINT.init_modal(<%= "\"#" + quotePrintModal + "\"" %>);
 
 			init();
@@ -222,7 +226,8 @@
 			            	viewText = '<a href="quoteMaintenance.html?id='+row.quoteId+'" class="editAction" data-id="'+row.quoteId+'"><webthing:view style="color:#404040;">View</webthing:view></a>';
 			            	printText = '<i class="fa fa-print orange quotePrint" aria=hidden="true" data-id="'+row.quoteId+'" data-quotenumber="'+ row.quoteCode + '"></i>';
 			            	copyText = '<i class="far fa-copy copyQuote" aria-hidden="true" data-id="'+row.quoteId+'"></i>';
-			            	{return '<ansi:hasPermission permissionRequired="QUOTE_READ" maxLevel="true">'+ viewText + '&nbsp;</ansi:hasPermission><ansi:hasPermission permissionRequired="QUOTE_CREATE">'+ editText +'</ansi:hasPermission>&nbsp;' + printText + '&nbsp;<ansi:hasPermission permissionRequired="QUOTE_CREATE">' + copyText + '</ansi:hasPermission>';}
+			            	var $noteLink = '<webthing:notes xrefType="QUOTE" xrefId="' + row.quoteId + '">Quote Notes</webthing:notes>'
+			            	{return '<ansi:hasPermission permissionRequired="QUOTE_READ" maxLevel="true">'+ viewText + '&nbsp;</ansi:hasPermission><ansi:hasPermission permissionRequired="QUOTE_CREATE">'+ editText +'</ansi:hasPermission>&nbsp;' + printText + '&nbsp;<ansi:hasPermission permissionRequired="QUOTE_CREATE">' + copyText + '</ansi:hasPermission> ' + $noteLink;}
 			            	
 			            } }],
 			            //"initComplete": function(settings, json) {
@@ -231,6 +236,7 @@
 			            //},
 			            "drawCallback": function( settings ) {
 			            	doFunctionBinding();
+			            	CALLNOTE.lookupLink();
 			            }
 				    } );
         		}
@@ -251,56 +257,57 @@
    <tiles:put name="content" type="string">
     	<h1>Quote Lookup</h1>
     	
- 	<table id="quoteTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
-        <colgroup>
-        	<col style="width:4%;" />
-    		<col style="width:6%;" />
-    		<col style="width:6%;" />
-    		<col style="width:16%;" />
-    		<col style="width:16%;" />
-    		<col style="width:13%;" />
-    		<col style="width:10%;" />
-    		<col style="width:9%;" />
-    		<col style="width:5%;" />
-    		<col style="width:8%;" />
-    		<col style="width:7%;" />  
-    	</colgroup> 
-        <thead>
-            <tr>
-                <th><bean:message key="field.label.quoteId" /></th>
-    			<th><bean:message key="field.label.quoteCode" /></th>
-    			<th><bean:message key="field.label.divisionNbr" /></th>
-    			<th><bean:message key="field.label.billToName" /></th>
-    			<th><bean:message key="field.label.jobSiteName" /></th>
-    			<th><bean:message key="field.label.jobSiteAddress" /></th>
-    			<th><bean:message key="field.label.managerName" /></th>
-    			<th><bean:message key="field.label.proposalDate" /></th>
-    			<th><bean:message key="field.label.quoteJobCount" /></th>
-    			<th><bean:message key="field.label.quotePpcSum" /></th>
-    			<th><bean:message key="field.label.action" /></th>
-            </tr>
-        </thead>
-        <tfoot>
-            <tr>
-                <th><bean:message key="field.label.quoteId" /></th>
-    			<th><bean:message key="field.label.quoteCode" /></th>
-    			<th><bean:message key="field.label.divisionNbr" /></th>
-    			<th><bean:message key="field.label.billToName" /></th>
-    			<th><bean:message key="field.label.jobSiteName" /></th>
-    			<th><bean:message key="field.label.jobSiteAddress" /></th>
-    			<th><bean:message key="field.label.managerName" /></th>
-    			<th><bean:message key="field.label.proposalDate" /></th>
-    			<th><bean:message key="field.label.quoteJobCount" /></th>
-    			<th><bean:message key="field.label.quotePpcSum" /></th>
-    			<th><bean:message key="field.label.action" /></th>
-    			
-            </tr>
-        </tfoot>
-    </table>
+	 	<table id="quoteTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
+	        <colgroup>
+	        	<col style="width:4%;" />
+	    		<col style="width:6%;" />
+	    		<col style="width:6%;" />
+	    		<col style="width:16%;" />
+	    		<col style="width:16%;" />
+	    		<col style="width:13%;" />
+	    		<col style="width:10%;" />
+	    		<col style="width:9%;" />
+	    		<col style="width:5%;" />
+	    		<col style="width:8%;" />
+	    		<col style="width:7%;" />  
+	    	</colgroup> 
+	        <thead>
+	            <tr>
+	                <th><bean:message key="field.label.quoteId" /></th>
+	    			<th><bean:message key="field.label.quoteCode" /></th>
+	    			<th><bean:message key="field.label.divisionNbr" /></th>
+	    			<th><bean:message key="field.label.billToName" /></th>
+	    			<th><bean:message key="field.label.jobSiteName" /></th>
+	    			<th><bean:message key="field.label.jobSiteAddress" /></th>
+	    			<th><bean:message key="field.label.managerName" /></th>
+	    			<th><bean:message key="field.label.proposalDate" /></th>
+	    			<th><bean:message key="field.label.quoteJobCount" /></th>
+	    			<th><bean:message key="field.label.quotePpcSum" /></th>
+	    			<th><bean:message key="field.label.action" /></th>
+	            </tr>
+	        </thead>
+	        <tfoot>
+	            <tr>
+	                <th><bean:message key="field.label.quoteId" /></th>
+	    			<th><bean:message key="field.label.quoteCode" /></th>
+	    			<th><bean:message key="field.label.divisionNbr" /></th>
+	    			<th><bean:message key="field.label.billToName" /></th>
+	    			<th><bean:message key="field.label.jobSiteName" /></th>
+	    			<th><bean:message key="field.label.jobSiteAddress" /></th>
+	    			<th><bean:message key="field.label.managerName" /></th>
+	    			<th><bean:message key="field.label.proposalDate" /></th>
+	    			<th><bean:message key="field.label.quoteJobCount" /></th>
+	    			<th><bean:message key="field.label.quotePpcSum" /></th>
+	    			<th><bean:message key="field.label.action" /></th>
+	    			
+	            </tr>
+	        </tfoot>
+	    </table>
+	    
+	    <webthing:scrolltop />
     
-    <webthing:scrolltop />
-    
-    <webthing:quotePrint modalName="<%= quotePrintModal %>" />
+    	<webthing:quotePrint modalName="<%= quotePrintModal %>" />
+    	<webthing:callNoteModals />
   
     </tiles:put>
 		

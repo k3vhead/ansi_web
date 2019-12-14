@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 
+import com.ansi.scilla.common.db.CallLog;
 import com.ansi.scilla.common.queries.SelectType;
 import com.ansi.scilla.web.claims.query.ClaimsQuery;
 import com.ansi.scilla.web.common.struts.SessionDivision;
@@ -20,6 +21,9 @@ public class CallNoteLookupQuery extends ClaimsQuery {
 	public static final String ANSI_CONTACT = "concat(ansi_user.first_name, ' ', ansi_user.last_name) as ansi_contact";
 	public static final String START_TIME = "call_log.start_time";
 	public static final String CONTACT_TYPE = "code.description as contact_type";
+	public static final String XREF_TYPE = "call_log_xref.xref_type";
+	public static final String XREF_ID = "call_log_xref.xref_id";
+	public static final String XREF = "concat(call_log_xref.xref_type, ' ', call_log_xref.xref_id)";
 	
 
 
@@ -37,7 +41,10 @@ public class CallNoteLookupQuery extends ClaimsQuery {
 			"		call_log.user_id, \n" + 
 			"		concat(ansi_user.first_name, ' ', ansi_user.last_name) as ansi_contact,\n" + 
 			"		call_log.start_time,\n" + 
-			"		code.description as contact_type\n";
+			"		code.display_value as contact_type,\n" +
+			"       call_log_xref.xref_type,\n" +
+			"       call_log_xref.xref_id,\n" +
+			"       concat(call_log_xref.xref_type, ' ', call_log_xref.xref_id) as xref\n";
 		
 
 	private static final String sqlFromClause = 
@@ -45,7 +52,8 @@ public class CallNoteLookupQuery extends ClaimsQuery {
 			"inner join address on address.address_id = call_log.address_id\n" + 
 			"inner join contact on contact.contact_id = call_log.contact_id\n" + 
 			"inner join ansi_user on ansi_user.user_id = call_log.user_id\n" + 
-			"inner join code on code.table_name='call_note' and code.field_name='call_xref' and code.value=call_log.contact_type\n"; 			
+			"inner join code on code.table_name='"+ CallLog.TABLE+"' and code.field_name='"+CallLog.CONTACT_TYPE+"' and code.value=call_log.contact_type\n" +
+			"inner join call_log_xref on call_log_xref.call_log_id=call_log.call_log_id\n"; 			
 
 	private static final String baseWhereClause = "";
 	

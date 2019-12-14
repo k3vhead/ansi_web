@@ -22,11 +22,15 @@
     
     
     <tiles:put name="headextra" type="string">
+    	<link rel="stylesheet" href="css/callNote.css" />
+    	<link rel="stylesheet" href="css/accordion.css" type="text/css" />
     	<link rel="stylesheet" href="css/sortable.css" type="text/css" />
         <script type="text/javascript" src="js/ansi_utils.js"></script>
         <script type="text/javascript" src="js/quotePrintHistory.js"></script>
         <script type="text/javascript" src="js/quotePrint.js"></script>
         <script type="text/javascript" src="js/addressUtils.js"></script>
+        <script type="text/javascript" src="js/callNote.js"></script> 
+        
         <script type="text/javascript">        
         
         	$(document).ready(function() {
@@ -54,6 +58,9 @@
 					
 					init : function() {
 						console.log("init");
+						CALLNOTE.init();
+						$("#call-note-link").attr("data-xrefid", QUOTEMAINTENANCE.quoteId);
+						CALLNOTE.lookupLink();
 						QUOTEMAINTENANCE.makeProgressbar();
 						QUOTEMAINTENANCE.init_modal();
 						QUOTEMAINTENANCE.makeAutoComplete();
@@ -2757,6 +2764,7 @@
     			<ansi:hasPermission permissionRequired="QUOTE_READ"><div class="action-button-container"><webthing:print styleClass="orange fa-2x quote-button action-button" styleId="preview-button">Preview</webthing:print></div></ansi:hasPermission>    			
     			<ansi:hasPermission permissionRequired="QUOTE_PROPOSE"><div class="action-button-container"><webthing:print styleClass="green fa-2x quote-button action-button" styleId="propose-button">Propose</webthing:print></div></ansi:hasPermission>
     			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><div class="action-button-container"><webthing:job styleClass="fa-2x quote-button action-button orange" styleId="new-job-button">New Job</webthing:job></div></ansi:hasPermission>    			
+    			<ansi:hasPermission permissionRequired="CALL_NOTE_WRITE"><div class="action-button-container"><webthing:notes styleId="call-note-link" styleClass="fa-2x" xrefType="QUOTE" xrefId="x">Quote Notes</webthing:notes></div></ansi:hasPermission>
     			
     			<%--
     			<input type="button" class="quoteButton" id="buttonModifyQuote" value="Modify" /><br />
@@ -2926,6 +2934,8 @@
 	    <div id="copy-modal">
 	    	<span style="font-size:110%; font-style:italic;">Copied</span>
 	    </div>
+	    
+	    <webthing:callNoteModals />
     </tiles:put>
 
 </tiles:insert>

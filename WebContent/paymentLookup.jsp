@@ -25,11 +25,13 @@
     <tiles:put name="headextra" type="string">
     	<link rel="stylesheet" href="css/lookup.css" />
     	<link rel="stylesheet" href="css/ticket.css" />
+    	<link rel="stylesheet" href="css/callNote.css" />
+    	<link rel="stylesheet" href="css/accordion.css" type="text/css" />
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
     	<script type="text/javascript" src="js/addressUtils.js"></script>
     	<script type="text/javascript" src="js/lookup.js"></script> 
     	<script type="text/javascript" src="js/ticket.js"></script>
-    	<script type="text/javascript" src="js/callNotes.js"></script>  
+    	<script type="text/javascript" src="js/callNote.js"></script>  
     
         <style type="text/css">
 			#displayTable {
@@ -70,10 +72,7 @@
 
                 	
         		init : function() {
-        			$.each($('input'), function () {
-    			        $(this).css("height","20px");
-    			        $(this).css("max-height", "20px");
-    			    });
+        			CALLNOTE.init();
         			PAYMENTLOOKUP.makeClickers();
                		TICKETUTILS.makeTicketViewModal("#ticket-modal")
 					PAYMENTLOOKUP.createTable();
@@ -175,7 +174,7 @@
     			            },
     			            "drawCallback": function( settings ) {
     			            	PAYMENTLOOKUP.doFunctionBinding();
-    			            	CALLNOTES.lookupLink();
+    			            	CALLNOTE.lookupLink();
     			            }
     			    } );
             	},
@@ -275,10 +274,11 @@
         </tfoot>
     </table>
     
-    <webthing:scrolltop />
+    	<webthing:scrolltop />
     
-    <webthing:ticketModal ticketContainer="ticket-modal" />
+    	<webthing:ticketModal ticketContainer="ticket-modal" />
     
+    	<webthing:callNoteModals />
     </tiles:put>
 		
 </tiles:insert>
