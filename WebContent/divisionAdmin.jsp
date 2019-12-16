@@ -212,8 +212,8 @@
 			        },
 					
 					
-					goDelete : function () {
-			            $("#goDelete").click(function($event) {
+					goDelete : function ($clickevent) {
+			        //    $("#goDelete").click(function($event) {
 			            	$event.preventDefault();
 			            	var $tableData = [];
 			                $("#displayTable").find('tr').each(function (rowIndex, r) {
@@ -267,12 +267,13 @@
 			             	     },
 			             	     dataType: 'json'
 			             	});
-			             });
+			          //   });
 			            
 					},
 						
 					goUpdate : function () {
 						var $divisionId = $("#addForm input[name='divisionId']").val();
+						var $rownum = $('#addForm').data('rownum')
 						/*	if ( $('#addForm').data('rownum') == null ) {
 								$url = "division/add";
 							} else {
@@ -337,9 +338,11 @@
 					    					});
 					    				} else {	    				
 											DIVISIONADMIN.clearAddForm();
-											$('#displayTable').trigger('reflow');
+											$('#displayTable').html('');
 											$('#addForm').dialog("close");
-							                //$("#displayTable").table("rebuild");
+							    			DIVISIONADMIN.getDivisionList();
+										//	$('#displayTable').replaceAll();
+							             //   DIVISIONADMIN.makeRow($divisionId, $rownum);
 					    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
 					    				}
 					    			},
@@ -352,6 +355,11 @@
 								},
 								dataType: 'json'
 							});
+					},
+					
+					rebuildTable : function ($divisionId, $rownum) {
+		                DIVISIONADMIN.makeRow($divisionId, $rownum);
+						
 					},
 					
 					makeAddForm : function () {

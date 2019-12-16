@@ -83,14 +83,25 @@
         <script type="text/javascript">    
         
         $(document).ready(function(){
-			$('.ScrollTop').click(function() {
-				$('html, body').animate({scrollTop: 0}, 800);
-				return false;
-       	    });
-
-        	var dataTable = null;
         	
-        	function createTable(){
+	        ;TICKETLOOKUP = {
+	 			   dataTable : null,
+	    	   	
+				
+	    		init : function() {	
+    				$.each($('input'), function () {
+    			        $(this).css("height","20px");
+    			        $(this).css("max-height", "20px");
+    			    });    				
+    				TICKETLOOKUP.createTable();    				
+               		TICKETUTILS.makeTicketViewModal("#ticket-modal");
+			    },
+			   	
+
+        	
+			    
+        	
+        	createTable : function () {
 				var $jobId = '<c:out value="${ANSI_JOB_ID}" />';
 				var $divisionId = '<c:out value="${ANSI_DIVISION_ID}" />';
 				var $startDate = '<c:out value="${ANSI_TICKET_LOOKUP_START_DATE}" />';
@@ -190,7 +201,7 @@
 			            	if ( row.ticket_id == null ) {
 			            		$actionData = "";
 			            	} else {
-				            	var $editLink = '<ansi:hasPermission permissionRequired="TICKET_WRITE"><a href="ticketReturn.html?id='+row.ticket_id+'" class="editAction" data-id="'+row.ticket_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
+				            	var $editLink = '<ansi:hasPermission permissionRequired="TICKET_WRITE"><a href="TICKETLOOKUP.html?id='+row.ticket_id+'" class="editAction" data-id="'+row.ticket_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
 				            	if ( row.ticket_status == 'F' ) {
 				            		var $overrideLink = "";
 				            	} else {
@@ -214,31 +225,15 @@
 			            	//console.log(json);
 			            	//doFunctionBinding();
 			            	var myTable = this;
-			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#ticketTable", createTable);
+			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#ticketTable", LOOKUPUTILS.createTable);
 			            },
 			            "drawCallback": function( settings ) {
-			            	doFunctionBinding();
+			            	TICKETLOOKUP.doFunctionBinding();
 			            }
 			    } );
-        	}
-        	        	
-        	init();
-        			
-        			
-            
-            function init(){
-				$.each($('input'), function () {
-			        $(this).css("height","20px");
-			        $(this).css("max-height", "20px");
-			    });
+        	},
 				
-				createTable();
-				
-           		TICKETUTILS.makeTicketViewModal("#ticket-modal")
-
-            }; 
-				
-			function doFunctionBinding() {
+			doFunctionBinding : function () {
 				$( ".editAction" ).on( "click", function($clickevent) {
 					 doEdit($clickevent);
 				});					
@@ -252,9 +247,9 @@
 					$("#ticket-modal").dialog("open");
 				});
 
-			}
+			},
 				
-			function doEdit($clickevent) {
+			doEdit : function ($clickevent) {
 				var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
 					var $url = 'ticketTable/' + $rowid;
 					//console.log("YOU PASSED ROW ID:" + $rowid);
@@ -292,11 +287,11 @@
 						dataType: 'json'
 					});
 				//console.log("Edit Button Clicked: " + $rowid);
-			}
+			},
 				
 				
 				
-			function doPrint($clickevent) {
+			doPrint : function ($clickevent) {
 				var $ticketId = $clickevent.currentTarget.attributes['data-id'].value;
 				console.debug("ROWID: " + $ticketId);
 				var a = document.createElement('a');
@@ -307,7 +302,11 @@
                 a.target = "_new";   // open in a new window
                 document.body.appendChild(a);
                 a.click();				
-			}
+			},
+			
+	        }
+			
+			TICKETLOOKUP.init();
         });
         		
         </script>        
