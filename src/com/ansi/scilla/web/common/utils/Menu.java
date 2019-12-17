@@ -17,6 +17,7 @@ public enum Menu {
 	TICKETS(			"Tickets", 				LOOKUPS, Permission.TICKET_READ,	"ticketLookup.html"),
 	TICKET_ASSIGNMENT(	"Ticket Assignments",	LOOKUPS, Permission.TICKET_READ,	"ticketAssignmentLookup.html"),
 	INVOICES(			"Invoices", 			LOOKUPS, Permission.INVOICE_READ, 	"invoiceLookup.html"),
+	INVOICE_DETAIL(     "Invoice Detail",       LOOKUPS, Permission.INVOICE_READ,   "invoiceDetailLookup.html"),
 	PAYMENTS(			"Payments", 			LOOKUPS, Permission.PAYMENT_READ, 	"paymentLookup.html"),
 	NON_DIRECT_LABOR(	"Non-Direct Labor", 	LOOKUPS, Permission.CLAIMS_READ, 	"nonDirectLaborLookup.html"),
 	EMPLOYEE_EXPENSE(	"Employee Expense", 	LOOKUPS, Permission.CLAIMS_READ, 	"employeeExpenseLookup.html"),

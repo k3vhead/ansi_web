@@ -365,6 +365,16 @@
 
 
 	<servlet>
+		<servlet-name>invoiceDetailLookup</servlet-name>
+		<servlet-class>com.ansi.scilla.web.invoice.servlet.InvoiceDetailLookupServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>invoiceDetailLookup</servlet-name>
+		<url-pattern>/invoiceDetailLookup</url-pattern>
+	</servlet-mapping>
+
+
+	<servlet>
 		<servlet-name>invoiceGeneration</servlet-name>
 		<servlet-class>com.ansi.scilla.web.invoice.servlet.InvoiceGenerationServlet</servlet-class>
 	</servlet>
