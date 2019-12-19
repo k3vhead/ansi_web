@@ -165,7 +165,7 @@
 				            { title: "PPC",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, data: function ( row, type, set ) {
 				            	if(row.ppc != null){return (row.ppc.toFixed(2));}
 				            } },
-				            { title: "Ticket Tax",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true,  data: function ( row, type, set ) {
+				            { title: "Tax",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true,  data: function ( row, type, set ) {
 				            	if(row.taxes != null){return (row.taxes.toFixed(2));}
 				            } },
 				            { title: "Total",  "defaultContent": "<i>N/A</i>",width:"4%", searchable:true,  data: function ( row, type, set ) {
