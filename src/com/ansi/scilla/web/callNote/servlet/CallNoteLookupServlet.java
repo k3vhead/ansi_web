@@ -28,16 +28,17 @@ public class CallNoteLookupServlet extends AbstractLookupServlet {
 	public static final String REALM = "callNoteLookup";
 	public static final String START_TIME = "start_time";
 	
+	
 	public CallNoteLookupServlet() {
 		super(Permission.CALL_NOTE_READ);
 		cols = new String[] { 
 				CallNoteLookupQuery.CALL_LOG_ID,
-				CallNoteLookupQuery.ADDRESS_ID,
+//				CallNoteLookupQuery.ADDRESS_ID,
 				CallNoteLookupQuery.ADDRESS_NAME,
-				CallNoteLookupQuery.CONTACT_ID,
+//				CallNoteLookupQuery.CONTACT_ID,
 				CallNoteLookupQuery.CONTACT_NAME,
 				CallNoteLookupQuery.SUMMARY,
-				CallNoteLookupQuery.USER_ID,
+//				CallNoteLookupQuery.USER_ID,
 				CallNoteLookupQuery.ANSI_CONTACT,
 				CallNoteLookupQuery.START_TIME,
 				CallNoteLookupQuery.CONTACT_TYPE,

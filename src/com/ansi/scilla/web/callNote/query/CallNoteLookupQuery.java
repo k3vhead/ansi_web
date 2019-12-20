@@ -3,24 +3,25 @@ package com.ansi.scilla.web.callNote.query;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 
 import com.ansi.scilla.common.db.CallLog;
 import com.ansi.scilla.common.queries.SelectType;
-import com.ansi.scilla.web.claims.query.ClaimsQuery;
+import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 
-public class CallNoteLookupQuery extends ClaimsQuery {
+public class CallNoteLookupQuery extends LookupQuery {
 	public static final String CALL_LOG_ID = "call_log.call_log_id"; 
 	public static final String ADDRESS_ID = "call_log.address_id";
-	public static final String ADDRESS_NAME = "address.name as address_name";
+	public static final String ADDRESS_NAME = "address.name";
 	public static final String CONTACT_ID = "call_log.contact_id";
-	public static final String CONTACT_NAME = "concat(contact.first_name, ' ', contact.last_name) as contact_name";
+	public static final String CONTACT_NAME = "concat(contact.first_name, ' ', contact.last_name)";
 	public static final String SUMMARY = "call_log.summary";
 	public static final String USER_ID = "call_log.user_id";
-	public static final String ANSI_CONTACT = "concat(ansi_user.first_name, ' ', ansi_user.last_name) as ansi_contact";
+	public static final String ANSI_CONTACT = "concat(ansi_user.first_name, ' ', ansi_user.last_name)";
 	public static final String START_TIME = "call_log.start_time";
-	public static final String CONTACT_TYPE = "code.description as contact_type";
+	public static final String CONTACT_TYPE = "code.description";
 	public static final String XREF_TYPE = "call_log_xref.xref_type";
 	public static final String XREF_ID = "call_log_xref.xref_id";
 	public static final String XREF = "concat(call_log_xref.xref_type, ' ', call_log_xref.xref_id)";
@@ -60,10 +61,9 @@ public class CallNoteLookupQuery extends ClaimsQuery {
 	
 	
 	public CallNoteLookupQuery(Integer userId, List<SessionDivision> divisionList) {
-		super(sqlSelectClause, makeFromClause(sqlFromClause, divisionList), baseWhereClause);
+		super(sqlSelectClause, sqlFromClause, baseWhereClause);
 		this.logger = LogManager.getLogger(this.getClass());
 		this.userId = userId;	
-		this.divisionList = divisionList;
 	}
 
 	public CallNoteLookupQuery(Integer userId, List<SessionDivision> divisionList, String searchTerm) {
@@ -77,7 +77,7 @@ public class CallNoteLookupQuery extends ClaimsQuery {
 	protected String makeOrderBy(SelectType selectType) {
 		String orderBy = "";
 		if ( selectType.equals(SelectType.DATA)) {
-			if ( ! StringUtils.isBlank(sortBy)) {
+			if ( StringUtils.isBlank(sortBy)) {
 				orderBy = " order by " + START_TIME + " desc ";
 			} else {
 //				List<String> sortList = Arrays.asList(StringUtils.split(sortBy, ","));
@@ -86,7 +86,6 @@ public class CallNoteLookupQuery extends ClaimsQuery {
 				orderBy = " order by " + sortBy + " " + sortDir;
 			}
 		}
-
 		return "\n" + orderBy;
 	}
 	
