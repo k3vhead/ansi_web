@@ -36,7 +36,8 @@ public class SpecialOverrideServlet extends AbstractServlet {
 		WebMessages webMessages = new WebMessages();
 		try {
 			
-			url = new AnsiURL(request, "specialOverrides", new String[] { ACTION_IS_LIST });
+			String[] name = SpecialOverrideType.names();
+			url = new AnsiURL(request, "specialOverrides", new String[] { name[6] });
 			conn = AppUtils.getDBCPConn();
 			AppUtils.validateSession(request, Permission.OVERRIDE_UPDATE_PAYMENTS);
 			

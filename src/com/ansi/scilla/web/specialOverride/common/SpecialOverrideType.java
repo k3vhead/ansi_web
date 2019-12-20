@@ -62,4 +62,14 @@ public enum SpecialOverrideType {
 		return permission;
 	}
 	
+	public static String[] names() {
+		String[] names = new String[SpecialOverrideType.values().length];
+		int i = 0;
+		for ( SpecialOverrideType reference : SpecialOverrideType.values() ) {
+			names[i] = reference.name();
+			i++;
+		}
+		return names;
+	}
+	
 }
