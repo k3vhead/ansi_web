@@ -2,9 +2,12 @@ package com.ansi.scilla.web.callNote.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -16,8 +19,10 @@ import org.apache.logging.log4j.Level;
 import com.ansi.scilla.common.callNote.CallNoteReference;
 import com.ansi.scilla.common.db.CallLog;
 import com.ansi.scilla.common.db.CallLogXref;
+import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.web.callNote.request.CallNoteRequest;
 import com.ansi.scilla.web.callNote.response.CallNoteResponse;
+import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
@@ -159,10 +164,10 @@ public class CallNoteServlet extends AbstractServlet {
 			logger.log(Level.DEBUG, jsonString);
 			CallNoteRequest callNoteRequest = new CallNoteRequest();
 			AppUtils.json2object(jsonString, callNoteRequest);
-			WebMessages webMessages = callNoteRequest.getCallNoteId() == null ? callNoteRequest.validateAdd(conn) : callNoteRequest.validateUpdate(conn);
+			WebMessages webMessages = callNoteRequest.getCallNoteId() == null ? callNoteRequest.validateAdd(conn, sessionData) : callNoteRequest.validateUpdate(conn);
 			if ( webMessages.isEmpty() ) {
 				try {
-					makeCallNote(conn, xrefType, xrefId, callNoteRequest, user);
+					makeCallNote(conn, xrefType, xrefId, callNoteRequest, sessionData);
 					conn.commit();
 				} catch ( Exception e) {
 					conn.rollback();
@@ -193,15 +198,30 @@ public class CallNoteServlet extends AbstractServlet {
 	}
 
 
-	private void makeCallNote(Connection conn, String xrefType, String xrefId, CallNoteRequest callNoteRequest, SessionUser user) throws Exception {
+	private void makeCallNote(Connection conn, String xrefType, String xrefId, CallNoteRequest callNoteRequest, SessionData sessionData) throws Exception {
+		SessionUser user = sessionData.getUser();
 		Date today = new Date();
-		GregorianCalendar startTime = new GregorianCalendar(
+
+		// we go through this conversion/transition/shuffle because the html5 date and time tags are
+		// being translated as UTC, and we're expecting the dates in the DB to be US/Central (essentially chicago time)
+		// This should have been handled by the JSON serializer, but that doesn't appear to be working as expected.
+		// Even if the serializer returns a chicago time, this code should just change chicago to chicago and all is good.
+		TimeZone callTimeZone = callNoteRequest.getStartDate().getTimeZone();
+		ZoneId zid = callTimeZone.toZoneId();
+		ZonedDateTime callTime = ZonedDateTime.of(
 				callNoteRequest.getStartDate().get(Calendar.YEAR), 
-				callNoteRequest.getStartDate().get(Calendar.MONTH),
+				callNoteRequest.getStartDate().get(Calendar.MONTH) + 1,   // different between java.util.Calendar and java.time.ZonedDateTime
 				callNoteRequest.getStartDate().get(Calendar.DAY_OF_MONTH),
 				callNoteRequest.getStartTime().get(Calendar.HOUR_OF_DAY),
 				callNoteRequest.getStartTime().get(Calendar.MINUTE),
-				0);
+				0,  // second
+				0,	// nano
+				zid);
+		
+		ZoneId chicagoZone = ZoneId.of("US/Central");
+		ZonedDateTime adjustedCallTime = callTime.withZoneSameInstant(chicagoZone);
+		
+		
 
 		CallLog callLog = new CallLog();
 		callLog.setAddressId(callNoteRequest.getAddressId());
@@ -209,8 +229,21 @@ public class CallNoteServlet extends AbstractServlet {
 		callLog.setContactId(callNoteRequest.getContactId());
 		callLog.setSummary(callNoteRequest.getSummary());
 		callLog.setTitle(callNoteRequest.getSummary());
-		callLog.setUserId(callNoteRequest.getUserId());
-		callLog.setStartTime(startTime.getTime());
+		
+		boolean canDoUser = false;
+		if ( sessionData.getUser().getSuperUser().equals(User.SUPER_USER_IS_YES) ) {
+			canDoUser = true;
+		}
+		if ( sessionData.hasPermission(Permission.CALL_NOTE_OVERRIDE)  ) {
+			canDoUser = true;
+		}
+		if ( canDoUser ) {
+			callLog.setUserId(callNoteRequest.getUserId());
+		} else {
+			callLog.setUserId(user.getUserId());
+		}		
+		
+		callLog.setStartTime(Date.from(adjustedCallTime.toInstant()));
 		callLog.setContactType(callNoteRequest.getContactType());
 		callLog.setUpdatedBy(user.getUserId());
 		callLog.setUpdatedDate(today);

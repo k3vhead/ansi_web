@@ -12,6 +12,8 @@ import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.WebMessages;
+import com.ansi.scilla.web.common.struts.SessionData;
+import com.ansi.scilla.web.common.utils.Permission;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class CallNoteRequest extends AbstractRequest {
@@ -124,12 +126,22 @@ public class CallNoteRequest extends AbstractRequest {
 	
 
 
-	public WebMessages validateAdd(Connection conn) throws Exception {
+	public WebMessages validateAdd(Connection conn, SessionData sessionData) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		RequestValidator.validateCallNoteXrefType(webMessages, XREF_TYPE, xrefType, true);
 		RequestValidator.validateId(conn, webMessages, Address.TABLE, Address.ADDRESS_ID, ADDRESS_ID, addressId, true);
 		RequestValidator.validateId(conn, webMessages, Contact.TABLE, Contact.CONTACT_ID, CONTACT_ID, contactId, true);
-		RequestValidator.validateId(conn, webMessages, User.TABLE, User.USER_ID, USER_ID, userId, true);
+		
+		boolean canDoUser = false;
+		if ( sessionData.getUser().getSuperUser().equals(User.SUPER_USER_IS_YES) ) {
+			canDoUser = true;
+		}
+		if ( sessionData.hasPermission(Permission.CALL_NOTE_OVERRIDE)  ) {
+			canDoUser = true;
+		}
+		if ( canDoUser ) {
+			RequestValidator.validateId(conn, webMessages, User.TABLE, User.USER_ID, USER_ID, userId, true);
+		}
 		RequestValidator.validateString(webMessages, SUMMARY, summary, 300, true);
 		RequestValidator.validateString(webMessages, NOTES, notes, 4000, true);
 		RequestValidator.validateContactType(conn, webMessages, CONTACT_TYPE, contactType, true);
