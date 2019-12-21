@@ -145,17 +145,16 @@
         
         $(document).ready(function(){
         	
+        	
 	        ;TICKETRETURN = {
-	    	   	GLOBAL_DATA : {
-		        	defaultTicketNbr : '<c:out value="${ANSI_TICKET_ID}" />',
-		        	ticketStatusList : ANSI_UTILS.getOptions("TICKET_STATUS"),
-					globalTicketId : 0,
-					ticketStatusMap : {},
-	    	   	},
 				
-	    		init : function() {		    			
-	    			$.each(TICKETRETURN.ticketStatusList.ticketStatus, function($index, $value) {
-	    				TICKETRETURN.ticketStatusMap[$value.code]=$value.display;
+	    		init : function() {		
+		        	$defaultTicketNbr = '<c:out value="${ANSI_TICKET_ID}" />';
+					$globalTicketId = 0;
+					$ticketStatusMap = {};
+		        	$ticketStatusList = ANSI_UTILS.getOptions("TICKET_STATUS");    			
+	    			$.each($ticketStatusList.ticketStatus, function($index, $value) {
+	    				$ticketStatusMap[$value.code]=$value.display;
 	    			});
 	    			//TICKETRETURN.addRow();
 	    			//TICKETRETURN.clearAddForm();
@@ -378,21 +377,21 @@
 						$("#editApprovalsModal input[name='modalManagerApproval']").prop("checked", false);
 						$("#editApprovalsModal input[name='modalBillSheet']").prop("checked", false);
 						
-						if ( GLOBAL_DATA['globalTicket'].customerSignature == true ) {
+						if ( $['globalTicket'].customerSignature == true ) {
 							$("#modalCustomerSignature").show();
 							$("#editApprovalsModal input[name='modalCustomerSignature']").hide();
 						} else {
 							$("#modalCustomerSignature").hide();
 							$("#editApprovalsModal input[name='modalCustomerSignature']").show();					
 						}
-						if ( GLOBAL_DATA['globalTicket'].billSheet == true ) {
+						if ( $['globalTicket'].billSheet == true ) {
 							$("#modalBillSheet").show();
 							$("#editApprovalsModal input[name='modalBillSheet']").hide();
 						} else {
 							$("#modalBillSheet").hide();
 							$("#editApprovalsModal input[name='modalBillSheet']").show();
 						}
-						if ( GLOBAL_DATA['globalTicket'].mgrApproval == true ) {
+						if ( $['globalTicket'].mgrApproval == true ) {
 							$("#modalManagerApproval").show();
 							$("#editApprovalsModal input[name='modalManagerApproval']").hide();
 						} else {
@@ -543,6 +542,10 @@
 						}	
 			   	},
 			   	
+			   	populateOptionList : function ($data) {
+			   		$ticketStatusList == $data.data.ticketStatus;
+			   	},
+			   	
 			   	
 			   	
 			   	populatePanelSelect : function ($data) {
@@ -574,7 +577,7 @@
 			   	
 			   	
 			   	populateSummary : function ($data) {
-						$("#status").html(TICKETRETURN.ticketStatusMap[$data.ticketDetail.status] + " (" + $data.ticketDetail.status + ")");
+						$("#status").html($ticketStatusMap[$data.ticketDetail.status] + " (" + $data.ticketDetail.status + ")");
 						$("#divisionDisplay").html($data.ticketDetail.divisionDisplay);
 						$("#jobId").html( '<a class="joblink" href="jobMaintenance.html?id='+ $data.ticketDetail.jobId + '">' + $data.ticketDetail.jobId + '</a>');
 						//$("#jobId").attr("data-jobid",$data.ticketDetail.jobId);
@@ -590,7 +593,7 @@
 
 			   	
 			   	populateTicketDetail : function ($data) {
-			   			GLOBAL_DATA['globalTicket'] = $data.ticketDetail;
+			   			$['globalTicket'] = $data.ticketDetail;
 						$("#ticketId").html($data.ticketDetail.ticketId);
 						$("#actPricePerCleaning").html($data.ticketDetail.actPricePerCleaning);
 						$("#totalVolPaid").html($data.ticketDetail.totalVolPaid);

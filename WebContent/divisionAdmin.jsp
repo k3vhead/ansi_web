@@ -214,7 +214,7 @@
 					
 					goDelete : function ($clickevent) {
 			        //    $("#goDelete").click(function($event) {
-			            	$event.preventDefault();
+			         //   	$event.preventDefault();
 			            	var $tableData = [];
 			                $("#displayTable").find('tr').each(function (rowIndex, r) {
 			                    var cols = [];
@@ -247,7 +247,8 @@
 											$("#displayTable").find($rowfinder).remove();
 							              //  $("#displayTable").html( "divisionAdmin.html #diplayTable" );
 											//$("#displayTable").html("");
-											$('#displayTable').trigger('reflow');
+											$('#tableBody').html('');
+							    			DIVISIONADMIN.getDivisionList();
 											$('#confirmDelete').dialog("close");
 											//DIVISIONADMIN.makeRow($data.data.division, $rownum);
 										}
@@ -338,9 +339,9 @@
 					    					});
 					    				} else {	    				
 											DIVISIONADMIN.clearAddForm();
-											$('#displayTable').html('');
-											$('#addForm').dialog("close");
+											$('#tableBody').html('');
 							    			DIVISIONADMIN.getDivisionList();
+											$('#addForm').dialog("close");
 										//	$('#displayTable').replaceAll();
 							             //   DIVISIONADMIN.makeRow($divisionId, $rownum);
 					    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
@@ -467,7 +468,7 @@
 		       			row = row + '<td class="text-left">';
 		       			row = row + '<a href="#" class="editAction" data-id="' + $division.divisionId + '"data-row="' + $rownum +'"><webthing:edit>Edit</webthing:edit></a>';
 		       			if ( $division.userCount == 0 ) {
-		       			row = row + '<a href="#" class="delAction" data-row="' + $rownum+'"><webthing:delete>Delete</webthing:delete></a>';
+		       			row = row + '<a href="#" class="delAction" data-row="'+$rownum+'"><webthing:delete>Delete</webthing:delete></a>';
 		       			}
 		       			row = row + '</td>';
 		       			
@@ -565,7 +566,7 @@
 	    		<col style="width:5%;" />
 	    		<col style="width:10%;" />
 	   		</colgroup>
-    		<tr>
+    		<thead>
     			<th class="text-left"><bean:message key="field.label.divisionId" /></th>
     			<th class="text-left">Div</th>
     			<th class="text-left"><bean:message key="field.label.description" /></th>
@@ -580,7 +581,8 @@
     					<th class="text-left"><bean:message key="field.label.action" /></th>
     				</ansi:hasWrite>
     			</ansi:hasPermission>
-    		</tr>
+    		</thead>
+    		<tbody id="tableBody"></tbody>
     	</table>
     				<webthing:scrolltop />
     	<ansi:hasPermission permissionRequired="SYSADMIN">
