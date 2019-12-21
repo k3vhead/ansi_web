@@ -256,8 +256,8 @@ $(function() {
 			$( "#call-note-list-modal" ).dialog({
 				title:'Call Note History',
 				autoOpen: false,
-				height: 500,
-				width: 700,
+				height: 750,
+				width: 800,
 				modal: true,
 				closeOnEscape:true,
 				//open: function(event, ui) {
@@ -482,6 +482,7 @@ $(function() {
 		
 		
 		showListModal : function($data) {
+			console.log("showListModal");
 			console.log($data);
 			$("#call-note-list-modal .note-list").html("");
 			$("#call-note-list-modal").attr("data-xreftype", $data.xrefType);
@@ -491,8 +492,10 @@ $(function() {
 				var $h4 = $('<h4>');
 				var $div = $('<div>');
 				$h4.append($value.contactName + ' ' + $value.startTime + ' ' + $value.summary);
+				$h4.attr("data-calllogid",$value.callLogId);
 				$li.append($h4);
-				$div.append($value.content);
+				$div.attr("class","calldetail"+$value.callLogId);
+				$div.append('<i class="fa fa-spinner fa-pulse fa-fw fa-5x"></i>');
 				$li.append($div);
 				$("#call-note-list-modal .note-list").append($li);
 			});
@@ -506,13 +509,44 @@ $(function() {
 					header: 'h4',
 					fillSpace: false,
 					collapsible: false,
-					active: true
+					active: true,
+					activate: CALLNOTE.getAccordionDetail
 				});
 				CALLNOTE.callNoteAccordion = true;
 			}
 			$("#call-note-list-modal").dialog("open");
 		},
 
+		
+		getAccordionDetail : function($event, $ui) {
+			console.log("getAccordionDetail");
+			
+			var $callNoteId = $ui.newHeader.attr("data-calllogid");
+			var $url = 'callNote/callNoteDetail.html?id=' + $callNoteId;
+			var jqxhr = $.ajax({
+				type: 'GET',
+				url: $url,
+				statusCode: {
+					200 : function($data) {
+						$contentSelector = "#call-note-list-modal .calldetail" + $callNoteId; 
+						$($contentSelector).html($data);
+					},
+					403: function($data) {
+						$("#globalMsg").html("Session Timeout. Log in and try again").show();
+					},
+					404: function($data) {
+						$("#globalMsg").html("Invalid id. Reload and try again").show();
+					},
+					405: function($data) {
+						$("#globalMsg").html("System Error 405. Contact Support").show();
+					},
+					500: function($data) {
+						$("#globalMsg").html("System Error 500. Contact Support").show();
+					},
+				},
+				dataType: 'html'
+			});
+		},
 	}
 	
 	
