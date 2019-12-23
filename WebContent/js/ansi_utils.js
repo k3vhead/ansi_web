@@ -19,7 +19,31 @@ $( document ).ready(function() {
 			});
 			return $returnValue;
 		},
-	
+		
+		getStatusList: function($ticketStatusList, $callback) {
+			console.log("getStatusList");
+			var $url = "ticket/" + $ticketStatusList;
+			var jqxhr2 = $.ajax({
+				type: 'GET',
+				url: $url,
+				data: {},							
+				statusCode: {
+					200: function($data) {
+						$callback($data.data)
+					},					
+					403: function($data) {
+						$("#globalMsg").html("Session Expired. Log In and try again").show();
+					},
+					404: function($data) {
+						$("#globalMsg").html("Invalid quote").show().fadeOut(4000);
+					},
+					500: function($data) {
+						$("#globalMsg").html("System Error 500. Contact Support").show();
+					}
+				},							
+				dataType: 'json'
+			});
+		},
 	
 		// get a list of values from the codes table
 		// this option could fail with asynchronous calls. Use getCodeList() instead

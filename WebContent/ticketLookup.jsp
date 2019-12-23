@@ -201,7 +201,7 @@
 			            	if ( row.ticket_id == null ) {
 			            		$actionData = "";
 			            	} else {
-				            	var $editLink = '<ansi:hasPermission permissionRequired="TICKET_WRITE"><a href="TICKETLOOKUP.html?id='+row.ticket_id+'" class="editAction" data-id="'+row.ticket_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
+				            	var $editLink = '<ansi:hasPermission permissionRequired="TICKET_WRITE"><a href="ticketReturn.html?id='+row.ticket_id+'" class="editAction" data-id="'+row.ticket_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
 				            	if ( row.ticket_status == 'F' ) {
 				            		var $overrideLink = "";
 				            	} else {

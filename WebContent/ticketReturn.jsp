@@ -15,7 +15,6 @@
 <%@ page import="com.ansi.scilla.common.jobticket.TicketStatus" %>
 
 <tiles:insert page="layout.jsp" flush="true">
-
     <tiles:put name="title" type="string">
         Ticket Return
     </tiles:put>
@@ -147,15 +146,15 @@
         	
         	
 	        ;TICKETRETURN = {
+		        	defaultTicketNbr : '<c:out value="${ANSI_TICKET_ID}" />',
+					globalTicketId : 0,
+					ticketStatusMap : {},
+					ticketStatusList : ANSI_UTILS.getStatusList("TICKET_STATUS"),
 				
-	    		init : function() {		
-		        	$defaultTicketNbr = '<c:out value="${ANSI_TICKET_ID}" />';
-					$globalTicketId = 0;
-					$ticketStatusMap = {};
-		        	$ticketStatusList = ANSI_UTILS.getOptions("TICKET_STATUS");    			
-	    			$.each($ticketStatusList.ticketStatus, function($index, $value) {
-	    				$ticketStatusMap[$value.code]=$value.display;
-	    			});
+	    		init : function() {		    			
+	    			$.each(TICKETRETURN.ticketStatusList.ticketStatus, function($index, $value) {
+	    				TICKETRETURN.ticketStatusMap[$value.code]=$value.display;
+	    			});		        	
 	    			//TICKETRETURN.addRow();
 	    			//TICKETRETURN.clearAddForm();
 	    			TICKETRETURN.dateField();
