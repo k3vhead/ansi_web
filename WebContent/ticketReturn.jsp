@@ -149,10 +149,10 @@
 		        	defaultTicketNbr : '<c:out value="${ANSI_TICKET_ID}" />',
 					globalTicketId : 0,
 					ticketStatusMap : {},
-					ticketStatusList : ANSI_UTILS.getStatusList("TICKET_STATUS"),
 				
-	    		init : function() {		    			
-	    			$.each(TICKETRETURN.ticketStatusList.ticketStatus, function($index, $value) {
+	    		init : function() {		
+					var $ticketStatusList = ANSI_UTILS.getStatusList("TICKET_STATUS");    			
+	    			$.each($ticketStatusList.ticketStatus, function($index, $value) {
 	    				TICKETRETURN.ticketStatusMap[$value.code]=$value.display;
 	    			});		        	
 	    			//TICKETRETURN.addRow();
@@ -576,7 +576,7 @@
 			   	
 			   	
 			   	populateSummary : function ($data) {
-						$("#status").html($ticketStatusMap[$data.ticketDetail.status] + " (" + $data.ticketDetail.status + ")");
+						$("#status").html(TICKETRETURN.ticketStatusMap[$data.ticketDetail.status] + " (" + $data.ticketDetail.status + ")");
 						$("#divisionDisplay").html($data.ticketDetail.divisionDisplay);
 						$("#jobId").html( '<a class="joblink" href="jobMaintenance.html?id='+ $data.ticketDetail.jobId + '">' + $data.ticketDetail.jobId + '</a>');
 						//$("#jobId").attr("data-jobid",$data.ticketDetail.jobId);
