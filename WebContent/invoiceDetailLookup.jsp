@@ -153,10 +153,10 @@
 				            { title: "Ticket",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, data: function ( row, type, set ) {
 				            	if(row.ticket_id != null){return ('<a href="#" data-id="'+row.ticket_id+'" class="ticket-clicker">'+row.ticket_id+'</a>');}
 				            } },
-				            { title: "Type",  "defaultContent": "<i>N/A</i>", width:"2%", searchable:true, data: function ( row, type, set ) {
+				            { title: "Ticket<br />Type",  "defaultContent": "<i>N/A</i>", width:"2%", searchable:true, data: function ( row, type, set ) {
 				            	if(row.ticket_type != null){return (row.ticket_type_display);}
 				            } },
-				            { title: "Status",  "defaultContent": "<i>N/A</i>", width:"2%", searchable:true, data: function ( row, type, set ) {
+				            { title: "Ticket<br />Status",  "defaultContent": "<i>N/A</i>", width:"2%", searchable:true, data: function ( row, type, set ) {
 				            	if(row.ticket_status != null){return ('<span class="tooltip">' + row.ticket_status + '<span class="tooltiptext">' + row.ticket_status_display + '</span></span>');}
 				            } },
 				            { title: "Completed",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, data: function ( row, type, set ) {
@@ -165,7 +165,7 @@
 				            { title: "PPC",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, data: function ( row, type, set ) {
 				            	if(row.ppc != null){return (row.ppc.toFixed(2));}
 				            } },
-				            { title: "Taxes",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true,  data: function ( row, type, set ) {
+				            { title: "Tax",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true,  data: function ( row, type, set ) {
 				            	if(row.taxes != null){return (row.taxes.toFixed(2));}
 				            } },
 				            { title: "Total",  "defaultContent": "<i>N/A</i>",width:"4%", searchable:true,  data: function ( row, type, set ) {

@@ -55,6 +55,9 @@
 					progressbar : $("#progressbar"),
 					progressLabel : $("#progress-label"),
 					
+					// these are used to detect changes in job activiation Direct Labor values
+					previousDlPct : null,
+	            	previousDlBudget : null,
 					
 					init : function() {
 						console.log("init");
@@ -507,6 +510,37 @@
 		            	$("#job-edit-modal .activation input[name='job-activation-om-notes']").val(QUOTEMAINTENANCE.joblist[$jobId].job.omNotes);
 		            	$("#job-edit-modal .activation input[name='job-activation-billing-notes']").val(QUOTEMAINTENANCE.joblist[$jobId].job.billingNotes);
 	
+		            	// calculate DL stufff
+		            	QUOTEMAINTENANCE.previousDlPct = $("#job-edit-modal .activation input[name='job-activation-dl-pct']").val();
+		            	QUOTEMAINTENANCE.previousDlBudget = $("#job-edit-modal .activation input[name='job-activation-dl-budget']").val();
+		            	$("#job-edit-modal .activation input[name='job-activation-dl-pct']").blur(function($event) {
+		            		var currentDlPct = $("#job-edit-modal .activation input[name='job-activation-dl-pct']").val();
+		            		var ppc = QUOTEMAINTENANCE.joblist[$jobId].job.pricePerCleaning;
+		            		if ( QUOTEMAINTENANCE.previousDlPct != currentDlPct ) {
+		            			newDlBudget = (currentDlPct / 100 ) * ppc;
+		            			if ( newDlBudget != Math.floor(newDlBudget)) { // if new value is not a whole number, limit to 2 decimals
+		            				newDlBudget = newDlBudget.toFixed(2);	
+		            			}
+		            			$("#job-edit-modal .activation input[name='job-activation-dl-budget']").val(newDlBudget);
+		            			QUOTEMAINTENANCE.previousDlPct = currentDlPct;
+		            			QUOTEMAINTENANCE.previousDlBudget = newDlBudget;
+		            		}		            		
+		            	});
+		            	$("#job-edit-modal .activation input[name='job-activation-dl-budget']").blur(function($event) {
+		            		var currentDlBudget = $("#job-edit-modal .activation input[name='job-activation-dl-budget']").val();
+		            		var ppc = QUOTEMAINTENANCE.joblist[$jobId].job.pricePerCleaning;
+		            		if ( QUOTEMAINTENANCE.previousDlBudget != currentDlBudget ) {
+		            			newDlPct = (currentDlBudget/ppc) * 100;
+		            			if ( newDlPct != Math.floor(newDlPct)) {    // if new value is not a whole number, limit to 2 decimals
+		            				newDlPct = newDlPct.toFixed(2);	
+		            			}
+		            			$("#job-edit-modal .activation input[name='job-activation-dl-pct']").val(newDlPct);
+		            			QUOTEMAINTENANCE.previousDlPct = newDlPct;
+		            			QUOTEMAINTENANCE.previousDlBudget = currentDlBudget;
+		            		}
+		            	});
+		            	
+		            	
 						// populate invoice edit panel
 						$("#job-edit-modal .invoice input[name='job-invoice-purchase-order']").val(QUOTEMAINTENANCE.joblist[$jobId].job.poNumber);
 		            	$("#job-edit-modal .invoice input[name='job-invoice-vendor-nbr']").val(QUOTEMAINTENANCE.joblist[$jobId].job.ourVendorNbr);
