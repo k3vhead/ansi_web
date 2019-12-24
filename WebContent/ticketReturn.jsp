@@ -151,10 +151,7 @@
 					ticketStatusMap : {},
 				
 	    		init : function() {		
-					var $ticketStatusList = ANSI_UTILS.getStatusList("TICKET_STATUS");    			
-	    			$.each($ticketStatusList.ticketStatus, function($index, $value) {
-	    				TICKETRETURN.ticketStatusMap[$value.code]=$value.display;
-	    			});		        	
+					ANSI_UTILS.getOptionList("TICKET_STATUS",TICKETRETURN.populateOptionList);  
 	    			//TICKETRETURN.addRow();
 	    			//TICKETRETURN.clearAddForm();
 	    			TICKETRETURN.dateField();
@@ -165,7 +162,7 @@
 	    			TICKETRETURN.makeEditApprovalsModal();
 	    		//	TICKETRETURN.createTicketStatusList();
 	    		//	TICKETRETURN.markValid();
-	    		//	TICKETRETURN.populateDefaultTicketNbr();
+	    			TICKETRETURN.populateDefaultTicketNbr();
 	    		//	TICKETRETURN.populateDefaultValues();
 	    		//	TICKETRETURN.populateInvoiceDetail();
 	    		//	TICKETRETURN.populatePanelSelect();
@@ -541,8 +538,10 @@
 						}	
 			   	},
 			   	
-			   	populateOptionList : function ($data) {
-			   		$ticketStatusList == $data.data.ticketStatus;
+			   	populateOptionList : function ($data) {	  			
+	    			$.each($data.ticketStatus, function($index, $value) {
+	    				TICKETRETURN.ticketStatusMap[$value.code]=$value.display;
+	    			});		        	
 			   	},
 			   	
 			   	

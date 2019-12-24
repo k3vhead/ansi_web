@@ -201,7 +201,7 @@
 			            	if ( row.ticket_id == null ) {
 			            		$actionData = "";
 			            	} else {
-				            	var $editLink = '<ansi:hasPermission permissionRequired="TICKET_WRITE"><a href="ticketReturn.html?id='+row.ticket_id+'" class="editAction" data-id="'+row.ticket_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
+				            	var $editLink = '<ansi:hasPermission permissionRequired="TICKET_WRITE"><a href="ticketReturn.html?id='+row.ticket_Id+'" class="editAction" data-id="'+row.ticket_Id+'" ><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
 				            	if ( row.ticket_status == 'F' ) {
 				            		var $overrideLink = "";
 				            	} else {
@@ -234,11 +234,12 @@
         	},
 				
 			doFunctionBinding : function () {
-				$( ".editAction" ).on( "click", function($clickevent) {
-					 doEdit($clickevent);
-				});					
+			/*	$( ".editAction" ).on( "click", function($clickevent) {
+					var $ticketid = $(this).attr("data-id");
+					TICKETLOOKUP.doEdit($clickevent);
+				});				*/	
 				$(".print-link").on( "click", function($clickevent) {
-					doPrint($clickevent);
+					TICKETLOOKUP.doPrint($clickevent);
 				});
 				$(".ticket-clicker").on("click", function($clickevent) {
 					$clickevent.preventDefault();
@@ -249,9 +250,9 @@
 
 			},
 				
-			doEdit : function ($clickevent) {
-				var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
-					var $url = 'ticketTable/' + $rowid;
+			/* doEdit : function ($clickevent) {
+				var $ticketId = $clickevent.currentTarget.attributes['data-id'].value;
+					var $url = 'ticketTable/' + $ticketId;
 					//console.log("YOU PASSED ROW ID:" + $rowid);
 					var jqxhr = $.ajax({
 						type: 'GET',
@@ -287,7 +288,7 @@
 						dataType: 'json'
 					});
 				//console.log("Edit Button Clicked: " + $rowid);
-			},
+			}, */
 				
 				
 				

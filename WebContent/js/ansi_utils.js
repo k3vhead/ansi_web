@@ -20,24 +20,21 @@ $( document ).ready(function() {
 			return $returnValue;
 		},
 		
-		getStatusList: function($optionList) {
-			var $returnValue = null;
+		getOptionList: function($optionList,$callback) {
 			var jqxhr1 = $.ajax({
 				type: 'GET',
 				url: 'options',
 				data: $optionList,
 				success: function($data) {
-					$returnValue = $data.data;
+					$callback($data.data)
 				},
 				statusCode: {
 					403: function($data) {
 						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
 					} 
 				},
-				dataType: 'json',
-		        async: false
+				dataType: 'json'
 			});
-			return $returnValue;
 		},
 	
 		// get a list of values from the codes table
