@@ -151,7 +151,7 @@
 					ticketStatusMap : {},
 				
 	    		init : function() {		
-					ANSI_UTILS.getOptionList("TICKET_STATUS",TICKETRETURN.populateOptionList);  
+					ANSI_UTILS.getTicketStatus("TICKET_STATUS",TICKETRETURN.populateTicketStatus);  
 	    			//TICKETRETURN.addRow();
 	    			//TICKETRETURN.clearAddForm();
 	    			TICKETRETURN.dateField();
@@ -244,7 +244,14 @@
 		        },
 		        	
 		        	
-			   	makeChangers : function () {
+			   	makeChangers : function () {					
+		        	$('#ticketNbr').focus(function($event) {
+		        		$(this).select();	
+		        	});		        	
+		        	$("input[type=text]").focus(function() {
+		        		$(this).select();
+		        	});        	
+			   					   		
 					$('#row_dim').hide(); 
 		    			$('#type').change(function(){
 		        			if($('#type').val() == 'parcel') {
@@ -416,7 +423,7 @@
 		                response: function(event, ui) {
 		                    if (ui.content.length === 0) {
 		                    	$("#globalMsg").html("No Matching Ticket");
-		                    	clearTicketData()
+		                    	TICKETRETURN.clearTicketData()
 		                    } else {
 		                    	$("#globalMsg").html("");
 		                    }
@@ -538,7 +545,7 @@
 						}	
 			   	},
 			   	
-			   	populateOptionList : function ($data) {	  			
+			   	populateTicketStatus : function ($data, $callback) {	
 	    			$.each($data.ticketStatus, function($index, $value) {
 	    				TICKETRETURN.ticketStatusMap[$value.code]=$value.display;
 	    			});		        	
@@ -709,18 +716,6 @@
 						
 						
 					},
-				   	
-				   	ticketNbrFocus : function () {
-			
-			        	$('#ticketNbr').focus(function($event) {
-			        		$(this).select();	
-			        	});
-			        	
-			        	$("input[type=text]").focus(function() {
-			        		$(this).select();
-			        	});
-			        	
-				   	},
    	 	};
 		
 		TICKETRETURN.init();

@@ -20,19 +20,25 @@ $( document ).ready(function() {
 			return $returnValue;
 		},
 		
-		getOptionList: function($optionList,$callback) {
+		getTicketStatus: function($optionList,$callback) {
 			var jqxhr1 = $.ajax({
 				type: 'GET',
 				url: 'options',
-				data: $optionList,
-				success: function($data) {
-					$callback($data.data)
-				},
+				data: $optionList,						
 				statusCode: {
+					200: function($data) {
+						$callback($data.data)
+					},					
 					403: function($data) {
-						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-					} 
-				},
+						$("#globalMsg").html("Session Expired. Log In and try again").show();
+					},
+					404: function($data) {
+						$("#globalMsg").html("Invalid Status").show().fadeOut(4000);
+					},
+					500: function($data) {
+						$("#globalMsg").html("System Error 500. Contact Support").show();
+					}
+				},					
 				dataType: 'json'
 			});
 		},
