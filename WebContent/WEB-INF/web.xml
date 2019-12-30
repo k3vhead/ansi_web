@@ -177,7 +177,17 @@
 
 
 
-
+	<servlet>
+        <servlet-name>contactNote</servlet-name>
+        <servlet-class>com.ansi.scilla.web.callNote.servlet.ContactNoteServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>contactNote</servlet-name>
+        <url-pattern>/callNote/contactNote/*</url-pattern>
+    </servlet-mapping>
+    
+    
+    
 	<servlet>
         <servlet-name>dashboardFavorites</servlet-name>
         <servlet-class>com.ansi.scilla.web.user.servlet.DashboardFavoritesServlet</servlet-class>

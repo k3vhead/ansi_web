@@ -11,8 +11,8 @@ $(function() {
 		
 		
 		
-		clearForm : function($xrefType, $xrefId) {
-			console.log("clearForm " + $xrefType + " " + $xrefId);
+		clearForm : function($xrefType, $xrefId, $xrefName) {
+			console.log("clearForm " + $xrefType + " " + $xrefId + " " + $xrefName);
 			$("#note-crud-form .err").html("");
 			
 			$.each( $("#note-crud-form input"), function($index, $value) {        				
@@ -32,7 +32,24 @@ $(function() {
 			});			
 			$("#note-crud-form input[name='xrefType']").val($xrefType);
 			$("#note-crud-form input[name='xrefId']").val($xrefId);
+			if ( $xrefName != null && $xrefName != '' ) {
+				if ( $xrefType == 'CONTACT' ) {
+					$("#note-crud-form input[name='contact']").val($xrefName);
+					$("#note-crud-form input[name='contactId']").val($xrefId);
+				} else if ( $xrefType = 'ADDRESS') {
+					$("#note-crud-form input[name='address']").val($xrefName);
+					$("#note-crud-form input[name='addressId']").val($xrefId);
+				}
+			}
+			//if ( $data.contactId != null && $data.contactId != '' ) {
+			//	$("#note-crud-form input[name='contactId']").val($data.contactId);
+			//	$("#note-crud-form input[name='contact']").val(($data.firstName + " " + $data.lastName).trim());
+			//}
 		},
+		
+		
+		
+		
 		
 		
 		
@@ -42,6 +59,7 @@ $(function() {
 			$(".call-note-action-link").click(function($event) {
 				var $xrefId = $(this).attr("data-xrefid");
 				var $xrefType = $(this).attr("data-xreftype");
+				var $xrefName = $(this).attr("data-xrefname");
 				var $url = "callNote/callNote/" + $xrefType + "/" + $xrefId;
 				
 				var jqxhr = $.ajax({
@@ -51,9 +69,9 @@ $(function() {
 						200: function($data) {
 							//$callback(200, $data);
 							if ( $data.data.noteList.length == 0 ) {
-								CALLNOTE.openNoteForm($xrefType, $xrefId)
+								CALLNOTE.openNoteForm($xrefType, $xrefId, $xrefName)
 							} else {
-								CALLNOTE.showListModal($data.data);
+								CALLNOTE.showListModal($data.data, $xrefName);
 							}
 							console.log($data);
 						},
@@ -256,7 +274,7 @@ $(function() {
 			$( "#call-note-list-modal" ).dialog({
 				title:'Call Note History',
 				autoOpen: false,
-				height: 750,
+				height: 650,
 				width: 800,
 				modal: true,
 				closeOnEscape:true,
@@ -273,7 +291,7 @@ $(function() {
 						id: "call-note-list-new-button",
 						click: function($event) {
 							$( "#call-note-list-modal" ).dialog("close");
-							CALLNOTE.openNoteForm($("#call-note-list-modal").attr("data-xreftype"),$("#call-note-list-modal").attr("data-xrefid"));
+							CALLNOTE.openNoteForm($("#call-note-list-modal").attr("data-xreftype"),$("#call-note-list-modal").attr("data-xrefid"), $("#call-note-list-modal").attr("data-xrefname"));
 						}
 					}
 				]
@@ -285,8 +303,8 @@ $(function() {
 		
 		
 		
-		openNoteForm : function($xrefType, $xrefId) {
-			CALLNOTE.clearForm($xrefType, $xrefId);
+		openNoteForm : function($xrefType, $xrefId, $xrefName) {
+			CALLNOTE.clearForm($xrefType, $xrefId, $xrefName);
 			$( "#note-crud-form" ).dialog("open");
 		},
 		
@@ -481,12 +499,13 @@ $(function() {
 		
 		
 		
-		showListModal : function($data) {
+		showListModal : function($data, $xrefName) {
 			console.log("showListModal");
 			console.log($data);
 			$("#call-note-list-modal .note-list").html("");
 			$("#call-note-list-modal").attr("data-xreftype", $data.xrefType);
 			$("#call-note-list-modal").attr("data-xrefid", $data.xrefId);
+			$("#call-note-list-modal").attr("data-xrefname", $xrefName);
 			$.each($data.noteList, function($index, $value) {
 				var $li = $('<li>');
 				var $h4 = $('<h4>');

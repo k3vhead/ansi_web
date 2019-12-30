@@ -25,6 +25,7 @@
     <tiles:put name="headextra" type="string">
        	<link rel="stylesheet" href="css/callNote.css" />
     	<link rel="stylesheet" href="css/accordion.css" type="text/css" />
+    	
     
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
    	 	<script type="text/javascript" src="js/addressUtils.js"></script>
@@ -262,7 +263,7 @@
 					            	$editLink = '<ansi:hasPermission permissionRequired="ADDRESS_WRITE"><a href="#" class="editAction" data-id="'+row.addressId+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>';
 					            	$copyLink = '<ansi:hasPermission permissionRequired="ADDRESS_WRITE"><a href="#" class="copyAction" data-id="'+row.addressId+'"><webthing:copy>Copy</webthing:copy></a></ansi:hasPermission>';
 					            	$deleteLink = '<ansi:hasPermission permissionRequired="ADDRESS_WRITE"><a href="#" class="delAction" data-id="'+row.addressId+'"><webthing:delete>Delete</webthing:delete></a></ansi:hasPermission>';					            	
-					            	var $noteLink = ''; //'<webthing:notes xrefType="ADDRESS" xrefId="' + row.addressId + '">Address Notes</webthing:notes>'
+					            	var $noteLink = '<webthing:notes xrefType="ADDRESS" xrefId="' + row.addressId + '" xrefName="'+row.name+'">Address Notes</webthing:notes>'
 					            	
 					            	$action = $viewLink + " " + $editLink + " " + $copyLink;
 					            	if(row.count < 1) {
@@ -276,7 +277,7 @@
 					            },
 					            "drawCallback": function( settings ) {
 					            	ADDRESSMAINTENANCE.doFunctionBinding();
-					            	//CALLNOTE.lookupLink();
+					            	CALLNOTE.lookupLink();
 					            }
 					            
 					            
