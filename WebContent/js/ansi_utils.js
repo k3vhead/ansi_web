@@ -20,7 +20,7 @@ $( document ).ready(function() {
 			return $returnValue;
 		},
 		
-		getTicketStatus: function($optionList,$callback) {
+		getOptionList: function($optionList,$callback) {
 			var jqxhr1 = $.ajax({
 				type: 'GET',
 				url: 'options',

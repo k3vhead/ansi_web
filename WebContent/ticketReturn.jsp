@@ -151,7 +151,7 @@
 					ticketStatusMap : {},
 				
 	    		init : function() {		
-					ANSI_UTILS.getTicketStatus("TICKET_STATUS",TICKETRETURN.populateTicketStatus);  
+					ANSI_UTILS.getOptionList("TICKET_STATUS",TICKETRETURN.populateTicketStatus);  
 	    			//TICKETRETURN.addRow();
 	    			//TICKETRETURN.clearAddForm();
 	    			TICKETRETURN.dateField();

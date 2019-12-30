@@ -225,7 +225,7 @@
 			            	//console.log(json);
 			            	//doFunctionBinding();
 			            	var myTable = this;
-			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#ticketTable", LOOKUPUTILS.createTable);
+			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#ticketTable", TICKETLOOKUP.createTable);
 			            },
 			            "drawCallback": function( settings ) {
 			            	TICKETLOOKUP.doFunctionBinding();
