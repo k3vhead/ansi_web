@@ -49,6 +49,10 @@ public class AnsiURL extends ApplicationWebObject {
 	 * does not validate against the list of expected values.
 	 */
 	public AnsiURL(HttpServletRequest request, String expectedRealm, String[] expectedCommandList) throws ResourceNotFoundException {
+		this(request, expectedRealm, expectedCommandList, true);
+	}
+
+	public AnsiURL(HttpServletRequest request, String expectedRealm, String[] expectedCommandList, boolean commmandRequired) throws ResourceNotFoundException {
 		super();
 		
         SessionUser user = AppUtils.getSessionUser(request);
@@ -78,8 +82,10 @@ public class AnsiURL extends ApplicationWebObject {
 			throw new ResourceNotFoundException("Wrong realm");
 		}
 		if ( pieces.length == 1 && expectedCommandList != null ) {
-			// we have no command, but we're expecting one
-			throw new ResourceNotFoundException("Extra command");
+			if (coommandRequired) {
+				// we have no command, but we're expecting one
+				throw new ResourceNotFoundException("Extra command");
+			}
 		}
 		if ( pieces.length > 1 ) {
 			if ( StringUtils.isNumeric(pieces[1])) {
