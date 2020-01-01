@@ -2,7 +2,6 @@ package com.ansi.scilla.web.specialOverride.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -11,17 +10,18 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
+import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.specialOverride.common.ParameterType;
 import com.ansi.scilla.web.specialOverride.common.SpecialOverrideType;
+import com.ansi.scilla.web.specialOverride.response.SpecialOverrideResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class SpecialOverrideServlet extends AbstractServlet {
@@ -37,18 +37,15 @@ public class SpecialOverrideServlet extends AbstractServlet {
 		try {
 			
 			String[] name = SpecialOverrideType.names();
-			url = new AnsiURL(request, "specialOverrides", new String[] { name[6] });
+			url = new AnsiURL(request, "specialOverrides", name);
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request, Permission.OVERRIDE_UPDATE_PAYMENTS);
 			
-			SpecialOverrideType type = SpecialOverrideType.valueOf(url.getCommand());
-			type.getPermission();
-			
-
 				
 			if ( StringUtils.isBlank(url.getCommand() )) {
-				validateGroupId(conn, url.getId());
-			}			
+				sendNameDescription(conn, response);
+			} else {
+				sendParameterTypes(conn, response, url, request);
+			}
 			//PermissionListResponse permissionListResponse = makePermissionListResponse(conn, url);
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");										// add messages to the response
 			
@@ -69,6 +66,18 @@ public class SpecialOverrideServlet extends AbstractServlet {
 		}
 	}
 	
+	private void sendParameterTypes(Connection conn, HttpServletResponse response, AnsiURL url, HttpServletRequest request) throws Exception {
+		SpecialOverrideType type = SpecialOverrideType.valueOf(url.getCommand());
+		AppUtils.validateSession(request, type.getPermission());
+		SpecialOverrideResponse data = new SpecialOverrideResponse(type.getSelectParms());
+		super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
+	}
+
+	private void sendNameDescription(Connection conn, HttpServletResponse response) throws Exception {
+		SpecialOverrideResponse data = new SpecialOverrideResponse();
+		super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
+	}
+
 	@SuppressWarnings("null")
 	protected void validateGroupId(Connection conn, Integer paymentId) throws RecordNotFoundException, Exception{
 		logger.log(Level.DEBUG, "validating group id: " + paymentId);
