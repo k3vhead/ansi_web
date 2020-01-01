@@ -37,7 +37,7 @@ public class SpecialOverrideServlet extends AbstractServlet {
 		try {
 			
 			String[] name = SpecialOverrideType.names();
-			url = new AnsiURL(request, "specialOverrides", name);
+			url = new AnsiURL(request, "specialOverrides", name, false);
 			conn = AppUtils.getDBCPConn();
 			
 				
