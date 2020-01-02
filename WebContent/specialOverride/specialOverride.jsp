@@ -38,72 +38,23 @@
         
         $(document).ready(function(){
 			;SPECIALOVERRIDE = {
+				fieldTypeMapping : {
+					"String":"text",
+					"Integer":"text",
+					"Date":"date",
+					"Calendar":"date"
+				},
+				
+				
 				init : function() {
 					SPECIALOVERRIDE.makeClickers();
-					SPECIALOVERRIDE.makeSelectCall(null, null, SPECIALOVERRIDE.populateSelector);
+					SPECIALOVERRIDE.doGetCall(null, null, SPECIALOVERRIDE.populateSelector);
 				},
 				
 				
 				
-				makeClickers : function() {
-					$("#specialOverride").change(function() {
-						var $selectedScript = $("#specialOverride option:selected").val();
-						SPECIALOVERRIDE.makeSelectCall(null, $selectedScript, SPECIALOVERRIDE.makeForm)
-					});
-					
-					$("#goSpecialOverride").click(function() {
-						var $selectedScript = $("#specialOverride option:selected").val();
-						SPECIALOVERRIDE.makeSelectCall(null, $selectedScript, SPECIALOVERRIDE.makeForm)
-					});
-				},
-				
-				
-				
-				makeForm : function($data) {
-					console.log("makeForm");
-					$("#formContainer").html("");
-					var $formTable = $("<table>");
-					$.each($data.itemList, function($index, $value) {
-						var $row = $("<tr>");
-						var $labelTd = $("<td>");
-						$labelTd.append($value.label);
-						$labelTd.attr("class","form-label");
-						$row.append($labelTd);
-						
-						$inputTd = $("<td>");
-						$inputField = $("<input>");
-						$inputField.attr("name",$value.fieldName);
-						$inputTd.append($inputField);
-						$row.append($inputTd);
-						
-						$errTd = $("<td>");
-						$errTd.attr("class","err");
-						$row.append($errTd);
-						
-						$formTable.append($row);
-					});
-					$("#formContainer").append($formTable);
-					$("#formContainer").append('<input type="button" value="Go" id="selectGoButton" />');
-					$("#formContainer").append('<input type="button" value="Cancel" id="selectCancelButton" />')
-					
-					$("#selectCancelButton").click(function() {
-						$("#formContainer").hide();
-						$("#selectContainer").show();
-					});
-					
-					$("#selectContainer").hide();
-					$("#formContainer").show();
-				},
-				
-				
-				
-				makeSelectCall : function($outbound, $scriptName, $callback) {
-					if ( $outbound == null ) {
-						$parms = null;
-					} else {
-						$parms = JSON.stringify($outbound);
-					}
-
+				doGetCall : function($outbound, $scriptName, $callback) {
+					console.log("doGetCall");
 					$url = "specialOverrides";
 					if ( $scriptName != null ) {
 						$url = $url + "/" + $scriptName;
@@ -111,11 +62,11 @@
 					var jqxhr = $.ajax({
 						type: 'GET',
 						url: $url,
-						data: $parms,
+						data: $outbound,
 						statusCode: {
 							200: function($data) {
-								console.log($data);
-								$callback($data.data);
+								console.log($outbound, $scriptName, $data);
+								$callback($outbound, $scriptName, $data);
 							},
 							403: function($data) {
 								$("#globalMsg").html("Session Timeout. Log in and try again").show();
@@ -135,15 +86,101 @@
 				},
 				
 				
-				populateSelector : function($data) {
+				
+				doSelectCall : function($scriptName) {
+					console.log("doSelectCall");
+					var $outbound = {};
+					$.each($("#selectForm .selectFormField"), function($index, $value) {
+						$outbound[$value.name] = $($value).val();
+					});
+					console.log(JSON.stringify($outbound));
+					SPECIALOVERRIDE.doGetCall($outbound, $scriptName, SPECIALOVERRIDE.processSelectCall);
+				},
+				
+				
+				
+				makeClickers : function() {
+					$("#specialOverride").change(function() {
+						var $selectedScript = $("#specialOverride option:selected").val();
+						SPECIALOVERRIDE.doGetCall(null, $selectedScript, SPECIALOVERRIDE.makeForm)
+					});
+					
+					$("#goSpecialOverride").click(function() {
+						var $selectedScript = $("#specialOverride option:selected").val();
+						SPECIALOVERRIDE.doGetCall(null, $selectedScript, SPECIALOVERRIDE.makeForm)
+					});
+				},
+				
+				
+				
+				makeForm : function($outbound, $scriptName, $data) {
+					console.log("makeForm");
+					$("#formContainer").html("");
+					var $formTable = $("<table>");
+					//$formTable.attr("data-scriptname",$scriptName);
+					$formTable.attr("id","selectForm");
+					$.each($data.data.itemList, function($index, $value) {
+						var $row = $("<tr>");
+						var $labelTd = $("<td>");
+						$labelTd.append($value.label);
+						$labelTd.attr("class","form-label");
+						$row.append($labelTd);
+						
+						$inputTd = $("<td>");
+						$inputField = $("<input>");
+						$inputField.attr("name",$value.fieldName);
+						$inputField.attr("type", SPECIALOVERRIDE.fieldTypeMapping[$value.fieldType]);
+						$inputField.attr("class","selectFormField");
+						$inputTd.append($inputField);
+						$row.append($inputTd);
+						
+						$errTd = $("<td>");
+						$errTd.attr("class","err");
+						$row.append($errTd);
+						
+						$formTable.append($row);
+					});
+					$("#formContainer").append($formTable);
+					$("#formContainer").append('<input type="button" value="Go" id="selectGoButton" />');
+					$("#formContainer").append('<input type="button" value="Cancel" id="selectCancelButton" />')
+					
+					$("#selectCancelButton").click(function() {
+						$("#formContainer").hide();
+						$("#selectContainer").show();
+					});
+					
+					$("#selectGoButton").click(function() {
+						SPECIALOVERRIDE.doSelectCall($scriptName);
+					});
+					
+					$("#selectContainer").hide();
+					$("#formContainer").show();
+				},
+				
+				
+				
+				populateSelector : function($outbound, $scriptName, $data) {
 					console.log("populateSelector");
 					$select = $("#specialOverride");
 					$('option', $select).remove();
 					$select.append(new Option("",""));
 					
-					$.each($data.itemList, function($index, $value) {
+					$.each($data.data.itemList, function($index, $value) {
 						$select.append(new Option($value.description, $value.name));
 					});
+				},
+				
+				
+				processSelectCall : function($outbound, $scriptName, $data ) {
+					console.log("processSelectCall");
+					if ( $data.responseHeader.responseCode == "SUCCESS") {
+						console.log("It worked");
+					} else if ( $data.responseHeader.responseCode = "EDIT_FAILURE") {
+						console.log("Bad data, but it worked");
+					} else {
+						$("#globalMsg").html("Bad Response Code " + $data.responseHeader.responseCode + ". Contact Support").show();
+						console.log("uh oh");
+					}
 				},
 			};
 			
