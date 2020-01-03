@@ -44,7 +44,14 @@ public class SpecialOverrideServlet extends AbstractServlet {
 			if ( StringUtils.isBlank(url.getCommand() )) {
 				sendNameDescription(conn, response);
 			} else {
-				sendParameterTypes(conn, response, url, request);
+				SpecialOverrideType type = SpecialOverrideType.valueOf(url.getCommand());
+				if(request.getParameterNames().equals(null)) {
+					sendParameterTypes(conn, response, url, request, type);
+				} else {
+					for(ParameterType p : type.getSelectParms()) {
+						p.setFieldName(request.getParameterNames().nextElement());
+					}
+				}
 			}
 			//PermissionListResponse permissionListResponse = makePermissionListResponse(conn, url);
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");										// add messages to the response
@@ -66,8 +73,8 @@ public class SpecialOverrideServlet extends AbstractServlet {
 		}
 	}
 	
-	private void sendParameterTypes(Connection conn, HttpServletResponse response, AnsiURL url, HttpServletRequest request) throws Exception {
-		SpecialOverrideType type = SpecialOverrideType.valueOf(url.getCommand());
+	private void sendParameterTypes(Connection conn, HttpServletResponse response, AnsiURL url,
+			HttpServletRequest request, SpecialOverrideType type) throws Exception {
 		AppUtils.validateSession(request, type.getPermission());
 		SpecialOverrideResponse data = new SpecialOverrideResponse(type.getSelectParms());
 		super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
