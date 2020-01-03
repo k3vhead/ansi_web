@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
+import java.lang.reflect.Method;
 
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -49,7 +50,8 @@ public class SpecialOverrideServlet extends AbstractServlet {
 					sendParameterTypes(conn, response, url, request, type);
 				} else {
 					for(ParameterType p : type.getSelectParms()) {
-						p.setFieldName(request.getParameterNames().nextElement());
+						Method m = p.getValidateMethod();
+						
 					}
 				}
 			}
