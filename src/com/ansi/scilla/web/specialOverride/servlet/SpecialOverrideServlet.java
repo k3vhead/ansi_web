@@ -2,6 +2,7 @@ package com.ansi.scilla.web.specialOverride.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.IllegalFormatException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -9,6 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
+
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -46,13 +49,16 @@ public class SpecialOverrideServlet extends AbstractServlet {
 				sendNameDescription(conn, response);
 			} else {
 				SpecialOverrideType type = SpecialOverrideType.valueOf(url.getCommand());
-				if(request.getParameterNames().equals(null)) {
-					sendParameterTypes(conn, response, url, request, type);
-				} else {
-					for(ParameterType p : type.getSelectParms()) {
-						Method m = p.getValidateMethod();
-						
+				if(request.getParameterNames().hasMoreElements()) {
+					WebMessages messages = validateParameters(type.getSelectParms(), request);
+					if(messages.isEmpty()) {
+						doSelect(conn, request, response, type);
+					} else {
+						SpecialOverrideResponse data = new SpecialOverrideResponse(type.getSelectParms());
+						super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
 					}
+				} else {
+					sendParameterTypes(conn, response, url, request, type);
 				}
 			}
 			//PermissionListResponse permissionListResponse = makePermissionListResponse(conn, url);
@@ -75,6 +81,30 @@ public class SpecialOverrideServlet extends AbstractServlet {
 		}
 	}
 	
+	private void doSelect(Connection conn, HttpServletRequest request, HttpServletResponse response,
+			SpecialOverrideType type) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private WebMessages validateParameters(ParameterType[] selectParms, HttpServletRequest request) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		WebMessages webMessages = new WebMessages();
+		for(ParameterType p : selectParms) {
+			String stringVal = request.getParameter(p.getFieldName());
+			if(StringUtils.isBlank(stringVal)) {
+				webMessages.addMessage(p.getFieldName(), "Required Value");
+			} else {
+				Method m = p.getValidateMethod();
+				try {
+					m.invoke(p, new Object[] {stringVal});
+				} catch (IllegalFormatException e) {
+					webMessages.addMessage(p.getFieldName(), "Invalid Format");
+				}
+			}
+		}
+		return webMessages;
+	}
+
 	private void sendParameterTypes(Connection conn, HttpServletResponse response, AnsiURL url,
 			HttpServletRequest request, SpecialOverrideType type) throws Exception {
 		AppUtils.validateSession(request, type.getPermission());
@@ -85,16 +115,6 @@ public class SpecialOverrideServlet extends AbstractServlet {
 	private void sendNameDescription(Connection conn, HttpServletResponse response) throws Exception {
 		SpecialOverrideResponse data = new SpecialOverrideResponse();
 		super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
-	}
-
-	@SuppressWarnings("null")
-	protected void validateGroupId(Connection conn, Integer paymentId) throws RecordNotFoundException, Exception{
-		logger.log(Level.DEBUG, "validating group id: " + paymentId);
-		SpecialOverrideType specialOverrideType = null;// = new SpecialOverrideType();
-		ParameterType parameterType = null;
-		parameterType.validateInteger(paymentId);
-//		permissionGroup.setPermissionGroupId(paymentId);
-//		permissionGroup.selectOne(conn);		// this throws RecordNotFound, which is propagated up the line into a 404 return
 	}
 	
 	
