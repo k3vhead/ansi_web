@@ -1,6 +1,5 @@
 package com.ansi.scilla.web.specialOverride.common;
 
-import java.lang.reflect.Method;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,27 +14,12 @@ public class ParameterType extends ApplicationObject {
 
 	private static final long serialVersionUID = 1L;
 
-	static Method integerValidatorMethod;
-	static Method dateValidatorMethod;
-	static Method stringValidatorMethod;
-	
 	private String label;
 	private String fieldName;
 	private Class<?> type;
-	private Method validateMethod;
+
 	
-	
-	static {
-		try {
-			integerValidatorMethod = ParameterType.class.getMethod("validateInteger", new Class<?>[] {String.class});		
-			dateValidatorMethod = ParameterType.class.getMethod("validateDate", new Class<?>[] {String.class});		
-			stringValidatorMethod = ParameterType.class.getMethod("validateString", new Class<?>[] {String.class});
-		} catch ( Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	public ParameterType(String label, String fieldName, Class<?> type, Method validateMethod) {
+	public ParameterType(String label, String fieldName, Class<?> type) { //, Method validateMethod) {
 		super();
 		this.label = label;
 		this.fieldName = fieldName;
@@ -59,23 +43,36 @@ public class ParameterType extends ApplicationObject {
 	public void setType(Class<?> type) {
 		this.type = type;
 	}
-	public Method getValidateMethod() {
-		return validateMethod;
+	
+	
+	public void validate(String value) throws InvalidFormatException {
+		if ( this.type.equals(Integer.class) ) {
+			validateInteger(value);
+		} else if ( this.type.equals(Date.class)) {
+			validateDate(value);
+		} else if ( this.type.equals(String.class)) {
+			validateString(value);
+		} else {
+			throw new RuntimeException("Invalid parameter type");
+		}
 	}
-	public void setValidateMethod(Method validateMethod) {
-		this.validateMethod = validateMethod;
-	}
+	
 	
 	public void validateInteger(String value) throws InvalidFormatException {
 		WebMessages webMessages = new WebMessages();
 		if(StringUtils.isBlank(value)) {
 			throw new InvalidFormatException();
 		}
-		Integer intVal = Integer.valueOf(value);
-		RequestValidator.validateInteger(webMessages, getLabel(), intVal, 0, null, true);
-		if ( ! webMessages.isEmpty() ) {
+		try {
+			Integer intVal = Integer.valueOf(value);
+			RequestValidator.validateInteger(webMessages, getLabel(), intVal, 0, null, true);
+			if ( ! webMessages.isEmpty() ) {
+				throw new InvalidFormatException();
+			}
+		} catch ( NumberFormatException e) {
 			throw new InvalidFormatException();
 		}
+		
 	}
 	
 	public void validateDate(String value) throws InvalidFormatException {

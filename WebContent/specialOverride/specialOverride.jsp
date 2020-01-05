@@ -180,6 +180,7 @@
 						console.log("Bad data, but it worked");
 						$.each($data.data.webMessages, function(key, messageList) {
 							var $identifier = "#selectForm ." + key + "_err";
+							console.log($identifier);
 							$($identifier).html(messageList[0]).show();							
 						});	
 					} else {

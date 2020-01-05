@@ -1,8 +1,8 @@
 package com.ansi.scilla.web.specialOverride.servlet;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
-import java.util.IllegalFormatException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -11,9 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
+import com.ansi.scilla.web.common.exception.InvalidFormatException;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
@@ -50,11 +48,12 @@ public class SpecialOverrideServlet extends AbstractServlet {
 			} else {
 				SpecialOverrideType type = SpecialOverrideType.valueOf(url.getCommand());
 				if(request.getParameterNames().hasMoreElements()) {
-					WebMessages messages = validateParameters(type.getSelectParms(), request);
-					if(messages.isEmpty()) {
+					webMessages = validateParameters(type.getSelectParms(), request);
+					if(webMessages.isEmpty()) {
 						doSelect(conn, request, response, type);
 					} else {
 						SpecialOverrideResponse data = new SpecialOverrideResponse(type.getSelectParms());
+						data.setWebMessages(webMessages);
 						super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
 					}
 				} else {
@@ -94,10 +93,9 @@ public class SpecialOverrideServlet extends AbstractServlet {
 			if(StringUtils.isBlank(stringVal)) {
 				webMessages.addMessage(p.getFieldName(), "Required Value");
 			} else {
-				Method m = p.getValidateMethod();
 				try {
-					m.invoke(p, new Object[] {stringVal});
-				} catch (IllegalFormatException e) {
+					p.validate(stringVal);
+				} catch (InvalidFormatException e) {
 					webMessages.addMessage(p.getFieldName(), "Invalid Format");
 				}
 			}
