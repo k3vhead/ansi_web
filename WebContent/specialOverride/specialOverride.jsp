@@ -135,7 +135,7 @@
 						$row.append($inputTd);
 						
 						$errTd = $("<td>");
-						$errTd.attr("class","err");
+						$errTd.attr("class","err " + $value.fieldName + "_err");
 						$row.append($errTd);
 						
 						$formTable.append($row);
@@ -150,6 +150,7 @@
 					});
 					
 					$("#selectGoButton").click(function() {
+						$("#selectForm .err").html("");
 						SPECIALOVERRIDE.doSelectCall($scriptName);
 					});
 					
@@ -177,6 +178,10 @@
 						console.log("It worked");
 					} else if ( $data.responseHeader.responseCode = "EDIT_FAILURE") {
 						console.log("Bad data, but it worked");
+						$.each($data.data.webMessages, function(key, messageList) {
+							var $identifier = "#selectForm ." + key + "_err";
+							$($identifier).html(messageList[0]).show();							
+						});	
 					} else {
 						$("#globalMsg").html("Bad Response Code " + $data.responseHeader.responseCode + ". Contact Support").show();
 						console.log("uh oh");
