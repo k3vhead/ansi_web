@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.web.common.exception.InvalidFormatException;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -50,22 +49,14 @@ public class SpecialOverrideServlet extends AbstractServlet {
 				if(request.getParameterNames().hasMoreElements()) {
 					webMessages = validateParameters(type.getSelectParms(), request);
 					if(webMessages.isEmpty()) {
-						doSelect(conn, request, response, type);
+						sendSelectResults(conn, request, response, type);
 					} else {
-						SpecialOverrideResponse data = new SpecialOverrideResponse(type.getSelectParms());
-						data.setWebMessages(webMessages);
-						super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+						sendEditErrors(conn, response, type, webMessages);
 					}
 				} else {
 					sendParameterTypes(conn, response, url, request, type);
 				}
 			}
-			//PermissionListResponse permissionListResponse = makePermissionListResponse(conn, url);
-			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");										// add messages to the response
-			
-			//permissionListResponse.setWebMessages(webMessages);
-			
-			//super.sendResponse(conn, response, ResponseCode.SUCCESS, permissionListResponse);					// send the response
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {							// these are thrown by session validation
 			super.sendForbidden(response);
 		} catch ( RecordNotFoundException e ) {			// if they're asking for an id that doesn't exist
@@ -80,10 +71,20 @@ public class SpecialOverrideServlet extends AbstractServlet {
 		}
 	}
 	
-	private void doSelect(Connection conn, HttpServletRequest request, HttpServletResponse response,
-			SpecialOverrideType type) {
-		// TODO Auto-generated method stub
-		
+	private void sendEditErrors(Connection conn, HttpServletResponse response, SpecialOverrideType type, WebMessages webMessages) throws Exception {
+		SpecialOverrideResponse data = new SpecialOverrideResponse(type.getSelectParms());
+		data.setWebMessages(webMessages);
+		super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);		
+	}
+
+	
+	private void sendSelectResults(Connection conn, HttpServletRequest request, HttpServletResponse response,
+			SpecialOverrideType type) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		SpecialOverrideResponse data = new SpecialOverrideResponse(type.getSelectParms());
+		webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
+		data.setWebMessages(webMessages);
+		super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
 	}
 
 	private WebMessages validateParameters(ParameterType[] selectParms, HttpServletRequest request) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
