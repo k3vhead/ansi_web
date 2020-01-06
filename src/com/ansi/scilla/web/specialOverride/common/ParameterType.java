@@ -1,6 +1,8 @@
 package com.ansi.scilla.web.specialOverride.common;
 
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -101,4 +103,23 @@ public class ParameterType extends ApplicationObject {
 		}
 	}
 	
+	public void setPsParm(PreparedStatement ps, String value, Integer index) throws SQLException {
+		if(this.type.equals(Integer.class)) {
+			Integer intVal = Integer.valueOf(value);
+			ps.setInt(index, intVal);
+		} else if ( this.type.equals(Date.class)) {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			try {
+				java.util.Date dateVal = sdf.parse(value);
+				java.sql.Date sqlDate = new java.sql.Date(dateVal.getTime());
+				ps.setDate(index, sqlDate);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		} else if ( this.type.equals(String.class)) {
+			ps.setString(index, value);
+		} else {
+			throw new RuntimeException("Invalid parameter type");
+		}
+	}
 }

@@ -3,6 +3,8 @@ package com.ansi.scilla.web.specialOverride.servlet;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -81,6 +83,14 @@ public class SpecialOverrideServlet extends AbstractServlet {
 	private void sendSelectResults(Connection conn, HttpServletRequest request, HttpServletResponse response,
 			SpecialOverrideType type) throws Exception {
 		WebMessages webMessages = new WebMessages();
+		PreparedStatement ps = conn.prepareStatement(type.getSelectSql());
+		for(ParameterType p : type.getSelectParms()) {
+			Integer i = 1;
+			p.setPsParm(ps, request.getParameter(p.getFieldName()), i);
+			i++;
+		}
+		ResultSet rs = ps.executeQuery();
+		
 		SpecialOverrideResponse data = new SpecialOverrideResponse(type.getSelectParms());
 		webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
 		data.setWebMessages(webMessages);
