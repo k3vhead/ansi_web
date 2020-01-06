@@ -151,7 +151,7 @@
 					ticketStatusMap : {},
 				
 	    		init : function() {		
-					ANSI_UTILS.getOptionList("TICKET_STATUS",TICKETRETURN.populateTicketStatus);  
+					ANSI_UTILS.getOptionList("TICKET_STATUS",TICKETRETURN.populateOptionList);  
 	    			//TICKETRETURN.addRow();
 	    			//TICKETRETURN.clearAddForm();
 	    			TICKETRETURN.dateField();
@@ -545,7 +545,7 @@
 						}	
 			   	},
 			   	
-			   	populateTicketStatus : function ($data, $callback) {	
+			   	populateOptionList : function ($data, $callback) {	
 	    			$.each($data.ticketStatus, function($index, $value) {
 	    				TICKETRETURN.ticketStatusMap[$value.code]=$value.display;
 	    			});		        	

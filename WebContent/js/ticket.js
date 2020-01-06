@@ -1,6 +1,6 @@
 $(function() {    	
 	;TICKETUTILS = {
-		$ticketStatusMap : {},
+		ticketStatusMap : {},
 
 
 		doTicketViewModal : function($modalId,$ticketId) {
@@ -33,17 +33,18 @@ $(function() {
 	       		dataType: 'json'
 	       	});
 		},
-			
-			
+	   	
+	   	populateOptionList : function ($data, $callback) {	
+			$.each($data.ticketStatus, function($index, $value) {
+				TICKETUTILS.ticketStatusMap[$value.code]=$value.display;
+			});		        	
+	   	},
 			
 			
 			
 			
 		makeTicketViewModal : function($modalId) {
-			var $ticketStatusList = ANSI_UTILS.getOptions("TICKET_STATUS");
-			$.each($ticketStatusList.ticketStatus, function($index, $value) {
-			    TICKETUTILS.$ticketStatusMap[$value.code]=$value.display;
-			});
+			ANSI_UTILS.getOptionList("TICKET_STATUS",TICKETUTILS.populateOptionList);
 			
 			
 			var $cancelId = $modalId.substring(1)+"-cancel-button";
