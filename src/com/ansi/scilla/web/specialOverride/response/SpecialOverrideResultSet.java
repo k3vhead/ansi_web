@@ -2,38 +2,59 @@ package com.ansi.scilla.web.specialOverride.response;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class SpecialOverrideResultSet extends SpecialOverrideResponseItem {
+import com.ansi.scilla.web.common.response.MessageResponse;
+
+public class SpecialOverrideResultSet extends MessageResponse {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private ResultSet rs;
-	private ResultSetMetaData rsmd;
+	private List<List<String>> itemList;
 	
 	public SpecialOverrideResultSet() {
 		super();
 	}
 	
-	public SpecialOverrideResultSet(ResultSet rs) throws SQLException {
-		this();
-		this.rs = rs;
-		this.rsmd = rs.getMetaData();
+	public SpecialOverrideResultSet(ResultSet rs) throws Exception {
+		this();		
+		this.itemList = new ArrayList<List<String>>();
+		ResultSetMetaData rsmd = rs.getMetaData();
+		List<String> headerList = new ArrayList<String>();
+		for ( int i = 0; i < rsmd.getColumnCount(); i++ ) {
+			headerList.add(rsmd.getColumnName(i+1));
+		}
+		itemList.add(headerList);
+		
+		while ( rs.next() ) {
+			List<String> row = new ArrayList<String>();
+			for ( int i = 0; i < rsmd.getColumnCount(); i++ ) {
+				int index = i+1;
+				String className = rsmd.getColumnClassName(index);
+				System.out.println(className);
+				if ( className.equalsIgnoreCase("java.lang.Integer")) {
+					row.add(String.valueOf(rs.getInt(index)));
+				} else if ( className.equalsIgnoreCase("java.lang.String")) {
+					row.add(rs.getString(index));
+				} else {
+					row.add( String.valueOf(rs.getObject(index)));
+					//throw new InvalidFormatException(rsmd.getColumnClassName(i+1));
+				}
+			}
+			itemList.add(row);
+		}
+		
+		
 	}
 
-	public ResultSet getRs() {
-		return rs;
+	public List<List<String>> getItemList() {
+		return itemList;
 	}
 
-	public void setRs(ResultSet rs) {
-		this.rs = rs;
+	public void setItemList(List<List<String>> itemList) {
+		this.itemList = itemList;
 	}
 
-	public ResultSetMetaData getRsmd() {
-		return rsmd;
-	}
-
-	public void setRsmd(ResultSetMetaData rsmd) {
-		this.rsmd = rsmd;
-	}
+	
 }

@@ -29,6 +29,15 @@
 			#formContainer {
 				display:none;
 			}
+			#selectResultsContainer {
+				display:none;
+			}
+			#selectResults {
+				width:100%;
+			}
+			.centered-text {
+				text-align:center;
+			}
 			.form-label {
 				font-weight:bold;
 			}
@@ -102,6 +111,9 @@
 				makeClickers : function() {
 					$("#specialOverride").change(function() {
 						var $selectedScript = $("#specialOverride option:selected").val();
+						console.log($("#specialOverride option:selected"));
+						console.log($("#specialOverride option:selected").text());
+						$(".script-title").html($("#specialOverride option:selected").text());
 						SPECIALOVERRIDE.doGetCall(null, $selectedScript, SPECIALOVERRIDE.makeForm)
 					});
 					
@@ -115,7 +127,7 @@
 				
 				makeForm : function($outbound, $scriptName, $data) {
 					console.log("makeForm");
-					$("#formContainer").html("");
+					$("#selectFormContent").html("");
 					var $formTable = $("<table>");
 					//$formTable.attr("data-scriptname",$scriptName);
 					$formTable.attr("id","selectForm");
@@ -140,9 +152,9 @@
 						
 						$formTable.append($row);
 					});
-					$("#formContainer").append($formTable);
-					$("#formContainer").append('<input type="button" value="Go" id="selectGoButton" />');
-					$("#formContainer").append('<input type="button" value="Cancel" id="selectCancelButton" />')
+					$("#selectFormContent").append($formTable);
+					$("#selectFormContent").append('<input type="button" value="Go" id="selectGoButton" />');
+					$("#selectFormContent").append('<input type="button" value="Cancel" id="selectCancelButton" />')
 					
 					$("#selectCancelButton").click(function() {
 						$("#formContainer").hide();
@@ -156,6 +168,33 @@
 					
 					$("#selectContainer").hide();
 					$("#formContainer").show();
+				},
+				
+				
+				
+				
+				makeSelectResultsTable : function($outbound, $scriptName, $data) {
+					console.log("makeSelectResultsTable");
+					$("#formContainer").hide();
+					$("#selectResults").html("");
+					
+					
+					$.each($data.data.itemList, function($index1, $rowResult) {
+						var $row = $("<tr>");
+						$.each($rowResult, function($index2, $value) {
+							var $col = $("<td>");
+							var $text = $("<span>");
+							if ( $index1 == 0 ) {								
+								$text.attr("class", "form-label");
+							}
+							$text.append($value);
+							$col.append($text);
+							$row.append($col);
+						});
+						$("#selectResults").append($row);
+					});
+					
+					$("#selectResultsContainer").show();
 				},
 				
 				
@@ -175,7 +214,7 @@
 				processSelectCall : function($outbound, $scriptName, $data ) {
 					console.log("processSelectCall");
 					if ( $data.responseHeader.responseCode == "SUCCESS") {
-						console.log("It worked");
+						SPECIALOVERRIDE.makeSelectResultsTable($outbound, $scriptName, $data);
 					} else if ( $data.responseHeader.responseCode = "EDIT_FAILURE") {
 						console.log("Bad data, but it worked");
 						$.each($data.data.webMessages, function(key, messageList) {
@@ -203,6 +242,15 @@
     	</div>
     	
     	<div id="formContainer">
+    		<h4><span class="script-title"></span></h4>
+    		<div id="selectFormContent">
+    		</div>
+    	</div>
+    	
+    	<div id="selectResultsContainer">
+    		<h4><span class="script-title"></span></h4>
+    		<table id="selectResults">
+    		</table>
     	</div>
    </tiles:put>
 		

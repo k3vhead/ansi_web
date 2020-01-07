@@ -25,6 +25,7 @@ import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.specialOverride.common.ParameterType;
 import com.ansi.scilla.web.specialOverride.common.SpecialOverrideType;
 import com.ansi.scilla.web.specialOverride.response.SpecialOverrideResponse;
+import com.ansi.scilla.web.specialOverride.response.SpecialOverrideResultSet;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class SpecialOverrideServlet extends AbstractServlet {
@@ -84,14 +85,16 @@ public class SpecialOverrideServlet extends AbstractServlet {
 			SpecialOverrideType type) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		PreparedStatement ps = conn.prepareStatement(type.getSelectSql());
+		int i = 1;
 		for(ParameterType p : type.getSelectParms()) {
-			Integer i = 1;
 			p.setPsParm(ps, request.getParameter(p.getFieldName()), i);
 			i++;
 		}
 		ResultSet rs = ps.executeQuery();
 		
-		SpecialOverrideResponse data = new SpecialOverrideResponse(type.getSelectParms());
+		SpecialOverrideResultSet data = new SpecialOverrideResultSet(rs);
+		rs.close();
+		
 		webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
 		data.setWebMessages(webMessages);
 		super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
