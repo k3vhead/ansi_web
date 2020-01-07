@@ -37,6 +37,12 @@ public class SpecialOverrideResultSet extends MessageResponse {
 					row.add(String.valueOf(rs.getInt(index)));
 				} else if ( className.equalsIgnoreCase("java.lang.String")) {
 					row.add(rs.getString(index));
+				} else if ( className.equalsIgnoreCase("java.math.BigDecimal")) {
+					row.add(String.valueOf(rs.getBigDecimal(index)));
+				} else if ( className.equalsIgnoreCase("java.sql.Timestamp")) {
+					row.add(String.valueOf(rs.getTimestamp(index)));
+				} else if ( className.equalsIgnoreCase("java.sql.Date")) {
+					row.add(String.valueOf(rs.getDate(index)));
 				} else {
 					row.add( String.valueOf(rs.getObject(index)));
 					//throw new InvalidFormatException(rsmd.getColumnClassName(i+1));
