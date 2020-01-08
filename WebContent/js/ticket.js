@@ -113,9 +113,8 @@ $(function() {
 		
 		
 		
-		
 		populateSummary : function($modalId, $data) {
-			$($modalId + " .status").html('<span class="tooltip">' + $data.ticketDetail.status + '<span class="tooltiptext">' + TICKETUTILS.$ticketStatusMap[$data.ticketDetail.status]+ '</span></span>');
+			$($modalId + " .status").html('<span class="tooltip">' + $data.ticketDetail.status + '<span class="tooltiptext">' + TICKETUTILS.ticketStatusMap[$data.ticketDetail.status]+ '</span></span>');
 			$($modalId + " .divisionDisplay").html($data.ticketDetail.divisionDisplay);
 			$($modalId + " .jobId").html( '<a class="joblink" href="jobMaintenance.html?id='+ $data.ticketDetail.jobId + '">' + $data.ticketDetail.jobId + '</a>');
 			$($modalId + " .serviceDescription").html($data.ticketDetail.serviceDescription);

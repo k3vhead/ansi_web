@@ -144,7 +144,7 @@
 			            	if(row.ticket_id != null){return ('<a href="#" data-id="'+row.ticket_id+'" class="ticket-clicker">'+row.ticket_id+'</a>');}
 			            } },
 			            { width:"5%", title: "<bean:message key="field.label.ticketStatus" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-			            	if(row.ticket_status != null){return ('<span class="tooltip">' + row.ticket_status_desc +'<span class="tooltiptext">'+row.ticket_status_desc+'</span></span>');}
+			            	if(row.view_ticket_status != null){return ('<span class="tooltip">' + row.view_ticket_status +'<span class="tooltiptext">'+row.ticket_status_desc+'</span></span>');}
 			            } },
 			            { width:"5%", title: "<bean:message key="field.label.ticketType" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
 			            	if(row.ticket_type_desc != null){return (row.ticket_type_desc+"");}
