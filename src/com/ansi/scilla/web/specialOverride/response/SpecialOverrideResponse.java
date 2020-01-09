@@ -83,8 +83,8 @@ public class SpecialOverrideResponse extends MessageResponse{
 					timeStamp = String.valueOf(rs.getTimestamp(index));
 					row.add(timeStamp);
 				} else if ( className.equalsIgnoreCase("java.sql.Date")) {
-					String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-					date = String.valueOf(rs.getDate(index));
+					String date = String.valueOf(rs.getDate(index));
+					date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 					row.add(date);
 				} else {
 					row.add( String.valueOf(rs.getObject(index)));
