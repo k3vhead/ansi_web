@@ -11,6 +11,7 @@ public class SpecialOverrideResultSet extends MessageResponse {
 	
 	private static final long serialVersionUID = 1L;
 	
+	private List<SpecialOverrideSelectItem> parameterList;
 	private List<List<String>> itemList;
 	
 	public SpecialOverrideResultSet() {
@@ -60,6 +61,14 @@ public class SpecialOverrideResultSet extends MessageResponse {
 
 	public void setItemList(List<List<String>> itemList) {
 		this.itemList = itemList;
+	}
+
+	public List<SpecialOverrideSelectItem> getParameterList() {
+		return parameterList;
+	}
+
+	public void setParameterList(List<SpecialOverrideSelectItem> parameterList) {
+		this.parameterList = parameterList;
 	}
 
 	

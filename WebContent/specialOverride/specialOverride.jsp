@@ -26,17 +26,32 @@
     	<script type="text/javascript" src="js/ticket.js"></script> 
     
         <style type="text/css">
-			#formContainer {
-				display:none;
-			}
+        	#confirm-modal {
+        		display:none;
+        		text-align:center;
+        	}
 			#selectResultsContainer {
 				display:none;
 			}
 			#selectResults {
 				width:100%;
 			}
+			#updateFormContent {
+				display:none;
+				margin-top:20px;
+			}
+			#updateResults {
+				display:none;
+				width:100%;
+				margin-top:20px;
+			}
 			.centered-text {
 				text-align:center;
+			}
+			.confirm-text {
+				width:100%;
+				text-align:center;
+				margin-top:20px;
 			}
 			.form-label {
 				font-weight:bold;
@@ -57,6 +72,7 @@
 				
 				init : function() {
 					SPECIALOVERRIDE.makeClickers();
+					SPECIALOVERRIDE.makeModals();
 					SPECIALOVERRIDE.doGetCall(null, null, SPECIALOVERRIDE.populateSelector);
 				},
 				
@@ -96,6 +112,52 @@
 				
 				
 				
+				doPostCall : function() {
+					console.log("doPostCall");
+					var $scriptName = $("#updateForm").attr("data-scriptname");
+					var $url = "specialOverrides/" + $scriptName;
+					
+					var jqxhr = $.ajax({
+						type: 'POST',
+						url: $url,
+						data: $("#updateForm .updateFormField").serialize(),
+						statusCode: {
+							200: function($data) {
+								if ( $data.responseHeader.responseCode == "SUCCESS") {
+									$("#globalMsg").html("Success").show().fadeOut(3000);
+									SPECIALOVERRIDE.makeSelectResultsTable("#updateResults", null, $scriptName, $data);
+								} else if ( $data.responseHeader.responseCode = "EDIT_FAILURE") {
+									console.log("Bad data, but it worked");
+									$.each($data.data.webMessages, function(key, messageList) {
+										var $identifier = "#updateForm ." + key + "_err";
+										console.log($identifier);
+										$($identifier).html(messageList[0]).show();							
+									});	
+								} else {
+									$("#globalMsg").html("Bad Response Code " + $data.responseHeader.responseCode + ". Contact Support").show();
+									console.log("uh oh");
+								}
+								
+							},
+							403: function($data) {
+								$("#globalMsg").html("Session Timeout. Log in and try again").show();
+							}, 
+							404: function($data) {
+								$("#globalMsg").html("System Error 404: Contact Support").show();
+							}, 
+							405: function($data) {
+								$("#globalMsg").html("System Error 405: Contact Support").show();
+							}, 
+							500: function($data) {
+								$("#globalMsg").html("System Error 500: Contact Support").show();
+							} 
+						},
+						dataType: 'json'
+					});
+				},
+				
+				
+				
 				doSelectCall : function($scriptName) {
 					console.log("doSelectCall");
 					var $outbound = {};
@@ -114,24 +176,63 @@
 						console.log($("#specialOverride option:selected"));
 						console.log($("#specialOverride option:selected").text());
 						$(".script-title").html($("#specialOverride option:selected").text());
-						SPECIALOVERRIDE.doGetCall(null, $selectedScript, SPECIALOVERRIDE.makeForm)
+						SPECIALOVERRIDE.doGetCall(null, $selectedScript, SPECIALOVERRIDE.makeSelectForm)
 					});
 					
 					$("#goSpecialOverride").click(function() {
+						$("#selectResults").html("");
+						$("#updateResults").html("");
 						var $selectedScript = $("#specialOverride option:selected").val();
-						SPECIALOVERRIDE.doGetCall(null, $selectedScript, SPECIALOVERRIDE.makeForm)
+						SPECIALOVERRIDE.doGetCall(null, $selectedScript, SPECIALOVERRIDE.makeSelectForm)
 					});
 				},
 				
 				
+				makeModals : function() {
+					$("#confirm-modal" ).dialog({
+						title:'Confirm Update',
+						autoOpen: false,
+						height: 190,
+						width: 300,
+						modal: true,
+						buttons: [
+							{
+								id: "confirm-is-no-button",
+								click: function() {
+									$("#confirm-modal").dialog( "close" );
+								}
+							},{
+								id: "confirm-is-yes-button",
+								click: function($event) {
+									$("#confirm-modal").dialog( "close" );
+									$("#updateResults").html("");
+									$("#updateForm .err").html("");
+									var $confirm = $('<input type="hidden" name="confirm" value="y" />');
+									$("#updateForm").append($confirm);
+									SPECIALOVERRIDE.doPostCall();
+								}
+							}	      	      
+						],
+						close: function() {
+							$("#confirm-modal").dialog( "close" );
+							//allFields.removeClass( "ui-state-error" );
+						}
+					});
+					
+					$('#confirm-is-no-button').button('option', 'label', 'No');
+					$('#confirm-is-yes-button').button('option', 'label', 'Yes');
+				},
 				
-				makeForm : function($outbound, $scriptName, $data) {
-					console.log("makeForm");
+				
+				
+				makeSelectForm : function($outbound, $scriptName, $data) {
+					console.log("makeSelectForm");
 					$("#selectFormContent").html("");
+
 					var $formTable = $("<table>");
 					//$formTable.attr("data-scriptname",$scriptName);
 					$formTable.attr("id","selectForm");
-					$.each($data.data.itemList, function($index, $value) {
+					$.each($data.data.selectList, function($index, $value) {
 						var $row = $("<tr>");
 						var $labelTd = $("<td>");
 						$labelTd.append($value.label);
@@ -157,8 +258,8 @@
 					$("#selectFormContent").append('<input type="button" value="Cancel" id="selectCancelButton" />')
 					
 					$("#selectCancelButton").click(function() {
-						$("#formContainer").hide();
-						$("#selectContainer").show();
+						$("#scriptSelectContainer").show();
+						$(".select-item").hide();
 					});
 					
 					$("#selectGoButton").click(function() {
@@ -166,20 +267,20 @@
 						SPECIALOVERRIDE.doSelectCall($scriptName);
 					});
 					
-					$("#selectContainer").hide();
-					$("#formContainer").show();
+					$("#scriptSelectContainer").hide();
+					$(".select-item").show();
+
 				},
 				
 				
 				
 				
-				makeSelectResultsTable : function($outbound, $scriptName, $data) {
-					console.log("makeSelectResultsTable");
-					$("#formContainer").hide();
-					$("#selectResults").html("");
+				makeSelectResultsTable : function($destination, $outbound, $scriptName, $data) {
+					console.log("makeSelectResultsTable " +$destination);
+					$("#selectFormContent").hide();
+					$($destination).html("");
 					
-					
-					$.each($data.data.itemList, function($index1, $rowResult) {
+					$.each($data.data.resultSet, function($index1, $rowResult) {
 						var $row = $("<tr>");
 						$.each($rowResult, function($index2, $value) {
 							var $col = $("<td>");
@@ -191,10 +292,70 @@
 							$col.append($text);
 							$row.append($col);
 						});
-						$("#selectResults").append($row);
+						$($destination).append($row);
 					});
 					
-					$("#selectResultsContainer").show();
+					$($destination).show();
+				},
+				
+				
+				
+				makeUpdateForm : function($outbound, $scriptName, $data) {
+					console.log("makeUpdateForm");
+					$("#updateFormContent").html("");
+
+					var $selectFields = []
+					$.each($data.data.selectList, function($index, $value) {
+						$selectFields.push($value.fieldName);
+					});
+					
+					var $formTable = $("<table>");
+					$formTable.attr("data-scriptname",$scriptName);
+					$formTable.attr("id","updateForm");
+					$.each($data.data.updateList, function($index, $value) {
+						var $row = $("<tr>");
+						var $labelTd = $("<td>");
+						$labelTd.append($value.label);
+						$labelTd.attr("class","form-label");
+						$row.append($labelTd);
+						
+						$inputTd = $("<td>");
+						$inputField = $("<input>");
+						$inputField.attr("name",$value.fieldName);
+						if ( $selectFields.includes($value.fieldName)) {
+							var $selectValue = $("#selectForm input[name='"+$value.fieldName+"']").val();
+							$inputField.attr("type", "hidden");
+							$inputField.attr("value", $selectValue);
+							$inputField.attr("class","updateFormField");
+							$inputTd.append($selectValue);
+						} else {
+							$inputField.attr("type", SPECIALOVERRIDE.fieldTypeMapping[$value.fieldType]);
+							$inputField.attr("class","updateFormField");
+						}
+						$inputTd.append($inputField);
+						$row.append($inputTd);
+						
+						$errTd = $("<td>");
+						$errTd.attr("class","err " + $value.fieldName + "_err");
+						$row.append($errTd);
+						
+						$formTable.append($row);
+					});
+					$("#updateFormContent").append($formTable);
+					$("#updateFormContent").append('<input type="button" value="Go" id="updateGoButton" />');
+					$("#updateFormContent").append('<input type="button" value="Cancel" id="updateCancelButton" />')
+					
+					$("#updateCancelButton").click(function() {
+						$("#scriptSelectContainer").show();
+						$(".select-item").hide();
+						$(".update-item").hide();
+					});
+					
+					$("#updateGoButton").click(function() {
+						$("#confirm-modal").dialog("open");
+					});
+					
+					$(".update-item").show();
 				},
 				
 				
@@ -205,7 +366,7 @@
 					$('option', $select).remove();
 					$select.append(new Option("",""));
 					
-					$.each($data.data.itemList, function($index, $value) {
+					$.each($data.data.scriptList, function($index, $value) {
 						$select.append(new Option($value.description, $value.name));
 					});
 				},
@@ -214,7 +375,8 @@
 				processSelectCall : function($outbound, $scriptName, $data ) {
 					console.log("processSelectCall");
 					if ( $data.responseHeader.responseCode == "SUCCESS") {
-						SPECIALOVERRIDE.makeSelectResultsTable($outbound, $scriptName, $data);
+						SPECIALOVERRIDE.makeSelectResultsTable("#selectResults", $outbound, $scriptName, $data);
+						SPECIALOVERRIDE.makeUpdateForm($outbound, $scriptName, $data);
 					} else if ( $data.responseHeader.responseCode = "EDIT_FAILURE") {
 						console.log("Bad data, but it worked");
 						$.each($data.data.webMessages, function(key, messageList) {
@@ -237,20 +399,21 @@
     
    <tiles:put name="content" type="string">
     	<h1><bean:message key="page.label.specialOverride" /></h1>
-    	<div id="selectContainer">
+    	<div id="scriptSelectContainer">
     		<select id="specialOverride"></select> <input type="button" value="Go" id="goSpecialOverride" />
     	</div>
     	
-    	<div id="formContainer">
-    		<h4><span class="script-title"></span></h4>
-    		<div id="selectFormContent">
-    		</div>
-    	</div>
+   		<h4 class="select-item"><span class="script-title"></span></h4>
+   		<div id="selectFormContent" class="select-item"></div>
+   		<table id="selectResults" class="select-item"></table>
+   		<div id="updateFormContent" class="update-item"></div>
+    	<table id="updateResults" class="update-item"></table>
     	
-    	<div id="selectResultsContainer">
-    		<h4><span class="script-title"></span></h4>
-    		<table id="selectResults">
-    		</table>
+    	
+    	<div id="confirm-modal">
+    		<div class="confirm-text">
+    			Are you sure?
+    		</div>
     	</div>
    </tiles:put>
 		

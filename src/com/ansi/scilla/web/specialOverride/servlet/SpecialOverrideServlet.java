@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.web.common.exception.InvalidFormatException;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -25,7 +26,6 @@ import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.specialOverride.common.ParameterType;
 import com.ansi.scilla.web.specialOverride.common.SpecialOverrideType;
 import com.ansi.scilla.web.specialOverride.response.SpecialOverrideResponse;
-import com.ansi.scilla.web.specialOverride.response.SpecialOverrideResultSet;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class SpecialOverrideServlet extends AbstractServlet {
@@ -59,7 +59,6 @@ public class SpecialOverrideServlet extends AbstractServlet {
 				} else {
 					sendParameterTypes(conn, response, url, request, type);
 				}
-				doUpdate(conn, response, url, request, type);
 			}
 			
 			
@@ -77,6 +76,71 @@ public class SpecialOverrideServlet extends AbstractServlet {
 		}
 	}
 	
+	
+	
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		AnsiURL url = null;
+		Connection conn = null;
+		WebMessages webMessages = new WebMessages();
+		try {
+			
+			String[] name = SpecialOverrideType.names();
+			url = new AnsiURL(request, "specialOverrides", name, false);
+			conn = AppUtils.getDBCPConn();
+			conn.setAutoCommit(false);
+				
+			if ( StringUtils.isBlank(url.getCommand() )) {
+				sendNameDescription(conn, response);
+				// make this a send not found
+			} else {
+				SpecialOverrideType type = SpecialOverrideType.valueOf(url.getCommand());
+				logger.log(Level.DEBUG, "Doing a post");
+				if(request.getParameterNames().hasMoreElements()) {
+					logger.log(Level.DEBUG, "We've got parameters");
+					webMessages = validateUpdateParameters(type.getUpdateParms(), request);
+					if(webMessages.isEmpty()) {
+						doUpdate(conn, response, url, request, type);
+						sendSelectResults(conn, request, response, type);
+					} else {
+						sendEditErrors(conn, response, type, webMessages);
+					}
+				} else {
+					sendParameterTypes(conn, response, url, request, type);
+				}
+			}
+			
+			
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {							// these are thrown by session validation
+			super.sendForbidden(response);
+		} catch ( RecordNotFoundException e ) {			// if they're asking for an id that doesn't exist
+			super.sendNotFound(response);						
+		} catch ( ResourceNotFoundException e) {		
+			super.sendNotFound(response);
+		} catch ( Exception e) {						// something bad happened
+			AppUtils.logException(e);
+			throw new ServletException(e);
+		} finally {
+			AppUtils.closeQuiet(conn);					// return the connection to the pool
+		}	
+	}
+
+
+
+	private WebMessages validateUpdateParameters(ParameterType[] updateParms, HttpServletRequest request) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		WebMessages webMessages = validateParameters(updateParms, request);
+		if ( ! webMessages.isEmpty() ) {
+			String confirm = request.getParameter("confirm_update");
+			if ( StringUtils.isBlank(confirm)) {
+				webMessages.addMessage("confirm", "Required Value");
+			}
+		}
+		return webMessages;
+	}
+
+
+
 	protected void doUpdate(Connection conn, HttpServletResponse response, AnsiURL url,
 			HttpServletRequest request, SpecialOverrideType type) throws Exception {
 		boolean confirm = false;
@@ -113,7 +177,7 @@ public class SpecialOverrideServlet extends AbstractServlet {
 	}
 
 	private void sendEditErrors(Connection conn, HttpServletResponse response, SpecialOverrideType type, WebMessages webMessages) throws Exception {
-		SpecialOverrideResponse data = new SpecialOverrideResponse(type.getSelectParms());
+		SpecialOverrideResponse data = new SpecialOverrideResponse(type);
 		data.setWebMessages(webMessages);
 		super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);		
 	}
@@ -130,7 +194,7 @@ public class SpecialOverrideServlet extends AbstractServlet {
 		}
 		ResultSet rs = ps.executeQuery();
 		
-		SpecialOverrideResultSet data = new SpecialOverrideResultSet(rs);
+		SpecialOverrideResponse data = new SpecialOverrideResponse(type, rs);
 		rs.close();
 		
 		webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
@@ -158,7 +222,7 @@ public class SpecialOverrideServlet extends AbstractServlet {
 	private void sendParameterTypes(Connection conn, HttpServletResponse response, AnsiURL url,
 			HttpServletRequest request, SpecialOverrideType type) throws Exception {
 		AppUtils.validateSession(request, type.getPermission());
-		SpecialOverrideResponse data = new SpecialOverrideResponse(type.getSelectParms());
+		SpecialOverrideResponse data = new SpecialOverrideResponse(type);
 		super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
 	}
 

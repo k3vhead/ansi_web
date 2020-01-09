@@ -7,14 +7,15 @@ public enum SpecialOverrideType {
 	UPDATE_PAYMENT_DATE(
 		"Update Payment Date",
 		"select * from payment where payment_id=? and payment_date=?",
-		"update payment set payment_date=? where payment_id=?",
+		"update payment set payment_date=? where payment_id=? and payment_date=?",
 		new ParameterType[] { 
 				new ParameterType("Payment Id", "payment_id", Integer.class), 
 				new ParameterType("Payment Date", "payment_date", java.sql.Date.class), 
 			},
 		new ParameterType[] { 
-				new ParameterType("New Date", "new_payment_date", java.sql.Date.class), 
+				new ParameterType("New Payment Date", "new_payment_date", java.sql.Date.class), 
 				new ParameterType("Payment Id", "payment_id", Integer.class), 
+				new ParameterType("Payment Date", "payment_date", java.sql.Date.class), 
 			},
 		Permission.OVERRIDE_UPDATE_PAYMENTS
 	);
