@@ -92,8 +92,9 @@ public class SpecialOverrideServlet extends AbstractServlet {
 			conn.setAutoCommit(false);
 				
 			if ( StringUtils.isBlank(url.getCommand() )) {
-				sendNameDescription(conn, response);
+				//sendNameDescription(conn, response);
 				// make this a send not found
+				sendNotFound(response);
 			} else {
 				SpecialOverrideType type = SpecialOverrideType.valueOf(url.getCommand());
 				logger.log(Level.DEBUG, "Doing a post");
@@ -141,22 +142,8 @@ public class SpecialOverrideServlet extends AbstractServlet {
 
 
 
-	protected void doUpdate(Connection conn, HttpServletResponse response, AnsiURL url,
+	private void doUpdate(Connection conn, HttpServletResponse response, AnsiURL url,
 			HttpServletRequest request, SpecialOverrideType type) throws Exception {
-		boolean confirm = false;
-		String yes = new String();
-		System.out.println("Please confirm update.");
-		if(yes.equalsIgnoreCase("y")) {
-			confirm = true;
-		}
-		if(confirm) {
-			validateUpdate(conn, response, url, request, type);
-		}
-	}
-
-	private void validateUpdate(Connection conn, HttpServletResponse response, AnsiURL url,
-			HttpServletRequest request, SpecialOverrideType type) throws Exception {
-		//WebMessages webMessages = new WebMessages();
 		int i = 1;
 		try {
 			conn.setAutoCommit(false);
@@ -165,6 +152,7 @@ public class SpecialOverrideServlet extends AbstractServlet {
 				p.setPsParm(ps, request.getParameter(p.getFieldName()), i);
 				i++;
 			}
+			logger.log(Level.DEBUG, "PreparedStatement about to execute");
 			ps.executeUpdate();
 			conn.commit();
 			
@@ -172,9 +160,8 @@ public class SpecialOverrideServlet extends AbstractServlet {
 			conn.rollback();
 			throw e;
 		}
-		
-		
 	}
+
 
 	private void sendEditErrors(Connection conn, HttpServletResponse response, SpecialOverrideType type, WebMessages webMessages) throws Exception {
 		SpecialOverrideResponse data = new SpecialOverrideResponse(type);

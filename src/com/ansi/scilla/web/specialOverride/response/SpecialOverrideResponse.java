@@ -3,7 +3,9 @@ package com.ansi.scilla.web.specialOverride.response;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.ansi.scilla.web.common.response.MessageResponse;
@@ -77,9 +79,13 @@ public class SpecialOverrideResponse extends MessageResponse{
 				} else if ( className.equalsIgnoreCase("java.math.BigDecimal")) {
 					row.add(String.valueOf(rs.getBigDecimal(index)));
 				} else if ( className.equalsIgnoreCase("java.sql.Timestamp")) {
-					row.add(String.valueOf(rs.getTimestamp(index)));
+					String timeStamp = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+					timeStamp = String.valueOf(rs.getTimestamp(index));
+					row.add(timeStamp);
 				} else if ( className.equalsIgnoreCase("java.sql.Date")) {
-					row.add(String.valueOf(rs.getDate(index)));
+					String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+					date = String.valueOf(rs.getDate(index));
+					row.add(date);
 				} else {
 					row.add( String.valueOf(rs.getObject(index)));
 					//throw new InvalidFormatException(rsmd.getColumnClassName(i+1));
