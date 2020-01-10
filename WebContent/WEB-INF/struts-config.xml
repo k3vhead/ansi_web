@@ -65,6 +65,20 @@
             <forward name="login" path="/login.jsp" />            
         </action>
         <action
+            path="/callNote/callNoteDetail"
+            type="com.ansi.scilla.web.callNote.action.CallNoteDetailAction"
+            name="idForm"
+            scope="request">
+            <forward name="valid" path="/callNotes/callNoteDetail.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+        <action
+            path="/callNoteLookup"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/callNotes/callNoteLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+        <action
             path="/claimDetailLookup"
             type="com.ansi.scilla.web.claims.action.ClaimDetailLookupAction"
             name="idForm"
@@ -139,6 +153,16 @@
             <forward name="valid" path="/invoiceGeneration.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
+        <action
+            path="/invoiceDetailLookup"
+            type="com.ansi.scilla.web.invoice.action.InvoiceLookupAction"
+            name="invoiceLookupForm"
+            input="/invoiceDetailLookup.jsp"
+            scope="request">
+            <forward name="valid" path="/invoiceDetailLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		
 		<action
             path="/invoiceLookup"
             type="com.ansi.scilla.web.invoice.action.InvoiceLookupAction"

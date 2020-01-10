@@ -124,6 +124,17 @@ public enum Permission {
 	REPORTS_CLIENT_CONTACT(null, false, "Functional Area: Client Contact Reports"),
 	REPORTS_CLIENT_CONTACT_READ(REPORTS_CLIENT_CONTACT, false, "Can read Client Contact reports"),
 	
+	
+	CALL_NOTES(null, false, "Functional Area: Call Notes"),
+	CALL_NOTE_READ(CALL_NOTES, false, "Can Read Call Notes"),
+	CALL_NOTE_WRITE(CALL_NOTE_READ, false, "Can create notes"),
+	CALL_NOTE_UPDATE(CALL_NOTE_WRITE, false, "Can revise your own notes"),
+	CALL_NOTE_OVERRIDE(CALL_NOTE_UPDATE, false, "Can revise other's notes"),
+	
+	
+	SPECIAL_OVERRIDE(null, false, "Functional Area: Special Override"),
+	OVERRIDE_UPDATE_PAYMENTS(SPECIAL_OVERRIDE, false, "Override payment date"),
+	
 	DEVELOPMENT(null, false, "Functional Area: System Developers"),
 	DEV(DEVELOPMENT, false, "Can Access Developer Areas"),
 	;

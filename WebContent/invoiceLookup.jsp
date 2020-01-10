@@ -23,6 +23,12 @@
     
     
     <tiles:put name="headextra" type="string">
+       	<link rel="stylesheet" href="css/callNote.css" />
+    	<link rel="stylesheet" href="css/accordion.css" type="text/css" />
+    	<script type="text/javascript" src="js/ansi_utils.js"></script>
+	    <script type="text/javascript" src="js/callNote.js"></script>  
+    	
+    
         <style type="text/css">
 			#displayTable {
 				width:90%;
@@ -58,6 +64,8 @@
         		$filterIcon = "fa fa-ban";
         	}
         	
+			CALLNOTE.init();
+
 			$('.ScrollTop').click(function() {
 				$('html, body').animate({scrollTop: 0}, 800);
 				return false;
@@ -154,7 +162,8 @@
 				            	} else {
 				            		$printText = ""; 
 				            	}
-				            	{return "<ansi:hasPermission permissionRequired='INVOICE_READ'>" + $printText + "</ansi:hasPermission>";}
+				            	var $noteLink = '<webthing:notes xrefType="INVOICE" xrefId="' + row.invoiceId + '">Invoice Notes</webthing:notes>'
+				            	{return "<ansi:hasPermission permissionRequired='INVOICE_READ'>" + $printText + "</ansi:hasPermission> " + $noteLink;}
 				            } }
 				            ],
 				            "initComplete": function(settings, json) {
@@ -163,6 +172,7 @@
 				            },
 				            "drawCallback": function( settings ) {
 				            	doFunctionBinding();
+				            	CALLNOTE.lookupLink();
 				            }
 				    } );
 //				$('.dataTables_filter input').unbind();        			
@@ -255,7 +265,8 @@
         </tfoot>
     </table>
     
-	<webthing:scrolltop />
+		<webthing:scrolltop />
+		<webthing:callNoteModals />
     
     </tiles:put>
 		
