@@ -5,6 +5,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -17,8 +19,11 @@ import com.ansi.scilla.web.common.exception.InvalidFormatException;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
+import com.ansi.scilla.web.common.struts.SessionData;
+import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
@@ -85,15 +90,16 @@ public class SpecialOverrideServlet extends AbstractServlet {
 		Connection conn = null;
 		WebMessages webMessages = new WebMessages();
 		try {
-			
+			SessionData sessionData = AppUtils.validateSession(request, Permission.SPECIAL_OVERRIDE_READ);
+			SessionUser user = sessionData.getUser();
 			String[] name = SpecialOverrideType.names();
 			url = new AnsiURL(request, "specialOverrides", name, false);
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
 				
 			if ( StringUtils.isBlank(url.getCommand() )) {
-				//sendNameDescription(conn, response);
-				// make this a send not found
+				// since we're expecting to do an update, send a not-found if they don't tell us
+				// what we're supposed to be updating.
 				sendNotFound(response);
 			} else {
 				SpecialOverrideType type = SpecialOverrideType.valueOf(url.getCommand());
@@ -102,8 +108,8 @@ public class SpecialOverrideServlet extends AbstractServlet {
 					logger.log(Level.DEBUG, "We've got parameters");
 					webMessages = validateUpdateParameters(type.getUpdateParms(), request);
 					if(webMessages.isEmpty()) {
-						doUpdate(conn, response, url, request, type);
-						sendSelectResults(conn, request, response, type);
+						doUpdate(conn, response, user, url, request, type);
+						sendUpdateResults(conn, request, response, type);
 					} else {
 						sendEditErrors(conn, response, type, webMessages);
 					}
@@ -142,17 +148,48 @@ public class SpecialOverrideServlet extends AbstractServlet {
 
 
 
-	private void doUpdate(Connection conn, HttpServletResponse response, AnsiURL url,
+	private void doUpdate(Connection conn, HttpServletResponse response, SessionUser user, AnsiURL url,
 			HttpServletRequest request, SpecialOverrideType type) throws Exception {
 		int i = 1;
 		try {
 			conn.setAutoCommit(false);
-			PreparedStatement ps = conn.prepareStatement(type.getUpdateSql());
+			String sql = type.getUpdateSql().replaceAll(" where ", ", updated_by=?, updated_date=SYSDATETIME() where ");
+			logger.log(Level.DEBUG, sql);
+			
+			
+			// figure out how many parameters we need to skip before setting the bind variable
+			// for the update user
+			Pattern sqlPattern = Pattern.compile("^(update .*)( where )(.*)$", Pattern.CASE_INSENSITIVE);
+			Pattern wherePattern = Pattern.compile("(.*=\\?)?", Pattern.CASE_INSENSITIVE);
+			Matcher sqlMatcher = sqlPattern.matcher(sql);
+			
+			if ( ! sqlMatcher.matches() ) {
+				throw new RuntimeException("Something's wrong with the sql: " + sql);
+			}
+			String whereClause = sqlMatcher.group(sqlMatcher.groupCount());
+				
+			Matcher whereMatcher = wherePattern.matcher(whereClause);
+			int whereParmCount = 0;
+			while ( whereMatcher.find()) {
+				whereParmCount++;
+			}
+			int updateParmCount = type.getUpdateParms().length - whereParmCount;
+			
+			logger.log(Level.DEBUG, updateParmCount + "\t" + whereParmCount);
+			
+			
+			PreparedStatement ps = conn.prepareStatement(sql);
 			for(ParameterType p : type.getUpdateParms()) {
+				logger.log(Level.DEBUG, i + " : " + p.getFieldName() + " : " + request.getParameter(p.getFieldName()));
 				p.setPsParm(ps, request.getParameter(p.getFieldName()), i);
+				if ( i == updateParmCount ) {
+					i++;
+					logger.log(Level.DEBUG, i + " : userId : " + user.getUserId());
+					ps.setInt(i, user.getUserId());
+				}
 				i++;
 			}
-			logger.log(Level.DEBUG, "PreparedStatement about to execute");
+			
 			ps.executeUpdate();
 			conn.commit();
 			
@@ -173,9 +210,11 @@ public class SpecialOverrideServlet extends AbstractServlet {
 	private void sendSelectResults(Connection conn, HttpServletRequest request, HttpServletResponse response,
 			SpecialOverrideType type) throws Exception {
 		WebMessages webMessages = new WebMessages();
+		logger.log(Level.DEBUG, type.getSelectSql());
 		PreparedStatement ps = conn.prepareStatement(type.getSelectSql());
 		int i = 1;
 		for(ParameterType p : type.getSelectParms()) {
+			logger.log(Level.DEBUG, p.getFieldName() + " : " + request.getParameter(p.getFieldName()));
 			p.setPsParm(ps, request.getParameter(p.getFieldName()), i);
 			i++;
 		}
@@ -189,6 +228,30 @@ public class SpecialOverrideServlet extends AbstractServlet {
 		super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
 	}
 
+	
+	
+	private void sendUpdateResults(Connection conn, HttpServletRequest request, HttpServletResponse response,
+			SpecialOverrideType type) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		logger.log(Level.DEBUG, type.getUpdateSelectSql());
+		PreparedStatement ps = conn.prepareStatement(type.getUpdateSelectSql());
+		int i = 1;
+		for(ParameterType p : type.getUpdateSelectParms()) {
+			logger.log(Level.DEBUG, p.getFieldName() + " : " + request.getParameter(p.getFieldName()));
+			p.setPsParm(ps, request.getParameter(p.getFieldName()), i);
+			i++;
+		}
+		ResultSet rs = ps.executeQuery();
+		
+		SpecialOverrideResponse data = new SpecialOverrideResponse(type, rs);
+		rs.close();
+		
+		webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
+		data.setWebMessages(webMessages);
+		super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
+	}
+
+	
 	private WebMessages validateParameters(ParameterType[] selectParms, HttpServletRequest request) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		WebMessages webMessages = new WebMessages();
 		for(ParameterType p : selectParms) {

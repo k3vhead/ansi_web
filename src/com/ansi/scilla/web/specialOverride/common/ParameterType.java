@@ -1,5 +1,6 @@
 package com.ansi.scilla.web.specialOverride.common;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -54,13 +55,15 @@ public class ParameterType extends ApplicationObject {
 			validateDate(value);
 		} else if ( this.type.equals(String.class)) {
 			validateString(value);
+		} else if ( this.type.equals(BigDecimal.class)) {
+			validateBigDecimal(value);
 		} else {
 			throw new RuntimeException("Invalid parameter type");
 		}
 	}
 	
 	
-	public void validateInteger(String value) throws InvalidFormatException {
+	protected void validateInteger(String value) throws InvalidFormatException {
 		WebMessages webMessages = new WebMessages();
 		if(StringUtils.isBlank(value)) {
 			throw new InvalidFormatException();
@@ -77,7 +80,7 @@ public class ParameterType extends ApplicationObject {
 		
 	}
 	
-	public void validateDate(String value) throws InvalidFormatException {
+	protected void validateDate(String value) throws InvalidFormatException {
 		WebMessages webMessages = new WebMessages();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		if(StringUtils.isBlank(value)) {
@@ -95,13 +98,30 @@ public class ParameterType extends ApplicationObject {
 		}
 	}
 	
-	public void validateString(String value) throws InvalidFormatException {
+	protected void validateString(String value) throws InvalidFormatException {
 		WebMessages webMessages = new WebMessages();
 		RequestValidator.validateString(webMessages, getLabel(), value, true);
 		if ( ! webMessages.isEmpty() ) {
 			throw new InvalidFormatException();
 		}
 	}
+	
+	private void validateBigDecimal(String value) throws InvalidFormatException {
+		WebMessages webMessages = new WebMessages();
+		if(StringUtils.isBlank(value)) {
+			throw new InvalidFormatException();
+		}
+		try {
+			BigDecimal decimalVal = new BigDecimal(value);
+			RequestValidator.validateBigDecimal(webMessages, getLabel(), decimalVal, (BigDecimal)null, (BigDecimal)null, true);
+			if ( ! webMessages.isEmpty() ) {
+				throw new InvalidFormatException();
+			}
+		} catch ( NumberFormatException e) {
+			throw new InvalidFormatException();
+		}		
+	}
+	
 	
 	public void setPsParm(PreparedStatement ps, String value, Integer index) throws SQLException {
 		if(this.type.equals(Integer.class)) {
@@ -118,6 +138,9 @@ public class ParameterType extends ApplicationObject {
 			}
 		} else if ( this.type.equals(String.class)) {
 			ps.setString(index, value);
+		} else if ( this.type.equals(BigDecimal.class)) {
+			BigDecimal decimalValue = new BigDecimal(value);
+			ps.setBigDecimal(index, decimalValue);
 		} else {
 			throw new RuntimeException("Invalid parameter type");
 		}

@@ -49,6 +49,7 @@ public enum Permission {
 	PAYMENT(null, false, "Functional Area: Payments"),
 	PAYMENT_READ(PAYMENT, true, "Read only access to payments"),		// this is for backwards compatibility
 	PAYMENT_WRITE(PAYMENT_READ, true, "Edit Payments"),		// this is for backwards compatibility
+	PAYMENT_OVERRIDE(PAYMENT_WRITE, true, "Override Payments"),
 	
 	INVOICE(null, false, "Functional Area: Invoices"),
 	INVOICE_READ(INVOICE, true, "Read-only access to invoices"),		// this is for backwards compatibility
@@ -126,8 +127,7 @@ public enum Permission {
 	
 	
 	SPECIAL_OVERRIDE (null, false, "Functional Area: Special Override"),
-	OVERRIDE_UPDATE_PAYMENTS(SPECIAL_OVERRIDE, false, "Can update payment date"),
-	
+	SPECIAL_OVERRIDE_READ(SPECIAL_OVERRIDE, false, "Special Override"),
 	
 	DEVELOPMENT(null, false, "Functional Area: System Developers"),
 	DEV(DEVELOPMENT, false, "Can Access Developer Areas"),

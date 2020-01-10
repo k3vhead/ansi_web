@@ -33,7 +33,6 @@ public class SpecialOverrideResultSet extends MessageResponse {
 			for ( int i = 0; i < rsmd.getColumnCount(); i++ ) {
 				int index = i+1;
 				String className = rsmd.getColumnClassName(index);
-				System.out.println(className);
 				if ( className.equalsIgnoreCase("java.lang.Integer")) {
 					row.add(String.valueOf(rs.getInt(index)));
 				} else if ( className.equalsIgnoreCase("java.lang.String")) {

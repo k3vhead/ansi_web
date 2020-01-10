@@ -173,9 +173,9 @@
 				makeClickers : function() {
 					$("#specialOverride").change(function() {
 						var $selectedScript = $("#specialOverride option:selected").val();
-						console.log($("#specialOverride option:selected"));
-						console.log($("#specialOverride option:selected").text());
 						$(".script-title").html($("#specialOverride option:selected").text());
+						$("#selectResults").html("");
+						$("#updateResults").html("");
 						SPECIALOVERRIDE.doGetCall(null, $selectedScript, SPECIALOVERRIDE.makeSelectForm)
 					});
 					
