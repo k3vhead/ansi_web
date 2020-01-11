@@ -125,7 +125,17 @@
 							200: function($data) {
 								if ( $data.responseHeader.responseCode == "SUCCESS") {
 									$("#globalMsg").html("Success").show().fadeOut(3000);
+									$(".updateButton").hide();
 									SPECIALOVERRIDE.makeSelectResultsTable("#updateResults", null, $scriptName, $data);
+									var $continueButton = $('<input type="button" id="continueButton" value="Continue" />');
+									$("#updateResults").append($continueButton);
+									$("#continueButton").click(function() {
+										$("#scriptSelectContainer").show();
+										$(".script-title").html("");
+										$("#selectResults").hide();
+										$("#updateFormContent").hide();
+										$("#updateResults").hide();
+									});
 								} else if ( $data.responseHeader.responseCode = "EDIT_FAILURE") {
 									console.log("Bad data, but it worked");
 									$.each($data.data.webMessages, function(key, messageList) {
@@ -180,9 +190,10 @@
 					});
 					
 					$("#goSpecialOverride").click(function() {
+						var $selectedScript = $("#specialOverride option:selected").val();
+						$(".script-title").html($("#specialOverride option:selected").text());
 						$("#selectResults").html("");
 						$("#updateResults").html("");
-						var $selectedScript = $("#specialOverride option:selected").val();
 						SPECIALOVERRIDE.doGetCall(null, $selectedScript, SPECIALOVERRIDE.makeSelectForm)
 					});
 				},
@@ -342,8 +353,8 @@
 						$formTable.append($row);
 					});
 					$("#updateFormContent").append($formTable);
-					$("#updateFormContent").append('<input type="button" value="Go" id="updateGoButton" />');
-					$("#updateFormContent").append('<input type="button" value="Cancel" id="updateCancelButton" />')
+					$("#updateFormContent").append('<input type="button" value="Go" id="updateGoButton" class="updateButton" />');
+					$("#updateFormContent").append('<input type="button" value="Cancel" id="updateCancelButton" class="updateButton" />')
 					
 					$("#updateCancelButton").click(function() {
 						$("#scriptSelectContainer").show();

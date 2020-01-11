@@ -42,7 +42,7 @@ public enum SpecialOverrideType {
 					new ParameterType("Old Ticket ID", "ticket_id", Integer.class),
 					new ParameterType("Payment ID", "payment_id", Integer.class), 
 				},
-			"select * from ticket_payment where payment_date in (?,?) and payment_id=?",
+			"select * from ticket_payment where ticket_id in (?,?) and payment_id=?",
 			new ParameterType[] { 
 					new ParameterType("Old Ticket ID", "ticket_id", Integer.class), 
 					new ParameterType("New Ticket ID", "new_ticket_id", Integer.class),
