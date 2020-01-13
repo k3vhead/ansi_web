@@ -267,6 +267,11 @@
              	$("#addForm select[name='tableName']").focus();
 			});
 			
+			$('.ScrollTop').click(function() {
+				$('html, body').animate({scrollTop: 0}, 800);
+      	  		return false;
+      	    });
+			
 			$("#cancelUpdate").click( function($clickevent) {
 				$clickevent.preventDefault();
 				clearAddForm();
@@ -623,6 +628,7 @@
     		<tbody>
     		</tbody>
     	</table>
+    				<webthing:scrolltop />
 		<ansi:hasPermission permissionRequired="SYSADMIN">
 			<ansi:hasWrite>
     			<div class="addButtonDiv">

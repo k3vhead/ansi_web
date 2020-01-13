@@ -23,6 +23,10 @@
     
     
     <tiles:put name="headextra" type="string">
+    	<link rel="stylesheet" href="css/callNote.css" />
+    	<link rel="stylesheet" href="css/accordion.css" type="text/css" />
+    	<script type="text/javascript" src="js/ansi_utils.js"></script>
+    	<script type="text/javascript" src="js/callNote.js"></script>  
         <style type="text/css">
 			#displayTable {
 				width:90%;
@@ -59,305 +63,323 @@
         <script type="text/javascript">
         
         $(document).ready(function(){
-        	var $ansiModal = '<c:out value="${ANSI_MODAL}" />';
         	
-			$('.ScrollTop').click(function() {
-				$('html, body').animate({scrollTop: 0}, 800);
-				return false;
-      		});
-			
-			$('.swap-name').click(function() {
-				var $tempName = $("#editPanel input[name='firstName']").val();
-				$("#editPanel input[name='firstName']").val(  $("#editPanel input[name='lastName']").val()  );
-				$("#editPanel input[name='lastName']").val($tempName);
-			});
-			
-			
-			$(".showNew").click(function($event) {
-				$('#goEdit').data("contactId",null);
-        		$('#goEdit').button('option', 'label', 'Save');
-        		$('#closeEditPanel').button('option', 'label', 'Close');
-        		
-				$("#editPanel input[name='businessPhone']").val("");
-				$("#editPanel input[name='fax']").val("");
-				$("#editPanel input[name='firstName']").val("");
-				$("#editPanel input[name='lastName']").val("");
-				$("#editPanel input[name='mobilePhone']").val("");
-				$("#editPanel input[name='preferredContact']").val("email");
-				$("#editPanel input[name='email']").val("");			        		
-        		$("#editPanel .err").html("");
-        		$("#editPanel").dialog("open");
-			});
-
-			
-			console.debug("Getting preferred cont options");
-			var $outbound = {};
-			$outbound['sortBy'] = 'display';
-			var jqxhr = $.ajax({
-				type: 'GET',
-				url: "code/contact/preferred_contact",
-				data:$outbound,
-				statusCode: {
-					200: function($data) {
-						//console.log($data);
-						$select="#editPanel select[name='preferredContact']"
-						$('option', $select).remove();
-						$.each($data.data.codeList, function($index, $code) {
-                            $($select).append(new Option($code.displayValue, $code.value));
-                    	});
-					},
-					403: function($data) {
-						$("#globalMsg").html("Session Timeout. Log in and try again");
-					},
-					404: function($data) {
-						$("#globalMsg").html("System Error while retrieving preferred contact types");
-					},
-					500: function($data) {
-						$("#globalMsg").html("System Error; Contact Support");
-					}
+	        ;CONTACTMAINTENANCE = {
+				
+	    		init : function() {	
+	    			CALLNOTE.init();
+	    		//	CONTACTMAINTENANCE.clearAddForm();
+	    			//CONTACTMAINTENANCE.clearEditForm();
+	    			CONTACTMAINTENANCE.createTable();
+	    			CONTACTMAINTENANCE.getOptions();
+	    		//	CONTACTMAINTENANCE.getTableFieldList(null, $("#addForm select[name='tableName']"));
+	    		//	CONTACTMAINTENANCE.makeAddForm();
+	    			CONTACTMAINTENANCE.makeEditPanel();
+	    			CONTACTMAINTENANCE.makeClickFunctions();
+	    		//	CONTACTMAINTENANCE.makeDeleteModal();
+	    			CONTACTMAINTENANCE.showNew();
+	        		},
+				
+				makeClickFunctions : function () { 				
+					$('.swap-name').click(function() {
+						var $tempName = $("#editPanel input[name='firstName']").val();
+						$("#editPanel input[name='firstName']").val(  $("#editPanel input[name='lastName']").val()  );
+						$("#editPanel input[name='lastName']").val($tempName);
+					});	
+					
 				},
-				dataType: 'json'
-			});
-            	       	
-        	var dataTable = null;
-        	
-        	function createTable(){
-        		var dataTable = $('#contactTable').DataTable( {
-        			"processing": 		true,
-        	        "serverSide": 		true,
-        	        "autoWidth": 		false,
-        	        "deferRender": 		true,
-        	        "scrollCollapse": 	true,
-        	        "scrollX": 			true,
-        	        rowId: 				'dt_RowId',
-        	        dom: 				'Bfrtip',
-        	        "searching": 		true,
-        	        lengthMenu: [
-        	        	[ 10, 50, 100, 500, 1000 ],
-        	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
-        	        ],
-        	        buttons: [
-        	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}}
-        	        ],
-        	        "columnDefs": [
-//         	            { "orderable": false, "targets": -1 },  // Need to re-add this when we add the action column back in
-        	            { className: "dt-left", "targets": [0,1,2,3,4,5] },
-        	            { className: "dt-center", "targets": [6] }
-//        	            { className: "dt-right", "targets": [5,6,7,8,9]}
-        	         ],
-        	        "paging": true,
-			        "ajax": {
-			        	"url": "contactLookup",
-			        	"type": "GET"
-			        	},
-			        columns: [
-			        	
-			            { title: "<bean:message key="field.label.lastName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-			            	if(row.lastName != null){return (row.lastName+"");}
-			            } },
-			            { title: "<bean:message key="field.label.firstName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.firstName != null){return (row.firstName+"");}
-			            } },
-			            { title: "<bean:message key="field.label.businessPhone" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.businessPhone != null){
-			            		if ( row.preferredContact=='business_phone') {
-			            			value = '<span style="font-weight:bold;">' + row.businessPhone + '</span>';
-			            		} else {
-			            			value = row.businessPhone + "";
-			            		}			            		
-			            		return (value);
-			            	}
-			            } },
-			            { title: "<bean:message key="field.label.email" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.businessPhone != null){
-			            		if ( row.preferredContact=='email') {
-			            			value = '<span style="font-weight:bold;">' + row.email + '</span>';
-			            		} else {
-			            			value = row.email + "";
-			            		}			            		
-			            		return (value);
-			            	}
-			            } },
-			            { title: "<bean:message key="field.label.fax" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-		            		if ( row.preferredContact=='fax') {
-		            			value = '<span style="font-weight:bold;">' + row.fax + '</span>';
-		            		} else {
-		            			value = row.fax + "";
-		            		}			            		
-		            		return (value);
-			            } },
-			            { title: "<bean:message key="field.label.mobilePhone" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-		            		if ( row.preferredContact=='mobile_phone') {
-		            			value = '<span style="font-weight:bold;">' + row.mobilePhone + '</span>';
-		            		} else {
-		            			value = row.mobilePhone + "";
-		            		}			            		
-		            		return (value);
-			            } },
-			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
-			            	{
-			            		return '<span class="tooltip"><i class="editAction fas fa-pencil-alt" data-id="'+ row.contactId + '" /><span class="tooltiptext">Edit</span></span>';}
-			            } }
-			            ],
-			            "initComplete": function(settings, json) {
-			            	//console.log(json);
-			            	doFunctionBinding();
-			            },
-			            "drawCallback": function( settings ) {
-			            	doFunctionBinding();
-			            }
-			    } );
-        	}
-        	        	
-        	init();
-        			
-            
-            function init(){
-					$.each($('input'), function () {
-				        $(this).css("height","20px");
-				        $(this).css("max-height", "20px");
-				    });
 					
-					createTable();
-            }; 
+				showNew : function () {
+					$(".showNew").click(function($event) {
+						$('#goEdit').data("contactId",null);
+		        		$('#goEdit').button('option', 'label', 'Save');
+		        		$('#closeEditPanel').button('option', 'label', 'Close');
+		        		
+						$("#editPanel input[name='businessPhone']").val("");
+						$("#editPanel input[name='fax']").val("");
+						$("#editPanel input[name='firstName']").val("");
+						$("#editPanel input[name='lastName']").val("");
+						$("#editPanel input[name='mobilePhone']").val("");
+						$("#editPanel input[name='preferredContact']").val("email");
+						$("#editPanel input[name='email']").val("");			        		
+		        		$("#editPanel .err").html("");
+		        		$("#editPanel").dialog("open");
+					});
+				},
+	
 				
-			function doFunctionBinding() {
-				$( ".editAction" ).on( "click", function($clickevent) {
-					 showEdit($clickevent);
-				});
-			}
-			
-			
-			
-			$("#editPanel" ).dialog({
-				title:'Edit Contact',
-				autoOpen: false,
-				height: 400,
-				width: 600,
-				modal: true,
-				buttons: [
-					{
-						id: "closeEditPanel",
-						click: function() {
+				getOptions : function () {
+					console.debug("Getting preferred cont options");
+					var $outbound = {};
+					$outbound['sortBy'] = 'display';
+					var jqxhr = $.ajax({
+						type: 'GET',
+						url: "code/contact/preferred_contact",
+						data:$outbound,
+						statusCode: {
+							200: function($data) {
+								//console.log($data);
+								$select="#editPanel select[name='preferredContact']"
+								$('option', $select).remove();
+								$.each($data.data.codeList, function($index, $code) {
+		                            $($select).append(new Option($code.displayValue, $code.value));
+		                    	});
+							},
+							403: function($data) {
+								$("#globalMsg").html("Session Timeout. Log in and try again");
+							},
+							404: function($data) {
+								$("#globalMsg").html("System Error while retrieving preferred contact types");
+							},
+							500: function($data) {
+								$("#globalMsg").html("System Error; Contact Support");
+							}
+						},
+						dataType: 'json'
+					});
+				},
+	    		
+	    		
+	    		createTable : function() {
+	    			CONTACTMAINTENANCE.dataTable = $('#contactTable').DataTable( {
+	        			"processing": 		true,
+	        	        "serverSide": 		true,
+	        	        "autoWidth": 		false,
+	        	        "deferRender": 		true,
+	        	        "scrollCollapse": 	true,
+	        	        "scrollX": 			true,
+	        	        rowId: 				'dt_RowId',
+	        	        dom: 				'Bfrtip',
+	        	        "searching": 		true,
+	        	        lengthMenu: [
+	        	        	[ 10, 50, 100, 500, 1000 ],
+	        	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
+	        	        ],
+	        	        buttons: [
+	        	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();}}
+	        	        ],
+	        	        "columnDefs": [
+	//         	            { "orderable": false, "targets": -1 },  // Need to re-add this when we add the action column back in
+	        	            { className: "dt-left", "targets": [0,1,2,3,4,5] },
+	        	            { className: "dt-center", "targets": [6] }
+	//        	            { className: "dt-right", "targets": [5,6,7,8,9]}
+	        	         ],
+	        	        "paging": true,
+				        "ajax": {
+				        	"url": "contactLookup",
+				        	"type": "GET"
+				        	},
+				        columns: [
+				        	
+				            { title: "<bean:message key="field.label.lastName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				            	if(row.lastName != null){return (row.lastName+"");}
+				            } },
+				            { title: "<bean:message key="field.label.firstName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            	if(row.firstName != null){return (row.firstName+"");}
+				            } },
+				            { title: "<bean:message key="field.label.businessPhone" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            	if(row.businessPhone != null){
+				            		if ( row.preferredContact=='business_phone') {
+				            			value = '<span style="font-weight:bold;">' + row.businessPhone + '</span>';
+				            		} else {
+				            			value = row.businessPhone + "";
+				            		}			            		
+				            		return (value);
+				            	}
+				            } },
+				            { title: "<bean:message key="field.label.email" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            	if(row.businessPhone != null){
+				            		if ( row.preferredContact=='email') {
+				            			value = '<span style="font-weight:bold;">' + row.email + '</span>';
+				            		} else {
+				            			value = row.email + "";
+				            		}			            		
+				            		return (value);
+				            	}
+				            } },
+				            { title: "<bean:message key="field.label.fax" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            		if ( row.preferredContact=='fax') {
+			            			value = '<span style="font-weight:bold;">' + row.fax + '</span>';
+			            		} else {
+			            			value = row.fax + "";
+			            		}			            		
+			            		return (value);
+				            } },
+				            { title: "<bean:message key="field.label.mobilePhone" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            		if ( row.preferredContact=='mobile_phone') {
+			            			value = '<span style="font-weight:bold;">' + row.mobilePhone + '</span>';
+			            		} else {
+			            			value = row.mobilePhone + "";
+			            		}			            		
+			            		return (value);
+				            } },
+				            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {				            	
+				            	{
+				            		var $editLink = '<ansi:hasPermission permissionRequired="CONTACT_WRITE"><span class="editAction" data-id="'+ row.contactId + '" /><webthing:edit>Edit</webthing:edit></span></ansi:hasPermission>';
+				            		var $noteLink = '<webthing:notes xrefType="CONTACT" xrefId="' + row.contactId + '" xrefName="'+row.firstName + ' ' + row.lastName +'">Contact Notes</webthing:notes>'
+				            		return $editLink + $noteLink; 
+				            	}
+				            } }
+				            ],
+				            "initComplete": function(settings, json) {
+				            	//console.log(json);
+				            	CONTACTMAINTENANCE.doFunctionBinding();
+				            },
+				            "drawCallback": function( settings ) {
+				            	CALLNOTE.lookupLink();
+				            }
+				    } );
+	        	},
+	        	        	
+	        /*	init();
+	        			
+	            
+	            function init(){
+						$.each($('input'), function () {
+					        $(this).css("height","20px");
+					        $(this).css("max-height", "20px");
+					    });
+						
+						createTable();
+	            }; */
+					
+				doFunctionBinding : function () {
+					$( ".editAction" ).on( "click", function($clickevent) {
+						 CONTACTMAINTENANCE.showEdit($clickevent);
+					});
+				},
+				
+				
+				makeEditPanel : function () {
+					$("#editPanel" ).dialog({
+						title:'Edit Contact',
+						autoOpen: false,
+						height: 400,
+						width: 600,
+						modal: true,
+						buttons: [
+							{
+								id: "closeEditPanel",
+								click: function() {
+									$("#editPanel").dialog( "close" );
+								}
+							},{
+								id: "goEdit",
+								click: function($event) {
+									CONTACTMAINTENANCE.updateContact();
+								}
+							}	      	      
+						],
+						close: function() {
 							$("#editPanel").dialog( "close" );
+							//allFields.removeClass( "ui-state-error" );
 						}
-					},{
-						id: "goEdit",
-						click: function($event) {
-							updateContact();
-						}
-					}	      	      
-				],
-				close: function() {
-					$("#editPanel").dialog( "close" );
-					//allFields.removeClass( "ui-state-error" );
-				}
-			});
-			
-			
-			function updateContact() {
-				console.debug("Updating contact");
-				var $contactId = $("#goEdit").data("contactId");
-				console.debug("contactId: " + $contactId);
+					});
+				},
 				
-				if ( $contactId == null || $contactId == '') {
-					$url = 'contact/add';
-				} else {
-					$url = 'contact/' + $contactId;
-				}
-				console.debug($url);
+				
+				updateContact : function () {
+					console.debug("Updating contact");
+					var $contactId = $("#goEdit").data("contactId");
+					console.debug("contactId: " + $contactId);
 					
-				var $outbound = {};
-				$outbound['contactId'] = $contactId;
-				$outbound['businessPhone'] = $("#editPanel input[name='businessPhone']").val();
-				$outbound['fax'] = $("#editPanel input[name='fax']").val();
-				$outbound['firstName'] = $("#editPanel input[name='firstName']").val();
-				$outbound['lastName'] = $("#editPanel input[name='lastName']").val();
-				$outbound['mobilePhone'] = $("#editPanel input[name='mobilePhone']").val();
-				$outbound['preferredContact'] = $("#editPanel select[name='preferredContact'] option:selected").val();
-				$outbound['email'] = $("#editPanel input[name='email']").val();			        		
-				console.debug($outbound);
+					if ( $contactId == null || $contactId == '') {
+						$url = 'contact/add';
+					} else {
+						$url = 'contact/' + $contactId;
+					}
+					console.debug($url);
+						
+					var $outbound = {};
+					$outbound['contactId'] = $contactId;
+					$outbound['businessPhone'] = $("#editPanel input[name='businessPhone']").val();
+					$outbound['fax'] = $("#editPanel input[name='fax']").val();
+					$outbound['firstName'] = $("#editPanel input[name='firstName']").val();
+					$outbound['lastName'] = $("#editPanel input[name='lastName']").val();
+					$outbound['mobilePhone'] = $("#editPanel input[name='mobilePhone']").val();
+					$outbound['preferredContact'] = $("#editPanel select[name='preferredContact'] option:selected").val();
+					$outbound['email'] = $("#editPanel input[name='email']").val();			        		
+					console.debug($outbound);
+					
+					var jqxhr = $.ajax({
+						type: 'POST',
+						url: $url,
+						data: JSON.stringify($outbound),
+						statusCode: {
+							200: function($data) {
+			    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+			    					$.each($data.data.webMessages, function (key, value) {
+			    						var $selectorName = "#" + key + "Err";
+			    						$($selectorName).show();
+			    						$($selectorName).html(value[0]).fadeOut(10000);
+			    					});
+			    				} else {
+					        		$("#editPanel").dialog("close");
+			    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
+			    					$('#contactTable').DataTable().ajax.reload();
+			    				}
+							},
+							403: function($data) {
+								$("#globalMsg").html("Session Timeout. Log in and try again");
+							},
+							404: function($data) {
+								$("#globalMsg").html("Invalid Contact").show().fadeOut(100000);
+							},
+							500: function($data) {
+								$("#globalMsg").html("System Error; Contact Support");
+							}
+						},
+						dataType: 'json'
+					});
+				},
 				
-				var jqxhr = $.ajax({
-					type: 'POST',
-					url: $url,
-					data: JSON.stringify($outbound),
-					statusCode: {
-						200: function($data) {
-		    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-		    					$.each($data.data.webMessages, function (key, value) {
-		    						var $selectorName = "#" + key + "Err";
-		    						$($selectorName).show();
-		    						$($selectorName).html(value[0]).fadeOut(10000);
-		    					});
-		    				} else {
-				        		$("#editPanel").dialog("close");
-		    					$("#globalMsg").html("Update Successful").show().fadeOut(10000);
-		    					$('#contactTable').DataTable().ajax.reload();
-		    				}
-						},
-						403: function($data) {
-							$("#globalMsg").html("Session Timeout. Log in and try again");
-						},
-						404: function($data) {
-							$("#globalMsg").html("Invalid Contact").show().fadeOut(100000);
-						},
-						500: function($data) {
-							$("#globalMsg").html("System Error; Contact Support");
-						}
-					},
-					dataType: 'json'
-				});
-			}
-			
-			
-			
-			
-			
 				
-			function showEdit($clickevent) {
-				var $contactId = $clickevent.currentTarget.attributes['data-id'].value;
-				console.debug("contactId: " + $contactId);
-				$("#goEdit").data("contactId", $contactId);
-        		$('#goEdit').button('option', 'label', 'Save');
-        		$('#closeEditPanel').button('option', 'label', 'Close');
-        		
-        		
-				var $url = 'contact/' + $contactId;
-				var jqxhr = $.ajax({
-					type: 'GET',
-					url: $url,
-					statusCode: {
-						200: function($data) {
-							//console.log($data);
-							var $contact = $data.data.contactList[0];
-							$("#editPanel input[name='businessPhone']").val($contact.businessPhone);
-							$("#editPanel input[name='fax']").val($contact.fax);
-							$("#editPanel input[name='firstName']").val($contact.firstName);
-							$("#editPanel input[name='lastName']").val($contact.lastName);
-							$("#editPanel input[name='mobilePhone']").val($contact.mobilePhone);
-							$("#editPanel input[name='preferredContact']").val($contact.preferredContact);
-							$("#editPanel input[name='email']").val($contact.email);			        		
-			        		$("#editPanel .err").html("");
-			        		$("#editPanel").dialog("open");
+				
+				
+				
+					
+				showEdit : function ($clickevent) {
+					var $contactId = $clickevent.currentTarget.attributes['data-id'].value;
+					console.debug("contactId: " + $contactId);
+					$("#goEdit").data("contactId", $contactId);
+	        		$('#goEdit').button('option', 'label', 'Save');
+	        		$('#closeEditPanel').button('option', 'label', 'Close');
+	        		
+	        		
+					var $url = 'contact/' + $contactId;
+					var jqxhr = $.ajax({
+						type: 'GET',
+						url: $url,
+						statusCode: {
+							200: function($data) {
+								//console.log($data);
+								var $contact = $data.data.contactList[0];
+								$("#editPanel input[name='businessPhone']").val($contact.businessPhone);
+								$("#editPanel input[name='fax']").val($contact.fax);
+								$("#editPanel input[name='firstName']").val($contact.firstName);
+								$("#editPanel input[name='lastName']").val($contact.lastName);
+								$("#editPanel input[name='mobilePhone']").val($contact.mobilePhone);
+								$("#editPanel input[name='preferredContact']").val($contact.preferredContact);
+								$("#editPanel input[name='email']").val($contact.email);			        		
+				        		$("#editPanel .err").html("");
+				        		$("#editPanel").dialog("open");
+							},
+							403: function($data) {
+								$("#globalMsg").html("Session Timeout. Log in and try again");
+							},
+							404: function($data) {
+								$("#globalMsg").html("Invalid Contact");
+							},
+							500: function($data) {
+								$("#globalMsg").html("System Error; Contact Support");
+							}
 						},
-						403: function($data) {
-							$("#globalMsg").html("Session Timeout. Log in and try again");
-						},
-						404: function($data) {
-							$("#globalMsg").html("Invalid Contact");
-						},
-						500: function($data) {
-							$("#globalMsg").html("System Error; Contact Support");
-						}
-					},
-					dataType: 'json'
-				});
-			}
+						dataType: 'json'
+					});
+				},
+	        };
 			
-			if ( $ansiModal != '' ) {
-				$(".showNew").click();
-			}
+			CONTACTMAINTENANCE.init();
 			
         });
         </script>        
@@ -444,6 +466,8 @@
     		</tr>    		
     	</table>
     </div>
+    
+    	<webthing:callNoteModals />
     </tiles:put>
 		
 </tiles:insert>
