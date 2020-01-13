@@ -735,7 +735,16 @@
 		<servlet-name>report</servlet-name>
 		<url-pattern>/report/*</url-pattern>
 	</servlet-mapping>
-
+	
+	<servlet>
+		<servlet-name>specialOverrides</servlet-name>
+		<servlet-class>com.ansi.scilla.web.specialOverride.servlet.SpecialOverrideServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>specialOverrides</servlet-name>
+		<url-pattern>/specialOverrides</url-pattern>
+		<url-pattern>/specialOverrides/*</url-pattern>
+	</servlet-mapping>
 
 	<servlet>
 		<servlet-name>tableFieldList</servlet-name>
