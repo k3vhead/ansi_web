@@ -126,6 +126,10 @@ public enum Permission {
 	
 	DEVELOPMENT(null, false, "Functional Area: System Developers"),
 	DEV(DEVELOPMENT, false, "Can Access Developer Areas"),
+	
+	DOCUMENTS(null, false, "Functional Area: Documents"),
+	DOCUMENTS_READ(DOCUMENTS, false, "Can read stored documents"),
+	DOCUMENTS_WRITE(DOCUMENTS_READ, false, "Can store documents"),
 	;
 	
 	private final Boolean divisionSpecific;

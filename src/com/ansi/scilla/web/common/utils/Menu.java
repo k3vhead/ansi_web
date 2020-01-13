@@ -24,6 +24,7 @@ public enum Menu {
 	TICKET_STATUS(		"Ticket Status", 		LOOKUPS, Permission.CLAIMS_READ, 	"ticketStatusLookup.html"),
 	BUDGET_CONTROL(		"Budget Control", 		LOOKUPS, Permission.CLAIMS_READ, 	"budgetControlLookup.html"),
 	CLAIM_DETAIL(		"Claim Detail", 		LOOKUPS, Permission.CLAIMS_READ, 	"claimDetailLookup.html"),
+	DOCUMENT_LOOKUP(	"Document", 			LOOKUPS, Permission.DOCUMENTS_READ, "documentLookup.html"),
 	
 	
 	REPORTS("Reports", null, null,"#"),

@@ -9,6 +9,7 @@ import java.util.List;
 
 import com.ansi.scilla.common.address.Country;
 import com.ansi.scilla.common.claims.WorkHoursType;
+import com.ansi.scilla.common.document.DocumentType;
 import com.ansi.scilla.common.employee.EmployeeHoursType;
 import com.ansi.scilla.common.invoice.InvoiceGrouping;
 import com.ansi.scilla.common.invoice.InvoiceStyle;
@@ -36,6 +37,7 @@ public class OptionsListResponse extends MessageResponse {
 	private List<ReportTypeOption> reportType;
 	private List<WorkHoursTypeOption> workHoursType;
 	private List<ExpenseTypeOption> expenseType;
+	private List<DocumentTypeOption> documentType;
 
 	public OptionsListResponse(List<ResponseOption> options, SessionData sessionData) throws ClassNotFoundException, Exception {
 		if ( options.contains(ResponseOption.JOB_FREQUENCY)) {
@@ -73,6 +75,9 @@ public class OptionsListResponse extends MessageResponse {
 		}
 		if ( options.contains(ResponseOption.EXPENSE_TYPE)) {
 			makeExpenseTypeList(sessionData);
+		}
+		if ( options.contains(ResponseOption.DOCUMENT_TYPE)) {
+			makeDocumentTypeList(sessionData);
 		}
 	}
 
@@ -185,6 +190,15 @@ public class OptionsListResponse extends MessageResponse {
 
 	}
 	
+	private void makeDocumentTypeList(SessionData sessionData) {
+		this.documentType = new ArrayList<DocumentTypeOption>();
+		for ( DocumentType documentType : DocumentType.values()) {
+			this.documentType.add(new DocumentTypeOption(documentType));
+		}
+		Collections.sort(this.expenseType);
+		
+	}
+
 	public List<JobFrequencyOption> getJobFrequency() {
 		return jobFrequency;
 	}

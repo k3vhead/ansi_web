@@ -158,6 +158,17 @@
     </servlet-mapping>
     
     
+    <servlet>
+        <servlet-name>documentLookup</servlet-name>
+        <servlet-class>com.ansi.scilla.web.document.servlet.DocumentLookupServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>documentLookup</servlet-name>
+        <url-pattern>/documents/documentLookup</url-pattern>
+    </servlet-mapping>
+
+
+    
     
    <servlet>
         <servlet-name>ticketStatusLookup</servlet-name>
