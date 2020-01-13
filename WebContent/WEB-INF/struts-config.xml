@@ -65,6 +65,20 @@
             <forward name="login" path="/login.jsp" />            
         </action>
         <action
+            path="/callNote/callNoteDetail"
+            type="com.ansi.scilla.web.callNote.action.CallNoteDetailAction"
+            name="idForm"
+            scope="request">
+            <forward name="valid" path="/callNotes/callNoteDetail.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+        <action
+            path="/callNoteLookup"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/callNotes/callNoteLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+        <action
             path="/claimDetailLookup"
             type="com.ansi.scilla.web.claims.action.ClaimDetailLookupAction"
             name="idForm"

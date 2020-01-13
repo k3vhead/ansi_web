@@ -25,6 +25,8 @@
     <tiles:put name="headextra" type="string">
     	<link rel="stylesheet" href="css/lookup.css" />
     	<link rel="stylesheet" href="css/ticket.css" />
+    	<link rel="stylesheet" href="css/callNote.css" />
+    	<link rel="stylesheet" href="css/accordion.css" type="text/css" />
         <style type="text/css">
 			#displayTable {
 				width:90%;
@@ -60,6 +62,7 @@
         <script type="text/javascript" src="js/lookup.js"></script>
         <script type="text/javascript" src="js/ticket.js"></script>
         <script type="text/javascript" src="js/invoicePrint.js"></script>
+        <script type="text/javascript" src="js/callNote.js"></script>
         <script type="text/javascript">
         
         $(document).ready(function(){
@@ -76,6 +79,7 @@
 		        		INVOICE_DETAIL_LOOKUP.filterIcon = "fa fa-ban";
 		        	}
 					
+					CALLNOTE.init();
         			INVOICE_DETAIL_LOOKUP.createTable();
 					TICKETUTILS.makeTicketViewModal("#ticket-modal")
 					
@@ -126,13 +130,13 @@
 				        	},
 				        columns: [
 				        	
-				            { title: "<bean:message key="field.label.invoiceId" />", width:"4%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				            { title: "<bean:message key="field.label.invoiceId" />", width:"3%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 				            	if(row.invoice_id != null){return (row.invoice_id+"");}
 				            } },
 				            { title: "<bean:message key="field.label.divisionNbr" />", width:"4%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.div != null){return (row.div+"");}
 				            } },
-				            { title: "<bean:message key="field.label.billToName" />", width:"13%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.billToName" />", width:"12%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.bill_to_name != null){return (row.bill_to_name+"");}
 				            } },
 				            { title: "<bean:message key="field.label.invoiceDate" />", width:"4%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
@@ -144,10 +148,10 @@
 				            { title: "<bean:message key="field.label.invoiceTax" />", width:"4%", searchable:true,  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.invoice_tax != null){return (row.invoice_tax.toFixed(2)+"");}
 				            } },
-				            { title: "Job Site",  "defaultContent": "<i>N/A</i>", width:"13%", searchable:true,  data: function ( row, type, set ) {
+				            { title: "Job Site",  "defaultContent": "<i>N/A</i>", width:"12%", searchable:true,  data: function ( row, type, set ) {
 				            	if(row.job_site_name != null){return (row.job_site_name+"");}
 				            } },
-				            { title: "Job Site Address",  "defaultContent": "<i>-</i>", width:"13%", searchable:true, data: function ( row, type, set ) {
+				            { title: "Job Site Address",  "defaultContent": "<i>-</i>", width:"12%", searchable:true, data: function ( row, type, set ) {
 				            	if(row.job_site_address != null){return (row.job_site_address+"");}
 				            } },
 				            { title: "Ticket",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, data: function ( row, type, set ) {
@@ -177,14 +181,16 @@
 				            { title: "Due",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, data: function ( row, type, set ) {
 				            	if(row.due != null){return (row.due.toFixed(2));}
 				            } },
-				            //{ title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.action" />", width:"2%", data: function ( row, type, set ) {
+				            	var $noteLink = '<webthing:notes xrefType="INVOICE" xrefId="' + row.invoice_id + '">Invoice Notes</webthing:notes>'
+				            	return $noteLink;
 				            //	if ( row.printCount > 0 ) {
 				            //		$printText =  '<i class="fa fa-print invoicePrint tooltip" aria=hidden="true" data-invoiceId="'+row.invoiceId+'"><span class="tooltiptext">Reprint</span></i>';
 				            //	} else {
 				            //		$printText = ""; 
 				            //	}
 				            //	{return "<ansi:hasPermission permissionRequired='INVOICE_READ'>" + $printText + "</ansi:hasPermission>";}
-				            //} }
+				            } }
 				            ],
 				            "initComplete": function(settings, json) {
 				            	//console.log(json);
@@ -193,6 +199,7 @@
 				            },
 				            "drawCallback": function( settings ) {
 				            	INVOICE_DETAIL_LOOKUP.doFunctionBinding();
+				            	CALLNOTE.lookupLink();
 				            }
 				    } );
 				},
@@ -240,6 +247,7 @@
 		<webthing:scrolltop />
     
     	<webthing:ticketModal ticketContainer="ticket-modal" />
+    	<webthing:callNoteModals />
     </tiles:put>
 		
 </tiles:insert>

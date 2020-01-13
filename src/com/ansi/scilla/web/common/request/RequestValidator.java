@@ -9,6 +9,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +21,9 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.ansi.scilla.common.callNote.CallNoteReference;
 import com.ansi.scilla.common.claims.WorkHoursType;
+import com.ansi.scilla.common.db.CallLog;
 import com.ansi.scilla.common.db.EmployeeExpense;
 import com.ansi.scilla.common.db.MSTable;
 import com.ansi.scilla.common.db.Ticket;
@@ -122,6 +125,24 @@ public class RequestValidator {
 		validateCode(conn, webMessages, "job", "building_type", fieldName, value, required);
 	}
 
+	
+	public static void validateCallNoteXrefType(WebMessages webMessages, String fieldName, String value, boolean required) {
+		if (StringUtils.isBlank(value)) {
+			if (required) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			try {
+				CallNoteReference callNoteReference = CallNoteReference.valueOf(value);
+				if (callNoteReference == null) {
+					webMessages.addMessage(fieldName, "Invalid Value");
+				}
+			} catch (IllegalArgumentException e) {
+				webMessages.addMessage(fieldName, "Invalid Value");
+			}
+		}
+	}
+	
 	public static void validateClaimDetailRequestType(WebMessages webMessages, String fieldName, String value, boolean required) {
 		if (StringUtils.isBlank(value)) {
 			if (required) {
@@ -157,6 +178,14 @@ public class RequestValidator {
 			}
 		}
 	}
+	
+	
+	
+	public static void validateContactType(Connection conn, WebMessages webMessages, String fieldName, String value, boolean required) throws Exception {
+		validateCode(conn, webMessages, CallLog.TABLE, CallLog.CONTACT_TYPE, fieldName, value, required);
+	}
+	
+
 
 	public static void validateDate(WebMessages webMessages, String fieldName, String value, String format,
 			boolean required, Date minValue, Date maxValue) {
@@ -188,6 +217,28 @@ public class RequestValidator {
 
 	}
 
+	
+	public static void validateDate(WebMessages webMessages, String fieldName, Calendar value, boolean required,
+			Date minValue, Date maxValue) {
+		if (value == null) {
+			if (required) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+			if (minValue != null && value.before(minValue)) {
+				String minLabel = format.format(minValue);
+				webMessages.addMessage(fieldName, "Date must be after " + minLabel);
+			}
+			if (maxValue != null && value.after(maxValue)) {
+				String maxLabel = format.format(maxValue);
+				webMessages.addMessage(fieldName, "Date must be before " + maxLabel);
+			}
+
+		}
+	}
+	
+	
 	public static void validateDate(WebMessages webMessages, String fieldName, Date value, boolean required,
 			Date minValue, Date maxValue) {
 		if (value == null) {
