@@ -43,7 +43,10 @@
         	}			
 			.dataTables_wrapper {
 				padding-top:10px;
-			}			
+			}	
+			.form-label {
+				font-weight:bold;
+			}		
         </style>
         
         <script type="text/javascript">    
@@ -51,6 +54,7 @@
         $(document).ready(function(){
         	;DOCUMENTLOOKUP = {
         		dataTable : null,
+        		docTypeList : [],
         		
         		divisionFilter : '<c:out value="${ANSI_DIVISION_ID}" />',	// col 1
 				jobFilter : '<c:out value="${ANSI_JOB_ID}" />', 			// col 7
@@ -63,6 +67,7 @@
         			DOCUMENTLOOKUP.makeTable();
         			DOCUMENTLOOKUP.makeModals();        			
         			DOCUMENTLOOKUP.makeClickers();
+        			ANSI_UTILS.getOptionList("DOCUMENT_TYPE",DOCUMENTLOOKUP.makeDocTypeList);
         		},
         		
         		
@@ -81,7 +86,13 @@
     			
     			
     			
-    			
+    			doSaveDocument : function() {
+    				console.log("doSaveDocument");
+    				var formData = new FormData();
+    				var $file = $("#new-document-modal input[name='fileSelect']").val();
+    				console.log($file);
+    				formData.append('fileSelect',$file, $file.name);
+    			},
     			
     			
     			
@@ -100,7 +111,15 @@
         		},
         		
         		
-        		
+        		makeDocTypeList : function($data) {
+        			console.log("makeDocTypeList");
+        			var $select = $("#new-document-modal select[name='documentType']");
+					$('option', $select).remove();
+					$select.append(new Option("",""));
+					$.each($data.documentType, function(index, val) {
+					    $select.append(new Option(val.display, val.code));
+					});	
+        		},
         		
         		
         		
@@ -122,6 +141,7 @@
 								id: "new-document-go-button",
 								click: function($event) {
 									console.log("Saving a new document");
+									DOCUMENTLOOKUP.doSaveDocument();
 								}
 							}	      	      
 						],
@@ -282,6 +302,11 @@
     				<td><span class="form-label">Xref:</span></td>
     				<td><input type="text" name="xrefId" /></td>
     				<td><span class="xrefId-err err"></span></td>
+    			</tr>
+    			<tr>
+    				<td><span class="form-label">File:</span></td>
+    				<td><input type="file" name="fileSelect" id="fileSelect" /></td>
+    				<td><span class="fileSelect-err err"></span></td>
     			</tr>
     		</table>
     	</div>

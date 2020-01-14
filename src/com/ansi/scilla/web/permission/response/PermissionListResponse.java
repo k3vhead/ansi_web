@@ -8,6 +8,7 @@ import org.apache.commons.collections.Transformer;
 
 import com.ansi.scilla.common.db.PermissionGroupLevel;
 import com.ansi.scilla.web.common.response.MessageResponse;
+import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 
 
@@ -69,7 +70,7 @@ public class PermissionListResponse extends MessageResponse {
 				Permission p = Permission.valueOf(group.getPermissionName());
 				permissionList.add(p);
 			} catch (IllegalArgumentException e) {
-				AppUtils.logException(e);
+				AppUtils.logException(e);				
 			}
 		}
 		return permissionList;
