@@ -135,10 +135,14 @@ public enum Permission {
 	
 	SPECIAL_OVERRIDE(null, false, "Functional Area: Special Override"),
 	SPECIAL_OVERRIDE_READ(SPECIAL_OVERRIDE, false, "Special Override"),
-	OVERRIDE_UPDATE_PAYMENTS(SPECIAL_OVERRIDE_READ, false, "Override payment date"),
+	//OVERRIDE_UPDATE_PAYMENTS(SPECIAL_OVERRIDE_READ, false, "Override payment date"),
 	
 	DEVELOPMENT(null, false, "Functional Area: System Developers"),
 	DEV(DEVELOPMENT, false, "Can Access Developer Areas"),
+
+	DOCUMENTS(null, false, "Functional Area: Documents"),
+	DOCUMENTS_READ(DOCUMENTS, false, "Can read stored documents"),
+	DOCUMENTS_WRITE(DOCUMENTS_READ, false, "Can store documents"),
 	;
 	
 	private final Boolean divisionSpecific;
