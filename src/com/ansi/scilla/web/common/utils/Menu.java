@@ -17,6 +17,7 @@ public enum Menu {
 	TICKETS(			"Tickets", 				LOOKUPS, Permission.TICKET_READ,	"ticketLookup.html"),
 	TICKET_ASSIGNMENT(	"Ticket Assignments",	LOOKUPS, Permission.TICKET_READ,	"ticketAssignmentLookup.html"),
 	INVOICES(			"Invoices", 			LOOKUPS, Permission.INVOICE_READ, 	"invoiceLookup.html"),
+	INVOICE_DETAIL(     "Invoice Detail",       LOOKUPS, Permission.INVOICE_READ,   "invoiceDetailLookup.html"),
 	PAYMENTS(			"Payments", 			LOOKUPS, Permission.PAYMENT_READ, 	"paymentLookup.html"),
 	NON_DIRECT_LABOR(	"Non-Direct Labor", 	LOOKUPS, Permission.CLAIMS_READ, 	"nonDirectLaborLookup.html"),
 	EMPLOYEE_EXPENSE(	"Employee Expense", 	LOOKUPS, Permission.CLAIMS_READ, 	"employeeExpenseLookup.html"),
@@ -26,6 +27,7 @@ public enum Menu {
 	LOCALE(             "Locale",               LOOKUPS, Permission.TAX_READ,       "localeLookup.html"),
 	TAXRATE_LOOKUP(	    "Tax Rate Lookup",		LOOKUPS, Permission.TAX_READ,	    "taxRateLookup.html"),
 	LOCALE_DIVISION(	"Nexus Taxed Lookup",	LOOKUPS, Permission.TAX_READ,		"localeDivisionLookup.html"),
+	CALL_NOTES(         "Call Notes",           LOOKUPS, Permission.CALL_NOTE_READ, "callNoteLookup.html"),
 	
 	
 	REPORTS("Reports", null, null,"#"),
@@ -47,6 +49,7 @@ public enum Menu {
 	ENTER_PAYMENT(		"Enter Payment", 		QUICK_LINKS, Permission.PAYMENT_WRITE,	"payment.html"),
 	TICKET_OVERRIDE(	"Ticket Override", 		QUICK_LINKS, Permission.TICKET_WRITE,	"ticketOverride.html"),
 	CLAIM_ENTRY(		"Claim Entry", 			QUICK_LINKS, Permission.CLAIMS_WRITE,	"claimEntry.html"),
+	SPECIAL_OVERRIDE(	"Special Override",		QUICK_LINKS, Permission.SPECIAL_OVERRIDE_READ, "specialOverride.html"),
 	
 	
 	SETTINGS("Settings", null, Permission.SYSADMIN_READ,"#"),

@@ -1,6 +1,6 @@
 $(function() {    	
 	;TICKETUTILS = {
-		$ticketStatusMap : {},
+		ticketStatusMap : {},
 
 
 		doTicketViewModal : function($modalId,$ticketId) {
@@ -33,17 +33,18 @@ $(function() {
 	       		dataType: 'json'
 	       	});
 		},
-			
-			
+	   	
+	   	populateOptionList : function ($data, $callback) {	
+			$.each($data.ticketStatus, function($index, $value) {
+				TICKETUTILS.ticketStatusMap[$value.code]=$value.display;
+			});		        	
+	   	},
 			
 			
 			
 			
 		makeTicketViewModal : function($modalId) {
-			var $ticketStatusList = ANSI_UTILS.getOptions("TICKET_STATUS");
-			$.each($ticketStatusList.ticketStatus, function($index, $value) {
-			    TICKETUTILS.$ticketStatusMap[$value.code]=$value.display;
-			});
+			ANSI_UTILS.getOptionList("TICKET_STATUS",TICKETUTILS.populateOptionList);
 			
 			
 			var $cancelId = $modalId.substring(1)+"-cancel-button";
@@ -112,9 +113,8 @@ $(function() {
 		
 		
 		
-		
 		populateSummary : function($modalId, $data) {
-			$($modalId + " .status").html('<span class="tooltip">' + $data.ticketDetail.status + '<span class="tooltiptext">' + TICKETUTILS.$ticketStatusMap[$data.ticketDetail.status]+ '</span></span>');
+			$($modalId + " .status").html('<span class="tooltip">' + $data.ticketDetail.status + '<span class="tooltiptext">' + TICKETUTILS.ticketStatusMap[$data.ticketDetail.status]+ '</span></span>');
 			$($modalId + " .divisionDisplay").html($data.ticketDetail.divisionDisplay);
 			$($modalId + " .jobId").html( '<a class="joblink" href="jobMaintenance.html?id='+ $data.ticketDetail.jobId + '">' + $data.ticketDetail.jobId + '</a>');
 			$($modalId + " .serviceDescription").html($data.ticketDetail.serviceDescription);
