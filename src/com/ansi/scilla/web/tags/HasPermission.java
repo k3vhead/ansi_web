@@ -39,7 +39,7 @@ public class HasPermission extends ConditionalTagSupport {
         boolean hasPermission = false;
 		SessionData sessionData = (SessionData)session.getAttribute(SessionData.KEY);
 		if ( sessionData != null ) {
-			if ( sessionData.getUser().getSuperUser().equals(new Integer(1)) ) {
+			if ( sessionData.getUser().getSuperUser().equals(Integer.valueOf(1)) ) {
 				hasPermission = true;
 			} else {
 				hasPermission = hasPermission(sessionData) && hasLevel(sessionData);

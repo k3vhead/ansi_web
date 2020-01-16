@@ -93,6 +93,16 @@
 	
 
 	<servlet>
+    	<servlet-name>ansiUserAutoComplete</servlet-name>
+    	<servlet-class>com.ansi.scilla.web.user.servlet.AnsiUserAutoCompleteServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+    	<servlet-name>ansiUserAutoComplete</servlet-name>
+    	<url-pattern>/ansiUserAutoComplete</url-pattern>
+    </servlet-mapping>
+    
+    
+   	<servlet>
 		<servlet-name>applyPayment</servlet-name>
 		<servlet-class>com.ansi.scilla.web.payment.servlet.ApplyPaymentServlet</servlet-class>
 	</servlet>
@@ -125,6 +135,37 @@
 
 
 
+	<servlet>
+        <servlet-name>callNote</servlet-name>
+        <servlet-class>com.ansi.scilla.web.callNote.servlet.CallNoteServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>callNote</servlet-name>
+        <url-pattern>/callNote/callNote/*</url-pattern>
+    </servlet-mapping>
+
+	<servlet>
+        <servlet-name>callNoteDetail</servlet-name>
+        <servlet-class>com.ansi.scilla.web.callNote.servlet.CallNoteDetailServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>callNoteDetail</servlet-name>
+        <url-pattern>/callNote/callNoteDetail/*</url-pattern>
+    </servlet-mapping>
+
+
+
+    <servlet>
+        <servlet-name>callNoteLookup</servlet-name>
+        <servlet-class>com.ansi.scilla.web.callNote.servlet.CallNoteLookupServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>callNoteLookup</servlet-name>
+        <url-pattern>/callNote/callNoteLookup</url-pattern>
+    </servlet-mapping>
+
+
+
     <servlet>
         <servlet-name>claimEntry</servlet-name>
         <servlet-class>com.ansi.scilla.web.claims.servlet.ClaimEntryServlet</servlet-class>
@@ -136,7 +177,17 @@
 
 
 
-
+	<servlet>
+        <servlet-name>contactNote</servlet-name>
+        <servlet-class>com.ansi.scilla.web.callNote.servlet.ContactNoteServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>contactNote</servlet-name>
+        <url-pattern>/callNote/contactNote/*</url-pattern>
+    </servlet-mapping>
+    
+    
+    
 	<servlet>
         <servlet-name>dashboardFavorites</servlet-name>
         <servlet-class>com.ansi.scilla.web.user.servlet.DashboardFavoritesServlet</servlet-class>
@@ -329,6 +380,16 @@
 	<servlet-mapping>
 		<servlet-name>invoice</servlet-name>
 		<url-pattern>/invoice/*</url-pattern>
+	</servlet-mapping>
+
+
+	<servlet>
+		<servlet-name>invoiceDetailLookup</servlet-name>
+		<servlet-class>com.ansi.scilla.web.invoice.servlet.InvoiceDetailLookupServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>invoiceDetailLookup</servlet-name>
+		<url-pattern>/invoiceDetailLookup</url-pattern>
 	</servlet-mapping>
 
 
@@ -683,7 +744,16 @@
 		<servlet-name>report</servlet-name>
 		<url-pattern>/report/*</url-pattern>
 	</servlet-mapping>
-
+	
+	<servlet>
+		<servlet-name>specialOverrides</servlet-name>
+		<servlet-class>com.ansi.scilla.web.specialOverride.servlet.SpecialOverrideServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>specialOverrides</servlet-name>
+		<url-pattern>/specialOverrides</url-pattern>
+		<url-pattern>/specialOverrides/*</url-pattern>
+	</servlet-mapping>
 
 	<servlet>
 		<servlet-name>tableFieldList</servlet-name>
