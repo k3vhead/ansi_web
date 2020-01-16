@@ -2,6 +2,7 @@ package com.ansi.scilla.web.test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 
 import org.apache.http.Header;
 import org.apache.http.client.ClientProtocolException;
@@ -43,7 +44,8 @@ public class DavesServletTester extends TestServlet {
 		Header sessionCookie = super.doLogin();
 //		String results = testNDL(sessionCookie, MyTestType.ADD);
 //		String results = testEmployeeExpense(sessionCookie, MyTestType.ADD);
-		String results = testDashboardFavorite(sessionCookie, Menu.NEW_QUOTE);
+//		String results = testDashboardFavorite(sessionCookie, Menu.NEW_QUOTE);
+		String results = testCallNote(sessionCookie);
 
 //		String results = super.doPost(sessionCookie, url, super.makeJson(parmMap));
 //		String results = super.doGet(sessionCookie, url, (HashMap<String,String>)null);
@@ -51,6 +53,15 @@ public class DavesServletTester extends TestServlet {
 		super.doLogoff(sessionCookie);
 		
 		logger.log(Level.DEBUG, results);
+	}
+
+
+
+
+	private String testCallNote(Header sessionCookie) throws ClientProtocolException, URISyntaxException, IOException {
+		String url = "/ansi_web/callNote/callNote/PAYMENT/49907";
+		String results = super.doGet(sessionCookie, url, (HashMap<String, String>)null);
+		return results;
 	}
 
 
