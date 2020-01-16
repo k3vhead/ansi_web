@@ -23,6 +23,10 @@
     
     
     <tiles:put name="headextra" type="string">
+    	<link rel="stylesheet" href="css/callNote.css" />
+    	<link rel="stylesheet" href="css/accordion.css" type="text/css" />
+    	<script type="text/javascript" src="js/ansi_utils.js"></script>
+    	<script type="text/javascript" src="js/callNote.js"></script>  
         <style type="text/css">
 			#displayTable {
 				width:90%;
@@ -63,6 +67,7 @@
 	        ;CONTACTMAINTENANCE = {
 				
 	    		init : function() {	
+	    			CALLNOTE.init();
 	    		//	CONTACTMAINTENANCE.clearAddForm();
 	    			//CONTACTMAINTENANCE.clearEditForm();
 	    			CONTACTMAINTENANCE.createTable();
@@ -208,9 +213,12 @@
 			            		}			            		
 			            		return (value);
 				            } },
-				            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
+				            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {				            	
 				            	{
-				            		return '<ansi:hasPermission permissionRequired="CONTACT_WRITE"><span class="editAction" data-id="'+ row.contactId + '" /><webthing:edit>Edit</webthing:edit></span></ansi:hasPermission>';}
+				            		var $editLink = '<ansi:hasPermission permissionRequired="CONTACT_WRITE"><span class="editAction" data-id="'+ row.contactId + '" /><webthing:edit>Edit</webthing:edit></span></ansi:hasPermission>';
+				            		var $noteLink = '<webthing:notes xrefType="CONTACT" xrefId="' + row.contactId + '" xrefName="'+row.firstName + ' ' + row.lastName +'">Contact Notes</webthing:notes>'
+				            		return $editLink + $noteLink; 
+				            	}
 				            } }
 				            ],
 				            "initComplete": function(settings, json) {
@@ -218,7 +226,7 @@
 				            	CONTACTMAINTENANCE.doFunctionBinding();
 				            },
 				            "drawCallback": function( settings ) {
-				            	//doFunctionBinding();
+				            	CALLNOTE.lookupLink();
 				            }
 				    } );
 	        	},
@@ -458,6 +466,8 @@
     		</tr>    		
     	</table>
     </div>
+    
+    	<webthing:callNoteModals />
     </tiles:put>
 		
 </tiles:insert>

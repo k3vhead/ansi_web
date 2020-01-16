@@ -9,7 +9,6 @@ import org.apache.commons.collections.Transformer;
 
 import com.ansi.scilla.common.db.PermissionGroupLevel;
 import com.ansi.scilla.web.common.response.MessageResponse;
-import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 
 
