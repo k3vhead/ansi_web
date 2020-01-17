@@ -167,7 +167,7 @@ public class TicketLookupQuery extends LookupQuery {
 //					"division.division_code", 
 					"ticket.fleetmatics_id" ,
 					"CONCAT(quote_number,revision)", 
-					"CONCAT(division_nbr,'-',division_code)", 
+					"CONCAT(tktdiv.division_nbr,'-',tktdiv.division_code)", 
 					"a2.name" ,
 					"a2.address1", 
 					"a1.name" ,

@@ -31,6 +31,9 @@
     	<script type="text/javascript" src="js/ticket.js"></script> 
     
         <style type="text/css">
+        	#messaeg-modal {
+        		display:none;
+        	}
         	#new-document-modal {
         		display:none;
         	}
@@ -84,14 +87,82 @@
     			
     			
     			
+    			doSaveDocument2 : function() {
+    				var $form = document.getElementById("#new-document-form");
+    				var $formData = new FormData($form);
+    				var $xhr = new XMLHttpRequest();
+    				xhr.open("POST", "documents/documentUpload");
+    				xhr.send($formData);
+    			},
+    			
     			
     			
     			doSaveDocument : function() {
     				console.log("doSaveDocument");
-    				var formData = new FormData();
-    				var $file = $("#new-document-modal input[name='fileSelect']").val();
-    				console.log($file);
-    				formData.append('fileSelect',$file, $file.name);
+    				var myFormData = new FormData();
+    				console.log(myFormData);
+    				var $file = $("#new-document-modal input[name='fileSelect']")[0].files[0]
+    				console.log("fileSelect");
+    				myFormData.append('fileSelect',$file);
+    				console.log(myFormData);
+    				console.log("documentType");
+    				myFormData.append( 'documentType', $("#new-document-modal select[name='documentType']").val() );
+    				console.log(myFormData);
+    				$.each( $("#new-document-modal input"), function($index, $value) {
+    					if ( $value.name != 'fileSelect' ) {
+    						console.log($value.name);
+    						myFormData.append($value.name, $value.value)	
+    						console.log(myFormData);
+    					}    					
+    				});
+    				
+    				console.log(myFormData);
+    				console.log(myFormData.values());
+    				//$.ajax({
+    				//	url: "documents/documentUpload",
+    				//	type: "POST",
+    				//	data: myFormData,
+    				//	contentType: 'multipart/form-data',
+    				//	processData: false,
+    				//	success: function(response) {
+    				//		if ( response != 0 ) {
+    				//			alert("success");
+    				//		} else {
+    				//			alert("failed");
+    				//		}
+    				//	},
+    				//	error: function(response) {
+    				//		alert("error");
+    				//	}
+    				//});
+    				
+    				var jqxhr = $.ajax({
+    					type: 'POST',
+    					url: "documents/documentUpload",
+    					data: myFormData,
+    					contentType: 'multipart/form-data',
+    					processData: false,
+    					statusCode: {
+    						200: function($data) { 
+    							$("#message-modal").html($data);
+    							$("#message-modal").dialog("open");
+    						},
+    						403: function($data) {
+    							$("#globalMessage").html("Session has expired. Login and try again").show();
+    						},
+    						404: function($data) {
+    							$("#globalMessage").html("System Error 404. Contact Support").show();
+    						},
+    						405: function($data) {
+    							$("#globalMessage").html("System Error 405. Contact Support").show();
+    						},
+    						500: function($data) {
+    							$("#globalMessage").html("System Error 500. Contact Support").show();
+    						} 
+    					},
+    					dataType: 'html'
+    				});	
+
     			},
     			
     			
@@ -141,7 +212,8 @@
 								id: "new-document-go-button",
 								click: function($event) {
 									console.log("Saving a new document");
-									DOCUMENTLOOKUP.doSaveDocument();
+									//DOCUMENTLOOKUP.doSaveDocument();
+									DOCUMENTLOOKUP.doSaveDocument2();
 								}
 							}	      	      
 						],
@@ -152,7 +224,29 @@
 					});        			
         			$('#new-document-cancel-button').button('option', 'label', 'Cancel');
         			$('#new-document-go-button').button('option', 'label', 'Save');
-        				
+        			
+        			
+        			
+        			$("#message-modal" ).dialog({
+						title:'System Message',
+						autoOpen: false,
+						height: 200,
+						width: 400,
+						modal: true,
+						buttons: [
+							{
+								id: "message-cancel-button",
+								click: function() {
+									$("#message-modal").dialog( "close" );
+								}
+							}	      	      
+						],
+						close: function() {
+							$("#message-modal").dialog( "close" );
+							//allFields.removeClass( "ui-state-error" );
+						}
+					});        			
+        			$('#message-cancel-button').button('option', 'label', 'Close');
         		},
         		
         		
@@ -272,45 +366,50 @@
 	    <webthing:scrolltop />
 	
 	    <div id="new-document-modal">
-    		<table>
-    			<tr>
-    				<td><span class="form-label">ID:</span></td>
-    				<td><input type="hidden" name="documentId" /><span class="documentId"></span></td>
-    				<td><span class="documentId-err err"></span></td>
-    			</tr>
-    			<tr>
-    				<td><span class="form-label">Description:</span></td>
-    				<td><input type="text" name="description" /></td>
-    				<td><span class="description-err err"></span></td>
-    			</tr>
-    			<tr>
-    				<td><span class="form-label">Document Date:</span></td>
-    				<td><input type="date" name="documentDate" /></td>
-    				<td><span class="documentDate-err err"></span></td>
-    			</tr>
-    			<tr>
-    				<td><span class="form-label">Expiration Date:</span></td>
-    				<td><input type="date" name="expirationDate" /></td>
-    				<td><span class="expirationDate-err err"></span></td>
-    			</tr>
-    			<tr>
-    				<td><span class="form-label">Document Type:</span></td>
-    				<td><select name="documentType"></select></td>
-    				<td><span class="documentType-err err"></span></td>
-    			</tr>
-    			<tr>
-    				<td><span class="form-label">Xref:</span></td>
-    				<td><input type="text" name="xrefId" /></td>
-    				<td><span class="xrefId-err err"></span></td>
-    			</tr>
-    			<tr>
-    				<td><span class="form-label">File:</span></td>
-    				<td><input type="file" name="fileSelect" id="fileSelect" /></td>
-    				<td><span class="fileSelect-err err"></span></td>
-    			</tr>
-    		</table>
+	    	<form id="new-document-form">
+	    		<table>
+	    			<tr>
+	    				<td><span class="form-label">ID:</span></td>
+	    				<td><input type="hidden" name="documentId" /><span class="documentId"></span></td>
+	    				<td><span class="documentId-err err"></span></td>
+	    			</tr>
+	    			<tr>
+	    				<td><span class="form-label">Description:</span></td>
+	    				<td><input type="text" name="description" /></td>
+	    				<td><span class="description-err err"></span></td>
+	    			</tr>
+	    			<tr>
+	    				<td><span class="form-label">Document Date:</span></td>
+	    				<td><input type="date" name="documentDate" /></td>
+	    				<td><span class="documentDate-err err"></span></td>
+	    			</tr>
+	    			<tr>
+	    				<td><span class="form-label">Expiration Date:</span></td>
+	    				<td><input type="date" name="expirationDate" /></td>
+	    				<td><span class="expirationDate-err err"></span></td>
+	    			</tr>
+	    			<tr>
+	    				<td><span class="form-label">Document Type:</span></td>
+	    				<td><select name="documentType"></select></td>
+	    				<td><span class="documentType-err err"></span></td>
+	    			</tr>
+	    			<tr>
+	    				<td><span class="form-label">Xref:</span></td>
+	    				<td><input type="text" name="xrefId" /></td>
+	    				<td><span class="xrefId-err err"></span></td>
+	    			</tr>
+	    			<tr>
+	    				<td><span class="form-label">File:</span></td>
+	    				<td><input type="file" name="fileSelect" id="fileSelect" /></td>
+	    				<td><span class="fileSelect-err err"></span></td>
+	    			</tr>
+	    		</table>
+    		</form>
     	</div>
 
+
+		<div id="message-modal">
+		</div>
     </tiles:put>
 		
 </tiles:insert>
