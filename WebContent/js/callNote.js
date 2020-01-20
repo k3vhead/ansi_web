@@ -73,19 +73,18 @@ $(function() {
 							} else {
 								CALLNOTE.showListModal($data.data, $xrefName);
 							}
-							console.log($data);
 						},
 						403: function($data) {
-							$callback(403, $data);
+							$("#globalMsg").html("Session expired/Invalid request. Log in and try again").show();
 						},
 						404: function($data) {
-							$callback(404, $data);
+							$("#globalMsg").html("System error 404. Contact Support").show();
 						},
 						405: function($data) {
-							$callback(405, $data);
+							$("#globalMsg").html("System error 405. Contact Support").show();
 						},
 						500: function($data) {
-							$callback(500, $data);
+							$("#globalMsg").html("System error 500. Contact Support").show();
 						} 
 					},
 					dataType: 'json'

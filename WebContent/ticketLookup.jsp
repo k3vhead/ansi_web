@@ -25,10 +25,13 @@
     <tiles:put name="headextra" type="string">
        	<link rel="stylesheet" href="css/lookup.css" />
     	<link rel="stylesheet" href="css/ticket.css" />
+    	<link rel="stylesheet" href="css/callNote.css" />
+    	<link rel="stylesheet" href="css/accordion.css" type="text/css" />    	
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
     	<script type="text/javascript" src="js/addressUtils.js"></script>
     	<script type="text/javascript" src="js/lookup.js"></script> 
     	<script type="text/javascript" src="js/ticket.js"></script> 
+   	    <script type="text/javascript" src="js/callNote.js"></script> 
     
         <style type="text/css">
 			#displayTable {
@@ -95,6 +98,7 @@
     			    });    				
     				TICKETLOOKUP.createTable();    				
                		TICKETUTILS.makeTicketViewModal("#ticket-modal");
+               		CALLNOTE.init();
 			    },
 			   	
 
@@ -217,7 +221,8 @@
 			            		if ( row.view_ticket_type == 'run' || row.view_ticket_type=='job') {
 			            			$claimLink = '<ansi:hasPermission permissionRequired="CLAIMS_WRITE"><a href="budgetControlLookup.html?id='+row.ticket_id+'"><webthing:invoiceIcon styleClass="green">Budget Control</webthing:invoiceIcon></a></ansi:hasPermission>';
 			            		}
-				            	$actionData = $editLink + $printLink + $overrideLink + $claimLink;
+			            		var $noteLink = '<webthing:notes xrefType="TICKET" xrefId="' + row.ticket_id + '">Ticket Notes</webthing:notes>'
+				            	$actionData = $editLink + $printLink + $overrideLink + $claimLink + $noteLink;
 			            	}
 			            	return $actionData;
 			            } }],
@@ -229,6 +234,7 @@
 			            },
 			            "drawCallback": function( settings ) {
 			            	TICKETLOOKUP.doFunctionBinding();
+			            	CALLNOTE.lookupLink();
 			            }
 			    } );
         	},
@@ -341,7 +347,7 @@
     <webthing:scrolltop />
 
     <webthing:ticketModal ticketContainer="ticket-modal" />
-
+	<webthing:callNoteModals />
     </tiles:put>
 		
 </tiles:insert>

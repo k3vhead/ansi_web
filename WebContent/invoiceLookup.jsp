@@ -197,11 +197,11 @@
 //		    });
         	
 
-			function doFunctionBinding() {
-				$( ".invoicePrint" ).on( "click", function($clickevent) {
-					invoicePrint($clickevent);
-				});
-			}
+				function doFunctionBinding() {
+					$( ".invoicePrint" ).on( "click", function($clickevent) {
+						invoicePrint($clickevent);
+					});
+				}
 				
 				
 				function invoicePrint($clickevent) {
