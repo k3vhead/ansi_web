@@ -262,17 +262,19 @@
         			$("#globalMsg").html("Error retrieving divisions. Reload page and try again");
         		},
         		
-        		
-        		
-        		
-        		makeStatusMap:function() {
-        			var $ticketStatusList = ANSI_UTILS.getOptions("TICKET_STATUS");
+
+        		populateOptionList : function($optionData) {
         			GLOBAL_DATA.ticketStatusMap = {};   // map codes to display text
         			GLOBAL_DATA.ticketSeqMap = {};		// figure out which codes can go before/after
-        			$.each($ticketStatusList.ticketStatus, function($index, $value) {
+        			$.each($optionData.ticketStatus, function($index, $value) {
         				GLOBAL_DATA.ticketStatusMap[$value.code]=$value.display;
         				GLOBAL_DATA.ticketSeqMap[$value.code]=[$value.name, $value.allPreviousValues];
         			});
+        		},
+        		
+        		
+        		makeStatusMap:function() {
+        			ANSI_UTILS.getOptionList("TICKET_STATUS",TICKET_OVERRIDE.populateOptionList);
         		},
         		
         		
