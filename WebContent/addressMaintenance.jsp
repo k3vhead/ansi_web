@@ -145,6 +145,10 @@
 				; ADDRESSMAINTENANCE = {
 					ansiModal : '<c:out value="${ANSI_MODAL}" />',
 					dataTable : null,
+					countryList : null,
+			   		invoiceGrouping : null,
+			   		invoiceTerm : null,
+			   		invoiceStyle : null,
 			
 					init : function() {
 						CALLNOTE.init();
@@ -773,18 +777,25 @@
 							$("#jobsiteBuildingTypeDefaultErr").hide();
 						});
 					},
+				   	
+				   	populateOptionList : function ($optionData) {	
+				   		ADDRESSMAINTENANCE.countryList = $optionData.country;
+				   		ADDRESSMAINTENANCE.invoiceGrouping = $optionData.invoiceGrouping;
+				   		ADDRESSMAINTENANCE.invoiceTerm = $optionData.invoiceTerm;
+				   		ADDRESSMAINTENANCE.invoiceStyle = $optionData.invoiceStyle;
+				   	},
 					
 					
 					makeOptionLists : function(){
-						$optionData = ANSI_UTILS.getOptions('COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM');
-						var $countryList = $optionData.country;
+						ANSI_UTILS.getOptionList('COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM',ADDRESSMAINTENANCE.populateOptionList);
+						//var $countryList = $optionData.country;
 						//$jobSiteDetail = "";
 
 						$('option', "#addAddressForm select[name='countryCode']").remove();
 						$('option', "#addAddressForm select[name='state']").remove();
 						$("#addAddressForm select[name='countryCode']").append(new Option("", ""));
 						$("#addAddressForm select[name='state']").append(new Option("", ""));
-		                $.each($countryList, function($index, $value) {
+		                $.each(ADDRESSMAINTENANCE.countryList, function($index, $value) {
 		                	$("#addAddressForm select[name='countryCode']").append(new Option($value.display, $value.abbrev));
 		                	
 		                	var $optGroup = $("<optgroup>");
@@ -796,9 +807,9 @@
 		                });
 		                
 		                
-		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceGroupingDefault']", $optionData.invoiceGrouping, null);
-		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceTermsDefault']", $optionData.invoiceTerm, null);
-		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceStyleDefault']", $optionData.invoiceStyle,null);
+		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceGroupingDefault']", ADDRESSMAINTENANCE.invoiceGrouping, null);
+		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceTermsDefault']", ADDRESSMAINTENANCE.invoiceTerm, null);
+		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceStyleDefault']", ADDRESSMAINTENANCE.invoiceStyle,null);
 		                
 		                
 		                // get building type options
@@ -897,11 +908,6 @@
     <tiles:put name="content" type="string">
     	<h1><bean:message key="page.label.address" /> <bean:message key="menu.label.lookup" /></h1>    	
 
-	    <ansi:hasPermission permissionRequired="ADDRESS_WRITE">
-   			<div class="addButtonDiv">
-   				<input type="button" class="addButton prettyWideButton" value="New" />
-   			</div>
-		</ansi:hasPermission>
  		<table id="addressTable" class="display" cellspacing="0" style="font-size:9pt;">
 	        <thead>
 	            <tr>

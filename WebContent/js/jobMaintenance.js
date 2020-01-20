@@ -7,8 +7,14 @@ $( document ).ready(function() {
 	;JOB_UTILS = {
 		pageInit:function($jobId) {
 
-			$optionData = ANSI_UTILS.getOptions('JOB_FREQUENCY,JOB_STATUS,INVOICE_TERM,INVOICE_GROUPING,INVOICE_STYLE,COUNTRY');
+			ANSI_UTILS.getOptionList('COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM',JOB_UTILS.populateOptionList);
 			//console.log($optionData);
+			
+			
+		},
+		
+		
+		populateOptionList : function ($optionData) {	
 			
 			JOB_DATA.jobFrequencyList = $optionData.jobFrequency;
 			JOB_DATA.jobStatusList = $optionData.jobStatus;
@@ -24,10 +30,9 @@ $( document ).ready(function() {
 			JOB_DATA.jobId = $jobId;
 			
 			JOB_UTILS.panelLoad("0",$jobId);
-			
-			
-		},
-			
+	   	},
+	   	
+	   	
 		panelLoad:function($namespace,$jobId) {			
 			var $jobDetail = null;			
 			var $quoteDetail = null;
