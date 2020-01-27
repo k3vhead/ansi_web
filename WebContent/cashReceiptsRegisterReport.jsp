@@ -148,7 +148,7 @@
         		},		
         	
                 populateDivisionSelect:function() {
-                	$data = ANSI_UTILS.makeDivisionList();
+                	$data = ANSI_UTILS.getDivisionList();
                 	$select = $("#divisionId");
         			$('option', $select).remove();
         			$select.append(new Option("",null));

@@ -606,7 +606,7 @@
 		    		
 		    		
 		    		makeOptionLists : function(){
-						ANSI_UTILS.getOptionList('JOB_STATUS,JOB_FREQUENCY,COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM', NEWQUOTE.populateOptions);
+						NEWQUOTE.getOptions('JOB_STATUS,JOB_FREQUENCY,COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM', NEWQUOTE.populateOptions);
 						NEWQUOTE.incrementProgress("Job Status List");
 						NEWQUOTE.incrementProgress("Job Frequency List");
 						
