@@ -89,7 +89,8 @@
 					PAYMENT.createModals();
 					PAYMENT.makePickers();
 					PAYMENT.makeClickers();
-					PAYMENT.autocomplete();  
+					PAYMENT.autocomplete(); 
+		        	ANSI_UTILS.getOptionList("PAYMENT_METHOD",PAYMENT.populateOptionList); 
 		        	if ( PAYMENT.paymentId == '' ) {
 		        		PAYMENT.paymentModal();
 		        		PAYMENT.paymentAction = "new";
@@ -113,10 +114,6 @@
 		        		$.each($optionData.paymentMethod, function(index, val) {
 							$("#paymentMethod").append(new Option(val.display, val.abbrev));
 						});
-		        	},
-		        	
-		        	makeOptionLists : function(){
-			        	ANSI_UTILS.getOptionList("PAYMENT_METHOD",PAYMENT.populateOptionList);
 			        	$('option', $("#paymentMethod")).remove();
 			        	$("#paymentMethod").append(new Option("",""));
 		        	},

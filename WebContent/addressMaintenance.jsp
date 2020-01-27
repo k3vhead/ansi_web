@@ -783,18 +783,6 @@
 				   		ADDRESSMAINTENANCE.invoiceGrouping = $optionData.invoiceGrouping;
 				   		ADDRESSMAINTENANCE.invoiceTerm = $optionData.invoiceTerm;
 				   		ADDRESSMAINTENANCE.invoiceStyle = $optionData.invoiceStyle;
-				   	},
-					
-					
-					makeOptionLists : function(){
-						ANSI_UTILS.getOptionList('COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM',ADDRESSMAINTENANCE.populateOptionList);
-						//var $countryList = $optionData.country;
-						//$jobSiteDetail = "";
-
-						$('option', "#addAddressForm select[name='countryCode']").remove();
-						$('option', "#addAddressForm select[name='state']").remove();
-						$("#addAddressForm select[name='countryCode']").append(new Option("", ""));
-						$("#addAddressForm select[name='state']").append(new Option("", ""));
 		                $.each(ADDRESSMAINTENANCE.countryList, function($index, $value) {
 		                	$("#addAddressForm select[name='countryCode']").append(new Option($value.display, $value.abbrev));
 		                	
@@ -815,6 +803,18 @@
 		                // get building type options
 		                ANSI_UTILS.populateCodeSelect("job","building_type","#addAddressForm select[name='jobsiteBuildingTypeDefault']","value","displayValue");
 		                ANSI_UTILS.populateCodeSelect("quote", "account_type", "#addAddressForm select[name='billtoAccountTypeDefault']", "value","displayValue");
+				   	},
+					
+					
+					makeOptionLists : function(){
+						ANSI_UTILS.getOptionList('COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM',ADDRESSMAINTENANCE.populateOptionList);
+						//var $countryList = $optionData.country;
+						//$jobSiteDetail = "";
+
+						$('option', "#addAddressForm select[name='countryCode']").remove();
+						$('option', "#addAddressForm select[name='state']").remove();
+						$("#addAddressForm select[name='countryCode']").append(new Option("", ""));
+						$("#addAddressForm select[name='state']").append(new Option("", ""));
 		            },
 		            
 		            
