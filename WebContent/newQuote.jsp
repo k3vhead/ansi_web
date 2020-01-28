@@ -168,39 +168,6 @@
 					
 					
 					
-					
-	    			
-	    			
-	    			
-	    			
-					getDivisionList : function($callback) {
-						console.log("getDivisionList");
-						var jqxhr3 = $.ajax({
-							type: 'GET',
-							url: 'division/list',
-							data: {},
-							statusCode: {
-								200:function($data) {
-									$callback($data.data);
-									NEWQUOTE.incrementProgress("Division List");
-								},
-								403: function($data) {								
-									$("#globalMsg").html("Session Expired. Log In and try again").show();
-								},
-								404: function($data) {
-									$("#globalMsg").html("System Error Division 404. Contact Support").show();
-								},
-								500: function($data) {
-									$("#globalMsg").html("System Error Division 500. Contact Support").show();
-								}
-							},
-							dataType: 'json',
-							async:false
-						});
-					},
-					
-					
-					
 					getJobPanel : function() {
 						console.log("getJobPanel");
 						var jqxhr1 = $.ajax({
@@ -228,35 +195,6 @@
 		    				dataType: 'html'
 		    			});
 					},
-					
-					
-					getOptions : function($optionList, $callBack) {
-						console.log("getOptions");
-		    			var $returnValue = null;
-		    			var jqxhr1 = $.ajax({
-		    				type: 'GET',
-		    				url: 'options',
-		    				data: $optionList,			    				
-		    				statusCode: {
-		    					200: function($data) {
-		    						$callBack($data.data);		    						
-		    					},			    				
-		    					403: function($data) {
-		    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-		    					}, 
-		    					404: function($data) {
-		    						$("#globalMsg").html("System Error Option 404. Contact Support").show();
-		    					}, 
-		    					405: function($data) {
-		    						$("#globalMsg").html("System Error Option 405. Contact Support").show();
-		    					}, 
-		    					500: function($data) {
-		    						$("#globalMsg").html("System Error Option 500. Contact Support").show();
-		    					}, 
-		    				},
-		    				dataType: 'json'
-		    			});
-		    		},
 		            
 		            
 		            
@@ -606,12 +544,12 @@
 		    		
 		    		
 		    		makeOptionLists : function(){
-						NEWQUOTE.getOptions('JOB_STATUS,JOB_FREQUENCY,COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM', NEWQUOTE.populateOptions);
+						ANSI_UTILS.getOptionList('JOB_STATUS,JOB_FREQUENCY,COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM', NEWQUOTE.populateOptions);
 						NEWQUOTE.incrementProgress("Job Status List");
 						NEWQUOTE.incrementProgress("Job Frequency List");
 						
 						
-						NEWQUOTE.getDivisionList(NEWQUOTE.populateDivisionList);
+						ANSI_UTILS.makeDivisionList(NEWQUOTE.populateDivisionList);
 						
 						
 						NEWQUOTE.getCodeList("job", "building_type", NEWQUOTE.populateBuildingType);
@@ -890,6 +828,9 @@
 						$.each(NEWQUOTE.divisionList, function(index, val) {
 						    $select.append(new Option(val.divisionNbr + "-" + val.divisionCode, val.divisionId));
 						});
+						
+
+						NEWQUOTE.incrementProgress("Division List");
 		            },
 		            
 		            
