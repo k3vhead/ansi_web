@@ -10,7 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.collections4.Transformer;
 
-import com.ansi.scilla.common.jobticket.TicketStatus;
+import com.ansi.scilla.common.document.DocumentType;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.servlet.AbstractLookupServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
@@ -34,6 +34,7 @@ public class DocumentLookupServlet extends AbstractLookupServlet {
 	public static final String XREF_TYPE = "xref_type";
 	public static final String XREF_ID = "xref_id";
 	public static final String XREF_DISPLAY = "xref_display";
+	public static final String XREF_TYPE_DISPLAY = "xref_type_display";
 
 	public DocumentLookupServlet() {
 		super(Permission.CLAIMS_READ);
@@ -98,6 +99,8 @@ public class DocumentLookupServlet extends AbstractLookupServlet {
 				arg0.put(EXPIRATION_DATE, expirationDateDisplay);
 			}
 			
+			DocumentType documentType = DocumentType.valueOf((String)arg0.get(XREF_TYPE));
+			arg0.put(XREF_TYPE_DISPLAY, documentType.description());
 			return arg0;
 		}
 		

@@ -25,19 +25,14 @@
     <tiles:put name="headextra" type="string">
        	<link rel="stylesheet" href="css/lookup.css" />
     	<link rel="stylesheet" href="css/ticket.css" />
+    	<link rel="stylesheet" href="css/document.css" />
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
     	<script type="text/javascript" src="js/addressUtils.js"></script>
     	<script type="text/javascript" src="js/lookup.js"></script> 
-    	<script type="text/javascript" src="js/ticket.js"></script> 
+    	<script type="text/javascript" src="js/document.js"></script> 
     
         <style type="text/css">
-        	#messaeg-modal {
-        		display:none;
-        	}
-        	#new-document-modal {
-        		display:none;
-        	}
-	        #table-container {
+        	#table-container {
         		width:100%;
         	}
 			#filter-container {
@@ -57,197 +52,44 @@
         $(document).ready(function(){
         	;DOCUMENTLOOKUP = {
         		dataTable : null,
-        		docTypeList : [],
-        		
-        		divisionFilter : '<c:out value="${ANSI_DIVISION_ID}" />',	// col 1
-				jobFilter : '<c:out value="${ANSI_JOB_ID}" />', 			// col 7
-				ticketFilter : '<c:out value="${ANSI_TICKET_ID}" />',   	//col 0
-				washerFilter : '<c:out value="${ANSI_WASHER_ID}" />',		//col 9
-
-        		
+        		uploadMessage : '<c:out value="${ansi_upload_message}" />',
         		
         		init : function() {
         			DOCUMENTLOOKUP.makeTable();
-        			DOCUMENTLOOKUP.makeModals();        			
-        			DOCUMENTLOOKUP.makeClickers();
-        			ANSI_UTILS.getOptionList("DOCUMENT_TYPE",DOCUMENTLOOKUP.makeDocTypeList);
+        			DOCUTILS.init('#document-lookup-table');        			
+        			DOCUMENTLOOKUP.makeClickers();  
+        			if ( DOCUMENTLOOKUP.uploadMessage != null && DOCUMENTLOOKUP.uploadMessage != '') {
+        				$("#globalMsg").html(DOCUMENTLOOKUP.uploadMessage).show().fadeOut(3000);
+        			}
         		},
         		
         		
         		
         		doFunctionBinding : function() {
-    				//$(".ticket-clicker").on("click", function($clickevent) {
-    				//	$clickevent.preventDefault();
-    				//	var $ticketId = $(this).attr("data-id");
-    				//	TICKETUTILS.doTicketViewModal("#ticket-modal",$ticketId);
-    				//	$("#ticket-modal").dialog("open");
-    				//});
+    				
 
     			},
     			
     			
     			
-    			doSaveDocument2 : function() {
-    				var $form = document.getElementById("#new-document-form");
-    				var $formData = new FormData($form);
-    				var $xhr = new XMLHttpRequest();
-    				xhr.open("POST", "documents/documentUpload");
-    				xhr.send($formData);
-    			},
     			
     			
     			
-    			doSaveDocument : function() {
-    				console.log("doSaveDocument");
-    				var myFormData = new FormData();
-    				console.log(myFormData);
-    				var $file = $("#new-document-modal input[name='fileSelect']")[0].files[0]
-    				console.log("fileSelect");
-    				myFormData.append('fileSelect',$file);
-    				console.log(myFormData);
-    				console.log("documentType");
-    				myFormData.append( 'documentType', $("#new-document-modal select[name='documentType']").val() );
-    				console.log(myFormData);
-    				$.each( $("#new-document-modal input"), function($index, $value) {
-    					if ( $value.name != 'fileSelect' ) {
-    						console.log($value.name);
-    						myFormData.append($value.name, $value.value)	
-    						console.log(myFormData);
-    					}    					
+    			
+    			makeClickers : function() {
+    				$('.ScrollTop').click(function() {
+    					$('html, body').animate({scrollTop: 0}, 800);
+    					return false;
+    	       	    });
+    				
+    				$("#new-document-button").click(function() {
+    					DOCUTILS.showAddModal()
     				});
-    				
-    				console.log(myFormData);
-    				console.log(myFormData.values());
-    				//$.ajax({
-    				//	url: "documents/documentUpload",
-    				//	type: "POST",
-    				//	data: myFormData,
-    				//	contentType: 'multipart/form-data',
-    				//	processData: false,
-    				//	success: function(response) {
-    				//		if ( response != 0 ) {
-    				//			alert("success");
-    				//		} else {
-    				//			alert("failed");
-    				//		}
-    				//	},
-    				//	error: function(response) {
-    				//		alert("error");
-    				//	}
-    				//});
-    				
-    				var jqxhr = $.ajax({
-    					type: 'POST',
-    					url: "documents/documentUpload",
-    					data: myFormData,
-    					contentType: 'multipart/form-data',
-    					processData: false,
-    					statusCode: {
-    						200: function($data) { 
-    							$("#message-modal").html($data);
-    							$("#message-modal").dialog("open");
-    						},
-    						403: function($data) {
-    							$("#globalMessage").html("Session has expired. Login and try again").show();
-    						},
-    						404: function($data) {
-    							$("#globalMessage").html("System Error 404. Contact Support").show();
-    						},
-    						405: function($data) {
-    							$("#globalMessage").html("System Error 405. Contact Support").show();
-    						},
-    						500: function($data) {
-    							$("#globalMessage").html("System Error 500. Contact Support").show();
-    						} 
-    					},
-    					dataType: 'html'
-    				});	
-
     			},
-    			
-    			
-    			
-    			
-
-        		makeClickers : function() {
-        			$('.ScrollTop').click(function() {
-        				$('html, body').animate({scrollTop: 0}, 800);
-        				return false;
-               	    });
-        			
-        			$("#new-document-button").click(function() {
-        				$("#new-document-modal .err").html("");
-        				$("#new-document-modal").dialog("open");
-        			});
-        		},
-        		
-        		
-        		makeDocTypeList : function($data) {
-        			console.log("makeDocTypeList");
-        			var $select = $("#new-document-modal select[name='documentType']");
-					$('option', $select).remove();
-					$select.append(new Option("",""));
-					$.each($data.documentType, function(index, val) {
-					    $select.append(new Option(val.display, val.code));
-					});	
-        		},
         		
         		
         		
         		
-        		makeModals : function() {
-        			$("#new-document-modal" ).dialog({
-						title:'New Document',
-						autoOpen: false,
-						height: 400,
-						width: 600,
-						modal: true,
-						buttons: [
-							{
-								id: "new-document-cancel-button",
-								click: function() {
-									$("#new-document-modal").dialog( "close" );
-								}
-							},{
-								id: "new-document-go-button",
-								click: function($event) {
-									console.log("Saving a new document");
-									//DOCUMENTLOOKUP.doSaveDocument();
-									DOCUMENTLOOKUP.doSaveDocument2();
-								}
-							}	      	      
-						],
-						close: function() {
-							$("#new-document-modal").dialog( "close" );
-							//allFields.removeClass( "ui-state-error" );
-						}
-					});        			
-        			$('#new-document-cancel-button').button('option', 'label', 'Cancel');
-        			$('#new-document-go-button').button('option', 'label', 'Save');
-        			
-        			
-        			
-        			$("#message-modal" ).dialog({
-						title:'System Message',
-						autoOpen: false,
-						height: 200,
-						width: 400,
-						modal: true,
-						buttons: [
-							{
-								id: "message-cancel-button",
-								click: function() {
-									$("#message-modal").dialog( "close" );
-								}
-							}	      	      
-						],
-						close: function() {
-							$("#message-modal").dialog( "close" );
-							//allFields.removeClass( "ui-state-error" );
-						}
-					});        			
-        			$('#message-cancel-button').button('option', 'label', 'Close');
-        		},
         		
         		
         		
@@ -289,6 +131,9 @@
     			            { width:"10%", title: "<bean:message key="field.label.documentId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.document_id != null){return row.document_id;}
     			            } },
+    			            { width:"10%", title: "<bean:message key="field.label.documentType" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+    			            	if(row.xref_type_display != null){return row.xref_type_display;}
+    			            } },
     			            { width:"25%", title: "<bean:message key="field.label.description" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.description != null){return row.description;}
     			            } },
@@ -302,14 +147,10 @@
     			            	if(row.xref_display != null){return (row.xref_display);}
     			            } },
     			            { width:"10%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {
-    			            	//var $assign ='<ansi:hasPermission permissionRequired="TICKET_WRITE"><a href="ticketAssignment.html?ticketId='+row.view_ticket_id+'&divisionId='+row.division_id+'"><webthing:assign styleClass="orange">Assign Ticket</webthing:assign></a></ansi:hasPermission>';
-    			            	//var $claimTkt = "";
-    			            	//var $claimWasher = "";
-    			            	
-    			            	return '<a href="#" class="viewAction" data-id="'+row.xref_id+'"><webthing:view>View</webthing:view></a>';
-    			            } },
-    			            { width:"25%", title: " ", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-    			            	return ' ';
+								var $viewLink = '<a href="#" class="document-view-action-link" data-id="'+row.document_id+'"><webthing:view>View</webthing:view></a>';
+    			            	var $editLink = '<a href="#" class="document-edit-action-link" data-id="'+row.document_id+'"><webthing:edit>Edit</webthing:edit></a>';
+    			            	var $deleteLink = '<a href="#" class="document-delete-action-link" data-id="'+row.document_id+'"><webthing:delete>Delete</webthing:delete></a>';
+    			            	return $viewLink + $editLink + $deleteLink
     			            } }],
     			            "initComplete": function(settings, json) {
     			            	console.log("initComplete");
@@ -322,6 +163,7 @@
     			            	console.log("drawCallback");
     			            	//$("#searching-modal").dialog("close");
     			            	DOCUMENTLOOKUP.doFunctionBinding();
+    			            	DOCUTILS.documentLink();
     			            }
     			    } );
             	},
@@ -365,51 +207,10 @@
 	    
 	    <webthing:scrolltop />
 	
-	    <div id="new-document-modal">
-	    	<form id="new-document-form">
-	    		<table>
-	    			<tr>
-	    				<td><span class="form-label">ID:</span></td>
-	    				<td><input type="hidden" name="documentId" /><span class="documentId"></span></td>
-	    				<td><span class="documentId-err err"></span></td>
-	    			</tr>
-	    			<tr>
-	    				<td><span class="form-label">Description:</span></td>
-	    				<td><input type="text" name="description" /></td>
-	    				<td><span class="description-err err"></span></td>
-	    			</tr>
-	    			<tr>
-	    				<td><span class="form-label">Document Date:</span></td>
-	    				<td><input type="date" name="documentDate" /></td>
-	    				<td><span class="documentDate-err err"></span></td>
-	    			</tr>
-	    			<tr>
-	    				<td><span class="form-label">Expiration Date:</span></td>
-	    				<td><input type="date" name="expirationDate" /></td>
-	    				<td><span class="expirationDate-err err"></span></td>
-	    			</tr>
-	    			<tr>
-	    				<td><span class="form-label">Document Type:</span></td>
-	    				<td><select name="documentType"></select></td>
-	    				<td><span class="documentType-err err"></span></td>
-	    			</tr>
-	    			<tr>
-	    				<td><span class="form-label">Xref:</span></td>
-	    				<td><input type="text" name="xrefId" /></td>
-	    				<td><span class="xrefId-err err"></span></td>
-	    			</tr>
-	    			<tr>
-	    				<td><span class="form-label">File:</span></td>
-	    				<td><input type="file" name="fileSelect" id="fileSelect" /></td>
-	    				<td><span class="fileSelect-err err"></span></td>
-	    			</tr>
-	    		</table>
-    		</form>
-    	</div>
+	    <webthing:documentModals />
 
 
-		<div id="message-modal">
-		</div>
+		
     </tiles:put>
 		
 </tiles:insert>
