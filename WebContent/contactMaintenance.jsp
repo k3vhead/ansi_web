@@ -227,6 +227,7 @@
 				            },
 				            "drawCallback": function( settings ) {
 				            	CALLNOTE.lookupLink();
+				            	CONTACTMAINTENANCE.doFunctionBinding();
 				            }
 				    } );
 	        	},
