@@ -783,21 +783,6 @@
 				   		ADDRESSMAINTENANCE.invoiceGrouping = $optionData.invoiceGrouping;
 				   		ADDRESSMAINTENANCE.invoiceTerm = $optionData.invoiceTerm;
 				   		ADDRESSMAINTENANCE.invoiceStyle = $optionData.invoiceStyle;
-		                $.each(ADDRESSMAINTENANCE.countryList, function($index, $value) {
-		                	$("#addAddressForm select[name='countryCode']").append(new Option($value.display, $value.abbrev));
-		                	
-		                	var $optGroup = $("<optgroup>");
-		                	$optGroup.attr("label",$value.display);
-		                	$.each($value.stateList, function($stateIndex, $stateValue) {
-		                		$optGroup.append(new Option($stateValue.display, $stateValue.abbreviation));
-		                	});
-		                	$("#addAddressForm select[name='state']").append($optGroup);
-		                });
-		                
-		                
-		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceGroupingDefault']", ADDRESSMAINTENANCE.invoiceGrouping, null);
-		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceTermsDefault']", ADDRESSMAINTENANCE.invoiceTerm, null);
-		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceStyleDefault']", ADDRESSMAINTENANCE.invoiceStyle,null);
 		                
 		                
 		                // get building type options
@@ -815,6 +800,21 @@
 						$('option', "#addAddressForm select[name='state']").remove();
 						$("#addAddressForm select[name='countryCode']").append(new Option("", ""));
 						$("#addAddressForm select[name='state']").append(new Option("", ""));
+		                $.each(ADDRESSMAINTENANCE.countryList, function($index, $value) {
+		                	$("#addAddressForm select[name='countryCode']").append(new Option($value.display, $value.abbrev));
+		                	
+		                	var $optGroup = $("<optgroup>");
+		                	$optGroup.attr("label",$value.display);
+		                	$.each($value.stateList, function($stateIndex, $stateValue) {
+		                		$optGroup.append(new Option($stateValue.display, $stateValue.abbreviation));
+		                	});
+		                	$("#addAddressForm select[name='state']").append($optGroup);
+		                });
+		                
+		                
+		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceGroupingDefault']", ADDRESSMAINTENANCE.invoiceGrouping, null);
+		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceTermsDefault']", ADDRESSMAINTENANCE.invoiceTerm, null);
+		                ANSI_UTILS.setOptionList("#addAddressForm select[name='invoiceStyleDefault']", ADDRESSMAINTENANCE.invoiceStyle,null);
 		            },
 		            
 		            

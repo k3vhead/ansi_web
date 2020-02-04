@@ -85,7 +85,6 @@
 				dataTable : null,
 		
 				init : function() {
-					PAYMENT.makeOptionLists();
 					PAYMENT.createModals();
 					PAYMENT.makePickers();
 					PAYMENT.makeClickers();
@@ -110,7 +109,7 @@
         		
 		        	//
 		        	
-		        	populateOptionList : function($optionData,$callback) {
+		        	populateOptionList : function($optionData) {
 		        		$.each($optionData.paymentMethod, function(index, val) {
 							$("#paymentMethod").append(new Option(val.display, val.abbrev));
 						});

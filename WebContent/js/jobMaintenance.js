@@ -390,7 +390,7 @@ $( document ).ready(function() {
 			
 			return $returnData;
 		},	
-		getJobDetail:function($jobId) {			
+		getJobDetail:function($jobId,$callback) {			
 			var $returnValue = null;
 			if ( $jobId != null ) {
 				var $url = "job/" + $jobId
@@ -400,21 +400,19 @@ $( document ).ready(function() {
 					data: {},
 					statusCode: {
 						200: function($data) {
-							$returnValue = $data.data;
-						},					
+							$callback($data.data)
+						},				
 						403: function($data) {
-							$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+							$("#globalMsg").html("Session Expired. Log In and try again").show();
 						},
 						404: function($data) {
-							$returnValue = {};
+							$("#globalMsg").html("Invalid Status").show().fadeOut(4000);
 						},
 						500: function($data) {
-							$("#globalMsg").html("System Error: Contact Support");
-							$returnValue={};
+							$("#globalMsg").html("System Error 500. Contact Support").show();
 						}
-					},
+					},					
 					dataType: 'json',
-					async:false
 				});
 			}
 			return $returnValue;
