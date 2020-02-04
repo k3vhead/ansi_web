@@ -72,6 +72,27 @@ public enum SpecialOverrideType {
 				},
 			Permission.PAYMENT_OVERRIDE
 		),
+	
+	UPDATE_PAYMENT_NOTE(
+			"Update Payment Notes",
+			"select * from payment where payment_id=? and payment_date=?",
+			new ParameterType[] { 
+					new ParameterType("Payment Id", "payment_id", Integer.class), 
+					new ParameterType("Payment Date", "payment_date", java.sql.Date.class), 
+				},
+			"update payment set payment_note=? where payment_id=? and payment_date=?",
+			new ParameterType[] { 
+					new ParameterType("Payment Date", "payment_date", java.sql.Date.class), 
+					new ParameterType("Payment Id", "payment_id", Integer.class), 
+				},
+			"select * from payment where payment_id=? and payment_date=?",
+			new ParameterType[] { 
+					new ParameterType("Payment Date", "payment_date", java.sql.Date.class), 
+					new ParameterType("Payment Id", "payment_id", Integer.class), 
+				},
+			Permission.PAYMENT_OVERRIDE
+		),
+	
 	;
 
 	
