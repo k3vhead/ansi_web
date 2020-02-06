@@ -82,12 +82,55 @@ public enum SpecialOverrideType {
 				},
 			"update payment set payment_note=? where payment_id=? and payment_date=?",
 			new ParameterType[] { 
+					new ParameterType("Payment Note", "payment_note", String.class),
+					new ParameterType("Payment Id", "payment_id", Integer.class),
+					new ParameterType("Payment Date", "payment_date", java.sql.Date.class),
+				},
+			"select * from payment where payment_id=? and payment_date=?",
+			new ParameterType[] { 
+					new ParameterType("Payment Id", "payment_id", Integer.class), 
+					new ParameterType("Payment Date", "payment_date", java.sql.Date.class), 
+				},
+			Permission.PAYMENT_OVERRIDE
+		),
+	
+	UPDATE_PAYMENT_AMOUNT(
+			"Update Payment Amount",
+			"select * from payment where payment_id=? and payment_date=?",
+			new ParameterType[] { 
+					new ParameterType("Payment Id", "payment_id", Integer.class), 
+					new ParameterType("Payment Date", "payment_date", java.sql.Date.class), 
+				},
+			"update payment set payment_amount=? where payment_id=? and payment_date=?",
+			new ParameterType[] { 
+					new ParameterType("Payment Amount", "payment_amount", BigDecimal.class),
 					new ParameterType("Payment Date", "payment_date", java.sql.Date.class), 
 					new ParameterType("Payment Id", "payment_id", Integer.class), 
 				},
 			"select * from payment where payment_id=? and payment_date=?",
 			new ParameterType[] { 
 					new ParameterType("Payment Date", "payment_date", java.sql.Date.class), 
+					new ParameterType("Payment Id", "payment_id", Integer.class), 
+				},
+			Permission.PAYMENT_OVERRIDE
+		),
+	
+	UNCOMPLETE_TICKET(
+			"Uncomplete a Ticket",
+			"select * from ticket where ticket_id=? and ticket_status='C'",
+			new ParameterType[] { 
+					new ParameterType("Ticket Id", "ticket_id", Integer.class), 
+//					new ParameterType("Ticket Status", "ticket_status", String.class), 
+				},
+			"update ticket set ticket_status='D', process_date=null, process_notes='completed in error',"
+			+ " customer_signature=0, bill_sheet=0, mgr_approval=0 where ticket_id=? and ticket_status='C'",
+			new ParameterType[] { 
+//					new ParameterType("Payment Amount", "payment_amount", BigDecimal.class),
+//					new ParameterType("Payment Date", "payment_date", java.sql.Date.class), 
+					new ParameterType("Ticket Id", "ticket_id", Integer.class), 
+				},
+			"select * from ticket where ticket_id=?",
+			new ParameterType[] { 
 					new ParameterType("Payment Id", "payment_id", Integer.class), 
 				},
 			Permission.PAYMENT_OVERRIDE
