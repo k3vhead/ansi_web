@@ -37,7 +37,7 @@ public class DocumentLookupServlet extends AbstractLookupServlet {
 	public static final String XREF_TYPE_DISPLAY = "xref_type_display";
 
 	public DocumentLookupServlet() {
-		super(Permission.CLAIMS_READ);
+		super((Permission)null);
 		cols = new String[] { 
 				DOCUMENT_ID,
 				DESCRIPTION,
@@ -56,6 +56,8 @@ public class DocumentLookupServlet extends AbstractLookupServlet {
 	public LookupQuery makeQuery(Connection conn, HttpServletRequest request) {
 		HttpSession session = request.getSession();
 		SessionData sessionData = (SessionData)session.getAttribute(SessionData.KEY);
+		
+		
 		
 		SessionUser user = sessionData.getUser();
 		List<SessionDivision> divisionList = sessionData.getDivisionList();

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 
 import com.ansi.scilla.common.document.DocumentType;
@@ -55,6 +56,16 @@ public class DocumentLookupQuery extends LookupQuery {
 		this.searchTerm = searchTerm;
 	}
 
+	public DocumentLookupQuery(Integer userId, List<SessionDivision> divisionList, String xrefType, Integer xrefId) {
+		super(makeSqlSelect(), makeSqlFrom(), makeSqlWhere(xrefType, xrefId));
+		this.logger = LogManager.getLogger(this.getClass());
+		this.userId = userId;
+	}
+	
+	private static String makeSqlWhere(String xrefType, Integer xrefId) {
+		return "where document.xref_type='" + xrefType + "' and document.xref_id=" + xrefId;
+	}
+
 	private static String makeSqlSelect() {
 		List<String> sqlSelect = new ArrayList<String>();
 		for ( DocumentType type : DocumentType.values()) {
@@ -98,14 +109,17 @@ public class DocumentLookupQuery extends LookupQuery {
 	 * @throws Exception
 	 */
 	protected String makeWhereClause(String queryTerm)  {
-		String whereClause = DocumentLookupQuery.baseWhereClause;
+		String whereClause = super.getBaseWhereClause();
+		logger.log(Level.DEBUG, whereClause);
 		String joiner = StringUtils.isBlank(baseWhereClause) ? " where " : " and ";
+		logger.log(Level.DEBUG, joiner);
 		if (! StringUtils.isBlank(queryTerm)) {
 				whereClause =  whereClause + joiner + " (\n"
 						+ " lower(concat(job_site.name, ' ', job_site.address1, ' ', job_site.city)) like '%" + queryTerm.toLowerCase() + "%'" +
 						"\n OR ticket.ticket_id like '%" + queryTerm.toLowerCase() + "%'" +
 						")" ;
 		}
+		logger.log(Level.DEBUG, whereClause);
 		return whereClause;
 	}
 	

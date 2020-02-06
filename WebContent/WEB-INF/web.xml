@@ -215,7 +215,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>documentLookup</servlet-name>
-        <url-pattern>/documents/documentLookup</url-pattern>
+        <url-pattern>/document/documentLookup</url-pattern>
     </servlet-mapping>
 
 
@@ -252,7 +252,18 @@
     </servlet-mapping>
 
     
+	<servlet>
+        <servlet-name>documentViewLookup</servlet-name>
+        <servlet-class>com.ansi.scilla.web.document.servlet.DocumentViewLookupServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>documentViewLookup</servlet-name>
+        <url-pattern>/document/viewLookup/*</url-pattern>
+    </servlet-mapping>
+
     
+    
+   
    <servlet>
         <servlet-name>claimDetailLookup</servlet-name>
         <servlet-class>com.ansi.scilla.web.claims.servlet.ClaimDetailLookupServlet</servlet-class>

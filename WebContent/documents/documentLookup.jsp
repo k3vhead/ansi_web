@@ -123,7 +123,7 @@
             	         ],
             	        "paging": true,
     			        "ajax": {
-    			        	"url": "documents/documentLookup",
+    			        	"url": "document/documentLookup",
     			        	"type": "GET",
     			        	"data": {}
     			        	},
