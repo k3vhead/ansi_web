@@ -2,8 +2,8 @@ package com.ansi.scilla.web.specialOverride.common;
 
 import java.math.BigDecimal;
 
-import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.common.jobticket.TicketStatus;
+import com.ansi.scilla.web.common.utils.Permission;
 
 public enum SpecialOverrideType {
 	
@@ -102,59 +102,40 @@ public enum SpecialOverrideType {
 					new ParameterType("Payment Id", "payment_id", Integer.class), 
 					new ParameterType("Payment Date", "payment_date", java.sql.Date.class), 
 				},
-			"update payment set amount=? where payment_id=? and payment_date=?",
+			"update payment set payment_amount=? where payment_id=? and payment_date=?",
 			new ParameterType[] { 
-					new ParameterType("Payment Amount", "amount", BigDecimal.class),
-					new ParameterType("Payment Id", "payment_id", Integer.class), 
+					new ParameterType("Payment Amount", "payment_amount", BigDecimal.class),
 					new ParameterType("Payment Date", "payment_date", java.sql.Date.class), 
+					new ParameterType("Payment Id", "payment_id", Integer.class), 
 				},
 			"select * from payment where payment_id=? and payment_date=?",
 			new ParameterType[] { 
-					new ParameterType("Payment Id", "payment_id", Integer.class), 
 					new ParameterType("Payment Date", "payment_date", java.sql.Date.class), 
+					new ParameterType("Payment Id", "payment_id", Integer.class), 
 				},
 			Permission.PAYMENT_OVERRIDE
 		),
 	
 	UNCOMPLETE_TICKET(
 			"Uncomplete a Ticket",
-			"select * from ticket where ticket_id=? and ticket_status='"+ TicketStatus.COMPLETED.code() +"'",
+			"select * from ticket where ticket_id=? and ticket_status='"+TicketStatus.COMPLETED.code()+"'",
 			new ParameterType[] { 
 					new ParameterType("Ticket Id", "ticket_id", Integer.class), 
+//					new ParameterType("Ticket Status", "ticket_status", String.class), 
 				},
-			"update ticket set ticket_status='"+ TicketStatus.DISPATCHED.code() +"', process_date=null, process_notes='completed in error',"
-			+ " customer_signature=0, bill_sheet=0, mgr_approval=0 where ticket_id=? and ticket_status='"+ TicketStatus.COMPLETED.code() +"'",
+			"update ticket set ticket_status='D', process_date=null, process_notes='completed in error',"
+			+ " customer_signature=0, bill_sheet=0, mgr_approval=0 where ticket_status='C and ticket_id=?'",
 			new ParameterType[] { 
+//					new ParameterType("Payment Amount", "payment_amount", BigDecimal.class),
+//					new ParameterType("Payment Date", "payment_date", java.sql.Date.class), 
 					new ParameterType("Ticket Id", "ticket_id", Integer.class), 
 				},
 			"select * from ticket where ticket_id=?",
 			new ParameterType[] { 
-					new ParameterType("Payment Id", "payment_id", Integer.class), 
+					new ParameterType("Ticket Id", "ticket_id", Integer.class), 
 				},
 			Permission.TICKET_OVERRIDE
 		),
-	
-//	UPDATE_TICKET_DIFFERENT_JOB(
-//			"Update Ticket to a Different Job",
-//			"select * from ticket where ticket_id in (?,?)",
-//			new ParameterType[] {
-//					new ParameterType("Ticket to Change", "ticket_id", Integer.class),
-//					new ParameterType("Ticket to Match", "ticket_id", Integer.class),
-//			}
-//			"update ticket set job_id=(select job_id from ticket where ticket_id=?), "
-//			+ "act_division_id=(select act_division_id from ticket where ticket_id=?), "
-//			+ "updated_by = @user, updated_date=sysdatetime() where ticket_id in (?)",
-//			new ParameterType[] {
-//					new ParameterType("Ticket to Change", "ticket_to_change", Integer.class),
-//					new ParameterType("Ticket to Match", "ticket_to_match", Integer.class),
-//			},
-//			"select * from ticket where ticket_id in (?,?)",
-//			new ParameterType[] {
-//					new ParameterType("Ticket to Change", "ticket_to_change", Integer.class),
-//					new ParameterType("Ticket to Match", "ticket_to_match", Integer.class),
-//			},
-//			Permission.PAYMENT_OVERRIDE
-//		),
 	
 	;
 
