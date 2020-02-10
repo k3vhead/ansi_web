@@ -390,8 +390,7 @@ $( document ).ready(function() {
 			
 			return $returnData;
 		},	
-		getJobDetail:function($jobId,$callback) {			
-			var $returnValue = null;
+		getJobDetail:function($jobId,$callback) {	
 			if ( $jobId != null ) {
 				var $url = "job/" + $jobId
 				var jqxhr = $.ajax({
@@ -415,7 +414,6 @@ $( document ).ready(function() {
 					dataType: 'json',
 				});
 			}
-			return $returnValue;
 
 		},
 		deleteJob: function($namespace,$rn){
