@@ -34,57 +34,69 @@
 
         </style>
         
-        <script type="text/javascript">        
-        $( document ).ready(function() {
-        	$('.dateField').datepicker({
-                prevText:'&lt;&lt;',
-                nextText: '&gt;&gt;',
-                showButtonPanel:true
-            });
-
-        	
-        	
-        	
-
-        $("#goButton").click(function($event){
-        	var $invoiceDate = $("#invoiceDate").val();
-        	var $monthlyFlag = $("#monthlyFlag").prop('checked');
-        	var $outbound = {'invoiceDate':$invoiceDate, 'monthlyFlag':$monthlyFlag}
-            var jqxhr = $.ajax({
-    			type: 'POST',
-    			url: 'invoiceGeneration/',
-    			data: JSON.stringify($outbound),
-    			success: function($data) {
-    				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-    					$.each($data.data.webMessages, function (key, value) {
-    						var $selectorName = "#" + key + "Err";
-    						$($selectorName).show();
-    						$($selectorName).html(value[0]).fadeOut(4000);
-    					});
-    				} else {
-    					//$("#globalMsg").html($data.responseHeader.responseMessage).fadeOut(4000);
-    		        	//$("#invoiceDate").val("");
-    		        	//$("#monthlyFlag").prop('checked', false);
-    		        	console.debug("Invoices genned");
-    		        	$("#printForm input[name=message]").val("Success! Invoices Generated");
-    					console.debug("form submit");
-    				    $("#printForm").submit();
-    		        	
-    				}
-    			},
-    			statusCode: {
-    				403: function($data) {
-    					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-    				},
-    				500: function($data) {
-         	    		$("#globalMsg").html("System Error: Contact Support").fadeIn(10);
-         	    	} 
-    			},
-    			dataType: 'json'
-    		});        	
-        });
+        <script type="text/javascript">          
         
-	
+    	$(document).ready(function() {
+
+			; INVOICE_GENERATION = {
+				
+				init : function() {
+					INVOICE_GENERATION.makeClickers();	
+				},
+						
+						
+		        	
+		        	
+		        makeClickers : function () {
+		        	$('.dateField').datepicker({
+		                prevText:'&lt;&lt;',
+		                nextText: '&gt;&gt;',
+		                showButtonPanel:true
+		            });
+		
+		            $("#goButton").click(function($event){
+		            	var $invoiceDate = $("#invoiceDate").val();
+		            	var $monthlyFlag = $("#monthlyFlag").prop('checked');
+		            	var $outbound = {'invoiceDate':$invoiceDate, 'monthlyFlag':$monthlyFlag}
+		                var jqxhr = $.ajax({
+		        			type: 'POST',
+		        			url: 'invoiceGeneration/',
+		        			data: JSON.stringify($outbound),
+		        			success: function($data) {
+		        				if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+		        					$.each($data.data.webMessages, function (key, value) {
+		        						var $selectorName = "#" + key + "Err";
+		        						$($selectorName).show();
+		        						$($selectorName).html(value[0]).fadeOut(4000);
+		        					});
+		        				} else {
+		        					//$("#globalMsg").html($data.responseHeader.responseMessage).fadeOut(4000);
+		        		        	//$("#invoiceDate").val("");
+		        		        	//$("#monthlyFlag").prop('checked', false);
+		        		        	console.debug("Invoices genned");
+		        		        	$("#printForm input[name=message]").val("Success! Invoices Generated");
+		        					console.debug("form submit");
+		        				    $("#printForm").submit();
+		        		        	
+		        				}
+		        			},
+		        			statusCode: {
+		        				403: function($data) {
+		        					$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+		        				},
+		        				500: function($data) {
+		             	    		$("#globalMsg").html("System Error: Contact Support").fadeIn(10);
+		             	    	} 
+		        			},
+		        			dataType: 'json'
+		        		});        	
+		            });
+		        	
+		        	
+		        },	
+			};
+        
+		   INVOICE_GENERATION.init();
 
       });
 

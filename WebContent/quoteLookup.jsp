@@ -62,184 +62,178 @@
         <script type="text/javascript">      
         
         $(document).ready(function(){
-			var dataTable = null;
+        	
+        	; QUOTE_LOOKUP = {
+			
+	     	     init : function () {
+	     	    	QUOTE_LOOKUP.makeClickers(); 
+	     	    	QUOTE_LOOKUP.createTable();
+	            	CALLNOTE.init();
+	            	QUOTE_PRINT.init_modal(<%= "\"#" + quotePrintModal + "\"" %>);
+	     	      
+	     	     },
+	     	     
+	     	     makeClickers : function () {
+		        	$('.dateField').datepicker({
+		                prevText:'&lt;&lt;',
+		                nextText: '&gt;&gt;',
+		                showButtonPanel:true
+		            });
+	     	     },
 
-			$('.ScrollTop').click(function() {
-				$('html, body').animate({scrollTop: 0}, 800);
-     	  		return false;
-			});           	      
+				doFunctionBinding : function () {
+					$( ".editAction" ).on( "click", function($clickevent) {
+						QUOTE_LOOKUP.doEdit($clickevent);
+					});
+					$( ".quotePrint" ).on( "click", function($clickevent) {
+						 QUOTE_PRINT.showQuotePrint(<%= "\"#" + quotePrintModal + "\"" %>, $(this).data("id"), $(this).data("quotenumber"), "PREVIEW");
+					});
+					$( ".copyQuote" ).on( "click", function($clickevent) {
+						QUOTE_LOOKUP.doCopy($(this).data("id"));
+					});
+				},
 
-        	$('.dateField').datepicker({
-                prevText:'&lt;&lt;',
-                nextText: '&gt;&gt;',
-                showButtonPanel:true
-            });
-
-        	CALLNOTE.init();
-        	QUOTE_PRINT.init_modal(<%= "\"#" + quotePrintModal + "\"" %>);
-
-			init();
-
-           	function init(){
-				$.each($('input'), function () {
-			        $(this).css("height","20px");
-			        $(this).css("max-height", "20px");
-			    });
+			
+				doEdit : function ($clickevent) {
+					var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
+					var $url = 'quoteTable/' + $rowid;
+					var jqxhr = $.ajax({
+						type: 'GET',
+						url: $url,
+						success: function($data) {
+			        		$("#quoteId").val(($data.data.codeList[0]).quoteId);
+			        		$("#quoteCode").val(($data.data.codeList[0]).quoteCode);
+			        		$("#divisionNbr").val(($data.data.codeList[0]).divisionNbr);
+			        		$("#billToName").val(($data.data.codeList[0]).billToName);
+			        		$("#jobSiteName").val(($data.data.codeList[0]).jobSiteName);
+			        		$("#jobSiteAddress").val(($data.data.codeList[0]).jobSiteAddress);
+			        		$("#managerName").val(($data.data.codeList[0]).managerName);
+			        		$("#proposalDate").val(($data.data.codeList[0]).proposalDate);
+			        		$("#quoteJobCount").val(($data.data.codeList[0]).quoteJobCount);
+			        		$("#quotePpcSum").val(($data.data.codeList[0]).quotePpcSum);
+			        		
+			        		$("#qId").val(($data.data.codeList[0]).quoteId);
+			        		$("#updateOrAdd").val("update");
+			        		$("#addQuoteTableForm").dialog( "open" );
+						},
+						statusCode: {
+							403: function($data) {
+								$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+							} 
+						},
+						dataType: 'json'
+					});				
+				},
 				
-				createTable();
-           	}
-
-			function doFunctionBinding() {
-				$( ".editAction" ).on( "click", function($clickevent) {
-					 doEdit($clickevent);
-				});
-				$( ".quotePrint" ).on( "click", function($clickevent) {
-					 QUOTE_PRINT.showQuotePrint(<%= "\"#" + quotePrintModal + "\"" %>, $(this).data("id"), $(this).data("quotenumber"), "PREVIEW");
-				});
-				$( ".copyQuote" ).on( "click", function($clickevent) {
-					doCopy($(this).data("id"));
-				});
-			}
-
-			
-			function doEdit($clickevent) {
-				var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
-				var $url = 'quoteTable/' + $rowid;
-				var jqxhr = $.ajax({
-					type: 'GET',
-					url: $url,
-					success: function($data) {
-		        		$("#quoteId").val(($data.data.codeList[0]).quoteId);
-		        		$("#quoteCode").val(($data.data.codeList[0]).quoteCode);
-		        		$("#divisionNbr").val(($data.data.codeList[0]).divisionNbr);
-		        		$("#billToName").val(($data.data.codeList[0]).billToName);
-		        		$("#jobSiteName").val(($data.data.codeList[0]).jobSiteName);
-		        		$("#jobSiteAddress").val(($data.data.codeList[0]).jobSiteAddress);
-		        		$("#managerName").val(($data.data.codeList[0]).managerName);
-		        		$("#proposalDate").val(($data.data.codeList[0]).proposalDate);
-		        		$("#quoteJobCount").val(($data.data.codeList[0]).quoteJobCount);
-		        		$("#quotePpcSum").val(($data.data.codeList[0]).quotePpcSum);
-		        		
-		        		$("#qId").val(($data.data.codeList[0]).quoteId);
-		        		$("#updateOrAdd").val("update");
-		        		$("#addQuoteTableForm").dialog( "open" );
-					},
-					statusCode: {
-						403: function($data) {
-							$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-						} 
-					},
-					dataType: 'json'
-				});				
-			}
-			
-			function doCopy($quoteId) {
-				var $url = "quote/copy/" + $quoteId;
-				var jqxhr = $.ajax({
-					type: 'POST',
-					url: $url,
-					data: {},
-					statusCode: {
-						200: function($data) {
-							$quoteId = $data.data.quote.quote.quoteId;
-							location.href="quoteMaintenance.html?id=" + $quoteId;
-						},					
-						403: function($data) {
-							$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+				doCopy : function ($quoteId) {
+					var $url = "quote/copy/" + $quoteId;
+					var jqxhr = $.ajax({
+						type: 'POST',
+						url: $url,
+						data: {},
+						statusCode: {
+							200: function($data) {
+								$quoteId = $data.data.quote.quote.quoteId;
+								location.href="quoteMaintenance.html?id=" + $quoteId;
+							},					
+							403: function($data) {
+								$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+							},
+							404: function($data) {
+								$returnValue = {};
+							},
+							500: function($data) {
+								
+							}
 						},
-						404: function($data) {
-							$returnValue = {};
-						},
-						500: function($data) {
-							
-						}
-					},
-					dataType: 'json'
-				});
-			}
-			
-			function createTable(){
-        		var dataTable = $('#quoteTable').DataTable( {
-        			"aaSorting":		[[0,'desc']],
-        			"processing": 		true,
-        	        "serverSide": 		true,
-        	        "autoWidth": 		false,
-        	        "deferRender": 		true,
-        	        "scrollCollapse": 	true,
-        	        "scrollX": 			true,
-        	        rowId: 				'dt_RowId',
-        	        dom: 				'Bfrtip',
-        	        "searching": 		true,
-        	        "searchDelay":		800,
-        	        lengthMenu: [
-        	        	[ 10, 50, 100, 500, 1000 ],
-        	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
-        	        ],
-        	        buttons: [
-        	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();$('#jobTable').columns.adjust().draw();}}
-        	        ],
-        	        "columnDefs": [
-         	            { "orderable": false, "targets": -1 },
-        	            { className: "dt-left", "targets": [0,2,3,4,5] },
-        	            { className: "dt-center", "targets": [1,7,8,-1] },
-        	            { className: "dt-right", "targets": [9]}
-        	         ],
-        	        "paging": true,
-			        "ajax": {
-			        	"url": "quoteTable",
-			        	"type": "GET"
-			        	},
-			        columns: [
-			            { title: "<bean:message key="field.label.quoteId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-			            	if(row.quoteId != null){return (row.quoteId+"");}
-			            } },
-			            { title: "<bean:message key="field.label.quoteCode" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.quoteCode != null){return (row.quoteCode+"");}
-			            } },
-			            { title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.divisionNbr != null){return (row.divisionNbr+"-"+row.divisionCode);}
-			            } },
-			            { title: "<bean:message key="field.label.billToName" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-			            	if(row.billToName != null){return (row.billToName+"");}
-			            } },
-			            { title: "<bean:message key="field.label.jobSiteName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.jobSiteName != null){return (row.jobSiteName+"");}
-			            } },
-			            { title: "<bean:message key="field.label.jobSiteAddress" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.jobSiteAddress != null){return (row.jobSiteAddress+"");}
-			            } },
-			            { title: "<bean:message key="field.label.managerName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.managerName != null){return (row.managerName+"");}
-			            } },
-			            { title: "<bean:message key="field.label.proposalDate" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-			            	if(row.proposalDate != null){return (row.proposalDate+"");}
-			            } },
-			            { title: "<bean:message key="field.label.quoteJobCount" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
-			            	if(row.quoteJobCount != null){return (row.quoteJobCount+"");}
-			            } },
-			            { title: "<bean:message key="field.label.quotePpcSum" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-			            	if(row.quotePpcSum != null){return (row.quotePpcSum+"");} 
-			            } },
-			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
-			            	//console.log(row);
-			            	editText = '<a href="quoteMaintenance.html?id='+row.quoteId+'" class="editAction" data-id="'+row.quoteId+'"><webthing:edit>Edit</webthing:edit></a>';
-			            	viewText = '<a href="quoteMaintenance.html?id='+row.quoteId+'" class="editAction" data-id="'+row.quoteId+'"><webthing:view style="color:#404040;">View</webthing:view></a>';
-			            	printText = '<i class="fa fa-print orange quotePrint" aria=hidden="true" data-id="'+row.quoteId+'" data-quotenumber="'+ row.quoteCode + '"></i>';
-			            	copyText = '<i class="far fa-copy copyQuote" aria-hidden="true" data-id="'+row.quoteId+'"></i>';
-			            	var $noteLink = '<webthing:notes xrefType="QUOTE" xrefId="' + row.quoteId + '">Quote Notes</webthing:notes>'
-			            	{return '<ansi:hasPermission permissionRequired="QUOTE_READ" maxLevel="true">'+ viewText + '&nbsp;</ansi:hasPermission><ansi:hasPermission permissionRequired="QUOTE_CREATE">'+ editText +'</ansi:hasPermission>&nbsp;' + printText + '&nbsp;<ansi:hasPermission permissionRequired="QUOTE_CREATE">' + copyText + '</ansi:hasPermission> ' + $noteLink;}
-			            	
-			            } }],
-			            //"initComplete": function(settings, json) {
-			            	//console.log(json);
-			            //	doFunctionBinding();
-			            //},
-			            "drawCallback": function( settings ) {
-			            	doFunctionBinding();
-			            	CALLNOTE.lookupLink();
-			            }
-				    } );
-        		}
+						dataType: 'json'
+					});
+				},
+				
+				createTable : function (){
+	        		var dataTable = $('#quoteTable').DataTable( {
+	        			"aaSorting":		[[0,'desc']],
+	        			"processing": 		true,
+	        	        "serverSide": 		true,
+	        	        "autoWidth": 		false,
+	        	        "deferRender": 		true,
+	        	        "scrollCollapse": 	true,
+	        	        "scrollX": 			true,
+	        	        rowId: 				'dt_RowId',
+	        	        dom: 				'Bfrtip',
+	        	        "searching": 		true,
+	        	        "searchDelay":		800,
+	        	        lengthMenu: [
+	        	        	[ 10, 50, 100, 500, 1000 ],
+	        	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
+	        	        ],
+	        	        buttons: [
+	        	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();$('#jobTable').columns.adjust().draw();}}
+	        	        ],
+	        	        "columnDefs": [
+	         	            { "orderable": false, "targets": -1 },
+	        	            { className: "dt-left", "targets": [0,2,3,4,5] },
+	        	            { className: "dt-center", "targets": [1,7,8,-1] },
+	        	            { className: "dt-right", "targets": [9]}
+	        	         ],
+	        	        "paging": true,
+				        "ajax": {
+				        	"url": "quoteTable",
+				        	"type": "GET"
+				        	},
+				        columns: [
+				            { title: "<bean:message key="field.label.quoteId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				            	if(row.quoteId != null){return (row.quoteId+"");}
+				            } },
+				            { title: "<bean:message key="field.label.quoteCode" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            	if(row.quoteCode != null){return (row.quoteCode+"");}
+				            } },
+				            { title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            	if(row.divisionNbr != null){return (row.divisionNbr+"-"+row.divisionCode);}
+				            } },
+				            { title: "<bean:message key="field.label.billToName" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				            	if(row.billToName != null){return (row.billToName+"");}
+				            } },
+				            { title: "<bean:message key="field.label.jobSiteName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            	if(row.jobSiteName != null){return (row.jobSiteName+"");}
+				            } },
+				            { title: "<bean:message key="field.label.jobSiteAddress" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            	if(row.jobSiteAddress != null){return (row.jobSiteAddress+"");}
+				            } },
+				            { title: "<bean:message key="field.label.managerName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            	if(row.managerName != null){return (row.managerName+"");}
+				            } },
+				            { title: "<bean:message key="field.label.proposalDate" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            	if(row.proposalDate != null){return (row.proposalDate+"");}
+				            } },
+				            { title: "<bean:message key="field.label.quoteJobCount" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
+				            	if(row.quoteJobCount != null){return (row.quoteJobCount+"");}
+				            } },
+				            { title: "<bean:message key="field.label.quotePpcSum" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				            	if(row.quotePpcSum != null){return (row.quotePpcSum+"");} 
+				            } },
+				            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
+				            	//console.log(row);
+				            	editText = '<a href="quoteMaintenance.html?id='+row.quoteId+'" class="editAction" data-id="'+row.quoteId+'"><webthing:edit>Edit</webthing:edit></a>';
+				            	viewText = '<a href="quoteMaintenance.html?id='+row.quoteId+'" class="editAction" data-id="'+row.quoteId+'"><webthing:view style="color:#404040;">View</webthing:view></a>';
+				            	printText = '<i class="fa fa-print orange quotePrint" aria=hidden="true" data-id="'+row.quoteId+'" data-quotenumber="'+ row.quoteCode + '"></i>';
+				            	copyText = '<i class="far fa-copy copyQuote" aria-hidden="true" data-id="'+row.quoteId+'"></i>';
+				            	var $noteLink = '<webthing:notes xrefType="QUOTE" xrefId="' + row.quoteId + '">Quote Notes</webthing:notes>'
+				            	{return '<ansi:hasPermission permissionRequired="QUOTE_READ" maxLevel="true">'+ viewText + '&nbsp;</ansi:hasPermission><ansi:hasPermission permissionRequired="QUOTE_CREATE">'+ editText +'</ansi:hasPermission>&nbsp;' + printText + '&nbsp;<ansi:hasPermission permissionRequired="QUOTE_CREATE">' + copyText + '</ansi:hasPermission> ' + $noteLink;}
+				            	
+				            } }],
+				            //"initComplete": function(settings, json) {
+				            	//console.log(json);
+				            //	doFunctionBinding();
+				            //},
+				            "drawCallback": function( settings ) {
+				            	QUOTE_LOOKUP.doFunctionBinding();
+				            	CALLNOTE.lookupLink();
+				            }
+					    } );
+	        		},
+	     	   	};
+	     	 QUOTE_LOOKUP.init();
 			});
         </script>        
     </tiles:put>
