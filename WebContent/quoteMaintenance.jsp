@@ -1186,6 +1186,29 @@
 		            		QUOTEMAINTENANCE.editThisJob($jobId, $type);
 		            	});
 		            	
+						$(".edit-this-job").mouseover(function($event) {
+							var $jobId = $(this).closest("div.panel-button-container")[0].attributes['data-jobid'].value;
+		            		var $type = $(this).attr("data-type");
+		            		if ( $type == "proposal") { $("#job" + $jobId + " .jobProposalDisplayPanel").addClass("pre-edit"); }
+		            		if ( $type == "activation") { $("#job" + $jobId + " .jobActivationDisplayPanel").addClass("pre-edit"); }
+		            		if ( $type == "invoice") { $("#job" + $jobId + " .jobInvoiceDisplayPanel").addClass("pre-edit"); }
+		            		if ( $type == "schedule") { $("#job" + $jobId + " .jobScheduleDisplayPanel").addClass("pre-edit"); }
+						});
+						
+						$(".edit-this-job").mouseout(function($event) {
+							var $jobId = $(this).closest("div.panel-button-container")[0].attributes['data-jobid'].value;
+		            		var $type = $(this).attr("data-type");
+		            		if ( $type == "proposal") { $("#job" + $jobId + " .jobProposalDisplayPanel").removeClass("pre-edit"); }
+		            		if ( $type == "activation") { $("#job" + $jobId + " .jobActivationDisplayPanel").removeClass("pre-edit"); }
+		            		if ( $type == "invoice") { $("#job" + $jobId + " .jobInvoiceDisplayPanel").removeClass("pre-edit"); }
+		            		if ( $type == "schedule") { $("#job" + $jobId + " .jobScheduleDisplayPanel").removeClass("pre-edit"); }
+						});
+						
+						
+						
+						
+						
+						
 		            	$(".cancel-this-job").click(function($event) {
 		            		//var $jobId = this.parentElement.attributes['data-jobid'].value;
 		            		var $jobId = $(this).closest("div.panel-button-container")[0].attributes['data-jobid'].value;
