@@ -246,7 +246,7 @@ public class SpecialOverrideServlet extends AbstractServlet {
 		SpecialOverrideResponse data = new SpecialOverrideResponse(type, rs);
 		rs.close();
 		
-		webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
+		webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, type.getSuccessMessage());
 		data.setWebMessages(webMessages);
 		super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
 	}

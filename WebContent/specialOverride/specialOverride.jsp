@@ -124,7 +124,7 @@
 						statusCode: {
 							200: function($data) {
 								if ( $data.responseHeader.responseCode == "SUCCESS") {
-									$("#globalMsg").html("Success").show().fadeOut(3000);
+									$("#globalMsg").html($data.responseHeader.responseMessage).show().fadeOut(6000);
 									$(".updateButton").hide();
 									SPECIALOVERRIDE.makeSelectResultsTable("#updateResults", null, $scriptName, $data);
 									var $continueButton = $('<input type="button" id="continueButton" value="Continue" />');

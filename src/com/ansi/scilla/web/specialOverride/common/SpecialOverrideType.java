@@ -26,6 +26,7 @@ public enum SpecialOverrideType {
 				new ParameterType("Payment Date", "payment_date", java.sql.Date.class), 
 				new ParameterType("Payment Id", "payment_id", Integer.class), 
 			},
+		"Success Update Payment Date",
 		Permission.PAYMENT_OVERRIDE
 	),
 	
@@ -49,6 +50,7 @@ public enum SpecialOverrideType {
 					new ParameterType("New Ticket ID", "new_ticket_id", Integer.class),
 					new ParameterType("Payment ID", "payment_id", Integer.class), 
 				},
+			"Success",
 			Permission.PAYMENT_OVERRIDE
 		),
 
@@ -71,6 +73,7 @@ public enum SpecialOverrideType {
 					new ParameterType("Ticket ID", "ticket_id", Integer.class), 
 					new ParameterType("Payment ID", "payment_id", Integer.class), 
 				},
+			"Success",
 			Permission.PAYMENT_OVERRIDE
 		),
 	
@@ -92,6 +95,7 @@ public enum SpecialOverrideType {
 					new ParameterType("Payment Id", "payment_id", Integer.class), 
 					new ParameterType("Payment Date", "payment_date", java.sql.Date.class), 
 				},
+			"Success",
 			Permission.PAYMENT_OVERRIDE
 		),
 	
@@ -113,6 +117,7 @@ public enum SpecialOverrideType {
 					new ParameterType("Payment Id", "payment_id", Integer.class), 
 					new ParameterType("Payment Date", "payment_date", java.sql.Date.class), 
 				},
+			"Success",
 			Permission.PAYMENT_OVERRIDE
 		),
 	
@@ -132,6 +137,7 @@ public enum SpecialOverrideType {
 			new ParameterType[] { 
 					new ParameterType("Ticket Id", "ticket_id", Integer.class), 
 				},
+			"Success",
 			Permission.TICKET_OVERRIDE
 		),
 	
@@ -155,6 +161,7 @@ public enum SpecialOverrideType {
 					new ParameterType("Ticket to Change", "ticket_id", Integer.class), 
 					new ParameterType("Ticket to Match", "ticket_id", Integer.class), 
 				},
+			"Success",
 			Permission.PAYMENT_OVERRIDE
 		),
 	
@@ -169,6 +176,7 @@ public enum SpecialOverrideType {
 	private final ParameterType[] selectParms;
 	private final ParameterType[] updateParms;
 	private final ParameterType[] updateSelectParms;
+	private final String successMessage;
 	private final Permission permission;
 	
 	private SpecialOverrideType(
@@ -179,6 +187,7 @@ public enum SpecialOverrideType {
 			ParameterType[] updateParms, 
 			String updateSelectSql, 
 			ParameterType[] updateSelectParms, 
+			String successMessage,
 			Permission permission) {
 		this.display = display;
 		this.selectSql = selectSql;
@@ -186,6 +195,7 @@ public enum SpecialOverrideType {
 		this.updateSelectSql = updateSelectSql;
 		this.selectParms = selectParms;
 		this.updateParms = updateParms;
+		this.successMessage = successMessage;
 		this.permission = permission;
 		this.updateSelectParms = updateSelectParms;
 	}
@@ -220,6 +230,10 @@ public enum SpecialOverrideType {
 	
 	public ParameterType[] getUpdateSelectParms() {
 		return updateSelectParms;
+	}
+	
+	public String getSuccessMessage() {
+		return successMessage;
 	}
 
 	public static String[] names() {
