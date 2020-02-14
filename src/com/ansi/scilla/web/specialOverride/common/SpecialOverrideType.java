@@ -106,9 +106,9 @@ public enum SpecialOverrideType {
 					new ParameterType("Payment Id", "payment_id", Integer.class), 
 					new ParameterType("Payment Date", "payment_date", java.sql.Date.class), 
 				},
-			"update payment set payment_amount=? where payment_id=? and payment_date=?",
+			"update payment set amount=? where payment_id=? and payment_date=?",
 			new ParameterType[] { 
-					new ParameterType("Payment Amount", "payment_amount", BigDecimal.class),
+					new ParameterType("Payment Amount", "amount", BigDecimal.class),
 					new ParameterType("Payment Id", "payment_id", Integer.class), 
 					new ParameterType("Payment Date", "payment_date", java.sql.Date.class), 
 				},
@@ -129,7 +129,7 @@ public enum SpecialOverrideType {
 				},
 			"update ticket set ticket_status='"+ TicketStatus.DISPATCHED.code() + "', process_date=null, process_notes='completed in error',"
 			+ " customer_signature=0, bill_sheet=0, mgr_approval=0 where ticket_status='"
-					+ TicketStatus.COMPLETED.code() + "' and ticket_id=?'",
+					+ TicketStatus.COMPLETED.code() + "' and ticket_id=?",
 			new ParameterType[] { 
 					new ParameterType("Ticket Id", "ticket_id", Integer.class), 
 				},
@@ -145,21 +145,21 @@ public enum SpecialOverrideType {
 			"Update a Ticket to a Different Job",
 			"select * from ticket where ticket_id in (?,?)",
 			new ParameterType[] { 
-					new ParameterType("Ticket to Change", "ticket_id", Integer.class), 
-					new ParameterType("Ticket to Match", "ticket_id", Integer.class), 
+					new ParameterType("Ticket to Change", "chg_ticket_id", Integer.class), 
+					new ParameterType("Ticket to Match", "match_ticket_id", Integer.class), 
 				},
 			"update ticket set job_id = (select job_id from ticket where ticket_id=?), "//ticket to match
-			+ "act_division_id = (select act_division_id from ticket where ticket_id=?), "//ticket to match
-			+ "updated_by = @user, updated_date = sysdatetime() where ticket_id in (?)",//ticket to change
+			+ "act_division_id = (select act_division_id from ticket where ticket_id=?) "//ticket to match
+			+ " where ticket_id=?",//ticket to change
 			new ParameterType[] { 
-					new ParameterType("Ticket to Match", "ticket_id", Integer.class), 
-					new ParameterType("Ticket to Match", "ticket_id", Integer.class), 
-					new ParameterType("Ticket to Change", "ticket_id", Integer.class), 
+					new ParameterType("Ticket to Match", "match_ticket_id", Integer.class), 
+					new ParameterType("Ticket to Match", "match_ticket_id", Integer.class), 
+					new ParameterType("Ticket to Change", "chg_ticket_id", Integer.class), 
 				},
-			"select * from ticket where ticket_id=(?,?)",
+			"select * from ticket where ticket_id in (?,?)",
 			new ParameterType[] { 
-					new ParameterType("Ticket to Change", "ticket_id", Integer.class), 
-					new ParameterType("Ticket to Match", "ticket_id", Integer.class), 
+					new ParameterType("Ticket to Change", "chg_ticket_id", Integer.class), 
+					new ParameterType("Ticket to Match", "match_ticket_id", Integer.class), 
 				},
 			"Success",
 			Permission.PAYMENT_OVERRIDE

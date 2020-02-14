@@ -153,8 +153,13 @@ public class SpecialOverrideServlet extends AbstractServlet {
 		int i = 1;
 		try {
 			conn.setAutoCommit(false);
-			String sql = type.getUpdateSql().replaceAll(" where ", ", updated_by=?, updated_date=SYSDATETIME() where ");
-			logger.log(Level.DEBUG, sql);
+//			String sql = type.getUpdateSql().replaceAll(" where ", ", updated_by=?, updated_date=SYSDATETIME() where ");
+			String sql = type.getUpdateSql();
+			int idx = sql.lastIndexOf("where");
+			String part1 = sql.substring(0, idx);
+			String part2 = sql.substring(idx);
+			String fixed = part1 + ", updated_by=?, updated_date=SYSDATETIME() " + part2;
+			logger.log(Level.DEBUG, fixed);
 			
 			
 			// figure out how many parameters we need to skip before setting the bind variable
