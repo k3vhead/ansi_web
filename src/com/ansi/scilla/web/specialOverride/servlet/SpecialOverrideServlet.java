@@ -166,13 +166,14 @@ public class SpecialOverrideServlet extends AbstractServlet {
 			// for the update user
 			Pattern sqlPattern = Pattern.compile("^(update .*)( where )(.*)$", Pattern.CASE_INSENSITIVE);
 			Pattern wherePattern = Pattern.compile("(.*=\\?)?", Pattern.CASE_INSENSITIVE);
-			Matcher sqlMatcher = sqlPattern.matcher(sql);
+			Matcher sqlMatcher = sqlPattern.matcher(fixed);
 			
 			if ( ! sqlMatcher.matches() ) {
-				throw new RuntimeException("Something's wrong with the sql: " + sql);
+				throw new RuntimeException("Something's wrong with the sql: " + fixed);
 			}
 			String whereClause = sqlMatcher.group(sqlMatcher.groupCount());
-				
+			logger.log(Level.DEBUG, "Where cluase: " + whereClause);
+			
 			Matcher whereMatcher = wherePattern.matcher(whereClause);
 			int whereParmCount = 0;
 			while ( whereMatcher.find()) {
@@ -180,10 +181,10 @@ public class SpecialOverrideServlet extends AbstractServlet {
 			}
 			int updateParmCount = type.getUpdateParms().length - whereParmCount;
 			
-			logger.log(Level.DEBUG, updateParmCount + "\t" + whereParmCount);
+			logger.log(Level.DEBUG, "Updates: " + updateParmCount + "\tWheres:" + whereParmCount);
 			
 			
-			PreparedStatement ps = conn.prepareStatement(sql);
+			PreparedStatement ps = conn.prepareStatement(fixed);
 			for(ParameterType p : type.getUpdateParms()) {
 				logger.log(Level.DEBUG, i + " : " + p.getFieldName() + " : " + request.getParameter(p.getFieldName()));
 				p.setPsParm(ps, request.getParameter(p.getFieldName()), i);
