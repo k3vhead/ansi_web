@@ -110,11 +110,11 @@
 		        	//
 		        	
 		        	populateOptionList : function($optionData) {
-		        		$.each($optionData.paymentMethod, function(index, val) {
+		        		$('option', $("#paymentMethod")).remove();
+			        	$("#paymentMethod").append(new Option("",""));
+						$.each($optionData.paymentMethod, function(index, val) {
 							$("#paymentMethod").append(new Option(val.display, val.abbrev));
 						});
-			        	$('option', $("#paymentMethod")).remove();
-			        	$("#paymentMethod").append(new Option("",""));
 		        	},
 		        	
 					createModals : function(){
