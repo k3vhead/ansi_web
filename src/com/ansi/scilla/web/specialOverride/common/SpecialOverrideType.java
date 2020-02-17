@@ -127,9 +127,14 @@ public enum SpecialOverrideType {
 			new ParameterType[] { 
 					new ParameterType("Ticket Id", "ticket_id", Integer.class), 
 				},
-			"update ticket set ticket_status='"+ TicketStatus.DISPATCHED.code() + "', process_date=null, process_notes='completed in error',"
-			+ " customer_signature=0, bill_sheet=0, mgr_approval=0 where ticket_status='"
-					+ TicketStatus.COMPLETED.code() + "' and ticket_id=?",
+			"update ticket set "
+					+ "ticket_status='"+ TicketStatus.DISPATCHED.code() + "', "
+					+ "process_date=null, "
+					+ "process_notes='completed in error', "
+					+ "customer_signature=0, "
+					+ "bill_sheet=0, "
+					+ "mgr_approval=0 "
+				+ "where ticket_status='" + TicketStatus.COMPLETED.code() + "' and ticket_id=?",
 			new ParameterType[] { 
 					new ParameterType("Ticket Id", "ticket_id", Integer.class), 
 				},

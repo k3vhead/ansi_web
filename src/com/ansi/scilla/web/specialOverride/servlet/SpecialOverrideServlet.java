@@ -165,7 +165,6 @@ public class SpecialOverrideServlet extends AbstractServlet {
 			// figure out how many parameters we need to skip before setting the bind variable
 			// for the update user
 			Pattern sqlPattern = Pattern.compile("^(update .*)( where )(.*)$", Pattern.CASE_INSENSITIVE);
-			Pattern wherePattern = Pattern.compile("(.*=\\?)?", Pattern.CASE_INSENSITIVE);
 			Matcher sqlMatcher = sqlPattern.matcher(fixed);
 			
 			if ( ! sqlMatcher.matches() ) {
@@ -174,10 +173,12 @@ public class SpecialOverrideServlet extends AbstractServlet {
 			String whereClause = sqlMatcher.group(sqlMatcher.groupCount());
 			logger.log(Level.DEBUG, "Where cluase: " + whereClause);
 			
-			Matcher whereMatcher = wherePattern.matcher(whereClause);
 			int whereParmCount = 0;
-			while ( whereMatcher.find()) {
+			int whereIdx = whereClause.indexOf("=?");
+			while ( whereIdx > 0 ) {
 				whereParmCount++;
+//				System.out.println(whereIdx + "\t" + whereParmCount);
+				whereIdx = whereClause.indexOf("=?", whereIdx+1);
 			}
 			int updateParmCount = type.getUpdateParms().length - whereParmCount;
 			
@@ -185,6 +186,13 @@ public class SpecialOverrideServlet extends AbstractServlet {
 			
 			
 			PreparedStatement ps = conn.prepareStatement(fixed);
+			// Even if we have no input-parm-based updates, we always have a user id to update, so put it first
+			if ( updateParmCount == 0 ) {
+				logger.log(Level.DEBUG, i + " : userId : " + user.getUserId());
+				ps.setInt(i, user.getUserId());
+				i++;
+			}
+			
 			for(ParameterType p : type.getUpdateParms()) {
 				logger.log(Level.DEBUG, i + " : " + p.getFieldName() + " : " + request.getParameter(p.getFieldName()));
 				p.setPsParm(ps, request.getParameter(p.getFieldName()), i);
