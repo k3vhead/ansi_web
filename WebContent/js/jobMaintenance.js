@@ -23,7 +23,7 @@ $( document ).ready(function() {
 			
 			JOB_DATA.invoiceStyleList = $optionData.invoiceStyle;
 			JOB_DATA.countryList = $optionData.country;
-			JOB_DATA.divisionList = ANSI_UTILS.getDivisionList();
+			JOB_DATA.divisionList = ANSI_UTILS.makeDivisionList(JOBPANEL.setDivisionList, JOB_UTILS.makeDivisionFailure);
 			JOB_DATA.buildingTypeList = ANSI_UTILS.makeBuildingTypeList();
 			
 			
@@ -31,6 +31,12 @@ $( document ).ready(function() {
 			
 			JOB_UTILS.panelLoad("0",$jobId);
 	   	},
+		
+		
+		
+		makeDivisionFailure : function() {
+			$("#globalMsg").html("Error retrieving divisions. Reload page and try again");
+		},
 	   	
 	   	
 		panelLoad:function($namespace,$jobId) {			

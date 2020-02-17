@@ -1394,7 +1394,7 @@
 						QUOTEMAINTENANCE.incrementProgress("Job Frequency List");
 						
 						
-						QUOTEMAINTENANCE.getDivisionList(QUOTEMAINTENANCE.populateDivisionList);
+						ANSI_UTILS.makeDivisionList(QUOTEMAINTENANCE.populateDivisionList, QUOTEMAINTENANCE.makeDivisionFailure);
 						
 						
 						QUOTEMAINTENANCE.getCodeList("job", "building_type", QUOTEMAINTENANCE.populateBuildingType);
@@ -1409,6 +1409,9 @@
 						QUOTEMAINTENANCE.makeManagerList();	
 		            },
 		            
+		            makeDivisionFailure : function() {
+		    			$("#globalMsg").html("Error retrieving divisions. Reload page and try again");
+		    		},
 		            
 		            
 		            
@@ -1701,7 +1704,10 @@
 					
 					
 					populateDivisionList : function($data) {
-		            	QUOTEMAINTENANCE.divisionList = $data.divisionList
+		            	console.log("divisionList 1");
+		            	QUOTEMAINTENANCE.incrementProgress("Division List");
+		            	
+		            	QUOTEMAINTENANCE.divisionList = $data.data.divisionList;
 		            	
 		            	var $select = $("#quoteDataContainer select[name='divisionId']");
 						$('option', $select).remove();
@@ -1994,6 +2000,7 @@
 		            
 		            
 		            populateQuotePanels : function($data) {
+		            	console.log("Q divisonid");
 	        			var $canPopulate = true;
 	        			
 	        			if ( QUOTEMAINTENANCE.accountTypeList == null ) { $canPopulate=false; }
