@@ -3,6 +3,7 @@ package com.ansi.scilla.web.specialOverride.common;
 import java.math.BigDecimal;
 
 import com.ansi.scilla.common.jobticket.TicketStatus;
+import com.ansi.scilla.common.jobticket.JobStatus;
 import com.ansi.scilla.web.common.utils.Permission;
 
 public enum SpecialOverrideType {
@@ -168,6 +169,27 @@ public enum SpecialOverrideType {
 				},
 			"Success",
 			Permission.PAYMENT_OVERRIDE
+		),
+	
+	UNCANCEL_JOB(
+			"Uncancel a Job",
+			"select * from job where job_id=? and job_status='"+ JobStatus.CANCELED.code() +"'",
+			new ParameterType[] { 
+					new ParameterType("Job Id", "job_id", Integer.class),  
+				},
+			"update job set job_status='"+ JobStatus.ACTIVE.code() +"', "
+					+ "cancel_date=null, cancel_reason=? where job_id=? and "
+					+ "job_status='"+ JobStatus.CANCELED.code() +"'",
+			new ParameterType[] { 
+					new ParameterType("Cancel Reason", "cancel_reason", String.class),
+					new ParameterType("Job Id", "job_id", Integer.class), 
+				},
+			"select * from job where job_id=?",
+			new ParameterType[] { 
+					new ParameterType("Job Id", "job_id", Integer.class), 
+				},
+			"Make sure to reschedule the job using the existing start date to get the tickets back.",
+			Permission.QUOTE_UPDATE
 		),
 	
 	;
