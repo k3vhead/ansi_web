@@ -189,7 +189,7 @@ public enum SpecialOverrideType {
 					new ParameterType("Job Id", "job_id", Integer.class), 
 				},
 			"Make sure to reschedule the job using the existing start date to get the tickets back.",
-			Permission.QUOTE_UPDATE
+			Permission.QUOTE_OVERRIDE
 		),
 	
 	;
