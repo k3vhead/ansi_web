@@ -206,7 +206,8 @@
             ;DASHBOARD = {
            		donelist : {"report":false, "quickLink":false, "lookup":false},
            		
-                init : function() {                	
+                init : function() {    
+                	DASHBOARD_UTILS.motd();
                 	DASHBOARD.getTotalList("report");
                 	DASHBOARD.getTotalList("quickLink");
                 	DASHBOARD.getTotalList("lookup");
