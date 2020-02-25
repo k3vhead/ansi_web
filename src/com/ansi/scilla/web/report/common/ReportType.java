@@ -167,13 +167,22 @@ public enum ReportType {
 			Permission.QUOTE_READ,
 			"PAC"
 		),
+	PAST_DUE_REPORT(
+			ReportJsp.reportByDivEnd,
+			"com.ansi.scilla.report.pastDue.PastDueReport2",
+			"com.ansi.scilla.web.report.request.ValidateDivEnd", 
+			new String[] { "endDate","divisionId"},
+			Permission.PAYMENT_READ,
+			"Past Due"
+		),
 	SIX_MONTH_ROLLING_VOLUME_REPORT(
 			ReportJsp.reportByDivMonthYear, 
-			"com.ansi.scilla.web.report.webReport.SixMonthRollingVolumeWebReport",
+			"com.ansi.scilla.report.sixMonthRollingVolume.SmrvReport",
+//			"com.ansi.scilla.web.report.webReport.SixMonthRollingVolumeWebReport",
 			"com.ansi.scilla.web.report.request.ValidateDivMonthYear",  
 			new String[] {"divisionId", "month", "year"},
 			Permission.TICKET_READ,
-			"6MRV"
+			"SMRV"
 		),
 	TICKET_STATUS_REPORT(
 			ReportJsp.reportByDivStartEnd, 
