@@ -59,6 +59,7 @@ public enum Menu {
 	DIVISIONS(			"Divisions",			SETTINGS,	Permission.SYSADMIN_READ,	"divisionAdmin.html"),
 	USER_LOOKUP(		"User Lookup",			SETTINGS,	Permission.SYSADMIN_READ,	"userLookup.html"),
 	PERMISSIONS(		"Permissions",			SETTINGS,	Permission.SYSADMIN_READ,	"permissionGroup.html"),
+	MOTD(               "Message of the Day",   SETTINGS,   Permission.SYSADMIN_WRITE,  "motd.html"),
 
 	
 	MY_ANSI("My ANSI", null, null,"#"),

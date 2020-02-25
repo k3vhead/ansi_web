@@ -93,25 +93,25 @@ change log
 				url: 'taxRate/list', 	// modthis
 				type: 'GET',
 				data: {},
-				success: function($data){ // if the ajax call succeeds... do all of this stuff.. 
-					// display the rows..
-					// calls the addRow Function for each data item (row) from url: 'taxRate/list'; 
-					//    note : the name after '$data.data.'  'taxRateList'. in this case, is defined
-					//           within the servlet that is doing the server side processing.
-					// modthis
-					$.each($data.data.taxRateList,	function(index, value) {	
-						// value.<data_item>Id> = the value used to retreive the record from the server
-						// value = the data item/row
-						// modthis
-						addRow(value.taxRateId, value);
-					});
-					doFunctionBinding();
-				},
-				error : {
-					function($data) {}
-				},
 				statusCode: {
-					403: function($data) { $("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);} 
+					200: function($data){ // if the ajax call succeeds... do all of this stuff.. 
+						// display the rows..
+						// calls the addRow Function for each data item (row) from url: 'taxRate/list'; 
+						//    note : the name after '$data.data.'  'taxRateList'. in this case, is defined
+						//           within the servlet that is doing the server side processing.
+						// modthis
+						$.each($data.data.taxRateList,	function(index, value) {	
+							// value.<data_item>Id> = the value used to retreive the record from the server
+							// value = the data item/row
+							// modthis
+							addRow(value.taxRateId, value);
+						});
+						doFunctionBinding();
+					},
+					403: function($data) { $("#globalMsg").html("Session Expired. Login and try again").show();},
+					404: function($data) { $("#globalMsg").html("System Error 404: Contact Support").show();},
+					405: function($data) { $("#globalMsg").html("System Error 405: Contact Support").show();}, 
+					500: function($data) { $("#globalMsg").html("System Error 500: Contact Support").show();}, 
 				},
 				dataType: 'json'
 			});
