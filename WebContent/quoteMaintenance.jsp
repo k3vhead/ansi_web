@@ -1186,6 +1186,29 @@
 		            		QUOTEMAINTENANCE.editThisJob($jobId, $type);
 		            	});
 		            	
+						$(".edit-this-job").mouseover(function($event) {
+							var $jobId = $(this).closest("div.panel-button-container")[0].attributes['data-jobid'].value;
+		            		var $type = $(this).attr("data-type");
+		            		if ( $type == "proposal") { $("#job" + $jobId + " .jobProposalDisplayPanel").addClass("pre-edit"); }
+		            		if ( $type == "activation") { $("#job" + $jobId + " .jobActivationDisplayPanel").addClass("pre-edit"); }
+		            		if ( $type == "invoice") { $("#job" + $jobId + " .jobInvoiceDisplayPanel").addClass("pre-edit"); }
+		            		if ( $type == "schedule") { $("#job" + $jobId + " .jobScheduleDisplayPanel").addClass("pre-edit"); }
+						});
+						
+						$(".edit-this-job").mouseout(function($event) {
+							var $jobId = $(this).closest("div.panel-button-container")[0].attributes['data-jobid'].value;
+		            		var $type = $(this).attr("data-type");
+		            		if ( $type == "proposal") { $("#job" + $jobId + " .jobProposalDisplayPanel").removeClass("pre-edit"); }
+		            		if ( $type == "activation") { $("#job" + $jobId + " .jobActivationDisplayPanel").removeClass("pre-edit"); }
+		            		if ( $type == "invoice") { $("#job" + $jobId + " .jobInvoiceDisplayPanel").removeClass("pre-edit"); }
+		            		if ( $type == "schedule") { $("#job" + $jobId + " .jobScheduleDisplayPanel").removeClass("pre-edit"); }
+						});
+						
+						
+						
+						
+						
+						
 		            	$(".cancel-this-job").click(function($event) {
 		            		//var $jobId = this.parentElement.attributes['data-jobid'].value;
 		            		var $jobId = $(this).closest("div.panel-button-container")[0].attributes['data-jobid'].value;
@@ -1846,13 +1869,23 @@
 		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-expire-date").html($jobDetail.job.expirationDate);
 		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-expire-reason").html($jobDetail.job.expirationReason);
 		            	
-		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-last-run").html($jobDetail.lastRun.processDate);		            	
+		            	var $lastProcessDate = "";
+		            	var $lastProcessTicket = "";
+		            	if ( $jobDetail.lastRun.processDate != null ) { $lastProcessDate = $jobDetail.lastRun.processDate; }
+		            	if ( $jobDetail.lastRun.ticketId != null ) { $lastProcessTicket = $jobDetail.lastRun.ticketId; }
+		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-last-run").html($lastProcessDate + " " + $lastProcessTicket);		            	
+
 		            	if ( $jobDetail.job.repeatScheduleAnnually == 1 ) {
 		            		$($destination + " input[name='repeatedAnnually']").prop("checked", true);
 		            	} else {
 		            		$($destination + " input[name='repeatedAnnually']").prop("checked", false);
 		            	}
-		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-next-due").html($jobDetail.nextDue.startDate);
+
+		            	var $startDate = "";
+		            	var $nextTicket = "";
+		            	if ( $jobDetail.nextDue.startDate != null ) { $startDate = $jobDetail.nextDue.startDate; }
+		            	if ( $jobDetail.nextDue.ticketId != null ) { $nextTicket = $jobDetail.nextDue.ticketId; }
+		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-next-due").html($startDate + " " + $nextTicket);
 		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-created-thru").html($jobDetail.lastCreated.startDate);
 		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-ticket-list").attr("href", "ticketLookup.html?jobId="+$jobId);
 		            	

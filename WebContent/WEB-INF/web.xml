@@ -529,7 +529,7 @@
 
     <servlet>
         <servlet-name>motd</servlet-name>
-        <servlet-class>com.ansi.scilla.web.common.servlet.MotdServlet</servlet-class>
+        <servlet-class>com.ansi.scilla.web.qotd.servlet.MotdServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>motd</servlet-name>

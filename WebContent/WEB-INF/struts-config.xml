@@ -237,7 +237,14 @@
             type="com.ansi.scilla.web.login.action.LogoffAction">
             <forward name="valid" path="/login.jsp" />
         </action>
-        
+        <action
+            path="/motd"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction"
+            scope="request">
+            <forward name="valid" path="/motd/motd.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		
 		<action
             path="/myAccount"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
