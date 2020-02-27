@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ansi.scilla.web.callNote.request.CallNoteRequest;
 import com.ansi.scilla.web.common.response.MessageResponse;
 
 public class CallNoteResponse extends MessageResponse {
@@ -39,6 +40,7 @@ public class CallNoteResponse extends MessageResponse {
 	private String xrefType;
 	private Integer xrefId;	
 	private List<CallNoteResponseItem> noteList;
+	private CallNoteRequest defaultVals;
 	
 	public CallNoteResponse() {
 		super();
@@ -49,9 +51,9 @@ public class CallNoteResponse extends MessageResponse {
 		this.xrefType = xrefType;
 		this.xrefId = xrefId;
 		this.noteList = makeNoteList(conn);
+		this.setDefaultVals(makeDefaultVals(conn, xrefType, xrefId));
 	}
 
-	
 	public String getXrefType() {
 		return xrefType;
 	}
@@ -75,6 +77,15 @@ public class CallNoteResponse extends MessageResponse {
 	public void setNoteList(List<CallNoteResponseItem> noteList) {
 		this.noteList = noteList;
 	}
+	
+	public CallNoteRequest getDefaultVals() {
+		return defaultVals;
+	}
+
+	public void setDefaultVals(CallNoteRequest defaultVals) {
+		this.defaultVals = defaultVals;
+	}
+	
 	private List<CallNoteResponseItem> makeNoteList(Connection conn) throws SQLException {
 		PreparedStatement ps = conn.prepareStatement(this.sql);
 		ps.setString(1, this.xrefType);
@@ -88,6 +99,12 @@ public class CallNoteResponse extends MessageResponse {
 		return noteList;
 	}
 	
+	private CallNoteRequest makeDefaultVals(Connection conn, String xrefType, Integer xrefId) {
+		List<CallNoteResponseItem> noteList = this.getNoteList();
+		CallNoteRequest cnr = this.getDefaultVals();
+		return cnr;
+	}
+
 	
 	
 	
