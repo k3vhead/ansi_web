@@ -12,6 +12,7 @@ import com.ansi.scilla.common.address.AddressUtils;
 import com.ansi.scilla.common.db.Address;
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
 import com.ansi.scilla.common.queries.TicketPaymentTotals;
+import com.ansi.scilla.web.address.query.AddressResponseQuery;
 import com.ansi.scilla.web.address.response.AddressResponseItem;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.payment.response.TicketPaymentTotalItem;
@@ -39,7 +40,8 @@ public class InvoiceTicketResponse extends MessageResponse {
 	public InvoiceTicketResponse(Connection conn, Integer invoiceId) throws RecordNotFoundException, Exception {
 		this();
 		Address address = AddressUtils.getBillToForInvoice(conn, invoiceId);
-		this.address = new AddressResponseItem(address);
+//		this.address = new AddressResponseItem(address);
+		this.address = AddressResponseQuery.selectOne(conn, address.getAddressId());
 		List<TicketPaymentTotals> totalsList = TicketPaymentTotals.selectByInvoice(conn, invoiceId);
 		makeTicketList(totalsList);
 	}

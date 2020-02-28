@@ -349,7 +349,11 @@
                 appendTo: "#somePmt",
                 select: function( event, ui ) {
                   //alert( "Selected: " + ui.item.id + " aka " + ui.item.label + " or " + ui.item.value );
-                  $("#invoiceNbr").val(ui.item.id);
+                  console.log(ui);
+                  var $idx = ui.item.label.indexOf(":Invoice ");
+                  console.log($idx);
+                  var $invoice = ui.item.label.substring($idx+":Invoice ".length);
+                  $("#invoiceNbr").val($invoice);
                 },
                 response: function(event, ui) {
                     if (ui.content.length === 0) {

@@ -17,7 +17,6 @@ import org.apache.logging.log4j.Level;
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Payment;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.db.TicketPayment;
 import com.ansi.scilla.common.jobticket.TicketStatus;
@@ -64,7 +63,7 @@ public class ApplyPaymentServlet extends AbstractServlet {
 				ApplyPaymentRequest paymentRequest = new  ApplyPaymentRequest();
 				AppUtils.json2object(jsonString, paymentRequest);
 				url = new AnsiURL(request, "applyPayment", new String[] {PaymentRequestType.VERIFY.name().toLowerCase(), PaymentRequestType.COMMIT.name().toLowerCase()});
-				SessionData sessionData = AppUtils.validateSession(request, Permission.PAYMENT, PermissionLevel.PERMISSION_LEVEL_IS_WRITE);
+				SessionData sessionData = AppUtils.validateSession(request, Permission.PAYMENT_WRITE);
 				SessionUser sessionUser = sessionData.getUser();
 				
 				PaymentRequestType requestType = PaymentRequestType.valueOf(url.getCommand().toUpperCase());

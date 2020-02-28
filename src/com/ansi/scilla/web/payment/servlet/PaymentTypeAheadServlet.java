@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.jsonFormat.AnsiFormat;
 import com.ansi.scilla.common.queries.PaymentSearch;
 import com.ansi.scilla.common.queries.PaymentSearchResult;
@@ -106,7 +105,7 @@ public class PaymentTypeAheadServlet extends AbstractServlet {
 							term = queryTerm.toLowerCase();
 							try {
 								conn = AppUtils.getDBCPConn();
-								SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+								SessionData sessionData = AppUtils.validateSession(request, Permission.TICKET_READ);
 								SessionUser user = sessionData.getUser();
 								logger.log(Level.DEBUG, "PaymentTypeAheadServlet(): doGet(): term =$" + term +"$");
 								List<ReturnItem> resultList = new ArrayList<ReturnItem>();
@@ -208,6 +207,7 @@ public class PaymentTypeAheadServlet extends AbstractServlet {
 			String amountDisplay = result.getPaymentAmount() == null ? " " : currencyFormatter.format(result.getPaymentAmount());
 			String checkDateDisplay = result.getCheckDate() == null ? " " : sdf.format(result.getCheckDate());
 
+			this.id = result.getPaymentId();
 			//payment_id:bill_to_name:date:amount:note:type:check_nbr:check_date:ticket_id:div:job_site:invoice_id
 			this.label = "Payment " + result.getPaymentId() 
 					+ ":" + "BT " + result.getBillToName()
