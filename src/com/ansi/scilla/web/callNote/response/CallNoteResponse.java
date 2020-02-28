@@ -7,8 +7,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ansi.scilla.common.callNote.CallNoteReference;
 import com.ansi.scilla.web.callNote.request.CallNoteRequest;
 import com.ansi.scilla.web.common.response.MessageResponse;
+import com.ansi.scilla.web.common.struts.SessionUser;
 
 public class CallNoteResponse extends MessageResponse {
 
@@ -41,17 +43,19 @@ public class CallNoteResponse extends MessageResponse {
 	private Integer xrefId;	
 	private List<CallNoteResponseItem> noteList;
 	private CallNoteRequest defaultVals;
+	private String defaultAddressName;
+	private String ansiContactName;
 	
 	public CallNoteResponse() {
 		super();
 	}
 	
-	public CallNoteResponse(Connection conn, String xrefType, Integer xrefId) throws SQLException {
+	public CallNoteResponse(Connection conn, String xrefType, Integer xrefId, SessionUser user) throws SQLException {
 		this();
 		this.xrefType = xrefType;
 		this.xrefId = xrefId;
 		this.noteList = makeNoteList(conn);
-		this.setDefaultVals(makeDefaultVals(conn, xrefType, xrefId));
+		this.setDefaultVals(makeDefaultVals(conn, xrefType, xrefId, user));
 	}
 
 	public String getXrefType() {
@@ -99,10 +103,14 @@ public class CallNoteResponse extends MessageResponse {
 		return noteList;
 	}
 	
-	private CallNoteRequest makeDefaultVals(Connection conn, String xrefType, Integer xrefId) {
-		List<CallNoteResponseItem> noteList = this.getNoteList();
-		CallNoteRequest cnr = this.getDefaultVals();
-		return cnr;
+	private CallNoteRequest makeDefaultVals(Connection conn, String xrefType, Integer xrefId, SessionUser user) {
+		CallNoteReference xref = CallNoteReference.valueOf(xrefType);
+		Integer addressId = xref.address(conn, xrefId);
+		CallNoteRequest callNoteRequest = new CallNoteRequest();
+		callNoteRequest.setUserId(user.getUserId());
+		callNoteRequest.setAddressId(addressId);
+		callNoteRequest.setEveryThingElse();
+		return callNoteRequest;
 	}
 
 	

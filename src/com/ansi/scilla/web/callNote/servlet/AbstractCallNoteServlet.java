@@ -46,7 +46,8 @@ public abstract class AbstractCallNoteServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
 			
-			AppUtils.validateSession(request, Permission.CALL_NOTE_READ);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.CALL_NOTE_READ);
+			SessionUser user = sessionData.getUser();
 			
 			String[] uri = request.getRequestURI().split("/");
 			if ( uri.length < 2 ) {
@@ -64,7 +65,7 @@ public abstract class AbstractCallNoteServlet extends AbstractServlet {
 				throw new ResourceNotFoundException();
 			}
 			
-			CallNoteResponse data = makeResponse(conn, xrefType, Integer.valueOf(xrefId));
+			CallNoteResponse data = makeResponse(conn, xrefType, Integer.valueOf(xrefId), user);
 			WebMessages webMessages = new WebMessages();
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
 			data.setWebMessages(webMessages);
@@ -170,7 +171,7 @@ public abstract class AbstractCallNoteServlet extends AbstractServlet {
 					conn.rollback();
 					throw e;
 				}
-				CallNoteResponse data = makeResponse(conn, xrefType, Integer.valueOf(xrefId));
+				CallNoteResponse data = makeResponse(conn, xrefType, Integer.valueOf(xrefId), user);
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
 				data.setWebMessages(webMessages);
 				super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
@@ -270,6 +271,6 @@ public abstract class AbstractCallNoteServlet extends AbstractServlet {
 		
 	}
 	
-	protected abstract CallNoteResponse makeResponse(Connection conn, String xrefType, Integer xrefId) throws Exception;
+	protected abstract CallNoteResponse makeResponse(Connection conn, String xrefType, Integer xrefId, SessionUser user) throws Exception;
 	protected abstract String makeRealm();
 }

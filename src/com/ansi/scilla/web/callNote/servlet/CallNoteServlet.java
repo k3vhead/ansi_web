@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import com.ansi.scilla.web.callNote.response.CallNoteResponse;
+import com.ansi.scilla.web.common.struts.SessionUser;
 
 public class CallNoteServlet extends AbstractCallNoteServlet {
 
@@ -12,8 +13,8 @@ public class CallNoteServlet extends AbstractCallNoteServlet {
 	public static final String REALM = "callNote";
 
 	@Override
-	protected CallNoteResponse makeResponse(Connection conn, String xrefType, Integer xrefId) throws SQLException {
-		return new CallNoteResponse(conn, xrefType, Integer.valueOf(xrefId));
+	protected CallNoteResponse makeResponse(Connection conn, String xrefType, Integer xrefId, SessionUser user) throws SQLException {
+		return new CallNoteResponse(conn, xrefType, Integer.valueOf(xrefId), user);
 	}
 
 	@Override
