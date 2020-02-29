@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ansi.scilla.common.callNote.CallNoteReference;
+import com.ansi.scilla.common.callNote.DefaultAddress;
 import com.ansi.scilla.web.callNote.request.CallNoteRequest;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.common.struts.SessionUser;
@@ -105,10 +106,11 @@ public class CallNoteResponse extends MessageResponse {
 	
 	private CallNoteRequest makeDefaultVals(Connection conn, String xrefType, Integer xrefId, SessionUser user) {
 		CallNoteReference xref = CallNoteReference.valueOf(xrefType);
-		Integer addressId = xref.address(conn, xrefId);
+		DefaultAddress defaultAddress = xref.defaultAddress(conn, xrefId);
 		CallNoteRequest callNoteRequest = new CallNoteRequest();
 		callNoteRequest.setUserId(user.getUserId());
-		callNoteRequest.setAddressId(addressId);
+		callNoteRequest.setAddressId(defaultAddress.addressId);
+		defaultAddressName = defaultAddress.name;
 		callNoteRequest.setEveryThingElse();
 		return callNoteRequest;
 	}
