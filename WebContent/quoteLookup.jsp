@@ -119,6 +119,12 @@
 						statusCode: {
 							403: function($data) {
 								$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
+							},
+							404: function($data) {
+								$("#globalMsg").html("System Error Copy 404. Contact Support");
+							},
+							500: function($data) {
+								$("#globalMsg").html("System Error Copy 500. Contact Support");
 							} 
 						},
 						dataType: 'json'
@@ -140,10 +146,10 @@
 								$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
 							},
 							404: function($data) {
-								$returnValue = {};
+								$("#globalMsg").html("System Error Copy 404. Contact Support");
 							},
 							500: function($data) {
-								
+								$("#globalMsg").html("System Error Copy 500. Contact Support");
 							}
 						},
 						dataType: 'json'
@@ -182,37 +188,37 @@
 				        	"type": "GET"
 				        	},
 				        columns: [
-				            { title: "<bean:message key="field.label.quoteId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				            { title: "<bean:message key="field.label.quoteId" />", "defaultContent": "<i>N/A</i>", width: '4%', data: function ( row, type, set ) {	
 				            	if(row.quoteId != null){return (row.quoteId+"");}
 				            } },
-				            { title: "<bean:message key="field.label.quoteCode" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.quoteCode" />", "defaultContent": "<i>N/A</i>", width: '6%', data: function ( row, type, set ) {
 				            	if(row.quoteCode != null){return (row.quoteCode+"");}
 				            } },
-				            { title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", width: '6%', data: function ( row, type, set ) {
 				            	if(row.divisionNbr != null){return (row.divisionNbr+"-"+row.divisionCode);}
 				            } },
-				            { title: "<bean:message key="field.label.billToName" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				            { title: "<bean:message key="field.label.billToName" />" , "defaultContent": "<i>N/A</i>", width: '16%', data: function ( row, type, set ) {	
 				            	if(row.billToName != null){return (row.billToName+"");}
 				            } },
-				            { title: "<bean:message key="field.label.jobSiteName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.jobSiteName" />", "defaultContent": "<i>N/A</i>", width: '16%', data: function ( row, type, set ) {
 				            	if(row.jobSiteName != null){return (row.jobSiteName+"");}
 				            } },
-				            { title: "<bean:message key="field.label.jobSiteAddress" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.jobSiteAddress" />",  "defaultContent": "<i>N/A</i>", width: '13%', data: function ( row, type, set ) {
 				            	if(row.jobSiteAddress != null){return (row.jobSiteAddress+"");}
 				            } },
-				            { title: "<bean:message key="field.label.managerName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.managerName" />", "defaultContent": "<i>N/A</i>", width: '10%', data: function ( row, type, set ) {
 				            	if(row.managerName != null){return (row.managerName+"");}
 				            } },
-				            { title: "<bean:message key="field.label.proposalDate" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.proposalDate" />", "defaultContent": "<i>N/A</i>", width: '9%', data: function ( row, type, set ) {
 				            	if(row.proposalDate != null){return (row.proposalDate+"");}
 				            } },
-				            { title: "<bean:message key="field.label.quoteJobCount" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
+				            { title: "<bean:message key="field.label.quoteJobCount" />", "defaultContent": "<i>N/A</i>", width: '5%', data: function ( row, type, set ) { 	
 				            	if(row.quoteJobCount != null){return (row.quoteJobCount+"");}
 				            } },
-				            { title: "<bean:message key="field.label.quotePpcSum" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				            { title: "<bean:message key="field.label.quotePpcSum" />", "defaultContent": "<i>N/A</i>", width: '8%', data: function ( row, type, set ) {	
 				            	if(row.quotePpcSum != null){return (row.quotePpcSum+"");} 
 				            } },
-				            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
+				            { title: "<bean:message key="field.label.action" />",  width: '7%', data: function ( row, type, set ) {	
 				            	//console.log(row);
 				            	editText = '<a href="quoteMaintenance.html?id='+row.quoteId+'" class="editAction" data-id="'+row.quoteId+'"><webthing:edit>Edit</webthing:edit></a>';
 				            	viewText = '<a href="quoteMaintenance.html?id='+row.quoteId+'" class="editAction" data-id="'+row.quoteId+'"><webthing:view style="color:#404040;">View</webthing:view></a>';
@@ -252,20 +258,7 @@
     	<h1>Quote Lookup</h1>
     	
 	 	<table id="quoteTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
-	        <colgroup>
-	        	<col style="width:4%;" />
-	    		<col style="width:6%;" />
-	    		<col style="width:6%;" />
-	    		<col style="width:16%;" />
-	    		<col style="width:16%;" />
-	    		<col style="width:13%;" />
-	    		<col style="width:10%;" />
-	    		<col style="width:9%;" />
-	    		<col style="width:5%;" />
-	    		<col style="width:8%;" />
-	    		<col style="width:7%;" />  
-	    	</colgroup> 
-	        <thead>
+	       <thead>
 	            <tr>
 	                <th><bean:message key="field.label.quoteId" /></th>
 	    			<th><bean:message key="field.label.quoteCode" /></th>

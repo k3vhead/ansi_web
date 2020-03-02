@@ -71,7 +71,7 @@
 						QUOTEMAINTENANCE.makeButtons();
 						QUOTEMAINTENANCE.makeOtherClickables();
 						if (QUOTEMAINTENANCE.quoteId != '' ) {
-							QUOTEMAINTENANCE.getQuote(QUOTEMAINTENANCE.quoteId);	
+							QUOTEMAINTENANCE.getQuote(QUOTEMAINTENANCE.quoteId,QUOTEMAINTENANCE.getQuotePanels);	
 						}
 						QUOTE_PRINT.init_modal("#printQuoteDiv");
 						QUOTE_PRINT_HISTORY.init("#printHistoryDiv", "#viewPrintHistory");
@@ -649,54 +649,56 @@
 		    				dataType: 'json'
 		    			});
 					},
-		            
-		            
-		            
-		            getQuote : function($quoteId) {
-		            	console.log("getQuote");
-						if ( $quoteId != null ) {
-							var $url = "quote/" + $quoteId
-							var jqxhr = $.ajax({
-								type: 'GET',
-								url: $url,
-								data: {},
-								statusCode: {
-									200: function($data) {
-										console.log("Got the quote");
-										QUOTEMAINTENANCE.quote = $data.data.quote;
-										QUOTEMAINTENANCE.populateQuotePanels($data.data);	
-										if ( QUOTEMAINTENANCE.quote.canEdit == true ) {
-											$("#edit-this-address").show();
-											$(".quote-button-container").show();
-											$("#edit-this-quote").show();
-										} 
-										if ( QUOTEMAINTENANCE.quote.canAddJob == true ) {
-											$("#new-job-button").show();
-										} else {
-											$("#new-job-button").hide();
-										}
-			//							if ( QUOTEMAINTENANCE.quote.canPropose == true ) {//gag: removed because "propose" is correct symantics for reprint also
-			//								$("#propose-button").show();
-			//							} else {
-			//								$("#propose-button").hide();
-			//							}
-									},					
-									403: function($data) {
-										$("#globalMsg").html("Session Expired. Log In and try again").show();
-									},
-									404: function($data) {
-										$("#globalMsg").html("Invalid quote").show().fadeOut(4000);
-									},
-									500: function($data) {
-										$("#globalMsg").html("System Error 500. Contact Support").show();
-									}
+
+					
+					getQuote: function($quoteId,$callback) {
+						var jqxhr1 = $.ajax({
+							type: 'GET',
+							url: "quote/" + $quoteId,
+							data: {},						
+							statusCode: {
+								200: function($data) {
+									$callback($data.data)
+								},					
+								403: function($data) {
+									$("#globalMsg").html("Session Expired. Log In and try again").show();
 								},
-								dataType: 'json',
-								async:false
-							});
-						}
+								404: function($data) {
+									$("#globalMsg").html("Invalid Status").show().fadeOut(4000);
+								},
+								500: function($data) {
+									$("#globalMsg").html("System Error 500. Contact Support").show();
+								}
+							},					
+							dataType: 'json'
+						});
 					},
 					
+		            getQuotePanels : function($callback)  {
+						console.log("Got the quote");
+						QUOTEMAINTENANCE.quote = $callback.quote;
+						QUOTEMAINTENANCE.populateQuotePanels($callback);	
+						if ( QUOTEMAINTENANCE.quote.canEdit == true ) {
+							$("#edit-this-address").show();
+							$(".quote-button-container").show();
+							$("#edit-this-quote").show();
+						} 
+						if ( QUOTEMAINTENANCE.quote.canAddJob == true ) {
+							$("#new-job-button").show();
+						} else {
+							$("#new-job-button").hide();
+						}
+//							if ( QUOTEMAINTENANCE.quote.canPropose == true ) {//gag: removed because "propose" is correct symantics for reprint also
+//								$("#propose-button").show();
+//							} else {
+//								$("#propose-button").hide();
+//							}
+					},			
+
+		            
+		            makeQuoteFailure : function() {
+		    			$("#globalMsg").html("Error retrieving quote data. Reload page and try again");
+		    		},
 
 					
 					getCodeList: function($tableName, $fieldName, $callback) {
