@@ -14,10 +14,9 @@ public class LoadPermissions {
 
 	public static void main(String[] args) {
 		try {
-//			new LoadPermissions().loadOptions();
-			new LoadPermissions().loadEquivalentValues();
+			new LoadPermissions().loadOptions();
+//			new LoadPermissions().loadEquivalentValues();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
