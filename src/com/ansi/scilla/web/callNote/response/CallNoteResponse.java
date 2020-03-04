@@ -12,6 +12,7 @@ import com.ansi.scilla.common.callNote.DefaultAddress;
 import com.ansi.scilla.web.callNote.request.CallNoteRequest;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.common.struts.SessionUser;
+import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class CallNoteResponse extends MessageResponse {
 
@@ -51,7 +52,7 @@ public class CallNoteResponse extends MessageResponse {
 		super();
 	}
 	
-	public CallNoteResponse(Connection conn, String xrefType, Integer xrefId, SessionUser user) throws SQLException {
+	public CallNoteResponse(Connection conn, String xrefType, Integer xrefId, SessionUser user) throws SQLException, RecordNotFoundException {
 		this();
 		this.xrefType = xrefType;
 		this.xrefId = xrefId;
@@ -104,14 +105,14 @@ public class CallNoteResponse extends MessageResponse {
 		return noteList;
 	}
 	
-	private CallNoteRequest makeDefaultVals(Connection conn, String xrefType, Integer xrefId, SessionUser user) {
+	private CallNoteRequest makeDefaultVals(Connection conn, String xrefType, Integer xrefId, SessionUser user) throws SQLException, RecordNotFoundException {
 		CallNoteReference xref = CallNoteReference.valueOf(xrefType);
 		DefaultAddress defaultAddress = xref.defaultAddress(conn, xrefId);
 		CallNoteRequest callNoteRequest = new CallNoteRequest();
 		callNoteRequest.setUserId(user.getUserId());
 		callNoteRequest.setAddressId(defaultAddress.addressId);
 		defaultAddressName = defaultAddress.name;
-		callNoteRequest.setEveryThingElse();
+		callNoteRequest.setContactId(xrefId);
 		return callNoteRequest;
 	}
 
