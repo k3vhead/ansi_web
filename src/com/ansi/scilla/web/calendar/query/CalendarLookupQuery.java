@@ -3,7 +3,9 @@ package com.ansi.scilla.web.calendar.query;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -14,39 +16,37 @@ import org.apache.logging.log4j.LogManager;
 
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.queries.SelectType;
+import com.ansi.scilla.common.utils.WhereFieldLikeTransformer;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.common.utils.ColumnFilter;
 import com.ansi.scilla.web.common.utils.SessionDivisionTransformer;
 
 public class CalendarLookupQuery extends LookupQuery {
 
 	private static final long serialVersionUID = 1L;
 
+	public static final String ANSI_DATE = "ansi_calendar.ansi_date";
+	public static final String DATE_TYPE = "ansi_calendar.date_type";
 	
 	public static final String sqlSelect = 
-			"select ansi_date, date_type \n"; 
-			
+			"select ansi_calendar.ansi_date, ansi_calendar.date_type \n";
 
 	public static final String sqlFromClause = 
-			"from ansi_calendar \n";
+			"\n from ansi_calendar  ";
 	
 	public static final String sqlWhereClause = "";
+	
 	
 	
 	public CalendarLookupQuery(Integer userId, List<SessionDivision> divisionList) {
 		super(sqlSelect, makeFromClause(sqlFromClause, divisionList, ""), sqlWhereClause);
 		this.logger = LogManager.getLogger(this.getClass());
 		this.userId = userId;
-		Calendar now = Calendar.getInstance();
-		this.searchTerm = String.valueOf(now.get(Calendar.YEAR));
 //		this.divisionList = divisionList;
 	}
 	
-	
-
-
-
 
 
 	/** *********************** **/
@@ -55,7 +55,7 @@ public class CalendarLookupQuery extends LookupQuery {
 	protected String makeOrderBy(SelectType selectType) {
 		String orderBy = "";
 		if ( selectType.equals(SelectType.DATA)) {
-			orderBy = "order by ansi_date asc";
+			orderBy = " order by year(ansi_calendar.ansi_date) desc, ansi_calendar.ansi_date asc ";
 		}
 
 		return "\n" + orderBy;
@@ -65,10 +65,31 @@ public class CalendarLookupQuery extends LookupQuery {
 	protected String makeWhereClause(String queryTerm) {
 		logger.log(Level.DEBUG, "makeWhereClause");
 		String whereClause = sqlWhereClause;
-		if ( ! StringUtils.isBlank(queryTerm)) {
-			whereClause = "where year(ansi_date)=?";
-		}
+		String joiner = StringUtils.isBlank(sqlWhereClause) ? " where " : " and ";
 		
+		
+		if (! StringUtils.isBlank(queryTerm)) {
+			String searchTerm = queryTerm.toLowerCase();
+			Collection<String> stringFields= Arrays.asList(new String[] {
+					"ansi_calendar.ansi_date" ,
+					"ansi_calendar.date_type", 
+			});
+			Collection<String> numericFields = Arrays.asList(new String[] {
+					
+			});
+			
+			List<String> whereFields = new ArrayList<String>();
+			whereFields.addAll(stringFields);
+			if ( StringUtils.isNumeric(searchTerm)) {
+				whereFields.addAll(numericFields);
+			}
+
+			Collection<?> whereClauseList = CollectionUtils.collect(whereFields, new WhereFieldLikeTransformer(searchTerm));
+			whereClause = whereClause + joiner +  "(" + StringUtils.join(whereClauseList, " \n\tOR ") + ")";
+		}
+
+		
+
 		return whereClause;
 	}
 
@@ -94,8 +115,10 @@ public class CalendarLookupQuery extends LookupQuery {
 			List<Division> divisionList = Division.cast(new Division().selectAll(conn));
 			for ( Division d : divisionList) { sdList.add(new SessionDivision(d)); }
 			CalendarLookupQuery x = new CalendarLookupQuery(5, sdList);
-//			x.setSearchTerm("2019");
-			System.out.println("Search Term: " + x.getSearchTerm());
+			x.setSearchTerm("2020");
+//			x.setJobId(211660);
+//			x.setStartDate(startDate);
+//			x.setStatus("D,P");
 			System.out.println("Countall: " + x.countAll(conn));
 			System.out.println("Count some: " + x.selectCount(conn));
 			ResultSet rs = x.select(conn,  0, 10);

@@ -134,6 +134,20 @@
 
 
 
+	<servlet>
+        <servlet-name>calendarLookup</servlet-name>
+        <servlet-class>com.ansi.scilla.web.calendar.servlet.CalendarServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>calendarLookup</servlet-name>
+        <url-pattern>/calendar/ansiCalendar/*</url-pattern>
+        <url-pattern>/calendar/ansiCalendar</url-pattern>
+    </servlet-mapping>
+
+
+
+
+	
 
 	<servlet>
         <servlet-name>callNote</servlet-name>

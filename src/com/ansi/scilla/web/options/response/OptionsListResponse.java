@@ -8,6 +8,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import com.ansi.scilla.common.address.Country;
+import com.ansi.scilla.common.calendar.CalendarDateType;
 import com.ansi.scilla.common.claims.WorkHoursType;
 import com.ansi.scilla.common.employee.EmployeeHoursType;
 import com.ansi.scilla.common.invoice.InvoiceGrouping;
@@ -36,6 +37,7 @@ public class OptionsListResponse extends MessageResponse {
 	private List<ReportTypeOption> reportType;
 	private List<WorkHoursTypeOption> workHoursType;
 	private List<ExpenseTypeOption> expenseType;
+	private List<CalendarTypeOption> calendarType;
 
 	public OptionsListResponse(List<ResponseOption> options, SessionData sessionData) throws ClassNotFoundException, Exception {
 		if ( options.contains(ResponseOption.JOB_FREQUENCY)) {
@@ -73,6 +75,9 @@ public class OptionsListResponse extends MessageResponse {
 		}
 		if ( options.contains(ResponseOption.EXPENSE_TYPE)) {
 			makeExpenseTypeList(sessionData);
+		}
+		if (options.contains(ResponseOption.CALENDAR_TYPE)) {
+			makeCalendarTypeList(sessionData);
 		}
 	}
 
@@ -182,8 +187,17 @@ public class OptionsListResponse extends MessageResponse {
 			this.expenseType.add(new ExpenseTypeOption(expenseType));
 		}
 		Collections.sort(this.expenseType);
+	}
+
+	private void makeCalendarTypeList(SessionData sessionData) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException  {
+		this.calendarType = new ArrayList<CalendarTypeOption>();
+		for ( CalendarDateType calendarDateType : CalendarDateType.values()) {
+			this.calendarType.add(new CalendarTypeOption(calendarDateType));
+		}
+		Collections.sort(this.calendarType);
 
 	}
+	
 	
 	public List<JobFrequencyOption> getJobFrequency() {
 		return jobFrequency;
@@ -279,6 +293,14 @@ public class OptionsListResponse extends MessageResponse {
 
 	public void setExpenseType(List<ExpenseTypeOption> expenseType) {
 		this.expenseType = expenseType;
+	}
+
+	public List<CalendarTypeOption> getCalendarType() {
+		return calendarType;
+	}
+
+	public void setCalendarType(List<CalendarTypeOption> calendarType) {
+		this.calendarType = calendarType;
 	}
 
 

@@ -25,7 +25,8 @@ public enum Menu {
 	BUDGET_CONTROL(		"Budget Control", 		LOOKUPS, Permission.CLAIMS_READ, 	"budgetControlLookup.html"),
 	CLAIM_DETAIL(		"Claim Detail", 		LOOKUPS, Permission.CLAIMS_READ, 	"claimDetailLookup.html"),
 	CALL_NOTES(         "Call Notes",           LOOKUPS, Permission.CALL_NOTE_READ, "callNoteLookup.html"),
-	
+	CALENDAR(           "ANSI Calendar",        LOOKUPS, Permission.CALENDAR_READ,  "calendarLookup.html"),
+
 	
 	REPORTS("Reports", null, null,"#"),
 	DRV30(				"30 Day DRV",			REPORTS, Permission.TICKET_READ,	"ticketView.html"),

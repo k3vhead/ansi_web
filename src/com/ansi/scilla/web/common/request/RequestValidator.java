@@ -21,6 +21,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.ansi.scilla.common.calendar.CalendarDateType;
 import com.ansi.scilla.common.callNote.CallNoteReference;
 import com.ansi.scilla.common.claims.WorkHoursType;
 import com.ansi.scilla.common.db.CallLog;
@@ -272,6 +273,23 @@ public class RequestValidator {
 				webMessages.addMessage(fieldName, "Cannot be more than " + maxValue.toString());
 			}
 		}
+	}
+
+	public static void validateDateType(WebMessages webMessages, String fieldName, String value, boolean required) {
+		if (StringUtils.isBlank(value)) {
+			if (required) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			try {
+				CalendarDateType type = CalendarDateType.valueOf(value);
+				if (type == null) {
+					webMessages.addMessage(fieldName, "Invalid Value");
+				}
+			} catch (IllegalArgumentException e) {
+				webMessages.addMessage(fieldName, "Invalid Value");
+			}
+		}		
 	}
 
 	public static void validateFloat(WebMessages webMessages, String fieldName, Float value, Float minValue,
