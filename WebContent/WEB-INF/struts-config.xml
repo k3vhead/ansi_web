@@ -51,6 +51,12 @@
             <forward name="login" path="/login.jsp" />            
         </action>
         <action
+            path="/batchLogLookup"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/batch/batchLogLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+        <action
             path="/ticketStatusLookup"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/claims/ticketStatusLookup.jsp" />

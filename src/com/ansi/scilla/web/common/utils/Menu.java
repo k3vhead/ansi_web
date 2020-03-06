@@ -26,6 +26,7 @@ public enum Menu {
 	CLAIM_DETAIL(		"Claim Detail", 		LOOKUPS, Permission.CLAIMS_READ, 	"claimDetailLookup.html"),
 	CALL_NOTES(         "Call Notes",           LOOKUPS, Permission.CALL_NOTE_READ, "callNoteLookup.html"),
 	CALENDAR(           "ANSI Calendar",        LOOKUPS, Permission.CALENDAR_READ,  "calendarLookup.html"),
+	BATCH_LOG(          "Batch Log",            LOOKUPS, Permission.BATCH_LOG_READ, "batchLogLookup.html"),
 
 	
 	REPORTS("Reports", null, null,"#"),

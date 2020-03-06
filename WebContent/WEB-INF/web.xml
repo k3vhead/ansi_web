@@ -121,6 +121,15 @@
 	</servlet-mapping>
 
 
+	<servlet>
+        <servlet-name>batchLogLookup</servlet-name>
+        <servlet-class>com.ansi.scilla.web.batch.servlet.BatchLogLookupServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>batchLogLookup</servlet-name>
+        <url-pattern>/batch/batchLogLookup</url-pattern>
+    </servlet-mapping>
+    
     
     <servlet>
         <servlet-name>budgetControlLookup</servlet-name>
