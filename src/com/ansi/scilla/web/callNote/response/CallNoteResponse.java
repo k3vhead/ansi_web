@@ -92,6 +92,22 @@ public class CallNoteResponse extends MessageResponse {
 		this.defaultVals = defaultVals;
 	}
 	
+	public String getDefaultAddressName() {
+		return defaultAddressName;
+	}
+	
+	public void setDefaultAddressName(String defaultAddressName) {
+		this.defaultAddressName = defaultAddressName;
+	}
+	
+	public String getAnsiContactName() {
+		return ansiContactName;
+	}
+	
+	public void setAnsiContactName(String ansiContactName) {
+		this.ansiContactName = ansiContactName;
+	}
+	
 	private List<CallNoteResponseItem> makeNoteList(Connection conn) throws SQLException {
 		PreparedStatement ps = conn.prepareStatement(this.sql);
 		ps.setString(1, this.xrefType);
@@ -111,8 +127,11 @@ public class CallNoteResponse extends MessageResponse {
 		CallNoteRequest callNoteRequest = new CallNoteRequest();
 		callNoteRequest.setUserId(user.getUserId());
 		callNoteRequest.setAddressId(defaultAddress.addressId);
-		defaultAddressName = defaultAddress.name;
+		this.defaultAddressName = defaultAddress.name;
+		this.ansiContactName = user.getFirstName() + " " + user.getLastName();
 		callNoteRequest.setContactId(xrefId);
+		callNoteRequest.setXrefId(xrefId);
+		callNoteRequest.setXrefType(xrefType);
 		return callNoteRequest;
 	}
 
