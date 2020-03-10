@@ -182,7 +182,7 @@
 				            	if(row.due != null){return (row.due.toFixed(2));}
 				            } },
 				            { title: "<bean:message key="field.label.action" />", width:"2%", data: function ( row, type, set ) {
-				            	var $noteLink = '<webthing:notes xrefType="INVOICE" xrefId="' + row.invoice_id + '">Invoice Notes</webthing:notes>'
+				            	var $noteLink = '<webthing:notes xrefType="TICKET" xrefId="' + row.ticket_id + '">Ticket Notes</webthing:notes>'
 				            	return $noteLink;
 				            //	if ( row.printCount > 0 ) {
 				            //		$printText =  '<i class="fa fa-print invoicePrint tooltip" aria=hidden="true" data-invoiceId="'+row.invoiceId+'"><span class="tooltiptext">Reprint</span></i>';

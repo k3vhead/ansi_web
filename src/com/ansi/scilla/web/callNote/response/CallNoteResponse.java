@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import com.ansi.scilla.common.callNote.CallNoteReference;
@@ -121,17 +122,26 @@ public class CallNoteResponse extends MessageResponse {
 		return noteList;
 	}
 	
-	private CallNoteRequest makeDefaultVals(Connection conn, String xrefType, Integer xrefId, SessionUser user) throws SQLException, RecordNotFoundException {
+	private CallNoteRequest makeDefaultVals(Connection conn, String xrefType, Integer xrefId, SessionUser user) throws SQLException {
+		Calendar now = Calendar.getInstance();
 		CallNoteReference xref = CallNoteReference.valueOf(xrefType);
-		DefaultAddress defaultAddress = xref.defaultAddress(conn, xrefId);
 		CallNoteRequest callNoteRequest = new CallNoteRequest();
 		callNoteRequest.setUserId(user.getUserId());
-		callNoteRequest.setAddressId(defaultAddress.addressId);
-		this.defaultAddressName = defaultAddress.name;
 		this.ansiContactName = user.getFirstName() + " " + user.getLastName();
+		try {
+			DefaultAddress defaultAddress = xref.defaultAddress(conn, xrefId);
+			callNoteRequest.setAddressId(defaultAddress.addressId);
+			this.defaultAddressName = defaultAddress.name;
+		} catch ( RecordNotFoundException e ) {
+			callNoteRequest.setAddressId(null);
+			this.defaultAddressName = null;
+		}
 		callNoteRequest.setContactId(xrefId);
 		callNoteRequest.setXrefId(xrefId);
 		callNoteRequest.setXrefType(xrefType);
+		callNoteRequest.setStartDate(now);
+		callNoteRequest.setStartTime(now);
+		callNoteRequest.setContactType("PHONE");
 		return callNoteRequest;
 	}
 
