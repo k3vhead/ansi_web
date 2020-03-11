@@ -143,6 +143,17 @@ public enum Permission {
 	DOCUMENTS(null, false, "Functional Area: Documents"),
 	DOCUMENTS_READ(DOCUMENTS, false, "Can read stored documents"),
 	DOCUMENTS_WRITE(DOCUMENTS_READ, false, "Can store documents"),
+
+	CALENDAR(null, false, "Functional Area: Calendar"),
+	CALENDAR_READ(CALENDAR, false, "Can see the corporate calendar"),
+	CALENDAR_WRITE(CALENDAR_READ, false, "Can update the corporate calendar"),
+
+	DIVISION_CLOSE(null, false, "Functional Area: Division Close"),
+	DIVISION_CLOSE_READ(DIVISION_CLOSE, false, "Can see division close dates"),
+	DIVISION_CLOSE_WRITE(DIVISION_CLOSE_READ, true, "Can set division close dates"),
+
+	BATCH_LOG(null, false, "Functional Area: Batch Logging"),
+	BATCH_LOG_READ(BATCH_LOG, false, "Can view the batch log"),
 	;
 	
 	private final Boolean divisionSpecific;
