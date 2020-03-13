@@ -129,123 +129,160 @@
        
         <script type="text/javascript">
         $(document).ready(function() {
-			// Populate the division list
-        	$divisionList = ANSI_UTILS.getDivisionList();
-			$("#divisionId").append(new Option("",""));
-			$.each($divisionList, function(index, val) {
-				var $displayValue = val.divisionNbr + "-" + val.divisionCode;
-				$("#divisionId").append(new Option($displayValue, val.divisionId));
-			});
-
-			var $today = new Date();
-			$("#startMonth").append(new Option("",""));
-			$("#startMonth").append(new Option("January", <%= Calendar.JANUARY %>));
-			$("#startMonth").append(new Option("February", <%= Calendar.FEBRUARY %>));
-			$("#startMonth").append(new Option("March", <%= Calendar.MARCH %>));
-			$("#startMonth").append(new Option("April", <%= Calendar.APRIL %>));
-			$("#startMonth").append(new Option("May", <%= Calendar.MAY %>));
-			$("#startMonth").append(new Option("June", <%= Calendar.JUNE %>));
-			$("#startMonth").append(new Option("July", <%= Calendar.JULY %>));
-			$("#startMonth").append(new Option("August", <%= Calendar.AUGUST %>));
-			$("#startMonth").append(new Option("September", <%= Calendar.SEPTEMBER %>));
-			$("#startMonth").append(new Option("October", <%= Calendar.OCTOBER %>));
-			$("#startMonth").append(new Option("November", <%= Calendar.NOVEMBER %>));
-			$("#startMonth").append(new Option("December", <%= Calendar.DECEMBER %>));
-			$("#startMonth").val($today.getMonth()-2); // last month, using java numbers: JANUARY=0
-			
-			var $startYear = $today.getFullYear();
-			$("#startYear").append(new Option("",""));
-			$("#startYear").append(new Option($startYear, $startYear));
-			$startYear--;
-			$("#startYear").append(new Option($startYear, $startYear));
-			$startYear--;
-			$("#startYear").append(new Option($startYear, $startYear));
-			$startYear--;
-			$("#startYear").append(new Option($startYear, $startYear));
-			$startYear--;
-			$("#startYear").append(new Option($startYear, $startYear));
-			$("#startYear").val($today.getFullYear());
-			
-			
-			$("#divisionId").change(function($event) {
-				checkData();
-			});
-			$("#startMonth").change(function($event) {
-				checkData();
-			});
-			$("#startYear").change(function($event) {
-				checkData();
-			});
-
-			function checkData() {
-				var $selectedDiv = $('#divisionId option:selected').val();
-				var $selectedMonth = $('#startMonth option:selected').val();
-				var $selectedYear = $('#startYear option:selected').val();
-				if ( $selectedDiv=='' || $selectedMonth=='' || $selectedYear=='' ) {
-					$("#goButton").hide();
-				} else {
-					$("#goButton").fadeIn(1000);
-				}
-			}
-			
-			$("#goButton").click(function () {
-				var $selectedDiv = $('#divisionId option:selected').val();
-				var $selectedMonth = $('#startMonth option:selected').val();
-				var $selectedYear = $('#startYear option:selected').val();
-				var $downloadUrl = "invoiceRegisterReport/" + $selectedDiv + "?month=" + $selectedMonth + "&year=" + $selectedYear;
-				$("#xlsDownload").attr("href", $downloadUrl);
-				$("#downloader").click();
-			});
-			
-			
-			function xxx() {
-				var jqxhr = $.ajax({
-					type: 'GET',
-					url: $url,
-					data: {'month':$selectedMonth,'year':$selectedYear},
-					statusCode: {
-						200: function($data) {
-							var newWindow = window.open("", "new window", "width=200, height=100");							
-							newWindow.document.write(data);
-						},
-						403: function($data) {
-							$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
-						}, 
-						404: function($data) {
-							$("#globalMsg").html("Invalid Division").show().fadeOut(5000);
-						}, 
-						405: function($data) {
-							$("#globalMsg").html("System Error 405; Contact Support").show().fadeOut(5000);
-						}, 
-						500: function($data) {
-							$("#globalMsg").html("System Error 500; Contact Support").show();
-						} 
-					},
-					dataType: 'html'
-				});
-			}
-        	        	
-
-			function bindFunctions() {
-	        	$(".ansi-stdrpt-data-row").bind("mouseover", function() {
-	                $(this).css('background-color','#CCCCCC');
-		        });
-	        	$(".ansi-stdrpt-data-row").bind("mouseout", function() {
-	                $(this).css('background-color','transparent');
-		        });
-			}
         	
-			$('.ScrollTop').click(function() {
-				$('html, body').animate({scrollTop: 0}, 800);
-      	  		return false;
-      	    });
-             
-             
-             
+        	; INVOICE_REGISTER_REPORT = {
+			
+	     	     init : function () {
+	     	    	INVOICE_REGISTER_REPORT.makeDivision();
+	     	    	INVOICE_REGISTER_REPORT.populateDates();
+	     	    	INVOICE_REGISTER_REPORT.populateChangers(); 
+	     	    	INVOICE_REGISTER_REPORT.checkData();
+	     	    	INVOICE_REGISTER_REPORT.populateClickers();
+	     	    	INVOICE_REGISTER_REPORT.xxx(); 
+	     	    	INVOICE_REGISTER_REPORT.bindFunctions();
+	     	      
+			     	},
+			     	
+			     	makeDivision : function() {
+			     	     
+			     	     
+						// Populate the division list
+			        ANSI_UTILS.makeDivisionList(INVOICE_REGISTER_REPORT.populateDivisionList, INVOICE_REGISTER_REPORT.makeDivisionFailure);
+			     	},
+		            
+		            makeDivisionFailure : function() {
+		    			$("#globalMsg").html("Error retrieving divisions. Reload page and try again");
+		    		},
+			     	
 
-            
+					
+					
+					
+					populateDivisionList : function($data) {
+		            	INVOICE_REGISTER_REPORT.divisionList = $data.data.divisionList;
+		            	
+						$("#divisionId").append(new Option("",""));
+						$.each(INVOICE_REGISTER_REPORT.divisionList, function(index, val) {
+							var $displayValue = val.divisionNbr + "-" + val.divisionCode;
+							$("#divisionId").append(new Option($displayValue, val.divisionId));
+						});
+		            },
+			     	
+			     	
 
-        })
+					populateDates : function() {
+			
+						var $today = new Date();
+						$("#startMonth").append(new Option("",""));
+						$("#startMonth").append(new Option("January", <%= Calendar.JANUARY %>));
+						$("#startMonth").append(new Option("February", <%= Calendar.FEBRUARY %>));
+						$("#startMonth").append(new Option("March", <%= Calendar.MARCH %>));
+						$("#startMonth").append(new Option("April", <%= Calendar.APRIL %>));
+						$("#startMonth").append(new Option("May", <%= Calendar.MAY %>));
+						$("#startMonth").append(new Option("June", <%= Calendar.JUNE %>));
+						$("#startMonth").append(new Option("July", <%= Calendar.JULY %>));
+						$("#startMonth").append(new Option("August", <%= Calendar.AUGUST %>));
+						$("#startMonth").append(new Option("September", <%= Calendar.SEPTEMBER %>));
+						$("#startMonth").append(new Option("October", <%= Calendar.OCTOBER %>));
+						$("#startMonth").append(new Option("November", <%= Calendar.NOVEMBER %>));
+						$("#startMonth").append(new Option("December", <%= Calendar.DECEMBER %>));
+						$("#startMonth").val($today.getMonth()-2); // last month, using java numbers: JANUARY=0
+						
+						var $startYear = $today.getFullYear();
+						$("#startYear").append(new Option("",""));
+						$("#startYear").append(new Option($startYear, $startYear));
+						$startYear--;
+						$("#startYear").append(new Option($startYear, $startYear));
+						$startYear--;
+						$("#startYear").append(new Option($startYear, $startYear));
+						$startYear--;
+						$("#startYear").append(new Option($startYear, $startYear));
+						$startYear--;
+						$("#startYear").append(new Option($startYear, $startYear));
+						$("#startYear").val($today.getFullYear());
+					},
+					
+					populateChangers : function() {
+						$("#divisionId").change(function($event) {
+							checkData();
+						});
+						$("#startMonth").change(function($event) {
+							checkData();
+						});
+						$("#startYear").change(function($event) {
+							checkData();
+						});
+					},
+		
+					checkData : function() {
+						var $selectedDiv = $('#divisionId option:selected').val();
+						var $selectedMonth = $('#startMonth option:selected').val();
+						var $selectedYear = $('#startYear option:selected').val();
+						if ( $selectedDiv=='' || $selectedMonth=='' || $selectedYear=='' ) {
+							$("#goButton").hide();
+						} else {
+							$("#goButton").fadeIn(1000);
+						}
+					},
+					
+					populateClickers : function() {
+						$("#goButton").click(function () {
+							var $selectedDiv = $('#divisionId option:selected').val();
+							var $selectedMonth = $('#startMonth option:selected').val();
+							var $selectedYear = $('#startYear option:selected').val();
+							var $downloadUrl = "invoiceRegisterReport/" + $selectedDiv + "?month=" + $selectedMonth + "&year=" + $selectedYear;
+							$("#xlsDownload").attr("href", $downloadUrl);
+							$("#downloader").click();
+						});
+					},
+					
+					
+					xxx : function() {
+						var jqxhr = $.ajax({
+							type: 'GET',
+							url: $url,
+							data: {'month':$selectedMonth,'year':$selectedYear},
+							statusCode: {
+								200: function($data) {
+									var newWindow = window.open("", "new window", "width=200, height=100");							
+									newWindow.document.write(data);
+								},
+								403: function($data) {
+									$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage);
+								}, 
+								404: function($data) {
+									$("#globalMsg").html("Invalid Division").show().fadeOut(5000);
+								}, 
+								405: function($data) {
+									$("#globalMsg").html("System Error 405; Contact Support").show().fadeOut(5000);
+								}, 
+								500: function($data) {
+									$("#globalMsg").html("System Error 500; Contact Support").show();
+								} 
+							},
+							dataType: 'html'
+						});
+					},
+		        	        	
+		
+					bindFunctions : function() {
+			        	$(".ansi-stdrpt-data-row").bind("mouseover", function() {
+			                $(this).css('background-color','#CCCCCC');
+				        });
+			        	$(".ansi-stdrpt-data-row").bind("mouseout", function() {
+			                $(this).css('background-color','transparent');
+				        });
+					},
+		             
+
+					};
+					
+			INVOICE_REGISTER_REPORT.init();
+		             
+		
+		            
+
+        });
        </script>
         
 
