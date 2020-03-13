@@ -10,10 +10,8 @@ import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,17 +21,21 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.report.common.ReportInputType;
+import com.ansi.scilla.report.common.ReportUtils;
+import com.ansi.scilla.report.common.parameters.ReportParameter;
+import com.ansi.scilla.report.common.parameters.ReportParmDiv;
+import com.ansi.scilla.report.common.parameters.ReportParmDivEndDate;
+import com.ansi.scilla.report.common.parameters.ReportParmDivMonthYear;
+import com.ansi.scilla.report.common.parameters.ReportParmDivStartEndDate;
+import com.ansi.scilla.report.common.parameters.ReportParmStartEndDate;
 import com.ansi.scilla.report.reportBuilder.AnsiReport;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.ApplicationWebObject;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
-import com.ansi.scilla.web.report.common.ReportJsp;
 import com.ansi.scilla.web.report.common.ReportType;
 
 /**
@@ -206,7 +208,63 @@ public class ReportDefinition extends ApplicationWebObject {
 	 * @return
 	 */
 	public String makeReportFileName(Connection conn) throws Exception {
-		Logger logger = LogManager.getLogger(this.getClass());
+		
+		Calendar runDate = Calendar.getInstance();
+		ReportParameter parameters = null;
+		Division division = null;
+		
+		ReportInputType reportInputType = this.reportType.reportInputType();
+		switch (reportInputType ) {
+			case reportByDiv:
+				division = new Division();
+				division.setDivisionId(this.divisionId);
+				division.selectOne(conn);
+				parameters = new ReportParmDiv(division, runDate);
+				break;
+			case reportByDivEnd:
+				division = new Division();
+				division.setDivisionId(this.divisionId);
+				division.selectOne(conn);
+				ReportParmDivEndDate reportParmDivEndDate = new ReportParmDivEndDate(division, runDate);
+				reportParmDivEndDate.setEndDate(this.endDate);
+				parameters = (ReportParameter)reportParmDivEndDate;
+				break;
+			case reportByDivMonthYear:
+				division = new Division();
+				division.setDivisionId(this.divisionId);
+				division.selectOne(conn);
+				ReportParmDivMonthYear reportParmDivMonthYear = new ReportParmDivMonthYear(division, runDate);
+				reportParmDivMonthYear.setMonth(this.month);
+				reportParmDivMonthYear.setYear(this.year);
+				parameters = (ReportParameter)reportParmDivMonthYear;
+				break;
+			case reportByDivStartEnd:
+				division = new Division();
+				division.setDivisionId(this.divisionId);
+				division.selectOne(conn);
+				ReportParmDivStartEndDate reportParmDivStartEndDate = new ReportParmDivStartEndDate(division, runDate);
+				reportParmDivStartEndDate.setStartDate(this.startDate);
+				reportParmDivStartEndDate.setEndDate(this.endDate);
+				parameters = (ReportParameter)reportParmDivStartEndDate;
+				break;
+			case reportByStartEnd:
+				ReportParmStartEndDate reportParmStartEndDate = new ReportParmStartEndDate(runDate);
+				reportParmStartEndDate.setStartDate(this.startDate);
+				reportParmStartEndDate.setEndDate(this.endDate);
+				parameters = (ReportParameter)reportParmStartEndDate;
+				break;
+			case reportNoInput:
+				// nothing to do here
+				break;
+			default:
+				break;
+		}
+		String fileName = ReportUtils.makeReportFileName(conn, runDate, this.reportType.reportInputType(), this.reportType.downloadFileName(), parameters);
+		return fileName.replaceAll(" ", "_");
+		
+		/**
+ 		Logger logger = LogManager.getLogger(this.getClass());
+
 		SimpleDateFormat yyyymmdd = new SimpleDateFormat("yyyy-MM-dd");
 //		SimpleDateFormat yyyymm = new SimpleDateFormat("yyyy-MM");
 		DecimalFormat nn = new DecimalFormat("00");
@@ -255,7 +313,11 @@ public class ReportDefinition extends ApplicationWebObject {
 		logger.log(Level.DEBUG, "Filename: " + reportFileName);
 		// the attachment header sees "end of name" when it finds a space
 		return reportFileName.replaceAll(" ", "_");
+		**/
 	}
+	
+	
+	
 	private String makeDiv(Connection conn, Integer divisionId) throws Exception {
 		Division division = new Division();
 		division.setDivisionId(divisionId);
