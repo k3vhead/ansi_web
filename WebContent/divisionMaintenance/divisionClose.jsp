@@ -61,9 +61,10 @@
         		
         		
         		doCloseDivision : function() {
-					console.log("closing Division")
+					console.log("doCloseDivision")
 					var $url = 'divisionClose';
-					var $outbound = { "divisionId":$("#division-close input[name='divisionId']").val() };
+					var $outbound = { "divisionId":$("#confirm-modal input[name='divisionId']").val() };
+					console.log($outbound);
 					var jqxhr = $.ajax({
 						type: 'POST',
 						url: $url,
@@ -71,6 +72,18 @@
 						statusCode: {
 							200 : function($data) {
 								console.log($data);
+								if ( $data.responseHeader.responseCode == 'SUCCESS') {
+									$('#displayTable').DataTable().ajax.reload();
+									$("#globalMsg").html("Success").show().fadeOut(3000);
+									$("#confirm-modal").dialog("close");
+								} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+									$("#globalMsg").html("Invalid system state. Reload page and try again").show();
+									$("#confirm-modal").dialog("close");
+								} else {
+									$("#globalMsg").html("System Error invalid response code ("+$data.responseHeader.responseCode+"): Contact Support").show();
+									$("#confirm-modal").dialog("close");
+								}	
+								$('html, body').animate({scrollTop: 0}, 800);
 							},
 							403: function($data) {
 								$("#confirm-modal").dialog("close");
@@ -103,6 +116,7 @@
         			console.log("doFunctionBinding");
 					$(".division-close").on("click", function($clickevent) {
 						var $divisionId = $(this).attr("data-divisionid");
+						console.log("Closing division: " + $divisionId);
 						$("#confirm-modal input[name='divisionId']").val($divisionId);
 						$("#confirm-modal").dialog("open");
 					});
@@ -204,7 +218,7 @@
     			            } },
     			            { title: "<bean:message key="field.label.action" />", width:"5%", data: function ( row, type, set ) {	
     			            	{
-    			            		var $closeLink = '<ansi:hasPermission permissionRequired="DIVISION_CLOSE_WRITE"><span class="action-link division-close"><webthing:close>Close Division</webthing:close></span></ansi:hasPermission>';
+    			            		var $closeLink = '<ansi:hasPermission permissionRequired="DIVISION_CLOSE_WRITE"><span class="action-link division-close" data-divisionid="'+row.division_id+'"><webthing:close>Close Division</webthing:close></span></ansi:hasPermission>';
     			            		var $notAllowed = '<webthing:ban>Not Allowed</webthing:ban>';
 //    				            	var $edit = '<a href="#" class="editAction" data-id="'+row.expenseId+'"><webthing:edit>Edit</webthing:edit></a>';
 //    			            		return "<ansi:hasPermission permissionRequired='CLAIMS_WRITE'>"+$edit+"</ansi:hasPermission>";
