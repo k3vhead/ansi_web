@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.web.common.utils.ApplicationWebObject;
+import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.common.utils.UserPermission;
 import com.ansi.scilla.web.login.response.LoginResponse;
 
@@ -69,5 +70,15 @@ public class SessionData extends ApplicationWebObject {
 		return foundIt;
 	}
 	
-	
+	public boolean hasPermission(Permission permissionName) {
+		boolean foundIt = false;
+		
+		for ( UserPermission userPermission : this.userPermissionList ) {
+			if ( userPermission.getPermissionName().equalsIgnoreCase(permissionName.toString())) {
+				foundIt = true;
+			}
+		}
+		
+		return foundIt;
+	}
 }

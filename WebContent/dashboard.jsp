@@ -30,9 +30,9 @@
         	td input[type="checkbox"] {
     			float: right;
 			}
-        	#clockBox {
-        		width:100%; 
-        		text-align:center; 
+        	#column-container-a #clockBox {
+				float: right;
+				width: 400px;
         	}
 			#helloBox {
 				width:100%; 
@@ -42,13 +42,10 @@
 			#motd {
 				padding-bottom:25px;
 			}
+			#clockBox {
 			
-			#clock-container {
-				float: right;
-				width: 400px;
-				
 			}
-			#clock {
+			#clockBox #clock {
 	        	position: relative;
 	        	width: 300px;
 	        	height: 300px;
@@ -98,13 +95,11 @@
         		 background-color: black;
 				 margin: 0;
 				 padding: 0;
-				 width: 100%;
-				 height: 25px;
+				 width: 33%;
 				 float: right;
 			}
-        	#quickLink-container #table-quickLink {
+        	#table-quickLink {
         		width: 100%;
-				float: left;
         	}
         	#column-container-a {	
         		width: 1300px;
@@ -140,11 +135,10 @@
 				 margin: 0;
 				 padding: 0;
 				 width: 100%;
-				 height: 25px;
 				 float: left;
 			}
-        	#lookup-container #table-lookup {
-				 width: 99%;
+        	#table-lookup {
+        		width: 100%;
 			}
 			
         	#ticket-modal {
@@ -162,13 +156,11 @@
         		 background-color: black;
 				 margin: 0;
 				 padding: 0;
-				 width: 100%;
-				 height: 25px;
+				 width: 33%;
 				 float: left;
 			}
-			#report-container #table-report {
-				width:100%;
-				float:left;
+			#table-report {
+        		width: 100%;
 			}
 			.action-button {
 				cursor:pointer;
@@ -196,6 +188,12 @@
         	.favorite-checkbox {
         		display: none;
         	}
+			.spacer {
+			    clear:both;
+			    width:100%;
+			    font-size:1px;
+			    background:transparent;
+			}
         </style>
         <script type="text/javascript" src="js/dashboard.js"></script>
         <script type="text/javascript" src="js/clock.js"></script>  
@@ -208,7 +206,8 @@
             ;DASHBOARD = {
            		donelist : {"report":false, "quickLink":false, "lookup":false},
            		
-                init : function() {                	
+                init : function() {    
+                	DASHBOARD_UTILS.motd();
                 	DASHBOARD.getTotalList("report");
                 	DASHBOARD.getTotalList("quickLink");
                 	DASHBOARD.getTotalList("lookup");
@@ -338,12 +337,12 @@
             DASHBOARD.init();
         });
         </script>
+    
         
     
     
     
     </tiles:put>
-    
     
     
     <tiles:put name="content" type="string">
@@ -354,55 +353,39 @@
     	</div>
     	
     	
-    	 <body>
 			<div id="column-container-a">
-		 	<div id="lookup-container" style="border:1px solid black;">
-		 		<div style="width:100%; background-color:#000000;">					
-					<div style="float:left; width:80%;background-color:inherit;color:#FFFFFF; border:0;text-indent: 3px;">Lookup</div>
-					<div style="float:left; display:inline-block; overflow:hidden; width:20%; text-align: center;background-color:inherit; border:0;">
+		 	<div id="lookup-container"style="border:1px solid black;">			
+					<div style="float:left; width:80%;background-color:#000000;color:#FFFFFF; border:0;text-indent: 3px;">Lookup</div>
+					<div style="float:left; display:inline-block; overflow:hidden; width:20%; text-align: center;background-color:#000000; border:0;">
 					<webthing:edit styleClass="edit-lookups">Edit Favorites</webthing:edit></div>
+					<div id="table-lookup"></div>
 					
 				</div>
-				<div id="table-lookup"></div>
-			</div>
 			<div id="column-container-b">
 			<div id="report-container" style="border:1px solid black;">
-		 		<div style="width:100%; background-color:#000000;">
-					<div style="float:left; width:80%;background-color:inherit;color:#FFFFFF; border:0;text-indent: 3px;">Report</div>
-					<div style="float:left; display:inline-block; overflow:hidden; width:20%; text-align: center;background-color:inherit; border:0;">
+					<div style="float:left; width:80%;background-color:#000000;color:#FFFFFF; border:0;text-indent: 3px;">Report</div>
+					<div style="float:left; display:inline-block; overflow:hidden; width:20%; text-align: center;background-color:#000000; border:0;">
 					<webthing:edit styleClass="edit-lookups">Edit Favorites</webthing:edit></div>
+				<div id="table-report"></div>
 					
 				</div>
-			<div id="table-report"></div>
-			</div>
 			<div id="quickLink-container" style="border:1px solid black;">
-		 		<div style="width:100%; background-color:#000000;">
-					<div style="float:left; width:80%;background-color:inherit;color:#FFFFFF; border:0;text-indent: 3px;">Quick Link</div>					
-					<div style="float:left; display:inline-block; overflow:hidden; width:20%; text-align: center;background-color:inherit; border:0;">
+					<div style="float:left; width:80%;background-color:#000000;color:#FFFFFF; border:0;text-indent: 3px;">Quick Link</div>					
+					<div style="float:left; display:inline-block; overflow:hidden; width:20%; text-align: center;background-color:#000000; border:0;">
 					<webthing:edit styleClass="edit-lookups">Edit Favorites</webthing:edit></div>
+				<div id="table-quickLink"></div>
 					
 				</div>
-			<div id="table-quickLink"></div>
 			</div>
 			</div>
-			<div id="clock-container">
     		<div id="clockBox">
-	    		<ul id="clock">	
+	    		<ul id="clock" style="display:inline-block;">	
 				   	<li id="sec"></li>
 				   	<li id="hour"></li>
 					<li id="min"></li>
 				</ul>
 			</div>
-			</div>
-		 </div>
-		 
-		 </body>
-    	
-    	
-    	
-	
-    	<webthing:scrolltop />
-
+			<div style="clear:both; width:100%; font-size:1px; background:transparent;"></div>
 		
    
    

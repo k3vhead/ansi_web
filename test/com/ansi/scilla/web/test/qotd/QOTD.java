@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.ansi.scilla.web.common.servlet.MotdServlet;
 import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.qotd.servlet.MotdServlet;
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
@@ -32,7 +32,7 @@ public class QOTD {
 		try {
 			conn = AppUtils.getDevConn();
 			MotdServlet servlet = new MotdServlet();
-			String message = servlet.doGetWork(conn);
+			String message = servlet.processGet(conn);
 			System.out.println(message);
 		} finally {
 			conn.close();

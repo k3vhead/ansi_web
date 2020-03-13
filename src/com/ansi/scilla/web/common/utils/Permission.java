@@ -49,6 +49,7 @@ public enum Permission {
 	PAYMENT(null, false, "Functional Area: Payments"),
 	PAYMENT_READ(PAYMENT, true, "Read only access to payments"),		// this is for backwards compatibility
 	PAYMENT_WRITE(PAYMENT_READ, true, "Edit Payments"),		// this is for backwards compatibility
+	PAYMENT_OVERRIDE(PAYMENT_WRITE, true, "Override Payments"),
 	
 	INVOICE(null, false, "Functional Area: Invoices"),
 	INVOICE_READ(INVOICE, true, "Read-only access to invoices"),		// this is for backwards compatibility
@@ -124,8 +125,35 @@ public enum Permission {
 	REPORTS_CLIENT_CONTACT(null, false, "Functional Area: Client Contact Reports"),
 	REPORTS_CLIENT_CONTACT_READ(REPORTS_CLIENT_CONTACT, false, "Can read Client Contact reports"),
 	
+	
+	CALL_NOTES(null, false, "Functional Area: Call Notes"),
+	CALL_NOTE_READ(CALL_NOTES, false, "Can Read Call Notes"),
+	CALL_NOTE_WRITE(CALL_NOTE_READ, false, "Can create notes"),
+	CALL_NOTE_UPDATE(CALL_NOTE_WRITE, false, "Can revise your own notes"),
+	CALL_NOTE_OVERRIDE(CALL_NOTE_UPDATE, false, "Can revise other's notes"),
+	
+	
+	SPECIAL_OVERRIDE(null, false, "Functional Area: Special Override"),
+	SPECIAL_OVERRIDE_READ(SPECIAL_OVERRIDE, false, "Special Override"),
+	//OVERRIDE_UPDATE_PAYMENTS(SPECIAL_OVERRIDE_READ, false, "Override payment date"),
+	
 	DEVELOPMENT(null, false, "Functional Area: System Developers"),
 	DEV(DEVELOPMENT, false, "Can Access Developer Areas"),
+
+	DOCUMENTS(null, false, "Functional Area: Documents"),
+	DOCUMENTS_READ(DOCUMENTS, false, "Can read stored documents"),
+	DOCUMENTS_WRITE(DOCUMENTS_READ, false, "Can store documents"),
+
+	CALENDAR(null, false, "Functional Area: Calendar"),
+	CALENDAR_READ(CALENDAR, false, "Can see the corporate calendar"),
+	CALENDAR_WRITE(CALENDAR_READ, false, "Can update the corporate calendar"),
+
+	DIVISION_CLOSE(null, false, "Functional Area: Division Close"),
+	DIVISION_CLOSE_READ(DIVISION_CLOSE, false, "Can see division close dates"),
+	DIVISION_CLOSE_WRITE(DIVISION_CLOSE_READ, true, "Can set division close dates"),
+
+	BATCH_LOG(null, false, "Functional Area: Batch Logging"),
+	BATCH_LOG_READ(BATCH_LOG, false, "Can view the batch log"),
 	;
 	
 	private final Boolean divisionSpecific;
