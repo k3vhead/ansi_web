@@ -49,9 +49,11 @@
 				max-width:80px !important;
 			}
 			.quotePrint {
+				text-decoration:none;
 				cursor:pointer;
 			}
 			.copyQuote {
+				text-decoration:none;
 				cursor:pointer;
 			}
 			#printQuoteDiv {
@@ -100,7 +102,8 @@
 					var jqxhr = $.ajax({
 						type: 'GET',
 						url: $url,
-						success: function($data) {
+						statusCode: {
+							200: function($data) {
 			        		$("#quoteId").val(($data.data.codeList[0]).quoteId);
 			        		$("#quoteCode").val(($data.data.codeList[0]).quoteCode);
 			        		$("#divisionNbr").val(($data.data.codeList[0]).divisionNbr);
@@ -115,8 +118,7 @@
 			        		$("#qId").val(($data.data.codeList[0]).quoteId);
 			        		$("#updateOrAdd").val("update");
 			        		$("#addQuoteTableForm").dialog( "open" );
-						},
-						statusCode: {
+							},
 							403: function($data) {
 								$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
 							},
@@ -222,10 +224,10 @@
 				            	//console.log(row);
 				            	editText = '<a href="quoteMaintenance.html?id='+row.quoteId+'" class="editAction" data-id="'+row.quoteId+'"><webthing:edit>Edit</webthing:edit></a>';
 				            	viewText = '<a href="quoteMaintenance.html?id='+row.quoteId+'" class="editAction" data-id="'+row.quoteId+'"><webthing:view style="color:#404040;">View</webthing:view></a>';
-				            	printText = '<a href="quoteMaintenance.html?id='+row.quoteId+'" class="quotePrint" data-id="'+row.quoteId+'" data-quotenumber="'+row.quoteCode+'"><webthing:print>Print</webthing:print></a>';
-				            	copyText = '<a href="quoteMaintenance.html?id='+row.quoteId+'" class="copyQuote" data-id="'+row.quoteId+'"><webthing:copy>Copy</webthing:copy></a>';
+				            	printText = '<a href="#" class="quotePrint" style="color:#000000;" data-id="'+row.quoteId+'" data-quotenumber="'+row.quoteCode+'"><webthing:print>Print</webthing:print></a>';
+				            	copyText = '<a href="quoteMaintenance.html?id='+row.quoteId+'" style="color:#000000;" class="copyQuote" data-id="'+row.quoteId+'"><webthing:copy>Copy</webthing:copy></a>';
 				            	var $noteLink = '<webthing:notes xrefType="QUOTE" xrefId="' + row.quoteId + '">Quote Notes</webthing:notes>'
-				            	{return '<ansi:hasPermission permissionRequired="QUOTE_READ" maxLevel="true">'+ viewText +'&nbsp;</ansi:hasPermission><ansi:hasPermission permissionRequired="QUOTE_CREATE">'+ editText +'</ansi:hasPermission>&nbsp;'+ printText +'&nbsp;<ansi:hasPermission permissionRequired="QUOTE_CREATE">'+ copyText +'</ansi:hasPermission>'+ $noteLink;}
+				            	{return '<ansi:hasPermission permissionRequired="QUOTE_READ" maxLevel="true">'+ viewText +'</ansi:hasPermission><ansi:hasPermission permissionRequired="QUOTE_CREATE">'+ editText +'</ansi:hasPermission>'+ printText +'<ansi:hasPermission permissionRequired="QUOTE_CREATE">'+ copyText +'</ansi:hasPermission>'+ $noteLink;}
 				            	
 				            } }],
 				            //"initComplete": function(settings, json) {
@@ -258,37 +260,7 @@
     	<h1>Quote Lookup</h1>
     	
 	 	<table id="quoteTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
-	       <thead>
-	            <tr>
-	                <th><bean:message key="field.label.quoteId" /></th>
-	    			<th><bean:message key="field.label.quoteCode" /></th>
-	    			<th><bean:message key="field.label.divisionNbr" /></th>
-	    			<th><bean:message key="field.label.billToName" /></th>
-	    			<th><bean:message key="field.label.jobSiteName" /></th>
-	    			<th><bean:message key="field.label.jobSiteAddress" /></th>
-	    			<th><bean:message key="field.label.managerName" /></th>
-	    			<th><bean:message key="field.label.proposalDate" /></th>
-	    			<th><bean:message key="field.label.quoteJobCount" /></th>
-	    			<th><bean:message key="field.label.quotePpcSum" /></th>
-	    			<th><bean:message key="field.label.action" /></th>
-	            </tr>
-	        </thead>
-	        <tfoot>
-	            <tr>
-	                <th><bean:message key="field.label.quoteId" /></th>
-	    			<th><bean:message key="field.label.quoteCode" /></th>
-	    			<th><bean:message key="field.label.divisionNbr" /></th>
-	    			<th><bean:message key="field.label.billToName" /></th>
-	    			<th><bean:message key="field.label.jobSiteName" /></th>
-	    			<th><bean:message key="field.label.jobSiteAddress" /></th>
-	    			<th><bean:message key="field.label.managerName" /></th>
-	    			<th><bean:message key="field.label.proposalDate" /></th>
-	    			<th><bean:message key="field.label.quoteJobCount" /></th>
-	    			<th><bean:message key="field.label.quotePpcSum" /></th>
-	    			<th><bean:message key="field.label.action" /></th>
-	    			
-	            </tr>
-	        </tfoot>
+	      
 	    </table>
 	    
 	    <webthing:scrolltop />
