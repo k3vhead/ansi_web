@@ -25,10 +25,13 @@
     <tiles:put name="headextra" type="string">
     	<link rel="stylesheet" href="css/lookup.css" />
     	<link rel="stylesheet" href="css/ticket.css" />
+    	<link rel="stylesheet" href="css/callNote.css" />
+    	<link rel="stylesheet" href="css/accordion.css" type="text/css" />
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
     	<script type="text/javascript" src="js/addressUtils.js"></script>
     	<script type="text/javascript" src="js/lookup.js"></script> 
-    	<script type="text/javascript" src="js/ticket.js"></script> 
+    	<script type="text/javascript" src="js/ticket.js"></script>
+    	<script type="text/javascript" src="js/callNote.js"></script>  
     
         <style type="text/css">
 			#displayTable {
@@ -69,10 +72,7 @@
 
                 	
         		init : function() {
-        			$.each($('input'), function () {
-    			        $(this).css("height","20px");
-    			        $(this).css("max-height", "20px");
-    			    });
+        			CALLNOTE.init();
         			PAYMENTLOOKUP.makeClickers();
                		TICKETUTILS.makeTicketViewModal("#ticket-modal")
 					PAYMENTLOOKUP.createTable();
@@ -162,8 +162,10 @@
     			            { title: "<bean:message key="field.label.paymentNote" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.paymentNote != null){return (row.paymentNote+"");}
     			            } },
-    			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
-    			            	{return '<ansi:hasPermission permissionRequired="INVOICE"><ansi:hasWrite><i class="edit-action-link" data-paymentId="' +row.paymentId+'"><webthing:edit>Edit</webthing:edit></ansi:hasWrite></ansi:hasPermission>';}
+    			            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {
+    			            	var $editLink = '<ansi:hasPermission permissionRequired="PAYMENT_WRITE"><i class="edit-action-link" data-paymentId="' +row.paymentId+'"><webthing:edit>Edit</webthing:edit></i></ansi:hasPermission>';
+    			            	var $noteLink = '<webthing:notes xrefType="PAYMENT" xrefId="' + row.paymentId + '">Payment Notes</webthing:notes>'
+    			            	{return $editLink + $noteLink;}
     			            } }
     			            ],
     			            "initComplete": function(settings, json) {
@@ -172,6 +174,7 @@
     			            },
     			            "drawCallback": function( settings ) {
     			            	PAYMENTLOOKUP.doFunctionBinding();
+    			            	CALLNOTE.lookupLink();
     			            }
     			    } );
             	},
@@ -271,10 +274,11 @@
         </tfoot>
     </table>
     
-    <webthing:scrolltop />
+    	<webthing:scrolltop />
     
-    <webthing:ticketModal ticketContainer="ticket-modal" />
+    	<webthing:ticketModal ticketContainer="ticket-modal" />
     
+    	<webthing:callNoteModals />
     </tiles:put>
 		
 </tiles:insert>

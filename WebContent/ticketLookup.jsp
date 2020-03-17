@@ -25,10 +25,13 @@
     <tiles:put name="headextra" type="string">
        	<link rel="stylesheet" href="css/lookup.css" />
     	<link rel="stylesheet" href="css/ticket.css" />
+    	<link rel="stylesheet" href="css/callNote.css" />
+    	<link rel="stylesheet" href="css/accordion.css" type="text/css" />    	
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
     	<script type="text/javascript" src="js/addressUtils.js"></script>
     	<script type="text/javascript" src="js/lookup.js"></script> 
     	<script type="text/javascript" src="js/ticket.js"></script> 
+   	    <script type="text/javascript" src="js/callNote.js"></script> 
     
         <style type="text/css">
 			#displayTable {
@@ -83,14 +86,26 @@
         <script type="text/javascript">    
         
         $(document).ready(function(){
-			$('.ScrollTop').click(function() {
-				$('html, body').animate({scrollTop: 0}, 800);
-				return false;
-       	    });
-
-        	var dataTable = null;
         	
-        	function createTable(){
+	        ;TICKETLOOKUP = {
+	 			   dataTable : null,
+	    	   	
+				
+	    		init : function() {	
+    				$.each($('input'), function () {
+    			        $(this).css("height","20px");
+    			        $(this).css("max-height", "20px");
+    			    });    				
+    				TICKETLOOKUP.createTable();    				
+               		TICKETUTILS.makeTicketViewModal("#ticket-modal");
+               		CALLNOTE.init();
+			    },
+			   	
+
+        	
+			    
+        	
+        	createTable : function () {
 				var $jobId = '<c:out value="${ANSI_JOB_ID}" />';
 				var $divisionId = '<c:out value="${ANSI_DIVISION_ID}" />';
 				var $startDate = '<c:out value="${ANSI_TICKET_LOOKUP_START_DATE}" />';
@@ -133,7 +148,7 @@
 			            	if(row.ticket_id != null){return ('<a href="#" data-id="'+row.ticket_id+'" class="ticket-clicker">'+row.ticket_id+'</a>');}
 			            } },
 			            { width:"5%", title: "<bean:message key="field.label.ticketStatus" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-			            	if(row.view_ticket_status != null){return ('<span class="tooltip">' + row.view_ticket_status+'<span class="tooltiptext">'+row.view_ticket_status_desc+'</span></span>');}
+			            	if(row.view_ticket_status != null){return ('<span class="tooltip">' + row.view_ticket_status +'<span class="tooltiptext">'+row.ticket_status_desc+'</span></span>');}
 			            } },
 			            { width:"5%", title: "<bean:message key="field.label.ticketType" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
 			            	if(row.ticket_type_desc != null){return (row.ticket_type_desc+"");}
@@ -190,7 +205,7 @@
 			            	if ( row.ticket_id == null ) {
 			            		$actionData = "";
 			            	} else {
-				            	var $editLink = '<ansi:hasPermission permissionRequired="TICKET_WRITE"><a href="ticketReturn.html?id='+row.ticket_id+'" class="editAction" data-id="'+row.ticket_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
+				            	var $editLink = '<ansi:hasPermission permissionRequired="TICKET_WRITE"><a href="ticketReturn.html?id='+row.ticket_id+'" class="editAction" data-id="'+row.ticket_id+'" ><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>&nbsp;';
 				            	if ( row.ticket_status == 'F' ) {
 				            		var $overrideLink = "";
 				            	} else {
@@ -206,7 +221,8 @@
 			            		if ( row.view_ticket_type == 'run' || row.view_ticket_type=='job') {
 			            			$claimLink = '<ansi:hasPermission permissionRequired="CLAIMS_WRITE"><a href="budgetControlLookup.html?id='+row.ticket_id+'"><webthing:invoiceIcon styleClass="green">Budget Control</webthing:invoiceIcon></a></ansi:hasPermission>';
 			            		}
-				            	$actionData = $editLink + $printLink + $overrideLink + $claimLink;
+			            		var $noteLink = '<webthing:notes xrefType="TICKET" xrefId="' + row.ticket_id + '">Ticket Notes</webthing:notes>'
+				            	$actionData = $editLink + $printLink + $overrideLink + $claimLink + $noteLink;
 			            	}
 			            	return $actionData;
 			            } }],
@@ -214,36 +230,22 @@
 			            	//console.log(json);
 			            	//doFunctionBinding();
 			            	var myTable = this;
-			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#ticketTable", createTable);
+			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#ticketTable", TICKETLOOKUP.createTable);
 			            },
 			            "drawCallback": function( settings ) {
-			            	doFunctionBinding();
+			            	TICKETLOOKUP.doFunctionBinding();
+			            	CALLNOTE.lookupLink();
 			            }
 			    } );
-        	}
-        	        	
-        	init();
-        			
-        			
-            
-            function init(){
-				$.each($('input'), function () {
-			        $(this).css("height","20px");
-			        $(this).css("max-height", "20px");
-			    });
+        	},
 				
-				createTable();
-				
-           		TICKETUTILS.makeTicketViewModal("#ticket-modal")
-
-            }; 
-				
-			function doFunctionBinding() {
-				$( ".editAction" ).on( "click", function($clickevent) {
-					 doEdit($clickevent);
-				});					
+			doFunctionBinding : function () {
+			/*	$( ".editAction" ).on( "click", function($clickevent) {
+					var $ticketid = $(this).attr("data-id");
+					TICKETLOOKUP.doEdit($clickevent);
+				});				*/	
 				$(".print-link").on( "click", function($clickevent) {
-					doPrint($clickevent);
+					TICKETLOOKUP.doPrint($clickevent);
 				});
 				$(".ticket-clicker").on("click", function($clickevent) {
 					$clickevent.preventDefault();
@@ -252,11 +254,11 @@
 					$("#ticket-modal").dialog("open");
 				});
 
-			}
+			},
 				
-			function doEdit($clickevent) {
-				var $rowid = $clickevent.currentTarget.attributes['data-id'].value;
-					var $url = 'ticketTable/' + $rowid;
+			/* doEdit : function ($clickevent) {
+				var $ticketId = $clickevent.currentTarget.attributes['data-id'].value;
+					var $url = 'ticketTable/' + $ticketId;
 					//console.log("YOU PASSED ROW ID:" + $rowid);
 					var jqxhr = $.ajax({
 						type: 'GET',
@@ -292,11 +294,11 @@
 						dataType: 'json'
 					});
 				//console.log("Edit Button Clicked: " + $rowid);
-			}
+			}, */
 				
 				
 				
-			function doPrint($clickevent) {
+			doPrint : function ($clickevent) {
 				var $ticketId = $clickevent.currentTarget.attributes['data-id'].value;
 				console.debug("ROWID: " + $ticketId);
 				var a = document.createElement('a');
@@ -307,7 +309,11 @@
                 a.target = "_new";   // open in a new window
                 document.body.appendChild(a);
                 a.click();				
-			}
+			},
+			
+	        }
+			
+			TICKETLOOKUP.init();
         });
         		
         </script>        
@@ -341,7 +347,7 @@
     <webthing:scrolltop />
 
     <webthing:ticketModal ticketContainer="ticket-modal" />
-
+	<webthing:callNoteModals />
     </tiles:put>
 		
 </tiles:insert>

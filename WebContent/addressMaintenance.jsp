@@ -23,8 +23,14 @@
     
     
     <tiles:put name="headextra" type="string">
-    <script type="text/javascript" src="js/ansi_utils.js"></script>
-    <script type="text/javascript" src="js/addressUtils.js"></script>
+       	<link rel="stylesheet" href="css/callNote.css" />
+    	<link rel="stylesheet" href="css/accordion.css" type="text/css" />
+    	
+    
+    	<script type="text/javascript" src="js/ansi_utils.js"></script>
+   	 	<script type="text/javascript" src="js/addressUtils.js"></script>
+   	 	<script type="text/javascript" src="js/callNote.js"></script>
+   	 	
         <style type="text/css">
         	td { border:solid 1px #FF000;}
 			#confirmDelete {
@@ -141,6 +147,7 @@
 					dataTable : null,
 			
 					init : function() {
+						CALLNOTE.init();
 						ADDRESSMAINTENANCE.makeOptionLists();
 						ADDRESSMAINTENANCE.makeAddAddressModal();
 						ADDRESSMAINTENANCE.makeViewAddressModal();
@@ -150,7 +157,11 @@
 						ADDRESSMAINTENANCE.makeAutoComplete();
 						if ( ADDRESSMAINTENANCE.ansiModal != '' ) {
 							$(".addButton").click();
-						}
+						}    					
+	    				$('.ScrollTop').click(function() {
+	    					$('html, body').animate({scrollTop: 0}, 800);
+	    	      	  		return false;
+	    	      	    });
 					},	
 					
 					
@@ -252,11 +263,13 @@
 					            	$editLink = '<ansi:hasPermission permissionRequired="ADDRESS_WRITE"><a href="#" class="editAction" data-id="'+row.addressId+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>';
 					            	$copyLink = '<ansi:hasPermission permissionRequired="ADDRESS_WRITE"><a href="#" class="copyAction" data-id="'+row.addressId+'"><webthing:copy>Copy</webthing:copy></a></ansi:hasPermission>';
 					            	$deleteLink = '<ansi:hasPermission permissionRequired="ADDRESS_WRITE"><a href="#" class="delAction" data-id="'+row.addressId+'"><webthing:delete>Delete</webthing:delete></a></ansi:hasPermission>';					            	
+					            	var $noteLink = '<webthing:notes xrefType="ADDRESS" xrefId="' + row.addressId + '" xrefName="'+row.name+'">Address Notes</webthing:notes>'
 					            	
 					            	$action = $viewLink + " " + $editLink + " " + $copyLink;
 					            	if(row.count < 1) {
 					            		$action = $action + " " + $deleteLink;
-					            	}				            	
+					            	}
+					            	$action = $action + " " + $noteLink;
 					            	return $action;	
 					            } }],
 					            "initComplete": function(settings, json) {
@@ -264,6 +277,7 @@
 					            },
 					            "drawCallback": function( settings ) {
 					            	ADDRESSMAINTENANCE.doFunctionBinding();
+					            	CALLNOTE.lookupLink();
 					            }
 					            
 					            
@@ -1188,6 +1202,9 @@
 		</div>
 		<input  type="text" id="updateOrAdd" style="display:none" />
 		<input  type="text" id="aId" style="display:none" />
+    	<webthing:scrolltop />
+    		
+    	<webthing:callNoteModals />
     </tiles:put>	
 </tiles:insert>
 

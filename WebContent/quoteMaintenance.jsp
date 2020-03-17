@@ -22,11 +22,15 @@
     
     
     <tiles:put name="headextra" type="string">
+    	<link rel="stylesheet" href="css/callNote.css" />
+    	<link rel="stylesheet" href="css/accordion.css" type="text/css" />
     	<link rel="stylesheet" href="css/sortable.css" type="text/css" />
         <script type="text/javascript" src="js/ansi_utils.js"></script>
         <script type="text/javascript" src="js/quotePrintHistory.js"></script>
         <script type="text/javascript" src="js/quotePrint.js"></script>
         <script type="text/javascript" src="js/addressUtils.js"></script>
+        <script type="text/javascript" src="js/callNote.js"></script> 
+        
         <script type="text/javascript">        
         
         	$(document).ready(function() {
@@ -51,9 +55,15 @@
 					progressbar : $("#progressbar"),
 					progressLabel : $("#progress-label"),
 					
+					// these are used to detect changes in job activiation Direct Labor values
+					previousDlPct : null,
+	            	previousDlBudget : null,
 					
 					init : function() {
 						console.log("init");
+						CALLNOTE.init();
+						$("#call-note-link").attr("data-xrefid", QUOTEMAINTENANCE.quoteId);
+						CALLNOTE.lookupLink();
 						QUOTEMAINTENANCE.makeProgressbar();
 						QUOTEMAINTENANCE.init_modal();
 						QUOTEMAINTENANCE.makeAutoComplete();
@@ -500,6 +510,37 @@
 		            	$("#job-edit-modal .activation input[name='job-activation-om-notes']").val(QUOTEMAINTENANCE.joblist[$jobId].job.omNotes);
 		            	$("#job-edit-modal .activation input[name='job-activation-billing-notes']").val(QUOTEMAINTENANCE.joblist[$jobId].job.billingNotes);
 	
+		            	// calculate DL stufff
+		            	QUOTEMAINTENANCE.previousDlPct = $("#job-edit-modal .activation input[name='job-activation-dl-pct']").val();
+		            	QUOTEMAINTENANCE.previousDlBudget = $("#job-edit-modal .activation input[name='job-activation-dl-budget']").val();
+		            	$("#job-edit-modal .activation input[name='job-activation-dl-pct']").blur(function($event) {
+		            		var currentDlPct = $("#job-edit-modal .activation input[name='job-activation-dl-pct']").val();
+		            		var ppc = QUOTEMAINTENANCE.joblist[$jobId].job.pricePerCleaning;
+		            		if ( QUOTEMAINTENANCE.previousDlPct != currentDlPct ) {
+		            			newDlBudget = (currentDlPct / 100 ) * ppc;
+		            			if ( newDlBudget != Math.floor(newDlBudget)) { // if new value is not a whole number, limit to 2 decimals
+		            				newDlBudget = newDlBudget.toFixed(2);	
+		            			}
+		            			$("#job-edit-modal .activation input[name='job-activation-dl-budget']").val(newDlBudget);
+		            			QUOTEMAINTENANCE.previousDlPct = currentDlPct;
+		            			QUOTEMAINTENANCE.previousDlBudget = newDlBudget;
+		            		}		            		
+		            	});
+		            	$("#job-edit-modal .activation input[name='job-activation-dl-budget']").blur(function($event) {
+		            		var currentDlBudget = $("#job-edit-modal .activation input[name='job-activation-dl-budget']").val();
+		            		var ppc = QUOTEMAINTENANCE.joblist[$jobId].job.pricePerCleaning;
+		            		if ( QUOTEMAINTENANCE.previousDlBudget != currentDlBudget ) {
+		            			newDlPct = (currentDlBudget/ppc) * 100;
+		            			if ( newDlPct != Math.floor(newDlPct)) {    // if new value is not a whole number, limit to 2 decimals
+		            				newDlPct = newDlPct.toFixed(2);	
+		            			}
+		            			$("#job-edit-modal .activation input[name='job-activation-dl-pct']").val(newDlPct);
+		            			QUOTEMAINTENANCE.previousDlPct = newDlPct;
+		            			QUOTEMAINTENANCE.previousDlBudget = currentDlBudget;
+		            		}
+		            	});
+		            	
+		            	
 						// populate invoice edit panel
 						$("#job-edit-modal .invoice input[name='job-invoice-purchase-order']").val(QUOTEMAINTENANCE.joblist[$jobId].job.poNumber);
 		            	$("#job-edit-modal .invoice input[name='job-invoice-vendor-nbr']").val(QUOTEMAINTENANCE.joblist[$jobId].job.ourVendorNbr);
@@ -1145,6 +1186,29 @@
 		            		QUOTEMAINTENANCE.editThisJob($jobId, $type);
 		            	});
 		            	
+						$(".edit-this-job").mouseover(function($event) {
+							var $jobId = $(this).closest("div.panel-button-container")[0].attributes['data-jobid'].value;
+		            		var $type = $(this).attr("data-type");
+		            		if ( $type == "proposal") { $("#job" + $jobId + " .jobProposalDisplayPanel").addClass("pre-edit"); }
+		            		if ( $type == "activation") { $("#job" + $jobId + " .jobActivationDisplayPanel").addClass("pre-edit"); }
+		            		if ( $type == "invoice") { $("#job" + $jobId + " .jobInvoiceDisplayPanel").addClass("pre-edit"); }
+		            		if ( $type == "schedule") { $("#job" + $jobId + " .jobScheduleDisplayPanel").addClass("pre-edit"); }
+						});
+						
+						$(".edit-this-job").mouseout(function($event) {
+							var $jobId = $(this).closest("div.panel-button-container")[0].attributes['data-jobid'].value;
+		            		var $type = $(this).attr("data-type");
+		            		if ( $type == "proposal") { $("#job" + $jobId + " .jobProposalDisplayPanel").removeClass("pre-edit"); }
+		            		if ( $type == "activation") { $("#job" + $jobId + " .jobActivationDisplayPanel").removeClass("pre-edit"); }
+		            		if ( $type == "invoice") { $("#job" + $jobId + " .jobInvoiceDisplayPanel").removeClass("pre-edit"); }
+		            		if ( $type == "schedule") { $("#job" + $jobId + " .jobScheduleDisplayPanel").removeClass("pre-edit"); }
+						});
+						
+						
+						
+						
+						
+						
 		            	$(".cancel-this-job").click(function($event) {
 		            		//var $jobId = this.parentElement.attributes['data-jobid'].value;
 		            		var $jobId = $(this).closest("div.panel-button-container")[0].attributes['data-jobid'].value;
@@ -1805,13 +1869,23 @@
 		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-expire-date").html($jobDetail.job.expirationDate);
 		            	$($destination + " .jobInvoiceDisplayPanel .job-invoice-expire-reason").html($jobDetail.job.expirationReason);
 		            	
-		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-last-run").html($jobDetail.lastRun.processDate);		            	
+		            	var $lastProcessDate = "";
+		            	var $lastProcessTicket = "";
+		            	if ( $jobDetail.lastRun.processDate != null ) { $lastProcessDate = $jobDetail.lastRun.processDate; }
+		            	if ( $jobDetail.lastRun.ticketId != null ) { $lastProcessTicket = $jobDetail.lastRun.ticketId; }
+		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-last-run").html($lastProcessDate + " " + $lastProcessTicket);		            	
+
 		            	if ( $jobDetail.job.repeatScheduleAnnually == 1 ) {
 		            		$($destination + " input[name='repeatedAnnually']").prop("checked", true);
 		            	} else {
 		            		$($destination + " input[name='repeatedAnnually']").prop("checked", false);
 		            	}
-		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-next-due").html($jobDetail.nextDue.startDate);
+
+		            	var $startDate = "";
+		            	var $nextTicket = "";
+		            	if ( $jobDetail.nextDue.startDate != null ) { $startDate = $jobDetail.nextDue.startDate; }
+		            	if ( $jobDetail.nextDue.ticketId != null ) { $nextTicket = $jobDetail.nextDue.ticketId; }
+		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-next-due").html($startDate + " " + $nextTicket);
 		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-created-thru").html($jobDetail.lastCreated.startDate);
 		            	$($destination + " .jobScheduleDisplayPanel .job-schedule-ticket-list").attr("href", "ticketLookup.html?jobId="+$jobId);
 		            	
@@ -2757,6 +2831,7 @@
     			<ansi:hasPermission permissionRequired="QUOTE_READ"><div class="action-button-container"><webthing:print styleClass="orange fa-2x quote-button action-button" styleId="preview-button">Preview</webthing:print></div></ansi:hasPermission>    			
     			<ansi:hasPermission permissionRequired="QUOTE_PROPOSE"><div class="action-button-container"><webthing:print styleClass="green fa-2x quote-button action-button" styleId="propose-button">Propose</webthing:print></div></ansi:hasPermission>
     			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><div class="action-button-container"><webthing:job styleClass="fa-2x quote-button action-button orange" styleId="new-job-button">New Job</webthing:job></div></ansi:hasPermission>    			
+    			<ansi:hasPermission permissionRequired="CALL_NOTE_WRITE"><div class="action-button-container"><webthing:notes styleId="call-note-link" styleClass="fa-2x" xrefType="QUOTE" xrefId="x">Quote Notes</webthing:notes></div></ansi:hasPermission>
     			
     			<%--
     			<input type="button" class="quoteButton" id="buttonModifyQuote" value="Modify" /><br />
@@ -2926,6 +3001,8 @@
 	    <div id="copy-modal">
 	    	<span style="font-size:110%; font-style:italic;">Copied</span>
 	    </div>
+	    
+	    <webthing:callNoteModals />
     </tiles:put>
 
 </tiles:insert>

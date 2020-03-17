@@ -110,6 +110,7 @@ public class DivisionServlet extends AbstractServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
+		
 		try {
 			AnsiURL url = new AnsiURL(request, REALM, new String[] { ACTION_IS_LIST });
 			SessionData sessionData = AppUtils.validateSession(request);
@@ -120,8 +121,16 @@ public class DivisionServlet extends AbstractServlet {
 
 				DivisionListResponse divisionListResponse = new DivisionListResponse();
 				if (!StringUtils.isBlank(url.getCommand()) && url.getCommand().equals(ACTION_IS_LIST)) {
-					divisionListResponse = new DivisionListResponse(conn, sessionData.getUser());
+					logger.debug("Division Response 124");
+					if ( sessionData.hasPermission(Permission.SYSADMIN_READ.toString())) {
+						logger.debug("Division Response 126");
+						divisionListResponse = new DivisionListResponse(conn);
+					} else {
+						logger.debug("Division Response 128");
+						divisionListResponse = new DivisionListResponse(conn, sessionData.getUser());
+					}
 				} else if (url.getId() != null) {
+					logger.debug("Division Response 133");
 					divisionListResponse = new DivisionListResponse(conn, url.getId());
 				} else {
 					// according to the URI parsing, this shouldn't happen, but
