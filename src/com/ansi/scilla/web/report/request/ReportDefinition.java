@@ -30,8 +30,9 @@ import com.ansi.scilla.report.common.parameters.ReportParameter;
 import com.ansi.scilla.report.common.parameters.ReportParmDiv;
 import com.ansi.scilla.report.common.parameters.ReportParmDivEndDate;
 import com.ansi.scilla.report.common.parameters.ReportParmDivMonthYear;
-import com.ansi.scilla.report.common.parameters.ReportParmDivStartEndDate;
-import com.ansi.scilla.report.common.parameters.ReportParmStartEndDate;
+import com.ansi.scilla.report.common.parameters.ReportParmStartEnd;
+import com.ansi.scilla.report.common.parameters.ReportParmStartEndMonth;
+import com.ansi.scilla.report.common.parameters.ReportParmStartEndMonthDiv;
 import com.ansi.scilla.report.reportBuilder.AnsiReport;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.ApplicationWebObject;
@@ -242,13 +243,13 @@ public class ReportDefinition extends ApplicationWebObject {
 				division = new Division();
 				division.setDivisionId(this.divisionId);
 				division.selectOne(conn);
-				ReportParmDivStartEndDate reportParmDivStartEndDate = new ReportParmDivStartEndDate(division, runDate);
+				ReportParmStartEndMonthDiv reportParmDivStartEndDate = new ReportParmStartEndMonthDiv(division, runDate);
 				reportParmDivStartEndDate.setStartDate(this.startDate);
 				reportParmDivStartEndDate.setEndDate(this.endDate);
 				parameters = (ReportParameter)reportParmDivStartEndDate;
 				break;
 			case reportByStartEnd:
-				ReportParmStartEndDate reportParmStartEndDate = new ReportParmStartEndDate(runDate);
+				ReportParmStartEnd reportParmStartEndDate = new ReportParmStartEndMonth(runDate);
 				reportParmStartEndDate.setStartDate(this.startDate);
 				reportParmStartEndDate.setEndDate(this.endDate);
 				parameters = (ReportParameter)reportParmStartEndDate;
