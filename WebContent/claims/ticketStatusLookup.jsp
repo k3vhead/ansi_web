@@ -25,10 +25,13 @@
     <tiles:put name="headextra" type="string">
     	<link rel="stylesheet" href="css/lookup.css" />
     	<link rel="stylesheet" href="css/ticket.css" />
+    	<link rel="stylesheet" href="css/callNote.css" />
+    	<link rel="stylesheet" href="css/accordion.css" />
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
     	<script type="text/javascript" src="js/addressUtils.js"></script>
     	<script type="text/javascript" src="js/lookup.js"></script> 
     	<script type="text/javascript" src="js/ticket.js"></script> 
+    	<script type="text/javascript" src="js/callNote.js"></script>
         <style type="text/css">
         	#filter-container {
         		width:402px;
@@ -66,6 +69,7 @@
         			TICKETSTATUS.createTable();
         			TICKETSTATUS.makeClickers();
         			TICKETSTATUS.makeModals();
+        			CALLNOTE.init();
         		},
         		
         		
@@ -155,9 +159,11 @@
     			            	{
     				            	var $claim = '';
     				            	if (row.ticket_status=='D' || row.ticket_status=='C') {
-    				            		$claim = '<a href="#" class="claimAction" data-id="'+row.ticket_id+'"><webthing:invoiceIcon styleClass="green">Budget Control</webthing:invoiceIcon></a>';
+    				            		$claim = '<ansi:hasPermission permissionRequired='CLAIMS_READ'><a href="#" class="claimAction" data-id="'+row.ticket_id+'">Ticket Note<webthing:invoiceIcon styleClass="green">Budget Control</webthing:invoiceIcon></a></ansi:hasPermission>';
     				            	}
-    			            		return "<ansi:hasPermission permissionRequired='CLAIMS_READ'>"+$claim+"</ansi:hasPermission>";
+    				            	var $notesLink = '<webthing:notes xrefType="TICKET" xrefId="'+row.ticket_id+'">Ticket Note</webthing:notes>';
+    				            	console.log($notesLink);
+    			            		return $claim + $notesLink;
     			            	}
     			            	
     			            } }],
@@ -167,6 +173,7 @@
     			            },
     			            "drawCallback": function( settings ) {
     			            	TICKETSTATUS.doFunctionBinding();
+    			            	CALLNOTE.lookupLink();
     			            }
     			    } );
             		//new $.fn.dataTable.FixedColumns( dataTable );
@@ -228,6 +235,7 @@
 	    <webthing:scrolltop />
     
 	    <webthing:ticketModal ticketContainer="ticket-modal" />
+	    <webthing:callNoteModals />
     </tiles:put>
 		
 </tiles:insert>
