@@ -64,8 +64,9 @@
         		
         		doCloseDivision : function() {
 					console.log("doCloseDivision")
+					var $actCloseDate = $("#confirm-modal input[name='actCloseDate']").val();
 					var $url = 'divisionClose';
-					var $outbound = { "divisionId":$("#confirm-modal input[name='divisionId']").val() };
+					var $outbound = { "divisionId":$("#confirm-modal input[name='divisionId']").val()};
 					console.log($outbound);
 					var jqxhr = $.ajax({
 						type: 'POST',
@@ -75,7 +76,7 @@
 							200 : function($data) {
 								console.log($data);
 								if ( $data.responseHeader.responseCode == 'SUCCESS') {
-									DIVISION_CLOSE.unclose = {};
+									DIVISION_CLOSE.unclose["divisionId"]= $actCloseDate;
 									$('#displayTable').DataTable().ajax.reload();
 									$("#globalMsg").html("Success").show().fadeOut(3000);
 									$("#confirm-modal").dialog("close");
@@ -116,7 +117,7 @@
         		doUncloseDivision : function() {
 					console.log("doUncloseDivision")
 					var $url = 'divisionUnclose';
-					var $outbound = { "divisionId":$("#confirm-unclose-modal input[name='divisionId']").val(), "actCloseDate":$("#confirm-modal input[name='actCloseDate']").val() };
+					var $outbound = { "divisionId":$("#confirm-unclose-modal input[name='divisionId']").val(), "actCloseDate":$("#confirm-unclose-modal input[name='actCloseDate']").val() };
 					console.log($outbound);
 					var jqxhr = $.ajax({
 						type: 'POST',
@@ -126,37 +127,39 @@
 							200 : function($data) {
 								console.log($data);
 								if ( $data.responseHeader.responseCode == 'SUCCESS') {
+									DIVISION_CLOSE.unclose = {};
 									$('#displayTable').DataTable().ajax.reload();
 									$("#globalMsg").html("Success").show().fadeOut(3000);
-									$("#confirm-unclose").dialog("close");
+									$("#confirm-unclose-modal").dialog("close");
 								} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
 									$("#globalMsg").html("Invalid system state. Reload page and try again").show();
-									$("#confirm-unclose").dialog("close");
+									$("#confirm-unclose-modal").dialog("close");
+									$('html, body').animate({scrollTop: 0}, 800);
 								} else {
 									$("#globalMsg").html("System Error invalid response code ("+$data.responseHeader.responseCode+"): Contact Support").show();
-									$("#confirm-unclose").dialog("close");
+									$("#confirm-unclose-modal").dialog("close");
+									$('html, body').animate({scrollTop: 0}, 800);
 								}	
-								$('html, body').animate({scrollTop: 0}, 800);
 							},
 							403: function($data) {
-								$("#confirm-unclose").dialog("close");
-								$('html, body').animate({scrollTop: 0}, 800);
+								$("#confirm-unclose-modal").dialog("close");
 								$("#globalMsg").html("Session Timeout. Log in and try again").show();
+								$('html, body').animate({scrollTop: 0}, 800);
 							},
 							404: function($data) {
-								$("#confirm-unclose").dialog("close");
-								$('html, body').animate({scrollTop: 0}, 800);
+								$("#confirm-unclose-modal").dialog("close");
 								$("#globalMsg").html("Invalid expense id. Reload and try again").show();
+								$('html, body').animate({scrollTop: 0}, 800);
 							},
 							405: function($data) {
-								$("#confirm-unclose").dialog("close");
-								$('html, body').animate({scrollTop: 0}, 800);
+								$("#confirm-unclose-modal").dialog("close");
 								$("#globalMsg").html("System Error 405. Contact Support").show();
+								$('html, body').animate({scrollTop: 0}, 800);
 							},
 							500: function($data) {
-								$("#confirm-unclose").dialog("close");
-								$('html, body').animate({scrollTop: 0}, 800);
+								$("#confirm-unclose-modal").dialog("close");
 								$("#globalMsg").html("System Error 500. Contact Support").show();
+								$('html, body').animate({scrollTop: 0}, 800);
 							},
 						},
 						dataType: 'json'
@@ -176,9 +179,9 @@
 						var $divisionId = $(this).attr("data-divisionid");
 						var $actCloseDate = $(this).attr("data-actCloseDate");
 						console.log("Unclose division: " + $divisionId);
-						$("#confirm-unclose input[name='divisionId']").val($divisionId);
-						$("#confirm-unclose input[name='actCloseDate']").val($actCloseDate);
-						$("#confirm-unclose").dialog("open");
+						$("#confirm-unclose-modal input[name='divisionId']").val($divisionId);
+						$("#confirm-unclose-modal input[name='actCloseDate']").val($actCloseDate);
+						$("#confirm-unclose-modal").dialog("open");
 					});
 				},
 
@@ -227,7 +230,7 @@
         		
             	
         		makeUncloseModal : function() {
-					$( "#confirm-unclose" ).dialog({
+					$( "#confirm-unclose-modal" ).dialog({
 						title:'Confirm Unclose',
 						autoOpen: false,
 						height: 150,
@@ -239,20 +242,20 @@
 						//},
 						buttons: [
 							{
-								id: "confirm-cancel-button",
+								id: "confirm-close-undo-button",
 								click: function($event) {
-									$( "#confirm-modal" ).dialog("close");
+									$( "#confirm-unclose-modal" ).dialog("close");
 								}
 							},{
-								id: "confirm-save-button",
+								id: "confirm-save-undo-button",
 								click: function($event) {
 									DIVISION_CLOSE.doUncloseDivision();
 								}
 							}
 						]
 					});	
-					$("#confirm-save-button").button('option', 'label', 'Save');
-					$("#confirm-cancel-button").button('option', 'label', 'Cancel');
+					$("#confirm-save-undo-button").button('option', 'label', 'Save');
+					$("#confirm-close-undo-button").button('option', 'label', 'Cancel');
         		},
         		
         		
@@ -316,17 +319,14 @@
 //    				            	var $edit = '<a href="#" class="editAction" data-id="'+row.expenseId+'"><webthing:edit>Edit</webthing:edit></a>';
 //    			            		return "<ansi:hasPermission permissionRequired='CLAIMS_WRITE'>"+$edit+"</ansi:hasPermission>";
 //    								return '<span class="call-note-detail" data-callnoteid="'+row.call_log_id+'"><webthing:view styleClass="green">View</webthing:view></span>';
-    								DIVISION_CLOSE.unclose = {};
-    				            		if ( DIVISION_CLOSE.unclose > 0 ) {
-    				            			return $closeLink + $uncloseLink;
-    				            		} else {
-    				            			if ( row.can_close == true ) {
-    											return $closeLink;
-    										} else {
-    											return $notAllowed;									
-    										}
-    				            		}
-    			            	}
+						            if ( DIVISION_CLOSE.unclose > 0 ) {
+					            			return $uncloseLink;
+					            		} else if ( row.can_close == true ) {
+											return $closeLink;
+										} else {
+											return $notAllowed;									
+											}
+					            		}
     			            	
     			            } }
     			            ],
@@ -374,7 +374,6 @@
     	<div style="width:100%; text-align:center">
     		<input type="hidden" value="" name="divisionId" />
     		<input type="hidden" value="" name="actCloseDate" />
-    		Unclose This Division?
     	</div>
     </div>
     </tiles:put>
