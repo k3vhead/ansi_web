@@ -390,7 +390,7 @@
 							SPECIALOVERRIDE.makeSelectResultsTable("#selectResults", $outbound, $scriptName, $data);
 							SPECIALOVERRIDE.makeUpdateForm($outbound, $scriptName, $data);
 						} else {
-							$("#globalMsg").html("No Results Selected").show().fadeOut(6000);
+							$("#globalMsg").html("No Records Selected for Override").show().fadeOut(6000);
 						}
 					} else if ( $data.responseHeader.responseCode = "EDIT_FAILURE") {
 						console.log("Bad data, but it worked");
