@@ -24,16 +24,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.Division;
-import com.ansi.scilla.report.common.ReportInputType;
-import com.ansi.scilla.report.common.ReportUtils;
-import com.ansi.scilla.report.common.parameters.ReportParameter;
-import com.ansi.scilla.report.common.parameters.ReportParmDiv;
-import com.ansi.scilla.report.common.parameters.ReportParmDivEndDate;
-import com.ansi.scilla.report.common.parameters.ReportParmDivMonthYear;
-import com.ansi.scilla.report.common.parameters.ReportParmStartEnd;
-import com.ansi.scilla.report.common.parameters.ReportParmStartEndMonth;
-import com.ansi.scilla.report.common.parameters.ReportParmStartEndMonthDiv;
 import com.ansi.scilla.report.reportBuilder.AnsiReport;
+import com.ansi.scilla.report.reportBuilder.reportBy.ReportByDivision;
+import com.ansi.scilla.report.reportBuilder.reportBy.ReportByDivMonthYear;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.ApplicationWebObject;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
@@ -64,6 +57,7 @@ public class ReportDefinition extends ApplicationWebObject {
 	private Integer month;
 	private Integer year;
 	private HashMap<String, String> reportDisplay;
+	private Calendar runDate;
 
 	/*
 	<forward name="reportByDiv" path="/reportByDiv.jsp" />
@@ -75,6 +69,7 @@ public class ReportDefinition extends ApplicationWebObject {
 	
 	protected ReportDefinition() {
 		super();
+		this.runDate = Calendar.getInstance();
 	}
 	/**
 	 * Parse the URI from the given request.
@@ -139,6 +134,7 @@ public class ReportDefinition extends ApplicationWebObject {
 		if ( reportRequest.getReportDisplay() != null ) {
 			this.reportDisplay = reportRequest.getReportDisplay();
 		}
+		this.runDate = Calendar.getInstance();
 	}
 	
 	private void parseParameters(Map<String, String[]> queryParameterMap) throws ParseException {
@@ -181,11 +177,14 @@ public class ReportDefinition extends ApplicationWebObject {
 	public Integer getYear() {
 		return year;
 	}
-
-
 	public HashMap<String, String> getReportDisplay() {
 		return reportDisplay;
+	}	
+	public Calendar getRunDate() {
+		return runDate;
 	}
+	
+	
 	private String makeJsonString(HttpServletRequest request) throws UnsupportedEncodingException, IOException {
 		Writer writer = new StringWriter();
 		 
@@ -204,127 +203,28 @@ public class ReportDefinition extends ApplicationWebObject {
         return jsonString;        
 	}
 
-	/**
-	 * Based on the report type, effective dates and as of, make a filename.
-	 * @return
-	 */
-	public String makeReportFileName(Connection conn) throws Exception {
-		
-		Calendar runDate = Calendar.getInstance();
-		ReportParameter parameters = null;
+	
+	
+	public String makeReportFileName(Connection conn, AnsiReport report) throws Exception {
 		Division division = null;
-		
-		ReportInputType reportInputType = this.reportType.reportInputType();
-		switch (reportInputType ) {
-			case reportByDiv:
-				division = new Division();
-				division.setDivisionId(this.divisionId);
-				division.selectOne(conn);
-				parameters = new ReportParmDiv(division, runDate);
-				break;
-			case reportByDivEnd:
-				division = new Division();
-				division.setDivisionId(this.divisionId);
-				division.selectOne(conn);
-				ReportParmDivEndDate reportParmDivEndDate = new ReportParmDivEndDate(division, runDate);
-				reportParmDivEndDate.setEndDate(this.endDate);
-				parameters = (ReportParameter)reportParmDivEndDate;
-				break;
-			case reportByDivMonthYear:
-				division = new Division();
-				division.setDivisionId(this.divisionId);
-				division.selectOne(conn);
-				ReportParmDivMonthYear reportParmDivMonthYear = new ReportParmDivMonthYear(division, runDate);
-				reportParmDivMonthYear.setMonth(this.month);
-				reportParmDivMonthYear.setYear(this.year);
-				parameters = (ReportParameter)reportParmDivMonthYear;
-				break;
-			case reportByDivStartEnd:
-				division = new Division();
-				division.setDivisionId(this.divisionId);
-				division.selectOne(conn);
-				ReportParmStartEndMonthDiv reportParmDivStartEndDate = new ReportParmStartEndMonthDiv(division, runDate);
-				reportParmDivStartEndDate.setStartDate(this.startDate);
-				reportParmDivStartEndDate.setEndDate(this.endDate);
-				parameters = (ReportParameter)reportParmDivStartEndDate;
-				break;
-			case reportByStartEnd:
-				ReportParmStartEnd reportParmStartEndDate = new ReportParmStartEndMonth(runDate);
-				reportParmStartEndDate.setStartDate(this.startDate);
-				reportParmStartEndDate.setEndDate(this.endDate);
-				parameters = (ReportParameter)reportParmStartEndDate;
-				break;
-			case reportNoInput:
-				// nothing to do here
-				break;
-			default:
-				break;
-		}
-		String fileName = ReportUtils.makeReportFileName(conn, runDate, this.reportType.reportInputType(), this.reportType.downloadFileName(), parameters);
-		return fileName.replaceAll(" ", "_");
-		
-		/**
- 		Logger logger = LogManager.getLogger(this.getClass());
-
-		SimpleDateFormat yyyymmdd = new SimpleDateFormat("yyyy-MM-dd");
-//		SimpleDateFormat yyyymm = new SimpleDateFormat("yyyy-MM");
-		DecimalFormat nn = new DecimalFormat("00");
-		
-		String asOf = yyyymmdd.format(new Date());
-		String startDate = this.startDate == null ? null : yyyymmdd.format(this.startDate.getTime());
-		String endDate = this.endDate == null ? null : yyyymmdd.format(this.endDate.getTime());
-		String monthYear = null;
-		if ( this.month != null && this.year != null ) {
-			monthYear = year + "-" + nn.format(this.month);
-		}
-	
-		List<String> names = new ArrayList<String>();
-		names.add(this.reportType.downloadFileName());		
-		if ( reportType.reportJsp().equals(ReportJsp.reportNoInput)) {
-			names.add("as of " + asOf);
-		} else if ( reportType.reportJsp().equals(ReportJsp.reportByDiv)) {
-			String div = makeDiv(conn, this.divisionId);
-			names.add("for Div " + div);
-			names.add("as of " + asOf);
-		} else if ( reportType.reportJsp().equals(ReportJsp.reportByStartEnd)) {
-			names.add("for " + startDate);
-			names.add("to " + endDate);
-			names.add("as of " + asOf);
-		} else if ( reportType.reportJsp().equals(ReportJsp.reportByDivEnd)) {
-			String div = makeDiv(conn, this.divisionId);
-			names.add("for Div " + div);
-			names.add("to " + endDate);
-			names.add("as of " + asOf);
-		} else if ( reportType.reportJsp().equals(ReportJsp.reportByDivMonthYear)) {
-			String div = makeDiv(conn, this.divisionId);
-			names.add("for Div " + div);
-			names.add("for " + monthYear);
-			names.add("as of " + asOf);
-		} else if ( reportType.reportJsp().equals(ReportJsp.reportByDivStartEnd)) {
-			String div = makeDiv(conn, this.divisionId);
-			names.add("for Div " + div);
-			names.add("for " + startDate);
-			names.add("to " + endDate);
-			names.add("as of " + asOf);
-		} else {
-			logger.log(Level.DEBUG, "No jsp match");
+		if ( ReportByDivision.class.isAssignableFrom(report.getClass()) ) {
+			division = new Division();
+			division.setDivisionId(divisionId);
+			division.selectOne(conn);
 		}
 		
-		String reportFileName = StringUtils.join(names, " ");
-		logger.log(Level.DEBUG, "Filename: " + reportFileName);
-		// the attachment header sees "end of name" when it finds a space
-		return reportFileName.replaceAll(" ", "_");
-		**/
+		Calendar startDate = this.startDate == null ? Calendar.getInstance() : (Calendar)this.startDate.clone();
+		if ( ReportByDivMonthYear.class.isAssignableFrom(report.getClass()) ) {
+			// When we report by division, month & year: the filename is based on start date
+			startDate.set(Calendar.YEAR, this.year);
+			startDate.set(Calendar.MONTH, this.month - 1);  // because it's zero-based and we fix it somewhere else
+		}
+		
+		String fileName = report.makeFileName(getRunDate(), division, startDate, endDate);
+		return fileName;
 	}
 	
-	
-	
-	private String makeDiv(Connection conn, Integer divisionId) throws Exception {
-		Division division = new Division();
-		division.setDivisionId(divisionId);
-		division.selectOne(conn);
-		return division.getDivisionDisplay();
-	}
+		
 	/**
 	 * Validate the current report definition against the validator class defined in the ReportType enum
 	 * @param conn
@@ -380,7 +280,4 @@ public class ReportDefinition extends ApplicationWebObject {
 		Method builderMethod = reportClass.getMethod("buildReport", classList);
 		AnsiReport report = (AnsiReport)builderMethod.invoke(null, objectList);
 		return report;
-	}
-
-	
-}
+	}}
