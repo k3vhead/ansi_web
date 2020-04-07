@@ -64,20 +64,14 @@
         		
         		doCloseDivision : function() {
 					console.log("doCloseDivision")
-					//$('#deleteConfirm').data('id', $(this).data('id'));
-					//$actCloseDate = $("#confirm-modal").attr("data-actclosedate");
-					var $actCloseDate =  $("#confirm-modal input[name='actCloseDate']").val();
-					//var $actCloseDate = $("#confirm-modal").data('data-actclosedate');
+					var $actCloseDate =  $("#confirm-modal").attr('data-actclosedate');
+					if ( $actCloseDate == "null" ) {
+						$actCloseDate = null;
+					}
 					console.log($actCloseDate);
-					//var $actCloseDate = $clickevent.currentTarget.attributes['data-actclosedate'].value;
-					//var $actCloseDate = $("#confirm-modal input[name='actCloseDate']").val();
-					//$('#deleteConfirm').data('id', $(this).data('id'));
-					//var $actCloseDate = $("#confirm-modal").attr("data-actclosedate",$actCloseDate).val();
-					//var actCloseDate = $("#confirm-modal").data('actCloseDate').val();
-					//DIVISION_CLOSE.unclose["divisionId"]= $actCloseDate;
-					//var $actCloseDate = $("data-actclosedate").attr('divisionId');
 					var $url = 'divisionClose';
-					var $outbound = { "divisionId":$("#confirm-modal input[name='divisionId']").val()};
+					var $divisionId = $("#confirm-modal input[name='divisionId']").val();
+					var $outbound = { "divisionId":$divisionId};
 					console.log($outbound);
 					console.log($actCloseDate);
 					var jqxhr = $.ajax({
@@ -87,15 +81,10 @@
 						statusCode: {
 							200 : function($data) {
 								console.log($data);
-								if ( $data.responseHeader.responseCode == 'SUCCESS') {
-									DIVISION_CLOSE.unclose["divisionId"]= $actCloseDate;
-									//console.log(DIVISION_CLOSE.unclose["divisionId"]);
-									console.log(DIVISION_CLOSE.unclose["divisionId"] in DIVISION_CLOSE.unclose);
-									
-									console.log(DIVISION_CLOSE.unclose['divisionId']);
-									console.log(DIVISION_CLOSE.unclose.length);
-									
-									
+								if ( $data.responseHeader.responseCode == 'SUCCESS') {									
+									DIVISION_CLOSE.unclose[$divisionId]= $actCloseDate;
+									console.log("unclose dict: ");
+									console.log(DIVISION_CLOSE.unclose);
 									$('#displayTable').DataTable().ajax.reload();
 									$("#globalMsg").html("Success").show().fadeOut(3000);
 									$("#confirm-modal").dialog("close");
@@ -136,7 +125,9 @@
         		doUncloseDivision : function() {
 					console.log("doUncloseDivision")
 					var $url = 'divisionUnclose';
-					var $outbound = { "divisionId":$("#confirm-unclose-modal input[name='divisionId']").val(), "actCloseDate":$("#confirm-unclose-modal input[name='actCloseDate']").val() };
+					var $divisionId = $("#confirm-unclose-modal input[name='divisionId']").val();
+					var $actCloseDate = DIVISION_CLOSE.unclose[$divisionId];
+					var $outbound = { "divisionId":$divisionId, "actCloseDate":$actCloseDate };
 					console.log($outbound);
 					var jqxhr = $.ajax({
 						type: 'POST',
@@ -146,7 +137,7 @@
 							200 : function($data) {
 								console.log($data);
 								if ( $data.responseHeader.responseCode == 'SUCCESS') {
-									DIVISION_CLOSE.unclose = {};
+									delete DIVISION_CLOSE.unclose[$divisionId];
 									$('#displayTable').DataTable().ajax.reload();
 									$("#globalMsg").html("Success").show().fadeOut(3000);
 									$("#confirm-unclose-modal").dialog("close");
@@ -194,13 +185,12 @@
 						var $actCloseDate = $(this).attr("data-actclosedate");
 						console.log("Closing division: " + $divisionId + $actCloseDate);
 						$("#confirm-modal input[name='divisionId']").val($divisionId);
-						//$actCloseDate = $("#confirm-modal").attr("data-actclosedate")
-						$("#confirm-modal input[name='actCloseDate']").val($actCloseDate);
+						$("#confirm-modal").attr("data-actclosedate",$actCloseDate);
 						$("#confirm-modal").dialog("open");
 					});
 					$(".division-unclose").on("click", function($clickevent) {
 						var $divisionId = $(this).attr("data-divisionid");
-						var $actCloseDate = $(this).attr("data-actclosedate");
+						var $actCloseDate = DIVISION_CLOSE.unclose[$divisionId];
 						console.log("Unclose division: " + $divisionId);
 						$("#confirm-unclose-modal input[name='divisionId']").val($divisionId);
 						$("#confirm-unclose-modal input[name='actCloseDate']").val($actCloseDate);
@@ -265,20 +255,20 @@
 						//},
 						buttons: [
 							{
-								id: "confirm-close-undo-button",
+								id: "confirm-unclose-cancel-button",
 								click: function($event) {
 									$( "#confirm-unclose-modal" ).dialog("close");
 								}
 							},{
-								id: "confirm-save-undo-button",
+								id: "confirm-unclose-save-button",
 								click: function($event) {
 									DIVISION_CLOSE.doUncloseDivision();
 								}
 							}
 						]
 					});	
-					$("#confirm-save-undo-button").button('option', 'label', 'Save');
-					$("#confirm-close-undo-button").button('option', 'label', 'Cancel');
+					$("#confirm-unclose-save-button").button('option', 'label', 'Save');
+					$("#confirm-unclose-cancel-button").button('option', 'label', 'Cancel');
         		},
         		
         		
@@ -337,23 +327,25 @@
     			            } },
     			            { title: "<bean:message key="field.label.action" />", width:"5%", data: function ( row, type, set ) {	
     			            	{
-    			            		var $closeLink = '<ansi:hasPermission permissionRequired="DIVISION_CLOSE_WRITE"><span class="action-link division-close" data-divisionid="'+row.division_id+'" data-actclosedate="'+row.act_close_date_display+'"><webthing:close>Close Division</webthing:close></span></ansi:hasPermission>';
+    			            		if ( row.act_close_date_display == null ) {
+    			            			$actCloseDate = null;
+    			            		} else {
+    			            			$actCloseDate = row.act_close_date_display;
+    			            		}
+    			            		var $closeLink = '<ansi:hasPermission permissionRequired="DIVISION_CLOSE_WRITE"><span class="action-link division-close" data-divisionid="'+row.division_id+'" data-actclosedate="'+$actCloseDate+'"><webthing:close>Close Division</webthing:close></span></ansi:hasPermission>';
     			            		var $uncloseLink = '<span class="action-link division-unclose" data-divisionid="'+row.division_id+'" data-actclosedate="'+row.act_close_date_display+'"><webthing:undo>Unclose Division</webthing:undo></span>';
     			            		var $notAllowed = '<webthing:ban>Not Allowed</webthing:ban>';
 //    				            	var $edit = '<a href="#" class="editAction" data-id="'+row.expenseId+'"><webthing:edit>Edit</webthing:edit></a>';
 //    			            		return "<ansi:hasPermission permissionRequired='CLAIMS_WRITE'>"+$edit+"</ansi:hasPermission>";
 //    								return '<span class="call-note-detail" data-callnoteid="'+row.call_log_id+'"><webthing:view styleClass="green">View</webthing:view></span>';
-    			            		if ( DIVISION_CLOSE.unclose.length > 0 ) {
+    			            		if ( row.division_id in DIVISION_CLOSE.unclose ) {
     			            			return $uncloseLink;
-    	    		        			console.log(DIVISION_CLOSE.unclose["divisionId"]);
 				            		} else if ( row.can_close == true ) {
 										return $closeLink;
-		    		        			console.log(DIVISION_CLOSE.unclose["divisionId"]);
 									} else {
 										return $notAllowed;	
-		    		        			console.log(DIVISION_CLOSE.unclose["divisionId"]);								
-										}
 				            		}
+    			            	}
 						            
 						            
 						            

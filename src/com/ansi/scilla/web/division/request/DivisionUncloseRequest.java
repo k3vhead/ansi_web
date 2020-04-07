@@ -36,12 +36,12 @@ public class DivisionUncloseRequest extends AbstractRequest {
 		this.divisionId = divisionId;
 	}
 	
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="America/Chicago")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Calendar getActCloseDate() {
 		return actCloseDate;
 	}
 
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="America/Chicago")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public void setActCloseDate(Calendar actCloseDate) {
 		this.actCloseDate = actCloseDate;
 	}
@@ -55,7 +55,7 @@ public class DivisionUncloseRequest extends AbstractRequest {
 				webMessages.addMessage(DIVISION_ID, "Cannot Unclose a division that hasn't been closed");
 			} else {
 //				validateDivisionDate(conn, webMessages, division);
-				if ( webMessages.isEmpty() ) {
+				if ( webMessages.isEmpty() && actCloseDate != null ) {
 					validateActCloseDate(conn, webMessages);
 				}
 			}

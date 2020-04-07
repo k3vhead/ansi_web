@@ -2,6 +2,7 @@ package com.ansi.scilla.web.division.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -21,7 +22,6 @@ import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
-import com.ansi.scilla.web.division.request.DivisionCloseRequest;
 import com.ansi.scilla.web.division.request.DivisionUncloseRequest;
 import com.ansi.scilla.web.division.response.DivisionCloseResponse;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
@@ -86,7 +86,8 @@ public class DivisionUncloseServlet extends AbstractCrudServlet {
 		division.setDivisionId(divisionRequest.getDivisionId());
 		division.selectOne(conn);
 		Date now = new Date();
-		division.setActCloseDate(divisionRequest.getActCloseDate().getTime());
+		Date closeDate = divisionRequest.getActCloseDate() == null ? (Date)null : divisionRequest.getActCloseDate().getTime();
+		division.setActCloseDate(closeDate);
 		division.setUpdatedBy(sessionUser.getUserId());
 		division.setUpdatedDate(now);
 		Division key = new Division();
@@ -118,7 +119,8 @@ public class DivisionUncloseServlet extends AbstractCrudServlet {
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
 			
 			DivisionCloseResponse data = new DivisionCloseResponse();
-			data.setActCloseDate(DateUtils.toCalendar(division.getActCloseDate()));
+			Calendar actCloseDate = division.getActCloseDate() == null ? (Calendar)null : DateUtils.toCalendar(division.getActCloseDate());
+			data.setActCloseDate(actCloseDate);
 	//		data.setClosedThruDate(closedThruDate);
 			data.setDivisionDisplay(division.getDivisionDisplay());
 			data.setDivisionId(division.getDivisionId());
