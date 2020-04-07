@@ -151,6 +151,7 @@ public enum Permission {
 	DIVISION_CLOSE(null, false, "Functional Area: Division Close"),
 	DIVISION_CLOSE_READ(DIVISION_CLOSE, false, "Can see division close dates"),
 	DIVISION_CLOSE_WRITE(DIVISION_CLOSE_READ, true, "Can set division close dates"),
+	DIVISION_CLOSE_OVERRIDE(DIVISION_CLOSE_WRITE, true, "Can override division close dates"),
 
 	BATCH_LOG(null, false, "Functional Area: Batch Logging"),
 	BATCH_LOG_READ(BATCH_LOG, false, "Can view the batch log"),
