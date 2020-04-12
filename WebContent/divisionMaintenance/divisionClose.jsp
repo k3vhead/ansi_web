@@ -86,7 +86,7 @@
 									console.log("unclose dict: ");
 									console.log(DIVISION_CLOSE.unclose);
 									$('#displayTable').DataTable().ajax.reload();
-									$("#globalMsg").html("Success").show().fadeOut(3000);
+									$("#globalMsg").html("Success").show().fadeOut(6000);
 									$("#confirm-modal").dialog("close");
 								} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
 									$("#globalMsg").html("Invalid system state. Reload page and try again").show();
@@ -161,7 +161,7 @@
 								if ( $data.responseHeader.responseCode == 'SUCCESS') {
 									delete DIVISION_CLOSE.unclose[$divisionId];
 									$('#displayTable').DataTable().ajax.reload();
-									$("#globalMsg").html("Success").show().fadeOut(3000);
+									$("#globalMsg").html("Success").show().fadeOut(6000);
 									$("#confirm-unclose-modal").dialog("close");
 								} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
 									$("#globalMsg").html("Invalid system state. Reload page and try again").show();
