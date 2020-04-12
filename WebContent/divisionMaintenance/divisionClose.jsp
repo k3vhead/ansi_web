@@ -49,9 +49,10 @@
         
         $(document).ready(function() {
         	;DIVISION_CLOSE = {
+            	callTypeList : null,
         		datatable : null,
-        		callTypeList : null,
         		unclose: {},
+        		
         		
         		init : function() {
         			DIVISION_CLOSE.makeTable();
@@ -59,8 +60,7 @@
         			DIVISION_CLOSE.makeModal();
         			DIVISION_CLOSE.makeUncloseModal();
         		},
-        		
-        		
+        		        		
         		
         		doCloseDivision : function() {
 					console.log("doCloseDivision")
@@ -122,6 +122,28 @@
 					});
         		},
         		
+        		
+        		doFunctionBinding : function () {
+        			console.log("doFunctionBinding");
+					$(".division-close").on("click", function($clickevent) {
+						var $divisionId = $(this).attr("data-divisionid");
+						var $actCloseDate = $(this).attr("data-actclosedate");
+						console.log("Closing division: " + $divisionId + $actCloseDate);
+						$("#confirm-modal input[name='divisionId']").val($divisionId);
+						$("#confirm-modal").attr("data-actclosedate",$actCloseDate);
+						$("#confirm-modal").dialog("open");
+					});
+					$(".division-unclose").on("click", function($clickevent) {
+						var $divisionId = $(this).attr("data-divisionid");
+						var $actCloseDate = DIVISION_CLOSE.unclose[$divisionId];
+						console.log("Unclose division: " + $divisionId);
+						$("#confirm-unclose-modal input[name='divisionId']").val($divisionId);
+						$("#confirm-unclose-modal input[name='actCloseDate']").val($actCloseDate);
+						$("#confirm-unclose-modal").dialog("open");
+					});
+				},
+				
+				
         		doUncloseDivision : function() {
 					console.log("doUncloseDivision")
 					var $url = 'divisionUnclose';
@@ -175,29 +197,6 @@
 						dataType: 'json'
 					});
         		},
-        		
-        		
-        		doFunctionBinding : function () {
-        			console.log("doFunctionBinding");
-					$(".division-close").on("click", function($clickevent) {
-						var $divisionId = $(this).attr("data-divisionid");
-						//var $actCloseDate = $("#confirm-modal input[name='actCloseDate']").attr("data-actclosedate");
-						var $actCloseDate = $(this).attr("data-actclosedate");
-						console.log("Closing division: " + $divisionId + $actCloseDate);
-						$("#confirm-modal input[name='divisionId']").val($divisionId);
-						$("#confirm-modal").attr("data-actclosedate",$actCloseDate);
-						$("#confirm-modal").dialog("open");
-					});
-					$(".division-unclose").on("click", function($clickevent) {
-						var $divisionId = $(this).attr("data-divisionid");
-						var $actCloseDate = DIVISION_CLOSE.unclose[$divisionId];
-						console.log("Unclose division: " + $divisionId);
-						$("#confirm-unclose-modal input[name='divisionId']").val($divisionId);
-						$("#confirm-unclose-modal input[name='actCloseDate']").val($actCloseDate);
-						$("#confirm-unclose-modal").dialog("open");
-					});
-				},
-
 				
 				
         		makeClickers : function() {
@@ -206,9 +205,7 @@
               	  		return false;
               	    });
             	},
-
-        		
-        		
+        		       		
             	
         		makeModal : function() {
 					$( "#confirm-modal" ).dialog({
@@ -218,9 +215,6 @@
 						width: 500,
 						modal: true,
 						closeOnEscape:true,
-						//open: function(event, ui) {
-						//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-						//},
 						buttons: [
 							{
 								id: "confirm-cancel-button",
@@ -238,40 +232,7 @@
 					$("#confirm-save-button").button('option', 'label', 'Save');
 					$("#confirm-cancel-button").button('option', 'label', 'Cancel');
         		},
-
-        		
-        		
-            	
-        		makeUncloseModal : function() {
-					$( "#confirm-unclose-modal" ).dialog({
-						title:'Confirm Unclose',
-						autoOpen: false,
-						height: 150,
-						width: 500,
-						modal: true,
-						closeOnEscape:true,
-						//open: function(event, ui) {
-						//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-						//},
-						buttons: [
-							{
-								id: "confirm-unclose-cancel-button",
-								click: function($event) {
-									$( "#confirm-unclose-modal" ).dialog("close");
-								}
-							},{
-								id: "confirm-unclose-save-button",
-								click: function($event) {
-									DIVISION_CLOSE.doUncloseDivision();
-								}
-							}
-						]
-					});	
-					$("#confirm-unclose-save-button").button('option', 'label', 'Save');
-					$("#confirm-unclose-cancel-button").button('option', 'label', 'Cancel');
-        		},
-        		
-        		
+        	        		
         		
         		makeTable : function() {
         			console.log(DIVISION_CLOSE.unclose["divisionId"]);
@@ -335,9 +296,6 @@
     			            		var $closeLink = '<ansi:hasPermission permissionRequired="DIVISION_CLOSE_WRITE"><span class="action-link division-close" data-divisionid="'+row.division_id+'" data-actclosedate="'+$actCloseDate+'"><webthing:close>Close Division</webthing:close></span></ansi:hasPermission>';
     			            		var $uncloseLink = '<span class="action-link division-unclose" data-divisionid="'+row.division_id+'" data-actclosedate="'+row.act_close_date_display+'"><webthing:undo>Unclose Division</webthing:undo></span>';
     			            		var $notAllowed = '<webthing:ban>Not Allowed</webthing:ban>';
-//    				            	var $edit = '<a href="#" class="editAction" data-id="'+row.expenseId+'"><webthing:edit>Edit</webthing:edit></a>';
-//    			            		return "<ansi:hasPermission permissionRequired='CLAIMS_WRITE'>"+$edit+"</ansi:hasPermission>";
-//    								return '<span class="call-note-detail" data-callnoteid="'+row.call_log_id+'"><webthing:view styleClass="green">View</webthing:view></span>';
     			            		if ( row.division_id in DIVISION_CLOSE.unclose ) {
     			            			return $uncloseLink;
 				            		} else if ( row.can_close == true ) {
@@ -346,10 +304,6 @@
 										return $notAllowed;	
 				            		}
     			            	}
-						            
-						            
-						            
-    			            	
     			            } }
     			            ],
     			            "initComplete": function(settings, json) {
@@ -360,14 +314,40 @@
     			            	DIVISION_CLOSE.doFunctionBinding();
     			            }
     			    } );
-            		//new $.fn.dataTable.FixedColumns( dataTable );
             	},
+        		       		
+            	
+        		makeUncloseModal : function() {
+					$( "#confirm-unclose-modal" ).dialog({
+						title:'Confirm Unclose',
+						autoOpen: false,
+						height: 150,
+						width: 500,
+						modal: true,
+						closeOnEscape:true,buttons: [
+							{
+								id: "confirm-unclose-cancel-button",
+								click: function($event) {
+									$( "#confirm-unclose-modal" ).dialog("close");
+								}
+							},{
+								id: "confirm-unclose-save-button",
+								click: function($event) {
+									DIVISION_CLOSE.doUncloseDivision();
+								}
+							}
+						]
+					});	
+					$("#confirm-unclose-save-button").button('option', 'label', 'Save');
+					$("#confirm-unclose-cancel-button").button('option', 'label', 'Cancel');
+        		},
 	    		
         	}
 
         	DIVISION_CLOSE.init();
         	
         });
+        
         </script>        
     </tiles:put>
     
