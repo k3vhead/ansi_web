@@ -2021,7 +2021,6 @@
     		<div id="quoteButtonContainer" style="width:30px;">
     			<ansi:hasPermission permissionRequired="QUOTE_READ"><a href="quoteLookup.html" style="text-decoration:none; color:#404040;"><webthing:view styleClass="fa-2x quote-button">Lookup</webthing:view></a></ansi:hasPermission>
     			<ansi:hasPermission permissionRequired="QUOTE_CREATE">
-    				<a href="newQuote.html"><webthing:addNew styleClass="fa-2x quote-button action-button" styleId="new-quote-button">New Quote</webthing:addNew></a>
     				<webthing:save styleClass="fa-2x quote-button action-button" styleId="save-quote-button">Save</webthing:save>
     			</ansi:hasPermission>
 	    	</div>
