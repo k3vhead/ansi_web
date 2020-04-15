@@ -778,6 +778,19 @@
 		<url-pattern>/report/*</url-pattern>
 	</servlet-mapping>
 	
+	
+	<servlet>
+		<servlet-name>reportSubscription</servlet-name>
+		<servlet-class>com.ansi.scilla.web.report.servlet.SubscriptionServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>reportSubscription</servlet-name>
+		<url-pattern>/reports/subscription</url-pattern>
+	</servlet-mapping>
+	
+	
+	
+	
 	<servlet>
 		<servlet-name>specialOverrides</servlet-name>
 		<servlet-class>com.ansi.scilla.web.specialOverride.servlet.SpecialOverrideServlet</servlet-class>

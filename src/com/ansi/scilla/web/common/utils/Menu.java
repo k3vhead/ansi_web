@@ -62,8 +62,9 @@ public enum Menu {
 
 	
 	MY_ANSI("My ANSI", null, null,"#"),
-	MY_ACCOUNT("My Account", MY_ANSI,null,"myAccount.html"),
-	LOGOFF("Logoff", MY_ANSI,null,"logoff.html"),
+	MY_ACCOUNT(         "My Account",           MY_ANSI,    null,                       "myAccount.html"),
+	MY_REPORTS(         "Report Subscriptions", MY_ANSI,    null,                       "reportSubscription.html"),
+	LOGOFF(             "Logoff",               MY_ANSI,    null,                       "logoff.html"),
 	
 	;
 	

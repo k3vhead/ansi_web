@@ -343,6 +343,13 @@
             <forward name="reportNoInput" path="/reportNoInput.jsp" /> 
             <forward name="login" path="/login.jsp" />            
         </action>  
+        <action
+            path="/reportSubscription"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/reports/subscription.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+		
          <action
             path="/specialOverride"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
