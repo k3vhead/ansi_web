@@ -14,7 +14,7 @@ import com.ansi.scilla.report.reportBuilder.AnsiReport;
 import com.ansi.scilla.report.reportBuilder.CompoundReport;
 import com.ansi.scilla.report.reportBuilder.StandardReport;
 import com.ansi.scilla.report.reportBuilder.StandardSummaryReport;
-import com.ansi.scilla.report.reportBuilder.XLSBuilder;
+import com.ansi.scilla.report.reportBuilder.xlsBuilder.XLSBuilder;
 
 public class TestRptBuilder {
 

@@ -15,7 +15,6 @@ public class TestMyMath {
 		try {
 			new TestMyMath().go();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
