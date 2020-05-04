@@ -1513,7 +1513,6 @@
 		    				var $quoteNumber = $(this).attr("data-quotenumber");
 		    				console.debug("Adding job to " + $quoteId);
 		    				
-		    				
 		    				//Clear all job forms
 		    				$(".job-edit-panel input").val("");
 		    				$(".job-edit-panel select").val("");
@@ -1620,6 +1619,8 @@
 		    				$("#edit-this-quote").hide();
 		    				$("#quoteDataContainer .managerName").hide();
 		    				$("#quoteDataContainer select[name='managerId']").show();
+		    				$("#new-quote-button").hide();
+		    				$("#lookup-button").hide();
 		    				$("#quote-container .quote-button-container .save-quote").show();
 		    				$("#quote-container .quote-button-container .cancel-edit").show();
 		    			});
@@ -1635,6 +1636,8 @@
 		    				$("#edit-this-quote").show();
 		    				$("#quoteDataContainer .managerName").show();
 		    				$("#quoteDataContainer select[name='managerId']").hide();
+		    				$("#new-quote-button").show();
+		    				$("#lookup-button").show();
 		    				$("#quote-container .quote-button-container .save-quote").hide();
 		    				$("#quote-container .quote-button-container .cancel-edit").hide();
 		    			});
@@ -2491,6 +2494,8 @@
 		    				$("#edit-this-quote").show();
 		    				$("#quote-container .quote-button-container .save-quote").hide();
 		    				$("#quote-container .quote-button-container .cancel-edit").hide();
+		    				$("#new-quote-button").show();
+		    				$("#lookup-button").show();
 						}
 						
 						
@@ -2826,7 +2831,7 @@
     			<%-- <ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:edit styleClass="fa-2x quote-button">Edit</webthing:edit></ansi:hasPermission>--%>
  			    <ansi:hasPermission permissionRequired="QUOTE_CREATE"><div class="action-button-container"><webthing:revise styleClass="fa-2x quote-button action-button" styleId="revise-button">Revise</webthing:revise></div></ansi:hasPermission>
     			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><div class="action-button-container"><webthing:copy styleClass="fa-2x quote-button action-button" styleId="copy-button">Copy</webthing:copy></div></ansi:hasPermission>
-    			<ansi:hasPermission permissionRequired="QUOTE_READ"><div class="action-button-container"><a href="quoteLookup.html" style="text-decoration:none; color:#404040;"><webthing:view styleClass="fa-2x quote-button">Lookup</webthing:view></a></div></ansi:hasPermission>
+    			<ansi:hasPermission permissionRequired="QUOTE_READ"><div class="action-button-container"><a href="quoteLookup.html" style="text-decoration:none; color:#404040;"><webthing:view styleClass="fa-2x quote-button" styleId="lookup-button">Lookup</webthing:view></a></div></ansi:hasPermission>
     			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><div class="action-button-container"><a href="newQuote.html"><webthing:addNew styleClass="fa-2x quote-button action-button" styleId="new-quote-button">New Quote</webthing:addNew></a></div></ansi:hasPermission>
     			<ansi:hasPermission permissionRequired="QUOTE_READ"><div class="action-button-container"><webthing:print styleClass="orange fa-2x quote-button action-button" styleId="preview-button">Preview</webthing:print></div></ansi:hasPermission>    			
     			<ansi:hasPermission permissionRequired="QUOTE_PROPOSE"><div class="action-button-container"><webthing:print styleClass="green fa-2x quote-button action-button" styleId="propose-button">Propose</webthing:print></div></ansi:hasPermission>
