@@ -24,7 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.Division;
-import com.ansi.scilla.report.reportBuilder.AnsiReport;
+import com.ansi.scilla.report.reportBuilder.reportType.AnsiReport;
 import com.ansi.scilla.report.reportBuilder.reportBy.ReportByDivision;
 import com.ansi.scilla.report.reportBuilder.reportBy.ReportByDivMonthYear;
 import com.ansi.scilla.web.common.utils.AppUtils;

@@ -95,6 +95,11 @@ public enum Permission {
 	CLAIMS_READ(CLAIMS, false, "Can read ticket claims"),
 	CLAIMS_WRITE(CLAIMS_READ, false, "Can edit ticket claims"),
 
+	REPORT_SUBSCRIPTION(null, false, "Functional Area: Report Subscription"),
+	REPORT_SUBSCRIPTION_READ(REPORT_SUBSCRIPTION, false, "Can Read Report Subscriptions"),
+	REPORT_SUBSCRIPTION_WRITE(REPORT_SUBSCRIPTION_READ, false, "Can Subscribe to Reports"),
+	REPORT_SUBSCRIPTION_OVERRIDE(REPORT_SUBSCRIPTION_WRITE, false, "Can Subscribe others to reports"),
+	
 	REPORTS_AGING(null, false, "Functional Area: Aging Reports"),
 	REPORTS_AGING_READ(REPORTS_AGING, false, "Can read aging reports"),
 	

@@ -1,8 +1,16 @@
 package com.ansi.scilla.web.report.response;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Division;
@@ -19,19 +27,17 @@ public class SubscriptionResponse extends MessageResponse {
 	private List<Report> reportList;
 	private List<Group> companyList;
 	private List<Group> regionList;
+	private Logger logger = LogManager.getLogger(SubscriptionResponse.class);
 	
 	
-	public SubscriptionResponse(Connection conn) throws Exception {
+	public SubscriptionResponse(Connection conn, Integer userId) throws Exception {
 		super();
 		this.divisionList = new ArrayList<Div>();
 		this.companyList = new ArrayList<Group>();
 		this.regionList = new ArrayList<Group>();
 		this.reportList = new ArrayList<Report>();
 		
-		List<Division> divisionList = Division.cast(new Division().selectAll(conn));
-		for ( Division division : divisionList ) {
-			this.divisionList.add(new Div(division));
-		}
+		this.divisionList = makeDivisionList(conn, userId);
 		
 		List<DivisionGroup> groupList = DivisionGroup.cast(new DivisionGroup().selectAll(conn));
 		for ( DivisionGroup group : groupList ) {
@@ -49,6 +55,30 @@ public class SubscriptionResponse extends MessageResponse {
 		}
 	}
 
+	private List<Div> makeDivisionList(Connection conn, Integer userId) throws SQLException {
+		List<Div> divisionList = new ArrayList<Div>();
+		String fieldList = StringUtils.join(new String[] {
+				"division." + Division.DIVISION_ID, 
+				"division." + Division.DIVISION_NBR,
+				"division." + Division.DIVISION_CODE, 
+				"division." + Division.DESCRIPTION}, ",");
+		String sql = "select " + fieldList + "\n" + 
+				"from division_user\n" + 
+				"inner join division on division.division_id=division_user.division_id\n" + 
+				"where user_id=?\n" + 
+				"order by concat(division_nbr,'-',division_code)";
+		logger.log(Level.DEBUG, sql);
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, userId);
+		ResultSet rs = ps.executeQuery();
+		while ( rs.next() ) {
+			divisionList.add(new Div(rs));
+		}
+		rs.close();
+		return divisionList;
+	}
+
+	
 	public List<Div> getDivisionList() {
 		return divisionList;
 	}
@@ -145,11 +175,11 @@ public class SubscriptionResponse extends MessageResponse {
 		private String div;
 		private String description;
 		
-		public Div(Division division) {
+		public Div(ResultSet rs) throws SQLException {
 			super();
-			this.divisionId = division.getDivisionId();
-			this.div = division.getDivisionDisplay();
-			this.description = division.getDescription();
+			this.divisionId = rs.getInt(Division.DIVISION_ID);
+			this.div = String.valueOf(rs.getInt(Division.DIVISION_NBR)) + "-" + rs.getString(Division.DIVISION_CODE);
+			this.description = rs.getString(Division.DESCRIPTION);
 		}
 
 		public Integer getDivisionId() {

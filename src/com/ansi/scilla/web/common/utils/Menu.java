@@ -58,12 +58,13 @@ public enum Menu {
 	DIVISIONS(			"Divisions",			SETTINGS,	Permission.SYSADMIN_READ,	"divisionAdmin.html"),
 	USER_LOOKUP(		"User Lookup",			SETTINGS,	Permission.SYSADMIN_READ,	"userLookup.html"),
 	PERMISSIONS(		"Permissions",			SETTINGS,	Permission.SYSADMIN_READ,	"permissionGroup.html"),
+	REPORT_SUBSCRIPTION("Report Subscriptions", SETTINGS,   Permission.REPORT_SUBSCRIPTION_OVERRIDE, "reportSubscriptionAdmin.html"),
 	MOTD(               "Message of the Day",   SETTINGS,   Permission.SYSADMIN_WRITE,  "motd.html"),
 
 	
 	MY_ANSI("My ANSI", null, null,"#"),
 	MY_ACCOUNT(         "My Account",           MY_ANSI,    null,                       "myAccount.html"),
-	MY_REPORTS(         "Report Subscriptions", MY_ANSI,    null,                       "reportSubscription.html"),
+	MY_REPORTS(         "Report Subscriptions", MY_ANSI,    Permission.REPORT_SUBSCRIPTION_WRITE, "reportSubscription.html"),
 	LOGOFF(             "Logoff",               MY_ANSI,    null,                       "logoff.html"),
 	
 	;

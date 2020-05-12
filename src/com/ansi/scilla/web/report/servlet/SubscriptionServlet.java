@@ -10,8 +10,10 @@ import javax.servlet.http.HttpServletResponse;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
+import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
@@ -31,9 +33,9 @@ public class SubscriptionServlet extends AbstractServlet {
 		WebMessages messages = new WebMessages();
 		try {
 			conn = AppUtils.getDBCPConn();
-			AppUtils.validateSession(request); //, Permission.REPORTS);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.REPORT_SUBSCRIPTION_READ);
 			url = new AnsiURL(request, REALM, (String[])null, false);				
-			SubscriptionResponse data = new SubscriptionResponse(conn);
+			SubscriptionResponse data = new SubscriptionResponse(conn, sessionData.getUser().getUserId());
 			data.setWebMessages(messages);
 			super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {

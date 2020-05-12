@@ -28,12 +28,13 @@ public class ChangePassword extends ApplicationObject {
 		Connection conn = null;
 		String DB = "DEV";
 //		String DB = "PROD";
-		Integer userId = 65;
-		String newPassword = "XisaGoodPassword";
+		Integer userId = 74;
+		String newPassword = "password1";
 		Integer myUserId = 5;
 		Boolean save = true;
 		
 		try {
+			System.out.println("Working in " + DB);
 			if ( DB.equals("PROD")) {
 				conn = AppUtils.getProdConn();
 			} else {
@@ -50,13 +51,17 @@ public class ChangePassword extends ApplicationObject {
 			rs.close();
 			if (save) {
 				java.sql.Date today = new java.sql.Date((new Date()).getTime());
-				psPut.setString(1,newPassword);
+				String encryptedPassword = AppUtils.encryptPassword(newPassword, userId);
+				psPut.setString(1,encryptedPassword);
 				psPut.setInt(2, myUserId);
 				psPut.setDate(3, today);
 				psPut.setInt(4, userId);
 				psPut.executeUpdate();
 				conn.commit();
 				System.out.println("Updated: " + newPassword);
+			} else {
+				conn.rollback();
+				System.out.println("Rolled back");
 			}
 		} catch ( Exception e) {
 			conn.rollback();
