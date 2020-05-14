@@ -7,11 +7,14 @@ import com.ansi.scilla.web.report.response.SubscriptionResponse;
 
 public class TestReportSubscription {
 
+	final int DCL = 5;
+	final int Terrence = 74;
+	
 	public void go() throws Exception {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDevConn();
-			SubscriptionResponse r = new SubscriptionResponse(conn);
+			SubscriptionResponse r = new SubscriptionResponse(conn, DCL);
 			String json = AppUtils.object2json(r);
 			System.out.println(json);
 		} finally {

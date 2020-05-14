@@ -5,17 +5,22 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Transformer;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.DivisionGroup;
 import com.ansi.scilla.common.exceptions.InvalidValueException;
+import com.ansi.scilla.common.organization.Div;
+import com.ansi.scilla.common.organization.Organization;
+import com.ansi.scilla.common.organization.OrganizationType;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.report.common.BatchReports;
 
@@ -37,32 +42,18 @@ public class SubscriptionResponse extends MessageResponse {
 		this.regionList = new ArrayList<Group>();
 		this.reportList = new ArrayList<Report>();
 		
-		this.divisionList = makeDivisionList(conn, userId);
-		
-		List<DivisionGroup> groupList = DivisionGroup.cast(new DivisionGroup().selectAll(conn));
-		for ( DivisionGroup group : groupList ) {
-			if ( group.getGroupType().equals(DivisionGroup.GroupType.COMPANY.name())) {
-				this.companyList.add(new Group(group));
-			} else if ( group.getGroupType().equals(DivisionGroup.GroupType.REGION.name())) {
-				this.regionList.add(new Group(group));
-			} else {
-				throw new InvalidValueException("Invalid division group type: " + group.getGroupType());
-			}
-		}
+		makeDivisionList(conn, userId);		
+		makeGroupLists(conn, divisionList);
 		
 		for ( BatchReports report : BatchReports.values() ) {
 			this.reportList.add(new Report(report));
 		}
+		Collections.sort(this.reportList);
 	}
 
-	private List<Div> makeDivisionList(Connection conn, Integer userId) throws SQLException {
-		List<Div> divisionList = new ArrayList<Div>();
-		String fieldList = StringUtils.join(new String[] {
-				"division." + Division.DIVISION_ID, 
-				"division." + Division.DIVISION_NBR,
-				"division." + Division.DIVISION_CODE, 
-				"division." + Division.DESCRIPTION}, ",");
-		String sql = "select " + fieldList + "\n" + 
+	private void makeDivisionList(Connection conn, Integer userId) throws SQLException {
+		
+		String sql = "select division.*\n" + 
 				"from division_user\n" + 
 				"inner join division on division.division_id=division_user.division_id\n" + 
 				"where user_id=?\n" + 
@@ -75,10 +66,44 @@ public class SubscriptionResponse extends MessageResponse {
 			divisionList.add(new Div(rs));
 		}
 		rs.close();
-		return divisionList;
 	}
 
 	
+	private void makeGroupLists(Connection conn, List<Div> divisionList) throws SQLException, InvalidValueException {
+		List<Integer> divIdList = (List<Integer>) CollectionUtils.collect(divisionList, new DivTransformer());
+//		logger.log(Level.DEBUG, divIdList);
+		HashMap<Integer, Organization> ansi = Organization.make(conn);
+		for ( Organization org : ansi.values() ) {
+			makeGroupLists(org, divIdList);
+		}
+		Collections.sort(this.companyList);
+		Collections.sort(this.regionList);
+	}
+	
+	private void makeGroupLists(Organization org, List<Integer> divIdList) throws InvalidValueException {
+		List<Integer> orgDivIdList = (List<Integer>)CollectionUtils.collect(org.getAllDivs(), new DivTransformer() );
+		if ( CollectionUtils.isSubCollection(orgDivIdList, divIdList) ) {
+			// check to see if user belongs to all divs in an organization
+
+			OrganizationType type = OrganizationType.valueOf(org.getType().toUpperCase());
+			if ( type.equals(OrganizationType.REGION) ) {
+				this.regionList.add(new Group(org));
+			} else if ( type.equals(OrganizationType.COMPANY) ) {
+				this.companyList.add(new Group(org));
+			} else {
+				throw new InvalidValueException("Unknown group type: " + type);
+			}
+		}
+
+		if ( org.getChildren() != null ) {
+			for ( Organization child : org.getChildren() ) {
+				makeGroupLists(child, divIdList);
+			}
+		}
+	}
+
+
+
 	public List<Div> getDivisionList() {
 		return divisionList;
 	}
@@ -111,7 +136,10 @@ public class SubscriptionResponse extends MessageResponse {
 		this.regionList = regionList;
 	}
 
-	public class Report extends ApplicationObject {
+	
+	
+	
+	public class Report extends ApplicationObject implements Comparable<Report> {
 
 		private static final long serialVersionUID = 1L;
 		private String reportId;
@@ -165,56 +193,27 @@ public class SubscriptionResponse extends MessageResponse {
 		public void setDivisionReport(Boolean divisionReport) {
 			this.divisionReport = divisionReport;
 		}
+		@Override
+		public int compareTo(Report o) {
+			return o.getCode().compareTo(this.getCode());
+		}
 		
 		
 	}
 	
-	public class Div extends ApplicationObject {
-		private static final long serialVersionUID = 1L;
-		private Integer divisionId;
-		private String div;
-		private String description;
-		
-		public Div(ResultSet rs) throws SQLException {
-			super();
-			this.divisionId = rs.getInt(Division.DIVISION_ID);
-			this.div = String.valueOf(rs.getInt(Division.DIVISION_NBR)) + "-" + rs.getString(Division.DIVISION_CODE);
-			this.description = rs.getString(Division.DESCRIPTION);
-		}
 
-		public Integer getDivisionId() {
-			return divisionId;
-		}
 
-		public void setDivisionId(Integer divisionId) {
-			this.divisionId = divisionId;
-		}
-
-		public String getDiv() {
-			return div;
-		}
-
-		public void setDiv(String div) {
-			this.div = div;
-		}
-
-		public String getDescription() {
-			return description;
-		}
-
-		public void setDescription(String description) {
-			this.description = description;
-		}
-		
-	}
-
-	public class Group extends ApplicationObject {
+	public class Group extends ApplicationObject implements Comparable<Group> {
 		private static final long serialVersionUID = 1L;
 		private Integer id;
 		private String name;
 		public Group(DivisionGroup group ) {
 			this.id = group.getGroupId();
 			this.name = group.getName();
+		}
+		public Group(Organization org) {
+			this.id = org.getGroupId();
+			this.name = org.getName();
 		}
 		public Integer getId() {
 			return id;
@@ -227,6 +226,20 @@ public class SubscriptionResponse extends MessageResponse {
 		}
 		public void setName(String name) {
 			this.name = name;
+		}
+		@Override
+		public int compareTo(Group o) {
+			return o.getName().compareTo(this.getName());
+		}
+		
+	}
+	
+	
+	public class DivTransformer implements Transformer<Div, Integer> {
+
+		@Override
+		public Integer transform(Div div) {
+			return div.getDivisionId();
 		}
 		
 	}
