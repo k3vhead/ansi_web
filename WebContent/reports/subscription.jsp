@@ -126,7 +126,7 @@
     				$.each($divisionList, function($divIdx, $division) {
     					$divTD = $("<td>");
     					$divTD.addClass("div-" + $division.divisionId);
-    					$divTD.append($division.div)
+    					$divTD.append($division.divisionDisplay)
     					$hdrRow.append($divTD);
     				});
         			$table.append($hdrRow);
