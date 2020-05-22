@@ -417,22 +417,22 @@
     			            { title: "Address", width:"20%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.address_name != null){return (row.address_name+"");}
     			            } },
-    			            { title: "Name", width:"20%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			            { title: "Name", width:"20%", searchable:true, searchFormat: "First Last Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
     			            	if(row.contact_name != null ){return row.contact_name;}
     			            } },
     			            { title: "Summary", width:"20%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.summary != null){return (row.summary+"");}
     			            } },
-    			            { title: "ANSI", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "ANSI", width:"10%", searchable:true, searchFormat: "First Last Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.ansi_contact != null){return (row.ansi_contact+"");}
     			            } },
-    			            { title: "Start", width:"12%", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "Start", width:"12%", searchable:true, searchFormat: "MM/dd/YYYY hh:mm", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.start_time != null){return (row.start_time+"");}
     			            } },
-    			            { title: "Type",  width:"7%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "Type",  width:"7%", searchable:true, searchFormat: "Type Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.contact_type != null){return (row.contact_type+"");}
     			            } },		
-    			            { title: "Xref",  width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "Xref",  width:"10%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.xref != null){return (row.xref+"");}
     			            } },
     			            { title: "<bean:message key="field.label.action" />", width:"5%", data: function ( row, type, set ) {	

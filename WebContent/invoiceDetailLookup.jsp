@@ -139,13 +139,13 @@
 				            { title: "<bean:message key="field.label.billToName" />", width:"12%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.bill_to_name != null){return (row.bill_to_name+"");}
 				            } },
-				            { title: "<bean:message key="field.label.invoiceDate" />", width:"4%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.invoiceDate" />", width:"4%", searchable:true, searchFormat: "MM/dd/YYYY", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.invoice_date != null){return (row.invoice_date+"");}
 				            } },
-				            { title: "Invoice PPC",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, data: function ( row, type, set ) {
+				            { title: "Invoice PPC",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
 				            	if(row.invoice_ppc != null){return (row.invoice_ppc.toFixed(2) +"");}
 				            } },
-				            { title: "<bean:message key="field.label.invoiceTax" />", width:"4%", searchable:true,  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.invoiceTax" />", width:"4%", searchable:true, searchFormat: "#.##", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.invoice_tax != null){return (row.invoice_tax.toFixed(2)+"");}
 				            } },
 				            { title: "Job Site",  "defaultContent": "<i>N/A</i>", width:"12%", searchable:true,  data: function ( row, type, set ) {
@@ -163,22 +163,22 @@
 				            { title: "Ticket<br />Status",  "defaultContent": "<i>N/A</i>", width:"2%", searchable:true, data: function ( row, type, set ) {
 				            	if(row.ticket_status != null){return ('<span class="tooltip">' + row.ticket_status + '<span class="tooltiptext">' + row.ticket_status_display + '</span></span>');}
 				            } },
-				            { title: "Completed",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, data: function ( row, type, set ) {
+				            { title: "Completed",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, searchFormat: "MM/dd/YYYY", data: function ( row, type, set ) {
 				            	if(row.completed_date != null){return (row.completed_date);}
 				            } },
-				            { title: "PPC",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, data: function ( row, type, set ) {
+				            { title: "PPC",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
 				            	if(row.ppc != null){return (row.ppc.toFixed(2));}
 				            } },
-				            { title: "Tax",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true,  data: function ( row, type, set ) {
+				            { title: "Tax",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, searchFormat: "#.##",  data: function ( row, type, set ) {
 				            	if(row.taxes != null){return (row.taxes.toFixed(2));}
 				            } },
-				            { title: "Total",  "defaultContent": "<i>N/A</i>",width:"4%", searchable:true,  data: function ( row, type, set ) {
+				            { title: "Total",  "defaultContent": "<i>N/A</i>",width:"4%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
 				            	if(row.total != null){return (row.total.toFixed(2));}
 				            } },
-				            { title: "Paid",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, data: function ( row, type, set ) {
+				            { title: "Paid",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
 				            	if(row.paid != null){return (row.paid.toFixed(2));}
 				            } },
-				            { title: "Due",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, data: function ( row, type, set ) {
+				            { title: "Due",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
 				            	if(row.due != null){return (row.due.toFixed(2));}
 				            } },
 				            { title: "<bean:message key="field.label.action" />", width:"2%", data: function ( row, type, set ) {
