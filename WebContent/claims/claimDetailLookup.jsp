@@ -116,7 +116,7 @@
     			            { title: "Claim Week", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.claim_week != null){return (row.claim_week+"");}
     			            } },
-    			            { title: "Work Date", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "MM/dd/YYYY", data: function ( row, type, set ) {	
+    			            { title: "Work Date", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "YYYY-MM-dd", data: function ( row, type, set ) {	
     			            	if(row.work_date != null){return (row.work_date+"");}
     			            } },
     			            { width:"12%", title: "Account", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
@@ -128,7 +128,7 @@
     			            { title: "Status", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.ticket_status != null){return ('<span class="tooltip">' + row.ticket_status + '<span class="tooltiptext">' + row.ticket_status_description + '</span></span>');}
     			            } },
-    			            { width:"8%", title: "Washer", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "Last Name, First Name", data: function ( row, type, set ) {	
+    			            { width:"8%", title: "Washer", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "Last, First Name", data: function ( row, type, set ) {	
     			            	if(row.washer_name != null){return (row.washer_name+"");}
     			            } },
     			            { title: "Total Volume" , "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {

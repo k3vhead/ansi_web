@@ -426,7 +426,7 @@
     			            { title: "ANSI", width:"10%", searchable:true, searchFormat: "First Last Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.ansi_contact != null){return (row.ansi_contact+"");}
     			            } },
-    			            { title: "Start", width:"12%", searchable:true, searchFormat: "MM/dd/YYYY hh:mm", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "Start", width:"12%", searchable:true, searchFormat: "YYYY-MM-dd", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.start_time != null){return (row.start_time+"");}
     			            } },
     			            { title: "Type",  width:"7%", searchable:true, searchFormat: "Type Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {

@@ -139,7 +139,7 @@
 				            { title: "<bean:message key="field.label.billToName" />", width:"12%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.bill_to_name != null){return (row.bill_to_name+"");}
 				            } },
-				            { title: "<bean:message key="field.label.invoiceDate" />", width:"4%", searchable:true, searchFormat: "MM/dd/YYYY", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.invoiceDate" />", width:"4%", searchable:true, searchFormat: "YYYY-MM-dd", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.invoice_date != null){return (row.invoice_date+"");}
 				            } },
 				            { title: "Invoice PPC",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
@@ -163,7 +163,7 @@
 				            { title: "Ticket<br />Status",  "defaultContent": "<i>N/A</i>", width:"2%", searchable:true, data: function ( row, type, set ) {
 				            	if(row.ticket_status != null){return ('<span class="tooltip">' + row.ticket_status + '<span class="tooltiptext">' + row.ticket_status_display + '</span></span>');}
 				            } },
-				            { title: "Completed",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, searchFormat: "MM/dd/YYYY", data: function ( row, type, set ) {
+				            { title: "Completed",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, searchFormat: "YYYY-MM-dd", data: function ( row, type, set ) {
 				            	if(row.completed_date != null){return (row.completed_date);}
 				            } },
 				            { title: "PPC",  "defaultContent": "<i>N/A</i>", width:"4%", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
