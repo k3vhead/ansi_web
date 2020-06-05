@@ -209,20 +209,62 @@
     </servlet-mapping>
     
     
-    
-   <servlet>
-        <servlet-name>ticketStatusLookup</servlet-name>
-        <servlet-class>com.ansi.scilla.web.claims.servlet.TicketStatusLookupServlet</servlet-class>
+    <servlet>
+        <servlet-name>documentLookup</servlet-name>
+        <servlet-class>com.ansi.scilla.web.document.servlet.DocumentLookupServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>ticketStatusLookup</servlet-name>
-        <url-pattern>/claims/ticketStatusLookup</url-pattern>
+        <servlet-name>documentLookup</servlet-name>
+        <url-pattern>/document/documentLookup</url-pattern>
     </servlet-mapping>
 
 
+    
+    
+   <servlet>
+        <servlet-name>documentUpload</servlet-name>
+        <servlet-class>com.ansi.scilla.web.document.servlet.DocumentUploadServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>documentUpload</servlet-name>
+        <url-pattern>/documentUpload/*</url-pattern>
+        <url-pattern>/documentUpload</url-pattern>
+    </servlet-mapping>
 
 
-    <servlet>
+	<servlet>
+        <servlet-name>documentValidate</servlet-name>
+        <servlet-class>com.ansi.scilla.web.document.servlet.DocumentValidateServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>documentValidate</servlet-name>
+        <url-pattern>/document/validate/*</url-pattern>
+    </servlet-mapping>
+    
+    
+   <servlet>
+        <servlet-name>documentView</servlet-name>
+        <servlet-class>com.ansi.scilla.web.document.servlet.DocumentViewServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>documentView</servlet-name>
+        <url-pattern>/document/view/*</url-pattern>
+    </servlet-mapping>
+
+    
+	<servlet>
+        <servlet-name>documentViewLookup</servlet-name>
+        <servlet-class>com.ansi.scilla.web.document.servlet.DocumentViewLookupServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>documentViewLookup</servlet-name>
+        <url-pattern>/document/viewLookup/*</url-pattern>
+    </servlet-mapping>
+
+    
+    
+   
+   <servlet>
         <servlet-name>claimDetailLookup</servlet-name>
         <servlet-class>com.ansi.scilla.web.claims.servlet.ClaimDetailLookupServlet</servlet-class>
     </servlet>
@@ -686,6 +728,17 @@
         <url-pattern>/quote/*</url-pattern>
     </servlet-mapping>
 
+
+	<servlet>
+		<servlet-name>quoteAutoComplete</servlet-name>
+		<servlet-class>com.ansi.scilla.web.quote.servlet.QuoteAutoComplete</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>quoteAutoComplete</servlet-name>
+		<url-pattern>/quoteAutoComplete</url-pattern>
+	</servlet-mapping>
+	
+	
 	<servlet>
         <servlet-name>quotePrint</servlet-name>
         <servlet-class>com.ansi.scilla.web.quote.servlet.QuotePrintServlet</servlet-class>
@@ -877,6 +930,18 @@
 	
 	
 	<servlet>
+        <servlet-name>ticketStatusLookup</servlet-name>
+        <servlet-class>com.ansi.scilla.web.claims.servlet.TicketStatusLookupServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ticketStatusLookup</servlet-name>
+        <url-pattern>/claims/ticketStatusLookup</url-pattern>
+    </servlet-mapping>
+
+
+
+
+    <servlet>
 		<servlet-name>ticketStatusReport</servlet-name>
 		<servlet-class>com.ansi.scilla.web.report.servlet.TicketStatusReportServlet</servlet-class>
 	</servlet>

@@ -7,8 +7,13 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.ansi.scilla.common.address.Country;
 import com.ansi.scilla.common.claims.WorkHoursType;
+import com.ansi.scilla.common.document.DocumentType;
 import com.ansi.scilla.common.employee.EmployeeHoursType;
 import com.ansi.scilla.common.invoice.InvoiceGrouping;
 import com.ansi.scilla.common.invoice.InvoiceStyle;
@@ -24,6 +29,8 @@ import com.ansi.scilla.web.report.common.ReportType;
 
 public class OptionsListResponse extends MessageResponse {
 	private static final long serialVersionUID = 1L;
+	private Logger logger;
+	
 	private List<JobFrequencyOption> jobFrequency;
 	private List<JobStatusOption> jobStatus;
 	private List<TicketStatusOption> ticketStatus;
@@ -36,8 +43,11 @@ public class OptionsListResponse extends MessageResponse {
 	private List<ReportTypeOption> reportType;
 	private List<WorkHoursTypeOption> workHoursType;
 	private List<ExpenseTypeOption> expenseType;
+	private List<DocumentTypeOption> documentType;
 
 	public OptionsListResponse(List<ResponseOption> options, SessionData sessionData) throws ClassNotFoundException, Exception {
+		this.logger = LogManager.getLogger(this.getClass());
+		
 		if ( options.contains(ResponseOption.JOB_FREQUENCY)) {
 			makeJobFrequencyList();
 		}
@@ -73,6 +83,9 @@ public class OptionsListResponse extends MessageResponse {
 		}
 		if ( options.contains(ResponseOption.EXPENSE_TYPE)) {
 			makeExpenseTypeList(sessionData);
+		}
+		if ( options.contains(ResponseOption.DOCUMENT_TYPE)) {
+			makeDocumentTypeList();
 		}
 	}
 
@@ -152,7 +165,7 @@ public class OptionsListResponse extends MessageResponse {
 	private void makeReportTypeList(SessionData sessionData) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException  {
 		this.reportType = new ArrayList<ReportTypeOption>();
 		for ( ReportType reportType : ReportType.values()) {
-			if ( sessionData.hasPermission(reportType.getPermission().name())) {
+			if ( sessionData != null && sessionData.hasPermission(reportType.getPermission().name())) {
 				String reportClassName = reportType.reportClassName();
 				Class<?> reportClass = Class.forName(reportClassName);
 				Field field = reportClass.getDeclaredField("REPORT_TITLE");
@@ -185,6 +198,15 @@ public class OptionsListResponse extends MessageResponse {
 
 	}
 	
+	private void makeDocumentTypeList() {
+		this.documentType = new ArrayList<DocumentTypeOption>();
+		for ( DocumentType documentType : DocumentType.values()) {
+			this.documentType.add(new DocumentTypeOption(documentType));
+		}
+		Collections.sort(this.documentType);
+		
+	}
+
 	public List<JobFrequencyOption> getJobFrequency() {
 		return jobFrequency;
 	}
@@ -279,6 +301,14 @@ public class OptionsListResponse extends MessageResponse {
 
 	public void setExpenseType(List<ExpenseTypeOption> expenseType) {
 		this.expenseType = expenseType;
+	}
+
+	public List<DocumentTypeOption> getDocumentType() {
+		return documentType;
+	}
+
+	public void setDocumentType(List<DocumentTypeOption> documentType) {
+		this.documentType = documentType;
 	}
 
 

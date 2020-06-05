@@ -191,7 +191,16 @@ public enum ReportType {
 			new String[] {"divisionId", "startDate", "endDate"},
 			Permission.TICKET_READ,
 			"Ticket Status"
-		);
+		),
+	EXPIRING_DOCUMENT_REPORT(
+			ReportJsp.reportByStartEnd, 
+			"com.ansi.scilla.report.expiringDocumentReport.ExpiringDocumentReport",
+			"com.ansi.scilla.web.report.request.ValidateStartEnd", 
+			new String[] {"startDate", "endDate"},
+			Permission.DOCUMENTS_READ,
+			"Expiring Document"
+		),
+	;
 		
 	private final ReportJsp jsp;
 	private final String reportClassName;

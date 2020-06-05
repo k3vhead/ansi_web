@@ -72,7 +72,7 @@ public class QuoteTableServlet extends AbstractServlet {
 	    Connection conn = null;
 	    try {
 	    	conn = AppUtils.getDBCPConn();
-	    	SessionData sessionData = AppUtils.validateSession(request, Permission.QUOTE, PermissionLevel.PERMISSION_LEVEL_IS_READ);
+	    	SessionData sessionData = AppUtils.validateSession(request, Permission.QUOTE_READ);
 	    	SessionUser user = sessionData.getUser();
 
 	    	String term = "";

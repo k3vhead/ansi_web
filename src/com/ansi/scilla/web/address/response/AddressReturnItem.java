@@ -24,6 +24,7 @@ public class AddressReturnItem extends ApplicationObject {
 	private int invoiceBatchDefault;
 	private String invoiceTermsDefault;
 	private String ourVendorNbrDefault;
+	private int documentCount;
 
 	public AddressReturnItem(ResultSet rs) throws SQLException {
 		super();
@@ -39,6 +40,7 @@ public class AddressReturnItem extends ApplicationObject {
 		this.countryCode = rs.getString("country_code");
 		this.DT_RowId = rs.getInt("address_id") + "";
 		this.count = rs.getInt("count");
+		this.documentCount = rs.getInt("document_count");
 
 		this.invoiceStyleDefault = rs.getString("invoice_style_default");
 		this.invoiceGroupingDefault = rs.getString("invoice_grouping_default");
@@ -123,6 +125,14 @@ public class AddressReturnItem extends ApplicationObject {
 
 	public int getCount() {
 		return count;
+	}
+
+	public int getDocumentCount() {
+		return documentCount;
+	}
+
+	public void setDocumentCount(int documentCount) {
+		this.documentCount = documentCount;
 	}
 
 	public void setCount(int count) {
