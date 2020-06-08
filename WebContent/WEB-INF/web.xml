@@ -788,6 +788,16 @@
 		<url-pattern>/reports/subscription</url-pattern>
 	</servlet-mapping>
 	
+
+
+	<servlet>
+		<servlet-name>reportSubscriptionCSV</servlet-name>
+		<servlet-class>com.ansi.scilla.web.report.servlet.ReportSubscriptionCSVServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>reportSubscriptionCSV</servlet-name>
+		<url-pattern>/reports/subscriptionCSV</url-pattern>
+	</servlet-mapping>
 	
 	
 	
