@@ -44,6 +44,13 @@
         		width:100%;
         		display:none;
         	}
+        	#thinking {
+        		width:100%;
+        	}
+        	.thinking {
+        		width:100%;
+        		display:none;
+        	}
         	#delete-modal {
         		display:none;
         	}
@@ -117,6 +124,8 @@
         			console.log("makeDivisionTable");
         			var $table = $("<table>");
         			var $hdrRow = $("<tr>");
+        			var $allTR =$("<tr>");
+        			
         		//	var $hdrColumn = $("<td>");
         			//$allTD=$("<table>").closest("td").index();
         			//$allTR=$("<table>").closest("tr").index();
@@ -139,35 +148,35 @@
         					//	$(".report-" + $report.reportId).css('background-color','#F9F9F9');
         					//	$(".div-"+$division.divisionId).css('background-color','#F9F9F9');
         						$($allRow).css('background-color','#F9F9F9');
-            					$($hdrRow).css('background-color','#F9F9F9');
+            				//	$($hdrRow).css('background-color','#F9F9F9');
         					});
         					$($selector).mouseout(function($event) {
         					//	$(".report-" + $report.reportId).css('background-color','transparent');
         					//	$(".div-"+$division.divisionId).css('background-color','transparent');
         						$($allRow).css('background-color','transparent');
-            					$($hdrRow).css('background-color','transparent');
+            				//	$($hdrRow).css('background-color','transparent');
         					});
         		//		});
         		//	});    		
         			
-        			var $allLabel = $("<td>").append("All"); //column label
+        			var $allLabel = $("<td>").append("All"); //row label
         			var $allTD = $("<td>").append($('<input type="checkbox" class="all-division-report-selector" />')); //corner select all button
 //        		  
 					//highlight division column alone
 	    					$.each( $reportList, function($reportIdx, $report) {        				
 	                			//	$.each($divisionList, function($divIdx, $division) {
-	                					$selector = $allTD;
+	                					$selector = $allRow;
 	                					$($selector).mouseover(function($event) {
 	                			//			$(".report-" + $report.reportId).css('background-color','#F9F9F9');
 	                			//			$(".div-"+$division.divisionId).css('background-color','#F9F9F9');
 	                						$($reportTD).css('background-color','#F9F9F9');
-	                    					$($allTD).css('background-color','#F9F9F9');
+	                    					$($allRow).css('background-color','#F9F9F9');
 	                					});
 	                					$($selector).mouseout(function($event) {
 	                				//		$(".report-" + $report.reportId).css('background-color','transparent');
 	                				//		$(".div-"+$division.divisionId).css('background-color','transparent');
 	                						$($reportTD).css('background-color','transparent');
-	                    					$($allTD).css('background-color','transparent');
+	                    					$($allRow).css('background-color','transparent');
 	                					});
 	                			//	});
 	                			});   
@@ -195,7 +204,7 @@
         			
         			$allRow.append($allLabel); //places column label into allRow
         			$allRow.append($allTD); //places allTD checkbox into allRow
-					$allRow.addClass($allTD);
+					$allRow.addClass($allRow);
         			
         			
 
@@ -234,25 +243,26 @@
         				$reportTD = $("<td>"); //places report into td
     					$reportTD.append($report.description); //assigns description to report in td
     					$tr.append($reportTD); //adds reportTD to tr
+    					$allTD = $("<td>");
     					$allTD = $($('<input type="checkbox" class="all-division-selector" data-report="'+$report.reportId+'" />'));
     					$allTD.append("All");
-    					$allTD.addClass($tr);
+    					$allTD.addClass($allTD);
     					$tr.append($allTD);
     					
     					//highlight row column alone
     					//$.each( $reportList, function($reportIdx, $report) {        				
                 			//	$.each($divisionList, function($divIdx, $division) {
-                					$selector = $tr;
+                					$selector = $allTD;
                 					$($selector).mouseover(function($event) {
                 			//			$(".report-" + $report.reportId).css('background-color','#F9F9F9');
                 			//			$(".div-"+$division.divisionId).css('background-color','#F9F9F9');
-                						$($tr).css('background-color','#F9F9F9');
+                						$($allTD).css('background-color','#F9F9F9');
                     					$($reportTD).css('background-color','#F9F9F9');
                 					});
                 					$($selector).mouseout(function($event) {
                 				//		$(".report-" + $report.reportId).css('background-color','transparent');
                 				//		$(".div-"+$division.divisionId).css('background-color','transparent');
-                						$($tr).css('background-color','transparent');
+                						$($allTD).css('background-color','transparent');
                     					$($reportTD).css('background-color','transparent');
                 					});
                 			//	});
@@ -370,9 +380,11 @@
         			console.log("makeExecutiveTable");
         			var $table = $("<table>");
         			var $hdrRow = $("<tr>");
+        			//var $allColumn = $("<td>");
         		//	$hdrRow.append( $("<tr>").append("All") );    
         		//	$hdrRow.append( $("<td>").append($('<input type="checkbox" class="all-selector"/>')) );   
-        		//	$table.append($hdrRow);
+        			$table.append($hdrRow);
+        			
 
         		
         		
@@ -382,10 +394,10 @@
         			var $allTD = $("<td>").append($('<input type="checkbox" class="all-selector" />'));
         	
         			$allRow.append($allLabel); 
-        				
         			$allRow.append($allTD);
-					
+        			$allRow.addClass($allRow);
         			$table.append($allRow);
+        			
         			
         			$.each( $reportList, function($reportIdx, $report) {
         				if ( $report["executiveReport"] == true ) {
@@ -394,14 +406,16 @@
 	        				$reportTD = $("<td>");
 	    					$reportTD.append($report.description)
 	    					$tr.append($reportTD);
-        					$td = $("<td>");
-        					$allTD = $('<input type="checkbox" class="all-selector" data-report="'+$selector+ '-' +$report.reportId+'" />');
+        				//	$td = $("<td>");
+        					$allTD = $('<input type="checkbox" class="all" data-report="'+$selector+ '-' +$report.reportId+'" />');
         					//$allTD = 
         					$allTD.append("All");
         				//	$tr.append($('<input type="checkbox" class="all-selector" data-report="'+$selector+ '-' +$report.reportId+'" />'));
         					$tr.append($('<input type="checkbox" class="executive-selector" data-report="'+$report.reportId+'" />'));
         					$tr.append($allTD);
+        					//$table.append($allTD)
 	        				$table.append($tr);	        				
+        				
         				}
         			});
         			
@@ -493,19 +507,24 @@
         			$hdrRow.append($("<td>"));  // blank box in the corner
         			$hdrRow.append( $("<td>").append("All"));
     				$.each($companyList, function($companyIdx, $company) {
-    					$hdrRow.append($("<td>").append($company.name));
+    					$companyTD=$("<td>");
+    					$companyTD.addClass("company-" + $company.id);
+    					$companyTD.append($company.name);
+    					$hdrRow.append($companyTD);
+    				//	$hdrRow.append($("<td>").append($company.name));
     				});
         			$table.append($hdrRow);
         			
-        			var $allRow = $("<tr>");
+        			var $allRow = $("<tr>").append($('<input class="all" />'));
         			var $allLabel = $("<td>").append("All");
         			var $allTD = $("<td>").append($('<input type="checkbox" class="groupTable-all-company-report-selector" />'));
         			$allRow.append($allLabel);
         			$allRow.append($allTD);	
+        			$allRow.addClass($allTD);
         			
         			$.each($companyList, function($companyIdx, $company) {
     					$companyTD=$("<td>");
-    					$companyTD.addClass("#destination company-" + $company.id);
+    					$companyTD.addClass("company-" + $company.id);
     					$companyTD.append($('<input type="checkbox" class="groupTable-all-report-selector" data-company="'+$company.id+'"/>'));
     					$allRow.append($companyTD);            			
         			
@@ -521,73 +540,53 @@
 	    					$tr.append($reportTD);
 	    					$allTD = $($('<input type="checkbox" class="groupTable-all-company-selector" data-report="'+$report.reportId+'" />'));
 	    					$allTD.append("All");
+	    					$allTD.addClass($tr);
 	    					$tr.append($allTD);
 	    					$.each($companyList, function($companyIdx, $company) {
 	        					//$td = $("<td>");
 	        					$companyTD=$("<td>");
-	        					$companyTD.addClass("#destination company-" + $company.id);
+	        					$companyTD.addClass("company-" + $company.id);
 	        					$companyTD.append($('<input type="checkbox" name="'+$report.reportId+"-" + $company.id +'" class="groupTable-report-selector" data-report="'+$report.reportId+'" data-company="'+$company.id+'"/>'));
 	        					$tr.append($companyTD);
 	        				});
 	        				$table.append($tr);
         				}
-        			});
-        			
-        			
-        			$.each( $reportList, function($reportIdx, $report) {        				
-        				$.each($companyList, function($companyIdx, $company) {
-        					$selector = ".report-" + $report.reportId + " .company-"+$company.id;
-        					$($selector).mouseover(function($event) {
-        						$(".report-" + $report.reportId).css('background-color','#F9F9F9');
-        						$(".company-" + $company.id).css('background-color','#F9F9F9');
-        						$($allTD).css('background-color','#F9F9F9');
-        					});
-        					$($selector).mouseout(function($event) {
-        						$(".report-" + $report.reportId).css('background-color','transparent');
-        						$(".company-" + $company.id).css('background-color','transparent');
-        						$($allTD).css('background-color','transparent');
-        					});
-        				});
-        			});       
+        			});    
         			
         			
         			
-        			
-        			
-        			
-        			/*
             			$($destination).html("");
             			$($destination).append($table);            			
             			
             			$.each( $reportList, function($reportIdx, $report) {        				
             				$.each($companyList, function($companyIdx, $company) {
-            					$selector = ".report-" + $report.reportId + ".destination .company-"+$company.id;
+            					$selector = ".report-" + $report.reportId + " .company-" + $company.id;
             					$($selector).mouseover(function($event) {
             						$(".report-" + $report.reportId).css('background-color','#F9F9F9');
             						$(".company-" + $company.id).css('background-color','#F9F9F9');
-            						$($allTD).css('background-color','#F9F9F9');
+            						$($allRow).css('background-color','#F9F9F9');
             					});
             					$($selector).mouseout(function($event) {
             						$(".report-" + $report.reportId).css('background-color','transparent');
             						$(".company-" + $company.id).css('background-color','transparent');
-            						$($allTD).css('background-color','transparent');
+            						$($allRow).css('background-color','transparent');
             					});
             				});
             			});  
 
-    					$("#destination .report-selector").click(function($event) {
+    					$($destination+" .groupTable-report-selector").click(function($event) {
     						var $reportId = $(this).attr("data-report");
     						var $id = $(this).attr("data-company");
     						var $subscribe = $(this).prop("checked");
     						REPORT_SUBSCRIPTION.doSubscription($reportId, $id, $subscribe);
     					}); 
             			
-    					$("#destination .all-report-selector").click(function($event) {
+    					$($destination+" .groupTable-all-report-selector").click(function($event) {
     						var $id = $(this).attr("data-company");
     						var $subscribe = $(this).prop("checked");
     						console.log("all for " + $id + " " + $subscribe);
     						$.each( REPORT_SUBSCRIPTION.reportList, function($index, $report) {
-    							$selector = '#destination input[name="'+$report.reportId+'-'+ $id+'"]';
+    							$selector = $destination+ ' input[name="'+$report.reportId+'-'+ $id+'"]';
     							$subscribed = $($selector).prop("checked");
     							if ( $subscribe != $subscribed ) {
     								$($selector).prop("checked", $subscribe);
@@ -595,12 +594,12 @@
     							}
     						});        				
     					});      	
-            			$("#destination .all-company-selector").click(function($event) {
+            			$($destination+" .groupTable-all-company-selector").click(function($event) {
             				var $reportId = $(this).attr("data-report");
             				var $subscribe = $(this).prop("checked");
             				console.log("all for " + $reportId + " " + $subscribe);
-            				$.each( REPORT_SUBSCRIPTION.companyList, function($companyIdx, $company) {
-            					$selector = '#destination input[name="'+$reportId+'-'+ $company.id+'"]';
+            				$.each( REPORT_SUBSCRIPTION.companyList, function($index, $company) {
+            					$selector = $destination+ ' input[name="'+$reportId+'-'+ $company.id+'"]';
             					$subscribed = $($selector).prop("checked");
             					if ( $subscribe != $subscribed ) {
             						$($selector).prop("checked", $subscribe);
@@ -608,14 +607,14 @@
             					}
             				});        				
             			});        		
-						$("#destination .all-company-report-selector").click(function($event) {
+						$($destination+" .groupTable-all-company-report-selector").click(function($event) {
 							var $subscribe = $(this).prop("checked");
 							console.log("all for all " + $subscribe);
-							$("#destination .all-company-selector").prop("checked", $subscribe);
-							$("#destination .all-report-selector").prop("checked", $subscribe);
+							$($destination+" .groupTable-all-company-selector").prop("checked", $subscribe);
+							$($destination+" .groupTable-all-report-selector").prop("checked", $subscribe);
 							$.each( $reportList, function($reportIdx, $report) {        				
 			    				$.each($companyList, function($companyIdx, $company) {
-			    					$selector = '#destination input[name="'+$report.reportId+'-'+ $company.id+'"]';
+			    					$selector =$destination+ ' input[name="'+$report.reportId+'-'+ $company.id+'"]';
 			    					$subscribed = $($selector).prop("checked");
 			    					if ( $subscribe != $subscribed ) {
 			    						$($selector).prop("checked", $subscribe);
@@ -623,149 +622,8 @@
 			    					}
 			    				});
 			    			});
-		    			});    */
-						
-						
-	        			if ($destination == "#company-selection-container") {
-	            			$("#company-selection-container").html("");
-	            			$("#company-selection-container").append($table);            			
-	            			
-	            			$.each( $reportList, function($reportIdx, $report) {        				
-	            				$.each($companyList, function($companyIdx, $company) {
-	            					$selector = ".report-" + $report.reportId + ".destination .company-"+$company.id;
-	            					$($selector).mouseover(function($event) {
-	            						$(".report-" + $report.reportId).css('background-color','#F9F9F9');
-	            						$(".company-" + $company.id).css('background-color','#F9F9F9');
-	            						$($allTD).css('background-color','#F9F9F9');
-	            					});
-	            					$($selector).mouseout(function($event) {
-	            						$(".report-" + $report.reportId).css('background-color','transparent');
-	            						$(".company-" + $company.id).css('background-color','transparent');
-	            						$($allTD).css('background-color','transparent');
-	            					});
-	            				});
-	            			});  
-
-	    					$("#company-selection-container .groupTable-report-selector").click(function($event) {
-	    						var $reportId = $(this).attr("data-report");
-	    						var $id = $(this).attr("data-company");
-	    						var $subscribe = $(this).prop("checked");
-	    						REPORT_SUBSCRIPTION.doSubscription($reportId, $id, $subscribe);
-	    					}); 
-	            			
-	    					$("#company-selection-container .groupTable-all-report-selector").click(function($event) {
-	    						var $id = $(this).attr("data-company");
-	    						var $subscribe = $(this).prop("checked");
-	    						console.log("all for " + $id + " " + $subscribe);
-	    						$.each( REPORT_SUBSCRIPTION.reportList, function($index, $report) {
-	    							$selector = '#company-selection-container input[name="'+$report.reportId+'-'+ $id+'"]';
-	    							$subscribed = $($selector).prop("checked");
-	    							if ( $subscribe != $subscribed ) {
-	    								$($selector).prop("checked", $subscribe);
-	    								REPORT_SUBSCRIPTION.doSubscription($report.reportId, $id, $subscribe);	
-	    							}
-	    						});        				
-	    					});      	
-	            			$("#company-selection-container .groupTable-all-company-selector").click(function($event) {
-	            				var $reportId = $(this).attr("data-report");
-	            				var $subscribe = $(this).prop("checked");
-	            				console.log("all for " + $reportId + " " + $subscribe);
-	            				$.each( REPORT_SUBSCRIPTION.companyList, function($companyIdx, $company) {
-	            					$selector = '#company-selection-container input[name="'+$reportId+'-'+ $company.id+'"]';
-	            					$subscribed = $($selector).prop("checked");
-	            					if ( $subscribe != $subscribed ) {
-	            						$($selector).prop("checked", $subscribe);
-	            						REPORT_SUBSCRIPTION.doSubscription($reportId, $company.id, $subscribe);	
-	            					}
-	            				});        				
-	            			});        		
-							$("#company-selection-container .groupTable-all-company-report-selector").click(function($event) {
-								var $subscribe = $(this).prop("checked");
-								console.log("all for all " + $subscribe);
-								$("#company-selection-container .groupTable-all-company-selector").prop("checked", $subscribe);
-								$("#company-selection-container .groupTable-all-report-selector").prop("checked", $subscribe);
-								$.each( $reportList, function($reportIdx, $report) {        				
-				    				$.each($companyList, function($companyIdx, $company) {
-				    					$selector = '#company-selection-container  input[name="'+$report.reportId+'-'+ $company.id+'"]';
-				    					$subscribed = $($selector).prop("checked");
-				    					if ( $subscribe != $subscribed ) {
-				    						$($selector).prop("checked", $subscribe);
-				    						REPORT_SUBSCRIPTION.doSubscription($report.reportId, $company.id, $subscribe);	
-				    					}
-				    				});
-				    			});
-			    			});    
-							
-	        			} else if ($destination == "#region-selection-container") {
-	            			$("#region-selection-container").html("");
-	            			$("#region-selection-container").append($table);
-	            			            			
-	            			$.each( $reportList, function($reportIdx, $report) {        				
-	            				$.each($companyList, function($companyIdx, $company) {
-	            					$selector = ".report-" + $report.reportId + ".destination .company-"+$company.id;
-	            					$($selector).mouseover(function($event) {
-	            						$(".report-" + $report.reportId).css('background-color','#F9F9F9');
-	            						$(".company-" + $company.id).css('background-color','#F9F9F9');
-	            						$($allTD).css('background-color','#F9F9F9');
-	            					});
-	            					$($selector).mouseout(function($event) {
-	            						$(".report-" + $report.reportId).css('background-color','transparent');
-	            						$(".company-" + $company.id).css('background-color','transparent');
-	            						$($allTD).css('background-color','transparent');
-	            					});
-	            				});
-	            			});  
-	            			
-	    					$("#region-selection-container .groupTable-report-selector").click(function($event) {
-	    						var $reportId = $(this).attr("data-report");
-	    						var $id = $(this).attr("data-company");
-	    						var $subscribe = $(this).prop("checked");
-	    						REPORT_SUBSCRIPTION.doSubscription($reportId, $id, $subscribe);
-	    					});
-	    					
-	    					$("#region-selection-container .groupTable-all-report-selector").click(function($event) {
-	    						var $id = $(this).attr("data-company");
-	    						var $subscribe = $(this).prop("checked");
-	    						console.log("all for " + $id + " " + $subscribe);
-	    						$.each( REPORT_SUBSCRIPTION.reportList, function($index, $report) {
-	    							$selector = '#region-selection-container input[name="'+$report.reportId+'-'+ $id+'"]';
-	    							$subscribed = $($selector).prop("checked");
-	    							if ( $subscribe != $subscribed ) {
-	    								$($selector).prop("checked", $subscribe);
-	    								REPORT_SUBSCRIPTION.doSubscription($report.reportId, $id, $subscribe);		
-	    							}
-	    						});        				
-	    					});
-	            			$("#region-selection-container .groupTable-all-company-selector").click(function($event) {
-	            				var $reportId = $(this).attr("data-report");
-	            				var $subscribe = $(this).prop("checked");
-	            				console.log("all for " + $reportId + " " + $subscribe);
-	            				$.each( REPORT_SUBSCRIPTION.companyList, function($companyIdx, $company) {
-	            					$selector = '#company-selection-container input[name="'+$reportId+'-'+ $company.id+'"]';
-	            					$subscribed = $($selector).prop("checked");
-	            					if ( $subscribe != $subscribed ) {
-	            						$($selector).prop("checked", $subscribe);
-	            						REPORT_SUBSCRIPTION.doSubscription($reportId, $company.id, $subscribe);	
-	            					}
-	            				});        				
-	            			});        
-	    					$("#region-selection-container .groupTable-all-company-report-selector").click(function($event) {
-	    						var $subscribe = $(this).prop("checked");
-	    						console.log("all for all " + $subscribe);
-	    						$("#region-selection-container .groupTable-all-company-selector").prop("checked", $subscribe);
-	    						$("#region-selection-container .groupTable-all-report-selector").prop("checked", $subscribe);
-	    						$.each( $reportList, function($reportIdx, $report) {        				
-	    							$.each($companyList, function($companyidx, $company) {
-	    								$selector = '#region-selection-container  input[name="'+$report.reportId+'-'+ $company.id+'"]';
-	    								$subscribed = $($selector).prop("checked");
-	    								if ( $subscribe != $subscribed ) {
-	    									$($selector).prop("checked", $subscribe);
-	    									REPORT_SUBSCRIPTION.doSubscription($report.reportId, $company.id, $subscribe);	
-	    								}
-	    							});
-	    						});       	
-						}); 
-	        			} 
+		    			});    
+	        			 
         			
         
         			$.each( $("#selection-menu-container input[name='subscription-selector']"), function($index, $value) {
@@ -797,6 +655,7 @@
 								REPORT_SUBSCRIPTION.makeGroupTable($data.data.reportList, $data.data.companyList, 'summaryReport', "#company-selection-container");
 								REPORT_SUBSCRIPTION.makeGroupTable($data.data.reportList, $data.data.regionList, 'summaryReport', "#region-selection-container");
 								REPORT_SUBSCRIPTION.makeExecutiveTable($data.data.reportList);
+			        			$("#thinking").hide();
 							},
 							403: function($data) {
 								$("#globalMsg").html("Session Timeout. Log in and try again").show();
@@ -843,6 +702,7 @@
     
    <tiles:put name="content" type="string">
     	<h1><bean:message key="page.label.reportSubscription" /></h1>
+    	<div id="thinking"><webthing:thinking></webthing:thinking></div>
     	    	
     	<div id="selection-menu-container">
     		Subscribe to:<br />
@@ -862,26 +722,24 @@
     		<input type="radio" name="subscription-selector" value="executive" /> Executive Reports<br />
     		</ansi:hasPermission>
     		
-				<webthing:thinking></webthing:thinking>
+    		<ansi:hasPermission permissionRequired="REPORT_SUBSCRIPTION_READ">
+    		<a href="reports/subscriptionCSV"><webthing:csv>Subscriptions</webthing:csv></a>
+    		</ansi:hasPermission>
+    		
     	</div>
-    	
     	
     	<div id="subscription-container">
     		
 			<div id="division-selection-container" class="selection-container">
-				<webthing:thinking></webthing:thinking>
 			</div>
 	     
 	     	<div id="region-selection-container" class="selection-container">
-	     		<webthing:thinking></webthing:thinking>
 	     	</div>
 	     	
 	     	<div id="company-selection-container" class="selection-container">
-	     		<webthing:thinking></webthing:thinking>
 	     	</div>
 	    
 	    	<div id="executive-selection-container" class="selection-container">
-	    		<webthing:thinking></webthing:thinking>
 	    	</div>
 	    	
 	    	<webthing:scrolltop />
