@@ -40,6 +40,7 @@ public class DocumentLookupServlet extends AbstractLookupServlet {
 		super((Permission)null);
 		cols = new String[] { 
 				DOCUMENT_ID,
+				XREF_TYPE,
 				DESCRIPTION,
 				DOCUMENT_DATE,
 				EXPIRATION_DATE,				
