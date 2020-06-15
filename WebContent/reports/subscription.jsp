@@ -124,20 +124,16 @@
         			console.log("makeDivisionTable");
         			var $table = $("<table>");
         			var $hdrRow = $("<tr>");
-        			var $allTR =$("<tr>");
         			
-        		//	var $hdrColumn = $("<td>");
-        			//$allTD=$("<table>").closest("td").index();
-        			//$allTR=$("<table>").closest("tr").index();
         			$hdrRow.append($("<td>"));  // blank box in the corner
-        			$hdrRow.append($("<td>").append("All")); //row label
+        			$hdrRow.append($('<td class ="hdr">').append("All")); //row label
     				$.each($divisionList, function($divIdx, $division) {
     					$divTD = $("<td>"); //separates divisions into columns
     					$divTD.addClass("div-" + $division.divisionId);
     					$divTD.append($division.divisionDisplay) //adds display value to divTD
     					$hdrRow.append($divTD); //places divTD columns into hdrRow
     				});
-        			$hdrRow.addClass($allLabel);
+        		//	$hdrRow.addClass($allLabel);
         			$table.append($hdrRow);
         			
         			var $allRow = $("<tr>");  //creates allRow columns  	
@@ -148,20 +144,21 @@
         					//	$(".report-" + $report.reportId).css('background-color','#F9F9F9');
         					//	$(".div-"+$division.divisionId).css('background-color','#F9F9F9');
         						$($allRow).css('background-color','#F9F9F9');
-            				//	$($hdrRow).css('background-color','#F9F9F9');
+            					$($allLabel).css('background-color','#F9F9F9');
         					});
         					$($selector).mouseout(function($event) {
         					//	$(".report-" + $report.reportId).css('background-color','transparent');
         					//	$(".div-"+$division.divisionId).css('background-color','transparent');
         						$($allRow).css('background-color','transparent');
-            				//	$($hdrRow).css('background-color','transparent');
+            					$($allLabel).css('background-color','transparent');
         					});
         		//		});
         		//	});    		
         			
         			var $allLabel = $("<td>").append("All"); //row label
         			var $allTD = $("<td>").append($('<input type="checkbox" class="all-division-report-selector" />')); //corner select all button
-//        		  
+        			
+       		/*  	//	$allTD.css('background-color','#F9F9F9');
 					//highlight division column alone
 	    					$.each( $reportList, function($reportIdx, $report) {        				
 	                			//	$.each($divisionList, function($divIdx, $division) {
@@ -179,27 +176,31 @@
 	                    					$($allRow).css('background-color','transparent');
 	                					});
 	                			//	});
-	                			});   
+	                			});   */
 
         			
         			//hilghlight all-all selections
-				/*	$.each( $reportList, function($reportIdx, $report) {        				
+					$.each( $reportList, function($reportIdx, $report) {        				
             				$.each($divisionList, function($divIdx, $division) {
             					$selector = $allTD;
             					$($selector).mouseover(function($event) {
             						$(".report-" + $report.reportId).css('background-color','#F9F9F9');
             						$(".div-"+$division.divisionId).css('background-color','#F9F9F9');
-            						//$($allLabel).css('background-color','#F9F9F9');
-                				//	$($allTR).css('background-color','#F9F9F9');
+            						$($allLabel).css('background-color','#F9F9F9');
+                					$($allTD).css('background-color','#F9F9F9');
+            					//	$(".all").css('background-color','#F9F9F9');
+                					$(".hdr").css('background-color','#F9F9F9');
             					});
             					$($selector).mouseout(function($event) {
             						$(".report-" + $report.reportId).css('background-color','transparent');
             						$(".div-"+$division.divisionId).css('background-color','transparent');
-            						//$($allLabel).css('background-color','transparent');
-                				//	$($allTR).css('background-color','transparent');
+            						$($allLabel).css('background-color','transparent');
+                					$($allTD).css('background-color','transparent');
+            					//	$(".all").css('background-color','transparent');
+                					$(".hdr").css('background-color','transparent');
             					});
             				});
-            			});   */
+            			});   
         			
         			
         			$allRow.append($allLabel); //places column label into allRow
@@ -213,25 +214,17 @@
     					$divTD.addClass("div-" + $division.divisionId);
     					$divTD.append($('<input type="checkbox" class="all-report-selector" data-division="'+$division.divisionId+'" />' )); //selects all reports in a division
 
-    					//highlight division column alone
-    					//$.each( $reportList, function($reportIdx, $report) {        				
-                			//	$.each($divisionList, function($divIdx, $division) {
-                					$selector = $divTD;
-                					$($selector).mouseover(function($event) {
-                			//			$(".report-" + $report.reportId).css('background-color','#F9F9F9');
-                						$(".div-"+$division.divisionId).css('background-color','#F9F9F9');
-                						$($divTD).css('background-color','#F9F9F9');
-                    		//			$($allTR).css('background-color','#F9F9F9');
-                					});
-                					$($selector).mouseout(function($event) {
-                				//		$(".report-" + $report.reportId).css('background-color','transparent');
-                						$(".div-"+$division.divisionId).css('background-color','transparent');
-                						$($divTD).css('background-color','transparent');
-                    			//		$($allTR).css('background-color','transparent');
-                					});
-                			//	});
-                		//	});   
-    					
+	   					//highlight division column alone
+           					$selector = $divTD;
+           					$($selector).mouseover(function($event) {
+           						$(".div-"+$division.divisionId).css('background-color','#F9F9F9');
+           						$($divTD).css('background-color','#F9F9F9');
+           					});
+           					$($selector).mouseout(function($event) {
+           						$(".div-"+$division.divisionId).css('background-color','transparent');
+           						$($divTD).css('background-color','transparent');
+           					});
+  					
     					
     					$allRow.append($divTD); //assigns divTD column to all row buttons
     				});
@@ -243,38 +236,38 @@
         				$reportTD = $("<td>"); //places report into td
     					$reportTD.append($report.description); //assigns description to report in td
     					$tr.append($reportTD); //adds reportTD to tr
-    					$allTD = $("<td>");
-    					$allTD = $($('<input type="checkbox" class="all-division-selector" data-report="'+$report.reportId+'" />'));
-    					$allTD.append("All");
-    					$allTD.addClass($allTD);
-    					$tr.append($allTD);
     					
-    					//highlight row column alone
-    					//$.each( $reportList, function($reportIdx, $report) {        				
-                			//	$.each($divisionList, function($divIdx, $division) {
-                					$selector = $allTD;
-                					$($selector).mouseover(function($event) {
-                			//			$(".report-" + $report.reportId).css('background-color','#F9F9F9');
-                			//			$(".div-"+$division.divisionId).css('background-color','#F9F9F9');
-                						$($allTD).css('background-color','#F9F9F9');
-                    					$($reportTD).css('background-color','#F9F9F9');
-                					});
-                					$($selector).mouseout(function($event) {
-                				//		$(".report-" + $report.reportId).css('background-color','transparent');
-                				//		$(".div-"+$division.divisionId).css('background-color','transparent');
-                						$($allTD).css('background-color','transparent');
-                    					$($reportTD).css('background-color','transparent');
-                					});
-                			//	});
-                		//	});   
+
+            			$allColumn = $('<td class="all">');
+    					$allColumn.append($('<input type="checkbox" class="all-division-selector" data-report="'+$report.reportId+'" />'));
+    				
+    					//highlights all column
+        				$selector = $allColumn;
+    					$($selector).mouseover(function($event) {    			
+    						$($allTD).css('background-color','#F9F9F9');
+    						$(".all").css('background-color','#F9F9F9');
+        					$(".hdr").css('background-color','#F9F9F9');
+    					});
+    					$($selector).mouseout(function($event) {
+    						$($allTD).css('background-color','transparent');
+    						$(".all").css('background-color','transparent');
+        					$(".hdr").css('background-color','transparent');
+    					});		
+            		
+    					$tr.append($allColumn);
+    					
+    					
         				$.each($divisionList, function($divIdx, $division) {
         					$divTD = $("<td>");
         					$divTD.addClass("div-" + $division.divisionId);
         					$divTD.append($('<input type="checkbox" name="'+$report.reportId+"-" + $division.divisionId +'" class="report-selector" data-report="'+$report.reportId+'" data-division="'+$division.divisionId+'"/>'));
         					$tr.append($divTD);
         				});
-        				$table.append($tr);	      				
+        				$table.append($tr);	
+        				
+        				
         			});
+        			
         			
         			$("#division-selection-container").html("");
         			$("#division-selection-container").append($table);
@@ -379,43 +372,56 @@
         		makeExecutiveTable : function($reportList) {
         			console.log("makeExecutiveTable");
         			var $table = $("<table>");
-        			var $hdrRow = $("<tr>");
+        			var $hdrRow = $("<tr>");   
+        			$hdrRow.append( $("<td>"));   
         			//var $allColumn = $("<td>");
-        		//	$hdrRow.append( $("<tr>").append("All") );    
-        		//	$hdrRow.append( $("<td>").append($('<input type="checkbox" class="all-selector"/>')) );   
+        			$hdrRow.append( $('<td class ="hdr">')); 
         			$table.append($hdrRow);
         			
 
         		
         		
         			
-        			var $allRow = $("<tr>");
-        			var $allLabel = $("<td>").append("All");
-        			var $allTD = $("<td>").append($('<input type="checkbox" class="all-selector" />'));
-        	
-        			$allRow.append($allLabel); 
-        			$allRow.append($allTD);
-        			$allRow.addClass($allRow);
-        			$table.append($allRow);
+        		//	var $allRow = $("<tr>");
+        		//	var $allLabel = $("<td>").append("All");
+        		//	var $allTD = $("<td>");
+        			var $allTD = $('<td class ="allselector">');
+        			
+        		
+        		//	$table.append($allTD);
         			
         			
         			$.each( $reportList, function($reportIdx, $report) {
         				if ( $report["executiveReport"] == true ) {
-	        				var $tr = $("<tr>");
-	        				$tr.addClass("report-" + $report.reportId);
-	        				$reportTD = $("<td>");
-	    					$reportTD.append($report.description)
-	    					$tr.append($reportTD);
-        				//	$td = $("<td>");
-        					$allTD = $('<input type="checkbox" class="all" data-report="'+$selector+ '-' +$report.reportId+'" />');
-        					//$allTD = 
-        					$allTD.append("All");
-        				//	$tr.append($('<input type="checkbox" class="all-selector" data-report="'+$selector+ '-' +$report.reportId+'" />'));
-        					$tr.append($('<input type="checkbox" class="executive-selector" data-report="'+$report.reportId+'" />'));
-        					$tr.append($allTD);
-        					//$table.append($allTD)
-	        				$table.append($tr);	        				
+        					var $tr = $("<tr>"); //creates report rows
+            				$tr.addClass("report-" + $report.reportId); //adds report to tr
+            				$reportTD = $("<td>"); //places report into td
+        					$reportTD.append($report.description); //assigns description to report in td
+        					$tr.append($reportTD); //adds reportTD to tr
+        					
+        					//$hdrRow.append($('<input type="checkbox" class="all" data-report="'+$selector+ '-' +$report.reportId+'" />'));
+        					$allTD.append($('<input type="checkbox" name="'+$report.reportId+'" class="allselector" data-report="'+$selector+'"/>'));
+
+                			$allColumn = $('<td class="all">').append($('<input type="checkbox" class="executive-selector" data-report="'+$report.reportId+'" />'));
+        				//	$allColumn.append($('<input type="checkbox" class="all" data-report="'+$selector+ '-' +$report.reportId+'" />'));
         				
+        					//highlights all column
+            				$selector = $allColumn;
+        					$($selector).mouseover(function($event) {    			
+        						$($allColumn).css('background-color','#F9F9F9');
+        						$(".all").css('background-color','#F9F9F9');
+            					$(".hdr").css('background-color','#F9F9F9');
+        					});
+        					$($selector).mouseout(function($event) {
+        						$($allColumn).css('background-color','transparent');
+        						$(".all").css('background-color','transparent');
+            					$(".hdr").css('background-color','transparent');
+        					});		
+        					//$tr.append($('<input type="checkbox" class="executive-selector" data-report="'+$report.reportId+'" />'));
+        					$tr.append($allColumn);
+        					
+            				$table.append($tr);	
+            				
         				}
         			});
         			
@@ -428,12 +434,12 @@
         					$selector = ".report-" + $report.reportId;
         					$($selector).mouseover(function($event) {
         						$(".report-" + $report.reportId).css('background-color','#F9F9F9');
-        						$($allTD).css('background-color','#F9F9F9');
+        					//	$($allTD).css('background-color','#F9F9F9');
         						//$($allTR).css('background-color','#F9F9F9');
         					});
         					$($selector).mouseout(function($event) {
         						$(".report-" + $report.reportId).css('background-color','transparent');
-        						$($allTD).css('background-color','transparent');
+        					//	$($allTD).css('background-color','transparent');
         					//	$($allTR).css('background-color','transparent');
         					});
         				});
@@ -504,8 +510,9 @@
         			console.log("makeGroupTable");
         			var $table = $("<table>");
         			var $hdrRow = $("<tr>");
+        			
         			$hdrRow.append($("<td>"));  // blank box in the corner
-        			$hdrRow.append( $("<td>").append("All"));
+        			$hdrRow.append($('<td class ="hdr">').append("All"));
     				$.each($companyList, function($companyIdx, $company) {
     					$companyTD=$("<td>");
     					$companyTD.addClass("company-" + $company.id);
@@ -515,9 +522,52 @@
     				});
         			$table.append($hdrRow);
         			
-        			var $allRow = $("<tr>").append($('<input class="all" />'));
+        			var $allRow = $("<tr>");
+	        			$selector = $allRow;
+						$($selector).mouseover(function($event) {
+						//	$(".report-" + $report.reportId).css('background-color','#F9F9F9');
+						//	$(".div-"+$division.divisionId).css('background-color','#F9F9F9');
+							$($allRow).css('background-color','#F9F9F9');
+	    					$($allLabel).css('background-color','#F9F9F9');
+						});
+						$($selector).mouseout(function($event) {
+						//	$(".report-" + $report.reportId).css('background-color','transparent');
+						//	$(".div-"+$division.divisionId).css('background-color','transparent');
+							$($allRow).css('background-color','transparent');
+	    					$($allLabel).css('background-color','transparent');
+						});
+        			
         			var $allLabel = $("<td>").append("All");
         			var $allTD = $("<td>").append($('<input type="checkbox" class="groupTable-all-company-report-selector" />'));
+        			
+        			
+
+        			//hilghlight all-all selections
+					$.each( $reportList, function($reportIdx, $report) {        				
+            				$.each($companyList, function($companyIdx, $company) {
+            					$selector = $allTD;
+            					$($selector).mouseover(function($event) {
+            						$(".report-" + $report.reportId).css('background-color','#F9F9F9');
+            						$(".company-"+$company.id).css('background-color','#F9F9F9');
+            						$($allLabel).css('background-color','#F9F9F9');
+                					$($allTD).css('background-color','#F9F9F9');
+            					//	$(".all").css('background-color','#F9F9F9');
+                					$(".hdr").css('background-color','#F9F9F9');
+            					});
+            					$($selector).mouseout(function($event) {
+            						$(".report-" + $report.reportId).css('background-color','transparent');
+            						$(".company-"+$company.id).css('background-color','transparent');
+            						$($allLabel).css('background-color','transparent');
+                					$($allTD).css('background-color','transparent');
+            					//	$(".all").css('background-color','transparent');
+                					$(".hdr").css('background-color','transparent');
+            					});
+            				});
+            			});   
+        			
+        			
+        			
+        			
         			$allRow.append($allLabel);
         			$allRow.append($allTD);	
         			$allRow.addClass($allTD);
@@ -526,6 +576,20 @@
     					$companyTD=$("<td>");
     					$companyTD.addClass("company-" + $company.id);
     					$companyTD.append($('<input type="checkbox" class="groupTable-all-report-selector" data-company="'+$company.id+'"/>'));
+    					
+
+   						//highlight division column alone
+        					$selector = $companyTD;
+        					$($selector).mouseover(function($event) {
+        						$(".company-"+$company.id).css('background-color','#F9F9F9');
+        						$($companyTD).css('background-color','#F9F9F9');
+        					});
+        					$($selector).mouseout(function($event) {
+        						$(".company-"+$company.id).css('background-color','transparent');
+        						$($companyTD).css('background-color','transparent');
+        					});
+    					
+    					
     					$allRow.append($companyTD);            			
         			
         			});
@@ -538,12 +602,27 @@
 	        				$reportTD = $("<td>");
 	    					$reportTD.append($report.description);
 	    					$tr.append($reportTD);
-	    					$allTD = $($('<input type="checkbox" class="groupTable-all-company-selector" data-report="'+$report.reportId+'" />'));
-	    					$allTD.append("All");
-	    					$allTD.addClass($tr);
-	    					$tr.append($allTD);
+	    					
+	    					
+	    					$allColumn = $('<td class="all">');
+	    					$allColumn.append($('<input type="checkbox" class="groupTable-all-company-selector" data-report="'+$report.reportId+'" />'));
+	        				
+	    					//highlights all column
+	        				$selector = $allColumn;
+	    					$($selector).mouseover(function($event) {    			
+	    						$($allTD).css('background-color','#F9F9F9');
+	    						$(".all").css('background-color','#F9F9F9');
+	        					$(".hdr").css('background-color','#F9F9F9');
+	    					});
+	    					$($selector).mouseout(function($event) {
+	    						$($allTD).css('background-color','transparent');
+	    						$(".all").css('background-color','transparent');
+	        					$(".hdr").css('background-color','transparent');
+	    					});		
+	    					//$allTD.append("All");
+	    					//$allTD.addClass($tr);
+	    					$tr.append($allColumn);
 	    					$.each($companyList, function($companyIdx, $company) {
-	        					//$td = $("<td>");
 	        					$companyTD=$("<td>");
 	        					$companyTD.addClass("company-" + $company.id);
 	        					$companyTD.append($('<input type="checkbox" name="'+$report.reportId+"-" + $company.id +'" class="groupTable-report-selector" data-report="'+$report.reportId+'" data-company="'+$company.id+'"/>'));
@@ -564,12 +643,12 @@
             					$($selector).mouseover(function($event) {
             						$(".report-" + $report.reportId).css('background-color','#F9F9F9');
             						$(".company-" + $company.id).css('background-color','#F9F9F9');
-            						$($allRow).css('background-color','#F9F9F9');
+            					//	$($allRow).css('background-color','#F9F9F9');
             					});
             					$($selector).mouseout(function($event) {
             						$(".report-" + $report.reportId).css('background-color','transparent');
             						$(".company-" + $company.id).css('background-color','transparent');
-            						$($allRow).css('background-color','transparent');
+            					//	$($allRow).css('background-color','transparent');
             					});
             				});
             			});  
@@ -723,23 +802,25 @@
     		</ansi:hasPermission>
     		
     		<ansi:hasPermission permissionRequired="REPORT_SUBSCRIPTION_READ">
+    		<td align="center">
     		<a href="reports/subscriptionCSV"><webthing:csv>Subscriptions</webthing:csv></a>
+    		</td>
     		</ansi:hasPermission>
     		
     	</div>
     	
     	<div id="subscription-container">
     		
-			<div id="division-selection-container" class="selection-container">
+			<div id="division-selection-container" class="selection-container" ">
 			</div>
 	     
-	     	<div id="region-selection-container" class="selection-container">
+	     	<div id="region-selection-container" class="selection-container" ">
 	     	</div>
 	     	
-	     	<div id="company-selection-container" class="selection-container">
+	     	<div id="company-selection-container" class="selection-container" ">
 	     	</div>
 	    
-	    	<div id="executive-selection-container" class="selection-container">
+	    	<div id="executive-selection-container" class="selection-container" ">
 	    	</div>
 	    	
 	    	<webthing:scrolltop />
