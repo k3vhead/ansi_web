@@ -122,7 +122,7 @@
 
         		makeDivisionTable : function($reportList, $divisionList) {
         			console.log("makeDivisionTable");
-        			var $table = $("<table>");
+        			var $table = $("<table>").css('text-align','center');
         			var $hdrRow = $("<tr>");
         			
         			$hdrRow.append($("<td>"));  // blank box in the corner
@@ -155,7 +155,7 @@
         		//		});
         		//	});    		
         			
-        			var $allLabel = $("<td>").append("All"); //row label
+        			var $allLabel = $("<td>").append("All").css('text-align','left'); //row label
         			var $allTD = $("<td>").append($('<input type="checkbox" class="all-division-report-selector" />')); //corner select all button
         			
        		/*  	//	$allTD.css('background-color','#F9F9F9');
@@ -235,7 +235,7 @@
         				$tr.addClass("report-" + $report.reportId); //adds report to tr
         				$reportTD = $("<td>"); //places report into td
     					$reportTD.append($report.description); //assigns description to report in td
-    					$tr.append($reportTD); //adds reportTD to tr
+    					$tr.append($reportTD).css('text-align','left'); //adds reportTD to tr
     					
 
             			$allColumn = $('<td class="all">');
@@ -258,7 +258,7 @@
     					
     					
         				$.each($divisionList, function($divIdx, $division) {
-        					$divTD = $("<td>");
+        					$divTD = $("<td>").css('text-align','center');
         					$divTD.addClass("div-" + $division.divisionId);
         					$divTD.append($('<input type="checkbox" name="'+$report.reportId+"-" + $division.divisionId +'" class="report-selector" data-report="'+$report.reportId+'" data-division="'+$division.divisionId+'"/>'));
         					$tr.append($divTD);
@@ -371,7 +371,7 @@
         		
         		makeExecutiveTable : function($reportList) {
         			console.log("makeExecutiveTable");
-        			var $table = $("<table>");
+        			var $table = $("<table>").css('text-align','center');
         			var $hdrRow = $("<tr>");   
         			$hdrRow.append( $("<td>"));   
         			//var $allColumn = $("<td>");
@@ -397,7 +397,7 @@
             				$tr.addClass("report-" + $report.reportId); //adds report to tr
             				$reportTD = $("<td>"); //places report into td
         					$reportTD.append($report.description); //assigns description to report in td
-        					$tr.append($reportTD); //adds reportTD to tr
+        					$tr.append($reportTD).css('text-align','left'); //adds reportTD to tr
         					
         					//$hdrRow.append($('<input type="checkbox" class="all" data-report="'+$selector+ '-' +$report.reportId+'" />'));
         					$allTD.append($('<input type="checkbox" name="'+$report.reportId+'" class="allselector" data-report="'+$selector+'"/>'));
@@ -511,7 +511,7 @@
         			var $table = $("<table>");
         			var $hdrRow = $("<tr>");
         			
-        			$hdrRow.append($("<td>"));  // blank box in the corner
+        			$hdrRow.append($("<td>")).css('text-align','center');  // blank box in the corner
         			$hdrRow.append($('<td class ="hdr">').append("All"));
     				$.each($companyList, function($companyIdx, $company) {
     					$companyTD=$("<td>");
@@ -522,7 +522,7 @@
     				});
         			$table.append($hdrRow);
         			
-        			var $allRow = $("<tr>");
+        			var $allRow = $("<tr>").css('text-align','center');
 	        			$selector = $allRow;
 						$($selector).mouseover(function($event) {
 						//	$(".report-" + $report.reportId).css('background-color','#F9F9F9');
@@ -537,7 +537,7 @@
 	    					$($allLabel).css('background-color','transparent');
 						});
         			
-        			var $allLabel = $("<td>").append("All");
+        			var $allLabel = $("<td>").append("All").css('text-align','left');
         			var $allTD = $("<td>").append($('<input type="checkbox" class="groupTable-all-company-report-selector" />'));
         			
         			
@@ -600,8 +600,8 @@
 	        				var $tr = $("<tr>");
 	        				$tr.addClass("report-" + $report.reportId);
 	        				$reportTD = $("<td>");
-	    					$reportTD.append($report.description);
-	    					$tr.append($reportTD);
+	    					$reportTD.append($report.description).css('text-align','left');
+	    					$tr.append($reportTD).css('text-align','left');
 	    					
 	    					
 	    					$allColumn = $('<td class="all">');
@@ -626,7 +626,7 @@
 	        					$companyTD=$("<td>");
 	        					$companyTD.addClass("company-" + $company.id);
 	        					$companyTD.append($('<input type="checkbox" name="'+$report.reportId+"-" + $company.id +'" class="groupTable-report-selector" data-report="'+$report.reportId+'" data-company="'+$company.id+'"/>'));
-	        					$tr.append($companyTD);
+	        					$tr.append($companyTD).css('text-align','center');
 	        				});
 	        				$table.append($tr);
         				}
@@ -802,9 +802,9 @@
     		</ansi:hasPermission>
     		
     		<ansi:hasPermission permissionRequired="REPORT_SUBSCRIPTION_READ">
-    		<td align="center">
+    		<div style="text-align: center">
     		<a href="reports/subscriptionCSV"><webthing:csv>Subscriptions</webthing:csv></a>
-    		</td>
+    		</div>
     		</ansi:hasPermission>
     		
     	</div>
