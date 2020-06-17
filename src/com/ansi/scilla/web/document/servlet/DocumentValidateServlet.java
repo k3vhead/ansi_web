@@ -41,7 +41,7 @@ public class DocumentValidateServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
-			AppUtils.validateSession(request, Permission.DOCUMENTS_READ);
+			AppUtils.validateSession(request, Permission.DOCUMENT_READ);
 			
 			AnsiURL url = new AnsiURL(request, REALM, (String[])null);
 			if ( url.getId() == null ) {
@@ -75,7 +75,7 @@ public class DocumentValidateServlet extends AbstractServlet {
 			conn.setAutoCommit(false);
 			String jsonString = super.makeJsonString(request);
 			DocumentUploadRequest documentRequest = new DocumentUploadRequest();			
-			AppUtils.validateSession(request, Permission.DOCUMENTS_WRITE);
+			AppUtils.validateSession(request, Permission.DOCUMENT_WRITE);
 			
 			AppUtils.json2object(jsonString, documentRequest);
 			AnsiURL url = new AnsiURL(request, REALM, (String[])null);

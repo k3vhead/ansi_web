@@ -197,7 +197,7 @@ public enum ReportType {
 			"com.ansi.scilla.report.expiringDocumentReport.ExpiringDocumentReport",
 			"com.ansi.scilla.web.report.request.ValidateStartEnd", 
 			new String[] {"startDate", "endDate"},
-			Permission.DOCUMENTS_READ,
+			Permission.DOCUMENT_READ,
 			"Expiring Document"
 		),
 	;

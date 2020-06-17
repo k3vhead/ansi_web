@@ -25,7 +25,7 @@ public enum Menu {
 	BUDGET_CONTROL(		"Budget Control", 		LOOKUPS, Permission.CLAIMS_READ, 	"budgetControlLookup.html"),
 	CLAIM_DETAIL(		"Claim Detail", 		LOOKUPS, Permission.CLAIMS_READ, 	"claimDetailLookup.html"),
 	CALL_NOTES(         "Call Notes",           LOOKUPS, Permission.CALL_NOTE_READ, "callNoteLookup.html"),
-	DOCUMENT_LOOKUP(	"Document", 			LOOKUPS, Permission.DOCUMENTS_READ, "documentLookup.html"),
+	DOCUMENT_LOOKUP(	"Document", 			LOOKUPS, Permission.DOCUMENT_READ, "documentLookup.html"),
 	
 	
 	REPORTS("Reports", null, null,"#"),

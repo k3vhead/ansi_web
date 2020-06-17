@@ -56,7 +56,7 @@ public class DocumentUploadServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
-			SessionData sessionData = AppUtils.validateSession(request, Permission.DOCUMENTS_WRITE);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.DOCUMENT_WRITE);
 
 			if ( !ServletFileUpload.isMultipartContent(request) ) {
 				logger.log(Level.DEBUG, "not multipart");
@@ -103,7 +103,7 @@ public class DocumentUploadServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
-			AppUtils.validateSession(request, Permission.DOCUMENTS_WRITE);
+			AppUtils.validateSession(request, Permission.DOCUMENT_WRITE);
 			AnsiURL url = new AnsiURL(request, REALM, (String[])null);
 			Integer documentId = url.getId();
 			

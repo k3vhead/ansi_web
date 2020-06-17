@@ -141,9 +141,9 @@ public enum Permission {
 	DEV(DEVELOPMENT, false, "Can Access Developer Areas"),
 
 
-	DOCUMENTS(null, false, "Functional Area: Documents"),
-	DOCUMENTS_READ(DOCUMENTS, false, "Can read stored documents"),
-	DOCUMENTS_WRITE(DOCUMENTS_READ, false, "Can store documents"),
+	DOCUMENT(null, false, "Functional Area: Documents"),
+	DOCUMENT_READ(DOCUMENT, false, "Can read stored documents"),
+	DOCUMENT_WRITE(DOCUMENT_READ, false, "Can store documents"),
 
 	CALENDAR(null, false, "Functional Area: Calendar"),
 	CALENDAR_READ(CALENDAR, false, "Can see the corporate calendar"),
