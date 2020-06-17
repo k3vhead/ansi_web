@@ -45,7 +45,8 @@ public class DavesServletTester extends TestServlet {
 //		String results = testNDL(sessionCookie, MyTestType.ADD);
 //		String results = testEmployeeExpense(sessionCookie, MyTestType.ADD);
 //		String results = testDashboardFavorite(sessionCookie, Menu.NEW_QUOTE);
-		String results = testCallNote(sessionCookie);
+//		String results = testCallNote(sessionCookie);
+		String results = testReportSubscription(sessionCookie);
 
 //		String results = super.doPost(sessionCookie, url, super.makeJson(parmMap));
 //		String results = super.doGet(sessionCookie, url, (HashMap<String,String>)null);
@@ -61,6 +62,16 @@ public class DavesServletTester extends TestServlet {
 	private String testCallNote(Header sessionCookie) throws ClientProtocolException, URISyntaxException, IOException {
 		String url = "/ansi_web/callNote/callNote/PAYMENT/49907";
 		String results = super.doGet(sessionCookie, url, (HashMap<String, String>)null);
+		return results;
+	}
+
+
+
+
+	private String testReportSubscription(Header sessionCookie) throws ClientProtocolException, IOException, URISyntaxException {
+		String url = "/ansi_web/reports/subscription";
+		String json = "{\"reportId\":\"XXXXX\"}";
+		String results = super.doPost(sessionCookie, url, json);
 		return results;
 	}
 
