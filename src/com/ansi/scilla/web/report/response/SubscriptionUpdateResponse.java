@@ -11,6 +11,15 @@ public class SubscriptionUpdateResponse extends MessageResponse {
 
 	private List<BatchReports> reportUpdates;
 
+	public SubscriptionUpdateResponse() {
+		super();
+	}
+	
+	public SubscriptionUpdateResponse(List<BatchReports> reportUpdates) {
+		this();
+		this.reportUpdates = reportUpdates;
+	}
+
 	public List<BatchReports> getReportUpdates() {
 		return reportUpdates;
 	}

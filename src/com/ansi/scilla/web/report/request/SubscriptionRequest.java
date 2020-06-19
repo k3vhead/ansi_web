@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.WebMessages;
+import com.ansi.scilla.web.report.common.BatchReports;
 
 public class SubscriptionRequest extends AbstractRequest {
 
@@ -56,22 +57,34 @@ public class SubscriptionRequest extends AbstractRequest {
 	}
 
 	public void validate(Connection conn, WebMessages webMessages) throws Exception {
+		AllReportType allReportType = AllReportType.NONE;
+		if ( ! StringUtils.isBlank(this.allReportType) ) {
+			try {
+				allReportType = AllReportType.valueOf(this.allReportType);
+				if ( allReportType == null ) {
+					webMessages.addMessage(ALL_REPORT_TYPE, "Invalid value");
+				}
+			} catch ( IllegalArgumentException e ) {
+				webMessages.addMessage(ALL_REPORT_TYPE, "Invalid value");
+			}
+		}
+		
 		if ( this.allDivisions == null ) {
 			webMessages.addMessage(ALL_DIVISIONS, "Required Entry");
-		} else {
-			if ( this.allDivisions == false ) {
+		}
+
+		RequestValidator.validateBoolean(webMessages, SUBSCRIBE, this.subscribe, true);
+		
+		if (webMessages.isEmpty() && allReportType.equals(AllReportType.NONE)) {
+			RequestValidator.validateReportId(webMessages, REPORT_ID, this.reportId, true);	
+		}
+		
+		if ( webMessages.isEmpty() && allReportType.equals(AllReportType.NONE) && ! StringUtils.isBlank(this.reportId) ) {
+			BatchReports batchReport = BatchReports.valueOf(this.reportId);
+			if ( batchReport.isDivisionReport() ) {
 				RequestValidator.validateDivisionId(conn, webMessages, DIVISION_ID, this.divisionId, true);
 			}
-			
 		}
-		
-		if ( StringUtils.isBlank(this.allReportType) ) {
-			RequestValidator.validateAllReportType(webMessages, ALL_REPORT_TYPE, this.allReportType, false);
-		} else {
-			RequestValidator.validateReportId(webMessages, REPORT_ID, this.reportId, true);
-		}
-		
-		RequestValidator.validateBoolean(webMessages, SUBSCRIBE, this.subscribe, true);
 	}
 
 

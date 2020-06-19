@@ -10,7 +10,11 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.ansi.scilla.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Menu;
+import com.ansi.scilla.web.report.common.BatchReports;
+import com.ansi.scilla.web.report.request.AllReportType;
+import com.ansi.scilla.web.report.request.SubscriptionRequest;
 
 
 public class DavesServletTester extends TestServlet {
@@ -50,7 +54,7 @@ public class DavesServletTester extends TestServlet {
 
 //		String results = super.doPost(sessionCookie, url, super.makeJson(parmMap));
 //		String results = super.doGet(sessionCookie, url, (HashMap<String,String>)null);
-//		String results = super.doDelete(sessionCookie, url, parmMap);
+//		String results = super.doDelete(sessionCookie, url, parmMap);		
 		super.doLogoff(sessionCookie);
 		
 		logger.log(Level.DEBUG, results);
@@ -62,16 +66,6 @@ public class DavesServletTester extends TestServlet {
 	private String testCallNote(Header sessionCookie) throws ClientProtocolException, URISyntaxException, IOException {
 		String url = "/ansi_web/callNote/callNote/PAYMENT/49907";
 		String results = super.doGet(sessionCookie, url, (HashMap<String, String>)null);
-		return results;
-	}
-
-
-
-
-	private String testReportSubscription(Header sessionCookie) throws ClientProtocolException, IOException, URISyntaxException {
-		String url = "/ansi_web/reports/subscription";
-		String json = "{\"reportId\":\"XXXXX\"}";
-		String results = super.doPost(sessionCookie, url, json);
 		return results;
 	}
 
@@ -156,6 +150,21 @@ public class DavesServletTester extends TestServlet {
 		}
 		return results;
 
+	}
+
+	private String testReportSubscription(Header sessionCookie) throws ClientProtocolException, IOException, URISyntaxException {
+		String url = "/ansi_web/reports/subscription";
+		//		String json = "{\"reportId\":\"XXXXX\"}";
+		SubscriptionRequest req = new SubscriptionRequest();
+		req.setAllDivisions(false);
+		req.setAllReportType(null);
+		req.setDivisionId(null);
+		req.setReportId(BatchReports.CASH_RECEIPTS_REGISTER.name());
+		req.setSubscribe(true);
+		String json = AppUtils.object2json(req);
+
+		String results = super.doPost(sessionCookie, url, json);
+		return results;
 	}
 
 	public enum MyTestType { ITEM,LIST,ADD,UPDATE,DELETE; }
