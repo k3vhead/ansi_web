@@ -1,6 +1,8 @@
 package com.ansi.scilla.web.report.response;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,8 +32,10 @@ public class SubscriptionResponse extends MessageResponse {
 	private List<Report> reportList;
 	private List<Group> companyList;
 	private List<Group> regionList;
-	private Logger logger = LogManager.getLogger(SubscriptionResponse.class);
+	private List<MySubscription> subscriptionList;
 	
+	private Logger logger = LogManager.getLogger(SubscriptionResponse.class);
+
 	
 	public SubscriptionResponse(Connection conn, Integer userId) throws Exception {
 		super();
@@ -39,6 +43,7 @@ public class SubscriptionResponse extends MessageResponse {
 		this.companyList = new ArrayList<Group>();
 		this.regionList = new ArrayList<Group>();
 		this.reportList = new ArrayList<Report>();
+		this.subscriptionList = makeSubscriptionList(conn, userId);
 		
 		makeDivisionList(conn, userId);		
 		makeGroupLists(conn, divisionList);
@@ -87,6 +92,17 @@ public class SubscriptionResponse extends MessageResponse {
 		}
 	}
 
+	public List<MySubscription> makeSubscriptionList(Connection conn, Integer userId) throws SQLException {
+		List<MySubscription> subscriptionList = new ArrayList<MySubscription>();
+		PreparedStatement ps = conn.prepareStatement(MySubscription.sql);
+		ps.setInt(1, userId);
+		ResultSet rs = ps.executeQuery();
+		while ( rs.next() ) {
+			subscriptionList.add(new MySubscription(rs));
+		}
+		rs.close();
+		return subscriptionList;
+	}
 
 
 	public List<Div> getDivisionList() {
@@ -120,10 +136,18 @@ public class SubscriptionResponse extends MessageResponse {
 	public void setRegionList(List<Group> regionList) {
 		this.regionList = regionList;
 	}
+	
+	public List<MySubscription> getSubscriptionList() {
+		return subscriptionList;
+	}
 
-	
-	
-	
+	public void setSubscriptionList(List<MySubscription> subscriptionList) {
+		this.subscriptionList = subscriptionList;
+	}
+
+
+
+
 	public class Report extends ApplicationObject implements Comparable<Report> {
 
 		private static final long serialVersionUID = 1L;
@@ -215,6 +239,48 @@ public class SubscriptionResponse extends MessageResponse {
 		@Override
 		public int compareTo(Group o) {
 			return o.getName().compareTo(this.getName());
+		}
+		
+	}
+	
+	
+	public class MySubscription extends ApplicationObject {
+		private static final long serialVersionUID = 1L;
+		
+		public static final String sql = "select subscription_id, report_id, division_id from report_subscription where user_id=?";
+		
+		private Integer subscriptionId;
+		private String reportId;
+		private Integer divisionId;
+		private MySubscription() {
+			super();
+		}
+		public MySubscription(ResultSet rs) throws SQLException {
+			this();
+			this.subscriptionId = rs.getInt("subscription_id");
+			this.reportId = rs.getString("report_id");
+			Object divisionId = rs.getObject("division_id");
+			if ( divisionId != null ) {
+				this.divisionId = (Integer)divisionId;
+			}
+		}
+		public Integer getSubscriptionId() {
+			return subscriptionId;
+		}
+		public void setSubscriptionId(Integer subscriptionId) {
+			this.subscriptionId = subscriptionId;
+		}
+		public String getReportId() {
+			return reportId;
+		}
+		public void setReportId(String reportId) {
+			this.reportId = reportId;
+		}
+		public Integer getDivisionId() {
+			return divisionId;
+		}
+		public void setDivisionId(Integer divisionId) {
+			this.divisionId = divisionId;
 		}
 		
 	}
