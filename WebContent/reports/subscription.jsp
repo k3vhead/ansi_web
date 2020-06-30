@@ -109,6 +109,7 @@
         				$word = "Unsubscribe"
         			}
         			console.log($word + " to " + $reportId + " for " + $divisionId);
+        			$("#subscription").html($reportId, $divisionId, $subscribe, $allDivisions, $allReportType);
         			$("#globalMsg").html($word + " to " + $reportId + " for " + $divisionId).show().fadeOut(1000);
         		},
         		
