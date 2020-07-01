@@ -100,7 +100,7 @@
         		},
                 
         		
-        		doSubscription : function($reportId, $divisionId, $subscribe) {
+        		doSubscription : function($reportId, $divisionId, $subscribe, $allDivisions, $allReportType) {
         			if ( $subscribe ) {
         		//		$(this).prop('checked', true);
         				$word = "Subscribe"
@@ -304,25 +304,28 @@
         				var $reportId = $(this).attr("data-report");
         				var $divisionId = $(this).attr("data-division");
         				var $subscribe = $(this).prop("checked");
-        				REPORT_SUBSCRIPTION.updateSubscription($reportId, $divisionId, $subscribe); // update select individual report
+        				
         				REPORT_SUBSCRIPTION.doSubscription($reportId, $divisionId, $subscribe);
         			});
         			$("#division-selection-container .all-report-selector").click(function($event) {
         				var $divisionId = $(this).attr("data-division");
+        				var $allReportType = $('.all-report-selector input[name="'+ $divisionId+'"]').prop('checked',true);
         				var $subscribe = $(this).prop("checked");
         				console.log("all for " + $divisionId + " " + $subscribe);
         				$.each( REPORT_SUBSCRIPTION.reportList, function($index, $report) {
         					$selector = '#division-selection-container input[name="'+$report.reportId+'-'+ $divisionId+'"]';
+        					//$selector = '#division-selection-container input[name="'+$report.reportId+'-'+ $divisionId+'"]';
         					$subscribed = $($selector).prop("checked");
         					if ( $subscribe != $subscribed ) {
         						$($selector).prop("checked", $subscribe);
-                				REPORT_SUBSCRIPTION.updateSubscription("ALL_REPORTS", $divisionId, $subscribe); // update select all reports for 1 division
-        						REPORT_SUBSCRIPTION.doSubscription($report.reportId, $divisionId, $subscribe);	
+                				
+        						REPORT_SUBSCRIPTION.doSubscription($allReportType, $report.reportId, $divisionId, $subscribe);	
         					}
         				}); 
         			});
         			$("#division-selection-container .all-division-selector").click(function($event) {
         				var $reportId = $(this).attr("data-report");
+        				var $allDivisions = $('.all-division-selector input[name="'+ $reportId+'"]').prop('checked',true);
         				var $subscribe = $(this).prop("checked");
         				
         				console.log("all for " + $reportId + " " + $subscribe);
@@ -331,27 +334,31 @@
         					$subscribed = $($selector).prop("checked");
         					if ( $subscribe != $subscribed ) {
         						$($selector).prop("checked", $subscribe);
-                				REPORT_SUBSCRIPTION.updateSubscription("ALL_DIVISIONS", $reportId, $subscribe); // update select all divisions for 1 report type  
-        						REPORT_SUBSCRIPTION.doSubscription($reportId, $division.divisionId, $subscribe);	
+                				
+        						REPORT_SUBSCRIPTION.doSubscription($allDivisions, $reportId, $division.divisionId, $subscribe);	
         					}
         				});      				
         			});        			
         			$("#division-selection-container .all-division-report-selector").click(function($event) {
+        				var $reportId = $(this).attr("data-report");
+        				var $divisionId = $(this).attr("data-division");
+        				var $allReportType = $('.all-report-selector input[name="'+ $divisionId+'"]').prop('checked',true);
+        				var $allDivisions = $('.all-division-selector input[name="'+ $reportId+'"]').prop('checked',true);
         				var $subscribe = $(this).prop("checked");
         				console.log("all for all " + $subscribe);
-        				$("#division-selection-container .all-division-selector").prop("checked", $subscribe);
-        				$("#division-selection-container .all-report-selector").prop("checked", $subscribe);
-        				$.each( $reportList, function($reportIdx, $report) {        				
-            				$.each($divisionList, function($divIdx, $division) {
-            					$selector = '#division-selection-container input[name="'+$report.reportId+'-'+ $division.divisionId+'"]';
+        				$("#division-selection-container .all-division-report-selector").prop("checked", $subscribe);
+        				//$("#division-selection-container .all-report-selector").prop("checked", $subscribe);
+        			//	$.each( $reportList, function($reportIdx, $report) {        				
+            		//		$.each($divisionList, function($divIdx, $division) {
+            					$selector = '#division-selection-container input[name="'+$allReportType+'-'+ $allDivisions+'"]';
             					$subscribed = $($selector).prop("checked");
             					if ( $subscribe != $subscribed ) {
             						$($selector).prop("checked", $subscribe);
-                    				REPORT_SUBSCRIPTION.updateSubscription("ALL_DIVISIONS", "ALL_REPORTS", $subscribe); // update select all divisions and reports 
-            						REPORT_SUBSCRIPTION.doSubscription($report.reportId, $division.divisionId, $subscribe);	
+                    				
+            						REPORT_SUBSCRIPTION.doSubscription($allReportType, $allDivisions, $subscribe);	
             					}
-            				});
-            			});   
+            				//});
+            			//});   
         			});
         			
         
