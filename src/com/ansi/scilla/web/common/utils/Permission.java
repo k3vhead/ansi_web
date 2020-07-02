@@ -155,6 +155,11 @@ public enum Permission {
 
 	BATCH_LOG(null, false, "Functional Area: Batch Logging"),
 	BATCH_LOG_READ(BATCH_LOG, false, "Can view the batch log"),
+
+	REPORT_DISTRIBUTION(null, false, "Functional Area: Report Distribution"),
+	REPORT_DISTRIBUTION_READ(REPORT_DISTRIBUTION, false, "Can read other report subscriptions"),
+	REPORT_DISTRIBUTION_WRITE(REPORT_DISTRIBUTION_READ, false, "Can write report subscriptions"),
+	REPORT_DISTRIBUTION_OVERRIDE(REPORT_DISTRIBUTION_WRITE, false, "Can read/write other users' report subscriptions"),
 	;
 	
 	private final Boolean divisionSpecific;
