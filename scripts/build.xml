@@ -19,6 +19,7 @@
             <include name="servlet-api.jar" />
             <include name="tomcat-api.jar" />
             <include name="tomcat-dbcp.jar" />
+        	<include name="sqljdbc42.jar" />   <!-- this is ms sql server specific -->
         </fileset>
 
         <fileset dir="${libdirectory}">

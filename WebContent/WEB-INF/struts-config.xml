@@ -165,6 +165,22 @@
             <forward name="valid" path="/divisionAdmin.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
+        <action
+            path="/documentLookup"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction"
+            scope="request">            
+            <forward name="valid" path="/documents/documentLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+        <action
+            path="/documentViewer"
+            type="com.ansi.scilla.web.document.action.DocumentViewerAction"
+            name="idForm"
+            input="/documents/documentViewer.jsp"
+            scope="request">            
+            <forward name="valid" path="/documents/documentViewer.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
 		<action
             path="/invoiceGeneration"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">

@@ -649,35 +649,6 @@
 		    				dataType: 'json'
 		    			});
 					},
-					
-					
-					getOptions : function($optionList, $callBack) {
-						console.log("getOptions");
-		    			var $returnValue = null;
-		    			var jqxhr1 = $.ajax({
-		    				type: 'GET',
-		    				url: 'options',
-		    				data: $optionList,			    				
-		    				statusCode: {
-		    					200: function($data) {
-		    						$callBack($data.data);		    						
-		    					},			    				
-		    					403: function($data) {
-		    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-		    					}, 
-		    					404: function($data) {
-		    						$("#globalMsg").html("System Error Option 404. Contact Support").show();
-		    					}, 
-		    					405: function($data) {
-		    						$("#globalMsg").html("System Error Option 405. Contact Support").show();
-		    					}, 
-		    					500: function($data) {
-		    						$("#globalMsg").html("System Error Option 500. Contact Support").show();
-		    					}, 
-		    				},
-		    				dataType: 'json'
-		    			});
-		    		},
 		            
 		            
 		            
@@ -1441,7 +1412,7 @@
 		    		
 		    		
 		    		makeOptionLists : function(){
-						QUOTEMAINTENANCE.getOptions('JOB_STATUS,JOB_FREQUENCY,COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM', QUOTEMAINTENANCE.populateOptions);
+						ANSI_UTILS.getOptionList('JOB_STATUS,JOB_FREQUENCY,COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM', QUOTEMAINTENANCE.populateOptions);
 						QUOTEMAINTENANCE.incrementProgress("Job Status List");
 						QUOTEMAINTENANCE.incrementProgress("Job Frequency List");
 						
@@ -1512,7 +1483,6 @@
 		    				var $quoteId = $(this).attr("data-quoteid");
 		    				var $quoteNumber = $(this).attr("data-quotenumber");
 		    				console.debug("Adding job to " + $quoteId);
-		    				
 		    				
 		    				//Clear all job forms
 		    				$(".job-edit-panel input").val("");
@@ -1620,6 +1590,8 @@
 		    				$("#edit-this-quote").hide();
 		    				$("#quoteDataContainer .managerName").hide();
 		    				$("#quoteDataContainer select[name='managerId']").show();
+		    				$("#new-quote-button").hide();
+		    				$("#lookup-button").hide();
 		    				$("#quote-container .quote-button-container .save-quote").show();
 		    				$("#quote-container .quote-button-container .cancel-edit").show();
 		    			});
@@ -1635,6 +1607,8 @@
 		    				$("#edit-this-quote").show();
 		    				$("#quoteDataContainer .managerName").show();
 		    				$("#quoteDataContainer select[name='managerId']").hide();
+		    				$("#new-quote-button").show();
+		    				$("#lookup-button").show();
 		    				$("#quote-container .quote-button-container .save-quote").hide();
 		    				$("#quote-container .quote-button-container .cancel-edit").hide();
 		    			});
@@ -2491,6 +2465,8 @@
 		    				$("#edit-this-quote").show();
 		    				$("#quote-container .quote-button-container .save-quote").hide();
 		    				$("#quote-container .quote-button-container .cancel-edit").hide();
+		    				$("#new-quote-button").show();
+		    				$("#lookup-button").show();
 						}
 						
 						
@@ -2826,7 +2802,7 @@
     			<%-- <ansi:hasPermission permissionRequired="QUOTE_CREATE"><webthing:edit styleClass="fa-2x quote-button">Edit</webthing:edit></ansi:hasPermission>--%>
  			    <ansi:hasPermission permissionRequired="QUOTE_CREATE"><div class="action-button-container"><webthing:revise styleClass="fa-2x quote-button action-button" styleId="revise-button">Revise</webthing:revise></div></ansi:hasPermission>
     			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><div class="action-button-container"><webthing:copy styleClass="fa-2x quote-button action-button" styleId="copy-button">Copy</webthing:copy></div></ansi:hasPermission>
-    			<ansi:hasPermission permissionRequired="QUOTE_READ"><div class="action-button-container"><a href="quoteLookup.html" style="text-decoration:none; color:#404040;"><webthing:view styleClass="fa-2x quote-button">Lookup</webthing:view></a></div></ansi:hasPermission>
+    			<ansi:hasPermission permissionRequired="QUOTE_READ"><div class="action-button-container"><a href="quoteLookup.html" style="text-decoration:none; color:#404040;"><webthing:view styleClass="fa-2x quote-button" styleId="lookup-button">Lookup</webthing:view></a></div></ansi:hasPermission>
     			<ansi:hasPermission permissionRequired="QUOTE_CREATE"><div class="action-button-container"><a href="newQuote.html"><webthing:addNew styleClass="fa-2x quote-button action-button" styleId="new-quote-button">New Quote</webthing:addNew></a></div></ansi:hasPermission>
     			<ansi:hasPermission permissionRequired="QUOTE_READ"><div class="action-button-container"><webthing:print styleClass="orange fa-2x quote-button action-button" styleId="preview-button">Preview</webthing:print></div></ansi:hasPermission>    			
     			<ansi:hasPermission permissionRequired="QUOTE_PROPOSE"><div class="action-button-container"><webthing:print styleClass="green fa-2x quote-button action-button" styleId="propose-button">Propose</webthing:print></div></ansi:hasPermission>
