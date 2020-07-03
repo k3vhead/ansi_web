@@ -117,8 +117,8 @@
             	        
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
-            	            { className: "dt-left", "targets": [1,4] },
-            	            { className: "dt-center", "targets": [0,2,3,5] },
+            	            { className: "dt-left", "targets": [1,2,4] },
+            	            { className: "dt-center", "targets": [0,3,5] },
             	            { className: "dt-right", "targets": []}
             	         ],
             	        "paging": true,
