@@ -88,8 +88,6 @@
         		reportList : [],
         		companyList : [],
         		regionList : [],
-        		subscribe : [],
-        		allDivisions : [],
         		allReportType : [],
         		
         		
@@ -108,9 +106,75 @@
         		//		$(this).prop('checked', false);
         				$word = "Unsubscribe"
         			}
+        			
+        		//	$("#subscription").html($reportId, $divisionId, $subscribe, $allDivisions, $allReportType);
+        			
+        		
+        			if ( $allReportType != null ) {
+        				var $reportId = null;
+        			} else {
+        				var $reportId = $reportId;
+        			}
+            				
+            				
+         				
+       				if ($allDivisions == true) {
+       			        var $divisionId = null;
+       			    }
+       			    else if ($allDivisions == false){
+       			        var $divisionId = $divisionId;
+       			    }
+            				//var $allDivisions = boolean;
+            				//var $subscribe = boolean;
+            				//var $subscribe = $($selector).prop('checked');
+            			//	var $isChecked = $($selector).prop('checked');
+            		var $outbound = {"reportId":$reportId, "divisionId":$divisionId, "subscribe":$subscribe, "allDivisions":$allDivisions, "allReportType":$allReportType};
+            			//	{"action":"REPEAT_JOB", "annualRepeat":$isChecked};
+            				
+            			
+          			
+	            			
+	       			var jqxhr = $.ajax({
+						type: 'POST',
+						url: "reports/subscription",
+          				data: JSON.stringify($outbound),
+						statusCode: {
+							200 : function($data) {
+          							if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
+          								$("#globalMsg").html("Edit Error").show().fadeOut(4000);
+                          				console.log("updates failed");
+          							}
+          							if ( $data.responseHeader.responseCode == 'SUCCESS') {
+          								$("#globalMsg").html("Update Successful").show().fadeOut(4000);
+          								$("#thinking").hide();
+          								REPORT_SUBSCRIPTION.makeLists($subscribe);
+          								console.log("updates success");
+          							}
+          						},	
+							403: function($data) {
+								$("#globalMsg").html("Session Timeout. Log in and try again").show();
+							},
+							404: function($data) {
+								$("#globalMsg").html("System Error 404. Reload and try again").show();
+							},
+							405: function($data) {
+								$("#globalMsg").html("System Error 405. Contact Support").show();
+							},
+							500: function($data) {
+								$("#globalMsg").html("System Error 500. Contact Support").show();
+							},
+						},
+						dataType: 'json'
+					});
+      			
+        			
+        			
+        			
+        			$("#globalMsg").html($word + " to " + $reportId + " for " + $divisionId).show().fadeOut(6000);
         			console.log($word + " to " + $reportId + " for " + $divisionId);
-        			$("#subscription").html($reportId, $divisionId, $subscribe, $allDivisions, $allReportType);
-        			$("#globalMsg").html($word + " to " + $reportId + " for " + $divisionId).show().fadeOut(1000);
+        			
+        			
+        			
         		},
         		
         		makeClickers : function() {
@@ -342,14 +406,14 @@
         			$("#division-selection-container .all-division-report-selector").click(function($event) {
         				var $reportId = $(this).attr("data-report");
         				var $divisionId = $(this).attr("data-division");
-        				var $allReportType = $('.all-report-selector input[name="'+ $divisionId+'"]').prop('checked',true);
-        				var $allDivisions = $('.all-division-selector input[name="'+ $reportId+'"]').prop('checked',true);
         				var $subscribe = $(this).prop("checked");
         				console.log("all for all " + $subscribe);
-        				$("#division-selection-container .all-division-report-selector").prop("checked", $subscribe);
-        				//$("#division-selection-container .all-report-selector").prop("checked", $subscribe);
-        			//	$.each( $reportList, function($reportIdx, $report) {        				
-            		//		$.each($divisionList, function($divIdx, $division) {
+        				//$("#division-selection-container .all-division-report-selector").prop("checked", $subscribe);
+        			//	$("#division-selection-container .all-report-selector").prop("checked", $subscribe);
+        				$.each( $reportList, function($reportIdx, $report) {        				
+            				$.each($divisionList, function($divIdx, $division) {
+        						var $allReportType = $('.all-report-selector input[name="'+ $divisionId+'"]').prop('checked',true);
+        						var $allDivisions = $('.all-division-selector input[name="'+ $reportId+'"]').prop('checked',true);
             					$selector = '#division-selection-container input[name="'+$allReportType+'-'+ $allDivisions+'"]';
             					$subscribed = $($selector).prop("checked");
             					if ( $subscribe != $subscribed ) {
@@ -357,8 +421,8 @@
                     				
             						REPORT_SUBSCRIPTION.doSubscription($allReportType, $allDivisions, $subscribe);	
             					}
-            				//});
-            			//});   
+            				});
+            			});   
         			});
         			
         
