@@ -7,11 +7,11 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.address.Country;
-import com.ansi.scilla.common.calendar.CalendarDateType;
 import com.ansi.scilla.common.claims.WorkHoursType;
 import com.ansi.scilla.common.document.DocumentType;
 import com.ansi.scilla.common.employee.EmployeeHoursType;
@@ -43,7 +43,6 @@ public class OptionsListResponse extends MessageResponse {
 	private List<ReportTypeOption> reportType;
 	private List<WorkHoursTypeOption> workHoursType;
 	private List<ExpenseTypeOption> expenseType;
-	private List<CalendarTypeOption> calendarType;
 	private List<DocumentTypeOption> documentType;
 
 	public OptionsListResponse(List<ResponseOption> options, SessionData sessionData) throws ClassNotFoundException, Exception {
@@ -84,9 +83,6 @@ public class OptionsListResponse extends MessageResponse {
 		}
 		if ( options.contains(ResponseOption.EXPENSE_TYPE)) {
 			makeExpenseTypeList(sessionData);
-		}
-		if (options.contains(ResponseOption.CALENDAR_TYPE)) {
-			makeCalendarTypeList(sessionData);
 		}
 		if ( options.contains(ResponseOption.DOCUMENT_TYPE)) {
 			makeDocumentTypeList();
@@ -199,14 +195,6 @@ public class OptionsListResponse extends MessageResponse {
 			this.expenseType.add(new ExpenseTypeOption(expenseType));
 		}
 		Collections.sort(this.expenseType);
-	}
-
-	private void makeCalendarTypeList(SessionData sessionData) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException  {
-		this.calendarType = new ArrayList<CalendarTypeOption>();
-		for ( CalendarDateType calendarDateType : CalendarDateType.values()) {
-			this.calendarType.add(new CalendarTypeOption(calendarDateType));
-		}
-		Collections.sort(this.calendarType);
 
 	}
 	
@@ -218,7 +206,6 @@ public class OptionsListResponse extends MessageResponse {
 		Collections.sort(this.documentType);
 		
 	}
-
 
 	public List<JobFrequencyOption> getJobFrequency() {
 		return jobFrequency;
@@ -314,14 +301,6 @@ public class OptionsListResponse extends MessageResponse {
 
 	public void setExpenseType(List<ExpenseTypeOption> expenseType) {
 		this.expenseType = expenseType;
-	}
-
-	public List<CalendarTypeOption> getCalendarType() {
-		return calendarType;
-	}
-
-	public void setCalendarType(List<CalendarTypeOption> calendarType) {
-		this.calendarType = calendarType;
 	}
 
 	public List<DocumentTypeOption> getDocumentType() {

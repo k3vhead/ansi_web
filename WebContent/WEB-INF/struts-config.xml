@@ -51,12 +51,6 @@
             <forward name="login" path="/login.jsp" />            
         </action>
         <action
-            path="/batchLogLookup"
-            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
-            <forward name="valid" path="/batch/batchLogLookup.jsp" />
-            <forward name="login" path="/login.jsp" />            
-        </action>
-        <action
             path="/ticketStatusLookup"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/claims/ticketStatusLookup.jsp" />
@@ -68,12 +62,6 @@
             name="idForm"
             scope="request">
             <forward name="valid" path="/claims/budgetControlLookup.jsp" />
-            <forward name="login" path="/login.jsp" />            
-        </action>
-        <action
-            path="/calendarLookup"
-            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
-            <forward name="valid" path="/calendar/calendarLookup.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
         <action
@@ -134,12 +122,6 @@
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/contactMaintenance.jsp" />
             <forward name="login" path="/login.jsp" />            
-        </action>
-		<action
-            path="/divisionClose"                   
-            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
-            <forward name="valid" path="/divisionMaintenance/divisionClose.jsp" />
-            <forward name="login" path="/login.jsp" />
         </action>
 		<action
             path="/employeeExpenseLookup"
@@ -359,13 +341,6 @@
             <forward name="reportNoInput" path="/reportNoInput.jsp" /> 
             <forward name="login" path="/login.jsp" />            
         </action>  
-        <action
-            path="/reportSubscription"
-            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
-            <forward name="valid" path="/reports/subscription.jsp" />
-            <forward name="login" path="/login.jsp" />            
-        </action>
-		
          <action
             path="/specialOverride"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">

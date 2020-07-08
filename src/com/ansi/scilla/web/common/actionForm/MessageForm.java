@@ -23,6 +23,7 @@ public class MessageForm extends AbstractActionForm {
 
 	@Override
 	public void reset(ActionMapping mapping, HttpServletRequest request) {
+		// TODO Auto-generated method stub
 		super.reset(mapping, request);
 		this.message = null;
 	}

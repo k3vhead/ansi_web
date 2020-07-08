@@ -15,6 +15,7 @@ public class TestJobDetailResponse {
 		try {
 			new TestJobDetailResponse().go();
 		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

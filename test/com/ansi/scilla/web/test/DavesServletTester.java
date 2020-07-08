@@ -10,11 +10,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.ansi.scilla.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Menu;
-import com.ansi.scilla.web.report.common.BatchReports;
-import com.ansi.scilla.web.report.request.AllReportType;
-import com.ansi.scilla.web.report.request.SubscriptionRequest;
 
 
 public class DavesServletTester extends TestServlet {
@@ -49,12 +45,11 @@ public class DavesServletTester extends TestServlet {
 //		String results = testNDL(sessionCookie, MyTestType.ADD);
 //		String results = testEmployeeExpense(sessionCookie, MyTestType.ADD);
 //		String results = testDashboardFavorite(sessionCookie, Menu.NEW_QUOTE);
-//		String results = testCallNote(sessionCookie);
-		String results = testReportSubscription(sessionCookie);
+		String results = testCallNote(sessionCookie);
 
 //		String results = super.doPost(sessionCookie, url, super.makeJson(parmMap));
 //		String results = super.doGet(sessionCookie, url, (HashMap<String,String>)null);
-//		String results = super.doDelete(sessionCookie, url, parmMap);		
+//		String results = super.doDelete(sessionCookie, url, parmMap);
 		super.doLogoff(sessionCookie);
 		
 		logger.log(Level.DEBUG, results);
@@ -150,21 +145,6 @@ public class DavesServletTester extends TestServlet {
 		}
 		return results;
 
-	}
-
-	private String testReportSubscription(Header sessionCookie) throws ClientProtocolException, IOException, URISyntaxException {
-		String url = "/ansi_web/reports/subscription";
-		//		String json = "{\"reportId\":\"XXXXX\"}";
-		SubscriptionRequest req = new SubscriptionRequest();
-		req.setAllDivisions(false);
-		req.setAllReportType(null);
-		req.setDivisionId(null);
-		req.setReportId(BatchReports.CASH_RECEIPTS_REGISTER.name());
-		req.setSubscribe(true);
-		String json = AppUtils.object2json(req);
-
-		String results = super.doPost(sessionCookie, url, json);
-		return results;
 	}
 
 	public enum MyTestType { ITEM,LIST,ADD,UPDATE,DELETE; }

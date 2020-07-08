@@ -14,6 +14,6 @@
 	BuildDate buildDate = new BuildDate();
 %>
 <span id="buildDate" class="trailerLink" 
-	data-webBuildDate="<%= buildDate.getWebBuildDate() %>" 
-	data-commonBuildDate="<%= buildDate.getCommonBuildDate()%>"
-	data-reportBuildDate="<%= buildDate.getReportBuildDate()%>" >Build: <%= buildDate.getWebBuildDate() %></span>
+	data-webBuildDate="<%= "[" + buildDate.getWebBranch() + "] [" + buildDate.getWebBuildDate() + "]" %>" 
+	data-commonBuildDate="<%= "[" + buildDate.getCommonBranch() + "] [" + buildDate.getCommonBuildDate() + "]" %>"
+	data-reportBuildDate="<%= "[" + buildDate.getReportBranch() + "] [" + buildDate.getReportBuildDate() + "]" %>" >Build: <%= buildDate.getWebBuildDate() %></span>

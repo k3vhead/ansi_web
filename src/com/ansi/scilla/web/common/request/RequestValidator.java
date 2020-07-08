@@ -22,11 +22,9 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.ansi.scilla.common.calendar.CalendarDateType;
 import com.ansi.scilla.common.callNote.CallNoteReference;
 import com.ansi.scilla.common.claims.WorkHoursType;
 import com.ansi.scilla.common.db.CallLog;
-import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.Document;
 import com.ansi.scilla.common.db.EmployeeExpense;
 import com.ansi.scilla.common.db.MSTable;
@@ -42,8 +40,6 @@ import com.ansi.scilla.web.claims.request.ClaimEntryRequestType;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.utils.FieldMap;
 import com.ansi.scilla.web.common.utils.Permission;
-import com.ansi.scilla.web.report.common.BatchReports;
-import com.ansi.scilla.web.report.request.AllReportType;
 import com.thewebthing.commons.db2.DBTable;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 import com.thewebthing.commons.lang.StringUtils;
@@ -92,33 +88,6 @@ public class RequestValidator {
 		validateCode(conn, webMessages, "quote", "account_type", fieldName, value, required);
 	}
 
-	
-	
-	public static Boolean validateAllReportType(WebMessages webMessages, String fieldName, String value, boolean required) {
-		Boolean isValid = true;
-		if (StringUtils.isBlank(value)) {
-			if (required) {
-				webMessages.addMessage(fieldName, "Required Value");
-				isValid = false;
-			}
-		} else {
-			try {
-				AllReportType reportId = AllReportType.valueOf(value);
-				if (reportId == null) {
-					webMessages.addMessage(fieldName, "Invalid Value");
-					isValid = false;
-				}
-			} catch (IllegalArgumentException e) {
-				webMessages.addMessage(fieldName, "Invalid Value");
-				isValid = false;
-			}
-		}
-		return isValid;
-	}
-
-	
-	
-	
 	public static void validateBigDecimal(WebMessages webMessages, String fieldName, BigDecimal value,
 			BigDecimal minValue, BigDecimal maxValue, boolean required) {
 		if (value == null) {
@@ -146,15 +115,12 @@ public class RequestValidator {
 		}
 	}
 
-	public static Boolean validateBoolean(WebMessages webMessages, String fieldName, Boolean value, boolean required) {
-		Boolean isValid = true;
+	public static void validateBoolean(WebMessages webMessages, String fieldName, Boolean value, boolean required) {
 		if (required) {
 			if (value == null) {
 				webMessages.addMessage(fieldName, "Required Value");
-				isValid = false;
 			}
 		}
-		return isValid;
 	}
 
 	public static void validateBuildingType(Connection conn, WebMessages webMessages, String fieldName, String value,
@@ -349,29 +315,6 @@ public class RequestValidator {
 		}
 	}
 
-	public static void validateDateType(WebMessages webMessages, String fieldName, String value, boolean required) {
-		if (StringUtils.isBlank(value)) {
-			if (required) {
-				webMessages.addMessage(fieldName, "Required Value");
-			}
-		} else {
-			try {
-				CalendarDateType type = CalendarDateType.valueOf(value);
-				if (type == null) {
-					webMessages.addMessage(fieldName, "Invalid Value");
-				}
-			} catch (IllegalArgumentException e) {
-				webMessages.addMessage(fieldName, "Invalid Value");
-			}
-		}		
-	}
-
-	
-	public static Boolean validateDivisionId(Connection conn, WebMessages webMessages, String fieldName, Integer value, boolean required ) throws Exception {
-		return validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, fieldName, value, required);
-	}
-	
-	
 	public static void validateFloat(WebMessages webMessages, String fieldName, Float value, Float minValue,
 			Float maxValue, boolean required) {
 		if (value == null) {
@@ -415,13 +358,11 @@ public class RequestValidator {
 		validateCode(conn, webMessages, EmployeeExpense.TABLE, EmployeeExpense.EXPENSE_TYPE, fieldName, value, required);
 	}
 
-	public static Boolean validateId(Connection conn, WebMessages webMessages, String dbTableName, String dbFieldName,
+	public static void validateId(Connection conn, WebMessages webMessages, String dbTableName, String dbFieldName,
 			String fieldName, Integer value, boolean required) throws Exception {
-		Boolean isValid = true;
 		if (value == null) {
 			if (required) {
 				webMessages.addMessage(fieldName, "Required Value");
-				isValid = false;
 			}
 		} else {
 			String sql = "select * from " + dbTableName + " where " + dbFieldName + "=?";
@@ -430,14 +371,10 @@ public class RequestValidator {
 			ResultSet rs = ps.executeQuery();
 			if (!rs.next()) {
 				webMessages.addMessage(fieldName, "Invalid Value");
-				isValid = false;
 			}
 		}
-		return isValid;
 	}
 
-	
-	
 	public static void validateInteger(WebMessages webMessages, String fieldName, Integer value, Integer minValue,
 			Integer maxValue, boolean required) {
 		if (value == null) {
@@ -591,32 +528,6 @@ public class RequestValidator {
 		}
 	}
 
-	
-	
-	public static Boolean validateReportId(WebMessages webMessages, String fieldName, String value, boolean required) {
-		Boolean isValid = true;
-		if (StringUtils.isBlank(value)) {
-			if (required) {
-				webMessages.addMessage(fieldName, "Required Value");
-				isValid = false;
-			}
-		} else {
-			try {
-				BatchReports reportId = BatchReports.valueOf(value);
-				if (reportId == null) {
-					webMessages.addMessage(fieldName, "Invalid Value");
-					isValid = false;
-				}
-			} catch (IllegalArgumentException e) {
-				webMessages.addMessage(fieldName, "Invalid Value");
-				isValid = false;
-			}
-		}
-		return isValid;
-	}
-	
-	
-	
 	public static void validateString(WebMessages webMessages, String fieldName, String value, boolean required) {
 		if (StringUtils.isBlank(value)) {
 			if (required) {

@@ -314,7 +314,7 @@
 			        	});
 			
 			        	$("#modalSearch").click(function($event) {
-			        		PAYMENT.paymentAction = "search";
+			        		$paymentAction = "search";
 			        		$("#newPaymentDate").datepicker("hide");
 			        		$("#modalSearchBox").css('background-color','#CCCCCC');
 			        		$("#modalNewBox").css('background-color','#FFFFFF');
@@ -328,7 +328,7 @@
 			        	})
 			        	
 			        	$("#modalNew").click(function($event) {
-			        		PAYMENT.paymentAction = "new";
+			        		$paymentAction = "new";
 			        		$("#modalSearchBox").css('background-color','#FFFFFF');
 			        		$("#modalNewBox").css('background-color','#CCCCCC');
 			        		$(".searchPmtRow").hide();
@@ -370,9 +370,9 @@
 					},
 		        	
 		        	goPayment : function () {
-		        		if ( PAYMENT.paymentAction == "search") {
+		        		if ( $paymentAction == "search") {
 		        			PAYMENT.getPayment();
-		        		} else if (PAYMENT.paymentAction == "new"){
+		        		} else if ($paymentAction == "new"){
 		        			PAYMENT.postPayment();
 		        		} else {
 		        			$("#globalMsg").html("System error. Reload and try again");

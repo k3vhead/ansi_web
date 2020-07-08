@@ -25,10 +25,8 @@ public enum Menu {
 	BUDGET_CONTROL(		"Budget Control", 		LOOKUPS, Permission.CLAIMS_READ, 	"budgetControlLookup.html"),
 	CLAIM_DETAIL(		"Claim Detail", 		LOOKUPS, Permission.CLAIMS_READ, 	"claimDetailLookup.html"),
 	CALL_NOTES(         "Call Notes",           LOOKUPS, Permission.CALL_NOTE_READ, "callNoteLookup.html"),
-	CALENDAR(           "ANSI Calendar",        LOOKUPS, Permission.CALENDAR_READ,  "calendarLookup.html"),
-	BATCH_LOG(          "Batch Log",            LOOKUPS, Permission.BATCH_LOG_READ, "batchLogLookup.html"),
 	DOCUMENT_LOOKUP(	"Document", 			LOOKUPS, Permission.DOCUMENT_READ, "documentLookup.html"),
-
+	
 	
 	REPORTS("Reports", null, null,"#"),
 	DRV30(				"30 Day DRV",			REPORTS, Permission.TICKET_READ,	"ticketView.html"),
@@ -50,7 +48,6 @@ public enum Menu {
 	TICKET_OVERRIDE(	"Ticket Override", 		QUICK_LINKS, Permission.TICKET_WRITE,	"ticketOverride.html"),
 	CLAIM_ENTRY(		"Claim Entry", 			QUICK_LINKS, Permission.CLAIMS_WRITE,	"claimEntry.html"),
 	SPECIAL_OVERRIDE(	"Special Override",		QUICK_LINKS, Permission.SPECIAL_OVERRIDE_READ, "specialOverride.html"),
-	DIVISION_CLOSE(     "Division Close",       QUICK_LINKS, Permission.DIVISION_CLOSE_READ, "divisionClose.html"),
 	
 	
 	SETTINGS("Settings", null, Permission.SYSADMIN_READ,"#"),
@@ -59,14 +56,12 @@ public enum Menu {
 	DIVISIONS(			"Divisions",			SETTINGS,	Permission.SYSADMIN_READ,	"divisionAdmin.html"),
 	USER_LOOKUP(		"User Lookup",			SETTINGS,	Permission.SYSADMIN_READ,	"userLookup.html"),
 	PERMISSIONS(		"Permissions",			SETTINGS,	Permission.SYSADMIN_READ,	"permissionGroup.html"),
-	REPORT_SUBSCRIPTION("Report Subscriptions", SETTINGS,   Permission.REPORT_SUBSCRIPTION_OVERRIDE, "reportSubscriptionAdmin.html"),
 	MOTD(               "Message of the Day",   SETTINGS,   Permission.SYSADMIN_WRITE,  "motd.html"),
 
 	
 	MY_ANSI("My ANSI", null, null,"#"),
-	MY_ACCOUNT(         "My Account",           MY_ANSI,    null,                       "myAccount.html"),
-	MY_REPORTS(         "Report Subscriptions", MY_ANSI,    Permission.REPORT_SUBSCRIPTION_WRITE, "reportSubscription.html"),
-	LOGOFF(             "Logoff",               MY_ANSI,    null,                       "logoff.html"),
+	MY_ACCOUNT("My Account", MY_ANSI,null,"myAccount.html"),
+	LOGOFF("Logoff", MY_ANSI,null,"logoff.html"),
 	
 	;
 	
