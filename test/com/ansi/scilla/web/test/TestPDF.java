@@ -23,7 +23,7 @@ public class TestPDF {
 
 	public static void main(String[] args) {
 		try {
-//			TesterUtils.makeLoggers();
+			TesterUtils.makeLoggers();
 			new TestPDF().go();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -55,8 +55,7 @@ public class TestPDF {
 					ByteArrayOutputStream baos = maker.makeInvoices(conn, divisionId, printDate, dueDate, ticketList);
 					
 					
-					//FileOutputStream os = new FileOutputStream(new File("/home/dclewis/Documents/projects/ANSI_Scheduling/invoice_test_" + divisionId + ".pdf"));
-					FileOutputStream os = new FileOutputStream(new File("/home/Documents/pdfs/invoice_test_" + divisionId + ".pdf"));
+					FileOutputStream os = new FileOutputStream(new File("/home/dclewis/Documents/projects/ANSI_Scheduling/invoice_test_" + divisionId + ".pdf"));
 					baos.writeTo(os);
 					os.flush();
 					os.close();

@@ -31,7 +31,7 @@ public class QOTD {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDevConn();
-			MotdServlet servlet = new MotdServlet();
+//			MotdServlet servlet = new MotdServlet();
 //			String message = servlet.processGet(conn);
 //			System.out.println(message);
 		} finally {

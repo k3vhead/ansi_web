@@ -6,6 +6,6 @@ public final class SuccessMessage extends WebMessages {
 
 	public SuccessMessage() {
 		super();
-		this.addMessage(GLOBAL_MESSAGE, "Success");
+		super.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
 	}
 }

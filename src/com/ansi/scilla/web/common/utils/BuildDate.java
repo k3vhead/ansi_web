@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +19,9 @@ public class BuildDate extends ApplicationObject {
 	private String webBuildDate;
 	private String commonBuildDate;
 	private String reportBuildDate;
+	private String webBranch;
+	private String reportBranch;
+	private String commonBranch;
 
 	public BuildDate() {
 		super();
@@ -36,6 +40,11 @@ public class BuildDate extends ApplicationObject {
 			InputStream reportStream = BuildDate.class.getClassLoader().getResourceAsStream(reportResource);
 			this.reportBuildDate = makeBuildDate(reportStream);
 			reportStream.close();
+			
+			String branchResource="resources/branch.properties";
+			InputStream branchStream = BuildDate.class.getClassLoader().getResourceAsStream(branchResource);
+			makeGitBranches(branchStream);
+			branchStream.close();
 		} catch ( Exception e ) {
 			AppUtils.logException(e);
 			this.webBuildDate = "Error";
@@ -72,6 +81,40 @@ public class BuildDate extends ApplicationObject {
         return buildDate;
 	}
 
+	
+	
+	private void makeGitBranches(InputStream is) throws IOException {		
+		Writer writer = new StringWriter();
+        char[] buffer = new char[1024];
+        try {
+            Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+            int n;
+            while ((n = reader.read(buffer)) != -1) {
+                writer.write(buffer, 0, n);
+            }
+        } finally {
+            is.close();
+        }
+        String propertyString = writer.toString();
+        String[] lines = propertyString.split("\n");
+        for ( int i = 0; i < lines.length; i++ ) {
+        	String[] values = lines[i].split("=");
+        	if ( values.length == 2 ) {
+        		switch ( values[0] ) {
+        		case "web":
+        			this.webBranch=values[1];
+        			break;
+        		case "common":
+        			this.commonBranch=values[1];
+        			break;
+        		case "report":
+        			this.reportBranch=values[1];
+        			break;
+        		}
+        	}
+        }
+	}
+
 	public String getWebBuildDate() {
 		return webBuildDate;
 	}
@@ -83,4 +126,18 @@ public class BuildDate extends ApplicationObject {
 	public String getReportBuildDate() {
 		return reportBuildDate;
 	}
+
+	public String getWebBranch() {
+		return webBranch;
+	}
+
+	public String getReportBranch() {
+		return reportBranch;
+	}
+
+	public String getCommonBranch() {
+		return commonBranch;
+	}
+	
+	
 }
