@@ -15,8 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Level;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import com.ansi.scilla.report.reportBuilder.htmlBuilder.HTMLBuilder;
-import com.ansi.scilla.report.reportBuilder.htmlBuilder.HTMLSummaryBuilder;
+import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.report.reportBuilder.reportType.AbstractReport;
 import com.ansi.scilla.report.reportBuilder.reportType.AnsiReport;
 import com.ansi.scilla.report.reportBuilder.reportType.CompoundReport;
@@ -24,6 +23,8 @@ import com.ansi.scilla.report.reportBuilder.reportType.CustomReport;
 import com.ansi.scilla.report.reportBuilder.reportType.DataDumpReport;
 import com.ansi.scilla.report.reportBuilder.reportType.StandardReport;
 import com.ansi.scilla.report.reportBuilder.reportType.StandardSummaryReport;
+import com.ansi.scilla.report.reportBuilder.htmlBuilder.HTMLBuilder;
+import com.ansi.scilla.report.reportBuilder.htmlBuilder.HTMLSummaryBuilder;
 import com.ansi.scilla.report.reportBuilder.xlsBuilder.XLSBuilder;
 import com.ansi.scilla.report.reportBuilder.xlsBuilder.XLSSummaryBuilder;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
@@ -53,8 +54,11 @@ public class StandardReportServlet extends AbstractServlet {
 			
 			this.def = new ReportDefinition(request);
 			List<String> messageList = def.validate(conn);
-			workbook = generateXLSReport(conn);
-			fileName = def.makeReportFileName(conn);
+			ReportAndFilename reportAndFilename = generateXLSReport(conn);
+			workbook = reportAndFilename.report;
+			fileName = reportAndFilename.fileName;
+//			workbook = generateXLSReport(conn);
+//			fileName = def.makeReportFileName(conn);
 //			fileName = URLEncoder.encode(fileName, "UTF-8");
 		} catch ( Exception e) 	{
 			AppUtils.logException(e);
@@ -203,12 +207,14 @@ public class StandardReportServlet extends AbstractServlet {
 	
 	
 	
-	private XSSFWorkbook generateXLSReport(Connection conn) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	private ReportAndFilename generateXLSReport(Connection conn) throws Exception {
 		XSSFWorkbook reportXLS = new XSSFWorkbook();
 		AnsiReport report = def.build(conn);
+		String fileName = def.makeReportFileName(conn, report);
+		
 		Method method = findAnXLSMethod(report);
 		method.invoke(this, new Object[] {report, reportXLS});
-		return reportXLS;
+		return new ReportAndFilename(reportXLS, fileName);
 
 	}
 
@@ -259,5 +265,18 @@ public class StandardReportServlet extends AbstractServlet {
 	
 	public void buildXLS(CustomReport report, XSSFWorkbook workbook) throws Exception {
 		report.add2XLS(workbook);
+	}
+	
+	
+	public class ReportAndFilename extends ApplicationObject {
+		private static final long serialVersionUID = 1L;
+		public XSSFWorkbook report;
+		public String fileName;
+		public ReportAndFilename(XSSFWorkbook report, String fileName) {
+			super();
+			this.report = report;
+			this.fileName = fileName;
+		}
+		
 	}
 }

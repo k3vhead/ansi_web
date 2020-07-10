@@ -95,6 +95,11 @@ public enum Permission {
 	CLAIMS_READ(CLAIMS, false, "Can read ticket claims"),
 	CLAIMS_WRITE(CLAIMS_READ, false, "Can edit ticket claims"),
 
+	REPORT_SUBSCRIPTION(null, false, "Functional Area: Report Subscription"),
+	REPORT_SUBSCRIPTION_READ(REPORT_SUBSCRIPTION, false, "Can Read Report Subscriptions"),
+	REPORT_SUBSCRIPTION_WRITE(REPORT_SUBSCRIPTION_READ, false, "Can Subscribe to Reports"),
+	REPORT_SUBSCRIPTION_OVERRIDE(REPORT_SUBSCRIPTION_WRITE, false, "Can Subscribe others to reports"),
+	
 	REPORTS_AGING(null, false, "Functional Area: Aging Reports"),
 	REPORTS_AGING_READ(REPORTS_AGING, false, "Can read aging reports"),
 	
@@ -152,6 +157,7 @@ public enum Permission {
 	DIVISION_CLOSE(null, false, "Functional Area: Division Close"),
 	DIVISION_CLOSE_READ(DIVISION_CLOSE, false, "Can see division close dates"),
 	DIVISION_CLOSE_WRITE(DIVISION_CLOSE_READ, true, "Can set division close dates"),
+	DIVISION_CLOSE_OVERRIDE(DIVISION_CLOSE_WRITE, true, "Can override division close dates"),
 
 	BATCH_LOG(null, false, "Functional Area: Batch Logging"),
 	BATCH_LOG_READ(BATCH_LOG, false, "Can view the batch log"),

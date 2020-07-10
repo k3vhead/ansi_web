@@ -4,9 +4,10 @@ import java.sql.Connection;
 import java.util.Calendar;
 
 import com.ansi.scilla.common.db.Division;
-import com.ansi.scilla.report.reportBuilder.reportBy.ReportByDivStartEnd;
 import com.ansi.scilla.report.reportBuilder.reportType.AbstractReport;
 import com.ansi.scilla.report.reportBuilder.reportType.CompoundReport;
+import com.ansi.scilla.report.reportBuilder.reportBy.ReportByDivMonthYear;
+import com.ansi.scilla.report.reportBuilder.reportBy.ReportByDivision;
 import com.ansi.scilla.report.sixMonthRollingVolume.SixMonthRollingVolumeReport;
 
 /**
@@ -15,11 +16,10 @@ import com.ansi.scilla.report.sixMonthRollingVolume.SixMonthRollingVolumeReport;
  * @author dclewis
  *
  */
-public class SixMonthRollingVolumeWebReport extends CompoundReport implements ReportByDivStartEnd {
+public class SixMonthRollingVolumeWebReport extends CompoundReport implements ReportByDivMonthYear, ReportByDivision {
 
 	private static final long serialVersionUID = 1L;
 	public static final String REPORT_TITLE = "6-Month Rolling Volume";
-	public static final String FILENAME = "SixMonthRollingVolume";
 
 	
 	protected SixMonthRollingVolumeWebReport(Connection conn, Integer divisionId, Integer month1, Integer year1, Integer month2, Integer year2) throws Exception {
@@ -37,17 +37,10 @@ public class SixMonthRollingVolumeWebReport extends CompoundReport implements Re
 	}
 
 
-
-
 	@Override
-	public String makeFileName(Calendar runDate, Division division, Calendar startDate,
-			Calendar endDate) {
-		return ReportByDivStartEnd.super.makeFileName(FILENAME, runDate, division, startDate, endDate);
+	public String makeFileName(Calendar runDate, Division division, Calendar startDate, Calendar endDate) {
+		return makeFileName("CRR", runDate, division, startDate, endDate);
 	}
-
-
-
-	
 
 	
 }
