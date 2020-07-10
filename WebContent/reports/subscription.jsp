@@ -110,7 +110,7 @@
         		//	$("#subscription").html($reportId, $divisionId, $subscribe, $allDivisions, $allReportType);
         			
         		
-        			if ( $allReportType != null ) {
+        	/*		if ( $allReportType != null ) {
         				var $reportId = null;
         			} else {
         				var $reportId = $reportId;
@@ -123,7 +123,7 @@
        			    }
        			    else if ($allDivisions == false){
        			        var $divisionId = $divisionId;
-       			    }
+       			    } */
             				//var $allDivisions = boolean;
             				//var $subscribe = boolean;
             				//var $subscribe = $($selector).prop('checked');
@@ -137,8 +137,9 @@
 	       			var jqxhr = $.ajax({
 						type: 'POST',
 						url: "reports/subscription",
-          				data: JSON.stringify($outbound),
-						statusCode: {
+          				$outbound : [{"reportId":null, "allReportType":$allReportType}, {"divisionId":null, "allDivisions":$allDivisions}],
+      					data: JSON.stringify($outbound),
+      					statusCode: {
 							200 : function($data) {
           							if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
           								$("#globalMsg").html("Edit Error").show().fadeOut(4000);
@@ -187,7 +188,7 @@
            			});
         		},
         		
-        		makeDivisionTable : function($reportList, $divisionList) {
+        		makeDivisionTable : function($reportList, $divisionList, $subscribe) {
         		/*	var $selector = REPORT_SUBSCRIPTION
         			$($selector).prop('checked',true);
         			var $isChecked = $($selector).prop('checked'); */
@@ -435,7 +436,7 @@
         		
         		
         		
-        		makeExecutiveTable : function($reportList) {
+        		makeExecutiveTable : function($reportList, $subscribe) {
         			console.log("makeExecutiveTable");
         			var $table = $("<table>").css('text-align','center');
         			var $hdrRow = $("<tr>");   
@@ -525,7 +526,7 @@
         		},
         	
         		
-        		makeGroupTable : function($reportList, $companyList, $filter, $destination) {
+        		makeGroupTable : function($reportList, $companyList, $filter, $destination, $reportId, $divisionId, $subscribe) {
         			console.log("makeGroupTable");
         			var $table = $("<table>");
         			var $hdrRow = $("<tr>");
@@ -765,15 +766,20 @@
     				var $divisionId = $division.divisionId;
     				var $allReportType = $allReportType;
     				//var $subscribe = $($selector).prop('checked');
-    				var $isChecked = $($selector).prop('checked');
-    				var $outbound = {"reportId":reportId, "divisionId":divisionId, "subscribe":boolean, "allDivisions":boolean, "allReportType":allReportType};
+    			//	var $isChecked = $($selector).prop('checked');
+    				var $outbound = [{"reportId":null, "allReportType":"Required Entry"}, {"divisionId":null, "allDivisions":$allDivisions}]
+    					
+    				
+    					
+    					
+    			//	{"reportId":reportId, "divisionId":divisionId, "subscribe":boolean, "allDivisions":boolean, "allReportType":allReportType};
     			//	{"action":"REPEAT_JOB", "annualRepeat":$isChecked};
     				var $url = "reports/subscription";
 
     				var jqxhr3 = $.ajax({
     					type: 'POST',
     					url: $url,
-    					data: JSON.stringify($outbound),
+    					data: {"reportId":reportId, "divisionId":divisionId, "subscribe":boolean, "allDivisions":boolean, "allReportType":allReportType},
     					statusCode: {
     						200: function($data) {
     							if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
@@ -847,7 +853,7 @@
 				}); */
        		},
        		
-       		makeLists : function() {
+       		makeLists : function($reportId, $divisionId, $subscribe) {
        			var jqxhr = $.ajax({
 					type: 'GET',
 					url: "reports/subscription",
@@ -860,10 +866,10 @@
 						//	REPORT_SUBSCRIPTION.allReportType = $data.data.allReportType;
 						//	REPORT_SUBSCRIPTION.allDivisions = $data.data.allDivisions;
 						//	REPORT_SUBSCRIPTION.subscribe = $data.data.subscribe;
-							REPORT_SUBSCRIPTION.makeDivisionTable($data.data.reportList, $data.data.divisionList);
-							REPORT_SUBSCRIPTION.makeGroupTable($data.data.reportList, $data.data.companyList, 'summaryReport', "#company-selection-container");
-							REPORT_SUBSCRIPTION.makeGroupTable($data.data.reportList, $data.data.regionList, 'summaryReport', "#region-selection-container");
-							REPORT_SUBSCRIPTION.makeExecutiveTable($data.data.reportList);
+							REPORT_SUBSCRIPTION.makeDivisionTable($data.data.reportList, $data.data.divisionList, $reportId, $divisionId, $subscribe);
+							REPORT_SUBSCRIPTION.makeGroupTable($data.data.reportList, $data.data.companyList, 'summaryReport', "#company-selection-container", $reportId, $divisionId, $subscribe);
+							REPORT_SUBSCRIPTION.makeGroupTable($data.data.reportList, $data.data.regionList, 'summaryReport', "#region-selection-container", $reportId, $divisionId, $subscribe);
+							REPORT_SUBSCRIPTION.makeExecutiveTable($data.data.reportList, $reportId, $subscribe);
 		        			$("#thinking").hide();
 						},
 						403: function($data) {
