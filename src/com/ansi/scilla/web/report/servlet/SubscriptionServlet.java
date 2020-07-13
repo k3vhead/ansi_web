@@ -123,12 +123,12 @@ public class SubscriptionServlet extends AbstractServlet {
 
 
 	private void doSubscription(Connection conn, SubscriptionRequest subscriptionRequest, SessionUser user, HttpServletResponse response) throws Exception {
-		List<BatchReports> updatedReports = new ArrayList<BatchReports>(); // this is the reports we have actually updated
-		
+		logger.log(Level.DEBUG, subscriptionRequest);
+		List<BatchReports> updatedReports = new ArrayList<BatchReports>(); // this is the reports we have actually updated		
 		List<BatchReports> reportsToUpdate = new ArrayList<BatchReports>(); // this is the reports that we plan to update
 		
-		AllReportType allReportType = AllReportType.NONE;
-		if ( StringUtils.isBlank(subscriptionRequest.getAllReportType())) {
+		AllReportType allReportType = StringUtils.isBlank(subscriptionRequest.getAllReportType()) ? AllReportType.NONE : AllReportType.valueOf(subscriptionRequest.getAllReportType());
+		if ( allReportType.equals(AllReportType.NONE) ) {
 			// This is a single report request
 			reportsToUpdate.add( BatchReports.valueOf(subscriptionRequest.getReportId()) );
 		} else {
@@ -138,14 +138,21 @@ public class SubscriptionServlet extends AbstractServlet {
 		}
 
 		List<Integer> divisionsToUpdate = new ArrayList<Integer>();
-		if ( subscriptionRequest.getAllDivisions() ) {
+		if ( subscriptionRequest.getAllDivisions().booleanValue() == true ) {
 			divisionsToUpdate = (List<Integer>) CollectionUtils.collect(SubscriptionUtils.makeDivisionList(conn, user.getUserId()), new Div2Id());
 		} else {
 			divisionsToUpdate.add(subscriptionRequest.getDivisionId());
 		}
 		
+		for ( BatchReports report : reportsToUpdate ) {
+			logger.log(Level.DEBUG, "Updating report: " + report.abbreviation());
+			for ( Integer div : divisionsToUpdate ) {
+				logger.log(Level.DEBUG, "Updating report: " + report.abbreviation() + " for div " + div);
+			}
+		}
 		
 		for ( BatchReports report : reportsToUpdate ) {
+			
 			if ( report.isDivisionReport() ) {
 				for ( Integer divisionId : divisionsToUpdate ) {
 					if ( doUpdate(conn, report, divisionId, user, subscriptionRequest.getSubscribe()) && ! updatedReports.contains(report) ) {
@@ -168,7 +175,7 @@ public class SubscriptionServlet extends AbstractServlet {
 	}
 	
 	private boolean doUpdate(Connection conn, BatchReports report, Integer divisionId, SessionUser user, Boolean subscribe) throws Exception {
-		System.out.println("Doing Update: " + report.abbreviation() + "\t" + divisionId);
+		logger.log(Level.DEBUG, "Doing Update: " + report.abbreviation() + "\t" + divisionId);
 		
 		boolean itWasUpdated = false;
 		Date today = new Date();
@@ -180,10 +187,12 @@ public class SubscriptionServlet extends AbstractServlet {
 		}
 		subscription.setReportId(report.name());
 		
+		logger.log(Level.DEBUG, subscription);
 		if ( subscribe.booleanValue() == true ) {
 			try {
 				subscription.selectOne(conn);
 				// trying to add something that's already there
+				logger.log(Level.DEBUG, "trying to add something that's already there");
 			} catch ( RecordNotFoundException e) {
 				subscription.setAddedBy(user.getUserId());
 				subscription.setUpdatedBy(user.getUserId());
@@ -191,13 +200,16 @@ public class SubscriptionServlet extends AbstractServlet {
 				subscription.setUpdatedDate(today);
 				subscription.insertWithKey(conn);
 				itWasUpdated = true;
+				logger.log(Level.DEBUG, "added subscription");
 			}
 		} else {
 			try {
 				subscription.delete(conn);
 				itWasUpdated = true;
+				logger.log(Level.DEBUG, "added subscription");
 			} catch ( RecordNotFoundException e ) {
 				// we don't care - deleting something that doesn't exist
+				logger.log(Level.DEBUG, "deleting something that doesn't exist");
 			}
 		}
 		return itWasUpdated;

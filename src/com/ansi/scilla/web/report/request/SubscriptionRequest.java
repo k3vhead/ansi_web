@@ -22,8 +22,8 @@ public class SubscriptionRequest extends AbstractRequest {
 	private String reportId;
 	private Integer divisionId;
 	private Boolean subscribe;
-	private Boolean allDivisions;
-	private String allReportType;
+	private Boolean allDivisions = false;
+	private String allReportType = AllReportType.NONE.name();
 	
 	public String getReportId() {
 		return reportId;
@@ -69,9 +69,9 @@ public class SubscriptionRequest extends AbstractRequest {
 			}
 		}
 		
-		if ( this.allDivisions == null ) {
-			webMessages.addMessage(ALL_DIVISIONS, "Required Entry");
-		}
+//		if ( this.allDivisions == null ) {
+//			webMessages.addMessage(ALL_DIVISIONS, "Required Entry");
+//		}
 
 		RequestValidator.validateBoolean(webMessages, SUBSCRIBE, this.subscribe, true);
 		
