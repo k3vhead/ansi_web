@@ -17,6 +17,7 @@ public class TestReportSubscription {
 			SubscriptionResponse r = new SubscriptionResponse(conn, DCL);
 			String json = AppUtils.object2json(r);
 			System.out.println(json);
+			System.out.println(r.getAllDivReportList());
 		} finally {
 			AppUtils.closeQuiet(conn);
 		}

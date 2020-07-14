@@ -10,7 +10,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.IterableUtils;
+import org.apache.commons.collections4.Predicate;
 import org.apache.commons.collections4.Transformer;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,6 +36,8 @@ public class SubscriptionResponse extends MessageResponse {
 	private List<Group> companyList;
 	private List<Group> regionList;
 	private List<MySubscription> subscriptionList;
+	private List<String> allDivReportList;
+//	private List<Integer> allReportDivList;
 	
 	private Logger logger = LogManager.getLogger(SubscriptionResponse.class);
 
@@ -47,6 +52,7 @@ public class SubscriptionResponse extends MessageResponse {
 		
 		makeDivisionList(conn, userId);		
 		makeGroupLists(conn, divisionList);
+		makeAllDivReportList();
 		
 		for ( BatchReports report : BatchReports.values() ) {
 			this.reportList.add(new Report(report));
@@ -55,7 +61,8 @@ public class SubscriptionResponse extends MessageResponse {
 	}
 
 	private void makeDivisionList(Connection conn, Integer userId) throws SQLException {
-		this.divisionList = SubscriptionUtils.makeDivisionList(conn, userId);		
+		this.divisionList = SubscriptionUtils.makeDivisionList(conn, userId);	
+		Collections.sort(divisionList);
 	}
 
 	
@@ -105,6 +112,19 @@ public class SubscriptionResponse extends MessageResponse {
 	}
 
 
+	private void makeAllDivReportList() {
+//		logger.log(Level.DEBUG, "MakeAllDivReportList: " + this.subscriptionList.size());
+		this.allDivReportList = new ArrayList<String>();
+		for ( MySubscription subscription : this.subscriptionList ) {
+			Integer divCount = Math.toIntExact(IterableUtils.countMatches(this.subscriptionList, new ReportMatchPredicate(subscription.getReportId())));
+//			logger.log(Level.DEBUG, subscription.getReportId() + "\t" + divCount);
+			if ( divCount.equals(divisionList.size()) && ! this.allDivReportList.contains(subscription.getReportId())) {
+				this.allDivReportList.add(subscription.getReportId());
+			}
+		}
+	}
+	
+
 	public List<Div> getDivisionList() {
 		return divisionList;
 	}
@@ -143,6 +163,12 @@ public class SubscriptionResponse extends MessageResponse {
 
 	public void setSubscriptionList(List<MySubscription> subscriptionList) {
 		this.subscriptionList = subscriptionList;
+	}
+	public List<String> getAllDivReportList() {
+		return allDivReportList;
+	}
+	public void setAllDivReportList(List<String> allDivReportList) {
+		this.allDivReportList = allDivReportList;
 	}
 
 
@@ -204,7 +230,7 @@ public class SubscriptionResponse extends MessageResponse {
 		}
 		@Override
 		public int compareTo(Report o) {
-			return o.getCode().compareTo(this.getCode());
+			return this.getCode().compareTo(o.getCode());
 		}
 		
 		
@@ -287,11 +313,41 @@ public class SubscriptionResponse extends MessageResponse {
 	
 	
 	public class DivTransformer implements Transformer<Div, Integer> {
-
 		@Override
 		public Integer transform(Div div) {
 			return div.getDivisionId();
 		}
 		
+	}
+	
+	
+	public class ReportMatchPredicate implements Predicate<MySubscription> {
+		private String reportId;
+		
+		public ReportMatchPredicate(String reportId) {
+			super();
+			this.reportId = reportId;
+		}
+
+		@Override
+		public boolean evaluate(MySubscription subscription) {
+			return subscription.getReportId().equals(reportId);
+		}
+	}
+	
+	
+	
+	public class DivMatchPredicate implements Predicate<MySubscription> {
+		private Integer divisionId;
+		
+		public DivMatchPredicate(Integer divisionId) {
+			super();
+			this.divisionId = divisionId;
+		}
+
+		@Override
+		public boolean evaluate(MySubscription subscription) {
+			return subscription.getDivisionId().equals(divisionId);
+		}
 	}
 }
