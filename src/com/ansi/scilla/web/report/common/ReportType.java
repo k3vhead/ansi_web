@@ -176,6 +176,14 @@ public enum ReportType {
 			Permission.PAYMENT_READ,
 			"Past Due"
 		),
+	REPORT_SUBSCRIPTION_CHANGE(
+			ReportInputType.reportByStartEnd,
+			"com.ansi.scilla.report.subscriptions.SubscriptionChangeReport",
+			"com.ansi.scilla.web.report.request.ValidateStartEnd", 
+			new String[] {"startDate", "endDate"},
+			Permission.REPORT_DISTRIBUTION_READ,
+			"Report Subscription Changes"
+		),
 	SIX_MONTH_ROLLING_VOLUME_REPORT(
 			ReportInputType.reportByDivMonthYear, 
 			"com.ansi.scilla.report.sixMonthRollingVolume.SmrvReport",
