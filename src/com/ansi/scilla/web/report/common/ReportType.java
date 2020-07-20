@@ -228,14 +228,6 @@ public enum ReportType {
 	}
 	
 	
-	@Deprecated
-	public String jsp() {
-		return this.jsp.name();
-	}
-	@Deprecated
-	public ReportInputType reportJsp() {
-		return this.jsp;
-	}
 	public ReportInputType reportInputType() { return this.jsp; }
 	
 	public String reportClassName() { return this.reportClassName; }
