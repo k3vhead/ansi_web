@@ -55,8 +55,8 @@ public class ReportAction extends SessionPageDisplayAction {
 					request.setAttribute(REPORT_TITLE, reportTitle);
 					request.setAttribute(REPORT_TYPE, reportType.toString());
 					
-					String jsp = reportType.jsp();
-					forward = mapping.findForward(jsp);	
+//					String jsp = reportType.jsp();
+					forward = mapping.findForward(reportType.reportInputType().name());	
 				} else {
 					List<ReportRow> reportRowList = new ArrayList<ReportRow>();
 					for ( ReportType reportType : ReportType.values()) {
