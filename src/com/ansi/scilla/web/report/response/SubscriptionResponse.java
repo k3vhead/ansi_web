@@ -10,10 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.collections4.Transformer;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,6 +25,7 @@ import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.report.common.BatchReports;
 import com.ansi.scilla.web.report.common.SubscriptionUtils;
 
+
 public class SubscriptionResponse extends MessageResponse {
 
 	private static final long serialVersionUID = 1L;
@@ -36,8 +35,7 @@ public class SubscriptionResponse extends MessageResponse {
 	private List<Group> companyList;
 	private List<Group> regionList;
 	private List<MySubscription> subscriptionList;
-	private List<String> allDivReportList;
-//	private List<Integer> allReportDivList;
+
 	
 	private Logger logger = LogManager.getLogger(SubscriptionResponse.class);
 
@@ -52,7 +50,6 @@ public class SubscriptionResponse extends MessageResponse {
 		
 		makeDivisionList(conn, userId);		
 		makeGroupLists(conn, divisionList);
-		makeAllDivReportList();
 		
 		for ( BatchReports report : BatchReports.values() ) {
 			this.reportList.add(new Report(report));
@@ -112,19 +109,6 @@ public class SubscriptionResponse extends MessageResponse {
 	}
 
 
-	private void makeAllDivReportList() {
-//		logger.log(Level.DEBUG, "MakeAllDivReportList: " + this.subscriptionList.size());
-		this.allDivReportList = new ArrayList<String>();
-		for ( MySubscription subscription : this.subscriptionList ) {
-			Integer divCount = Math.toIntExact(IterableUtils.countMatches(this.subscriptionList, new ReportMatchPredicate(subscription.getReportId())));
-//			logger.log(Level.DEBUG, subscription.getReportId() + "\t" + divCount);
-			if ( divCount.equals(divisionList.size()) && ! this.allDivReportList.contains(subscription.getReportId())) {
-				this.allDivReportList.add(subscription.getReportId());
-			}
-		}
-	}
-	
-
 	public List<Div> getDivisionList() {
 		return divisionList;
 	}
@@ -164,12 +148,7 @@ public class SubscriptionResponse extends MessageResponse {
 	public void setSubscriptionList(List<MySubscription> subscriptionList) {
 		this.subscriptionList = subscriptionList;
 	}
-	public List<String> getAllDivReportList() {
-		return allDivReportList;
-	}
-	public void setAllDivReportList(List<String> allDivReportList) {
-		this.allDivReportList = allDivReportList;
-	}
+	
 
 
 
@@ -180,17 +159,21 @@ public class SubscriptionResponse extends MessageResponse {
 		private String reportId;
 		private String code;
 		private String description;
-		private Boolean executiveReport;
+		private Boolean allAnsiReport;
 		private Boolean summaryReport;
 		private Boolean divisionReport;
+		private Boolean trendReport;
+		private Boolean utilityReport;
 		public Report(BatchReports report) {
 			super();
 			this.reportId = report.name();
 			this.code = report.abbreviation();
 			this.description = report.description();
-			this.executiveReport = report.isExecutiveReport();
+			this.allAnsiReport = report.isAllAnsiReport();
 			this.summaryReport = report.isSummaryReport();
 			this.divisionReport = report.isDivisionReport();
+			this.trendReport = report.isTrendReport();
+			this.utilityReport = report.isUtilityReport();
 		}
 		public String getReportId() {
 			return reportId;
@@ -211,10 +194,10 @@ public class SubscriptionResponse extends MessageResponse {
 			this.description = description;
 		}
 		public Boolean getExecutiveReport() {
-			return executiveReport;
+			return allAnsiReport;
 		}
 		public void setExecutiveReport(Boolean executiveReport) {
-			this.executiveReport = executiveReport;
+			this.allAnsiReport = executiveReport;
 		}
 		public Boolean getSummaryReport() {
 			return summaryReport;
@@ -227,6 +210,24 @@ public class SubscriptionResponse extends MessageResponse {
 		}
 		public void setDivisionReport(Boolean divisionReport) {
 			this.divisionReport = divisionReport;
+		}		
+		public Boolean getAllAnsiReport() {
+			return allAnsiReport;
+		}
+		public void setAllAnsiReport(Boolean allAnsiReport) {
+			this.allAnsiReport = allAnsiReport;
+		}
+		public Boolean getTrendReport() {
+			return trendReport;
+		}
+		public void setTrendReport(Boolean trendReport) {
+			this.trendReport = trendReport;
+		}
+		public Boolean getUtilityReport() {
+			return utilityReport;
+		}
+		public void setUtilityReport(Boolean utilityReport) {
+			this.utilityReport = utilityReport;
 		}
 		@Override
 		public int compareTo(Report o) {

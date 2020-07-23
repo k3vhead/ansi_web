@@ -34,7 +34,7 @@ import com.ansi.scilla.web.report.common.BatchReports;
 import com.ansi.scilla.web.report.common.SubscriptionUtils;
 import com.ansi.scilla.web.report.request.AllReportType;
 import com.ansi.scilla.web.report.request.SubscriptionRequest;
-import com.ansi.scilla.web.report.response.SubscriptionResponse;
+import com.ansi.scilla.web.report.response.SubscriptionResponse2;
 import com.ansi.scilla.web.report.response.SubscriptionUpdateResponse;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
@@ -55,7 +55,7 @@ public class SubscriptionServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			SessionData sessionData = AppUtils.validateSession(request, Permission.REPORT_SUBSCRIPTION_READ);
 //			url = new AnsiURL(request, REALM, (String[])null, false);				
-			SubscriptionResponse data = new SubscriptionResponse(conn, sessionData.getUser().getUserId());
+			SubscriptionResponse2 data = new SubscriptionResponse2(conn, sessionData.getUser().getUserId());
 			data.setWebMessages(messages);
 			super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
@@ -243,7 +243,7 @@ public class SubscriptionServlet extends AbstractServlet {
 					isTrue = arg0.isSummaryReport();
 					break;
 				case EXECUTIVE:
-					isTrue = arg0.isExecutiveReport();
+					isTrue = arg0.isAllAnsiReport();
 					break;
 				default:
 					isTrue = false;
