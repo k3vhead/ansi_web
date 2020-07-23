@@ -88,7 +88,8 @@
         		reportList : [],
         		companyList : [],
         		regionList : [],
-        		subscriptionList : [],
+        		allDivReportList : [],
+        	//	subscriptionList : [],
         		//allReportType : [],
         		
         		
@@ -99,46 +100,19 @@
         		},
                 
         		
-        		doSubscription : function($reportId, $divisionId, $subscribe, $allDivisions, $allReportType, $subscriptionId) {
+        		doSubscription : function($reportId, $divisionId, $subscribe, $allDivisions, $allReportType, $allDivReportList, $subscriptionId) {
         			if ( $subscribe ) {
-        		//		$(this).prop('checked', true);
         				$word = "Subscribe"
         			} else {
-        		//		$(this).prop('checked', false);
         				$word = "Unsubscribe"
         			}
         			
-        		//	$("#subscription").html($reportId, $divisionId, $subscribe, $allDivisions, $allReportType);
-        			
-        		
-        	/*		if ( $allReportType != null ) {
-        				var $reportId = null;
-        			} else {
-        				var $reportId = $reportId;
-        			}
+            		var $outbound = {"reportId":$reportId, "divisionId":$divisionId, "subscribe":$subscribe, "allDivisions":$allDivisions, "allReportType":$allReportType, "subscriptionId":$subscriptionId, "allDivReportList":$allDivReportList};
             				
-            				
-         				
-       				if ($allDivisions == true) {
-       			        var $divisionId = null;
-       			    }
-       			    else if ($allDivisions == false){
-       			        var $divisionId = $divisionId;
-       			    } */
-            				//var $allDivisions = boolean;
-            				//var $subscribe = boolean;
-            				//var $subscribe = $($selector).prop('checked');
-            			//	var $isChecked = $($selector).prop('checked');
-            		var $outbound = {"reportId":$reportId, "divisionId":$divisionId, "subscribe":$subscribe, "allDivisions":$allDivisions, "allReportType":$allReportType, "subscriptionId":$subscriptionId};
-            			//	{"action":"REPEAT_JOB", "annualRepeat":$isChecked};
-            				
-            			
-          			
-	            			
 	       			var jqxhr = $.ajax({
 						type: 'POST',
 						url: "reports/subscription",
-          				$outbound : [{"reportId":null, "allReportType":$allReportType}, {"divisionId":null, "allDivisions":$allDivisions}],
+          				$outbound : [{"reportId":null, "allReportType":$allReportType, "allDivReportList":$allDivReportList}, {"divisionId":null, "allDivisions":$allDivisions, "allDivReportList":$allDivReportList}],
       					data: JSON.stringify($outbound),
       					statusCode: {
 							200 : function($data) {
@@ -149,7 +123,7 @@
           							if ( $data.responseHeader.responseCode == 'SUCCESS') {
           								$("#globalMsg").html("Update Successful").show().fadeOut(4000);
           								$("#thinking").hide();
-          								REPORT_SUBSCRIPTION.makeLists($reportId, $divisionId, $subscriptionId, $subscribe);
+          								REPORT_SUBSCRIPTION.makeLists();
           								console.log("updates success");
           							}
           						},	
@@ -169,13 +143,8 @@
 						dataType: 'json'
 					});
       			
-        			
-        			
-        			
         			$("#globalMsg").html($word + " to " + $reportId + " for " + $divisionId).show().fadeOut(6000);
         			console.log($word + " to " + $reportId + " for " + $divisionId);
-        			
-        			
         			
         		},
         		
@@ -189,18 +158,13 @@
            			});
         		},
         		
-        		makeDivisionTable : function($reportList, $divisionList, $subscriptionList, $subscriptionId) {
-        		/*	var $selector = REPORT_SUBSCRIPTION
-        			$($selector).prop('checked',true);
-        			var $isChecked = $($selector).prop('checked'); */
-        			
+        		makeDivisionTable : function($reportList, $divisionList, $subscriptionList, $allDivReportList, $subscriptionId) {
         			
         			console.log("makeDivisionTable");
         			var $table = $("<table>").css('text-align','center');
         			var $hdrRow = $("<tr>");
         			
         			$hdrRow.append($("<td>"));  
-        			$hdrRow.append($('<td class ="hdr">').append("All")); 
     				$.each($divisionList, function($divIdx, $division) {
     					$divTD = $("<td>"); 
     					$divTD.addClass("div-" + $division.divisionId);
@@ -209,82 +173,26 @@
     				});
         		
         			$table.append($hdrRow);
-        			
-        			var $allRow = $("<tr>");  
-        			
-       					$selector = $allRow;
-       					$($selector).mouseover(function($event) {
-       						$($allRow).css('background-color','#F9F9F9');
-           					$($allLabel).css('background-color','#F9F9F9');
-       					});
-       					$($selector).mouseout(function($event) {
-       						$($allRow).css('background-color','transparent');
-           					$($allLabel).css('background-color','transparent');
-       					});
-        			
-        			var $allLabel = $("<td>").append("All").css('text-align','left'); 
-        			var $allTD = $("<td>").append($('<input type="checkbox" class="all-division-report-selector" />')); 
-        			
-        			$allTD.prop('checked','true');
-        			$allTD.prop('checked','false');
-
-				/*	if ($(this).is(':checked')) {
-	                    $($allTD).val("True");
-	                } else {
-	                    $($allTD).val("False");
-	                } */
 					
 					$.each( $reportList, function($reportIdx, $report) {        				
             				$.each($divisionList, function($divIdx, $division) {
-            					$selector = $allTD;
+            					$selector = ".report-" + $report.reportId + ".division" + $division.divisionId;
             					$($selector).mouseover(function($event) {
             						$(".report-" + $report.reportId).css('background-color','#F9F9F9');
             						$(".div-"+$division.divisionId).css('background-color','#F9F9F9');
-            						$($allLabel).css('background-color','#F9F9F9');
-                					$($allTD).css('background-color','#F9F9F9');
-                					$(".hdr").css('background-color','#F9F9F9');
+            					//	$($allLabel).css('background-color','#F9F9F9');
+                				//	$($allTD).css('background-color','#F9F9F9');
+                				//	$(".hdr").css('background-color','#F9F9F9');
             					});
             					$($selector).mouseout(function($event) {
             						$(".report-" + $report.reportId).css('background-color','transparent');
             						$(".div-"+$division.divisionId).css('background-color','transparent');
-            						$($allLabel).css('background-color','transparent');
-                					$($allTD).css('background-color','transparent');
-                					$(".hdr").css('background-color','transparent');
+            					//	$($allLabel).css('background-color','transparent');
+                				//	$($allTD).css('background-color','transparent');
+                				//	$(".hdr").css('background-color','transparent');
             					});
             				});
             			});   
-        			
-        			$allRow.append($allLabel); 
-        			$allRow.append($allTD); 
-					$allRow.addClass($allRow);
-					
-        			$.each($divisionList, function($divIdx, $division) {
-    					$divTD = $("<td>"); 
-    					$divTD.addClass("div-" + $division.divisionId);
-    					$divTD.append($('<input type="checkbox" class="all-report-selector" data-division="'+$division.divisionId+'" />' )); 
-    					$divTD.prop('checked','true');
-    					$divTD.prop('checked','false');
-    				//	var $divTD = $(this).
-
-    				/*	if ($(this).prop(':checked')) {
-    	                    $($divTD).val("True");
-    	                } else {
-    	                    $($divTD).val("False");
-    	                } */
-    					
-           					$selector = $divTD;
-           					$($selector).mouseover(function($event) {
-           						$(".div-"+$division.divisionId).css('background-color','#F9F9F9');
-           						$($divTD).css('background-color','#F9F9F9');
-           					});
-           					$($selector).mouseout(function($event) {
-           						$(".div-"+$division.divisionId).css('background-color','transparent');
-           						$($divTD).css('background-color','transparent');
-           					});
-  					
-    					$allRow.append($divTD); 
-    				});
-        			$table.append($allRow);
         			
         			$.each( $reportList, function($reportIdx, $report) {
         				var $tr = $("<tr>"); 
@@ -293,45 +201,12 @@
     					$reportTD.append($report.description); 
     					$tr.append($reportTD).css('text-align','left'); 
     					
-            			$allColumn = $('<td class="all">');
-    					$allColumn.append($('<input type="checkbox" class="all-division-selector" data-report="'+$report.reportId+'" />'));
-    					$allColumn.prop('checked','true');
-    					$allColumn.prop('checked','false');
-
-    				/*	if ($(this).is(':checked')) {
-    	                    $($allColumn).val("True");
-    	                } else {
-    	                    $($allColumn).val("False");
-    	                } */
-    					
-        				$selector = $allColumn;
-    					$($selector).mouseover(function($event) {    			
-    						$($allTD).css('background-color','#F9F9F9');
-    						$(".all").css('background-color','#F9F9F9');
-        					$(".hdr").css('background-color','#F9F9F9');
-    					});
-    					$($selector).mouseout(function($event) {
-    						$($allTD).css('background-color','transparent');
-    						$(".all").css('background-color','transparent');
-        					$(".hdr").css('background-color','transparent');
-    					});		
-            		
-    					$tr.append($allColumn);
-    					
         				$.each($divisionList, function($divIdx, $division) {
         					$divTD = $("<td>").css('text-align','center');
         					$divTD.addClass("div-" + $division.divisionId);
         					$divTD.append($('<input type="checkbox" name="'+$report.reportId+"-" + $division.divisionId +'" class="report-selector" data-report="'+$report.reportId+'" data-division="'+$division.divisionId+'"/>'));
         					$divTD.prop('checked','true');
         					$divTD.prop('checked','false');
-
-        			/*		if ($(this).is(':checked')) {
-        	                    $($divTD).val("True");
-        	                } else {
-        	                    $($divTD).val("False");
-        	                } */
-        					
-        					
         					
         					$tr.append($divTD);
         				});
@@ -339,15 +214,14 @@
         				
         			});
         			
-        			
         			$("#division-selection-container").html("");
         			$("#division-selection-container").append($table);
         			
-
-
-
-					$.each($subscriptionList, function($subscriptionIdx, $subscription) {
-						$subscriptionId = $("input[type='checkbox']");		
+					$.each($subscriptionList, function($index, $value) {
+						var $checkboxName = $value.reportId + "-" + $value.divisionId;
+						var $checkbox = "#division-selection-container input[name='" + $checkboxName +"']";
+						console.log($checkbox);
+						$($checkbox).prop(":checked", true);	
 						
                 	}); 
         			
@@ -363,6 +237,20 @@
         						$(".div-"+$division.divisionId).css('background-color','transparent');
         					});
         				});
+        			});   
+        			
+        			$.each( $reportList, function($reportIdx, $report) {        				
+        			//	$.each($divisionList, function($divIdx, $division) {
+        					$selector = ".report-" + $report.reportId;
+        					$($selector).mouseover(function($event) {
+        						$(".report-" + $report.reportId).css('background-color','#F9F9F9');
+        					//	$(".div-"+$division.divisionId).css('background-color','#F9F9F9');
+        					});
+        					$($selector).mouseout(function($event) {
+        						$(".report-" + $report.reportId).css('background-color','transparent');
+        					//	$(".div-"+$division.divisionId).css('background-color','transparent');
+        					});
+        			//	});
         			});   
 
         			$.each( $divisionList, function($divIdx, $division) {        
@@ -381,63 +269,6 @@
         				var $subscriptionId = $(this).attr("data-subscriptionId");
         				REPORT_SUBSCRIPTION.doSubscription($reportId, $divisionId, $subscribe, $subscriptionId);
         			});
-        			$("#division-selection-container .all-report-selector").click(function($event) {
-        				var $divisionId = $(this).attr("data-division");
-        				var $allReportType = $('.all-report-selector input[name="'+ $divisionId+'"]').prop('checked',true);
-        				var $subscribe = $(this).prop("checked");
-        				var $subscriptionId = $(this).attr("data-subscriptionId");
-        				console.log("all for " + $divisionId + " " + $subscribe);
-        				$.each( REPORT_SUBSCRIPTION.reportList, function($index, $report) {
-        					$selector = '#division-selection-container input[name="'+$report.reportId+'-'+ $divisionId+'"]';
-        					//$selector = '#division-selection-container input[name="'+$report.reportId+'-'+ $divisionId+'"]';
-        					$subscribed = $($selector).prop("checked");
-        					if ( $subscribe != $subscribed ) {
-        						$($selector).prop("checked", $subscribe);
-                				
-        						REPORT_SUBSCRIPTION.doSubscription($allReportType, $report.reportId, $divisionId, $subscribe, $subscriptionId);	
-        					}
-        				}); 
-        			});
-        			$("#division-selection-container .all-division-selector").click(function($event) {
-        				var $reportId = $(this).attr("data-report");
-        				var $allDivisions = $('.all-division-selector input[name="'+ $reportId+'"]').prop('checked',true);
-        				var $subscribe = $(this).prop("checked");
-        				var $subscriptionId = $(this).attr("data-subscriptionId");
-        				
-        				console.log("all for " + $reportId + " " + $subscribe);
-        				$.each( REPORT_SUBSCRIPTION.divisionList, function($index, $division) {
-        					$selector = '#division-selection-container input[name="'+$reportId+'-'+ $division.divisionId+'"]';
-        					$subscribed = $($selector).prop("checked");
-        					if ( $subscribe != $subscribed ) {
-        						$($selector).prop("checked", $subscribe);
-                				
-        						REPORT_SUBSCRIPTION.doSubscription($allDivisions, $reportId, $division.divisionId, $subscribe, $subscriptionId);	
-        					}
-        				});      				
-        			});        			
-        			$("#division-selection-container .all-division-report-selector").click(function($event) {
-        				var $reportId = $(this).attr("data-report");
-        				var $divisionId = $(this).attr("data-division");
-        				var $subscribe = $(this).prop("checked");
-        				var $subscriptionId = $(this).attr("data-subscriptionId");
-        				console.log("all for all " + $subscribe);
-        				//$("#division-selection-container .all-division-report-selector").prop("checked", $subscribe);
-        			//	$("#division-selection-container .all-report-selector").prop("checked", $subscribe);
-        				$.each( $reportList, function($reportIdx, $report) {        				
-            				$.each($divisionList, function($divIdx, $division) {
-        						var $allReportType = $('.all-report-selector input[name="'+ $divisionId+'"]').prop('checked',true);
-        						var $allDivisions = $('.all-division-selector input[name="'+ $reportId+'"]').prop('checked',true);
-            					$selector = '#division-selection-container input[name="'+$allReportType+'-'+ $allDivisions+'"]';
-            					$subscribed = $($selector).prop("checked");
-            					if ( $subscribe != $subscribed ) {
-            						$($selector).prop("checked", $subscribe);
-                    				
-            						REPORT_SUBSCRIPTION.doSubscription($allReportType, $allDivisions, $subscribe, $subscriptionId);	
-            					}
-            				});
-            			});   
-        			});
-        			
         
         			$.each( $("#selection-menu-container input[name='subscription-selector']"), function($index, $value) {
         				if ( $value.value == 'division' ) {
@@ -445,7 +276,6 @@
         				}        				
         			});
         		},
-        		
         		
         		
         		makeExecutiveTable : function($reportList, $subscriptionList) {
@@ -467,15 +297,15 @@
         					$tr.append($reportTD).css('text-align','left'); 
         					$allTD.append($('<input type="checkbox" name="'+$report.reportId+'" class="allselector" data-report="'+$selector+'"/>'));
         					$allTD.prop('checked','true');
-        					$allTD.prop('checked','false');
+        					$allTD.prop('checked','false'); 
 
-        			/*		if ($(this).is(':checked')) {
+        					if ($(this).is(':checked')) {
         	                    $($allTD).val("True");
         	                } else {
         	                    $($allTD).val("False");
-        	                } */
+        	                } 
         					
-                		//	$allColumn = $('<td class="all">').append($('<input type="checkbox" class="executive-selector" data-report="'+$report.reportId+'" />'));
+                			$allColumn = $('<td class="all">').append($('<input type="checkbox" class="executive-selector" data-report="'+$report.reportId+'" />'));
         				
             				$selector = $allColumn;
         					$($selector).mouseover(function($event) {    			
@@ -488,7 +318,7 @@
         						$(".all").css('background-color','transparent');
             					$(".hdr").css('background-color','transparent');
         					});	
-        					$tr.append($allColumn);
+        					$tr.append($allColumn); 
         					
             				$table.append($tr);	
             				
@@ -498,10 +328,12 @@
         			$("#executive-selection-container").html("");
         			$("#executive-selection-container").append($table);
         			
-
-
-					$.each($subscriptionList, function($subscriptionIdx, $subscription) {
-						$subscriptionId = $("input[type='checkbox']");					
+					$.each($subscriptionList, function($index, $value) {
+						var $checkboxName = $value.reportId + "-" + $value.divisionId;
+						var $checkbox = "#division-selection-container input[name='" + $checkboxName +"']";
+						console.log($checkbox);
+						$($checkbox).prop(":checked", true);	
+						
                 	}); 
         			
         			$.each( $reportList, function($reportIdx, $report) {        				
@@ -515,28 +347,14 @@
         					});
         				});
         			});       
+        			
         			$("#executive-selection-container .executive-selector").click(function($event) {
         				var $reportId = $(this).attr("data-report");
         				var $subscribe = $(this).prop("checked");
         				var $subscriptionId = $(this).attr("data-subscriptionId");
         				REPORT_SUBSCRIPTION.doSubscription($reportId, $subscribe, $subscriptionId);
         			});
-        			$("#executive-selection-container .all-selector").click(function($event) {
-        				var $subscribe = $(this).prop("checked");
-        				var $subscriptionId = $(this).attr("data-subscriptionId");
-        				console.log("all for all " + $subscribe);
-        				$("#executive-selection-container .all-selector").prop("checked", $subscribe);
-        				$.each( $reportList, function($reportIdx, $report) {   
-            					$selector = '#executive-selection-container input[name="'+$report.reportId+'"]';
-            					$subscribed = $($selector).prop("checked");
-            					if ( $subscribe != $subscribed ) {
-            						$($selector).prop("checked", $subscribe);
-            						REPORT_SUBSCRIPTION.doSubscription($report.reportId, $subscribe, $subscriptionId);	
-            					}
-            				}); 
-            			});  
         			
-        
         			$.each( $("#selection-menu-container input[name='subscription-selector']"), function($index, $value) {
         				if ( $value.value == 'report' ) {
         					$(this).click();
@@ -545,13 +363,12 @@
         		},
         	
         		
-        		makeGroupTable : function($reportList, $companyList, $subscriptionList, $filter, $destination, $reportId, $divisionId) {
+        		makeGroupTable : function($reportList, $companyList, $subscriptionList, $allDivReportList, $filter, $destination, $reportId, $divisionId) {
         			console.log("makeGroupTable");
         			var $table = $("<table>");
         			var $hdrRow = $("<tr>");
         			
         			$hdrRow.append($("<td>")).css('text-align','center');  
-        			$hdrRow.append($('<td class ="hdr">').append("All"));
     				$.each($companyList, function($companyIdx, $company) {
     					$companyTD=$("<td>");
     					$companyTD.addClass("company-" + $company.id);
@@ -559,83 +376,26 @@
     					$hdrRow.append($companyTD);
     				});
         			$table.append($hdrRow);
-        			
-        			var $allRow = $("<tr>").css('text-align','center');
-	        			$selector = $allRow;
-						$($selector).mouseover(function($event) {
-							$($allRow).css('background-color','#F9F9F9');
-	    					$($allLabel).css('background-color','#F9F9F9');
-						});
-						$($selector).mouseout(function($event) {
-							$($allRow).css('background-color','transparent');
-	    					$($allLabel).css('background-color','transparent');
-						});
-        			
-        			var $allLabel = $("<td>").append("All").css('text-align','left');
-        			var $allTD = $("<td>").append($('<input type="checkbox" class="groupTable-all-company-report-selector" />'));
-        			
-        			$allTD.prop('checked','true');
-        			$allTD.prop('checked','false');
-
-				/*	if ($(this).is(':checked')) {
-	                    $($allTD).val("True");
-	                } else {
-	                    $($allTD).val("False");
-	                } */
 					
-        			
 					$.each( $reportList, function($reportIdx, $report) {        				
             				$.each($companyList, function($companyIdx, $company) {
-            					$selector = $allTD;
+            					$selector = ".report-" + $report.reportId;
             					$($selector).mouseover(function($event) {
             						$(".report-" + $report.reportId).css('background-color','#F9F9F9');
             						$(".company-"+$company.id).css('background-color','#F9F9F9');
-            						$($allLabel).css('background-color','#F9F9F9');
-                					$($allTD).css('background-color','#F9F9F9');
+            					//	$($allLabel).css('background-color','#F9F9F9');
+                				//	$($allTD).css('background-color','#F9F9F9');
                 					$(".hdr").css('background-color','#F9F9F9');
             					});
             					$($selector).mouseout(function($event) {
             						$(".report-" + $report.reportId).css('background-color','transparent');
             						$(".company-"+$company.id).css('background-color','transparent');
-            						$($allLabel).css('background-color','transparent');
-                					$($allTD).css('background-color','transparent');
+            					//	$($allLabel).css('background-color','transparent');
+                				//	$($allTD).css('background-color','transparent');
                 					$(".hdr").css('background-color','transparent');
             					});
             				});
             			});   
-        			
-        			$allRow.append($allLabel);
-        			$allRow.append($allTD);	
-        			$allRow.addClass($allTD);
-        			
-        			$.each($companyList, function($companyIdx, $company) {
-    					$companyTD=$("<td>");
-    					$companyTD.addClass("company-" + $company.id);
-    					$companyTD.append($('<input type="checkbox" class="groupTable-all-report-selector" data-company="'+$company.id+'"/>'));
-    					$companyTD.prop('checked','true');
-    					$companyTD.prop('checked','false');
-
-    				/*	if ($(this).is(':checked')) {
-    	                    $($companyTD).val("True");
-    	                } else {
-    	                    $($companyTD).val("False");
-    	                } */
-    					
-        					$selector = $companyTD;
-        					$($selector).mouseover(function($event) {
-        						$(".company-"+$company.id).css('background-color','#F9F9F9');
-        						$($companyTD).css('background-color','#F9F9F9');
-        					});
-        					$($selector).mouseout(function($event) {
-        						$(".company-"+$company.id).css('background-color','transparent');
-        						$($companyTD).css('background-color','transparent');
-        					});
-    					
-    					
-    					$allRow.append($companyTD);            			
-        			
-        			});
-        			$table.append($allRow);
         			
         			$.each( $reportList, function($reportIdx, $report) {
         				if ( $report[$filter] == true ) {
@@ -645,31 +405,6 @@
 	    					$reportTD.append($report.description).css('text-align','left');
 	    					$tr.append($reportTD).css('text-align','left');
 	    					
-	    					
-	    					$allColumn = $('<td class="all">');
-	    					$allColumn.append($('<input type="checkbox" class="groupTable-all-company-selector" data-report="'+$report.reportId+'" />'));
-	        				
-	    					$allColumn.prop('checked','true');
-	    					$allColumn.prop('checked','false');
-
-        			/*		if ($(this).is(':checked')) {
-        	                    $($allColumn).val("True");
-        	                } else {
-        	                    $($allColumn).val("False");
-        	                } */
-        					
-	        				$selector = $allColumn;
-	    					$($selector).mouseover(function($event) {    			
-	    						$($allTD).css('background-color','#F9F9F9');
-	    						$(".all").css('background-color','#F9F9F9');
-	        					$(".hdr").css('background-color','#F9F9F9');
-	    					});
-	    					$($selector).mouseout(function($event) {
-	    						$($allTD).css('background-color','transparent');
-	    						$(".all").css('background-color','transparent');
-	        					$(".hdr").css('background-color','transparent');
-	    					});
-	    					$tr.append($allColumn);
 	    					$.each($companyList, function($companyIdx, $company) {
 	        					$companyTD=$("<td>");
 	        					$companyTD.addClass("company-" + $company.id);
@@ -678,12 +413,6 @@
 	        					$companyTD.prop('checked','true');
 	        					$companyTD.prop('checked','false');
 	        					
-	        				/*	if ($(this).is(':checked')) {
-	        	                    $($companyTD).val("True");
-	        	                } else {
-	        	                    $($companyTD).val("False");
-	        	                } */
-	        					
 	        					$tr.append($companyTD).css('text-align','center');
 	        				});
 	        				$table.append($tr);
@@ -691,7 +420,15 @@
         			});    
         			
            			$($destination).html("");
-           			$($destination).append($table);            			
+           			$($destination).append($table);   
+
+					$.each($subscriptionList, function($index, $value) {
+						var $checkboxName = $value.reportId + "-" + $value.divisionId;
+						var $checkbox = "#division-selection-container input[name='" + $checkboxName +"']";
+						console.log($checkbox);
+						$($checkbox).prop(":checked", true);		
+						
+                	}); 
            			
            			$.each( $reportList, function($reportIdx, $report) {        				
            				$.each($companyList, function($companyIdx, $company) {
@@ -706,10 +443,7 @@
            					});
            				});
            			});  
-
-					$.each($subscriptionList, function($subscriptionIdx, $subscription) {
-						$subscriptionId = $("input[type='checkbox']");							
-                	}); 
+           			
    					$($destination+" .groupTable-report-selector").click(function($event) {
    						var $reportId = $(this).attr("data-report");
    						var $id = $(this).attr("data-company");
@@ -717,53 +451,6 @@
         				var $subscriptionId = $(this).attr("data-subscriptionId");
    						REPORT_SUBSCRIPTION.doSubscription($reportId, $id, $subscribe, $subscriptionId);
    					}); 
-           			
-   					$($destination+" .groupTable-all-report-selector").click(function($event) {
-   						var $id = $(this).attr("data-company");
-   						var $subscribe = $(this).prop("checked");
-        				var $subscriptionId = $(this).attr("data-subscriptionId");
-   						console.log("all for " + $id + " " + $subscribe);
-   						$.each( REPORT_SUBSCRIPTION.reportList, function($index, $report) {
-   							$selector = $destination+ ' input[name="'+$report.reportId+'-'+ $id+'"]';
-   							$subscribed = $($selector).prop("checked");
-   							if ( $subscribe != $subscribed ) {
-   								$($selector).prop("checked", $subscribe);
-   								REPORT_SUBSCRIPTION.doSubscription($report.reportId, $id, $subscribe, $subscriptionId);	
-   							}
-   						});        				
-   					});      	
-           			$($destination+" .groupTable-all-company-selector").click(function($event) {
-           				var $reportId = $(this).attr("data-report");
-           				var $subscribe = $(this).prop("checked");
-        				var $subscriptionId = $(this).attr("data-subscriptionId");
-           				console.log("all for " + $reportId + " " + $subscribe);
-           				$.each( REPORT_SUBSCRIPTION.companyList, function($index, $company) {
-           					$selector = $destination+ ' input[name="'+$reportId+'-'+ $company.id+'"]';
-           					$subscribed = $($selector).prop("checked");
-           					if ( $subscribe != $subscribed ) {
-           						$($selector).prop("checked", $subscribe);
-           						REPORT_SUBSCRIPTION.doSubscription($reportId, $company.id, $subscribe, $subscriptionId);	
-           					}
-           				});        				
-           			});        		
-					$($destination+" .groupTable-all-company-report-selector").click(function($event) {
-						var $subscribe = $(this).prop("checked");
-        				var $subscriptionId = $(this).attr("data-subscriptionId");
-						console.log("all for all " + $subscribe);
-						$($destination+" .groupTable-all-company-selector").prop("checked", $subscribe);
-						$($destination+" .groupTable-all-report-selector").prop("checked", $subscribe);
-						$.each( $reportList, function($reportIdx, $report) {        				
-		    				$.each($companyList, function($companyIdx, $company) {
-		    					$selector =$destination+ ' input[name="'+$report.reportId+'-'+ $company.id+'"]';
-		    					$subscribed = $($selector).prop("checked");
-		    					if ( $subscribe != $subscribed ) {
-		    						$($selector).prop("checked", $subscribe);
-		    					//	REPORT_SUBSCRIPTION.updateSubscription($report.reportId, $company.id, $subscribe)
-		    						REPORT_SUBSCRIPTION.doSubscription($report.reportId, $company.id, $subscribe, $subscriptionId);	
-		    					}
-		    				});
-		    			});
-	    			});    
         			 
        			$.each( $("#selection-menu-container input[name='subscription-selector']"), function($index, $value) {
        				if ( $value.value == 'destinationName' ) {
@@ -771,11 +458,9 @@
        				}        				
        			}); 
 				
-       			
-       			
        		},
        		
-       		makeLists : function($reportId, $divisionId, $subscriptionId) {
+       		makeLists : function($reportId, $divisionId, $allDivReportList, $subscriptionId) {
        			var jqxhr = $.ajax({
 					type: 'GET',
 					url: "reports/subscription",
@@ -786,11 +471,12 @@
 							REPORT_SUBSCRIPTION.companyList = $data.data.companyList;
 							REPORT_SUBSCRIPTION.regionList = $data.data.regionList;
 							REPORT_SUBSCRIPTION.subscriptionList = $data.data.subscriptionList;
+							REPORT_SUBSCRIPTION.allDivReportList = $data.data.allDivReportList;
 						//	REPORT_SUBSCRIPTION.allDivisions = $data.data.allDivisions;
 						//	REPORT_SUBSCRIPTION.subscribe = $data.data.subscribe;
-							REPORT_SUBSCRIPTION.makeDivisionTable($data.data.reportList, $data.data.divisionList, $data.data.subscriptionList, $reportId, $divisionId, $subscriptionId);
-							REPORT_SUBSCRIPTION.makeGroupTable($data.data.reportList, $data.data.companyList, $data.data.subscriptionList, 'summaryReport', "#company-selection-container", $reportId, $divisionId, $subscriptionId);
-							REPORT_SUBSCRIPTION.makeGroupTable($data.data.reportList, $data.data.regionList, $data.data.subscriptionList, 'summaryReport', "#region-selection-container", $reportId, $divisionId, $subscriptionId);
+							REPORT_SUBSCRIPTION.makeDivisionTable($data.data.reportList, $data.data.divisionList, $data.data.allDivReportList, $data.data.subscriptionList, $reportId, $divisionId, $allDivReportList, $subscriptionId);
+							REPORT_SUBSCRIPTION.makeGroupTable($data.data.reportList, $data.data.companyList, $data.data.allDivReportList, $data.data.subscriptionList, 'summaryReport', "#company-selection-container", $reportId, $divisionId, $allDivReportList, $subscriptionId);
+							REPORT_SUBSCRIPTION.makeGroupTable($data.data.reportList, $data.data.regionList, $data.data.allDivReportList, $data.data.subscriptionList, 'summaryReport', "#region-selection-container", $reportId, $divisionId, $allDivReportList, $subscriptionId);
 							REPORT_SUBSCRIPTION.makeExecutiveTable($data.data.reportList, $data.data.subscriptionList, $reportId, $subscriptionId);
 		        			$("#thinking").hide();
 						},
