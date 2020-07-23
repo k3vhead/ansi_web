@@ -82,6 +82,7 @@
     					return false;
     	       	    });
     				
+    				
     				$("#new-document-button").click(function() {
     					DOCUTILS.showAddModal()
     				});
@@ -117,8 +118,8 @@
             	        
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
-            	            { className: "dt-left", "targets": [1,2,4] },
-            	            { className: "dt-center", "targets": [0,3,5] },
+            	            { className: "dt-left", "targets": [1,4] },
+            	            { className: "dt-center", "targets": [0,2,3,5] },
             	            { className: "dt-right", "targets": []}
             	         ],
             	        "paging": true,
@@ -148,7 +149,7 @@
     			            } },
     			            { width:"10%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {
 								var $viewLink = '<a href="#" class="document-view-action-link" data-id="'+row.document_id+'"><webthing:view>View</webthing:view></a>';
-    			            	var $editLink = '<a href="#" class="document-edit-action-link" data-id="'+row.document_id+'"><webthing:edit>Edit</webthing:edit></a>';
+    			            	var $editLink = '<ansi:hasPermission permissionRequired="DOCUMENT_WRITE"><a href="#" class="document-edit-action-link" data-id="'+row.document_id+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>';
     			            	var $deleteLink = '<a href="#" class="document-delete-action-link" data-id="'+row.document_id+'"><webthing:delete>Delete</webthing:delete></a>';
     			            	return $viewLink + $editLink + $deleteLink
     			            } }],
@@ -202,7 +203,9 @@
 		        <tbody></tbody>
 		        <tfoot></tfoot>
 		    </table>
+		    <ansi:hasPermission permissionRequired="DOCUMENT_WRITE">
 		    <input type="button" class="prettyWideButton" id="new-document-button" value="New" />
+			</ansi:hasPermission>	    
 	    </div>
 	    
 	    <webthing:scrolltop />
