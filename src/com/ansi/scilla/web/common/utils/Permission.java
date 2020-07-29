@@ -140,9 +140,10 @@ public enum Permission {
 	DEVELOPMENT(null, false, "Functional Area: System Developers"),
 	DEV(DEVELOPMENT, false, "Can Access Developer Areas"),
 
-	DOCUMENTS(null, false, "Functional Area: Documents"),
-	DOCUMENTS_READ(DOCUMENTS, false, "Can read stored documents"),
-	DOCUMENTS_WRITE(DOCUMENTS_READ, false, "Can store documents"),
+
+	DOCUMENT(null, false, "Functional Area: Documents"),
+	DOCUMENT_READ(DOCUMENT, false, "Can read stored documents"),
+	DOCUMENT_WRITE(DOCUMENT_READ, false, "Can store documents"),
 
 	CALENDAR(null, false, "Functional Area: Calendar"),
 	CALENDAR_READ(CALENDAR, false, "Can see the corporate calendar"),
@@ -154,6 +155,11 @@ public enum Permission {
 
 	BATCH_LOG(null, false, "Functional Area: Batch Logging"),
 	BATCH_LOG_READ(BATCH_LOG, false, "Can view the batch log"),
+
+	REPORT_DISTRIBUTION(null, false, "Functional Area: Report Distribution"),
+	REPORT_DISTRIBUTION_READ(REPORT_DISTRIBUTION, false, "Can read other report subscriptions"),
+	REPORT_DISTRIBUTION_WRITE(REPORT_DISTRIBUTION_READ, false, "Can write report subscriptions"),
+	REPORT_DISTRIBUTION_OVERRIDE(REPORT_DISTRIBUTION_WRITE, false, "Can read/write other users' report subscriptions"),
 	;
 	
 	private final Boolean divisionSpecific;

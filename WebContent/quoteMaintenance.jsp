@@ -649,35 +649,6 @@
 		    				dataType: 'json'
 		    			});
 					},
-					
-					
-					getOptions : function($optionList, $callBack) {
-						console.log("getOptions");
-		    			var $returnValue = null;
-		    			var jqxhr1 = $.ajax({
-		    				type: 'GET',
-		    				url: 'options',
-		    				data: $optionList,			    				
-		    				statusCode: {
-		    					200: function($data) {
-		    						$callBack($data.data);		    						
-		    					},			    				
-		    					403: function($data) {
-		    						$("#useridMsg").html($data.responseJSON.responseHeader.responseMessage);
-		    					}, 
-		    					404: function($data) {
-		    						$("#globalMsg").html("System Error Option 404. Contact Support").show();
-		    					}, 
-		    					405: function($data) {
-		    						$("#globalMsg").html("System Error Option 405. Contact Support").show();
-		    					}, 
-		    					500: function($data) {
-		    						$("#globalMsg").html("System Error Option 500. Contact Support").show();
-		    					}, 
-		    				},
-		    				dataType: 'json'
-		    			});
-		    		},
 		            
 		            
 		            
@@ -1441,7 +1412,7 @@
 		    		
 		    		
 		    		makeOptionLists : function(){
-						QUOTEMAINTENANCE.getOptions('JOB_STATUS,JOB_FREQUENCY,COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM', QUOTEMAINTENANCE.populateOptions);
+						ANSI_UTILS.getOptionList('JOB_STATUS,JOB_FREQUENCY,COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM', QUOTEMAINTENANCE.populateOptions);
 						QUOTEMAINTENANCE.incrementProgress("Job Status List");
 						QUOTEMAINTENANCE.incrementProgress("Job Frequency List");
 						

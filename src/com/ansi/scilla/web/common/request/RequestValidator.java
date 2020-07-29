@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,10 +25,12 @@ import org.apache.logging.log4j.Logger;
 import com.ansi.scilla.common.callNote.CallNoteReference;
 import com.ansi.scilla.common.claims.WorkHoursType;
 import com.ansi.scilla.common.db.CallLog;
+import com.ansi.scilla.common.db.Document;
 import com.ansi.scilla.common.db.EmployeeExpense;
 import com.ansi.scilla.common.db.MSTable;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.db.User;
+import com.ansi.scilla.common.document.DocumentType;
 import com.ansi.scilla.common.invoice.InvoiceGrouping;
 import com.ansi.scilla.common.invoice.InvoiceStyle;
 import com.ansi.scilla.common.invoice.InvoiceTerm;
@@ -258,7 +261,45 @@ public class RequestValidator {
 
 		}
 	}
+	
+	
+	public static void validateDocumentId(Connection conn, WebMessages webMessages, String fieldName, Integer value, boolean required) throws Exception {
+		validateId(conn, webMessages, Document.TABLE, Document.DOCUMENT_ID, fieldName, value, required);
+	}
 
+	
+	public static void validateDocumentType(WebMessages webMessages, String fieldName, String value, boolean required) {
+		if (StringUtils.isBlank(value)) {
+			if (required) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			try {
+				DocumentType documentType = DocumentType.valueOf(value);
+				if (documentType == null) {
+					webMessages.addMessage(fieldName, "Invalid Value");
+				}
+			} catch (IllegalArgumentException e) {
+				webMessages.addMessage(fieldName, "Invalid Value");
+			}
+		}		
+	}
+
+
+	public static void validateDocumentTypeXref(Connection conn, WebMessages webMessages, String fieldName, DocumentType documentType, Integer value, boolean required) throws SQLException {
+		if ( value == null ) {
+			if ( required ) {
+				webMessages.addMessage(fieldName, "Required Value");			
+			} 
+		} else {
+			if ( ! documentType.isValidXref(conn, value) ) {
+				webMessages.addMessage(fieldName, "Invalid cross-reference");
+			}
+		}
+	}
+
+	
+	
 	public static void validateDouble(WebMessages webMessages, String fieldName, Double value, Double minValue,
 			Double maxValue, boolean required) {
 		if (value == null) {
@@ -592,5 +633,6 @@ public class RequestValidator {
 			}
 		}
 	}
+
 
 }

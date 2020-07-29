@@ -139,27 +139,43 @@ public class AddressTableServlet extends AbstractServlet {
 		    int totalAfterFilter = total;
 			term = term.toLowerCase();
 			List<AddressReturnItem> resultList = new ArrayList<AddressReturnItem>();
+			/*
 			sql = "select a.address_id, a.name, a.address_status, a.address1, a.address2, a.city, a.county, a.state, a.zip, a.country_code, (a3.jobCount + a3.billCount) as count, "
-					+ "a.invoice_style_default, a.invoice_grouping_default, a.invoice_batch_default, a.invoice_terms_default, a.our_vendor_nbr_default "
+					+ "a.invoice_style_default, a.invoice_grouping_default, a.invoice_batch_default, a.invoice_terms_default, a.our_vendor_nbr_default, a.billto_tax_exempt "
 					+ "\n from address a"
 					+ "\n left join (select a2.address_id, count(q1.job_site_address_id) as jobCount, count(q1.bill_to_address_id) as billCount from address a2"
 					+ "\n inner join quote q1 on (a2.address_id = q1.job_site_address_id or a2.address_id = q1.bill_to_address_id) group by a2.address_id ) a3 on a.address_id = a3.address_id";
-			String[] searchFields = new String[] {"a.name","a.address1","a.address2","a.city","a.county","a.state","a.zip","a.country_code"};
-			CollectionUtils.transform(Arrays.asList(searchFields), new WhereClauseMaker());
-//			String search = "\n where lower(a.name) like ?"
-//					+ "\n OR lower(a.address1) like ?"
-//					+ "\n OR lower(a.address2) like ?"
-//					+ "\n OR lower(a.city) like ?"
-//					+ "\n OR lower(a.county) like ?"
-//					+ "\n OR lower(a.state) like ?"
-//					+ "\n OR lower(a.zip) like ?"
-//					+ "\n OR lower(a.country_code) like ?";
-			String search = StringUtils.isBlank(term) ? "" : " \nwhere " + StringUtils.join(searchFields, " \nOR ");
+			*/
+			sql = "select a.address_id, a.name, a.address_status, a.address1, a.address2, a.city, a.county, a.state, a.zip, \n" + 
+					"	a.country_code, (a3.jobCount + a3.billCount) as count, \n" + 
+					"	a.invoice_style_default, a.invoice_grouping_default, \n" + 
+					"	a.invoice_batch_default, a.invoice_terms_default, a.our_vendor_nbr_default, count(document.document_id) as document_count\n" + 
+					" from address a\n" + 
+					" left outer join document on document.xref_id=a.address_id and document.xref_type='TAX_EXEMPT'\n" + 
+					" left join (select a2.address_id, count(q1.job_site_address_id) as jobCount, count(q1.bill_to_address_id) as billCount from address a2\n" + 
+					" inner join quote q1 on (a2.address_id = q1.job_site_address_id or a2.address_id = q1.bill_to_address_id) group by a2.address_id ) a3 on a.address_id = a3.address_id\n"; 
+					
+			String groupBy = "group by a.address_id, a.name, a.address_status, a.address1, a.address2, a.city, a.county, a.state, a.zip, \n" + 
+					"	a.country_code, (a3.jobCount + a3.billCount), \n" + 
+					"	a.invoice_style_default, a.invoice_grouping_default, \n" + 
+					"	a.invoice_batch_default, a.invoice_terms_default, a.our_vendor_nbr_default";
+			
+			String search = "\n where lower(a.name) like '%" + term + "%'"
+					+ "\n OR lower(a.address1) like '%" + term + "%'"
+					+ "\n OR lower(a.address2) like '%" + term + "%'"
+					+ "\n OR lower(a.city) like '%" + term + "%'"
+					+ "\n OR lower(a.county) like '%" + term + "%'"
+					+ "\n OR lower(a.state) like '%" + term + "%'"
+					+ "\n OR lower(a.zip) like '%" + term + "%'"
+					+ "\n OR lower(a.country_code) like '%" + term + "%'";
+//					String group = " group by a.address_id, a.name, a.status, a.address1, a.address2, a.city, a.county, a.state, a.zip, a.country_code";
+			
 			
 			if ( ! StringUtils.isBlank(term)) {
 				sql += search ;
 			}
-			sql += " \norder by a." + colName + " " + dir;
+			sql += groupBy;
+			sql += " order by a." + colName + " " + dir;
 			
 			
 			if ( amount != -1) {
@@ -167,27 +183,22 @@ public class AddressTableServlet extends AbstractServlet {
 					+ " FETCH NEXT " + amount + " ROWS ONLY";
 			}
 			logger.log(Level.DEBUG, sql);
-			PreparedStatement ps = conn.prepareStatement(sql);
-			if ( ! StringUtils.isBlank(term)) {
-				for ( int i = 0; i < searchFields.length; i++ ) {
-					ps.setString(i+1, "%" + term + "%");
-				}
-			}
-			ResultSet rs = ps.executeQuery();
+			s = conn.createStatement();
+			ResultSet rs = s.executeQuery(sql);
 			while ( rs.next() ) {
 				resultList.add(new AddressReturnItem(rs));
 			}
 			rs.close();
 			
 			
-			String sql2 = "select count(*) from address a " + search;
-			PreparedStatement ps2 = conn.prepareStatement(sql2);
-			if ( ! StringUtils.isBlank(term)) {
-				for ( int i = 0; i < searchFields.length; i++ ) {
-					ps2.setString(i+1, "%" + term + "%");
-				}
+			
+			String sql2 = "select count(*)"
+					+ " from address a";
+			if (search != "") {
+				sql2 += search;
 			}
-			ResultSet rs2 = ps2.executeQuery();
+			Statement s2 = conn.createStatement();
+			ResultSet rs2 = s2.executeQuery(sql2);
 			if(rs2.next()){
 				totalAfterFilter = rs2.getInt(1);
 		    }
