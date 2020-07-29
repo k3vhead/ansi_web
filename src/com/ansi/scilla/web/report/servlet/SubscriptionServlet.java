@@ -55,7 +55,7 @@ public class SubscriptionServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			SessionData sessionData = AppUtils.validateSession(request, Permission.REPORT_SUBSCRIPTION_READ);
 //			url = new AnsiURL(request, REALM, (String[])null, false);				
-			SubscriptionResponse2 data = new SubscriptionResponse2(conn, sessionData.getUser().getUserId());
+			SubscriptionResponse2 data = new SubscriptionResponse2(conn, sessionData.getUser().getUserId(), sessionData.getUserPermissionList());
 			data.setWebMessages(messages);
 			super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {

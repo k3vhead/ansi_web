@@ -6,6 +6,8 @@ import java.util.List;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Predicate;
 
+import com.ansi.scilla.web.common.utils.Permission;
+
 /**
  * AllAnsi - Report contains data from across the enterprise. It may or may not contain group or division-specific
  * 			data as supporting detail.
@@ -21,44 +23,44 @@ import org.apache.commons.collections4.Predicate;
 public enum BatchReports {
 
 	// Weekly
-	PAC_WEEKLY("PAC Weekly",                false, false, true, false, false),
-	DO_LIST(   "Dispatched & Outstanding",  false, false, true, false, false),
-	PD45(      "45-Day Past Due",           false, false, true, false, false),
+	PAC_WEEKLY("PAC Weekly",                false, false, true, false, false, Permission.QUOTE_READ),
+	DO_LIST(   "Dispatched & Outstanding",  false, false, true, false, false, Permission.TICKET_READ),
+	PD45(      "45-Day Past Due",           false, false, true, false, false, Permission.PAYMENT_READ),
 
-	TSR(       "Ticket Status",             false, false, true, false, false),
+	TSR(       "Ticket Status",             false, false, true, false, false, Permission.TICKET_READ ),
 
 	// Monthly - before the month end
-	DRV(       "Detailed Rolling Volume",   false, false, true, false, false),
+	DRV(       "Detailed Rolling Volume",   false, false, true, false, false, Permission.TICKET_READ ),
 	
 	
 	// Monthly - after the monthly close
-	PAC_MONTHLY("PAC Monthly",              false, false, true, false, false),
-	LIFT_GENIE( "Lift/Genie Monthly",       true,  false, false, false, false),
+	PAC_MONTHLY("PAC Monthly",              false, false, true, false, false, Permission.QUOTE_READ ),
+	LIFT_GENIE( "Lift/Genie Monthly",       true,  false, false, false, false, Permission.TICKET_READ ),
 	CASH_RECEIPTS_REGISTER(
-			"Cash Receipts Register",       true,  false, false, false, false),
-	SERVICE_TAX("Service Taxes",            true,  false, false, false, false),
-	IR_SUMMARY( "Invoice Register Summary", true,  false, false, false, false),
-	IR(         "Invoice Register Detail",  false, false, true, false, false),
+			"Cash Receipts Register",       true,  false, false, false, false, Permission.PAYMENT_READ ),
+	SERVICE_TAX("Service Taxes",            true,  false, false, false, false, Permission.PAYMENT_WRITE ),
+	IR_SUMMARY( "Invoice Register Summary", true,  false, false, false, false, Permission.INVOICE_READ ),
+	IR(         "Invoice Register Detail",  false, false, true, false, false, Permission.INVOICE_READ ),
 	AR_TOTALS(  "Accounts Receivable w over 60 day detail", // divisions can get this but not batched
-											true,  false, false, false, false), 
-	AR_LISTING( "AR Listing",				true,  false, false, false, false), 	//exec (trend)
+											true,  false, false, false, false, Permission.INVOICE_READ ), 
+	AR_LISTING( "AR Listing",				true,  false, false, false, false, Permission.INVOICE_READ ), 	//exec (trend)
 
 	// Quarterly - after quarter close
-	PAC_QUARTER("PAC Quarterly",            false, false, true, false, false),
-	PAC_YTD(    "PAC Year-to-Date",         false, false, true, false, false),
-	SMRV(       "Six-Month Rolling Volume", false, false, true, false, false),
+	PAC_QUARTER("PAC Quarterly",            false, false, true, false, false, Permission.QUOTE_READ ),
+	PAC_YTD(    "PAC Year-to-Date",         false, false, true, false, false, Permission.QUOTE_READ ),
+	SMRV(       "Six-Month Rolling Volume", false, false, true, false, false, Permission.TICKET_READ ),
 	CREDIT_CARD_FEE_DISTRIBUTION(
-			"Credit Card Fee Distribution", true,  false, false, false, false),
-	WO_AND_FEES("WO & Fees",                true,  false, false, false, false), 	// M, Q, Y?
+			"Credit Card Fee Distribution", true,  false, false, false, false, Permission.INVOICE_READ ),
+	WO_AND_FEES("WO & Fees",                true,  false, false, false, false, Permission.INVOICE_READ), 	// M, Q, Y?
 
 	// Executive reports - historical trending - generated quarterly
 	ACCOUNTS_RECEIVABLE( "AR w Claimed vs Billed",					// claimed/billed/cash
-											false, true,  true, false, false),
+											false, true,  true, false, false, Permission.INVOICE_READ ),
 	SKIPPED_AND_DISPATCHED( 										// lost volume for this and last quarter
-			"Skipped & Dispatched Counts",  false, true,  true, false, false),
-	QSS("Quarterly Sales Summary", 			true,  false, false, false, false),	// PAC trending
-	VOLUME_FORECAST("Volume Forecast",      false, true,  false, false, false),	// 6MRV trending
-	VPP("Volume Per Person",                false, true,  true, false, false),	// volume per paycheck paid out
+			"Skipped & Dispatched Counts",  false, true,  true, false, false, Permission.TICKET_READ ),
+	QSS("Quarterly Sales Summary", 			true,  false, false, false, false, Permission.INVOICE_READ ),	// PAC trending
+	VOLUME_FORECAST("Volume Forecast",      false, true,  false, false, false, Permission.INVOICE_READ ),	// 6MRV trending
+	VPP("Volume Per Person",                false, true,  true, false, false, Permission.INVOICE_READ ),	// volume per paycheck paid out
 	;
 	
 	private String description;
@@ -67,71 +69,28 @@ public enum BatchReports {
 	private Boolean divisionReport; // is division-specific
 	private Boolean trendReport;
 	private Boolean utilityReport;
+	private Permission permission;
 	
-	private BatchReports(String description, Boolean allAnsiReport, Boolean summaryReport, Boolean divisionReport, Boolean trendReport, Boolean utilityReport) {
+	private BatchReports(String description, Boolean allAnsiReport, Boolean summaryReport, Boolean divisionReport, Boolean trendReport, Boolean utilityReport, Permission permission) {
 		this.description = description;
 		this.allAnsiReport = allAnsiReport;
 		this.summaryReport = summaryReport;
 		this.divisionReport = divisionReport;
 		this.trendReport = trendReport;
 		this.utilityReport = utilityReport;
+		this.permission = permission;
 	}
 	
 	public String abbreviation() { return this.name().replaceAll("_", " "); }
 	public String description() { return this.description; }
+	public Permission permission() { return this.permission; }
 	public Boolean isAllAnsiReport() { return this.allAnsiReport; }
 	public Boolean isSummaryReport() { return this.summaryReport; }
 	public Boolean isDivisionReport() { return this.divisionReport; }
 	public Boolean isTrendReport() { return this.trendReport; }
 	public Boolean isUtilityReport() { return this.utilityReport; }
 	
-	public static List<BatchReports> makeAllAnsiReportList() {
-		return IterableUtils.toList(IterableUtils.filteredIterable( Arrays.asList(BatchReports.values()), new ReportTypePredicate(MatchType.allAnsiReport)));
-	}
 	
-	public static List<BatchReports> makeTrendReportList() {
-		return IterableUtils.toList(IterableUtils.filteredIterable( Arrays.asList(BatchReports.values()), new ReportTypePredicate(MatchType.trendReport)));
-	}
-	
-	public static List<BatchReports> makeSummaryReportList() {
-		return IterableUtils.toList(IterableUtils.filteredIterable( Arrays.asList(BatchReports.values()), new ReportTypePredicate(MatchType.summaryReport)));
-	}
-	
-	public static List<BatchReports> makeDivisionReportList() {
-		return IterableUtils.toList(IterableUtils.filteredIterable( Arrays.asList(BatchReports.values()), new ReportTypePredicate(MatchType.divisionReport)));
-	}
-	
-	public static List<BatchReports> makeUtilityReportList() {
-		return IterableUtils.toList(IterableUtils.filteredIterable( Arrays.asList(BatchReports.values()), new ReportTypePredicate(MatchType.utilityReport)));
-	}
-	
-	private static class ReportTypePredicate implements Predicate<BatchReports> {
-		private MatchType matchType;
-		
-		public ReportTypePredicate(MatchType matchType) {
-			super();
-			this.matchType = matchType;
-		}
-
-		@Override
-		public boolean evaluate(BatchReports batchReport) {			
-			return (matchType.equals(MatchType.allAnsiReport) && batchReport.isAllAnsiReport()) || 
-					(matchType.equals(MatchType.summaryReport) && batchReport.isSummaryReport()) || 
-					(matchType.equals(MatchType.divisionReport) && batchReport.isDivisionReport()) || 
-					(matchType.equals(MatchType.trendReport) && batchReport.isTrendReport()) || 
-					(matchType.equals(MatchType.utilityReport) && batchReport.isUtilityReport()); 
-		}
-		
-	}
-	
-	private enum MatchType {
-		allAnsiReport,
-		summaryReport,
-		divisionReport,
-		trendReport,
-		utilityReport,
-		;
-	}
 	
 	
 }

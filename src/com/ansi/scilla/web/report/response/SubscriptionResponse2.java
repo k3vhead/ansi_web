@@ -23,6 +23,7 @@ import com.ansi.scilla.common.organization.Div;
 import com.ansi.scilla.common.organization.Organization;
 import com.ansi.scilla.common.organization.OrganizationType;
 import com.ansi.scilla.web.common.response.MessageResponse;
+import com.ansi.scilla.web.common.utils.UserPermission;
 import com.ansi.scilla.web.report.common.BatchReports;
 import com.ansi.scilla.web.report.common.SubscriptionUtils;
 
@@ -48,25 +49,37 @@ public class SubscriptionResponse2 extends MessageResponse {
 	private Logger logger = LogManager.getLogger(SubscriptionResponse2.class);
 
 	
-	public SubscriptionResponse2(Connection conn, Integer userId) throws Exception {
+	public SubscriptionResponse2(Connection conn, Integer userId, List<UserPermission> userPermissionList) throws Exception {
 		super();
 		ReportTransformer reportTransformer = new ReportTransformer();
 		this.divisionList = makeDivisionList(conn, userId);	
 		makeGroups(conn, divisionList);
 		
-		this.allAnsiReports = makeAllAnsiReports(conn, reportTransformer, userId);
-		this.trendReports = makeTrendReports(reportTransformer);
-		this.utilityReports = makeUtilityReports(reportTransformer);
+		List<BatchReports> allowedReports = SubscriptionUtils.myReports(userPermissionList); // reports I can see based on my permissions
+		
+		this.allAnsiReports = makeAllAnsiReports(conn, reportTransformer, allowedReports, userId);
+		this.trendReports = makeTrendReports(allowedReports, reportTransformer);
+		this.utilityReports = makeUtilityReports(allowedReports, reportTransformer);
 		if ( this.divisionList.size() > 0 ) {
-			this.divisionReports = makeDivisionReports(reportTransformer);
+			this.divisionReports = makeDivisionReports(allowedReports, reportTransformer);
 		}
 		if ( this.companyList.size() > 0 || this.regionList.size() > 0 || this.groupList.size() > 0 ) {
-			this.summaryReports = makeSummaryReports(reportTransformer);
+			this.summaryReports = makeSummaryReports(allowedReports, reportTransformer);
 		}
 		this.subscriptionList = makeSubscriptionList(conn, userId);
 		
 		
 		
+		Collections.sort(allAnsiReports);
+		Collections.sort(summaryReports);
+		Collections.sort(divisionReports);
+		Collections.sort(trendReports);
+		Collections.sort(utilityReports);
+		
+		Collections.sort(divisionList);
+		Collections.sort(companyList);
+		Collections.sort(regionList);
+		Collections.sort(groupList);
 		
 	}
 
@@ -133,7 +146,7 @@ public class SubscriptionResponse2 extends MessageResponse {
 	}
 	
 	
-	private List<Report> makeAllAnsiReports(Connection conn, ReportTransformer reportTransformer, Integer userId) throws SQLException {
+	private List<Report> makeAllAnsiReports(Connection conn, ReportTransformer reportTransformer, List<BatchReports> allowedReports, Integer userId) throws SQLException {
 		
 		PreparedStatement ps = conn.prepareStatement("SELECT division.division_id, concat(division_nbr,'-',division_code) as div, description, \n" + 
 				"	case \n" + 
@@ -154,7 +167,7 @@ public class SubscriptionResponse2 extends MessageResponse {
 			}
 		}
 		rs.close();
-		return allAnsi ? IterableUtils.toList(IterableUtils.transformedIterable(BatchReports.makeAllAnsiReportList(), reportTransformer)) : new ArrayList<Report>();
+		return allAnsi ? IterableUtils.toList(IterableUtils.transformedIterable(SubscriptionUtils.makeAllAnsiReportList(allowedReports), reportTransformer)) : new ArrayList<Report>();
 		
 	}
 
@@ -199,20 +212,20 @@ public class SubscriptionResponse2 extends MessageResponse {
 		}
 	}
 
-	private List<Report> makeDivisionReports(ReportTransformer reportTransformer) {
-		return IterableUtils.toList(IterableUtils.transformedIterable(BatchReports.makeDivisionReportList(), reportTransformer));
+	private List<Report> makeDivisionReports(List<BatchReports> allowedReports, ReportTransformer reportTransformer) {
+		return IterableUtils.toList(IterableUtils.transformedIterable(SubscriptionUtils.makeDivisionReportList(allowedReports), reportTransformer));
 	}
 	
-	private List<Report> makeTrendReports(ReportTransformer reportTransformer) {
-		return IterableUtils.toList(IterableUtils.transformedIterable(BatchReports.makeTrendReportList(), reportTransformer));
+	private List<Report> makeTrendReports(List<BatchReports> allowedReports, ReportTransformer reportTransformer) {
+		return IterableUtils.toList(IterableUtils.transformedIterable(SubscriptionUtils.makeTrendReportList(allowedReports), reportTransformer));
 	}
 	
-	private List<Report> makeUtilityReports(ReportTransformer reportTransformer) {
-		return IterableUtils.toList(IterableUtils.transformedIterable(BatchReports.makeUtilityReportList(), reportTransformer));
+	private List<Report> makeUtilityReports(List<BatchReports> allowedReports, ReportTransformer reportTransformer) {
+		return IterableUtils.toList(IterableUtils.transformedIterable(SubscriptionUtils.makeUtilityReportList(allowedReports), reportTransformer));
 	}
 	
-	private List<Report> makeSummaryReports(ReportTransformer reportTransformer) {
-		return IterableUtils.toList(IterableUtils.transformedIterable(BatchReports.makeSummaryReportList(), reportTransformer));
+	private List<Report> makeSummaryReports(List<BatchReports> allowedReports, ReportTransformer reportTransformer) {
+		return IterableUtils.toList(IterableUtils.transformedIterable(SubscriptionUtils.makeSummaryReportList(allowedReports), reportTransformer));
 	}
 
 	private List<MySubscription> makeSubscriptionList(Connection conn, Integer userId) throws SQLException {
