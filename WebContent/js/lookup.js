@@ -28,8 +28,10 @@ $(function() {
             		$inputField = $('<input type="text">')
             		$fieldName = "columns["+colIdx+"][search][value]";
             		$inputField.attr("name", $fieldName);
+            		if(columns[colIdx].searchFormat != null){
+            			$inputField.attr("placeholder", columns[colIdx].searchFormat);
+            		}
             		$fieldCell.append($inputField);
-            		
             		
             		$filterRow.append($titleCell);
             		$filterRow.append($fieldCell);

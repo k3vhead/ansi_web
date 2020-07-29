@@ -795,18 +795,24 @@
 				   		ADDRESSMAINTENANCE.invoiceGrouping = $optionData.invoiceGrouping;
 				   		ADDRESSMAINTENANCE.invoiceTerm = $optionData.invoiceTerm;
 				   		ADDRESSMAINTENANCE.invoiceStyle = $optionData.invoiceStyle;
+				   		ADDRESSMAINTENANCE.populateOptionLists();
 				   	},
 					
-					
-					makeOptionLists : function(){
-						ANSI_UTILS.getOptionList('COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM',ADDRESSMAINTENANCE.populateOptionList);
-						//var $countryList = $optionData.country;
-						//$jobSiteDetail = "";
+					makeOptionLists : function (){
+	        			console.log("Making options");
 
+						ANSI_UTILS.getOptionList('COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM',ADDRESSMAINTENANCE.populateOptionList);
 						$('option', "#addAddressForm select[name='countryCode']").remove();
 						$('option', "#addAddressForm select[name='state']").remove();
 						$("#addAddressForm select[name='countryCode']").append(new Option("", ""));
 						$("#addAddressForm select[name='state']").append(new Option("", ""));
+					},
+				   	
+				   	
+					populateOptionLists : function(){	
+	        			console.log("Making all the things");
+						//var $countryList = $optionData.country;
+						//$jobSiteDetail = "";
 		                $.each(ADDRESSMAINTENANCE.countryList, function($index, $value) {
 		                	$("#addAddressForm select[name='countryCode']").append(new Option($value.display, $value.abbrev));
 		                	

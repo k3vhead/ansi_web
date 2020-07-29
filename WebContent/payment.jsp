@@ -88,6 +88,9 @@
 					PAYMENT.makeOptionLists();
 					PAYMENT.createModals();
 					PAYMENT.makePickers();
+					PAYMENT.makeCalculations();
+					PAYMENT.makeFocus();
+					PAYMENT.makeChangers();
 					PAYMENT.makeClickers();
 					PAYMENT.autocomplete();  
 		        	if ( PAYMENT.paymentId == '' ) {
@@ -219,7 +222,27 @@
 				        });   
 					},
 					
-					makeClickers : function () {
+					makeChangers : function () {
+			        	
+			        	$("#feeAmount").change(function($event) {
+							$fixedValue = parseFloat($(this).val()).toFixed(2);
+							$(this).val($fixedValue);
+							PAYMENT.calculateAllTotals();
+			        	});
+			        	
+			        	$("#excessCash").change(function($event) {
+							$fixedValue = parseFloat($(this).val()).toFixed(2);
+							$(this).val($fixedValue);
+							PAYMENT.calculateAllTotals();
+			        	});
+
+						
+						
+						
+					},
+					
+					
+					makeCalculations : function () {
 			        	
 			        	
 			        	$("#calcButton").click(function($event) {
@@ -307,6 +330,12 @@
 							
 							
 			        	});
+						
+						
+					},
+					
+					
+					makeClickers : function () {
 			        	
 			        	$("#editPaymentIcon").click(function($event) {
 			        		PAYMENT.paymentModal();
@@ -314,7 +343,7 @@
 			        	});
 			
 			        	$("#modalSearch").click(function($event) {
-			        		$paymentAction = "search";
+			        		PAYMENT.paymentAction = "search";
 			        		$("#newPaymentDate").datepicker("hide");
 			        		$("#modalSearchBox").css('background-color','#CCCCCC');
 			        		$("#modalNewBox").css('background-color','#FFFFFF');
@@ -328,7 +357,7 @@
 			        	})
 			        	
 			        	$("#modalNew").click(function($event) {
-			        		$paymentAction = "new";
+			        		PAYMENT.paymentAction = "new";
 			        		$("#modalSearchBox").css('background-color','#FFFFFF');
 			        		$("#modalNewBox").css('background-color','#CCCCCC');
 			        		$(".searchPmtRow").hide();
@@ -347,32 +376,24 @@
 			        		$("#feeAmount").val("0.00");
 			        		$("#excessCash").val("0.00");
 			        	});
-			        	
-			        	$("#feeAmount").change(function($event) {
-							$fixedValue = parseFloat($(this).val()).toFixed(2);
-							$(this).val($fixedValue);
-							PAYMENT.calculateAllTotals();
-			        	});
+					},
+					
+					makeFocus : function () {
 			        	
 			        	$("#feeAmount").focus(function($event) {
 							$(this).select();
 			        	});
-			        	
-			        	$("#excessCash").change(function($event) {
-							$fixedValue = parseFloat($(this).val()).toFixed(2);
-							$(this).val($fixedValue);
-							PAYMENT.calculateAllTotals();
-			        	});
-			        	
 			        	$("#excessCash").focus(function($event) {
 							$(this).select();
 			        	});
+						
+						
 					},
 		        	
 		        	goPayment : function () {
-		        		if ( $paymentAction == "search") {
+		        		if ( PAYMENT.paymentAction == "search") {
 		        			PAYMENT.getPayment();
-		        		} else if ($paymentAction == "new"){
+		        		} else if (PAYMENT.paymentAction == "new"){
 		        			PAYMENT.postPayment();
 		        		} else {
 		        			$("#globalMsg").html("System error. Reload and try again");
@@ -747,7 +768,7 @@
 									$totalValue = $totalValue + parseFloat($(this).val());
 								}						
 							});
-							$("#totalPayInvoice").html( formatCurrency($totalValue));
+							$("#totalPayInvoice").html( PAYMENT.formatCurrency($totalValue));
 							return $totalValue
 						},
 						
@@ -758,38 +779,38 @@
 									$totalValue = $totalValue + parseFloat($(this).val());
 								}						
 							});
-							$("#totalPayTax").html( formatCurrency($totalValue));
+							$("#totalPayTax").html( PAYMENT.formatCurrency($totalValue));
 							return $totalValue;
 						},
+						
 						calcToPay : function() {
-							var $totalValue = calcTotalPayInv() + calcTotalPayTax();
-							$("#toPay").html( formatCurrency($totalValue) );
+							var $totalValue = PAYMENT.calcTotalPayInv() + PAYMENT.calcTotalPayTax();
+							$("#toPay").html( PAYMENT.formatCurrency($totalValue) );
 							return $totalValue;
 							
 						},				
 						calcTotalPay : function() {
 							var $feeAmount = parseFloat($("#feeAmount").val());
 							var $excessCash = parseFloat($("#excessCash").val());
-							var $toPay = calcToPay();
+							var $toPay = PAYMENT.calcToPay();
 							return $feeAmount + $excessCash + $toPay;
 						},
 						
 						calculateAllTotals : function() {
-							$totalPayInvoice = calcTotalPayInv();
-							$totalPayTax = calcTotalPayTax();
-							$toPay = calcToPay();					
-							$totalPay = calcTotalPay();
+							$totalPayInvoice = PAYMENT.calcTotalPayInv();
+							$totalPayTax = PAYMENT.calcTotalPayTax();
+							$toPay = PAYMENT.calcToPay();					
+							$totalPay = PAYMENT.calcTotalPay();
 							$available = $unappliedAmount - $totalPay;
-							$("#unappliedAmount").html(formatCurrency($available));
+							$("#unappliedAmount").html(PAYMENT.formatCurrency($available));
 						},
-						
-						
+												
 						doFunctionBinding : function() {
 							$( ".ticketPayInv").on("focus", function() {
 								if ( $(this).val() == null || $(this).val() == "" ) {
 									// figure default amount to apply
 									$balance = parseFloat($(this).data("amount") - parseFloat($(this).data("paid")));
-									$totalPay = calcTotalPay();
+									$totalPay = PAYMENT.calcTotalPay();
 									$available = $unappliedAmount - $totalPay;
 									$toPay = Math.min($balance, $available)
 									$(this).val($toPay.toFixed(2));
@@ -798,6 +819,7 @@
 									$(this).select();
 								}
 							});
+							
 							$( ".ticketPayInv").on("change", function() {
 								if ( isNaN($(this).val()) ) {
 									$fixedValue = 0;
@@ -807,11 +829,12 @@
 								$(this).val($fixedValue);
 								PAYMENT.calculateAllTotals();
 							});
+							
 							$( ".ticketPayTax").on("focus", function() {
 								if ( $(this).val() == null || $(this).val() == "" ) {
 									// figure default amount to apply
 									$taxBalance = parseFloat($(this).data("amount") - parseFloat($(this).data("paid")));
-									$totalPay = calcTotalPay();
+									$totalPay = PAYMENT.calcTotalPay();
 									$available = $unappliedAmount - $totalPay;
 									$toPay = Math.min($taxBalance, $available)
 									$(this).val($toPay.toFixed(2));
@@ -820,6 +843,7 @@
 									$(this).select();
 								}
 							});
+							
 							$( ".ticketPayTax").on("change", function() {
 								if ( isNaN($(this).val()) ) {
 									$fixedValue = 0;
@@ -831,7 +855,6 @@
 							});
 						},
 		        
-		
 						goApplyPayment : function() {
 							$outbound = $("#confirmPaymentModal").data("applyPaymentRequest");
 							
