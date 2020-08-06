@@ -45,7 +45,7 @@ public class QuoteAutoComplete extends AbstractAutoCompleteServlet {
 				" OR lower(bill_to.address1) like '%" + term + "%'" +
 				" ORDER BY concat(quote.quote_number, quote.revision) " +
 				" OFFSET 0 ROWS" +
-				" FETCH NEXT 500 ROWS ONLY";
+				" FETCH NEXT 250 ROWS ONLY";
 		String sql = StringUtils.isNumeric(term) ? sql1 + sql2 + sql3 : sql1 + sql3;
 		logger.log(Level.DEBUG, sql);
 		
