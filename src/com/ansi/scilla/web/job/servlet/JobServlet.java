@@ -430,14 +430,21 @@ public class JobServlet extends AbstractServlet {
 		Integer newJobId = null;
 		
 		try {
-			webMessages = jobRequest.validateNewJob(conn);
+			webMessages = validateAdd(conn, jobRequest);
+//			logger.log(Level.DEBUG, "makeNewJob:validateAdd.webMessages:" + webMessages);
 			if ( webMessages.isEmpty() ) {
-				populateNewJob(job, jobRequest);
-				newJobId = insertJob(conn, user, job);
-				conn.commit();
-				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
-				responseCode = ResponseCode.SUCCESS;
-				jobDetailResponse = new JobDetailResponse(conn, newJobId, permissionList);
+				webMessages = jobRequest.validateNewJob(conn);
+//				logger.log(Level.DEBUG, "makeNewJob:validateNewJob.webMessages:" + webMessages);
+				if ( webMessages.isEmpty() ) {
+					populateNewJob(job, jobRequest);
+					newJobId = insertJob(conn, user, job);
+					conn.commit();
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
+					responseCode = ResponseCode.SUCCESS;
+					jobDetailResponse = new JobDetailResponse(conn, newJobId, permissionList);
+				} else {
+					responseCode = ResponseCode.EDIT_FAILURE;
+				}
 			} else {
 				responseCode = ResponseCode.EDIT_FAILURE;
 			}
@@ -737,7 +744,7 @@ public class JobServlet extends AbstractServlet {
 	}
 	*/
 	
-	
+// As far as I can tell, this code is never called. GAG 8/6/2020	
 	protected Job doAdd(Connection conn, JobRequest jobRequest, SessionUser sessionUser, List<UserPermission> permissionList, HttpServletResponse response) throws Exception {
 		JobDetailResponse jobDetailResponse = new JobDetailResponse();
 		ResponseCode responseCode = null;
@@ -745,6 +752,7 @@ public class JobServlet extends AbstractServlet {
 		Job job = new Job();
 
 		WebMessages webMessages = validateAdd(conn, jobRequest);
+//		logger.log(Level.DEBUG, "doAdd.validateAdd:" + webMessages);
 		if(jobRequest.getQuoteId() != null && jobRequest.getQuoteId() ==0){
 			responseCode = ResponseCode.EDIT_FAILURE;
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "No Quote ID, Try saving quote first");
@@ -1087,7 +1095,7 @@ public class JobServlet extends AbstractServlet {
 	protected WebMessages validateAdd(Connection conn, JobRequest jobRequest) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		List<String> missingFields = super.validateRequiredAddFields(jobRequest);
-		logger.log(Level.DEBUG, "validateAdd");
+		logger.log(Level.DEBUG, "validateAdd:" + missingFields);
 		String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
 		if ( missingFields.isEmpty() ) {
 			if ( ! JobUtils.isValidDLPct(jobRequest.getDirectLaborPct())) {
