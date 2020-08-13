@@ -26,7 +26,8 @@ public enum ReportType {
 	
 	ACCOUNTS_RECEIVABLE_TOTALS_SUMMARY(
 			ReportInputType.reportNoInput,
-			"com.ansi.scilla.report.datadumps.AccountsReceivableTotalsSummary",
+//			"com.ansi.scilla.report.datadumps.AccountsReceivableTotalsSummary",  datadump replaced by standard report
+			"com.ansi.scilla.report.accountsReceivable.AccountsReceivableTotalsSummary",
 			"com.ansi.scilla.web.report.request.NoValidate", 
 			new String[] {},
 			Permission.TECH_ADMIN_READ,
