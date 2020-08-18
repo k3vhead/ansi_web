@@ -270,6 +270,7 @@ public class SpecialOverrideServlet extends AbstractServlet {
 		WebMessages webMessages = new WebMessages();
 		for(ParameterType p : selectParms) {
 			String stringVal = request.getParameter(p.getFieldName());
+			stringVal = StringUtils.trim(stringVal);
 			if(StringUtils.isBlank(stringVal)) {
 				webMessages.addMessage(p.getFieldName(), "Required Value");
 			} else {
