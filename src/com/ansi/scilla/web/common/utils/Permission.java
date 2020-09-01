@@ -36,6 +36,11 @@ public enum Permission {
 	JOB_WRITE(JOB_READ, true, "Can Edit jobs"),   // this is for backwards compatibility
 	**/
 	
+	JOBTAG(null, false, "Functional Area: Job Tags"),
+	JOBTAG_READ(JOBTAG, false, "For consistency only, we actually use quote_read"),
+	JOBTAG_WRITE(JOBTAG_READ, false, "Edit/Delete Job Tags"),
+	
+	
 	TICKET(null, true, "Functional area: Tickets"),
 	TICKET_READ(TICKET, true, "Read-only access to Tickets"),		// this is for backwards compatibility
 	TICKET_WRITE(TICKET_READ, true, "Edit Tickets"),		// this is for backwards compatibility

@@ -151,37 +151,37 @@
     			            { title: "Claim Week", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.claim_week != null){return (row.claim_week+"");}
     			            } },
-    			            { title: "Budget", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Budget", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.budget != null){return (row.budget.toFixed(2));}
     			            } },
-    			            { title: "Direct Labor", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Direct Labor", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.claimed_weekly_dl_amt != null){return ('<span class="direct-labor-clicker" data-id="'+row.ticket_id+'">' + row.claimed_weekly_dl_amt.toFixed(2) + "</span>");}
     			            } },
-    			            { title: "+ Expenses", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "+ Expenses", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.claimed_weekly_dl_exp != null){return (row.claimed_weekly_dl_exp);}
     			            } },
-    			            { title: "= Total", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "= Total", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.claimed_weekly_dl_total != null){return (row.claimed_weekly_dl_total.toFixed(2));}
     			            } },
-    			            { title: "Total Volume (PPC)" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Total Volume (PPC)" , "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.total_volume != null){return (row.total_volume.toFixed(2));}
     			            } },
-    			            { title: "Claimed DL Volume" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Claimed DL Volume" , "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.claimed_volume != null){return (row.claimed_volume.toFixed(2));}
     			            } },
-    			            { title: "Claimed Passthru Volume" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Claimed Passthru Volume" , "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.passthru_volume != null){return ('<span class="passthru-expense-clicker" data-id="'+row.ticket_id+'">' + row.passthru_volume.toFixed(2) + "</span>");}
     			            } },
-    			            { title: "Total Volume Claimed" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Total Volume Claimed" , "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.claimed_volume_total != null){return (row.claimed_volume_total.toFixed(2));}
     			            } },
-    			            { title: "Volume Remaining", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Volume Remaining", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.volume_remaining != null){return ( row.volume_remaining.toFixed(2));}
     			            } },
-    			            { title: "Billed Amount",  "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Billed Amount",  "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.billed_amount != null){return ( row.billed_amount.toFixed(2));}
     			            } },			            
-    			            { title: "Diff CLM/BLD",  "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Diff CLM/BLD",  "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.claimed_vs_billed != null){return ( row.claimed_vs_billed.toFixed(2));}
     			            } },
     			            { 

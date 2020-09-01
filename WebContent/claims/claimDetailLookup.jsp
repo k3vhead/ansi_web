@@ -116,7 +116,7 @@
     			            { title: "Claim Week", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.claim_week != null){return (row.claim_week+"");}
     			            } },
-    			            { title: "Work Date", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+    			            { title: "Work Date", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "YYYY-MM-dd", data: function ( row, type, set ) {	
     			            	if(row.work_date != null){return (row.work_date+"");}
     			            } },
     			            { width:"12%", title: "Account", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
@@ -128,43 +128,43 @@
     			            { title: "Status", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.ticket_status != null){return ('<span class="tooltip">' + row.ticket_status + '<span class="tooltiptext">' + row.ticket_status_description + '</span></span>');}
     			            } },
-    			            { width:"8%", title: "Washer", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+    			            { width:"8%", title: "Washer", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "Last, First Name", data: function ( row, type, set ) {	
     			            	if(row.washer_name != null){return (row.washer_name+"");}
     			            } },
-    			            { title: "Total Volume" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Total Volume" , "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.total_volume != null){return (row.total_volume.toFixed(2));}
     			            } },
-    			            { title: "Budget" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Budget" , "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.budget != null){return (row.budget.toFixed(2));}
     			            } },
-    			            { title: "Direct Labor", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Direct Labor", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.ticket_claim_dl_amt != null){return (row.ticket_claim_dl_amt.toFixed(2));}
     			            } },
-    			            { title: "+ Expenses", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "+ Expenses", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#", data: function ( row, type, set ) {
     			            	if(row.ticket_claim_dl_exp != null){return (row.ticket_claim_dl_exp);}
     			            } },
-    			            { title: "= Total", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "= Total", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.ticket_claim_dl_total != null){return (row.ticket_claim_dl_total.toFixed(2));}
     			            } },
-    			            { title: "Hours", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Hours", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.ticket_claim_dl_hours != null){return (row.ticket_claim_dl_hours.toFixed(2));}
     			            } },
-    			            { title: "DL Volume Claimed" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "DL Volume Claimed" , "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.claimed_volume != null){return (row.claimed_volume.toFixed(2));}
     			            } },
-    			            { title: "Passthru Volume Claimed" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Passthru Volume Claimed" , "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.passthru_volume != null){return (row.passthru_volume.toFixed(2));}
     			            } },
-    			            { title: "Total Volume Claimed" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Total Volume Claimed" , "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.claimed_volume_total != null){return (row.claimed_volume_total.toFixed(2));}
     			            } },
-    			            { title: "Unclaimed", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Unclaimed", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.volume_remaining != null){return ( row.volume_remaining.toFixed(2));}
     			            } },
-    			            { title: "Total DL Claimed", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "Total DL Claimed", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.claimed_dl_total != null){return ( row.claimed_dl_total.toFixed(2));}
     			            } },
-    			            { title: "DL Remaining", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { title: "DL Remaining", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
     			            	if(row.dl_remaining != null){return ( row.dl_remaining.toFixed(2));}
     			            } },
     			            { title: "<bean:message key="field.label.action" />",  searchable:false, data: function ( row, type, set ) {	

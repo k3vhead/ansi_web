@@ -33,7 +33,10 @@ public class DocumentLookupServlet extends AbstractLookupServlet {
 	public static final String EXPIRATION_DATE = "expiration_date";
 	public static final String XREF_TYPE = "xref_type";
 	public static final String XREF_ID = "xref_id";
-	public static final String XREF_DISPLAY = "xref_display";
+	public static final String XREF_DISPLAY = "case\n" + 
+			"when xref_type = 'SIGNED_CONTRACT' then concat(quote.quote_number,quote.revision)\n" + 
+			"when xref_type = 'TAX_EXEMPT' then address.name\n" + 
+			"end";
 	public static final String XREF_TYPE_DISPLAY = "xref_type_display";
 
 	public DocumentLookupServlet() {

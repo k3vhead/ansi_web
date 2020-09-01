@@ -143,7 +143,8 @@ public class InvoiceTypeAheadServlet extends AbstractServlet {
 
 		Integer billToAddressId = StringUtils.isNumeric(billTo) ? Integer.valueOf(billTo) : null;
 
-		String sql = InvoiceSearch.sql + InvoiceSearch.generateWhereClause(conn, term, billToAddressId);
+		String sql = InvoiceSearch.sql + InvoiceSearch.generateWhereClause(conn, term, billToAddressId) 
+			+ " ORDER BY invoice_id DESC OFFSET 0 ROWS FETCH NEXT 250 ROWS ONLY";
 		logger.log(Level.DEBUG, "******");
 		logger.log(Level.DEBUG, "Invoice SQL:\n" + sql);
 		logger.log(Level.DEBUG, "******");

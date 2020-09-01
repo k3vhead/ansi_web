@@ -123,7 +123,7 @@ public class AddressTypeAheadServlet extends AbstractServlet {
 										+ " OR lower(zip) like '%" + term + "%'"
 										+ " ORDER BY name "
 										+ " OFFSET 0 ROWS"
-										+ " FETCH NEXT 500 ROWS ONLY";
+										+ " FETCH NEXT 250 ROWS ONLY";
 								Statement s = conn.createStatement();
 								ResultSet rs = s.executeQuery(sql);
 								while ( rs.next() ) {
