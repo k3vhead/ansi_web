@@ -170,7 +170,7 @@
 			            { width:"7%", title: "<bean:message key="field.label.jobSiteAddress" />",  "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
 			            	if(row.job_site_address != null){return (row.job_site_address+"");}
 			            } },
-			            { width:"6%", title: "<bean:message key="field.label.startDate" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            { width:"6%", title: "<bean:message key="field.label.startDate" />", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "YYYY-MM-dd", data: function ( row, type, set ) {
 			            	//if(row.start_date != null){return (row.start_date+"");}
 			            	//if(row.view_start_date != null){return (row.view_start_date+"");}
 			            	if ( row.display_start_date != null ) { return row.display_start_date; }
@@ -178,7 +178,7 @@
 			            { width:"5%", title: "<bean:message key="field.label.jobFrequency" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
 			            	if(row.job_frequency != null){return (row.job_frequency+"");}
 			            } },
-			            { width:"5%", title: "<bean:message key="field.label.pricePerCleaning" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+			            { width:"5%", title: "<bean:message key="field.label.pricePerCleaning" />", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
 			            	if(row.price_per_cleaning != null){return (row.price_per_cleaning.toFixed(2)+"");}
 			            } },
 			            { width:"5%", title: "<bean:message key="field.label.jobNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
@@ -191,13 +191,13 @@
 			            { width:"16%", title: "<bean:message key="field.label.serviceDescription" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
 			            	if(row.service_description != null){return (row.service_description+"");}
 			            } },
-			            { width:"6%", title: "<bean:message key="field.label.processDate" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) { 	
+			            { width:"6%", title: "<bean:message key="field.label.processDate" />", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "YYYY-MM-dd", data: function ( row, type, set ) { 	
 			            	if(row.process_date != null){return (row.process_date+"");}
 			            } },
 			            { width:"6%", title: "<bean:message key="field.label.invoiceId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
 			            	if(row.invoice_id != null){return (row.invoice_id+"");} 
 			            } },
-			            { width:"6%", title: "<bean:message key="field.label.amountDue" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
+			            { width:"6%", title: "<bean:message key="field.label.amountDue" />", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {	
 			            	if(row.amount_due != null){return (row.amount_due.toFixed(2)+"");} 
 			            } },
 			            { width:"5%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	

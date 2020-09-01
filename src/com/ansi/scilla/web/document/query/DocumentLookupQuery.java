@@ -115,8 +115,12 @@ public class DocumentLookupQuery extends LookupQuery {
 		logger.log(Level.DEBUG, joiner);
 		if (! StringUtils.isBlank(queryTerm)) {
 				whereClause =  whereClause + joiner + " (\n"
-						+ " lower(concat(job_site.name, ' ', job_site.address1, ' ', job_site.city)) like '%" + queryTerm.toLowerCase() + "%'" +
-						"\n OR ticket.ticket_id like '%" + queryTerm.toLowerCase() + "%'" +
+						+ " document.document_id like '%" + queryTerm.toLowerCase() + "%'" +
+						"\n OR document.description like '%" + queryTerm.toLowerCase() + "%'" +
+//	(filter)				"\n OR document.xref_type like '%" + queryTerm.toLowerCase() + "%'" +
+						"\n OR document.xref_id like '%" + queryTerm.toLowerCase() + "%'" +
+//	(filter)				"\n OR document.document_date like '%" + queryTerm.toLowerCase() + "%'" +
+//	(filter)				"\n OR document.expiration_date like '%" + queryTerm.toLowerCase() + "%'" +
 						")" ;
 		}
 		logger.log(Level.DEBUG, whereClause);
