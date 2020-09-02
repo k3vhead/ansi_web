@@ -166,6 +166,10 @@ public enum Permission {
 
 	BATCH_LOG(null, false, "Functional Area: Batch Logging"),
 	BATCH_LOG_READ(BATCH_LOG, false, "Can view the batch log"),
+	
+	LEADERSHIP(null, false, "Functional Area: Leadership"),
+	LEADERSHIP_READ(LEADERSHIP, false, "Limited to corporate leaders - read-only"),
+	LEADERSHIP_WRITE(LEADERSHIP_READ, false, "Limited to corporate leaders - CRUD"),
 
 	REPORT_DISTRIBUTION(null, false, "Functional Area: Report Distribution"),
 	REPORT_DISTRIBUTION_READ(REPORT_DISTRIBUTION, false, "Can read other report subscriptions"),
