@@ -14,5 +14,7 @@ public enum ResponseOption {
 	WORK_HOURS_TYPE,
 	EXPENSE_TYPE,
 	DOCUMENT_TYPE,
+	JOBTAG_TYPE,
+	JOBTAG_STATUS,
 	;
 }

@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,6 +19,8 @@ import com.ansi.scilla.common.invoice.InvoiceStyle;
 import com.ansi.scilla.common.invoice.InvoiceTerm;
 import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.jobticket.JobStatus;
+import com.ansi.scilla.common.jobticket.JobTagStatus;
+import com.ansi.scilla.common.jobticket.JobTagType;
 import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.common.payment.PaymentMethod;
 import com.ansi.scilla.web.common.response.MessageResponse;
@@ -44,6 +45,8 @@ public class OptionsListResponse extends MessageResponse {
 	private List<WorkHoursTypeOption> workHoursType;
 	private List<ExpenseTypeOption> expenseType;
 	private List<DocumentTypeOption> documentType;
+	private List<JobTagStatusOption> jobTagStatus;
+	private List<JobTagTypeOption> jobTagType;
 
 	public OptionsListResponse(List<ResponseOption> options, SessionData sessionData) throws ClassNotFoundException, Exception {
 		this.logger = LogManager.getLogger(this.getClass());
@@ -87,7 +90,14 @@ public class OptionsListResponse extends MessageResponse {
 		if ( options.contains(ResponseOption.DOCUMENT_TYPE)) {
 			makeDocumentTypeList();
 		}
+		if ( options.contains(ResponseOption.JOBTAG_TYPE)) {
+			makeJobTagTypeList();
+		}
+		if ( options.contains(ResponseOption.JOBTAG_STATUS)) {
+			makeJobTagStatusList();
+		}
 	}
+
 
 	private void makeInvoiceStyleList() {
 		this.invoiceStyle = new ArrayList<InvoiceStyleOption>();
@@ -206,7 +216,25 @@ public class OptionsListResponse extends MessageResponse {
 		Collections.sort(this.documentType);
 		
 	}
+	
+	private void makeJobTagStatusList() {
+		this.jobTagStatus = new ArrayList<JobTagStatusOption>();
+		for ( JobTagStatus value : JobTagStatus.values()) {
+			this.jobTagStatus.add(new JobTagStatusOption(value));
+		}
+		Collections.sort(this.jobTagStatus);
+		
+	}
 
+	private void makeJobTagTypeList() {
+		this.jobTagType = new ArrayList<JobTagTypeOption>();
+		for ( JobTagType value : JobTagType.values()) {
+			this.jobTagType.add(new JobTagTypeOption(value));
+		}
+		Collections.sort(this.jobTagType);		
+	}
+
+	
 	public List<JobFrequencyOption> getJobFrequency() {
 		return jobFrequency;
 	}
@@ -309,6 +337,24 @@ public class OptionsListResponse extends MessageResponse {
 
 	public void setDocumentType(List<DocumentTypeOption> documentType) {
 		this.documentType = documentType;
+	}
+
+
+	public List<JobTagStatusOption> getJobTagStatus() {
+		return jobTagStatus;
+	}
+
+
+	public void setJobTagStatus(List<JobTagStatusOption> jobTagStatus) {
+		this.jobTagStatus = jobTagStatus;
+	}
+
+	public List<JobTagTypeOption> getJobTagType() {
+		return jobTagType;
+	}
+
+	public void setJobTagType(List<JobTagTypeOption> jobTagType) {
+		this.jobTagType = jobTagType;
 	}
 
 
