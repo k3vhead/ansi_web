@@ -105,19 +105,19 @@
         		},
                 
         		
-        		doSubscription : function($reportId, $divisionId, $subscribe, $allDivisions, $allAnsiReports, $divisionReports, $subscriptionId) {
+        		doSubscription : function($reportId, $divisionId, $columnId, $subscribe, $allDivisions, $allAnsiReports, $divisionReports, $subscriptionId) {
         			if ( $subscribe ) {
         				$word = "Subscribe"
         			} else {
         				$word = "Unsubscribe"
         			}
         			
-            		var $outbound = {"reportId":$reportId, "divisionId":$divisionId, "subscribe":$subscribe, "allDivisions":$allDivisions, "allAnsiReports":$allAnsiReports, "subscriptionId":$subscriptionId, "divisionReports":$divisionReports};
+            		var $outbound = {"reportId":$reportId, "divisionId":$divisionId, "columnId":$columnId, "subscribe":$subscribe, "allDivisions":$allDivisions, "allAnsiReports":$allAnsiReports, "subscriptionId":$subscriptionId, "divisionReports":$divisionReports};
             				
 	       			var jqxhr = $.ajax({
 						type: 'POST',
 						url: "reports/subscription",
-          				$outbound : [{"reportId":null, "allAnsiReports":$allAnsiReports, "divisionReports":$divisionReports}, {"divisionId":null, "allDivisions":$allDivisions, "divisionReports":$divisionReports}],
+          				$outbound : [{"reportId":null, "allAnsiReports":$allAnsiReports, "divisionReports":$divisionReports}, {"divisionId":null, "allDivisions":$allDivisions, "divisionReports":$divisionReports}, {"reportId":$reportId, "columnId":$columnId}],
       					data: JSON.stringify($outbound),
       					statusCode: {
 							200 : function($data) {
@@ -311,24 +311,35 @@
            			$hdrRow.append( $("<td>"));
            			$.each($columnList, function($index, $value) {
            				var $hdrTD = $("<td>").append($value.name);
+           				$hdrTD.addClass("hdr"); 
+    					$hdrTD.addClass("div-" + $value.name);
            				$hdrRow.append($hdrTD);	
+           				$hdrTD.addClass("hdr"); 
            			});
            			
            			$table.append($hdrRow);
            			
            			$.each($reportList, function($index, $report) {
            				var $row = $("<tr>");
+        				$row.addClass("report-" + $report.reportId);
+           				$row.addClass("reportrow"); 
            				var $labelTD = $("<td>");
            				$labelTD.append($report.description);
            				$row.append($labelTD);
            				$.each($columnList, function($index2, $column) {
            					var $checkboxTD = $("<td>");
-               				var $checkbox = $('<input>');
+        					$checkboxTD.addClass("div-" + $column.id);
+               				var $checkbox = $('<input />');
+               				$checkbox.addClass("subscription-checkbox");
+               				
+        					//$divTD.append($('<input type="checkbox" name="'+$report.reportId+"-" + $column.id +'" class="report-selector" data-report="'+$report.reportId+'" data-group="'+$groupId+'"/>'));
+        					
                			 	$checkbox.attr("name",$container + '-' + $column.id);
                			 	$checkbox.attr("type","checkbox");
                			 	$checkbox.attr("value", $column.id);
                				$checkboxTD.append($checkbox);
                				$row.append($checkboxTD);
+               				//$checkboxTD.addClass("divisioncolumn"); 
            				});           				
            				$table.append($row);
            			});
@@ -336,11 +347,28 @@
            			
            			$("#"+$container).append($table);
            			
+         			$selector = "#"+$container + " .reportrow";
+          			$($selector).mouseover(function($event) {
+   						$(this).css('background-color','#F9F9F9');
+   					});
+   					$($selector).mouseout(function($event) {
+   						$(this).css('background-color','transparent');
+   					}); 
+           			
+         			$selector = "#"+$container + " .hdr";
+          			$($selector).mouseover(function($event) {
+   						$(this).css('background-color','#F9F9F9');
+   					});
+   					$($selector).mouseout(function($event) {
+   						$(this).css('background-color','transparent');
+   					});
+   					
            			$selector = "#"+$container + " .subscription-checkbox";
    					$($selector).click(function($event) {
-   						var $reportId = $(this).attr("data-reportid");
-   						var $groupId = $(this).attr("data-groupid");
-   						REPORT_SUBSCRIPTION.doSubscription($subscribe, $reportId, $groupId, null);
+   						var $subscribe = $(this).attr("data-column.id" + "data-reportId");
+   						var $reportId = $(this).attr("data-reportId");
+   						var $columnId = $(this).attr("data-column.id");
+   						REPORT_SUBSCRIPTION.doSubscription($subscribe, $reportId, $columnId, null);
    					});
         		},
 
