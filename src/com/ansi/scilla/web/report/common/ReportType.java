@@ -30,7 +30,7 @@ public enum ReportType {
 			"com.ansi.scilla.report.accountsReceivable.AccountsReceivableTotalsSummary",
 			"com.ansi.scilla.web.report.request.NoValidate", 
 			new String[] {},
-			Permission.TECH_ADMIN_READ,
+			Permission.LEADERSHIP_READ,
 			"Accounts Receivable Totals Summary"
 		),
 	ACCOUNTS_RECEIVABLE_TOTALS_SUMMARY_BY_DIVISION(
@@ -46,7 +46,7 @@ public enum ReportType {
 			"com.ansi.scilla.report.datadumps.AccountsReceivableTotalsOver60Detail",
 			"com.ansi.scilla.web.report.request.NoValidate", 
 			new String[] {},
-			Permission.TECH_ADMIN_READ,
+			Permission.LEADERSHIP_READ,
 			"Accounts Receivable Totals Over 60"
 		),
 	ACCOUNTS_RECEIVABLE_TOTALS_OVER_60_DETAIL_BY_DIVISION(
