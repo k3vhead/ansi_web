@@ -38,8 +38,6 @@
 				float:right;
 			}
 			.subscription-selector {
-				width:11%;
-				float:right;
 				display: none;
 			}
 			.activeRowCol {
@@ -324,13 +322,13 @@
         				$row.addClass("report-" + $report.reportId);
            				$row.addClass("reportrow"); 
            				var $labelTD = $("<td>");
+           				$labelTD.addClass("TD");
            				$labelTD.append($report.description);
            				$row.append($labelTD);
            				$.each($columnList, function($index2, $column) {
            					var $checkboxTD = $("<td>");
         					$checkboxTD.addClass("div-" + $column.id);
                				var $checkbox = $('<input />');
-               				$checkbox.addClass("subscription-checkbox");
                				
         					//$divTD.append($('<input type="checkbox" name="'+$report.reportId+"-" + $column.id +'" class="report-selector" data-report="'+$report.reportId+'" data-group="'+$groupId+'"/>'));
         					
@@ -338,7 +336,9 @@
                			 	$checkbox.attr("type","checkbox");
                			 	$checkbox.attr("value", $column.id);
                				$checkboxTD.append($checkbox);
+               				$checkboxTD.addClass("checkboxTD");
                				$row.append($checkboxTD);
+               				
                				//$checkboxTD.addClass("divisioncolumn"); 
            				});           				
            				$table.append($row);
@@ -354,21 +354,37 @@
    					$($selector).mouseout(function($event) {
    						$(this).css('background-color','transparent');
    					}); 
-           			
-         			$selector = "#"+$container + " .hdr";
+   					
+   					$("th, td").mouseover(function()
+					{
+						var targetIndex, elements;
+						targetIndex = $(this).index() + 1;
+						elements = $("th, td");
+						elements.filter(":nth-child(" + targetIndex + ")").css("background-color", "#F9F9F9");
+						elements.not(":nth-child(" + targetIndex + ")").css("background-color", "transparent");
+					});
+					$("table").mouseleave(function()
+					{
+						$("th, td").css("background-color", "transparent");
+					});
+   					
+   				/*	$selector = "#"+$container + " .checkboxTD";
           			$($selector).mouseover(function($event) {
    						$(this).css('background-color','#F9F9F9');
    					});
    					$($selector).mouseout(function($event) {
    						$(this).css('background-color','transparent');
-   					});
+   					}); */
+   					
+   					
+   					
    					
            			$selector = "#"+$container + " .subscription-checkbox";
    					$($selector).click(function($event) {
    						var $subscribe = $(this).attr("data-column.id" + "data-reportId");
    						var $reportId = $(this).attr("data-reportId");
    						var $columnId = $(this).attr("data-column.id");
-   						REPORT_SUBSCRIPTION.doSubscription($subscribe, $reportId, $columnId, null);
+   						REPORT_SUBSCRIPTION.doSubscription($container, $subscribe, $reportId, $columnId, null);
    					});
         		},
 
@@ -379,6 +395,7 @@
            			console.log("Making container " + $container);
            			var $table = $("<table>");
            			var $hdrRow = $('<tr><td>&nbsp;</td><td><span style="font-weight:bold;">Subscribe</span></td></tr>');
+           			
            			$table.append($hdrRow);
            			
            			
@@ -409,12 +426,12 @@
    					});
    					$($selector).mouseout(function($event) {
    						$(this).css('background-color','transparent');
-   					});
+   					}); 
    					
    					$selector = "#"+$container + " .subscription-checkbox";
    					$($selector).click(function($event) {
    						var $reportId = $(this).attr("data-reportid");
-   						REPORT_SUBSCRIPTION.doSubscription($subscribe, $reportId);
+   						REPORT_SUBSCRIPTION.doSubscription($subscribe, $container, $reportId);
    					});
        			},
        			
@@ -521,31 +538,31 @@
     	    	
     	<div id="selection-menu-container">
     		Subscribe to:<br />
-    		<div id= "allAnsi-subscription-selector subscription-selector">
+    		<div id= "allAnsi-subscription-selector" class="subscription-selector">
     		<input type="radio" name="subscription-selector" value="allAnsi" /> All Ansi Reports<br />
     		</div>
     		
-    		<div id= "company-subscription-selector subscription-selector">		
+    		<div id= "company-subscription-selector" class="subscription-selector">		
     		<input type="radio" name="subscription-selector" value="company" /> Company Reports<br />
 			</div>
 			    		
-    		<div id= "region-subscription-selector subscription-selector">
+    		<div id= "region-subscription-selector" class="subscription-selector">
     		<input type="radio" name="subscription-selector" value="region" /> Region Reports<br />
 			</div>
 			    		
-    		<div id= "group-subscription-selector subscription-selector">
+    		<div id= "group-subscription-selector" class=subscription-selector">
     		<input type="radio" name="subscription-selector" value="group" /> Group Reports<br />
 			</div>
     		
-    		<div id= "division-subscription-selector subscription-selector">
+    		<div id= "division-subscription-selector" class="subscription-selector">
     		<input type="radio" name="subscription-selector" value="division" /> Division Reports<br />
 			</div>
     		   		
-    		<div id= "trend-subscription-selector subscription-selector">
+    		<div id= "trend-subscription-selector" class="subscription-selector">
     		<input type="radio" name="subscription-selector" value="trend" /> Trend Reports<br />
 			</div>
 			    		
-    		<div id= "utility-subscription-selector">
+    		<div id= "utility-subscription-selector" class="subscription-selector">
     		<input type="radio" name="subscription-selector" value="utility" /> Utility Reports<br />
     		</div>    	
     		    		
