@@ -57,10 +57,11 @@ public class JobTagServlet extends AbstractCrudServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		logger.log(Level.DEBUG, "doGet");
 		processGet(request, response, 
 				Permission.JOBTAG_READ, 
 				REALM, 
-				new String[] { ACTION_IS_GET },
+				new String[] { ACTION_IS_GET, ACTION_IS_LIST },
 				new JobTag(), 
 				fieldMap);
 	}

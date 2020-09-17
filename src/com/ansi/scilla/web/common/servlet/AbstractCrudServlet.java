@@ -169,6 +169,7 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 				}
 
 			} catch(RecordNotFoundException recordNotFoundEx) {
+				logger.log(Level.DEBUG, "RecordNotFound - 404");
 				super.sendNotFound(response);
 			} catch ( Exception e) {
 				AppUtils.logException(e);
@@ -546,6 +547,7 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 	
 	
 	private void sendListResponse(Connection conn, HttpServletResponse response, MSTable table, List<FieldMap> fieldMap) throws Exception {
+		logger.log(Level.DEBUG, "sendListResponse");
 		HashMap<String, FieldMap> db2json = makeDb2Json(fieldMap);
 		List<HashMap<String, Object>> itemList = new ArrayList<HashMap<String,Object>>();
 
@@ -597,13 +599,7 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 	}
 
 
-//	private HashMap<String, FieldMap> makeJson2Db(List<FieldMap> fieldMap) {
-//		HashMap<String, FieldMap> db2Json = new HashMap<String, FieldMap>();
-//		for ( FieldMap map : fieldMap ) {
-//			db2Json.put(map.jsonField, map);
-//		}
-//		return db2Json;
-//	}
+
 
 
 

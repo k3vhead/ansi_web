@@ -10,7 +10,7 @@ public class JobTagTypeOption extends WebOption  {
 	public JobTagTypeOption(JobTagType tagType) {
 		super();
 		this.code = tagType.name();
-		this.display = tagType.name();
+		this.display = tagType.display();
 		this.name = tagType.name();
 	}
 	public String getCode() {

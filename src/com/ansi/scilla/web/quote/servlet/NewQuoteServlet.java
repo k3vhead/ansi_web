@@ -198,7 +198,7 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 			if ( webMessages.isEmpty() ) {
 				Job newJob = populateNewJob(jobRequest);
 				logger.log(Level.DEBUG, newJob);
-				JobDetail jobDetail = new JobDetail(newJob, new User(), new User());
+				JobDetail jobDetail = new JobDetail(conn, newJob, new User(), new User());
 				logger.log(Level.DEBUG, jobDetail);
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
 				responseCode = ResponseCode.SUCCESS;

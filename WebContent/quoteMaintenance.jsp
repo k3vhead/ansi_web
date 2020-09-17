@@ -46,6 +46,8 @@
 					invoiceTermList : null,
 					jobStatusList : null,
 					jobFrequencyList : null,
+					jobTagList : null,
+					jobTagTypeList : null,
 					leadTypeList : null,
 					managerList : null,
 					quote : null,
@@ -124,46 +126,6 @@
 								$($selector).html($val[0]).show().fadeOut(3000);
 							});							
 						} else {
-							//QUOTEMAINTENANCE.quote = $data.data.quote;
-							//var $replacementJobHeader = null
-							//$.each($data.data.jobHeaderList, function($index, $value) {
-						//		if ( $value.jobId == $data.data.job.jobId ) {
-						//			$replacementJobHeader = QUOTEMAINTENANCE.makeJobHeader(
-							//				$value.jobId, 
-								//			$value.jobNbr, 
-								//			$value.abbrDescription, 
-								//			$value.divisionNbr, 
-								//			$value.divisionCode, 
-								//			$value.jobStatus, 
-								//			$value.jobFrequency, 
-								//			$value.pricePerCleaning,
-								//			$value.canEdit,
-								//			$value.canActivate,
-								//			$value.canCancel,
-								//			$value.canDelete,
-								//			$value.canSchedule);
-								//}
-							//});
-							// header
-							//var $jobId = $data.data.quote.jobDetail.job.jobId;
-							//var $headerDestination = "#job" + $jobId + " .jobTitleRow";
-							//$($headerDestination).html("");
-							//$($headerDestination).append($replacementJobHeader);
-							//QUOTEMAINTENANCE.makeJobClickers();
-							// detail
-							//var $dataDestination = "#job" + $jobId + " .job-data-row";
-							//QUOTEMAINTENANCE.populateJobPanel($data.jobId, $dataDestination, $data.data);
-							//$("#job-activate-modal").dialog("close");
-							//$("#globalMsg").html("Job Activated").show().fadeOut(3000);
-							
-							//QUOTEMAINTENANCE.showJobUpdates($data.data);
-							
-							
-							
-							
-							
-							
-							
 							var $jobId = $data.data.quote.jobDetail.job.jobId;
 							QUOTEMAINTENANCE.joblist[$jobId] = $data.data.quote.jobDetail;
 							console.log("populate the job panels after activate");
@@ -171,7 +133,6 @@
 							$("#job-activate-modal").dialog("close");
 							
 							QUOTEMAINTENANCE.showJobUpdates($data.data);
-
 						}
 					}, 
 					
@@ -451,10 +412,67 @@
 					},
 					
 					
+					populateTagListEdit : function($job) {
+						console.log($job);
+						var $display = "N/A";
+						if ( QUOTEMAINTENANCE.jobTagList.length > 0 ) {
+		            		
+		            		console.log("Tag types should be here");
+		            		var $tagDisplay = $("<div>");
+		            		$.each(QUOTEMAINTENANCE.jobTagTypeList, function($typeIndex, $tagType) {		            			
+		            			console.log($tagType);
+		            			var $label = '<span class="formLabel">' + $tagType.display + ': </span>';
+		            			$tagDisplay.append($label);
+		            			$display = "";
+		            			$.each(QUOTEMAINTENANCE.jobTagList, function($index, $tag) {
+		            				console.log($tag);
+		            				if ( $tag.tagType == $tagType.name) {
+		            					console.log("Adding " + $tag.name + " to " + $tagType.name + " list");
+										var $classList = "";
+										var $tagIsActive = true
+										var $tagIsSelected = false;
+										var $skip = false;
+										if ( $tag.status == "INACTIVE") {
+											$tagIsActive = false;
+										}
+										$.each($job.jobTagList, function($selectedIndex, $selectedTag) {
+											if ( $selectedTag.tagId == $tag.tagId ) {
+												$tagIsSelected = true;
+											}
+										});
+										if ( $tagIsActive ) {
+											if ( $tagIsSelected ) {
+												$classList = $classList + " jobtag-selected";
+											} else {
+												// nothing to do here
+											}
+										} else {
+											if ( $tagIsSelected ) {
+												$classList = $classList + " jobtag-selected jobtag-inactive";
+											} else {
+												$skip = true;
+											}
+										}
+										if ( $skip == false ) {
+				            				$display = $display + '<span style="cursor:pointer;" class="jobtag jobtag-edit tooltip '+$classList+'" data-tagid="'+$tag.tagId+'">' + $tag.name + '<span class="tooltiptext">'+$tag.tagType + '-' + $tag.description+'</span></span>&nbsp;';				            				
+										}
+		            				}
+								});
+		            			
+		            			$tagDisplay.append($display + "<br />");
+		            		});
+							
+						}
+						
+						return $tagDisplay;
+					},
+
+					
+					
 					
 					editThisJob : function($jobId, $type) {
 	            		console.log("clicked a job edit: " + $jobId);
-	            		console.log($type);
+	            		console.log("Edit type: " + $type);
 	
 	    				// hide edit icon & show save/cancel
 	    				//$editSelector = "#job" + $jobId + " .jobTitleRow .panel-button-container .edit-this-job";
@@ -494,7 +512,19 @@
 						$("#job-edit-modal .proposal input[name='job-proposal-ppc']").val(QUOTEMAINTENANCE.joblist[$jobId].job.pricePerCleaning);
 						$("#job-edit-modal .proposal select[name='job-proposal-freq']").val(QUOTEMAINTENANCE.joblist[$jobId].job.jobFrequency);
 						$("#job-edit-modal .proposal textarea[name='job-proposal-desc']").val(QUOTEMAINTENANCE.joblist[$jobId].job.serviceDescription);
+						$("#job-edit-modal .proposal .job-proposal-jobtag").html(QUOTEMAINTENANCE.populateTagListEdit(QUOTEMAINTENANCE.joblist[$jobId].job));
 						
+						$(".jobtag-edit").click(function($event) {
+							var $tagId = $(this).attr("data-tagid");
+							var $selected = $(this).hasClass("jobtag-selected");
+							console.log("jobtag click: " + $tagId + " " + $selected);
+							if ( $selected ) {
+								$(this).removeClass("jobtag-selected");
+							} else {
+								$(this).addClass("jobtag-selected");
+							}
+						});
+
 						
 						// populate activation edit panel
 						$("#job-edit-modal .activation input[name='job-activation-dl-pct']").val(QUOTEMAINTENANCE.joblist[$jobId].job.directLaborPct);
@@ -1383,7 +1413,36 @@
 					
 					
 					
-					makeManagerList: function(){
+					
+					makeJobTagList : function(){
+	    				var $url = "jobtag/jobTag/list";
+	    				var jqxhr = $.ajax({
+	    					type: 'GET',
+	    					url: $url,
+	    					data: null,
+	    					statusCode: {
+	    						200: function($data) {
+	    							QUOTEMAINTENANCE.jobTagList = $data.data.itemList;
+	    							QUOTEMAINTENANCE.incrementProgress("Job Tag List");
+	    						},					
+	    						403: function($data) {
+	    							$("#globalMsg").html("Session Expired. Log In and try again").show();
+	    						},
+	    						404: function($data) {
+	    							$("#globalMsg").html("System Error 404/Manager List. Contact Support").show();
+	    						},
+	    						500: function($data) {
+	    							$("#globalMsg").html("System Error 500. Contact Support").show();
+	    						}
+	    					},
+	    					dataType: 'json'
+	    				});		    			
+		    		},
+		    		
+		    		
+		    		
+					
+					makeManagerList : function(){
 	    				var $url = "user/manager";
 	    				var jqxhr = $.ajax({
 	    					type: 'GET',
@@ -1412,7 +1471,7 @@
 		    		
 		    		
 		    		makeOptionLists : function(){
-						ANSI_UTILS.getOptionList('JOB_STATUS,JOB_FREQUENCY,COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM', QUOTEMAINTENANCE.populateOptions);
+						ANSI_UTILS.getOptionList('JOB_STATUS,JOB_FREQUENCY,COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM,JOBTAG_TYPE', QUOTEMAINTENANCE.populateOptions);
 						QUOTEMAINTENANCE.incrementProgress("Job Status List");
 						QUOTEMAINTENANCE.incrementProgress("Job Frequency List");
 						
@@ -1430,6 +1489,7 @@
 						QUOTEMAINTENANCE.incrementProgress("Lead Type List");
 						
 						QUOTEMAINTENANCE.makeManagerList();	
+						QUOTEMAINTENANCE.makeJobTagList();
 		            },
 		            
 		            
@@ -1637,7 +1697,7 @@
 		    					//$("#progressbar").hide();
 		    					QUOTEMAINTENANCE.showQuote();
 		    				},
-		    				max: 11
+		    				max: 12
 		    			});
 		    		},
 		    		
@@ -1796,6 +1856,28 @@
 		            },
 		            
 		            
+		            
+		            makeJobTagDisplay : function($jobTagList) {
+		            	var $display = '<span class="formLabel">Tags:</span> N/A<br />';
+		            	if ( $jobTagList != null && $jobTagList.length > 0 ) {
+		            		$display = "";
+		            		$.each(QUOTEMAINTENANCE.jobTagTypeList, function($typeIndex, $tagType) {
+		            			console.log("getting tags for " + $tagType.name);
+		            			$display = $display + '<span class="formLabel">' + $tagType.display + ": </span>";
+			            		$.each($jobTagList, function($index, $value) {
+			            			console.log("Checking " + $value.tagType + " " + $value.name + " " + $value.tagType);
+			            			if ( $value.tagType == $tagType.name ) {
+			            				$display = $display + '<span class="jobtag tooltip" data-tagid="'+$value.tagId+'">' + $value.name + '<span class="tooltiptext">'+$value.tagDescription+'</span></span>&nbsp;';
+			            			}
+			            		});
+			            		$display = $display + "<br />";
+		            		});
+		            	}
+		            	return $display;
+		            },
+		            
+		            
+		            
 		            populateJobPanel : function($jobId, $destination, $data) {	
 		            	console.log("Populate Job Panel");
 		            	console.log($data);
@@ -1818,6 +1900,7 @@
 		            	$($destination + " .jobProposalDisplayPanel .job-proposal-ppc").html("$" + $jobDetail.job.pricePerCleaning);
 		            	$($destination + " .jobProposalDisplayPanel .job-proposal-freq").html($jobDetail.job.jobFrequency);
 		            	$($destination + " .jobProposalDisplayPanel .job-proposal-desc").html($jobDetail.job.serviceDescription);
+		            	$($destination + " .jobProposalDisplayPanel .job-proposal-jobtag").html(QUOTEMAINTENANCE.makeJobTagDisplay($jobDetail.job.jobTagList));
 		            	
 		            	$($destination + " .jobActivationDisplayPanel .job-activation-dl-pct").html($jobDetail.job.directLaborPct);
 		            	$($destination + " .jobActivationDisplayPanel .job-activation-dl-budget").html($jobDetail.job.budget);
@@ -1949,6 +2032,7 @@
 						QUOTEMAINTENANCE.invoiceTermList = $optionData.invoiceTerm;
 						QUOTEMAINTENANCE.jobStatusList = $optionData.jobStatus;
 						QUOTEMAINTENANCE.jobFrequencyList = $optionData.jobFrequency;
+						QUOTEMAINTENANCE.jobTagTypeList = $optionData.jobTagType
 						
 						QUOTEMAINTENANCE.populateOptionSelects();
 		            },
@@ -2303,6 +2387,15 @@
 								} else {
 									$outbound['repeatScheduleAnnually'] = 0;
 								}
+							}
+							if ( $type == "proposal" ) {
+								console.log("proposal-specific updates");
+								var $jobtagList = [];
+								$.each( $("#job-edit-modal .proposal .jobtag-selected"), function($tagIndex, $tagValue) {
+									var $tagId = $(this).attr("data-tagid");
+									$jobtagList.push(parseInt($tagId));
+								});
+								$outbound['jobtags'] = $jobtagList;
 							}
 						});
 
@@ -2744,6 +2837,22 @@
 			.job-header-job-div {
 				display:inline; 
 				margin-right:10px;
+			}
+			.jobtag {
+				border:solid 1px #404040;
+				padding:1px;
+				spacing:1px;
+				-moz-border-radius:3px;
+				-webkit-border-radius:3px;
+				-khtml-border-radius:3px;
+				border-radius:3px;
+			}
+			.jobtag-inactive {
+				text-decoration:line-through;
+			}
+			.jobtag-selected {
+				background:#CC6600;
+				color:#FFFFFF;
 			}
 			.panel-button-container {
 				float:right; 

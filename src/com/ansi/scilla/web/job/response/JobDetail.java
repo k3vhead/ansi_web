@@ -2,14 +2,16 @@ package com.ansi.scilla.web.job.response;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Date;
-
-import org.apache.commons.beanutils.PropertyUtils;
+import java.util.List;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Job;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.exceptions.InvalidJobStatusException;
+import com.ansi.scilla.common.jobticket.JobTagDisplay;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
@@ -75,9 +77,10 @@ public class JobDetail extends ApplicationObject {
 	private Boolean canCancel;
 	private Boolean canDelete;
 	private Boolean canReschedule;
+	private List<JobTagDisplay> jobTagList;
 	
 	
-	public JobDetail(Job job, User addedBy, User updatedBy) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, InvalidJobStatusException {
+	public JobDetail(Connection conn, Job job, User addedBy, User updatedBy) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, InvalidJobStatusException, SQLException {
 		super();
 //		PropertyUtils.copyProperties(this, job);
 		this.billingContactId = job.getBillingContactId();
@@ -176,7 +179,10 @@ public class JobDetail extends ApplicationObject {
 		this.canCancel = job.canCancel();
 		this.canDelete = job.canDelete();
 		this.canReschedule = job.canReschedule();
+		
+		this.jobTagList = JobTagDisplay.getTags(conn, job.getJobId());
 	}
+	
 //	@JsonSerialize(using=AnsiDateFormatter.class)
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Date getActivationDate() {
@@ -584,6 +590,14 @@ public class JobDetail extends ApplicationObject {
 	}
 	public void setCanReschedule(Boolean canReschedule) {
 		this.canReschedule = canReschedule;
+	}
+
+	public List<JobTagDisplay> getJobTagList() {
+		return jobTagList;
+	}
+
+	public void setJobTagList(List<JobTagDisplay> jobTagList) {
+		this.jobTagList = jobTagList;
 	}
 
 }
