@@ -460,6 +460,7 @@ public class JobServlet extends AbstractServlet {
 				if ( webMessages.isEmpty() ) {
 					populateNewJob(job, jobRequest);
 					newJobId = insertJob(conn, user, job);
+					updateJobTags(conn, user, newJobId, jobRequest);
 					conn.commit();
 					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
 					responseCode = ResponseCode.SUCCESS;

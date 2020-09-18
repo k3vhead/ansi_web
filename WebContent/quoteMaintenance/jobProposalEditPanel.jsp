@@ -42,7 +42,6 @@
 			</tr>
 			<tr>
 				<td colspan="4">
-				<span class="formLabel">Tags:</span><br />
 				<span class="job-proposal-jobtag"  data-apiname="jobtag"></span>
 				</td>
 			</tr>

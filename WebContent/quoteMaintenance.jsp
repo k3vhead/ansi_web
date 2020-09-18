@@ -435,11 +435,14 @@
 										if ( $tag.status == "INACTIVE") {
 											$tagIsActive = false;
 										}
-										$.each($job.jobTagList, function($selectedIndex, $selectedTag) {
-											if ( $selectedTag.tagId == $tag.tagId ) {
-												$tagIsSelected = true;
-											}
-										});
+										if ( $job != null ) {
+											// when we're adding a job, a null is passed in, so nothing will be pre-selected
+											$.each($job.jobTagList, function($selectedIndex, $selectedTag) {
+												if ( $selectedTag.tagId == $tag.tagId ) {
+													$tagIsSelected = true;
+												}
+											});
+										}
 										if ( $tagIsActive ) {
 											if ( $tagIsSelected ) {
 												$classList = $classList + " jobtag-selected";
@@ -1548,6 +1551,27 @@
 		    				$(".job-edit-panel input").val("");
 		    				$(".job-edit-panel select").val("");
 		    				$(".job-edit-panel textarea").val("");
+		    				
+		    				//show job tags
+		    				if ($("#job-edit-modal .proposal .job-proposal-jobtag").html() == "" ) {
+		    					$("#job-edit-modal .proposal .job-proposal-jobtag").html(QUOTEMAINTENANCE.populateTagListEdit(null));
+		    					$(".jobtag-edit").click(function($event) {
+									var $tagId = $(this).attr("data-tagid");
+									var $selected = $(this).hasClass("jobtag-selected");
+									console.log("jobtag click: " + $tagId + " " + $selected);
+									if ( $selected ) {
+										$(this).removeClass("jobtag-selected");
+									} else {
+										$(this).addClass("jobtag-selected");
+									}
+								});
+		    				} else {
+		    					// new job -- nothing pre-selected
+		    					$.each($("#job-edit-modal .proposal .job-proposal-jobtag .jobtag-edit"), function($index, $value) {
+		    						$(this).removeClass("jobtag-selected");
+		    					});
+		    				}
+		    				
 		    				//set all job forms to visible
 							$(".job-edit-panel").show();		    				
 		    				//Populate frequncy dropdown
