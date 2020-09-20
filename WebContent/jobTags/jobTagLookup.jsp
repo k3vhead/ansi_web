@@ -157,7 +157,7 @@
     				$( "#jobtag-crud-modal" ).dialog({
 						title:'Job Tag',
 						autoOpen: false,
-						height: 300,
+						height: 375,
 						width: 500,
 						modal: true,
 						closeOnEscape:true,
@@ -189,7 +189,7 @@
     				$( "#jobtag-delete-modal" ).dialog({
 						title:'Confirm',
 						autoOpen: false,
-						height: 200,
+						height: 175,
 						width: 300,
 						modal: true,
 						closeOnEscape:true,
@@ -244,8 +244,8 @@
             	        
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
-            	            { className: "dt-left", "targets": [1,2,3] },
-            	            { className: "dt-center", "targets": [0,4,5,6] },
+            	            { className: "dt-left", "targets": [1,2,3,4,5,7] },
+            	            { className: "dt-center", "targets": [0,6] },
             	            { className: "dt-right", "targets": []}
             	         ],
             	        "paging": true,
@@ -261,8 +261,11 @@
     			            { width:"12%", title: "Type", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.type_display != null){return row.type_display;}
     			            } },
-    			            { width:"25%", title: "Name", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-    			            	if(row.name != null){return row.name;}
+    			            { width:"12%", title: "Code", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            	if(row.long_code != null){return row.long_code;}
+    			            } },
+    			            { width:"20%", title: "Abbreviation", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            	if(row.abbrev != null){return row.abbrev;}
     			            } },
     			            { width:"25%", title: "Description", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.description != null){return row.description;}
@@ -270,10 +273,10 @@
     			            { width:"12%", title: "Status", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.tag_status != null){return row.tag_status;}
     			            } },
-    			            { width:"12%", title: "Job Count", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            { width:"8%", title: "Job Count", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.job_count != null){return (row.job_count+"");}
     			            } },
-    			            { width:"10%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {
+    			            { width:"5%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {
     			            	var $editLink = "";
     			            	var $deleteLink = "";
     			            	
@@ -305,14 +308,16 @@
 					$('option', $select).remove();
 					$select.append(new Option("",""));
 					$.each(JOBTAGLOOKUP.jobTagTypesList, function($index, $value) {
-						$select.append(new Option($value.display, $value.NAME));
+						console.log("Adding to type list");
+						console.log($value);
+						$select.append(new Option($value.display, $value.name));
 					});
 					
             		var $select = $("#jobtag-crud-modal select[name='status']");            		
 					$('option', $select).remove();
 					$select.append(new Option("",""));
 					$.each(JOBTAGLOOKUP.jobTagStatusList, function($index, $value) {
-						$select.append(new Option($value.display, $value.NAME));
+						$select.append(new Option($value.display, $value.name));
 					});
 
 					$("#tagId").html("");
@@ -328,7 +333,8 @@
             		var $tagId = $("#jobtag-crud-modal input[name='tagId']").val();
             		var $outbound = {
             				"tagId":$tagId,
-		    				"name":$("#jobtag-crud-modal input[name='name']").val(),
+		    				"abbrev":$("#jobtag-crud-modal input[name='abbrev']").val(),
+		    				"longCode":$("#jobtag-crud-modal input[name='longCode']").val(),
 		    				"description":$("#jobtag-crud-modal input[name='description']").val(),
 		    				"tagType":$("#jobtag-crud-modal select[name='tagType']").val(),
 		    				"status":$("#jobtag-crud-modal select[name='status']").val(),
@@ -406,9 +412,14 @@
 							<td><span class="err errField tagType"></span></td>
 						</tr>
 						<tr>
-							<td><span class="formLabel">Name:</span></td>
-							<td><input type="text" class="userField" name="name"/></td>
-							<td><span class="err errField name"></span></td>
+							<td><span class="formLabel">Long Code:</span></td>
+							<td><input type="text" class="userField" name="longCode"/></td>
+							<td><span class="err errField longCode"></span></td>
+						</tr>
+						<tr>
+							<td><span class="formLabel">Abbreviation:</span></td>
+							<td><input type="text" class="userField" name="abbrev"/></td>
+							<td><span class="err errField abbrev"></span></td>
 						</tr>
 						<tr>
 							<td><span class="formLabel">Description:</span></td>

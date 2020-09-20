@@ -17,7 +17,8 @@ public class JobTagLookupQuery extends LookupQuery {
 
 	public static final String TAG_ID = "job_tag.tag_id";
 	public static final String TYPE_DISPLAY = "type_display";
-	public static final String NAME = "job_tag.name";
+	public static final String ABBREV = "job_tag.abbrev";
+	public static final String LONG_CODE = "job_tag.long_code";
 	public static final String DESCRIPTION = "job_tag.description";
 	public static final String TAG_STATUS = "tag_status";
 	public static final String JOB_COUNT = "job_count";
@@ -78,7 +79,8 @@ public class JobTagLookupQuery extends LookupQuery {
 		sqlSelect.add("\tjob_tag.tag_id,"); 
 		sqlSelect.add("\tjob_tag.tag_type,");
 		sqlSelect.add(makeTypeSql() + " as type_display,");
-		sqlSelect.add("\tjob_tag.name,");
+		sqlSelect.add("\tjob_tag.long_code,");
+		sqlSelect.add("\tjob_tag.abbrev,");
 		sqlSelect.add("\tjob_tag.description,");
 		sqlSelect.add("\tjob_tag.status,");
 		sqlSelect.add(makeStatusSql() + " as tag_status,");		
@@ -119,7 +121,7 @@ public class JobTagLookupQuery extends LookupQuery {
 		String orderBy = "";
 		if ( selectType.equals(SelectType.DATA)) {
 			if ( StringUtils.isBlank(sortBy)) {				
-				orderBy = " order by " + TYPE_DISPLAY + " asc," + NAME + " asc";
+				orderBy = " order by " + TYPE_DISPLAY + " asc," + LONG_CODE + " asc";
 			} else {
 //				List<String> sortList = Arrays.asList(StringUtils.split(sortBy, ","));
 				String sortDir = sortIsAscending ? orderBy + " asc " : orderBy + " desc ";
@@ -148,8 +150,9 @@ public class JobTagLookupQuery extends LookupQuery {
 		logger.log(Level.DEBUG, joiner);
 		if (! StringUtils.isBlank(queryTerm)) {
 			whereClause =  whereClause + joiner + " (\n"
-						+ " lower(job_tag.name) like '%" + queryTerm.toLowerCase() + "%'" +	
+						+ " lower(job_tag.long_code) like '%" + queryTerm.toLowerCase() + "%'" +	
 						" or lower(job_tag.description) like '%" + queryTerm.toLowerCase() + "%'" +
+						" or lower(job_tag.abbrev) like '%" + queryTerm.toLowerCase() + "%'" +
 						")" ;
 		}
 		logger.log(Level.DEBUG, whereClause);

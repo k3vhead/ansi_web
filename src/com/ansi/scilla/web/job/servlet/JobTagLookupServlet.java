@@ -32,7 +32,8 @@ public class JobTagLookupServlet extends AbstractLookupServlet {
 		cols = new String[] { 
 				JobTagLookupQuery.TAG_ID,
 				JobTagLookupQuery.makeTypeSql(),
-				JobTagLookupQuery.NAME,
+				JobTagLookupQuery.LONG_CODE,
+				JobTagLookupQuery.ABBREV,
 				JobTagLookupQuery.DESCRIPTION,
 				JobTagLookupQuery.makeStatusSql(),
 				JobTagLookupQuery.JOB_COUNT,

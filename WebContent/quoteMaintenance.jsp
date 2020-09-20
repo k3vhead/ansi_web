@@ -427,7 +427,7 @@
 		            			$.each(QUOTEMAINTENANCE.jobTagList, function($index, $tag) {
 		            				console.log($tag);
 		            				if ( $tag.tagType == $tagType.name) {
-		            					console.log("Adding " + $tag.name + " to " + $tagType.name + " list");
+		            					console.log("Adding " + $tag.longCode + " to " + $tagType.name + " list");
 										var $classList = "";
 										var $tagIsActive = true
 										var $tagIsSelected = false;
@@ -457,7 +457,7 @@
 											}
 										}
 										if ( $skip == false ) {
-				            				$display = $display + '<span style="cursor:pointer;" class="jobtag jobtag-edit tooltip '+$classList+'" data-tagid="'+$tag.tagId+'">' + $tag.name + '<span class="tooltiptext">'+$tag.tagType + '-' + $tag.description+'</span></span>&nbsp;';				            				
+				            				$display = $display + '<span style="cursor:pointer;" class="jobtag jobtag-edit tooltip '+$classList+'" data-tagid="'+$tag.tagId+'">' + $tag.longCode + '<span class="tooltiptext">'+$tag.abbrev + '-' + $tag.description+'</span></span>&nbsp;';				            				
 										}
 		            				}
 								});
@@ -1891,7 +1891,7 @@
 			            		$.each($jobTagList, function($index, $value) {
 			            			console.log("Checking " + $value.tagType + " " + $value.name + " " + $value.tagType);
 			            			if ( $value.tagType == $tagType.name ) {
-			            				$display = $display + '<span class="jobtag tooltip" data-tagid="'+$value.tagId+'">' + $value.name + '<span class="tooltiptext">'+$value.tagDescription+'</span></span>&nbsp;';
+			            				$display = $display + '<span class="jobtag tooltip" data-tagid="'+$value.tagId+'">' + $value.longCode + '<span class="tooltiptext">'+$value.abbrev + " - " + $value.tagDescription+'</span></span>&nbsp;';
 			            			}
 			            		});
 			            		$display = $display + "<br />";
@@ -2870,6 +2870,7 @@
 				-webkit-border-radius:3px;
 				-khtml-border-radius:3px;
 				border-radius:3px;
+				cursor:default;
 			}
 			.jobtag-inactive {
 				text-decoration:line-through;

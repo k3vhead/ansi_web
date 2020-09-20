@@ -30,7 +30,8 @@ public class JobTagServlet extends AbstractCrudServlet {
 	
 	private static final String TAG_ID = "tagId";
 	private static final String TAG_TYPE = "tagType";
-	private static final String NAME = "name";
+	private static final String ABBREV = "abbrev";
+	private static final String LONG_CODE = "longCode";
 	private static final String DESCRIPTION = "description";
 	private static final String STATUS = "status";
 	
@@ -40,7 +41,8 @@ public class JobTagServlet extends AbstractCrudServlet {
 		fieldMap = new ArrayList<FieldMap>();
 		fieldMap.add(new FieldMap(TAG_ID, JobTag.TAG_ID, JsonFieldFormat.INTEGER, false));
 		fieldMap.add(new FieldMap(TAG_TYPE, JobTag.TAG_TYPE, JsonFieldFormat.STRING, true));
-		fieldMap.add(new FieldMap(NAME, JobTag.NAME, JsonFieldFormat.STRING, true));
+		fieldMap.add(new FieldMap(ABBREV, JobTag.ABBREV, JsonFieldFormat.STRING, true));
+		fieldMap.add(new FieldMap(LONG_CODE, JobTag.LONG_CODE, JsonFieldFormat.STRING, true));
 		fieldMap.add(new FieldMap(DESCRIPTION, JobTag.DESCRIPTION, JsonFieldFormat.STRING, true));
 		fieldMap.add(new FieldMap(STATUS, JobTag.STATUS, JsonFieldFormat.STRING, true));
 	}
@@ -100,10 +102,12 @@ public class JobTagServlet extends AbstractCrudServlet {
 		RequestValidator.validateString(webMessages, DESCRIPTION, (String)addRequest.get(DESCRIPTION), 128, true);
 		RequestValidator.validateTagType(webMessages, TAG_TYPE, (String)addRequest.get(TAG_TYPE), true);
 		RequestValidator.validateTagStatus(webMessages, STATUS, (String)addRequest.get(STATUS), true);
-		RequestValidator.validateString(webMessages, NAME, (String)addRequest.get(NAME), 45, true);
+		RequestValidator.validateString(webMessages, ABBREV, (String)addRequest.get(ABBREV), 45, true);
+		RequestValidator.validateString(webMessages, LONG_CODE, (String)addRequest.get(LONG_CODE), 45, true);
 		if ( webMessages.isEmpty()) {
 			// name must be unique within type
-			RequestValidator.validateTagName(conn, webMessages, NAME, (String)addRequest.get(TAG_TYPE),  (String)addRequest.get(NAME), true);
+			RequestValidator.validateTagAbbrev(conn, webMessages, ABBREV, (String)addRequest.get(TAG_TYPE),  (String)addRequest.get(ABBREV), true);
+			RequestValidator.validateTagCode(conn, webMessages, LONG_CODE, (String)addRequest.get(TAG_TYPE),  (String)addRequest.get(LONG_CODE), true);
 		}		
 		return webMessages;
 	}
@@ -116,7 +120,8 @@ public class JobTagServlet extends AbstractCrudServlet {
 		RequestValidator.validateString(webMessages, DESCRIPTION, (String)updateRequest.get(DESCRIPTION), 128, true);
 		RequestValidator.validateTagType(webMessages, TAG_TYPE, (String)updateRequest.get(TAG_TYPE), true);
 		RequestValidator.validateTagStatus(webMessages, STATUS, (String)updateRequest.get(STATUS), true);
-		RequestValidator.validateString(webMessages, NAME, (String)updateRequest.get(NAME), 45, true);
+		RequestValidator.validateTagAbbrev(conn, webMessages, ABBREV, (String)updateRequest.get(TAG_TYPE),  (String)updateRequest.get(ABBREV), true);
+		RequestValidator.validateTagCode(conn, webMessages, LONG_CODE, (String)updateRequest.get(TAG_TYPE),  (String)updateRequest.get(LONG_CODE), true);
 		return webMessages;
 	}
 
