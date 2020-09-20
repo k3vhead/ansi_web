@@ -552,7 +552,7 @@ public class RequestValidator {
 	}
 
 	
-	public static void validateTagName(Connection conn, WebMessages webMessages, String fieldName, String tagType,
+	public static void validateTagAbbrev(Connection conn, WebMessages webMessages, String fieldName, String tagType,
 			String value, boolean required) throws Exception {
 		if (StringUtils.isBlank(value)) {
 			if (required) {
@@ -560,16 +560,42 @@ public class RequestValidator {
 			}
 		} else {
 			try {
-				PreparedStatement ps = conn.prepareStatement("select count(*) as record_count from job_tag where tag_type=? and name=?");
+				PreparedStatement ps = conn.prepareStatement("select count(*) as record_count from job_tag where tag_type=? and abbrev=?");
 				ps.setString(1, tagType);
 				ps.setString(2, value);
 				ResultSet rs = ps.executeQuery();
 				if ( rs.next() ) {
 					if ( rs.getInt("record_count") > 0 ) {
-						webMessages.addMessage(fieldName, "Duplicate Tag Name");
+						webMessages.addMessage(fieldName, "Duplicate Tag Abbreviation");
 					}
 				} else {
-					throw new Exception("Error validating name. Contact Support");
+					throw new Exception("Error validating abbreviation. Contact Support");
+				}
+			} catch (IllegalArgumentException e) {
+				webMessages.addMessage(fieldName, "Invalid Value");
+			}
+		}
+		
+	}
+	
+	public static void validateTagCode(Connection conn, WebMessages webMessages, String fieldName, String tagType,
+			String value, boolean required) throws Exception {
+		if (StringUtils.isBlank(value)) {
+			if (required) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			try {
+				PreparedStatement ps = conn.prepareStatement("select count(*) as record_count from job_tag where tag_type=? and long_code=?");
+				ps.setString(1, tagType);
+				ps.setString(2, value);
+				ResultSet rs = ps.executeQuery();
+				if ( rs.next() ) {
+					if ( rs.getInt("record_count") > 0 ) {
+						webMessages.addMessage(fieldName, "Duplicate Tag Code");
+					}
+				} else {
+					throw new Exception("Error validating code. Contact Support");
 				}
 			} catch (IllegalArgumentException e) {
 				webMessages.addMessage(fieldName, "Invalid Value");
