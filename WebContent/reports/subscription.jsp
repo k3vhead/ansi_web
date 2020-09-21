@@ -34,8 +34,12 @@
         		border:solid 1px #000000;				
 			}
 			#selection-menu-container {
+				display: hidden;
 				width:11%;
 				float:right;
+			}
+			.checkbox {
+				float: center;
 			}
 			.subscription-selector {
 				display: none;
@@ -92,8 +96,8 @@
         		groupList : [],
         		reportList : [],
         		regionList : [],
-        		//allAnsiReports : [],
-        		//subscriptionList : [],
+        		allAnsiReports : [],
+        		subscriptionList : [],
         		//allReportType : [],
         		
         		
@@ -110,12 +114,12 @@
         				$word = "Unsubscribe"
         			}
         			
-            		var $outbound = {"reportId":$reportId, "divisionId":$divisionId, "id":$value.id, "subscribe":$subscribe, "subscriptionId":$subscriptionId};
+            		var $outbound = {"reportId":$reportId, "divisionId":$divisionId, "id":$id, "subscribe":$subscribe, "subscriptionId":$subscriptionId};
             				
 	       			var jqxhr = $.ajax({
 						type: 'POST',
 						url: "reports/subscription",
-          				$outbound : [{"reportId":$reportId}, {"divisionId":$divisionId, "reportId":$reportId}, {"reportId":$reportId, "id":$value.id}],
+          				$outbound : [{"reportId":$reportId}, {"divisionId":$divisionId, "reportId":$reportId}, {"reportId":$reportId, "id":$id}],
       					data: JSON.stringify($outbound),
       					statusCode: {
 							200 : function($data) {
@@ -182,6 +186,7 @@
            		
         		
         		makeClickers : function() {
+        			<ansi:hasPermission permissionRequired="PERMISSIONS_WRITE">;
         			var $menuOpt = $("#selection-menu-container input[name='subscription-selector']");
            			$menuOpt.click(function($event, $value) {
            				var $selection = $(this).val();
@@ -189,7 +194,7 @@
            				var $selector = "#" + $selection + "-selection-container";
            				$($selector).show();
            			});
-           			
+           			</ansi:hasPermission>;
            			$(".subscription-selector").hide();	
         		},
         		
@@ -251,6 +256,7 @@
 					$.each($subscriptionList, function($index, $value) {
 						var $checkboxName = $value.reportId + "-" + $value.divisionId;
 						var $checkbox = "#division-selection-container input[name='" + $checkboxName +"']";
+						$checkbox.addClass("subscribe-" + $subscriptionId);
 						console.log($checkbox);
 						$($checkbox).prop(":checked", true);	
 						
@@ -283,8 +289,8 @@
         				var $reportId = $(this).attr("data-report");
         				var $divisionId = $(this).attr("data-division");
         				var $subscribe = $(this).prop("checked");
-        				var $subscriptionId = $(this).attr("data-subscriptionId");
-        				REPORT_SUBSCRIPTION.doSubscription($reportId, $divisionId, $subscribe, $subscriptionId);
+        			//	var $subscriptionId = $(this).attr("data-subscriptionId");
+        				REPORT_SUBSCRIPTION.doSubscription($reportId, $divisionId, $subscribe);
         			});
         
         			$.each( $("#selection-menu-container input[name='subscription-selector']"), function($index, $value) {
@@ -298,7 +304,7 @@
         		
        			makeMultiColumnTable($container, $reportList, $columnList, $subscriptionList) {
         			console.log("Making container" + $container);
-        			var $table = $("<table>");
+        			var $table = $("<table>").css('text-align','center');
            			var $hdrRow = $("<tr>");
            			$hdrRow.append( $("<td>"));
            			$.each($columnList, function($index, $value) {
@@ -314,7 +320,7 @@
            				var $row = $("<tr>");
         				$row.addClass("report-" + $report.reportId);
            				var $labelTD = $("<td>");
-           				$labelTD.append($report.description);
+           				$labelTD.append($report.description).css('text-align','left');
            				$row.append($labelTD);
            				$.each($columnList, function($index, $value) {
            					var $checkboxTD = $("<td>");
@@ -368,7 +374,7 @@
         		
         		makeOneColumnTable : function($container, $reportList, $subscriptionList) {
            			console.log("Making container " + $container);
-           			var $table = $("<table>");
+           			var $table = $("<table>").css('text-align','center');
            			var $hdrRow = $('<tr><td>&nbsp;</td><td><span style="font-weight:bold;">Subscribe</span></td></tr>');
            			
            			$table.append($hdrRow);
@@ -379,7 +385,7 @@
            				$row.addClass("report-"+$value.reportId);
            				var $labelTD = $("<td>");
            				$labelTD.append($value.description);
-           				$row.append($labelTD);
+           				$row.append($labelTD).css('text-align','left');
            				var $checkboxTD = $("<td>");
            				$checkboxTD.attr("style","text-align:center;");
            				var $checkbox = $('<input>');
@@ -500,7 +506,7 @@
     	<div id="selection-menu-container">
     		Subscribe to:<br />
     		<div id= "allAnsi-subscription-selector" class="subscription-selector">
-    		<input type="radio" name="subscription-selector" value="allAnsi" /> All Ansi Reports<br />
+    		<input type="radio" name="subscription-selector" value="allAnsi" /> All-ANSI Reports<br />
     		</div>
     		
     		<div id= "company-subscription-selector" class="subscription-selector">		
@@ -511,7 +517,7 @@
     		<input type="radio" name="subscription-selector" value="region" /> Region Reports<br />
 			</div>
 			    		
-    		<div id= "group-subscription-selector" class=subscription-selector">
+    		<div id= "group-subscription-selector" class="subscription-selector">
     		<input type="radio" name="subscription-selector" value="group" /> Group Reports<br />
 			</div>
     		
@@ -527,11 +533,13 @@
     		<input type="radio" name="subscription-selector" value="utility" /> Utility Reports<br />
     		</div>    	
     		    		
-    		<div style="text-align: center">
     		<ansi:hasPermission permissionRequired="REPORT_SUBSCRIPTION_READ">
-    		<a href="reports/subscriptionCSV"><webthing:csv>Subscriptions</webthing:csv></a>
+    			<ansi:hasRead>
+		    		<div style="text-align: center">
+		    		<a href="reports/subscriptionCSV"><webthing:csv>Subscriptions</webthing:csv></a>
+		    		</div>
+    			</ansi:hasRead>
     		</ansi:hasPermission>
-    		</div>
     		
     	</div>
     	
