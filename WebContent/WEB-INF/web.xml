@@ -570,7 +570,7 @@
 	
 	<servlet>
 		<servlet-name>jobTable</servlet-name>
-		<servlet-class>com.ansi.scilla.web.job.servlet.JobTableServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.job.servlet.JobLookupServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>jobTable</servlet-name>

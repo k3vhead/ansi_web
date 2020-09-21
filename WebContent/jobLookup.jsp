@@ -151,49 +151,49 @@
     			        	},
     			        columns: [
     			        	{ width: "4%", title: "<bean:message key="field.label.jobId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-    			            	if(row.jobId != null){return (row.jobId+"");}
+    			            	if(row.job_id != null){return (row.job_id+"");}
     			            } },
     			            { width: "4%", title: "<bean:message key="field.label.quoteName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.quoteId != null){return ('<ansi:hasPermission permissionRequired="QUOTE"><a href="quoteMaintenance.html?id='+ row.quoteId+ '" style="color:#404040"></ansi:hasPermission>' + row.quoteNumber + row.revision +'<ansi:hasPermission permissionRequired="QUOTE"></ansi:hasPermission>');}
+    			            	if(row.quote_id != null){return ('<ansi:hasPermission permissionRequired="QUOTE"><a href="quoteMaintenance.html?id='+ row.quote_id+ '" style="color:#404040"></ansi:hasPermission>' + row.quote_number + row.revision +'<ansi:hasPermission permissionRequired="QUOTE"></ansi:hasPermission>');}
     			            } },
     			            { width: "3%", title: "<bean:message key="field.label.jobStatus" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.jobStatus != null){return (row.jobStatus+"");}
+    			            	if(row.job_status != null){return (row.job_status+"");}
     			            } },
     			            { width: "4%", title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.divisionNbr != null){return (row.divisionNbr+"-"+row.divisionCode);}
+    			            	if(row.division_nbr != null){return (row.division_nbr+"-"+row.division_code);}
     			            } },
     			            { width: "10%", title: "<bean:message key="field.label.billToName" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-    			            	if(row.billToName != null){return (row.billToName+"");}
+    			            	if(row.bill_to_name != null){return (row.bill_to_name+"");}
     			            } },
     			            { width: "10%", title: "<bean:message key="field.label.jobSiteName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.jobSiteName != null){return (row.jobSiteName+"");}
+    			            	if(row.job_site_name != null){return (row.job_site_name+"");}
     			            } },
     			            { width: "10%", title: "<bean:message key="field.label.jobSiteAddress" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.jobSiteAddress != null){return (row.jobSiteAddress+", " + row.jobSiteCity + ", " + row.jobSiteState );}
+    			            	if(row.job_site_address != null){return (row.job_site_address+", " + row.job_site_city + ", " + row.job_site_state );}
     			            } },
     			            { width: "5%", title: "<bean:message key="field.label.startDate" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.startDate != null){return (row.startDate+"");}
+    			            	if(row.start_date != null){return (row.start_date+"");}
     			            } },
     			            { width: "3%", title: "<bean:message key="field.label.jobFrequency" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.jobFrequency != null){return (row.jobFrequency+"");}
+    			            	if(row.job_frequency != null){return (row.job_frequency+"");}
     			            } },
     			            { width: "5%", title: "<bean:message key="field.label.pricePerCleaning" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.pricePerCleaning != null){return (row.pricePerCleaning+"");}
+    			            	if(row.price_per_cleaning != null){return (row.price_per_cleaning+"");}
     			            } },
     			            { width: "4%", title: "<bean:message key="field.label.jobNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
-    			            	if(row.jobNbr != null){return (row.jobNbr+"");}
+    			            	if(row.job_nbr != null){return (row.job_nbr+"");}
     			            } },
     			            { width: "24%", title: "<bean:message key="field.label.serviceDescription" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.serviceDescription != null){return (row.serviceDescription+"");}
+    			            	if(row.service_description != null){return (row.service_description+"");}
     			            } },
     			            { width: "4%", title: "<bean:message key="field.label.poNumber" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.poNumber != null){return (row.poNumber+"");}	    
+    			            	if(row.po_number != null){return (row.po_number+"");}	    
     			            } },	
     		        		{ width: "9%", title: "<bean:message key="field.label.jobContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    	        			if(row.jobContact != null){
-    	        				var preferredContact = row.jobContact.preferredContact;
+    	        			if(row.job_contact != null){
+    	        				var preferredContact = row.job_contact.preferred_contact;
     	        				icon = JOBLOOKUP.makeContactIcon(preferredContact);    	        				
-    	        				return (row.jobContact.lastName+",&nbsp;"+row.jobContact.firstName+ "<br />" + icon + row.jobContact.contactMethod);
+    	        				return (row.jobContact.last_name+",&nbsp;"+row.jobContact.first_name+ "<br />" + icon + row.job_contact.contact_method);
     	        				}
 	    	        		} },
     	        			{ width: "9%", title: "<bean:message key="field.label.siteContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
