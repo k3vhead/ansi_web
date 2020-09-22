@@ -197,8 +197,7 @@
         		
        		
         		
-        		
-				makeDivisionTable : function($divisionList, $divisionReports, $reportId, $divisionId, $subscriptionList, $subscriptionId) {        			
+				makeDivisionTable : function($divisionList, $divisionReports, $subscriptionList) {        			
         			console.log("makeDivisionTable");
         			var $table = $("<table>").css('text-align','center');
         			var $hdrRow = $("<tr>");
@@ -239,14 +238,7 @@
         					$divTD.addClass("div-" + $division.divisionId);
         					$divTD.append($('<input type="checkbox" name="'+$report.reportId+"-" + $division.divisionId +'" class="report-selector" data-report="'+$report.reportId+'" data-division="'+$division.divisionId+'"/>'));
 
-    					//	var $checkboxName = $report.reportId + "-" + $division.divisionId;
-    						var $checkbox = "#division-selection-container input[name='" +$report.reportId + "-" + $division.divisionId+"']";
-
-    						$($checkbox).prop(":checked", true);	
-
-    	        			console.log("Assign checkbox" + $report.reportId +"-"+ $division.divisionId);
-        				//	$divTD.prop('checked','true');
-        				//	$divTD.prop('checked','false');
+    					
         					
         					$tr.append($divTD);
         				});
@@ -255,19 +247,21 @@
         			});
 
         			
-					$.each($subscriptionList, function($index, $value) {
-						var $subscriptionId = $report.reportId + "-" + $report.divisionId;
-						var $checkbox = "#division-selection-container input[name='" + $subscriptionId +"']";
-					//	$checkbox.addClass("subscribe-" + $subscriptionId);
-						console.log("Subscribe" + $subscriptionId);
-						$($checkbox).prop(":checked", true);	
-						//$divTD.append($checkbox);
-						
-                	}); 
 					
         			
         			$("#division-selection-container").html("");
         			$("#division-selection-container").append($table);
+        			
+        			console.log("We have " + $subscriptionList.length + " subscriptions");
+					$.each($subscriptionList, function($index, $value) {
+						var $subscriptionId = $value.reportId + "-" + $value.divisionId;						
+						var $checkbox = "#division-selection-container input[name='" + $subscriptionId +"']";
+					//	$checkbox.addClass("subscribe-" + $subscriptionId);
+						console.log("Subscribe" + $subscriptionId);
+						$($checkbox).prop("checked", true);	
+						//$divTD.append($checkbox);
+						
+                	}); 
 					
         			$.each( $divisionReports, function($reportIdx, $report) {        				
         				$.each($divisionList, function($divIdx, $division) {
@@ -496,6 +490,7 @@
 					
 					if ( $data.data.divisionList.length > 0 && $data.data.divisionReports.length > 0 ) { 
 						$("#division-subscription-selector").show();	
+						console.log("Subscribed to " + $data.data.subscriptionList.length + "reports");
 						REPORT_SUBSCRIPTION.makeDivisionTable($data.data.divisionList, $data.data.divisionReports, $data.data.subscriptionList);
 					} else {  
 						$("#division-subscription-selector").hide();								
@@ -547,11 +542,9 @@
     		</div>    	
     		    		
     		<ansi:hasPermission permissionRequired="REPORT_SUBSCRIPTION_READ">
-    			<ansi:hasRead>
-		    		<div style="text-align: center">
+	    		<div style="text-align: center">
 		    		<a href="reports/subscriptionCSV"><webthing:csv>Subscriptions</webthing:csv></a>
-		    		</div>
-    			</ansi:hasRead>
+	    		</div>
     		</ansi:hasPermission>
     		
     	</div>
