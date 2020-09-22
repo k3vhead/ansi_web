@@ -1,10 +1,15 @@
 package com.ansi.scilla.web.job.servlet;
 
 import java.sql.Connection;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import org.apache.commons.collections4.Transformer;
 
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.servlet.AbstractLookupServlet;
@@ -22,25 +27,41 @@ public class JobLookupServlet extends AbstractLookupServlet {
 	
 	public static final String REALM = "jobTable";
 	
+	public static final String PROPOSAL_DATE = "proposal_date";
+	public static final String ACTIVATION_DATE = "activation_date";
+	public static final String CANCEL_DATE = "cancel_date";
+	public static final String START_DATE = "start_date";
+	
+	public static final String DATE_FORMAT = "MM/dd/yyyy";
+	
+	
 	
 	public JobLookupServlet() {
 		super(Permission.QUOTE_READ);
 		cols = new String[] { 
 				JobLookupQuery.JOB_ID,
-				JobLookupQuery.QUOTE_NUMBER,
+				JobLookupQuery.QUOTE_NBR,
 				JobLookupQuery.JOB_STATUS,
-				JobLookupQuery.DIVISION_NBR,
+				JobLookupQuery.DIV,
 				JobLookupQuery.BILL_TO_NAME,
 				JobLookupQuery.SITE_NAME,
-				JobLookupQuery.JOB_SITE_ADDRESS,
+				JobLookupQuery.JOB_SITE,
 				JobLookupQuery.START_DATE,
 				JobLookupQuery.JOB_FREQUENCY,
 				JobLookupQuery.PRICE_PER_CLEANING,
 				JobLookupQuery.JOB_NBR,
 				JobLookupQuery.SERVICE_DESCRIPTION,
-				JobLookupQuery.PO_NUMBER
+				JobLookupQuery.PO_NUMBER,
+				JobLookupQuery.JOB_CONTACT,
+				JobLookupQuery.SITE_CONTACT,
+				JobLookupQuery.CONTRACT_CONTACT,
+				JobLookupQuery.BILLING_CONTACT,
+				JobLookupQuery.PROPOSAL_DATE,
+				JobLookupQuery.ACTIVATION_DATE,
+				JobLookupQuery.CANCEL_DATE,
+				JobLookupQuery.CANCEL_REASON
 				};
-//		super.itemTransformer = new ItemTransformer();
+		super.itemTransformer = new ItemTransformer();
 	}
 
 
@@ -78,17 +99,24 @@ public class JobLookupServlet extends AbstractLookupServlet {
 
 
 
-//	public class ItemTransformer implements Transformer<HashMap<String, Object>,HashMap<String, Object>> {
-//
-//		@Override
-//		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
-//			Integer jobCount = (Integer)arg0.get(JobTagLookupQuery.JOB_COUNT);				
-//			Boolean canDelete = jobCount.intValue() == 0;				
-//			arg0.put(CAN_DELETE, canDelete);
-//			return arg0;
-//		}
-//
-//	}
+	public class ItemTransformer implements Transformer<HashMap<String, Object>,HashMap<String, Object>> {
+
+		private final SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+		
+		@Override
+		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
+			for ( String key : new String[] {PROPOSAL_DATE, ACTIVATION_DATE, START_DATE, CANCEL_DATE} ) {
+				Timestamp date = (Timestamp)arg0.get(key);
+				if ( date != null ) {
+					arg0.put(key, dateFormat.format(date));
+				}
+			}
+			
+
+			return arg0;
+		}
+
+	}
 
 
 	

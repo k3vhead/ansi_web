@@ -25,6 +25,7 @@
     <tiles:put name="headextra" type="string">
        	<link rel="stylesheet" href="css/callNote.css" />
     	<link rel="stylesheet" href="css/accordion.css" type="text/css" />
+    	<link rel="stylesheet" href="css/lookup.css" />
        	<script type="text/javascript" src="js/ansi_utils.js"></script>
     	<script type="text/javascript" src="js/lookup.js"></script> 
     	<script type="text/javascript" src="js/callNote.js"></script>  
@@ -40,6 +41,10 @@
 				width:400px;
 				padding:15px;
 			}
+			#filter-container {
+        		width:402px;
+        		float:right;
+        	}	
 			#lookupModal {
 				display:none;
 				text-align:center;
@@ -150,96 +155,98 @@
     			        	"type": "GET"
     			        	},
     			        columns: [
-    			        	{ width: "4%", title: "<bean:message key="field.label.jobId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			        	{ width: "4%", title: "<bean:message key="field.label.jobId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.job_id != null){return (row.job_id+"");}
     			            } },
-    			            { width: "4%", title: "<bean:message key="field.label.quoteName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.quote_id != null){return ('<ansi:hasPermission permissionRequired="QUOTE"><a href="quoteMaintenance.html?id='+ row.quote_id+ '" style="color:#404040"></ansi:hasPermission>' + row.quote_number + row.revision +'<ansi:hasPermission permissionRequired="QUOTE"></ansi:hasPermission>');}
+    			            { width: "4%", title: "<bean:message key="field.label.quoteName" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            	if(row.quote_nbr != null){return ('<ansi:hasPermission permissionRequired="QUOTE"><a href="quoteMaintenance.html?id='+ row.quote_id+ '" style="color:#404040"></ansi:hasPermission>' + row.quote_nbr +'<ansi:hasPermission permissionRequired="QUOTE"></ansi:hasPermission>');}
     			            } },
-    			            { width: "3%", title: "<bean:message key="field.label.jobStatus" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "3%", title: "<bean:message key="field.label.jobStatus" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.job_status != null){return (row.job_status+"");}
     			            } },
-    			            { width: "4%", title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.division_nbr != null){return (row.division_nbr+"-"+row.division_code);}
+    			            { width: "4%", title: "<bean:message key="field.label.divisionNbr" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            	if(row.div != null){return (row.div);}
     			            } },
-    			            { width: "10%", title: "<bean:message key="field.label.billToName" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			            { width: "10%", title: "<bean:message key="field.label.billToName" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
     			            	if(row.bill_to_name != null){return (row.bill_to_name+"");}
     			            } },
-    			            { width: "10%", title: "<bean:message key="field.label.jobSiteName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "10%", title: "<bean:message key="field.label.jobSiteName" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.job_site_name != null){return (row.job_site_name+"");}
     			            } },
-    			            { width: "10%", title: "<bean:message key="field.label.jobSiteAddress" />",  "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.job_site_address != null){return (row.job_site_address+", " + row.job_site_city + ", " + row.job_site_state );}
+    			            { width: "10%", title: "<bean:message key="field.label.jobSiteAddress" />",  "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    			            	if(row.job_site != null){return (row.job_site);}
     			            } },
-    			            { width: "5%", title: "<bean:message key="field.label.startDate" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "5%", title: "<bean:message key="field.label.startDate" />", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "YYYY-MM-dd", data: function ( row, type, set ) {
     			            	if(row.start_date != null){return (row.start_date+"");}
     			            } },
-    			            { width: "3%", title: "<bean:message key="field.label.jobFrequency" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "3%", title: "<bean:message key="field.label.jobFrequency" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.job_frequency != null){return (row.job_frequency+"");}
     			            } },
-    			            { width: "5%", title: "<bean:message key="field.label.pricePerCleaning" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "5%", title: "<bean:message key="field.label.pricePerCleaning" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.price_per_cleaning != null){return (row.price_per_cleaning+"");}
     			            } },
-    			            { width: "4%", title: "<bean:message key="field.label.jobNbr" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) { 	
+    			            { width: "4%", title: "<bean:message key="field.label.jobNbr" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) { 	
     			            	if(row.job_nbr != null){return (row.job_nbr+"");}
     			            } },
-    			            { width: "24%", title: "<bean:message key="field.label.serviceDescription" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "24%", title: "<bean:message key="field.label.serviceDescription" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.service_description != null){return (row.service_description+"");}
     			            } },
-    			            { width: "4%", title: "<bean:message key="field.label.poNumber" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { width: "4%", title: "<bean:message key="field.label.poNumber" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     			            	if(row.po_number != null){return (row.po_number+"");}	    
     			            } },	
-    		        		{ width: "9%", title: "<bean:message key="field.label.jobContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    		        		{ width: "9%", title: "<bean:message key="field.label.jobContact" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
     	        			if(row.job_contact != null){
-    	        				var preferredContact = row.job_contact.preferred_contact;
+    	        				var preferredContact = row.job_contact_preferred_contact;
     	        				icon = JOBLOOKUP.makeContactIcon(preferredContact);    	        				
-    	        				return (row.jobContact.last_name+",&nbsp;"+row.jobContact.first_name+ "<br />" + icon + row.job_contact.contact_method);
+    	        				return (row.job_contact + "<br />" + icon + row.job_contact_method);
     	        				}
 	    	        		} },
-    	        			{ width: "9%", title: "<bean:message key="field.label.siteContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    	        			if(row.siteContact != null){
-    	        				var preferredContact = row.siteContact.preferredContact;
+    	        			{ width: "9%", title: "<bean:message key="field.label.siteContact" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    	        			if(row.site_contact!= null){
+    	        				var preferredContact = row.site_contact_preferred_contact;
         	        			icon = JOBLOOKUP.makeContactIcon(preferredContact);
-        	        			return (row.siteContact.lastName+",&nbsp;"+row.siteContact.firstName+ "<br />" + icon + row.siteContact.contactMethod);
+        	        			return (row.site_contact + "<br />" + icon + row.site_contact_method);
         	        			}
     	    	        	} },
-    	        			{ width: "9%", title: "<bean:message key="field.label.contractContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    	        			if(row.contractContact != null){
-    	        				var preferredContact = row.contractContact.preferredContact;
+    	        			{ width: "9%", title: "<bean:message key="field.label.contractContact" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+    	        			if(row.contract_contact != null){
+    	        				var preferredContact = row.contract_contact_preferred_contact;
         	        			icon = JOBLOOKUP.makeContactIcon(preferredContact);
-        	        			return (row.contractContact.lastName+",&nbsp;"+row.contractContact.firstName+ "<br />" + icon + row.contractContact.contactMethod);
+        	        			return (row.contract_contact + "<br />" + icon + row.contract_contact_method);
         	        			}
     	    	        	} },
-        	        		{ width: "9%", title: "<bean:message key="field.label.billingContact" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-        	        		if(row.jobContact != null){
-    	        				var preferredContact = row.billingContact.preferredContact;
+        	        		{ width: "9%", title: "<bean:message key="field.label.billingContact" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+        	        		if(row.billing_contact != null){
+    	        				var preferredContact = row.billing_contact_preferred_contact;
         	        			icon = JOBLOOKUP.makeContactIcon(preferredContact);
-        	        			return (row.billingContact.lastName+",&nbsp;"+row.billingContact.firstName+ "<br />" + icon + row.billingContact.contactMethod);
+        	        			return (row.billing_contact + "<br />" + icon + row.billing_contact_method);
         	        			
         	        			}
     	    	        	} },
-    	    	        	{ width: "5%", title: "Proposed", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    	    	        		if(row.proposalDate != null){return (row.proposalDate+"");}	    
+    	    	        	{ width: "5%", title: "Proposed", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "YYYY-MM-dd", data: function ( row, type, set ) {
+    	    	        		if(row.proposal_date != null){return (row.proposal_date+"");}	    
     			            } },
-    			            { width: "5%", title: "Active", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.activationDate != null){return (row.activationDate+"");}	    
+    			            { width: "5%", title: "Active", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "YYYY-MM-dd", data: function ( row, type, set ) {
+    			            	if(row.activation_date != null){return (row.activation_date+"");}	    
     			            } },
-    			            { width: "5%", title: "Cancel", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.cancelDate != null){return (row.cancelDate+"");}	    
+    			            { width: "5%", title: "Cancel", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "YYYY-MM-dd", data: function ( row, type, set ) {
+    			            	if(row.cancel_date != null){return (row.cancel_date+"");}	    
     			            } },
-    			            { width: "5%", title: "Reason", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.cancelReason != null){return (row.cancelReason+"");}	    
+    			            { width: "5%", title: "Reason", "defaultContent": "<i>N/A</i>", searchable:true,  data: function ( row, type, set ) {
+    			            	if(row.cancel_reason != null){return (row.cancel_reason+"");}	    
     			            } },
     			            { width: "4%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
     			            	{
-    				            	var $edit = '<a href="jobMaintenance.html?id='+row.jobId+'" class="editAction" data-id="'+row.jobId+'"><webthing:edit>View</webthing:edit></a>';
-    				            	var $noteLink = '<webthing:notes xrefType="QUOTE" xrefId="' + row.quoteId + '">Quote Notes</webthing:notes>'
+    				            	var $edit = '<a href="jobMaintenance.html?id='+row.job_id+'" class="editAction" data-id="'+row.job_id+'"><webthing:edit>View</webthing:edit></a>';
+    				            	var $noteLink = '<webthing:notes xrefType="QUOTE" xrefId="' + row.quote_id + '">Quote Notes</webthing:notes>'
     			            		return "<ansi:hasPermission permissionRequired='QUOTE_READ'>"+$edit+"</ansi:hasPermission>" + $noteLink;
     			            	}
     			            	
     			            } }],
     			            "initComplete": function(settings, json) {
     			            	JOBLOOKUP.doFunctionBinding();
+    			            	var myTable = this;
+    			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#jobTable", JOBLOOKUP.createTable);
     			            },
     			            "drawCallback": function( settings ) {
     			            	CALLNOTE.lookupLink();
@@ -348,6 +355,7 @@
    <tiles:put name="content" type="string">
     	<h1>Job Lookup</h1>
     	    	
+    	<webthing:lookupFilter filterContainer="filter-container" />
 	 	<table id="jobTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
 	       	
 	    </table>
