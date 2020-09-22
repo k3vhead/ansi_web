@@ -51,11 +51,12 @@ public enum BatchReports {
 	SMRV(       "Six-Month Rolling Volume", false, false, true, false, false, Permission.TICKET_READ ),
 	CREDIT_CARD_FEE_DISTRIBUTION(
 			"Credit Card Fee Distribution", true,  false, false, false, false, Permission.INVOICE_READ ),
-	WO_AND_FEES_QUARTER("WO & Fees",        true,  false, true,  false, false, Permission.INVOICE_READ), 	// Q, Y
+	WO_AND_FEES_QUARTER(
+			"WO & Fees Quarterly",       	true,  false, true,  false, false, Permission.INVOICE_READ), 	// Q, Y
 
 	// Yearly - after year close
 	PAC_YEARLY( "PAC Yearly",         		false, false, true,  false, false, Permission.QUOTE_READ ),
-	WO_AND_FEES_YEARLY("WO & Fees",			true,  false, true,  false, false, Permission.INVOICE_READ), 	// Q, Y
+	WO_AND_FEES_YEARLY("WO & Fees Yearly",	true,  false, true,  false, false, Permission.INVOICE_READ), 	// Q, Y
 
 	// Executive reports - historical trending - generated quarterly
 	ACCOUNTS_RECEIVABLE( "AR w Claimed vs Billed",					// claimed/billed/cash
