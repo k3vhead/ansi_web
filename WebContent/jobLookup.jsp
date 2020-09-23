@@ -235,7 +235,7 @@
     			            { width: "5%", title: "Reason", "defaultContent": "<i>N/A</i>", searchable:true,  data: function ( row, type, set ) {
     			            	if(row.cancel_reason != null){return (row.cancel_reason+"");}	    
     			            } },
-    			            { width: "5%", title: "Equipment", "defaultContent": "<i></i>", searchable:true,  data: function ( row, type, set ) {
+    			            { width: "5%", title: "Tags", "defaultContent": "<i></i>", searchable:true,  data: function ( row, type, set ) {
     			            	if(row.tag_list != null){return (row.tag_list+"");}	    
     			            } },
     			            { width: "4%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
