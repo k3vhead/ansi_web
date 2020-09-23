@@ -33,7 +33,7 @@ public class JobLookupQuery extends LookupQuery {
 	public static final String QUOTE_NBR = "concat(quote.quote_number,quote.revision)";
 	public static final String PROPOSAL_DATE = "quote.proposal_date";
 	public static final String DIVISION_ID = "division.division_id";
-	public static final String DIV = "concat(division.division_id,'-',division.division_code)";
+	public static final String DIV = "concat(division.division_nbr,'-',division.division_code)";
 	public static final String BILL_TO_NAME = "a1.name"; 
 	public static final String SITE_NAME = "a2.name"; 
 	public static final String JOB_SITE = "concat(a2.address1, ', ', a2.city,', ', a2.state)";
