@@ -18,7 +18,6 @@ import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.Permission;
-import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.job.query.JobLookupQuery;
 
 public class JobLookupServlet extends AbstractLookupServlet {
@@ -59,7 +58,8 @@ public class JobLookupServlet extends AbstractLookupServlet {
 				JobLookupQuery.PROPOSAL_DATE,
 				JobLookupQuery.ACTIVATION_DATE,
 				JobLookupQuery.CANCEL_DATE,
-				JobLookupQuery.CANCEL_REASON
+				JobLookupQuery.CANCEL_REASON,
+				JobLookupQuery.TAG_LIST,
 				};
 		super.itemTransformer = new ItemTransformer();
 	}
@@ -91,7 +91,7 @@ public class JobLookupServlet extends AbstractLookupServlet {
 			
 			return lookupQuery;
 			
-		} catch (ResourceNotFoundException e) { 
+		} catch (Exception e) { 
 			throw new RuntimeException(e);		
 		}
 	}

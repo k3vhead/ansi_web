@@ -73,7 +73,7 @@
         	;JOBLOOKUP = {
        			dataTable : null,
        			lookupType : '<c:out value="${ANSI_JOB_LOOKUP_TYPE}" />',
-       			pacColumns : [17,18,19,20],
+       			pacColumns : [17,18,19,20,21],
        			contactColumns : [13,14,15,16],
        			jobColumns : [11,12],
        			
@@ -145,7 +145,7 @@
             	        ],
             	        "columnDefs": [
              	            { "orderable": false, "targets": -1 },
-            	            { className: "dt-left", "targets": [4,5,6,11] },
+            	            { className: "dt-left", "targets": [4,5,6,11,21] },
             	            { className: "dt-center", "targets": [0,1,2,3,7,8,10,12,17,18,19,20,-1] },
             	            { className: "dt-right", "targets": [9]}
             	         ],
@@ -234,6 +234,9 @@
     			            } },
     			            { width: "5%", title: "Reason", "defaultContent": "<i>N/A</i>", searchable:true,  data: function ( row, type, set ) {
     			            	if(row.cancel_reason != null){return (row.cancel_reason+"");}	    
+    			            } },
+    			            { width: "5%", title: "Equipment", "defaultContent": "<i></i>", searchable:true,  data: function ( row, type, set ) {
+    			            	if(row.tag_list != null){return (row.tag_list+"");}	    
     			            } },
     			            { width: "4%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {	
     			            	{

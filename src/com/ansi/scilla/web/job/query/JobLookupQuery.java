@@ -1,19 +1,23 @@
 package com.ansi.scilla.web.job.query;
 
+import java.sql.Connection;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 
+import com.ansi.scilla.common.jobticket.JobUtils;
 import com.ansi.scilla.common.queries.SelectType;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.struts.SessionDivision;
+import com.ansi.scilla.web.common.utils.AppUtils;
 
 public class JobLookupQuery extends LookupQuery {
 
 	private static final long serialVersionUID = 1L;
 
+	
 	public static final String JOB_ID = "job.job_id";
 	public static final String QUOTE_ID = "job.quote_id";
 	public static final String JOB_NBR = "job.job_nbr";
@@ -65,6 +69,7 @@ public class JobLookupQuery extends LookupQuery {
 							" 	when 'fax' then billing_contact.fax \n" + 
 							" 	when 'mobile_phone' then billing_contact.mobile_phone \n" + 
 							" end";
+	public static final String TAG_LIST = "tag_count.tag_list";
 	
 	
 	
@@ -100,7 +105,8 @@ public class JobLookupQuery extends LookupQuery {
 			CONTRACT_CONTACT_METHOD + " as contract_contact_method,  \n" + 
 			BILLING_CONTACT + " as billing_contact,\n" +  
 			BILLING_CONTACT_PREFERRED_CONTACT + " as billing_contact_preferred_contact, \n" + 
-			BILLING_CONTACT_METHOD + " as billing_contact_method\n " 
+			BILLING_CONTACT_METHOD + " as billing_contact_method, \n " +
+			TAG_LIST + "\n"
 			;			
 
 	
@@ -122,18 +128,23 @@ public class JobLookupQuery extends LookupQuery {
 	
 	
 	
-	public JobLookupQuery(Integer userId, List<SessionDivision> divisionList) {
-		super(sqlSelectClause, sqlFromClause, "");		
+	public JobLookupQuery(Integer userId, List<SessionDivision> divisionList) throws Exception {
+		super(sqlSelectClause, makeSqlFromClause(), "");		
 		this.logger = LogManager.getLogger(this.getClass());
 		this.userId = userId;		
 	}
 
-	public JobLookupQuery(Integer userId, List<SessionDivision> divisionList, String searchTerm) {
+	public JobLookupQuery(Integer userId, List<SessionDivision> divisionList, String searchTerm) throws Exception {
 		this(userId, divisionList);
 		this.searchTerm = searchTerm;
 	}
 
 
+	private static String makeSqlFromClause() throws Exception {
+		Connection conn = AppUtils.getDBCPConn();
+		String fromClause = sqlFromClause + "\nleft outer join (" + JobUtils.makeTagSql(conn, "my_tags") +") as tag_count on tag_count.job_id=job.job_id\n";		
+		return fromClause;
+	}
 	
 
 	
