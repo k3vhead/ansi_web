@@ -297,7 +297,6 @@
         			$.each( $("#selection-menu-container input[name='subscription-selector']"), function($index, $value) {
         				if ( $value.value == 'division' ) {
         					$(this).click();
-        					$(this).prop("checked");
         				}        				
         			});
         		},
@@ -333,9 +332,9 @@
            					var $checkboxTD = $("<td>");
         					$checkboxTD.addClass("div-" + $value.id);
                				var $checkbox = $('<input />');
-               				$checkbox.addClass("subscription-checkbox");
+               			//	$checkbox.addClass("subscription-checkbox");
         					
-               			 	$checkbox.attr("name",$container + '-' + $value.id);
+               			 	$checkbox.attr("name",$container + '-' + $value.id + '-' + $report.reportId);
                			 	$checkbox.attr("type","checkbox");
                			 	$checkbox.attr("value", $value.id);
                			 	$checkbox.attr("value", $report.reportId);
@@ -346,8 +345,24 @@
            				$table.append($row);
            			});
 
+        			$("#"+$container).html("");
            			
            			$("#"+$container).append($table);
+           			
+
+        			
+        			console.log("We have " + $subscriptionList.length + " subscriptions");
+					$.each($subscriptionList, function($index, $value) {
+						var $subscriptionMulti = $value.reportId + "-" + $value.subscriptionId;						
+						var $checkboxMulti = "#"+$container+ ".selection-container input[name='" + $subscriptionMulti +"']";
+					//	$checkbox.addClass("subscribe-" + $subscriptionId);
+						console.log("Subscribe" + $subscriptionMulti);
+						$($checkboxMulti).prop("checked", true);	
+						//$divTD.append($checkbox);
+						
+                	}); 
+           			
+           			
            			
          			$selector = "#"+$container + " .reportrow";
           			$($selector).mouseover(function($event) {
@@ -404,9 +419,25 @@
            				$row.append($checkboxTD);
            				$table.append($row);
            			});
-           			
+
+
+        			$("#"+$container).html("");           			
            			$("#"+$container).append($table);
+           			         			
+
+        			
+        			console.log("We have " + $subscriptionList.length + " subscriptions");
+					$.each($subscriptionList, function($index, $value) {
+						var $subscriptionOne = $value.reportId;						
+						var $checkboxOne = "#"+$container+".selection-container input[name='" + $subscriptionOne +"']";
+					//	$checkbox.addClass("subscribe-" + $subscriptionId);
+						console.log("Subscribe" + $subscriptionOne);
+						$($checkboxOne).prop("checked", true);	
+						//$divTD.append($checkbox);
+						
+                	}); 
            			
+					
          			$selector = "#"+$container + " .reportrow";
           			$($selector).mouseover(function($event) {
    						$(this).css('background-color','#F9F9F9');
