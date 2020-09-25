@@ -257,7 +257,7 @@
 						var $subscriptionId = $value.reportId + "-" + $value.divisionId;						
 						var $checkbox = "#division-selection-container input[name='" + $subscriptionId +"']";
 					//	$checkbox.addClass("subscribe-" + $subscriptionId);
-						console.log("Subscribe" + $subscriptionId);
+					//	console.log("Subscribe" + $subscriptionId);
 						$($checkbox).prop("checked", true);	
 						//$divTD.append($checkbox);
 						
@@ -336,7 +336,7 @@
         					
                			 	$checkbox.attr("name",$container + '-' + $value.id + '-' + $report.reportId);
                			 	$checkbox.attr("type","checkbox");
-               			 	$checkbox.attr("value", $value.id);
+               			 	// $checkbox.attr("value", $value.id);
                			 	$checkbox.attr("value", $report.reportId);
                				$checkboxTD.append($checkbox);
                				$row.append($checkboxTD);
@@ -356,7 +356,7 @@
 						var $subscriptionMulti = $value.reportId + "-" + $value.subscriptionId;						
 						var $checkboxMulti = "#"+$container+ ".selection-container input[name='" + $subscriptionMulti +"']";
 					//	$checkbox.addClass("subscribe-" + $subscriptionId);
-						console.log("Subscribe" + $subscriptionMulti);
+					//	console.log("Subscribe" + $subscriptionMulti);
 						$($checkboxMulti).prop("checked", true);	
 						//$divTD.append($checkbox);
 						
@@ -411,7 +411,7 @@
            				var $checkboxTD = $("<td>");
            				$checkboxTD.attr("style","text-align:center;");
            				var $checkbox = $('<input>');
-           			 	$checkbox.attr("name",$container + '-' + $value.reportId);
+           			 	$checkbox.attr("name",$value.reportId);
            			 	$checkbox.addClass("subscription-checkbox");
            			 	$checkbox.attr("type","checkbox");
            			 	$checkbox.attr("value", $value.reportId);
@@ -428,10 +428,11 @@
         			
         			console.log("We have " + $subscriptionList.length + " subscriptions");
 					$.each($subscriptionList, function($index, $value) {
-						var $subscriptionOne = $value.reportId;						
-						var $checkboxOne = "#"+$container+".selection-container input[name='" + $subscriptionOne +"']";
+					//	var $subscriptionOne = $value.reportId;						
+						var $checkboxOne = "#"+$container+" input[name='" + $value.reportId +"']";
 					//	$checkbox.addClass("subscribe-" + $subscriptionId);
-						console.log("Subscribe" + $subscriptionOne);
+					//	console.log("Subscribe" + $subscriptionOne);
+						console.log("Checkbox single: " + $checkboxOne);
 						$($checkboxOne).prop("checked", true);	
 						//$divTD.append($checkbox);
 						
