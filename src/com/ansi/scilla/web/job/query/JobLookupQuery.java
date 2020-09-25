@@ -113,7 +113,7 @@ public class JobLookupQuery extends LookupQuery {
 	private static final String sqlFromClause = 
 			"FROM job \n" + 
 			"JOIN quote ON quote.quote_id = job.quote_id \n" + 
-			"    AND quote.division_id in ( select division_id from division_user where user_id=5) \n" + 
+			"    AND quote.division_id in ( select division_id from division_user where user_id=$USERFILTER$) \n" + 
 			"JOIN division ON job.division_id = division.division_id \n" + 
 			"JOIN address a1 ON quote.bill_to_address_id = a1.address_id \n" + 
 			"JOIN address a2 ON quote.job_site_address_id = a2.address_id \n" + 
@@ -129,7 +129,7 @@ public class JobLookupQuery extends LookupQuery {
 	
 	
 	public JobLookupQuery(Integer userId, List<SessionDivision> divisionList) throws Exception {
-		super(sqlSelectClause, makeSqlFromClause(), "");		
+		super(sqlSelectClause, makeSqlFromClause(userId), "");		
 		this.logger = LogManager.getLogger(this.getClass());
 		this.userId = userId;		
 	}
@@ -140,16 +140,16 @@ public class JobLookupQuery extends LookupQuery {
 	}
 
 
-	private static String makeSqlFromClause() throws Exception {
+	private static String makeSqlFromClause(Integer userId) throws Exception {
 		Connection conn = AppUtils.getDBCPConn();
-		String fromClause = sqlFromClause + "\nleft outer join (" + JobUtils.makeTagSql(conn, "my_tags") +") as tag_count on tag_count.job_id=job.job_id\n";		
-		return fromClause;
+		String tagClause = sqlFromClause + "\nleft outer join (" + JobUtils.makeTagSql(conn, "my_tags") +") as tag_count on tag_count.job_id=job.job_id\n";
+		String sql = tagClause.replaceAll("\\$USERFILTER\\$", String.valueOf(userId));
+		return sql;
 	}
 	
 
 	
 	
-
 
 	
 
