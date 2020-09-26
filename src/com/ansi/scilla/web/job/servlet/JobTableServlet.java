@@ -27,6 +27,8 @@ import com.ansi.scilla.web.job.response.JobTableJsonResponse;
 import com.ansi.scilla.web.job.response.JobTableReturnItem;
 
 /**
+ * Use JobLookupServlet instead of JobTableServlet
+ * 
  * The url for delete will return methodNotAllowed
  * 
  * The url for post will return methodNotAllowed
@@ -37,6 +39,7 @@ import com.ansi.scilla.web.job.response.JobTableReturnItem;
  * @author ggroce
  *
  */
+@Deprecated
 public class JobTableServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;

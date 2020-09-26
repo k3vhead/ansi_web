@@ -92,6 +92,7 @@ public class JobLookupServlet extends AbstractLookupServlet {
 			return lookupQuery;
 			
 		} catch (Exception e) { 
+			e.printStackTrace();
 			throw new RuntimeException(e);		
 		}
 	}

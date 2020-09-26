@@ -144,6 +144,7 @@ public class JobLookupQuery extends LookupQuery {
 		Connection conn = AppUtils.getDBCPConn();
 		String tagClause = sqlFromClause + "\nleft outer join (" + JobUtils.makeTagSql(conn, "my_tags") +") as tag_count on tag_count.job_id=job.job_id\n";
 		String sql = tagClause.replaceAll("\\$USERFILTER\\$", String.valueOf(userId));
+		conn.close();
 		return sql;
 	}
 	
