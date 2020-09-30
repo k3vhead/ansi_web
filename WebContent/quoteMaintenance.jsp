@@ -30,6 +30,7 @@
         <script type="text/javascript" src="js/quotePrint.js"></script>
         <script type="text/javascript" src="js/addressUtils.js"></script>
         <script type="text/javascript" src="js/callNote.js"></script> 
+        <script type="text/javascript" src="js/textExpander.js"></script> 
         
         <script type="text/javascript">        
         
@@ -50,8 +51,8 @@
 					jobTagTypeList : null,
 					leadTypeList : null,
 					managerList : null,
-					quote : null,
-					
+					quote : null,					
+									
 					joblist : {},
 					
 					progressbar : $("#progressbar"),
@@ -63,6 +64,7 @@
 					
 					init : function() {
 						console.log("init");
+						TEXTEXPANDER.init();
 						CALLNOTE.init();
 						$("#call-note-link").attr("data-xrefid", QUOTEMAINTENANCE.quoteId);
 						CALLNOTE.lookupLink();
@@ -417,17 +419,13 @@
 						var $display = "N/A";
 						if ( QUOTEMAINTENANCE.jobTagList.length > 0 ) {
 		            		
-		            		console.log("Tag types should be here");
 		            		var $tagDisplay = $("<div>");
 		            		$.each(QUOTEMAINTENANCE.jobTagTypeList, function($typeIndex, $tagType) {		            			
-		            			console.log($tagType);
 		            			var $label = '<span class="formLabel">' + $tagType.display + ': </span>';
 		            			$tagDisplay.append($label);
 		            			$display = "";
 		            			$.each(QUOTEMAINTENANCE.jobTagList, function($index, $tag) {
-		            				console.log($tag);
 		            				if ( $tag.tagType == $tagType.name) {
-		            					console.log("Adding " + $tag.longCode + " to " + $tagType.name + " list");
 										var $classList = "";
 										var $tagIsActive = true
 										var $tagIsSelected = false;
@@ -528,6 +526,12 @@
 							}
 						});
 
+						$("#job-edit-modal .proposal textarea[name='job-proposal-desc']").keyup(function($event) {
+							TEXTEXPANDER.keyup($event, $("#job-edit-modal .proposal textarea[name='job-proposal-desc']"))
+						});
+						$("#job-edit-modal .proposal textarea[name='job-proposal-desc']").blur(function() {
+							TEXTEXPANDER.blur($("#job-edit-modal .proposal textarea[name='job-proposal-desc']"))
+						});
 						
 						// populate activation edit panel
 						$("#job-edit-modal .activation input[name='job-activation-dl-pct']").val(QUOTEMAINTENANCE.joblist[$jobId].job.directLaborPct);
@@ -1886,10 +1890,8 @@
 		            	if ( $jobTagList != null && $jobTagList.length > 0 ) {
 		            		$display = "";
 		            		$.each(QUOTEMAINTENANCE.jobTagTypeList, function($typeIndex, $tagType) {
-		            			console.log("getting tags for " + $tagType.name);
 		            			$display = $display + '<span class="formLabel">' + $tagType.display + ": </span>";
 			            		$.each($jobTagList, function($index, $value) {
-			            			console.log("Checking " + $value.tagType + " " + $value.name + " " + $value.tagType);
 			            			if ( $value.tagType == $tagType.name ) {
 			            				$display = $display + '<span class="jobtag tooltip" data-tagid="'+$value.tagId+'">' + $value.longCode + '<span class="tooltiptext">'+$value.abbrev + " - " + $value.tagDescription+'</span></span>&nbsp;';
 			            			}
