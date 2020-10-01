@@ -31,6 +31,8 @@
         <script type="text/javascript" src="js/quoteMaintenance.js"></script>        
          --%>
         <script type="text/javascript" src="js/addressUtils.js"></script>
+		<script type="text/javascript" src="js/textExpander.js"></script> 
+        
         <script type="text/javascript">        
         
         <%--
@@ -89,6 +91,7 @@
 					
 					init : function() {
 						console.log("init");
+						TEXTEXPANDER.init();
 						NEWQUOTE.makeProgressbar();
 						NEWQUOTE.init_modal();
 						NEWQUOTE.makeAutoComplete();
@@ -123,6 +126,15 @@
 	    				//Populate frequncy dropdown
 	    				NEWQUOTE.populateJobFrequencySelect();
 	    				console.debug("Set jobid attr to new/add/something");
+	    				
+	    				var $serviceDescription = $("#job-edit-modal textarea[name='job-proposal-desc']");
+    					$serviceDescription.keyup(function($event) {
+							TEXTEXPANDER.keyup($event, $serviceDescription)
+						});
+						$serviceDescription.blur(function() {
+							TEXTEXPANDER.blur($serviceDescription)
+						});
+						
 	    				$("#job-edit-modal").attr("data-jobid", "add");
 						$("#job-edit-modal").attr("data-type", "add");
 						$("#job-edit-modal input[name='job-proposal-job-nbr']").val(1);
