@@ -15,9 +15,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import com.ansi.scilla.common.AnsiTime;
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.quote.QuotePrintType;
 import com.ansi.scilla.common.quote.QuoteUtils;
@@ -99,9 +99,14 @@ public class QuotePrintServlet extends AbstractServlet {
 		try {
 			if ( ! StringUtils.isBlank(dateString)) {
 				quoteDate = sdf.parse(dateString);
+			} else {  // just use current date
+				Calendar cal = DateUtils.truncate(Calendar.getInstance(), Calendar.DAY_OF_MONTH);
+				quoteDate = cal.getTime();
 			}
 		} catch ( ParseException e ) {
 			// just use current date
+			Calendar cal = DateUtils.truncate(Calendar.getInstance(), Calendar.DAY_OF_MONTH);
+			quoteDate = cal.getTime();
 		}
 		return quoteDate;
 	}
