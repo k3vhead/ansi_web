@@ -291,13 +291,13 @@ public class ContactServlet extends AbstractServlet {
 
 	protected void validatePreferredContact(ContactRequest contactRequest, WebMessages webMessages) {
 		if ( contactRequest.getPreferredContact().equals(Contact.BUSINESS_PHONE) && StringUtils.isBlank(contactRequest.getBusinessPhone())){
-			webMessages.addMessage(Contact.BUSINESS_PHONE, "Missing data");
+			webMessages.addMessage(ContactRequest.BUSINESS_PHONE, "Missing data");
 		} else if ( contactRequest.getPreferredContact().equals(Contact.MOBILE_PHONE) && StringUtils.isBlank(contactRequest.getMobilePhone())){
-			webMessages.addMessage(Contact.MOBILE_PHONE, "Missing data");
+			webMessages.addMessage(ContactRequest.MOBILE_PHONE, "Missing data");
 		} else if ( contactRequest.getPreferredContact().equals(Contact.FAX) && StringUtils.isBlank(contactRequest.getFax())){
-			webMessages.addMessage(Contact.FAX, "Missing data");
+			webMessages.addMessage(ContactRequest.FAX, "Missing data");
 		} else if ( contactRequest.getPreferredContact().equals(Contact.EMAIL) && StringUtils.isBlank(contactRequest.getEmail())){
-			webMessages.addMessage(Contact.EMAIL, "Missing data");
+			webMessages.addMessage(ContactRequest.EMAIL, "Missing data");
 		}
 		
 	}
