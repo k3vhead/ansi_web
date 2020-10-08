@@ -82,7 +82,17 @@ public class JobDetail extends ApplicationObject {
 	
 	public JobDetail(Connection conn, Job job, User addedBy, User updatedBy) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, InvalidJobStatusException, SQLException {
 		super();
-//		PropertyUtils.copyProperties(this, job);
+		make(conn, job, addedBy, updatedBy);
+		this.jobTagList = JobTagDisplay.getTags(conn, job.getJobId());
+	}
+	
+	public JobDetail(Connection conn, Job job, List<JobTagDisplay> jobTagList, User addedBy, User updatedBy) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, InvalidJobStatusException, SQLException {
+		super();
+		make(conn, job, addedBy, updatedBy);
+		this.jobTagList = jobTagList;
+	}
+
+	private void make(Connection conn, Job job, User addedBy, User updatedBy) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, InvalidJobStatusException, SQLException {
 		this.billingContactId = job.getBillingContactId();
 		this.billingNotes = job.getBillingNotes();
 		this.budget = job.getBudget();
@@ -180,10 +190,9 @@ public class JobDetail extends ApplicationObject {
 		this.canDelete = job.canDelete();
 		this.canReschedule = job.canReschedule();
 		
-		this.jobTagList = JobTagDisplay.getTags(conn, job.getJobId());
 	}
-	
-//	@JsonSerialize(using=AnsiDateFormatter.class)
+
+	//	@JsonSerialize(using=AnsiDateFormatter.class)
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 	public Date getActivationDate() {
 		return activationDate;
