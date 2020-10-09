@@ -1038,19 +1038,13 @@
 						//$anchor = $("a[name='" + $anchorName + "']");
 						//$('html,body').animate({scrollTop: $anchor.offset().top},'slow');
 						
-		            	console.log("Hopefully this is a list of jobtags");
-		            	console.log($jobDetail.job.jobTagList);
+		            	$("#job-panel-container .job-proposal-jobtag .jobtag").removeClass("jobtag-selected");
 		            	$.each( $("#job-panel-container .job-proposal-jobtag .jobtag"), function($tagIndex, $tag) {
 		            		var $that = $(this);
 		            		var $tagId = $that.attr("data-tagid");
 		            		$.each( $jobDetail.job.jobTagList, function($selectedIndex, $selectedTag) {
-		            			console.log("Comparing " + $tagId + " to " + $selectedTag.tagId + " " + $selectedTag.longCode);
 								if ( parseInt($tagId) == $selectedTag.tagId ) {
-									console.log("Selected!");
-									$that.addClass("jobtag-selected");
-								} else {
-									console.log("Selected -- no!");
-									$that.removeClass("jobtag-selected");
+									$that.addClass("jobtag-selected");								
 								}
 		            		});
 		            	});
@@ -1747,6 +1741,16 @@
 						$outbound['requestSpecialScheduling'] = NEWQUOTE.job.job.requestSpecialScheduling
 						$outbound['serviceDescription'] = NEWQUOTE.job.job.serviceDescription;
 						$outbound['siteContact'] = $data.data.siteContact.contactId;
+						
+						var $jobTags = [];
+						$.each( $("#job-panel-container .job-proposal-jobtag .jobtag"), function($tagIndex, $tag) {
+		            		var $that = $(this);
+		            		var $tagId = $that.attr("data-tagid");
+		            		if ( $that.hasClass("jobtag-selected") ) {
+		            			$jobTags.push($tagId);
+		            		}
+		            	});
+						$outbound['jobtags'] = $jobTags;
 						//$outbound['startDate'] = 
 //						private String status;
 						//if ( NEWQUOTE.taxExempt == true || NEWQUOTE.taxExempt == "true" ) {

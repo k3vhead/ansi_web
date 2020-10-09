@@ -293,15 +293,17 @@ public class JobServlet extends AbstractServlet {
 			// we don't care
 		}
 		
-		for ( Integer tagId : jobRequest.getJobtags() ) {
-			xref = new JobTagXref();
-			xref.setAddedBy(user.getUserId());
-//			xref.setAddedDate(addedDate);
-			xref.setJobId(jobId);
-			xref.setTagId(tagId);
-			xref.setUpdatedBy(user.getUserId());
-//			xref.setUpdatedDate(updatedDate);
-			xref.insertWithNoKey(conn);			
+		if ( jobRequest.getJobtags() != null && jobRequest.getJobtags().length > 0 ) {
+			for ( Integer tagId : jobRequest.getJobtags() ) {
+				xref = new JobTagXref();
+				xref.setAddedBy(user.getUserId());
+	//			xref.setAddedDate(addedDate);
+				xref.setJobId(jobId);
+				xref.setTagId(tagId);
+				xref.setUpdatedBy(user.getUserId());
+	//			xref.setUpdatedDate(updatedDate);
+				xref.insertWithNoKey(conn);			
+			}
 		}
 		
 	}

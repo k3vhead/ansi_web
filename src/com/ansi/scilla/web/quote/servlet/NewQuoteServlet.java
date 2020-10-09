@@ -3,6 +3,7 @@ package com.ansi.scilla.web.quote.servlet;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -218,14 +219,10 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 					responseCode = ResponseCode.EDIT_FAILURE;
 				} else {
 					Job newJob = populateNewJob(jobRequest);
-					System.out.println("*******************");
-					System.out.println("Job Tags");
-					for ( Integer x : jobRequest.getJobtags()) {
-						System.out.println("TagId: " + x);
+					List<JobTagDisplay> jobTagDisplayList = new ArrayList<JobTagDisplay>();
+					if ( jobRequest.getJobtags() != null && jobRequest.getJobtags().length > 0 ) {
+						jobTagDisplayList = JobTagDisplay.makeDisplayList(conn, jobRequest.getJobtags());
 					}
-					System.out.println("*******************");
-					
-					List<JobTagDisplay> jobTagDisplayList = JobTagDisplay.makeDisplayList(conn, jobRequest.getJobtags());
 					logger.log(Level.DEBUG, newJob);
 					JobDetail jobDetail = new JobDetail(conn, newJob, jobTagDisplayList, new User(), new User());
 					logger.log(Level.DEBUG, jobDetail);
