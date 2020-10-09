@@ -443,7 +443,7 @@
 						$( "#job-edit-modal" ).dialog({
 							title:'Job Edit',
 							autoOpen: false,
-							height: 350,
+							height: 600,
 							width: 600,
 							modal: true,
 							closeOnEscape:true,
