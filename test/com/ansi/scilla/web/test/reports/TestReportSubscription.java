@@ -17,8 +17,8 @@ public class TestReportSubscription {
 		try {
 			conn = AppUtils.getDevConn();
 			make(conn, DCL);
-			System.out.println("******************");
-			make(conn, Terrence);
+//			System.out.println("******************");
+//			make(conn, Terrence);
 		} finally {
 			AppUtils.closeQuiet(conn);
 		}
@@ -28,7 +28,7 @@ public class TestReportSubscription {
 	private void make(Connection conn, int userId) throws Exception {
 		final Integer SPECIAL_OVERRIDE = 6;
 		final Integer OPERATIONS_MANAGER = 2205;
-		List<UserPermission> userPermissions = UserPermission.getUserPermissions(conn, OPERATIONS_MANAGER);
+		List<UserPermission> userPermissions = UserPermission.getUserPermissions(conn, SPECIAL_OVERRIDE);
 		SubscriptionResponse2 r = new SubscriptionResponse2(conn, userId, userPermissions);
 //		String json = AppUtils.object2json(r);
 //		System.out.println(json);		
