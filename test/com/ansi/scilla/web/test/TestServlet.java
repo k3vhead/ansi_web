@@ -35,15 +35,20 @@ import com.ansi.scilla.common.utils.AppUtils;
 import com.ansi.scilla.web.login.request.LoginRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thewebthing.commons.lang.JsonException;
-import com.thewebthing.commons.lang.JsonUtils;
 
 public abstract class TestServlet {
 
+	public static final String PLATFORM_IS_LOCAL = "127.0.0.1";
+	public static final String PLATFORM_IS_DEV = "dev.asa.ansi.local";
+	public static final String PLATFORM_IS_UAT = "uat.asa.ansi.local";
+	public static final String PLATFORM_IS_PROD = "prod.asa.ansi.local";
+	
+	
 	protected final SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss.S");
 	protected final Logger logger = LogManager.getLogger(TestServlet.class);
 	protected String userId=null;
 	protected String password=null;
-	protected String hostname = "127.0.0.1";
+	protected String hostname = PLATFORM_IS_LOCAL;
 	protected Integer hostport = 8080;
 	
 	
@@ -269,4 +274,6 @@ public abstract class TestServlet {
 	protected String makeJson(HashMap<String, String> parmMap) throws JsonException, JsonProcessingException {		
 		return parmMap == null ? null : AppUtils.object2json(parmMap);
 	}
+	
+	
 }

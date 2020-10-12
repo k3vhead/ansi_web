@@ -21,6 +21,7 @@ import com.ansi.scilla.common.exceptions.InvalidJobStatusException;
 import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.jobticket.JobStatus;
 import com.ansi.scilla.common.jobticket.JobUtils;
+import com.ansi.scilla.web.address.response.AddressResponse;
 import com.ansi.scilla.web.common.response.MessageKey;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -39,6 +40,7 @@ import com.ansi.scilla.web.job.request.JobRequest;
 import com.ansi.scilla.web.job.request.JobRequestAction;
 import com.ansi.scilla.web.job.response.JobDetailResponse;
 import com.ansi.scilla.web.quote.response.QuoteResponse;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class JobServlet extends AbstractServlet {
@@ -126,10 +128,10 @@ public class JobServlet extends AbstractServlet {
 			if ( url.getId() != null ) {
 				job = selectJob(conn, url.getId());
 			}
-			logger.log(Level.DEBUG, jsonString);
-			JobRequest jobRequest = new JobRequest(jsonString);
-			
 			try {
+				logger.log(Level.DEBUG, jsonString);
+				JobRequest jobRequest = new JobRequest(jsonString);
+			
 				Quote quote = selectQuote(conn, job, jobRequest);
 				trafficCop(conn, response, sessionData, job, quote, jobRequest);					
 				
@@ -143,6 +145,19 @@ public class JobServlet extends AbstractServlet {
 //					quoteResponse = new QuoteResponse(conn, url.getId(), permissionList);
 //					quoteResponse.getQuote().setJobDetail(jobDetail);
 //				}
+			} catch (InvalidFormatException e) {
+				String badField = super.findBadField(e.toString());
+				QuoteResponse data = new QuoteResponse();
+				WebMessages messages = new WebMessages();
+				messages.addMessage(badField, "Invalid Format");
+				data.setWebMessages(messages);
+				try {
+					super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+				} catch (Exception e2) {
+					AppUtils.logException(e2);
+					AppUtils.rollbackQuiet(conn);
+					throw new ServletException(e2);
+				}
 			} catch ( JobProcessException e ) {
 				conn.rollback();
 				responseCode = ResponseCode.SYSTEM_FAILURE;
@@ -1099,7 +1114,7 @@ public class JobServlet extends AbstractServlet {
 		String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
 		if ( missingFields.isEmpty() ) {
 			if ( ! JobUtils.isValidDLPct(jobRequest.getDirectLaborPct())) {
-				webMessages.addMessage("directLabotPct", "Invalid DL Pct");
+				webMessages.addMessage("directLaborPct", "Invalid DL Pct");
 			}
 		} else {
 //			String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");

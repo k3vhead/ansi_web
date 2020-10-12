@@ -192,6 +192,7 @@ public enum SpecialOverrideType {
 			Permission.QUOTE_OVERRIDE
 		),
 
+
 	SET_DIVISION_ACTUAL_CLOSE_DATE(
 			"Set Division Actual Close Date",
 			"select division_id, concat(division_nbr,'-',division_code) as div, description, act_close_date from division where division_id=?",
@@ -228,6 +229,28 @@ public enum SpecialOverrideType {
 			"Date Removed - Division has never been closed",
 			Permission.DIVISION_CLOSE_OVERRIDE
 		),
+
+	
+	UNREJECT_TICKETS(
+			"Unreject a Ticket",
+			"select * from ticket where ticket_status='" + TicketStatus.REJECTED.code() + "' and ticket_id=?",
+			new ParameterType[] { 
+					new ParameterType("Ticket Id", "ticket_id", Integer.class),  
+				},
+			"update ticket set ticket_status='" + TicketStatus.NOT_DISPATCHED.code() + "', process_notes=?, process_date=null"
+			+ " where ticket_status='" + TicketStatus.REJECTED.code() + "' and ticket_id=?",
+			new ParameterType[] { 
+					new ParameterType("Process Notes", "process_notes", String.class),
+					new ParameterType("Ticket Id", "ticket_id", Integer.class), 
+				},
+			"select * from ticket where ticket_id=?",
+			new ParameterType[] { 
+					new ParameterType("Ticket Id", "ticket_id", Integer.class), 
+				},
+			"Success",
+			Permission.TICKET_OVERRIDE
+		),
+	
 	;
 
 	
