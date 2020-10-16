@@ -116,16 +116,16 @@
 	       			var jqxhr = $.ajax({
 						type: 'POST',
 						url: "reports/subscription",
-          				$outbound : [{"reportId":$reportId}, {"divisionId":$divisionId, "reportId":$reportId}, {"reportId":$reportId, "id":$id}],
+          				$outbound : [{"reportId":$reportId}, {"reportId":$reportId,"divisionId":$divisionId}, {"reportId":$reportId, "id":$id}, {"subscriptionId":$subscriptionId}],
       					data: JSON.stringify($outbound),
       					statusCode: {
 							200 : function($data) {
           							if ( $data.responseHeader.responseCode == 'EDIT_FAILURE') {
-          								$("#globalMsg").html("Edit Error").show().fadeOut(4000);
+          								$("#globalMsg").html("Edit Error").show().fadeOut(6000);
                           				console.log("updates failed");
           							}
           							if ( $data.responseHeader.responseCode == 'SUCCESS') {
-          								$("#globalMsg").html("Update Successful").show().fadeOut(4000);
+          								$("#globalMsg").html("Update Successful").show().fadeOut(6000);
           								$("#thinking").hide();
           								REPORT_SUBSCRIPTION.makeLists();
           								console.log("updates success");
@@ -245,8 +245,8 @@
         			
         			console.log("We have " + $subscriptionList.length + " subscriptions");
 					$.each($subscriptionList, function($index, $value) {
-						var $subscriptionId = $value.reportId + "-" + $value.divisionId;						
-						var $checkbox = "#division-selection-container input[name='" + $subscriptionId +"']";
+						//var $subscriptionId = $value.reportId + "-" + $value.divisionId;						
+						var $checkbox = "#division-selection-container input[name='" + $value.reportId + "-" + $value.divisionId +"']";
 					//	console.log("Subscribe" + $subscriptionId);
 						$($checkbox).prop("checked", true);							
                 	}); 
@@ -275,10 +275,12 @@
         					});
         			});    
         			$("#division-selection-container .report-selector").click(function($event) {
+        			//	var $subscribe = $(this).attr("data-report" + "data-division");
         				var $reportId = $(this).attr("data-report");
         				var $divisionId = $(this).attr("data-division");
-        				var $subscribe = $(this).prop("checked");
-        				REPORT_SUBSCRIPTION.doSubscription($reportId, $divisionId, $subscribe);
+        				var $subscribe = $(this).prop("checked",true);
+        				var $subscriptionId = $(this).attr("data-subscriptionId");
+        				REPORT_SUBSCRIPTION.doSubscription($reportId, $divisionId, $subscribe, $subscriptionId);
         			});
         
         			$.each( $("#selection-menu-container input[name='subscription-selector']"), function($index, $value) {
@@ -313,7 +315,7 @@
            				$row.append($labelTD);
            				$.each($columnList, function($index, $column) {
            					var $checkboxTD = $("<td>");
-               				var $checkbox = $('<input>');       					
+               				var $checkbox = $('<input>');   
                			 	$checkbox.attr( { "name":$value.reportId, "name":$column.name } );
                			 	$checkbox.attr("type","checkbox");
                			 	$checkbox.attr( { "value":$value.reportId, "value":$column.name } );
@@ -330,7 +332,7 @@
 					$.each($subscriptionList, function($index, $value) {					
 						var $checkboxMulti = "#"+$container+ ".selection-container input[name='" + $value.reportId + "-" + $value.divisionId +"']";
 						console.log("Checkbox multi: " + $checkboxMulti);
-						$($checkboxMulti).prop("checked", true);							
+						$($checkboxMulti).prop("checked",true);							
                 	}); 
            			           			
          			$selector = "#"+$container + " .reportrow";
@@ -355,9 +357,10 @@
    					
            			$selector = "#"+$container + " .subscription-checkbox";
    					$($selector).click(function($event) {
-   						var $subscribe = $(this).attr("data-value.id" + "data-reportId");
+   					//	var $subscribe = $(this).attr("data-value.id" + "data-reportId");
    						var $reportId = $(this).attr("data-reportId");
    						var $id = $(this).attr("data-value.id");
+        				var $subscribe = $(this).prop("checked",true);
    						REPORT_SUBSCRIPTION.doSubscription($container, $subscribe, $reportId, $id, null);
    					});
         		},
@@ -373,20 +376,21 @@
            			$.each($reportList, function($index, $value) {
            				var $row = $("<tr>");
            				$row.addClass("reportrow");
-           				$row.addClass("report-"+$value.reportId);
+           				$row.addClass("report-" + $value.reportId);
            				var $labelTD = $("<td>");
            				$labelTD.append($value.description);
            				$row.append($labelTD).css('text-align','left');
            				var $checkboxTD = $("<td>");
-           				$checkboxTD.attr("style","text-align:center;");
+           			//	$checkboxTD.attr("style","text-align:center;");
            				var $checkbox = $('<input>');
            			 	$checkbox.attr("name",$value.reportId);
            			 	$checkbox.addClass("subscription-checkbox");
            			 	$checkbox.attr("type","checkbox");
-           			 	$checkbox.attr("value", $value.reportId);
+           			 	$checkbox.attr("value",$value.reportId);
            				$checkboxTD.append($checkbox);
            				$row.append($checkboxTD);
            				$table.append($row);
+						console.log("VALUE" + $value.reportId);
            			});
 
         			$("#"+$container).html("");           			
@@ -394,9 +398,9 @@
            			
         			console.log("We have " + $subscriptionList.length + " subscriptions");
 					$.each($subscriptionList, function($index, $value) {				
-						var $checkboxOne = "#"+$container+" input[name='" + $value.reportId +"']";
+						var $checkboxOne = "#"+$container+".selection-container input[name='" + $value.reportId +"']";
 						console.log("Checkbox single: " + $checkboxOne);
-						$($checkboxOne).prop("checked", true);							
+						$($checkboxOne).prop("checked",true);							
                 	}); 
            								
          			$selector = "#"+$container + " .reportrow";
@@ -410,7 +414,9 @@
    					$selector = "#"+$container + " .subscription-checkbox";
    					$($selector).click(function($event) {
    						var $reportId = $(this).attr("data-reportid");
-   						REPORT_SUBSCRIPTION.doSubscription($subscribe, $container, $reportId);
+        				var $subscribe = $(this).prop("checked",true);
+        				//var $subscribe = $(this).attr("data-reportId");
+   						REPORT_SUBSCRIPTION.doSubscription($subscribe, $container, $reportId, null);
    					});
        			},
        			
