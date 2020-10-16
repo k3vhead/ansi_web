@@ -190,6 +190,7 @@ public class SubscriptionResponse2 extends MessageResponse {
 		Collections.sort(this.groupList);
 	}
 	
+	
 	private void makeGroupLists(Organization org, List<Integer> divIdList) throws InvalidValueException {
 		List<Integer> orgDivIdList = (List<Integer>)CollectionUtils.collect(org.getAllDivs(), new DivTransformer() );
 		if ( CollectionUtils.isSubCollection(orgDivIdList, divIdList) ) {
@@ -377,6 +378,7 @@ public class SubscriptionResponse2 extends MessageResponse {
 		private Integer subscriptionId;
 		private String reportId;
 		private Integer divisionId;
+		private Integer groupId;
 		private MySubscription() {
 			super();
 		}
@@ -406,6 +408,12 @@ public class SubscriptionResponse2 extends MessageResponse {
 		}
 		public void setDivisionId(Integer divisionId) {
 			this.divisionId = divisionId;
+		}
+		public Integer getGroupId() {
+			return groupId;
+		}
+		public void setGroupId(Integer groupId) {
+			this.groupId = groupId;
 		}
 		
 	}
