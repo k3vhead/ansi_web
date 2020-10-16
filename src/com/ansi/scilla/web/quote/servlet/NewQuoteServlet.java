@@ -3,6 +3,7 @@ package com.ansi.scilla.web.quote.servlet;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -20,8 +21,8 @@ import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
 import com.ansi.scilla.common.exceptions.InvalidJobStatusException;
 import com.ansi.scilla.common.jobticket.JobStatus;
+import com.ansi.scilla.common.jobticket.JobTagDisplay;
 import com.ansi.scilla.common.jobticket.JobUtils;
-import com.ansi.scilla.web.common.response.MessageKey;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.struts.SessionData;
@@ -218,8 +219,12 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 					responseCode = ResponseCode.EDIT_FAILURE;
 				} else {
 					Job newJob = populateNewJob(jobRequest);
+					List<JobTagDisplay> jobTagDisplayList = new ArrayList<JobTagDisplay>();
+					if ( jobRequest.getJobtags() != null && jobRequest.getJobtags().length > 0 ) {
+						jobTagDisplayList = JobTagDisplay.makeDisplayList(conn, jobRequest.getJobtags());
+					}
 					logger.log(Level.DEBUG, newJob);
-					JobDetail jobDetail = new JobDetail(newJob, new User(), new User());
+					JobDetail jobDetail = new JobDetail(conn, newJob, jobTagDisplayList, new User(), new User());
 					logger.log(Level.DEBUG, jobDetail);
 					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
 					responseCode = ResponseCode.SUCCESS;

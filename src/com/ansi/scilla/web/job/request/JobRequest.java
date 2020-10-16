@@ -47,6 +47,7 @@ public class JobRequest extends AbstractRequest{
 	public static final String REPEAT_SCHEDULE_ANNUALLY = "repeatScheduleAnnually";
 	public static final String UPDATE_TYPE = "updateType";
 	public static final String ACTION = "action";
+	public static final String JOBTAGS = "jobtags";
 		
 
 	private Date activationDate;
@@ -95,6 +96,7 @@ public class JobRequest extends AbstractRequest{
 	private String action;
 	private Date proposalDate;
 	private Boolean annualRepeat;
+	private Integer[] jobtags;
 	
 	private Logger logger;
 	
@@ -714,5 +716,13 @@ public class JobRequest extends AbstractRequest{
 		}
 		
 		return webMessages;
+	}
+
+	public Integer[] getJobtags() {
+		return jobtags;
+	}
+
+	public void setJobtags(Integer[] jobtags) {
+		this.jobtags = jobtags;
 	}
 }

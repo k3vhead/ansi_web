@@ -15,5 +15,7 @@ public enum ResponseOption {
 	EXPENSE_TYPE,
 	CALENDAR_TYPE,
 	DOCUMENT_TYPE,
+	JOBTAG_TYPE,
+	JOBTAG_STATUS,
 	;
 }

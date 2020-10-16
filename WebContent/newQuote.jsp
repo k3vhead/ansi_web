@@ -31,6 +31,8 @@
         <script type="text/javascript" src="js/quoteMaintenance.js"></script>        
          --%>
         <script type="text/javascript" src="js/addressUtils.js"></script>
+		<script type="text/javascript" src="js/textExpander.js"></script> 
+        
         <script type="text/javascript">        
         
         <%--
@@ -79,7 +81,8 @@
 					taxExempt : null,
 					taxExemptReason : null,
 				
-					
+					jobTagTypeList : null,
+					jobTagList : null,
 					
 					job : null,
 					
@@ -89,6 +92,7 @@
 					
 					init : function() {
 						console.log("init");
+						TEXTEXPANDER.init();
 						NEWQUOTE.makeProgressbar();
 						NEWQUOTE.init_modal();
 						NEWQUOTE.makeAutoComplete();
@@ -123,6 +127,28 @@
 	    				//Populate frequncy dropdown
 	    				NEWQUOTE.populateJobFrequencySelect();
 	    				console.debug("Set jobid attr to new/add/something");
+	    				
+	    				var $serviceDescription = $("#job-edit-modal textarea[name='job-proposal-desc']");
+    					$serviceDescription.keyup(function($event) {
+							TEXTEXPANDER.keyup($event, $serviceDescription)
+						});
+						$serviceDescription.blur(function() {
+							TEXTEXPANDER.blur($serviceDescription)
+						});
+						
+						$("#job-edit-modal .job-proposal-jobtag").html(NEWQUOTE.makeJobTagDisplay(true));
+						
+	            		$(".jobtag-edit").click(function($event) {
+							var $tagId = $(this).attr("data-tagid");
+							var $selected = $(this).hasClass("jobtag-selected");
+							console.log("jobtag click: " + $tagId + " " + $selected);
+							if ( $selected ) {
+								$(this).removeClass("jobtag-selected");
+							} else {
+								$(this).addClass("jobtag-selected");
+							}
+						});
+
 	    				$("#job-edit-modal").attr("data-jobid", "add");
 						$("#job-edit-modal").attr("data-type", "add");
 						$("#job-edit-modal input[name='job-proposal-job-nbr']").val(1);
@@ -417,7 +443,7 @@
 						$( "#job-edit-modal" ).dialog({
 							title:'Job Edit',
 							autoOpen: false,
-							height: 350,
+							height: 600,
 							width: 600,
 							modal: true,
 							closeOnEscape:true,
@@ -570,8 +596,56 @@
 					},
 					
 					
+					makeJobTagDisplay : function($isEdit) {
+						console.log("makeJobTagDisplay " + $isEdit);						
+		            	var $display = '<span class="formLabel">Tags:</span> N/A<br />';
+		            	if ( NEWQUOTE.jobTagTypeList != null && NEWQUOTE.jobTagTypeList.length > 0 ) {
+		            		$display = "";
+		            		if ( $isEdit == true ) {
+		            			$editClass = "jobtag-edit";
+		            		} else {
+		            			$editClass = "";
+		            		}
+		            		$.each(NEWQUOTE.jobTagTypeList, function($typeIndex, $tagType) {
+		            			$display = $display + '<span class="formLabel">' + $tagType.display + ": </span>";
+			            		$.each(NEWQUOTE.jobTagList, function($index, $value) {
+			            			if ( $value.tagType == $tagType.name ) {
+			            				$display = $display + '<span class="jobtag tooltip '+$editClass + '" data-tagid="'+$value.tagId+'">' + $value.longCode + '<span class="tooltiptext">'+$value.abbrev + " - " + $value.description+'</span></span>&nbsp;';
+			            			}
+			            		});
+			            		$display = $display + "<br />";
+		            		});
+		            	}
+		            	
+		            	return $display;
+		            },
 					
 					
+					makeJobTagList : function(){
+	    				var $url = "jobtag/jobTag/list";
+	    				var jqxhr = $.ajax({
+	    					type: 'GET',
+	    					url: $url,
+	    					data: null,
+	    					statusCode: {
+	    						200: function($data) {
+	    							NEWQUOTE.jobTagList = $data.data.itemList;
+	    							NEWQUOTE.incrementProgress("Job Tag List");
+	    						},					
+	    						403: function($data) {
+	    							$("#globalMsg").html("Session Expired. Log In and try again").show();
+	    						},
+	    						404: function($data) {
+	    							$("#globalMsg").html("System Error 404/Manager List. Contact Support").show();
+	    						},
+	    						500: function($data) {
+	    							$("#globalMsg").html("System Error 500. Contact Support").show();
+	    						}
+	    					},
+	    					dataType: 'json'
+	    				});		    			
+		    		},
+		    		
 					
 					
 					
@@ -606,7 +680,7 @@
 		    		
 		    		
 		    		makeOptionLists : function(){
-						NEWQUOTE.getOptions('JOB_STATUS,JOB_FREQUENCY,COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM', NEWQUOTE.populateOptions);
+						NEWQUOTE.getOptions('JOB_STATUS,JOB_FREQUENCY,COUNTRY,INVOICE_GROUPING,INVOICE_STYLE,INVOICE_TERM,JOBTAG_TYPE', NEWQUOTE.populateOptions);
 						NEWQUOTE.incrementProgress("Job Status List");
 						NEWQUOTE.incrementProgress("Job Frequency List");
 						
@@ -622,6 +696,8 @@
 						
 						NEWQUOTE.getCodeList("quote","lead_type", NEWQUOTE.populateLeadType); 
 						NEWQUOTE.incrementProgress("Lead Type List");
+						
+						NEWQUOTE.makeJobTagList();						
 						
 						NEWQUOTE.makeManagerList();	
 		            },
@@ -915,6 +991,7 @@
 		            	$($destination + " .jobProposalDisplayPanel .job-proposal-ppc").html("$" + $jobDetail.job.pricePerCleaning);
 		            	$($destination + " .jobProposalDisplayPanel .job-proposal-freq").html($jobDetail.job.jobFrequency);
 		            	$($destination + " .jobProposalDisplayPanel .job-proposal-desc").html($jobDetail.job.serviceDescription);
+		            	$($destination + " .jobProposalDisplayPanel .job-proposal-jobtag").html(NEWQUOTE.makeJobTagDisplay(false));
 		            	
 		            	$($destination + " .jobActivationDisplayPanel .job-activation-dl-pct").html($jobDetail.job.directLaborPct);
 		            	$($destination + " .jobActivationDisplayPanel .job-activation-dl-budget").html($jobDetail.job.budget);
@@ -960,6 +1037,17 @@
 		            	//console.log($anchorName);
 						//$anchor = $("a[name='" + $anchorName + "']");
 						//$('html,body').animate({scrollTop: $anchor.offset().top},'slow');
+						
+		            	$("#job-panel-container .job-proposal-jobtag .jobtag").removeClass("jobtag-selected");
+		            	$.each( $("#job-panel-container .job-proposal-jobtag .jobtag"), function($tagIndex, $tag) {
+		            		var $that = $(this);
+		            		var $tagId = $that.attr("data-tagid");
+		            		$.each( $jobDetail.job.jobTagList, function($selectedIndex, $selectedTag) {
+								if ( parseInt($tagId) == $selectedTag.tagId ) {
+									$that.addClass("jobtag-selected");								
+								}
+		            		});
+		            	});
 		            },
 		            
 		            
@@ -999,6 +1087,7 @@
 						NEWQUOTE.invoiceTermList = $optionData.invoiceTerm;
 						NEWQUOTE.jobStatusList = $optionData.jobStatus;
 						NEWQUOTE.jobFrequencyList = $optionData.jobFrequency;
+						NEWQUOTE.jobTagTypeList = $optionData.jobTagType;
 						
 						NEWQUOTE.populateOptionSelects();
 		            },
@@ -1347,6 +1436,17 @@
 		    				});
 							
 							// do some panel-specific fixes:
+							if ($type == "proposal") {
+								var $jobtagList = [];
+								$.each( $("#job-edit-modal .job-proposal-jobtag .jobtag"), function($tagIndex, $tag) {
+									var $selected = $(this).hasClass("jobtag-selected");
+									if ( $selected ) {
+										var $tagId = $(this).attr("data-tagid");
+										$jobtagList.push(parseInt($tagId));
+									}
+								});
+								$outbound['jobtags'] = $jobtagList;
+							}
 							if ($type == "activation") {
 								if ( $("#job-edit-modal .activation input[name='requestSpecialScheduling']").prop("checked") == true ) {
 									$outbound['requestSpecialScheduling'] = 1;
@@ -1641,6 +1741,16 @@
 						$outbound['requestSpecialScheduling'] = NEWQUOTE.job.job.requestSpecialScheduling
 						$outbound['serviceDescription'] = NEWQUOTE.job.job.serviceDescription;
 						$outbound['siteContact'] = $data.data.siteContact.contactId;
+						
+						var $jobTags = [];
+						$.each( $("#job-panel-container .job-proposal-jobtag .jobtag"), function($tagIndex, $tag) {
+		            		var $that = $(this);
+		            		var $tagId = $that.attr("data-tagid");
+		            		if ( $that.hasClass("jobtag-selected") ) {
+		            			$jobTags.push($tagId);
+		            		}
+		            	});
+						$outbound['jobtags'] = $jobTags;
 						//$outbound['startDate'] = 
 //						private String status;
 						//if ( NEWQUOTE.taxExempt == true || NEWQUOTE.taxExempt == "true" ) {
@@ -1968,6 +2078,23 @@
 			.edit-err { 
 				background-color:#FF0000; 
 				opacity:0.20;
+			}
+			.jobtag {
+				border:solid 1px #404040;
+				padding:1px;
+				spacing:1px;
+				-moz-border-radius:3px;
+				-webkit-border-radius:3px;
+				-khtml-border-radius:3px;
+				border-radius:3px;
+				cursor:default;
+			}
+			.jobtag-inactive {
+				text-decoration:line-through;
+			}
+			.jobtag-selected {
+				background:#CC6600;
+				color:#FFFFFF;
 			}
 			.panel-button-container {
 				float:right; 

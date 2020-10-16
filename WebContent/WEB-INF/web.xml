@@ -587,9 +587,32 @@
 		<url-pattern>/getJobs/*</url-pattern>
 	</servlet-mapping>
 	
+	
+	<servlet>
+		<servlet-name>jobTagLookup</servlet-name>
+		<servlet-class>com.ansi.scilla.web.job.servlet.JobTagLookupServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>jobTagLookup</servlet-name>
+		<url-pattern>/jobtag/jobTagLookup</url-pattern>
+	</servlet-mapping>
+	
+	
+	<servlet>
+		<servlet-name>jobTag</servlet-name>
+		<servlet-class>com.ansi.scilla.web.job.servlet.JobTagServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>jobTag</servlet-name>
+		<url-pattern>/jobtag/jobTag/*</url-pattern>
+		<url-pattern>/jobtag/jobTag</url-pattern>
+	</servlet-mapping>
+	
+	
+	
 	<servlet>
 		<servlet-name>jobTable</servlet-name>
-		<servlet-class>com.ansi.scilla.web.job.servlet.JobTableServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.job.servlet.JobLookupServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>jobTable</servlet-name>

@@ -46,6 +46,9 @@ public class AbstractServlet extends HttpServlet {
 	public static final String ACTION_IS_ADD = "add";
 	public static final String ACTION_IS_COPY = "copy";
 	public static final String ACTION_IS_LIST = "list";
+	public static final String ACTION_IS_GET = "get";
+	public static final String ACTION_IS_EDIT = "edit";
+	public static final String ACTION_IS_DELETE = "delete";
 	
 	protected Logger logger = AppUtils.getLogger();
 

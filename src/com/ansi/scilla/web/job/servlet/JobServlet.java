@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.Job;
+import com.ansi.scilla.common.db.JobTagXref;
 import com.ansi.scilla.common.db.Quote;
 import com.ansi.scilla.common.exceptions.ActionNotPermittedException;
 import com.ansi.scilla.common.exceptions.DuplicateEntryException;
@@ -253,6 +254,7 @@ public class JobServlet extends AbstractServlet {
 			if ( webMessages.isEmpty() ) {
 				populateJobProposal(job, jobRequest);
 				updateJob(conn, user, job);
+				updateJobTags(conn, user, job.getJobId(), jobRequest);
 				conn.commit();
 				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
 				responseCode = ResponseCode.SUCCESS;
@@ -282,12 +284,34 @@ public class JobServlet extends AbstractServlet {
 	}
 
 	
+	private void updateJobTags(Connection conn, SessionUser user, Integer jobId, JobRequest jobRequest) throws Exception {
+		JobTagXref xref = new JobTagXref();
+		xref.setJobId(jobId);
+		try {
+			xref.delete(conn);
+		} catch ( RecordNotFoundException e) {
+			// we don't care
+		}
+		
+		if ( jobRequest.getJobtags() != null && jobRequest.getJobtags().length > 0 ) {
+			for ( Integer tagId : jobRequest.getJobtags() ) {
+				xref = new JobTagXref();
+				xref.setAddedBy(user.getUserId());
+	//			xref.setAddedDate(addedDate);
+				xref.setJobId(jobId);
+				xref.setTagId(tagId);
+				xref.setUpdatedBy(user.getUserId());
+	//			xref.setUpdatedDate(updatedDate);
+				xref.insertWithNoKey(conn);			
+			}
+		}
+		
+	}
 
 	
 	
 	
 	
-
 	
 	private void makeActivationUpdate(Connection conn, HttpServletResponse response, SessionUser user, Job job, JobRequest jobRequest, List<UserPermission> permissionList) throws Exception {
 		WebMessages webMessages = new WebMessages();
@@ -453,6 +477,7 @@ public class JobServlet extends AbstractServlet {
 				if ( webMessages.isEmpty() ) {
 					populateNewJob(job, jobRequest);
 					newJobId = insertJob(conn, user, job);
+					updateJobTags(conn, user, newJobId, jobRequest);
 					conn.commit();
 					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Success");
 					responseCode = ResponseCode.SUCCESS;

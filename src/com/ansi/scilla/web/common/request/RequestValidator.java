@@ -6,6 +6,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,6 +38,8 @@ import com.ansi.scilla.common.invoice.InvoiceGrouping;
 import com.ansi.scilla.common.invoice.InvoiceStyle;
 import com.ansi.scilla.common.invoice.InvoiceTerm;
 import com.ansi.scilla.common.jobticket.JobFrequency;
+import com.ansi.scilla.common.jobticket.JobTagStatus;
+import com.ansi.scilla.common.jobticket.JobTagType;
 import com.ansi.scilla.common.payment.PaymentMethod;
 import com.ansi.scilla.web.claims.request.ClaimEntryRequestType;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -638,6 +641,94 @@ public class RequestValidator {
 	}
 
 	
+	public static void validateTagAbbrev(Connection conn, WebMessages webMessages, String fieldName, String tagType,
+			String value, boolean required) throws Exception {
+		if (StringUtils.isBlank(value)) {
+			if (required) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			try {
+				PreparedStatement ps = conn.prepareStatement("select count(*) as record_count from job_tag where tag_type=? and abbrev=?");
+				ps.setString(1, tagType);
+				ps.setString(2, value);
+				ResultSet rs = ps.executeQuery();
+				if ( rs.next() ) {
+					if ( rs.getInt("record_count") > 0 ) {
+						webMessages.addMessage(fieldName, "Duplicate Tag Abbreviation");
+					}
+				} else {
+					throw new Exception("Error validating abbreviation. Contact Support");
+				}
+			} catch (IllegalArgumentException e) {
+				webMessages.addMessage(fieldName, "Invalid Value");
+			}
+		}
+		
+	}
+	
+	public static void validateTagCode(Connection conn, WebMessages webMessages, String fieldName, String tagType,
+			String value, boolean required) throws Exception {
+		if (StringUtils.isBlank(value)) {
+			if (required) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			try {
+				PreparedStatement ps = conn.prepareStatement("select count(*) as record_count from job_tag where tag_type=? and long_code=?");
+				ps.setString(1, tagType);
+				ps.setString(2, value);
+				ResultSet rs = ps.executeQuery();
+				if ( rs.next() ) {
+					if ( rs.getInt("record_count") > 0 ) {
+						webMessages.addMessage(fieldName, "Duplicate Tag Code");
+					}
+				} else {
+					throw new Exception("Error validating code. Contact Support");
+				}
+			} catch (IllegalArgumentException e) {
+				webMessages.addMessage(fieldName, "Invalid Value");
+			}
+		}
+		
+	}
+
+	public static void validateTagStatus(WebMessages webMessages, String fieldName, String value, boolean required) {
+		if (StringUtils.isBlank(value)) {
+			if (required) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			try {
+				JobTagStatus tagStatus = JobTagStatus.valueOf(value);
+				if (tagStatus == null) {
+					webMessages.addMessage(fieldName, "Invalid Value");
+				}
+			} catch (IllegalArgumentException e) {
+				webMessages.addMessage(fieldName, "Invalid Value");
+			}
+		}
+		
+	}
+
+	public static void validateTagType(WebMessages webMessages, String fieldName, String value, boolean required) {
+		if (StringUtils.isBlank(value)) {
+			if (required) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			try {
+				JobTagType tagType = JobTagType.valueOf(value);
+				if (tagType == null) {
+					webMessages.addMessage(fieldName, "Invalid Value");
+				}
+			} catch (IllegalArgumentException e) {
+				webMessages.addMessage(fieldName, "Invalid Value");
+			}
+		}
+		
+	}
+
 	public static void validateTicketId(Connection conn, WebMessages webMessages, String fieldName, Integer value, boolean required) throws Exception {
 		if (value == null) {
 			if (required) {

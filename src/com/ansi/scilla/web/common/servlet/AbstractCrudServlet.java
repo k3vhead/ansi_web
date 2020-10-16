@@ -57,7 +57,6 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String ACTION_IS_LIST = "list";
 
 	public static final SimpleDateFormat standardDateFormat = new SimpleDateFormat("MM/dd/yyyy");
 	protected final Logger logger = LogManager.getLogger(this.getClass());
@@ -170,6 +169,7 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 				}
 
 			} catch(RecordNotFoundException recordNotFoundEx) {
+				logger.log(Level.DEBUG, "RecordNotFound - 404");
 				super.sendNotFound(response);
 			} catch ( Exception e) {
 				AppUtils.logException(e);
@@ -191,7 +191,8 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 		SessionUser sessionUser = AppUtils.getSessionUser(request);
 		try {
 			String jsonString = super.makeJsonString(request);
-			AnsiURL url = new AnsiURL(request, realm, actionList);
+			AnsiURL url = new AnsiURL(request, realm, actionList, false);
+			logger.log(Level.DEBUG, url);
 			AppUtils.validateSession(request, permission);
 			Connection conn = null;
 			try {
@@ -202,10 +203,29 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 				// figure out if this is an "add" or an "update"								
 				try {
 					if ( ! StringUtils.isBlank(url.getCommand()) && url.getCommand().equals(ACTION_IS_ADD)) {
+						/*
+						 this handles a URL like:   /ansi_web/somefunction/add
+						 this is not the way we want to do things going forward, but is still in place to handle existing code in
+						 EmployeeExpenseServlet and NonDirectLaborServlet.  This option should be removed next time
+						 those modules are modified. Changes to web.xml are likely as well.
+						*/
+						processAddRequest(conn, response, table, sessionUser, jsonString, fieldMap);
+					} else if ( StringUtils.isBlank(url.getCommand()) && url.getId() == null ) {
+						/*
+						 this handles a URL like: /ansi_web/somefunction
+						 This is the preferred method.
+						 */
 						processAddRequest(conn, response, table, sessionUser, jsonString, fieldMap);
 					} else if ( url.getId() != null ) {
+						/*
+						 this handles a URL like: /ansi_web/somefunction/123
+						 where 123 is the id into the table we're crudding
+						 */
 						processUpdateRequest(conn, response, table, url.getId(), sessionUser, jsonString, fieldMap);
 					} else {
+						/*
+						 This handles any other URL, which is an indication you messed up somewhere
+						 */
 						super.sendNotFound(response);
 					}
 				} catch ( InvalidFormatException formatException) {
@@ -527,6 +547,7 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 	
 	
 	private void sendListResponse(Connection conn, HttpServletResponse response, MSTable table, List<FieldMap> fieldMap) throws Exception {
+		logger.log(Level.DEBUG, "sendListResponse");
 		HashMap<String, FieldMap> db2json = makeDb2Json(fieldMap);
 		List<HashMap<String, Object>> itemList = new ArrayList<HashMap<String,Object>>();
 
@@ -578,13 +599,7 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 	}
 
 
-//	private HashMap<String, FieldMap> makeJson2Db(List<FieldMap> fieldMap) {
-//		HashMap<String, FieldMap> db2Json = new HashMap<String, FieldMap>();
-//		for ( FieldMap map : fieldMap ) {
-//			db2Json.put(map.jsonField, map);
-//		}
-//		return db2Json;
-//	}
+
 
 
 

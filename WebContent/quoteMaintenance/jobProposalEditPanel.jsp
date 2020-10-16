@@ -36,8 +36,13 @@
 			</tr>
 			<tr>
 				<td colspan="4">
-					<span class="formLabel">Service Description</span><br />
+					<span class="formLabel">Service Description:</span><br />
 					<textarea name="job-proposal-desc"  data-apiname="serviceDescription" rows="5" cols="40"></textarea>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="4">
+				<span class="job-proposal-jobtag"  data-apiname="jobtag"></span>
 				</td>
 			</tr>
 		</table>

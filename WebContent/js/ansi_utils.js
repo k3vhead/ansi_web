@@ -1,5 +1,36 @@
 $( document ).ready(function() {
 	;ANSI_UTILS = {
+		doServerCall : function($type, $url, $outbound, $successMethod, $failureMethod) {
+			var jqxhr = $.ajax({
+				type: $type,
+				url: $url,
+				data: $outbound,
+				statusCode: {
+					200: function($data) {
+						if ( $data.responseHeader.responseCode == 'SUCCESS' ) {
+							$successMethod($data);
+						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE' ) {
+							$failureMethod($data);
+						} else {
+							$("#globalMsg").html("System Error: " + $url + " Invalid response code " + $data.responseHeader.responseCode + ". Contact Support").show().fadeOut(5000);
+						}
+					},					
+					403: function($data) {
+						$("#globalMsg").html($data.responseJSON.responseHeader.responseMessage).show().fadeOut(5000);
+					},
+					404: function($data) {
+						$("#globalMsg").html("System Error: " + $url + " 404. Contact Support").show().fadeOut(5000);
+					},
+					500: function($data) {
+						$("#globalMsg").html("System Error: " + $url + " 500. Contact Support").show().fadeOut(5000);
+					}
+				},
+				dataType: "json"
+			});
+		},
+			
+			
+			
 		getOptions: function($optionList) {
 			var $returnValue = null;
 			var jqxhr1 = $.ajax({
