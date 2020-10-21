@@ -104,19 +104,20 @@
         		},
                 
         		
-        		doSubscription : function($reportId, $divisionId, $id, $subscribe, $subscriptionId) {
-        			if ( $subscribe ) {
+        		doSubscription : function($reportId, $divisionId, $subscribe, $subscriptionId) {
+        			console.log("doSubscription");
+        			console.log($reportId + " " + $divisionId + " " + $subscribe + " " + $subscriptionId);
+        			if ( $subscribe == true ) {
         				$word = "Subscribe"
         			} else {
         				$word = "Unsubscribe"
         			}
-        			
-            		var $outbound = {"reportId":$reportId, "divisionId":$divisionId, "id":$id, "subscribe":$subscribe, "subscriptionId":$subscriptionId};
+
+            		var $outbound = {"reportId":$reportId, "divisionId":$divisionId, "subscribe":$subscribe, "subscriptionId":$subscriptionId};
             				
 	       			var jqxhr = $.ajax({
 						type: 'POST',
 						url: "reports/subscription",
-          				$outbound : [{"reportId":$reportId}, {"reportId":$reportId,"divisionId":$divisionId}, {"reportId":$reportId, "id":$id}, {"subscriptionId":$subscriptionId}],
       					data: JSON.stringify($outbound),
       					statusCode: {
 							200 : function($data) {
@@ -278,8 +279,8 @@
         			//	var $subscribe = $(this).attr("data-report" + "data-division");
         				var $reportId = $(this).attr("data-report");
         				var $divisionId = $(this).attr("data-division");
-        				var $subscribe = $(this).prop("checked",true);
-        				var $subscriptionId = $(this).attr("data-subscriptionId");
+        				var $subscribe = $(this).prop("checked");
+        				var $subscriptionId = $(this).attr("data-subscriptionId");        				
         				REPORT_SUBSCRIPTION.doSubscription($reportId, $divisionId, $subscribe, $subscriptionId);
         			});
         
@@ -361,7 +362,7 @@
    						var $reportId = $(this).attr("data-reportId");
    						var $id = $(this).attr("data-value.id");
         				var $subscribe = $(this).prop("checked",true);
-   						REPORT_SUBSCRIPTION.doSubscription($container, $subscribe, $reportId, $id, null);
+   						REPORT_SUBSCRIPTION.doSubscription($reportId, $id, $subscribe, null);
    					});
         		},
 
