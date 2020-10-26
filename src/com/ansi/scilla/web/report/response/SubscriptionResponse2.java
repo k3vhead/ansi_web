@@ -373,7 +373,7 @@ public class SubscriptionResponse2 extends MessageResponse {
 	public class MySubscription extends ApplicationObject {
 		private static final long serialVersionUID = 1L;
 		
-		public static final String sql = "select subscription_id, report_id, division_id from report_subscription where user_id=?";
+		public static final String sql = "select subscription_id, report_id, division_id, group_id from report_subscription where user_id=?";
 		
 		private Integer subscriptionId;
 		private String reportId;
@@ -390,32 +390,23 @@ public class SubscriptionResponse2 extends MessageResponse {
 			if ( divisionId != null ) {
 				this.divisionId = (Integer)divisionId;
 			}
+			Object groupId = rs.getObject("group_id");
+			if ( groupId != null ) {
+				this.groupId = (Integer)groupId;
+			}
 		}
 		public Integer getSubscriptionId() {
 			return subscriptionId;
 		}
-		public void setSubscriptionId(Integer subscriptionId) {
-			this.subscriptionId = subscriptionId;
-		}
 		public String getReportId() {
 			return reportId;
-		}
-		public void setReportId(String reportId) {
-			this.reportId = reportId;
 		}
 		public Integer getDivisionId() {
 			return divisionId;
 		}
-		public void setDivisionId(Integer divisionId) {
-			this.divisionId = divisionId;
-		}
 		public Integer getGroupId() {
 			return groupId;
 		}
-		public void setGroupId(Integer groupId) {
-			this.groupId = groupId;
-		}
-		
 	}
 	
 	
