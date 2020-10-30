@@ -293,12 +293,12 @@
         		
         		
         		
-       			makeMultiColumnTable($container, $reportList, $columnList, $subscriptionList) {
+       			makeMultiColumnTable($container, $reportList, $groupList, $subscriptionList) {
         			console.log("Making container" + $container);
         			var $table = $("<table>").css('text-align','center');
            			var $hdrRow = $("<tr>");
            			$hdrRow.append( $("<td>"));
-           			$.each($columnList, function($index, $value) {
+           			$.each($groupList, function($index, $value) {
            				var $hdrTD = $("<td>").append($value.name);
     					$hdrTD.addClass("div-" + $value.id);
            				$hdrRow.append($hdrTD);	
@@ -314,15 +314,18 @@
            				var $labelTD = $("<td>");
            				$labelTD.append($value.description).css('text-align','left');
            				$row.append($labelTD);
-           				$.each($columnList, function($index, $column) {
+           				$.each($groupList, function($groupIdx, $group) {
            					var $checkboxTD = $("<td>");
-               				var $checkbox = $('<input>');   
-               			 	$checkbox.attr( { "name":$value.reportId, "name":$column.name } );
+        					$checkboxTD.addClass("div-" + $group.id);
+        					$checkboxTD.append($('<input type="checkbox" name="'+$value.reportId+"-" + $group.id +'" class="group-selector" data-report="'+$value.reportId+'" data-division="'+$group.id+'"/>'));
+        					$checkboxTD.addClass("group-selector");
+               			/*	var $checkbox = $('<input>');   
+               			 	$checkbox.attr( { "name":$value.reportId, "name":$group.id } );
                			 	$checkbox.attr("type","checkbox");
-               			 	$checkbox.attr( { "value":$value.reportId, "value":$column.name } );
-               			 	$checkboxTD.append($checkbox);
+               			 	$checkbox.attr( { "value":$value.reportId, "value":$group.id } );
+               			 	$checkboxTD.append($checkbox); */
                				$row.append($checkboxTD);
-    						console.log("VALUE" + $value.reportId + $column.name);
+    						console.log("VALUE" + $value.reportId + $group.id);
            				});           				
            				$table.append($row);
            			});
@@ -356,13 +359,18 @@
 						$("th, td").css("background-color", "transparent");
 					}); 
    					
-           			$selector = "#"+$container + " .subscription-checkbox";
-   					$($selector).click(function($event) {
-   					//	var $subscribe = $(this).attr("data-value.id" + "data-reportId");
-   						var $reportId = $(this).attr("data-reportId");
-   						var $id = $(this).attr("data-value.id");
-        				var $subscribe = $(this).prop("checked",true);
-   						REPORT_SUBSCRIPTION.doSubscription($reportId, $id, $subscribe, null);
+           			//$selector = "#"+$container + " .group-selector";
+
+        			$("#"+$container + " .group-selector").click(function($event) {
+           			
+           			
+   					//$($selector).click(function($event) {
+   					//	var $subscribe = $(this).attr("data-group.id" + "data-reportId");
+   						var $reportId = $(this).attr("data-report");
+   						var $id = $(this).attr("data-division");
+        				var $subscribe = $(this).prop("checked");
+        				var $subscriptionId = $(this).attr("data-subscriptionId");     
+   						REPORT_SUBSCRIPTION.doSubscription($reportId, $id, $subscribe, $subscriptionId);
    					});
         		},
 
