@@ -57,9 +57,9 @@
             <forward name="login" path="/login.jsp" />            
         </action>
         <action
-            path="/bcr"
+            path="/budgetControl"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
-            <forward name="valid" path="/bcr/budgetControl.jsp" />
+            <forward name="valid" path="/budgetControl/index.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
         <action

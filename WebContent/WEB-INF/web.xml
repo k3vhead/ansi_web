@@ -131,6 +131,17 @@
         <url-pattern>/claims/budgetControlLookup/*</url-pattern>
         <url-pattern>/claims/budgetControlLookup</url-pattern>
     </servlet-mapping>
+    
+    
+    
+    <servlet>
+        <servlet-name>bcrServlet</servlet-name>
+        <servlet-class>com.ansi.scilla.web.bcr.servlet.BcrServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>bcrServlet</servlet-name>
+        <url-pattern>/bcr/*</url-pattern>
+    </servlet-mapping>
 
 
 
@@ -198,8 +209,7 @@
     </servlet-mapping>
     
     
-    
-   <servlet>
+    <servlet>
         <servlet-name>directLaborLookup</servlet-name>
         <servlet-class>com.ansi.scilla.web.claims.servlet.DirectLaborLookupServlet</servlet-class>
     </servlet>
@@ -1047,7 +1057,17 @@
 	</servlet-mapping>
 
 
-
+	<servlet>
+        <servlet-name>workdate</servlet-name>
+        <servlet-class>com.ansi.scilla.web.dates.servlet.WorkDateServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>workdate</servlet-name>
+        <url-pattern>/workdate</url-pattern>
+    </servlet-mapping>
+    
+    
+   
 
 
 

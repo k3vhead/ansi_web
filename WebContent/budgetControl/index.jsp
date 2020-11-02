@@ -10,6 +10,7 @@
 <%@ taglib uri="/WEB-INF/struts-bean.tld"  prefix="bean"  %>
 <%@ taglib uri="/WEB-INF/struts-tiles.tld" prefix="tiles" %>
 <%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="webthing" %>
+<%@ taglib tagdir="/WEB-INF/tags/bcr" prefix="bcr" %>
 <%@ taglib uri="/WEB-INF/theTagThing.tld" prefix="ansi" %>
 
 
@@ -32,6 +33,37 @@
     	<script type="text/javascript" src="js/lookup.js"></script> 
     	<script type="text/javascript" src="js/ticket.js"></script> 
         <style type="text/css">
+        	#bcr_title_prompt {
+        		display:none;
+        	}
+			#bcr_panels .display {
+				display:none;
+			}
+        	.aligned-center {
+        		text-align:center;
+        	}
+        	.aligned-right {
+        		text-align:right;
+        	}
+			.bcr_totals_display .column-header {
+				font-weight:bold;
+			}
+			.bcr_totals_display th {
+				text-align:right;
+			}
+        	.form-label {
+				font-weight:bold;
+			}			
+			.table-header {
+				text-align:center;
+				font-weight:bold;
+			}
+			
+			
+			
+			
+			
+			
         	#filter-container {
         		width:402px;
         		float:right;
@@ -61,11 +93,28 @@
         <script type="text/javascript">
         
         $(document).ready(function() {
-        	;BUDGETCONTROL = {        		
+        	;BUDGETCONTROL = {      
+        		workDate : null,
+        		division : null,
+        		
         		init : function() {
         			ANSI_UTILS.makeDivisionList(BUDGETCONTROL.makeDivListSuccess, BUDGETCONTROL.makeDivListFail);
         			BUDGETCONTROL.makeAccordion();
         			BUDGETCONTROL.makeClickers();
+        		},
+        		
+        		
+        		dateCallFail : function($data) {
+        			console.log("dateCallFail");
+        			$("#globalMsg").html("Failure Retrieving Dates. Contact Support");
+        		},
+        		
+        		
+        		
+        		dateCallSuccess: function($data) {
+        			console.log("dateCallSuccess");
+        			BUDGETCONTROL.workDate = $data.data;
+        			 $("#bcr_title_prompt .workDateDisplay").html($data.data.firstOfMonth + " - " + $data.data.lastOfMonth);
         		},
         		
         		
@@ -93,7 +142,7 @@
         		
         		makeDivListFail : function($data) {
         			console.log("makeDivListFail");
-        			$("#globalMsg").html("Failure Retrieving Divisions. Contact Support");
+        			$("#globalMsg").html("Failure Retrieving Divisions. Contact Support").show();
         		},
         		
         		
@@ -109,11 +158,19 @@
        				
         			BUDGETCONTROL.makeModals();
         			$( "#bcr_title_prompt" ).dialog("open");
-        			$("#workWeekSelector").change(function() {
-        				console.log("Date changed");
+        			$("#bcr_title_prompt .workDayDisplay").html("");
+        			$("#workDaySelector").change(function() {
+        				var $workDay = $("#workDaySelector").val();
+        				console.log("Date changed: " + $workDay);
+        				if ( $workDay == null || $workDay == "") {
+        					$("#bcr_title_prompt .workDateDisplay").html("");
+        				} else {
+        					$("#bcr_title_prompt .workDateErr").html("");
+	        				$outbound = {"workDate":$workDay,"format":"yyyy-MM-dd"};
+	        				ANSI_UTILS.doServerCall("GET", "workdate", $outbound, BUDGETCONTROL.dateCallSuccess, BUDGETCONTROL.dateCallFail);
+        				}
         			});
         		},
-        		
         		
         		
         		
@@ -124,8 +181,8 @@
         			$( "#bcr_title_prompt" ).dialog({
         				title:'Budget Control',
         				autoOpen: false,
-        				height: 600,
-        				width: 950,
+        				height: 200,
+        				width: 500,
         				modal: true,
         				closeOnEscape:false,
         				open: function(event, ui) {
@@ -135,13 +192,156 @@
         					{
         						id:  "bcr_title_prompt_save",
         						click: function($event) {
-        							$("#bcr_title_prompt").dialog("close");
+        							BUDGETCONTROL.titleSave();        							
         						}
         					}
         				]
         			});	
         			$("#bcr_title_prompt_save").button('option', 'label', 'Go');
         			
+        			
+        		},
+        		
+        		
+        		
+        		populateActualDLPanel : function($data) {
+        			var $weekLabel = ["1st","2nd","3rd","4th","5th"];
+
+        			$.each($data.data.workCalendar, function($index, $value) {
+						var $row = $("<tr>");
+						var $label = $("<td>").append($weekLabel[$index] + " Wk in Mo");
+						var $week = $("<td>").append($value.weekOfYear);
+						var $firstOfWeek = $("<td>").append($value.firstOfWeek);
+						$firstOfWeek.addClass("aligned-center");
+						var $lastOfWeek = $("<td>").append($value.lastOfWeek);
+						$lastOfWeek.addClass("aligned-center");
+						var $actualDL = $('<input type="text" />');
+						$actualDL.attr("name","actualDL-" + $value.weekOfYear);	
+						var $omDL = $('<input type="text" />');
+						$omDL.attr("name","actualDL-" + $value.weekOfYear);	
+						$row.append($label);
+						$row.append($week);
+						$row.append($firstOfWeek);
+						$row.append($lastOfWeek);
+						$row.append( $("<td>").append($actualDL));
+						$row.append( $("<td>").append($omDL));
+						$("#actual_dl_totals tbody").append($row);
+					});
+        		},
+        		
+        		
+        		
+        		
+        		populateBudgetControlTotalsPanel : function($data) {
+        			var $headerRow1 = $("<tr>");
+					$headerRow1.append($("<td>").append("&nbsp;"));
+					$headerRow1.append($("<td>").append("&nbsp;")); 
+					var $headerRow2 = $("<tr>");
+					$headerRow2.append($("<td>").addClass("column-header").append("Week:"));
+					$headerRow2.append($("<td>").addClass("column-header").addClass("aligned-right").append("Unclaimed")); 
+					$.each($data.data.workCalendar, function($index, $value) {
+						var $startDate = $value.firstOfWeek.substring(0, 5);
+						var $endDate = $value.lastOfWeek.substring(0, 5);
+						var $dates = $("<td>").append($startDate + "-" + $endDate);
+						$dates.addClass("aligned-right");
+						$headerRow1.append($dates);
+
+						var $week = $("<td>").addClass("column-header").append($value.weekOfYear);
+						$week.addClass("aligned-right");
+						$headerRow2.append($week);
+					});
+					$headerRow1.append( $("<th>").append("Month") );
+					$headerRow2.append( $("<th>").append("Total") );
+					$("#bcr_totals .bcr_totals_display thead").append($headerRow1);
+					$("#bcr_totals .bcr_totals_display thead").append($headerRow2);
+					
+					
+					var $bcRowLabels = ["Volume Claimed","Claimed Volume Remaining",
+								"Total Billed","Variance",
+								"Total D/L Claimed","Actual D/L","Actual OM D/L","Total Actual D/L"];
+					
+					var $totalVolRow = $("<tr>");					
+					$totalVolRow.append( $("<td>").append("Total Volume:") );
+					$totalVolRow.append( $("<td>").addClass("aligned-right").append("0.00") );
+					$.each($data.data.workCalendar, function($index, $value) {
+						$totalVolRow.append( $("<td>").addClass("aligned-right").append("0.00") );
+					});
+					$totalVolRow.append( $("<td>").addClass("aligned-right").append("0.00") );
+					$("#bcr_totals .bcr_totals_display tbody").append($totalVolRow);
+					
+					$.each($bcRowLabels, function($index, $value) {
+						var $bcRow = $("<tr>");
+						$bcRow.append( $("<td>").append($value+":") );
+						$bcRow.append( $("<td>").addClass("aligned-right").append("n/a") );
+						$.each($data.data.workCalendar, function($index, $value) {
+							$bcRow.append( $("<td>").addClass("aligned-right").append("0.00") );
+						});
+						$bcRow.append( $("<td>").addClass("aligned-right").append("0.00") );
+						$("#bcr_totals .bcr_totals_display tbody").append($bcRow);
+					});
+					
+					$.each(["D/L Percentage","Actual D/L Percentage"], function($index, $value) {
+						var $bcRow = $("<tr>");
+						$bcRow.append( $("<td>").append($value+":") );
+						$bcRow.append( $("<td>").append("&nbsp;") );
+						$.each($data.data.workCalendar, function($index, $value) {
+							$bcRow.append( $("<td>").addClass("aligned-right").append("0.00%") );
+						});
+						$bcRow.append( $("<td>").addClass("aligned-right").append("0.00%") );
+						$("#bcr_totals .bcr_totals_display tbody").append($bcRow);
+					});
+					
+        		},
+        		
+        		
+        		
+        		
+        		populateTitlePanel : function($data) {
+					$("#bcr_summary .dateCreated").html($data.data.dateCreated);
+					$("#bcr_summary .dateModified").html($data.data.dateModified);
+					$("#bcr_summary .workYear").html($data.data.workYear);
+					$("#bcr_summary .workMonth").html($data.data.workMonth);
+					$("#bcr_summary .workMonthName").html($data.data.workMonthName);
+					$("#bcr_summary .firstOfMonth").html($data.data.firstOfMonth);
+					$("#bcr_summary .lastOfMonth").html($data.data.lastOfMonth);
+					$("#bcr_summary .div").html($data.data.div);
+					$("#bcr_summary .managerFirstName").html($data.data.managerFirstName);
+					$("#bcr_summary .managerLastName").html($data.data.managerLastName);
+        		},
+        		
+        		
+        		
+        		titleSave : function() {
+        			console.log("titleSave");
+        			$("#bcr_title_prompt .err").html("");
+        			var $divisionId = $("#bcr_title_prompt select[name='divisionId']").val();
+        			console.log("Div: " + $divisionId);
+        			$outbound = {"divisionId":$divisionId, "workDate":$("#workDaySelector").val()};
+        			console.log(JSON.stringify($outbound));
+        			ANSI_UTILS.doServerCall("POST", "bcr/title", JSON.stringify($outbound), BUDGETCONTROL.titleSaveSuccess, BUDGETCONTROL.titleSaveFail);
+					
+        		},
+        		
+        		
+        		
+        		titleSaveFail : function($data) {
+        			console.log("titleSaveFail");
+        			$.each($data.data.webMessages, function($key, $value) {        				
+        				$("#bcr_title_prompt ."+$key+"Err").html($value[0]);
+        			});
+        		},
+        		
+        		
+        		titleSaveSuccess : function($data) {
+        			console.log("titleSaveSuccess");
+        			BUDGETCONTROL.populateTitlePanel($data);
+        			BUDGETCONTROL.populateActualDLPanel($data);
+        			BUDGETCONTROL.populateBudgetControlTotalsPanel($data);
+
+					$("#bcr_panels .thinking").hide();
+					$("#bcr_panels .display").show();
+        			$("#bcr_title_prompt").dialog("close");
+        			$("#titleHeader").click();
         			
         		}
         	};
@@ -309,35 +509,50 @@
    <tiles:put name="content" type="string">
     	<h1>Budget Control</h1>
     	
-    	<ul class="accordionList">
+    	<ul id="bcr_panels" class="accordionList">
     		<li class="accordionItem">    			
-        		<h4 class="accHdr">Title</h4>
+        		<h4 class="accHdr" id="titleHeader">Title</h4>
         		<div id="bcr_summary">
-        			<webthing:thinking style="width:100%" />
+        			<div class="thinking"><webthing:thinking style="width:100%" /></div>
+        			<div class="display">
+        				<bcr:title />        				
+        			</div>
         		</div>
        		</li>
     		<li class="accordionItem">    			
         		<h4 class="accHdr">Actual Direct Labor Totals</h4>
-        		<div id="bcr_totals">
-        			<webthing:thinking style="width:100%" />
+        		<div id="actual_dl_totals">
+        			<div class="thinking"><webthing:thinking style="width:100%" /></div>
+        			<div class="display">
+        				<bcr:actualDLTotals />
+        			</div>
         		</div>
        		</li>
     		<li class="accordionItem">    			
         		<h4 class="accHdr">Budget Control Totals</h4>
-        		<div id="bcr_tools">
-        			<webthing:thinking style="width:100%" />
+        		<div id="bcr_totals">
+        			<div class="thinking"><webthing:thinking style="width:100%" /></div>
+	        		<div class="display">
+	       				<bcr:budgetControlTotals />
+	       			</div>
         		</div>
        		</li>
     		<li class="accordionItem">    			
         		<h4 class="accHdr">Employees</h4>
         		<div id="bcr_employees">
-        			<webthing:thinking style="width:100%" />
+        			<div class="thinking"><webthing:thinking style="width:100%" /></div>
+	        		<div class="display">
+	       				Employee List
+	       			</div>
         		</div>
        		</li>
        		<li class="accordionItem">    			
         		<h4 class="accHdr">Tickets</h4>
         		<div id="bcr_tickets">
-        			<webthing:thinking style="width:100%" />
+        			<div class="thinking"><webthing:thinking style="width:100%" /></div>
+	        		<div class="display">
+	       				TicketList
+	       			</div>
         		</div>
        		</li>
    		</ul>
@@ -362,13 +577,16 @@
 	    		<tr>
 	    			<td><span class="form-label">Division:</span></td>
 	    			<td><select name="divisionId"></select></td>
+	    			<td><span class="err divisionIdErr"></span></td>
 	    		</tr>
 	    		<tr>
 	    			<td><span class="form-label">Date:</span></td>
-	    			<td><input id="workWeekSelector" type="date" name="workWeek" /></td>	    			
+	    			<td><input id="workDaySelector" type="date" name="workDate" /></td>
+	    			<td><span class="err workDateErr"></span></td>	    			
 	    		</tr>
 	    		<tr>
-	    			<td colspan="2"><span class="workWeekDisplay"></span></td>
+	    			<td>&nbsp;</td>
+	    			<td><span class="workDateDisplay"></span></td>
 	    		</tr>
 	    	</table>
 	    </div>

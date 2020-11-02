@@ -6,7 +6,6 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -266,6 +265,33 @@ public class RequestValidator {
 	}
 	
 	
+	public static void validateDivisionUser(Connection conn, WebMessages webMessages, Integer divisionId, String divisionField, Integer userId, String userField, boolean required) throws SQLException {
+		if ( divisionId == null ) {
+			if ( required == true ) {
+				webMessages.addMessage(divisionField, "Not authorized for this division");
+			}
+		} else if ( userId == null ) {
+			if ( required == true ) {
+				webMessages.addMessage(userField, "Not authorized for this division");
+			}
+		} else {
+			PreparedStatement ps = conn.prepareStatement("select count(*) as record_count from division_user where division_id=? and user_id=?");
+			ps.setInt(1,  divisionId);
+			ps.setInt(2,  userId);
+			ResultSet rs = ps.executeQuery();
+			if ( rs.next() ) {
+				if ( rs.getInt("record_count") == 0 ) {
+					webMessages.addMessage(divisionField, "Not authorized for this division");
+				}
+			} else {
+				webMessages.addMessage(divisionField, "Error checking authorization");
+			}
+			rs.close();
+			
+		}
+		
+	}
+
 	public static void validateDocumentId(Connection conn, WebMessages webMessages, String fieldName, Integer value, boolean required) throws Exception {
 		validateId(conn, webMessages, Document.TABLE, Document.DOCUMENT_ID, fieldName, value, required);
 	}
