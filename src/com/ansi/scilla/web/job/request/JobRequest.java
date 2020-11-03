@@ -690,7 +690,7 @@ public class JobRequest extends AbstractRequest{
 		RequestValidator.validateNumber(webMessages, DIRECT_LABOR_PCT, this.getDirectLaborPct(), new BigDecimal(0), new BigDecimal(100), true);
 		RequestValidator.validateNumber(webMessages,BUDGET, this.getBudget(), new BigDecimal(0), null, true);
 		RequestValidator.validateInteger(webMessages,FLOORS, this.getFloors(), 0, null, true);
-		RequestValidator.validateString(webMessages, EQUIPMENT, this.getEquipment(), false);
+		RequestValidator.validateString(webMessages, EQUIPMENT, this.getEquipment(), true);
 		RequestValidator.validateString(webMessages, WASHER_NOTES, this.getWasherNotes(), false);
 		RequestValidator.validateString(webMessages, OM_NOTES, this.getOmNotes(), false);
 		RequestValidator.validateString(webMessages, BILLING_NOTES, this.getBillingNotes(), false);
