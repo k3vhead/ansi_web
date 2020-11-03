@@ -99,7 +99,7 @@
         		        		
         		
         		init : function() {
-        			REPORT_SUBSCRIPTION.makeClickers();	
+        			REPORT_SUBSCRIPTION.makeClickers();		
         			REPORT_SUBSCRIPTION.getSubscriptions();
         		},
                 
@@ -128,7 +128,6 @@
           							if ( $data.responseHeader.responseCode == 'SUCCESS') {
           								$("#globalMsg").html("Update Successful").show().fadeOut(6000);
           								$("#thinking").hide();
-          								REPORT_SUBSCRIPTION.makeLists();
           								console.log("updates success");
           							}
           						},	
@@ -317,8 +316,8 @@
            				$.each($groupList, function($groupIdx, $group) {
            					var $checkboxTD = $("<td>");
         					$checkboxTD.addClass("div-" + $group.id);
-        					$checkboxTD.append($('<input type="checkbox" name="'+$value.reportId+"-" + $group.id +'" class="group-selector" data-report="'+$value.reportId+'" data-division="'+$group.id+'"/>'));
-        					$checkboxTD.addClass("group-selector");
+        					$checkboxTD.append($('<input type="checkbox" name="'+$value.reportId+"-" + $group.id +'" class="group-checkbox" data-report="'+$value.reportId+'" data-division="'+$group.id+'"/>'));
+        					$checkboxTD.addClass("group-checkbox");
                			/*	var $checkbox = $('<input>');   
                			 	$checkbox.attr( { "name":$value.reportId, "name":$group.id } );
                			 	$checkbox.attr("type","checkbox");
@@ -359,21 +358,58 @@
 						$("th, td").css("background-color", "transparent");
 					}); 
    					
-           			//$selector = "#"+$container + " .group-selector";
+   				/*	$selector = "#"+$container + " .group-checkbox";
+					$($selector).click(function($event) {
+    					//	var $subscribe = $(this).attr("data-group.id" + "data-reportId");
+    						var $reportId = $(this).attr("data-report");
+    						var $id = $(this).attr("data-division");
+        					var $subscribe = $(this).prop("checked");
+        					var $subscriptionId = $(this).attr("data-subscriptionId");     
+    						REPORT_SUBSCRIPTION.doSubscription($reportId, $id, $subscribe, $subscriptionId);
+    				}); */
 
-        			$("#"+$container + " .group-selector").click(function($event) {
-           			
-           			
-   					//$($selector).click(function($event) {
-   					//	var $subscribe = $(this).attr("data-group.id" + "data-reportId");
-   						var $reportId = $(this).attr("data-report");
-   						var $id = $(this).attr("data-division");
-        				var $subscribe = $(this).prop("checked");
-        				var $subscriptionId = $(this).attr("data-subscriptionId");     
-   						REPORT_SUBSCRIPTION.doSubscription($reportId, $id, $subscribe, $subscriptionId);
-   					});
+	        	/*	if ( $container == 'company' ) {
+	           			$selector = "#company-selection-container" + " .group-selector";
+	        			//$(".group-selector").click(function($event) {
+	        			//$("#"+$container + " .group-selector").click(function($event) {	
+	    					$($selector).click(function($event) {
+	    					//	var $subscribe = $(this).attr("data-group.id" + "data-reportId");
+	    						var $reportId = $(this).attr("data-report");
+	    						var $id = $(this).attr("data-division");
+	        					var $subscribe = $(this).prop("checked");
+	        					var $subscriptionId = $(this).attr("data-subscriptionId");     
+	    						REPORT_SUBSCRIPTION.doSubscription($reportId, $id, $subscribe, $subscriptionId);
+	    					});
+					}     	
+
+	        		if ( $container == 'region' ) {
+	           			$selector = "#region-selection-container" + " .group-selector";
+	        			$(".group-selector").click(function($event) {
+	        			//$("#"+$container + " .group-selector").click(function($event) {	
+	    				//	$($selector).click(function($event) {
+	    					//	var $subscribe = $(this).attr("data-group.id" + "data-reportId");
+	    						var $reportId = $(this).attr("data-report");
+	    						var $id = $(this).attr("data-division");
+	        					var $subscribe = $(this).prop("checked");
+	        					var $subscriptionId = $(this).attr("data-subscriptionId");     
+	    						REPORT_SUBSCRIPTION.doSubscription($reportId, $id, $subscribe, $subscriptionId);
+	    					});
+					}     	
+
+	        		if ( $container == 'group' ) {
+	           			$selector = "#group-selection-container" + " .group-selector";
+	        			//$(".group-selector").click(function($event) {
+	        			//$("#"+$container + " .group-selector").click(function($event) {	
+	    					$($selector).click(function($event) {
+	    					//	var $subscribe = $(this).attr("data-group.id" + "data-reportId");
+	    						var $reportId = $(this).attr("data-report");
+	    						var $id = $(this).attr("data-division");
+	        					var $subscribe = $(this).prop("checked");
+	        					var $subscriptionId = $(this).attr("data-subscriptionId");     
+	    						REPORT_SUBSCRIPTION.doSubscription($reportId, $id, $subscribe, $subscriptionId);
+	    					});
+					} */     	
         		},
-
         		
         		makeOneColumnTable : function($container, $reportList, $subscriptionList) {
            			console.log("Making container " + $container);
@@ -474,18 +510,39 @@
 						if ( REPORT_SUBSCRIPTION.companyList.length > 0 ) {
 							$("#company-subscription-selector").show();
 							REPORT_SUBSCRIPTION.makeMultiColumnTable("company-selection-container", REPORT_SUBSCRIPTION.summaryReports, REPORT_SUBSCRIPTION.companyList, $data.data.subscriptionList);
+		        		/*	$("#company-selection-container .group-selector").click(function($event) {
+			    						var $reportId = $(this).attr("data-report");
+			    						var $id = $(this).attr("data-division");
+			        					var $subscribe = $(this).prop("checked");
+			        					var $subscriptionId = $(this).attr("data-subscriptionId");     
+			    						REPORT_SUBSCRIPTION.doSubscription($reportId, $id, $subscribe, $subscriptionId);
+			    					}); */
 						} else {
 							$("#company-subscription-selector").hide();
 						}
 						if ( REPORT_SUBSCRIPTION.regionList.length > 0 ) {
 							$("#region-subscription-selector").show();
 							REPORT_SUBSCRIPTION.makeMultiColumnTable("region-selection-container", REPORT_SUBSCRIPTION.summaryReports, REPORT_SUBSCRIPTION.regionList, $data.data.subscriptionList);
+		        		/*	$("#region-selection-container .group-selector").click(function($event) {
+			    						var $reportId = $(this).attr("data-report");
+			    						var $id = $(this).attr("data-division");
+			        					var $subscribe = $(this).prop("checked");
+			        					var $subscriptionId = $(this).attr("data-subscriptionId");     
+			    						REPORT_SUBSCRIPTION.doSubscription($reportId, $id, $subscribe, $subscriptionId);
+			    					}); */
 						} else {
 							$("#region-subscription-selector").hide();
 						}
 						if ( REPORT_SUBSCRIPTION.groupList.length > 0 ) {
 							$("#group-subscription-selector").show();
 							REPORT_SUBSCRIPTION.makeMultiColumnTable("group-selection-container", REPORT_SUBSCRIPTION.summaryReports, REPORT_SUBSCRIPTION.groupList, $data.data.subscriptionList);
+		        		/*	$("#group-selection-container .group-selector").click(function($event) {
+			    						var $reportId = $(this).attr("data-report");
+			    						var $id = $(this).attr("data-division");
+			        					var $subscribe = $(this).prop("checked");
+			        					var $subscriptionId = $(this).attr("data-subscriptionId");     
+			    						REPORT_SUBSCRIPTION.doSubscription($reportId, $id, $subscribe, $subscriptionId);
+			    					}); */
 						} else {
 							$("#group-subscription-selector").hide();
 						}
@@ -494,6 +551,14 @@
 						$("#region-subscription-selector").hide();
 						$("#group-subscription-selector").hide();
 					}
+					
+					$(".group-selector").click(function($event) {
+    					var $reportId = $(this).attr("data-report");
+						var $id = $(this).attr("data-division");
+						var $subscribe = $(this).prop("checked");
+						var $subscriptionId = $(this).attr("data-subscriptionId");     
+					REPORT_SUBSCRIPTION.doSubscription($reportId, $id, $subscribe, $subscriptionId);
+					}); 
 					
 					if ( $data.data.divisionList.length > 0 && $data.data.divisionReports.length > 0 ) { 
 						$("#division-subscription-selector").show();	
