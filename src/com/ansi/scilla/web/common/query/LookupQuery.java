@@ -3,10 +3,12 @@ package com.ansi.scilla.web.common.query;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -310,6 +312,9 @@ public abstract class LookupQuery extends ApplicationObject {
 				} else if ( o instanceof java.util.Date) {
 					java.util.Date date = (java.util.Date)o;
 					ps.setDate(idx, new java.sql.Date(date.getTime()));
+				} else if ( o instanceof java.util.GregorianCalendar) {
+					GregorianCalendar date = (GregorianCalendar)o;
+					ps.setDate(idx, new java.sql.Date(date.getTime().getTime()));
 				} else {
 					throw new RuntimeException("Add another value to the else for " + o.getClass().getName());
 				}

@@ -19,6 +19,7 @@ public class BcrServlet extends AbstractServlet {
 	private final String DIRECT_LABOR = "directLabor";
 	private final String TOTALS = "totals";
 	private final String EMPLOYEES = "employees";
+	private final String TICKETLIST = "ticketList";
 	
 	
 	private static final long serialVersionUID = 1L;
@@ -33,7 +34,20 @@ public class BcrServlet extends AbstractServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		super.doGet(request, response);
+		String uri = request.getRequestURI();
+		String trigger = REALM + "/";
+		String destination = uri.substring(uri.indexOf(trigger)+trigger.length());
+		
+		switch (destination) {
+		case TITLE:
+			new BcrTitleServlet().doGet(request, response);
+			break;
+		case TICKETLIST:
+			new BcrTicketLookupServlet().doGet(request, response);
+			break;
+		default:
+			super.sendNotFound(response);
+		}
 	}
 
 	@Override
@@ -46,6 +60,9 @@ public class BcrServlet extends AbstractServlet {
 		switch (destination) {
 		case TITLE:
 			new BcrTitleServlet().doPost(request, response);
+			break;
+		case TICKETLIST:
+			super.sendNotFound(response);
 			break;
 		default:
 			super.sendNotFound(response);

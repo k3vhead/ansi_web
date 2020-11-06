@@ -96,6 +96,7 @@
         	;BUDGETCONTROL = {      
         		workDate : null,
         		division : null,
+        		ticketTable : null,
         		
         		init : function() {
         			ANSI_UTILS.makeDivisionList(BUDGETCONTROL.makeDivListSuccess, BUDGETCONTROL.makeDivListFail);
@@ -114,7 +115,111 @@
         		dateCallSuccess: function($data) {
         			console.log("dateCallSuccess");
         			BUDGETCONTROL.workDate = $data.data;
-        			 $("#bcr_title_prompt .workDateDisplay").html($data.data.firstOfMonth + " - " + $data.data.lastOfMonth);
+        			$("#bcr_title_prompt .workDateDisplay").html($data.data.firstOfMonth + " - " + $data.data.lastOfMonth);
+        		},
+        		
+        		
+        		
+        		doTicketLookup : function($data) {
+        			console.log("doTIcketLookup");
+        			console.log($data);
+        			var $outbound = {"divisionId":$data.data.divisionId, "startDate":$data.data.firstOfMonth};
+        			
+        			
+        			BUDGETCONTROL.ticketTable = $('#ticketTable').DataTable( {
+            			"aaSorting":		[[0,'asc']],
+            			"processing": 		true,
+            	        "serverSide": 		true,
+            	        "autoWidth": 		false,
+            	        "deferRender": 		true,
+            	        "scrollCollapse": 	true,
+            	        "scrollX": 			true,
+            	        "pageLength":		50,
+            	        rowId: 				'dt_RowId',
+            	        dom: 				'Bfrtip',
+            	        "searching": 		true,
+            	        "searchDelay":		800,
+            	        lengthMenu: [
+            	        	[ 10, 50, 100, 500, 1000 ],
+            	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
+            	        ],
+            	        buttons: [
+            	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();$('#ticketTable').draw();}}
+            	        ],
+            	        "columnDefs": [
+             	            { "orderable": true, "targets": -1 },
+             	            { className: "dt-head-center", "targets":[0,1,2,3,4,5,6,7,8,9,10,11,12,13]},
+            	            { className: "dt-left", "targets": [0,1,2,3,4,9,13] },
+            	            { className: "dt-center", "targets": [12] },
+            	            { className: "dt-right", "targets": [5,6,7,8,10,11]}
+            	         ],
+            	        "paging": true,
+    			        "ajax": {
+    			        	"url": "bcr/ticketList",
+    			        	"type": "GET",
+    			        	"data": $outbound,
+    			        	},
+    			        columns: [
+    			        	{ title: "Account", width:"15%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.name != null){return (row.name+"");}
+    			            } },
+    			            { title: "Ticket Number", width:"6%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.ticket_id != null){return (row.ticket_id+"");}
+    			            } },
+    			            { title: "Claim Week", width:"4%", searchable:true, searchFormat: "First Last Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+    			            	//if(row.contact_name != null ){return row.contact_name;}
+    			            	return BUDGETCONTROL.makeClaimWeekSelect(row.ticket_id, $data.data.workCalendar);
+    			            } },
+    			            { title: "D/L", width:"6%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	//if(row.summary != null){return (row.summary+"");}
+    			            	return '<input type="text"  style="width:20px;" />';
+    			            } },
+    			            { title: "+Exp", width:"6%", searchable:true, searchFormat: "First Last Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	//if(row.ansi_contact != null){return (row.ansi_contact+"");}
+    			            	return '<input type="text" style="width:20px;"/>';
+    			            } },
+    			            { title: "Total D/L", width:"6%", searchable:true, searchFormat: "YYYY-MM-dd hh:mm", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	//if(row.start_time != null){return (row.start_time+"");}
+    			            	return 'x';
+    			            } },
+    			            { title: "Total Volume",  width:"6%", searchable:true, searchFormat: "Type Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.budget != null){return (row.budget.toFixed(2)+"");}
+    			            } },		
+    			            { title: "Volume Claimed",  width:"6%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	//if(row.xref != null){return (row.xref+"");}
+    			            	return '<input type="text"  style="width:20px;" />';
+    			            } },
+    			            { title: "Volume Remaining",  width:"6%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	//if(row.xref != null){return (row.xref+"");}
+    			            	return 'x';
+    			            } },
+    			            { title: "Notes",  width:"10%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	//if(row.xref != null){return (row.xref+"");}
+    			            	return 'x';
+    			            } },
+    			            { title: "Billed Amount",  width:"6%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.price_per_cleaning != null){return (row.price_per_cleaning.toFixed(2)+"");}
+    			            } },
+    			            { title: "Diff Clm/Bld",  width:"6%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	//if(row.price_per_cleaning != null){return (row.price_per_cleaning+"");}
+    			            	return 'x';
+    			            } },
+    			            { title: "Ticket Status",  width:"4%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.ticket_status != null){return (row.ticket_status+"");}
+    			            } },
+    			            { title: "Employee",  width:"13%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	//if(row.price_per_cleaning != null){return (row.price_per_cleaning+"");}
+    			            	return '<input type="text"  style="width:50px;" />';
+    			            } }
+    			            ],
+    			            "initComplete": function(settings, json) {
+    			            	var myTable = this;
+    			            	//LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#ticketTable", CALL_NOTE_LOOKUP.makeTable);
+    			            },
+    			            "drawCallback": function( settings ) {
+    			            	//CALL_NOTE_LOOKUP.doFunctionBinding();
+    			            }
+    			    } );
         		},
         		
         		
@@ -132,6 +237,23 @@
 					});
         		},
         		
+        		
+        		
+        		makeClaimWeekSelect : function($ticket_id, $workCalendar) {
+        			var $select = $("<select>");
+        			$select.attr("data-ticketid",$ticket_id);
+        			var $defaultOption = $("<option>")
+       				$defaultOption.attr("value","");
+       				$defaultOption.append("");
+       				$select.append($defaultOption);
+        			$.each( $workCalendar, function($index, $value) {
+        				var $option = $("<option>");
+        				$option.attr("value",$value.weekOfYear);
+        				$option.append($value.weekOfYear);
+        				$select.append($option);
+        			});
+        			return $select[0].outerHTML;
+        		},
         		
         		
         		makeClickers : function() {
@@ -217,8 +339,12 @@
 						$lastOfWeek.addClass("aligned-center");
 						var $actualDL = $('<input type="text" />');
 						$actualDL.attr("name","actualDL-" + $value.weekOfYear);	
+						$actualDL.addClass("actualDL");
+						$actualDL.attr("data-week",$value.weekOfYear)
 						var $omDL = $('<input type="text" />');
-						$omDL.attr("name","actualDL-" + $value.weekOfYear);	
+						$omDL.attr("name","omDL-" + $value.weekOfYear);	
+						$omDL.addClass("omDL");
+						$omDL.attr("data-week",$value.weekOfYear)
 						$row.append($label);
 						$row.append($week);
 						$row.append($firstOfWeek);
@@ -227,6 +353,22 @@
 						$row.append( $("<td>").append($omDL));
 						$("#actual_dl_totals tbody").append($row);
 					});
+        			
+        			$("#actual_dl_totals input").blur(function($event) {
+        				var $that = $(this);
+        				var $week = $that.attr("data-week");
+        				var $value = $that.val();
+						if ( $that.hasClass("actualDL") ) {
+							console.log("actualDL " + $week + " " + $value);
+							var $selector = "#bcr_totals .actual_dl_week" + $week;
+							console.log("Selector: " + $selector);
+							$($selector).val($value);
+						} else if ( $that.hasClass("omDL") ) {
+							console.log("omDL " + $week + " " + $value);
+						} else {
+							console.log("oops");
+						}        				
+        			});
         		},
         		
         		
@@ -256,27 +398,43 @@
 					$("#bcr_totals .bcr_totals_display thead").append($headerRow2);
 					
 					
-					var $bcRowLabels = ["Volume Claimed","Claimed Volume Remaining",
-								"Total Billed","Variance",
-								"Total D/L Claimed","Actual D/L","Actual OM D/L","Total Actual D/L"];
+					var $bcRowLabels = [
+							{"label":"Volume Claimed:","className":"volume_claimed"},
+							{"label":"Claimed Volume Remaining:","className":"claimed_volume_remaining"},
+							{"label":"<break>"},
+							{"label":"Total Billed:","className":"total_billed"},
+							{"label":"Variance:","className":"variance"},
+							{"label":"<break>"},
+							{"label":"Total D/L Claimed:","className":"total_dl_claimed"},
+							{"label":"Actual D/L:","className":"actual_dl"},
+							{"label":"Actual OM D/L:","className":"actual_om_dl"},
+							{"label":"Total Actual D/L:","className":"total_actual_dl"},
+							{"label":"<break>"}
+						];
 					
 					var $totalVolRow = $("<tr>");					
 					$totalVolRow.append( $("<td>").append("Total Volume:") );
 					$totalVolRow.append( $("<td>").addClass("aligned-right").append("0.00") );
 					$.each($data.data.workCalendar, function($index, $value) {
-						$totalVolRow.append( $("<td>").addClass("aligned-right").append("0.00") );
+						$totalVolRow.append( $("<td>").addClass("aligned-right").addClass("total_volume").addClass("week"+$value.weekOfYear).append("0.00") );
 					});
 					$totalVolRow.append( $("<td>").addClass("aligned-right").append("0.00") );
 					$("#bcr_totals .bcr_totals_display tbody").append($totalVolRow);
 					
 					$.each($bcRowLabels, function($index, $value) {
 						var $bcRow = $("<tr>");
-						$bcRow.append( $("<td>").append($value+":") );
-						$bcRow.append( $("<td>").addClass("aligned-right").append("n/a") );
-						$.each($data.data.workCalendar, function($index, $value) {
+						if ( $value == "<break>") {
+							$bcRow.append( $('<td colspan="6">').append("&nbsp;") );
+						} else {
+							console.log($value);
+							$bcRow.append( $("<td>").append($value['label']) );
+							$bcRow.append( $("<td>").addClass("aligned-right").append("n/a") );
+							$.each($data.data.workCalendar, function($index, $calendarValue) {
+								var $className = $value['className']+"_"+"week"+$calendarValue.weekOfYear;
+								$bcRow.append( $("<td>").addClass("aligned-right").addClass($className).append("0.00") );
+							});
 							$bcRow.append( $("<td>").addClass("aligned-right").append("0.00") );
-						});
-						$bcRow.append( $("<td>").addClass("aligned-right").append("0.00") );
+						}
 						$("#bcr_totals .bcr_totals_display tbody").append($bcRow);
 					});
 					
@@ -319,8 +477,11 @@
         			$outbound = {"divisionId":$divisionId, "workDate":$("#workDaySelector").val()};
         			console.log(JSON.stringify($outbound));
         			ANSI_UTILS.doServerCall("POST", "bcr/title", JSON.stringify($outbound), BUDGETCONTROL.titleSaveSuccess, BUDGETCONTROL.titleSaveFail);
-					
+        			
         		},
+        		
+        		
+        		
         		
         		
         		
@@ -334,6 +495,8 @@
         		
         		titleSaveSuccess : function($data) {
         			console.log("titleSaveSuccess");
+        			BUDGETCONTROL.doTicketLookup($data);
+        			
         			BUDGETCONTROL.populateTitlePanel($data);
         			BUDGETCONTROL.populateActualDLPanel($data);
         			BUDGETCONTROL.populateBudgetControlTotalsPanel($data);
@@ -346,159 +509,6 @@
         		}
         	};
         	
-        	
-        	
-        	
-        	;BCR_PLACEHOLDER = {
-        		datatable : null,
-        		
-        		init : function() {
-        			BUDGETCONTROL.createTable();
-        			BUDGETCONTROL.makeClickers();
-        			BUDGETCONTROL.makeModals();
-        			CALLNOTE.init();
-        		},
-        		
-        		
-        		
-				createTable : function() {
-            		BUDGETCONTROL.dataTable = $('#displayTable').DataTable( {
-            			"aaSorting":		[[0,'asc']],
-            			"processing": 		true,
-            	        "serverSide": 		true,
-            	        "autoWidth": 		false,
-            	        "deferRender": 		true,
-            	        "scrollCollapse": 	true,
-            	        "scrollX": 			true,
-            	        rowId: 				'dt_RowId',
-            	        dom: 				'Bfrtip',
-            	        "searching": 		true,
-            	        "searchDelay":		800,
-            	        lengthMenu: [
-            	        	[ 10, 50, 100, 500, 1000 ],
-            	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
-            	        ],
-            	        buttons: [
-            	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();$('#displayTable').draw();}}
-            	        ],
-            	        "columnDefs": [
-             	            { "orderable": false, "targets": -1 },
-            	            { className: "dt-left", "targets": [0,1,2] },
-            	            { className: "dt-center", "targets": [3,16] },
-            	            { className: "dt-right", "targets": [4,5,6,7,8,9,10,11,12,13,14,15]}
-            	         ],
-            	        "paging": true,
-    			        "ajax": {
-    			        	"url": "claims/ticketStatusLookup",
-    			        	"type": "GET"
-    			        	},
-    			        columns: [
-    			        	
-    			            { width:"4%", title: "Div", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
-    			            	if(row.div != null){return (row.div+"");}
-    			            } },
-    			            { width:"23%", title: "Account", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-    			            	if(row.job_site_name != null){return (row.job_site_name);}
-    			            } },
-    			            { title: "Ticket", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-    			            	if(row.ticket_id != null){return ('<a href="#" data-id="'+row.ticket_id+'" class="ticket-clicker">'+row.ticket_id+'</a>');}
-    			            } },
-    			            { title: "Status", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
-    			            	if(row.ticket_status != null){return ('<span class="tooltip">' + row.ticket_status + '<span class="tooltiptext">' + row.ticket_status_description + '</span></span>');}
-    			            } },
-    			            { title: "Direct Labor", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
-    			            	if(row.claimed_dl_amt != null){return (parseFloat(row.claimed_dl_amt).toFixed(2));}
-    			            } },
-    			            { title: "+ Expenses" , "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
-    			            	if(row.claimed_dl_exp != null){return (parseFloat(row.claimed_dl_exp).toFixed(2));}
-    			            } },
-    			            { title: "= Total", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
-    			            	if(row.claimed_dl_total != null){return (parseFloat(row.claimed_dl_total).toFixed(2)+"");}
-    			            } },
-    			            { title: "Total Volume", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
-    			            	if(row.total_volume != null){return (parseFloat(row.total_volume).toFixed(2)+"");}
-    			            } },
-    			            { title: "Volume Claimed", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.claimed_volume != null){return (parseFloat(row.claimed_volume).toFixed(2)+"");}
-    			            } },
-    			            { title: "Passthru",  "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
-    			            	if(row.passthru_volume != null){return (parseFloat(row.passthru_volume).toFixed(2)+"");}
-    			            } },			            
-    			            { title: "Volume Claimed Total", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
-    			            	if(row.claimed_volume_total != null){return (parseFloat(row.claimed_volume_total).toFixed(2)+"");}
-    			            } },
-    			            { title: "Remaining Volume", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
-    			            	if(row.volume_remaining != null){return (parseFloat(row.volume_remaining).toFixed(2)+"");}
-    			            } },
-    			            { title: "Invoiced Amount", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
-    			            	if(row.billed_amount != null){return (parseFloat(row.billed_amount).toFixed(2)+"");}
-    			            } },
-    			            { title: "Diff CLM/BLD", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
-    			            	if(row.claimed_vs_billed != null){return (parseFloat(row.claimed_vs_billed).toFixed(2)+"");}
-    			            } },
-    			            { title: "Amount Paid", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
-    			            	if(row.paid_amt != null){return (parseFloat(row.paid_amt).toFixed(2)+"");}
-    			            } },
-    			            { title: "Amount Due", "defaultContent": "<i>N/A</i>", searchable:true, searchFormat: "#.##", data: function ( row, type, set ) {
-    			            	if(row.amount_due != null){return (parseFloat(row.amount_due).toFixed(2)+"");}
-    			            } },
-    			            { title: "<bean:message key="field.label.action" />",  searchable:false, data: function ( row, type, set ) {	
-    			            	{
-    				            	var $claim = '';
-    				            	if (row.ticket_status=='D' || row.ticket_status=='C') {
-    				            		$claim = '<ansi:hasPermission permissionRequired='CLAIMS_READ'><a href="#" class="claimAction" data-id="'+row.ticket_id+'">Ticket Note<webthing:invoiceIcon styleClass="green">Budget Control</webthing:invoiceIcon></a></ansi:hasPermission>';
-    				            	}
-    				            	var $notesLink = '<webthing:notes xrefType="TICKET" xrefId="'+row.ticket_id+'">Ticket Note</webthing:notes>';
-    				            	console.log($notesLink);
-    			            		return $claim + $notesLink;
-    			            	}
-    			            	
-    			            } }],
-    			            "initComplete": function(settings, json) {
-    			            	LOOKUPUTILS.makeFilters(this, "#filter-container", "#displayTable", BUDGETCONTROL.createTable);
-    			            	//BUDGETCONTROL.doFunctionBinding();
-    			            },
-    			            "drawCallback": function( settings ) {
-    			            	BUDGETCONTROL.doFunctionBinding();
-    			            	CALLNOTE.lookupLink();
-    			            }
-    			    } );
-            		//new $.fn.dataTable.FixedColumns( dataTable );
-            	},
-        		
-        		
-            	
-            	doFunctionBinding : function () {
-					$( ".claimAction" ).on( "click", function($clickevent) {
-						var $ticketId = $(this).attr("data-id");
-						location.href="budgetControlLookup.html?id="+$ticketId
-					});
-					$(".ticket-clicker").on("click", function($clickevent) {
-						$clickevent.preventDefault();
-						var $ticketId = $(this).attr("data-id");
-						TICKETUTILS.doTicketViewModal("#ticket-modal",$ticketId);
-						$("#ticket-modal").dialog("open");
-					});
-				},
-            	
-            	
-            	makeClickers : function() {
-            		$('.ScrollTop').click(function() {
-        				$('html, body').animate({scrollTop: 0}, 800);
-              	  		return false;
-              	    });
-            		
-            		
-            	},
-            	
-            	
-            	
-            	makeModals : function() {
-            		TICKETUTILS.makeTicketViewModal("#ticket-modal")
-            	},
-	    		
-        	}
-      	  	
 
         	BUDGETCONTROL.init();
         	
@@ -542,7 +552,7 @@
         		<div id="bcr_employees">
         			<div class="thinking"><webthing:thinking style="width:100%" /></div>
 	        		<div class="display">
-	       				Employee List
+	       				<bcr:employees />
 	       			</div>
         		</div>
        		</li>
@@ -551,7 +561,7 @@
         		<div id="bcr_tickets">
         			<div class="thinking"><webthing:thinking style="width:100%" /></div>
 	        		<div class="display">
-	       				TicketList
+	        			<bcr:ticketTable />	       				
 	       			</div>
         		</div>
        		</li>
@@ -559,14 +569,6 @@
    		
    	    <webthing:lookupFilter filterContainer="filter-container" />
     	
-	 	<table id="displayTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:1300px;width:1300px;">
-	       	<thead>
-	        </thead>
-	        <tfoot>
-	        </tfoot>
-	    </table>
-	    <input type="button" value="New" class="prettyWideButton" id="new-NDL-button" />
-	    
 	    <webthing:scrolltop />
     
 	    <webthing:ticketModal ticketContainer="ticket-modal" />
