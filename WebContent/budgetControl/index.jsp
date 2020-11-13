@@ -58,10 +58,9 @@
 				text-align:center;
 				font-weight:bold;
 			}
-			
-			
-			
-			
+			.ticket-week-display {
+				display:none;
+			} 
 			
 			
         	#filter-container {
@@ -99,9 +98,9 @@
         		ticketTable : null,
         		
         		init : function() {
-        			ANSI_UTILS.makeDivisionList(BUDGETCONTROL.makeDivListSuccess, BUDGETCONTROL.makeDivListFail);
-        			BUDGETCONTROL.makeAccordion();
+        			BUDGETCONTROL.makeSelectionLists();
         			BUDGETCONTROL.makeClickers();
+        			BUDGETCONTROL.makeAccordion();
         		},
         		
         		
@@ -261,37 +260,30 @@
         		},
         		
         		
-        		
-        		makeDivListFail : function($data) {
-        			console.log("makeDivListFail");
-        			$("#globalMsg").html("Failure Retrieving Divisions. Contact Support").show();
+        		makeDateList : function($data) {
+        			console.log("makeDateList");
+        			var $dateField = $("#bcr_title_prompt select[name='workDate']");
+        			$dateField.append(new Option("",""));
+       				$.each($data.data.displayMonthList, function(index, val) {    
+       					var $option = $("<option>")
+       					$option.attr("value",val.workDate);
+       					$option.attr("data-firstofmonth", val.firstOfMonth);
+       					$option.attr("data-lastofmonth",val.lastOfMonth)
+       					$option.append(val.displayDate);
+       					$dateField.append($option);
+       					//$dateField.append(new Option(val.displayDate, val.workDate));
+       				});
         		},
         		
         		
-        		
-        		makeDivListSuccess : function($data) {
-        			console.log("makeDivListSuccess");
+        		makeDivList : function($data) {
+        			console.log("makeDivList");
         			var $divisionField = $("#bcr_title_prompt select[name='divisionId']");
         			$divisionField.append(new Option("",""));
        				$.each($data.data.divisionList, function(index, val) {
        					var $displayValue = val.divisionNbr + "-" + val.divisionCode;
        					$divisionField.append(new Option($displayValue, val.divisionId));
        				});
-       				
-        			BUDGETCONTROL.makeModals();
-        			$( "#bcr_title_prompt" ).dialog("open");
-        			$("#bcr_title_prompt .workDayDisplay").html("");
-        			$("#workDaySelector").change(function() {
-        				var $workDay = $("#workDaySelector").val();
-        				console.log("Date changed: " + $workDay);
-        				if ( $workDay == null || $workDay == "") {
-        					$("#bcr_title_prompt .workDateDisplay").html("");
-        				} else {
-        					$("#bcr_title_prompt .workDateErr").html("");
-	        				$outbound = {"workDate":$workDay,"format":"yyyy-MM-dd"};
-	        				ANSI_UTILS.doServerCall("GET", "workdate", $outbound, BUDGETCONTROL.dateCallSuccess, BUDGETCONTROL.dateCallFail);
-        				}
-        			});
         		},
         		
         		
@@ -326,6 +318,41 @@
         		
         		
         		
+        		// get a list of divisions, and calendars for initial modal
+        		makeSelectionLists : function() {
+        			ANSI_UTILS.doServerCall("GET", "bcr/init", null, BUDGETCONTROL.makeSelectionListSuccess, BUDGETCONTROL.makeSelectionListFail);
+        		},
+        		
+        		
+        		// process a failure in getting initial div list and calendar
+        		makeSelectionListFail : function($data) {
+        			console.log("makeSelectionListFail");
+        			$("#globalMsg").html("Failure intializing page. Contact Support").show();
+        		},
+        		
+        		
+        		// process a successful retrieval of initial div list and calendar
+        		makeSelectionListSuccess : function($data) {
+        			console.log("makeSelectionListSuccess");
+        			BUDGETCONTROL.makeDivList($data);
+        			BUDGETCONTROL.makeDateList($data);
+        			
+        			BUDGETCONTROL.makeModals();
+        			$( "#bcr_title_prompt" ).dialog("open");
+        			$("#bcr_title_prompt .workDayDisplay").html("");
+        			$("#workDaySelector").change(function() {
+        				var $workDay = $("#workDaySelector").val();
+        				if ( $workDay == null || $workDay == "") {
+           					$("#bcr_title_prompt .workDateDisplay").html("");
+            			} else {
+            				var $selected = $("#workDaySelector option:selected");
+            				$("#bcr_title_prompt .workDateDisplay").html($selected.attr("data-firstofmonth") + " - " + $selected.attr("data-lastofmonth"));
+            			}
+        			});        			
+        		},
+        		
+        		
+        		
         		populateActualDLPanel : function($data) {
         			var $weekLabel = ["1st","2nd","3rd","4th","5th"];
 
@@ -354,20 +381,35 @@
 						$("#actual_dl_totals tbody").append($row);
 					});
         			
+        		
         			$("#actual_dl_totals input").blur(function($event) {
         				var $that = $(this);
         				var $week = $that.attr("data-week");
         				var $value = $that.val();
+        				if ( isNaN($value) || $value == '' || $value == null) {
+        					$value = "0.00";
+        				}
+        				$value = parseFloat($value).toFixed(2);
+        				$that.val( $value );
 						if ( $that.hasClass("actualDL") ) {
-							console.log("actualDL " + $week + " " + $value);
 							var $selector = "#bcr_totals .actual_dl_week" + $week;
-							console.log("Selector: " + $selector);
-							$($selector).val($value);
+							var $looper = "#bcr_totals .actual_dl";
+							var $totalCell = "#bcr_totals .actual_dl_total";
 						} else if ( $that.hasClass("omDL") ) {
-							console.log("omDL " + $week + " " + $value);
+							var $selector = "#bcr_totals .actual_om_dl_week" + $week;
+							var $looper = "#bcr_totals .actual_om_dl";
+							var $totalCell = "#bcr_totals .actual_om_dl_total";
 						} else {
-							console.log("oops");
-						}        				
+							//$("#globalMsg").html("Invalid system state. Reload and try again").show();
+							// we're just going to ignore this
+						}
+						$($selector).html($value);
+						var $rowTotal = 0.00;
+						$.each( $($looper), function($index, $value) {
+							$rowTotal = $rowTotal + parseFloat($($value).html());
+						});
+						$($totalCell).html($rowTotal.toFixed(2));
+						
         			});
         		},
         		
@@ -423,7 +465,7 @@
 					
 					$.each($bcRowLabels, function($index, $value) {
 						var $bcRow = $("<tr>");
-						if ( $value == "<break>") {
+						if ( $value['label'] == "<break>") {
 							$bcRow.append( $('<td colspan="6">').append("&nbsp;") );
 						} else {
 							console.log($value);
@@ -431,9 +473,9 @@
 							$bcRow.append( $("<td>").addClass("aligned-right").append("n/a") );
 							$.each($data.data.workCalendar, function($index, $calendarValue) {
 								var $className = $value['className']+"_"+"week"+$calendarValue.weekOfYear;
-								$bcRow.append( $("<td>").addClass("aligned-right").addClass($className).append("0.00") );
+								$bcRow.append( $("<td>").addClass($value['className']).addClass('week'+$calendarValue.weekOfYear).addClass("aligned-right").addClass($className).append("0.00") );
 							});
-							$bcRow.append( $("<td>").addClass("aligned-right").append("0.00") );
+							$bcRow.append( $("<td>").addClass("aligned-right").addClass($value['className']+'_total').append("0.00") );
 						}
 						$("#bcr_totals .bcr_totals_display tbody").append($bcRow);
 					});
@@ -501,6 +543,14 @@
         			BUDGETCONTROL.populateActualDLPanel($data);
         			BUDGETCONTROL.populateBudgetControlTotalsPanel($data);
 
+					$.each($data.data.workCalendar, function($index, $value) {
+						var $panelId = "#bcr_panels .ticket-display-week" + $value.weekOfMonth;
+						var $labelId = "h4 .week" + $value.weekOfMonth;
+						console.log($labelId);
+						$($labelId).html("Week " + $value.weekOfYear + " | " + $value.firstOfWeek + "-" + $value.lastOfWeek);
+						$($panelId).show();
+					});
+        			
 					$("#bcr_panels .thinking").hide();
 					$("#bcr_panels .display").show();
         			$("#bcr_title_prompt").dialog("close");
@@ -557,8 +607,53 @@
         		</div>
        		</li>
        		<li class="accordionItem">    			
-        		<h4 class="accHdr">Tickets</h4>
+        		<h4 class="accHdr">All Tickets</h4>
         		<div id="bcr_tickets">
+        			<div class="thinking"><webthing:thinking style="width:100%" /></div>
+	        		<div class="display">
+	        			<bcr:ticketTable />	       				
+	       			</div>
+        		</div>
+       		</li>
+       		<li class="accordionItem ticket-week-display ticket-display-week1">    			
+        		<h4 class="accHdr"><span class="week1">Week 1</span></h4>
+        		<div id="bcr_tickets_week1">
+        			<div class="thinking"><webthing:thinking style="width:100%" /></div>
+	        		<div class="display">
+	        			<bcr:ticketTable />	       				
+	       			</div>
+        		</div>
+       		</li>
+       		<li class="accordionItem ticket-week-display ticket-display-week2">    			
+        		<h4 class="accHdr"><span class="week2">Week 2</span></h4>
+        		<div id="bcr_tickets_week2">
+        			<div class="thinking"><webthing:thinking style="width:100%" /></div>
+	        		<div class="display">
+	        			<bcr:ticketTable />	       				
+	       			</div>
+        		</div>
+       		</li>
+       		<li class="accordionItem ticket-week-display ticket-display-week3">    			
+        		<h4 class="accHdr"><span class="week3">Week 3</span></h4>
+        		<div id="bcr_tickets_week3">
+        			<div class="thinking"><webthing:thinking style="width:100%" /></div>
+	        		<div class="display">
+	        			<bcr:ticketTable />	       				
+	       			</div>
+        		</div>
+       		</li>
+       		<li class="accordionItem ticket-week-display ticket-display-week4">    			
+        		<h4 class="accHdr"><span class="week4">Week 4</span></h4>
+        		<div id="bcr_tickets_week4">
+        			<div class="thinking"><webthing:thinking style="width:100%" /></div>
+	        		<div class="display">
+	        			<bcr:ticketTable />	       				
+	       			</div>
+        		</div>
+       		</li>
+       		<li class="accordionItem ticket-week-display ticket-display-week5">    			
+        		<h4 class="accHdr"><span class="week5">Week 5</span></h4>
+        		<div id="bcr_tickets_week1">
         			<div class="thinking"><webthing:thinking style="width:100%" /></div>
 	        		<div class="display">
 	        			<bcr:ticketTable />	       				
@@ -583,7 +678,7 @@
 	    		</tr>
 	    		<tr>
 	    			<td><span class="form-label">Date:</span></td>
-	    			<td><input id="workDaySelector" type="date" name="workDate" /></td>
+	    			<td><select id="workDaySelector" name="workDate"></select></td>
 	    			<td><span class="err workDateErr"></span></td>	    			
 	    		</tr>
 	    		<tr>

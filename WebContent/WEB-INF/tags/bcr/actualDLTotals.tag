@@ -22,9 +22,11 @@
 	<tbody>
 	</tbody>
 	<tfoot>
+		<!-- 
 		<tr>
 			<td colspan="6" style="text-align:right;"><input type="button" value="Save" /></td>
 			<td>&nbsp;</td>
 		</tr>
+		 -->
 	</tfoot>
 </table>

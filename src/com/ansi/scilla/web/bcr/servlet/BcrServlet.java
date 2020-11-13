@@ -20,6 +20,7 @@ public class BcrServlet extends AbstractServlet {
 	private final String TOTALS = "totals";
 	private final String EMPLOYEES = "employees";
 	private final String TICKETLIST = "ticketList";
+	private final String INIT = "init";
 	
 	
 	private static final long serialVersionUID = 1L;
@@ -39,6 +40,9 @@ public class BcrServlet extends AbstractServlet {
 		String destination = uri.substring(uri.indexOf(trigger)+trigger.length());
 		
 		switch (destination) {
+		case INIT:
+			new BcrInitServlet().doGet(request, response);
+			break;
 		case TITLE:
 			new BcrTitleServlet().doGet(request, response);
 			break;
@@ -58,6 +62,9 @@ public class BcrServlet extends AbstractServlet {
 		String destination = uri.substring(uri.indexOf(trigger)+trigger.length());
 		
 		switch (destination) {
+		case INIT:
+			new BcrInitServlet().doPost(request, response);
+			break;
 		case TITLE:
 			new BcrTitleServlet().doPost(request, response);
 			break;
