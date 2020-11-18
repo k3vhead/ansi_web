@@ -8,20 +8,21 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.Level;
 
-import com.ansi.scilla.web.bcr.query.BcrLookupQuery;
+import com.ansi.scilla.web.bcr.query.BcrWeeklyLookupQuery;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.common.struts.SessionUser;
 
-public class BcrTicketLookupServlet extends AbstractBcrTicketLookupServlet {
+public class BcrWeeklyTicketLookupServlet extends AbstractBcrTicketLookupServlet {
 	
 	private static final long serialVersionUID = 1L;
-
+	
+	
 	
 	@Override
 	public LookupQuery makeQuery(Connection conn, HttpServletRequest request) {
-		logger.log(Level.DEBUG, "Making all-ticket Query");
+		logger.log(Level.DEBUG, "Making weekly Query");
 		HttpSession session = request.getSession();
 		SessionData sessionData = (SessionData)session.getAttribute(SessionData.KEY);
 		
@@ -33,7 +34,9 @@ public class BcrTicketLookupServlet extends AbstractBcrTicketLookupServlet {
 			searchTerm = request.getParameter("search[value]");
 		}
 		Integer divisionId = Integer.valueOf(request.getParameter("divisionId"));
-		BcrLookupQuery lookupQuery = new BcrLookupQuery(user.getUserId(), divisionList, divisionId);
+		String workWeek = request.getParameter("workWeek");
+		logger.log(Level.DEBUG, "Parms: " + divisionId + " " + workWeek);
+		BcrWeeklyLookupQuery lookupQuery = new BcrWeeklyLookupQuery(user.getUserId(), divisionList, divisionId, workWeek);
 		if ( searchTerm != null ) {
 			lookupQuery.setSearchTerm(searchTerm);
 		}
@@ -41,22 +44,5 @@ public class BcrTicketLookupServlet extends AbstractBcrTicketLookupServlet {
 		
 	}
 	
-	
-	
-//	public class ItemTransformer implements Transformer<HashMap<String, Object>, HashMap<String, Object>> {
-//
-//		private final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
-//		@Override
-//		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
-//			Timestamp startTime = (Timestamp)arg0.get(START_TIME);
-//			String display = "XXX";
-//			if ( startTime != null ) {
-//				display = sdf.format(startTime);
-//				arg0.put(START_TIME, display);
-//			}
-//			return arg0;
-//		}
-//		
-//	}
 
 }

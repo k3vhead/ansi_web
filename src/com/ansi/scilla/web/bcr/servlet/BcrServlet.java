@@ -20,6 +20,7 @@ public class BcrServlet extends AbstractServlet {
 	private final String TOTALS = "totals";
 	private final String EMPLOYEES = "employees";
 	private final String TICKETLIST = "ticketList";
+	private final String WEEKLY_LIST = "weeklyTicketList";
 	private final String INIT = "init";
 	
 	
@@ -49,6 +50,9 @@ public class BcrServlet extends AbstractServlet {
 		case TICKETLIST:
 			new BcrTicketLookupServlet().doGet(request, response);
 			break;
+		case WEEKLY_LIST:
+			new BcrWeeklyTicketLookupServlet().doGet(request, response);
+			break;
 		default:
 			super.sendNotFound(response);
 		}
@@ -67,9 +71,6 @@ public class BcrServlet extends AbstractServlet {
 			break;
 		case TITLE:
 			new BcrTitleServlet().doPost(request, response);
-			break;
-		case TICKETLIST:
-			super.sendNotFound(response);
 			break;
 		default:
 			super.sendNotFound(response);

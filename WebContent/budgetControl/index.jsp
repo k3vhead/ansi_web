@@ -95,7 +95,7 @@
         	;BUDGETCONTROL = {      
         		workDate : null,
         		division : null,
-        		ticketTable : null,
+        		ticketTable : {},
         		
         		init : function() {
         			BUDGETCONTROL.makeSelectionLists();
@@ -119,13 +119,24 @@
         		
         		
         		
-        		doTicketLookup : function($data) {
+        		doFunctionBinding : function() {
+        			$(".ticket-clicker").on("click", function($clickevent) {
+    					$clickevent.preventDefault();
+    					var $ticketId = $(this).attr("data-id");
+    					TICKETUTILS.doTicketViewModal("#ticket-modal",$ticketId);
+    					$("#ticket-modal").dialog("open");
+    				});	
+        		},
+        		
+        		
+        		
+        		doTicketLookup : function($destination,$url, $outbound) {
         			console.log("doTIcketLookup");
-        			console.log($data);
-        			var $outbound = {"divisionId":$data.data.divisionId, "startDate":$data.data.firstOfMonth};
+        			console.log($destination);
+        			console.log($url);
+        			console.log($outbound)
         			
-        			
-        			BUDGETCONTROL.ticketTable = $('#ticketTable').DataTable( {
+        			BUDGETCONTROL.ticketTable[$destination] = $($destination).DataTable( {
             			"aaSorting":		[[0,'asc']],
             			"processing": 		true,
             	        "serverSide": 		true,
@@ -154,61 +165,61 @@
             	         ],
             	        "paging": true,
     			        "ajax": {
-    			        	"url": "bcr/ticketList",
+    			        	"url": $url,
     			        	"type": "GET",
     			        	"data": $outbound,
     			        	},
     			        columns: [
     			        	{ title: "Account", width:"15%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.name != null){return (row.name+"");}
+    			            	if(row.job_site_name != null){return (row.job_site_name+"");}
     			            } },
     			            { title: "Ticket Number", width:"6%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.ticket_id != null){return (row.ticket_id+"");}
+    			            	if(row.ticket_id != null){return ('<a href="#" data-id="'+row.ticket_id+'" class="ticket-clicker">'+row.ticket_id+'</a>');}
     			            } },
     			            { title: "Claim Week", width:"4%", searchable:true, searchFormat: "First Last Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-    			            	//if(row.contact_name != null ){return row.contact_name;}
-    			            	return BUDGETCONTROL.makeClaimWeekSelect(row.ticket_id, $data.data.workCalendar);
+    			            	if(row.claim_week != null ){return row.claim_week;}    			            	
+    			            	//return BUDGETCONTROL.makeClaimWeekSelect(row.ticket_id, $data.data.workCalendar);
     			            } },
     			            { title: "D/L", width:"6%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	//if(row.summary != null){return (row.summary+"");}
-    			            	return '<input type="text"  style="width:20px;" />';
+    			            	if(row.dl_amt != null){return (row.dl_amt.toFixed(2)+"");}
     			            } },
-    			            { title: "+Exp", width:"6%", searchable:true, searchFormat: "First Last Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	//if(row.ansi_contact != null){return (row.ansi_contact+"");}
-    			            	return '<input type="text" style="width:20px;"/>';
-    			            } },
-    			            { title: "Total D/L", width:"6%", searchable:true, searchFormat: "YYYY-MM-dd hh:mm", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	//if(row.start_time != null){return (row.start_time+"");}
-    			            	return 'x';
-    			            } },
+    			       //     { title: "+Exp", width:"6%", searchable:true, searchFormat: "First Last Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			       //     	//if(row.ansi_contact != null){return (row.ansi_contact+"");}
+    			       //     	return '<input type="text" style="width:20px;"/>';
+    			       //     } },
+    			       //     { title: "Total D/L", width:"6%", searchable:true, searchFormat: "YYYY-MM-dd hh:mm", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			       //     	//if(row.start_time != null){return (row.start_time+"");}
+    			       //     	return 'x';
+    			       //     } },
     			            { title: "Total Volume",  width:"6%", searchable:true, searchFormat: "Type Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.budget != null){return (row.budget.toFixed(2)+"");}
+    			            	if(row.total_volume != null){return (row.total_volume.toFixed(2)+"");}
     			            } },		
     			            { title: "Volume Claimed",  width:"6%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	//if(row.xref != null){return (row.xref+"");}
-    			            	return '<input type="text"  style="width:20px;" />';
+    			            	if(row.volume_claimed != null){return (row.volume_claimed.toFixed(2)+"");}
     			            } },
     			            { title: "Volume Remaining",  width:"6%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	//if(row.xref != null){return (row.xref+"");}
-    			            	return 'x';
+    			            	if(row.volume_remaining != null){return (row.volume_remaining.toFixed(2)+"");}
     			            } },
     			            { title: "Notes",  width:"10%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	//if(row.xref != null){return (row.xref+"");}
-    			            	return 'x';
+    			            	if(row.notes != null){return (row.notes+"");}
     			            } },
     			            { title: "Billed Amount",  width:"6%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.price_per_cleaning != null){return (row.price_per_cleaning.toFixed(2)+"");}
+    			            	if(row.billed_amount != null){return (row.billed_amount.toFixed(2)+"");}
     			            } },
     			            { title: "Diff Clm/Bld",  width:"6%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	//if(row.price_per_cleaning != null){return (row.price_per_cleaning+"");}
-    			            	return 'x';
+    			            	if(row.claimed_vs_billed != null){return (row.claimed_vs_billed.toFixed(2)+"");}
     			            } },
     			            { title: "Ticket Status",  width:"4%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.ticket_status != null){return (row.ticket_status+"");}
     			            } },
+    			            { title: "Service",  width:"4%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.service_tag_id != null){return (row.service_tag_id+"");}
+    			            } },
+    			            { title: "Equipment",  width:"4%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.equipment_tags != null){return (row.equipment_tags+"");}
+    			            } },
     			            { title: "Employee",  width:"13%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	//if(row.price_per_cleaning != null){return (row.price_per_cleaning+"");}
-    			            	return '<input type="text"  style="width:50px;" />';
+    			            	if(row.employee != null){return (row.employee+"");}
     			            } }
     			            ],
     			            "initComplete": function(settings, json) {
@@ -217,6 +228,7 @@
     			            },
     			            "drawCallback": function( settings ) {
     			            	//CALL_NOTE_LOOKUP.doFunctionBinding();
+    			            	BUDGETCONTROL.doFunctionBinding();
     			            }
     			    } );
         		},
@@ -248,7 +260,7 @@
         			$.each( $workCalendar, function($index, $value) {
         				var $option = $("<option>");
         				$option.attr("value",$value.weekOfYear);
-        				$option.append($value.weekOfYear);
+        				$option.append($value.workYear + "-" + $value.weekOfYear);
         				$select.append($option);
         			});
         			return $select[0].outerHTML;
@@ -304,6 +316,11 @@
         				},
         				buttons: [
         					{
+        						id:  "bcr_title_prompt_cancel",
+        						click: function($event) {
+        							location.href="dashboard.html";        							
+        						}
+        					},{
         						id:  "bcr_title_prompt_save",
         						click: function($event) {
         							BUDGETCONTROL.titleSave();        							
@@ -311,6 +328,7 @@
         					}
         				]
         			});	
+        			$("#bcr_title_prompt_cancel").button('option', 'label', 'Cancel');
         			$("#bcr_title_prompt_save").button('option', 'label', 'Go');
         			
         			
@@ -495,6 +513,18 @@
         		
         		
         		
+        		populateTicketTables : function($data) {
+        			console.log("populateTicketTables");        			
+        			var $outbound = {"divisionId":$data.data.divisionId};
+        			BUDGETCONTROL.doTicketLookup("#ticketTable","bcr/ticketList", $outbound);
+        			$.each($data.data.workCalendar, function($index, $value) {
+        				var $destination = "#ticketTable" + $value.weekOfMonth;
+        				$outbound['workWeek'] = $data.data.workYear + "-" + $value.weekOfYear;
+        				BUDGETCONTROL.doTicketLookup($destination, "bcr/weeklyTicketList", $outbound);
+        			});
+					        			
+        		},
+        		
         		
         		populateTitlePanel : function($data) {
 					$("#bcr_summary .dateCreated").html($data.data.dateCreated);
@@ -537,8 +567,8 @@
         		
         		titleSaveSuccess : function($data) {
         			console.log("titleSaveSuccess");
-        			BUDGETCONTROL.doTicketLookup($data);
         			
+        			BUDGETCONTROL.populateTicketTables($data);
         			BUDGETCONTROL.populateTitlePanel($data);
         			BUDGETCONTROL.populateActualDLPanel($data);
         			BUDGETCONTROL.populateBudgetControlTotalsPanel($data);
@@ -611,7 +641,7 @@
         		<div id="bcr_tickets">
         			<div class="thinking"><webthing:thinking style="width:100%" /></div>
 	        		<div class="display">
-	        			<bcr:ticketTable />	       				
+	        			<bcr:ticketTable id="ticketTable" />	       				
 	       			</div>
         		</div>
        		</li>
@@ -620,7 +650,7 @@
         		<div id="bcr_tickets_week1">
         			<div class="thinking"><webthing:thinking style="width:100%" /></div>
 	        		<div class="display">
-	        			<bcr:ticketTable />	       				
+	        			<bcr:ticketTable id="ticketTable1" />	       				
 	       			</div>
         		</div>
        		</li>
@@ -629,7 +659,7 @@
         		<div id="bcr_tickets_week2">
         			<div class="thinking"><webthing:thinking style="width:100%" /></div>
 	        		<div class="display">
-	        			<bcr:ticketTable />	       				
+	        			<bcr:ticketTable id="ticketTable2" />	       				
 	       			</div>
         		</div>
        		</li>
@@ -638,7 +668,7 @@
         		<div id="bcr_tickets_week3">
         			<div class="thinking"><webthing:thinking style="width:100%" /></div>
 	        		<div class="display">
-	        			<bcr:ticketTable />	       				
+	        			<bcr:ticketTable id="ticketTable3" />	       				
 	       			</div>
         		</div>
        		</li>
@@ -647,7 +677,7 @@
         		<div id="bcr_tickets_week4">
         			<div class="thinking"><webthing:thinking style="width:100%" /></div>
 	        		<div class="display">
-	        			<bcr:ticketTable />	       				
+	        			<bcr:ticketTable id="ticketTable4" />	       				
 	       			</div>
         		</div>
        		</li>
@@ -656,7 +686,7 @@
         		<div id="bcr_tickets_week1">
         			<div class="thinking"><webthing:thinking style="width:100%" /></div>
 	        		<div class="display">
-	        			<bcr:ticketTable />	       				
+	        			<bcr:ticketTable id="ticketTable5"  />	       				
 	       			</div>
         		</div>
        		</li>
