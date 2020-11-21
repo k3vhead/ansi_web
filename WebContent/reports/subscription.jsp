@@ -289,47 +289,50 @@
         				}        				
         			});
         		},
+
+
         		
         		
         		
-       			makeMultiColumnTable($container, $reportList, $groupList, $subscriptionList) {
+       			makeMultiColumnTable : function($container, $reportList, $groupList, $subscriptionList) {
         			console.log("Making container" + $container);
         			var $table = $("<table>").css('text-align','center');
            			var $hdrRow = $("<tr>");
            			$hdrRow.append( $("<td>"));
-           			$.each($groupList, function($index, $value) {
-           				var $hdrTD = $("<td>").append($value.name);
-    					$hdrTD.addClass("div-" + $value.id);
+           			$.each($groupList, function($groupIdx, $group) {
+           				var $hdrTD = $("<td>").append($group.name);
+    					$hdrTD.addClass("div-" + $group.id);
            				$hdrRow.append($hdrTD);	
            				$hdrTD.addClass("hdr");
+           				console.log("VALUE" + $group.id + $group.name);
            			});
            			
            			$table.append($hdrRow);
+        			$("#"+$container).html("");
+           			$("#"+$container).append($table);
            			
-           			$.each($reportList, function($index, $value) {
+           			$.each($reportList, function($reportIdx, $report) {
            				var $row = $("<tr>");
            				$row.addClass("reportrow");
-        				$row.addClass("report-" + $value.reportId);
+        				$row.addClass("report-" + $report.reportId);
            				var $labelTD = $("<td>");
-           				$labelTD.append($value.description).css('text-align','left');
+           				$labelTD.append($report.description).css('text-align','left');
            				$row.append($labelTD);
            				$.each($groupList, function($groupIdx, $group) {
            					var $checkboxTD = $("<td>");
         					$checkboxTD.addClass("div-" + $group.id);
-        					$checkboxTD.append($('<input type="checkbox" name="'+$value.reportId+"-" + $group.id +'" class="group-checkbox" data-report="'+$value.reportId+'" data-division="'+$group.id+'"/>'));
+        				//	$checkboxTD.append($('<input type="checkbox" name="'+$report.reportId+"-" + $group.id +'" class="group-checkbox" data-report="'+$report.reportId+'" data-division="'+$group.id+'"/>'));
         					$checkboxTD.addClass("group-checkbox");
-               			/*	var $checkbox = $('<input>');   
-               			 	$checkbox.attr( { "name":$value.reportId, "name":$group.id } );
+               				var $checkbox = $('<input>');   
+               			 	//$checkbox.attr( { "name":$value.reportId, "name":$group.id } );
                			 	$checkbox.attr("type","checkbox");
-               			 	$checkbox.attr( { "value":$value.reportId, "value":$group.id } );
-               			 	$checkboxTD.append($checkbox); */
+               			 	$checkbox.attr( { "value":$report.reportId, "value":$group.id } );
+               			 	$checkboxTD.append($checkbox); 
                				$row.append($checkboxTD);
-    						console.log("VALUE" + $value.reportId + $group.id);
+    						console.log("VALUE" + $report.reportId + $group.code + $group.division);
            				});           				
            				$table.append($row);
            			});
-        			$("#"+$container).html("");
-           			$("#"+$container).append($table);
         			
         			console.log("We have " + $subscriptionList.length + " subscriptions");
 					$.each($subscriptionList, function($index, $value) {					
@@ -358,7 +361,7 @@
 						$("th, td").css("background-color", "transparent");
 					}); 
    					
-   				/*	$selector = "#"+$container + " .group-checkbox";
+   					$selector = "#"+$container + " .group-checkbox";
 					$($selector).click(function($event) {
     					//	var $subscribe = $(this).attr("data-group.id" + "data-reportId");
     						var $reportId = $(this).attr("data-report");
@@ -366,9 +369,9 @@
         					var $subscribe = $(this).prop("checked");
         					var $subscriptionId = $(this).attr("data-subscriptionId");     
     						REPORT_SUBSCRIPTION.doSubscription($reportId, $id, $subscribe, $subscriptionId);
-    				}); */
+    				}); 
 
-	        	/*	if ( $container == 'company' ) {
+	        /*		if ( $container == 'company' ) {
 	           			$selector = "#company-selection-container" + " .group-selector";
 	        			//$(".group-selector").click(function($event) {
 	        			//$("#"+$container + " .group-selector").click(function($event) {	
@@ -408,8 +411,10 @@
 	        					var $subscriptionId = $(this).attr("data-subscriptionId");     
 	    						REPORT_SUBSCRIPTION.doSubscription($reportId, $id, $subscribe, $subscriptionId);
 	    					});
-					} */     	
+					}     	*/
         		},
+
+
         		
         		makeOneColumnTable : function($container, $reportList, $subscriptionList) {
            			console.log("Making container " + $container);
@@ -435,7 +440,7 @@
            				$checkboxTD.append($checkbox);
            				$row.append($checkboxTD);
            				$table.append($row);
-						console.log("VALUE" + $value.reportId);
+					//	console.log("VALUE" + $value.reportId);
            			});
 
         			$("#"+$container).html("");           			
@@ -444,7 +449,7 @@
         			console.log("We have " + $subscriptionList.length + " subscriptions");
 					$.each($subscriptionList, function($index, $value) {				
 						var $checkboxOne = "#"+$container+".selection-container input[name='" + $value.reportId +"']";
-						console.log("Checkbox single: " + $checkboxOne);
+					//	console.log("Checkbox single: " + $checkboxOne);
 						$($checkboxOne).prop("checked",true);							
                 	}); 
            								
@@ -458,10 +463,11 @@
    					
    					$selector = "#"+$container + " .subscription-checkbox";
    					$($selector).click(function($event) {
-   						var $reportId = $(this).attr("data-reportid");
-        				var $subscribe = $(this).prop("checked",true);
+   						var $reportId = $(this).attr("data-report");
+        				var $subscribe = $(this).prop("checked");
+        				var $subscriptionId = $(this).attr("data-subscriptionId");   
         				//var $subscribe = $(this).attr("data-reportId");
-   						REPORT_SUBSCRIPTION.doSubscription($subscribe, $container, $reportId, null);
+   						REPORT_SUBSCRIPTION.doSubscription($subscribe, $container, $reportId, $subscriptionId, null);
    					});
        			},
        			
