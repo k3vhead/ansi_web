@@ -105,16 +105,16 @@
         		
                 
         		
-        		doGroupSubscription : function($reportId, $id, $subscribe, $subscriptionId) {
+        		doGroupSubscription : function($reportId, $groupId, $subscribe, $subscriptionId) {
         			console.log("doSubscription");
-        			console.log($reportId + " " + $id + " " + $subscribe + " " + $subscriptionId);
+        			console.log($reportId + " " + $groupId + " " + $subscribe + " " + $subscriptionId);
         			if ( $subscribe == true ) {
         				$word = "Subscribe"
         			} else {
         				$word = "Unsubscribe"
         			}
 
-            		var $outbound = {"reportId":$reportId, "id":$id, "subscribe":$subscribe, "subscriptionId":$subscriptionId};
+            		var $outbound = {"reportId":$reportId, "groupId":$groupId, "subscribe":$subscribe, "subscriptionId":$subscriptionId};
             				
 	       			var jqxhr = $.ajax({
 						type: 'POST',
@@ -148,8 +148,8 @@
 						dataType: 'json'
 					});
       			
-        			$("#globalMsg").html($word + " to " + $reportId + " for " + $id).show().fadeOut(6000);
-        			console.log($word + " to " + $reportId + " for " + $id);
+        			$("#globalMsg").html($word + " to " + $reportId + " for " + $groupId).show().fadeOut(6000);
+        			console.log($word + " to " + $reportId + " for " + $groupId);
         			
         		},
         		
@@ -204,7 +204,7 @@
         		},
         		     		
         		        		
-				getSubscriptions : function($reportId, $divisionId, $id, $subscriptionId) {           			
+				getSubscriptions : function($reportId, $divisionId, $groupId, $subscriptionId) {           			
            			var jqxhr = $.ajax({
     					type: 'GET',
     					url: "reports/subscription",
@@ -345,23 +345,21 @@
         		
         		
         		
-       			makeMultiColumnTable : function($container, $reportList, $groupList, $subscriptionList) {
+       			makeMultiColumnTable : function($container, $reportList, $divisionList, $groupList, $subscriptionList) {
         			console.log("Making container" + $container);
         			var $table = $("<table>").css('text-align','center');
            			var $hdrRow = $("<tr>");
            			$hdrRow.append( $("<td>"));
            			
-           			$.each($groupList, function($groupIdx, $group) {
-           				var $hdrTD = $("<td>").append($group.name);
-    					$hdrTD.addClass("div-" + $group.id);
+           			$.each($divisionList, function($divIdx, $division) {
+           				var $hdrTD = $("<td>").append($division.divisionDisplay);
+    					$hdrTD.addClass("div-" + $division.groupId);
            				$hdrRow.append($hdrTD);	
            				$hdrTD.addClass("hdr");
-           				console.log("VALUE" + $group.id + $group.name);
-           			});
+           				console.log("LOOK" + $division.groupId);
+           			}); 
            			
            			$table.append($hdrRow);
-        			$("#"+$container).html("");
-           			$("#"+$container).append($table);
            			
            			$.each($reportList, function($index, $value) {
            				var $row = $("<tr>");
@@ -370,10 +368,10 @@
            				var $labelTD = $("<td>");
            				$labelTD.append($value.description).css('text-align','left');
            				$row.append($labelTD);
-           				$.each($groupList, function($groupIdx, $group) {
+           				$.each($divisionList, function($divIdx, $division) {
            					$checkboxTD = $("<td>");
-        					$checkboxTD.addClass("div-" + $group.id);
-        					$checkboxTD.append($('<input type="checkbox" name="'+$value.reportId+"-" + $group.id +'" class="group-checkbox" data-report="'+$value.reportId+'" data-group="'+$group.id+'"/>'));
+        					$checkboxTD.addClass("div-" + $division.groupId);
+        					$checkboxTD.append($('<input type="checkbox" name="'+$value.reportId+"-" + $division.groupId +'" class="group-checkbox" data-report="'+$value.reportId+'" data-group="'+$division.groupId+'"/>'));
         				/*	$checkboxTD.addClass("group-checkbox");
                				var $checkbox = $('<input>');   
                			 	$checkbox.attr( { "name":$value.reportId, "name":$group.id } );
@@ -381,14 +379,17 @@
                			 	$checkbox.attr( { "value":$value.reportId, "value":$group.id } );
                			 	$checkboxTD.append($checkbox); */
                				$row.append($checkboxTD);
-    						console.log("VALUE" + $value.reportId + $group.code + $group.division);
+    						console.log("VALUE" + $value.reportId + $division.groupId );
            				});           				
            				$table.append($row);
            			});
+           			
+        			$("#"+$container).html("");
+           			$("#"+$container).append($table);
         			
         			console.log("We have " + $subscriptionList.length + " subscriptions");
 					$.each($subscriptionList, function($index, $value) {					
-						var $checkboxMulti = "#"+$container+ ".selection-container input[name='" + $value.reportId + "-" + $value.subscriptionId +"']";
+						var $checkboxMulti = "#"+$container+".selection-container input[name='" + $value.reportId + "-" + $value.groupId +"']";
 						console.log("Checkbox multi: " + $checkboxMulti);
 						$($checkboxMulti).prop("checked",true);							
                 	}); 
@@ -417,10 +418,10 @@
 					$($selector).click(function($event) {
     					//	var $subscribe = $(this).attr("data-group.id" + "data-reportId");
     						var $reportId = $(this).attr("data-report");
-    						var $id = $(this).attr("data-group");
+    						var $groupId = $(this).attr("data-group");
         					var $subscribe = $(this).prop("checked");
         					var $subscriptionId = $(this).attr("data-subscriptionId");     
-    						REPORT_SUBSCRIPTION.doGroupSubscription($reportId, $id, $subscribe, $subscriptionId);
+    						REPORT_SUBSCRIPTION.doGroupSubscription($reportId, $groupId, $subscribe, $subscriptionId);
     				}); 
         		},
 
@@ -529,7 +530,7 @@
 					if ( REPORT_SUBSCRIPTION.summaryReports.length > 0 ) {
 						if ( REPORT_SUBSCRIPTION.companyList.length > 0 ) {
 							$("#company-subscription-selector").show();
-							REPORT_SUBSCRIPTION.makeMultiColumnTable("company-selection-container", REPORT_SUBSCRIPTION.summaryReports, REPORT_SUBSCRIPTION.companyList, $data.data.subscriptionList);
+							REPORT_SUBSCRIPTION.makeMultiColumnTable("company-selection-container", REPORT_SUBSCRIPTION.summaryReports, REPORT_SUBSCRIPTION.divisionList, REPORT_SUBSCRIPTION.companyList, $data.data.subscriptionList);
 		        		/*	$("#company-selection-container .group-selector").click(function($event) {
 			    						var $reportId = $(this).attr("data-report");
 			    						var $id = $(this).attr("data-division");
@@ -542,7 +543,7 @@
 						}
 						if ( REPORT_SUBSCRIPTION.regionList.length > 0 ) {
 							$("#region-subscription-selector").show();
-							REPORT_SUBSCRIPTION.makeMultiColumnTable("region-selection-container", REPORT_SUBSCRIPTION.summaryReports, REPORT_SUBSCRIPTION.regionList, $data.data.subscriptionList);
+							REPORT_SUBSCRIPTION.makeMultiColumnTable("region-selection-container", REPORT_SUBSCRIPTION.summaryReports, REPORT_SUBSCRIPTION.divisionList, REPORT_SUBSCRIPTION.regionList, $data.data.subscriptionList);
 		        		/*	$("#region-selection-container .group-selector").click(function($event) {
 			    						var $reportId = $(this).attr("data-report");
 			    						var $id = $(this).attr("data-division");
@@ -555,7 +556,7 @@
 						}
 						if ( REPORT_SUBSCRIPTION.groupList.length > 0 ) {
 							$("#group-subscription-selector").show();
-							REPORT_SUBSCRIPTION.makeMultiColumnTable("group-selection-container", REPORT_SUBSCRIPTION.summaryReports, REPORT_SUBSCRIPTION.groupList, $data.data.subscriptionList);
+							REPORT_SUBSCRIPTION.makeMultiColumnTable("group-selection-container", REPORT_SUBSCRIPTION.summaryReports, REPORT_SUBSCRIPTION.divisionList, REPORT_SUBSCRIPTION.groupList, $data.data.subscriptionList);
 		        		/*	$("#group-selection-container .group-selector").click(function($event) {
 			    						var $reportId = $(this).attr("data-report");
 			    						var $id = $(this).attr("data-division");
