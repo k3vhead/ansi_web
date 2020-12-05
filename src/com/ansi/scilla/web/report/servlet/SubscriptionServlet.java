@@ -2,7 +2,9 @@ package com.ansi.scilla.web.report.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -11,10 +13,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.collections4.Transformer;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.ReportSubscription;
@@ -31,7 +31,6 @@ import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.report.common.BatchReports;
-import com.ansi.scilla.web.report.common.SubscriptionUtils;
 import com.ansi.scilla.web.report.request.AllReportType;
 import com.ansi.scilla.web.report.request.SubscriptionRequest;
 import com.ansi.scilla.web.report.response.SubscriptionResponse2;
@@ -124,49 +123,27 @@ public class SubscriptionServlet extends AbstractServlet {
 
 	private void doSubscription(Connection conn, SubscriptionRequest subscriptionRequest, SessionUser user, HttpServletResponse response) throws Exception {
 		logger.log(Level.DEBUG, subscriptionRequest);
-		List<BatchReports> updatedReports = new ArrayList<BatchReports>(); // this is the reports we have actually updated		
-		List<BatchReports> reportsToUpdate = new ArrayList<BatchReports>(); // this is the reports that we plan to update
 		
-		AllReportType allReportType = StringUtils.isBlank(subscriptionRequest.getAllReportType()) ? AllReportType.NONE : AllReportType.valueOf(subscriptionRequest.getAllReportType());
-		if ( allReportType.equals(AllReportType.NONE) ) {
-			// This is a single report request
-			reportsToUpdate.add( BatchReports.valueOf(subscriptionRequest.getReportId()) );
-		} else {
-			// this is an "all reports" request
-			allReportType = AllReportType.valueOf(subscriptionRequest.getAllReportType());
-			reportsToUpdate = (List<BatchReports>) CollectionUtils.select(Arrays.asList(BatchReports.values()), new AllReportTypePredicate(allReportType));
-		}
-
-		List<Integer> divisionsToUpdate = new ArrayList<Integer>();
-		if ( subscriptionRequest.getAllDivisions().booleanValue() == true ) {
-			divisionsToUpdate = (List<Integer>) CollectionUtils.collect(SubscriptionUtils.makeDivisionList(conn, user.getUserId()), new Div2Id());
-		} else {
-			divisionsToUpdate.add(subscriptionRequest.getDivisionId());
-		}
-		
-		for ( BatchReports report : reportsToUpdate ) {
-			logger.log(Level.DEBUG, "Updating report: " + report.abbreviation());
-			for ( Integer div : divisionsToUpdate ) {
-				logger.log(Level.DEBUG, "Updating report: " + report.abbreviation() + " for div " + div);
-			}
-		}
-		
-		for ( BatchReports report : reportsToUpdate ) {
-			
-			if ( report.isDivisionReport() ) {
-				for ( Integer divisionId : divisionsToUpdate ) {
-					if ( doUpdate(conn, report, divisionId, user, subscriptionRequest.getSubscribe()) && ! updatedReports.contains(report) ) {
-						updatedReports.add(report);
-					}
-				}
+		if ( subscriptionExists(conn, subscriptionRequest, user) ) {
+			if ( subscriptionRequest.getSubscribe().booleanValue() == true ) {
+				// subscription already exists -- no need to do anything
+				logger.log(Level.DEBUG, "Skipping duplicate add");
 			} else {
-				if ( doUpdate(conn, report, (Integer)null, user, subscriptionRequest.getSubscribe()) && ! updatedReports.contains(report) ) {
-					updatedReports.add(report);
-				}
+				deleteSubscription(conn, subscriptionRequest, user);
 			}
-				
+		} else {
+			if ( subscriptionRequest.getSubscribe().booleanValue() == true ) {
+				addSubscription(conn, subscriptionRequest, user);
+			} else {
+				// trying to delete non-existant description -- no need to do anything
+				logger.log(Level.DEBUG, "Skipping duplicate delete");
+			}
 		}
+		
+		
 		conn.commit();
+		BatchReports updatedReport = BatchReports.valueOf(subscriptionRequest.getReportId());
+		List<BatchReports> updatedReports = Arrays.asList(new BatchReports[] {updatedReport});
 		SubscriptionUpdateResponse data = new SubscriptionUpdateResponse(updatedReports);		
 		data.setWebMessages(new SuccessMessage());
 		super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
@@ -174,45 +151,100 @@ public class SubscriptionServlet extends AbstractServlet {
 		
 	}
 	
-	private boolean doUpdate(Connection conn, BatchReports report, Integer divisionId, SessionUser user, Boolean subscribe) throws Exception {
-		logger.log(Level.DEBUG, "Doing Update: " + report.abbreviation() + "\t" + divisionId);
+	
+	
+	private boolean subscriptionExists(Connection conn, SubscriptionRequest req, SessionUser user) throws SQLException {
+		boolean subscriptionExists = false;
+		PreparedStatement ps = null;
+		String sql = "select count(*) as subscription_count from report_subscription where report_id=? and user_id=? ";
+		if ( req.getDivisionId() == null && req.getGroupId() == null ) {
+			ps = conn.prepareStatement(sql);	
+			ps.setString(1, req.getReportId());
+			ps.setInt(2, user.getUserId());
+		} else {
+			if ( req.getDivisionId() != null ) {
+				ps = conn.prepareStatement(sql+ "and division_id=?");	
+				ps.setString(1, req.getReportId());
+				ps.setInt(2, user.getUserId());
+				ps.setInt(3, req.getDivisionId());
+			} else if ( req.getGroupId() != null ) {
+				ps = conn.prepareStatement(sql+ "and group_id=?");	
+				ps.setString(1, req.getReportId());
+				ps.setInt(2, user.getUserId());
+				ps.setInt(3, req.getGroupId());
+			} else {
+				// this can't happen. We'll code for it anyway
+				throw new RuntimeException("This can't happen");
+			}
+		}
 		
-		boolean itWasUpdated = false;
+		ResultSet rs = ps.executeQuery();
+		if ( rs.next() ) {
+			subscriptionExists = rs.getInt("subscription_count") > 0;					
+		}
+		rs.close();
+		logger.log(Level.DEBUG, "SubscriptionExists: " + subscriptionExists);
+		return subscriptionExists;
+	}
+
+
+
+
+	private void deleteSubscription(Connection conn, SubscriptionRequest req, SessionUser user) throws SQLException {
+		PreparedStatement ps = null;
+		String sql = "delete from report_subscription where report_id=? and user_id=? ";
+		if ( req.getDivisionId() == null && req.getGroupId() == null ) {
+			ps = conn.prepareStatement(sql);	
+			ps.setString(1, req.getReportId());
+			ps.setInt(2, user.getUserId());
+		} else {
+			if ( req.getDivisionId() != null ) {
+				ps = conn.prepareStatement(sql+ "and division_id=?");	
+				ps.setString(1, req.getReportId());
+				ps.setInt(2, user.getUserId());
+				ps.setInt(3, req.getDivisionId());
+			} else if ( req.getGroupId() != null ) {
+				ps = conn.prepareStatement(sql+ "and group_id=?");	
+				ps.setString(1, req.getReportId());
+				ps.setInt(2, user.getUserId());
+				ps.setInt(3, req.getGroupId());
+			} else {
+				// this can't happen. We'll code for it anyway
+				throw new RuntimeException("This can't happen");
+			}
+		}
+		logger.log(Level.DEBUG, sql);
+		ps.executeUpdate();
+		
+	}
+
+
+
+
+	private void addSubscription(Connection conn, SubscriptionRequest req, SessionUser user) throws Exception {
+		logger.log(Level.DEBUG, "Doing Add: " + req.getReportId() + "\t" + req.getDivisionId() + "\t" + req.getGroupId());
+		
 		Date today = new Date();
 		
 		ReportSubscription subscription = new ReportSubscription();
 		subscription.setUserId(user.getUserId());
-		if ( divisionId != null ) {
-			subscription.setDivisionId(divisionId);
+		subscription.setReportId(req.getReportId());
+		if ( req.getDivisionId() != null ) {
+			subscription.setDivisionId(req.getDivisionId());
 		}
-		subscription.setReportId(report.name());
+		if ( req.getDivisionId() != null ) {
+			subscription.setDivisionId(req.getDivisionId());
+		} else if ( req.getGroupId() != null ) {
+			subscription.setGroupId(req.getGroupId());
+		}
 		
-		logger.log(Level.DEBUG, subscription);
-		if ( subscribe.booleanValue() == true ) {
-			try {
-				subscription.selectOne(conn);
-				// trying to add something that's already there
-				logger.log(Level.DEBUG, "trying to add something that's already there");
-			} catch ( RecordNotFoundException e) {
-				subscription.setAddedBy(user.getUserId());
-				subscription.setUpdatedBy(user.getUserId());
-				subscription.setAddedDate(today);
-				subscription.setUpdatedDate(today);
-				subscription.insertWithKey(conn);
-				itWasUpdated = true;
-				logger.log(Level.DEBUG, "added subscription");
-			}
-		} else {
-			try {
-				subscription.delete(conn);
-				itWasUpdated = true;
-				logger.log(Level.DEBUG, "added subscription");
-			} catch ( RecordNotFoundException e ) {
-				// we don't care - deleting something that doesn't exist
-				logger.log(Level.DEBUG, "deleting something that doesn't exist");
-			}
-		}
-		return itWasUpdated;
+		logger.log(Level.DEBUG, subscription);		
+		subscription.setAddedBy(user.getUserId());
+		subscription.setUpdatedBy(user.getUserId());
+		subscription.setAddedDate(today);
+		subscription.setUpdatedDate(today);
+		subscription.insertWithKey(conn);
+		logger.log(Level.DEBUG, "added subscription");
 	}
 
 

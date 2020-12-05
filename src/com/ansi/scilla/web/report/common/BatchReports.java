@@ -26,46 +26,39 @@ public enum BatchReports {
 	PAC_WEEKLY("PAC Weekly",                false, false, true, false, false, Permission.QUOTE_READ),
 	DO_LIST(   "Dispatched & Outstanding",  false, false, true, false, false, Permission.TICKET_READ),
 	PD45(      "45-Day Past Due",           false, false, true, false, false, Permission.PAYMENT_READ),
-
 	TSR(       "Ticket Status",             false, false, true, false, false, Permission.TICKET_READ ),
-
+	
 	// Monthly - before the month end
 	DRV(       "Detailed Rolling Volume",   false, false, true, false, false, Permission.TICKET_READ ),
 	
 	
 	// Monthly - after the monthly close
-	PAC_MONTHLY("PAC Monthly",              false, false, true, false, false, Permission.QUOTE_READ ),
-	LIFT_GENIE( "Lift/Genie Monthly",       true,  false, false, false, false, Permission.TICKET_READ ),
-	CASH_RECEIPTS_REGISTER(
-			"Cash Receipts Register",       true,  false, false, false, false, Permission.PAYMENT_READ ),
-	SERVICE_TAX("Service Taxes",            true,  false, false, false, false, Permission.PAYMENT_WRITE ),
-	IR_SUMMARY( "Invoice Register Summary", true,  false, false, false, false, Permission.INVOICE_READ ),
-	IR(         "Invoice Register Detail",  false, false, true,  false, false, Permission.INVOICE_READ ),
-	AR_TOTALS(  "Accounts Receivable w over 60 day detail", // divisions can get this but not batched
-											true,  false, true,  false, false, Permission.INVOICE_READ ), 
-	AR_LISTING( "AR Listing",				true,  false, false, false, false, Permission.INVOICE_READ ), 	//exec (trend)
+	PAC_MONTHLY("PAC Monthly",                              false, false, true,  false, false, Permission.QUOTE_READ ),
+	LIFT_GENIE( "Lift/Genie Monthly",                       true,  false, false, false, false, Permission.TICKET_READ ),
+	CASH_RECEIPTS_REGISTER("Cash Receipts Register",        true,  false, false, false, false, Permission.PAYMENT_READ ),
+	SERVICE_TAX("Service Taxes",                            true,  false, false, false, false, Permission.PAYMENT_WRITE ),
+	IR_SUMMARY( "Invoice Register Summary",                 true,  false, false, false, false, Permission.INVOICE_READ ),
+	IR(         "Invoice Register Detail",                  false, false, true,  false, false, Permission.INVOICE_READ ),
+	AR_TOTALS(  "Accounts Receivable w over 60 day detail", true,  false, true,  false, false, Permission.INVOICE_READ ), // divisions can get this but not batched
+	AR_LISTING( "AR Listing",				                true,  false, false, false, false, Permission.INVOICE_READ ), 	//exec (trend)
 
 	// Quarterly - after quarter close
-	PAC_QUARTER("PAC Quarterly",            false, false, true, false, false, Permission.QUOTE_READ ),
-	PAC_YTD(    "PAC Year-to-Date",         false, false, true, false, false, Permission.QUOTE_READ ),
-	SMRV(       "Six-Month Rolling Volume", false, false, true, false, false, Permission.TICKET_READ ),
-	CREDIT_CARD_FEE_DISTRIBUTION(
-			"Credit Card Fee Distribution", true,  false, false, false, false, Permission.INVOICE_READ ),
-	WO_AND_FEES_QUARTER(
-			"WO & Fees Quarterly",       	true,  false, true,  false, false, Permission.INVOICE_READ), 	// Q, Y
+	PAC_QUARTER(                 "PAC Quarterly",                false, false, true,  false, false, Permission.QUOTE_READ ),
+	PAC_YTD(                     "PAC Year-to-Date",             false, false, true,  false, false, Permission.QUOTE_READ ),
+	SMRV(                        "Six-Month Rolling Volume",     false, false, true,  false, false, Permission.TICKET_READ ),
+	CREDIT_CARD_FEE_DISTRIBUTION("Credit Card Fee Distribution", true,  false, false, false, false, Permission.INVOICE_READ ),
+	WO_AND_FEES_QUARTER(          "WO & Fees Quarterly",         true,  false, true,  false, false, Permission.INVOICE_READ), 	// Q, Y
 
 	// Yearly - after year close
-	PAC_YEARLY( "PAC Yearly",         		false, false, true,  false, false, Permission.QUOTE_READ ),
+	PAC_YEARLY(        "PAC Yearly",        false, false, true,  false, false, Permission.QUOTE_READ ),
 	WO_AND_FEES_YEARLY("WO & Fees Yearly",	true,  false, true,  false, false, Permission.INVOICE_READ), 	// Q, Y
 
 	// Executive reports - historical trending - generated quarterly
-	ACCOUNTS_RECEIVABLE( "AR w Claimed vs Billed",					// claimed/billed/cash
-											false, true,  true, false, false, Permission.INVOICE_READ ),
-	SKIPPED_AND_DISPATCHED( 										// lost volume for this and last quarter
-			"Skipped & Dispatched Counts",  false, true,  true, false, false, Permission.TICKET_READ ),
-	QSS("Quarterly Sales Summary", 			true,  false, false, false, false, Permission.INVOICE_READ ),	// PAC trending
-	VOLUME_FORECAST("Volume Forecast",      false, true,  false, false, false, Permission.INVOICE_READ ),	// 6MRV trending
-	VPP("Volume Per Person",                false, true,  true, false, false, Permission.INVOICE_READ ),	// volume per paycheck paid out
+	ACCOUNTS_RECEIVABLE(   "AR w Claimed vs Billed",	  false, true,  true,  false, false, Permission.INVOICE_READ ),	// claimed/billed/cash
+	SKIPPED_AND_DISPATCHED("Skipped & Dispatched Counts", false, true,  true,  false, false, Permission.TICKET_READ ),
+	QSS(                   "Quarterly Sales Summary", 	  true,  false, false, false, false, Permission.INVOICE_READ ),	// PAC trending
+	VOLUME_FORECAST(       "Volume Forecast",             false, true,  false, false, false, Permission.INVOICE_READ ),	// 6MRV trending
+	VPP(                   "Volume Per Person",           false, true,  true,  false, false, Permission.INVOICE_READ ),	// volume per paycheck paid out
 	;
 	
 	private String description;

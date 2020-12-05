@@ -18,12 +18,14 @@ public class SubscriptionRequest extends AbstractRequest {
 	public static final String SUBSCRIBE = "subscribe";
 	public static final String ALL_DIVISIONS = "allDivisions";
 	public static final String ALL_REPORT_TYPE = "allReportType";
+	public static final String GROUP_ID = "groupId";
 		
 	private String reportId;
 	private Integer divisionId;
 	private Boolean subscribe;
 	private Boolean allDivisions = false;
 	private String allReportType = AllReportType.NONE.name();
+	private Integer groupId;
 	
 	public String getReportId() {
 		return reportId;
@@ -55,8 +57,15 @@ public class SubscriptionRequest extends AbstractRequest {
 	public void setAllReportType(String allReportType) {
 		this.allReportType = allReportType;
 	}
-
+	public Integer getGroupId() {
+		return groupId;
+	}
+	public void setGroupId(Integer groupId) {
+		this.groupId = groupId;
+	}
 	public void validate(Connection conn, WebMessages webMessages) throws Exception {
+		// for now we're not doing an "all report" or "all group" request, so we're skipping this part
+		/**
 		AllReportType allReportType = AllReportType.NONE;
 		if ( ! StringUtils.isBlank(this.allReportType) ) {
 			try {
@@ -69,21 +78,67 @@ public class SubscriptionRequest extends AbstractRequest {
 			}
 		}
 		
-//		if ( this.allDivisions == null ) {
-//			webMessages.addMessage(ALL_DIVISIONS, "Required Entry");
-//		}
-
-		RequestValidator.validateBoolean(webMessages, SUBSCRIBE, this.subscribe, true);
-		
-		if (webMessages.isEmpty() && allReportType.equals(AllReportType.NONE)) {
-			RequestValidator.validateReportId(webMessages, REPORT_ID, this.reportId, true);	
+		if ( this.allDivisions == null ) {
+			webMessages.addMessage(ALL_DIVISIONS, "Required Entry");
 		}
+		**/
 		
-		if ( webMessages.isEmpty() && allReportType.equals(AllReportType.NONE) && ! StringUtils.isBlank(this.reportId) ) {
+		// required entries: report type and subscription off/on
+		RequestValidator.validateReportId(webMessages, REPORT_ID, this.reportId, true);	
+		RequestValidator.validateBoolean(webMessages, SUBSCRIBE, this.subscribe, true);	
+		
+		// if we have required entries, make sure associated data is valid
+		if ( webMessages.isEmpty() ) {
 			BatchReports batchReport = BatchReports.valueOf(this.reportId);
+			boolean needsGroup = false;
+			boolean needsDiv = false;
+			
 			if ( batchReport.isDivisionReport() ) {
-				RequestValidator.validateDivisionId(conn, webMessages, DIVISION_ID, this.divisionId, true);
+				needsDiv = true;
+			} 
+			if ( batchReport.isAllAnsiReport() ) {
+				// no division/group id validation required
+			} 
+			if ( batchReport.isSummaryReport() ) {
+				needsGroup = true;
+			} 
+			if ( batchReport.isTrendReport() ) {
+				needsGroup = true;				
+			} 
+			if ( batchReport.isUtilityReport() ) {
+				// no division/group id validation required
+			} 
+			
+			if ( needsGroup ) {
+				if ( needsDiv ) {
+					// needs group & div, so we really only need one
+					if ( this.groupId == null && this.divisionId == null ) {
+						webMessages.addMessage(DIVISION_ID, "Required Value");
+						webMessages.addMessage(GROUP_ID, "Required Value");
+					} else {
+						if ( this.divisionId != null ) {
+							RequestValidator.validateDivisionId(conn, webMessages, DIVISION_ID, this.divisionId, true);
+						}
+						if ( this.groupId != null ) {
+							RequestValidator.validateDivisionGroupId(conn, webMessages, GROUP_ID, this.groupId, true);
+						}
+					}
+				} else {
+					// needs group & ! div, so we really need group
+					RequestValidator.validateDivisionGroupId(conn, webMessages, GROUP_ID, this.groupId, true);
+				}
+			} else {
+				if ( needsDiv ) {
+					// needs div, but not group, so we really need div
+					RequestValidator.validateDivisionId(conn, webMessages, DIVISION_ID, this.divisionId, true);
+				} else {
+					// doesn't need div or group, so go on with life
+				}				
 			}
+			
+			
+			
+			
 		}
 	}
 

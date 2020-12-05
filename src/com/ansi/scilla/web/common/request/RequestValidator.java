@@ -6,7 +6,6 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,6 +27,7 @@ import com.ansi.scilla.common.callNote.CallNoteReference;
 import com.ansi.scilla.common.claims.WorkHoursType;
 import com.ansi.scilla.common.db.CallLog;
 import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.common.db.DivisionGroup;
 import com.ansi.scilla.common.db.Document;
 import com.ansi.scilla.common.db.EmployeeExpense;
 import com.ansi.scilla.common.db.MSTable;
@@ -373,6 +373,13 @@ public class RequestValidator {
 	public static Boolean validateDivisionId(Connection conn, WebMessages webMessages, String fieldName, Integer value, boolean required ) throws Exception {
 		return validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, fieldName, value, required);
 	}
+	
+	
+	
+	public static Boolean validateDivisionGroupId(Connection conn, WebMessages webMessages, String fieldName, Integer value, boolean required ) throws Exception {
+		return validateId(conn, webMessages, "division_group", DivisionGroup.GROUP_ID, fieldName, value, required);
+	}
+	
 	
 	
 	public static void validateFloat(WebMessages webMessages, String fieldName, Float value, Float minValue,
