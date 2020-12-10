@@ -566,7 +566,7 @@
         				var $destination = "#ticketTable" + $value.weekOfMonth;
         				var $outbound = {"divisionId":$data.data.divisionId, "workYear":$data.data.workYear,"workWeek":$value.weekOfYear};
         				$weekList.push($value.weekOfYear);
-        				BUDGETCONTROL.doTicketLookup($destination, "bcr/weeklyTicketList", $outbound);
+        				BUDGETCONTROL.doTicketLookup($destination, "bcr/ticketList", $outbound);
         			});
         			console.log($weekList);
         			var $workWeeks = $weekList.join(",");
