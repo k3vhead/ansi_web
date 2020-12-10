@@ -2,11 +2,14 @@ package com.ansi.scilla.web.bcr.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections4.Transformer;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.web.bcr.query.BcrLookupQuery;
@@ -25,9 +28,11 @@ public abstract class AbstractBcrTicketLookupServlet extends AbstractLookupServl
 	public static final String TOTAL_VOLUME = "total_volume";
 	public static final String TOTAL_CLAIMED = "total_claimed";
 	public static final String VOLUME_REMAINING = "volume_remaining";
-	public static final String NOTES = "notes";
 	public static final String DIFF_CLM_BLD = "diff_clm_bld";
 	public static final String EMPLOYEE = "employee";
+	
+	public static final String NOTES = "notes";
+	public static final String NOTES_DISPLAY = "notes_display";
 	
 	
 	public AbstractBcrTicketLookupServlet() {
@@ -49,7 +54,7 @@ public abstract class AbstractBcrTicketLookupServlet extends AbstractLookupServl
 				BcrLookupQuery.TICKET_STATUS,
 				EMPLOYEE
 				};
-//		super.itemTransformer = new ItemTransformer();
+		super.itemTransformer = new ItemTransformer();
 	}
 
 
@@ -73,20 +78,19 @@ public abstract class AbstractBcrTicketLookupServlet extends AbstractLookupServl
 	
 	
 	
-//	public class ItemTransformer implements Transformer<HashMap<String, Object>, HashMap<String, Object>> {
-//
-//		private final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
-//		@Override
-//		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
-//			Timestamp startTime = (Timestamp)arg0.get(START_TIME);
-//			String display = "XXX";
-//			if ( startTime != null ) {
-//				display = sdf.format(startTime);
-//				arg0.put(START_TIME, display);
-//			}
-//			return arg0;
-//		}
-//		
-//	}
+	public class ItemTransformer implements Transformer<HashMap<String, Object>, HashMap<String, Object>> {
+
+		@Override
+		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
+			String notes = (String)arg0.get(NOTES);
+			if ( StringUtils.isBlank(notes) ) {
+				arg0.put(NOTES_DISPLAY, null);
+			} else {
+				arg0.put(NOTES_DISPLAY, StringUtils.abbreviate(notes, 10));
+			}
+			return arg0;
+		}
+		
+	}
 
 }

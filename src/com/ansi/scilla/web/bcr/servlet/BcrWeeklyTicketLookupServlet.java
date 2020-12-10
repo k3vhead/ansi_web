@@ -34,9 +34,10 @@ public class BcrWeeklyTicketLookupServlet extends AbstractBcrTicketLookupServlet
 			searchTerm = request.getParameter("search[value]");
 		}
 		Integer divisionId = Integer.valueOf(request.getParameter("divisionId"));
+		Integer workYear = Integer.valueOf(request.getParameter("workYear"));
 		String workWeek = request.getParameter("workWeek");
-		logger.log(Level.DEBUG, "Parms: " + divisionId + " " + workWeek);
-		BcrWeeklyLookupQuery lookupQuery = new BcrWeeklyLookupQuery(user.getUserId(), divisionList, divisionId, workWeek);
+		logger.log(Level.DEBUG, "Parms: " + divisionId + " " + workYear + " " + workWeek);
+		BcrWeeklyLookupQuery lookupQuery = new BcrWeeklyLookupQuery(user.getUserId(), divisionList, divisionId, workYear, workWeek);
 		if ( searchTerm != null ) {
 			lookupQuery.setSearchTerm(searchTerm);
 		}
