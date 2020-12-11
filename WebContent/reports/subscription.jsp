@@ -95,7 +95,6 @@
         		regionList : [],
         		allAnsiReports : [],
         		subscriptionList : [],
-        		//allReportType : [],
         		        		
         		
         		init : function() {
@@ -114,7 +113,7 @@
         				$word = "Unsubscribe"
         			}
 
-            		var $outbound = {"reportId":$reportId, "groupId":$groupId, "subscribe":$subscribe, "subscriptionId":$subscriptionId};
+            		var $outbound = {"reportId":$reportId, "groupId":$groupId, "subscribe":$subscribe, "subscriptionId":$subscriptionId, "null":null};
             				
 	       			var jqxhr = $.ajax({
 						type: 'POST',
@@ -204,7 +203,7 @@
         		},
         		     		
         		        		
-				getSubscriptions : function($reportId, $divisionId, $groupId, $subscriptionId) {           			
+				getSubscriptions : function($reportId, $divisionId, $id, $subscriptionId) {           			
            			var jqxhr = $.ajax({
     					type: 'GET',
     					url: "reports/subscription",
@@ -295,8 +294,7 @@
         			$("#division-selection-container").append($table);
         			
         			console.log("We have " + $subscriptionList.length + " subscriptions");
-					$.each($subscriptionList, function($index, $value) {
-						//var $subscriptionId = $value.reportId + "-" + $value.divisionId;						
+					$.each($subscriptionList, function($index, $value) {				
 						var $checkbox = "#division-selection-container input[name='" + $value.reportId + "-" + $value.divisionId +"']";
 					//	console.log("Subscribe" + $subscriptionId);
 						$($checkbox).prop("checked", true);							
@@ -326,7 +324,6 @@
         					});
         			});    
         			$("#division-selection-container .report-selector").click(function($event) {
-        			//	var $subscribe = $(this).attr("data-report" + "data-division");
         				var $reportId = $(this).attr("data-report");
         				var $divisionId = $(this).attr("data-division");
         				var $subscribe = $(this).prop("checked");
@@ -351,12 +348,12 @@
            			var $hdrRow = $("<tr>");
            			$hdrRow.append( $("<td>"));
            			
-           			$.each($divisionList, function($divIdx, $division) {
-           				var $hdrTD = $("<td>").append($division.divisionDisplay);
-    					$hdrTD.addClass("div-" + $division.groupId);
+           			$.each($groupList, function($groupIdx, $group) {
+           				var $hdrTD = $("<td>").append($group.name);
+    					$hdrTD.addClass("div-" + $group.id);
            				$hdrRow.append($hdrTD);	
            				$hdrTD.addClass("hdr");
-           				console.log("LOOK" + $division.groupId);
+           				console.log("LOOK" + $group.id);
            			}); 
            			
            			$table.append($hdrRow);
@@ -368,18 +365,12 @@
            				var $labelTD = $("<td>");
            				$labelTD.append($value.description).css('text-align','left');
            				$row.append($labelTD);
-           				$.each($divisionList, function($divIdx, $division) {
+           				$.each($groupList, function($groupIdx, $group) {
            					$checkboxTD = $("<td>");
-        					$checkboxTD.addClass("div-" + $division.groupId);
-        					$checkboxTD.append($('<input type="checkbox" name="'+$value.reportId+"-" + $division.groupId +'" class="group-checkbox" data-report="'+$value.reportId+'" data-group="'+$division.groupId+'"/>'));
-        				/*	$checkboxTD.addClass("group-checkbox");
-               				var $checkbox = $('<input>');   
-               			 	$checkbox.attr( { "name":$value.reportId, "name":$group.id } );
-               			 	$checkbox.attr("type","checkbox");
-               			 	$checkbox.attr( { "value":$value.reportId, "value":$group.id } );
-               			 	$checkboxTD.append($checkbox); */
-               				$row.append($checkboxTD);
-    						console.log("VALUE" + $value.reportId + $division.groupId );
+        					$checkboxTD.addClass("div-" + $group.id);
+        					$checkboxTD.append($('<input type="checkbox" name="'+$value.reportId+"-" + $group.id +'" class="group-checkbox" data-report="'+$value.reportId+'" data-group="'+$group.id+'"/>'));
+        					$row.append($checkboxTD);
+    						console.log("HERE" + $value.reportId + $group.id );
            				});           				
            				$table.append($row);
            			});
@@ -416,7 +407,6 @@
    					
    					$selector = "#"+$container + " .group-checkbox";
 					$($selector).click(function($event) {
-    					//	var $subscribe = $(this).attr("data-group.id" + "data-reportId");
     						var $reportId = $(this).attr("data-report");
     						var $groupId = $(this).attr("data-group");
         					var $subscribe = $(this).prop("checked");
@@ -446,13 +436,6 @@
            				$checkboxTD = $("<td>");
            				$checkboxTD.addClass("report-" + $value.reportId)
            				$checkboxTD.append($('<input type="checkbox" name="'+$value.reportId+'" class="subscription-checkbox" data-report="'+$value.reportId+'" />'));
-           			//	$checkboxTD.attr("style","text-align:center;");
-           			/*	$checkbox = $('<input>');
-           			 	$checkbox.attr("name",$value.reportId);
-           			 	$checkbox.addClass("subscription-checkbox");
-           			 	$checkbox.attr("type","checkbox");
-           			 	$checkbox.attr("value",$value.reportId);
-           				$checkboxTD.append($checkbox); */
            				$row.append($checkboxTD);
            				$table.append($row);
 					//	console.log("VALUE" + $value.reportId);
@@ -481,7 +464,6 @@
    						var $reportId = $(this).attr("data-report");
         				var $subscribe = $(this).prop("checked");
         				var $subscriptionId = $(this).attr("data-subscriptionId");   
-        				//var $subscribe = $(this).attr("data-reportId");
    						REPORT_SUBSCRIPTION.doDivisionSubscription($reportId, null, $subscribe, $subscriptionId);
    					});
        			},
@@ -502,7 +484,6 @@
    					REPORT_SUBSCRIPTION.divisionList = $data.data.divisionList;
    					REPORT_SUBSCRIPTION.groupList = $data.data.groupList;					
    					REPORT_SUBSCRIPTION.regionList = $data.data.regionList;
-   					//REPORT_SUBSCRIPTION.orgList = $data.data.reportList;		
    					REPORT_SUBSCRIPTION.subscriptionList = $data.data.subscriptionList;
    					REPORT_SUBSCRIPTION.summaryReportList = $data.data.summaryReportList;
    					
@@ -531,39 +512,21 @@
 						if ( REPORT_SUBSCRIPTION.companyList.length > 0 ) {
 							$("#company-subscription-selector").show();
 							REPORT_SUBSCRIPTION.makeMultiColumnTable("company-selection-container", REPORT_SUBSCRIPTION.summaryReports, REPORT_SUBSCRIPTION.divisionList, REPORT_SUBSCRIPTION.companyList, $data.data.subscriptionList);
-		        		/*	$("#company-selection-container .group-selector").click(function($event) {
-			    						var $reportId = $(this).attr("data-report");
-			    						var $id = $(this).attr("data-division");
-			        					var $subscribe = $(this).prop("checked");
-			        					var $subscriptionId = $(this).attr("data-subscriptionId");     
-			    						REPORT_SUBSCRIPTION.doSubscription($reportId, $id, $subscribe, $subscriptionId);
-			    					}); */
+		        		
 						} else {
 							$("#company-subscription-selector").hide();
 						}
 						if ( REPORT_SUBSCRIPTION.regionList.length > 0 ) {
 							$("#region-subscription-selector").show();
 							REPORT_SUBSCRIPTION.makeMultiColumnTable("region-selection-container", REPORT_SUBSCRIPTION.summaryReports, REPORT_SUBSCRIPTION.divisionList, REPORT_SUBSCRIPTION.regionList, $data.data.subscriptionList);
-		        		/*	$("#region-selection-container .group-selector").click(function($event) {
-			    						var $reportId = $(this).attr("data-report");
-			    						var $id = $(this).attr("data-division");
-			        					var $subscribe = $(this).prop("checked");
-			        					var $subscriptionId = $(this).attr("data-subscriptionId");     
-			    						REPORT_SUBSCRIPTION.doSubscription($reportId, $id, $subscribe, $subscriptionId);
-			    					}); */
+		        		
 						} else {
 							$("#region-subscription-selector").hide();
 						}
 						if ( REPORT_SUBSCRIPTION.groupList.length > 0 ) {
 							$("#group-subscription-selector").show();
 							REPORT_SUBSCRIPTION.makeMultiColumnTable("group-selection-container", REPORT_SUBSCRIPTION.summaryReports, REPORT_SUBSCRIPTION.divisionList, REPORT_SUBSCRIPTION.groupList, $data.data.subscriptionList);
-		        		/*	$("#group-selection-container .group-selector").click(function($event) {
-			    						var $reportId = $(this).attr("data-report");
-			    						var $id = $(this).attr("data-division");
-			        					var $subscribe = $(this).prop("checked");
-			        					var $subscriptionId = $(this).attr("data-subscriptionId");     
-			    						REPORT_SUBSCRIPTION.doSubscription($reportId, $id, $subscribe, $subscriptionId);
-			    					}); */
+		        		
 						} else {
 							$("#group-subscription-selector").hide();
 						}
