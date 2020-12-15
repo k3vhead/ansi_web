@@ -108,6 +108,12 @@
         		},
         		
         		
+        		actualDLError : function($data) {
+        			console.log("actualDLError");
+        		},
+        		
+        		
+        		
         		dateCallFail : function($data) {
         			console.log("dateCallFail");
         			$("#globalMsg").html("Failure Retrieving Dates. Contact Support");
@@ -248,6 +254,71 @@
     			    } );
         		},
         		
+        		
+        		
+        		
+        		initializeActualDLPanel : function($data) {
+        			console.log("initializeActualDLPanel");
+        			var $weekLabel = ["1st","2nd","3rd","4th","5th"];
+
+        			$.each($data.data.workCalendar, function($index, $value) {
+						var $row = $("<tr>");
+						var $label = $("<td>").append($weekLabel[$index] + " Wk in Mo");
+						var $week = $("<td>").append($value.weekOfYear);
+						var $firstOfWeek = $("<td>").append($value.firstOfWeek);
+						$firstOfWeek.addClass("aligned-center");
+						var $lastOfWeek = $("<td>").append($value.lastOfWeek);
+						$lastOfWeek.addClass("aligned-center");
+						var $actualDL = $('<input type="text" />');
+						$actualDL.attr("name","actualDL-" + $value.weekOfYear);	
+						$actualDL.addClass("actualDL");
+						$actualDL.attr("data-week",$value.weekOfYear);
+						$actualDL.attr("data-year",$data.data.workYear);
+						var $omDL = $('<input type="text" />');
+						$omDL.attr("name","omDL-" + $value.weekOfYear);	
+						$omDL.addClass("omDL");
+						$omDL.attr("data-week",$value.weekOfYear)
+						$omDL.attr("data-year",$data.data.workYear);
+						$row.append($label);
+						$row.append($week);
+						$row.append($firstOfWeek);
+						$row.append($lastOfWeek);
+						$row.append( $("<td>").append($actualDL));
+						$row.append( $("<td>").append($omDL));
+						$("#actual_dl_totals tbody").append($row);
+					});
+        			
+        		
+        			$("#actual_dl_totals input").blur(function($event) {
+        				var $that = $(this);
+        				var $week = $that.attr("data-week");
+        				var $value = $that.val();
+        				if ( isNaN($value) || $value == '' || $value == null) {
+        					$value = "0.00";
+        				}
+        				$value = parseFloat($value).toFixed(2);
+        				$that.val( $value );
+						if ( $that.hasClass("actualDL") ) {
+							var $selector = "#bcr_totals .actual_dl_week" + $week;
+							var $looper = "#bcr_totals .actual_dl";
+							var $totalCell = "#bcr_totals .actual_dl_total";
+						} else if ( $that.hasClass("omDL") ) {
+							var $selector = "#bcr_totals .actual_om_dl_week" + $week;
+							var $looper = "#bcr_totals .actual_om_dl";
+							var $totalCell = "#bcr_totals .actual_om_dl_total";
+						} else {
+							//$("#globalMsg").html("Invalid system state. Reload and try again").show();
+							// we're just going to ignore this
+						}
+						$($selector).html($value);
+						var $rowTotal = 0.00;
+						$.each( $($looper), function($index, $value) {
+							$rowTotal = $rowTotal + parseFloat($($value).html());
+						});
+						$($totalCell).html($rowTotal.toFixed(2));
+						
+        			});
+        		},
         		
         		
         		
@@ -417,66 +488,24 @@
         		
         		
         		
-        		populateActualDLPanel : function($data) {
-        			var $weekLabel = ["1st","2nd","3rd","4th","5th"];
-
-        			$.each($data.data.workCalendar, function($index, $value) {
-						var $row = $("<tr>");
-						var $label = $("<td>").append($weekLabel[$index] + " Wk in Mo");
-						var $week = $("<td>").append($value.weekOfYear);
-						var $firstOfWeek = $("<td>").append($value.firstOfWeek);
-						$firstOfWeek.addClass("aligned-center");
-						var $lastOfWeek = $("<td>").append($value.lastOfWeek);
-						$lastOfWeek.addClass("aligned-center");
-						var $actualDL = $('<input type="text" />');
-						$actualDL.attr("name","actualDL-" + $value.weekOfYear);	
-						$actualDL.addClass("actualDL");
-						$actualDL.attr("data-week",$value.weekOfYear)
-						var $omDL = $('<input type="text" />');
-						$omDL.attr("name","omDL-" + $value.weekOfYear);	
-						$omDL.addClass("omDL");
-						$omDL.attr("data-week",$value.weekOfYear)
-						$row.append($label);
-						$row.append($week);
-						$row.append($firstOfWeek);
-						$row.append($lastOfWeek);
-						$row.append( $("<td>").append($actualDL));
-						$row.append( $("<td>").append($omDL));
-						$("#actual_dl_totals tbody").append($row);
-					});
-        			
         		
-        			$("#actual_dl_totals input").blur(function($event) {
-        				var $that = $(this);
-        				var $week = $that.attr("data-week");
-        				var $value = $that.val();
-        				if ( isNaN($value) || $value == '' || $value == null) {
-        					$value = "0.00";
-        				}
-        				$value = parseFloat($value).toFixed(2);
-        				$that.val( $value );
-						if ( $that.hasClass("actualDL") ) {
-							var $selector = "#bcr_totals .actual_dl_week" + $week;
-							var $looper = "#bcr_totals .actual_dl";
-							var $totalCell = "#bcr_totals .actual_dl_total";
-						} else if ( $that.hasClass("omDL") ) {
-							var $selector = "#bcr_totals .actual_om_dl_week" + $week;
-							var $looper = "#bcr_totals .actual_om_dl";
-							var $totalCell = "#bcr_totals .actual_om_dl_total";
-						} else {
-							//$("#globalMsg").html("Invalid system state. Reload and try again").show();
-							// we're just going to ignore this
-						}
-						$($selector).html($value);
-						var $rowTotal = 0.00;
-						$.each( $($looper), function($index, $value) {
-							$rowTotal = $rowTotal + parseFloat($($value).html());
-						});
-						$($totalCell).html($rowTotal.toFixed(2));
-						
+        		populateActualDLPanel : function($data) {
+        			console.log("populateActualDLPanel");
+        			$.each($data.data.weekActualDL, function($index, $value) {
+        				console.log("Week: " + $index + " " + $value.actualDL);
+        				
+        				var $actualDL = parseFloat($value.actualDL).toFixed(2);
+        				var $actualOM = parseFloat($value.omDL).toFixed(2);
+        				
+        				// populate actual dl panel
+        				var $actual = 'input[name="actualDL-'+$index+'"]';
+        				var $om = 'input[name="omDL-'+$index+'"]';
+        				$($actual).val($actualDL);
+        				$($om).val($actualOM);
+        				
+        				
         			});
         		},
-        		
         		
         		
         		
@@ -568,7 +597,6 @@
         				$weekList.push($value.weekOfYear);
         				BUDGETCONTROL.doTicketLookup($destination, "bcr/ticketList", $outbound);
         			});
-        			console.log($weekList);
         			var $workWeeks = $weekList.join(",");
         			var $outbound = {"divisionId":$data.data.divisionId, "workYear":$data.data.workYear, "workWeek":$workWeeks};
         			BUDGETCONTROL.doTicketLookup("#ticketTable","bcr/ticketList", $outbound);
@@ -619,7 +647,16 @@
         			
         			BUDGETCONTROL.populateTicketTables($data);
         			BUDGETCONTROL.populateTitlePanel($data);
-        			BUDGETCONTROL.populateActualDLPanel($data);
+        			BUDGETCONTROL.initializeActualDLPanel($data);
+        			
+					$weekList = [];        			
+        			$.each($data.data.workCalendar, function($index, $value) {
+        				$weekList.push($value.weekOfYear);
+        			});
+        			var $workWeeks = $weekList.join(",");
+        			var $outbound = {"divisionId":$data.data.divisionId, "workYear":$data.data.workYear, "workWeek":$workWeeks};        			
+        			ANSI_UTILS.doServerCall("GET", "bcr/actualDL", $outbound, BUDGETCONTROL.populateActualDLPanel, BUDGETCONTROL.actualDLError);
+
         			BUDGETCONTROL.populateBudgetControlTotalsPanel($data);
 
 					$.each($data.data.workCalendar, function($index, $value) {

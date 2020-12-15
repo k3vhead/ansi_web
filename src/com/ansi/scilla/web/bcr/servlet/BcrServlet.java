@@ -21,6 +21,7 @@ public class BcrServlet extends AbstractServlet {
 	private final String EMPLOYEES = "employees";
 	private final String TICKETLIST = "ticketList";
 	private final String INIT = "init";
+	private final String ACTUAL_DL = "actualDL";
 	
 	
 	private static final long serialVersionUID = 1L;
@@ -48,7 +49,12 @@ public class BcrServlet extends AbstractServlet {
 			break;
 		case TICKETLIST:
 			new BcrTicketLookupServlet().doGet(request, response);
-			break;		
+			break;	
+		case TOTALS:
+			new BcrTotalsServlet().doGet(request, response);
+		case ACTUAL_DL:
+			new BcrActualDLServlet().doGet(request, response);
+			break;
 		default:
 			super.sendNotFound(response);
 		}
@@ -67,6 +73,9 @@ public class BcrServlet extends AbstractServlet {
 			break;
 		case TITLE:
 			new BcrTitleServlet().doPost(request, response);
+			break;
+		case ACTUAL_DL:
+			new BcrActualDLServlet().doPost(request, response);
 			break;
 		default:
 			super.sendNotFound(response);

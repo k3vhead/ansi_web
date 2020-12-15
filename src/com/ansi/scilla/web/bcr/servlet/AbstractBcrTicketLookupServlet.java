@@ -12,7 +12,7 @@ import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
-import com.ansi.scilla.web.bcr.query.BcrLookupQuery;
+import com.ansi.scilla.web.bcr.query.BcrTicketLookupQuery;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.servlet.AbstractLookupServlet;
 import com.ansi.scilla.web.common.utils.Permission;
@@ -38,10 +38,10 @@ public abstract class AbstractBcrTicketLookupServlet extends AbstractLookupServl
 	public AbstractBcrTicketLookupServlet() {
 		super(Permission.TICKET_READ);
 		cols = new String[] { 
-				BcrLookupQuery.NAME,
-				BcrLookupQuery.TICKET_ID,
+				BcrTicketLookupQuery.NAME,
+				BcrTicketLookupQuery.TICKET_ID,
 				CLAIM_WEEK,
-				BcrLookupQuery.TICKET_TYPE,
+				BcrTicketLookupQuery.TICKET_TYPE,
 				DIRECT_LABOR,
 				EXPENSES,
 				TOTAL_DIRECT_LABOR,
@@ -49,9 +49,9 @@ public abstract class AbstractBcrTicketLookupServlet extends AbstractLookupServl
 				TOTAL_CLAIMED,
 				VOLUME_REMAINING,
 				NOTES,
-				BcrLookupQuery.PRICE_PER_CLEANING,
+				BcrTicketLookupQuery.PRICE_PER_CLEANING,
 				DIFF_CLM_BLD,
-				BcrLookupQuery.TICKET_STATUS,
+				BcrTicketLookupQuery.TICKET_STATUS,
 				EMPLOYEE
 				};
 		super.itemTransformer = new ItemTransformer();

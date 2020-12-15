@@ -8,7 +8,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.Level;
 
-import com.ansi.scilla.web.bcr.query.BcrLookupQuery;
+import com.ansi.scilla.web.bcr.query.BcrTicketLookupQuery;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionDivision;
@@ -36,7 +36,7 @@ public class BcrTicketLookupServlet extends AbstractBcrTicketLookupServlet {
 		Integer workYear = Integer.valueOf(request.getParameter("workYear"));
 		String workWeek = request.getParameter("workWeek");  // comma-delimited list of work weeks.
 		logger.log(Level.DEBUG, "Parms: " + divisionId + " " + workYear + " " + workWeek);
-		BcrLookupQuery lookupQuery = new BcrLookupQuery(user.getUserId(), divisionList, divisionId, workYear, workWeek);
+		BcrTicketLookupQuery lookupQuery = new BcrTicketLookupQuery(user.getUserId(), divisionList, divisionId, workYear, workWeek);
 		if ( searchTerm != null ) {
 			lookupQuery.setSearchTerm(searchTerm);
 		}

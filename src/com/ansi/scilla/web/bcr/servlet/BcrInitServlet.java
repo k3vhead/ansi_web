@@ -82,7 +82,8 @@ public class BcrInitServlet extends AbstractServlet {
 			throw new ServletException(e);
 		} finally {
 			AppUtils.closeQuiet(conn);
-		}	}
+		}	
+	}
 
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response)

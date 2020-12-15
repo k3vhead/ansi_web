@@ -1,7 +1,6 @@
-package com.ansi.scilla.web.bcr.query;
+package com.ansi.scilla.web.bcr.common;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -10,24 +9,15 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.ansi.scilla.common.queries.SelectType;
-import com.ansi.scilla.web.common.query.LookupQuery;
+import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.web.bcr.query.BcrTicketLookupQuery;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.common.utils.SessionDivisionTransformer;
 
-public class BcrLookupQuery extends LookupQuery {
-
+public class BcrTicketSql extends ApplicationObject {
 	private static final long serialVersionUID = 1L;
-	
-	public static final String TICKET_ID = "ticket.ticket_id";
-	public static final String NAME = "job_site.name";
-	public static final String TICKET_STATUS = "ticket.ticket_status";
-	public static final String PRICE_PER_CLEANING = "job.price_per_cleaning";
-	public static final String BUDGET = "job.budget";
-	public static final String TICKET_TYPE = "ticket.ticket_type";
-	
-	
-	protected static final String sqlSelectClause = 
+
+	public static final String sqlSelectClause = 
 			"select \n" + 
 			"   job_site.name as job_site_name\n" + 
 			" , ticket.ticket_id\n" + 
@@ -60,7 +50,7 @@ public class BcrLookupQuery extends LookupQuery {
 			" , 'GSS' as equipment_tags\n";
 			
 	
-	protected static final String sqlFromClause = 
+	public static final String sqlFromClause = 
 			"from ticket\n" + 
 			"join job on job.job_id = ticket.job_id\n" + 
 			"left outer join ticket_claim on ticket_claim.ticket_id = ticket.ticket_id\n" + 
@@ -95,109 +85,26 @@ public class BcrLookupQuery extends LookupQuery {
 			"	) as invoice_totals on invoice_totals.ticket_id = ticket.ticket_id \n";
 					
 	
-	protected static final String baseWhereClause =
+	public static final String baseWhereClause =
 			"where ticket.ticket_type in ('run','job') \n" + 
 			" -- and ticket.ticket_status in ('D','COMPLETED')   \n" + 
 			"  and ticket.act_division_id=? \n" + 
 			" and ticket_claim.claim_year=?\n" + 
 			" and ticket_claim.claim_week in ($CLAIMWEEKFILTER$)\n"; 
-			
-	protected Integer divisionId;
-	protected String workWeek;
-	protected Integer workYear;
-
-
-	public BcrLookupQuery(Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer workYear, String workWeek) {
-		super(sqlSelectClause, makeFilteredFromClause(divisionList), makeBaseWhereClause(workWeek));
-		this.logger = LogManager.getLogger(BcrLookupQuery.class);
-		this.userId = userId;	
-		this.workWeek = workWeek;
-		this.workYear = workYear;
-		this.divisionId = divisionId;
-		super.setBaseFilterValue(Arrays.asList( new Object[] {divisionId, workYear}));
-	}
-
-	public Integer getDivisionId() {
-		return divisionId;
-	}
-
-	public void setDivisionId(Integer divisionId) {
-		this.divisionId = divisionId;
-	}
-
-
 	
-	public String getWorkWeek() {
-		return workWeek;
-	}
-
-	public void setWorkWeek(String workWeek) {
-		this.workWeek = workWeek;
-	}
-
-	public Integer getWorkYear() {
-		return workYear;
-	}
-
-	public void setWorkYear(Integer workYear) {
-		this.workYear = workYear;
-	}
 	
-	@Override
-	protected String makeOrderBy(SelectType selectType) {
-		String orderBy = "";
-		if ( selectType.equals(SelectType.DATA)) {
-			if ( StringUtils.isBlank(sortBy)) {
-				orderBy =  " order by job_site.name, ticket_id, claim_week";
-			} else {
-//				List<String> sortList = Arrays.asList(StringUtils.split(sortBy, ","));
-				String sortDir = sortIsAscending ? orderBy + " asc " : orderBy + " desc ";
-//				String sortBy = StringUtils.join(sortList, sortDir + ", ");
-				orderBy = " order by " + sortBy + " " + sortDir;
-			}
-		}
-		return "\n" + orderBy;
-	}
-
-
-	protected static String makeFilteredFromClause(List<SessionDivision> divisionList) {
+	public static String makeFilteredFromClause(List<SessionDivision> divisionList) {
 		List<Integer> divisionIdList = new ArrayList<Integer>();
 		divisionIdList = CollectionUtils.collect(divisionList.iterator(), new SessionDivisionTransformer(), divisionIdList);
 		String divisionFilter = StringUtils.join(divisionIdList, ",");
-		String whereClause = sqlFromClause.replaceAll("\\$DIVISION_USER_FILTER\\$", divisionFilter);
+		String whereClause = BcrTicketSql.sqlFromClause.replaceAll("\\$DIVISION_USER_FILTER\\$", divisionFilter);
 		return whereClause;
 	}
 	
-	private static String makeBaseWhereClause(String workWeek) {
-		Logger myLogger = LogManager.getLogger(BcrLookupQuery.class);
-		String whereClause = baseWhereClause.replaceAll("\\$CLAIMWEEKFILTER\\$", workWeek);
+	public static String makeBaseWhereClause(String workWeek) {
+		Logger myLogger = LogManager.getLogger(BcrTicketLookupQuery.class);
+		String whereClause = BcrTicketSql.baseWhereClause.replaceAll("\\$CLAIMWEEKFILTER\\$", workWeek);
 		myLogger.log(Level.DEBUG, whereClause);
 		return whereClause;
 	}
-
-	
-
-	@Override
-	protected String makeWhereClause(String queryTerm) {
-		String whereClause = makeBaseWhereClause(workWeek);
-		String joiner = " and ";
-		
-		if ( ! StringUtils.isBlank(queryTerm) ) {
-			whereClause =  whereClause + joiner + " (\n"
-					+ " " + TICKET_ID + " like '%" + queryTerm.toLowerCase() +  "%'" +
-					"\n OR lower( " + NAME + " ) ) like '%" + queryTerm.toLowerCase() + "%'" +
-					")" ;
-		}
-		
-		return whereClause;
-	}
-
-
-	
-
-	
-	
-	
-	
-
 }
