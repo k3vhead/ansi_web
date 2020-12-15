@@ -86,11 +86,14 @@ public class BcrTicketSql extends ApplicationObject {
 					
 	
 	public static final String baseWhereClause =
-			"where ticket.ticket_type in ('run','job') \n" + 
-			" -- and ticket.ticket_status in ('D','COMPLETED')   \n" + 
+			"where ticket.ticket_type in ('run','job') \n" + 			
 			"  and ticket.act_division_id=? \n" + 
-			" and ticket_claim.claim_year=?\n" + 
-			" and ticket_claim.claim_week in ($CLAIMWEEKFILTER$)\n"; 
+			" and (\n" +
+			"     ticket_claim.claim_year=?\n" + 
+			"     and ticket_claim.claim_week in ($CLAIMWEEKFILTER$)\n" +
+			" ) or (\n" +
+			"     ticket.ticket_status in ('D','C')\n" +
+			" )"; 
 	
 	
 	public static String makeFilteredFromClause(List<SessionDivision> divisionList) {
