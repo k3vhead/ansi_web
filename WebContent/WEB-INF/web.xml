@@ -1151,5 +1151,11 @@
         <res-auth>Container</res-auth>
     </resource-ref>
 -->
+    <resource-ref>
+        <description>Overture Tomcat Database Pooling</description>
+        <res-ref-name>jdbc/ansi</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+    </resource-ref>
 	
 </web-app>
