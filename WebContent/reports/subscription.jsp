@@ -101,12 +101,11 @@
         			REPORT_SUBSCRIPTION.makeClickers();		
         			REPORT_SUBSCRIPTION.getSubscriptions();
         		},
-        		
-                
+        		                
         		
         		doGroupSubscription : function($reportId, $groupId, $subscribe, $subscriptionId) {
         			console.log("doSubscription");
-        			console.log($reportId + " " + $groupId + " " + $subscribe + " " + $subscriptionId);
+        			//console.log($reportId + " " + $groupId + " " + $subscribe + " " + $subscriptionId);
         			if ( $subscribe == true ) {
         				$word = "Subscribe"
         			} else {
@@ -148,15 +147,14 @@
 					});
       			
         			$("#globalMsg").html($word + " to " + $reportId + " for " + $groupId).show().fadeOut(6000);
-        			console.log($word + " to " + $reportId + " for " + $groupId);
+        			//console.log($word + " to " + $reportId + " for " + $groupId);
         			
         		},
         		
-                
-        		
+                        		
         		doDivisionSubscription : function($reportId, $divisionId, $subscribe, $subscriptionId) {
         			console.log("doSubscription");
-        			console.log($reportId + " " + $divisionId + " " + $subscribe + " " + $subscriptionId);
+        			//console.log($reportId + " " + $divisionId + " " + $subscribe + " " + $subscriptionId);
         			if ( $subscribe == true ) {
         				$word = "Subscribe"
         			} else {
@@ -198,12 +196,12 @@
 					});
       			
         			$("#globalMsg").html($word + " to " + $reportId + " for " + $divisionId).show().fadeOut(6000);
-        			console.log($word + " to " + $reportId + " for " + $divisionId);
+        			//console.log($word + " to " + $reportId + " for " + $divisionId);
         			
         		},
         		     		
         		        		
-				getSubscriptions : function($reportId, $divisionId, $id, $subscriptionId) {           			
+				getSubscriptions : function($reportId, $divisionId, $groupId, $subscriptionId) {           			
            			var jqxhr = $.ajax({
     					type: 'GET',
     					url: "reports/subscription",
@@ -293,10 +291,10 @@
         			$("#division-selection-container").html("");
         			$("#division-selection-container").append($table);
         			
-        			console.log("We have " + $subscriptionList.length + " subscriptions");
+        			//console.log("We have " + $subscriptionList.length + " subscriptions");
 					$.each($subscriptionList, function($index, $value) {				
 						var $checkbox = "#division-selection-container input[name='" + $value.reportId + "-" + $value.divisionId +"']";
-					//	console.log("Subscribe" + $subscriptionId);
+						//console.log("Subscribe" + $subscriptionId);
 						$($checkbox).prop("checked", true);							
                 	}); 
 					
@@ -337,11 +335,8 @@
         				}        				
         			});
         		},
-
-
-        		
-        		
-        		
+       		
+        		        		
        			makeMultiColumnTable : function($container, $reportList, $divisionList, $groupList, $subscriptionList) {
         			console.log("Making container" + $container);
         			var $table = $("<table>").css('text-align','center');
@@ -353,7 +348,7 @@
     					$hdrTD.addClass("div-" + $group.id);
            				$hdrRow.append($hdrTD);	
            				$hdrTD.addClass("hdr");
-           				console.log("LOOK" + $group.id);
+           				//console.log("LOOK" + $group.id);
            			}); 
            			
            			$table.append($hdrRow);
@@ -370,7 +365,7 @@
         					$checkboxTD.addClass("div-" + $group.id);
         					$checkboxTD.append($('<input type="checkbox" name="'+$value.reportId+"-" + $group.id +'" class="group-checkbox" data-report="'+$value.reportId+'" data-group="'+$group.id+'"/>'));
         					$row.append($checkboxTD);
-    						console.log("HERE" + $value.reportId + $group.id );
+    						//console.log("HERE" + $value.reportId + $group.id );
            				});           				
            				$table.append($row);
            			});
@@ -378,10 +373,10 @@
         			$("#"+$container).html("");
            			$("#"+$container).append($table);
         			
-        			console.log("We have " + $subscriptionList.length + " subscriptions");
+        			//console.log("We have " + $subscriptionList.length + " subscriptions");
 					$.each($subscriptionList, function($index, $value) {					
 						var $checkboxMulti = "#"+$container+".selection-container input[name='" + $value.reportId + "-" + $value.groupId +"']";
-						console.log("Checkbox multi: " + $checkboxMulti);
+						//console.log("Checkbox multi: " + $checkboxMulti);
 						$($checkboxMulti).prop("checked",true);							
                 	}); 
            			           			
@@ -415,7 +410,6 @@
     				}); 
         		},
 
-
         		
         		makeOneColumnTable : function($container, $reportList, $subscriptionList) {
            			console.log("Making container " + $container);
@@ -423,8 +417,6 @@
            			var $hdrRow = $('<tr><td>&nbsp;</td><td><span style="font-weight:bold;">Subscribe</span></td></tr>');
            			
            			$table.append($hdrRow);
-           		          			
-           			
            			
            			$.each($reportList, function($index, $value) {
            				var $row = $("<tr>");
@@ -438,16 +430,16 @@
            				$checkboxTD.append($('<input type="checkbox" name="'+$value.reportId+'" class="subscription-checkbox" data-report="'+$value.reportId+'" />'));
            				$row.append($checkboxTD);
            				$table.append($row);
-					//	console.log("VALUE" + $value.reportId);
+						//console.log("VALUE" + $value.reportId);
            			});
 
         			$("#"+$container).html("");           			
            			$("#"+$container).append($table);
            			
-        			console.log("We have " + $subscriptionList.length + " subscriptions");
+        			//console.log("We have " + $subscriptionList.length + " subscriptions");
 					$.each($subscriptionList, function($index, $value) {				
 						var $checkboxOne = "#"+$container+".selection-container input[name='" + $value.reportId +"']";
-					//	console.log("Checkbox single: " + $checkboxOne);
+						//console.log("Checkbox single: " + $checkboxOne);
 						$($checkboxOne).prop("checked",true);							
                 	}); 
            								
@@ -468,7 +460,7 @@
    					});
        			},
        			
-        		
+       			
         		makeTables : function($data) {
    					REPORT_SUBSCRIPTION.allAnsiReports = $data.data.allAnsiReports;
    					REPORT_SUBSCRIPTION.divisionReports = $data.data.divisionReports;
@@ -538,7 +530,7 @@
 					
 					if ( $data.data.divisionList.length > 0 && $data.data.divisionReports.length > 0 ) { 
 						$("#division-subscription-selector").show();	
-						console.log("Subscribed to " + $data.data.subscriptionList.length + "reports");
+						//console.log("Subscribed to " + $data.data.subscriptionList.length + "reports");
 						REPORT_SUBSCRIPTION.makeDivisionTable($data.data.divisionList, $data.data.divisionReports, $data.data.subscriptionList);
 					} else {  
 						$("#division-subscription-selector").hide();								
