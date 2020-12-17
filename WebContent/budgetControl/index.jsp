@@ -108,8 +108,8 @@
         		},
         		
         		
-        		actualDLError : function($data) {
-        			console.log("actualDLError");
+        		bcrError : function($data) {
+        			console.log("bcrError");
         		},
         		
         		
@@ -322,6 +322,86 @@
         		
         		
         		
+        		initializeBudgetControlTotalsPanel : function($data) {
+        			var $headerRow1 = $("<tr>");
+					$headerRow1.append($("<td>").append("&nbsp;"));
+					$headerRow1.append($("<td>").append("&nbsp;")); 
+					var $headerRow2 = $("<tr>");
+					$headerRow2.append($("<td>").addClass("column-header").append("Week:"));
+					$headerRow2.append($("<td>").addClass("column-header").addClass("aligned-right").append("Unclaimed")); 
+					$.each($data.data.workCalendar, function($index, $value) {
+						var $startDate = $value.firstOfWeek.substring(0, 5);
+						var $endDate = $value.lastOfWeek.substring(0, 5);
+						var $dates = $("<td>").append($startDate + "-" + $endDate);
+						$dates.addClass("aligned-right");
+						$headerRow1.append($dates);
+
+						var $week = $("<td>").addClass("column-header").append($value.weekOfYear);
+						$week.addClass("aligned-right");
+						$headerRow2.append($week);
+					});
+					$headerRow1.append( $("<th>").append("Month") );
+					$headerRow2.append( $("<th>").append("Total") );
+					$("#bcr_totals .bcr_totals_display thead").append($headerRow1);
+					$("#bcr_totals .bcr_totals_display thead").append($headerRow2);
+					
+					
+					var $bcRowLabels = [
+							{"label":"Volume Claimed:","className":"volume_claimed"},
+							{"label":"Claimed Volume Remaining:","className":"claimed_volume_remaining"},
+							{"label":"<break>"},
+							{"label":"Total Billed:","className":"total_billed"},
+							{"label":"Variance:","className":"variance"},
+							{"label":"<break>"},
+							{"label":"Total D/L Claimed:","className":"total_dl_claimed"},
+							{"label":"Actual D/L:","className":"actual_dl"},
+							{"label":"Actual OM D/L:","className":"actual_om_dl"},
+							{"label":"Total Actual D/L:","className":"total_actual_dl"},
+							{"label":"<break>"}
+						];
+					
+					var $totalVolRow = $("<tr>");					
+					$totalVolRow.append( $("<td>").append("Total Volume:") );
+					$totalVolRow.append( $("<td>").addClass("aligned-right").append("0.00") );
+					$.each($data.data.workCalendar, function($index, $value) {
+						$totalVolRow.append( $("<td>").addClass("aligned-right").addClass("total_volume").addClass("week"+$value.weekOfYear).addClass("total_volume_week"+$value.weekOfYear).append("0.00") );
+					});
+					$totalVolRow.append( $("<td>").addClass("aligned-right").append("0.00") );
+					$("#bcr_totals .bcr_totals_display tbody").append($totalVolRow);
+					
+					$.each($bcRowLabels, function($index, $value) {
+						var $bcRow = $("<tr>");
+						if ( $value['label'] == "<break>") {
+							$bcRow.append( $('<td colspan="6">').append("&nbsp;") );
+						} else {
+							console.log($value);
+							$bcRow.append( $("<td>").append($value['label']) );
+							$bcRow.append( $("<td>").addClass("aligned-right").append("n/a") );
+							$.each($data.data.workCalendar, function($index, $calendarValue) {
+								var $className = $value['className']+"_"+"week"+$calendarValue.weekOfYear;								
+								$bcRow.append( $("<td>").addClass($value['className']).addClass('week'+$calendarValue.weekOfYear).addClass($value['className']+"_"+'week'+$calendarValue.weekOfYear).addClass("aligned-right").addClass($className).append("0.00") );
+							});
+							$bcRow.append( $("<td>").addClass("aligned-right").addClass($value['className']+'_total').append("0.00") );
+						}
+						$("#bcr_totals .bcr_totals_display tbody").append($bcRow);
+					});
+					
+					$.each(["D/L Percentage","Actual D/L Percentage"], function($index, $value) {
+						var $bcRow = $("<tr>");
+						$bcRow.append( $("<td>").append($value+":") );
+						$bcRow.append( $("<td>").append("&nbsp;") );
+						$.each($data.data.workCalendar, function($index, $value) {
+							$bcRow.append( $("<td>").addClass("aligned-right").append("0.00%") );
+						});
+						$bcRow.append( $("<td>").addClass("aligned-right").append("0.00%") );
+						$("#bcr_totals .bcr_totals_display tbody").append($bcRow);
+					});
+					
+        		},
+        		
+        		
+        		
+        		
         		makeAccordion : function() {
         			$('ul.accordionList').accordion({
 						//autoHeight: true,
@@ -509,81 +589,33 @@
         		
         		
         		
+        		
         		populateBudgetControlTotalsPanel : function($data) {
-        			var $headerRow1 = $("<tr>");
-					$headerRow1.append($("<td>").append("&nbsp;"));
-					$headerRow1.append($("<td>").append("&nbsp;")); 
-					var $headerRow2 = $("<tr>");
-					$headerRow2.append($("<td>").addClass("column-header").append("Week:"));
-					$headerRow2.append($("<td>").addClass("column-header").addClass("aligned-right").append("Unclaimed")); 
-					$.each($data.data.workCalendar, function($index, $value) {
-						var $startDate = $value.firstOfWeek.substring(0, 5);
-						var $endDate = $value.lastOfWeek.substring(0, 5);
-						var $dates = $("<td>").append($startDate + "-" + $endDate);
-						$dates.addClass("aligned-right");
-						$headerRow1.append($dates);
-
-						var $week = $("<td>").addClass("column-header").append($value.weekOfYear);
-						$week.addClass("aligned-right");
-						$headerRow2.append($week);
-					});
-					$headerRow1.append( $("<th>").append("Month") );
-					$headerRow2.append( $("<th>").append("Total") );
-					$("#bcr_totals .bcr_totals_display thead").append($headerRow1);
-					$("#bcr_totals .bcr_totals_display thead").append($headerRow2);
-					
-					
-					var $bcRowLabels = [
-							{"label":"Volume Claimed:","className":"volume_claimed"},
-							{"label":"Claimed Volume Remaining:","className":"claimed_volume_remaining"},
-							{"label":"<break>"},
-							{"label":"Total Billed:","className":"total_billed"},
-							{"label":"Variance:","className":"variance"},
-							{"label":"<break>"},
-							{"label":"Total D/L Claimed:","className":"total_dl_claimed"},
-							{"label":"Actual D/L:","className":"actual_dl"},
-							{"label":"Actual OM D/L:","className":"actual_om_dl"},
-							{"label":"Total Actual D/L:","className":"total_actual_dl"},
-							{"label":"<break>"}
-						];
-					
-					var $totalVolRow = $("<tr>");					
-					$totalVolRow.append( $("<td>").append("Total Volume:") );
-					$totalVolRow.append( $("<td>").addClass("aligned-right").append("0.00") );
-					$.each($data.data.workCalendar, function($index, $value) {
-						$totalVolRow.append( $("<td>").addClass("aligned-right").addClass("total_volume").addClass("week"+$value.weekOfYear).append("0.00") );
-					});
-					$totalVolRow.append( $("<td>").addClass("aligned-right").append("0.00") );
-					$("#bcr_totals .bcr_totals_display tbody").append($totalVolRow);
-					
-					$.each($bcRowLabels, function($index, $value) {
-						var $bcRow = $("<tr>");
-						if ( $value['label'] == "<break>") {
-							$bcRow.append( $('<td colspan="6">').append("&nbsp;") );
-						} else {
-							console.log($value);
-							$bcRow.append( $("<td>").append($value['label']) );
-							$bcRow.append( $("<td>").addClass("aligned-right").append("n/a") );
-							$.each($data.data.workCalendar, function($index, $calendarValue) {
-								var $className = $value['className']+"_"+"week"+$calendarValue.weekOfYear;
-								$bcRow.append( $("<td>").addClass($value['className']).addClass('week'+$calendarValue.weekOfYear).addClass("aligned-right").addClass($className).append("0.00") );
-							});
-							$bcRow.append( $("<td>").addClass("aligned-right").addClass($value['className']+'_total').append("0.00") );
-						}
-						$("#bcr_totals .bcr_totals_display tbody").append($bcRow);
-					});
-					
-					$.each(["D/L Percentage","Actual D/L Percentage"], function($index, $value) {
-						var $bcRow = $("<tr>");
-						$bcRow.append( $("<td>").append($value+":") );
-						$bcRow.append( $("<td>").append("&nbsp;") );
-						$.each($data.data.workCalendar, function($index, $value) {
-							$bcRow.append( $("<td>").addClass("aligned-right").append("0.00%") );
-						});
-						$bcRow.append( $("<td>").addClass("aligned-right").append("0.00%") );
-						$("#bcr_totals .bcr_totals_display tbody").append($bcRow);
-					});
-					
+        			console.log("populateBudgetControlTotalsPanel");
+        			var $dataToTable = {
+        				"totalVolume":"total_volume",
+        				"volumeClaimed":"volume_claimed",
+        				"dlAmt":"actual_dl",
+        				// "dlTotal":"",
+        				// "passthruVolume":"",
+        				"claimedVolumeTotal":"total_dl_claimed",
+        				"volumeRemaining":"claimed_volume_remaining",
+        				"billedAmount":"total_billed",
+        				"claimedVsBilled":"variance",
+        			};
+        			
+        			$.each($data.data.weekTotals, function($indexWk, $weekTotal) {
+        				console.log($weekTotal['claimWeek'] +" "+$weekTotal['totalVolume']);
+        				var $weekNum = $weekTotal['claimWeek'].split("-")[1];
+        				$.each($dataToTable, function($source, $destination) {
+        					var $selector = "#bcr_totals ." + $destination +"_week" + $weekNum;
+        					console.log("Dest: " + $selector);
+        					console.log("value: " + $weekTotal[$source].toFixed(2));
+        					$($selector).html( $weekTotal[$source].toFixed(2) );     
+                			
+        	        		
+        				});
+        			});
         		},
         		
         		
@@ -592,13 +624,15 @@
         			console.log("populateTicketTables");
         			var $weekList = []
         			$.each($data.data.workCalendar, function($index, $value) {
-        				var $destination = "#ticketTable" + $value.weekOfMonth;
-        				var $outbound = {"divisionId":$data.data.divisionId, "workYear":$data.data.workYear,"workWeek":$value.weekOfYear};
         				$weekList.push($value.weekOfYear);
-        				BUDGETCONTROL.doTicketLookup($destination, "bcr/ticketList", $outbound);
         			});
         			var $workWeeks = $weekList.join(",");
-        			var $outbound = {"divisionId":$data.data.divisionId, "workYear":$data.data.workYear, "workWeek":$workWeeks};
+        			$.each($data.data.workCalendar, function($index, $value) {
+        				var $destination = "#ticketTable" + $value.weekOfMonth;
+        				var $outbound = {"divisionId":$data.data.divisionId, "workYear":$data.data.workYear,"workWeeks":$workWeeks,"workWeek":$value.weekOfYear};
+        				BUDGETCONTROL.doTicketLookup($destination, "bcr/weeklyTicketList", $outbound);
+        			});
+        			var $outbound = {"divisionId":$data.data.divisionId, "workYear":$data.data.workYear, "workWeeks":$workWeeks};
         			BUDGETCONTROL.doTicketLookup("#ticketTable","bcr/ticketList", $outbound);
         		},
         		
@@ -645,19 +679,20 @@
         		titleSaveSuccess : function($data) {
         			console.log("titleSaveSuccess");
         			
-        			BUDGETCONTROL.populateTicketTables($data);
-        			BUDGETCONTROL.populateTitlePanel($data);
-        			BUDGETCONTROL.initializeActualDLPanel($data);
-        			
 					$weekList = [];        			
         			$.each($data.data.workCalendar, function($index, $value) {
         				$weekList.push($value.weekOfYear);
         			});
+        			
         			var $workWeeks = $weekList.join(",");
+        			BUDGETCONTROL.initializeActualDLPanel($data);        			
+        			BUDGETCONTROL.initializeBudgetControlTotalsPanel($data);
+        			BUDGETCONTROL.populateTicketTables($data);
+        			BUDGETCONTROL.populateTitlePanel($data);
         			var $outbound = {"divisionId":$data.data.divisionId, "workYear":$data.data.workYear, "workWeek":$workWeeks};        			
-        			ANSI_UTILS.doServerCall("GET", "bcr/actualDL", $outbound, BUDGETCONTROL.populateActualDLPanel, BUDGETCONTROL.actualDLError);
+        			ANSI_UTILS.doServerCall("GET", "bcr/actualDL", $outbound, BUDGETCONTROL.populateActualDLPanel, BUDGETCONTROL.bcrError);
+        			ANSI_UTILS.doServerCall("GET", "bcr/bcTotals", $outbound, BUDGETCONTROL.populateBudgetControlTotalsPanel, BUDGETCONTROL.bcrError);
 
-        			BUDGETCONTROL.populateBudgetControlTotalsPanel($data);
 
 					$.each($data.data.workCalendar, function($index, $value) {
 						var $panelId = "#bcr_panels .ticket-display-week" + $value.weekOfMonth;

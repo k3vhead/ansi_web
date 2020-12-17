@@ -104,10 +104,8 @@ public class BcrTicketSql extends ApplicationObject {
 		return whereClause;
 	}
 	
-	public static String makeBaseWhereClause(String workWeek) {
-		Logger myLogger = LogManager.getLogger(BcrTicketLookupQuery.class);
-		String whereClause = BcrTicketSql.baseWhereClause.replaceAll("\\$CLAIMWEEKFILTER\\$", workWeek);
-		myLogger.log(Level.DEBUG, whereClause);
+	public static String makeBaseWhereClause(String workWeeks) {
+		String whereClause = BcrTicketSql.baseWhereClause.replaceAll("\\$CLAIMWEEKFILTER\\$", workWeeks);
 		return whereClause;
 	}
 }

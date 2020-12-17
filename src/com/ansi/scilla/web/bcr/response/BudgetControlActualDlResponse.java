@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -48,12 +47,10 @@ public class BudgetControlActualDlResponse extends MessageResponse {
 	private HashMap<Integer, ActualDL> makeActualDL(Connection conn, Integer userId, List<SessionDivision> divisionList,
 			Integer divisionId, Integer workYear, String workWeek) throws SQLException {
 		
-		Logger logger = LogManager.getLogger(this.getClass());
-		HashMap<Integer, ActualDL> weekActualDL = new HashMap<Integer, ActualDL>();
+		HashMap<Integer, ActualDL> weekActualDL = new HashMap<Integer, ActualDL>();		
+		String[] workWeeks = StringUtils.split(workWeek, ",");		
 		
-		String[] workWeeks = StringUtils.split(workWeek, ",");
-		String sql = baseSql.replaceAll("\\$WEEKFILTER\\$", QMarkTransformer.makeQMarkWhereClause(Arrays.asList(workWeeks)));
-		logger.log(Level.DEBUG, sql);
+		String sql = baseSql.replaceAll("\\$WEEKFILTER\\$", QMarkTransformer.makeQMarkWhereClause(workWeek));
 		int n = 1;
 		PreparedStatement ps = conn.prepareStatement(sql);
 		ps.setInt(n, divisionId);

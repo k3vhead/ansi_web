@@ -2,15 +2,15 @@ package com.ansi.scilla.web.bcr.servlet;
 
 import com.ansi.scilla.web.bcr.query.BcrTicketLookupQuery;
 
-public class BcrTicketLookupServlet extends AbstractBcrTicketLookupServlet {
+public class BcrWeeklyTicketLookupServlet extends AbstractBcrTicketLookupServlet {
 	
 	private static final long serialVersionUID = 1L;
 
 	@Override
 	protected void makeMyColumns() {
 		cols = new String[] { 
-				BcrTicketLookupQuery.NAME,
-				BcrTicketLookupQuery.TICKET_ID,
+				"job_site_name",
+				"ticket_id",
 				CLAIM_WEEK,
 				BcrTicketLookupQuery.TICKET_TYPE,
 				DIRECT_LABOR,

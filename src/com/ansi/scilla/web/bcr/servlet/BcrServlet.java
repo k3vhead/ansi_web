@@ -17,9 +17,10 @@ public class BcrServlet extends AbstractServlet {
 	private final String REALM = "bcr";
 	private final String TITLE = "title";
 	private final String DIRECT_LABOR = "directLabor";
-	private final String TOTALS = "totals";
+	private final String BC_TOTALS = "bcTotals";
 	private final String EMPLOYEES = "employees";
 	private final String TICKETLIST = "ticketList";
+	private final String WEEKLY_TICKETLIST = "weeklyTicketList";
 	private final String INIT = "init";
 	private final String ACTUAL_DL = "actualDL";
 	
@@ -50,7 +51,10 @@ public class BcrServlet extends AbstractServlet {
 		case TICKETLIST:
 			new BcrTicketLookupServlet().doGet(request, response);
 			break;	
-		case TOTALS:
+		case WEEKLY_TICKETLIST:
+			new BcrWeeklyTicketLookupServlet().doGet(request, response);
+			break;	
+		case BC_TOTALS:
 			new BcrTotalsServlet().doGet(request, response);
 		case ACTUAL_DL:
 			new BcrActualDLServlet().doGet(request, response);
