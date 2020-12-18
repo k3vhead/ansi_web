@@ -7,6 +7,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.web.bcr.common.BcrTicketSql;
 import com.ansi.scilla.web.common.response.MessageResponse;
@@ -33,12 +38,52 @@ public class BudgetControlTotalsResponse extends MessageResponse {
 
 	private List<BCRTotalsDetail> weekTotals;
 	private BCRTotalsDetail monthTotal;
+	private BudgetControlActualDlResponse actualDl;
 	
 	public BudgetControlTotalsResponse(Connection conn, Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer workYear, String workWeek) throws SQLException {
+		this.actualDl = new BudgetControlActualDlResponse(conn, userId, divisionList, divisionId, workYear, workWeek);
+		makeTotalsResponse(conn, userId, divisionList, divisionId, workYear, workWeek);
+	}
+	
+	
+	public List<BCRTotalsDetail> getWeekTotals() {
+		return weekTotals;
+	}
+
+	public void setWeekTotals(List<BCRTotalsDetail> weekTotals) {
+		this.weekTotals = weekTotals;
+	}
+
+	public BCRTotalsDetail getMonthTotal() {
+		return monthTotal;
+	}
+
+	public void setMonthTotal(BCRTotalsDetail monthTotal) {
+		this.monthTotal = monthTotal;
+	}
+
+	public BudgetControlActualDlResponse getActualDl() {
+		return actualDl;
+	}
+
+	public void setActualDl(BudgetControlActualDlResponse actualDl) {
+		this.actualDl = actualDl;
+	}
+
+
+	private void makeTotalsResponse(Connection conn, Integer userId, List<SessionDivision> divisionList,
+			Integer divisionId, Integer workYear, String workWeek) throws SQLException {
 		String baseSql = BcrTicketSql.sqlSelectClause + BcrTicketSql.makeFilteredFromClause(divisionList) + BcrTicketSql.makeBaseWhereClause(workWeek);
 		String sql = selectClause + baseSql + groupClause;
 		this.weekTotals = new ArrayList<BCRTotalsDetail>();
 		this.monthTotal = new BCRTotalsDetail();
+		
+		List<Integer> weekFilter = new ArrayList<Integer>();
+		for ( String weekNum : StringUtils.split(workWeek, ",")) {
+			weekFilter.add(Integer.valueOf(weekNum));
+		}
+		Logger logger = LogManager.getLogger(this.getClass());
+		logger.log(Level.DEBUG, sql);
 		
 		PreparedStatement ps = conn.prepareStatement(sql);
 		ps.setInt(1, divisionId);
@@ -47,29 +92,12 @@ public class BudgetControlTotalsResponse extends MessageResponse {
 		while ( rs.next() ) {
 			BCRTotalsDetail detail = new BCRTotalsDetail(rs);
 			this.weekTotals.add(detail);
-			this.monthTotal.add(detail);
+			String[] workDate = detail.getClaimWeek().split("-");
+			if ( weekFilter.contains(Integer.valueOf(workDate[1]))) {
+				this.monthTotal.add(detail);
+			}
 		}
-		rs.close();		
-	}
-	
-	
-	public List<BCRTotalsDetail> getWeekTotals() {
-		return weekTotals;
-	}
-
-
-	public void setWeekTotals(List<BCRTotalsDetail> weekTotals) {
-		this.weekTotals = weekTotals;
-	}
-
-
-	public BCRTotalsDetail getMonthTotal() {
-		return monthTotal;
-	}
-
-
-	public void setMonthTotal(BCRTotalsDetail monthTotal) {
-		this.monthTotal = monthTotal;
+		rs.close();				
 	}
 
 

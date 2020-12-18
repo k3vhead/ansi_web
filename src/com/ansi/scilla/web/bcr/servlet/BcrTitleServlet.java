@@ -50,7 +50,6 @@ public class BcrTitleServlet extends AbstractServlet {
 				BcrTitleRequest titleRequest = new BcrTitleRequest();
 				AppUtils.json2object(jsonString, titleRequest);
 				final SimpleDateFormat sdfx = new SimpleDateFormat("MM/dd/yyyy E HH:mm:ss.S");
-				logger.log(Level.DEBUG, titleRequest.getWorkDate() == null ? "No Date entered" : sdfx.format(titleRequest.getWorkDate().getTime()));
 				SessionUser sessionUser = sessionData.getUser();
 				WebMessages webMessages = titleRequest.validate(conn, sessionUser);				
 				BcrTitleResponse data = new BcrTitleResponse();

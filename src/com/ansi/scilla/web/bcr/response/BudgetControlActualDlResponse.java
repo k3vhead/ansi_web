@@ -8,9 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.utils.QMarkTransformer;
@@ -39,15 +36,14 @@ public class BudgetControlActualDlResponse extends MessageResponse {
 			Integer divisionId, Integer workYear, String workWeek) throws SQLException {
 		this();
 		this.workYear = workYear;
-		this.weekActualDL = makeActualDL(conn, userId, divisionList, divisionId, workYear, workWeek);
-		
+		makeActualDL(conn, userId, divisionList, divisionId, workYear, workWeek);
 	}
 
 	
-	private HashMap<Integer, ActualDL> makeActualDL(Connection conn, Integer userId, List<SessionDivision> divisionList,
+	private void makeActualDL(Connection conn, Integer userId, List<SessionDivision> divisionList,
 			Integer divisionId, Integer workYear, String workWeek) throws SQLException {
 		
-		HashMap<Integer, ActualDL> weekActualDL = new HashMap<Integer, ActualDL>();		
+		this.weekActualDL = new HashMap<Integer, ActualDL>();
 		String[] workWeeks = StringUtils.split(workWeek, ",");		
 		
 		String sql = baseSql.replaceAll("\\$WEEKFILTER\\$", QMarkTransformer.makeQMarkWhereClause(workWeek));
@@ -65,12 +61,14 @@ public class BudgetControlActualDlResponse extends MessageResponse {
 		}
 		ResultSet rs  = ps.executeQuery();
 		while ( rs.next() ) {
-			weekActualDL.put(rs.getInt("claim_week"), new ActualDL(rs));
+			Integer claimWeek = rs.getInt("claim_week");
+			ActualDL weeklyDL = new ActualDL(rs);
+			this.weekActualDL.put(claimWeek, weeklyDL);
 		}
 		rs.close();
-		return weekActualDL;
 	}
 
+	
 	
 	public Integer getWorkYear() {
 		return workYear;
@@ -91,6 +89,7 @@ public class BudgetControlActualDlResponse extends MessageResponse {
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+	
 
 
 	public class ActualDL extends ApplicationObject {
@@ -98,11 +97,18 @@ public class BudgetControlActualDlResponse extends MessageResponse {
 		private Integer claimWeek;
 		private Double actualDL;
 		private Double omDL;
+		private Double totalDL;
+		
+		public ActualDL() {
+			super();
+		}
 		
 		public ActualDL(ResultSet rs) throws SQLException {
+			this();
 			this.claimWeek = rs.getInt("claim_week");
 			this.actualDL = rs.getDouble("actual_dl");
 			this.omDL = rs.getDouble("om_dl");
+			this.totalDL = this.actualDL + this.omDL;
 		}
 
 		public Integer getClaimWeek() {
@@ -116,6 +122,12 @@ public class BudgetControlActualDlResponse extends MessageResponse {
 		public Double getOmDL() {
 			return omDL;
 		}
+
+		public Double getTotalDL() {
+			return totalDL;
+		}
+
+		
 		
 	}
 }

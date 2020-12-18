@@ -110,6 +110,7 @@
         		
         		bcrError : function($data) {
         			console.log("bcrError");
+        			$("#globalMsg").html("Unknown system error. Contact Support");
         		},
         		
         		
@@ -150,11 +151,14 @@
         		
         		
         		doTicketLookup : function($destination,$url, $outbound) {
-        			console.log("doTIcketLookup");
-        			console.log($destination);
-        			console.log($url);
-        			console.log($outbound)
-        			
+        			var $weekNum = $outbound['workWeek'];
+        			if ( $weekNum==null || $weekNum=='') {
+        				$fileName = "All Tickets";
+        			} else {
+        				$fileName = "Tickets Week " + $weekNum;
+        			}
+        			console.log("doTIcketLookup " + $fileName);
+
         			BUDGETCONTROL.ticketTable[$destination] = $($destination).DataTable( {
             			"aaSorting":		[[0,'asc']],
             			"processing": 		true,
@@ -173,7 +177,13 @@
             	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
             	        ],
             	        buttons: [
-            	        	'pageLength','copy', 'csv', 'excel', {extend: 'pdfHtml5', orientation: 'landscape'}, 'print',{extend: 'colvis',	label: function () {doFunctionBinding();$('#ticketTable').draw();}}
+            	        	'pageLength',
+            	        	'copy', 
+            	        	{extend:'csv', filename:'* ' + $fileName}, 
+            	        	{extend:'excel', filename:'* ' + $fileName}, 
+            	        	{extend:'pdfHtml5', orientation: 'landscape', filename:'* ' + $fileName}, 
+            	        	'print',
+            	        	{extend:'colvis', label: function () {doFunctionBinding();$('#ticketTable').draw();}}
             	        ],
             	        "columnDefs": [
              	            { "orderable": true, "targets": -1 },
@@ -298,25 +308,24 @@
         				}
         				$value = parseFloat($value).toFixed(2);
         				$that.val( $value );
-						if ( $that.hasClass("actualDL") ) {
-							var $selector = "#bcr_totals .actual_dl_week" + $week;
-							var $looper = "#bcr_totals .actual_dl";
-							var $totalCell = "#bcr_totals .actual_dl_total";
-						} else if ( $that.hasClass("omDL") ) {
-							var $selector = "#bcr_totals .actual_om_dl_week" + $week;
-							var $looper = "#bcr_totals .actual_om_dl";
-							var $totalCell = "#bcr_totals .actual_om_dl_total";
-						} else {
-							//$("#globalMsg").html("Invalid system state. Reload and try again").show();
-							// we're just going to ignore this
-						}
-						$($selector).html($value);
-						var $rowTotal = 0.00;
-						$.each( $($looper), function($index, $value) {
-							$rowTotal = $rowTotal + parseFloat($($value).html());
-						});
-						$($totalCell).html($rowTotal.toFixed(2));
-						
+    					if ( $that.hasClass("actualDL") ) {
+    						var $selector = "#bcr_totals .actual_dl_week" + $week;
+    						var $looper = "#bcr_totals .actual_dl";
+    						var $totalCell = "#bcr_totals .actual_dl_total";
+    					} else if ( $that.hasClass("omDL") ) {
+    						var $selector = "#bcr_totals .actual_om_dl_week" + $week;
+    						var $looper = "#bcr_totals .actual_om_dl";
+    						var $totalCell = "#bcr_totals .actual_om_dl_total";
+    					} else {
+    						//$("#globalMsg").html("Invalid system state. Reload and try again").show();
+    						// we're just going to ignore this
+    					}
+    					$($selector).html($value);
+    					var $rowTotal = 0.00;
+    					$.each( $($looper), function($index, $value) {
+    						$rowTotal = $rowTotal + parseFloat($($value).html());
+    					});
+    					$($totalCell).html($rowTotal.toFixed(2));
         			});
         		},
         		
@@ -366,7 +375,7 @@
 					$.each($data.data.workCalendar, function($index, $value) {
 						$totalVolRow.append( $("<td>").addClass("aligned-right").addClass("total_volume").addClass("week"+$value.weekOfYear).addClass("total_volume_week"+$value.weekOfYear).append("0.00") );
 					});
-					$totalVolRow.append( $("<td>").addClass("aligned-right").append("0.00") );
+					$totalVolRow.append( $("<td>").addClass("aligned-right").addClass("total_volume_total").append("0.00") );
 					$("#bcr_totals .bcr_totals_display tbody").append($totalVolRow);
 					
 					$.each($bcRowLabels, function($index, $value) {
@@ -374,7 +383,6 @@
 						if ( $value['label'] == "<break>") {
 							$bcRow.append( $('<td colspan="6">').append("&nbsp;") );
 						} else {
-							console.log($value);
 							$bcRow.append( $("<td>").append($value['label']) );
 							$bcRow.append( $("<td>").addClass("aligned-right").append("n/a") );
 							$.each($data.data.workCalendar, function($index, $calendarValue) {
@@ -571,9 +579,7 @@
         		
         		populateActualDLPanel : function($data) {
         			console.log("populateActualDLPanel");
-        			$.each($data.data.weekActualDL, function($index, $value) {
-        				console.log("Week: " + $index + " " + $value.actualDL);
-        				
+        			$.each($data.weekActualDL, function($index, $value) {
         				var $actualDL = parseFloat($value.actualDL).toFixed(2);
         				var $actualOM = parseFloat($value.omDL).toFixed(2);
         				
@@ -582,16 +588,17 @@
         				var $om = 'input[name="omDL-'+$index+'"]';
         				$($actual).val($actualDL);
         				$($om).val($actualOM);
-        				
-        				
         			});
         		},
         		
         		
         		
         		
+        		
         		populateBudgetControlTotalsPanel : function($data) {
         			console.log("populateBudgetControlTotalsPanel");
+        			
+        			// populate budget control totals panel with weekly data
         			var $dataToTable = {
         				"totalVolume":"total_volume",
         				"volumeClaimed":"volume_claimed",
@@ -605,17 +612,37 @@
         			};
         			
         			$.each($data.data.weekTotals, function($indexWk, $weekTotal) {
-        				console.log($weekTotal['claimWeek'] +" "+$weekTotal['totalVolume']);
         				var $weekNum = $weekTotal['claimWeek'].split("-")[1];
         				$.each($dataToTable, function($source, $destination) {
-        					var $selector = "#bcr_totals ." + $destination +"_week" + $weekNum;
-        					console.log("Dest: " + $selector);
-        					console.log("value: " + $weekTotal[$source].toFixed(2));
-        					$($selector).html( $weekTotal[$source].toFixed(2) );     
-                			
-        	        		
+        					var $weekSelector = "#bcr_totals ." + $destination +"_week" + $weekNum;
+        					$($weekSelector).html( $weekTotal[$source].toFixed(2) );     
         				});
         			});
+    				$.each($dataToTable, function($source, $destination) {
+        				var $monthSelector = "#bcr_totals ." + $destination + "_total";
+        				console.log($monthSelector + " " + $data.data.monthTotal[$source]);
+        				$($monthSelector).html( $data.data.monthTotal[$source].toFixed(2) );
+    				});
+        			
+        			
+        			
+        			// populate actual DL panel with actual dl data
+        			BUDGETCONTROL.populateActualDLPanel($data.data.actualDl);
+        			// populate budget control panel actual dl rows
+        			$.each($data.data.actualDl.weekActualDL, function($weekNum, $value) {
+        				var $actualDL = parseFloat($value.actualDL).toFixed(2);
+        				var $dlSelector = "#bcr_totals .actual_dl_week" + $weekNum;
+        				$($dlSelector).html($actualDL);
+        				var $actualOM = parseFloat($value.omDL).toFixed(2);
+        				var $omSelector = "#bcr_totals .actual_om_dl_week" + $weekNum;
+        				$($omSelector).html($actualOM);
+        				var $totalDL = parseFloat($value.totalDL).toFixed(2);
+        				var $totSelector = "#bcr_totals .total_actual_dl_week" + $weekNum;
+        				$($totSelector).html($totalDL);
+        			});
+        			
+        			
+        			
         		},
         		
         		
@@ -656,11 +683,8 @@
         			console.log("titleSave");
         			$("#bcr_title_prompt .err").html("");
         			var $divisionId = $("#bcr_title_prompt select[name='divisionId']").val();
-        			console.log("Div: " + $divisionId);
         			$outbound = {"divisionId":$divisionId, "workDate":$("#workDaySelector").val()};
-        			console.log(JSON.stringify($outbound));
         			ANSI_UTILS.doServerCall("POST", "bcr/title", JSON.stringify($outbound), BUDGETCONTROL.titleSaveSuccess, BUDGETCONTROL.titleSaveFail);
-        			
         		},
         		
         		
@@ -690,14 +714,13 @@
         			BUDGETCONTROL.populateTicketTables($data);
         			BUDGETCONTROL.populateTitlePanel($data);
         			var $outbound = {"divisionId":$data.data.divisionId, "workYear":$data.data.workYear, "workWeek":$workWeeks};        			
-        			ANSI_UTILS.doServerCall("GET", "bcr/actualDL", $outbound, BUDGETCONTROL.populateActualDLPanel, BUDGETCONTROL.bcrError);
+        			// ANSI_UTILS.doServerCall("GET", "bcr/actualDL", $outbound, BUDGETCONTROL.populateActualDLPanel, BUDGETCONTROL.bcrError);
         			ANSI_UTILS.doServerCall("GET", "bcr/bcTotals", $outbound, BUDGETCONTROL.populateBudgetControlTotalsPanel, BUDGETCONTROL.bcrError);
 
 
 					$.each($data.data.workCalendar, function($index, $value) {
 						var $panelId = "#bcr_panels .ticket-display-week" + $value.weekOfMonth;
 						var $labelId = "h4 .week" + $value.weekOfMonth;
-						console.log($labelId);
 						$($labelId).html("Week " + $value.weekOfYear + " | " + $value.firstOfWeek + "-" + $value.lastOfWeek);
 						$($panelId).show();
 					});
