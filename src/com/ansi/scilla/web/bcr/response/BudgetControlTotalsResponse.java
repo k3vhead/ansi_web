@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.web.bcr.common.BcrTicketSql;
+import com.ansi.scilla.web.bcr.response.BudgetControlActualDlResponse.ActualDL;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 
@@ -42,7 +44,7 @@ public class BudgetControlTotalsResponse extends MessageResponse {
 	
 	public BudgetControlTotalsResponse(Connection conn, Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer workYear, String workWeek) throws SQLException {
 		this.actualDl = new BudgetControlActualDlResponse(conn, userId, divisionList, divisionId, workYear, workWeek);
-		makeTotalsResponse(conn, userId, divisionList, divisionId, workYear, workWeek);
+		makeTotalsResponse(conn, userId, divisionList, divisionId, workYear, workWeek, this.actualDl);
 	}
 	
 	
@@ -70,9 +72,11 @@ public class BudgetControlTotalsResponse extends MessageResponse {
 		this.actualDl = actualDl;
 	}
 
+	
+
 
 	private void makeTotalsResponse(Connection conn, Integer userId, List<SessionDivision> divisionList,
-			Integer divisionId, Integer workYear, String workWeek) throws SQLException {
+			Integer divisionId, Integer workYear, String workWeek, BudgetControlActualDlResponse actualDl) throws SQLException {
 		String baseSql = BcrTicketSql.sqlSelectClause + BcrTicketSql.makeFilteredFromClause(divisionList) + BcrTicketSql.makeBaseWhereClause(workWeek);
 		String sql = selectClause + baseSql + groupClause;
 		this.weekTotals = new ArrayList<BCRTotalsDetail>();
@@ -90,7 +94,7 @@ public class BudgetControlTotalsResponse extends MessageResponse {
 		ps.setInt(2, workYear);
 		ResultSet rs = ps.executeQuery();
 		while ( rs.next() ) {
-			BCRTotalsDetail detail = new BCRTotalsDetail(rs);
+			BCRTotalsDetail detail = new BCRTotalsDetail(rs, actualDl);
 			this.weekTotals.add(detail);
 			String[] workDate = detail.getClaimWeek().split("-");
 			if ( weekFilter.contains(Integer.valueOf(workDate[1]))) {
@@ -101,7 +105,9 @@ public class BudgetControlTotalsResponse extends MessageResponse {
 	}
 
 
-	public class BCRTotalsDetail extends ApplicationObject {
+
+
+	public class BCRTotalsDetail extends ApplicationObject implements Comparable<BCRTotalsDetail> {
 		private static final long serialVersionUID = 1L;
 		private String claimWeek;
 		private Double dlAmt = 0.0D;
@@ -113,11 +119,13 @@ public class BudgetControlTotalsResponse extends MessageResponse {
 		private Double volumeRemaining = 0.0D;
 		private Double billedAmount = 0.0D;
 		private Double claimedVsBilled = 0.0D;
+		private Double dlPercentage = 0.0D;
+		private Double actualDlPercentage = 0.0D;
 		
 		public BCRTotalsDetail() {
 			super();
 		}
-		public BCRTotalsDetail(ResultSet rs) throws SQLException {
+		public BCRTotalsDetail(ResultSet rs, BudgetControlActualDlResponse actualDl) throws SQLException {
 			this();
 			this.claimWeek = rs.getString("claim_week");
 			this.dlAmt = rs.getDouble("dl_amt");
@@ -128,7 +136,19 @@ public class BudgetControlTotalsResponse extends MessageResponse {
 			this.claimedVolumeTotal = rs.getDouble("claimed_volume_total");
 			this.volumeRemaining = rs.getDouble("volume_remaining");
 			this.billedAmount = rs.getDouble("billed_amount");
-			this.claimedVsBilled = rs.getDouble("claimed_vs_billed");
+			this.claimedVsBilled = rs.getDouble("claimed_vs_billed");			
+			this.dlPercentage = this.volumeClaimed == null ? 0.0D : (this.dlTotal/this.volumeClaimed)*100;
+			
+			if ( this.volumeClaimed == null ) {
+				this.actualDlPercentage = 0.0D;
+			} else {
+				String[] claimWeekString = StringUtils.split(this.claimWeek, "-");
+				Integer weekNum = Integer.valueOf(claimWeekString[1]);
+				HashMap<Integer, ActualDL> map = actualDl.getWeekActualDL();
+				ActualDL actualDL = map.get(weekNum);				
+				this.actualDlPercentage = actualDL == null || actualDL.getTotalDL() == null ? 0.0D : (actualDL.getTotalDL() / this.volumeClaimed)*100;
+			}
+			 
 		}
 
 		public String getClaimWeek() {
@@ -210,7 +230,18 @@ public class BudgetControlTotalsResponse extends MessageResponse {
 		public void setClaimedVsBilled(Double claimedVsBilled) {
 			this.claimedVsBilled = claimedVsBilled;
 		}
-		
+		public Double getDlPercentage() {
+			return dlPercentage;
+		}
+		public void setDlPercentage(Double dlPercentage) {
+			this.dlPercentage = dlPercentage;
+		}
+		public Double getActualDlPercentage() {
+			return actualDlPercentage;
+		}
+		public void setActualDlPercentage(Double actualDlPercentage) {
+			this.actualDlPercentage = actualDlPercentage;
+		}
 		
 		public void add(BCRTotalsDetail detail) {
 			this.dlAmt = this.dlAmt + detail.getDlAmt();
@@ -222,6 +253,11 @@ public class BudgetControlTotalsResponse extends MessageResponse {
 			this.volumeRemaining = this.volumeRemaining + detail.getVolumeRemaining();
 			this.billedAmount = this.billedAmount + detail.getBilledAmount();
 			this.claimedVsBilled = this.claimedVsBilled + detail.getClaimedVsBilled();
+		}
+		
+		@Override
+		public int compareTo(BCRTotalsDetail o) {
+			return this.getClaimWeek().compareTo(o.getClaimWeek());
 		}
 		
 		

@@ -602,7 +602,7 @@
         			var $dataToTable = {
         				"totalVolume":"total_volume",
         				"volumeClaimed":"volume_claimed",
-        				"dlAmt":"actual_dl",
+        				//"dlAmt":"actual_dl",  This gets populated from "actual direct labor" totals panel
         				// "dlTotal":"",
         				// "passthruVolume":"",
         				"claimedVolumeTotal":"total_dl_claimed",
@@ -640,8 +640,10 @@
         				var $totSelector = "#bcr_totals .total_actual_dl_week" + $weekNum;
         				$($totSelector).html($totalDL);
         			});
-        			
-        			
+        			// populate budget control panel actual dl totals
+        			$("#bcr_totals .actual_dl_total").html($data.data.actualDl.totalActualDL.actualDL.toFixed(2));
+        			$("#bcr_totals .actual_om_dl_total").html($data.data.actualDl.totalActualDL.omDL.toFixed(2));
+        			$("#bcr_totals .total_actual_dl_total").html($data.data.actualDl.totalActualDL.totalDL.toFixed(2));
         			
         		},
         		

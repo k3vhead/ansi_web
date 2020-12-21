@@ -20,6 +20,7 @@ public class BudgetControlActualDlResponse extends MessageResponse {
 
 	private Integer workYear;
 	private HashMap<Integer, ActualDL> weekActualDL;
+	private ActualDL totalActualDL;
 	
 	private static final String baseSql = "select dl.division_id, dl.claim_year, dl.claim_week, dl.actual_dl, om_dl\n" + 
 			"from actual_direct_labor_totals dl\n" + 
@@ -44,6 +45,7 @@ public class BudgetControlActualDlResponse extends MessageResponse {
 			Integer divisionId, Integer workYear, String workWeek) throws SQLException {
 		
 		this.weekActualDL = new HashMap<Integer, ActualDL>();
+		this.totalActualDL = new ActualDL();
 		String[] workWeeks = StringUtils.split(workWeek, ",");		
 		
 		String sql = baseSql.replaceAll("\\$WEEKFILTER\\$", QMarkTransformer.makeQMarkWhereClause(workWeek));
@@ -64,6 +66,7 @@ public class BudgetControlActualDlResponse extends MessageResponse {
 			Integer claimWeek = rs.getInt("claim_week");
 			ActualDL weeklyDL = new ActualDL(rs);
 			this.weekActualDL.put(claimWeek, weeklyDL);
+			this.totalActualDL.add(weeklyDL);
 		}
 		rs.close();
 	}
@@ -86,10 +89,16 @@ public class BudgetControlActualDlResponse extends MessageResponse {
 		this.weekActualDL = weekActualDL;
 	}
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
+	public ActualDL getTotalActualDL() {
+		return totalActualDL;
 	}
-	
+
+	public void setTotalActualDL(ActualDL totalActualDL) {
+		this.totalActualDL = totalActualDL;
+	}
+
+
+
 
 
 	public class ActualDL extends ApplicationObject {
@@ -103,6 +112,8 @@ public class BudgetControlActualDlResponse extends MessageResponse {
 			super();
 		}
 		
+		
+
 		public ActualDL(ResultSet rs) throws SQLException {
 			this();
 			this.claimWeek = rs.getInt("claim_week");
@@ -125,6 +136,12 @@ public class BudgetControlActualDlResponse extends MessageResponse {
 
 		public Double getTotalDL() {
 			return totalDL;
+		}
+
+		public void add(ActualDL weeklyDL) {
+			this.actualDL = this.actualDL == null ? weeklyDL.getActualDL() : this.actualDL + weeklyDL.getActualDL();
+			this.omDL = this.omDL == null ? weeklyDL.getOmDL() : this.omDL + weeklyDL.getOmDL();
+			this.totalDL = this.totalDL == null ? weeklyDL.getTotalDL() : this.totalDL + weeklyDL.getTotalDL();			
 		}
 
 		
