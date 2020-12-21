@@ -146,7 +146,7 @@
 						dataType: 'json'
 					});
       			
-        			$("#globalMsg").html($word + " to " + $reportId + " for " + $groupId).show().fadeOut(6000);
+        			//$("#globalMsg").html($word + " to " + $reportId + " for " + $groupId).show().fadeOut(6000);
         			//console.log($word + " to " + $reportId + " for " + $groupId);
         			
         		},
@@ -195,7 +195,7 @@
 						dataType: 'json'
 					});
       			
-        			$("#globalMsg").html($word + " to " + $reportId + " for " + $divisionId).show().fadeOut(6000);
+        			//$("#globalMsg").html($word + " to " + $reportId + " for " + $divisionId).show().fadeOut(6000);
         			//console.log($word + " to " + $reportId + " for " + $divisionId);
         			
         		},
