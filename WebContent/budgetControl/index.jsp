@@ -356,17 +356,19 @@
 					
 					
 					var $bcRowLabels = [
-							{"label":"Volume Claimed:","className":"volume_claimed"},
-							{"label":"Claimed Volume Remaining:","className":"claimed_volume_remaining"},
+							{"label":"Volume Claimed:","className":"volume_claimed", "column1":"n/a"},
+							{"label":"Claimed Volume Remaining:","className":"claimed_volume_remaining", "column1":"n/a"},
 							{"label":"<break>"},
-							{"label":"Total Billed:","className":"total_billed"},
-							{"label":"Variance:","className":"variance"},
+							{"label":"Total Billed:","className":"total_billed", "column1":"n/a"},
+							{"label":"Variance:","className":"variance", "column1":"n/a"},
 							{"label":"<break>"},
-							{"label":"Total D/L Claimed:","className":"total_dl_claimed"},
-							{"label":"Actual D/L:","className":"actual_dl"},
-							{"label":"Actual OM D/L:","className":"actual_om_dl"},
-							{"label":"Total Actual D/L:","className":"total_actual_dl"},
-							{"label":"<break>"}
+							{"label":"Total D/L Claimed:","className":"total_dl_claimed", "column1":"n/a"},
+							{"label":"Actual D/L:","className":"actual_dl", "column1":"n/a"},
+							{"label":"Actual OM D/L:","className":"actual_om_dl", "column1":"n/a"},
+							{"label":"Total Actual D/L:","className":"total_actual_dl", "column1":"n/a"},
+							{"label":"<break>"},
+							{"label":"D/L Percentage:", "className":"dl_percentage", "column1":"&nbsp;"},
+							{"label":"Actual D/L Percentage:", "className":"actual_dl_percentage", "column1":"&nbsp;"},
 						];
 					
 					var $totalVolRow = $("<tr>");					
@@ -384,24 +386,13 @@
 							$bcRow.append( $('<td colspan="6">').append("&nbsp;") );
 						} else {
 							$bcRow.append( $("<td>").append($value['label']) );
-							$bcRow.append( $("<td>").addClass("aligned-right").append("n/a") );
+							$bcRow.append( $("<td>").addClass("aligned-right").append($value['column1']) );
 							$.each($data.data.workCalendar, function($index, $calendarValue) {
 								var $className = $value['className']+"_"+"week"+$calendarValue.weekOfYear;								
 								$bcRow.append( $("<td>").addClass($value['className']).addClass('week'+$calendarValue.weekOfYear).addClass($value['className']+"_"+'week'+$calendarValue.weekOfYear).addClass("aligned-right").addClass($className).append("0.00") );
 							});
 							$bcRow.append( $("<td>").addClass("aligned-right").addClass($value['className']+'_total').append("0.00") );
 						}
-						$("#bcr_totals .bcr_totals_display tbody").append($bcRow);
-					});
-					
-					$.each(["D/L Percentage","Actual D/L Percentage"], function($index, $value) {
-						var $bcRow = $("<tr>");
-						$bcRow.append( $("<td>").append($value+":") );
-						$bcRow.append( $("<td>").append("&nbsp;") );
-						$.each($data.data.workCalendar, function($index, $value) {
-							$bcRow.append( $("<td>").addClass("aligned-right").append("0.00%") );
-						});
-						$bcRow.append( $("<td>").addClass("aligned-right").append("0.00%") );
 						$("#bcr_totals .bcr_totals_display tbody").append($bcRow);
 					});
 					
@@ -605,10 +596,12 @@
         				//"dlAmt":"actual_dl",  This gets populated from "actual direct labor" totals panel
         				// "dlTotal":"",
         				// "passthruVolume":"",
-        				"claimedVolumeTotal":"total_dl_claimed",
+        				"dlTotal":"total_dl_claimed",
         				"volumeRemaining":"claimed_volume_remaining",
         				"billedAmount":"total_billed",
         				"claimedVsBilled":"variance",
+        				"dlPercentage":"dl_percentage",
+        				"actualDlPercentage":"actual_dl_percentage",
         			};
         			
         			$.each($data.data.weekTotals, function($indexWk, $weekTotal) {
