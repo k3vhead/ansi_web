@@ -114,6 +114,7 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 				HashMap<String, Double> weeklyDL = dl.getWeeklyDL();
 				weeklyDL.put(claimWeek, directLabor);
 				dl.setWeeklyDL(weeklyDL);
+				dl.setTotalDL(dl.getTotalDL() + directLabor);
 				workMap.put(employee, dl);
 			}
 		}
@@ -133,6 +134,7 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 
 		private String employee;
 		private HashMap<String, Double> weeklyDL = new HashMap<String, Double>();
+		private Double totalDL;
 		
 		public EmployeeDL(String employee, Integer workYear, String workWeekList) {
 			super();
@@ -141,6 +143,7 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 			for ( String week : weekList ) {
 				weeklyDL.put( String.valueOf(workYear)+"-"+week, 0.0D);
 			}
+			this.totalDL = 0.0D;
 		}
 		
 		public String getEmployee() {
@@ -159,14 +162,26 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 			this.weeklyDL = weeklyDL;
 		}
 
+		public Double getTotalDL() {
+			return totalDL;
+		}
+
+		public void setTotalDL(Double totalDL) {
+			this.totalDL = totalDL;
+		}
+
 		public void add(EmployeeDL dl) {
 			for ( Map.Entry<String, Double> week : dl.getWeeklyDL().entrySet() ) {
 				String claimWeek = week.getKey();
 				Double currentValue = this.weeklyDL.get(claimWeek);
 				Double newValue = currentValue + dl.getWeeklyDL().get(claimWeek);
-				this.weeklyDL.put(claimWeek, newValue);
+				this.weeklyDL.put(claimWeek, newValue);				
 			}
 			
+			this.totalDL = 0.0D;
+			for ( Double weeklyDL : this.getWeeklyDL().values() ) {
+				this.totalDL = this.totalDL + weeklyDL;
+			}
 		}
 
 		@Override

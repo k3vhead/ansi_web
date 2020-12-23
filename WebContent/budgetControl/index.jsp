@@ -690,6 +690,7 @@
         		
         		populateEmployeePanel : function($data) {
         			console.log("populateEmployeePanel");
+					
         			$.each($data.data.employees, function($index, $value) {
         				console.log($value.employee);
         				var $employeeRow = $("<tr>");
@@ -702,8 +703,22 @@
         						$employeeRow.append( $("<td>").addClass("aligned-right").append("0.00") );
         					}
         				});
+        				$employeeRow.append( $("<td>").addClass("aligned-right").append($value.totalDL.toFixed(2)) );
         				$("#bcr_employees tbody").append($employeeRow);
         			});
+        			
+        			var $footerRow = $("<tr>");
+					$footerRow.append( $("<td>").append("Total Assigned D/L - All Employees"));
+					$footerRow.append( $("<td>").append("&nbsp;"));  // spacer to account for unclaimed column
+					$.each($data.data.claimWeeks, function($index, $claimWeek) {
+						if ( $claimWeek in $data.data.monthlyTotal.weeklyDL ) {
+							$footerRow.append( $("<td>").addClass("aligned-right").append($data.data.monthlyTotal.weeklyDL[$claimWeek].toFixed(2)) );
+						} else {
+							$footerRow.append( $("<td>").addClass("aligned-right").append("0.00") );
+						}
+					});
+    				$footerRow.append( $("<td>").addClass("aligned-right").append($data.data.monthlyTotal.totalDL.toFixed(2)) );
+    				$("#bcr_employees tfoot").html($footerRow);
         		},
         		
         		
