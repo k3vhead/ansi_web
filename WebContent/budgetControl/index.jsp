@@ -70,6 +70,10 @@
 			.ticket-week-display {
 				display:none;
 			} 
+			.ticket-note {
+				text-decoration:underline;
+				cursor:pointer;
+			}
 			
 			
         	#filter-container {
@@ -237,7 +241,7 @@
     			            } },
     			            { title: "Notes",  width:"10%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	var $displayNote = '';
-    			            	if(row.notes != null && row.notes != ''){$displayNote = '<span class="tooltip">'+row.notes_display+'<span class="tooltiptext">'+row.notes+'</span></span>';}
+    			            	if(row.notes != null && row.notes != ''){$displayNote = '<span class="tooltip ticket-note">'+row.notes_display+'<span class="tooltiptext">'+row.notes+'</span></span>';}
     			            	return $displayNote;
     			            } },
     			            { title: "Billed Amount",  width:"6%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
@@ -692,7 +696,6 @@
         			console.log("populateEmployeePanel");
 					
         			$.each($data.data.employees, function($index, $value) {
-        				console.log($value.employee);
         				var $employeeRow = $("<tr>");
         				$employeeRow.append( $("<td>").append($value.employee) );
         				$employeeRow.append( $("<td>").append("&nbsp;") );  // spacer to account for unclaimed column in budget control total panel

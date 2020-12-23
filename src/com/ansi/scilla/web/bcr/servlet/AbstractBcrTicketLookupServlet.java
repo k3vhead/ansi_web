@@ -2,6 +2,7 @@ package com.ansi.scilla.web.bcr.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
@@ -51,7 +53,7 @@ public abstract class AbstractBcrTicketLookupServlet extends AbstractLookupServl
 		public AbstractBcrTicketLookupServlet() {
 			super(Permission.TICKET_READ);
 			makeMyColumns();
-//			super.itemTransformer = new ItemTransformer();
+			super.itemTransformer = new ItemTransformer();
 		}
 		
 		@Override
@@ -92,20 +94,20 @@ public abstract class AbstractBcrTicketLookupServlet extends AbstractLookupServl
 
 		protected abstract void makeMyColumns();
 		
-//		public class ItemTransformer implements Transformer<HashMap<String, Object>, HashMap<String, Object>> {
-	//
-//			@Override
-//			public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
-//				String notes = (String)arg0.get(NOTES);
-//				if ( StringUtils.isBlank(notes) ) {
-//					arg0.put(NOTES_DISPLAY, null);
-//				} else {
-//					arg0.put(NOTES_DISPLAY, StringUtils.abbreviate(notes, 10));
-//				}
-//				return arg0;
-//			}
-//			
-//		}
-	//	
+		public class ItemTransformer implements Transformer<HashMap<String, Object>, HashMap<String, Object>> {
+	
+			@Override
+			public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
+				String notes = (String)arg0.get(NOTES);
+				if ( StringUtils.isBlank(notes) ) {
+					arg0.put(NOTES_DISPLAY, null);
+				} else {
+					arg0.put(NOTES_DISPLAY, StringUtils.abbreviate(notes, 10));
+				}
+				return arg0;
+			}
+			
+		}
+		
 
 }
