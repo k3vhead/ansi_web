@@ -56,6 +56,10 @@ public class BcrServlet extends AbstractServlet {
 			break;	
 		case BC_TOTALS:
 			new BcrTotalsServlet().doGet(request, response);
+			break;
+		case EMPLOYEES:
+			new BcrEmployeesServlet().doGet(request, response);
+			break;
 		case ACTUAL_DL:
 			new BcrActualDLServlet().doGet(request, response);
 			break;

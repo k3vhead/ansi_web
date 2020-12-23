@@ -48,6 +48,12 @@
         	.aligned-right {
         		text-align:right;
         	}
+        	.bcr_employees_display .column-header {
+				font-weight:bold;
+			}
+			.bcr_employees_display th {
+				text-align:right;
+			}
 			.bcr_totals_display .column-header {
 				font-weight:bold;
 			}
@@ -401,6 +407,46 @@
         		
         		
         		
+        		initializeEmployeePanel : function($data) {
+        			var $headerRow1 = $("<tr>");
+					$headerRow1.append($("<td>").append("&nbsp;"));
+					$headerRow1.append($("<td>").append("&nbsp;")); 
+					var $headerRow2 = $("<tr>");
+					$headerRow2.append($("<td>").addClass("column-header").append("Week:"));
+					$headerRow2.append($("<td>").addClass("column-header").addClass("aligned-right").append("&nbsp;")); 
+					var $footerRow = $("<tr>");
+					$footerRow.append( $("<td>").append("Total Assigned D/L - All Employees"));
+					$footerRow.append( $("<td>").append("&nbsp;"));  // spacer to account for unclaimed column
+					
+					$.each($data.data.workCalendar, function($index, $value) {
+						var $startDate = $value.firstOfWeek.substring(0, 5);
+						var $endDate = $value.lastOfWeek.substring(0, 5);
+						var $dates = $("<td>").append($startDate + "-" + $endDate);
+						$dates.addClass("aligned-right");
+						$headerRow1.append($dates);
+
+						var $week = $("<td>").addClass("column-header").append($value.weekOfYear);
+						$week.addClass("aligned-right");
+						$headerRow2.append($week);
+						
+						$footerRow.append( $("<td>").addClass("aligned-right").append("0.00") );
+					});
+					$headerRow1.append( $("<th>").append("Month") );
+					$headerRow2.append( $("<th>").append("Total") );
+					$("#bcr_employees .bcr_employees_display thead").append($headerRow1);
+					$("#bcr_employees .bcr_employees_display thead").append($headerRow2);
+					
+					
+					$footerRow.append( $("<td>").addClass("aligned-right").append("0.00") );
+					$("#bcr_employees .bcr_employees_display tfoot").append($footerRow);
+
+					
+        		},
+        		
+        		
+        		
+        		
+        		
         		makeAccordion : function() {
         			$('ul.accordionList').accordion({
 						//autoHeight: true,
@@ -613,7 +659,6 @@
         			});
     				$.each($dataToTable, function($source, $destination) {
         				var $monthSelector = "#bcr_totals ." + $destination + "_total";
-        				console.log($monthSelector + " " + $data.data.monthTotal[$source]);
         				$($monthSelector).html( $data.data.monthTotal[$source].toFixed(2) );
     				});
         			
@@ -638,6 +683,27 @@
         			$("#bcr_totals .actual_om_dl_total").html($data.data.actualDl.totalActualDL.omDL.toFixed(2));
         			$("#bcr_totals .total_actual_dl_total").html($data.data.actualDl.totalActualDL.totalDL.toFixed(2));
         			
+        		},
+        		
+        		
+        		
+        		
+        		populateEmployeePanel : function($data) {
+        			console.log("populateEmployeePanel");
+        			$.each($data.data.employees, function($index, $value) {
+        				console.log($value.employee);
+        				var $employeeRow = $("<tr>");
+        				$employeeRow.append( $("<td>").append($value.employee) );
+        				$employeeRow.append( $("<td>").append("&nbsp;") );  // spacer to account for unclaimed column in budget control total panel
+        				$.each($data.data.claimWeeks, function($index, $claimWeek) {
+        					if ( $claimWeek in $value.weeklyDL ) {
+        						$employeeRow.append( $("<td>").addClass("aligned-right").append($value.weeklyDL[$claimWeek].toFixed(2)) );
+        					} else {
+        						$employeeRow.append( $("<td>").addClass("aligned-right").append("0.00") );
+        					}
+        				});
+        				$("#bcr_employees tbody").append($employeeRow);
+        			});
         		},
         		
         		
@@ -706,11 +772,13 @@
         			var $workWeeks = $weekList.join(",");
         			BUDGETCONTROL.initializeActualDLPanel($data);        			
         			BUDGETCONTROL.initializeBudgetControlTotalsPanel($data);
+        			BUDGETCONTROL.initializeEmployeePanel($data);
         			BUDGETCONTROL.populateTicketTables($data);
         			BUDGETCONTROL.populateTitlePanel($data);
         			var $outbound = {"divisionId":$data.data.divisionId, "workYear":$data.data.workYear, "workWeek":$workWeeks};        			
         			// ANSI_UTILS.doServerCall("GET", "bcr/actualDL", $outbound, BUDGETCONTROL.populateActualDLPanel, BUDGETCONTROL.bcrError);
         			ANSI_UTILS.doServerCall("GET", "bcr/bcTotals", $outbound, BUDGETCONTROL.populateBudgetControlTotalsPanel, BUDGETCONTROL.bcrError);
+        			ANSI_UTILS.doServerCall("GET", "bcr/employees", $outbound, BUDGETCONTROL.populateEmployeePanel, BUDGETCONTROL.bcrError);
 
 
 					$.each($data.data.workCalendar, function($index, $value) {

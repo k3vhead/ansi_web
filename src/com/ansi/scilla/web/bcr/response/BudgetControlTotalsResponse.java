@@ -41,10 +41,12 @@ public class BudgetControlTotalsResponse extends MessageResponse {
 	private List<BCRTotalsDetail> weekTotals;
 	private BCRTotalsDetail monthTotal;
 	private BudgetControlActualDlResponse actualDl;
+	private BudgetControlEmployeesResponse employees;
 	
 	public BudgetControlTotalsResponse(Connection conn, Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer workYear, String workWeek) throws SQLException {
 		this.actualDl = new BudgetControlActualDlResponse(conn, userId, divisionList, divisionId, workYear, workWeek);
 		makeTotalsResponse(conn, userId, divisionList, divisionId, workYear, workWeek, this.actualDl);
+		makeEmployeeResponse(conn, userId, divisionList, divisionId, workYear, workWeek);
 	}
 	
 	
@@ -73,6 +75,16 @@ public class BudgetControlTotalsResponse extends MessageResponse {
 	}
 
 	
+
+
+	public BudgetControlEmployeesResponse getEmployees() {
+		return employees;
+	}
+
+
+	public void setEmployees(BudgetControlEmployeesResponse employees) {
+		this.employees = employees;
+	}
 
 
 	private void makeTotalsResponse(Connection conn, Integer userId, List<SessionDivision> divisionList,
@@ -105,6 +117,10 @@ public class BudgetControlTotalsResponse extends MessageResponse {
 	}
 
 
+	private void makeEmployeeResponse(Connection conn, Integer userId, List<SessionDivision> divisionList,
+			Integer divisionId, Integer workYear, String workWeek) throws SQLException {
+		this.employees = new BudgetControlEmployeesResponse(conn, userId, divisionList, divisionId, workYear, workWeek);		
+	}
 
 
 	public class BCRTotalsDetail extends ApplicationObject implements Comparable<BCRTotalsDetail> {
