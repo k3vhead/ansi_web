@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -38,52 +39,67 @@ public class BudgetControlTotalsResponse extends MessageResponse {
 	
 	private static final String groupClause = "\n) as detail group by claim_week\norder by claim_week";
 
+	private Integer divisionId;
 	private List<BCRTotalsDetail> weekTotals;
 	private BCRTotalsDetail monthTotal;
 	private BudgetControlActualDlResponse actualDl;
 	private BudgetControlEmployeesResponse employees;
+	private List<String> claimWeeks;
 	
+	
+	public BudgetControlTotalsResponse() {
+		super();
+	}
+
 	public BudgetControlTotalsResponse(Connection conn, Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer workYear, String workWeek) throws SQLException {
+		this();
+		this.divisionId = divisionId;
 		this.actualDl = new BudgetControlActualDlResponse(conn, userId, divisionList, divisionId, workYear, workWeek);
 		makeTotalsResponse(conn, userId, divisionList, divisionId, workYear, workWeek, this.actualDl);
 		makeEmployeeResponse(conn, userId, divisionList, divisionId, workYear, workWeek);
+		this.claimWeeks = new ArrayList<String>();
+		for ( String week : StringUtils.split(workWeek,",")) {
+			claimWeeks.add( String.valueOf(workYear)+"-"+week);
+		}
+		Collections.sort(claimWeeks);
 	}
 	
 	
+	public Integer getDivisionId() {
+		return divisionId;
+	}
+	public void setDivisionId(Integer divisionId) {
+		this.divisionId = divisionId;
+	}
 	public List<BCRTotalsDetail> getWeekTotals() {
 		return weekTotals;
 	}
-
 	public void setWeekTotals(List<BCRTotalsDetail> weekTotals) {
 		this.weekTotals = weekTotals;
 	}
-
 	public BCRTotalsDetail getMonthTotal() {
 		return monthTotal;
 	}
-
 	public void setMonthTotal(BCRTotalsDetail monthTotal) {
 		this.monthTotal = monthTotal;
 	}
-
 	public BudgetControlActualDlResponse getActualDl() {
 		return actualDl;
 	}
-
 	public void setActualDl(BudgetControlActualDlResponse actualDl) {
 		this.actualDl = actualDl;
 	}
-
-	
-
-
 	public BudgetControlEmployeesResponse getEmployees() {
 		return employees;
 	}
-
-
 	public void setEmployees(BudgetControlEmployeesResponse employees) {
 		this.employees = employees;
+	}
+	public List<String> getClaimWeeks() {
+		return claimWeeks;
+	}
+	public void setClaimWeeks(List<String> claimWeeks) {
+		this.claimWeeks = claimWeeks;
 	}
 
 

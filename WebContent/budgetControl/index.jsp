@@ -42,6 +42,9 @@
 			#bcr_panels .display {
 				display:none;
 			}
+			.actual-saving {
+				display:none;
+			}
         	.aligned-center {
         		text-align:center;
         	}
@@ -120,14 +123,14 @@
         		
         		bcrError : function($data) {
         			console.log("bcrError");
-        			$("#globalMsg").html("Unknown system error. Contact Support");
+        			$("#globalMsg").html("Unknown system error. Contact Support").show();
         		},
         		
         		
         		
         		dateCallFail : function($data) {
         			console.log("dateCallFail");
-        			$("#globalMsg").html("Failure Retrieving Dates. Contact Support");
+        			$("#globalMsg").html("Failure Retrieving Dates. Contact Support").show();
         		},
         		
         		
@@ -294,48 +297,69 @@
 						$actualDL.addClass("actualDL");
 						$actualDL.attr("data-week",$value.weekOfYear);
 						$actualDL.attr("data-year",$data.data.workYear);
+						$actualDL.val("0.00");
 						var $omDL = $('<input type="text" />');
 						$omDL.attr("name","omDL-" + $value.weekOfYear);	
 						$omDL.addClass("omDL");
 						$omDL.attr("data-week",$value.weekOfYear)
 						$omDL.attr("data-year",$data.data.workYear);
+						$omDL.val("0.00");
 						$row.append($label);
 						$row.append($week);
 						$row.append($firstOfWeek);
 						$row.append($lastOfWeek);
 						$row.append( $("<td>").append($actualDL));
 						$row.append( $("<td>").append($omDL));
+						var $workingClass = "actual-saving actual-working-week" + $value.weekOfYear; 
+						var $doneClass = "actual-saving actual-done-week" + $value.weekOfYear;
+						$row.append( $("<td>").append('<webthing:working styleClass="'+$workingClass+'"/><webthing:checkmark  styleClass="'+$doneClass+'">Success</webthing:checkmark>'));
 						$("#actual_dl_totals tbody").append($row);
 					});
         			
         		
         			$("#actual_dl_totals input").blur(function($event) {
         				var $that = $(this);
-        				var $week = $that.attr("data-week");
+        				var $previousValue = $that.attr("data-previous");
         				var $value = $that.val();
         				if ( isNaN($value) || $value == '' || $value == null) {
         					$value = "0.00";
         				}
         				$value = parseFloat($value).toFixed(2);
         				$that.val( $value );
-    					if ( $that.hasClass("actualDL") ) {
-    						var $selector = "#bcr_totals .actual_dl_week" + $week;
-    						var $looper = "#bcr_totals .actual_dl";
-    						var $totalCell = "#bcr_totals .actual_dl_total";
-    					} else if ( $that.hasClass("omDL") ) {
-    						var $selector = "#bcr_totals .actual_om_dl_week" + $week;
-    						var $looper = "#bcr_totals .actual_om_dl";
-    						var $totalCell = "#bcr_totals .actual_om_dl_total";
-    					} else {
-    						//$("#globalMsg").html("Invalid system state. Reload and try again").show();
-    						// we're just going to ignore this
-    					}
-    					$($selector).html($value);
-    					var $rowTotal = 0.00;
-    					$.each( $($looper), function($index, $value) {
-    						$rowTotal = $rowTotal + parseFloat($($value).html());
-    					});
-    					$($totalCell).html($rowTotal.toFixed(2));
+        				
+        				// only do updates if the number has changed
+        				if ( $value != $previousValue ) {
+        					console.log("Value changed -- do a save: " + $value + " " + $previousValue);        					
+            				var $claimWeek = $that.attr("data-week");
+            				var $claimYear = $that.attr("data-year");            				
+            				var $divisionId = $that.attr("data-divisionid");
+            				var $claimWeeks = $that.attr("data-claimweeks");
+        					var $workingSelector = "#actual_dl_totals .actual-working-week" + $claimWeek;
+        					$($workingSelector).show();
+        					var $outbound = {"claimWeek":$claimWeek, "claimYear":$claimYear, "value":$value, "divisionId":$divisionId, "claimWeeks":$claimWeeks};
+        					if ( $that.hasClass("actualDL") ) {
+        						var $selector = "#bcr_totals .actual_dl_week" + $claimWeek;
+        						var $looper = "#bcr_totals .actual_dl";
+        						var $totalCell = "#bcr_totals .actual_dl_total";
+        						$outbound['type'] = "actualDL";
+        					} else if ( $that.hasClass("omDL") ) {
+        						var $selector = "#bcr_totals .actual_om_dl_week" + $claimWeek;
+        						var $looper = "#bcr_totals .actual_om_dl";
+        						var $totalCell = "#bcr_totals .actual_om_dl_total";
+        						$outbound['type'] = 'omDL';
+        					} else {
+        						//$("#globalMsg").html("Invalid system state. Reload and try again").show();
+        						// we're just going to ignore this
+        					}
+        					console.log($outbound);
+        					ANSI_UTILS.doServerCall("POST", "bcr/actualDL", JSON.stringify($outbound), BUDGETCONTROL.updateActualSuccess, BUDGETCONTROL.updateActualFail);
+        					$($selector).html($value);
+        					var $rowTotal = 0.00;
+        					$.each( $($looper), function($index, $value) {
+        						$rowTotal = $rowTotal + parseFloat($($value).html());
+        					});
+        					$($totalCell).html($rowTotal.toFixed(2));
+        				}
         			});
         		},
         		
@@ -618,8 +642,20 @@
         		
         		
         		
-        		populateActualDLPanel : function($data) {
+        		populateActualDLPanel : function($data, $divisionId, $claimWeeks) {
         			console.log("populateActualDLPanel");
+        			var $claimWeekArray = null;
+        			$.each($claimWeeks, function($index, $value) {
+        				var $weekNum = $value.split("-")[1];
+        				if ( $claimWeekArray == null ) {
+        					$claimWeekArray = $weekNum;
+        				} else {
+        					$claimWeekArray = $claimWeekArray + "," + $weekNum
+        				}
+        			});
+        			$("#actual_dl_totals input").attr("data-divisionid",$divisionId);
+        			$("#actual_dl_totals input").attr("data-previous","0.00");
+        			$("#actual_dl_totals input").attr("data-claimweeks",$claimWeekArray);
         			$.each($data.weekActualDL, function($index, $value) {
         				var $actualDL = parseFloat($value.actualDL).toFixed(2);
         				var $actualOM = parseFloat($value.omDL).toFixed(2);
@@ -627,9 +663,14 @@
         				// populate actual dl panel
         				var $actual = 'input[name="actualDL-'+$index+'"]';
         				var $om = 'input[name="omDL-'+$index+'"]';
+        				$($actual).attr("data-previous",$actualDL);
+        				//$($actual).attr("data-divisionid", $divisionId);
+        				$($om).attr("data-previous",$actualOM);
+        				//$($om).attr("data-divisionid", $divisionId);
         				$($actual).val($actualDL);
         				$($om).val($actualOM);
-        			});
+        			});        			
+        			$(".actual-saving").hide();  // putting this in the CSS doesn't help b/c they don't exist yet
         		},
         		
         		
@@ -669,7 +710,7 @@
         			
         			
         			// populate actual DL panel with actual dl data
-        			BUDGETCONTROL.populateActualDLPanel($data.data.actualDl);
+        			BUDGETCONTROL.populateActualDLPanel($data.data.actualDl, $data.data.divisionId, $data.data.claimWeeks);
         			// populate budget control panel actual dl rows
         			$.each($data.data.actualDl.weekActualDL, function($weekNum, $value) {
         				var $actualDL = parseFloat($value.actualDL).toFixed(2);
@@ -811,6 +852,18 @@
         			$("#bcr_title_prompt").dialog("close");
         			$("#titleHeader").click();
         			
+        		},
+        		
+        		
+        		updateActualFail : function($data) {
+        			console.log("updateActualFail");
+        			$("#globalMsg").html($data.data.webMessages["GLOBAL_MESSAGE"]).show();
+        		},
+        		
+        		updateActualSuccess : function($data) {
+        			console.log("updateActualSuccess");
+        			BUDGETCONTROL.populateBudgetControlTotalsPanel($data);
+        			$("#globalMsg").html("D/L Updated").show().fadeOut(3000);
         		}
         	};
         	

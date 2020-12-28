@@ -11,10 +11,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.utils.QMarkTransformer;
-import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 
-public class BudgetControlActualDlResponse extends MessageResponse {
+public class BudgetControlActualDlResponse extends ApplicationObject {
 
 	private static final long serialVersionUID = 1L;
 
@@ -29,7 +28,7 @@ public class BudgetControlActualDlResponse extends MessageResponse {
 			"and dl.claim_year=?\n" + 
 			"and dl.claim_week in $WEEKFILTER$";
 	
-	private BudgetControlActualDlResponse() {
+	public BudgetControlActualDlResponse() {
 		super();
 	}
 	
