@@ -5,49 +5,65 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.web.bcr.query.BcrTicketLookupQuery;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.common.utils.SessionDivisionTransformer;
 
 public class BcrTicketSql extends ApplicationObject {
 	private static final long serialVersionUID = 1L;
 
+	public static final String JOB_SITE_NAME = "job_site_name";
+	public static final String TICKET_ID = "ticket_id";
+	public static final String CLAIM_WEEK = "claim_week";
+	public static final String DL_AMT = "dl_amt";
+	public static final String DL_TOTAL = "dl_total";
+	public static final String TOTAL_VOLUME = "total_volume";
+	public static final String VOLUME_CLAIMED = "volume_claimed";
+	public static final String PASSTHRU_VOLUME = "passthru_volume";
+	public static final String PASSTHRU_EXPENSE_TYPE = "passthru_expense_type";
+	public static final String CLAIMED_VOLUME_TOTAL = "claimed_volume_total";
+	public static final String VOLUME_REMAINING = "volume_remaining";
+	public static final String SERVICE_TAG_ID = "service_tag_id";
+	public static final String NOTES = "notes";
+	public static final String BILLED_AMOUNT = "billed_amount";
+	public static final String CLAIMED_VS_BILLED = "claimed_vs_billed";
+	public static final String TICKET_STATUS = "ticket_status";
+	public static final String EMPLOYEE = "employee";
+	public static final String EQUIPMENT_TAGS = "equipment_tags";
+	
+	
 	public static final String sqlSelectClause = 
 			"select \n" + 
-			"   job_site.name as job_site_name\n" + 
-			" , ticket.ticket_id\n" + 
-			" , concat(ticket_claim.claim_year,'-',ticket_claim.claim_week) as claim_week\n" + 
-			" , isnull(ticket_claim.dl_amt,0.00) as dl_amt\n" + 
+			"   job_site.name as " + JOB_SITE_NAME + "\n" + 
+			" , ticket."+TICKET_ID+"\n" + 
+			" , concat(ticket_claim.claim_year,'-',ticket_claim.claim_week) as "+CLAIM_WEEK+"\n" + 
+			" , isnull(ticket_claim.dl_amt,0.00) as "+DL_AMT+"\n" + 
 			"-- ** ignoring dl_exp until we know what we are doing with it **\n" + 
 			"-- , isnull(ticket_claim.dl_exp,0.00) as dl_exp\n" + 
 			"-- , isnull(ticket_claim.dl_amt,0.00)+ISNULL(ticket_claim.dl_exp,0.00) as dl_total\n" + 
-			" , isnull(ticket_claim.dl_amt,0.00) as dl_total\n" + 
-			" , job.price_per_cleaning as total_volume\n" + 
-			" , isnull(ticket_claim.volume,0.00) as volume_claimed	\n" + 
+			" , isnull(ticket_claim.dl_amt,0.00) as "+DL_TOTAL +"\n" + 
+			" , job.price_per_cleaning as "+ TOTAL_VOLUME + "\n" + 
+			" , isnull(ticket_claim.volume,0.00) as " + VOLUME_CLAIMED + "\n" + 
 			"-- ** this part needs a passthru discussion **\n" + 
-			" , ISNULL(ticket_claim.passthru_expense_volume,0.00) as passthru_volume	\n" + 
-			" , ticket_claim.passthru_expense_type\n" + 
-			" , isnull(ticket_claim.volume,0.00)+ISNULL(ticket_claim.passthru_expense_volume,0.00) as claimed_volume_total\n" + 
-			" , job.price_per_cleaning - isnull(ticket_claim_totals.claimed_total_volume,0.00)	as volume_remaining	\n" + 
+			" , ISNULL(ticket_claim.passthru_expense_volume,0.00) as " + PASSTHRU_VOLUME +"\n" + 
+			" , ticket_claim." + PASSTHRU_EXPENSE_TYPE + "\n" + 
+			" , isnull(ticket_claim.volume,0.00)+ISNULL(ticket_claim.passthru_expense_volume,0.00) as "+CLAIMED_VOLUME_TOTAL+"\n" + 
+			" , job.price_per_cleaning - isnull(ticket_claim_totals.claimed_total_volume,0.00)	as "+VOLUME_REMAINING + " \n" + 
 			"-- , isnull(invoice_totals.invoiced_amount,0.00) as billed_amount	, (isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim_passthru_totals.passthru_volume,0.00))		- isnull(invoice_totals.invoiced_amount,0.00) as claimed_vs_billed	, ISNULL(ticket_payment_totals.paid_amount,0.00) as paid_amt	, ISNULL(invoice_totals.invoiced_amount,0.00)-ISNULL(ticket_payment_totals.paid_amount,0.00) as amount_due\n" + 
 			"-- , job.price_per_cleaning - (isnull(ticket_claim_totals.claimed_volume,0.00))	as volume_remaining\n" + 
-			" , job_tag.abbrev as service_tag_id\n" + 
-			" , ticket_claim.notes\n" + 
+			" , job_tag.abbrev as " + SERVICE_TAG_ID + "\n" + 
+			" , ticket_claim.notes as " + NOTES + "\n" + 
 			"-- ** used a join to make sure only invoiced tickets get a billed amount **\n" + 
-			" , isnull(invoice_totals.invoiced_amount,0.00) as billed_amount\n" + 
+			" , isnull(invoice_totals.invoiced_amount,0.00) as " + BILLED_AMOUNT + "\n" + 
 			"-- ** repeat of passthru question **\n" + 
 			"-- , (isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim_passthru_totals.passthru_volume,0.00)) - isnull(invoice_totals.invoiced_amount,0.00) as claimed_vs_billed	\n" + 
-			" , (isnull(ticket_claim_totals.claimed_volume,0.00)) - isnull(invoice_totals.invoiced_amount,0.00) as claimed_vs_billed	\n" + 
-			" , ticket.ticket_status\n" + 
-			" , ticket_claim.employee_name as employee\n" + 
+			" , (isnull(ticket_claim_totals.claimed_volume,0.00)) - isnull(invoice_totals.invoiced_amount,0.00) as " + CLAIMED_VS_BILLED + " \n" + 
+			" , ticket.ticket_status as " + TICKET_STATUS + "\n" + 
+			" , ticket_claim.employee_name as " + EMPLOYEE + "\n" + 
 			"-- ** this is where the equipment tags would go **\n" + 
 			"-- , \"concat equipment tags separated by commas\"\n" + 
-			" , 'GSS' as equipment_tags\n";
+			" , 'GSS' as " + EQUIPMENT_TAGS + " \n";
 			
 	
 	public static final String sqlFromClause = 

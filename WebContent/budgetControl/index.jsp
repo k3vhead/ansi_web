@@ -155,9 +155,14 @@
         			$(".bcr-edit-clicker").on("click", function($clickevent) {
         				$clickevent.preventDefault();
         				var $ticketId = $(this).attr("data-ticketid");
+        				var $divisionId = $(this).attr("data-divisionid");
+        				var $workYear = $(this).attr("data-workYear");
+        				var $workWeeks = $(this).attr("data-workWeeks");
+        				var $outbound = {"divisionId":$divisionId, "workYear":$workYear, "workWeeks":$workWeeks};
         				console.log("edit clicked: " + $ticketId);
-        				$("#bcr_edit_modal .ticketId").html($ticketId);
-        				$("#bcr_edit_modal").dialog("open");
+        				console.log($outbound);
+        				var $url = "bcr/ticket/" + $ticketId;
+        				ANSI_UTILS.doServerCall("GET", $url, $outbound, BUDGETCONTROL.getTicketDetailSuccess, BUDGETCONTROL.getTicketDetailFail);
         			});
         		},
         		
@@ -213,7 +218,7 @@
     			        	},
     			        columns: [
     			        	{ title: "Account", width:"15%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.job_site_name != null){return ('<a href="#" class="bcr-edit-clicker" data-ticketid="'+row.ticket_id+'">'+row.job_site_name+'</a>');}
+    			            	if(row.job_site_name != null){return ('<a href="#" class="bcr-edit-clicker" data-ticketid="'+row.ticket_id+'" data-workyear="'+$outbound['workYear']+'" data-workweeks="'+$outbound['workWeeks']+'" data-divisionid="'+$outbound['divisionId']+'">'+row.job_site_name+'</a>');}
     			            } },
     			            { title: "Ticket Number", width:"6%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.ticket_id != null){return ('<a href="#" data-id="'+row.ticket_id+'" class="ticket-clicker">'+row.ticket_id+'</a>');}
@@ -277,6 +282,44 @@
     			    } );
         		},
         		
+        		
+        		
+        		getTicketDetailSuccess : function($data) {
+					console.log("getTicketDetailSuccess");  
+					
+					var $select = $("#bcr_edit_modal select[name='claimWeek']");
+					$('option', $select).remove();
+					$select.append(new Option("",""));
+					$.each($data.data.claimWeeks, function(index, val) {
+						console.log(val);
+					    $select.append(new Option(val, val));
+					});	
+					
+					
+        			$("#bcr_edit_modal .jobSiteName").html($data.data.ticket.jobSiteName);
+        			$("#bcr_edit_modal .ticketId").html($data.data.ticket.ticketId);
+        			$("#bcr_edit_modal select[name='claimWeek']").val($data.data.ticket.claimWeek);
+        			$("#bcr_edit_modal input[name='dlAmt']").val($data.data.ticket.dlAmt.toFixed(2));
+        			$("#bcr_edit_modal input[name='totalVolume']").val($data.data.ticket.totalVolume.toFixed(2));
+        			$("#bcr_edit_modal input[name='volumeClaimed']").val($data.data.ticket.volumeClaimed.toFixed(2));
+        			$("#bcr_edit_modal .volumeRemaining").html($data.data.ticket.volumeRemaining.toFixed(2));
+        			$("#bcr_edit_modal input[name='notes']").val($data.data.ticket.notes);
+        			$("#bcr_edit_modal input[name='billedAmount']").val($data.data.ticket.billedAmount.toFixed(2));
+        			$("#bcr_edit_modal .claimedVsBilled").html($data.data.ticket.claimedVsBilled.toFixed(2));
+        			$("#bcr_edit_modal .ticketStatus").html($data.data.ticket.ticketStatus);
+        			$("#bcr_edit_modal .serviceTagId").html($data.data.ticket.serviceTagId);
+        			$("#bcr_edit_modal .equipmentTags").html($data.data.ticket.equipmentTags);
+        			$("#bcr_edit_modal input[name='employee']").val($data.data.ticket.employee);
+    	    		
+        			$("#bcr_edit_modal").dialog("open");
+        		}, 
+        		
+        		
+        		
+        		getTicketDetailFail : function($data) {
+					console.log("getTicketDetailFail");        			
+
+        		},
         		
         		
         		
@@ -542,7 +585,7 @@
         			$( "#bcr_edit_modal" ).dialog({
         				title:'Edit Claim',
         				autoOpen: false,
-        				height: 400,
+        				height: 550,
         				width: 500,
         				modal: true,
         				closeOnEscape:true,
@@ -1002,7 +1045,7 @@
 	    	<table>
 	    		<tr>
 	    			<td><span class="form-label">Account:</span></td>
-	    			<td></td>
+	    			<td><span class="jobSiteName"></span></td>
 	    			<td><span class="err divisionIdErr"></span></td>
 	    		</tr>
 	    		<tr>
@@ -1012,57 +1055,62 @@
 	    		</tr>
 	    		<tr>
 	    			<td><span class="form-label">Claim Week:</span></td>
-	    			<td></td>
+	    			<td><select name="claimWeek"></select></td>
 	    			<td><span class="err workDateErr"></span></td>	    			
 	    		</tr>
 	    		<tr>
 	    			<td><span class="form-label">D/L:</span></td>
-	    			<td></td>
+	    			<td><input type="text" name="dlAmt"></input></td>
 	    			<td><span class="err workDateErr"></span></td>	    			
 	    		</tr>
 	    		<tr>
 	    			<td><span class="form-label">Total Volume:</span></td>
-	    			<td></td>
+	    			<td><input type="text" name="totalVolume"></input></td>
 	    			<td><span class="err workDateErr"></span></td>	    			
 	    		</tr>
 	    		<tr>
 	    			<td><span class="form-label">Volume Claimed:</span></td>
-	    			<td></td>
+	    			<td><input type="text" name="volumeClaimed"></input></td>
 	    			<td><span class="err workDateErr"></span></td>	    			
 	    		</tr>
 	    		<tr>
 	    			<td><span class="form-label">Volume Remaining:</span></td>
-	    			<td></td>
+	    			<td><span class="volumeRemaining"></span></td>
 	    			<td><span class="err workDateErr"></span></td>	    			
 	    		</tr>
 	    		<tr>
 	    			<td><span class="form-label">Notes:</span></td>
-	    			<td></td>
+	    			<td><input type="text" name="notes"></input></td>
 	    			<td><span class="err workDateErr"></span></td>	    			
 	    		</tr>
 	    		<tr>
 	    			<td><span class="form-label">Billed Amount:</span></td>
-	    			<td></td>
+	    			<td><input type="text" name="billedAmount"></input></td>
+	    			<td><span class="err workDateErr"></span></td>	    			
+	    		</tr>
+	    		<tr>
+	    			<td><span class="form-label">Diff Clm/Bld:</span></td>
+	    			<td><span class="claimedVsBilled"></span></td>
 	    			<td><span class="err workDateErr"></span></td>	    			
 	    		</tr>
 	    		<tr>
 	    			<td><span class="form-label">Ticket Status:</span></td>
-	    			<td></td>
+	    			<td><span class="ticketStatus"></span></td>
 	    			<td><span class="err workDateErr"></span></td>	    			
 	    		</tr>
 	    		<tr>
 	    			<td><span class="form-label">Service:</span></td>
-	    			<td></td>
+	    			<td><span class="serviceTagId"></span></td>
 	    			<td><span class="err workDateErr"></span></td>	    			
 	    		</tr>
 	    		<tr>
 	    			<td><span class="form-label">Equipment:</span></td>
-	    			<td></td>
+	    			<td><span class="equipmentTags"></span></td>
 	    			<td><span class="err workDateErr"></span></td>	    			
 	    		</tr>
 	    		<tr>
 	    			<td><span class="form-label">Employee:</span></td>
-	    			<td></td>
+	    			<td><input type="text" name="employee"></input></td>
 	    			<td><span class="err workDateErr"></span></td>	    			
 	    		</tr>
 	    		

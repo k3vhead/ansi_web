@@ -16,13 +16,13 @@ import com.ansi.scilla.web.common.servlet.AbstractServlet;
 public class BcrServlet extends AbstractServlet {
 	private final String REALM = "bcr";
 	private final String TITLE = "title";
-	private final String DIRECT_LABOR = "directLabor";
 	private final String BC_TOTALS = "bcTotals";
 	private final String EMPLOYEES = "employees";
 	private final String TICKETLIST = "ticketList";
 	private final String WEEKLY_TICKETLIST = "weeklyTicketList";
 	private final String INIT = "init";
 	private final String ACTUAL_DL = "actualDL";
+	private final String TICKET = "ticket";
 	
 	
 	private static final long serialVersionUID = 1L;
@@ -40,6 +40,10 @@ public class BcrServlet extends AbstractServlet {
 		String uri = request.getRequestURI();
 		String trigger = REALM + "/";
 		String destination = uri.substring(uri.indexOf(trigger)+trigger.length());
+		Integer index = destination.indexOf("/");   // in case we have something like bcr/ticket/12345
+		logger.log(Level.DEBUG, destination + " " + index);
+		destination = index > 0 ? destination.substring(0, index) : destination;
+		logger.log(Level.DEBUG, "tweaked: " + destination);
 		
 		switch (destination) {
 		case INIT:
@@ -62,6 +66,9 @@ public class BcrServlet extends AbstractServlet {
 			break;
 		case ACTUAL_DL:
 			new BcrActualDLServlet().doGet(request, response);
+			break;
+		case TICKET:
+			new BcrTicketServlet().doGet(request, response);
 			break;
 		default:
 			super.sendNotFound(response);
