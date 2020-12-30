@@ -318,7 +318,7 @@
         		
         		getTicketDetailFail : function($data) {
 					console.log("getTicketDetailFail");        			
-
+					$("#globalMsg").html("Invalid system state. Reload and try again").show();					
         		},
         		
         		
@@ -608,6 +608,23 @@
         			});	
         			$("#bcr_claim_edit_cancel").button('option', 'label', 'Cancel');
         			$("#bcr_claim_edit_save").button('option', 'label', 'Save');
+        			
+        			
+        			
+        			
+        			
+        			var $employeeSelector = '#bcr_edit_modal input[name="employee"]';
+            		$( $employeeSelector ).autocomplete({
+						'source':"bcr/employee?",
+						position:{my:"left top", at:"left bottom",collision:"none"},
+						appendTo:"#bcr_edit_form",
+						select: function( event, ui ) {
+							$('#bcr_edit_form input[name="employee"]').val(ui.item.label);							
+							if ( ui.item.value == null || ui.item.value.trim() == "" ) {
+								$($employeeSelector).val(ui.item.label)
+							}
+       			      	}
+       			 	});
         		},
         		
         		
@@ -1042,79 +1059,81 @@
 	    
 	    
 	    <div id="bcr_edit_modal">
-	    	<table>
-	    		<tr>
-	    			<td><span class="form-label">Account:</span></td>
-	    			<td><span class="jobSiteName"></span></td>
-	    			<td><span class="err divisionIdErr"></span></td>
-	    		</tr>
-	    		<tr>
-	    			<td><span class="form-label">Ticket Number:</span></td>
-	    			<td><span class="ticketId"></span></td>
-	    			<td><span class="err workDateErr"></span></td>	    			
-	    		</tr>
-	    		<tr>
-	    			<td><span class="form-label">Claim Week:</span></td>
-	    			<td><select name="claimWeek"></select></td>
-	    			<td><span class="err workDateErr"></span></td>	    			
-	    		</tr>
-	    		<tr>
-	    			<td><span class="form-label">D/L:</span></td>
-	    			<td><input type="text" name="dlAmt"></input></td>
-	    			<td><span class="err workDateErr"></span></td>	    			
-	    		</tr>
-	    		<tr>
-	    			<td><span class="form-label">Total Volume:</span></td>
-	    			<td><input type="text" name="totalVolume"></input></td>
-	    			<td><span class="err workDateErr"></span></td>	    			
-	    		</tr>
-	    		<tr>
-	    			<td><span class="form-label">Volume Claimed:</span></td>
-	    			<td><input type="text" name="volumeClaimed"></input></td>
-	    			<td><span class="err workDateErr"></span></td>	    			
-	    		</tr>
-	    		<tr>
-	    			<td><span class="form-label">Volume Remaining:</span></td>
-	    			<td><span class="volumeRemaining"></span></td>
-	    			<td><span class="err workDateErr"></span></td>	    			
-	    		</tr>
-	    		<tr>
-	    			<td><span class="form-label">Notes:</span></td>
-	    			<td><input type="text" name="notes"></input></td>
-	    			<td><span class="err workDateErr"></span></td>	    			
-	    		</tr>
-	    		<tr>
-	    			<td><span class="form-label">Billed Amount:</span></td>
-	    			<td><input type="text" name="billedAmount"></input></td>
-	    			<td><span class="err workDateErr"></span></td>	    			
-	    		</tr>
-	    		<tr>
-	    			<td><span class="form-label">Diff Clm/Bld:</span></td>
-	    			<td><span class="claimedVsBilled"></span></td>
-	    			<td><span class="err workDateErr"></span></td>	    			
-	    		</tr>
-	    		<tr>
-	    			<td><span class="form-label">Ticket Status:</span></td>
-	    			<td><span class="ticketStatus"></span></td>
-	    			<td><span class="err workDateErr"></span></td>	    			
-	    		</tr>
-	    		<tr>
-	    			<td><span class="form-label">Service:</span></td>
-	    			<td><span class="serviceTagId"></span></td>
-	    			<td><span class="err workDateErr"></span></td>	    			
-	    		</tr>
-	    		<tr>
-	    			<td><span class="form-label">Equipment:</span></td>
-	    			<td><span class="equipmentTags"></span></td>
-	    			<td><span class="err workDateErr"></span></td>	    			
-	    		</tr>
-	    		<tr>
-	    			<td><span class="form-label">Employee:</span></td>
-	    			<td><input type="text" name="employee"></input></td>
-	    			<td><span class="err workDateErr"></span></td>	    			
-	    		</tr>
-	    		
-	    	</table>
+	    	<form id="bcr_edit_form">
+		    	<table>
+		    		<tr>
+		    			<td><span class="form-label">Account:</span></td>
+		    			<td><span class="jobSiteName"></span></td>
+		    			<td><span class="err divisionIdErr"></span></td>
+		    		</tr>
+		    		<tr>
+		    			<td><span class="form-label">Ticket Number:</span></td>
+		    			<td><span class="ticketId"></span></td>
+		    			<td><span class="err workDateErr"></span></td>	    			
+		    		</tr>
+		    		<tr>
+		    			<td><span class="form-label">Claim Week:</span></td>
+		    			<td><select name="claimWeek"></select></td>
+		    			<td><span class="err workDateErr"></span></td>	    			
+		    		</tr>
+		    		<tr>
+		    			<td><span class="form-label">D/L:</span></td>
+		    			<td><input type="text" name="dlAmt"></input></td>
+		    			<td><span class="err workDateErr"></span></td>	    			
+		    		</tr>
+		    		<tr>
+		    			<td><span class="form-label">Total Volume:</span></td>
+		    			<td><input type="text" name="totalVolume"></input></td>
+		    			<td><span class="err workDateErr"></span></td>	    			
+		    		</tr>
+		    		<tr>
+		    			<td><span class="form-label">Volume Claimed:</span></td>
+		    			<td><input type="text" name="volumeClaimed"></input></td>
+		    			<td><span class="err workDateErr"></span></td>	    			
+		    		</tr>
+		    		<tr>
+		    			<td><span class="form-label">Volume Remaining:</span></td>
+		    			<td><span class="volumeRemaining"></span></td>
+		    			<td><span class="err workDateErr"></span></td>	    			
+		    		</tr>
+		    		<tr>
+		    			<td><span class="form-label">Notes:</span></td>
+		    			<td><input type="text" name="notes"></input></td>
+		    			<td><span class="err workDateErr"></span></td>	    			
+		    		</tr>
+		    		<tr>
+		    			<td><span class="form-label">Billed Amount:</span></td>
+		    			<td><input type="text" name="billedAmount"></input></td>
+		    			<td><span class="err workDateErr"></span></td>	    			
+		    		</tr>
+		    		<tr>
+		    			<td><span class="form-label">Diff Clm/Bld:</span></td>
+		    			<td><span class="claimedVsBilled"></span></td>
+		    			<td><span class="err workDateErr"></span></td>	    			
+		    		</tr>
+		    		<tr>
+		    			<td><span class="form-label">Ticket Status:</span></td>
+		    			<td><span class="ticketStatus"></span></td>
+		    			<td><span class="err workDateErr"></span></td>	    			
+		    		</tr>
+		    		<tr>
+		    			<td><span class="form-label">Service:</span></td>
+		    			<td><span class="serviceTagId"></span></td>
+		    			<td><span class="err workDateErr"></span></td>	    			
+		    		</tr>
+		    		<tr>
+		    			<td><span class="form-label">Equipment:</span></td>
+		    			<td><span class="equipmentTags"></span></td>
+		    			<td><span class="err workDateErr"></span></td>	    			
+		    		</tr>
+		    		<tr>
+		    			<td><span class="form-label">Employee:</span></td>
+		    			<td><input type="text" name="employee"></input></td>
+		    			<td><span class="err workDateErr"></span></td>	    			
+		    		</tr>
+		    		
+		    	</table>
+	    	</form>
 	    </div>
     </tiles:put>
 		

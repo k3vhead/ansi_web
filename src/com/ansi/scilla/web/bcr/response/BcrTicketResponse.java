@@ -77,6 +77,7 @@ public class BcrTicketResponse extends MessageResponse {
 		ps.setInt(1, divisionId);
 		ps.setInt(2, workYear);
 		ps.setInt(3, ticketId);
+		logger.log(Level.DEBUG, "division | workYear | ticketId: " + divisionId + " | "+workYear+" | "+ticketId);
 		ResultSet rs = ps.executeQuery();
 		if ( rs.next() ) {
 			this.ticket = new BcrTicket(rs);

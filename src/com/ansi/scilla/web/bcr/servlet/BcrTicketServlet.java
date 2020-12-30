@@ -8,9 +8,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
+import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.web.bcr.response.BcrTicketResponse;
+import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.SuccessMessage;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -32,6 +35,7 @@ public class BcrTicketServlet extends AbstractServlet {
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		Connection conn = null;
+		WebMessages webMessages = new WebMessages();
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
@@ -42,11 +46,20 @@ public class BcrTicketServlet extends AbstractServlet {
 			Integer workYear = Integer.valueOf(request.getParameter("workYear"));
 			String workWeeks = request.getParameter("workWeeks");  // comma-delimited list of work weeks.
 			logger.log(Level.DEBUG, "Parms: " + divisionId + " " + workYear + " " + workWeeks);
-			Integer ticketId = 506645;
-			BcrTicketResponse data = new BcrTicketResponse(conn, sessionUser.getUserId(), divisionList, divisionId, workYear, workWeeks, ticketId);
-			WebMessages webMessages = new SuccessMessage();
-			data.setWebMessages(webMessages);
-			super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
+			String[] uriPath = request.getRequestURI().split("/");
+			String ticket = uriPath[uriPath.length-1];
+			if ( StringUtils.isNumeric(ticket)) {
+				RequestValidator.validateId(conn, webMessages, Ticket.TABLE, Ticket.TICKET_ID, WebMessages.GLOBAL_MESSAGE, Integer.valueOf(ticket), true);
+				if ( webMessages.isEmpty() ) {
+					BcrTicketResponse data = new BcrTicketResponse(conn, sessionUser.getUserId(), divisionList, divisionId, workYear, workWeeks, Integer.valueOf(ticket));
+					data.setWebMessages(new SuccessMessage());
+					super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
+				} else {
+					super.sendNotFound(response);
+				}
+			} else {
+				super.sendNotFound(response);
+			}
 		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
 			super.sendForbidden(response);			
 		} catch ( Exception e) {
