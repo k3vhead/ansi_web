@@ -92,10 +92,27 @@ public class BcrTicketLookupQuery extends LookupQuery {
 		String whereClause = BcrTicketSql.makeBaseWhereClause(workWeeks);
 		String joiner = " and ";
 		
+		String[] searchableFields = new String[] {
+			"job_site.name",
+			"concat(ticket_claim.claim_year,'-',ticket_claim.claim_week)",
+			"ticket_claim.passthru_expense_type",
+			"job_tag.abbrev",
+			"ticket_claim.notes",
+			"ticket.ticket_status",
+			"ticket_claim.employee_name",
+			// equipment tags
+		};
+		
+		
 		if ( ! StringUtils.isBlank(queryTerm) ) {
-			whereClause =  whereClause + joiner + " (\n"
-					+ " " + TICKET_ID + " like '%" + queryTerm.toLowerCase() +  "%'" +
-					"\n OR lower( " + NAME + " ) ) like '%" + queryTerm.toLowerCase() + "%'" +
+			StringBuffer searchFieldBuffer = new StringBuffer();
+			for ( String field : searchableFields ) {
+				searchFieldBuffer.append("\n OR lower(" + field + ") like '%" + queryTerm.toLowerCase() + "%'");
+			}
+			
+			whereClause =  whereClause + joiner + " (\n" +
+					" " + TICKET_ID + " like '%" + queryTerm.toLowerCase() +  "%'" +
+					searchFieldBuffer.toString() + "\n" +
 					")" ;
 		}
 		
@@ -103,10 +120,6 @@ public class BcrTicketLookupQuery extends LookupQuery {
 	}
 
 
-	
-
-	
-	
 	
 	
 

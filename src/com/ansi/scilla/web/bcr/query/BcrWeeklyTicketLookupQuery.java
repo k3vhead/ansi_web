@@ -112,11 +112,29 @@ public class BcrWeeklyTicketLookupQuery extends LookupQuery {
 	protected String makeWhereClause(String queryTerm) {
 		String whereClause = makeWeeklyWhereClause(workYear, workWeek);
 		String joiner = " and ";
-		
+
+		// these are different than in BcrTicketLookupQuery because we're using a subquery here
+		String[] searchableFields = new String[] {
+				"basequery.job_site_name",
+				"basequery.claim_week",
+				"basequery.passthru_expense_type",
+				"basequery.service_tag_id",
+				"basequery.notes",
+				"basequery.ticket_status",
+				"basequery.employee",
+				// equipment tags
+		};
+
+
 		if ( ! StringUtils.isBlank(queryTerm) ) {
-			whereClause =  whereClause + joiner + " (\n"
-					+ " " + TICKET_ID + " like '%" + queryTerm.toLowerCase() +  "%'" +
-					"\n OR lower( " + NAME + " ) ) like '%" + queryTerm.toLowerCase() + "%'" +
+			StringBuffer searchFieldBuffer = new StringBuffer();
+			for ( String field : searchableFields ) {
+				searchFieldBuffer.append("\n OR lower(" + field + ") like '%" + queryTerm.toLowerCase() + "%'");
+			}
+
+			whereClause =  whereClause + joiner + " (\n" +
+					" basequery.ticket_id like '%" + queryTerm.toLowerCase() +  "%'" +
+					searchFieldBuffer.toString() + "\n" +
 					")" ;
 		}
 		

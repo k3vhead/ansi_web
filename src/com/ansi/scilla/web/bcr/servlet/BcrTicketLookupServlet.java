@@ -1,7 +1,5 @@
 package com.ansi.scilla.web.bcr.servlet;
 
-import com.ansi.scilla.web.bcr.query.BcrTicketLookupQuery;
-
 public class BcrTicketLookupServlet extends AbstractBcrTicketLookupServlet {
 	
 	private static final long serialVersionUID = 1L;
@@ -9,21 +7,20 @@ public class BcrTicketLookupServlet extends AbstractBcrTicketLookupServlet {
 	@Override
 	protected void makeMyColumns() {
 		cols = new String[] { 
-				BcrTicketLookupQuery.NAME,
-				BcrTicketLookupQuery.TICKET_ID,
-				CLAIM_WEEK,
-				BcrTicketLookupQuery.TICKET_TYPE,
-				DIRECT_LABOR,
-				EXPENSES,
-				TOTAL_DIRECT_LABOR,
-				TOTAL_VOLUME,
-				TOTAL_CLAIMED,
-				VOLUME_REMAINING,
-				NOTES,
-				BcrTicketLookupQuery.PRICE_PER_CLEANING,
-				DIFF_CLM_BLD,
-				BcrTicketLookupQuery.TICKET_STATUS,
-				EMPLOYEE
+				"job_site_name", //	Account
+				"ticket_id",	//Ticket Number
+				"claim_week",	// ClaimWeek
+				"dl_amt", //"D/L"  
+				"total_volume", //"Total Volume"  
+				"volume_claimed", //"Volume Claimed" 
+				"volume_remaining", //"Volume Remaining"  
+				"notes", //"Notes"  
+				"billed_amount", //"Billed Amount"  
+				"claimed_vs_billed", //"Diff Clm/Bld"  
+				"ticket_status", //"Ticket Status"  
+				"service_tag_id", //"Service"  
+				"equipment_tags", //"Equipment"  
+				"employee", //"Employee"
 		};
 	}
 
