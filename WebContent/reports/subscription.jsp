@@ -337,7 +337,7 @@
         		},
        		
         		        		
-       			makeMultiColumnTable : function($container, $reportList, $divisionList, $groupList, $subscriptionList) {
+       			makeMultiColumnTable : function($container, $reportList, $groupList, $subscriptionList) {
         			console.log("Making container" + $container);
         			var $table = $("<table>").css('text-align','center');
            			var $hdrRow = $("<tr>");
@@ -477,7 +477,6 @@
    					REPORT_SUBSCRIPTION.groupList = $data.data.groupList;					
    					REPORT_SUBSCRIPTION.regionList = $data.data.regionList;
    					REPORT_SUBSCRIPTION.subscriptionList = $data.data.subscriptionList;
-   					REPORT_SUBSCRIPTION.summaryReportList = $data.data.summaryReportList;
    					
    					if ( REPORT_SUBSCRIPTION.allAnsiReports.length > 0 ) {
 						$("#allAnsi-subscription-selector").show();	
@@ -503,21 +502,21 @@
 					if ( REPORT_SUBSCRIPTION.summaryReports.length > 0 ) {
 						if ( REPORT_SUBSCRIPTION.companyList.length > 0 ) {
 							$("#company-subscription-selector").show();
-							REPORT_SUBSCRIPTION.makeMultiColumnTable("company-selection-container", REPORT_SUBSCRIPTION.summaryReports, REPORT_SUBSCRIPTION.divisionList, REPORT_SUBSCRIPTION.companyList, $data.data.subscriptionList);
+							REPORT_SUBSCRIPTION.makeMultiColumnTable("company-selection-container", REPORT_SUBSCRIPTION.summaryReports, REPORT_SUBSCRIPTION.companyList, $data.data.subscriptionList);
 		        		
 						} else {
 							$("#company-subscription-selector").hide();
 						}
 						if ( REPORT_SUBSCRIPTION.regionList.length > 0 ) {
 							$("#region-subscription-selector").show();
-							REPORT_SUBSCRIPTION.makeMultiColumnTable("region-selection-container", REPORT_SUBSCRIPTION.summaryReports, REPORT_SUBSCRIPTION.divisionList, REPORT_SUBSCRIPTION.regionList, $data.data.subscriptionList);
+							REPORT_SUBSCRIPTION.makeMultiColumnTable("region-selection-container", REPORT_SUBSCRIPTION.summaryReports, REPORT_SUBSCRIPTION.regionList, $data.data.subscriptionList);
 		        		
 						} else {
 							$("#region-subscription-selector").hide();
 						}
 						if ( REPORT_SUBSCRIPTION.groupList.length > 0 ) {
 							$("#group-subscription-selector").show();
-							REPORT_SUBSCRIPTION.makeMultiColumnTable("group-selection-container", REPORT_SUBSCRIPTION.summaryReports, REPORT_SUBSCRIPTION.divisionList, REPORT_SUBSCRIPTION.groupList, $data.data.subscriptionList);
+							REPORT_SUBSCRIPTION.makeMultiColumnTable("group-selection-container", REPORT_SUBSCRIPTION.summaryReports, REPORT_SUBSCRIPTION.groupList, $data.data.subscriptionList);
 		        		
 						} else {
 							$("#group-subscription-selector").hide();
