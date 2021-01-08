@@ -195,6 +195,9 @@ public class DivisionUserServlet extends AbstractServlet {
 				divUser.insertWithNoKey(conn);
 			} else if(!active) {
 				divUser.delete(conn);
+				/*
+				 * delete from report_subscription where user_id=? and division_id=?
+				 */
 			}
 		} catch(RecordNotFoundException e) {
 			// This happens when we try to delete a non-existent record
