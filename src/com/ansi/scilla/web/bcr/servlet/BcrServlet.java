@@ -45,19 +45,12 @@ public class BcrServlet extends AbstractServlet {
 		Integer index = destination.indexOf("/");   // in case we have something like bcr/ticket/12345
 		destination = index > 0 ? destination.substring(0, index) : destination;
 		
+		logger.log(Level.DEBUG, "GET: " + destination);
+		
 		switch (destination) {
-		case INIT:
-			new BcrInitServlet().doGet(request, response);
+		case ACTUAL_DL:
+			new BcrActualDLServlet().doGet(request, response);
 			break;
-		case TITLE:
-			new BcrTitleServlet().doGet(request, response);
-			break;
-		case TICKETLIST:
-			new BcrTicketLookupServlet().doGet(request, response);
-			break;	
-		case WEEKLY_TICKETLIST:
-			new BcrWeeklyTicketLookupServlet().doGet(request, response);
-			break;	
 		case BC_TOTALS:
 			new BcrTotalsServlet().doGet(request, response);
 			break;
@@ -67,12 +60,21 @@ public class BcrServlet extends AbstractServlet {
 		case EMPLOYEES:
 			new BcrEmployeesServlet().doGet(request, response);
 			break;
-		case ACTUAL_DL:
-			new BcrActualDLServlet().doGet(request, response);
+		case INIT:
+			new BcrInitServlet().doGet(request, response);
 			break;
 		case TICKET:
 			new BcrTicketServlet().doGet(request, response);
 			break;
+		case TICKETLIST:
+			new BcrTicketLookupServlet().doGet(request, response);
+			break;	
+		case TITLE:
+			new BcrTitleServlet().doGet(request, response);
+			break;
+		case WEEKLY_TICKETLIST:
+			new BcrWeeklyTicketLookupServlet().doGet(request, response);
+			break;	
 		default:
 			super.sendNotFound(response);
 		}
@@ -84,16 +86,25 @@ public class BcrServlet extends AbstractServlet {
 		String uri = request.getRequestURI();
 		String trigger = REALM + "/";
 		String destination = uri.substring(uri.indexOf(trigger)+trigger.length());
+		Integer index = destination.indexOf("/");   // in case we have something like bcr/ticket/12345
+		destination = index > 0 ? destination.substring(0, index) : destination;
+		
+		logger.log(Level.DEBUG, "POST: " + destination);
+		
+		
 		
 		switch (destination) {
+		case ACTUAL_DL:
+			new BcrActualDLServlet().doPost(request, response);
+			break;
 		case INIT:
 			new BcrInitServlet().doPost(request, response);
 			break;
+		case TICKET:
+			new BcrTicketServlet().doPost(request, response);
+			break;
 		case TITLE:
 			new BcrTitleServlet().doPost(request, response);
-			break;
-		case ACTUAL_DL:
-			new BcrActualDLServlet().doPost(request, response);
 			break;
 		default:
 			super.sendNotFound(response);

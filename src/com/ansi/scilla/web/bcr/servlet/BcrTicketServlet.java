@@ -2,6 +2,7 @@ package com.ansi.scilla.web.bcr.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -12,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.Ticket;
+import com.ansi.scilla.web.bcr.request.BcrTicketRequest;
 import com.ansi.scilla.web.bcr.response.BcrTicketResponse;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -26,6 +28,8 @@ import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
+import com.ansi.scilla.web.payment.response.PaymentResponse;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 public class BcrTicketServlet extends AbstractServlet {
 
@@ -70,4 +74,59 @@ public class BcrTicketServlet extends AbstractServlet {
 			AppUtils.closeQuiet(conn);
 		}	
 	}
+
+	
+	
+	
+	
+	@Override
+	public void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		Connection conn = null;
+		try {
+			try{
+				conn = AppUtils.getDBCPConn();
+				conn.setAutoCommit(false);
+				String jsonString = super.makeJsonString(request);
+				logger.log(Level.DEBUG, jsonString);
+				SessionData sessionData = AppUtils.validateSession(request, Permission.CLAIMS_WRITE);
+				BcrTicketRequest titleRequest = new BcrTicketRequest();
+				AppUtils.json2object(jsonString, titleRequest);
+				final SimpleDateFormat sdfx = new SimpleDateFormat("MM/dd/yyyy E HH:mm:ss.S");
+				SessionUser sessionUser = sessionData.getUser();
+				List<SessionDivision> divisionList = sessionData.getDivisionList();
+				WebMessages webMessages = titleRequest.validate(conn, sessionUser);				
+				BcrTicketResponse data = new BcrTicketResponse();
+				if ( webMessages.isEmpty() ) {
+//					data = new BcrTicketResponse(conn, sessionUser.getUserId(), divisionList, divisionId, workYear, workWeeks, Integer.valueOf(ticket));
+					super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
+				} else {
+					data.setWebMessages(webMessages);
+					super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+				}
+				
+				
+			} catch ( InvalidFormatException e ) {
+				String badField = super.findBadField(e.toString());
+				PaymentResponse data = new PaymentResponse();
+				WebMessages messages = new WebMessages();
+				messages.addMessage(badField, "Invalid Format");
+				data.setWebMessages(messages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+				super.sendForbidden(response);			
+			}
+		} catch ( Exception e) {
+			AppUtils.logException(e);
+			AppUtils.rollbackQuiet(conn);
+			throw new ServletException(e);
+		} finally {
+			AppUtils.closeQuiet(conn);
+		}
+	}
+	
+	
+	
+	
+	
 }

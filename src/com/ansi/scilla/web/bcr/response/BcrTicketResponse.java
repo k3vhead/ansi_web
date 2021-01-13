@@ -30,8 +30,13 @@ public class BcrTicketResponse extends MessageResponse {
 	private List<String> claimWeeks;
 	private BcrTicket ticket;
 	
-	public BcrTicketResponse(Connection conn, Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer workYear, String workWeek, Integer ticketId) throws SQLException, RecordNotFoundException {
+	
+	public BcrTicketResponse() {
 		super();
+	}
+
+	public BcrTicketResponse(Connection conn, Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer workYear, String workWeek, Integer ticketId) throws SQLException, RecordNotFoundException {
+		this();
 		this.claimYear = workYear;
 		this.claimWeeks = new ArrayList<String>();
 		for ( String week : StringUtils.split(workWeek,",")) {

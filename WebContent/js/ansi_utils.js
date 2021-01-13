@@ -28,8 +28,37 @@ $( document ).ready(function() {
 				dataType: "json"
 			});
 		},
+		
+		
 			
+		// loops through all inputs & selects in a form and creates a map (suitable for a server call) with
+		// name/value pairs. If a fieldname exists as a key in the $nameMapping map, the field will be renamed
+		// in the outbound map accordingly.
+		form2outbound : function($selector, $nameMapping) {
+			var $outbound = {};
+			var $inputSelector = $selector + " input";
+			var $selectSelector = $selector + " select";
+
+			$.each($($inputSelector), function($index, $value) {
+				if ( $value.name in $nameMapping ) {
+					$outbound[ $nameMapping[$value.name] ] = $($value).val();
+				} else {
+					$outbound[$value.name] = $($value).val();
+				}
+				
+			});
+			$.each($($selectSelector), function($index, $value) {
+				if ( $value.name in $nameMapping ) {
+					$outbound[ $nameMapping[$value.name] ] = $($value).val();
+				} else {
+					$outbound[$value.name] = $($value).val();
+				}
+			});			
 			
+			return $outbound;
+		},
+		
+		
 			
 		getOptions: function($optionList) {
 			var $returnValue = null;
