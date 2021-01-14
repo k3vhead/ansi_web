@@ -3,6 +3,11 @@ package com.ansi.scilla.web.bcr.request;
 import java.sql.Connection;
 import java.util.Calendar;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
@@ -68,6 +73,7 @@ public class BcrActualRequest extends AbstractRequest {
 	
 	public WebMessages validate(Connection conn, SessionUser sessionUser) throws Exception {
 		WebMessages webMessages = new WebMessages();
+
 		
 		if ( ! this.type.equalsIgnoreCase(TYPE_IS_ACTUAL) && ! this.type.equalsIgnoreCase(TYPE_IS_OM) ) {
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalidate Update Type");
@@ -99,13 +105,17 @@ public class BcrActualRequest extends AbstractRequest {
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "User not assigned to division");
 		}
 		
-		
-//		Calendar workDay = Calendar.getInstance();
-//		List<DisplayMonth> displayYear = BcrUtils.makeDisplayYear(workDay);
-//		boolean isValidClaimDate = false;
-//		for ( DisplayMonth displayMonth : displayYear ) {
-//			
-//		}
+		String[] validClaimWeeks = StringUtils.split(claimWeeks, ",");
+		boolean isValidClaimWeek = false;
+		for ( String validClaimWeek : validClaimWeeks ) {
+			if ( claimWeek == Integer.valueOf(validClaimWeek).intValue() ) {
+				isValidClaimWeek = true;
+			}
+		}
+		if ( ! isValidClaimWeek ) {
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Claim Week. Reload page and try again");
+		}
+
 	
 		
 		return webMessages;

@@ -913,6 +913,7 @@
         			console.log(JSON.stringify($outbound));
         			var $ticketId = $outbound['ticketId'];
         			var $url = "bcr/ticket/" + $ticketId;
+        			$url = $url + "?divisionId=" +BUDGETCONTROL.divisionId+ "&workYear="+BUDGETCONTROL.workYear+"&workWeeks="+BUDGETCONTROL.workWeek;
         			ANSI_UTILS.doServerCall("POST", $url, JSON.stringify($outbound), BUDGETCONTROL.ticketEditSuccess, BUDGETCONTROL.ticketEditFail);
         		},
         		

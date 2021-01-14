@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import com.ansi.scilla.common.utils.WorkWeek;
 import com.ansi.scilla.common.utils.WorkYear;
 import com.ansi.scilla.web.bcr.response.DisplayMonth;
 
@@ -30,5 +31,23 @@ public class BcrUtils {
 			workDate.add(Calendar.MONTH, 1);
 		}
 		return displayYear;
+	}
+	
+	
+	
+	/**
+	 * Calculate the workweeks for a given month
+	 * @param firstOfMonth
+	 * @param lastOfMonth
+	 * @return
+	 */
+	public static List<WorkWeek> makeWorkCalendar(Calendar firstOfMonth, Calendar lastOfMonth) {
+		List<WorkWeek> workCalendar = new ArrayList<WorkWeek>();
+		Calendar calendar = new GregorianCalendar(firstOfMonth.get(Calendar.YEAR), firstOfMonth.get(Calendar.MONTH), firstOfMonth.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+		while ( calendar.before(lastOfMonth) ) {
+			workCalendar.add( new WorkWeek(calendar) );
+			calendar.add(Calendar.DAY_OF_YEAR, 7);
+		}
+		return workCalendar;
 	}
 }

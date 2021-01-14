@@ -1,9 +1,7 @@
 package com.ansi.scilla.web.bcr.response;
 
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.logging.log4j.Level;
@@ -14,6 +12,7 @@ import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.utils.WorkWeek;
 import com.ansi.scilla.common.utils.WorkYear;
+import com.ansi.scilla.web.bcr.common.BcrUtils;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -63,7 +62,7 @@ public class BcrTitleResponse extends MessageResponse {
 		this.managerFirstName = sessionUser.getFirstName();
 		this.managerLastName = sessionUser.getLastName();
 		this.managerId = sessionUser.getUserId();
-		makeWorkCalendar(this.firstOfMonth, this.lastOfMonth);
+		this.workCalendar = BcrUtils.makeWorkCalendar(firstOfMonth, lastOfMonth);
 	}
 	
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
@@ -157,15 +156,7 @@ public class BcrTitleResponse extends MessageResponse {
 		this.workCalendar = workCalendar;
 	}
 
-	private void makeWorkCalendar(Calendar firstOfMonth, Calendar lastOfMonth) {
-		this.workCalendar = new ArrayList<WorkWeek>();
-		Calendar calendar = new GregorianCalendar(firstOfMonth.get(Calendar.YEAR), firstOfMonth.get(Calendar.MONTH), firstOfMonth.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
-		while ( calendar.before(lastOfMonth) ) {
-			this.workCalendar.add( new WorkWeek(calendar) );
-			calendar.add(Calendar.DAY_OF_YEAR, 7);
-		}
-		
-	}
+	
 	
 	
 }

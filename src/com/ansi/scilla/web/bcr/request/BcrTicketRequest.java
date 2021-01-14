@@ -1,10 +1,18 @@
 package com.ansi.scilla.web.bcr.request;
 
 import java.sql.Connection;
+import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.WebMessages;
+import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.common.struts.SessionUser;
 
 public class BcrTicketRequest extends AbstractRequest {
@@ -19,6 +27,7 @@ public class BcrTicketRequest extends AbstractRequest {
 	public static final String BILLED_AMOUNT  = "billedAmount";
 	public static final String EMPLOYEE  = "employee";
 	public static final String CLAIM_WEEK  = "claimWeek";
+	public static final String DIVISION_ID = "divisionId";
 	
 	
 	private Integer ticketId;
@@ -80,7 +89,7 @@ public class BcrTicketRequest extends AbstractRequest {
 	}
 
 	
-	public WebMessages validate(Connection conn, SessionUser sessionUser) throws Exception {
+	public WebMessages validate(Connection conn, SessionUser sessionUser, List<SessionDivision> divisionList, Integer divisionId, Integer claimYear, String claimWeeks) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		
 		RequestValidator.validateTicketId(conn, webMessages, TICKET_ID, this.ticketId, true);
@@ -89,7 +98,30 @@ public class BcrTicketRequest extends AbstractRequest {
 		RequestValidator.validateNumber(webMessages, VOLUME_CLAIMED, this.volumeClaimed, 0.0D, null, true);
 		RequestValidator.validateNumber(webMessages, BILLED_AMOUNT, this.billedAmount, 0.0D, null, true);
 
-//		private String claimWeek;
+		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, WebMessages.GLOBAL_MESSAGE, divisionId, true);
+		if ( ! webMessages.containsKey(WebMessages.GLOBAL_MESSAGE)) {
+			RequestValidator.validateDivisionUser(conn, webMessages, divisionId, WebMessages.GLOBAL_MESSAGE, sessionUser.getUserId(), DIVISION_ID, true);
+		}
+		
+		if ( StringUtils.isBlank(claimWeeks) ) {
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid System State. Reload page and try again");
+		} else {
+			// claimWeek contains a string like '2020-46'
+			// claimWeeks contains a string like '45,46,47,48'
+			// make sure the "week" from claimWeek is in claimWeeks
+			String[] validClaimWeeks = StringUtils.split(claimWeeks, ",");
+			String[] selectedClaimWeek = StringUtils.split(claimWeek, "-");
+			Integer claimWeek = Integer.valueOf(selectedClaimWeek[1]);
+			boolean isValidClaimWeek = false;
+			for ( String validClaimWeek : validClaimWeeks ) {
+				if ( claimWeek == Integer.valueOf(validClaimWeek).intValue() ) {
+					isValidClaimWeek = true;
+				}
+			}
+			if ( ! isValidClaimWeek ) {
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Claim Week. Reload page and try again");
+			}
+		}
 		
 		return webMessages;
 	}

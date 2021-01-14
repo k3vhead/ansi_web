@@ -83,6 +83,7 @@ public class BcrTicketServlet extends AbstractServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		Connection conn = null;
+		WebMessages webMessages = new WebMessages();
 		try {
 			try{
 				conn = AppUtils.getDBCPConn();
@@ -90,21 +91,38 @@ public class BcrTicketServlet extends AbstractServlet {
 				String jsonString = super.makeJsonString(request);
 				logger.log(Level.DEBUG, jsonString);
 				SessionData sessionData = AppUtils.validateSession(request, Permission.CLAIMS_WRITE);
-				BcrTicketRequest titleRequest = new BcrTicketRequest();
-				AppUtils.json2object(jsonString, titleRequest);
+				BcrTicketRequest bcrTicketRequest = new BcrTicketRequest();
+				AppUtils.json2object(jsonString, bcrTicketRequest);
 				final SimpleDateFormat sdfx = new SimpleDateFormat("MM/dd/yyyy E HH:mm:ss.S");
 				SessionUser sessionUser = sessionData.getUser();
 				List<SessionDivision> divisionList = sessionData.getDivisionList();
-				WebMessages webMessages = titleRequest.validate(conn, sessionUser);				
-				BcrTicketResponse data = new BcrTicketResponse();
-				if ( webMessages.isEmpty() ) {
-//					data = new BcrTicketResponse(conn, sessionUser.getUserId(), divisionList, divisionId, workYear, workWeeks, Integer.valueOf(ticket));
-					super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
-				} else {
-					data.setWebMessages(webMessages);
-					super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
-				}
 				
+				Integer divisionId = Integer.valueOf(request.getParameter("divisionId"));
+				Integer workYear = Integer.valueOf(request.getParameter("workYear"));
+				String workWeeks = request.getParameter("workWeeks");  // comma-delimited list of work weeks.
+				logger.log(Level.DEBUG, "Parms: " + divisionId + " " + workYear + " " + workWeeks);
+				String[] uriPath = request.getRequestURI().split("/");
+				String ticket = uriPath[uriPath.length-1];
+				
+				if ( StringUtils.isNumeric(ticket)) {
+					RequestValidator.validateId(conn, webMessages, Ticket.TABLE, Ticket.TICKET_ID, WebMessages.GLOBAL_MESSAGE, Integer.valueOf(ticket), true);
+					if ( webMessages.isEmpty() ) {
+						webMessages = bcrTicketRequest.validate(conn, sessionUser, divisionList, divisionId, workYear, workWeeks);						
+						BcrTicketResponse data = new BcrTicketResponse();
+						if ( webMessages.isEmpty() ) {
+							processClaimRequest(conn, Integer.valueOf(ticket), bcrTicketRequest, sessionUser);
+							data = new BcrTicketResponse(conn, sessionUser.getUserId(), divisionList, divisionId, workYear, workWeeks, Integer.valueOf(ticket));
+							super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
+						} else {
+							data.setWebMessages(webMessages);
+							super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+						}
+					} else {
+						super.sendNotFound(response);
+					}
+				} else {
+					super.sendNotFound(response);
+				}
 				
 			} catch ( InvalidFormatException e ) {
 				String badField = super.findBadField(e.toString());
@@ -123,6 +141,15 @@ public class BcrTicketServlet extends AbstractServlet {
 		} finally {
 			AppUtils.closeQuiet(conn);
 		}
+	}
+
+
+
+
+
+	private void processClaimRequest(Connection conn, Integer valueOf, BcrTicketRequest bcrTicketRequest, SessionUser sessionUser) {
+		
+		
 	}
 	
 	
