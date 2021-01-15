@@ -3,6 +3,8 @@ package com.ansi.scilla.web.user.servlet;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +23,6 @@ import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
-import com.ansi.scilla.web.division.response.DivisionListResponse;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.MissingRequiredDataException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
@@ -198,6 +199,14 @@ public class DivisionUserServlet extends AbstractServlet {
 				/*
 				 * delete from report_subscription where user_id=? and division_id=?
 				 */
+				String sql = "delete from report_subscription where user_id=? and division_id=?";
+				PreparedStatement ps = conn.prepareStatement(sql);
+				logger.log(Level.DEBUG, sql);
+				ps.setInt(1, userId);
+				ps.setInt(2, divisionId);
+				ResultSet rs = ps.executeQuery();
+				
+				rs.close();
 			}
 		} catch(RecordNotFoundException e) {
 			// This happens when we try to delete a non-existent record
