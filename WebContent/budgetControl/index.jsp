@@ -190,7 +190,8 @@
         				var $divisionId = $(this).attr("data-divisionid");
         				var $workYear = $(this).attr("data-workYear");
         				var $workWeeks = $(this).attr("data-workWeeks");
-        				var $outbound = {"divisionId":$divisionId, "workYear":$workYear, "workWeeks":$workWeeks};
+        				var $claimId = $(this).attr("data-claimid")
+        				var $outbound = {"divisionId":$divisionId, "workYear":$workYear, "workWeeks":$workWeeks, "claimId":$claimId};
         				console.log("edit clicked: " + $ticketId);
         				console.log($outbound);
         				var $url = "bcr/ticket/" + $ticketId;
@@ -251,7 +252,7 @@
     			        	},
     			        columns: [
     			        	{ title: "Account", width:"15%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.job_site_name != null){return ('<a href="#" class="bcr-edit-clicker" data-ticketid="'+row.ticket_id+'" data-workyear="'+$outbound['workYear']+'" data-workweeks="'+$outbound['workWeeks']+'" data-divisionid="'+$outbound['divisionId']+'">'+row.job_site_name+'</a>');}
+    			            	if(row.job_site_name != null){return ('<a href="#" class="bcr-edit-clicker" data-claimid="'+row.claim_id+'" data-ticketid="'+row.ticket_id+'" data-workyear="'+$outbound['workYear']+'" data-workweeks="'+$outbound['workWeeks']+'" data-divisionid="'+$outbound['divisionId']+'">'+row.job_site_name+'</a>');}
     			            } },
     			            { title: "Ticket Number", width:"6%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.ticket_id != null){return ('<a href="#" data-id="'+row.ticket_id+'" class="ticket-clicker">'+row.ticket_id+'</a>');}
@@ -345,6 +346,7 @@
         			$("#bcr_edit_modal .serviceTagId").html($data.data.ticket.serviceTagId);
         			$("#bcr_edit_modal .equipmentTags").html($data.data.ticket.equipmentTags);
         			$("#bcr_edit_modal input[name='employee']").val($data.data.ticket.employee);
+        			$("#bcr_edit_modal input[name='claimId']").val($data.data.ticket.claimId);
     	    		
         			$("#bcr_edit_modal").dialog("open");
         		}, 
@@ -644,6 +646,13 @@
         			$("#bcr_claim_edit_cancel").button('option', 'label', 'Cancel');
         			$("#bcr_claim_edit_save").button('option', 'label', 'Save');
         			
+        			$("#dlAmtField").blur( function() {
+	        			if ( $("#dlAmtField").val() == null || $("#dlAmtField").val() == "" ) {
+	        				$("#dlAmtField").val("0.00");   // it's a string so we get the pennies
+	        			} else {
+	        				$("#dlAmtField").val( parseFloat($("#dlAmtField").val()).toFixed(2) );
+	        			} 
+        			});
         			
         			$("#totalVolumeField").blur( function() {
         				BUDGETCONTROL.calculateRemainingVolume();
@@ -1152,6 +1161,7 @@
 	    <div id="bcr_edit_modal">
 	    	<form id="bcr_edit_form">
 	    		<input type="hidden" name="ticketId" />
+	    		<input type="hidden" name="claimId" />
 		    	<table>
 		    		<tr>
 		    			<td><span class="form-label">Account:</span></td>
@@ -1170,7 +1180,7 @@
 		    		</tr>
 		    		<tr>
 		    			<td><span class="form-label">D/L:</span></td>
-		    			<td><input type="text" name="dlAmt"></input></td>
+		    			<td><input type="text" name="dlAmt" id="dlAmtField"></input></td>
 		    			<td><span class="err dlAmtErr"></span></td>	    			
 		    		</tr>
 		    		<tr>

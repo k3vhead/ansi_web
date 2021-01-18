@@ -4,11 +4,9 @@ import java.sql.Connection;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.common.db.TicketClaim;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -28,6 +26,7 @@ public class BcrTicketRequest extends AbstractRequest {
 	public static final String EMPLOYEE  = "employee";
 	public static final String CLAIM_WEEK  = "claimWeek";
 	public static final String DIVISION_ID = "divisionId";
+	public static final String CLAIM_ID = "claimId";
 	
 	
 	private Integer ticketId;
@@ -38,6 +37,7 @@ public class BcrTicketRequest extends AbstractRequest {
 	private Double billedAmount;
 	private String employee;
 	private String claimWeek;
+	private Integer claimId;
 	
 	public Integer getTicketId() {
 		return ticketId;
@@ -87,7 +87,12 @@ public class BcrTicketRequest extends AbstractRequest {
 	public void setClaimWeek(String claimWeek) {
 		this.claimWeek = claimWeek;
 	}
-
+	public Integer getClaimId() {
+		return claimId;
+	}
+	public void setClaimId(Integer claimId) {
+		this.claimId = claimId;
+	}
 	
 	public WebMessages validate(Connection conn, SessionUser sessionUser, List<SessionDivision> divisionList, Integer divisionId, Integer claimYear, String claimWeeks) throws Exception {
 		WebMessages webMessages = new WebMessages();
@@ -97,6 +102,8 @@ public class BcrTicketRequest extends AbstractRequest {
 		RequestValidator.validateNumber(webMessages, TOTAL_VOLUME, this.totalVolume, 0.0D, null, true);
 		RequestValidator.validateNumber(webMessages, VOLUME_CLAIMED, this.volumeClaimed, 0.0D, null, true);
 		RequestValidator.validateNumber(webMessages, BILLED_AMOUNT, this.billedAmount, 0.0D, null, true);
+		// claimId is not required because it won't be there for add transactions
+		RequestValidator.validateId(conn, webMessages, TicketClaim.TABLE, TicketClaim.CLAIM_ID, WebMessages.GLOBAL_MESSAGE, claimId, false);
 
 		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, WebMessages.GLOBAL_MESSAGE, divisionId, true);
 		if ( ! webMessages.containsKey(WebMessages.GLOBAL_MESSAGE)) {

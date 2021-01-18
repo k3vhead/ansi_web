@@ -17,6 +17,7 @@ public class BcrTicket extends ApplicationObject {
 
 	private String jobSiteName;
 	private Integer ticketId;
+	private Integer claimId;
 	private String claimWeek;
 	private Double dlAmt;
 	private Double dlTotal;
@@ -58,7 +59,7 @@ public class BcrTicket extends ApplicationObject {
 		this.ticketStatus = rs.getString(BcrTicketSql.TICKET_STATUS);
 		this.employee = rs.getString(BcrTicketSql.EMPLOYEE);
 		this.equipmentTags = rs.getString(BcrTicketSql.EQUIPMENT_TAGS);
-		
+		this.claimId = rs.getInt(BcrTicketSql.CLAIM_ID);
 	}
 	
 	
@@ -204,6 +205,14 @@ public class BcrTicket extends ApplicationObject {
 
 	public void setEquipmentTags(String equipmentTags) {
 		this.equipmentTags = equipmentTags;
+	}
+
+	public Integer getClaimId() {
+		return claimId;
+	}
+
+	public void setClaimId(Integer claimId) {
+		this.claimId = claimId;
 	}
 
 

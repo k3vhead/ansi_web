@@ -1,8 +1,10 @@
 package com.ansi.scilla.web.bcr.servlet;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -13,6 +15,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.Ticket;
+import com.ansi.scilla.common.db.TicketClaim;
+import com.ansi.scilla.common.utils.AnsiDateUtils;
 import com.ansi.scilla.web.bcr.request.BcrTicketRequest;
 import com.ansi.scilla.web.bcr.response.BcrTicketResponse;
 import com.ansi.scilla.web.common.request.RequestValidator;
@@ -110,7 +114,11 @@ public class BcrTicketServlet extends AbstractServlet {
 						webMessages = bcrTicketRequest.validate(conn, sessionUser, divisionList, divisionId, workYear, workWeeks);						
 						BcrTicketResponse data = new BcrTicketResponse();
 						if ( webMessages.isEmpty() ) {
-							processClaimRequest(conn, Integer.valueOf(ticket), bcrTicketRequest, sessionUser);
+							if ( bcrTicketRequest.getClaimId() == null ) {
+								insertClaim(conn, Integer.valueOf(ticket), bcrTicketRequest, sessionUser);
+							} else {
+								updateClaim(conn, Integer.valueOf(ticket), bcrTicketRequest, sessionUser);
+							}
 							data = new BcrTicketResponse(conn, sessionUser.getUserId(), divisionList, divisionId, workYear, workWeeks, Integer.valueOf(ticket));
 							super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
 						} else {
@@ -147,10 +155,67 @@ public class BcrTicketServlet extends AbstractServlet {
 
 
 
-	private void processClaimRequest(Connection conn, Integer valueOf, BcrTicketRequest bcrTicketRequest, SessionUser sessionUser) {
-		
-		
+	private void insertClaim(Connection conn, Integer ticketId, BcrTicketRequest bcrTicketRequest,
+			SessionUser sessionUser) {
+		logger.log(Level.DEBUG, "Inserting New Claim");
+		throw new RuntimeException("Patience, young padawan, this is Not coded yet");
 	}
+
+
+
+
+
+	private void updateClaim(Connection conn, Integer ticketId, BcrTicketRequest bcrTicketRequest,
+			SessionUser sessionUser) throws Exception {
+		logger.log(Level.DEBUG, "Updating Claim " + ticketId + "\t" + bcrTicketRequest.getClaimId());
+		logger.log(Level.DEBUG, bcrTicketRequest.toJson());
+		
+		TicketClaim ticketClaim = new TicketClaim();
+		ticketClaim.setClaimId(bcrTicketRequest.getClaimId());
+		ticketClaim.selectOne(conn);
+		
+		Date today = AnsiDateUtils.getToday();
+		TicketClaim key = new TicketClaim();
+		key.setClaimId(bcrTicketRequest.getClaimId());
+		
+		String[] claimDate = bcrTicketRequest.getClaimWeek().split("-");
+
+		/** Ticket claim **/
+		//private Integer claimId;
+		//private Integer ticketId;
+		//private Integer serviceType;
+		ticketClaim.setClaimYear(Integer.valueOf(claimDate[0]));
+		ticketClaim.setClaimWeek(Integer.valueOf(claimDate[1]));
+		ticketClaim.setVolume(new BigDecimal(bcrTicketRequest.getTotalVolume()));
+		ticketClaim.setDlAmt(new BigDecimal(bcrTicketRequest.getDlAmt()));
+		//private BigDecimal dlExpenses;
+		//private BigDecimal passthruExpenseVolume;
+		//private String passthruExpenseType;
+		//private BigDecimal hours;
+		ticketClaim.setNotes(bcrTicketRequest.getNotes());
+		ticketClaim.setEmployeeName(bcrTicketRequest.getEmployee());
+		ticketClaim.setUpdatedBy(sessionUser.getUserId());
+		ticketClaim.setUpdatedDate(today);
+		
+		
+		
+		/** bcr ticket request **/
+		//private Integer ticketId;
+		//private Double totalVolume;
+		//private Double billedAmount;
+		//private Integer claimId;
+		
+
+		logger.log(Level.DEBUG, ticketClaim);
+		ticketClaim.update(conn, key);
+		conn.commit();
+	}
+
+
+
+
+
+	
 	
 	
 	

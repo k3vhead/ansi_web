@@ -31,12 +31,13 @@ public class BcrTicketSql extends ApplicationObject {
 	public static final String TICKET_STATUS = "ticket_status";
 	public static final String EMPLOYEE = "employee";
 	public static final String EQUIPMENT_TAGS = "equipment_tags";
-	
+	public static final String CLAIM_ID = "claim_id";
 	
 	public static final String sqlSelectClause = 
 			"select \n" + 
 			"   job_site.name as " + JOB_SITE_NAME + "\n" + 
 			" , ticket."+TICKET_ID+"\n" + 
+			" , ticket_claim." + CLAIM_ID + "\n" +
 			" , concat(ticket_claim.claim_year,'-',ticket_claim.claim_week) as "+CLAIM_WEEK+"\n" + 
 			" , isnull(ticket_claim.dl_amt,0.00) as "+DL_AMT+"\n" + 
 			"-- ** ignoring dl_exp until we know what we are doing with it **\n" + 
