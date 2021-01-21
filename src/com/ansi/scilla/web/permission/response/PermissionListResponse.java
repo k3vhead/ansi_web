@@ -2,9 +2,11 @@ package com.ansi.scilla.web.permission.response;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
-import org.apache.commons.collections.Transformer;
+import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.db.PermissionGroupLevel;
 import com.ansi.scilla.web.common.response.MessageResponse;
@@ -14,7 +16,10 @@ import com.ansi.scilla.web.common.utils.Permission;
 
 public class PermissionListResponse extends MessageResponse {
 	private static final long serialVersionUID = 1L;
-	private List<List<PermissionDisplayItem>> permissionList;
+	// key is top-level permission name. List is permissions that are subordinate to top-level
+	// we are assuming only 2 levels.
+	private HashMap<String, List<PermissionDisplayItem>> permissionList;
+	private List<PermissionDisplayItem> functionalAreas;  // sorted list of functional area names (keys into the hashmap)
 	
 	public PermissionListResponse() {
 		super();
@@ -27,28 +32,40 @@ public class PermissionListResponse extends MessageResponse {
 		makeMasterList(permissionList);
 	}
 	
-	public List<List<PermissionDisplayItem>> getPermissionList() {
+	public HashMap<String, List<PermissionDisplayItem>> getPermissionList() {
 		return permissionList;
 	}
 
-	public void setPermissionList(List<List<PermissionDisplayItem>> permissionList) {
+	public void setPermissionList(HashMap<String, List<PermissionDisplayItem>> permissionList) {
 		this.permissionList = permissionList;
 	}
 
 	
 
 	
-	private void makeMasterList(List<Permission> groupPermissionList) {
-		permissionList = new ArrayList<List<PermissionDisplayItem>>();
+	public List<PermissionDisplayItem> getFunctionalAreas() {
+		return functionalAreas;
+	}
 
-		for ( Permission p : Permission.values() ) {
-			if ( p.getParent() == null ) {
-				List<PermissionDisplayItem> sublist = new ArrayList<PermissionDisplayItem>();
-				sublist.add(new PermissionDisplayItem(p, false));
-				makeSubList(p, sublist, groupPermissionList);
-				permissionList.add(sublist);
-			}
+	public void setFunctionalAreas(List<PermissionDisplayItem> functionalAreas) {
+		this.functionalAreas = functionalAreas;
+	}
+
+	private void makeMasterList(List<Permission> groupPermissionList) {
+		permissionList = new HashMap<String, List<PermissionDisplayItem>>();
+		this.functionalAreas = new ArrayList<PermissionDisplayItem>();
+		
+		for ( Permission p : Permission.makeFunctionalAreaList() ) {
+			PermissionDisplayItem functionalArea = new PermissionDisplayItem(p, false);
+			functionalArea.setDescription(StringUtils.replace(functionalArea.getDescription(), "Functional Area:", ""));
+			functionalArea.setDescription(StringUtils.replace(functionalArea.getDescription(), " ", "&nbsp;"));
+			this.functionalAreas.add(functionalArea);
+			List<PermissionDisplayItem> sublist = new ArrayList<PermissionDisplayItem>();
+			makeSubList(p, sublist, groupPermissionList);
+			permissionList.put(p.name(), sublist);
 		}
+		
+		Collections.sort(this.functionalAreas);
 	}
 
 	private  void makeSubList(Permission p, List<PermissionDisplayItem> sublist, List<Permission> groupPermissionList) {
@@ -63,7 +80,6 @@ public class PermissionListResponse extends MessageResponse {
 		PermissionGroupLevel key = new PermissionGroupLevel();
 		key.setPermissionGroupId(permissionGroupId);
 		List<PermissionGroupLevel> groupPermissionList = PermissionGroupLevel.cast(key.selectSome(conn));
-//		List<Permission> permissionList = (List<Permission>) CollectionUtils.collect(groupPermissionList.iterator(), new Group2Permission());
 		List<Permission> permissionList = new ArrayList<Permission>();
 		for ( PermissionGroupLevel group : groupPermissionList) {
 			try {
@@ -77,34 +93,21 @@ public class PermissionListResponse extends MessageResponse {
 	}
 
 	
-	public class Group2Permission implements Transformer {
-
-		@Override
-		public Object transform(Object arg0) {
-			PermissionGroupLevel group = (PermissionGroupLevel)arg0;
-			Permission p = Permission.valueOf(group.getPermissionName());
-			return p;
+	
+	
+	public static void main(String[] args) {
+		Connection conn = null;		
+		try {
+			conn = AppUtils.getDevConn();
+			PermissionListResponse x = new PermissionListResponse(conn, 2209);
+			String json = AppUtils.object2json(x);
+			System.out.println(json);
+		} catch ( Exception e) {
+			e.printStackTrace();
+		} finally {
+			AppUtils.closeQuiet(conn);
 		}
+		
+		
 	}
-	
-	
-//	public static void main(String[] args) {
-//		Connection conn = null;		
-//		try {
-//			conn = AppUtils.getDevConn();
-//			PermissionListResponse x = new PermissionListResponse(conn, 7);
-//			for ( List<PermissionDisplayItem> itemList : x.getPermissionList() ) {
-//				for ( PermissionDisplayItem item : itemList ) {
-//					System.out.println(item.getPermissionName() + "\t" + item.getIncluded());
-//				}
-//				System.out.println("======================");
-//			}
-//		} catch ( Exception e) {
-//			e.printStackTrace();
-//		} finally {
-//			AppUtils.closeQuiet(conn);
-//		}
-//		
-//		
-//	}
 }

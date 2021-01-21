@@ -270,7 +270,7 @@ public enum Permission {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Permission> makeFunctionalAreaList() {
+	public List<Permission> makeFunctionalAreaTree() {
 		List<Permission> functionalAreaList = new ArrayList<Permission>();
 		CollectionUtils.addAll(functionalAreaList, makeChildTree().iterator());
 		CollectionUtils.addAll(functionalAreaList, makeParentList().iterator());
@@ -280,6 +280,20 @@ public enum Permission {
 		return uniqueList;
 	}
 	
+	
+	/**
+	 * Make a list of top-level permission (no parent)
+	 * @return
+	 */
+	public static List<Permission> makeFunctionalAreaList() {
+		List<Permission> functionalAreaList = new ArrayList<Permission>();
+		for ( Permission p : Permission.values() ) {
+			if ( p.getParent() == null ) {
+				functionalAreaList.add(p);
+			}
+		}
+		return functionalAreaList;
+	}
 //	public static void main(String[] args) {
 //		for ( Permission p : Permission.values() ) {
 //			if ( p.getParent() == null ) {
