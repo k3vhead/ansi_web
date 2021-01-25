@@ -44,6 +44,7 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 	private List<String> claimWeeks;
 	private List<EmployeeDL> employees;
 	private EmployeeDL monthlyTotal;
+	private Logger logger = LogManager.getLogger(BudgetControlEmployeesResponse.class);
 	
 	public BudgetControlEmployeesResponse(Connection conn, Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer workYear, String workWeek) throws SQLException {
 		super();
@@ -173,7 +174,10 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 		public void add(EmployeeDL dl) {
 			for ( Map.Entry<String, Double> week : dl.getWeeklyDL().entrySet() ) {
 				String claimWeek = week.getKey();
-				Double currentValue = this.weeklyDL.get(claimWeek);
+				Double currentValue = this.weeklyDL.get(claimWeek) == null ? 0.0D : this.weeklyDL.get(claimWeek);
+				logger.log(Level.DEBUG, "Current Value: " + currentValue);
+				logger.log(Level.DEBUG, "claim week: " + claimWeek);
+				logger.log(Level.DEBUG, "weeklyDL: " + dl.getWeeklyDL());
 				Double newValue = currentValue + dl.getWeeklyDL().get(claimWeek);
 				this.weeklyDL.put(claimWeek, newValue);				
 			}
