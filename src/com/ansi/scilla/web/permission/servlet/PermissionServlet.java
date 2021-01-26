@@ -230,9 +230,14 @@ public class PermissionServlet extends AbstractServlet {
 		PreparedStatement ps = conn.prepareStatement(sql);
 		ps.setInt(1, permissionGroupId);
 		ResultSet rs = ps.executeQuery();
+		int n = 0;
+		while (rs.next()) {
+			n++;
+			userList.add((SessionUser) rs.getArray(n));
+		}
+		SessionUser user = userList.get(0);
 		
 		conn.commit();
-		
 		
 		PermissionListResponse data = new PermissionListResponse(conn, permissionGroupId);
 		data.setWebMessages(new WebMessages());
