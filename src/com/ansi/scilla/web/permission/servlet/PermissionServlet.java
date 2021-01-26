@@ -214,6 +214,14 @@ public class PermissionServlet extends AbstractServlet {
 		if ( newPermission != null ) {
 			addNewPermission(conn, permissionGroupId, newPermission, sessionUser);
 		}
+		List<Permission> permissionList = null;
+		permissionList.add(newPermission);
+		/*
+		 * get list of users in permissionGroupId, get list of subscriptions for each user,
+		 * remove each sub not in line with the permissions of permissionGroupId
+		 */
+		List<SessionUser> userList = null;
+		userList.add(sessionUser);
 		
 		conn.commit();
 		
