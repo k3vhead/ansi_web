@@ -3,6 +3,7 @@ package com.ansi.scilla.web.permission.servlet;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
@@ -38,6 +39,7 @@ import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.permission.request.PermissionRequest;
 import com.ansi.scilla.web.permission.response.PermissionGroupResponse;
 import com.ansi.scilla.web.permission.response.PermissionListResponse;
+import com.ansi.scilla.web.user.query.UserLookup;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 /**
@@ -216,12 +218,18 @@ public class PermissionServlet extends AbstractServlet {
 		}
 		List<Permission> permissionList = null;
 		permissionList.add(newPermission);
+		
 		/*
 		 * get list of users in permissionGroupId, get list of subscriptions for each user,
 		 * remove each sub not in line with the permissions of permissionGroupId
 		 */
 		List<SessionUser> userList = null;
-		userList.add(sessionUser);
+		String sql = UserLookup.sqlSelect + "\n FROM ansi_user  "
+				+ "\n LEFT OUTER JOIN permission_group ON permission_group.permission_group_id=?";
+		
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, permissionGroupId);
+		ResultSet rs = ps.executeQuery();
 		
 		conn.commit();
 		
