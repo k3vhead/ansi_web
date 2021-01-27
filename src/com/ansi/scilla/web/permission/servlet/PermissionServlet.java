@@ -237,7 +237,7 @@ public class PermissionServlet extends AbstractServlet {
 			n++;
 			userList.add((SessionUser) rs.getArray(n));
 		}
-		SessionUser user = userList.get(0);
+		permissionList.get(0);
 		
 		conn.commit();
 		
