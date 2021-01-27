@@ -36,6 +36,7 @@ import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
+import com.ansi.scilla.web.permission.common.PermissionCommon;
 import com.ansi.scilla.web.permission.request.PermissionRequest;
 import com.ansi.scilla.web.permission.response.PermissionGroupResponse;
 import com.ansi.scilla.web.permission.response.PermissionListResponse;
@@ -217,8 +218,8 @@ public class PermissionServlet extends AbstractServlet {
 			addNewPermission(conn, permissionGroupId, newPermission, sessionUser);
 		}
 		
-		List<Permission> permissionList = null;
-		permissionList.add(newPermission);
+		List<Permission> permissionList = PermissionCommon.makeGroupList(conn, permissionGroupId);
+		
 		
 		/*
 		 * get list of users in permissionGroupId, get list of subscriptions for each user,
