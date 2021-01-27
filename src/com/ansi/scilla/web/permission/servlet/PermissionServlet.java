@@ -216,6 +216,7 @@ public class PermissionServlet extends AbstractServlet {
 		if ( newPermission != null ) {
 			addNewPermission(conn, permissionGroupId, newPermission, sessionUser);
 		}
+		
 		List<Permission> permissionList = null;
 		permissionList.add(newPermission);
 		
