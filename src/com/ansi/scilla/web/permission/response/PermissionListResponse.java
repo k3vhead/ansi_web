@@ -8,10 +8,10 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.ansi.scilla.common.db.PermissionGroupLevel;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.web.permission.common.PermissionCommon;
 
 
 public class PermissionListResponse extends MessageResponse {
@@ -77,18 +77,9 @@ public class PermissionListResponse extends MessageResponse {
 	
 	
 	private List<Permission> makeGroupList(Connection conn, Integer permissionGroupId) throws Exception{
-		PermissionGroupLevel key = new PermissionGroupLevel();
-		key.setPermissionGroupId(permissionGroupId);
-		List<PermissionGroupLevel> groupPermissionList = PermissionGroupLevel.cast(key.selectSome(conn));
-		List<Permission> permissionList = new ArrayList<Permission>();
-		for ( PermissionGroupLevel group : groupPermissionList) {
-			try {
-				Permission p = Permission.valueOf(group.getPermissionName());
-				permissionList.add(p);
-			} catch (IllegalArgumentException e) {
-				AppUtils.logException(e);				
-			}
-		}
+		
+		List<Permission> permissionList = PermissionCommon.makeGroupList(conn, permissionGroupId);
+		
 		return permissionList;
 	}
 
