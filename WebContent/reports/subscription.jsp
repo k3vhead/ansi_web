@@ -228,7 +228,6 @@
            		           		
         		
         		makeClickers : function() {
-        			<ansi:hasPermission permissionRequired="PERMISSIONS_WRITE">;
         			var $menuOpt = $("#selection-menu-container input[name='subscription-selector']");
            			$menuOpt.click(function($event, $value) {
            				var $selection = $(this).val();
@@ -236,7 +235,6 @@
            				var $selector = "#" + $selection + "-selection-container";
            				$($selector).show();
            			});
-           			</ansi:hasPermission>;
            			$(".subscription-selector").hide();	
         		},
         		       		
