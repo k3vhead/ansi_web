@@ -218,32 +218,46 @@ public class PermissionServlet extends AbstractServlet {
 			addNewPermission(conn, permissionGroupId, newPermission, sessionUser);
 		}
 		
-		List<Permission> permissionList = PermissionCommon.makeGroupList(conn, permissionGroupId);
-		
-		
 		/*
 		 * get list of users in permissionGroupId, get list of subscriptions for each user,
 		 * remove each sub not in line with the permissions of permissionGroupId
 		 */
-		List<SessionUser> userList = null;
-		String sql = UserLookup.sqlSelect + "\n FROM ansi_user  "
-				+ "\n LEFT OUTER JOIN permission_group ON permission_group.permission_group_id=?";
+		List<Permission> permissionList = PermissionCommon.makeGroupList(conn, permissionGroupId);
 		
-		PreparedStatement ps = conn.prepareStatement(sql);
-		ps.setInt(1, permissionGroupId);
-		ResultSet rs = ps.executeQuery();
-		int n = 0;
-		while (rs.next()) {
-			n++;
-			userList.add((SessionUser) rs.getArray(n));
+		List<SessionUser> userList = getUserList(conn, permissionGroupId);
+		
+		for(int i = 0; i < userList.size(); i++) {
+			SessionUser user = userList.get(i);
+			for(int j = 0; j < permissionList.size(); j++) {
+				Permission permission = permissionList.get(j);
+				
+			}
 		}
-		permissionList.get(0);
 		
 		conn.commit();
 		
 		PermissionListResponse data = new PermissionListResponse(conn, permissionGroupId);
 		data.setWebMessages(new WebMessages());
 		super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
+	}
+	
+	@SuppressWarnings("null")
+	private List<SessionUser> getUserList(Connection conn, Integer permissionGroupId) throws SQLException{
+		
+		String sql = UserLookup.sqlSelect + "\n FROM ansi_user  "
+				+ "\n LEFT OUTER JOIN permission_group ON permission_group.permission_group_id=?";
+		
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, permissionGroupId);
+		ResultSet rs = ps.executeQuery();
+		List<SessionUser> userList = null;
+		int n = 0;
+		while (rs.next()) {
+			n++;
+			userList.add((SessionUser) rs.getArray(n));
+		}
+		return userList;
+		
 	}
 
 	private void deleteOldPermissions(Connection conn, Integer permissionGroupId, Permission functionalArea) throws SQLException {
