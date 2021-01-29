@@ -240,7 +240,6 @@ public class PermissionServlet extends AbstractServlet {
 		super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
 	}
 	
-	@SuppressWarnings("null")
 	private List<User> getUserList(Connection conn, Integer permissionGroupId) throws Exception{
 		User key = new User();
 		key.setPermissionGroupId(permissionGroupId);
