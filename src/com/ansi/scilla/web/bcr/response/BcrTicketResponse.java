@@ -13,6 +13,8 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.web.bcr.common.BcrTicket;
 import com.ansi.scilla.web.bcr.common.BcrTicketSql;
 import com.ansi.scilla.web.common.response.MessageResponse;
@@ -28,7 +30,9 @@ public class BcrTicketResponse extends MessageResponse {
 	
 	private Integer claimYear;
 	private List<String> claimWeeks;
-	private BcrTicket ticket;
+	private TicketData ticket;
+	private List<BcrTicket> dlClaims;
+	private List<PassthruExpense> expenses;
 	
 	
 	public BcrTicketResponse() {
@@ -59,16 +63,34 @@ public class BcrTicketResponse extends MessageResponse {
 	public void setClaimWeeks(List<String> claimWeeks) {
 		this.claimWeeks = claimWeeks;
 	}
-	public BcrTicket getTicket() {
+		public TicketData getTicket() {
 		return ticket;
 	}
-	public void setTicket(BcrTicket ticket) {
+
+	public void setTicket(TicketData ticket) {
 		this.ticket = ticket;
 	}
 
+	public List<BcrTicket> getDlClaims() {
+		return dlClaims;
+	}
+
+	public void setDlClaims(List<BcrTicket> dlClaims) {
+		this.dlClaims = dlClaims;
+	}
+
+	public List<PassthruExpense> getExpenses() {
+		return expenses;
+	}
+
+	public void setExpenses(List<PassthruExpense> expenses) {
+		this.expenses = expenses;
+	}
 
 	private void makeResponse(Connection conn, Integer userId, List<SessionDivision> divisionList,
 			Integer divisionId, Integer workYear, String workWeek, Integer ticketId) throws SQLException, RecordNotFoundException {
+		
+		this.ticket = new TicketData(conn, ticketId);
 		String baseSql = BcrTicketSql.sqlSelectClause + BcrTicketSql.makeFilteredFromClause(divisionList) + BcrTicketSql.makeBaseWhereClause(workWeek);
 		String sql = selectClause + baseSql + whereClause;
 		
@@ -84,12 +106,120 @@ public class BcrTicketResponse extends MessageResponse {
 		ps.setInt(3, ticketId);
 		logger.log(Level.DEBUG, "division | workYear | ticketId: " + divisionId + " | "+workYear+" | "+ticketId);
 		ResultSet rs = ps.executeQuery();
-		if ( rs.next() ) {
-			this.ticket = new BcrTicket(rs);
-		} else {
+		this.dlClaims = new ArrayList<BcrTicket>();
+		this.expenses = new ArrayList<PassthruExpense>();
+		while ( rs.next() ) {
+			dlClaims.add(new BcrTicket(rs));
+			Integer claimId = rs.getInt("claim_id");
+			Double passthruVolume = rs.getDouble("passthru_volume");
+			String passthruExpenseType = rs.getString("passthru_expense_type");
+			logger.log(Level.DEBUG, "Expense type: " + passthruExpenseType);
+			if ( ! StringUtils.isBlank(passthruExpenseType)) {
+				expenses.add(new PassthruExpense(claimId, passthruVolume, passthruExpenseType));
+			}
+		}
+		if ( dlClaims.isEmpty() ) {
 			throw new RecordNotFoundException(String.valueOf(ticketId));
 		}
 		
 
+	}
+	
+	public class TicketData extends ApplicationObject {
+		private static final long serialVersionUID = 1L;
+
+		private final String sql = "select ticket.ticket_id, ticket.job_id, ticket.ticket_type, ticket.ticket_status, address.name as job_site_name\n" + 
+				"from ticket \n" + 
+				"inner join job on job.job_id=ticket.job_id\n" + 
+				"inner join quote on quote.quote_id=job.quote_id\n" + 
+				"inner join address on address.address_id=quote.job_site_address_id\n" + 
+				"where ticket_id=?";
+		
+		private Integer ticketId;
+		private Integer jobId;
+		private String ticketType;
+		private String status;
+		private String jobSiteName;
+		private String serviceTagId;
+		
+		private TicketData() {
+			super();
+		}
+		
+		public TicketData(Connection conn, Integer ticketId) throws RecordNotFoundException, SQLException {
+			this();
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1,  ticketId);
+			ResultSet rs = ps.executeQuery();
+			if ( rs.next() ) {
+				this.ticketId = ticketId;
+				this.jobId = rs.getInt("job_id");
+				this.ticketType = rs.getString("ticket_type");
+				this.status = rs.getString("ticket_status");
+				this.jobSiteName = rs.getString("job_site_name");
+//				this.serviceTagId = rs.getString("service_tag_id");
+			} else {
+				throw new RecordNotFoundException();
+			}
+		}
+
+		public Integer getTicketId() {
+			return ticketId;
+		}
+
+		public Integer getJobId() {
+			return jobId;
+		}
+
+		public String getTicketType() {
+			return ticketType;
+		}
+
+		public String getStatus() {
+			return status;
+		}
+
+		public String getJobSiteName() {
+			return jobSiteName;
+		}
+
+		public String getServiceTagId() {
+			return serviceTagId;
+		}
+		
+	}
+	
+	
+	public class PassthruExpense extends ApplicationObject {
+		private static final long serialVersionUID = 1L;
+
+		private Integer claimId;
+		private Double passthruVolume;
+		private String passthruExpenseType;
+		
+		private PassthruExpense() {
+			super();
+		}
+
+		public PassthruExpense(Integer claimId, Double passthruVolume, String passthruExpenseType) {
+			this();
+			this.claimId = claimId;
+			this.passthruVolume = passthruVolume;
+			this.passthruExpenseType = passthruExpenseType;
+		}
+
+		public Integer getClaimId() {
+			return claimId;
+		}
+
+		public Double getPassthruVolume() {
+			return passthruVolume;
+		}
+
+		public String getPassthruExpenseType() {
+			return passthruExpenseType;
+		}
+		
+		
 	}
 }

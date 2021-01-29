@@ -175,9 +175,6 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 			for ( Map.Entry<String, Double> week : dl.getWeeklyDL().entrySet() ) {
 				String claimWeek = week.getKey();
 				Double currentValue = this.weeklyDL.get(claimWeek) == null ? 0.0D : this.weeklyDL.get(claimWeek);
-				logger.log(Level.DEBUG, "Current Value: " + currentValue);
-				logger.log(Level.DEBUG, "claim week: " + claimWeek);
-				logger.log(Level.DEBUG, "weeklyDL: " + dl.getWeeklyDL());
 				Double newValue = currentValue + dl.getWeeklyDL().get(claimWeek);
 				this.weeklyDL.put(claimWeek, newValue);				
 			}

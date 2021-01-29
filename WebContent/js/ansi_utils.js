@@ -16,7 +16,7 @@ $( document ).ready(function() {
 						}
 					},					
 					403: function($data) {
-						$("#globalMsg").html($data.responseHeader.responseMessage).show().fadeOut(5000);
+						$("#globalMsg").html("Session has expired.").show().fadeOut(5000);
 					},
 					404: function($data) {
 						$("#globalMsg").html("System Error: " + $url + " 404. Contact Support").show().fadeOut(5000);

@@ -331,22 +331,112 @@
 					
 					$("#bcr_edit_modal .err").html("");
 					
-        			$("#bcr_edit_modal .jobSiteName").html($data.data.ticket.jobSiteName);
-        			$("#bcr_edit_modal .ticketId").html($data.data.ticket.ticketId);
-        			$("#bcr_edit_modal input[name='ticketId']").val($data.data.ticket.ticketId);
-        			$("#bcr_edit_modal select[name='claimWeek']").val($data.data.ticket.claimWeek);
-        			$("#bcr_edit_modal input[name='dlAmt']").val($data.data.ticket.dlAmt.toFixed(2));
-        			$("#bcr_edit_modal input[name='totalVolume']").val($data.data.ticket.totalVolume.toFixed(2));
-        			$("#bcr_edit_modal input[name='volumeClaimed']").val($data.data.ticket.volumeClaimed.toFixed(2));
-        			$("#bcr_edit_modal .volumeRemaining").html($data.data.ticket.volumeRemaining.toFixed(2));
-        			$("#bcr_edit_modal input[name='notes']").val($data.data.ticket.notes);
-        			$("#bcr_edit_modal input[name='billedAmount']").val($data.data.ticket.billedAmount.toFixed(2));
-        			$("#bcr_edit_modal .claimedVsBilled").html($data.data.ticket.claimedVsBilled.toFixed(2));
-        			$("#bcr_edit_modal .ticketStatus").html($data.data.ticket.ticketStatus);
-        			$("#bcr_edit_modal .serviceTagId").html($data.data.ticket.serviceTagId);
-        			$("#bcr_edit_modal .equipmentTags").html($data.data.ticket.equipmentTags);
-        			$("#bcr_edit_modal input[name='employee']").val($data.data.ticket.employee);
-        			$("#bcr_edit_modal input[name='claimId']").val($data.data.ticket.claimId);
+					$("#bcr_edit_modal").dialog( "option", "title", "Ticket Claim: " + $data.data.ticket.ticketId + " (" + $data.data.ticket.status + ")  " + $data.data.ticket.jobSiteName);
+					
+					$("#bcr_edit_modal input[name='totalVolume']").val($data.data.dlClaims[0].totalVolume.toFixed(2));
+					
+					
+					// Make DL Claim Table:
+					BUDGETCONTROL.dlClaimTable = $("#dl-claim-table").DataTable( {
+	    			data : $data.data.dlClaims,
+	    			paging : false,
+	    			autoWidth : false,
+        	        deferRender : true,
+        	        destroy : true,		// this lets us reinitialize the table for different permission groups
+	    			columns : [
+	    				{ width:"125px", title:"Direct Labor", className:"dt-right", orderable:true,
+	    					data:function($row,$type,$set) {
+	    						return $row.dlAmt.toFixed(2);
+	    					}
+	    				},
+	    				{ width:"125px", title:"Volume Claimed", className:"dt-right", orderable:true,
+	    					data:function($row,$type,$set) {
+	    						return $row.volumeClaimed.toFixed(2);
+	    					}  
+	    				},
+	    				{ width:"200px", title:"Equipment Type", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>", data:'equipmentTags'},
+	    				{ width:"300px", title:"Employee", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>", data:'employee'},
+	    				{ width:"300px", title:"Notes", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>", data:'notes'},
+	    				{ width:"300px", title:"Action", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>",
+	    					data:function($row,$type,$set) {
+	    						return '<webthing:delete>Delete</webthing:delete>';		
+	    					}
+	    				},
+	    			],
+	    			"drawCallback": function( settings ) {
+	    				// something to make this do something useful
+		            },
+		            "footerCallback" : function( row, data, start, end, display ) {
+		            	var api = this.api();
+		            	//var data;
+		            	dlTotal = api.column(0).data().reduce( function(a,b) {
+		            		var mySum = parseFloat(a) + parseFloat(b);
+		            		return mySum;
+		            	}, 0);
+		            	volumeClaimedTotal = api.column(1).data().reduce( function(a,b) {
+		            		var mySum = parseFloat(a) + parseFloat(b);
+		            		return mySum;
+		            	}, 0);
+		            	$( api.column(0).footer() ).html( dlTotal.toFixed(2) );
+		            	$( api.column(1).footer() ).html( volumeClaimedTotal.toFixed(2) );
+		            	$("#div-summary .total-dl").html( dlTotal.toFixed(2) );
+		            	$("#div-summary .total-claimed-volume").html( volumeClaimedTotal.toFixed(2) );
+		            }
+	    		});
+					
+					
+					
+					
+				// Make DL Expense Table:
+				BUDGETCONTROL.dlExpenseTable = $("#dl-expense-table").DataTable( {
+	    			data : $data.data.expenses,
+	    			paging : false,
+	    			autoWidth : false,
+        	        deferRender : true,
+        	        searching: false, 
+        	        destroy : true,		// this lets us reinitialize the table for different permission groups
+	    			columns : [
+	    				{ width:"125px", title:"Claimed Expense Vol.", className:"dt-right", orderable:true,
+	    					data:function($row,$type,$set) {
+	    						return $row.passthruVolume.toFixed(2);
+	    					}
+	    				},	    				
+	    				{ width:"200px", title:"Expense Type", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>", data:'passthruExpenseType'},
+	    				{ width:"50px", title:" ", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>",
+	    					data:function($row,$type,$set) {
+	    						return '<webthing:delete>Delete</webthing:delete>';		
+	    					}
+	    				},
+	    			],
+	    			"drawCallback": function( settings ) {
+	    				// something editable should go here
+		            },
+		            "footerCallback" : function( row, data, start, end, display ) {
+		            	var api = this.api();
+		            	//var data;
+		            	expenseTotal = api.column(0).data().reduce( function(a,b) {
+		            		var mySum = parseFloat(a) + parseFloat(b);
+		            		return mySum;
+		            	}, 0);
+		            	
+		            	$( api.column(0).footer() ).html( expenseTotal.toFixed(2) );
+		            }
+	    		});
+					
+        			//$("#bcr_edit_modal input[name='ticketId']").val($data.data.ticket.ticketId);
+        			//$("#bcr_edit_modal select[name='claimWeek']").val($data.data.ticket.claimWeek);
+        			//$("#bcr_edit_modal input[name='dlAmt']").val($data.data.ticket.dlAmt.toFixed(2));
+        			//
+        			//$("#bcr_edit_modal input[name='volumeClaimed']").val($data.data.ticket.volumeClaimed.toFixed(2));
+        			//$("#bcr_edit_modal .volumeRemaining").html($data.data.ticket.volumeRemaining.toFixed(2));
+        			//$("#bcr_edit_modal input[name='notes']").val($data.data.ticket.notes);
+        			//$("#bcr_edit_modal input[name='billedAmount']").val($data.data.ticket.billedAmount.toFixed(2));
+        			//$("#bcr_edit_modal .claimedVsBilled").html($data.data.ticket.claimedVsBilled.toFixed(2));
+        			//$("#bcr_edit_modal .ticketStatus").html($data.data.ticket.ticketStatus);
+        			//$("#bcr_edit_modal .serviceTagId").html($data.data.ticket.serviceTagId);
+        			//$("#bcr_edit_modal .equipmentTags").html($data.data.ticket.equipmentTags);
+        			//$("#bcr_edit_modal input[name='employee']").val($data.data.ticket.employee);
+        			//$("#bcr_edit_modal input[name='claimId']").val($data.data.ticket.claimId);
     	    		
         			$("#bcr_edit_modal").dialog("open");
         		}, 
@@ -622,8 +712,8 @@
         			$( "#bcr_edit_modal" ).dialog({
         				title:'Edit Claim',
         				autoOpen: false,
-        				height: 550,
-        				width: 550,
+        				height: 600,
+        				width: 1024,
         				modal: true,
         				closeOnEscape:true,
         				//open: function(event, ui) {
@@ -1159,83 +1249,77 @@
 	    
 	    
 	    <div id="bcr_edit_modal">
-	    	<form id="bcr_edit_form">
-	    		<input type="hidden" name="ticketId" />
-	    		<input type="hidden" name="claimId" />
-		    	<table>
-		    		<tr>
-		    			<td><span class="form-label">Account:</span></td>
-		    			<td><span class="jobSiteName"></span></td>
-		    			<td><span class="err jobSiteNameErr"></span></td>
-		    		</tr>
-		    		<tr>
-		    			<td><span class="form-label">Ticket Number:</span></td>
-		    			<td><span class="ticketId"></span></td>
-		    			<td><span class="err ticketIdErr"></span></td>	    			
-		    		</tr>
-		    		<tr>
-		    			<td><span class="form-label">Claim Week:</span></td>
-		    			<td><select name="claimWeek"></select></td>
-		    			<td><span class="err claimWeekErr"></span></td>	    			
-		    		</tr>
-		    		<tr>
-		    			<td><span class="form-label">D/L:</span></td>
-		    			<td><input type="text" name="dlAmt" id="dlAmtField"></input></td>
-		    			<td><span class="err dlAmtErr"></span></td>	    			
-		    		</tr>
-		    		<tr>
-		    			<td><span class="form-label">Total Volume:</span></td>
-		    			<td><input type="text" name="totalVolume" id="totalVolumeField"></input></td>
-		    			<td><span class="err totalVolumeErr"></span></td>	    			
-		    		</tr>
-		    		<tr>
-		    			<td><span class="form-label">Volume Claimed:</span></td>
-		    			<td><input type="text" name="volumeClaimed" id="volumeClaimedField"></input></td>
-		    			<td><span class="err volumeClaimedErr"></span></td>	    			
-		    		</tr>
-		    		<tr>
-		    			<td><span class="form-label">Volume Remaining:</span></td>
-		    			<td><span class="volumeRemaining"></span></td>
-		    			<td><span class="err volumeRemainingErr"></span></td>	    			
-		    		</tr>
-		    		<tr>
-		    			<td><span class="form-label">Notes:</span></td>
-		    			<td><input type="text" name="notes"></input></td>
-		    			<td><span class="err workDateErr"></span></td>	    			
-		    		</tr>
-		    		<tr>
-		    			<td><span class="form-label">Billed Amount:</span></td>
-		    			<td><input type="text" name="billedAmount" id="billedAmountField"></input></td>
-		    			<td><span class="err billedAmountErr"></span></td>	    			
-		    		</tr>
-		    		<tr>
-		    			<td><span class="form-label">Diff Clm/Bld:</span></td>
-		    			<td><span class="claimedVsBilled"></span></td>
-		    			<td><span class="err claimedVsBilledErr"></span></td>	    			
-		    		</tr>
-		    		<tr>
-		    			<td><span class="form-label">Ticket Status:</span></td>
-		    			<td><span class="ticketStatus"></span></td>
-		    			<td><span class="err ticketStatusErr"></span></td>	    			
-		    		</tr>
-		    		<tr>
-		    			<td><span class="form-label">Service:</span></td>
-		    			<td><span class="serviceTagId"></span></td>
-		    			<td><span class="err serviceTagIdErr"></span></td>	    			
-		    		</tr>
-		    		<tr>
-		    			<td><span class="form-label">Equipment:</span></td>
-		    			<td><span class="equipmentTags"></span></td>
-		    			<td><span class="err equipmentTagsErr"></span></td>	    			
-		    		</tr>
-		    		<tr>
-		    			<td><span class="form-label">Employee:</span></td>
-		    			<td><input type="text" name="employee"></input></td>
-		    			<td><span class="err employeeErr"></span></td>	    			
-		    		</tr>
-		    		
-		    	</table>
-	    	</form>
+	    	<div style="width:100%; height:15px;">
+	    		<span class="err bcr_edit_message"></span>
+	    	</div>
+	    	<table>
+	    		<tr>
+	    			<td><span class="form-label">Claim Week:</span></td>
+	    			<td><select name="claimWeek"></select></td>
+	    			<td>&nbsp;</td>
+	    			<td><span class="form-label">Total Volume:</span></td>
+	    			<td><input type="text" name="totalVolume" /></td>
+    			</tr>
+	    	</table>
+	    	
+	    	<div style="margin-top:12px; border-top:solid 2px #000000; border-bottom:solid 2px #000000; width:100%;">
+	    		<div style="background-color:#CCCCCC; font-weight:bold;padding-top:3px; padding-bottom:3px;">Direct Labor Claims</div>
+	    		<table id="dl-claim-table">
+	    			<thead></thead>
+	    			<tbody></tbody>
+	    			<tfoot>
+	    				<tr>
+	    					<th></th>
+	    					<th></th>
+	    					<th></th>
+	    					<th></th>
+	    					<th></th>
+	    					<th></th>
+	    				</tr>
+	    			</tfoot>
+	    		</table>
+	    	</div>
+	    	
+	    	<div style="clear:both; width:100%; border-top:solid 2px #000000;">&nbsp;</div>
+	    	
+	    	<div id="div-summary" style="float:right; margin-top:12px; border-top:solid 2px #000000; border-bottom:solid 2px #000000; width:48%;">
+	    		<div style="background-color:#CCCCCC; font-weight:bold;padding-top:3px; padding-bottom:3px;">Summary</div>
+	    		<table>
+	    			<tr>
+	    				<td><span class="form-label">Total D/L:</span></td>
+	    				<td style="float:right;"><span class="total-dl"></span></td>
+	    			</tr>
+	    			<tr>
+	    				<td><span class="form-label">Total Volume:</span></td>
+	    				<td style="float:right;"><span class="total-volume"></span></td>
+	    			</tr>
+	    			<tr>
+	    				<td><span class="form-label">Total Claimed Volume:</span></td>
+	    				<td style="float:right;"><span class="total-claimed-volume"></span></td>
+	    			</tr>
+	    			<tr>
+	    				<td><span class="form-label">Remaining Volume:</span></td>
+	    				<td style="float:right;"><span class="remaining-volume"></span></td>
+	    			</tr>
+	    		</table>
+	    	</div>
+	    	
+	    	<div style="float:left; margin-top:12px; border-top:solid 2px #000000; border-bottom:solid 2px #000000; width:48%;">
+	    		<div style="background-color:#CCCCCC; font-weight:bold;padding-top:3px; padding-bottom:3px;">Claimed Expense Volume</div>
+	    		<table id="dl-expense-table">
+	    			<thead></thead>
+	    			<tbody></tbody>
+	    			<tfoot>
+	    				<tr>
+	    					<th></th>
+	    					<th></th>
+	    					<th></th>
+	    				</tr>
+	    			</tfoot>
+	    		</table>
+	    	</div>
+	    	
+	    	
 	    </div>
     </tiles:put>
 		
