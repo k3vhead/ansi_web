@@ -10,7 +10,7 @@ import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 
 
-public class PermissionCommon extends MessageResponse {
+public class PermissionUtils extends MessageResponse {
 
 	
 	/**

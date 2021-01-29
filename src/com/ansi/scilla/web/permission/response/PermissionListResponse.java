@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
-import com.ansi.scilla.web.permission.common.PermissionCommon;
+import com.ansi.scilla.web.permission.common.PermissionUtils;
 
 
 public class PermissionListResponse extends MessageResponse {
@@ -78,7 +78,7 @@ public class PermissionListResponse extends MessageResponse {
 	
 	private List<Permission> makeGroupList(Connection conn, Integer permissionGroupId) throws Exception{
 		
-		List<Permission> permissionList = PermissionCommon.makeGroupList(conn, permissionGroupId);
+		List<Permission> permissionList = PermissionUtils.makeGroupList(conn, permissionGroupId);
 		
 		return permissionList;
 	}
