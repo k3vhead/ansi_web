@@ -3,7 +3,6 @@ package com.ansi.scilla.web.permission.servlet;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
@@ -22,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.db.PermissionGroup;
 import com.ansi.scilla.common.db.PermissionGroupLevel;
+import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.utils.QMarkTransformer;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -40,7 +40,6 @@ import com.ansi.scilla.web.permission.common.PermissionCommon;
 import com.ansi.scilla.web.permission.request.PermissionRequest;
 import com.ansi.scilla.web.permission.response.PermissionGroupResponse;
 import com.ansi.scilla.web.permission.response.PermissionListResponse;
-import com.ansi.scilla.web.user.query.UserLookup;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 /**
@@ -224,10 +223,10 @@ public class PermissionServlet extends AbstractServlet {
 		 */
 		List<Permission> permissionList = PermissionCommon.makeGroupList(conn, permissionGroupId);
 		
-		List<SessionUser> userList = getUserList(conn, permissionGroupId);
+		List<User> userList = getUserList(conn, permissionGroupId);
 		
 		for(int i = 0; i < userList.size(); i++) {
-			SessionUser user = userList.get(i);
+			User user = userList.get(i);
 			for(int j = 0; j < permissionList.size(); j++) {
 				Permission permission = permissionList.get(j);
 				
@@ -242,21 +241,12 @@ public class PermissionServlet extends AbstractServlet {
 	}
 	
 	@SuppressWarnings("null")
-	private List<SessionUser> getUserList(Connection conn, Integer permissionGroupId) throws SQLException{
-		
-		String sql = UserLookup.sqlSelect + "\n FROM ansi_user  "
-				+ "\n LEFT OUTER JOIN permission_group ON permission_group.permission_group_id=?";
-		
-		PreparedStatement ps = conn.prepareStatement(sql);
-		ps.setInt(1, permissionGroupId);
-		ResultSet rs = ps.executeQuery();
-		List<SessionUser> userList = null;
-		int n = 0;
-		while (rs.next()) {
-			n++;
-			userList.add((SessionUser) rs.getArray(n));
-		}
+	private List<User> getUserList(Connection conn, Integer permissionGroupId) throws Exception{
+		User key = new User();
+		key.setPermissionGroupId(permissionGroupId);
+		List<User> userList = User.cast(key.selectSome(conn));
 		return userList;
+		
 		
 	}
 
@@ -327,4 +317,19 @@ public class PermissionServlet extends AbstractServlet {
 		}
 		
 	}
+	
+//	public static void main(String[] args ) {
+//		Connection conn = null;
+//		try {
+//			conn = AppUtils.getDevConn();
+//			List<User> usersList = new PermissionServlet().getUserList(conn, 1);
+//			for ( User user : usersList ) {
+//				System.out.println(user.getUserId() + "\t" + user.getLastName() + "\t" + user.getFirstName());
+//			}
+//		} catch ( Exception e ) {
+//			e.printStackTrace();
+//		} finally {
+//			AppUtils.closeQuiet(conn);
+//		}
+//	}
 }
