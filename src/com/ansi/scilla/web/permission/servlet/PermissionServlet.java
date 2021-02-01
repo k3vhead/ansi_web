@@ -40,6 +40,7 @@ import com.ansi.scilla.web.permission.common.PermissionUtils;
 import com.ansi.scilla.web.permission.request.PermissionRequest;
 import com.ansi.scilla.web.permission.response.PermissionGroupResponse;
 import com.ansi.scilla.web.permission.response.PermissionListResponse;
+import com.ansi.scilla.web.report.common.BatchReports;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 /**
@@ -206,6 +207,7 @@ public class PermissionServlet extends AbstractServlet {
 	 * @param sessionUser
 	 * @throws Exception 
 	 */
+	@SuppressWarnings("null")
 	private void processUpdate(Connection conn, HttpServletResponse response, Integer permissionGroupId,
 			PermissionRequest permissionRequest, SessionUser sessionUser) throws Exception {
 		Permission functionalArea = Permission.valueOf(permissionRequest.getFunctionalArea());
@@ -222,15 +224,36 @@ public class PermissionServlet extends AbstractServlet {
 		 * remove each sub not in line with the permissions of permissionGroupId
 		 */
 		List<Permission> permissionList = PermissionUtils.makeGroupList(conn, permissionGroupId);
-		
 		List<User> userList = getUserList(conn, permissionGroupId);
 		
-		for(int i = 0; i < userList.size(); i++) {
-			User user = userList.get(i);
-			for(int j = 0; j < permissionList.size(); j++) {
-				Permission permission = permissionList.get(j);
-				
+		List<BatchReports> reportList = null;
+		
+		for(Permission p : permissionList) {
+			for(BatchReports br : BatchReports.values()) {
+				if(br.permission().equals(p)) {
+					reportList.add(br);
+				}
 			}
+		}
+		
+		List<Object> subUserList = IteratorUtils.toList(CollectionUtils.collect(userList, new UserToId()).iterator());
+		List<Object> subReportList = IteratorUtils.toList(CollectionUtils.collect(reportList, new ReportToName()).iterator());
+		
+		String sql = "select from report_subscription where user_id in (" + QMarkTransformer.makeQMarkWhereClause(subUserList) + ") "
+				+ "and report_id not in (" + QMarkTransformer.makeQMarkWhereClause(subReportList) + ")";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		int n = 0;
+//		for(Integer user_id : userList.size()) {
+//			ps.setInt(n, user_id);
+//			n++;
+//		}
+		for(int i = 0; i < userList.size(); i++) {
+			ps.setInt(n, userList.get(i).getUserId());
+			n++;
+		}
+		for(int i = 0; i < reportList.size(); i++) {
+			ps.setString(n, reportList.get(i).name());
+			n++;
 		}
 		
 		conn.commit();
@@ -312,6 +335,24 @@ public class PermissionServlet extends AbstractServlet {
 
 		@Override
 		public String transform(Permission arg0) {			
+			return arg0.name();
+		}
+		
+	}
+	
+	public class UserToId implements Transformer<User, Integer> {
+
+		@Override
+		public Integer transform(User arg0) {			
+			return arg0.getUserId();
+		}
+		
+	}
+	
+	public class ReportToName implements Transformer<BatchReports, String> {
+
+		@Override
+		public String transform(BatchReports arg0) {			
 			return arg0.name();
 		}
 		
