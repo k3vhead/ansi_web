@@ -5,7 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -227,7 +227,7 @@ public class PermissionServlet extends AbstractServlet {
 		List<Permission> permissionList = PermissionUtils.makeGroupList(conn, permissionGroupId);
 		List<User> userList = getUserList(conn, permissionGroupId);
 		
-		List<BatchReports> reportList = Collections.emptyList();
+		List<BatchReports> reportList = new ArrayList<BatchReports>();
 		
 		for(Permission p : permissionList) {
 			for(BatchReports br : BatchReports.values()) {
@@ -243,7 +243,7 @@ public class PermissionServlet extends AbstractServlet {
 		String sql = getSql(subUserList, subReportList);
 		PreparedStatement ps = conn.prepareStatement(sql);
 		
-		int n = 0;
+		int n = 1;
 		for(int i = 0; i < userList.size(); i++) {
 			ps.setInt(n, userList.get(i).getUserId());
 			n++;
