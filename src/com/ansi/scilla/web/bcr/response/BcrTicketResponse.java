@@ -29,6 +29,7 @@ public class BcrTicketResponse extends MessageResponse {
 	private static final String whereClause = "\n) as detail where ticket_id=?";
 	
 	private Integer claimYear;
+	private String claimWeek;
 	private List<String> claimWeeks;
 	private TicketData ticket;
 	private List<BcrTicket> dlClaims;
@@ -85,6 +86,14 @@ public class BcrTicketResponse extends MessageResponse {
 
 	public void setExpenses(List<PassthruExpense> expenses) {
 		this.expenses = expenses;
+	}
+
+	public String getClaimWeek() {
+		return claimWeek;
+	}
+
+	public void setClaimWeek(String claimWeek) {
+		this.claimWeek = claimWeek;
 	}
 
 	private void makeResponse(Connection conn, Integer userId, List<SessionDivision> divisionList,

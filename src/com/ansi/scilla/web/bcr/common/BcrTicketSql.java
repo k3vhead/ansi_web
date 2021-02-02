@@ -33,6 +33,45 @@ public class BcrTicketSql extends ApplicationObject {
 	public static final String EQUIPMENT_TAGS = "equipment_tags";
 	public static final String CLAIM_ID = "claim_id";
 	
+	
+	/**
+	 * Using code freely stolen from:
+	 * https://stackoverflow.com/questions/194852/how-to-concatenate-text-from-multiple-rows-into-a-single-text-string-in-sql-serv
+	 * 
+	 * This query creates a 2-column table containing a ticket id and a comma-delimited list of job_tag.abbrev where the
+	 * job tag is of type 'EQUIPMENT'
+	 * 
+	 * eg:  12345, 'WFP,LPT'
+	 * 
+	 * It is highly inefficient because of 2 identical sub-selects within the subselect, but it has the advantage of actually working.
+	 * 
+	 */
+	private static final String equipment_tag_subselect = "SELECT Main.ticket_id,\n" + 
+			"       LEFT(Main.equipment_tags,Len(Main.equipment_tags)-1) As \"equipment_tags\"\n" + 
+			"FROM\n" + 
+			"    (\n" + 
+			"        SELECT DISTINCT ST2.ticket_id, \n" + 
+			"            (\n" + 
+			"                SELECT ST1.equipment_tags + ',' AS [text()]\n" + 
+			"                FROM (\n" + 
+			"                	select ticket_claim.ticket_id, job_tag.abbrev as equipment_tags\n" + 
+			"					from ticket_claim\n" + 
+			"					inner join ticket on ticket.ticket_id=ticket_claim.ticket_id\n" + 
+			"					inner join job_tag_xref xref on xref.job_id=ticket.job_id\n" + 
+			"					inner join job_tag on job_tag.tag_id=xref.tag_id and job_tag.tag_type='EQUIPMENT') ST1\n" + 
+			"                WHERE ST1.ticket_id = ST2.ticket_id\n" + 
+			"                ORDER BY ST1.ticket_id\n" + 
+			"                FOR XML PATH ('')\n" + 
+			"            ) [equipment_tags]\n" + 
+			"        FROM (\n" + 
+			"	        select ticket_claim.ticket_id, job_tag.abbrev as equipment_tags\n" + 
+			"			from ticket_claim\n" + 
+			"			inner join ticket on ticket.ticket_id=ticket_claim.ticket_id\n" + 
+			"			inner join job_tag_xref xref on xref.job_id=ticket.job_id\n" + 
+			"			inner join job_tag on job_tag.tag_id=xref.tag_id and job_tag.tag_type='EQUIPMENT') ST2\n" + 
+			"    ) [Main]";
+	
+	
 	public static final String sqlSelectClause = 
 			"select \n" + 
 			"   job_site.name as " + JOB_SITE_NAME + "\n" + 
@@ -64,7 +103,7 @@ public class BcrTicketSql extends ApplicationObject {
 			" , ticket_claim.employee_name as " + EMPLOYEE + "\n" + 
 			"-- ** this is where the equipment tags would go **\n" + 
 			"-- , \"concat equipment tags separated by commas\"\n" + 
-			" , 'GSS' as " + EQUIPMENT_TAGS + " \n";
+			" , tag_list.equipment_tags as " + EQUIPMENT_TAGS + " \n";
 			
 	
 	public static final String sqlFromClause = 
@@ -99,7 +138,8 @@ public class BcrTicketSql extends ApplicationObject {
 			"	from ticket\n" + 
 			"	where invoice_date is not null\n" + 
 			"	group by ticket_id\n" + 
-			"	) as invoice_totals on invoice_totals.ticket_id = ticket.ticket_id \n";
+			"	) as invoice_totals on invoice_totals.ticket_id = ticket.ticket_id \n" +
+			"inner join (" + equipment_tag_subselect + ") tag_list on tag_list.ticket_id=ticket_claim.ticket_id";
 					
 	
 	public static final String baseWhereClause =
@@ -117,12 +157,12 @@ public class BcrTicketSql extends ApplicationObject {
 		List<Integer> divisionIdList = new ArrayList<Integer>();
 		divisionIdList = CollectionUtils.collect(divisionList.iterator(), new SessionDivisionTransformer(), divisionIdList);
 		String divisionFilter = StringUtils.join(divisionIdList, ",");
-		String whereClause = BcrTicketSql.sqlFromClause.replaceAll("\\$DIVISION_USER_FILTER\\$", divisionFilter);
+		String whereClause = " " + BcrTicketSql.sqlFromClause.replaceAll("\\$DIVISION_USER_FILTER\\$", divisionFilter);
 		return whereClause;
 	}
 	
 	public static String makeBaseWhereClause(String workWeeks) {
-		String whereClause = BcrTicketSql.baseWhereClause.replaceAll("\\$CLAIMWEEKFILTER\\$", workWeeks);
+		String whereClause = " " + BcrTicketSql.baseWhereClause.replaceAll("\\$CLAIMWEEKFILTER\\$", workWeeks);
 		return whereClause;
 	}
 }

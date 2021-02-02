@@ -28,6 +28,7 @@
     	<link rel="stylesheet" href="css/ticket.css" />
     	<link rel="stylesheet" href="css/callNote.css" />
     	<link rel="stylesheet" href="css/accordion.css" />
+    	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
     	<script type="text/javascript" src="js/addressUtils.js"></script>
     	<script type="text/javascript" src="js/lookup.js"></script> 
@@ -438,6 +439,8 @@
         			//$("#bcr_edit_modal input[name='employee']").val($data.data.ticket.employee);
         			//$("#bcr_edit_modal input[name='claimId']").val($data.data.ticket.claimId);
     	    		
+    			    BUDGETCONTROL.makeChart();
+
         			$("#bcr_edit_modal").dialog("open");
         		}, 
         		
@@ -656,6 +659,27 @@
 						active: true
 					});
         		},
+        		
+        		
+        		makeChart : function() {
+					var ctx = $("#myChart");
+					var myChart = new Chart(ctx, {
+						type : 'pie',
+						data : {
+							labels: ['Total D/L','Total Claimed','Remaining'],							
+							datasets : [{
+								label : "",
+								data : [12, 19, 3],
+								backgroundColor : ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)','rgba(255, 206, 86, 1)'],
+								borderColor : ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)','rgba(255, 206, 86, 1)'],
+								borderWidth: 1
+							}]
+						},
+						options : {
+							legend : { display:false, position:"bottom", boxWidth:12 }
+						}
+					});
+				},
         		
         		
         		
@@ -1284,8 +1308,13 @@
 	    	
 	    	<div id="div-summary" style="float:right; margin-top:12px; border-top:solid 2px #000000; border-bottom:solid 2px #000000; width:48%;">
 	    		<div style="background-color:#CCCCCC; font-weight:bold;padding-top:3px; padding-bottom:3px;">Summary</div>
-	    		<table>
-	    			<tr>
+	    		
+	    		<div style="width:35%; float:right; margin-right:10%;">
+	    			<canvas id="myChart" style="width:100px; height:100px;"></canvas>
+	    		</div>
+	    		
+	    		<table style="width:48%; float:left;">
+	    			<tr style="background-color:rgb(255,99,132);">
 	    				<td><span class="form-label">Total D/L:</span></td>
 	    				<td style="float:right;"><span class="total-dl"></span></td>
 	    			</tr>
@@ -1293,11 +1322,11 @@
 	    				<td><span class="form-label">Total Volume:</span></td>
 	    				<td style="float:right;"><span class="total-volume"></span></td>
 	    			</tr>
-	    			<tr>
+	    			<tr style="background-color:rgb(54, 162, 235);">
 	    				<td><span class="form-label">Total Claimed Volume:</span></td>
 	    				<td style="float:right;"><span class="total-claimed-volume"></span></td>
 	    			</tr>
-	    			<tr>
+	    			<tr style="background-color:rgb(255, 206, 86);">
 	    				<td><span class="form-label">Remaining Volume:</span></td>
 	    				<td style="float:right;"><span class="remaining-volume"></span></td>
 	    			</tr>
@@ -1318,8 +1347,7 @@
 	    			</tfoot>
 	    		</table>
 	    	</div>
-	    	
-	    	
+	    		    	
 	    </div>
     </tiles:put>
 		
