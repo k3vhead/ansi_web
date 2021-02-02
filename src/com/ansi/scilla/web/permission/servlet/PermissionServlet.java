@@ -3,7 +3,9 @@ package com.ansi.scilla.web.permission.servlet;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -207,7 +209,6 @@ public class PermissionServlet extends AbstractServlet {
 	 * @param sessionUser
 	 * @throws Exception 
 	 */
-	@SuppressWarnings("null")
 	private void processUpdate(Connection conn, HttpServletResponse response, Integer permissionGroupId,
 			PermissionRequest permissionRequest, SessionUser sessionUser) throws Exception {
 		Permission functionalArea = Permission.valueOf(permissionRequest.getFunctionalArea());
@@ -226,7 +227,7 @@ public class PermissionServlet extends AbstractServlet {
 		List<Permission> permissionList = PermissionUtils.makeGroupList(conn, permissionGroupId);
 		List<User> userList = getUserList(conn, permissionGroupId);
 		
-		List<BatchReports> reportList = null;
+		List<BatchReports> reportList = Collections.emptyList();
 		
 		for(Permission p : permissionList) {
 			for(BatchReports br : BatchReports.values()) {
@@ -239,14 +240,10 @@ public class PermissionServlet extends AbstractServlet {
 		List<Object> subUserList = IteratorUtils.toList(CollectionUtils.collect(userList, new UserToId()).iterator());
 		List<Object> subReportList = IteratorUtils.toList(CollectionUtils.collect(reportList, new ReportToName()).iterator());
 		
-		String sql = "select from report_subscription where user_id in (" + QMarkTransformer.makeQMarkWhereClause(subUserList) + ") "
-				+ "and report_id not in (" + QMarkTransformer.makeQMarkWhereClause(subReportList) + ")";
+		String sql = getSql(subUserList, subReportList);
 		PreparedStatement ps = conn.prepareStatement(sql);
+		
 		int n = 0;
-//		for(Integer user_id : userList.size()) {
-//			ps.setInt(n, user_id);
-//			n++;
-//		}
 		for(int i = 0; i < userList.size(); i++) {
 			ps.setInt(n, userList.get(i).getUserId());
 			n++;
@@ -256,6 +253,8 @@ public class PermissionServlet extends AbstractServlet {
 			n++;
 		}
 		
+		ResultSet rs = ps.executeQuery();
+		rs.close();
 		conn.commit();
 		
 		PermissionListResponse data = new PermissionListResponse(conn, permissionGroupId);
@@ -268,10 +267,14 @@ public class PermissionServlet extends AbstractServlet {
 		key.setPermissionGroupId(permissionGroupId);
 		List<User> userList = User.cast(key.selectSome(conn));
 		return userList;
-		
-		
 	}
 
+	private String getSql(List<Object> subUserList, List<Object> subReportList) {
+		String sql = "select from report_subscription where user_id in (" + QMarkTransformer.makeQMarkWhereClause(subUserList) + ") "
+				+ "and report_id not in (" + QMarkTransformer.makeQMarkWhereClause(subReportList) + ")";
+		return sql;
+	}
+	
 	private void deleteOldPermissions(Connection conn, Integer permissionGroupId, Permission functionalArea) throws SQLException {
 		List<Permission> permissionsInFunctionalArea = functionalArea.makeFunctionalAreaTree();
 		List<Object> subNameList = IteratorUtils.toList(CollectionUtils.collect(permissionsInFunctionalArea, new PermissionToName()).iterator());
@@ -363,9 +366,27 @@ public class PermissionServlet extends AbstractServlet {
 //		try {
 //			conn = AppUtils.getDevConn();
 //			List<User> usersList = new PermissionServlet().getUserList(conn, 1);
+//			List<Permission> permissionList = PermissionUtils.makeGroupList(conn, 1);
+//			List<BatchReports> reportList = Collections.emptyList();
+//			
+//			for(Permission p : permissionList) {
+//				for(BatchReports br : BatchReports.values()) {
+//					if(br.permission().equals(p)) {
+//						reportList.add(br);
+//					}
+//				}
+//			}
+//			
 //			for ( User user : usersList ) {
 //				System.out.println(user.getUserId() + "\t" + user.getLastName() + "\t" + user.getFirstName());
 //			}
+//			for(Permission permission : permissionList) {
+//				System.out.println(permission.name() + "\t" + permission.getDescription());
+//			}
+//			for(BatchReports br : reportList) {
+//				System.out.println(br.abbreviation() + "\t" + br.name() + "\t" + br.description());
+//			}
+//			
 //		} catch ( Exception e ) {
 //			e.printStackTrace();
 //		} finally {
