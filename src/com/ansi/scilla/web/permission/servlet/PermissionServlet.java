@@ -246,10 +246,12 @@ public class PermissionServlet extends AbstractServlet {
 		int n = 1;
 		for(int i = 0; i < userList.size(); i++) {
 			ps.setInt(n, userList.get(i).getUserId());
+			logger.log(Level.DEBUG, userList.get(i).getUserId());
 			n++;
 		}
 		for(int i = 0; i < reportList.size(); i++) {
 			ps.setString(n, reportList.get(i).name());
+			logger.log(Level.DEBUG, reportList.get(i).name());
 			n++;
 		}
 		
@@ -270,8 +272,9 @@ public class PermissionServlet extends AbstractServlet {
 	}
 
 	private String getSql(List<Object> subUserList, List<Object> subReportList) {
-		String sql = "select from report_subscription where user_id in (" + QMarkTransformer.makeQMarkWhereClause(subUserList) + ") "
-				+ "and report_id not in (" + QMarkTransformer.makeQMarkWhereClause(subReportList) + ")";
+		String sql = "select * from report_subscription where user_id in " + QMarkTransformer.makeQMarkWhereClause(subUserList) + " "
+				+ "and report_id not in " + QMarkTransformer.makeQMarkWhereClause(subReportList) + "";
+		logger.log(Level.DEBUG, sql);
 		return sql;
 	}
 	
