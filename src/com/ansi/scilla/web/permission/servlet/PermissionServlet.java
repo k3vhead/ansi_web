@@ -255,8 +255,9 @@ public class PermissionServlet extends AbstractServlet {
 			n++;
 		}
 		
-		ResultSet rs = ps.executeQuery();
-		rs.close();
+//		ResultSet rs = ps.executeQuery();
+//		rs.close();
+		ps.execute();
 		conn.commit();
 		
 		PermissionListResponse data = new PermissionListResponse(conn, permissionGroupId);
@@ -272,7 +273,7 @@ public class PermissionServlet extends AbstractServlet {
 	}
 
 	private String getSql(List<Object> subUserList, List<Object> subReportList) {
-		String sql = "select * from report_subscription where user_id in " + QMarkTransformer.makeQMarkWhereClause(subUserList) + " "
+		String sql = "delete from report_subscription where user_id in " + QMarkTransformer.makeQMarkWhereClause(subUserList) + " "
 				+ "and report_id not in " + QMarkTransformer.makeQMarkWhereClause(subReportList) + "";
 		logger.log(Level.DEBUG, sql);
 		return sql;
