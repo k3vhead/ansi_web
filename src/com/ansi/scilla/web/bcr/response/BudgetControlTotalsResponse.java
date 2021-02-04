@@ -169,7 +169,7 @@ public class BudgetControlTotalsResponse extends MessageResponse {
 			this.volumeRemaining = rs.getDouble("volume_remaining");
 			this.billedAmount = rs.getDouble("billed_amount");
 			this.claimedVsBilled = rs.getDouble("claimed_vs_billed");			
-			this.dlPercentage = this.volumeClaimed == null ? 0.0D : (this.dlTotal/this.volumeClaimed)*100;
+			this.dlPercentage = this.volumeClaimed == null || this.volumeClaimed == 0.0D ? 0.0D : (this.dlTotal/this.volumeClaimed)*100;
 			
 			if ( this.volumeClaimed == null ) {
 				this.actualDlPercentage = 0.0D;
@@ -179,8 +179,7 @@ public class BudgetControlTotalsResponse extends MessageResponse {
 				HashMap<Integer, ActualDL> map = actualDl.getWeekActualDL();
 				ActualDL actualDL = map.get(weekNum);				
 				this.actualDlPercentage = actualDL == null || actualDL.getTotalDL() == null ? 0.0D : (actualDL.getTotalDL() / this.volumeClaimed)*100;
-			}
-			 
+			}	
 		}
 
 		public String getClaimWeek() {

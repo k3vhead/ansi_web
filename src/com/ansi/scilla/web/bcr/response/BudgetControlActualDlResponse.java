@@ -109,6 +109,9 @@ public class BudgetControlActualDlResponse extends ApplicationObject {
 		
 		public ActualDL() {
 			super();
+			this.actualDL = 0.0D;
+			this.omDL = 0.0D;
+			this.totalDL = 0.0D;
 		}
 		
 		

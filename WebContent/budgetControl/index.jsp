@@ -58,6 +58,10 @@
 			.bcr_employees_display th {
 				text-align:right;
 			}
+			.bcr_employees_display .border-set {
+				border-right:solid 1px #404040;
+				padding-right:4px;
+			}
 			.bcr_totals_display .column-header {
 				font-weight:bold;
 			}
@@ -615,6 +619,9 @@
 					var $headerRow2 = $("<tr>");
 					$headerRow2.append($("<td>").addClass("column-header").append("Week:"));
 					$headerRow2.append($("<td>").addClass("column-header").addClass("aligned-right").append("&nbsp;")); 
+					$headerRow3 = $("<tr>");
+					$headerRow3.append($("<td>").append("&nbsp;"));
+					$headerRow3.append($("<td>").append("&nbsp;")); 
 					var $footerRow = $("<tr>");
 					$footerRow.append( $("<td>").append("Total Assigned D/L - All Employees"));
 					$footerRow.append( $("<td>").append("&nbsp;"));  // spacer to account for unclaimed column
@@ -623,22 +630,32 @@
 						var $startDate = $value.firstOfWeek.substring(0, 5);
 						var $endDate = $value.lastOfWeek.substring(0, 5);
 						var $dates = $("<td>").append($startDate + "-" + $endDate);
-						$dates.addClass("aligned-right");
+						$dates.addClass("aligned-center");
+						$dates.addClass("border-set");
+						$dates.attr("colspan","2");
 						$headerRow1.append($dates);
 
-						var $week = $("<td>").addClass("column-header").append($value.weekOfYear);
-						$week.addClass("aligned-right");
+						var $week = $("<td>").addClass("column-header").append($data.data.workYear + "-" + $value.weekOfYear);
+						$week.addClass("aligned-center");
+						$week.addClass("border-set");
+						$week.attr("colspan",2);
 						$headerRow2.append($week);
 						
-						$footerRow.append( $("<td>").addClass("aligned-right").append("0.00") );
+						$headerRow3.append('<td class="column-header aligned-center">Volume</td><td class="column-header aligned-center border-set">D/L</td>')
+						
+						$footerRow.append( $("<td>").addClass("aligned-right").append("0.00") ); // claimed vol
+						$footerRow.append( $("<td>").addClass("aligned-right").append("0.00") ); // claimed dl
 					});
-					$headerRow1.append( $("<th>").append("Month") );
-					$headerRow2.append( $("<th>").append("Total") );
+					$headerRow1.append( $('<td colspan="2" class="column-header aligned-center">').append("Month") );
+					$headerRow2.append( $('<td colspan="2" class="column-header aligned-center">').append("Total") );
+					$headerRow3.append('<td class="column-header aligned-center">Volume</td><td class="column-header aligned-center">D/L</td>')
 					$("#bcr_employees .bcr_employees_display thead").append($headerRow1);
 					$("#bcr_employees .bcr_employees_display thead").append($headerRow2);
+					$("#bcr_employees .bcr_employees_display thead").append($headerRow3);
 					
 					
-					$footerRow.append( $("<td>").addClass("aligned-right").append("0.00") );
+					$footerRow.append( $("<td>").addClass("aligned-right").append("0.00") );// claimed vol
+					$footerRow.append( $("<td>").addClass("aligned-right").append("0.00") );// claimed dl
 					$("#bcr_employees .bcr_employees_display tfoot").append($footerRow);
 
 					
@@ -966,32 +983,52 @@
         			console.log("populateEmployeePanel");
 					
         			$.each($data.data.employees, function($index, $value) {
-        				var $employeeRow = $("<tr>");
+        				var $employeeRow = $('<tr class="employee-row">');
         				$employeeRow.append( $("<td>").append($value.employee) );
         				$employeeRow.append( $("<td>").append("&nbsp;") );  // spacer to account for unclaimed column in budget control total panel
         				$.each($data.data.claimWeeks, function($index, $claimWeek) {
-        					if ( $claimWeek in $value.weeklyDL ) {
-        						$employeeRow.append( $("<td>").addClass("aligned-right").append($value.weeklyDL[$claimWeek].toFixed(2)) );
+        					if ( $claimWeek in $value.weeklyClaimedVolume ) {
+        						$employeeRow.append( $("<td>").addClass("aligned-right").append($value.weeklyClaimedVolume[$claimWeek].toFixed(2)) );
         					} else {
         						$employeeRow.append( $("<td>").addClass("aligned-right").append("0.00") );
         					}
+        					if ( $claimWeek in $value.weeklyClaimedDL ) {
+        						$employeeRow.append( $('<td class="border-set">').addClass("aligned-right").append($value.weeklyClaimedDL[$claimWeek].toFixed(2)) );
+        					} else {
+        						$employeeRow.append( $('<td class="border-set">').addClass("aligned-right").append("0.00") );
+        					}
         				});
-        				$employeeRow.append( $("<td>").addClass("aligned-right").append($value.totalDL.toFixed(2)) );
+        				$employeeRow.append( $("<td>").addClass("aligned-right").append($value.totalClaimedVolume.toFixed(2)) );
+        				$employeeRow.append( $("<td>").addClass("aligned-right").append($value.totalClaimedDL.toFixed(2)) );
         				$("#bcr_employees tbody").append($employeeRow);
         			});
         			
-        			var $footerRow = $("<tr>");
+        			var $footerRow = $('<tr class="employee-row" style="border-top:solid 1px #404040;">');
 					$footerRow.append( $("<td>").append("Total Assigned D/L - All Employees"));
 					$footerRow.append( $("<td>").append("&nbsp;"));  // spacer to account for unclaimed column
 					$.each($data.data.claimWeeks, function($index, $claimWeek) {
-						if ( $claimWeek in $data.data.monthlyTotal.weeklyDL ) {
-							$footerRow.append( $("<td>").addClass("aligned-right").append($data.data.monthlyTotal.weeklyDL[$claimWeek].toFixed(2)) );
+						if ( $claimWeek in $data.data.monthlyTotal.weeklyClaimedVolume ) {
+							$footerRow.append( $("<td>").addClass("aligned-right").append($data.data.monthlyTotal.weeklyClaimedVolume[$claimWeek].toFixed(2)) );
 						} else {
 							$footerRow.append( $("<td>").addClass("aligned-right").append("0.00") );
 						}
+						if ( $claimWeek in $data.data.monthlyTotal.weeklyClaimedDL ) {
+							$footerRow.append( $('<td class="border-set">').addClass("aligned-right").append($data.data.monthlyTotal.weeklyClaimedDL[$claimWeek].toFixed(2)) );
+						} else {
+							$footerRow.append( $('<td class="border-set">').addClass("aligned-right").append("0.00") );
+						}
 					});
-    				$footerRow.append( $("<td>").addClass("aligned-right").append($data.data.monthlyTotal.totalDL.toFixed(2)) );
+					$footerRow.append( $("<td>").addClass("aligned-right").append($data.data.monthlyTotal.totalClaimedVolume.toFixed(2)) );
+    				$footerRow.append( $("<td>").addClass("aligned-right").append($data.data.monthlyTotal.totalClaimedDL.toFixed(2)) );
     				$("#bcr_employees tfoot").html($footerRow);
+    				
+    				
+    				$(".employee-row").mouseover(function($event) {
+						$(this).css('background-color','#E5E5E5');						
+					});
+					$(".employee-row").mouseout(function($event) {
+						$(this).css('background-color','transparent');
+					});
         		},
         		
         		

@@ -42,8 +42,8 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 
 	private Integer claimYear;
 	private List<String> claimWeeks;
-	private List<EmployeeDL> employees;
-	private EmployeeDL monthlyTotal;
+	private List<EmployeeClaim> employees;
+	private EmployeeClaim monthlyTotal;
 	private Logger logger = LogManager.getLogger(BudgetControlEmployeesResponse.class);
 	
 	public BudgetControlEmployeesResponse(Connection conn, Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer workYear, String workWeek) throws SQLException {
@@ -54,11 +54,11 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 			claimWeeks.add( String.valueOf(workYear)+"-"+week);
 		}
 		Collections.sort(claimWeeks);
-		this.employees = new ArrayList<EmployeeDL>();
-		this.monthlyTotal = new EmployeeDL((String)null, workYear, workWeek);
+		this.employees = new ArrayList<EmployeeClaim>();
+		this.monthlyTotal = new EmployeeClaim((String)null, workYear, workWeek);
 		makeTotalsResponse(conn, userId, divisionList, divisionId, workYear, workWeek);
-		for ( EmployeeDL dl : employees ) {
-			monthlyTotal.add(dl);
+		for ( EmployeeClaim claim : employees ) {
+			monthlyTotal.add(claim);
 		}
 	}
 	
@@ -74,16 +74,16 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 	public void setClaimWeeks(List<String> claimWeeks) {
 		this.claimWeeks = claimWeeks;
 	}
-	public List<EmployeeDL> getEmployees() {
+	public List<EmployeeClaim> getEmployees() {
 		return employees;
 	}
-	public void setEmployees(List<EmployeeDL> employees) {
+	public void setEmployees(List<EmployeeClaim> employees) {
 		this.employees = employees;
 	}
-	public EmployeeDL getMonthlyTotal() {
+	public EmployeeClaim getMonthlyTotal() {
 		return monthlyTotal;
 	}
-	public void setMonthlyTotal(EmployeeDL monthlyTotal) {
+	public void setMonthlyTotal(EmployeeClaim monthlyTotal) {
 		this.monthlyTotal = monthlyTotal;
 	}
 
@@ -91,6 +91,7 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 			Integer divisionId, Integer workYear, String workWeek) throws SQLException {
 		String baseSql = BcrTicketSql.sqlSelectClause + BcrTicketSql.makeFilteredFromClause(divisionList) + BcrTicketSql.makeBaseWhereClause(workWeek);
 		String sql = selectClause + baseSql + groupClause;
+		logger.log(Level.DEBUG, sql);
 		
 		List<Integer> weekFilter = new ArrayList<Integer>();
 		for ( String weekNum : StringUtils.split(workWeek, ",")) {
@@ -99,7 +100,7 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 		Logger logger = LogManager.getLogger(this.getClass());
 		logger.log(Level.DEBUG, sql);
 		
-		HashMap<String, EmployeeDL> workMap = new HashMap<String, EmployeeDL>();  // "string" is employee
+		HashMap<String, EmployeeClaim> workMap = new HashMap<String, EmployeeClaim>();  // "string" is employee
 		
 		PreparedStatement ps = conn.prepareStatement(sql);
 		ps.setInt(1, divisionId);
@@ -111,17 +112,17 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 			Double directLabor = rs.getDouble("dl_amt");
 			String[] workDate = claimWeek.split("-");
 			if ( weekFilter.contains(Integer.valueOf(workDate[1]))) {
-				EmployeeDL dl = workMap.containsKey(employee) ? workMap.get(employee) : new EmployeeDL(employee, workYear, workWeek);
-				HashMap<String, Double> weeklyDL = dl.getWeeklyDL();
+				EmployeeClaim dl = workMap.containsKey(employee) ? workMap.get(employee) : new EmployeeClaim(employee, workYear, workWeek);
+				HashMap<String, Double> weeklyDL = dl.getWeeklyClaimedDL();
 				weeklyDL.put(claimWeek, directLabor);
-				dl.setWeeklyDL(weeklyDL);
-				dl.setTotalDL(dl.getTotalDL() + directLabor);
+				dl.setWeeklyClaimedDL(weeklyDL);
+				dl.setTotalClaimedDL(dl.getTotalClaimedDL() + directLabor);
 				workMap.put(employee, dl);
 			}
 		}
 		rs.close();
 		
-		for ( EmployeeDL employeeDL : workMap.values() ) {
+		for ( EmployeeClaim employeeDL : workMap.values() ) {
 			this.employees.add(employeeDL);
 		}
 		Collections.sort(this.employees);
@@ -130,63 +131,85 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 
 
 
-	public class EmployeeDL extends ApplicationObject implements Comparable<EmployeeDL> {
+	public class EmployeeClaim extends ApplicationObject implements Comparable<EmployeeClaim> {
 		private static final long serialVersionUID = 1L;
 
 		private String employee;
-		private HashMap<String, Double> weeklyDL = new HashMap<String, Double>();
-		private Double totalDL;
+		private HashMap<String, Double> weeklyClaimedDL = new HashMap<String, Double>();
+		private HashMap<String, Double> weeklyClaimedVolume = new HashMap<String, Double>();
+		private Double totalClaimedDL;
+		private Double totalClaimedVolume;
 		
-		public EmployeeDL(String employee, Integer workYear, String workWeekList) {
+		public EmployeeClaim(String employee, Integer workYear, String workWeekList) {
 			super();
 			String[] weekList = workWeekList.split(",");
 			this.employee = employee;
 			for ( String week : weekList ) {
-				weeklyDL.put( String.valueOf(workYear)+"-"+week, 0.0D);
+				weeklyClaimedDL.put( String.valueOf(workYear)+"-"+week, 0.0D);
+				weeklyClaimedVolume.put( String.valueOf(workYear)+"-"+week, 0.0D);
 			}
-			this.totalDL = 0.0D;
+			this.totalClaimedDL = 0.0D;
+			this.totalClaimedVolume = 0.0D;
 		}
 		
 		public String getEmployee() {
 			return employee;
 		}
 
+
+
+
 		public void setEmployee(String employee) {
 			this.employee = employee;
 		}
-
-		public HashMap<String, Double> getWeeklyDL() {
-			return weeklyDL;
+		public HashMap<String, Double> getWeeklyClaimedDL() {
+			return weeklyClaimedDL;
+		}
+		public void setWeeklyClaimedDL(HashMap<String, Double> weeklyClaimedDL) {
+			this.weeklyClaimedDL = weeklyClaimedDL;
+		}
+		public HashMap<String, Double> getWeeklyClaimedVolume() {
+			return weeklyClaimedVolume;
+		}
+		public void setWeeklyClaimedVolume(HashMap<String, Double> weeklyClaimedVolume) {
+			this.weeklyClaimedVolume = weeklyClaimedVolume;
+		}
+		public Double getTotalClaimedDL() {
+			return totalClaimedDL;
+		}
+		public void setTotalClaimedDL(Double totalClaimedDL) {
+			this.totalClaimedDL = totalClaimedDL;
+		}
+		public Double getTotalClaimedVolume() {
+			return totalClaimedVolume;
+		}
+		public void setTotalClaimedVolume(Double totalClaimedVolume) {
+			this.totalClaimedVolume = totalClaimedVolume;
 		}
 
-		public void setWeeklyDL(HashMap<String, Double> weeklyDL) {
-			this.weeklyDL = weeklyDL;
-		}
-
-		public Double getTotalDL() {
-			return totalDL;
-		}
-
-		public void setTotalDL(Double totalDL) {
-			this.totalDL = totalDL;
-		}
-
-		public void add(EmployeeDL dl) {
-			for ( Map.Entry<String, Double> week : dl.getWeeklyDL().entrySet() ) {
+		public void add(EmployeeClaim dl) {
+			for ( Map.Entry<String, Double> week : dl.getWeeklyClaimedDL().entrySet() ) {
 				String claimWeek = week.getKey();
-				Double currentValue = this.weeklyDL.get(claimWeek) == null ? 0.0D : this.weeklyDL.get(claimWeek);
-				Double newValue = currentValue + dl.getWeeklyDL().get(claimWeek);
-				this.weeklyDL.put(claimWeek, newValue);				
+				Double currentDL = this.weeklyClaimedDL.get(claimWeek) == null ? 0.0D : this.weeklyClaimedDL.get(claimWeek);
+				Double newDL = currentDL + dl.getWeeklyClaimedDL().get(claimWeek);
+				this.weeklyClaimedDL.put(claimWeek, newDL);				
+				Double currentVolume = this.weeklyClaimedVolume.get(claimWeek) == null ? 0.0D : this.weeklyClaimedVolume.get(claimWeek);
+				Double newVolume = currentVolume + dl.getWeeklyClaimedVolume().get(claimWeek);
+				this.weeklyClaimedVolume.put(claimWeek, newVolume);				
 			}
 			
-			this.totalDL = 0.0D;
-			for ( Double weeklyDL : this.getWeeklyDL().values() ) {
-				this.totalDL = this.totalDL + weeklyDL;
+			this.totalClaimedDL = 0.0D;
+			for ( Double weeklyDL : this.getWeeklyClaimedDL().values() ) {
+				this.totalClaimedDL = this.totalClaimedDL + weeklyDL;
+			}
+			this.totalClaimedVolume = 0.0D;
+			for ( Double weeklyVolume : this.getWeeklyClaimedVolume().values() ) {
+				this.totalClaimedVolume = this.totalClaimedVolume + weeklyVolume;
 			}
 		}
 
 		@Override
-		public int compareTo(EmployeeDL o) {
+		public int compareTo(EmployeeClaim o) {
 			return this.employee.compareTo(o.getEmployee());
 		}
 		
