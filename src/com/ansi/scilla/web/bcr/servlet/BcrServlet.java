@@ -21,6 +21,7 @@ public class BcrServlet extends AbstractServlet {
 	private final String EMPLOYEE_AUTOCOMPLETE = "employee";
 	private final String EMPLOYEES = "employees";
 	private final String INIT = "init";
+	private final String KEEP_ALIVE = "keepAlive";
 	private final String TICKET = "ticket";
 	private final String TICKETLIST = "ticketList";
 	private final String TITLE = "title";
@@ -62,6 +63,9 @@ public class BcrServlet extends AbstractServlet {
 			break;
 		case INIT:
 			new BcrInitServlet().doGet(request, response);
+			break;
+		case KEEP_ALIVE:
+			new BcrKeepAliveServlet().doGet(request, response);
 			break;
 		case TICKET:
 			new BcrTicketServlet().doGet(request, response);
