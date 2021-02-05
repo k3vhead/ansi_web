@@ -93,21 +93,33 @@ public class TicketLookupServlet extends AbstractLookupServlet {
 			}
 			if (! StringUtils.isBlank(request.getParameter("jobId"))) {
 				jobIdFilterValue = Integer.valueOf(request.getParameter("jobId"));
+				if(jobIdFilterValue.equals(null)) {
+					throw new ResourceNotFoundException("Job ID not found");
+				}
 				lookupQuery.setJobId(jobIdFilterValue);
 			}
 			if (! StringUtils.isBlank(request.getParameter("divisionId"))) {
 				divisionIdFilterValue = Integer.valueOf(request.getParameter("divisionId"));
+				if(divisionIdFilterValue.equals(null)) {
+					throw new ResourceNotFoundException("Division ID not found");
+				}
 				lookupQuery.setDivisionId(divisionIdFilterValue);
 			}
 			if (! StringUtils.isBlank(request.getParameter("startDate"))) {
 				SimpleDateFormat parmDateFormatter = new SimpleDateFormat("MM/dd/yyyy");
 				Date parmDate = parmDateFormatter.parse(request.getParameter("startDate"));
+				if(parmDate.equals(null)) {
+					throw new ResourceNotFoundException("Start Date not found");
+				}
 				startDateFilterValue = Calendar.getInstance(new AnsiTime());
 				startDateFilterValue.setTime(parmDate);
 				lookupQuery.setStartDate(startDateFilterValue);
 			}
 			if ( ! StringUtils.isBlank(request.getParameter("status"))) {
 				ticketStatusFilterValue = request.getParameter("status");
+				if(ticketStatusFilterValue.equals(null)) {
+					throw new ResourceNotFoundException("Status not found");
+				}
 				lookupQuery.setStatus(ticketStatusFilterValue);
 			}
 			return lookupQuery;
