@@ -9,6 +9,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ansi.scilla.web.common.response.MessageResponse;
+import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.utils.AppUtils;
 
@@ -26,21 +28,21 @@ public class BcrKeepAliveServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
-		} catch (NamingException e) {
+			super.sendResponse(conn, response, ResponseCode.SUCCESS, new BcrKeepAliveResponse());
+		} catch (Exception e) {
 			
-			e.printStackTrace();
-		} catch (SQLException e) {
-			
-			e.printStackTrace();
-		}
+			throw new ServletException(e);
+		} 
 		
 	}
+	
+	public class BcrKeepAliveResponse extends MessageResponse {
 
-	@Override
-	public void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		super.doPost(request, response);
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		
 	}
-
 	
 }
