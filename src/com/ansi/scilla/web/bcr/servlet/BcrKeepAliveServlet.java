@@ -32,7 +32,9 @@ public class BcrKeepAliveServlet extends AbstractServlet {
 		} catch (Exception e) {
 			
 			throw new ServletException(e);
-		} 
+		} finally {
+			AppUtils.closeQuiet(conn);
+		}
 		
 	}
 	
