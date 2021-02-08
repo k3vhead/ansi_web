@@ -60,7 +60,16 @@ public abstract class AbstractBcrTicketLookupServlet extends AbstractLookupServl
 		protected void doGet(HttpServletRequest request, HttpServletResponse response)
 				throws ServletException, IOException {
 			logger.log(Level.DEBUG, request.getRequestURI());
-			super.doGet(request, response);
+			Integer divisionId = Integer.valueOf(request.getParameter(DIVISION_ID));
+			Integer workYear = Integer.valueOf(request.getParameter(WORK_YEAR));
+			String workWeeks = request.getParameter(WORK_WEEKS);  // comma-delimited list of work weeks.
+			String workWeek = request.getParameter(WORK_WEEK);  // the single week we want to look at
+			if(divisionId.equals(null) || workYear.equals(null) || workWeeks.equals(null) || workWeek.equals(null)) {
+				super.sendNotFound(response);
+			} else {
+				super.doGet(request, response);
+			}
+			
 		}
 		
 		
@@ -80,6 +89,7 @@ public abstract class AbstractBcrTicketLookupServlet extends AbstractLookupServl
 			Integer workYear = Integer.valueOf(request.getParameter(WORK_YEAR));
 			String workWeeks = request.getParameter(WORK_WEEKS);  // comma-delimited list of work weeks.
 			String workWeek = request.getParameter(WORK_WEEK);  // the single week we want to look at
+			
 			logger.log(Level.DEBUG, "Parms: " + divisionId + " " + workYear + " " + workWeeks + " " + workWeek);
 			LookupQuery lookupQuery = StringUtils.isBlank(workWeek) ?
 					new BcrTicketLookupQuery(user.getUserId(), divisionList, divisionId, workYear, workWeeks)
