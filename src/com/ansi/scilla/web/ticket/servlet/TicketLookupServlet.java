@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.collections4.Transformer;
@@ -74,6 +75,7 @@ public class TicketLookupServlet extends AbstractLookupServlet {
 	public LookupQuery makeQuery(Connection conn, HttpServletRequest request) {
 		HttpSession session = request.getSession();
 		SessionData sessionData = (SessionData)session.getAttribute(SessionData.KEY);
+		HttpServletResponse response = null;
 		
 		SessionUser user = sessionData.getUser();
 		List<SessionDivision> divisionList = sessionData.getDivisionList();
@@ -94,14 +96,14 @@ public class TicketLookupServlet extends AbstractLookupServlet {
 			if (! StringUtils.isBlank(request.getParameter("jobId"))) {
 				jobIdFilterValue = Integer.valueOf(request.getParameter("jobId"));
 				if(jobIdFilterValue.equals(null)) {
-					throw new ResourceNotFoundException("Job ID not found");
+					super.sendNotFound(response);
 				}
 				lookupQuery.setJobId(jobIdFilterValue);
 			}
 			if (! StringUtils.isBlank(request.getParameter("divisionId"))) {
 				divisionIdFilterValue = Integer.valueOf(request.getParameter("divisionId"));
 				if(divisionIdFilterValue.equals(null)) {
-					throw new ResourceNotFoundException("Division ID not found");
+					super.sendNotFound(response);
 				}
 				lookupQuery.setDivisionId(divisionIdFilterValue);
 			}
@@ -109,7 +111,7 @@ public class TicketLookupServlet extends AbstractLookupServlet {
 				SimpleDateFormat parmDateFormatter = new SimpleDateFormat("MM/dd/yyyy");
 				Date parmDate = parmDateFormatter.parse(request.getParameter("startDate"));
 				if(parmDate.equals(null)) {
-					throw new ResourceNotFoundException("Start Date not found");
+					super.sendNotFound(response);
 				}
 				startDateFilterValue = Calendar.getInstance(new AnsiTime());
 				startDateFilterValue.setTime(parmDate);
@@ -118,7 +120,7 @@ public class TicketLookupServlet extends AbstractLookupServlet {
 			if ( ! StringUtils.isBlank(request.getParameter("status"))) {
 				ticketStatusFilterValue = request.getParameter("status");
 				if(ticketStatusFilterValue.equals(null)) {
-					throw new ResourceNotFoundException("Status not found");
+					super.sendNotFound(response);
 				}
 				lookupQuery.setStatus(ticketStatusFilterValue);
 			}
