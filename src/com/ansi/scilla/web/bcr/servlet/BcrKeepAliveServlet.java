@@ -2,9 +2,7 @@ package com.ansi.scilla.web.bcr.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
 
-import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,7 +16,6 @@ public class BcrKeepAliveServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
 	
-	private static final String YEAR = "year";
 
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -29,8 +26,7 @@ public class BcrKeepAliveServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
 			super.sendResponse(conn, response, ResponseCode.SUCCESS, new BcrKeepAliveResponse());
-		} catch (Exception e) {
-			
+		} catch (Exception e) {			
 			throw new ServletException(e);
 		} finally {
 			AppUtils.closeQuiet(conn);
