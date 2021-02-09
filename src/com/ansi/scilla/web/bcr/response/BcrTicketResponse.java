@@ -14,7 +14,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.web.bcr.common.BcrTicket;
 import com.ansi.scilla.web.bcr.common.BcrTicketSql;
 import com.ansi.scilla.web.common.response.MessageResponse;
@@ -137,11 +136,14 @@ public class BcrTicketResponse extends MessageResponse {
 	public class TicketData extends ApplicationObject {
 		private static final long serialVersionUID = 1L;
 
-		private final String sql = "select ticket.ticket_id, ticket.job_id, ticket.ticket_type, ticket.ticket_status, address.name as job_site_name\n" + 
-				"from ticket \n" + 
+		private final String sql = "select ticket.ticket_id, ticket.job_id, ticket.ticket_type, ticket.ticket_status, "
+				+ "\taddress.name as job_site_name, job_tag.tag_id as service_tag_id, job_tag.abbrev\n" + 
+				"from ticket\n" + 
 				"inner join job on job.job_id=ticket.job_id\n" + 
 				"inner join quote on quote.quote_id=job.quote_id\n" + 
 				"inner join address on address.address_id=quote.job_site_address_id\n" + 
+				"left outer join job_tag_xref xref on xref.job_id=job.job_id\n" + 
+				"inner join job_tag on job_tag.tag_id=xref.tag_id and job_tag.tag_type='SERVICE'\n" + 
 				"where ticket_id=?";
 		
 		private Integer ticketId;
@@ -150,6 +152,7 @@ public class BcrTicketResponse extends MessageResponse {
 		private String status;
 		private String jobSiteName;
 		private String serviceTagId;
+		private String serviceTagAbbrev;
 		
 		private TicketData() {
 			super();
@@ -166,7 +169,8 @@ public class BcrTicketResponse extends MessageResponse {
 				this.ticketType = rs.getString("ticket_type");
 				this.status = rs.getString("ticket_status");
 				this.jobSiteName = rs.getString("job_site_name");
-//				this.serviceTagId = rs.getString("service_tag_id");
+				this.serviceTagId = rs.getString("service_tag_id");
+				this.serviceTagAbbrev = rs.getString("abbrev");
 			} else {
 				throw new RecordNotFoundException();
 			}
@@ -194,6 +198,10 @@ public class BcrTicketResponse extends MessageResponse {
 
 		public String getServiceTagId() {
 			return serviceTagId;
+		}
+
+		public String getServiceTagAbbrev() {
+			return serviceTagAbbrev;
 		}
 		
 	}

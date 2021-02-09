@@ -336,7 +336,7 @@
 					
 					$("#bcr_edit_modal .err").html("");
 					
-					$("#bcr_edit_modal").dialog( "option", "title", "Ticket Claim: " + $data.data.ticket.ticketId + " (" + $data.data.ticket.status + ")  " + $data.data.ticket.jobSiteName);
+					$("#bcr_edit_modal").dialog( "option", "title", "Ticket Claim: " + $data.data.ticket.ticketId + " (" + $data.data.ticket.status + ")  " + $data.data.ticket.jobSiteName + ", Service Type: " + $data.data.ticket.serviceTagAbbrev);
 					
 					$("#bcr_edit_modal input[name='totalVolume']").val($data.data.dlClaims[0].totalVolume.toFixed(2));
 					
@@ -401,7 +401,7 @@
         	        searching: false, 
         	        destroy : true,		// this lets us reinitialize the table for different permission groups
 	    			columns : [
-	    				{ width:"125px", title:"Claimed Expense Vol.", className:"dt-right", orderable:true,
+	    				{ width:"125px", title:"Expense Vol.", className:"dt-right", orderable:true,
 	    					data:function($row,$type,$set) {
 	    						return $row.passthruVolume.toFixed(2);
 	    					}
@@ -1053,6 +1053,7 @@
         		
         		
         		populateTitlePanel : function($data) {
+        			$("#titleHeader").html($data.data.workMonthName + ", " + $data.data.workYear + " -- " + $data.data.div);
 					$("#bcr_summary .dateCreated").html($data.data.dateCreated);
 					$("#bcr_summary .dateModified").html($data.data.dateModified);
 					$("#bcr_summary .workYear").html($data.data.workYear);
@@ -1371,7 +1372,7 @@
 	    	</div>
 	    	
 	    	<div style="float:left; margin-top:12px; border-top:solid 2px #000000; border-bottom:solid 2px #000000; width:48%;">
-	    		<div style="background-color:#CCCCCC; font-weight:bold;padding-top:3px; padding-bottom:3px;">Claimed Expense Volume</div>
+	    		<div style="background-color:#CCCCCC; font-weight:bold;padding-top:3px; padding-bottom:3px;">Expense Volume</div>
 	    		<table id="dl-expense-table">
 	    			<thead></thead>
 	    			<tbody></tbody>
