@@ -1,5 +1,14 @@
 package com.ansi.scilla.web.bcr.servlet;
 
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
+
 public class BcrTicketLookupServlet extends AbstractBcrTicketLookupServlet {
 	
 	private static final long serialVersionUID = 1L;
@@ -23,7 +32,35 @@ public class BcrTicketLookupServlet extends AbstractBcrTicketLookupServlet {
 				"employee", //"Employee"
 		};
 	}
-
+	
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		logger.log(Level.DEBUG, request.getRequestURI());
+		
+		boolean errorFound = false;
+		String divisionString = request.getParameter(DIVISION_ID);
+		String workYearString = request.getParameter(WORK_YEAR);
+		String workWeeks = request.getParameter(WORK_WEEKS);  // comma-delimited list of work weeks.
+		if(StringUtils.isBlank(divisionString)) {
+			errorFound = true;
+		} 
+		if(!StringUtils.isNumeric(divisionString)) {
+			errorFound = true;
+		}
+		if(!StringUtils.isNumeric(workYearString)) {
+			errorFound = true;
+		}
+		if(StringUtils.isBlank(workWeeks)) {
+			errorFound = true;
+		}
+		if(errorFound) {
+			super.sendNotFound(response);
+		} else {
+			super.doGet(request, response);
+		}
+		
+	}
 	
 
 }

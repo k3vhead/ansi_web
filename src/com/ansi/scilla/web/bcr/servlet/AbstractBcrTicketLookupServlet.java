@@ -56,22 +56,6 @@ public abstract class AbstractBcrTicketLookupServlet extends AbstractLookupServl
 			super.itemTransformer = new ItemTransformer();
 		}
 		
-		@Override
-		protected void doGet(HttpServletRequest request, HttpServletResponse response)
-				throws ServletException, IOException {
-			logger.log(Level.DEBUG, request.getRequestURI());
-			Integer divisionId = Integer.valueOf(request.getParameter(DIVISION_ID));
-			Integer workYear = Integer.valueOf(request.getParameter(WORK_YEAR));
-			String workWeeks = request.getParameter(WORK_WEEKS);  // comma-delimited list of work weeks.
-			String workWeek = request.getParameter(WORK_WEEK);  // the single week we want to look at
-			if(divisionId.equals(null) || workYear.equals(null) || workWeeks.equals(null) || workWeek.equals(null)) {
-				super.sendNotFound(response);
-			} else {
-				super.doGet(request, response);
-			}
-			
-		}
-		
 		
 		@Override
 		public LookupQuery makeQuery(Connection conn, HttpServletRequest request) {
