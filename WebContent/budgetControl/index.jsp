@@ -662,6 +662,13 @@
         		},
         		
         		
+        		keepAliveFail : function($data) {
+        			$("#globalMsg").html("Session Error. Contact Support").show();
+        		},
+        		
+        		keepAliveSuccess : function($data) {
+        			console.log("keepAliveSuccess");
+        		},
         		
         		
         		
@@ -718,7 +725,9 @@
         		
         		
         		makeClickers : function() {
-        			
+					$(".accHdr").click(function($clickEvent) {
+						ANSI_UTILS.doServerCall("GET", "bcr/keepAlive", null, BUDGETCONTROL.keepAliveSuccess, BUDGETCONTROL.keepAliveFail);
+					});
         		},
         		
         		
