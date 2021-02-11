@@ -22,7 +22,7 @@ public class BcrServlet extends AbstractServlet {
 	private final String EMPLOYEES = "employees";
 	private final String INIT = "init";
 	private final String KEEP_ALIVE = "keepAlive";
-	private final String TICKET = "ticket";
+	private final String TICKET_CLAIM = "ticketClaim";
 	private final String TICKETLIST = "ticketList";
 	private final String TITLE = "title";
 	private final String WEEKLY_TICKETLIST = "weeklyTicketList";
@@ -67,8 +67,8 @@ public class BcrServlet extends AbstractServlet {
 		case KEEP_ALIVE:
 			new BcrKeepAliveServlet().doGet(request, response);
 			break;
-		case TICKET:
-			new BcrTicketServlet().doGet(request, response);
+		case TICKET_CLAIM:
+			new BcrTicketClaimServlet().doGet(request, response);
 			break;
 		case TICKETLIST:
 			new BcrTicketLookupServlet().doGet(request, response);
@@ -104,8 +104,8 @@ public class BcrServlet extends AbstractServlet {
 		case INIT:
 			new BcrInitServlet().doPost(request, response);
 			break;
-		case TICKET:
-			new BcrTicketServlet().doPost(request, response);
+		case TICKET_CLAIM:
+			new BcrTicketClaimServlet().doPost(request, response);
 			break;
 		case TITLE:
 			new BcrTitleServlet().doPost(request, response);

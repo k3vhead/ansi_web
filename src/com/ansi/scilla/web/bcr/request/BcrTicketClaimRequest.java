@@ -13,7 +13,7 @@ import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.common.struts.SessionUser;
 
-public class BcrTicketRequest extends AbstractRequest {
+public class BcrTicketClaimRequest extends AbstractRequest {
 
 	private static final long serialVersionUID = 1L;
 	

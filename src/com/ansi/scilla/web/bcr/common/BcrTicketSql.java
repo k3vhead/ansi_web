@@ -16,6 +16,7 @@ public class BcrTicketSql extends ApplicationObject {
 	public static final String JOB_SITE_NAME = "job_site_name";
 	public static final String TICKET_ID = "ticket_id";
 	public static final String CLAIM_WEEK = "claim_week";
+	public static final String DL_EXPENSES = "dl_expenses";
 	public static final String DL_AMT = "dl_amt";
 	public static final String DL_TOTAL = "dl_total";
 	public static final String TOTAL_VOLUME = "total_volume";
@@ -79,8 +80,7 @@ public class BcrTicketSql extends ApplicationObject {
 			" , ticket_claim." + CLAIM_ID + "\n" +
 			" , concat(ticket_claim.claim_year,'-',ticket_claim.claim_week) as "+CLAIM_WEEK+"\n" + 
 			" , isnull(ticket_claim.dl_amt,0.00) as "+DL_AMT+"\n" + 
-			"-- ** ignoring dl_exp until we know what we are doing with it **\n" + 
-			"-- , isnull(ticket_claim.dl_exp,0.00) as dl_exp\n" + 
+			" , isnull(ticket_claim.dl_expenses,0.00) as " + DL_EXPENSES + "\n" + 
 			"-- , isnull(ticket_claim.dl_amt,0.00)+ISNULL(ticket_claim.dl_exp,0.00) as dl_total\n" + 
 			" , isnull(ticket_claim.dl_amt,0.00) as "+DL_TOTAL +"\n" + 
 			" , job.price_per_cleaning as "+ TOTAL_VOLUME + "\n" + 

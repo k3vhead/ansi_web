@@ -26,6 +26,7 @@ public class BcrWeeklyTicketLookupServlet extends AbstractBcrTicketLookupServlet
 			"total_volume", //"Total Volume"  
 			"volume_claimed", //"Volume Claimed" 
 			"volume_remaining", //"Volume Remaining"  
+			"dl_expenses", // DL Expenses
 			"notes", //"Notes"  
 			"billed_amount", //"Billed Amount"  
 			"claimed_vs_billed", //"Diff Clm/Bld"  

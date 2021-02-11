@@ -17,8 +17,8 @@ import org.apache.logging.log4j.Level;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.db.TicketClaim;
 import com.ansi.scilla.common.utils.AnsiDateUtils;
-import com.ansi.scilla.web.bcr.request.BcrTicketRequest;
-import com.ansi.scilla.web.bcr.response.BcrTicketResponse;
+import com.ansi.scilla.web.bcr.request.BcrTicketClaimRequest;
+import com.ansi.scilla.web.bcr.response.BcrTicketClaimResponse;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.SuccessMessage;
@@ -35,7 +35,7 @@ import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.payment.response.PaymentResponse;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
-public class BcrTicketServlet extends AbstractServlet {
+public class BcrTicketClaimServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
 
@@ -55,11 +55,12 @@ public class BcrTicketServlet extends AbstractServlet {
 			String workWeeks = request.getParameter("workWeeks");  // comma-delimited list of work weeks.
 			logger.log(Level.DEBUG, "Parms: " + divisionId + " " + workYear + " " + workWeeks);
 			String[] uriPath = request.getRequestURI().split("/");
-			String ticket = uriPath[uriPath.length-1];
-			if ( StringUtils.isNumeric(ticket)) {
-				RequestValidator.validateId(conn, webMessages, Ticket.TABLE, Ticket.TICKET_ID, WebMessages.GLOBAL_MESSAGE, Integer.valueOf(ticket), true);
+			String claim = uriPath[uriPath.length-1];
+			if ( StringUtils.isNumeric(claim)) {
+				Integer claimId = Integer.valueOf(claim);
+				RequestValidator.validateId(conn, webMessages, TicketClaim.TABLE, TicketClaim.CLAIM_ID, WebMessages.GLOBAL_MESSAGE, claimId, true);
 				if ( webMessages.isEmpty() ) {
-					BcrTicketResponse data = new BcrTicketResponse(conn, sessionUser.getUserId(), divisionList, divisionId, workYear, workWeeks, Integer.valueOf(ticket));
+					BcrTicketClaimResponse data = new BcrTicketClaimResponse(conn, sessionUser.getUserId(), divisionList, divisionId, workYear, workWeeks, claimId);
 					data.setWebMessages(new SuccessMessage());
 					super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
 				} else {
@@ -95,7 +96,7 @@ public class BcrTicketServlet extends AbstractServlet {
 				String jsonString = super.makeJsonString(request);
 				logger.log(Level.DEBUG, jsonString);
 				SessionData sessionData = AppUtils.validateSession(request, Permission.CLAIMS_WRITE);
-				BcrTicketRequest bcrTicketRequest = new BcrTicketRequest();
+				BcrTicketClaimRequest bcrTicketRequest = new BcrTicketClaimRequest();
 				AppUtils.json2object(jsonString, bcrTicketRequest);
 				final SimpleDateFormat sdfx = new SimpleDateFormat("MM/dd/yyyy E HH:mm:ss.S");
 				SessionUser sessionUser = sessionData.getUser();
@@ -112,14 +113,14 @@ public class BcrTicketServlet extends AbstractServlet {
 					RequestValidator.validateId(conn, webMessages, Ticket.TABLE, Ticket.TICKET_ID, WebMessages.GLOBAL_MESSAGE, Integer.valueOf(ticket), true);
 					if ( webMessages.isEmpty() ) {
 						webMessages = bcrTicketRequest.validate(conn, sessionUser, divisionList, divisionId, workYear, workWeeks);						
-						BcrTicketResponse data = new BcrTicketResponse();
+						BcrTicketClaimResponse data = new BcrTicketClaimResponse();
 						if ( webMessages.isEmpty() ) {
 							if ( bcrTicketRequest.getClaimId() == null ) {
 								insertClaim(conn, Integer.valueOf(ticket), bcrTicketRequest, sessionUser);
 							} else {
 								updateClaim(conn, Integer.valueOf(ticket), bcrTicketRequest, sessionUser);
 							}
-							data = new BcrTicketResponse(conn, sessionUser.getUserId(), divisionList, divisionId, workYear, workWeeks, Integer.valueOf(ticket));
+							data = new BcrTicketClaimResponse(conn, sessionUser.getUserId(), divisionList, divisionId, workYear, workWeeks, Integer.valueOf(ticket));
 							super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
 						} else {
 							data.setWebMessages(webMessages);
@@ -155,7 +156,10 @@ public class BcrTicketServlet extends AbstractServlet {
 
 
 
-	private void insertClaim(Connection conn, Integer ticketId, BcrTicketRequest bcrTicketRequest,
+	
+
+
+	private void insertClaim(Connection conn, Integer ticketId, BcrTicketClaimRequest bcrTicketRequest,
 			SessionUser sessionUser) {
 		logger.log(Level.DEBUG, "Inserting New Claim");
 		throw new RuntimeException("Patience, young padawan, this is Not coded yet");
@@ -165,7 +169,7 @@ public class BcrTicketServlet extends AbstractServlet {
 
 
 
-	private void updateClaim(Connection conn, Integer ticketId, BcrTicketRequest bcrTicketRequest,
+	private void updateClaim(Connection conn, Integer ticketId, BcrTicketClaimRequest bcrTicketRequest,
 			SessionUser sessionUser) throws Exception {
 		logger.log(Level.DEBUG, "Updating Claim " + ticketId + "\t" + bcrTicketRequest.getClaimId());
 		logger.log(Level.DEBUG, bcrTicketRequest.toJson());

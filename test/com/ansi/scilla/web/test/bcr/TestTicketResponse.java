@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.util.List;
 
 import com.ansi.scilla.common.utils.AppUtils;
-import com.ansi.scilla.web.bcr.response.BcrTicketResponse;
+import com.ansi.scilla.web.bcr.response.BcrTicketClaimResponse;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.test.TesterUtils;
 

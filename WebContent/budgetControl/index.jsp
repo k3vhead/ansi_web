@@ -191,15 +191,16 @@
         			
         			$(".bcr-edit-clicker").on("click", function($clickevent) {
         				$clickevent.preventDefault();
+        				var $claimId = $(this).attr("data-claimid");
         				var $ticketId = $(this).attr("data-ticketid");
         				var $divisionId = $(this).attr("data-divisionid");
         				var $workYear = $(this).attr("data-workYear");
         				var $workWeeks = $(this).attr("data-workWeeks");
         				var $claimId = $(this).attr("data-claimid")
         				var $outbound = {"divisionId":$divisionId, "workYear":$workYear, "workWeeks":$workWeeks, "claimId":$claimId};
-        				console.log("edit clicked: " + $ticketId);
+        				console.log("edit clicked: " + $ticketId + " claim: " + $claimId);
         				console.log($outbound);
-        				var $url = "bcr/ticket/" + $ticketId;
+        				var $url = "bcr/ticketClaim/" + $claimId;
         				ANSI_UTILS.doServerCall("GET", $url, $outbound, BUDGETCONTROL.getTicketDetailSuccess, BUDGETCONTROL.getTicketDetailFail);
         			});
         		},
@@ -286,7 +287,10 @@
     			            { title: "Volume Remaining",  width:"6%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.volume_remaining != null){return (row.volume_remaining.toFixed(2)+"");}
     			            } },
-    			            { title: "Notes",  width:"10%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            { title: "Expense Volume", width:"6%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			            	if(row.dl_expenses != null){return (row.dl_expenses.toFixed(2)+"");}
+    			            } },
+							{ title: "Notes",  width:"10%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	var $displayNote = '';
     			            	if(row.notes != null && row.notes != ''){$displayNote = '<span class="tooltip ticket-note">'+row.notes_display+'<span class="tooltiptext">'+row.notes+'</span></span>';}
     			            	return $displayNote;
@@ -343,93 +347,93 @@
 					
 					// Make DL Claim Table:
 					BUDGETCONTROL.dlClaimTable = $("#dl-claim-table").DataTable( {
-	    			data : $data.data.dlClaims,
-	    			paging : false,
-	    			autoWidth : false,
-        	        deferRender : true,
-        	        destroy : true,		// this lets us reinitialize the table for different permission groups
-	    			columns : [
-	    				{ width:"125px", title:"Direct Labor", className:"dt-right", orderable:true,
-	    					data:function($row,$type,$set) {
-	    						return $row.dlAmt.toFixed(2);
-	    					}
-	    				},
-	    				{ width:"125px", title:"Volume Claimed", className:"dt-right", orderable:true,
-	    					data:function($row,$type,$set) {
-	    						return $row.volumeClaimed.toFixed(2);
-	    					}  
-	    				},
-	    				{ width:"200px", title:"Equipment Type", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>", data:'equipmentTags'},
-	    				{ width:"300px", title:"Employee", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>", data:'employee'},
-	    				{ width:"300px", title:"Notes", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>", data:'notes'},
-	    				{ width:"300px", title:"Action", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>",
-	    					data:function($row,$type,$set) {
-	    						return '<webthing:delete>Delete</webthing:delete>';		
-	    					}
-	    				},
-	    			],
-	    			"drawCallback": function( settings ) {
-	    				// something to make this do something useful
-		            },
-		            "footerCallback" : function( row, data, start, end, display ) {
-		            	var api = this.api();
-		            	//var data;
-		            	dlTotal = api.column(0).data().reduce( function(a,b) {
-		            		var mySum = parseFloat(a) + parseFloat(b);
-		            		return mySum;
-		            	}, 0);
-		            	volumeClaimedTotal = api.column(1).data().reduce( function(a,b) {
-		            		var mySum = parseFloat(a) + parseFloat(b);
-		            		return mySum;
-		            	}, 0);
-		            	$( api.column(0).footer() ).html( dlTotal.toFixed(2) );
-		            	$( api.column(1).footer() ).html( volumeClaimedTotal.toFixed(2) );
-		            	$("#div-summary .total-dl").html( dlTotal.toFixed(2) );
-		            	$("#div-summary .total-claimed-volume").html( volumeClaimedTotal.toFixed(2) );
-		            }
-	    		});
-					
-					
-					
-					
-				// Make DL Expense Table:
-				BUDGETCONTROL.dlExpenseTable = $("#dl-expense-table").DataTable( {
-	    			data : $data.data.expenses,
-	    			paging : false,
-	    			autoWidth : false,
-        	        deferRender : true,
-        	        searching: false, 
-        	        destroy : true,		// this lets us reinitialize the table for different permission groups
-	    			columns : [
-	    				{ width:"125px", title:"Expense Vol.", className:"dt-right", orderable:true,
-	    					data:function($row,$type,$set) {
-	    						return $row.passthruVolume.toFixed(2);
-	    					}
-	    				},	    				
-	    				{ width:"200px", title:"Expense Type", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>", data:'passthruExpenseType'},
-	    				{ width:"50px", title:" ", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>",
-	    					data:function($row,$type,$set) {
-	    						return '<webthing:delete>Delete</webthing:delete>';		
-	    					}
-	    				},
-	    			],
-	    			"drawCallback": function( settings ) {
-	    				// something editable should go here
-		            },
-		            "footerCallback" : function( row, data, start, end, display ) {
-		            	var api = this.api();
-		            	//var data;
-		            	expenseTotal = api.column(0).data().reduce( function(a,b) {
-		            		var mySum = parseFloat(a) + parseFloat(b);
-		            		return mySum;
-		            	}, 0);
-		            	
-		            	$( api.column(0).footer() ).html( expenseTotal.toFixed(2) );
-		            }
-	    		});
+		    			data : $data.data.dlClaims,
+		    			paging : false,
+		    			autoWidth : false,
+	        	        deferRender : true,
+	        	        destroy : true,		// this lets us reinitialize the table for different permission groups
+		    			columns : [
+		    				{ width:"125px", title:"Direct Labor", className:"dt-right", orderable:true,
+		    					data:function($row,$type,$set) {
+		    						return $row.dlAmt.toFixed(2);
+		    					}
+		    				},
+		    				{ width:"125px", title:"Volume Claimed", className:"dt-right", orderable:true,
+		    					data:function($row,$type,$set) {
+		    						return $row.volumeClaimed.toFixed(2);
+		    					}  
+		    				},
+		    				{ width:"200px", title:"Equipment Type", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>", data:'equipmentTags'},
+		    				{ width:"300px", title:"Employee", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>", data:'employee'},
+		    				{ width:"300px", title:"Notes", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>", data:'notes'},
+		    				{ width:"300px", title:"Action", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>",
+		    					data:function($row,$type,$set) {
+		    						return '<webthing:delete>Delete</webthing:delete>';		
+		    					}
+		    				},
+		    			],
+		    			"drawCallback": function( settings ) {
+		    				// something to make this do something useful
+			            },
+			            "footerCallback" : function( row, data, start, end, display ) {
+			            	var api = this.api();
+			            	//var data;
+			            	dlTotal = api.column(0).data().reduce( function(a,b) {
+			            		var mySum = parseFloat(a) + parseFloat(b);
+			            		return mySum;
+			            	}, 0);
+			            	volumeClaimedTotal = api.column(1).data().reduce( function(a,b) {
+			            		var mySum = parseFloat(a) + parseFloat(b);
+			            		return mySum;
+			            	}, 0);
+			            	$( api.column(0).footer() ).html( dlTotal.toFixed(2) );
+			            	$( api.column(1).footer() ).html( volumeClaimedTotal.toFixed(2) );
+			            	$("#div-summary .total-dl").html( dlTotal.toFixed(2) );
+			            	$("#div-summary .total-claimed-volume").html( volumeClaimedTotal.toFixed(2) );
+			            }
+		    		});
+						
+						
+						
+						
+					// Make DL Expense Table:
+					BUDGETCONTROL.dlExpenseTable = $("#dl-expense-table").DataTable( {
+		    			data : $data.data.expenses,
+		    			paging : false,
+		    			autoWidth : false,
+	        	        deferRender : true,
+	        	        searching: false, 
+	        	        destroy : true,		// this lets us reinitialize the table for different permission groups
+		    			columns : [
+		    				{ width:"125px", title:"Expense Vol.", className:"dt-right", orderable:true,
+		    					data:function($row,$type,$set) {
+		    						return $row.passthruVolume.toFixed(2);
+		    					}
+		    				},	    				
+		    				{ width:"200px", title:"Expense Type", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>", data:'passthruExpenseType'},
+		    				{ width:"50px", title:" ", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>",
+		    					data:function($row,$type,$set) {
+		    						return '<webthing:delete>Delete</webthing:delete>';		
+		    					}
+		    				},
+		    			],
+		    			"drawCallback": function( settings ) {
+		    				// something editable should go here
+			            },
+			            "footerCallback" : function( row, data, start, end, display ) {
+			            	var api = this.api();
+			            	//var data;
+			            	expenseTotal = api.column(0).data().reduce( function(a,b) {
+			            		var mySum = parseFloat(a) + parseFloat(b);
+			            		return mySum;
+			            	}, 0);
+			            	
+			            	$( api.column(0).footer() ).html( expenseTotal.toFixed(2) );
+			            }
+		    		});
 					
         			//$("#bcr_edit_modal input[name='ticketId']").val($data.data.ticket.ticketId);
-        			//$("#bcr_edit_modal select[name='claimWeek']").val($data.data.ticket.claimWeek);
+       				$("#bcr_edit_modal select[name='claimWeek']").val($data.data.claimWeek);
         			//$("#bcr_edit_modal input[name='dlAmt']").val($data.data.ticket.dlAmt.toFixed(2));
         			//
         			//$("#bcr_edit_modal input[name='volumeClaimed']").val($data.data.ticket.volumeClaimed.toFixed(2));
@@ -1082,7 +1086,7 @@
         			var $outbound = ANSI_UTILS.form2outbound("#bcr_edit_modal",{});
         			console.log(JSON.stringify($outbound));
         			var $ticketId = $outbound['ticketId'];
-        			var $url = "bcr/ticket/" + $ticketId;
+        			var $url = "bcr/ticketClaim/" + $ticketId;
         			$url = $url + "?divisionId=" +BUDGETCONTROL.divisionId+ "&workYear="+BUDGETCONTROL.workYear+"&workWeeks="+BUDGETCONTROL.workWeek;
         			ANSI_UTILS.doServerCall("POST", $url, JSON.stringify($outbound), BUDGETCONTROL.ticketEditSuccess, BUDGETCONTROL.ticketEditFail);
         		},

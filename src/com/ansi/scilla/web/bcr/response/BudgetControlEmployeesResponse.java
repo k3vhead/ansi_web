@@ -91,7 +91,6 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 			Integer divisionId, Integer workYear, String workWeek) throws SQLException {
 		String baseSql = BcrTicketSql.sqlSelectClause + BcrTicketSql.makeFilteredFromClause(divisionList) + BcrTicketSql.makeBaseWhereClause(workWeek);
 		String sql = selectClause + baseSql + groupClause;
-		logger.log(Level.DEBUG, sql);
 		
 		List<Integer> weekFilter = new ArrayList<Integer>();
 		for ( String weekNum : StringUtils.split(workWeek, ",")) {

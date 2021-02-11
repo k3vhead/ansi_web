@@ -14,13 +14,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.db.TicketClaim;
 import com.ansi.scilla.web.bcr.common.BcrTicket;
 import com.ansi.scilla.web.bcr.common.BcrTicketSql;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
-public class BcrTicketResponse extends MessageResponse {
+public class BcrTicketClaimResponse extends MessageResponse {
 
 	private static final long serialVersionUID = 1L;
 
@@ -35,19 +36,38 @@ public class BcrTicketResponse extends MessageResponse {
 	private List<PassthruExpense> expenses;
 	
 	
-	public BcrTicketResponse() {
+	public BcrTicketClaimResponse() {
 		super();
 	}
 
-	public BcrTicketResponse(Connection conn, Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer workYear, String workWeek, Integer ticketId) throws SQLException, RecordNotFoundException {
+	/**
+	 * 
+	 * @param conn
+	 * @param userId
+	 * @param divisionList
+	 * @param divisionId
+	 * @param workYear
+	 * @param workWeeks comma-delimited list of claim weeks
+	 * @param ticketId
+	 * @throws SQLException
+	 * @throws RecordNotFoundException
+	 */
+	public BcrTicketClaimResponse(Connection conn, Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer workYear, String workWeeks, Integer claimId) throws SQLException, RecordNotFoundException, Exception {
 		this();
 		this.claimYear = workYear;
+		
+		TicketClaim ticketClaim = makeClaim(conn, claimId);
+		makeResponse(conn, userId, divisionList, divisionId, workYear, workWeeks, ticketClaim.getTicketId());
+		String formattedClaimWeek = StringUtils.leftPad(String.valueOf(ticketClaim.getClaimWeek()), 2, '0'); // make sure week '4' is actually '04'
+		this.claimWeek = ticketClaim.getClaimYear() + "-" + formattedClaimWeek;
 		this.claimWeeks = new ArrayList<String>();
-		for ( String week : StringUtils.split(workWeek,",")) {
+		for ( String week : StringUtils.split(workWeeks,",")) {
 			claimWeeks.add( String.valueOf(workYear)+"-"+week);
 		}
+		if ( ! StringUtils.isBlank(claimWeek) && ! claimWeeks.contains(claimWeek)) {
+			claimWeeks.add(claimWeek);
+		}
 		Collections.sort(claimWeeks);
-		makeResponse(conn, userId, divisionList, divisionId, workYear, workWeek, ticketId);
 	}
 
 	
@@ -95,15 +115,22 @@ public class BcrTicketResponse extends MessageResponse {
 		this.claimWeek = claimWeek;
 	}
 
+	private TicketClaim makeClaim(Connection conn, Integer claimId) throws Exception {
+		TicketClaim ticketClaim = new TicketClaim();
+		ticketClaim.setClaimId(claimId);
+		ticketClaim.selectOne(conn);
+		return ticketClaim;
+	}
+
 	private void makeResponse(Connection conn, Integer userId, List<SessionDivision> divisionList,
-			Integer divisionId, Integer workYear, String workWeek, Integer ticketId) throws SQLException, RecordNotFoundException {
+			Integer divisionId, Integer workYear, String workWeeks, Integer ticketId) throws SQLException, RecordNotFoundException {
 		
 		this.ticket = new TicketData(conn, ticketId);
-		String baseSql = BcrTicketSql.sqlSelectClause + BcrTicketSql.makeFilteredFromClause(divisionList) + BcrTicketSql.makeBaseWhereClause(workWeek);
+		String baseSql = BcrTicketSql.sqlSelectClause + BcrTicketSql.makeFilteredFromClause(divisionList) + BcrTicketSql.makeBaseWhereClause(workWeeks);
 		String sql = selectClause + baseSql + whereClause;
 		
 		List<Integer> weekFilter = new ArrayList<Integer>();
-		for ( String weekNum : StringUtils.split(workWeek, ",")) {
+		for ( String weekNum : StringUtils.split(workWeeks, ",")) {
 			weekFilter.add(Integer.valueOf(weekNum));
 		}
 		Logger logger = LogManager.getLogger(this.getClass());
@@ -112,7 +139,7 @@ public class BcrTicketResponse extends MessageResponse {
 		ps.setInt(1, divisionId);
 		ps.setInt(2, workYear);
 		ps.setInt(3, ticketId);
-		logger.log(Level.DEBUG, "division | workYear | ticketId: " + divisionId + " | "+workYear+" | "+ticketId);
+		logger.log(Level.DEBUG, "division | workYear | workWeeks | ticketId: " + divisionId + " | "+workYear+" | "+ workWeeks + " | " + ticketId);
 		ResultSet rs = ps.executeQuery();
 		this.dlClaims = new ArrayList<BcrTicket>();
 		this.expenses = new ArrayList<PassthruExpense>();
