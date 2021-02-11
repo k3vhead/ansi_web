@@ -24,8 +24,8 @@ public class TestBcrSpreadsheet {
 			Integer claimYear = 2020;
 			
 			BcrTicketSpreadsheet spreadsheet = new BcrTicketSpreadsheet(conn, divisionList, divisionId, claimYear, workWeeks);
-			XSSFWorkbook workbook = spreadsheet.makeWorkbook();
-			workbook.write(new FileOutputStream("/Users/jwlewis/Documents/projects/pinpoint/google_cat/catdump_20131203.xlsx"));
+//			XSSFWorkbook workbook = spreadsheet.makeWorkbook();
+//			workbook.write(new FileOutputStream("/Users/jwlewis/Documents/projects/pinpoint/google_cat/catdump_20131203.xlsx"));
 			
 		} finally {
 			conn.close();
