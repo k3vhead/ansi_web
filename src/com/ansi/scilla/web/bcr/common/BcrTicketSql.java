@@ -139,7 +139,7 @@ public class BcrTicketSql extends ApplicationObject {
 			"	where invoice_date is not null\n" + 
 			"	group by ticket_id\n" + 
 			"	) as invoice_totals on invoice_totals.ticket_id = ticket.ticket_id \n" +
-			"inner join (" + equipment_tag_subselect + ") tag_list on tag_list.ticket_id=ticket_claim.ticket_id";
+			"left outer join (" + equipment_tag_subselect + ") tag_list on tag_list.ticket_id=ticket_claim.ticket_id";
 					
 	
 	public static final String baseWhereClause =
