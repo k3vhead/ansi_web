@@ -47,6 +47,13 @@ public class BcrTicketSpreadsheet {
 		Row row = null;
 		Cell cell = null;
 		workbook.setSheetName(0, "BCR Ticket Spreadsheet");
+		/*
+		 * Column Headers:
+		 * Job Site Name, Ticket Id, Claim Id, Claim Week, Dl Amt, Dl Expenses, Dl Total,
+		 * Total Volume, Volume Claimed, PassThru Volume, PassThru Expense Type, 
+		 * Claimed Volume Total, Volume Remaining, Service Tag Id, Notes, 
+		 * Billed Amount, Claimed vs Billed, Ticket Status, Employee, Equipment Tags
+		 */
 		row = sheet.createRow(0);
 		int n = 0;
 		while(rs.next()) {
@@ -54,10 +61,18 @@ public class BcrTicketSpreadsheet {
 			cell.setCellValue(rsmd.getColumnClassName(n));
 			n++;
 		}
+		n = 0;
+		int rowNum = 1;
+		row = sheet.createRow(rowNum);
+		while(rs.next()) {
+			cell = row.createCell(n);
+			cell.setCellValue(rs.getString(n));
+			n++;
+		}
 		
 		
 		
-		workbook.write(new FileOutputStream("/Users/dlewis/Documents/projects/pinpoint/google_cat/catdump_20131203.xlsx"));
+		workbook.write(new FileOutputStream("/Users/jwlewis/Documents/projects/pinpoint/google_cat/catdump_20131203.xlsx"));
 //		return workbook;
 	}
 	
