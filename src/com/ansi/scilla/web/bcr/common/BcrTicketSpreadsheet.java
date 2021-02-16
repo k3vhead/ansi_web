@@ -22,9 +22,9 @@ public class BcrTicketSpreadsheet {
 	 * @author jwlewis
 	 */
 	
-	public BcrTicketSpreadsheet() {
-		//this.BcrTicketSpreadsheet(conn, year, weeks);
-	}
+//	public BcrTicketSpreadsheet() {
+//		//this.BcrTicketSpreadsheet(conn, year, weeks);
+//	}
 	
 	public BcrTicketSpreadsheet(Connection conn, List<SessionDivision> divisionList, Integer divisionId, Integer claimYear, String workWeeks) 
 			throws FileNotFoundException, IOException, SQLException {
@@ -49,30 +49,58 @@ public class BcrTicketSpreadsheet {
 		workbook.setSheetName(0, "BCR Ticket Spreadsheet");
 		/*
 		 * Column Headers:
-		 * Job Site Name, Ticket Id, Claim Id, Claim Week, Dl Amt, Dl Expenses, Dl Total,
-		 * Total Volume, Volume Claimed, PassThru Volume, PassThru Expense Type, 
-		 * Claimed Volume Total, Volume Remaining, Service Tag Id, Notes, 
-		 * Billed Amount, Claimed vs Billed, Ticket Status, Employee, Equipment Tags
+		 * Job Site Name, String
+		 * Ticket Id, Integer
+		 * Claim Id, Integer
+		 * Claim Week, String
+		 * Dl Amt, BigDecimal
+		 * Dl Expenses, BigDecimal
+		 * Dl Total, BigDecimal
+		 * Total Volume, BigDecimal
+		 * Volume Claimed, BigDecimal
+		 * PassThru Volume, BigDecimal
+		 * PassThru Expense Type, String
+		 * Claimed Volume Total, BigDecimal
+		 * Volume Remaining, BigDecimal
+		 * Service Tag Id, String
+		 * Notes, String
+		 * Billed Amount, BigDecimal
+		 * Claimed vs Billed, BigDecimal
+		 * Ticket Status, String
+		 * Employee, String
+		 * Equipment Tags, String
 		 */
 		row = sheet.createRow(0);
-		int n = 0;
-		while(rs.next()) {
-			cell = row.createCell(n);
-			cell.setCellValue(rsmd.getColumnClassName(n));
-			n++;
+		int colNum = 1;
+		while(!rsmd.getColumnName(colNum).isEmpty()) {
+			cell = row.createCell(colNum - 1);
+			cell.setCellValue(rsmd.getColumnName(colNum));
+			System.out.println(rsmd.getColumnClassName(colNum) + " : " + rsmd.getColumnName(colNum));
+			colNum++;
 		}
-		n = 0;
+		colNum = 1;
 		int rowNum = 1;
 		row = sheet.createRow(rowNum);
 		while(rs.next()) {
-			cell = row.createCell(n);
-			cell.setCellValue(rs.getString(n));
-			n++;
+			for(int i = 1; i <= rsmd.getColumnCount(); i++) {
+				cell = row.createCell(i - 1);
+				if(rsmd.getColumnClassName(colNum).substring(10).equalsIgnoreCase("String")) {
+					cell.setCellValue("");
+				} else if(rsmd.getColumnClassName(colNum).substring(10).equalsIgnoreCase("BigDecimal")) {
+					
+				} else if(rsmd.getColumnClassName(colNum).substring(10).equalsIgnoreCase("Integer")) {
+					
+				} else {
+					break;
+				}
+			}
+			rowNum++;
+			
 		}
 		
 		
 		
-		workbook.write(new FileOutputStream("/Users/jwlewis/Documents/projects/pinpoint/google_cat/catdump_20131203.xlsx"));
+		workbook.write(new FileOutputStream("/Users/jwlewis/Documents/projects/BCR_Spreadsheet.xlsx"));
 //		return workbook;
 	}
 	
