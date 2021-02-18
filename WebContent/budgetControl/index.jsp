@@ -284,11 +284,17 @@
     			            { title: "Volume Claimed",  width:"6%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.volume_claimed != null){return (row.volume_claimed.toFixed(2)+"");}
     			            } },
+    			      //      { title: "Volume Remaining",  width:"6%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			      //      	if(row.volume_remaining != null){return (row.volume_remaining.toFixed(2)+"");}
+    			      //      } },
+    			      //      { title: "Expense Volume", width:"6%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+    			      //      	if(row.dl_expenses != null){return (row.dl_expenses.toFixed(2)+"");}
+    			      //      } },
+        			        { title: "Expense Volume", width:"6%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+        			          	if(row.passthru_volume != null){return (row.passthru_volume.toFixed(2)+"");}
+    			            } },
     			            { title: "Volume Remaining",  width:"6%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.volume_remaining != null){return (row.volume_remaining.toFixed(2)+"");}
-    			            } },
-    			            { title: "Expense Volume", width:"6%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.dl_expenses != null){return (row.dl_expenses.toFixed(2)+"");}
     			            } },
 							{ title: "Notes",  width:"10%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	var $displayNote = '';

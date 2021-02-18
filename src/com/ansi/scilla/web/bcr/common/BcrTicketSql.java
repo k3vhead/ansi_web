@@ -97,8 +97,8 @@ public class BcrTicketSql extends ApplicationObject {
 			"-- ** used a join to make sure only invoiced tickets get a billed amount **\n" + 
 			" , isnull(invoice_totals.invoiced_amount,0.00) as " + BILLED_AMOUNT + "\n" + 
 			"-- ** repeat of passthru question **\n" + 
-			"-- , (isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim_passthru_totals.passthru_volume,0.00)) - isnull(invoice_totals.invoiced_amount,0.00) as claimed_vs_billed	\n" + 
-			" , (isnull(ticket_claim_totals.claimed_volume,0.00)) - isnull(invoice_totals.invoiced_amount,0.00) as " + CLAIMED_VS_BILLED + " \n" + 
+			" , (isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim.passthru_expense_volume,0.00)) - isnull(invoice_totals.invoiced_amount,0.00) as claimed_vs_billed	\n" + 
+			"-- , (isnull(ticket_claim_totals.claimed_volume,0.00)) - isnull(invoice_totals.invoiced_amount,0.00) as " + CLAIMED_VS_BILLED + " \n" + 
 			" , ticket.ticket_status as " + TICKET_STATUS + "\n" + 
 			" , ticket_claim.employee_name as " + EMPLOYEE + "\n" + 
 			"-- ** this is where the equipment tags would go **\n" + 
