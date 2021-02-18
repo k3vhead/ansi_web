@@ -163,8 +163,9 @@ public class BcrTicketClaimResponse extends MessageResponse {
 	public class TicketData extends ApplicationObject {
 		private static final long serialVersionUID = 1L;
 
-		private final String sql = "select ticket.ticket_id, ticket.job_id, ticket.ticket_type, ticket.ticket_status, "
-				+ "\taddress.name as job_site_name, job_tag.tag_id as service_tag_id, job_tag.abbrev\n" + 
+		private final String sql = "select ticket.ticket_id, ticket.job_id, ticket.ticket_type, ticket.ticket_status, " +
+				"\taddress.name as job_site_name, job_tag.tag_id as service_tag_id, job_tag.abbrev,\n" +
+				"\tjob.price_per_cleaning as total_volume\n" +
 				"from ticket\n" + 
 				"inner join job on job.job_id=ticket.job_id\n" + 
 				"inner join quote on quote.quote_id=job.quote_id\n" + 
@@ -180,6 +181,7 @@ public class BcrTicketClaimResponse extends MessageResponse {
 		private String jobSiteName;
 		private String serviceTagId;
 		private String serviceTagAbbrev;
+		private Double totalVolume;
 		
 		private TicketData() {
 			super();
@@ -198,6 +200,7 @@ public class BcrTicketClaimResponse extends MessageResponse {
 				this.jobSiteName = rs.getString("job_site_name");
 				this.serviceTagId = rs.getString("service_tag_id");
 				this.serviceTagAbbrev = rs.getString("abbrev");
+				this.totalVolume = rs.getDouble("total_volume");
 			} else {
 				throw new RecordNotFoundException();
 			}
@@ -229,6 +232,14 @@ public class BcrTicketClaimResponse extends MessageResponse {
 
 		public String getServiceTagAbbrev() {
 			return serviceTagAbbrev;
+		}
+
+		public Double getTotalVolume() {
+			return totalVolume;
+		}
+
+		public void setTotalVolume(Double totalVolume) {
+			this.totalVolume = totalVolume;
 		}
 		
 	}

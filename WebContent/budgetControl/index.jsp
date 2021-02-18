@@ -342,8 +342,12 @@
 					
 					$("#bcr_edit_modal").dialog( "option", "title", "Ticket Claim: " + $data.data.ticket.ticketId + " (" + $data.data.ticket.status + ")  " + $data.data.ticket.jobSiteName + ", Service Type: " + $data.data.ticket.serviceTagAbbrev);
 					
-					$("#bcr_edit_modal input[name='totalVolume']").val($data.data.dlClaims[0].totalVolume.toFixed(2));
-					
+					$("#bcr_edit_modal input[name='totalVolume']").val($data.data.ticket.totalVolume.toFixed(2));
+	            	$("#div-summary .total-volume").html( $data.data.ticket.totalVolume.toFixed(2) );
+
+	            	var volumeClaimedTotal = 0.0;
+	            	var volumeRemainingTotal = 0.0;
+	            	var expenseTotal = 0.0;
 					
 					// Make DL Claim Table:
 					BUDGETCONTROL.dlClaimTable = $("#dl-claim-table").DataTable( {
@@ -351,7 +355,7 @@
 		    			paging : false,
 		    			autoWidth : false,
 	        	        deferRender : true,
-	        	        destroy : true,		// this lets us reinitialize the table for different permission groups
+	        	        destroy : true,		// this lets us reinitialize the table for different tickets
 		    			columns : [
 		    				{ width:"125px", title:"Direct Labor", className:"dt-right", orderable:true,
 		    					data:function($row,$type,$set) {
@@ -362,11 +366,16 @@
 		    					data:function($row,$type,$set) {
 		    						return $row.volumeClaimed.toFixed(2);
 		    					}  
+		    				},		    				
+		    				{ width:"125px", title:"Volume Remaining", className:"dt-right", orderable:true, visible:false,
+		    					data:function($row,$type,$set) {
+		    						return $row.volumeRemaining.toFixed(2);
+		    					}  
 		    				},
-		    				{ width:"200px", title:"Equipment Type", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>", data:'equipmentTags'},
+		    				{ width:"125px", title:"Equipment Type", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>", data:'equipmentTags'},
 		    				{ width:"300px", title:"Employee", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>", data:'employee'},
 		    				{ width:"300px", title:"Notes", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>", data:'notes'},
-		    				{ width:"300px", title:"Action", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>",
+		    				{ width:"30px", title:"Action", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>",
 		    					data:function($row,$type,$set) {
 		    						return '<webthing:delete>Delete</webthing:delete>';		
 		    					}
@@ -386,10 +395,13 @@
 			            		var mySum = parseFloat(a) + parseFloat(b);
 			            		return mySum;
 			            	}, 0);
+			            	volumeRemainingTotal = api.column(2).data().reduce( function(a,b) {
+			            		var mySum = parseFloat(a) + parseFloat(b);
+			            		return mySum;
+			            	}, 0);
 			            	$( api.column(0).footer() ).html( dlTotal.toFixed(2) );
 			            	$( api.column(1).footer() ).html( volumeClaimedTotal.toFixed(2) );
-			            	$("#div-summary .total-dl").html( dlTotal.toFixed(2) );
-			            	$("#div-summary .total-claimed-volume").html( volumeClaimedTotal.toFixed(2) );
+			            	$( api.column(2).footer() ).html( volumeRemainingTotal.toFixed(2) );			            	
 			            }
 		    		});
 						
@@ -431,7 +443,13 @@
 			            	$( api.column(0).footer() ).html( expenseTotal.toFixed(2) );
 			            }
 		    		});
-					
+
+	            	$("#div-summary .volume-claimed").html( volumeClaimedTotal.toFixed(2) );
+	            	$("#div-summary .volume-remaining").html( volumeRemainingTotal.toFixed(2) );
+	            	$("#div-summary .expense-volume").html( expenseTotal.toFixed(2) );
+ 					BUDGETCONTROL.makeChart(volumeClaimedTotal, expenseTotal, volumeRemainingTotal);
+
+	            	
         			//$("#bcr_edit_modal input[name='ticketId']").val($data.data.ticket.ticketId);
        				$("#bcr_edit_modal select[name='claimWeek']").val($data.data.claimWeek);
         			//$("#bcr_edit_modal input[name='dlAmt']").val($data.data.ticket.dlAmt.toFixed(2));
@@ -447,7 +465,7 @@
         			//$("#bcr_edit_modal input[name='employee']").val($data.data.ticket.employee);
         			//$("#bcr_edit_modal input[name='claimId']").val($data.data.ticket.claimId);
     	    		
-    			    BUDGETCONTROL.makeChart();
+
 
         			$("#bcr_edit_modal").dialog("open");
         		}, 
@@ -689,17 +707,22 @@
         		},
         		
         		
-        		makeChart : function() {
+        		makeChart : function(volumeClaimedTotal, expenseTotal, volumeRemainingTotal) {
+        			console.log("makeChart");
+        			console.log(volumeClaimedTotal + " | " + expenseTotal + " | " + volumeRemainingTotal);
+        			var red = 'rgba(255, 99, 132, 1)';
+        			var blue = 'rgba(54, 162, 235, 1)';
+        			var orange = 'rgba(255, 206, 86, 1)';
 					var ctx = $("#myChart");
 					var myChart = new Chart(ctx, {
 						type : 'pie',
 						data : {
-							labels: ['Total D/L','Total Claimed','Remaining'],							
+							labels: ['Volume Claimed', 'Expense Volume','Volume Remaining'],							
 							datasets : [{
 								label : "",
-								data : [12, 19, 3],
-								backgroundColor : ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)','rgba(255, 206, 86, 1)'],
-								borderColor : ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)','rgba(255, 206, 86, 1)'],
+								data : [volumeClaimedTotal, expenseTotal, volumeRemainingTotal],
+								backgroundColor : [orange, blue, red],
+								borderColor : [orange, blue, red],
 								borderWidth: 1
 							}]
 						},
@@ -1350,6 +1373,7 @@
 	    					<th></th>
 	    					<th></th>
 	    					<th></th>
+	    					<th></th>
 	    				</tr>
 	    			</tfoot>
 	    		</table>
@@ -1365,21 +1389,21 @@
 	    		</div>
 	    		
 	    		<table style="width:48%; float:left;">
-	    			<tr style="background-color:rgb(255,99,132);">
-	    				<td><span class="form-label">Total D/L:</span></td>
-	    				<td style="float:right;"><span class="total-dl"></span></td>
+	    			<tr>
+	    				<td style="width:75%; text-align:left; padding:3px;"><span class="form-label">Total Volume:</span></td>
+	    				<td style="width:25%; text-align:right; padding:3px;"><span class="total-volume"></span></td>
 	    			</tr>
 	    			<tr>
-	    				<td><span class="form-label">Total Volume:</span></td>
-	    				<td style="float:right;"><span class="total-volume"></span></td>
+	    				<td style="width:75%; text-align:left; padding:3px;"><span class="form-label">Volume Claimed:</span></td>
+	    				<td style="width:25%; text-align:right; padding:3px; background:rgb(255,206,86)"><span class="volume-claimed"></span></td>
 	    			</tr>
-	    			<tr style="background-color:rgb(54, 162, 235);">
-	    				<td><span class="form-label">Total Claimed Volume:</span></td>
-	    				<td style="float:right;"><span class="total-claimed-volume"></span></td>
+	    			<tr>
+	    				<td style="width:75%; text-align:left; padding:3px;"><span class="form-label">Expense Volume:</span></td>
+	    				<td style="width:25%; text-align:right; padding:3px; background:rgb(54, 162, 235)"><span class="expense-volume"></span></td>
 	    			</tr>
-	    			<tr style="background-color:rgb(255, 206, 86);">
-	    				<td><span class="form-label">Remaining Volume:</span></td>
-	    				<td style="float:right;"><span class="remaining-volume"></span></td>
+	    			<tr>
+	    				<td style="width:75%; text-align:left; padding:3px;"><span class="form-label">Volume Remaining:</span></td>
+	    				<td style="width:25%; text-align:right; padding:3px; background:rgb(255,99,132)"><span class="volume-remaining"></span></td>
 	    			</tr>
 	    		</table>
 	    	</div>
