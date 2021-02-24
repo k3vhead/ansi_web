@@ -163,16 +163,20 @@ public class BcrTicketClaimResponse extends MessageResponse {
 	public class TicketData extends ApplicationObject {
 		private static final long serialVersionUID = 1L;
 
-		private final String sql = "select ticket.ticket_id, ticket.job_id, ticket.ticket_type, ticket.ticket_status, " +
+		private final String sql = "select ticket.ticket_id, ticket.job_id, ticket.ticket_type, ticket.ticket_status, \n" +
 				"\taddress.name as job_site_name, job_tag.tag_id as service_tag_id, job_tag.abbrev,\n" +
-				"\tjob.price_per_cleaning as total_volume\n" +
+				"\tjob.price_per_cleaning as total_volume,\n" +
+				"\tjob.price_per_cleaning - isnull(ticket_claim_totals.claimed_total_volume,0.00)	as volume_remaining \n" +
 				"from ticket\n" + 
 				"inner join job on job.job_id=ticket.job_id\n" + 
 				"inner join quote on quote.quote_id=job.quote_id\n" + 
 				"inner join address on address.address_id=quote.job_site_address_id\n" + 
 				"left outer join job_tag_xref xref on xref.job_id=job.job_id\n" + 
+				"left outer join (\n" +
+				BcrTicketSql.ticketTotalSubselect +
+				") as ticket_claim_totals on ticket_claim_totals.ticket_id = ticket.ticket_id\n" +
 				"inner join job_tag on job_tag.tag_id=xref.tag_id and job_tag.tag_type='SERVICE'\n" + 
-				"where ticket_id=?";
+				"where ticket.ticket_id=?";
 		
 		private Integer ticketId;
 		private Integer jobId;
@@ -182,6 +186,7 @@ public class BcrTicketClaimResponse extends MessageResponse {
 		private String serviceTagId;
 		private String serviceTagAbbrev;
 		private Double totalVolume;
+		private Double volumeRemaining;
 		
 		private TicketData() {
 			super();
@@ -201,6 +206,7 @@ public class BcrTicketClaimResponse extends MessageResponse {
 				this.serviceTagId = rs.getString("service_tag_id");
 				this.serviceTagAbbrev = rs.getString("abbrev");
 				this.totalVolume = rs.getDouble("total_volume");
+				this.volumeRemaining = rs.getDouble("volume_remaining");
 			} else {
 				throw new RecordNotFoundException();
 			}
@@ -240,6 +246,10 @@ public class BcrTicketClaimResponse extends MessageResponse {
 
 		public void setTotalVolume(Double totalVolume) {
 			this.totalVolume = totalVolume;
+		}
+
+		public Double getVolumeRemaining() {
+			return volumeRemaining;
 		}
 		
 	}

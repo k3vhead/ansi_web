@@ -25,6 +25,7 @@ public class BcrTicketSql extends ApplicationObject {
 	public static final String PASSTHRU_EXPENSE_TYPE = "passthru_expense_type";
 	public static final String CLAIMED_VOLUME_TOTAL = "claimed_volume_total";
 	public static final String VOLUME_REMAINING = "volume_remaining";
+	public static final String AMOUNT_DUE = "amount_due";
 	public static final String SERVICE_TAG_ID = "service_tag_id";
 	public static final String NOTES = "notes";
 	public static final String BILLED_AMOUNT = "billed_amount";
@@ -47,7 +48,7 @@ public class BcrTicketSql extends ApplicationObject {
 	 * It is highly inefficient because of 2 identical sub-selects within the subselect, but it has the advantage of actually working.
 	 * 
 	 */
-	private static final String equipment_tag_subselect = "SELECT Main.ticket_id,\n" + 
+	private static final String equipmentTagSubselect = "SELECT Main.ticket_id,\n" + 
 			"       LEFT(Main.equipment_tags,Len(Main.equipment_tags)-1) As \"equipment_tags\"\n" + 
 			"FROM\n" + 
 			"    (\n" + 
@@ -73,6 +74,18 @@ public class BcrTicketSql extends ApplicationObject {
 			"    ) [Main]";
 	
 	
+	public static final String ticketTotalSubselect = 
+			"	select ticket_id\n" + 
+					"		, sum(isnull(volume,0.00)) as claimed_volume\n" + 
+					"		, sum(isnull(volume,0.00)+isnull(passthru_expense_volume,0.00)) as claimed_total_volume\n" + 
+					"		, sum(isnull(dl_amt,0.00)) as claimed_dl_amt\n" + 
+					"		, sum(isnull(dl_expenses,0.00)) as claimed_dl_exp\n" + 
+					"		, sum(isnull(passthru_expense_volume,0.00)) as claimed_pt_exp\n" + 
+					"--		, sum(hours) as claimed_hours\n" + 
+					"	from ticket_claim \n" + 
+					"	group by ticket_id\n"; 
+	
+	
 	public static final String sqlSelectClause = 
 			"select \n" + 
 			"   job_site.name as " + JOB_SITE_NAME + "\n" + 
@@ -90,14 +103,14 @@ public class BcrTicketSql extends ApplicationObject {
 			" , ticket_claim." + PASSTHRU_EXPENSE_TYPE + "\n" + 
 			" , isnull(ticket_claim.volume,0.00)+ISNULL(ticket_claim.passthru_expense_volume,0.00) as "+CLAIMED_VOLUME_TOTAL+"\n" + 
 			" , job.price_per_cleaning - isnull(ticket_claim_totals.claimed_total_volume,0.00)	as "+VOLUME_REMAINING + " \n" + 
-			"-- , isnull(invoice_totals.invoiced_amount,0.00) as billed_amount	, (isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim_passthru_totals.passthru_volume,0.00))		- isnull(invoice_totals.invoiced_amount,0.00) as claimed_vs_billed	, ISNULL(ticket_payment_totals.paid_amount,0.00) as paid_amt	, ISNULL(invoice_totals.invoiced_amount,0.00)-ISNULL(ticket_payment_totals.paid_amount,0.00) as amount_due\n" + 
+			"-- , isnull(invoice_totals.invoiced_amount,0.00) as billed_amount	, (isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim_passthru_totals.passthru_volume,0.00))		- isnull(invoice_totals.invoiced_amount,0.00) as claimed_vs_billed	, ISNULL(ticket_payment_totals.paid_amount,0.00) as paid_amt	, ISNULL(invoice_totals.invoiced_amount,0.00)-ISNULL(ticket_payment_totals.paid_amount,0.00) as "+AMOUNT_DUE+"\n" + 
 			"-- , job.price_per_cleaning - (isnull(ticket_claim_totals.claimed_volume,0.00))	as volume_remaining\n" + 
 			" , job_tag.abbrev as " + SERVICE_TAG_ID + "\n" + 
 			" , ticket_claim.notes as " + NOTES + "\n" + 
 			"-- ** used a join to make sure only invoiced tickets get a billed amount **\n" + 
 			" , isnull(invoice_totals.invoiced_amount,0.00) as " + BILLED_AMOUNT + "\n" + 
 			"-- ** repeat of passthru question **\n" + 
-			" , (isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim.passthru_expense_volume,0.00)) - isnull(invoice_totals.invoiced_amount,0.00) as claimed_vs_billed	\n" + 
+			" , (isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim.passthru_expense_volume,0.00)) - isnull(invoice_totals.invoiced_amount,0.00) as " + CLAIMED_VS_BILLED + " \n" +  
 			"-- , (isnull(ticket_claim_totals.claimed_volume,0.00)) - isnull(invoice_totals.invoiced_amount,0.00) as " + CLAIMED_VS_BILLED + " \n" + 
 			" , ticket.ticket_status as " + TICKET_STATUS + "\n" + 
 			" , ticket_claim.employee_name as " + EMPLOYEE + "\n" + 
@@ -115,15 +128,7 @@ public class BcrTicketSql extends ApplicationObject {
 			"join address job_site on job_site.address_id = quote.job_site_address_id\n" + 
 			"join job_tag on job_tag.tag_id=ticket_claim.service_type \n" + 
 			"left outer join (\n" + 
-			"	select ticket_id\n" + 
-			"		, sum(isnull(volume,0.00)) as claimed_volume\n" + 
-			"		, sum(isnull(volume,0.00)+isnull(passthru_expense_volume,0.00)) as claimed_total_volume\n" + 
-			"		, sum(isnull(dl_amt,0.00)) as claimed_dl_amt\n" + 
-			"		, sum(isnull(dl_expenses,0.00)) as claimed_dl_exp\n" + 
-			"		, sum(isnull(passthru_expense_volume,0.00)) as claimed_pt_exp\n" + 
-			"--		, sum(hours) as claimed_hours\n" + 
-			"	from ticket_claim \n" + 
-			"	group by ticket_id\n" + 
+			ticketTotalSubselect +
 			"	) as ticket_claim_totals on ticket_claim_totals.ticket_id = ticket.ticket_id\n" + 
 			"-- ** part of the passthru discussion **\n" + 
 			"--left outer join (\n" + 
@@ -139,7 +144,7 @@ public class BcrTicketSql extends ApplicationObject {
 			"	where invoice_date is not null\n" + 
 			"	group by ticket_id\n" + 
 			"	) as invoice_totals on invoice_totals.ticket_id = ticket.ticket_id \n" +
-			"left outer join (" + equipment_tag_subselect + ") tag_list on tag_list.ticket_id=ticket_claim.ticket_id";
+			"left outer join (" + equipmentTagSubselect + ") tag_list on tag_list.ticket_id=ticket_claim.ticket_id";
 					
 	
 	public static final String baseWhereClause =

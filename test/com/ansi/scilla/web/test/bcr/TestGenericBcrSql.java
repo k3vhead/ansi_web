@@ -3,6 +3,7 @@ package com.ansi.scilla.web.test.bcr;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.util.List;
 
 import com.ansi.scilla.common.utils.AppUtils;
@@ -17,7 +18,7 @@ public class TestGenericBcrSql {
 		try {
 			conn = AppUtils.getDevConn();
 			conn.setAutoCommit(false);
-			String workWeek = "41,42,43,44";
+			String workWeek = "45,46,47,48";
 			List<SessionDivision> divisionList = TesterUtils.makeSessionDivisionList(conn, 5);
 			Integer divisionId = 101;
 			Integer claimYear = 2020;
@@ -28,8 +29,15 @@ public class TestGenericBcrSql {
 			ps.setInt(1,  divisionId);
 			ps.setInt(2, claimYear);
 			ResultSet rs = ps.executeQuery();
+			ResultSetMetaData rsmd = rs.getMetaData();
 			while ( rs.next() ) {
-				System.out.println(rs.getInt("claim_id") + "\t" + rs.getInt("ticket_id"));
+				Integer ticketId = rs.getInt("ticket_id");
+				if ( ticketId.intValue() == 506645 ) {
+					for ( int i = 1; i <= rsmd.getColumnCount(); i++ ) {
+						System.out.println(rsmd.getColumnName(i) + "\t" + rs.getObject(i));
+					}
+					System.out.println("***************");
+				}
 			}
 			rs.close();
 			
