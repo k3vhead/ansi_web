@@ -19,14 +19,14 @@ public class TestTicketResponse {
 			List<SessionDivision> divisionList = TesterUtils.makeSessionDivisionList(conn, userId);
 			
 			
-			String uri = "/ansi_web/bcr/ticket/506645";
+			String uri = "/ansi_web/bcr/ticketClaim/25";
 			String[] uriPath = uri.split("/");
 			String ticket = uriPath[uriPath.length-1];
 			System.out.println(ticket);
 			
 			
-//			BcrTicketResponse response = new BcrTicketResponse(conn, userId, divisionList, 101, 2020, "45,46,47,48", 506645);
-//			System.out.println(response);
+			BcrTicketClaimResponse response = new BcrTicketClaimResponse(conn, userId, divisionList, 101, 2020, "45,46,47,48", 25);
+			System.out.println(response);
 			
 		} finally {
 			if ( conn != null ) {

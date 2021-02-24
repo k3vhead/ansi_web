@@ -351,8 +351,8 @@
 					$("#bcr_edit_modal input[name='totalVolume']").val($data.data.ticket.totalVolume.toFixed(2));
 	            	$("#div-summary .total-volume").html( $data.data.ticket.totalVolume.toFixed(2) );
 
+
 	            	var volumeClaimedTotal = 0.0;
-	            	var volumeRemainingTotal = 0.0;
 	            	var expenseTotal = 0.0;
 					
 					// Make DL Claim Table:
@@ -400,14 +400,9 @@
 			            	volumeClaimedTotal = api.column(1).data().reduce( function(a,b) {
 			            		var mySum = parseFloat(a) + parseFloat(b);
 			            		return mySum;
-			            	}, 0);
-			            	volumeRemainingTotal = api.column(2).data().reduce( function(a,b) {
-			            		var mySum = parseFloat(a) + parseFloat(b);
-			            		return mySum;
-			            	}, 0);
+			            	}, 0);			            	
 			            	$( api.column(0).footer() ).html( dlTotal.toFixed(2) );
 			            	$( api.column(1).footer() ).html( volumeClaimedTotal.toFixed(2) );
-			            	$( api.column(2).footer() ).html( volumeRemainingTotal.toFixed(2) );			            	
 			            }
 		    		});
 						
@@ -451,9 +446,9 @@
 		    		});
 
 	            	$("#div-summary .volume-claimed").html( volumeClaimedTotal.toFixed(2) );
-	            	$("#div-summary .volume-remaining").html( volumeRemainingTotal.toFixed(2) );
+	            	$("#div-summary .volume-remaining").html( $data.data.ticket.volumeRemaining.toFixed(2) );
 	            	$("#div-summary .expense-volume").html( expenseTotal.toFixed(2) );
- 					BUDGETCONTROL.makeChart(volumeClaimedTotal, expenseTotal, volumeRemainingTotal);
+ 					BUDGETCONTROL.makeChart(volumeClaimedTotal, expenseTotal, $data.data.ticket.volumeRemaining);
 
 	            	
         			//$("#bcr_edit_modal input[name='ticketId']").val($data.data.ticket.ticketId);
