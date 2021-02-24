@@ -3,6 +3,7 @@ package com.ansi.scilla.web.bcr.common;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,6 +21,7 @@ import com.ansi.scilla.web.common.struts.SessionDivision;
 public class BcrTicketSpreadsheet {
 	/**
 	 * @author jwlewis
+	 * @throws Exception 
 	 */
 	
 //	public BcrTicketSpreadsheet() {
@@ -27,7 +29,7 @@ public class BcrTicketSpreadsheet {
 //	}
 	
 	public BcrTicketSpreadsheet(Connection conn, List<SessionDivision> divisionList, Integer divisionId, Integer claimYear, String workWeeks) 
-			throws FileNotFoundException, IOException, SQLException {
+			throws Exception {
 //		String sql = BcrTicketSql.makeBaseWhereClause(workWeeks);
 		String baseSql = BcrTicketSql.sqlSelectClause + BcrTicketSql.makeFilteredFromClause(divisionList) + BcrTicketSql.makeBaseWhereClause(workWeeks);
 		System.out.println(baseSql);
@@ -35,7 +37,7 @@ public class BcrTicketSpreadsheet {
 	}
 	
 	private void createSpreadsheet(Connection conn, String sql, List<SessionDivision> divisionList, Integer divisionId, Integer year, String workWeekList) 
-			throws SQLException, FileNotFoundException, IOException {
+			throws Exception {
 		PreparedStatement ps = conn.prepareStatement(sql);
 		ps.setInt(1,  divisionId);
 		ps.setInt(2, year);
@@ -85,13 +87,14 @@ public class BcrTicketSpreadsheet {
 			for(int i = 1; i <= rsmd.getColumnCount(); i++) {
 				cell = row.createCell(i - 1);
 				if(rsmd.getColumnClassName(colNum).substring(10).equalsIgnoreCase("String")) {
-					cell.setCellValue("");
+					cell.setCellValue(rs.getString(i));
 				} else if(rsmd.getColumnClassName(colNum).substring(10).equalsIgnoreCase("BigDecimal")) {
-					
+					BigDecimal x = rs.getBigDecimal(i);
+					cell.setCellValue(x.doubleValue());
 				} else if(rsmd.getColumnClassName(colNum).substring(10).equalsIgnoreCase("Integer")) {
-					
+					cell.setCellValue(rs.getInt(i));
 				} else {
-					break;
+					throw new Exception();
 				}
 			}
 			rowNum++;
