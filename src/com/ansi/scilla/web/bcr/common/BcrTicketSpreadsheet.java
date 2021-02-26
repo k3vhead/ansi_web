@@ -1,14 +1,12 @@
 package com.ansi.scilla.web.bcr.common;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -27,6 +25,13 @@ public class BcrTicketSpreadsheet {
 //	public BcrTicketSpreadsheet() {
 //		//this.BcrTicketSpreadsheet(conn, year, weeks);
 //	}
+	
+	private static final HashMap<String, String> headerMap;
+	
+	static {
+		headerMap = new HashMap<String, String>();
+		headerMap.put("job_site_name","Account");
+	}
 	
 	public BcrTicketSpreadsheet(Connection conn, List<SessionDivision> divisionList, Integer divisionId, Integer claimYear, String workWeeks) 
 			throws Exception {
@@ -73,14 +78,15 @@ public class BcrTicketSpreadsheet {
 		 * Equipment Tags, String
 		 */
 		row = sheet.createRow(0);
-		int colNum = 1;
-		while(!rsmd.getColumnName(colNum).isEmpty()) {
+//		int colNum = 1;
+//		while(!rsmd.getColumnName(colNum).isEmpty()) {
+		for ( int colNum = 1; colNum<= rsmd.getColumnCount(); colNum++) {
 			cell = row.createCell(colNum - 1);
-			cell.setCellValue(rsmd.getColumnName(colNum));
-			System.out.println(rsmd.getColumnClassName(colNum) + " : " + rsmd.getColumnName(colNum));
-			colNum++;
+			cell.setCellValue(headerMap.get(rsmd.getColumnName(colNum)));
+			System.out.println(rsmd.getColumnTypeName(colNum) + " : " + rsmd.getColumnClassName(colNum) + " : " + rsmd.getColumnName(colNum));
+//			colNum++;
 		}
-		colNum = 1;
+		int colNum = 1;
 		int rowNum = 1;
 		row = sheet.createRow(rowNum);
 		while(rs.next()) {
@@ -94,7 +100,7 @@ public class BcrTicketSpreadsheet {
 				} else if(rsmd.getColumnClassName(colNum).substring(10).equalsIgnoreCase("Integer")) {
 					cell.setCellValue(rs.getInt(i));
 				} else {
-					throw new Exception();
+					throw new Exception("Unexpected value format" + rsmd.getColumnClassName(i));
 				}
 			}
 			rowNum++;
@@ -104,6 +110,7 @@ public class BcrTicketSpreadsheet {
 		
 		
 		workbook.write(new FileOutputStream("/Users/jwlewis/Documents/projects/BCR_Spreadsheet.xlsx"));
+//		workbook.write(new FileOutputStream("/home/dclewis/Documents/webthing_v2/projects/ANSI/testresults/BCR_Spreadsheet.xlsx"));
 //		return workbook;
 	}
 	
