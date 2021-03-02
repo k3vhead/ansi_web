@@ -165,6 +165,26 @@ public class RequestValidator {
 		}
 	}
 
+	public static void validateClaimWeek(WebMessages webMessages, String fieldName, String value, boolean required) {
+		if ( StringUtils.isBlank(value) ) {
+			if ( required ) {
+				webMessages.addMessage(fieldName, "Claim Week is Required");
+			} 
+		} else {
+			Pattern pattern = Pattern.compile("^([0-9][0-9][0-9][0-9])(-)([0-9][0-9])$",Pattern.CASE_INSENSITIVE);
+			Matcher matcher = pattern.matcher(value);
+			if ( matcher.matches() ) {
+				int weekNum = Integer.valueOf(matcher.group(3)).intValue();
+				if ( weekNum < 1 || weekNum > 53 ) {
+					webMessages.addMessage(fieldName, "Invalid claim week (week number)");
+				}
+			} else {
+				webMessages.addMessage(fieldName, "Invalid claim week (format)");
+			}
+			
+		}
+	}
+
 	private static void validateCode(Connection conn, WebMessages webMessages, String dbTableName, String dbFieldName,
 			String fieldName, String value, boolean required) throws Exception {
 		if (StringUtils.isBlank(value) ) {
