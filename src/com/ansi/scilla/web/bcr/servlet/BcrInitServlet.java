@@ -2,20 +2,13 @@ package com.ansi.scilla.web.bcr.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
-
-import com.ansi.scilla.common.utils.WorkYear;
-import com.ansi.scilla.web.bcr.request.BcrTitleRequest;
 import com.ansi.scilla.web.bcr.response.BcrInitResponse;
-import com.ansi.scilla.web.bcr.response.BcrTitleResponse;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
@@ -34,7 +27,7 @@ public class BcrInitServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
 	
-	private static final String YEAR = "year";
+//	private static final String YEAR = "year";
 
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -56,7 +49,7 @@ public class BcrInitServlet extends AbstractServlet {
 				
 				Calendar workDay = Calendar.getInstance();
 				WebMessages webMessages = new WebMessages();
-				BcrInitResponse data = new BcrInitResponse(divisionListResponse.getDivisionList(), workDay);
+				BcrInitResponse data = new BcrInitResponse(conn, divisionListResponse.getDivisionList(), workDay);
 				
 				data.setWebMessages(webMessages);
 				if ( webMessages.isEmpty() ) {

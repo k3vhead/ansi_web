@@ -73,7 +73,10 @@
 			}
         	.form-label {
 				font-weight:bold;
-			}			
+			}		
+			.newExpenseItem {
+				display:none;
+			}	
 			.table-header {
 				text-align:center;
 				font-weight:bold;
@@ -122,13 +125,19 @@
     			workYear : null, 
     			workWeek : null,
     			// this holds the ticket panel datatables
-        		ticketTable : {},   
+        		ticketTable : {},
+        		// these are valid values for posts to bcr/ticket and bcr/ticketClaim
         		changeType : {
         			"CLAIM_WEEK":"claimWeek",
         			"TOTAL_VOLUME":"totalVolume",
         			"DL":"dl",
         			"EXPENSE":"expense"
         		},
+        		// these are the valid expense types when adding a new pass-thru expense (populated by init call)
+        		expenseTypes : [],
+        		
+        		
+        		
         		
         		init : function() {
         			BUDGETCONTROL.makeSelectionLists();
@@ -461,7 +470,7 @@
 		    					}
 		    				},	    				
 		    				{ width:"200px", title:"Expense Type", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>", data:'passthruExpenseType'},
-		    				{ width:"50px", title:" ", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>",
+		    				{ width:"50px", title:" ", className:"dt-center", orderable:false, defaultContent: "<i>N/A</i>",
 		    					data:function($row,$type,$set) {
 		    						var $edit = '<span class="action-link edit-expense" data-claimid="'+$row.claimId+'"><webthing:edit>Edit</webthing:edit></span>';
 		    						var $delete = '<span class="action-link delete-expense" data-claimid="'+$row.claimId+'"><webthing:delete>Delete</webthing:delete></span>';
@@ -480,7 +489,9 @@
 			            		return mySum;
 			            	}, 0);
 			            	
-			            	$( api.column(0).footer() ).html( expenseTotal.toFixed(2) );
+			            	$( api.column(0).footer() ).html( '<span class="newExpenseItem"><input type="text" placeholder="0.00" style="width:100px;" name="expenseVolume"/><br /></span><span class="displayExpenseItem">' + expenseTotal.toFixed(2) + '</span>');
+			            	$( api.column(1).footer() ).html( '<span class="newExpenseItem"><select name="expenseType"></select><br /></span>' );
+			            	$( api.column(2).footer() ).html( '<span class="newExpenseItem"><webthing:ban styleClass="cancelExpense">Cancel</webthing:ban><webthing:checkmark styleClass="saveExpense">Save</webthing:checkmark></span><span class="displayExpenseItem"><webthing:addNew styleClass="newExpenseButton">New Expense</webthing:addNew></span>' );
 			            }
 		    		});
 
@@ -506,7 +517,26 @@
         			//$("#bcr_edit_modal input[name='claimId']").val($data.data.ticket.claimId);
     	    		
 
-
+        			var $select = $("#bcr_edit_modal select[name='expenseType']");
+					$('option', $select).remove();
+					$select.append(new Option("",""));
+					$.each(BUDGETCONTROL.expenseTypes, function(index, val) {
+					    $select.append(new Option(val.displayValue, val.value));
+					});	
+					
+					$("#bcr_edit_modal .newExpenseButton").click(function() {
+						console.log("New Expense Click");
+						$("#bcr_edit_modal .displayExpenseItem").hide();
+						$("#bcr_edit_modal .newExpenseItem").fadeIn(250);
+					});
+					$("#bcr_edit_modal .cancelExpense").click(function() {
+						console.log("Cancel Expense Click");
+						$("#bcr_edit_modal .newExpenseItem").hide();
+						$("#bcr_edit_modal .displayExpenseItem").fadeIn(250);
+					});
+					$("#bcr_edit_modal .saveExpense").click(function() {
+						console.log("Save Expense Click");						
+					});
         			$("#bcr_edit_modal").dialog("open");
         		}, 
         		
@@ -854,16 +884,9 @@
         							$( "#bcr_edit_modal" ).dialog("close");    							
         						}
         					}
-        					//,{
-        					//	id:  "bcr_claim_edit_save",
-        					//	click: function($event) {
-        					//		BUDGETCONTROL.ticketEditSave();        							
-        					//	}
-        					//}
         				]
         			});	
         			$("#bcr_claim_edit_cancel").button('option', 'label', 'Done');
-        			//$("#bcr_claim_edit_save").button('option', 'label', 'Save');
         			
         			$("#dlAmtField").blur( function() {
 	        			if ( $("#dlAmtField").val() == null || $("#dlAmtField").val() == "" ) {
@@ -956,6 +979,7 @@
         		// process a successful retrieval of initial div list and calendar
         		makeSelectionListSuccess : function($data) {
         			console.log("makeSelectionListSuccess");
+        			BUDGETCONTROL.expenseTypes = $data.data.expenseTypeList;
         			BUDGETCONTROL.makeDivList($data);
         			BUDGETCONTROL.makeDateList($data);
         			
