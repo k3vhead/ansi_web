@@ -88,8 +88,9 @@ public class BcrTicketSpreadsheet {
 		}
 		int colNum = 1;
 		int rowNum = 1;
-		row = sheet.createRow(rowNum);
+		
 		while(rs.next()) {
+			row = sheet.createRow(rowNum);
 			for(int i = 1; i <= rsmd.getColumnCount(); i++) {
 				cell = row.createCell(i - 1);
 				if(rsmd.getColumnClassName(colNum).substring(10).equalsIgnoreCase("String")) {
