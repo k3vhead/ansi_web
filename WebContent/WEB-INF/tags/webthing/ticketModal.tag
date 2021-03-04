@@ -47,7 +47,7 @@
 		   		
 		   		<tr>
 		   			<th>Job Tags</th>
-		   			<th>  </th>
+		   			<td><span class="jobTags"></span></td>
 		   		</tr>
 		   		
 		   		<tr class="processNotesRow">

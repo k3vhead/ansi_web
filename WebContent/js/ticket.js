@@ -187,7 +187,17 @@ $(function() {
 				
 				$($modalId + " .processDateLabel").html($processLabel);
 				$($modalId + " .processDate").html($data.ticketDetail.processDate);
-				$($modalId + " .processNotes").html($data.ticketDetail.processNotes);					
+				$($modalId + " .processNotes").html($data.ticketDetail.processNotes);	
+				
+				$($modalId + " .jobTags").html("");
+				$displayValue = "";
+				$.each($data.ticketDetail.jobTags, function($key, $value) {
+					$.each($value, function($index, $jobTag) {
+						$displayValue = $displayValue + " " + $jobTag.abbrev;
+					});
+					$displayValue = $displayValue + "<br />";
+				});	
+				$($modalId + " .jobTags").html($displayValue);
 			}
 		},
 		
