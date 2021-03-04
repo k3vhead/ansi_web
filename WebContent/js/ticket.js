@@ -110,7 +110,16 @@ $(function() {
 				$($modalId + " .invoiceTable").hide();				
 			}				
 		},
-		
+		populateJobTags : function($modalId, $data) {
+				$($modalId + " .longCode").html($data.jobTags.longCode);					
+				$($modalId + " .abbrev").html($data.jobTags.abbrev);
+				$($modalId + " .status").html($data.jobTags.status);
+				$($modalId + " .statusDescription").html($data.jobTags.statusDescription);
+				$($modalId + " .tagDescription").html($data.jobTags.tagDescription);
+				$($modalId + " .tagId").html($data.jobTags.tagId);
+				$($modalId + " .tagType").html($data.jobTags.tagType);
+				$($modalId + " .tagTypeDescription").html($data.jobTags.tagTypeDescription);
+			},
 		
 		
 		populateSummary : function($modalId, $data) {

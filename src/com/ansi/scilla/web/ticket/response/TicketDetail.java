@@ -2,7 +2,12 @@ package com.ansi.scilla.web.ticket.response;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +20,7 @@ import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.invoice.InvoiceStyle;
 import com.ansi.scilla.common.invoice.InvoiceTerm;
 import com.ansi.scilla.common.jobticket.JobFrequency;
+import com.ansi.scilla.common.jobticket.JobTagDisplay;
 import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.common.jobticket.TicketType;
 import com.ansi.scilla.common.jsonFormat.AnsiCurrencyFormatter;
@@ -67,7 +73,7 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 
 	
 	
-	
+	private HashMap<String,List<JobTagDisplay>> jobTags;/*sting is the job tag type*/
 	
 	
 	/* ******************************************** */
@@ -87,6 +93,8 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 	private BigDecimal taxRate;
 	private String poNumber;
 	private String actPoNumber;
+
+
 	
 	/* ******************************************** */
 	/* ******************************************** */
@@ -176,12 +184,48 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		} else {
 			this.actPoNumber = ticket.getActPoNumber();
 		}
+		makeJobTagList(conn, this.jobId);
 	}
-
+	private void makeJobTagList(Connection conn, Integer jobId2) throws SQLException {
+		this.jobTags = new HashMap<String,List<JobTagDisplay>>();
+		List<JobTagDisplay> tagList = JobTagDisplay.getTags(conn, jobId2);
+		Collections.sort(tagList, new Comparator<JobTagDisplay>() {
+			public int compare(JobTagDisplay o1, JobTagDisplay o2) {
+				return o1.getTagType().compareTo(o2.getTagType());
+			}
+		});
+		List<JobTagDisplay> tagNameList = new ArrayList<JobTagDisplay> ();
+		String previousTagType = null;
+		for (JobTagDisplay tagDisplay : tagList) {
+			if (!StringUtils.isBlank(previousTagType) && !tagDisplay.getTagType().equals(previousTagType)) {
+				this.jobTags.put(previousTagType,tagNameList);
+				tagNameList = new ArrayList<JobTagDisplay>();
+			}
+			tagNameList.add(tagDisplay);
+			previousTagType = tagDisplay.getTagType();
+		}
+		this.jobTags.put(previousTagType, tagNameList);
+	}
+	/*
+	Type	name	Previous type: Serv		map: {Equip:[xxx,yyy],Serv:[bbb]}
+	==== 	====	List:  [bbb]
+	Equip	xxx
+	Equip	yyy
+	Serv	bbb
+	*/
+	
 	public Integer getTicketId() {
 		return ticketId;
 	}
 	
+	public HashMap<String, List<JobTagDisplay>> getJobTags() {
+		return jobTags;
+	}
+
+	public void setJobTags(HashMap<String, List<JobTagDisplay>> jobTags) {
+		this.jobTags = jobTags;
+	}
+
 	public void setTicketId(Integer ticketId) {
 		this.ticketId = ticketId;
 	}
