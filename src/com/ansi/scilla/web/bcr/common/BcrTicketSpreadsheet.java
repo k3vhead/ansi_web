@@ -31,6 +31,25 @@ public class BcrTicketSpreadsheet {
 	static {
 		headerMap = new HashMap<String, String>();
 		headerMap.put("job_site_name","Account");
+		headerMap.put("ticket_id","Ticket Id");
+		headerMap.put("claim_id","Claim Id");
+		headerMap.put("claim_week","Claim Week");
+		headerMap.put("dl_amt","Dl Amount");
+		headerMap.put("dl_expenses","Dl Expenses");
+		headerMap.put("dl_total","Dl Total");
+		headerMap.put("total_volume","Total Volume");
+		headerMap.put("volume_claimed","Volume Claimed");
+		headerMap.put("passthru_volume","PassThru Volume");
+		headerMap.put("passthru_expense_type","PassThru Expense Type");
+		headerMap.put("claimed_volume_total","Claimed Volume Total");
+		headerMap.put("volume_remaining","Volume Remaining");
+		headerMap.put("service_tag_id","Service Tag Id");
+		headerMap.put("notes","Notes");
+		headerMap.put("billed_amount","Billed Amount");
+		headerMap.put("claimed_vs_billed","Claimed vs Billed");
+		headerMap.put("ticket_status","Ticket Status");
+		headerMap.put("employee","Employee");
+		headerMap.put("equipment_tags","Equipment Tags");
 	}
 	
 	public BcrTicketSpreadsheet(Connection conn, List<SessionDivision> divisionList, Integer divisionId, Integer claimYear, String workWeeks) 
@@ -82,7 +101,11 @@ public class BcrTicketSpreadsheet {
 //		while(!rsmd.getColumnName(colNum).isEmpty()) {
 		for ( int colNum = 1; colNum<= rsmd.getColumnCount(); colNum++) {
 			cell = row.createCell(colNum - 1);
-			cell.setCellValue(headerMap.get(rsmd.getColumnName(colNum)));
+			if(headerMap.get(rsmd.getColumnName(colNum)) != null) {
+				cell.setCellValue(headerMap.get(rsmd.getColumnName(colNum)));
+			} else {
+				cell.setCellValue(rsmd.getColumnName(colNum));
+			}
 			System.out.println(rsmd.getColumnTypeName(colNum) + " : " + rsmd.getColumnClassName(colNum) + " : " + rsmd.getColumnName(colNum));
 //			colNum++;
 		}
@@ -93,12 +116,14 @@ public class BcrTicketSpreadsheet {
 			row = sheet.createRow(rowNum);
 			for(int i = 1; i <= rsmd.getColumnCount(); i++) {
 				cell = row.createCell(i - 1);
-				if(rsmd.getColumnClassName(colNum).substring(10).equalsIgnoreCase("String")) {
+				String[] sub = rsmd.getColumnClassName(i).split(".");
+				System.out.println(rsmd.getColumnClassName(i).substring(10));
+				if(rsmd.getColumnClassName(i).substring(10).equalsIgnoreCase("String")) {
 					cell.setCellValue(rs.getString(i));
-				} else if(rsmd.getColumnClassName(colNum).substring(10).equalsIgnoreCase("BigDecimal")) {
+				} else if(rsmd.getColumnClassName(i).substring(10).equalsIgnoreCase("BigDecimal")) {
 					BigDecimal x = rs.getBigDecimal(i);
 					cell.setCellValue(x.doubleValue());
-				} else if(rsmd.getColumnClassName(colNum).substring(10).equalsIgnoreCase("Integer")) {
+				} else if(rsmd.getColumnClassName(i).substring(10).equalsIgnoreCase("Integer")) {
 					cell.setCellValue(rs.getInt(i));
 				} else {
 					throw new Exception("Unexpected value format" + rsmd.getColumnClassName(i));
@@ -110,7 +135,7 @@ public class BcrTicketSpreadsheet {
 		
 		
 		
-		workbook.write(new FileOutputStream("/Users/jwlewis/Documents/projects/BCR_Spreadsheet.xlsx"));
+		workbook.write(new FileOutputStream("/home/jwlewis/Documents/projects/BCR_Spreadsheet.xlsx"));
 //		workbook.write(new FileOutputStream("/home/dclewis/Documents/webthing_v2/projects/ANSI/testresults/BCR_Spreadsheet.xlsx"));
 //		return workbook;
 	}

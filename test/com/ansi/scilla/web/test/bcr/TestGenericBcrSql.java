@@ -42,7 +42,9 @@ public class TestGenericBcrSql {
 			rs.close();
 			
 		} finally {
-			conn.close();
+			if(conn != null) {
+				conn.close();
+			}
 		}
 	}
 	
