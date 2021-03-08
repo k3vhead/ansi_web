@@ -34,9 +34,9 @@ public class TestGenericBcrSql {
 				Integer ticketId = rs.getInt("ticket_id");
 				if ( ticketId.intValue() == 506645 ) {
 					for ( int i = 1; i <= rsmd.getColumnCount(); i++ ) {
-						System.out.println(rsmd.getColumnName(i) + "\t" + rs.getObject(i));
+//						System.out.println(rsmd.getColumnName(i) + "\t" + rs.getObject(i));
 					}
-					System.out.println("***************");
+//					System.out.println("***************");
 				}
 			}
 			rs.close();

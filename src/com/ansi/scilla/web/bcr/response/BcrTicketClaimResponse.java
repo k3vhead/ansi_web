@@ -146,12 +146,15 @@ public class BcrTicketClaimResponse extends MessageResponse {
 		ResultSet rs = ps.executeQuery();
 		this.dlClaims = new ArrayList<BcrTicket>();
 		this.expenses = new ArrayList<PassthruExpense>();
-		while ( rs.next() ) {
-			dlClaims.add(new BcrTicket(rs));
+		while ( rs.next() ) {			
 			Integer claimId = rs.getInt("claim_id");
 			Double passthruVolume = rs.getDouble("passthru_volume");
 			String passthruExpenseType = rs.getString("expense_type_display");
-			if ( ! StringUtils.isBlank(passthruExpenseType)) {
+			// D/L claims and passthru expense claims are stored separately in the ticket_claim table.
+			// Each type goes into a separate list.
+			if ( StringUtils.isBlank(passthruExpenseType)) {
+				dlClaims.add(new BcrTicket(rs));
+			} else {
 				expenses.add(new PassthruExpense(claimId, passthruVolume, passthruExpenseType));
 			}
 		}

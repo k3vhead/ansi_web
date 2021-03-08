@@ -56,7 +56,7 @@ public class BcrTicketSql extends ApplicationObject {
 			"            (\n" + 
 			"                SELECT ST1.equipment_tags + ',' AS [text()]\n" + 
 			"                FROM (\n" + 
-			"                	select ticket_claim.ticket_id, job_tag.abbrev as equipment_tags\n" + 
+			"                	select distinct ticket_claim.ticket_id, job_tag.abbrev as equipment_tags\n" + 
 			"					from ticket_claim\n" + 
 			"					inner join ticket on ticket.ticket_id=ticket_claim.ticket_id\n" + 
 			"					inner join job_tag_xref xref on xref.job_id=ticket.job_id\n" + 
@@ -66,7 +66,7 @@ public class BcrTicketSql extends ApplicationObject {
 			"                FOR XML PATH ('')\n" + 
 			"            ) [equipment_tags]\n" + 
 			"        FROM (\n" + 
-			"	        select ticket_claim.ticket_id, job_tag.abbrev as equipment_tags\n" + 
+			"	        select distinct ticket_claim.ticket_id, job_tag.abbrev as equipment_tags\n" + 
 			"			from ticket_claim\n" + 
 			"			inner join ticket on ticket.ticket_id=ticket_claim.ticket_id\n" + 
 			"			inner join job_tag_xref xref on xref.job_id=ticket.job_id\n" + 
