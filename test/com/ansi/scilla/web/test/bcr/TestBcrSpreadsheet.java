@@ -27,8 +27,11 @@ public class TestBcrSpreadsheet {
 //			XSSFWorkbook workbook = spreadsheet.makeWorkbook();
 //			workbook.write(new FileOutputStream("/Users/jwlewis/Documents/projects/pinpoint/google_cat/catdump_20131203.xlsx"));
 			
+			
 		} finally {
-			conn.close();
+			if ( conn != null ) {
+				conn.close();
+			}
 		}
 	}
 	

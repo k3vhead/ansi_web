@@ -24,7 +24,7 @@ public class TestEmployeeResponse {
 //			String ticket = uriPath[uriPath.length-1];
 //			System.out.println(ticket);
 			
-			BudgetControlEmployeesResponse response = new BudgetControlEmployeesResponse(conn, userId, divisionList, 101, 2020, "41,42,43,44");
+			BudgetControlEmployeesResponse response = new BudgetControlEmployeesResponse(conn, userId, divisionList, 101, 2020, "45,46,47,48");
 //			System.out.println(response);
 			String json = AppUtils.object2json(response);
 			System.out.println(json);

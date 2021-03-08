@@ -8,7 +8,7 @@ import com.ansi.scilla.web.bcr.response.BcrTicketClaimResponse;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.test.TesterUtils;
 
-public class TestTicketResponse {
+public class TestTicketClaimResponse {
 
 	private final Integer userId = 5;
 	
@@ -38,7 +38,7 @@ public class TestTicketResponse {
 	
 	public static void main(String[] args) {
 		try {
-			new TestTicketResponse().go();
+			new TestTicketClaimResponse().go();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

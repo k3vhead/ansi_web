@@ -38,7 +38,11 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 			"	sum(detail.claimed_vs_billed) as claimed_vs_billed\n" + 
 			"from (\n";
 	
-	private static final String groupClause = "\n) as detail \n group by detail.employee, detail.claim_week\norder by detail.employee, detail.claim_week";
+	private static final String groupClause =
+			"\n) as detail \n "
+			+ "where passthru_expense_type is null and passthru_volume=0 \n"    // passthru expenses get their own row. For employees, we don't care
+			+ "group by detail.employee, detail.claim_week\n"
+			+ "order by detail.employee, detail.claim_week";
 
 	private Integer claimYear;
 	private List<String> claimWeeks;
@@ -209,7 +213,21 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 
 		@Override
 		public int compareTo(EmployeeClaim o) {
-			return this.employee.compareTo(o.getEmployee());
+			int retvalue = 0;
+			if ( StringUtils.isBlank(this.employee) ) {
+				if ( StringUtils.isBlank(o.getEmployee()) ) {
+					retvalue = 0;
+				} else {
+					retvalue = -1;
+				}
+			} else {
+				if ( StringUtils.isBlank(o.getEmployee()) ) {
+					retvalue = 1;
+				} else {
+					retvalue = this.employee.compareTo(o.getEmployee());
+				}
+			}
+			return retvalue;
 		}
 		
 		

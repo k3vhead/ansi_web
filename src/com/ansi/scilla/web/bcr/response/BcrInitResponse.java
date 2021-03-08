@@ -65,7 +65,7 @@ public class BcrInitResponse extends MessageResponse {
 	private List<ExpenseType> makeExpenseTypeList(Connection conn) throws SQLException {
 		List<ExpenseType> expenseTypeList = new ArrayList<ExpenseType>();
 		Statement s = conn.createStatement();
-		ResultSet rs = s.executeQuery("select value, display_value from code where table_name='employee_expense' and field_name='expense_type' order by seq, display_value");
+		ResultSet rs = s.executeQuery("select value, display_value from code where table_name='ticket_claim_passthru' and field_name='passthru_expense_type' order by seq, display_value");
 		while (rs.next()) {
 			expenseTypeList.add(new ExpenseType(rs));
 		}

@@ -374,6 +374,29 @@
         		},
         		
         		
+        		expenseSave : function() {
+        			console.log("expenseSave");
+        			var $ticketId = 506645;
+        			var $serviceType = "WW";
+        			var $claimWeek = "2020-46";
+        			var $volume = $("#bcr_edit_modal input[name='expenseVolume']").val();
+        			var $expenseType = $("#bcr_edit_modal input[name='expenseType']").val();
+        			var $outbound = {
+        					"ticketId":$ticketId,
+                			"serviceType":$serviceType,
+                			"claimWeek":$claimWeek,
+                			"volume":$volume,
+                			"expenseType":$expenseType,
+        			}
+        			ANSI_UTILS.doServerCall("POST", "bcr/expense", JSON.stringify($outbound), BUDGETCONTROL.expenseSaveSuccess, BUDGETCONTROL.claimUpdateFail);
+        		},
+        		
+        		
+        		expenseSaveSuccess : function($data) {
+        			console.log("expenseSaveSuccess");
+        		},
+        		
+        		
         		
         		getTicketDetailSuccess : function($data) {
 					console.log("getTicketDetailSuccess");  
@@ -392,7 +415,7 @@
 					
 					$("#bcr_edit_modal").dialog( "option", "title", "Ticket Claim: " + $data.data.ticket.ticketId + " (" + $data.data.ticket.status + ")  " + $data.data.ticket.jobSiteName + ", Service Type: " + $data.data.ticket.serviceTagAbbrev);
 					
-					$("#bcr_edit_modal input[name='totalVolume']").val($data.data.ticket.totalVolume.toFixed(2));
+					$("#bcr_edit_modal .totalVolume").html($data.data.ticket.totalVolume.toFixed(2));
 	            	$("#div-summary .total-volume").html( $data.data.ticket.totalVolume.toFixed(2) );
 
 
@@ -535,7 +558,7 @@
 						$("#bcr_edit_modal .displayExpenseItem").fadeIn(250);
 					});
 					$("#bcr_edit_modal .saveExpense").click(function() {
-						console.log("Save Expense Click");						
+						BUDGETCONTROL.expenseSave();						
 					});
         			$("#bcr_edit_modal").dialog("open");
         		}, 
@@ -1442,7 +1465,7 @@
 	    			<td><select name="claimWeek"></select></td>
 	    			<td>&nbsp;</td>
 	    			<td><span class="form-label">Total Volume:</span></td>
-	    			<td><input type="text" name="totalVolume" /></td>
+	    			<td><span class="totalVolume"></span></td>
     			</tr>
 	    	</table>
 	    	

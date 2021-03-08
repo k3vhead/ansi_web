@@ -25,8 +25,11 @@ public class BcrTicketClaimResponse extends MessageResponse {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final String selectClause = "select detail.* from (\n";	
-	private static final String whereClause = "\n) as detail where ticket_id=?";
+	private static final String selectClause = "select detail.* , code.display_value as expense_type_display from (\n";	
+	private static final String whereClause = 
+			"\n) as detail"
+			+ "\nleft outer join code on table_name='ticket_claim_passthru' and field_name='passthru_expense_type' and value=detail.passthru_expense_type"
+			+ "\nwhere ticket_id=?";
 	
 	private Integer claimYear;
 	private String claimWeek;
@@ -147,8 +150,7 @@ public class BcrTicketClaimResponse extends MessageResponse {
 			dlClaims.add(new BcrTicket(rs));
 			Integer claimId = rs.getInt("claim_id");
 			Double passthruVolume = rs.getDouble("passthru_volume");
-			String passthruExpenseType = rs.getString("passthru_expense_type");
-			logger.log(Level.DEBUG, "Expense type: " + passthruExpenseType);
+			String passthruExpenseType = rs.getString("expense_type_display");
 			if ( ! StringUtils.isBlank(passthruExpenseType)) {
 				expenses.add(new PassthruExpense(claimId, passthruVolume, passthruExpenseType));
 			}

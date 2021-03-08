@@ -20,6 +20,7 @@ public class BcrServlet extends AbstractServlet {
 	private final String BC_TOTALS = "bcTotals";
 	private final String EMPLOYEE_AUTOCOMPLETE = "employee";
 	private final String EMPLOYEES = "employees";
+	private final String EXPENSE = "expense";
 	private final String INIT = "init";
 	private final String KEEP_ALIVE = "keepAlive";
 	private final String TICKET = "ticket";
@@ -101,6 +102,9 @@ public class BcrServlet extends AbstractServlet {
 		switch (destination) {
 		case ACTUAL_DL:
 			new BcrActualDLServlet().doPost(request, response);
+			break;
+		case EXPENSE:
+			new BcrExpenseServlet().doPost(request, response);
 			break;
 		case INIT:
 			new BcrInitServlet().doPost(request, response);
