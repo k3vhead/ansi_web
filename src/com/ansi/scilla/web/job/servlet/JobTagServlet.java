@@ -99,11 +99,11 @@ public class JobTagServlet extends AbstractCrudServlet {
 	@Override
 	protected WebMessages validateAdd(Connection conn, HashMap<String, Object> addRequest) throws Exception {
 		WebMessages webMessages = new WebMessages();
-		RequestValidator.validateString(webMessages, DESCRIPTION, (String)addRequest.get(DESCRIPTION), 128, true);
+		RequestValidator.validateString(webMessages, DESCRIPTION, (String)addRequest.get(DESCRIPTION), 128, true, null);
 		RequestValidator.validateTagType(webMessages, TAG_TYPE, (String)addRequest.get(TAG_TYPE), true);
 		RequestValidator.validateTagStatus(webMessages, STATUS, (String)addRequest.get(STATUS), true);
-		RequestValidator.validateString(webMessages, ABBREV, (String)addRequest.get(ABBREV), 45, true);
-		RequestValidator.validateString(webMessages, LONG_CODE, (String)addRequest.get(LONG_CODE), 45, true);
+		RequestValidator.validateString(webMessages, ABBREV, (String)addRequest.get(ABBREV), 45, true, null);
+		RequestValidator.validateString(webMessages, LONG_CODE, (String)addRequest.get(LONG_CODE), 45, true, null);
 		if ( webMessages.isEmpty()) {
 			// name must be unique within type
 			RequestValidator.validateTagAbbrev(conn, webMessages, ABBREV, (String)addRequest.get(TAG_TYPE),  (String)addRequest.get(ABBREV), true);
@@ -117,7 +117,7 @@ public class JobTagServlet extends AbstractCrudServlet {
 		WebMessages webMessages = new WebMessages();
 		/* We don't need this line because the id is validated in the Abstract servlet. It returns a 404 if the id is invalid */
 //		RequestValidator.validateId(conn, webMessages, JobTag.TABLE, JobTag.TAG_ID, TAG_ID, id, true);
-		RequestValidator.validateString(webMessages, DESCRIPTION, (String)updateRequest.get(DESCRIPTION), 128, true);
+		RequestValidator.validateString(webMessages, DESCRIPTION, (String)updateRequest.get(DESCRIPTION), 128, true, null);
 		RequestValidator.validateTagType(webMessages, TAG_TYPE, (String)updateRequest.get(TAG_TYPE), true);
 		RequestValidator.validateTagStatus(webMessages, STATUS, (String)updateRequest.get(STATUS), true);
 		RequestValidator.validateTagAbbrev(conn, webMessages, ABBREV, (String)updateRequest.get(TAG_TYPE),  (String)updateRequest.get(ABBREV), true);

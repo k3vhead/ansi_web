@@ -16,18 +16,18 @@ import com.ansi.scilla.web.common.servlet.AbstractServlet;
 public class BcrServlet extends AbstractServlet {
 	private final String REALM = "bcr";
 
-	private final String ACTUAL_DL = "actualDL";
-	private final String BC_TOTALS = "bcTotals";
-	private final String EMPLOYEE_AUTOCOMPLETE = "employee";
-	private final String EMPLOYEES = "employees";
-	private final String EXPENSE = "expense";
-	private final String INIT = "init";
-	private final String KEEP_ALIVE = "keepAlive";
-	private final String TICKET = "ticket";
-	private final String TICKET_CLAIM = "ticketClaim";
-	private final String TICKETLIST = "ticketList";
-	private final String TITLE = "title";
-	private final String WEEKLY_TICKETLIST = "weeklyTicketList";
+	public static final String ACTUAL_DL = "actualDL";
+	public static final String BC_TOTALS = "bcTotals";
+	public static final String EMPLOYEE_AUTOCOMPLETE = "employee";
+	public static final String EMPLOYEES = "employees";
+	public static final String EXPENSE = "expense";
+	public static final String INIT = "init";
+	public static final String KEEP_ALIVE = "keepAlive";
+	public static final String TICKET = "ticket";
+	public static final String TICKET_CLAIM = "ticketClaim";
+	public static final String TICKETLIST = "ticketList";
+	public static final String TITLE = "title";
+	public static final String WEEKLY_TICKETLIST = "weeklyTicketList";
 	
 	
 	private static final long serialVersionUID = 1L;
@@ -36,7 +36,21 @@ public class BcrServlet extends AbstractServlet {
 	@Override
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		super.doDelete(request, response);
+		String uri = request.getRequestURI();
+		String trigger = REALM + "/";
+		String destination = uri.substring(uri.indexOf(trigger)+trigger.length());
+		Integer index = destination.indexOf("/");   // in case we have something like bcr/ticket/12345
+		destination = index > 0 ? destination.substring(0, index) : destination;
+		
+		logger.log(Level.DEBUG, "GET: " + destination);
+		
+		switch (destination) {		
+		case EXPENSE:
+			new BcrExpenseServlet().doDelete(request, response);
+			break;		
+		default:
+			super.sendNotFound(response);
+		}
 	}
 
 	@Override

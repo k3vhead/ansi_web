@@ -32,7 +32,7 @@ public class MotdRequest extends AbstractRequest {
 	
 	public WebMessages validate() {
 		WebMessages webMessages = new WebMessages();
-		RequestValidator.validateString(webMessages, MESSAGE, this.message, 1024, true);
+		RequestValidator.validateString(webMessages, MESSAGE, this.message, 1024, true, null);
 		return webMessages;
 	}
 

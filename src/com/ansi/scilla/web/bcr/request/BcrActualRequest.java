@@ -94,7 +94,7 @@ public class BcrActualRequest extends AbstractRequest {
 		}
 		
 		tempMessages = new WebMessages();
-		RequestValidator.validateId(conn, tempMessages, Division.TABLE, Division.DIVISION_ID, DIVISION_ID, divisionId, true);
+		RequestValidator.validateId(conn, tempMessages, Division.TABLE, Division.DIVISION_ID, DIVISION_ID, divisionId, true, null);
 		if ( ! tempMessages.isEmpty() ) {
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Division. Reload page and try again");
 		}

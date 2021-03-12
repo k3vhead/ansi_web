@@ -684,11 +684,11 @@ public class JobRequest extends AbstractRequest{
 		WebMessages webMessages = new WebMessages();
 		RequestValidator.validateJobFrequency(webMessages, JOB_FREQUENCY, this.getJobFrequency(), true);
 		RequestValidator.validateInteger(webMessages, JOB_NBR, this.jobNbr, 1, null, true);
-		RequestValidator.validateNumber(webMessages, PRICE_PER_CLEANING, this.getPricePerCleaning(), new BigDecimal(0), null, true);
+		RequestValidator.validateNumber(webMessages, PRICE_PER_CLEANING, this.getPricePerCleaning(), new BigDecimal(0), null, true, null);
 		RequestValidator.validateString(webMessages, SERVICE_DESCRIPTION, this.getServiceDescription(), true);
 		RequestValidator.validateBoolean(webMessages, REQUEST_SPECIAL_SCHEDULING, this.getRequestSpecialScheduling(), false);
-		RequestValidator.validateNumber(webMessages, DIRECT_LABOR_PCT, this.getDirectLaborPct(), new BigDecimal(0), new BigDecimal(100), true);
-		RequestValidator.validateNumber(webMessages,BUDGET, this.getBudget(), new BigDecimal(0), null, true);
+		RequestValidator.validateNumber(webMessages, DIRECT_LABOR_PCT, this.getDirectLaborPct(), new BigDecimal(0), new BigDecimal(100), true, null);
+		RequestValidator.validateNumber(webMessages,BUDGET, this.getBudget(), new BigDecimal(0), null, true, null);
 		RequestValidator.validateInteger(webMessages,FLOORS, this.getFloors(), 0, null, true);
 		RequestValidator.validateString(webMessages, EQUIPMENT, this.getEquipment(), true);
 		RequestValidator.validateString(webMessages, WASHER_NOTES, this.getWasherNotes(), false);

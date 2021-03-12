@@ -25,7 +25,7 @@ public class TestTicketClaimResponse {
 			System.out.println(ticket);
 			
 			
-			BcrTicketClaimResponse response = new BcrTicketClaimResponse(conn, userId, divisionList, 101, 2020, "45,46,47,48", 25);
+			BcrTicketClaimResponse response = BcrTicketClaimResponse.fromClaim(conn, userId, divisionList, 101, 2020, "45,46,47,48", 25);
 			System.out.println(response);
 			
 		} finally {

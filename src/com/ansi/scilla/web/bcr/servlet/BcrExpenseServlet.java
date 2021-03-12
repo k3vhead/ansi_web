@@ -1,17 +1,22 @@
 package com.ansi.scilla.web.bcr.servlet;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Connection;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
+import com.ansi.scilla.common.AnsiTime;
+import com.ansi.scilla.common.db.TicketClaim;
 import com.ansi.scilla.web.bcr.request.BcrExpenseRequest;
-import com.ansi.scilla.web.bcr.response.BcrExpenseResponse;
+import com.ansi.scilla.web.bcr.response.BcrTicketClaimResponse;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
@@ -42,37 +47,38 @@ public class BcrExpenseServlet extends AbstractServlet {
 				String jsonString = super.makeJsonString(request);
 				logger.log(Level.DEBUG, jsonString);
 				SessionData sessionData = AppUtils.validateSession(request, Permission.CLAIMS_WRITE);
-				BcrExpenseRequest bcrTicketRequest = new BcrExpenseRequest();
-				AppUtils.json2object(jsonString, bcrTicketRequest);
+				BcrExpenseRequest bcrExpenseRequest = new BcrExpenseRequest();
+				AppUtils.json2object(jsonString, bcrExpenseRequest);
 				SessionUser sessionUser = sessionData.getUser();
 				List<SessionDivision> divisionList = sessionData.getDivisionList();
 				
-//				String[] uriPath = request.getRequestURI().split("/");
-//				String ticket = uriPath[uriPath.length-1];
-//				
-//				if ( StringUtils.isNumeric(ticket)) {
-//					RequestValidator.validateId(conn, webMessages, Ticket.TABLE, Ticket.TICKET_ID, WebMessages.GLOBAL_MESSAGE, Integer.valueOf(ticket), true);
-//					if ( webMessages.isEmpty() ) {
-//						webMessages = bcrTicketRequest.validate(conn, sessionUser, divisionList, divisionId, workYear, workWeeks);						
-						BcrExpenseResponse data = new BcrExpenseResponse();
-//						if ( webMessages.isEmpty() ) {
-//							if ( bcrTicketRequest.getClaimId() == null ) {
-//								insertClaim(conn, Integer.valueOf(ticket), bcrTicketRequest, sessionUser);
-//							} else {
-//								updateClaim(conn, Integer.valueOf(ticket), bcrTicketRequest, sessionUser);
-//							}
-//							data = new BcrTicketClaimResponse(conn, sessionUser.getUserId(), divisionList, divisionId, workYear, workWeeks, Integer.valueOf(ticket));
-							super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
-//						} else {
-//							data.setWebMessages(webMessages);
-//							super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
-//						}
-//					} else {
-//						super.sendNotFound(response);
-//					}
-//				} else {
-//					super.sendNotFound(response);
-//				}
+				logger.log(Level.DEBUG, request.getRequestURI());
+				Integer index = request.getRequestURI().indexOf(BcrServlet.EXPENSE);
+				String claimId = request.getRequestURI().substring(index + BcrServlet.EXPENSE.length());
+				claimId = claimId.startsWith("/") ? claimId.substring(1) : claimId;
+				
+				BcrTicketClaimResponse data = new BcrTicketClaimResponse();
+				
+				if ( StringUtils.isBlank(claimId) ) {
+					// this is a new expense
+					webMessages = bcrExpenseRequest.validateAdd(conn);
+					if ( webMessages.isEmpty() ) {
+						Integer newClaimId = insertExpense(conn, bcrExpenseRequest, sessionUser);						
+						data = BcrTicketClaimResponse.fromClaim(conn, sessionUser.getUserId(), divisionList, bcrExpenseRequest.getDivisionId(), bcrExpenseRequest.getWorkYear(), bcrExpenseRequest.getWorkWeeks(), newClaimId);
+						super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
+					} else {
+						data.setWebMessages(webMessages);
+						super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+					}
+				} else if ( StringUtils.isNumeric(claimId) ) {
+					// this is an update to an existing expense
+					webMessages = bcrExpenseRequest.validateUpdate(conn, Integer.valueOf(claimId));
+					throw new Exception("Not yet young padawan");
+				} else {
+					// somebody fubar'd
+					super.sendNotFound(response);
+				}
+
 				
 			} catch ( InvalidFormatException e ) {
 				String badField = super.findBadField(e.toString());
@@ -91,5 +97,116 @@ public class BcrExpenseServlet extends AbstractServlet {
 		} finally {
 			AppUtils.closeQuiet(conn);
 		}
+	}
+
+	
+	
+	
+	@Override
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		Connection conn = null;
+		WebMessages webMessages = new WebMessages();
+		try {
+			try{
+				conn = AppUtils.getDBCPConn();
+				conn.setAutoCommit(false);
+				String jsonString = super.makeJsonString(request);
+				logger.log(Level.DEBUG, jsonString);
+				SessionData sessionData = AppUtils.validateSession(request, Permission.CLAIMS_WRITE);
+				BcrExpenseRequest bcrExpenseRequest = new BcrExpenseRequest();
+				AppUtils.json2object(jsonString, bcrExpenseRequest);
+				SessionUser sessionUser = sessionData.getUser();
+				List<SessionDivision> divisionList = sessionData.getDivisionList();
+				
+				logger.log(Level.DEBUG, request.getRequestURI());
+				Integer index = request.getRequestURI().indexOf(BcrServlet.EXPENSE);
+				String claimId = request.getRequestURI().substring(index + BcrServlet.EXPENSE.length());
+				claimId = claimId.startsWith("/") ? claimId.substring(1) : claimId;
+				
+				BcrTicketClaimResponse data = new BcrTicketClaimResponse();
+				
+				if ( StringUtils.isBlank(claimId) ) {
+					super.sendNotFound(response);
+				} else if ( StringUtils.isNumeric(claimId) ) {
+					webMessages = BcrExpenseRequest.validateDelete(conn, Integer.valueOf(claimId));
+					if ( webMessages.isEmpty() ) {
+						// the claim response is predicated on having a claim id. So we get the response based on the claim we're
+						// deleting, then scrub that info from the response object.
+						data = BcrTicketClaimResponse.fromClaim(conn, sessionUser.getUserId(), divisionList, bcrExpenseRequest.getDivisionId(), bcrExpenseRequest.getWorkYear(), bcrExpenseRequest.getWorkWeeks(), Integer.valueOf(claimId));
+						data.scrubClaim(Integer.valueOf(claimId));
+						deleteExpense(conn, Integer.valueOf(claimId));
+						super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
+					} else {
+						super.sendNotFound(response); // we've got a bad claim id
+					}					
+				} else {
+					// somebody fubar'd
+					super.sendNotFound(response);
+				}
+
+				
+			} catch ( InvalidFormatException e ) {
+				String badField = super.findBadField(e.toString());
+				PaymentResponse data = new PaymentResponse();
+				WebMessages messages = new WebMessages();
+				messages.addMessage(badField, "Invalid Format");
+				data.setWebMessages(messages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+				super.sendForbidden(response);			
+			}
+		} catch ( Exception e) {
+			AppUtils.logException(e);
+			AppUtils.rollbackQuiet(conn);
+			throw new ServletException(e);
+		} finally {
+			AppUtils.closeQuiet(conn);
+		}
+	}
+
+
+
+
+	private Integer insertExpense(Connection conn, BcrExpenseRequest bcrExpenseRequest, SessionUser sessionUser) throws Exception {
+			logger.log(Level.DEBUG, "Inserting a Passthru Expense");
+			TicketClaim ticketClaim = new TicketClaim();
+			Calendar today = Calendar.getInstance(new AnsiTime());
+			
+			
+			String[] claimWeek = bcrExpenseRequest.getClaimWeek().split("-");
+			
+			
+			ticketClaim.setAddedBy(sessionUser.getUserId());
+			ticketClaim.setAddedDate(today.getTime());
+			ticketClaim.setClaimWeek(Integer.valueOf(claimWeek[1]));
+			ticketClaim.setClaimYear(Integer.valueOf(claimWeek[0]));
+			ticketClaim.setDlAmt(BigDecimal.ZERO);
+			ticketClaim.setDlExpenses(BigDecimal.ZERO);
+	//		ticketClaim.setEmployeeName(employeeName);
+			ticketClaim.setHours(BigDecimal.ZERO);
+			ticketClaim.setNotes(bcrExpenseRequest.getNotes());
+			ticketClaim.setPassthruExpenseType(bcrExpenseRequest.getExpenseType());
+			ticketClaim.setPassthruExpenseVolume(new BigDecimal(bcrExpenseRequest.getVolume()));
+			ticketClaim.setServiceType(bcrExpenseRequest.getServiceTagId());
+			ticketClaim.setTicketId(bcrExpenseRequest.getTicketId());
+			ticketClaim.setUpdatedBy(sessionUser.getUserId());
+			ticketClaim.setUpdatedDate(today.getTime());
+			ticketClaim.setVolume(BigDecimal.ZERO);
+			
+			Integer claimId = ticketClaim.insertWithKey(conn);
+			conn.commit();
+			return claimId;
+		}
+
+
+
+
+	private void deleteExpense(Connection conn, Integer claimId) throws Exception {
+		TicketClaim ticketClaim = new TicketClaim();
+		ticketClaim.setClaimId(claimId);
+		ticketClaim.delete(conn);
+		conn.commit();
+		
 	}
 }

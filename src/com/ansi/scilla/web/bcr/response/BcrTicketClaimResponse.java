@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -17,6 +19,7 @@ import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.TicketClaim;
 import com.ansi.scilla.web.bcr.common.BcrTicket;
 import com.ansi.scilla.web.bcr.common.BcrTicketSql;
+import com.ansi.scilla.web.bcr.common.PassthruExpense;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.thewebthing.commons.db2.RecordNotFoundException;
@@ -25,8 +28,8 @@ public class BcrTicketClaimResponse extends MessageResponse {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final String selectClause = "select detail.* , code.display_value as expense_type_display from (\n";	
-	private static final String whereClause = 
+	public static final String selectClause = "select detail.* , code.display_value as expense_type_display from (\n";	
+	public static final String whereClause = 
 			"\n) as detail"
 			+ "\nleft outer join code on table_name='ticket_claim_passthru' and field_name='passthru_expense_type' and value=detail.passthru_expense_type"
 			+ "\nwhere ticket_id=?";
@@ -55,7 +58,7 @@ public class BcrTicketClaimResponse extends MessageResponse {
 	 * @throws SQLException
 	 * @throws RecordNotFoundException
 	 */
-	public BcrTicketClaimResponse(Connection conn, Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer workYear, String workWeeks, Integer claimId) throws SQLException, RecordNotFoundException, Exception {
+	private BcrTicketClaimResponse(Connection conn, Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer workYear, String workWeeks, Integer claimId) throws SQLException, RecordNotFoundException, Exception {
 		this();
 		this.claimYear = workYear;
 		
@@ -118,6 +121,17 @@ public class BcrTicketClaimResponse extends MessageResponse {
 		this.claimWeek = claimWeek;
 	}
 
+	/**
+	 * Remove references to a particular claim id. (In essence, this means searching the D/L claims and expenses for the claim id)
+	 * @param claimId
+	 */
+	public void scrubClaim(Integer claimId) {
+		CollectionUtils.filterInverse(this.expenses, new PassthruExpenseFilterByClaim(claimId));
+		CollectionUtils.filterInverse(this.dlClaims, new BcrTicketFilterByClaim(claimId));
+	}
+
+	
+	
 	private TicketClaim makeClaim(Connection conn, Integer claimId) throws Exception {
 		TicketClaim ticketClaim = new TicketClaim();
 		ticketClaim.setClaimId(claimId);
@@ -125,6 +139,8 @@ public class BcrTicketClaimResponse extends MessageResponse {
 		return ticketClaim;
 	}
 
+	
+	
 	private void makeResponse(Connection conn, Integer userId, List<SessionDivision> divisionList,
 			Integer divisionId, Integer workYear, String workWeeks, Integer ticketId) throws SQLException, RecordNotFoundException {
 		
@@ -155,7 +171,8 @@ public class BcrTicketClaimResponse extends MessageResponse {
 			if ( StringUtils.isBlank(passthruExpenseType)) {
 				dlClaims.add(new BcrTicket(rs));
 			} else {
-				expenses.add(new PassthruExpense(claimId, passthruVolume, passthruExpenseType));
+				String notes = rs.getString("notes");
+				expenses.add(new PassthruExpense(claimId, passthruVolume, passthruExpenseType, notes));
 			}
 		}
 		if ( dlClaims.isEmpty() ) {
@@ -164,6 +181,15 @@ public class BcrTicketClaimResponse extends MessageResponse {
 		
 
 	}
+	
+	
+	
+	
+	public static BcrTicketClaimResponse fromClaim(Connection conn, Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer workYear, String workWeeks, Integer claimId) throws SQLException, RecordNotFoundException, Exception {
+		return new BcrTicketClaimResponse(conn, userId, divisionList, divisionId, workYear, workWeeks, claimId);
+	}
+	
+	
 	
 	public class TicketData extends ApplicationObject {
 		private static final long serialVersionUID = 1L;
@@ -260,36 +286,35 @@ public class BcrTicketClaimResponse extends MessageResponse {
 	}
 	
 	
-	public class PassthruExpense extends ApplicationObject {
-		private static final long serialVersionUID = 1L;
+	public class BcrTicketFilterByClaim implements Predicate<BcrTicket> {
 
 		private Integer claimId;
-		private Double passthruVolume;
-		private String passthruExpenseType;
 		
-		private PassthruExpense() {
+		public BcrTicketFilterByClaim(Integer claimId) {
 			super();
-		}
-
-		public PassthruExpense(Integer claimId, Double passthruVolume, String passthruExpenseType) {
-			this();
 			this.claimId = claimId;
-			this.passthruVolume = passthruVolume;
-			this.passthruExpenseType = passthruExpenseType;
 		}
 
-		public Integer getClaimId() {
-			return claimId;
-		}
-
-		public Double getPassthruVolume() {
-			return passthruVolume;
-		}
-
-		public String getPassthruExpenseType() {
-			return passthruExpenseType;
+		@Override
+		public boolean evaluate(BcrTicket arg0) {
+			return arg0.getClaimId().equals(claimId);
 		}
 		
+	}
+	
+	public class PassthruExpenseFilterByClaim implements Predicate<PassthruExpense> {
+
+		private Integer claimId;
+		
+		public PassthruExpenseFilterByClaim(Integer claimId) {
+			super();
+			this.claimId = claimId;
+		}
+
+		@Override
+		public boolean evaluate(PassthruExpense arg0) {
+			return arg0.getClaimId().equals(claimId);
+		}
 		
 	}
 }

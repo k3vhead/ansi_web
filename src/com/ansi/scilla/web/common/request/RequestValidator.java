@@ -87,7 +87,7 @@ public class RequestValidator {
 
 	public static void validateAccountType(Connection conn, WebMessages webMessages, String fieldName, String value,
 			boolean required) throws Exception {
-		validateCode(conn, webMessages, "quote", "account_type", fieldName, value, required);
+		validateCode(conn, webMessages, "quote", "account_type", fieldName, value, required, null);
 	}
 
 	public static void validateBigDecimal(WebMessages webMessages, String fieldName, BigDecimal value,
@@ -127,7 +127,7 @@ public class RequestValidator {
 
 	public static void validateBuildingType(Connection conn, WebMessages webMessages, String fieldName, String value,
 			boolean required) throws Exception {
-		validateCode(conn, webMessages, "job", "building_type", fieldName, value, required);
+		validateCode(conn, webMessages, "job", "building_type", fieldName, value, required, null);
 	}
 
 	
@@ -185,11 +185,24 @@ public class RequestValidator {
 		}
 	}
 
+	/**
+	 * 
+	 * @param conn
+	 * @param webMessages
+	 * @param dbTableName
+	 * @param dbFieldName
+	 * @param fieldName
+	 * @param value
+	 * @param required
+	 * @param label Optional String value to be incorporated into the error message. Useful for those cases where the message is not displayed next to the field being validated
+	 * @throws Exception
+	 */
 	private static void validateCode(Connection conn, WebMessages webMessages, String dbTableName, String dbFieldName,
-			String fieldName, String value, boolean required) throws Exception {
+			String fieldName, String value, boolean required, String label) throws Exception {
 		if (StringUtils.isBlank(value) ) {
 			if (required) {
-				webMessages.addMessage(fieldName, "Required Value");
+				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
+				webMessages.addMessage(fieldName, message);
 			}
 		} else {
 			String sql = "select * from code where table_name=? and field_name=? and value=?";
@@ -199,7 +212,8 @@ public class RequestValidator {
 			ps.setString(3, value);
 			ResultSet rs = ps.executeQuery();
 			if (!rs.next()) {
-				webMessages.addMessage(fieldName, "Invalid Value");
+				String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is invalid";
+				webMessages.addMessage(fieldName, message);
 			}
 		}
 	}
@@ -207,7 +221,7 @@ public class RequestValidator {
 	
 	
 	public static void validateContactType(Connection conn, WebMessages webMessages, String fieldName, String value, boolean required) throws Exception {
-		validateCode(conn, webMessages, CallLog.TABLE, CallLog.CONTACT_TYPE, fieldName, value, required);
+		validateCode(conn, webMessages, CallLog.TABLE, CallLog.CONTACT_TYPE, fieldName, value, required, null);
 	}
 	
 
@@ -313,7 +327,7 @@ public class RequestValidator {
 	}
 
 	public static void validateDocumentId(Connection conn, WebMessages webMessages, String fieldName, Integer value, boolean required) throws Exception {
-		validateId(conn, webMessages, Document.TABLE, Document.DOCUMENT_ID, fieldName, value, required);
+		validateId(conn, webMessages, Document.TABLE, Document.DOCUMENT_ID, fieldName, value, required, null);
 	}
 
 	
@@ -350,16 +364,18 @@ public class RequestValidator {
 	
 	
 	public static void validateDouble(WebMessages webMessages, String fieldName, Double value, Double minValue,
-			Double maxValue, boolean required) {
+			Double maxValue, boolean required, String label) {
 		if (value == null) {
 			if (required) {
-				webMessages.addMessage(fieldName, "Required Value");
+				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
+				webMessages.addMessage(fieldName, message);
 			}
 		} else {
+			String message = StringUtils.isBlank(label) ? "" : label + " ";
 			if (minValue != null && value < minValue) {
-				webMessages.addMessage(fieldName, "Must be at least " + minValue.toString());
+				webMessages.addMessage(fieldName, message + "Must be at least " + minValue.toString());
 			} else if (maxValue != null && value > maxValue) {
-				webMessages.addMessage(fieldName, "Cannot be more than " + maxValue.toString());
+				webMessages.addMessage(fieldName, message + "Cannot be more than " + maxValue.toString());
 			}
 		}
 	}
@@ -404,14 +420,34 @@ public class RequestValidator {
 
 	public static void validateExpenseType(Connection conn, WebMessages webMessages, String fieldName, String value,
 			boolean required) throws Exception {
-		validateCode(conn, webMessages, EmployeeExpense.TABLE, EmployeeExpense.EXPENSE_TYPE, fieldName, value, required);
+		validateCode(conn, webMessages, EmployeeExpense.TABLE, EmployeeExpense.EXPENSE_TYPE, fieldName, value, required, null);
 	}
 
+	
 	public static void validateId(Connection conn, WebMessages webMessages, String dbTableName, String dbFieldName,
 			String fieldName, Integer value, boolean required) throws Exception {
+		validateId(conn, webMessages, dbTableName, dbFieldName, fieldName, value, required, null);
+	}
+	
+	
+	/**
+	 * Validate the unique key into a database table, typically generated by an auto-increment. (eg. ticket_id for the Ticket table)
+	 * @param conn
+	 * @param webMessages
+	 * @param dbTableName
+	 * @param dbFieldName
+	 * @param fieldName
+	 * @param value
+	 * @param required
+	 * @param label Optional String value to be incorporated into the error message. Useful for those cases where the message is not displayed next to the field being validated
+	 * @throws Exception
+	 */
+	public static void validateId(Connection conn, WebMessages webMessages, String dbTableName, String dbFieldName,
+			String fieldName, Integer value, boolean required, String label) throws Exception {
 		if (value == null) {
 			if (required) {
-				webMessages.addMessage(fieldName, "Required Value");
+				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
+				webMessages.addMessage(fieldName, message);
 			}
 		} else {
 			String sql = "select * from " + dbTableName + " where " + dbFieldName + "=?";
@@ -419,7 +455,8 @@ public class RequestValidator {
 			ps.setInt(1, value);
 			ResultSet rs = ps.executeQuery();
 			if (!rs.next()) {
-				webMessages.addMessage(fieldName, "Invalid Value");
+				String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is invalid";
+				webMessages.addMessage(fieldName, message);
 			}
 		}
 	}
@@ -511,18 +548,18 @@ public class RequestValidator {
 
 	public static void validateLeadType(Connection conn, WebMessages webMessages, String fieldName, String value,
 			boolean required) throws Exception {
-		validateCode(conn, webMessages, "quote", "lead_type", fieldName, value, required);
+		validateCode(conn, webMessages, "quote", "lead_type", fieldName, value, required, null);
 	}
 
 	public static void validateNumber(WebMessages webMessages, String fieldName, Object value, Object minValue,
-			Object maxValue, boolean required) {
+			Object maxValue, boolean required, String label) {
 		if (value == null) {
 			if (required) {
 				webMessages.addMessage(fieldName, "Required Value");
 			}
 		} else {
 			if (value instanceof Double) {
-				validateDouble(webMessages, fieldName, (Double) value, (Double) minValue, (Double) maxValue, required);
+				validateDouble(webMessages, fieldName, (Double) value, (Double) minValue, (Double) maxValue, required, label);
 			} else if (value instanceof BigDecimal) {
 				validateBigDecimal(webMessages, fieldName, (BigDecimal) value, (BigDecimal) minValue, (BigDecimal) maxValue, required);
 			} else if (value instanceof Integer) {
@@ -537,24 +574,24 @@ public class RequestValidator {
 	}
 
 	
-	public static void validatePassthruExpenseType(Connection conn, WebMessages webMessages, String fieldName, String value, boolean required) throws Exception {
-		validateCode(conn, webMessages, "ticket_claim_passthru", "passthru_expense_type", fieldName, value, required);
+	public static void validatePassthruExpenseType(Connection conn, WebMessages webMessages, String fieldName, String value, boolean required, String label) throws Exception {
+		validateCode(conn, webMessages, "ticket_claim_passthru", "passthru_expense_type", fieldName, value, required, label);
 	}
 
 	
 	public static void validatePaymentTerms(WebMessages webMessages, String fieldName, String value, boolean required) {
 		if (StringUtils.isBlank(value)) {
 			if (required) {
-				webMessages.addMessage(fieldName, "Required Value");
+				webMessages.addMessage(fieldName, "Expense Type is required");
 			}
 		} else {
 			try {
 				PaymentMethod paymentTerms = PaymentMethod.valueOf(value);
 				if (paymentTerms == null) {
-					webMessages.addMessage(fieldName, "Invalid Value");
+					webMessages.addMessage(fieldName, "Invalid Passthru Expense");
 				}
 			} catch (IllegalArgumentException e) {
-				webMessages.addMessage(fieldName, "Invalid Value");
+				webMessages.addMessage(fieldName, "Invalid Passthru Expense");
 			}
 		}
 	}
@@ -585,14 +622,25 @@ public class RequestValidator {
 		}
 	}
 
-	public static void validateString(WebMessages webMessages, String fieldName, String value, Integer maxLength, boolean required) {
+	/**
+	 * 
+	 * @param webMessages
+	 * @param fieldName
+	 * @param value
+	 * @param maxLength
+	 * @param required
+	 * @param label Optional String value to be incorporated into the error message. Useful for those cases where the message is not displayed next to the field being validated
+	 */
+	public static void validateString(WebMessages webMessages, String fieldName, String value, Integer maxLength, boolean required, String label) {
 		if (StringUtils.isBlank(value)) {
 			if (required) {
-				webMessages.addMessage(fieldName, "Required Value");
+				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
+				webMessages.addMessage(fieldName, message);
 			}
 		} else {
 			if (value.length() > maxLength ) {
-				webMessages.addMessage(fieldName, "Must be less than " + maxLength + " characters");
+				String message = StringUtils.isBlank(label) ? "" : label + " ";
+				webMessages.addMessage(fieldName, message + "Must be less than " + maxLength + " characters");
 			}
 		}
 	}
@@ -686,22 +734,28 @@ public class RequestValidator {
 		
 	}
 
-	public static void validateTicketId(Connection conn, WebMessages webMessages, String fieldName, Integer value, boolean required) throws Exception {
+	/**
+	 * 
+	 * @param conn
+	 * @param webMessages
+	 * @param fieldName
+	 * @param value
+	 * @param required
+	 * @param label Optional String value to be incorporated into the error message. Useful for those cases where the message is not displayed next to the field being validated
+	 * @throws Exception
+	 */
+	public static void validateTicketId(Connection conn, WebMessages webMessages, String fieldName, Integer value, boolean required, String label) throws Exception {
 		if (value == null) {
 			if (required) {
-				webMessages.addMessage(fieldName, "Required Value");
+				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
+				webMessages.addMessage(fieldName, message);
 			}
 		} else {
-			Ticket ticket = new Ticket();
-			ticket.setTicketId(value);
-			try { 
-				ticket.selectOne(conn);
-			} catch ( RecordNotFoundException e) {
-				webMessages.addMessage(fieldName, "Invalid Value");
-			}
-			
+			validateId(conn, webMessages, Ticket.TABLE, Ticket.TICKET_ID, fieldName, value, required, label);
 		}
 	}
+	
+	
 	
 	public static void validateUserStatus(WebMessages webMessages, String fieldName, Integer value, boolean required) {
 		List<Integer> validValues = Arrays

@@ -97,15 +97,15 @@ public class BcrTicketClaimRequest extends AbstractRequest {
 	public WebMessages validate(Connection conn, SessionUser sessionUser, List<SessionDivision> divisionList, Integer divisionId, Integer claimYear, String claimWeeks) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		
-		RequestValidator.validateTicketId(conn, webMessages, TICKET_ID, this.ticketId, true);
-		RequestValidator.validateNumber(webMessages, DL_AMT, this.dlAmt, 0.0D, null, true);
-		RequestValidator.validateNumber(webMessages, TOTAL_VOLUME, this.totalVolume, 0.0D, null, true);
-		RequestValidator.validateNumber(webMessages, VOLUME_CLAIMED, this.volumeClaimed, 0.0D, null, true);
-		RequestValidator.validateNumber(webMessages, BILLED_AMOUNT, this.billedAmount, 0.0D, null, true);
+		RequestValidator.validateTicketId(conn, webMessages, TICKET_ID, this.ticketId, true, null);
+		RequestValidator.validateNumber(webMessages, DL_AMT, this.dlAmt, 0.0D, null, true, null);
+		RequestValidator.validateNumber(webMessages, TOTAL_VOLUME, this.totalVolume, 0.0D, null, true, null);
+		RequestValidator.validateNumber(webMessages, VOLUME_CLAIMED, this.volumeClaimed, 0.0D, null, true, null);
+		RequestValidator.validateNumber(webMessages, BILLED_AMOUNT, this.billedAmount, 0.0D, null, true, null);
 		// claimId is not required because it won't be there for add transactions
-		RequestValidator.validateId(conn, webMessages, TicketClaim.TABLE, TicketClaim.CLAIM_ID, WebMessages.GLOBAL_MESSAGE, claimId, false);
+		RequestValidator.validateId(conn, webMessages, TicketClaim.TABLE, TicketClaim.CLAIM_ID, WebMessages.GLOBAL_MESSAGE, claimId, false, null);
 
-		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, WebMessages.GLOBAL_MESSAGE, divisionId, true);
+		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, WebMessages.GLOBAL_MESSAGE, divisionId, true, null);
 		if ( ! webMessages.containsKey(WebMessages.GLOBAL_MESSAGE)) {
 			RequestValidator.validateDivisionUser(conn, webMessages, divisionId, WebMessages.GLOBAL_MESSAGE, sessionUser.getUserId(), DIVISION_ID, true);
 		}

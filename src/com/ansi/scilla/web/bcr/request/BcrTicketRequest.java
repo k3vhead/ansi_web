@@ -33,7 +33,7 @@ public class BcrTicketRequest extends AbstractRequest {
 	public WebMessages validateUpdateClaimWeek(Connection conn, Integer ticketId) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		
-		RequestValidator.validateTicketId(conn, webMessages, TICKET_ID, ticketId, true);
+		RequestValidator.validateTicketId(conn, webMessages, TICKET_ID, ticketId, true, null);
 		RequestValidator.validateClaimWeek(webMessages, OLD_CLAIM_WEEK, this.oldClaimWeek, true);
 		RequestValidator.validateClaimWeek(webMessages, NEW_CLAIM_WEEK, this.newClaimWeek, true);
 		

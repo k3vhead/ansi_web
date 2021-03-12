@@ -1,10 +1,8 @@
 package com.ansi.scilla.web.bcr.servlet;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -12,9 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.Level;
 
-import com.ansi.scilla.common.db.TicketClaim;
-import com.ansi.scilla.common.utils.AnsiDateUtils;
-import com.ansi.scilla.web.bcr.request.BcrTicketClaimRequest;
 import com.ansi.scilla.web.bcr.request.BcrTicketRequest;
 import com.ansi.scilla.web.bcr.request.BcrTicketRequestType;
 import com.ansi.scilla.web.bcr.response.BcrTicketResponse;
