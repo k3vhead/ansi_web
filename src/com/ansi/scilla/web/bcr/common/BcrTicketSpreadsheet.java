@@ -6,11 +6,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -27,6 +31,7 @@ public class BcrTicketSpreadsheet {
 //	}
 	
 	private static final HashMap<String, String> headerMap;
+	private static DecimalFormat df = new DecimalFormat("#0.00");
 	
 	static {
 		headerMap = new HashMap<String, String>();
@@ -97,34 +102,46 @@ public class BcrTicketSpreadsheet {
 		 * Equipment Tags, String
 		 */
 		row = sheet.createRow(0);
-//		int colNum = 1;
 //		while(!rsmd.getColumnName(colNum).isEmpty()) {
+		XSSFCellStyle cellStyleRight = workbook.createCellStyle();
+		cellStyleRight.setAlignment(CellStyle.ALIGN_RIGHT);
+		XSSFCellStyle cellStyleCenter = workbook.createCellStyle();
+		cellStyleCenter.setAlignment(CellStyle.ALIGN_CENTER);
+		XSSFCellStyle headerStyle = workbook.createCellStyle();
+		XSSFFont headerFont = workbook.createFont();
+		headerFont.setBold(true);
+		headerStyle.setFont(headerFont);
+		
 		for ( int colNum = 1; colNum<= rsmd.getColumnCount(); colNum++) {
 			cell = row.createCell(colNum - 1);
 			if(headerMap.get(rsmd.getColumnName(colNum)) != null) {
 				cell.setCellValue(headerMap.get(rsmd.getColumnName(colNum)));
+				cell.setCellStyle(headerStyle);
 			} else {
 				cell.setCellValue(rsmd.getColumnName(colNum));
+				cell.setCellStyle(headerStyle);
 			}
 			System.out.println(rsmd.getColumnTypeName(colNum) + " : " + rsmd.getColumnClassName(colNum) + " : " + rsmd.getColumnName(colNum));
-//			colNum++;
 		}
-		int colNum = 1;
-		int rowNum = 1;
+		
+		int rowNum = 1;	
+		
 		
 		while(rs.next()) {
 			row = sheet.createRow(rowNum);
 			for(int i = 1; i <= rsmd.getColumnCount(); i++) {
 				cell = row.createCell(i - 1);
-				String[] sub = rsmd.getColumnClassName(i).split(".");
-				System.out.println(rsmd.getColumnClassName(i).substring(10));
-				if(rsmd.getColumnClassName(i).substring(10).equalsIgnoreCase("String")) {
+				String[] sub = rsmd.getColumnClassName(i).split("\\.");
+				if(sub[sub.length - 1].equalsIgnoreCase("String")) {
 					cell.setCellValue(rs.getString(i));
-				} else if(rsmd.getColumnClassName(i).substring(10).equalsIgnoreCase("BigDecimal")) {
+				} else if(sub[sub.length - 1].equalsIgnoreCase("BigDecimal")) {
 					BigDecimal x = rs.getBigDecimal(i);
-					cell.setCellValue(x.doubleValue());
-				} else if(rsmd.getColumnClassName(i).substring(10).equalsIgnoreCase("Integer")) {
+					double d = x.doubleValue();
+					cell.setCellValue(df.format(d));
+					cell.setCellStyle(cellStyleRight);
+				} else if(sub[sub.length - 1].equalsIgnoreCase("Integer")) {
 					cell.setCellValue(rs.getInt(i));
+					cell.setCellStyle(cellStyleCenter);
 				} else {
 					throw new Exception("Unexpected value format" + rsmd.getColumnClassName(i));
 				}
@@ -133,7 +150,9 @@ public class BcrTicketSpreadsheet {
 			
 		}
 		
-		
+//		for(int i = 1; i <= rsmd.getColumnCount(); i++) {
+//			sheet.autoSizeColumn(i);
+//		}
 		
 		workbook.write(new FileOutputStream("/home/jwlewis/Documents/projects/BCR_Spreadsheet.xlsx"));
 //		workbook.write(new FileOutputStream("/home/dclewis/Documents/webthing_v2/projects/ANSI/testresults/BCR_Spreadsheet.xlsx"));
