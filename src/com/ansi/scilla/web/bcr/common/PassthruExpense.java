@@ -8,6 +8,7 @@ public class PassthruExpense extends ApplicationObject {
 
 	private Integer claimId;
 	private Double passthruVolume;
+	private String passthruExpenseCode;
 	private String passthruExpenseType;
 	private String notes;
 	
@@ -15,10 +16,11 @@ public class PassthruExpense extends ApplicationObject {
 		super();
 	}
 
-	public PassthruExpense(Integer claimId, Double passthruVolume, String passthruExpenseType, String notes) {
+	public PassthruExpense(Integer claimId, Double passthruVolume, String passthruExpenseCode, String passthruExpenseType, String notes) {
 		this();
 		this.claimId = claimId;
 		this.passthruVolume = passthruVolume;
+		this.passthruExpenseCode = passthruExpenseCode;
 		this.passthruExpenseType = passthruExpenseType;
 		this.notes = notes;
 	}
@@ -29,6 +31,10 @@ public class PassthruExpense extends ApplicationObject {
 
 	public Double getPassthruVolume() {
 		return passthruVolume;
+	}
+
+	public String getPassthruExpenseCode() {
+		return passthruExpenseCode;
 	}
 
 	public String getPassthruExpenseType() {

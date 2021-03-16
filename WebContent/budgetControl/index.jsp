@@ -557,7 +557,7 @@
 						$("#bcr_edit_modal .newExpenseItem").hide();
 						$("#bcr_edit_modal .displayExpenseItem").fadeIn(250);
 					});
-					$("#bcr_edit_modal .saveExpense").click(function() {
+					$("#bcr_edit_modal .saveNewExpense").click(function() {
 						BUDGETCONTROL.expenseSave();						
 					});
         			$("#bcr_edit_modal").dialog("open");
@@ -894,6 +894,18 @@
         			var $editTag = '<webthing:edit styleClass="expense-edit">Edit</webthing:edit>';
         			var $editCancelTag = '<webthing:ban styleClass="expense-edit-cancel">Cancel</webthing:ban>';
         			var $actionHeader = $editTag + $editCancelTag;
+        			
+        			var $columnExpense = 0;
+	            	var $columnExpenseEdit = 1;
+	            	var $columnType = 2;
+	            	var $columnTypeEdit = 3;
+	            	var $columnNotes = 4;
+	            	var $columnNotesEdit = 5;
+	            	var $columnAction = 6;
+	            	
+	            	var $displayColumns = [$columnExpense,$columnType,$columnNotes];
+	            	var $editColumns = [$columnExpenseEdit, $columnTypeEdit,$columnNotesEdit];
+	            	
 					BUDGETCONTROL.dlExpenseTable = $("#dl-expense-table").DataTable( {
 		    			data : $data.data.expenses,
 		    			paging : false,
@@ -902,7 +914,7 @@
 	        	        searching: false, 
 	        	        scrollX : false,
 	        	        rowId : 'claimId',
-	        	        destroy : true,		// this lets us reinitialize the table for different permission groups
+	        	        destroy : true,		// this lets us reinitialize the table for different tickets
 		    			columns : [
 		    				{ width:"125px", title:"Expense Vol.", className:"dt-right", orderable:true,
 		    					data:function($row,$type,$set) {
@@ -916,6 +928,13 @@
 		    					}
 		    				},
 		    				{ width:"200px", title:"Expense Type", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>", data:'passthruExpenseType'},
+		    				{ width:"200px", title:"Expense Type", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>", visible:true,
+		    					data:function($row,$type,$set) {
+		    						var $edit = '<select name="expenseType"></select>';
+		    						return $edit;
+		    					}
+		    				
+		    				},
 		    				{ width:"200px", title:"Notes", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>", data:'notes'},
 		    				{ width:"200px", title:"Notes", className:"dt-head-left", orderable:true, visible:false,
 		    					data:function($row,$type,$set) {
@@ -932,6 +951,20 @@
 		    				},
 		    			],
 		    			"drawCallback": function( settings ) {
+		    				var $select = $("#bcr_edit_modal select[name='expenseType']");
+							$('option', $select).remove();
+							$select.append(new Option("",""));
+							$.each(BUDGETCONTROL.expenseTypes, function(index, val) {
+							    $select.append(new Option(val.displayValue, val.value));
+							});
+							$.each($data.data.expenses, function(index, val) {
+								var $expenseSelect = "#" + val.claimId + " select[name='expenseType']";
+								$($expenseSelect).val(val.passthruExpenseCode);
+							});
+							// select must be visible in order for options to be populated, so hide it afterwards
+	    					$("#dl-expense-table").DataTable().columns($columnTypeEdit).visible(false);		    					
+							
+							
 		    				$(".expense-edit-cancel").hide();
 		    				$(".save-expense").hide();
 		    				$(".delete-expense").click(function($event) {
@@ -940,34 +973,59 @@
 		    					$("#bcr_delete_confirmation_modal").dialog("open");
 		    				});
 		    				$(".expense-edit").click(function($event) {
-		    					console.log("expense edit");
 		    					var myTable = $("#dl-expense-table").DataTable();		    					
-	    						myTable.columns(0).visible(false);
-	    						myTable.columns(1).visible(true);
+	    						$.each($displayColumns, function($index, $value) {myTable.columns($value).visible(false);});
+	    						$.each($editColumns, function($index, $value) {myTable.columns($value).visible(true);});
 	    						$(".expense-edit").hide();
-	    						$(".delete-expense").hide();
 	    						$(".expense-edit-cancel").show();
+	    						$(".delete-expense").hide();
 	    						$(".save-expense").show();
+	    						$(".newExpenseItem").hide();
+	    						$(".displayExpenseItem").hide();
 		    				});
     						$(".expense-edit-cancel").click(function($event) {
-		    					console.log("expense edit cancel");
-		    					var myTable = $("#dl-expense-table").DataTable();		    					
-	    						myTable.columns(1).visible(false);
-	    						myTable.columns(0).visible(true);
-	    						$(".expense-edit-cancel").hide();
+		    					var myTable = $("#dl-expense-table").DataTable();		    						    						
+	    						$.each($editColumns, function($index, $value) {myTable.columns($value).visible(false);});
+	    						$.each($displayColumns, function($index, $value) {myTable.columns($value).visible(true);});
 	    						$(".expense-edit").show();
+	    						$(".expense-edit-cancel").hide();
 	    						$(".save-expense").hide();
 	    						$(".delete-expense").show();
+	    						$(".newExpenseItem").hide();
+	    						$(".displayExpenseItem").show();
 		    				});
+    						$(".save-expense").click(function($event) {
+    							var $claimId = $(this).attr("data-claimid");
+    							console.log("Saving " + $claimId);
+    							var $volume = $("#"+$claimId + " input[name='expenseVolume']").val();
+    							var $expenseType = $("#"+$claimId + " select[name='expenseType']").val();
+    							var $notes = $("#"+$claimId + " input[name='notes']").val();
+    							
+    							// these are needed to create the correct response, not to do the update
+    		        			var $divisionId = BUDGETCONTROL.divisionId
+    							var $ticketId = $("#bcr_edit_modal").attr("ticketId");
+        						var $serviceTagId = $("#bcr_edit_modal").attr("serviceTagId");
+        						var $claimWeek = $("#bcr_edit_modal select[name='claimWeek']").val(); 
+    		        			var $workYear = BUDGETCONTROL.workYear; 
+    		        			var $workWeeks = BUDGETCONTROL.workWeek;
+    		        			
+    		        			var $outbound = {
+    		        					"divisionId":$divisionId,
+    		        					"ticketId":$ticketId,
+    		                			"serviceTagId":$serviceTagId,
+    		                			"claimWeek":$claimWeek,
+    		                			"volume":$volume,
+    		                			"expenseType":$expenseType,
+    		                			"notes":$notes,
+    		                			"workYear":$workYear,
+    		                			"workWeeks":$workWeeks,
+    		        			}
+    		        			console.log($outbound);
+    		        			var $url = "bcr/expense/" + $claimId;
+    		        			ANSI_UTILS.doServerCall("POST", $url, JSON.stringify($outbound), BUDGETCONTROL.expenseSaveSuccess, BUDGETCONTROL.claimUpdateFail);
+    						});
 			            },
 			            "footerCallback" : function( row, data, start, end, display ) {
-			            	var $columnExpense = 0;
-			            	var $columnExpenseEdit = 1;
-			            	var $columnType = 2;
-			            	var $columnNotes = 3;
-			            	var $columnNotesEdit = 4;
-			            	var $columnAction = 5;
-			            	
 			            	var api = this.api();
 			            	//var data;
 			            	expenseTotal = api.column($columnExpense).data().reduce( function(a,b) {
@@ -978,7 +1036,7 @@
 			            	$( api.column($columnExpense).footer() ).html( '<span class="newExpenseItem"><input type="text" placeholder="0.00" style="width:80px;" name="expenseVolume"/><br /></span><span class="displayExpenseItem">' + expenseTotal.toFixed(2) + '</span>');
 			            	$( api.column($columnType).footer() ).html( '<span class="newExpenseItem"><select name="expenseType"></select><br /></span>' );
 			            	$( api.column($columnNotes).footer() ).html( '<span class="newExpenseItem"><input type="text" style="width:120px;" name="notes"/><br /></span>');
-			            	$( api.column($columnAction).footer() ).html( '<span class="newExpenseItem"><webthing:ban styleClass="cancelExpense">Cancel</webthing:ban><webthing:checkmark styleClass="saveExpense">Save</webthing:checkmark></span><span class="displayExpenseItem"><webthing:addNew styleClass="newExpenseButton">New Expense</webthing:addNew></span>' );
+			            	$( api.column($columnAction).footer() ).html( '<span class="newExpenseItem"><webthing:ban styleClass="cancelExpense">Cancel</webthing:ban><webthing:checkmark styleClass="saveNewExpense">Save</webthing:checkmark></span><span class="displayExpenseItem"><webthing:addNew styleClass="newExpenseButton">New Expense</webthing:addNew></span>' );
 			            	
 			            	var volumeClaimedTotal = parseFloat($("#bcr_edit_modal").attr("volumeClaimedTotal"));
 			            	$("#div-summary .volume-claimed").html( volumeClaimedTotal.toFixed(2) );
@@ -1666,6 +1724,7 @@
 	    					<th></th>
 	    					<th></th>
 	    					<th></th>
+							<th></th>
 							<th></th>
 	    				</tr>
 	    			</tfoot>

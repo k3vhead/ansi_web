@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Level;
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.TicketClaim;
 import com.ansi.scilla.web.bcr.request.BcrExpenseRequest;
+import com.ansi.scilla.web.bcr.request.BcrTicketClaimRequest;
 import com.ansi.scilla.web.bcr.response.BcrTicketClaimResponse;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -72,8 +73,20 @@ public class BcrExpenseServlet extends AbstractServlet {
 					}
 				} else if ( StringUtils.isNumeric(claimId) ) {
 					// this is an update to an existing expense
-					webMessages = bcrExpenseRequest.validateUpdate(conn, Integer.valueOf(claimId));
-					throw new Exception("Not yet young padawan");
+					Integer claim =  Integer.valueOf(claimId);
+					webMessages = bcrExpenseRequest.validateUpdate(conn, claim);
+					if ( webMessages.isEmpty() ) {
+						updateExpense(conn, claim, bcrExpenseRequest, sessionUser);
+						data = BcrTicketClaimResponse.fromClaim(conn, sessionUser.getUserId(), divisionList, bcrExpenseRequest.getDivisionId(), bcrExpenseRequest.getWorkYear(), bcrExpenseRequest.getWorkWeeks(), claim);
+						super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
+					} else {
+						if ( webMessages.containsKey(BcrTicketClaimRequest.CLAIM_ID)) {
+							super.sendNotFound(response);
+						} else {
+							data.setWebMessages(webMessages);
+							super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+						}						
+					}	
 				} else {
 					// somebody fubar'd
 					super.sendNotFound(response);
@@ -198,6 +211,28 @@ public class BcrExpenseServlet extends AbstractServlet {
 			conn.commit();
 			return claimId;
 		}
+
+
+
+
+	private void updateExpense(Connection conn, Integer claimId, BcrExpenseRequest bcrExpenseRequest, SessionUser sessionUser) throws Exception {
+		Calendar today = Calendar.getInstance(new AnsiTime());
+		TicketClaim ticketClaim = new TicketClaim();
+		ticketClaim.setClaimId(claimId);
+		ticketClaim.selectOne(conn);
+		
+		ticketClaim.setPassthruExpenseType(bcrExpenseRequest.getExpenseType());
+		ticketClaim.setPassthruExpenseVolume(new BigDecimal(bcrExpenseRequest.getVolume()));
+		ticketClaim.setNotes(bcrExpenseRequest.getNotes());
+		ticketClaim.setUpdatedBy(sessionUser.getUserId());
+		ticketClaim.setUpdatedDate(today.getTime());
+		
+		
+		TicketClaim key = new TicketClaim();
+		key.setClaimId(claimId);
+		ticketClaim.update(conn, key);
+		conn.commit();
+	}
 
 
 

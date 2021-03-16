@@ -130,8 +130,17 @@ public class BcrExpenseRequest extends AbstractRequest {
 		return webMessages;
 	}
 	
-	public WebMessages validateUpdate(Connection conn, Integer claimId) {
+	public WebMessages validateUpdate(Connection conn, Integer claimId) throws Exception {
 		WebMessages webMessages = new WebMessages();
+		RequestValidator.validateId(conn, webMessages, TicketClaim.TABLE, TicketClaim.CLAIM_ID, CLAIM_ID, claimId, true, "Claim ID");
+		RequestValidator.validateNumber(webMessages, WORK_YEAR, this.workYear, null, null, true, "Year");
+		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, DIVISION_ID, this.divisionId, true, "Division");
+		RequestValidator.validateClaimWeek(webMessages, CLAIM_WEEK, this.claimWeek, true);
+		RequestValidator.validatePassthruExpenseType(conn, webMessages, EXPENSE_TYPE, this.expenseType, true, "Expense Type");		
+		RequestValidator.validateDouble(webMessages, VOLUME, this.volume, null, null, true, "Volume");		
+		RequestValidator.validateId(conn, webMessages, JobTag.TABLE, JobTag.TAG_ID, SERVICE_TAG_ID, this.serviceTagId, true, "Service Tag");
+		RequestValidator.validateTicketId(conn, webMessages, TICKET_ID, this.ticketId, true, "Ticket");
+		RequestValidator.validateString(webMessages, NOTES, this.notes, 1000, false, "Note");
 		return webMessages;
 	}
 	
