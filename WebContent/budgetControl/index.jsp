@@ -547,19 +547,7 @@
 					    $select.append(new Option(val.displayValue, val.value));
 					});	
 					
-					$("#bcr_edit_modal .newExpenseButton").click(function() {
-						console.log("New Expense Click");
-						$("#bcr_edit_modal .displayExpenseItem").hide();
-						$("#bcr_edit_modal .newExpenseItem").fadeIn(250);
-					});
-					$("#bcr_edit_modal .cancelExpense").click(function() {
-						console.log("Cancel Expense Click");
-						$("#bcr_edit_modal .newExpenseItem").hide();
-						$("#bcr_edit_modal .displayExpenseItem").fadeIn(250);
-					});
-					$("#bcr_edit_modal .saveNewExpense").click(function() {
-						BUDGETCONTROL.expenseSave();						
-					});
+
         			$("#bcr_edit_modal").dialog("open");
         		}, 
         		
@@ -1038,6 +1026,20 @@
 			            	$( api.column($columnNotes).footer() ).html( '<span class="newExpenseItem"><input type="text" style="width:120px;" name="notes"/><br /></span>');
 			            	$( api.column($columnAction).footer() ).html( '<span class="newExpenseItem"><webthing:ban styleClass="cancelExpense">Cancel</webthing:ban><webthing:checkmark styleClass="saveNewExpense">Save</webthing:checkmark></span><span class="displayExpenseItem"><webthing:addNew styleClass="newExpenseButton">New Expense</webthing:addNew></span>' );
 			            	
+							$("#bcr_edit_modal .newExpenseButton").click(function() {
+								console.log("New Expense Click");
+								$("#bcr_edit_modal .displayExpenseItem").hide();
+								$("#bcr_edit_modal .newExpenseItem").fadeIn(250);
+							});
+							$("#bcr_edit_modal .cancelExpense").click(function() {
+								console.log("Cancel Expense Click");
+								$("#bcr_edit_modal .newExpenseItem").hide();
+								$("#bcr_edit_modal .displayExpenseItem").fadeIn(250);
+							});
+							$("#bcr_edit_modal .saveNewExpense").click(function() {
+								BUDGETCONTROL.expenseSave();						
+							});
+							
 			            	var volumeClaimedTotal = parseFloat($("#bcr_edit_modal").attr("volumeClaimedTotal"));
 			            	$("#div-summary .volume-claimed").html( volumeClaimedTotal.toFixed(2) );
 			            	$("#div-summary .volume-remaining").html( $data.data.ticket.volumeRemaining.toFixed(2) );
