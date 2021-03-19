@@ -204,9 +204,8 @@ public class DivisionUserServlet extends AbstractServlet {
 				logger.log(Level.DEBUG, sql);
 				ps.setInt(1, userId);
 				ps.setInt(2, divisionId);
-				ResultSet rs = ps.executeQuery();
+				ps.executeUpdate();
 				
-				rs.close();
 			}
 		} catch(RecordNotFoundException e) {
 			// This happens when we try to delete a non-existent record
