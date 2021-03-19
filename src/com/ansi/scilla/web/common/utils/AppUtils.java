@@ -43,6 +43,7 @@ import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
 import com.ansi.scilla.common.db.ApplicationProperties;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.User;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.common.utils.PropertyNames;
 import com.ansi.scilla.web.common.response.MessageKey;
 import com.ansi.scilla.web.common.response.ResponseCode;

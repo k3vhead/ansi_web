@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.time.DateUtils;
 
 import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.response.MessageKey;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -21,7 +22,6 @@ import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.division.request.DivisionUncloseRequest;
 import com.ansi.scilla.web.division.response.DivisionCloseResponse;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;

@@ -19,8 +19,8 @@ import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.organization.Div;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.common.utils.QMarkTransformer;
-import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.common.utils.UserPermission;
 
 public class SubscriptionUtils {

@@ -14,13 +14,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.JobTag;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractCrudServlet;
 import com.ansi.scilla.web.common.servlet.PermittedAction;
 import com.ansi.scilla.web.common.utils.FieldMap;
 import com.ansi.scilla.web.common.utils.JsonFieldFormat;
-import com.ansi.scilla.web.common.utils.Permission;
 
 public class JobTagServlet extends AbstractCrudServlet {
 

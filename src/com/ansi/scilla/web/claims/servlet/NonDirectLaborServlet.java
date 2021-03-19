@@ -19,13 +19,13 @@ import com.ansi.scilla.common.claims.WorkHoursType;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.NonDirectLabor;
 import com.ansi.scilla.common.db.User;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractCrudServlet;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.FieldMap;
 import com.ansi.scilla.web.common.utils.JsonFieldFormat;
-import com.ansi.scilla.web.common.utils.Permission;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 

@@ -1,7 +1,7 @@
 package com.ansi.scilla.web.report.common;
 
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.report.common.ReportInputType;
-import com.ansi.scilla.web.common.utils.Permission;
 
 /**
  * These are here so we can make sure we didn't typo the object name in the enum

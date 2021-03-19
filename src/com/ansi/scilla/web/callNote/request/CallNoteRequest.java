@@ -9,11 +9,11 @@ import com.ansi.scilla.common.db.Address;
 import com.ansi.scilla.common.db.CallLog;
 import com.ansi.scilla.common.db.Contact;
 import com.ansi.scilla.common.db.User;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.struts.SessionData;
-import com.ansi.scilla.web.common.utils.Permission;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class CallNoteRequest extends AbstractRequest {

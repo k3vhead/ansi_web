@@ -18,8 +18,8 @@ import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.User;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.common.utils.WhereFieldLikeTransformer;
-import com.ansi.scilla.web.common.utils.Permission;
 
 /**
  * List of all users with a given permission.  (Use UserLookup for users within a permission group)
