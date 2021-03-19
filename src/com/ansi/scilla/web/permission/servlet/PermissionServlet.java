@@ -3,9 +3,7 @@ package com.ansi.scilla.web.permission.servlet;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,7 +21,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.db.PermissionGroup;
 import com.ansi.scilla.common.db.PermissionGroupLevel;
-import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.utils.QMarkTransformer;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -38,11 +35,10 @@ import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.permission.common.PermissionUtils;
 import com.ansi.scilla.web.permission.request.PermissionRequest;
 import com.ansi.scilla.web.permission.response.PermissionGroupResponse;
 import com.ansi.scilla.web.permission.response.PermissionListResponse;
-import com.ansi.scilla.web.report.common.BatchReports;
+import com.ansi.scilla.web.report.common.SubscriptionUtils;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 /**
@@ -220,83 +216,39 @@ public class PermissionServlet extends AbstractServlet {
 			addNewPermission(conn, permissionGroupId, newPermission, sessionUser);
 		}
 		
-		/*
-		 * get list of users in permissionGroupId, get list of subscriptions for each user,
-		 * remove each sub not in line with the permissions of permissionGroupId
-		 */
-		List<Permission> permissionList = PermissionUtils.makeGroupList(conn, permissionGroupId);
-		List<User> userList = getUserList(conn, permissionGroupId);
-		
-		List<BatchReports> reportList = new ArrayList<BatchReports>();
-		
-		for(Permission p : permissionList) {
-			for(BatchReports br : BatchReports.values()) {
-				if(br.permission().equals(p)) {
-					reportList.add(br);
-				}
-			}
-		}
-		
-		List<Object> subUserList = IteratorUtils.toList(CollectionUtils.collect(userList, new UserToId()).iterator());
-		List<Object> subReportList = IteratorUtils.toList(CollectionUtils.collect(reportList, new ReportToName()).iterator());
-		
-		String sql = getSql(subUserList, subReportList);
-		PreparedStatement ps = conn.prepareStatement(sql);
-		
-		int n = 1;
-		for(int i = 0; i < userList.size(); i++) {
-			ps.setInt(n, userList.get(i).getUserId());
-			logger.log(Level.DEBUG, userList.get(i).getUserId());
-			n++;
-		}
-		for(int i = 0; i < reportList.size(); i++) {
-			ps.setString(n, reportList.get(i).name());
-			logger.log(Level.DEBUG, reportList.get(i).name());
-			n++;
-		}
-		
-//		ResultSet rs = ps.executeQuery();
-//		rs.close();
-		ps.execute();
+		// remove report subscriptions 
+		SubscriptionUtils.cureReportSubscriptions(conn, permissionGroupId);
 		conn.commit();
-		
+
 		PermissionListResponse data = new PermissionListResponse(conn, permissionGroupId);
 		data.setWebMessages(new WebMessages());
 		super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
 	}
 	
-	private List<User> getUserList(Connection conn, Integer permissionGroupId) throws Exception{
-		User key = new User();
-		key.setPermissionGroupId(permissionGroupId);
-		List<User> userList = User.cast(key.selectSome(conn));
-		return userList;
-	}
-
-	private String getSql(List<Object> subUserList, List<Object> subReportList) {
-		String sql = "delete from report_subscription where user_id in " + QMarkTransformer.makeQMarkWhereClause(subUserList) + " "
-				+ "and report_id not in " + QMarkTransformer.makeQMarkWhereClause(subReportList) + "";
-		logger.log(Level.DEBUG, sql);
-		return sql;
-	}
 	
-	private void deleteOldPermissions(Connection conn, Integer permissionGroupId, Permission functionalArea) throws SQLException {
+	
+	
+	
+	protected void deleteOldPermissions(Connection conn, Integer permissionGroupId, Permission functionalArea) throws SQLException {
 		List<Permission> permissionsInFunctionalArea = functionalArea.makeFunctionalAreaTree();
-		List<Object> subNameList = IteratorUtils.toList(CollectionUtils.collect(permissionsInFunctionalArea, new PermissionToName()).iterator());
-		String sql = "delete from permission_group_level where permission_group_id=? and permission_name in " + QMarkTransformer.makeQMarkWhereClause(subNameList);
-		logger.log(Level.DEBUG, sql);
-		PreparedStatement ps = conn.prepareStatement(sql);
-		int n = 1;
-		ps.setInt(n, permissionGroupId);
-		n++;
-		for ( Object o : subNameList ) {
-			ps.setString(n, (String)o);
+		if ( permissionsInFunctionalArea.size() > 0 ) {
+			// there won't be any permissions assigned to a new group, so we don't need to do this
+			List<Object> subNameList = IteratorUtils.toList(CollectionUtils.collect(permissionsInFunctionalArea, new PermissionToName()).iterator());
+			String sql = "delete from permission_group_level where permission_group_id=? and permission_name in " + QMarkTransformer.makeQMarkWhereClause(subNameList);
+			logger.log(Level.DEBUG, sql);
+			PreparedStatement ps = conn.prepareStatement(sql);
+			int n = 1;
+			ps.setInt(n, permissionGroupId);
 			n++;
+			for ( Object o : subNameList ) {
+				ps.setString(n, (String)o);
+				n++;
+			}
+			ps.executeUpdate();
 		}
-		ps.executeUpdate();
-		
 	}
 
-	private void addNewPermission(Connection conn, Integer permissionGroupId, Permission newPermission, SessionUser sessionUser) throws Exception {
+	protected void addNewPermission(Connection conn, Integer permissionGroupId, Permission newPermission, SessionUser sessionUser) throws Exception {
 		Date now = new Date();
 		PermissionGroupLevel level = new PermissionGroupLevel();
 		level.setPermissionGroupId(permissionGroupId);
@@ -337,7 +289,6 @@ public class PermissionServlet extends AbstractServlet {
 	
 	
 	
-	
 	public class PermissionToName implements Transformer<Permission, String> {
 
 		@Override
@@ -347,23 +298,6 @@ public class PermissionServlet extends AbstractServlet {
 		
 	}
 	
-	public class UserToId implements Transformer<User, Integer> {
-
-		@Override
-		public Integer transform(User arg0) {			
-			return arg0.getUserId();
-		}
-		
-	}
-	
-	public class ReportToName implements Transformer<BatchReports, String> {
-
-		@Override
-		public String transform(BatchReports arg0) {			
-			return arg0.name();
-		}
-		
-	}
 	
 //	public static void main(String[] args ) {
 //		Connection conn = null;

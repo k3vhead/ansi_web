@@ -8,13 +8,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
+import org.apache.commons.collections4.IteratorUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.collections4.Transformer;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.organization.Div;
+import com.ansi.scilla.common.utils.QMarkTransformer;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.common.utils.UserPermission;
 
@@ -23,6 +28,78 @@ public class SubscriptionUtils {
 	private static final Logger logger = LogManager.getLogger(SubscriptionUtils.class);
 	
 	
+	
+	/**
+	 * Report subscriptions need to change when:
+	 * <ul>
+	 * <li>a user is moved from one permission group to another</li>
+	 * <li>When the permissions in a permission group change</li>
+	 * <li>When a user is removed from a division</li>
+	 * </ul>
+	 * This method will handle the first two cases by Removing the subscriptions the users are not 
+	 * allowed to see, by deleting everything that is not in the the permission group's list of permissions.
+	 * 
+	 * @param conn
+	 * @param userId
+	 * @param permissionGroupId
+	 * @throws Exception
+	 */
+	public static void cureReportSubscriptions(Connection conn, Integer permissionGroupId) throws Exception {
+		// make list of permissions to keep, taking into account the hierarchy of permissions
+		List<UserPermission> userPermissionList = UserPermission.getUserPermissions(conn, permissionGroupId);
+		List<String> permissionsToKeep = IteratorUtils.toList(CollectionUtils.collect(userPermissionList, new PermissionStringTransformer()).iterator());		
+		
+		// make list of users in permission group. We only change subscriptions for these users.
+		User key = new User();
+		key.setPermissionGroupId(permissionGroupId);
+		List<User> userList = User.cast(key.selectSome(conn));
+		
+		
+		// make a list of reports that require one of the permissions in the we just made
+		List<BatchReports> reportList = new ArrayList<BatchReports>();		
+		for(String permission : permissionsToKeep) {
+			Permission p = Permission.valueOf(permission);
+			for(BatchReports br : BatchReports.values()) {
+				if(br.permission().equals(p)) {
+					reportList.add(br);
+				}
+			}
+		}
+		
+		List<Object> subUserList = IteratorUtils.toList(CollectionUtils.collect(userList, new UserToId()).iterator());
+		List<Object> subReportList = IteratorUtils.toList(CollectionUtils.collect(reportList, new ReportToName()).iterator());
+		// handle new permission groups/groups with no assigned permissions
+		if ( subUserList.size() > 0 && subReportList.size() > 0 ) {
+			String sql = "delete from report_subscription where user_id in " + QMarkTransformer.makeQMarkWhereClause(subUserList) + " "
+					+ "and report_id not in " + QMarkTransformer.makeQMarkWhereClause(subReportList) + "";
+			logger.log(Level.DEBUG, sql);
+			PreparedStatement ps = conn.prepareStatement(sql);
+
+			int n = 1;
+			for(int i = 0; i < userList.size(); i++) {
+				ps.setInt(n, userList.get(i).getUserId());
+				logger.log(Level.DEBUG, userList.get(i).getUserId());
+				n++;
+			}
+			for(int i = 0; i < reportList.size(); i++) {
+				ps.setString(n, reportList.get(i).name());
+				logger.log(Level.DEBUG, reportList.get(i).name());
+				n++;
+			}
+
+			
+			ps.execute();
+		}
+	}
+
+
+	/**
+	 * Make a list of divisions that a user is assigned to
+	 * @param conn
+	 * @param userId
+	 * @return
+	 * @throws SQLException
+	 */
 	public static List<Div> makeDivisionList(Connection conn, Integer userId) throws SQLException {
 		List<Div> divisionList = new ArrayList<Div>();
 		String sql = "select division.*\n" + 
@@ -153,6 +230,13 @@ public class SubscriptionUtils {
 		}		
 	}
 	
+	private static class PermissionStringTransformer implements Transformer<UserPermission, String> {
+		@Override
+		public String transform(UserPermission userPermission) {
+			return userPermission.getPermissionName();
+		}		
+	}
+	
 	private static class PermissionPredicate implements Predicate<BatchReports> {
 		private Permission permission;		
 		public PermissionPredicate(Permission permission) {
@@ -165,6 +249,30 @@ public class SubscriptionUtils {
 			return batchReports.permission().equals(this.permission);
 		}
 		
+	}
+	
+	public static class UserToId implements Transformer<User, Integer> {
+		@Override
+		public Integer transform(User arg0) {			
+			return arg0.getUserId();
+		}		
+	}
+	
+	
+	public static class PermissionToName implements Transformer<Permission, String> {
+		@Override
+		public String transform(Permission arg0) {			
+			return arg0.name();
+		}
+	}
+	
+	
+	
+	public static class ReportToName implements Transformer<BatchReports, String> {
+		@Override
+		public String transform(BatchReports arg0) {			
+			return arg0.name();
+		}
 	}
 }
 

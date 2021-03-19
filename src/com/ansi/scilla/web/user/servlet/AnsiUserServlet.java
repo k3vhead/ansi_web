@@ -26,6 +26,7 @@ import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
+import com.ansi.scilla.web.report.common.SubscriptionUtils;
 import com.ansi.scilla.web.ticket.response.TicketReturnResponse;
 import com.ansi.scilla.web.user.request.AnsiUserRequest;
 import com.ansi.scilla.web.user.response.UserResponse;
@@ -126,7 +127,7 @@ public class AnsiUserServlet extends AbstractServlet {
 			conn = AppUtils.getDBCPConn();
 			AnsiURL url = new AnsiURL(request, REALM, new String[] {FILTER_IS_LIST,FILTER_IS_MANAGER});	
 			String sortField = request.getParameter("sortBy");
-			logger.log(Level.DEBUG, "Sortig by: " + sortField);
+			logger.log(Level.DEBUG, "Sorting by: " + sortField);
 			if ( ! StringUtils.isBlank(sortField)) {
 				if ( ! ArrayUtils.contains(UserResponse.VALID_SORT_FIELDS, sortField) ) {
 					sortField = null;
@@ -135,13 +136,10 @@ public class AnsiUserServlet extends AbstractServlet {
 			logger.log(Level.DEBUG, "Still sorting by: " + sortField);
 	
 			if( url.getId() == null && StringUtils.isBlank(url.getCommand())) {
-				logger.log(Level.DEBUG, "user servlet 43");
 				throw new ResourceNotFoundException();
 			} else if (url.getId() != null) {
-				logger.log(Level.DEBUG, "user servlet 46");
 				userResponse = new UserResponse(conn, url.getId());
 			} else if ( ! StringUtils.isBlank(url.getCommand())) {
-				logger.log(Level.DEBUG, "user servlet 49");
 				UserResponse.UserListType listType = UserResponse.UserListType.valueOf(url.getCommand().toUpperCase());
 				userResponse = new UserResponse(conn, listType);
 			} else {
@@ -220,6 +218,12 @@ public class AnsiUserServlet extends AbstractServlet {
 				key.setUserId(userRequest.getUserId());
 				user.update(conn, key);
 				conn.commit();
+
+				// we update subscriptions after committing the user change so the user shows up
+				// in the list of group members for whom we need to check subscriptions.
+				SubscriptionUtils.cureReportSubscriptions(conn, userRequest.getPermissionGroupId());
+				conn.commit();
+
 				if ( ! StringUtils.isBlank(userRequest.getPassword())) {
 					updatePassword(conn, userRequest.getUserId(), userRequest.getPassword());
 					conn.commit();
@@ -266,6 +270,9 @@ public class AnsiUserServlet extends AbstractServlet {
 		user.setZip(userRequest.getZip());
 		user.setMinimumHourlyPay(userRequest.getMinimumHourlyPay());
 	}
+
+	
+
 
 	private void updatePassword(Connection conn, Integer userId, String password) throws Exception {
 		String encryptedPassword = AppUtils.encryptPassword(password, userId);
