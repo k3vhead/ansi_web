@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -105,8 +106,10 @@ public class BcrTicketSpreadsheet {
 //		while(!rsmd.getColumnName(colNum).isEmpty()) {
 		XSSFCellStyle cellStyleRight = workbook.createCellStyle();
 		cellStyleRight.setAlignment(CellStyle.ALIGN_RIGHT);
+		
 		XSSFCellStyle cellStyleCenter = workbook.createCellStyle();
-		cellStyleCenter.setAlignment(CellStyle.ALIGN_CENTER);
+		cellStyleCenter.setAlignment(HorizontalAlignment.CENTER);
+		
 		XSSFCellStyle headerStyle = workbook.createCellStyle();
 		XSSFFont headerFont = workbook.createFont();
 		headerFont.setBold(true);
@@ -145,10 +148,15 @@ public class BcrTicketSpreadsheet {
 				} else {
 					throw new Exception("Unexpected value format" + rsmd.getColumnClassName(i));
 				}
+				if(i == 18) {
+					cell.setCellStyle(cellStyleCenter);
+				}
 			}
 			rowNum++;
 			
 		}
+		sheet.setDefaultColumnWidth(20);
+		sheet.setColumnWidth(1, 30);
 		
 //		for(int i = 1; i <= rsmd.getColumnCount(); i++) {
 //			sheet.autoSizeColumn(i);
