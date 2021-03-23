@@ -197,10 +197,8 @@ public class BcrTicketClaimResponse extends MessageResponse {
 
 		private final String sql = "select ticket.ticket_id, ticket.job_id, ticket.ticket_type, ticket.ticket_status, \n" +
 				"\taddress.name as job_site_name, job_tag.tag_id as service_tag_id, job_tag.abbrev,\n" +
-			//	"\tjob.price_per_cleaning as total_volume,\n" +
-			//	"\tjob.price_per_cleaning - isnull(ticket_claim_totals.claimed_total_volume,0.00)	as volume_remaining \n" +
-				"\tticket.act_price_per_cleaning as total_volume,\n" +
-				"\tticket.act_price_per_cleaning - isnull(rolling_totals.total_volume,0.00)	as volume_remaining \n" +
+				"\tjob.price_per_cleaning as total_volume,\n" +
+				"\tjob.price_per_cleaning - isnull(ticket_claim_totals.claimed_total_volume,0.00)	as volume_remaining \n" +
 				"from ticket\n" + 
 				"inner join job on job.job_id=ticket.job_id\n" + 
 				"inner join quote on quote.quote_id=job.quote_id\n" + 
@@ -209,17 +207,6 @@ public class BcrTicketClaimResponse extends MessageResponse {
 				"left outer join (\n" +
 				BcrTicketSql.ticketTotalSubselect +
 				") as ticket_claim_totals on ticket_claim_totals.ticket_id = ticket.ticket_id\n" +
-				"   left outer join (\n" + 
-				"	select ticket_id\n" + 
-				"		, claim_year\n" + 
-				"		, claim_week\n" + 
-				"		, (select sum(isnull(volume,0.00) + isnull(passthru_expense_volume,0.00)) from ticket_claim as t where t.ticket_id = ticket_claim.ticket_id\n" + 
-				"			and (t.claim_year < ticket_claim.claim_year or (t.claim_year = ticket_claim.claim_year and t.claim_week <= ticket_claim.claim_week))\n" + 
-				"			) as total_volume\n" + 
-				"	from ticket_claim \n" + 
-				"	group by ticket_claim.ticket_id, claim_year, claim_week\n" + 
-				"	) as rolling_totals on rolling_totals.ticket_id = ticket.ticket_id \n" + 
-				"		and rolling_totals.claim_year = ticket_claim.claim_year and rolling_totals.claim_week = ticket_claim.claim_week \n" + 
 				"inner join job_tag on job_tag.tag_id=xref.tag_id and job_tag.tag_type='SERVICE'\n" + 
 				"where ticket.ticket_id=?";
 		
