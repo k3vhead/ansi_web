@@ -32,7 +32,8 @@ public class BcrTicketClaimResponse extends MessageResponse {
 	public static final String whereClause = 
 			"\n) as detail"
 			+ "\nleft outer join code on table_name='ticket_claim_passthru' and field_name='passthru_expense_type' and value=detail.passthru_expense_type"
-			+ "\nwhere ticket_id=?";
+			+ "\nwhere ticket_id=?"
+			+ "\nand claim_week=?";
 	
 	private Integer claimYear;
 	private String claimWeek;
@@ -63,7 +64,7 @@ public class BcrTicketClaimResponse extends MessageResponse {
 		this.claimYear = workYear;
 		
 		TicketClaim ticketClaim = makeClaim(conn, claimId);
-		makeResponse(conn, userId, divisionList, divisionId, workYear, workWeeks, ticketClaim.getTicketId());
+		makeResponse(conn, userId, divisionList, divisionId, workYear, workWeeks, ticketClaim.getTicketId(), ticketClaim.getClaimWeek());
 		String formattedClaimWeek = StringUtils.leftPad(String.valueOf(ticketClaim.getClaimWeek()), 2, '0'); // make sure week '4' is actually '04'
 		this.claimWeek = ticketClaim.getClaimYear() + "-" + formattedClaimWeek;
 		this.claimWeeks = new ArrayList<String>();
@@ -142,7 +143,7 @@ public class BcrTicketClaimResponse extends MessageResponse {
 	
 	
 	private void makeResponse(Connection conn, Integer userId, List<SessionDivision> divisionList,
-			Integer divisionId, Integer workYear, String workWeeks, Integer ticketId) throws SQLException, RecordNotFoundException {
+			Integer divisionId, Integer workYear, String workWeeks, Integer ticketId, Integer claimWeek) throws SQLException, RecordNotFoundException {
 		
 		this.ticket = new TicketData(conn, ticketId);
 		String baseSql = BcrTicketSql.sqlSelectClause + BcrTicketSql.makeFilteredFromClause(divisionList) + BcrTicketSql.makeBaseWhereClause(workWeeks);
@@ -158,6 +159,7 @@ public class BcrTicketClaimResponse extends MessageResponse {
 		ps.setInt(1, divisionId);
 		ps.setInt(2, workYear);
 		ps.setInt(3, ticketId);
+		ps.setString(4, workYear + "-" + claimWeek);
 		logger.log(Level.DEBUG, "division | workYear | workWeeks | ticketId: " + divisionId + " | "+workYear+" | "+ workWeeks + " | " + ticketId);
 		ResultSet rs = ps.executeQuery();
 		this.dlClaims = new ArrayList<BcrTicket>();
