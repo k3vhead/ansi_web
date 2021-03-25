@@ -32,8 +32,9 @@ public class BcrTicketClaimResponse extends MessageResponse {
 	public static final String whereClause = 
 			"\n) as detail"
 			+ "\nleft outer join code on table_name='ticket_claim_passthru' and field_name='passthru_expense_type' and value=detail.passthru_expense_type"
-			+ "\nwhere ticket_id=?"
-			+ "\nand claim_week=?";
+			+ "\nwhere " + BcrTicketSql.TICKET_ID + "=?"
+			+ "\nand " + BcrTicketSql.SERVICE_TYPE_ID + "=?"
+			+ "\nand " + BcrTicketSql.CLAIM_WEEK + "=?";
 	
 	private Integer claimYear;
 	private String claimWeek;
@@ -64,7 +65,7 @@ public class BcrTicketClaimResponse extends MessageResponse {
 		this.claimYear = workYear;
 		
 		TicketClaim ticketClaim = makeClaim(conn, claimId);
-		makeResponse(conn, userId, divisionList, divisionId, workYear, workWeeks, ticketClaim.getTicketId(), ticketClaim.getClaimWeek());
+		makeResponse(conn, userId, divisionList, divisionId, workYear, workWeeks, ticketClaim);
 		String formattedClaimWeek = StringUtils.leftPad(String.valueOf(ticketClaim.getClaimWeek()), 2, '0'); // make sure week '4' is actually '04'
 		this.claimWeek = ticketClaim.getClaimYear() + "-" + formattedClaimWeek;
 		this.claimWeeks = new ArrayList<String>();
@@ -143,8 +144,9 @@ public class BcrTicketClaimResponse extends MessageResponse {
 	
 	
 	private void makeResponse(Connection conn, Integer userId, List<SessionDivision> divisionList,
-			Integer divisionId, Integer workYear, String workWeeks, Integer ticketId, Integer claimWeek) throws SQLException, RecordNotFoundException {
+			Integer divisionId, Integer workYear, String workWeeks, TicketClaim ticketClaim) throws SQLException, RecordNotFoundException {
 		
+		Integer ticketId = ticketClaim.getTicketId();
 		this.ticket = new TicketData(conn, ticketId);
 		String baseSql = BcrTicketSql.sqlSelectClause + BcrTicketSql.makeFilteredFromClause(divisionList) + BcrTicketSql.makeBaseWhereClause(workWeeks);
 		String sql = selectClause + baseSql + whereClause;
@@ -159,8 +161,16 @@ public class BcrTicketClaimResponse extends MessageResponse {
 		ps.setInt(1, divisionId);
 		ps.setInt(2, workYear);
 		ps.setInt(3, ticketId);
-		ps.setString(4, workYear + "-" + claimWeek);
-		logger.log(Level.DEBUG, "division | workYear | workWeeks | ticketId: " + divisionId + " | "+workYear+" | "+ workWeeks + " | " + ticketId);
+		ps.setInt(4, ticketClaim.getServiceType());
+		ps.setString(5, workYear + "-" + ticketClaim.getClaimWeek());
+
+		logger.log(Level.DEBUG, "Division: " + divisionId);
+		logger.log(Level.DEBUG, "workYear: " + workYear);
+		logger.log(Level.DEBUG, "ticketId: " + ticketId);
+		logger.log(Level.DEBUG, "getServiceType: " + ticketClaim.getServiceType());
+		logger.log(Level.DEBUG, "claimWeek: " + workYear + "-" + claimWeek);
+
+		
 		ResultSet rs = ps.executeQuery();
 		this.dlClaims = new ArrayList<BcrTicket>();
 		this.expenses = new ArrayList<PassthruExpense>();
