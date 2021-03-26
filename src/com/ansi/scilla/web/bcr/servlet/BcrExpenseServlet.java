@@ -147,8 +147,8 @@ public class BcrExpenseServlet extends AbstractServlet {
 						// the claim response is predicated on having a claim id. So we get the response based on the claim we're
 						// deleting, then scrub that info from the response object.
 						data = BcrTicketClaimResponse.fromClaim(conn, sessionUser.getUserId(), divisionList, bcrExpenseRequest.getDivisionId(), bcrExpenseRequest.getWorkYear(), bcrExpenseRequest.getWorkWeeks(), Integer.valueOf(claimId));
-						data.scrubClaim(Integer.valueOf(claimId));
 						deleteExpense(conn, Integer.valueOf(claimId));
+						data.scrubClaim(conn, Integer.valueOf(claimId));
 						super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
 					} else {
 						super.sendNotFound(response); // we've got a bad claim id

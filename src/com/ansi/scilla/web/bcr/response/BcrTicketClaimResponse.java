@@ -91,7 +91,7 @@ public class BcrTicketClaimResponse extends MessageResponse {
 	public void setClaimWeeks(List<String> claimWeeks) {
 		this.claimWeeks = claimWeeks;
 	}
-		public TicketData getTicket() {
+	public TicketData getTicket() {
 		return ticket;
 	}
 
@@ -125,11 +125,16 @@ public class BcrTicketClaimResponse extends MessageResponse {
 
 	/**
 	 * Remove references to a particular claim id. (In essence, this means searching the D/L claims and expenses for the claim id)
+	 * @param conn
 	 * @param claimId
+	 * @param ticketId
+	 * @throws RecordNotFoundException
+	 * @throws SQLException
 	 */
-	public void scrubClaim(Integer claimId) {
+	public void scrubClaim(Connection conn, Integer claimId) throws RecordNotFoundException, SQLException {
 		CollectionUtils.filterInverse(this.expenses, new PassthruExpenseFilterByClaim(claimId));
 		CollectionUtils.filterInverse(this.dlClaims, new BcrTicketFilterByClaim(claimId));
+		this.ticket = new TicketData(conn, this.ticket.getTicketId());
 	}
 
 	
@@ -168,7 +173,7 @@ public class BcrTicketClaimResponse extends MessageResponse {
 		logger.log(Level.DEBUG, "workYear: " + workYear);
 		logger.log(Level.DEBUG, "ticketId: " + ticketId);
 		logger.log(Level.DEBUG, "getServiceType: " + ticketClaim.getServiceType());
-		logger.log(Level.DEBUG, "claimWeek: " + workYear + "-" + claimWeek);
+		logger.log(Level.DEBUG, "claimWeek: " + workYear + "-" + ticketClaim.getClaimWeek());
 
 		
 		ResultSet rs = ps.executeQuery();
@@ -239,6 +244,8 @@ public class BcrTicketClaimResponse extends MessageResponse {
 		public TicketData(Connection conn, Integer ticketId) throws RecordNotFoundException, SQLException {
 			this();
 			PreparedStatement ps = conn.prepareStatement(sql);
+			Logger logger = LogManager.getLogger(BcrTicketClaimResponse.class);
+			logger.log(Level.DEBUG, sql);
 			ps.setInt(1,  ticketId);
 			ResultSet rs = ps.executeQuery();
 			if ( rs.next() ) {
