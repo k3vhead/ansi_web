@@ -46,8 +46,8 @@
 		   		</tr>
 		   		
 		   		<tr>
-		   			<th>Job Tags</th>
-		   			<td><span class="jobTags"></span></td>
+		   			<th style="border-bottom:solid 1px #000000;" class="formLabel">Job Tags</th>
+		   			<td colspan="5" style="border-bottom:solid 1px #000000;"><span class="jobTags"></span></td>
 		   		</tr>
 		   		
 		   		<tr class="processNotesRow">

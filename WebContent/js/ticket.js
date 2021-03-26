@@ -191,9 +191,11 @@ $(function() {
 				
 				$($modalId + " .jobTags").html("");
 				$displayValue = "";
+				
+				
 				$.each($data.ticketDetail.jobTags, function($key, $value) {
 					$.each($value, function($index, $jobTag) {
-						$displayValue = $displayValue + " " + $jobTag.abbrev;
+						$displayValue = $displayValue + " " + '<span class="jobtag-display jobtag-selected tooltip">'+$jobTag.abbrev+'<span class="tooltiptext">'+ $jobTag.tagDescription +'</span></span>';
 					});
 					$displayValue = $displayValue + "<br />";
 				});	
