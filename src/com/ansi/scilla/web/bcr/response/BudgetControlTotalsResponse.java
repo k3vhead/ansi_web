@@ -122,11 +122,15 @@ public class BudgetControlTotalsResponse extends MessageResponse {
 		ps.setInt(2, workYear);
 		ResultSet rs = ps.executeQuery();
 		while ( rs.next() ) {
-			BCRTotalsDetail detail = new BCRTotalsDetail(rs, actualDl);
-			this.weekTotals.add(detail);
-			String[] workDate = detail.getClaimWeek().split("-");
-			if ( weekFilter.contains(Integer.valueOf(workDate[1]))) {
-				this.monthTotal.add(detail);
+			String claimWeek = rs.getString("claim_week");
+			logger.log(Level.DEBUG, "claimWeek:<" +claimWeek+">");
+			if (!(claimWeek.equals("-"))) {
+				BCRTotalsDetail detail = new BCRTotalsDetail(rs, actualDl);
+				this.weekTotals.add(detail);
+				String[] workDate = claimWeek.split("-");
+				if ( weekFilter.contains(Integer.valueOf(workDate[1]))) {
+					this.monthTotal.add(detail);
+				}
 			}
 		}
 		rs.close();				

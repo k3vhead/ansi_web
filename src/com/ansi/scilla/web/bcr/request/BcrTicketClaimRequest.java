@@ -138,10 +138,10 @@ public class BcrTicketClaimRequest extends AbstractRequest {
 		WebMessages webMessages = new WebMessages();
 		
 		RequestValidator.validateTicketId(conn, webMessages, TICKET_ID, this.ticketId, true, null);
-		RequestValidator.validateNumber(webMessages, DL_AMT, this.dlAmt, 0.0D, null, true, null);
-		RequestValidator.validateNumber(webMessages, TOTAL_VOLUME, this.totalVolume, 0.0D, null, true, null);
-		RequestValidator.validateNumber(webMessages, VOLUME_CLAIMED, this.volumeClaimed, 0.0D, null, true, null);
-		RequestValidator.validateNumber(webMessages, BILLED_AMOUNT, this.billedAmount, 0.0D, null, true, null);
+		RequestValidator.validateNumber(webMessages, DL_AMT, this.dlAmt, null, null, true, null);
+//		RequestValidator.validateNumber(webMessages, TOTAL_VOLUME, this.totalVolume, 0.0D, null, true, null);
+		RequestValidator.validateNumber(webMessages, VOLUME_CLAIMED, this.volumeClaimed, null, null, true, null);
+//		RequestValidator.validateNumber(webMessages, BILLED_AMOUNT, this.billedAmount, 0.0D, null, true, null);
 		// claimId is not required because it won't be there for add transactions
 		RequestValidator.validateId(conn, webMessages, TicketClaim.TABLE, TicketClaim.CLAIM_ID, WebMessages.GLOBAL_MESSAGE, claimId, false, null);
 
@@ -179,9 +179,9 @@ public class BcrTicketClaimRequest extends AbstractRequest {
 		WebMessages webMessages = new WebMessages();
 		
 		RequestValidator.validateTicketId(conn, webMessages, TICKET_ID, this.ticketId, true, "Ticket ID");
-		RequestValidator.validateNumber(webMessages, DL_AMT, this.dlAmt, 0.0D, null, true, "D/L Amount");
+		RequestValidator.validateNumber(webMessages, DL_AMT, this.dlAmt, null, null, true, "D/L Amount");
 //		RequestValidator.validateNumber(webMessages, TOTAL_VOLUME, this.totalVolume, 0.0D, null, true, null);
-		RequestValidator.validateNumber(webMessages, VOLUME_CLAIMED, this.volumeClaimed, 0.0D, null, true, "Volume Claimed");
+		RequestValidator.validateNumber(webMessages, VOLUME_CLAIMED, this.volumeClaimed, null, null, true, "Volume Claimed");
 //		RequestValidator.validateNumber(webMessages, BILLED_AMOUNT, this.billedAmount, 0.0D, null, true, null);
 		RequestValidator.validateId(conn, webMessages, JobTag.TABLE, JobTag.TAG_ID, SERVICE_TAG_ID, this.serviceTagId, true);
 		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, WebMessages.GLOBAL_MESSAGE, divisionId, true, "Division ID");

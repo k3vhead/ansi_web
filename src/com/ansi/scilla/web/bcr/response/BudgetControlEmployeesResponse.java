@@ -113,14 +113,17 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 			String employee = rs.getString("employee");
 			String claimWeek = rs.getString("claim_week");
 			Double directLabor = rs.getDouble("dl_amt");
-			String[] workDate = claimWeek.split("-");
-			if ( weekFilter.contains(Integer.valueOf(workDate[1]))) {
+			logger.log(Level.DEBUG, "claimWeek:<" +claimWeek+">");
+			if (!(claimWeek.equals("-"))) {
+				String[] workDate = claimWeek.split("-");
+				if ( weekFilter.contains(Integer.valueOf(workDate[1]))) {
 				EmployeeClaim dl = workMap.containsKey(employee) ? workMap.get(employee) : new EmployeeClaim(employee, workYear, workWeek);
 				HashMap<String, Double> weeklyDL = dl.getWeeklyClaimedDL();
 				weeklyDL.put(claimWeek, directLabor);
 				dl.setWeeklyClaimedDL(weeklyDL);
 				dl.setTotalClaimedDL(dl.getTotalClaimedDL() + directLabor);
 				workMap.put(employee, dl);
+				}
 			}
 		}
 		rs.close();

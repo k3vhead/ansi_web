@@ -84,7 +84,8 @@ public class BcrTicketSql extends ApplicationObject {
 					"		, sum(isnull(passthru_expense_volume,0.00)) as claimed_pt_exp\n" + 
 					"--		, sum(hours) as claimed_hours\n" + 
 					"	from ticket_claim \n" + 
-					"	group by ticket_id\n"; 
+					"	group by ticket_id" + 
+					"\n"; 
 	
 	
 	public static final String sqlSelectClause = 
@@ -98,13 +99,14 @@ public class BcrTicketSql extends ApplicationObject {
 			" , isnull(ticket_claim.dl_expenses,0.00) as " + DL_EXPENSES + "\n" + 
 			"-- , isnull(ticket_claim.dl_amt,0.00)+ISNULL(ticket_claim.dl_exp,0.00) as dl_total\n" + 
 			" , isnull(ticket_claim.dl_amt,0.00) as "+DL_TOTAL +"\n" + 
-			" , job.price_per_cleaning as "+ TOTAL_VOLUME + "\n" + 
+			" , ticket.act_price_per_cleaning as "+ TOTAL_VOLUME + "\n" + 
 			" , isnull(ticket_claim.volume,0.00) as " + VOLUME_CLAIMED + "\n" + 
 			"-- ** this part needs a passthru discussion **\n" + 
 			" , ISNULL(ticket_claim.passthru_expense_volume,0.00) as " + PASSTHRU_VOLUME +"\n" + 
 			" , ticket_claim." + PASSTHRU_EXPENSE_TYPE + "\n" + 
 			" , isnull(ticket_claim.volume,0.00)+ISNULL(ticket_claim.passthru_expense_volume,0.00) as "+CLAIMED_VOLUME_TOTAL+"\n" + 
-			" , job.price_per_cleaning - isnull(ticket_claim_totals.claimed_total_volume,0.00)	as "+VOLUME_REMAINING + " \n" + 
+	//gag		" , job.price_per_cleaning - isnull(ticket_claim_totals.claimed_total_volume,0.00)	as "+VOLUME_REMAINING + " \n" + 
+			" , ticket.act_price_per_cleaning - isnull(rolling_totals.total_volume,0.00)	as "+VOLUME_REMAINING + " \n" + 
 			"-- , isnull(invoice_totals.invoiced_amount,0.00) as billed_amount	, (isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim_passthru_totals.passthru_volume,0.00))		- isnull(invoice_totals.invoiced_amount,0.00) as claimed_vs_billed	, ISNULL(ticket_payment_totals.paid_amount,0.00) as paid_amt	, ISNULL(invoice_totals.invoiced_amount,0.00)-ISNULL(ticket_payment_totals.paid_amount,0.00) as "+AMOUNT_DUE+"\n" + 
 			"-- , job.price_per_cleaning - (isnull(ticket_claim_totals.claimed_volume,0.00))	as volume_remaining\n" + 
 			" , job_tag.abbrev as " + SERVICE_TAG_ID + "\n" + 
@@ -128,10 +130,21 @@ public class BcrTicketSql extends ApplicationObject {
 			"join quote on quote.quote_id = job.quote_id\n" + 
 			"join division on division.division_id = ticket.act_division_id and division.division_id in ($DIVISION_USER_FILTER$)\n" + 
 			"join address job_site on job_site.address_id = quote.job_site_address_id\n" + 
-			"join job_tag on job_tag.tag_id=ticket_claim.service_type \n" + 
+			"left outer join job_tag on job_tag.tag_id=ticket_claim.service_type \n" + 
 			"left outer join (\n" + 
 			ticketTotalSubselect +
 			"	) as ticket_claim_totals on ticket_claim_totals.ticket_id = ticket.ticket_id\n" + 
+			"   left outer join (\n" + 
+			"	select ticket_id\n" + 
+			"		, claim_year\n" + 
+			"		, claim_week\n" + 
+			"		, (select sum(isnull(volume,0.00) + isnull(passthru_expense_volume,0.00)) from ticket_claim as t where t.ticket_id = ticket_claim.ticket_id\n" + 
+			"			and (t.claim_year < ticket_claim.claim_year or (t.claim_year = ticket_claim.claim_year and t.claim_week <= ticket_claim.claim_week))\n" + 
+			"			) as total_volume\n" + 
+			"	from ticket_claim \n" + 
+			"	group by ticket_claim.ticket_id, claim_year, claim_week\n" + 
+			"	) as rolling_totals on rolling_totals.ticket_id = ticket.ticket_id \n" + 
+			"		and rolling_totals.claim_year = ticket_claim.claim_year and rolling_totals.claim_week = ticket_claim.claim_week \n" + 
 			"-- ** part of the passthru discussion **\n" + 
 			"--left outer join (\n" + 
 			"--	select ticket_id\n" + 
@@ -157,7 +170,11 @@ public class BcrTicketSql extends ApplicationObject {
 			"     and ticket_claim.claim_week in ($CLAIMWEEKFILTER$)\n" +
 			"   ) or (\n" +
 			"     ticket.ticket_status in ('D','C')\n" +
-			" ))"; 
+//			" )\n" + 
+			"   ) or ((isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim.passthru_expense_volume,0.00)) - isnull(invoice_totals.invoiced_amount,0.00) <> 0.00)\n" + 
+			"		and (isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim.passthru_expense_volume,0.00) <> 0.00)\n" + 
+			"   )  \n" 
+			; 
 	
 	
 	public static String makeFilteredFromClause(List<SessionDivision> divisionList) {

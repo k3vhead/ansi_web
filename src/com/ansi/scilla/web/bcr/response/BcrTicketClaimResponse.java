@@ -152,7 +152,8 @@ public class BcrTicketClaimResponse extends MessageResponse {
 			Integer divisionId, Integer workYear, String workWeeks, TicketClaim ticketClaim) throws SQLException, RecordNotFoundException {
 		
 		Integer ticketId = ticketClaim.getTicketId();
-		this.ticket = new TicketData(conn, ticketId);
+		Integer serviceType = ticketClaim.getServiceType();
+		this.ticket = new TicketData(conn, ticketId, serviceType);
 		String baseSql = BcrTicketSql.sqlSelectClause + BcrTicketSql.makeFilteredFromClause(divisionList) + BcrTicketSql.makeBaseWhereClause(workWeeks);
 		String sql = selectClause + baseSql + whereClause;
 		
@@ -214,8 +215,8 @@ public class BcrTicketClaimResponse extends MessageResponse {
 
 		private final String sql = "select ticket.ticket_id, ticket.job_id, ticket.ticket_type, ticket.ticket_status, \n" +
 				"\taddress.name as job_site_name, job_tag.tag_id as service_tag_id, job_tag.abbrev,\n" +
-				"\tjob.price_per_cleaning as total_volume,\n" +
-				"\tjob.price_per_cleaning - isnull(ticket_claim_totals.claimed_total_volume,0.00)	as volume_remaining \n" +
+				"\tticket.act_price_per_cleaning as total_volume,\n" +
+				"\tticket.act_price_per_cleaning - isnull(ticket_claim_totals.claimed_total_volume,0.00)	as volume_remaining \n" +
 				"from ticket\n" + 
 				"inner join job on job.job_id=ticket.job_id\n" + 
 				"inner join quote on quote.quote_id=job.quote_id\n" + 
@@ -225,7 +226,7 @@ public class BcrTicketClaimResponse extends MessageResponse {
 				BcrTicketSql.ticketTotalSubselect +
 				") as ticket_claim_totals on ticket_claim_totals.ticket_id = ticket.ticket_id\n" +
 				"inner join job_tag on job_tag.tag_id=xref.tag_id and job_tag.tag_type='SERVICE'\n" + 
-				"where ticket.ticket_id=?";
+				"where ticket.ticket_id=?\n";
 		
 		private Integer ticketId;
 		private Integer jobId;
@@ -247,6 +248,29 @@ public class BcrTicketClaimResponse extends MessageResponse {
 			Logger logger = LogManager.getLogger(BcrTicketClaimResponse.class);
 			logger.log(Level.DEBUG, sql);
 			ps.setInt(1,  ticketId);
+			ResultSet rs = ps.executeQuery();
+			if ( rs.next() ) {
+				this.ticketId = ticketId;
+				this.jobId = rs.getInt("job_id");
+				this.ticketType = rs.getString("ticket_type");
+				this.status = rs.getString("ticket_status");
+				this.jobSiteName = rs.getString("job_site_name");
+				this.serviceTagId = rs.getString("service_tag_id");
+				this.serviceTagAbbrev = rs.getString("abbrev");
+				this.totalVolume = rs.getDouble("total_volume");
+				this.volumeRemaining = rs.getDouble("volume_remaining");
+			} else {
+				throw new RecordNotFoundException();
+			}
+		}
+
+		public TicketData(Connection conn, Integer ticketId, Integer serviceTag) throws RecordNotFoundException, SQLException {
+			this();
+			PreparedStatement ps = conn.prepareStatement(sql+" and job_tag.tag_id=?\n");
+			Logger logger = LogManager.getLogger(BcrTicketClaimResponse.class);
+			logger.log(Level.DEBUG, sql+" and job_tag.tag_id=?\n");
+			ps.setInt(1,  ticketId);
+			ps.setInt(2,  serviceTag);
 			ResultSet rs = ps.executeQuery();
 			if ( rs.next() ) {
 				this.ticketId = ticketId;
