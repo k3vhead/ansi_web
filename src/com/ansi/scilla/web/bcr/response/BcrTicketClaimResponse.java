@@ -131,10 +131,13 @@ public class BcrTicketClaimResponse extends MessageResponse {
 	 * @throws RecordNotFoundException
 	 * @throws SQLException
 	 */
-	public void scrubClaim(Connection conn, Integer claimId) throws RecordNotFoundException, SQLException {
+	public void scrubClaim(Connection conn, Integer claimId) throws RecordNotFoundException, Exception {
+		TicketClaim claim = new TicketClaim();
+		claim.setClaimId(claimId);
+		claim.selectOne(conn);
 		CollectionUtils.filterInverse(this.expenses, new PassthruExpenseFilterByClaim(claimId));
 		CollectionUtils.filterInverse(this.dlClaims, new BcrTicketFilterByClaim(claimId));
-		this.ticket = new TicketData(conn, this.ticket.getTicketId());
+		this.ticket = new TicketData(conn, this.ticket.getTicketId(), claim.getServiceType());
 	}
 
 	
@@ -242,27 +245,27 @@ public class BcrTicketClaimResponse extends MessageResponse {
 			super();
 		}
 		
-		public TicketData(Connection conn, Integer ticketId) throws RecordNotFoundException, SQLException {
-			this();
-			PreparedStatement ps = conn.prepareStatement(sql);
-			Logger logger = LogManager.getLogger(BcrTicketClaimResponse.class);
-			logger.log(Level.DEBUG, sql);
-			ps.setInt(1,  ticketId);
-			ResultSet rs = ps.executeQuery();
-			if ( rs.next() ) {
-				this.ticketId = ticketId;
-				this.jobId = rs.getInt("job_id");
-				this.ticketType = rs.getString("ticket_type");
-				this.status = rs.getString("ticket_status");
-				this.jobSiteName = rs.getString("job_site_name");
-				this.serviceTagId = rs.getString("service_tag_id");
-				this.serviceTagAbbrev = rs.getString("abbrev");
-				this.totalVolume = rs.getDouble("total_volume");
-				this.volumeRemaining = rs.getDouble("volume_remaining");
-			} else {
-				throw new RecordNotFoundException();
-			}
-		}
+//		public TicketData(Connection conn, Integer ticketId) throws RecordNotFoundException, SQLException {
+//			this();
+//			PreparedStatement ps = conn.prepareStatement(sql);
+//			Logger logger = LogManager.getLogger(BcrTicketClaimResponse.class);
+//			logger.log(Level.DEBUG, sql);
+//			ps.setInt(1,  ticketId);
+//			ResultSet rs = ps.executeQuery();
+//			if ( rs.next() ) {
+//				this.ticketId = ticketId;
+//				this.jobId = rs.getInt("job_id");
+//				this.ticketType = rs.getString("ticket_type");
+//				this.status = rs.getString("ticket_status");
+//				this.jobSiteName = rs.getString("job_site_name");
+//				this.serviceTagId = rs.getString("service_tag_id");
+//				this.serviceTagAbbrev = rs.getString("abbrev");
+//				this.totalVolume = rs.getDouble("total_volume");
+//				this.volumeRemaining = rs.getDouble("volume_remaining");
+//			} else {
+//				throw new RecordNotFoundException();
+//			}
+//		}
 
 		public TicketData(Connection conn, Integer ticketId, Integer serviceTag) throws RecordNotFoundException, SQLException {
 			this();
