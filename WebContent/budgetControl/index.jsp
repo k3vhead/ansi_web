@@ -232,7 +232,7 @@
 					if ( $claimType == "expense") {
 						$successFunction = BUDGETCONTROL.expenseSaveSuccess;
 					} else if ( $claimType = "labor" ) {
-						$successFunction = BUDGECONTROL.laborSaveSuccess;
+						$successFunction = BUDGETCONTROL.laborSaveSuccess;
 					} else {
 						$successFunction = "Invalid claim type: " + $claimType
 					}
@@ -764,7 +764,7 @@
                 			"workWeeks":$workWeeks,
         			}
         			console.log($outbound);
-        			//ANSI_UTILS.doServerCall("POST", "bcr/expense", JSON.stringify($outbound), BUDGETCONTROL.expenseSaveSuccess, BUDGETCONTROL.claimUpdateFail);
+        			ANSI_UTILS.doServerCall("POST", "bcr/ticketClaim", JSON.stringify($outbound), BUDGETCONTROL.expenseSaveSuccess, BUDGETCONTROL.claimUpdateFail);
         		},
         		
         		

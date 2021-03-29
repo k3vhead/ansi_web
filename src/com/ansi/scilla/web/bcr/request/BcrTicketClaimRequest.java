@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.common.db.JobTag;
 import com.ansi.scilla.common.db.TicketClaim;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
@@ -27,6 +28,9 @@ public class BcrTicketClaimRequest extends AbstractRequest {
 	public static final String CLAIM_WEEK  = "claimWeek";
 	public static final String DIVISION_ID = "divisionId";
 	public static final String CLAIM_ID = "claimId";
+	public static final String WORK_YEAR = "workYear";
+	public static final String WORK_WEEKS = "workWeeks";
+	public static final String SERVICE_TAG_ID = "serviceTagId";
 	
 	
 	private Integer ticketId;
@@ -38,6 +42,10 @@ public class BcrTicketClaimRequest extends AbstractRequest {
 	private String employee;
 	private String claimWeek;
 	private Integer claimId;
+	private Integer divisionId;
+	private Integer workYear;
+	private String workWeeks;
+	private Integer serviceTagId;
 	
 	public Integer getTicketId() {
 		return ticketId;
@@ -94,7 +102,39 @@ public class BcrTicketClaimRequest extends AbstractRequest {
 		this.claimId = claimId;
 	}
 	
-	public WebMessages validate(Connection conn, SessionUser sessionUser, List<SessionDivision> divisionList, Integer divisionId, Integer claimYear, String claimWeeks) throws Exception {
+	public Integer getDivisionId() {
+		return divisionId;
+	}
+	public void setDivisionId(Integer divisionId) {
+		this.divisionId = divisionId;
+	}
+	public Integer getWorkYear() {
+		return workYear;
+	}
+	/**
+	 * The ANSI calendar year for which we are retrieving data, filtered by the weeks defined in work weeks.
+	 * @param workYear
+	 */
+	public void setWorkYear(Integer workYear) {
+		this.workYear = workYear;
+	}
+	public String getWorkWeeks() {
+		return workWeeks;
+	}
+	/**
+	 * comma-delimited list of ANSI calendar weeks for which we are retrieving data. Typically all the weeks in a month (eg "44,45,46,47"). 
+	 * @param workWeeks
+	 */
+	public void setWorkWeeks(String workWeeks) {
+		this.workWeeks = workWeeks;
+	}
+	public Integer getServiceTagId() {
+		return serviceTagId;
+	}
+	public void setServiceTagId(Integer serviceTagId) {
+		this.serviceTagId = serviceTagId;
+	}
+	public WebMessages validateGet(Connection conn, SessionUser sessionUser, List<SessionDivision> divisionList, Integer divisionId, Integer claimYear, String claimWeeks) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		
 		RequestValidator.validateTicketId(conn, webMessages, TICKET_ID, this.ticketId, true, null);
@@ -131,5 +171,48 @@ public class BcrTicketClaimRequest extends AbstractRequest {
 		}
 		
 		return webMessages;
+	}
+	
+	
+	
+	public WebMessages validateAdd(Connection conn, SessionUser sessionUser) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		
+		RequestValidator.validateTicketId(conn, webMessages, TICKET_ID, this.ticketId, true, "Ticket ID");
+		RequestValidator.validateNumber(webMessages, DL_AMT, this.dlAmt, 0.0D, null, true, "D/L Amount");
+//		RequestValidator.validateNumber(webMessages, TOTAL_VOLUME, this.totalVolume, 0.0D, null, true, null);
+		RequestValidator.validateNumber(webMessages, VOLUME_CLAIMED, this.volumeClaimed, 0.0D, null, true, "Volume Claimed");
+//		RequestValidator.validateNumber(webMessages, BILLED_AMOUNT, this.billedAmount, 0.0D, null, true, null);
+		RequestValidator.validateId(conn, webMessages, JobTag.TABLE, JobTag.TAG_ID, SERVICE_TAG_ID, this.serviceTagId, true);
+		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, WebMessages.GLOBAL_MESSAGE, divisionId, true, "Division ID");
+		if ( ! webMessages.containsKey(WebMessages.GLOBAL_MESSAGE)) {
+			RequestValidator.validateDivisionUser(conn, webMessages, divisionId, WebMessages.GLOBAL_MESSAGE, sessionUser.getUserId(), DIVISION_ID, true);
+		}
+		
+		if ( StringUtils.isBlank(workWeeks) ) {
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid System State. Reload page and try again");
+		} else {
+			// claimWeek contains a string like '2020-46'
+			// claimWeeks contains a string like '45,46,47,48'
+			// make sure the "week" from claimWeek is in claimWeeks
+			String[] validClaimWeeks = StringUtils.split(workWeeks, ",");
+			String[] selectedClaimWeek = StringUtils.split(claimWeek, "-");
+			Integer claimWeek = Integer.valueOf(selectedClaimWeek[1]);
+			boolean isValidClaimWeek = false;
+			for ( String validClaimWeek : validClaimWeeks ) {
+				if ( claimWeek == Integer.valueOf(validClaimWeek).intValue() ) {
+					isValidClaimWeek = true;
+				}
+			}
+			if ( ! isValidClaimWeek ) {
+				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Claim Week. Reload page and try again");
+			}
+		}
+		
+		return webMessages;
+	}
+	public WebMessages validateUpdate(Connection conn, Integer claimId2) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

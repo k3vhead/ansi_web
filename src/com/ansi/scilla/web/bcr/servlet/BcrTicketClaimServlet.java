@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
-import com.ansi.scilla.common.db.Ticket;
+import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.TicketClaim;
 import com.ansi.scilla.common.utils.AnsiDateUtils;
 import com.ansi.scilla.web.bcr.request.BcrTicketClaimRequest;
@@ -32,8 +33,6 @@ import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.payment.response.PaymentResponse;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 public class BcrTicketClaimServlet extends AbstractServlet {
 
@@ -88,69 +87,54 @@ public class BcrTicketClaimServlet extends AbstractServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		Connection conn = null;
-		throw new RuntimeException("Not written yet");
-//		WebMessages webMessages = new WebMessages();
-//		try {
-//			try{
-//				conn = AppUtils.getDBCPConn();
-//				conn.setAutoCommit(false);
-//				String jsonString = super.makeJsonString(request);
-//				logger.log(Level.DEBUG, jsonString);
-//				SessionData sessionData = AppUtils.validateSession(request, Permission.CLAIMS_WRITE);
-//				BcrTicketClaimRequest bcrTicketRequest = new BcrTicketClaimRequest();
-//				AppUtils.json2object(jsonString, bcrTicketRequest);
-//				final SimpleDateFormat sdfx = new SimpleDateFormat("MM/dd/yyyy E HH:mm:ss.S");
-//				SessionUser sessionUser = sessionData.getUser();
-//				List<SessionDivision> divisionList = sessionData.getDivisionList();
-//				
-//				Integer divisionId = Integer.valueOf(request.getParameter("divisionId"));
-//				Integer workYear = Integer.valueOf(request.getParameter("workYear"));
-//				String workWeeks = request.getParameter("workWeeks");  // comma-delimited list of work weeks.
-//				logger.log(Level.DEBUG, "Parms: " + divisionId + " " + workYear + " " + workWeeks);
-//				String[] uriPath = request.getRequestURI().split("/");
-//				String ticket = uriPath[uriPath.length-1];
-//				
-//				if ( StringUtils.isNumeric(ticket)) {
-//					RequestValidator.validateId(conn, webMessages, Ticket.TABLE, Ticket.TICKET_ID, WebMessages.GLOBAL_MESSAGE, Integer.valueOf(ticket), true, null);
-//					if ( webMessages.isEmpty() ) {
-//						webMessages = bcrTicketRequest.validate(conn, sessionUser, divisionList, divisionId, workYear, workWeeks);						
-//						BcrTicketClaimResponse data = new BcrTicketClaimResponse();
-//						if ( webMessages.isEmpty() ) {
-//							if ( bcrTicketRequest.getClaimId() == null ) {
-//								insertClaim(conn, Integer.valueOf(ticket), bcrTicketRequest, sessionUser);
-//							} else {
-//								updateClaim(conn, Integer.valueOf(ticket), bcrTicketRequest, sessionUser);
-//							}
-//							data = BcrTicketClaimResponse.fromClaim(conn, sessionUser.getUserId(), divisionList, divisionId, workYear, workWeeks, Integer.valueOf(ticket));
-//							super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
-//						} else {
-//							data.setWebMessages(webMessages);
-//							super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
-//						}
-//					} else {
-//						super.sendNotFound(response);
-//					}
-//				} else {
-//					super.sendNotFound(response);
-//				}
-//				
-//			} catch ( InvalidFormatException e ) {
-//				String badField = super.findBadField(e.toString());
-//				PaymentResponse data = new PaymentResponse();
-//				WebMessages messages = new WebMessages();
-//				messages.addMessage(badField, "Invalid Format");
-//				data.setWebMessages(messages);
-//				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
-//			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
-//				super.sendForbidden(response);			
-//			}
-//		} catch ( Exception e) {
-//			AppUtils.logException(e);
-//			AppUtils.rollbackQuiet(conn);
-//			throw new ServletException(e);
-//		} finally {
-//			AppUtils.closeQuiet(conn);
-//		}
+		WebMessages webMessages = new WebMessages();
+		String realm = BcrServlet.REALM + "/" + BcrServlet.TICKET_CLAIM;
+		try {
+			try{
+				conn = AppUtils.getDBCPConn();
+				conn.setAutoCommit(false);
+				String jsonString = super.makeJsonString(request);
+				logger.log(Level.DEBUG, jsonString);
+				SessionData sessionData = AppUtils.validateSession(request, Permission.CLAIMS_WRITE);
+				BcrTicketClaimRequest bcrRequest = new BcrTicketClaimRequest();
+				AppUtils.json2object(jsonString, bcrRequest);
+				final SimpleDateFormat sdfx = new SimpleDateFormat("MM/dd/yyyy E HH:mm:ss.S");
+				SessionUser sessionUser = sessionData.getUser();
+				List<SessionDivision> divisionList = sessionData.getDivisionList();
+				
+				int index = request.getRequestURI().indexOf(realm);
+				logger.log(Level.DEBUG, request.getRequestURI().substring(index + realm.length()));
+				String claim = request.getRequestURI().substring(index + realm.length());
+
+						
+				if ( StringUtils.isBlank(claim) ) {
+					logger.log(Level.DEBUG, "We're trying to add a new D/L Claim");
+					processAdd(conn, response, sessionUser, divisionList, bcrRequest);					
+				} else {
+					logger.log(Level.DEBUG, "We're trying to update an existing D/L Claim");
+					if ( StringUtils.isNumeric(claim) ) {
+						processUpdate(conn, response, claim, sessionUser, divisionList, bcrRequest);
+					} else {
+						super.sendNotFound(response);
+					}
+				}				
+			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+				super.sendForbidden(response);			
+			} catch ( Exception e) {
+				AppUtils.logException(e);
+				AppUtils.rollbackQuiet(conn);
+				throw new ServletException(e);
+			} finally {
+				AppUtils.closeQuiet(conn);
+			}	
+
+		} catch ( Exception e) {
+			AppUtils.logException(e);
+			AppUtils.rollbackQuiet(conn);
+			throw new ServletException(e);
+		} finally {
+			AppUtils.closeQuiet(conn);
+		}
 	}
 
 
@@ -160,11 +144,73 @@ public class BcrTicketClaimServlet extends AbstractServlet {
 	
 
 
-	private void insertClaim(Connection conn, Integer ticketId, BcrTicketClaimRequest bcrTicketRequest,
-			SessionUser sessionUser) {
-		logger.log(Level.DEBUG, "Inserting New Claim");
-		throw new RuntimeException("Patience, young padawan, this is Not coded yet");
+	private void processAdd(Connection conn, HttpServletResponse response, SessionUser sessionUser, List<SessionDivision> divisionList, BcrTicketClaimRequest bcrRequest) throws Exception {
+		BcrTicketClaimResponse data = new BcrTicketClaimResponse();
+		String[] claimWeek = bcrRequest.getClaimWeek().split("-");
+		
+		WebMessages webMessages = bcrRequest.validateAdd(conn, sessionUser);
+		if ( webMessages.isEmpty() ) {
+			Calendar today = Calendar.getInstance(new AnsiTime());
+			TicketClaim ticketClaim = new TicketClaim();
+			ticketClaim.setAddedBy(sessionUser.getUserId());
+			ticketClaim.setAddedDate(today.getTime());
+//			ticketClaim.setClaimId(claimId);
+			ticketClaim.setClaimWeek(Integer.valueOf(claimWeek[1]));
+			ticketClaim.setClaimYear(bcrRequest.getWorkYear());
+			ticketClaim.setDlAmt(new BigDecimal(bcrRequest.getDlAmt()));
+			ticketClaim.setDlExpenses(BigDecimal.ZERO);
+			ticketClaim.setEmployeeName(bcrRequest.getEmployee());
+			ticketClaim.setHours(BigDecimal.ZERO);
+			ticketClaim.setNotes(bcrRequest.getNotes());
+//			ticketClaim.setPassthruExpenseType(passthruExpenseType);
+			ticketClaim.setServiceType(bcrRequest.getServiceTagId());
+			ticketClaim.setTicketId(bcrRequest.getTicketId());
+			ticketClaim.setUpdatedBy(sessionUser.getUserId());
+			ticketClaim.setUpdatedDate(today.getTime());
+			ticketClaim.setVolume(new BigDecimal(bcrRequest.getVolumeClaimed()));
+			logger.log(Level.DEBUG, ticketClaim);
+			Integer claimId = ticketClaim.insertWithKey(conn);
+			conn.commit();
+			data = BcrTicketClaimResponse.fromClaim(conn, sessionUser.getUserId(), divisionList, bcrRequest.getDivisionId(), bcrRequest.getWorkYear(), bcrRequest.getWorkWeeks(), claimId);
+			super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
+		} else {			
+			data.setWebMessages(webMessages);								
+			super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+		}		
 	}
+
+
+
+
+
+	private void processUpdate(Connection conn, HttpServletResponse response, String claim, SessionUser sessionUser, List<SessionDivision> divisionList, BcrTicketClaimRequest bcrRequest) throws Exception {
+		WebMessages webMessages = new WebMessages();
+		BcrTicketClaimResponse data = new BcrTicketClaimResponse();
+
+		Integer claimId = Integer.valueOf(claim);
+		RequestValidator.validateId(conn, webMessages, TicketClaim.TABLE, TicketClaim.CLAIM_ID, WebMessages.GLOBAL_MESSAGE, claimId, true, null);
+		if ( webMessages.isEmpty() ) {
+			webMessages = bcrRequest.validateUpdate(conn, claimId);
+			if ( webMessages.isEmpty() ) {
+				// do the update
+				data = BcrTicketClaimResponse.fromClaim(conn, sessionUser.getUserId(), divisionList, bcrRequest.getDivisionId(), bcrRequest.getWorkYear(), bcrRequest.getWorkWeeks(), claimId);
+				data.setWebMessages(new SuccessMessage());
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
+			} else {
+				data.setWebMessages(webMessages);								
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+			}
+		} else {
+			super.sendNotFound(response);
+		}
+		
+	}
+
+
+
+
+
+	
 
 
 
