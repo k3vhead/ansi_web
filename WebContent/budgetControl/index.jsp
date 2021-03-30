@@ -915,7 +915,7 @@
 	        	        deferRender : true,
 	        	        searching: false, 
 	        	        scrollX : false,
-	        	        rowId : 'claimId',
+	        	        rowId : 'claimId',	// this sets an id for the row: <tr id="123"> ... </tr>   where 123 is the claim id
 	        	        destroy : true,		// this lets us reinitialize the table for different tickets
 		    			columns : [
 		    				{ width:"125px", title:"Expense Vol.", className:"dt-right", orderable:true,
@@ -999,7 +999,7 @@
 		    				});
     						$(".save-expense").click(function($event) {
     							var $claimId = $(this).attr("data-claimid");
-    							console.log("Saving " + $claimId);
+    							console.log("Saving expense" + $claimId);
     							var $volume = $("#"+$claimId + " input[name='expenseVolume']").val();
     							var $expenseType = $("#"+$claimId + " select[name='expenseType']").val();
     							var $notes = $("#"+$claimId + " input[name='notes']").val();
@@ -1076,12 +1076,19 @@
         			var $actionHeader = $editTag + $editCancelTag;
         			
         			var $columnLabor = 0;
-        			var $columnClaimed = 1;
-        			var $columnRemaining = 2;
-        			var $columnEquipment = 3;
-        			var $columnEmployee = 4;
-        			var $columnNotes = 5;
-        			var $columnAction = 6;
+        			var $columnLaborEdit = 1;
+        			var $columnClaimed = 2;
+        			var $columnClaimedEdit = 3;
+        			var $columnRemaining = 4;
+        			var $columnEquipment = 5;
+        			var $columnEmployee = 6;
+        			var $columnEmployeeEdit = 7;
+        			var $columnNotes = 8;
+        			var $columnNotesEdit = 9;
+        			var $columnAction = 10;
+        			
+        			var $displayColumns = [$columnLabor,$columnClaimed,$columnEmployee,$columnNotes];
+	            	var $editColumns = [$columnLaborEdit, $columnClaimedEdit,$columnEmployeeEdit,$columnNotesEdit];
         			
 					// Make DL Claim Table:
 					BUDGETCONTROL.dlClaimTable = $("#dl-claim-table").DataTable( {
@@ -1089,31 +1096,56 @@
 		    			paging : false,
 		    			autoWidth : false,
 	        	        deferRender : true,
+	        	        rowId : 'claimId',	// this sets an id for the row: <tr id="123"> ... </tr>   where 123 is the claim id
 	        	        destroy : true,		// this lets us reinitialize the table for different tickets
 		    			columns : [
-		    				{ width:"125px", title:"Direct Labor", className:"dt-right", orderable:true,
+		    				{ width:"125px", title:"Direct Labor", className:"dt-right", orderable:true, visible:true,
 		    					data:function($row,$type,$set) {
 		    						return $row.dlAmt.toFixed(2);
 		    					}
 		    				},
-		    				{ width:"125px", title:"Volume Claimed", className:"dt-right", orderable:true,
+		    				{ width:"125px", title:"Direct Labor", className:"dt-right", orderable:true, visible:false,
+		    					data:function($row,$type,$set) {
+		    						var $edit = '<input type="text" name="dlAmt" value="' + $row.dlAmt.toFixed(2) + '" style="width:80px;" />';		    						
+		    						return $edit;
+		    					}
+		    				},
+		    				{ width:"125px", title:"Volume Claimed", className:"dt-right", orderable:true, visible:true,
 		    					data:function($row,$type,$set) {
 		    						return $row.volumeClaimed.toFixed(2);
 		    					}  
-		    				},		    				
-		    				{ width:"125px", title:"Volume Remaining", className:"dt-right", orderable:true, visible:false,
+		    				},	
+		    				{ width:"125px", title:"Volume Claimed", className:"dt-right", orderable:true, visible:false,
+		    					data:function($row,$type,$set) {
+		    						var $edit = '<input type="text" name="volumeClaimed" value="' + $row.volumeClaimed.toFixed(2) + '" style="width:80px;" />';
+		    						return $edit;
+		    					}
+		    				},
+		    				{ width:"125px", title:"Volume Remaining", className:"dt-right", orderable:false, visible:false,
 		    					data:function($row,$type,$set) {
 		    						return $row.volumeRemaining.toFixed(2);
 		    					}  
 		    				},
-		    				{ width:"125px", title:"Equipment Type", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>", data:'equipmentTags'},
-		    				{ width:"300px", title:"Employee", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>", data:'employee'},
-		    				{ width:"300px", title:"Notes", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>", data:'notes'},
-		    				{ width:"30px", title:$actionHeader, className:"dt-center", orderable:false, defaultContent: "<i>N/A</i>",
+		    				{ width:"125px", title:"Equipment Type", className:"dt-head-left", orderable:true, visible:true, defaultContent: "<i>N/A</i>", data:'equipmentTags'},
+		    				{ width:"300px", title:"Employee", className:"dt-head-left", orderable:true, visible:true, defaultContent: "<i>N/A</i>", data:'employee'},
+		    				{ width:"300px", title:"Employee", className:"dt-head-left", orderable:true, visible:true, defaultContent: "<i>N/A</i>", 
 		    					data:function($row,$type,$set) {
-		    						//var $edit = '<span class="action-link edit-claim" data-claimid="'+$row.claimId+'"><webthing:edit>Edit</webthing:edit></span>';
+		    						var $edit = '<input type="text" name="employee" value="' + $row.employee + '"/>';
+		    						return $edit;
+		    					} 
+		    				},
+		    				{ width:"300px", title:"Notes", className:"dt-head-left", orderable:true, visible:true, defaultContent: "<i>N/A</i>", data:'notes'},
+		    				{ width:"300px", title:"Notes", className:"dt-head-left", orderable:true, visible:false, defaultContent: "<i>N/A</i>", 
+		    					data:function($row,$type,$set) {
+		    						var $edit = '<input type="text" name="laborNotes" value="' + $row.notes + '"/>';
+		    						return $edit;
+		    					} 
+		    				},
+		    				{ width:"30px", title:$actionHeader, className:"dt-center", orderable:false, visible:true, defaultContent: "<i>N/A</i>",
+		    					data:function($row,$type,$set) {
+		    						var $save = '<span class="action-link save-labor" data-claimid="'+$row.claimId+'"><webthing:checkmark>Save</webthing:checkmark></span>';
 		    						var $delete = '<span class="action-link delete-claim" data-claimid="'+$row.claimId+'"><webthing:delete>Delete</webthing:delete></span>';
-		    						return $delete;		
+		    						return $delete + $save;		
 		    					}
 		    				},
 		    			],
@@ -1121,11 +1153,71 @@
 		    				// something to make this do something useful		
 		    				$(".labor-edit-cancel").hide();
 		    				$(".newLaborItem").hide();
+		    				$(".save-labor").hide();
 		    				$(".delete-claim").click(function($event) {
 		    					var $claimId = $(this).attr("data-claimid");
 		    					$("#bcr_delete_confirmation_modal").attr("claimId", $claimId);
 		    					$("#bcr_delete_confirmation_modal").attr("claimType", "labor");
 		    					$("#bcr_delete_confirmation_modal").dialog("open");
+		    				});
+		    				$(".labor-edit").click(function($event){
+		    					console.log("labor edit");
+		    					var myTable = $("#dl-claim-table").DataTable();		    					
+	    						$.each($displayColumns, function($index, $value) {myTable.columns($value).visible(false);});
+	    						$.each($editColumns, function($index, $value) {myTable.columns($value).visible(true);});
+	    						$(".labor-edit").hide();
+	    						$(".labor-edit-cancel").show();
+	    						$(".delete-claim").hide();
+	    						$(".save-labor").show();
+	    						$(".newLaborItem").hide();
+	    						$(".displayLaborItem").hide();
+		    				});
+		    				$(".labor-edit-cancel").click(function($event) {
+		    					var myTable = $("#dl-claim-table").DataTable();		    						    						
+	    						$.each($editColumns, function($index, $value) {myTable.columns($value).visible(false);});
+	    						$.each($displayColumns, function($index, $value) {myTable.columns($value).visible(true);});
+	    						$(".labor-edit").show();
+	    						$(".labor-edit-cancel").hide();
+	    						$(".save-labor").hide();
+	    						$(".delete-claim").show();
+	    						$(".newLaborItem").hide();
+	    						$(".displayLaborItem").show();
+		    				});
+		    				// for autocomplete to work, the field has to be visible. So hide it after the binding
+		    				BUDGETCONTROL.makeEmployeeAutoComplete("#bcr_edit_modal input[name='employee']");
+		    				$("#dl-claim-table").DataTable().columns($columnEmployeeEdit).visible(false);
+		    				
+		    				$(".save-labor").click(function($event) {
+		    					var $claimId = $(this).attr("data-claimid");
+    							console.log("Saving d/l " + $claimId);
+    							var $dlAmt = $("#"+$claimId + " input[name='dlAmt']").val();
+    							var $volumeClaimed = $("#"+$claimId + " input[name='volumeClaimed']").val();
+    							var $employee = $("#" + $claimId + " input[name='employee']").val();
+    							var $notes = $("#"+$claimId + " input[name='laborNotes']").val();
+    							
+    							// these are needed to create the correct response, not to do the update
+    		        			var $divisionId = BUDGETCONTROL.divisionId
+    							var $ticketId = $("#bcr_edit_modal").attr("ticketId");
+        						var $serviceTagId = $("#bcr_edit_modal").attr("serviceTagId");
+        						var $claimWeek = $("#bcr_edit_modal select[name='claimWeek']").val(); 
+    		        			var $workYear = BUDGETCONTROL.workYear; 
+    		        			var $workWeeks = BUDGETCONTROL.workWeek;
+    		        			
+    		        			var $outbound = {
+    		        					"divisionId":$divisionId,
+    		        					"ticketId":$ticketId,
+    		                			"serviceTagId":$serviceTagId,
+    		                			"claimWeek":$claimWeek,
+    		                			"dlAmt":$dlAmt,
+    		                			"volumeClaimed":$volumeClaimed,
+    		                			"employee":$employee,
+    		                			"notes":$notes,
+    		                			"workYear":$workYear,
+    		                			"workWeeks":$workWeeks,
+    		        			}
+    		        			console.log($outbound);
+    		        			var $url = "bcr/ticketClaim/" + $claimId;
+    		        			ANSI_UTILS.doServerCall("POST", $url, JSON.stringify($outbound), BUDGETCONTROL.expenseSaveSuccess, BUDGETCONTROL.claimUpdateFail);
 		    				});
 			            },
 			            "footerCallback" : function( row, data, start, end, display ) {
@@ -1146,6 +1238,8 @@
 			            	$( api.column($columnNotes).footer() ).html( '<span class="newLaborItem"><input type="text" style="width:120px;" name="laborNotes"/><br /></span>');
 			            	$( api.column($columnAction).footer() ).html( '<span class="newLaborItem"><webthing:ban styleClass="cancelLabor">Cancel</webthing:ban><webthing:checkmark styleClass="saveNewLabor">Save</webthing:checkmark></span><span class="displayLaborItem"><webthing:addNew styleClass="newLaborButton">New Claim</webthing:addNew></span>' );
 		 					$("#bcr_edit_modal").attr("volumeClaimedTotal", volumeClaimedTotal);
+		 					
+		 					BUDGETCONTROL.makeEmployeeAutoComplete("#bcr_edit_modal input[name='employee']");
 		 					
 							$("#bcr_edit_modal .newLaborButton").click(function() {
 								console.log("New Labor Click");
@@ -1214,7 +1308,12 @@
         			
         			
         			
-        			var $employeeSelector = '#bcr_edit_modal input[name="employee"]';
+        			BUDGETCONTROL.makeEmployeeAutoComplete('#bcr_edit_modal input[name="employee"]')        			
+        		},
+        		
+        		
+        		
+        		makeEmployeeAutoComplete : function($employeeSelector) {
             		$( $employeeSelector ).autocomplete({
 						'source':"bcr/employee?",
 						position:{my:"left top", at:"left bottom",collision:"none"},
@@ -1227,7 +1326,6 @@
        			      	}
        			 	});
         		},
-        		
         		
         		
         		
@@ -1790,6 +1888,10 @@
 	    			<tbody></tbody>
 	    			<tfoot>
 	    				<tr>
+	    					<th></th>
+	    					<th></th>
+	    					<th></th>
+	    					<th></th>
 	    					<th></th>
 	    					<th></th>
 	    					<th></th>

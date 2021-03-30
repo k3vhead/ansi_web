@@ -211,8 +211,9 @@ public class BcrTicketClaimRequest extends AbstractRequest {
 		
 		return webMessages;
 	}
-	public WebMessages validateUpdate(Connection conn, Integer claimId2) {
-		// TODO Auto-generated method stub
-		return null;
+	
+	
+	public WebMessages validateUpdate(Connection conn, SessionUser sessionUser) throws Exception {
+		return validateAdd(conn, sessionUser);
 	}
 }
