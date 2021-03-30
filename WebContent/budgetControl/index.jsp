@@ -445,25 +445,12 @@
         		expenseSaveSuccess : function($data) {
         			console.log("expenseSaveSuccess");
         			BUDGETCONTROL.getTicketDetailSuccess($data);
+        			BUDGETCONTROL.refreshPanels($data);
         			$("#bcr_delete_confirmation_modal").dialog("close");
         			$("#bcr_edit_modal .bcr_edit_message").html("Update Successful");
         			$("#bcr_edit_modal .bcr_edit_message").show().fadeOut(6000);
         		},
-        		xxx : function() {
-        			// this handles expense adds:
-        			var $volume = $("#bcr_edit_modal input[name='expenseVolume']").val("");
-        			var $expenseType = $("#bcr_edit_modal select[name='expenseType']").val("");
-        			var $notes = $("#bcr_edit_modal input[name='notes']").val("");	
-        			$("#bcr_edit_modal .newExpenseItem").hide();
-					$("#bcr_edit_modal .displayExpenseItem").fadeIn(500);
-					// this handles expense deletes
-					$("#bcr_delete_confirmation_modal").dialog("close");
-					// this handles displaying the new data
-					$("#bcr_edit_modal .bcr_edit_message").html("Update Successful");
-					BUDGETCONTROL.makeDlExpenseTable($data);
-					$("#bcr_edit_modal .bcr_edit_message").show().fadeOut(6000);
-					
-        		},
+        		
         		
         		
         		
@@ -781,6 +768,7 @@
 					// this handles displaying the new data
 					$("#bcr_edit_modal .bcr_edit_message").html("Update Successful");
 					BUDGETCONTROL.makeDlLaborTable($data);
+					BUDGETCONTROL.refreshPanels($data);
 					$("#bcr_edit_modal .bcr_edit_message").show().fadeOut(6000);
 					
         		},
@@ -1523,7 +1511,9 @@
         		
         		populateEmployeePanel : function($data) {
         			console.log("populateEmployeePanel");
-					
+        			
+        			$("#bcr_employees tbody").html(""); // this is so the refresh works
+        			
         			$.each($data.data.employees, function($index, $value) {
         				var $employeeRow = $('<tr class="employee-row">');
         				$employeeRow.append( $("<td>").append($value.employee) );
@@ -1607,6 +1597,18 @@
 					$("#bcr_summary .managerFirstName").html($data.data.managerFirstName);
 					$("#bcr_summary .managerLastName").html($data.data.managerLastName);
         		},
+        		
+        		
+        		
+        		refreshPanels : function($data) {
+        			console.log("refreshPanels");
+        			var $workWeeks = BUDGETCONTROL.workWeek;
+        			var $outbound = {"divisionId":BUDGETCONTROL.divisionId, "workYear":$data.data.claimYear, "workWeek":$workWeeks};
+        			ANSI_UTILS.doServerCall("GET", "bcr/bcTotals", $outbound, BUDGETCONTROL.populateBudgetControlTotalsPanel, BUDGETCONTROL.bcrError);
+        			ANSI_UTILS.doServerCall("GET", "bcr/employees", $outbound, BUDGETCONTROL.populateEmployeePanel, BUDGETCONTROL.bcrError);
+        			BUDGETCONTROL.refreshTicketTables();
+        		},
+        		
         		
         		
         		

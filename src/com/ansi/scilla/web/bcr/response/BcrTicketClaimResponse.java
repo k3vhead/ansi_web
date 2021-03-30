@@ -131,13 +131,10 @@ public class BcrTicketClaimResponse extends MessageResponse {
 	 * @throws RecordNotFoundException
 	 * @throws SQLException
 	 */
-	public void scrubClaim(Connection conn, Integer claimId) throws RecordNotFoundException, Exception {
-		TicketClaim claim = new TicketClaim();
-		claim.setClaimId(claimId);
-		claim.selectOne(conn);
-		CollectionUtils.filterInverse(this.expenses, new PassthruExpenseFilterByClaim(claimId));
-		CollectionUtils.filterInverse(this.dlClaims, new BcrTicketFilterByClaim(claimId));
-		this.ticket = new TicketData(conn, this.ticket.getTicketId(), claim.getServiceType());
+	public void scrubClaim(Connection conn, TicketClaim ticketClaim) throws RecordNotFoundException, Exception {		
+		CollectionUtils.filterInverse(this.expenses, new PassthruExpenseFilterByClaim(ticketClaim.getClaimId()));
+		CollectionUtils.filterInverse(this.dlClaims, new BcrTicketFilterByClaim(ticketClaim.getClaimId()));
+		this.ticket = new TicketData(conn, this.ticket.getTicketId(), ticketClaim.getServiceType());
 	}
 
 	
