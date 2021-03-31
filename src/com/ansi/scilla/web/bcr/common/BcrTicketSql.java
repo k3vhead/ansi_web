@@ -126,13 +126,13 @@ public class BcrTicketSql extends ApplicationObject {
 	public static final String sqlFromClause = 
 			"from ticket\n" + 
 			"join job on job.job_id = ticket.job_id\n" + 
-			"left outer join ticket_claim on ticket_claim.ticket_id = ticket.ticket_id\n" + 
 			"join quote on quote.quote_id = job.quote_id\n" + 
 			"join division on division.division_id = ticket.act_division_id and division.division_id in ($DIVISION_USER_FILTER$)\n" + 
 			"join address job_site on job_site.address_id = quote.job_site_address_id\n" + 
 //gag			"left outer join job_tag on job_tag.tag_id=ticket_claim.service_type \n" + 
 			"left outer join job_tag_xref on job_tag_xref.job_id=ticket.job_id and job_tag_xref.tag_id in (select tag_id from job_tag where tag_type='SERVICE') \n" + 
 			"left outer join job_tag on job_tag.tag_id=job_tag_xref.tag_id \n" + 
+			"left outer join ticket_claim on ticket_claim.ticket_id = ticket.ticket_id and job_tag.tag_id=ticket_claim.service_type\n" + 
 			"left outer join (\n" + 
 			ticketTotalSubselect +
 			"	) as ticket_claim_totals on ticket_claim_totals.ticket_id = ticket.ticket_id\n" + 
