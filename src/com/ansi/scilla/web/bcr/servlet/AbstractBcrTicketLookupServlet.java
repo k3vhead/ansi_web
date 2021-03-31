@@ -33,7 +33,7 @@ public abstract class AbstractBcrTicketLookupServlet extends AbstractLookupServl
 	public static final String VOLUME_REMAINING = "volume_remaining";
 	public static final String DIFF_CLM_BLD = "diff_clm_bld";
 	public static final String EMPLOYEE = "employee";
-	
+
 	public static final String NOTES = "notes";
 	public static final String NOTES_DISPLAY = "notes_display";
 	
@@ -42,63 +42,67 @@ public abstract class AbstractBcrTicketLookupServlet extends AbstractLookupServl
 
 
 	// request parameter names:
-		protected static final String WORK_YEAR = "workYear";
-		protected static final String WORK_WEEKS = "workWeeks";
-		protected static final String WORK_WEEK = "workWeek";
-		protected static final String DIVISION_ID = "divisionId";
+	protected static final String WORK_YEAR = "workYear";
+	protected static final String WORK_WEEKS = "workWeeks";
+	protected static final String WORK_WEEK = "workWeek";
+	protected static final String DIVISION_ID = "divisionId";
+
+	public AbstractBcrTicketLookupServlet() {
+		super(Permission.TICKET_READ);
+		makeMyColumns();
+		super.itemTransformer = new ItemTransformer();
+	}
 		
-		public AbstractBcrTicketLookupServlet() {
-			super(Permission.TICKET_READ);
-			makeMyColumns();
-			super.itemTransformer = new ItemTransformer();
+		
+	@Override
+	public LookupQuery makeQuery(Connection conn, HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		SessionData sessionData = (SessionData)session.getAttribute(SessionData.KEY);
+
+		SessionUser user = sessionData.getUser();
+		List<SessionDivision> divisionList = sessionData.getDivisionList();
+
+		String searchTerm = null;
+		if(request.getParameter("search[value]") != null){
+			searchTerm = request.getParameter("search[value]");
 		}
-		
-		
-		@Override
-		public LookupQuery makeQuery(Connection conn, HttpServletRequest request) {
-			HttpSession session = request.getSession();
-			SessionData sessionData = (SessionData)session.getAttribute(SessionData.KEY);
-			
-			SessionUser user = sessionData.getUser();
-			List<SessionDivision> divisionList = sessionData.getDivisionList();
-//				AnsiURL url = new AnsiURL(request, REALM, (String[])null);
-			String searchTerm = null;
-			if(request.getParameter("search[value]") != null){
-				searchTerm = request.getParameter("search[value]");
-			}
-			Integer divisionId = Integer.valueOf(request.getParameter(DIVISION_ID));
-			Integer workYear = Integer.valueOf(request.getParameter(WORK_YEAR));
-			String workWeeks = request.getParameter(WORK_WEEKS);  // comma-delimited list of work weeks.
-			String workWeek = request.getParameter(WORK_WEEK);  // the single week we want to look at
-			
-			logger.log(Level.DEBUG, "Parms: " + divisionId + " " + workYear + " " + workWeeks + " " + workWeek);
-			LookupQuery lookupQuery = StringUtils.isBlank(workWeek) ?
-					new BcrTicketLookupQuery(user.getUserId(), divisionList, divisionId, workYear, workWeeks)
-					:
+		Integer divisionId = Integer.valueOf(request.getParameter(DIVISION_ID));
+		Integer workYear = Integer.valueOf(request.getParameter(WORK_YEAR));
+		String workWeeks = request.getParameter(WORK_WEEKS);  // comma-delimited list of work weeks.
+		String workWeek = request.getParameter(WORK_WEEK);  // the single week we want to look at
+
+		logger.log(Level.DEBUG, "Parms: " + divisionId + " " + workYear + " " + workWeeks + " " + workWeek);
+		LookupQuery lookupQuery = StringUtils.isBlank(workWeek) ?
+				new BcrTicketLookupQuery(user.getUserId(), divisionList, divisionId, workYear, workWeeks)
+				:
 					new BcrWeeklyTicketLookupQuery(user.getUserId(), divisionList, divisionId, workYear, workWeeks, workWeek);
-			if ( searchTerm != null ) {
-				lookupQuery.setSearchTerm(searchTerm);
+				if ( searchTerm != null ) {
+					lookupQuery.setSearchTerm(searchTerm);
+				}
+				return lookupQuery;
+
+	}
+
+	protected abstract void makeMyColumns();
+
+	public class ItemTransformer implements Transformer<HashMap<String, Object>, HashMap<String, Object>> {
+
+		@Override
+		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
+			String notes = (String)arg0.get(NOTES);
+			if ( StringUtils.isBlank(notes) ) {
+				arg0.put(NOTES_DISPLAY, null);
+			} else {
+				arg0.put(NOTES_DISPLAY, StringUtils.abbreviate(notes, 10));
 			}
-			return lookupQuery;
 			
+			if ( arg0.get(CLAIM_WEEK).equals("-") ) {
+				arg0.put(CLAIM_WEEK, null);
+			}
+			return arg0;
 		}
 
-		protected abstract void makeMyColumns();
-		
-		public class ItemTransformer implements Transformer<HashMap<String, Object>, HashMap<String, Object>> {
-	
-			@Override
-			public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
-				String notes = (String)arg0.get(NOTES);
-				if ( StringUtils.isBlank(notes) ) {
-					arg0.put(NOTES_DISPLAY, null);
-				} else {
-					arg0.put(NOTES_DISPLAY, StringUtils.abbreviate(notes, 10));
-				}
-				return arg0;
-			}
-			
-		}
+	}
 		
 
 }

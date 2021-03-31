@@ -40,6 +40,9 @@
         	#bcr_edit_modal {
         		display:none;
         	}
+        	#bcr_new_claim_modal {
+        		display:none;
+        	}
         	#bcr_title_prompt {
         		display:none;
         	}
@@ -284,6 +287,16 @@
         				var $url = "bcr/ticketClaim/" + $claimId;
         				ANSI_UTILS.doServerCall("GET", $url, $outbound, BUDGETCONTROL.getTicketDetailSuccess, BUDGETCONTROL.getTicketDetailFail);
         			});
+        			
+        			$(".newClaimButton").on("click", function($clickevent) {
+        				$clickevent.preventDefault();
+        				var $ticketId = $(this).attr("data-ticketid");
+        				var $serviceTypeId = $(this).attr("data-servicetypeid");
+        				var $serviceTagId = $(this).attr("data-servicetagid");
+        				console.log("New claim: " + $ticketId + " " + $serviceTypeId + " " + $serviceTagId);
+        				$("#bcr_new_claim_modal").dialog("open");
+        			});
+
         		},
         		
         		
@@ -338,16 +351,29 @@
     			        	"data": $outbound,
     			        	},
     			        columns: [
-    			        	{ title: "Account", width:"15%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.job_site_name != null){return ('<a href="#" class="bcr-edit-clicker" data-claimid="'+row.claim_id+'" data-ticketid="'+row.ticket_id+'" data-workyear="'+$outbound['workYear']+'" data-workweeks="'+$outbound['workWeeks']+'" data-divisionid="'+$outbound['divisionId']+'">'+row.job_site_name+'</a>');}
-    			            } },
+    			        	{ title: "Account", width:"15%", searchable:true, "defaultContent": "<i>N/A</i>", 
+    			        		data: function ( row, type, set ) {
+    			            		if(row.job_site_name != null) {
+	    			        			var $display = row.job_site_name;
+    			            			if (row.claim_id != null ) {
+    			            				$display = '<a href="#" class="bcr-edit-clicker" data-claimid="'+row.claim_id+'" data-ticketid="'+row.ticket_id+'" data-workyear="'+$outbound['workYear']+'" data-workweeks="'+$outbound['workWeeks']+'" data-divisionid="'+$outbound['divisionId']+'">'+row.job_site_name+'</a>';
+    			            			}
+    			            			return $display;
+    			            		}
+    			            	} 
+    			        	},
     			            { title: "Ticket Number", width:"6%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.ticket_id != null){return ('<a href="#" data-id="'+row.ticket_id+'" class="ticket-clicker">'+row.ticket_id+'</a>');}
     			            } },
-    			            { title: "Claim Week", width:"4%", searchable:true, searchFormat: "First Last Name", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-    			            	if(row.claim_week != null ){return row.claim_week;}    			            	
-    			            	//return BUDGETCONTROL.makeClaimWeekSelect(row.ticket_id, $data.data.workCalendar);
-    			            } },
+    			            { title: "Claim Week", width:"4%", searchable:true, searchFormat: "First Last Name", 
+    			            	data: function ( row, type, set ) {
+    			            		var $display = row.claim_week;
+    			            		if(row.claim_week == null ) {
+    			            			$display = '<span class="newClaimButton" data-ticketid="'+row.ticket_id+'" data-servicetypeid="'+row.service_type_id+'" data-servicetagid="'+row.service_tag_id+'"><webthing:addNew>New Claim</webthing:addNew></span>';
+	    			            	}    			     
+    			            		return $display;
+    			            	} 
+    			            },
     			            { title: "D/L", width:"6%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.dl_amt != null){return (row.dl_amt.toFixed(2)+"");}
     			            } },
@@ -394,19 +420,14 @@
     			            { title: "Service",  width:"4%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.service_tag_id != null){return (row.service_tag_id+"");}
     			            } },
-    			            { title: "Equipment",  width:"4%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.equipment_tags != null){return (row.equipment_tags+"");}
-    			            } },
-    			            { title: "Employee",  width:"13%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.employee != null){return (row.employee+"");}
-    			            } }
+    			            { title: "Equipment",  width:"4%", searchable:true, searchFormat: "Equipment #####", data:'equipment_tags' },
+    			            { title: "Employee",  width:"13%", searchable:true, searchFormat: "Name #####", data:'employee' }
     			            ],
     			            "initComplete": function(settings, json) {
     			            	var myTable = this;
     			            	//LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#ticketTable", CALL_NOTE_LOOKUP.makeTable);
     			            },
     			            "drawCallback": function( settings ) {
-    			            	//CALL_NOTE_LOOKUP.doFunctionBinding();
     			            	BUDGETCONTROL.doFunctionBinding();
     			            }
     			    } );
@@ -1377,6 +1398,38 @@
         			});
         			$("#bcr_delete_cancel").button('option', 'label', 'No');
         			$("#bcr_delete_save").button('option', 'label', 'Yes');
+        			
+        			
+        			
+        			
+        			
+        			$("#bcr_new_claim_modal").dialog({
+        				title:'New Claim',
+        				autoOpen: false,
+        				height: 200,
+        				width: 500,
+        				modal: true,
+        				closeOnEscape:true,
+        				open: function(event, ui) {
+        					$(".ui-dialog-titlebar-close", ui.dialog | ui).show();
+        				},
+        				buttons: [
+        					{
+        						id:  "bcr_new_claim_cancel",
+        						click: function($event) {
+        							$("#bcr_new_claim_modal").dialog("close");      							
+        						}
+        					},{
+        						id:  "bcr_new_claim_save",
+        						click: function($event) {
+        							//BUDGETCONTROL.deleteClaim();
+        							console.log("new claim save button");
+        						}
+        					}
+        				]
+        			});
+        			$("#bcr_new_claim_cancel").button('option', 'label', 'Cancel');
+        			$("#bcr_new_claim_save").button('option', 'label', 'Save');
         		},
         		
         		
@@ -1954,6 +2007,96 @@
 	    		</table>
 	    	</div>
 	    		    	
+	    </div>
+	    
+	    
+	    <div id="bcr_new_claim_modal">
+	    	<div style="width:55%; float:right">	    	
+	    		<div style="float:right; width:80%;">	    			
+	    			<table style="width:100%;">
+	    				<tr>
+	    					<td colspan="3" style="text-align:center;"><span style="background-color:#CCCCCC;font-weight:bold;">New Expense Claim</span></td>
+	    				</tr>
+	    				<tr>
+	    					<td class="form-label">Ticket:</td>
+	    					<td><span class="ticketId"></span></td>
+	    					<td><input type="hidden" name="ticketId" /></td>
+	    				</tr>
+	    				<tr>
+	    					<td class="form-label">Service Type:</td>
+	    					<td><span class="serviceTypeId"></span></td>
+	    					<td><input type="hidden" name="serviceTagId" /></td>
+	    				</tr>
+	    				<tr>
+	    					<td class="form-label">Volume Claimed:</td>
+	    					<td><input type="text" name="volume" /></td>
+	    					<td><span class="volumeErr"></span></td>
+	    				</tr>
+	    				<tr>
+	    					<td class="form-label">Expense Type:</td>
+	    					<td><select name="expenseType"></select></td>
+	    					<td><span class="employeeErr"></span></td>
+	    				</tr>
+	    				<tr>
+	    					<td class="form-label">Notes:</td>
+	    					<td><input type="text" name="notes" /></td>
+	    					<td><span class="notesErr"></span></td>
+	    				</tr>
+	    			</table>
+	    		</div>
+	    		<div style="float:left; width:10%;">
+	    			<table style="spacing-right:10%;height:100%;">
+	    				<tr>
+	    					<td style="width:50%;">&nbsp;</td>
+	    					<td style="border-left:solid 1px #000000;"><br /></td>
+	    				</tr>
+	    				<tr>
+	    					<td colspan="2"><span style="font-style:italic;">--&nbsp;or&nbsp;--</span></td>
+	    				</tr>
+	    				<tr>
+	    					<td style="width:50%;">&nbsp;</td>
+	    					<td style="border-left:solid 1px #000000;"><br /></td>
+	    				</tr>
+	    			</table>
+	    		</div>
+	    	</div>
+	    	<div style="float:left; width:43%;">
+	    			    			<table style="width:100%;">
+	    				<tr>
+	    					<td colspan="3" style="text-align:center;"><span style="background-color:#CCCCCC;font-weight:bold;">New D/L Claim</span></td>
+	    				</tr>
+	    				<tr>
+	    					<td class="form-label">Ticket:</td>
+	    					<td><span class="ticketId"></span></td>
+	    					<td><input type="hidden" name="ticketId" /></td>
+	    				</tr>
+	    				<tr>
+	    					<td class="form-label">Service Type:</td>
+	    					<td><span class="serviceTypeId"></span></td>
+	    					<td><input type="hidden" name="serviceTagId" /></td>
+	    				</tr>
+	    				<tr>
+	    					<td class="form-label">Direct Labor:</td>
+	    					<td><input type="text" name="dlAmt" /></td>
+	    					<td><span class="dlAmtErr"></span></td>
+	    				</tr>
+	    				<tr>
+	    					<td class="form-label">Volume Claimed:</td>
+	    					<td><input type="text" name="volume" /></td>
+	    					<td><span class="volumeErr"></span></td>
+	    				</tr>
+	    				<tr>
+	    					<td class="form-label">Employee:</td>
+	    					<td><input type="text" name="employee" /></td>
+	    					<td><span class="employeeErr"></span></td>
+	    				</tr>
+	    				<tr>
+	    					<td class="form-label">Notes:</td>
+	    					<td><input type="text" name="notes" /></td>
+	    					<td><span class="notesErr"></span></td>
+	    				</tr>
+	    			</table>
+    		</div>
 	    </div>
     </tiles:put>
 		
