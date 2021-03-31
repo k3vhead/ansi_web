@@ -93,7 +93,7 @@ public class BcrTicketSql extends ApplicationObject {
 			"   job_site.name as " + JOB_SITE_NAME + "\n" + 
 			" , ticket."+TICKET_ID+"\n" + 
 			" , ticket_claim." + CLAIM_ID + "\n" +
-			" , ticket_claim.service_type as " + SERVICE_TYPE_ID + "\n" + 
+			" , job_tag_xref.tag_id as " + SERVICE_TYPE_ID + "\n" + 
 			" , concat(ticket_claim.claim_year,'-',ticket_claim.claim_week) as "+CLAIM_WEEK+"\n" + 
 			" , isnull(ticket_claim.dl_amt,0.00) as "+DL_AMT+"\n" + 
 			" , isnull(ticket_claim.dl_expenses,0.00) as " + DL_EXPENSES + "\n" + 
@@ -130,7 +130,9 @@ public class BcrTicketSql extends ApplicationObject {
 			"join quote on quote.quote_id = job.quote_id\n" + 
 			"join division on division.division_id = ticket.act_division_id and division.division_id in ($DIVISION_USER_FILTER$)\n" + 
 			"join address job_site on job_site.address_id = quote.job_site_address_id\n" + 
-			"left outer join job_tag on job_tag.tag_id=ticket_claim.service_type \n" + 
+//gag			"left outer join job_tag on job_tag.tag_id=ticket_claim.service_type \n" + 
+			"left outer join job_tag_xref on job_tag_xref.job_id=ticket.job_id and job_tag_xref.tag_id in (select tag_id from job_tag where tag_type='SERVICE') \n" + 
+			"left outer join job_tag on job_tag.tag_id=job_tag_xref.tag_id \n" + 
 			"left outer join (\n" + 
 			ticketTotalSubselect +
 			"	) as ticket_claim_totals on ticket_claim_totals.ticket_id = ticket.ticket_id\n" + 
