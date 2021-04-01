@@ -77,9 +77,27 @@
 			.bcr_totals_display th {
 				text-align:right;
 			}
+			.button_is_active {
+				text-align:center; 
+				border:solid 1px #000000; 
+				padding:5px; 
+				background-color:#CCCCCC;"
+			}
+			.button_is_inactive {
+				text-align:center; 
+				border:solid 1px #000000; 
+				padding:5px; 
+				background-color:#FFFFFF;
+			}
+			.field-container {
+				cursor:pointer;
+			}
         	.form-label {
 				font-weight:bold;
-			}		
+			}	
+			.expenseDetails {
+				display:none;
+			}	
 			.newExpenseItem {
 				display:none;
 			}	
@@ -130,6 +148,7 @@
         		divisionId : null,
     			workYear : null, 
     			workWeek : null,
+    			workCalendar : null,
     			// this holds the ticket panel datatables
         		ticketTable : {},
         		// these are valid values for posts to bcr/ticket and bcr/ticketClaim
@@ -293,8 +312,18 @@
         				var $ticketId = $(this).attr("data-ticketid");
         				var $serviceTypeId = $(this).attr("data-servicetypeid");
         				var $serviceTagId = $(this).attr("data-servicetagid");
-        				console.log("New claim: " + $ticketId + " " + $serviceTypeId + " " + $serviceTagId);
+        				console.log("New claim: " + $ticketId + " " + $serviceTypeId + " " + $serviceTagId);   
+        				$("#bcr_new_claim_modal input").val("");
+        				$("#bcr_new_claim_modal select").val("");
+        				$("#bcr_new_claim_modal .err").html("");
+        				$("#bcr_new_claim_modal input[name='ticketId']").val($ticketId);
+        				$("#bcr_new_claim_modal .ticketId").html($ticketId);
+        				$("#bcr_new_claim_modal input[name='serviceTypeId']").val($serviceTypeId);
+        				$("#bcr_new_claim_modal .serviceTagId").html($serviceTagId);
+        				
         				$("#bcr_new_claim_modal").dialog("open");
+        				$("#directLaborFieldContainer").click();
+
         			});
 
         		},
@@ -868,6 +897,32 @@
 						var $outbound = {"ticketId": $ticketId, "oldClaimWeek": $oldWeek, "newClaimWeek":$newWeek};
 						ANSI_UTILS.doServerCall("POST", $url, JSON.stringify($outbound), BUDGETCONTROL.claimWeekEditSuccess, BUDGETCONTROL.claimUpdateFail);
 					}); 
+					
+					
+					
+					
+					// this bit handles the display/hide of panels in the new claim modal
+					$("#directLaborFieldContainer").click(function($event) {
+						$(".field-container").removeClass("button_is_active");
+						$(".field-container").addClass("button_is_inactive");
+						$("#directLaborFieldContainer").removeClass("button_is_inactive");
+						$("#directLaborFieldContainer").addClass("button_is_active");		
+						$(".details").hide();
+						$("#bcr_new_claim_modal .directLaborDetails").show();
+						$("#bcr_new_claim_modal").attr("data-claimtype","labor");
+					});
+					
+					$("#expenseFieldContainer").click(function($event) {
+						$(".field-container").removeClass("button_is_active");
+						$(".field-container").addClass("button_is_inactive");
+						$("#expenseFieldContainer").removeClass("button_is_inactive");
+						$("#expenseFieldContainer").addClass("button_is_active");	
+						$(".details").hide();
+						$("#bcr_new_claim_modal .expenseDetails").show();
+						$("#bcr_new_claim_modal").attr("data-claimtype","expense");
+					});
+					
+
         		},
         		
         		
@@ -1406,8 +1461,8 @@
         			$("#bcr_new_claim_modal").dialog({
         				title:'New Claim',
         				autoOpen: false,
-        				height: 200,
-        				width: 500,
+        				height: 400,
+        				width: 575,
         				modal: true,
         				closeOnEscape:true,
         				open: function(event, ui) {
@@ -1422,14 +1477,14 @@
         					},{
         						id:  "bcr_new_claim_save",
         						click: function($event) {
-        							//BUDGETCONTROL.deleteClaim();
-        							console.log("new claim save button");
+        							BUDGETCONTROL.saveNewClaim();
         						}
         					}
         				]
         			});
         			$("#bcr_new_claim_cancel").button('option', 'label', 'Cancel');
         			$("#bcr_new_claim_save").button('option', 'label', 'Save');
+        			BUDGETCONTROL.makeEmployeeAutoComplete("#bcr_new_claim_modal input[name='employee']");
         		},
         		
         		
@@ -1465,7 +1520,24 @@
             				var $selected = $("#workDaySelector option:selected");
             				$("#bcr_title_prompt .workDateDisplay").html($selected.attr("data-firstofmonth") + " - " + $selected.attr("data-lastofmonth"));
             			}
-        			});        			
+        			});      
+        			
+        			
+					// populate the new claim expense type selector
+					console.log("Populating new claim expense selector");
+
+					var $select = $("#bcr_new_claim_modal select[name='expenseType']");
+					$('option', $select).remove();
+					$select.append(new Option("",""));
+					$.each(BUDGETCONTROL.expenseTypes, function(index, val) {
+					    $select.append(new Option(val.displayValue, val.value));
+					});
+					// this may have been some extra copy on the copy & Paste. Re-examine if something starts going wrong
+					//$.each($data.data.expenses, function(index, val) {
+					//	var $expenseSelect = "#" + val.claimId + " select[name='expenseType']";
+					//	$($expenseSelect).val(val.passthruExpenseCode);
+					//});
+					
         		},
         		
         		
@@ -1674,6 +1746,56 @@
 
         		
         		
+        		saveNewClaim : function() {
+					var $claimType = $("#bcr_new_claim_modal").attr("data-claimtype");
+        			console.log("saveNewClaim: " + $claimType);
+        			if ( $claimType == "labor") {
+        				var $ticketId = $("#bcr_new_claim_modal .directLaborDetails input[name='ticketId']").val();
+            			var $serviceTagId = $("#bcr_new_claim_modal .directLaborDetails input[name='serviceTypeId']").val();
+            			var $claimWeek = $("#bcr_new_claim_modal .directLaborDetails select[name='claimWeek']").val();
+            			
+            			var $dlAmt = $("#bcr_new_claim_modal .directLaborDetails input[name='dlAmt']").val();
+            			var $volumeClaimed = $("#bcr_new_claim_modal .directLaborDetails input[name='volumeClaimed']").val();
+            			var $employee = $("#bcr_new_claim_modal .directLaborDetails input[name='employee']").val();
+            			var $notes = $("#bcr_new_claim_modal .directLaborDetails input[name='notes']").val();
+            			
+            			// these are needed to create the correct response, not to do the update
+            			var $divisionId = BUDGETCONTROL.divisionId
+            			var $workYear = BUDGETCONTROL.workYear; 
+            			var $workWeeks = BUDGETCONTROL.workWeek;
+            			
+            			var $outbound = {
+            					"divisionId":$divisionId,
+            					"ticketId":$ticketId,
+                    			"serviceTagId":$serviceTagId,
+                    			"claimWeek":$claimWeek,
+                    			"dlAmt":$dlAmt,
+                    			"volumeClaimed":$volumeClaimed,
+                    			"employee":$employee,
+                    			"notes":$notes,
+                    			"workYear":$workYear,
+                    			"workWeeks":$workWeeks,
+            			}
+            			console.log($outbound);
+            			ANSI_UTILS.doServerCall("POST", "bcr/ticketClaim", JSON.stringify($outbound), BUDGETCONTROL.saveNewClaimSuccess, BUDGETCONTROL.saveNewClaimFail);
+        			} else if ( $claimType == "expense" ) {
+        				alert("new expense doesn't work yet");
+        			} else {
+        				$("#bcr_new_claim_modal .newClaimErr").html("Invalid system state. (Claim Type: " + $claimType + ")  Reload page and try again");
+        			}
+
+        		},
+        		
+        		
+        		saveNewClaimFail : function($data) {
+        			console.log("saveNewClaimFail");
+        		},
+        		
+        		
+        		saveNewClaimSuccess : function($data) {
+        			console.log("saveNewClaimSuccess");
+        		},
+        		
         		
         		ticketEditSave : function() {
         			console.log("ticketEditSave");
@@ -1753,6 +1875,7 @@
         			BUDGETCONTROL.divisionId = $data.data.divisionId;
         			BUDGETCONTROL.workYear = $data.data.workYear; 
         			BUDGETCONTROL.workWeek = $workWeeks;
+        			BUDGETCONTROL.workCalendar = $data.data.workCalendar;
         			var $outbound = {"divisionId":$data.data.divisionId, "workYear":$data.data.workYear, "workWeek":$workWeeks};        			
         			// ANSI_UTILS.doServerCall("GET", "bcr/actualDL", $outbound, BUDGETCONTROL.populateActualDLPanel, BUDGETCONTROL.bcrError);
         			ANSI_UTILS.doServerCall("GET", "bcr/bcTotals", $outbound, BUDGETCONTROL.populateBudgetControlTotalsPanel, BUDGETCONTROL.bcrError);
@@ -1766,6 +1889,17 @@
 						$($panelId).show();
 					});
         			
+					var $select = $("#bcr_new_claim_modal select[name='claimWeek']");
+					$('option', $select).remove();
+					$select.append(new Option("",""));
+					console.log("Populating new claim week selector");
+					$.each(BUDGETCONTROL.workCalendar, function($index, $val) {
+						var $displayValue = BUDGETCONTROL.workYear + "-" + $val.weekOfYear;
+						console.log($displayValue);
+					    $select.append(new Option($displayValue, $displayValue));
+					});
+
+					
 					$("#bcr_panels .thinking").hide();
 					$("#bcr_panels .display").show();
         			$("#bcr_title_prompt").dialog("close");
@@ -2011,92 +2145,105 @@
 	    
 	    
 	    <div id="bcr_new_claim_modal">
-	    	<div style="width:55%; float:right">	    	
-	    		<div style="float:right; width:80%;">	    			
-	    			<table style="width:100%;">
-	    				<tr>
-	    					<td colspan="3" style="text-align:center;"><span style="background-color:#CCCCCC;font-weight:bold;">New Expense Claim</span></td>
-	    				</tr>
-	    				<tr>
-	    					<td class="form-label">Ticket:</td>
-	    					<td><span class="ticketId"></span></td>
-	    					<td><input type="hidden" name="ticketId" /></td>
-	    				</tr>
-	    				<tr>
-	    					<td class="form-label">Service Type:</td>
-	    					<td><span class="serviceTypeId"></span></td>
-	    					<td><input type="hidden" name="serviceTagId" /></td>
-	    				</tr>
-	    				<tr>
-	    					<td class="form-label">Volume Claimed:</td>
-	    					<td><input type="text" name="volume" /></td>
-	    					<td><span class="volumeErr"></span></td>
-	    				</tr>
-	    				<tr>
-	    					<td class="form-label">Expense Type:</td>
-	    					<td><select name="expenseType"></select></td>
-	    					<td><span class="employeeErr"></span></td>
-	    				</tr>
-	    				<tr>
-	    					<td class="form-label">Notes:</td>
-	    					<td><input type="text" name="notes" /></td>
-	    					<td><span class="notesErr"></span></td>
-	    				</tr>
-	    			</table>
-	    		</div>
-	    		<div style="float:left; width:10%;">
-	    			<table style="spacing-right:10%;height:100%;">
-	    				<tr>
-	    					<td style="width:50%;">&nbsp;</td>
-	    					<td style="border-left:solid 1px #000000;"><br /></td>
-	    				</tr>
-	    				<tr>
-	    					<td colspan="2"><span style="font-style:italic;">--&nbsp;or&nbsp;--</span></td>
-	    				</tr>
-	    				<tr>
-	    					<td style="width:50%;">&nbsp;</td>
-	    					<td style="border-left:solid 1px #000000;"><br /></td>
-	    				</tr>
-	    			</table>
-	    		</div>
+	    	<div style="width:100%; height:25px;">
+	    		<span class="newClaimErr err"></span>
 	    	</div>
-	    	<div style="float:left; width:43%;">
-	    			    			<table style="width:100%;">
-	    				<tr>
-	    					<td colspan="3" style="text-align:center;"><span style="background-color:#CCCCCC;font-weight:bold;">New D/L Claim</span></td>
-	    				</tr>
-	    				<tr>
-	    					<td class="form-label">Ticket:</td>
-	    					<td><span class="ticketId"></span></td>
-	    					<td><input type="hidden" name="ticketId" /></td>
-	    				</tr>
-	    				<tr>
-	    					<td class="form-label">Service Type:</td>
-	    					<td><span class="serviceTypeId"></span></td>
-	    					<td><input type="hidden" name="serviceTagId" /></td>
-	    				</tr>
-	    				<tr>
-	    					<td class="form-label">Direct Labor:</td>
-	    					<td><input type="text" name="dlAmt" /></td>
-	    					<td><span class="dlAmtErr"></span></td>
-	    				</tr>
-	    				<tr>
-	    					<td class="form-label">Volume Claimed:</td>
-	    					<td><input type="text" name="volume" /></td>
-	    					<td><span class="volumeErr"></span></td>
-	    				</tr>
-	    				<tr>
-	    					<td class="form-label">Employee:</td>
-	    					<td><input type="text" name="employee" /></td>
-	    					<td><span class="employeeErr"></span></td>
-	    				</tr>
-	    				<tr>
-	    					<td class="form-label">Notes:</td>
-	    					<td><input type="text" name="notes" /></td>
-	    					<td><span class="notesErr"></span></td>
-	    				</tr>
-	    			</table>
-    		</div>
+	    	<table style="width:500px;">
+				<colgroup>
+		        	<col style="width:50%;" />
+		        	<col style="width:50%;" />
+				</colgroup>
+				<tr>
+					<td id="directLaborFieldContainer" class="field-container button_is_active"><webthing:laborIcon styleId="directLaborFieldButton" styleClass="action-link fa-lg">Direct Labor</webthing:laborIcon></td>
+					<td id="expenseFieldContainer" class="field-container button_is_inactive"><webthing:invoiceIcon styleId="expenseFieldButton" styleClass="action-link fa-lg">Expense</webthing:invoiceIcon></td>
+					<td>&nbsp;</td>
+				</tr>
+			</table>
+			<div class="details directLaborDetails">
+				<table style="width:100%;">   
+					<colgroup>
+			        	<col style="width:25%;" />
+			        	<col style="width:45%;" />
+			        	<col style="width:30%;" />
+					</colgroup> 				
+    				<tr>
+    					<td class="form-label">Ticket:</td>
+    					<td><span class="ticketId"></span></td>
+    					<td><input type="hidden" name="ticketId" /></td>
+    				</tr>
+    				<tr>
+    					<td class="form-label">Service Type:</td>
+    					<td><span class="serviceTagId"></span></td>
+    					<td><input type="hidden" name="serviceTypeId" /></td>
+    				</tr>
+    				<tr>
+    					<td class="form-label">Claim Week:</td>
+    					<td><select name="claimWeek"></select></td>
+    					<td><span class="claimWeekErr"></span></td>
+    				</tr>
+    				<tr>
+    					<td class="form-label">Direct Labor:</td>
+    					<td><input type="text" name="dlAmt" /></td>
+    					<td><span class="dlAmtErr"></span></td>
+    				</tr>
+    				<tr>
+    					<td class="form-label">Volume Claimed:</td>
+    					<td><input type="text" name="volumeClaimed" /></td>
+    					<td><span class="volumeErr"></span></td>
+    				</tr>
+    				<tr>
+    					<td class="form-label">Employee:</td>
+    					<td><input type="text" name="employee" /></td>
+    					<td><span class="employeeErr"></span></td>
+    				</tr>
+    				<tr>
+    					<td class="form-label">Notes:</td>
+    					<td><input type="text" name="notes" /></td>
+    					<td><span class="notesErr"></span></td>
+    				</tr>
+    			</table>
+			</div>
+			<div class="details expenseDetails">
+				<table style="width:100%;">
+					<colgroup>
+			        	<col style="width:25%;" />
+			        	<col style="width:45%;" />
+			        	<col style="width:30%;" />
+					</colgroup>
+    				<tr>
+    					<td class="form-label">Ticket:</td>
+    					<td><span class="ticketId"></span></td>
+    					<td>&nbsp;</td>
+    				</tr>
+    				<tr>
+    					<td class="form-label">Service Type:</td>
+    					<td><span class="serviceTagId"></span></td>
+    					<td>&nbsp;</td>
+    				</tr>
+    				<tr>
+    					<td class="form-label">Claim Week:</td>
+    					<td><select name="claimWeek"></select></td>
+    					<td><span class="claimWeekErr"></span></td>
+    				</tr>
+    				<tr>
+    					<td class="form-label">Volume Claimed:</td>
+    					<td><input type="text" name="volume" /></td>
+    					<td><span class="volumeErr"></span></td>
+    				</tr>
+    				<tr>
+    					<td class="form-label">Expense Type:</td>
+    					<td><select name="expenseType"></select></td>
+    					<td><span class="employeeErr"></span></td>
+    				</tr>
+    				<tr>
+    					<td class="form-label">Notes:</td>
+    					<td><input type="text" name="notes" /></td>
+    					<td><span class="notesErr"></span></td>
+    				</tr>
+    			</table>
+			</div>
+			
+			
 	    </div>
     </tiles:put>
 		
