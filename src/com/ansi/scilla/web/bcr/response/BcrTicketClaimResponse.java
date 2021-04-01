@@ -32,7 +32,9 @@ public class BcrTicketClaimResponse extends MessageResponse {
 	public static final String whereClause = 
 			"\n) as detail"
 			+ "\nleft outer join code on table_name='ticket_claim_passthru' and field_name='passthru_expense_type' and value=detail.passthru_expense_type"
-			+ "\nwhere ticket_id=?";
+			+ "\nwhere " + BcrTicketSql.TICKET_ID + "=?"
+			+ "\nand " + BcrTicketSql.SERVICE_TYPE_ID + "=?"
+			+ "\nand " + BcrTicketSql.CLAIM_WEEK + "=?";
 	
 	private Integer claimYear;
 	private String claimWeek;
@@ -63,7 +65,7 @@ public class BcrTicketClaimResponse extends MessageResponse {
 		this.claimYear = workYear;
 		
 		TicketClaim ticketClaim = makeClaim(conn, claimId);
-		makeResponse(conn, userId, divisionList, divisionId, workYear, workWeeks, ticketClaim.getTicketId());
+		makeResponse(conn, userId, divisionList, divisionId, workYear, workWeeks, ticketClaim);
 		String formattedClaimWeek = StringUtils.leftPad(String.valueOf(ticketClaim.getClaimWeek()), 2, '0'); // make sure week '4' is actually '04'
 		this.claimWeek = ticketClaim.getClaimYear() + "-" + formattedClaimWeek;
 		this.claimWeeks = new ArrayList<String>();
@@ -89,7 +91,7 @@ public class BcrTicketClaimResponse extends MessageResponse {
 	public void setClaimWeeks(List<String> claimWeeks) {
 		this.claimWeeks = claimWeeks;
 	}
-		public TicketData getTicket() {
+	public TicketData getTicket() {
 		return ticket;
 	}
 
@@ -123,11 +125,16 @@ public class BcrTicketClaimResponse extends MessageResponse {
 
 	/**
 	 * Remove references to a particular claim id. (In essence, this means searching the D/L claims and expenses for the claim id)
+	 * @param conn
 	 * @param claimId
+	 * @param ticketId
+	 * @throws RecordNotFoundException
+	 * @throws SQLException
 	 */
-	public void scrubClaim(Integer claimId) {
-		CollectionUtils.filterInverse(this.expenses, new PassthruExpenseFilterByClaim(claimId));
-		CollectionUtils.filterInverse(this.dlClaims, new BcrTicketFilterByClaim(claimId));
+	public void scrubClaim(Connection conn, TicketClaim ticketClaim) throws RecordNotFoundException, Exception {		
+		CollectionUtils.filterInverse(this.expenses, new PassthruExpenseFilterByClaim(ticketClaim.getClaimId()));
+		CollectionUtils.filterInverse(this.dlClaims, new BcrTicketFilterByClaim(ticketClaim.getClaimId()));
+		this.ticket = new TicketData(conn, this.ticket.getTicketId(), ticketClaim.getServiceType());
 	}
 
 	
@@ -142,9 +149,11 @@ public class BcrTicketClaimResponse extends MessageResponse {
 	
 	
 	private void makeResponse(Connection conn, Integer userId, List<SessionDivision> divisionList,
-			Integer divisionId, Integer workYear, String workWeeks, Integer ticketId) throws SQLException, RecordNotFoundException {
+			Integer divisionId, Integer workYear, String workWeeks, TicketClaim ticketClaim) throws SQLException, RecordNotFoundException {
 		
-		this.ticket = new TicketData(conn, ticketId);
+		Integer ticketId = ticketClaim.getTicketId();
+		Integer serviceType = ticketClaim.getServiceType();
+		this.ticket = new TicketData(conn, ticketId, serviceType);
 		String baseSql = BcrTicketSql.sqlSelectClause + BcrTicketSql.makeFilteredFromClause(divisionList) + BcrTicketSql.makeBaseWhereClause(workWeeks);
 		String sql = selectClause + baseSql + whereClause;
 		
@@ -158,7 +167,16 @@ public class BcrTicketClaimResponse extends MessageResponse {
 		ps.setInt(1, divisionId);
 		ps.setInt(2, workYear);
 		ps.setInt(3, ticketId);
-		logger.log(Level.DEBUG, "division | workYear | workWeeks | ticketId: " + divisionId + " | "+workYear+" | "+ workWeeks + " | " + ticketId);
+		ps.setInt(4, ticketClaim.getServiceType());
+		ps.setString(5, workYear + "-" + ticketClaim.getClaimWeek());
+
+		logger.log(Level.DEBUG, "Division: " + divisionId);
+		logger.log(Level.DEBUG, "workYear: " + workYear);
+		logger.log(Level.DEBUG, "ticketId: " + ticketId);
+		logger.log(Level.DEBUG, "getServiceType: " + ticketClaim.getServiceType());
+		logger.log(Level.DEBUG, "claimWeek: " + workYear + "-" + ticketClaim.getClaimWeek());
+
+		
 		ResultSet rs = ps.executeQuery();
 		this.dlClaims = new ArrayList<BcrTicket>();
 		this.expenses = new ArrayList<PassthruExpense>();
@@ -197,10 +215,8 @@ public class BcrTicketClaimResponse extends MessageResponse {
 
 		private final String sql = "select ticket.ticket_id, ticket.job_id, ticket.ticket_type, ticket.ticket_status, \n" +
 				"\taddress.name as job_site_name, job_tag.tag_id as service_tag_id, job_tag.abbrev,\n" +
-			//	"\tjob.price_per_cleaning as total_volume,\n" +
-			//	"\tjob.price_per_cleaning - isnull(ticket_claim_totals.claimed_total_volume,0.00)	as volume_remaining \n" +
 				"\tticket.act_price_per_cleaning as total_volume,\n" +
-				"\tticket.act_price_per_cleaning - isnull(rolling_totals.total_volume,0.00)	as volume_remaining \n" +
+				"\tticket.act_price_per_cleaning - isnull(ticket_claim_totals.claimed_total_volume,0.00)	as volume_remaining \n" +
 				"from ticket\n" + 
 				"inner join job on job.job_id=ticket.job_id\n" + 
 				"inner join quote on quote.quote_id=job.quote_id\n" + 
@@ -209,19 +225,8 @@ public class BcrTicketClaimResponse extends MessageResponse {
 				"left outer join (\n" +
 				BcrTicketSql.ticketTotalSubselect +
 				") as ticket_claim_totals on ticket_claim_totals.ticket_id = ticket.ticket_id\n" +
-				"   left outer join (\n" + 
-				"	select ticket_id\n" + 
-				"		, claim_year\n" + 
-				"		, claim_week\n" + 
-				"		, (select sum(isnull(volume,0.00) + isnull(passthru_expense_volume,0.00)) from ticket_claim as t where t.ticket_id = ticket_claim.ticket_id\n" + 
-				"			and (t.claim_year < ticket_claim.claim_year or (t.claim_year = ticket_claim.claim_year and t.claim_week <= ticket_claim.claim_week))\n" + 
-				"			) as total_volume\n" + 
-				"	from ticket_claim \n" + 
-				"	group by ticket_claim.ticket_id, claim_year, claim_week\n" + 
-				"	) as rolling_totals on rolling_totals.ticket_id = ticket.ticket_id \n" + 
-				"		and rolling_totals.claim_year = ticket_claim.claim_year and rolling_totals.claim_week = ticket_claim.claim_week \n" + 
 				"inner join job_tag on job_tag.tag_id=xref.tag_id and job_tag.tag_type='SERVICE'\n" + 
-				"where ticket.ticket_id=?";
+				"where ticket.ticket_id=?\n";
 		
 		private Integer ticketId;
 		private Integer jobId;
@@ -237,10 +242,35 @@ public class BcrTicketClaimResponse extends MessageResponse {
 			super();
 		}
 		
-		public TicketData(Connection conn, Integer ticketId) throws RecordNotFoundException, SQLException {
+//		public TicketData(Connection conn, Integer ticketId) throws RecordNotFoundException, SQLException {
+//			this();
+//			PreparedStatement ps = conn.prepareStatement(sql);
+//			Logger logger = LogManager.getLogger(BcrTicketClaimResponse.class);
+//			logger.log(Level.DEBUG, sql);
+//			ps.setInt(1,  ticketId);
+//			ResultSet rs = ps.executeQuery();
+//			if ( rs.next() ) {
+//				this.ticketId = ticketId;
+//				this.jobId = rs.getInt("job_id");
+//				this.ticketType = rs.getString("ticket_type");
+//				this.status = rs.getString("ticket_status");
+//				this.jobSiteName = rs.getString("job_site_name");
+//				this.serviceTagId = rs.getString("service_tag_id");
+//				this.serviceTagAbbrev = rs.getString("abbrev");
+//				this.totalVolume = rs.getDouble("total_volume");
+//				this.volumeRemaining = rs.getDouble("volume_remaining");
+//			} else {
+//				throw new RecordNotFoundException();
+//			}
+//		}
+
+		public TicketData(Connection conn, Integer ticketId, Integer serviceTag) throws RecordNotFoundException, SQLException {
 			this();
-			PreparedStatement ps = conn.prepareStatement(sql);
+			PreparedStatement ps = conn.prepareStatement(sql+" and job_tag.tag_id=?\n");
+			Logger logger = LogManager.getLogger(BcrTicketClaimResponse.class);
+			logger.log(Level.DEBUG, sql+" and job_tag.tag_id=?\n");
 			ps.setInt(1,  ticketId);
+			ps.setInt(2,  serviceTag);
 			ResultSet rs = ps.executeQuery();
 			if ( rs.next() ) {
 				this.ticketId = ticketId;

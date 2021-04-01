@@ -14,7 +14,7 @@ import com.ansi.scilla.web.common.servlet.AbstractServlet;
 
 
 public class BcrServlet extends AbstractServlet {
-	private final String REALM = "bcr";
+	public static final String REALM = "bcr";
 
 	public static final String ACTUAL_DL = "actualDL";
 	public static final String BC_TOTALS = "bcTotals";
