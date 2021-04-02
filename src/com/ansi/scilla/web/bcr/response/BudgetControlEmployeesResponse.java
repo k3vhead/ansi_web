@@ -40,7 +40,7 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 	
 	private static final String groupClause =
 			"\n) as detail \n "
-			+ "where passthru_expense_type is null and passthru_volume=0 \n"    // passthru expenses get their own row. For employees, we don't care
+			+ "--where passthru_expense_type is null and passthru_volume=0 \n"    // passthru expenses get their own row. For employees, we don't care
 			+ "group by detail.employee, detail.claim_week\n"
 			+ "order by detail.employee, detail.claim_week";
 
@@ -113,7 +113,11 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 			String employee = rs.getString("employee");
 			String claimWeek = rs.getString("claim_week");
 			Double directLabor = rs.getDouble("dl_amt");
+			Double volumeClaimed = rs.getDouble("volume_claimed");
+			logger.log(Level.DEBUG, "employee:<" +employee+">");
 			logger.log(Level.DEBUG, "claimWeek:<" +claimWeek+">");
+			logger.log(Level.DEBUG, "directLabor:<" +directLabor+">");
+			logger.log(Level.DEBUG, "volumeClaimed:<" +volumeClaimed+">");
 			if (!(claimWeek.equals("-"))) {
 				String[] workDate = claimWeek.split("-");
 				if ( weekFilter.contains(Integer.valueOf(workDate[1]))) {
@@ -121,7 +125,11 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 				HashMap<String, Double> weeklyDL = dl.getWeeklyClaimedDL();
 				weeklyDL.put(claimWeek, directLabor);
 				dl.setWeeklyClaimedDL(weeklyDL);
+				HashMap<String, Double> weeklyVC = dl.getWeeklyClaimedVolume();
+				weeklyVC.put(claimWeek, volumeClaimed);
+				dl.setWeeklyClaimedVolume(weeklyVC);
 				dl.setTotalClaimedDL(dl.getTotalClaimedDL() + directLabor);
+				dl.setTotalClaimedDL(dl.getTotalClaimedVolume() + volumeClaimed);
 				workMap.put(employee, dl);
 				}
 			}
