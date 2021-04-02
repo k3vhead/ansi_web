@@ -194,9 +194,9 @@ public class BcrTicketClaimResponse extends MessageResponse {
 				expenses.add(new PassthruExpense(claimId, passthruVolume, passthruExpenseCode, passthruExpenseType, notes));
 			}
 		}
-		if ( dlClaims.isEmpty() ) {
-			throw new RecordNotFoundException(String.valueOf(ticketId));
-		}
+//		if ( dlClaims.isEmpty() ) {
+//			throw new RecordNotFoundException(String.valueOf(ticketId));
+//		}
 		
 
 	}
