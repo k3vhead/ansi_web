@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -17,7 +16,6 @@ import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.TicketClaim;
-import com.ansi.scilla.common.utils.AnsiDateUtils;
 import com.ansi.scilla.web.bcr.request.BcrTicketClaimRequest;
 import com.ansi.scilla.web.bcr.response.BcrTicketClaimResponse;
 import com.ansi.scilla.web.common.request.RequestValidator;
@@ -33,6 +31,7 @@ import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 public class BcrTicketClaimServlet extends AbstractServlet {
 
@@ -121,7 +120,14 @@ public class BcrTicketClaimServlet extends AbstractServlet {
 					}
 				}				
 			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
-				super.sendForbidden(response);			
+				super.sendForbidden(response);		
+			} catch ( InvalidFormatException e) {
+				String badField = super.findBadField(e.toString());
+                WebMessages messages = new WebMessages();
+                messages.addMessage(badField, "Invalid Format");
+                BcrTicketClaimResponse data = new BcrTicketClaimResponse();
+                data.setWebMessages(messages);
+                super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
 			} catch ( Exception e) {
 				AppUtils.logException(e);
 				AppUtils.rollbackQuiet(conn);

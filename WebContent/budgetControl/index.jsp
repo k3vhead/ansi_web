@@ -903,11 +903,13 @@
 					
 					// this bit handles the display/hide of panels in the new claim modal
 					$("#directLaborFieldContainer").click(function($event) {
+						
 						$(".field-container").removeClass("button_is_active");
 						$(".field-container").addClass("button_is_inactive");
 						$("#directLaborFieldContainer").removeClass("button_is_inactive");
 						$("#directLaborFieldContainer").addClass("button_is_active");		
 						$(".details").hide();
+						$("#bcr_new_claim_modal .err").html("");
 						$("#bcr_new_claim_modal .directLaborDetails").show();
 						$("#bcr_new_claim_modal").attr("data-claimtype","labor");
 					});
@@ -918,6 +920,7 @@
 						$("#expenseFieldContainer").removeClass("button_is_inactive");
 						$("#expenseFieldContainer").addClass("button_is_active");	
 						$(".details").hide();
+						$("#bcr_new_claim_modal .err").html("");
 						$("#bcr_new_claim_modal .expenseDetails").show();
 						$("#bcr_new_claim_modal").attr("data-claimtype","expense");
 					});
@@ -1749,9 +1752,12 @@
         		saveNewClaim : function() {
 					var $claimType = $("#bcr_new_claim_modal").attr("data-claimtype");
         			console.log("saveNewClaim: " + $claimType);
-        			if ( $claimType == "labor") {
-        				var $ticketId = $("#bcr_new_claim_modal .directLaborDetails input[name='ticketId']").val();
-            			var $serviceTagId = $("#bcr_new_claim_modal .directLaborDetails input[name='serviceTypeId']").val();
+        			$("#bcr_new_claim_modal .err").html("");
+        			
+        			var $ticketId = $("#bcr_new_claim_modal .directLaborDetails input[name='ticketId']").val();
+        			var $serviceTagId = $("#bcr_new_claim_modal .directLaborDetails input[name='serviceTypeId']").val();
+        			
+        			if ( $claimType == "labor") {        			
             			var $claimWeek = $("#bcr_new_claim_modal .directLaborDetails select[name='claimWeek']").val();
             			
             			var $dlAmt = $("#bcr_new_claim_modal .directLaborDetails input[name='dlAmt']").val();
@@ -1779,7 +1785,39 @@
             			console.log($outbound);
             			ANSI_UTILS.doServerCall("POST", "bcr/ticketClaim", JSON.stringify($outbound), BUDGETCONTROL.saveNewClaimSuccess, BUDGETCONTROL.saveNewClaimFail);
         			} else if ( $claimType == "expense" ) {
-        				alert("new expense doesn't work yet");
+						var $claimWeek = $("#bcr_new_claim_modal .expenseDetails select[name='claimWeek']").val();            			
+            			var $volume = $("#bcr_new_claim_modal .expenseDetails input[name='volume']").val();
+            			var $expenseType = $("#bcr_new_claim_modal .expenseDetails select[name='expenseType']").val();
+            			var $notes = $("#bcr_new_claim_modal .expenseDetails input[name='notes']").val();
+            			
+            			console.log($claimWeek + "\t" + $volume + "\t" + $expenseType + "\t" + $notes);
+            			
+            			// these are needed to create the correct response, not to do the update
+            			var $divisionId = BUDGETCONTROL.divisionId
+            			var $workYear = BUDGETCONTROL.workYear; 
+            			var $workWeeks = BUDGETCONTROL.workWeek;
+            			// {"divisionId":101,
+            			//	"ticketId":"506645",
+            			//	"serviceTagId":"2",
+            			//	"claimWeek":"2020-46",
+            			//	"volume":"20",
+            			//	"expenseType":"Lift",
+            			//	"notes":"C Eb G Bb",
+            			//	"workYear":2020,
+            			//	"workWeeks":"45,46,47,48"}
+            			var $outbound = {
+            					"divisionId":$divisionId,
+            					"ticketId":$ticketId,
+                    			"serviceTagId":$serviceTagId,
+                    			"claimWeek":$claimWeek,
+                    			"volume":$volume,
+                    			"expenseType":$expenseType,
+                    			"notes":$notes,
+                    			"workYear":$workYear,
+                    			"workWeeks":$workWeeks,
+            			}
+            			console.log($outbound);
+            			ANSI_UTILS.doServerCall("POST", "bcr/expense", JSON.stringify($outbound), BUDGETCONTROL.saveNewClaimSuccess, BUDGETCONTROL.saveNewClaimFail);
         			} else {
         				$("#bcr_new_claim_modal .newClaimErr").html("Invalid system state. (Claim Type: " + $claimType + ")  Reload page and try again");
         			}
@@ -1789,11 +1827,19 @@
         		
         		saveNewClaimFail : function($data) {
         			console.log("saveNewClaimFail");
+        			$.each($data.data.webMessages, function($index, $value) {
+        				var $selector = "#bcr_new_claim_modal ." + $index + "Err";
+        				console.log($selector);
+        				$($selector).html($value[0]);
+        			});
         		},
         		
         		
         		saveNewClaimSuccess : function($data) {
         			console.log("saveNewClaimSuccess");
+        			$("#bcr_new_claim_modal").dialog("close");
+        			$("#globalMsg").html("Update Complete").show().fadeOut(4000);
+        			BUDGETCONTROL.refreshTicketTables();
         		},
         		
         		
@@ -2179,27 +2225,27 @@
     				<tr>
     					<td class="form-label">Claim Week:</td>
     					<td><select name="claimWeek"></select></td>
-    					<td><span class="claimWeekErr"></span></td>
+    					<td><span class="claimWeekErr err"></span></td>
     				</tr>
     				<tr>
     					<td class="form-label">Direct Labor:</td>
     					<td><input type="text" name="dlAmt" /></td>
-    					<td><span class="dlAmtErr"></span></td>
+    					<td><span class="dlAmtErr err"></span></td>
     				</tr>
     				<tr>
     					<td class="form-label">Volume Claimed:</td>
     					<td><input type="text" name="volumeClaimed" /></td>
-    					<td><span class="volumeErr"></span></td>
+    					<td><span class="volumeClaimedErr err"></span></td>
     				</tr>
     				<tr>
     					<td class="form-label">Employee:</td>
     					<td><input type="text" name="employee" /></td>
-    					<td><span class="employeeErr"></span></td>
+    					<td><span class="employeeErr err"></span></td>
     				</tr>
     				<tr>
     					<td class="form-label">Notes:</td>
     					<td><input type="text" name="notes" /></td>
-    					<td><span class="notesErr"></span></td>
+    					<td><span class="notesErr err"></span></td>
     				</tr>
     			</table>
 			</div>
@@ -2223,22 +2269,22 @@
     				<tr>
     					<td class="form-label">Claim Week:</td>
     					<td><select name="claimWeek"></select></td>
-    					<td><span class="claimWeekErr"></span></td>
+    					<td><span class="claimWeekErr err"></span></td>
     				</tr>
     				<tr>
     					<td class="form-label">Volume Claimed:</td>
     					<td><input type="text" name="volume" /></td>
-    					<td><span class="volumeErr"></span></td>
+    					<td><span class="volumeErr err"></span></td>
     				</tr>
     				<tr>
     					<td class="form-label">Expense Type:</td>
     					<td><select name="expenseType"></select></td>
-    					<td><span class="employeeErr"></span></td>
+    					<td><span class="expenseTypeErr err"></span></td>
     				</tr>
     				<tr>
     					<td class="form-label">Notes:</td>
     					<td><input type="text" name="notes" /></td>
-    					<td><span class="notesErr"></span></td>
+    					<td><span class="notesErr err"></span></td>
     				</tr>
     			</table>
 			</div>

@@ -43,7 +43,6 @@ import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.utils.FieldMap;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.thewebthing.commons.db2.DBTable;
-import com.thewebthing.commons.db2.RecordNotFoundException;
 import com.thewebthing.commons.lang.StringUtils;
 
 public class RequestValidator {
@@ -646,6 +645,22 @@ public class RequestValidator {
 	}
 
 	
+	public static void validateStringFormat(WebMessages webMessages, String fieldName, String value, Pattern pattern, boolean required, String label) {
+		if (StringUtils.isBlank(value)) {
+			if (required) {
+				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
+				webMessages.addMessage(fieldName, message);
+			}
+		} else {
+			Matcher matcher = pattern.matcher(value);
+			if ( ! matcher.matches() ) {
+				String message = StringUtils.isBlank(label) ? "" : " for " + label;
+				webMessages.addMessage(fieldName, "Invalid format" + message);
+			}
+		}
+		
+	}
+
 	public static void validateTagAbbrev(Connection conn, WebMessages webMessages, String fieldName, String tagType,
 			String value, boolean required) throws Exception {
 		if (StringUtils.isBlank(value)) {
