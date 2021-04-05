@@ -339,6 +339,7 @@
         			}
         			console.log("doTicketLookup " + $fileName + "  " + $destination);
         			
+        			var $jobEditTag = '<webthing:edit>No Services Defined. Revise the Job</webthing:edit>';
         			
         			BUDGETCONTROL.ticketTable[$destination] = $($destination).DataTable( {
             			"aaSorting":		[[0,'asc']],
@@ -380,27 +381,25 @@
     			        	"data": $outbound,
     			        	},
     			        columns: [
-    			        	{ title: "Account", width:"15%", searchable:true, "defaultContent": "<i>N/A</i>", 
-    			        		data: function ( row, type, set ) {
-    			            		if(row.job_site_name != null) {
-	    			        			var $display = row.job_site_name;
-    			            			if (row.claim_id != null ) {
-    			            				$display = '<a href="#" class="bcr-edit-clicker" data-claimid="'+row.claim_id+'" data-ticketid="'+row.ticket_id+'" data-workyear="'+$outbound['workYear']+'" data-workweeks="'+$outbound['workWeeks']+'" data-divisionid="'+$outbound['divisionId']+'">'+row.job_site_name+'</a>';
-    			            			}
-    			            			return $display;
-    			            		}
-    			            	} 
-    			        	},
+    			        	{ title: "Account", width:"15%", searchable:true, "defaultContent": "<i>N/A</i>", data:'job_site_name' }, 
     			            { title: "Ticket Number", width:"6%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.ticket_id != null){return ('<a href="#" data-id="'+row.ticket_id+'" class="ticket-clicker">'+row.ticket_id+'</a>');}
     			            } },
-    			            { title: "Claim Week", width:"4%", searchable:true, searchFormat: "First Last Name", 
+    			            { title: "Claim Week", width:"5%", searchable:true, searchFormat: "First Last Name", 
     			            	data: function ( row, type, set ) {
-    			            		var $display = row.claim_week;
-    			            		if(row.claim_week == null ) {
-    			            			$display = '<span class="newClaimButton" data-ticketid="'+row.ticket_id+'" data-servicetypeid="'+row.service_type_id+'" data-servicetagid="'+row.service_tag_id+'"><webthing:addNew>New Claim</webthing:addNew></span>';
-	    			            	}    			     
-    			            		return $display;
+    			            		var $claimWeek = "";
+    			            		var $display = "";
+    			            		
+    			            		if (row.claim_id != null ) {
+    			            			$claimWeek = '<a href="#" class="bcr-edit-clicker" data-claimid="'+row.claim_id+'" data-ticketid="'+row.ticket_id+'" data-workyear="'+$outbound['workYear']+'" data-workweeks="'+$outbound['workWeeks']+'" data-divisionid="'+$outbound['divisionId']+'">'+row.claim_week+'</a>';
+    			            		}
+
+									if ( row.service_tag_id == null ) {
+										$addButton = "";
+									} else {
+    			            			$addButton = '<span class="newClaimButton" data-ticketid="'+row.ticket_id+'" data-servicetypeid="'+row.service_type_id+'" data-servicetagid="'+row.service_tag_id+'"><webthing:addNew>New Claim</webthing:addNew></span>';
+									}
+    			            		return $claimWeek + $addButton;
     			            	} 
     			            },
     			            { title: "D/L", width:"6%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
@@ -446,9 +445,16 @@
     			            { title: "Ticket Status",  width:"4%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.ticket_status != null){return (row.ticket_status+"");}
     			            } },
-    			            { title: "Service",  width:"4%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.service_tag_id != null){return (row.service_tag_id+"");}
-    			            } },
+    			            { title: "Service",  width:"4%", searchable:true, searchFormat: "Name #####", 
+    			            	data: function ( row, type, set ) {
+    			            		if ( row.service_tag_id == null ) {
+    			            			$display = '<a href="jobMaintenance.html?id=' + row.job_id +'">' + $jobEditTag + '</a>';
+    			            		} else {
+    			            			$display = row.service_tag_id;
+    			            		}
+    			            		return $display;
+    			            	} 
+    			            },
     			            { title: "Equipment",  width:"4%", searchable:true, searchFormat: "Equipment #####", data:'equipment_tags' },
     			            { title: "Employee",  width:"13%", searchable:true, searchFormat: "Name #####", data:'employee' }
     			            ],

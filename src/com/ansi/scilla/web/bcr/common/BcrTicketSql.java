@@ -15,6 +15,7 @@ public class BcrTicketSql extends ApplicationObject {
 
 	public static final String JOB_SITE_NAME = "job_site_name";
 	public static final String TICKET_ID = "ticket_id";
+	public static final String JOB_ID = "job_id";
 	public static final String CLAIM_WEEK = "claim_week";
 	public static final String DL_EXPENSES = "dl_expenses";
 	public static final String DL_AMT = "dl_amt";
@@ -35,6 +36,7 @@ public class BcrTicketSql extends ApplicationObject {
 	public static final String EQUIPMENT_TAGS = "equipment_tags";
 	public static final String CLAIM_ID = "claim_id";
 	public static final String SERVICE_TYPE_ID = "service_type_id";
+	
 	
 	
 	/**
@@ -92,6 +94,7 @@ public class BcrTicketSql extends ApplicationObject {
 			"select \n" + 
 			"   job_site.name as " + JOB_SITE_NAME + "\n" + 
 			" , ticket."+TICKET_ID+"\n" + 
+			" , ticket." + JOB_ID + "\n" + 
 			" , ticket_claim." + CLAIM_ID + "\n" +
 			" , job_tag_xref.tag_id as " + SERVICE_TYPE_ID + "\n" + 
 			" , concat(ticket_claim.claim_year,'-',ticket_claim.claim_week) as "+CLAIM_WEEK+"\n" + 
