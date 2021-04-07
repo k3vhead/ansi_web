@@ -339,6 +339,11 @@
         			}
         			console.log("doTicketLookup " + $fileName + "  " + $destination);
         			
+        			var $showClaimModal = []
+        			$.each($outbound.workWeeks.split(","), function($index, $value) {
+        				$showClaimModal.push($outbound.workYear + "-" + $value)
+        			});
+        			
         			var $jobEditTag = '<webthing:edit>No Services Defined. Revise the Job</webthing:edit>';
         			
         			BUDGETCONTROL.ticketTable[$destination] = $($destination).DataTable( {
@@ -391,7 +396,10 @@
     			            		var $display = "";
     			            		
     			            		if (row.claim_id != null ) {
-    			            			$claimWeek = '<a href="#" class="bcr-edit-clicker" data-claimid="'+row.claim_id+'" data-ticketid="'+row.ticket_id+'" data-workyear="'+$outbound['workYear']+'" data-workweeks="'+$outbound['workWeeks']+'" data-divisionid="'+$outbound['divisionId']+'">'+row.claim_week+'</a>';
+    			            			$claimWeek = row.claim_week;
+    			            			if ( $showClaimModal.includes(row.claim_week) ) {
+    			            				$claimWeek = '<a href="#" class="bcr-edit-clicker" data-claimid="'+row.claim_id+'" data-ticketid="'+row.ticket_id+'" data-workyear="'+$outbound['workYear']+'" data-workweeks="'+$outbound['workWeeks']+'" data-divisionid="'+$outbound['divisionId']+'">'+row.claim_week+'</a>';
+    			            			}
     			            		}
 
 									if ( row.service_tag_id == null ) {
@@ -528,7 +536,7 @@
 					$("#bcr_edit_modal").dialog( "option", "title", "Ticket Claim: " + $data.data.ticket.ticketId + " (" + $data.data.ticket.status + ")  " + $data.data.ticket.jobSiteName + ", Service Type: " + $data.data.ticket.serviceTagAbbrev);
 					
 					$("#bcr_edit_modal .totalVolume").html($data.data.ticket.totalVolume.toFixed(2));
-	            	$("#div-summary .total-volume").html( $data.data.ticket.totalVolume.toFixed(2) );
+	            	//$("#div-summary .total-volume").html( $data.data.ticket.totalVolume.toFixed(2) );
 
 
 	            	// set attributes so in-modal updates can happen (stash the values for later use)
@@ -537,6 +545,7 @@
 	            	
 	            	BUDGETCONTROL.makeDlLaborTable($data);
 					BUDGETCONTROL.makeDlExpenseTable($data);	
+					BUDGETCONTROL.makeSummaryPanel($data);
 						
 						            	
        				$("#bcr_edit_modal select[name='claimWeek']").val($data.data.claimWeek);
@@ -845,29 +854,7 @@
         		},
         		
         		
-        		makeChart : function(volumeClaimedTotal, expenseTotal, volumeRemainingTotal) {
-        			console.log("makeChart");
-        			var red = 'rgba(255, 99, 132, 1)';
-        			var blue = 'rgba(54, 162, 235, 1)';
-        			var orange = 'rgba(255, 206, 86, 1)';
-					var ctx = $("#myChart");
-					var myChart = new Chart(ctx, {
-						type : 'pie',
-						data : {
-							labels: ['Volume Claimed', 'Expense Volume','Volume Remaining'],							
-							datasets : [{
-								label : "",
-								data : [volumeClaimedTotal, expenseTotal, volumeRemainingTotal],
-								backgroundColor : [orange, blue, red],
-								borderColor : [orange, blue, red],
-								borderWidth: 1
-							}]
-						},
-						options : {
-							legend : { display:false, position:"bottom", boxWidth:12 }
-						}
-					});
-				},
+        		
         		
         		
         		
@@ -1128,11 +1115,7 @@
 								BUDGETCONTROL.expenseSave();						
 							});
 							
-			            	var volumeClaimedTotal = parseFloat($("#bcr_edit_modal").attr("volumeClaimedTotal"));
-			            	$("#div-summary .volume-claimed").html( volumeClaimedTotal.toFixed(2) );
-			            	$("#div-summary .volume-remaining").html( $data.data.ticket.volumeRemaining.toFixed(2) );
-			            	$("#div-summary .expense-volume").html( expenseTotal.toFixed(2) );
-		 					BUDGETCONTROL.makeChart(volumeClaimedTotal, expenseTotal, $data.data.ticket.volumeRemaining);
+			            	
 			            }
 		    		});
         		},
@@ -1547,6 +1530,48 @@
 					//	$($expenseSelect).val(val.passthruExpenseCode);
 					//});
 					
+        		},
+        		
+        		
+        		
+        		
+        		makeSummaryPanel : function($data) {
+        			console.log("makeSummaryPanel");
+        			var $totalVolume = $data.data.summary.totalVolume.toFixed(2);
+        			var $volumeClaimed = $data.data.summary.volumeClaimed.toFixed(2);
+        			var $volumeRemaining = $data.data.summary.volumeRemaining.toFixed(2);
+        			var $expenseVolume = $data.data.summary.expenseVolume.toFixed(2);
+        			
+        			$("#div-summary .total-volume").html( $totalVolume );
+        			$("#div-summary .volume-claimed").html( $volumeClaimed );
+        			$("#div-summary .volume-remaining").html( $volumeRemaining );
+        			$("#div-summary .expense-volume").html( $expenseVolume );
+        			
+        			var red = 'rgba(255, 99, 132, 1)';
+        			var blue = 'rgba(54, 162, 235, 1)';
+        			var orange = 'rgba(255, 206, 86, 1)';
+					var ctx = $("#myChart");
+					var myChart = new Chart(ctx, {
+						type : 'pie',
+						data : {
+							labels: ['Volume Claimed', 'Expense Volume','Volume Remaining'],							
+							datasets : [{
+								label : "",
+								data : [ $volumeClaimed, $expenseVolume, $volumeRemaining ],
+								backgroundColor : [orange, blue, red],
+								borderColor : [orange, blue, red],
+								borderWidth: 1
+							}]
+						},
+						options : {
+							legend : { display:false, position:"bottom", boxWidth:12 }
+						}
+					});
+        			//var volumeClaimedTotal = parseFloat($("#bcr_edit_modal").attr("volumeClaimedTotal"));
+	            	//$("#div-summary .volume-claimed").html( volumeClaimedTotal.toFixed(2) );
+	            	//$("#div-summary .volume-remaining").html( $data.data.ticket.volumeRemaining.toFixed(2) );
+	            	//$("#div-summary .expense-volume").html( expenseTotal.toFixed(2) );
+ 					//BUDGETCONTROL.makeChart(volumeClaimedTotal, expenseTotal, $data.data.ticket.volumeRemaining);
         		},
         		
         		

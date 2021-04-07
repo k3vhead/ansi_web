@@ -3,12 +3,13 @@ package com.ansi.scilla.web.test.bcr;
 import java.sql.Connection;
 import java.util.List;
 
+import com.ansi.scilla.common.db.TicketClaim;
 import com.ansi.scilla.common.utils.AppUtils;
-import com.ansi.scilla.web.bcr.response.BcrTicketClaimResponse;
+import com.ansi.scilla.web.bcr.response.BcrTicketClaimSummary;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.test.TesterUtils;
 
-public class TestTicketClaimResponse {
+public class TestTicketClaimSummary {
 
 	private final Integer userId = 5;
 	
@@ -17,16 +18,12 @@ public class TestTicketClaimResponse {
 		try {
 			conn = AppUtils.getDevConn();
 			List<SessionDivision> divisionList = TesterUtils.makeSessionDivisionList(conn, userId);
+			TicketClaim ticketClaim = new TicketClaim();
+			ticketClaim.setClaimId(28);
+			ticketClaim.selectOne(conn);
 			
-			
-//			String uri = "/ansi_web/bcr/ticketClaim/27";
-//			String[] uriPath = uri.split("/");
-//			String ticket = uriPath[uriPath.length-1];
-//			System.out.println(ticket);
-			
-			
-			BcrTicketClaimResponse response = BcrTicketClaimResponse.fromClaim(conn, userId, divisionList, 101, 2020, "45,46,47,48", 27);
-//			System.out.println(response);
+			BcrTicketClaimSummary response = new BcrTicketClaimSummary(conn, ticketClaim, divisionList, 101, 2020);
+			System.out.println(response);
 			String json = AppUtils.object2json(response);
 			System.out.println(json);
 			
@@ -40,7 +37,7 @@ public class TestTicketClaimResponse {
 	
 	public static void main(String[] args) {
 		try {
-			new TestTicketClaimResponse().go();
+			new TestTicketClaimSummary().go();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
