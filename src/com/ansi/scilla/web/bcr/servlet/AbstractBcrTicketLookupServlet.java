@@ -46,6 +46,7 @@ public abstract class AbstractBcrTicketLookupServlet extends AbstractLookupServl
 	protected static final String WORK_WEEKS = "workWeeks";
 	protected static final String WORK_WEEK = "workWeek";
 	protected static final String DIVISION_ID = "divisionId";
+	protected static final String MONTHLY_FILTER = "monthlyFilter";
 
 	public AbstractBcrTicketLookupServlet() {
 		super(Permission.TICKET_READ);
@@ -72,14 +73,18 @@ public abstract class AbstractBcrTicketLookupServlet extends AbstractLookupServl
 		String workWeek = request.getParameter(WORK_WEEK);  // the single week we want to look at
 
 		logger.log(Level.DEBUG, "Parms: " + divisionId + " " + workYear + " " + workWeeks + " " + workWeek);
-		LookupQuery lookupQuery = StringUtils.isBlank(workWeek) ?
-				new BcrTicketLookupQuery(user.getUserId(), divisionList, divisionId, workYear, workWeeks)
-				:
-					new BcrWeeklyTicketLookupQuery(user.getUserId(), divisionList, divisionId, workYear, workWeeks, workWeek);
-				if ( searchTerm != null ) {
-					lookupQuery.setSearchTerm(searchTerm);
-				}
-				return lookupQuery;
+		LookupQuery lookupQuery = null;
+		if (StringUtils.isBlank(workWeek)) {	
+			String monthlyParm = request.getParameter(MONTHLY_FILTER);
+			Boolean monthlyFilter = ( ! StringUtils.isBlank(monthlyParm) ) && monthlyParm.equalsIgnoreCase("true");
+			lookupQuery = new BcrTicketLookupQuery(user.getUserId(), divisionList, divisionId, workYear, workWeeks, monthlyFilter);
+		} else {
+			lookupQuery = new BcrWeeklyTicketLookupQuery(user.getUserId(), divisionList, divisionId, workYear, workWeeks, workWeek);
+		}
+		if ( searchTerm != null ) {
+			lookupQuery.setSearchTerm(searchTerm);
+		}
+		return lookupQuery;
 
 	}
 

@@ -330,14 +330,57 @@
         		
         		
         		
-        		doTicketLookup : function($destination,$url, $outbound) {
+        		doMonthlyFilter : function($destination, $url, $outbound) {
+        			console.log("doMonthlyFilter ")
+        			var $key = 'monthlyFilter';
+        			$($destination).DataTable().destroy(false);
+        			if ( $key in $outbound ) {
+        				if ( $outbound[$key]=="true") {
+        					$outbound[$key] = "false";
+        				} else {
+        					$outbound[$key] = "true";
+        				}
+        			} else {
+        				$outbound[$key] = "true";
+        			}
+        			BUDGETCONTROL.doTicketLookup($destination, $url, $outbound);
+        		},
+        		
+        		
+        		
+        		
+        		doTicketLookup : function($destination, $url, $outbound) {
         			var $weekNum = $outbound['workWeek'];
+        			        			
+        			
         			if ( $weekNum==null || $weekNum=='') {
         				$fileName = "All Tickets";
         			} else {
         				$fileName = "Tickets Week " + $weekNum;
         			}
         			console.log("doTicketLookup " + $fileName + "  " + $destination);
+        			
+        			var $buttonArray = [
+        	        	'pageLength',
+        	        	'copy', 
+        	        	{extend:'csv', filename:'* ' + $fileName}, 
+        	        	{extend:'excel', filename:'* ' + $fileName}, 
+        	        	{extend:'pdfHtml5', orientation: 'landscape', filename:'* ' + $fileName}, 
+        	        	'print',
+        	        	{extend:'colvis', label: function () {doFunctionBinding();$('#ticketTable').draw();}}
+        	        ];
+        			
+        			if ( $weekNum==null || $weekNum=='') {
+        				$buttonArray.push({ 
+        					text:'Current Month', 
+        					action: function(e, dt, node, config) { 
+        						BUDGETCONTROL.doMonthlyFilter($destination, $url, $outbound);
+       						} 
+        				});
+        			}
+        			
+        			
+        			
         			
         			var $showClaimModal = []
         			$.each($outbound.workWeeks.split(","), function($index, $value) {
@@ -363,15 +406,7 @@
             	        	[ 10, 50, 100, 500, 1000 ],
             	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
             	        ],
-            	        buttons: [
-            	        	'pageLength',
-            	        	'copy', 
-            	        	{extend:'csv', filename:'* ' + $fileName}, 
-            	        	{extend:'excel', filename:'* ' + $fileName}, 
-            	        	{extend:'pdfHtml5', orientation: 'landscape', filename:'* ' + $fileName}, 
-            	        	'print',
-            	        	{extend:'colvis', label: function () {doFunctionBinding();$('#ticketTable').draw();}}
-            	        ],
+            	        buttons: $buttonArray,
             	        "columnDefs": [
              	            { "orderable": true, "targets": -1 },
              	            { className: "dt-head-center", "targets":[0,1,2,3,4,5,6,7,8,9,10,11,12,13]},
