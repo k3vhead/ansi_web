@@ -1,4 +1,5 @@
-<%@ tag description="Budget Control Panel 1" body-content="scriptless" %> 
+<%@ tag description="Budget Control Panel 1" body-content="scriptless" %>
+<%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="webthing" %> 
 <table style="width:100%;">
 	<colgroup>
 		<col span="1" style="width:10%;" />
@@ -26,6 +27,12 @@
 	<tr>
 		<td><span class="form-label">Year:</span></td>
 		<td><span class="workYear"></span></td>
+		<td></td>
+		<td rowspan="4" style="text-align:center;">
+			<webthing:view styleClass="new-bcr fa-3x green">New BCR</webthing:view>
+			&nbsp;&nbsp;
+			<a href="#" target="_new" class="all-ticket-spreadsheet"><webthing:excel styleClass="fa-3x blue">All Tickets</webthing:excel></a>
+		</td>
 	</tr>
 	<tr>
 		<td><span class="form-label">Month:</span></td>

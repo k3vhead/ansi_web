@@ -26,6 +26,7 @@ public class BcrServlet extends AbstractServlet {
 	public static final String TICKET = "ticket";
 	public static final String TICKET_CLAIM = "ticketClaim";
 	public static final String TICKETLIST = "ticketList";
+	public static final String TICKET_XLS = "ticketXls";
 	public static final String TITLE = "title";
 	public static final String WEEKLY_TICKETLIST = "weeklyTicketList";
 	
@@ -88,7 +89,10 @@ public class BcrServlet extends AbstractServlet {
 			break;
 		case TICKETLIST:
 			new BcrTicketLookupServlet().doGet(request, response);
-			break;	
+			break;
+		case TICKET_XLS:
+			new BcrTicketSpreadsheetServlet().doGet(request, response);
+			break;
 		case TITLE:
 			new BcrTitleServlet().doGet(request, response);
 			break;

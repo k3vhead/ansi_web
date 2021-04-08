@@ -61,6 +61,9 @@
         	.aligned-right {
         		text-align:right;
         	}
+        	.all-ticket-spreadsheet {
+        		text-decoration:none;
+        	}
         	.bcr_employees_display .column-header {
 				font-weight:bold;
 			}
@@ -98,6 +101,9 @@
 			.expenseDetails {
 				display:none;
 			}	
+			.new-bcr {
+				cursor:pointer;
+			}
 			.newExpenseItem {
 				display:none;
 			}	
@@ -399,6 +405,7 @@
             	        "scrollX": 			true,
             	        "pageLength":		50,
             	        rowId: 				'dt_RowId',
+            	        destroy : 			true,		// this lets us reinitialize the table
             	        dom: 				'Bfrtip',
             	        "searching": 		true,
             	        "searchDelay":		800,
@@ -1438,7 +1445,11 @@
         					{
         						id:  "bcr_title_prompt_cancel",
         						click: function($event) {
-        							location.href="dashboard.html";        							
+        							if ( BUDGETCONTROL.workWeek == null ) {
+        								location.href="dashboard.html";
+        							} else {
+        								$( "#bcr_title_prompt" ).dialog("close");
+        							}
         						}
         					},{
         						id:  "bcr_title_prompt_save",
@@ -1779,7 +1790,7 @@
         		
         		
         		populateTitlePanel : function($data) {
-        			$("#titleHeader").html($data.data.workMonthName + ", " + $data.data.workYear + " -- " + $data.data.div);
+        			$("#titleHeader").html($data.data.workMonthName + ", " + $data.data.workYear + " -- " + $data.data.div);        			
 					$("#bcr_summary .dateCreated").html($data.data.dateCreated);
 					$("#bcr_summary .dateModified").html($data.data.dateModified);
 					$("#bcr_summary .workYear").html($data.data.workYear);
@@ -1790,6 +1801,23 @@
 					$("#bcr_summary .div").html($data.data.div);
 					$("#bcr_summary .managerFirstName").html($data.data.managerFirstName);
 					$("#bcr_summary .managerLastName").html($data.data.managerLastName);
+					
+					$("#bcr_summary .new-bcr").click(function($event) {
+						$( "#bcr_title_prompt" ).dialog("open");
+					});
+					
+					var $workWeeks = [];
+					$.each($data.data.workCalendar, function($index, $value) {
+						$workWeeks.push($value.weekOfYear);
+					});
+					var $parms = [];
+					$parms.push("divisionId="+$data.data.divisionId);
+					$parms.push("workYear=" + $data.data.workYear);
+					$parms.push("workWeeks=" + $workWeeks.join(","));
+					
+					var $url = "bcr/ticketXls?" + $parms.join("&");
+					console.log($url);
+					$("#bcr_summary .all-ticket-spreadsheet").attr("href",$url);
         		},
         		
         		
