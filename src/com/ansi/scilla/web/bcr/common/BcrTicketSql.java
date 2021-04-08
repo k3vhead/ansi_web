@@ -15,6 +15,8 @@ public class BcrTicketSql extends ApplicationObject {
 
 	public static final String JOB_SITE_NAME = "job_site_name";
 	public static final String TICKET_ID = "ticket_id";
+	public static final String JOB_ID = "job_id";
+	public static final String CLAIM_YEAR = "claim_year";
 	public static final String CLAIM_WEEK = "claim_week";
 	public static final String DL_EXPENSES = "dl_expenses";
 	public static final String DL_AMT = "dl_amt";
@@ -35,6 +37,7 @@ public class BcrTicketSql extends ApplicationObject {
 	public static final String EQUIPMENT_TAGS = "equipment_tags";
 	public static final String CLAIM_ID = "claim_id";
 	public static final String SERVICE_TYPE_ID = "service_type_id";
+	
 	
 	
 	/**
@@ -92,8 +95,10 @@ public class BcrTicketSql extends ApplicationObject {
 			"select \n" + 
 			"   job_site.name as " + JOB_SITE_NAME + "\n" + 
 			" , ticket."+TICKET_ID+"\n" + 
+			" , ticket." + JOB_ID + "\n" + 
 			" , ticket_claim." + CLAIM_ID + "\n" +
 			" , job_tag_xref.tag_id as " + SERVICE_TYPE_ID + "\n" + 
+			" , ticket_claim.claim_year as " + CLAIM_YEAR + "\n" +
 			" , concat(ticket_claim.claim_year,'-',ticket_claim.claim_week) as "+CLAIM_WEEK+"\n" + 
 			" , isnull(ticket_claim.dl_amt,0.00) as "+DL_AMT+"\n" + 
 			" , isnull(ticket_claim.dl_expenses,0.00) as " + DL_EXPENSES + "\n" + 
@@ -164,18 +169,20 @@ public class BcrTicketSql extends ApplicationObject {
 			"left outer join (" + equipmentTagSubselect + ") tag_list on tag_list.ticket_id=ticket_claim.ticket_id";
 					
 	
-	public static final String baseWhereClause =
+	public static final String baseWhereClause1 =
 			"where ticket.ticket_type in ('run','job') \n" + 			
 			"  and ticket.act_division_id=? \n" + 
 			" and ((\n" +
 			"     ticket_claim.claim_year=?\n" + 
 			"     and ticket_claim.claim_week in ($CLAIMWEEKFILTER$)\n" +
-			"   ) or (\n" +
+			"   ) "
+			; 
+	public static final String baseWhereClause2 =
+			" or (\n" +
 			"     ticket.ticket_status in ('D','C')\n" +
-//			" )\n" + 
-			"   ) or ((isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim.passthru_expense_volume,0.00)) - isnull(invoice_totals.invoiced_amount,0.00) <> 0.00)\n" + 
+			" ) or ((isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim.passthru_expense_volume,0.00)) - isnull(invoice_totals.invoiced_amount,0.00) <> 0.00)\n" + 
 			"		and (isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim.passthru_expense_volume,0.00) <> 0.00)\n" + 
-			"   )  \n" 
+			" )  \n" 
 			; 
 	
 	
@@ -188,7 +195,12 @@ public class BcrTicketSql extends ApplicationObject {
 	}
 	
 	public static String makeBaseWhereClause(String workWeeks) {
-		String whereClause = " " + BcrTicketSql.baseWhereClause.replaceAll("\\$CLAIMWEEKFILTER\\$", workWeeks);
+		return makeBaseWhereClause(workWeeks, false);
+	}
+	
+	public static String makeBaseWhereClause(String workWeeks, Boolean monthlyFilter) {
+		String baseWhereClause = monthlyFilter ? BcrTicketSql.baseWhereClause1 +")" : BcrTicketSql.baseWhereClause1 + BcrTicketSql.baseWhereClause2;		
+		String whereClause = " " + baseWhereClause.replaceAll("\\$CLAIMWEEKFILTER\\$", workWeeks);
 		return whereClause;
 	}
 }

@@ -34,6 +34,8 @@ public class BcrTicketSpreadsheet {
 	private static final HashMap<String, String> headerMap;
 	private static DecimalFormat df = new DecimalFormat("#0.00");
 	
+	private XSSFWorkbook workbook;
+	
 	static {
 		headerMap = new HashMap<String, String>();
 		headerMap.put("job_site_name","Account");
@@ -66,6 +68,13 @@ public class BcrTicketSpreadsheet {
 		createSpreadsheet(conn, baseSql, divisionList, divisionId, claimYear, workWeeks);
 	}
 	
+	
+	public XSSFWorkbook getWorkbook() {
+		return workbook;
+	}
+
+
+	
 	private void createSpreadsheet(Connection conn, String sql, List<SessionDivision> divisionList, Integer divisionId, Integer year, String workWeekList) 
 			throws Exception {
 		PreparedStatement ps = conn.prepareStatement(sql);
@@ -74,7 +83,7 @@ public class BcrTicketSpreadsheet {
 		ResultSet rs = ps.executeQuery();
 		ResultSetMetaData rsmd = rs.getMetaData();
 		
-		XSSFWorkbook workbook = new XSSFWorkbook();
+		this.workbook = new XSSFWorkbook();
 		XSSFSheet sheet = workbook.createSheet();
 		Row row = null;
 		Cell cell = null;
@@ -162,7 +171,7 @@ public class BcrTicketSpreadsheet {
 //			sheet.autoSizeColumn(i);
 //		}
 		
-		workbook.write(new FileOutputStream("/home/jwlewis/Documents/projects/BCR_Spreadsheet.xlsx"));
+//		workbook.write(new FileOutputStream("/home/jwlewis/Documents/projects/BCR_Spreadsheet.xlsx"));
 //		workbook.write(new FileOutputStream("/home/dclewis/Documents/webthing_v2/projects/ANSI/testresults/BCR_Spreadsheet.xlsx"));
 //		return workbook;
 	}

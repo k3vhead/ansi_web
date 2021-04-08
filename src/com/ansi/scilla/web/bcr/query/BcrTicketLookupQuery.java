@@ -28,15 +28,17 @@ public class BcrTicketLookupQuery extends LookupQuery {
 	protected Integer divisionId;
 	protected String workWeeks;
 	protected Integer workYear;
+	protected Boolean monthlyFilter;
 
 
-	public BcrTicketLookupQuery(Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer workYear, String workWeeks) {
-		super(BcrTicketSql.sqlSelectClause, BcrTicketSql.makeFilteredFromClause(divisionList), BcrTicketSql.makeBaseWhereClause(workWeeks));
+	public BcrTicketLookupQuery(Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer workYear, String workWeeks, Boolean monthlyFilter) {
+		super(BcrTicketSql.sqlSelectClause, BcrTicketSql.makeFilteredFromClause(divisionList), BcrTicketSql.makeBaseWhereClause(workWeeks, monthlyFilter));
 		this.logger = LogManager.getLogger(BcrTicketLookupQuery.class);
 		this.userId = userId;	
 		this.workWeeks = workWeeks;
 		this.workYear = workYear;
 		this.divisionId = divisionId;
+		this.monthlyFilter = monthlyFilter;
 		super.setBaseFilterValue(Arrays.asList( new Object[] {divisionId, workYear}));
 	}
 
@@ -66,6 +68,14 @@ public class BcrTicketLookupQuery extends LookupQuery {
 		this.workYear = workYear;
 	}
 	
+	public Boolean getMonthlyFilter() {
+		return monthlyFilter;
+	}
+
+	public void setMonthlyFilter(Boolean monthlyFilter) {
+		this.monthlyFilter = monthlyFilter;
+	}
+
 	@Override
 	protected String makeOrderBy(SelectType selectType) {
 		String orderBy = "";
@@ -89,7 +99,7 @@ public class BcrTicketLookupQuery extends LookupQuery {
 
 	@Override
 	protected String makeWhereClause(String queryTerm) {
-		String whereClause = BcrTicketSql.makeBaseWhereClause(workWeeks);
+		String whereClause = BcrTicketSql.makeBaseWhereClause(workWeeks, monthlyFilter);
 		String joiner = " and ";
 		
 		String[] searchableFields = new String[] {

@@ -61,6 +61,9 @@
         	.aligned-right {
         		text-align:right;
         	}
+        	.all-ticket-spreadsheet {
+        		text-decoration:none;
+        	}
         	.bcr_employees_display .column-header {
 				font-weight:bold;
 			}
@@ -98,6 +101,9 @@
 			.expenseDetails {
 				display:none;
 			}	
+			.new-bcr {
+				cursor:pointer;
+			}
 			.newExpenseItem {
 				display:none;
 			}	
@@ -330,8 +336,29 @@
         		
         		
         		
-        		doTicketLookup : function($destination,$url, $outbound) {
+        		doMonthlyFilter : function($destination, $url, $outbound) {
+        			console.log("doMonthlyFilter ")
+        			var $key = 'monthlyFilter';
+        			$($destination).DataTable().destroy(false);
+        			if ( $key in $outbound ) {
+        				if ( $outbound[$key]=="true") {
+        					$outbound[$key] = "false";
+        				} else {
+        					$outbound[$key] = "true";
+        				}
+        			} else {
+        				$outbound[$key] = "true";
+        			}
+        			BUDGETCONTROL.doTicketLookup($destination, $url, $outbound);
+        		},
+        		
+        		
+        		
+        		
+        		doTicketLookup : function($destination, $url, $outbound) {
         			var $weekNum = $outbound['workWeek'];
+        			        			
+        			
         			if ( $weekNum==null || $weekNum=='') {
         				$fileName = "All Tickets";
         			} else {
@@ -339,6 +366,34 @@
         			}
         			console.log("doTicketLookup " + $fileName + "  " + $destination);
         			
+        			var $buttonArray = [
+        	        	'pageLength',
+        	        	'copy', 
+        	        	{extend:'csv', filename:'* ' + $fileName}, 
+        	        	{extend:'excel', filename:'* ' + $fileName}, 
+        	        	{extend:'pdfHtml5', orientation: 'landscape', filename:'* ' + $fileName}, 
+        	        	'print',
+        	        	{extend:'colvis', label: function () {doFunctionBinding();$('#ticketTable').draw();}}
+        	        ];
+        			
+        			if ( $weekNum==null || $weekNum=='') {
+        				$buttonArray.push({ 
+        					text:'Current Month', 
+        					action: function(e, dt, node, config) { 
+        						BUDGETCONTROL.doMonthlyFilter($destination, $url, $outbound);
+       						} 
+        				});
+        			}
+        			
+        			
+        			
+        			
+        			var $showClaimModal = []
+        			$.each($outbound.workWeeks.split(","), function($index, $value) {
+        				$showClaimModal.push($outbound.workYear + "-" + $value)
+        			});
+        			
+        			var $jobEditTag = '<webthing:edit>No Services Defined. Revise the Job</webthing:edit>';
         			
         			BUDGETCONTROL.ticketTable[$destination] = $($destination).DataTable( {
             			"aaSorting":		[[0,'asc']],
@@ -350,6 +405,7 @@
             	        "scrollX": 			true,
             	        "pageLength":		50,
             	        rowId: 				'dt_RowId',
+            	        destroy : 			true,		// this lets us reinitialize the table
             	        dom: 				'Bfrtip',
             	        "searching": 		true,
             	        "searchDelay":		800,
@@ -357,15 +413,7 @@
             	        	[ 10, 50, 100, 500, 1000 ],
             	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
             	        ],
-            	        buttons: [
-            	        	'pageLength',
-            	        	'copy', 
-            	        	{extend:'csv', filename:'* ' + $fileName}, 
-            	        	{extend:'excel', filename:'* ' + $fileName}, 
-            	        	{extend:'pdfHtml5', orientation: 'landscape', filename:'* ' + $fileName}, 
-            	        	'print',
-            	        	{extend:'colvis', label: function () {doFunctionBinding();$('#ticketTable').draw();}}
-            	        ],
+            	        buttons: $buttonArray,
             	        "columnDefs": [
              	            { "orderable": true, "targets": -1 },
              	            { className: "dt-head-center", "targets":[0,1,2,3,4,5,6,7,8,9,10,11,12,13]},
@@ -380,27 +428,28 @@
     			        	"data": $outbound,
     			        	},
     			        columns: [
-    			        	{ title: "Account", width:"15%", searchable:true, "defaultContent": "<i>N/A</i>", 
-    			        		data: function ( row, type, set ) {
-    			            		if(row.job_site_name != null) {
-	    			        			var $display = row.job_site_name;
-    			            			if (row.claim_id != null ) {
-    			            				$display = '<a href="#" class="bcr-edit-clicker" data-claimid="'+row.claim_id+'" data-ticketid="'+row.ticket_id+'" data-workyear="'+$outbound['workYear']+'" data-workweeks="'+$outbound['workWeeks']+'" data-divisionid="'+$outbound['divisionId']+'">'+row.job_site_name+'</a>';
-    			            			}
-    			            			return $display;
-    			            		}
-    			            	} 
-    			        	},
+    			        	{ title: "Account", width:"15%", searchable:true, "defaultContent": "<i>N/A</i>", data:'job_site_name' }, 
     			            { title: "Ticket Number", width:"6%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.ticket_id != null){return ('<a href="#" data-id="'+row.ticket_id+'" class="ticket-clicker">'+row.ticket_id+'</a>');}
     			            } },
-    			            { title: "Claim Week", width:"4%", searchable:true, searchFormat: "First Last Name", 
+    			            { title: "Claim Week", width:"5%", searchable:true, searchFormat: "First Last Name", 
     			            	data: function ( row, type, set ) {
-    			            		var $display = row.claim_week;
-    			            		if(row.claim_week == null ) {
-    			            			$display = '<span class="newClaimButton" data-ticketid="'+row.ticket_id+'" data-servicetypeid="'+row.service_type_id+'" data-servicetagid="'+row.service_tag_id+'"><webthing:addNew>New Claim</webthing:addNew></span>';
-	    			            	}    			     
-    			            		return $display;
+    			            		var $claimWeek = "";
+    			            		var $display = "";
+    			            		
+    			            		if (row.claim_id != null ) {
+    			            			$claimWeek = row.claim_week;
+    			            			if ( $showClaimModal.includes(row.claim_week) ) {
+    			            				$claimWeek = '<a href="#" class="bcr-edit-clicker" data-claimid="'+row.claim_id+'" data-ticketid="'+row.ticket_id+'" data-workyear="'+$outbound['workYear']+'" data-workweeks="'+$outbound['workWeeks']+'" data-divisionid="'+$outbound['divisionId']+'">'+row.claim_week+'</a>';
+    			            			}
+    			            		}
+
+									if ( row.service_tag_id == null ) {
+										$addButton = "";
+									} else {
+    			            			$addButton = '<span class="newClaimButton" data-ticketid="'+row.ticket_id+'" data-servicetypeid="'+row.service_type_id+'" data-servicetagid="'+row.service_tag_id+'"><webthing:addNew>New Claim</webthing:addNew></span>';
+									}
+    			            		return $claimWeek + $addButton;
     			            	} 
     			            },
     			            { title: "D/L", width:"6%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
@@ -446,9 +495,16 @@
     			            { title: "Ticket Status",  width:"4%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.ticket_status != null){return (row.ticket_status+"");}
     			            } },
-    			            { title: "Service",  width:"4%", searchable:true, searchFormat: "Name #####", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-    			            	if(row.service_tag_id != null){return (row.service_tag_id+"");}
-    			            } },
+    			            { title: "Service",  width:"4%", searchable:true, searchFormat: "Name #####", 
+    			            	data: function ( row, type, set ) {
+    			            		if ( row.service_tag_id == null ) {
+    			            			$display = '<a href="jobMaintenance.html?id=' + row.job_id +'">' + $jobEditTag + '</a>';
+    			            		} else {
+    			            			$display = row.service_tag_id;
+    			            		}
+    			            		return $display;
+    			            	} 
+    			            },
     			            { title: "Equipment",  width:"4%", searchable:true, searchFormat: "Equipment #####", data:'equipment_tags' },
     			            { title: "Employee",  width:"13%", searchable:true, searchFormat: "Name #####", data:'employee' }
     			            ],
@@ -522,7 +578,7 @@
 					$("#bcr_edit_modal").dialog( "option", "title", "Ticket Claim: " + $data.data.ticket.ticketId + " (" + $data.data.ticket.status + ")  " + $data.data.ticket.jobSiteName + ", Service Type: " + $data.data.ticket.serviceTagAbbrev);
 					
 					$("#bcr_edit_modal .totalVolume").html($data.data.ticket.totalVolume.toFixed(2));
-	            	$("#div-summary .total-volume").html( $data.data.ticket.totalVolume.toFixed(2) );
+	            	//$("#div-summary .total-volume").html( $data.data.ticket.totalVolume.toFixed(2) );
 
 
 	            	// set attributes so in-modal updates can happen (stash the values for later use)
@@ -531,6 +587,7 @@
 	            	
 	            	BUDGETCONTROL.makeDlLaborTable($data);
 					BUDGETCONTROL.makeDlExpenseTable($data);	
+					BUDGETCONTROL.makeSummaryPanel($data);
 						
 						            	
        				$("#bcr_edit_modal select[name='claimWeek']").val($data.data.claimWeek);
@@ -839,29 +896,7 @@
         		},
         		
         		
-        		makeChart : function(volumeClaimedTotal, expenseTotal, volumeRemainingTotal) {
-        			console.log("makeChart");
-        			var red = 'rgba(255, 99, 132, 1)';
-        			var blue = 'rgba(54, 162, 235, 1)';
-        			var orange = 'rgba(255, 206, 86, 1)';
-					var ctx = $("#myChart");
-					var myChart = new Chart(ctx, {
-						type : 'pie',
-						data : {
-							labels: ['Volume Claimed', 'Expense Volume','Volume Remaining'],							
-							datasets : [{
-								label : "",
-								data : [volumeClaimedTotal, expenseTotal, volumeRemainingTotal],
-								backgroundColor : [orange, blue, red],
-								borderColor : [orange, blue, red],
-								borderWidth: 1
-							}]
-						},
-						options : {
-							legend : { display:false, position:"bottom", boxWidth:12 }
-						}
-					});
-				},
+        		
         		
         		
         		
@@ -903,11 +938,13 @@
 					
 					// this bit handles the display/hide of panels in the new claim modal
 					$("#directLaborFieldContainer").click(function($event) {
+						
 						$(".field-container").removeClass("button_is_active");
 						$(".field-container").addClass("button_is_inactive");
 						$("#directLaborFieldContainer").removeClass("button_is_inactive");
 						$("#directLaborFieldContainer").addClass("button_is_active");		
 						$(".details").hide();
+						$("#bcr_new_claim_modal .err").html("");
 						$("#bcr_new_claim_modal .directLaborDetails").show();
 						$("#bcr_new_claim_modal").attr("data-claimtype","labor");
 					});
@@ -918,6 +955,7 @@
 						$("#expenseFieldContainer").removeClass("button_is_inactive");
 						$("#expenseFieldContainer").addClass("button_is_active");	
 						$(".details").hide();
+						$("#bcr_new_claim_modal .err").html("");
 						$("#bcr_new_claim_modal .expenseDetails").show();
 						$("#bcr_new_claim_modal").attr("data-claimtype","expense");
 					});
@@ -1119,11 +1157,7 @@
 								BUDGETCONTROL.expenseSave();						
 							});
 							
-			            	var volumeClaimedTotal = parseFloat($("#bcr_edit_modal").attr("volumeClaimedTotal"));
-			            	$("#div-summary .volume-claimed").html( volumeClaimedTotal.toFixed(2) );
-			            	$("#div-summary .volume-remaining").html( $data.data.ticket.volumeRemaining.toFixed(2) );
-			            	$("#div-summary .expense-volume").html( expenseTotal.toFixed(2) );
-		 					BUDGETCONTROL.makeChart(volumeClaimedTotal, expenseTotal, $data.data.ticket.volumeRemaining);
+			            	
 			            }
 		    		});
         		},
@@ -1411,7 +1445,11 @@
         					{
         						id:  "bcr_title_prompt_cancel",
         						click: function($event) {
-        							location.href="dashboard.html";        							
+        							if ( BUDGETCONTROL.workWeek == null ) {
+        								location.href="dashboard.html";
+        							} else {
+        								$( "#bcr_title_prompt" ).dialog("close");
+        							}
         						}
         					},{
         						id:  "bcr_title_prompt_save",
@@ -1538,6 +1576,48 @@
 					//	$($expenseSelect).val(val.passthruExpenseCode);
 					//});
 					
+        		},
+        		
+        		
+        		
+        		
+        		makeSummaryPanel : function($data) {
+        			console.log("makeSummaryPanel");
+        			var $totalVolume = $data.data.summary.totalVolume.toFixed(2);
+        			var $volumeClaimed = $data.data.summary.volumeClaimed.toFixed(2);
+        			var $volumeRemaining = $data.data.summary.volumeRemaining.toFixed(2);
+        			var $expenseVolume = $data.data.summary.expenseVolume.toFixed(2);
+        			
+        			$("#div-summary .total-volume").html( $totalVolume );
+        			$("#div-summary .volume-claimed").html( $volumeClaimed );
+        			$("#div-summary .volume-remaining").html( $volumeRemaining );
+        			$("#div-summary .expense-volume").html( $expenseVolume );
+        			
+        			var red = 'rgba(255, 99, 132, 1)';
+        			var blue = 'rgba(54, 162, 235, 1)';
+        			var orange = 'rgba(255, 206, 86, 1)';
+					var ctx = $("#myChart");
+					var myChart = new Chart(ctx, {
+						type : 'pie',
+						data : {
+							labels: ['Volume Claimed', 'Expense Volume','Volume Remaining'],							
+							datasets : [{
+								label : "",
+								data : [ $volumeClaimed, $expenseVolume, $volumeRemaining ],
+								backgroundColor : [orange, blue, red],
+								borderColor : [orange, blue, red],
+								borderWidth: 1
+							}]
+						},
+						options : {
+							legend : { display:false, position:"bottom", boxWidth:12 }
+						}
+					});
+        			//var volumeClaimedTotal = parseFloat($("#bcr_edit_modal").attr("volumeClaimedTotal"));
+	            	//$("#div-summary .volume-claimed").html( volumeClaimedTotal.toFixed(2) );
+	            	//$("#div-summary .volume-remaining").html( $data.data.ticket.volumeRemaining.toFixed(2) );
+	            	//$("#div-summary .expense-volume").html( expenseTotal.toFixed(2) );
+ 					//BUDGETCONTROL.makeChart(volumeClaimedTotal, expenseTotal, $data.data.ticket.volumeRemaining);
         		},
         		
         		
@@ -1710,7 +1790,7 @@
         		
         		
         		populateTitlePanel : function($data) {
-        			$("#titleHeader").html($data.data.workMonthName + ", " + $data.data.workYear + " -- " + $data.data.div);
+        			$("#titleHeader").html($data.data.workMonthName + ", " + $data.data.workYear + " -- " + $data.data.div);        			
 					$("#bcr_summary .dateCreated").html($data.data.dateCreated);
 					$("#bcr_summary .dateModified").html($data.data.dateModified);
 					$("#bcr_summary .workYear").html($data.data.workYear);
@@ -1721,6 +1801,23 @@
 					$("#bcr_summary .div").html($data.data.div);
 					$("#bcr_summary .managerFirstName").html($data.data.managerFirstName);
 					$("#bcr_summary .managerLastName").html($data.data.managerLastName);
+					
+					$("#bcr_summary .new-bcr").click(function($event) {
+						$( "#bcr_title_prompt" ).dialog("open");
+					});
+					
+					var $workWeeks = [];
+					$.each($data.data.workCalendar, function($index, $value) {
+						$workWeeks.push($value.weekOfYear);
+					});
+					var $parms = [];
+					$parms.push("divisionId="+$data.data.divisionId);
+					$parms.push("workYear=" + $data.data.workYear);
+					$parms.push("workWeeks=" + $workWeeks.join(","));
+					
+					var $url = "bcr/ticketXls?" + $parms.join("&");
+					console.log($url);
+					$("#bcr_summary .all-ticket-spreadsheet").attr("href",$url);
         		},
         		
         		
@@ -1749,9 +1846,12 @@
         		saveNewClaim : function() {
 					var $claimType = $("#bcr_new_claim_modal").attr("data-claimtype");
         			console.log("saveNewClaim: " + $claimType);
-        			if ( $claimType == "labor") {
-        				var $ticketId = $("#bcr_new_claim_modal .directLaborDetails input[name='ticketId']").val();
-            			var $serviceTagId = $("#bcr_new_claim_modal .directLaborDetails input[name='serviceTypeId']").val();
+        			$("#bcr_new_claim_modal .err").html("");
+        			
+        			var $ticketId = $("#bcr_new_claim_modal .directLaborDetails input[name='ticketId']").val();
+        			var $serviceTagId = $("#bcr_new_claim_modal .directLaborDetails input[name='serviceTypeId']").val();
+        			
+        			if ( $claimType == "labor") {        			
             			var $claimWeek = $("#bcr_new_claim_modal .directLaborDetails select[name='claimWeek']").val();
             			
             			var $dlAmt = $("#bcr_new_claim_modal .directLaborDetails input[name='dlAmt']").val();
@@ -1779,7 +1879,39 @@
             			console.log($outbound);
             			ANSI_UTILS.doServerCall("POST", "bcr/ticketClaim", JSON.stringify($outbound), BUDGETCONTROL.saveNewClaimSuccess, BUDGETCONTROL.saveNewClaimFail);
         			} else if ( $claimType == "expense" ) {
-        				alert("new expense doesn't work yet");
+						var $claimWeek = $("#bcr_new_claim_modal .expenseDetails select[name='claimWeek']").val();            			
+            			var $volume = $("#bcr_new_claim_modal .expenseDetails input[name='volume']").val();
+            			var $expenseType = $("#bcr_new_claim_modal .expenseDetails select[name='expenseType']").val();
+            			var $notes = $("#bcr_new_claim_modal .expenseDetails input[name='notes']").val();
+            			
+            			console.log($claimWeek + "\t" + $volume + "\t" + $expenseType + "\t" + $notes);
+            			
+            			// these are needed to create the correct response, not to do the update
+            			var $divisionId = BUDGETCONTROL.divisionId
+            			var $workYear = BUDGETCONTROL.workYear; 
+            			var $workWeeks = BUDGETCONTROL.workWeek;
+            			// {"divisionId":101,
+            			//	"ticketId":"506645",
+            			//	"serviceTagId":"2",
+            			//	"claimWeek":"2020-46",
+            			//	"volume":"20",
+            			//	"expenseType":"Lift",
+            			//	"notes":"C Eb G Bb",
+            			//	"workYear":2020,
+            			//	"workWeeks":"45,46,47,48"}
+            			var $outbound = {
+            					"divisionId":$divisionId,
+            					"ticketId":$ticketId,
+                    			"serviceTagId":$serviceTagId,
+                    			"claimWeek":$claimWeek,
+                    			"volume":$volume,
+                    			"expenseType":$expenseType,
+                    			"notes":$notes,
+                    			"workYear":$workYear,
+                    			"workWeeks":$workWeeks,
+            			}
+            			console.log($outbound);
+            			ANSI_UTILS.doServerCall("POST", "bcr/expense", JSON.stringify($outbound), BUDGETCONTROL.saveNewClaimSuccess, BUDGETCONTROL.saveNewClaimFail);
         			} else {
         				$("#bcr_new_claim_modal .newClaimErr").html("Invalid system state. (Claim Type: " + $claimType + ")  Reload page and try again");
         			}
@@ -1789,11 +1921,19 @@
         		
         		saveNewClaimFail : function($data) {
         			console.log("saveNewClaimFail");
+        			$.each($data.data.webMessages, function($index, $value) {
+        				var $selector = "#bcr_new_claim_modal ." + $index + "Err";
+        				console.log($selector);
+        				$($selector).html($value[0]);
+        			});
         		},
         		
         		
         		saveNewClaimSuccess : function($data) {
         			console.log("saveNewClaimSuccess");
+        			$("#bcr_new_claim_modal").dialog("close");
+        			$("#globalMsg").html("Update Complete").show().fadeOut(4000);
+        			BUDGETCONTROL.refreshTicketTables();
         		},
         		
         		
@@ -2179,27 +2319,27 @@
     				<tr>
     					<td class="form-label">Claim Week:</td>
     					<td><select name="claimWeek"></select></td>
-    					<td><span class="claimWeekErr"></span></td>
+    					<td><span class="claimWeekErr err"></span></td>
     				</tr>
     				<tr>
     					<td class="form-label">Direct Labor:</td>
     					<td><input type="text" name="dlAmt" /></td>
-    					<td><span class="dlAmtErr"></span></td>
+    					<td><span class="dlAmtErr err"></span></td>
     				</tr>
     				<tr>
     					<td class="form-label">Volume Claimed:</td>
     					<td><input type="text" name="volumeClaimed" /></td>
-    					<td><span class="volumeErr"></span></td>
+    					<td><span class="volumeClaimedErr err"></span></td>
     				</tr>
     				<tr>
     					<td class="form-label">Employee:</td>
     					<td><input type="text" name="employee" /></td>
-    					<td><span class="employeeErr"></span></td>
+    					<td><span class="employeeErr err"></span></td>
     				</tr>
     				<tr>
     					<td class="form-label">Notes:</td>
     					<td><input type="text" name="notes" /></td>
-    					<td><span class="notesErr"></span></td>
+    					<td><span class="notesErr err"></span></td>
     				</tr>
     			</table>
 			</div>
@@ -2223,22 +2363,22 @@
     				<tr>
     					<td class="form-label">Claim Week:</td>
     					<td><select name="claimWeek"></select></td>
-    					<td><span class="claimWeekErr"></span></td>
+    					<td><span class="claimWeekErr err"></span></td>
     				</tr>
     				<tr>
     					<td class="form-label">Volume Claimed:</td>
     					<td><input type="text" name="volume" /></td>
-    					<td><span class="volumeErr"></span></td>
+    					<td><span class="volumeErr err"></span></td>
     				</tr>
     				<tr>
     					<td class="form-label">Expense Type:</td>
     					<td><select name="expenseType"></select></td>
-    					<td><span class="employeeErr"></span></td>
+    					<td><span class="expenseTypeErr err"></span></td>
     				</tr>
     				<tr>
     					<td class="form-label">Notes:</td>
     					<td><input type="text" name="notes" /></td>
-    					<td><span class="notesErr"></span></td>
+    					<td><span class="notesErr err"></span></td>
     				</tr>
     			</table>
 			</div>

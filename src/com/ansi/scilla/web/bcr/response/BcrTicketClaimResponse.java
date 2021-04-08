@@ -42,6 +42,7 @@ public class BcrTicketClaimResponse extends MessageResponse {
 	private TicketData ticket;
 	private List<BcrTicket> dlClaims;
 	private List<PassthruExpense> expenses;
+	private BcrTicketClaimSummary summary;
 	
 	
 	public BcrTicketClaimResponse() {
@@ -66,6 +67,7 @@ public class BcrTicketClaimResponse extends MessageResponse {
 		
 		TicketClaim ticketClaim = makeClaim(conn, claimId);
 		makeResponse(conn, userId, divisionList, divisionId, workYear, workWeeks, ticketClaim);
+		makeSummary(conn, ticketClaim, divisionList, divisionId, workYear);
 		String formattedClaimWeek = StringUtils.leftPad(String.valueOf(ticketClaim.getClaimWeek()), 2, '0'); // make sure week '4' is actually '04'
 		this.claimWeek = ticketClaim.getClaimYear() + "-" + formattedClaimWeek;
 		this.claimWeeks = new ArrayList<String>();
@@ -121,6 +123,14 @@ public class BcrTicketClaimResponse extends MessageResponse {
 
 	public void setClaimWeek(String claimWeek) {
 		this.claimWeek = claimWeek;
+	}
+
+	public BcrTicketClaimSummary getSummary() {
+		return summary;
+	}
+
+	public void setSummary(BcrTicketClaimSummary summary) {
+		this.summary = summary;
 	}
 
 	/**
@@ -194,9 +204,9 @@ public class BcrTicketClaimResponse extends MessageResponse {
 				expenses.add(new PassthruExpense(claimId, passthruVolume, passthruExpenseCode, passthruExpenseType, notes));
 			}
 		}
-		if ( dlClaims.isEmpty() ) {
-			throw new RecordNotFoundException(String.valueOf(ticketId));
-		}
+//		if ( dlClaims.isEmpty() ) {
+//			throw new RecordNotFoundException(String.valueOf(ticketId));
+//		}
 		
 
 	}
@@ -204,6 +214,12 @@ public class BcrTicketClaimResponse extends MessageResponse {
 	
 	
 	
+	private void makeSummary(Connection conn, TicketClaim ticketClaim, List<SessionDivision> divisionList,
+			Integer divisionId, Integer workYear) throws Exception {
+		this.summary = new BcrTicketClaimSummary(conn, ticketClaim, divisionList, divisionId, workYear);
+		
+	}
+
 	public static BcrTicketClaimResponse fromClaim(Connection conn, Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer workYear, String workWeeks, Integer claimId) throws SQLException, RecordNotFoundException, Exception {
 		return new BcrTicketClaimResponse(conn, userId, divisionList, divisionId, workYear, workWeeks, claimId);
 	}
@@ -242,27 +258,6 @@ public class BcrTicketClaimResponse extends MessageResponse {
 			super();
 		}
 		
-//		public TicketData(Connection conn, Integer ticketId) throws RecordNotFoundException, SQLException {
-//			this();
-//			PreparedStatement ps = conn.prepareStatement(sql);
-//			Logger logger = LogManager.getLogger(BcrTicketClaimResponse.class);
-//			logger.log(Level.DEBUG, sql);
-//			ps.setInt(1,  ticketId);
-//			ResultSet rs = ps.executeQuery();
-//			if ( rs.next() ) {
-//				this.ticketId = ticketId;
-//				this.jobId = rs.getInt("job_id");
-//				this.ticketType = rs.getString("ticket_type");
-//				this.status = rs.getString("ticket_status");
-//				this.jobSiteName = rs.getString("job_site_name");
-//				this.serviceTagId = rs.getString("service_tag_id");
-//				this.serviceTagAbbrev = rs.getString("abbrev");
-//				this.totalVolume = rs.getDouble("total_volume");
-//				this.volumeRemaining = rs.getDouble("volume_remaining");
-//			} else {
-//				throw new RecordNotFoundException();
-//			}
-//		}
 
 		public TicketData(Connection conn, Integer ticketId, Integer serviceTag) throws RecordNotFoundException, SQLException {
 			this();
@@ -361,4 +356,6 @@ public class BcrTicketClaimResponse extends MessageResponse {
 		}
 		
 	}
+	
+	
 }

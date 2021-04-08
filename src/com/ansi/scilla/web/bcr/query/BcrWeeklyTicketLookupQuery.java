@@ -73,7 +73,7 @@ public class BcrWeeklyTicketLookupQuery extends LookupQuery {
 	}
 
 	private static String makeWeeklyFromClause(Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer workYear, String workWeeks, String queryTerm) {
-		BcrTicketLookupQuery lookup = new BcrTicketLookupQuery(userId, divisionList, divisionId, workYear, workWeeks);
+		BcrTicketLookupQuery lookup = new BcrTicketLookupQuery(userId, divisionList, divisionId, workYear, workWeeks, false);
 		String sql = lookup.getSqlSelectClause() + lookup.getSqlFromClause() + lookup.makeWhereClause(queryTerm);
 		Logger logger = LogManager.getLogger(BcrWeeklyTicketLookupQuery.class);
 		logger.log(Level.DEBUG, sql);

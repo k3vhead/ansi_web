@@ -2,6 +2,7 @@ package com.ansi.scilla.web.bcr.request;
 
 import java.sql.Connection;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -185,6 +186,7 @@ public class BcrTicketClaimRequest extends AbstractRequest {
 //		RequestValidator.validateNumber(webMessages, BILLED_AMOUNT, this.billedAmount, 0.0D, null, true, null);
 		RequestValidator.validateId(conn, webMessages, JobTag.TABLE, JobTag.TAG_ID, SERVICE_TAG_ID, this.serviceTagId, true);
 		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, WebMessages.GLOBAL_MESSAGE, divisionId, true, "Division ID");
+		RequestValidator.validateStringFormat(webMessages, CLAIM_WEEK, this.claimWeek, Pattern.compile("\\d\\d\\d\\d-\\d\\d"), true, "Claim Week");
 		if ( ! webMessages.containsKey(WebMessages.GLOBAL_MESSAGE)) {
 			RequestValidator.validateDivisionUser(conn, webMessages, divisionId, WebMessages.GLOBAL_MESSAGE, sessionUser.getUserId(), DIVISION_ID, true);
 		}
@@ -192,20 +194,22 @@ public class BcrTicketClaimRequest extends AbstractRequest {
 		if ( StringUtils.isBlank(workWeeks) ) {
 			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid System State. Reload page and try again");
 		} else {
-			// claimWeek contains a string like '2020-46'
-			// claimWeeks contains a string like '45,46,47,48'
-			// make sure the "week" from claimWeek is in claimWeeks
-			String[] validClaimWeeks = StringUtils.split(workWeeks, ",");
-			String[] selectedClaimWeek = StringUtils.split(claimWeek, "-");
-			Integer claimWeek = Integer.valueOf(selectedClaimWeek[1]);
-			boolean isValidClaimWeek = false;
-			for ( String validClaimWeek : validClaimWeeks ) {
-				if ( claimWeek == Integer.valueOf(validClaimWeek).intValue() ) {
-					isValidClaimWeek = true;
+			if ( ! webMessages.containsKey(CLAIM_WEEK) ) {
+				// claimWeek contains a string like '2020-46'
+				// claimWeeks contains a string like '45,46,47,48'
+				// make sure the "week" from claimWeek is in claimWeeks
+				String[] validClaimWeeks = StringUtils.split(workWeeks, ",");
+				String[] selectedClaimWeek = StringUtils.split(claimWeek, "-");
+				Integer claimWeek = Integer.valueOf(selectedClaimWeek[1]);
+				boolean isValidClaimWeek = false;
+				for ( String validClaimWeek : validClaimWeeks ) {
+					if ( claimWeek == Integer.valueOf(validClaimWeek).intValue() ) {
+						isValidClaimWeek = true;
+					}
 				}
-			}
-			if ( ! isValidClaimWeek ) {
-				webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Claim Week. Reload page and try again");
+				if ( ! isValidClaimWeek ) {
+					webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Invalid Claim Week. Reload page and try again");
+				}
 			}
 		}
 		
