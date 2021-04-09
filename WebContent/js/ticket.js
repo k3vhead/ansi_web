@@ -194,9 +194,9 @@ $(function() {
 				
 				
 				$.each($data.ticketDetail.jobTags, function($key, $value) {
-					
+					$displayValue = $displayValue + $key + ": ";
 					$.each($value, function($index, $jobTag) {
-						if ( $value.tagType !== $tagType.name ){
+						if ( $value.tagType !== $jobTag.name ){
 							$displayValue = $displayValue + '<span class="formLabel">' + $tagType.displayValue + ": </span>";
 						}
 						else {
