@@ -33,6 +33,28 @@ public class BcrTicketSpreadsheet {
 	
 	private static final HashMap<String, String> headerMap;
 	private static DecimalFormat df = new DecimalFormat("#0.00");
+//	private static BCRHeader[] {
+//		new BCRHeader("job_site_name","Account",123.4),
+//		new BCRHeader("ticket_id","Ticket Id",123),
+//		new BCRHeader("claim_id","Claim Id",123),
+//		new BCRHeader("claim_week","Claim Week",123),
+//		new BCRHeader("dl_amt","Dl Amount",123),
+//		new BCRHeader("dl_expenses","Dl Expenses",123),
+//		new BCRHeader("dl_total","Dl Total",123),
+//		new BCRHeader("total_volume","Total Volume",123),
+//		new BCRHeader("volume_claimed","Volume Claimed",123),
+//		new BCRHeader("passthru_volume","PassThru Volume",123),
+//		new BCRHeader("passthru_expense_type","PassThru Expense Type",123),
+//		new BCRHeader("claimed_volume_total","Claimed Volume Total",123),
+//		new BCRHeader("volume_remaining","Volume Remaining",123),
+//		new BCRHeader("service_tag_id","Service Tag Id",123),
+//		new BCRHeader("notes","Notes",123),
+//		new BCRHeader("billed_amount","Billed Amount",123),
+//		new BCRHeader("claimed_vs_billed","Claimed vs Billed",123),
+//		new BCRHeader("ticket_status","Ticket Status",123),
+//		new BCRHeader("employee","Employee",123),
+//		new BCRHeader("equipment_tags","Equipment Tags",123),
+//	}
 	
 	private XSSFWorkbook workbook;
 	
@@ -176,5 +198,8 @@ public class BcrTicketSpreadsheet {
 //		return workbook;
 	}
 	
+	public void BCRHeader(String headerSql, String headerTitle, BigDecimal cellWidth) {
+		
+	}
 	
 }
