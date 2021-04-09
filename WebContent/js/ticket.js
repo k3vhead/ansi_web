@@ -196,11 +196,10 @@ $(function() {
 				$.each($data.ticketDetail.jobTags, function($key, $value) {
 					$displayValue = $displayValue + $key + ": ";
 					$.each($value, function($index, $jobTag) {
-						if ( $value.tagType !== $jobTag.name ){
-							$displayValue = $displayValue + '<span class="formLabel">' + $tagType.displayValue + ": </span>";
-						}
-						else {
+						if ( $value.tagType == $jobTag.name ){
 							$displayValue = $displayValue + " " + '<span class="jobtag-display jobtag-selected tooltip">'+$jobTag.abbrev+'<span class="tooltiptext">'+ $jobTag.tagDescription +'</span></span>';
+						} else {
+							$displayValue = $displayValue + '<span class="formLabel">' + $jobTag.displayValue + ": </span>";
 						}
 					});
 					$displayValue = $displayValue + "<br />";
