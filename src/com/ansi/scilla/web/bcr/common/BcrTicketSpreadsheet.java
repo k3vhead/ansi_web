@@ -34,6 +34,21 @@ public class BcrTicketSpreadsheet {
 	
 //	private static final HashMap<String, String> headerMap;
 	private static DecimalFormat df = new DecimalFormat("#0.00");
+	private static XSSFWorkbook workbook;
+	
+//	static {
+//		XSSFCellStyle cellStyleRight = workbook.createCellStyle();
+//		cellStyleRight.setAlignment(CellStyle.ALIGN_RIGHT);
+//		
+//		XSSFCellStyle cellStyleCenter = workbook.createCellStyle();
+//		cellStyleCenter.setAlignment(HorizontalAlignment.CENTER);
+//		
+//		XSSFCellStyle headerStyle = workbook.createCellStyle();
+//		XSSFFont headerFont = workbook.createFont();
+//		headerFont.setBold(true);
+//		headerStyle.setFont(headerFont);
+//	}
+	
 	private static BCRHeader[] headerMap = new BCRHeader[] {
 		new BCRHeader("job_site_name","Account",123.4D),
 		new BCRHeader("ticket_id","Ticket Id",123D),
@@ -57,7 +72,7 @@ public class BcrTicketSpreadsheet {
 		new BCRHeader("equipment_tags","Equipment Tags",123D),
 	};
 	
-	private XSSFWorkbook workbook;
+	
 	
 	
 	
@@ -113,7 +128,7 @@ public class BcrTicketSpreadsheet {
 		 * Equipment Tags, String
 		 */
 		row = sheet.createRow(0);
-//		while(!rsmd.getColumnName(colNum).isEmpty()) {
+
 		XSSFCellStyle cellStyleRight = workbook.createCellStyle();
 		cellStyleRight.setAlignment(CellStyle.ALIGN_RIGHT);
 		
@@ -129,6 +144,7 @@ public class BcrTicketSpreadsheet {
 			BCRHeader header = headerMap[colNum];
 			cell = row.createCell(colNum);
 			cell.setCellValue(header.getHeaderName());
+			cell.setCellStyle(headerStyle);
 		}
 		
 		Integer rowNum = 1;
@@ -140,14 +156,22 @@ public class BcrTicketSpreadsheet {
 				Object obj = rs.getObject(header.dbField);
 				if ( obj == null ) {
 					// ignore it and go on with life
+					cell = row.createCell(colNum);
+					cell.setCellValue("null");
 				} else if ( obj instanceof String ) {
 					String value = (String)obj;
 					cell = row.createCell(colNum);
 					cell.setCellValue(value);
 				} else if ( obj instanceof BigDecimal ) {
 					BigDecimal value = (BigDecimal)obj;
+					cell = row.createCell(colNum);
+					cell.setCellValue(df.format(value));
+					cell.setCellStyle(cellStyleRight);
 				} else if ( obj instanceof Integer ) {
 					Integer value = (Integer)obj;
+					cell = row.createCell(colNum);
+					cell.setCellValue(value);
+					cell.setCellStyle(cellStyleCenter);
 				} else {
 					throw new Exception("Joshua didn't code this one: " + obj.getClass().getCanonicalName());
 				}
@@ -201,11 +225,13 @@ public class BcrTicketSpreadsheet {
 		private String dbField;
 		private String headerName;
 		private Double columnWidth;
+		//private XSSFCellStyle cellStyle;
 		public BCRHeader(String dbField, String headerName, Double columnWidth) {
 			super();
 			this.dbField = dbField;
 			this.headerName = headerName;
 			this.columnWidth = columnWidth;
+//			this.cellStyle = cellStyle;
 		}
 		public String getDbField() {
 			return dbField;
@@ -225,7 +251,12 @@ public class BcrTicketSpreadsheet {
 		public void setColumnWidth(Double columnWidth) {
 			this.columnWidth = columnWidth;
 		}
-		
+//		public XSSFCellStyle getCellStyle() {
+//			return cellStyle;
+//		}
+//		public void setCellStyle(XSSFCellStyle cellStyle) {
+//			this.cellStyle = cellStyle;
+//		}
 		
 	}
 
