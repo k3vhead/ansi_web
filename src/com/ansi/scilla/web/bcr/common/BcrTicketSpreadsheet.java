@@ -33,7 +33,7 @@ public class BcrTicketSpreadsheet {
 //	}
 	
 //	private static final HashMap<String, String> headerMap;
-	private static DecimalFormat df = new DecimalFormat("#0.00");
+//	private static DecimalFormat df = new DecimalFormat("#0.00");
 	private static XSSFWorkbook workbook;
 	
 //	static {
@@ -48,11 +48,30 @@ public class BcrTicketSpreadsheet {
 //		headerFont.setBold(true);
 //		headerStyle.setFont(headerFont);
 //	}
-	
+	/*
+	 * Column Headers:
+	 * Account, String
+	 * Ticket Number, Integer
+	 * Claim Week, String
+	 * Dl Total, BigDecimal
+	 * Total Volume, BigDecimal
+	 * Volume Claimed, BigDecimal
+	 * Expense Volume, BigDecimal
+	 * Volume Remaining, BigDecimal
+	 * Notes, String
+	 * Billed Amount, BigDecimal
+	 * Claimed vs Billed, BigDecimal
+	 * Ticket Status, String
+	 * Employee, String
+	 * Equipment Tags, String
+	 */
 	private static BCRHeader[] headerMap = new BCRHeader[] {
 		new BCRHeader("job_site_name","Account",123.4D),
-		new BCRHeader("ticket_id","Ticket Id",123D),
+		new BCRHeader("ticket_id","Ticket Number",123D),
+		new BCRHeader("job_id","Job Id",123D),
 		new BCRHeader("claim_id","Claim Id",123D),
+		new BCRHeader("service_type_id","Service Type Id",123D),
+		new BCRHeader("claim_year","Claim Year",123D),
 		new BCRHeader("claim_week","Claim Week",123D),
 		new BCRHeader("dl_amt","Dl Amount",123D),
 		new BCRHeader("dl_expenses","Dl Expenses",123D),
@@ -71,10 +90,6 @@ public class BcrTicketSpreadsheet {
 		new BCRHeader("employee","Employee",123D),
 		new BCRHeader("equipment_tags","Equipment Tags",123D),
 	};
-	
-	
-	
-	
 	
 	public BcrTicketSpreadsheet(Connection conn, List<SessionDivision> divisionList, Integer divisionId, Integer claimYear, String workWeeks) 
 			throws Exception {
@@ -104,33 +119,12 @@ public class BcrTicketSpreadsheet {
 		Row row = null;
 		Cell cell = null;
 		workbook.setSheetName(0, "BCR Ticket Spreadsheet");
-		/*
-		 * Column Headers:
-		 * Job Site Name, String
-		 * Ticket Id, Integer
-		 * Claim Id, Integer
-		 * Claim Week, String
-		 * Dl Amt, BigDecimal
-		 * Dl Expenses, BigDecimal
-		 * Dl Total, BigDecimal
-		 * Total Volume, BigDecimal
-		 * Volume Claimed, BigDecimal
-		 * PassThru Volume, BigDecimal
-		 * PassThru Expense Type, String
-		 * Claimed Volume Total, BigDecimal
-		 * Volume Remaining, BigDecimal
-		 * Service Tag Id, String
-		 * Notes, String
-		 * Billed Amount, BigDecimal
-		 * Claimed vs Billed, BigDecimal
-		 * Ticket Status, String
-		 * Employee, String
-		 * Equipment Tags, String
-		 */
+		
 		row = sheet.createRow(0);
 
 		XSSFCellStyle cellStyleRight = workbook.createCellStyle();
 		cellStyleRight.setAlignment(CellStyle.ALIGN_RIGHT);
+		cellStyleRight.setDataFormat(workbook.createDataFormat().getFormat("#0.00"));
 		
 		XSSFCellStyle cellStyleCenter = workbook.createCellStyle();
 		cellStyleCenter.setAlignment(HorizontalAlignment.CENTER);
@@ -139,6 +133,12 @@ public class BcrTicketSpreadsheet {
 		XSSFFont headerFont = workbook.createFont();
 		headerFont.setBold(true);
 		headerStyle.setFont(headerFont);
+		
+		int y = 1;
+		while(rs.next() && y <= rsmd.getColumnCount()) {
+			System.out.println(rsmd.getColumnName(y) + "\t:\t"  + rsmd.getColumnClassName(y));
+			y++;
+		}
 		
 		for (int colNum = 0; colNum < headerMap.length; colNum++ ) {
 			BCRHeader header = headerMap[colNum];
@@ -165,7 +165,7 @@ public class BcrTicketSpreadsheet {
 				} else if ( obj instanceof BigDecimal ) {
 					BigDecimal value = (BigDecimal)obj;
 					cell = row.createCell(colNum);
-					cell.setCellValue(df.format(value));
+					cell.setCellValue(value.doubleValue());
 					cell.setCellStyle(cellStyleRight);
 				} else if ( obj instanceof Integer ) {
 					Integer value = (Integer)obj;
@@ -181,31 +181,31 @@ public class BcrTicketSpreadsheet {
 		
 		
 		
-		while(rs.next()) {
-			row = sheet.createRow(rowNum);
-			for(int i = 1; i <= rsmd.getColumnCount(); i++) {
-				cell = row.createCell(i - 1);
-				String[] sub = rsmd.getColumnClassName(i).split("\\.");
-				if(sub[sub.length - 1].equalsIgnoreCase("String")) {
-					cell.setCellValue(rs.getString(i));
-				} else if(sub[sub.length - 1].equalsIgnoreCase("BigDecimal")) {
-					BigDecimal x = rs.getBigDecimal(i);
-					double d = x.doubleValue();
-					cell.setCellValue(df.format(d));
-					cell.setCellStyle(cellStyleRight);
-				} else if(sub[sub.length - 1].equalsIgnoreCase("Integer")) {
-					cell.setCellValue(rs.getInt(i));
-					cell.setCellStyle(cellStyleCenter);
-				} else {
-					throw new Exception("Unexpected value format" + rsmd.getColumnClassName(i));
-				}
-				if(i == 18) {
-					cell.setCellStyle(cellStyleCenter);
-				}
-			}
-			rowNum++;
-			
-		}
+//		while(rs.next()) {
+//			row = sheet.createRow(rowNum);
+//			for(int i = 1; i <= rsmd.getColumnCount(); i++) {
+//				cell = row.createCell(i - 1);
+//				String[] sub = rsmd.getColumnClassName(i).split("\\.");
+//				if(sub[sub.length - 1].equalsIgnoreCase("String")) {
+//					cell.setCellValue(rs.getString(i));
+//				} else if(sub[sub.length - 1].equalsIgnoreCase("BigDecimal")) {
+//					BigDecimal x = rs.getBigDecimal(i);
+//					double d = x.doubleValue();
+//					cell.setCellValue(df.format(d));
+//					cell.setCellStyle(cellStyleRight);
+//				} else if(sub[sub.length - 1].equalsIgnoreCase("Integer")) {
+//					cell.setCellValue(rs.getInt(i));
+//					cell.setCellStyle(cellStyleCenter);
+//				} else {
+//					throw new Exception("Unexpected value format" + rsmd.getColumnClassName(i));
+//				}
+//				if(i == 18) {
+//					cell.setCellStyle(cellStyleCenter);
+//				}
+//			}
+//			rowNum++;
+//			
+//		}
 		rs.close();
 		conn.close();
 		sheet.setDefaultColumnWidth(20);
