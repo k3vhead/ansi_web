@@ -1,21 +1,20 @@
 package com.ansi.scilla.web.bcr.common;
 
-import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.text.DecimalFormat;
-import java.util.HashMap;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -23,78 +22,18 @@ import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 
 public class BcrTicketSpreadsheet {
-	/**
-	 * @author jwlewis
-	 * @throws Exception 
-	 */
+	private XSSFWorkbook workbook;
 	
-//	public BcrTicketSpreadsheet() {
-//		//this.BcrTicketSpreadsheet(conn, year, weeks);
-//	}
-	
-//	private static final HashMap<String, String> headerMap;
-//	private static DecimalFormat df = new DecimalFormat("#0.00");
-	private static XSSFWorkbook workbook;
-	
-//	static {
-//		XSSFCellStyle cellStyleRight = workbook.createCellStyle();
-//		cellStyleRight.setAlignment(CellStyle.ALIGN_RIGHT);
-//		
-//		XSSFCellStyle cellStyleCenter = workbook.createCellStyle();
-//		cellStyleCenter.setAlignment(HorizontalAlignment.CENTER);
-//		
-//		XSSFCellStyle headerStyle = workbook.createCellStyle();
-//		XSSFFont headerFont = workbook.createFont();
-//		headerFont.setBold(true);
-//		headerStyle.setFont(headerFont);
-//	}
-	/*
-	 * Column Headers:
-	 * Account, String
-	 * Ticket Number, Integer
-	 * Claim Week, String
-	 * Dl Total, BigDecimal
-	 * Total Volume, BigDecimal
-	 * Volume Claimed, BigDecimal
-	 * Expense Volume, BigDecimal
-	 * Volume Remaining, BigDecimal
-	 * Notes, String
-	 * Billed Amount, BigDecimal
-	 * Claimed vs Billed, BigDecimal
-	 * Ticket Status, String
-	 * Employee, String
-	 * Equipment Tags, String
-	 */
-	private static BCRHeader[] headerMap = new BCRHeader[] {
-		new BCRHeader("job_site_name","Account",123.4D),
-		new BCRHeader("ticket_id","Ticket Number",123D),
-		new BCRHeader("job_id","Job Id",123D),
-		new BCRHeader("claim_id","Claim Id",123D),
-		new BCRHeader("service_type_id","Service Type Id",123D),
-		new BCRHeader("claim_year","Claim Year",123D),
-		new BCRHeader("claim_week","Claim Week",123D),
-		new BCRHeader("dl_amt","Dl Amount",123D),
-		new BCRHeader("dl_expenses","Dl Expenses",123D),
-		new BCRHeader("dl_total","Dl Total",123D),
-		new BCRHeader("total_volume","Total Volume",123D),
-		new BCRHeader("volume_claimed","Volume Claimed",123D),
-		new BCRHeader("passthru_volume","PassThru Volume",123D),
-		new BCRHeader("passthru_expense_type","PassThru Expense Type",123D),
-		new BCRHeader("claimed_volume_total","Claimed Volume Total",123D),
-		new BCRHeader("volume_remaining","Volume Remaining",123D),
-		new BCRHeader("service_tag_id","Service Tag Id",123D),
-		new BCRHeader("notes","Notes",123D),
-		new BCRHeader("billed_amount","Billed Amount",123D),
-		new BCRHeader("claimed_vs_billed","Claimed vs Billed",123D),
-		new BCRHeader("ticket_status","Ticket Status",123D),
-		new BCRHeader("employee","Employee",123D),
-		new BCRHeader("equipment_tags","Equipment Tags",123D),
-	};
+	private BCRHeader[] headerMap;
 	
 	public BcrTicketSpreadsheet(Connection conn, List<SessionDivision> divisionList, Integer divisionId, Integer claimYear, String workWeeks) 
 			throws Exception {
-//		String sql = BcrTicketSql.makeBaseWhereClause(workWeeks);
-		String baseSql = BcrTicketSql.sqlSelectClause + BcrTicketSql.makeFilteredFromClause(divisionList) + BcrTicketSql.makeBaseWhereClause(workWeeks);
+		this.workbook = new XSSFWorkbook();
+		doInit();
+		String baseSql = BcrTicketSql.sqlSelectClause + 
+				BcrTicketSql.makeFilteredFromClause(divisionList) + 
+				BcrTicketSql.makeBaseWhereClause(workWeeks) + 
+				"\norder by " + BcrTicketSql.JOB_SITE_NAME;
 		System.out.println(baseSql);
 		createSpreadsheet(conn, baseSql, divisionList, divisionId, claimYear, workWeeks);
 	}
@@ -105,23 +44,7 @@ public class BcrTicketSpreadsheet {
 	}
 
 
-	
-	private void createSpreadsheet(Connection conn, String sql, List<SessionDivision> divisionList, Integer divisionId, Integer year, String workWeekList) 
-			throws Exception {
-		PreparedStatement ps = conn.prepareStatement(sql);
-		ps.setInt(1,  divisionId);
-		ps.setInt(2, year);
-		ResultSet rs = ps.executeQuery();
-		ResultSetMetaData rsmd = rs.getMetaData();
-		
-		this.workbook = new XSSFWorkbook();
-		XSSFSheet sheet = workbook.createSheet();
-		Row row = null;
-		Cell cell = null;
-		workbook.setSheetName(0, "BCR Ticket Spreadsheet");
-		
-		row = sheet.createRow(0);
-
+	private void doInit() {
 		XSSFCellStyle cellStyleRight = workbook.createCellStyle();
 		cellStyleRight.setAlignment(CellStyle.ALIGN_RIGHT);
 		cellStyleRight.setDataFormat(workbook.createDataFormat().getFormat("#0.00"));
@@ -129,35 +52,84 @@ public class BcrTicketSpreadsheet {
 		XSSFCellStyle cellStyleCenter = workbook.createCellStyle();
 		cellStyleCenter.setAlignment(HorizontalAlignment.CENTER);
 		
-		XSSFCellStyle headerStyle = workbook.createCellStyle();
-		XSSFFont headerFont = workbook.createFont();
-		headerFont.setBold(true);
-		headerStyle.setFont(headerFont);
+		XSSFCellStyle cellStyleLeft = workbook.createCellStyle();
+		cellStyleLeft.setAlignment(HorizontalAlignment.LEFT);
 		
-		int y = 1;
-		while(rs.next() && y <= rsmd.getColumnCount()) {
-			System.out.println(rsmd.getColumnName(y) + "\t:\t"  + rsmd.getColumnClassName(y));
-			y++;
+		
+		this.headerMap = new BCRHeader[] {				
+				new BCRHeader("job_site_name","Account",10000, cellStyleLeft),
+				new BCRHeader("ticket_id","Ticket Number",3500, cellStyleCenter),
+				new BCRHeader("claim_week","Claim Week",3500, cellStyleCenter),
+				new BCRHeader("dl_amt","D/L",3000, cellStyleRight),
+				new BCRHeader("total_volume","Total Volume",3500, cellStyleRight),
+				new BCRHeader("volume_claimed","Volume Claimed",4000, cellStyleRight),
+				new BCRHeader("passthru_volume","Expense Volume",4000, cellStyleRight),
+				new BCRHeader("volume_remaining","Volume Remaining",4500, cellStyleRight),
+				new BCRHeader("notes","Notes",10000, cellStyleLeft),
+				new BCRHeader("billed_amount","Billed Amount",3500, cellStyleRight),
+				new BCRHeader("claimed_vs_billed","Diff Clm/Bld",3500, cellStyleRight),
+				new BCRHeader("ticket_status","Ticket Status",3000, cellStyleRight),
+				new BCRHeader("service_tag_id","Service",3000, cellStyleCenter),
+				new BCRHeader("equipment_tags","Equipment",3000, cellStyleCenter),
+				new BCRHeader("employee","Employee",4500, cellStyleLeft),
+				
+				
+//				new BCRHeader("job_id","Job Id",123D),
+//				new BCRHeader("claim_id","Claim Id",123D),
+//				new BCRHeader("service_type_id","Service Type Id",123D),
+//				new BCRHeader("claim_year","Claim Year",123D),
+//				new BCRHeader("dl_expenses","Dl Expenses",123D),
+//				new BCRHeader("dl_total","Dl Total",123D),
+//				new BCRHeader("passthru_expense_type","PassThru Expense Type",123D),
+//				new BCRHeader("claimed_volume_total","Claimed Volume Total",123D),
+				
+		};		
+	}
+
+
+	private void createSpreadsheet(Connection conn, String sql, List<SessionDivision> divisionList, Integer divisionId, Integer year, String workWeekList) 
+			throws Exception {
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1,  divisionId);
+		ps.setInt(2, year);
+		ResultSet rs = ps.executeQuery();
+		
+		makeAllTicketSheet(rs);
+		String[] workWeeks = workWeekList.split(",");
+		for ( int i = 0; i < workWeeks.length; i++ ) {
+			rs.absolute(1);
+			makeWeeklySheet(rs, i, year, workWeeks[i]);
 		}
-		
-		for (int colNum = 0; colNum < headerMap.length; colNum++ ) {
-			BCRHeader header = headerMap[colNum];
-			cell = row.createCell(colNum);
-			cell.setCellValue(header.getHeaderName());
-			cell.setCellStyle(headerStyle);
-		}
-		
+		rs.close();
+		conn.close();
+
+	}
+	
+	private void makeWeeklySheet(ResultSet rs, int index, Integer year, String string) {
+		XSSFSheet sheet = makeSheet(index, year + "-" + string);		
+	}
+
+
+	private void makeAllTicketSheet(ResultSet rs) throws SQLException, Exception {
+		XSSFSheet sheet = makeSheet(0, "BCR Ticket Spreadsheet");
+
+		XSSFRow row = null;
+		XSSFCell cell = null;
+
 		Integer rowNum = 1;
-		
+
 		while(rs.next()) {
+			int ticketId = rs.getInt("ticket_id");
+			if ( ticketId == 845442 || ticketId == 848805 ) {
+				Object vr = rs.getObject("volume_remaining");
+				System.out.println(ticketId + "\t" + vr.toString() + "\t" + vr.getClass().getCanonicalName() );
+			}
 			row = sheet.createRow(rowNum);
 			for (int colNum = 0; colNum < headerMap.length; colNum++ ) {
 				BCRHeader header = headerMap[colNum];
 				Object obj = rs.getObject(header.dbField);
 				if ( obj == null ) {
 					// ignore it and go on with life
-					cell = row.createCell(colNum);
-					cell.setCellValue("null");
 				} else if ( obj instanceof String ) {
 					String value = (String)obj;
 					cell = row.createCell(colNum);
@@ -166,97 +138,64 @@ public class BcrTicketSpreadsheet {
 					BigDecimal value = (BigDecimal)obj;
 					cell = row.createCell(colNum);
 					cell.setCellValue(value.doubleValue());
-					cell.setCellStyle(cellStyleRight);
 				} else if ( obj instanceof Integer ) {
 					Integer value = (Integer)obj;
 					cell = row.createCell(colNum);
 					cell.setCellValue(value);
-					cell.setCellStyle(cellStyleCenter);
 				} else {
 					throw new Exception("Joshua didn't code this one: " + obj.getClass().getCanonicalName());
 				}
+				cell.setCellStyle(header.cellStyle);
+				sheet.setColumnWidth(colNum, header.columnWidth);
 			}
 			rowNum++;
 		}
-		
-		
-		
-//		while(rs.next()) {
-//			row = sheet.createRow(rowNum);
-//			for(int i = 1; i <= rsmd.getColumnCount(); i++) {
-//				cell = row.createCell(i - 1);
-//				String[] sub = rsmd.getColumnClassName(i).split("\\.");
-//				if(sub[sub.length - 1].equalsIgnoreCase("String")) {
-//					cell.setCellValue(rs.getString(i));
-//				} else if(sub[sub.length - 1].equalsIgnoreCase("BigDecimal")) {
-//					BigDecimal x = rs.getBigDecimal(i);
-//					double d = x.doubleValue();
-//					cell.setCellValue(df.format(d));
-//					cell.setCellStyle(cellStyleRight);
-//				} else if(sub[sub.length - 1].equalsIgnoreCase("Integer")) {
-//					cell.setCellValue(rs.getInt(i));
-//					cell.setCellStyle(cellStyleCenter);
-//				} else {
-//					throw new Exception("Unexpected value format" + rsmd.getColumnClassName(i));
-//				}
-//				if(i == 18) {
-//					cell.setCellStyle(cellStyleCenter);
-//				}
-//			}
-//			rowNum++;
-//			
-//		}
-		rs.close();
-		conn.close();
-		sheet.setDefaultColumnWidth(20);
-		sheet.setColumnWidth(1, 30);
-		
-//		for(int i = 1; i <= rsmd.getColumnCount(); i++) {
-//			sheet.autoSizeColumn(i);
-//		}
-		
-//		workbook.write(new FileOutputStream("/home/jwlewis/Documents/projects/BCR_Spreadsheet.xlsx"));
-//		workbook.write(new FileOutputStream("/home/dclewis/Documents/webthing_v2/projects/ANSI/testresults/BCR_Spreadsheet.xlsx"));
-//		return workbook;
+
 	}
+
+
+	private XSSFSheet makeSheet(Integer index, String title) {
+		XSSFSheet sheet = workbook.createSheet();
+		workbook.setSheetName(index, title);
+		
+		XSSFRow row = sheet.createRow(0);
+		XSSFCell cell = null;
+		
+		XSSFCellStyle headerStyle = workbook.createCellStyle();
+		XSSFFont headerFont = workbook.createFont();
+		headerFont.setBold(true);
+		headerStyle.setFont(headerFont);
+		headerStyle.setAlignment(HorizontalAlignment.CENTER);
+		
+		
+		for (int colNum = 0; colNum < headerMap.length; colNum++ ) {
+			BCRHeader header = headerMap[colNum];
+			cell = row.createCell(colNum);
+			cell.setCellValue(header.headerName);
+			cell.setCellStyle(headerStyle);
+			sheet.setColumnWidth(colNum, header.columnWidth);
 	
+		}		
+		
+		return sheet;
+	}
+
+
 	public static class BCRHeader extends ApplicationObject {
 		private static final long serialVersionUID = 1L;
-		private String dbField;
-		private String headerName;
-		private Double columnWidth;
-		//private XSSFCellStyle cellStyle;
-		public BCRHeader(String dbField, String headerName, Double columnWidth) {
+		public String dbField;
+		public String headerName;
+		public Integer columnWidth;
+		public XSSFCellStyle cellStyle;
+		
+		public BCRHeader(String dbField, String headerName, Integer columnWidth, XSSFCellStyle cellStyle) {
 			super();
 			this.dbField = dbField;
 			this.headerName = headerName;
 			this.columnWidth = columnWidth;
-//			this.cellStyle = cellStyle;
+			this.cellStyle = cellStyle;
 		}
-		public String getDbField() {
-			return dbField;
-		}
-		public void setDbField(String dbField) {
-			this.dbField = dbField;
-		}
-		public String getHeaderName() {
-			return headerName;
-		}
-		public void setHeaderName(String headerName) {
-			this.headerName = headerName;
-		}
-		public Double getColumnWidth() {
-			return columnWidth;
-		}
-		public void setColumnWidth(Double columnWidth) {
-			this.columnWidth = columnWidth;
-		}
-//		public XSSFCellStyle getCellStyle() {
-//			return cellStyle;
-//		}
-//		public void setCellStyle(XSSFCellStyle cellStyle) {
-//			this.cellStyle = cellStyle;
-//		}
+		
 		
 	}
 
