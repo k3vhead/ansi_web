@@ -11,8 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Level;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.web.bcr.common.BcrTicketSpreadsheet;
-import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionDivision;
@@ -30,7 +30,7 @@ public class BcrTicketSpreadsheetServlet extends AbstractServlet {
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		Connection conn = null;
-		WebMessages webMessages = new WebMessages();
+
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
@@ -42,7 +42,7 @@ public class BcrTicketSpreadsheetServlet extends AbstractServlet {
 			String workWeeks = request.getParameter("workWeeks");  // comma-delimited list of work weeks.
 			logger.log(Level.DEBUG, "Parms: " + divisionId + " " + workYear + " " + workWeeks);
 			
-			String fileName = "bcrAllTickets_" + workYear; 
+			String fileName = makeFileName(conn, divisionId, workYear, workWeeks); 
 			BcrTicketSpreadsheet spreadsheet = new BcrTicketSpreadsheet(conn, divisionList, divisionId, workYear, workWeeks);
 			XSSFWorkbook workbook = spreadsheet.getWorkbook();
 			AppUtils.writeSpreadSheet(response, workbook, fileName);
@@ -56,5 +56,16 @@ public class BcrTicketSpreadsheetServlet extends AbstractServlet {
 		} finally {
 			AppUtils.closeQuiet(conn);
 		}	
+	}
+
+	private String makeFileName(Connection conn, Integer divisionId, Integer workYear, String workWeeks) throws Exception {
+		Division division = new Division();
+		division.setDivisionId(divisionId);
+		division.selectOne(conn);
+		
+		String weekString = workWeeks.replaceAll(",", "-");
+		
+		String fileName = "bcrTickets_" + division.getDivisionDisplay() + "_" + workYear + "_" + weekString;
+		return fileName;
 	}
 }

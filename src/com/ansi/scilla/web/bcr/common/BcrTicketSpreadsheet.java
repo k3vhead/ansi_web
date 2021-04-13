@@ -1,16 +1,21 @@
 package com.ansi.scilla.web.bcr.common;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.poi.ss.usermodel.Cell;
+import org.apache.commons.collections4.IterableUtils;
+import org.apache.commons.collections4.Predicate;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -25,17 +30,24 @@ public class BcrTicketSpreadsheet {
 	private XSSFWorkbook workbook;
 	
 	private BCRHeader[] headerMap;
+	private Logger logger = LogManager.getLogger(BcrTicketSpreadsheet.class);
 	
 	public BcrTicketSpreadsheet(Connection conn, List<SessionDivision> divisionList, Integer divisionId, Integer claimYear, String workWeeks) 
 			throws Exception {
+		super();		
+		List<BCRRow> data = makeData(conn, divisionList, divisionId, claimYear, workWeeks);
 		this.workbook = new XSSFWorkbook();
-		doInit();
-		String baseSql = BcrTicketSql.sqlSelectClause + 
-				BcrTicketSql.makeFilteredFromClause(divisionList) + 
-				BcrTicketSql.makeBaseWhereClause(workWeeks) + 
-				"\norder by " + BcrTicketSql.JOB_SITE_NAME;
-		System.out.println(baseSql);
-		createSpreadsheet(conn, baseSql, divisionList, divisionId, claimYear, workWeeks);
+		initWorkbook();
+		BCRRowPredicate filter = new BCRRowPredicate();
+		
+		makeSheet(data, 0, "All Tickets");
+		String[] weekList = workWeeks.split(",");
+		for ( int i = 0; i < weekList.length; i++ ) {
+			String tabName = claimYear + "-" + weekList[i];
+			filter.setTabName(tabName);
+			List<BCRRow> weeklyData = IterableUtils.toList(IterableUtils.filteredIterable(data, filter));
+			makeSheet(weeklyData, i+1, tabName);
+		}
 	}
 	
 	
@@ -44,7 +56,30 @@ public class BcrTicketSpreadsheet {
 	}
 
 
-	private void doInit() {
+	private List<BCRRow> makeData(Connection conn, List<SessionDivision> divisionList, Integer divisionId, Integer claimYear, String workWeeks) throws SQLException {
+		String baseSql = BcrTicketSql.sqlSelectClause + 
+				BcrTicketSql.makeFilteredFromClause(divisionList) + 
+				BcrTicketSql.makeBaseWhereClause(workWeeks) + 
+				"\norder by " + BcrTicketSql.JOB_SITE_NAME;
+		logger.log(Level.DEBUG, baseSql);
+		
+		List<BCRRow> data = new ArrayList<BCRRow>();
+		PreparedStatement ps = conn.prepareStatement(baseSql);
+		ps.setInt(1,  divisionId);
+		ps.setInt(2, claimYear);
+		
+		ResultSet rs = ps.executeQuery();
+		while ( rs.next() ) {
+			data.add(new BCRRow(rs));
+		}
+		
+		rs.close();
+		conn.close();
+		return data;
+	}
+
+
+	private void initWorkbook() throws NoSuchFieldException, SecurityException {
 		XSSFCellStyle cellStyleRight = workbook.createCellStyle();
 		cellStyleRight.setAlignment(CellStyle.ALIGN_RIGHT);
 		cellStyleRight.setDataFormat(workbook.createDataFormat().getFormat("#0.00"));
@@ -57,96 +92,71 @@ public class BcrTicketSpreadsheet {
 		
 		
 		this.headerMap = new BCRHeader[] {				
-				new BCRHeader("job_site_name","Account",10000, cellStyleLeft),
-				new BCRHeader("ticket_id","Ticket Number",3500, cellStyleCenter),
-				new BCRHeader("claim_week","Claim Week",3500, cellStyleCenter),
-				new BCRHeader("dl_amt","D/L",3000, cellStyleRight),
-				new BCRHeader("total_volume","Total Volume",3500, cellStyleRight),
-				new BCRHeader("volume_claimed","Volume Claimed",4000, cellStyleRight),
-				new BCRHeader("passthru_volume","Expense Volume",4000, cellStyleRight),
-				new BCRHeader("volume_remaining","Volume Remaining",4500, cellStyleRight),
-				new BCRHeader("notes","Notes",10000, cellStyleLeft),
-				new BCRHeader("billed_amount","Billed Amount",3500, cellStyleRight),
-				new BCRHeader("claimed_vs_billed","Diff Clm/Bld",3500, cellStyleRight),
-				new BCRHeader("ticket_status","Ticket Status",3000, cellStyleRight),
-				new BCRHeader("service_tag_id","Service",3000, cellStyleCenter),
-				new BCRHeader("equipment_tags","Equipment",3000, cellStyleCenter),
-				new BCRHeader("employee","Employee",4500, cellStyleLeft),
-				
-				
-//				new BCRHeader("job_id","Job Id",123D),
-//				new BCRHeader("claim_id","Claim Id",123D),
-//				new BCRHeader("service_type_id","Service Type Id",123D),
-//				new BCRHeader("claim_year","Claim Year",123D),
-//				new BCRHeader("dl_expenses","Dl Expenses",123D),
-//				new BCRHeader("dl_total","Dl Total",123D),
-//				new BCRHeader("passthru_expense_type","PassThru Expense Type",123D),
-//				new BCRHeader("claimed_volume_total","Claimed Volume Total",123D),
-				
+				new BCRHeader(BCRRow.class.getField("jobSiteName"),"Account",10000, cellStyleLeft),
+				new BCRHeader(BCRRow.class.getField("ticketId"),"Ticket Number",3500, cellStyleCenter),
+				new BCRHeader(BCRRow.class.getField("claimWeek"),"Claim Week",3500, cellStyleCenter),
+				new BCRHeader(BCRRow.class.getField("dlAmt"),"D/L",3000, cellStyleRight),
+				new BCRHeader(BCRRow.class.getField("totalVolume"),"Total Volume",3500, cellStyleRight),
+				new BCRHeader(BCRRow.class.getField("volumeClaimed"),"Volume Claimed",4000, cellStyleRight),
+				new BCRHeader(BCRRow.class.getField("expenseVolume"),"Expense Volume",4000, cellStyleRight),
+				new BCRHeader(BCRRow.class.getField("volumeRemaining"),"Volume Remaining",4500, cellStyleRight),
+				new BCRHeader(BCRRow.class.getField("notes"),"Notes",10000, cellStyleLeft),
+				new BCRHeader(BCRRow.class.getField("billedAmount"),"Billed Amount",3500, cellStyleRight),
+				new BCRHeader(BCRRow.class.getField("diffClmBld"),"Diff Clm/Bld",3500, cellStyleRight),
+				new BCRHeader(BCRRow.class.getField("ticketStatus"),"Ticket Status",3000, cellStyleRight),
+				new BCRHeader(BCRRow.class.getField("service"),"Service",3000, cellStyleCenter),
+				new BCRHeader(BCRRow.class.getField("equipment"),"Equipment",3000, cellStyleCenter),
+				new BCRHeader(BCRRow.class.getField("employee"),"Employee",4500, cellStyleLeft),
 		};		
 	}
 
 
-	private void createSpreadsheet(Connection conn, String sql, List<SessionDivision> divisionList, Integer divisionId, Integer year, String workWeekList) 
-			throws Exception {
-		PreparedStatement ps = conn.prepareStatement(sql);
-		ps.setInt(1,  divisionId);
-		ps.setInt(2, year);
-		ResultSet rs = ps.executeQuery();
-		
-		makeAllTicketSheet(rs);
-		String[] workWeeks = workWeekList.split(",");
-		for ( int i = 0; i < workWeeks.length; i++ ) {
-			rs.absolute(1);
-			makeWeeklySheet(rs, i, year, workWeeks[i]);
-		}
-		rs.close();
-		conn.close();
-
-	}
 	
-	private void makeWeeklySheet(ResultSet rs, int index, Integer year, String string) {
-		XSSFSheet sheet = makeSheet(index, year + "-" + string);		
-	}
+	
+	
 
-
-	private void makeAllTicketSheet(ResultSet rs) throws SQLException, Exception {
-		XSSFSheet sheet = makeSheet(0, "BCR Ticket Spreadsheet");
+	private void makeSheet(List<BCRRow> data, Integer index, String title) throws SQLException, Exception {
+		XSSFSheet sheet = initSheet(index, title);
 
 		XSSFRow row = null;
 		XSSFCell cell = null;
 
 		Integer rowNum = 1;
 
-		while(rs.next()) {
-			int ticketId = rs.getInt("ticket_id");
-			if ( ticketId == 845442 || ticketId == 848805 ) {
-				Object vr = rs.getObject("volume_remaining");
-				System.out.println(ticketId + "\t" + vr.toString() + "\t" + vr.getClass().getCanonicalName() );
-			}
+		for ( BCRRow dataRow : data ) {		
 			row = sheet.createRow(rowNum);
 			for (int colNum = 0; colNum < headerMap.length; colNum++ ) {
 				BCRHeader header = headerMap[colNum];
-				Object obj = rs.getObject(header.dbField);
+				Object obj = header.field.get(dataRow);
 				if ( obj == null ) {
 					// ignore it and go on with life
 				} else if ( obj instanceof String ) {
 					String value = (String)obj;
 					cell = row.createCell(colNum);
+					cell.setCellStyle(header.cellStyle);
+					sheet.setColumnWidth(colNum, header.columnWidth);
 					cell.setCellValue(value);
 				} else if ( obj instanceof BigDecimal ) {
 					BigDecimal value = (BigDecimal)obj;
 					cell = row.createCell(colNum);
+					cell.setCellStyle(header.cellStyle);
+					sheet.setColumnWidth(colNum, header.columnWidth);
 					cell.setCellValue(value.doubleValue());
+				} else if ( obj instanceof Double ) {
+					Double value = (Double)obj;
+					cell = row.createCell(colNum);
+					cell.setCellStyle(header.cellStyle);
+					sheet.setColumnWidth(colNum, header.columnWidth);
+					cell.setCellValue(value);
 				} else if ( obj instanceof Integer ) {
 					Integer value = (Integer)obj;
 					cell = row.createCell(colNum);
+					cell.setCellStyle(header.cellStyle);
+					sheet.setColumnWidth(colNum, header.columnWidth);
 					cell.setCellValue(value);
 				} else {
 					throw new Exception("Joshua didn't code this one: " + obj.getClass().getCanonicalName());
-				}
-				cell.setCellStyle(header.cellStyle);
-				sheet.setColumnWidth(colNum, header.columnWidth);
+				}				
 			}
 			rowNum++;
 		}
@@ -154,7 +164,7 @@ public class BcrTicketSpreadsheet {
 	}
 
 
-	private XSSFSheet makeSheet(Integer index, String title) {
+	private XSSFSheet initSheet(Integer index, String title) {
 		XSSFSheet sheet = workbook.createSheet();
 		workbook.setSheetName(index, title);
 		
@@ -180,23 +190,85 @@ public class BcrTicketSpreadsheet {
 		return sheet;
 	}
 
-
+	
+	/**
+	 * Repreasents one column of the spreadsheet tab. 
+	 * The Field is the BCRRow source for the data
+	 *
+	 */
 	public static class BCRHeader extends ApplicationObject {
 		private static final long serialVersionUID = 1L;
-		public String dbField;
+		public Field field;
 		public String headerName;
 		public Integer columnWidth;
 		public XSSFCellStyle cellStyle;
 		
-		public BCRHeader(String dbField, String headerName, Integer columnWidth, XSSFCellStyle cellStyle) {
+		public BCRHeader(Field field, String headerName, Integer columnWidth, XSSFCellStyle cellStyle) {
 			super();
-			this.dbField = dbField;
+			this.field = field;
 			this.headerName = headerName;
 			this.columnWidth = columnWidth;
 			this.cellStyle = cellStyle;
 		}
-		
-		
 	}
 
+	/**
+	 * Represents one row of a spreadsheet tab, equivalent to one row from the database query
+	 *
+	 */
+	public class BCRRow extends ApplicationObject {
+		private static final long serialVersionUID = 1L;
+		public String jobSiteName; 
+		public Integer ticketId;
+		public String claimWeek;
+		public Double dlAmt;
+		public Double totalVolume;
+		public Double volumeClaimed;
+		public Double expenseVolume;
+		public Double volumeRemaining;
+		public String notes;
+		public Double billedAmount;
+		public Double diffClmBld;
+		public String ticketStatus;
+		public String service;
+		public String equipment;
+		public String employee;
+		
+		public BCRRow(ResultSet rs) throws SQLException {
+			super();
+			this.jobSiteName = rs.getString("job_site_name");
+			this.ticketId = rs.getInt("ticket_id");
+			this.claimWeek = rs.getString("claim_week");
+			this.dlAmt = rs.getDouble("dl_amt");
+			this.totalVolume = rs.getDouble("total_volume");
+			this.volumeClaimed = rs.getDouble("volume_claimed");
+			this.expenseVolume = rs.getDouble("passthru_volume");
+			this.volumeRemaining = rs.getDouble("volume_remaining");
+			this.notes = rs.getString("notes");
+			this.billedAmount = rs.getDouble("billed_amount");
+			this.diffClmBld = rs.getDouble("claimed_vs_billed");
+			this.ticketStatus = rs.getString("ticket_status");
+			this.service = rs.getString("service_tag_id");
+			this.equipment = rs.getString("equipment_tags");
+			this.employee = rs.getString("employee");
+		}
+	}
+	
+	/**
+	 * Filters by claim week. Used to create week-specific tabs in the spreadsheet
+	 *
+	 */
+	public class BCRRowPredicate implements Predicate<BCRRow> {
+		private String tabName;
+		
+		public void setTabName(String tabName) {
+			this.tabName = tabName;
+		}
+
+		@Override
+		public boolean evaluate(BCRRow arg0) {
+			return arg0.claimWeek.equals(tabName);
+		}
+		
+	}
 }
