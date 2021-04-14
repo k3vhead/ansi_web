@@ -270,7 +270,7 @@
 					
 					var $ticketId = $("#bcr_edit_modal").attr("ticketId");
         			var $serviceTagId = $("#bcr_edit_modal").attr("serviceTagId");
-        			var $claimWeek = $("#bcr_edit_modal select[name='claimWeek']").val();        			
+        			var $claimWeek = $("#bcr_edit_modal input[name='claimWeek']").val();			
         			
         			// these are needed to create the correct response, not to do the update
         			var $divisionId = BUDGETCONTROL.divisionId
@@ -523,7 +523,7 @@
         			console.log("expenseSave");
         			var $ticketId = $("#bcr_edit_modal").attr("ticketId");
         			var $serviceTagId = $("#bcr_edit_modal").attr("serviceTagId");
-        			var $claimWeek = $("#bcr_edit_modal select[name='claimWeek']").val();
+        			var $claimWeek = $("#bcr_edit_modal input[name='claimWeek']").val();
         			var $volume = $("#bcr_edit_modal input[name='expenseVolume']").val();
         			var $expenseType = $("#bcr_edit_modal select[name='expenseType']").val();
         			var $notes = $("#bcr_edit_modal input[name='notes']").val();
@@ -563,15 +563,10 @@
         		getTicketDetailSuccess : function($data) {
 					console.log("getTicketDetailSuccess");  
 					
-					var $select = $("#bcr_edit_modal select[name='claimWeek']");
+					var $select = $("#bcr_edit_modal input[name='claimWeek']");
 					$($select).attr("data-ticketid",$data.data.ticket.ticketId);
 					$($select).attr("data-oldclaimweek",$data.data.claimWeek);
 					$($select).attr("data-changetype",BUDGETCONTROL.changeType["CLAIMWEEK"]);
-					$('option', $select).remove();
-					$select.append(new Option("",""));
-					$.each($data.data.claimWeeks, function(index, val) {
-					    $select.append(new Option(val, val));
-					});	
 					
 					$("#bcr_edit_modal .err").html("");
 					
@@ -590,7 +585,8 @@
 					BUDGETCONTROL.makeSummaryPanel($data);
 						
 						            	
-       				$("#bcr_edit_modal select[name='claimWeek']").val($data.data.claimWeek);
+       				$("#bcr_edit_modal input[name='claimWeek']").val($data.data.claimWeek);
+       				$("#bcr_edit_modal .claim-week").html($data.data.claimWeek);
 
         			var $select = $("#bcr_edit_modal select[name='expenseType']");
 					$('option', $select).remove();
@@ -833,7 +829,7 @@
         			console.log("laborSave");
         			var $ticketId = $("#bcr_edit_modal").attr("ticketId");
         			var $serviceTagId = $("#bcr_edit_modal").attr("serviceTagId");
-        			var $claimWeek = $("#bcr_edit_modal select[name='claimWeek']").val();
+        			var $claimWeek = $("#bcr_edit_modal input[name='claimWeek']").val();
         			
         			var $dlAmt = $("#bcr_edit_modal input[name='dlAmt']").val();
         			var $volumeClaimed = $("#bcr_edit_modal input[name='volumeClaimed']").val();
@@ -921,19 +917,6 @@
 					$(".accHdr").click(function($clickEvent) {
 						ANSI_UTILS.doServerCall("GET", "bcr/keepAlive", null, BUDGETCONTROL.keepAliveSuccess, BUDGETCONTROL.keepAliveFail);
 					});
-					var $claimWeekSelect = $("#bcr_edit_modal select[name='claimWeek']");
-					$claimWeekSelect.change(function() {
-						var $oldWeek = $claimWeekSelect.attr("data-oldclaimweek");
-						var $ticketId = $claimWeekSelect.attr("data-ticketid");
-						var $newWeek = $claimWeekSelect.val();
-						var $changeType = BUDGETCONTROL.changeType['CLAIM_WEEK']
-						console.log("Claim week changed: " + $oldWeek + " " + $ticketId + " " + $newWeek);
-						var $url = "bcr/ticket/" + $ticketId + "/" + BUDGETCONTROL.changeType["CLAIM_WEEK"];
-						var $outbound = {"ticketId": $ticketId, "oldClaimWeek": $oldWeek, "newClaimWeek":$newWeek};
-						ANSI_UTILS.doServerCall("POST", $url, JSON.stringify($outbound), BUDGETCONTROL.claimWeekEditSuccess, BUDGETCONTROL.claimUpdateFail);
-					}); 
-					
-					
 					
 					
 					// this bit handles the display/hide of panels in the new claim modal
@@ -1110,7 +1093,7 @@
     		        			var $divisionId = BUDGETCONTROL.divisionId
     							var $ticketId = $("#bcr_edit_modal").attr("ticketId");
         						var $serviceTagId = $("#bcr_edit_modal").attr("serviceTagId");
-        						var $claimWeek = $("#bcr_edit_modal select[name='claimWeek']").val(); 
+        						var $claimWeek = $("#bcr_edit_modal input[name='claimWeek']").val(); 
     		        			var $workYear = BUDGETCONTROL.workYear; 
     		        			var $workWeeks = BUDGETCONTROL.workWeek;
     		        			
@@ -1297,7 +1280,7 @@
     		        			var $divisionId = BUDGETCONTROL.divisionId
     							var $ticketId = $("#bcr_edit_modal").attr("ticketId");
         						var $serviceTagId = $("#bcr_edit_modal").attr("serviceTagId");
-        						var $claimWeek = $("#bcr_edit_modal select[name='claimWeek']").val(); 
+        						var $claimWeek = $("#bcr_edit_modal input[name='claimWeek']").val(); 
     		        			var $workYear = BUDGETCONTROL.workYear; 
     		        			var $workWeeks = BUDGETCONTROL.workWeek;
     		        			
@@ -1890,15 +1873,7 @@
             			var $divisionId = BUDGETCONTROL.divisionId
             			var $workYear = BUDGETCONTROL.workYear; 
             			var $workWeeks = BUDGETCONTROL.workWeek;
-            			// {"divisionId":101,
-            			//	"ticketId":"506645",
-            			//	"serviceTagId":"2",
-            			//	"claimWeek":"2020-46",
-            			//	"volume":"20",
-            			//	"expenseType":"Lift",
-            			//	"notes":"C Eb G Bb",
-            			//	"workYear":2020,
-            			//	"workWeeks":"45,46,47,48"}
+
             			var $outbound = {
             					"divisionId":$divisionId,
             					"ticketId":$ticketId,
@@ -2203,7 +2178,7 @@
 	    	<table>
 	    		<tr>
 	    			<td><span class="form-label">Claim Week:</span></td>
-	    			<td><select name="claimWeek"></select></td>
+	    			<td><span class="claim-week"></span><input type="hidden" name="claimWeek" /></td>
 	    			<td>&nbsp;</td>
 	    			<td><span class="form-label">Total Volume:</span></td>
 	    			<td><span class="totalVolume"></span></td>

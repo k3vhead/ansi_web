@@ -103,7 +103,7 @@ public class BcrTicketSpreadsheet {
 				new BCRHeader(BCRRow.class.getField("notes"),"Notes",10000, cellStyleLeft),
 				new BCRHeader(BCRRow.class.getField("billedAmount"),"Billed Amount",3500, cellStyleRight),
 				new BCRHeader(BCRRow.class.getField("diffClmBld"),"Diff Clm/Bld",3500, cellStyleRight),
-				new BCRHeader(BCRRow.class.getField("ticketStatus"),"Ticket Status",3000, cellStyleRight),
+				new BCRHeader(BCRRow.class.getField("ticketStatus"),"Ticket Status",3000, cellStyleCenter),
 				new BCRHeader(BCRRow.class.getField("service"),"Service",3000, cellStyleCenter),
 				new BCRHeader(BCRRow.class.getField("equipment"),"Equipment",3000, cellStyleCenter),
 				new BCRHeader(BCRRow.class.getField("employee"),"Employee",4500, cellStyleLeft),
