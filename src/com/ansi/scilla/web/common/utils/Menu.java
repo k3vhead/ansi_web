@@ -49,7 +49,7 @@ public enum Menu {
 	TICKET_OVERRIDE(	"Ticket Override", 		QUICK_LINKS, Permission.TICKET_WRITE,	"ticketOverride.html"),
 	CLAIM_ENTRY(		"Claim Entry", 			QUICK_LINKS, Permission.CLAIMS_WRITE,	"claimEntry.html"),
 	SPECIAL_OVERRIDE(	"Special Override",		QUICK_LINKS, Permission.SPECIAL_OVERRIDE_READ, "specialOverride.html"),
-	BCR(                "Budget Control",       QUICK_LINKS, Permission.TECH_ADMIN_WRITE,   "budgetControl.html"),
+	BCR(                "Budget Control",       QUICK_LINKS, Permission.CLAIMS_WRITE,   "budgetControl.html"),
 	
 	
 	SETTINGS("Settings", null, Permission.SYSADMIN_READ,"#"),
