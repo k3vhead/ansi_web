@@ -15,9 +15,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ansi.scilla.common.queries.ContactSearch;
-import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.contact.response.ContactTableResponse;
 import com.ansi.scilla.web.contact.response.ContactTableResponseItem;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;

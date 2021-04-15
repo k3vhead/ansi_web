@@ -12,7 +12,6 @@ import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.TicketClaim;
 import com.ansi.scilla.common.db.TicketClaimPassthru;
-import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.claims.request.ClaimEntryRequest;
 import com.ansi.scilla.web.claims.request.ClaimEntryRequestType;
 import com.ansi.scilla.web.claims.response.ClaimEntryResponse;
@@ -22,6 +21,7 @@ import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;

@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Predicate;
 
-import com.ansi.scilla.common.utils.Permission;
+import com.ansi.scilla.web.common.utils.Permission;
 
 /**
  * AllAnsi - Report contains data from across the enterprise. It may or may not contain group or division-specific

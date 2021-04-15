@@ -14,7 +14,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.db.PermissionGroupLevel;
 import com.ansi.scilla.common.db.PermissionLevel;
-import com.ansi.scilla.common.utils.Permission;
 
 public class UserPermission extends ApplicationWebObject implements Comparable<UserPermission> {
 

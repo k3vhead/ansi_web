@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.document.DocumentType;
-import com.ansi.scilla.common.utils.Permission;
+import com.ansi.scilla.web.common.utils.Permission;
 
 /**
  * This is a wrapper for the DocumentType enum that assigns a permission for accessing a particular 

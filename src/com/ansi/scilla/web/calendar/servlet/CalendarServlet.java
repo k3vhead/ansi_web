@@ -15,7 +15,6 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.db.AnsiCalendar;
-import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.calendar.request.CalendarRequest;
 import com.ansi.scilla.web.calendar.response.CalendarResponse;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -25,6 +24,7 @@ import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;

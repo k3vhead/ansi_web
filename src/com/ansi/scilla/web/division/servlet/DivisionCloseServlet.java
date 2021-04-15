@@ -17,7 +17,6 @@ import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.time.DateUtils;
 
 import com.ansi.scilla.common.db.Division;
-import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.response.MessageKey;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -28,6 +27,7 @@ import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.division.query.DivisionCloseQuery;
 import com.ansi.scilla.web.division.request.DivisionCloseRequest;
 import com.ansi.scilla.web.division.response.DivisionCloseResponse;

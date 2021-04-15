@@ -3,8 +3,8 @@ package com.ansi.scilla.web.permission.response;
 import java.util.HashMap;
 import java.util.List;
 
-import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.common.utils.Permission;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class PermissionTree extends HashMap<Permission,PermissionTreeItem> {

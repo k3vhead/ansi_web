@@ -10,9 +10,9 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.response.WebMessages;
+import com.ansi.scilla.web.common.utils.Permission;
 
 public class PermissionRequest extends AbstractRequest {
 

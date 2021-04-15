@@ -6,9 +6,9 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.common.utils.QMarkTransformer;
 import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.common.utils.UserPermission;
 
 public class TestPermission {
