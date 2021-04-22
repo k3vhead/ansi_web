@@ -612,6 +612,7 @@
         			console.log("initializeActualDLPanel");
         			var $weekLabel = ["1st","2nd","3rd","4th","5th"];
 
+        			$("#actual_dl_totals tbody").html("");
         			$.each($data.data.workCalendar, function($index, $value) {
 						var $row = $("<tr>");
 						var $label = $("<td>").append($weekLabel[$index] + " Wk in Mo");
@@ -694,6 +695,10 @@
         		
         		
         		initializeBudgetControlTotalsPanel : function($data) {
+        			$("#bcr_totals .bcr_totals_display thead").html("");
+        			$("#bcr_totals .bcr_totals_display tbody").html("");
+        			
+        			
         			var $headerRow1 = $("<tr>");
 					$headerRow1.append($("<td>").append("&nbsp;"));
 					$headerRow1.append($("<td>").append("&nbsp;")); 
@@ -764,6 +769,10 @@
         		
         		
         		initializeEmployeePanel : function($data) {
+        			$("#bcr_employees .bcr_employees_display thead").html("");
+        			$("#bcr_employees .bcr_employees_display tbody").html("");
+        			$("#bcr_employees .bcr_employees_display tfoot").html("");
+        			
         			var $headerRow1 = $("<tr>");
 					$headerRow1.append($("<td>").append("&nbsp;"));
 					$headerRow1.append($("<td>").append("&nbsp;")); 
@@ -1692,6 +1701,8 @@
         			$("#bcr_totals .actual_om_dl_total").html($data.data.actualDl.totalActualDL.omDL.toFixed(2));
         			$("#bcr_totals .total_actual_dl_total").html($data.data.actualDl.totalActualDL.totalDL.toFixed(2));
         			
+        			$("#bcr_totals .dl_percentage_total").html("tbd");        			
+        			$("#bcr_totals .actual_dl_percentage_total").html("tbd");
         		},
         		
         		
