@@ -16,7 +16,7 @@ import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.web.common.action.SessionPageDisplayAction;
 import com.ansi.scilla.web.common.actionForm.IdForm;
 import com.ansi.scilla.web.common.struts.SessionData;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.report.common.ReportType;
 import com.thewebthing.commons.lang.StringUtils;
 

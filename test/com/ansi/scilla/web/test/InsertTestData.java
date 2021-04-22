@@ -23,7 +23,7 @@ import com.ansi.scilla.common.db.Title;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 
 public class InsertTestData extends TesterUtils {
 	private final boolean debug=true;

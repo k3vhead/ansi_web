@@ -1,7 +1,7 @@
 package com.ansi.scilla.web.permission.response;
 
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 
 public class PermissionDisplayItem extends ApplicationObject implements Comparable<PermissionDisplayItem> {
 

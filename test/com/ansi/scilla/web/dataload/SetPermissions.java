@@ -6,7 +6,7 @@ import com.ansi.scilla.common.db.PermissionGroup;
 import com.ansi.scilla.common.db.PermissionGroupLevel;
 import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 
 public class SetPermissions {
 

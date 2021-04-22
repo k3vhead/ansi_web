@@ -44,6 +44,7 @@ import com.ansi.scilla.common.db.ApplicationProperties;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.common.utils.PropertyNames;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.common.response.MessageKey;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.struts.SessionData;

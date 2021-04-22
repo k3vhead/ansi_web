@@ -2,6 +2,7 @@ package com.ansi.scilla.web.common.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.ansi.scilla.common.utils.Permission;
 
 public enum Menu {
 	DASHBOARD("Dashboard", null, null,"dashboard.html"),

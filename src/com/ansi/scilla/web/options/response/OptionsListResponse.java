@@ -26,7 +26,7 @@ import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.common.payment.PaymentMethod;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.common.struts.SessionData;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.report.common.ReportType;
 
 public class OptionsListResponse extends MessageResponse {

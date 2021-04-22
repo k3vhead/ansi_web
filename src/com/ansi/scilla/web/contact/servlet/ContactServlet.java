@@ -21,7 +21,7 @@ import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.contact.request.ContactRequest;
 import com.ansi.scilla.web.contact.response.ContactListResponse;
 import com.ansi.scilla.web.contact.response.ContactResponse;

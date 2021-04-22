@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 import com.ansi.scilla.common.jobticket.TicketStatus;
 import com.ansi.scilla.common.jobticket.JobStatus;
-import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.common.utils.Permission;
 
 public enum SpecialOverrideType {
 	
