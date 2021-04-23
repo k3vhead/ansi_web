@@ -135,9 +135,6 @@ public class BudgetControlTotalsResponse extends MessageResponse {
 		}
 		rs.close();			
 		
-		logger.log(Level.DEBUG, "*****************************************");
-		logger.log(Level.DEBUG, monthTotal);
-		logger.log(Level.DEBUG, "*****************************************");
 		if ( monthTotal.getVolumeClaimed() == null || monthTotal.getVolumeClaimed() == 0.0D ) {
 			monthTotal.setDlPercentage(0.0D);
 		} else {
