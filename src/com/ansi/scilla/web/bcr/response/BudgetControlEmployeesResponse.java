@@ -114,10 +114,10 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 			String claimWeek = rs.getString("claim_week");
 			Double directLabor = rs.getDouble("dl_amt");
 			Double volumeClaimed = rs.getDouble("volume_claimed");
-			logger.log(Level.DEBUG, "employee:<" +employee+">");
-			logger.log(Level.DEBUG, "claimWeek:<" +claimWeek+">");
-			logger.log(Level.DEBUG, "directLabor:<" +directLabor+">");
-			logger.log(Level.DEBUG, "volumeClaimed:<" +volumeClaimed+">");
+//			logger.log(Level.DEBUG, "employee:<" +employee+">");
+//			logger.log(Level.DEBUG, "claimWeek:<" +claimWeek+">");
+//			logger.log(Level.DEBUG, "directLabor:<" +directLabor+">");
+//			logger.log(Level.DEBUG, "volumeClaimed:<" +volumeClaimed+">");
 			if (!(claimWeek.equals("-"))) {
 				String[] workDate = claimWeek.split("-");
 				if ( weekFilter.contains(Integer.valueOf(workDate[1]))) {
