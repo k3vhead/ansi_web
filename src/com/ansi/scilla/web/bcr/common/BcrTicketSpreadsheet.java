@@ -24,6 +24,8 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.web.bcr.response.BudgetControlTotalsResponse;
+import com.ansi.scilla.web.bcr.response.BudgetControlTotalsResponse.BCRTotalsDetail;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 
 public class BcrTicketSpreadsheet {
@@ -36,6 +38,7 @@ public class BcrTicketSpreadsheet {
 			throws Exception {
 		super();		
 		List<BCRRow> data = makeData(conn, divisionList, divisionId, claimYear, workWeeks);
+		
 		this.workbook = new XSSFWorkbook();
 		initWorkbook();
 		BCRRowPredicate filter = new BCRRowPredicate();
@@ -48,6 +51,10 @@ public class BcrTicketSpreadsheet {
 			List<BCRRow> weeklyData = IterableUtils.toList(IterableUtils.filteredIterable(data, filter));
 			makeSheet(weeklyData, i+1, tabName);
 		}
+		
+		BudgetControlTotalsResponse bctr = new BudgetControlTotalsResponse(conn, 0, divisionList, divisionId, claimYear, weekList[0]);
+		List<BCRTotalsDetail> weekTotals = bctr.getWeekTotals();
+		
 	}
 	
 	
@@ -189,7 +196,15 @@ public class BcrTicketSpreadsheet {
 		
 		return sheet;
 	}
-
+	
+	/**
+	 * Creates BCR Totals Tab
+	 */
+//	public static class BCRTotals {
+//		BudgetControlTotalsResponse bctr = new BudgetControlTotalsResponse(conn, userId, divisionList, divisionId, workYear, workWeek);
+//		List<BCRTotalsDetail> weekTotals = bctr.getWeekTotals();
+//		
+//	}
 	
 	/**
 	 * Repreasents one column of the spreadsheet tab. 
