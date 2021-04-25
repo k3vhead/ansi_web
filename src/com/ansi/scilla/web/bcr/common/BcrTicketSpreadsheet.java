@@ -45,7 +45,7 @@ public class BcrTicketSpreadsheet {
 		BCRRowPredicate filter = new BCRRowPredicate();
 		
 		BudgetControlTotalsResponse bctr = new BudgetControlTotalsResponse(conn, userId, divisionList, divisionId, claimYear, weekList[0]);
-		makeBugetControlTotalsTab(bctr);
+		makeBudgetControlTotalsTab(bctr);
 		
 		
 		makeSheet(data, 1, "All Tickets");
@@ -65,11 +65,48 @@ public class BcrTicketSpreadsheet {
 	}
 
 
-	private void makeBugetControlTotalsTab(BudgetControlTotalsResponse bctr) {
+	private void makeBudgetControlTotalsTab(BudgetControlTotalsResponse bctr) {
 		List<BCRTotalsDetail> weekTotals = bctr.getWeekTotals();
 
 		XSSFSheet bctrSheet = this.workbook.createSheet("Monthly Budget Control Summary");
+		int rowNum = 0;
+		int colNum = 0;
 		
+		XSSFRow row = null;
+		XSSFCell cell = null;
+		
+		for(rowNum = 0; rowNum < getBctrLabels().size(); rowNum++) {
+			row = bctrSheet.createRow(rowNum);
+			cell = row.createCell(colNum);
+			cell.setCellValue(getBctrLabels().get(rowNum));
+		}
+		colNum++;
+		
+		for(rowNum = 0; rowNum < weekTotals.size(); rowNum++) {
+			row = bctrSheet.createRow(rowNum);
+			cell = row.createCell(colNum);
+			cell.setCellValue(weekTotals.get(rowNum).toString());
+		}
+		colNum++;
+		
+		
+	}
+	
+	private List<String> getBctrLabels() {
+		List<String> bctrLabels = new ArrayList<String>();
+		bctrLabels.add("Week: ");
+		bctrLabels.add("Total Volume: ");
+		bctrLabels.add("Volume Claimed: ");
+		bctrLabels.add("Claimed Volume Remaining: ");
+		bctrLabels.add("Total Billed: ");
+		bctrLabels.add("Variance: ");
+		bctrLabels.add("Total D/L Claimed: ");
+		bctrLabels.add("Actual D/L: ");
+		bctrLabels.add("Actual OM D/L: ");
+		bctrLabels.add("Total Actual D/L: ");
+		bctrLabels.add("D/L Percentage: ");
+		bctrLabels.add("Actual D/L Percentage: ");
+		return bctrLabels;
 	}
 
 
