@@ -43,7 +43,7 @@ public class BcrTicketSpreadsheetServlet extends AbstractServlet {
 			logger.log(Level.DEBUG, "Parms: " + divisionId + " " + workYear + " " + workWeeks);
 			
 			String fileName = makeFileName(conn, divisionId, workYear, workWeeks); 
-			BcrTicketSpreadsheet spreadsheet = new BcrTicketSpreadsheet(conn, divisionList, divisionId, workYear, workWeeks);
+			BcrTicketSpreadsheet spreadsheet = new BcrTicketSpreadsheet(conn, sessionData.getUser().getUserId(), divisionList, divisionId, workYear, workWeeks);
 			XSSFWorkbook workbook = spreadsheet.getWorkbook();
 			AppUtils.writeSpreadSheet(response, workbook, fileName);
 			

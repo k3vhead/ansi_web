@@ -34,32 +34,42 @@ public class BcrTicketSpreadsheet {
 	private BCRHeader[] headerMap;
 	private Logger logger = LogManager.getLogger(BcrTicketSpreadsheet.class);
 	
-	public BcrTicketSpreadsheet(Connection conn, List<SessionDivision> divisionList, Integer divisionId, Integer claimYear, String workWeeks) 
+	public BcrTicketSpreadsheet(Connection conn, Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer claimYear, String workWeeks) 
 			throws Exception {
 		super();		
 		List<BCRRow> data = makeData(conn, divisionList, divisionId, claimYear, workWeeks);
+		String[] weekList = workWeeks.split(",");
 		
 		this.workbook = new XSSFWorkbook();
 		initWorkbook();
 		BCRRowPredicate filter = new BCRRowPredicate();
 		
-		makeSheet(data, 0, "All Tickets");
-		String[] weekList = workWeeks.split(",");
+		BudgetControlTotalsResponse bctr = new BudgetControlTotalsResponse(conn, userId, divisionList, divisionId, claimYear, weekList[0]);
+		makeBugetControlTotalsTab(bctr);
+		
+		
+		makeSheet(data, 1, "All Tickets");
 		for ( int i = 0; i < weekList.length; i++ ) {
 			String tabName = claimYear + "-" + weekList[i];
 			filter.setTabName(tabName);
 			List<BCRRow> weeklyData = IterableUtils.toList(IterableUtils.filteredIterable(data, filter));
-			makeSheet(weeklyData, i+1, tabName);
+			makeSheet(weeklyData, i+2, tabName);
 		}
 		
-		BudgetControlTotalsResponse bctr = new BudgetControlTotalsResponse(conn, 0, divisionList, divisionId, claimYear, weekList[0]);
-		List<BCRTotalsDetail> weekTotals = bctr.getWeekTotals();
 		
 	}
 	
 	
 	public XSSFWorkbook getWorkbook() {
 		return workbook;
+	}
+
+
+	private void makeBugetControlTotalsTab(BudgetControlTotalsResponse bctr) {
+		List<BCRTotalsDetail> weekTotals = bctr.getWeekTotals();
+
+		XSSFSheet bctrSheet = this.workbook.createSheet("Monthly Budget Control Summary");
+		
 	}
 
 
