@@ -113,6 +113,16 @@ public class BcrTicketSpreadsheet {
 			populateTotalsValue(sheet, colNum, TotalsRow.CLAIMED_VOLUME_REMAINING, weekTotals.get(i).getVolumeRemaining());
 			
 			populateTotalsValue(sheet, colNum, TotalsRow.TOTAL_BILLED, weekTotals.get(i).getBilledAmount());
+			populateTotalsValue(sheet, colNum, TotalsRow.VARIANCE, weekTotals.get(i).getClaimedVsBilled());
+			
+			populateTotalsValue(sheet, colNum, TotalsRow.TOTAL_DL_CLAIMED, weekTotals.get(i).getDlTotal());
+			populateTotalsValue(sheet, colNum, TotalsRow.ACTUAL_DL, weekTotals.get(i).getDlAmt());
+			populateTotalsValue(sheet, colNum, TotalsRow.ACTUAL_OM_DL, weekTotals.get(i).getDlAmt());
+			Double totalActualDL = weekTotals.get(i).getDlAmt() + weekTotals.get(i).getDlTotal();
+			populateTotalsValue(sheet, colNum, TotalsRow.TOTAL_ACTUAL_DL, totalActualDL);
+			
+			populateTotalsValue(sheet, colNum, TotalsRow.DL_PERCENTAGE, weekTotals.get(i).getDlPercentage());
+			populateTotalsValue(sheet, colNum, TotalsRow.ACTUAL_DL_PERCENTAGE, weekTotals.get(i).getActualDlPercentage());
 		}
 		
 		
@@ -123,8 +133,14 @@ public class BcrTicketSpreadsheet {
 	private void populateTotalsValue(XSSFSheet sheet, int colNum, TotalsRow totalsRow, Double value) {
 		XSSFRow row = sheet.getRow(totalsRow.rowNum());
 		XSSFCell cell = row.getCell(colNum);
+		
+		XSSFCellStyle cellStyleRight = workbook.createCellStyle();
+		cellStyleRight.setAlignment(CellStyle.ALIGN_RIGHT);
+		cellStyleRight.setDataFormat(workbook.createDataFormat().getFormat("#0.00"));
+		
 		// set cell format to right-justified, 2 decimals
-		cell.setCellValue(value);		
+		cell.setCellValue(value);
+		cell.setCellStyle(cellStyleRight);
 	}
 
 
