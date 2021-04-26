@@ -47,7 +47,8 @@ public class BcrTicketSpreadsheet {
 		BudgetControlTotalsResponse bctr = new BudgetControlTotalsResponse(conn, userId, divisionList, divisionId, claimYear, weekList[0]);
 		makeBudgetControlTotalsTab(bctr);
 		
-		
+		conn.close();
+
 		makeSheet(data, 1, "All Tickets");
 		for ( int i = 0; i < weekList.length; i++ ) {
 			String tabName = claimYear + "-" + weekList[i];
@@ -68,30 +69,73 @@ public class BcrTicketSpreadsheet {
 	private void makeBudgetControlTotalsTab(BudgetControlTotalsResponse bctr) {
 		List<BCRTotalsDetail> weekTotals = bctr.getWeekTotals();
 
-		XSSFSheet bctrSheet = this.workbook.createSheet("Monthly Budget Control Summary");
+		XSSFSheet sheet = this.workbook.createSheet("Monthly Budget Control Summary");
 		int rowNum = 0;
 		int colNum = 0;
 		
 		XSSFRow row = null;
 		XSSFCell cell = null;
 		
-		for(rowNum = 0; rowNum < getBctrLabels().size(); rowNum++) {
-			row = bctrSheet.createRow(rowNum);
-			cell = row.createCell(colNum);
-			cell.setCellValue(getBctrLabels().get(rowNum));
+		// make Date Row
+		colNum = 2;
+		row = sheet.createRow(0);
+		for ( int i = 0; i < weekTotals.size(); i++ ) {
+			cell = row.createCell(i+2);
+			cell.setCellValue("xx/yy-xx/yy");
 		}
-		colNum++;
-		
-		for(rowNum = 0; rowNum < weekTotals.size(); rowNum++) {
-			row = bctrSheet.createRow(rowNum);
-			cell = row.createCell(colNum);
-			cell.setCellValue(weekTotals.get(rowNum).toString());
+		cell = row.createCell(weekTotals.size() + 2);
+		cell.setCellValue("Month");
+				
+				
+		// initialize weekly columns
+		for ( TotalsRow totalsRow : TotalsRow.values() ) {
+			row = sheet.createRow(totalsRow.rowNum);
+			cell = row.createCell(0);  // label
+			cell.setCellValue(totalsRow.label());
+			cell = row.createCell(1); // unclaimed			
+			if ( totalsRow.equals(TotalsRow.WEEK) ) {
+				cell.setCellValue("Unclaimed");
+			} else {
+				cell.setCellValue("n/a");
+			}
+			for (colNum = 0; colNum < weekTotals.size(); colNum++ ) {
+				cell = row.createCell(colNum + 2);
+				cell.setCellValue("x");
+			}
 		}
-		colNum++;
 		
+		// make Weekly columns
+		for ( int i = 0; i < weekTotals.size(); i++ ) {
+			colNum = i + 2;
+			populateTotalsWeek(sheet, colNum, weekTotals.get(i).getClaimWeek());
+			populateTotalsValue(sheet, colNum, TotalsRow.TOTAL_VOLUME, weekTotals.get(i).getTotalVolume());
+			populateTotalsValue(sheet, colNum, TotalsRow.VOLUME_CLAIMED, weekTotals.get(i).getVolumeClaimed());
+			populateTotalsValue(sheet, colNum, TotalsRow.CLAIMED_VOLUME_REMAINING, weekTotals.get(i).getVolumeRemaining());
+			
+			populateTotalsValue(sheet, colNum, TotalsRow.TOTAL_BILLED, weekTotals.get(i).getBilledAmount());
+		}
+		
+		
+		// make Totals column
 		
 	}
 	
+	private void populateTotalsValue(XSSFSheet sheet, int colNum, TotalsRow totalsRow, Double value) {
+		XSSFRow row = sheet.getRow(totalsRow.rowNum());
+		XSSFCell cell = row.getCell(colNum);
+		// set cell format to right-justified, 2 decimals
+		cell.setCellValue(value);		
+	}
+
+
+	private void populateTotalsWeek(XSSFSheet sheet, int colNum, String claimWeek) {
+		XSSFRow row = sheet.getRow(TotalsRow.WEEK.rowNum());
+		XSSFCell cell = row.getCell(colNum);
+		// set cell format to right-justified, bold
+		cell.setCellValue(claimWeek);	
+	}
+
+
 	private List<String> getBctrLabels() {
 		List<String> bctrLabels = new ArrayList<String>();
 		bctrLabels.add("Week: ");
@@ -128,7 +172,6 @@ public class BcrTicketSpreadsheet {
 		}
 		
 		rs.close();
-		conn.close();
 		return data;
 	}
 
@@ -332,5 +375,33 @@ public class BcrTicketSpreadsheet {
 			return arg0.claimWeek.equals(tabName);
 		}
 		
+	}
+	
+	
+	private enum TotalsRow {
+		WEEK(1, "Week"),
+		TOTAL_VOLUME(2, "Total Volume: "),
+		VOLUME_CLAIMED(3, "Volume Claimed: "),
+		CLAIMED_VOLUME_REMAINING(4, "Claimed Volume Remaining: "),
+		TOTAL_BILLED(6, "Total Billed: "),
+		VARIANCE(7, "Variance: "),
+		TOTAL_DL_CLAIMED(9, "Total D/L Claimed: "),
+		ACTUAL_DL(10, "Actual D/L: "),
+		ACTUAL_OM_DL(11, "Actual OM D/L: "),
+		TOTAL_ACTUAL_DL(12, "Total Actual D/L: "),
+		DL_PERCENTAGE(14, "D/L Percentage: "),
+		ACTUAL_DL_PERCENTAGE(15, "Actual D/L Percentage: "),
+		;
+		
+		private Integer rowNum;
+		private String label;
+		
+		private TotalsRow(Integer rowNum, String label) {
+			this.rowNum = rowNum;
+			this.label = label;
+		}
+		
+		public Integer rowNum() { return this.rowNum; }
+		public String label() { return this.label; }
 	}
 }
