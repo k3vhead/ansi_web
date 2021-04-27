@@ -7,10 +7,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Predicate;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,6 +28,8 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.utils.WorkWeek;
+import com.ansi.scilla.common.utils.WorkYear;
 import com.ansi.scilla.web.bcr.response.BudgetControlTotalsResponse;
 import com.ansi.scilla.web.bcr.response.BudgetControlTotalsResponse.BCRTotalsDetail;
 import com.ansi.scilla.web.common.struts.SessionDivision;
@@ -44,8 +50,9 @@ public class BcrTicketSpreadsheet {
 		initWorkbook();
 		BCRRowPredicate filter = new BCRRowPredicate();
 		
+		List<WorkWeek> workCalendar = makeWorkCalendar(claimYear, weekList);
 		BudgetControlTotalsResponse bctr = new BudgetControlTotalsResponse(conn, userId, divisionList, divisionId, claimYear, weekList[0]);
-		makeBudgetControlTotalsTab(bctr);
+		makeBudgetControlTotalsTab(workCalendar, bctr);
 		
 		conn.close();
 
@@ -66,7 +73,24 @@ public class BcrTicketSpreadsheet {
 	}
 
 
-	private void makeBudgetControlTotalsTab(BudgetControlTotalsResponse bctr) {
+	private List<WorkWeek> makeWorkCalendar(Integer claimYear, String[] weekList) {
+		List<WorkWeek> workCalendar = new ArrayList<WorkWeek>();
+		
+		WorkYear workYear = new WorkYear(claimYear);
+		Collection<HashMap<String, Object>> values = workYear.values();
+		for ( HashMap<String, Object> value : values ) {
+			Integer weekOfYear = (Integer)value.get(WorkYear.WEEK_OF_YEAR);
+			if ( ArrayUtils.contains(weekList, claimYear + "-" + weekOfYear)) {
+				Calendar firstOfWeek = (Calendar)value.get(WorkYear.FIRST_OF_WEEK);
+				workCalendar.add( new WorkWeek(firstOfWeek) );
+			}
+		}
+
+		return workCalendar;
+	}
+
+
+	private void makeBudgetControlTotalsTab(List<WorkWeek> workCalendar, BudgetControlTotalsResponse bctr) {
 		List<BCRTotalsDetail> weekTotals = bctr.getWeekTotals();
 
 		XSSFSheet sheet = this.workbook.createSheet("Monthly Budget Control Summary");
