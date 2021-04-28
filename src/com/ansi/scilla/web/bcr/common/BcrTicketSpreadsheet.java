@@ -100,6 +100,21 @@ public class BcrTicketSpreadsheet {
 		XSSFRow row = null;
 		XSSFCell cell = null;
 		
+		XSSFCellStyle headerStyle = workbook.createCellStyle();
+		XSSFFont headerFont = workbook.createFont();
+		headerFont.setBold(true);
+		headerStyle.setFont(headerFont);
+		headerStyle.setAlignment(HorizontalAlignment.LEFT);
+		
+		XSSFCellStyle headerStyleCenter = workbook.createCellStyle();
+		XSSFFont headerCenterFont = workbook.createFont();
+		headerCenterFont.setBold(true);
+		headerStyleCenter.setFont(headerFont);
+		headerStyleCenter.setAlignment(HorizontalAlignment.CENTER);
+		
+		XSSFCellStyle cellStyleCenter = workbook.createCellStyle();
+		cellStyleCenter.setAlignment(HorizontalAlignment.CENTER);
+		
 		// make Date Row
 		colNum = 2;
 		row = sheet.createRow(0);
@@ -116,11 +131,15 @@ public class BcrTicketSpreadsheet {
 			row = sheet.createRow(totalsRow.rowNum);
 			cell = row.createCell(0);  // label
 			cell.setCellValue(totalsRow.label());
+			cell.setCellStyle(headerStyle);
+			
 			cell = row.createCell(1); // unclaimed			
 			if ( totalsRow.equals(TotalsRow.WEEK) ) {
 				cell.setCellValue("Unclaimed");
+				cell.setCellStyle(headerStyleCenter);
 			} else {
 				cell.setCellValue("n/a");
+				cell.setCellStyle(cellStyleCenter);
 			}
 			for (colNum = 0; colNum < weekTotals.size(); colNum++ ) {
 				cell = row.createCell(colNum + 2);
@@ -147,8 +166,10 @@ public class BcrTicketSpreadsheet {
 			
 			populateTotalsValue(sheet, colNum, TotalsRow.DL_PERCENTAGE, weekTotals.get(i).getDlPercentage());
 			populateTotalsValue(sheet, colNum, TotalsRow.ACTUAL_DL_PERCENTAGE, weekTotals.get(i).getActualDlPercentage());
+			sheet.setColumnWidth(colNum, 3000);
 		}
-		
+		sheet.setColumnWidth(0, 7000);
+		sheet.setColumnWidth(1, 3000);
 		
 		// make Totals column
 		
@@ -172,7 +193,14 @@ public class BcrTicketSpreadsheet {
 		XSSFRow row = sheet.getRow(TotalsRow.WEEK.rowNum());
 		XSSFCell cell = row.getCell(colNum);
 		// set cell format to right-justified, bold
-		cell.setCellValue(claimWeek);	
+		XSSFCellStyle headerStyle = workbook.createCellStyle();
+		XSSFFont headerFont = workbook.createFont();
+		headerFont.setBold(true);
+		headerStyle.setFont(headerFont);
+		headerStyle.setAlignment(HorizontalAlignment.RIGHT);
+		
+		cell.setCellValue(claimWeek);
+		cell.setCellStyle(headerStyle);
 	}
 
 
