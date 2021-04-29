@@ -181,8 +181,12 @@ public class BcrTicketSql extends ApplicationObject {
 			" or (\n" +
 			"     ticket.ticket_status in ('D','C')\n" +
 			" ) or ((isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim.passthru_expense_volume,0.00)) - isnull(invoice_totals.invoiced_amount,0.00) <> 0.00)\n" + 
-			"		and (isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim.passthru_expense_volume,0.00) <> 0.00)\n" + 
+//gag		"		and (isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim.passthru_expense_volume,0.00) <> 0.00)\n" + 
+			"		and (ticket.start_date >= '2020-10-01')\n" + 
 			" )  \n" 
+			; 
+	public static final String baseWhereClause3 =
+			" and (ticket.start_date <= '2020-11-27')\n" // This is the last day (Friday) of the last week in the month
 			; 
 	
 	
@@ -199,7 +203,8 @@ public class BcrTicketSql extends ApplicationObject {
 	}
 	
 	public static String makeBaseWhereClause(String workWeeks, Boolean monthlyFilter) {
-		String baseWhereClause = monthlyFilter ? BcrTicketSql.baseWhereClause1 +")" : BcrTicketSql.baseWhereClause1 + BcrTicketSql.baseWhereClause2;		
+		String baseWhereClause = monthlyFilter ? BcrTicketSql.baseWhereClause1 + ")" : BcrTicketSql.baseWhereClause1 + BcrTicketSql.baseWhereClause2;		
+//gag-this would be the current month filter		String baseWhereClause = monthlyFilter ? BcrTicketSql.baseWhereClause1 + BcrTicketSql.baseWhereClause2 + BcrTicketSql.baseWhereClause3 : BcrTicketSql.baseWhereClause1 + BcrTicketSql.baseWhereClause2;		
 		String whereClause = " " + baseWhereClause.replaceAll("\\$CLAIMWEEKFILTER\\$", workWeeks);
 		return whereClause;
 	}
