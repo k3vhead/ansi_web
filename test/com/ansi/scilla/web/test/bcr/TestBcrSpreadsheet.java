@@ -21,7 +21,7 @@ public class TestBcrSpreadsheet {
 		try {
 			conn = AppUtils.getDevConn();
 			conn.setAutoCommit(false);
-			String workWeeks = "41,42,43,44";
+			String workWeeks = "45,46,47,48";
 			List<SessionDivision> divisionList = TesterUtils.makeSessionDivisionList(conn, 5);
 			Integer divisionId = 101;
 			Integer claimYear = 2020;

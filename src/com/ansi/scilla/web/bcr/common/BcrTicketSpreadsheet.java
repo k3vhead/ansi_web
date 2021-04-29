@@ -6,15 +6,20 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -75,23 +80,34 @@ public class BcrTicketSpreadsheet {
 
 	private List<WorkWeek> makeWorkCalendar(Integer claimYear, String[] weekList) {
 		List<WorkWeek> workCalendar = new ArrayList<WorkWeek>();
+		WorkWeekDatePredicate workWeekPredicate = new WorkWeekDatePredicate();
 		
 		WorkYear workYear = new WorkYear(claimYear);
 		Collection<HashMap<String, Object>> values = workYear.values();
 		for ( HashMap<String, Object> value : values ) {
 			Integer weekOfYear = (Integer)value.get(WorkYear.WEEK_OF_YEAR);
-			if ( ArrayUtils.contains(weekList, claimYear + "-" + weekOfYear)) {
+			String matcher = weekOfYear < 10 ? "0" + weekOfYear : String.valueOf(weekOfYear);	
+			if ( ArrayUtils.contains(weekList, matcher)) {
 				Calendar firstOfWeek = (Calendar)value.get(WorkYear.FIRST_OF_WEEK);
-				workCalendar.add( new WorkWeek(firstOfWeek) );
+				workWeekPredicate.firstOfWeek = firstOfWeek;
+				if ( IterableUtils.countMatches(workCalendar, workWeekPredicate) == 0 ) {
+					workCalendar.add(new WorkWeek(firstOfWeek));
+				}				
 			}
 		}
 
+		Collections.sort(workCalendar, new Comparator<WorkWeek>() {
+			public int compare(WorkWeek o1, WorkWeek o2) {
+				return o1.getFirstOfWeek().compareTo(o2.getFirstOfWeek());
+			}
+		});
 		return workCalendar;
 	}
 
 
 	private void makeBudgetControlTotalsTab(List<WorkWeek> workCalendar, BudgetControlTotalsResponse bctr) {
 		List<BCRTotalsDetail> weekTotals = bctr.getWeekTotals();
+		BCRTotalsPredicate totalsPredicate = new BCRTotalsPredicate();
 
 		XSSFSheet sheet = this.workbook.createSheet("Monthly Budget Control Summary");
 		int rowNum = 0;
@@ -99,6 +115,7 @@ public class BcrTicketSpreadsheet {
 		
 		XSSFRow row = null;
 		XSSFCell cell = null;
+		SimpleDateFormat mmdd = new SimpleDateFormat("MM/dd");
 		
 		XSSFCellStyle headerStyle = workbook.createCellStyle();
 		XSSFFont headerFont = workbook.createFont();
@@ -118,12 +135,14 @@ public class BcrTicketSpreadsheet {
 		// make Date Row
 		colNum = 2;
 		row = sheet.createRow(0);
-		for ( int i = 0; i < weekTotals.size(); i++ ) {
+		for ( int i = 0; i < workCalendar.size(); i++ ) {
 			cell = row.createCell(i+2);
-			cell.setCellValue("xx/yy-xx/yy");
+			Date firstOfWeek = workCalendar.get(i).getFirstOfWeek().getTime();
+			Date lastOfWeek = workCalendar.get(i).getLastOfWeek().getTime();
+			cell.setCellValue(mmdd.format(firstOfWeek) + "-" + mmdd.format(lastOfWeek));
 		}
-		cell = row.createCell(weekTotals.size() + 2);
-		cell.setCellValue("Month");
+		cell = row.createCell(workCalendar.size() + 2);
+		cell.setCellValue("Month");		
 				
 				
 		// initialize weekly columns
@@ -141,31 +160,35 @@ public class BcrTicketSpreadsheet {
 				cell.setCellValue("n/a");
 				cell.setCellStyle(cellStyleCenter);
 			}
-			for (colNum = 0; colNum < weekTotals.size(); colNum++ ) {
+			for (colNum = 0; colNum < workCalendar.size(); colNum++ ) {
 				cell = row.createCell(colNum + 2);
-				cell.setCellValue("x");
+				cell.setCellValue(0D);
 			}
 		}
 		
 		// make Weekly columns
-		for ( int i = 0; i < weekTotals.size(); i++ ) {
+		for ( int i = 0; i < workCalendar.size(); i++ ) {
 			colNum = i + 2;
-			populateTotalsWeek(sheet, colNum, weekTotals.get(i).getClaimWeek());
-			populateTotalsValue(sheet, colNum, TotalsRow.TOTAL_VOLUME, weekTotals.get(i).getTotalVolume());
-			populateTotalsValue(sheet, colNum, TotalsRow.VOLUME_CLAIMED, weekTotals.get(i).getVolumeClaimed());
-			populateTotalsValue(sheet, colNum, TotalsRow.CLAIMED_VOLUME_REMAINING, weekTotals.get(i).getVolumeRemaining());
-			
-			populateTotalsValue(sheet, colNum, TotalsRow.TOTAL_BILLED, weekTotals.get(i).getBilledAmount());
-			populateTotalsValue(sheet, colNum, TotalsRow.VARIANCE, weekTotals.get(i).getClaimedVsBilled());
-			
-			populateTotalsValue(sheet, colNum, TotalsRow.TOTAL_DL_CLAIMED, weekTotals.get(i).getDlTotal());
-			populateTotalsValue(sheet, colNum, TotalsRow.ACTUAL_DL, weekTotals.get(i).getDlAmt());
-			populateTotalsValue(sheet, colNum, TotalsRow.ACTUAL_OM_DL, weekTotals.get(i).getDlAmt());
-			Double totalActualDL = weekTotals.get(i).getDlAmt() + weekTotals.get(i).getDlTotal();
-			populateTotalsValue(sheet, colNum, TotalsRow.TOTAL_ACTUAL_DL, totalActualDL);
-			
-			populateTotalsValue(sheet, colNum, TotalsRow.DL_PERCENTAGE, weekTotals.get(i).getDlPercentage());
-			populateTotalsValue(sheet, colNum, TotalsRow.ACTUAL_DL_PERCENTAGE, weekTotals.get(i).getActualDlPercentage());
+			totalsPredicate.workWeek = workCalendar.get(i);
+			BCRTotalsDetail detail = IterableUtils.find(weekTotals, totalsPredicate);
+			populateTotalsWeek(sheet, colNum, workCalendar.get(i).getWeekOfYear());
+			if ( detail != null ) {
+				populateTotalsValue(sheet, colNum, TotalsRow.TOTAL_VOLUME, detail.getTotalVolume());
+				populateTotalsValue(sheet, colNum, TotalsRow.VOLUME_CLAIMED, detail.getVolumeClaimed());
+				populateTotalsValue(sheet, colNum, TotalsRow.CLAIMED_VOLUME_REMAINING, detail.getVolumeRemaining());
+				
+				populateTotalsValue(sheet, colNum, TotalsRow.TOTAL_BILLED, detail.getBilledAmount());
+				populateTotalsValue(sheet, colNum, TotalsRow.VARIANCE, detail.getClaimedVsBilled());
+				
+				populateTotalsValue(sheet, colNum, TotalsRow.TOTAL_DL_CLAIMED, detail.getDlTotal());
+				populateTotalsValue(sheet, colNum, TotalsRow.ACTUAL_DL, detail.getDlAmt());
+				populateTotalsValue(sheet, colNum, TotalsRow.ACTUAL_OM_DL, detail.getDlAmt());
+				Double totalActualDL = detail.getDlAmt() + detail.getDlTotal();
+				populateTotalsValue(sheet, colNum, TotalsRow.TOTAL_ACTUAL_DL, totalActualDL);
+				
+				populateTotalsValue(sheet, colNum, TotalsRow.DL_PERCENTAGE, detail.getDlPercentage());
+				populateTotalsValue(sheet, colNum, TotalsRow.ACTUAL_DL_PERCENTAGE, detail.getActualDlPercentage());
+			}
 			sheet.setColumnWidth(colNum, 3000);
 		}
 		sheet.setColumnWidth(0, 7000);
@@ -189,7 +212,7 @@ public class BcrTicketSpreadsheet {
 	}
 
 
-	private void populateTotalsWeek(XSSFSheet sheet, int colNum, String claimWeek) {
+	private void populateTotalsWeek(XSSFSheet sheet, int colNum, Integer claimWeek) {
 		XSSFRow row = sheet.getRow(TotalsRow.WEEK.rowNum());
 		XSSFCell cell = row.getCell(colNum);
 		// set cell format to right-justified, bold
@@ -204,22 +227,7 @@ public class BcrTicketSpreadsheet {
 	}
 
 
-	private List<String> getBctrLabels() {
-		List<String> bctrLabels = new ArrayList<String>();
-		bctrLabels.add("Week: ");
-		bctrLabels.add("Total Volume: ");
-		bctrLabels.add("Volume Claimed: ");
-		bctrLabels.add("Claimed Volume Remaining: ");
-		bctrLabels.add("Total Billed: ");
-		bctrLabels.add("Variance: ");
-		bctrLabels.add("Total D/L Claimed: ");
-		bctrLabels.add("Actual D/L: ");
-		bctrLabels.add("Actual OM D/L: ");
-		bctrLabels.add("Total Actual D/L: ");
-		bctrLabels.add("D/L Percentage: ");
-		bctrLabels.add("Actual D/L Percentage: ");
-		return bctrLabels;
-	}
+	
 
 
 	private List<BCRRow> makeData(Connection conn, List<SessionDivision> divisionList, Integer divisionId, Integer claimYear, String workWeeks) throws SQLException {
@@ -445,6 +453,34 @@ public class BcrTicketSpreadsheet {
 		
 	}
 	
+	
+	/**
+	 * Filters by matching first of week.
+	 *
+	 */
+	public class WorkWeekDatePredicate implements Predicate<WorkWeek> {
+
+		public Calendar firstOfWeek;
+		
+		@Override
+		public boolean evaluate(WorkWeek arg0) {
+			return DateUtils.isSameDay(firstOfWeek, arg0.getFirstOfWeek());
+		}
+		
+	}
+	
+	
+	public class BCRTotalsPredicate implements Predicate<BCRTotalsDetail> {
+
+		public WorkWeek workWeek;
+		
+		@Override
+		public boolean evaluate(BCRTotalsDetail arg0) {
+			String[] cw = arg0.getClaimWeek().split("-");
+			return workWeek.getWeekOfYear().equals(Integer.valueOf(cw[1]));
+		}
+		
+	}
 	
 	private enum TotalsRow {
 		WEEK(1, "Week"),
