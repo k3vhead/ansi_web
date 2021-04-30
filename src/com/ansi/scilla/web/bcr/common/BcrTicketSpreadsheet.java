@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Predicate;
@@ -33,8 +34,10 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.utils.AppUtils;
 import com.ansi.scilla.common.utils.WorkWeek;
 import com.ansi.scilla.common.utils.WorkYear;
+import com.ansi.scilla.web.bcr.response.BudgetControlActualDlResponse.ActualDL;
 import com.ansi.scilla.web.bcr.response.BudgetControlTotalsResponse;
 import com.ansi.scilla.web.bcr.response.BudgetControlTotalsResponse.BCRTotalsDetail;
 import com.ansi.scilla.web.common.struts.SessionDivision;
@@ -56,7 +59,7 @@ public class BcrTicketSpreadsheet {
 		BCRRowPredicate filter = new BCRRowPredicate();
 		
 		List<WorkWeek> workCalendar = makeWorkCalendar(claimYear, weekList);
-		BudgetControlTotalsResponse bctr = new BudgetControlTotalsResponse(conn, userId, divisionList, divisionId, claimYear, weekList[0]);
+		BudgetControlTotalsResponse bctr = new BudgetControlTotalsResponse(conn, userId, divisionList, divisionId, claimYear, workWeeks);
 		makeBudgetControlTotalsTab(workCalendar, bctr);
 		
 		conn.close();
@@ -112,6 +115,7 @@ public class BcrTicketSpreadsheet {
 		XSSFSheet sheet = this.workbook.createSheet("Monthly Budget Control Summary");
 		int rowNum = 0;
 		int colNum = 0;
+		Integer monthTotalColNum = workCalendar.size() + 2;  //row label + "unclaimed" + each week gives us 2 cells extra
 		
 		XSSFRow row = null;
 		XSSFCell cell = null;
@@ -132,6 +136,11 @@ public class BcrTicketSpreadsheet {
 		XSSFCellStyle cellStyleCenter = workbook.createCellStyle();
 		cellStyleCenter.setAlignment(HorizontalAlignment.CENTER);
 		
+		XSSFCellStyle cellStyleRight = workbook.createCellStyle();
+		cellStyleRight.setAlignment(CellStyle.ALIGN_RIGHT);
+		cellStyleRight.setDataFormat(workbook.createDataFormat().getFormat("#0.00"));
+
+		
 		// make Date Row
 		colNum = 2;
 		row = sheet.createRow(0);
@@ -142,7 +151,8 @@ public class BcrTicketSpreadsheet {
 			cell.setCellValue(mmdd.format(firstOfWeek) + "-" + mmdd.format(lastOfWeek));
 		}
 		cell = row.createCell(workCalendar.size() + 2);
-		cell.setCellValue("Month");		
+		cell.setCellValue("Month");	
+		cell.setCellStyle(headerStyleCenter);
 				
 				
 		// initialize weekly columns
@@ -156,6 +166,9 @@ public class BcrTicketSpreadsheet {
 			if ( totalsRow.equals(TotalsRow.WEEK) ) {
 				cell.setCellValue("Unclaimed");
 				cell.setCellStyle(headerStyleCenter);
+			} else if ( totalsRow.equals(TotalsRow.TOTAL_VOLUME)) {
+				cell.setCellValue(0.0D);
+				cell.setCellStyle(cellStyleRight);				
 			} else {
 				cell.setCellValue("n/a");
 				cell.setCellStyle(cellStyleCenter);
@@ -163,7 +176,19 @@ public class BcrTicketSpreadsheet {
 			for (colNum = 0; colNum < workCalendar.size(); colNum++ ) {
 				cell = row.createCell(colNum + 2);
 				cell.setCellValue(0D);
+				cell.setCellStyle(cellStyleRight);
 			}
+
+			cell = row.createCell(monthTotalColNum);
+
+			if ( totalsRow.equals(TotalsRow.WEEK) ) {
+				cell.setCellValue("Total");
+				cell.setCellStyle(headerStyleCenter);
+			} else {
+				cell.setCellValue(0.0D);
+				cell.setCellStyle(cellStyleRight);
+			}
+			
 		}
 		
 		// make Weekly columns
@@ -181,20 +206,54 @@ public class BcrTicketSpreadsheet {
 				populateTotalsValue(sheet, colNum, TotalsRow.VARIANCE, detail.getClaimedVsBilled());
 				
 				populateTotalsValue(sheet, colNum, TotalsRow.TOTAL_DL_CLAIMED, detail.getDlTotal());
-				populateTotalsValue(sheet, colNum, TotalsRow.ACTUAL_DL, detail.getDlAmt());
-				populateTotalsValue(sheet, colNum, TotalsRow.ACTUAL_OM_DL, detail.getDlAmt());
-				Double totalActualDL = detail.getDlAmt() + detail.getDlTotal();
-				populateTotalsValue(sheet, colNum, TotalsRow.TOTAL_ACTUAL_DL, totalActualDL);
-				
+
 				populateTotalsValue(sheet, colNum, TotalsRow.DL_PERCENTAGE, detail.getDlPercentage());
 				populateTotalsValue(sheet, colNum, TotalsRow.ACTUAL_DL_PERCENTAGE, detail.getActualDlPercentage());
 			}
 			sheet.setColumnWidth(colNum, 3000);
 		}
+		
+		
+		// populate monthly column		
+		BCRTotalsDetail monthTotal = bctr.getMonthTotal();		
+		populateTotalsValue(sheet, monthTotalColNum, TotalsRow.TOTAL_VOLUME, monthTotal.getTotalVolume());
+		populateTotalsValue(sheet, monthTotalColNum, TotalsRow.VOLUME_CLAIMED, monthTotal.getVolumeClaimed());
+		populateTotalsValue(sheet, monthTotalColNum, TotalsRow.CLAIMED_VOLUME_REMAINING, monthTotal.getVolumeRemaining());
+		
+		populateTotalsValue(sheet, monthTotalColNum, TotalsRow.TOTAL_BILLED, monthTotal.getBilledAmount());
+		populateTotalsValue(sheet, monthTotalColNum, TotalsRow.VARIANCE, monthTotal.getClaimedVsBilled());
+		
+		populateTotalsValue(sheet, monthTotalColNum, TotalsRow.TOTAL_DL_CLAIMED, monthTotal.getDlTotal());
+
+		populateTotalsValue(sheet, monthTotalColNum, TotalsRow.DL_PERCENTAGE, monthTotal.getDlPercentage());
+		populateTotalsValue(sheet, monthTotalColNum, TotalsRow.ACTUAL_DL_PERCENTAGE, monthTotal.getActualDlPercentage());
+		
+		
+		
+		
+		// populate Totals & Actuals
+		HashMap<Integer, ActualDL> actuals = bctr.getActualDl().getWeekActualDL();
+		List<Integer> weekNums = IterableUtils.toList(actuals.keySet());
+		Collections.sort(weekNums);
+		colNum = 2;
+		for (Integer weekNum : weekNums ) {
+			ActualDL actual = actuals.get(weekNum);
+			populateTotalsValue(sheet, colNum, TotalsRow.ACTUAL_DL, actual.getActualDL());
+			populateTotalsValue(sheet, colNum, TotalsRow.ACTUAL_OM_DL, actual.getOmDL());
+			populateTotalsValue(sheet, colNum, TotalsRow.TOTAL_ACTUAL_DL, actual.getActualDL() + actual.getOmDL());
+			colNum++;
+		}
+		
+
+		// populate budget control panel actual dl totals
+		ActualDL totalActualDL = bctr.getActualDl().getTotalActualDL();
+		populateTotalsValue(sheet, monthTotalColNum, TotalsRow.ACTUAL_DL, totalActualDL.getActualDL());
+		populateTotalsValue(sheet, monthTotalColNum, TotalsRow.ACTUAL_OM_DL, totalActualDL.getOmDL());
+		populateTotalsValue(sheet, monthTotalColNum, TotalsRow.TOTAL_ACTUAL_DL, totalActualDL.getTotalDL());
+
+		
 		sheet.setColumnWidth(0, 7000);
 		sheet.setColumnWidth(1, 3000);
-		
-		// make Totals column
 		
 	}
 	
@@ -202,13 +261,9 @@ public class BcrTicketSpreadsheet {
 		XSSFRow row = sheet.getRow(totalsRow.rowNum());
 		XSSFCell cell = row.getCell(colNum);
 		
-		XSSFCellStyle cellStyleRight = workbook.createCellStyle();
-		cellStyleRight.setAlignment(CellStyle.ALIGN_RIGHT);
-		cellStyleRight.setDataFormat(workbook.createDataFormat().getFormat("#0.00"));
-		
 		// set cell format to right-justified, 2 decimals
 		cell.setCellValue(value);
-		cell.setCellStyle(cellStyleRight);
+//		cell.setCellStyle(cellStyleRight);
 	}
 
 
