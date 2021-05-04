@@ -37,6 +37,7 @@ public class BcrTicketSql extends ApplicationObject {
 	public static final String EQUIPMENT_TAGS = "equipment_tags";
 	public static final String CLAIM_ID = "claim_id";
 	public static final String SERVICE_TYPE_ID = "service_type_id";
+	public static final String CLAIMED_EQUIPMENT = "claimed_equipment";
 	
 	
 	
@@ -76,6 +77,64 @@ public class BcrTicketSql extends ApplicationObject {
 			"			inner join job_tag_xref xref on xref.job_id=ticket.job_id\n" + 
 			"			inner join job_tag on job_tag.tag_id=xref.tag_id and job_tag.tag_type='EQUIPMENT') ST2\n" + 
 			"    ) [Main]";
+	
+	
+	
+	
+	/**
+	 * Using code freely stolen from:
+	 * https://stackoverflow.com/questions/194852/how-to-concatenate-text-from-multiple-rows-into-a-single-text-string-in-sql-serv
+	 * 
+	 * This query creates a 2-column table containing a claim id and a comma-delimited list of job_tag.abbrev where the
+	 * job tag is of type 'EQUIPMENT'
+	 * 
+	 * eg: where claim_equipment contains
+	 * 		claim_id	equipment_id
+	 * 		========	============
+	 * 		30			7
+	 * 		30			8
+	 * 		2234		7
+	 * 
+	 * this subselect will return
+	 * 		claim_id	claimed_equipment
+	 * 		========	=================
+	 * 		30			WFP,LPT
+	 * 		2234		WFP
+	 *
+	 *	claims that have no equipment will return a null in the claimed_equipment column
+	 * 
+	 * It is highly inefficient because of 2 identical sub-selects within the subselect, but it has the advantage of actually working.
+	 * 
+	 */
+	private static final String claimedEquipmentSubselect = 
+			"SELECT Main.claim_id,\n" + 
+			"	case len(main.claimed_equipment)\n" + 
+			"	when 0 then null\n" + 
+			"	else LEFT(Main.claimed_equipment,Len(Main.claimed_equipment)-1)\n" + 
+			"	end as 'claimed_equipment'\n" + 
+			"FROM\n" + 
+			"    (\n" + 
+			"        SELECT DISTINCT ST4.claim_id, \n" + 
+			"            (\n" + 
+			"                SELECT ST3.claimed_equipment + ',' AS [text()]\n" + 
+			"                FROM (\n" + 
+			"                	select ticket_claim.claim_id, ce.equipment_id, job_tag.abbrev as claimed_equipment \n" + 
+			"					from ticket_claim\n" + 
+			"					left outer join claim_equipment ce on ce.claim_id=ticket_claim.claim_id \n" + 
+			"					left outer join job_tag on job_tag.tag_id=ce.equipment_id and job_tag.tag_type='EQUIPMENT') ST3\n" + 
+			"                WHERE ST3.claim_id = ST4.claim_id\n" + 
+			"                ORDER BY ST3.claim_id\n" + 
+			"                FOR XML PATH ('')\n" + 
+			"            ) [claimed_equipment]\n" + 
+			"        FROM (\n" + 
+			"	        select distinct ticket_claim.claim_id, job_tag.abbrev as claimed_equipment\n" + 
+			"			from ticket_claim\n" + 
+			"			inner join ticket on ticket.ticket_id=ticket_claim.ticket_id\n" + 
+			"			inner join job_tag_xref xref on xref.job_id=ticket.job_id\n" + 
+			"			inner join job_tag on job_tag.tag_id=xref.tag_id and job_tag.tag_type='EQUIPMENT') ST4\n" + 
+			"    ) [Main]";
+	
+	
 	
 	
 	public static final String ticketTotalSubselect = 
@@ -125,7 +184,8 @@ public class BcrTicketSql extends ApplicationObject {
 			" , ticket_claim.employee_name as " + EMPLOYEE + "\n" + 
 			"-- ** this is where the equipment tags would go **\n" + 
 			"-- , \"concat equipment tags separated by commas\"\n" + 
-			" , tag_list.equipment_tags as " + EQUIPMENT_TAGS + " \n";
+			" , tag_list.equipment_tags as " + EQUIPMENT_TAGS + " \n" +
+			" , claimed_equipment_list.claimed_equipment as " + CLAIMED_EQUIPMENT + "\n";
 			
 	
 	public static final String sqlFromClause = 
@@ -166,7 +226,8 @@ public class BcrTicketSql extends ApplicationObject {
 			"	where invoice_date is not null\n" + 
 			"	group by ticket_id\n" + 
 			"	) as invoice_totals on invoice_totals.ticket_id = ticket.ticket_id \n" +
-			"left outer join (" + equipmentTagSubselect + ") tag_list on tag_list.ticket_id=ticket_claim.ticket_id";
+			"left outer join (" + equipmentTagSubselect + ") tag_list on tag_list.ticket_id=ticket_claim.ticket_id\n" +
+			"left outer join (" + claimedEquipmentSubselect + ") claimed_equipment_list on claimed_equipment_list.claim_id=ticket_claim.claim_id";
 					
 	
 	public static final String baseWhereClause1 =

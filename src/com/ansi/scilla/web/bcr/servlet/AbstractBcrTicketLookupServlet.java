@@ -1,16 +1,21 @@
 package com.ansi.scilla.web.bcr.servlet;
 
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
+import com.ansi.scilla.web.bcr.common.BcrTicketSql;
 import com.ansi.scilla.web.bcr.query.BcrTicketLookupQuery;
 import com.ansi.scilla.web.bcr.query.BcrWeeklyTicketLookupQuery;
 import com.ansi.scilla.web.common.query.LookupQuery;
@@ -36,6 +41,7 @@ public abstract class AbstractBcrTicketLookupServlet extends AbstractLookupServl
 
 	public static final String NOTES = "notes";
 	public static final String NOTES_DISPLAY = "notes_display";
+	public static final String UNCLAIMED_EQUIPMENT = "unclaimed_equipment";
 	
 	
 	
@@ -104,6 +110,16 @@ public abstract class AbstractBcrTicketLookupServlet extends AbstractLookupServl
 			if ( arg0.get(CLAIM_WEEK).equals("-") ) {
 				arg0.put(CLAIM_WEEK, null);
 			}
+			
+			
+			String equipmentTags = (String)arg0.get(BcrTicketSql.EQUIPMENT_TAGS);
+			String claimedEquipment = (String)arg0.get(BcrTicketSql.CLAIMED_EQUIPMENT);
+			List<String> equipmentTagList = StringUtils.isBlank(equipmentTags) ? new ArrayList<String>() : Arrays.asList(equipmentTags.split(","));
+			List<String> claimedEquipmentList = StringUtils.isBlank(claimedEquipment) ? new ArrayList<String>() : Arrays.asList(claimedEquipment.split(","));
+			Collection<String> unclaimedEquipmentList = CollectionUtils.subtract(equipmentTagList, claimedEquipmentList);
+			String unclaimedEquipment = StringUtils.join(unclaimedEquipmentList, ",");
+			arg0.put(UNCLAIMED_EQUIPMENT, unclaimedEquipment);
+			
 			return arg0;
 		}
 

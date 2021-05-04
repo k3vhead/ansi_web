@@ -505,7 +505,24 @@
     			            		return $display;
     			            	} 
     			            },
-    			            { title: "Equipment",  width:"4%", searchable:true, searchFormat: "Equipment #####", data:'equipment_tags' },
+    			            { title: "Equipment",  width:"4%", searchable:true, searchFormat: "Equipment #####", 
+    			            	data: function ( row, type, set ) {
+    			            		var $display = [];
+    			            		if ( row.equipment_tags != null ) {
+	    			            		var $equipmentList = row.equipment_tags.split(",");
+	    			            		var $unclaimedList = row.unclaimed_equipment.split(",");
+	    			            		$.each($equipmentList, function($index, $value) {
+	    			            			console.log("Checking: " + $value);
+	    			            			if ( $unclaimedList.includes($value) ) {
+	    			            				$display.push($value);
+	    			            			} else {
+	    			            				$display.push('<span style="font-weight:bold;">'+ $value + '</span>');
+	    			            			}
+	    			            		});
+    			            		}
+    			            		return $display.join(",");
+    			            	}
+    			            },
     			            { title: "Employee",  width:"13%", searchable:true, searchFormat: "Name #####", data:'employee' }
     			            ],
     			            "initComplete": function(settings, json) {
