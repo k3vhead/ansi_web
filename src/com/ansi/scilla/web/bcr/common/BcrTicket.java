@@ -58,7 +58,8 @@ public class BcrTicket extends ApplicationObject {
 		this.claimedVsBilled = rs.getDouble(BcrTicketSql.CLAIMED_VS_BILLED);
 		this.ticketStatus = rs.getString(BcrTicketSql.TICKET_STATUS);
 		this.employee = rs.getString(BcrTicketSql.EMPLOYEE);
-		this.equipmentTags = rs.getString(BcrTicketSql.EQUIPMENT_TAGS);
+		// display claimed equipment instead of equipment assigned to the job 
+		this.equipmentTags = rs.getString(BcrTicketSql.CLAIMED_EQUIPMENT); //rs.getString(BcrTicketSql.EQUIPMENT_TAGS);
 		this.claimId = rs.getInt(BcrTicketSql.CLAIM_ID);
 	}
 	

@@ -512,15 +512,14 @@
 	    			            		var $equipmentList = row.equipment_tags.split(",");
 	    			            		var $unclaimedList = row.unclaimed_equipment.split(",");
 	    			            		$.each($equipmentList, function($index, $value) {
-	    			            			console.log("Checking: " + $value);
 	    			            			if ( $unclaimedList.includes($value) ) {
-	    			            				$display.push($value);
+	    			            				$display.push('<span class="jobtag-display">'+ $value + '</span>');
 	    			            			} else {
-	    			            				$display.push('<span style="font-weight:bold;">'+ $value + '</span>');
+	    			            				$display.push('<span class="jobtag-display jobtag-selected">'+ $value + '</span>');
 	    			            			}
 	    			            		});
     			            		}
-    			            		return $display.join(",");
+    			            		return $display.join("");
     			            	}
     			            },
     			            { title: "Employee",  width:"13%", searchable:true, searchFormat: "Name #####", data:'employee' }
@@ -1233,7 +1232,18 @@
 		    						return $row.volumeRemaining.toFixed(2);
 		    					}  
 		    				},
-		    				{ width:"125px", title:"Equipment Type", className:"dt-head-left", orderable:true, visible:true, defaultContent: "<i>N/A</i>", data:'equipmentTags'},
+		    				{ width:"125px", title:"Equipment Type", className:"dt-head-left", orderable:true, visible:true, defaultContent: "", 
+	    						data: function ( row, type, set ) {
+    			            		var $display = [];
+    			            		if ( row.equipmentTags != null ) {
+	    			            		var $equipmentList = row.equipmentTags.split(",");
+	    			            		$.each($equipmentList, function($index, $value) {
+    			            				$display.push('<span class="jobtag-display jobtag-selected">'+ $value + '</span>');
+	    			            		});
+    			            		}
+    			            		return $display.join("");
+    			            	}
+		    				},
 		    				{ width:"300px", title:"Employee", className:"dt-head-left", orderable:true, visible:true, defaultContent: "<i>N/A</i>", data:'employee'},
 		    				{ width:"300px", title:"Employee", className:"dt-head-left", orderable:true, visible:true, defaultContent: "<i>N/A</i>", 
 		    					data:function($row,$type,$set) {
