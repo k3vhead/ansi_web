@@ -16,6 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.db.JobTag;
 import com.ansi.scilla.common.db.TicketClaim;
 import com.ansi.scilla.web.bcr.common.BcrTicket;
 import com.ansi.scilla.web.bcr.common.BcrTicketSql;
@@ -43,6 +44,7 @@ public class BcrTicketClaimResponse extends MessageResponse {
 	private List<BcrTicket> dlClaims;
 	private List<PassthruExpense> expenses;
 	private BcrTicketClaimSummary summary;
+	private List<EquipmentTag> equipmentTags;
 	
 	
 	public BcrTicketClaimResponse() {
@@ -78,6 +80,8 @@ public class BcrTicketClaimResponse extends MessageResponse {
 			claimWeeks.add(claimWeek);
 		}
 		Collections.sort(claimWeeks);
+		
+		this.equipmentTags = makeEquipmentTags(conn, claimId);
 	}
 
 	
@@ -131,6 +135,14 @@ public class BcrTicketClaimResponse extends MessageResponse {
 
 	public void setSummary(BcrTicketClaimSummary summary) {
 		this.summary = summary;
+	}
+
+	public List<EquipmentTag> getEquipmentTags() {
+		return equipmentTags;
+	}
+
+	public void setEquipmentTags(List<EquipmentTag> equipmentTags) {
+		this.equipmentTags = equipmentTags;
 	}
 
 	/**
@@ -220,6 +232,28 @@ public class BcrTicketClaimResponse extends MessageResponse {
 		
 	}
 
+	private List<EquipmentTag> makeEquipmentTags(Connection conn, Integer claimId) throws SQLException {
+		List<EquipmentTag> equipmentTags = new ArrayList<EquipmentTag>();
+		final String sql = "select job_tag.tag_id, job_tag.long_code, job_tag.description, job_tag.abbrev\n" + 
+				"from ticket_claim\n" + 
+				"inner join ticket on ticket.ticket_id=ticket_claim.ticket_id \n" + 
+				"inner join job_tag_xref on job_tag_xref.job_id =ticket.job_id\n" + 
+				"inner join job_tag on job_tag.tag_id=job_tag_xref.tag_id and job_tag.tag_type=?\n" + 
+				"where ticket_claim.claim_id=?\n" +
+				"order by job_tag.abbrev";
+		Logger logger = LogManager.getLogger(this.getClass());
+		logger.log(Level.DEBUG, sql);
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setString(1, "EQUIPMENT");
+		ps.setInt(2, claimId);
+		ResultSet rs = ps.executeQuery();
+		while ( rs.next() ) {
+			equipmentTags.add(new EquipmentTag(rs));
+		}		
+		return equipmentTags;
+	}
+
+	
 	public static BcrTicketClaimResponse fromClaim(Connection conn, Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer workYear, String workWeeks, Integer claimId) throws SQLException, RecordNotFoundException, Exception {
 		return new BcrTicketClaimResponse(conn, userId, divisionList, divisionId, workYear, workWeeks, claimId);
 	}
@@ -357,5 +391,46 @@ public class BcrTicketClaimResponse extends MessageResponse {
 		
 	}
 	
+	
+	public class EquipmentTag extends ApplicationObject {
+		private static final long serialVersionUID = 1L;
+		private Integer tagId;
+		private String longCode;
+		private String description;
+		private String abbrev;
+		
+		public EquipmentTag(ResultSet rs) throws SQLException {
+			super();
+			this.tagId = rs.getInt(JobTag.TAG_ID);
+			this.longCode = rs.getString(JobTag.LONG_CODE);
+			this.description = rs.getString(JobTag.DESCRIPTION);
+			this.abbrev = rs.getString(JobTag.ABBREV);
+		}
+		
+		public Integer getTagId() {
+			return tagId;
+		}
+		public void setTagId(Integer tagId) {
+			this.tagId = tagId;
+		}
+		public String getLongCode() {
+			return longCode;
+		}
+		public void setLongCode(String longCode) {
+			this.longCode = longCode;
+		}
+		public String getDescription() {
+			return description;
+		}
+		public void setDescription(String description) {
+			this.description = description;
+		}
+		public String getAbbrev() {
+			return abbrev;
+		}
+		public void setAbbrev(String abbrev) {
+			this.abbrev = abbrev;
+		}
+	}
 	
 }

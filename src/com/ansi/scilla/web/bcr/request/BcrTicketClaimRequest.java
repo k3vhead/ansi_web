@@ -32,6 +32,7 @@ public class BcrTicketClaimRequest extends AbstractRequest {
 	public static final String WORK_YEAR = "workYear";
 	public static final String WORK_WEEKS = "workWeeks";
 	public static final String SERVICE_TAG_ID = "serviceTagId";
+	public static final String CLAIMED_EQUIPMENT = "claimedEquipment";
 	
 	
 	private Integer ticketId;
@@ -47,6 +48,7 @@ public class BcrTicketClaimRequest extends AbstractRequest {
 	private Integer workYear;
 	private String workWeeks;
 	private Integer serviceTagId;
+	private String claimedEquipment;
 	
 	public Integer getTicketId() {
 		return ticketId;
@@ -135,6 +137,18 @@ public class BcrTicketClaimRequest extends AbstractRequest {
 	public void setServiceTagId(Integer serviceTagId) {
 		this.serviceTagId = serviceTagId;
 	}
+	/**
+	 * comma-delimited list of jobtag id's. These are the id's of jobtags of type "EQUIPMENT" that are associated with this claim
+	 * 
+	 * @return
+	 */
+	public String getClaimedEquipment() {
+		return claimedEquipment;
+	}
+	public void setClaimedEquipment(String claimedEquipment) {
+		this.claimedEquipment = claimedEquipment;
+	}
+	
 	public WebMessages validateGet(Connection conn, SessionUser sessionUser, List<SessionDivision> divisionList, Integer divisionId, Integer claimYear, String claimWeeks) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		

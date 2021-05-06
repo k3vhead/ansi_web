@@ -578,7 +578,7 @@
         		
         		getTicketDetailSuccess : function($data) {
 					console.log("getTicketDetailSuccess");  
-					
+										
 					var $select = $("#bcr_edit_modal input[name='claimWeek']");
 					$($select).attr("data-ticketid",$data.data.ticket.ticketId);
 					$($select).attr("data-oldclaimweek",$data.data.claimWeek);
@@ -859,7 +859,13 @@
         			var $dlAmt = $("#bcr_edit_modal input[name='dlAmt']").val();
         			var $volumeClaimed = $("#bcr_edit_modal input[name='volumeClaimed']").val();
         			var $employee = $("#bcr_edit_modal input[name='employee']").val();
-        			var $notes = $("#bcr_edit_modal input[name='laborNotes']").val();
+        			var $notes = $("#bcr_edit_modal input[name='laborNotes']").val();        			
+        			
+        			var $selectedEquipment = [];
+        			$.each( $("#bcr_edit_modal .equipment-claim.jobtag-selected"), function($index, $value) {
+        				$tagId = $(this).attr("data-tagid");
+        				$selectedEquipment.push($tagId);
+        			});
         			
         			// these are needed to create the correct response, not to do the update
         			var $divisionId = BUDGETCONTROL.divisionId
@@ -877,6 +883,7 @@
                 			"notes":$notes,
                 			"workYear":$workYear,
                 			"workWeeks":$workWeeks,
+                			"claimedEquipment":$selectedEquipment.join(","),
         			}
         			console.log($outbound);
         			ANSI_UTILS.doServerCall("POST", "bcr/ticketClaim", JSON.stringify($outbound), BUDGETCONTROL.expenseSaveSuccess, BUDGETCONTROL.claimUpdateFail);
@@ -1193,8 +1200,14 @@
         			var $columnNotesEdit = 9;
         			var $columnAction = 10;
         			
-        			var $displayColumns = [$columnLabor,$columnClaimed,$columnEmployee,$columnNotes];
+        			var $displayColumns = [$columnLabor,$columnClaimed, $columnEmployee,$columnNotes];
 	            	var $editColumns = [$columnLaborEdit, $columnClaimedEdit,$columnEmployeeEdit,$columnNotesEdit];
+	            	
+	            	var $equipmentList = [];
+	            	$.each($data.data.equipmentTags, function($index, $value) {
+	            		$equipmentList.push('<span class="jobtag-display equipment-claim" style="cursor:pointer;" data-tagid="'+$value.tagId+'">' + $value.abbrev + "</span>");
+	            	});
+	            	var $equipmentDisplay = $equipmentList.join("");
         			
 					// Make DL Claim Table:
 					BUDGETCONTROL.dlClaimTable = $("#dl-claim-table").DataTable( {
@@ -1351,6 +1364,7 @@
 
 			            	$( api.column($columnLabor).footer() ).html( '<span class="newLaborItem"><input type="text" placeholder="0.00" style="width:80px;" name="dlAmt"/><br /></span><span class="displayLaborItem">' + dlTotal.toFixed(2) + '</span>');
 			            	$( api.column($columnClaimed).footer() ).html( '<span class="newLaborItem"><input type="text" placeholder="0.00" style="width:80px;" name="volumeClaimed"/><br /></span><span class="displayLaborItem">' + volumeClaimedTotal.toFixed(2) + '</span>');
+			            	$( api.column($columnEquipment).footer() ).html( '<span class="newLaborItem">'+$equipmentDisplay+'<br /></span><span class="displayLaborItem">&nbsp;</span>');
 			            	$( api.column($columnEmployee).footer() ).html( '<span class="newLaborItem"><input type="text" style="width:120px;" name="employee"/><br /></span>');
 			            	$( api.column($columnNotes).footer() ).html( '<span class="newLaborItem"><input type="text" style="width:120px;" name="laborNotes"/><br /></span>');
 			            	$( api.column($columnAction).footer() ).html( '<span class="newLaborItem"><webthing:ban styleClass="cancelLabor">Cancel</webthing:ban><webthing:checkmark styleClass="saveNewLabor">Save</webthing:checkmark></span><span class="displayLaborItem"><webthing:addNew styleClass="newLaborButton">New Claim</webthing:addNew></span>' );
@@ -1358,6 +1372,9 @@
 		 					
 		 					BUDGETCONTROL.makeEmployeeAutoComplete("#bcr_edit_modal input[name='employee']");
 		 					
+		 					$("#bcr_edit_modal .equipment-claim").click(function() {
+		 						$(this).toggleClass("jobtag-selected");
+		 					});
 							$("#bcr_edit_modal .newLaborButton").click(function() {
 								console.log("New Labor Click");
 								$("#bcr_edit_modal .displayLaborItem").hide();
