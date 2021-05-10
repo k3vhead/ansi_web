@@ -417,6 +417,55 @@ public class RequestValidator {
 
 	}
 
+	/**
+	 * 
+	 * @param conn
+	 * @param webMessages
+	 * @param value comma-separated list of job tag id's of type 'EQUIPMENT'
+	 * @param ticketId
+	 * @param fieldName
+	 * @param required
+	 * @param label
+	 * @throws SQLException 
+	 */
+	public static void validateEquipmentTags(Connection conn, WebMessages webMessages, String fieldName,
+			Integer ticketId, String value, boolean required, String label) throws SQLException {
+		if ( StringUtils.isBlank(value) ) {
+			if ( required ) {
+				if ( StringUtils.isBlank(label) ) {
+					webMessages.addMessage(fieldName, "Required Value");
+				} else {
+					webMessages.addMessage(fieldName, label + " is required");
+				}
+			}
+		} else {
+			String sql = "select xref.tag_id\n" + 
+					"from ticket\n" + 
+					"inner join job_tag_xref xref on xref.job_id=ticket.job_id\n" + 
+					"inner join job_tag on job_tag.tag_id=xref.tag_id and job_tag.tag_type ='EQUIPMENT'\n" + 
+					"where ticket.ticket_id=?";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, ticketId);
+			ResultSet rs = ps.executeQuery();
+			List<Integer> validTagList = new ArrayList<Integer>();
+			while ( rs.next() ) {
+				validTagList.add( rs.getInt("tag_id"));
+			}
+			rs.close();
+			
+			for (String testTag : value.split(",") ) {
+				if ( ! validTagList.contains(Integer.valueOf(testTag)) && ! webMessages.containsKey(fieldName)) {
+					if (StringUtils.isBlank(label) ) {
+						webMessages.addMessage(fieldName, "Invalid Value");
+					} else {
+						webMessages.addMessage(fieldName, "Invalid " + label);
+					}
+				}
+			}
+		}
+		
+	}
+
 	public static void validateExpenseType(Connection conn, WebMessages webMessages, String fieldName, String value,
 			boolean required) throws Exception {
 		validateCode(conn, webMessages, EmployeeExpense.TABLE, EmployeeExpense.EXPENSE_TYPE, fieldName, value, required, null);

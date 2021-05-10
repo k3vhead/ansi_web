@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.AnsiTime;
+import com.ansi.scilla.common.db.ClaimEquipment;
 import com.ansi.scilla.common.db.TicketClaim;
 import com.ansi.scilla.web.bcr.request.BcrTicketClaimRequest;
 import com.ansi.scilla.web.bcr.response.BcrTicketClaimResponse;
@@ -178,6 +179,21 @@ public class BcrTicketClaimServlet extends AbstractServlet {
 			ticketClaim.setVolume(new BigDecimal(bcrRequest.getVolumeClaimed()));
 			logger.log(Level.DEBUG, ticketClaim);
 			Integer claimId = ticketClaim.insertWithKey(conn);
+			
+			if ( ! StringUtils.isBlank(bcrRequest.getClaimedEquipment()) ) {
+				String[] claimedEquipmentList = StringUtils.split(bcrRequest.getClaimedEquipment(),",");
+				for ( String tagId : claimedEquipmentList ) {
+					ClaimEquipment claimEquipment = new ClaimEquipment();
+					claimEquipment.setClaimId(claimId);
+					claimEquipment.setEquipmentId(Integer.valueOf(tagId));
+					claimEquipment.setAddedBy(sessionUser.getUserId());
+					claimEquipment.setAddedDate(today.getTime());
+					claimEquipment.setUpdatedBy(sessionUser.getUserId());
+					claimEquipment.setUpdatedDate(today.getTime());
+					claimEquipment.insertWithNoKey(conn);
+				}
+				
+			}
 			conn.commit();
 			data = BcrTicketClaimResponse.fromClaim(conn, sessionUser.getUserId(), divisionList, bcrRequest.getDivisionId(), bcrRequest.getWorkYear(), bcrRequest.getWorkWeeks(), claimId);
 			super.sendResponse(conn, response, ResponseCode.SUCCESS, data);

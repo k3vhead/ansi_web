@@ -227,6 +227,11 @@ public class BcrTicketClaimRequest extends AbstractRequest {
 			}
 		}
 		
+		if ( ! webMessages.containsKey(TICKET_ID) ) {
+			// we use the ticket to find the job to find the valid equipment tags, so a ticket error makes an
+			// equipment tag validation impossible.
+			RequestValidator.validateEquipmentTags(conn, webMessages, CLAIMED_EQUIPMENT, this.ticketId, this.claimedEquipment, false, "Equipment");
+		}
 		return webMessages;
 	}
 	
