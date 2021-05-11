@@ -3,6 +3,7 @@ package com.ansi.scilla.web.bcr.servlet;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
@@ -33,6 +34,7 @@ import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class BcrTicketClaimServlet extends AbstractServlet {
 
@@ -268,6 +270,64 @@ public class BcrTicketClaimServlet extends AbstractServlet {
 		ticketClaim.setVolume(new BigDecimal(bcrRequest.getVolumeClaimed()));
 		logger.log(Level.DEBUG, ticketClaim);
 		ticketClaim.update(conn, key);
+		
+		if ( StringUtils.isBlank(bcrRequest.getClaimedEquipment())) {
+			try {
+				ClaimEquipment ce = new ClaimEquipment();
+				ce.setClaimId(claimId);
+				ce.delete(conn);
+			} catch ( RecordNotFoundException e) {
+				// tried to delete something that wasn't there. We don't care
+			}
+		} else {
+			final String equipmentSql = 
+					"if exists (select * from claim_equipment where claim_id=? and equipment_id=?)\n" + 
+					"	update claim_equipment set updated_by=?,updated_date=? where claim_id=? and equipment_id=?\n" + 
+					"ELSE \n" + 
+					"	insert into claim_equipment(claim_id,equipment_id,added_by,added_date,updated_by,updated_date)\n" + 
+					"	values (?,?,?,?,?,?)";
+			PreparedStatement psUpsert = conn.prepareStatement(equipmentSql);
+			PreparedStatement psDelete = conn.prepareStatement("delete from claim_equipment where claim_id=? and equipment_id not in (" + bcrRequest.getClaimedEquipment() + ")");
+			for ( String equipmentTag : bcrRequest.getClaimedEquipment().split(",") ) {
+				Integer equipmentId = Integer.valueOf(equipmentTag);
+				java.sql.Date sessionDate = new java.sql.Date(today.getTime().getTime());
+				
+				int n = 1;
+				//updates
+				psUpsert.setInt(n, claimId);
+				n++;
+				psUpsert.setInt(n, equipmentId);
+				n++;
+				psUpsert.setInt(n, sessionUser.getUserId());
+				n++;
+				psUpsert.setDate(n, sessionDate);
+				n++;
+				psUpsert.setInt(n, claimId);
+				n++;
+				psUpsert.setInt(n, equipmentId);
+				n++;
+				//inserts
+				psUpsert.setInt(n, claimId);
+				n++;
+				psUpsert.setInt(n, equipmentId);
+				n++;
+				psUpsert.setInt(n, sessionUser.getUserId());
+				n++;
+				psUpsert.setDate(n, sessionDate);
+				n++;
+				psUpsert.setInt(n, sessionUser.getUserId());
+				n++;
+				psUpsert.setDate(n, sessionDate);
+				n++;
+				psUpsert.executeUpdate();
+			}
+			
+			psDelete.setInt(1, claimId);
+			psDelete.executeUpdate();
+		}
+
+		
+		
 		conn.commit();
 	}
 

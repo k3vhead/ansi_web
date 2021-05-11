@@ -1194,14 +1194,15 @@
         			var $columnClaimedEdit = 3;
         			var $columnRemaining = 4;
         			var $columnEquipment = 5;
-        			var $columnEmployee = 6;
-        			var $columnEmployeeEdit = 7;
-        			var $columnNotes = 8;
-        			var $columnNotesEdit = 9;
-        			var $columnAction = 10;
+        			var $columnEquipmentEdit = 6;
+        			var $columnEmployee = 7;
+        			var $columnEmployeeEdit = 8;
+        			var $columnNotes = 9;
+        			var $columnNotesEdit = 10;
+        			var $columnAction = 11;
         			
-        			var $displayColumns = [$columnLabor,$columnClaimed, $columnEmployee,$columnNotes];
-	            	var $editColumns = [$columnLaborEdit, $columnClaimedEdit,$columnEmployeeEdit,$columnNotesEdit];
+        			var $displayColumns = [$columnLabor,$columnClaimed, $columnEquipment, $columnEmployee,$columnNotes];
+	            	var $editColumns = [$columnLaborEdit, $columnClaimedEdit,$columnEquipmentEdit, $columnEmployeeEdit,$columnNotesEdit];
 	            	
 	            	var $equipmentList = [];
 	            	$.each($data.data.equipmentTags, function($index, $value) {
@@ -1254,6 +1255,24 @@
     			            				$display.push('<span class="jobtag-display jobtag-selected">'+ $value + '</span>');
 	    			            		});
     			            		}
+    			            		return $display.join("");
+    			            	}
+		    				},
+		    				{ width:"125px", title:"Equipment Type", className:"dt-head-left", orderable:true, visible:true, defaultContent: "", 
+	    						data: function ( row, type, set ) {
+    			            		var $display = [];
+    			            		var $rowTags = [];
+    			            		if ( row.equipmentTags != null ) {
+    			            			$rowTags = row.equipmentTags.split(",");
+    			            		}
+    			            		$.each($data.data.equipmentTags, function($index, $value) {
+    			            			if ( $rowTags.includes($value.abbrev) ) {
+    			            				$display.push('<span class="jobtag-display equipment-claim-updt jobtag-selected" style="cursor:pointer;" data-tagid="'+$value.tagId+'">' + $value.abbrev + '</span>');
+    			            			} else {
+    			            				$display.push('<span class="jobtag-display equipment-claim-updt" style="cursor:pointer;" data-tagid="'+$value.tagId+'">' + $value.abbrev + "</span>");
+    			            			}
+    			            		});
+
     			            		return $display.join("");
     			            	}
 		    				},
@@ -1313,6 +1332,13 @@
 	    						$(".newLaborItem").hide();
 	    						$(".displayLaborItem").show();
 		    				});
+
+		    				// for on-click to work, the field has to be visible. So hide it after the binding
+		    				$(".equipment-claim-updt").click(function($event) {
+		    					$(this).toggleClass("jobtag-selected");
+		    				});
+		    				$("#dl-claim-table").DataTable().columns($columnEquipmentEdit).visible(false);
+		    				
 		    				// for autocomplete to work, the field has to be visible. So hide it after the binding
 		    				BUDGETCONTROL.makeEmployeeAutoComplete("#bcr_edit_modal input[name='employee']");
 		    				$("#dl-claim-table").DataTable().columns($columnEmployeeEdit).visible(false);
@@ -1325,6 +1351,10 @@
     							var $employee = $("#" + $claimId + " input[name='employee']").val();
     							var $notes = $("#"+$claimId + " input[name='laborNotes']").val();
     							
+    							var $claimedEquipment = [];
+    							$.each( $("#"+$claimId + " .jobtag-selected"), function($index, $value) {
+   									$claimedEquipment.push($($value).attr("data-tagid"));
+    							});
     							// these are needed to create the correct response, not to do the update
     		        			var $divisionId = BUDGETCONTROL.divisionId
     							var $ticketId = $("#bcr_edit_modal").attr("ticketId");
@@ -1344,6 +1374,7 @@
     		                			"notes":$notes,
     		                			"workYear":$workYear,
     		                			"workWeeks":$workWeeks,
+    		                			"claimedEquipment":$claimedEquipment.join(","),
     		        			}
     		        			console.log($outbound);
     		        			var $url = "bcr/ticketClaim/" + $claimId;
@@ -2247,6 +2278,7 @@
 	    			<tbody></tbody>
 	    			<tfoot>
 	    				<tr>
+	    					<th></th>
 	    					<th></th>
 	    					<th></th>
 	    					<th></th>

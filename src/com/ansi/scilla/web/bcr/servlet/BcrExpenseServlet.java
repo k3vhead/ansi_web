@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.AnsiTime;
+import com.ansi.scilla.common.db.ClaimEquipment;
 import com.ansi.scilla.common.db.TicketClaim;
 import com.ansi.scilla.web.bcr.request.BcrExpenseRequest;
 import com.ansi.scilla.web.bcr.request.BcrTicketClaimRequest;
@@ -242,6 +243,10 @@ public class BcrExpenseServlet extends AbstractServlet {
 
 
 	private void deleteExpense(Connection conn, Integer claimId) throws Exception {
+		ClaimEquipment claimEquipment = new ClaimEquipment();
+		claimEquipment.setClaimId(claimId);
+		claimEquipment.delete(conn);
+		
 		TicketClaim ticketClaim = new TicketClaim();
 		ticketClaim.setClaimId(claimId);
 		ticketClaim.delete(conn);
