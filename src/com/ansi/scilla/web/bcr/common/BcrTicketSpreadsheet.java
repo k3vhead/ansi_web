@@ -15,15 +15,16 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.hssf.util.CellRangeAddress;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -34,15 +35,19 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.common.utils.AppUtils;
 import com.ansi.scilla.common.utils.WorkWeek;
 import com.ansi.scilla.common.utils.WorkYear;
 import com.ansi.scilla.web.bcr.response.BudgetControlActualDlResponse.ActualDL;
+import com.ansi.scilla.web.bcr.response.BudgetControlEmployeesResponse;
+import com.ansi.scilla.web.bcr.response.BudgetControlEmployeesResponse.EmployeeClaim;
 import com.ansi.scilla.web.bcr.response.BudgetControlTotalsResponse;
 import com.ansi.scilla.web.bcr.response.BudgetControlTotalsResponse.BCRTotalsDetail;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 
 public class BcrTicketSpreadsheet {
+	private final SimpleDateFormat mmdd = new SimpleDateFormat("MM/dd");
+	
+	
 	private XSSFWorkbook workbook;
 	
 	private BCRHeader[] headerMap;
@@ -62,14 +67,18 @@ public class BcrTicketSpreadsheet {
 		BudgetControlTotalsResponse bctr = new BudgetControlTotalsResponse(conn, userId, divisionList, divisionId, claimYear, workWeeks);
 		makeBudgetControlTotalsTab(workCalendar, bctr);
 		
+		
+		BudgetControlEmployeesResponse employeeResponse = new BudgetControlEmployeesResponse(conn, userId, divisionList, divisionId, claimYear, workWeeks);
+		makeBudgetControlEmployeesTab(claimYear, workCalendar, employeeResponse);
+		
 		conn.close();
 
-		makeSheet(data, 1, "All Tickets");
+		makeTicketTab(data, 2, "All Tickets");
 		for ( int i = 0; i < weekList.length; i++ ) {
 			String tabName = claimYear + "-" + weekList[i];
 			filter.setTabName(tabName);
 			List<BCRRow> weeklyData = IterableUtils.toList(IterableUtils.filteredIterable(data, filter));
-			makeSheet(weeklyData, i+2, tabName);
+			makeTicketTab(weeklyData, i+3, tabName);
 		}
 		
 		
@@ -113,13 +122,13 @@ public class BcrTicketSpreadsheet {
 		BCRTotalsPredicate totalsPredicate = new BCRTotalsPredicate();
 
 		XSSFSheet sheet = this.workbook.createSheet("Monthly Budget Control Summary");
-		int rowNum = 0;
+//		int rowNum = 0;
 		int colNum = 0;
 		Integer monthTotalColNum = workCalendar.size() + 2;  //row label + "unclaimed" + each week gives us 2 cells extra
 		
 		XSSFRow row = null;
 		XSSFCell cell = null;
-		SimpleDateFormat mmdd = new SimpleDateFormat("MM/dd");
+		
 		
 		XSSFCellStyle headerStyle = workbook.createCellStyle();
 		XSSFFont headerFont = workbook.createFont();
@@ -257,6 +266,196 @@ public class BcrTicketSpreadsheet {
 		
 	}
 	
+	
+	
+	private void makeBudgetControlEmployeesTab(Integer claimYear, List<WorkWeek> workCalendar, BudgetControlEmployeesResponse employeeResponse) {
+		XSSFSheet sheet = this.workbook.createSheet("Employees");
+		XSSFRow row = null;
+		XSSFCell cell = null;
+		int rowNum = 0;
+		int colNum = 0;
+		
+		XSSFRow headerRow1 = sheet.createRow(0);
+		XSSFRow headerRow2 = sheet.createRow(1);
+		XSSFRow headerRow3 = sheet.createRow(2);
+
+		cell = headerRow1.createCell(0);
+		cell.setCellValue("Week:");
+		
+		colNum = 1;
+		for ( int i = 0; i < workCalendar.size(); i++ ) {
+			Date firstOfWeek = workCalendar.get(i).getFirstOfWeek().getTime();
+			Date lastOfWeek = workCalendar.get(i).getLastOfWeek().getTime();
+			
+			cell = headerRow1.createCell(colNum);
+			sheet.addMergedRegion(new CellRangeAddress(0,0,colNum,colNum+1));
+			cell.setCellValue(mmdd.format(firstOfWeek) + "-" + mmdd.format(lastOfWeek));
+			
+			cell = headerRow2.createCell(colNum);
+			sheet.addMergedRegion(new CellRangeAddress(1,1,colNum,colNum+1));
+			cell.setCellValue(claimYear + "-" + workCalendar.get(i).getWeekOfYear());
+			
+			cell = headerRow3.createCell(colNum);
+			cell.setCellValue("Volume");
+			cell = headerRow3.createCell(colNum+1);
+			cell.setCellValue("D/L");
+			
+			colNum = colNum+2;
+		}
+		
+		cell = headerRow1.createCell(colNum);
+		sheet.addMergedRegion(new CellRangeAddress(0,0,colNum,colNum+1));
+		cell.setCellValue("Month");
+		
+		cell = headerRow2.createCell(colNum);
+		sheet.addMergedRegion(new CellRangeAddress(1,1,colNum,colNum+1));
+		cell.setCellValue("Total");
+		
+		cell = headerRow3.createCell(colNum);
+		cell.setCellValue("Volume");
+		cell = headerRow3.createCell(colNum+1);
+		cell.setCellValue("D/L");
+		
+		
+		rowNum = 3;
+		
+		for ( EmployeeClaim claim : employeeResponse.getEmployees() ) {
+			row = sheet.createRow(rowNum);
+			cell = row.createCell(0);
+			cell.setCellValue(StringUtils.isBlank(claim.getEmployee()) ? "unspecified" : claim.getEmployee());
+			
+			colNum = 1;
+			for ( String claimWeek : employeeResponse.getClaimWeeks() ) {
+				cell = row.createCell(colNum);
+				if ( claim.getWeeklyClaimedVolume().containsKey(claimWeek)) {
+					cell.setCellValue(claim.getWeeklyClaimedVolume().get(claimWeek));
+				} else {
+					cell.setCellValue(0.0D);
+				}
+				colNum++;
+				cell = row.createCell(colNum);
+				if ( claim.getWeeklyClaimedDL().containsKey(claimWeek)) {
+					cell.setCellValue(claim.getWeeklyClaimedDL().get(claimWeek));
+				} else {
+					cell.setCellValue(0.0D);
+				}
+				colNum++;
+			}
+			cell = row.createCell(colNum);
+			cell.setCellValue(claim.getTotalClaimedVolume());				
+			colNum++;
+			cell = row.createCell(colNum);
+			cell.setCellValue(claim.getTotalClaimedDL());
+			colNum++;
+			rowNum++;
+		}
+		
+		row = sheet.createRow(rowNum);
+		cell = row.createCell(0);
+		cell.setCellValue("Total Assigned D/L - All Employees");
+		colNum = 1;
+		for ( String claimWeek : employeeResponse.getClaimWeeks() ) {
+			cell = row.createCell(colNum);
+			if ( employeeResponse.getMonthlyTotal().getWeeklyClaimedVolume().containsKey(claimWeek)) {
+				cell.setCellValue(employeeResponse.getMonthlyTotal().getWeeklyClaimedVolume().get(claimWeek));
+			} else {
+				cell.setCellValue(0.0D);
+			}
+			colNum++;
+			cell = row.createCell(colNum);
+			if ( employeeResponse.getMonthlyTotal().getWeeklyClaimedDL().containsKey(claimWeek)) {
+				cell.setCellValue(employeeResponse.getMonthlyTotal().getWeeklyClaimedDL().get(claimWeek));
+			} else {
+				cell.setCellValue(0.0D);
+			}
+			colNum++;
+		}
+		cell = row.createCell(colNum);
+		cell.setCellValue(employeeResponse.getMonthlyTotal().getTotalClaimedVolume());				
+		colNum++;
+		cell = row.createCell(colNum);
+		cell.setCellValue(employeeResponse.getMonthlyTotal().getTotalClaimedDL());
+		colNum++;
+
+	}
+
+
+	private void makeTicketTab(List<BCRRow> data, Integer index, String title) throws SQLException, Exception {
+		XSSFSheet sheet = initTicketTab(index, title);
+	
+		XSSFRow row = null;
+		XSSFCell cell = null;
+	
+		Integer rowNum = 1;
+	
+		for ( BCRRow dataRow : data ) {		
+			row = sheet.createRow(rowNum);
+			for (int colNum = 0; colNum < headerMap.length; colNum++ ) {
+				BCRHeader header = headerMap[colNum];
+				Object obj = header.field.get(dataRow);
+				if ( obj == null ) {
+					// ignore it and go on with life
+				} else if ( obj instanceof String ) {
+					String value = (String)obj;
+					cell = row.createCell(colNum);
+					cell.setCellStyle(header.cellStyle);
+					sheet.setColumnWidth(colNum, header.columnWidth);
+					cell.setCellValue(value);
+				} else if ( obj instanceof BigDecimal ) {
+					BigDecimal value = (BigDecimal)obj;
+					cell = row.createCell(colNum);
+					cell.setCellStyle(header.cellStyle);
+					sheet.setColumnWidth(colNum, header.columnWidth);
+					cell.setCellValue(value.doubleValue());
+				} else if ( obj instanceof Double ) {
+					Double value = (Double)obj;
+					cell = row.createCell(colNum);
+					cell.setCellStyle(header.cellStyle);
+					sheet.setColumnWidth(colNum, header.columnWidth);
+					cell.setCellValue(value);
+				} else if ( obj instanceof Integer ) {
+					Integer value = (Integer)obj;
+					cell = row.createCell(colNum);
+					cell.setCellStyle(header.cellStyle);
+					sheet.setColumnWidth(colNum, header.columnWidth);
+					cell.setCellValue(value);
+				} else {
+					throw new Exception("Joshua didn't code this one: " + obj.getClass().getCanonicalName());
+				}				
+			}
+			rowNum++;
+		}
+	
+	}
+
+
+	private XSSFSheet initTicketTab(Integer index, String title) {
+		XSSFSheet sheet = workbook.createSheet();
+		workbook.setSheetName(index, title);
+		
+		XSSFRow row = sheet.createRow(0);
+		XSSFCell cell = null;
+		
+		XSSFCellStyle headerStyle = workbook.createCellStyle();
+		XSSFFont headerFont = workbook.createFont();
+		headerFont.setBold(true);
+		headerStyle.setFont(headerFont);
+		headerStyle.setAlignment(HorizontalAlignment.CENTER);
+		
+		
+		for (int colNum = 0; colNum < headerMap.length; colNum++ ) {
+			BCRHeader header = headerMap[colNum];
+			cell = row.createCell(colNum);
+			cell.setCellValue(header.headerName);
+			cell.setCellStyle(headerStyle);
+			sheet.setColumnWidth(colNum, header.columnWidth);
+	
+		}		
+		
+		return sheet;
+	}
+
+
 	private void populateTotalsValue(XSSFSheet sheet, int colNum, TotalsRow totalsRow, Double value) {
 		XSSFRow row = sheet.getRow(totalsRow.rowNum());
 		XSSFCell cell = row.getCell(colNum);
@@ -343,80 +542,7 @@ public class BcrTicketSpreadsheet {
 	
 	
 
-	private void makeSheet(List<BCRRow> data, Integer index, String title) throws SQLException, Exception {
-		XSSFSheet sheet = initSheet(index, title);
-
-		XSSFRow row = null;
-		XSSFCell cell = null;
-
-		Integer rowNum = 1;
-
-		for ( BCRRow dataRow : data ) {		
-			row = sheet.createRow(rowNum);
-			for (int colNum = 0; colNum < headerMap.length; colNum++ ) {
-				BCRHeader header = headerMap[colNum];
-				Object obj = header.field.get(dataRow);
-				if ( obj == null ) {
-					// ignore it and go on with life
-				} else if ( obj instanceof String ) {
-					String value = (String)obj;
-					cell = row.createCell(colNum);
-					cell.setCellStyle(header.cellStyle);
-					sheet.setColumnWidth(colNum, header.columnWidth);
-					cell.setCellValue(value);
-				} else if ( obj instanceof BigDecimal ) {
-					BigDecimal value = (BigDecimal)obj;
-					cell = row.createCell(colNum);
-					cell.setCellStyle(header.cellStyle);
-					sheet.setColumnWidth(colNum, header.columnWidth);
-					cell.setCellValue(value.doubleValue());
-				} else if ( obj instanceof Double ) {
-					Double value = (Double)obj;
-					cell = row.createCell(colNum);
-					cell.setCellStyle(header.cellStyle);
-					sheet.setColumnWidth(colNum, header.columnWidth);
-					cell.setCellValue(value);
-				} else if ( obj instanceof Integer ) {
-					Integer value = (Integer)obj;
-					cell = row.createCell(colNum);
-					cell.setCellStyle(header.cellStyle);
-					sheet.setColumnWidth(colNum, header.columnWidth);
-					cell.setCellValue(value);
-				} else {
-					throw new Exception("Joshua didn't code this one: " + obj.getClass().getCanonicalName());
-				}				
-			}
-			rowNum++;
-		}
-
-	}
-
-
-	private XSSFSheet initSheet(Integer index, String title) {
-		XSSFSheet sheet = workbook.createSheet();
-		workbook.setSheetName(index, title);
-		
-		XSSFRow row = sheet.createRow(0);
-		XSSFCell cell = null;
-		
-		XSSFCellStyle headerStyle = workbook.createCellStyle();
-		XSSFFont headerFont = workbook.createFont();
-		headerFont.setBold(true);
-		headerStyle.setFont(headerFont);
-		headerStyle.setAlignment(HorizontalAlignment.CENTER);
-		
-		
-		for (int colNum = 0; colNum < headerMap.length; colNum++ ) {
-			BCRHeader header = headerMap[colNum];
-			cell = row.createCell(colNum);
-			cell.setCellValue(header.headerName);
-			cell.setCellStyle(headerStyle);
-			sheet.setColumnWidth(colNum, header.columnWidth);
 	
-		}		
-		
-		return sheet;
-	}
 	
 	/**
 	 * Creates BCR Totals Tab
