@@ -25,6 +25,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.hssf.util.CellRangeAddress;
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -46,7 +47,7 @@ import com.ansi.scilla.web.common.struts.SessionDivision;
 
 public class BcrTicketSpreadsheet {
 	private final SimpleDateFormat mmdd = new SimpleDateFormat("MM/dd");
-	
+	private final HashMap<CellFormat, XSSFCellStyle> cellFormats = new HashMap<CellFormat, XSSFCellStyle>();
 	
 	private XSSFWorkbook workbook;
 	
@@ -60,6 +61,7 @@ public class BcrTicketSpreadsheet {
 		String[] weekList = workWeeks.split(",");
 		
 		this.workbook = new XSSFWorkbook();
+		makeStyles();
 		initWorkbook();
 		BCRRowPredicate filter = new BCRRowPredicate();
 		
@@ -87,6 +89,51 @@ public class BcrTicketSpreadsheet {
 	
 	public XSSFWorkbook getWorkbook() {
 		return workbook;
+	}
+
+
+	private void makeStyles() {
+		XSSFCellStyle headerStyle = workbook.createCellStyle();
+		XSSFFont headerFont = workbook.createFont();
+		headerFont.setBold(true);
+		headerStyle.setFont(headerFont);
+		headerStyle.setAlignment(HorizontalAlignment.LEFT);
+		this.cellFormats.put(CellFormat.HEADER, headerStyle);
+		
+		XSSFCellStyle headerStyleCenter = workbook.createCellStyle();
+		XSSFFont headerCenterFont = workbook.createFont();
+		headerCenterFont.setBold(true);
+		headerStyleCenter.setFont(headerFont);
+		headerStyleCenter.setAlignment(HorizontalAlignment.CENTER);
+		this.cellFormats.put(CellFormat.HEADER_CENTER, headerStyleCenter);
+		
+		XSSFCellStyle headerStyleCenterBorder = workbook.createCellStyle();
+		XSSFFont headerCenterBorderFont = workbook.createFont();
+		headerCenterBorderFont.setBold(true);
+		headerStyleCenterBorder.setFont(headerCenterBorderFont);
+		headerStyleCenterBorder.setAlignment(HorizontalAlignment.CENTER);
+		headerStyleCenterBorder.setBorderRight(BorderStyle.MEDIUM);
+		this.cellFormats.put(CellFormat.HEADER_CENTER_BORDER, headerStyleCenterBorder);
+		
+		XSSFCellStyle cellStyleCenter = workbook.createCellStyle();
+		cellStyleCenter.setAlignment(HorizontalAlignment.CENTER);
+		this.cellFormats.put(CellFormat.CENTER, cellStyleCenter);
+		
+		XSSFCellStyle cellStyleCenterBorder = workbook.createCellStyle();
+		cellStyleCenterBorder.setAlignment(HorizontalAlignment.CENTER);
+		cellStyleCenterBorder.setBorderRight(BorderStyle.MEDIUM);
+		this.cellFormats.put(CellFormat.CENTER_BORDER, cellStyleCenterBorder);
+		
+		XSSFCellStyle cellStyleRight = workbook.createCellStyle();
+		cellStyleRight.setAlignment(CellStyle.ALIGN_RIGHT);
+		cellStyleRight.setDataFormat(workbook.createDataFormat().getFormat("#0.00"));
+		this.cellFormats.put(CellFormat.RIGHT, cellStyleRight);
+		
+		XSSFCellStyle cellStyleRightBorder = workbook.createCellStyle();
+		cellStyleRightBorder.setAlignment(CellStyle.ALIGN_RIGHT);
+		cellStyleRightBorder.setDataFormat(workbook.createDataFormat().getFormat("#0.00"));
+		cellStyleRightBorder.setBorderRight(BorderStyle.MEDIUM);
+		this.cellFormats.put(CellFormat.RIGHT_BORDER, cellStyleRightBorder);
 	}
 
 
@@ -130,24 +177,7 @@ public class BcrTicketSpreadsheet {
 		XSSFCell cell = null;
 		
 		
-		XSSFCellStyle headerStyle = workbook.createCellStyle();
-		XSSFFont headerFont = workbook.createFont();
-		headerFont.setBold(true);
-		headerStyle.setFont(headerFont);
-		headerStyle.setAlignment(HorizontalAlignment.LEFT);
 		
-		XSSFCellStyle headerStyleCenter = workbook.createCellStyle();
-		XSSFFont headerCenterFont = workbook.createFont();
-		headerCenterFont.setBold(true);
-		headerStyleCenter.setFont(headerFont);
-		headerStyleCenter.setAlignment(HorizontalAlignment.CENTER);
-		
-		XSSFCellStyle cellStyleCenter = workbook.createCellStyle();
-		cellStyleCenter.setAlignment(HorizontalAlignment.CENTER);
-		
-		XSSFCellStyle cellStyleRight = workbook.createCellStyle();
-		cellStyleRight.setAlignment(CellStyle.ALIGN_RIGHT);
-		cellStyleRight.setDataFormat(workbook.createDataFormat().getFormat("#0.00"));
 
 		
 		// make Date Row
@@ -161,7 +191,7 @@ public class BcrTicketSpreadsheet {
 		}
 		cell = row.createCell(workCalendar.size() + 2);
 		cell.setCellValue("Month");	
-		cell.setCellStyle(headerStyleCenter);
+		cell.setCellStyle(cellFormats.get(CellFormat.HEADER_CENTER));
 				
 				
 		// initialize weekly columns
@@ -169,33 +199,33 @@ public class BcrTicketSpreadsheet {
 			row = sheet.createRow(totalsRow.rowNum);
 			cell = row.createCell(0);  // label
 			cell.setCellValue(totalsRow.label());
-			cell.setCellStyle(headerStyle);
+			cell.setCellStyle(cellFormats.get(CellFormat.HEADER));
 			
 			cell = row.createCell(1); // unclaimed			
 			if ( totalsRow.equals(TotalsRow.WEEK) ) {
 				cell.setCellValue("Unclaimed");
-				cell.setCellStyle(headerStyleCenter);
+				cell.setCellStyle(cellFormats.get(CellFormat.HEADER_CENTER));
 			} else if ( totalsRow.equals(TotalsRow.TOTAL_VOLUME)) {
 				cell.setCellValue(0.0D);
-				cell.setCellStyle(cellStyleRight);				
+				cell.setCellStyle(cellFormats.get(CellFormat.RIGHT));				
 			} else {
 				cell.setCellValue("n/a");
-				cell.setCellStyle(cellStyleCenter);
+				cell.setCellStyle(cellFormats.get(CellFormat.CENTER));
 			}
 			for (colNum = 0; colNum < workCalendar.size(); colNum++ ) {
 				cell = row.createCell(colNum + 2);
 				cell.setCellValue(0D);
-				cell.setCellStyle(cellStyleRight);
+				cell.setCellStyle(cellFormats.get(CellFormat.RIGHT));
 			}
 
 			cell = row.createCell(monthTotalColNum);
 
 			if ( totalsRow.equals(TotalsRow.WEEK) ) {
 				cell.setCellValue("Total");
-				cell.setCellStyle(headerStyleCenter);
+				cell.setCellStyle(cellFormats.get(CellFormat.HEADER_CENTER));
 			} else {
 				cell.setCellValue(0.0D);
-				cell.setCellStyle(cellStyleRight);
+				cell.setCellStyle(cellFormats.get(CellFormat.RIGHT));
 			}
 			
 		}
@@ -281,24 +311,35 @@ public class BcrTicketSpreadsheet {
 
 		cell = headerRow1.createCell(0);
 		cell.setCellValue("Week:");
+		cell.setCellStyle(cellFormats.get(CellFormat.HEADER));
+		
 		
 		colNum = 1;
 		for ( int i = 0; i < workCalendar.size(); i++ ) {
 			Date firstOfWeek = workCalendar.get(i).getFirstOfWeek().getTime();
 			Date lastOfWeek = workCalendar.get(i).getLastOfWeek().getTime();
 			
+			cell = headerRow1.createCell(colNum+1);
+			cell.setCellStyle(cellFormats.get(CellFormat.CENTER_BORDER));
 			cell = headerRow1.createCell(colNum);
 			sheet.addMergedRegion(new CellRangeAddress(0,0,colNum,colNum+1));
 			cell.setCellValue(mmdd.format(firstOfWeek) + "-" + mmdd.format(lastOfWeek));
+			cell.setCellStyle(cellFormats.get(CellFormat.CENTER_BORDER));
 			
+			
+			cell = headerRow2.createCell(colNum+1);
+			cell.setCellStyle(cellFormats.get(CellFormat.CENTER_BORDER));
 			cell = headerRow2.createCell(colNum);
 			sheet.addMergedRegion(new CellRangeAddress(1,1,colNum,colNum+1));
 			cell.setCellValue(claimYear + "-" + workCalendar.get(i).getWeekOfYear());
+			cell.setCellStyle(cellFormats.get(CellFormat.HEADER_CENTER_BORDER));
 			
 			cell = headerRow3.createCell(colNum);
 			cell.setCellValue("Volume");
+			cell.setCellStyle(cellFormats.get(CellFormat.HEADER_CENTER));
 			cell = headerRow3.createCell(colNum+1);
 			cell.setCellValue("D/L");
+			cell.setCellStyle(cellFormats.get(CellFormat.HEADER_CENTER_BORDER));
 			
 			colNum = colNum+2;
 		}
@@ -306,15 +347,19 @@ public class BcrTicketSpreadsheet {
 		cell = headerRow1.createCell(colNum);
 		sheet.addMergedRegion(new CellRangeAddress(0,0,colNum,colNum+1));
 		cell.setCellValue("Month");
+		cell.setCellStyle(cellFormats.get(CellFormat.HEADER_CENTER));
 		
 		cell = headerRow2.createCell(colNum);
 		sheet.addMergedRegion(new CellRangeAddress(1,1,colNum,colNum+1));
 		cell.setCellValue("Total");
+		cell.setCellStyle(cellFormats.get(CellFormat.HEADER_CENTER));
 		
 		cell = headerRow3.createCell(colNum);
 		cell.setCellValue("Volume");
+		cell.setCellStyle(cellFormats.get(CellFormat.HEADER_CENTER));
 		cell = headerRow3.createCell(colNum+1);
 		cell.setCellValue("D/L");
+		cell.setCellStyle(cellFormats.get(CellFormat.HEADER_CENTER));
 		
 		
 		rowNum = 3;
@@ -332,6 +377,7 @@ public class BcrTicketSpreadsheet {
 				} else {
 					cell.setCellValue(0.0D);
 				}
+				cell.setCellStyle(cellFormats.get(CellFormat.RIGHT));
 				colNum++;
 				cell = row.createCell(colNum);
 				if ( claim.getWeeklyClaimedDL().containsKey(claimWeek)) {
@@ -339,13 +385,16 @@ public class BcrTicketSpreadsheet {
 				} else {
 					cell.setCellValue(0.0D);
 				}
+				cell.setCellStyle(cellFormats.get(CellFormat.RIGHT_BORDER));
 				colNum++;
 			}
 			cell = row.createCell(colNum);
-			cell.setCellValue(claim.getTotalClaimedVolume());				
+			cell.setCellValue(claim.getTotalClaimedVolume());
+			cell.setCellStyle(cellFormats.get(CellFormat.RIGHT));
 			colNum++;
 			cell = row.createCell(colNum);
 			cell.setCellValue(claim.getTotalClaimedDL());
+			cell.setCellStyle(cellFormats.get(CellFormat.RIGHT));
 			colNum++;
 			rowNum++;
 		}
@@ -361,6 +410,7 @@ public class BcrTicketSpreadsheet {
 			} else {
 				cell.setCellValue(0.0D);
 			}
+			cell.setCellStyle(cellFormats.get(CellFormat.RIGHT));
 			colNum++;
 			cell = row.createCell(colNum);
 			if ( employeeResponse.getMonthlyTotal().getWeeklyClaimedDL().containsKey(claimWeek)) {
@@ -368,15 +418,23 @@ public class BcrTicketSpreadsheet {
 			} else {
 				cell.setCellValue(0.0D);
 			}
+			cell.setCellStyle(cellFormats.get(CellFormat.RIGHT_BORDER));
 			colNum++;
 		}
 		cell = row.createCell(colNum);
-		cell.setCellValue(employeeResponse.getMonthlyTotal().getTotalClaimedVolume());				
+		cell.setCellValue(employeeResponse.getMonthlyTotal().getTotalClaimedVolume());
+		cell.setCellStyle(cellFormats.get(CellFormat.RIGHT));
 		colNum++;
 		cell = row.createCell(colNum);
 		cell.setCellValue(employeeResponse.getMonthlyTotal().getTotalClaimedDL());
+		cell.setCellStyle(cellFormats.get(CellFormat.RIGHT));
 		colNum++;
 
+		
+		sheet.setColumnWidth(0, 7500);
+		for ( int i = 1; i <= sheet.getRow(0).getLastCellNum(); i++ ) {
+			sheet.setColumnWidth(i, 2500);
+		}
 	}
 
 
@@ -688,5 +746,19 @@ public class BcrTicketSpreadsheet {
 		
 		public Integer rowNum() { return this.rowNum; }
 		public String label() { return this.label; }
+	}
+	
+	
+	
+	
+	private enum CellFormat {
+		HEADER,
+		HEADER_CENTER,
+		HEADER_CENTER_BORDER,
+		CENTER,
+		CENTER_BORDER,
+		RIGHT,
+		RIGHT_BORDER,
+		;		
 	}
 }
