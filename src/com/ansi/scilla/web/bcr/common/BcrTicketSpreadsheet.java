@@ -47,6 +47,7 @@ import com.ansi.scilla.web.common.struts.SessionDivision;
 
 public class BcrTicketSpreadsheet {
 	private final SimpleDateFormat mmdd = new SimpleDateFormat("MM/dd");
+	private final SimpleDateFormat mmddyyyy = new SimpleDateFormat("MM/dd/yyyy");
 	private final HashMap<CellFormat, XSSFCellStyle> cellFormats = new HashMap<CellFormat, XSSFCellStyle>();
 	
 	private XSSFWorkbook workbook;
@@ -64,18 +65,19 @@ public class BcrTicketSpreadsheet {
 		makeStyles();
 		initWorkbook();
 		BCRRowPredicate filter = new BCRRowPredicate();
-		
+				
 		List<WorkWeek> workCalendar = makeWorkCalendar(claimYear, weekList);
-		BudgetControlTotalsResponse bctr = new BudgetControlTotalsResponse(conn, userId, divisionList, divisionId, claimYear, workWeeks);
-		makeBudgetControlTotalsTab(workCalendar, bctr);
 		
+		BudgetControlTotalsResponse bctr = new BudgetControlTotalsResponse(conn, userId, divisionList, divisionId, claimYear, workWeeks);
+		makeActualDLTotalsTab(workCalendar, bctr);		
+		makeBudgetControlTotalsTab(workCalendar, bctr);		
 		
 		BudgetControlEmployeesResponse employeeResponse = new BudgetControlEmployeesResponse(conn, userId, divisionList, divisionId, claimYear, workWeeks);
 		makeBudgetControlEmployeesTab(claimYear, workCalendar, employeeResponse);
 		
 		conn.close();
 
-		makeTicketTab(data, 2, "All Tickets");
+		makeTicketTab(data, 3, "All Tickets");
 		for ( int i = 0; i < weekList.length; i++ ) {
 			String tabName = claimYear + "-" + weekList[i];
 			filter.setTabName(tabName);
@@ -164,6 +166,78 @@ public class BcrTicketSpreadsheet {
 	}
 
 
+	private void makeActualDLTotalsTab(List<WorkWeek> workCalendar, BudgetControlTotalsResponse bctr) {
+		XSSFSheet sheet = this.workbook.createSheet("Actual Direct Labor Totals");
+		String[] weekLabel = new String[] {"1st","2nd","3rd","4th","5th"};
+		String[] columnLabel = new String[] {"Week",null,"Begins","Ends","Actual D/L","OM D/L"};
+		short dateFormat = this.workbook.createDataFormat().getFormat("mm/dd/yyyy");
+		XSSFCellStyle dateCellStyle =  this.workbook.createCellStyle();
+		dateCellStyle.setDataFormat(dateFormat);
+		dateCellStyle.setAlignment(HorizontalAlignment.CENTER);
+		
+		XSSFRow row = null;
+		XSSFCell cell = null;
+		int rowNum = 0;
+		int colNum = 0;
+		
+		row = sheet.createRow(rowNum);
+		for ( int i = 0; i < columnLabel.length; i++ ) {
+			if ( ! StringUtils.isBlank(columnLabel[i])) {
+				cell = row.createCell(i);
+				cell.setCellValue(columnLabel[i]);
+				if ( i == 0 ) {
+					sheet.addMergedRegion(new CellRangeAddress(rowNum,rowNum,i,i+1));
+				}
+				cell.setCellStyle(this.cellFormats.get(CellFormat.HEADER_CENTER));
+			}
+		}
+		rowNum++;
+		
+		for ( WorkWeek value : workCalendar ) {
+			colNum = 0;
+			row = sheet.createRow(rowNum);
+			cell = row.createCell(colNum);
+			cell.setCellValue(weekLabel[rowNum - 1] + " Wk in Mo");
+			colNum++;
+			cell = row.createCell(colNum);
+			cell.setCellValue(value.getWeekOfYear());
+			cell.setCellStyle(this.cellFormats.get(CellFormat.CENTER));
+			colNum++;
+			cell = row.createCell(colNum);
+			cell.setCellType(XSSFCell.CELL_TYPE_NUMERIC);
+			cell.setCellValue(value.getFirstOfWeek());
+			cell.setCellStyle(dateCellStyle);
+			colNum++;
+			cell = row.createCell(colNum);
+			cell.setCellType(XSSFCell.CELL_TYPE_NUMERIC);
+			cell.setCellValue(value.getLastOfWeek());
+			cell.setCellStyle(dateCellStyle);
+			colNum++;
+			
+			ActualDL actualDL = bctr.getActualDl().getWeekActualDL().get(value.getWeekOfYear());
+			cell = row.createCell(colNum);
+			cell.setCellValue(actualDL.getActualDL());
+			cell.setCellStyle(this.cellFormats.get(CellFormat.RIGHT));
+			colNum++;
+			cell = row.createCell(colNum);
+			cell.setCellValue(actualDL.getOmDL());
+			cell.setCellStyle(this.cellFormats.get(CellFormat.RIGHT));
+			colNum++;
+			
+			rowNum++;
+		}
+		
+		sheet.setColumnWidth(0, 6000);	// wk in month
+		sheet.setColumnWidth(1, 2000);	// wk in year
+		sheet.setColumnWidth(2, 4000);	// begin date
+		sheet.setColumnWidth(3, 4000);	// end date
+		sheet.setColumnWidth(4, 3000);	// actual D/L
+		sheet.setColumnWidth(5, 3000);	// OM D/L
+		
+		
+	}
+
+
 	private void makeBudgetControlTotalsTab(List<WorkWeek> workCalendar, BudgetControlTotalsResponse bctr) {
 		List<BCRTotalsDetail> weekTotals = bctr.getWeekTotals();
 		BCRTotalsPredicate totalsPredicate = new BCRTotalsPredicate();
@@ -176,9 +250,6 @@ public class BcrTicketSpreadsheet {
 		XSSFRow row = null;
 		XSSFCell cell = null;
 		
-		
-		
-
 		
 		// make Date Row
 		colNum = 2;
