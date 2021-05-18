@@ -143,7 +143,11 @@ public class BudgetControlTotalsResponse extends MessageResponse {
 		if ( monthTotal.getVolumeClaimed() == null || monthTotal.getTotalVolume() == null ) {
 			monthTotal.setActualDlPercentage(0.0D);
 		} else {
-			monthTotal.setActualDlPercentage( (monthTotal.getTotalVolume() / monthTotal.getVolumeClaimed())*100);
+			//monthTotal.setActualDlPercentage( (monthTotal.getTotalVolume() / monthTotal.getVolumeClaimed())*100);
+			ActualDL totalActualDL = this.getActualDl().getTotalActualDL();
+			Double actualDL = totalActualDL.getActualDL();
+			Double totalDL = this.getMonthTotal().getVolumeClaimed();	
+			monthTotal.setActualDlPercentage( actualDL / totalDL * 100 );
 		}
 		
 	}
