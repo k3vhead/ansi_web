@@ -24,10 +24,10 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.poi.hssf.util.CellRangeAddress;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -64,25 +64,31 @@ public class BcrTicketSpreadsheet {
 		this.workbook = new XSSFWorkbook();
 		makeStyles();
 		initWorkbook();
-		BCRRowPredicate filter = new BCRRowPredicate();
-				
+		BCRRowPredicate filter = new BCRRowPredicate();				
 		List<WorkWeek> workCalendar = makeWorkCalendar(claimYear, weekList);
+		int tabNumber = 0;
 		
 		BudgetControlTotalsResponse bctr = new BudgetControlTotalsResponse(conn, userId, divisionList, divisionId, claimYear, workWeeks);
-		makeActualDLTotalsTab(workCalendar, bctr);		
-		makeBudgetControlTotalsTab(workCalendar, bctr);		
+		makeActualDLTotalsTab(tabNumber, workCalendar, bctr);
+		tabNumber++;
+		
+		makeBudgetControlTotalsTab(tabNumber, workCalendar, bctr);
+		tabNumber++;
 		
 		BudgetControlEmployeesResponse employeeResponse = new BudgetControlEmployeesResponse(conn, userId, divisionList, divisionId, claimYear, workWeeks);
-		makeBudgetControlEmployeesTab(claimYear, workCalendar, employeeResponse);
+		makeBudgetControlEmployeesTab(tabNumber, claimYear, workCalendar, employeeResponse);
+		tabNumber++;
 		
 		conn.close();
 
-		makeTicketTab(data, 3, "All Tickets");
+		makeTicketTab(data, tabNumber, "All Tickets");
+		tabNumber++;
 		for ( int i = 0; i < weekList.length; i++ ) {
 			String tabName = claimYear + "-" + weekList[i];
 			filter.setTabName(tabName);
 			List<BCRRow> weeklyData = IterableUtils.toList(IterableUtils.filteredIterable(data, filter));
-			makeTicketTab(weeklyData, i+3, tabName);
+			makeTicketTab(weeklyData, tabNumber, tabName);
+			tabNumber++;
 		}
 		
 		
@@ -166,8 +172,10 @@ public class BcrTicketSpreadsheet {
 	}
 
 
-	private void makeActualDLTotalsTab(List<WorkWeek> workCalendar, BudgetControlTotalsResponse bctr) {
-		XSSFSheet sheet = this.workbook.createSheet("Actual Direct Labor Totals");
+	private void makeActualDLTotalsTab(int tabNumber, List<WorkWeek> workCalendar, BudgetControlTotalsResponse bctr) {
+		String tabName = "Actual Direct Labor Totals";
+		XSSFSheet sheet = this.workbook.createSheet(tabName);
+		this.workbook.setSheetOrder(tabName, tabNumber);
 		String[] weekLabel = new String[] {"1st","2nd","3rd","4th","5th"};
 		String[] columnLabel = new String[] {"Week",null,"Begins","Ends","Actual D/L","OM D/L"};
 		short dateFormat = this.workbook.createDataFormat().getFormat("mm/dd/yyyy");
@@ -238,11 +246,14 @@ public class BcrTicketSpreadsheet {
 	}
 
 
-	private void makeBudgetControlTotalsTab(List<WorkWeek> workCalendar, BudgetControlTotalsResponse bctr) {
+	private void makeBudgetControlTotalsTab(int tabNumber, List<WorkWeek> workCalendar, BudgetControlTotalsResponse bctr) {
 		List<BCRTotalsDetail> weekTotals = bctr.getWeekTotals();
 		BCRTotalsPredicate totalsPredicate = new BCRTotalsPredicate();
 
-		XSSFSheet sheet = this.workbook.createSheet("Monthly Budget Control Summary");
+		String tabName = "Monthly Budget Control Summary";
+		XSSFSheet sheet = this.workbook.createSheet(tabName);
+		this.workbook.setSheetOrder(tabName, tabNumber);
+		
 //		int rowNum = 0;
 		int colNum = 0;
 		Integer monthTotalColNum = workCalendar.size() + 2;  //row label + "unclaimed" + each week gives us 2 cells extra
@@ -369,8 +380,10 @@ public class BcrTicketSpreadsheet {
 	
 	
 	
-	private void makeBudgetControlEmployeesTab(Integer claimYear, List<WorkWeek> workCalendar, BudgetControlEmployeesResponse employeeResponse) {
-		XSSFSheet sheet = this.workbook.createSheet("Employees");
+	private void makeBudgetControlEmployeesTab(Integer tabNumber, Integer claimYear, List<WorkWeek> workCalendar, BudgetControlEmployeesResponse employeeResponse) {
+		String tabName = "Employees";
+		XSSFSheet sheet = this.workbook.createSheet(tabName);
+		this.workbook.setSheetOrder(tabName, tabNumber);
 		XSSFRow row = null;
 		XSSFCell cell = null;
 		int rowNum = 0;
@@ -560,7 +573,7 @@ public class BcrTicketSpreadsheet {
 
 	private XSSFSheet initTicketTab(Integer index, String title) {
 		XSSFSheet sheet = workbook.createSheet();
-		workbook.setSheetName(index, title);
+		workbook.setSheetName(index, title);		
 		
 		XSSFRow row = sheet.createRow(0);
 		XSSFCell cell = null;
