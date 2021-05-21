@@ -92,12 +92,12 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 	}
 
 	private void makeTotalsResponse(Connection conn, Integer userId, List<SessionDivision> divisionList,
-			Integer divisionId, Integer workYear, String workWeek) throws SQLException {
-		String baseSql = BcrTicketSql.sqlSelectClause + BcrTicketSql.makeFilteredFromClause(divisionList) + BcrTicketSql.makeBaseWhereClause(workWeek);
+			Integer divisionId, Integer workYear, String workWeeks) throws SQLException {
+		String baseSql = BcrTicketSql.sqlSelectClause + BcrTicketSql.makeFilteredFromClause(divisionList) + BcrTicketSql.makeBaseWhereClause(workWeeks);
 		String sql = selectClause + baseSql + groupClause;
 		
 		List<Integer> weekFilter = new ArrayList<Integer>();
-		for ( String weekNum : StringUtils.split(workWeek, ",")) {
+		for ( String weekNum : StringUtils.split(workWeeks, ",")) {
 			weekFilter.add(Integer.valueOf(weekNum));
 		}
 		Logger logger = LogManager.getLogger(this.getClass());
@@ -121,16 +121,9 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 			if (!(claimWeek.equals("-"))) {
 				String[] workDate = claimWeek.split("-");
 				if ( weekFilter.contains(Integer.valueOf(workDate[1]))) {
-				EmployeeClaim dl = workMap.containsKey(employee) ? workMap.get(employee) : new EmployeeClaim(employee, workYear, workWeek);
-				HashMap<String, Double> weeklyDL = dl.getWeeklyClaimedDL();
-				weeklyDL.put(claimWeek, directLabor);
-				dl.setWeeklyClaimedDL(weeklyDL);
-				HashMap<String, Double> weeklyVC = dl.getWeeklyClaimedVolume();
-				weeklyVC.put(claimWeek, volumeClaimed);
-				dl.setWeeklyClaimedVolume(weeklyVC);
-				dl.setTotalClaimedDL(dl.getTotalClaimedDL() + directLabor);
-				dl.setTotalClaimedDL(dl.getTotalClaimedVolume() + volumeClaimed);
-				workMap.put(employee, dl);
+					EmployeeClaim employeeClaim = workMap.containsKey(employee) ? workMap.get(employee) : new EmployeeClaim(employee, workYear, workWeeks);
+					employeeClaim.addAWeeklyClaim(claimWeek, directLabor, volumeClaimed);					
+					workMap.put(employee, employeeClaim);
 				}
 			}
 		}
@@ -170,9 +163,6 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 			return employee;
 		}
 
-
-
-
 		public void setEmployee(String employee) {
 			this.employee = employee;
 		}
@@ -199,6 +189,26 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 		}
 		public void setTotalClaimedVolume(Double totalClaimedVolume) {
 			this.totalClaimedVolume = totalClaimedVolume;
+		}
+
+		/**
+		 * Add direct labor and volume claimed to the list of weekly claims for this employee
+		 * @param claimWeek
+		 * @param directLabor
+		 * @param volumeClaimed
+		 */
+		public void addAWeeklyClaim(String claimWeek, Double directLabor, Double volumeClaimed) {
+			weeklyClaimedDL.put(claimWeek, directLabor);
+			this.totalClaimedDL = 0.0D;
+			for ( Double claimedDL : this.weeklyClaimedDL.values() ) {
+				this.totalClaimedDL = this.totalClaimedDL + claimedDL;
+			}
+			
+			weeklyClaimedVolume.put(claimWeek, volumeClaimed);
+			this.totalClaimedVolume = 0.0D;
+			for ( Double claimedDL : this.weeklyClaimedVolume.values() ) {
+				this.totalClaimedVolume = this.totalClaimedVolume + claimedDL;
+			}
 		}
 
 		public void add(EmployeeClaim dl) {
