@@ -36,20 +36,21 @@ public class DBCompare {
 
 	private final Integer TABLE = 0;
 	private final Integer DEV = 1;
-	private final Integer UAT = 2;
-	private final Integer UAT_COLUMN = 3;
-	private final Integer PROD = 4;
-	private final Integer PROD_COLUMN = 5;
+	private final Integer DEV_HISTORY = 2;
+	private final Integer UAT = 3;
+	private final Integer UAT_COLUMN = 4;
+	private final Integer PROD = 5;
+	private final Integer PROD_COLUMN = 6;
 	
-	private final String[] headers = new String[] {"Table", "DEV","UAT","Col", "PROD", "Col"};
-	private final Integer[] columnWidths = new Integer[] {8000,8000,8000,8000,8000,8000};
+	private final String[] headers = new String[] {"Table", "DEV","History","UAT","Col", "PROD", "Col"};
+	private final Integer[] columnWidths = new Integer[] {8000,8000,2500,8000,8000,8000,8000};
 	
 	private XSSFCellStyle greenCell;
 	private XSSFCellStyle yellowCell;
 	private XSSFCellStyle redCell;
 	private XSSFCellStyle headerCell;
 	private XSSFCellStyle centeredCell;
-	
+	private XSSFCellStyle redCenteredCell;
 	
 	
 	
@@ -126,6 +127,16 @@ public class DBCompare {
 				cell.setCellStyle(this.redCell);
 			}
 
+			cell = row.createCell(DEV_HISTORY);
+			Boolean hasHistory = hasHistory(tableDescription, devTables);
+			if ( hasHistory != null ) {
+				if ( hasHistory ) {
+					cell.setCellStyle(greenCell);
+				} else {
+					cell.setCellValue("X");
+					cell.setCellStyle(redCenteredCell);
+				}
+			}
 
 			if ( devTables.contains(tableDescription) && uatTables.contains(tableDescription)) {
 				List<String> mismatch = compareColumns(tableDescription.tableName, devTables, uatTables);
@@ -310,6 +321,25 @@ public class DBCompare {
 		
 	}
 	
+	/**
+	 * Returns true if this table has an associated history table
+	 * Returns fall if this table does not have an associated history table
+	 * Returns null if this is a history table (ie name ends with "_history");
+	 * 
+	 * @param tableDescription
+	 * @param devTables
+	 * @return
+	 */
+	private Boolean hasHistory(TableDescription tableDescription, List<TableDescription> tableList) {
+		Boolean hasHistory = null;
+		String tableName = tableDescription.tableName.toLowerCase();		
+		if ( ! tableName.endsWith("_history") ) {
+			String historyName = tableName + "_history";
+			hasHistory =  IterableUtils.countMatches(tableList, new TableNameMatchPredicate(historyName)) > 0;
+		}
+		return hasHistory;
+	}
+
 	private List<String> compareColumns(String tableName, List<TableDescription> tableList1,  List<TableDescription> tableList2) {		
 		List<String> mismatch = new ArrayList<String>();
 		TableNameMatchPredicate tablePredicate = new TableNameMatchPredicate(tableName);
@@ -399,6 +429,18 @@ public class DBCompare {
 		redCell.setBorderColor(BorderSide.TOP, red);
 		redCell.setBorderColor(BorderSide.LEFT, red);
 		redCell.setBorderColor(BorderSide.RIGHT, red);
+		
+		redCenteredCell = workbook.createCellStyle();
+		redCenteredCell.setAlignment(HorizontalAlignment.LEFT);
+		redCenteredCell.setBorderBottom(BorderStyle.MEDIUM);
+		redCenteredCell.setBorderTop(BorderStyle.MEDIUM);
+		redCenteredCell.setBorderLeft(BorderStyle.MEDIUM);
+		redCenteredCell.setBorderRight(BorderStyle.MEDIUM);
+		redCenteredCell.setBorderColor(BorderSide.BOTTOM, red);
+		redCenteredCell.setBorderColor(BorderSide.TOP, red);
+		redCenteredCell.setBorderColor(BorderSide.LEFT, red);
+		redCenteredCell.setBorderColor(BorderSide.RIGHT, red);
+		redCenteredCell.setAlignment(HorizontalAlignment.CENTER);
 		
 		XSSFColor yellow = new XSSFColor(Color.YELLOW); 
 		yellowCell = workbook.createCellStyle();
@@ -582,7 +624,7 @@ public class DBCompare {
 		}
 		@Override
 		public boolean evaluate(TableDescription arg0) {
-			return arg0.tableName.equals(tableName);
+			return arg0.tableName.equalsIgnoreCase(tableName);
 		}
 		
 	}
