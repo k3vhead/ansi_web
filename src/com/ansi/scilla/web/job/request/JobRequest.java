@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.logging.log4j.Level;
@@ -538,13 +541,14 @@ public class JobRequest extends AbstractRequest{
 	}
 	
 	
-	public WebMessages validateProposalUpdate() {
+	public WebMessages validateProposalUpdate(Connection conn) throws SQLException {
 		WebMessages webMessages = new WebMessages();
 		
 		RequestValidator.validateJobFrequency(webMessages, "jobFrequency", this.jobFrequency, true);
 		RequestValidator.validateInteger(webMessages, "jobNbr", this.jobNbr, 1, null, true);
 		RequestValidator.validateBigDecimal(webMessages, "pricePerCleaning", this.pricePerCleaning, new BigDecimal(0), null, true);
 		RequestValidator.validateString(webMessages, "serviceDescription", this.serviceDescription, true);
+		RequestValidator.validateServiceTags(conn, webMessages, "jobtags", this.jobtags, true, "Service");
 		
 		return webMessages;
 	}
@@ -635,10 +639,10 @@ public class JobRequest extends AbstractRequest{
 	public WebMessages validateNewJob(Connection conn) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		
-		WebMessages proposalMessages = validateProposalUpdate();
-		WebMessages activationMessages = validateProposalUpdate();
-		WebMessages invoiceMessages = validateProposalUpdate();
-		WebMessages scheduleMessages = validateProposalUpdate();
+		WebMessages proposalMessages = validateProposalUpdate(conn);
+		WebMessages activationMessages = validateProposalUpdate(conn);
+		WebMessages invoiceMessages = validateProposalUpdate(conn);
+		WebMessages scheduleMessages = validateProposalUpdate(conn);
 		
 		for ( WebMessages messages : new WebMessages[] {proposalMessages, activationMessages, invoiceMessages, scheduleMessages} ) {
 			if ( ! messages.isEmpty() ) {
@@ -646,6 +650,19 @@ public class JobRequest extends AbstractRequest{
 			}
 		}
 		
+		System.out.println("*******************************************");
+		System.out.println("JobRequest 654");
+		System.out.println("*******************************************");
+		
+		for ( Map.Entry<String,List<String>> entry : webMessages.entrySet() ) {
+			System.out.println(entry.getKey());
+			for ( String message : webMessages.get(entry.getKey())) {
+				System.out.println("\t" + message);
+			}			
+		}
+		System.out.println("*******************************************");
+		System.out.println("*******************************************");
+		System.out.println("*******************************************");
 
 		RequestValidator.validateId(conn, webMessages, "contact", "contact_id", "billingContactId", this.billingContactId, true);
 		RequestValidator.validateBuildingType(conn, webMessages, "buildingType", this.buildingType, true);

@@ -27,6 +27,7 @@ import com.ansi.scilla.common.claims.WorkHoursType;
 import com.ansi.scilla.common.db.CallLog;
 import com.ansi.scilla.common.db.Document;
 import com.ansi.scilla.common.db.EmployeeExpense;
+import com.ansi.scilla.common.db.JobTag;
 import com.ansi.scilla.common.db.MSTable;
 import com.ansi.scilla.common.db.Ticket;
 import com.ansi.scilla.common.db.User;
@@ -38,6 +39,7 @@ import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.jobticket.JobTagStatus;
 import com.ansi.scilla.common.jobticket.JobTagType;
 import com.ansi.scilla.common.payment.PaymentMethod;
+import com.ansi.scilla.common.utils.QMarkTransformer;
 import com.ansi.scilla.web.claims.request.ClaimEntryRequestType;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.utils.FieldMap;
@@ -660,6 +662,61 @@ public class RequestValidator {
 				webMessages.addMessage(fieldName, "Invalid Value");
 			}
 		}
+	}
+
+	/**
+	 * Given a list of ID's, make sure they are all valid job_tag_id's and at least one of them is of type "SERVICE"
+	 * @param conn
+	 * @param webMessages
+	 * @param fieldName
+	 * @param value
+	 * @param required
+	 * @param label
+	 * @throws SQLException 
+	 */
+	public static void validateServiceTags(Connection conn, WebMessages webMessages, String fieldName, Integer[] value, boolean required, String label) throws SQLException {
+		Logger logger = LogManager.getLogger(RequestValidator.class);
+		String reqMessage = StringUtils.isBlank(label) ? "Required Value" : label + " must be specified";
+		String invMessage = StringUtils.isBlank(label) ? "Invalid tag" : label + " is invalid";
+		
+		if ( value == null || value.length == 0 ) {
+			if ( required == true ) {
+				webMessages.addMessage(fieldName, reqMessage);
+			}
+		} else {
+			List<Integer> validTagList = new ArrayList<Integer>();
+			boolean foundAService = false;
+			boolean foundAnInvalidService = false;
+			
+			String sql = "select tag_id,tag_type, status from job_tag where tag_id in " + QMarkTransformer.makeQMarkWhereClause(value);
+			logger.log(Level.DEBUG, sql);
+			
+			PreparedStatement ps = conn.prepareStatement(sql);
+			for ( int n = 0; n < value.length; n++ ) {
+				ps.setInt(n+1, value[n]);
+			}
+			ResultSet rs = ps.executeQuery();
+			while ( rs.next() ) {
+				validTagList.add(rs.getInt(JobTag.TAG_ID));
+				if ( rs.getString(JobTag.TAG_TYPE).equalsIgnoreCase("SERVICE") ) {
+					foundAService = true;
+				}
+			}
+			rs.close();
+			for ( Integer tagId : value ) {
+				if ( ! validTagList.contains(tagId) ) {
+					foundAnInvalidService = true;
+				}
+			}
+			if ( ! foundAService ) { 
+				webMessages.addMessage(fieldName, reqMessage);
+			} else if ( foundAnInvalidService ) {
+				webMessages.addMessage(fieldName, invMessage);
+			} else {
+				// all is good -- go on with life
+			}
+		}
+		
 	}
 
 	public static void validateString(WebMessages webMessages, String fieldName, String value, boolean required) {

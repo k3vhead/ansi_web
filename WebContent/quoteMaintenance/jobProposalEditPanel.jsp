@@ -42,6 +42,7 @@
 			</tr>
 			<tr>
 				<td colspan="4">
+				<span class="job-proposal-jobtag-message err"></span>
 				<span class="job-proposal-jobtag"  data-apiname="jobtag"></span>
 				</td>
 			</tr>

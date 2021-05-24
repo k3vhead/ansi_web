@@ -246,9 +246,11 @@ public class BcrTicketSql extends ApplicationObject {
 			"		and (ticket.start_date >= '2020-10-01')\n" + 
 			" )  \n" 
 			; 
-	public static final String baseWhereClause3 =
-			" and (ticket.start_date <= '2020-11-27')\n" // This is the last day (Friday) of the last week in the month
-			; 
+	
+// DCL: Not sure why this is here, but it's not used so I commented it out. YMMV	
+//	public static final String baseWhereClause3 =
+//			" and (ticket.start_date <= '2020-11-27')\n" // This is the last day (Friday) of the last week in the month
+//			; 
 	
 	
 	public static String makeFilteredFromClause(List<SessionDivision> divisionList) {
