@@ -1747,12 +1747,20 @@
         				var $weekNum = $weekTotal['claimWeek'].split("-")[1];
         				$.each($dataToTable, function($source, $destination) {
         					var $weekSelector = "#bcr_totals ." + $destination +"_week" + $weekNum;
-        					$($weekSelector).html( $weekTotal[$source].toFixed(2) );     
+        					try {
+        						$($weekSelector).html( $weekTotal[$source].toFixed(2) );
+        					} catch(err) {
+        						$($weekSelector).html( "0.00" );
+        					}
         				});
         			});
     				$.each($dataToTable, function($source, $destination) {
         				var $monthSelector = "#bcr_totals ." + $destination + "_total";
-        				$($monthSelector).html( $data.data.monthTotal[$source].toFixed(2) );
+    					try {
+    						$($monthSelector).html( $data.data.monthTotal[$source].toFixed(2) );
+    					} catch(err) {
+    						$($monthSelector).html( "0.00" );
+    					}
     				});
         			
         			
@@ -1776,8 +1784,13 @@
         			$("#bcr_totals .actual_om_dl_total").html($data.data.actualDl.totalActualDL.omDL.toFixed(2));
         			$("#bcr_totals .total_actual_dl_total").html($data.data.actualDl.totalActualDL.totalDL.toFixed(2));
         			
-        			$("#bcr_totals .dl_percentage_total").html($data.data.monthTotal.dlPercentage.toFixed(2));        			
-        			$("#bcr_totals .actual_dl_percentage_total").html($data.data.monthTotal.actualDlPercentage.toFixed(2));
+        			$("#bcr_totals .dl_percentage_total").html($data.data.monthTotal.dlPercentage.toFixed(2)); 
+        			
+        			try {
+        				$("#bcr_totals .actual_dl_percentage_total").html($data.data.monthTotal.actualDlPercentage.toFixed(2));
+        			} catch(err) {
+        				$("#bcr_totals .actual_dl_percentage_total").html("0.00");
+        			}
         		},
         		
         		
