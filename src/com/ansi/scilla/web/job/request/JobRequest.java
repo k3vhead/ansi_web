@@ -717,6 +717,7 @@ public class JobRequest extends AbstractRequest{
 		boolean expireReasonIsRequired = this.getExpirationDate() != null;
 		RequestValidator.validateString(webMessages, EXPIRATION_REASON, this.getExpirationReason(), expireReasonIsRequired);
 		RequestValidator.validateBoolean(webMessages, REPEAT_SCHEDULE_ANNUALLY, this.getRepeatScheduleAnnually(), false);
+		RequestValidator.validateServiceTags(conn, webMessages, JOBTAGS, this.jobtags, true, "Service Type");
 			
 		return webMessages;
 	}
