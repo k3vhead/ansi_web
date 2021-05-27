@@ -100,7 +100,7 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 	
 	/**
 	 * When the standard method to populate the database record does not fit requirements, create a method to populate
-	 * and insert the database record. The signature must match:<br />
+	 * and insert the database record. The signature must match:
 	 * public static Integer overrideAdd(Connection conn, HttpServletResponse response, SessionUser sessionUser, JsonNode jsonNode) throws Exception {
 	 * 
 	 * @return
@@ -115,7 +115,7 @@ public abstract class AbstractCrudServlet extends AbstractServlet {
 
 	/**
 	 * When the standard method to populate the database record does not fit requirements, create a method to populate
-	 * and insert the database record. The signature must match:<br />
+	 * and insert the database record. The signature must match:
 	 * public void overrideUpdate(Connection conn, HttpServletResponse response, Integer id, SessionUser sessionUser, JsonNode jsonNode) throws Exception {
 	 * @return
 	 */

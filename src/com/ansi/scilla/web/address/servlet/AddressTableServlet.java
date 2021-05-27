@@ -42,7 +42,7 @@ import com.ansi.scilla.web.exceptions.TimeoutException;
  * 
  * The url for get will be one of:
  * 		/addressSearch    						(retrieves all records from address table)
- * 		/addressSearch?term=<searchTerm>		(returns all records containing <searchTerm>)
+ * 		/addressSearch?term=&lt;searchTerm&gt;	(returns all records containing &lt;searchTerm&gt;)
  * 
  * The servlet will return all records if there is no "term=" is found.
  * 

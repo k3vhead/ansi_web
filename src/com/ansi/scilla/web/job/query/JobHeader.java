@@ -238,10 +238,10 @@ public class JobHeader extends ApplicationObject implements Comparable<JobHeader
 	/**
 	 * Get basic job information for display on quote maintenance screen.
 	 * @param conn
-	 * @param quoteId
-	 * @param permissionList 
+	 * @param quote
+	 * @param permissionList
 	 * @return
-	 * @throws SQLException
+	 * @throws Exception
 	 */
 	public static List<JobHeader> getJobHeaderList(Connection conn, Quote quote, List<UserPermission> permissionList) throws Exception {
 		Integer quoteId = quote.getQuoteId();

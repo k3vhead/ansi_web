@@ -33,21 +33,21 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 /**
- * The url for delete will be of the form /taxRate/<taxRateId>
+ * The url for delete will be of the form /taxRate/&lt;taxRateId&gt;
  * 
  * The url for get will be one of:
  * 		/taxRate/list    			(retrieves everything)
- * 		/taxRate/<taxRateId>		(retrieves a single record)
+ * 		/taxRate/&lt;taxRateId&gt;		(retrieves a single record)
  * 	For 2.0 probably adding state, county and city fields to taxRate table
- * 		/taxRate/<state>				(Retrieves state contains <state>)
- * 		/taxRate/<state>/<county>		(Retrieves and county contains <county>)
- * 		/taxRate/<state>/<county>/<city>(Retrieves and city contains <city>)
+ * 		/taxRate/&lt;state&gt;				(Retrieves state contains &lt;state&gt;)
+ * 		/taxRate/&lt;state&gt;/&lt;county&gt;		(Retrieves and county contains &lt;county&gt;)
+ * 		/taxRate/&lt;state&gt;/&lt;county&gt;/&lt;city&gt;(Retrieves and city contains &lt;city&gt;)
  * 
  * The url for adding a new record will be a POST to:
  * 		/taxRate/add   with parameters in the JSON
  * 
  * The url for update will be a POST to:
- * 		/taxRate/<taxRateId> with parameters in the JSON
+ * 		/taxRate/&lt;taxRateId&gt; with parameters in the JSON
  * 
  * 
  * @author gagroce

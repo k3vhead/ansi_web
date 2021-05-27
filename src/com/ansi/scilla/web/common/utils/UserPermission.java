@@ -101,7 +101,7 @@ public class UserPermission extends ApplicationWebObject implements Comparable<U
 	/**
 	 * Get a list of permissions for a permission group
 	 * @param conn
-	 * @param userId
+	 * @param permissionGroupId
 	 * @return
 	 */
 	public static List<UserPermission> getUserPermissions(Connection conn, Integer permissionGroupId) throws Exception {

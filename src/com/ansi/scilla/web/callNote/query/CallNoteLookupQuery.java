@@ -3,7 +3,6 @@ package com.ansi.scilla.web.callNote.query;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 
 import com.ansi.scilla.common.db.CallLog;
@@ -97,7 +96,6 @@ public class CallNoteLookupQuery extends LookupQuery {
 	 * 
 	 * @param queryTerm
 	 * @return 
-	 * @throws Exception
 	 */
 	protected String makeWhereClause(String queryTerm)  {
 		String whereClause = CallNoteLookupQuery.baseWhereClause;

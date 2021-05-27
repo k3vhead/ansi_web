@@ -31,10 +31,9 @@ public abstract class AbstractAutoCompleteServlet extends AbstractServlet {
 	
 
 	/**
-	 * 
-	 * @param realm	This is the bit of the url 
+	 * Standard constructor: requires a permission to make sure you're actually allowed to see what
+	 * you're trying to auto-complete
 	 * @param permission
-	 * @param autoComplete
 	 */
 	protected AbstractAutoCompleteServlet(Permission permission) {
 		this.permission = permission;

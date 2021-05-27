@@ -44,7 +44,7 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
 /**
   The url for GET will be one of:
   
- 		GET permission/<permissionGroupId> returns:
+ 		GET permission/&lt;permissionGroupId&gt; returns:
  		{
   			"webMessages": null,
   			"permissionList": [
@@ -73,7 +73,7 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
  ***********************************************************************************
   
   The url for update will be a POST to:
-  		/permission/<permissionGroupId#>,	(returns a list of permissions having the same groupId)
+  		/permission/&lt;permissionGroupId#&gt;,	(returns a list of permissions having the same groupId)
   
   		data to pass in will look like : 
  			{	"permissionGroupId": 123,

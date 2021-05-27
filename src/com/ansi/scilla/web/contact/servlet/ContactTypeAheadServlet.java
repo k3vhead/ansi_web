@@ -47,8 +47,8 @@ import com.thewebthing.commons.lang.StringUtils;
  * 
  * The url for get will be one of:
  * 		/contactSearch?term=					(returns all records)
- * 		/contactSearch?term=<searchTerm>		(returns all records containing <searchTerm>)
- * 		/contactSearch?id=<contactId>			(returns the record for <contactId>)
+ * 		/contactSearch?term=&lt;searchTerm&gt;	(returns all records containing &lt;searchTerm&gt;)
+ * 		/contactSearch?id=&lt;contactId&gt;		(returns the record for &lt;contactId&gt;)
  * 
  * The servlet will return 404 Not Found if there is no "term=" found.
  * 

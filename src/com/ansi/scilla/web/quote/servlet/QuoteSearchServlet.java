@@ -34,11 +34,11 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
  * 
  * The url for get will be one of:
  * 		/quoteSearch/List      				(retrieves everything)
- * 		/quoteSearch/<quoteId>					(retrieves a single record)
+ * 		/quoteSearch/&lt;quoteId&gt;					(retrieves a single record)
  *		/quoteSearch?term=					(retrieves everything)
- * 		/quoteSearch?term=<queryTerm>			(retrieves filtered selection)
- * 		/quoteSearch?sort=<sort>,<sort> 		(retrieve sorted selection)
- * 		/quoteSearch?term=<term>&sort=<sort> 	(retrieve sorted filtered selection)
+ * 		/quoteSearch?term=&lt;queryTerm&gt;			(retrieves filtered selection)
+ * 		/quoteSearch?sort=&lt;sort&gt;,&lt;sort&gt; 		(retrieve sorted selection)
+ * 		/quoteSearch?term=&lt;term&gt;&amp;sort=&lt;sort&gt; 	(retrieve sorted filtered selection)
  * 
  * 
  * @author ggroce

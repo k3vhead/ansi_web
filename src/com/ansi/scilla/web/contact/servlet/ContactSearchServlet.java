@@ -40,7 +40,7 @@ import com.thewebthing.commons.lang.StringUtils;
  * 
  * The url for get will be one of:
  * 		/contactSearch    						(retrieves all records from contact table)
- * 		/contactSearch?term=<searchTerm>		(returns all records containing <searchTerm>)
+ * 		/contactSearch?term=&lt;searchTerm&gt;		(returns all records containing &lt;searchTerm&gt;)
  * 
  * The servlet will return all records if there is no "term=" is found.
  * 

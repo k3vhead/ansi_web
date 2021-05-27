@@ -50,7 +50,7 @@ import com.thewebthing.commons.lang.StringUtils;
  * 
  * The url for get will be one of:
  * 		/PaymentTypeAhead?term=					(returns not found)
- * 		/PaymentTypeAhead?term=<searchTerm>		(returns all records containing <searchTerm>)
+ * 		/PaymentTypeAhead?term=&lt;searchTerm&gt;		(returns all records containing &lt;searchTerm&gt;)
  * 
  * The servlet will return 404 Not Found if there is no "term=" found.
  * 

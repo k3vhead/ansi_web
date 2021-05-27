@@ -39,7 +39,7 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
  * The url for delete will return methodNotAllowed
  * 
  * The url for get will be one of:
- * 		/ticket/<ticketId>	json includes panel="return" -- (returns ticket return fields for a given ticket)
+ * 		/ticket/&lt;ticketId&gt;	json includes panel="return" -- (returns ticket return fields for a given ticket)
  * 			Needs to return:
  * 				ticket
  * 				status
@@ -55,7 +55,7 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
  * 				nextAllowedStatusList
  * 				jobId - passed to job panels 
  * 
- * 		/ticket/<ticketId>	json includes panel="invoice" -- (returns ticket invoice fields for a given ticket)
+ * 		/ticket/&lt;ticketId&gt;	json includes panel="invoice" -- (returns ticket invoice fields for a given ticket)
  * 				Includes the invoice detail for the ticket and the invoice totals for the invoice
  * 				Needs to return:
 				 * 		for Ticket = ticketId
@@ -66,7 +66,7 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
 				 * 			balance(actPpc + actTax - (sumTcktPpcPaid + sumTktTaxPaid))
 				 * 			daysToPay(today, invoiceDate, balance) 
 				 * 					if balance == 0, daysToPay = max(paymentDate)-invoiceDate
-				 * 					if balance <> 0, daysToPay = today - invoiceDate
+				 * 					if balance &lt;&gt; 0, daysToPay = today - invoiceDate
 				 * 			**ticket write off amount - stub for v 2.0
 				 * 		for Invoice = invoiceId
 				 * 			invoice_id (this is the invoice number)
@@ -81,17 +81,17 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
  * 					
  * 
  * The url for update will be a POST to:  
- * 		/ticket/<ticket>  json with panel="invoice" will return methodNotAllowed - invoice panel is read only
+ * 		/ticket/&lt;ticket&gt;  json with panel="invoice" will return methodNotAllowed - invoice panel is read only
  * 
- * 		/ticket/<ticket>  json includes panel="return" with parameters in the JSON
+ * 		/ticket/&lt;ticket&gt;  json includes panel="return" with parameters in the JSON
  * 			Action 		Next Status			Parameters
- * 			complete	"C"omplete			<nextStatus><processDate><processNotes><actualPricePerCleaning>
- * 											<actualDirectLaborPct><actualDirectLabor>
- * 											<customerSignature><billSheet><managerApproval>
- * 			skip		"S"kipped			<nextStatus><processDate><processNotes>
- * 			void		"V"oided			<nextStatus><processDate><processNotes>
- * 			reject		"R"ejected			<nextStatus><processDate><processNotes>
- * 			re-queue	"N"ot Dispatched	<nextStatus>
+ * 			complete	"C"omplete			&lt;nextStatus&gt;&lt;processDate&gt;&lt;processNotes&gt;&lt;actualPricePerCleaning&gt;
+ * 											&lt;actualDirectLaborPct&gt;&lt;actualDirectLabor&gt;
+ * 											&lt;customerSignature&gt;&lt;billSheet&gt;&lt;managerApproval&gt;
+ * 			skip		"S"kipped			&lt;nextStatus&gt;&lt;processDate&gt;&lt;processNotes&gt;
+ * 			void		"V"oided			&lt;nextStatus&gt;&lt;processDate&gt;&lt;processNotes&gt;
+ * 			reject		"R"ejected			&lt;nextStatus&gt;&lt;processDate&gt;&lt;processNotes&gt;
+ * 			re-queue	"N"ot Dispatched	&lt;nextStatus&gt;
  * 
  * 
  * Processing for POST:
@@ -119,13 +119,6 @@ public class TicketServlet extends AbstractServlet {
 	private static final long serialVersionUID = 1L;
 	
 	
-	/**
-	 * Parses a URL of the form /<servlet>/<id>/<panel>
-	 * @param expected servlet identifier "/job/", "/ticket/", "/quote/table/", etc.
-	 * @param url of the form /<servlet>/<id>/<panel> where <servlet> and <panel> are String and <id> is integer
-	 * @return Boolean - true == valid url, false == invalid url
-	 * 
-	 */
 	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

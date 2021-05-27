@@ -76,8 +76,6 @@ public class ReportDefinition extends ApplicationWebObject {
 	 * Note that posted values (like the JSON in and "ADD") must be processed before invoking this constructor
 	 * 
 	 * @param request The unchanged HTTP request object, after posted values are processed 
-	 * @param expectedRealm Typically the servlet name, eg "ticket" or "division"
-	 * @param expectedCommandList A list of valid commands like "list" or "add". A null value means no commands are accepted
 	 * @throws ResourceNotFoundException Thrown if the realm is incorrect or the URI format is wrong, or if the command 
 	 * does not validate against the list of expected values.
 	 * @throws IOException 

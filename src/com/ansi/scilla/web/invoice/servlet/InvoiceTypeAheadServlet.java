@@ -51,7 +51,7 @@ import com.thewebthing.commons.lang.StringUtils;
  * 
  * The url for get will be one of:
  * 		/invoiceTypeAhead?term=					(returns not found)
- * 		/invoiceTypeAhead?term=<searchTerm>		(returns all records containing <searchTerm>)
+ * 		/invoiceTypeAhead?term=&lt;searchTerm&gt;		(returns all records containing &lt;searchTerm&gt;)
  * 
  * The servlet will return 404 Not Found if there is no "term=" found.
  * 

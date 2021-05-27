@@ -28,7 +28,7 @@ import com.thewebthing.commons.lang.StringUtils;
 /**
  * 
  * The url for get will be one of:						
- * 		/getJobs?quoteId=<searchTerm>		(returns all job records containing <quoteId>)
+ * 		/getJobs?quoteId=&lt;searchTerm&gt;		(returns all job records containing &lt;quoteId&gt;)
  * 
  * The url for delete will return methodNotAllowed
  * 

@@ -299,12 +299,10 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 
 
 	/**
-	 * @throws UnsupportedEncodingException 
 	 * Parses a query sting into name, value pairs
-	 * 
-	 * @param string
-	 * @return Map<String,String>
-	 * @throws 
+	 * @param queryString
+	 * @return
+	 * @throws UnsupportedEncodingException
 	 */
 	public static HashMap<String, String> getQueryMap(String queryString) throws UnsupportedEncodingException {
 		HashMap<String, String> queryMap = new HashMap<String, String>();
@@ -570,7 +568,6 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 	 * @param request
 	 * @return
 	 * @throws TimeoutException 
-	 * @throws Exception
 	 */
 	public static SessionData validateSession(HttpServletRequest request) throws TimeoutException  {		
 		HttpSession session = null;

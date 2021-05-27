@@ -462,7 +462,7 @@ public class TicketOverrideServlet extends TicketServlet {
 	 * ticket update.
 	 * 
 	 * id - the string identifying what kind of override we're doing
-	 * processor - the method in the servlet that process the request. Must have signature: methodName(Integer ticketId, HashMap<String, String> values)
+	 * processor - the method in the servlet that process the request. Must have signature: methodName(Integer ticketId, HashMap&lt;String, String&gt; values)
 	 * permission - any permission required beyond the TICKET that is minimum required to do this update. (Yes, we're checking
 	 * 		for "ticket" twice, but it's at minimal cost, and it makes the code easier)
 	 * 

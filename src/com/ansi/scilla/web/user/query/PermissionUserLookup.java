@@ -244,8 +244,6 @@ public class PermissionUserLookup extends ApplicationObject {
 	/**
 	 * Returns data, based on stuff that has been entered into the object
 	 * @param conn
-	 * @param offset
-	 * @param rowCount
 	 * @return
 	 */
 	public List<UserLookupItem> select(Connection conn) throws Exception {
@@ -266,8 +264,6 @@ public class PermissionUserLookup extends ApplicationObject {
 	/**
 	 * Returns data, based on stuff that has been entered into the object
 	 * @param conn
-	 * @param offset
-	 * @param rowCount
 	 * @return
 	 */
 	public List<UserLookupItem> selectAll(Connection conn) throws Exception {

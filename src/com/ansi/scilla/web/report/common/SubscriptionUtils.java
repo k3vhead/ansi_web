@@ -38,9 +38,7 @@ public class SubscriptionUtils {
 	 * </ul>
 	 * This method will handle the first two cases by Removing the subscriptions the users are not 
 	 * allowed to see, by deleting everything that is not in the the permission group's list of permissions.
-	 * 
 	 * @param conn
-	 * @param userId
 	 * @param permissionGroupId
 	 * @throws Exception
 	 */
@@ -123,7 +121,7 @@ public class SubscriptionUtils {
 	/**
 	 * Returns a list of reports I'm allowed to see, based on my permissions
 	 * 
-	 * @param permissions
+	 * @param userPermissions
 	 * @return
 	 */
 	public static List<BatchReports> myReports(List<UserPermission> userPermissions) {
@@ -143,7 +141,7 @@ public class SubscriptionUtils {
 	}
 	
 	/**
-	 * Determines which reports in the given list are &quote;All-Ansi&quot; reports.  If you want the entire
+	 * Determines which reports in the given list are "All-Ansi" reports.  If you want the entire
 	 * list of All-Ansi, pass in <code>Arrays.asList(BatchReports.values())</code>
 	 * @param batchReports
 	 * @return
@@ -153,7 +151,7 @@ public class SubscriptionUtils {
 	}
 	
 	/**
-	 * Determines which reports in the given list are &quote;Trend&quot; reports.  If you want the entire
+	 * Determines which reports in the given list are &quot;Trend&quot; reports.  If you want the entire
 	 * list of All-Ansi, pass in <code>Arrays.asList(BatchReports.values())</code>
 	 * @param batchReports
 	 * @return
@@ -163,7 +161,7 @@ public class SubscriptionUtils {
 	}
 	
 	/**
-	 * Determines which reports in the given list are &quote;Summary&quot; reports.  If you want the entire
+	 * Determines which reports in the given list are &quot;Summary&quot; reports.  If you want the entire
 	 * list of All-Ansi, pass in <code>Arrays.asList(BatchReports.values())</code>
 	 * @param batchReports
 	 * @return
@@ -173,7 +171,7 @@ public class SubscriptionUtils {
 	}
 	
 	/**
-	 * Determines which reports in the given list are &quote;Division&quot; reports.  If you want the entire
+	 * Determines which reports in the given list are &quot;Division&quot; reports.  If you want the entire
 	 * list of All-Ansi, pass in <code>Arrays.asList(BatchReports.values())</code>
 	 * @param batchReports
 	 * @return
@@ -183,7 +181,7 @@ public class SubscriptionUtils {
 	}
 	
 	/**
-	 * Determines which reports in the given list are &quote;Utility&quot; reports.  If you want the entire
+	 * Determines which reports in the given list are &quot;Utility&quot; reports.  If you want the entire
 	 * list of All-Ansi, pass in <code>Arrays.asList(BatchReports.values())</code>
 	 * @param batchReports
 	 * @return
