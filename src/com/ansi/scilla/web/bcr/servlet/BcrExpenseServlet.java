@@ -32,6 +32,7 @@ import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.payment.response.PaymentResponse;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class BcrExpenseServlet extends AbstractServlet {
 
@@ -243,9 +244,13 @@ public class BcrExpenseServlet extends AbstractServlet {
 
 
 	private void deleteExpense(Connection conn, Integer claimId) throws Exception {
-		ClaimEquipment claimEquipment = new ClaimEquipment();
-		claimEquipment.setClaimId(claimId);
-		claimEquipment.delete(conn);
+		try {
+			ClaimEquipment claimEquipment = new ClaimEquipment();
+			claimEquipment.setClaimId(claimId);
+			claimEquipment.delete(conn);
+		} catch ( RecordNotFoundException e) {
+			// trying to delete something that isn't there; we don't care
+		}
 		
 		TicketClaim ticketClaim = new TicketClaim();
 		ticketClaim.setClaimId(claimId);
