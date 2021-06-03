@@ -44,6 +44,7 @@ public class TestPDF {
 
 			InvoicePrinter maker = new InvoicePrinter();
 			Integer divisionId=3;
+			Integer userId = 5;
 			List<Division> divisionList = Division.cast(new Division().selectAll(conn));
 //			for ( Division division : divisionList ) {
 //				divisionId = division.getDivisionId();
@@ -52,7 +53,7 @@ public class TestPDF {
 				if ( ticketList.size()==0) {
 					System.err.println("Skipping: " + divisionId);
 				} else {
-					ByteArrayOutputStream baos = maker.makeInvoices(conn, divisionId, printDate, dueDate, ticketList);
+					ByteArrayOutputStream baos = maker.makeInvoices(conn, divisionId, printDate, dueDate, ticketList, userId);
 					
 					
 					FileOutputStream os = new FileOutputStream(new File("/home/dclewis/Documents/projects/ANSI_Scheduling/invoice_test_" + divisionId + ".pdf"));
