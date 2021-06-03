@@ -2,7 +2,9 @@ package com.ansi.scilla.web.ticket.response;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -73,7 +75,7 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 
 	
 	
-	private HashMap<String,List<JobTagDisplay>> jobTags;/*sting is the job tag type*/
+	private HashMap<String,List<JobTagDisplay>> jobTags;/*string is the job tag type*/
 	
 	
 	/* ******************************************** */
@@ -186,33 +188,43 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		}
 		makeJobTagList(conn, this.jobId);
 	}
-	private void makeJobTagList(Connection conn, Integer jobId2) throws SQLException {
+	
+	
+	private void makeJobTagList(Connection conn, Integer jobId) throws SQLException {
 		this.jobTags = new HashMap<String,List<JobTagDisplay>>();
-		List<JobTagDisplay> tagList = JobTagDisplay.getTags(conn, jobId2);
-		Collections.sort(tagList, new Comparator<JobTagDisplay>() {
-			public int compare(JobTagDisplay o1, JobTagDisplay o2) {
-				return o1.getTagType().compareTo(o2.getTagType());
-			}
-		});
-		List<JobTagDisplay> tagNameList = new ArrayList<JobTagDisplay> ();
-		String previousTagType = null;
-		for (JobTagDisplay tagDisplay : tagList) {
-			if (!StringUtils.isBlank(previousTagType) && !tagDisplay.getTagType().equals(previousTagType)) {
-				this.jobTags.put(previousTagType,tagNameList);
-				tagNameList = new ArrayList<JobTagDisplay>();
-			}
-			tagNameList.add(tagDisplay);
-			previousTagType = tagDisplay.getTagType();
+		
+		// initialize the tag display list
+		Statement s = conn.createStatement();
+		ResultSet rs = s.executeQuery("select distinct tag_type from job_tag order by tag_type");
+		while (rs.next() ) {
+			this.jobTags.put(rs.getString("tag_type"), new ArrayList<JobTagDisplay>());
 		}
-		this.jobTags.put(previousTagType, tagNameList);
+		
+		// get the tag display values
+		List<JobTagDisplay> tagList = JobTagDisplay.getTags(conn, jobId);
+		// make sure we've got tags to display
+		if ( tagList != null && tagList.size() > 0 ) {
+			Collections.sort(tagList, new Comparator<JobTagDisplay>() {
+				public int compare(JobTagDisplay o1, JobTagDisplay o2) {
+					return o1.getTagType().compareTo(o2.getTagType());
+				}
+			});
+			List<JobTagDisplay> tagNameList = new ArrayList<JobTagDisplay> ();
+			String previousTagType = null;
+			for (JobTagDisplay tagDisplay : tagList) {
+				if (!StringUtils.isBlank(previousTagType) && !tagDisplay.getTagType().equals(previousTagType)) {
+					this.jobTags.put(previousTagType,tagNameList);
+					tagNameList = new ArrayList<JobTagDisplay>();
+				}
+				tagNameList.add(tagDisplay);
+				previousTagType = tagDisplay.getTagType();
+			}
+			this.jobTags.put(previousTagType, tagNameList);
+		}
+		
 	}
-	/*
-	Type	name	Previous type: Serv		map: {Equip:[xxx,yyy],Serv:[bbb]}
-	==== 	====	List:  [bbb]
-	Equip	xxx
-	Equip	yyy
-	Serv	bbb
-	*/
+	
+	
 	
 	public Integer getTicketId() {
 		return ticketId;
