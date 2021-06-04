@@ -132,6 +132,10 @@ public class BcrTicketSpreadsheet {
 		cellStyleCenterBorder.setBorderRight(BorderStyle.MEDIUM);
 		this.cellFormats.put(CellFormat.CENTER_BORDER, cellStyleCenterBorder);
 		
+		XSSFCellStyle cellStyleLeft = workbook.createCellStyle();
+		cellStyleLeft.setAlignment(CellStyle.ALIGN_LEFT);
+		this.cellFormats.put(CellFormat.LEFT, cellStyleLeft);
+		
 		XSSFCellStyle cellStyleRight = workbook.createCellStyle();
 		cellStyleRight.setAlignment(CellStyle.ALIGN_RIGHT);
 		cellStyleRight.setDataFormat(workbook.createDataFormat().getFormat("#0.00"));
@@ -223,12 +227,12 @@ public class BcrTicketSpreadsheet {
 			colNum++;
 			
 			ActualDL actualDL = bctr.getActualDl().getWeekActualDL().get(value.getWeekOfYear());
-			cell = row.createCell(colNum);
-			cell.setCellValue(actualDL.getActualDL());
+			cell = row.createCell(colNum);			
+			cell.setCellValue(actualDL == null ? 0.0D : actualDL.getActualDL());
 			cell.setCellStyle(this.cellFormats.get(CellFormat.RIGHT));
 			colNum++;
 			cell = row.createCell(colNum);
-			cell.setCellValue(actualDL.getOmDL());
+			cell.setCellValue(actualDL == null ? 0.0D : actualDL.getOmDL());
 			cell.setCellStyle(this.cellFormats.get(CellFormat.RIGHT));
 			colNum++;
 			
@@ -841,6 +845,7 @@ public class BcrTicketSpreadsheet {
 		HEADER_CENTER_BORDER,
 		CENTER,
 		CENTER_BORDER,
+		LEFT,
 		RIGHT,
 		RIGHT_BORDER,
 		;		

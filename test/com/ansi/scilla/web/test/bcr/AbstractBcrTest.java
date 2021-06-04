@@ -6,5 +6,9 @@ public abstract class AbstractBcrTest {
 	
 	protected final String workWeekOctober2020 = "41,42,43,44";
 	protected final String workweekNovember2020 = "45,46,47,48";
+	protected final String workWeekDecember2020 = "49,50,51,52,53";
+	
+	protected final Integer USER_IS_JOSHUA = 1;
+	protected final Integer USER_IS_DAVE = 5;
 
 }
