@@ -92,6 +92,7 @@ public class BcrTicketSpreadsheet {
 		}
 		
 		
+		makeUnclaimedEquipmentTab(data, tabNumber);
 	}
 	
 	
@@ -575,6 +576,62 @@ public class BcrTicketSpreadsheet {
 	}
 
 
+	private void makeUnclaimedEquipmentTab(List<BCRRow> data, int tabNumber) throws Exception {
+		BCRHeader[] unclaimedTicketHeader = new BCRHeader[] {				
+				new BCRHeader(BCRRow.class.getField("jobSiteName"),"Account",10000, this.cellFormats.get(CellFormat.LEFT)),
+				new BCRHeader(BCRRow.class.getField("ticketId"),"Ticket Number",3500, this.cellFormats.get(CellFormat.CENTER)),
+				new BCRHeader(BCRRow.class.getField("claimWeek"),"Claim Week",3500, this.cellFormats.get(CellFormat.CENTER)),
+				new BCRHeader(BCRRow.class.getField("notes"),"Notes",10000, this.cellFormats.get(CellFormat.LEFT)),
+				new BCRHeader(BCRRow.class.getField("equipment"),"Equipment",4000, this.cellFormats.get(CellFormat.CENTER)),
+				new BCRHeader(BCRRow.class.getField("employee"),"Employee",4500, this.cellFormats.get(CellFormat.LEFT)),
+		};
+		
+		String tabName = "Unclaimed Equipment";
+		XSSFSheet sheet = this.workbook.createSheet(tabName);
+		this.workbook.setSheetOrder(tabName, tabNumber);
+		XSSFRow row = null;
+		XSSFCell cell = null;
+		int rowNum = 1;
+		
+		XSSFRow headerRow1 = sheet.createRow(0);
+		for ( int i = 0; i < unclaimedTicketHeader.length; i++ ) {
+			cell = headerRow1.createCell(i);
+			cell.setCellValue(unclaimedTicketHeader[i].headerName);
+			cell.setCellStyle(this.cellFormats.get(CellFormat.HEADER_CENTER));
+			sheet.setColumnWidth(i, unclaimedTicketHeader[i].columnWidth);
+		}
+		
+		for ( BCRRow dataRow : data ) {
+			row = sheet.createRow(rowNum);
+			for (int colNum = 0; colNum < unclaimedTicketHeader.length; colNum++ ) {
+				BCRHeader header = unclaimedTicketHeader[colNum];
+				Object obj = header.field.get(dataRow);
+				cell = row.createCell(colNum);
+				cell.setCellStyle(header.cellStyle);
+				sheet.setColumnWidth(colNum, header.columnWidth);
+				if ( obj == null ) {
+					// ignore it and go on with life
+				} else if ( obj instanceof String ) {
+					String value = (String)obj;
+					cell.setCellValue(value);
+				} else if ( obj instanceof BigDecimal ) {
+					BigDecimal value = (BigDecimal)obj;
+					cell.setCellValue(value.doubleValue());
+				} else if ( obj instanceof Double ) {
+					Double value = (Double)obj;
+					cell.setCellValue(value);
+				} else if ( obj instanceof Integer ) {
+					Integer value = (Integer)obj;
+					cell.setCellValue(value);
+				} else {
+					throw new Exception("Joshua didn't code this one: " + obj.getClass().getCanonicalName());
+				}	
+			}
+			rowNum++;
+		}
+	}
+
+
 	private XSSFSheet initTicketTab(Integer index, String title) {
 		XSSFSheet sheet = workbook.createSheet();
 		workbook.setSheetName(index, title);		
@@ -653,16 +710,10 @@ public class BcrTicketSpreadsheet {
 
 
 	private void initWorkbook() throws NoSuchFieldException, SecurityException {
-		XSSFCellStyle cellStyleRight = workbook.createCellStyle();
-		cellStyleRight.setAlignment(CellStyle.ALIGN_RIGHT);
-		cellStyleRight.setDataFormat(workbook.createDataFormat().getFormat("#0.00"));
-		
-		XSSFCellStyle cellStyleCenter = workbook.createCellStyle();
-		cellStyleCenter.setAlignment(HorizontalAlignment.CENTER);
-		
-		XSSFCellStyle cellStyleLeft = workbook.createCellStyle();
-		cellStyleLeft.setAlignment(HorizontalAlignment.LEFT);
-		
+
+		XSSFCellStyle cellStyleLeft = this.cellFormats.get(CellFormat.LEFT);
+		XSSFCellStyle cellStyleCenter = this.cellFormats.get(CellFormat.CENTER);
+		XSSFCellStyle cellStyleRight = this.cellFormats.get(CellFormat.RIGHT);
 		
 		this.headerMap = new BCRHeader[] {				
 				new BCRHeader(BCRRow.class.getField("jobSiteName"),"Account",10000, cellStyleLeft),
@@ -678,7 +729,7 @@ public class BcrTicketSpreadsheet {
 				new BCRHeader(BCRRow.class.getField("diffClmBld"),"Diff Clm/Bld",3500, cellStyleRight),
 				new BCRHeader(BCRRow.class.getField("ticketStatus"),"Ticket Status",3000, cellStyleCenter),
 				new BCRHeader(BCRRow.class.getField("service"),"Service",3000, cellStyleCenter),
-				new BCRHeader(BCRRow.class.getField("equipment"),"Equipment",3000, cellStyleCenter),
+				new BCRHeader(BCRRow.class.getField("equipment"),"Equipment",4000, cellStyleCenter),
 				new BCRHeader(BCRRow.class.getField("employee"),"Employee",4500, cellStyleLeft),
 		};		
 	}
