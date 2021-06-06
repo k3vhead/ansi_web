@@ -1,6 +1,5 @@
-package com.ansi.scilla.web.bcr.common;
+package com.ansi.scilla.web.bcr.common.BCRSpreadsheet;
 
-import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,10 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.collections4.IterableUtils;
-import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,6 +35,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.utils.WorkWeek;
 import com.ansi.scilla.common.utils.WorkYear;
+import com.ansi.scilla.web.bcr.common.BcrTicketSql;
 import com.ansi.scilla.web.bcr.response.BudgetControlActualDlResponse.ActualDL;
 import com.ansi.scilla.web.bcr.response.BudgetControlEmployeesResponse;
 import com.ansi.scilla.web.bcr.response.BudgetControlEmployeesResponse.EmployeeClaim;
@@ -45,139 +43,24 @@ import com.ansi.scilla.web.bcr.response.BudgetControlTotalsResponse;
 import com.ansi.scilla.web.bcr.response.BudgetControlTotalsResponse.BCRTotalsDetail;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 
-public class BcrTicketSpreadsheet {
-	private final SimpleDateFormat mmdd = new SimpleDateFormat("MM/dd");
-	private final SimpleDateFormat mmddyyyy = new SimpleDateFormat("MM/dd/yyyy");
-	private final HashMap<CellFormat, XSSFCellStyle> cellFormats = new HashMap<CellFormat, XSSFCellStyle>();
-	
-	private XSSFWorkbook workbook;
-	
-	private BCRHeader[] headerMap;
-	private Logger logger = LogManager.getLogger(BcrTicketSpreadsheet.class);
-	
-	public BcrTicketSpreadsheet(Connection conn, Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer claimYear, String workWeeks) 
-			throws Exception {
-		super();		
-		List<BCRRow> data = makeData(conn, divisionList, divisionId, claimYear, workWeeks);
-		String[] weekList = workWeeks.split(",");
-		
-		this.workbook = new XSSFWorkbook();
-		makeStyles();
-		initWorkbook();
-		BCRRowPredicate filter = new BCRRowPredicate();				
-		List<WorkWeek> workCalendar = makeWorkCalendar(claimYear, weekList);
-		int tabNumber = 0;
-		
-		BudgetControlTotalsResponse bctr = new BudgetControlTotalsResponse(conn, userId, divisionList, divisionId, claimYear, workWeeks);
-		makeActualDLTotalsTab(tabNumber, workCalendar, bctr);
-		tabNumber++;
-		
-		makeBudgetControlTotalsTab(tabNumber, workCalendar, bctr);
-		tabNumber++;
-		
-		BudgetControlEmployeesResponse employeeResponse = new BudgetControlEmployeesResponse(conn, userId, divisionList, divisionId, claimYear, workWeeks);
-		makeBudgetControlEmployeesTab(tabNumber, claimYear, workCalendar, employeeResponse);
-		tabNumber++;
-		
-		conn.close();
+public abstract class AbstractBCRSpreadsheet extends ApplicationObject {
 
-		makeTicketTab(data, tabNumber, "All Tickets");
-		tabNumber++;
-		for ( int i = 0; i < weekList.length; i++ ) {
-			String tabName = claimYear + "-" + weekList[i];
-			filter.setTabName(tabName);
-			List<BCRRow> weeklyData = IterableUtils.toList(IterableUtils.filteredIterable(data, filter));
-			makeTicketTab(weeklyData, tabNumber, tabName);
-			tabNumber++;
-		}
-		
-		
-		makeUnclaimedEquipmentTab(data, tabNumber);
-	}
+	private static final long serialVersionUID = 1L;
+
+	protected final SimpleDateFormat mmdd = new SimpleDateFormat("MM/dd");
+//	private final SimpleDateFormat mmddyyyy = new SimpleDateFormat("MM/dd/yyyy");
+	protected final HashMap<CellFormat, XSSFCellStyle> cellFormats = new HashMap<CellFormat, XSSFCellStyle>();
 	
+	protected XSSFWorkbook workbook;
+	
+	protected BCRHeader[] headerMap;
+	protected Logger logger = LogManager.getLogger(BcrTicketSpreadsheet.class);
 	
 	public XSSFWorkbook getWorkbook() {
 		return workbook;
 	}
 
-
-	private void makeStyles() {
-		XSSFCellStyle headerStyle = workbook.createCellStyle();
-		XSSFFont headerFont = workbook.createFont();
-		headerFont.setBold(true);
-		headerStyle.setFont(headerFont);
-		headerStyle.setAlignment(HorizontalAlignment.LEFT);
-		this.cellFormats.put(CellFormat.HEADER, headerStyle);
-		
-		XSSFCellStyle headerStyleCenter = workbook.createCellStyle();
-		XSSFFont headerCenterFont = workbook.createFont();
-		headerCenterFont.setBold(true);
-		headerStyleCenter.setFont(headerFont);
-		headerStyleCenter.setAlignment(HorizontalAlignment.CENTER);
-		this.cellFormats.put(CellFormat.HEADER_CENTER, headerStyleCenter);
-		
-		XSSFCellStyle headerStyleCenterBorder = workbook.createCellStyle();
-		XSSFFont headerCenterBorderFont = workbook.createFont();
-		headerCenterBorderFont.setBold(true);
-		headerStyleCenterBorder.setFont(headerCenterBorderFont);
-		headerStyleCenterBorder.setAlignment(HorizontalAlignment.CENTER);
-		headerStyleCenterBorder.setBorderRight(BorderStyle.MEDIUM);
-		this.cellFormats.put(CellFormat.HEADER_CENTER_BORDER, headerStyleCenterBorder);
-		
-		XSSFCellStyle cellStyleCenter = workbook.createCellStyle();
-		cellStyleCenter.setAlignment(HorizontalAlignment.CENTER);
-		this.cellFormats.put(CellFormat.CENTER, cellStyleCenter);
-		
-		XSSFCellStyle cellStyleCenterBorder = workbook.createCellStyle();
-		cellStyleCenterBorder.setAlignment(HorizontalAlignment.CENTER);
-		cellStyleCenterBorder.setBorderRight(BorderStyle.MEDIUM);
-		this.cellFormats.put(CellFormat.CENTER_BORDER, cellStyleCenterBorder);
-		
-		XSSFCellStyle cellStyleLeft = workbook.createCellStyle();
-		cellStyleLeft.setAlignment(CellStyle.ALIGN_LEFT);
-		this.cellFormats.put(CellFormat.LEFT, cellStyleLeft);
-		
-		XSSFCellStyle cellStyleRight = workbook.createCellStyle();
-		cellStyleRight.setAlignment(CellStyle.ALIGN_RIGHT);
-		cellStyleRight.setDataFormat(workbook.createDataFormat().getFormat("#0.00"));
-		this.cellFormats.put(CellFormat.RIGHT, cellStyleRight);
-		
-		XSSFCellStyle cellStyleRightBorder = workbook.createCellStyle();
-		cellStyleRightBorder.setAlignment(CellStyle.ALIGN_RIGHT);
-		cellStyleRightBorder.setDataFormat(workbook.createDataFormat().getFormat("#0.00"));
-		cellStyleRightBorder.setBorderRight(BorderStyle.MEDIUM);
-		this.cellFormats.put(CellFormat.RIGHT_BORDER, cellStyleRightBorder);
-	}
-
-
-	private List<WorkWeek> makeWorkCalendar(Integer claimYear, String[] weekList) {
-		List<WorkWeek> workCalendar = new ArrayList<WorkWeek>();
-		WorkWeekDatePredicate workWeekPredicate = new WorkWeekDatePredicate();
-		
-		WorkYear workYear = new WorkYear(claimYear);
-		Collection<HashMap<String, Object>> values = workYear.values();
-		for ( HashMap<String, Object> value : values ) {
-			Integer weekOfYear = (Integer)value.get(WorkYear.WEEK_OF_YEAR);
-			String matcher = weekOfYear < 10 ? "0" + weekOfYear : String.valueOf(weekOfYear);	
-			if ( ArrayUtils.contains(weekList, matcher)) {
-				Calendar firstOfWeek = (Calendar)value.get(WorkYear.FIRST_OF_WEEK);
-				workWeekPredicate.firstOfWeek = firstOfWeek;
-				if ( IterableUtils.countMatches(workCalendar, workWeekPredicate) == 0 ) {
-					workCalendar.add(new WorkWeek(firstOfWeek));
-				}				
-			}
-		}
-
-		Collections.sort(workCalendar, new Comparator<WorkWeek>() {
-			public int compare(WorkWeek o1, WorkWeek o2) {
-				return o1.getFirstOfWeek().compareTo(o2.getFirstOfWeek());
-			}
-		});
-		return workCalendar;
-	}
-
-
-	private void makeActualDLTotalsTab(int tabNumber, List<WorkWeek> workCalendar, BudgetControlTotalsResponse bctr) {
+	protected void makeActualDLTotalsTab(int tabNumber, List<WorkWeek> workCalendar, BudgetControlTotalsResponse bctr) {
 		String tabName = "Actual Direct Labor Totals";
 		XSSFSheet sheet = this.workbook.createSheet(tabName);
 		this.workbook.setSheetOrder(tabName, tabNumber);
@@ -250,8 +133,7 @@ public class BcrTicketSpreadsheet {
 		
 	}
 
-
-	private void makeBudgetControlTotalsTab(int tabNumber, List<WorkWeek> workCalendar, BudgetControlTotalsResponse bctr) {
+	protected void makeBudgetControlTotalsTab(int tabNumber, List<WorkWeek> workCalendar, BudgetControlTotalsResponse bctr) {
 		List<BCRTotalsDetail> weekTotals = bctr.getWeekTotals();
 		BCRTotalsPredicate totalsPredicate = new BCRTotalsPredicate();
 
@@ -283,7 +165,7 @@ public class BcrTicketSpreadsheet {
 				
 		// initialize weekly columns
 		for ( TotalsRow totalsRow : TotalsRow.values() ) {
-			row = sheet.createRow(totalsRow.rowNum);
+			row = sheet.createRow(totalsRow.rowNum());
 			cell = row.createCell(0);  // label
 			cell.setCellValue(totalsRow.label());
 			cell.setCellStyle(cellFormats.get(CellFormat.HEADER));
@@ -385,7 +267,7 @@ public class BcrTicketSpreadsheet {
 	
 	
 	
-	private void makeBudgetControlEmployeesTab(Integer tabNumber, Integer claimYear, List<WorkWeek> workCalendar, BudgetControlEmployeesResponse employeeResponse) {
+	protected void makeBudgetControlEmployeesTab(Integer tabNumber, Integer claimYear, List<WorkWeek> workCalendar, BudgetControlEmployeesResponse employeeResponse) {
 		String tabName = "Employees";
 		XSSFSheet sheet = this.workbook.createSheet(tabName);
 		this.workbook.setSheetOrder(tabName, tabNumber);
@@ -527,7 +409,7 @@ public class BcrTicketSpreadsheet {
 	}
 
 
-	private void makeTicketTab(List<BCRRow> data, Integer index, String title) throws SQLException, Exception {
+	protected void makeTicketTab(List<BCRRow> data, Integer index, String title) throws SQLException, Exception {
 		XSSFSheet sheet = initTicketTab(index, title);
 	
 		XSSFRow row = null;
@@ -576,7 +458,7 @@ public class BcrTicketSpreadsheet {
 	}
 
 
-	private void makeUnclaimedEquipmentTab(List<BCRRow> data, int tabNumber) throws Exception {
+	protected void makeUnclaimedEquipmentTab(List<BCRRow> data, int tabNumber) throws Exception {
 		BCRHeader[] unclaimedTicketHeader = new BCRHeader[] {				
 				new BCRHeader(BCRRow.class.getField("jobSiteName"),"Account",10000, this.cellFormats.get(CellFormat.LEFT)),
 				new BCRHeader(BCRRow.class.getField("ticketId"),"Ticket Number",3500, this.cellFormats.get(CellFormat.CENTER)),
@@ -584,6 +466,7 @@ public class BcrTicketSpreadsheet {
 				new BCRHeader(BCRRow.class.getField("notes"),"Notes",10000, this.cellFormats.get(CellFormat.LEFT)),
 				new BCRHeader(BCRRow.class.getField("equipment"),"Equipment",4000, this.cellFormats.get(CellFormat.CENTER)),
 				new BCRHeader(BCRRow.class.getField("employee"),"Employee",4500, this.cellFormats.get(CellFormat.LEFT)),
+				new BCRHeader(BCRRow.class.getField("claimedEquipment"),"Claimed",4000, this.cellFormats.get(CellFormat.LEFT)),
 		};
 		
 		String tabName = "Unclaimed Equipment";
@@ -632,7 +515,7 @@ public class BcrTicketSpreadsheet {
 	}
 
 
-	private XSSFSheet initTicketTab(Integer index, String title) {
+	protected XSSFSheet initTicketTab(Integer index, String title) {
 		XSSFSheet sheet = workbook.createSheet();
 		workbook.setSheetName(index, title);		
 		
@@ -659,7 +542,7 @@ public class BcrTicketSpreadsheet {
 	}
 
 
-	private void populateTotalsValue(XSSFSheet sheet, int colNum, TotalsRow totalsRow, Double value) {
+	protected void populateTotalsValue(XSSFSheet sheet, int colNum, TotalsRow totalsRow, Double value) {
 		XSSFRow row = sheet.getRow(totalsRow.rowNum());
 		XSSFCell cell = row.getCell(colNum);
 		
@@ -669,7 +552,7 @@ public class BcrTicketSpreadsheet {
 	}
 
 
-	private void populateTotalsWeek(XSSFSheet sheet, int colNum, Integer claimWeek) {
+	protected void populateTotalsWeek(XSSFSheet sheet, int colNum, Integer claimWeek) {
 		XSSFRow row = sheet.getRow(TotalsRow.WEEK.rowNum());
 		XSSFCell cell = row.getCell(colNum);
 		// set cell format to right-justified, bold
@@ -687,7 +570,7 @@ public class BcrTicketSpreadsheet {
 	
 
 
-	private List<BCRRow> makeData(Connection conn, List<SessionDivision> divisionList, Integer divisionId, Integer claimYear, String workWeeks) throws SQLException {
+	protected List<BCRRow> makeData(Connection conn, List<SessionDivision> divisionList, Integer divisionId, Integer claimYear, String workWeeks) throws SQLException {
 		String baseSql = BcrTicketSql.sqlSelectClause + 
 				BcrTicketSql.makeFilteredFromClause(divisionList) + 
 				BcrTicketSql.makeBaseWhereClause(workWeeks) + 
@@ -709,7 +592,7 @@ public class BcrTicketSpreadsheet {
 	}
 
 
-	private void initWorkbook() throws NoSuchFieldException, SecurityException {
+	protected void initWorkbook() throws NoSuchFieldException, SecurityException {
 
 		XSSFCellStyle cellStyleLeft = this.cellFormats.get(CellFormat.LEFT);
 		XSSFCellStyle cellStyleCenter = this.cellFormats.get(CellFormat.CENTER);
@@ -736,161 +619,83 @@ public class BcrTicketSpreadsheet {
 
 
 	
-	
-	
-
-	
-	
-	/**
-	 * Creates BCR Totals Tab
-	 */
-//	public static class BCRTotals {
-//		BudgetControlTotalsResponse bctr = new BudgetControlTotalsResponse(conn, userId, divisionList, divisionId, workYear, workWeek);
-//		List<BCRTotalsDetail> weekTotals = bctr.getWeekTotals();
-//		
-//	}
-	
-	/**
-	 * Repreasents one column of the spreadsheet tab. 
-	 * The Field is the BCRRow source for the data
-	 *
-	 */
-	public static class BCRHeader extends ApplicationObject {
-		private static final long serialVersionUID = 1L;
-		public Field field;
-		public String headerName;
-		public Integer columnWidth;
-		public XSSFCellStyle cellStyle;
+	protected void makeStyles() {
+		XSSFCellStyle headerStyle = workbook.createCellStyle();
+		XSSFFont headerFont = workbook.createFont();
+		headerFont.setBold(true);
+		headerStyle.setFont(headerFont);
+		headerStyle.setAlignment(HorizontalAlignment.LEFT);
+		this.cellFormats.put(CellFormat.HEADER, headerStyle);
 		
-		public BCRHeader(Field field, String headerName, Integer columnWidth, XSSFCellStyle cellStyle) {
-			super();
-			this.field = field;
-			this.headerName = headerName;
-			this.columnWidth = columnWidth;
-			this.cellStyle = cellStyle;
-		}
+		XSSFCellStyle headerStyleCenter = workbook.createCellStyle();
+		XSSFFont headerCenterFont = workbook.createFont();
+		headerCenterFont.setBold(true);
+		headerStyleCenter.setFont(headerFont);
+		headerStyleCenter.setAlignment(HorizontalAlignment.CENTER);
+		this.cellFormats.put(CellFormat.HEADER_CENTER, headerStyleCenter);
+		
+		XSSFCellStyle headerStyleCenterBorder = workbook.createCellStyle();
+		XSSFFont headerCenterBorderFont = workbook.createFont();
+		headerCenterBorderFont.setBold(true);
+		headerStyleCenterBorder.setFont(headerCenterBorderFont);
+		headerStyleCenterBorder.setAlignment(HorizontalAlignment.CENTER);
+		headerStyleCenterBorder.setBorderRight(BorderStyle.MEDIUM);
+		this.cellFormats.put(CellFormat.HEADER_CENTER_BORDER, headerStyleCenterBorder);
+		
+		XSSFCellStyle cellStyleCenter = workbook.createCellStyle();
+		cellStyleCenter.setAlignment(HorizontalAlignment.CENTER);
+		this.cellFormats.put(CellFormat.CENTER, cellStyleCenter);
+		
+		XSSFCellStyle cellStyleCenterBorder = workbook.createCellStyle();
+		cellStyleCenterBorder.setAlignment(HorizontalAlignment.CENTER);
+		cellStyleCenterBorder.setBorderRight(BorderStyle.MEDIUM);
+		this.cellFormats.put(CellFormat.CENTER_BORDER, cellStyleCenterBorder);
+		
+		XSSFCellStyle cellStyleLeft = workbook.createCellStyle();
+		cellStyleLeft.setAlignment(CellStyle.ALIGN_LEFT);
+		this.cellFormats.put(CellFormat.LEFT, cellStyleLeft);
+		
+		XSSFCellStyle cellStyleRight = workbook.createCellStyle();
+		cellStyleRight.setAlignment(CellStyle.ALIGN_RIGHT);
+		cellStyleRight.setDataFormat(workbook.createDataFormat().getFormat("#0.00"));
+		this.cellFormats.put(CellFormat.RIGHT, cellStyleRight);
+		
+		XSSFCellStyle cellStyleRightBorder = workbook.createCellStyle();
+		cellStyleRightBorder.setAlignment(CellStyle.ALIGN_RIGHT);
+		cellStyleRightBorder.setDataFormat(workbook.createDataFormat().getFormat("#0.00"));
+		cellStyleRightBorder.setBorderRight(BorderStyle.MEDIUM);
+		this.cellFormats.put(CellFormat.RIGHT_BORDER, cellStyleRightBorder);
 	}
 
-	/**
-	 * Represents one row of a spreadsheet tab, equivalent to one row from the database query
-	 *
-	 */
-	public class BCRRow extends ApplicationObject {
-		private static final long serialVersionUID = 1L;
-		public String jobSiteName; 
-		public Integer ticketId;
-		public String claimWeek;
-		public Double dlAmt;
-		public Double totalVolume;
-		public Double volumeClaimed;
-		public Double expenseVolume;
-		public Double volumeRemaining;
-		public String notes;
-		public Double billedAmount;
-		public Double diffClmBld;
-		public String ticketStatus;
-		public String service;
-		public String equipment;
-		public String employee;
+
+	protected List<WorkWeek> makeWorkCalendar(Integer claimYear, String[] weekList) {
+		List<WorkWeek> workCalendar = new ArrayList<WorkWeek>();
+		WorkWeekDatePredicate workWeekPredicate = new WorkWeekDatePredicate();
 		
-		public BCRRow(ResultSet rs) throws SQLException {
-			super();
-			this.jobSiteName = rs.getString("job_site_name");
-			this.ticketId = rs.getInt("ticket_id");
-			this.claimWeek = rs.getString("claim_week");
-			this.dlAmt = rs.getDouble("dl_amt");
-			this.totalVolume = rs.getDouble("total_volume");
-			this.volumeClaimed = rs.getDouble("volume_claimed");
-			this.expenseVolume = rs.getDouble("passthru_volume");
-			this.volumeRemaining = rs.getDouble("volume_remaining");
-			this.notes = rs.getString("notes");
-			this.billedAmount = rs.getDouble("billed_amount");
-			this.diffClmBld = rs.getDouble("claimed_vs_billed");
-			this.ticketStatus = rs.getString("ticket_status");
-			this.service = rs.getString("service_tag_id");
-			this.equipment = rs.getString("equipment_tags");
-			this.employee = rs.getString("employee");
-		}
-	}
-	
-	/**
-	 * Filters by claim week. Used to create week-specific tabs in the spreadsheet
-	 *
-	 */
-	public class BCRRowPredicate implements Predicate<BCRRow> {
-		private String tabName;
-		
-		public void setTabName(String tabName) {
-			this.tabName = tabName;
+		WorkYear workYear = new WorkYear(claimYear);
+		Collection<HashMap<String, Object>> values = workYear.values();
+		for ( HashMap<String, Object> value : values ) {
+			Integer weekOfYear = (Integer)value.get(WorkYear.WEEK_OF_YEAR);
+			String matcher = weekOfYear < 10 ? "0" + weekOfYear : String.valueOf(weekOfYear);	
+			if ( ArrayUtils.contains(weekList, matcher)) {
+				Calendar firstOfWeek = (Calendar)value.get(WorkYear.FIRST_OF_WEEK);
+				workWeekPredicate.firstOfWeek = firstOfWeek;
+				if ( IterableUtils.countMatches(workCalendar, workWeekPredicate) == 0 ) {
+					workCalendar.add(new WorkWeek(firstOfWeek));
+				}				
+			}
 		}
 
-		@Override
-		public boolean evaluate(BCRRow arg0) {
-			return arg0.claimWeek.equals(tabName);
-		}
-		
+		Collections.sort(workCalendar, new Comparator<WorkWeek>() {
+			public int compare(WorkWeek o1, WorkWeek o2) {
+				return o1.getFirstOfWeek().compareTo(o2.getFirstOfWeek());
+			}
+		});
+		return workCalendar;
 	}
 	
 	
-	/**
-	 * Filters by matching first of week.
-	 *
-	 */
-	public class WorkWeekDatePredicate implements Predicate<WorkWeek> {
-
-		public Calendar firstOfWeek;
-		
-		@Override
-		public boolean evaluate(WorkWeek arg0) {
-			return DateUtils.isSameDay(firstOfWeek, arg0.getFirstOfWeek());
-		}
-		
-	}
-	
-	
-	public class BCRTotalsPredicate implements Predicate<BCRTotalsDetail> {
-
-		public WorkWeek workWeek;
-		
-		@Override
-		public boolean evaluate(BCRTotalsDetail arg0) {
-			String[] cw = arg0.getClaimWeek().split("-");
-			return workWeek.getWeekOfYear().equals(Integer.valueOf(cw[1]));
-		}
-		
-	}
-	
-	private enum TotalsRow {
-		WEEK(1, "Week"),
-		TOTAL_VOLUME(2, "Total Volume: "),
-		VOLUME_CLAIMED(3, "Volume Claimed: "),
-		CLAIMED_VOLUME_REMAINING(4, "Claimed Volume Remaining: "),
-		TOTAL_BILLED(6, "Total Billed: "),
-		VARIANCE(7, "Variance: "),
-		TOTAL_DL_CLAIMED(9, "Total D/L Claimed: "),
-		ACTUAL_DL(10, "Actual D/L: "),
-		ACTUAL_OM_DL(11, "Actual OM D/L: "),
-		TOTAL_ACTUAL_DL(12, "Total Actual D/L: "),
-		DL_PERCENTAGE(14, "D/L Percentage: "),
-		ACTUAL_DL_PERCENTAGE(15, "Actual D/L Percentage: "),
-		;
-		
-		private Integer rowNum;
-		private String label;
-		
-		private TotalsRow(Integer rowNum, String label) {
-			this.rowNum = rowNum;
-			this.label = label;
-		}
-		
-		public Integer rowNum() { return this.rowNum; }
-		public String label() { return this.label; }
-	}
-	
-	
-	
-	
-	private enum CellFormat {
+	protected enum CellFormat {
 		HEADER,
 		HEADER_CENTER,
 		HEADER_CENTER_BORDER,

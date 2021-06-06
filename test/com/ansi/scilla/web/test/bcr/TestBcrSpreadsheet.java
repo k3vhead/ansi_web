@@ -7,7 +7,7 @@ import java.util.List;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.ansi.scilla.common.utils.AppUtils;
-import com.ansi.scilla.web.bcr.common.BcrTicketSpreadsheet;
+import com.ansi.scilla.web.bcr.common.BCRSpreadsheet.BcrTicketSpreadsheet;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.test.TesterUtils;
 
