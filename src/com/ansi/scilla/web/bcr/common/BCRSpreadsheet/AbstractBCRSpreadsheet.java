@@ -62,7 +62,7 @@ public abstract class AbstractBCRSpreadsheet extends ApplicationObject {
 		this.workbook = new XSSFWorkbook();
 		makeStyles();
 		initWorkbook();
-		BCRRowPredicate filter = new BCRRowPredicate();				
+		BCRRowTabPredicate filter = new BCRRowTabPredicate();				
 		List<WorkWeek> workCalendar = makeWorkCalendar(claimYear, weekList);
 		int tabNumber = 0;
 		
@@ -302,9 +302,11 @@ public abstract class AbstractBCRSpreadsheet extends ApplicationObject {
 				new BCRHeader(BCRRow.class.getField("ticketId"),"Ticket Number",3500, this.cellFormats.get(CellFormat.CENTER)),
 				new BCRHeader(BCRRow.class.getField("claimWeek"),"Claim Week",3500, this.cellFormats.get(CellFormat.CENTER)),
 				new BCRHeader(BCRRow.class.getField("notes"),"Notes",10000, this.cellFormats.get(CellFormat.LEFT)),
-				new BCRHeader(BCRRow.class.getField("equipment"),"Equipment",4000, this.cellFormats.get(CellFormat.CENTER)),
-				new BCRHeader(BCRRow.class.getField("employee"),"Employee",4500, this.cellFormats.get(CellFormat.LEFT)),
+//				new BCRHeader(BCRRow.class.getField("equipment"),"Equipment",4000, this.cellFormats.get(CellFormat.LEFT)),
+				new BCRHeader(BCRRow.class.getField("service"),"Service",3000, this.cellFormats.get(CellFormat.CENTER)),
 				new BCRHeader(BCRRow.class.getField("claimedEquipment"),"Claimed",4000, this.cellFormats.get(CellFormat.LEFT)),
+				new BCRHeader(BCRRow.class.getField("unclaimedEquipment"),"Unclaimed",4000, this.cellFormats.get(CellFormat.LEFT)),
+				new BCRHeader(BCRRow.class.getField("employee"),"Employee",4500, this.cellFormats.get(CellFormat.LEFT)),
 		};
 		
 		String tabName = "Unclaimed Equipment";
@@ -313,6 +315,7 @@ public abstract class AbstractBCRSpreadsheet extends ApplicationObject {
 		XSSFRow row = null;
 		XSSFCell cell = null;
 		int rowNum = 1;
+		List<BCRRow> unclaimedEquipmentData = IterableUtils.toList(IterableUtils.filteredIterable(data, new BCRRowUnclaimedEquipmentPredicate()));
 		
 		XSSFRow headerRow1 = sheet.createRow(0);
 		for ( int i = 0; i < unclaimedTicketHeader.length; i++ ) {
@@ -322,7 +325,7 @@ public abstract class AbstractBCRSpreadsheet extends ApplicationObject {
 			sheet.setColumnWidth(i, unclaimedTicketHeader[i].columnWidth);
 		}
 		
-		for ( BCRRow dataRow : data ) {
+		for ( BCRRow dataRow : unclaimedEquipmentData ) {
 			row = sheet.createRow(rowNum);
 			for (int colNum = 0; colNum < unclaimedTicketHeader.length; colNum++ ) {
 				BCRHeader header = unclaimedTicketHeader[colNum];
@@ -450,7 +453,7 @@ public abstract class AbstractBCRSpreadsheet extends ApplicationObject {
 				new BCRHeader(BCRRow.class.getField("diffClmBld"),"Diff Clm/Bld",3500, cellStyleRight),
 				new BCRHeader(BCRRow.class.getField("ticketStatus"),"Ticket Status",3000, cellStyleCenter),
 				new BCRHeader(BCRRow.class.getField("service"),"Service",3000, cellStyleCenter),
-				new BCRHeader(BCRRow.class.getField("equipment"),"Equipment",4000, cellStyleCenter),
+				new BCRHeader(BCRRow.class.getField("equipment"),"Equipment",4000, cellStyleLeft),
 				new BCRHeader(BCRRow.class.getField("employee"),"Employee",4500, cellStyleLeft),
 		};		
 	}

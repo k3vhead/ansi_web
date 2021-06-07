@@ -26,10 +26,17 @@ public class TestBcrSpreadsheet extends AbstractBcrTest {
 //			SessionUser sessionUser = sessionData.getUser();
 //			Integer userId = sessionUser.getUserId();
 			
-			BcrTicketSpreadsheet spreadsheet = new BcrTicketSpreadsheet(conn, userId, divisionList, div_12il02, claimYear, workweekNovember2020);
+			BcrTicketSpreadsheet spreadsheet = new BcrTicketSpreadsheet(conn, userId, divisionList, div_12il02, claimYear, workWeekDecember2020);
 			XSSFWorkbook workbook = spreadsheet.getWorkbook();
-//			workbook.write(new FileOutputStream("/home/jwlewis/Documents/projects/BCR_Spreadsheet.xlsx"));
-			workbook.write(new FileOutputStream("/home/dclewis/Documents/webthing_v2/projects/ANSI/testresults/BCR_Spreadsheet.xlsx"));
+			if ( userId == USER_IS_DAVE) {
+				workbook.write(new FileOutputStream("/home/dclewis/Documents/webthing_v2/projects/ANSI/testresults/BCR_Spreadsheet.xlsx"));
+			} else if ( userId == USER_IS_JOSHUA ) {
+				workbook.write(new FileOutputStream("/home/jwlewis/Documents/projects/BCR_Spreadsheet.xlsx"));
+			} else {
+				throw new Exception("Where do I write the file?");
+			}
+
+			
 			
 			
 		} finally {

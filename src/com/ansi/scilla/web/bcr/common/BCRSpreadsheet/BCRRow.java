@@ -2,6 +2,13 @@ package com.ansi.scilla.web.bcr.common.BCRSpreadsheet;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.IterableUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
 
@@ -23,6 +30,7 @@ public class BCRRow extends ApplicationObject {
 	public String equipment;
 	public String employee;
 	public String claimedEquipment;
+	public String unclaimedEquipment;
 	
 	public BCRRow(ResultSet rs) throws SQLException {
 		super();
@@ -42,5 +50,14 @@ public class BCRRow extends ApplicationObject {
 		this.equipment = rs.getString("equipment_tags");
 		this.employee = rs.getString("employee");
 		this.claimedEquipment = rs.getString("claimed_equipment");
+		this.unclaimedEquipment = makeUnclaimedEquipment();
+	}
+
+	private String makeUnclaimedEquipment() {
+		List<String> allEquipment = StringUtils.isBlank(this.equipment) ? new ArrayList<String>() : Arrays.asList(StringUtils.split(this.equipment,",")); 
+		List<String> claimedEquipment = StringUtils.isBlank(this.claimedEquipment) ? new ArrayList<String>() : Arrays.asList(StringUtils.split(this.claimedEquipment,","));
+		List<String> unclaimedEquipment = IterableUtils.toList(CollectionUtils.subtract(allEquipment, claimedEquipment));
+		
+		return StringUtils.join(unclaimedEquipment, ",");
 	}
 }
