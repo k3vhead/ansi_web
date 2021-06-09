@@ -158,7 +158,12 @@ public class BcrTicketSql extends ApplicationObject {
 			" , ticket_claim." + CLAIM_ID + "\n" +
 			" , job_tag_xref.tag_id as " + SERVICE_TYPE_ID + "\n" + 
 			" , ticket_claim.claim_year as " + CLAIM_YEAR + "\n" +
-			" , concat(ticket_claim.claim_year,'-',ticket_claim.claim_week) as "+CLAIM_WEEK+"\n" + 
+			" , CASE \n" +			// the case statement is so weeks will be displayed as nnnn-nn regardless of whether the weeknum < 10
+			"       when ticket_claim.claim_week < 10 then \n" +
+			"			concat(ticket_claim.claim_year,'-','0',ticket_claim.claim_week) \n" +
+			"		else \n" + 
+			"			concat(ticket_claim.claim_year,'-',ltrim(str(ticket_claim.claim_week))) \n" +
+			"	end as  "+CLAIM_WEEK+"\n" + 
 			" , isnull(ticket_claim.dl_amt,0.00) as "+DL_AMT+"\n" + 
 			" , isnull(ticket_claim.dl_expenses,0.00) as " + DL_EXPENSES + "\n" + 
 			"-- , isnull(ticket_claim.dl_amt,0.00)+ISNULL(ticket_claim.dl_exp,0.00) as dl_total\n" + 
