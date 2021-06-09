@@ -16,6 +16,7 @@ import org.apache.struts.action.RequestProcessor;
 import com.ansi.scilla.common.db.ApplicationProperties;
 import com.ansi.scilla.common.utils.ApplicationProperty;
 import com.ansi.scilla.web.common.utils.AppUtils;
+import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class ScillaRequestProcessor extends RequestProcessor {
 
@@ -27,6 +28,8 @@ public class ScillaRequestProcessor extends RequestProcessor {
 		if ( StringUtils.isBlank(systemDB)) {
 			try {
 				cxt.setAttribute("ANSI_SYSTEM_DB", makeDbName());
+			} catch ( RecordNotFoundException e ) {
+				cxt.setAttribute("ANSI_SYSTEM_DB", "??");
 			} catch ( Exception e) {
 				throw new ServletException(e);
 			}
