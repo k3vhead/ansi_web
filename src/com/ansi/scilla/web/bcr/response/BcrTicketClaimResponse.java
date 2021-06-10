@@ -148,15 +148,19 @@ public class BcrTicketClaimResponse extends MessageResponse {
 	/**
 	 * Remove references to a particular claim id. (In essence, this means searching the D/L claims and expenses for the claim id)
 	 * @param conn
+	 * @param workYear 
+	 * @param divisionId 
+	 * @param divisionList 
 	 * @param claimId
 	 * @param ticketId
 	 * @throws RecordNotFoundException
 	 * @throws SQLException
 	 */
-	public void scrubClaim(Connection conn, TicketClaim ticketClaim) throws RecordNotFoundException, Exception {		
+	public void scrubClaim(Connection conn, TicketClaim ticketClaim, List<SessionDivision> divisionList, Integer divisionId, Integer workYear) throws RecordNotFoundException, Exception {		
 		CollectionUtils.filterInverse(this.expenses, new PassthruExpenseFilterByClaim(ticketClaim.getClaimId()));
 		CollectionUtils.filterInverse(this.dlClaims, new BcrTicketFilterByClaim(ticketClaim.getClaimId()));
 		this.ticket = new TicketData(conn, this.ticket.getTicketId(), ticketClaim.getServiceType());
+		this.summary = new BcrTicketClaimSummary(conn, ticketClaim, divisionList, divisionId, workYear);
 	}
 
 	

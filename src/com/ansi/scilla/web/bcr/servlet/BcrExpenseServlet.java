@@ -154,7 +154,7 @@ public class BcrExpenseServlet extends AbstractServlet {
 						
 						data = BcrTicketClaimResponse.fromClaim(conn, sessionUser.getUserId(), divisionList, bcrExpenseRequest.getDivisionId(), bcrExpenseRequest.getWorkYear(), bcrExpenseRequest.getWorkWeeks(), Integer.valueOf(claimId));
 						deleteExpense(conn, Integer.valueOf(claimId));
-						data.scrubClaim(conn, ticketClaim);
+						data.scrubClaim(conn, ticketClaim, divisionList, bcrExpenseRequest.getDivisionId(), bcrExpenseRequest.getWorkYear());
 						super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
 					} else {
 						super.sendNotFound(response); // we've got a bad claim id
