@@ -19,14 +19,14 @@ public class TestBcrSpreadsheet extends AbstractBcrTest {
 			conn = AppUtils.getDevConn();
 			conn.setAutoCommit(false);
 			
-			Integer claimYear = 2020;
+			Integer claimYear = 2021;
 			Integer userId = USER_IS_DAVE;
 			List<SessionDivision> divisionList = TesterUtils.makeSessionDivisionList(conn, userId);
 //			SessionData sessionData = null;
 //			SessionUser sessionUser = sessionData.getUser();
 //			Integer userId = sessionUser.getUserId();
 			
-			BcrTicketSpreadsheet spreadsheet = new BcrTicketSpreadsheet(conn, userId, divisionList, div_12il02, claimYear, workWeekDecember2020);
+			BcrTicketSpreadsheet spreadsheet = new BcrTicketSpreadsheet(conn, userId, divisionList, div_12il02, claimYear, workWeekJune2021);
 			XSSFWorkbook workbook = spreadsheet.getWorkbook();
 			if ( userId == USER_IS_DAVE) {
 				workbook.write(new FileOutputStream("/home/dclewis/Documents/webthing_v2/projects/ANSI/testresults/BCR_Spreadsheet.xlsx"));

@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -205,8 +206,10 @@ public class BcrTicketSpreadsheet extends AbstractBCRSpreadsheet {
 		
 		populateTotalsValue(sheet, monthTotalColNum, TotalsRow.TOTAL_DL_CLAIMED, monthTotal.getDlTotal());
 
-		populateTotalsValue(sheet, monthTotalColNum, TotalsRow.DL_PERCENTAGE, monthTotal.getDlPercentage());
-		populateTotalsValue(sheet, monthTotalColNum, TotalsRow.ACTUAL_DL_PERCENTAGE, monthTotal.getActualDlPercentage());
+		Double dlDisplay = monthTotal.getDlPercentage().isInfinite() ? 0.0D : monthTotal.getDlPercentage();
+		populateTotalsValue(sheet, monthTotalColNum, TotalsRow.DL_PERCENTAGE, dlDisplay);
+		Double actualDlDisplay = monthTotal.getActualDlPercentage().isInfinite() ? 0.0D : monthTotal.getActualDlPercentage();
+		populateTotalsValue(sheet, monthTotalColNum, TotalsRow.ACTUAL_DL_PERCENTAGE, actualDlDisplay);
 		
 		
 		
