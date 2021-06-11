@@ -1745,6 +1745,7 @@
         			
         			$.each($data.data.weekTotals, function($indexWk, $weekTotal) {
         				var $weekNum = $weekTotal['claimWeek'].split("-")[1];
+        				$weekNum = parseInt($weekNum); //claimWeek is nnnn-nn (2-digit week number). Cast to int so "03" becomes "3"
         				$.each($dataToTable, function($source, $destination) {
         					var $weekSelector = "#bcr_totals ." + $destination +"_week" + $weekNum;
         					try {
