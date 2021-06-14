@@ -24,7 +24,7 @@ import com.ansi.scilla.web.common.struts.SessionDivision;
 
 public class BcrTicketSpreadsheet extends AbstractBCRSpreadsheet {
 	
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;		
 
 	public BcrTicketSpreadsheet(Connection conn, Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer claimYear, String workWeeks) 
 			throws Exception {
@@ -33,6 +33,7 @@ public class BcrTicketSpreadsheet extends AbstractBCRSpreadsheet {
 	
 	
 	protected void makeActualDLTotalsTab(int tabNumber, List<WorkWeek> workCalendar, BudgetControlTotalsResponse bctr) {
+		bcrLogger.log(Level.DEBUG, "Making actual dl tab");
 		String tabName = "Actual Direct Labor Totals";
 		XSSFSheet sheet = this.workbook.createSheet(tabName);
 		this.workbook.setSheetOrder(tabName, tabNumber);
@@ -48,6 +49,7 @@ public class BcrTicketSpreadsheet extends AbstractBCRSpreadsheet {
 		int rowNum = 0;
 		int colNum = 0;
 		
+		// Make header row
 		row = sheet.createRow(rowNum);
 		for ( int i = 0; i < columnLabel.length; i++ ) {
 			if ( ! StringUtils.isBlank(columnLabel[i])) {
@@ -61,7 +63,9 @@ public class BcrTicketSpreadsheet extends AbstractBCRSpreadsheet {
 		}
 		rowNum++;
 		
+		// make data rows
 		for ( WorkWeek value : workCalendar ) {
+			bcrLogger.log(Level.DEBUG, value.getWeekOfYear());
 			colNum = 0;
 			row = sheet.createRow(rowNum);
 			cell = row.createCell(colNum);
@@ -107,6 +111,8 @@ public class BcrTicketSpreadsheet extends AbstractBCRSpreadsheet {
 	
 	
 	protected void makeBudgetControlTotalsTab(int tabNumber, List<WorkWeek> workCalendar, BudgetControlTotalsResponse bctr) {
+		bcrLogger.log(Level.DEBUG, "makeBudgetControlTotalsTab");
+		bcrLogger.log(Level.DEBUG, bctr);
 		List<BCRTotalsDetail> weekTotals = bctr.getWeekTotals();
 		BCRTotalsPredicate totalsPredicate = new BCRTotalsPredicate();
 
