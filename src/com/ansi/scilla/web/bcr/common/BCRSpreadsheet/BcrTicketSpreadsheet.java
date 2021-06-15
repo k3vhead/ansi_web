@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -33,7 +32,6 @@ public class BcrTicketSpreadsheet extends AbstractBCRSpreadsheet {
 	
 	
 	protected void makeActualDLTotalsTab(int tabNumber, List<WorkWeek> workCalendar, BudgetControlTotalsResponse bctr) {
-		bcrLogger.log(Level.DEBUG, "Making actual dl tab");
 		String tabName = "Actual Direct Labor Totals";
 		XSSFSheet sheet = this.workbook.createSheet(tabName);
 		this.workbook.setSheetOrder(tabName, tabNumber);
@@ -65,7 +63,6 @@ public class BcrTicketSpreadsheet extends AbstractBCRSpreadsheet {
 		
 		// make data rows
 		for ( WorkWeek value : workCalendar ) {
-			bcrLogger.log(Level.DEBUG, value.getWeekOfYear());
 			colNum = 0;
 			row = sheet.createRow(rowNum);
 			cell = row.createCell(colNum);
@@ -111,8 +108,6 @@ public class BcrTicketSpreadsheet extends AbstractBCRSpreadsheet {
 	
 	
 	protected void makeBudgetControlTotalsTab(int tabNumber, List<WorkWeek> workCalendar, BudgetControlTotalsResponse bctr) {
-		bcrLogger.log(Level.DEBUG, "makeBudgetControlTotalsTab");
-		bcrLogger.log(Level.DEBUG, bctr);
 		List<BCRTotalsDetail> weekTotals = bctr.getWeekTotals();
 		BCRTotalsPredicate totalsPredicate = new BCRTotalsPredicate();
 

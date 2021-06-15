@@ -55,7 +55,8 @@ public class BudgetControlEmployeesResponse extends MessageResponse {
 		this.claimYear = workYear;
 		this.claimWeeks = new ArrayList<String>();
 		for ( String week : StringUtils.split(workWeek,",")) {
-			claimWeeks.add( String.valueOf(workYear)+"-"+week);
+			String weekNum = Integer.valueOf(week) < 10 ? "0" + week : week;
+			claimWeeks.add( String.valueOf(workYear)+"-"+weekNum);
 		}
 		Collections.sort(claimWeeks);
 		this.employees = new ArrayList<EmployeeClaim>();

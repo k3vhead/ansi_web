@@ -31,7 +31,6 @@ public class BcrWeeklyTicketLookupQuery extends LookupQuery {
 	protected Integer workYear;
 	protected String workWeek;
 
-
 	public BcrWeeklyTicketLookupQuery(Integer userId, List<SessionDivision> divisionList, Integer divisionId, Integer workYear, String workWeeks, String workWeek) {
 		super(makeWeeklySelectClause(), makeWeeklyFromClause(userId, divisionList, divisionId, workYear, workWeeks, (String)null), makeWeeklyWhereClause(workYear, workWeek));
 		this.logger = LogManager.getLogger(BcrWeeklyTicketLookupQuery.class);
@@ -82,7 +81,8 @@ public class BcrWeeklyTicketLookupQuery extends LookupQuery {
 
 
 	private static String makeWeeklyWhereClause(Integer workYear, String workWeek) {
-		return "where basequery.claim_week='" + workYear + "-" + workWeek + "'";
+		String weekNum = Integer.valueOf(workWeek) < 10 ? "0" + workWeek : workWeek;
+		return "where basequery.claim_week='" + workYear + "-" + weekNum + "'";
 	}
 	
 	

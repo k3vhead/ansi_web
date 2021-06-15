@@ -48,7 +48,6 @@ public abstract class AbstractBCRSpreadsheet extends ApplicationObject {
 	protected final SimpleDateFormat mmdd = new SimpleDateFormat("MM/dd");
 //	private final SimpleDateFormat mmddyyyy = new SimpleDateFormat("MM/dd/yyyy");
 	protected final HashMap<CellFormat, XSSFCellStyle> cellFormats = new HashMap<CellFormat, XSSFCellStyle>();
-	protected Logger bcrLogger;
 	
 	protected XSSFWorkbook workbook;
 	
@@ -57,14 +56,8 @@ public abstract class AbstractBCRSpreadsheet extends ApplicationObject {
 	
 	public AbstractBCRSpreadsheet(Connection conn, Integer userId, List<SessionDivision> divisionList,
 			Integer divisionId, Integer claimYear, String workWeeks) throws Exception {
-		this.bcrLogger = LogManager.getLogger("bcr_logger");
-		bcrLogger.log(Level.DEBUG, "userId: " + userId);
-		for ( SessionDivision sd : divisionList ) {
-			bcrLogger.log(Level.DEBUG, sd.getDivisionId() + "\t" + sd.getDivisionDisplay());
-		}
-		bcrLogger.log(Level.DEBUG, "divisionId: " + divisionId);
-		bcrLogger.log(Level.DEBUG, "claimYear: " + claimYear);
-		bcrLogger.log(Level.DEBUG, "workWeeks: " + workWeeks);
+		
+		
 		List<BCRRow> data = makeData(conn, divisionList, divisionId, claimYear, workWeeks);
 		String[] weekList = workWeeks.split(",");
 		
@@ -117,8 +110,6 @@ public abstract class AbstractBCRSpreadsheet extends ApplicationObject {
 	
 	protected void makeBudgetControlEmployeesTab(Integer tabNumber, Integer claimYear, List<WorkWeek> workCalendar, BudgetControlEmployeesResponse employeeResponse) {
 		String tabName = "Employees";
-		bcrLogger.log(Level.DEBUG, "Making Employee Tab");
-		bcrLogger.log(Level.DEBUG, employeeResponse);
 		XSSFSheet sheet = this.workbook.createSheet(tabName);
 		this.workbook.setSheetOrder(tabName, tabNumber);
 		XSSFRow row = null;
@@ -186,9 +177,7 @@ public abstract class AbstractBCRSpreadsheet extends ApplicationObject {
 		
 		rowNum = 3;
 		
-		bcrLogger.log(Level.DEBUG, "Looping thru claims");
 		for ( EmployeeClaim claim : employeeResponse.getEmployees() ) {
-			bcrLogger.log(Level.DEBUG, claim);
 			row = sheet.createRow(rowNum);
 			cell = row.createCell(0);
 			cell.setCellValue(StringUtils.isBlank(claim.getEmployee()) ? "unspecified" : claim.getEmployee());

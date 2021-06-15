@@ -19,12 +19,10 @@ public class TestBcrSpreadsheet extends AbstractBcrTest {
 			conn = AppUtils.getUATConn();
 			conn.setAutoCommit(false);
 			
+			
 			Integer claimYear = 2021;
 			Integer userId = USER_IS_DAVE;
 			List<SessionDivision> divisionList = TesterUtils.makeSessionDivisionList(conn, userId);
-//			SessionData sessionData = null;
-//			SessionUser sessionUser = sessionData.getUser();
-//			Integer userId = sessionUser.getUserId();
 			
 			BcrTicketSpreadsheet spreadsheet = new BcrTicketSpreadsheet(conn, userId, divisionList, div_12il02, claimYear, workWeekJanuary2021);
 			XSSFWorkbook workbook = spreadsheet.getWorkbook();
