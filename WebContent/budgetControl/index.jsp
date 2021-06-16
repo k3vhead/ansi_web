@@ -657,53 +657,66 @@
 						$row.append( $("<td>").append($omDL));
 						var $workingClass = "actual-saving actual-working-week" + $value.weekOfYear; 
 						var $doneClass = "actual-saving actual-done-week" + $value.weekOfYear;
-						$row.append( $("<td>").append('<webthing:working styleClass="'+$workingClass+'"/><webthing:checkmark  styleClass="'+$doneClass+'">Success</webthing:checkmark>'));
+						var $errClass = "err" + $value.weekOfYear;
+						var $messageTdText = '<webthing:working styleClass="'+$workingClass+'"/>';
+						$messageTdText = $messageTdText + '<webthing:checkmark  styleClass="'+$doneClass+'">Success</webthing:checkmark>';
+						$messageTdText = $messageTdText + '<span class="err ' + $errClass + '" style="display:none;">Invalid Value</span>';
+						$row.append( $("<td>").append($messageTdText));
 						$("#actual_dl_totals tbody").append($row);
 					});
         			
         		
         			$("#actual_dl_totals input").blur(function($event) {
         				var $that = $(this);
-        				var $previousValue = $that.attr("data-previous");
-        				var $value = $that.val();
-        				if ( isNaN($value) || $value == '' || $value == null) {
-        					$value = "0.00";
-        				}
-        				$value = parseFloat($value).toFixed(2);
-        				$that.val( $value );
         				
-        				// only do updates if the number has changed
-        				if ( $value != $previousValue ) {
-        					console.log("Value changed -- do a save: " + $value + " " + $previousValue);        					
-            				var $claimWeek = $that.attr("data-week");
-            				var $claimYear = $that.attr("data-year");            				
-            				var $divisionId = $that.attr("data-divisionid");
-            				var $claimWeeks = $that.attr("data-claimweeks");
-        					var $workingSelector = "#actual_dl_totals .actual-working-week" + $claimWeek;
-        					$($workingSelector).show();
-        					var $outbound = {"claimWeek":$claimWeek, "claimYear":$claimYear, "value":$value, "divisionId":$divisionId, "claimWeeks":$claimWeeks};
-        					if ( $that.hasClass("actualDL") ) {
-        						var $selector = "#bcr_totals .actual_dl_week" + $claimWeek;
-        						var $looper = "#bcr_totals .actual_dl";
-        						var $totalCell = "#bcr_totals .actual_dl_total";
-        						$outbound['type'] = "actualDL";
-        					} else if ( $that.hasClass("omDL") ) {
-        						var $selector = "#bcr_totals .actual_om_dl_week" + $claimWeek;
-        						var $looper = "#bcr_totals .actual_om_dl";
-        						var $totalCell = "#bcr_totals .actual_om_dl_total";
-        						$outbound['type'] = 'omDL';
-        					} else {
-        						//$("#globalMsg").html("Invalid system state. Reload and try again").show();
-        						// we're just going to ignore this
-        					}
-        					console.log($outbound);
-        					ANSI_UTILS.doServerCall("POST", "bcr/actualDL", JSON.stringify($outbound), BUDGETCONTROL.updateActualSuccess, BUDGETCONTROL.updateActualFail);
-        					$($selector).html($value);
-        					var $rowTotal = 0.00;
-        					$.each( $($looper), function($index, $value) {
-        						$rowTotal = $rowTotal + parseFloat($($value).html());
-        					});
-        					$($totalCell).html($rowTotal.toFixed(2));
+        				var $claimWeek = $that.attr("data-week");
+        				var $claimYear = $that.attr("data-year");            				
+        				var $divisionId = $that.attr("data-divisionid");
+        				var $claimWeeks = $that.attr("data-claimweeks");        				
+        				var $previousValue = $that.attr("data-previous");
+        				var $workingSelector = "#actual_dl_totals .actual-working-week" + $claimWeek;
+        				var $errSelector = "#actual_dl_totals .err" + $claimWeek;
+        				
+        				var $value = $that.val().trim().replace(/,/g,"");
+        				if ( $value == '' || $value == null) {
+        					$value = "0.00";
+    					}
+        				if ( isNaN($value) ) {
+        					$($errSelector).show().fadeOut(3000);
+        				} else {        					
+	       					$value = parseFloat($value).toFixed(2);
+	        				$that.val( $value );
+	        				
+	        				// only do updates if the number has changed
+	        				if ( $value != $previousValue ) {
+	        					console.log("Value changed -- do a save: " + $value + " " + $previousValue);        					
+
+	        					
+	        					$($workingSelector).show();
+	        					var $outbound = {"claimWeek":$claimWeek, "claimYear":$claimYear, "value":$value, "divisionId":$divisionId, "claimWeeks":$claimWeeks};
+	        					if ( $that.hasClass("actualDL") ) {
+	        						var $selector = "#bcr_totals .actual_dl_week" + $claimWeek;
+	        						var $looper = "#bcr_totals .actual_dl";
+	        						var $totalCell = "#bcr_totals .actual_dl_total";
+	        						$outbound['type'] = "actualDL";
+	        					} else if ( $that.hasClass("omDL") ) {
+	        						var $selector = "#bcr_totals .actual_om_dl_week" + $claimWeek;
+	        						var $looper = "#bcr_totals .actual_om_dl";
+	        						var $totalCell = "#bcr_totals .actual_om_dl_total";
+	        						$outbound['type'] = 'omDL';
+	        					} else {
+	        						//$("#globalMsg").html("Invalid system state. Reload and try again").show();
+	        						// we're just going to ignore this
+	        					}
+	        					console.log($outbound);
+	        					ANSI_UTILS.doServerCall("POST", "bcr/actualDL", JSON.stringify($outbound), BUDGETCONTROL.updateActualSuccess, BUDGETCONTROL.updateActualFail);
+	        					$($selector).html($value);
+	        					var $rowTotal = 0.00;
+	        					$.each( $($looper), function($index, $value) {
+	        						$rowTotal = $rowTotal + parseFloat($($value).html());
+	        					});
+	        					$($totalCell).html($rowTotal.toFixed(2));
+	        				}
         				}
         			});
         		},
