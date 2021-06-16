@@ -19,20 +19,20 @@ public class TestBcrWorksheet extends AbstractBcrTest {
 	public void go() throws Exception {
 		Connection conn = null;
 		try {
-			conn = AppUtils.getDevConn();
+			conn = AppUtils.getUATConn();
 			conn.setAutoCommit(false);
 			
 			Integer claimYear = 2021;
-			Integer userId = USER_IS_JOSHUA;
+			Integer userId = USER_IS_DAVE;
 			List<SessionDivision> divisionList = TesterUtils.makeSessionDivisionList(conn, userId);
 //			SessionData sessionData = null;
 //			SessionUser sessionUser = sessionData.getUser();
 //			Integer userId = sessionUser.getUserId();
 			
-			BcrTicketWorksheet spreadsheet = new BcrTicketWorksheet(conn, userId, divisionList, div_12il02, claimYear, workWeekJune2021);
+			BcrTicketWorksheet spreadsheet = new BcrTicketWorksheet(conn, userId, divisionList, div_12il02, claimYear, workWeekJanuary2021);
 			XSSFWorkbook workbook = spreadsheet.getWorkbook();
 			if ( userId == USER_IS_DAVE) {
-				workbook.write(new FileOutputStream("/home/dclewis/Documents/webthing_v2/projects/ANSI/testresults/BCR_Spreadsheet.xlsx"));
+				workbook.write(new FileOutputStream("/home/dclewis/Documents/webthing_v2/projects/ANSI/testresults/BCR_Worksheet.xlsx"));
 			} else if ( userId == USER_IS_JOSHUA ) {
 				workbook.write(new FileOutputStream("/home/jwlewis/Documents/projects/BCR_Worksheet.xlsx"));
 			} else {
