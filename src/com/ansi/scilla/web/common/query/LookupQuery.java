@@ -3,7 +3,6 @@ package com.ansi.scilla.web.common.query;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -353,7 +352,7 @@ public abstract class LookupQuery extends ApplicationObject {
 			Method method;
 			try {
 				method = ColumnFilter.class.getMethod(filter.getComparisonType().getMethodName());
-				String value = (String)method.invoke(filter);
+				String value = (String)method.invoke(filter);				
 				return value;
 			} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				throw new RuntimeException(e);
