@@ -247,7 +247,8 @@ public abstract class LookupQuery extends ApplicationObject {
 		String offsetPhrase = makeOffset(selectType, offset);
 		String fetchPhrase = makeFetch(selectType, rowCount);
 		String orderByPhrase = makeOrderBy(selectType);
-		String wherePhrase = selectType.equals(SelectType.COUNTALL) ? baseWhereClause : makeWhereClause(this.searchTerm);
+		String searchPhrase = this.searchTerm.indexOf("'") > -1 ? this.searchTerm.replaceAll("'", "''") : this.searchTerm;
+		String wherePhrase = selectType.equals(SelectType.COUNTALL) ? baseWhereClause : makeWhereClause(searchPhrase);
 		String filterPhrase = makeFilterPhrase(wherePhrase);
 		
 		this.logger.log(Level.DEBUG, "wherePhrase: " + wherePhrase);
