@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
@@ -50,6 +49,9 @@ public class BcrTicketWorksheet extends AbstractBCRSpreadsheet {
 		XSSFCellStyle yellowBack = this.workbook.createCellStyle();
 		yellowBack.setFillBackgroundColor(IndexedColors.YELLOW.index);
 		yellowBack.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		
+//		CustomCellFormat myStyle = new CustomCellFormat(CustomCellColor.BLACK, CustomCellColor.WHITE, CustomCellAlignment.RIGHT, "#,##000", "#,###0.00");
+//		myStyle.setBackground(CustomCellColor.YELLOW);
 		
 		XSSFRow row = null;
 		XSSFCell cell = null;
