@@ -390,7 +390,12 @@
         			
         			var $showClaimModal = []
         			$.each($outbound.workWeeks.split(","), function($index, $value) {
-        				$showClaimModal.push($outbound.workYear + "-" + $value)
+        				if ( $value < 10 ) {
+        					$displayValue = "0" + $value;
+        				} else {
+        					$displayValue = $value;
+        				}
+        				$showClaimModal.push($outbound.workYear + "-" + $displayValue)
         			});
         			
         			var $jobEditTag = '<webthing:edit>No Services Defined. Revise the Job</webthing:edit>';
@@ -432,7 +437,7 @@
     			            { title: "Ticket Number", width:"6%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
     			            	if(row.ticket_id != null){return ('<a href="#" data-id="'+row.ticket_id+'" class="ticket-clicker">'+row.ticket_id+'</a>');}
     			            } },
-    			            { title: "Claim Week", width:"5%", searchable:true, searchFormat: "First Last Name", 
+    			            { title: "Claim Week", width:"5%", searchable:true, searchFormat: "nnnn-nn", 
     			            	data: function ( row, type, set ) {
     			            		var $claimWeek = "";
     			            		var $display = "";
@@ -2122,7 +2127,11 @@
 					$select.append(new Option("",""));
 					console.log("Populating new claim week selector");
 					$.each(BUDGETCONTROL.workCalendar, function($index, $val) {
-						var $displayValue = BUDGETCONTROL.workYear + "-" + $val.weekOfYear;
+						var $displayWeek = String($val.weekOfYear);
+						if ( $val.weekOfYear < 10 ) {
+							$displayWeek = "0" + String($val.weekOfYear);
+						}
+						var $displayValue = BUDGETCONTROL.workYear + "-" + $displayWeek;
 						console.log($displayValue);
 					    $select.append(new Option($displayValue, $displayValue));
 					});

@@ -8,7 +8,7 @@ import com.ansi.scilla.web.bcr.response.BcrTicketClaimResponse;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.test.TesterUtils;
 
-public class TestTicketClaimResponse {
+public class TestTicketClaimResponse extends AbstractBcrTest {
 
 	private final Integer userId = 5;
 	
@@ -25,7 +25,7 @@ public class TestTicketClaimResponse {
 //			System.out.println(ticket);
 			
 			
-			BcrTicketClaimResponse response = BcrTicketClaimResponse.fromClaim(conn, userId, divisionList, 101, 2020, "45,46,47,48", 27);
+			BcrTicketClaimResponse response = BcrTicketClaimResponse.fromClaim(conn, userId, divisionList, div_67oh07, 2021, workWeekJanuary2021, 2311);
 //			System.out.println(response);
 			String json = AppUtils.object2json(response);
 			System.out.println(json);

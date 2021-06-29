@@ -74,7 +74,8 @@ public class BcrTicketClaimResponse extends MessageResponse {
 		this.claimWeek = ticketClaim.getClaimYear() + "-" + formattedClaimWeek;
 		this.claimWeeks = new ArrayList<String>();
 		for ( String week : StringUtils.split(workWeeks,",")) {
-			claimWeeks.add( String.valueOf(workYear)+"-"+week);
+			String displayWeek = Integer.valueOf(week) < 10 ? "0" + week : week;
+			claimWeeks.add( String.valueOf(workYear)+"-"+displayWeek);
 		}
 		if ( ! StringUtils.isBlank(claimWeek) && ! claimWeeks.contains(claimWeek)) {
 			claimWeeks.add(claimWeek);
@@ -190,17 +191,20 @@ public class BcrTicketClaimResponse extends MessageResponse {
 		Logger logger = LogManager.getLogger(this.getClass());
 		logger.log(Level.DEBUG, sql);
 		PreparedStatement ps = conn.prepareStatement(sql);
+		
+		String filterWeek = workYear + "-" + StringUtils.leftPad(String.valueOf(ticketClaim.getClaimWeek()), 2, "0");
+		
 		ps.setInt(1, divisionId);
 		ps.setInt(2, workYear);
 		ps.setInt(3, ticketId);
 		ps.setInt(4, ticketClaim.getServiceType());
-		ps.setString(5, workYear + "-" + ticketClaim.getClaimWeek());
+		ps.setString(5, filterWeek);
 
 		logger.log(Level.DEBUG, "Division: " + divisionId);
 		logger.log(Level.DEBUG, "workYear: " + workYear);
 		logger.log(Level.DEBUG, "ticketId: " + ticketId);
 		logger.log(Level.DEBUG, "getServiceType: " + ticketClaim.getServiceType());
-		logger.log(Level.DEBUG, "claimWeek: " + workYear + "-" + ticketClaim.getClaimWeek());
+		logger.log(Level.DEBUG, "claimWeek: " + filterWeek);
 
 		
 		ResultSet rs = ps.executeQuery();
