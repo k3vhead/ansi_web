@@ -429,7 +429,7 @@
             	        "paging": true,
     			        "ajax": {
     			        	"url": $url,
-    			        	"type": "GET",
+    			        	"type": "POST",
     			        	"data": $outbound,
     			        	},
     			        columns: [

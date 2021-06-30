@@ -38,8 +38,7 @@ public class BcrWeeklyTicketLookupServlet extends AbstractBcrTicketLookupServlet
 		};
 	}
 	
-	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+	protected void processLookup(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		logger.log(Level.DEBUG, request.getRequestURI());
 		String divisionString = request.getParameter(DIVISION_ID);
@@ -68,4 +67,17 @@ public class BcrWeeklyTicketLookupServlet extends AbstractBcrTicketLookupServlet
 	}
 	
 
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		processLookup(request, response);
+	}
+
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		processLookup(request, response);
+	}
+	
+	
 }
