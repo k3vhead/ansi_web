@@ -49,6 +49,9 @@
 			#bcr_panels .display {
 				display:none;
 			}
+			#session_expire_modal {
+				display:none;
+			}
 			.action-link {
 				cursor:pointer;
 			}
@@ -854,7 +857,12 @@
 
 					
         		},
-        		
+
+        		keepAliveExpired : function($data) {
+        			console.log("keepAliveExpired");
+        			$("#globalMsg").html("Session expired").show();
+        			$("#session_expire_modal").dialog("open");
+        		},
         		
         		keepAliveFail : function($data) {
         			$("#globalMsg").html("Session Error. Contact Support").show();
@@ -862,6 +870,7 @@
         		
         		keepAliveSuccess : function($data) {
         			console.log("keepAliveSuccess");
+        			
         		},
         		
         		
@@ -965,7 +974,7 @@
         		
         		makeClickers : function() {
 					$(".accHdr").click(function($clickEvent) {
-						ANSI_UTILS.doServerCall("GET", "bcr/keepAlive", null, BUDGETCONTROL.keepAliveSuccess, BUDGETCONTROL.keepAliveFail);
+						ANSI_UTILS.doServerCall("GET", "bcr/keepAlive", null, BUDGETCONTROL.keepAliveSuccess, BUDGETCONTROL.keepAliveFail, BUDGETCONTROL.keepAliveExpired);
 					});
 					
 					
@@ -1579,6 +1588,26 @@
         			
         			
         			
+        			$("#session_expire_modal").dialog({
+        				title:'Session Has Expired',
+        				autoOpen: false,
+        				height: 200,
+        				width: 300,
+        				modal: true,
+        				closeOnEscape:false,
+        				open: function(event, ui) {
+        					$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+        				},
+        				buttons: [
+        					{
+        						id:  "session_expire_ok",
+        						click: function($event) {
+        							location.href="dashboard.html";      							
+        						}
+        					}
+        				]
+        			});
+        			$("#session_expire_ok").button('option', 'label', 'OK');
         			
         			
         			$("#bcr_new_claim_modal").dialog({
@@ -2292,6 +2321,13 @@
 	    		<h2>Are you sure?</h2>
 	    	</div>
 	    </div>
+	    
+	    <div id="session_expire_modal">
+	    	<div style="width:100%; text-align:center;">
+	    		<h3>Session Expired.</h3>
+	    	</div>
+	    </div>
+	    
 	    
 	    <div id="bcr_edit_modal">
 	    	<div style="width:45%; float:right;">
