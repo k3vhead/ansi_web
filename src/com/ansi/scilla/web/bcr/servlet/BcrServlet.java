@@ -136,6 +136,12 @@ public class BcrServlet extends AbstractServlet {
 		case TITLE:
 			new BcrTitleServlet().doPost(request, response);
 			break;
+		case TICKETLIST:
+			new BcrTicketLookupServlet().doGet(request, response);
+			break;
+		case WEEKLY_TICKETLIST:
+			new BcrWeeklyTicketLookupServlet().doGet(request, response);
+			break;	
 		default:
 			super.sendNotFound(response);
 		}

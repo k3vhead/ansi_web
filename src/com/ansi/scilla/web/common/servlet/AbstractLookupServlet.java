@@ -159,7 +159,16 @@ public abstract class AbstractLookupServlet extends AbstractServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		super.sendNotAllowed(response);
+		try {
+			if ( permission == null ) {
+				AppUtils.validateSession(request);
+			} else {
+				AppUtils.validateSession(request, permission);
+			}
+			processGet(request, response);
+		} catch (TimeoutException  | NotAllowedException | ExpiredLoginException e) {
+			super.sendForbidden(response);
+		}
 	}
 	
 	@Override

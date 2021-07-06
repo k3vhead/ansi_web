@@ -1,6 +1,6 @@
 $( document ).ready(function() {
 	;ANSI_UTILS = {
-		doServerCall : function($type, $url, $outbound, $successMethod, $failureMethod) {
+		doServerCall : function($type, $url, $outbound, $successMethod, $failureMethod, $expiredMethod) {
 			var jqxhr = $.ajax({
 				type: $type,
 				url: $url,
@@ -16,7 +16,11 @@ $( document ).ready(function() {
 						}
 					},					
 					403: function($data) {
-						$("#globalMsg").html("Session has expired.").show().fadeOut(5000);
+						if ( $expiredMethod == null ) {
+							$("#globalMsg").html("Session has expired.").show().fadeOut(5000);
+						} else {
+							$expiredMethod($data);
+						}
 					},
 					404: function($data) {
 						$("#globalMsg").html("System Error: " + $url + " 404. Contact Support").show().fadeOut(5000);
