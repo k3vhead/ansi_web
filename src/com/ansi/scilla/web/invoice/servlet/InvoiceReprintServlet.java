@@ -48,7 +48,7 @@ public class InvoiceReprintServlet extends AbstractServlet {
 				conn = AppUtils.getDBCPConn();
 				conn.setAutoCommit(false);
 				ansiURL = new AnsiURL(request, "invoiceReprint", (String[])null); //  .../ticket/etc
-				SessionData sessionData = AppUtils.validateSession(request, Permission.INVOICE_WRITE);
+				SessionData sessionData = AppUtils.validateSession(request, Permission.INVOICE_READ);
 				Invoice invoice = validateInvoice(conn, ansiURL.getId());
 				SessionUser sessionUser = sessionData.getUser();				
 				processUpdate(conn, request, response, invoice, sessionUser);
