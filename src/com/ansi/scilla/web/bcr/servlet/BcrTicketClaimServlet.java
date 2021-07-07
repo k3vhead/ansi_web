@@ -92,9 +92,9 @@ public class BcrTicketClaimServlet extends AbstractServlet {
 		WebMessages webMessages = new WebMessages();
 		String realm = BcrServlet.REALM + "/" + BcrServlet.TICKET_CLAIM;
 		try {
+			conn = AppUtils.getDBCPConn();
+			conn.setAutoCommit(false);
 			try{
-				conn = AppUtils.getDBCPConn();
-				conn.setAutoCommit(false);
 				String jsonString = super.makeJsonString(request);
 				logger.log(Level.DEBUG, jsonString);
 				SessionData sessionData = AppUtils.validateSession(request, Permission.CLAIMS_WRITE);
@@ -131,20 +131,18 @@ public class BcrTicketClaimServlet extends AbstractServlet {
                 BcrTicketClaimResponse data = new BcrTicketClaimResponse();
                 data.setWebMessages(messages);
                 super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
-			} catch ( Exception e) {
-				AppUtils.logException(e);
-				AppUtils.rollbackQuiet(conn);
-				throw new ServletException(e);
-			} finally {
-				AppUtils.closeQuiet(conn);
 			}	
 
 		} catch ( Exception e) {
 			AppUtils.logException(e);
-			AppUtils.rollbackQuiet(conn);
+			if ( conn != null ) {
+				AppUtils.rollbackQuiet(conn);
+			}
 			throw new ServletException(e);
 		} finally {
-			AppUtils.closeQuiet(conn);
+			if ( conn != null ) {
+				AppUtils.closeQuiet(conn);
+			}
 		}
 	}
 
@@ -254,7 +252,7 @@ public class BcrTicketClaimServlet extends AbstractServlet {
 		key.setClaimId(claimId);
 		
 		Calendar today = Calendar.getInstance(new AnsiTime());
-//		ticketClaim.setClaimId(claimId);
+		ticketClaim.setClaimId(claimId);
 		ticketClaim.setClaimWeek(Integer.valueOf(claimWeek[1]));
 		ticketClaim.setClaimYear(bcrRequest.getWorkYear());
 		ticketClaim.setDlAmt(new BigDecimal(bcrRequest.getDlAmt()));

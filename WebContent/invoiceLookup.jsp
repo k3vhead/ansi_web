@@ -40,6 +40,9 @@
 				width:400px;
 				padding:15px;
 			}
+			.invoicePrint {
+				cursor:pointer;
+			}
 			.prettyWideButton {
 				height:30px;
 				min-height:30px;
