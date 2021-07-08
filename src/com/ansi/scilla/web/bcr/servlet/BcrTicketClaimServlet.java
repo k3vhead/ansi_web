@@ -2,6 +2,7 @@ package com.ansi.scilla.web.bcr.servlet;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.text.SimpleDateFormat;
@@ -166,7 +167,7 @@ public class BcrTicketClaimServlet extends AbstractServlet {
 //			ticketClaim.setClaimId(claimId);
 			ticketClaim.setClaimWeek(Integer.valueOf(claimWeek[1]));
 			ticketClaim.setClaimYear(bcrRequest.getWorkYear());
-			ticketClaim.setDlAmt(new BigDecimal(bcrRequest.getDlAmt()));
+			ticketClaim.setDlAmt(  (new BigDecimal(bcrRequest.getDlAmt())).round(MathContext.DECIMAL32)  );
 			ticketClaim.setDlExpenses(BigDecimal.ZERO);
 			ticketClaim.setEmployeeName(bcrRequest.getEmployee());
 			ticketClaim.setHours(BigDecimal.ZERO);
@@ -176,7 +177,7 @@ public class BcrTicketClaimServlet extends AbstractServlet {
 			ticketClaim.setTicketId(bcrRequest.getTicketId());
 			ticketClaim.setUpdatedBy(sessionUser.getUserId());
 			ticketClaim.setUpdatedDate(today.getTime());
-			ticketClaim.setVolume(new BigDecimal(bcrRequest.getVolumeClaimed()));
+			ticketClaim.setVolume(  (new BigDecimal(bcrRequest.getVolumeClaimed())).round(MathContext.DECIMAL32) );
 			logger.log(Level.DEBUG, ticketClaim);
 			Integer claimId = ticketClaim.insertWithKey(conn);
 			
@@ -255,7 +256,7 @@ public class BcrTicketClaimServlet extends AbstractServlet {
 		ticketClaim.setClaimId(claimId);
 		ticketClaim.setClaimWeek(Integer.valueOf(claimWeek[1]));
 		ticketClaim.setClaimYear(bcrRequest.getWorkYear());
-		ticketClaim.setDlAmt(new BigDecimal(bcrRequest.getDlAmt()));
+		ticketClaim.setDlAmt(  (new BigDecimal(bcrRequest.getDlAmt())).round(MathContext.DECIMAL32)  );
 		ticketClaim.setDlExpenses(BigDecimal.ZERO);
 		ticketClaim.setEmployeeName(bcrRequest.getEmployee());
 		ticketClaim.setHours(BigDecimal.ZERO);
@@ -265,7 +266,7 @@ public class BcrTicketClaimServlet extends AbstractServlet {
 		ticketClaim.setTicketId(bcrRequest.getTicketId());
 		ticketClaim.setUpdatedBy(sessionUser.getUserId());
 		ticketClaim.setUpdatedDate(today.getTime());
-		ticketClaim.setVolume(new BigDecimal(bcrRequest.getVolumeClaimed()));
+		ticketClaim.setVolume(  (new BigDecimal(bcrRequest.getVolumeClaimed())).round(MathContext.DECIMAL32)  );
 		logger.log(Level.DEBUG, ticketClaim);
 		ticketClaim.update(conn, key);
 		
