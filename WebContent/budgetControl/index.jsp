@@ -169,6 +169,9 @@
         		},
         		// these are the valid expense types when adding a new pass-thru expense (populated by init call)
         		expenseTypes : [],
+        		lastEmployeeEntered : null,
+    			lastNoteEntered : null,
+    			lastWorkWeekEntered : null,
         		
         		
         		
@@ -295,7 +298,13 @@
 				
 				
         		doFunctionBinding : function() {
-        			console.log("doFunctionBinding");
+        			console.log("doFunctionBinding");  
+        			// make sure a click only does stuff one time
+        			$(".ticket-clicker").off("click");
+        			$(".bcr-edit-clicker").off("click");
+        			$(".newClaimButton").off("click");
+        			
+        			// make sure a click actually does something (but only once)
         			$(".ticket-clicker").on("click", function($clickevent) {
     					$clickevent.preventDefault();
     					var $ticketId = $(this).attr("data-id");
@@ -321,23 +330,16 @@
         				var $ticketId = $(this).attr("data-ticketid");
         				var $serviceTypeId = $(this).attr("data-servicetypeid");
         				var $serviceTagId = $(this).attr("data-servicetagid");
-        				console.log("New claim: " + $ticketId + " " + $serviceTypeId + " " + $serviceTagId);   
-        				$("#bcr_new_claim_modal input").val("");
-        				$("#bcr_new_claim_modal select").val("");
-        				$("#bcr_new_claim_modal .err").html("");
-        				$("#bcr_new_claim_modal input[name='ticketId']").val($ticketId);
-        				$("#bcr_new_claim_modal .ticketId").html($ticketId);
-        				$("#bcr_new_claim_modal input[name='serviceTypeId']").val($serviceTypeId);
-        				$("#bcr_new_claim_modal .serviceTagId").html($serviceTagId);
-        				
-        				$("#bcr_new_claim_modal").dialog("open");
-        				$("#directLaborFieldContainer").click();
-
+        				console.log("New claim: " + $ticketId + " " + $serviceTypeId + " " + $serviceTagId); 
+        				var $url = "ticket/" + $ticketId;
+        				ANSI_UTILS.doServerCall("GET", $url, $outbound, BUDGETCONTROL.getClaimPrefillSuccess, BUDGETCONTROL.getClaimPrefillFail, null, {"ticketId":$ticketId, "serviceTypeId":$serviceTypeId, "serviceTagId":$serviceTagId});
         			});
 
         		},
         		
-        		
+
+
+
         		
         		doMonthlyFilter : function($destination, $url, $outbound) {
         			console.log("doMonthlyFilter ")
@@ -581,6 +583,54 @@
         			$("#bcr_edit_modal .bcr_edit_message").show().fadeOut(6000);
         		},
         		
+        		
+        		
+        		getClaimPrefillFail : function($data) {
+        			console.log("getClaimPrefillFail");
+        			$("#globalMsg").html("System Error retrieving ticket detail. Contact Support")
+        		},
+        		
+        		
+        		getClaimPrefillSuccess : function($data, $passThruData) {
+        			console.log("getClaimPrefillSuccess");
+        			var $ticketId = $passThruData["ticketId"];
+        			var $serviceTypeId = $passThruData["serviceTypeId"];
+        			var $serviceTagId = $passThruData["serviceTagId"];
+        			var $actDlAmt = $data.data.ticketDetail.actDlAmt.replace("$","").replace(",","");
+        			var $actPricePerCleaning = $data.data.ticketDetail.actPricePerCleaning.replace("$","").replace(",","");
+        			
+    				$("#bcr_new_claim_modal input").val("");
+    				$("#bcr_new_claim_modal select").val("");
+    				$("#bcr_new_claim_modal .err").html("");
+    				$("#bcr_new_claim_modal input[name='ticketId']").val($ticketId);
+    				$("#bcr_new_claim_modal input[name='dlAmt']").val($actDlAmt);
+    				$("#bcr_new_claim_modal input[name='volumeClaimed']").val($actPricePerCleaning);
+    				$("#bcr_new_claim_modal .ticketId").html($ticketId);
+    				$("#bcr_new_claim_modal input[name='serviceTypeId']").val($serviceTypeId);
+    				$("#bcr_new_claim_modal .serviceTagId").html($serviceTagId);
+    				
+    				if ( BUDGETCONTROL.lastEmployeeEntered != null ) {
+    					$("#bcr_new_claim_modal input[name='employee']").val(BUDGETCONTROL.lastEmployeeEntered);
+    				}
+    				if ( BUDGETCONTROL.lastNoteEntered != null ) {
+    					$("#bcr_new_claim_modal input[name='notes']").val(BUDGETCONTROL.lastNoteEntered);
+    				}
+    				
+    				if ( BUDGETCONTROL.lastWorkWeekEntered != null ) {
+        				var $thisMonth = false;
+        				$.each( $("#bcr_new_claim_modal select[name='claimWeek'] option"), function($index, $value) {
+        					if ( $value.value == BUDGETCONTROL.lastWorkWeekEntered ) {
+        						$thisMonth = true;
+        					}
+        				});
+        				if ( $thisMonth == true ) {
+    						$("#bcr_new_claim_modal select[name='claimWeek']").val(BUDGETCONTROL.lastWorkWeekEntered);
+        				}
+    				}
+    				
+    				$("#bcr_new_claim_modal").dialog("open");
+    				$("#directLaborFieldContainer").click();
+        		},
         		
         		
         		
@@ -989,6 +1039,7 @@
 						$("#bcr_new_claim_modal .err").html("");
 						$("#bcr_new_claim_modal .directLaborDetails").show();
 						$("#bcr_new_claim_modal").attr("data-claimtype","labor");
+						$("#bcr_new_claim_modal .directLaborDetails select[name='claimWeek']").focus();
 					});
 					
 					$("#expenseFieldContainer").click(function($event) {
@@ -1000,6 +1051,7 @@
 						$("#bcr_new_claim_modal .err").html("");
 						$("#bcr_new_claim_modal .expenseDetails").show();
 						$("#bcr_new_claim_modal").attr("data-claimtype","expense");
+						$("#bcr_new_claim_modal .expenseDetails select[name='claimWeek']").focus();
 					});
 					
 
@@ -2158,6 +2210,9 @@
         			console.log("saveNewClaimSuccess");
         			$("#bcr_new_claim_modal").dialog("close");
         			$("#globalMsg").html("Update Complete").show().fadeOut(4000);
+        			BUDGETCONTROL.lastEmployeeEntered = $("#bcr_new_claim_modal input[name='employee']").val();
+        			BUDGETCONTROL.lastNoteEntered = $("#bcr_new_claim_modal input[name='notes']").val();
+        			BUDGETCONTROL.lastWorkWeekEntered = $("#bcr_new_claim_modal select[name='claimWeek']").val();
         			BUDGETCONTROL.refreshTicketTables();
         		},
         		

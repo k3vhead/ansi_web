@@ -1,6 +1,14 @@
 $( document ).ready(function() {
 	;ANSI_UTILS = {
-		doServerCall : function($type, $url, $outbound, $successMethod, $failureMethod, $expiredMethod) {
+		// $type          : POST or GET
+		// $url           : the url to call
+		// $outbound      : dictionary or json string of name/value pairs to be sent to the URL via query string or post data
+		// $successMethod : callback when the HTTP returns a 200 and the response code is SUCCESS (ie. no edit errors)
+		// $failureMethod : callback when the HTTP returns a 200 and the response code is EDIT_FAILURE
+		// $expiredMethod : callback when the HTTP returns a 403. Default is to display a message in #globalMsg
+		// $passThruData  : dictionary of data to be passed to callback methods, along with the HTTP response object.
+		// Note that callbacks will be called, passing HTTP response object and $passThruData
+		doServerCall : function($type, $url, $outbound, $successMethod, $failureMethod, $expiredMethod, $passThruData) {
 			var jqxhr = $.ajax({
 				type: $type,
 				url: $url,
@@ -8,9 +16,9 @@ $( document ).ready(function() {
 				statusCode: {
 					200: function($data) {
 						if ( $data.responseHeader.responseCode == 'SUCCESS' ) {
-							$successMethod($data);
+							$successMethod($data, $passThruData);
 						} else if ( $data.responseHeader.responseCode == 'EDIT_FAILURE' ) {
-							$failureMethod($data);
+							$failureMethod($data, $passThruData);
 						} else {
 							$("#globalMsg").html("System Error: " + $url + " Invalid response code " + $data.responseHeader.responseCode + ". Contact Support").show().fadeOut(5000);
 						}
@@ -19,7 +27,7 @@ $( document ).ready(function() {
 						if ( $expiredMethod == null ) {
 							$("#globalMsg").html("Session has expired.").show().fadeOut(5000);
 						} else {
-							$expiredMethod($data);
+							$expiredMethod($data, $passThruData);
 						}
 					},
 					404: function($data) {
