@@ -18,7 +18,7 @@ public class ChangeAllPasswords {
 			conn.setAutoCommit(false);
 			
 			Statement s = conn.createStatement();
-			ResultSet rsGet = s.executeQuery("select first_name, last_name, user_id from ansi_user");
+			ResultSet rsGet = s.executeQuery("select first_name, last_name, user_id from ansi_user where user_id not in (1,5,6,7,9,77)");
 			PreparedStatement ps = conn.prepareStatement("update ansi_user set password=?,updated_date=?,updated_by=? where user_id=?");
 			java.sql.Date now = new java.sql.Date(new java.util.Date().getTime());
 			while ( rsGet.next() ) {

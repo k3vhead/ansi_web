@@ -59,6 +59,9 @@ public class ColumnFilter extends ApplicationObject {
 	 */
 	public String toLike() {
 		String term = String.valueOf(searchValue);
+		if ( term.indexOf("'") > -1 ) {
+			term = term.replaceAll("'", "''");
+		}
 		return "lower(" + columnName + ") like '%" + term.toLowerCase() + "%'";
 	}
 	public String toEqNumber() {
@@ -70,6 +73,9 @@ public class ColumnFilter extends ApplicationObject {
 	 */
 	public String toEqString() {
 		String term = String.valueOf(searchValue);
+		if ( term.indexOf("'") > -1 ) {
+			term = term.replaceAll("'", "''");
+		}
 		return "lower(" + columnName + ")='" + term.toLowerCase() + "'";
 	}
 	/**

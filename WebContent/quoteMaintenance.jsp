@@ -490,6 +490,7 @@
 						$($tableSelector).show();
 						$($closedSelector).hide();
 						$($openSelector).show();
+						$("#job-edit-modal .job-proposal-jobtag-message").html("");
 						
 						$detailSelector = "#job" + $jobId + " .job-data-row .job-detail-display";
 						if ( ! $($detailSelector).length ) {
@@ -1555,6 +1556,7 @@
 		    				$(".job-edit-panel input").val("");
 		    				$(".job-edit-panel select").val("");
 		    				$(".job-edit-panel textarea").val("");
+		    				$("#job-edit-modal .job-proposal-jobtag-message").html("");
 		    				
 		    				//show job tags
 		    				if ($("#job-edit-modal .proposal .job-proposal-jobtag").html() == "" ) {
@@ -2483,23 +2485,29 @@
 							$.each($data.data.webMessages, function(index, val) {	
 								// index matches up with attr data-apiname in the form
 								// loop through the input/selects and apply a class to the input
-								$.each( $("#job-edit-modal input"), function(fieldIdx, fieldVal) {
-									var $apiName = $(fieldVal).attr("data-apiname");
-									if ( index == $apiName ) {
-										var $fieldName = $(fieldVal).attr("name");
-										var $selector = "#job-edit-modal input[name='"+ $fieldName +"']";
-										$($selector).addClass("edit-err");
-									}
-								});
-								$.each( $("#job-edit-modal select"), function(fieldIdx, fieldVal) {
-									var $apiName = $(fieldVal).attr("data-apiname");
-									if ( index == $apiName ) {
-										var $fieldName = $(fieldVal).attr("name");
-										var $selector = "#job-edit-modal select[name='"+ $fieldName +"']";
-										$($selector).addClass("edit-err");
-									}
-								});
+								if ( index == "jobtags") {
+									// jobtags gets special treatment because it's not an input or a select
+									$("#job-edit-modal .job-proposal-jobtag-message").html($data.data.webMessages["jobtags"][0]).show();
+								} else {
+									$.each( $("#job-edit-modal input"), function(fieldIdx, fieldVal) {
+										var $apiName = $(fieldVal).attr("data-apiname");
+										if ( index == $apiName ) {
+											var $fieldName = $(fieldVal).attr("name");
+											var $selector = "#job-edit-modal input[name='"+ $fieldName +"']";
+											$($selector).addClass("edit-err");
+										}
+									});
+									$.each( $("#job-edit-modal select"), function(fieldIdx, fieldVal) {
+										var $apiName = $(fieldVal).attr("data-apiname");
+										if ( index == $apiName ) {
+											var $fieldName = $(fieldVal).attr("name");
+											var $selector = "#job-edit-modal select[name='"+ $fieldName +"']";
+											$($selector).addClass("edit-err");
+										}
+									});
+								}
 							});
+							
 						} else {
 							console.log("Update header success:");
 							console.log($data);

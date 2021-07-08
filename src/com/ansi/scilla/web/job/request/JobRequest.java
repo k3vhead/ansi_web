@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.logging.log4j.Level;
@@ -538,13 +541,14 @@ public class JobRequest extends AbstractRequest{
 	}
 	
 	
-	public WebMessages validateProposalUpdate() {
+	public WebMessages validateProposalUpdate(Connection conn) throws SQLException {
 		WebMessages webMessages = new WebMessages();
 		
 		RequestValidator.validateJobFrequency(webMessages, "jobFrequency", this.jobFrequency, true);
 		RequestValidator.validateInteger(webMessages, "jobNbr", this.jobNbr, 1, null, true);
 		RequestValidator.validateBigDecimal(webMessages, "pricePerCleaning", this.pricePerCleaning, new BigDecimal(0), null, true);
 		RequestValidator.validateString(webMessages, "serviceDescription", this.serviceDescription, true);
+		RequestValidator.validateServiceTags(conn, webMessages, "jobtags", this.jobtags, true, "Service");
 		
 		return webMessages;
 	}
@@ -635,10 +639,10 @@ public class JobRequest extends AbstractRequest{
 	public WebMessages validateNewJob(Connection conn) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		
-		WebMessages proposalMessages = validateProposalUpdate();
-		WebMessages activationMessages = validateProposalUpdate();
-		WebMessages invoiceMessages = validateProposalUpdate();
-		WebMessages scheduleMessages = validateProposalUpdate();
+		WebMessages proposalMessages = validateProposalUpdate(conn);
+		WebMessages activationMessages = validateProposalUpdate(conn);
+		WebMessages invoiceMessages = validateProposalUpdate(conn);
+		WebMessages scheduleMessages = validateProposalUpdate(conn);
 		
 		for ( WebMessages messages : new WebMessages[] {proposalMessages, activationMessages, invoiceMessages, scheduleMessages} ) {
 			if ( ! messages.isEmpty() ) {
@@ -646,6 +650,19 @@ public class JobRequest extends AbstractRequest{
 			}
 		}
 		
+		System.out.println("*******************************************");
+		System.out.println("JobRequest 654");
+		System.out.println("*******************************************");
+		
+		for ( Map.Entry<String,List<String>> entry : webMessages.entrySet() ) {
+			System.out.println(entry.getKey());
+			for ( String message : webMessages.get(entry.getKey())) {
+				System.out.println("\t" + message);
+			}			
+		}
+		System.out.println("*******************************************");
+		System.out.println("*******************************************");
+		System.out.println("*******************************************");
 
 		RequestValidator.validateId(conn, webMessages, "contact", "contact_id", "billingContactId", this.billingContactId, true);
 		RequestValidator.validateBuildingType(conn, webMessages, "buildingType", this.buildingType, true);
@@ -684,11 +701,11 @@ public class JobRequest extends AbstractRequest{
 		WebMessages webMessages = new WebMessages();
 		RequestValidator.validateJobFrequency(webMessages, JOB_FREQUENCY, this.getJobFrequency(), true);
 		RequestValidator.validateInteger(webMessages, JOB_NBR, this.jobNbr, 1, null, true);
-		RequestValidator.validateNumber(webMessages, PRICE_PER_CLEANING, this.getPricePerCleaning(), new BigDecimal(0), null, true);
+		RequestValidator.validateNumber(webMessages, PRICE_PER_CLEANING, this.getPricePerCleaning(), new BigDecimal(0), null, true, null);
 		RequestValidator.validateString(webMessages, SERVICE_DESCRIPTION, this.getServiceDescription(), true);
 		RequestValidator.validateBoolean(webMessages, REQUEST_SPECIAL_SCHEDULING, this.getRequestSpecialScheduling(), false);
-		RequestValidator.validateNumber(webMessages, DIRECT_LABOR_PCT, this.getDirectLaborPct(), new BigDecimal(0), new BigDecimal(100), true);
-		RequestValidator.validateNumber(webMessages,BUDGET, this.getBudget(), new BigDecimal(0), null, true);
+		RequestValidator.validateNumber(webMessages, DIRECT_LABOR_PCT, this.getDirectLaborPct(), new BigDecimal(0), new BigDecimal(100), true, null);
+		RequestValidator.validateNumber(webMessages,BUDGET, this.getBudget(), new BigDecimal(0), null, true, null);
 		RequestValidator.validateInteger(webMessages,FLOORS, this.getFloors(), 0, null, true);
 		RequestValidator.validateString(webMessages, EQUIPMENT, this.getEquipment(), true);
 		RequestValidator.validateString(webMessages, WASHER_NOTES, this.getWasherNotes(), false);
@@ -700,6 +717,7 @@ public class JobRequest extends AbstractRequest{
 		boolean expireReasonIsRequired = this.getExpirationDate() != null;
 		RequestValidator.validateString(webMessages, EXPIRATION_REASON, this.getExpirationReason(), expireReasonIsRequired);
 		RequestValidator.validateBoolean(webMessages, REPEAT_SCHEDULE_ANNUALLY, this.getRepeatScheduleAnnually(), false);
+		RequestValidator.validateServiceTags(conn, webMessages, JOBTAGS, this.jobtags, true, "Service Type");
 			
 		return webMessages;
 	}

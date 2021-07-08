@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!--
 <!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts 1.1//EN"
  "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
- -->
 <struts-config>
     <form-beans>    
     	<form-bean name="idForm"               type="com.ansi.scilla.web.common.actionForm.IdForm" />
@@ -60,6 +58,12 @@
             path="/ticketStatusLookup"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/claims/ticketStatusLookup.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+        <action
+            path="/budgetControl"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/budgetControl/index.jsp" />
             <forward name="login" path="/login.jsp" />            
         </action>
         <action

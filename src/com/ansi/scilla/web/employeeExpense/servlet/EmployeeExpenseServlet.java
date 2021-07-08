@@ -75,7 +75,7 @@ public class EmployeeExpenseServlet extends AbstractCrudServlet {
 				true, null, null);
 		RequestValidator.validateExpenseType(conn, webMessages, "expenseType", (String) addRequest.get("expenseType"),
 				true);
-		RequestValidator.validateNumber(webMessages, "amount", addRequest.get("amount"), 0.0D, null, true);
+		RequestValidator.validateNumber(webMessages, "amount", addRequest.get("amount"), 0.0D, null, true, null);
 		RequestValidator.validateString(webMessages, "detail", (String) addRequest.get("detail"), false);
 		RequestValidator.validateString(webMessages, "notes", (String) addRequest.get("notes"), false);
 
@@ -96,7 +96,7 @@ public class EmployeeExpenseServlet extends AbstractCrudServlet {
 				standardDateFormat, true, null, null);
 		RequestValidator.validateExpenseType(conn, webMessages, "expenseType",
 				(String) updateRequest.get("expenseType"), true);
-		RequestValidator.validateNumber(webMessages, "amount", updateRequest.get("amount"), 0.0D, null, true);
+		RequestValidator.validateNumber(webMessages, "amount", updateRequest.get("amount"), 0.0D, null, true, null);
 		RequestValidator.validateString(webMessages, "detail", (String) updateRequest.get("detail"), false);
 		RequestValidator.validateString(webMessages, "notes", (String) updateRequest.get("notes"), false);
 

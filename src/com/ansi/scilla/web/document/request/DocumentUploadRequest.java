@@ -94,7 +94,7 @@ public class DocumentUploadRequest extends AbstractRequest {
 
 	private WebMessages validateCommon(Connection conn) throws SQLException {
 		WebMessages webMessages = new WebMessages();
-		RequestValidator.validateString(webMessages, DESCRIPTION, this.description, 256, true);
+		RequestValidator.validateString(webMessages, DESCRIPTION, this.description, 256, true, null);
 		RequestValidator.validateDate(webMessages, DOCUMENT_DATE, documentDate, true, (Date)null, (Date)null);
 		RequestValidator.validateDate(webMessages, EXPIRATION_DATE, expirationDate, false, (Date)null, (Date)null);
 		return webMessages;

@@ -127,8 +127,8 @@ public class ClaimEntryServlet extends AbstractServlet {
 				ticketClaim.setTicketId(ticketId);
 				ticketClaim.setUpdatedBy(sessionData.getUser().getUserId());
 				ticketClaim.setVolume(new BigDecimal(claimEntryRequest.getVolume()));
-				ticketClaim.setWasherId(claimEntryRequest.getWasherId());
-				ticketClaim.setWorkDate(claimEntryRequest.getWorkDate());
+//				ticketClaim.setWasherId(claimEntryRequest.getWasherId());
+//				ticketClaim.setWorkDate(claimEntryRequest.getWorkDate());
 				ticketClaim.insertWithKey(conn);
 				
 				conn.commit();

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -32,12 +33,14 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
 
 import com.ansi.scilla.common.db.ApplicationProperties;
@@ -111,7 +114,7 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 	        throw new NotAllowedException();
 	    }		
 	}
-
+	
 
 	/**
 	 * We have discovered that the HTML5 date and time tags are being translated at UTC, but we expect the 
@@ -326,6 +329,7 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 	    return queryMap;  
 	}
 
+	
 
 
 	public static String getRandomQuote() {
@@ -356,7 +360,7 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 		return resultString;
 	}
 
-
+	
 
 	public static String jsonPost(HttpServletRequest request) throws UnsupportedEncodingException, IOException {
 		Writer writer = new StringWriter();
@@ -376,6 +380,7 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 	    return jsonString;        
 	}
 
+	
 
 
 	private static void logBadRequestSession(HttpServletRequest request) {
@@ -400,7 +405,7 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 		
 	}
 
-
+	
 
 	/**
 	 * Log exception to the application logger
@@ -429,7 +434,7 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 		
 	}
 
-
+	
 
 	/**
 	 * Create an application logger.
@@ -673,5 +678,28 @@ public class AppUtils extends com.ansi.scilla.common.utils.AppUtils {
 		}
 		
 		return sessionData;
+	}
+	
+	
+	
+	public static void writeSpreadSheet(HttpServletResponse response, XSSFWorkbook workbook, String fileName) throws IOException {
+//		Logger logger = LogManager.getLogger(AppUtils.class);
+		
+		response.setStatus(HttpServletResponse.SC_OK);
+		OutputStream out = response.getOutputStream();
+		
+	    response.setHeader("Expires", "0");
+	    response.setHeader("Cache-Control", "must-revalidate, post-check=0, pre-check=0");
+	    response.setHeader("Pragma", "public");
+	    // setting the content type
+//	    response.setContentType("application/vnd.ms-excel");
+	    response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+	    String dispositionHeader = "attachment; filename=" + fileName + ".xlsx";
+		response.setHeader("Content-disposition",dispositionHeader);
+	    // the contentlength
+//	    response.setContentLength(baos.size());
+
+		workbook.write(out);
+		out.close();
 	}
 }

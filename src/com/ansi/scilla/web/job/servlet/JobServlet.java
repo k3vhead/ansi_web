@@ -23,6 +23,7 @@ import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.jobticket.JobStatus;
 import com.ansi.scilla.common.jobticket.JobUtils;
 import com.ansi.scilla.web.address.response.AddressResponse;
+import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.MessageKey;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -250,7 +251,7 @@ public class JobServlet extends AbstractServlet {
 		ResponseCode responseCode = null;
 		
 		try {
-			webMessages = jobRequest.validateProposalUpdate();
+			webMessages = jobRequest.validateProposalUpdate(conn);
 			if ( webMessages.isEmpty() ) {
 				populateJobProposal(job, jobRequest);
 				updateJob(conn, user, job);
@@ -1135,6 +1136,11 @@ public class JobServlet extends AbstractServlet {
 	protected WebMessages validateAdd(Connection conn, JobRequest jobRequest) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		List<String> missingFields = super.validateRequiredAddFields(jobRequest);
+		// the validateRequiredAddFields method checks for null and for empty strings, not for zero-length arrays.
+		// since we are moving away from using this method, and toward the RequestValidator paradigm, let's add
+		// a check for new fields here.
+		RequestValidator.validateServiceTags(conn, webMessages, JobRequest.JOBTAGS, jobRequest.getJobtags(), true, "Service Type");
+		
 		logger.log(Level.DEBUG, "validateAdd:" + missingFields);
 		String messageText = AppUtils.getMessageText(conn, MessageKey.MISSING_DATA, "Required Entry");
 		if ( missingFields.isEmpty() ) {
