@@ -12,12 +12,12 @@ import org.apache.logging.log4j.Level;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.bcr.common.BCRSpreadsheet.BcrTicketSpreadsheet;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.struts.SessionDivision;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
