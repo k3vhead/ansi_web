@@ -627,9 +627,13 @@
     						$("#bcr_new_claim_modal select[name='claimWeek']").val(BUDGETCONTROL.lastWorkWeekEntered);
         				}
     				}
+
     				
+    				// this bit handles the display/hide of panels in the new claim modal    				
+					$("#bcr_new_claim_modal .err").html("");
+
     				$("#bcr_new_claim_modal").dialog("open");
-    				$("#directLaborFieldContainer").click();
+    				$("#bcr_new_claim_modal .directLaborDetail select[name='claimWeek']").focus();
         		},
         		
         		
@@ -1028,31 +1032,7 @@
 					});
 					
 					
-					// this bit handles the display/hide of panels in the new claim modal
-					$("#directLaborFieldContainer").click(function($event) {
-						
-						$(".field-container").removeClass("button_is_active");
-						$(".field-container").addClass("button_is_inactive");
-						$("#directLaborFieldContainer").removeClass("button_is_inactive");
-						$("#directLaborFieldContainer").addClass("button_is_active");		
-						$(".details").hide();
-						$("#bcr_new_claim_modal .err").html("");
-						$("#bcr_new_claim_modal .directLaborDetails").show();
-						$("#bcr_new_claim_modal").attr("data-claimtype","labor");
-						$("#bcr_new_claim_modal .directLaborDetails select[name='claimWeek']").focus();
-					});
 					
-					$("#expenseFieldContainer").click(function($event) {
-						$(".field-container").removeClass("button_is_active");
-						$(".field-container").addClass("button_is_inactive");
-						$("#expenseFieldContainer").removeClass("button_is_inactive");
-						$("#expenseFieldContainer").addClass("button_is_active");	
-						$(".details").hide();
-						$("#bcr_new_claim_modal .err").html("");
-						$("#bcr_new_claim_modal .expenseDetails").show();
-						$("#bcr_new_claim_modal").attr("data-claimtype","expense");
-						$("#bcr_new_claim_modal .expenseDetails select[name='claimWeek']").focus();
-					});
 					
 
         		},
@@ -1768,8 +1748,8 @@
         			$("#bcr_new_claim_modal").dialog({
         				title:'New Claim',
         				autoOpen: false,
-        				height: 400,
-        				width: 575,
+        				height: 420,
+        				width: 750,
         				modal: true,
         				closeOnEscape:true,
         				open: function(event, ui) {
@@ -1784,7 +1764,7 @@
         					},{
         						id:  "bcr_new_claim_save",
         						click: function($event) {
-        							BUDGETCONTROL.saveNewClaim();
+        							BUDGETCONTROL.makeNewClaim();
         						}
         					}
         				]
@@ -1792,7 +1772,50 @@
         			$("#bcr_new_claim_cancel").button('option', 'label', 'Cancel');
         			$("#bcr_new_claim_save").button('option', 'label', 'Save');
         			BUDGETCONTROL.makeEmployeeAutoComplete("#bcr_new_claim_modal input[name='employee']");
+        			
+        			$("#bcr_new_claim_modal input").keydown(function($event) {
+    					if ( $event.which == 13 ) {
+    						// when you hit "enter" on an input, click the go button
+	 						$event.preventDefault();
+	 						$("#bcr_new_claim_save").click();
+    					}
+    				});
+        			$("#bcr_new_claim_modal select").keydown(function($event) {
+    					if ( $event.which == 13 ) {
+    						// when you hit "enter" on an input, click the go button
+	 						$event.preventDefault();
+	 						$("#bcr_new_claim_save").click();
+    					}
+    				});
         		},
+        		
+        		
+        		
+        		// insert new Labor and/or expense claim, based on "new claim" modal from ticket panels
+        		makeNewClaim : function() {
+        			console.log("makeNewClaim");
+        			var $outbound = {
+        				"ticketId":$("#bcr_new_claim_modal input[name='ticketId']").val(),
+        				"serviceTypeId":$("#bcr_new_claim_modal input[name='serviceTypeId']").val(),
+        				"claimWeek":$("#bcr_new_claim_modal select[name='claimWeek']").val(),
+        				"dlAmt":$("#bcr_new_claim_modal input[name='dlAmt']").val(),
+        				"expenseVolume":$("#bcr_new_claim_modal input[name='expenseVolume']").val(),
+        				"volumeClaimed":$("#bcr_new_claim_modal input[name='volumeClaimed']").val(),
+        				"expenseType":$("#bcr_new_claim_modal select[name='expenseType']").val(),
+        				"employee":$("#bcr_new_claim_modal input[name='employee']").val(),
+        				"notes":$("#bcr_new_claim_modal input[name='notes']").val(),        				
+        			};
+        			console.log($outbound);
+        			ANSI_UTILS.doServerCall("POST", "bcr/newClaim", JSON.stringify($outbound), BUDGETCONTROL.makeNewClaimSuccess, BUDGETCONTROL.makeNewClaimFail);
+        		},
+        		
+        		makeNewClaimFail : function($data) {
+        			console.log("makeNewClaimFail");
+        		},
+        		
+        		makeNewClaimSuccess : function($data) {
+        			console.log("makeNewClaimSuccess");
+        		}, 
         		
         		
         		
@@ -2579,101 +2602,83 @@
 	    <div id="bcr_new_claim_modal">
 	    	<div style="width:100%; height:25px;">
 	    		<span class="newClaimErr err"></span>
-	    	</div>
-	    	<table style="width:500px;">
-				<colgroup>
-		        	<col style="width:50%;" />
-		        	<col style="width:50%;" />
-				</colgroup>
-				<tr>
-					<td id="directLaborFieldContainer" class="field-container button_is_active"><webthing:laborIcon styleId="directLaborFieldButton" styleClass="action-link fa-lg">Direct Labor</webthing:laborIcon></td>
-					<td id="expenseFieldContainer" class="field-container button_is_inactive"><webthing:invoiceIcon styleId="expenseFieldButton" styleClass="action-link fa-lg">Expense</webthing:invoiceIcon></td>
-					<td>&nbsp;</td>
-				</tr>
+	    	</div>	    	
+			<table style="width:100%;">   
+   				<tr>
+   					<td style="width:20%;" rowspan="3">&nbsp;</td>
+   					<td style="width:20%;" class="form-label">Ticket:</td>
+   					<td style="width:20%;" ><span class="ticketId"></span></td>
+   					<td style="width:20%;" ><input type="hidden" name="ticketId" /></td>
+   					<td style="width:20%;" rowspan="3">&nbsp;</td>
+   				</tr>
+   				<tr>
+   					<td class="form-label">Service Type:</td>
+   					<td><span class="serviceTagId"></span></td>
+   					<td><input type="hidden" name="serviceTypeId" /></td>
+   				</tr>
+   				<tr>
+   					<td class="form-label">Claim Week:</td>
+   					<td><select name="claimWeek" tabindex="1"></select></td>
+   					<td><span class="claimWeekErr err"></span></td>
+   				</tr>
 			</table>
-			<div class="details directLaborDetails">
-				<table style="width:100%;">   
-					<colgroup>
-			        	<col style="width:25%;" />
-			        	<col style="width:45%;" />
-			        	<col style="width:30%;" />
-					</colgroup> 				
-    				<tr>
-    					<td class="form-label">Ticket:</td>
-    					<td><span class="ticketId"></span></td>
-    					<td><input type="hidden" name="ticketId" /></td>
-    				</tr>
-    				<tr>
-    					<td class="form-label">Service Type:</td>
-    					<td><span class="serviceTagId"></span></td>
-    					<td><input type="hidden" name="serviceTypeId" /></td>
-    				</tr>
-    				<tr>
-    					<td class="form-label">Claim Week:</td>
-    					<td><select name="claimWeek"></select></td>
-    					<td><span class="claimWeekErr err"></span></td>
-    				</tr>
-    				<tr>
-    					<td class="form-label">Direct Labor:</td>
-    					<td><input type="text" name="dlAmt" /></td>
-    					<td><span class="dlAmtErr err"></span></td>
-    				</tr>
-    				<tr>
-    					<td class="form-label">Volume Claimed:</td>
-    					<td><input type="text" name="volumeClaimed" /></td>
-    					<td><span class="volumeClaimedErr err"></span></td>
-    				</tr>
-    				<tr>
-    					<td class="form-label">Employee:</td>
-    					<td><input type="text" name="employee" /></td>
-    					<td><span class="employeeErr err"></span></td>
-    				</tr>
-    				<tr>
-    					<td class="form-label">Notes:</td>
-    					<td><input type="text" name="notes" /></td>
-    					<td><span class="notesErr err"></span></td>
-    				</tr>
-    			</table>
-			</div>
-			<div class="details expenseDetails">
-				<table style="width:100%;">
-					<colgroup>
-			        	<col style="width:25%;" />
-			        	<col style="width:45%;" />
-			        	<col style="width:30%;" />
-					</colgroup>
-    				<tr>
-    					<td class="form-label">Ticket:</td>
-    					<td><span class="ticketId"></span></td>
-    					<td>&nbsp;</td>
-    				</tr>
-    				<tr>
-    					<td class="form-label">Service Type:</td>
-    					<td><span class="serviceTagId"></span></td>
-    					<td>&nbsp;</td>
-    				</tr>
-    				<tr>
-    					<td class="form-label">Claim Week:</td>
-    					<td><select name="claimWeek"></select></td>
-    					<td><span class="claimWeekErr err"></span></td>
-    				</tr>
-    				<tr>
-    					<td class="form-label">Volume Claimed:</td>
-    					<td><input type="text" name="volume" /></td>
-    					<td><span class="volumeErr err"></span></td>
-    				</tr>
-    				<tr>
-    					<td class="form-label">Expense Type:</td>
-    					<td><select name="expenseType"></select></td>
-    					<td><span class="expenseTypeErr err"></span></td>
-    				</tr>
-    				<tr>
-    					<td class="form-label">Notes:</td>
-    					<td><input type="text" name="notes" /></td>
-    					<td><span class="notesErr err"></span></td>
-    				</tr>
-    			</table>
-			</div>
+			
+			<table style="width:100%;border-top:solid 1px #404040;">
+				<colgroup>
+		        	<col style="width:16%;" />
+		        	<col style="width:16%;" />
+		        	<col style="width:16%;" />
+		        	<col style="width:2%;" />
+		        	<col style="width:2%;" />
+		        	<col style="width:16%;" />
+		        	<col style="width:16%;" />
+		        	<col style="width:16%;" />
+				</colgroup>
+   				<tr>
+   					<td colspan="3" style="text-align:center; width:48%;"><span class="form-label">Direct Labor</span></td>
+   					<td rowspan="4" style="width:2%;">&nbsp;</td>
+   					<td rowspan="4" style="width:2%; border-left:solid 1px #404040;">&nbsp;</td>
+   					<td colspan="3" style="text-align:center; width:48%;"><span class="form-label">Expense</span></td>
+   				</tr>
+   				<tr>
+   					<td class="form-label">Direct Labor:</td>
+   					<td><input type="text" name="dlAmt" tabindex="1" /></td>
+   					<td><span class="dlAmtErr err"></span></td>
+   					
+   					<td class="form-label">Expense Volume Claimed:</td>
+   					<td><input type="text" name="expenseVolume"  tabindex="4"/></td>
+   					<td><span class="volumeErr err"></span></td>
+   				</tr>
+   				<tr>
+   					<td class="form-label">Volume Claimed:</td>
+   					<td><input type="text" name="volumeClaimed" tabindex="2" /></td>
+   					<td><span class="volumeClaimedErr err"></span></td>
+   					
+   					<td class="form-label">Expense Type:</td>
+   					<td><select name="expenseType" tabindex="5"></select></td>
+   					<td><span class="expenseTypeErr err"></span></td>
+   				</tr>
+   				<tr>
+   					<td class="form-label">Employee:</td>
+   					<td><input type="text" name="employee" tabindex="3" /></td>
+   					<td><span class="employeeErr err"></span></td>
+   					<td>&nbsp;</td>
+   					<td>&nbsp;</td>
+   					<td>&nbsp;</td>
+   				</tr>
+   				
+   				<tr>
+   					<td colspan="8" style="border-top:solid 1px #404040;" >&nbsp;</td>
+   				</tr>
+   				
+   				
+   				<tr style="border-top:solid 1px #404040;">
+   					<td>&nbsp;</td>
+   					<td colspan="5" class="form-label">Notes:&nbsp;<input type="text" name="notes" tabindex="7" /></td>
+   					<td><span class="notesErr err"></span></td>
+   					<td>&nbsp;</td>
+   				</tr> 
+   			</table>
 			
 			
 	    </div>
