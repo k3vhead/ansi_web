@@ -39,8 +39,7 @@ public class BcrNewClaimServlet extends AbstractServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		Connection conn = null;
-//		WebMessages webMessages = new WebMessages();
-		String realm = BcrServlet.REALM + "/" + BcrServlet.NEW_CLAIM;
+//		String realm = BcrServlet.REALM + "/" + BcrServlet.NEW_CLAIM;
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
@@ -51,7 +50,7 @@ public class BcrNewClaimServlet extends AbstractServlet {
 				BcrNewClaimRequest bcrNewClaimRequest = new BcrNewClaimRequest();
 				AppUtils.json2object(jsonString, bcrNewClaimRequest);
 				SessionUser sessionUser = sessionData.getUser();
-				List<SessionDivision> divisionList = sessionData.getDivisionList();
+//				List<SessionDivision> divisionList = sessionData.getDivisionList();
 
 				WebMessages webMessages = bcrNewClaimRequest.validate(conn);
 				BcrTicketClaimResponse data = new BcrTicketClaimResponse();
@@ -64,6 +63,7 @@ public class BcrNewClaimServlet extends AbstractServlet {
 						BcrExpenseRequest bcrExpenseRequest = new BcrExpenseRequest(bcrNewClaimRequest);
 						BcrUtils.insertExpenseClaim(conn, bcrExpenseRequest, sessionUser);
 					}		
+					conn.commit();
 					super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
 				} else {
 					data.setWebMessages(webMessages);
@@ -93,30 +93,6 @@ public class BcrNewClaimServlet extends AbstractServlet {
 			}
 		}
 	}
-
-
-
-
-
-	
-
-
-	private void processAdd(Connection conn, HttpServletResponse response, SessionUser sessionUser, List<SessionDivision> divisionList, BcrTicketClaimRequest bcrRequest) throws Exception {
-		BcrTicketClaimResponse data = new BcrTicketClaimResponse();
-		
-		WebMessages webMessages = bcrRequest.validateAdd(conn, sessionUser);
-		if ( webMessages.isEmpty() ) {
-			Integer claimId = BcrUtils.addNewLaborClaim(conn, bcrRequest, sessionUser);
-			conn.commit();
-			data = BcrTicketClaimResponse.fromClaim(conn, sessionUser.getUserId(), divisionList, bcrRequest.getDivisionId(), bcrRequest.getWorkYear(), bcrRequest.getWorkWeeks(), claimId);
-			super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
-		} else {			
-			data.setWebMessages(webMessages);								
-			super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
-		}		
-	}
-
-
 
 
 

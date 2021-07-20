@@ -18,7 +18,11 @@ public class BcrNewClaimRequest extends AbstractRequest {
 	public static final String EXPENSE_TYPE = "expenseType";
 	public static final String EMPLOYEE = "employee";
 	public static final String NOTES = "notes";
+	public static final String DIVISION_ID = "divisionId";
+	public static final String WORK_YEAR = "workYear";
+	public static final String WORK_WEEKS = "workWeeks";
 	
+	private Integer divisionId;
 	private Integer ticketId;
 	private Integer serviceTypeId;
 	private String claimWeek;	// format: yyyy-nn
@@ -28,8 +32,16 @@ public class BcrNewClaimRequest extends AbstractRequest {
 	private String expenseType;
 	private String employee;
 	private String notes;
+	private Integer workYear;
+	private String workWeeks;
 	
 	
+	public Integer getDivisionId() {
+		return divisionId;
+	}
+	public void setDivisionId(Integer divisionId) {
+		this.divisionId = divisionId;
+	}
 	public Integer getTicketId() {
 		return ticketId;
 	}
@@ -84,6 +96,20 @@ public class BcrNewClaimRequest extends AbstractRequest {
 	public void setNotes(String notes) {
 		this.notes = notes;
 	}
+	public Integer getWorkYear() {
+		return workYear;
+	}
+	public void setWorkYear(Integer workYear) {
+		this.workYear = workYear;
+	}
+	public String getWorkWeeks() {
+		return workWeeks;
+	}
+	public void setWorkWeeks(String workWeeks) {
+		this.workWeeks = workWeeks;
+	}
+	
+	
 	
 	
 	public WebMessages validate(Connection conn) {

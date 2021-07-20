@@ -1794,7 +1794,26 @@
         		// insert new Labor and/or expense claim, based on "new claim" modal from ticket panels
         		makeNewClaim : function() {
         			console.log("makeNewClaim");
+        			
+        			var $ticketId = $("#bcr_edit_modal").attr("ticketId");
+        			var $serviceTagId = $("#bcr_edit_modal").attr("serviceTagId");
+        			var $claimWeek = $("#bcr_edit_modal input[name='claimWeek']").val();
+        			var $volume = $("#bcr_edit_modal input[name='expenseVolume']").val();
+        			var $expenseType = $("#bcr_edit_modal select[name='expenseType']").val();
+        			var $notes = $("#bcr_edit_modal input[name='notes']").val();
+        			
+        			// these are needed to create the correct response, not to do the update
+        			var $divisionId = BUDGETCONTROL.divisionId
+        			var $workYear = BUDGETCONTROL.workYear; 
+        			var $workWeeks = BUDGETCONTROL.workWeek;
+        			
+        			
+        			
         			var $outbound = {
+        				"divisionId":BUDGETCONTROL.divisionId,
+                		"workYear":BUDGETCONTROL.workYear, 
+                		"workWeeks":BUDGETCONTROL.workWeek,	
+        					
         				"ticketId":$("#bcr_new_claim_modal input[name='ticketId']").val(),
         				"serviceTypeId":$("#bcr_new_claim_modal input[name='serviceTypeId']").val(),
         				"claimWeek":$("#bcr_new_claim_modal select[name='claimWeek']").val(),

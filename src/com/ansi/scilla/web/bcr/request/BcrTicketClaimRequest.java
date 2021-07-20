@@ -59,15 +59,15 @@ public class BcrTicketClaimRequest extends AbstractRequest {
 		this.ticketId = bcrNewClaimRequest.getTicketId();
 		this.dlAmt = bcrNewClaimRequest.getDlAmt();
 //		this.totalVolume = bcrNewClaimRequest.getTotalVolume();
-//		this.volumeClaimed = bcrNewClaimRequest.getvolumeClaimed();
+		this.volumeClaimed = bcrNewClaimRequest.getVolumeClaimed();
 		this.notes = bcrNewClaimRequest.getNotes();
 //		this.billedAmount = bcrNewClaimRequest.getBilledAmount();
 		this.employee = bcrNewClaimRequest.getEmployee();
 		this.claimWeek = bcrNewClaimRequest.getClaimWeek();
 //		this.claimId
-//		this.divisionId = bcrNewClaimRequest.getDivisionId();
-//		this.workYear = bcrNewClaimRequest.getWorkYear();
-//		this.workWeeks = bcrNewClaimRequest.getWorkWeeks();
+		this.divisionId = bcrNewClaimRequest.getDivisionId();
+		this.workYear = bcrNewClaimRequest.getWorkYear();
+		this.workWeeks = bcrNewClaimRequest.getWorkWeeks();
 		this.serviceTagId = bcrNewClaimRequest.getServiceTypeId();
 //		this.claimedEquipment = bcrNewClaimRequest.getClaimedEquipment();
 	}
