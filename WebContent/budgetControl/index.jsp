@@ -1832,8 +1832,13 @@
         			console.log("makeNewClaimFail");
         		},
         		
+        		
         		makeNewClaimSuccess : function($data) {
         			console.log("makeNewClaimSuccess");
+        			//BUDGETCONTROL.getTicketDetailSuccess($data);
+        			BUDGETCONTROL.refreshPanels($data);
+        			$("#bcr_new_claim_modal").dialog("close");
+        			$("#globalMsg").html("Update Successful").fadeOut(6000);
         		}, 
         		
         		
