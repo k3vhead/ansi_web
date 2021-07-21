@@ -2,8 +2,11 @@ package com.ansi.scilla.web.bcr.request;
 
 import java.sql.Connection;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.response.WebMessages;
+import com.ansi.scilla.web.common.struts.SessionUser;
 
 public class BcrNewClaimRequest extends AbstractRequest {
 
@@ -17,7 +20,8 @@ public class BcrNewClaimRequest extends AbstractRequest {
 	public static final String VOLUME_CLAIMED = "volumeClaimed";
 	public static final String EXPENSE_TYPE = "expenseType";
 	public static final String EMPLOYEE = "employee";
-	public static final String NOTES = "notes";
+	public static final String LABOR_NOTES = "laborNotes";
+	public static final String EXPENSE_NOTES = "expenseNotes";
 	public static final String DIVISION_ID = "divisionId";
 	public static final String WORK_YEAR = "workYear";
 	public static final String WORK_WEEKS = "workWeeks";
@@ -31,7 +35,8 @@ public class BcrNewClaimRequest extends AbstractRequest {
 	private Double volumeClaimed;
 	private String expenseType;
 	private String employee;
-	private String notes;
+	private String laborNotes;
+	private String expenseNotes;
 	private Integer workYear;
 	private String workWeeks;
 	
@@ -89,12 +94,18 @@ public class BcrNewClaimRequest extends AbstractRequest {
 	}
 	public void setEmployee(String employee) {
 		this.employee = employee;
+	}	
+	public String getLaborNotes() {
+		return laborNotes;
 	}
-	public String getNotes() {
-		return notes;
+	public void setLaborNotes(String laborNotes) {
+		this.laborNotes = laborNotes;
 	}
-	public void setNotes(String notes) {
-		this.notes = notes;
+	public String getExpenseNotes() {
+		return expenseNotes;
+	}
+	public void setExpenseNotes(String expenseNotes) {
+		this.expenseNotes = expenseNotes;
 	}
 	public Integer getWorkYear() {
 		return workYear;
@@ -110,12 +121,86 @@ public class BcrNewClaimRequest extends AbstractRequest {
 	}
 	
 	
-	
-	
-	public WebMessages validate(Connection conn) {
+	public WebMessages validate(Connection conn, SessionUser sessionUser) throws Exception {
 		WebMessages webMessages = new WebMessages();
+		if ( isExpenseClaim() || isLaborClaim() ) {
+			BcrTicketClaimRequest bcrTicketClaimRequest = makeBcrTicketClaimRequest();
+			BcrExpenseRequest bcrExpenseRequest = makeBcrExpenseRequest();
+			
+			if ( isLaborClaim() ) {
+				WebMessages laborMessages = bcrTicketClaimRequest.validateAdd(conn, sessionUser);
+				if ( ! laborMessages.isEmpty() ) {
+					webMessages.addAllMessages(laborMessages);
+				}
+			}
+			
+			if ( isExpenseClaim() ) {
+				WebMessages expenseMessages = bcrExpenseRequest.validateAdd(conn);
+				if ( ! expenseMessages.isEmpty() ) {
+					webMessages.addAllMessages(expenseMessages);
+				}
+			}
+		} else {
+			webMessages.addMessage("newClaim", "No claim entered");
+		}
 		return webMessages;
 	}
 	
+	
+	
+	public BcrExpenseRequest makeBcrExpenseRequest() {
+		BcrExpenseRequest request = new BcrExpenseRequest();
+		request.setDivisionId(divisionId);
+		request.setTicketId(ticketId);
+		request.setServiceTagId(serviceTypeId);
+		request.setClaimWeek(claimWeek);
+		request.setVolume(expenseVolume);
+		request.setExpenseType(expenseType);
+		request.setNotes(expenseNotes);
+		request.setWorkYear(workYear);
+		request.setWorkWeeks(workWeeks);
+		return request;
+	}
+	
+	
+	public BcrTicketClaimRequest makeBcrTicketClaimRequest() {
+		BcrTicketClaimRequest request = new BcrTicketClaimRequest();
+		request.setTicketId(ticketId);
+		request.setDlAmt(dlAmt);
+		request.setVolumeClaimed(volumeClaimed);
+		request.setNotes(laborNotes);
+		request.setEmployee(employee);
+		request.setClaimWeek(claimWeek);
+		request.setDivisionId(divisionId);
+		request.setWorkYear(workYear);
+		request.setWorkWeeks(workWeeks);
+		request.setServiceTagId(serviceTypeId);
+		return request;
+	}
+	
+	
+	
+	public boolean isExpenseClaim() {
+		boolean isExpense = false;
+		
+		if ( expenseVolume != null ) { isExpense = true; }
+		if ( ! StringUtils.isBlank(expenseType) ) { isExpense = true; }
+		if ( ! StringUtils.isBlank(expenseNotes) ) { isExpense = true; }
+		
+		return isExpense;
+	}
+	
+	
+	
+	public boolean isLaborClaim() {
+		boolean isLabor = false;
+		
+		if ( dlAmt != null ) { isLabor = true; }
+		if ( volumeClaimed != null ) { isLabor = true; }
+		if ( ! StringUtils.isBlank(employee) ) { isLabor = true; }
+		if ( ! StringUtils.isBlank(laborNotes) ) { isLabor = true; }
+		
+		return isLabor;
+	}
 	
 }

@@ -8,7 +8,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.web.bcr.common.BcrUtils;
@@ -52,18 +51,20 @@ public class BcrNewClaimServlet extends AbstractServlet {
 				SessionUser sessionUser = sessionData.getUser();
 				List<SessionDivision> divisionList = sessionData.getDivisionList();
 
-				WebMessages webMessages = bcrNewClaimRequest.validate(conn);
+				WebMessages webMessages = bcrNewClaimRequest.validate(conn, sessionUser);
 				BcrTicketClaimResponse data = new BcrTicketClaimResponse();
 				
+				logger.log(Level.DEBUG, "webMessages messages: " + webMessages.size());
 				if ( webMessages.isEmpty() ) {
+					logger.log(Level.DEBUG, "webMessages is Empty");
 					Integer laborClaimId = null;
 					Integer expenseClaimId = null;
-					if ( bcrNewClaimRequest.getDlAmt() != null ) {
-						BcrTicketClaimRequest bcrTicketClaimRequest = new BcrTicketClaimRequest(bcrNewClaimRequest);
+					if ( bcrNewClaimRequest.isLaborClaim() ) {
+						BcrTicketClaimRequest bcrTicketClaimRequest = bcrNewClaimRequest.makeBcrTicketClaimRequest();
 						laborClaimId = BcrUtils.addNewLaborClaim(conn, bcrTicketClaimRequest, sessionUser);
 					}
-					if ( ! StringUtils.isBlank(bcrNewClaimRequest.getExpenseType()) ) {
-						BcrExpenseRequest bcrExpenseRequest = new BcrExpenseRequest(bcrNewClaimRequest);
+					if ( bcrNewClaimRequest.isExpenseClaim() ) {						
+						BcrExpenseRequest bcrExpenseRequest = bcrNewClaimRequest.makeBcrExpenseRequest();
 						expenseClaimId = BcrUtils.insertExpenseClaim(conn, bcrExpenseRequest, sessionUser);
 					}		
 					Integer claimId = laborClaimId == null ? expenseClaimId : laborClaimId;

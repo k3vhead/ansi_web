@@ -38,18 +38,6 @@ public class BcrExpenseRequest extends AbstractRequest {
 		super();
 	}
 	
-	public BcrExpenseRequest(BcrNewClaimRequest bcrNewClaimRequest) {
-		this();
-		this.divisionId = bcrNewClaimRequest.getDivisionId();
-		this.ticketId= bcrNewClaimRequest.getTicketId();
-		this.serviceTagId = bcrNewClaimRequest.getServiceTypeId();
-		this.claimWeek = bcrNewClaimRequest.getClaimWeek();
-		this.volume = bcrNewClaimRequest.getExpenseVolume();
-		this.expenseType = bcrNewClaimRequest.getExpenseType();
-		this.notes = bcrNewClaimRequest.getNotes();
-		this.workYear = bcrNewClaimRequest.getWorkYear();
-		this.workWeeks = bcrNewClaimRequest.getWorkWeeks();
-	}
 	
 	public Integer getDivisionId() {
 		return divisionId;

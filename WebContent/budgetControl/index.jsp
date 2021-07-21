@@ -303,6 +303,7 @@
         			$(".ticket-clicker").off("click");
         			$(".bcr-edit-clicker").off("click");
         			$(".newClaimButton").off("click");
+        			$(".zeroClaimButton").off("click");
         			
         			// make sure a click actually does something (but only once)
         			$(".ticket-clicker").on("click", function($clickevent) {
@@ -333,6 +334,16 @@
         				console.log("New claim: " + $ticketId + " " + $serviceTypeId + " " + $serviceTagId); 
         				var $url = "ticket/" + $ticketId;
         				ANSI_UTILS.doServerCall("GET", $url, $outbound, BUDGETCONTROL.getClaimPrefillSuccess, BUDGETCONTROL.getClaimPrefillFail, null, {"ticketId":$ticketId, "serviceTypeId":$serviceTypeId, "serviceTagId":$serviceTagId});
+        			});
+
+        			$(".zeroClaimButton").on("click", function($clickevent) {
+        				$clickevent.preventDefault();
+        				var $ticketId = $(this).attr("data-ticketid");
+        				var $serviceTypeId = $(this).attr("data-servicetypeid");
+        				var $serviceTagId = $(this).attr("data-servicetagid");
+        				console.log("zero claim: " + $ticketId + " " + $serviceTypeId + " " + $serviceTagId); 
+        				var $url = "ticket/" + $ticketId;
+        				ANSI_UTILS.doServerCall("GET", $url, $outbound, BUDGETCONTROL.getZerofillSuccess, BUDGETCONTROL.getClaimPrefillFail, null, {"ticketId":$ticketId, "serviceTypeId":$serviceTypeId, "serviceTagId":$serviceTagId});
         			});
 
         		},
@@ -459,7 +470,8 @@
 									} else {
     			            			$addButton = '<span class="newClaimButton" data-ticketid="'+row.ticket_id+'" data-servicetypeid="'+row.service_type_id+'" data-servicetagid="'+row.service_tag_id+'"><webthing:addNew>New Claim</webthing:addNew></span>';
 									}
-    			            		return $claimWeek + $addButton;
+									var $zeroButton = '<span class="zeroClaimButton" data-ticketid="'+row.ticket_id+'" data-servicetypeid="'+row.service_type_id+'" data-servicetagid="'+row.service_tag_id+'"><webthing:zero>Zero Claim</webthing:zero></span>';
+    			            		return $claimWeek + $addButton + $zeroButton;
     			            	} 
     			            },
     			            { title: "D/L", width:"6%", searchable:true, "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
@@ -682,6 +694,53 @@
         		getTicketDetailFail : function($data) {
 					console.log("getTicketDetailFail");        			
 					$("#globalMsg").html("Invalid system state. Reload and try again").show();					
+        		},
+        		
+        		
+        		
+        		getZerofillSuccess : function($data, $passThruData) {
+        			console.log("getClaimPrefillSuccess");
+        			var $ticketId = $passThruData["ticketId"];
+        			var $serviceTypeId = $passThruData["serviceTypeId"];
+        			var $serviceTagId = $passThruData["serviceTagId"];
+        			var $actDlAmt = $data.data.ticketDetail.actDlAmt.replace("$","").replace(",","");
+        			var $actPricePerCleaning = $data.data.ticketDetail.actPricePerCleaning.replace("$","").replace(",","");
+        			
+    				$("#bcr_new_claim_modal input").val("");
+    				$("#bcr_new_claim_modal select").val("");
+    				$("#bcr_new_claim_modal .err").html("");
+    				$("#bcr_new_claim_modal input[name='ticketId']").val($ticketId);
+    				$("#bcr_new_claim_modal input[name='dlAmt']").val("0.00");
+    				$("#bcr_new_claim_modal input[name='volumeClaimed']").val("0.00");
+    				$("#bcr_new_claim_modal .ticketId").html($ticketId);
+    				$("#bcr_new_claim_modal input[name='serviceTypeId']").val($serviceTypeId);
+    				$("#bcr_new_claim_modal .serviceTagId").html($serviceTagId);
+    				
+    				if ( BUDGETCONTROL.lastEmployeeEntered != null ) {
+    					$("#bcr_new_claim_modal input[name='employee']").val(BUDGETCONTROL.lastEmployeeEntered);
+    				}
+    				if ( BUDGETCONTROL.lastNoteEntered != null ) {
+    					$("#bcr_new_claim_modal input[name='notes']").val(BUDGETCONTROL.lastNoteEntered);
+    				}
+    				
+    				if ( BUDGETCONTROL.lastWorkWeekEntered != null ) {
+        				var $thisMonth = false;
+        				$.each( $("#bcr_new_claim_modal select[name='claimWeek'] option"), function($index, $value) {
+        					if ( $value.value == BUDGETCONTROL.lastWorkWeekEntered ) {
+        						$thisMonth = true;
+        					}
+        				});
+        				if ( $thisMonth == true ) {
+    						$("#bcr_new_claim_modal select[name='claimWeek']").val(BUDGETCONTROL.lastWorkWeekEntered);
+        				}
+    				}
+
+    				
+    				// this bit handles the display/hide of panels in the new claim modal    				
+					$("#bcr_new_claim_modal .err").html("");
+
+    				$("#bcr_new_claim_modal").dialog("open");
+    				$("#bcr_new_claim_modal .directLaborDetail select[name='claimWeek']").focus();
         		},
         		
         		
@@ -1642,7 +1701,16 @@
         		
         		makeEmployeeAutoComplete : function($employeeSelector) {
             		$( $employeeSelector ).autocomplete({
-						'source':"bcr/employee?",
+						//'source':"bcr/employee?",
+						'source':function(request, response) {
+							jQuery.get(
+								"bcr/employee", 
+								{term:request.term, divisionId:BUDGETCONTROL.divisionId}, 
+								function($data) {
+									response($data);
+								}
+							)
+						},
 						position:{my:"left top", at:"left bottom",collision:"none"},
 						appendTo:"#bcr_edit_form",
 						select: function( event, ui ) {
@@ -1653,6 +1721,11 @@
        			      	}
        			 	});
         		},
+        		
+        		
+        		
+				
+
         		
         		
         		
@@ -1771,22 +1844,10 @@
         			});
         			$("#bcr_new_claim_cancel").button('option', 'label', 'Cancel');
         			$("#bcr_new_claim_save").button('option', 'label', 'Save');
+        			$("#bcr_new_claim_cancel").attr("tabIndex", "9");
+        			$("#bcr_new_claim_save").attr("tabIndex", "10");
         			BUDGETCONTROL.makeEmployeeAutoComplete("#bcr_new_claim_modal input[name='employee']");
-        			
-        			$("#bcr_new_claim_modal input").keydown(function($event) {
-    					if ( $event.which == 13 ) {
-    						// when you hit "enter" on an input, click the go button
-	 						$event.preventDefault();
-	 						$("#bcr_new_claim_save").click();
-    					}
-    				});
-        			$("#bcr_new_claim_modal select").keydown(function($event) {
-    					if ( $event.which == 13 ) {
-    						// when you hit "enter" on an input, click the go button
-	 						$event.preventDefault();
-	 						$("#bcr_new_claim_save").click();
-    					}
-    				});
+        			BUDGETCONTROL.saveOnEnter();        			
         		},
         		
         		
@@ -1794,6 +1855,8 @@
         		// insert new Labor and/or expense claim, based on "new claim" modal from ticket panels
         		makeNewClaim : function() {
         			console.log("makeNewClaim");
+        			
+        			$("#bcr_new_claim_modal .err").html("");
         			
         			var $ticketId = $("#bcr_edit_modal").attr("ticketId");
         			var $serviceTagId = $("#bcr_edit_modal").attr("serviceTagId");
@@ -1822,7 +1885,8 @@
         				"volumeClaimed":$("#bcr_new_claim_modal input[name='volumeClaimed']").val(),
         				"expenseType":$("#bcr_new_claim_modal select[name='expenseType']").val(),
         				"employee":$("#bcr_new_claim_modal input[name='employee']").val(),
-        				"notes":$("#bcr_new_claim_modal input[name='notes']").val(),        				
+        				"laborNotes":$("#bcr_new_claim_modal input[name='laborNotes']").val(),
+        				"expenseNotes":$("#bcr_new_claim_modal input[name='expenseNotes']").val(), 
         			};
         			console.log($outbound);
         			ANSI_UTILS.doServerCall("POST", "bcr/newClaim", JSON.stringify($outbound), BUDGETCONTROL.makeNewClaimSuccess, BUDGETCONTROL.makeNewClaimFail);
@@ -1830,6 +1894,10 @@
         		
         		makeNewClaimFail : function($data) {
         			console.log("makeNewClaimFail");
+        			$.each($data.data.webMessages, function($index, $value) {
+        				var $loc = "#bcr_new_claim_modal ." + $index + "Err";
+        				$($loc).html($value[0]);
+        			});
         		},
         		
         		
@@ -2264,6 +2332,27 @@
         		},
         		
         		
+        		
+        		
+        		saveOnEnter : function() {
+	    			$("#bcr_new_claim_modal input").keydown(function($event) {
+						if ( $event.which == 13 ) {
+							// when you hit "enter" on an input, click the go button
+	 						$event.preventDefault();
+	 						$("#bcr_new_claim_save").click();
+						}
+					});
+	    			$("#bcr_new_claim_modal select").keydown(function($event) {
+						if ( $event.which == 13 ) {
+							// when you hit "enter" on an input, click the go button
+	 						$event.preventDefault();
+	 						$("#bcr_new_claim_save").click();
+						}
+					});
+        		},
+    			
+    			
+    			
         		ticketEditSave : function() {
         			console.log("ticketEditSave");
         			var $outbound = ANSI_UTILS.form2outbound("#bcr_edit_modal",{});
@@ -2660,8 +2749,8 @@
 				</colgroup>
    				<tr>
    					<td colspan="3" style="text-align:center; width:48%;"><span class="form-label">Direct Labor</span></td>
-   					<td rowspan="4" style="width:2%;">&nbsp;</td>
-   					<td rowspan="4" style="width:2%; border-left:solid 1px #404040;">&nbsp;</td>
+   					<td rowspan="5" style="width:2%;">&nbsp;</td>
+   					<td rowspan="5" style="width:2%; border-left:solid 1px #404040;">&nbsp;</td>
    					<td colspan="3" style="text-align:center; width:48%;"><span class="form-label">Expense</span></td>
    				</tr>
    				<tr>
@@ -2670,7 +2759,7 @@
    					<td><span class="dlAmtErr err"></span></td>
    					
    					<td class="form-label">Expense Volume Claimed:</td>
-   					<td><input type="text" name="expenseVolume"  tabindex="4"/></td>
+   					<td><input type="text" name="expenseVolume"  tabindex="5"/></td>
    					<td><span class="volumeErr err"></span></td>
    				</tr>
    				<tr>
@@ -2679,7 +2768,7 @@
    					<td><span class="volumeClaimedErr err"></span></td>
    					
    					<td class="form-label">Expense Type:</td>
-   					<td><select name="expenseType" tabindex="5"></select></td>
+   					<td><select name="expenseType" tabindex="6"></select></td>
    					<td><span class="expenseTypeErr err"></span></td>
    				</tr>
    				<tr>
@@ -2690,18 +2779,15 @@
    					<td>&nbsp;</td>
    					<td>&nbsp;</td>
    				</tr>
-   				
    				<tr>
-   					<td colspan="8" style="border-top:solid 1px #404040;" >&nbsp;</td>
+   					<td class="form-label">Notes:</td>
+   					<td><input type="text" name="laborNotes" tabindex="4" /></td>
+   					<td><span class="laborNotesErr err"></span></td>
+   					
+   					<td class="form-label">Notes:</td>
+   					<td><input type="text" name="expenseNotes" tabindex="7" /></td>
+   					<td><span class="expenseNotesErr err"></span></td>
    				</tr>
-   				
-   				
-   				<tr style="border-top:solid 1px #404040;">
-   					<td>&nbsp;</td>
-   					<td colspan="5" class="form-label">Notes:&nbsp;<input type="text" name="notes" tabindex="7" /></td>
-   					<td><span class="notesErr err"></span></td>
-   					<td>&nbsp;</td>
-   				</tr> 
    			</table>
 			
 			
