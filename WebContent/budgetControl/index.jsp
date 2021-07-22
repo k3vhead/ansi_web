@@ -158,6 +158,7 @@
     			workYear : null, 
     			workWeek : null,
     			workCalendar : null,
+    			title : null,   // this holds all of the data from the original "title" call (a duplicate of divId, work year/week/calendar)
     			// this holds the ticket panel datatables
         		ticketTable : {},
         		// these are valid values for posts to bcr/ticket and bcr/ticketClaim
@@ -376,9 +377,9 @@
         			        			
         			
         			if ( $weekNum==null || $weekNum=='') {
-        				$fileName = "All Tickets";
+        				$fileName = "All_Tickets_" + BUDGETCONTROL.title.div + "_" + BUDGETCONTROL.title.workYear + "_" + BUDGETCONTROL.workWeek  ;
         			} else {
-        				$fileName = "Tickets Week " + $weekNum;
+        				$fileName = "Weekly_Tickets_ " + BUDGETCONTROL.title.div + "_" + BUDGETCONTROL.title.workYear + "_" + $weekNum;
         			}
         			console.log("doTicketLookup " + $fileName + "  " + $destination);
         			
@@ -2416,6 +2417,7 @@
         		
         		titleSaveSuccess : function($data) {
         			console.log("titleSaveSuccess");
+        			BUDGETCONTROL.title = $data.data; // this is a duplicate of some of the BUDGETCONTROL.* items, some cleanup would be a good idea but ... priorities
         			
 					$weekList = [];        			
         			$.each($data.data.workCalendar, function($index, $value) {
@@ -2423,15 +2425,16 @@
         			});
         			
         			var $workWeeks = $weekList.join(",");
+        			BUDGETCONTROL.divisionId = $data.data.divisionId;
+        			BUDGETCONTROL.workYear = $data.data.workYear; 
+        			BUDGETCONTROL.workWeek = $workWeeks;
+        			BUDGETCONTROL.workCalendar = $data.data.workCalendar;
+        			
         			BUDGETCONTROL.initializeActualDLPanel($data);        			
         			BUDGETCONTROL.initializeBudgetControlTotalsPanel($data);
         			BUDGETCONTROL.initializeEmployeePanel($data);
         			BUDGETCONTROL.populateTicketTables($data);
         			BUDGETCONTROL.populateTitlePanel($data);
-        			BUDGETCONTROL.divisionId = $data.data.divisionId;
-        			BUDGETCONTROL.workYear = $data.data.workYear; 
-        			BUDGETCONTROL.workWeek = $workWeeks;
-        			BUDGETCONTROL.workCalendar = $data.data.workCalendar;
         			var $outbound = {"divisionId":$data.data.divisionId, "workYear":$data.data.workYear, "workWeek":$workWeeks};        			
         			// ANSI_UTILS.doServerCall("GET", "bcr/actualDL", $outbound, BUDGETCONTROL.populateActualDLPanel, BUDGETCONTROL.bcrError);
         			ANSI_UTILS.doServerCall("GET", "bcr/bcTotals", $outbound, BUDGETCONTROL.populateBudgetControlTotalsPanel, BUDGETCONTROL.bcrError);
