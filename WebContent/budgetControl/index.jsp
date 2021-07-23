@@ -589,6 +589,7 @@
         		
         		expenseSaveSuccess : function($data) {
         			console.log("expenseSaveSuccess");
+        			$("#bcr_claim_edit_cancel").attr("pending_update","no");
         			BUDGETCONTROL.getTicketDetailSuccess($data);
         			BUDGETCONTROL.refreshPanels($data);
         			$("#bcr_delete_confirmation_modal").dialog("close");
@@ -686,7 +687,7 @@
 					    $select.append(new Option(val.displayValue, val.value));
 					});	
 					
-
+					
         			$("#bcr_edit_modal").dialog("open");
         		}, 
         		
@@ -1217,7 +1218,8 @@
 		    					$("#bcr_delete_confirmation_modal").dialog("open");
 		    				});
 		    				$(".expense-edit").click(function($event) {
-		    					var myTable = $("#dl-expense-table").DataTable();		    					
+		    					var myTable = $("#dl-expense-table").DataTable();
+		    					$("#bcr_claim_edit_cancel").attr("pending_update","yes");
 	    						$.each($displayColumns, function($index, $value) {myTable.columns($value).visible(false);});
 	    						$.each($editColumns, function($index, $value) {myTable.columns($value).visible(true);});
 	    						$(".expense-edit").hide();
@@ -1229,7 +1231,8 @@
 	    						$("#dl-expense-table tbody input[name='expenseVolume']").eq(0).focus();  // set focus to expenseVolume in row 0 in tbody
 		    				});
     						$(".expense-edit-cancel").click(function($event) {
-		    					var myTable = $("#dl-expense-table").DataTable();		    						    						
+		    					var myTable = $("#dl-expense-table").DataTable();	
+		    					$("#bcr_claim_edit_cancel").attr("pending_update","no");
 	    						$.each($editColumns, function($index, $value) {myTable.columns($value).visible(false);});
 	    						$.each($displayColumns, function($index, $value) {myTable.columns($value).visible(true);});
 	    						$(".expense-edit").show();
@@ -1292,6 +1295,7 @@
 			            	
 							$("#bcr_edit_modal .newExpenseButton").click(function() {
 								console.log("New Expense Click");
+								$("#bcr_claim_edit_cancel").attr("pending_update","yes");
 								$("#bcr_edit_modal .displayExpenseItem").hide();
 								$("#bcr_edit_modal .newExpenseItem").fadeIn(250);
 								$("#newExpenseVolume").focus();
@@ -1306,6 +1310,7 @@
 							
 							$("#bcr_edit_modal .cancelExpense").click(function() {
 								console.log("Cancel Expense Click");
+								$("#bcr_claim_edit_cancel").attr("pending_update","no");
 								$("#bcr_edit_modal .newExpenseItem").hide();
 								$("#bcr_edit_modal .displayExpenseItem").fadeIn(250);
 							});
@@ -1480,7 +1485,8 @@
 		    				});
 		    				$(".labor-edit").click(function($event){
 		    					console.log("labor edit");
-		    					var myTable = $("#dl-claim-table").DataTable();		    					
+		    					var myTable = $("#dl-claim-table").DataTable();	
+		    					$("#bcr_claim_edit_cancel").attr("pending_update","yes");
 	    						$.each($displayColumns, function($index, $value) {myTable.columns($value).visible(false);});
 	    						$.each($editColumns, function($index, $value) {myTable.columns($value).visible(true);});
 	    						$(".labor-edit").hide();
@@ -1492,7 +1498,8 @@
 	    						$("#dl-claim-table tbody input[name='dlAmt']").eq(0).focus();  // set focus to dlAmt in row 0 in tbody
 		    				});
 		    				$(".labor-edit-cancel").click(function($event) {
-		    					var myTable = $("#dl-claim-table").DataTable();		    						    						
+		    					var myTable = $("#dl-claim-table").DataTable();	
+		    					$("#bcr_claim_edit_cancel").attr("pending_update","no");
 	    						$.each($editColumns, function($index, $value) {myTable.columns($value).visible(false);});
 	    						$.each($displayColumns, function($index, $value) {myTable.columns($value).visible(true);});
 	    						$(".labor-edit").show();
@@ -1608,6 +1615,7 @@
 		    				});
 							$("#bcr_edit_modal .newLaborButton").click(function() {
 								console.log("New Labor Click");
+								$("#bcr_claim_edit_cancel").attr("pending_update","yes");
 								$("#bcr_edit_modal .displayLaborItem").hide();
 								$("#bcr_edit_modal .newLaborItem").fadeIn(250);
 								$("#newDlAmt").focus();
@@ -1621,6 +1629,7 @@
 		    				});
 							$("#bcr_edit_modal .cancelLabor").click(function() {
 								console.log("Cancel Labor Click");
+								$("#bcr_claim_edit_cancel").attr("pending_update","no");
 								$("#bcr_edit_modal .newLaborItem").hide();
 								$("#bcr_edit_modal .displayLaborItem").fadeIn(250);
 							});
@@ -1666,11 +1675,17 @@
         					{
         						id:  "bcr_claim_edit_cancel",
         						click: function($event) {
-        							$( "#bcr_edit_modal" ).dialog("close");    							
+        							var $pending = $("#bcr_claim_edit_cancel").attr("pending_update");
+        							if ( $pending == "no" ) {
+        								$( "#bcr_edit_modal" ).dialog("close");
+        							} else {
+										$( "#bcr_edit_modal .bcr_edit_message" ).html("Updates are pending. Cancel or Save").show().fadeOut(3000);        								
+        							}
         						}
         					}
         				]
         			});	
+        			$("#bcr_claim_edit_cancel").attr("pending_update","no");
         			$("#bcr_claim_edit_cancel").button('option', 'label', 'Done');
         			
         			$("#dlAmtField").blur( function() {
