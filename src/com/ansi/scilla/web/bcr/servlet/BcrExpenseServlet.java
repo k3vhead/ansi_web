@@ -2,6 +2,7 @@ package com.ansi.scilla.web.bcr.servlet;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.sql.Connection;
 import java.util.Calendar;
 import java.util.List;
@@ -206,7 +207,7 @@ public class BcrExpenseServlet extends AbstractServlet {
 			ticketClaim.setHours(BigDecimal.ZERO);
 			ticketClaim.setNotes(bcrExpenseRequest.getNotes());
 			ticketClaim.setPassthruExpenseType(bcrExpenseRequest.getExpenseType());
-			ticketClaim.setPassthruExpenseVolume(new BigDecimal(bcrExpenseRequest.getVolume()));
+			ticketClaim.setPassthruExpenseVolume(  (new BigDecimal(bcrExpenseRequest.getVolume())).round(MathContext.DECIMAL32) );
 			ticketClaim.setServiceType(bcrExpenseRequest.getServiceTagId());
 			ticketClaim.setTicketId(bcrExpenseRequest.getTicketId());
 			ticketClaim.setUpdatedBy(sessionUser.getUserId());
@@ -228,7 +229,7 @@ public class BcrExpenseServlet extends AbstractServlet {
 		ticketClaim.selectOne(conn);
 		
 		ticketClaim.setPassthruExpenseType(bcrExpenseRequest.getExpenseType());
-		ticketClaim.setPassthruExpenseVolume(new BigDecimal(bcrExpenseRequest.getVolume()));
+		ticketClaim.setPassthruExpenseVolume(  (new BigDecimal(bcrExpenseRequest.getVolume())).round(MathContext.DECIMAL32) );
 		ticketClaim.setNotes(bcrExpenseRequest.getNotes());
 		ticketClaim.setUpdatedBy(sessionUser.getUserId());
 		ticketClaim.setUpdatedDate(today.getTime());

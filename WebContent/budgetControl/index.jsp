@@ -169,6 +169,9 @@
         		},
         		// these are the valid expense types when adding a new pass-thru expense (populated by init call)
         		expenseTypes : [],
+        		lastEmployeeEntered : null,
+    			lastNoteEntered : null,
+    			lastWorkWeekEntered : null,
         		
         		
         		
@@ -295,7 +298,13 @@
 				
 				
         		doFunctionBinding : function() {
-        			console.log("doFunctionBinding");
+        			console.log("doFunctionBinding");  
+        			// make sure a click only does stuff one time
+        			$(".ticket-clicker").off("click");
+        			$(".bcr-edit-clicker").off("click");
+        			$(".newClaimButton").off("click");
+        			
+        			// make sure a click actually does something (but only once)
         			$(".ticket-clicker").on("click", function($clickevent) {
     					$clickevent.preventDefault();
     					var $ticketId = $(this).attr("data-id");
@@ -321,23 +330,16 @@
         				var $ticketId = $(this).attr("data-ticketid");
         				var $serviceTypeId = $(this).attr("data-servicetypeid");
         				var $serviceTagId = $(this).attr("data-servicetagid");
-        				console.log("New claim: " + $ticketId + " " + $serviceTypeId + " " + $serviceTagId);   
-        				$("#bcr_new_claim_modal input").val("");
-        				$("#bcr_new_claim_modal select").val("");
-        				$("#bcr_new_claim_modal .err").html("");
-        				$("#bcr_new_claim_modal input[name='ticketId']").val($ticketId);
-        				$("#bcr_new_claim_modal .ticketId").html($ticketId);
-        				$("#bcr_new_claim_modal input[name='serviceTypeId']").val($serviceTypeId);
-        				$("#bcr_new_claim_modal .serviceTagId").html($serviceTagId);
-        				
-        				$("#bcr_new_claim_modal").dialog("open");
-        				$("#directLaborFieldContainer").click();
-
+        				console.log("New claim: " + $ticketId + " " + $serviceTypeId + " " + $serviceTagId); 
+        				var $url = "ticket/" + $ticketId;
+        				ANSI_UTILS.doServerCall("GET", $url, $outbound, BUDGETCONTROL.getClaimPrefillSuccess, BUDGETCONTROL.getClaimPrefillFail, null, {"ticketId":$ticketId, "serviceTypeId":$serviceTypeId, "serviceTagId":$serviceTagId});
         			});
 
         		},
         		
-        		
+
+
+
         		
         		doMonthlyFilter : function($destination, $url, $outbound) {
         			console.log("doMonthlyFilter ")
@@ -581,6 +583,54 @@
         			$("#bcr_edit_modal .bcr_edit_message").show().fadeOut(6000);
         		},
         		
+        		
+        		
+        		getClaimPrefillFail : function($data) {
+        			console.log("getClaimPrefillFail");
+        			$("#globalMsg").html("System Error retrieving ticket detail. Contact Support")
+        		},
+        		
+        		
+        		getClaimPrefillSuccess : function($data, $passThruData) {
+        			console.log("getClaimPrefillSuccess");
+        			var $ticketId = $passThruData["ticketId"];
+        			var $serviceTypeId = $passThruData["serviceTypeId"];
+        			var $serviceTagId = $passThruData["serviceTagId"];
+        			var $actDlAmt = $data.data.ticketDetail.actDlAmt.replace("$","").replace(",","");
+        			var $actPricePerCleaning = $data.data.ticketDetail.actPricePerCleaning.replace("$","").replace(",","");
+        			
+    				$("#bcr_new_claim_modal input").val("");
+    				$("#bcr_new_claim_modal select").val("");
+    				$("#bcr_new_claim_modal .err").html("");
+    				$("#bcr_new_claim_modal input[name='ticketId']").val($ticketId);
+    				$("#bcr_new_claim_modal input[name='dlAmt']").val($actDlAmt);
+    				$("#bcr_new_claim_modal input[name='volumeClaimed']").val($actPricePerCleaning);
+    				$("#bcr_new_claim_modal .ticketId").html($ticketId);
+    				$("#bcr_new_claim_modal input[name='serviceTypeId']").val($serviceTypeId);
+    				$("#bcr_new_claim_modal .serviceTagId").html($serviceTagId);
+    				
+    				if ( BUDGETCONTROL.lastEmployeeEntered != null ) {
+    					$("#bcr_new_claim_modal input[name='employee']").val(BUDGETCONTROL.lastEmployeeEntered);
+    				}
+    				if ( BUDGETCONTROL.lastNoteEntered != null ) {
+    					$("#bcr_new_claim_modal input[name='notes']").val(BUDGETCONTROL.lastNoteEntered);
+    				}
+    				
+    				if ( BUDGETCONTROL.lastWorkWeekEntered != null ) {
+        				var $thisMonth = false;
+        				$.each( $("#bcr_new_claim_modal select[name='claimWeek'] option"), function($index, $value) {
+        					if ( $value.value == BUDGETCONTROL.lastWorkWeekEntered ) {
+        						$thisMonth = true;
+        					}
+        				});
+        				if ( $thisMonth == true ) {
+    						$("#bcr_new_claim_modal select[name='claimWeek']").val(BUDGETCONTROL.lastWorkWeekEntered);
+        				}
+    				}
+    				
+    				$("#bcr_new_claim_modal").dialog("open");
+    				$("#directLaborFieldContainer").click();
+        		},
         		
         		
         		
@@ -989,6 +1039,7 @@
 						$("#bcr_new_claim_modal .err").html("");
 						$("#bcr_new_claim_modal .directLaborDetails").show();
 						$("#bcr_new_claim_modal").attr("data-claimtype","labor");
+						$("#bcr_new_claim_modal .directLaborDetails select[name='claimWeek']").focus();
 					});
 					
 					$("#expenseFieldContainer").click(function($event) {
@@ -1000,6 +1051,7 @@
 						$("#bcr_new_claim_modal .err").html("");
 						$("#bcr_new_claim_modal .expenseDetails").show();
 						$("#bcr_new_claim_modal").attr("data-claimtype","expense");
+						$("#bcr_new_claim_modal .expenseDetails select[name='claimWeek']").focus();
 					});
 					
 
@@ -1051,6 +1103,7 @@
 	            	var $displayColumns = [$columnExpense,$columnType,$columnNotes];
 	            	var $editColumns = [$columnExpenseEdit, $columnTypeEdit,$columnNotesEdit];
 	            	
+	            	var $tabIndex = 0;
     				
 					BUDGETCONTROL.dlExpenseTable = $("#dl-expense-table").DataTable( {
 		    			data : $data.data.expenses,
@@ -1069,14 +1122,16 @@
 		    				},	
 		    				{ width:"125px", title:"Expense Vol", className:"dt-right", orderable:true, visible:false,
 		    					data:function($row,$type,$set) {
-		    						var $edit = '<input type="text" name="expenseVolume" value="'+$row.passthruVolume.toFixed(2)+'" style="width:80px;" />';
+		    						$tabIndex++;
+		    						var $edit = '<input type="text" name="expenseVolume" tabindex="'+$tabIndex+'" value="'+$row.passthruVolume.toFixed(2)+'" style="width:80px;" />';
 		    						return $edit;
 		    					}
 		    				},
 		    				{ width:"200px", title:"Expense Type", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>", data:'passthruExpenseType'},
 		    				{ width:"200px", title:"Expense Type", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>", visible:true,
 		    					data:function($row,$type,$set) {
-		    						var $edit = '<select name="expenseType"></select>';
+		    						$tabIndex++;
+		    						var $edit = '<select name="expenseType" tabindex="'+$tabIndex+'"></select>';
 		    						return $edit;
 		    					}
 		    				
@@ -1084,13 +1139,15 @@
 		    				{ width:"200px", title:"Notes", className:"dt-head-left", orderable:true, defaultContent: "<i>N/A</i>", data:'notes'},
 		    				{ width:"200px", title:"Notes", className:"dt-head-left", orderable:true, visible:false,
 		    					data:function($row,$type,$set) {
-		    						var $edit = '<input type="text" name="notes" value="'+$row.notes+'" style="width:80px;" />';
+		    						$tabIndex++;
+		    						var $edit = '<input type="text" name="notes" value="'+$row.notes+'" tabindex="'+$tabIndex+'" style="width:80px;" />';
 		    						return $edit;
 		    					}
 		    				},
 		    				{ width:"50px", title:$actionHeader, className:"dt-center", orderable:false, defaultContent: "<i>N/A</i>",
 		    					data:function($row,$type,$set) {
-		    						var $save = '<span class="action-link save-expense" data-claimid="'+$row.claimId+'"><webthing:checkmark>Save</webthing:checkmark></span>';
+		    						$tabIndex++;
+		    						var $save = '<span class="action-link save-expense" data-claimid="'+$row.claimId+'" tabindex="'+$tabIndex+'"><webthing:checkmark>Save</webthing:checkmark></span>';
 		    						var $delete = '<span class="action-link delete-expense" data-claimid="'+$row.claimId+'"><webthing:delete>Delete</webthing:delete></span>';
 		    						return $delete + $save;		
 		    					}
@@ -1129,6 +1186,7 @@
 	    						$(".save-expense").show();
 	    						$(".newExpenseItem").hide();
 	    						$(".displayExpenseItem").hide();
+	    						$("#dl-expense-table tbody input[name='expenseVolume']").eq(0).focus();  // set focus to expenseVolume in row 0 in tbody
 		    				});
     						$(".expense-edit-cancel").click(function($event) {
 		    					var myTable = $("#dl-expense-table").DataTable();		    						    						
@@ -1171,6 +1229,13 @@
     		        			var $url = "bcr/expense/" + $claimId;
     		        			ANSI_UTILS.doServerCall("POST", $url, JSON.stringify($outbound), BUDGETCONTROL.expenseSaveSuccess, BUDGETCONTROL.claimUpdateFail);
     						});
+    						$(".save-expense").keydown(function($event) {
+		    					if ( $event.which == 32 ) {
+		    						// on space bar, act like you clicked the icon
+			 						$event.preventDefault();
+		    						$(this).click();
+		    					}
+		    				});
 			            },
 			            "footerCallback" : function( row, data, start, end, display ) {
 			            	var api = this.api();
@@ -1180,24 +1245,47 @@
 			            		return mySum;
 			            	}, 0);
 			            	
-			            	$( api.column($columnExpense).footer() ).html( '<span class="newExpenseItem"><input type="text" placeholder="0.00" style="width:80px;" name="expenseVolume"/><br /></span><span class="displayExpenseItem">' + expenseTotal.toFixed(2) + '</span>');
-			            	$( api.column($columnType).footer() ).html( '<span class="newExpenseItem"><select name="expenseType"></select><br /></span>' );
-			            	$( api.column($columnNotes).footer() ).html( '<span class="newExpenseItem"><input type="text" style="width:120px;" name="notes"/><br /></span>');
-			            	$( api.column($columnAction).footer() ).html( '<span class="newExpenseItem"><webthing:ban styleClass="cancelExpense">Cancel</webthing:ban><webthing:checkmark styleClass="saveNewExpense">Save</webthing:checkmark></span><span class="displayExpenseItem"><webthing:addNew styleClass="newExpenseButton">New Expense</webthing:addNew></span>' );
+			            	$( api.column($columnExpense).footer() ).html( '<span class="newExpenseItem"><input type="text" placeholder="0.00" style="width:80px;" id="newExpenseVolume" name="expenseVolume" tabindex="10" /><br /></span><span class="displayExpenseItem">' + expenseTotal.toFixed(2) + '</span>');
+			            	$( api.column($columnType).footer() ).html( '<span class="newExpenseItem"><select name="expenseType" tabindex="11"></select><br /></span>' );
+			            	$( api.column($columnNotes).footer() ).html( '<span class="newExpenseItem"><input type="text" style="width:120px;" name="notes" tabindex="12" /><br /></span>');
+			            	$( api.column($columnAction).footer() ).html( '<span class="newExpenseItem"><webthing:ban styleClass="cancelExpense" tabindex="13">Cancel</webthing:ban><webthing:checkmark styleClass="saveNewExpense" tabindex="14">Save</webthing:checkmark></span><span class="displayExpenseItem"><webthing:addNew styleClass="newExpenseButton">New Expense</webthing:addNew></span>' );
 			            	
 							$("#bcr_edit_modal .newExpenseButton").click(function() {
 								console.log("New Expense Click");
 								$("#bcr_edit_modal .displayExpenseItem").hide();
 								$("#bcr_edit_modal .newExpenseItem").fadeIn(250);
+								$("#newExpenseVolume").focus();
 							});
+							$("#bcr_edit_modal .newExpenseButton").keydown(function($event) {
+		    					if ( $event.which == 32 ) {
+		    						// on space bar, act like you clicked the icon
+			 						$event.preventDefault();
+		    						$(this).click();
+		    					}
+		    				});
+							
 							$("#bcr_edit_modal .cancelExpense").click(function() {
 								console.log("Cancel Expense Click");
 								$("#bcr_edit_modal .newExpenseItem").hide();
 								$("#bcr_edit_modal .displayExpenseItem").fadeIn(250);
 							});
+							$("#bcr_edit_modal .cancelExpense").keydown(function($event) {
+		    					if ( $event.which == 32 ) {
+		    						// on space bar, act like you clicked the icon
+			 						$event.preventDefault();
+		    						$(this).click();
+		    					}
+		    				});
 							$("#bcr_edit_modal .saveNewExpense").click(function() {
 								BUDGETCONTROL.expenseSave();						
 							});
+							$("#bcr_edit_modal .saveNewExpense").keydown(function($event) {
+		    					if ( $event.which == 32 ) {
+		    						// on space bar, act like you clicked the icon
+			 						$event.preventDefault();
+		    						$(this).click();
+		    					}
+		    				});
 							
 			            	
 			            }
@@ -1232,11 +1320,15 @@
 	            	var $editColumns = [$columnLaborEdit, $columnClaimedEdit,$columnEquipmentEdit, $columnEmployeeEdit,$columnNotesEdit];
 	            	
 	            	var $equipmentList = [];
+	            	var $tabIndex = 22; //in the input, DL Amt is 20, volume claimed is 21, so start the equipment at 22
 	            	$.each($data.data.equipmentTags, function($index, $value) {
-	            		$equipmentList.push('<span class="jobtag-display equipment-claim" style="cursor:pointer;" data-tagid="'+$value.tagId+'">' + $value.abbrev + "</span>");
+	            		$equipmentList.push('<span class="jobtag-display equipment-claim" style="cursor:pointer;" tabindex="'+$tabIndex+'" data-tagid="'+$value.tagId+'">' + $value.abbrev + "</span>");
+	            		$tabIndex = $tabIndex + 1;
 	            	});
 	            	var $equipmentDisplay = $equipmentList.join("");
         			
+	            	var $tabIndex = 0;
+	            	
 					// Make DL Claim Table:
 					BUDGETCONTROL.dlClaimTable = $("#dl-claim-table").DataTable( {
 		    			data : $data.data.dlClaims,
@@ -1253,7 +1345,8 @@
 		    				},
 		    				{ width:"125px", title:"Direct Labor", className:"dt-right", orderable:true, visible:false,
 		    					data:function($row,$type,$set) {
-		    						var $edit = '<input type="text" name="dlAmt" value="' + $row.dlAmt.toFixed(2) + '" style="width:80px;" />';		    						
+		    						$tabIndex++;
+		    						var $edit = '<input type="text" name="dlAmt" tabindex="'+$tabIndex+'" value="' + $row.dlAmt.toFixed(2) + '" style="width:80px;" />';		    						
 		    						return $edit;
 		    					}
 		    				},
@@ -1264,7 +1357,8 @@
 		    				},	
 		    				{ width:"125px", title:"Volume Claimed", className:"dt-right", orderable:true, visible:false,
 		    					data:function($row,$type,$set) {
-		    						var $edit = '<input type="text" name="volumeClaimed" value="' + $row.volumeClaimed.toFixed(2) + '" style="width:80px;" />';
+		    						$tabIndex++;
+		    						var $edit = '<input type="text" name="volumeClaimed" tabindex="'+$tabIndex+'" value="' + $row.volumeClaimed.toFixed(2) + '" style="width:80px;" />';
 		    						return $edit;
 		    					}
 		    				},
@@ -1293,10 +1387,11 @@
     			            			$rowTags = row.equipmentTags.split(",");
     			            		}
     			            		$.each($data.data.equipmentTags, function($index, $value) {
+    			            			$tabIndex++;
     			            			if ( $rowTags.includes($value.abbrev) ) {
-    			            				$display.push('<span class="jobtag-display equipment-claim-updt jobtag-selected" style="cursor:pointer;" data-tagid="'+$value.tagId+'">' + $value.abbrev + '</span>');
+    			            				$display.push('<span class="jobtag-display equipment-claim-updt jobtag-selected" tabindex="'+$tabIndex+'" style="cursor:pointer;" data-tagid="'+$value.tagId+'">' + $value.abbrev + '</span>');
     			            			} else {
-    			            				$display.push('<span class="jobtag-display equipment-claim-updt" style="cursor:pointer;" data-tagid="'+$value.tagId+'">' + $value.abbrev + "</span>");
+    			            				$display.push('<span class="jobtag-display equipment-claim-updt" tabindex="'+$tabIndex+'" style="cursor:pointer;" data-tagid="'+$value.tagId+'">' + $value.abbrev + "</span>");
     			            			}
     			            		});
 
@@ -1306,25 +1401,32 @@
 		    				{ width:"300px", title:"Employee", className:"dt-head-left", orderable:true, visible:true, defaultContent: "<i>N/A</i>", data:'employee'},
 		    				{ width:"300px", title:"Employee", className:"dt-head-left", orderable:true, visible:true, defaultContent: "<i>N/A</i>", 
 		    					data:function($row,$type,$set) {
-		    						var $edit = '<input type="text" name="employee" value="' + $row.employee + '"/>';
+		    						$tabIndex++;
+		    						var $edit = '<input type="text" name="employee" tabindex="'+$tabIndex+'" value="' + $row.employee + '"/>';
 		    						return $edit;
 		    					} 
 		    				},
 		    				{ width:"300px", title:"Notes", className:"dt-head-left", orderable:true, visible:true, defaultContent: "<i>N/A</i>", data:'notes'},
 		    				{ width:"300px", title:"Notes", className:"dt-head-left", orderable:true, visible:false, defaultContent: "<i>N/A</i>", 
 		    					data:function($row,$type,$set) {
-		    						var $edit = '<input type="text" name="laborNotes" value="' + $row.notes + '"/>';
+		    						$tabIndex++;
+		    						var $edit = '<input type="text" name="laborNotes" tabindex="'+$tabIndex+'" value="' + $row.notes + '"/>';
 		    						return $edit;
 		    					} 
 		    				},
 		    				{ width:"30px", title:$actionHeader, className:"dt-center", orderable:false, visible:true, defaultContent: "<i>N/A</i>",
 		    					data:function($row,$type,$set) {
-		    						var $save = '<span class="action-link save-labor" data-claimid="'+$row.claimId+'"><webthing:checkmark>Save</webthing:checkmark></span>';
+		    						$tabIndex++;
+		    						var $save = '<span class="action-link save-labor" tabindex="'+$tabIndex+'" data-claimid="'+$row.claimId+'"><webthing:checkmark>Save</webthing:checkmark></span>';
 		    						var $delete = '<span class="action-link delete-claim" data-claimid="'+$row.claimId+'"><webthing:delete>Delete</webthing:delete></span>';
 		    						return $delete + $save;		
 		    					}
 		    				},
 		    			],
+		    			//"createdRow" : function($row, $data, $dataIndex, cells ) {
+		    			//	$rowNum++;
+		    			//	$fieldIndex = 1;
+		    			//},
 		    			"drawCallback": function( settings ) {
 		    				// something to make this do something useful		
 		    				$(".labor-edit-cancel").hide();
@@ -1347,6 +1449,7 @@
 	    						$(".save-labor").show();
 	    						$(".newLaborItem").hide();
 	    						$(".displayLaborItem").hide();
+	    						$("#dl-claim-table tbody input[name='dlAmt']").eq(0).focus();  // set focus to dlAmt in row 0 in tbody
 		    				});
 		    				$(".labor-edit-cancel").click(function($event) {
 		    					var myTable = $("#dl-claim-table").DataTable();		    						    						
@@ -1363,6 +1466,14 @@
 		    				// for on-click to work, the field has to be visible. So hide it after the binding
 		    				$(".equipment-claim-updt").click(function($event) {
 		    					$(this).toggleClass("jobtag-selected");
+		    				});
+		    				$(".equipment-claim-updt").keydown(function($event) {
+		    					console.log("equipment keydown: " + $event.which);
+		    					if ( $event.which == 32 ) {
+		    						// on space bar, act like you clicked the icon
+			 						$event.preventDefault();
+		    						$(this).click();
+		    					}
 		    				});
 		    				$("#dl-claim-table").DataTable().columns($columnEquipmentEdit).visible(false);
 		    				
@@ -1407,6 +1518,13 @@
     		        			var $url = "bcr/ticketClaim/" + $claimId;
     		        			ANSI_UTILS.doServerCall("POST", $url, JSON.stringify($outbound), BUDGETCONTROL.expenseSaveSuccess, BUDGETCONTROL.claimUpdateFail);
 		    				});
+		    				$(".save-labor").keydown(function($event) {
+		    					if ( $event.which == 32 ) {
+		    						// on space bar, act like you clicked the icon
+			 						$event.preventDefault();
+		    						$(this).click();
+		    					}
+		    				});
 			            },
 			            "footerCallback" : function( row, data, start, end, display ) {
 			            	var api = this.api();
@@ -1420,32 +1538,69 @@
 			            		return mySum;
 			            	}, 0);			            	
 
-			            	$( api.column($columnLabor).footer() ).html( '<span class="newLaborItem"><input type="text" placeholder="0.00" style="width:80px;" name="dlAmt"/><br /></span><span class="displayLaborItem">' + dlTotal.toFixed(2) + '</span>');
-			            	$( api.column($columnClaimed).footer() ).html( '<span class="newLaborItem"><input type="text" placeholder="0.00" style="width:80px;" name="volumeClaimed"/><br /></span><span class="displayLaborItem">' + volumeClaimedTotal.toFixed(2) + '</span>');
+			            	$( api.column($columnLabor).footer() ).html( '<span class="newLaborItem"><input type="text" placeholder="0.00" style="width:80px;" tabindex="20" id="newDlAmt" name="dlAmt"/><br /></span><span class="displayLaborItem">' + dlTotal.toFixed(2) + '</span>');
+			            	$( api.column($columnClaimed).footer() ).html( '<span class="newLaborItem"><input type="text" placeholder="0.00" style="width:80px;" tabindex="21" name="volumeClaimed"/><br /></span><span class="displayLaborItem">' + volumeClaimedTotal.toFixed(2) + '</span>');
 			            	$( api.column($columnEquipment).footer() ).html( '<span class="newLaborItem">'+$equipmentDisplay+'<br /></span><span class="displayLaborItem">&nbsp;</span>');
-			            	$( api.column($columnEmployee).footer() ).html( '<span class="newLaborItem"><input type="text" style="width:120px;" name="employee"/><br /></span>');
-			            	$( api.column($columnNotes).footer() ).html( '<span class="newLaborItem"><input type="text" style="width:120px;" name="laborNotes"/><br /></span>');
-			            	$( api.column($columnAction).footer() ).html( '<span class="newLaborItem"><webthing:ban styleClass="cancelLabor">Cancel</webthing:ban><webthing:checkmark styleClass="saveNewLabor">Save</webthing:checkmark></span><span class="displayLaborItem"><webthing:addNew styleClass="newLaborButton">New Claim</webthing:addNew></span>' );
+			            	$tabIndex++;
+			            	$( api.column($columnEmployee).footer() ).html( '<span class="newLaborItem"><input type="text" style="width:120px;" name="employee" tabindex="'+$tabIndex+'" /><br /></span>');
+			            	$tabIndex++;
+			            	$( api.column($columnNotes).footer() ).html( '<span class="newLaborItem"><input type="text" style="width:120px;" name="laborNotes" tabindex="'+$tabIndex+'"/><br /></span>');
+			            	$tabIndex++;
+			            	var $cancelString = '<webthing:ban styleClass="cancelLabor" tabindex="'+$tabIndex+'">Cancel</webthing:ban>';
+			            	$tabIndex++;
+			            	var $saveString = '<webthing:checkmark styleClass="saveNewLabor" tabindex="'+$tabIndex+'">Save</webthing:checkmark>';
+			            	$( api.column($columnAction).footer() ).html( '<span class="newLaborItem">'+$cancelString+$saveString + '</span><span class="displayLaborItem"><webthing:addNew styleClass="newLaborButton">New Claim</webthing:addNew></span>' );
+			            	$tabIndex++;
 		 					$("#bcr_edit_modal").attr("volumeClaimedTotal", volumeClaimedTotal);
 		 					
 		 					BUDGETCONTROL.makeEmployeeAutoComplete("#bcr_edit_modal input[name='employee']");
 		 					
 		 					$("#bcr_edit_modal .equipment-claim").click(function() {
+		 						console.log("equipment click");
 		 						$(this).toggleClass("jobtag-selected");
 		 					});
+		 					$("#bcr_edit_modal .equipment-claim").keydown(function($event) {
+		    					if ( $event.which == 32 ) {
+		    						// on space bar, act like you clicked the icon
+			 						$event.preventDefault();
+		    						$(this).click();
+		    					}
+		    				});
 							$("#bcr_edit_modal .newLaborButton").click(function() {
 								console.log("New Labor Click");
 								$("#bcr_edit_modal .displayLaborItem").hide();
 								$("#bcr_edit_modal .newLaborItem").fadeIn(250);
+								$("#newDlAmt").focus();
 							});
+							$("#bcr_edit_modal .newLaborButton").keydown(function($event) {
+		    					if ( $event.which == 32 ) {
+		    						// on space bar, act like you clicked the icon
+			 						$event.preventDefault();
+		    						$(this).click();
+		    					}
+		    				});
 							$("#bcr_edit_modal .cancelLabor").click(function() {
 								console.log("Cancel Labor Click");
 								$("#bcr_edit_modal .newLaborItem").hide();
 								$("#bcr_edit_modal .displayLaborItem").fadeIn(250);
 							});
+							$("#bcr_edit_modal .cancelLabor").keydown(function($event) {
+		    					if ( $event.which == 32 ) {
+		    						// on space bar, act like you clicked the icon
+			 						$event.preventDefault();
+		    						$(this).click();
+		    					}
+		    				});
 							$("#bcr_edit_modal .saveNewLabor").click(function() {
 								BUDGETCONTROL.laborSave();						
 							});
+							$("#bcr_edit_modal .saveNewLabor").keydown(function($event) {
+		    					if ( $event.which == 32 ) {
+		    						// on space bar, act like you clicked the icon
+			 						$event.preventDefault();
+		    						$(this).click();
+		    					}
+		    				});
 			            }
 		    		});
         		},
@@ -2055,6 +2210,9 @@
         			console.log("saveNewClaimSuccess");
         			$("#bcr_new_claim_modal").dialog("close");
         			$("#globalMsg").html("Update Complete").show().fadeOut(4000);
+        			BUDGETCONTROL.lastEmployeeEntered = $("#bcr_new_claim_modal input[name='employee']").val();
+        			BUDGETCONTROL.lastNoteEntered = $("#bcr_new_claim_modal input[name='notes']").val();
+        			BUDGETCONTROL.lastWorkWeekEntered = $("#bcr_new_claim_modal select[name='claimWeek']").val();
         			BUDGETCONTROL.refreshTicketTables();
         		},
         		
