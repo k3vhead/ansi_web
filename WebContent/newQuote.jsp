@@ -47,6 +47,7 @@
         	$(document).ready(function() {
 				; NEWQUOTE = {
 					quoteId : '<c:out value="${ANSI_QUOTE_ID}" />',
+					showOrphanModal : true,
 					accountTypeList : null,
 					countryList : null,
 					buildingTypeList : null,
@@ -94,7 +95,7 @@
 					init : function() {
 						console.log("init");
 						if (NEWQUOTE.quoteId != '' ) {
-							NEWQUOTE.getQuote(NEWQUOTE.quoteId);	
+							NEWQUOTE.getQuote(NEWQUOTE.quoteId);							
 						}
 						TEXTEXPANDER.init();
 						NEWQUOTE.makeProgressbar();
@@ -1877,7 +1878,10 @@
 					
 					showNextModal : function() {
 						console.log("showNextModal");
-						if ( NEWQUOTE.billToAddress == null) {
+						if ( NEWQUOTE.quoteId != null && NEWQUOTE.quoteId != '' && NEWQUOTE.showOrphanModal == true) {
+							console.log("showOrphanModal");
+							NEWQUOTE.showOrphanMessage();
+						} else if ( NEWQUOTE.billToAddress == null) {
 							console.log("prompt for bill to");
 							$("#save-quote-button").hide(2500);
 							var $type = "billto"
@@ -1973,6 +1977,38 @@
 					
 					
 					
+					showOrphanMessage : function() {
+						// initialize the modal and open it in one function because it will 
+						// (hopefully) be a rare thing to need it. No need to waste resources
+						$( "#orphan-message" ).dialog({
+							title:'Warning: Orphan Quote',
+							autoOpen: false,
+							height: 225,
+							width: 500,
+							modal: true,
+							closeOnEscape:true,
+							//open: function(event, ui) {
+							//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+							//},
+							buttons: [
+								{
+									id: "orphan-cancel-button",
+									click: function($event) {
+										NEWQUOTE.showOrphanModal = false;
+										$( "#orphan-message" ).dialog("close");
+										NEWQUOTE.showNextModal();
+									}
+								}
+							]
+						});	
+						$("#orphan-cancel-button").button('option', 'label', 'OK');
+						
+						$( "#orphan-message" ).dialog("open");
+					},
+					
+					
+					
+					
 					showQuote : function() {
 						console.log("showQuote");
 		            	$("#loading-container").hide();
@@ -2033,6 +2069,9 @@
                 display:none;
             }
             #newQuoteDisplay {
+            	display:none;
+            }
+            #orphan-message {
             	display:none;
             }
 			#printQuoteDiv {
@@ -2319,6 +2358,16 @@
 	    </html:form>
 	    
 	    
+	    
+	    <div id="orphan-message">
+	    	<div style="width:100%;text-align:center;">
+	    		<h2>Warning:</h2>
+	    	</div>
+	    	<div style="width:100%;">
+	    		There are no jobs associated with this quote. You will be prompted for required
+	    		information before jobs can be added and/or further processing will be allowed.
+	    	</div>
+	    </div>
     </tiles:put>
 
 </tiles:insert>
