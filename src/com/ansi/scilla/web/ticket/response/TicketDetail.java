@@ -2,6 +2,7 @@ package com.ansi.scilla.web.ticket.response;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -188,6 +189,17 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		}
 		makeJobTagList(conn, this.jobId);
 	}
+	
+	
+	
+	private BigDecimal makeActualDl(Connection conn, Integer ticketId) throws SQLException {
+		PreparedStatement ps = conn.prepareStatement("select sum(dl_amt) as actuaDL from ticket_claim where ticket_claim.ticket_id=?");
+		ps.setInt(1,  ticketId);
+		ResultSet rs = ps.executeQuery();
+		BigDecimal actuaDl = rs.next() ? rs.getBigDecimal("actuaDL") : BigDecimal.ZERO;
+		return actuaDl;
+	}
+
 	
 	
 	private void makeJobTagList(Connection conn, Integer jobId) throws SQLException {
