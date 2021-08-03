@@ -92,6 +92,12 @@ public enum Permission {
 	CAN_RUN_TICKETS(ACTIVITIES, true, "Can wash windows, etc"),
 	CAN_COMPLETE_TICKETS(CAN_RUN_TICKETS, true, "Can set tickets to ready-to-bill"),
 	
+	PAYROLL(null, false, "Functional Area: Payroll"),
+	PAYROLL_READ(PAYROLL, false, "Can read payroll information"),
+	PAYROLL_WRITE(PAYROLL_READ, false, "Can create/update payroll data"),
+	PAYROLL_OVERRIDE(PAYROLL_WRITE, false, "Can override payroll information"),
+	
+	
 	PERMISSIONS(null, false, "Functional Area: Permissions"),
 	PERMISSIONS_READ(PERMISSIONS, false, "Can read permission group assignments"),
 	PERMISSIONS_WRITE(PERMISSIONS_READ, false, "Can edit permission groups, assign permissions to group"),
