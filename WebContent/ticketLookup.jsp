@@ -222,7 +222,7 @@
 			            			$claimLink = '<ansi:hasPermission permissionRequired="CLAIMS_WRITE"><a href="budgetControlLookup.html?id='+row.ticket_id+'"><webthing:invoiceIcon styleClass="green">Budget Control</webthing:invoiceIcon></a></ansi:hasPermission>';
 			            		}
 			            		var $noteLink = '<webthing:notes xrefType="TICKET" xrefId="' + row.ticket_id + '">Ticket Notes</webthing:notes>'
-				            	$actionData = $editLink + $printLink + $overrideLink + $claimLink + $noteLink;
+				            	$actionData = $editLink + $printLink + $overrideLink + $noteLink;
 			            	}
 			            	return $actionData;
 			            } }],
