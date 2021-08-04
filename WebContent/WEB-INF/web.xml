@@ -374,6 +374,16 @@
         <servlet-name>division</servlet-name>
         <url-pattern>/division/*</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+    	<servlet-name>divisionLookup</servlet-name>
+    	<servlet-class>com.ansi.scilla.web.division.servlet.DivisionLookupServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+    	<servlet-name>divisionLookup</servlet-name>
+    	<url-pattern>/divisionLookup</url-pattern>
+    </servlet-mapping>
+
     <servlet>
     	<servlet-name>divisionTypeAhead</servlet-name>
     	<servlet-class>com.ansi.scilla.web.division.servlet.DivisionTypeAheadServlet</servlet-class>

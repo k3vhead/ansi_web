@@ -3,6 +3,60 @@ $( document ).ready(function() {
 		// $type          : POST or GET
 		// $url           : the url to call
 		// $outbound      : dictionary or json string of name/value pairs to be sent to the URL via query string or post data
+		// $callbacks     : dictionary of callback methods based on http status code. eg. {200:successMethod, 500:errorMethod, 403:securityMethod}
+		// $passThruData  : dictionary of data to be passed to callback methods, along with the HTTP response object.
+		// Note that callbacks will be called, passing HTTP response object and $passThruData
+		// If you run into an HTTP code that isn't in the list, add it and make life easier for the next guy
+		makeServerCall : function($type, $url, $outbound, $callbacks, $passThruData) {
+			var jqxhr = $.ajax({
+				type: $type,
+				url: $url,
+				data: $outbound,
+				statusCode: {
+					200: function($data) {
+						$method = $callbacks[200];
+						if ( $method == null ) {
+							$("#globalMsg").html("System Error: " + $url + " Undefined response. Contact Support");
+						} else {
+							$method($data, $passThruData);
+						}
+					},					
+					403: function($data) {
+						$method = $callbacks[403];
+						if ( $method == null ) {
+							$("#globalMsg").html("Session has expired.").show().fadeOut(5000);
+						} else {
+							$method($data, $passThruData);
+						}
+					},
+					404: function($data) {
+						$method = $callbacks[404];
+						if ( $method == null ) {
+							$("#globalMsg").html("System Error: " + $url + " 404. Contact Support").show().fadeOut(5000);
+						} else {
+							$method($data, $passThruData);
+						}
+					},
+					500: function($data) {
+						$method = $callbacks[500];
+						if ( $method == null ) {
+							$("#globalMsg").html("System Error: " + $url + " 500. Contact Support").show().fadeOut(5000);
+						} else {
+							$method($data, $passThruData);
+						}						
+					}
+				},
+				dataType: "json"
+			});
+		},	
+			
+		
+		// *********************************************************************************
+		// ******** THIS METHOD IS DEPRECATED. USE makeServerCall INSTEAD ******************
+		// *********************************************************************************
+		// $type          : POST or GET
+		// $url           : the url to call
+		// $outbound      : dictionary or json string of name/value pairs to be sent to the URL via query string or post data
 		// $successMethod : callback when the HTTP returns a 200 and the response code is SUCCESS (ie. no edit errors)
 		// $failureMethod : callback when the HTTP returns a 200 and the response code is EDIT_FAILURE
 		// $expiredMethod : callback when the HTTP returns a 403. Default is to display a message in #globalMsg

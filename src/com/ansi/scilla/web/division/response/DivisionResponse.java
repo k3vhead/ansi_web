@@ -7,8 +7,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.apache.commons.beanutils.PropertyUtils;
-
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.web.common.response.MessageResponse;
 
@@ -58,6 +56,7 @@ public class DivisionResponse extends MessageResponse implements Serializable {
 		} else { 
 			this.division.setStatus(null);
 		}
+		this.division.setMinHourlyRate(division.getMinimumHourlyPay());
 	}
 
 	private Integer makeUserCount(Connection conn, Integer divisionId) throws SQLException {
