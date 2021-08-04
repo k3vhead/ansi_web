@@ -482,10 +482,10 @@
     			            	return $icon;
     			            } },
     			            { width:"10%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {
-    			       			var $editLink = '<a href="#" class="editAction" data-id="' + row.division_id + '"><webthing:edit>Edit</webthing:edit></a>';
+    			       			var $editLink = '<ansi:hasPermission permissionRequired="SYSADMIN_WRITE"><a href="#" class="editAction" data-id="' + row.division_id + '"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>';
     			       			var $deleteLink = "";
     			       			if ( row.user_count == 0 ) {
-    			       				$deleteLink = '<a href="#" class="delAction" data-id="' + row.division_id + '" data-div="'+row.div+'"><webthing:delete>Delete</webthing:delete></a>';
+    			       				$deleteLink = '<ansi:hasPermission permissionRequired="SYSADMIN_WRITE"><a href="#" class="delAction" data-id="' + row.division_id + '" data-div="'+row.div+'"><webthing:delete>Delete</webthing:delete></a></ansi:hasPermission>';
     			       			}
     			       			var $viewLink = '<a href="#" class="viewAction" data-id="'+row.division_id+'"><webthing:view>View</webthing:view></a>';
     			       			return $viewLink + $editLink + $deleteLink;
@@ -682,114 +682,109 @@
     	
     	
  		<webthing:scrolltop />
-    	<ansi:hasPermission permissionRequired="SYSADMIN">
-    		<ansi:hasWrite>
-    			<div class="addButtonDiv">
-    				<input type="button" class="prettyWideButton showNew" value="New" />
-		    	</div>
-    		</ansi:hasWrite>
+    	<ansi:hasPermission permissionRequired="SYSADMIN_WRITE">
+   			<div class="addButtonDiv">
+   				<input type="button" class="prettyWideButton showNew" value="New" />
+	    	</div>
     	</ansi:hasPermission>
     	
-    	<ansi:hasPermission permissionRequired="SYSADMIN">
-    		<ansi:hasWrite>
-		    	<div id="confirmDelete">
-		    		<table id="delData">
-		    			<tr>
-		    				<td><span class="formLabel"><bean:message key="field.label.divisionCode" />:</span></td>
-		    				<td id="delDivisionCode"></td>
-		    			</tr>
-		    		</table>
-		    	</div>
+    	<ansi:hasPermission permissionRequired="SYSADMIN_WRITE">
+	    	<div id="confirmDelete">
+	    		<table id="delData">
+	    			<tr>
+	    				<td><span class="formLabel"><bean:message key="field.label.divisionCode" />:</span></td>
+	    				<td id="delDivisionCode"></td>
+	    			</tr>
+	    		</table>
+	    	</div>
+	    	
+	    	<div id="addFormDiv">
+	    		<h2 id="addFormTitle"></h2>
+	    		<div id="addFormMsg" class="err"></div>
+	    		<form action="#" method="post" id="addForm">
+	    			<table>
+	    				<tr>
+	    					<td><span class="formLabel"><bean:message key="field.label.divisionId" />:</span></td>
+	    					<td><input style="border:none" type="text" name="divisionId" readonly/></td>
+   							<td><span class="err" id="divisionIdErr"></span></td>
+	    				</tr>
+	    				<tr>
+	    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.divisionNbrDA" />:</span></td>
+	    					<td><input type="text" name="divisionNbr"/></td>
+   							<td><span class="err" id="divisionNbrErr"></span></td>
+	    				</tr>
+	    				<tr>
+	    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.divisionCode" />:</span></td>
+	    					<td><input type="text" name="divisionCode"/></td>
+   							<td><span class="err" id="divisionCodeErr"></span></td>
+	    				</tr>
+						<tr>
+	    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.description" />:</span></td>
+	    					<td><input type="text" name="description"/></td>
+   							<td><span class="err" id="descriptionErr"></span></td>
+	    				</tr>
+	    				<tr>
+	    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.defaultDirectLaborPctDefault" /> <bean:message key="field.label.defaultDirectLaborPctDL%" />:</span></td>
+	    					<td><input type="text" name="defaultDirectLaborPct"/></td>
+   							<td><span class="err" id="defaultDirectLaborPctErr"></span></td>
+	    				</tr>
+	    				<tr>
+	    					<td><span class="required">*</span><span class="formLabel">Max Regular Hours Per Day:</span></td>
+	    					<td><input type="text" name="maxRegHrsPerDay"/></td>
+	    					<td><span class="err" id="maxRegHrsPerDayErr"></span></td>
+	    				</tr>
+	    				<tr>
+	    					<td><span class="required">*</span><span class="formLabel">Max Regular Hours Per Week:</span></td>
+	    					<td><input type="text" name="maxRegHrsPerWeek"/></td>
+	    					<td><span class="err" id="maxRegHrsPerWeekErr"></span></td>
+	    				</tr>
+	    				<tr>
+	    					<td><span class="required">*</span><span class="formLabel">Min Hourly Rate:</span></td>
+	    					<td><input type="text" name="minHourlyRate"/></td>
+	    					<td><span class="err" id="minHourlyRateErr"></span></td>
+	    				</tr>
+	    				<tr>
+	    					<td><span class="required">*</span><span class="formLabel">Overtime Rate:</span></td>
+	    					<td><input type="text" name="overtimeRate"/></td>
+	    					<td><span class="err" id="overtimeRateErr"></span></td>
+	    				</tr>
+	    				<tr>
+	    					<td><span class="required">*</span><span class="formLabel">Weekend is Overtime:</span></td>
+	    					<td>
+	    						<select name="weekendIsOt">		    						
+	    							<option value=""></option>
+		    						<option value="1">Yes</option>
+		    						<option value="0">No</option>
+	    						</select>
+	    					</td>
+	    					<td><span class="err" id="weekendIsOtErr"></span></td>
+	    				</tr>
+	    				<tr>
+	    					<td><span class="required">*</span><span class="formLabel">Hourly Rate is Fixed:</span></td>
+	    					<td>
+	    						<select name="hourlyRateIsFixed">
+		    						<option value=""></option>
+		    						<option value="1">Yes</option>
+		    						<option value="0">No</option>
+	    						</select>
+	    					</td>
+   							<td><span class="err" id="hourlyRateIsFixedErr"></span></td>
+	    				</tr>
+	    				<tr>
+	    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.status" />:</span></td>
+	    					<td>
+	    						<select name="status">
+	    							<option value="1"><bean:message key="field.label.active" /></option>
+	    							<option value="0"><bean:message key="field.label.inactive" /></option>
+	    						</select>
+	    					</td>
+   							<td><span class="err" id="statusErr"></span></td>
+	    				</tr>
+	    			</table>
+	    		</form>
+	    	</div>
 		    	
-		    	<div id="addFormDiv">
-		    		<h2 id="addFormTitle"></h2>
-		    		<div id="addFormMsg" class="err"></div>
-		    		<form action="#" method="post" id="addForm">
-		    			<table>
-		    				<tr>
-		    					<td><span class="formLabel"><bean:message key="field.label.divisionId" />:</span></td>
-		    					<td><input style="border:none" type="text" name="divisionId" readonly/></td>
-    							<td><span class="err" id="divisionIdErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.divisionNbrDA" />:</span></td>
-		    					<td><input type="text" name="divisionNbr"/></td>
-    							<td><span class="err" id="divisionNbrErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.divisionCode" />:</span></td>
-		    					<td><input type="text" name="divisionCode"/></td>
-    							<td><span class="err" id="divisionCodeErr"></span></td>
-		    				</tr>
-							<tr>
-		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.description" />:</span></td>
-		    					<td><input type="text" name="description"/></td>
-    							<td><span class="err" id="descriptionErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.defaultDirectLaborPctDefault" /> <bean:message key="field.label.defaultDirectLaborPctDL%" />:</span></td>
-		    					<td><input type="text" name="defaultDirectLaborPct"/></td>
-    							<td><span class="err" id="defaultDirectLaborPctErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Max Regular Hours Per Day:</span></td>
-		    					<td><input type="text" name="maxRegHrsPerDay"/></td>
-		    					<td><span class="err" id="maxRegHrsPerDayErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Max Regular Hours Per Week:</span></td>
-		    					<td><input type="text" name="maxRegHrsPerWeek"/></td>
-		    					<td><span class="err" id="maxRegHrsPerWeekErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Min Hourly Rate:</span></td>
-		    					<td><input type="text" name="minHourlyRate"/></td>
-		    					<td><span class="err" id="minHourlyRateErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Overtime Rate:</span></td>
-		    					<td><input type="text" name="overtimeRate"/></td>
-		    					<td><span class="err" id="overtimeRateErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Weekend is Overtime:</span></td>
-		    					<td>
-		    						<select name="weekendIsOt">		    						
-		    							<option value=""></option>
-			    						<option value="1">Yes</option>
-			    						<option value="0">No</option>
-		    						</select>
-		    					</td>
-		    					<td><span class="err" id="weekendIsOtErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel">Hourly Rate is Fixed:</span></td>
-		    					<td>
-		    						<select name="hourlyRateIsFixed">
-			    						<option value=""></option>
-			    						<option value="1">Yes</option>
-			    						<option value="0">No</option>
-		    						</select>
-		    					</td>
-    							<td><span class="err" id="hourlyRateIsFixedErr"></span></td>
-		    				</tr>
-		    				<tr>
-		    					<td><span class="required">*</span><span class="formLabel"><bean:message key="field.label.status" />:</span></td>
-		    					<td>
-		    						<select name="status">
-		    							<option value="1"><bean:message key="field.label.active" /></option>
-		    							<option value="0"><bean:message key="field.label.inactive" /></option>
-		    						</select>
-		    					</td>
-    							<td><span class="err" id="statusErr"></span></td>
-		    				</tr>
-		    			</table>
-		    		</form>
-		    	</div>
-		    	
-		    	
-	    	</ansi:hasWrite>
-    	</ansi:hasPermission>
+		</ansi:hasPermission>
     	
     	<div id="viewForm">
     		<h2 id="viewFormTitle"></h2>
