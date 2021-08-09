@@ -239,8 +239,11 @@ public class BcrTicketSql extends ApplicationObject {
 			"where ticket.ticket_type in ('run','job') \n" + 			
 			"  and ticket.act_division_id=? \n" + 
 			" and ((\n" +
-			"     ticket_claim.claim_year=?\n" + 
-			"     and ticket_claim.claim_week in ($CLAIMWEEKFILTER$)\n" +
+//			"     ticket_claim.claim_year=?\n" + 
+//			"     and ticket_claim.claim_week in ($CLAIMWEEKFILTER$)\n" +
+		    "     ticket_claim.ticket_id in (select ticket_id from ticket_claim where \n" +
+		    "			ticket_claim.claim_year=? \n" +
+		    "			and ticket_claim.claim_week in ($CLAIMWEEKFILTER$))\n" +
 			"   ) "
 			; 
 	public static final String baseWhereClause2 =
@@ -248,11 +251,28 @@ public class BcrTicketSql extends ApplicationObject {
 			"     ticket.ticket_status in ('D','C')\n" +
 			" ) or ((isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim.passthru_expense_volume,0.00)) - isnull(invoice_totals.invoiced_amount,0.00) <> 0.00)\n" + 
 //gag		"		and (isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim.passthru_expense_volume,0.00) <> 0.00)\n" + 
-			"		and (ticket.start_date >= '2020-10-01')\n" + 
+//gag		"		and (ticket.start_date >= '2020-10-01')\n" + 
+			"       and (ticket.start_date >= DATEADD(month, -1, DATEADD(month, DATEDIFF(month, 0, sysdatetime()), 0)) \n" +
+			"            or ticket.process_date >= DATEADD(month, -1, DATEADD(month, DATEDIFF(month, 0, sysdatetime()), 0)) \n" +
+			"            ) \n" +
+			" )  \n" 
+			; 
+	
+	public static final String baseWhereClause3 = //month filter
+			" or (\n" +
+			"     ticket.ticket_status in ('D','C')\n" +
+			"     and ticket.start_date < DATEADD(month, 1, DATEADD(month, DATEDIFF(month, 0, sysdatetime()), 0) \n" +
+			" ) or ((isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim.passthru_expense_volume,0.00)) - isnull(invoice_totals.invoiced_amount,0.00) <> 0.00)\n" + 
+//gag		"		and (isnull(ticket_claim_totals.claimed_volume,0.00)+ISNULL(ticket_claim.passthru_expense_volume,0.00) <> 0.00)\n" + 
+//gag		"		and (ticket.start_date >= '2020-10-01')\n" + 
+			"       and (ticket.start_date >= DATEADD(month, -1, DATEADD(month, DATEDIFF(month, 0, sysdatetime()), 0)) \n" +
+			"            or ticket.process_date >= DATEADD(month, -1, DATEADD(month, DATEDIFF(month, 0, sysdatetime()), 0)) \n" +
+			"            ) \n" +
 			" )  \n" 
 			; 
 	
 // DCL: Not sure why this is here, but it's not used so I commented it out. YMMV	
+// GAG: This was an attempt to trim the dispatched tickets to the current month.  The logic is wrong so I have to redo it.
 //	public static final String baseWhereClause3 =
 //			" and (ticket.start_date <= '2020-11-27')\n" // This is the last day (Friday) of the last week in the month
 //			; 
@@ -271,7 +291,8 @@ public class BcrTicketSql extends ApplicationObject {
 	}
 	
 	public static String makeBaseWhereClause(String workWeeks, Boolean monthlyFilter) {
-		String baseWhereClause = monthlyFilter ? BcrTicketSql.baseWhereClause1 + ")" : BcrTicketSql.baseWhereClause1 + BcrTicketSql.baseWhereClause2;		
+//		String baseWhereClause = monthlyFilter ? BcrTicketSql.baseWhereClause1 + ")" : BcrTicketSql.baseWhereClause1 + BcrTicketSql.baseWhereClause2;		
+		String baseWhereClause = monthlyFilter ? BcrTicketSql.baseWhereClause1 + BcrTicketSql.baseWhereClause3 : BcrTicketSql.baseWhereClause1 + BcrTicketSql.baseWhereClause2;		
 //gag-this would be the current month filter		String baseWhereClause = monthlyFilter ? BcrTicketSql.baseWhereClause1 + BcrTicketSql.baseWhereClause2 + BcrTicketSql.baseWhereClause3 : BcrTicketSql.baseWhereClause1 + BcrTicketSql.baseWhereClause2;		
 		String whereClause = " " + baseWhereClause.replaceAll("\\$CLAIMWEEKFILTER\\$", workWeeks);
 		return whereClause;
