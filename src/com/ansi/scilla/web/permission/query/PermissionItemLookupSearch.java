@@ -13,12 +13,12 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.ansi.scilla.common.queries.ReportQuery;
-import com.ansi.scilla.common.queries.SelectType;
 import com.ansi.scilla.common.db.PermissionGroupLevel;
 //import com.ansi.scilla.web.test.TestServlet;
 //import com.ansi.scilla.common.db.PermissionGroupLevel;
 import com.ansi.scilla.common.db.PermissionLevel;
+import com.ansi.scilla.common.queries.ReportQuery;
+import com.ansi.scilla.common.queries.SelectType;
 
 public class PermissionItemLookupSearch extends ReportQuery {
 

@@ -4,8 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import org.apache.commons.lang3.time.DateUtils;
-
 public class TestCalendarWeirdness {
 
 	private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");

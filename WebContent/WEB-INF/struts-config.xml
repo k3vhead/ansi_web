@@ -152,6 +152,24 @@
             <forward name="login" path="/login.jsp" />            
         </action>
         <action
+            path="/companies"
+            type="com.ansi.scilla.web.organization.action.OrganizationAction">
+            <forward name="valid" path="/organizations/index.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+        <action
+            path="/regions"
+            type="com.ansi.scilla.web.organization.action.OrganizationAction">
+            <forward name="valid" path="/organizations/index.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+        <action
+            path="/groups"
+            type="com.ansi.scilla.web.organization.action.OrganizationAction">
+            <forward name="valid" path="/organizations/index.jsp" />
+            <forward name="login" path="/login.jsp" />            
+        </action>
+        <action
             path="/documentLookup"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction"
             scope="request">            

@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
-import com.ansi.scilla.common.db.PermissionLevel;
 import com.ansi.scilla.common.queries.PaymentSearch;
 import com.ansi.scilla.common.queries.PaymentSearchResult;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;

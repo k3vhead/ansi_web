@@ -4,9 +4,6 @@ import java.sql.Connection;
 import java.util.Calendar;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.web.common.request.AbstractRequest;

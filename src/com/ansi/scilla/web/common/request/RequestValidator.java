@@ -38,6 +38,7 @@ import com.ansi.scilla.common.invoice.InvoiceTerm;
 import com.ansi.scilla.common.jobticket.JobFrequency;
 import com.ansi.scilla.common.jobticket.JobTagStatus;
 import com.ansi.scilla.common.jobticket.JobTagType;
+import com.ansi.scilla.common.organization.OrganizationType;
 import com.ansi.scilla.common.payment.PaymentMethod;
 import com.ansi.scilla.common.utils.QMarkTransformer;
 import com.ansi.scilla.web.claims.request.ClaimEntryRequestType;
@@ -45,6 +46,7 @@ import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.utils.FieldMap;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.thewebthing.commons.db2.DBTable;
+import com.thewebthing.commons.db2.RecordNotFoundException;
 import com.thewebthing.commons.lang.StringUtils;
 
 public class RequestValidator {
@@ -624,6 +626,29 @@ public class RequestValidator {
 	}
 
 	
+	public static void validateOrganizationId(Connection conn, WebMessages webMessages, String fieldName,
+			OrganizationType type, Integer value, boolean required) throws SQLException, RecordNotFoundException {
+		if ( value == null ) {
+			if ( required ) {
+				webMessages.addMessage(fieldName, "Organization ID is required");
+			}
+		} else {			
+			PreparedStatement ps = conn.prepareStatement("select count(*) as record_count from division_group where group_id=? and group_type=?");
+			ps.setInt(1, value);
+			ps.setString(2, type.name().toUpperCase());
+			ResultSet rs = ps.executeQuery();
+			if ( rs.next() ) {
+				if ( rs.getInt("record_count") == 0 ) {
+					webMessages.addMessage(fieldName, "Invalid Organization ID");
+				}				
+			} else {
+				throw new RecordNotFoundException();
+			}
+		}
+			
+		
+	}
+
 	public static void validatePassthruExpenseType(Connection conn, WebMessages webMessages, String fieldName, String value, boolean required, String label) throws Exception {
 		validateCode(conn, webMessages, "ticket_claim_passthru", "passthru_expense_type", fieldName, value, required, label);
 	}

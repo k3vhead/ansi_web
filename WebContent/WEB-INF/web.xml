@@ -667,6 +667,15 @@
         <servlet-name>options</servlet-name>
         <url-pattern>/options/*</url-pattern>
     </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>organization</servlet-name>
+        <servlet-class>com.ansi.scilla.web.organization.servlet.OrganizationServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>organization</servlet-name>
+        <url-pattern>/organization/*</url-pattern>
+    </servlet-mapping>
 
     <servlet>
         <servlet-name>pacReport</servlet-name>

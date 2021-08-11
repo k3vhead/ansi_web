@@ -1,16 +1,11 @@
 package com.ansi.scilla.web.division.servlet;
 
 import java.sql.Connection;
-import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.collections4.Transformer;
-
-import com.ansi.scilla.common.document.DocumentType;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.servlet.AbstractLookupServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
@@ -19,7 +14,6 @@ import com.ansi.scilla.web.common.struts.SessionUser;
 import com.ansi.scilla.web.common.utils.AnsiURL;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.division.query.DivisionLookupQuery;
-import com.ansi.scilla.web.document.query.DocumentLookupQuery;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 
 public class DivisionLookupServlet extends AbstractLookupServlet {

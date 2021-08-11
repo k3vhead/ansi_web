@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -33,7 +32,6 @@ import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.ResourceNotFoundException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.permission.request.PermGroupRequest;
 import com.ansi.scilla.web.permission.request.PermissionRequest;
 import com.ansi.scilla.web.permission.response.PermGroupCountRecord;
 import com.ansi.scilla.web.permission.response.PermissionGroupResponse;
