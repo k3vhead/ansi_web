@@ -55,6 +55,34 @@ public class OrganizationServlet extends AbstractServlet {
 		
 	}
 
+
+
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		try {
+			AppUtils.validateSession(request, Permission.SYSADMIN_READ);
+			
+			String uri = request.getRequestURI();
+			String trigger = REALM + "/";
+			String uriDetail = uri.substring(uri.indexOf(trigger)+trigger.length());
+			// destination[0] should be one of the OrganizationType values (except for division)
+			String[] destination = uriDetail.split("/");
+	
+			OrganizationType type = OrganizationType.valueOf(destination[0].toUpperCase());
+//			if ( destination.length == 1 ) {
+//				new OrganizationLookupServlet(type).doPost(request, response);
+//			} else {
+				new OrganizationDetailServlet(type).doPost(request, response);
+//			}			
+		} catch (IllegalArgumentException e) {
+			// if the destination is not a valid organization type
+			super.sendNotFound(response);
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+			super.sendForbidden(response);	
+		}
+	}
+
 	
 
 

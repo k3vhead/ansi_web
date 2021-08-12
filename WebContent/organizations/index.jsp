@@ -49,6 +49,13 @@
         	#organization-display th {
         		text-align:left;
         	}
+        	#organization-edit table {
+        		width:100%;
+        		border:solid 1px #404040;
+        	}
+        	#organization-edit th {
+        		text-align:left;
+        	}
         	.action-link {
         		text-decoration:none;
         	}
@@ -57,6 +64,10 @@
 			}	
 			.form-label {
 				font-weight:bold;
+			}
+			.org-status-change {
+				display:none;
+				cursor:pointer;
 			}
 			.view-link {
 				color:#404040;
@@ -75,19 +86,20 @@
         			$("h1 .organization-type-display").html(ORGMAINT.orgTypeDisplay);
         			ORGMAINT.getOrgs(); 
         			ORGMAINT.makeModals();
+        			ORGMAINT.makeClickers();
         		},
         		
         		
-        		getOrganizationDetail : function($organizationId, $filter) {
+        		getOrganizationDetail : function($action, $organizationId, $filter) {
         			// $filter says whether to retrieve all children (false) or just the children of this org (true)
-        			console.log("viewOrg: " + $organizationId);
+        			console.log("getOrganizationDetail: " + $organizationId);
         			var $url = "organization/" + ORGMAINT.orgType + "/" + $organizationId;
         			var $callbacks = {
         				200 : ORGMAINT.showOrgDetail,
         				404 : ORGMAINT.getOrgsFail,
         			}        			
         			$outbound = {"filter":$filter};
-        			ANSI_UTILS.makeServerCall("GET", $url, $outbound, $callbacks, {});
+        			ANSI_UTILS.makeServerCall("GET", $url, $outbound, $callbacks, {"action":$action});
         		},
         		
         		
@@ -115,6 +127,51 @@
         		},
         		
         		
+        		
+        		makeClickers : function() {
+        			$("#organization-edit .org-status-change").on("click", function($event) {
+        				console.log("changing status");
+        				var $organizationId = $(this).attr("data-id");
+        				var $classList = $(this).attr('class').split(" ");
+        				var $newStatus = null;
+        				$.each($classList, function($index, $value) {
+        					if ( $value == "status-is-active") {
+        						$newStatus = false;
+        					} else if ( $value == "status-is-inactive") {
+        						$newStatus = true;
+        					} else if ( $value == "status-is-unknown") {
+        						$newStatus = true;
+        					}
+        				});
+        				var $url = "organization/" + ORGMAINT.orgType + "/" + $organizationId;
+        				var $outbound = {"status":$newStatus};
+        				var $callbacks = {
+        					200 : ORGMAINT.statusChangeSuccess,
+        				};
+        				ANSI_UTILS.makeServerCall("POST", $url, JSON.stringify($outbound), $callbacks, {});
+        			});
+        			
+        			
+        			$("#organization-edit input[name='name']").on("blur", function($event) {
+        				console.log("changing name");
+        				var $organizationId = $(this).attr("data-id");
+        				var $oldName = $(this).attr("data-name");
+        				var $newName = $("#organization-edit input[name='name']").val();
+        				
+        				if ( $oldName != $newName) {  
+        					$("#organization-edit input[name='name']").attr("data-name", $newName);
+	        				var $url = "organization/" + ORGMAINT.orgType + "/" + $organizationId;
+	        				var $outbound = {"name":$newName};
+	        				var $callbacks = {
+	        					200 : ORGMAINT.statusChangeSuccess,
+	        				};
+	        				ANSI_UTILS.makeServerCall("POST", $url, JSON.stringify($outbound), $callbacks, {});
+        				}
+        			});
+        		},
+        		
+        		
+        		
         		makeModals : function() {
         			$( "#organization-display" ).dialog({
         				title:'View ' + ORGMAINT.orgTypeDisplay,
@@ -135,7 +192,28 @@
         					}
         				]
         			});	
-        			$("#org_display_cancel").button('option', 'label', 'Done');        			
+        			$("#org_display_cancel").button('option', 'label', 'Done');    
+        			
+        			$( "#organization-edit" ).dialog({
+        				title:'Edit ' + ORGMAINT.orgTypeDisplay,
+        				autoOpen: false,
+        				height: 500,
+        				width: 1200,
+        				modal: true,
+        				closeOnEscape:true,
+        				//open: function(event, ui) {
+        				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+        				//},
+        				buttons: [
+        					{
+        						id:  "org_edit_cancel",
+        						click: function($event) {
+       								$( "#organization-edit" ).dialog("close");
+        						}
+        					}
+        				]
+        			});	
+        			$("#org_edit_cancel").button('option', 'label', 'Done');
         		},
         		
         		
@@ -198,7 +276,8 @@
 		    				{ width:"10%", title:"Action", className:"dt-center", orderable:true, visible:$passthru['edit'],
 		    					data:function(row,type,set) {
 	    							$viewLink = '<a href="#" class="action-link view-link" data-id="'+row.organizationId+'"><webthing:view>View</webthing:view></a>';
-		    						return $viewLink;
+	    							$editLink = '<ansi:hasPermission permissionRequired="SYSADMIN_WRITE"><a href="#" class="action-link edit-link" data-id="'+row.organizationId+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>';
+		    						return $viewLink + $editLink;
 		    					},		    					
 		    				},
 	    				],
@@ -207,11 +286,11 @@
 	    					$(".action-link").off("click");
 	    					$(".view-link").click(function($clickevent) {
 	    						var $organizationId = $(this).attr("data-id");
-	    						ORGMAINT.getOrganizationDetail($organizationId, true);
+	    						ORGMAINT.getOrganizationDetail("view", $organizationId, true);
 	    					});
 	    					$(".edit-link").click(function($clickevent) {
 	    						var $organizationId = $(this).attr("data-id");
-	    						ORGMAINT.getOrganizationDetail($organizationId, false);
+	    						ORGMAINT.getOrganizationDetail("edit", $organizationId, false);
 	    					});
 	    				},
         			});
@@ -224,37 +303,82 @@
         		showOrgDetail : function($data, $passthru) {
         			console.log("showOrgDetail");
         			
+        			var $destination = {
+        				"view" : "#organization-display",
+        				"edit" : "#organization-edit",
+        			};
         			var $organization = $data.data.organization;
         			var $active = '<webthing:checkmark>Active</webthing:checkmark>';
         			var $inactive = '<webthing:ban>Inactive</webthing:ban>';
         			var $unknown = '<webthing:questionmark>Unknown</webthing:questionmark>';
 
-        			if ( $organization.status == 0 ) { $status = $inactive}
-					else if ( $organization.status == 1 ) { $status = $active }
-					else { $status = $unknown }
+        			if ( $organization.status == 0 ) { 
+        				$status = $inactive;
+        			} else if ( $organization.status == 1 ) { 
+        				$status = $active;
+        			} else { 
+        				$status = $unknown; 
+       				}
 
+        			// populate the display modal
         			$("#organization-display .organization-id").html($organization.organizationId);
         			$("#organization-display .name").html($organization.name);
         			$("#organization-display .status").html($status);
         			$("#organization-display .parent-name").html($organization.parentName);
         			$("#organization-display .parent-type").html($organization.parentType);
         			
+        			// populate the edit modal
+        			$("#organization-edit .organization-id").html($organization.organizationId);
+        			$("#organization-edit input[name='name']").val($organization.name);
+        			$("#organization-edit input[name='name']").attr("data-id", $organization.organizationId);
+        			$("#organization-edit input[name='name']").attr("data-name", $organization.name);
+        			$("#organization-edit .org-status-change").hide();
+        			$("#organization-edit .org-status-change").attr("data-id", $organization.organizationId);
+        			if ( $organization.status == 0 ) { 
+        				$("#organization-edit .status-is-inactive").show();
+        			} else if ( $organization.status == 1 ) { 
+        				$("#organization-edit .status-is-active").show();
+        			} else { 
+        				$("#organization-edit .status-is-unknown").show();
+       				}
+        			$("#organization-edit .parent-name").html($organization.parentName);
+        			$("#organization-edit .parent-type").html($organization.parentType);
+        			
+        			// populate the child list
         			var $displayDetail = {
-        				"destination":"#organization-display .organization-children",
+        				"destination":$destination[$passthru["action"]] + " .organization-children",
         				"edit":false,
         				"source":"childList",
         			}
         			ORGMAINT.makeOrgTable($data, $displayDetail)
         			
-        			
-        			$("#organization-display").dialog("open");
+        			// display one of the modals
+        			$($destination[$passthru["action"]]).dialog("open");
         		},
         		
         		
         		
         		
             	
-            	
+        		statusChangeSuccess : function($data, $passthru) {
+        			console.log("statusChangeSuccess");
+        			if ( $data.responseHeader.responseCode == "SUCCESS" ) {
+        				$("#organization-edit .organization-msg").html("Update Successful").show().fadeOut(3000);
+        				$("#organization-edit .org-status-change").hide();
+            			if ( $data.data.organization.status == 0 ) { 
+            				$("#organization-edit .status-is-inactive").show();
+            			} else if ( $data.data.organization.status == 1 ) { 
+            				$("#organization-edit .status-is-active").show();
+            			} else { 
+            				$("#organization-edit .status-is-unknown").show();
+           				}            			
+            			ORGMAINT.getOrgs();
+        			} else {
+        				$("#organization-edit .organization-msg").html("System Error. Reload the page and try again").show();
+        			}
+        			
+        			
+        		},
             	
             	
             	
@@ -288,7 +412,7 @@
 	
 
 		<div id="organization-display">
-			<div style="width:100%; height:12px;" class="organization-msg"></div>
+			<div style="width:100%; height:12px;"><span class="err organization-msg"></span></div>
 			<table>
 				<tr>
 					<th>ID</th>
@@ -303,6 +427,33 @@
 					<td><span class="parent-name"></span></td>
 					<td><span class="parent-type"></span></td>					
 					<td><span class="status"></span></td>
+				</tr>
+			</table>
+			<table class="organization-children">
+			</table>
+		</div>
+		
+		
+		<div id="organization-edit">
+			<div style="width:100%; height:12px;"><span class="err organization-msg"></span></div>
+			<table>
+				<tr>
+					<th>ID</th>
+					<th>Name</th>
+					<th>Parent</th>
+					<th>Parent Type</th>
+					<th>Status</th>					
+				</tr>
+				<tr>
+					<td><span class="organization-id"></span></td>
+					<td><input type="text" name="name" /></td>
+					<td><span class="parent-name"></span></td>
+					<td><span class="parent-type"></span></td>					
+					<td><span class="status">					
+						<webthing:checkmark styleClass="org-status-change status-is-active">Active</webthing:checkmark>
+	        			<webthing:ban styleClass="org-status-change status-is-inactive">Inactive</webthing:ban>
+	        			<webthing:questionmark styleClass="org-status-change status-is-unknown">Unknown</webthing:questionmark>					
+					</span></td>
 				</tr>
 			</table>
 			<table class="organization-children">
