@@ -80,8 +80,22 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 				doValidateQuote(conn, response, sessionData, quoteRequest);
 			} else if ( action.equalsIgnoreCase(NewQuoteRequest.ACTION_IS_SAVE) ) {
 				NewQuoteRequest quoteRequest = StringUtils.isBlank(jsonString) ? new NewQuoteRequest() : new NewQuoteRequest(jsonString);
+				
+				// this is where we figure out whether we're creating a new quote, or filling in the blanks from an orphan
+				int idx = url.indexOf("/quote/");				
+				String myString = url.substring(idx + "/quote/".length());	
+				String[] urlPieces = myString.split("/");   // this should be a 1- or 2-item array. 
+															// [0] has either 'new' or 'orphan', [1] should be the orphaned quote id
+				for ( String x : urlPieces ) {
+					logger.log(Level.DEBUG, "urlPieces:" + x);
+				}
 				logger.log(Level.DEBUG, quoteRequest);
-				doSave(conn, response, sessionData, quoteRequest);
+				if ( urlPieces[0].equals("new") ) {
+					doSave(conn, response, sessionData, quoteRequest);
+				} else {
+					doOrphanSave(conn, response, sessionData, quoteRequest, urlPieces[1]);
+				}
+				
 			} else if ( action.equalsIgnoreCase(NewQuoteRequest.ACTION_IS_JOB)) {
 				JobRequest jobRequest = new JobRequest(jsonString);
 				logger.log(Level.DEBUG, jobRequest);
@@ -325,6 +339,77 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 	}
 
 	
+	private void doOrphanSave(Connection conn, HttpServletResponse response, SessionData sessionData,
+			NewQuoteRequest quoteRequest, String quoteId) throws RecordNotFoundException, Exception {
+		WebMessages webMessages = new WebMessages();
+
+		try {
+			Date today = new Date();
+			Quote quote = new Quote();
+			quote.setQuoteId(Integer.valueOf(quoteId));
+			quote.selectOne(conn);
+			
+			SessionUser sessionUser = sessionData.getUser();
+
+//			quote.setAddedBy(sessionUser.getUserId());		
+//			quote.setAddedDate(today);
+			quote.setUpdatedBy(sessionUser.getUserId());
+			quote.setUpdatedDate(today);
+
+			quote.setBillToAddressId(quoteRequest.getBillToAddressId());
+			quote.setJobSiteAddressId(quoteRequest.getJobSiteAddressId());
+			quote.setLeadType(quoteRequest.getLeadType());
+			quote.setDivisionId(quoteRequest.getDivisionId());
+			quote.setAccountType(quoteRequest.getAccountType());
+			quote.setManagerId(quoteRequest.getManagerId());
+			quote.setTemplateId(0);
+
+			if ( ! StringUtils.isBlank(quoteRequest.getAccountType())) {
+				quote.setAccountType(quoteRequest.getAccountType());
+			}
+
+			quote.setQuoteNumber(AppUtils.getNextQuoteNumber(conn));
+			quote.setRevision("A");
+			quote.setSignedByContactId(null);
+
+			Quote key = new Quote();
+			key.setQuoteId(Integer.valueOf(quoteId));
+			quote.update(conn, key);
+			
+			setAddressDefaults(conn, quoteRequest, sessionUser);
+			
+			conn.commit();
+			
+			webMessages.addMessage(WebMessages.GLOBAL_MESSAGE, "Quote Updated");
+			NewQuoteDisplayResponse quoteResponse = new NewQuoteDisplayResponse();
+			quoteResponse.setQuoteId(Integer.valueOf(quoteId));
+			quoteResponse.setInvoiceGrouping(quoteRequest.getInvoiceGrouping());
+			quoteResponse.setInvoiceStyle(quoteRequest.getInvoiceStyle());
+			quoteResponse.setBuildingType(quoteRequest.getBuildingType());
+			quoteResponse.setInvoiceBatch(quoteRequest.getInvoiceBatch());
+			quoteResponse.setInvoiceTerms(quoteRequest.getInvoiceTerms());
+			if ( quoteRequest.getTaxExempt() != null && quoteRequest.getTaxExempt() == true ) {
+				quoteResponse.setTaxExempt(true);
+				quoteResponse.setTaxExemptReason(quoteRequest.getTaxExemptReason());
+			} else {
+				quoteResponse.setTaxExempt(false);
+				quoteResponse.setTaxExemptReason(null);
+			}			
+			quoteResponse.setJobContact(new ContactItem(conn, quoteRequest.getJobContactId()));
+			quoteResponse.setSiteContact(new ContactItem(conn, quoteRequest.getSiteContact()));
+			quoteResponse.setContractContact(new ContactItem(conn, quoteRequest.getContractContactId()));
+			quoteResponse.setBillingContact(new ContactItem(conn, quoteRequest.getBillingContactId()));
+			quoteResponse.setWebMessages(webMessages);
+			super.sendResponse(conn, response, ResponseCode.SUCCESS, quoteResponse);
+		} catch ( Exception e ) {
+			conn.rollback();
+			throw e;
+		}
+	}
+
+	
+	
+	
 	private void setAddressDefaults(Connection conn, NewQuoteRequest quoteRequest, SessionUser sessionUser) throws RecordNotFoundException, Exception {
 		Address address = new Address();
 		address.setAddressId(quoteRequest.getJobSiteAddressId());
@@ -333,10 +418,10 @@ public class NewQuoteServlet extends AbstractQuoteServlet {
 		address.setBilltoBillingContactDefault(quoteRequest.getBillingContactId());
 		address.setBilltoAccountTypeDefault(quoteRequest.getAccountType());
 		address.setBilltoContractContactDefault(quoteRequest.getContractContactId());
-		Integer taxExempt = quoteRequest.getTaxExempt() == true ? 1 : 0;
+		Integer taxExempt = quoteRequest.getTaxExempt() != null && quoteRequest.getTaxExempt() == true ? 1 : 0;
 		address.setBilltoTaxExempt(taxExempt);
 		address.setBilltoTaxExemptReason(quoteRequest.getTaxExemptReason());
-		Integer invoiceBatchDefault = quoteRequest.getInvoiceBatch() == true ? 1 : 0;
+		Integer invoiceBatchDefault = quoteRequest.getInvoiceBatch() != null && quoteRequest.getInvoiceBatch() == true ? 1 : 0;
 		address.setInvoiceBatchDefault(invoiceBatchDefault);
 		address.setInvoiceGroupingDefault(quoteRequest.getInvoiceGrouping());
 		address.setInvoiceStyleDefault(quoteRequest.getInvoiceStyle());

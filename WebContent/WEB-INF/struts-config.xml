@@ -262,7 +262,8 @@
         </action>
         <action
             path="/newQuote"
-            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction"
+            type="com.ansi.scilla.web.quote.action.QuoteMaintenanceAction"            
+            name="idForm"
             scope="request">
             <forward name="valid" path="/newQuote.jsp" />
             <forward name="login" path="/login.jsp" />            
