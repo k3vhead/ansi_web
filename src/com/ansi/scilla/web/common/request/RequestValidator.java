@@ -633,9 +633,15 @@ public class RequestValidator {
 				webMessages.addMessage(fieldName, "Organization ID is required");
 			}
 		} else {			
-			PreparedStatement ps = conn.prepareStatement("select count(*) as record_count from division_group where group_id=? and group_type=?");
+			String sql = type.equals(OrganizationType.DIVISION) ?
+					"select count(*) as record_count from division where division_id=?"
+					:
+					"select count(*) as record_count from division_group where group_id=? and group_type=?";
+			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setInt(1, value);
-			ps.setString(2, type.name().toUpperCase());
+			if ( ! type.equals(OrganizationType.DIVISION)) {
+				ps.setString(2, type.name().toUpperCase());
+			}
 			ResultSet rs = ps.executeQuery();
 			if ( rs.next() ) {
 				if ( rs.getInt("record_count") == 0 ) {

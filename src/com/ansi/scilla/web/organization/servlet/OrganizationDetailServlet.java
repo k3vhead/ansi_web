@@ -2,6 +2,7 @@ package com.ansi.scilla.web.organization.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Calendar;
 
 import javax.servlet.ServletException;
@@ -13,6 +14,7 @@ import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.DivisionGroup;
+import com.ansi.scilla.common.exceptions.InvalidHierarchyException;
 import com.ansi.scilla.common.organization.OrganizationType;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -27,6 +29,7 @@ import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.organization.request.OrganizationDetailRequest;
 import com.ansi.scilla.web.organization.response.OrganizationDetailResponse;
+
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class OrganizationDetailServlet extends AbstractServlet {
@@ -115,7 +118,11 @@ public class OrganizationDetailServlet extends AbstractServlet {
 					AppUtils.json2object(jsonString, organizationDetailRequest);
 					organizationDetailRequest.validate(conn, webMessages, organizationId);
 					if ( webMessages.isEmpty() ) {
-						doUpdate(conn, sessionData.getUser(), organizationId, organizationDetailRequest);
+						if ( organizationDetailRequest.getParentId() == null ) {
+							doUpdate(conn, sessionData.getUser(), organizationId, organizationDetailRequest);
+						} else {
+							doParentUpdate(conn, sessionData.getUser(), type, organizationId, organizationDetailRequest);
+						}
 						conn.commit();
 						data = new OrganizationDetailResponse(conn, type, organizationId, filter);
 						super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
@@ -124,7 +131,7 @@ public class OrganizationDetailServlet extends AbstractServlet {
 						super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
 					}
 				} else {
-					logger.log(Level.DEBUG, "Organization doDetailGet");
+					logger.log(Level.DEBUG, "Organization doDetailPost");
 					super.sendNotFound(response);
 				}
 			} catch ( Exception e) {
@@ -166,7 +173,6 @@ public class OrganizationDetailServlet extends AbstractServlet {
 	}
 
 	
-	
 	private void doUpdate(Connection conn, SessionUser sessionUser, Integer organizationId, OrganizationDetailRequest orgRequest) throws RecordNotFoundException, Exception {
 		Calendar today = Calendar.getInstance(new AnsiTime());
 		java.sql.Date now = new java.sql.Date(today.getTime().getTime());
@@ -186,6 +192,9 @@ public class OrganizationDetailServlet extends AbstractServlet {
 				throw new Exception("This should never happen");
 			}
 		}
+		if ( orgRequest.getParentId() != null ) {			
+			group.setParentId(orgRequest.getParentId());
+		}
 		group.setUpdatedBy(sessionUser.getUserId());
 		group.setUpdatedDate(now);
 		
@@ -194,6 +203,11 @@ public class OrganizationDetailServlet extends AbstractServlet {
 		group.update(conn, key);
 		
 		
+	}
+
+	private void doParentUpdate(Connection conn, SessionUser user, OrganizationType type, Integer organizationId,
+			OrganizationDetailRequest organizationDetailRequest) throws SQLException, InvalidHierarchyException {
+		type.updateParent(conn, organizationId, organizationDetailRequest.getParentId(), user.getUserId()); 
 	}
 
 	private class InvalidOrgUriException extends Exception {

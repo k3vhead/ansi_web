@@ -81,6 +81,10 @@
         		orgType : '<c:out value="${ANSI_ORGANIZATION_TYPE}" />',
         		orgTypeDisplay : '<c:out value="${ANSI_ORGANIZATION_TYPE_DISPLAY}" />',        		
         		orgTable : null,
+        		icons : {
+        			"componentIsYes":'<webthing:component>Component</webthing:component>',
+					"componentIsNo":'<webthing:componentNo>Reassign</webthing:componentNo>',
+        		},
         		
         		init : function() {
         			$("h1 .organization-type-display").html(ORGMAINT.orgTypeDisplay);
@@ -113,7 +117,7 @@
         			}
         			var $passthru = {
        					"destination":"#org-table", 
-       					"edit":true,
+       					"action":["view","edit"],
        					"source":"orgList",
         			}
         			ANSI_UTILS.makeServerCall("GET", $url, {}, $callbacks, $passthru);
@@ -223,7 +227,7 @@
         		
         		makeOrgTable : function($data, $passthru) {
         			console.log("makeOrgTable");  
-        			
+        			console.log($passthru);
         			var $active = '<webthing:checkmark>Active</webthing:checkmark>';
         			var $inactive = '<webthing:ban>Inactive</webthing:ban>';
         			var $unknown = '<webthing:questionmark>Unknown</webthing:questionmark>';
@@ -231,6 +235,7 @@
         			var $edit = '<webthing:edit>Edit</webthing:edit>';
 	       			var $delete = '<webthing:delete>Delete</webthing:delete></a>';
 	       			var $view = '<webthing:view>View</webthing:view>';
+	       			
 	       			
 					
 					
@@ -273,11 +278,25 @@
 		    						return $status;
 		    					}
 		    				},
-		    				{ width:"10%", title:"Action", className:"dt-center", orderable:true, visible:$passthru['edit'],
+		    				{ width:"10%", title:"Action", className:"dt-center", orderable:true, visible:$passthru['action'].length > 0,
 		    					data:function(row,type,set) {
-	    							$viewLink = '<a href="#" class="action-link view-link" data-id="'+row.organizationId+'"><webthing:view>View</webthing:view></a>';
-	    							$editLink = '<ansi:hasPermission permissionRequired="SYSADMIN_WRITE"><a href="#" class="action-link edit-link" data-id="'+row.organizationId+'"><webthing:edit>Edit</webthing:edit></a></ansi:hasPermission>';
-		    						return $viewLink + $editLink;
+		    						var $viewLink = "";
+		    						var $editLink = "";
+		    						var $parentLink = "";
+		    						
+		    						$.each($passthru['action'], function($index, $value) {
+		    							if ( $value == "view" )  { $viewLink = '<a href="#" class="action-link view-link" data-id="'+row.organizationId+'"><webthing:view>View</webthing:view></a>'; }
+		    							if ( $value == "edit" )  { $editLink = '<a href="#" class="action-link edit-link" data-id="'+row.organizationId+'"><webthing:edit>Edit</webthing:edit></a>'; }
+		    							if ( $value == "parent") { 
+		    								if ( row.parentId == $data.data.organization.organizationId) {
+		    									$parentLink = ORGMAINT.icons['componentIsYes'];
+			    							} else {
+			    								$parentLink = '<a href="#" class="action-link parent-link" data-orgtype="'+row.type+'" data-id="'+row.organizationId+'">' + ORGMAINT.icons['componentIsNo'] + '</a>';
+			    							}
+		    							}
+		    						});
+	    							
+		    						return $viewLink + '<ansi:hasPermission permissionRequired="SYSADMIN_WRITE">' + $editLink + $parentLink + '</ansi:hasPermission>';
 		    					},		    					
 		    				},
 	    				],
@@ -292,6 +311,9 @@
 	    						var $organizationId = $(this).attr("data-id");
 	    						ORGMAINT.getOrganizationDetail("edit", $organizationId, false);
 	    					});
+	    					$(".parent-link").click(function($clickevent) {	    						
+	    						ORGMAINT.parentChange($(this));
+	    					});
 	    				},
         			});
         			
@@ -300,13 +322,42 @@
         		},
         		
         		
+
+        		parentChange : function($clickEvent) {
+        			var $organizationId = $clickEvent.attr("data-id");
+					var $organizationType = $clickEvent.attr("data-orgtype");
+					var $newParent = $("#organization-edit input[name='name']").attr("data-id");
+					console.log("changing parent: " + $organizationId + " " + $organizationType + " " + $newParent);
+					var $url = "organization/" + $organizationType + "/" + $organizationId;
+    				var $outbound = {"parentId":$newParent};
+    				var $callbacks = {
+    					200 : ORGMAINT.parentChangeSuccess,
+    				};
+    				ANSI_UTILS.makeServerCall("POST", $url, JSON.stringify($outbound), $callbacks, {"event":$clickEvent});
+
+        		},
+        		
+        		
+        		
+        		
+        		parentChangeSuccess : function($data, $passthru) {
+        			console.log("parentChangeSuccess");
+        			if ( $data.responseHeader.responseCode == "SUCCESS" ) {
+        				$("#organization-edit .organization-msg").html("Update successful").show().fadeOut(3000);
+        				$passthru["event"].html(ORGMAINT.icons['componentIsYes'])
+            			//ORGMAINT.showOrgDetail($data, {"action":"edit"});
+        			} else {
+        				//this happens if the data attributes on the lookup are weird.
+        				$("#organization-edit .organization-msg").html("Update error. Reload page and try again").show();
+        			}
+        		},
+        		
+        		
+        		
+        		
         		showOrgDetail : function($data, $passthru) {
         			console.log("showOrgDetail");
         			
-        			var $destination = {
-        				"view" : "#organization-display",
-        				"edit" : "#organization-edit",
-        			};
         			var $organization = $data.data.organization;
         			var $active = '<webthing:checkmark>Active</webthing:checkmark>';
         			var $inactive = '<webthing:ban>Inactive</webthing:ban>';
@@ -344,12 +395,27 @@
         			$("#organization-edit .parent-name").html($organization.parentName);
         			$("#organization-edit .parent-type").html($organization.parentType);
         			
-        			// populate the child list
-        			var $displayDetail = {
-        				"destination":$destination[$passthru["action"]] + " .organization-children",
-        				"edit":false,
-        				"source":"childList",
+        			var $destination = {
+           				"view" : "#organization-display",
+           				"edit" : "#organization-edit",
+           			};
+            			
+        			if ( $passthru["action"] == "view" ) {
+        				$displayDetail = {
+               				"destination":$destination[$passthru["action"]] + " .organization-children",
+               				"action":[],
+               				"source":"childList",
+               			}
+        			} else if ( $passthru["action"] == "edit" ) {
+        				$displayDetail = {
+               				"destination":$destination[$passthru["action"]] + " .organization-children",
+               				"action":["parent"],
+               				"source":"childList",
+               			}
+        			} else {
+        				$("#globalMsg").html("System Error. Invalid action. Contact Support");
         			}
+        			// populate the child list        			
         			ORGMAINT.makeOrgTable($data, $displayDetail)
         			
         			// display one of the modals
@@ -412,7 +478,7 @@
 	
 
 		<div id="organization-display">
-			<div style="width:100%; height:12px;"><span class="err organization-msg"></span></div>
+			<div style="width:100%; height:14px;"><span class="err organization-msg"></span></div>
 			<table>
 				<tr>
 					<th>ID</th>
@@ -435,7 +501,7 @@
 		
 		
 		<div id="organization-edit">
-			<div style="width:100%; height:12px;"><span class="err organization-msg"></span></div>
+			<div style="width:100%; height:14px;"><span class="err organization-msg"></span></div>
 			<table>
 				<tr>
 					<th>ID</th>
