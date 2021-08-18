@@ -16,13 +16,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
 
-import com.ansi.scilla.report.report.ReportDistributionByReport;
-import com.ansi.scilla.report.report.RowData;
+import com.ansi.scilla.common.utils.Permission;
+import com.ansi.scilla.report.reportDistribution.ReportDistributionByReport;
+import com.ansi.scilla.report.reportDistribution.RowData;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.utils.AppUtils;
-import com.ansi.scilla.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
