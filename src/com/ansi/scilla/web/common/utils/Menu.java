@@ -52,6 +52,13 @@ public enum Menu {
 	BCR(                "Budget Control",       QUICK_LINKS, Permission.CLAIMS_WRITE,   "budgetControl.html"),
 	
 	
+	PAYROLL("Payroll", null, Permission.PAYROLL_WRITE, "#"),
+	PAYROLL_EMPLOYEE_IMPORT("Employee Import",  PAYROLL,    Permission.PAYROLL_WRITE,  "payrollEmployeeImport.html"),
+	PAYROLL_WORKSHEET_IMPORT("Payroll Import",  PAYROLL,    Permission.PAYROLL_WRITE,  "payrollTimesheetImport.html"),
+	PAYROLL_EXCEPTION_REPORT("Exception Report", PAYROLL,   Permission.PAYROLL_WRITE,  "payrollExceptionReport.html"),
+	PAYROLL_EXPORT("Payroll Export",            PAYROLL,    Permission.PAYROLL_WRITE,  "payrollExport.html"),
+	
+	
 	SETTINGS("Settings", null, Permission.SYSADMIN_READ,"#"),
 	TAX_MAINTENANCE(	"Tax Maintenance",		SETTINGS,	Permission.SYSADMIN_READ,	"taxRateMaintenance.html"),
 	CODES(				"Codes",				SETTINGS,	Permission.SYSADMIN_READ,	"codeMaintenance.html"),

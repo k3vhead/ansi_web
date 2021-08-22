@@ -98,6 +98,7 @@
 								<webthing:menu menuName="LOOKUPS" />
 			        			<webthing:menu menuName="REPORTS"><webthing:reportMenu /></webthing:menu>
 			        			<webthing:menu menuName="QUICK_LINKS" />
+			        			<webthing:menu menuName="PAYROLL" />
 							</ul>
 						</div>  <!--  menus left --> 
 				</div> <!-- id=headerNav -->

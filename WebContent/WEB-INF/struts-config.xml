@@ -323,6 +323,30 @@
             <forward name="login" path="/login.jsp" />
         </action>
 		<action
+            path="/payrollEmployeeImport"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/payroll/employeeImport.jsp" />
+            <forward name="login" path="/login.jsp" />
+        </action>
+		<action
+            path="/payrollTimesheetImport"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/payroll/timesheetImport.jsp" />
+            <forward name="login" path="/login.jsp" />
+        </action>
+		<action
+            path="/payrollExceptionReport"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/payroll/exceptionReport.jsp" />
+            <forward name="login" path="/login.jsp" />
+        </action>
+		<action
+            path="/payrollExport"
+            type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
+            <forward name="valid" path="/payroll/export.jsp" />
+            <forward name="login" path="/login.jsp" />
+        </action>
+		<action
             path="/permissionGroup"
             type="com.ansi.scilla.web.common.action.SessionPageDisplayAction">
             <forward name="valid" path="/permissionGroup.jsp" />
