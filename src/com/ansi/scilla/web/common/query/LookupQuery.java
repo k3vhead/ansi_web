@@ -289,8 +289,14 @@ public abstract class LookupQuery extends ApplicationObject {
 	}
 	
 	
+	/**
+	 * 
+	 * @param selectType
+	 * @param rowCount Number of rows to return. -1 indicates "all of them"
+	 * @return
+	 */
 	private String makeFetch(SelectType selectType, Integer rowCount) {
-		return selectType.equals(SelectType.DATA) ? "\n FETCH NEXT " + rowCount + " ROWS ONLY " : "";
+		return selectType.equals(SelectType.DATA) && rowCount > 0 ? "\n FETCH NEXT " + rowCount + " ROWS ONLY " : "";
 	}
 
 	
