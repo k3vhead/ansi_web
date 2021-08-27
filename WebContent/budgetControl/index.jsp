@@ -632,8 +632,8 @@
     				$("#bcr_new_claim_modal select").val("");
     				$("#bcr_new_claim_modal .err").html("");
     				$("#bcr_new_claim_modal input[name='ticketId']").val($ticketId);
-    				$("#bcr_new_claim_modal input[name='dlAmt']").val($actDlAmt);
-    				$("#bcr_new_claim_modal input[name='volumeClaimed']").val($actPricePerCleaning);
+    				$("#bcr_new_claim_modal input[name='dlAmt']").val($data.data.ticketDetail.remainingDlAmt.toFixed(2));
+    				$("#bcr_new_claim_modal input[name='volumeClaimed']").val($data.data.ticketDetail.remainingPricePerCleaning.toFixed(2));
     				$("#bcr_new_claim_modal .ticketId").html($ticketId);
     				$("#bcr_new_claim_modal input[name='serviceTypeId']").val($serviceTypeId);
     				$("#bcr_new_claim_modal .serviceTagId").html($serviceTagId);

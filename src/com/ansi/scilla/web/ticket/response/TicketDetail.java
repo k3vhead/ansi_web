@@ -16,6 +16,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.claims.TicketClaimTotals;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.Job;
 import com.ansi.scilla.common.db.TaxRate;
@@ -97,6 +98,9 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 	private String poNumber;
 	private String actPoNumber;
 
+	// how much of this ticket has not yet been claimed:
+	private BigDecimal remainingDlAmt;    
+	private BigDecimal remainingPricePerCleaning;
 
 	
 	/* ******************************************** */
@@ -111,6 +115,7 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 		ticket.setTicketId(ticketId);
 		ticket.selectOne(conn);
 		TicketPaymentTotals ticketPaymentTotals = TicketPaymentTotals.select(conn, ticketId);
+		TicketClaimTotals ticketClaimTotals = new TicketClaimTotals(conn, ticketId);
 		
 		Division division = new Division();
 		division.setDivisionId(ticketPaymentTotals.getDivisionId());
@@ -188,6 +193,9 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 			this.actPoNumber = ticket.getActPoNumber();
 		}
 		makeJobTagList(conn, this.jobId);
+		
+		this.remainingDlAmt = this.actDlAmt.subtract(ticketClaimTotals.getTotalClaimedDlAmt());    
+		this.remainingPricePerCleaning = this.actPricePerCleaning.subtract(ticketClaimTotals.getTotalClaimedVolume());
 	}
 	
 	
@@ -588,6 +596,22 @@ public class TicketDetail extends ApplicationObject { //TicketPaymentTotal popul
 
 	public void setJobFrequencyDesc(String jobFrequencyDesc) {
 		this.jobFrequencyDesc = jobFrequencyDesc;
+	}
+
+	public BigDecimal getRemainingDlAmt() {
+		return remainingDlAmt;
+	}
+
+	public void setRemainingDlAmt(BigDecimal remainingDlAmt) {
+		this.remainingDlAmt = remainingDlAmt;
+	}
+
+	public BigDecimal getRemainingPricePerCleaning() {
+		return remainingPricePerCleaning;
+	}
+
+	public void setRemainingPricePerCleaning(BigDecimal remainingPricePerCleaning) {
+		this.remainingPricePerCleaning = remainingPricePerCleaning;
 	}
 
 	
