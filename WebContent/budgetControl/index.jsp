@@ -315,7 +315,10 @@
     				});	
         			
         			$(".bcr-edit-clicker").on("click", function($clickevent) {
-        				$clickevent.preventDefault();
+        				$clickevent.preventDefault();        				
+        				var $tableId = $(this).parents('table').attr("id");
+        				console.log("ID:");
+						console.log( $tableId);
         				var $claimId = $(this).attr("data-claimid");
         				var $ticketId = $(this).attr("data-ticketid");
         				var $divisionId = $(this).attr("data-divisionid");
@@ -324,7 +327,7 @@
         				var $claimId = $(this).attr("data-claimid")
         				var $outbound = {"divisionId":$divisionId, "workYear":$workYear, "workWeeks":$workWeeks, "claimId":$claimId};
         				var $url = "bcr/ticketClaim/" + $claimId;
-        				ANSI_UTILS.doServerCall("GET", $url, $outbound, BUDGETCONTROL.getTicketDetailSuccess, BUDGETCONTROL.getTicketDetailFail);
+        				ANSI_UTILS.doServerCall("GET", $url, $outbound, BUDGETCONTROL.getTicketDetailSuccess, BUDGETCONTROL.getTicketDetailFail, null, {'tableId':$tableId});
         			});
         			
         			$(".newClaimButton").on("click", function($clickevent) {
@@ -425,8 +428,8 @@
             	        "deferRender": 		true,
             	        "scrollCollapse": 	true,
             	        "scrollX": 			true,
-            	        "pageLength":		50,
-            	        rowId: 				'dt_RowId',
+            	        "pageLength":		-1,
+            	        rowId: 				'dt_RowId', // 'claim_id', //'dt_RowId',
             	        destroy : 			true,		// this lets us reinitialize the table
             	        dom: 				'Bfrtip',
             	        "searching": 		true,
@@ -446,7 +449,7 @@
             	        "paging": true,
     			        "ajax": {
     			        	"url": $url,
-    			        	"type": "POST",
+    			        	"type": "GET",
     			        	"data": $outbound,
     			        	},
     			        columns: [
@@ -553,6 +556,18 @@
     			            },
     			            "drawCallback": function( settings ) {
     			            	BUDGETCONTROL.doFunctionBinding();
+    			            	$("#doScroll").off("click");
+    			            	$("#doScroll").click( function($event) {
+    								console.log("Scrolling");
+    								
+    								$('html, body').animate({
+    									scrollTop:$("#ticketTable .row243").offset().top
+    								}, 2000);    								
+    			            	});    			          
+    			            },
+    			            "createdRow": function(nRow, aData, iDataIndex ) {
+								// as each row is created, add a class to the <tr> tags
+    			            	$(nRow).addClass("row"+aData.claim_id);
     			            }
     			    } );
         		},
@@ -617,8 +632,8 @@
     				$("#bcr_new_claim_modal select").val("");
     				$("#bcr_new_claim_modal .err").html("");
     				$("#bcr_new_claim_modal input[name='ticketId']").val($ticketId);
-    				$("#bcr_new_claim_modal input[name='dlAmt']").val($actDlAmt);
-    				$("#bcr_new_claim_modal input[name='volumeClaimed']").val($actPricePerCleaning);
+    				$("#bcr_new_claim_modal input[name='dlAmt']").val($data.data.ticketDetail.remainingDlAmt.toFixed(2));
+    				$("#bcr_new_claim_modal input[name='volumeClaimed']").val($data.data.ticketDetail.remainingPricePerCleaning.toFixed(2));
     				$("#bcr_new_claim_modal .ticketId").html($ticketId);
     				$("#bcr_new_claim_modal input[name='serviceTypeId']").val($serviceTypeId);
     				$("#bcr_new_claim_modal .serviceTagId").html($serviceTagId);
@@ -652,9 +667,13 @@
         		
         		
         		
-        		getTicketDetailSuccess : function($data) {
-					console.log("getTicketDetailSuccess");  
-										
+        		getTicketDetailSuccess : function($data, $passthruData) {
+					console.log("getTicketDetailSuccess"); 
+					var $tableId = null;
+					if ( $passthruData != null ) {
+						$tableId = $passthruData['tableId'];
+					}
+					console.log("tableId: " + $tableId);			
 					var $select = $("#bcr_edit_modal input[name='claimWeek']");
 					$($select).attr("data-ticketid",$data.data.ticket.ticketId);
 					$($select).attr("data-oldclaimweek",$data.data.claimWeek);
@@ -671,6 +690,12 @@
 	            	// set attributes so in-modal updates can happen (stash the values for later use)
 	            	$("#bcr_edit_modal").attr("ticketId",$data.data.ticket.ticketId);
 	            	$("#bcr_edit_modal").attr("serviceTagId",$data.data.ticket.serviceTagId);
+	            	if ( $tableId == null ) {
+	            		$("#bcr_edit_modal").removeAttr("data-tableid");
+	            	} else {
+	            		$("#bcr_edit_modal").attr("data-tableid",$tableId);
+	            	}
+	            	
 	            	
 	            	BUDGETCONTROL.makeDlLaborTable($data);
 					BUDGETCONTROL.makeDlExpenseTable($data);	
@@ -2548,6 +2573,9 @@
        		<li class="accordionItem">    			
         		<h4 class="accHdr">All Tickets</h4>
         		<div id="bcr_tickets">
+        			<!-- DCL 2021/08/27  This button is here as a development tool to test the "scroll to location" code
+        			<input type="button" value="scroll" id="doScroll" /><br />
+        			 -->
         			<div class="thinking"><webthing:thinking style="width:100%" /></div>
 	        		<div class="display">
 	        			<bcr:ticketTable id="ticketTable" />	       				
