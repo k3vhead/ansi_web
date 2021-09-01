@@ -59,6 +59,9 @@
         	.action-link {
         		text-decoration:none;
         	}
+        	.company-field {
+        		display:none;
+        	}
 			.dataTables_wrapper {
 				padding-top:10px;
 			}	
@@ -88,6 +91,11 @@
         		
         		init : function() {
         			$("h1 .organization-type-display").html(ORGMAINT.orgTypeDisplay);
+        			if ( ORGMAINT.orgType == 'COMPANY' ) {
+        				$(".company-field").show();
+        			} else {
+        				$(".company-field").hide();
+        			}
         			ORGMAINT.getOrgs(); 
         			ORGMAINT.makeModals();
         			ORGMAINT.makeClickers();
@@ -166,6 +174,23 @@
         					$("#organization-edit input[name='name']").attr("data-name", $newName);
 	        				var $url = "organization/" + ORGMAINT.orgType + "/" + $organizationId;
 	        				var $outbound = {"name":$newName};
+	        				var $callbacks = {
+	        					200 : ORGMAINT.statusChangeSuccess,
+	        				};
+	        				ANSI_UTILS.makeServerCall("POST", $url, JSON.stringify($outbound), $callbacks, {});
+        				}
+        			});
+        			
+        			$("#organization-edit input[name='companyCode']").on("blur", function($event) {
+        				console.log("changing company");
+        				var $organizationId = $(this).attr("data-id");
+        				var $oldName = $(this).attr("data-name");
+        				var $newName = $("#organization-edit input[name='companyCode']").val();
+        				
+        				if ( $oldName != $newName) {  
+        					$("#organization-edit input[name='name']").attr("data-name", $newName);
+	        				var $url = "organization/" + ORGMAINT.orgType + "/" + $organizationId;
+	        				var $outbound = {"companyCode":$newName};
 	        				var $callbacks = {
 	        					200 : ORGMAINT.statusChangeSuccess,
 	        				};
@@ -270,6 +295,7 @@
 		    				{ width:"25%", title:"Name", className:"dt-left", orderable:true, data:'name' },
 		    				{ width:"25%", title:"Parent", className:"dt-left", orderable:true, data:'parentName' },
 		    				{ width:"10%", title:"Parent Type", className:"dt-left", orderable:true, data:'parentType' },
+		    				{ width:"15%", title:"Company Code", className:"dt-left", orderable:true, data:'companyCode' },
 		    				{ width:"10%", title:"Status", className:"dt-center", orderable:true, 
 		    					data:function(row,type,set) {
 		    						if ( row.status == 0 ) { $status = $inactive}
@@ -314,6 +340,12 @@
 	    					$(".parent-link").click(function($clickevent) {	    						
 	    						ORGMAINT.parentChange($(this));
 	    					});
+	    					
+	    					// hide the company code column 
+	    					var myTable = $($passthru['destination']).DataTable();
+	    					if ( ORGMAINT.orgType != "COMPANY" ) {
+    							myTable.columns(4).visible(false);
+	    					}
 	    				},
         			});
         			
@@ -377,12 +409,16 @@
         			$("#organization-display .status").html($status);
         			$("#organization-display .parent-name").html($organization.parentName);
         			$("#organization-display .parent-type").html($organization.parentType);
+        			$("#organization-display .company-code").html($organization.companyCode);
         			
         			// populate the edit modal
         			$("#organization-edit .organization-id").html($organization.organizationId);
         			$("#organization-edit input[name='name']").val($organization.name);
         			$("#organization-edit input[name='name']").attr("data-id", $organization.organizationId);
         			$("#organization-edit input[name='name']").attr("data-name", $organization.name);
+        			$("#organization-edit input[name='companyCode']").val($organization.companyCode);
+        			$("#organization-edit input[name='companyCode']").attr("data-id", $organization.organizationId);
+        			$("#organization-edit input[name='companyCode']").attr("data-name", $organization.companyCode);
         			$("#organization-edit .org-status-change").hide();
         			$("#organization-edit .org-status-change").attr("data-id", $organization.organizationId);
         			if ( $organization.status == 0 ) { 
@@ -485,6 +521,7 @@
 					<th>Name</th>
 					<th>Parent</th>
 					<th>Parent Type</th>
+					<th class="company-field">Company Code</th>
 					<th>Status</th>					
 				</tr>
 				<tr>
@@ -492,6 +529,7 @@
 					<td><span class="name"></span></td>
 					<td><span class="parent-name"></span></td>
 					<td><span class="parent-type"></span></td>					
+					<td class="company-field"><span class="company-code"></span></td>				
 					<td><span class="status"></span></td>
 				</tr>
 			</table>
@@ -508,13 +546,15 @@
 					<th>Name</th>
 					<th>Parent</th>
 					<th>Parent Type</th>
+					<th class="company-field">Company Code</th>
 					<th>Status</th>					
 				</tr>
 				<tr>
 					<td><span class="organization-id"></span></td>
 					<td><input type="text" name="name" /></td>
 					<td><span class="parent-name"></span></td>
-					<td><span class="parent-type"></span></td>					
+					<td><span class="parent-type"></span></td>	
+					<td class="company-field"><input type="text" name="companyCode" /></td>				
 					<td><span class="status">					
 						<webthing:checkmark styleClass="org-status-change status-is-active">Active</webthing:checkmark>
 	        			<webthing:ban styleClass="org-status-change status-is-inactive">Inactive</webthing:ban>

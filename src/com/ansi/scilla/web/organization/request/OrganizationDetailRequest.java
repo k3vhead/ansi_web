@@ -16,10 +16,12 @@ public class OrganizationDetailRequest extends AbstractRequest {
 	public static final String STATUS = "status";
 	public static final String NAME = "name";
 	public static final String PARENT_ID = "parentId";
+	public static final String COMPANY_CODE = "companyCode";
 
 	private Boolean status;
 	private String name;
 	private Integer parentId;
+	private String companyCode;
 	
 	public Boolean getStatus() {
 		return status;
@@ -39,16 +41,22 @@ public class OrganizationDetailRequest extends AbstractRequest {
 	public void setParentId(Integer parentId) {
 		this.parentId = parentId;
 	}
-	
-	
+	public String getCompanyCode() {
+		return companyCode;
+	}
+	public void setCompanyCode(String companyCode) {
+		this.companyCode = companyCode;
+	}
+
 	public void validate(Connection conn, WebMessages webMessages, Integer organizationId) throws Exception {
-		if ( status == null && StringUtils.isBlank(name) && parentId == null ) {
+		if ( status == null && StringUtils.isBlank(name) && parentId == null && StringUtils.isBlank(companyCode)) {
 			//No data got here -- that's a bad thing
 			//We don't know what they were trying to do, so mark everything an error and let the 
 			//front end figure it out.
 			webMessages.addMessage(STATUS, "Status is Required");
 			webMessages.addMessage(NAME, "Name is required");
 			webMessages.addMessage(PARENT_ID, "Parent is required");
+			webMessages.addMessage(COMPANY_CODE, "Company Code is required");
 		} else {
 			// something is entered, so validate whatever is entered.
 			if ( ! StringUtils.isBlank(this.name) ) {
@@ -59,6 +67,9 @@ public class OrganizationDetailRequest extends AbstractRequest {
 			}
 			if ( this.parentId != null ) {
 				RequestValidator.validateId(conn, webMessages, "division_group", DivisionGroup.GROUP_ID, PARENT_ID, this.parentId, true, "Parent");
+			}
+			if ( ! StringUtils.isBlank(this.companyCode) ) {
+				RequestValidator.validateString(webMessages, COMPANY_CODE, this.companyCode, 45, false, "Company Code");
 			}
 		}
 	}
