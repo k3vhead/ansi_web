@@ -38,26 +38,10 @@
 			#filter-container {
         		width:402px;
         		float:right;
-        	}			
-        	#organization-display {
-        		display:none;
-        	}
-        	#organization-display table {
-        		width:100%;
-        		border:solid 1px #404040;
-        	}
-        	#organization-display th {
-        		text-align:left;
-        	}
-        	#organization-edit table {
-        		width:100%;
-        		border:solid 1px #404040;
-        	}
-        	#organization-edit th {
-        		text-align:left;
-        	}
+        	}			        	
         	.action-link {
         		text-decoration:none;
+        		cursor:pointer;
         	}
 			.dataTables_wrapper {
 				padding-top:10px;
@@ -77,30 +61,108 @@
         <script type="text/javascript">    
         
         $(document).ready(function(){
-        	;ORGMAINT = {
-        		orgType : '<c:out value="${ANSI_ORGANIZATION_TYPE}" />',
-        		orgTypeDisplay : '<c:out value="${ANSI_ORGANIZATION_TYPE_DISPLAY}" />',        		
-        		orgTable : null,
-        		icons : {
-        			"componentIsYes":'<webthing:component>Component</webthing:component>',
-					"componentIsNo":'<webthing:componentNo>Reassign</webthing:componentNo>',
+        	;EMPLOYEELOOKUP = {
+        		init : function() {
+        			EMPLOYEELOOKUP.makeEmployeeTable(); 
+        			//EMPLOYEELOOKUP.makeModals();
         		},
         		
-        		init : function() {
-        			$("h1 .organization-type-display").html(ORGMAINT.orgTypeDisplay);
-        			ORGMAINT.getOrgs(); 
-        			ORGMAINT.makeModals();
-        			ORGMAINT.makeClickers();
+        		
+        		makeEmployeeTable : function() {
+        			$("#employeeLookup").DataTable( {
+            			"aaSorting":		[[4,'asc'],[3,'asc']],
+            			"processing": 		true,
+            	        "serverSide": 		true,
+            	        "autoWidth": 		false,
+            	        "deferRender": 		true,
+            	        "scrollCollapse": 	true,
+            	        "scrollX": 			true,
+            	        "pageLength":		50,
+            	        rowId: 				'dt_RowId',
+            	        destroy : 			true,		// this lets us reinitialize the table
+            	        dom: 				'Bfrtip',
+            	        "searching": 		true,
+            	        "searchDelay":		800,
+            	        lengthMenu: [
+            	        	[ 10, 50, 100, 500, 1000 ],
+            	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
+            	        ],
+            	        buttons: [
+            	        		'pageLength',
+            	        		'copy', 
+            	        		'csv', 
+            	        		'excel', 
+            	        		{extend: 'pdfHtml5', orientation: 'landscape'}, 
+            	        		'print',{extend: 'colvis',	label: function () {doFunctionBinding();$('#displayTable').draw();}},
+            	        	],
+            	        "columnDefs": [
+             	            { "orderable": true, "targets": -1 },
+             	            { className: "dt-head-center", "targets":[]},
+            	            { className: "dt-left", "targets": [0,1,2,3,4,5,6,7,8,9,10] },
+            	            { className: "dt-center", "targets": [] },
+            	            { className: "dt-right", "targets": []}
+            	         ],
+            	        "paging": true,
+    			        "ajax": {
+    			        	"url": "payroll/employeeLookup",
+    			        	"type": "GET",
+    			        	"data": {},
+    			        	},
+    			        columns: [
+    			        	{ title: "Employee Code", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' }, 
+    			        	{ title: "Company Code", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'company_code' }, 
+    			        	{ title: "Division", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'division' },
+    			        	{ title: "First Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_first_name' },
+    			        	{ title: "Last Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_last_name' },
+    			        	{ title: "MI", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_mi' },
+    			        	{ title: "Dept. Description", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'dept_description' },
+    			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_status' },
+    			        	{ title: "Termination", width:"10%", searchable:true, "defaultContent": "", data:'employee_termination_date' },
+    			        	{ title: "Notes", width:"10%", searchable:true, "defaultContent": "", data:'notes' },
+    			            { title: "Action",  width:"10%", searchable:true, searchFormat: "Equipment #####", 
+    			            	data: function ( row, type, set ) { 
+    			            		var $actionLink = '<span class="action-link" data-id="'+row.employee_code+'"><webthing:view>View</webthing:view></span>';
+    			            		return $actionLink;
+    			            	}
+    			            },
+    			            ],
+    			            "initComplete": function(settings, json) {
+    			            	var myTable = this;
+    			            	//LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#ticketTable", CALL_NOTE_LOOKUP.makeTable);
+    			            },
+    			            "drawCallback": function( settings ) {
+    			            	$(".action-link").off("click");
+    			            	$(".action-link").click(function($clickevent) {
+    			            		var $employeeCode = $(this).attr("data-id");
+    			            		console.log("employee code: " + $employeeCode);
+    			            	});
+    			            }
+    			    } );
         		},
+        		
+        		
+        		
+        		
+        		
+        		
+        		
+        		
+        		
+        		
+        		
+        		
+        		
+        		
+        		
         		
         		
         		getOrganizationDetail : function($action, $organizationId, $filter) {
         			// $filter says whether to retrieve all children (false) or just the children of this org (true)
         			console.log("getOrganizationDetail: " + $organizationId);
-        			var $url = "organization/" + ORGMAINT.orgType + "/" + $organizationId;
+        			var $url = "organization/" + EMPLOYEELOOKUP.orgType + "/" + $organizationId;
         			var $callbacks = {
-        				200 : ORGMAINT.showOrgDetail,
-        				404 : ORGMAINT.getOrgsFail,
+        				200 : EMPLOYEELOOKUP.showOrgDetail,
+        				404 : EMPLOYEELOOKUP.getOrgsFail,
         			}        			
         			$outbound = {"filter":$filter};
         			ANSI_UTILS.makeServerCall("GET", $url, $outbound, $callbacks, {"action":$action});
@@ -110,10 +172,10 @@
         		
         		getOrgs : function() {
         			console.log("getOrgs");
-        			var $url = "organization/" + ORGMAINT.orgType;
+        			var $url = "organization/" + EMPLOYEELOOKUP.orgType;
         			var $callbacks = {
-        				200 : ORGMAINT.makeOrgTable,
-        				404 : ORGMAINT.getOrgsFail,
+        				200 : EMPLOYEELOOKUP.makeOrgTable,
+        				404 : EMPLOYEELOOKUP.getOrgsFail,
         			}
         			var $passthru = {
        					"destination":"#org-table", 
@@ -147,10 +209,10 @@
         						$newStatus = true;
         					}
         				});
-        				var $url = "organization/" + ORGMAINT.orgType + "/" + $organizationId;
+        				var $url = "organization/" + EMPLOYEELOOKUP.orgType + "/" + $organizationId;
         				var $outbound = {"status":$newStatus};
         				var $callbacks = {
-        					200 : ORGMAINT.statusChangeSuccess,
+        					200 : EMPLOYEELOOKUP.statusChangeSuccess,
         				};
         				ANSI_UTILS.makeServerCall("POST", $url, JSON.stringify($outbound), $callbacks, {});
         			});
@@ -164,10 +226,10 @@
         				
         				if ( $oldName != $newName) {  
         					$("#organization-edit input[name='name']").attr("data-name", $newName);
-	        				var $url = "organization/" + ORGMAINT.orgType + "/" + $organizationId;
+	        				var $url = "organization/" + EMPLOYEELOOKUP.orgType + "/" + $organizationId;
 	        				var $outbound = {"name":$newName};
 	        				var $callbacks = {
-	        					200 : ORGMAINT.statusChangeSuccess,
+	        					200 : EMPLOYEELOOKUP.statusChangeSuccess,
 	        				};
 	        				ANSI_UTILS.makeServerCall("POST", $url, JSON.stringify($outbound), $callbacks, {});
         				}
@@ -178,7 +240,7 @@
         		
         		makeModals : function() {
         			$( "#organization-display" ).dialog({
-        				title:'View ' + ORGMAINT.orgTypeDisplay,
+        				title:'View ' + EMPLOYEELOOKUP.orgTypeDisplay,
         				autoOpen: false,
         				height: 500,
         				width: 1200,
@@ -199,7 +261,7 @@
         			$("#org_display_cancel").button('option', 'label', 'Done');    
         			
         			$( "#organization-edit" ).dialog({
-        				title:'Edit ' + ORGMAINT.orgTypeDisplay,
+        				title:'Edit ' + EMPLOYEELOOKUP.orgTypeDisplay,
         				autoOpen: false,
         				height: 500,
         				width: 1200,
@@ -242,9 +304,9 @@
 					
         			var $buttonArray = [        	        	
         	        	'copy', 
-        	        	{extend:'csv', filename:'*_' + ORGMAINT.orgTypeDisplay}, 
-        	        	{extend:'excel', filename:'*_' + ORGMAINT.orgTypeDisplay}, 
-        	        	{extend:'pdfHtml5', orientation: 'landscape', filename:'*_' + ORGMAINT.orgTypeDisplay}, 
+        	        	{extend:'csv', filename:'*_' + EMPLOYEELOOKUP.orgTypeDisplay}, 
+        	        	{extend:'excel', filename:'*_' + EMPLOYEELOOKUP.orgTypeDisplay}, 
+        	        	{extend:'pdfHtml5', orientation: 'landscape', filename:'*_' + EMPLOYEELOOKUP.orgTypeDisplay}, 
         	        	'print',
         	        	{extend:'colvis', label: function () {
 	        	        		doFunctionBinding();
@@ -289,9 +351,9 @@
 		    							if ( $value == "edit" )  { $editLink = '<a href="#" class="action-link edit-link" data-id="'+row.organizationId+'"><webthing:edit>Edit</webthing:edit></a>'; }
 		    							if ( $value == "parent") { 
 		    								if ( row.parentId == $data.data.organization.organizationId) {
-		    									$parentLink = ORGMAINT.icons['componentIsYes'];
+		    									$parentLink = EMPLOYEELOOKUP.icons['componentIsYes'];
 			    							} else {
-			    								$parentLink = '<a href="#" class="action-link parent-link" data-orgtype="'+row.type+'" data-id="'+row.organizationId+'">' + ORGMAINT.icons['componentIsNo'] + '</a>';
+			    								$parentLink = '<a href="#" class="action-link parent-link" data-orgtype="'+row.type+'" data-id="'+row.organizationId+'">' + EMPLOYEELOOKUP.icons['componentIsNo'] + '</a>';
 			    							}
 		    							}
 		    						});
@@ -305,14 +367,14 @@
 	    					$(".action-link").off("click");
 	    					$(".view-link").click(function($clickevent) {
 	    						var $organizationId = $(this).attr("data-id");
-	    						ORGMAINT.getOrganizationDetail("view", $organizationId, true);
+	    						EMPLOYEELOOKUP.getOrganizationDetail("view", $organizationId, true);
 	    					});
 	    					$(".edit-link").click(function($clickevent) {
 	    						var $organizationId = $(this).attr("data-id");
-	    						ORGMAINT.getOrganizationDetail("edit", $organizationId, false);
+	    						EMPLOYEELOOKUP.getOrganizationDetail("edit", $organizationId, false);
 	    					});
 	    					$(".parent-link").click(function($clickevent) {	    						
-	    						ORGMAINT.parentChange($(this));
+	    						EMPLOYEELOOKUP.parentChange($(this));
 	    					});
 	    				},
         			});
@@ -331,7 +393,7 @@
 					var $url = "organization/" + $organizationType + "/" + $organizationId;
     				var $outbound = {"parentId":$newParent};
     				var $callbacks = {
-    					200 : ORGMAINT.parentChangeSuccess,
+    					200 : EMPLOYEELOOKUP.parentChangeSuccess,
     				};
     				ANSI_UTILS.makeServerCall("POST", $url, JSON.stringify($outbound), $callbacks, {"event":$clickEvent});
 
@@ -344,8 +406,8 @@
         			console.log("parentChangeSuccess");
         			if ( $data.responseHeader.responseCode == "SUCCESS" ) {
         				$("#organization-edit .organization-msg").html("Update successful").show().fadeOut(3000);
-        				$passthru["event"].html(ORGMAINT.icons['componentIsYes'])
-            			//ORGMAINT.showOrgDetail($data, {"action":"edit"});
+        				$passthru["event"].html(EMPLOYEELOOKUP.icons['componentIsYes'])
+            			//EMPLOYEELOOKUP.showOrgDetail($data, {"action":"edit"});
         			} else {
         				//this happens if the data attributes on the lookup are weird.
         				$("#organization-edit .organization-msg").html("Update error. Reload page and try again").show();
@@ -416,7 +478,7 @@
         				$("#globalMsg").html("System Error. Invalid action. Contact Support");
         			}
         			// populate the child list        			
-        			ORGMAINT.makeOrgTable($data, $displayDetail)
+        			EMPLOYEELOOKUP.makeOrgTable($data, $displayDetail)
         			
         			// display one of the modals
         			$($destination[$passthru["action"]]).dialog("open");
@@ -438,7 +500,7 @@
             			} else { 
             				$("#organization-edit .status-is-unknown").show();
            				}            			
-            			ORGMAINT.getOrgs();
+            			EMPLOYEELOOKUP.getOrgs();
         			} else {
         				$("#organization-edit .organization-msg").html("System Error. Reload the page and try again").show();
         			}
@@ -450,7 +512,7 @@
             	
         	};
         	
-        	ORGMAINT.init();
+        	EMPLOYEELOOKUP.init();
         	
         	
         });
@@ -462,7 +524,8 @@
     	<h1>Employee Lookup</h1> 
 
     	
-
+		<table id="employeeLookup">
+		</table>
 		
     </tiles:put>
 		

@@ -740,6 +740,16 @@
 		<servlet-name>paymentTypeAhead</servlet-name>
 		<url-pattern>/paymentTypeAhead/*</url-pattern>
 	</servlet-mapping>
+	
+	
+	<servlet>
+		<servlet-name>payroll</servlet-name>
+		<servlet-class>com.ansi.scilla.web.payroll.servlet.PayrollServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>payroll</servlet-name>
+		<url-pattern>/payroll/*</url-pattern>
+	</servlet-mapping>
 
 
 	<servlet>
