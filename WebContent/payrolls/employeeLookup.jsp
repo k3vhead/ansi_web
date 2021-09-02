@@ -32,6 +32,9 @@
     	<script type="text/javascript" src="js/document.js"></script> 
     
         <style type="text/css">
+        	#alias-display {
+        		display:none;
+        	}
         	#table-container {
         		width:100%;
         	}
@@ -63,9 +66,80 @@
         $(document).ready(function(){
         	;EMPLOYEELOOKUP = {
         		init : function() {
+        			EMPLOYEELOOKUP.makeModals();
         			EMPLOYEELOOKUP.makeEmployeeTable(); 
-        			//EMPLOYEELOOKUP.makeModals();
         		},
+        		
+        		
+        		
+        		
+        		makeAliasTable : function($employeeCode) {
+        			console.log("makeAliasTable: " + $employeeCode);
+        			$("#alias-display").dialog("open");
+        			$("#alias-lookup").DataTable( {
+            			"aaSorting":		[[0,'asc']],
+            			"processing": 		true,
+            	        "serverSide": 		true,
+            	        "autoWidth": 		false,
+            	        "deferRender": 		true,
+            	        "scrollCollapse": 	true,
+            	        "scrollX": 			true,
+            	        "pageLength":		50,
+            	        rowId: 				'dt_RowId',
+            	        destroy : 			true,		// this lets us reinitialize the table
+            	        dom: 				'Bfrtip',
+            	        "searching": 		true,
+            	        "searchDelay":		800,
+            	        lengthMenu: [
+            	        	[ 10, 50, 100, 500, 1000 ],
+            	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
+            	        ],
+            	        buttons: [
+            	        		'pageLength',
+            	        		'copy', 
+            	        		'csv', 
+            	        		'excel', 
+            	        		{extend: 'pdfHtml5', orientation: 'landscape'}, 
+            	        		'print',{extend: 'colvis',	label: function () {doFunctionBinding();$('#displayTable').draw();}},
+            	        	],
+            	        "columnDefs": [
+             	            { "orderable": true, "targets": -1 },
+             	            { className: "dt-head-center", "targets":[]},
+            	            { className: "dt-left", "targets": [0] },
+            	            { className: "dt-center", "targets": [] },
+            	            { className: "dt-right", "targets": []}
+            	         ],
+            	        "paging": true,
+    			        "ajax": {
+    			        	"url": "payroll/aliasLookup",
+    			        	"type": "GET",
+    			        	"data": {"employeeCode":$employeeCode},
+    			        	},
+    			        columns: [
+    			        	{ title: "Employee Alias", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_name' }, 
+    			            { title: "Action",  width:"10%", searchable:true, searchFormat: "Equipment #####", 
+    			            	data: function ( row, type, set ) { 
+    			            		var $actionLink = '<span class="action-link" data-id="'+row.employee_code+'"><webthing:view>View</webthing:view></span>';
+    			            		$actionLink = "";
+    			            		return $actionLink;
+    			            	}
+    			            },
+    			            ],
+    			            "initComplete": function(settings, json) {
+    			            	var myTable = this;
+    			            	//LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#ticketTable", CALL_NOTE_LOOKUP.makeTable);
+    			            },
+    			            "drawCallback": function( settings ) {
+    			            	//$(".action-link").off("click");
+    			            	//$(".action-link").click(function($clickevent) {
+    			            	//	var $employeeCode = $(this).attr("data-id");
+    			            	//	console.log("employee code: " + $employeeCode);
+    			            	//	EMPLOYEELOOKUP.makeAliasTable($employeeCode);
+    			            	//});
+    			            }
+    			    } );
+        		},
+        		
         		
         		
         		makeEmployeeTable : function() {
@@ -135,10 +209,44 @@
     			            	$(".action-link").click(function($clickevent) {
     			            		var $employeeCode = $(this).attr("data-id");
     			            		console.log("employee code: " + $employeeCode);
+    			            		EMPLOYEELOOKUP.makeAliasTable($employeeCode);
     			            	});
     			            }
     			    } );
         		},
+        		
+        		
+        		makeModals : function() {
+        			console.log("makeModals");
+        			$( "#alias-display" ).dialog({
+        				title:'View Employee Alias',
+        				autoOpen: false,
+        				height: 500,
+        				width: 1200,
+        				modal: true,
+        				closeOnEscape:true,
+        				//open: function(event, ui) {
+        				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+        				//},
+        				buttons: [
+        					{
+        						id:  "alias_display_cancel",
+        						click: function($event) {
+       								$( "#alias-display" ).dialog("close");
+        						}
+        					}
+        				]
+        			});	
+        			$("#alias_display_cancel").button('option', 'label', 'Done');    
+        			
+        			
+        		},
+        		
+        		
+        		
+        		
+        		
+        		
         		
         		
         		
@@ -238,49 +346,7 @@
         		
         		
         		
-        		makeModals : function() {
-        			$( "#organization-display" ).dialog({
-        				title:'View ' + EMPLOYEELOOKUP.orgTypeDisplay,
-        				autoOpen: false,
-        				height: 500,
-        				width: 1200,
-        				modal: true,
-        				closeOnEscape:true,
-        				//open: function(event, ui) {
-        				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-        				//},
-        				buttons: [
-        					{
-        						id:  "org_display_cancel",
-        						click: function($event) {
-       								$( "#organization-display" ).dialog("close");
-        						}
-        					}
-        				]
-        			});	
-        			$("#org_display_cancel").button('option', 'label', 'Done');    
-        			
-        			$( "#organization-edit" ).dialog({
-        				title:'Edit ' + EMPLOYEELOOKUP.orgTypeDisplay,
-        				autoOpen: false,
-        				height: 500,
-        				width: 1200,
-        				modal: true,
-        				closeOnEscape:true,
-        				//open: function(event, ui) {
-        				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-        				//},
-        				buttons: [
-        					{
-        						id:  "org_edit_cancel",
-        						click: function($event) {
-       								$( "#organization-edit" ).dialog("close");
-        						}
-        					}
-        				]
-        			});	
-        			$("#org_edit_cancel").button('option', 'label', 'Done');
-        		},
+        		
         		
         		
         		
@@ -527,6 +593,10 @@
 		<table id="employeeLookup">
 		</table>
 		
+		<div id="alias-display">
+			<table id="alias-lookup">
+			</table>
+		</div>
     </tiles:put>
 		
 </tiles:insert>

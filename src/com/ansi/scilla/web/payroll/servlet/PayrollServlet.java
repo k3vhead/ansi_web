@@ -19,6 +19,7 @@ public class PayrollServlet extends AbstractServlet {
 	public static final String REALM = "payroll";
 	
 	public static final String EMPLOYEE_LOOKUP = "employeeLookup";
+	public static final String ALIAS_LOOKUP = "aliasLookup";
 
 	private final Logger logger = LogManager.getLogger(PayrollServlet.class);
 
@@ -39,6 +40,9 @@ public class PayrollServlet extends AbstractServlet {
 		logger.log(Level.DEBUG, "GET: " + destination);
 		
 		switch (destination) {
+		case ALIAS_LOOKUP:
+			new AliasLookupServlet().doGet(request, response);
+			break;
 		case EMPLOYEE_LOOKUP:
 			new EmployeeLookupServlet().doGet(request, response);
 			break;

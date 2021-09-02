@@ -1,5 +1,6 @@
 package com.ansi.scilla.web.payroll.query;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -91,14 +92,17 @@ public class EmployeeLookupQuery extends LookupQuery {
 				"concat(payroll_employee.employee_last_name, ', ', payroll_employee.employee_last_name, ' ', payroll_employee.employee_mi)",
 		};
 
-
 		
-		if ( ! StringUtils.isBlank(queryTerm) ) {
-			StringBuffer searchFieldBuffer = new StringBuffer();
+		
+		if ( StringUtils.isBlank(queryTerm) ) {
+			whereClause = sqlWhereClause;
+		} else {
+			List<String> searchStrings = new ArrayList<String>();
 			for ( String field : searchableFields ) {
-				searchFieldBuffer.append("\n OR lower(" + field + ") like '%" + queryTerm.toLowerCase() + "%'");
-			}			
-			whereClause = StringUtils.isBlank(sqlWhereClause) ? searchFieldBuffer.toString() : sqlWhereClause + " and (" + searchFieldBuffer.toString() + ")";
+				searchStrings.add("lower(" + field + ") like '%" + queryTerm.toLowerCase() + "%'");
+			}
+			String filterClause = "(" + StringUtils.join(searchStrings, " \nOR ") + ")";
+			whereClause = StringUtils.isBlank(sqlWhereClause)?  "where " + filterClause : "where " + sqlWhereClause + " and " + filterClause;
 		}
 		
 		return whereClause;
