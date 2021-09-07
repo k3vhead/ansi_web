@@ -77,380 +77,92 @@
         <script type="text/javascript">    
         
         $(document).ready(function(){
-        	;ORGMAINT = {
-        		orgType : '<c:out value="${ANSI_ORGANIZATION_TYPE}" />',
-        		orgTypeDisplay : '<c:out value="${ANSI_ORGANIZATION_TYPE_DISPLAY}" />',        		
-        		orgTable : null,
-        		icons : {
-        			"componentIsYes":'<webthing:component>Component</webthing:component>',
-					"componentIsNo":'<webthing:componentNo>Reassign</webthing:componentNo>',
-        		},
-        		
-        		init : function() {
-        			$("h1 .organization-type-display").html(ORGMAINT.orgTypeDisplay);
-        			ORGMAINT.getOrgs(); 
-        			ORGMAINT.makeModals();
-        			ORGMAINT.makeClickers();
-        		},
-        		
-        		
-        		getOrganizationDetail : function($action, $organizationId, $filter) {
-        			// $filter says whether to retrieve all children (false) or just the children of this org (true)
-        			console.log("getOrganizationDetail: " + $organizationId);
-        			var $url = "organization/" + ORGMAINT.orgType + "/" + $organizationId;
-        			var $callbacks = {
-        				200 : ORGMAINT.showOrgDetail,
-        				404 : ORGMAINT.getOrgsFail,
-        			}        			
-        			$outbound = {"filter":$filter};
-        			ANSI_UTILS.makeServerCall("GET", $url, $outbound, $callbacks, {"action":$action});
-        		},
-        		
-        		
-        		
-        		getOrgs : function() {
-        			console.log("getOrgs");
-        			var $url = "organization/" + ORGMAINT.orgType;
-        			var $callbacks = {
-        				200 : ORGMAINT.makeOrgTable,
-        				404 : ORGMAINT.getOrgsFail,
-        			}
-        			var $passthru = {
-       					"destination":"#org-table", 
-       					"action":["view","edit"],
-       					"source":"orgList",
-        			}
-        			ANSI_UTILS.makeServerCall("GET", $url, {}, $callbacks, $passthru);
-        		},
-        		
-        		
-        		
-        		getOrgsFail : function($data, $passthru) {
-        			console.log("getOrgsFail");
-        			$("#globalMsg").html("Invalid organization type");        			
-        		},
-        		
-        		
-        		
-        		makeClickers : function() {
-        			$("#organization-edit .org-status-change").on("click", function($event) {
-        				console.log("changing status");
-        				var $organizationId = $(this).attr("data-id");
-        				var $classList = $(this).attr('class').split(" ");
-        				var $newStatus = null;
-        				$.each($classList, function($index, $value) {
-        					if ( $value == "status-is-active") {
-        						$newStatus = false;
-        					} else if ( $value == "status-is-inactive") {
-        						$newStatus = true;
-        					} else if ( $value == "status-is-unknown") {
-        						$newStatus = true;
-        					}
-        				});
-        				var $url = "organization/" + ORGMAINT.orgType + "/" + $organizationId;
-        				var $outbound = {"status":$newStatus};
-        				var $callbacks = {
-        					200 : ORGMAINT.statusChangeSuccess,
-        				};
-        				ANSI_UTILS.makeServerCall("POST", $url, JSON.stringify($outbound), $callbacks, {});
-        			});
-        			
-        			
-        			$("#organization-edit input[name='name']").on("blur", function($event) {
-        				console.log("changing name");
-        				var $organizationId = $(this).attr("data-id");
-        				var $oldName = $(this).attr("data-name");
-        				var $newName = $("#organization-edit input[name='name']").val();
-        				
-        				if ( $oldName != $newName) {  
-        					$("#organization-edit input[name='name']").attr("data-name", $newName);
-	        				var $url = "organization/" + ORGMAINT.orgType + "/" + $organizationId;
-	        				var $outbound = {"name":$newName};
-	        				var $callbacks = {
-	        					200 : ORGMAINT.statusChangeSuccess,
-	        				};
-	        				ANSI_UTILS.makeServerCall("POST", $url, JSON.stringify($outbound), $callbacks, {});
-        				}
-        			});
-        		},
-        		
-        		
-        		
-        		makeModals : function() {
-        			$( "#organization-display" ).dialog({
-        				title:'View ' + ORGMAINT.orgTypeDisplay,
-        				autoOpen: false,
-        				height: 500,
-        				width: 1200,
-        				modal: true,
-        				closeOnEscape:true,
-        				//open: function(event, ui) {
-        				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-        				//},
-        				buttons: [
-        					{
-        						id:  "org_display_cancel",
-        						click: function($event) {
-       								$( "#organization-display" ).dialog("close");
-        						}
-        					}
-        				]
-        			});	
-        			$("#org_display_cancel").button('option', 'label', 'Done');    
-        			
-        			$( "#organization-edit" ).dialog({
-        				title:'Edit ' + ORGMAINT.orgTypeDisplay,
-        				autoOpen: false,
-        				height: 500,
-        				width: 1200,
-        				modal: true,
-        				closeOnEscape:true,
-        				//open: function(event, ui) {
-        				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-        				//},
-        				buttons: [
-        					{
-        						id:  "org_edit_cancel",
-        						click: function($event) {
-       								$( "#organization-edit" ).dialog("close");
-        						}
-        					}
-        				]
-        			});	
-        			$("#org_edit_cancel").button('option', 'label', 'Done');
-        		},
-        		
-        		
-        		
-        		
-        		
-        		
-        		makeOrgTable : function($data, $passthru) {
-        			console.log("makeOrgTable");  
-        			console.log($passthru);
-        			var $active = '<webthing:checkmark>Active</webthing:checkmark>';
-        			var $inactive = '<webthing:ban>Inactive</webthing:ban>';
-        			var $unknown = '<webthing:questionmark>Unknown</webthing:questionmark>';
-        			
-        			var $edit = '<webthing:edit>Edit</webthing:edit>';
-	       			var $delete = '<webthing:delete>Delete</webthing:delete></a>';
-	       			var $view = '<webthing:view>View</webthing:view>';
-	       			
-	       			
-					
-					
-					
-        			var $buttonArray = [        	        	
-        	        	'copy', 
-        	        	{extend:'csv', filename:'*_' + ORGMAINT.orgTypeDisplay}, 
-        	        	{extend:'excel', filename:'*_' + ORGMAINT.orgTypeDisplay}, 
-        	        	{extend:'pdfHtml5', orientation: 'landscape', filename:'*_' + ORGMAINT.orgTypeDisplay}, 
-        	        	'print',
-        	        	{extend:'colvis', label: function () {
-	        	        		doFunctionBinding();
-	        	        		$('#org-table').draw();
-        	        		}
-        	        	}
-        	        ];
-        			
-        			$($passthru['destination']).DataTable( {
-		    			data : $data.data[$passthru['source']],
-		    			"aaSorting":		[[1,'asc']],
-		    			paging : false,
-		    			autoWidth : false,
-	        	        deferRender : true,
-	        	        searching: false, 
-	        	        scrollX : false,
-	        	        rowId : 'organizationId',	// this sets an id for the row: <tr id="123"> ... </tr>   where 123 is the org id
-	        	        dom : 'Bfrtip',
-	        	        destroy : true,		// this lets us reinitialize the table for different tickets
-            	        buttons: $buttonArray,
-		    			columns : [
-		    				{ width:"10%", title:"ID", className:"dt-center", orderable:true, data:'organizationId' },
-		    				{ width:"25%", title:"Name", className:"dt-left", orderable:true, data:'name' },
-		    				{ width:"25%", title:"Parent", className:"dt-left", orderable:true, data:'parentName' },
-		    				{ width:"10%", title:"Parent Type", className:"dt-left", orderable:true, data:'parentType' },
-		    				{ width:"10%", title:"Status", className:"dt-center", orderable:true, 
-		    					data:function(row,type,set) {
-		    						if ( row.status == 0 ) { $status = $inactive}
-		    						else if ( row.status == 1 ) { $status = $active }
-		    						else { $status = $unknown }
-		    						return $status;
-		    					}
-		    				},
-		    				{ width:"10%", title:"Action", className:"dt-center", orderable:true, visible:$passthru['action'].length > 0,
-		    					data:function(row,type,set) {
-		    						var $viewLink = "";
-		    						var $editLink = "";
-		    						var $parentLink = "";
-		    						
-		    						$.each($passthru['action'], function($index, $value) {
-		    							if ( $value == "view" )  { $viewLink = '<a href="#" class="action-link view-link" data-id="'+row.organizationId+'"><webthing:view>View</webthing:view></a>'; }
-		    							if ( $value == "edit" )  { $editLink = '<a href="#" class="action-link edit-link" data-id="'+row.organizationId+'"><webthing:edit>Edit</webthing:edit></a>'; }
-		    							if ( $value == "parent") { 
-		    								if ( row.parentId == $data.data.organization.organizationId) {
-		    									$parentLink = ORGMAINT.icons['componentIsYes'];
-			    							} else {
-			    								$parentLink = '<a href="#" class="action-link parent-link" data-orgtype="'+row.type+'" data-id="'+row.organizationId+'">' + ORGMAINT.icons['componentIsNo'] + '</a>';
-			    							}
-		    							}
-		    						});
-	    							
-		    						return $viewLink + '<ansi:hasPermission permissionRequired="SYSADMIN_WRITE">' + $editLink + $parentLink + '</ansi:hasPermission>';
-		    					},		    					
-		    				},
-	    				],
-	    				"drawCallback": function( settings ) {
-	    					console.log("drawCallback");
-	    					$(".action-link").off("click");
-	    					$(".view-link").click(function($clickevent) {
-	    						var $organizationId = $(this).attr("data-id");
-	    						ORGMAINT.getOrganizationDetail("view", $organizationId, true);
-	    					});
-	    					$(".edit-link").click(function($clickevent) {
-	    						var $organizationId = $(this).attr("data-id");
-	    						ORGMAINT.getOrganizationDetail("edit", $organizationId, false);
-	    					});
-	    					$(".parent-link").click(function($clickevent) {	    						
-	    						ORGMAINT.parentChange($(this));
-	    					});
-	    				},
-        			});
-        			
-	       			// var myTable $($passthru['destination']).DataTable();
-					// myTable.columns(columnNumber).visible(true);
-        		},
-        		
-        		
-
-        		parentChange : function($clickEvent) {
-        			var $organizationId = $clickEvent.attr("data-id");
-					var $organizationType = $clickEvent.attr("data-orgtype");
-					var $newParent = $("#organization-edit input[name='name']").attr("data-id");
-					console.log("changing parent: " + $organizationId + " " + $organizationType + " " + $newParent);
-					var $url = "organization/" + $organizationType + "/" + $organizationId;
-    				var $outbound = {"parentId":$newParent};
-    				var $callbacks = {
-    					200 : ORGMAINT.parentChangeSuccess,
-    				};
-    				ANSI_UTILS.makeServerCall("POST", $url, JSON.stringify($outbound), $callbacks, {"event":$clickEvent});
-
-        		},
-        		
-        		
-        		
-        		
-        		parentChangeSuccess : function($data, $passthru) {
-        			console.log("parentChangeSuccess");
-        			if ( $data.responseHeader.responseCode == "SUCCESS" ) {
-        				$("#organization-edit .organization-msg").html("Update successful").show().fadeOut(3000);
-        				$passthru["event"].html(ORGMAINT.icons['componentIsYes'])
-            			//ORGMAINT.showOrgDetail($data, {"action":"edit"});
-        			} else {
-        				//this happens if the data attributes on the lookup are weird.
-        				$("#organization-edit .organization-msg").html("Update error. Reload page and try again").show();
-        			}
-        		},
-        		
-        		
-        		
-        		
-        		showOrgDetail : function($data, $passthru) {
-        			console.log("showOrgDetail");
-        			
-        			var $organization = $data.data.organization;
-        			var $active = '<webthing:checkmark>Active</webthing:checkmark>';
-        			var $inactive = '<webthing:ban>Inactive</webthing:ban>';
-        			var $unknown = '<webthing:questionmark>Unknown</webthing:questionmark>';
-
-        			if ( $organization.status == 0 ) { 
-        				$status = $inactive;
-        			} else if ( $organization.status == 1 ) { 
-        				$status = $active;
-        			} else { 
-        				$status = $unknown; 
-       				}
-
-        			// populate the display modal
-        			$("#organization-display .organization-id").html($organization.organizationId);
-        			$("#organization-display .name").html($organization.name);
-        			$("#organization-display .status").html($status);
-        			$("#organization-display .parent-name").html($organization.parentName);
-        			$("#organization-display .parent-type").html($organization.parentType);
-        			
-        			// populate the edit modal
-        			$("#organization-edit .organization-id").html($organization.organizationId);
-        			$("#organization-edit input[name='name']").val($organization.name);
-        			$("#organization-edit input[name='name']").attr("data-id", $organization.organizationId);
-        			$("#organization-edit input[name='name']").attr("data-name", $organization.name);
-        			$("#organization-edit .org-status-change").hide();
-        			$("#organization-edit .org-status-change").attr("data-id", $organization.organizationId);
-        			if ( $organization.status == 0 ) { 
-        				$("#organization-edit .status-is-inactive").show();
-        			} else if ( $organization.status == 1 ) { 
-        				$("#organization-edit .status-is-active").show();
-        			} else { 
-        				$("#organization-edit .status-is-unknown").show();
-       				}
-        			$("#organization-edit .parent-name").html($organization.parentName);
-        			$("#organization-edit .parent-type").html($organization.parentType);
-        			
-        			var $destination = {
-           				"view" : "#organization-display",
-           				"edit" : "#organization-edit",
-           			};
-            			
-        			if ( $passthru["action"] == "view" ) {
-        				$displayDetail = {
-               				"destination":$destination[$passthru["action"]] + " .organization-children",
-               				"action":[],
-               				"source":"childList",
-               			}
-        			} else if ( $passthru["action"] == "edit" ) {
-        				$displayDetail = {
-               				"destination":$destination[$passthru["action"]] + " .organization-children",
-               				"action":["parent"],
-               				"source":"childList",
-               			}
-        			} else {
-        				$("#globalMsg").html("System Error. Invalid action. Contact Support");
-        			}
-        			// populate the child list        			
-        			ORGMAINT.makeOrgTable($data, $displayDetail)
-        			
-        			// display one of the modals
-        			$($destination[$passthru["action"]]).dialog("open");
-        		},
-        		
-        		
-        		
-        		
-            	
-        		statusChangeSuccess : function($data, $passthru) {
-        			console.log("statusChangeSuccess");
-        			if ( $data.responseHeader.responseCode == "SUCCESS" ) {
-        				$("#organization-edit .organization-msg").html("Update Successful").show().fadeOut(3000);
-        				$("#organization-edit .org-status-change").hide();
-            			if ( $data.data.organization.status == 0 ) { 
-            				$("#organization-edit .status-is-inactive").show();
-            			} else if ( $data.data.organization.status == 1 ) { 
-            				$("#organization-edit .status-is-active").show();
-            			} else { 
-            				$("#organization-edit .status-is-unknown").show();
-           				}            			
-            			ORGMAINT.getOrgs();
-        			} else {
-        				$("#organization-edit .organization-msg").html("System Error. Reload the page and try again").show();
-        			}
-        			
-        			
-        		},
+        	;TIMESHEETLOOKUP = {
+        			init : function() {
+        				TIMESHEETLOOKUP.makeTimesheetLookup(); 
+            		},
+            		
+            		makeTimesheetLookup : function() {
+            			$("#timesheetLookup").DataTable( {
+                			"aaSorting":		[[0,'asc'],[1,'asc'],[2,'asc']],
+                			"processing": 		true,
+                	        "serverSide": 		true,
+                	        "autoWidth": 		false,
+                	        "deferRender": 		true,
+                	        "scrollCollapse": 	true,
+                	        "scrollX": 			true,
+                	        "pageLength":		50,
+                	        rowId: 				'dt_RowId',
+                	        destroy : 			true,		// this lets us reinitialize the table
+                	        dom: 				'Bfrtip',
+                	        "searching": 		true,
+                	        "searchDelay":		800,
+                	        lengthMenu: [
+                	        	[ 10, 50, 100, 500, 1000 ],
+                	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
+                	        ],
+                	        buttons: [
+                	        		'pageLength',
+                	        		'copy', 
+                	        		'csv', 
+                	        		'excel', 
+                	        		{extend: 'pdfHtml5', orientation: 'landscape'}, 
+                	        		'print',{extend: 'colvis',	label: function () {doFunctionBinding();$('#timesheetLookup').draw();}},
+                	        	],
+                	        "columnDefs": [
+                 	            { "orderable": true, "targets": -1 },
+                 	            { className: "dt-head-center", "targets":[]},
+                	            { className: "dt-left", "targets": [0,1,2,3,4,5,6,7,8,9,10] },
+                	            { className: "dt-center", "targets": [] },
+                	            { className: "dt-right", "targets": []}
+                	         ],
+                	        "paging": true,
+        			        "ajax": {
+        			        	"url": "payroll/timesheetLookup",
+        			        	"type": "GET",
+        			        	"data": {},
+        			        	},
+        			        columns: [
+        			        	{ title: "Division", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'div' },
+        			        	{ title: "Week Ending", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'week_ending' },
+        			        	{ title: "State", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'state' },
+        			        	{ title: "City", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'city' },
+        			        	{ title: "Employee Code", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' },
+        			        	{ title: "Employee Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_name' },
+        			            { title: "Regular Hours",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.regular_hours.toFixed(2); } },
+        			            { title: "Regular Pay",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.regular_pay.toFixed(2); } },
+        			            { title: "Expenses",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.expenses.toFixed(2); } },
+        			            { title: "OT Hours",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.ot_hours.toFixed(2); } },
+        			            { title: "OT Pay",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.ot_pay.toFixed(2); } },
+        			            { title: "Vacation Hours",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.vacation_hours.toFixed(2); } },
+        			            { title: "Vacation Pay",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.vacation_pay.toFixed(2); } },
+        			            { title: "Holiday Hours",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.holiday_hours.toFixed(2); } },
+        			            { title: "Holiday Pay",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.holiday_pay.toFixed(2); } },
+        			            { title: "Gross Pay",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.gross_pay.toFixed(2); } },
+        			            { title: "Expenses Submitted",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.expenses_submitted.toFixed(2); } },
+        			            { title: "Expenses Allowed",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.expenses_allowed.toFixed(2); } },
+        			            { title: "Volume",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.volume.toFixed(2); } },
+        			            { title: "Direct Labor",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.direct_labor.toFixed(2); } },
+        			            { title: "Productivity",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.productivity.toFixed(2); } },
+        			            ],
+        			            "initComplete": function(settings, json) {
+        			            	var myTable = this;
+        			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#timesheetLookup", TIMESHEETLOOKUP.makeTimesheetLookup);
+        			            },
+        			            "drawCallback": function( settings ) {
+        			            	// nothing to do here
+        			            }
+        			    } );
+            		},
+            		
+            		
+            		
             	
             	
             	
         	};
         	
-        	ORGMAINT.init();
+        	TIMESHEETLOOKUP.init();
         	
         	
         });
@@ -461,8 +173,8 @@
    <tiles:put name="content" type="string">
     	<h1>Timesheet Lookup</h1> 
 
-    	
-
+    	<webthing:lookupFilter filterContainer="filter-container" />
+		<table id="timesheetLookup"></table>
 		
     </tiles:put>
 		

@@ -195,7 +195,7 @@
     			        	{ title: "Notes", width:"10%", searchable:true, "defaultContent": "", data:'notes' },
     			            { title: "Action",  width:"10%", searchable:false,  
     			            	data: function ( row, type, set ) { 
-    			            		var $actionLink = '<span class="action-link" data-id="'+row.employee_code+'"><webthing:view>View</webthing:view></span>';
+    			            		var $actionLink = '<span class="action-link" data-id="'+row.employee_code+'"><webthing:view>Alias</webthing:view></span>';
     			            		return $actionLink;
     			            	}
     			            },
