@@ -52,6 +52,9 @@
 			.form-label {
 				font-weight:bold;
 			}
+			.modal-window {
+				display:none;
+			}
 			.org-status-change {
 				display:none;
 				cursor:pointer;
@@ -70,6 +73,24 @@
         			EMPLOYEELOOKUP.makeEmployeeTable(); 
         		},
         		
+        		
+        		
+        		displayEmployeeModal : function($data, $passsthru) {
+        			console.log("displayEmployeeModal");
+        			$("#employee-edit input").val("");
+        			$("#employee-edit .err").html("");
+        			$("#employee-edit input[name='employeeCode']").val($data.data.employee.employeeCode);
+        			$("#employee-edit input[name='companyCode']").val($data.data.employee.companyCode);
+        			$("#employee-edit input[name='divisionId']").val($data.data.employee.divisionId);
+        			$("#employee-edit input[name='firstName']").val($data.data.employee.firstName);
+        			$("#employee-edit input[name='lastName']").val($data.data.employee.lastName);
+        			$("#employee-edit input[name='middleInitial']").val($data.data.employee.middleInitial);
+        			$("#employee-edit input[name='departmentDescription']").val($data.data.employee.departmentDescription);
+        			$("#employee-edit input[name='status']").val($data.data.employee.status);
+        			$("#employee-edit input[name='terminationDate']").val($data.data.employee.terminationDate);
+        			$("#employee-edit input[name='notes']").val($data.data.employee.notes);
+        			$("#employee-edit").dialog("open");
+        		},
         		
         		
         		
@@ -195,7 +216,9 @@
     			        	{ title: "Notes", width:"10%", searchable:true, "defaultContent": "", data:'notes' },
     			            { title: "Action",  width:"10%", searchable:false,  
     			            	data: function ( row, type, set ) { 
-    			            		var $actionLink = '<span class="action-link" data-id="'+row.employee_code+'"><webthing:view>Alias</webthing:view></span>';
+    			            		var $viewLink = '<span class="action-link view-link" data-id="'+row.employee_code+'"><webthing:view>Alias</webthing:view></span>';
+    			            		var $editLink = '<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><span class="action-link edit-link" data-id="'+row.employee_code+'"><webthing:edit>Edit</webthing:edit></span></ansi:hasPermission>';
+    			            		var $actionLink = $viewLink + $editLink;
     			            		return $actionLink;
     			            	}
     			            },
@@ -205,11 +228,21 @@
     			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#employeeLookup", EMPLOYEELOOKUP.makeEmployeeTable);
     			            },
     			            "drawCallback": function( settings ) {
-    			            	$(".action-link").off("click");
-    			            	$(".action-link").click(function($clickevent) {
+    			            	$(".view-link").off("click");
+    			            	$(".edit-link").off("click");
+    			            	$(".view-link").click(function($clickevent) {
     			            		var $employeeCode = $(this).attr("data-id");
     			            		console.log("employee code: " + $employeeCode);
     			            		EMPLOYEELOOKUP.makeAliasTable($employeeCode);
+    			            	});
+    			            	$(".edit-link").click(function($clickevent) {
+    			            		var $employeeCode = $(this).attr("data-id");
+    			            		console.log("employee code: " + $employeeCode);
+    			            		var $url = "payroll/employee/" + $employeeCode
+    			            		var $callbacks = {
+    			            				200:EMPLOYEELOOKUP.displayEmployeeModal
+    			            			};
+    			            		ANSI_UTILS.makeServerCall("GET", $url, {}, $callbacks, {});
     			            	});
     			            }
     			    } );
@@ -240,9 +273,40 @@
         			$("#alias_display_cancel").button('option', 'label', 'Done');    
         			
         			
+        			$( "#employee-edit" ).dialog({
+        				title:'Edit Employee',
+        				autoOpen: false,
+        				height: 500,
+        				width: 600,
+        				modal: true,
+        				closeOnEscape:true,
+        				//open: function(event, ui) {
+        				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+        				//},
+        				buttons: [
+        					{
+        						id:  "employee-edit-cancel",
+        						click: function($event) {
+       								$( "#employee-edit" ).dialog("close");
+        						}
+        					},{
+        						id:  "employee-edit-save",
+        						click: function($event) {
+       								EMPLOYEELOOKUP.saveEmployee();
+        						}
+        					}
+        				]
+        			});	
+        			$("#employee-edit-cancel").button('option', 'label', 'Cancel');  
+        			$("#employee-edit-save").button('option', 'label', 'Save');
         		},
         		
         		
+        		
+        		
+        		saveEmployee : function() {
+        			console.log("saveEmployee");
+        		},
             	
         	};
         	
@@ -263,6 +327,50 @@
 		
 		<div id="alias-display">
 			<table id="alias-lookup">
+			</table>
+		</div>
+		
+		<div id="employee-edit" class="modal-window">
+			<table>
+				<tr>
+					<td class="form-label">Company:</td>
+					<td><input name="companyCode" type="text" /></td>
+					<td><span class="err companyCodeErr"></span></td>
+				</tr>
+				<tr>
+					<td class="form-label">Division:</td>
+					<td><input name="divisionId" type="text" /></td>
+					<td><span class="err divisionIdErr"></span></td>
+				</tr>
+				<tr>
+					<td class="form-label">Name:</td>
+					<td>
+						<input name="firstName" type="text" placeholder="First" />
+						<input name="middleInitial" type="text" placeholder="MI" style="width:15px;" />
+						<input name="lastName" type="text" placeholder="Last" />
+					</td>
+					<td><span class="err nameErr"></span></td>
+				</tr>				
+				<tr>
+					<td class="form-label">Department:</td>
+					<td><input name="departmentDescription" type="text" /></td>
+					<td><span class="err departmentErr"></span></td>
+				</tr>
+				<tr>
+					<td class="form-label">Status</td>
+					<td><input name="status" type="text" /></td>
+					<td><span class="err statusErr"></span></td>
+				</tr>
+				<tr>
+					<td class="form-label">Termination Date:</td>
+					<td><input name="terminationDate" type="date" /></td>
+					<td><span class="err terminationDateErr"></span></td>
+				</tr>
+				<tr>
+					<td class="form-label">Notes:</td>
+					<td><input name="notes" type="text" /></td>
+					<td><span class="err notesErr"></span></td>
+				</tr>
 			</table>
 		</div>
     </tiles:put>
