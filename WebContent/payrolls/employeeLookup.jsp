@@ -80,13 +80,13 @@
         			$("#employee-edit input").val("");
         			$("#employee-edit .err").html("");
         			$("#employee-edit input[name='employeeCode']").val($data.data.employee.employeeCode);
-        			$("#employee-edit input[name='companyCode']").val($data.data.employee.companyCode);
-        			$("#employee-edit input[name='divisionId']").val($data.data.employee.divisionId);
+        			$("#employee-edit select[name='companyCode']").val($data.data.employee.companyCode);
+        			$("#employee-edit select[name='divisionId']").val($data.data.employee.divisionId);
         			$("#employee-edit input[name='firstName']").val($data.data.employee.firstName);
         			$("#employee-edit input[name='lastName']").val($data.data.employee.lastName);
         			$("#employee-edit input[name='middleInitial']").val($data.data.employee.middleInitial);
         			$("#employee-edit input[name='departmentDescription']").val($data.data.employee.departmentDescription);
-        			$("#employee-edit input[name='status']").val($data.data.employee.status);
+        			$("#employee-edit select[name='status']").val($data.data.employee.status);
         			$("#employee-edit input[name='terminationDate']").val($data.data.employee.terminationDate);
         			$("#employee-edit input[name='notes']").val($data.data.employee.notes);
         			$("#employee-edit").dialog("open");
@@ -334,12 +334,22 @@
 			<table>
 				<tr>
 					<td class="form-label">Company:</td>
-					<td><input name="companyCode" type="text" /></td>
+					<td>
+						<select name="companyCode">
+							<option value=""></option>
+							<ansi:selectPayrollCompany active="true" />
+						</select>
+					</td>
 					<td><span class="err companyCodeErr"></span></td>
 				</tr>
 				<tr>
 					<td class="form-label">Division:</td>
-					<td><input name="divisionId" type="text" /></td>
+					<td>
+						<select name="divisionId">
+							<option value=""></option>
+							<ansi:selectOrganization active="true" type="DIVISION" />
+						</select>
+					</td>
 					<td><span class="err divisionIdErr"></span></td>
 				</tr>
 				<tr>
@@ -358,7 +368,13 @@
 				</tr>
 				<tr>
 					<td class="form-label">Status</td>
-					<td><input name="status" type="text" /></td>
+					<td>
+						<select name="status">
+							<option value=""></option>
+							<option value="Active">Active</option>
+							<option value="Terminated">Terminated</option>
+						</select>
+					</td>
 					<td><span class="err statusErr"></span></td>
 				</tr>
 				<tr>

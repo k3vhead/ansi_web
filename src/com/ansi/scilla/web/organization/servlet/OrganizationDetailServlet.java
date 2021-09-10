@@ -105,6 +105,7 @@ public class OrganizationDetailServlet extends AbstractServlet {
 		try {
 			SessionData sessionData = AppUtils.validateSession(request, Permission.SYSADMIN_READ);
 			String jsonString = super.makeJsonString(request);
+			logger.log(Level.DEBUG, jsonString);
 			Integer organizationId = isValidUri(request);
 			boolean filter = ( ! StringUtils.isBlank(request.getParameter("filter"))) && request.getParameter("filter").equals("true");
 			OrganizationDetailResponse data = new OrganizationDetailResponse();
@@ -194,6 +195,9 @@ public class OrganizationDetailServlet extends AbstractServlet {
 		}
 		if ( orgRequest.getParentId() != null ) {			
 			group.setParentId(orgRequest.getParentId());
+		}
+		if ( ! StringUtils.isBlank(orgRequest.getCompanyCode()) ) {
+			group.setCompanyCode(orgRequest.getCompanyCode());
 		}
 		group.setUpdatedBy(sessionUser.getUserId());
 		group.setUpdatedDate(now);

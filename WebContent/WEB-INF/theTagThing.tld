@@ -282,6 +282,47 @@
 	</tag>
 	
 	
+	
+	
+	<tag>
+		<name>selectOrganization</name>
+		<tagclass>com.ansi.scilla.web.tags.SelectOrganization</tagclass>
+		<bodycontent>JSP</bodycontent>
+		<info>
+			Displays the options for a division or division_group selector/dropdown. Must be surrounded by "select" tag
+		</info>
+		<attribute>
+			<name>active</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>type</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+	</tag>
+	
+	
+	
+	
+	<tag>
+		<name>selectPayrollCompany</name>
+		<tagclass>com.ansi.scilla.web.tags.SelectPayrollCompany</tagclass>
+		<bodycontent>JSP</bodycontent>
+		<info>
+			Displays the options for a payroll company selector/dropdown. Must be surrounded by "select" tag
+		</info>
+		<attribute>
+			<name>active</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+	</tag>
+	
+	
+	
+	
 	<tag>
 		<name>text</name>
 		<tagclass>com.ansi.scilla.web.tags.Text</tagclass>
