@@ -62,6 +62,56 @@ public class PayrollServlet extends AbstractServlet {
 
 
 
+	@Override
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		logger.log(Level.DEBUG, "Payroll doPost");
+		String uri = request.getRequestURI();
+		logger.log(Level.DEBUG, "PayrollURI: " + uri);
+		
+		String trigger = REALM + "/";
+		String destination = uri.substring(uri.indexOf(trigger)+trigger.length());
+		Integer index = destination.indexOf("/");   // in case we have something like bcr/ticket/12345
+		destination = index > 0 ? destination.substring(0, index) : destination;
+		
+		logger.log(Level.DEBUG, "DELETE: " + destination);
+		
+		switch (destination) {
+		case EMPLOYEE:
+			new EmployeeServlet().doDelete(request, response);
+			break;
+		default:
+			super.sendNotFound(response);
+		};
+	}
+
+
+
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		logger.log(Level.DEBUG, "Payroll doPost");
+		String uri = request.getRequestURI();
+		logger.log(Level.DEBUG, "PayrollURI: " + uri);
+		
+		String trigger = REALM + "/";
+		String destination = uri.substring(uri.indexOf(trigger)+trigger.length());
+		Integer index = destination.indexOf("/");   // in case we have something like bcr/ticket/12345
+		destination = index > 0 ? destination.substring(0, index) : destination;
+		
+		logger.log(Level.DEBUG, "POST: " + destination);
+		
+		switch (destination) {
+		case EMPLOYEE:
+			new EmployeeServlet().doPost(request, response);
+			break;
+		default:
+			super.sendNotFound(response);
+		}
+	}
+
+
+
 	
 
 	

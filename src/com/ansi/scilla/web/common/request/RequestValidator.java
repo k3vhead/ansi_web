@@ -40,6 +40,7 @@ import com.ansi.scilla.common.jobticket.JobTagStatus;
 import com.ansi.scilla.common.jobticket.JobTagType;
 import com.ansi.scilla.common.organization.OrganizationType;
 import com.ansi.scilla.common.payment.PaymentMethod;
+import com.ansi.scilla.common.payroll.EmployeeStatus;
 import com.ansi.scilla.common.utils.QMarkTransformer;
 import com.ansi.scilla.web.claims.request.ClaimEntryRequestType;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -222,6 +223,32 @@ public class RequestValidator {
 	}
 	
 	
+	public static void validateCompanyCode(Connection conn, WebMessages webMessages, String fieldName, String value, Boolean required, String label) throws SQLException {
+		if ( StringUtils.isBlank(value) ) {
+			if ( required ) {
+				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
+				webMessages.addMessage(fieldName, message);
+			}
+		} else {
+			PreparedStatement ps = conn.prepareStatement("select count(*) as record_count \n" + 
+					"from division_group \n" + 
+					"where division_group.group_type =? and company_code=?");
+			ps.setString(1, OrganizationType.COMPANY.name());
+			ps.setString(2, value);
+			ResultSet rs = ps.executeQuery();
+			boolean isValid = false;
+			if ( rs.next() ) {
+				isValid = rs.getInt("record_count") > 0;
+			}
+			rs.close();
+			if ( isValid == false ) {
+				String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is invalid";
+				webMessages.addMessage(fieldName, message);
+			}
+		}
+	}
+	
+	
 	
 	public static void validateContactType(Connection conn, WebMessages webMessages, String fieldName, String value, boolean required) throws Exception {
 		validateCode(conn, webMessages, CallLog.TABLE, CallLog.CONTACT_TYPE, fieldName, value, required, null);
@@ -383,6 +410,25 @@ public class RequestValidator {
 		}
 	}
 
+	
+	public static void validateEmployeeStatus(WebMessages webMessages, String fieldName, String value, boolean required) {
+		if (StringUtils.isBlank(value)) {
+			if (required) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			try {
+				EmployeeStatus employeeStatus = EmployeeStatus.valueOf(value);
+				if (employeeStatus == null) {
+					webMessages.addMessage(fieldName, "Invalid Value");
+				}
+			} catch (IllegalArgumentException e) {
+				webMessages.addMessage(fieldName, "Invalid Value");
+			}
+		}
+	}
+	
+	
 	public static void validateFloat(WebMessages webMessages, String fieldName, Float value, Float minValue,
 			Float maxValue, boolean required) {
 		if (value == null) {

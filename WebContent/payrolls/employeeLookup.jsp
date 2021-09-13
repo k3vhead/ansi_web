@@ -78,7 +78,9 @@
         		displayEmployeeModal : function($data, $passsthru) {
         			console.log("displayEmployeeModal");
         			$("#employee-edit input").val("");
+        			$("#employee-edit select").val("");
         			$("#employee-edit .err").html("");
+        			$("#employee-edit .employee-code").html($data.data.employee.employeeCode)
         			$("#employee-edit input[name='employeeCode']").val($data.data.employee.employeeCode);
         			$("#employee-edit select[name='companyCode']").val($data.data.employee.companyCode);
         			$("#employee-edit select[name='divisionId']").val($data.data.employee.divisionId);
@@ -206,13 +208,13 @@
     			        columns: [
     			        	{ title: "Employee Code", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' }, 
     			        	{ title: "Company Code", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'company_code' }, 
-    			        	{ title: "Division", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'division' },
+    			        	{ title: "Division", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'div' },
     			        	{ title: "First Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_first_name' },
     			        	{ title: "Last Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_last_name' },
     			        	{ title: "MI", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_mi' },
     			        	{ title: "Dept. Description", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'dept_description' },
     			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_status' },
-    			        	{ title: "Termination", width:"10%", searchable:true, "defaultContent": "", data:'employee_termination_date' },
+    			        	{ title: "Termination", width:"10%", searchable:true, "defaultContent": "", data:'formatted_date' },
     			        	{ title: "Notes", width:"10%", searchable:true, "defaultContent": "", data:'notes' },
     			            { title: "Action",  width:"10%", searchable:false,  
     			            	data: function ( row, type, set ) { 
@@ -249,6 +251,14 @@
         		},
         		
         		
+        		
+        		makeLists : function($data, $passthru) {
+        			EMPLOYEELOOKUP.companyCodeList = $data.data.companyCodeList;
+        			EMPLOYEELOOKUP.divisionList = $data.data.divisionList;
+        		},
+        		
+        		
+        		
         		makeModals : function() {
         			console.log("makeModals");
         			$( "#alias-display" ).dialog({
@@ -277,7 +287,7 @@
         				title:'Edit Employee',
         				autoOpen: false,
         				height: 500,
-        				width: 600,
+        				width: 800,
         				modal: true,
         				closeOnEscape:true,
         				//open: function(event, ui) {
@@ -306,8 +316,42 @@
         		
         		saveEmployee : function() {
         			console.log("saveEmployee");
+        			$("#employee-edit .err").html("");
+					var $employeeCode = $("#employee-edit input[name='employeeCode']").val();					
+        			var $outbound = {
+	        			'companyCode' : $("#employee-edit select[name='companyCode']").val(),
+	        			'divisionId' : $("#employee-edit select[name='divisionId']").val(),
+	        			'firstName' : $("#employee-edit input[name='firstName']").val(),
+	        			'lastName' : $("#employee-edit input[name='lastName']").val(),
+	        			'middleInitial' : $("#employee-edit input[name='middleInitial']").val(),
+	        			'departmentDescription' : $("#employee-edit input[name='departmentDescription']").val(),
+	        			'status' : $("#employee-edit select[name='status']").val(),
+	        			'terminationDate' : $("#employee-edit input[name='terminationDate']").val(),
+	        			'notes' : $("#employee-edit input[name='notes']").val(),
+        			}
+        			var $url = "payroll/employee"
+        			if ( $employeeCode != null && $employeeCode != "") {
+        				$url = $url + "/" + $employeeCode
+        			}
+        			ANSI_UTILS.makeServerCall("post", $url, JSON.stringify($outbound), {200:EMPLOYEELOOKUP.saveEmployeeSuccess}, {});
         		},
             	
+        		
+        		saveEmployeeSuccess : function($data, $passthru) {
+        			console.log("saveEmployeeSuccess");
+        			if ( $data.responseHeader.responseCode == 'SUCCESS' ) {
+	        			$("#employeeLookup").DataTable().ajax.reload();
+	        			$("#employee-edit").dialog("close");
+	        			$("#globalMsg").html("Success").show().fadeOut(3000);
+        			} else if ($data.responseHeader.responseCode == 'EDIT_FAILURE' ) {
+						$.each($data.data.webMessages, function($index, $value) {
+							var $selector = "#employee-edit ." + $index + "Err";
+							$($selector).html($value[0]);
+						});
+        			} else {
+	        			$("#globalMsg").html("Invalid response code: " + $data.responseHeader.responseCode + ". Cntact Support").show();
+        			}
+        		}
         	};
         	
         	EMPLOYEELOOKUP.init();
@@ -332,6 +376,14 @@
 		
 		<div id="employee-edit" class="modal-window">
 			<table>
+				<tr>
+					<td class="form-label">Employee Code:</td>
+					<td>
+						<input type="hidden" name="employeeCode" />
+						<span class="employee-code"></span>
+					</td>
+					<td><span class="err employeeCodeErr"></span></td>
+				</tr>
 				<tr>
 					<td class="form-label">Company:</td>
 					<td>
@@ -371,8 +423,8 @@
 					<td>
 						<select name="status">
 							<option value=""></option>
-							<option value="Active">Active</option>
-							<option value="Terminated">Terminated</option>
+							<option value="ACTIVE">Active</option>
+							<option value="TERMINATED">Terminated</option>
 						</select>
 					</td>
 					<td><span class="err statusErr"></span></td>

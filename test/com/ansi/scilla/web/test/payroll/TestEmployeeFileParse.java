@@ -16,8 +16,10 @@ public class TestEmployeeFileParse {
 		Date x = sdf.parse("12/25/2021");
 		System.out.println(x);
 		
+		String davesFile = "/home/dclewis/Documents/webthing_v2/projects/ANSI/design/20210629_payroll/rollout_mtg/PAYCOM Import Template-NEW-GEN.csv";
+		String krisFile = "xxxxx";
 		
-		CSVReader reader = new CSVReader(new FileReader("xxxxxxxx"));
+		CSVReader reader = new CSVReader(new FileReader(davesFile));
 		List<String[]> recordList = reader.readAll();
 		reader.close();
 		for ( String[] row : recordList ) {

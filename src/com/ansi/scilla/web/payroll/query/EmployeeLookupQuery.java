@@ -19,7 +19,8 @@ public class EmployeeLookupQuery extends LookupQuery {
 	private static final String sqlSelectClause = "select " +
 			"   payroll_employee.employee_code,\n" + 
 			"	payroll_employee.company_code,\n" + 
-			"	payroll_employee.division,\n" + 
+//			"	payroll_employee.division,\n" +
+			"   concat(division.division_nbr, '-',division.division_code) as div, \n" +
 			"	payroll_employee.division_id,\n" + 
 			"	payroll_employee.employee_first_name,\n" + 
 			"	payroll_employee.employee_last_name,\n" + 
@@ -29,7 +30,8 @@ public class EmployeeLookupQuery extends LookupQuery {
 			"	payroll_employee.employee_termination_date,\n" + 
 			"	payroll_employee.notes\n";
 	private static final String sqlFromClause =
-			"from payroll_employee ";
+			"from payroll_employee \n" +
+			"inner join division on division.division_id=payroll_employee.division_id\n";
 	private static final String sqlWhereClause = "";
 			
 	

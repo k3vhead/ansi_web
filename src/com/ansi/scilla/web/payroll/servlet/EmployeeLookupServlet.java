@@ -2,6 +2,11 @@ package com.ansi.scilla.web.payroll.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -9,6 +14,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Transformer;
+import org.apache.commons.lang3.StringUtils;
+
+import com.ansi.scilla.common.payroll.EmployeeStatus;
+import com.ansi.scilla.web.bcr.common.BcrTicketSql;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.servlet.AbstractLookupServlet;
 import com.ansi.scilla.web.common.struts.SessionData;
@@ -26,7 +37,7 @@ public class EmployeeLookupServlet extends AbstractLookupServlet {
 	
 	public static final String EMPLOYEE_CODE = "employee_code";
 	public static final String COMPANY_CODE = "company_code";
-	public static final String DIVISION = "division";
+	public static final String DIVISION = "concat(division.division_nbr, '-',division.division_code)";
 //	public static final String "	division_id";
 	public static final String FIRST_NAME = "employee_first_name";
 	public static final String LAST_NAME = "employee_last_name";
@@ -35,6 +46,7 @@ public class EmployeeLookupServlet extends AbstractLookupServlet {
 	public static final String EMPLOYEE_STATUS = "employee_status";
 	public static final String TERMINATION_DATE = "employee_termination_date";
 	public static final String NOTES = "notes";
+	public static final String FORMATTED_DATE = "formatted_date";
 
 
 	public EmployeeLookupServlet() {
@@ -52,7 +64,9 @@ public class EmployeeLookupServlet extends AbstractLookupServlet {
 			TERMINATION_DATE,
 			NOTES
 		};
+		super.itemTransformer = new ItemTransformer();
 	}
+	
 	
 	
 	@Override
@@ -85,4 +99,20 @@ public class EmployeeLookupServlet extends AbstractLookupServlet {
 		}
 	}
 
+	
+	public class ItemTransformer implements Transformer<HashMap<String, Object>, HashMap<String, Object>> {
+
+		@Override
+		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
+			java.sql.Date terminationDate = (java.sql.Date)arg0.get(TERMINATION_DATE);
+			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+			String formattedDate = terminationDate == null ? null : sdf.format(terminationDate);
+			arg0.put(FORMATTED_DATE, formattedDate);
+
+			EmployeeStatus employeeStatus = EmployeeStatus.valueOf((String)arg0.get(EMPLOYEE_STATUS));
+			arg0.put(EMPLOYEE_STATUS, employeeStatus.display());
+			return arg0;
+		}
+
+	}
 }
