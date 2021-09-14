@@ -35,6 +35,16 @@
         	#alias-display {
         		display:none;
         	}
+        	#alias-display .alias-message {
+        		width:100%;
+        		height:13px;
+        	}
+        	#alias-display .action-link {
+        		cursor:pointer;
+        	}
+        	#confirm-modal {
+        		display:none;
+        	}
         	#table-container {
         		width:100%;
         	}
@@ -96,6 +106,46 @@
         		
         		
         		
+        		doConfirm : function() {
+        			var $function = $("#confirm-save").attr("data-function");
+        			if ( $function == "deleteAlias" ) {
+        				var $employeeCode = $("#confirm-save").attr("data-id");
+        				var $aliasName = $("#confirm-save").attr("data-name");
+        				var $url = "payroll/alias/" + $employeeCode + "/" + $aliasName;
+        				ANSI_UTILS.makeServerCall("DELETE", $url, {}, {200:EMPLOYEELOOKUP.doConfirmSuccess}, {});
+        			} else {
+        				$("#confirm-modal").dialog("close");
+        				console.log("Function: " + $function);
+        				$("#globalMsg").html("Invalid System State. Reload and try again").show();
+        			}
+        		},
+        		
+        		
+        		
+        		doConfirmSuccess : function($data, $passthru) {
+        			$("#alias-lookup").DataTable().ajax.reload();
+        			$("#confirm-modal").dialog("close");
+        			$("#alias-display .alias-message").html("Success").show().fadeOut(3000);
+        		},
+        		
+        		
+        		
+        		doNewAliasSuccess : function($data, $passthru) {
+        			if ( $data.responseHeader.responseCode == 'SUCCESS' ) {
+	        			$("#alias-lookup").DataTable().ajax.reload();
+	        			$("#alias-display input[name='employeeName']").val("");
+	        			$("#alias-display .err").html("");
+	        			$("#alias-display .alias-message").html("Success").show().fadeOut(3000);
+        			} else {
+        				var $message = $data.data.webMessages['employeeName'][0];
+        				console.log($message);
+        				$("#alias-display .alias-message").html($message).show().fadeOut(3000);
+        			}
+        		},
+        		
+        		
+        		
+        		
         		makeAliasTable : function($employeeCode) {
         			console.log("makeAliasTable: " + $employeeCode);
         			$("#alias-display").dialog("open");
@@ -129,7 +179,7 @@
              	            { "orderable": true, "targets": -1 },
              	            { className: "dt-head-center", "targets":[]},
             	            { className: "dt-left", "targets": [0] },
-            	            { className: "dt-center", "targets": [] },
+            	            { className: "dt-center", "targets": [1] },
             	            { className: "dt-right", "targets": []}
             	         ],
             	        "paging": true,
@@ -140,25 +190,61 @@
     			        	},
     			        columns: [
     			        	{ title: "Employee Alias", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_name' }, 
-    			            //{ title: "Action",  width:"10%", searchable:true, searchFormat: "Equipment #####", 
-    			            //	data: function ( row, type, set ) { 
-    			            //		var $actionLink = '<span class="action-link" data-id="'+row.employee_code+'"><webthing:view>View</webthing:view></span>';
-    			            //		$actionLink = "";
-    			            //		return $actionLink;
-    			            //	}
-    			            //},
+    			            { title: "Action",  width:"10%", searchable:true, searchFormat: "Equipment #####", 
+    			            	data: function ( row, type, set ) { 
+    			            		//var $editLink = '<span class="action-link edit-link" data-id="'+row.employee_code+'" data-name="'+row.employee_name+'"><webthing:edit>Edit</webthing:edit></span>';
+    			            		var $deleteLink = '<span class="action-link delete-link" data-id="'+row.employee_code+'" data-name="'+row.employee_name+'"><webthing:delete>Delete</webthing:delete></span>';
+    			            		return '<ansi:hasPermission permissionRequired="PAYROLL_WRITE">' + $deleteLink + '</ansi:hasPermission>'
+    			            	}
+    			            },
     			            ],
     			            "initComplete": function(settings, json) {
     			            	var myTable = this;
     			            	//LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#ticketTable", CALL_NOTE_LOOKUP.makeTable);
     			            },
     			            "drawCallback": function( settings ) {
-    			            	//$(".action-link").off("click");
-    			            	//$(".action-link").click(function($clickevent) {
-    			            	//	var $employeeCode = $(this).attr("data-id");
-    			            	//	console.log("employee code: " + $employeeCode);
-    			            	//	EMPLOYEELOOKUP.makeAliasTable($employeeCode);
-    			            	//});
+    			            	console.log("alias drawCallback");
+    			            	//$("#alias-lookup .edit-link").off("click");
+    			            	$("#alias-lookup .delete-link").off("click");
+    			            	$("#alias-lookup .cancel-new-alias").off("click");
+    			            	$("#alias-lookup .save-new-alias").off("click");
+    			            	$("#alias-lookup .delete-link").click(function($event) {
+    			            		var $employeeCode = $(this).attr("data-id");
+    			            		var $employeeName = $(this).attr("data-name");
+    			            		$("#confirm-save").attr("data-function","deleteAlias");
+    			            		$("#confirm-save").attr("data-id",$employeeCode);
+    			            		$("#confirm-save").attr("data-name",$employeeName);
+									$("#confirm-modal").dialog("open");
+    			            	});
+    			            	$("#alias-display .cancel-new-alias").click( function($event) {
+    			            		$("#alias-display input[name='employeeName']").val("");
+    			            	});
+    			            	$("#alias-display .save-new-alias").click( function($event) {    			            		
+    			            		var $employeeCode = $(this).attr("data-id");
+    			            		var $employeeName = null
+    			            		$.each( $("#alias-display input"), function($index, $value) {
+    			            			// for some reason, datatables is putting two input boxes, so get the one that is populated
+    			            			var $thisValue = $($value).val();
+    			            			if ( $thisValue != null ) {
+    			            				$employeeName = $thisValue;
+    			            			}
+    			            		});
+    			            		var $url = "payroll/alias/" + $employeeCode;
+    			            		$("#alias-display .err").html("");
+    			            		console.log("new alias name: " + $employeeName);
+    			            		ANSI_UTILS.makeServerCall("POST", $url, {"employeeName":$employeeName}, {200:EMPLOYEELOOKUP.doNewAliasSuccess}, {});
+    			            	});
+
+    			            },
+    			            "footerCallback" : function( row, data, start, end, display ) {
+    			            	console.log("alias footerCallback");
+    			            	var api = this.api();
+    			            	var $saveLink = '<span class="action-link save-new-alias" data-id="'+$employeeCode+'"><webthing:checkmark>Save</webthing:checkmark></span>';
+    			            	var $cancelLink = '<span class="action-link cancel-new-alias"><webthing:ban>Cancel</webthing:ban></span>';
+    			            	var $aliasInput = '<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><input type="text" name="employeeName" placeholder="New Alias" /></ansi:hasPermission>';
+    			            	var $aliasError = '<span class="employeeNameErr err"></span>';
+    			            	$( api.column(0).footer() ).html($aliasInput + " " + $aliasError);
+    			            	$( api.column(1).footer() ).html('<ansi:hasPermission permissionRequired="PAYROLL_WRITE">' + $saveLink + $cancelLink + '</ansi:hasPermission>');
     			            }
     			    } );
         		},
@@ -309,6 +395,36 @@
         			});	
         			$("#employee-edit-cancel").button('option', 'label', 'Cancel');  
         			$("#employee-edit-save").button('option', 'label', 'Save');
+        			
+        			
+        			
+        			
+        			$( "#confirm-modal" ).dialog({
+        				title:'Confirm Delete',
+        				autoOpen: false,
+        				height: 200,
+        				width: 300,
+        				modal: true,
+        				closeOnEscape:true,
+        				//open: function(event, ui) {
+        				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+        				//},
+        				buttons: [
+        					{
+        						id:  "confirm-cancel",
+        						click: function($event) {
+       								$( "#confirm-modal" ).dialog("close");
+        						}
+        					},{
+        						id:  "confirm-save",
+        						click: function($event) {
+       								EMPLOYEELOOKUP.doConfirm();
+        						}
+        					}
+        				]
+        			});	
+        			$("#confirm-cancel").button('option', 'label', 'Cancel');  
+        			$("#confirm-save").button('option', 'label', 'Confirm');
         		},
         		
         		
@@ -351,7 +467,13 @@
         			} else {
 	        			$("#globalMsg").html("Invalid response code: " + $data.responseHeader.responseCode + ". Cntact Support").show();
         			}
-        		}
+        		},
+        		
+        		
+        		
+        		showAliasEdit : function($data, $passthru) {
+        			console.log("showAliasEdit");
+        		},
         	};
         	
         	EMPLOYEELOOKUP.init();
@@ -370,9 +492,23 @@
 		</table>
 		
 		<div id="alias-display">
+			<div class="alias-message err"></div>
 			<table id="alias-lookup">
-			</table>
+				<thead></thead>
+				<tbody></tbody>
+				<tfoot>
+					<td></td>
+					<td></td>
+				</tfoot>
+			</table>			
 		</div>
+		
+		
+		<div id="confirm-modal">			
+			<h2>Are you sure?</h2>
+		</div>
+		
+		
 		
 		<div id="employee-edit" class="modal-window">
 			<table>

@@ -18,6 +18,7 @@ public class PayrollServlet extends AbstractServlet {
 
 	public static final String REALM = "payroll";
 	
+	public static final String ALIAS = "alias";
 	public static final String ALIAS_LOOKUP = "aliasLookup";
 	public static final String EMPLOYEE = "employee";
 	public static final String EMPLOYEE_LOOKUP = "employeeLookup";	
@@ -44,6 +45,9 @@ public class PayrollServlet extends AbstractServlet {
 		switch (destination) {
 		case ALIAS_LOOKUP:
 			new AliasLookupServlet().doGet(request, response);
+			break;
+		case ALIAS:
+			new AliasServlet().doGet(request,response);
 			break;
 		case EMPLOYEE:
 			new EmployeeServlet().doGet(request, response);
@@ -77,6 +81,9 @@ public class PayrollServlet extends AbstractServlet {
 		logger.log(Level.DEBUG, "DELETE: " + destination);
 		
 		switch (destination) {
+		case ALIAS:
+			new AliasServlet().doDelete(request,response);
+			break;
 		case EMPLOYEE:
 			new EmployeeServlet().doDelete(request, response);
 			break;
@@ -102,6 +109,9 @@ public class PayrollServlet extends AbstractServlet {
 		logger.log(Level.DEBUG, "POST: " + destination);
 		
 		switch (destination) {
+		case ALIAS:
+			new AliasServlet().doPost(request,response);
+			break;
 		case EMPLOYEE:
 			new EmployeeServlet().doPost(request, response);
 			break;
