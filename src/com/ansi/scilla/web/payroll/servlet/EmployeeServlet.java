@@ -2,15 +2,18 @@ package com.ansi.scilla.web.payroll.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.Calendar;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.AnsiTime;
+import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.common.db.PayrollEmployee;
 import com.ansi.scilla.common.payroll.EmployeeStatus;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -71,16 +74,14 @@ public class EmployeeServlet extends AbstractServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		logger.log(Level.DEBUG, "Employee post");
 		Connection conn = null;
-		WebMessages webMessages = new WebMessages();
-		ResponseCode responseCode = null;
-		EmployeeResponse data = new EmployeeResponse();
+
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
 			try {
 				String uri = request.getRequestURI();
 				String[] uriPath = uri.split("/");
-				Integer employeeCode = Integer.valueOf(uriPath[uriPath.length - 1]);
+				Integer employeeCode = StringUtils.isNumeric(uriPath[uriPath.length - 1]) ? Integer.valueOf(uriPath[uriPath.length - 1]) : null;
 				Calendar today = Calendar.getInstance(new AnsiTime());
 				
 				String jsonString = super.makeJsonString(request);
@@ -88,17 +89,12 @@ public class EmployeeServlet extends AbstractServlet {
 				SessionData sessionData = AppUtils.validateSession(request, Permission.PAYROLL_WRITE);
 				EmployeeRequest employeeRequest = new EmployeeRequest();
 				AppUtils.json2object(jsonString, employeeRequest);
-				webMessages = employeeRequest.validate(conn);
-				if ( webMessages.isEmpty() ) {
-					doUpdate(conn, employeeCode, employeeRequest, sessionData.getUser(), today);
-					conn.commit();
-					responseCode = ResponseCode.SUCCESS;
-					data = new EmployeeResponse(conn, employeeCode);
+				
+				if ( employeeCode == null ) {
+					processAddRequest(conn, response, employeeRequest, sessionData, today);
 				} else {
-					responseCode = ResponseCode.EDIT_FAILURE;
-				}
-				data.setWebMessages(webMessages);
-				super.sendResponse(conn, response, responseCode, data);
+					processUpdateRequest(conn, response, employeeCode, employeeRequest, sessionData.getUser().getUserId(), today);
+				}					
 			} catch ( RecordNotFoundException e) {
 				super.sendNotFound(response);
 			} finally {
@@ -113,19 +109,142 @@ public class EmployeeServlet extends AbstractServlet {
 		}
 	}
 
-	private void doUpdate(Connection conn, Integer employeeCode, EmployeeRequest employeeRequest, SessionUser sessionUser, Calendar today) throws RecordNotFoundException, Exception {
+	private void processAddRequest(Connection conn, HttpServletResponse response, EmployeeRequest employeeRequest, SessionData sessionData, Calendar today) throws Exception {
+		ResponseCode responseCode = null;
+		EmployeeResponse data = new EmployeeResponse();
+		WebMessages webMessages = employeeRequest.validateAdd(conn);
+		if ( webMessages.isEmpty() ) {
+			doAdd(conn, employeeRequest, sessionData.getUser(), today);
+			conn.commit();
+			responseCode = ResponseCode.SUCCESS;
+			data = new EmployeeResponse(conn, employeeRequest.getEmployeeCode());
+		} else {
+			responseCode = ResponseCode.EDIT_FAILURE;
+		}
+		data.setWebMessages(webMessages);
+		super.sendResponse(conn, response, responseCode, data);		
+	}
+
+	
+	private void processUpdateRequest(Connection conn, HttpServletResponse response, Integer employeeCode, EmployeeRequest employeeRequest, Integer userId, Calendar today) throws RecordNotFoundException, Exception {
+		ResponseCode responseCode = null;
+		EmployeeResponse data = new EmployeeResponse();
+		WebMessages webMessages = employeeRequest.validateUpdate(conn);
+
+		if ( webMessages.isEmpty() ) {
+			doUpdate(conn, employeeCode, employeeRequest, userId, today);
+			conn.commit();
+			responseCode = ResponseCode.SUCCESS;
+			data = new EmployeeResponse(conn, employeeRequest.getEmployeeCode());
+		} else {
+			responseCode = ResponseCode.EDIT_FAILURE;
+		}
+		data.setWebMessages(webMessages);
+		super.sendResponse(conn, response, responseCode, data);	
+	}
+
+	private void doAdd(Connection conn, EmployeeRequest employeeRequest, SessionUser sessionUser, Calendar today) throws Exception {
 		PayrollEmployee employee = new PayrollEmployee();
-		employee.setEmployeeCode(employeeCode);
-		employee.selectOne(conn);
 		
-		employee.setCompanyCode(employeeRequest.getCompanyCode());
-		employee.setDeptDescription(employeeRequest.getDepartmentDescription());
-		employee.setDivision(null);
+		populateEmployee(conn, employee, employeeRequest, sessionUser, today);
+		
+		employee.setEmployeeCode(employeeRequest.getEmployeeCode());
+		employee.setAddedBy(sessionUser.getUserId());
+		employee.setAddedDate(today.getTime());
+		
+		employee.insertWithNoKey(conn);		
+	}
+
+	private void doUpdate(Connection conn, Integer employeeCode, EmployeeRequest employeeRequest, Integer userId, Calendar today) throws RecordNotFoundException, Exception {
+		logger.log(Level.DEBUG, "Employee Servlet doUpdate");
+		logger.log(Level.DEBUG, "employeeCode: " + employeeCode);
+		logger.log(Level.DEBUG, employeeRequest);
+		Division division = new Division();
+		division.setDivisionId(employeeRequest.getDivisionId());
+		division.selectOne(conn);
+		
+		java.sql.Date updateTime = new java.sql.Date(today.getTime().getTime());
+		java.sql.Date terminationDate = employeeRequest.getTerminationDate() == null ? null : new java.sql.Date(employeeRequest.getTerminationDate().getTime().getTime());
+		
+		String sql = "UPDATE payroll_employee \n"
+				+ "SET employee_last_name=?,\n"
+				+ "		employee_mi=?,\n"
+				+ "		dept_description=?,\n"
+				+ "		employee_status=?,\n"
+				+ "		employee_termination_date=?,\n"
+				+ "		employee_code=?,\n"
+				+ "		employee_first_name=?,\n"
+				+ "		company_code=?,\n"
+				+ "		division_id=?,\n"
+				+ "		division=?,\n"
+				+ "		notes=?,\n"
+				+ "		updated_by=?,\n"
+				+ "		updated_date=? \n"
+				+ "WHERE employee_code=?";
+		
+		logger.log(Level.DEBUG, sql);
+		logger.log(Level.DEBUG, StringUtils.trimToNull(employeeRequest.getLastName()));
+		logger.log(Level.DEBUG, StringUtils.trimToNull(employeeRequest.getMiddleInitial()));
+		logger.log(Level.DEBUG, StringUtils.trimToNull(employeeRequest.getDepartmentDescription()));
+		logger.log(Level.DEBUG, StringUtils.trimToNull(employeeRequest.getStatus()));
+		logger.log(Level.DEBUG, terminationDate);
+		logger.log(Level.DEBUG, employeeCode);
+		logger.log(Level.DEBUG, StringUtils.trimToNull(employeeRequest.getFirstName()));
+		logger.log(Level.DEBUG, StringUtils.trimToNull(employeeRequest.getCompanyCode()));
+		logger.log(Level.DEBUG, employeeRequest.getDivisionId());
+		logger.log(Level.DEBUG, String.valueOf(division.getDivisionNbr()));
+		logger.log(Level.DEBUG, StringUtils.trimToNull(employeeRequest.getNotes()));
+		logger.log(Level.DEBUG, userId);
+		logger.log(Level.DEBUG, updateTime);
+		logger.log(Level.DEBUG, employeeCode);
+		
+		
+		PreparedStatement ps = conn.prepareStatement(sql);
+		int n = 1;
+		ps.setString(n, StringUtils.trimToNull(employeeRequest.getLastName()));
+		n++;
+		ps.setString(n, StringUtils.trimToNull(employeeRequest.getMiddleInitial()));
+		n++;
+		ps.setString(n, StringUtils.trimToNull(employeeRequest.getDepartmentDescription()));
+		n++;
+		ps.setString(n, StringUtils.trimToNull(employeeRequest.getStatus()));
+		n++;
+		ps.setDate(n, terminationDate);
+		n++;
+		ps.setInt(n, employeeCode);
+		n++;
+		ps.setString(n, StringUtils.trimToNull(employeeRequest.getFirstName()));
+		n++;
+		ps.setString(n, StringUtils.trimToNull(employeeRequest.getCompanyCode()));
+		n++;
+		ps.setInt(n, employeeRequest.getDivisionId());
+		n++;
+		ps.setString(n, String.valueOf(division.getDivisionNbr()));
+		n++;
+		ps.setString(n, StringUtils.trimToNull(employeeRequest.getNotes()));
+		n++;
+		ps.setInt(n, userId);
+		n++;
+		ps.setDate(n, updateTime);
+		n++;
+		ps.setInt(n, employeeCode);
+
+		ps.executeUpdate();
+	}
+
+	private void populateEmployee(Connection conn, PayrollEmployee employee, EmployeeRequest employeeRequest, SessionUser sessionUser, Calendar today) throws Exception {
+		Division division = new Division();
+		division.setDivisionId(employeeRequest.getDivisionId());
+		division.selectOne(conn);
+		
+		employee.setCompanyCode(StringUtils.trimToNull(employeeRequest.getCompanyCode()));
+		employee.setDeptDescription(StringUtils.trimToNull(employeeRequest.getDepartmentDescription()));
+		employee.setDivision(String.valueOf(division.getDivisionNbr()));
 		employee.setDivisionId(employeeRequest.getDivisionId());
-		employee.setEmployeeFirstName(employeeRequest.getFirstName());
-		employee.setEmployeeLastName(employeeRequest.getLastName());
-		employee.setEmployeeMi(employeeRequest.getMiddleInitial());
-		employee.setEmployeeStatus(employeeRequest.getStatus());
+		employee.setEmployeeFirstName(StringUtils.trimToNull(employeeRequest.getFirstName()));
+		employee.setEmployeeLastName(StringUtils.trimToNull(employeeRequest.getLastName()));
+		employee.setEmployeeMi(StringUtils.trimToNull(employeeRequest.getMiddleInitial()));
+		employee.setEmployeeStatus(StringUtils.trimToNull(employeeRequest.getStatus()));
 		EmployeeStatus employeeStatus = EmployeeStatus.valueOf(employeeRequest.getStatus());
 		if ( employeeStatus.equals(EmployeeStatus.ACTIVE)) {
 			employee.setEmployeeTerminationDate(null);
@@ -133,13 +252,10 @@ public class EmployeeServlet extends AbstractServlet {
 			employee.setEmployeeTerminationDate(employeeRequest.getTerminationDate().getTime());
 		}
 		
-		employee.setNotes(employeeRequest.getNotes());
+		employee.setNotes(StringUtils.trimToNull(employeeRequest.getNotes()));
 		employee.setUpdatedBy(sessionUser.getUserId());
 		employee.setUpdatedDate(today.getTime());
 		
-		PayrollEmployee key = new PayrollEmployee();
-		key.setEmployeeCode(employeeCode);
-		employee.update(conn, key);
 	}
 
 	

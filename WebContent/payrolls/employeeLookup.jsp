@@ -81,6 +81,7 @@
         		init : function() {
         			EMPLOYEELOOKUP.makeModals();
         			EMPLOYEELOOKUP.makeEmployeeTable(); 
+        			EMPLOYEELOOKUP.makeClickers();
         		},
         		
         		
@@ -90,7 +91,6 @@
         			$("#employee-edit input").val("");
         			$("#employee-edit select").val("");
         			$("#employee-edit .err").html("");
-        			$("#employee-edit .employee-code").html($data.data.employee.employeeCode)
         			$("#employee-edit input[name='employeeCode']").val($data.data.employee.employeeCode);
         			$("#employee-edit select[name='companyCode']").val($data.data.employee.companyCode);
         			$("#employee-edit select[name='divisionId']").val($data.data.employee.divisionId);
@@ -250,6 +250,17 @@
         		},
         		
         		
+        		
+        		makeClickers : function() {
+        			$("#new-employee-button").click(function($clickevent) {
+        				console.log("New employee button");
+        				$("#employee-edit input").val("");
+            			$("#employee-edit select").val("");
+            			$("#employee-edit .err").html("");
+            			$("#employee-edit .employee-code").html("New")
+            			$("#employee-edit").dialog("open");
+        			});
+        		},
         		
         		makeEmployeeTable : function() {
         			$("#employeeLookup").DataTable( {
@@ -490,6 +501,7 @@
     	<webthing:lookupFilter filterContainer="filter-container" />
 		<table id="employeeLookup">
 		</table>
+		<input class="prettyWideButton" id="new-employee-button" value="New" type="button" />
 		
 		<div id="alias-display">
 			<div class="alias-message err"></div>
@@ -497,8 +509,10 @@
 				<thead></thead>
 				<tbody></tbody>
 				<tfoot>
-					<td></td>
-					<td></td>
+					<tr>
+						<td></td>
+						<td></td>
+					</tr>
 				</tfoot>
 			</table>			
 		</div>
@@ -515,8 +529,7 @@
 				<tr>
 					<td class="form-label">Employee Code:</td>
 					<td>
-						<input type="hidden" name="employeeCode" />
-						<span class="employee-code"></span>
+						<input type="text" name="employeeCode" />
 					</td>
 					<td><span class="err employeeCodeErr"></span></td>
 				</tr>
