@@ -16,27 +16,55 @@ public class EmployeeRecord extends ApplicationObject {
 
 
 	private static final Integer COL_COMPANY_CODE = 0;
-	// etc. etc.
+	private static final Integer COL_DIVISION_ID = 1;
+	private static final Integer COL_EMPLOYEE_CODE = 2;
+	private static final Integer COL_FIRST_NAME = 3;
+	private static final Integer COL_LAST_NAME = 4;
+	private static final Integer COL_DEPARTMENT_DESCRIPTION = 5;
+	private static final Integer COL_STATUS = 6;
+	private static final Integer COL_TERMINATION_DATE = 7;
+	private static final Integer COL_UNION_MEMBER= 8;
+	private static final Integer COL_UNION_CODE = 9;
+	private static final Integer COL_UNION_RATE = 10;
+	private static final Integer COL_PROCESS_DATE = 11;
+//	// etc. etc.
+//	
 	
-	
-	private Integer employeeCode;
+	private String employeeCode;
 	private String companyCode;
-	private Integer divisionId;
+	private String divisionId;
 	private String firstName;
 	private String lastName;
-	private String middleInitial;
 	private String departmentDescription;
 	private String status;
-	private Calendar terminationDate;
-	private String notes;
+	private String terminationDate;
+	private String unionMember;
+	private String unionCode;
+	private String unionRate;
+	private String processDate;
 	
 	public EmployeeRecord() {
 		super();
 	}
 	
 	public EmployeeRecord(String[] spreadSheetRow) {
+		
 		super();
+				
 		this.companyCode = spreadSheetRow[COL_COMPANY_CODE];
+		this.divisionId = spreadSheetRow[COL_DIVISION_ID];
+		this.employeeCode = spreadSheetRow[COL_EMPLOYEE_CODE];
+		this.firstName = spreadSheetRow[COL_FIRST_NAME];
+		this.lastName = spreadSheetRow[COL_LAST_NAME];
+		this.departmentDescription = spreadSheetRow[COL_DEPARTMENT_DESCRIPTION];
+		this.status = spreadSheetRow[COL_STATUS];
+		this.terminationDate = spreadSheetRow[COL_TERMINATION_DATE];
+		//this.setTerminationDate(spreadSheetRow[COL_TERMINATION_DATE]);
+		this.unionMember = spreadSheetRow[COL_UNION_MEMBER];
+		this.unionCode = spreadSheetRow[COL_UNION_CODE];
+		this.unionRate = spreadSheetRow[COL_UNION_RATE];
+		this.processDate = spreadSheetRow[COL_PROCESS_DATE];
+		
 		// etc. etc. etc.
 		
 	}
@@ -56,16 +84,16 @@ public class EmployeeRecord extends ApplicationObject {
 		this.departmentDescription = employee.getDeptDescription();
 		this.status = employee.getEmployeeStatus();
 		if ( employee.getEmployeeTerminationDate() != null ) {
-			this.terminationDate = DateUtils.toCalendar(employee.getEmployeeTerminationDate());
+			this.setTerminationDate(DateUtils.toCalendar(employee.getEmployeeTerminationDate()));
 		}
 		this.notes = employee.getNotes();
 	}
 
-	public Integer getEmployeeCode() {
+	public String getEmployeeCode() {
 		return employeeCode;
 	}
 
-	public void setEmployeeCode(Integer employeeCode) {
+	public void setEmployeeCode(String employeeCode) {
 		this.employeeCode = employeeCode;
 	}
 
@@ -77,11 +105,11 @@ public class EmployeeRecord extends ApplicationObject {
 		this.companyCode = companyCode;
 	}
 
-	public Integer getDivisionId() {
+	public String getDivisionId() {
 		return divisionId;
 	}
 
-	public void setDivisionId(Integer divisionId) {
+	public void setDivisionId(String divisionId) {
 		this.divisionId = divisionId;
 	}
 
@@ -125,15 +153,15 @@ public class EmployeeRecord extends ApplicationObject {
 		this.status = status;
 	}
 
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="America/Chicago")
-	public Calendar getTerminationDate() {
-		return terminationDate;
-	}
-	
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="America/Chicago")
-	public void setTerminationDate(Calendar terminationDate) {
-		this.terminationDate = terminationDate;
-	}
+//	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="America/Chicago")
+//	public Calendar getTerminationDate() {
+//		return terminationDate;
+//	}
+//	
+//	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="America/Chicago")
+//	public void setTerminationDate(Calendar terminationDate) {
+//		this.terminationDate = terminationDate;
+//	}
 
 	public String getNotes() {
 		return notes;
@@ -141,5 +169,45 @@ public class EmployeeRecord extends ApplicationObject {
 
 	public void setNotes(String notes) {
 		this.notes = notes;
+	}
+
+	public String getUnionCode() {
+		return unionCode;
+	}
+
+	public void setUnionCode(String unionCode) {
+		this.unionCode = unionCode;
+	}
+
+	public String getTerminationDate() {
+		return terminationDate;
+	}
+
+	public void setTerminationDate(String terminationDate) {
+		this.terminationDate = terminationDate;
+	}
+
+	public String getUnionMember() {
+		return unionMember;
+	}
+
+	public void setUnionMember(String unionMember) {
+		this.unionMember = unionMember;
+	}
+
+	public String getUnionRate() {
+		return unionRate;
+	}
+
+	public void setUnionRate(String unionRate) {
+		this.unionRate = unionRate;
+	}
+
+	public String getProcessDate() {
+		return processDate;
+	}
+
+	public void setProcessDate(String processDate) {
+		this.processDate = processDate;
 	}
 }

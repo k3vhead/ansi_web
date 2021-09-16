@@ -17,11 +17,13 @@ public class TestEmployeeFileParse {
 		System.out.println(x);
 		
 		String davesFile = "/home/dclewis/Documents/webthing_v2/projects/ANSI/design/20210629_payroll/rollout_mtg/PAYCOM Import Template-NEW-GEN.csv";
-		String krisFile = "xxxxx";
+		String krisFile = "/home/klandeck/Documents/payroll/PAYCOM Import Template-NEW-GEN.csv";
 		
-		CSVReader reader = new CSVReader(new FileReader(davesFile));
-		List<String[]> recordList = reader.readAll();
+		CSVReader reader = new CSVReader(new FileReader(krisFile));
+		List<String[]> recordList = reader.readAll();		
+		recordList.remove(0);
 		reader.close();
+		
 		for ( String[] row : recordList ) {
 			EmployeeRecord rec = new EmployeeRecord(row);
 			System.out.println(rec);
