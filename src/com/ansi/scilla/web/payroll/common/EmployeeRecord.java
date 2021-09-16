@@ -1,14 +1,6 @@
 package com.ansi.scilla.web.payroll.common;
 
-import java.sql.Connection;
-import java.util.Calendar;
-
-import org.apache.commons.lang3.time.DateUtils;
-
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.common.db.PayrollEmployee;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class EmployeeRecord extends ApplicationObject {
 
@@ -27,8 +19,7 @@ public class EmployeeRecord extends ApplicationObject {
 	private static final Integer COL_UNION_CODE = 9;
 	private static final Integer COL_UNION_RATE = 10;
 	private static final Integer COL_PROCESS_DATE = 11;
-//	// etc. etc.
-//	
+	
 	
 	private String employeeCode;
 	private String companyCode;
@@ -60,7 +51,6 @@ public class EmployeeRecord extends ApplicationObject {
 		this.departmentDescription = spreadSheetRow[COL_DEPARTMENT_DESCRIPTION];
 		this.status = spreadSheetRow[COL_STATUS];
 		this.terminationDate = spreadSheetRow[COL_TERMINATION_DATE];
-		//this.setTerminationDate(spreadSheetRow[COL_TERMINATION_DATE]);
 		this.unionMember = spreadSheetRow[COL_UNION_MEMBER];
 		this.unionCode = spreadSheetRow[COL_UNION_CODE];
 		this.unionRate = spreadSheetRow[COL_UNION_RATE];
@@ -68,24 +58,7 @@ public class EmployeeRecord extends ApplicationObject {
 	}
 	
 
-	public EmployeeRecord(Connection conn, Integer employeeCode) throws RecordNotFoundException, Exception {
-		super();
-		PayrollEmployee employee = new PayrollEmployee();
-		employee.setEmployeeCode(employeeCode);
-		employee.selectOne(conn);
-		this.employeeCode = employeeCode;
-		this.companyCode = employee.getCompanyCode();
-		this.divisionId = employee.getDivisionId();
-		this.firstName = employee.getEmployeeFirstName();
-		this.lastName = employee.getEmployeeLastName();
-//		this.middleInitial = employee.getEmployeeMi();
-		this.departmentDescription = employee.getDeptDescription();
-		this.status = employee.getEmployeeStatus();
-		if ( employee.getEmployeeTerminationDate() != null ) {
-			this.setTerminationDate(DateUtils.toCalendar(employee.getEmployeeTerminationDate()));
-		}
-		this.notes = employee.getNotes();
-	}
+
 
 	public String getEmployeeCode() {
 		return employeeCode;
@@ -127,14 +100,6 @@ public class EmployeeRecord extends ApplicationObject {
 		this.lastName = lastName;
 	}
 
-//	public String getMiddleInitial() {
-//		return middleInitial;
-//	}
-//
-//	public void setMiddleInitial(String middleInitial) {
-//		this.middleInitial = middleInitial;
-//	}
-
 	public String getDepartmentDescription() {
 		return departmentDescription;
 	}
@@ -149,24 +114,6 @@ public class EmployeeRecord extends ApplicationObject {
 
 	public void setStatus(String status) {
 		this.status = status;
-	}
-
-//	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="America/Chicago")
-//	public Calendar getTerminationDate() {
-//		return terminationDate;
-//	}
-//	
-//	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="America/Chicago")
-//	public void setTerminationDate(Calendar terminationDate) {
-//		this.terminationDate = terminationDate;
-//	}
-
-	public String getNotes() {
-		return notes;
-	}
-
-	public void setNotes(String notes) {
-		this.notes = notes;
 	}
 
 	public String getUnionCode() {

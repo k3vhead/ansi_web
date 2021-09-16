@@ -32,6 +32,9 @@
     	<script type="text/javascript" src="js/document.js"></script> 
     
         <style type="text/css">
+        	#display-div {
+        		display:none;
+        	}
         	#table-container {
         		width:100%;
         	}
@@ -133,6 +136,13 @@
         		
         		
         		makeClickers : function() {
+        			$("#save-button").click(function($event) {
+        				$("#prompt-div").hide();
+        				$("#display-div").show();
+        			});
+        			
+        			
+        			
         			$("#organization-edit .org-status-change").on("click", function($event) {
         				console.log("changing status");
         				var $organizationId = $(this).attr("data-id");
@@ -461,7 +471,16 @@
    <tiles:put name="content" type="string">
     	<h1>Payroll Employee Import</h1> 
 
+    	<div id="prompt-div">
+	    	Prompt for Division: <select><option value="astate">A State</option></select><br />
+	    	Prompt for file: <input type="file" /><br />
+	    	<input type="button" value="Save" id="save-button" />
+    	</div>
     	
+    	
+    	<div id="display-div">
+    		output goes here
+    	</div>
 
 		
     </tiles:put>

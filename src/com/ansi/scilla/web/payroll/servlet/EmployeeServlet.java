@@ -3,6 +3,8 @@ package com.ansi.scilla.web.payroll.servlet;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Calendar;
 
 import javax.servlet.ServletException;
@@ -133,7 +135,7 @@ public class EmployeeServlet extends AbstractServlet {
 
 		if ( webMessages.isEmpty() ) {
 			doUpdate(conn, employeeCode, employeeRequest, userId, today);
-			conn.commit();
+			conn.rollback();
 			responseCode = ResponseCode.SUCCESS;
 			data = new EmployeeResponse(conn, employeeRequest.getEmployeeCode());
 		} else {
@@ -143,6 +145,7 @@ public class EmployeeServlet extends AbstractServlet {
 		super.sendResponse(conn, response, responseCode, data);	
 	}
 
+	
 	private void doAdd(Connection conn, EmployeeRequest employeeRequest, SessionUser sessionUser, Calendar today) throws Exception {
 		PayrollEmployee employee = new PayrollEmployee();
 		
@@ -155,6 +158,7 @@ public class EmployeeServlet extends AbstractServlet {
 		employee.insertWithNoKey(conn);		
 	}
 
+
 	private void doUpdate(Connection conn, Integer employeeCode, EmployeeRequest employeeRequest, Integer userId, Calendar today) throws RecordNotFoundException, Exception {
 		logger.log(Level.DEBUG, "Employee Servlet doUpdate");
 		logger.log(Level.DEBUG, "employeeCode: " + employeeCode);
@@ -166,20 +170,20 @@ public class EmployeeServlet extends AbstractServlet {
 		java.sql.Date updateTime = new java.sql.Date(today.getTime().getTime());
 		java.sql.Date terminationDate = employeeRequest.getTerminationDate() == null ? null : new java.sql.Date(employeeRequest.getTerminationDate().getTime().getTime());
 		
-		String sql = "UPDATE payroll_employee \n"
-				+ "SET employee_last_name=?,\n"
-				+ "		employee_mi=?,\n"
-				+ "		dept_description=?,\n"
-				+ "		employee_status=?,\n"
-				+ "		employee_termination_date=?,\n"
-				+ "		employee_code=?,\n"
-				+ "		employee_first_name=?,\n"
-				+ "		company_code=?,\n"
-				+ "		division_id=?,\n"
-				+ "		division=?,\n"
-				+ "		notes=?,\n"
-				+ "		updated_by=?,\n"
-				+ "		updated_date=? \n"
+		String sql =
+				  "UPDATE payroll_employee "
+				+ "SET company_code=?, "
+				+ "    division=?, "
+				+ "    division_id=?, "
+				+ "    employee_first_name=?, "
+				+ "    employee_last_name=?, "
+				+ "    employee_mi=?, "
+				+ "    dept_description=?, "
+				+ "    employee_status=?, "
+				+ "    employee_termination_date=?, "
+				+ "    notes=?, "
+				+ "    updated_by=?, "
+				+ "    updated_date=? "
 				+ "WHERE employee_code=?";
 		
 		logger.log(Level.DEBUG, sql);
@@ -197,10 +201,17 @@ public class EmployeeServlet extends AbstractServlet {
 		logger.log(Level.DEBUG, userId);
 		logger.log(Level.DEBUG, updateTime);
 		logger.log(Level.DEBUG, employeeCode);
-		
-		
+
 		PreparedStatement ps = conn.prepareStatement(sql);
 		int n = 1;
+		ps.setString(n, StringUtils.trimToNull(employeeRequest.getCompanyCode()));
+		n++;
+		ps.setString(n, String.valueOf(division.getDivisionNbr()));
+		n++;
+		ps.setInt(n, employeeRequest.getDivisionId());
+		n++;
+		ps.setString(n, StringUtils.trimToNull(employeeRequest.getFirstName()));
+		n++;
 		ps.setString(n, StringUtils.trimToNull(employeeRequest.getLastName()));
 		n++;
 		ps.setString(n, StringUtils.trimToNull(employeeRequest.getMiddleInitial()));
@@ -211,16 +222,6 @@ public class EmployeeServlet extends AbstractServlet {
 		n++;
 		ps.setDate(n, terminationDate);
 		n++;
-		ps.setInt(n, employeeCode);
-		n++;
-		ps.setString(n, StringUtils.trimToNull(employeeRequest.getFirstName()));
-		n++;
-		ps.setString(n, StringUtils.trimToNull(employeeRequest.getCompanyCode()));
-		n++;
-		ps.setInt(n, employeeRequest.getDivisionId());
-		n++;
-		ps.setString(n, String.valueOf(division.getDivisionNbr()));
-		n++;
 		ps.setString(n, StringUtils.trimToNull(employeeRequest.getNotes()));
 		n++;
 		ps.setInt(n, userId);
@@ -228,6 +229,10 @@ public class EmployeeServlet extends AbstractServlet {
 		ps.setDate(n, updateTime);
 		n++;
 		ps.setInt(n, employeeCode);
+		
+		
+//		n++;
+//		ps.setInt(n, employeeCode);
 
 		ps.executeUpdate();
 	}
