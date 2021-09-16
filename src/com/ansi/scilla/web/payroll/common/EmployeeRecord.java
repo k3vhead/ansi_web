@@ -50,7 +50,8 @@ public class EmployeeRecord extends ApplicationObject {
 	public EmployeeRecord(String[] spreadSheetRow) {
 		
 		super();
-				
+		
+		
 		this.companyCode = spreadSheetRow[COL_COMPANY_CODE];
 		this.divisionId = spreadSheetRow[COL_DIVISION_ID];
 		this.employeeCode = spreadSheetRow[COL_EMPLOYEE_CODE];
@@ -64,9 +65,6 @@ public class EmployeeRecord extends ApplicationObject {
 		this.unionCode = spreadSheetRow[COL_UNION_CODE];
 		this.unionRate = spreadSheetRow[COL_UNION_RATE];
 		this.processDate = spreadSheetRow[COL_PROCESS_DATE];
-		
-		// etc. etc. etc.
-		
 	}
 	
 
@@ -80,7 +78,7 @@ public class EmployeeRecord extends ApplicationObject {
 		this.divisionId = employee.getDivisionId();
 		this.firstName = employee.getEmployeeFirstName();
 		this.lastName = employee.getEmployeeLastName();
-		this.middleInitial = employee.getEmployeeMi();
+//		this.middleInitial = employee.getEmployeeMi();
 		this.departmentDescription = employee.getDeptDescription();
 		this.status = employee.getEmployeeStatus();
 		if ( employee.getEmployeeTerminationDate() != null ) {
@@ -129,13 +127,13 @@ public class EmployeeRecord extends ApplicationObject {
 		this.lastName = lastName;
 	}
 
-	public String getMiddleInitial() {
-		return middleInitial;
-	}
-
-	public void setMiddleInitial(String middleInitial) {
-		this.middleInitial = middleInitial;
-	}
+//	public String getMiddleInitial() {
+//		return middleInitial;
+//	}
+//
+//	public void setMiddleInitial(String middleInitial) {
+//		this.middleInitial = middleInitial;
+//	}
 
 	public String getDepartmentDescription() {
 		return departmentDescription;
