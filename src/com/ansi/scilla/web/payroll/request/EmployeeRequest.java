@@ -13,6 +13,7 @@ public class EmployeeRequest extends AbstractRequest {
 
 	private static final long serialVersionUID = 1L;
 
+	public static final String EMPLOYEE_CODE = "employeeCode";
 	public static final String COMPANY_CODE ="companyCode";
 	public static final String DIVISION_ID="divisionId";
 	public static final String FIRST_NAME="firstName";
@@ -23,7 +24,7 @@ public class EmployeeRequest extends AbstractRequest {
 	public static final String TERMINATION_DATE="terminationDate";
 	public static final String NOTES="notes";
 	
-	
+	private Integer employeeCode;
 	private String companyCode;
 	private Integer divisionId;
 	private String firstName;
@@ -34,6 +35,12 @@ public class EmployeeRequest extends AbstractRequest {
 	private Calendar terminationDate;
 	private String notes;
 
+	public Integer getEmployeeCode() {
+		return employeeCode;
+	}
+	public void setEmployeeCode(Integer employeeCode) {
+		this.employeeCode = employeeCode;
+	}
 	public String getCompanyCode() {
 		return companyCode;
 	}
@@ -90,9 +97,14 @@ public class EmployeeRequest extends AbstractRequest {
 	}
 	
 	
+	public WebMessages validateAdd(Connection conn) throws Exception {
+		WebMessages webMessages = validateUpdate(conn);
+		RequestValidator.validateInteger(webMessages, EMPLOYEE_CODE, employeeCode, null, null, true);
+		return webMessages;
+	}
 	
 	
-	public WebMessages validate(Connection conn) throws Exception {
+	public WebMessages validateUpdate(Connection conn) throws Exception {
 		WebMessages webMessages = new WebMessages();
 		
 		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, DIVISION_ID, this.divisionId, true);
