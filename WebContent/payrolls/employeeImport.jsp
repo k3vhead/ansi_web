@@ -80,6 +80,46 @@
         <script type="text/javascript">    
         
         $(document).ready(function(){
+        	;EMPLOYEE_IMPORT = {
+        		init : function() {
+        			$("#save-button").click(function($event) {
+        				var file = document.getElementById('employee-file').files[0];
+        				var reader = new FileReader();
+        				reader.readAsText(file, 'UTF-8');
+        				reader.onload = EMPLOYEE_IMPORT.saveFile;
+        				// reader.onprogress ...  (progress bar)
+        			});
+        			
+        			
+        		},
+        		
+        		
+        		saveFile : function($event) {
+        			var results = $event.target.result;
+        			var fileName = document.getElementById('employee-file').files[0].name;
+        			var formData = new FormData();
+        			var file = document.getElementById('employee-file').files[0];
+        			formData.append('employeeFile',file, fileName);
+        			formData.append('divisionId', $("#prompt-div select[name='divisionId']").val());
+        			
+        			var xhr = new XMLHttpRequest();
+        			xhr.open('POST',"payroll/employeeImport", true);
+        			
+        			xhr.onload = function() {
+        				if ( xhr.status == 200 ) {
+        					alert("It worked");
+        				} else {
+        					alert("It didn: " + xhr.status);
+        				}
+        			};
+        			
+        			xhr.send(formData);
+        		}
+        	};
+        	
+        	EMPLOYEE_IMPORT.init();
+        	
+        	
         	;ORGMAINT = {
         		orgType : '<c:out value="${ANSI_ORGANIZATION_TYPE}" />',
         		orgTypeDisplay : '<c:out value="${ANSI_ORGANIZATION_TYPE_DISPLAY}" />',        		
@@ -460,7 +500,7 @@
             	
         	};
         	
-        	ORGMAINT.init();
+        	// ORGMAINT.init();
         	
         	
         });
@@ -472,8 +512,8 @@
     	<h1>Payroll Employee Import</h1> 
 
     	<div id="prompt-div">
-	    	Prompt for Division: <select><option value="astate">A State</option></select><br />
-	    	Prompt for file: <input type="file" /><br />
+	    	Prompt for Division: <select name="divisionId"><option value="123">A State</option></select><br />
+	    	Prompt for file: <input type="file" id="employee-file" name="files[]" /><br />
 	    	<input type="button" value="Save" id="save-button" />
     	</div>
     	
