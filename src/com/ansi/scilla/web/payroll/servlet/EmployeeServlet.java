@@ -1,10 +1,12 @@
 package com.ansi.scilla.web.payroll.servlet;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Calendar;
 
 import javax.servlet.ServletException;
@@ -47,7 +49,6 @@ public class EmployeeServlet extends AbstractServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		logger.log(Level.DEBUG, "Employee get");
 		Connection conn = null;
 		WebMessages webMessages = new WebMessages();
 		try {
@@ -74,7 +75,6 @@ public class EmployeeServlet extends AbstractServlet {
 	
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		logger.log(Level.DEBUG, "Employee post");
 		Connection conn = null;
 
 		try {
@@ -135,7 +135,7 @@ public class EmployeeServlet extends AbstractServlet {
 
 		if ( webMessages.isEmpty() ) {
 			doUpdate(conn, employeeCode, employeeRequest, userId, today);
-			conn.rollback();
+			conn.commit();
 			responseCode = ResponseCode.SUCCESS;
 			data = new EmployeeResponse(conn, employeeRequest.getEmployeeCode());
 		} else {
@@ -160,9 +160,6 @@ public class EmployeeServlet extends AbstractServlet {
 
 
 	private void doUpdate(Connection conn, Integer employeeCode, EmployeeRequest employeeRequest, Integer userId, Calendar today) throws RecordNotFoundException, Exception {
-		logger.log(Level.DEBUG, "Employee Servlet doUpdate");
-		logger.log(Level.DEBUG, "employeeCode: " + employeeCode);
-		logger.log(Level.DEBUG, employeeRequest);
 		Division division = new Division();
 		division.setDivisionId(employeeRequest.getDivisionId());
 		division.selectOne(conn);
@@ -170,40 +167,121 @@ public class EmployeeServlet extends AbstractServlet {
 		java.sql.Date updateTime = new java.sql.Date(today.getTime().getTime());
 		java.sql.Date terminationDate = employeeRequest.getTerminationDate() == null ? null : new java.sql.Date(employeeRequest.getTerminationDate().getTime().getTime());
 		
+		if ( employeeRequest.getSelectedEmployeeCode() != null && employeeRequest.getSelectedEmployeeCode().equals(employeeRequest.getEmployeeCode())) {
+			processStandardUpdate(conn, employeeCode, employeeRequest, userId, division, today, updateTime, terminationDate);
+		} else {
+			processChangedEmployeeCode(conn, employeeCode, employeeRequest, userId, division, today, updateTime, terminationDate);
+		}
+	
+		
+	}
+
+	/**
+	 * We need to handle this special case because employee code is a foreign key from alias to employee. If the employee changes
+	 * code, then the alias also needs to change employee code. So, here's the process:
+	 * 
+	 * Insert a employee record with the new employee code
+	 * Update alias records to point to the new employee record
+	 * Delete the old employee record
+	 * 
+	 * @param conn
+	 * @param employeeCode
+	 * @param employeeRequest
+	 * @param userId
+	 * @param today
+	 * @param updateTime
+	 * @param terminationDate
+	 * @throws SQLException 
+	 */
+	private void processChangedEmployeeCode(Connection conn, Integer employeeCode, EmployeeRequest employeeRequest,
+			Integer userId, Division division, Calendar today, Date updateTime, Date terminationDate) throws SQLException {
+		// Insert employee record with new employee code:
+		String insertSql = "insert into payroll_employee(\n" + 
+				"	employee_code,\n" + 
+				"	company_code,\n" + 
+				"	division,\n" + 
+				"	division_id,\n" + 
+				"	employee_first_name,\n" + 
+				"	employee_last_name,\n" + 
+				"	employee_mi,\n" + 
+				"	dept_description,\n" + 
+				"	employee_status,\n" + 
+				"	employee_termination_date,\n" + 
+				"	notes,\n" + 
+				"	union_member,\n" + 
+				"	union_code,\n" + 
+				"	union_rate,\n" + 
+				"	process_date,\n" + 
+				"	added_by,\n" + 
+				"	added_date,\n" + 
+				"	updated_by,\n" + 
+				"	updated_date)\n" + 
+				"select ? as employee_code,\n" + 
+				"	company_code,\n" + 
+				"	division,\n" + 
+				"	division_id,\n" + 
+				"	employee_first_name,\n" + 
+				"	employee_last_name,\n" + 
+				"	employee_mi,\n" + 
+				"	dept_description,\n" + 
+				"	employee_status,\n" + 
+				"	employee_termination_date,\n" + 
+				"	notes,\n" + 
+				"	union_member,\n" + 
+				"	union_code,\n" + 
+				"	union_rate,\n" + 
+				"	process_date,\n" + 
+				"	added_by,\n" + 
+				"	added_date,\n" + 
+				"	updated_by,\n" + 
+				"	updated_date from payroll_employee where payroll_employee.employee_code=?";
+		PreparedStatement insertPs = conn.prepareStatement(insertSql);
+		insertPs.setInt(1, employeeRequest.getEmployeeCode());
+		insertPs.setInt(2, employeeRequest.getSelectedEmployeeCode());
+		insertPs.executeUpdate();
+		
+		// update alias records
+		PreparedStatement updatePs = conn.prepareStatement("update employee_alias set employee_code=? where employee_code=?");
+		updatePs.setInt(1, employeeRequest.getEmployeeCode());
+		updatePs.setInt(2, employeeRequest.getSelectedEmployeeCode());
+		updatePs.executeUpdate();
+		
+		// delete the obsolete payroll employee
+		PreparedStatement deletePs = conn.prepareStatement("delete payroll_employee where employee_code=?");
+		deletePs.setInt(1, employeeRequest.getSelectedEmployeeCode());
+		deletePs.executeUpdate();
+		
+		// update the rest of the fields
+		processStandardUpdate(conn, employeeRequest.getEmployeeCode(), employeeRequest, userId, division, today, updateTime, terminationDate);
+		
+		
+	}
+
+	private void processStandardUpdate(Connection conn, Integer employeeCode, EmployeeRequest employeeRequest,
+			Integer userId, Division division, Calendar today, Date updateTime, Date terminationDate) throws SQLException {
 		String sql =
 				  "UPDATE payroll_employee "
-				+ "SET company_code=?, "
-				+ "    division=?, "
-				+ "    division_id=?, "
-				+ "    employee_first_name=?, "
-				+ "    employee_last_name=?, "
-				+ "    employee_mi=?, "
-				+ "    dept_description=?, "
-				+ "    employee_status=?, "
-				+ "    employee_termination_date=?, "
-				+ "    notes=?, "
-				+ "    updated_by=?, "
-				+ "    updated_date=? "
+				+ "SET employee_code=?, \n"
+				+ "    company_code=?, \n"
+				+ "    division=?, \n"
+				+ "    division_id=?, \n"
+				+ "    employee_first_name=?, \n"
+				+ "    employee_last_name=?, \n "
+				+ "    employee_mi=?, \n"
+				+ "    dept_description=?, \n"
+				+ "    employee_status=?, \n"
+				+ "    employee_termination_date=?, \n"
+				+ "    notes=?, \n"
+				+ "    updated_by=?, \n"
+				+ "    updated_date=? \n"
 				+ "WHERE employee_code=?";
 		
-		logger.log(Level.DEBUG, sql);
-		logger.log(Level.DEBUG, StringUtils.trimToNull(employeeRequest.getLastName()));
-		logger.log(Level.DEBUG, StringUtils.trimToNull(employeeRequest.getMiddleInitial()));
-		logger.log(Level.DEBUG, StringUtils.trimToNull(employeeRequest.getDepartmentDescription()));
-		logger.log(Level.DEBUG, StringUtils.trimToNull(employeeRequest.getStatus()));
-		logger.log(Level.DEBUG, terminationDate);
-		logger.log(Level.DEBUG, employeeCode);
-		logger.log(Level.DEBUG, StringUtils.trimToNull(employeeRequest.getFirstName()));
-		logger.log(Level.DEBUG, StringUtils.trimToNull(employeeRequest.getCompanyCode()));
-		logger.log(Level.DEBUG, employeeRequest.getDivisionId());
-		logger.log(Level.DEBUG, String.valueOf(division.getDivisionNbr()));
-		logger.log(Level.DEBUG, StringUtils.trimToNull(employeeRequest.getNotes()));
-		logger.log(Level.DEBUG, userId);
-		logger.log(Level.DEBUG, updateTime);
-		logger.log(Level.DEBUG, employeeCode);
+		
 
 		PreparedStatement ps = conn.prepareStatement(sql);
 		int n = 1;
+		ps.setInt(n, employeeRequest.getEmployeeCode());
+		n++;
 		ps.setString(n, StringUtils.trimToNull(employeeRequest.getCompanyCode()));
 		n++;
 		ps.setString(n, String.valueOf(division.getDivisionNbr()));
@@ -234,13 +312,15 @@ public class EmployeeServlet extends AbstractServlet {
 //		n++;
 //		ps.setInt(n, employeeCode);
 
-		ps.executeUpdate();
+		ps.executeUpdate();		
 	}
 
 	private void populateEmployee(Connection conn, PayrollEmployee employee, EmployeeRequest employeeRequest, SessionUser sessionUser, Calendar today) throws Exception {
 		Division division = new Division();
 		division.setDivisionId(employeeRequest.getDivisionId());
 		division.selectOne(conn);
+		
+		boolean isUnionMember =  employeeRequest.getUnionMember() != null && employeeRequest.getUnionMember().intValue() == 1;
 		
 		employee.setCompanyCode(StringUtils.trimToNull(employeeRequest.getCompanyCode()));
 		employee.setDeptDescription(StringUtils.trimToNull(employeeRequest.getDepartmentDescription()));
@@ -256,7 +336,12 @@ public class EmployeeServlet extends AbstractServlet {
 		} else {
 			employee.setEmployeeTerminationDate(employeeRequest.getTerminationDate().getTime());
 		}
-		
+		employee.setUnionMember( isUnionMember ? 1 : 0 );
+		if ( isUnionMember ) {
+			employee.setUnionCode(employeeRequest.getUnionCode());
+			employee.setUnionRate(new BigDecimal(employeeRequest.getUnionRate()).round(MathContext.DECIMAL32));
+		}
+		employee.setProcessDate(employeeRequest.getProcessDate().getTime());
 		employee.setNotes(StringUtils.trimToNull(employeeRequest.getNotes()));
 		employee.setUpdatedBy(sessionUser.getUserId());
 		employee.setUpdatedDate(today.getTime());

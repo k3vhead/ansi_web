@@ -91,6 +91,7 @@
         			$("#employee-edit input").val("");
         			$("#employee-edit select").val("");
         			$("#employee-edit .err").html("");
+        			$("#employee-edit input[name='selectedEmployeeCode']").val($data.data.employee.employeeCode);
         			$("#employee-edit input[name='employeeCode']").val($data.data.employee.employeeCode);
         			$("#employee-edit select[name='companyCode']").val($data.data.employee.companyCode);
         			$("#employee-edit select[name='divisionId']").val($data.data.employee.divisionId);
@@ -100,6 +101,20 @@
         			$("#employee-edit input[name='departmentDescription']").val($data.data.employee.departmentDescription);
         			$("#employee-edit select[name='status']").val($data.data.employee.status);
         			$("#employee-edit input[name='terminationDate']").val($data.data.employee.terminationDate);
+        			if ( $data.data.employee.unionMember == 1 ) {
+        				$("#employee-edit input[name='unionMember']").prop("checked", true);
+        				$("#employee-edit .unionInput").prop('disabled',false);
+        			} else {
+        				$("#employee-edit input[name='unionMember']").prop("checked", false);
+        				$("#employee-edit .unionInput").prop('disabled',true);
+        			}
+        			$("#employee-edit input[name='unionCode']").val($data.data.employee.unionCode);
+        			if ( $data.data.employee.unionRate == null ) {
+        				$("#employee-edit input[name='unionRate']").val("");
+        			} else {
+        				$("#employee-edit input[name='unionRate']").val($data.data.employee.unionRate.toFixed(2));	
+        			}
+        			$("#employee-edit input[name='processDate']").val($data.data.employee.processDate);
         			$("#employee-edit input[name='notes']").val($data.data.employee.notes);
         			$("#employee-edit").dialog("open");
         		},
@@ -260,9 +275,22 @@
             			$("#employee-edit .employee-code").html("New")
             			$("#employee-edit").dialog("open");
         			});
+        			
+        			
+        			$("#employee-edit input[name='unionMember']").click(function($clickEvent) {
+        				if ( $("#employee-edit input[name='unionMember']").prop('checked') ) {
+        					$("#employee-edit .unionInput").prop('disabled',false);
+        				} else {
+        					$("#employee-edit .unionInput").prop('disabled',true);
+        				}
+        			});
         		},
         		
         		makeEmployeeTable : function() {
+        			var $yes = '<webthing:checkmark>Yes</webthing:checkmark>';
+        			var $no = '<webthing:ban>No</webthing:ban>';
+        			var $unknown = '<webthing:questionmark>Invalid</webthing:questionmark>';
+        			
         			$("#employeeLookup").DataTable( {
             			"aaSorting":		[[4,'asc'],[3,'asc']],
             			"processing": 		true,
@@ -292,9 +320,9 @@
             	        "columnDefs": [
              	            { "orderable": true, "targets": -1 },
              	            { className: "dt-head-center", "targets":[]},
-            	            { className: "dt-left", "targets": [0,1,2,3,4,5,6,7,8,9,10] },
-            	            { className: "dt-center", "targets": [] },
-            	            { className: "dt-right", "targets": []}
+            	            { className: "dt-left", "targets": [0,1,2,3,4,5,6,7,8,10,12] },
+            	            { className: "dt-center", "targets": [9,13] },
+            	            { className: "dt-right", "targets": [11]}
             	         ],
             	        "paging": true,
     			        "ajax": {
@@ -303,17 +331,44 @@
     			        	"data": {},
     			        	},
     			        columns: [
-    			        	{ title: "Employee Code", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' }, 
-    			        	{ title: "Company Code", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'company_code' }, 
-    			        	{ title: "Division", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'div' },
+    			        	{ title: "Employee Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' }, 
+    			        	{ title: "Company Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'company_code' }, 
+    			        	{ title: "Division", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'div' },
     			        	{ title: "First Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_first_name' },
     			        	{ title: "Last Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_last_name' },
-    			        	{ title: "MI", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_mi' },
+    			        	{ title: "MI", width:"5%", searchable:true, "defaultContent": "", data:'employee_mi' },
     			        	{ title: "Dept. Description", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'dept_description' },
     			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_status' },
-    			        	{ title: "Termination", width:"10%", searchable:true, "defaultContent": "", data:'formatted_date' },
-    			        	{ title: "Notes", width:"10%", searchable:true, "defaultContent": "", data:'notes' },
-    			            { title: "Action",  width:"10%", searchable:false,  
+    			        	{ title: "Termination", width:"10%", searchable:true, "defaultContent": "", data:'formatted_termination_date' },
+    			        	{ title: "Union", width:"5%", searchable:true, "defaultContent":$unknown,
+    			        		data:function(row, type, set) {
+    			        			var $value = $unknown;
+    			        			if ( row.union_member != null ) {
+    			        				if ( row.union_member == 1 ) {
+    			        					$value = $yes;
+    			        				}
+    			        				if ( row.union_member == 0 ) {
+    			        					$value = $no;
+    			        				}
+    			        			}
+    			        			return $value;
+    			        		}
+    			        	},
+    			        	{ title: "Union Code", width:"10%", searchable:true, "defaultContent": "", data:'union_code' },
+    			        	{ title: "Union Rate", width:"10%", searchable:true, "defaultContent":"",
+    			        		data:function(row, type, set) {
+    			        			var $value = "";
+    			        			if ( row.union_member == 1 ) {
+    			        				$value = $unknown;
+    			        				if ( row.union_rate != null ) {
+    			        					$value = "$" + row.union_rate.toFixed(2);
+    			        				}
+    			        			}
+    			        			return $value;
+    			        		}
+    			        	},
+    			        	{ title: "Notes", width:"10%", searchable:true, "defaultContent": "", data:'notes' },    			        	
+    			            { title: "Action",  width:"5%", searchable:false,  
     			            	data: function ( row, type, set ) { 
     			            		var $viewLink = '<span class="action-link view-link" data-id="'+row.employee_code+'"><webthing:view>Alias</webthing:view></span>';
     			            		var $editLink = '<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><span class="action-link edit-link" data-id="'+row.employee_code+'"><webthing:edit>Edit</webthing:edit></span></ansi:hasPermission>';
@@ -383,7 +438,7 @@
         			$( "#employee-edit" ).dialog({
         				title:'Edit Employee',
         				autoOpen: false,
-        				height: 500,
+        				height: 520,
         				width: 800,
         				modal: true,
         				closeOnEscape:true,
@@ -444,8 +499,14 @@
         		saveEmployee : function() {
         			console.log("saveEmployee");
         			$("#employee-edit .err").html("");
-					var $employeeCode = $("#employee-edit input[name='employeeCode']").val();					
+        			var $selectedEmployeeCode = $("#employee-edit input[name='selectedEmployeeCode']").val();
+        			var $unionMember = 0;
+        			if ( $("#employee-edit input[name='unionMember']").prop("checked") == true ) {
+        				$unionMember = 1; 
+        			} 
         			var $outbound = {
+       					'selectedEmployeeCode' : $("#employee-edit input[name='selectedEmployeeCode']").val(),
+        				'employeeCode' : $("#employee-edit input[name='employeeCode']").val(),
 	        			'companyCode' : $("#employee-edit select[name='companyCode']").val(),
 	        			'divisionId' : $("#employee-edit select[name='divisionId']").val(),
 	        			'firstName' : $("#employee-edit input[name='firstName']").val(),
@@ -453,12 +514,16 @@
 	        			'middleInitial' : $("#employee-edit input[name='middleInitial']").val(),
 	        			'departmentDescription' : $("#employee-edit input[name='departmentDescription']").val(),
 	        			'status' : $("#employee-edit select[name='status']").val(),
-	        			'terminationDate' : $("#employee-edit input[name='terminationDate']").val(),
+	        			'terminationDate' : $("#employee-edit input[name='terminationDate']").val(),	        			
+	        			'unionMember' : $unionMember,
+	        			'unionCode' : $("#employee-edit input[name='unionCode']").val(),
+	        			'unionRate' : $("#employee-edit input[name='unionRate']").val(),
+	        			'processDate' : $("#employee-edit input[name='processDate']").val(),
 	        			'notes' : $("#employee-edit input[name='notes']").val(),
         			}
         			var $url = "payroll/employee"
-        			if ( $employeeCode != null && $employeeCode != "") {
-        				$url = $url + "/" + $employeeCode
+        			if ( $selectedEmployeeCode != null && $selectedEmployeeCode != "") {
+        				$url = $url + "/" + $selectedEmployeeCode
         			}
         			ANSI_UTILS.makeServerCall("post", $url, JSON.stringify($outbound), {200:EMPLOYEELOOKUP.saveEmployeeSuccess}, {});
         		},
@@ -530,6 +595,7 @@
 					<td class="form-label">Employee Code:</td>
 					<td>
 						<input type="text" name="employeeCode" />
+						<input type="hidden" name="selectedEmployeeCode" />
 					</td>
 					<td><span class="err employeeCodeErr"></span></td>
 				</tr>
@@ -582,6 +648,26 @@
 					<td class="form-label">Termination Date:</td>
 					<td><input name="terminationDate" type="date" /></td>
 					<td><span class="err terminationDateErr"></span></td>
+				</tr>
+				<tr>
+					<td class="form-label">Union Member:</td>
+					<td><input name="unionMember" type="checkbox" value="1" /></td>
+					<td><span class="err unionMemberErr"></span></td>
+				</tr>
+				<tr>
+					<td class="form-label">Union Code:</td>
+					<td><input name="unionCode" class="unionInput" type="text" /></td>
+					<td><span class="err unionCodeErr"></span></td>
+				</tr>
+				<tr>
+					<td class="form-label">Union Rate:</td>
+					<td><input name="unionRate" style="height:12px;" class="unionInput" type="text"  placeholder="0.00"  /></td>
+					<td><span class="err unionRateErr"></span></td>
+				</tr>
+				<tr>
+					<td class="form-label">Process Date:</td>
+					<td><input name="processDate" type="date" /></td>
+					<td><span class="err processDateErr"></span></td>
 				</tr>
 				<tr>
 					<td class="form-label">Notes:</td>

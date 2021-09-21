@@ -24,9 +24,9 @@ public class EmployeeResponseRecord extends ApplicationObject {
 	private String departmentDescription;
 	private String status;
 	private Calendar terminationDate;
-	private String unionMember;
+	private Integer unionMember;
 	private String unionCode;
-	private String unionRate;
+	private Double unionRate;
 	private Calendar processDate;
 	private String notes;
 	
@@ -51,6 +51,11 @@ public class EmployeeResponseRecord extends ApplicationObject {
 			this.terminationDate = DateUtils.toCalendar(employee.getEmployeeTerminationDate());
 		}
 		this.notes = employee.getNotes();
+		this.unionMember = employee.getUnionMember() != null && employee.getUnionMember().intValue() == 1 ? 1 : 0;
+		this.unionCode = employee.getUnionCode();
+		this.unionRate = employee.getUnionRate() == null ? null : employee.getUnionRate().doubleValue();
+		this.processDate = DateUtils.toCalendar(employee.getProcessDate());
+		
 	}
 
 	public Integer getEmployeeCode() {
@@ -127,11 +132,11 @@ public class EmployeeResponseRecord extends ApplicationObject {
 		this.terminationDate = terminationDate;
 	}
 
-	public String getUnionMember() {
+	public Integer getUnionMember() {
 		return unionMember;
 	}
 
-	public void setUnionMember(String unionMember) {
+	public void setUnionMember(Integer unionMember) {
 		this.unionMember = unionMember;
 	}
 
@@ -143,11 +148,11 @@ public class EmployeeResponseRecord extends ApplicationObject {
 		this.unionCode = unionCode;
 	}
 
-	public String getUnionRate() {
+	public Double getUnionRate() {
 		return unionRate;
 	}
 
-	public void setUnionRate(String unionRate) {
+	public void setUnionRate(Double unionRate) {
 		this.unionRate = unionRate;
 	}
 

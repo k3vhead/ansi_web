@@ -28,7 +28,11 @@ public class EmployeeLookupQuery extends LookupQuery {
 			"	payroll_employee.dept_description,\n" + 
 			"	payroll_employee.employee_status,\n" + 
 			"	payroll_employee.employee_termination_date,\n" + 
-			"	payroll_employee.notes\n";
+			"	payroll_employee.notes, \n" +
+			"	payroll_employee.union_member, \n" +
+			"	payroll_employee.union_code, \n" +
+			"	payroll_employee.union_rate, \n" + 
+			"   payroll_employee.process_date \n";
 	private static final String sqlFromClause =
 			"from payroll_employee \n" +
 			"inner join division on division.division_id=payroll_employee.division_id\n";
