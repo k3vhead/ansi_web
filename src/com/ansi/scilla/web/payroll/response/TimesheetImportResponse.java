@@ -81,12 +81,12 @@ public class TimesheetImportResponse extends MessageResponse {
 			this.div = div;
 		}
 		
-		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="America/Chicago")
+		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public Calendar getPayrollDate() {
 			return payrollDate;
 		}
 		
-		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="America/Chicago")
+		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
 		public void setPayrollDate(Calendar payrollDate) {
 			this.payrollDate = payrollDate;
 		}
