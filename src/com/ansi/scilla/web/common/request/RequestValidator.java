@@ -308,6 +308,7 @@ public class RequestValidator {
 	}
 	
 	
+	
 	public static void validateDate(WebMessages webMessages, String fieldName, Date value, boolean required,
 			Date minValue, Date maxValue) {
 		if (value == null) {
@@ -327,6 +328,46 @@ public class RequestValidator {
 
 		}
 	}
+	
+	
+	/**
+	 * 
+	 * @param webMessages
+	 * @param fieldName
+	 * @param value
+	 * @param required
+	 * @param minValue
+	 * @param maxValue
+	 * @param dayOfWeek  eg. Calendar.FRIDAY
+	 */
+	public static void validateDay(WebMessages webMessages, String fieldName, Calendar value, boolean required,
+			Date minValue, Date maxValue, int dayOfWeek) {
+		final String[] dayString = new String[] {(String)null, "Sunday", "Monday","Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+		if (value == null) {
+			if (required) {
+				webMessages.addMessage(fieldName, "Required Value");
+			}
+		} else {
+			SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+			if (minValue != null && value.before(minValue)) {
+				String minLabel = format.format(minValue);
+				webMessages.addMessage(fieldName, "Date must be after " + minLabel);
+			}
+			if (maxValue != null && value.after(maxValue)) {
+				String maxLabel = format.format(maxValue);
+				webMessages.addMessage(fieldName, "Date must be before " + maxLabel);
+			}
+			if ( dayOfWeek < 1 || dayOfWeek > 7 ) {
+				webMessages.addMessage(fieldName, "Invalid day of week");
+			} else {
+				if ( value.get(Calendar.DAY_OF_WEEK) != dayOfWeek ) {
+					webMessages.addMessage(fieldName, "Must be " + dayString[dayOfWeek]);
+				}
+			}
+		}
+	}
+	
+	
 	
 	
 	public static void validateDivisionUser(Connection conn, WebMessages webMessages, Integer divisionId, String divisionField, Integer userId, String userField, boolean required) throws SQLException {
@@ -791,6 +832,22 @@ public class RequestValidator {
 				webMessages.addMessage(fieldName, invMessage);
 			} else {
 				// all is good -- go on with life
+			}
+		}
+		
+	}
+
+	public static void validateState(WebMessages webMessages, String fieldName, String value, boolean required, String label) {
+		String states="AL,AK,AZ,AR,CA,CO,CN,DE,FL,GA,HI,ID,IL,IN,IA,KS,KY,LA,ME,MD,MA,MI,MN,MS,MO,MO,NE,NV,NH,NJ,NM,NY,NC,ND,OH,OK,OR,PA,RI,SC,SD,TN,TX,UT,VT,VA,WA,WV,WI,WY";
+		if ( required ) {
+			if ( StringUtils.isBlank(value) ) {
+				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is required";
+				webMessages.addMessage(fieldName, message);
+			}
+		} else {
+			if ( ! states.contains(value) ) {
+				String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is invalid";
+				webMessages.addMessage(fieldName, message);
 			}
 		}
 		

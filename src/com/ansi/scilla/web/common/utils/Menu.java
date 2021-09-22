@@ -56,7 +56,7 @@ public enum Menu {
 	PAYROLL_EMPLOYEE_LOOKUP("Employee Lookup",   PAYROLL,    Permission.PAYROLL_READ,   "payrollEmployeeLookup.html"),
 	PAYROLL_TIMESHEET_LOOKUP("Timesheet Lookup", PAYROLL,    Permission.PAYROLL_READ,   "payrollTimesheetLookup.html"),
 	PAYROLL_EMPLOYEE_IMPORT("Employee Import",   PAYROLL,    Permission.PAYROLL_WRITE,  "payrollEmployeeImport.html"),
-	PAYROLL_WORKSHEET_IMPORT("Payroll Import",   PAYROLL,    Permission.PAYROLL_WRITE,  "payrollTimesheetImport.html"),
+	PAYROLL_WORKSHEET_IMPORT("Timesheet Import",   PAYROLL,    Permission.PAYROLL_WRITE,  "payrollTimesheetImport.html"),
 	PAYROLL_EXCEPTION_REPORT("Exception Report", PAYROLL,    Permission.PAYROLL_WRITE,  "payrollExceptionReport.html"),
 	PAYROLL_EXPORT("Payroll Export",             PAYROLL,    Permission.PAYROLL_WRITE,  "payrollExport.html"),
 	

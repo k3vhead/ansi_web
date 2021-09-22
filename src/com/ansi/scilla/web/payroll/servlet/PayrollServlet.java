@@ -23,7 +23,9 @@ public class PayrollServlet extends AbstractServlet {
 	public static final String EMPLOYEE = "employee";
 	public static final String EMPLOYEE_IMPORT = "employeeImport";
 	public static final String EMPLOYEE_LOOKUP = "employeeLookup";	
+	public static final String TIMESHEET_IMPORT = "timesheetImport";
 	public static final String TIMESHEET_LOOKUP = "timesheetLookup";
+	
 
 	private final Logger logger = LogManager.getLogger(PayrollServlet.class);
 
@@ -118,6 +120,9 @@ public class PayrollServlet extends AbstractServlet {
 			break;
 		case EMPLOYEE_IMPORT:
 			new EmployeeImportServlet().doPost(request, response);
+			break;
+		case TIMESHEET_IMPORT:
+			new TimesheetImportServlet().doPost(request, response);
 			break;
 		default:
 			super.sendNotFound(response);
