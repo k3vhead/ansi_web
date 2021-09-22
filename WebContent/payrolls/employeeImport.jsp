@@ -511,12 +511,44 @@
    <tiles:put name="content" type="string">
     	<h1>Payroll Employee Import</h1> 
 
-    	<div id="prompt-div">
-	    	Prompt for Division: <select name="divisionId"><option value="123">A State</option></select><br />
-	    	Prompt for file: <input type="file" id="employee-file" name="files[]" /><br />
-	    	<input type="button" value="Save" id="save-button" />
-    	</div>
-    	
+   
+	    	
+	    <table id="prompt-div">
+    		<tr>
+    			<td><span class="formLabel">Division: </span></td>
+    			<td><select name="divisionId">
+	    			<option value="123"></option>
+	    			<option value="123">0-AA00</option>
+	    			<option value="123">12-IL02</option>
+	    			<option value="123">15-IL05</option>
+	    			<option value="123">18-IL08</option>
+	    			<option value="123">19-IL09</option>
+	    			<option value="123">23-CH03</option>
+	    			<option value="123">31-IN01</option>
+	    			<option value="123">32-IN02</option>
+	    			<option value="123">33-IN03</option>
+	    			<option value="123">44-MO04</option>
+	    			<option value="123">65-OH05</option>
+	    			<option value="123">66-OH06</option>
+	    			<option value="123">67-OH07</option>
+	    			<option value="123">71-PA01</option>
+	    			<option value="123">72-PA02</option>    
+	    			<option value="123">77-CL07</option>
+	    			<option value="123">78-CL08</option>
+	    			<option value="123">81-TN01</option>    	
+	    			<option value="123">89-TN09</option>    	  	    		
+	    		</select><br /></td>
+    		</tr>
+    		<tr>
+    			<td><span class="formLabel">Import CSV File: </span></td>
+    			<td><input type="file" id="employee-file" name="files[]" /><br /></td>
+    		</tr>
+    		<tr>
+    			<td></td>
+    			<td><input type="button" value="Save" id="save-button" /></td>
+    		</tr>
+    	</table>
+	    	
     	
     	<div id="display-div">
     		output goes here
