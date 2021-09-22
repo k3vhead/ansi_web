@@ -540,7 +540,7 @@
 	    		</select><br /></td>
     		</tr>
     		<tr>
-    			<td><span class="formLabel">Import CSV File: </span></td>
+    			<td><span class="formLabel">Select CSV File: </span></td>
     			<td><input type="file" id="employee-file" name="files[]" /><br /></td>
     		</tr>
     		<tr>
