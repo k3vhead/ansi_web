@@ -26,7 +26,6 @@ import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.payroll.response.AliasResponse;
-import com.ansi.scilla.web.payroll.response.EmployeeResponse;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class AliasServlet extends AbstractServlet {
@@ -45,6 +44,7 @@ public class AliasServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
+			AppUtils.validateSession(request, Permission.CLAIMS_WRITE);
 			try {
 				String uri = request.getRequestURI();
 				String[] uriPath = uri.split("/");
@@ -64,6 +64,8 @@ public class AliasServlet extends AbstractServlet {
 			} finally {
 				conn.close();
 			}
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+			super.sendForbidden(response);
 		} catch ( Exception e) {
 			AppUtils.logException(e);
 			AppUtils.rollbackQuiet(conn);
@@ -80,6 +82,7 @@ public class AliasServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
+			AppUtils.validateSession(request, Permission.CLAIMS_READ);
 			try {
 				String uri = request.getRequestURI();
 				String[] uriPath = uri.split("/");
@@ -94,6 +97,8 @@ public class AliasServlet extends AbstractServlet {
 			} finally {
 				conn.close();
 			}
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+			super.sendForbidden(response);
 		} catch ( Exception e) {
 			AppUtils.logException(e);
 			AppUtils.rollbackQuiet(conn);

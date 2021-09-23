@@ -17,6 +17,11 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
+import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.web.exceptions.ExpiredLoginException;
+import com.ansi.scilla.web.exceptions.NotAllowedException;
+import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.payroll.common.EmployeeRecord;
 
 import au.com.bytecode.opencsv.CSVReader;
@@ -33,6 +38,7 @@ public class EmployeeImportServlet extends AbstractServlet {
 		logger.log(Level.DEBUG, "Employee Import post");
 
 		try {
+			AppUtils.validateSession(request, Permission.CLAIMS_WRITE);  //make sure we're allowed to do this
 			DiskFileItemFactory factory = new DiskFileItemFactory();		// this is a utility that we'll use to parse the input into objects
 			factory.setRepository(new File("/tmp"));						// that tell us everything we need to know. Somebody else has done
 			ServletFileUpload upload = new ServletFileUpload(factory);		// the work, so we don't need to recreate it.
@@ -60,6 +66,8 @@ public class EmployeeImportServlet extends AbstractServlet {
 					}
 				}
 			}
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+			super.sendForbidden(response);
 		} catch ( FileUploadException e ) {
 			throw new ServletException(e);
 		}

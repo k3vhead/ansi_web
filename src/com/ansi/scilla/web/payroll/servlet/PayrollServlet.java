@@ -25,6 +25,7 @@ public class PayrollServlet extends AbstractServlet {
 	public static final String EMPLOYEE_LOOKUP = "employeeLookup";	
 	public static final String TIMESHEET_IMPORT = "timesheetImport";
 	public static final String TIMESHEET_LOOKUP = "timesheetLookup";
+	public static final String EXCEPTION_REPORT = "exceptionReport";
 	
 
 	private final Logger logger = LogManager.getLogger(PayrollServlet.class);
@@ -57,6 +58,9 @@ public class PayrollServlet extends AbstractServlet {
 			break;
 		case EMPLOYEE_LOOKUP:
 			new EmployeeLookupServlet().doGet(request, response);
+			break;
+		case EXCEPTION_REPORT:
+			new ExceptionReportServlet().doGet(request, response);
 			break;
 		case TIMESHEET_LOOKUP:
 			new TimesheetLookupServlet().doGet(request, response);
@@ -120,7 +124,7 @@ public class PayrollServlet extends AbstractServlet {
 			break;
 		case EMPLOYEE_IMPORT:
 			new EmployeeImportServlet().doPost(request, response);
-			break;
+			break;		
 		case TIMESHEET_IMPORT:
 			new TimesheetImportServlet().doPost(request, response);
 			break;

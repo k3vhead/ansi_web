@@ -16,7 +16,12 @@ import org.apache.logging.log4j.Level;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
+import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.utils.AppUtils;
+import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.web.exceptions.ExpiredLoginException;
+import com.ansi.scilla.web.exceptions.NotAllowedException;
+import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.payroll.request.TimesheetImportRequest;
 import com.ansi.scilla.web.payroll.response.TimesheetImportResponse;
 
@@ -36,6 +41,7 @@ public class TimesheetImportServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
+			SessionData sessionData = AppUtils.validateSession(request, Permission.PAYROLL_WRITE);
 			TimesheetImportRequest uploadRequest = new TimesheetImportRequest(request);
 			ResponseCode responseCode = null;
 			WebMessages webMessages = uploadRequest.validate(conn);
@@ -50,40 +56,10 @@ public class TimesheetImportServlet extends AbstractServlet {
 			}
 
 			super.sendResponse(conn, response, responseCode, data);
-//			DiskFileItemFactory factory = new DiskFileItemFactory();		
-//			factory.setRepository(new File("/tmp"));						
-//			ServletFileUpload upload = new ServletFileUpload(factory);		
-//	
-//			@SuppressWarnings("unchecked")
-//			List<FileItem> formItems = upload.parseRequest(request);		
-//			if ( formItems != null && formItems.size() > 0 ) {				
-//				for ( FileItem item : formItems ) {							
-//					logger.log(Level.DEBUG, item.getFieldName());			
-//					if ( item.isFormField() ) {
-//						String value = item.getString();					
-//						logger.log(Level.DEBUG, value);						
-//					} else {
-//						logger.log(Level.DEBUG, item.getContentType());		
-//						logger.log(Level.DEBUG, item.getName());
-//						CSVReader reader = new CSVReader(new InputStreamReader(item.getInputStream()));		
-//						List<String[]> recordList = reader.readAll();										
-//						recordList.remove(0);								
-//						reader.close();
-//						
-//						for ( int i = 0; i < 5; i++ ) {						
-//							EmployeeRecord rec = new EmployeeRecord(recordList.get(i));
-//							logger.log(Level.DEBUG,rec);					
-//						}
-//					}
-//				}
-//			}
+
 			conn.close();
-		} catch ( FileUploadException e ) {
-			throw new ServletException(e);
-		} catch (NamingException e) {
-			throw new ServletException(e);
-		} catch (SQLException e) {
-			throw new ServletException(e);
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e) {
+			super.sendForbidden(response);	
 		} catch (Exception e) {
 			throw new ServletException(e);
 		}

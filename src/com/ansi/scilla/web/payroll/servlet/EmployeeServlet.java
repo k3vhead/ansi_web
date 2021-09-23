@@ -54,7 +54,8 @@ public class EmployeeServlet extends AbstractServlet {
 		try {
 			conn = AppUtils.getDBCPConn();
 			conn.setAutoCommit(false);
-			try {
+			AppUtils.validateSession(request, Permission.PAYROLL_READ);
+			try {				
 				String uri = request.getRequestURI();
 				String[] uriPath = uri.split("/");
 				Integer employeeCode = Integer.valueOf(uriPath[uriPath.length - 1]);
@@ -66,9 +67,10 @@ public class EmployeeServlet extends AbstractServlet {
 			} finally {
 				conn.close();
 			}
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+			super.sendForbidden(response);	
 		} catch ( Exception e) {
 			AppUtils.logException(e);
-			AppUtils.rollbackQuiet(conn);
 			throw new ServletException(e);
 		}
 	}
