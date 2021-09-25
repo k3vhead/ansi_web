@@ -2,10 +2,10 @@ package com.ansi.scilla.web.ticket.servlet;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URLEncoder;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -119,9 +119,13 @@ public class TicketDRVServlet extends AbstractServlet {
 	}
 
 	public void sendAsXLS(HttpServletResponse response, Integer month, Integer year, TicketDRVResponse ticketDRVResponse) throws IOException{
-		SimpleDateFormat fileNameDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		String fileNameDate = fileNameDateFormat.format(ticketDRVResponse.getRunDate());
-		String fileName = "DRV for Division " + ticketDRVResponse.getDivision().getDivisionNbr() + " for " + year + "-" + month + " as of " + fileNameDate + ".xlsx";
+		SimpleDateFormat runDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		String runDate = runDateFormat.format(ticketDRVResponse.getRunDate());
+		
+		SimpleDateFormat reportDateFormat = new SimpleDateFormat("yyyy-MM");
+		String reportDate = reportDateFormat.format((new GregorianCalendar(year, month, 1)).getTime());
+		
+		String fileName = "DRV for Division " + ticketDRVResponse.getDivision().getDivisionNbr() + " for " + reportDate + " as of " + runDate + ".xlsx";
 		fileName = fileName.replaceAll(" ","_");
 		
 		XSSFWorkbook workbook = ticketDRVResponse.toXLSX();
