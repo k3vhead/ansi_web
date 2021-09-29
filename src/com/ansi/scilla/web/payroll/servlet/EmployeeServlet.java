@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.common.AnsiTime;
 import com.ansi.scilla.common.db.Division;
+import com.ansi.scilla.common.db.EmployeeAlias;
 import com.ansi.scilla.common.db.PayrollEmployee;
 import com.ansi.scilla.common.payroll.EmployeeStatus;
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -42,9 +43,38 @@ public class EmployeeServlet extends AbstractServlet {
 	@Override
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		super.doDelete(request, response);
+		Connection conn = null;
+
+		try {
+			conn = AppUtils.getDBCPConn();
+			conn.setAutoCommit(false);
+			try {
+				String uri = request.getRequestURI();
+				String[] uriPath = uri.split("/");
+				Integer employeeCode = StringUtils.isNumeric(uriPath[uriPath.length - 1]) ? Integer.valueOf(uriPath[uriPath.length - 1]) : null;
+				Calendar today = Calendar.getInstance(new AnsiTime());
+				
+//				String jsonString = super.makeJsonString(request);
+//				logger.log(Level.DEBUG, jsonString);
+				SessionData sessionData = AppUtils.validateSession(request, Permission.PAYROLL_WRITE);
+//				EmployeeRequest employeeRequest = new EmployeeRequest();
+//				AppUtils.json2object(jsonString, employeeRequest);
+				
+				processDeleteRequest(conn, response, employeeCode);
+			} finally {
+				conn.close();
+			}
+		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+			super.sendForbidden(response);
+		} catch ( Exception e) {
+			AppUtils.logException(e);
+			AppUtils.rollbackQuiet(conn);
+			throw new ServletException(e);
+		}		
 	}
+	
+	
+	
 	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -113,6 +143,9 @@ public class EmployeeServlet extends AbstractServlet {
 		}
 	}
 
+	
+	
+	
 	private void processAddRequest(Connection conn, HttpServletResponse response, EmployeeRequest employeeRequest, SessionData sessionData, Calendar today) throws Exception {
 		ResponseCode responseCode = null;
 		EmployeeResponse data = new EmployeeResponse();
@@ -148,6 +181,34 @@ public class EmployeeServlet extends AbstractServlet {
 	}
 
 	
+	
+	private void processDeleteRequest(Connection conn, HttpServletResponse response, Integer employeeCode) throws Exception {
+		try {
+			EmployeeAlias alias = new EmployeeAlias();
+			alias.setEmployeeCode(employeeCode);
+			alias.delete(conn);
+		} catch ( RecordNotFoundException e ) {
+			// we don't care. It's a delete of something that doesn't exist
+		}
+		
+		try {
+			PayrollEmployee employee = new PayrollEmployee();
+			employee.setEmployeeCode(employeeCode);
+			employee.delete(conn);
+		} catch ( RecordNotFoundException e ) {
+			// we don't care. It's a delete of something that doesn't exist
+		}
+		
+		conn.commit();
+		
+		EmployeeResponse data = new EmployeeResponse();
+		data.setWebMessages(new WebMessages());
+		super.sendResponse(conn, response, ResponseCode.SUCCESS, data);	
+	}
+
+
+
+
 	private void doAdd(Connection conn, EmployeeRequest employeeRequest, SessionUser sessionUser, Calendar today) throws Exception {
 		PayrollEmployee employee = new PayrollEmployee();
 		

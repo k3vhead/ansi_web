@@ -13,7 +13,7 @@
 
 <%
 	String defaultValue = (String)jspContext.getAttribute("defaultValue");
-	String states="AL,AK,AZ,AR,CA,CO,CN,DE,FL,GA,HI,ID,IL,IN,IA,KS,KY,LA,ME,MD,MA,MI,MN,MS,MO,MO,NE,NV,NH,NJ,NM,NY,NC,ND,OH,OK,OR,PA,RI,SC,SD,TN,TX,UT,VT,VA,WA,WV,WI,WY";
+	String states="AL,AK,AZ,AR,CA,CO,DE,FL,GA,HI,ID,IL,IN,IA,KS,KY,LA,ME,MD,MA,MI,MN,MS,MO,MO,NE,NV,NH,NJ,NM,NY,NC,ND,OH,OK,OR,PA,RI,SC,SD,TN,TX,UT,VT,VA,WA,WV,WI,WY";
 	 for ( String state : states.split(",") ) { 
 		 String selectedString = defaultValue != null && defaultValue.equalsIgnoreCase(state) ? "selected=\"selected\"" : "";
 %>

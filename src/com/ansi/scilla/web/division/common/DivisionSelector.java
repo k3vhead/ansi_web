@@ -26,7 +26,7 @@ public class DivisionSelector extends ApplicationObject {
 	
 	private List<DivisionSelectorItem> divisionList;
 	
-	private DivisionSelector(Connection conn) throws SQLException {
+	public DivisionSelector(Connection conn) throws SQLException {
 		super();
 		Statement s = conn.createStatement();
 		ResultSet rs = s.executeQuery("select division_id, concat(division_nbr, '-', division_code) as div, division_status from division order by div" );
@@ -53,15 +53,15 @@ public class DivisionSelector extends ApplicationObject {
 	}
 
 	
-	public static DivisionSelector getInstance(Connection conn) throws SQLException {
-		if ( instance == null ) {
-			// this makes this object thread-safe, more efficiently than "public static synchronized DivisionSelector ..."
-			synchronized (DivisionSelector.class) { 
-				instance = new DivisionSelector(conn);
-			}
-		}
-		return instance;
-	}
+//	public static DivisionSelector getInstance(Connection conn) throws SQLException {
+//		if ( instance == null ) {
+//			// this makes this object thread-safe, more efficiently than "public static synchronized DivisionSelector ..."
+//			synchronized (DivisionSelector.class) { 
+//				instance = new DivisionSelector(conn);
+//			}
+//		}
+//		return instance;
+//	}
 	
 	
 }

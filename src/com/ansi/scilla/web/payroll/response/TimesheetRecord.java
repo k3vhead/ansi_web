@@ -6,6 +6,29 @@ public class TimesheetRecord extends ApplicationObject {
 
 	private static final long serialVersionUID = 1L;
 
+	public static final String CITY = "city";
+	public static final String DIRECT_LABOR = "directLabor";
+	public static final String DIVISION_ID = "divisionId";
+	public static final String EMPLOYEE_CODE = "employeeCode";
+	public static final String EMPLOYEE_NAME = "employeeName";
+	public static final String EXPENSES = "expenses";
+	public static final String EXPENSES_ALLOWED = "expensesAllowed";
+	public static final String EXPENSES_SUBMITTED = "expensesSubmitted";
+	public static final String GROSS_PAY = "grossPay";
+	public static final String HOLIDAY_HOURS = "holidayHours";
+	public static final String HOLIDAY_PAY = "holidayPay";
+	public static final String OT_HOURS = "otHours";
+	public static final String OT_PAY = "otPay";
+	public static final String PAYROLL_WORKSHEETCOL = "payrollWorksheetcol";
+	public static final String PRODUCTIVITY = "productivity";
+	public static final String REGULAR_HOURS = "regularHours";
+	public static final String REGULAR_PAY = "regularPay";
+	public static final String STATE = "state";
+	public static final String VACATION_HOURS = "vacationHours";
+	public static final String VACATION_PAY = "vacationPay";
+	public static final String VOLUME = "volume";
+	public static final String WEEK_ENDING = "weekEnding";
+	
 	private String row;
 	private String employeeName;
 	private String expenses;
@@ -16,7 +39,7 @@ public class TimesheetRecord extends ApplicationObject {
 	private String holidayPay;
 	private String otHours;
 	private String otPay;
-	private String payrollWorksheetcol;
+	private String directLabor;
 	private String productivity;
 	private String regularHours;
 	private String regularPay;
@@ -24,6 +47,11 @@ public class TimesheetRecord extends ApplicationObject {
 	private String vacationHours;
 	private String vacationPay;
 	private String volume;
+	private Boolean errorsFound;
+	
+	public TimesheetRecord() {
+		super();
+	}
 	
 	public String getRow() {
 		return row;
@@ -84,12 +112,12 @@ public class TimesheetRecord extends ApplicationObject {
 	}
 	public void setOtPay(String otPay) {
 		this.otPay = otPay;
+	}	
+	public String getDirectLabor() {
+		return directLabor;
 	}
-	public String getPayrollWorksheetcol() {
-		return payrollWorksheetcol;
-	}
-	public void setPayrollWorksheetcol(String payrollWorksheetcol) {
-		this.payrollWorksheetcol = payrollWorksheetcol;
+	public void setDirectLabor(String directLabor) {
+		this.directLabor = directLabor;
 	}
 	public String getProductivity() {
 		return productivity;
@@ -134,5 +162,13 @@ public class TimesheetRecord extends ApplicationObject {
 		this.volume = volume;
 	}
 
+	public Boolean getErrorsFound() {
+		return errorsFound;
+	}
+
+	public void setErrorsFound(Boolean errorsFound) {
+		this.errorsFound = errorsFound;
+	}
+	
 	
 }

@@ -65,6 +65,9 @@
 			.dataTables_wrapper {
 				padding-top:10px;
 			}	
+			.details-control {
+				cursor:pointer;
+			}
 			.form-label {
 				font-weight:bold;
 			}
@@ -81,11 +84,75 @@
         
        	$(document).ready(function(){
            	;TIMESHEET_IMPORT = {
+           		statusIsGood : '<webthing:checkmark>No Errors</webthing:checkmark>',
+           		statusIsBad : '<webthing:ban>Error</webthing:ban>',
+           		saveButton : '<webthing:save>Save</webthing:save>',
+           		view : '<webthing:view styleClass="details-control">Details</webthing:view>',
+           			
+           			
            		init : function() {
            			TIMESHEET_IMPORT.makeClickers();            			
            		},
            	
            	
+           		
+           		formatDetail : function(row) {
+           			console.log("formatDetail");
+           			var $table = $("<table>");
+           			$table.attr("style","width:100%;");
+           			
+           			$expenseRow = $("<tr>");
+           			$expenseRow.append( $('<td>') );
+           			$expenseRow.append( $("<td>") );
+           			$expenseRow.append( $("<td>") );
+           			$expenseRow.append( $("<td>").append("Expenses"));
+           			$expenseRow.append( $("<td>").append(row.expenses));
+           			$expenseRow.append( $("<td>") );
+           			$expenseRow.append( $("<td>").append(TIMESHEET_IMPORT.statusIsGood));           			
+           			$table.append($expenseRow);
+           			
+           			$otRow = $("<tr>");
+           			$expenseRow.append( $('<td>') );
+           			$otRow.append( $("<td>") );
+           			$otRow.append( $("<td>") );
+           			$otRow.append( $("<td>").append("OT Hours | Pay"));
+           			$otRow.append( $("<td>").append(row.otHours));
+           			$otRow.append( $("<td>").append(row.otPay));
+           			$otRow.append( $("<td>").append(TIMESHEET_IMPORT.statusIsGood));           			
+           			$table.append($otRow);
+           			
+           			$vacactionRow = $("<tr>");
+           			$expenseRow.append( $('<td>').append("&nbsp;") );
+           			$vacactionRow.append( $("<td>") );
+           			$vacactionRow.append( $("<td>") );
+           			$vacactionRow.append( $("<td>").append("Vacation Hours | Pay"));
+           			$vacactionRow.append( $("<td>").append(row.vacationHours));
+           			$vacactionRow.append( $("<td>").append(row.vacationPay));
+           			$vacactionRow.append( $("<td>").append(TIMESHEET_IMPORT.statusIsBad));           			
+           			$table.append($vacactionRow);
+
+						
+           			return $table;
+
+           			
+   					//{ title : "Expenses", "defaultContent": "", data:'expenses' },
+   					//{ title : "OT Hours", "defaultContent": "", data:'otHours' },
+   					//{ title : "OT Pay", "defaultContent": "", data:'otPay' },
+   					//{ title : "Vacation Hours", "defaultContent": "", data:'vacationHours' },
+   					//{ title : "Vacation Pay", "defaultContent": "", data:'vacationPay' },
+   					//{ title : "Holiday Hours", "defaultContent": "", data:'holidayHours' },
+   					//{ title : "Holiday Pay", "defaultContent": "", data:'holidayPay' },
+   					//{ title : "Gross Pay", "defaultContent": "", data:'grossPay' },
+   					//{ title : "Expenses Submitted", "defaultContent": "", data:'expensesSubmitted' },
+   					//{ title : "Expenses Allowed", "defaultContent": "", data:'expensesAllowed' },
+   					//{ title : "Volume", "defaultContent": "", data:'volume' },
+   					//{ title : "Direct Labor", "defaultContent": "", data:'directLabor' },
+   					//{ title : "Productivity", "defaultContent": "", data:'productivity' },
+
+           		},
+           		
+           		
+           		
            		makeClickers : function() {
            			$("#save-button").click(function($event) {
            				$("#prompt-div .err").html("");
@@ -132,6 +199,60 @@
            			$("#display-div .state").html($data.data.request.state);
            			$("#display-div .city").html($data.data.request.city);
            			$("#display-div .timesheetFile").html($data.data.request.timesheetFile);
+           			
+           			
+           			
+           			var $table = $("#timesheet").DataTable({
+           				aaSorting : [[0,'asc']],
+            			processing : true,
+           				data : $data.data.employeeRecordList,
+           				searching : true,
+            	        searchDelay : 800,
+           				columnDefs : [
+             	            { orderable : true, "targets": -1 },
+             	            //{ className : "dt-head-center", "targets":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]},
+            	            //{ className : "dt-left", "targets": [1] },
+            	            //{ className : "dt-center", "targets": [0,17] },
+            	            //{ className : "dt-right", "targets": [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]}
+            	         ],
+           				columns : [
+           					{ title : "Row", "defaultContent": "", data:'row' },
+           					{ title : "Employee Name", "defaultContent": "", data:'employeeName' },
+           					{ title : "Status", "defaultContent":"", 
+           						data : function(row, type, set) {
+									var $tag = TIMESHEET_IMPORT.statusIsGood;          							
+           							if ( row.errorsFound == true ) { $tag = TIMESHEET_IMPORT.statusIsBad; }
+           							return $tag;
+           						}
+           					},
+           					{ title : "Regular Hours", "defaultContent": "", data:'regularHours' },
+           					{ title : "Regular Pay", "defaultContent": "", data:'regularPay' },
+           					{ title : "Messages", "defaultContent" : "" },
+           					{ title : "Action", 
+    			            	data: function ( row, type, set ) { 
+    			            		//var $editLink = '<span class="action-link edit-link" data-id="'+row.employee_code+'" data-name="'+row.employee_name+'"><webthing:edit>Edit</webthing:edit></span>';
+    			            		//var $deleteLink = '<span class="action-link delete-link" data-id="'+row.employee_code+'" data-name="'+row.employee_name+'"><webthing:delete>Delete</webthing:delete></span>';
+    			            		return TIMESHEET_IMPORT.view + TIMESHEET_IMPORT.saveButton;
+    			            	} },
+           				],
+           				drawCallback : function( settings ) {
+           					$(".details-control").off("click");
+           					$(".details-control").on("click", function() {
+           						console.log("Expand stuff");
+           						var tr = $(this).closest('tr');
+           						var row = $table.row(tr);
+           						if ( row.child.isShown() ) {
+           							console.log("isShown if");
+           							row.child.hide();
+           							tr.removeClass("shown");
+           						} else {
+           							console.log("isShown else");
+           							row.child( TIMESHEET_IMPORT.formatDetail(row.data()) ).show();
+           							tr.addClass('shown');
+           						}
+           					});
+           				}
+           			});
            		},
            		
            		
@@ -252,6 +373,8 @@
     			
     		</table>
 			
+			<table id="timesheet">
+			</table>
 		</div>
     </tiles:put>
 		
