@@ -49,7 +49,7 @@ public class SelectPayrollCompany extends BodyTagSupport {
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDBCPConn();
-			List<DivisionGroupSelectorItem> companyList = CompanySelector.getInstance(conn).getGroupList();
+			List<DivisionGroupSelectorItem> companyList = new CompanySelector(conn).getGroupList();
 			List<String> options = new ArrayList<String>();
 			for ( DivisionGroupSelectorItem item : companyList ) {
 				if ( ! StringUtils.isBlank(item.getCompanyCode())) {

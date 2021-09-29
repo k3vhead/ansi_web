@@ -127,7 +127,11 @@
         				var $employeeCode = $("#confirm-save").attr("data-id");
         				var $aliasName = $("#confirm-save").attr("data-name");
         				var $url = "payroll/alias/" + $employeeCode + "/" + $aliasName;
-        				ANSI_UTILS.makeServerCall("DELETE", $url, {}, {200:EMPLOYEELOOKUP.doConfirmSuccess}, {});
+        				ANSI_UTILS.makeServerCall("DELETE", $url, {}, {200:EMPLOYEELOOKUP.doConfirmAliasSuccess}, {});
+        			} else if ( $function == "deleteEmployee") {
+        				var $employeeCode = $("#confirm-save").attr("data-id");
+        				var $url = "payroll/employee/" + $employeeCode;
+        				ANSI_UTILS.makeServerCall("DELETE", $url, {}, {200:EMPLOYEELOOKUP.doConfirmEmployeeSuccess}, {});
         			} else {
         				$("#confirm-modal").dialog("close");
         				console.log("Function: " + $function);
@@ -137,10 +141,18 @@
         		
         		
         		
-        		doConfirmSuccess : function($data, $passthru) {
+        		doConfirmAliasSuccess : function($data, $passthru) {
         			$("#alias-lookup").DataTable().ajax.reload();
         			$("#confirm-modal").dialog("close");
         			$("#alias-display .alias-message").html("Success").show().fadeOut(3000);
+        		},
+        		
+        		
+        		
+        		doConfirmEmployeeSuccess : function($data, $passthru) {
+        			$("#employeeLookup").DataTable().ajax.reload();
+        			$("#confirm-modal").dialog("close");
+        			$("#globalMsg").html("Success").show().fadeOut(3000);
         		},
         		
         		
@@ -372,7 +384,11 @@
     			            	data: function ( row, type, set ) { 
     			            		var $viewLink = '<span class="action-link view-link" data-id="'+row.employee_code+'"><webthing:view>Alias</webthing:view></span>';
     			            		var $editLink = '<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><span class="action-link edit-link" data-id="'+row.employee_code+'"><webthing:edit>Edit</webthing:edit></span></ansi:hasPermission>';
-    			            		var $actionLink = $viewLink + $editLink;
+    			            		var $deleteLink = '';
+    			            		if ( row.timesheet_count == 0 ) {
+    			            			$deleteLink = '<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><span class="action-link delete-link" data-id="'+row.employee_code+'"><webthing:delete>Delete</webthing:delete></span></ansi:hasPermission>';
+    			            		}
+    			            		var $actionLink = $viewLink + $editLink + $deleteLink;
     			            		return $actionLink;
     			            	}
     			            },
@@ -384,6 +400,7 @@
     			            "drawCallback": function( settings ) {
     			            	$(".view-link").off("click");
     			            	$(".edit-link").off("click");
+    			            	$(".delete-link").off("click");
     			            	$(".view-link").click(function($clickevent) {
     			            		var $employeeCode = $(this).attr("data-id");
     			            		console.log("employee code: " + $employeeCode);
@@ -397,6 +414,14 @@
     			            				200:EMPLOYEELOOKUP.displayEmployeeModal
     			            			};
     			            		ANSI_UTILS.makeServerCall("GET", $url, {}, $callbacks, {});
+    			            	});
+    			            	$(".delete-link").click(function($clickevent) {
+    			            		var $employeeCode = $(this).attr("data-id");
+    			            		console.log("employee code: " + $employeeCode);
+    			            		$("#confirm-save").attr("data-function","deleteEmployee");
+    			            		$("#confirm-save").attr("data-id",$employeeCode);
+    			            		$("#confirm-save").attr("data-name",null);
+									$("#confirm-modal").dialog("open");
     			            	});
     			            }
     			    } );

@@ -32,10 +32,13 @@ public class EmployeeLookupQuery extends LookupQuery {
 			"	payroll_employee.union_member, \n" +
 			"	payroll_employee.union_code, \n" +
 			"	payroll_employee.union_rate, \n" + 
-			"   payroll_employee.process_date \n";
+			"   payroll_employee.process_date, \n" +
+	        "   isnull(timesheet.record_count, 0) as timesheet_count \n";
 	private static final String sqlFromClause =
 			"from payroll_employee \n" +
-			"inner join division on division.division_id=payroll_employee.division_id\n";
+			"inner join division on division.division_id=payroll_employee.division_id\n" +
+			"left outer join (select employee_code, count(*) as record_count from payroll_worksheet group by employee_code) as timesheet \n" + 
+			"	on timesheet.employee_code=payroll_employee.employee_code";
 	private static final String sqlWhereClause = "";
 			
 	

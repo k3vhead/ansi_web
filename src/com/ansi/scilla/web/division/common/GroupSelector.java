@@ -10,17 +10,17 @@ public class GroupSelector extends OrganizationSelector {
 
 	protected static GroupSelector instance;
 	
-	private GroupSelector(Connection conn) throws SQLException {
+	public GroupSelector(Connection conn) throws SQLException {
 		super(conn, OrganizationType.GROUP);
 	}
 	
-	public static GroupSelector getInstance(Connection conn) throws SQLException {
-		if ( instance == null ) {
-			// this makes this object thread-safe, more efficiently than "public static synchronized DivisionSelector ..."
-			synchronized (GroupSelector.class) { 
-				instance = new GroupSelector(conn);
-			}
-		}
-		return instance;
-	}
+//	public static GroupSelector getInstance(Connection conn) throws SQLException {
+//		if ( instance == null ) {
+//			// this makes this object thread-safe, more efficiently than "public static synchronized DivisionSelector ..."
+//			synchronized (GroupSelector.class) { 
+//				instance = new GroupSelector(conn);
+//			}
+//		}
+//		return instance;
+//	}
 }

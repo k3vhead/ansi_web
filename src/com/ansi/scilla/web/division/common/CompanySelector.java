@@ -10,17 +10,17 @@ public class CompanySelector extends OrganizationSelector {
 
 	protected static CompanySelector instance;
 	
-	private CompanySelector(Connection conn) throws SQLException {
+	public CompanySelector(Connection conn) throws SQLException {
 		super(conn, OrganizationType.COMPANY);
 	}
 	
-	public static CompanySelector getInstance(Connection conn) throws SQLException {
-		if ( instance == null ) {
-			// this makes this object thread-safe, more efficiently than "public static synchronized DivisionSelector ..."
-			synchronized (CompanySelector.class) { 
-				instance = new CompanySelector(conn);
-			}
-		}
-		return instance;
-	}
+//	public static CompanySelector getInstance(Connection conn) throws SQLException {
+//		if ( instance == null ) {
+//			// this makes this object thread-safe, more efficiently than "public static synchronized DivisionSelector ..."
+//			synchronized (CompanySelector.class) { 
+//				instance = new CompanySelector(conn);
+//			}
+//		}
+//		return instance;
+//	}
 }

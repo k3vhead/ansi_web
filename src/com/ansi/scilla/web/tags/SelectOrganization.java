@@ -65,16 +65,16 @@ public class SelectOrganization extends BodyTagSupport {
 		String optionString = null;
 		switch ( this.type.toUpperCase() ) {
 		case "DIVISION":
-			optionString = DivisionSelector.getInstance(conn).makeHtml(activeOnly);
+			optionString = new DivisionSelector(conn).makeHtml(activeOnly);
 			break;
 		case "COMPANY":
-			optionString = CompanySelector.getInstance(conn).makeHtml(activeOnly);
+			optionString = new CompanySelector(conn).makeHtml(activeOnly);
 			break;
 		case "REGION":
-			optionString = RegionSelector.getInstance(conn).makeHtml(activeOnly);
+			optionString = new RegionSelector(conn).makeHtml(activeOnly);
 			break;
 		case "GROUP":
-			optionString = GroupSelector.getInstance(conn).makeHtml(activeOnly);
+			optionString = new GroupSelector(conn).makeHtml(activeOnly);
 			break;
 		default:
 			throw new JspException("Invalid type");

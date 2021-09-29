@@ -37,6 +37,14 @@ $( document ).ready(function() {
 							$method($data, $passThruData);
 						}
 					},
+					405: function($data) {
+						$method = $callbacks[404];
+						if ( $method == null ) {
+							$("#globalMsg").html("Action Not Permitted").show().fadeOut(5000);
+						} else {
+							$method($data, $passThruData);
+						}
+					},
 					500: function($data) {
 						$method = $callbacks[500];
 						if ( $method == null ) {

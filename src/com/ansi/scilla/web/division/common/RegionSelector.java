@@ -10,17 +10,17 @@ public class RegionSelector extends OrganizationSelector {
 
 	protected static RegionSelector instance;
 	
-	private RegionSelector(Connection conn) throws SQLException {
+	public RegionSelector(Connection conn) throws SQLException {
 		super(conn, OrganizationType.REGION);
 	}
 	
-	public static RegionSelector getInstance(Connection conn) throws SQLException {
-		if ( instance == null ) {
-			// this makes this object thread-safe, more efficiently than "public static synchronized DivisionSelector ..."
-			synchronized (RegionSelector.class) { 
-				instance = new RegionSelector(conn);
-			}
-		}
-		return instance;
-	}
+//	public static RegionSelector getInstance(Connection conn) throws SQLException {
+//		if ( instance == null ) {
+//			// this makes this object thread-safe, more efficiently than "public static synchronized DivisionSelector ..."
+//			synchronized (RegionSelector.class) { 
+//				instance = new RegionSelector(conn);
+//			}
+//		}
+//		return instance;
+//	}
 }
