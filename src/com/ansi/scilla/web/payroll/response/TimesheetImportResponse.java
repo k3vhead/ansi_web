@@ -1,5 +1,6 @@
 package com.ansi.scilla.web.payroll.response;
 
+import java.io.InputStream;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +36,10 @@ public class TimesheetImportResponse extends MessageResponse {
 		} );
 	}
 
+	public TimesheetImportResponse(Connection conn, InputStream timesheetFile) {
+		this();
+		
+	}
 
 	public RequestDisplay getRequest() {
 		return request;

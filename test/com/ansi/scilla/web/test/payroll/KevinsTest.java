@@ -1,6 +1,9 @@
 package com.ansi.scilla.web.test.payroll;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,8 +21,8 @@ public class KevinsTest{
 	//private final String filePath1 = "test/com/ansi/scilla/web/test/payroll/data/1/extracted/Payroll 77 09.24.2021/content.xml";
 	private final String odsFilePath1 = "test/com/ansi/scilla/web/test/payroll/data/1/ods/Payroll 77 09.24.2021.ods";
 
-	public enum wpr_cols{
-		EmployeeRow  	("B")		
+	public enum WprCols{
+		EMPLOYEE_ROW  	("B")		
 		,EmployeeName 	("D")
 		,RegularHours 	("F")
 		,RegularPay		("H")
@@ -40,26 +43,25 @@ public class KevinsTest{
 		,OM_Name		("O3")
 		,WeekEnding		("X3");
 		
-		private final String text;	
+		private final String cellLocation;	
 		 /**
-	     * @param text
+	     * @param cellLocation
 	     */
-		wpr_cols(final String text) {
-	        this.text = text;
+		private WprCols(final String cellLocation) {
+	        this.cellLocation = cellLocation;
 	    }
 
-	    /* (non-Javadoc)
-	     * @see java.lang.Enum#toString()
-	     */
-	    @Override
-	    public String toString() {
-	        return text;
-	    }
+		public String cellLocation() {
+			return this.cellLocation;
+		}
+	   
 	}
 
 	public void go() throws Exception {
 		File odsFile = new File(odsFilePath1);
-		SpreadsheetDocument oDoc = SpreadsheetDocument.loadDocument(odsFile);
+//		SpreadsheetDocument oDoc = SpreadsheetDocument.loadDocument(odsFile);
+		InputStream inputStream = new FileInputStream(odsFile);
+		SpreadsheetDocument oDoc = SpreadsheetDocument.loadDocument(inputStream);
 		
 		List<Table> oTables = oDoc.getTableList();
 				
@@ -74,36 +76,36 @@ public class KevinsTest{
 		Table summary_tab = oTables.get(2);
 
 		/* debug msgs */
-		System.out.println("Divsion - " + smry.getCellByPosition("L3").getDisplayText());
-		System.out.println("OM Name - " + smry.getCellByPosition("O3").getDisplayText());
-		System.out.println("Week Ending - " + smry.getCellByPosition("X3").getDisplayText());
+		System.out.println("Divsion - " + summary_tab.getCellByPosition("L3").getDisplayText());
+		System.out.println("OM Name - " + summary_tab.getCellByPosition("O3").getDisplayText());
+		System.out.println("Week Ending - " + summary_tab.getCellByPosition("X3").getDisplayText());
 		/* debug msgs */
 		
 		List<TimesheetRecord> oTimesheetSummaryRows = new ArrayList<TimesheetRecord>();
 		
-		String CellAddr="";
+		String cellAddr="";
 		for(Integer sdRow=6; sdRow<39;sdRow++) {
-			TimesheetRecord TimeRecRow = new TimesheetRecord();
+			TimesheetRecord timeRecRow = new TimesheetRecord();
 
-			TimeRecRow.setEmployeeName(summary_tab.getCellByPosition		(wpr_cols.EmployeeName	+ sdRow.toString()).getDisplayText());
-			TimeRecRow.setDirectLabor(summary_tab.getCellByPosition			(wpr_cols.DL			+ sdRow.toString()).getDisplayText());
-			TimeRecRow.setExpenses(summary_tab.getCellByPosition			(wpr_cols.Expenses		+ sdRow.toString()).getDisplayText());
-			TimeRecRow.setExpensesAllowed(summary_tab.getCellByPosition		(wpr_cols.ExpAllowed	+ sdRow.toString()).getDisplayText());
-			TimeRecRow.setExpensesSubmitted(summary_tab.getCellByPosition	(wpr_cols.ExpSubmitted	+ sdRow.toString()).getDisplayText());
-			TimeRecRow.setGrossPay(summary_tab.getCellByPosition			(wpr_cols.GrossPay		+ sdRow.toString()).getDisplayText());
-			TimeRecRow.setHolidayHours(summary_tab.getCellByPosition		(wpr_cols.HolPay		+ sdRow.toString()).getDisplayText());
-			TimeRecRow.setHolidayPay(summary_tab.getCellByPosition			(wpr_cols.OTPay			+ sdRow.toString()).getDisplayText());
-			TimeRecRow.setOtHours(summary_tab.getCellByPosition				(wpr_cols.OTHours		+ sdRow.toString()).getDisplayText());
-			TimeRecRow.setOtPay(summary_tab.getCellByPosition				(wpr_cols.OTPay			+ sdRow.toString()).getDisplayText());
-			TimeRecRow.setProductivity(summary_tab.getCellByPosition		(wpr_cols.Prod 			+ sdRow.toString()).getDisplayText());
-			TimeRecRow.setRegularHours(summary_tab.getCellByPosition		(wpr_cols.RegularHours	+ sdRow.toString()).getDisplayText());
-			TimeRecRow.setRegularPay(summary_tab.getCellByPosition			(wpr_cols.RegularPay	+ sdRow.toString()).getDisplayText());
+			timeRecRow.setEmployeeName(summary_tab.getCellByPosition		(WprCols.EmployeeName	+ sdRow.toString()).getDisplayText());
+			timeRecRow.setDirectLabor(summary_tab.getCellByPosition			(WprCols.DL			+ sdRow.toString()).getDisplayText());
+			timeRecRow.setExpenses(summary_tab.getCellByPosition			(WprCols.Expenses		+ sdRow.toString()).getDisplayText());
+			timeRecRow.setExpensesAllowed(summary_tab.getCellByPosition		(WprCols.ExpAllowed	+ sdRow.toString()).getDisplayText());
+			timeRecRow.setExpensesSubmitted(summary_tab.getCellByPosition	(WprCols.ExpSubmitted	+ sdRow.toString()).getDisplayText());
+			timeRecRow.setGrossPay(summary_tab.getCellByPosition			(WprCols.GrossPay		+ sdRow.toString()).getDisplayText());
+			timeRecRow.setHolidayHours(summary_tab.getCellByPosition		(WprCols.HolPay		+ sdRow.toString()).getDisplayText());
+			timeRecRow.setHolidayPay(summary_tab.getCellByPosition			(WprCols.OTPay			+ sdRow.toString()).getDisplayText());
+			timeRecRow.setOtHours(summary_tab.getCellByPosition				(WprCols.OTHours		+ sdRow.toString()).getDisplayText());
+			timeRecRow.setOtPay(summary_tab.getCellByPosition				(WprCols.OTPay			+ sdRow.toString()).getDisplayText());
+			timeRecRow.setProductivity(summary_tab.getCellByPosition		(WprCols.Prod 			+ sdRow.toString()).getDisplayText());
+			timeRecRow.setRegularHours(summary_tab.getCellByPosition		(WprCols.RegularHours	+ sdRow.toString()).getDisplayText());
+			timeRecRow.setRegularPay(summary_tab.getCellByPosition			(WprCols.RegularPay	+ sdRow.toString()).getDisplayText());
 			//TimeRecRow.setState(smry.getCellByPosition					(wpr_cols.EmployeeName+sdRow.toString()).getDisplayText());
-			TimeRecRow.setVacationHours(summary_tab.getCellByPosition		(wpr_cols.VacHours		+ sdRow.toString()).getDisplayText());
-			TimeRecRow.setVacationPay(summary_tab.getCellByPosition			(wpr_cols.VacPay		+ sdRow.toString()).getDisplayText());
-			TimeRecRow.setVolume(summary_tab.getCellByPosition				(wpr_cols.Volume		+ sdRow.toString()).getDisplayText());
+			timeRecRow.setVacationHours(summary_tab.getCellByPosition		(WprCols.VacHours		+ sdRow.toString()).getDisplayText());
+			timeRecRow.setVacationPay(summary_tab.getCellByPosition			(WprCols.VacPay		+ sdRow.toString()).getDisplayText());
+			timeRecRow.setVolume(summary_tab.getCellByPosition				(WprCols.Volume		+ sdRow.toString()).getDisplayText());
 			
-			oTimesheetSummaryRows.add(TimeRecRow);
+			oTimesheetSummaryRows.add(timeRecRow);
 			
 			/* debug msgs... 
 			System.out.println("Employee Name for Row " + sdRow + " is " + TimeRecRow.getEmployeeName());
@@ -127,7 +129,11 @@ public class KevinsTest{
 	public static void main(String[] args) {
 		System.out.println(new Date());
 		try {
-			new KevinsTest().go();
+			Connection conn = null;
+			InputStream inputStream = null;
+//			new KevinsTest().go();
+			TimesheetImportResponse x = new TimesheetImportResponse(conn, inputStream);
+			System.out.println(x);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
