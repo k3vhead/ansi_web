@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.test;
+package com.ansi.scilla.web.dataload;
 
 import java.io.FileInputStream;
 import java.math.BigDecimal;
@@ -24,6 +24,7 @@ import com.ansi.scilla.common.db.User;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
+import com.ansi.scilla.web.test.TesterUtils;
 
 public class InsertTestData extends TesterUtils {
 	private final boolean debug=true;

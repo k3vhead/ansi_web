@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.test;
+package com.ansi.scilla.web.test.permission;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.test;
+package com.ansi.scilla.web.test.reports;
 
 import java.lang.reflect.Method;
 import java.sql.Connection;

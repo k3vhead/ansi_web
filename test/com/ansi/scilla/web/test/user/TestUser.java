@@ -1,8 +1,9 @@
-package com.ansi.scilla.web.test;
+package com.ansi.scilla.web.test.user;
 
 import java.sql.Connection;
 
 import com.ansi.scilla.common.utils.AppUtils;
+import com.ansi.scilla.web.test.TesterUtils;
 import com.ansi.scilla.web.user.query.UserLookupItem;
 import com.ansi.scilla.web.user.response.UserResponse;
 

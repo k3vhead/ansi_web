@@ -1,8 +1,9 @@
-package com.ansi.scilla.web.test;
+package com.ansi.scilla.web.test.contacts;
 
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 
+import com.ansi.scilla.web.test.TesterUtils;
 import com.thewebthing.commons.lang.StringUtils;
 
 public class TestContactSearch {

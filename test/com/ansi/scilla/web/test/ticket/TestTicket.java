@@ -1,9 +1,10 @@
-package com.ansi.scilla.web.test;
+package com.ansi.scilla.web.test.ticket;
 
 import java.sql.Connection;
 
 import com.ansi.scilla.common.queries.TicketPaymentTotals;
 import com.ansi.scilla.common.utils.AppUtils;
+import com.ansi.scilla.web.test.TesterUtils;
 
 public class TestTicket {
 

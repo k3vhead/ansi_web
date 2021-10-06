@@ -1,9 +1,10 @@
-package com.ansi.scilla.web.test;
+package com.ansi.scilla.web.test.permission;
 
 import java.sql.Connection;
 
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.permission.response.PermissionGroupListResponse;
+import com.ansi.scilla.web.test.TesterUtils;
 
 public class TestPermissionGroups {
 
