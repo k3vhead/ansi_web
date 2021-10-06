@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.test;
+package com.ansi.scilla.web.test.reports;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -12,6 +12,7 @@ import com.ansi.scilla.common.invoice.InvoicePrinter;
 import com.ansi.scilla.common.invoice.InvoiceTicket;
 import com.ansi.scilla.common.invoice.InvoiceUtils;
 import com.ansi.scilla.common.utils.AppUtils;
+import com.ansi.scilla.web.test.TesterUtils;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;

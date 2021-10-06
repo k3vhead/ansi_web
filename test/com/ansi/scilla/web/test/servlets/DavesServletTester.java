@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.test;
+package com.ansi.scilla.web.test.servlets;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ansi.scilla.web.common.utils.Menu;
+import com.ansi.scilla.web.test.TestServlet;
 
 
 public class DavesServletTester extends TestServlet {

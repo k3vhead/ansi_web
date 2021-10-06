@@ -1,7 +1,9 @@
-package com.ansi.scilla.web.test;
+package com.ansi.scilla.web.test.address;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.ansi.scilla.web.test.TesterUtils;
 
 public class TestAddress {
 

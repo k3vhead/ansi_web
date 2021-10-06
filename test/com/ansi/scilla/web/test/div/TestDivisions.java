@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.test;
+package com.ansi.scilla.web.test.div;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -9,6 +9,7 @@ import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.division.request.DivisionRequest;
 import com.ansi.scilla.web.division.response.DivisionListResponse;
 import com.ansi.scilla.web.division.servlet.DivisionServlet;
+import com.ansi.scilla.web.test.TesterUtils;
 
 public class TestDivisions {
 

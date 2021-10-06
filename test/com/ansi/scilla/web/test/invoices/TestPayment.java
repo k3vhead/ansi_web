@@ -1,9 +1,10 @@
-package com.ansi.scilla.web.test;
+package com.ansi.scilla.web.test.invoices;
 
 import java.sql.Connection;
 
 import com.ansi.scilla.common.utils.AppUtils;
 import com.ansi.scilla.web.payment.response.PaymentResponse;
+import com.ansi.scilla.web.test.TesterUtils;
 
 public class TestPayment {
 

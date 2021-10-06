@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.test;
+package com.ansi.scilla.web.test.servlets;
 
 import java.util.HashMap;
 
@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.permission.request.PermissionRequest;
+import com.ansi.scilla.web.test.TestServlet;
 import com.ansi.scilla.web.user.request.DivisionUserRequest;
 
 

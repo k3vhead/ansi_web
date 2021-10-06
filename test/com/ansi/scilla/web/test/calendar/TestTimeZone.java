@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.test;
+package com.ansi.scilla.web.test.calendar;
 
 import java.time.ZoneId;
 

@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.test;
+package com.ansi.scilla.web.test.user;
 
 
 import java.sql.Connection;
@@ -7,6 +7,7 @@ import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.login.request.LoginRequest;
 import com.ansi.scilla.web.login.response.LoginResponse;
 import com.ansi.scilla.web.login.servlet.LoginServlet;
+import com.ansi.scilla.web.test.TesterUtils;
 import com.thewebthing.commons.lang.JsonUtils;
 
 

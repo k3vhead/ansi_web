@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.test;
+package com.ansi.scilla.web.test.servlets;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.permission.request.PermissionRequest;
+import com.ansi.scilla.web.test.TestServlet;
 import com.ansi.scilla.web.user.request.DivisionUserRequest;
 
 public class RachelServletTester extends TestServlet {

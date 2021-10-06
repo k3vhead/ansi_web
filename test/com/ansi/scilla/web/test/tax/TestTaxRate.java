@@ -1,6 +1,7 @@
-package com.ansi.scilla.web.test;
+package com.ansi.scilla.web.test.tax;
 
 import com.ansi.scilla.web.tax.request.TaxRateRequest;
+import com.ansi.scilla.web.test.TesterUtils;
 
 public class TestTaxRate {
 

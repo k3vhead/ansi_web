@@ -1,4 +1,4 @@
-package com.ansi.scilla.web.test;
+package com.ansi.scilla.web.test.servlets;
 
 import java.io.IOException;
 import java.io.StringWriter;
