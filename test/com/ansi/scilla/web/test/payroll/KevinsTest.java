@@ -85,12 +85,14 @@ public class KevinsTest{
 		
 		String cellAddr="";
 		for(Integer sdRow=6; sdRow<39;sdRow++) {
+			System.out.println("Row: " + sdRow);
+			System.out.println("Loc: " + WprCols.EmployeeName.cellLocation()	+ sdRow.toString());
 			TimesheetRecord timeRecRow = new TimesheetRecord();
 
-			timeRecRow.setEmployeeName(summary_tab.getCellByPosition		(WprCols.EmployeeName	+ sdRow.toString()).getDisplayText());
-			timeRecRow.setDirectLabor(summary_tab.getCellByPosition			(WprCols.DL			+ sdRow.toString()).getDisplayText());
-			timeRecRow.setExpenses(summary_tab.getCellByPosition			(WprCols.Expenses		+ sdRow.toString()).getDisplayText());
-			timeRecRow.setExpensesAllowed(summary_tab.getCellByPosition		(WprCols.ExpAllowed	+ sdRow.toString()).getDisplayText());
+			timeRecRow.setEmployeeName(summary_tab.getCellByPosition		(WprCols.EmployeeName.cellLocation()	+ sdRow.toString()).getDisplayText());
+			timeRecRow.setDirectLabor(summary_tab.getCellByPosition			(WprCols.DL.cellLocation()			+ sdRow.toString()).getDisplayText());
+			timeRecRow.setExpenses(summary_tab.getCellByPosition			(WprCols.Expenses.cellLocation()		+ sdRow.toString()).getDisplayText());
+			timeRecRow.setExpensesAllowed(summary_tab.getCellByPosition		(WprCols.ExpAllowed.cellLocation()	+ sdRow.toString()).getDisplayText());
 			timeRecRow.setExpensesSubmitted(summary_tab.getCellByPosition	(WprCols.ExpSubmitted	+ sdRow.toString()).getDisplayText());
 			timeRecRow.setGrossPay(summary_tab.getCellByPosition			(WprCols.GrossPay		+ sdRow.toString()).getDisplayText());
 			timeRecRow.setHolidayHours(summary_tab.getCellByPosition		(WprCols.HolPay		+ sdRow.toString()).getDisplayText());
@@ -131,9 +133,9 @@ public class KevinsTest{
 		try {
 			Connection conn = null;
 			InputStream inputStream = null;
-//			new KevinsTest().go();
-			TimesheetImportResponse x = new TimesheetImportResponse(conn, inputStream);
-			System.out.println(x);
+			new KevinsTest().go();
+//			TimesheetImportResponse x = new TimesheetImportResponse(conn, inputStream);
+//			System.out.println(x);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
