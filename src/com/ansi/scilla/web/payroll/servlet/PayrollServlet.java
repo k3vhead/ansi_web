@@ -22,7 +22,8 @@ public class PayrollServlet extends AbstractServlet {
 	public static final String ALIAS_LOOKUP = "aliasLookup";
 	public static final String EMPLOYEE = "employee";
 	public static final String EMPLOYEE_IMPORT = "employeeImport";
-	public static final String EMPLOYEE_LOOKUP = "employeeLookup";	
+	public static final String EMPLOYEE_LOOKUP = "employeeLookup";
+	public static final String TIMESHEET = "timesheet";
 	public static final String TIMESHEET_IMPORT = "timesheetImport";
 	public static final String TIMESHEET_LOOKUP = "timesheetLookup";
 	public static final String EXCEPTION_REPORT = "exceptionReport";
@@ -62,6 +63,9 @@ public class PayrollServlet extends AbstractServlet {
 		case EXCEPTION_REPORT:
 			new ExceptionReportServlet().doGet(request, response);
 			break;
+		case TIMESHEET:
+			new TimesheetServlet().doGet(request, response);
+			break;
 		case TIMESHEET_LOOKUP:
 			new TimesheetLookupServlet().doGet(request, response);
 			break;
@@ -94,6 +98,9 @@ public class PayrollServlet extends AbstractServlet {
 		case EMPLOYEE:
 			new EmployeeServlet().doDelete(request, response);
 			break;
+		case TIMESHEET:
+			new TimesheetServlet().doDelete(request, response);
+			break;
 		default:
 			super.sendNotFound(response);
 		};
@@ -125,6 +132,9 @@ public class PayrollServlet extends AbstractServlet {
 		case EMPLOYEE_IMPORT:
 			new EmployeeImportServlet().doPost(request, response);
 			break;		
+		case TIMESHEET:
+			new TimesheetServlet().doPost(request, response);
+			break;
 		case TIMESHEET_IMPORT:
 			new TimesheetImportServlet().doPost(request, response);
 			break;

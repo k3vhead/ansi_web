@@ -56,7 +56,7 @@ public class TimesheetLookupServlet extends AbstractLookupServlet {
 	public TimesheetLookupServlet() {
 		super(Permission.PAYROLL_READ);
 		cols = new String[] { 
-			DIVISION_ID,
+//			DIVISION_ID,
 			DIV, 
 			WEEK_ENDING,
 			STATE,

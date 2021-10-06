@@ -227,7 +227,12 @@
            					},
            					{ title : "Regular Hours", "defaultContent": "", data:'regularHours' },
            					{ title : "Regular Pay", "defaultContent": "", data:'regularPay' },
-           					{ title : "Messages", "defaultContent" : "" },
+           					{ title : "OT Hours", "defaultContent": "", data:'otHours' },
+           					{ title : "OT Pay", "defaultContent": "", data:'otPay' },
+           					{ title : "Vacation Hours", "defaultContent": "", data:'vacationHours' },
+           					{ title : "Vacation Pay", "defaultContent": "", data:'vacationPay' },
+
+
            					{ title : "Action", 
     			            	data: function ( row, type, set ) { 
     			            		//var $editLink = '<span class="action-link edit-link" data-id="'+row.employee_code+'" data-name="'+row.employee_name+'"><webthing:edit>Edit</webthing:edit></span>';

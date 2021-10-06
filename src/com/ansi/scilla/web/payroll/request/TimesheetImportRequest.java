@@ -164,7 +164,7 @@ public class TimesheetImportRequest extends AbstractRequest implements UploadPar
 			RequestValidator.validateDay(webMessages, PAYROLL_DATE, this.payrollDate, true, null, null, Calendar.FRIDAY);
 		}
 		RequestValidator.validateState(webMessages, STATE, this.state, true, null);
-		RequestValidator.validateString(webMessages, CITY, this.city, true);
+		RequestValidator.validateString(webMessages, CITY, this.city, false);
 		if ( this.timesheetFile == null ) {
 			webMessages.addMessage(TIMESHEET_FILE, "Required Value");
 		} else {
