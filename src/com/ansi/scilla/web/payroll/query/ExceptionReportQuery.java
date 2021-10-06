@@ -1,9 +1,9 @@
 package com.ansi.scilla.web.payroll.query;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import com.ansi.scilla.common.ApplicationObject;
 
@@ -50,11 +50,12 @@ public class ExceptionReportQuery extends ApplicationObject {
 			+ "LEFT OUTER JOIN payroll_worksheet on payroll_worksheet.division_id = division.division_id \n"
 			+ "	and payroll_worksheet.employee_code = payroll_employee.employee_code\n"
 			+ "	-- and week_ending \n"
-			+ "WHERE group_type = 'COMPANY' and division_group.company_code is not NULL \n"
+			+ "WHERE group_type = 'COMPANY' and division_group.company_code is not NULL and division_group.group_id=? \n"
 			+ "ORDER BY company_code, group_name";
-	public static ResultSet execute(Connection conn) throws SQLException {
-		Statement s = conn.createStatement();
-		ResultSet rs = s.executeQuery(sql);
+	public static ResultSet execute(Connection conn, Integer groupId) throws SQLException {
+		PreparedStatement s = conn.prepareStatement(sql);
+		s.setInt(1, groupId);
+		ResultSet rs = s.executeQuery();
 		return rs;
 	}
 }
