@@ -32,6 +32,10 @@
     	<script type="text/javascript" src="js/document.js"></script> 
     
         <style type="text/css">
+        	#confirmation-modal {
+        		display:none;
+        		text-align:center;
+        	}
         	#edit-modal {
         		display:none;
         	}
@@ -69,6 +73,9 @@
 			.form-label {
 				font-weight:bold;
 			}
+			.new-timesheet-container {
+				width:100%;
+			}
 			.timesheet-err {
 				width:100%;
 				height:14px;
@@ -99,7 +106,54 @@
         		
        			init : function() {       				
        				TIMESHEETLOOKUP.makeTimesheetLookup(); 
+       				TIMESHEETLOOKUP.makeClickers();
            		},
+           		
+           		
+           		deleteTimesheet : function() {
+           			console.log("delete timesheet");
+           			var $outbound = {};
+           			$.each( $("#confirmation-modal input"), function($index, $value) {
+           				$outbound[$value.name] = $($value).val();
+           			});
+           			console.log($outbound);
+           			ANSI_UTILS.makeServerCall("DELETE", "payroll/timesheet", JSON.stringify($outbound), {200:TIMESHEETLOOKUP.saveTimesheetSuccess}, {});
+           		},
+           		
+           		
+           		initConfirmationModal : function() {
+					console.log("initConfirmationModal");
+           			
+           			$( "#confirmation-modal" ).dialog({
+        				title:'Confirm Delete',
+        				autoOpen: false,
+        				height: 200,
+        				width: 350,
+        				modal: true,
+        				closeOnEscape:true,
+        				//open: function(event, ui) {
+        				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+        				//},
+        				buttons: [
+        					{
+        						id:  "confirm-cancel",
+        						click: function($event) {
+       								$( "#confirmation-modal" ).dialog("close");
+        						}
+        					},{
+        						id:  "confirm-save",
+        						click: function($event) {
+       								TIMESHEETLOOKUP.deleteTimesheet();
+        						}
+        					}
+        				]
+        			});	
+        			$("#confirm-cancel").button('option', 'label', 'Cancel');  
+        			$("#confirm-save").button('option', 'label', 'Save');
+           		},
+           		
+           		
+           		
            		
            		initEditModal : function() {
            			console.log("initEditModal");
@@ -120,7 +174,7 @@
            			$( "#edit-modal" ).dialog({
         				title:'Timesheet Edit',
         				autoOpen: false,
-        				height: 500,
+        				height: 700,
         				width: 600,
         				modal: true,
         				closeOnEscape:true,
@@ -144,6 +198,28 @@
         			$("#edit-cancel").button('option', 'label', 'Cancel');  
         			$("#edit-save").button('option', 'label', 'Save');
            		},
+           		
+           		
+           		
+           		makeClickers : function() {
+           			$("input[name='new-timesheet']").click(function($event) {
+           				console.log("new timesheet");
+           				if ( ! $("#edit-modal").hasClass("ui-dialog-content")) {
+               				TIMESHEETLOOKUP.initEditModal();
+               			}
+           				$("#edit-modal .err").html("").show();           				
+               			$.each( $("#edit-modal input"), function($index, $value) {
+               				$($value).val("");
+               			});
+               			$.each( $("#edit-modal select"), function($index, $value) {
+               				$($value).val("");
+               			});
+           				$("#edit-modal input[name='action']").val("ADD");
+           				$("#edit-modal .update-field").prop("disabled", false);
+               			$("#edit-modal").dialog("open");
+           			});
+           		},
+           		
            		
            		
            		
@@ -242,21 +318,21 @@
        			        	{ title: "City", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'city' },
        			        	{ title: "Employee Code", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' },
        			        	{ title: "Employee Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_name' },
-       			            { title: "Regular Hours",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.regular_hours.toFixed(2); } },
-       			            { title: "Regular Pay",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.regular_pay.toFixed(2); } },
-       			            { title: "Expenses",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.expenses.toFixed(2); } },
-       			            { title: "OT Hours",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.ot_hours.toFixed(2); } },
-       			            { title: "OT Pay",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.ot_pay.toFixed(2); } },
-       			            { title: "Vacation Hours",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.vacation_hours.toFixed(2); } },
-       			            { title: "Vacation Pay",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.vacation_pay.toFixed(2); } },
-       			            { title: "Holiday Hours",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.holiday_hours.toFixed(2); } },
-       			            { title: "Holiday Pay",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.holiday_pay.toFixed(2); } },
-       			            { title: "Gross Pay",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.gross_pay.toFixed(2); } },
-       			            { title: "Expenses Submitted",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.expenses_submitted.toFixed(2); } },
-       			            { title: "Expenses Allowed",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.expenses_allowed.toFixed(2); } },
-       			            { title: "Volume",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.volume.toFixed(2); } },
-       			            { title: "Direct Labor",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.direct_labor.toFixed(2); } },
-       			            { title: "Productivity",  width:"10%", searchable:false, data: function ( row, type, set ) { return row.productivity.toFixed(2); } },
+       			            { title: "Regular Hours",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.regular_hours == null ? "" : row.regular_hours.toFixed(2); } },
+       			            { title: "Regular Pay",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.regular_pay == null ? "" : row.regular_pay.toFixed(2); } },
+       			            { title: "Expenses",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.expenses == null ? "" : row.expenses.toFixed(2); } },
+       			            { title: "OT Hours",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.ot_hours == null ? "" : row.ot_hours.toFixed(2); } },
+       			            { title: "OT Pay",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.ot_pay == null ? "" : row.ot_pay.toFixed(2); } },
+       			            { title: "Vacation Hours",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.vacation_hours == null ? "" : row.vacation_hours.toFixed(2); } },
+       			            { title: "Vacation Pay",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.vacation_pay == null ? "" : row.vacation_pay.toFixed(2); } },
+       			            { title: "Holiday Hours",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.holiday_hours == null ? "" : row.holiday_hours.toFixed(2); } },
+       			            { title: "Holiday Pay",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.holiday_pay == null ? "" : row.holiday_pay.toFixed(2); } },
+       			            { title: "Gross Pay",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.gross_pay == null ? "" : row.gross_pay.toFixed(2); } },
+       			            { title: "Expenses Submitted",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.expenses_submitted == null ? "" : row.expenses_submitted.toFixed(2); } },
+       			            { title: "Expenses Allowed",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.expenses_allowed == null ? "" : row.expenses_allowed.toFixed(2); } },
+       			            { title: "Volume",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.volume == null ? "" : row.volume.toFixed(2); } },
+       			            { title: "Direct Labor",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.direct_labor == null ? "" : row.direct_labor.toFixed(2); } },
+       			            { title: "Productivity",  width:"10%", searchable:false, "defaultContent": "", data: function ( row, type, set ) { return row.productivity == null ? "" : row.productivity.toFixed(2); } },
        			            { title: "Action", searchable:false, defaultContent:"", data: function(row, type, set) {
        			            	var $parms = 'data-div="'+row.division_id+'" data-date="'+row.week_ending+'" data-state="'+row.state+'" data-employee="'+row.employee_code+'" data-city="'+row.city+'"';
        			            	var $deleteLink = '<span class="action-link delete-action" ' + $parms + '>' + $delete + '</span>';
@@ -275,9 +351,23 @@
        			            	$(".delete-action").off("click");
        			            	$(".edit-action").off("click");
        			            	$(".delete-action").click(function($event) {
-       			            		var $employeeCode = $(this).attr("data-id");
+       			            		var $divisionId = $(this).attr("data-div");
        			            		var $weekEnding = $(this).attr("data-date");
-       			            		console.log("Deleting " + $employeeCode + " " + $weekEnding);
+       			            		var $state = $(this).attr("data-state");
+       			            		var $employeeCode = $(this).attr("data-employee");
+       			            		var $city = $(this).attr("data-city");
+
+       			            		if ( ! $("#confirmation-modal").hasClass("ui-dialog-content")) {
+       			           				TIMESHEETLOOKUP.initConfirmationModal();
+       			           			}
+       			            		
+									$("#confirmation-modal input[name='divisionId']").val($divisionId);
+									$("#confirmation-modal input[name='weekEnding']").val($weekEnding);
+									$("#confirmation-modal input[name='state']").val($state);
+									$("#confirmation-modal input[name='employeeCode']").val($employeeCode);
+									$("#confirmation-modal input[name='city']").val($city);									
+       			            		
+       			            		$("#confirmation-modal").dialog("open");
        			            	});
        			            	$(".edit-action").click(function($event) {
        			            		var $divisionId = $(this).attr("data-div");
@@ -285,15 +375,14 @@
        			            		var $state = $(this).attr("data-state");
        			            		var $employeeCode = $(this).attr("data-employee");
        			            		var $city = $(this).attr("data-city");
-									var $outbound = {
-										"divisionId":$divisionId,
-        			            		"weekEnding":$weekEnding,
-        			            		"state":$state,
-        			            		"employeeCode":$employeeCode,
-        			            		"city":$city,
-									};
+       			            		var $outbound = {
+    										"divisionId":$divisionId,
+            			            		"weekEnding":$weekEnding,
+            			            		"state":$state,
+            			            		"employeeCode":$employeeCode,
+            			            		"city":$city,
+    									};
        			            		
-       			            		console.log("Editing ");
        			            		ANSI_UTILS.makeServerCall("GET", "payroll/timesheet", $outbound, {200:TIMESHEETLOOKUP.showEditModal}, {});
        			            	});
        			            }
@@ -313,7 +402,6 @@
            			$.each( $("#edit-modal select"), function($index, $value) {
            				$outbound[$value.name] = $($value).val();
            			});
-           			console.log($outbound);
            			var $callbacks = {
         				200:TIMESHEETLOOKUP.saveTimesheetSuccess,
         				403:TIMESHEETLOOKUP.saveTimesheetError,
@@ -342,13 +430,14 @@
            			if ( $data.responseHeader.responseCode == 'EDIT_FAILURE' ) {
            				$.each($data.data.webMessages, function($index, $value) {
            					var $selector = "#edit-modal ." + $index + "Err";
-           					console.log($selector);
            					$($selector).html($value[0]);
            				});
            			} else if ( $data.responseHeader.responseCode == 'SUCCESS' ) {
                			$("#globalMsg").html("Success").show().fadeOut(3000);
                			$("#timesheetLookup").DataTable().ajax.reload();
+               			// close both modals because we don't know which one called this method
                			$("#edit-modal").dialog("close");
+               			$("#confirmation-modal").dialog("close");
            			} else {
            				$("#edit-modal .timesheet-err").html("Unexpected response code: " + $data.responseHeader.responseCode + ". Contact Support").show();
            			}
@@ -363,6 +452,7 @@
            			}
            			
            			$("#edit-modal .err").html("");
+           			$("#edit-modal input[name='action']").val("UPDATE");
            		 	$("#edit-modal select[name='divisionId']").val($data.data.divisionId);
            		 	$("#edit-modal input[name='weekEnding']").val($data.data.weekEnding);
            		 	$("#edit-modal input[name='divisionId']").val($data.data.divisionId);
@@ -372,8 +462,10 @@
            			$("#edit-modal input[name='employeeName']").val($data.data.employeeName);
            			$.each(TIMESHEETLOOKUP.timesheetFields, function($index, $value) {
            				var $selector = "#edit-modal input[name='"+$value.name+"']";
-           				$($selector).val($data.data[$value.name].toFixed(2));
+           				var $displayValue = $data.data[$value.name] == null ? "" : $data.data[$value.name].toFixed(2);
+           				$($selector).val($displayValue);
            			});
+           			$("#edit-modal .update-field").prop("disabled", true);
            			$("#edit-modal").dialog("open");
 
            		},
@@ -395,14 +487,16 @@
 
     	<webthing:lookupFilter filterContainer="filter-container" />
 		<table id="timesheetLookup"></table>
+		<div class="new-timesheet-container"><input type="button" value="New Timesheet" class="prettyWideButton" name="new-timesheet" /></div>
 		
 		<div id="edit-modal">
 			<div class="timesheet-err err"></div>
+			<input type="hidden" name="action" />
 			<table class="edit-form">
 				<tr>
 					<td><span class="form-label">Division: </span></td>
 					<td>
-						<select name="divisionId">
+						<select name="divisionId" class="update-field">
 							<option value=""></option>
 							<ansi:selectOrganization active="true" type="DIVISION" />
 						</select>
@@ -411,13 +505,13 @@
 				</tr>
 				<tr>
 					<td><span class="form-label">Week Ending: </span></td>
-					<td><input type="date" name="weekEnding" /></td>
+					<td><input type="date" name="weekEnding" class="update-field" /></td>
 					<td><span class="weekEndingErr err"></span></td>
 				</tr>
 				<tr>
 					<td><span class="form-label">State: </span></td>
 					<td>
-						<select name="state">
+						<select name="state" class="update-field">
 							<option value=""></option>
 							<webthing:states />
 						</select>
@@ -426,20 +520,29 @@
 				</tr>
 				<tr>
 					<td><span class="form-label">City: </span></td>
-					<td><input type="text" name="city" /></td>
+					<td><input type="text" name="city" class="update-field" /></td>
 					<td><span class="cityErr err"></span></td>
 				</tr>
 				<tr>
 					<td><span class="form-label">Employee Code: </span></td>
-					<td><input type="text" name="employeeCode" /></td>
+					<td><input type="text" name="employeeCode" class="update-field" /></td>
 					<td><span class="employeeCodeErr err"></span></td>
 				</tr>
 				<tr>
 					<td><span class="form-label">Employee Name: </span></td>
-					<td><input type="text" name="employeeName" /></td>
+					<td><input type="text" name="employeeName" class="update-field" /></td>
 					<td><span class="employeeNameErr err"></span></td>
 				</tr>
 			</table>
+		</div>
+		
+		<div id="confirmation-modal">
+			<h2>Are You Sure?</h2>
+			<input type="hidden" name="divisionId" />
+			<input type="hidden" name="weekEnding" />
+			<input type="hidden" name="state" />
+			<input type="hidden" name="employeeCode" />
+			<input type="hidden" name="city" />
 		</div>
     </tiles:put>
 		

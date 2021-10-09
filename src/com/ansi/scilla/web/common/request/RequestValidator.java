@@ -452,6 +452,32 @@ public class RequestValidator {
 	}
 
 	
+	public static void validateEmployeeCode(Connection conn, WebMessages webMessages, String fieldName,
+			Integer value, boolean required, String label) throws SQLException {
+		if ( value == null ) {
+			if ( required == true ) {
+				String message = StringUtils.isBlank(label) ? "Required Value" : label + " is Required";
+				webMessages.addMessage(fieldName, message);
+			}
+		} else {
+			PreparedStatement ps = conn.prepareStatement("select count(*) as record_count from payroll_employee pe where pe.employee_code = ?");
+			ps.setInt(1, value);
+			ResultSet rs = ps.executeQuery();
+			if ( rs.next() ) {
+				if ( rs.getInt("record_count") == 0 ) {
+					String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is Invalid";
+					webMessages.addMessage(fieldName, message);
+				}
+			} else {
+				String message = StringUtils.isBlank(label) ? "Invalid Value" : label + " is Invalid";
+				webMessages.addMessage(fieldName, message);
+			}
+			rs.close();
+		}
+	
+		
+	}
+
 	public static void validateEmployeeStatus(WebMessages webMessages, String fieldName, String value, boolean required) {
 		if (StringUtils.isBlank(value)) {
 			if (required) {

@@ -1,12 +1,20 @@
 package com.ansi.scilla.web.payroll.servlet;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.sql.Connection;
+import java.util.Calendar;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.ansi.scilla.common.db.PayrollWorksheet;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
@@ -27,10 +35,49 @@ public class TimesheetServlet extends AbstractServlet {
 	@Override
 	public void doDelete(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		super.doDelete(request, response);
+		Connection conn = null;
+		WebMessages webMessages = new WebMessages();
+		TimesheetResponse data = new TimesheetResponse();
+		ResponseCode responseCode = null;
+		try {
+			try {
+				AppUtils.validateSession(request, Permission.CLAIMS_WRITE);
+	
+				conn = AppUtils.getDBCPConn();
+				conn.setAutoCommit(false);
+				TimesheetRequest timesheetRequest = new TimesheetRequest();
+				String jsonString = super.makeJsonString(request);
+				AppUtils.json2object(jsonString, timesheetRequest);
+				
+				webMessages = timesheetRequest.validateDelete(conn);
+				processDelete(conn, timesheetRequest);
+				conn.commit();
+				data.setWebMessages(webMessages);
+				super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
+			} catch ( RecordNotFoundException e) {
+				super.sendNotFound(response);
+			} catch (com.ansi.scilla.web.common.exception.InvalidFormatException e) {
+				String fieldName = super.findBadField(e.getMessage());
+				webMessages.addMessage(fieldName, "Invalid Format");
+				data.setWebMessages(webMessages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+			} catch (com.fasterxml.jackson.databind.exc.InvalidFormatException e) {
+				String fieldName = super.findBadField(e.getMessage());
+				webMessages.addMessage(fieldName, "Invalid Format");
+				data.setWebMessages(webMessages);
+				super.sendResponse(conn, response, ResponseCode.EDIT_FAILURE, data);
+			} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+				super.sendForbidden(response);
+			} finally {
+				AppUtils.closeQuiet(conn);
+			}
+		} catch ( Exception e) {
+			throw new ServletException(e);
+		} 
 	}
 
+	
+	
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -73,6 +120,7 @@ public class TimesheetServlet extends AbstractServlet {
 	}
 
 	
+	
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -92,7 +140,16 @@ public class TimesheetServlet extends AbstractServlet {
 				
 				webMessages = timesheetRequest.validate(conn);
 				if ( webMessages.isEmpty() ) {
-					processUpdate(conn, timesheetRequest, sessionData);
+					switch ( timesheetRequest.getAction() ) {
+					case TimesheetRequest.ACTION_IS_ADD:
+						processAdd(conn, timesheetRequest, sessionData);
+						break;
+					case TimesheetRequest.ACTION_IS_UPDATE:
+						processUpdate(conn, timesheetRequest, sessionData);
+						break;
+					default:
+						throw new com.ansi.scilla.web.common.exception.InvalidFormatException(TimesheetRequest.EMPLOYEE_CODE);
+					}
 					conn.commit();
 					responseCode = ResponseCode.SUCCESS;
 				} else {
@@ -124,9 +181,65 @@ public class TimesheetServlet extends AbstractServlet {
 		
 	}
 
-	private void processUpdate(Connection conn, TimesheetRequest timesheetRequest, SessionData sessionData) throws RecordNotFoundException {
-		// TODO Auto-generated method stub
+	private void processAdd(Connection conn, TimesheetRequest timesheetRequest, SessionData sessionData) throws Exception {
+		Calendar today = AppUtils.getToday();
+		PayrollWorksheet timesheet = new PayrollWorksheet();		
+		populateTimesheetKeys(timesheet, timesheetRequest);
+		populateTimesheetValues(timesheet, timesheetRequest);
+		timesheet.setEmployeeName(timesheetRequest.getEmployeeName());
+		timesheet.setAddedBy(sessionData.getUser().getUserId());
+		timesheet.setAddedDate(today.getTime());
+		timesheet.setUpdatedBy(sessionData.getUser().getUserId());
+		timesheet.setUpdatedDate(today.getTime());
+		timesheet.insertWithNoKey(conn);		
+	}
+	
+	
+	
+
+	private void processUpdate(Connection conn, TimesheetRequest timesheetRequest, SessionData sessionData) throws RecordNotFoundException, Exception {
+		Calendar today = AppUtils.getToday();
 		
+		PayrollWorksheet timesheet = new PayrollWorksheet();
+		populateTimesheetKeys(timesheet, timesheetRequest);
+		PayrollWorksheet key = (PayrollWorksheet)timesheet.clone();
+		timesheet.selectOne(conn);
+		populateTimesheetValues(timesheet, timesheetRequest);
+
+		timesheet.setUpdatedBy(sessionData.getUser().getUserId());
+		timesheet.setUpdatedDate(today.getTime());
+		timesheet.update(conn, key);
+		
+	}
+
+	private void processDelete(Connection conn, TimesheetRequest timesheetRequest) throws Exception {
+		PayrollWorksheet timesheet = new PayrollWorksheet();		
+		populateTimesheetKeys(timesheet, timesheetRequest);
+		timesheet.delete(conn);		
+	}
+
+
+
+	private void populateTimesheetKeys(PayrollWorksheet timesheet, TimesheetRequest timesheetRequest) {
+		timesheet.setDivisionId(timesheetRequest.getDivisionId());
+		timesheet.setWeekEnding(timesheetRequest.getWeekEnding().getTime());
+		timesheet.setState(timesheetRequest.getState());
+		timesheet.setEmployeeCode(timesheetRequest.getEmployeeCode());
+		timesheet.setCity(timesheetRequest.getCity());
+		
+	}
+
+	private void populateTimesheetValues(PayrollWorksheet timesheet, TimesheetRequest timesheetRequest) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+		for (String fieldName : TimesheetRequest.PAYROLL_FIELDNAMES ) {
+			String getterName = "get" + StringUtils.capitalize(fieldName);
+			Method getter = TimesheetRequest.class.getMethod(getterName, (Class<?>[])null);
+			String setterName = "set" + StringUtils.capitalize(fieldName);
+			Method setter = PayrollWorksheet.class.getMethod(setterName, new Class<?>[] {BigDecimal.class});
+			Double getterValue = (Double)getter.invoke(timesheetRequest, (Object[])null);
+			BigDecimal setterValue =  getterValue == null ? null : new BigDecimal(getterValue).round(MathContext.DECIMAL32);
+			setter.invoke(timesheet, new Object[] {setterValue} );
+		}
+		timesheet.setProductivity(new BigDecimal(timesheetRequest.getProductivity()).round(MathContext.DECIMAL32));
 	}
 	
 

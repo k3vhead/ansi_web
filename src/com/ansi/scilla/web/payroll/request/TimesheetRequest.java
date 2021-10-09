@@ -2,6 +2,8 @@ package com.ansi.scilla.web.payroll.request;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -10,18 +12,29 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.web.common.exception.InvalidFormatException;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+
 public class TimesheetRequest extends AbstractRequest {
 
 
 	private static final long serialVersionUID = 1L;
 
+	public static final String ACTION_IS_ADD = "ADD";
+	public static final String ACTION_IS_UPDATE = "UPDATE";
+	
+	
+	public static final String ACTION = "action";
+	
 	public static final String DIVISION_ID = "divisionId";
 	public static final String WEEK_ENDING = "weekEnding";
 	public static final String STATE = "state";
@@ -49,6 +62,10 @@ public class TimesheetRequest extends AbstractRequest {
 	
 	
 	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	
+	// this field is used to see what step in CRUD we're working with
+	private String action;
+	
 	// these fields are used in the get to identify a unique record
 	private Integer divisionId;
 	private Calendar weekEnding;
@@ -75,7 +92,10 @@ public class TimesheetRequest extends AbstractRequest {
 	private Double volume;
 
 	
-	private final String[] floatFields = new String[] {
+	// This list is used to for validation (here) and to populate
+	// the payroll_worksheet DB record (in TimesheetServlet)
+	// Make note that productivity is not listed here
+	public static final String[] PAYROLL_FIELDNAMES = new String[] {
 		DIRECT_LABOR,
 		EXPENSES,
 		EXPENSES_ALLOWED,
@@ -85,7 +105,6 @@ public class TimesheetRequest extends AbstractRequest {
 		HOLIDAY_PAY,
 		OT_HOURS,
 		OT_PAY,
-		PRODUCTIVITY,
 		REGULAR_HOURS,
 		REGULAR_PAY,
 		VACATION_HOURS,
@@ -127,6 +146,15 @@ public class TimesheetRequest extends AbstractRequest {
 			}
 		}
 		this.city = request.getParameter(CITY);
+	}
+
+	
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
 	}
 
 	public Integer getDivisionId() {
@@ -300,18 +328,71 @@ public class TimesheetRequest extends AbstractRequest {
 	}
 	
 	
+	
 	public WebMessages validate(Connection conn) throws Exception {
-		WebMessages webMessages = new WebMessages();
+		Logger logger = LogManager.getLogger(this.getClass());
+		WebMessages webMessages = new WebMessages();		
 		validateNumbers(webMessages);
+		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, DIVISION_ID, this.divisionId, true);
+		RequestValidator.validateState(webMessages, STATE, this.state, true, null);
+		RequestValidator.validateString(webMessages, CITY, this.city, 255, false, null);
+		RequestValidator.validateDate(webMessages, WEEK_ENDING, this.weekEnding, true, null, null);
+		RequestValidator.validateEmployeeCode(conn, webMessages, EMPLOYEE_CODE, this.employeeCode, true, null);
+
+		for ( String x : webMessages.keySet() ) {
+			logger.log(Level.DEBUG, x + "=>" + webMessages.get(x));
+		}
+		// Validate code/name combo
+		// Handles: Franklin Roosevelt
+		//			Franklin D Roosevelt
+		//			Franklin D. Roosevelt
+		//			Roosevelt, Franklin
+		//			Roosevelt, Franklin D
+		//			Roosevelt, Franklin D.
+		if ( ! webMessages.containsKey(EMPLOYEE_CODE) ) {
+			String sql = "select count(*) as record_count from payroll_employee pe where pe.employee_code = ? \n" + 
+					"	and (\n" + 
+					"		lower(concat(pe.employee_first_name,' ',pe.employee_last_name)) = ?\n" + 
+					"		or lower(concat(pe.employee_first_name,' ',pe.employee_mi,' ',pe.employee_last_name)) = ?\n" + 
+					"		or lower(concat(pe.employee_first_name,' ',pe.employee_mi,'. ',pe.employee_last_name)) = ?\n" + 
+					"		or lower(concat(pe.employee_last_name,', ',pe.employee_first_name)) = ?\n" + 
+					"		or lower(concat(pe.employee_last_name,', ',pe.employee_first_name,' ',pe.employee_mi)) = ?\n" + 
+					"		or lower(concat(pe.employee_last_name,', ',pe.employee_first_name,' ',pe.employee_mi,'.')) = ?\n" + 
+					"	)";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, employeeCode);
+			for ( int n = 2; n < 8; n++ ) {
+				ps.setString(n, this.employeeName.toLowerCase());
+			}
+			ResultSet rs = ps.executeQuery();
+			if ( rs.next() ) {
+				if ( rs.getInt("record_count") == 0 ) {
+					webMessages.addMessage(EMPLOYEE_CODE, "Invalid EmployeeCode/Employee Name combination");
+				}
+			} else {
+				webMessages.addMessage(EMPLOYEE_CODE, "Error while validating");
+			}
+			rs.close();
+		}
 		return webMessages;
 	}
 
 	private void validateNumbers(WebMessages webMessages) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
-		for (String fieldName : floatFields ) {
+		for (String fieldName : PAYROLL_FIELDNAMES ) {
 			Field field = this.getClass().getDeclaredField(fieldName);
 			Double value = (Double)field.get(this);
 			RequestValidator.validateDouble(webMessages, fieldName, value, 0.0D, (Double)null, false, null);			
 		}
-		
+		RequestValidator.validateDouble(webMessages, PRODUCTIVITY, this.productivity, 0.0D, 1.0D, false, null);
+	}
+
+	public WebMessages validateDelete(Connection conn) throws Exception {
+		WebMessages webMessages = new WebMessages();		
+		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, DIVISION_ID, this.divisionId, true);
+		RequestValidator.validateState(webMessages, STATE, this.state, true, null);
+		RequestValidator.validateString(webMessages, CITY, this.city, 255, false, null);
+		RequestValidator.validateDate(webMessages, WEEK_ENDING, this.weekEnding, true, null, null);
+		RequestValidator.validateEmployeeCode(conn, webMessages, EMPLOYEE_CODE, this.employeeCode, true, null);
+		return webMessages;
 	}
 }
