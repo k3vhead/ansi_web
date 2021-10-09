@@ -197,6 +197,39 @@
         			});	
         			$("#edit-cancel").button('option', 'label', 'Cancel');  
         			$("#edit-save").button('option', 'label', 'Save');
+        			
+        			var $nameSelector = "#edit-modal input[name='employeeName']";
+        			var $codeSelector = "#edit-modal input[name='employeeCode']"
+        			$( $nameSelector ).autocomplete({
+						'source':"payroll/employeeAutoComplete?",
+						position:{my:"left top", at:"left bottom",collision:"none"},
+						appendTo:"#edit_form",
+						select: function( event, ui ) {
+							console.log(ui);
+							$($nameSelector).val(ui.item.label);
+							$($codeSelector).val(ui.item.id);
+							if ( ui.item.value == null || ui.item.value.trim() == "" ) {
+								$($nameSelector).val("")
+								$($codeSelector).val("")
+							}
+       			      	}
+       			 	});
+        			        			
+        			$( $codeSelector ).autocomplete({
+						'source':"payroll/employeeCodeComplete?",
+						position:{my:"left top", at:"left bottom",collision:"none"},
+						appendTo:"#edit_form",
+						select: function( event, ui ) {
+							console.log(ui);
+							console.log(event);
+							$($nameSelector).val(ui.item.employeeName);
+							//$($codeSelector).val(ui.item.label);
+							if ( ui.item.value == null || ui.item.value.trim() == "" ) {
+								$($nameSelector).val("")
+								$($codeSelector).val("")
+							}
+       			      	}
+       			 	});
            		},
            		
            		
@@ -435,9 +468,13 @@
            			} else if ( $data.responseHeader.responseCode == 'SUCCESS' ) {
                			$("#globalMsg").html("Success").show().fadeOut(3000);
                			$("#timesheetLookup").DataTable().ajax.reload();
-               			// close both modals because we don't know which one called this method
-               			$("#edit-modal").dialog("close");
-               			$("#confirmation-modal").dialog("close");
+               			// close both modals because we don't know which one called this method, but only after they've been init'd
+               			if ( $("#edit-modal").hasClass("ui-dialog-content")) {
+               				$("#edit-modal").dialog("close");
+               			}
+               			if ( $("#confirmation-modal").hasClass("ui-dialog-content")) {
+               				$("#confirmation-modal").dialog("close");
+               			}
            			} else {
            				$("#edit-modal .timesheet-err").html("Unexpected response code: " + $data.responseHeader.responseCode + ". Contact Support").show();
            			}

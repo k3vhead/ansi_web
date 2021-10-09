@@ -21,6 +21,8 @@ public class PayrollServlet extends AbstractServlet {
 	public static final String ALIAS = "alias";
 	public static final String ALIAS_LOOKUP = "aliasLookup";
 	public static final String EMPLOYEE = "employee";
+	public static final String EMPLOYEE_AUTOCOMPLETE = "employeeAutoComplete";
+	public static final String EMPLOYEE_CODECOMPLETE = "employeeCodeComplete";
 	public static final String EMPLOYEE_IMPORT = "employeeImport";
 	public static final String EMPLOYEE_LOOKUP = "employeeLookup";
 	public static final String TIMESHEET = "timesheet";
@@ -56,6 +58,12 @@ public class PayrollServlet extends AbstractServlet {
 			break;
 		case EMPLOYEE:
 			new EmployeeServlet().doGet(request, response);
+			break;
+		case EMPLOYEE_AUTOCOMPLETE:
+			new EmployeeAutoCompleteServlet().doGet(request, response);
+			break;
+		case EMPLOYEE_CODECOMPLETE:
+			new EmployeeCodeCompleteServlet().doGet(request, response);
 			break;
 		case EMPLOYEE_LOOKUP:
 			new EmployeeLookupServlet().doGet(request, response);
