@@ -24,15 +24,17 @@ public class KevinsTest{
 		Connection conn = null;
 		try {
 			conn = AppUtils.getDevConn();
-			conn.setAutoCommit(false);		
+			conn.setAutoCommit(false);	
+			inputStream = new FileInputStream(odsFilePath1);
+			TimesheetImportResponse x = new TimesheetImportResponse(conn, inputStream);
+			System.out.println(x);
 		} 
 		finally {
 			if ( conn != null ) {
 				conn.close();
 			}
 		}
-		inputStream = new FileInputStream(odsFilePath1);
-		TimesheetImportResponse x = new TimesheetImportResponse(conn, inputStream);
+		
 	}
 	
 

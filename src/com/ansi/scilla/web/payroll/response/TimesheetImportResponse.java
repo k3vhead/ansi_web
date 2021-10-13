@@ -7,6 +7,9 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Table;
 
@@ -21,16 +24,16 @@ public class TimesheetImportResponse extends MessageResponse {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private Logger logger = LogManager.getLogger(TimesheetImportResponse.class);
 	
 	private List<TimesheetRecord> timesheetRecords = new ArrayList<TimesheetRecord>();
 
-	private String operationsManagerName = new String();
-	private String division = new String();
-	private String weekEnding = new String();
+	private String operationsManagerName;
+	private String division;
+	private String weekEnding;
+	private RequestDisplay request;
 	
 	//private List<TimesheetRecord> timesheetRecords = new ArrayList<TimesheetRecord>();
-	
-	private InputStream weeklyPayrollReportODS;
 	
 	public enum WprCols{
 		EMPLOYEE_ROW  	("B")		
@@ -57,7 +60,7 @@ public class TimesheetImportResponse extends MessageResponse {
 		private final String cellLocation;	
 		 /**
 	     * @param cellLocation
-u	     */
+	     */
 		private WprCols(final String cellLocation) {
 	        this.cellLocation = cellLocation;
 	    }
@@ -83,9 +86,10 @@ u	     */
 		
 	}	
 	
-	public TimesheetImportResponse(Connection conn, InputStream inputStream) {
+	public TimesheetImportResponse(Connection conn, InputStream inputStream) throws Exception {
 		this();
-		this.weeklyPayrollReportODS = inputStream;
+		logger.log(Level.DEBUG, "Building a response object");
+		parseODSFile(inputStream);
 		
 	}
 
@@ -142,28 +146,15 @@ u	     */
 		this.weekEnding = weekEnding;
 	}
 
-	public InputStream getWeeklyPayrollReportODS() {
-		return weeklyPayrollReportODS;
-	}
-
-	public void setWeeklyPayrollReportODS(InputStream weeklyPayrollReportODS) {
-		this.weeklyPayrollReportODS = weeklyPayrollReportODS;
-	}
+	
 		
-    public void ParseODSFile(InputStream odsFile) {
+    public void parseODSFile(InputStream odsFile) throws Exception {
 
-    	private Boolean isDebugMode=true;
+    	Boolean isDebugMode=true;
     	    	
     	SpreadsheetDocument speadsheetDocument = null;
-		try {
-			speadsheetDocument = SpreadsheetDocument.loadDocument(odsFile);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		speadsheetDocument = SpreadsheetDocument.loadDocument(odsFile);
 		
-		// if the spreadsheet didn't populate... abort.
-		if(speadsheetDocument==null) return;
 		
 		List<Table> tables = speadsheetDocument.getTableList();
 			
@@ -215,12 +206,13 @@ u	     */
 			
 			timesheetRecords.add(timeSheetRecord);
 			
-			if(isDebugMode) {	
-				System.out.println("Employee Name for Row " + sdRow + " is " + TimeRecRow.getEmployeeName());
-				System.out.println("Volume for Row " + sdRow + " is " + TimeRecRow.getVolume());
-			}
+//			if(isDebugMode) {	
+//				System.out.println("Employee Name for Row " + sdRow + " is " + TimeRecRow.getEmployeeName());
+//				System.out.println("Volume for Row " + sdRow + " is " + TimeRecRow.getVolume());
+//			}
 		}
-		this.setDivision(cellAddr); summary_tab.getCellByPosition(WprCols.Volume.cellLocation()			+ sdRow.toString()).getDisplayText());
+		this.setDivision(cellAddr); 
+//		summary_tab.getCellByPosition(WprCols.Volume.cellLocation()			+ sdRow.toString()).getDisplayText());
 		
 		
 		
