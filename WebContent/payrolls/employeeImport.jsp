@@ -105,14 +105,21 @@
         			var xhr = new XMLHttpRequest();
         			xhr.open('POST',"payroll/employeeImport", true);
         			
-        			xhr.onload = function() {
-        				if ( xhr.status == 200 ) {
-        					alert("It worked");
-        				} else {
-        					alert("It didn: " + xhr.status);
-        				}
-        			};
-        			
+
+           			xhr.onload = function() {
+           				if ( xhr.status == 200 ) {
+           					var $data = JSON.parse(this.response);
+           					if ( $data.responseHeader.responseCode == "EDIT_FAILURE") {
+           						EMPLOYEE_IMPORT.processUploadFailure($data);
+           					} else if ( $data.responseHeader.responseCode == "SUCCESS" ) {
+           						EMPLOYEE_IMPORT.processUploadSuccess($data);
+           					} else {
+           						$("#globalMsg").html("Invalid response code " + $data.responseHeader.responseCode + ". Contact Support");
+           					}
+           				} else {
+           					$("#globalMsg").html("Response Code " + xhr.status + ". Contact Support");
+           				}
+           			};
         			xhr.send(formData);
         		}
         	};
@@ -175,12 +182,47 @@
         		
         		
         		
-        		makeClickers : function() {
-        			$("#save-button").click(function($event) {
-        				$("#prompt-div").hide();
-        				$("#display-div").show();
-        			});
-        			
+
+           		makeClickers : function() {
+           			$("#save-button").click(function($event) {
+           				$("#prompt-div .err").html("");
+           				var file = document.getElementById('timesheet-file').files[0];
+           				var reader = new FileReader();
+           				if ( file == null ) { 
+							$("#prompt-div .timesheetFileErr").html("Required Value").show();
+							if ( $("#prompt-div select[name='divisionId']").val().length == 0) { $("#prompt-div .divisionIdErr").html("Required Value").show(); }
+							
+           				} else {
+	           				reader.readAsText(file, 'UTF-8');	           				
+	           				reader.onload = EMPLOYEE_IMPORT.saveFile;
+	           				// reader.onprogress ...  (progress bar)
+           				}
+           			});
+           			
+           			$("#display-div input[name='cancelButton']").click(function($event) {
+           				$("#display-div").hide();
+           				$("#prompt-div").show();
+           			});
+           		},
+           		
+
+
+           		processUploadFailure : function($data) {
+           			console.log("processUploadFailure");
+           			$("#prompt-div .err").html("");
+           			$.each($data.data.webMessages, function($index, $value) {
+           				var $selector = "#prompt-div ." + $index + "Err";
+           				$($selector).html($value[0]).show();
+           			});
+           		},
+           		
+           		
+           		processUploadSuccess : function($data) {
+           			console.log("processUploadSuccess");
+           			$("#prompt-div").hide();
+           			$("#display-div").show();
+           			$("#display-div .divisionId").html($data.data.request.div);
+           			}
         			
         			
         			$("#organization-edit .org-status-change").on("click", function($event) {
@@ -513,46 +555,48 @@
 
    
 	    	
-	    <table id="prompt-div">
+	    <div id="prompt-div">
+	    <table>
     		<tr>
     			<td><span class="formLabel">Division: </span></td>
-    			<td><select name="divisionId">
-	    			<option value="123"></option>
-	    			<option value="123">0-AA00</option>
-	    			<option value="123">12-IL02</option>
-	    			<option value="123">15-IL05</option>
-	    			<option value="123">18-IL08</option>
-	    			<option value="123">19-IL09</option>
-	    			<option value="123">23-CH03</option>
-	    			<option value="123">31-IN01</option>
-	    			<option value="123">32-IN02</option>
-	    			<option value="123">33-IN03</option>
-	    			<option value="123">44-MO04</option>
-	    			<option value="123">65-OH05</option>
-	    			<option value="123">66-OH06</option>
-	    			<option value="123">67-OH07</option>
-	    			<option value="123">71-PA01</option>
-	    			<option value="123">72-PA02</option>    
-	    			<option value="123">77-CL07</option>
-	    			<option value="123">78-CL08</option>
-	    			<option value="123">81-TN01</option>    	
-	    			<option value="123">89-TN09</option>    	  	    		
-	    		</select><br /></td>
+    			<td>
+    			<select name="divisionId">
+    				<option value=""></option>
+    				<ansi:selectOrganization type="DIVISION" active="true" />
+    			</select>
+    			</td>
+    			<td><span class="divisionIdErr err"></span></td>
     		</tr>
     		<tr>
-    			<td><span class="formLabel">Select CSV File: </span></td>
+    			<td><span class="formLabel">Paycom Import File:</span></td>
     			<td><input type="file" id="employee-file" name="files[]" /><br /></td>
     		</tr>
     		<tr>
     			<td></td>
     			<td><input type="button" value="Save" id="save-button" /></td>
+    			
     		</tr>
     	</table>
+    	</div>
 	    	
     	
-    	<div id="display-div">
-    		output goes here
-    	</div>
+    	<table id="display-div">
+    		<tr>
+    			<td><span class="form-label">Company Code:</span></td>
+    			<td><span class="form-label">Division:</span></td>
+    			<td><span class="form-label">Employee Code:</span></td>
+    			<td><span class="form-label">First:</span></td>
+    			<td><span class="form-label">Last:</span></td>
+    			<td><span class="form-label">Department Desc Status:</span></td>
+    			<td><span class="form-label">Term Date:</span></td>
+    			<td><span class="form-label">Union Member:</span></td>
+    			<td><span class="form-label">Union Code:</span></td>
+    			<td><span class="form-label">Union Rate:</span></td>
+    			<td><span class="form-label">Process Date:</span></td>
+    				
+    			<td rowspan="2"><input type="button" value="Cancel" name="cancelButton" class="action-button" /></td>
+    		</tr>
+    	</table>
 
 		
     </tiles:put>
