@@ -1,30 +1,27 @@
 package com.ansi.scilla.web.payroll.servlet;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.sql.Connection;
 import java.util.Enumeration;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.logging.log4j.Level;
 
+import com.ansi.scilla.web.common.response.ResponseCode;
+import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
+import com.ansi.scilla.web.common.struts.SessionData;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.payroll.common.EmployeeRecord;
-
-import au.com.bytecode.opencsv.CSVReader;
+import com.ansi.scilla.web.payroll.request.EmployeeRequest;
+import com.ansi.scilla.web.payroll.response.EmployeeImportResponse;
 
 public class EmployeeImportServlet extends AbstractServlet {
 
@@ -37,7 +34,31 @@ public class EmployeeImportServlet extends AbstractServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		logger.log(Level.DEBUG, "Employee Import post");
 
+		Connection conn = null;
 		try {
+			conn = AppUtils.getDBCPConn();
+			conn.setAutoCommit(false);
+			
+			SessionData sessionData = AppUtils.validateSession(request, Permission.PAYROLL_WRITE);
+//			EmployeeRequest uploadRequest = new EmployeeRequest(request);
+//			ResponseCode responseCode = null;
+//			WebMessages webMessages = uploadRequest.validate(conn);
+//			EmployeeImportResponse data = new EmployeeImportResponse();
+//			data.setWebMessages(webMessages);
+//			
+//			if ( webMessages.isEmpty() ) {
+//				data = new EmployeeImportResponse(conn, uploadRequest);
+//				responseCode = ResponseCode.SUCCESS;
+//			} else {
+//				responseCode = ResponseCode.EDIT_FAILURE;
+//			}
+//
+//			super.sendResponse(conn, response, responseCode, data);
+
+			conn.close();
+		}
+		
+		/*try {
 			AppUtils.validateSession(request, Permission.CLAIMS_WRITE);  //make sure we're allowed to do this
 			DiskFileItemFactory factory = new DiskFileItemFactory();		// this is a utility that we'll use to parse the input into objects
 			factory.setRepository(new File("/tmp"));						// that tell us everything we need to know. Somebody else has done
@@ -66,9 +87,12 @@ public class EmployeeImportServlet extends AbstractServlet {
 					}
 				}
 			}
-		} catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
+		}*/ 
+		catch (TimeoutException | NotAllowedException | ExpiredLoginException e1) {
 			super.sendForbidden(response);
-		} catch ( FileUploadException e ) {
+//		} catch ( FileUploadException e ) {
+//			throw new ServletException(e);
+		}	catch (Exception e) {
 			throw new ServletException(e);
 		}
 		
