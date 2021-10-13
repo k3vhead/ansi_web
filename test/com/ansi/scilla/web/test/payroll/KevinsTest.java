@@ -22,15 +22,13 @@ public class KevinsTest{
 		
 
 		Connection conn = null;
-		try {			
-			try {
-				conn = AppUtils.getDevConn();
-				conn.setAutoCommit(false);		
-			} 
-			finally {
-				if ( conn != null ) {
-					conn.close();
-				}
+		try {
+			conn = AppUtils.getDevConn();
+			conn.setAutoCommit(false);		
+		} 
+		finally {
+			if ( conn != null ) {
+				conn.close();
 			}
 		}
 		inputStream = new FileInputStream(odsFilePath1);

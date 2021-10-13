@@ -7,37 +7,85 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
+import org.odftoolkit.simple.SpreadsheetDocument;
+import org.odftoolkit.simple.table.Table;
+
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.payroll.request.TimesheetImportRequest;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat;	
 
 public class TimesheetImportResponse extends MessageResponse {
-
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	private RequestDisplay request;
-	private List<TimesheetRecord> employeeRecordList = new ArrayList<TimesheetRecord>();
 	
+	private List<TimesheetRecord> timesheetRecords = new ArrayList<TimesheetRecord>();
+
+	private String operationsManagerName = new String();
+	private String division = new String();
+	private String weekEnding = new String();
+	
+	//private List<TimesheetRecord> timesheetRecords = new ArrayList<TimesheetRecord>();
+	
+	private InputStream weeklyPayrollReportODS;
+	
+	public enum WprCols{
+		EMPLOYEE_ROW  	("B")		
+		,EmployeeName 	("D")
+		,RegularHours 	("F")
+		,RegularPay		("H")
+		,Expenses 		("J")
+		,OTHours 		("L")
+		,OTPay 			("N")
+		,VacHours 		("P")
+		,VacPay			("R")
+		,HolHours 		("T")
+		,HolPay  		("V")
+		,GrossPay 		("X")
+		,ExpSubmitted 	("Z")		
+		,ExpAllowed 	("AB")
+		,Volume 		("AD")
+		,DL 			("AF")
+		,Prod 			("AH")
+		,Division		("L3")
+		,OM_Name		("O3")
+		,WeekEnding		("X3");
+		
+		private final String cellLocation;	
+		 /**
+	     * @param cellLocation
+u	     */
+		private WprCols(final String cellLocation) {
+	        this.cellLocation = cellLocation;
+	    }
+
+		public String cellLocation() {
+			return this.cellLocation;
+		}
+	   
+	}
+		
 	public TimesheetImportResponse() {
 		super();
 	}
-	
+		
 	public TimesheetImportResponse(Connection conn, TimesheetImportRequest request) throws Exception {
 		this();	
+		
 		this.request = new RequestDisplay(conn, request);
-		this.employeeRecordList = Arrays.asList( new TimesheetRecord[] {
+		this.timesheetRecords = Arrays.asList( new TimesheetRecord[] {
 				new SampleRecord1(),
 				new SampleRecord2()
 		} );
-	}
-
-	public TimesheetImportResponse(Connection conn, InputStream timesheetFile) {
+		
+	}	
+	
+	public TimesheetImportResponse(Connection conn, InputStream inputStream) {
 		this();
+		this.weeklyPayrollReportODS = inputStream;
 		
 	}
 
@@ -45,22 +93,150 @@ public class TimesheetImportResponse extends MessageResponse {
 		return request;
 	}
 
-
 	public List<TimesheetRecord> getEmployeeRecordList() {
-		return employeeRecordList;
+		return timesheetRecords;
 	}
 
-
 	public void setEmployeeRecordList(List<TimesheetRecord> employeeRecordList) {
-		this.employeeRecordList = employeeRecordList;
+		this.timesheetRecords = employeeRecordList;
 	}
 	
 	public void addEmployeeRecord(TimesheetRecord record) {
-		if ( this.employeeRecordList == null ) {
-			this.employeeRecordList = new ArrayList<TimesheetRecord>();
+		if ( this.timesheetRecords == null ) {
+			this.timesheetRecords = new ArrayList<TimesheetRecord>();
 		}
-		this.employeeRecordList.add(record);
+		this.timesheetRecords.add(record);
 	}
+
+	
+
+	public List<TimesheetRecord> getTimesheetRecords() {
+		return timesheetRecords;
+	}
+
+	public void setTimesheetRecords(List<TimesheetRecord> timesheetRecords) {
+		this.timesheetRecords = timesheetRecords;
+	}
+
+	public String getOperationsManagerName() {
+		return operationsManagerName;
+	}
+
+	public void setOperationsManagerName(String operationsManagerName) {
+		this.operationsManagerName = operationsManagerName;
+	}
+
+	public String getDivision() {
+		return division;
+	}
+
+	public void setDivision(String division) {
+		this.division = division;
+	}
+
+	public String getWeekEnding() {
+		return weekEnding;
+	}
+
+	public void setWeekEnding(String weekEnding) {
+		this.weekEnding = weekEnding;
+	}
+
+	public InputStream getWeeklyPayrollReportODS() {
+		return weeklyPayrollReportODS;
+	}
+
+	public void setWeeklyPayrollReportODS(InputStream weeklyPayrollReportODS) {
+		this.weeklyPayrollReportODS = weeklyPayrollReportODS;
+	}
+		
+    public void ParseODSFile(InputStream odsFile) {
+
+    	private Boolean isDebugMode=true;
+    	    	
+    	SpreadsheetDocument speadsheetDocument = null;
+		try {
+			speadsheetDocument = SpreadsheetDocument.loadDocument(odsFile);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		// if the spreadsheet didn't populate... abort.
+		if(speadsheetDocument==null) return;
+		
+		List<Table> tables = speadsheetDocument.getTableList();
+			
+		// tests that tables are present */
+		if(isDebugMode) {	
+			System.out.println("Tables Found " + tables.size() );
+			for(int i=0; i < tables.size();i++) {
+				Table table = tables.get(i);	
+				System.out.println("Tab Name - " + table.getTableName().toString());
+			}
+		}
+		
+		Table summary_tab = tables.get(2);
+
+		// tests that division, om name and week ending were properly plucked. 
+		if(isDebugMode) {	
+			System.out.println("Divsion - " + summary_tab.getCellByPosition("L3").getDisplayText());
+			System.out.println("OM Name - " + summary_tab.getCellByPosition("O3").getDisplayText());
+			System.out.println("Week Ending - " + summary_tab.getCellByPosition("X3").getDisplayText());
+		}
+		
+		
+		String cellAddr="";
+		for(Integer sdRow=6; sdRow<39;sdRow++) {
+			if(isDebugMode) {	 // spew some data for each row to debug.. 
+				System.out.println("Row: " + sdRow);
+				System.out.println("Loc: " + WprCols.EmployeeName.cellLocation()	+ sdRow.toString());
+			}
+			
+			TimesheetRecord timeSheetRecord = new TimesheetRecord();
+			
+			timeSheetRecord.setEmployeeName(summary_tab.getCellByPosition		(WprCols.EmployeeName.cellLocation()	+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setDirectLabor(summary_tab.getCellByPosition		(WprCols.DL.cellLocation()				+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setExpenses(summary_tab.getCellByPosition			(WprCols.Expenses.cellLocation()		+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setExpensesAllowed(summary_tab.getCellByPosition	(WprCols.ExpAllowed.cellLocation()		+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setExpensesSubmitted(summary_tab.getCellByPosition	(WprCols.ExpSubmitted.cellLocation()	+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setGrossPay(summary_tab.getCellByPosition			(WprCols.GrossPay.cellLocation()		+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setHolidayHours(summary_tab.getCellByPosition		(WprCols.HolPay.cellLocation()			+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setHolidayPay(summary_tab.getCellByPosition			(WprCols.OTPay.cellLocation()			+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setOtHours(summary_tab.getCellByPosition			(WprCols.OTHours.cellLocation()			+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setOtPay(summary_tab.getCellByPosition				(WprCols.OTPay.cellLocation()			+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setProductivity(summary_tab.getCellByPosition		(WprCols.Prod.cellLocation() 			+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setRegularHours(summary_tab.getCellByPosition		(WprCols.RegularHours.cellLocation()	+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setRegularPay(summary_tab.getCellByPosition			(WprCols.RegularPay.cellLocation()		+ sdRow.toString()).getDisplayText());
+			//TimeRecRow.setState(smry.getCellByPosition						(wpr_cols.EmployeeName+sdRow.toString()).getDisplayText());
+			timeSheetRecord.setVacationHours(summary_tab.getCellByPosition		(WprCols.VacHours.cellLocation()		+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setVacationPay(summary_tab.getCellByPosition		(WprCols.VacPay.cellLocation()			+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setVolume(summary_tab.getCellByPosition				(WprCols.Volume.cellLocation()			+ sdRow.toString()).getDisplayText());
+			
+			timesheetRecords.add(timeSheetRecord);
+			
+			if(isDebugMode) {	
+				System.out.println("Employee Name for Row " + sdRow + " is " + TimeRecRow.getEmployeeName());
+				System.out.println("Volume for Row " + sdRow + " is " + TimeRecRow.getVolume());
+			}
+		}
+		this.setDivision(cellAddr); summary_tab.getCellByPosition(WprCols.Volume.cellLocation()			+ sdRow.toString()).getDisplayText());
+		
+		
+		
+		TimesheetImportResponse oTimeSheetImportResponse = new TimesheetImportResponse();
+		oTimeSheetImportResponse.setEmployeeRecordList(timesheetRecords);
+
+		// don't see any place to set division, week_ending or om_name
+		// oTimeSheetImportResponse.
+		//smry.getCellByPosition		(wpr_cols.EmployeeName	+ sdRow.toString()).getDisplayText());		
+		
+		/* debug msgs */
+		System.out.println("Rows stored = " + timesheetRecords.size());
+		/* debug msgs */
+
+
+    }
 	
 	public class RequestDisplay extends ApplicationObject {
 		private static final long serialVersionUID = 1L;
@@ -124,6 +300,9 @@ public class TimesheetImportResponse extends MessageResponse {
 		public void setTimesheetFile(String timesheetFile) {
 			this.timesheetFile = timesheetFile;
 		}
+		
+
+		
 		
 		
 	}
