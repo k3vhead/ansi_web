@@ -43,12 +43,12 @@ public class ExceptionReportServlet extends AbstractServlet {
 			logger.log(Level.DEBUG, "Exception uri: " + request.getRequestURI());
 			logger.log(Level.DEBUG, "Exception path: " + path);
 			
-			String divisionId = path.substring(StringUtils.lastIndexOf(path, "/")+1);
-			logger.log(Level.DEBUG, "division: " + divisionId);
+			String groupId = path.substring(StringUtils.lastIndexOf(path, "/")+1);
+			logger.log(Level.DEBUG, "division: " + groupId);
 			
-			if ( StringUtils.isNumeric(divisionId) ) {
+			if ( StringUtils.isNumeric(groupId) ) {
 				try {
-					ExceptionReportResponse data = new ExceptionReportResponse(conn, Integer.valueOf(divisionId));
+					ExceptionReportResponse data = new ExceptionReportResponse(conn, Integer.valueOf(groupId));
 					data.setWebMessages(webMessages);
 					super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
 				} catch ( RecordNotFoundException e ) {

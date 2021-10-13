@@ -2,9 +2,10 @@ package com.ansi.scilla.web.payroll.common;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Calendar;
 
 import com.ansi.scilla.common.ApplicationObject;
-import com.thewebthing.commons.db2.RecordNotFoundException;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class ExceptionReportRecord extends ApplicationObject {
 
@@ -23,8 +24,8 @@ public class ExceptionReportRecord extends ApplicationObject {
 	 private String employeeMi;
 	 private String employeeLastName;
 	/* private String empolyeeStatus; //not used */
-	/* private Calendar employeeTermination;
-	 private Calendar weekEnding; */
+	 private Calendar employeeTermination;
+	 private Calendar weekEnding;
 	 private String state;
 	 private String city;
 	 private String employeeName;
@@ -179,6 +180,122 @@ public class ExceptionReportRecord extends ApplicationObject {
 	public String getProductivity() {
 		return productivity;
 	}
+
+	public Double getVacationHours() {
+		return vacationHours;
+	}
+
+	public void setVacationHours(Double vacationHours) {
+		this.vacationHours = vacationHours;
+	}
+
+	public void setCompanyCode(String companyCode) {
+		this.companyCode = companyCode;
+	}
+
+	public void setDivisionId(Integer divisionId) {
+		this.divisionId = divisionId;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public void setDiv(String div) {
+		this.div = div;
+	}
+
+	public void setEmployeeFirstName(String employeeFirstName) {
+		this.employeeFirstName = employeeFirstName;
+	}
+
+	public void setEmployeeMi(String employeeMi) {
+		this.employeeMi = employeeMi;
+	}
+
+	public void setEmployeeLastName(String employeeLastName) {
+		this.employeeLastName = employeeLastName;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public void setEmployeeName(String employeeName) {
+		this.employeeName = employeeName;
+	}
+
+	public void setRegularHours(Integer regularHours) {
+		this.regularHours = regularHours;
+	}
+
+	public void setRegularPay(Integer regularPay) {
+		this.regularPay = regularPay;
+	}
+
+	public void setExpenses(Integer expenses) {
+		this.expenses = expenses;
+	}
+
+	public void setOtHours(Integer otHours) {
+		this.otHours = otHours;
+	}
+
+	public void setOtPay(Integer otPay) {
+		this.otPay = otPay;
+	}
+
+	public void setHolidayHours(Integer holidayHours) {
+		this.holidayHours = holidayHours;
+	}
+
+	public void setHolidayPay(Integer holidayPay) {
+		this.holidayPay = holidayPay;
+	}
+
+	public void setExpensesSubmitted(Integer expensesSubmitted) {
+		this.expensesSubmitted = expensesSubmitted;
+	}
+
+	public void setExpensesAllowed(Integer expensesAllowed) {
+		this.expensesAllowed = expensesAllowed;
+	}
+
+	public void setVolume(Integer volume) {
+		this.volume = volume;
+	}
+
+	public void setDirectLabor(Integer directLabor) {
+		this.directLabor = directLabor;
+	}
+
+	public void setProductivity(String productivity) {
+		this.productivity = productivity;
+	}
+	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
+	public Calendar getEmployeeTermination() {
+		return employeeTermination;
+	}
+	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
+	public void setEmployeeTermination(Calendar employeeTermination) {
+		this.employeeTermination = employeeTermination;
+	}
+	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
+	public Calendar getWeekEnding() {
+		return weekEnding;
+	}
+
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
+	public void setWeekEnding(Calendar weekEnding) {
+		this.weekEnding = weekEnding;
+	}
 	 
 	 
 	 /*
@@ -215,4 +332,5 @@ public class ExceptionReportRecord extends ApplicationObject {
 				+ "	payroll_worksheet.productivit
 				
 				*/
+	
 }

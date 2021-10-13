@@ -45,8 +45,8 @@ public class TestExceptionQuery {
 			+ "LEFT OUTER JOIN payroll_worksheet on payroll_worksheet.division_id = division.division_id \n"
 			+ "	and payroll_worksheet.employee_code = payroll_employee.employee_code\n"
 			+ "	-- and week_ending \n"
-			+ "WHERE group_type = 'COMPANY' and division_group.company_code is not NULL \n"
-			+ "ORDER BY company_code, group_name\n";
+			+ "WHERE group_type = 'COMPANY' and division_group.group_id is not NULL \n"
+			+ "ORDER BY group_id, group_name\n";
 			
 	public static void main(String[] args) {
 		try {
@@ -66,8 +66,8 @@ public class TestExceptionQuery {
 			PreparedStatement ps = con.prepareStatement(sql);
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
-				String companyCode = rs.getString("company_code");
-				System.out.println(companyCode);
+				String group_id = rs.getString("group_id");
+				System.out.println(group_id);
 				ExceptionReportRecord rec = new ExceptionReportRecord(rs);
 			}
 			rs.close();
