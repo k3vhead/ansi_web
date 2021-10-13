@@ -21,9 +21,16 @@ import com.ansi.scilla.web.common.exception.InvalidFormatException;
 import com.ansi.scilla.web.common.request.AbstractRequest;
 import com.ansi.scilla.web.common.request.RequestValidator;
 import com.ansi.scilla.web.common.response.WebMessages;
+import com.ansi.scilla.web.payroll.common.TimesheetValidator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 
+/**
+ * Used for adding/editing a payroll timesheet record, most likely from the Payroll Timesheet Lookup page
+ * 
+ * @author dclewis
+ *
+ */
 public class TimesheetRequest extends AbstractRequest {
 
 
@@ -373,6 +380,11 @@ public class TimesheetRequest extends AbstractRequest {
 				webMessages.addMessage(EMPLOYEE_CODE, "Error while validating");
 			}
 			rs.close();
+		}
+		
+		if ( webMessages.isEmpty() ) {
+			TimesheetValidator.validateEmployeeName(conn, webMessages, EMPLOYEE_NAME, this.employeeName, "Employee Name");
+			TimesheetValidator.validateExpenses(conn, webMessages, EXPENSES_SUBMITTED, expensesAllowed, expensesSubmitted, grossPay);
 		}
 		return webMessages;
 	}

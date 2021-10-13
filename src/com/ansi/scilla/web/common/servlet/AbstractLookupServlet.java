@@ -27,6 +27,7 @@ import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.common.utils.ColumnFilter;
 import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
+import com.ansi.scilla.web.exceptions.InvalidParameterException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 
@@ -168,6 +169,8 @@ public abstract class AbstractLookupServlet extends AbstractServlet {
 			processGet(request, response);
 		} catch (TimeoutException  | NotAllowedException | ExpiredLoginException e) {
 			super.sendForbidden(response);
+		} catch ( InvalidParameterException e ) {
+			super.sendNotFound(response);
 		}
 	}
 	
@@ -184,12 +187,14 @@ public abstract class AbstractLookupServlet extends AbstractServlet {
 			processGet(request, response);
 		} catch (TimeoutException  | NotAllowedException | ExpiredLoginException e) {
 			super.sendForbidden(response);
+		} catch (InvalidParameterException e) {
+			super.sendNotFound(response);
 		}
 	}
 	
 	
 	
-	private void processGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	private void processGet(HttpServletRequest request, HttpServletResponse response) throws InvalidParameterException, ServletException {
 		String sStart = request.getParameter("start");
 		String sAmount = request.getParameter("length");
 		String sDraw = request.getParameter("draw");
@@ -317,7 +322,7 @@ public abstract class AbstractLookupServlet extends AbstractServlet {
 		return columnFilterList;
 	}
 
-	public abstract LookupQuery makeQuery(Connection conn, HttpServletRequest request);
+	public abstract LookupQuery makeQuery(Connection conn, HttpServletRequest request) throws InvalidParameterException;
 	
 	
 }
