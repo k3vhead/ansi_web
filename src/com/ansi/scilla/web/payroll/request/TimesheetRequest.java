@@ -385,6 +385,7 @@ public class TimesheetRequest extends AbstractRequest {
 		if ( webMessages.isEmpty() ) {
 			TimesheetValidator.validateEmployeeName(conn, webMessages, EMPLOYEE_NAME, this.employeeName, "Employee Name");
 			TimesheetValidator.validateExpenses(conn, webMessages, EXPENSES_SUBMITTED, expensesAllowed, expensesSubmitted, grossPay);
+			TimesheetValidator.validateExpensesYTD(conn, webMessages, EXPENSES_SUBMITTED, employeeCode, weekEnding);
 		}
 		return webMessages;
 	}

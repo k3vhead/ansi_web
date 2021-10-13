@@ -34,7 +34,7 @@ public class ExceptionReportResponse extends MessageResponse {
 		this.group = division.getDivisionDisplay();
 		this.groupDescription = division.getDescription();
 		this.recordList = new ArrayList<ExceptionReportRecord> ();
-		ResultSet rs = ExceptionReportQuery.execute(conn, groupId);
+		ResultSet rs = null; //ExceptionReportQuery.execute(conn, groupId);
 		while (rs.next()) {
 			ExceptionReportRecord record = new ExceptionReportRecord(rs);
 			this.recordList.add(record);

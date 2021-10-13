@@ -3,6 +3,7 @@ package com.ansi.scilla.web.payroll.query;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -60,16 +61,16 @@ public class ExceptionReportQuery extends LookupQuery {
 			"	and payroll_worksheet.employee_code = payroll_employee.employee_code\n" +
 			"	-- and week_ending \n";			
 	private static final String sqlWhereClause =
-			"WHERE group_type = 'COMPANY' and division_group.company_code is not NULL and division_group.group_id=? \n" +
-			"ORDER BY company_code, group_name";
+			"WHERE group_type = 'COMPANY' and division_group.company_code is not NULL and division_group.group_id=? \n";
+//			"ORDER BY company_code, group_name";
 			
 	
 
-	public ExceptionReportQuery(Integer userId, List<SessionDivision> divisionList) {
+	public ExceptionReportQuery(Integer userId, List<SessionDivision> divisionList, Integer groupId) {
 		super(sqlSelectClause, sqlFromClause, sqlWhereClause);
 		this.logger = LogManager.getLogger(ExceptionReportQuery.class);
 		this.userId = userId;	
-//		super.setBaseFilterValue(Arrays.asList( new Object[] {divisionId, workYear}));
+		super.setBaseFilterValue(Arrays.asList( new Object[] {groupId}));
 	}
 
 
@@ -80,7 +81,7 @@ public class ExceptionReportQuery extends LookupQuery {
 		String orderBy = "";
 		if ( selectType.equals(SelectType.DATA)) {
 			if ( StringUtils.isBlank(sortBy)) {
-				orderBy =  " order by division.group_id";
+				orderBy =  " order by CONCAT(division.division_nbr, '-', division.division_code), payroll_employee.employee_first_name, payroll_employee.employee_last_name";
 			} else {
 //				List<String> sortList = Arrays.asList(StringUtils.split(sortBy, ","));
 				String sortDir = sortIsAscending ? orderBy + " asc " : orderBy + " desc ";
@@ -103,8 +104,7 @@ public class ExceptionReportQuery extends LookupQuery {
 		
 		String[] searchableFields = new String[] {
 				"division_group.name" ,
-				"division_group.company_code" ,
-				"division.division_id" ,
+				"division.division_nbr" ,
 				"division.description" ,
 				"payroll_employee.employee_code" ,
 				"payroll_employee.employee_first_name" ,
@@ -128,13 +128,6 @@ public class ExceptionReportQuery extends LookupQuery {
 		return whereClause;
 	}
 
-
-
-
-	public static ResultSet execute(Connection conn, Integer groupId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	
 	

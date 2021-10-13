@@ -1,13 +1,16 @@
 package com.ansi.scilla.web.payroll.common;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Calendar;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.ansi.scilla.common.db.ApplicationProperties;
+import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.common.utils.ApplicationProperty;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.thewebthing.commons.db2.RecordNotFoundException;
@@ -45,6 +48,14 @@ public class TimesheetValidator {
 	
 	private static final String EMPLOYEE_ALIAS_SQL = 
 			"select count(*) as record_count from employee_alias where lower(employee_name)=?";
+	
+	private static final String YTD_EXPENSE_SQL =
+			"select isnull(sum(pw.gross_pay),0) as ytd_gross_pay,\n" +
+			"   isnull(sum(pw.expenses),0) as ytd_expenses, \n" + 
+			"	isnull(sum(pw.expenses_submitted),0) as ytd_expenses_submitted, \n" + 
+			"	isnull(sum(pw.expenses_allowed),0) as ytd_expenses_allowed \n" + 
+			"from payroll_worksheet pw\n" + 
+			"where pw.week_ending>=? and employee_code=?";
 	
 	
 	
@@ -114,6 +125,26 @@ public class TimesheetValidator {
 				isValid = false;
 			}
 		}
+		return isValid;
+	}
+	
+	
+	public static boolean validateExpensesYTD(Connection conn, WebMessages webMessages, String fieldName, Integer employeeCode, Calendar workDay) throws RecordNotFoundException, Exception {
+		boolean isValid = true;
+		Calendar fiscalStart = AppUtils.getFiscalStart(conn, workDay);
+		PreparedStatement ps = conn.prepareStatement(YTD_EXPENSE_SQL);
+		ps.setDate(1, new java.sql.Date(fiscalStart.getTime().getTime()));
+		ps.setInt(2, employeeCode);
+		ResultSet rs = ps.executeQuery();
+		if ( rs.next()) {
+			Double expensesAllowed = rs.getDouble("ytd_expenses_allowed");
+			Double expensesSubmitted = rs.getDouble("ytd_expenses_submitted");
+			Double grossPay = rs.getDouble("ytd_gross_pay");
+			validateExpenses(conn, webMessages, fieldName, expensesAllowed, expensesSubmitted, grossPay);
+		} else {
+			throw new RecordNotFoundException();
+		}
+		rs.close();
 		return isValid;
 	}
 }
