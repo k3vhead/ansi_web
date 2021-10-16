@@ -291,8 +291,8 @@ public class AbstractServlet extends HttpServlet {
 					}
 				} else if ( value != null && value instanceof Float) {
 					Float decimalValue = (Float)value;
-					Float minValue = new Float(min);
-					Float maxValue = new Float(max);
+					Float minValue = Float.valueOf(min);
+					Float maxValue = Float.valueOf(max);
 					
 					if ( minValue.compareTo(decimalValue) > 0 ) {
 						nonMatchingValues.add(fixFieldName(fieldName));
@@ -301,8 +301,8 @@ public class AbstractServlet extends HttpServlet {
 					}
 				} else if ( value != null && value instanceof Integer) {
 					Integer decimalValue = (Integer)value;
-					Integer minValue = (new Float(min)).intValue();
-					Integer maxValue = (new Float(max)).intValue();
+					Integer minValue = (Float.valueOf(min)).intValue();
+					Integer maxValue = (Float.valueOf(max)).intValue();
 					
 					if ( minValue.compareTo(decimalValue) > 0 ) {
 						nonMatchingValues.add(fixFieldName(fieldName));
