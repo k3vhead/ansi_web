@@ -50,6 +50,12 @@ public class BcrTicketClaimRequest extends AbstractRequest {
 	private Integer serviceTagId;
 	private String claimedEquipment;
 	
+	public BcrTicketClaimRequest() {
+		super();
+	}
+	
+	
+	
 	public Integer getTicketId() {
 		return ticketId;
 	}

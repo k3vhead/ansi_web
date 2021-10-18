@@ -46,8 +46,14 @@
 		   		</tr>
 		   		
 		   		<tr>
-		   			<th style="border-bottom:solid 1px #000000;" class="formLabel">Job Tags</th>
-		   			<td colspan="5" style="border-bottom:solid 1px #000000;"><span class="jobTags"></span></td>
+		   			<th style="border-bottom:solid 1px #000000;" rowspan="2" class="formLabel">Job Tags</th>
+		   			<td colspan="3" rowspan="2" style="border-bottom:solid 1px #000000;"><span class="jobTags"></span></td>
+		   			<td><span class="formLabel">D/L</span></td>
+		   			<td><span class="directLabor">0.00</span></td>
+		   		</tr>
+		   		<tr>
+		   			<td style="border-bottom:solid 1px #000000;"><span class="formLabel">D/L%</span></td>
+		   			<td style="border-bottom:solid 1px #000000;"><span class="directLaborPct">0.00%</span></td>
 		   		</tr>
 		   		
 		   		<tr class="processNotesRow">

@@ -289,8 +289,14 @@ public abstract class LookupQuery extends ApplicationObject {
 	}
 	
 	
+	/**
+	 * 
+	 * @param selectType
+	 * @param rowCount Number of rows to return. -1 indicates "all of them"
+	 * @return
+	 */
 	private String makeFetch(SelectType selectType, Integer rowCount) {
-		return selectType.equals(SelectType.DATA) ? "\n FETCH NEXT " + rowCount + " ROWS ONLY " : "";
+		return selectType.equals(SelectType.DATA) && rowCount > 0 ? "\n FETCH NEXT " + rowCount + " ROWS ONLY " : "";
 	}
 
 	
@@ -307,14 +313,18 @@ public abstract class LookupQuery extends ApplicationObject {
 			for ( Object o : this.baseFilterValue ) {
 				if ( o instanceof Integer ) {
 					ps.setInt(idx,(Integer)o);
+					this.logger.log(Level.DEBUG, "Index: " + idx + "Integer: " + (Integer)o);
 				} else if ( o instanceof String ) {
 					ps.setString(idx, (String)o);
+					this.logger.log(Level.DEBUG, "Index: " + idx + "String: " + (String)o);
 				} else if ( o instanceof java.util.Date) {
 					java.util.Date date = (java.util.Date)o;
 					ps.setDate(idx, new java.sql.Date(date.getTime()));
+					this.logger.log(Level.DEBUG, "Index: " + idx + "Date: " + new java.sql.Date(date.getTime()));
 				} else if ( o instanceof java.util.GregorianCalendar) {
 					GregorianCalendar date = (GregorianCalendar)o;
 					ps.setDate(idx, new java.sql.Date(date.getTime().getTime()));
+					this.logger.log(Level.DEBUG, "Index: " + idx + "Date: " + new java.sql.Date(date.getTime().getTime()));
 				} else {
 					throw new RuntimeException("Add another value to the else for " + o.getClass().getName());
 				}

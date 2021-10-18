@@ -67,7 +67,7 @@ $(function() {
 					}
 				]
 			});	
-			$("#"+$cancelId).button('option', 'label', 'Cancel');
+			$("#"+$cancelId).button('option', 'label', 'Done');
 		},
 		
 		
@@ -143,6 +143,8 @@ $(function() {
 			$($modalId + " .actTax").html($data.ticketDetail.actTax);
 			$($modalId + " .totalTaxPaid").html($data.ticketDetail.totalTaxPaid);
 			$($modalId + " .ticketBalance").html($data.ticketDetail.balance);
+			$($modalId + " .directLabor").html($data.ticketDetail.actDlAmt);
+			$($modalId + " .directLaborPct").html($data.ticketDetail.actDlPct);
 			
 			$($modalId + " .completedRow").hide();
 			if ( $data.ticketDetail.status=='N') {

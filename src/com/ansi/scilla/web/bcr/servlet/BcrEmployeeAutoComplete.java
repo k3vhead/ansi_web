@@ -44,9 +44,15 @@ public class BcrEmployeeAutoComplete extends AbstractAutoCompleteServlet {
 		List<AbstractAutoCompleteItem> itemList = new ArrayList<AbstractAutoCompleteItem>();
 		
 		String term = parameterMap.get("term").toLowerCase();
-		String sql = "select distinct employee_name from ticket_claim where lower(employee_name) like ?";
+		String divisionId = parameterMap.get("divisionId");
+		String sql = "select distinct employee_name \n" + 
+				"from ticket_claim \n" + 
+				"inner join ticket on ticket.ticket_id = ticket_claim.ticket_id\n" + 
+				"inner join division on division.division_id = ticket.act_division_id and ticket.act_division_id = ?\n" + 
+				"where lower(employee_name) like ?";
 		PreparedStatement ps = conn.prepareStatement(sql);
-		ps.setString(1, "%" + term.toLowerCase() + "%");
+		ps.setInt(1, Integer.valueOf(divisionId));
+		ps.setString(2, "%" + term.toLowerCase() + "%");
 		ResultSet rs = ps.executeQuery();
 		while ( rs.next() ) {
 			itemList.add(new EmployeeName(rs) );

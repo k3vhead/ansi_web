@@ -200,6 +200,7 @@ public class ContactServlet extends AbstractServlet {
 
 	protected WebMessages validateAdd(Connection conn, ContactRequest contactRequest) throws Exception {
 		WebMessages webMessages = new WebMessages();
+		contactRequest = removeExtraSpaces(contactRequest);
 		List<String> missingFields = super.validateRequiredAddFields(contactRequest);
 		if ( missingFields.isEmpty() ) {
 			List<String> badFormatFieldList = super.validateFormat(contactRequest);
@@ -230,6 +231,8 @@ public class ContactServlet extends AbstractServlet {
 
 	protected WebMessages validateUpdate(Connection conn, Contact contact, ContactRequest contactRequest) throws RecordNotFoundException, Exception {
 		WebMessages webMessages = new WebMessages();
+		contactRequest = removeExtraSpaces(contactRequest);
+		
 		List<String> missingFields = super.validateRequiredUpdateFields(contactRequest);
 		if ( missingFields.isEmpty() ) {
 			List<String> badFormatFieldList = super.validateFormat(contactRequest);
@@ -252,6 +255,18 @@ public class ContactServlet extends AbstractServlet {
 			}
 		}
 		return webMessages;
+	}
+
+	private ContactRequest removeExtraSpaces(ContactRequest contactRequest) {
+		contactRequest.setFirstName(StringUtils.trimToNull(contactRequest.getFirstName()));
+		contactRequest.setLastName(StringUtils.trimToNull(contactRequest.getLastName()));
+		contactRequest.setEmail(StringUtils.trimToNull(contactRequest.getEmail()));
+		contactRequest.setBusinessPhone(StringUtils.trimToNull(contactRequest.getBusinessPhone()));
+		contactRequest.setFax(StringUtils.trimToNull(contactRequest.getFax()));
+		contactRequest.setMobilePhone(StringUtils.trimToNull(contactRequest.getMobilePhone()));
+		contactRequest.setPreferredContact(StringUtils.trimToNull(contactRequest.getPreferredContact()));
+		
+		return contactRequest;
 	}
 
 	protected Contact doAdd(Connection conn, ContactRequest contactRequest, SessionUser sessionUser) throws Exception {

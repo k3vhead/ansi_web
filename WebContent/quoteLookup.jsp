@@ -142,8 +142,11 @@
     			            	if(row.quotePpcSum != null){return (row.quotePpcSum+"");} 
     			            } },
     			            { title: "<bean:message key="field.label.action" />", width:"8%",  data: function ( row, type, set ) {	
-    			            	//console.log(row);
+    			            	//console.log(row);    			            	
     			            	editText = '<a href="quoteMaintenance.html?id='+row.quoteId+'" class="editAction" data-id="'+row.quoteId+'"><webthing:edit>Edit</webthing:edit></a>';
+    			            	if ( row.quoteJobCount == 0 ) {
+    			            		editText = '<a href="newQuote.html?id='+row.quoteId+'" class="editAction" data-id="'+row.quoteId+'"><webthing:edit>Edit</webthing:edit></a>';
+    			            	}
     			            	viewText = '<a href="quoteMaintenance.html?id='+row.quoteId+'" class="editAction" data-id="'+row.quoteId+'"><webthing:view style="color:#404040;">View</webthing:view></a>';
     			            	printText = '<i class="fa fa-print orange quotePrint" aria=hidden="true" data-id="'+row.quoteId+'" data-quotenumber="'+ row.quoteCode + '"></i>';
     			            	copyText = '<i class="far fa-copy copyQuote" aria-hidden="true" data-id="'+row.quoteId+'"></i>';

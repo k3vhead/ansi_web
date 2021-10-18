@@ -34,6 +34,9 @@ public class BcrExpenseRequest extends AbstractRequest {
 	private Integer workYear;
 	private String workWeeks;
 	
+	public BcrExpenseRequest() {
+		super();
+	}
 	
 	
 	public Integer getDivisionId() {
