@@ -635,6 +635,7 @@
     <servlet-mapping>
         <servlet-name>newQuote</servlet-name>
         <url-pattern>/quote/new</url-pattern>
+        <url-pattern>/quote/orphan/*</url-pattern>
     </servlet-mapping>
 
 

@@ -97,7 +97,7 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 						queryTerm = URLDecoder.decode(queryTerm, "UTF-8");
 						queryTerm = StringUtils.trimToNull(queryTerm);
 						if ( ! StringUtils.isBlank(queryTerm)) {
-							term = queryTerm.toLowerCase();
+							term = StringUtils.trim(queryTerm.toLowerCase());
 						}
 					}
 					try {
@@ -107,16 +107,16 @@ public class ContactTypeAheadServlet extends AbstractServlet {
 						List<ReturnItem> resultList = new ArrayList<ReturnItem>();
 						String sql = "select contact_id, "
 //								+ " concat(last_name,', ',first_name) as name, "
-								+ " concat(first_name, ' ', last_name) as name, "
+								+ " concat(LTRIM(RTRIM(first_name)), ' ', LTRIM(RTRIM(last_name))) as name, "
 								+ " business_phone, mobile_phone, email, fax, preferred_contact "
 								+ " from contact where lower(business_phone) like '%" + term + "%'"
 								+ " OR lower(fax) like '%" + term + "%'"
-								+ " OR lower(concat(first_name,' ',last_name)) like '%" + term + "%'"
-								+ " OR lower(concat(last_name,' ',first_name)) like '%" + term + "%'"
-								+ " OR lower(concat(last_name,', ',first_name)) like '%" + term + "%'"
+								+ " OR lower(concat(LTRIM(RTRIM(first_name)),' ',LTRIM(RTRIM(last_name)))) like '%" + term + "%'"
+								+ " OR lower(concat(LTRIM(RTRIM(last_name)),' ',LTRIM(RTRIM(first_name)))) like '%" + term + "%'"
+								+ " OR lower(concat(LTRIM(RTRIM(last_name)),', ',LTRIM(RTRIM(first_name)))) like '%" + term + "%'"
 								+ " OR lower(mobile_phone) like '%" + term + "%'"
 								+ " OR lower(email) like '%" + term + "%'"
-								+ " ORDER BY concat(first_name, ' ', last_name) "
+								+ " ORDER BY concat(LTRIM(RTRIM(first_name)), ' ', LTRIM(RTRIM(last_name))) "
 //								+ " ORDER BY concat(last_name,', ',first_name) "
 								+ " OFFSET 0 ROWS"
 								+ " FETCH NEXT 250 ROWS ONLY";

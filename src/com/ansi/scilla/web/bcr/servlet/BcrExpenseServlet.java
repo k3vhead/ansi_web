@@ -1,10 +1,7 @@
 package com.ansi.scilla.web.bcr.servlet;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.MathContext;
 import java.sql.Connection;
-import java.util.Calendar;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -14,9 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
-import com.ansi.scilla.common.AnsiTime;
-import com.ansi.scilla.common.db.ClaimEquipment;
 import com.ansi.scilla.common.db.TicketClaim;
+import com.ansi.scilla.web.bcr.common.BcrUtils;
 import com.ansi.scilla.web.bcr.request.BcrExpenseRequest;
 import com.ansi.scilla.web.bcr.request.BcrTicketClaimRequest;
 import com.ansi.scilla.web.bcr.response.BcrTicketClaimResponse;
@@ -33,7 +29,6 @@ import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.payment.response.PaymentResponse;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class BcrExpenseServlet extends AbstractServlet {
 
@@ -67,7 +62,7 @@ public class BcrExpenseServlet extends AbstractServlet {
 					// this is a new expense
 					webMessages = bcrExpenseRequest.validateAdd(conn);
 					if ( webMessages.isEmpty() ) {
-						Integer newClaimId = insertExpense(conn, bcrExpenseRequest, sessionUser);						
+						Integer newClaimId = BcrUtils.insertExpenseClaim(conn, bcrExpenseRequest, sessionUser);						
 						data = BcrTicketClaimResponse.fromClaim(conn, sessionUser.getUserId(), divisionList, bcrExpenseRequest.getDivisionId(), bcrExpenseRequest.getWorkYear(), bcrExpenseRequest.getWorkWeeks(), newClaimId);
 						super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
 					} else {
@@ -79,7 +74,7 @@ public class BcrExpenseServlet extends AbstractServlet {
 					Integer claim =  Integer.valueOf(claimId);
 					webMessages = bcrExpenseRequest.validateUpdate(conn, claim);
 					if ( webMessages.isEmpty() ) {
-						updateExpense(conn, claim, bcrExpenseRequest, sessionUser);
+						BcrUtils.updateExpenseClaim(conn, claim, bcrExpenseRequest, sessionUser);
 						data = BcrTicketClaimResponse.fromClaim(conn, sessionUser.getUserId(), divisionList, bcrExpenseRequest.getDivisionId(), bcrExpenseRequest.getWorkYear(), bcrExpenseRequest.getWorkWeeks(), claim);
 						super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
 					} else {
@@ -154,7 +149,7 @@ public class BcrExpenseServlet extends AbstractServlet {
 						ticketClaim.selectOne(conn);
 						
 						data = BcrTicketClaimResponse.fromClaim(conn, sessionUser.getUserId(), divisionList, bcrExpenseRequest.getDivisionId(), bcrExpenseRequest.getWorkYear(), bcrExpenseRequest.getWorkWeeks(), Integer.valueOf(claimId));
-						deleteExpense(conn, Integer.valueOf(claimId));
+						BcrUtils.deleteClaim(conn, Integer.valueOf(claimId));
 						data.scrubClaim(conn, ticketClaim, divisionList, bcrExpenseRequest.getDivisionId(), bcrExpenseRequest.getWorkYear());
 						super.sendResponse(conn, response, ResponseCode.SUCCESS, data);
 					} else {
@@ -188,75 +183,5 @@ public class BcrExpenseServlet extends AbstractServlet {
 
 
 
-	private Integer insertExpense(Connection conn, BcrExpenseRequest bcrExpenseRequest, SessionUser sessionUser) throws Exception {
-			logger.log(Level.DEBUG, "Inserting a Passthru Expense");
-			TicketClaim ticketClaim = new TicketClaim();
-			Calendar today = Calendar.getInstance(new AnsiTime());
-			
-			
-			String[] claimWeek = bcrExpenseRequest.getClaimWeek().split("-");
-			
-			
-			ticketClaim.setAddedBy(sessionUser.getUserId());
-			ticketClaim.setAddedDate(today.getTime());
-			ticketClaim.setClaimWeek(Integer.valueOf(claimWeek[1]));
-			ticketClaim.setClaimYear(Integer.valueOf(claimWeek[0]));
-			ticketClaim.setDlAmt(BigDecimal.ZERO);
-			ticketClaim.setDlExpenses(BigDecimal.ZERO);
-	//		ticketClaim.setEmployeeName(employeeName);
-			ticketClaim.setHours(BigDecimal.ZERO);
-			ticketClaim.setNotes(bcrExpenseRequest.getNotes());
-			ticketClaim.setPassthruExpenseType(bcrExpenseRequest.getExpenseType());
-			ticketClaim.setPassthruExpenseVolume(  (new BigDecimal(bcrExpenseRequest.getVolume())).round(MathContext.DECIMAL32) );
-			ticketClaim.setServiceType(bcrExpenseRequest.getServiceTagId());
-			ticketClaim.setTicketId(bcrExpenseRequest.getTicketId());
-			ticketClaim.setUpdatedBy(sessionUser.getUserId());
-			ticketClaim.setUpdatedDate(today.getTime());
-			ticketClaim.setVolume(BigDecimal.ZERO);
-			
-			Integer claimId = ticketClaim.insertWithKey(conn);
-			conn.commit();
-			return claimId;
-		}
-
-
-
-
-	private void updateExpense(Connection conn, Integer claimId, BcrExpenseRequest bcrExpenseRequest, SessionUser sessionUser) throws Exception {
-		Calendar today = Calendar.getInstance(new AnsiTime());
-		TicketClaim ticketClaim = new TicketClaim();
-		ticketClaim.setClaimId(claimId);
-		ticketClaim.selectOne(conn);
-		
-		ticketClaim.setPassthruExpenseType(bcrExpenseRequest.getExpenseType());
-		ticketClaim.setPassthruExpenseVolume(  (new BigDecimal(bcrExpenseRequest.getVolume())).round(MathContext.DECIMAL32) );
-		ticketClaim.setNotes(bcrExpenseRequest.getNotes());
-		ticketClaim.setUpdatedBy(sessionUser.getUserId());
-		ticketClaim.setUpdatedDate(today.getTime());
-		
-		
-		TicketClaim key = new TicketClaim();
-		key.setClaimId(claimId);
-		ticketClaim.update(conn, key);
-		conn.commit();
-	}
-
-
-
-
-	private void deleteExpense(Connection conn, Integer claimId) throws Exception {
-		try {
-			ClaimEquipment claimEquipment = new ClaimEquipment();
-			claimEquipment.setClaimId(claimId);
-			claimEquipment.delete(conn);
-		} catch ( RecordNotFoundException e) {
-			// trying to delete something that isn't there; we don't care
-		}
-		
-		TicketClaim ticketClaim = new TicketClaim();
-		ticketClaim.setClaimId(claimId);
-		ticketClaim.delete(conn);
-		conn.commit();
-		
-	}
+	
 }

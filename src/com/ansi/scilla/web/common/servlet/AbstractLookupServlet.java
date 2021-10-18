@@ -215,12 +215,15 @@ public abstract class AbstractLookupServlet extends AbstractServlet {
 				start = Integer.parseInt(sStart);
 				start = start < 0 ? 0 : start;
 			}
-			if (sAmount != null) {
+			if (sAmount != null) {				
 				amount = Integer.parseInt(sAmount);
-				if (amount < 10 ) {
-					amount = 10;
-				} else if (amount > 1000) {
-					amount = 1000;
+				// -1 indicates "get all rows"
+				if ( amount > 0 ) {
+					if (amount < 10 ) {
+						amount = 10;
+					} else if (amount > 1000) {
+						amount = 1000;
+					}
 				}
 			}
 			if (sDraw != null) {

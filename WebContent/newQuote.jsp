@@ -46,6 +46,8 @@
         
         	$(document).ready(function() {
 				; NEWQUOTE = {
+					quoteId : '<c:out value="${ANSI_QUOTE_ID}" />',
+					showOrphanModal : true,
 					accountTypeList : null,
 					countryList : null,
 					buildingTypeList : null,
@@ -70,13 +72,13 @@
 					divisionId : null,
 					managerId : null,
 					leadType : null,
+					buildingType : null,
+					invoiceStyle : null,
+					invoiceGrouping : null,
 					
 					// pieces of the quote that are not required
 					accountType : null,
-					buildingType : null,
 					invoiceTerms : null,
-					invoiceStyle : null,
-					invoiceGrouping : null,
 					invoiceBatch : null,
 					taxExempt : null,
 					taxExemptReason : null,
@@ -92,6 +94,9 @@
 					
 					init : function() {
 						console.log("init");
+						if (NEWQUOTE.quoteId != '' ) {
+							NEWQUOTE.getQuote(NEWQUOTE.quoteId);							
+						}
 						TEXTEXPANDER.init();
 						NEWQUOTE.makeProgressbar();
 						NEWQUOTE.init_modal();
@@ -100,9 +105,6 @@
 						NEWQUOTE.makeButtons();
 						NEWQUOTE.makeOtherClickables();
 						NEWQUOTE.getJobPanel();
-						if (NEWQUOTE.quoteId != '' ) {
-							NEWQUOTE.getQuote(NEWQUOTE.quoteId);	
-						}
 						QUOTE_PRINT.init_modal("#printQuoteDiv");
 						//QUOTE_PRINT_HISTORY.init("#printHistoryDiv", "#viewPrintHistory");
 						//$("#loading-container").hide();
@@ -169,6 +171,9 @@
 						console.log("doQuoteUpdate");
 						var $outbound = JSON.stringify($data);
 						var $url = "quote/new";
+						if ( NEWQUOTE.quoteId != null && NEWQUOTE.quoteId !='' ) {
+							$url = "quote/orphan/" + NEWQUOTE.quoteId;
+						}
 						console.log($outbound);
 						
 						
@@ -301,21 +306,22 @@
 										console.log("Got the quote");
 										NEWQUOTE.quote = $data.data.quote;
 										NEWQUOTE.populateQuotePanels($data.data);	
-										if ( NEWQUOTE.quote.canEdit == true ) {
-											$("#edit-this-address").show();
-											$(".quote-button-container").show();
-											$("#edit-this-quote").show();
-										} 
-										if ( NEWQUOTE.quote.canAddJob == true ) {
-											$("#new-job-button").show();
-										} else {
-											$("#new-job-button").hide();
-										}
-										if ( NEWQUOTE.quote.canPropose == true ) {
-											$("#propose-button").show();
-										} else {
-											$("#propose-button").hide();
-										}
+										NEWQUOTE.billToAddress = $data.data.quote.billTo;
+										NEWQUOTE.jobSiteAddress = $data.data.quote.jobSite;
+										
+										NEWQUOTE.managerId = $data.data.quote.quote.managerId;
+						            	NEWQUOTE.divisionId = $data.data.quote.quote.divisionId;
+						            	NEWQUOTE.accountType = $data.data.quote.quote.accountType;
+						            	NEWQUOTE.invoiceTerms = $data.data.quote.quote.invoiceTerms;
+						            	NEWQUOTE.proposalDate = $data.data.quote.quote.proposalDate;
+						            	NEWQUOTE.leadType = $data.data.quote.quote.leadType;
+						            	NEWQUOTE.invoiceStyle = $data.data.quote.quote.invoiceStyle;
+						            	NEWQUOTE.buildingType = $data.data.quote.quote.buildingType;
+						            	NEWQUOTE.invoiceGrouping = $data.data.quote.quote.invoiceGrouping;
+						            	
+						            	NEWQUOTE.invoiceBatch = $data.data.quote.quote.invoiceBatch;
+						            	NEWQUOTE.taxExempt = $data.data.quote.quote.taxExempt;
+						            	NEWQUOTE.taxExemptReason = $data.data.quote.quote.taxExemptReason;
 									},					
 									403: function($data) {
 										$("#globalMsg").html("Session Expired. Log In and try again").show();
@@ -1190,13 +1196,16 @@
 							NEWQUOTE.populateQuotePanel($data.quote);
 							NEWQUOTE.populateAddressPanel( "#address-bill-to", $data.quote.billTo);
 							NEWQUOTE.populateAddressPanel( "#address-job-site", $data.quote.jobSite);
-							NEWQUOTE.populateContactPanel( "#job-contact", $data.quote.jobContact.jobContact);
-							NEWQUOTE.populateContactPanel( "#site-contact", $data.quote.jobContact.siteContact);
-							NEWQUOTE.populateContactPanel( "#billing-contact", $data.quote.jobContact.billingContact);
-							NEWQUOTE.populateContactPanel( "#contract-contact", $data.quote.jobContact.contractContact);
-							NEWQUOTE.populateJobHeader($data.quote.jobHeaderList)
-							NEWQUOTE.makeJobExpansion();
-							
+							if ( $data.quote.jobContact != null ) {
+								NEWQUOTE.populateContactPanel( "#job-contact", $data.quote.jobContact.jobContact);
+								NEWQUOTE.populateContactPanel( "#site-contact", $data.quote.jobContact.siteContact);
+								NEWQUOTE.populateContactPanel( "#billing-contact", $data.quote.jobContact.billingContact);
+								NEWQUOTE.populateContactPanel( "#contract-contact", $data.quote.jobContact.contractContact);
+							}
+							if ( $data.quote.jobHeaderList.length > 0 ) {
+								NEWQUOTE.populateJobHeader($data.quote.jobHeaderList)
+								NEWQUOTE.makeJobExpansion();
+							}
 							// when the page loads the first time, check for a job id
 							// if it is there, expand that job
 							// then delete the input parameter so it doesn't get accidentally referenced later
@@ -1665,14 +1674,14 @@
 					
 					saveTheQuoteErr : function($data) {
 						console.log("saveTheQuoteErr");
-						console.log("saveQuoteHeaderErr " + $statusCode)
+						console.log("saveQuoteHeaderErr ")
 						$("#save-quote-button").hide(2500);
 						var $messages = {
 								403:"Session Expired. Log in and try again",
 								404:"System Error Quote 404. Contact Support",
 								500:"System Error Quote 500. Contact Support"
 						}
-						$("#globalMsg").html( $messages[$statusCode] );
+						$("#globalMsg").html( "System Error" );
 						$("#globalMsg").show();
 					},
 					
@@ -1869,7 +1878,10 @@
 					
 					showNextModal : function() {
 						console.log("showNextModal");
-						if ( NEWQUOTE.billToAddress == null) {
+						if ( NEWQUOTE.quoteId != null && NEWQUOTE.quoteId != '' && NEWQUOTE.showOrphanModal == true) {
+							console.log("showOrphanModal");
+							NEWQUOTE.showOrphanMessage();
+						} else if ( NEWQUOTE.billToAddress == null) {
 							console.log("prompt for bill to");
 							$("#save-quote-button").hide(2500);
 							var $type = "billto"
@@ -1931,12 +1943,27 @@
 		    				$("#contact-edit-modal").dialog("open");
 						} else if ( NEWQUOTE.divisionId == null ) {
 							$("#save-quote-button").hide(2500);
+							$("#quote-container .quote-button-container").show();
 							$("#edit-this-quote").click();
 						} else if ( NEWQUOTE.managerId == null ) {
 							$("#save-quote-button").hide(2500);
+							$("#quote-container .quote-button-container").show();
 							$("#edit-this-quote").click();
 						} else if ( NEWQUOTE.leadType == null ) {
 							$("#save-quote-button").hide(2500);
+							$("#quote-container .quote-button-container").show();
+							$("#edit-this-quote").click();
+						} else if ( NEWQUOTE.buildingType == null ) {
+							$("#save-quote-button").hide(2500);
+							$("#quote-container .quote-button-container").show();
+							$("#edit-this-quote").click();
+						} else if ( NEWQUOTE.invoiceStyle == null ) {
+							$("#save-quote-button").hide(2500);
+							$("#quote-container .quote-button-container").show();
+							$("#edit-this-quote").click();
+						} else if ( NEWQUOTE.invoiceGrouping == null ) {
+							$("#save-quote-button").hide(2500);
+							$("#quote-container .quote-button-container").show();
 							$("#edit-this-quote").click();
 						} else if ( NEWQUOTE.job == null ) {
 							$("#save-quote-button").hide(2500);
@@ -1950,6 +1977,38 @@
 					
 					
 					
+					showOrphanMessage : function() {
+						// initialize the modal and open it in one function because it will 
+						// (hopefully) be a rare thing to need it. No need to waste resources
+						$( "#orphan-message" ).dialog({
+							title:'Warning: Orphan Quote',
+							autoOpen: false,
+							height: 225,
+							width: 500,
+							modal: true,
+							closeOnEscape:true,
+							//open: function(event, ui) {
+							//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+							//},
+							buttons: [
+								{
+									id: "orphan-cancel-button",
+									click: function($event) {
+										NEWQUOTE.showOrphanModal = false;
+										$( "#orphan-message" ).dialog("close");
+										NEWQUOTE.showNextModal();
+									}
+								}
+							]
+						});	
+						$("#orphan-cancel-button").button('option', 'label', 'OK');
+						
+						$( "#orphan-message" ).dialog("open");
+					},
+					
+					
+					
+					
 					showQuote : function() {
 						console.log("showQuote");
 		            	$("#loading-container").hide();
@@ -1959,16 +2018,19 @@
 						$("#quoteButtonContainer").fadeIn(1000);
 						$("#job-display-container").fadeIn(1000);
 						
+						// after init is done, start prompting for data
+						NEWQUOTE.showNextModal();
+						
 						// after init is done -- show bill-to modal
-						var $type = "billto"
-	    				$title = "Bill To";	
-						$("#address-edit-modal input[name='address-name']").val("");
-	    				$("#address-edit-modal").dialog("option","title",$title);
-	    				$("#address-edit-modal .none-found").hide();
-	    				$("#address-edit-display").hide();
-	    				$("#address-edit-modal").data("type",$type);
-			        	$("#address-edit-modal").data("id","");
-	    				$("#address-edit-modal").dialog("open");
+						//var $type = "billto"
+	    				//$title = "Bill To";	
+						//$("#address-edit-modal input[name='address-name']").val("");
+	    				//$("#address-edit-modal").dialog("option","title",$title);
+	    				//$("#address-edit-modal .none-found").hide();
+	    				//$("#address-edit-display").hide();
+	    				//$("#address-edit-modal").data("type",$type);
+			        	//$("#address-edit-modal").data("id","");
+	    				//$("#address-edit-modal").dialog("open");
 		            }
 				};
 				
@@ -2007,6 +2069,9 @@
                 display:none;
             }
             #newQuoteDisplay {
+            	display:none;
+            }
+            #orphan-message {
             	display:none;
             }
 			#printQuoteDiv {
@@ -2293,6 +2358,16 @@
 	    </html:form>
 	    
 	    
+	    
+	    <div id="orphan-message">
+	    	<div style="width:100%;text-align:center;">
+	    		<h2>Warning:</h2>
+	    	</div>
+	    	<div style="width:100%;">
+	    		There are no jobs associated with this quote. You will be prompted for required
+	    		information before jobs can be added and/or further processing will be allowed.
+	    	</div>
+	    </div>
     </tiles:put>
 
 </tiles:insert>
