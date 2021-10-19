@@ -26,7 +26,14 @@ public class ContactLookupQuery extends LookupQuery {
 
 	
 	private static final String sqlSelectClause = 
-			"select * ";
+			"select " + BUSINESS_PHONE + ", "
+			+ CONTACT_ID + ", "
+			+ FAX + ", "
+			+ FIRST_NAME + ", "
+			+ LAST_NAME + ", "
+			+ MOBILE_PHONE + ", "
+			+ PREFERRED_CONTACT + ", "
+			+ EMAIL + " ";
 		
 
 	private static final String sqlFromClause = 
@@ -54,7 +61,7 @@ public class ContactLookupQuery extends LookupQuery {
 		String orderBy = "";
 		if ( selectType.equals(SelectType.DATA)) {
 			if ( StringUtils.isBlank(sortBy)) {
-				orderBy = " order by " + CONTACT_ID + " desc ";
+				orderBy = " order by " + LAST_NAME + " desc ";
 			} else {
 //				List<String> sortList = Arrays.asList(StringUtils.split(sortBy, ","));
 				String sortDir = sortIsAscending ? orderBy + " asc " : orderBy + " desc ";
@@ -101,8 +108,8 @@ public class ContactLookupQuery extends LookupQuery {
 				+ " OR lower(concat(first_name,' ',last_name)) like '%" + queryTerm + "%'"
 				+ " OR lower(concat(last_name,' ',first_name)) like '%" + queryTerm + "%'"
 				+ " OR lower(concat(last_name,', ',first_name)) like '%" + queryTerm + "%'"
-				+ " OR mobile_phone like '%" + queryTerm + "%'"
-				+ " OR email like '%" + queryTerm + "%'";
+				+ " OR mobile_phone like '%" + queryTerm + "%'" //see if we can concatinate phone number to only numerals, eliminating "-"s. 
+				+ " OR lower(email) like '%" + queryTerm + "%'";
 		}
 		return whereClause;
 	}
