@@ -4,6 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
 
+import org.apache.commons.lang3.time.DateUtils;
+
 import com.ansi.scilla.common.ApplicationObject;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -23,9 +25,9 @@ public class ExceptionReportRecord extends ApplicationObject {
 	 private String employeeFirstName;
 	 private String employeeMi;
 	 private String employeeLastName;
-	/* private String empolyeeStatus; //not used */
-	 private Calendar employeeTermination;
-	 private Calendar weekEnding;
+	// private String empolyeeStatus; 
+	// private Calendar employeeTermination;
+	// private Calendar weekEnding;
 	 private String state;
 	 private String city;
 	 private String employeeName;
@@ -34,10 +36,10 @@ public class ExceptionReportRecord extends ApplicationObject {
 	 private Integer expenses;
 	 private Integer otHours;
 	 private Integer otPay;
-	/* private Integer vacationPay; //not used */
+	// private Integer vacationPay; 
 	 private Integer holidayHours;
 	 private Integer holidayPay;
-	/* private Integer grossPay; //not used */
+	// private Integer grossPay; 
 	 private Integer expensesSubmitted;
 	 private Integer expensesAllowed;
 	 private Integer volume;
@@ -58,10 +60,10 @@ public class ExceptionReportRecord extends ApplicationObject {
 		 this.employeeFirstName = rs.getString("employee_first_name");
 		 this.employeeMi = rs.getString("employee_mi");
 		 this.employeeLastName = rs.getString("employee_last_name");
-		/* this.employeeStatus = rs.getString("employee_status"); */
-		/*this.employeeTerminationDate = rs.getCalendar("employee_termination_date");
-		this.weekEnding = rs.getCalendar("week_ending"); */
-		this.state = rs.getString("state");
+		 //this.employeeStatus = rs.getString("employee_status"); 
+		// this.employeeTerminationDate = rs.getCalendar("employee_termination_date");
+		// this.weekEnding = rs.getCalendar("week_ending"); 
+		 this.state = rs.getString("state");
 		this.city = rs.getString("city");
 		this.employeeName = rs.getString("employee_name");
 		this.regularHours = rs.getInt("regular_hours");
@@ -71,7 +73,7 @@ public class ExceptionReportRecord extends ApplicationObject {
 		this.otPay = rs.getInt("ot_pay");
 		this.holidayHours = rs.getInt("holiday_hours");
 		this.holidayPay = rs.getInt("holiday_pay");
-		/*this.grossPay = rs.getInt("gross_pay"); */
+		//this.grossPay = rs.getInt("gross_pay"); 
 		this.expensesSubmitted = rs.getInt("expenses_submitted");
 		this.expensesAllowed = rs.getInt("expenses_allowed");
 		this.volume = rs.getInt("volume");
@@ -277,25 +279,25 @@ public class ExceptionReportRecord extends ApplicationObject {
 		this.productivity = productivity;
 	}
 	
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
-	public Calendar getEmployeeTermination() {
-		return employeeTermination;
-	}
+	//@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
+	//public Calendar getEmployeeTermination() {
+	//	return employeeTermination;
+	//}
 	
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
-	public void setEmployeeTermination(Calendar employeeTermination) {
-		this.employeeTermination = employeeTermination;
-	}
+	//@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
+	//public void setEmployeeTermination(Calendar employeeTermination) {
+	//	this.employeeTermination = employeeTermination;
+	//}
 	
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
-	public Calendar getWeekEnding() {
-		return weekEnding;
-	}
+	//@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
+	//public Calendar getWeekEnding() {
+	//	return weekEnding;
+	//}
 
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
-	public void setWeekEnding(Calendar weekEnding) {
-		this.weekEnding = weekEnding;
-	}
+	//@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
+	//public void setWeekEnding(Calendar weekEnding) {
+	//	this.weekEnding = weekEnding;
+	//} 
 	 
 	 
 	 /*

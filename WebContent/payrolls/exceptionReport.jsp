@@ -86,16 +86,132 @@
         $(document).ready(function(){
         	;EXCEPTION_REPORT = {
         		init : function() {
-        			$("#prompt-div select[name='divisionId']").change(function() {
-        				$("#prompt-div .divisionIdErr").html("");
-        				var $divisionId = $("#prompt-div select[name='divisionId']").val();
-        				if ( $divisionId == null ) {
-        					$("#prompt-div .divisionIdErr").html("Required Value");
+        			$("#prompt-div select[name='companyCode']").change(function() {
+        				$("#prompt-div .companyCodeErr").html("");
+        				var $companyCode = $("#prompt-div select[name='companyCode']").val();
+        				if ( $companyCode == null ) {
+        					$("#prompt-div .companyCodeErr").html("Required Value");
         				} else {
-        					EXCEPTION_REPORT.getReport($divisionId);
+        					EXCEPTION_REPORT.getReport($companyCode);
         				}
        				});
         		},
+        		
+        		
+
+                
+                
+                
+                createTable : function() {
+            		var dataTable = $('#exceptionReportTable').DataTable( {
+            			"aaSorting":		[[0,'desc']],
+            			"processing": 		true,
+            	        "serverSide": 		true,
+            	        "autoWidth": 		false,
+            	        "deferRender": 		true,
+            	        "scrollCollapse": 	true,
+            	        "scrollX": 			true,
+            	        rowId: 				'dt_RowId',
+            	        dom: 				'Bfrtip',
+            	        "searching": 		true,
+            	        "searchDelay":		800,
+            	        lengthMenu: [
+            	        	[ 10, 50, 100, 500, 1000 ],
+            	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
+            	        ],
+            	        buttons: [
+            	        	'pageLength',
+            	        	'copy', 
+            	        	'csv', 
+            	        	'excel', 
+            	        	{extend: 'pdfHtml5', orientation: 'landscape'}, 
+            	        	'print',
+            	        	{extend: 'colvis',	label: function () {doFunctionBinding();$('#exceptionReportTable').draw();}},
+            	        	{
+	        	        		text:'Job',
+	        	        		action: function(e, dt, node, config) {
+	        	        			JOBLOOKUP.showJobColumns();	        	        			
+	        	        		}
+	        	        	},{
+	        	        		text:'Contacts',
+	        	        		action: function(e, dt, node, config) {
+	        	        			JOBLOOKUP.showContactColumns();	        	        			
+	        	        		}
+	        	        	},{
+	        	        		text:'PAC',
+	        	        		action: function(e, dt, node, config) {
+	        	        			JOBLOOKUP.showPacColumns();	        	        			
+	        	        		}
+	        	        	}
+            	        ],
+            	        "columnDefs": [
+             	            { "orderable": false, "targets": -1 },
+            	            { className: "dt-left", "targets": [4,5,6,11,21] },
+            	            { className: "dt-center", "targets": [0,1,2,3,7,8,10,12,17,18,19,20,-1] },
+            	            { className: "dt-right", "targets": [9]}
+            	         ],
+            	        "paging": true,
+    			        "ajax": {
+    			        	"url": "exceptionReportTable",
+    			        	"type": "GET"
+    			        	},
+    			        columns: [
+    			        	
+
+    			        	
+    			        	public static final String GROUP_NAME = "group_name";
+    			        	public static final String COMPANY_NAME = "company_code";
+    			        	public static final String DIVISION_ID = "division_id";
+    			        	public static final String DESCRIPTION = "description";
+    			        	public static final String EMPLOYEE_CODE = "employee_code";
+    			        	public static final String EMPLOYEE_FIRST_NAME = "employee_first_name";
+    			        	public static final String EMPLOYEE_LAST_NAME = "employee_last_name";
+    			        	public static final String EMPLOYEE_STATUS = "employee_status";
+    			        	public static final String TERMINATION_DATE = "employee_termination_date";
+    			        	public static final String FORMATTED_TERMINATION_DATE = "formatted_termination_date";
+    			        	public static final String UNION_MEMBER = "union_member";
+    			        	public static final String UNION_CODE = "union_code";
+    			        	public static final String UNION_RATE = "union_rate";
+    			        	public static final String PROCESS_DATE = "process_date";
+    			        	public static final String FORMATTED_PROCESS_DATE = "formatted_process_date";
+    			        	
+    			        	{ title: "Group_Name", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'group_name' }, 
+    			        	{ title: "Employee Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' }, 
+    			        	{ title: "Company Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'company_code' }, 
+    			        	{ title: "Division", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'division_id' },
+    			        	{ title: "First Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_first_name' },
+    			        	{ title: "Last Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_last_name' },
+    			        	{ title: "Description", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'description' },
+    			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_status' },
+    			        	{ title: "Termination_Date", width:"10%", searchable:true, "defaultContent": "", data:'formatted_termination_date' },
+    			        	{ title: "Union_Member", width:"10%", searchable:true, "defaultContent": "", data:'union_member' },
+    			        	{ title: "Unions_Code", width:"10%", searchable:true, "defaultContent": "", data:'union_code' },
+    			        	{ title: "Unsion_Rate", width:"10%", searchable:true, "defaultContent": "", data:'union_rate' },
+    			        	{ title: "Process_Date", width:"10%", searchable:true, "defaultContent": "", data:'formatted_process_date' },
+    			        	{ title: "Action",  width:"5%", searchable:false,  
+    			            	data: function ( row, type, set ) { 
+    			            		var $viewLink = '<span class="action-link view-link" data-id="'+row.employee_code+'"><webthing:view>Exception_Report_Record</webthing:view></span>';
+    			            		var $editLink = '<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><span class="action-link edit-link" data-id="'+row.employee_code+'"><webthing:edit>Edit</webthing:edit></span></ansi:hasPermission>';
+    			            		var $deleteLink = '';
+    			            		if ( row.timesheet_count == 0 ) {
+    			            			$deleteLink = '<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><span class="action-link delete-link" data-id="'+row.employee_code+'"><webthing:delete>Delete</webthing:delete></span></ansi:hasPermission>';
+    			            		}
+    			            		var $actionLink = $viewLink + $editLink + $deleteLink;
+    			            		return $actionLink;
+    			            	}
+    			            },
+    			            	
+    			            } }],
+    			            "initComplete": function(settings, json) {
+    			            	EXCEPTION_REPORT.doFunctionBinding();
+    			            	var myTable = this;
+    			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#exceptionReportTable", EXCEPTION_REPORT.createTable);
+    			            },
+    			            "drawCallback": function( settings ) {
+    			            	CALLNOTE.lookupLink();
+    			            }
+    			    } );
+            	},
 
         		
         		
@@ -110,8 +226,8 @@
         		
         		
         		
-        		getReport : function($divisionId) {
-        			var $url = "payroll/exceptionReport/" + $divisionId;
+        		getReport : function($companyCode) {
+        			var $url = "payroll/exceptionReport/" + $companyCode;
         			ANSI_UTILS.makeServerCall("GET", $url, {}, {200:EXCEPTION_REPORT.getReportSuccess}, {});
         		},
         		
@@ -124,7 +240,7 @@
         			if ( $data.responseHeader.responseCode == 'SUCCESS' ) {
         				EXCEPTION_REPORT.displayReport($data);
         			} else {
-        				$("#prompt-div .divisionIdErr").html($data.data.webMessages['divisionId'][0]);
+        				$("#prompt-div .companyCodeErr").html($data.data.webMessages['companyCode'][0]);
         			}
         		}
         		
@@ -145,11 +261,11 @@
     	<h1>Payroll Exception Report</h1> 
 
 		<div id="prompt-div">
-	    	<select name="divisionId">
+	    	<select name="companyCode">
 				<option value=""></option>
-				<ansi:selectOrganization type="DIVISION" active="true" />
+				<ansi:selectOrganization type="COMPANY" active="true" />
 			</select>
-			<span class="divisionIdErr err"></span>
+			<span class="companyCodeErr err"></span>
 		</div>
 
 		<div id="display-div">

@@ -2,15 +2,19 @@ package com.ansi.scilla.web.payroll.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
+import com.ansi.scilla.common.payroll.EmployeeStatus;
 import com.ansi.scilla.web.common.query.LookupQuery;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
@@ -25,9 +29,29 @@ import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.payroll.query.ExceptionReportQuery;
 import com.ansi.scilla.web.payroll.response.ExceptionReportResponse;
+import com.ansi.scilla.web.payroll.servlet.EmployeeLookupServlet.ItemTransformer;
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class ExceptionReportServlet extends AbstractLookupServlet {
+	
+	public static final String GROUP_NAME = "group_name";
+	public static final String COMPANY_NAME = "company_code";
+	public static final String DIVISION_ID = "division_id";
+	public static final String DESCRIPTION = "description";
+	public static final String EMPLOYEE_CODE = "employee_code";
+	public static final String EMPLOYEE_FIRST_NAME = "employee_first_name";
+	public static final String EMPLOYEE_LAST_NAME = "employee_last_name";
+	public static final String EMPLOYEE_STATUS = "employee_status";
+	public static final String TERMINATION_DATE = "employee_termination_date";
+	public static final String FORMATTED_TERMINATION_DATE = "formatted_termination_date";
+	public static final String UNION_MEMBER = "union_member";
+	public static final String UNION_CODE = "union_code";
+	public static final String UNION_RATE = "union_rate";
+	public static final String PROCESS_DATE = "process_date";
+	public static final String FORMATTED_PROCESS_DATE = "formatted_process_date";
+	
+	
+	
 
 	private static final long serialVersionUID = 1L;
 	public static final String REALM = "payroll/exceptionReport";
@@ -35,11 +59,23 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 	public ExceptionReportServlet() {
 		super(Permission.PAYROLL_WRITE);
 		cols = new String[] { 
-			"group_name",
-			"company_code",
-			"division_id",
-			"description"
+				GROUP_NAME,
+				COMPANY_NAME,
+				DIVISION_ID,
+				DESCRIPTION,
+				EMPLOYEE_CODE,
+				EMPLOYEE_FIRST_NAME,
+				EMPLOYEE_LAST_NAME,
+				EMPLOYEE_STATUS,
+				TERMINATION_DATE,
+				UNION_MEMBER,
+				UNION_CODE,
+				UNION_RATE,
+				PROCESS_DATE,
+				
+								
 		};
+		super.itemTransformer = new ItemTransformer();
 	}
 	
 	
@@ -115,6 +151,31 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 			AppUtils.closeQuiet(conn);
 		}
 		
+	}
+	
+
+
+	
+	public class ItemTransformer implements Transformer<HashMap<String, Object>, HashMap<String, Object>> {
+
+		@Override
+		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
+			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+
+			java.sql.Date terminationDate = (java.sql.Date)arg0.get(TERMINATION_DATE);			
+			String formattedDate = terminationDate == null ? null : sdf.format(terminationDate);
+			arg0.put(FORMATTED_TERMINATION_DATE, formattedDate);
+
+			EmployeeStatus employeeStatus = EmployeeStatus.valueOf((String)arg0.get(EMPLOYEE_STATUS));
+			arg0.put(EMPLOYEE_STATUS, employeeStatus.display());
+			
+			java.sql.Date processDate = (java.sql.Date)arg0.get(PROCESS_DATE);
+			String formattedProcessDate = processDate == null ? null : sdf.format(processDate);
+			arg0.put(FORMATTED_PROCESS_DATE, formattedProcessDate);
+			
+			return arg0;
+		}
+
 	}
 
 }
