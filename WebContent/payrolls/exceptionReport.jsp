@@ -92,7 +92,7 @@
         				if ( $companyCode == null ) {
         					$("#prompt-div .companyCodeErr").html("Required Value");
         				} else {
-        					EXCEPTION_REPORT.getReport($companyCode);
+        					EXCEPTION_REPORT.createTable($companyCode);
         				}
        				});
         		},
@@ -102,7 +102,9 @@
                 
                 
                 
-                createTable : function() {
+                createTable : function($companyCode) {
+                	var $url = "payroll/exceptionReport/" + $companyCode;
+                	
             		var dataTable = $('#exceptionReportTable').DataTable( {
             			"aaSorting":		[[0,'desc']],
             			"processing": 		true,
@@ -156,25 +158,6 @@
     			        	"type": "GET"
     			        	},
     			        columns: [
-    			        	
-
-    			        	
-    			        	public static final String GROUP_NAME = "group_name";
-    			        	public static final String COMPANY_NAME = "company_code";
-    			        	public static final String DIVISION_ID = "division_id";
-    			        	public static final String DESCRIPTION = "description";
-    			        	public static final String EMPLOYEE_CODE = "employee_code";
-    			        	public static final String EMPLOYEE_FIRST_NAME = "employee_first_name";
-    			        	public static final String EMPLOYEE_LAST_NAME = "employee_last_name";
-    			        	public static final String EMPLOYEE_STATUS = "employee_status";
-    			        	public static final String TERMINATION_DATE = "employee_termination_date";
-    			        	public static final String FORMATTED_TERMINATION_DATE = "formatted_termination_date";
-    			        	public static final String UNION_MEMBER = "union_member";
-    			        	public static final String UNION_CODE = "union_code";
-    			        	public static final String UNION_RATE = "union_rate";
-    			        	public static final String PROCESS_DATE = "process_date";
-    			        	public static final String FORMATTED_PROCESS_DATE = "formatted_process_date";
-    			        	
     			        	{ title: "Group_Name", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'group_name' }, 
     			        	{ title: "Employee Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' }, 
     			        	{ title: "Company Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'company_code' }, 
@@ -199,9 +182,7 @@
     			            		var $actionLink = $viewLink + $editLink + $deleteLink;
     			            		return $actionLink;
     			            	}
-    			            },
-    			            	
-    			            } }],
+    			            }],
     			            "initComplete": function(settings, json) {
     			            	EXCEPTION_REPORT.doFunctionBinding();
     			            	var myTable = this;
