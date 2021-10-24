@@ -338,7 +338,7 @@
 
 	<servlet>
 		<servlet-name>contactLookup</servlet-name>
-		<servlet-class>com.ansi.scilla.web.contact.servlet.ContactTableServlet</servlet-class>
+		<servlet-class>com.ansi.scilla.web.contact.servlet.ContactLookupServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>contactLookup</servlet-name>

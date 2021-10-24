@@ -171,6 +171,9 @@
 				        	},
 				        columns: [
 				        	
+				        	{ title: "<bean:message key="field.label.contactId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				            	if(row.contactId != null){return (row.contactId+"");}
+				            } },
 				            { title: "<bean:message key="field.label.lastName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 				            	if(row.lastName != null){return (row.lastName+"");}
 				            } },

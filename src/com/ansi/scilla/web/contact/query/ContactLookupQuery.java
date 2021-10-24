@@ -61,7 +61,7 @@ public class ContactLookupQuery extends LookupQuery {
 		String orderBy = "";
 		if ( selectType.equals(SelectType.DATA)) {
 			if ( StringUtils.isBlank(sortBy)) {
-				orderBy = " order by " + LAST_NAME + " desc ";
+				orderBy = " order by " + LAST_NAME + " asc ";
 			} else {
 //				List<String> sortList = Arrays.asList(StringUtils.split(sortBy, ","));
 				String sortDir = sortIsAscending ? orderBy + " asc " : orderBy + " desc ";

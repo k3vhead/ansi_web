@@ -31,18 +31,16 @@ public class ContactLookupServlet extends AbstractLookupServlet {
 	
 	public ContactLookupServlet() {
 		super(Permission.CONTACT_READ);
-		cols = new String[] { 
-				ContactLookupQuery.BUSINESS_PHONE,
+		cols = new String[] {
 				ContactLookupQuery.CONTACT_ID,
+				ContactLookupQuery.LAST_NAME,
+				ContactLookupQuery.FIRST_NAME,
+				ContactLookupQuery.BUSINESS_PHONE,
 				ContactLookupQuery.EMAIL,
 				ContactLookupQuery.FAX,
-				ContactLookupQuery.FIRST_NAME,
-				ContactLookupQuery.LAST_NAME,
 				ContactLookupQuery.MOBILE_PHONE,
-				ContactLookupQuery.PREFERRED_CONTACT,
-				
 				};
-		super.itemTransformer = new ItemTransformer();
+//		super.itemTransformer = new ItemTransformer();
 	}
 
 
@@ -75,21 +73,21 @@ public class ContactLookupServlet extends AbstractLookupServlet {
 
 
 
-	public class ItemTransformer implements Transformer<HashMap<String, Object>, HashMap<String, Object>> {
-
-		private final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
-		@Override
-		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
-			Timestamp startTime = (Timestamp)arg0.get(START_TIME);
-			String display = "XXX";
-			if ( startTime != null ) {
-				display = sdf.format(startTime);
-				arg0.put(START_TIME, display);
-			}
-			return arg0;
-		}
-		
-	}
+//	public class ItemTransformer implements Transformer<HashMap<String, Object>, HashMap<String, Object>> {
+//
+//		private final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
+//		@Override
+//		public HashMap<String, Object> transform(HashMap<String, Object> arg0) {
+//			Timestamp startTime = (Timestamp)arg0.get(START_TIME);
+//			String display = "XXX";
+//			if ( startTime != null ) {
+//				display = sdf.format(startTime);
+//				arg0.put(START_TIME, display);
+//			}
+//			return arg0;
+//		}
+//		
+//	}
 
 
 	
