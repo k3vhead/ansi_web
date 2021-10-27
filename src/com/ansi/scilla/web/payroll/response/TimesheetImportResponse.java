@@ -24,38 +24,37 @@ public class TimesheetImportResponse extends MessageResponse {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Logger logger = LogManager.getLogger(TimesheetImportResponse.class);
-	
-	private List<TimesheetRecord> timesheetRecords = new ArrayList<TimesheetRecord>();
-
-	private String operationsManagerName;
+	private Logger logger = LogManager.getLogger(TimesheetImportResponse.class);	
+	private String city;
 	private String division;
+	private String operationsManagerName;
+	private String state;
+	private List<TimesheetRecord> timesheetRecords = new ArrayList<TimesheetRecord>();
 	private String weekEnding;
-	private RequestDisplay request;
-	
-	//private List<TimesheetRecord> timesheetRecords = new ArrayList<TimesheetRecord>();
 	
 	public enum WprCols{
 		EMPLOYEE_ROW  	("B")		
-		,EmployeeName 	("D")
-		,RegularHours 	("F")
-		,RegularPay		("H")
-		,Expenses 		("J")
-		,OTHours 		("L")
-		,OTPay 			("N")
-		,VacHours 		("P")
-		,VacPay			("R")
-		,HolHours 		("T")
-		,HolPay  		("V")
-		,GrossPay 		("X")
-		,ExpSubmitted 	("Z")		
-		,ExpAllowed 	("AB")
-		,Volume 		("AD")
-		,DL 			("AF")
-		,Prod 			("AH")
-		,Division		("L3")
-		,OM_Name		("O3")
-		,WeekEnding		("X3");
+		,EMPLOYEE_NAME 	("D")
+		,REGULAR_HOURS 	("F")
+		,REGULAR_PAY	("H")
+		,EXPENSES 		("J")
+		,OT_HOURS 		("L")
+		,OT_PAY 		("N")
+		,VACATION_HOURS	("P")
+		,VACATION_PAY	("R")
+		,HOLIDAY_HOURS 	("T")
+		,HOLIDAY_PAY  	("V")
+		,GROSS_PAY 		("X")
+		,EXPENSES_SUBMITTED 		("Z")		
+		,EXPENSES_ALLOWED 			("AB")
+		,VOLUME 		("AD")
+		,DIRECT_LABOR 	("AF")
+		,PRODUCTIVITY 	("AH")
+		,CITY			("B4")
+		,STATE			("F4")
+		,DIVISION		("L3")
+		,OPERATIONS_MANAGER_NAME	("O3")
+		,WEEK_ENDING	("X3");
 		
 		private final String cellLocation;	
 		 /**
@@ -70,235 +69,109 @@ public class TimesheetImportResponse extends MessageResponse {
 		}
 	   
 	}
-		
 	public TimesheetImportResponse() {
 		super();
 	}
-		
 	public TimesheetImportResponse(Connection conn, TimesheetImportRequest request) throws Exception {
-		this();	
-		
-		this.request = new RequestDisplay(conn, request);
+		this();			
 		this.timesheetRecords = Arrays.asList( new TimesheetRecord[] {
 				new SampleRecord1(),
 				new SampleRecord2()
 		} );
-		
 	}	
-	
 	public TimesheetImportResponse(Connection conn, InputStream inputStream) throws Exception {
 		this();
-		logger.log(Level.DEBUG, "Building a response object");
 		parseODSFile(inputStream);
 		
 	}
-
-	public RequestDisplay getRequest() {
-		return request;
-	}
-
 	public List<TimesheetRecord> getEmployeeRecordList() {
 		return timesheetRecords;
 	}
-
 	public void setEmployeeRecordList(List<TimesheetRecord> employeeRecordList) {
 		this.timesheetRecords = employeeRecordList;
 	}
-	
+
 	public void addEmployeeRecord(TimesheetRecord record) {
 		if ( this.timesheetRecords == null ) {
 			this.timesheetRecords = new ArrayList<TimesheetRecord>();
 		}
 		this.timesheetRecords.add(record);
 	}
-
-	
-
-	public List<TimesheetRecord> getTimesheetRecords() {
-		return timesheetRecords;
+	public String getCity() {
+		return this.city;
 	}
-
-	public void setTimesheetRecords(List<TimesheetRecord> timesheetRecords) {
-		this.timesheetRecords = timesheetRecords;
+	public void setCity(String city) {	
+		this.city = city;
 	}
-
-	public String getOperationsManagerName() {
-		return operationsManagerName;
-	}
-
-	public void setOperationsManagerName(String operationsManagerName) {
-		this.operationsManagerName = operationsManagerName;
-	}
-
 	public String getDivision() {
 		return division;
 	}
-
 	public void setDivision(String division) {
 		this.division = division;
 	}
-
+	public String getOperationsManagerName() {
+		return operationsManagerName;
+	}
+	public void setOperationsManagerName(String operationsManagerName) {
+		this.operationsManagerName = operationsManagerName;
+	}
+	public String getState() {
+		return state;
+	}
+	public void setState(String state) {
+		this.state = state;
+	}
+	public List<TimesheetRecord> getTimesheetRecords() {
+		return timesheetRecords;
+	}
+	public void setTimesheetRecords(List<TimesheetRecord> timesheetRecords) {
+		this.timesheetRecords = timesheetRecords;
+	}
 	public String getWeekEnding() {
 		return weekEnding;
 	}
-
 	public void setWeekEnding(String weekEnding) {
 		this.weekEnding = weekEnding;
 	}
 
-	
-		
-    public void parseODSFile(InputStream odsFile) throws Exception {
-
-    	Boolean isDebugMode=true;
-    	    	
+	public void parseODSFile(InputStream odsFile) throws Exception {    	    	
     	SpreadsheetDocument speadsheetDocument = null;
 		speadsheetDocument = SpreadsheetDocument.loadDocument(odsFile);
-		
-		
 		List<Table> tables = speadsheetDocument.getTableList();
-			
-		// tests that tables are present */
-		if(isDebugMode) {	
-			System.out.println("Tables Found " + tables.size() );
-			for(int i=0; i < tables.size();i++) {
-				Table table = tables.get(i);	
-				System.out.println("Tab Name - " + table.getTableName().toString());
-			}
-		}
-		
-		Table summary_tab = tables.get(2);
-
-		// tests that division, om name and week ending were properly plucked. 
-		if(isDebugMode) {	
-			System.out.println("Divsion - " + summary_tab.getCellByPosition("L3").getDisplayText());
-			System.out.println("OM Name - " + summary_tab.getCellByPosition("O3").getDisplayText());
-			System.out.println("Week Ending - " + summary_tab.getCellByPosition("X3").getDisplayText());
-		}
-		
-		
-		String cellAddr="";
-		for(Integer sdRow=6; sdRow<39;sdRow++) {
-			if(isDebugMode) {	 // spew some data for each row to debug.. 
-				System.out.println("Row: " + sdRow);
-				System.out.println("Loc: " + WprCols.EmployeeName.cellLocation()	+ sdRow.toString());
-			}
-			
+					
+		Table tableSummary = tables.get(2);
+				
+		for(Integer sdRow=6; sdRow<39;sdRow++) {			
 			TimesheetRecord timeSheetRecord = new TimesheetRecord();
 			
-			timeSheetRecord.setEmployeeName(summary_tab.getCellByPosition		(WprCols.EmployeeName.cellLocation()	+ sdRow.toString()).getDisplayText());
-			timeSheetRecord.setDirectLabor(summary_tab.getCellByPosition		(WprCols.DL.cellLocation()				+ sdRow.toString()).getDisplayText());
-			timeSheetRecord.setExpenses(summary_tab.getCellByPosition			(WprCols.Expenses.cellLocation()		+ sdRow.toString()).getDisplayText());
-			timeSheetRecord.setExpensesAllowed(summary_tab.getCellByPosition	(WprCols.ExpAllowed.cellLocation()		+ sdRow.toString()).getDisplayText());
-			timeSheetRecord.setExpensesSubmitted(summary_tab.getCellByPosition	(WprCols.ExpSubmitted.cellLocation()	+ sdRow.toString()).getDisplayText());
-			timeSheetRecord.setGrossPay(summary_tab.getCellByPosition			(WprCols.GrossPay.cellLocation()		+ sdRow.toString()).getDisplayText());
-			timeSheetRecord.setHolidayHours(summary_tab.getCellByPosition		(WprCols.HolPay.cellLocation()			+ sdRow.toString()).getDisplayText());
-			timeSheetRecord.setHolidayPay(summary_tab.getCellByPosition			(WprCols.OTPay.cellLocation()			+ sdRow.toString()).getDisplayText());
-			timeSheetRecord.setOtHours(summary_tab.getCellByPosition			(WprCols.OTHours.cellLocation()			+ sdRow.toString()).getDisplayText());
-			timeSheetRecord.setOtPay(summary_tab.getCellByPosition				(WprCols.OTPay.cellLocation()			+ sdRow.toString()).getDisplayText());
-			timeSheetRecord.setProductivity(summary_tab.getCellByPosition		(WprCols.Prod.cellLocation() 			+ sdRow.toString()).getDisplayText());
-			timeSheetRecord.setRegularHours(summary_tab.getCellByPosition		(WprCols.RegularHours.cellLocation()	+ sdRow.toString()).getDisplayText());
-			timeSheetRecord.setRegularPay(summary_tab.getCellByPosition			(WprCols.RegularPay.cellLocation()		+ sdRow.toString()).getDisplayText());
-			//TimeRecRow.setState(smry.getCellByPosition						(wpr_cols.EmployeeName+sdRow.toString()).getDisplayText());
-			timeSheetRecord.setVacationHours(summary_tab.getCellByPosition		(WprCols.VacHours.cellLocation()		+ sdRow.toString()).getDisplayText());
-			timeSheetRecord.setVacationPay(summary_tab.getCellByPosition		(WprCols.VacPay.cellLocation()			+ sdRow.toString()).getDisplayText());
-			timeSheetRecord.setVolume(summary_tab.getCellByPosition				(WprCols.Volume.cellLocation()			+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setEmployeeName(tableSummary.getCellByPosition		(WprCols.EMPLOYEE_NAME.cellLocation()	+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setDirectLabor(tableSummary.getCellByPosition		(WprCols.DIRECT_LABOR.cellLocation()				+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setExpenses(tableSummary.getCellByPosition			(WprCols.EXPENSES.cellLocation()		+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setExpensesAllowed(tableSummary.getCellByPosition	(WprCols.EXPENSES_ALLOWED.cellLocation()		+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setExpensesSubmitted(tableSummary.getCellByPosition	(WprCols.EXPENSES_SUBMITTED.cellLocation()	+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setGrossPay(tableSummary.getCellByPosition			(WprCols.GROSS_PAY.cellLocation()		+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setHolidayHours(tableSummary.getCellByPosition		(WprCols.HOLIDAY_HOURS.cellLocation()			+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setHolidayPay(tableSummary.getCellByPosition			(WprCols.HOLIDAY_PAY.cellLocation()			+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setOtHours(tableSummary.getCellByPosition			(WprCols.OT_HOURS.cellLocation()			+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setOtPay(tableSummary.getCellByPosition				(WprCols.OT_PAY.cellLocation()			+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setProductivity(tableSummary.getCellByPosition		(WprCols.PRODUCTIVITY.cellLocation() 			+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setRegularHours(tableSummary.getCellByPosition		(WprCols.REGULAR_HOURS.cellLocation()	+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setRegularPay(tableSummary.getCellByPosition			(WprCols.REGULAR_PAY.cellLocation()		+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setVacationHours(tableSummary.getCellByPosition		(WprCols.VACATION_HOURS.cellLocation()		+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setVacationPay(tableSummary.getCellByPosition		(WprCols.VACATION_PAY.cellLocation()			+ sdRow.toString()).getDisplayText());
+			timeSheetRecord.setVolume(tableSummary.getCellByPosition				(WprCols.VOLUME.cellLocation()			+ sdRow.toString()).getDisplayText());
 			
 			timesheetRecords.add(timeSheetRecord);
-			
-//			if(isDebugMode) {	
-//				System.out.println("Employee Name for Row " + sdRow + " is " + TimeRecRow.getEmployeeName());
-//				System.out.println("Volume for Row " + sdRow + " is " + TimeRecRow.getVolume());
-//			}
 		}
-		this.setDivision(cellAddr); 
-//		summary_tab.getCellByPosition(WprCols.Volume.cellLocation()			+ sdRow.toString()).getDisplayText());
-		
-		
-		
-		TimesheetImportResponse oTimeSheetImportResponse = new TimesheetImportResponse();
-		oTimeSheetImportResponse.setEmployeeRecordList(timesheetRecords);
-
-		// don't see any place to set division, week_ending or om_name
-		// oTimeSheetImportResponse.
-		//smry.getCellByPosition		(wpr_cols.EmployeeName	+ sdRow.toString()).getDisplayText());		
-		
-		/* debug msgs */
-		System.out.println("Rows stored = " + timesheetRecords.size());
-		/* debug msgs */
-
-
+		this.setEmployeeRecordList(timesheetRecords);
+		this.setDivision(tableSummary.getCellByPosition(WprCols.DIVISION.cellLocation()).getDisplayText());
+		this.setWeekEnding(tableSummary.getCellByPosition(WprCols.WEEK_ENDING.cellLocation()).getDisplayText());
+		this.setOperationsManagerName(tableSummary.getCellByPosition(WprCols.OPERATIONS_MANAGER_NAME.cellLocation()).getDisplayText());
+		this.setState(tableSummary.getCellByPosition(WprCols.STATE.cellLocation()).getDisplayText());
+		this.setCity(tableSummary.getCellByPosition(WprCols.CITY.cellLocation()).getDisplayText());
+		logger.log(Level.DEBUG,"Rows stored = " + this.getEmployeeRecordList().size());
     }
-	
-	public class RequestDisplay extends ApplicationObject {
-		private static final long serialVersionUID = 1L;
-		private String div;
-		private Calendar payrollDate;
-		private String state;
-		private String city;
-		private String timesheetFile;
-		
-		public RequestDisplay(Connection conn, TimesheetImportRequest request) throws Exception {
-			super();
-			Division division = new Division();
-			division.setDivisionId(request.getDivisionId());
-			division.selectOne(conn);
-			this.div = division.getDivisionDisplay();
-			
-			this.payrollDate = request.getPayrollDate();
-			this.state = request.getState();
-			this.city = request.getCity();
-			this.timesheetFile = request.getTimesheetFile().getName();
-		}
 
-		public String getDiv() {
-			return div;
-		}
-
-		public void setDiv(String div) {
-			this.div = div;
-		}
-		
-		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
-		public Calendar getPayrollDate() {
-			return payrollDate;
-		}
-		
-		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM/dd/yyyy", timezone="America/Chicago")
-		public void setPayrollDate(Calendar payrollDate) {
-			this.payrollDate = payrollDate;
-		}
-
-		public String getState() {
-			return state;
-		}
-
-		public void setState(String state) {
-			this.state = state;
-		}
-
-		public String getCity() {
-			return city;
-		}
-
-		public void setCity(String city) {
-			this.city = city;
-		}
-
-		public String getTimesheetFile() {
-			return timesheetFile;
-		}
-
-		public void setTimesheetFile(String timesheetFile) {
-			this.timesheetFile = timesheetFile;
-		}
-		
-
-		
-		
-		
-	}
-	
 	public class SampleRecord1 extends TimesheetRecord {
 		private static final long serialVersionUID = 1L;
 		public SampleRecord1() {
@@ -314,7 +187,6 @@ public class TimesheetImportResponse extends MessageResponse {
 			super.setErrorsFound(true);
 		}
 	}
-	
 	public class SampleRecord2 extends TimesheetRecord {
 		private static final long serialVersionUID = 1L;
 		public SampleRecord2() {
