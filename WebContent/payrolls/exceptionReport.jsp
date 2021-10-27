@@ -92,28 +92,41 @@
         				if ( $companyCode == null ) {
         					$("#prompt-div .companyCodeErr").html("Required Value");
         				} else {
-        					EXCEPTION_REPORT.createTable($companyCode);
+        					EXCEPTION_REPORT.getReport($companyCode);
         				}
        				});
+        		},
+
+        		
+        		
+        		displayReport : function($data) {
+        			$("#prompt-div").hide();
+        			$("#display-div").show();
+        			
+        			$("#display-div .companyCode").html($data.data.companyCode + " (" + $data.data.div + ")");
+        			
+        			EXCEPTION_REPORT.makeEmployeeTable();
         		},
         		
         		
 
-                
-                
-                
-                createTable : function($companyCode) {
-                	var $url = "payroll/exceptionReport/" + $companyCode;
-                	
-            		var dataTable = $('#exceptionReportTable').DataTable( {
-            			"aaSorting":		[[0,'desc']],
+        		
+        		makeEmployeeTable : function() {
+        			var $yes = '<webthing:checkmark>Yes</webthing:checkmark>';
+        			var $no = '<webthing:ban>No</webthing:ban>';
+        			var $unknown = '<webthing:questionmark>Invalid</webthing:questionmark>';
+        			
+        			$("#exceptionReportTable").DataTable( {
+            			"aaSorting":		[[4,'asc'],[3,'asc']],
             			"processing": 		true,
             	        "serverSide": 		true,
             	        "autoWidth": 		false,
             	        "deferRender": 		true,
             	        "scrollCollapse": 	true,
             	        "scrollX": 			true,
+            	        "pageLength":		50,
             	        rowId: 				'dt_RowId',
+            	        destroy : 			true,		// this lets us reinitialize the table
             	        dom: 				'Bfrtip',
             	        "searching": 		true,
             	        "searchDelay":		800,
@@ -122,88 +135,62 @@
             	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
             	        ],
             	        buttons: [
-            	        	'pageLength',
-            	        	'copy', 
-            	        	'csv', 
-            	        	'excel', 
-            	        	{extend: 'pdfHtml5', orientation: 'landscape'}, 
-            	        	'print',
-            	        	{extend: 'colvis',	label: function () {doFunctionBinding();$('#exceptionReportTable').draw();}},
-            	        	{
-	        	        		text:'Job',
-	        	        		action: function(e, dt, node, config) {
-	        	        			JOBLOOKUP.showJobColumns();	        	        			
-	        	        		}
-	        	        	},{
-	        	        		text:'Contacts',
-	        	        		action: function(e, dt, node, config) {
-	        	        			JOBLOOKUP.showContactColumns();	        	        			
-	        	        		}
-	        	        	},{
-	        	        		text:'PAC',
-	        	        		action: function(e, dt, node, config) {
-	        	        			JOBLOOKUP.showPacColumns();	        	        			
-	        	        		}
-	        	        	}
-            	        ],
+            	        		'pageLength',
+            	        		'copy', 
+            	        		'csv', 
+            	        		'excel', 
+            	        		{extend: 'pdfHtml5', orientation: 'landscape'}, 
+            	        		'print',{extend: 'colvis',	label: function () {doFunctionBinding();$('#exceptionReportTable').draw();}},
+            	        	],
             	        "columnDefs": [
-             	            { "orderable": false, "targets": -1 },
-            	            { className: "dt-left", "targets": [4,5,6,11,21] },
-            	            { className: "dt-center", "targets": [0,1,2,3,7,8,10,12,17,18,19,20,-1] },
-            	            { className: "dt-right", "targets": [9]}
+             	            { "orderable": true, "targets": -1 },
+             	            { className: "dt-head-center", "targets":[]},
+            	            { className: "dt-left", "targets": [0,1,2,3,4,5,6,7,8,10,12] },
+            	            { className: "dt-center", "targets": [9,13] },
+            	            { className: "dt-right", "targets": [11]}
             	         ],
             	        "paging": true,
     			        "ajax": {
-    			        	"url": "exceptionReportTable",
-    			        	"type": "GET"
+    			        	"url": "payroll/exceptionReport",
+    			        	"type": "GET",
+    			        	"data": {},
     			        	},
     			        columns: [
-    			        	{ title: "Group_Name", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'group_name' }, 
-    			        	{ title: "Employee Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' }, 
-    			        	{ title: "Company Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'company_code' }, 
-    			        	{ title: "Division", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'division_id' },
-    			        	{ title: "First Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_first_name' },
-    			        	{ title: "Last Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_last_name' },
-    			        	{ title: "Description", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'description' },
-    			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_status' },
-    			        	{ title: "Termination_Date", width:"10%", searchable:true, "defaultContent": "", data:'formatted_termination_date' },
-    			        	{ title: "Union_Member", width:"10%", searchable:true, "defaultContent": "", data:'union_member' },
-    			        	{ title: "Unions_Code", width:"10%", searchable:true, "defaultContent": "", data:'union_code' },
-    			        	{ title: "Unsion_Rate", width:"10%", searchable:true, "defaultContent": "", data:'union_rate' },
-    			        	{ title: "Process_Date", width:"10%", searchable:true, "defaultContent": "", data:'formatted_process_date' },
-    			        	{ title: "Action",  width:"5%", searchable:false,  
-    			            	data: function ( row, type, set ) { 
-    			            		var $viewLink = '<span class="action-link view-link" data-id="'+row.employee_code+'"><webthing:view>Exception_Report_Record</webthing:view></span>';
-    			            		var $editLink = '<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><span class="action-link edit-link" data-id="'+row.employee_code+'"><webthing:edit>Edit</webthing:edit></span></ansi:hasPermission>';
-    			            		var $deleteLink = '';
-    			            		if ( row.timesheet_count == 0 ) {
-    			            			$deleteLink = '<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><span class="action-link delete-link" data-id="'+row.employee_code+'"><webthing:delete>Delete</webthing:delete></span></ansi:hasPermission>';
-    			            		}
-    			            		var $actionLink = $viewLink + $editLink + $deleteLink;
-    			            		return $actionLink;
-    			            	}
-    			            }],
-    			            "initComplete": function(settings, json) {
-    			            	EXCEPTION_REPORT.doFunctionBinding();
-    			            	var myTable = this;
-    			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#exceptionReportTable", EXCEPTION_REPORT.createTable);
-    			            },
-    			            "drawCallback": function( settings ) {
-    			            	CALLNOTE.lookupLink();
-    			            }
-    			    } );
-            	},
-
-        		
-        		
-        		displayReport : function($data) {
-        			$("#prompt-div").hide();
-        			$("#display-div").show();
-        			
-        			$("#display-div .division").html($data.data.div + " (" + $data.data.divDescription + ")");
-        			
-        			// populate the report here
-        		},
+        			        	{ title: "Group_Name", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'group_name' }, 
+        			        	{ title: "Employee Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' }, 
+        			        	{ title: "Company Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'company_code' }, 
+        			        	{ title: "Division", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'division_id' },
+        			        	{ title: "First Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_first_name' },
+        			        	{ title: "Last Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_last_name' },
+        			        	{ title: "Description", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'description' },
+        			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_status' },
+        			        	{ title: "Termination_Date", width:"10%", searchable:true, "defaultContent": "", data:'formatted_termination_date' },
+        			        	{ title: "Union_Member", width:"10%", searchable:true, "defaultContent": "", data:'union_member' },
+        			        	{ title: "Unions_Code", width:"10%", searchable:true, "defaultContent": "", data:'union_code' },
+        			        	{ title: "Unsion_Rate", width:"10%", searchable:true, "defaultContent": "", data:'union_rate' },
+        			        	{ title: "Process_Date", width:"10%", searchable:true, "defaultContent": "", data:'formatted_process_date' },
+        			        	{ title: "Action",  width:"5%", searchable:false,  
+        			            	data: function ( row, type, set ) { 
+        			            		var $viewLink = '<span class="action-link view-link" data-id="'+row.employee_code+'"><webthing:view>Exception_Report_Record</webthing:view></span>';
+        			            		var $editLink = '<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><span class="action-link edit-link" data-id="'+row.employee_code+'"><webthing:edit>Edit</webthing:edit></span></ansi:hasPermission>';
+        			            		var $deleteLink = '';
+        			            		if ( row.timesheet_count == 0 ) {
+        			            			$deleteLink = '<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><span class="action-link delete-link" data-id="'+row.employee_code+'"><webthing:delete>Delete</webthing:delete></span></ansi:hasPermission>';
+        			            		}
+        			            		var $actionLink = $viewLink + $editLink + $deleteLink;
+        			            		return $actionLink;
+        			            	}
+        			            }],
+        			            "initComplete": function(settings, json) {
+        			            	EXCEPTION_REPORT.doFunctionBinding();
+        			            	var myTable = this;
+        			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#exceptionReportTable", EXCEPTION_REPORT.createTable);
+        			            },
+        			            "drawCallback": function( settings ) {
+        			            	CALLNOTE.lookupLink();
+        			            }
+        			    } );
+                	},
         		
         		
         		
@@ -218,11 +205,11 @@
         		
         		getReportSuccess : function($data, $passThru) {
         			console.log("getReportSuccess");
-        			if ( $data.responseHeader.responseCode == 'SUCCESS' ) {
+        			//if ( $data.responseHeader.responseCode == 'SUCCESS' ) {
         				EXCEPTION_REPORT.displayReport($data);
-        			} else {
-        				$("#prompt-div .companyCodeErr").html($data.data.webMessages['companyCode'][0]);
-        			}
+        			//} else {
+        			//	$("#prompt-div .companyCodeErr").html($data.data.webMessages['companyCode'][0]);
+        			//}
         		}
         		
         	};
@@ -244,19 +231,20 @@
 		<div id="prompt-div">
 	    	<select name="companyCode">
 				<option value=""></option>
-				<ansi:selectOrganization type="COMPANY" active="true" />
+				<ansi:selectOrganization type="DIVISION" active="true" />
 			</select>
 			<span class="companyCodeErr err"></span>
 		</div>
 
 		<div id="display-div">
 			<div>
-				<span class="form-label">Division: </span>
-				<span class="division"></span>
+				<span class="form-label">Company Code: </span>
+				<span class="companyCode"></span>
 			</div>
 			
 			<div class="exception-report">
-				The report goes here
+			<table id="exceptionReportTable">
+			</table>
 			</div>
 			
 		</div>
