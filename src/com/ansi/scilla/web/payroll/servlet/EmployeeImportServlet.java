@@ -20,7 +20,6 @@ import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
 import com.ansi.scilla.web.payroll.request.EmployeeImportRequest;
-import com.ansi.scilla.web.payroll.request.EmployeeRequest;
 import com.ansi.scilla.web.payroll.response.EmployeeImportResponse;
 
 public class EmployeeImportServlet extends AbstractServlet {

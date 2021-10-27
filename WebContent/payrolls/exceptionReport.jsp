@@ -231,7 +231,7 @@
 		<div id="prompt-div">
 	    	<select name="companyCode">
 				<option value=""></option>
-				<ansi:selectOrganization type="DIVISION" active="true" />
+				<ansi:selectOrganization type="COMPANY" active="true" />
 			</select>
 			<span class="companyCodeErr err"></span>
 		</div>
