@@ -610,16 +610,17 @@
     	<table id="display-div">
     		<tr>
     				<td><span class="form-label">Division:</span></td>
-    				<td><span class="divisionId"></span></td>
+    				
 
     				<td><span class="form-label">Paycom Import File:</span></td>
-    				<td><span class="employeeFile"></span></td>
+    				
     				
     			<td rowspan="2"><input type="button" value="Cancel" name="cancelButton" class="action-button" /></td>
     		</tr>
     		<tr>
     				
-
+				<td><span class="divisionId"></span></td>
+				<td><span class="employeeFile"></span></td>
     				
     			</tr>
     	</table>
