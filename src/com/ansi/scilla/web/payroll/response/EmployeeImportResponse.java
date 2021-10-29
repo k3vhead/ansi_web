@@ -1,5 +1,6 @@
 package com.ansi.scilla.web.payroll.response;
 
+
 import java.io.InputStream;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -14,7 +15,9 @@ import org.odftoolkit.simple.table.Table;
 
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.payroll.common.EmployeeRecord;
-import com.ansi.scilla.web.payroll.request.EmployeeImportRequest;	
+import com.ansi.scilla.web.payroll.request.EmployeeImportRequest;
+import com.ansi.scilla.web.payroll.request.EmployeeRequest;
+
 
 public class EmployeeImportResponse extends MessageResponse {
 	/**
@@ -51,6 +54,7 @@ public class EmployeeImportResponse extends MessageResponse {
 	        this.cellLocation = cellLocation;
 	    }
 
+
 		public String cellLocation() {
 			return this.cellLocation;
 		}
@@ -59,7 +63,7 @@ public class EmployeeImportResponse extends MessageResponse {
 	public EmployeeImportResponse() {
 		super();
 	}
-	public EmployeeImportResponse(Connection conn, EmployeeImportRequest request) throws Exception {
+	public EmployeeImportResponse(Connection conn, EmployeeRequest request) throws Exception {
 		this();			
 		this.employeeRecords = Arrays.asList( new EmployeeRecord[] {
 				new SampleRecord1(),
@@ -70,6 +74,9 @@ public class EmployeeImportResponse extends MessageResponse {
 		this();
 		parseODSFile(inputStream);
 		
+	}
+	public EmployeeImportResponse(Connection conn, EmployeeImportRequest uploadRequest) {
+		// TODO Auto-generated constructor stub
 	}
 	public List<EmployeeRecord> getEmployeeRecordList() {
 		return employeeRecords;
@@ -84,7 +91,12 @@ public class EmployeeImportResponse extends MessageResponse {
 		}
 		this.employeeRecords.add(record);
 	}
-	
+	public List<EmployeeRecord> getEmployeeRecords() {
+		return employeeRecords;
+	}
+	public void setEmployeeRecords(List<EmployeeRecord> employeeRecords) {
+		this.employeeRecords = employeeRecords;
+	}
 	
 	public String getDivision() {
 		return division;

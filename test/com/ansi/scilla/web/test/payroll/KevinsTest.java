@@ -10,14 +10,13 @@ import com.ansi.scilla.web.payroll.response.TimesheetImportResponse;
 
 public class KevinsTest{
 
+//	private final String filePath = "/home/dclewis/Documents/webthing_v2/projects/ANSI/design/20210629_payroll/rollout_mtg/Payroll 77 08.13.21.ods";
+	private final String filePath = "/home/dclewis/Documents/webthing_v2/projects/ANSI/design/20210629_payroll/rollout_mtg/Payroll 77 08.13.21.ods";
 	
 	public void go() throws Exception {
 		InputStream inputStream;
 
-		String odsFilePath1;;
-		//	private final String filePath = "/home/dclewis/Documents/webthing_v2/projects/ANSI/data/20210711_bcr_spreadsheet_examples/indy/work/content.xml";
-		//  private final String filePath = "test/com/ansi/scilla/web/test/bcr/content.xml";
-		//private final String filePath1 = "test/com/ansi/scilla/web/test/payroll/data/1/extracted/Payroll 77 09.24.2021/content.xml";
+		String odsFilePath1;
 		odsFilePath1 = "test/com/ansi/scilla/web/test/payroll/data/1/ods/Payroll 77 09.24.2021.ods";
 		
 
@@ -25,7 +24,7 @@ public class KevinsTest{
 		try {
 			conn = AppUtils.getDevConn();
 			conn.setAutoCommit(false);	
-			inputStream = new FileInputStream(odsFilePath1);
+			inputStream = new FileInputStream(filePath);
 			TimesheetImportResponse x = new TimesheetImportResponse(conn, inputStream);
 			System.out.println(x);
 		} 
