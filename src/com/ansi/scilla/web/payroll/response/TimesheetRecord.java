@@ -1,6 +1,10 @@
 package com.ansi.scilla.web.payroll.response;
 
 import com.ansi.scilla.common.ApplicationObject;
+import org.odftoolkit.simple.SpreadsheetDocument;
+import org.odftoolkit.simple.table.Table;
+
+
 
 public class TimesheetRecord extends ApplicationObject {
 
@@ -49,9 +53,73 @@ public class TimesheetRecord extends ApplicationObject {
 	private String volume;
 	private Boolean errorsFound;
 	
+	public enum WprCols{
+		EMPLOYEE_ROW  	("B")		
+		,EMPLOYEE_NAME 	("D")
+		,REGULAR_HOURS 	("F")
+		,REGULAR_PAY	("H")
+		,EXPENSES 		("J")
+		,OT_HOURS 		("L")
+		,OT_PAY 		("N")
+		,VACATION_HOURS	("P")
+		,VACATION_PAY	("R")
+		,HOLIDAY_HOURS 	("T")
+		,HOLIDAY_PAY  	("V")
+		,GROSS_PAY 		("X")
+		,EXPENSES_SUBMITTED 		("Z")		
+		,EXPENSES_ALLOWED 			("AB")
+		,VOLUME 		("AD")
+		,DIRECT_LABOR 	("AF")
+		,PRODUCTIVITY 	("AH")
+		,CITY			("B4")
+		,STATE			("F4")
+		,DIVISION		("L3")
+		,OPERATIONS_MANAGER_NAME	("O3")
+		,WEEK_ENDING	("X3");
+		
+		private final String cellLocation;	
+		 /**
+	     * @param cellLocation
+	     */
+		private WprCols(final String cellLocation) {
+	        this.cellLocation = cellLocation;
+	    }
+
+		public String cellLocation() {
+			return this.cellLocation;
+		}
+	   
+	}
+	
+	
+	
 	public TimesheetRecord() {
 		super();
 	}
+	
+	public TimesheetRecord(Table table, Integer ordinalRow) {
+		super();
+		
+		String row = ordinalRow.toString();
+		setEmployeeName(table.getCellByPosition			(WprCols.EMPLOYEE_NAME.cellLocation()+row).getDisplayText());
+		setDirectLabor(table.getCellByPosition			(WprCols.DIRECT_LABOR.cellLocation()+row).getDisplayText());
+		setExpenses(table.getCellByPosition				(WprCols.EXPENSES.cellLocation()+row).getDisplayText());
+		setExpensesAllowed(table.getCellByPosition		(WprCols.EXPENSES_ALLOWED.cellLocation()+row).getDisplayText());
+		setExpensesSubmitted(table.getCellByPosition	(WprCols.EXPENSES_SUBMITTED.cellLocation()+row).getDisplayText());
+		setGrossPay(table.getCellByPosition				(WprCols.GROSS_PAY.cellLocation()+row).getDisplayText());
+		setHolidayHours(table.getCellByPosition			(WprCols.HOLIDAY_HOURS.cellLocation()+row).getDisplayText());
+		setHolidayPay(table.getCellByPosition			(WprCols.HOLIDAY_PAY.cellLocation()+row).getDisplayText());
+		setOtHours(table.getCellByPosition				(WprCols.OT_HOURS.cellLocation()+row).getDisplayText());
+		setOtPay(table.getCellByPosition				(WprCols.OT_PAY.cellLocation()+row).getDisplayText());
+		setProductivity(table.getCellByPosition			(WprCols.PRODUCTIVITY.cellLocation()+row).getDisplayText());
+		setRegularHours(table.getCellByPosition			(WprCols.REGULAR_HOURS.cellLocation()+row).getDisplayText());
+		setRegularPay(table.getCellByPosition			(WprCols.REGULAR_PAY.cellLocation()+row).getDisplayText());
+		setVacationHours(table.getCellByPosition		(WprCols.VACATION_HOURS.cellLocation()+row).getDisplayText());
+		setVacationPay(table.getCellByPosition			(WprCols.VACATION_PAY.cellLocation()+row).getDisplayText());
+		setVolume(table.getCellByPosition				(WprCols.VOLUME.cellLocation()+row).getDisplayText());
+	}
+	
+	
 	
 	public String getRow() {
 		return row;
