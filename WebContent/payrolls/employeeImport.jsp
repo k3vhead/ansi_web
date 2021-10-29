@@ -65,6 +65,9 @@
 			.dataTables_wrapper {
 				padding-top:10px;
 			}	
+			.details-control {
+				cursor:pointer;
+			}	
 			.form-label {
 				font-weight:bold;
 			}
@@ -79,7 +82,7 @@
         
         <script type="text/javascript">    
         
-        $(document).ready(function(){
+/*          $(document).ready(function()
         	;EMPLOYEE_IMPORT = {
         		init : function() {
         			$("#save-button").click(function($event) {
@@ -91,43 +94,112 @@
         			});
         			
         			
-        		},
-        		
-        		
-        		saveFile : function($event) {
-        			var results = $event.target.result;
-        			var fileName = document.getElementById('employee-file').files[0].name;
-        			var formData = new FormData();
-        			var file = document.getElementById('employee-file').files[0];
-        			formData.append('employeeFile',file, fileName);
-        			formData.append('divisionId', $("#prompt-div select[name='divisionId']").val());
-        			
-        			var xhr = new XMLHttpRequest();
-        			xhr.open('POST',"payroll/employeeImport", true);
-        			
+        		*/
+        		$(document).ready(function(){
+                   	;EMPLOYEE_IMPORT = {
+                   		statusIsGood : '<webthing:checkmark>No Errors</webthing:checkmark>',
+                   		statusIsBad : '<webthing:ban>Error</webthing:ban>',
+                   		saveButton : '<webthing:save>Save</webthing:save>',
+                   		view : '<webthing:view styleClass="details-control">Details</webthing:view>',
+                   			
+                   			
+                   		init : function() {
+                   			EMPLOYEE_IMPORT.makeClickers();            			
+                   		},
+                   	
+                   	
+                  
+                   		
+                   		makeClickers : function() {
+                   			$("#save-button").click(function($event) {
+                   				$("#prompt-div .err").html("");
+                   				var file = document.getElementById('employee-file').files[0];
+                   				var reader = new FileReader();
+                   				if ( file == null ) { 
+        							$("#prompt-div .employeeFileErr").html("Required Value").show();
+        							if ( $("#prompt-div select[name='divisionId']").val().length == 0) { $("#prompt-div .divisionIdErr").html("Required Value").show(); }
+        						} else {
+        	           				reader.readAsText(file, 'UTF-8');	           				
+        	           				reader.onload = EMPLOYEE_IMPORT.saveFile;
+        	           				// reader.onprogress ...  (progress bar)
+                   				}
+                   			});
+                   			
+                   			$("#display-div input[name='cancelButton']").click(function($event) {
+                   				$("#display-div").hide();
+                   				$("#prompt-div").show();
+                   			});
+                   		},
+                   		
 
-           			xhr.onload = function() {
-           				if ( xhr.status == 200 ) {
-           					var $data = JSON.parse(this.response);
-           					if ( $data.responseHeader.responseCode == "EDIT_FAILURE") {
-           						EMPLOYEE_IMPORT.processUploadFailure($data);
-           					} else if ( $data.responseHeader.responseCode == "SUCCESS" ) {
-           						EMPLOYEE_IMPORT.processUploadSuccess($data);
-           					} else {
-           						$("#globalMsg").html("Invalid response code " + $data.responseHeader.responseCode + ". Contact Support");
-           					}
-           				} else {
-           					$("#globalMsg").html("Response Code " + xhr.status + ". Contact Support");
-           				}
-           			};
-        			xhr.send(formData);
-        		}
-        	};
+                   		
+                   		
+                   		processUploadFailure : function($data) {
+                   			console.log("processUploadFailure");
+                   			$("#prompt-div .err").html("");
+                   			$.each($data.data.webMessages, function($index, $value) {
+                   				var $selector = "#prompt-div ." + $index + "Err";
+                   				$($selector).html($value[0]).show();
+                   			});
+                   		},
+                   		
+                   		
+                   		processUploadSuccess : function($data) {
+                   			console.log("processUploadSuccess");
+                   			$("#prompt-div").hide();
+                   			$("#display-div").show();
+                   	  	$("#display-div .divisionId").html($data.data.request.div); 
+
+                   			 $("#display-div .employeeFile").html($data.data.request.employeeFile);
+                   			
+                   			
+                			 $("#organization-edit .org-status-change").on("click", function($event) {
+                				console.log("changing status");
+                				var $organizationId = $(this).attr("data-id");
+                				var $classList = $(this).attr('class').split(" ");
+                				var $newStatus = null;
+                				$.each($classList, function($index, $value) {
+                					if ( $value == "status-is-active") {
+                						$newStatus = false;
+                					} else if ( $value == "status-is-inactive") {
+                						$newStatus = true;
+                					} else if ( $value == "status-is-unknown") {
+                						$newStatus = true;
+                					}
+                				});
+                				var $url = "organization/" + ORGMAINT.orgType + "/" + $organizationId;
+                				var $outbound = {"status":$newStatus};
+                				var $callbacks = {
+                					200 : ORGMAINT.statusChangeSuccess,
+                				};
+                				ANSI_UTILS.makeServerCall("POST", $url, JSON.stringify($outbound), $callbacks, {});
+                			});
+                			
+                			
+                			$("#organization-edit input[name='name']").on("blur", function($event) {
+                				console.log("changing name");
+                				var $organizationId = $(this).attr("data-id");
+                				var $oldName = $(this).attr("data-name");
+                				var $newName = $("#organization-edit input[name='name']").val();
+                				
+                				if ( $oldName != $newName) {  
+                					$("#organization-edit input[name='name']").attr("data-name", $newName);
+        	        				var $url = "organization/" + ORGMAINT.orgType + "/" + $organizationId;
+        	        				var $outbound = {"name":$newName};
+        	        				var $callbacks = {
+        	        					200 : ORGMAINT.statusChangeSuccess,
+        	        				};
+        	        				ANSI_UTILS.makeServerCall("POST", $url, JSON.stringify($outbound), $callbacks, {});
+                				} 
+                			}); 
+                		},
+                		
+                		
+                   		
+        		
         	
-        	EMPLOYEE_IMPORT.init();
-        	
-        	
-        	;ORGMAINT = {
+         	
+        	/* ;ORGMAINT = {
         		orgType : '<c:out value="${ANSI_ORGANIZATION_TYPE}" />',
         		orgTypeDisplay : '<c:out value="${ANSI_ORGANIZATION_TYPE_DISPLAY}" />',        		
         		orgTable : null,
@@ -183,89 +255,10 @@
         		
         		
 
-           		makeClickers : function() {
-           			$("#save-button").click(function($event) {
-           				$("#prompt-div .err").html("");
-           				var file = document.getElementById('timesheet-file').files[0];
-           				var reader = new FileReader();
-           				if ( file == null ) { 
-							$("#prompt-div .timesheetFileErr").html("Required Value").show();
-							if ( $("#prompt-div select[name='divisionId']").val().length == 0) { $("#prompt-div .divisionIdErr").html("Required Value").show(); }
-							
-           				} else {
-	           				reader.readAsText(file, 'UTF-8');	           				
-	           				reader.onload = EMPLOYEE_IMPORT.saveFile;
-	           				// reader.onprogress ...  (progress bar)
-           				}
-           			});
-           			
-           			$("#display-div input[name='cancelButton']").click(function($event) {
-           				$("#display-div").hide();
-           				$("#prompt-div").show();
-           			});
-           		},
+           	
            		
 
 
-           		processUploadFailure : function($data) {
-           			console.log("processUploadFailure");
-           			$("#prompt-div .err").html("");
-           			$.each($data.data.webMessages, function($index, $value) {
-           				var $selector = "#prompt-div ." + $index + "Err";
-           				$($selector).html($value[0]).show();
-           			});
-           		},
-           		
-           		
-           		processUploadSuccess : function($data) {
-           			console.log("processUploadSuccess");
-           			$("#prompt-div").hide();
-           			$("#display-div").show();
-           			$("#display-div .divisionId").html($data.data.request.div);
-           			}
-        			
-        			
-        			$("#organization-edit .org-status-change").on("click", function($event) {
-        				console.log("changing status");
-        				var $organizationId = $(this).attr("data-id");
-        				var $classList = $(this).attr('class').split(" ");
-        				var $newStatus = null;
-        				$.each($classList, function($index, $value) {
-        					if ( $value == "status-is-active") {
-        						$newStatus = false;
-        					} else if ( $value == "status-is-inactive") {
-        						$newStatus = true;
-        					} else if ( $value == "status-is-unknown") {
-        						$newStatus = true;
-        					}
-        				});
-        				var $url = "organization/" + ORGMAINT.orgType + "/" + $organizationId;
-        				var $outbound = {"status":$newStatus};
-        				var $callbacks = {
-        					200 : ORGMAINT.statusChangeSuccess,
-        				};
-        				ANSI_UTILS.makeServerCall("POST", $url, JSON.stringify($outbound), $callbacks, {});
-        			});
-        			
-        			
-        			$("#organization-edit input[name='name']").on("blur", function($event) {
-        				console.log("changing name");
-        				var $organizationId = $(this).attr("data-id");
-        				var $oldName = $(this).attr("data-name");
-        				var $newName = $("#organization-edit input[name='name']").val();
-        				
-        				if ( $oldName != $newName) {  
-        					$("#organization-edit input[name='name']").attr("data-name", $newName);
-	        				var $url = "organization/" + ORGMAINT.orgType + "/" + $organizationId;
-	        				var $outbound = {"name":$newName};
-	        				var $callbacks = {
-	        					200 : ORGMAINT.statusChangeSuccess,
-	        				};
-	        				ANSI_UTILS.makeServerCall("POST", $url, JSON.stringify($outbound), $callbacks, {});
-        				}
-        			});
-        		},
-        		
         		
         		
         		makeModals : function() {
@@ -540,13 +533,45 @@
             	
             	
             	
+        	}; */
+        	
+        	// ORGMAINT.init(); 
+        	
+        	
+       
+        		saveFile : function($event) {
+        			var results = $event.target.result;
+        			var fileName = document.getElementById('employee-file').files[0].name;
+        			var formData = new FormData();
+        			var file = document.getElementById('employee-file').files[0];
+        			formData.append('employeeFile',file, fileName);
+        			formData.append('divisionId', $("#prompt-div select[name='divisionId']").val());
+        			
+        			var xhr = new XMLHttpRequest();
+        			xhr.open('POST',"payroll/employeeImport", true);
+        			
+
+           			xhr.onload = function() {
+           				if ( xhr.status == 200 ) {
+           					var $data = JSON.parse(this.response);
+           					if ( $data.responseHeader.responseCode == "EDIT_FAILURE") {
+           						EMPLOYEE_IMPORT.processUploadFailure($data);
+           					} else if ( $data.responseHeader.responseCode == "SUCCESS" ) {
+           						EMPLOYEE_IMPORT.processUploadSuccess($data);
+           					} else {
+           						$("#globalMsg").html("Invalid response code " + $data.responseHeader.responseCode + ". Contact Support");
+           					}
+           				} else {
+           					$("#globalMsg").html("Response Code " + xhr.status + ". Contact Support");
+           				}
+           			};
+        			xhr.send(formData);
+        		}
         	};
         	
-        	// ORGMAINT.init();
+        	EMPLOYEE_IMPORT.init();
+        	});
         	
-        	
-        });
-        		
         </script>        
     </tiles:put>
     
@@ -565,15 +590,17 @@
     				<ansi:selectOrganization type="DIVISION" active="true" />
     			</select>
     			</td>
+    			
     			<td><span class="divisionIdErr err"></span></td>
     		</tr>
     		<tr>
     			<td><span class="formLabel">Paycom Import File:</span></td>
     			<td><input type="file" id="employee-file" name="files[]" /><br /></td>
+    			<td><span class="employeeFileErr err"></span></td>
     		</tr>
     		<tr>
-    			<td></td>
-    			<td><input type="button" value="Save" id="save-button" /></td>
+    			
+    				<td colspan="2" style="text-align:center;"><input type="button" value="Save" id="save-button" /></td>
     			
     		</tr>
     	</table>
@@ -582,21 +609,21 @@
     	
     	<table id="display-div">
     		<tr>
-    			<td><span class="form-label">Company Code:</span></td>
-    			<td><span class="form-label">Division:</span></td>
-    			<td><span class="form-label">Employee Code:</span></td>
-    			<td><span class="form-label">First:</span></td>
-    			<td><span class="form-label">Last:</span></td>
-    			<td><span class="form-label">Department Desc Status:</span></td>
-    			<td><span class="form-label">Term Date:</span></td>
-    			<td><span class="form-label">Union Member:</span></td>
-    			<td><span class="form-label">Union Code:</span></td>
-    			<td><span class="form-label">Union Rate:</span></td>
-    			<td><span class="form-label">Process Date:</span></td>
+    				<td><span class="form-label">Division:</span></td>
+    				<td><span class="divisionId"></span></td>
+
+    				<td><span class="form-label">Paycom Import File:</span></td>
+    				<td><span class="employeeFile"></span></td>
     				
     			<td rowspan="2"><input type="button" value="Cancel" name="cancelButton" class="action-button" /></td>
     		</tr>
+    		<tr>
+    				
+
+    				
+    			</tr>
     	</table>
+    	<table id="employee"></table>
 
 		
     </tiles:put>

@@ -8,7 +8,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.fileupload.FileUploadException;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -20,7 +19,7 @@ import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
-import com.ansi.scilla.web.payroll.request.EmployeeRequest;
+import com.ansi.scilla.web.payroll.request.EmployeeImportRequest;
 import com.ansi.scilla.web.payroll.response.EmployeeImportResponse;
 
 public class EmployeeImportServlet extends AbstractServlet {
@@ -40,20 +39,20 @@ public class EmployeeImportServlet extends AbstractServlet {
 			conn.setAutoCommit(false);
 			
 			SessionData sessionData = AppUtils.validateSession(request, Permission.PAYROLL_WRITE);
-//			EmployeeRequest uploadRequest = new EmployeeRequest(request);
-//			ResponseCode responseCode = null;
-//			WebMessages webMessages = uploadRequest.validate(conn);
-//			EmployeeImportResponse data = new EmployeeImportResponse();
-//			data.setWebMessages(webMessages);
-//			
-//			if ( webMessages.isEmpty() ) {
-//				data = new EmployeeImportResponse(conn, uploadRequest);
-//				responseCode = ResponseCode.SUCCESS;
-//			} else {
-//				responseCode = ResponseCode.EDIT_FAILURE;
-//			}
-//
-//			super.sendResponse(conn, response, responseCode, data);
+			EmployeeImportRequest uploadRequest = new EmployeeImportRequest(request);
+			ResponseCode responseCode = null;
+			WebMessages webMessages = uploadRequest.validate(conn);
+			EmployeeImportResponse data = new EmployeeImportResponse();
+			data.setWebMessages(webMessages);
+			
+			if ( webMessages.isEmpty() ) {
+				data = new EmployeeImportResponse(conn, uploadRequest);
+				responseCode = ResponseCode.SUCCESS;
+			} else {
+				responseCode = ResponseCode.EDIT_FAILURE;
+			}
+
+			super.sendResponse(conn, response, responseCode, data);
 
 			conn.close();
 		}
