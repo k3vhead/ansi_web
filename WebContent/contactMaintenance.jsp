@@ -171,19 +171,19 @@
 				        	},
 				        columns: [
 				        	
-				        	{ title: "<bean:message key="field.label.contactId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-				            	if(row.contactId != null){return (row.contactId+"");}
+				        	{ title: "<bean:message key="field.label.contact_id" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				            	if(row.contact_id != null){return (row.contact_id+"");}
 				            } },
-				            { title: "<bean:message key="field.label.lastName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-				            	if(row.lastName != null){return (row.lastName+"");}
+				            { title: "<bean:message key="field.label.last_name" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				            	if(row.last_name != null){return (row.last_name+"");}
 				            } },
-				            { title: "<bean:message key="field.label.firstName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-				            	if(row.firstName != null){return (row.firstName+"");}
+				            { title: "<bean:message key="field.label.first_name" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            	if(row.first_name != null){return (row.first_name+"");}
 				            } },
-				            { title: "<bean:message key="field.label.businessPhone" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
-				            	if(row.businessPhone != null){
+				            { title: "<bean:message key="field.label.business_phone" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            	if(row.business_phone != null){
 				            		if ( row.preferredContact=='business_phone') {
-				            			value = '<span style="font-weight:bold;">' + row.businessPhone + '</span>';
+				            			value = '<span style="font-weight:bold;">' + row.business_phone + '</span>';
 				            		} else {
 				            			value = row.businessPhone + "";
 				            		}			            		
@@ -208,18 +208,18 @@
 			            		}			            		
 			            		return (value);
 				            } },
-				            { title: "<bean:message key="field.label.mobilePhone" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				            { title: "<bean:message key="field.label.mobile_phone" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 			            		if ( row.preferredContact=='mobile_phone') {
-			            			value = '<span style="font-weight:bold;">' + row.mobilePhone + '</span>';
+			            			value = '<span style="font-weight:bold;">' + row.mobile_phone + '</span>';
 			            		} else {
-			            			value = row.mobilePhone + "";
+			            			value = row.mobile_phone + "";
 			            		}			            		
 			            		return (value);
 				            } },
 				            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {				            	
 				            	{
-				            		var $editLink = '<ansi:hasPermission permissionRequired="CONTACT_WRITE"><span class="editAction" data-id="'+ row.contactId + '" /><webthing:edit>Edit</webthing:edit></span></ansi:hasPermission>';
-				            		var $noteLink = '<webthing:notes xrefType="CONTACT" xrefId="' + row.contactId + '" xrefName="'+row.firstName + ' ' + row.lastName +'">Contact Notes</webthing:notes>'
+				            		var $editLink = '<ansi:hasPermission permissionRequired="CONTACT_WRITE"><span class="editAction" data-id="'+ row.contact_id + '" /><webthing:edit>Edit</webthing:edit></span></ansi:hasPermission>';
+				            		var $noteLink = '<webthing:notes xrefType="CONTACT" xrefId="' + row.contact_id + '" xrefName="'+row.first_name + ' ' + row.last_name +'">Contact Notes</webthing:notes>'
 				            		return $editLink + $noteLink; 
 				            	}
 				            } }
