@@ -72,10 +72,23 @@ public class JobContact extends ApplicationObject {
 	private ContactItem contractContact;
 	private ContactItem billingContact;
 	
-
-	
-	private JobContact(ResultSet rs) throws SQLException {
+	private JobContact() {
 		super();
+	}
+	
+	
+	public JobContact(ContactItem jobContact, ContactItem siteContact, ContactItem contractContact,
+			ContactItem billingContact) {
+		this();
+		this.jobContact = jobContact;
+		this.siteContact = siteContact;
+		this.contractContact = contractContact;
+		this.billingContact = billingContact;
+	}
+
+
+	private JobContact(ResultSet rs) throws SQLException {
+		this();
 		this.quoteId = rs.getInt("quote_id");
 		this.jobId = rs.getInt("job_id");
 		

@@ -6,10 +6,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.web.bcr.common.BcrUtils;
+import com.ansi.scilla.common.utils.WorkYear;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.division.response.DivisionCountRecord;
 
@@ -59,7 +60,19 @@ public class BcrInitResponse extends MessageResponse {
 	}
 
 	private List<DisplayMonth> makeDisplayYear(Calendar workDay) {
-		return BcrUtils.makeDisplayYear(workDay);
+//		return BcrUtils.makeDisplayYear(workDay);
+		Calendar myDate = (Calendar)workDay.clone();
+		myDate.set(Calendar.DAY_OF_MONTH, 15);
+		List<DisplayMonth> displayMonths = new ArrayList<DisplayMonth>();
+
+		myDate.add(Calendar.MONTH, -6);
+		
+		for ( int i = 0; i < 9; i++ ) {
+			WorkYear workYear = new WorkYear(myDate.get(Calendar.YEAR));
+			displayMonths.add(new DisplayMonth(workYear, myDate));
+			myDate.add(Calendar.MONTH, 1);			
+		}
+		return displayMonths;
 	}
 
 	private List<ExpenseType> makeExpenseTypeList(Connection conn) throws SQLException {
