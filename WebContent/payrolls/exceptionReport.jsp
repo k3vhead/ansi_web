@@ -92,7 +92,7 @@
         				if ( $companyCode == null ) {
         					$("#prompt-div .companyCodeErr").html("Required Value");
         				} else {
-        					EXCEPTION_REPORT.getReport($companyCode);
+        					EXCEPTION_REPORT.makeEmployeeTable($companyCode);
         				}
        				});
         		},
@@ -111,7 +111,7 @@
         		
 
         		
-        		makeEmployeeTable : function() {
+        		makeEmployeeTable : function($companyCode) {
         			var $yes = '<webthing:checkmark>Yes</webthing:checkmark>';
         			var $no = '<webthing:ban>No</webthing:ban>';
         			var $unknown = '<webthing:questionmark>Invalid</webthing:questionmark>';
@@ -124,7 +124,7 @@
             	        "deferRender": 		true,
             	        "scrollCollapse": 	true,
             	        "scrollX": 			true,
-            	        "pageLength":		50,
+            	      //  "pageLength":		50,
             	        rowId: 				'dt_RowId',
             	        destroy : 			true,		// this lets us reinitialize the table
             	        dom: 				'Bfrtip',
@@ -135,7 +135,7 @@
             	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
             	        ],
             	        buttons: [
-            	        		'pageLength',
+            	        	//	'pageLength',
             	        		'copy', 
             	        		'csv', 
             	        		'excel', 
@@ -149,14 +149,14 @@
             	            { className: "dt-center", "targets": [9,13] },
             	            { className: "dt-right", "targets": [11]}
             	         ],
-            	        "paging": true,
+            	       // "paging": true,
     			        "ajax": {
-    			        	"url": "payroll/exceptionReport",
+    			        	"url": "payroll/exceptionReport/" + $companyCode,
     			        	"type": "GET",
     			        	"data": {},
     			        	},
     			        columns: [
-        			        	{ title: "Group_Name", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'group_name' }, 
+        			        	{ title: "Group Name", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'group_name' }, 
         			        	{ title: "Employee Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' }, 
         			        	{ title: "Company Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'company_code' }, 
         			        	{ title: "Division", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'division_id' },
@@ -164,11 +164,11 @@
         			        	{ title: "Last Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_last_name' },
         			        	{ title: "Description", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'description' },
         			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_status' },
-        			        	{ title: "Termination_Date", width:"10%", searchable:true, "defaultContent": "", data:'formatted_termination_date' },
-        			        	{ title: "Union_Member", width:"10%", searchable:true, "defaultContent": "", data:'union_member' },
-        			        	{ title: "Unions_Code", width:"10%", searchable:true, "defaultContent": "", data:'union_code' },
-        			        	{ title: "Unsion_Rate", width:"10%", searchable:true, "defaultContent": "", data:'union_rate' },
-        			        	{ title: "Process_Date", width:"10%", searchable:true, "defaultContent": "", data:'formatted_process_date' },
+        			        	{ title: "Termination Date", width:"10%", searchable:true, "defaultContent": "", data:'formatted_termination_date' },
+        			        	{ title: "Union Member", width:"10%", searchable:true, "defaultContent": "", data:'union_member' },
+        			        	{ title: "Unions Code", width:"10%", searchable:true, "defaultContent": "", data:'union_code' },
+        			        	{ title: "Unsion Rate", width:"10%", searchable:true, "defaultContent": "", data:'union_rate' },
+        			        	{ title: "Process Date", width:"10%", searchable:true, "defaultContent": "", data:'formatted_process_date' },
         			        	{ title: "Action",  width:"5%", searchable:false,  
         			            	data: function ( row, type, set ) { 
         			            		var $viewLink = '<span class="action-link view-link" data-id="'+row.employee_code+'"><webthing:view>Exception_Report_Record</webthing:view></span>';
@@ -182,12 +182,12 @@
         			            	}
         			            }],
         			            "initComplete": function(settings, json) {
-        			            	EXCEPTION_REPORT.doFunctionBinding();
+        			            	//EXCEPTION_REPORT.doFunctionBinding();
         			            	var myTable = this;
-        			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#exceptionReportTable", EXCEPTION_REPORT.createTable);
+        			            	//LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#exceptionReportTable", EXCEPTION_REPORT.createTable);
         			            },
         			            "drawCallback": function( settings ) {
-        			            	CALLNOTE.lookupLink();
+        			            	//CALL_NOTE.lookupLink();
         			            }
         			    } );
                 	},
@@ -232,21 +232,10 @@
 	    	<select name="companyCode">
 				<option value=""></option>
 				<ansi:selectOrganization type="COMPANY" active="true" />
-			</select>
-			<span class="companyCodeErr err"></span>
-		</div>
-
-		<div id="display-div">
-			<div>
-				<span class="form-label">Company Code: </span>
-				<span class="companyCode"></span>
-			</div>
-			
-			<div class="exception-report">
+				
 			<table id="exceptionReportTable">
 			</table>
-			</div>
-			
+			</select>
 		</div>
     </tiles:put>
 		
