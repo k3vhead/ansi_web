@@ -166,8 +166,10 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 			String formattedDate = terminationDate == null ? null : sdf.format(terminationDate);
 			arg0.put(FORMATTED_TERMINATION_DATE, formattedDate);
 
-			EmployeeStatus employeeStatus = EmployeeStatus.valueOf((String)arg0.get(EMPLOYEE_STATUS));
-			arg0.put(EMPLOYEE_STATUS, employeeStatus.display());
+			if ( arg0.containsKey(EMPLOYEE_STATUS) && arg0.get(EMPLOYEE_STATUS) != null ) {
+				EmployeeStatus employeeStatus = EmployeeStatus.valueOf((String)arg0.get(EMPLOYEE_STATUS));
+				arg0.put(EMPLOYEE_STATUS, employeeStatus.display());
+			}
 			
 			java.sql.Date processDate = (java.sql.Date)arg0.get(PROCESS_DATE);
 			String formattedProcessDate = processDate == null ? null : sdf.format(processDate);
