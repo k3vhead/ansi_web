@@ -30,6 +30,7 @@ import com.ansi.scilla.report.reportBuilder.xlsBuilder.XLSSummaryBuilder;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
 import com.ansi.scilla.web.common.utils.AppUtils;
 import com.ansi.scilla.web.report.request.ReportDefinition;
+import com.thewebthing.commons.lang.StringUtils;
 
 public class StandardReportServlet extends AbstractServlet {
 
@@ -74,6 +75,7 @@ public class StandardReportServlet extends AbstractServlet {
         response.setHeader("Cache-Control", "must-revalidate, post-check=0, pre-check=0");
         response.setHeader("Pragma", "public");
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        fileName = fileName.replaceAll(" ", "_");
         String dispositionHeader = "attachment; filename=" + fileName + ".xlsx";
         logger.log(Level.DEBUG, "dispositionHeader: " + dispositionHeader);
         response.setHeader("Content-disposition",dispositionHeader);
