@@ -148,9 +148,8 @@
                    			console.log("processUploadSuccess");
                    			$("#prompt-div").hide();
                    			$("#display-div").show();
-                   	  	$("#display-div .divisionId").html($data.data.request.div); 
 
-                   			 $("#display-div .employeeFile").html($data.data.request.employeeFile);
+                   			 $("#display-div .employeeFile").html($data.data.fileName);
                    			
                    			
                 			 $("#organization-edit .org-status-change").on("click", function($event) {
