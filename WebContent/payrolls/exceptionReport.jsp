@@ -92,7 +92,7 @@
         				if ( $companyCode == null ) {
         					$("#prompt-div .companyCodeErr").html("Required Value");
         				} else {
-        					EXCEPTION_REPORT.makeEmployeeTable($companyCode);
+        					EXCEPTION_REPORT.makeExceptionTable($companyCode);
         				}
        				});
         		},
@@ -111,7 +111,7 @@
         		
 
         		
-        		makeEmployeeTable : function($companyCode) {
+        		makeExceptionTable : function($companyCode) {
         			var $yes = '<webthing:checkmark>Yes</webthing:checkmark>';
         			var $no = '<webthing:ban>No</webthing:ban>';
         			var $unknown = '<webthing:questionmark>Invalid</webthing:questionmark>';
@@ -156,7 +156,7 @@
     			        	"data": {},
     			        	},
     			        columns: [
-        			        	{ title: "Group Name", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'group_name' }, 
+        			        	//{ title: "Group Name", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'group_name' }, 
         			        	{ title: "Employee Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' }, 
         			        	{ title: "Company Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'company_code' }, 
         			        	{ title: "Division", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'division_id' },
@@ -184,10 +184,10 @@
         			            "initComplete": function(settings, json) {
         			            	//EXCEPTION_REPORT.doFunctionBinding();
         			            	var myTable = this;
-        			            	//LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#exceptionReportTable", EXCEPTION_REPORT.createTable);
+        			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#exceptionReportTable", EXCEPTION_REPORT.makeExceptionTable);
         			            },
         			            "drawCallback": function( settings ) {
-        			            	//CALL_NOTE.lookupLink();
+        			            	CALL_NOTE.lookupLink();
         			            }
         			    } );
                 	},
@@ -227,7 +227,8 @@
     
    <tiles:put name="content" type="string">
     	<h1>Payroll Exception Report</h1> 
-
+    	
+    	<webthing:lookupFilter filterContainer="filter-container" />
 		<div id="prompt-div">
 	    	<select name="companyCode">
 				<option value=""></option>
