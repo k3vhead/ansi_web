@@ -1,8 +1,10 @@
 package com.ansi.scilla.web.payroll.servlet;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -19,8 +21,11 @@ import com.ansi.scilla.web.common.utils.Permission;
 import com.ansi.scilla.web.exceptions.ExpiredLoginException;
 import com.ansi.scilla.web.exceptions.NotAllowedException;
 import com.ansi.scilla.web.exceptions.TimeoutException;
+import com.ansi.scilla.web.payroll.common.EmployeeRecord;
 import com.ansi.scilla.web.payroll.request.EmployeeImportRequest;
 import com.ansi.scilla.web.payroll.response.EmployeeImportResponse;
+
+import au.com.bytecode.opencsv.CSVReader;
 
 public class EmployeeImportServlet extends AbstractServlet {
 
@@ -46,6 +51,15 @@ public class EmployeeImportServlet extends AbstractServlet {
 			data.setWebMessages(webMessages);
 			
 			if ( webMessages.isEmpty() ) {
+//				CSVReader reader = new CSVReader(new InputStreamReader(item.getInputStream()));		
+//				List<String[]> recordList = reader.readAll();										
+//				recordList.remove(0);								
+//				reader.close();
+//				
+//				for ( int i = 0; i < 5; i++ ) {						
+//					EmployeeRecord rec = new EmployeeRecord(recordList.get(i));
+//					logger.log(Level.DEBUG,rec);					
+//				}
 				data = new EmployeeImportResponse(conn, uploadRequest);
 				responseCode = ResponseCode.SUCCESS;
 			} else {

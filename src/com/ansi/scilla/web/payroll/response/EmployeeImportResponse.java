@@ -2,6 +2,7 @@ package com.ansi.scilla.web.payroll.response;
 
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +18,8 @@ import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.payroll.common.EmployeeRecord;
 import com.ansi.scilla.web.payroll.request.EmployeeImportRequest;
 import com.ansi.scilla.web.payroll.request.EmployeeRequest;
+
+import au.com.bytecode.opencsv.CSVReader;
 
 
 public class EmployeeImportResponse extends MessageResponse {
@@ -72,7 +75,7 @@ public class EmployeeImportResponse extends MessageResponse {
 	}	
 	public EmployeeImportResponse(Connection conn, InputStream inputStream) throws Exception {
 		this();
-		parseODSFile(inputStream);
+		parseCSVFile(inputStream);
 		
 	}
 	public EmployeeImportResponse(Connection conn, EmployeeImportRequest uploadRequest) {
@@ -117,9 +120,20 @@ public class EmployeeImportResponse extends MessageResponse {
 //		this.terminationDate = terminationDate;
 //	}
 	
-	public void parseODSFile(InputStream odsFile) throws Exception {    	    	
+	public void parseCSVFile(InputStream csvFile) throws Exception {    
+		
+//		CSVReader reader = new CSVReader(new InputStreamReader(item.getInputStream()));		
+//		List<String[]> recordList = reader.readAll();										
+//		recordList.remove(0);								
+//		reader.close();
+//		
+//		for ( int i = 0; i < 5; i++ ) {						
+//			EmployeeRecord rec = new EmployeeRecord(recordList.get(i));
+//			logger.log(Level.DEBUG,rec);					
+//		}
+		
     	SpreadsheetDocument speadsheetDocument = null;
-		speadsheetDocument = SpreadsheetDocument.loadDocument(odsFile);
+		speadsheetDocument = SpreadsheetDocument.loadDocument(csvFile);
 		List<Table> tables = speadsheetDocument.getTableList();
 					
 		Table tableSummary = tables.get(2);
@@ -171,14 +185,18 @@ public class EmployeeImportResponse extends MessageResponse {
 		private static final long serialVersionUID = 1L;
 		public SampleRecord2() {
 			super();
-//			super.setRow("2");
-//			super.setEmployeeName("LEE KOCH");
-//			super.setExpenses("0.00");
-//			super.setVacationHours("8");
-//			super.setVacationPay("146.00");
-//			super.setGrossPay("146.00");
-//			super.setProductivity("100.00%");
-//			super.setErrorsFound(false);
+			super.setCompanyCode("2");
+			super.setEmployeeCode("0001");
+			super.setFirstName("LEE ");
+			super.setLastName("KOCK");
+			super.setDepartmentDescription("xxx");
+			super.setStatus("active");
+			super.setTerminationDate("10/23/20");
+			super.setUnionMember("yes");
+			super.setUnionCode("231");	
+			super.setUnionRate("0.00");
+			super.setProcessDate("10/23/20");
+			
 		}
 	}
 }

@@ -34,11 +34,11 @@ public class EmployeeImportRequest extends AbstractRequest implements UploadPars
 	private static final long serialVersionUID = 1L;
 	
 	public static final String DIVISION_ID = "divisionId";
-	public static final String PAYROLL_DATE = "payrollDate";
+//	public static final String PAYROLL_DATE = "payrollDate";
 	
 	public static final String EMPLOYEE_FILE = "employeeFile";
 	
-	protected final SimpleDateFormat payrollDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+//	protected final SimpleDateFormat payrollDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
 	private Integer divisionId;
 	private Calendar payrollDate;
@@ -63,17 +63,7 @@ public class EmployeeImportRequest extends AbstractRequest implements UploadPars
 					case DIVISION_ID:
 						this.divisionId = makeInteger(item);
 						break;
-					case PAYROLL_DATE:
-						try {
-							this.payrollDate = makeCalendar(item, payrollDateFormat);
-						} catch (ParseException e) {
-							webMessages.addMessage(PAYROLL_DATE, "Invalid Date");
-						}
-						break;
-					
-					default:
-						logger.log(Level.ERROR, "Unexpected field: " + item.getFieldName());
-						break;
+//				
 					}
 				} else {
 					switch ( item.getFieldName() ) {
@@ -87,17 +77,17 @@ public class EmployeeImportRequest extends AbstractRequest implements UploadPars
 					logger.log(Level.DEBUG, item.getContentType());	// for ods, expect:  application/vnd.oasis.opendocument.spreadsheet
 					logger.log(Level.DEBUG, item.getName());  // this is the filename
 						
+//					CSVReader reader = new CSVReader(new InputStreamReader(item.getInputStream()));		
+//					List<String[]> recordList = reader.readAll();										
+//					recordList.remove(0);								
+//					reader.close();
+//					
+//					for ( int i = 0; i < 5; i++ ) {						
+//						EmployeeRecord rec = new EmployeeRecord(recordList.get(i));
+//						logger.log(Level.DEBUG,rec);					
+//					}
 						
-						
-					CSVReader reader = new CSVReader(new InputStreamReader(item.getInputStream()));		
-					List<String[]> recordList = reader.readAll();										
-					recordList.remove(0);								
-					reader.close();
 					
-					for ( int i = 0; i < 5; i++ ) {						
-						EmployeeRecord rec = new EmployeeRecord(recordList.get(i));
-						logger.log(Level.DEBUG,rec);					
-					}
 				}
 			}
 		}
@@ -111,13 +101,13 @@ public class EmployeeImportRequest extends AbstractRequest implements UploadPars
 		this.divisionId = divisionId;
 	}
 
-	public Calendar getPayrollDate() {
-		return payrollDate;
-	}
-
-	public void setPayrollDate(Calendar payrollDate) {
-		this.payrollDate = payrollDate;
-	}
+//	public Calendar getPayrollDate() {
+//		return payrollDate;
+//	}
+//
+//	public void setPayrollDate(Calendar payrollDate) {
+//		this.payrollDate = payrollDate;
+//	}
 
 	
 
@@ -137,15 +127,15 @@ public class EmployeeImportRequest extends AbstractRequest implements UploadPars
 		this.webMessages = webMessages;
 	}
 
-	public SimpleDateFormat getPayrollDateFormat() {
-		return payrollDateFormat;
-	}
+//	public SimpleDateFormat getPayrollDateFormat() {
+//		return payrollDateFormat;
+//	}
 	
 	public WebMessages validate(Connection conn) throws Exception {
 		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, DIVISION_ID, this.divisionId, true);
-		if ( ! webMessages.containsKey(PAYROLL_DATE)) {
-			RequestValidator.validateDay(webMessages, PAYROLL_DATE, this.payrollDate, true, null, null, Calendar.FRIDAY);
-		}
+//		if ( ! webMessages.containsKey(PAYROLL_DATE)) {
+//			RequestValidator.validateDay(webMessages, PAYROLL_DATE, this.payrollDate, true, null, null, Calendar.FRIDAY);
+//		}
 		
 		if ( this.employeeFile == null ) {
 			webMessages.addMessage(EMPLOYEE_FILE, "Required Value");
@@ -158,4 +148,5 @@ public class EmployeeImportRequest extends AbstractRequest implements UploadPars
 		}
 		return webMessages;
 	}
+	
 }
