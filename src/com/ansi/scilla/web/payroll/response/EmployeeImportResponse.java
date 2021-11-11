@@ -73,11 +73,13 @@ public class EmployeeImportResponse extends MessageResponse {
 	public void parseCSVFile(InputStream csvFile) throws Exception {    
 		
 		CSVReader reader = new CSVReader(new InputStreamReader(csvFile));		
-		List<String[]> recordList = reader.readAll();										
-		recordList.remove(0);								
+		List<String[]> recordList = reader.readAll();	
+
+		recordList.remove(0);			
+		int recordSize = recordList.size();
 		reader.close();
 		
-		for ( int i = 0; i < 5; i++ ) {						
+		for ( int i = 0; i < recordSize; i++ ) {						
 			EmployeeRecord rec = new EmployeeRecord(recordList.get(i));
 			this.employeeRecords.add(rec);
 			logger.log(Level.DEBUG,rec);					

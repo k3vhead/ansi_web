@@ -40,7 +40,7 @@ public class EmployeeImportRequest extends AbstractRequest implements UploadPars
 	
 //	protected final SimpleDateFormat payrollDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-	private Integer divisionId;
+//	private Integer divisionId;
 	private Calendar payrollDate;
 	
 	private FileItem employeeFile;
@@ -59,12 +59,12 @@ public class EmployeeImportRequest extends AbstractRequest implements UploadPars
 			for ( FileItem item : formItems ) {							
 				logger.log(Level.DEBUG, item.getFieldName());			
 				if ( item.isFormField() ) {
-					switch ( item.getFieldName() ) {
-					case DIVISION_ID:
-						this.divisionId = makeInteger(item);
-						break;
-//				
-					}
+//					switch ( item.getFieldName() ) {
+//					case DIVISION_ID:
+//						this.divisionId = makeInteger(item);
+//						break;
+//			
+//					}
 				} else {
 					switch ( item.getFieldName() ) {
 					case EMPLOYEE_FILE:
@@ -93,13 +93,13 @@ public class EmployeeImportRequest extends AbstractRequest implements UploadPars
 		}
 	}
 
-	public Integer getDivisionId() {
-		return divisionId;
-	}
-
-	public void setDivisionId(Integer divisionId) {
-		this.divisionId = divisionId;
-	}
+//	public Integer getDivisionId() {
+//		return divisionId;
+//	}
+//
+//	public void setDivisionId(Integer divisionId) {
+//		this.divisionId = divisionId;
+//	}
 
 //	public Calendar getPayrollDate() {
 //		return payrollDate;
@@ -132,7 +132,7 @@ public class EmployeeImportRequest extends AbstractRequest implements UploadPars
 //	}
 	
 	public WebMessages validate(Connection conn) throws Exception {
-		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, DIVISION_ID, this.divisionId, true);
+//		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, DIVISION_ID, this.divisionId, true);
 //		if ( ! webMessages.containsKey(PAYROLL_DATE)) {
 //			RequestValidator.validateDay(webMessages, PAYROLL_DATE, this.payrollDate, true, null, null, Calendar.FRIDAY);
 //		}
