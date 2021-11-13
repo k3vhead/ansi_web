@@ -171,21 +171,21 @@
 				        	},
 				        columns: [
 				        	
-				        	{ title: "<bean:message key="field.label.contact_id" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				        	{ title: "<bean:message key="field.label.contactId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 				            	if(row.contact_id != null){return (row.contact_id+"");}
 				            } },
-				            { title: "<bean:message key="field.label.last_name" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				            { title: "<bean:message key="field.label.lastName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
 				            	if(row.last_name != null){return (row.last_name+"");}
 				            } },
-				            { title: "<bean:message key="field.label.first_name" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.firstName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.first_name != null){return (row.first_name+"");}
 				            } },
-				            { title: "<bean:message key="field.label.business_phone" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.businessPhone" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
 				            	if(row.business_phone != null){
-				            		if ( row.preferredContact=='business_phone') {
+				            		if ( row.preferred_contact=='business_phone') {
 				            			value = '<span style="font-weight:bold;">' + row.business_phone + '</span>';
 				            		} else {
-				            			value = row.businessPhone + "";
+				            			value = row.business_phone + "";
 				            		}			            		
 				            		return (value);
 				            	}
@@ -208,8 +208,8 @@
 			            		}			            		
 			            		return (value);
 				            } },
-				            { title: "<bean:message key="field.label.mobile_phone" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
-			            		if ( row.preferredContact=='mobile_phone') {
+				            { title: "<bean:message key="field.label.mobilePhone" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+			            		if ( row.preferred_contact=='mobile_phone') {
 			            			value = '<span style="font-weight:bold;">' + row.mobile_phone + '</span>';
 			            		} else {
 			            			value = row.mobile_phone + "";
