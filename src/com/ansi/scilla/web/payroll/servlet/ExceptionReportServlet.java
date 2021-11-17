@@ -34,20 +34,20 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class ExceptionReportServlet extends AbstractLookupServlet {
 	
-	public static final String GROUP_NAME = "group_name";
+	//public static final String GROUP_NAME = "group_name";
 	public static final String COMPANY_NAME = "company_code";
+	public static final String EMPLOYEE_CODE = "employee_code";
 	public static final String DIVISION_ID = "division_id";
 	public static final String DESCRIPTION = "description";
-	public static final String EMPLOYEE_CODE = "employee_code";
 	public static final String EMPLOYEE_FIRST_NAME = "employee_first_name";
 	public static final String EMPLOYEE_LAST_NAME = "employee_last_name";
 	public static final String EMPLOYEE_STATUS = "employee_status";
 	public static final String TERMINATION_DATE = "employee_termination_date";
-	public static final String FORMATTED_TERMINATION_DATE = "formatted_termination_date";
 	public static final String UNION_MEMBER = "union_member";
 	public static final String UNION_CODE = "union_code";
 	public static final String UNION_RATE = "union_rate";
 	public static final String PROCESS_DATE = "process_date";
+	public static final String FORMATTED_TERMINATION_DATE = "formatted_termination_date";
 	public static final String FORMATTED_PROCESS_DATE = "formatted_process_date";
 	
 	
@@ -59,7 +59,7 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 	public ExceptionReportServlet() {
 		super(Permission.PAYROLL_WRITE);
 		cols = new String[] { 
-				GROUP_NAME,
+	//			GROUP_NAME,
 				COMPANY_NAME,
 				DIVISION_ID,
 				DESCRIPTION,
