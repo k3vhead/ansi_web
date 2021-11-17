@@ -118,15 +118,28 @@
                    			});
                    		},
                    		
-                   		makeEmployeeTable : function() {
+                   		makeEmployeeTableXXX : function($data) {
+                   			console.log($data);
+                   			$("#employeeImport").DataTable( {
+                   				data: $data.employeeRecords,
+                   				columns: [
+            			        	{ title: "Employee Code", data:'employeeCode' },
+           			        	]
+                   			});
+                   		},
+                   		
+                   		
+                   		makeEmployeeTable : function($data) {
                 			var $yes = '<webthing:checkmark>Yes</webthing:checkmark>';
                 			var $no = '<webthing:ban>No</webthing:ban>';
                 			var $unknown = '<webthing:questionmark>Invalid</webthing:questionmark>';
                 			
+                			console.log($data.employeeRecords);
+                			
                 			$("#employeeImport").DataTable( {
                     			"aaSorting":		[[4,'asc'],[3,'asc']],
                     			"processing": 		true,
-                    	        "serverSide": 		true,
+                    	        //"serverSide": 		true,
                     	        "autoWidth": 		false,
                     	        "deferRender": 		true,
                     	        "scrollCollapse": 	true,
@@ -162,11 +175,9 @@
  //           			        	"type": "GET",
  //           			        	"data": {},
  //           			        	},
- 								"data":$data.data.employeeRecords
- 								$('#example').DataTable( {
- 								    data: data,
+ 								"data":JSON.stringify($data.employeeRecords), 								
             			        columns: [
-            			        	{ title: "Employee Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' }, 
+            			        	{ title: "Employee Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employeeCode' }, 
             			        	{ title: "Company Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'company_code' }, 
             			        	{ title: "Division", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'div' },
             			        	{ title: "First Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_first_name' },
@@ -216,7 +227,6 @@
             			            	}
             			         	   },
             			      		 ],
- 								});
             			            "initComplete": function(settings, json) {
             			            	var myTable = this;
             			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#employeeImport", EMPLOYEELOOKUP.makeEmployeeTable);
@@ -269,7 +279,7 @@
                    			$("#display-div").show();
                    			$("#alias-display").show();
                    			$("#display-div .employeeFile").html($data.data.fileName);
-                   			EMPLOYEE_IMPORT.makeEmployeeTable();
+                   			EMPLOYEE_IMPORT.makeEmployeeTable($data.data);
                    			
                 			 $("#organization-edit .org-status-change").on("click", function($event) {
                 				console.log("changing status");
@@ -386,15 +396,7 @@
     	
 				<div id="alias-display">
 			<div class="alias-message err"></div>
-			<table id="alias-lookup">
-				<thead></thead>
-				<tbody></tbody>
-				<tfoot>
-					<tr>
-						<td></td>
-						<td></td>
-					</tr>
-				</tfoot>
+			<table id="employeeImport">				
 			</table>			
 		</div>
 		
