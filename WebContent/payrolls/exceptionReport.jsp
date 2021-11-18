@@ -172,12 +172,7 @@
         			        	{ title: "Action",  width:"5%", searchable:false,  
         			            	data: function ( row, type, set ) { 
         			            		var $viewLink = '<span class="action-link view-link" data-id="'+row.employee_code+'"><webthing:view>Exception_Report_Record</webthing:view></span>';
-        			            		var $editLink = '<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><span class="action-link edit-link" data-id="'+row.employee_code+'"><webthing:edit>Edit</webthing:edit></span></ansi:hasPermission>';
-        			            		var $deleteLink = '';
-        			            		if ( row.timesheet_count == 0 ) {
-        			            			$deleteLink = '<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><span class="action-link delete-link" data-id="'+row.employee_code+'"><webthing:delete>Delete</webthing:delete></span></ansi:hasPermission>';
-        			            		}
-        			            		var $actionLink = $viewLink + $editLink + $deleteLink;
+        			            		var $actionLink = $viewLink;
         			            		return $actionLink;
         			            	}
         			            }],
