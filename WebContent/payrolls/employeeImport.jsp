@@ -96,7 +96,109 @@
                    	
                    	
                   
-                   		
+                   		makeAliasTable : function($employeeCode) {
+                			console.log("makeAliasTable: " + $employeeCode);
+                			$("#alias-display").dialog("open");
+                			$("#alias-lookup").DataTable( {
+                    			"aaSorting":		[[0,'asc']],
+                    			"processing": 		true,
+                    	        "serverSide": 		true,
+                    	        "autoWidth": 		false,
+                    	        "deferRender": 		true,
+                    	        "scrollCollapse": 	true,
+                    	        "scrollX": 			true,
+                    	       // "pageLength":		50, 
+                    	        rowId: 				'dt_RowId',
+                    	        destroy : 			true,		// this lets us reinitialize the table
+                    	        dom: 				'Bfrtip',
+                    	        "searching": 		true,
+                    	        "searchDelay":		800,
+                    	       /*   lengthMenu: [
+                    	        	[ 10, 50, 100, 500, 1000 ],
+                    	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
+                    	        ],  */
+                    	        buttons: [
+                    	        		//'pageLength',
+                    	        		'copy', 
+                    	        		'csv', 
+                    	        		'excel', 
+                    	        		{extend: 'pdfHtml5', orientation: 'landscape'}, 
+                    	        		'print',{extend: 'colvis',	label: function () {doFunctionBinding();$('#displayTable').draw();}},
+                    	        	],
+                    	        "columnDefs": [
+                     	            { "orderable": true, "targets": -1 },
+                     	            { className: "dt-head-center", "targets":[]},
+                    	            { className: "dt-left", "targets": [0] },
+                    	            { className: "dt-center", "targets": [1] },
+                    	            { className: "dt-right", "targets": []}
+                    	         ],
+                    	        "paging": false,
+            			        /* "ajax": {
+            			        	"url": "payroll/aliasLookup",
+            			        	"type": "GET",
+            			        	"data": {"employeeCode":$employeeCode},
+            			        	}, */
+            			        columns: [
+            			        	{ title: "Employee Alias", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_name' }, 
+            			            { title: "Action",  width:"10%", searchable:true, searchFormat: "Equipment #####", 
+            			            	data: function ( row, type, set ) { 
+            			            		//var $editLink = '<span class="action-link edit-link" data-id="'+row.employee_code+'" data-name="'+row.employee_name+'"><webthing:edit>Edit</webthing:edit></span>';
+            			            		var $deleteLink = '<span class="action-link delete-link" data-id="'+row.employee_code+'" data-name="'+row.employee_name+'"><webthing:delete>Delete</webthing:delete></span>';
+            			            		return '<ansi:hasPermission permissionRequired="PAYROLL_WRITE">' + $deleteLink + '</ansi:hasPermission>'
+            			            	}
+            			            },
+            			            ],
+            			            "initComplete": function(settings, json) {
+            			            	var myTable = this;
+            			            	//LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#ticketTable", CALL_NOTE_LOOKUP.makeTable);
+            			            },
+            			            "drawCallback": function( settings ) {
+            			            	console.log("alias drawCallback");
+            			            	//$("#alias-lookup .edit-link").off("click");
+            			            	$("#alias-lookup .delete-link").off("click");
+            			            	$("#alias-lookup .cancel-new-alias").off("click");
+            			            	$("#alias-lookup .save-new-alias").off("click");
+            			            	$("#alias-lookup .delete-link").click(function($event) {
+            			            		var $employeeCode = $(this).attr("data-id");
+            			            		var $employeeName = $(this).attr("data-name");
+            			            		$("#confirm-save").attr("data-function","deleteAlias");
+            			            		$("#confirm-save").attr("data-id",$employeeCode);
+            			            		$("#confirm-save").attr("data-name",$employeeName);
+        									$("#confirm-modal").dialog("open");
+            			            	});
+            			            	$("#alias-display .cancel-new-alias").click( function($event) {
+            			            		$("#alias-display input[name='employeeName']").val("");
+            			            	});
+            			            	$("#alias-display .save-new-alias").click( function($event) {    			            		
+            			            		var $employeeCode = $(this).attr("data-id");
+            			            		var $employeeName = null
+            			            		$.each( $("#alias-display input"), function($index, $value) {
+            			            			// for some reason, datatables is putting two input boxes, so get the one that is populated
+            			            			var $thisValue = $($value).val();
+            			            			if ( $thisValue != null ) {
+            			            				$employeeName = $thisValue;
+            			            			}
+            			            		});
+            			            		var $url = "payroll/alias/" + $employeeCode;
+            			            		$("#alias-display .err").html("");
+            			            		console.log("new alias name: " + $employeeName);
+            			            		ANSI_UTILS.makeServerCall("POST", $url, {"employeeName":$employeeName}, {200:EMPLOYEELOOKUP.doNewAliasSuccess}, {});
+            			            	});
+
+            			            },
+            			            "footerCallback" : function( row, data, start, end, display ) {
+            			            	console.log("alias footerCallback");
+            			            	var api = this.api();
+            			            	var $saveLink = '<span class="action-link save-new-alias" data-id="'+$employeeCode+'"><webthing:checkmark>Save</webthing:checkmark></span>';
+            			            	var $cancelLink = '<span class="action-link cancel-new-alias"><webthing:ban>Cancel</webthing:ban></span>';
+            			            	var $aliasInput = '<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><input type="text" name="employeeName" placeholder="New Alias" /></ansi:hasPermission>';
+            			            	var $aliasError = '<span class="employeeNameErr err"></span>';
+            			            	$( api.column(0).footer() ).html($aliasInput + " " + $aliasError);
+            			            	$( api.column(1).footer() ).html('<ansi:hasPermission permissionRequired="PAYROLL_WRITE">' + $saveLink + $cancelLink + '</ansi:hasPermission>');
+            			            }
+            			    } );
+                		},
+                		
                    		makeClickers : function() {
                    			$("#save-button").click(function($event) {
                    				$("#prompt-div .err").html("");
@@ -115,6 +217,7 @@
                    			$("#display-div input[name='cancelButton']").click(function($event) {
                    				$("#display-div").hide();
                    				$("#prompt-div").show();
+                   				$("#alias-display").hide();
                    			});
                    		},
                    		
@@ -135,9 +238,9 @@
                    			console.log("processUploadSuccess");
                    			$("#prompt-div").hide();
                    			$("#display-div").show();
-
-                   			 $("#display-div .employeeFile").html($data.data.fileName);
-                   			
+                   			$("#alias-display").show();
+                   			$("#display-div .employeeFile").html($data.data.fileName);
+                   			EMPLOYEE_IMPORT.makeAliasTable();
                    			
                 			 $("#organization-edit .org-status-change").on("click", function($event) {
                 				console.log("changing status");
@@ -251,8 +354,20 @@
     		</tr>
     		
     	</table>
-    	<table id="employee"></table>
-
+    	
+				<div id="alias-display">
+			<div class="alias-message err"></div>
+			<table id="alias-lookup">
+				<thead></thead>
+				<tbody></tbody>
+				<tfoot>
+					<tr>
+						<td></td>
+						<td></td>
+					</tr>
+				</tfoot>
+			</table>			
+		</div>
 		
     </tiles:put>
 		
