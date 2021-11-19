@@ -41,7 +41,7 @@ public class LoadClaims {
 			conn = AppUtils.getDevConn();
 			conn.setAutoCommit(false);
 			
-			PreparedStatement ps = conn.prepareStatement("insert into ticket_claim (ticket_id,service_type,claim_year,claim_week,volume,dl_amt,dl_expenses,passthru_expense_volume,passthru_expense_type,hours,notes,employee_name,added_by,added_date,updated_by,updated_date) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+			PreparedStatement ps = conn.prepareStatement("insert into ticket_claim (ticket_id,service_type,claim_year,claim_month, claim_week,volume,dl_amt,dl_expenses,passthru_expense_volume,passthru_expense_type,hours,notes,employee_name,added_by,added_date,updated_by,updated_date) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 			PreparedStatement worker = conn.prepareStatement("select first_name, last_name from ansi_user where user_id=?");
 			
 			CSVReader reader = new CSVReader(new FileReader("/home/dclewis/Documents/webthing_v2/projects/ANSI/data/20201209_ticket_claims/20201208_ticket_claim_data.csv"));
@@ -53,6 +53,7 @@ public class LoadClaims {
 				WorkYear workYear = new WorkYear(workDate.getYear());
 				GregorianCalendar date = new GregorianCalendar(workDate.getYear(), workDate.getMonthValue()-1, workDate.getDayOfMonth(),0,0,0);
 				Integer workWeek = workYear.getWeekOfYear(date);
+				Integer claimMonth = workYear.getWorkMonth(workWeek);
 				LocalDateTime addedDate = LocalDateTime.parse(line[ADDED_DATE],auditDateFormat);
 				LocalDateTime updatedDate =LocalDateTime.parse(line[UPDATED_DATE],auditDateFormat);
 				String workerName = makeWorker(worker, line[WASHER_ID]);
@@ -60,19 +61,20 @@ public class LoadClaims {
 				ps.setInt(1, Integer.valueOf(line[TICKET_ID]));
 				ps.setInt(2, 2);
 				ps.setInt(3, workDate.getYear());
-				ps.setInt(4, workWeek);
-				ps.setDouble(5, Double.valueOf(line[VOLUME]));
-				ps.setDouble(6, Double.valueOf(line[DL_AMT]));
-				ps.setDouble(7, 0.0D);	//expenses
-				ps.setNull(8, Types.DOUBLE);	// passthru
-				ps.setNull(9,  Types.INTEGER);  // expense type
-				ps.setDouble(10, Double.valueOf(line[HOURS]));
-				ps.setString(11, line[NOTES]);
-				ps.setString(12, workerName);
-				ps.setInt(13, Integer.valueOf(line[ADDED_BY]));
-				ps.setDate(14, makeDate(addedDate));
-				ps.setInt(15, Integer.valueOf(line[UPDATED_BY]));
-				ps.setDate(16, makeDate(updatedDate));
+				ps.setInt(4, claimMonth);
+				ps.setInt(5, workWeek);
+				ps.setDouble(6, Double.valueOf(line[VOLUME]));
+				ps.setDouble(7, Double.valueOf(line[DL_AMT]));
+				ps.setDouble(8, 0.0D);	//expenses
+				ps.setNull(9, Types.DOUBLE);	// passthru
+				ps.setNull(10,  Types.INTEGER);  // expense type
+				ps.setDouble(11, Double.valueOf(line[HOURS]));
+				ps.setString(12, line[NOTES]);
+				ps.setString(13, workerName);
+				ps.setInt(14, Integer.valueOf(line[ADDED_BY]));
+				ps.setDate(15, makeDate(addedDate));
+				ps.setInt(16, Integer.valueOf(line[UPDATED_BY]));
+				ps.setDate(17, makeDate(updatedDate));
 				ps.executeUpdate();
 				
 			}
