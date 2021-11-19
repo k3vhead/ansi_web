@@ -16,4 +16,5 @@
 <span id="buildDate" class="trailerLink" 
 	data-webBuildDate="<%= buildDate.getWebBuildDate() %>" 
 	data-commonBuildDate="<%= buildDate.getCommonBuildDate()%>"
-	data-reportBuildDate="<%= buildDate.getReportBuildDate()%>" >Build: <%= buildDate.getWebBuildDate() %></span>
+	data-reportBuildDate="<%= buildDate.getReportBuildDate()%>" 
+	data-gitbranch="<%= buildDate.getGitBranch()%>">Build: <%= buildDate.getWebBuildDate() %></span>
