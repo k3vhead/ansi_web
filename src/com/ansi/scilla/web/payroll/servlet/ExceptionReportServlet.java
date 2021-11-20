@@ -33,8 +33,7 @@ import com.ansi.scilla.web.payroll.servlet.EmployeeLookupServlet.ItemTransformer
 import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class ExceptionReportServlet extends AbstractLookupServlet {
-	
-	//public static final String GROUP_NAME = "group_name";
+		
 	public static final String COMPANY_NAME = "company_code";
 	public static final String EMPLOYEE_CODE = "employee_code";
 	public static final String DIVISION_ID = "division_id";
@@ -59,7 +58,7 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 	public ExceptionReportServlet() {
 		super(Permission.PAYROLL_WRITE);
 		cols = new String[] { 
-	//			GROUP_NAME,
+	
 				COMPANY_NAME,
 				DIVISION_ID,
 				DESCRIPTION,

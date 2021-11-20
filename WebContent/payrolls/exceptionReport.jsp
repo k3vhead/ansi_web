@@ -145,9 +145,8 @@
             	        "columnDefs": [
              	            { "orderable": true, "targets": -1 },
              	            { className: "dt-head-center", "targets":[]},
-            	            { className: "dt-left", "targets": [0,1,2,3,4,5,6,7,8,10,12] },
-            	            { className: "dt-center", "targets": [9,13] },
-            	            { className: "dt-right", "targets": [11]}
+            	            { className: "dt-left", "targets": [0,1,2,3,4,5,6,7,8,9,10,11] },
+            	            { className: "dt-center", "targets": [12] },
             	         ],
             	       // "paging": true,
     			        "ajax": {
@@ -156,7 +155,6 @@
     			        	"data": {},
     			        	},
     			        columns: [
-        			        	//{ title: "Group Name", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'group_name' }, 
         			        	{ title: "Employee Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_code' }, 
         			        	{ title: "Company Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'company_code' }, 
         			        	{ title: "Division", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'division_id' },
@@ -166,8 +164,8 @@
         			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_status' },
         			        	{ title: "Termination Date", width:"10%", searchable:true, "defaultContent": "", data:'formatted_termination_date' },
         			        	{ title: "Union Member", width:"10%", searchable:true, "defaultContent": "", data:'union_member' },
-        			        	{ title: "Unions Code", width:"10%", searchable:true, "defaultContent": "", data:'union_code' },
-        			        	{ title: "Unsion Rate", width:"10%", searchable:true, "defaultContent": "", data:'union_rate' },
+        			        	{ title: "Union Code", width:"10%", searchable:true, "defaultContent": "", data:'union_code' },
+        			        	{ title: "Union Rate", width:"10%", searchable:true, "defaultContent": "", data:'union_rate' },
         			        	{ title: "Process Date", width:"10%", searchable:true, "defaultContent": "", data:'formatted_process_date' },
         			        	{ title: "Action",  width:"5%", searchable:false,  
         			            	data: function ( row, type, set ) { 
@@ -177,12 +175,13 @@
         			            	}
         			            }],
         			            "initComplete": function(settings, json) {
-        			            	//EXCEPTION_REPORT.doFunctionBinding();
         			            	var myTable = this;
         			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#exceptionReportTable", EXCEPTION_REPORT.makeExceptionTable);
-        			            },
+        			               
+        			            	//EXCEPTION_REPORT.doFunctionBinding();
+        			            	},
         			            "drawCallback": function( settings ) {
-        			            	CALL_NOTE.lookupLink();
+        			            	//CALL_NOTE.lookupLink();
         			            }
         			    } );
                 	},
