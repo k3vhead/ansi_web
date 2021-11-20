@@ -34,14 +34,14 @@ import com.thewebthing.commons.db2.RecordNotFoundException;
 
 public class ExceptionReportServlet extends AbstractLookupServlet {
 		
-	public static final String COMPANY_NAME = "company_code";
-	public static final String EMPLOYEE_CODE = "employee_code";
-	public static final String DIVISION_ID = "division_id";
-	public static final String DESCRIPTION = "description";
-	public static final String EMPLOYEE_FIRST_NAME = "employee_first_name";
-	public static final String EMPLOYEE_LAST_NAME = "employee_last_name";
-	public static final String EMPLOYEE_STATUS = "employee_status";
-	public static final String TERMINATION_DATE = "employee_termination_date";
+	public static final String COMPANY_NAME = "division_group.company_code";
+	public static final String EMPLOYEE_CODE = "payroll_employee.employee_code";
+	public static final String DIVISION_ID = "division.division_id";
+	public static final String EMPLOYEE_FIRST_NAME = "payroll_employee.employee_first_name";
+	public static final String EMPLOYEE_LAST_NAME = "payroll_employee.employee_last_name";
+	public static final String EMPLOYEE_STATUS = "payroll_employee.employee_status";
+	public static final String DESCRIPTION = "division.description";
+	public static final String TERMINATION_DATE = "payroll_employee.employee_termination_date";
 	public static final String UNION_MEMBER = "union_member";
 	public static final String UNION_CODE = "union_code";
 	public static final String UNION_RATE = "union_rate";
@@ -58,13 +58,13 @@ public class ExceptionReportServlet extends AbstractLookupServlet {
 	public ExceptionReportServlet() {
 		super(Permission.PAYROLL_WRITE);
 		cols = new String[] { 
-	
+
+				EMPLOYEE_CODE,
 				COMPANY_NAME,
 				DIVISION_ID,
-				DESCRIPTION,
-				EMPLOYEE_CODE,
 				EMPLOYEE_FIRST_NAME,
 				EMPLOYEE_LAST_NAME,
+				DESCRIPTION,
 				EMPLOYEE_STATUS,
 				TERMINATION_DATE,
 				UNION_MEMBER,
