@@ -114,7 +114,7 @@
                    			$("#display-div input[name='cancelButton']").click(function($event) {
                    				$("#display-div").hide();
                    				$("#prompt-div").show();
-                   				$("#alias-display").hide();
+                   				$("#employee-display").hide();
                    			});
                    		},
                    		
@@ -123,7 +123,15 @@
                    			$("#employeeImport").DataTable( {
                    				data: $data.employeeRecords,
                    				columns: [
-            			        	{ title: "Employee Code", data:'employeeCode' },
+                   					{ title: "Employee Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employeeCode' },
+                   					{ title: "Company Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'companyCode' },
+                   					{ title: "Division", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'divisionId' },
+            			        	{ title: "First Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'firstName' },
+            			        	{ title: "Last Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'lastName' },
+            			        	{ title: "MI", width:"5%", searchable:true, "defaultContent": "", data:'middleInitial' },
+            			        	{ title: "Dept. Description", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'departmentDescription' },
+            			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'status' },
+            			        	{ title: "Termination", width:"10%", searchable:true, "defaultContent": "", data:'terminationDate' },
            			        	]
                    			});
                    		},
@@ -155,7 +163,7 @@
                 //    	            [ '10 rows', '50 rows', '100 rows', '500 rows', '1000 rows' ]
                 //    	        ],
                     	        buttons: [
-                    	        		'pageLength',
+                    	     //   		'pageLength',
                     	        		'copy', 
                     	        		'csv', 
                     	        		'excel', 
@@ -175,34 +183,36 @@
  //           			        	"type": "GET",
  //           			        	"data": {},
  //           			        	},
- 								"data":JSON.stringify($data.employeeRecords), 								
+ 								//"data":JSON.stringify($data.employeeRecords), 	
+ 								data: $data.employeeRecords,
             			        columns: [
             			        	{ title: "Employee Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employeeCode' }, 
-            			        	{ title: "Company Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'company_code' }, 
-            			        	{ title: "Division", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'div' },
-            			        	{ title: "First Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_first_name' },
-            			        	{ title: "Last Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_last_name' },
-            			        	{ title: "MI", width:"5%", searchable:true, "defaultContent": "", data:'employee_mi' },
-            			        	{ title: "Dept. Description", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'dept_description' },
-            			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'employee_status' },
-            			        	{ title: "Termination", width:"10%", searchable:true, "defaultContent": "", data:'formatted_termination_date' },
-            			        	{ title: "Union", width:"5%", searchable:true, "defaultContent":$unknown,
+            			        	{ title: "Company Code", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'companyCode' }, 
+            			        	{ title: "Division", width:"5%", searchable:true, "defaultContent": "<i>N/A</i>", data:'divisionId' },
+            			        	{ title: "First Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'firstName' },
+            			        	{ title: "Last Name", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'lastName' },
+            			        	{ title: "MI", width:"5%", searchable:true, "defaultContent": "", data:'middleInitial' },
+            			        	{ title: "Dept. Description", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'departmentDescription' },
+            			        	{ title: "Status", width:"10%", searchable:true, "defaultContent": "<i>N/A</i>", data:'status' },
+            			        	{ title: "Termination", width:"10%", searchable:true, "defaultContent": "", data:'terminationDate' },
+            			        	{ title: "Union", width:"5%", searchable:true, "defaultContent":"", data:$unknown,
             			        		data:function(row, type, set) {
             			        			var $value = $unknown;
-            			        			if ( row.union_member != null ) {
-            			        				if ( row.union_member == 1 ) {
+            			        			if ( row.unionMember != null ) {
+            			        				if ( row.unionMember == "Yes" ) {
             			        					$value = $yes;
             			        				}
-            			        				if ( row.union_member == 0 ) {
+            			        				if ( row.unionMember == '' ) {
             			        					$value = $no;
             			        				}
             			        			}
             			        			return $value;
             			        		}
-            			        	},
-            			        	{ title: "Union Code", width:"10%", searchable:true, "defaultContent": "", data:'union_code' },
-            			        	{ title: "Union Rate", width:"10%", searchable:true, "defaultContent":"",
-            			        		data:function(row, type, set) {
+            			        			
+            			        	}, 
+            			        	{ title: "Union Code", width:"10%", searchable:true, "defaultContent": "", data:'unionCode' },
+            			        	{ title: "Union Rate", width:"10%", searchable:true, "defaultContent":"", data:'unionRate' },
+            			        		/* data:function(row, type, set) {
             			        			var $value = "";
             			        			if ( row.union_member == 1 ) {
             			        				$value = $unknown;
@@ -212,7 +222,7 @@
             			        			}
             			        			return $value;
             			        		}
-            			        	},
+            			        	}, */
             			        	{ title: "Notes", width:"10%", searchable:true, "defaultContent": "", data:'notes' },    			        	
             			            { title: "Action",  width:"5%", searchable:false,  
             			            	data: function ( row, type, set ) { 
@@ -227,7 +237,7 @@
             			            	}
             			         	   },
             			      		 ],
-            			            "initComplete": function(settings, json) {
+            			         /*   "initComplete": function(settings, json) {
             			            	var myTable = this;
             			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#employeeImport", EMPLOYEELOOKUP.makeEmployeeTable);
             			            },
@@ -238,7 +248,7 @@
             			            	$(".view-link").click(function($clickevent) {
             			            		var $employeeCode = $(this).attr("data-id");
             			            		console.log("employee code: " + $employeeCode);
-            			       //     		EMPLOYEELOOKUP.makeAliasTable($employeeCode);
+            			            		EMPLOYEELOOKUP.makeAliasTable($employeeCode);
             			            	});
             			            	$(".edit-link").click(function($clickevent) {
             			            		var $employeeCode = $(this).attr("data-id");
@@ -257,7 +267,7 @@
             			            		$("#confirm-save").attr("data-name",null);
         									$("#confirm-modal").dialog("open");
             			            	});
-            			            }
+            			            }  */
             			    } );
                 		},
                 		
@@ -277,7 +287,7 @@
                    			console.log("processUploadSuccess");
                    			$("#prompt-div").hide();
                    			$("#display-div").show();
-                   			$("#alias-display").show();
+                   			$("#employee-display").show();
                    			$("#display-div .employeeFile").html($data.data.fileName);
                    			EMPLOYEE_IMPORT.makeEmployeeTable($data.data);
                    			
@@ -394,8 +404,8 @@
     		
     	</table>
     	
-				<div id="alias-display">
-			<div class="alias-message err"></div>
+				<div id="employee-display">
+			<div class="employee-message err"></div>
 			<table id="employeeImport">				
 			</table>			
 		</div>
