@@ -1,13 +1,20 @@
 package com.ansi.scilla.web.test.payroll;
 
-import java.io.FileReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Transformer;
+
+import com.ansi.scilla.common.utils.AppUtils;
 import com.ansi.scilla.web.payroll.common.EmployeeRecord;
-
-import au.com.bytecode.opencsv.CSVReader;
+import com.ansi.scilla.web.payroll.common.EmployeeRecordStatus;
+import com.ansi.scilla.web.payroll.response.EmployeeImportResponse;
 
 public class TestEmployeeFileParse {
 
@@ -18,15 +25,28 @@ public class TestEmployeeFileParse {
 		
 		String davesFile = "/home/dclewis/Documents/webthing_v2/projects/ANSI/design/20210629_payroll/rollout_mtg/PAYCOM Import Template-NEW-GEN.csv";
 		String krisFile = "/home/klandeck/Documents/payroll/PAYCOM Import Template-NEW-GEN.csv";
-		
-		CSVReader reader = new CSVReader(new FileReader(davesFile));
-		List<String[]> recordList = reader.readAll();		
-		recordList.remove(0);
-		reader.close();
-		
-		for ( String[] row : recordList ) {
-			EmployeeRecord rec = new EmployeeRecord(row);
-			System.out.println(rec);
+				
+//		CSVReader reader = new CSVReader(new FileReader(davesFile));
+//		List<String[]> recordList = reader.readAll();		
+//		recordList.remove(0);
+//		reader.close();
+//		
+//		for ( String[] row : recordList ) {
+//			EmployeeRecord rec = new EmployeeRecord(row);
+//			System.out.println(rec);
+//		}
+		Connection conn = null;
+		try {
+			conn = AppUtils.getDevConn();
+			File file = new File(davesFile);
+			PreparedStatement ps = conn.prepareStatement("select * from payroll_employee where employee_code=? or (lower(employee_first_name)=? and lower(employee_last_name)=?)");
+			EmployeeImportResponse data = new EmployeeImportResponse(conn, new FileInputStream(file));
+			CollectionUtils.transform(data.getEmployeeRecords(), new EmployeeRecordTransformer(ps));
+			for ( EmployeeRecord record : data.getEmployeeRecords() ) {
+				System.out.println(record.getEmployeeCode() + "\t" + record.getRecordStatus());
+			}
+		} finally {
+			conn.close();
 		}
 		
 	}
@@ -39,4 +59,39 @@ public class TestEmployeeFileParse {
 		}
 	}
 
+	public class EmployeeRecordTransformer implements Transformer<EmployeeRecord, EmployeeRecord> {
+
+		private PreparedStatement statement;		
+		
+
+		public EmployeeRecordTransformer(PreparedStatement statement) {
+			super();
+			this.statement = statement;
+		}
+
+
+		@Override
+		public EmployeeRecord transform(EmployeeRecord arg0) {
+			try {
+				statement.setInt(1, Integer.valueOf(arg0.getEmployeeCode()));
+				statement.setString(2, arg0.getFirstName().toLowerCase());
+				statement.setString(3, arg0.getLastName().toLowerCase());
+				ResultSet rs = statement.executeQuery();
+				if ( rs.next() ) {
+					EmployeeRecord record = new EmployeeRecord(rs);
+					if (arg0.equals(record)) {
+						arg0.setRecordStatus(EmployeeRecordStatus.EXISTS.toString());
+					} else {
+						arg0.setRecordStatus(EmployeeRecordStatus.MODIFIED.toString());
+					}
+				} else {
+					arg0.setRecordStatus(EmployeeRecordStatus.NEW.toString());
+				}
+			} catch ( Exception e) {
+				throw new RuntimeException(e);
+			}
+			return arg0;
+		}
+		
+	}
 }

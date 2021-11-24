@@ -1,6 +1,14 @@
 package com.ansi.scilla.web.payroll.common;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Map;
+
+import org.apache.commons.beanutils.BeanMap;
+
 import com.ansi.scilla.common.ApplicationObject;
+import com.ansi.scilla.common.db.PayrollEmployee;
 
 public class EmployeeRecord extends ApplicationObject {
 
@@ -33,6 +41,8 @@ public class EmployeeRecord extends ApplicationObject {
 	private String unionCode;
 	private String unionRate;
 	private String processDate;
+	private String recordStatus;
+	
 	
 	public EmployeeRecord() {
 		super();
@@ -59,6 +69,28 @@ public class EmployeeRecord extends ApplicationObject {
 	
 
 
+
+	public EmployeeRecord(ResultSet rs) throws SQLException {
+		super();
+		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy");
+		Object terminationDate = rs.getObject(PayrollEmployee.EMPLOYEE_TERMINATION_DATE);
+		Object unionMember = rs.getObject(PayrollEmployee.UNION_MEMBER);
+		Object unionRate = rs.getObject(PayrollEmployee.UNION_RATE);
+		Object processDate = rs.getObject(PayrollEmployee.PROCESS_DATE);
+		
+		this.employeeCode = String.valueOf(rs.getInt(PayrollEmployee.EMPLOYEE_CODE));
+		this.companyCode = rs.getString(PayrollEmployee.COMPANY_CODE);
+		this.divisionId = String.valueOf(rs.getInt(PayrollEmployee.DIVISION_ID));
+		this.firstName = rs.getString(PayrollEmployee.EMPLOYEE_FIRST_NAME);
+		this.lastName = rs.getString(PayrollEmployee.EMPLOYEE_LAST_NAME);
+		this.departmentDescription = rs.getString(PayrollEmployee.DEPT_DESCRIPTION);
+		this.status = rs.getString(PayrollEmployee.EMPLOYEE_STATUS);
+		this.terminationDate = terminationDate == null ? null : sdf.format((java.sql.Date)terminationDate);
+		this.unionMember = unionMember == null ? null : "Yes";
+		this.unionCode = rs.getString(PayrollEmployee.UNION_CODE);
+		this.unionRate = unionRate == null ? null : String.valueOf(unionRate);
+		this.processDate = processDate == null ? null : sdf.format((java.sql.Date)processDate);
+	}
 
 	public String getEmployeeCode() {
 		return employeeCode;
@@ -155,4 +187,44 @@ public class EmployeeRecord extends ApplicationObject {
 	public void setProcessDate(String processDate) {
 		this.processDate = processDate;
 	}
+
+	public String getRecordStatus() {
+		return recordStatus;
+	}
+
+	public void setRecordStatus(String recordStatus) {
+		this.recordStatus = recordStatus;
+	}
+
+	
+	@Override
+	public boolean equals(Object obj) {
+		BeanMap arg0 = new BeanMap(this);
+		BeanMap arg1 = new BeanMap(obj);
+		boolean matches = true;
+		if ( arg0.keySet().equals(arg1.keySet()) ) {
+			for ( Object entryObject : arg0.entrySet() ) {
+				Map.Entry<Object,Object> entry = (Map.Entry<Object,Object>)entryObject;
+				Object o = arg1.get(entry.getKey());
+				if ( o!= null && entry.getValue() != null ) {
+					if ( o.getClass().getName().equals("java.lang.String")) {
+						if ( ! ((String)entry.getValue()).equalsIgnoreCase((String)o) ) {
+							System.out.println("** " + this.getEmployeeCode() + "\t" + entry.getKey());
+							matches = false;
+						}
+					} else {
+						if ( ! entry.getValue().equals(o)) {
+							System.out.println("*** " + this.getEmployeeCode() + "\t" + entry.getKey());
+							matches = false;
+						}
+					}
+				}
+			}
+		} else {
+			matches = false;
+		}
+		return matches;
+	}
+	
+	
 }
