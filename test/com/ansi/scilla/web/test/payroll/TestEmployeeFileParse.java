@@ -43,7 +43,12 @@ public class TestEmployeeFileParse {
 			EmployeeImportResponse data = new EmployeeImportResponse(conn, new FileInputStream(file));
 			CollectionUtils.transform(data.getEmployeeRecords(), new EmployeeRecordTransformer(ps));
 			for ( EmployeeRecord record : data.getEmployeeRecords() ) {
-				System.out.println(record.getEmployeeCode() + "\t" + record.getRecordStatus());
+				if ( record.getRecordStatus().equalsIgnoreCase("MODIFIED")) {
+					System.out.println(record.getEmployeeCode() + "\t" + record.getRecordStatus());
+					for ( String q : record.getFieldList() ) {
+						System.out.println("\t" + q);
+					}
+				}
 			}
 		} finally {
 			conn.close();
@@ -83,10 +88,14 @@ public class TestEmployeeFileParse {
 						arg0.setRecordStatus(EmployeeRecordStatus.EXISTS.toString());
 					} else {
 						arg0.setRecordStatus(EmployeeRecordStatus.MODIFIED.toString());
+//						System.out.println(arg0);
+//						System.out.println(record);
+//						System.out.println("******************");
 					}
 				} else {
 					arg0.setRecordStatus(EmployeeRecordStatus.NEW.toString());
 				}
+//				System.out.println(arg0.getEmployeeCode() + "\t" + arg0.getRecordStatus());
 			} catch ( Exception e) {
 				throw new RuntimeException(e);
 			}

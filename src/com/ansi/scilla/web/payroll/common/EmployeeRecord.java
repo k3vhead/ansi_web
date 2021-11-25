@@ -2,13 +2,20 @@ package com.ansi.scilla.web.payroll.common;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
-import org.apache.commons.beanutils.BeanMap;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import com.ansi.scilla.common.ApplicationObject;
 import com.ansi.scilla.common.db.PayrollEmployee;
+import com.ansi.scilla.common.payroll.EmployeeStatus;
 
 public class EmployeeRecord extends ApplicationObject {
 
@@ -29,6 +36,7 @@ public class EmployeeRecord extends ApplicationObject {
 	private static final Integer COL_PROCESS_DATE = 11;
 	
 	
+	// If you change this list of fields, make sure you modify the "equals()" method as well.
 	private String employeeCode;
 	private String companyCode;
 	private String divisionId;
@@ -42,6 +50,7 @@ public class EmployeeRecord extends ApplicationObject {
 	private String unionRate;
 	private String processDate;
 	private String recordStatus;
+	private List<String> fieldList = new ArrayList<String>();
 	
 	
 	public EmployeeRecord() {
@@ -80,7 +89,7 @@ public class EmployeeRecord extends ApplicationObject {
 		
 		this.employeeCode = String.valueOf(rs.getInt(PayrollEmployee.EMPLOYEE_CODE));
 		this.companyCode = rs.getString(PayrollEmployee.COMPANY_CODE);
-		this.divisionId = String.valueOf(rs.getInt(PayrollEmployee.DIVISION_ID));
+		this.divisionId = String.valueOf(rs.getInt(PayrollEmployee.DIVISION));
 		this.firstName = rs.getString(PayrollEmployee.EMPLOYEE_FIRST_NAME);
 		this.lastName = rs.getString(PayrollEmployee.EMPLOYEE_LAST_NAME);
 		this.departmentDescription = rs.getString(PayrollEmployee.DEPT_DESCRIPTION);
@@ -195,36 +204,175 @@ public class EmployeeRecord extends ApplicationObject {
 	public void setRecordStatus(String recordStatus) {
 		this.recordStatus = recordStatus;
 	}
-
 	
+	public List<String> getFieldList() {
+		return fieldList;
+	}
+
+	public void setFieldList(List<String> fieldList) {
+		this.fieldList = fieldList;
+	}
+
 	@Override
-	public boolean equals(Object obj) {
-		BeanMap arg0 = new BeanMap(this);
-		BeanMap arg1 = new BeanMap(obj);
+	public boolean equals(Object obj) {		
 		boolean matches = true;
-		if ( arg0.keySet().equals(arg1.keySet()) ) {
-			for ( Object entryObject : arg0.entrySet() ) {
-				Map.Entry<Object,Object> entry = (Map.Entry<Object,Object>)entryObject;
-				Object o = arg1.get(entry.getKey());
-				if ( o!= null && entry.getValue() != null ) {
-					if ( o.getClass().getName().equals("java.lang.String")) {
-						if ( ! ((String)entry.getValue()).equalsIgnoreCase((String)o) ) {
-							System.out.println("** " + this.getEmployeeCode() + "\t" + entry.getKey());
-							matches = false;
-						}
-					} else {
-						if ( ! entry.getValue().equals(o)) {
-							System.out.println("*** " + this.getEmployeeCode() + "\t" + entry.getKey());
-							matches = false;
-						}
-					}
-				}
+		if ( obj.getClass().getName().equals(this.getClass().getName()) ) {			
+			EmployeeRecord rec = (EmployeeRecord)obj;
+			matches = compareInt("employeeCode", this.employeeCode, rec.getEmployeeCode()) ? matches : false;
+			matches = compareString("companyCode", this.companyCode, rec.getCompanyCode()) ? matches : false;
+			matches = compareInt("divisionId", this.divisionId, rec.getDivisionId()) ? matches : false;
+			matches = compareString("firstName", this.firstName, rec.getFirstName()) ? matches : false;
+			matches = compareString("lastName", this.lastName, rec.getLastName()) ? matches : false;
+			matches = compareString("departmentDescription", this.departmentDescription, rec.getDepartmentDescription()) ? matches : false;
+			matches = compareStatus("status", this.status, rec.getStatus()) ? matches : false;
+			try {
+				matches = compareDate("terminationDate", this.terminationDate, rec.getTerminationDate(), "MM/dd/yy") ? matches : false;
+			} catch ( ParseException e) {
+				fieldList.add("terminationDate");
+				matches = false;
+			}
+			matches = compareBoolean("unionMember", this.unionMember, rec.getUnionMember()) ? matches : false;
+			matches = compareString("unionCode", this.unionCode, rec.getUnionCode()) ? matches : false;
+			matches = compareDollar("unionRate", this.unionRate, rec.getUnionRate()) ? matches : false;
+			try {
+				matches = compareDate("processDate", this.processDate, rec.getProcessDate(), "MM/dd/yy") ? matches : false;
+			} catch ( ParseException e) {
+				fieldList.add("processDate");
+				matches = false;
 			}
 		} else {
+			fieldList.add("classname");
 			matches = false;
 		}
 		return matches;
 	}
+
+
+	private Boolean compareInt(String fieldName, String value1, String value2) {	
+		Boolean matches = nullCheck(fieldName, value1, value2);
+		if ( matches == null) {
+			if ( value1.equalsIgnoreCase(value2) ) {
+				matches = true;
+			} else {
+				fieldList.add(fieldName);
+				matches = false;
+			}
+		}
+		return matches;
+	}
+
+	private Boolean compareBoolean(String fieldName, String value1, String value2)  {
+		Boolean matches = nullCheck(fieldName, value1, value2);
+		if ( matches == null) {
+			List<String> trueValueList = Arrays.asList(new String[] {"1","Yes","yes","true","True"});
+			Boolean true1 = trueValueList.contains(value1);
+			Boolean true2 = trueValueList.contains(value2);
+			if ( true1.equals(true2) ) {
+				matches = true;
+			} else {
+				matches = false;
+				fieldList.add(fieldName);
+			}
+		}
+		return matches;
+	}
+
+	private Boolean compareStatus(String fieldName, String value1, String value2)  {
+		Boolean matches = nullCheck(fieldName, value1, value2);
+		HashMap<String, EmployeeStatus> lookup = new HashMap<String, EmployeeStatus>();
+		for ( EmployeeStatus employeeStatus : EmployeeStatus.values() ) {
+			lookup.put(employeeStatus.display(), employeeStatus);
+		}
+		if ( matches == null) {
+			EmployeeStatus status1 = lookup.containsKey(value1) ? lookup.get(value1) : EmployeeStatus.valueOf(value1);
+			EmployeeStatus status2 = lookup.containsKey(value2) ? lookup.get(value2) : EmployeeStatus.valueOf(value2);
+			if ( status1 != null && status2 != null ) {
+				if ( status1.equals(status2)) {
+					matches = true;
+				} else {
+					matches = false;
+					fieldList.add(fieldName);
+				}
+			} else {
+				fieldList.add(fieldName);
+				matches = false;
+			}
+		}
+		return matches;
+	}
+
+	private Boolean compareString(String fieldName, String value1, String value2)  {
+		Boolean matches = nullCheck(fieldName, value1, value2);
+		if ( matches == null) {
+			if ( value1.equalsIgnoreCase(value2) ) {
+				matches = true;
+			} else {
+				matches = false;
+				fieldList.add(fieldName);
+			}		
+		}
+		return matches;
+	}
+
+	private Boolean compareDollar(String fieldName, String value1, String value2)  {
+		Boolean matches = nullCheck(fieldName, value1, value2);
+		if ( matches == null) {
+			Float float1 = value1.startsWith("$") ? Float.valueOf(value1.substring(1)) : Float.valueOf(value1);
+			Float float2 = value2.startsWith("$") ? Float.valueOf(value2.substring(1)) : Float.valueOf(value2);
+			if ( float1.equals(float2)) {
+				matches = true;
+			} else {
+				matches = false;
+				fieldList.add(fieldName);				
+			}
+		}
+		return matches;
+	}
+
+	private Boolean compareDate(String fieldName, String value1, String value2, String dateFormat) throws ParseException {
+		Boolean matches = nullCheck(fieldName, value1, value2);
+		if ( matches == null) {
+			SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+			Date date1 = sdf.parse(value1);
+			Date date2 = sdf.parse(value2);
+			if ( DateUtils.isSameDay(date1, date2)) {
+				matches = true;
+			} else {
+				matches = false;
+				fieldList.add(fieldName);				
+			}
+		}
+		return matches;
+	}
+
+	/**
+	 * 
+	 * @param fieldName
+	 * @param value1
+	 * @param value2
+	 * @return true if match, false if mismatch, null if needs another check
+	 */
+	private Boolean nullCheck(String fieldName, String value1, String value2) {
+		Boolean matches = null;
+		if ( isBlank(value1) && isBlank(value2) ) {
+			// both are null - match
+			matches = true;
+		} else if (isBlank(value1) && ! isBlank(value2)) {
+			// value1 is null & value2 is not --> mismatch
+			fieldList.add(fieldName);
+			matches = false; 
+		} else if ( isBlank(value2) && ! isBlank(value1) ) {
+			// value2 is null & value1 is not --> mismatch
+			fieldList.add(fieldName);
+			matches = false;
+		} else {
+			matches = null;
+		}	
+		return matches;
+	}
 	
+	private boolean isBlank(String text) {
+		return StringUtils.isBlank(text) || text.length() == 0 || text.equals("");
+	}
 	
 }
