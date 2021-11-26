@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
+//import java.util.Arrays;
+//import java.util.Calendar;
 import java.util.List;
 
 import org.apache.logging.log4j.Level;
@@ -15,11 +15,11 @@ import org.apache.commons.fileupload.FileItem;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Table;
 
-import com.ansi.scilla.common.ApplicationObject;
-import com.ansi.scilla.common.db.Division;
+//import com.ansi.scilla.common.ApplicationObject;
+//import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.payroll.request.TimesheetImportRequest;
-import com.fasterxml.jackson.annotation.JsonFormat;	
+//import com.fasterxml.jackson.annotation.JsonFormat;	
 
 public class TimesheetImportResponse extends MessageResponse {
 	/**
@@ -33,7 +33,7 @@ public class TimesheetImportResponse extends MessageResponse {
 	private String state;
 	private List<TimesheetRecord> timesheetRecords = new ArrayList<TimesheetRecord>();
 	private String weekEnding;
-	private FileItem fileItem;
+	//private FileItem fileItem;
 	
 		
 	public TimesheetImportResponse() {	
@@ -41,7 +41,7 @@ public class TimesheetImportResponse extends MessageResponse {
 	
 	public TimesheetImportResponse(Connection conn, FileItem fileItem) throws Exception {
 		super();
-		this.fileItem = fileItem;
+		//this.fileItem = fileItem;
 		parseODSFile(fileItem.getInputStream());
 	}
 	
@@ -112,8 +112,7 @@ public class TimesheetImportResponse extends MessageResponse {
 		for(Integer row=6; row<39;row++) {			
 			timesheetRecords.add(new TimesheetRecord(table, row));
 		}		
-		this.setEmployeeRecordList(timesheetRecords);
-		
+		this.setEmployeeRecordList(timesheetRecords);	
 		this.setDivision(table.getCellByPosition(TimesheetRecord.WprCols.DIVISION.cellLocation()).getDisplayText());
 		this.setWeekEnding(table.getCellByPosition(TimesheetRecord.WprCols.WEEK_ENDING.cellLocation()).getDisplayText());
 		this.setOperationsManagerName(table.getCellByPosition(TimesheetRecord.WprCols.OPERATIONS_MANAGER_NAME.cellLocation()).getDisplayText());

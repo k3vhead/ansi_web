@@ -46,7 +46,7 @@ public class TestPDF {
 			InvoicePrinter maker = new InvoicePrinter();
 			Integer divisionId=3;
 			Integer userId = 5;
-			List<Division> divisionList = Division.cast(new Division().selectAll(conn));
+			List<Division> divisionList = DIVISION.cast(new Division().selectAll(conn));
 //			for ( Division division : divisionList ) {
 //				divisionId = division.getDivisionId();
 //				System.out.println("***** " + divisionId + " *******");				

@@ -30,9 +30,7 @@ public class TimesheetImportServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
 	public static final String REALM = "payroll/timesheetImport";
-	
-	
-	
+		
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		logger.log(Level.DEBUG, "Employee Import post");
@@ -72,9 +70,5 @@ public class TimesheetImportServlet extends AbstractServlet {
 			logger.log(Level.DEBUG, parmName);
 		}
 	}
-
-	
-
-	
 
 }
