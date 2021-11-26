@@ -82,7 +82,7 @@ public class EmployeeImportResponse extends MessageResponse {
 		for ( int i = 0; i < recordSize; i++ ) {						
 			EmployeeRecord rec = new EmployeeRecord(recordList.get(i));
 			this.employeeRecords.add(rec);
-			logger.log(Level.DEBUG,rec);					
+//			logger.log(Level.DEBUG,rec);					
 		}
 		
     	
