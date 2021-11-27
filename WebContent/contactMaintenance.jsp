@@ -160,8 +160,8 @@
 	        	        ],
 	        	        "columnDefs": [
 	//         	            { "orderable": false, "targets": -1 },  // Need to re-add this when we add the action column back in
-	        	            { className: "dt-left", "targets": [0,1,2,3,4,5] },
-	        	            { className: "dt-center", "targets": [6] }
+	        	            { className: "dt-left", "targets": [0,1,2,3,4,5,6] },
+	        	            { className: "dt-center", "targets": [7] }
 	//        	            { className: "dt-right", "targets": [5,6,7,8,9]}
 	        	         ],
 	        	        "paging": true,
@@ -171,16 +171,16 @@
 				        	},
 				        columns: [
 				        	
-				        	{ title: "<bean:message key="field.label.contactId" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				        	{width: "4%", title: "<bean:message key="field.label.contactId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
 				            	if(row.contact_id != null){return (row.contact_id+"");}
 				            } },
-				            { title: "<bean:message key="field.label.lastName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				            { title: "<bean:message key="field.label.lastName" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
 				            	if(row.last_name != null){return (row.last_name+"");}
 				            } },
-				            { title: "<bean:message key="field.label.firstName" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.firstName" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
 				            	if(row.first_name != null){return (row.first_name+"");}
 				            } },
-				            { title: "<bean:message key="field.label.businessPhone" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.businessPhone" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
 				            	if(row.business_phone != null){
 				            		if ( row.preferred_contact=='business_phone') {
 				            			value = '<span style="font-weight:bold;">' + row.business_phone + '</span>';
@@ -190,7 +190,7 @@
 				            		return (value);
 				            	}
 				            } },
-				            { title: "<bean:message key="field.label.email" />", "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {
+				            { title: "<bean:message key="field.label.email" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
 				            	if(row.businessPhone != null){
 				            		if ( row.preferredContact=='email') {
 				            			value = '<span style="font-weight:bold;">' + row.email + '</span>';
@@ -200,7 +200,7 @@
 				            		return (value);
 				            	}
 				            } },
-				            { title: "<bean:message key="field.label.fax" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				            { title: "<bean:message key="field.label.fax" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
 			            		if ( row.preferredContact=='fax') {
 			            			value = '<span style="font-weight:bold;">' + row.fax + '</span>';
 			            		} else {
@@ -208,7 +208,7 @@
 			            		}			            		
 			            		return (value);
 				            } },
-				            { title: "<bean:message key="field.label.mobilePhone" />" , "defaultContent": "<i>N/A</i>", data: function ( row, type, set ) {	
+				            { title: "<bean:message key="field.label.mobilePhone" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
 			            		if ( row.preferred_contact=='mobile_phone') {
 			            			value = '<span style="font-weight:bold;">' + row.mobile_phone + '</span>';
 			            		} else {
@@ -216,7 +216,7 @@
 			            		}			            		
 			            		return (value);
 				            } },
-				            { title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {				            	
+				            {width: "4%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {				            	
 				            	{
 				            		var $editLink = '<ansi:hasPermission permissionRequired="CONTACT_WRITE"><span class="editAction" data-id="'+ row.contact_id + '" /><webthing:edit>Edit</webthing:edit></span></ansi:hasPermission>';
 				            		var $noteLink = '<webthing:notes xrefType="CONTACT" xrefId="' + row.contact_id + '" xrefName="'+row.first_name + ' ' + row.last_name +'">Contact Notes</webthing:notes>'
@@ -395,16 +395,18 @@
     	    <input type="button" class="prettyWideButton showNew" value="New" />
  	<table id="contactTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:800px;width:800px;">
        	<colgroup>
-        	<col style="width:20%;" />
-        	<col style="width:20%;" />
-        	<col style="width:12%" />
-        	<col style="width:12%;" />
-        	<col style="width:12%;" />
-        	<col style="width:12%;" />
-        	<col style="width:12%;" />
+       		<col style="width:10%;" />
+        	<col style="width:18%;" />
+        	<col style="width:18%;" />
+        	<col style="width:10%" />
+        	<col style="width:10%;" />
+        	<col style="width:10%;" />
+        	<col style="width:10%;" />
+        	<col style="width:10%;" />
    		</colgroup>
         <thead>
             <tr>
+            	<th><bean:message key="field.label.contactId" /></th>
                 <th><bean:message key="field.label.lastName" /></th>
     			<th><bean:message key="field.label.firstName" /></th>
     			<th><bean:message key="field.label.businessPhone" /></th>
@@ -416,6 +418,7 @@
         </thead>
         <tfoot>
             <tr>
+            	<th><bean:message key="field.label.contactId" /></th>
                 <th><bean:message key="field.label.lastName" /></th>
     			<th><bean:message key="field.label.firstName" /></th>
     			<th><bean:message key="field.label.businessPhone" /></th>
@@ -429,47 +432,6 @@
     <input type="button" class="prettyWideButton showNew" value="New" />
     
     <webthing:scrolltop />
-    
-    
-    <div id="editPanel">
-    	<table>
-    		<tr>
-    			<td><span class="formHdr"><bean:message key="field.label.firstName" /></span></td>
-    			<td><input type="text" name="firstName" /> <i class="fa fa-level-down swap-name" aria-hidden="true"></i></td>
-    			<td><span class="err" id="firstNameErr"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr"><bean:message key="field.label.lastName" /></span></td>
-    			<td></i><input type="text" name="lastName" /> <i class="fa fa-level-up swap-name" aria-hidden="true"></td>
-    			<td><span class="err" id="lastNameErr"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr"><bean:message key="field.label.businessPhone" /></span></td>
-    			<td><input type="text" name="businessPhone" /></td>
-    			<td><span class="err" id="businessPhoneErr"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr"><bean:message key="field.label.email" /></span></td>
-    			<td><input type="text" name="email" /></td>
-    			<td><span class="err" id="emailErr"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr"><bean:message key="field.label.fax" /></span></td>
-    			<td><input type="text" name="fax" /></td>
-    			<td><span class="err" id="faxErr"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr"><bean:message key="field.label.mobilePhone" /></span></td>
-    			<td><input type="text" name="mobilePhone" /></td>
-    			<td><span class="err" id="mobilePhoneErr"></span></td>
-    		</tr>
-    		<tr>
-    			<td><span class="formHdr">Preferred Contact</span></td>
-    			<td><select name="preferredContact"></select></td>
-    			<td><span class="err" id="preferredContactErr"></span></td>
-    		</tr>    		
-    	</table>
-    </div>
     
     	<webthing:callNoteModals />
     </tiles:put>
