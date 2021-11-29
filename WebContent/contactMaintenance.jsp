@@ -392,46 +392,12 @@
    <tiles:put name="content" type="string">
     	<h1><bean:message key="page.label.contact" /> <bean:message key="menu.label.lookup" /></h1>
     	
-    	    <input type="button" class="prettyWideButton showNew" value="New" />
- 	<table id="contactTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:800px;width:800px;">
-       	<colgroup>
-       		<col style="width:10%;" />
-        	<col style="width:18%;" />
-        	<col style="width:18%;" />
-        	<col style="width:10%" />
-        	<col style="width:10%;" />
-        	<col style="width:10%;" />
-        	<col style="width:10%;" />
-        	<col style="width:10%;" />
-   		</colgroup>
-        <thead>
-            <tr>
-            	<th><bean:message key="field.label.contactId" /></th>
-                <th><bean:message key="field.label.lastName" /></th>
-    			<th><bean:message key="field.label.firstName" /></th>
-    			<th><bean:message key="field.label.businessPhone" /></th>
-    			<th><bean:message key="field.label.email" /></th>
-    			<th><bean:message key="field.label.fax" /></th>
-    			<th><bean:message key="field.label.mobilePhone" /></th>
-    			<th><bean:message key="field.label.action" /></th>
-            </tr>
-        </thead>
-        <tfoot>
-            <tr>
-            	<th><bean:message key="field.label.contactId" /></th>
-                <th><bean:message key="field.label.lastName" /></th>
-    			<th><bean:message key="field.label.firstName" /></th>
-    			<th><bean:message key="field.label.businessPhone" /></th>
-    			<th><bean:message key="field.label.email" /></th>
-    			<th><bean:message key="field.label.fax" /></th>
-    			<th><bean:message key="field.label.mobilePhone" /></th>
-    			<th><bean:message key="field.label.action" /></th>
-            </tr>
-        </tfoot>
-    </table>
-    <input type="button" class="prettyWideButton showNew" value="New" />
-    
-    <webthing:scrolltop />
+   	    <input type="button" class="prettyWideButton showNew" value="New" />
+ 		<table id="contactTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:800px;width:800px;">       	
+	    </table>
+	    <input type="button" class="prettyWideButton showNew" value="New" />
+	    
+	    <webthing:scrolltop />
     
     	<webthing:callNoteModals />
     </tiles:put>
