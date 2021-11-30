@@ -1,5 +1,8 @@
 package com.ansi.scilla.web.payroll.common;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -51,10 +54,12 @@ public class EmployeeRecord extends ApplicationObject {
 	private String processDate;
 	private String recordStatus;
 	private List<String> fieldList = new ArrayList<String>();
+	private String rowId;
 	
 	
 	public EmployeeRecord() {
 		super();
+		this.rowId = makeRowId();
 	}
 	
 	public EmployeeRecord(String[] spreadSheetRow) {
@@ -74,6 +79,7 @@ public class EmployeeRecord extends ApplicationObject {
 		this.unionCode = spreadSheetRow[COL_UNION_CODE];
 		this.unionRate = spreadSheetRow[COL_UNION_RATE];
 		this.processDate = spreadSheetRow[COL_PROCESS_DATE];
+		this.rowId = makeRowId();
 	}
 	
 
@@ -99,6 +105,7 @@ public class EmployeeRecord extends ApplicationObject {
 		this.unionCode = rs.getString(PayrollEmployee.UNION_CODE);
 		this.unionRate = unionRate == null ? null : String.valueOf(unionRate);
 		this.processDate = processDate == null ? null : sdf.format((java.sql.Date)processDate);
+		this.rowId = makeRowId();
 	}
 
 	public String getEmployeeCode() {
@@ -211,6 +218,10 @@ public class EmployeeRecord extends ApplicationObject {
 
 	public void setFieldList(List<String> fieldList) {
 		this.fieldList = fieldList;
+	}
+	
+	public String getRowId() {
+		return this.rowId;
 	}
 
 	@Override
@@ -375,4 +386,21 @@ public class EmployeeRecord extends ApplicationObject {
 		return StringUtils.isBlank(text) || text.length() == 0 || text.equals("");
 	}
 	
+	private String makeRowId() {
+		List<String> source = new ArrayList<String>();
+		source.add(employeeCode == null ? "" : String.valueOf(employeeCode));
+		source.add(companyCode == null ? "" : companyCode);
+		source.add(divisionId == null ? "" : String.valueOf(firstName));
+		source.add(firstName == null ? "" : firstName);
+		source.add(lastName == null ? "" : lastName);
+		try {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			byte[] messageDigest = md.digest(StringUtils.join(source, "").getBytes());
+			BigInteger number = new BigInteger(1, messageDigest);
+			return number.toString(16);
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException(e);
+		}
+	}
+		
 }
