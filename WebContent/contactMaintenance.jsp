@@ -89,8 +89,9 @@
 					
 				},
 					
-				showNew : function () {
+				showNew : function () {					
 					$(".showNew").click(function($event) {
+						console.log("showNew");
 						$('#goEdit').data("contactId",null);
 		        		$('#goEdit').button('option', 'label', 'Save');
 		        		$('#closeEditPanel').button('option', 'label', 'Close');
@@ -171,27 +172,21 @@
 				        	},
 				        columns: [
 				        	
-				        	{width: "4%", title: "<bean:message key="field.label.contactId" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
-				            	if(row.contact_id != null){return (row.contact_id+"");}
-				            } },
-				            { title: "<bean:message key="field.label.lastName" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
-				            	if(row.last_name != null){return (row.last_name+"");}
-				            } },
-				            { title: "<bean:message key="field.label.firstName" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-				            	if(row.first_name != null){return (row.first_name+"");}
-				            } },
+				        	{width: "4%", title: "<bean:message key="field.label.contactId" />", "defaultContent": "<i>N/A</i>", searchable:true, data:"contact_id" },
+				            { title: "<bean:message key="field.label.lastName" />", "defaultContent": "<i>N/A</i>", searchable:true, data:"last_name" },
+				            { title: "<bean:message key="field.label.firstName" />", "defaultContent": "<i>N/A</i>", searchable:true, data:"first_name"},
 				            { title: "<bean:message key="field.label.businessPhone" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-				            	if(row.business_phone != null){
-				            		if ( row.preferred_contact=='business_phone') {
-				            			value = '<span style="font-weight:bold;">' + row.business_phone + '</span>';
-				            		} else {
-				            			value = row.business_phone + "";
-				            		}			            		
-				            		return (value);
-				            	}
+				            	value = "";
+			            		if ( row.preferred_contact=='business_phone') {
+			            			value = '<span style="font-weight:bold;">' + row.business_phone + '</span>';
+			            		} else {
+			            			value = row.business_phone + "";
+			            		}			            		
+			            		return (value);
 				            } },
 				            { title: "<bean:message key="field.label.email" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
-				            	if(row.businessPhone != null){
+				            	value = "";
+				            	if(row.email != null){
 				            		if ( row.preferredContact=='email') {
 				            			value = '<span style="font-weight:bold;">' + row.email + '</span>';
 				            		} else {
@@ -200,20 +195,26 @@
 				            		return (value);
 				            	}
 				            } },
-				            { title: "<bean:message key="field.label.fax" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
-			            		if ( row.preferredContact=='fax') {
-			            			value = '<span style="font-weight:bold;">' + row.fax + '</span>';
-			            		} else {
-			            			value = row.fax + "";
-			            		}			            		
+				            { title: "<bean:message key="field.label.fax" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+				            	value = "";
+				            	if ( row.fax != null ) {
+				            		if ( row.preferredContact=='fax') {
+				            			value = '<span style="font-weight:bold;">' + row.fax + '</span>';
+				            		} else {
+				            			value = row.fax + "";
+				            		}		
+				            	}
 			            		return (value);
 				            } },
-				            { title: "<bean:message key="field.label.mobilePhone" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {	
-			            		if ( row.preferred_contact=='mobile_phone') {
-			            			value = '<span style="font-weight:bold;">' + row.mobile_phone + '</span>';
-			            		} else {
-			            			value = row.mobile_phone + "";
-			            		}			            		
+				            { title: "<bean:message key="field.label.mobilePhone" />" , "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
+				            	value = "";
+				            	if ( row.mobile_phone != null ) {
+				            		if ( row.preferred_contact=='mobile_phone') {
+				            			value = '<span style="font-weight:bold;">' + row.mobile_phone + '</span>';
+				            		} else {
+				            			value = row.mobile_phone + "";
+				            		}		
+				            	}
 			            		return (value);
 				            } },
 				            {width: "4%", title: "<bean:message key="field.label.action" />",  data: function ( row, type, set ) {				            	
@@ -226,32 +227,22 @@
 				            ],
 				            "initComplete": function(settings, json) {
 				            	//console.log(json);
-				            	CONTACTMAINTENANCE.doFunctionBinding();
+				            	//CONTACTMAINTENANCE.doFunctionBinding();
 				            },
 				            "drawCallback": function( settings ) {
 				            	CALLNOTE.lookupLink();
-				            	CONTACTMAINTENANCE.doFunctionBinding();
+				            	//CONTACTMAINTENANCE.doFunctionBinding();
+				            	
+				            	$(".editAction").off("click");
+				            	$( ".editAction" ).on("click", function($clickevent) {
+									console.log("click edit");
+									CONTACTMAINTENANCE.showEdit($clickevent);
+								});
 				            }
 				    } );
 	        	},
 	        	        	
-	        /*	init();
-	        			
-	            
-	            function init(){
-						$.each($('input'), function () {
-					        $(this).css("height","20px");
-					        $(this).css("max-height", "20px");
-					    });
-						
-						createTable();
-	            }; */
-					
-				doFunctionBinding : function () {
-					$( ".editAction" ).on( "click", function($clickevent) {
-						 CONTACTMAINTENANCE.showEdit($clickevent);
-					});
-				},
+	       				
 				
 				
 				makeEditPanel : function () {
@@ -343,6 +334,7 @@
 				
 					
 				showEdit : function ($clickevent) {
+					console.log("showEdit");
 					var $contactId = $clickevent.currentTarget.attributes['data-id'].value;
 					console.debug("contactId: " + $contactId);
 					$("#goEdit").data("contactId", $contactId);
@@ -399,6 +391,45 @@
 	    
 	    <webthing:scrolltop />
     
+	    <div id="editPanel">
+	    	<table>
+	    		<tr>
+	    			<td><span class="formHdr"><bean:message key="field.label.firstName" /></span></td>
+	    			<td><input type="text" name="firstName" /> <i class="fa fa-level-down swap-name" aria-hidden="true"></i></td>
+	    			<td><span class="err" id="firstNameErr"></span></td>
+	    		</tr>
+	    		<tr>
+	    			<td><span class="formHdr"><bean:message key="field.label.lastName" /></span></td>
+	    			<td></i><input type="text" name="lastName" /> <i class="fa fa-level-up swap-name" aria-hidden="true"></td>
+	    			<td><span class="err" id="lastNameErr"></span></td>
+	    		</tr>
+	    		<tr>
+	    			<td><span class="formHdr"><bean:message key="field.label.businessPhone" /></span></td>
+	    			<td><input type="text" name="businessPhone" /></td>
+	    			<td><span class="err" id="businessPhoneErr"></span></td>
+	    		</tr>
+	    		<tr>
+	    			<td><span class="formHdr"><bean:message key="field.label.email" /></span></td>
+	    			<td><input type="text" name="email" /></td>
+	    			<td><span class="err" id="emailErr"></span></td>
+	    		</tr>
+	    		<tr>
+	    			<td><span class="formHdr"><bean:message key="field.label.fax" /></span></td>
+	    			<td><input type="text" name="fax" /></td>
+	    			<td><span class="err" id="faxErr"></span></td>
+	    		</tr>
+	    		<tr>
+	    			<td><span class="formHdr"><bean:message key="field.label.mobilePhone" /></span></td>
+	    			<td><input type="text" name="mobilePhone" /></td>
+	    			<td><span class="err" id="mobilePhoneErr"></span></td>
+	    		</tr>
+	    		<tr>
+	    			<td><span class="formHdr">Preferred Contact</span></td>
+	    			<td><select name="preferredContact"></select></td>
+	    			<td><span class="err" id="preferredContactErr"></span></td>
+	    		</tr>    		
+	    	</table>
+	    </div>
     	<webthing:callNoteModals />
     </tiles:put>
 		
