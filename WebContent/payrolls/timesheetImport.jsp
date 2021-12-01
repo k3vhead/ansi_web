@@ -194,11 +194,14 @@
            			console.log("processUploadSuccess");
            			$("#prompt-div").hide();
            			$("#display-div").show();
-           			$("#display-div .divisionId").html($data.data.request.div);
-           			$("#display-div .payrollDate").html($data.data.request.payrollDate);
-           			$("#display-div .state").html($data.data.request.state);
-           			$("#display-div .city").html($data.data.request.city);
-           			$("#display-div .timesheetFile").html($data.data.request.timesheetFile);
+           			console.log("showing display div.. ");
+           			console.log($data);
+           			console.log($data.data.division);
+           			$("#display-div .divisionId").html($data.data.division);
+           			$("#display-div .payrollDate").html($data.data.weekEnding);
+           			$("#display-div .state").html($data.data.state);
+           			$("#display-div .city").html($data.data.city);
+           			$("#display-div .timesheetFile").html($data.data.fileName);
            			
            			
            			
@@ -284,6 +287,7 @@
            						TIMESHEET_IMPORT.processUploadFailure($data);
            					} else if ( $data.responseHeader.responseCode == "SUCCESS" ) {
            						TIMESHEET_IMPORT.processUploadSuccess($data);
+           						console.log($data.Division);           						
            					} else {
            						$("#globalMsg").html("Invalid response code " + $data.responseHeader.responseCode + ". Contact Support");
            					}
@@ -359,6 +363,36 @@
     	</div>
 
 		<div id="display-div">
+		    <!-- 
+    		<table>
+    			<tr>
+    				<td><span class="form-label">Division:</span></td>
+    				<td><span class="divisionId"></span></td>
+    				<td><span class="divisionIdErr err"></span></td>
+    			</tr>
+    			<tr>
+    				<td><span class="form-label">Week Ending:</span></td>
+    				<td><span class="payrollDate"></span></td>
+    				<td><span class="payrollDateErr err"></span></td>
+    			</tr>
+    			<tr>
+    				<td><span class="form-label">State:</span></td>
+    				<td><span class="State"></span></td>
+    				<td><span class="stateErr err"></span></td>
+    			</tr>
+    			<tr>
+    				<td><span class="form-label">City/Jurisdiction:</span></td>
+    				<td><span class="city"></span></td>
+    				<td><span class="cityErr err"></span></td>
+    			</tr>
+    			<tr>
+    				<td><span class="form-label">Payroll File:</span></td>
+    				<td><span class="timesheetFile"></span></td>
+    				<td><span class="timesheetFileErr err"></span></td>
+    			</tr>    			
+    		</table>
+            -->
+
 			<table style="width:100%;">
     			<tr>
     				<td><span class="form-label">Division:</span></td>
@@ -366,7 +400,10 @@
     				<td><span class="form-label">State:</span></td>
     				<td><span class="form-label">City/Jurisdiction:</span></td>
     				<td><span class="form-label">Payroll File:</span></td>
-    				<td rowspan="2"><input type="button" value="Cancel" name="cancelButton" class="action-button" /></td>
+    				<td rowspan="2">
+    					<input type="button" value="Cancel" name="cancelButton" class="action-button" />
+    					<input type="button" value="Save" id="save-button" />
+    				</td>
     			</tr>
     			<tr>
     				<td><span class="divisionId"></span></td>
@@ -379,7 +416,6 @@
     			</tr>
     			
     		</table>
-			
 			<table id="timesheet">
 			</table>
 		</div>
