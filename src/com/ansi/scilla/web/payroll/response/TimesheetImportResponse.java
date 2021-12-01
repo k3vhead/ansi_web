@@ -42,17 +42,20 @@ public class TimesheetImportResponse extends MessageResponse {
 	public TimesheetImportResponse(Connection conn, FileItem fileItem) throws Exception {
 		super();
 		//this.fileItem = fileItem;
-		parseODSFile(fileItem.getInputStream());
+		logger.log(Level.DEBUG," Contrstructor.. ");
+		//parseODSFile(fileItem.getInputStream());
+		parseODSFile(fileItem);
 	}
 	
 	public TimesheetImportResponse(Connection conn, TimesheetImportRequest request) throws Exception {
 	}	
 	
-	public TimesheetImportResponse(Connection conn, InputStream inputStream) throws Exception {
-		this();
-		parseODSFile(inputStream);
-		
-	}
+	//public TimesheetImportResponse(Connection conn, InputStream inputStream) throws Exception {
+	//	this();
+	//	//parseODSFile(inputStream);
+	//	
+	//}
+	
 	public List<TimesheetRecord> getEmployeeRecordList() {
 		return timesheetRecords;
 	}
@@ -103,9 +106,12 @@ public class TimesheetImportResponse extends MessageResponse {
 		this.weekEnding = weekEnding;
 	}
 
-	public void parseODSFile(InputStream odsFile) throws Exception {    	    	
+	public void parseODSFile(FileItem fileItem) throws Exception {    	    	
+		logger.log(Level.DEBUG,"Inside Parser.. ");
+		
     	SpreadsheetDocument speadsheetDocument = null;
-		speadsheetDocument = SpreadsheetDocument.loadDocument(odsFile);
+    	speadsheetDocument = SpreadsheetDocument.loadDocument(fileItem.getInputStream());
+		logger.log(Level.DEBUG,"Parse:.." + fileItem.getName());
 		List<Table> tables = speadsheetDocument.getTableList();
 					
 		Table table = tables.get(2);
@@ -118,6 +124,13 @@ public class TimesheetImportResponse extends MessageResponse {
 		this.setOperationsManagerName(table.getCellByPosition(TimesheetRecord.WprCols.OPERATIONS_MANAGER_NAME.cellLocation()).getDisplayText());
 		this.setState(table.getCellByPosition(TimesheetRecord.WprCols.STATE.cellLocation()).getDisplayText());
 		this.setCity(table.getCellByPosition(TimesheetRecord.WprCols.CITY.cellLocation()).getDisplayText());
+
+		logger.log(Level.DEBUG,"Division = " + this.getDivision());
+		logger.log(Level.DEBUG,"Week Ending = " + this.getWeekEnding());
+		logger.log(Level.DEBUG,"OM Name = " + this.getOperationsManagerName());
+		logger.log(Level.DEBUG,"State = " + this.getState());
+		logger.log(Level.DEBUG,"City = " + this.getCity());
+				
 		logger.log(Level.DEBUG,"Rows stored = " + this.getEmployeeRecordList().size());
     }
 }

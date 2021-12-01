@@ -160,10 +160,10 @@
            				var reader = new FileReader();
            				if ( file == null ) { 
 							$("#prompt-div .timesheetFileErr").html("Required Value").show();
-							if ( $("#prompt-div select[name='divisionId']").val().length == 0) { $("#prompt-div .divisionIdErr").html("Required Value").show(); }
-							if ( $("#prompt-div input[name='payrollDate']").val().length == 0 ) {$("#prompt-div .payrollDateErr").html("Required Value").show(); }
-							if ( $("#prompt-div select[name='state']").val().length == 0 ) {$("#prompt-div .stateErr").html("Required Value").show(); }
-							if ( $("#prompt-div input[name='city']").val().length == 0 ) {$("#prompt-div .cityErr").html("Required Value").show(); }
+							//if ( $("#prompt-div select[name='divisionId']").val().length == 0) { $("#prompt-div .divisionIdErr").html("Required Value").show(); }
+							//if ( $("#prompt-div input[name='payrollDate']").val().length == 0 ) {$("#prompt-div .payrollDateErr").html("Required Value").show(); }
+							//if ( $("#prompt-div select[name='state']").val().length == 0 ) {$("#prompt-div .stateErr").html("Required Value").show(); }
+							//if ( $("#prompt-div input[name='city']").val().length == 0 ) {$("#prompt-div .cityErr").html("Required Value").show(); }
            				} else {
 	           				reader.readAsText(file, 'UTF-8');	           				
 	           				reader.onload = TIMESHEET_IMPORT.saveFile;
@@ -269,10 +269,10 @@
            			var formData = new FormData();
            			var file = document.getElementById('timesheet-file').files[0];
            			formData.append('timesheetFile',file, fileName);
-           			formData.append('divisionId', $("#prompt-div select[name='divisionId']").val());
-           			formData.append('payrollDate', $("#prompt-div input[name='payrollDate']").val());
-           			formData.append('state', $("#prompt-div select[name='state']").val());
-           			formData.append('city', $("#prompt-div input[name='city']").val());
+           			//formData.append('divisionId', $("#prompt-div select[name='divisionId']").val());
+           			//formData.append('payrollDate', $("#prompt-div input[name='payrollDate']").val());
+           			//formData.append('state', $("#prompt-div select[name='state']").val());
+           			//formData.append('city', $("#prompt-div input[name='city']").val());
            			
            			var xhr = new XMLHttpRequest();
            			xhr.open('POST',"payroll/timesheetImport", true);
@@ -308,6 +308,7 @@
 
     	<div id="prompt-div">
     		<table>
+    		    <!--  
     			<tr>
     				<td><span class="form-label">Division:</span></td>
     				<td>
@@ -342,6 +343,7 @@
     				</td>
     				<td><span class="cityErr err"></span></td>
     			</tr>
+    			-->
     			<tr>
     				<td><span class="form-label">Payroll File:</span></td>
     				<td>

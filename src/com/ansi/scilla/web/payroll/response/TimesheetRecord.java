@@ -101,6 +101,8 @@ public class TimesheetRecord extends ApplicationObject {
 		super();
 		
 		String row = ordinalRow.toString();
+		
+		setRow(table.getCellByPosition					(WprCols.EMPLOYEE_ROW.cellLocation()+row).getDisplayText());
 		setEmployeeName(table.getCellByPosition			(WprCols.EMPLOYEE_NAME.cellLocation()+row).getDisplayText());
 		setDirectLabor(table.getCellByPosition			(WprCols.DIRECT_LABOR.cellLocation()+row).getDisplayText());
 		setExpenses(table.getCellByPosition				(WprCols.EXPENSES.cellLocation()+row).getDisplayText());
@@ -118,9 +120,7 @@ public class TimesheetRecord extends ApplicationObject {
 		setVacationPay(table.getCellByPosition			(WprCols.VACATION_PAY.cellLocation()+row).getDisplayText());
 		setVolume(table.getCellByPosition				(WprCols.VOLUME.cellLocation()+row).getDisplayText());
 	}
-	
-	
-	
+
 	public String getRow() {
 		return row;
 	}

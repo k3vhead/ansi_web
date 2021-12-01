@@ -43,7 +43,8 @@ public class TimesheetImportServlet extends AbstractServlet {
 			TimesheetImportRequest uploadRequest = new TimesheetImportRequest(request);
 			ResponseCode responseCode = null;
 			WebMessages webMessages = uploadRequest.validate(conn);
-			TimesheetImportResponse data = new TimesheetImportResponse();
+			TimesheetImportResponse data = new TimesheetImportResponse(conn, uploadRequest.getTimesheetFile());
+			
 			data.setWebMessages(webMessages);
 			
 			if ( webMessages.isEmpty() ) {

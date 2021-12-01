@@ -58,6 +58,7 @@ public class TimesheetImportRequest extends AbstractRequest implements UploadPar
 				logger.log(Level.DEBUG, item.getFieldName());			
 				if ( item.isFormField() ) {
 					switch ( item.getFieldName() ) {
+					/*
 					case DIVISION_ID:
 						this.divisionId = makeInteger(item);
 						break;
@@ -74,6 +75,7 @@ public class TimesheetImportRequest extends AbstractRequest implements UploadPar
 					case CITY:
 						this.city = makeString(item);
 						break;
+					*/
 					default:
 						logger.log(Level.ERROR, "Unexpected field: " + item.getFieldName());
 						break;
@@ -81,17 +83,17 @@ public class TimesheetImportRequest extends AbstractRequest implements UploadPar
 				} else {
 					switch ( item.getFieldName() ) {
 					case TIMESHEET_FILE:
+						logger.log(Level.DEBUG, "Upload file made it to servlet: " + item.getFieldName());
 						this.timesheetFile = item;
 						break;
 					default:
-						logger.log(Level.ERROR, "Unexpected file upload: " + item.getFieldName());
+						logger.log(Level.ERROR, "Unexpected file upload: " + item.getFieldName() + " = " + item.getName());
 						break;
 					}
 					logger.log(Level.DEBUG, item.getContentType());	// for ods, expect:  application/vnd.oasis.opendocument.spreadsheet
 					logger.log(Level.DEBUG, item.getName());  // this is the filename
 						
-						
-						
+
 //					CSVReader reader = new CSVReader(new InputStreamReader(item.getInputStream()));		
 //					List<String[]> recordList = reader.readAll();										
 //					recordList.remove(0);								
@@ -163,8 +165,8 @@ public class TimesheetImportRequest extends AbstractRequest implements UploadPar
 		if ( ! webMessages.containsKey(PAYROLL_DATE)) {
 			RequestValidator.validateDay(webMessages, PAYROLL_DATE, this.payrollDate, true, null, null, Calendar.FRIDAY);
 		}
-		RequestValidator.validateState(webMessages, STATE, this.state, true, null);
-		RequestValidator.validateString(webMessages, CITY, this.city, false);
+		//RequestValidator.validateState(webMessages, STATE, this.state, true, null);
+		//RequestValidator.validateString(webMessages, CITY, this.city, false);
 		if ( this.timesheetFile == null ) {
 			webMessages.addMessage(TIMESHEET_FILE, "Required Value");
 		} else {
@@ -174,6 +176,7 @@ public class TimesheetImportRequest extends AbstractRequest implements UploadPar
 				webMessages.addMessage(TIMESHEET_FILE, "Invalid file format. Must be ODS");
 			}
 		}
+		logger.log(Level.DEBUG, "From Validate: " + webMessages);
 		return webMessages;
 	}
 }
