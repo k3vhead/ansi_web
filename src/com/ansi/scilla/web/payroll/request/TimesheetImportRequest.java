@@ -161,10 +161,10 @@ public class TimesheetImportRequest extends AbstractRequest implements UploadPar
 	}
 	
 	public WebMessages validate(Connection conn) throws Exception {
-		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, DIVISION_ID, this.divisionId, true);
-		if ( ! webMessages.containsKey(PAYROLL_DATE)) {
-			RequestValidator.validateDay(webMessages, PAYROLL_DATE, this.payrollDate, true, null, null, Calendar.FRIDAY);
-		}
+//		RequestValidator.validateId(conn, webMessages, Division.TABLE, Division.DIVISION_ID, DIVISION_ID, this.divisionId, true);
+//		if ( ! webMessages.containsKey(PAYROLL_DATE)) {
+//			RequestValidator.validateDay(webMessages, PAYROLL_DATE, this.payrollDate, true, null, null, Calendar.FRIDAY);
+//		}
 		//RequestValidator.validateState(webMessages, STATE, this.state, true, null);
 		//RequestValidator.validateString(webMessages, CITY, this.city, false);
 		if ( this.timesheetFile == null ) {

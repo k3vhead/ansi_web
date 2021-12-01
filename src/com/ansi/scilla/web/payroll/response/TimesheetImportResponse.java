@@ -1,5 +1,8 @@
 package com.ansi.scilla.web.payroll.response;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -8,10 +11,10 @@ import java.util.ArrayList;
 //import java.util.Calendar;
 import java.util.List;
 
+import org.apache.commons.fileupload.FileItem;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.commons.fileupload.FileItem;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Table;
 
@@ -33,28 +36,35 @@ public class TimesheetImportResponse extends MessageResponse {
 	private String state;
 	private List<TimesheetRecord> timesheetRecords = new ArrayList<TimesheetRecord>();
 	private String weekEnding;
-	//private FileItem fileItem;
+	private String fileName;
 	
 		
 	public TimesheetImportResponse() {	
-	}
-	
-	public TimesheetImportResponse(Connection conn, FileItem fileItem) throws Exception {
 		super();
-		//this.fileItem = fileItem;
-		logger.log(Level.DEBUG," Contrstructor.. ");
-		//parseODSFile(fileItem.getInputStream());
-		parseODSFile(fileItem);
+	}
+
+	public TimesheetImportResponse(Connection conn, TimesheetImportRequest request) throws IOException, Exception {
+		this(conn, request.getTimesheetFile());
 	}
 	
-	public TimesheetImportResponse(Connection conn, TimesheetImportRequest request) throws Exception {
-	}	
+	public TimesheetImportResponse(Connection conn, String fileName) throws FileNotFoundException, Exception {
+		this(conn, new File(fileName));
+	}
 	
-	//public TimesheetImportResponse(Connection conn, InputStream inputStream) throws Exception {
-	//	this();
-	//	//parseODSFile(inputStream);
-	//	
-	//}
+	public TimesheetImportResponse(Connection conn, File file) throws FileNotFoundException, Exception {
+		this();
+		this.fileName = file.getAbsolutePath();
+		parseODSFile(new FileInputStream(file));
+	}
+	
+	public TimesheetImportResponse(Connection conn, FileItem file) throws IOException, Exception {
+		this();
+		this.fileName = file.getName();
+		parseODSFile(file.getInputStream());
+	}
+	
+	
+	
 	
 	public List<TimesheetRecord> getEmployeeRecordList() {
 		return timesheetRecords;
@@ -105,13 +115,19 @@ public class TimesheetImportResponse extends MessageResponse {
 	public void setWeekEnding(String weekEnding) {
 		this.weekEnding = weekEnding;
 	}
+	public String getFileName() {
+		return fileName;
+	}
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
 
-	public void parseODSFile(FileItem fileItem) throws Exception {    	    	
+	
+	public void parseODSFile(InputStream inputStream) throws Exception {    	    	
 		logger.log(Level.DEBUG,"Inside Parser.. ");
 		
     	SpreadsheetDocument speadsheetDocument = null;
-    	speadsheetDocument = SpreadsheetDocument.loadDocument(fileItem.getInputStream());
-		logger.log(Level.DEBUG,"Parse:.." + fileItem.getName());
+    	speadsheetDocument = SpreadsheetDocument.loadDocument(inputStream);
 		List<Table> tables = speadsheetDocument.getTableList();
 					
 		Table table = tables.get(2);

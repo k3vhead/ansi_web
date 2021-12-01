@@ -2,15 +2,12 @@ package com.ansi.scilla.web.payroll.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Enumeration;
 
-import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.fileupload.FileUploadException;
 import org.apache.logging.log4j.Level;
 
 import com.ansi.scilla.web.common.response.ResponseCode;
@@ -43,7 +40,7 @@ public class TimesheetImportServlet extends AbstractServlet {
 			TimesheetImportRequest uploadRequest = new TimesheetImportRequest(request);
 			ResponseCode responseCode = null;
 			WebMessages webMessages = uploadRequest.validate(conn);
-			TimesheetImportResponse data = new TimesheetImportResponse(conn, uploadRequest.getTimesheetFile());
+			TimesheetImportResponse data = new TimesheetImportResponse();
 			
 			data.setWebMessages(webMessages);
 			
