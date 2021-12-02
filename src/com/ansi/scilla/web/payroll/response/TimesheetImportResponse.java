@@ -1,10 +1,8 @@
 package com.ansi.scilla.web.payroll.response;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.util.ArrayList;
 //import java.util.Arrays;
@@ -12,29 +10,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.odftoolkit.simple.SpreadsheetDocument;
-import org.odftoolkit.simple.table.Table;
 
-//import com.ansi.scilla.common.ApplicationObject;
-//import com.ansi.scilla.common.db.Division;
 import com.ansi.scilla.web.common.response.MessageResponse;
 import com.ansi.scilla.web.payroll.request.TimesheetImportRequest;
-//import com.fasterxml.jackson.annotation.JsonFormat;	
+import com.ansi.scilla.common.payroll.PayrollWorksheetParser;
+import com.ansi.scilla.common.payroll.PayrollWorksheetEmployee;
 
 public class TimesheetImportResponse extends MessageResponse {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Logger logger = LogManager.getLogger(TimesheetImportResponse.class);	
+	final Logger logger = LogManager.getLogger(TimesheetImportResponse.class);	
 	private String city;
 	private String division;
 	private String operationsManagerName;
 	private String state;
-	private List<TimesheetRecord> timesheetRecords = new ArrayList<TimesheetRecord>();
+	private List<PayrollWorksheetEmployee> timesheetRecords = new ArrayList<PayrollWorksheetEmployee>();
 	private String weekEnding;
 	private String fileName;
 	
@@ -52,33 +46,43 @@ public class TimesheetImportResponse extends MessageResponse {
 	}
 	
 	public TimesheetImportResponse(Connection conn, File file) throws FileNotFoundException, Exception {
-		this();
-		this.fileName = file.getAbsolutePath();
-		parseODSFile(new FileInputStream(file));
+		this(conn, new PayrollWorksheetParser(file));
+//		this.fileName = file.getAbsolutePath();
+//		parseODSFile(new FileInputStream(file));
 	}
 	
 	public TimesheetImportResponse(Connection conn, FileItem file) throws IOException, Exception {
+		this(conn, new PayrollWorksheetParser(file));
+//		this.fileName = file.getName();
+//		parseODSFile(file.getInputStream());
+	}
+	
+	private TimesheetImportResponse(Connection conn, PayrollWorksheetParser parser ) {
 		this();
-		this.fileName = file.getName();
-		parseODSFile(file.getInputStream());
+		this.city = parser.getCity();
+		this.division = parser.getDivision();
+		this.operationsManagerName = parser.getOperationsManagerName();
+		this.state = parser.getState();
+		this.timesheetRecords = parser.getTimesheetRecords();
+		this.weekEnding = parser.getWeekEnding();
+		this.fileName = parser.getFileName();
 	}
 	
 	
-	
-	
-	public List<TimesheetRecord> getEmployeeRecordList() {
+	public List<PayrollWorksheetEmployee> getEmployeeRecordList() {
 		return timesheetRecords;
 	}
-	public void setEmployeeRecordList(List<TimesheetRecord> employeeRecordList) {
+	public void setEmployeeRecordList(List<PayrollWorksheetEmployee> employeeRecordList) {
 		this.timesheetRecords = employeeRecordList;
 	}
 
-	public void addEmployeeRecord(TimesheetRecord record) {
+	public void addEmployeeRecord(PayrollWorksheetEmployee record) {
 		if ( this.timesheetRecords == null ) {
-			this.timesheetRecords = new ArrayList<TimesheetRecord>();
+			this.timesheetRecords = new ArrayList<PayrollWorksheetEmployee>();
 		}
 		this.timesheetRecords.add(record);
 	}
+	
 	public String getCity() {
 		return this.city;
 	}
@@ -103,10 +107,10 @@ public class TimesheetImportResponse extends MessageResponse {
 	public void setState(String state) {
 		this.state = state;
 	}
-	public List<TimesheetRecord> getTimesheetRecords() {
+	public List<PayrollWorksheetEmployee> getTimesheetRecords() {
 		return timesheetRecords;
 	}
-	public void setTimesheetRecords(List<TimesheetRecord> timesheetRecords) {
+	public void setTimesheetRecords(List<PayrollWorksheetEmployee> timesheetRecords) {
 		this.timesheetRecords = timesheetRecords;
 	}
 	public String getWeekEnding() {
@@ -123,30 +127,31 @@ public class TimesheetImportResponse extends MessageResponse {
 	}
 
 	
-	public void parseODSFile(InputStream inputStream) throws Exception {    	    	
-		logger.log(Level.DEBUG,"Inside Parser.. ");
-		
-    	SpreadsheetDocument speadsheetDocument = null;
-    	speadsheetDocument = SpreadsheetDocument.loadDocument(inputStream);
-		List<Table> tables = speadsheetDocument.getTableList();
-					
-		Table table = tables.get(2);
-		for(Integer row=6; row<39;row++) {			
-			timesheetRecords.add(new TimesheetRecord(table, row));
-		}		
-		this.setEmployeeRecordList(timesheetRecords);	
-		this.setDivision(table.getCellByPosition(TimesheetRecord.WprCols.DIVISION.cellLocation()).getDisplayText());
-		this.setWeekEnding(table.getCellByPosition(TimesheetRecord.WprCols.WEEK_ENDING.cellLocation()).getDisplayText());
-		this.setOperationsManagerName(table.getCellByPosition(TimesheetRecord.WprCols.OPERATIONS_MANAGER_NAME.cellLocation()).getDisplayText());
-		this.setState(table.getCellByPosition(TimesheetRecord.WprCols.STATE.cellLocation()).getDisplayText());
-		this.setCity(table.getCellByPosition(TimesheetRecord.WprCols.CITY.cellLocation()).getDisplayText());
-
-		logger.log(Level.DEBUG,"Division = " + this.getDivision());
-		logger.log(Level.DEBUG,"Week Ending = " + this.getWeekEnding());
-		logger.log(Level.DEBUG,"OM Name = " + this.getOperationsManagerName());
-		logger.log(Level.DEBUG,"State = " + this.getState());
-		logger.log(Level.DEBUG,"City = " + this.getCity());
-				
-		logger.log(Level.DEBUG,"Rows stored = " + this.getEmployeeRecordList().size());
-    }
+	
+//	public void parseODSFile(InputStream inputStream) throws Exception {    	    	
+//		logger.log(Level.DEBUG,"Inside Parser.. ");
+//		
+//    	SpreadsheetDocument speadsheetDocument = null;
+//    	speadsheetDocument = SpreadsheetDocument.loadDocument(inputStream);
+//		List<Table> tables = speadsheetDocument.getTableList();
+//					
+//		Table table = tables.get(2);
+//		for(Integer row=6; row<39;row++) {			
+//			timesheetRecords.add(new TimesheetRecord(table, row));
+//		}		
+//		this.setEmployeeRecordList(timesheetRecords);	
+//		this.setDivision(table.getCellByPosition(TimesheetRecord.WprCols.DIVISION.cellLocation()).getDisplayText());
+//		this.setWeekEnding(table.getCellByPosition(TimesheetRecord.WprCols.WEEK_ENDING.cellLocation()).getDisplayText());
+//		this.setOperationsManagerName(table.getCellByPosition(TimesheetRecord.WprCols.OPERATIONS_MANAGER_NAME.cellLocation()).getDisplayText());
+//		this.setState(table.getCellByPosition(TimesheetRecord.WprCols.STATE.cellLocation()).getDisplayText());
+//		this.setCity(table.getCellByPosition(TimesheetRecord.WprCols.CITY.cellLocation()).getDisplayText());
+//
+//		logger.log(Level.DEBUG,"Division = " + this.getDivision());
+//		logger.log(Level.DEBUG,"Week Ending = " + this.getWeekEnding());
+//		logger.log(Level.DEBUG,"OM Name = " + this.getOperationsManagerName());
+//		logger.log(Level.DEBUG,"State = " + this.getState());
+//		logger.log(Level.DEBUG,"City = " + this.getCity());
+//				
+//		logger.log(Level.DEBUG,"Rows stored = " + this.getEmployeeRecordList().size());
+//    }
 }
