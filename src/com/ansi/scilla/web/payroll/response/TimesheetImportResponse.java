@@ -52,7 +52,7 @@ public class TimesheetImportResponse extends MessageResponse {
 	}
 	
 	public TimesheetImportResponse(Connection conn, FileItem file) throws IOException, Exception {
-		this(conn, new PayrollWorksheetParser(file));
+		this(conn, new PayrollWorksheetParser(file.getName(), file.getInputStream()));
 //		this.fileName = file.getName();
 //		parseODSFile(file.getInputStream());
 	}

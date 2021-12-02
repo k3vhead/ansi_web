@@ -14,6 +14,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Transformer;
 import org.apache.logging.log4j.Level;
 
+import com.ansi.scilla.common.payroll.EmployeeImportRecord;
 import com.ansi.scilla.web.common.response.ResponseCode;
 import com.ansi.scilla.web.common.response.WebMessages;
 import com.ansi.scilla.web.common.servlet.AbstractServlet;
@@ -123,7 +124,7 @@ public class EmployeeImportServlet extends AbstractServlet {
 
 	
 
-	public class EmployeeRecordTransformer implements Transformer<EmployeeRecord, EmployeeRecord> {
+	public class EmployeeRecordTransformer implements Transformer<EmployeeImportRecord, EmployeeImportRecord> {
 
 		private PreparedStatement statement;		
 		
@@ -135,7 +136,7 @@ public class EmployeeImportServlet extends AbstractServlet {
 
 
 		@Override
-		public EmployeeRecord transform(EmployeeRecord arg0) {
+		public EmployeeImportRecord transform(EmployeeImportRecord arg0) {
 			try {
 				statement.setInt(1, Integer.valueOf(arg0.getEmployeeCode()));
 				statement.setString(2, arg0.getFirstName().toLowerCase());
