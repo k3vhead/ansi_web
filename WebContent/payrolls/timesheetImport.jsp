@@ -12,16 +12,12 @@
 <%@ taglib tagdir="/WEB-INF/tags/webthing" prefix="webthing" %>
 <%@ taglib uri="/WEB-INF/theTagThing.tld" prefix="ansi" %>
 
-
-
-
 <tiles:insert page="../layout.jsp" flush="true">
 
     <tiles:put name="title" type="string">
 		Payroll Timesheet Import
     </tiles:put>
-    
-    
+        
     <tiles:put name="headextra" type="string">
        	<link rel="stylesheet" href="css/lookup.css" />
     	<link rel="stylesheet" href="css/ticket.css" />
@@ -88,14 +84,11 @@
            		statusIsBad : '<webthing:ban>Error</webthing:ban>',
            		saveButton : '<webthing:save>Save</webthing:save>',
            		view : '<webthing:view styleClass="details-control">Details</webthing:view>',
-           			
-           			
+           			           			
            		init : function() {
            			TIMESHEET_IMPORT.makeClickers();            			
            		},
-           	
-           	
-           		
+           	           	           		
            		formatDetail : function(row) {
            			console.log("formatDetail");
            			var $table = $("<table>");
@@ -130,7 +123,6 @@
            			$vacactionRow.append( $("<td>").append(row.vacationPay));
            			$vacactionRow.append( $("<td>").append(TIMESHEET_IMPORT.statusIsBad));           			
            			$table.append($vacactionRow);
-
 						
            			return $table;
 
@@ -150,9 +142,7 @@
    					//{ title : "Productivity", "defaultContent": "", data:'productivity' },
 
            		},
-           		
-           		
-           		
+           		       		
            		makeClickers : function() {
            			$("#save-button").click(function($event) {
            				$("#prompt-div .err").html("");
@@ -174,12 +164,10 @@
            			$("#display-div input[name='cancelButton']").click(function($event) {
            				$("#display-div").hide();
            				$("#prompt-div").show();
+           				$("#prompt-div .timesheet-file").val('');
            			});
            		},
-           		
-
-           		
-           		
+           		           		           		
            		processUploadFailure : function($data) {
            			console.log("processUploadFailure");
            			$("#prompt-div .err").html("");
@@ -188,8 +176,7 @@
            				$($selector).html($value[0]).show();
            			});
            		},
-           		
-           		
+           		           		
            		processUploadSuccess : function($data) {
            			console.log("processUploadSuccess");
            			$("#prompt-div").hide();
@@ -198,19 +185,20 @@
            			console.log($data);
            			console.log($data.data.division);
            			$("#display-div .divisionId").html($data.data.division);
+           			$("#display-div .operationsManagerName").html($data.data.operationsManagerName);           			
            			$("#display-div .payrollDate").html($data.data.weekEnding);
            			$("#display-div .state").html($data.data.state);
            			$("#display-div .city").html($data.data.city);
            			$("#display-div .timesheetFile").html($data.data.fileName);
-           			
-           			
-           			
+           			           			           			
            			var $table = $("#timesheet").DataTable({
            				aaSorting : [[0,'asc']],
             			processing : true,
            				data : $data.data.employeeRecordList,
            				searching : true,
             	        searchDelay : 800,
+            	        paging: false,
+            	        destroy: true,
            				columnDefs : [
              	            { orderable : true, "targets": -1 },
              	            //{ className : "dt-head-center", "targets":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]},
@@ -262,10 +250,7 @@
            				}
            			});
            		},
-           		
-           		
-           		
-           		
+        
            		saveFile : function($event) {
            			var results = $event.target.result;
            			var fileName = document.getElementById('timesheet-file').files[0].name;
@@ -287,7 +272,7 @@
            						TIMESHEET_IMPORT.processUploadFailure($data);
            					} else if ( $data.responseHeader.responseCode == "SUCCESS" ) {
            						TIMESHEET_IMPORT.processUploadSuccess($data);
-           						console.log($data.Division);           						
+           						console.log($data.data.Division);           						
            					} else {
            						$("#globalMsg").html("Invalid response code " + $data.responseHeader.responseCode + ". Contact Support");
            					}
@@ -396,6 +381,7 @@
 			<table style="width:100%;">
     			<tr>
     				<td><span class="form-label">Division:</span></td>
+    				<td><span class="form-label">Operations Manager:</span></td>
     				<td><span class="form-label">Week Ending:</span></td>
     				<td><span class="form-label">State:</span></td>
     				<td><span class="form-label">City/Jurisdiction:</span></td>
@@ -407,14 +393,14 @@
     			</tr>
     			<tr>
     				<td><span class="divisionId"></span></td>
+    				<td><span class="operationsManagerName"></span></td>
     				<td><span class="payrollDate"></span></td>
     				<td><span class="state"></span></td>
     				<td><span class="city"></span></td>
     				<td><span class="timesheetFile"></span></td>
     			</tr>
     			<tr>
-    			</tr>
-    			
+    			</tr>    			
     		</table>
 			<table id="timesheet">
 			</table>
