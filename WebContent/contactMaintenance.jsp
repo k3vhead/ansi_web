@@ -40,6 +40,10 @@
 				width:400px;
 				padding:15px;
 			}
+			#filter-container {
+        		width:402px;
+        		float:right;
+        	}
 			.prettyWideButton {
 				height:30px;
 				min-height:30px;
@@ -179,11 +183,13 @@
 				            { title: "<bean:message key="field.label.firstName" />", "defaultContent": "<i>N/A</i>", searchable:true, data:"first_name"},
 				            { title: "<bean:message key="field.label.businessPhone" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
 				            	value = "";
-			            		if ( row.preferred_contact=='business_phone') {
-			            			value = '<span style="font-weight:bold;">' + row.business_phone + '</span>';
-			            		} else {
-			            			value = row.business_phone + "";
-			            		}			            		
+				            	if ( row.business_phone != null ) {
+				            		if ( row.preferred_contact=='business_phone') {
+				            			value = '<span style="font-weight:bold;">' + row.business_phone + '</span>';
+				            		} else {
+				            			value = row.business_phone + "";
+				            		}		
+				            	}
 			            		return (value);
 				            } },
 				            { title: "<bean:message key="field.label.email" />", "defaultContent": "<i>N/A</i>", searchable:true, data: function ( row, type, set ) {
@@ -354,6 +360,7 @@
 							200: function($data) {
 								//console.log($data);
 								var $contact = $data.data.contactList[0];
+								$("#editPanel .contactId").html($contactId);
 								$("#editPanel input[name='businessPhone']").val($contact.businessPhone);
 								$("#editPanel input[name='fax']").val($contact.fax);
 								$("#editPanel input[name='firstName']").val($contact.firstName);
@@ -397,6 +404,11 @@
     
 	    <div id="editPanel">
 	    	<table>
+	    		<tr>
+	    			<td><span class="formHdr">ID</span></td>
+	    			<td><span class="contactId"></span></i></td>
+	    			<td>&nbsp;</td>
+	    		</tr>
 	    		<tr>
 	    			<td><span class="formHdr"><bean:message key="field.label.firstName" /></span></td>
 	    			<td><input type="text" name="firstName" /> <i class="fa fa-level-down swap-name" aria-hidden="true"></i></td>
