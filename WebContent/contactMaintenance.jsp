@@ -25,7 +25,9 @@
     <tiles:put name="headextra" type="string">
     	<link rel="stylesheet" href="css/callNote.css" />
     	<link rel="stylesheet" href="css/accordion.css" type="text/css" />
+    	<link rel="stylesheet" href="css/lookup.css" />
     	<script type="text/javascript" src="js/ansi_utils.js"></script>
+    	<script type="text/javascript" src="js/lookup.js"></script>
     	<script type="text/javascript" src="js/callNote.js"></script>  
         <style type="text/css">
 			#displayTable {
@@ -228,6 +230,8 @@
 				            "initComplete": function(settings, json) {
 				            	//console.log(json);
 				            	//CONTACTMAINTENANCE.doFunctionBinding();
+				            	var myTable = this;
+				            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#contactTable", CONTACTMAINTENANCE.createTable);
 				            },
 				            "drawCallback": function( settings ) {
 				            	CALLNOTE.lookupLink();
@@ -383,7 +387,7 @@
     
    <tiles:put name="content" type="string">
     	<h1><bean:message key="page.label.contact" /> <bean:message key="menu.label.lookup" /></h1>
-    	
+    	<webthing:lookupFilter filterContainer="filter-container" />
    	    <input type="button" class="prettyWideButton showNew" value="New" />
  		<table id="contactTable" style="table-layout: fixed" class="display" cellspacing="0" style="font-size:9pt;max-width:800px;width:800px;">       	
 	    </table>
