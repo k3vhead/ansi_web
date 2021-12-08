@@ -206,6 +206,8 @@
             			        					$value = $no;
             			        				}
             			        			}
+            			        			$value = $value + "| " + row.dt_RowId;
+            		
             			        			return $value;
             			        		}
             			        			
@@ -226,53 +228,77 @@
             			        	{ title: "Notes", width:"10%", searchable:true, "defaultContent": "", data:'notes' },    			        	
             			            { title: "Action",  width:"5%", searchable:false,  
             			            	data: function ( row, type, set ) { 
-            			            		var $viewLink = '<span class="action-link view-link" data-id="'+row.employee_code+'"><webthing:view>Alias</webthing:view></span>';
-            			            		var $editLink = '<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><span class="action-link edit-link" data-id="'+row.employee_code+'"><webthing:edit>Edit</webthing:edit></span></ansi:hasPermission>';
+            			            		var $viewLink = '<span class="action-link view-link" data-id="'+row.rowId+'"><webthing:view>Alias</webthing:view></span>';
+            			            		var $editLink = '<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><span class="action-link edit-link" data-id="'+row.rowId+'"><webthing:edit>Edit</webthing:edit></span></ansi:hasPermission>';
             			            		var $deleteLink = '';
             			            		if ( row.timesheet_count == 0 ) {
-            			            			$deleteLink = '<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><span class="action-link delete-link" data-id="'+row.employee_code+'"><webthing:delete>Delete</webthing:delete></span></ansi:hasPermission>';
+            			            			$deleteLink = '<ansi:hasPermission permissionRequired="PAYROLL_WRITE"><span class="action-link delete-link" data-id="'+row.rowID+'"><webthing:delete>Delete</webthing:delete></span></ansi:hasPermission>';
             			            		}
             			            		var $actionLink = $viewLink + $editLink + $deleteLink;
             			            		return $actionLink;
             			            	}
             			         	   },
             			      		 ],
-            			         /*   "initComplete": function(settings, json) {
-            			            	var myTable = this;
-            			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#employeeImport", EMPLOYEELOOKUP.makeEmployeeTable);
-            			            },
-            			            "drawCallback": function( settings ) {
-            			            	$(".view-link").off("click");
-            			            	$(".edit-link").off("click");
-            			            	$(".delete-link").off("click");
-            			            	$(".view-link").click(function($clickevent) {
-            			            		var $employeeCode = $(this).attr("data-id");
-            			            		console.log("employee code: " + $employeeCode);
-            			            		EMPLOYEELOOKUP.makeAliasTable($employeeCode);
-            			            	});
-            			            	$(".edit-link").click(function($clickevent) {
-            			            		var $employeeCode = $(this).attr("data-id");
-            			            		console.log("employee code: " + $employeeCode);
-            			            		var $url = "payroll/employee/" + $employeeCode
-            			            		var $callbacks = {
-            			            				200:EMPLOYEELOOKUP.displayEmployeeModal
-            			            			};
-            			            		ANSI_UTILS.makeServerCall("GET", $url, {}, $callbacks, {});
-            			            	});
-            			            	$(".delete-link").click(function($clickevent) {
-            			            		var $employeeCode = $(this).attr("data-id");
-            			            		console.log("employee code: " + $employeeCode);
-            			            		$("#confirm-save").attr("data-function","deleteEmployee");
-            			            		$("#confirm-save").attr("data-id",$employeeCode);
-            			            		$("#confirm-save").attr("data-name",null);
-        									$("#confirm-modal").dialog("open");
-            			            	});
-            			            }  */
+            			      		 "initComplete": function(settings, json) {
+             			            	var myTable = this;
+             			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#employeeLookup", EMPLOYEE_IMPORT.makeEmployeeTable);
+             			            },
+             			            drawCallback : function() {
+             			              $(".editme").off("click");
+             			              $(".editme").click(function($event) {
+             			              var $id = $(this).attr("data-id");
+             			             // displayEditModal(dictionary[$id]);
+             			              alert("it worked!");
+             			          });
+             			         /*    "drawCallback": function( settings ) 
+             			            	$(".view-link").off("click");
+             			            	$(".edit-link").off("click");
+             			            	$(".delete-link").off("click");
+             			            	$(".view-link").click(function($clickevent) {
+             			            		var $employeeCode = $(this).attr("data-id");
+             			            		console.log("employee code: " + $employeeCode);
+             			            		EMPLOYEE_IMPORT.makeAliasTable($employeeCode);
+             			            	});
+             			            	$(".edit-link").click(function($clickevent) {
+             			            		var $employeeCode = $(this).attr("data-id");
+             			            		console.log("employee code: " + $employeeCode);
+             			            		var $url = "payroll/employee/" + $employeeCode
+             			            		var $callbacks = {
+             			            				200:EMPLOYEE_IMPORT.displayEmployeeModal
+             			            			};
+             			            		ANSI_UTILS.makeServerCall("GET", $url, {}, $callbacks, {});
+             			            	});
+             			            	$(".delete-link").click(function($clickevent) {
+             			            		var $employeeCode = $(this).attr("data-id");
+             			            		console.log("employee code: " + $employeeCode);
+             			            		$("#confirm-save").attr("data-function","deleteEmployee");
+             			            		$("#confirm-save").attr("data-id",$employeeCode);
+             			            		$("#confirm-save").attr("data-name",null);
+         									$("#confirm-modal").dialog("open");
+            			            	});*/
+            			            }    
             			    } );
                 		},
                 		
-                   		
-                   		
+                		
+                		 doConfirm : function() {
+                			var $function = $("#confirm-save").attr("data-function");
+                			if ( $function == "deleteAlias" ) {
+                				var $employeeCode = $("#confirm-save").attr("data-id");
+                				var $aliasName = $("#confirm-save").attr("data-name");
+                				var $url = "payroll/alias/" + $employeeCode + "/" + $aliasName;
+                				ANSI_UTILS.makeServerCall("DELETE", $url, {}, {200:EMPLOYEE_IMPORT.processUploadSuccess}, {});
+                			} else if ( $function == "deleteEmployee") {
+                				var $employeeCode = $("#confirm-save").attr("data-id");
+                				var $url = "payroll/employee/" + $employeeCode;
+                				ANSI_UTILS.makeServerCall("DELETE", $url, {}, {200:EMPLOYEE_IMPORT.processUploadSuccess}, {});
+                			} else {
+                				$("#confirm-modal").dialog("close");
+                				console.log("Function: " + $function);
+                				$("#globalMsg").html("Invalid System State. Reload and try again").show();
+                			}
+                		}, 
+                		
                    		processUploadFailure : function($data) {
                    			console.log("processUploadFailure");
                    			$("#prompt-div .err").html("");
@@ -391,17 +417,20 @@
 	    	
     	
     	<table id="display-div">
-    		<tr>
+    		<tr id="makeedit">
     				
     				
 
     				<td><span class="form-label">Paycom Import File:</span></td>
     				<td><span class="employeeFile"></span></td>
+    				<td rowspan="2"><input type="button" value="Cancel" name="cancelButton" class="action-button" /></td>
+    				<td><span data-id="doedit" class="editme">Edit</span></td>
     				
     				
-    			<td rowspan="2"><input type="button" value="Cancel" name="cancelButton" class="action-button" /></td>
+    			
     		</tr>
     		
+    		</tr>
     	</table>
     	
 				<div id="employee-display">
