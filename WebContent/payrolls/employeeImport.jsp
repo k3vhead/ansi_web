@@ -35,6 +35,9 @@
         	#display-div {
         		display:none;
         	}
+        	#employee-modal {
+        		display:none;
+        	}
         	#table-container {
         		width:100%;
         	}
@@ -58,6 +61,11 @@
         	}
         	#organization-edit th {
         		text-align:left;
+        	}
+        	#workingtag {
+        		display:none;
+        		width:100%;
+        		border:solid 1px #000000;
         	}
         	.action-link {
         		text-decoration:none;
@@ -88,10 +96,12 @@
                    		statusIsBad : '<webthing:ban>Error</webthing:ban>',
                    		saveButton : '<webthing:save>Save</webthing:save>',
                    		view : '<webthing:view styleClass="details-control">Details</webthing:view>',
+                   		employeeDict : {},
                    			
                    			
                    		init : function() {
-                   			EMPLOYEE_IMPORT.makeClickers();            			
+                   			EMPLOYEE_IMPORT.makeClickers();  
+                   			EMPLOYEE_IMPORT.makeModals();
                    		},
                    	
                    	
@@ -108,6 +118,7 @@
         	           				reader.readAsText(file, 'UTF-8');	           				
         	           				reader.onload = EMPLOYEE_IMPORT.saveFile;
         	           				// reader.onprogress ...  (progress bar)
+        	           				$("#workingtag").show();
                    				}
                    			});
                    			
@@ -115,8 +126,34 @@
                    				$("#display-div").hide();
                    				$("#prompt-div").show();
                    				$("#employee-display").hide();
+                   				$("#workingtag").hide();
                    			});
                    		},
+                   		
+                   		
+                   		makeModals : function() {
+                   			$( "#employee-modal" ).dialog({
+                				title:'View Employee Alias',
+                				autoOpen: false,
+                				height: 500,
+                				width: 600,
+                				modal: true,
+                				closeOnEscape:true,
+                				//open: function(event, ui) {
+                				//	$(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+                				//},
+                				buttons: [
+                					{
+                						id:  "alias_display_cancel",
+                						click: function($event) {
+               								$( "#employee-modal" ).dialog("close");
+                						}
+                					}
+                				]
+                			});	
+                			$("#alias_display_cancel").button('option', 'label', 'Done');  
+                   		},
+                   		
                    		
                    		makeEmployeeTableXXX : function($data) {
                    			console.log($data);
@@ -138,6 +175,8 @@
                    		
                    		
                    		makeEmployeeTable : function($data) {
+                   			$("#workingtag").hide();
+                   			
                 			var $yes = '<webthing:checkmark>Yes</webthing:checkmark>';
                 			var $no = '<webthing:ban>No</webthing:ban>';
                 			var $unknown = '<webthing:questionmark>Invalid</webthing:questionmark>';
@@ -153,7 +192,7 @@
                     	        "scrollCollapse": 	true,
                     	        "scrollX": 			true,
                     	     //   "pageLength":		50,
-                    	        rowId: 				'dt_RowId',
+                    	        rowId: 				'rowId',
                     	        destroy : 			true,		// this lets us reinitialize the table
                     	        dom: 				'Bfrtip',
                     	        "searching": 		true,
@@ -205,8 +244,7 @@
             			        				if ( row.unionMember == '' ) {
             			        					$value = $no;
             			        				}
-            			        			}
-            			        			$value = $value + "| " + row.dt_RowId;
+            			        			}            			        			
             		
             			        			return $value;
             			        		}
@@ -244,40 +282,20 @@
              			            	LOOKUPUTILS.makeFilters(myTable, "#filter-container", "#employeeLookup", EMPLOYEE_IMPORT.makeEmployeeTable);
              			            },
              			            drawCallback : function() {
-             			              $(".editme").off("click");
-             			              $(".editme").click(function($event) {
-             			              var $id = $(this).attr("data-id");
-             			             // displayEditModal(dictionary[$id]);
-             			              alert("it worked!");
-             			          });
-             			         /*    "drawCallback": function( settings ) 
-             			            	$(".view-link").off("click");
              			            	$(".edit-link").off("click");
-             			            	$(".delete-link").off("click");
-             			            	$(".view-link").click(function($clickevent) {
-             			            		var $employeeCode = $(this).attr("data-id");
-             			            		console.log("employee code: " + $employeeCode);
-             			            		EMPLOYEE_IMPORT.makeAliasTable($employeeCode);
-             			            	});
-             			            	$(".edit-link").click(function($clickevent) {
-             			            		var $employeeCode = $(this).attr("data-id");
-             			            		console.log("employee code: " + $employeeCode);
-             			            		var $url = "payroll/employee/" + $employeeCode
-             			            		var $callbacks = {
-             			            				200:EMPLOYEE_IMPORT.displayEmployeeModal
-             			            			};
-             			            		ANSI_UTILS.makeServerCall("GET", $url, {}, $callbacks, {});
-             			            	});
-             			            	$(".delete-link").click(function($clickevent) {
-             			            		var $employeeCode = $(this).attr("data-id");
-             			            		console.log("employee code: " + $employeeCode);
-             			            		$("#confirm-save").attr("data-function","deleteEmployee");
-             			            		$("#confirm-save").attr("data-id",$employeeCode);
-             			            		$("#confirm-save").attr("data-name",null);
-         									$("#confirm-modal").dialog("open");
-            			            	});*/
+             			            	$(".edit-link").click(function($event) {
+             			              		var $id = $(this).attr("data-id");
+             			              		EMPLOYEE_IMPORT.displayEditModal($id);
+             			              		//alert("it worked! " + $id);
+             			          		});
             			            }    
             			    } );
+                		},
+                		
+                		
+                		displayEditModal : function($row) {
+                			$("#employee-modal input[name='name']").val("Kris L");
+                			$("#employee-modal").dialog("open");
                 		},
                 		
                 		
@@ -415,28 +433,33 @@
     	</table>
     	</div>
 	    	
+	    <div id="workingtag">
+	    	<webthing:working />
+	    </div>
     	
     	<table id="display-div">
     		<tr id="makeedit">
-    				
-    				
-
-    				<td><span class="form-label">Paycom Import File:</span></td>
-    				<td><span class="employeeFile"></span></td>
-    				<td rowspan="2"><input type="button" value="Cancel" name="cancelButton" class="action-button" /></td>
-    				<td><span data-id="doedit" class="editme">Edit</span></td>
-    				
-    				
-    			
-    		</tr>
-    		
+   				<td><span class="form-label">Paycom Import File:</span></td>
+   				<td><span class="employeeFile"></span></td>
+   				<td rowspan="2"><input type="button" value="Cancel" name="cancelButton" class="action-button" /></td>
+   				<td><span data-id="doedit" class="editme">Edit</span></td>
     		</tr>
     	</table>
     	
-				<div id="employee-display">
+		<div id="employee-display">
 			<div class="employee-message err"></div>
 			<table id="employeeImport">				
 			</table>			
+		</div>
+		
+		<div id="employee-modal">
+			<table>
+				<tr>
+					<td><span class="formLabel">Name</span></td>
+					<td><input name="name" /></td>
+					<td><span class="err nameErr"></span></td>
+				</tr>
+			</table>
 		</div>
 		
     </tiles:put>
